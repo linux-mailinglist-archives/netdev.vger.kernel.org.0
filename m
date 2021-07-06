@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 171F33BD1DF
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:39:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DD93BD0EC
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239119AbhGFLkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:40:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47548 "EHLO mail.kernel.org"
+        id S234515AbhGFLhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:37:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236267AbhGFLe7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:34:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A235E61E25;
-        Tue,  6 Jul 2021 11:23:16 +0000 (UTC)
+        id S236287AbhGFLfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B72661E1E;
+        Tue,  6 Jul 2021 11:23:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570597;
-        bh=sODFjQzU3USHLt6BrmHeBwUgk5c78OeFL3+f/Hi8QAs=;
+        s=k20201202; t=1625570601;
+        bh=+EjrSCLm7Socqe+OOWOjIGaOHL39kZtz9vJx6xZ1JIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H5QjQqUIjaQhtLaNk5xlvhT8acnk6yRwbTRyA1WaxhT7rpKIEM8gW49rGbhQEpaKG
-         EIcNTcMXrFSHevJsYVkdn2wRc1SUs5975wYN5c0YFz1ze6M6zPqcJcrUpC0vhZunTi
-         8PErsBbaGf2OLjJ017EFey1F+5M2O2y8YUF4k2wJMHzS/fFOsQIcaPjtShmQCnYSaR
-         k1ZE5mxo/6KUIQJ261/ut/971fWFxCMiuBrl6kKiU0ftKdFUOACA8B2B+qlWCGsyfD
-         IhPn+ZJHgoYy7yEJbKAt3r7Q5udH0e0rt1FDLaXOhufrQ17T9BMuktgwUBL0WuLXJ3
-         ikqN0611fbNuw==
+        b=W5EjakNuy4WXpPDxEVZLEQN9riivvSteLDaRx+ohPgXVsOiL8dWh6gDTmK5DWz5hS
+         1GJ7uJ11j5UL8euxasMQRCHEiLjoaMeNK5ztGFkuVk3wUztP0BC0Wcqmpq6hM6toyG
+         BnG/smpgSVRWZ4Nno2hNP9cbuEvMdNqD5hPPHFvnBL0TKANmzXTyoHF8AWxMK9Tdif
+         mUuBNYkXwUQL8TEjJ4tcheNpoTKhPJNv1K4ThfzsK9Ih+MFpNOo/YiGcckGqnQL09s
+         ig42ttYpmxuJkN62Uf5rZldHqI7FNDRy6p3cDw+qmEHQVBicmJIFjBJEVcWhmx1mma
+         kFhMcy/zwTp5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        Tony Brelinski <tonyx.brelinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 057/137] net: bridge: mrp: Update ring transitions.
-Date:   Tue,  6 Jul 2021 07:20:43 -0400
-Message-Id: <20210706112203.2062605-57-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.10 060/137] ice: fix clang warning regarding deadcode.DeadStores
+Date:   Tue,  6 Jul 2021 07:20:46 -0400
+Message-Id: <20210706112203.2062605-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -43,47 +45,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
 
-[ Upstream commit fcb34635854a5a5814227628867ea914a9805384 ]
+[ Upstream commit 7e94090ae13e1ae5fe8bd3a9cd08136260bb7039 ]
 
-According to the standard IEC 62439-2, the number of transitions needs
-to be counted for each transition 'between' ring state open and ring
-state closed and not from open state to closed state.
+clang generates deadcode.DeadStores warnings when a variable
+is used to read a value, but then that value isn't used later
+in the code. Fix this warning.
 
-Therefore fix this for both ring and interconnect ring.
-
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_mrp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-index d1336a7ad7ff..3259f5480127 100644
---- a/net/bridge/br_mrp.c
-+++ b/net/bridge/br_mrp.c
-@@ -607,8 +607,7 @@ int br_mrp_set_ring_state(struct net_bridge *br,
- 	if (!mrp)
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index a7975afecf70..14eba9bc174d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -3492,13 +3492,9 @@ static int
+ ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
+ 		    struct ice_ring_container *rc)
+ {
+-	struct ice_pf *pf;
+-
+ 	if (!rc->ring)
  		return -EINVAL;
  
--	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
--	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
-+	if (mrp->ring_state != state->ring_state)
- 		mrp->ring_transitions++;
- 
- 	mrp->ring_state = state->ring_state;
-@@ -690,8 +689,7 @@ int br_mrp_set_in_state(struct net_bridge *br, struct br_mrp_in_state *state)
- 	if (!mrp)
+-	pf = rc->ring->vsi->back;
+-
+ 	switch (c_type) {
+ 	case ICE_RX_CONTAINER:
+ 		ec->use_adaptive_rx_coalesce = ITR_IS_DYNAMIC(rc->itr_setting);
+@@ -3510,7 +3506,7 @@ ice_get_rc_coalesce(struct ethtool_coalesce *ec, enum ice_container_type c_type,
+ 		ec->tx_coalesce_usecs = rc->itr_setting & ~ICE_ITR_DYNAMIC;
+ 		break;
+ 	default:
+-		dev_dbg(ice_pf_to_dev(pf), "Invalid c_type %d\n", c_type);
++		dev_dbg(ice_pf_to_dev(rc->ring->vsi->back), "Invalid c_type %d\n", c_type);
  		return -EINVAL;
+ 	}
  
--	if (mrp->in_state == BR_MRP_IN_STATE_CLOSED &&
--	    state->in_state != BR_MRP_IN_STATE_CLOSED)
-+	if (mrp->in_state != state->in_state)
- 		mrp->in_transitions++;
- 
- 	mrp->in_state = state->in_state;
 -- 
 2.30.2
 
