@@ -2,35 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E97A3BCE77
+	by mail.lfdr.de (Postfix) with ESMTP id B747B3BCE78
 	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbhGFL0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:26:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54674 "EHLO mail.kernel.org"
+        id S233787AbhGFL0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:26:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55940 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232968AbhGFLWT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:22:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DEB3461CCF;
-        Tue,  6 Jul 2021 11:17:51 +0000 (UTC)
+        id S233349AbhGFLWU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:22:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5539A61CD8;
+        Tue,  6 Jul 2021 11:17:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570272;
-        bh=9oZV2sweLG7QNjxJq5lidgr3AufUJfafWyGDoLTwjao=;
+        s=k20201202; t=1625570274;
+        bh=KOu7qrupT3Xq1MPcezUqH3okfRUfVTjKqiEIPZ1rfEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQqPS8W+Jd7nHe7k1BuMziAnV5Ys9SxcLxb/1XmZIRqDEvUZvcLzlgUxaHTsggrux
-         DDOXUIuDWv0jrNIWhirDfFSfPo58HDfRytzceZylLy3F/gUnj9dafm5qNoZnMgQ5gb
-         2+pnrqscWtIZvHkZjhStySkhNLdEUTxlo1Fws4suCKuFXBDv6pQnVX/cKHqy929+dy
-         1osbaf6KPBoVKYm7VYzVzHNCbJRqWzxT65PHZKT9Ciax3Jrauqmlp/ZOEMNF0WqfkD
-         GEm0U81vwTE7MTt8Xv88WCnY3AnmJPJPiUKZT0zy+11YW9nNbquvTIoLCmxukCx5Hx
-         caM7U1jUdxJYg==
+        b=YN/lNI0u9PIMQ+tLXGiql6tKPJFmBMLIwNUm+lCFvexBYRI+bztqiMjGM96JcIhTd
+         YqO1XJvTYSha1a5EiBKbkMivpDEbnbA/4thf9fm3uAXKnvySUVfIM3gOKL4i11vqY7
+         2fRFL1fBPv2kqro/yQXN/aTcxD9j6x22ZJ4L0CX9SLsDW89gf1e1MsrBKi0HvAPxol
+         xPwgezk1vd+Yfcvl2za9DUJZj+EyhJsdwkk87KB2KwHtw9IAkqzDaikKo07ksojlrj
+         eJmdHHAQXaafuz6ysmKGAsUAyiIL9pVLcPFndwIxklnXwTpbiL5Dt30JPCX29o5Jfg
+         KUwokFVr1tS2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Young <sean@mess.org>, Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org,
+Cc:     Martynas Pumputis <m@lambda.lt>, Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-alpha@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-arch@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 166/189] media, bpf: Do not copy more entries than user space requested
-Date:   Tue,  6 Jul 2021 07:13:46 -0400
-Message-Id: <20210706111409.2058071-166-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 167/189] net: retrieve netns cookie via getsocketopt
+Date:   Tue,  6 Jul 2021 07:13:47 -0400
+Message-Id: <20210706111409.2058071-167-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -42,41 +46,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: Martynas Pumputis <m@lambda.lt>
 
-[ Upstream commit 647d446d66e493d23ca1047fa8492b0269674530 ]
+[ Upstream commit e8b9eab99232c4e62ada9d7976c80fd5e8118289 ]
 
-The syscall bpf(BPF_PROG_QUERY, &attr) should use the prog_cnt field to
-see how many entries user space provided and return ENOSPC if there are
-more programs than that. Before this patch, this is not checked and
-ENOSPC is never returned.
+It's getting more common to run nested container environments for
+testing cloud software. One of such examples is Kind [1] which runs a
+Kubernetes cluster in Docker containers on a single host. Each container
+acts as a Kubernetes node, and thus can run any Pod (aka container)
+inside the former. This approach simplifies testing a lot, as it
+eliminates complicated VM setups.
 
-Note that one lirc device is limited to 64 bpf programs, and user space
-I'm aware of -- ir-keytable -- always gives enough space for 64 entries
-already. However, we should not copy program ids than are requested.
+Unfortunately, such a setup breaks some functionality when cgroupv2 BPF
+programs are used for load-balancing. The load-balancer BPF program
+needs to detect whether a request originates from the host netns or a
+container netns in order to allow some access, e.g. to a service via a
+loopback IP address. Typically, the programs detect this by comparing
+netns cookies with the one of the init ns via a call to
+bpf_get_netns_cookie(NULL). However, in nested environments the latter
+cannot be used given the Kubernetes node's netns is outside the init ns.
+To fix this, we need to pass the Kubernetes node netns cookie to the
+program in a different way: by extending getsockopt() with a
+SO_NETNS_COOKIE option, the orchestrator which runs in the Kubernetes
+node netns can retrieve the cookie and pass it to the program instead.
 
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20210623213754.632-1-sean@mess.org
+Thus, this is following up on Eric's commit 3d368ab87cf6 ("net:
+initialize net->net_cookie at netns setup") to allow retrieval via
+SO_NETNS_COOKIE.  This is also in line in how we retrieve socket cookie
+via SO_COOKIE.
+
+  [1] https://kind.sigs.k8s.io/
+
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Martynas Pumputis <m@lambda.lt>
+Cc: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/bpf-lirc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/alpha/include/uapi/asm/socket.h  | 2 ++
+ arch/mips/include/uapi/asm/socket.h   | 2 ++
+ arch/parisc/include/uapi/asm/socket.h | 2 ++
+ arch/sparc/include/uapi/asm/socket.h  | 2 ++
+ include/uapi/asm-generic/socket.h     | 2 ++
+ net/core/sock.c                       | 7 +++++++
+ 6 files changed, 17 insertions(+)
 
-diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
-index 3fe3edd80876..afae0afe3f81 100644
---- a/drivers/media/rc/bpf-lirc.c
-+++ b/drivers/media/rc/bpf-lirc.c
-@@ -326,7 +326,8 @@ int lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
- 	}
+diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
+index 57420356ce4c..6b3daba60987 100644
+--- a/arch/alpha/include/uapi/asm/socket.h
++++ b/arch/alpha/include/uapi/asm/socket.h
+@@ -127,6 +127,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
  
- 	if (attr->query.prog_cnt != 0 && prog_ids && cnt)
--		ret = bpf_prog_array_copy_to_user(progs, prog_ids, cnt);
-+		ret = bpf_prog_array_copy_to_user(progs, prog_ids,
-+						  attr->query.prog_cnt);
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
  
- unlock:
- 	mutex_unlock(&ir_raw_handler_lock);
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
+index 2d949969313b..cdf404a831b2 100644
+--- a/arch/mips/include/uapi/asm/socket.h
++++ b/arch/mips/include/uapi/asm/socket.h
+@@ -138,6 +138,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
+ 
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
+index f60904329bbc..5b5351cdcb33 100644
+--- a/arch/parisc/include/uapi/asm/socket.h
++++ b/arch/parisc/include/uapi/asm/socket.h
+@@ -119,6 +119,8 @@
+ #define SO_PREFER_BUSY_POLL	0x4043
+ #define SO_BUSY_POLL_BUDGET	0x4044
+ 
++#define SO_NETNS_COOKIE		0x4045
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64
+diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
+index 848a22fbac20..92675dc380fa 100644
+--- a/arch/sparc/include/uapi/asm/socket.h
++++ b/arch/sparc/include/uapi/asm/socket.h
+@@ -120,6 +120,8 @@
+ #define SO_PREFER_BUSY_POLL	 0x0048
+ #define SO_BUSY_POLL_BUDGET	 0x0049
+ 
++#define SO_NETNS_COOKIE          0x0050
++
+ #if !defined(__KERNEL__)
+ 
+ 
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 4dcd13d097a9..d588c244ec2f 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -122,6 +122,8 @@
+ #define SO_PREFER_BUSY_POLL	69
+ #define SO_BUSY_POLL_BUDGET	70
+ 
++#define SO_NETNS_COOKIE		71
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 946888afef88..2003c5ebb4c2 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1622,6 +1622,13 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+ 		v.val = sk->sk_bound_dev_if;
+ 		break;
+ 
++	case SO_NETNS_COOKIE:
++		lv = sizeof(u64);
++		if (len != lv)
++			return -EINVAL;
++		v.val64 = sock_net(sk)->net_cookie;
++		break;
++
+ 	default:
+ 		/* We implement the SO_SNDLOWAT etc to not be settable
+ 		 * (1003.1g 7).
 -- 
 2.30.2
 
