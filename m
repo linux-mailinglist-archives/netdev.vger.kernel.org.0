@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3213B3BCF6A
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6DD3BCF8B
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbhGFL2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:28:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35448 "EHLO mail.kernel.org"
+        id S234115AbhGFLaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:30:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233941AbhGFL0e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:26:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 30B7261D55;
-        Tue,  6 Jul 2021 11:19:53 +0000 (UTC)
+        id S234112AbhGFL05 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:26:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B0AA461D59;
+        Tue,  6 Jul 2021 11:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570394;
-        bh=6BREJ0k9L9mE1E4tZx8e9Dg/2tIQvEdSjFwZmz7JpRU=;
+        s=k20201202; t=1625570396;
+        bh=NIpmSb6xWrkUDhVx5Xar84NSlhZVImOx3vM9UEWBHus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXHI01WHz051k/f6U7ZP7D2LgcIdbkrK3E4+3K7uVD8YEo/KtLT/Zj4SSGowYkGXP
-         Kj4t/hE/6ht1KFmW58a/TYLFR20ba1OJLHBjv01p6WhBeWHGadt9ADZQmJ98yqROcF
-         jatArWup4S7eIX1AWewvvp5w0pN6bUdG2DDqDK2zMvJKDrdfp+buuROCMDLFK9wsID
-         RI1dsKLRoIKOwYJrzpHv9jBm2gFTGVjrSjY/wmacbnd/gQnFknduvgRgBJ0Wl9104J
-         WtYKYcPHIa358/OyjK9ptS3UmPT4G8eeAVprDZOInMdCnqAyNQ7j1if3OTdAOBr807
-         dyxh3BMkvNagA==
+        b=cc2v1DJJ0m4XXlFnPRrf1lwvd0jwAtEjbENzwQrgoFOA9crSQifHrFYXd0kkwNUre
+         YySBlWcqMrB2kBX+PE/SZHLFDagSCpg4Csy/TLo+LAfgGpJDyGKOY4pnZlFVDvzs8U
+         cLNSuRObIP3Zs3oKSRkLbOyZemambWHM4w/zdQigezCpO0043ZniEUuRFjMLlqQ/OC
+         ow/g8oJgTwjGdF5m0CeoN2VmoL8i85R8OyPrwSS48YemzrolUQmZ0Lxm3WU8Zmjis4
+         2Hu36YKrbMXfFiATYaaEG1qkKMv/jPvvpLzcQOjn7+zGodfCTnU6zv0tdF/9G88Cov
+         BNy1HKWSvgraA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Liwei Song <liwei.song@windriver.com>,
+        Tony Brelinski <tonyx.brelinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 065/160] net: bridge: mrp: Update ring transitions.
-Date:   Tue,  6 Jul 2021 07:16:51 -0400
-Message-Id: <20210706111827.2060499-65-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 067/160] ice: set the value of global config lock timeout longer
+Date:   Tue,  6 Jul 2021 07:16:53 -0400
+Message-Id: <20210706111827.2060499-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -43,47 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Liwei Song <liwei.song@windriver.com>
 
-[ Upstream commit fcb34635854a5a5814227628867ea914a9805384 ]
+[ Upstream commit fb3612840d4f587a0af9511a11d7989d1fa48206 ]
 
-According to the standard IEC 62439-2, the number of transitions needs
-to be counted for each transition 'between' ring state open and ring
-state closed and not from open state to closed state.
+It may need hold Global Config Lock a longer time when download DDP
+package file, extend the timeout value to 5000ms to ensure that
+download can be finished before other AQ command got time to run,
+this will fix the issue below when probe the device, 5000ms is a test
+value that work with both Backplane and BreakoutCable NVM image:
 
-Therefore fix this for both ring and interconnect ring.
+ice 0000:f4:00.0: VSI 12 failed lan queue config, error ICE_ERR_CFG
+ice 0000:f4:00.0: Failed to delete VSI 12 in FW - error: ICE_ERR_AQ_TIMEOUT
+ice 0000:f4:00.0: probe failed due to setup PF switch: -12
+ice: probe of 0000:f4:00.0 failed with error -12
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Liwei Song <liwei.song@windriver.com>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_mrp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_type.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-index 12487f6fe9b4..58254fbfda85 100644
---- a/net/bridge/br_mrp.c
-+++ b/net/bridge/br_mrp.c
-@@ -620,8 +620,7 @@ int br_mrp_set_ring_state(struct net_bridge *br,
- 	if (!mrp)
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 266036b7a49a..8a90c47e337d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -63,7 +63,7 @@ enum ice_aq_res_ids {
+ /* FW update timeout definitions are in milliseconds */
+ #define ICE_NVM_TIMEOUT			180000
+ #define ICE_CHANGE_LOCK_TIMEOUT		1000
+-#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	3000
++#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	5000
  
--	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
--	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
-+	if (mrp->ring_state != state->ring_state)
- 		mrp->ring_transitions++;
- 
- 	mrp->ring_state = state->ring_state;
-@@ -708,8 +707,7 @@ int br_mrp_set_in_state(struct net_bridge *br, struct br_mrp_in_state *state)
- 	if (!mrp)
- 		return -EINVAL;
- 
--	if (mrp->in_state == BR_MRP_IN_STATE_CLOSED &&
--	    state->in_state != BR_MRP_IN_STATE_CLOSED)
-+	if (mrp->in_state != state->in_state)
- 		mrp->in_transitions++;
- 
- 	mrp->in_state = state->in_state;
+ enum ice_aq_res_access_type {
+ 	ICE_RES_READ = 1,
 -- 
 2.30.2
 
