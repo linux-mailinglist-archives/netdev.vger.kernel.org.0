@@ -2,44 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 865CD3BCD9B
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC9523BCDD6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233751AbhGFLW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:22:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55924 "EHLO mail.kernel.org"
+        id S234077AbhGFLXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:23:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233274AbhGFLUf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:20:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 66A8561C98;
-        Tue,  6 Jul 2021 11:17:24 +0000 (UTC)
+        id S233378AbhGFLUx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:20:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DDD4B61C75;
+        Tue,  6 Jul 2021 11:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570245;
-        bh=aTLbfS26FUjGL5zsttRHB8OvZgZDTjIUGN4Syj05pLY=;
+        s=k20201202; t=1625570250;
+        bh=N+NjFiyd8DvIA9L1V+wHXA3UPj7jZ0d5f+aLc2aQ30I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AYVdQxt/Ke3ekiZ9Qq1/O1+AzvzPI177MMUAljTU6HHSjyujHt1kB1NYrGSKo8NvW
-         HDRXAX1H0smVReHoyFYycdSRXAMQUllNSmcKS9dRh9v1g4aqEGZT70BAqVtujFYzFi
-         s3Jzpku+DH3MdBVtZZcvKsww9QKq1Hp0MmcDWaJrdR4bmAZ+KSkSfuZtudsaFvIsFv
-         30pQ1zYKnsKSdKbJjPLQtA5i93Uovg5HUHAREf+JAuxn3IIwxy6bH5fLrKW193SX9T
-         tjZIn60wwFhKIHqbGhYJVtFaFKxEJtIpYagNwjavUTYAaavAG87vVeSFg3US8ONhTU
-         0q6I7tXxRKjog==
+        b=JLzBQJdZWVtdfQh+79CuP7/GRpwwyont8rj/7sOUypQxNdZUJcyWTn/b9yWqrV08L
+         G6exk9Tz2N5ME6L9jrdg7dy+YJ0rPyxiohoz8UUGRgquSc5h2mqVZNosPywJ1XQsFw
+         FnoW/2aSLfB8nDp5gnsZrweU4AU+dgXxvJaDNzprrs0HL/4UGPevq3azznUkMxNIIh
+         QQc/lfl34s0drIVhOd2CEzg+MryWzLh58E5swl41ug9+DEf6TIleSPgq6JEfcEi0LE
+         xp5uAFb2UhYW6fdCdkjuO6ItmYAP9AvDvq0dExH9GsI8h75Le86eIq11vQYaD1mBnV
+         qDtBOv/l0tkjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Longpeng(Mike)" <longpeng2@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        David Brazdil <dbrazdil@google.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        lixianming <lixianming5@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 145/189] vsock: notify server to shutdown when client has pending signal
-Date:   Tue,  6 Jul 2021 07:13:25 -0400
-Message-Id: <20210706111409.2058071-145-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 149/189] iwlwifi: mvm: don't change band on bound PHY contexts
+Date:   Tue,  6 Jul 2021 07:13:29 -0400
+Message-Id: <20210706111409.2058071-149-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -51,70 +43,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Longpeng(Mike)" <longpeng2@huawei.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit c7ff9cff70601ea19245d997bb977344663434c7 ]
+[ Upstream commit 8835a64f74c46baebfc946cd5a2c861b866ebcee ]
 
-The client's sk_state will be set to TCP_ESTABLISHED if the server
-replay the client's connect request.
+When we have a P2P Device active, we attempt to only change the
+PHY context it uses when we get a new remain-on-channel, if the
+P2P Device is the only user of the PHY context.
 
-However, if the client has pending signal, its sk_state will be set
-to TCP_CLOSE without notify the server, so the server will hold the
-corrupt connection.
+This is fine if we're switching within a band, but if we're
+switching bands then the switch implies a removal and re-add
+of the PHY context, which isn't permitted by the firmware while
+it's bound to an interface.
 
-            client                        server
+Fix the code to skip the unbind/release/... cycle only if the
+band doesn't change (or we have old devices that can switch the
+band on the fly as well.)
 
-1. sk_state=TCP_SYN_SENT         |
-2. call ->connect()              |
-3. wait reply                    |
-                                 | 4. sk_state=TCP_ESTABLISHED
-                                 | 5. insert to connected list
-                                 | 6. reply to the client
-7. sk_state=TCP_ESTABLISHED      |
-8. insert to connected list      |
-9. *signal pending* <--------------------- the user kill client
-10. sk_state=TCP_CLOSE           |
-client is exiting...             |
-11. call ->release()             |
-     virtio_transport_close
-      if (!(sk->sk_state == TCP_ESTABLISHED ||
-	      sk->sk_state == TCP_CLOSING))
-		return true; *return at here, the server cannot notice the connection is corrupt*
-
-So the client should notify the peer in this case.
-
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jorgen Hansen <jhansen@vmware.com>
-Cc: Norbert Slusarek <nslusarek@gmx.net>
-Cc: Andra Paraschiv <andraprs@amazon.com>
-Cc: Colin Ian King <colin.king@canonical.com>
-Cc: David Brazdil <dbrazdil@google.com>
-Cc: Alexander Popov <alex.popov@linux.com>
-Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
-Link: https://lkml.org/lkml/2021/5/17/418
-Signed-off-by: lixianming <lixianming5@huawei.com>
-Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210612142637.e9ac313f70f3.I713b9d109957df7e7d9ed0861d5377ce3f8fccd3@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/vmw_vsock/af_vsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c | 24 ++++++++++++++-----
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 92a72f0e0d94..ae11311807fd 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1369,7 +1369,7 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 607d5d564928..141d9fc299b0 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -3800,6 +3800,7 @@ static int iwl_mvm_roc(struct ieee80211_hw *hw,
+ 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
+ 	struct cfg80211_chan_def chandef;
+ 	struct iwl_mvm_phy_ctxt *phy_ctxt;
++	bool band_change_removal;
+ 	int ret, i;
  
- 		if (signal_pending(current)) {
- 			err = sock_intr_errno(timeout);
--			sk->sk_state = TCP_CLOSE;
-+			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
- 			sock->state = SS_UNCONNECTED;
- 			vsock_transport_cancel_pkt(vsk);
- 			goto out_wait;
+ 	IWL_DEBUG_MAC80211(mvm, "enter (%d, %d, %d)\n", channel->hw_value,
+@@ -3880,19 +3881,30 @@ static int iwl_mvm_roc(struct ieee80211_hw *hw,
+ 	cfg80211_chandef_create(&chandef, channel, NL80211_CHAN_NO_HT);
+ 
+ 	/*
+-	 * Change the PHY context configuration as it is currently referenced
+-	 * only by the P2P Device MAC
++	 * Check if the remain-on-channel is on a different band and that
++	 * requires context removal, see iwl_mvm_phy_ctxt_changed(). If
++	 * so, we'll need to release and then re-configure here, since we
++	 * must not remove a PHY context that's part of a binding.
+ 	 */
+-	if (mvmvif->phy_ctxt->ref == 1) {
++	band_change_removal =
++		fw_has_capa(&mvm->fw->ucode_capa,
++			    IWL_UCODE_TLV_CAPA_BINDING_CDB_SUPPORT) &&
++		mvmvif->phy_ctxt->channel->band != chandef.chan->band;
++
++	if (mvmvif->phy_ctxt->ref == 1 && !band_change_removal) {
++		/*
++		 * Change the PHY context configuration as it is currently
++		 * referenced only by the P2P Device MAC (and we can modify it)
++		 */
+ 		ret = iwl_mvm_phy_ctxt_changed(mvm, mvmvif->phy_ctxt,
+ 					       &chandef, 1, 1);
+ 		if (ret)
+ 			goto out_unlock;
+ 	} else {
+ 		/*
+-		 * The PHY context is shared with other MACs. Need to remove the
+-		 * P2P Device from the binding, allocate an new PHY context and
+-		 * create a new binding
++		 * The PHY context is shared with other MACs (or we're trying to
++		 * switch bands), so remove the P2P Device from the binding,
++		 * allocate an new PHY context and create a new binding.
+ 		 */
+ 		phy_ctxt = iwl_mvm_get_free_phy_ctxt(mvm);
+ 		if (!phy_ctxt) {
 -- 
 2.30.2
 
