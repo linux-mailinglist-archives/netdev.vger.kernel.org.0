@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8623BD138
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:36:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DBA3BD0EA
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbhGFLhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:37:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42564 "EHLO mail.kernel.org"
+        id S233805AbhGFLhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:37:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235063AbhGFLd4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:33:56 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DB7C61E08;
-        Tue,  6 Jul 2021 11:23:03 +0000 (UTC)
+        id S235436AbhGFLeN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:34:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4568161D42;
+        Tue,  6 Jul 2021 11:23:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570584;
-        bh=NKRBa+ZnalVf/of+MHcxQ4XWS/mH2Exv8L+GNaH1lEg=;
+        s=k20201202; t=1625570591;
+        bh=XgRCXrZzfo4r2WSm0JFleqkKshN6fWmDVtnciUsyALw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xg+qm73rgNTkpfJM44VymM+sWCRRYZOlMAnpkC4wy+PEjWqg8y2FqG+HcnEoL9RMc
-         0poCHp4EpW3OfGickoHPQetOgdd2TUMDNqdJU7H1lGZMWxQ3ZW2LfWMfBN0YFVRaZ5
-         Zi5B6qjdtouFVLu4okqCNb++zu+LyURIpVWn6ubyOIG2M+3d+w4jtJ/OIKJKm089z2
-         AaMjKFMJkVbWmIUbCXEr4NfYHalL2BHtm1/+WLcROBdcYwcS6Bb/PdSI+ESLplnsSM
-         CTdK3TSoDTHLBaqVTq5skAbZfptBZiQ+qgBc9jNcjbMFO8fVxQkZYs56bFvkZfwlj1
-         RdwcD25c7Qxxg==
+        b=EqhVbANis4ZR5N9HeKFHk70+d9eBAdcFDP1rRYec+ilf8ZG9UplPowGIjGpXhjtTf
+         BzBB0IrTM6K4MF5HKguJXaA9WIzA5JHlyfSaRkfbTk3WkDz2HSCbqLVmmMxIveFbZp
+         xDN7X0aVxjWAtih02rEfUt/aCCENMYvbVcSmaotaLt73pEsUbLJqOeTaxtygf1bX3f
+         QNvJiMWo5MWSQiGNPrdTKwfXb5Sgu5gM9KV6mY/zaOGevEjvIC29j/NaMhC9/uttui
+         ueTiGD6jGR7KpbtyebDb2e489EBgw/vEytl4Gf/c45B9FgPD4l/uhSt1OG8Ll8RDIJ
+         7r5N1EhN5KaZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        mingkun bian <bianmingkun@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 047/137] ipv6: use prandom_u32() for ID generation
-Date:   Tue,  6 Jul 2021 07:20:33 -0400
-Message-Id: <20210706112203.2062605-47-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 052/137] net: tcp better handling of reordering then loss cases
+Date:   Tue,  6 Jul 2021 07:20:38 -0400
+Message-Id: <20210706112203.2062605-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -43,92 +45,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Yuchung Cheng <ycheng@google.com>
 
-[ Upstream commit 62f20e068ccc50d6ab66fdb72ba90da2b9418c99 ]
+[ Upstream commit a29cb6914681a55667436a9eb7a42e28da8cf387 ]
 
-This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
-table for IP ID generation"), but focusing on some specific aspects
-of IPv6.
+This patch aims to improve the situation when reordering and loss are
+ocurring in the same flight of packets.
 
-Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
-minimum MTU of 1280, it's much less easy to force a remote peer to
-produce many fragments to explore its ID sequence. In addition packet
-IDs are 32-bit in IPv6, which further complicates their analysis. On
-the other hand, it is often easier to choose among plenty of possible
-source addresses and partially work around the bigger hash table the
-commit above permits, which leaves IPv6 partially exposed to some
-possibilities of remote analysis at the risk of weakening some
-protocols like DNS if some IDs can be predicted with a good enough
-probability.
+Previously the reordering would first induce a spurious recovery, then
+the subsequent ACK may undo the cwnd (based on the timestamps e.g.).
+However the current loss recovery does not proceed to invoke
+RACK to install a reordering timer. If some packets are also lost, this
+may lead to a long RTO-based recovery. An example is
+https://groups.google.com/g/bbr-dev/c/OFHADvJbTEI
 
-Given the wide range of permitted IDs, the risk of collision is extremely
-low so there's no need to rely on the positive increment algorithm that
-is shared with the IPv4 code via ip_idents_reserve(). We have a fast
-PRNG, so let's simply call prandom_u32() and be done with it.
+The solution is to after reverting the recovery, always invoke RACK
+to either mount the RACK timer to fast retransmit after the reordering
+window, or restarts the recovery if new loss is identified. Hence
+it is possible the sender may go from Recovery to Disorder/Open to
+Recovery again in one ACK.
 
-Performance measurements at 10 Gbps couldn't show any difference with
-the previous code, even when using a single core, because due to the
-large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
-of the random generation is completely offset by other operations and by
-the network transfer time. In addition, this change removes the need to
-update a shared entry in the idents table so it may even end up being
-slightly faster on large scale systems where this matters.
-
-The risk of at least one collision here is about 1/80 million among
-10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
-which remains very low compared to IPv4 where all IDs are reused
-every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
-
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20210529110746.6796-1-w@1wt.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: mingkun bian <bianmingkun@gmail.com>
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/output_core.c | 28 +++++-----------------------
- 1 file changed, 5 insertions(+), 23 deletions(-)
+ net/ipv4/tcp_input.c | 45 +++++++++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 19 deletions(-)
 
-diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
-index af36acc1a644..2880dc7d9a49 100644
---- a/net/ipv6/output_core.c
-+++ b/net/ipv6/output_core.c
-@@ -15,29 +15,11 @@ static u32 __ipv6_select_ident(struct net *net,
- 			       const struct in6_addr *dst,
- 			       const struct in6_addr *src)
- {
--	const struct {
--		struct in6_addr dst;
--		struct in6_addr src;
--	} __aligned(SIPHASH_ALIGNMENT) combined = {
--		.dst = *dst,
--		.src = *src,
--	};
--	u32 hash, id;
--
--	/* Note the following code is not safe, but this is okay. */
--	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
--		get_random_bytes(&net->ipv4.ip_id_key,
--				 sizeof(net->ipv4.ip_id_key));
--
--	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
--
--	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
--	 * set the hight order instead thus minimizing possible future
--	 * collisions.
--	 */
--	id = ip_idents_reserve(hash, 1);
--	if (unlikely(!id))
--		id = 1 << 31;
-+	u32 id;
-+
-+	do {
-+		id = prandom_u32();
-+	} while (!id);
- 
- 	return id;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index fac5c1469cee..4d4b641c204d 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -2802,8 +2802,17 @@ static void tcp_process_loss(struct sock *sk, int flag, int num_dupack,
+ 	*rexmit = REXMIT_LOST;
  }
+ 
++static bool tcp_force_fast_retransmit(struct sock *sk)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++
++	return after(tcp_highest_sack_seq(tp),
++		     tp->snd_una + tp->reordering * tp->mss_cache);
++}
++
+ /* Undo during fast recovery after partial ACK. */
+-static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una)
++static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una,
++				 bool *do_lost)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+@@ -2828,7 +2837,9 @@ static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una)
+ 		tcp_undo_cwnd_reduction(sk, true);
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPPARTIALUNDO);
+ 		tcp_try_keep_open(sk);
+-		return true;
++	} else {
++		/* Partial ACK arrived. Force fast retransmit. */
++		*do_lost = tcp_force_fast_retransmit(sk);
+ 	}
+ 	return false;
+ }
+@@ -2852,14 +2863,6 @@ static void tcp_identify_packet_loss(struct sock *sk, int *ack_flag)
+ 	}
+ }
+ 
+-static bool tcp_force_fast_retransmit(struct sock *sk)
+-{
+-	struct tcp_sock *tp = tcp_sk(sk);
+-
+-	return after(tcp_highest_sack_seq(tp),
+-		     tp->snd_una + tp->reordering * tp->mss_cache);
+-}
+-
+ /* Process an event, which can update packets-in-flight not trivially.
+  * Main goal of this function is to calculate new estimate for left_out,
+  * taking into account both packets sitting in receiver's buffer and
+@@ -2929,17 +2932,21 @@ static void tcp_fastretrans_alert(struct sock *sk, const u32 prior_snd_una,
+ 		if (!(flag & FLAG_SND_UNA_ADVANCED)) {
+ 			if (tcp_is_reno(tp))
+ 				tcp_add_reno_sack(sk, num_dupack, ece_ack);
+-		} else {
+-			if (tcp_try_undo_partial(sk, prior_snd_una))
+-				return;
+-			/* Partial ACK arrived. Force fast retransmit. */
+-			do_lost = tcp_force_fast_retransmit(sk);
+-		}
+-		if (tcp_try_undo_dsack(sk)) {
+-			tcp_try_keep_open(sk);
++		} else if (tcp_try_undo_partial(sk, prior_snd_una, &do_lost))
+ 			return;
+-		}
++
++		if (tcp_try_undo_dsack(sk))
++			tcp_try_keep_open(sk);
++
+ 		tcp_identify_packet_loss(sk, ack_flag);
++		if (icsk->icsk_ca_state != TCP_CA_Recovery) {
++			if (!tcp_time_to_recover(sk, flag))
++				return;
++			/* Undo reverts the recovery state. If loss is evident,
++			 * starts a new recovery (e.g. reordering then loss);
++			 */
++			tcp_enter_recovery(sk, ece_ack);
++		}
+ 		break;
+ 	case TCP_CA_Loss:
+ 		tcp_process_loss(sk, flag, num_dupack, rexmit);
 -- 
 2.30.2
 
