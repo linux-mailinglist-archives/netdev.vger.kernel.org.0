@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D189C3BD5E9
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449D73BD5EA
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344490AbhGFM0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:26:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47624 "EHLO mail.kernel.org"
+        id S1344504AbhGFM0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:26:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237217AbhGFLgB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:36:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C7EC761ED5;
-        Tue,  6 Jul 2021 11:26:11 +0000 (UTC)
+        id S237226AbhGFLgC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:36:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2979361EB5;
+        Tue,  6 Jul 2021 11:26:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570772;
-        bh=S9/1Mhag0nYqUV5sfUsnw3wO1xIjF0pQqhHhMh67ZvA=;
+        s=k20201202; t=1625570776;
+        bh=P5+KMcJDFo2yGi04uMWeiO0IkMItRttzt4J4oMExSnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fLdFOZXrY5yRwuCEAsYc6uf/cUBblcOjB1QBVenVCQQeCe2Hg4GXUx4c6x9HKNzvh
-         h/heAoHWSha6UsHYvzwMDy4iIwn7TBQ32E4r6pCIq5gpshekfUFyyYyRRvMKzC46CC
-         0NYdUDW4LV0VRtOlX9ts2rPnh6ZzbFnhs32PjGbD8lqEPEUAVfb6jl9/V3qXfgNdtc
-         cCgHEMKRipVZOFz9To7EQWRt+I9aVaTItTHf7VB4c197+5MWk8isjCMG2MuU70+dD7
-         Lq6/lp7pC4meatl2vA7EVYZAEQAx5RibuSE2DOvkN0TYwvzW+RcVM8+an1o3jMwFki
-         wjfJppp8yUGdQ==
+        b=qP0k6fucEEhOaABelyVXczKD9EwmsuF44eLk/sm1xFBkX2pslAy1dGu8xbxO4gZAI
+         YejUoc8VaKCzHJ/L5QGeIcNiLYwXfA4raDytN1XPZW7lkcoR9t6j2XMKvnmmvHoT4+
+         q0iHJbeIoSoEpUDqrk0aImXEMxtFcMWV3+Rtl/OUafH8E9B72A0LzTvj4VTA3fOzij
+         ld/Wzl9iuNbRNO3XGzdE8d7xb79RObEulQ/7Fn/h5RlxyfNVdv8BAKeg2V8VqnqlQ+
+         9ta+InkSYgR/4PnBqp4fx0IPikXB9zJTthVo4OtGhFmiovL87Ranfu8eDkVpA4WCeU
+         E2+IQB8BLjVWg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 55/74] atm: nicstar: register the interrupt handler in the right place
-Date:   Tue,  6 Jul 2021 07:24:43 -0400
-Message-Id: <20210706112502.2064236-55-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 58/74] iwlwifi: mvm: don't change band on bound PHY contexts
+Date:   Tue,  6 Jul 2021 07:24:46 -0400
+Message-Id: <20210706112502.2064236-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112502.2064236-1-sashal@kernel.org>
 References: <20210706112502.2064236-1-sashal@kernel.org>
@@ -43,164 +43,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 70b639dc41ad499384e41e106fce72e36805c9f2 ]
+[ Upstream commit 8835a64f74c46baebfc946cd5a2c861b866ebcee ]
 
-Because the error handling is sequential, the application of resources
-should be carried out in the order of error handling, so the operation
-of registering the interrupt handler should be put in front, so as not
-to free the unregistered interrupt handler during error handling.
+When we have a P2P Device active, we attempt to only change the
+PHY context it uses when we get a new remain-on-channel, if the
+P2P Device is the only user of the PHY context.
 
-This log reveals it:
+This is fine if we're switching within a band, but if we're
+switching bands then the switch implies a removal and re-add
+of the PHY context, which isn't permitted by the firmware while
+it's bound to an interface.
 
-[    3.438724] Trying to free already-free IRQ 23
-[    3.439060] WARNING: CPU: 5 PID: 1 at kernel/irq/manage.c:1825 free_irq+0xfb/0x480
-[    3.440039] Modules linked in:
-[    3.440257] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
-[    3.440793] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.441561] RIP: 0010:free_irq+0xfb/0x480
-[    3.441845] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
-[    3.443121] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
-[    3.443483] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
-[    3.443972] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
-[    3.444462] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
-[    3.444950] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
-[    3.444994] FS:  0000000000000000(0000) GS:ffff88817bd40000(0000) knlGS:0000000000000000
-[    3.444994] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.444994] CR2: 0000000000000000 CR3: 000000000642e000 CR4: 00000000000006e0
-[    3.444994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    3.444994] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    3.444994] Call Trace:
-[    3.444994]  ns_init_card_error+0x18e/0x250
-[    3.444994]  nicstar_init_one+0x10d2/0x1130
-[    3.444994]  local_pci_probe+0x4a/0xb0
-[    3.444994]  pci_device_probe+0x126/0x1d0
-[    3.444994]  ? pci_device_remove+0x100/0x100
-[    3.444994]  really_probe+0x27e/0x650
-[    3.444994]  driver_probe_device+0x84/0x1d0
-[    3.444994]  ? mutex_lock_nested+0x16/0x20
-[    3.444994]  device_driver_attach+0x63/0x70
-[    3.444994]  __driver_attach+0x117/0x1a0
-[    3.444994]  ? device_driver_attach+0x70/0x70
-[    3.444994]  bus_for_each_dev+0xb6/0x110
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  driver_attach+0x22/0x30
-[    3.444994]  bus_add_driver+0x1e6/0x2a0
-[    3.444994]  driver_register+0xa4/0x180
-[    3.444994]  __pci_register_driver+0x77/0x80
-[    3.444994]  ? uPD98402_module_init+0xd/0xd
-[    3.444994]  nicstar_init+0x1f/0x75
-[    3.444994]  do_one_initcall+0x7a/0x3d0
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
-[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  kernel_init+0x13/0x180
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ret_from_fork+0x1f/0x30
-[    3.444994] Kernel panic - not syncing: panic_on_warn set ...
-[    3.444994] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
-[    3.444994] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.444994] Call Trace:
-[    3.444994]  dump_stack+0xba/0xf5
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  panic+0x155/0x3ed
-[    3.444994]  ? __warn+0xed/0x150
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  __warn+0x103/0x150
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  report_bug+0x119/0x1c0
-[    3.444994]  handle_bug+0x3b/0x80
-[    3.444994]  exc_invalid_op+0x18/0x70
-[    3.444994]  asm_exc_invalid_op+0x12/0x20
-[    3.444994] RIP: 0010:free_irq+0xfb/0x480
-[    3.444994] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
-[    3.444994] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
-[    3.444994] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
-[    3.444994] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
-[    3.444994] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
-[    3.444994] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
-[    3.444994]  ? vprintk_func+0x71/0x110
-[    3.444994]  ns_init_card_error+0x18e/0x250
-[    3.444994]  nicstar_init_one+0x10d2/0x1130
-[    3.444994]  local_pci_probe+0x4a/0xb0
-[    3.444994]  pci_device_probe+0x126/0x1d0
-[    3.444994]  ? pci_device_remove+0x100/0x100
-[    3.444994]  really_probe+0x27e/0x650
-[    3.444994]  driver_probe_device+0x84/0x1d0
-[    3.444994]  ? mutex_lock_nested+0x16/0x20
-[    3.444994]  device_driver_attach+0x63/0x70
-[    3.444994]  __driver_attach+0x117/0x1a0
-[    3.444994]  ? device_driver_attach+0x70/0x70
-[    3.444994]  bus_for_each_dev+0xb6/0x110
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  driver_attach+0x22/0x30
-[    3.444994]  bus_add_driver+0x1e6/0x2a0
-[    3.444994]  driver_register+0xa4/0x180
-[    3.444994]  __pci_register_driver+0x77/0x80
-[    3.444994]  ? uPD98402_module_init+0xd/0xd
-[    3.444994]  nicstar_init+0x1f/0x75
-[    3.444994]  do_one_initcall+0x7a/0x3d0
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
-[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  kernel_init+0x13/0x180
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ret_from_fork+0x1f/0x30
-[    3.444994] Dumping ftrace buffer:
-[    3.444994]    (ftrace buffer empty)
-[    3.444994] Kernel Offset: disabled
-[    3.444994] Rebooting in 1 seconds..
+Fix the code to skip the unbind/release/... cycle only if the
+band doesn't change (or we have old devices that can switch the
+band on the fly as well.)
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210612142637.e9ac313f70f3.I713b9d109957df7e7d9ed0861d5377ce3f8fccd3@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/nicstar.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c | 24 ++++++++++++++-----
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
-index f1e8aa26d284..f9d29de537b6 100644
---- a/drivers/atm/nicstar.c
-+++ b/drivers/atm/nicstar.c
-@@ -525,6 +525,15 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
- 	/* Set the VPI/VCI MSb mask to zero so we can receive OAM cells */
- 	writel(0x00000000, card->membase + VPM);
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index fc6430edd110..09b1a6beee77 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -3725,6 +3725,7 @@ static int iwl_mvm_roc(struct ieee80211_hw *hw,
+ 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
+ 	struct cfg80211_chan_def chandef;
+ 	struct iwl_mvm_phy_ctxt *phy_ctxt;
++	bool band_change_removal;
+ 	int ret, i;
  
-+	card->intcnt = 0;
-+	if (request_irq
-+	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
-+		pr_err("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
-+		error = 9;
-+		ns_init_card_error(card, error);
-+		return error;
-+	}
+ 	IWL_DEBUG_MAC80211(mvm, "enter (%d, %d, %d)\n", channel->hw_value,
+@@ -3794,19 +3795,30 @@ static int iwl_mvm_roc(struct ieee80211_hw *hw,
+ 	cfg80211_chandef_create(&chandef, channel, NL80211_CHAN_NO_HT);
+ 
+ 	/*
+-	 * Change the PHY context configuration as it is currently referenced
+-	 * only by the P2P Device MAC
++	 * Check if the remain-on-channel is on a different band and that
++	 * requires context removal, see iwl_mvm_phy_ctxt_changed(). If
++	 * so, we'll need to release and then re-configure here, since we
++	 * must not remove a PHY context that's part of a binding.
+ 	 */
+-	if (mvmvif->phy_ctxt->ref == 1) {
++	band_change_removal =
++		fw_has_capa(&mvm->fw->ucode_capa,
++			    IWL_UCODE_TLV_CAPA_BINDING_CDB_SUPPORT) &&
++		mvmvif->phy_ctxt->channel->band != chandef.chan->band;
 +
- 	/* Initialize TSQ */
- 	card->tsq.org = dma_alloc_coherent(&card->pcidev->dev,
- 					   NS_TSQSIZE + NS_TSQ_ALIGNMENT,
-@@ -751,15 +760,6 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
- 
- 	card->efbie = 1;
- 
--	card->intcnt = 0;
--	if (request_irq
--	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
--		printk("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
--		error = 9;
--		ns_init_card_error(card, error);
--		return error;
--	}
--
- 	/* Register device */
- 	card->atmdev = atm_dev_register("nicstar", &card->pcidev->dev, &atm_ops,
- 					-1, NULL);
++	if (mvmvif->phy_ctxt->ref == 1 && !band_change_removal) {
++		/*
++		 * Change the PHY context configuration as it is currently
++		 * referenced only by the P2P Device MAC (and we can modify it)
++		 */
+ 		ret = iwl_mvm_phy_ctxt_changed(mvm, mvmvif->phy_ctxt,
+ 					       &chandef, 1, 1);
+ 		if (ret)
+ 			goto out_unlock;
+ 	} else {
+ 		/*
+-		 * The PHY context is shared with other MACs. Need to remove the
+-		 * P2P Device from the binding, allocate an new PHY context and
+-		 * create a new binding
++		 * The PHY context is shared with other MACs (or we're trying to
++		 * switch bands), so remove the P2P Device from the binding,
++		 * allocate an new PHY context and create a new binding.
+ 		 */
+ 		phy_ctxt = iwl_mvm_get_free_phy_ctxt(mvm);
+ 		if (!phy_ctxt) {
 -- 
 2.30.2
 
