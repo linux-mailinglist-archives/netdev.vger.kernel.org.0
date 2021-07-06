@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 100AA3BCC20
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76983BCC25
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232526AbhGFLS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:18:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53438 "EHLO mail.kernel.org"
+        id S232355AbhGFLS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:18:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232362AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232384AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:18:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CCC0361C3E;
-        Tue,  6 Jul 2021 11:15:23 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B73E961C43;
+        Tue,  6 Jul 2021 11:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570124;
-        bh=MWXuWisZncxrhW+Gof0/n2Fystbk7rolGH5RF9Kpt5A=;
+        s=k20201202; t=1625570128;
+        bh=X0vuEX7gbgXVikkrOrMJN4xe+EpY/dDaKKOHLoFDWpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HA1fHeGP0m2qm3JFnyItrMUrBdC1aFWE5yaBHwdXTowdVZ/2vUFMqyfcyKOBbHMaL
-         eMrDEA8lRME1GFdPHeWZ3fE9MqNc0VmBICx7w26lAODWOrXYHeSZi+5P2iAvXiPBos
-         YxXI1HohDtMGkNcEx6QzUZbuMFPNsSjUfU/GjnKwzZjj1uQDdxb73/ywAIl4M4squU
-         V8MzwXY19Ab8TZNu/DBzv8fOQK3srnP7Dbtg5ACAOlgwd84jqdQN9NDq93KyGsCfhY
-         vkFiYwSI7kExeA+jyb4HzTZUYD4DxFXEdN5jNaB/4RwKyiHvQF7teqoC6gECX7TytL
-         6w99dHH9h75qw==
+        b=L6dceCbZq3muGGnY7AX7Z+qDzAtxOd9okgbHeTGjdgOMUVoZRXgIlnED0SvqbmBJU
+         wVJ55jzc5xz3gdc39rpm0efkX1w/OqcM59AIENMgF9xTJd5+GhmzCaFqAhGhfDMlvH
+         KiU+OiBtjWCrpf/kVAdhLKkgOsYPFH1nIE5+W+kNys3a7zEK96PwJRfgYuQBPxdnfy
+         Y3cLaTqCPTuA2n3/C75Q4tmmT8damFFtkyKWYUGem4JuCzZ7gTdZHwfzY4bLFck5JO
+         4Db2EhOV1GJ8r2ntYGohG/Xm/2d13SOD1QJwfQk6XBURBsC3WFlxzs349gFPqsGxuK
+         vgnJE3gSJ1MAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eli Cohen <elic@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 053/189] net/mlx5: Fix lag port remapping logic
-Date:   Tue,  6 Jul 2021 07:11:53 -0400
-Message-Id: <20210706111409.2058071-53-sashal@kernel.org>
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.13 056/189] net: stmmac: the XPCS obscures a potential "PHY not found" error
+Date:   Tue,  6 Jul 2021 07:11:56 -0400
+Message-Id: <20210706111409.2058071-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -42,58 +44,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 8613641063617c1dfc731b403b3ee4935ef15f87 ]
+[ Upstream commit 4751d2aa321f2828d8c5d2f7ce4ed18a01e47f46 ]
 
-Fix the logic so that if both ports netdevices are enabled or disabled,
-use the trivial mapping without swapping.
+stmmac_mdio_register() has logic to search for PHYs on the MDIO bus and
+assign them IRQ lines, as well as to set priv->plat->phy_addr.
 
-If only one of the netdevice's tx is enabled, use it to remap traffic to
-that port.
+If no PHY is found, the "found" variable remains set to 0 and the
+function errors out.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+After the introduction of commit f213bbe8a9d6 ("net: stmmac: Integrate
+it with DesignWare XPCS"), the "found" variable was immediately reused
+for searching for a PCS on the same MDIO bus.
+
+This can result in 2 types of potential problems (none of them seems to
+be seen on the only Intel system that sets has_xpcs = true, otherwise it
+would have been reported):
+
+1. If a PCS is found but a PHY is not, then the code happily exits with
+   no error. One might say "yes, but this is not possible, because
+   of_mdiobus_register will probe a PHY for all MDIO addresses,
+   including for the XPCS, so if an XPCS exists, then a PHY certainly
+   exists too". Well, that is not true, see intel_mgbe_common_data():
+
+	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
+	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
+	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
+
+2. A PHY is found but an MDIO device with the XPCS PHY ID isn't, and in
+   that case, the error message will be "No PHY found". Confusing.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/r/20210527155959.3270478-1-olteanv@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 21 +++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index b8748390335f..9ce144ef8326 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -118,17 +118,24 @@ static bool __mlx5_lag_is_sriov(struct mlx5_lag *ldev)
- static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
- 					   u8 *port1, u8 *port2)
- {
-+	bool p1en;
-+	bool p2en;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index b750074f8f9c..e293bf1ce9f3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -503,6 +503,12 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 		found = 1;
+ 	}
+ 
++	if (!found && !mdio_node) {
++		dev_warn(dev, "No PHY found\n");
++		err = -ENODEV;
++		goto no_phy_found;
++	}
 +
-+	p1en = tracker->netdev_state[MLX5_LAG_P1].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P1].link_up;
-+
-+	p2en = tracker->netdev_state[MLX5_LAG_P2].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P2].link_up;
-+
- 	*port1 = 1;
- 	*port2 = 2;
--	if (!tracker->netdev_state[MLX5_LAG_P1].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P1].link_up) {
--		*port1 = 2;
-+	if ((!p1en && !p2en) || (p1en && p2en))
- 		return;
+ 	/* Try to probe the XPCS by scanning all addresses. */
+ 	if (priv->hw->xpcs) {
+ 		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
+@@ -511,6 +517,7 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 
+ 		xpcs->bus = new_bus;
+ 
++		found = 0;
+ 		for (addr = 0; addr < max_addr; addr++) {
+ 			xpcs->addr = addr;
+ 
+@@ -520,13 +527,12 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 				break;
+ 			}
+ 		}
 -	}
  
--	if (!tracker->netdev_state[MLX5_LAG_P2].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P2].link_up)
-+	if (p1en)
- 		*port2 = 1;
-+	else
-+		*port1 = 2;
- }
+-	if (!found && !mdio_node) {
+-		dev_warn(dev, "No PHY found\n");
+-		mdiobus_unregister(new_bus);
+-		mdiobus_free(new_bus);
+-		return -ENODEV;
++		if (!found && !mdio_node) {
++			dev_warn(dev, "No XPCS found\n");
++			err = -ENODEV;
++			goto no_xpcs_found;
++		}
+ 	}
  
- void mlx5_modify_lag(struct mlx5_lag *ldev,
+ bus_register_done:
+@@ -534,6 +540,9 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 
+ 	return 0;
+ 
++no_xpcs_found:
++no_phy_found:
++	mdiobus_unregister(new_bus);
+ bus_register_fail:
+ 	mdiobus_free(new_bus);
+ 	return err;
 -- 
 2.30.2
 
