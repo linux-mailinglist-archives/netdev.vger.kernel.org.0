@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 721523BCFDD
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D986A3BCFEC
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235138AbhGFLbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:31:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42562 "EHLO mail.kernel.org"
+        id S233349AbhGFLbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:31:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235526AbhGFLaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:30:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ED47661CDF;
-        Tue,  6 Jul 2021 11:21:15 +0000 (UTC)
+        id S235566AbhGFLaL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:30:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A103C61D98;
+        Tue,  6 Jul 2021 11:21:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570476;
-        bh=I3lYcrAzjWWwNNTQYpDEKai+YMoJnJOzHKEKOlEwnFU=;
+        s=k20201202; t=1625570483;
+        bh=L8jub376s6xaAsAzk1kQdZw4+cPvBHdSUCWHrjUgamA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/Pjmy/HM7GGntaSZSZMC5D4fsfiZFoBtmS7ZFaBpuje2z0fDJfPSCVY+TJOmMCyi
-         AstdP53LrpINroI0HDExRvS4y6d1f0GJrbtLNy6+t+Qdhh4i6Do7ZmUcxPTZSnkFYG
-         4gKex4GVhSzuCv5L6pDJggP4uGeF2ZkOdf6nSqeOaS50WdzUjtyV8T/nw/L8KuyOiJ
-         I8bVczdTEfqlH7vFfg5gyflXmtb7eTTBjA0XlkufsirA8gRfCComEN0UTafVn1/Yxw
-         yBK0LJk7optk9oRg/lDw0BfyV9VBPGDDhbvLyEFt5Pu1xAzpW3z/khHmPe1cEE0pny
-         QK0pnCIoUZGmA==
+        b=Q4/jHwUF613HIA7FrV9MakOD929V5MhCAk2hEzIq3+zG41ibeeJJBspwtAZQS+2p6
+         pzjITs80WMzf3ILnEzJe1LdEjNLfQQDOjYp+WqSme5rtCuHgyuaovN5TkgaC89b6wb
+         12kW3WxBL4u936hipinDueR7qHIkb2cTS/QRFbmGAwHOlODMCmxRCa+XGnzWJ60a+H
+         5khoeVOHmzQLMxF+8VqzUUUdWo+YAcnAArPgQj/oTPkEgCKH8jQYzBANaEJR2LrGxY
+         +vKDYgEfcOcnbvVOnbowWNXEJ2YYNveOFSvOHdAR5prdB7IOM1TEPXMxnih4OHktvf
+         8ZAgpEG2giyTQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 126/160] iwlwifi: pcie: fix context info freeing
-Date:   Tue,  6 Jul 2021 07:17:52 -0400
-Message-Id: <20210706111827.2060499-126-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 131/160] net: dsa: b53: Create default VLAN entry explicitly
+Date:   Tue,  6 Jul 2021 07:17:57 -0400
+Message-Id: <20210706111827.2060499-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -43,41 +43,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 26d18c75a7496c4c52b0b6789e713dc76ebfbc87 ]
+[ Upstream commit 64a81b24487f0d2fba0f033029eec2abc7d82cee ]
 
-After firmware alive, iwl_trans_pcie_gen2_fw_alive() is called
-to free the context info. However, on gen3 that will then free
-the context info with the wrong size.
+In case CONFIG_VLAN_8021Q is not set, there will be no call down to the
+b53 driver to ensure that the default PVID VLAN entry will be configured
+with the appropriate untagged attribute towards the CPU port. We were
+implicitly relying on dsa_slave_vlan_rx_add_vid() to do that for us,
+instead make it explicit.
 
-Since we free this allocation later, let it stick around until
-the device is stopped for now, freeing some of it earlier is a
-separate change.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618105614.afb63fb8cbc1.If4968db8e09f4ce2a1d27a6d750bca3d132d7d70@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Reported-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/b53/b53_common.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-index af9412bd697e..7996b05a51c2 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-@@ -254,7 +254,8 @@ void iwl_trans_pcie_gen2_fw_alive(struct iwl_trans *trans, u32 scd_addr)
- 	/* now that we got alive we can free the fw image & the context info.
- 	 * paging memory cannot be freed included since FW will still use it
- 	 */
--	iwl_pcie_ctxt_info_free(trans);
-+	if (trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_AX210)
-+		iwl_pcie_ctxt_info_free(trans);
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index eb443721c58e..dee314245fb1 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -725,6 +725,13 @@ static u16 b53_default_pvid(struct b53_device *dev)
+ 		return 0;
+ }
  
- 	/*
- 	 * Re-enable all the interrupts, including the RF-Kill one, now that
++static bool b53_vlan_port_needs_forced_tagged(struct dsa_switch *ds, int port)
++{
++	struct b53_device *dev = ds->priv;
++
++	return dev->tag_protocol == DSA_TAG_PROTO_NONE && dsa_is_cpu_port(ds, port);
++}
++
+ int b53_configure_vlan(struct dsa_switch *ds)
+ {
+ 	struct b53_device *dev = ds->priv;
+@@ -745,9 +752,20 @@ int b53_configure_vlan(struct dsa_switch *ds)
+ 
+ 	b53_enable_vlan(dev, dev->vlan_enabled, ds->vlan_filtering);
+ 
+-	b53_for_each_port(dev, i)
++	/* Create an untagged VLAN entry for the default PVID in case
++	 * CONFIG_VLAN_8021Q is disabled and there are no calls to
++	 * dsa_slave_vlan_rx_add_vid() to create the default VLAN
++	 * entry. Do this only when the tagging protocol is not
++	 * DSA_TAG_PROTO_NONE
++	 */
++	b53_for_each_port(dev, i) {
++		v = &dev->vlans[def_vid];
++		v->members |= BIT(i);
++		if (!b53_vlan_port_needs_forced_tagged(ds, i))
++			v->untag = v->members;
+ 		b53_write16(dev, B53_VLAN_PAGE,
+ 			    B53_VLAN_PORT_DEF_TAG(i), def_vid);
++	}
+ 
+ 	/* Upon initial call we have not set-up any VLANs, but upon
+ 	 * system resume, we need to restore all VLAN entries.
 -- 
 2.30.2
 
