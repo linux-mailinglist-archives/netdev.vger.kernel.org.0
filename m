@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B4C73BD133
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:36:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABACF3BD1F0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238073AbhGFLii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:38:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47600 "EHLO mail.kernel.org"
+        id S236491AbhGFLku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:40:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47606 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236822AbhGFLfm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236823AbhGFLfm (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:35:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7BEC261A1D;
-        Tue,  6 Jul 2021 11:24:24 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F625619C5;
+        Tue,  6 Jul 2021 11:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570665;
-        bh=Jt/aDsq1Stl07LbDBGnFnJezfY3j/6id96MaEfUjrqY=;
+        s=k20201202; t=1625570666;
+        bh=+8rqQbAuVd7Yc+LWivSX8JFw1Pu4KMR5sP8kZhHQ84g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ty+vuhmWnq/dHVGQcXdOqXwwzM2BJJsoN3ban708yNym9tRTRAji2Nw7Z80MHxvtu
-         CWrvA3a/Ct4hpT+75XoUAGrhMp/u69acEQ4nCPiyM4eoCwkpmk+e2WV2gUjtrY95Qv
-         e1DI43AzrRHql4vjw76Ka+u3q+BphQImN2TXz5PhrvUGqPmx87Toy4iTNdTlCwDJOv
-         q+j06TSozz0Y/+wAZzNnQrMx9Qqg/Shb69H4UWP5Mz/aqSvIaLe8zYeiytcL7GYr/3
-         9OkBjXDfBZW64VtuXEyIW2IJJpun7agOfcWafTPpEWZDmVwtJ02trpH1XPzoaWrFGw
-         sB0TxEqReSKhw==
+        b=CGcsCT2STuUnrH1D/vTHiNWBHRMCTndC0R7bXtetpRj6lT0otp1k0hADj3IwiyYo2
+         uuU0rdZWk4ByNLlCRZiW+kEOkbhh+WQj8d8qed1onunujrJgmM3QTDMeMBIlHTaTao
+         Rr1XAKVf5Za4D7252pI1D52ghxq3HEbWAC9Nzt7uSBliIVfzWIAXGgKDGcnbBTFKdD
+         dIO8P2CsYy1Ph6eBKOWXJ8Dzlv3vhZC/zAw/vaJmapnclGkHc2FUaQk1Eaen3VG/AU
+         cNLj3MM348AY6x0cQsr3MflEj+MWXWcrplDa8mN7cD3tWzHbD91FNa+mbR4wLOYSq2
+         5mBorGtjZLMFA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 109/137] iwlwifi: pcie: fix context info freeing
-Date:   Tue,  6 Jul 2021 07:21:35 -0400
-Message-Id: <20210706112203.2062605-109-sashal@kernel.org>
+Cc:     =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 110/137] sfc: avoid double pci_remove of VFs
+Date:   Tue,  6 Jul 2021 07:21:36 -0400
+Message-Id: <20210706112203.2062605-110-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,41 +43,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 26d18c75a7496c4c52b0b6789e713dc76ebfbc87 ]
+[ Upstream commit 45423cff1db66cf0993e8a9bd0ac93e740149e49 ]
 
-After firmware alive, iwl_trans_pcie_gen2_fw_alive() is called
-to free the context info. However, on gen3 that will then free
-the context info with the wrong size.
+If pci_remove was called for a PF with VFs, the removal of the VFs was
+called twice from efx_ef10_sriov_fini: one directly with pci_driver->remove
+and another implicit by calling pci_disable_sriov, which also perform
+the VFs remove. This was leading to crashing the kernel on the second
+attempt.
 
-Since we free this allocation later, let it stick around until
-the device is stopped for now, freeing some of it earlier is a
-separate change.
+Given that pci_disable_sriov already calls to pci remove function, get
+rid of the direct call to pci_driver->remove from the driver.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618105614.afb63fb8cbc1.If4968db8e09f4ce2a1d27a6d750bca3d132d7d70@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+2 different ways to trigger the bug:
+- Create one or more VFs, then attach the PF to a virtual machine (at
+  least with qemu/KVM)
+- Create one or more VFs, then remove the PF with:
+  echo 1 > /sys/bus/pci/devices/PF_PCI_ID/remove
+
+Removing sfc module does not trigger the error, at least for me, because
+it removes the VF first, and then the PF.
+
+Example of a log with the error:
+    list_del corruption, ffff967fd20a8ad0->next is LIST_POISON1 (dead000000000100)
+    ------------[ cut here ]------------
+    kernel BUG at lib/list_debug.c:47!
+    [...trimmed...]
+    RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x4c
+    [...trimmed...]
+    Call Trace:
+    efx_dissociate+0x1f/0x140 [sfc]
+    efx_pci_remove+0x27/0x150 [sfc]
+    pci_device_remove+0x3b/0xc0
+    device_release_driver_internal+0x103/0x1f0
+    pci_stop_bus_device+0x69/0x90
+    pci_stop_and_remove_bus_device+0xe/0x20
+    pci_iov_remove_virtfn+0xba/0x120
+    sriov_disable+0x2f/0xe0
+    efx_ef10_pci_sriov_disable+0x52/0x80 [sfc]
+    ? pcie_aer_is_native+0x12/0x40
+    efx_ef10_sriov_fini+0x72/0x110 [sfc]
+    efx_pci_remove+0x62/0x150 [sfc]
+    pci_device_remove+0x3b/0xc0
+    device_release_driver_internal+0x103/0x1f0
+    unbind_store+0xf6/0x130
+    kernfs_fop_write+0x116/0x190
+    vfs_write+0xa5/0x1a0
+    ksys_write+0x4f/0xb0
+    do_syscall_64+0x5b/0x1a0
+    entry_SYSCALL_64_after_hwframe+0x65/0xca
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-index 4c3ca2a37696..b031e9304983 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans-gen2.c
-@@ -269,7 +269,8 @@ void iwl_trans_pcie_gen2_fw_alive(struct iwl_trans *trans, u32 scd_addr)
- 	/* now that we got alive we can free the fw image & the context info.
- 	 * paging memory cannot be freed included since FW will still use it
- 	 */
--	iwl_pcie_ctxt_info_free(trans);
-+	if (trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_AX210)
-+		iwl_pcie_ctxt_info_free(trans);
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 21fa6c0e8873..a5d28b0f75ba 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -439,7 +439,6 @@ int efx_ef10_sriov_init(struct efx_nic *efx)
+ void efx_ef10_sriov_fini(struct efx_nic *efx)
+ {
+ 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
+-	unsigned int i;
+ 	int rc;
  
- 	/*
- 	 * Re-enable all the interrupts, including the RF-Kill one, now that
+ 	if (!nic_data->vf) {
+@@ -449,14 +448,7 @@ void efx_ef10_sriov_fini(struct efx_nic *efx)
+ 		return;
+ 	}
+ 
+-	/* Remove any VFs in the host */
+-	for (i = 0; i < efx->vf_count; ++i) {
+-		struct efx_nic *vf_efx = nic_data->vf[i].efx;
+-
+-		if (vf_efx)
+-			vf_efx->pci_dev->driver->remove(vf_efx->pci_dev);
+-	}
+-
++	/* Disable SRIOV and remove any VFs in the host */
+ 	rc = efx_ef10_pci_sriov_disable(efx, true);
+ 	if (rc)
+ 		netif_dbg(efx, drv, efx->net_dev,
 -- 
 2.30.2
 
