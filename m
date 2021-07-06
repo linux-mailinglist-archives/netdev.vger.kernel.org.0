@@ -2,118 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E803BDFBA
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 01:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58F543BDFBE
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 01:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230073AbhGFXXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 19:23:04 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:42192 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbhGFXXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 19:23:04 -0400
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-        by linux.microsoft.com (Postfix) with ESMTPSA id EEDBB20B8763;
-        Tue,  6 Jul 2021 16:20:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EEDBB20B8763
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1625613625;
-        bh=+B2RyBYE0y86L8yJkdHeDMZTG4ZuIZ21amffRovnID0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=i8+3otj2+n6kuZyF3CxQ3ICAGTAFbCGsxjhAichRnN5quDMAf7WJMNGGpTj+mFh6W
-         XnYk+qVNIWJXayNCBPdx7X0B3L/NVFf8F3OzroPT8pygwnI15nC6/pYEI6ieIS7cC6
-         fQw/OEkcRdvTzAtv/fSXOnkuUyC7083HO7zFdgow=
-Received: by mail-oi1-f179.google.com with SMTP id h9so1253019oih.4;
-        Tue, 06 Jul 2021 16:20:24 -0700 (PDT)
-X-Gm-Message-State: AOAM531CYhO4IwMRTEvjQ7SdI0hfu19EALz6XsjBcRqpOCzSwzRdByPs
-        mLfT7ALRX+Ub+3WwH6j97uyGFINR7mpSt98vDHs=
-X-Google-Smtp-Source: ABdhPJwvODCWG0AeXR+9oECO+x2o6a1FUtOPxOFl78LnDVCsndsRrY7L/qQ1u0pK80Ldg6T8UkI2OFAHz5YoRYK66/Y=
-X-Received: by 2002:a17:90a:650b:: with SMTP id i11mr22926182pjj.39.1625613613347;
- Tue, 06 Jul 2021 16:20:13 -0700 (PDT)
+        id S229941AbhGFXZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 19:25:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229910AbhGFXZH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 19:25:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 666E061C93;
+        Tue,  6 Jul 2021 23:22:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625613748;
+        bh=5mlEDZpYyfsm7tdGyB+79GO9dRgHUn5r+UFeUbzhS/4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sUesseh4jTaA8tnTNCEOEi+zDaJTAGkrhJ1JBopObj67sxM5KDnsFFM6Zh2K9DQ/w
+         vANHA6iRRzRo6MMSlxXsZ2gYmChCPdvjOZe8VMl6b17EgSZriPhvgCuw1ZujF0zBRZ
+         Ov+rsU/phD02mmkq6ovBv9AS3W6doxjdfPQObNcS+XWWN57a5FJLbuBrmo0tUg2NF4
+         f1Dt5hUFhERDh07SlfNK2zcR962IJSmgKGxWRj29YD9f8VuRWvEyQ2/TCTv+dSyc48
+         6DByJhVXX7gdSn0/CUIKghODj5ONUjZyaBtbkIdLS+UX8RF6vFm5oa/ZppYkp/lhWc
+         wEzkoQRMrYwhg==
+Date:   Wed, 7 Jul 2021 01:22:24 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Peter Rosin <peda@axentia.se>, netdev@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH RFC net-next] dt-bindings: ethernet-controller: document
+ signal multiplexer
+Message-ID: <20210707012224.14df9eab@thinkpad>
+In-Reply-To: <YN5kGsMwds+wCACq@lunn.ch>
+References: <20210701005347.8280-1-kabel@kernel.org>
+        <YN5kGsMwds+wCACq@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
- <20210702153947.7b44acdf@linux.microsoft.com> <20210706155131.GS22278@shell.armlinux.org.uk>
-In-Reply-To: <20210706155131.GS22278@shell.armlinux.org.uk>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Wed, 7 Jul 2021 01:19:37 +0200
-X-Gmail-Original-Message-ID: <CAFnufp1hM6WRDigAsSfM94yneRhkmxBoGG7NxRUkbfTR2WQvyA@mail.gmail.com>
-Message-ID: <CAFnufp1hM6WRDigAsSfM94yneRhkmxBoGG7NxRUkbfTR2WQvyA@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page pool
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
-        feng.tang@intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 6, 2021 at 5:51 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Fri, Jul 02, 2021 at 03:39:47PM +0200, Matteo Croce wrote:
-> > On Wed, 30 Jun 2021 17:17:54 +0800
-> > Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >
-> > > This patchset adds elevated refcnt support for page pool
-> > > and enable skb's page frag recycling based on page pool
-> > > in hns3 drvier.
-> > >
-> > > Yunsheng Lin (2):
-> > >   page_pool: add page recycling support based on elevated refcnt
-> > >   net: hns3: support skb's frag page recycling based on page pool
-> > >
-> > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
-> > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
-> > >  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
-> > >  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
-> > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
-> > >  include/linux/mm_types.h                           |   2 +-
-> > >  include/linux/skbuff.h                             |   4 +-
-> > >  include/net/page_pool.h                            |  30 ++-
-> > >  net/core/page_pool.c                               | 215
-> > > +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
-> > > deletions(-)
-> > >
-> >
-> > Interesting!
-> > Unfortunately I'll not have access to my macchiatobin anytime soon, can
-> > someone test the impact, if any, on mvpp2?
->
-> I'll try to test. Please let me know what kind of testing you're
-> looking for (I haven't been following these patches, sorry.)
->
+On Fri, 2 Jul 2021 02:55:54 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-A drop test or L2 routing will be enough.
-BTW I should have the macchiatobin back on friday.
+> On Thu, Jul 01, 2021 at 02:53:47AM +0200, Marek Beh=C3=BAn wrote:
+> > There are devices where the MAC signals from the ethernet controller are
+> > not directly connected to an ethernet PHY or a SFP cage, but to a
+> > multiplexer, so that the device can switch between the endpoints.
+> >=20
+> > For example on Turris Omnia the WAN controller is connected to a SerDes
+> > switch, which multiplexes the SerDes lanes between SFP cage and ethernet
+> > PHY, depending on whether a SFP module is present (MOD_DEF0 GPIO from
+> > the SFP cage). =20
+>=20
+> At the moment, i don't think phylink supports this. It does not have a
+> way to dynamically switch PHY. If the SFP disappears, you probably
+> want to configure the PHY, so that it is up, autoneg started,
+> etc. When the SFP reappears, the PHY needs to be configured down, the
+> SFP probably needs its TX GPIO line set active, etc. None of this
+> currently exists.
 
-Regards,
--- 
-per aspera ad upstream
+Of course this is not supported by phylink: it can't be, since we don't
+even have a binding description :) I am figuring out how to do correct
+binding while working on implementing this into phylink.
+
+> The Marvell switches have something similar but different. Which ever
+> gets link first, SFP or PHY gets the data path. In this case, you
+> probably want phylink to configure both the SFP and the PHY, and then
+> wait and see what happens. The hardware will then set the mux when one
+> of them gets link. phylink should then configure the other
+> down. Again, non of this exists at the moment.
+>=20
+> I would imaging a similar binding could be used for these two
+> conditions. But until we get the needed code, it is hard for me to
+> say. So i think i would prefer to wait until we do have code.
+>=20
+
+I now have an idea that might be sane for bindings, so next time I will
+send the code as well.
+
+> I also wonder how wise it is to put this into the generic ethernet
+> controller binding. Muxing based on MOD_DEF0 i expect to be very
+> rare. Muxing based on first port having link seems more likely. But
+> both i expect are pretty unusual. So i would be tempted to make it a
+> standalone binding, which can be imported into an MAC binding which
+> actually needs it. Or it actually becomes part of the phylink
+> binding, since this all appears to be PHY related, not MAC.
+>=20
+> 	  Andrew
+
+We'll see. Stay tuned for my patch series. :)
+
+Marek
