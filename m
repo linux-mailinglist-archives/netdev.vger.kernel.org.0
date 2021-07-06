@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE843BD19B
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 656F43BD194
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238624AbhGFLjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47622 "EHLO mail.kernel.org"
+        id S238549AbhGFLjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:39:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237484AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237476AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECA2961DAC;
-        Tue,  6 Jul 2021 11:27:55 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EF28461DAE;
+        Tue,  6 Jul 2021 11:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570876;
-        bh=wrthiZxoYzHAOIM/zYDPEA/Ffyh62jqK+IpwXjfqEYQ=;
+        s=k20201202; t=1625570879;
+        bh=AOANztogWG+byXD6GqBWGWH2rCikFuzKCOSb6tGVcgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qg1lJ8Z55i6mBUkJZ7yQpwusU4NX/vR11yGnLJkvBSAsDe2CnQDxLnz9tROaIpKIm
-         wfOpGWirnRHG6oZSb3wOe3eFuRKBbSMGfQufaZLkfSARsEomt/DfvMPAykPsHvkrdP
-         FAjZJRTPWcD82f7HiqcCt7tu8J2dyakPAbatg/3pWWgfyV3P3a6NqRaGNxb+ALE8m6
-         aqtGbZc2jDl2HRg826V3gxU+NJ+4DroLLLpcL5PRflmSlJ8DoYPyKXNNJ2fuNlrUwR
-         JYLd97aK1VgzCG/mf2QC1+ghgrtyMgqbCd+xzAC2BoYt9IQH+5F1bmNuCjgm8j9YTc
-         nuiDxO5WaLz4A==
+        b=QUrkiYs6gy3O/227zyaWPYP24G2tRC2X32bdTU3umoyZZoCm2JOfDi6o680vOcX7E
+         Woyw3RV64eT3fK1FY+/AHnobMYoQg0okTT8NMol9WrAPstkEsmbYn0iuNbPWuwXBLJ
+         oMjQAe2hrZ1miQT77RiR6YEf5kQK3TN+S5HQ7mRogfQk6USr48iLY5REw2jTDzdKS+
+         Yk1IABhifILR8kdMaTYQg7TxfHpGarHGXUC/PlBEcH8t4GFBaAsov4odxWw4POZ+sm
+         FuQbvyusur+ZpO9iIX36WkEewT3+wmNf3ssV0S+ydAkMXLXl1768OwqT8NQif9SCer
+         AmBOMPMrJHEQA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Flavio Suligoi <f.suligoi@asem.it>,
+Cc:     Zou Wei <zou_wei@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 05/45] net: pch_gbe: Use proper accessors to BE data in pch_ptp_match()
-Date:   Tue,  6 Jul 2021 07:27:09 -0400
-Message-Id: <20210706112749.2065541-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 07/45] atm: iphase: fix possible use-after-free in ia_module_exit()
+Date:   Tue,  6 Jul 2021 07:27:11 -0400
+Message-Id: <20210706112749.2065541-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112749.2065541-1-sashal@kernel.org>
 References: <20210706112749.2065541-1-sashal@kernel.org>
@@ -44,85 +43,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Zou Wei <zou_wei@huawei.com>
 
-[ Upstream commit 443ef39b499cc9c6635f83238101f1bb923e9326 ]
+[ Upstream commit 1c72e6ab66b9598cac741ed397438a52065a8f1f ]
 
-Sparse is not happy about handling of strict types in pch_ptp_match():
+This module's remove path calls del_timer(). However, that function
+does not wait until the timer handler finishes. This means that the
+timer handler may still be running after the driver's remove function
+has finished, which would result in a use-after-free.
 
-  .../pch_gbe_main.c:158:33: warning: incorrect type in argument 2 (different base types)
-  .../pch_gbe_main.c:158:33:    expected unsigned short [usertype] uid_hi
-  .../pch_gbe_main.c:158:33:    got restricted __be16 [usertype]
-  .../pch_gbe_main.c:158:45: warning: incorrect type in argument 3 (different base types)
-  .../pch_gbe_main.c:158:45:    expected unsigned int [usertype] uid_lo
-  .../pch_gbe_main.c:158:45:    got restricted __be32 [usertype]
-  .../pch_gbe_main.c:158:56: warning: incorrect type in argument 4 (different base types)
-  .../pch_gbe_main.c:158:56:    expected unsigned short [usertype] seqid
-  .../pch_gbe_main.c:158:56:    got restricted __be16 [usertype]
+Fix by calling del_timer_sync(), which makes sure the timer handler
+has finished, and unable to re-schedule itself.
 
-Fix that by switching to use proper accessors to BE data.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Flavio Suligoi <f.suligoi@asem.it>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/oki-semi/pch_gbe/pch_gbe_main.c  | 19 ++++++-------------
- 1 file changed, 6 insertions(+), 13 deletions(-)
+ drivers/atm/iphase.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-index 5ae9681a2da7..d06b666c58fc 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -124,7 +124,7 @@ static int pch_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index 2b29598791e8..16eb0266a59a 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -3301,7 +3301,7 @@ static void __exit ia_module_exit(void)
  {
- 	u8 *data = skb->data;
- 	unsigned int offset;
--	u16 *hi, *id;
-+	u16 hi, id;
- 	u32 lo;
+ 	pci_unregister_driver(&ia_driver);
  
- 	if (ptp_classify_raw(skb) == PTP_CLASS_NONE)
-@@ -135,14 +135,11 @@ static int pch_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
- 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(seqid))
- 		return 0;
- 
--	hi = (u16 *)(data + offset + OFF_PTP_SOURCE_UUID);
--	id = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);
-+	hi = get_unaligned_be16(data + offset + OFF_PTP_SOURCE_UUID + 0);
-+	lo = get_unaligned_be32(data + offset + OFF_PTP_SOURCE_UUID + 2);
-+	id = get_unaligned_be16(data + offset + OFF_PTP_SEQUENCE_ID);
- 
--	memcpy(&lo, &hi[1], sizeof(lo));
--
--	return (uid_hi == *hi &&
--		uid_lo == lo &&
--		seqid  == *id);
-+	return (uid_hi == hi && uid_lo == lo && seqid == id);
+-        del_timer(&ia_timer);
++	del_timer_sync(&ia_timer);
  }
  
- static void
-@@ -152,7 +149,6 @@ pch_rx_timestamp(struct pch_gbe_adapter *adapter, struct sk_buff *skb)
- 	struct pci_dev *pdev;
- 	u64 ns;
- 	u32 hi, lo, val;
--	u16 uid, seq;
- 
- 	if (!adapter->hwts_rx_en)
- 		return;
-@@ -168,10 +164,7 @@ pch_rx_timestamp(struct pch_gbe_adapter *adapter, struct sk_buff *skb)
- 	lo = pch_src_uuid_lo_read(pdev);
- 	hi = pch_src_uuid_hi_read(pdev);
- 
--	uid = hi & 0xffff;
--	seq = (hi >> 16) & 0xffff;
--
--	if (!pch_ptp_match(skb, htons(uid), htonl(lo), htons(seq)))
-+	if (!pch_ptp_match(skb, hi, lo, hi >> 16))
- 		goto out;
- 
- 	ns = pch_rx_snap_read(pdev);
+ module_init(ia_module_init);
 -- 
 2.30.2
 
