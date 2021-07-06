@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 554FB3BD34D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5FFD3BD161
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238306AbhGFLjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47608 "EHLO mail.kernel.org"
+        id S238274AbhGFLjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:39:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237155AbhGFLf6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B42FE61CB4;
-        Tue,  6 Jul 2021 11:25:44 +0000 (UTC)
+        id S237176AbhGFLf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A002D61CD9;
+        Tue,  6 Jul 2021 11:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570745;
-        bh=LGzdI1v0S5Zx+cdVoMYUzOdVZTttiJ4l1Davo96KDtk=;
+        s=k20201202; t=1625570754;
+        bh=1mtU8YSKv4BPkxTJfhmoD7GsJDIIoEDrFVjRf6WTsIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PA+1n+HQvBmsJJ6jlMjRu+UybX/LodF53HMu7tBtpAc9nJv3ddDI3p1hbTS+zlO+G
-         XKPzMsih6voFwNDtRhU1VguUnAmyPOlwglwcvvrR7v8A+C0MMu8h3gVf62qHLB0dqt
-         d4GgITezEWJovPZHOP6D4xyxCXF8Z7cGU1CZaLo+loWI6CRg1JV1tJZb8COcxzLw7V
-         v07muhlhsMCxUuSgb9Sf+j9Pz/SWklbumtYq/y8H2uwJgqOJ5rmCJbKeiLJH2ZGy+M
-         GhzJbusvRKzOihZTXa95Ws7tVYYB9FoQpcfOgFKQpAYnjk0wo5ueGPwqjCyCC5OO6H
-         YlF3TijhTh8Zg==
+        b=iY2eKZh0YV/42UTF2VGEd7YFXDfQZau0IPieY+44oiPjZzU1XY5cISPEoNolMwJjN
+         ax3e2zKwfgTbED15RlWgGsEfregbNSqEzfn5f9Au3exy8s2ccJlQ6vLgvmfIZ7tBvr
+         EUUxNq87DJS3pvGqMEAkEnCNFM3miGBYL1sQY8bNoA53YKjoZ04V9TLQx10u9E7ZFN
+         tncrFep9SVe6pnZF1pbsNQQwLJWpGSkIOgigdWwkRWBbgoMpWQyjbxDi3bg14fUjFX
+         Ctwmr2F4nYjulgBvsOSSGthNYLw/1wHqjusljWPqgLFTdDrt4Tn88v6Eboh29LbZs/
+         2GjVf58NCMaTQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Koba Ko <koba.ko@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 34/74] net: moxa: Use devm_platform_get_and_ioremap_resource()
-Date:   Tue,  6 Jul 2021 07:24:22 -0400
-Message-Id: <20210706112502.2064236-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 41/74] r8169: avoid link-up interrupt issue on RTL8106e if user enables ASPM
+Date:   Tue,  6 Jul 2021 07:24:29 -0400
+Message-Id: <20210706112502.2064236-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112502.2064236-1-sashal@kernel.org>
 References: <20210706112502.2064236-1-sashal@kernel.org>
@@ -42,41 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 35cba15a504bf4f585bb9d78f47b22b28a1a06b2 ]
+[ Upstream commit 1ee8856de82faec9bc8bd0f2308a7f27e30ba207 ]
 
-Use devm_platform_get_and_ioremap_resource() to simplify
-code and avoid a null-ptr-deref by checking 'res' in it.
+It has been reported that on RTL8106e the link-up interrupt may be
+significantly delayed if the user enables ASPM L1. Per default ASPM
+is disabled. The change leaves L1 enabled on the PCIe link (thus still
+allowing to reach higher package power saving states), but the
+NIC won't actively trigger it.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reported-by: Koba Ko <koba.ko@canonical.com>
+Tested-by: Koba Ko <koba.ko@canonical.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/moxa/moxart_ether.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
-index f70bb81e1ed6..9f7eaae51335 100644
---- a/drivers/net/ethernet/moxa/moxart_ether.c
-+++ b/drivers/net/ethernet/moxa/moxart_ether.c
-@@ -480,14 +480,13 @@ static int moxart_mac_probe(struct platform_device *pdev)
- 	priv->ndev = ndev;
- 	priv->pdev = pdev;
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 661202e85412..5969f64169e5 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5190,7 +5190,6 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
+ 	RTL_W8(tp, DLLPR, RTL_R8(tp, DLLPR) & ~PFM_EN);
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ndev->base_addr = res->start;
--	priv->base = devm_ioremap_resource(p_dev, res);
-+	priv->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(priv->base)) {
- 		dev_err(p_dev, "devm_ioremap_resource failed\n");
- 		ret = PTR_ERR(priv->base);
- 		goto init_fail;
- 	}
-+	ndev->base_addr = res->start;
+ 	rtl_pcie_state_l2l3_disable(tp);
+-	rtl_hw_aspm_clkreq_enable(tp, true);
+ }
  
- 	spin_lock_init(&priv->txlock);
- 
+ DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
 -- 
 2.30.2
 
