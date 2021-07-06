@@ -2,36 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B74923BD056
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E1C73BD049
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234613AbhGFLdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:33:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42374 "EHLO mail.kernel.org"
+        id S234341AbhGFLd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:33:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42402 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235446AbhGFLaF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235445AbhGFLaF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:30:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8F0EC61DAD;
-        Tue,  6 Jul 2021 11:21:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F411161DB6;
+        Tue,  6 Jul 2021 11:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570464;
-        bh=aoIJEK2ctr+vblvtjuxk51ES7NtmT3py9Q2KbvuflV4=;
+        s=k20201202; t=1625570466;
+        bh=YHHFx1qwWhBrcZ1n1JNW4wvjeABGSRVWte2cISSaodM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cSFWcHdEtGefxMq3oRfz7C5Kab7HkZ4/huAF99HRYUQ/LV0YUXZTvsDAvY3vhiXez
-         FviNVGNgR2VbrPY6yW5l8/3Igt4fyVXpvFTMLa7pEQM2HeUdxUCzxfs7P5tgeQ0dvr
-         U1yd0NWxG5h/3cws0Z/15vCbhlGJnUb6OfLmfL2WPe7keRAQRH+lsTDdiIZjbofvbv
-         Czff0hJQWlHWfRGLMBBtjxQuWzC4IavAADPW2FJt6uuNXaU4bOZZGoA2olqovQp/2V
-         J2wufq4DQzkIVu9UuU4TPezo8rcPehU1338U1SX7csOI0gNqR+tpXGbw7+wabN7VlD
-         tideVgmDV3zBQ==
+        b=GNEXFI27hHIov+i96EoQbwJc2EM6pSwOAGcehEEVKZhCwWCxT7SRrG8WmOTyFyeB6
+         YOdKn+EHw3feST4KnbaCH4Stmi2Ho1/CMEhM8QlcIQdc2H1UdbLRVqusY18y67IIKB
+         CMs3eJaGFnwrEX+hvXhbW3mVO6r/UIYpPGedrHb+bLFQj7HAHoz0ILAXvbq78/5mUp
+         1qeDVyu8zQtB+P+aiujJ7xYRs59tkEhJNQohiCB1MtzyGamm9nt5IsJ3Ue85WlF2Jb
+         hO63jRUD2r4Pc5yf5A/pq7Ae8IPCMvTG68iYMKqHkqyo2vG2KPhIXlI2cg1JKpalQq
+         eAw3umz28GpCg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+Cc:     "Longpeng(Mike)" <longpeng2@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 117/160] atm: nicstar: register the interrupt handler in the right place
-Date:   Tue,  6 Jul 2021 07:17:43 -0400
-Message-Id: <20210706111827.2060499-117-sashal@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        David Brazdil <dbrazdil@google.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        lixianming <lixianming5@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 118/160] vsock: notify server to shutdown when client has pending signal
+Date:   Tue,  6 Jul 2021 07:17:44 -0400
+Message-Id: <20210706111827.2060499-118-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -43,164 +51,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
 
-[ Upstream commit 70b639dc41ad499384e41e106fce72e36805c9f2 ]
+[ Upstream commit c7ff9cff70601ea19245d997bb977344663434c7 ]
 
-Because the error handling is sequential, the application of resources
-should be carried out in the order of error handling, so the operation
-of registering the interrupt handler should be put in front, so as not
-to free the unregistered interrupt handler during error handling.
+The client's sk_state will be set to TCP_ESTABLISHED if the server
+replay the client's connect request.
 
-This log reveals it:
+However, if the client has pending signal, its sk_state will be set
+to TCP_CLOSE without notify the server, so the server will hold the
+corrupt connection.
 
-[    3.438724] Trying to free already-free IRQ 23
-[    3.439060] WARNING: CPU: 5 PID: 1 at kernel/irq/manage.c:1825 free_irq+0xfb/0x480
-[    3.440039] Modules linked in:
-[    3.440257] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
-[    3.440793] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.441561] RIP: 0010:free_irq+0xfb/0x480
-[    3.441845] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
-[    3.443121] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
-[    3.443483] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
-[    3.443972] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
-[    3.444462] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
-[    3.444950] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
-[    3.444994] FS:  0000000000000000(0000) GS:ffff88817bd40000(0000) knlGS:0000000000000000
-[    3.444994] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.444994] CR2: 0000000000000000 CR3: 000000000642e000 CR4: 00000000000006e0
-[    3.444994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    3.444994] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    3.444994] Call Trace:
-[    3.444994]  ns_init_card_error+0x18e/0x250
-[    3.444994]  nicstar_init_one+0x10d2/0x1130
-[    3.444994]  local_pci_probe+0x4a/0xb0
-[    3.444994]  pci_device_probe+0x126/0x1d0
-[    3.444994]  ? pci_device_remove+0x100/0x100
-[    3.444994]  really_probe+0x27e/0x650
-[    3.444994]  driver_probe_device+0x84/0x1d0
-[    3.444994]  ? mutex_lock_nested+0x16/0x20
-[    3.444994]  device_driver_attach+0x63/0x70
-[    3.444994]  __driver_attach+0x117/0x1a0
-[    3.444994]  ? device_driver_attach+0x70/0x70
-[    3.444994]  bus_for_each_dev+0xb6/0x110
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  driver_attach+0x22/0x30
-[    3.444994]  bus_add_driver+0x1e6/0x2a0
-[    3.444994]  driver_register+0xa4/0x180
-[    3.444994]  __pci_register_driver+0x77/0x80
-[    3.444994]  ? uPD98402_module_init+0xd/0xd
-[    3.444994]  nicstar_init+0x1f/0x75
-[    3.444994]  do_one_initcall+0x7a/0x3d0
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
-[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  kernel_init+0x13/0x180
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ret_from_fork+0x1f/0x30
-[    3.444994] Kernel panic - not syncing: panic_on_warn set ...
-[    3.444994] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
-[    3.444994] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    3.444994] Call Trace:
-[    3.444994]  dump_stack+0xba/0xf5
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  panic+0x155/0x3ed
-[    3.444994]  ? __warn+0xed/0x150
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  __warn+0x103/0x150
-[    3.444994]  ? free_irq+0xfb/0x480
-[    3.444994]  report_bug+0x119/0x1c0
-[    3.444994]  handle_bug+0x3b/0x80
-[    3.444994]  exc_invalid_op+0x18/0x70
-[    3.444994]  asm_exc_invalid_op+0x12/0x20
-[    3.444994] RIP: 0010:free_irq+0xfb/0x480
-[    3.444994] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
-[    3.444994] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
-[    3.444994] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
-[    3.444994] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
-[    3.444994] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
-[    3.444994] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
-[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
-[    3.444994]  ? vprintk_func+0x71/0x110
-[    3.444994]  ns_init_card_error+0x18e/0x250
-[    3.444994]  nicstar_init_one+0x10d2/0x1130
-[    3.444994]  local_pci_probe+0x4a/0xb0
-[    3.444994]  pci_device_probe+0x126/0x1d0
-[    3.444994]  ? pci_device_remove+0x100/0x100
-[    3.444994]  really_probe+0x27e/0x650
-[    3.444994]  driver_probe_device+0x84/0x1d0
-[    3.444994]  ? mutex_lock_nested+0x16/0x20
-[    3.444994]  device_driver_attach+0x63/0x70
-[    3.444994]  __driver_attach+0x117/0x1a0
-[    3.444994]  ? device_driver_attach+0x70/0x70
-[    3.444994]  bus_for_each_dev+0xb6/0x110
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  driver_attach+0x22/0x30
-[    3.444994]  bus_add_driver+0x1e6/0x2a0
-[    3.444994]  driver_register+0xa4/0x180
-[    3.444994]  __pci_register_driver+0x77/0x80
-[    3.444994]  ? uPD98402_module_init+0xd/0xd
-[    3.444994]  nicstar_init+0x1f/0x75
-[    3.444994]  do_one_initcall+0x7a/0x3d0
-[    3.444994]  ? rdinit_setup+0x40/0x40
-[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
-[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  kernel_init+0x13/0x180
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ? rest_init+0x2c0/0x2c0
-[    3.444994]  ret_from_fork+0x1f/0x30
-[    3.444994] Dumping ftrace buffer:
-[    3.444994]    (ftrace buffer empty)
-[    3.444994] Kernel Offset: disabled
-[    3.444994] Rebooting in 1 seconds..
+            client                        server
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+1. sk_state=TCP_SYN_SENT         |
+2. call ->connect()              |
+3. wait reply                    |
+                                 | 4. sk_state=TCP_ESTABLISHED
+                                 | 5. insert to connected list
+                                 | 6. reply to the client
+7. sk_state=TCP_ESTABLISHED      |
+8. insert to connected list      |
+9. *signal pending* <--------------------- the user kill client
+10. sk_state=TCP_CLOSE           |
+client is exiting...             |
+11. call ->release()             |
+     virtio_transport_close
+      if (!(sk->sk_state == TCP_ESTABLISHED ||
+	      sk->sk_state == TCP_CLOSING))
+		return true; *return at here, the server cannot notice the connection is corrupt*
+
+So the client should notify the peer in this case.
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jorgen Hansen <jhansen@vmware.com>
+Cc: Norbert Slusarek <nslusarek@gmx.net>
+Cc: Andra Paraschiv <andraprs@amazon.com>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: David Brazdil <dbrazdil@google.com>
+Cc: Alexander Popov <alex.popov@linux.com>
+Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lkml.org/lkml/2021/5/17/418
+Signed-off-by: lixianming <lixianming5@huawei.com>
+Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/nicstar.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
-index 3a38720acd0e..bc5a6ab6fa4b 100644
---- a/drivers/atm/nicstar.c
-+++ b/drivers/atm/nicstar.c
-@@ -527,6 +527,15 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
- 	/* Set the VPI/VCI MSb mask to zero so we can receive OAM cells */
- 	writel(0x00000000, card->membase + VPM);
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index bc7fb9bf3351..2a82fbf32ccc 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1369,7 +1369,7 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
  
-+	card->intcnt = 0;
-+	if (request_irq
-+	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
-+		pr_err("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
-+		error = 9;
-+		ns_init_card_error(card, error);
-+		return error;
-+	}
-+
- 	/* Initialize TSQ */
- 	card->tsq.org = dma_alloc_coherent(&card->pcidev->dev,
- 					   NS_TSQSIZE + NS_TSQ_ALIGNMENT,
-@@ -753,15 +762,6 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
- 
- 	card->efbie = 1;
- 
--	card->intcnt = 0;
--	if (request_irq
--	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
--		printk("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
--		error = 9;
--		ns_init_card_error(card, error);
--		return error;
--	}
--
- 	/* Register device */
- 	card->atmdev = atm_dev_register("nicstar", &card->pcidev->dev, &atm_ops,
- 					-1, NULL);
+ 		if (signal_pending(current)) {
+ 			err = sock_intr_errno(timeout);
+-			sk->sk_state = TCP_CLOSE;
++			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
+ 			goto out_wait;
 -- 
 2.30.2
 
