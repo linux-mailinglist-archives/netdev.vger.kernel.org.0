@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1267D3BD5B1
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF953BD5B3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237096AbhGFMYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:24:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42374 "EHLO mail.kernel.org"
+        id S237554AbhGFMYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:24:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234322AbhGFLd3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:33:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64D1E61D26;
-        Tue,  6 Jul 2021 11:22:52 +0000 (UTC)
+        id S236278AbhGFLe7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:34:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D378661E17;
+        Tue,  6 Jul 2021 11:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570573;
-        bh=cJMaaJMtowFiLkow7PjF58jLQoCxdhCoY6hKVUPpwH4=;
+        s=k20201202; t=1625570599;
+        bh=d0xJ5IqhciSCUZX4+3tX78VLP+tSPx1jaMcPTeNp7EY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H15VWorYexT/ZA9TXme5lskXYCpbcRHWv3WsEHTBaGoFkM6c6U2DpCYH1hMj4V+q9
-         kLlYSUDLzM+/BCtUmk6+nSLXz34+kmvBH5NM1zFaoAWXO1v57NRG76oGLDh1W75iw8
-         6Q+X/CCqlB0KeK2bagGSLg6w45fn0yOG4/9PL8SgH5KDTi3+7msmJ+Sq32wxh5wV7b
-         xPr22sRlr08xl00a9mlOjqnhf2VbjQHkbIRCjl/f5iePbYtvnCvf66eRG12Z5f62IS
-         zATqCnU+I6wMY7v1MCpo3VREM+pkVVbwQrvsfwrBVue/rnaansLbtae+uGUNRZKmI5
-         pVRrX2/BYPipw==
+        b=nUJHOJM/QuHbnhs4ZkjDf7nDSg4jB9AJS2JHU1QWtwePC5e+3F5HTIhw5wOTTUiWV
+         DcNMVAI9aYJ2qMh4PjxWFhnxbGCZLpXQPkV4IeQkTci0QOam/NEwILb9q8LDElMlhJ
+         6gsq9E7/4VIjDWus1klLSBcMmgwPgsr5fLxtggdPZC51O0TNW900BarNqXkcQJi/2R
+         GZkZtMT0vJ0VTSqNQ3LcshPC5fRv2i+k4c6n2lhSHXardRin63sKjgbfskbQDxzndT
+         kS4PKa38OOTZH0dBW5b3Yjk0EAWz2a24htFUlZdwki0AC3ylkV8BYHfAaG2+W1KukK
+         5yNLrzHZJWWxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eli Cohen <elic@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 038/137] net/mlx5: Fix lag port remapping logic
-Date:   Tue,  6 Jul 2021 07:20:24 -0400
-Message-Id: <20210706112203.2062605-38-sashal@kernel.org>
+Cc:     Liwei Song <liwei.song@windriver.com>,
+        Tony Brelinski <tonyx.brelinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 059/137] ice: set the value of global config lock timeout longer
+Date:   Tue,  6 Jul 2021 07:20:45 -0400
+Message-Id: <20210706112203.2062605-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -42,58 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Liwei Song <liwei.song@windriver.com>
 
-[ Upstream commit 8613641063617c1dfc731b403b3ee4935ef15f87 ]
+[ Upstream commit fb3612840d4f587a0af9511a11d7989d1fa48206 ]
 
-Fix the logic so that if both ports netdevices are enabled or disabled,
-use the trivial mapping without swapping.
+It may need hold Global Config Lock a longer time when download DDP
+package file, extend the timeout value to 5000ms to ensure that
+download can be finished before other AQ command got time to run,
+this will fix the issue below when probe the device, 5000ms is a test
+value that work with both Backplane and BreakoutCable NVM image:
 
-If only one of the netdevice's tx is enabled, use it to remap traffic to
-that port.
+ice 0000:f4:00.0: VSI 12 failed lan queue config, error ICE_ERR_CFG
+ice 0000:f4:00.0: Failed to delete VSI 12 in FW - error: ICE_ERR_AQ_TIMEOUT
+ice 0000:f4:00.0: probe failed due to setup PF switch: -12
+ice: probe of 0000:f4:00.0 failed with error -12
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Liwei Song <liwei.song@windriver.com>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_type.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 9025e5f38bb6..fe5476a76464 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -118,17 +118,24 @@ static bool __mlx5_lag_is_sriov(struct mlx5_lag *ldev)
- static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
- 					   u8 *port1, u8 *port2)
- {
-+	bool p1en;
-+	bool p2en;
-+
-+	p1en = tracker->netdev_state[MLX5_LAG_P1].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P1].link_up;
-+
-+	p2en = tracker->netdev_state[MLX5_LAG_P2].tx_enabled &&
-+	       tracker->netdev_state[MLX5_LAG_P2].link_up;
-+
- 	*port1 = 1;
- 	*port2 = 2;
--	if (!tracker->netdev_state[MLX5_LAG_P1].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P1].link_up) {
--		*port1 = 2;
-+	if ((!p1en && !p2en) || (p1en && p2en))
- 		return;
--	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 1bed183d96a0..ee3497d25464 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -63,7 +63,7 @@ enum ice_aq_res_ids {
+ /* FW update timeout definitions are in milliseconds */
+ #define ICE_NVM_TIMEOUT			180000
+ #define ICE_CHANGE_LOCK_TIMEOUT		1000
+-#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	3000
++#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	5000
  
--	if (!tracker->netdev_state[MLX5_LAG_P2].tx_enabled ||
--	    !tracker->netdev_state[MLX5_LAG_P2].link_up)
-+	if (p1en)
- 		*port2 = 1;
-+	else
-+		*port1 = 2;
- }
- 
- void mlx5_modify_lag(struct mlx5_lag *ldev,
+ enum ice_aq_res_access_type {
+ 	ICE_RES_READ = 1,
 -- 
 2.30.2
 
