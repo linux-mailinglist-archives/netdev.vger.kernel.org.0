@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E02E3BCDC2
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A603BCDDB
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbhGFLXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:23:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55802 "EHLO mail.kernel.org"
+        id S234094AbhGFLXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:23:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233497AbhGFLVM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:21:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D7E7C61CEE;
-        Tue,  6 Jul 2021 11:17:42 +0000 (UTC)
+        id S233125AbhGFLVe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:21:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DEA861CD0;
+        Tue,  6 Jul 2021 11:17:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570263;
-        bh=ejeh7x8VILLkzHwcfeY8ejdBP6rp3we5gnnFdnNnW5M=;
+        s=k20201202; t=1625570265;
+        bh=q40AHm9I5Lk5DXFmVPqQqxkyiDbwGY8e1r7ys0fjt1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lIUGZx2eU8KfHsm8McHWsIeWnaTGKJlE0fWt74V/Gnofg7YEIZZYzzqL+fEItE6Zr
-         8KDSyWt4tojExI5vwhgYqMKDUT5zIkI2QEQiQ86THHEmUL+HYHHr5TAkNx+PoWjfhg
-         RPljbDCqLFkOASlOyaLrsuOgZpFnznlwZejy6uDVnG0tT/gLVUDOahhAE+T3C2Vz+s
-         aUniYmeIBeQFG+UX+05UDUIBWH/jlt20axziD7Z5sK1JLeHNmLXH7d5iBF+6brrdCL
-         xMOIf51U3trIZtZfSoojZroUS9wDhbxxdgORnbYElzVNfr2sP35QfcgOvK8/PYqDnQ
-         Jl5K673wUKl/A==
+        b=IGz1CZKEaMlj0q+IPu68KkQE07gRZZ2jrXJA2NfAs0wf6+Ff5gQce3zPny+ZvTb0d
+         Cp9kiqY0BrjOMykumxLq0i576stymUBpX8Ju2/aJpcoU0si9E2ZgTSMjVwCSgfMN7b
+         VqpD4tDb9Ii3Oe6SilAdwvIAz4bnhLjGZl2IaHXDip8u+uGW7xdPy7PGLI56R8MlI6
+         4QYmjlGEnG/aqePEMVX75p+gJWSSI+9fBYJprrIJQSACvIdBz+uFWhrVWI2CpQg+G0
+         sgKCBObB5fPLqpMM7aTsYXNf90v/CSmHwcTkXG+mnMjqOZnjbjxIRIZVH17u4SgHAd
+         qcT+U/s+ZxxVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 159/189] net: dsa: b53: Create default VLAN entry explicitly
-Date:   Tue,  6 Jul 2021 07:13:39 -0400
-Message-Id: <20210706111409.2058071-159-sashal@kernel.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 160/189] wireless: wext-spy: Fix out-of-bounds warning
+Date:   Tue,  6 Jul 2021 07:13:40 -0400
+Message-Id: <20210706111409.2058071-160-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -43,65 +45,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 
-[ Upstream commit 64a81b24487f0d2fba0f033029eec2abc7d82cee ]
+[ Upstream commit e93bdd78406da9ed01554c51e38b2a02c8ef8025 ]
 
-In case CONFIG_VLAN_8021Q is not set, there will be no call down to the
-b53 driver to ensure that the default PVID VLAN entry will be configured
-with the appropriate untagged attribute towards the CPU port. We were
-implicitly relying on dsa_slave_vlan_rx_add_vid() to do that for us,
-instead make it explicit.
+Fix the following out-of-bounds warning:
 
-Reported-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+net/wireless/wext-spy.c:178:2: warning: 'memcpy' offset [25, 28] from the object at 'threshold' is out of the bounds of referenced subobject 'low' with type 'struct iw_quality' at offset 20 [-Warray-bounds]
+
+The problem is that the original code is trying to copy data into a
+couple of struct members adjacent to each other in a single call to
+memcpy(). This causes a legitimate compiler warning because memcpy()
+overruns the length of &threshold.low and &spydata->spy_thr_low. As
+these are just a couple of struct members, fix this by using direct
+assignments, instead of memcpy().
+
+This helps with the ongoing efforts to globally enable -Warray-bounds
+and get us closer to being able to tighten the FORTIFY_SOURCE routines
+on memcpy().
+
+Link: https://github.com/KSPP/linux/issues/109
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20210422200032.GA168995@embeddedor
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/b53/b53_common.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ net/wireless/wext-spy.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 3ca6b394dd5f..67a7de87c17a 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -728,6 +728,13 @@ static u16 b53_default_pvid(struct b53_device *dev)
- 		return 0;
+diff --git a/net/wireless/wext-spy.c b/net/wireless/wext-spy.c
+index 33bef22e44e9..b379a0371653 100644
+--- a/net/wireless/wext-spy.c
++++ b/net/wireless/wext-spy.c
+@@ -120,8 +120,8 @@ int iw_handler_set_thrspy(struct net_device *	dev,
+ 		return -EOPNOTSUPP;
+ 
+ 	/* Just do it */
+-	memcpy(&(spydata->spy_thr_low), &(threshold->low),
+-	       2 * sizeof(struct iw_quality));
++	spydata->spy_thr_low = threshold->low;
++	spydata->spy_thr_high = threshold->high;
+ 
+ 	/* Clear flag */
+ 	memset(spydata->spy_thr_under, '\0', sizeof(spydata->spy_thr_under));
+@@ -147,8 +147,8 @@ int iw_handler_get_thrspy(struct net_device *	dev,
+ 		return -EOPNOTSUPP;
+ 
+ 	/* Just do it */
+-	memcpy(&(threshold->low), &(spydata->spy_thr_low),
+-	       2 * sizeof(struct iw_quality));
++	threshold->low = spydata->spy_thr_low;
++	threshold->high = spydata->spy_thr_high;
+ 
+ 	return 0;
  }
+@@ -173,10 +173,10 @@ static void iw_send_thrspy_event(struct net_device *	dev,
+ 	memcpy(threshold.addr.sa_data, address, ETH_ALEN);
+ 	threshold.addr.sa_family = ARPHRD_ETHER;
+ 	/* Copy stats */
+-	memcpy(&(threshold.qual), wstats, sizeof(struct iw_quality));
++	threshold.qual = *wstats;
+ 	/* Copy also thresholds */
+-	memcpy(&(threshold.low), &(spydata->spy_thr_low),
+-	       2 * sizeof(struct iw_quality));
++	threshold.low = spydata->spy_thr_low;
++	threshold.high = spydata->spy_thr_high;
  
-+static bool b53_vlan_port_needs_forced_tagged(struct dsa_switch *ds, int port)
-+{
-+	struct b53_device *dev = ds->priv;
-+
-+	return dev->tag_protocol == DSA_TAG_PROTO_NONE && dsa_is_cpu_port(ds, port);
-+}
-+
- int b53_configure_vlan(struct dsa_switch *ds)
- {
- 	struct b53_device *dev = ds->priv;
-@@ -748,9 +755,20 @@ int b53_configure_vlan(struct dsa_switch *ds)
- 
- 	b53_enable_vlan(dev, -1, dev->vlan_enabled, ds->vlan_filtering);
- 
--	b53_for_each_port(dev, i)
-+	/* Create an untagged VLAN entry for the default PVID in case
-+	 * CONFIG_VLAN_8021Q is disabled and there are no calls to
-+	 * dsa_slave_vlan_rx_add_vid() to create the default VLAN
-+	 * entry. Do this only when the tagging protocol is not
-+	 * DSA_TAG_PROTO_NONE
-+	 */
-+	b53_for_each_port(dev, i) {
-+		v = &dev->vlans[def_vid];
-+		v->members |= BIT(i);
-+		if (!b53_vlan_port_needs_forced_tagged(ds, i))
-+			v->untag = v->members;
- 		b53_write16(dev, B53_VLAN_PAGE,
- 			    B53_VLAN_PORT_DEF_TAG(i), def_vid);
-+	}
- 
- 	/* Upon initial call we have not set-up any VLANs, but upon
- 	 * system resume, we need to restore all VLAN entries.
+ 	/* Send event to user space */
+ 	wireless_send_event(dev, SIOCGIWTHRSPY, &wrqu, (char *) &threshold);
 -- 
 2.30.2
 
