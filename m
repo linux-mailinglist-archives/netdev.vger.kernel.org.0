@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C80C3BD27C
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3E33BD27F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239473AbhGFLml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:42:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47596 "EHLO mail.kernel.org"
+        id S235444AbhGFLmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:42:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237651AbhGFLgV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237656AbhGFLgV (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CFA4D61DF2;
-        Tue,  6 Jul 2021 11:29:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D63FC61DD6;
+        Tue,  6 Jul 2021 11:29:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570948;
-        bh=n2vsdjTx/lctda6weRG5p0tIWznoempiBW0ujVFOs84=;
+        s=k20201202; t=1625570949;
+        bh=Ob6FilYMBQHlK95h2wrDFDKED5trKUIx8qcft3Q/piQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l86Lc+aNWQFiqgxxp0kqjLj260/IynvQwHk1WGNeTbg5YNA1dWYkl0kvams6LM6rk
-         lhhaVqMLakekAi/ZcTzrYKvVRoACCAIYOCiJGwL/bK4oFP1+r4qkKJnEYWObdci0oB
-         fiFruFLyjXhxdacvjeTnC2Qa1Oxxa1SoCEeNjgMeFyl8cV38InCqjYpy83IekfFqMl
-         uPjv786NtrtWo4+6N4OvhF+U86oPeFZvZM0Uf8u35FD+35gWTv0W2rYMT/LTxhczVA
-         ZezK7JiMSA5VIX17vRzpidipatSG9a0Gd777kuDJOaHZLzfLWrYQJ47YVjL0uez1D2
-         cZirIG/lWI1HQ==
+        b=l4awvt6ib/WUKSovZA9xzYQQhAdmPBFd2Z3w2qO3ev4TiIdQ0sSCiJm5t2GMUcPdc
+         qRtWWqNjuDshaWZmduOuNxQb75M9U2GOX2kP4yp5MmWMVv7QVzGa2Xyj9LFE6yWauT
+         ucnD4ibiAtcTUT55noUjygKuS+DP3jcbH/y82k6TX1R3cTqnGrDRbGCQZ6B0LA4/Lr
+         Qh7iUbPr8wXbLxRszqEwH362UuzAF8rGDubxYK0Z+6ABXQ0tqVLnL/fxTHG5hmZ1Og
+         aoVwyrz0Drn8PtnGbPBJrqxvXaO1BRDLpfthVEFUDPLLSlZ4NzGx9eVW5YS6tPQ3/g
+         Z74D1YSNj8MKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Yang Yingliang <yangyingliang@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 16/35] net: micrel: check return value after calling platform_get_resource()
-Date:   Tue,  6 Jul 2021 07:28:28 -0400
-Message-Id: <20210706112848.2066036-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 17/35] net: moxa: Use devm_platform_get_and_ioremap_resource()
+Date:   Tue,  6 Jul 2021 07:28:29 -0400
+Message-Id: <20210706112848.2066036-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112848.2066036-1-sashal@kernel.org>
 References: <20210706112848.2066036-1-sashal@kernel.org>
@@ -44,32 +44,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 20f1932e2282c58cb5ac59517585206cf5b385ae ]
+[ Upstream commit 35cba15a504bf4f585bb9d78f47b22b28a1a06b2 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+Use devm_platform_get_and_ioremap_resource() to simplify
+code and avoid a null-ptr-deref by checking 'res' in it.
 
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/ks8842.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/moxa/moxart_ether.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/ks8842.c b/drivers/net/ethernet/micrel/ks8842.c
-index cb0102dd7f70..d691c33dffc6 100644
---- a/drivers/net/ethernet/micrel/ks8842.c
-+++ b/drivers/net/ethernet/micrel/ks8842.c
-@@ -1150,6 +1150,10 @@ static int ks8842_probe(struct platform_device *pdev)
- 	unsigned i;
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index 6fe61d9343cb..9673fbe16774 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -487,14 +487,13 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 	priv = netdev_priv(ndev);
+ 	priv->ndev = ndev;
  
- 	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!iomem) {
-+		dev_err(&pdev->dev, "Invalid resource\n");
-+		return -EINVAL;
-+	}
- 	if (!request_mem_region(iomem->start, resource_size(iomem), DRV_NAME))
- 		goto err_mem_region;
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ndev->base_addr = res->start;
+-	priv->base = devm_ioremap_resource(p_dev, res);
++	priv->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(priv->base)) {
+ 		dev_err(p_dev, "devm_ioremap_resource failed\n");
+ 		ret = PTR_ERR(priv->base);
+ 		goto init_fail;
+ 	}
++	ndev->base_addr = res->start;
+ 
+ 	spin_lock_init(&priv->txlock);
  
 -- 
 2.30.2
