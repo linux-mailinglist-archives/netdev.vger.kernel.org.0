@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 119833BD5E6
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6713BD5E5
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242969AbhGFMZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:25:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47550 "EHLO mail.kernel.org"
+        id S242334AbhGFMZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:25:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237172AbhGFLf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237179AbhGFLf7 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:35:59 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7228961EB7;
-        Tue,  6 Jul 2021 11:25:51 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC33761D4B;
+        Tue,  6 Jul 2021 11:25:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570752;
-        bh=5tDp/ZueAwz4bjmm/8YY1xZ7y9gXCB+4EX/TPbZVNk0=;
+        s=k20201202; t=1625570759;
+        bh=DLMSh4j0AnmTMlzgxM/VboZ7+8wm4ULFHQ39d2I+ppE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AY4yKzukE8h/dLQteHUOUUZspIAy7nlqrAAf05bwDkSrT/Zp/4I7CxFjy0h3qSSj0
-         5V2jFYIigC3Qw7SiuVEwks0joiWyAY6kvSPCvZVlw6YDZp0z9nkbsSi0mGIuWpk6Vd
-         9msgG1AglgNorW7aluf3dCoTtuIp815cLvSRhxFfQ/SRkrqUejYYzxI6nKTonlLaVi
-         wBoKI0vxhmNbwLqQUTuOFVHQSMEsNtMrBGHpFDEmGtEYUwS4ULBhHKDGFscZJ3Ijed
-         sZHmso5IO3wozXGsMtJ7z0vj0uHByDyLYsUROrpkJjqlM3AFHwWJcTM+ePAauFampk
-         ZogTiEefxi7qA==
+        b=lJEgyIACwITXpHtemLa5ae9tQYZ2skKml7ezIecBBY1M/Cm8bPq7Y4svu31MLo657
+         B8cSPT7npdTWLH6H2H4+NVt6Rqqq9phhLgWLQXpYWR+oiMd8apoEkw8QdqSTrlk6IK
+         YYUFXTnW3Vh+r+8gPkB+kYYzF5vWTSfrKV0emuRi+OlNhJeC3vLPNtusCRuSi7sSLm
+         J/YtQdp/YKrXXWZ60Z3JxEleKJNbYTyxvjPoCvjFwc/RHIkLR4qnE2ju6ej9ACUIjz
+         iJVTx2AFqmajxJsPtG8hYrAHqSj4ppkIwkEc4ZqmOcmNNb8jLO8oZYyMC3hWGFLRUF
+         Dr2FzOzQJ6rvw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 39/74] fjes: check return value after calling platform_get_resource()
-Date:   Tue,  6 Jul 2021 07:24:27 -0400
-Message-Id: <20210706112502.2064236-39-sashal@kernel.org>
+Cc:     Lee Gibson <leegib@gmail.com>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 45/74] wl1251: Fix possible buffer overflow in wl1251_cmd_scan
+Date:   Tue,  6 Jul 2021 07:24:33 -0400
+Message-Id: <20210706112502.2064236-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112502.2064236-1-sashal@kernel.org>
 References: <20210706112502.2064236-1-sashal@kernel.org>
@@ -42,35 +42,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Lee Gibson <leegib@gmail.com>
 
-[ Upstream commit f18c11812c949553d2b2481ecaa274dd51bed1e7 ]
+[ Upstream commit d10a87a3535cce2b890897914f5d0d83df669c63 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+Function wl1251_cmd_scan calls memcpy without checking the length.
+Harden by checking the length is within the maximum allowed size.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Lee Gibson <leegib@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210428115508.25624-1-leegib@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/fjes/fjes_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/ti/wl1251/cmd.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index 91a1059517f5..b89b4a3800a4 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -1262,6 +1262,10 @@ static int fjes_probe(struct platform_device *plat_dev)
- 	adapter->interrupt_watch_enable = false;
+diff --git a/drivers/net/wireless/ti/wl1251/cmd.c b/drivers/net/wireless/ti/wl1251/cmd.c
+index 9547aea01b0f..ea0215246c5c 100644
+--- a/drivers/net/wireless/ti/wl1251/cmd.c
++++ b/drivers/net/wireless/ti/wl1251/cmd.c
+@@ -466,9 +466,12 @@ int wl1251_cmd_scan(struct wl1251 *wl, u8 *ssid, size_t ssid_len,
+ 		cmd->channels[i].channel = channels[i]->hw_value;
+ 	}
  
- 	res = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		err = -EINVAL;
-+		goto err_free_control_wq;
+-	cmd->params.ssid_len = ssid_len;
+-	if (ssid)
+-		memcpy(cmd->params.ssid, ssid, ssid_len);
++	if (ssid) {
++		int len = clamp_val(ssid_len, 0, IEEE80211_MAX_SSID_LEN);
++
++		cmd->params.ssid_len = len;
++		memcpy(cmd->params.ssid, ssid, len);
 +	}
- 	hw->hw_res.start = res->start;
- 	hw->hw_res.size = resource_size(res);
- 	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
+ 
+ 	ret = wl1251_cmd_send(wl, CMD_SCAN, cmd, sizeof(*cmd));
+ 	if (ret < 0) {
 -- 
 2.30.2
 
