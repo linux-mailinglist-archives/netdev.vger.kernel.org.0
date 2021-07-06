@@ -2,394 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799A03BD7DE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 15:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3EE3BD923
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 16:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbhGFNjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 09:39:37 -0400
-Received: from protonic.xs4all.nl ([83.163.252.89]:44712 "EHLO
-        protonic.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbhGFNjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 09:39:33 -0400
-X-Greylist: delayed 498 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Jul 2021 09:39:32 EDT
-Received: from erd992 (erd988.prtnl [192.168.224.30])
-        by sparta.prtnl (Postfix) with ESMTP id B3B4E44A024D;
-        Tue,  6 Jul 2021 15:28:34 +0200 (CEST)
-Date:   Tue, 6 Jul 2021 15:28:34 +0200
-From:   David Jander <david@protonic.nl>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
-        wg@grandegger.com, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Zhang Changzhong <zhangchangzhong@huawei.com>
-Subject: Re: [PATCH v1 2/2] net: j1939: extend UAPI to notify about RX
- status
-Message-ID: <20210706152834.44e62837@erd992>
-In-Reply-To: <20210706115758.11196-2-o.rempel@pengutronix.de>
-References: <20210706115758.11196-1-o.rempel@pengutronix.de>
-        <20210706115758.11196-2-o.rempel@pengutronix.de>
-Organization: Protonic Holland
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S232295AbhGFO6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 10:58:08 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:6429 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231460AbhGFO6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 10:58:01 -0400
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GK3vQ6Qspz76rF;
+        Tue,  6 Jul 2021 21:54:26 +0800 (CST)
+Received: from [10.174.178.171] (10.174.178.171) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 6 Jul 2021 21:57:53 +0800
+Subject: Re: [PATCH v4 bpf-next 1/9] bpf: Introduce bpf timers.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>
+References: <20210701192044.78034-1-alexei.starovoitov@gmail.com>
+ <20210701192044.78034-2-alexei.starovoitov@gmail.com>
+From:   "luwei (O)" <luwei32@huawei.com>
+Message-ID: <bcdccd37-6372-859f-824e-c96250361904@huawei.com>
+Date:   Tue, 6 Jul 2021 21:57:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20210701192044.78034-2-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.171]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  6 Jul 2021 13:57:58 +0200
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
 
-> To be able to create applications with user friendly feedback, we need be
-> able to provide receive status information.
-> 
-> Typical ETP transfer may take seconds or even hours. To give user some
-> clue or show a progress bar, the stack should push status updates.
-> Same as for the TX information, the socket error queue will be used with
-> following new signals:
-> - J1939_EE_INFO_RX_RTS   - received and accepted request to send signal.
-> - J1939_EE_INFO_RX_DPO   - received data package offset signal
-> - J1939_EE_INFO_RX_ABORT - RX session was aborted
-> 
-> Instead of completion signal, user will get data package.
-> To activate this signals, application should set
-> SOF_TIMESTAMPING_RX_SOFTWARE to the SO_TIMESTAMPING socket option. This
-> will avoid unpredictable application behavior for the old software.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  include/uapi/linux/can/j1939.h |   9 +++
->  net/can/j1939/j1939-priv.h     |   4 +
->  net/can/j1939/socket.c         | 135 +++++++++++++++++++++++++--------
->  net/can/j1939/transport.c      |  22 +++++-
->  4 files changed, 136 insertions(+), 34 deletions(-)
-> 
-> diff --git a/include/uapi/linux/can/j1939.h b/include/uapi/linux/can/j1939.h
-> index df6e821075c1..dc2a8e15c0b7 100644
-> --- a/include/uapi/linux/can/j1939.h
-> +++ b/include/uapi/linux/can/j1939.h
-> @@ -78,11 +78,20 @@ enum {
->  enum {
->  	J1939_NLA_PAD,
->  	J1939_NLA_BYTES_ACKED,
-> +	J1939_NLA_TOTAL_SIZE,
-> +	J1939_NLA_DEST_ADDR,
-> +	J1939_NLA_DEST_NAME,
-> +	J1939_NLA_SRC_ADDR,
-> +	J1939_NLA_SRC_NAME,
-> +	J1939_NLA_PGN,
->  };
->  
->  enum {
->  	J1939_EE_INFO_NONE,
->  	J1939_EE_INFO_TX_ABORT,
-> +	J1939_EE_INFO_RX_RTS,
-> +	J1939_EE_INFO_RX_DPO,
-> +	J1939_EE_INFO_RX_ABORT,
->  };
->  
->  struct j1939_filter {
-> diff --git a/net/can/j1939/j1939-priv.h b/net/can/j1939/j1939-priv.h
-> index 93b8ad7f7d04..f6df20808f5e 100644
-> --- a/net/can/j1939/j1939-priv.h
-> +++ b/net/can/j1939/j1939-priv.h
-> @@ -23,6 +23,9 @@ enum j1939_sk_errqueue_type {
->  	J1939_ERRQUEUE_TX_ACK,
->  	J1939_ERRQUEUE_TX_SCHED,
->  	J1939_ERRQUEUE_TX_ABORT,
-> +	J1939_ERRQUEUE_RX_RTS,
-> +	J1939_ERRQUEUE_RX_DPO,
-> +	J1939_ERRQUEUE_RX_ABORT,
->  };
->  
->  /* j1939 devices */
-> @@ -87,6 +90,7 @@ struct j1939_priv {
->  	struct list_head j1939_socks;
->  
->  	struct kref rx_kref;
-> +	u32 rx_tskey;
->  };
->  
->  void j1939_ecu_put(struct j1939_ecu *ecu);
-> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-> index c2bf1c02597e..30b99897c473 100644
-> --- a/net/can/j1939/socket.c
-> +++ b/net/can/j1939/socket.c
-> @@ -902,20 +902,33 @@ static struct sk_buff *j1939_sk_alloc_skb(struct net_device *ndev,
->  	return NULL;
->  }
->  
-> -static size_t j1939_sk_opt_stats_get_size(void)
-> +static size_t j1939_sk_opt_stats_get_size(enum j1939_sk_errqueue_type type)
->  {
-> -	return
-> -		nla_total_size(sizeof(u32)) + /* J1939_NLA_BYTES_ACKED */
-> -		0;
-> +	switch (type) {
-> +	case J1939_ERRQUEUE_RX_RTS:
-> +		return
-> +			nla_total_size(sizeof(u32)) + /* J1939_NLA_BYTES_ALL */
-> +			nla_total_size(sizeof(u64)) + /* J1939_NLA_DEST_ADDR */
-> +			nla_total_size(sizeof(u64)) + /* J1939_NLA_SRC_ADDR */
-
-DST and SRC address are u8...?
-
-> +			nla_total_size(sizeof(u64)) + /* J1939_NLA_DEST_NAME */
-> +			nla_total_size(sizeof(u64)) + /* J1939_NLA_SRC_NAME */
-> +			nla_total_size(sizeof(u32)) + /* J1939_NLA_PGN */
-> +			0;
-> +	default:
-> +		return
-> +			nla_total_size(sizeof(u32)) + /* J1939_NLA_BYTES_ACKED */
-> +			0;
-> +	}
->  }
->  
->  static struct sk_buff *
-> -j1939_sk_get_timestamping_opt_stats(struct j1939_session *session)
-> +j1939_sk_get_timestamping_opt_stats(struct j1939_session *session,
-> +				    enum j1939_sk_errqueue_type type)
->  {
->  	struct sk_buff *stats;
->  	u32 size;
->  
-> -	stats = alloc_skb(j1939_sk_opt_stats_get_size(), GFP_ATOMIC);
-> +	stats = alloc_skb(j1939_sk_opt_stats_get_size(type), GFP_ATOMIC);
->  	if (!stats)
->  		return NULL;
->  
-> @@ -925,32 +938,67 @@ j1939_sk_get_timestamping_opt_stats(struct j1939_session *session)
->  		size = min(session->pkt.tx_acked * 7,
->  			   session->total_message_size);
->  
-> -	nla_put_u32(stats, J1939_NLA_BYTES_ACKED, size);
-> +	switch (type) {
-> +	case J1939_ERRQUEUE_RX_RTS:
-> +		nla_put_u32(stats, J1939_NLA_TOTAL_SIZE,
-> +			    session->total_message_size);
-> +		nla_put_u32(stats, J1939_NLA_PGN,
-> +			    session->skcb.addr.pgn);
-> +		nla_put_u64_64bit(stats, J1939_NLA_SRC_NAME,
-> +				  session->skcb.addr.src_name, J1939_NLA_PAD);
-> +		nla_put_u64_64bit(stats, J1939_NLA_DEST_NAME,
-> +				  session->skcb.addr.dst_name, J1939_NLA_PAD);
-> +		nla_put_u8(stats, J1939_NLA_SRC_ADDR,
-> +			   session->skcb.addr.sa);
-> +		nla_put_u8(stats, J1939_NLA_DEST_ADDR,
-> +			   session->skcb.addr.da);
-
-See above.
-Also, shouldn't the order of these be the same as in
-j1939_sk_opt_stats_get_size()... for readability?
-
-> +		break;
-> +	default:
-> +		nla_put_u32(stats, J1939_NLA_BYTES_ACKED, size);
-> +	}
->  
->  	return stats;
->  }
->  
-> -void j1939_sk_errqueue(struct j1939_session *session,
-> -		       enum j1939_sk_errqueue_type type)
-> +static void __j1939_sk_errqueue(struct j1939_session *session, struct sock *sk,
-> +				enum j1939_sk_errqueue_type type)
->  {
->  	struct j1939_priv *priv = session->priv;
-> -	struct sock *sk = session->sk;
->  	struct j1939_sock *jsk;
->  	struct sock_exterr_skb *serr;
->  	struct sk_buff *skb;
->  	char *state = "UNK";
->  	int err;
->  
-> -	/* currently we have no sk for the RX session */
-> -	if (!sk)
-> -		return;
-> -
->  	jsk = j1939_sk(sk);
->  
->  	if (!(jsk->state & J1939_SOCK_ERRQUEUE))
->  		return;
->  
-> -	skb = j1939_sk_get_timestamping_opt_stats(session);
-> +	switch (type) {
-> +	case J1939_ERRQUEUE_TX_ACK:
-> +		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_ACK))
-> +			return;
-> +		break;
-> +	case J1939_ERRQUEUE_TX_SCHED:
-> +		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_SCHED))
-> +			return;
-> +		break;
-> +	case J1939_ERRQUEUE_TX_ABORT:
-> +		break;
-> +	case J1939_ERRQUEUE_RX_RTS:
-> +		fallthrough;
-> +	case J1939_ERRQUEUE_RX_DPO:
-> +		fallthrough;
-> +	case J1939_ERRQUEUE_RX_ABORT:
-> +		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_RX_SOFTWARE))
-> +			return;
-> +		break;
-> +	default:
-> +		netdev_err(priv->ndev, "Unknown errqueue type %i\n", type);
-> +	}
-> +
-> +	skb = j1939_sk_get_timestamping_opt_stats(session, type);
->  	if (!skb)
->  		return;
->  
-> @@ -962,35 +1010,41 @@ void j1939_sk_errqueue(struct j1939_session *session,
->  	memset(serr, 0, sizeof(*serr));
->  	switch (type) {
->  	case J1939_ERRQUEUE_TX_ACK:
-> -		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_ACK)) {
-> -			kfree_skb(skb);
-> -			return;
-> -		}
-> -
->  		serr->ee.ee_errno = ENOMSG;
->  		serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
->  		serr->ee.ee_info = SCM_TSTAMP_ACK;
-> -		state = "ACK";
-> +		state = "TX ACK";
->  		break;
->  	case J1939_ERRQUEUE_TX_SCHED:
-> -		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_SCHED)) {
-> -			kfree_skb(skb);
-> -			return;
-> -		}
-> -
->  		serr->ee.ee_errno = ENOMSG;
->  		serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
->  		serr->ee.ee_info = SCM_TSTAMP_SCHED;
-> -		state = "SCH";
-> +		state = "TX SCH";
->  		break;
->  	case J1939_ERRQUEUE_TX_ABORT:
->  		serr->ee.ee_errno = session->err;
->  		serr->ee.ee_origin = SO_EE_ORIGIN_LOCAL;
->  		serr->ee.ee_info = J1939_EE_INFO_TX_ABORT;
-> -		state = "ABT";
-> +		state = "TX ABT";
-> +		break;
-> +	case J1939_ERRQUEUE_RX_RTS:
-> +		serr->ee.ee_errno = ENOMSG;
-> +		serr->ee.ee_origin = SO_EE_ORIGIN_LOCAL;
-> +		serr->ee.ee_info = J1939_EE_INFO_RX_RTS;
-> +		state = "RX RTS";
-> +		break;
-> +	case J1939_ERRQUEUE_RX_DPO:
-> +		serr->ee.ee_errno = ENOMSG;
-> +		serr->ee.ee_origin = SO_EE_ORIGIN_LOCAL;
-> +		serr->ee.ee_info = J1939_EE_INFO_RX_DPO;
-> +		state = "RX DPO";
-> +		break;
-> +	case J1939_ERRQUEUE_RX_ABORT:
-> +		serr->ee.ee_errno = session->err;
-> +		serr->ee.ee_origin = SO_EE_ORIGIN_LOCAL;
-> +		serr->ee.ee_info = J1939_EE_INFO_RX_ABORT;
-> +		state = "RX ABT";
->  		break;
-> -	default:
-> -		netdev_err(priv->ndev, "Unknown errqueue type %i\n", type);
->  	}
->  
->  	serr->opt_stats = true;
-> @@ -1005,6 +1059,27 @@ void j1939_sk_errqueue(struct j1939_session *session,
->  		kfree_skb(skb);
->  };
->  
-> +void j1939_sk_errqueue(struct j1939_session *session,
-> +		       enum j1939_sk_errqueue_type type)
+在 2021/7/2 3:20 AM, Alexei Starovoitov 写道:
+> From: Alexei Starovoitov <ast@kernel.org>
+>
+> Introduce 'struct bpf_timer { __u64 :64; __u64 :64; };' that can be embedded
+> in hash/array/lru maps as a regular field and helpers to operate on it:
+>
+> // Initialize the timer.
+> // First 4 bits of 'flags' specify clockid.
+> // Only CLOCK_MONOTONIC, CLOCK_REALTIME, CLOCK_BOOTTIME are allowed.
+> long bpf_timer_init(struct bpf_timer *timer, struct bpf_map *map, int flags);
+>
+> // Configure the timer to call 'callback_fn' static function.
+> long bpf_timer_set_callback(struct bpf_timer *timer, void *callback_fn);
+>
+> // Arm the timer to expire 'nsec' nanoseconds from the current time.
+> long bpf_timer_start(struct bpf_timer *timer, u64 nsec, u64 flags);
+>
+> // Cancel the timer and wait for callback_fn to finish if it was running.
+> long bpf_timer_cancel(struct bpf_timer *timer);
+>
+[...]
+> +static enum hrtimer_restart bpf_timer_cb(struct hrtimer *hrtimer)
 > +{
-> +	struct j1939_priv *priv = session->priv;
-> +	struct j1939_sock *jsk;
+> +	struct bpf_hrtimer *t = container_of(hrtimer, struct bpf_hrtimer, timer);
+> +	struct bpf_map *map = t->map;
+> +	void *value = t->value;
+> +	struct bpf_timer_kern *timer = value + map->timer_off;
+> +	struct bpf_prog *prog;
+> +	void *callback_fn;
+> +	void *key;
+> +	u32 idx;
+> +	int ret;
 > +
-> +	if (session->sk) {
-> +		/* send TX notifications to the socket of origin  */
-> +		__j1939_sk_errqueue(session, session->sk, type);
-> +		return;
+> +	/* The triple underscore bpf_spin_lock is a direct call
+> +	 * to BPF_CALL_1(bpf_spin_lock) which does irqsave.
+> +	 */
+> +	____bpf_spin_lock(&timer->lock);
+> +	/* callback_fn and prog need to match. They're updated together
+> +	 * and have to be read under lock.
+> +	 */
+> +	prog = t->prog;
+> +	callback_fn = t->callback_fn;
+> +
+> +	/* wrap bpf subprog invocation with prog->refcnt++ and -- to make
+> +	 * sure that refcnt doesn't become zero when subprog is executing.
+> +	 * Do it under lock to make sure that bpf_timer_start doesn't drop
+> +	 * prev prog refcnt to zero before timer_cb has a chance to bump it.
+> +	 */
+> +	bpf_prog_inc(prog);
+> +	____bpf_spin_unlock(&timer->lock);
+> +
+> +	/* bpf_timer_cb() runs in hrtimer_run_softirq. It doesn't migrate and
+> +	 * cannot be preempted by another bpf_timer_cb() on the same cpu.
+> +	 * Remember the timer this callback is servicing to prevent
+> +	 * deadlock if callback_fn() calls bpf_timer_cancel() on the same timer.
+> +	 */
+> +	this_cpu_write(hrtimer_running, t);
+> +	if (map->map_type == BPF_MAP_TYPE_ARRAY) {
+> +		struct bpf_array *array = container_of(map, struct bpf_array, map);
+> +
+> +		/* compute the key */
+> +		idx = ((char *)value - array->value) / array->elem_size;
+> +		key = &idx;
+> +	} else { /* hash or lru */
+> +		key = value - round_up(map->key_size, 8);
 > +	}
 > +
-> +	/* spread RX notifications to all sockets subscribed to this session */
-> +	spin_lock_bh(&priv->j1939_socks_lock);
-> +	list_for_each_entry(jsk, &priv->j1939_socks, list) {
-> +		if (j1939_sk_recv_match_one(jsk, &session->skcb))
-> +			__j1939_sk_errqueue(session, &jsk->sk, type);
-> +	}
-> +	spin_unlock_bh(&priv->j1939_socks_lock);
-> +};
+> +	ret = BPF_CAST_CALL(callback_fn)((u64)(long)map,
+> +					 (u64)(long)key,
+> +					 (u64)(long)value, 0, 0);
+> +	WARN_ON(ret != 0); /* Next patch moves this check into the verifier */
+> +	bpf_prog_put(prog);
 > +
->  void j1939_sk_send_loop_abort(struct sock *sk, int err)
->  {
->  	sk->sk_err = err;
-> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> index 362cf38cacca..cb358646e382 100644
-> --- a/net/can/j1939/transport.c
-> +++ b/net/can/j1939/transport.c
-> @@ -260,10 +260,14 @@ static void __j1939_session_drop(struct j1939_session *session)
->  
->  static void j1939_session_destroy(struct j1939_session *session)
->  {
-> -	if (session->err)
-> -		j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
-> -	else
-> -		j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ACK);
-> +	if (session->transmission) {
-> +		if (session->err)
-> +			j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
-> +		else
-> +			j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ACK);
-> +	} else if (session->err) {
-> +			j1939_sk_errqueue(session, J1939_ERRQUEUE_RX_ABORT);
-> +	}
->  
->  	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
->  
-> @@ -1087,6 +1091,8 @@ static void __j1939_session_cancel(struct j1939_session *session,
->  
->  	if (session->sk)
->  		j1939_sk_send_loop_abort(session->sk, session->err);
-> +	else
-> +		j1939_sk_errqueue(session, J1939_ERRQUEUE_RX_ABORT);
->  }
->  
->  static void j1939_session_cancel(struct j1939_session *session,
-> @@ -1297,6 +1303,8 @@ static void j1939_xtp_rx_abort_one(struct j1939_priv *priv, struct sk_buff *skb,
->  	session->err = j1939_xtp_abort_to_errno(priv, abort);
->  	if (session->sk)
->  		j1939_sk_send_loop_abort(session->sk, session->err);
-> +	else
-> +		j1939_sk_errqueue(session, J1939_ERRQUEUE_RX_ABORT);
->  	j1939_session_deactivate_activate_next(session);
->  
->  abort_put:
-> @@ -1597,6 +1605,9 @@ j1939_session *j1939_xtp_rx_rts_session_new(struct j1939_priv *priv,
->  	session->pkt.rx = 0;
->  	session->pkt.tx = 0;
->  
-> +	session->tskey = priv->rx_tskey++;
-> +	j1939_sk_errqueue(session, J1939_ERRQUEUE_RX_RTS);
+> +	this_cpu_write(hrtimer_running, NULL);
+> +	return HRTIMER_NORESTART;
+> +}
 > +
->  	WARN_ON_ONCE(j1939_session_activate(session));
->  
->  	return session;
-> @@ -1719,6 +1730,9 @@ static void j1939_xtp_rx_dpo_one(struct j1939_session *session,
->  	session->pkt.dpo = j1939_etp_ctl_to_packet(skb->data);
->  	session->last_cmd = dat[0];
->  	j1939_tp_set_rxtimeout(session, 750);
-> +
-> +	if (!session->transmission)
-> +		j1939_sk_errqueue(session, J1939_ERRQUEUE_RX_DPO);
->  }
->  
->  static void j1939_xtp_rx_dpo(struct j1939_priv *priv, struct sk_buff *skb,
+Your patch is awesome, and I tried your example and it works, my 
+call_back() is called after a certained time.  But  I am confued that 
+the bpf_timer_cb() function only returns HRTIMER_NORESTART,
 
-Best regards,
+how to trigger a periodic task, that means I want to call my call_back() 
+periodically, not just for one time ?
+
+[...]
 
 -- 
-David Jander
-Protonic Holland.
+Best Regards,
+Lu Wei
 
