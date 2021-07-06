@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF833BCE6F
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 037713BCC3C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233562AbhGFL0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:26:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53570 "EHLO mail.kernel.org"
+        id S232489AbhGFLSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:18:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232134AbhGFLRz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:17:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B33DD61C2C;
-        Tue,  6 Jul 2021 11:15:15 +0000 (UTC)
+        id S232360AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:18:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8908961C22;
+        Tue,  6 Jul 2021 11:15:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570116;
-        bh=A544I4oJm6Rauy6+cq/Rn4Cfmeu+DFrH6kgZSY4qboI=;
+        s=k20201202; t=1625570123;
+        bh=qwDOPYoWnDfuwo7d96yAIbMByB5OAY5HzokkWBqgC+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUljQrHoODrFBnUFDvePJJqsDzivhL1ALqwPTdol9pJt5CzMZy4n2xoICVi5xGwoM
-         MrmJltgafyFocflamzWCrWZjgi5bxQjakDpZ330/7F1/yc6zqftBYhW87OMz+iMIJS
-         ySlXgmeBz0jNKv6OF22iqndAFZryGnfKsFrmj0MGEMFI980xVLwpx4D6kUbhCeWKo/
-         IlaFlzmAE/MjdRvOWtR5E9IUte5g+mMCYrSALjOQra8U5wsdEMHeyVmSbKk8w2cDq7
-         xRdODlJcaEAmx1BuqXV/rVDBljG5szpFwFVqdg/4X3Cu839MLy6FRQ49AoRXCABYWV
-         g56tevStMnoow==
+        b=h4K9FovNyZWFz9aoYze++dt8RTkctRKZvMvLo0IqwHs9MbcUbc6sDGdez+FWyYhp+
+         832ac/w68VsJOaOumApmRBbmsSrw3WJ0+jDEP4rGpEKnnUw+D3Vtl7X165UwD4eDIH
+         D6hTUTpKSyklQ50lW7O98JJDlgtD8UvhTOaY45QTvQxTjhX8/ZsvjChT1wKO799BtP
+         aEP2mD45sEMxokkcxqsMw0ttJ7NPCgJ5FEu9TqFJQhHPKQAcLOb5REU7wVcjGoxYD3
+         yNPQvaRY4L2Vi9AGYAC9El+iLyA1JN1m5w7P0gSqfBHky5rYLe5VT8H90CKCgSiZ5T
+         LMFkWIdG9Y5Tw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Dave Switzer <david.switzer@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 047/189] igb: fix assignment on big endian machines
-Date:   Tue,  6 Jul 2021 07:11:47 -0400
-Message-Id: <20210706111409.2058071-47-sashal@kernel.org>
+Cc:     Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 052/189] net/mlx5e: IPsec/rep_tc: Fix rep_tc_update_skb drops IPsec packet
+Date:   Tue,  6 Jul 2021 07:11:52 -0400
+Message-Id: <20210706111409.2058071-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -44,48 +43,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Huy Nguyen <huyn@nvidia.com>
 
-[ Upstream commit b514958dd1a3bd57638b0e63b8e5152b1960e6aa ]
+[ Upstream commit c07274ab1ab2c38fb128e32643c22c89cb319384 ]
 
-The igb driver was trying hard to be sparse correct, but somehow
-ended up converting a variable into little endian order and then
-tries to OR something with it.
+rep_tc copy REG_C1 to REG_B. IPsec crypto utilizes the whole REG_B
+register with BIT31 as IPsec marker. rep_tc_update_skb drops
+IPsec because it thought REG_B contains bad value.
 
-A much plainer way of doing things is to leave all variables and
-OR operations in CPU (non-endian) mode, and then convert to
-little endian only once, which is what this change does.
+In previous patch, BIT 31 of REG_C1 is reserved for IPsec.
+Skip the rep_tc_update_skb if BIT31 of REG_B is set.
 
-This probably fixes a bug that might have been seen only on
-big endian systems.
-
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Dave Switzer <david.switzer@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+Signed-off-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b0232a8de343..7b1885f9ce03 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -6276,12 +6276,12 @@ int igb_xmit_xdp_ring(struct igb_adapter *adapter,
- 	cmd_type |= len | IGB_TXD_DCMD;
- 	tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index f90894eea9e0..5346271974f5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -1310,7 +1310,8 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
+ 	if (rep->vlan && skb_vlan_tag_present(skb))
+ 		skb_vlan_pop(skb);
  
--	olinfo_status = cpu_to_le32(len << E1000_ADVTXD_PAYLEN_SHIFT);
-+	olinfo_status = len << E1000_ADVTXD_PAYLEN_SHIFT;
- 	/* 82575 requires a unique index per ring */
- 	if (test_bit(IGB_RING_FLAG_TX_CTX_IDX, &tx_ring->flags))
- 		olinfo_status |= tx_ring->reg_idx << 4;
+-	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
++	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
++		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
+ 		dev_kfree_skb_any(skb);
+ 		goto free_wqe;
+ 	}
+@@ -1367,7 +1368,8 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
  
--	tx_desc->read.olinfo_status = olinfo_status;
-+	tx_desc->read.olinfo_status = cpu_to_le32(olinfo_status);
+ 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
  
- 	netdev_tx_sent_queue(txring_txq(tx_ring), tx_buffer->bytecount);
- 
+-	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
++	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
++		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
+ 		dev_kfree_skb_any(skb);
+ 		goto mpwrq_cqe_out;
+ 	}
 -- 
 2.30.2
 
