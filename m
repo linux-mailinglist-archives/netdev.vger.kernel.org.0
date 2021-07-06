@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 750733BD0F7
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A463BD0F0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237925AbhGFLht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:37:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47570 "EHLO mail.kernel.org"
+        id S236066AbhGFLhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:37:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236341AbhGFLfG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236340AbhGFLfG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:35:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1447661D31;
-        Tue,  6 Jul 2021 11:23:23 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 47C3861DFF;
+        Tue,  6 Jul 2021 11:23:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570604;
-        bh=30GOSRscCV+LcBccfoLXd0HpdRXX0qYf3JIRJoragvw=;
+        s=k20201202; t=1625570605;
+        bh=cfuxUJR0olSoJxyDcHJY9UrvBHZyreOKRgKi4miJ58Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugb8OLn4diBD4PCwdd9xgnWVL6+9JaM6zkN59mDfUgCsEjxwavdGvvSKrEPoT/dw1
-         IHUxwmzfdYAdvqccEvs0+nj/P64CX409x4G3lLPnZ4UKG3Ml9FjQoTi2u+s8gP4YMo
-         kqrZoMtR+fXQRCqkwWtiPlBBJ9IbRPQldUhB56BRqmes19M/p1fujsY+nAWu+WbUal
-         Ai4RaH6Z2qbetyj8HeaZ1QgQzaOzcyOTdG8hVUxB3ktHyYz19SckyQ4xgx6ZlbtrKs
-         XLvwk3pPuLxw1PVVEbqs6Yj3oIDY8RPyf3voJst9YEJw8aQfPDBuDmQ5QgTeb4NVVh
-         icEOXpXnbLV5g==
+        b=SBZGf0LpJCeD8OvbkIPNUAHPNnfleftN+N/URTDG1ob2NY6jxSpG5yzKz+miVJcRZ
+         5kQG+09cJTw9UsTCMGpZG4r+GC+Q9FJtnZOqQdcFEH0Z9huhuo17wS9P+uNqk3X3ew
+         9zXa1mnWw1dXbORjBMSqfnEXR736iPG9wWKfW2mLvRFMiVBYOSg+8Z84c9UNRN2eQ4
+         tlAxaR1LonsQs2LHuhQeWI2kpwvUBjPc0qoGuo/jSI4z/T+cAhowEBsR5qp19A9WPh
+         zJdH26LcGQi3VUrO/3HHpV8HiyFLdRKymZYIXsCxy8BPvpJ149JxkjdGfK035Jm21S
+         3eLhldbu4pQYw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 063/137] net: bcmgenet: check return value after calling platform_get_resource()
-Date:   Tue,  6 Jul 2021 07:20:49 -0400
-Message-Id: <20210706112203.2062605-63-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 064/137] net: mvpp2: check return value after calling platform_get_resource()
+Date:   Tue,  6 Jul 2021 07:20:50 -0400
+Message-Id: <20210706112203.2062605-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -46,34 +44,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 74325bf0104573c6dfce42837139aeef3f34be76 ]
+[ Upstream commit 0bb51a3a385790a4be20085494cf78f70dadf646 ]
 
 It will cause null-ptr-deref if platform_get_resource() returns NULL,
 we need check the return value.
 
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmmii.c | 4 ++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index 6fb6c3556285..f9e91304d232 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -423,6 +423,10 @@ static int bcmgenet_mii_register(struct bcmgenet_priv *priv)
- 	int id, ret;
- 
- 	pres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!pres) {
-+		dev_err(&pdev->dev, "Invalid resource\n");
-+		return -EINVAL;
-+	}
- 	memset(&res, 0, sizeof(res));
- 	memset(&ppd, 0, sizeof(ppd));
- 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 6aa13c9f9fc9..fa5ad61ce078 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6871,6 +6871,10 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 			return PTR_ERR(priv->lms_base);
+ 	} else {
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
++		if (!res) {
++			dev_err(&pdev->dev, "Invalid resource\n");
++			return -EINVAL;
++		}
+ 		if (has_acpi_companion(&pdev->dev)) {
+ 			/* In case the MDIO memory region is declared in
+ 			 * the ACPI, it can already appear as 'in-use'
 -- 
 2.30.2
 
