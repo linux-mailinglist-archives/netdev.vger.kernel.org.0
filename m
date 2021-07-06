@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FF03BDE5C
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 22:18:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9346C3BDE55
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 22:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbhGFUVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 16:21:18 -0400
+        id S230192AbhGFUVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 16:21:11 -0400
 Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:45527 "EHLO
         EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230112AbhGFUVK (ORCPT
+        by vger.kernel.org with ESMTP id S229935AbhGFUVK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 16:21:10 -0400
 X-Greylist: delayed 902 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Jul 2021 16:21:10 EDT
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
  EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
  15.0.1156.6; Tue, 6 Jul 2021 13:03:27 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id B55892027E;
-        Tue,  6 Jul 2021 13:03:29 -0700 (PDT)
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 2D5F02027E;
+        Tue,  6 Jul 2021 13:03:30 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id B0B5FAA0C5; Tue,  6 Jul 2021 13:03:29 -0700 (PDT)
+        id 293B4AA0C5; Tue,  6 Jul 2021 13:03:30 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -27,9 +27,9 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 1/7] vmxnet3: prepare for version 6 changes
-Date:   Tue, 6 Jul 2021 13:03:05 -0700
-Message-ID: <20210706200312.29777-2-doshir@vmware.com>
+Subject: [PATCH net-next 2/7] vmxnet3: add support for 32 Tx/Rx queues
+Date:   Tue, 6 Jul 2021 13:03:06 -0700
+Message-ID: <20210706200312.29777-3-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20210706200312.29777-1-doshir@vmware.com>
 References: <20210706200312.29777-1-doshir@vmware.com>
@@ -41,119 +41,388 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vmxnet3 is currently at version 4 and this patch initiates the
-preparation to accommodate changes for upto version 6. Introduced
-utility macros for vmxnet3 version 6 comparison and update Copyright
-information.
+Currently, vmxnet3 supports maximum of 8 Tx/Rx queues. With increase
+in number of vcpus on a VM, to achieve better performance and utilize
+idle vcpus, we need to increase the max number of queues supported.
+
+This patch enhances vmxnet3 to support maximum of 32 Tx/Rx queues.
+Increasing the Rx queues also increases the probability of distrubuting
+the traffic from different flows to different queues with RSS.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 ---
- drivers/net/vmxnet3/Makefile          | 2 +-
- drivers/net/vmxnet3/upt1_defs.h       | 2 +-
- drivers/net/vmxnet3/vmxnet3_defs.h    | 2 +-
- drivers/net/vmxnet3/vmxnet3_drv.c     | 2 +-
- drivers/net/vmxnet3/vmxnet3_ethtool.c | 2 +-
- drivers/net/vmxnet3/vmxnet3_int.h     | 8 +++++++-
- 6 files changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_defs.h |  31 ++++++-
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 170 +++++++++++++++++++++++++------------
+ drivers/net/vmxnet3/vmxnet3_int.h  |  10 ++-
+ 3 files changed, 151 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/net/vmxnet3/Makefile b/drivers/net/vmxnet3/Makefile
-index c5a167a1c85c..7a38925f4165 100644
---- a/drivers/net/vmxnet3/Makefile
-+++ b/drivers/net/vmxnet3/Makefile
-@@ -2,7 +2,7 @@
- #
- # Linux driver for VMware's vmxnet3 ethernet NIC.
- #
--# Copyright (C) 2007-2020, VMware, Inc. All Rights Reserved.
-+# Copyright (C) 2007-2021, VMware, Inc. All Rights Reserved.
- #
- # This program is free software; you can redistribute it and/or modify it
- # under the terms of the GNU General Public License as published by the
-diff --git a/drivers/net/vmxnet3/upt1_defs.h b/drivers/net/vmxnet3/upt1_defs.h
-index 8c014c98471c..f9f3a23d1698 100644
---- a/drivers/net/vmxnet3/upt1_defs.h
-+++ b/drivers/net/vmxnet3/upt1_defs.h
-@@ -1,7 +1,7 @@
- /*
-  * Linux driver for VMware's vmxnet3 ethernet NIC.
-  *
-- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
-+ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms of the GNU General Public License as published by the
 diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index a8d5ebd47c71..ce76ebc376da 100644
+index ce76ebc376da..a9c108166a52 100644
 --- a/drivers/net/vmxnet3/vmxnet3_defs.h
 +++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -1,7 +1,7 @@
+@@ -98,6 +98,9 @@ enum {
+ 	VMXNET3_CMD_GET_TXDATA_DESC_SIZE,
+ 	VMXNET3_CMD_GET_COALESCE,
+ 	VMXNET3_CMD_GET_RSS_FIELDS,
++	VMXNET3_CMD_GET_RESERVED2,
++	VMXNET3_CMD_GET_RESERVED3,
++	VMXNET3_CMD_GET_MAX_QUEUES_CONF,
+ };
+ 
  /*
-  * Linux driver for VMware's vmxnet3 ethernet NIC.
-  *
-- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
-+ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms of the GNU General Public License as published by the
+@@ -533,6 +536,13 @@ enum vmxnet3_intr_type {
+ /* addition 1 for events */
+ #define VMXNET3_MAX_INTRS      25
+ 
++/* Version 6 and later will use below macros */
++#define VMXNET3_EXT_MAX_TX_QUEUES  32
++#define VMXNET3_EXT_MAX_RX_QUEUES  32
++/* addition 1 for events */
++#define VMXNET3_EXT_MAX_INTRS      65
++#define VMXNET3_FIRST_SET_INTRS    64
++
+ /* value of intrCtrl */
+ #define VMXNET3_IC_DISABLE_ALL  0x1   /* bit 0 */
+ 
+@@ -547,6 +557,19 @@ struct Vmxnet3_IntrConf {
+ 	__le32		reserved[2];
+ };
+ 
++struct Vmxnet3_IntrConfExt {
++	u8              autoMask;
++	u8              numIntrs;      /* # of interrupts */
++	u8              eventIntrIdx;
++	u8              reserved;
++	__le32          intrCtrl;
++	__le32          reserved1;
++	u8              modLevels[VMXNET3_EXT_MAX_INTRS]; /* moderation level for
++							   * each intr
++							   */
++	u8              reserved2[3];
++};
++
+ /* one bit per VLAN ID, the size is in the units of u32	*/
+ #define VMXNET3_VFT_SIZE  (4096 / (sizeof(u32) * 8))
+ 
+@@ -719,11 +742,16 @@ struct Vmxnet3_DSDevRead {
+ 	struct Vmxnet3_VariableLenConfDesc	pluginConfDesc;
+ };
+ 
++struct Vmxnet3_DSDevReadExt {
++	/* read-only region for device, read by dev in response to a SET cmd */
++	struct Vmxnet3_IntrConfExt              intrConfExt;
++};
++
+ /* All structures in DriverShared are padded to multiples of 8 bytes */
+ struct Vmxnet3_DriverShared {
+ 	__le32				magic;
+ 	/* make devRead start at 64bit boundaries */
+-	__le32				pad;
++	__le32                          size; /* size of DriverShared */
+ 	struct Vmxnet3_DSDevRead	devRead;
+ 	__le32				ecr;
+ 	__le32				reserved;
+@@ -734,6 +762,7 @@ struct Vmxnet3_DriverShared {
+ 						  * command
+ 						  */
+ 	} cu;
++	struct Vmxnet3_DSDevReadExt     devReadExt;
+ };
+ 
+ 
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 6e87f1fc4874..1f072cfdff3d 100644
+index 1f072cfdff3d..d32fa6f3ae57 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1,7 +1,7 @@
- /*
-  * Linux driver for VMware's vmxnet3 ethernet NIC.
-  *
-- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
-+ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms of the GNU General Public License as published by the
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index c0bd9cbc43b1..efb59f13227e 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -1,7 +1,7 @@
- /*
-  * Linux driver for VMware's vmxnet3 ethernet NIC.
-  *
-- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
-+ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms of the GNU General Public License as published by the
+@@ -2460,6 +2460,7 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ {
+ 	struct Vmxnet3_DriverShared *shared = adapter->shared;
+ 	struct Vmxnet3_DSDevRead *devRead = &shared->devRead;
++	struct Vmxnet3_DSDevReadExt *devReadExt = &shared->devReadExt;
+ 	struct Vmxnet3_TxQueueConf *tqc;
+ 	struct Vmxnet3_RxQueueConf *rqc;
+ 	int i;
+@@ -2572,14 +2573,26 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ #endif /* VMXNET3_RSS */
+ 
+ 	/* intr settings */
+-	devRead->intrConf.autoMask = adapter->intr.mask_mode ==
+-				     VMXNET3_IMM_AUTO;
+-	devRead->intrConf.numIntrs = adapter->intr.num_intrs;
+-	for (i = 0; i < adapter->intr.num_intrs; i++)
+-		devRead->intrConf.modLevels[i] = adapter->intr.mod_levels[i];
++	if (!VMXNET3_VERSION_GE_6(adapter) ||
++	    !adapter->queuesExtEnabled) {
++		devRead->intrConf.autoMask = adapter->intr.mask_mode ==
++					     VMXNET3_IMM_AUTO;
++		devRead->intrConf.numIntrs = adapter->intr.num_intrs;
++		for (i = 0; i < adapter->intr.num_intrs; i++)
++			devRead->intrConf.modLevels[i] = adapter->intr.mod_levels[i];
++
++		devRead->intrConf.eventIntrIdx = adapter->intr.event_intr_idx;
++		devRead->intrConf.intrCtrl |= cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
++	} else {
++		devReadExt->intrConfExt.autoMask = adapter->intr.mask_mode ==
++						   VMXNET3_IMM_AUTO;
++		devReadExt->intrConfExt.numIntrs = adapter->intr.num_intrs;
++		for (i = 0; i < adapter->intr.num_intrs; i++)
++			devReadExt->intrConfExt.modLevels[i] = adapter->intr.mod_levels[i];
+ 
+-	devRead->intrConf.eventIntrIdx = adapter->intr.event_intr_idx;
+-	devRead->intrConf.intrCtrl |= cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
++		devReadExt->intrConfExt.eventIntrIdx = adapter->intr.event_intr_idx;
++		devReadExt->intrConfExt.intrCtrl |= cpu_to_le32(VMXNET3_IC_DISABLE_ALL);
++	}
+ 
+ 	/* rx filter settings */
+ 	devRead->rxFilterConf.rxMode = 0;
+@@ -2717,6 +2730,7 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
+ 	 * tx queue if the link is up.
+ 	 */
+ 	vmxnet3_check_link(adapter, true);
++	netif_tx_wake_all_queues(adapter->netdev);
+ 	for (i = 0; i < adapter->num_rx_queues; i++)
+ 		napi_enable(&adapter->rx_queue[i].napi);
+ 	vmxnet3_enable_all_intrs(adapter);
+@@ -3372,6 +3386,8 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	int size;
+ 	int num_tx_queues;
+ 	int num_rx_queues;
++	int queues;
++	unsigned long flags;
+ 
+ 	if (!pci_msi_enabled())
+ 		enable_mq = 0;
+@@ -3394,10 +3410,6 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	num_tx_queues = rounddown_pow_of_two(num_tx_queues);
+ 	netdev = alloc_etherdev_mq(sizeof(struct vmxnet3_adapter),
+ 				   max(num_tx_queues, num_rx_queues));
+-	dev_info(&pdev->dev,
+-		 "# of Tx queues : %d, # of Rx queues : %d\n",
+-		 num_tx_queues, num_rx_queues);
+-
+ 	if (!netdev)
+ 		return -ENOMEM;
+ 
+@@ -3447,45 +3459,6 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_alloc_shared;
+ 	}
+ 
+-	adapter->num_rx_queues = num_rx_queues;
+-	adapter->num_tx_queues = num_tx_queues;
+-	adapter->rx_buf_per_pkt = 1;
+-
+-	size = sizeof(struct Vmxnet3_TxQueueDesc) * adapter->num_tx_queues;
+-	size += sizeof(struct Vmxnet3_RxQueueDesc) * adapter->num_rx_queues;
+-	adapter->tqd_start = dma_alloc_coherent(&adapter->pdev->dev, size,
+-						&adapter->queue_desc_pa,
+-						GFP_KERNEL);
+-
+-	if (!adapter->tqd_start) {
+-		dev_err(&pdev->dev, "Failed to allocate memory\n");
+-		err = -ENOMEM;
+-		goto err_alloc_queue_desc;
+-	}
+-	adapter->rqd_start = (struct Vmxnet3_RxQueueDesc *)(adapter->tqd_start +
+-							    adapter->num_tx_queues);
+-
+-	adapter->pm_conf = dma_alloc_coherent(&adapter->pdev->dev,
+-					      sizeof(struct Vmxnet3_PMConf),
+-					      &adapter->pm_conf_pa,
+-					      GFP_KERNEL);
+-	if (adapter->pm_conf == NULL) {
+-		err = -ENOMEM;
+-		goto err_alloc_pm;
+-	}
+-
+-#ifdef VMXNET3_RSS
+-
+-	adapter->rss_conf = dma_alloc_coherent(&adapter->pdev->dev,
+-					       sizeof(struct UPT1_RSSConf),
+-					       &adapter->rss_conf_pa,
+-					       GFP_KERNEL);
+-	if (adapter->rss_conf == NULL) {
+-		err = -ENOMEM;
+-		goto err_alloc_rss;
+-	}
+-#endif /* VMXNET3_RSS */
+-
+ 	err = vmxnet3_alloc_pci_resources(adapter);
+ 	if (err < 0)
+ 		goto err_alloc_pci;
+@@ -3529,6 +3502,75 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 		goto err_ver;
+ 	}
+ 
++	if (VMXNET3_VERSION_GE_6(adapter)) {
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
++				       VMXNET3_CMD_GET_MAX_QUEUES_CONF);
++		queues = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++		if (queues > 0) {
++			adapter->num_rx_queues = min(num_rx_queues, ((queues >> 8) & 0xff));
++			adapter->num_tx_queues = min(num_tx_queues, (queues & 0xff));
++		} else {
++			adapter->num_rx_queues = min(num_rx_queues,
++						     VMXNET3_DEVICE_DEFAULT_RX_QUEUES);
++			adapter->num_tx_queues = min(num_tx_queues,
++						     VMXNET3_DEVICE_DEFAULT_TX_QUEUES);
++		}
++		if (adapter->num_rx_queues > VMXNET3_MAX_RX_QUEUES ||
++		    adapter->num_tx_queues > VMXNET3_MAX_TX_QUEUES) {
++			adapter->queuesExtEnabled = true;
++		} else {
++			adapter->queuesExtEnabled = false;
++		}
++	} else {
++		adapter->queuesExtEnabled = false;
++		adapter->num_rx_queues = min(num_rx_queues,
++					     VMXNET3_DEVICE_DEFAULT_RX_QUEUES);
++		adapter->num_tx_queues = min(num_tx_queues,
++					     VMXNET3_DEVICE_DEFAULT_TX_QUEUES);
++	}
++	dev_info(&pdev->dev,
++		 "# of Tx queues : %d, # of Rx queues : %d\n",
++		 adapter->num_tx_queues, adapter->num_rx_queues);
++
++	adapter->rx_buf_per_pkt = 1;
++
++	size = sizeof(struct Vmxnet3_TxQueueDesc) * adapter->num_tx_queues;
++	size += sizeof(struct Vmxnet3_RxQueueDesc) * adapter->num_rx_queues;
++	adapter->tqd_start = dma_alloc_coherent(&adapter->pdev->dev, size,
++						&adapter->queue_desc_pa,
++						GFP_KERNEL);
++
++	if (!adapter->tqd_start) {
++		dev_err(&pdev->dev, "Failed to allocate memory\n");
++		err = -ENOMEM;
++		goto err_ver;
++	}
++	adapter->rqd_start = (struct Vmxnet3_RxQueueDesc *)(adapter->tqd_start +
++							    adapter->num_tx_queues);
++
++	adapter->pm_conf = dma_alloc_coherent(&adapter->pdev->dev,
++					      sizeof(struct Vmxnet3_PMConf),
++					      &adapter->pm_conf_pa,
++					      GFP_KERNEL);
++	if (adapter->pm_conf == NULL) {
++		err = -ENOMEM;
++		goto err_alloc_pm;
++	}
++
++#ifdef VMXNET3_RSS
++
++	adapter->rss_conf = dma_alloc_coherent(&adapter->pdev->dev,
++					       sizeof(struct UPT1_RSSConf),
++					       &adapter->rss_conf_pa,
++					       GFP_KERNEL);
++	if (adapter->rss_conf == NULL) {
++		err = -ENOMEM;
++		goto err_alloc_rss;
++	}
++#endif /* VMXNET3_RSS */
++
+ 	if (VMXNET3_VERSION_GE_3(adapter)) {
+ 		adapter->coal_conf =
+ 			dma_alloc_coherent(&adapter->pdev->dev,
+@@ -3538,7 +3580,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 					   GFP_KERNEL);
+ 		if (!adapter->coal_conf) {
+ 			err = -ENOMEM;
+-			goto err_ver;
++			goto err_coal_conf;
+ 		}
+ 		adapter->coal_conf->coalMode = VMXNET3_COALESCE_DISABLED;
+ 		adapter->default_coal_mode = true;
+@@ -3621,9 +3663,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 				  adapter->coal_conf, adapter->coal_conf_pa);
+ 	}
+ 	vmxnet3_free_intr_resources(adapter);
+-err_ver:
+-	vmxnet3_free_pci_resources(adapter);
+-err_alloc_pci:
++err_coal_conf:
+ #ifdef VMXNET3_RSS
+ 	dma_free_coherent(&adapter->pdev->dev, sizeof(struct UPT1_RSSConf),
+ 			  adapter->rss_conf, adapter->rss_conf_pa);
+@@ -3634,7 +3674,9 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ err_alloc_pm:
+ 	dma_free_coherent(&adapter->pdev->dev, size, adapter->tqd_start,
+ 			  adapter->queue_desc_pa);
+-err_alloc_queue_desc:
++err_ver:
++	vmxnet3_free_pci_resources(adapter);
++err_alloc_pci:
+ 	dma_free_coherent(&adapter->pdev->dev,
+ 			  sizeof(struct Vmxnet3_DriverShared),
+ 			  adapter->shared, adapter->shared_pa);
+@@ -3653,7 +3695,8 @@ vmxnet3_remove_device(struct pci_dev *pdev)
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
+ 	int size = 0;
+-	int num_rx_queues;
++	int num_rx_queues, rx_queues;
++	unsigned long flags;
+ 
+ #ifdef VMXNET3_RSS
+ 	if (enable_mq)
+@@ -3663,6 +3706,21 @@ vmxnet3_remove_device(struct pci_dev *pdev)
+ #endif
+ 		num_rx_queues = 1;
+ 	num_rx_queues = rounddown_pow_of_two(num_rx_queues);
++	if (VMXNET3_VERSION_GE_6(adapter)) {
++		spin_lock_irqsave(&adapter->cmd_lock, flags);
++		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
++				       VMXNET3_CMD_GET_MAX_QUEUES_CONF);
++		rx_queues = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
++		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++		if (rx_queues > 0)
++			rx_queues = (rx_queues >> 8) & 0xff;
++		else
++			rx_queues = min(num_rx_queues, VMXNET3_DEVICE_DEFAULT_RX_QUEUES);
++		num_rx_queues = min(num_rx_queues, rx_queues);
++	} else {
++		num_rx_queues = min(num_rx_queues,
++				    VMXNET3_DEVICE_DEFAULT_RX_QUEUES);
++	}
+ 
+ 	cancel_work_sync(&adapter->work);
+ 
 diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index e910596b79cf..075c1f56aecc 100644
+index 075c1f56aecc..8675209070ea 100644
 --- a/drivers/net/vmxnet3/vmxnet3_int.h
 +++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -1,7 +1,7 @@
- /*
-  * Linux driver for VMware's vmxnet3 ethernet NIC.
-  *
-- * Copyright (C) 2008-2020, VMware, Inc. All Rights Reserved.
-+ * Copyright (C) 2008-2021, VMware, Inc. All Rights Reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify it
-  * under the terms of the GNU General Public License as published by the
-@@ -81,6 +81,8 @@
- 	#define VMXNET3_RSS
- #endif
+@@ -303,15 +303,18 @@ struct vmxnet3_rx_queue {
+ 	struct vmxnet3_rq_driver_stats  stats;
+ } __attribute__((__aligned__(SMP_CACHE_BYTES)));
  
-+#define VMXNET3_REV_6		5	/* Vmxnet3 Rev. 6 */
-+#define VMXNET3_REV_5		4	/* Vmxnet3 Rev. 5 */
- #define VMXNET3_REV_4		3	/* Vmxnet3 Rev. 4 */
- #define VMXNET3_REV_3		2	/* Vmxnet3 Rev. 3 */
- #define VMXNET3_REV_2		1	/* Vmxnet3 Rev. 2 */
-@@ -421,6 +423,10 @@ struct vmxnet3_adapter {
- 	(adapter->version >= VMXNET3_REV_3 + 1)
- #define VMXNET3_VERSION_GE_4(adapter) \
- 	(adapter->version >= VMXNET3_REV_4 + 1)
-+#define VMXNET3_VERSION_GE_5(adapter) \
-+	(adapter->version >= VMXNET3_REV_5 + 1)
-+#define VMXNET3_VERSION_GE_6(adapter) \
-+	(adapter->version >= VMXNET3_REV_6 + 1)
+-#define VMXNET3_DEVICE_MAX_TX_QUEUES 8
+-#define VMXNET3_DEVICE_MAX_RX_QUEUES 8   /* Keep this value as a power of 2 */
++#define VMXNET3_DEVICE_MAX_TX_QUEUES 32
++#define VMXNET3_DEVICE_MAX_RX_QUEUES 32   /* Keep this value as a power of 2 */
++
++#define VMXNET3_DEVICE_DEFAULT_TX_QUEUES 8
++#define VMXNET3_DEVICE_DEFAULT_RX_QUEUES 8   /* Keep this value as a power of 2 */
  
- /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
- #define VMXNET3_DEF_TX_RING_SIZE    512
+ /* Should be less than UPT1_RSS_MAX_IND_TABLE_SIZE */
+ #define VMXNET3_RSS_IND_TABLE_SIZE (VMXNET3_DEVICE_MAX_RX_QUEUES * 4)
+ 
+ #define VMXNET3_LINUX_MAX_MSIX_VECT     (VMXNET3_DEVICE_MAX_TX_QUEUES + \
+ 					 VMXNET3_DEVICE_MAX_RX_QUEUES + 1)
+-#define VMXNET3_LINUX_MIN_MSIX_VECT     2 /* 1 for tx-rx pair and 1 for event */
++#define VMXNET3_LINUX_MIN_MSIX_VECT     3 /* 1 for tx, 1 for rx pair and 1 for event */
+ 
+ 
+ struct vmxnet3_intr {
+@@ -398,6 +401,7 @@ struct vmxnet3_adapter {
+ 	dma_addr_t adapter_pa;
+ 	dma_addr_t pm_conf_pa;
+ 	dma_addr_t rss_conf_pa;
++	bool   queuesExtEnabled;
+ };
+ 
+ #define VMXNET3_WRITE_BAR0_REG(adapter, reg, val)  \
 -- 
 2.11.0
 
