@@ -2,222 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1383BC4AE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 04:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2953BC4C4
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 04:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbhGFCGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 22:06:45 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:9479 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229740AbhGFCGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 22:06:44 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJm442kMtzZrBL;
-        Tue,  6 Jul 2021 10:00:52 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 6 Jul 2021 10:04:03 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 6 Jul 2021
- 10:04:03 +0800
-Subject: Re: [PATCH net-next 1/2] tools: add missing infrastructure for
- building ptr_ring.h
+        id S229879AbhGFCds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 22:33:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36793 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229774AbhGFCdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 22:33:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625538668;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+t7xgkqb9EDjx9o5Ws18UiODNH1rDl4lfk/LxQtMlSA=;
+        b=FNBWKSB4vP36xOKulsnQpbuSzm6Jb3DSh2MYj/MsEJRdRTdlqO+xEdpDpD98IHgZ8EQFMp
+        i8WEyyO43bQbx8OH6D6Jwcv9hWW7rKckR7F6d6B+DtXws5mZFP4uWKgnM0Ca/dtEKkr7HG
+        wbKPQB7YAXGX+Afg7gaK3If7q37hfTM=
+Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
+ [209.85.216.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-452-ZQHv9YEdM46MPU9RcnAk5w-1; Mon, 05 Jul 2021 22:31:05 -0400
+X-MC-Unique: ZQHv9YEdM46MPU9RcnAk5w-1
+Received: by mail-pj1-f70.google.com with SMTP id r2-20020a17090a9402b0290172349acde4so817415pjo.9
+        for <netdev@vger.kernel.org>; Mon, 05 Jul 2021 19:31:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=+t7xgkqb9EDjx9o5Ws18UiODNH1rDl4lfk/LxQtMlSA=;
+        b=VDLbgndkq0UbR74lauasjCkSkAuSSsatbDKx8zWAS5yZzgaLgwLwX7YUjvG2t4kBqY
+         wdbMlqwTRCraWl6TshmiSKfJqD8cO7Ze2O/Dn9FjNE/av0lDVhagDPSQwlSuFVibFPeP
+         Jlb5D+Mv+gjagvVt5vqgPG/Zbjj5sUWPJiVFfsapU86YsP+Q+xTAgN4K67llNKeQXAl1
+         uq9dM+UO8mW5zOgbRB6hbSShTemu1kKln1yte0lUzaJ5IKE9aWhsDx26dcWLtoQrqK9d
+         FQQ3UQXSGqwSd0xsoPinzxkcJFI9juaenfU0e1gklhOj+xvrnyexZ2Iqr4rX+uRygnBt
+         72PQ==
+X-Gm-Message-State: AOAM530gfwunB/cThSwNyDUB+57RSb6XmZdOHz6P8dmdOUI4woMiurRx
+        10vl8a2Y3cOUUJSnMi3JILugq68vIGzGl4j1KzejPDetyWEt4Q1tyBAUwKaa8aAwwcULjcjmi7t
+        O6LNLunaQugvevwnt
+X-Received: by 2002:a17:90b:124f:: with SMTP id gx15mr2053887pjb.8.1625538664020;
+        Mon, 05 Jul 2021 19:31:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzGJ3C4PIS2j1yjac50lMKMZ06m91aoC+A1GrgZ9KMYDd3ldGiJnB8VFZ5kPGCmj4zRcWEfnQ==
+X-Received: by 2002:a17:90b:124f:: with SMTP id gx15mr2053875pjb.8.1625538663867;
+        Mon, 05 Jul 2021 19:31:03 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d25sm13862589pgn.42.2021.07.05.19.31.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Jul 2021 19:31:03 -0700 (PDT)
+Subject: Re: [PATCH 2/2] vdpa: vp_vdpa: don't use hard-coded maximum virtqueue
+ size
 To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jasowang@redhat.com>,
-        <nickhu@andestech.com>, <green.hu@gmail.com>,
-        <deanbo422@gmail.com>, <akpm@linux-foundation.org>,
-        <yury.norov@gmail.com>, <andriy.shevchenko@linux.intel.com>,
-        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
- <1625457455-4667-2-git-send-email-linyunsheng@huawei.com>
- <20210705143144-mutt-send-email-mst@kernel.org>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <cbc4053e-7eda-4c46-5b98-558c741e45b6@huawei.com>
-Date:   Tue, 6 Jul 2021 10:04:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, xieyongji@bytedance.com,
+        stefanha@redhat.com
+References: <20210705071910.31965-1-jasowang@redhat.com>
+ <20210705071910.31965-2-jasowang@redhat.com>
+ <20210705032602-mutt-send-email-mst@kernel.org>
+ <02139c5f-92c5-eda6-8d2d-8e1b6ac70f3e@redhat.com>
+ <20210705065534-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e0744583-fcdc-07d0-a414-31d660089e2b@redhat.com>
+Date:   Tue, 6 Jul 2021 10:30:59 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210705143144-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210705065534-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/7/6 2:39, Michael S. Tsirkin wrote:
-> On Mon, Jul 05, 2021 at 11:57:34AM +0800, Yunsheng Lin wrote:
->> In order to build ptr_ring.h in userspace, the cacheline
->> aligning, cpu_relax() and slab related infrastructure is
->> needed, so add them in this patch.
+
+在 2021/7/6 上午1:59, Michael S. Tsirkin 写道:
+> On Mon, Jul 05, 2021 at 03:29:47PM +0800, Jason Wang wrote:
+>> 在 2021/7/5 下午3:26, Michael S. Tsirkin 写道:
+>>> On Mon, Jul 05, 2021 at 03:19:10PM +0800, Jason Wang wrote:
+>>>> This patch switch to read virtqueue size from the capability instead
+>>>> of depending on the hardcoded value. This allows the per virtqueue
+>>>> size could be advertised.
+>>>>
+>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>> So let's add an ioctl for this? It's really a bug we don't..
 >>
->> As L1_CACHE_BYTES may be different for different arch, which
->> is mostly defined in include/generated/autoconf.h, so user may
->> need to do "make defconfig" before building a tool using the
->> API in linux/cache.h.
+>> As explained in patch 1. Qemu doesn't use VHOST_VDPA_GET_VRING_NUM actually.
+>> Instead it checks the result VHOST_VDPA_SET_VRING_NUM.
 >>
->> Also "linux/lockdep.h" is not added in "tools/include" yet,
->> so remove it in "linux/spinlock.h", and the only place using
->> "linux/spinlock.h" is tools/testing/radix-tree, removing that
->> does not break radix-tree testing.
+>> So I change VHOST_VDPA_GET_VRING_NUM to return the minimal size of all the
+>> virtqueues.
 >>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> 
-> This is hard to review.
-> Try to split this please. Functional changes separate from
-> merely moving code around.
-
-Sure.
-
-> 
-> 
->> ---
->>  tools/include/asm/cache.h          | 56 ++++++++++++++++++++++++
->>  tools/include/asm/processor.h      | 36 ++++++++++++++++
->>  tools/include/generated/autoconf.h |  1 +
->>  tools/include/linux/align.h        | 15 +++++++
->>  tools/include/linux/cache.h        | 87 ++++++++++++++++++++++++++++++++++++++
->>  tools/include/linux/gfp.h          |  4 ++
->>  tools/include/linux/slab.h         | 46 ++++++++++++++++++++
->>  tools/include/linux/spinlock.h     |  2 -
->>  8 files changed, 245 insertions(+), 2 deletions(-)
->>  create mode 100644 tools/include/asm/cache.h
->>  create mode 100644 tools/include/asm/processor.h
->>  create mode 100644 tools/include/generated/autoconf.h
->>  create mode 100644 tools/include/linux/align.h
->>  create mode 100644 tools/include/linux/cache.h
->>  create mode 100644 tools/include/linux/slab.h
+>> If you wish we can add a VHOST_VDPA_GET_VRING_NUM2, but I'm not sure it will
+>> have a user or not.
 >>
->> diff --git a/tools/include/asm/cache.h b/tools/include/asm/cache.h
->> new file mode 100644
->> index 0000000..071e310
->> --- /dev/null
->> +++ b/tools/include/asm/cache.h
->> @@ -0,0 +1,56 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +
->> +#ifndef __TOOLS_LINUX_ASM_CACHE_H
->> +#define __TOOLS_LINUX_ASM_CACHE_H
->> +
->> +#include <generated/autoconf.h>
->> +
->> +#if defined(__i386__) || defined(__x86_64__)
->> +#define L1_CACHE_SHIFT	(CONFIG_X86_L1_CACHE_SHIFT)
->> +#elif defined(__arm__)
->> +#define L1_CACHE_SHIFT	(CONFIG_ARM_L1_CACHE_SHIFT)
->> +#elif defined(__aarch64__)
->> +#define L1_CACHE_SHIFT	(6)
->> +#elif defined(__powerpc__)
->> +
->> +/* bytes per L1 cache line */
->> +#if defined(CONFIG_PPC_8xx)
->> +#define L1_CACHE_SHIFT	4
->> +#elif defined(CONFIG_PPC_E500MC)
->> +#define L1_CACHE_SHIFT	6
->> +#elif defined(CONFIG_PPC32)
->> +#if defined(CONFIG_PPC_47x)
->> +#define L1_CACHE_SHIFT	7
->> +#else
->> +#define L1_CACHE_SHIFT	5
->> +#endif
->> +#else /* CONFIG_PPC64 */
->> +#define L1_CACHE_SHIFT	7
->> +#endif
->> +
->> +#elif defined(__sparc__)
->> +#define L1_CACHE_SHIFT 5
->> +#elif defined(__alpha__)
->> +
->> +#if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_EV6)
->> +#define L1_CACHE_SHIFT	6
->> +#else
->> +/* Both EV4 and EV5 are write-through, read-allocate,
->> +   direct-mapped, physical.
->> +*/
->> +#define L1_CACHE_SHIFT	5
->> +#endif
->> +
->> +#elif defined(__mips__)
->> +#define L1_CACHE_SHIFT	CONFIG_MIPS_L1_CACHE_SHIFT
->> +#elif defined(__ia64__)
->> +#define L1_CACHE_SHIFT	CONFIG_IA64_L1_CACHE_SHIFT
->> +#elif defined(__nds32__)
->> +#define L1_CACHE_SHIFT	5
->> +#else
->> +#define L1_CACHE_SHIFT	5
->> +#endif
->> +
->> +#define L1_CACHE_BYTES	(1 << L1_CACHE_SHIFT)
->> +
->> +#endif
->> diff --git a/tools/include/asm/processor.h b/tools/include/asm/processor.h
->> new file mode 100644
->> index 0000000..3198ad6
->> --- /dev/null
->> +++ b/tools/include/asm/processor.h
->> @@ -0,0 +1,36 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +
->> +#ifndef __TOOLS_LINUX_ASM_PROCESSOR_H
->> +#define __TOOLS_LINUX_ASM_PROCESSOR_H
->> +
->> +#include <pthread.h>
->> +
->> +#if defined(__i386__) || defined(__x86_64__)
->> +#include "../../arch/x86/include/asm/vdso/processor.h"
->> +#elif defined(__arm__)
->> +#include "../../arch/arm/include/asm/vdso/processor.h"
->> +#elif defined(__aarch64__)
->> +#include "../../arch/arm64/include/asm/vdso/processor.h"
->> +#elif defined(__powerpc__)
->> +#include "../../arch/powerpc/include/vdso/processor.h"
->> +#elif defined(__s390__)
->> +#include "../../arch/s390/include/vdso/processor.h"
->> +#elif defined(__sh__)
->> +#include "../../arch/sh/include/asm/processor.h"
->> +#elif defined(__sparc__)
->> +#include "../../arch/sparc/include/asm/processor.h"
->> +#elif defined(__alpha__)
->> +#include "../../arch/alpha/include/asm/processor.h"
->> +#elif defined(__mips__)
->> +#include "../../arch/mips/include/asm/vdso/processor.h"
->> +#elif defined(__ia64__)
->> +#include "../../arch/ia64/include/asm/processor.h"
->> +#elif defined(__xtensa__)
->> +#include "../../arch/xtensa/include/asm/processor.h"
->> +#elif defined(__nds32__)
->> +#include "../../arch/nds32/include/asm/processor.h"
->> +#else
->> +#define cpu_relax()	sched_yield()
-> 
-> Does this have a chance to work outside of kernel?
+>> Thanks
+> Question is how do we know returning the minimal and not e.g. the max
+> size is the right thing to do?
 
-I am not sure I understand what you meant here.
-sched_yield() is a pthread API, so it should work in the
-user space.
-And it allow the rigntest to compile when it is built on
-the arch which is not handled as above.
 
-> 
->> +#endif
-> 
-> did you actually test or even test build all these arches?
-> Not sure we need to bother with hacks like these.
+For the new ioctl, it will return the max queue size per vq.
 
-Only x86_64 and arm64 arches have been built and tested.
+It's probably too late to fix the old one, so it's only safe to return 
+the minimal one.
 
-This is added referring the tools/include/asm/barrier.h.
+Actually, most of the vDPA parents should be fine except for the 
+vp_vdpa. When running in a nested environment, Qemu only advertise cvq 
+with 64 entries.
 
-> 
-> 
->> +
+Thanks
+
+
+>
+>
+>>>> ---
+>>>>    drivers/vdpa/virtio_pci/vp_vdpa.c | 6 ++++--
+>>>>    1 file changed, 4 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
+>>>> index 2926641fb586..198f7076e4d9 100644
+>>>> --- a/drivers/vdpa/virtio_pci/vp_vdpa.c
+>>>> +++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
+>>>> @@ -18,7 +18,6 @@
+>>>>    #include <linux/virtio_pci.h>
+>>>>    #include <linux/virtio_pci_modern.h>
+>>>> -#define VP_VDPA_QUEUE_MAX 256
+>>>>    #define VP_VDPA_DRIVER_NAME "vp_vdpa"
+>>>>    #define VP_VDPA_NAME_SIZE 256
+>>>> @@ -197,7 +196,10 @@ static void vp_vdpa_set_status(struct vdpa_device *vdpa, u8 status)
+>>>>    static u16 vp_vdpa_get_vq_num_max(struct vdpa_device *vdpa, u16 qid)
+>>>>    {
+>>>> -	return VP_VDPA_QUEUE_MAX;
+>>>> +	struct vp_vdpa *vp_vdpa = vdpa_to_vp(vdpa);
+>>>> +	struct virtio_pci_modern_device *mdev = &vp_vdpa->mdev;
+>>>> +
+>>>> +	return vp_modern_get_queue_size(mdev, qid);
+>>>>    }
+>>>>    static int vp_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 qid,
+>>>> -- 
+>>>> 2.25.1
 
