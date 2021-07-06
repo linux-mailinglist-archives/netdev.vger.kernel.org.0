@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02C093BD20F
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BD33BD156
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237256AbhGFLlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:41:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47624 "EHLO mail.kernel.org"
+        id S238198AbhGFLjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:39:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237086AbhGFLfx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E95561E9D;
-        Tue,  6 Jul 2021 11:25:24 +0000 (UTC)
+        id S237117AbhGFLfz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1056361EA3;
+        Tue,  6 Jul 2021 11:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570725;
-        bh=S3q5+8GXB75Xf7g+Pzl9qYFzT+wHQlfna6ymitQ/T3o=;
+        s=k20201202; t=1625570734;
+        bh=NKRBa+ZnalVf/of+MHcxQ4XWS/mH2Exv8L+GNaH1lEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M+Iizmi6FcwFiApRJK/mOd03wcH84r3Q9o+jXzPvE57SNCxWhCOpPzYcp66ucHUxm
-         F/dO9oSwoyszEYy69/iz2iDSbWwStEAgnGvDy/kpL7ahcCJbIfXoFFc7Z2hLyCnlls
-         z+iWYPfQg0vnvQ+5gE4m8I4zPkh+8eGijc0NSwyjogZVJ5Z9NDZijiOR5nLcAzRp6c
-         s40IspVAO6oTUEYkGUczgdLALJTZXCIRenE1+7+s4N+Fl67vQTKvfUPmUUeZl93ItT
-         5VpmTvKNalMN/DpvHxwKtmXi+CizYMWC/B+H66atHUzaYDeN3ctD3hjeZPLrmNgFNX
-         kn37PWdXpEMTg==
+        b=SD61JUi6gP0doGXaq/Ns91IMRg7Ogh8uGVAse23X8zphUFSD8NAy1+abFL+7nf6Eh
+         Cz/qzi/HxB9EsnfjzcxjSh0GKfFTy/vueUJ0uqh2HFENibrdOIKIpJQ1auWiDfnC6/
+         5110THqbKddKq5fDM+g4G66tcthoA8+k/KAMMUrDgmiGmDWstOi140Xk1J0Ut95cRe
+         8Ezx4SN8qmHRmPbw9WnZGjKc7nOtsd1cbtZ+AhFgpCwrzWo2CYPKM9o7w7uwCJNBdV
+         3epriRoRI4ppk3I7OSyHp54FjYIOyGBeMFFpCSRQsrkX3fpPlmsCedpodHhrKZT5bP
+         eNo8uX3XgVJhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongseok Yi <dseok.yi@samsung.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 17/74] bpf: Check for BPF_F_ADJ_ROOM_FIXED_GSO when bpf_skb_change_proto
-Date:   Tue,  6 Jul 2021 07:24:05 -0400
-Message-Id: <20210706112502.2064236-17-sashal@kernel.org>
+Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 25/74] ipv6: use prandom_u32() for ID generation
+Date:   Tue,  6 Jul 2021 07:24:13 -0400
+Message-Id: <20210706112502.2064236-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112502.2064236-1-sashal@kernel.org>
 References: <20210706112502.2064236-1-sashal@kernel.org>
@@ -44,118 +43,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongseok Yi <dseok.yi@samsung.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit fa7b83bf3b156c767f3e4a25bbf3817b08f3ff8e ]
+[ Upstream commit 62f20e068ccc50d6ab66fdb72ba90da2b9418c99 ]
 
-In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
-coalesced packet payload can be > MSS, but < MSS + 20.
+This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
+table for IP ID generation"), but focusing on some specific aspects
+of IPv6.
 
-bpf_skb_proto_6_to_4() will upgrade the MSS and it can be > the payload
-length. After then tcp_gso_segment checks for the payload length if it
-is <= MSS. The condition is causing the packet to be dropped.
+Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
+minimum MTU of 1280, it's much less easy to force a remote peer to
+produce many fragments to explore its ID sequence. In addition packet
+IDs are 32-bit in IPv6, which further complicates their analysis. On
+the other hand, it is often easier to choose among plenty of possible
+source addresses and partially work around the bigger hash table the
+commit above permits, which leaves IPv6 partially exposed to some
+possibilities of remote analysis at the risk of weakening some
+protocols like DNS if some IDs can be predicted with a good enough
+probability.
 
-tcp_gso_segment():
-        [...]
-        mss = skb_shinfo(skb)->gso_size;
-        if (unlikely(skb->len <= mss))
-                goto out;
-        [...]
+Given the wide range of permitted IDs, the risk of collision is extremely
+low so there's no need to rely on the positive increment algorithm that
+is shared with the IPv4 code via ip_idents_reserve(). We have a fast
+PRNG, so let's simply call prandom_u32() and be done with it.
 
-Allow to upgrade/downgrade MSS only when BPF_F_ADJ_ROOM_FIXED_GSO is
-not set.
+Performance measurements at 10 Gbps couldn't show any difference with
+the previous code, even when using a single core, because due to the
+large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
+of the random generation is completely offset by other operations and by
+the network transfer time. In addition, this change removes the need to
+update a shared entry in the idents table so it may even end up being
+slightly faster on large scale systems where this matters.
 
-Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/bpf/1620804453-57566-1-git-send-email-dseok.yi@samsung.com
+The risk of at least one collision here is about 1/80 million among
+10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
+which remains very low compared to IPv4 where all IDs are reused
+every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
+
+Reported-by: Amit Klein <aksecurity@gmail.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20210529110746.6796-1-w@1wt.eu
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ net/ipv6/output_core.c | 28 +++++-----------------------
+ 1 file changed, 5 insertions(+), 23 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 108bcf600052..823e77846525 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2833,7 +2833,7 @@ static int bpf_skb_net_hdr_pop(struct sk_buff *skb, u32 off, u32 len)
- 	return ret;
- }
- 
--static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
-+static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
+diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
+index af36acc1a644..2880dc7d9a49 100644
+--- a/net/ipv6/output_core.c
++++ b/net/ipv6/output_core.c
+@@ -15,29 +15,11 @@ static u32 __ipv6_select_ident(struct net *net,
+ 			       const struct in6_addr *dst,
+ 			       const struct in6_addr *src)
  {
- 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
- 	u32 off = skb_mac_header_len(skb);
-@@ -2862,7 +2862,9 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
- 		}
- 
- 		/* Due to IPv6 header, MSS needs to be downgraded. */
--		skb_decrease_gso_size(shinfo, len_diff);
-+		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
-+			skb_decrease_gso_size(shinfo, len_diff);
+-	const struct {
+-		struct in6_addr dst;
+-		struct in6_addr src;
+-	} __aligned(SIPHASH_ALIGNMENT) combined = {
+-		.dst = *dst,
+-		.src = *src,
+-	};
+-	u32 hash, id;
+-
+-	/* Note the following code is not safe, but this is okay. */
+-	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
+-		get_random_bytes(&net->ipv4.ip_id_key,
+-				 sizeof(net->ipv4.ip_id_key));
+-
+-	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
+-
+-	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
+-	 * set the hight order instead thus minimizing possible future
+-	 * collisions.
+-	 */
+-	id = ip_idents_reserve(hash, 1);
+-	if (unlikely(!id))
+-		id = 1 << 31;
++	u32 id;
 +
- 		/* Header must be checked, and gso_segs recomputed. */
- 		shinfo->gso_type |= SKB_GSO_DODGY;
- 		shinfo->gso_segs = 0;
-@@ -2874,7 +2876,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
- 	return 0;
- }
++	do {
++		id = prandom_u32();
++	} while (!id);
  
--static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
-+static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
- {
- 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
- 	u32 off = skb_mac_header_len(skb);
-@@ -2903,7 +2905,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
- 		}
- 
- 		/* Due to IPv4 header, MSS can be upgraded. */
--		skb_increase_gso_size(shinfo, len_diff);
-+		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
-+			skb_increase_gso_size(shinfo, len_diff);
-+
- 		/* Header must be checked, and gso_segs recomputed. */
- 		shinfo->gso_type |= SKB_GSO_DODGY;
- 		shinfo->gso_segs = 0;
-@@ -2915,17 +2919,17 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
- 	return 0;
- }
- 
--static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
-+static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
- {
- 	__be16 from_proto = skb->protocol;
- 
- 	if (from_proto == htons(ETH_P_IP) &&
- 	      to_proto == htons(ETH_P_IPV6))
--		return bpf_skb_proto_4_to_6(skb);
-+		return bpf_skb_proto_4_to_6(skb, flags);
- 
- 	if (from_proto == htons(ETH_P_IPV6) &&
- 	      to_proto == htons(ETH_P_IP))
--		return bpf_skb_proto_6_to_4(skb);
-+		return bpf_skb_proto_6_to_4(skb, flags);
- 
- 	return -ENOTSUPP;
- }
-@@ -2935,7 +2939,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
- {
- 	int ret;
- 
--	if (unlikely(flags))
-+	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
- 		return -EINVAL;
- 
- 	/* General idea is that this helper does the basic groundwork
-@@ -2955,7 +2959,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
- 	 * that. For offloads, we mark packet as dodgy, so that headers
- 	 * need to be verified first.
- 	 */
--	ret = bpf_skb_proto_xlat(skb, proto);
-+	ret = bpf_skb_proto_xlat(skb, proto, flags);
- 	bpf_compute_data_pointers(skb);
- 	return ret;
+ 	return id;
  }
 -- 
 2.30.2
