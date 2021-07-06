@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1443A3BD2A6
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D2B3BD2AC
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237704AbhGFLoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:44:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47558 "EHLO mail.kernel.org"
+        id S239147AbhGFLob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:44:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237312AbhGFLgF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237316AbhGFLgF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A91A61EFA;
-        Tue,  6 Jul 2021 11:26:48 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A17B61EF7;
+        Tue,  6 Jul 2021 11:26:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570809;
-        bh=V5zivt4KHWMbQAUslsEEoDkydvtFrBaqqBpGyzEc12w=;
+        s=k20201202; t=1625570811;
+        bh=MB9zlgkJnCKies2mtTgzKmFoPVEsNrYGrm3alODX5fQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yn1DQKzadn9Fm9GQWfBq97KA0HAeod69GNj+j8z6trZUSAQYziy9M8iWSJI8r/Awm
-         e9J5fTCV0OY7VZUZvNC42zmgxVFp0XtAwlr8x+FFQ7ROllbC6L8HmYlzL2NW8dE3NT
-         IH1ldI8R2ArIIQ9ipp+v1qcyV/aqStIsjSdCJf5NnaOkYenBI01M3QmYzszXtfXPYA
-         zaLuYIv38eiIYdsORukpJdQUJ4cIJU4Y66pxunExOojqHggV6Jd5EcT6plEaasw7S2
-         RrcsjuA/HLz8H7T6Zx1Yc+6rfuY7yTpwgOC1N2m55pgXAzhn6lr+y75+or2IRbNrQ+
-         LPCVDFlciwccw==
+        b=uz9FEHsS1j7fYUcv7dZdkZhBOF2pWMzMPDEsfCeNaoCAOwLN6HPpdSqW97DFOGs+Q
+         N9vAulFa2fkoDh7BjCP5sphnGsdl7hieZrMaqI1+Qo0t7f7ohcuKdTzWk39bRubMiQ
+         rlh+jTYwVKgVR4kMvEH8m5V0XaLtwra8ZMX5RuSLWNggyFTIDJPpLi49zo9tdmVguX
+         QJ+lIwHiDp7GSyKl4RMPQlk2zJUm9QxNQT2e3j3V56JtA9Ygq9fsv0O9zWKqqQyOrA
+         VHcv2+FPOA+2FRhvVJJlvF/b8VYw8WwQHHnJ0Ne+AsdOSNhkZGOM1nJSz/SWxSy7Qx
+         2m6pMIccafWKw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Zou Wei <zou_wei@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 08/55] atm: iphase: fix possible use-after-free in ia_module_exit()
-Date:   Tue,  6 Jul 2021 07:25:51 -0400
-Message-Id: <20210706112638.2065023-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/55] mISDN: fix possible use-after-free in HFC_cleanup()
+Date:   Tue,  6 Jul 2021 07:25:52 -0400
+Message-Id: <20210706112638.2065023-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112638.2065023-1-sashal@kernel.org>
 References: <20210706112638.2065023-1-sashal@kernel.org>
@@ -45,7 +44,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Zou Wei <zou_wei@huawei.com>
 
-[ Upstream commit 1c72e6ab66b9598cac741ed397438a52065a8f1f ]
+[ Upstream commit 009fc857c5f6fda81f2f7dd851b2d54193a8e733 ]
 
 This module's remove path calls del_timer(). However, that function
 does not wait until the timer handler finishes. This means that the
@@ -60,22 +59,22 @@ Signed-off-by: Zou Wei <zou_wei@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/iphase.c | 2 +-
+ drivers/isdn/hardware/mISDN/hfcpci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
-index 008905d4152a..827c6d5e6177 100644
---- a/drivers/atm/iphase.c
-+++ b/drivers/atm/iphase.c
-@@ -3301,7 +3301,7 @@ static void __exit ia_module_exit(void)
+diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
+index ebb3fa2e1d00..53349850f866 100644
+--- a/drivers/isdn/hardware/mISDN/hfcpci.c
++++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+@@ -2348,7 +2348,7 @@ static void __exit
+ HFC_cleanup(void)
  {
- 	pci_unregister_driver(&ia_driver);
+ 	if (timer_pending(&hfc_tl))
+-		del_timer(&hfc_tl);
++		del_timer_sync(&hfc_tl);
  
--        del_timer(&ia_timer);
-+	del_timer_sync(&ia_timer);
+ 	pci_unregister_driver(&hfc_driver);
  }
- 
- module_init(ia_module_init);
 -- 
 2.30.2
 
