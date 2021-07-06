@@ -2,36 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64D383BD346
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E4D3BD23D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238332AbhGFLjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47598 "EHLO mail.kernel.org"
+        id S237299AbhGFLlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:41:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237193AbhGFLgA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:36:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F6C361ED1;
-        Tue,  6 Jul 2021 11:26:05 +0000 (UTC)
+        id S237228AbhGFLgC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:36:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 129B461EBA;
+        Tue,  6 Jul 2021 11:26:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570766;
-        bh=o8/SmWUqbQEyuMyc2gvCsZe1vXGfO6sLcc64P9UU7hg=;
+        s=k20201202; t=1625570774;
+        bh=DJxiN70BRBarR5/uZop+MDHK1yLCEOfYLHYuhA4a8F4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tpJtrxOt2xIDn7IDmOevpMznaRhUbsF83MYrVS3HZzLntW15nglRm7MfOfxO2gKZV
-         JEsJox9JHRZ3htxrkZjgbWe6yGi52c07Uu9hjUVcwv8wg1nfsw4Hpsdh1ENQrTOYyp
-         sX0CH3JMZqyJMYom+B0ZYx51Mz72vTrbtt17IgVAZ4X8tOK8x+Z7dIyBO/xuyr2qSM
-         85XfWyNIWf4yQgt3WDaT2LksuxjkYbn421ccsfCnsqu38jjMToDWxIwE3zj8YuLcmX
-         You6/Z6dxowsa+AXjA9IQBv3VFO0Rxj5d3Cgl4jcqu2LHRhY0rUfXfYfUFUpe/jvOt
-         Aes6u2PAQIMQg==
+        b=hUYWmPmR8Pj6Tz/CvSt6JF7n21l2kARlKJk09vxndpNz4hotbTCqnb1XyVVkWXvmr
+         VOHc+3vYWrf9mYBx/YKPg4Z1rTvwaLzeF4vXd6nZYmf5FGOPB55V+Zz87E0ZWuIlNo
+         z8UElCwkAcyW3GqbAl0l0pV7D/irygLBaXtwmWletIhiKWtC1xAOMSJVxm2P3+Utwk
+         YEGYm01Z5NnhHzj3OiQmC4K0HVmfl6QDhJn3PE0fjEKDHYGo51Rj0ZN/O3gXjuE4cE
+         bIosXzxD7JL/jsHoJfuI3GBuKUkE3q4SrJpyxQoPUuH5mNWIb+7SPB2iq7GsY7Vm6t
+         XqUm3H94kDTyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
+Cc:     "Longpeng(Mike)" <longpeng2@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        David Brazdil <dbrazdil@google.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        lixianming <lixianming5@huawei.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 50/74] net: sched: fix error return code in tcf_del_walker()
-Date:   Tue,  6 Jul 2021 07:24:38 -0400
-Message-Id: <20210706112502.2064236-50-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 56/74] vsock: notify server to shutdown when client has pending signal
+Date:   Tue,  6 Jul 2021 07:24:44 -0400
+Message-Id: <20210706112502.2064236-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112502.2064236-1-sashal@kernel.org>
 References: <20210706112502.2064236-1-sashal@kernel.org>
@@ -43,35 +51,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
 
-[ Upstream commit 55d96f72e8ddc0a294e0b9c94016edbb699537e1 ]
+[ Upstream commit c7ff9cff70601ea19245d997bb977344663434c7 ]
 
-When nla_put_u32() fails, 'ret' could be 0, it should
-return error code in tcf_del_walker().
+The client's sk_state will be set to TCP_ESTABLISHED if the server
+replay the client's connect request.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+However, if the client has pending signal, its sk_state will be set
+to TCP_CLOSE without notify the server, so the server will hold the
+corrupt connection.
+
+            client                        server
+
+1. sk_state=TCP_SYN_SENT         |
+2. call ->connect()              |
+3. wait reply                    |
+                                 | 4. sk_state=TCP_ESTABLISHED
+                                 | 5. insert to connected list
+                                 | 6. reply to the client
+7. sk_state=TCP_ESTABLISHED      |
+8. insert to connected list      |
+9. *signal pending* <--------------------- the user kill client
+10. sk_state=TCP_CLOSE           |
+client is exiting...             |
+11. call ->release()             |
+     virtio_transport_close
+      if (!(sk->sk_state == TCP_ESTABLISHED ||
+	      sk->sk_state == TCP_CLOSING))
+		return true; *return at here, the server cannot notice the connection is corrupt*
+
+So the client should notify the peer in this case.
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Jorgen Hansen <jhansen@vmware.com>
+Cc: Norbert Slusarek <nslusarek@gmx.net>
+Cc: Andra Paraschiv <andraprs@amazon.com>
+Cc: Colin Ian King <colin.king@canonical.com>
+Cc: David Brazdil <dbrazdil@google.com>
+Cc: Alexander Popov <alex.popov@linux.com>
+Suggested-by: Stefano Garzarella <sgarzare@redhat.com>
+Link: https://lkml.org/lkml/2021/5/17/418
+Signed-off-by: lixianming <lixianming5@huawei.com>
+Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/act_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 716cad677318..17e5cd9ebd89 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -316,7 +316,8 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 	}
- 	mutex_unlock(&idrinfo->lock);
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index c82e7b52ab1f..d4104144bab1 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1217,7 +1217,7 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
  
--	if (nla_put_u32(skb, TCA_FCNT, n_i))
-+	ret = nla_put_u32(skb, TCA_FCNT, n_i);
-+	if (ret)
- 		goto nla_put_failure;
- 	nla_nest_end(skb, nest);
- 
+ 		if (signal_pending(current)) {
+ 			err = sock_intr_errno(timeout);
+-			sk->sk_state = TCP_CLOSE;
++			sk->sk_state = sk->sk_state == TCP_ESTABLISHED ? TCP_CLOSING : TCP_CLOSE;
+ 			sock->state = SS_UNCONNECTED;
+ 			vsock_transport_cancel_pkt(vsk);
+ 			goto out_wait;
 -- 
 2.30.2
 
