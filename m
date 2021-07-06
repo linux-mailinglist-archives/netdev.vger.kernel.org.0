@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69FC3BDE14
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 21:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E62E3BDE56
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 22:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbhGFTfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 15:35:46 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43614 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229811AbhGFTfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 15:35:46 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m0qoa-0003eJ-DF; Tue, 06 Jul 2021 21:33:04 +0200
-Received: from [85.5.47.65] (helo=linux-3.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m0qoa-000S7C-5t; Tue, 06 Jul 2021 21:33:04 +0200
-Subject: LPC 2021 Networking and BPF Track CFP (Reminder)
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     xdp-newbies@vger.kernel.org, iovisor-dev@lists.iovisor.org,
-        linux-wireless@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        lwn@lwn.net
-References: <6d225920-9ecc-ef24-2bf8-848ca86c7fb0@iogearbox.net>
-Message-ID: <c549da28-a3c0-9478-4b91-7aa2ff124b69@iogearbox.net>
-Date:   Tue, 6 Jul 2021 21:33:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S230222AbhGFUVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 16:21:12 -0400
+Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:45527 "EHLO
+        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230185AbhGFUVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 16:21:11 -0400
+X-Greylist: delayed 902 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Jul 2021 16:21:10 EDT
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
+ 15.0.1156.6; Tue, 6 Jul 2021 13:03:26 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 23723202BB;
+        Tue,  6 Jul 2021 13:03:29 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 1C115AA0C5; Tue,  6 Jul 2021 13:03:29 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 0/7] vmxnet3: upgrade to version 6
+Date:   Tue, 6 Jul 2021 13:03:04 -0700
+Message-ID: <20210706200312.29777-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-In-Reply-To: <6d225920-9ecc-ef24-2bf8-848ca86c7fb0@iogearbox.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26223/Tue Jul  6 13:05:54 2021)
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a reminder for the Call for Proposals (CFP) for the Networking and
-BPF track at the 2021 edition of the Linux Plumbers Conference (LPC), which
-will be held virtually on the wider Internet, on September 20th - 24th, 2021.
+vmxnet3 emulation has recently added several new features which includes
+increase in queues supported, remove power of 2 limitation on queues,
+add RSS for ESP IPv6, etc. This patch series extends the vmxnet3 driver
+to leverage these new features.
 
-This year's Networking and BPF track technical committee is comprised of:
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 6.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
-   David S. Miller <davem@davemloft.net>
-   Jakub Kicinski <kuba@kernel.org>
-   Eric Dumazet <edumazet@google.com>
-   Alexei Starovoitov <ast@kernel.org>
-   Daniel Borkmann <daniel@iogearbox.net>
-   Andrii Nakryiko <andrii@kernel.org>
+In particular, following changes are introduced:
 
-We are seeking proposals of 40 minutes in length (including Q&A discussion),
-optionally accompanied by papers of 2 to 10 pages in length.
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 6 comparison
+  and updates Copyright information.
 
-Any kind of advanced Linux networking and/or BPF related topic will be considered.
+Patch 2:
+  This patch adds support to increase maximum Tx/Rx queues from 8 to 32.
 
-Please submit your proposals through the official LPC website at:
+Patch 3:
+  This patch removes the limitation of power of 2 on the queues.
 
-   https://linuxplumbersconf.org/event/11/abstracts/
+Patch 4:
+  Uses existing get_rss_hash_opts and set_rss_hash_opts methods to add
+  support for ESP IPv6 RSS.
 
-Make sure to select "Networking & BPF Summit" in the Track pull-down menu.
+Patch 5:
+  This patch reports correct RSS hash type based on the type of RSS
+  performed.
 
-Proposals must be submitted by August 13th, and submitters will be notified of
-acceptance by August 16th.
+Patch 6:
+  This patch updates maximum configurable mtu to 9190.
 
-Final slides and papers (as PDF) are due on the first day of the conference.
+Patch 7:
+  With all vmxnet3 version 6 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 6.
+
+
+Ronak Doshi (7):
+  vmxnet3: prepare for version 6 changes
+  vmxnet3: add support for 32 Tx/Rx queues
+  vmxnet3: remove power of 2 limitation on the queues
+  vmxnet3: add support for ESP IPv6 RSS
+  vmxnet3: set correct hash type based on rss information
+  vmxnet3: increase maximum configurable mtu to 9190
+  vmxnet3: update to version 6
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  50 ++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 221 ++++++++++++++++++++++++----------
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  22 +++-
+ drivers/net/vmxnet3/vmxnet3_int.h     |  22 +++-
+ 6 files changed, 236 insertions(+), 83 deletions(-)
+
+-- 
+2.11.0
+
