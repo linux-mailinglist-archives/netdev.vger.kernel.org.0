@@ -2,96 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59DAD3BC483
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 03:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3F03BC48F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 03:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbhGFBOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 21:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbhGFBOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 21:14:36 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF51C061574;
-        Mon,  5 Jul 2021 18:11:58 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id b5-20020a17090a9905b029016fc06f6c5bso896708pjp.5;
-        Mon, 05 Jul 2021 18:11:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NwQaLt08jBec11KMF4e1SB6lInafR9MTNHkp/3GAlCs=;
-        b=GrH7hbBZRjhmUoQzTYxVhnvJrgTf6HEZuivxzAFryLBr+X+CbRKtUf0W4ybY+myvtc
-         sh+IvumMoC8jOMd/iaFUBaJj2JK5QJqd2nHYthE2Mbj0XQ2lZdyg5UoYliOT+gC064at
-         FJtsxcQk3V6in/tiOY36+CqYpQS1ngOkdobFQwX2NdPRBtXY66JWP4nAHnv+9qlIzFVu
-         jntzgNiRwql5L6++9YGAsjdPpwb9vb02QEuu8d09qpY2LZ53Z8cnRGo5Qkanr5K8a2bb
-         Btf3/rp5VzC7jgC7ZxU02+TYGUaGdtKZY62GnqjxIez6rxevnD2fPW04Xpy5F7QBGcjO
-         QD5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NwQaLt08jBec11KMF4e1SB6lInafR9MTNHkp/3GAlCs=;
-        b=iijGrmtJBo0efwHYYfGV1BxN9eRbndGvGTi0nfa1b+LjCy4Da7PdcW0SULcXF+v3/6
-         NUFISz94WAoWE1cwmrfKRlGue7CFdta6k/wXBh8fK6wwVUd4mb9t/7mdLKzz8Mul8W7o
-         1HlflDl2f8/YdB4V/RKrfElqLBUXzZidp5z5ghx04+EnWSqcPSg8GRGoSWqIDkOaDWrW
-         55F5wAEeJg9fnEZxLWLjnzth7Y8R5hwPIgj4XdrxZOg80CTXaCPYVielZjaRZ7lEVOzx
-         o905zeVSKh6jzfqnUqplCODCvdMWUFVwT/ZwUWOhKFgzhhTXnKkyQQEjQC4kLSyNwNBZ
-         VqZA==
-X-Gm-Message-State: AOAM533seO2fEOYvzy2MDzB7F5YqOc01xhABRccs3tVdb+rqRc8yyAM8
-        BxK9D4cJ8fNLVRIToG5Tzps=
-X-Google-Smtp-Source: ABdhPJxyVBLkpgGVc/tcOrtl50EC8uoGSyLEDjcPeC7u5xbnkGWbldxhnRLLRWu2eDHWgIkL8CZNiA==
-X-Received: by 2002:a17:903:2341:b029:129:33d3:60ee with SMTP id c1-20020a1709032341b029012933d360eemr14771858plh.66.1625533918176;
-        Mon, 05 Jul 2021 18:11:58 -0700 (PDT)
-Received: from ubuntu.localdomain ([103.220.76.197])
-        by smtp.gmail.com with ESMTPSA id o16sm9017810pjw.51.2021.07.05.18.11.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 18:11:57 -0700 (PDT)
-From:   gushengxian <gushengxian507419@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gushengxian <gushengxian@yulong.com>
-Subject: [PATCH v2] tools: bpftool: close va_list 'ap' by va_end()
-Date:   Mon,  5 Jul 2021 18:11:50 -0700
-Message-Id: <20210706011150.670544-1-gushengxian507419@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229891AbhGFBSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 21:18:35 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:60743 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229733AbhGFBSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 21:18:35 -0400
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EAF19806B6;
+        Tue,  6 Jul 2021 13:15:53 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1625534153;
+        bh=7EH8newCu/5rldYs/AL9Gg04ut1kOlRle/EtodLUUno=;
+        h=From:To:Cc:Subject:Date;
+        b=i0wMqBFmN5puqg6QTxMfAo6e6LTXDeNntERIv9XaSTa6r0zSHuV4hL903rG/X1T0z
+         JW1CQ9PVFgH5djDL/CCZ3EOQApOA35ZyMqCvvDv0A2LR7dX1Py05nShCUMdRxegu71
+         2V+6MSbMFDA2JUlelj8BSF4qXmd6KWLeOLHTGHz4kAI8uA7dmjWA3zfnTZJ3Vi+2+n
+         vs1gBYAOlSHYGaSCuxCEiNR7AuUJMv+p9qvTVDRBaU8BNCUDmuY0XC7YKNeYuq6H+q
+         rIIuj2Jbt5ZU09cbSMOOdxlEs9HcoJ3c766LwaNDMAweRuSfA2i0Ge7Od77DNUvRKY
+         WHkLv+lMRRcVQ==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B60e3aec90000>; Tue, 06 Jul 2021 13:15:53 +1200
+Received: from callums-dl.ws.atlnz.lc (callums-dl.ws.atlnz.lc [10.33.22.16])
+        by pat.atlnz.lc (Postfix) with ESMTP id BFAD913EE58;
+        Tue,  6 Jul 2021 13:15:53 +1200 (NZST)
+Received: by callums-dl.ws.atlnz.lc (Postfix, from userid 1764)
+        id B7D12A028D; Tue,  6 Jul 2021 13:15:53 +1200 (NZST)
+From:   Callum Sinclair <callum.sinclair@alliedtelesis.co.nz>
+To:     dsahern@kernel.org, nikolay@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linus.luessing@c0d3.blue,
+        Callum Sinclair <callum.sinclair@alliedtelesis.co.nz>
+Subject: [PATCH] net: Allow any address multicast join for IP sockets
+Date:   Tue,  6 Jul 2021 13:15:47 +1200
+Message-Id: <20210706011548.2201-1-callum.sinclair@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=IOh89TnG c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=e_q4qTt1xDgA:10 a=Mf_EwY-YAuCiQXJ_BIEA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: gushengxian <gushengxian@yulong.com>
+For an application to receive all multicast packets in a range such as
+224.0.0.1 - 239.255.255.255 each multicast IP address has to be joined
+explicitly one at a time.
 
-va_list 'ap' was opened but not closed by va_end(). It should be
-closed by va_end() before return.
+Allow the any address to be passed to the IP_ADD_MEMBERSHIP and
+IPV6_ADD_MEMBERSHIP socket option per interface. By joining the any
+address the socket will receive all multicast packets that are received
+on the interface.=20
 
-According to suggestion of Daniel Borkmann <daniel@iogearbox.net>.
-Signed-off-by: gushengxian <gushengxian@yulong.com>
----
- tools/bpf/bpftool/jit_disasm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This allows any IP socket to be used for IGMP or MLD snooping.
 
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index e7e7eee9f172..24734f2249d6 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -43,11 +43,13 @@ static int fprintf_json(void *out, const char *fmt, ...)
- {
- 	va_list ap;
- 	char *s;
-+	int err;
- 
- 	va_start(ap, fmt);
--	if (vasprintf(&s, fmt, ap) < 0)
--		return -1;
-+	err = vasprintf(&s, fmt, ap);
- 	va_end(ap);
-+	if (err < 0)
-+		return -1;
- 
- 	if (!oper_count) {
- 		int i;
--- 
-2.25.1
+Callum Sinclair (1):
+  net: Allow any address multicast join for IP sockets
+
+ net/ipv4/igmp.c  | 40 ++++++++++++++++++++++++++++++++--------
+ net/ipv6/mcast.c | 20 ++++++++++++++------
+ 2 files changed, 46 insertions(+), 14 deletions(-)
+
+--=20
+2.32.0
 
