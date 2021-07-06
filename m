@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8BA3BC9C8
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 12:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EBA13BC9E8
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 12:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbhGFK2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 06:28:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52730 "EHLO mail.kernel.org"
+        id S231551AbhGFK3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 06:29:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231208AbhGFK2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 06:28:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 273FD619AB;
-        Tue,  6 Jul 2021 10:25:45 +0000 (UTC)
+        id S231305AbhGFK3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 06:29:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 67D94619A5;
+        Tue,  6 Jul 2021 10:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625567145;
-        bh=V+uGgWI7ODWDPnX93N2q4QxlyZDaMh1bjqAqdpBNoN4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=maDtNYbjZpDD0PKjc4+nM3Y213Akod8ccrNcZVsiy5KPtneyyahoRaDB5AbMrAwYJ
-         m6oMoU+hcgZXNuCsoc9yJ2+bzIoCnRHsti/6uqBP8DKnPnXcD/khw96G8CUsBlPlvR
-         uf0MJVwBY0fA5Npz0MHmvhwpdr+Wv2TOZMh4BI+fP5OWpWrOVsQ5Dquu1HsKCQm/Z3
-         7bqMd9M3OziVf290y6vu/n9lxKpsWMkO6NowOo/L+CwTy3kWF456W471Gj/HhlY3go
-         paE6+JOD9eP6KydGYz0nficgDNBo/ZvaGMWNwDkXP9s9hxxto+00KpCpg6+2NdC4+K
-         HB6sMk/Pez8VQ==
-Received: by pali.im (Postfix)
-        id 93CEB6E9; Tue,  6 Jul 2021 12:25:42 +0200 (CEST)
-Date:   Tue, 6 Jul 2021 12:25:42 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+        s=k20201202; t=1625567225;
+        bh=0Vco6bcsV+Des5dnB/IHP43/fsWcFHTPga6X4P0iyiI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MJ47WOBtCFnBMrkhOv+LFd3d2n5QIFWUez/HdhcKSgj7hDo7O0eQPQO5H1okLYNyY
+         WRHGLatcUEVgmIJR5BCR7gEfLHN7Lv0rc0YJ5MyF740i+lCi8D4V+MGNYVLcohzTMs
+         AfQKJwNYwrk/3LHkBQb8ARTgdmp51CHltJ3T5fWM60xGKOpwPUaG1eqdKH5Upw0qVs
+         s7qgJDHkhXgsuZf0dm36DQ+Su4NaRp8y0KTbqHcRHQh4sMzfcc9GcElEIURZcXDone
+         /RqrSOsALErH8v8KBG/HSN0T6lH+qCDwKWZm1izYVpvXQqH5K2135N2PlYwMDGoyI2
+         kPGtTEoLasdOg==
+Date:   Tue, 6 Jul 2021 12:26:31 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         kernel@pengutronix.de, linux-kernel@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>,
@@ -41,7 +40,7 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         Maxime Ripard <mripard@kernel.org>,
         Chen-Yu Tsai <wens@csie.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
@@ -71,7 +70,6 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
         Jens Taprogge <jens.taprogge@taprogge.org>,
         Johannes Thumshirn <morbidrsa@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Maxim Levitsky <maximlevitsky@gmail.com>,
         Alex Dubov <oakad@yahoo.com>,
         Ulf Hansson <ulf.hansson@linaro.org>,
@@ -83,7 +81,7 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Maximilian Luz <luzmaximilian@gmail.com>,
@@ -129,6 +127,7 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alexey Kardashevskiy <aik@ozlabs.ru>,
         Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Joey Pabalan <jpabalanb@gmail.com>,
+        Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
         Adrian Hunter <adrian.hunter@intel.com>,
         Frank Li <lznuaa@gmail.com>,
         Mike Christie <michael.christie@oracle.com>,
@@ -157,50 +156,77 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
         xen-devel@lists.xenproject.org
 Subject: Re: [PATCH] bus: Make remove callback return void
-Message-ID: <20210706102542.7lzvb6nm4ztmlarl@pali>
-References: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Message-ID: <20210706122631.463bc671@coco.lan>
 In-Reply-To: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
-User-Agent: NeoMutt/20180716
+References: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 06 July 2021 11:50:37 Uwe Kleine-König wrote:
+Em Tue,  6 Jul 2021 11:50:37 +0200
+Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> escreveu:
+
 > The driver core ignores the return value of this callback because there
 > is only little it can do when a device disappears.
-> 
+>=20
 > This is the final bit of a long lasting cleanup quest where several
 > buses were converted to also return void from their remove callback.
 > Additionally some resource leaks were fixed that were caused by drivers
 > returning an error code in the expectation that the driver won't go
 > away.
-> 
+>=20
 > With struct bus_type::remove returning void it's prevented that newly
 > implemented buses return an ignored error code and so don't anticipate
 > wrong expectations for driver authors.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-Acked-by: Pali Rohár <pali@kernel.org>
-
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 > ---
 > Hello,
-> 
+>=20
 > this patch depends on "PCI: endpoint: Make struct pci_epf_driver::remove
 > return void" that is not yet applied, see
-> https://lore.kernel.org/r/20210223090757.57604-1-u.kleine-koenig@pengutronix.de.
-> 
+> https://lore.kernel.org/r/20210223090757.57604-1-u.kleine-koenig@pengutro=
+nix.de.
+>=20
 > I tested it using allmodconfig on amd64 and arm, but I wouldn't be
 > surprised if I still missed to convert a driver. So it would be great to
 > get this into next early after the merge window closes.
-> 
+>=20
 > I send this mail to all people that get_maintainer.pl emits for this
 > patch. I wonder how many recipents will refuse this mail because of the
 > long Cc: list :-)
-> 
+>=20
 > Best regards
 > Uwe
+>=20
+
+> diff --git a/drivers/media/pci/bt8xx/bttv-gpio.c b/drivers/media/pci/bt8x=
+x/bttv-gpio.c
+> index b730225ca887..a2b18e2bed1b 100644
+> --- a/drivers/media/pci/bt8xx/bttv-gpio.c
+> +++ b/drivers/media/pci/bt8xx/bttv-gpio.c
+> @@ -46,14 +46,13 @@ static int bttv_sub_probe(struct device *dev)
+>  	return sub->probe ? sub->probe(sdev) : -ENODEV;
+>  }
+> =20
+> -static int bttv_sub_remove(struct device *dev)
+> +static void bttv_sub_remove(struct device *dev)
+>  {
+>  	struct bttv_sub_device *sdev =3D to_bttv_sub_dev(dev);
+>  	struct bttv_sub_driver *sub =3D to_bttv_sub_drv(dev->driver);
+> =20
+>  	if (sub->remove)
+>  		sub->remove(sdev);
+> -	return 0;
+>  }
+> =20
+
+Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org> # for drivers/media
+
+
+Thanks,
+Mauro
