@@ -2,108 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF743BD6AB
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B56C03BD738
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:52:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238313AbhGFMmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:42:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23524 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242470AbhGFM1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 08:27:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625574263;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Y13alJ2jM1bOVc9q850K4tBpaenyHU9dsbMO+Gya7uc=;
-        b=h8uerQLFMJ9bS8CM4wWmuMfzpoJJbxMH1oZ6ZcUDmEx6Kl6AcvGnEMQ9XJzLNi5ZBTjsLK
-        JlwDIhvwtvoe4yTRC126OQFTXsWatVRwPxbZbXiGQO47zVYQ/rniy8pV+tY+AX6t7lcv5I
-        j4+FelXi++JkAxRoW0hmxt1C72E+gzI=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-216-VjD2VBTSMB2iCDcGB09VwQ-1; Tue, 06 Jul 2021 08:24:22 -0400
-X-MC-Unique: VjD2VBTSMB2iCDcGB09VwQ-1
-Received: by mail-ed1-f72.google.com with SMTP id i8-20020a50fc080000b02903989feb4920so5239059edr.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 05:24:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y13alJ2jM1bOVc9q850K4tBpaenyHU9dsbMO+Gya7uc=;
-        b=NX1wHQPejr8KZNMY2VnQ1xfUZ/ba0N5yCm4G6LrhOr3sPMuccD3+0MgKBH2lBAonRg
-         ZyIG95bH+81uF7iOwrhJnO/16E2kJhNJIHBzODEXiSlbc3oXbH1gEFSNLjKttWFN2cg2
-         rfUQKs/iYN3XRq7fBke5gcy++gEqIuklAlrMtfK/AgtgeRQS2IPNzQFeYEPH8Aqv2y43
-         NVRegZKvF8sXzYK50jUHMBWRjVnKl/zPOWZKSe7e0cZu4ihn0hsfGKUVCe7nd4vrDAxr
-         hi3QCTCyHHFOTkert27xE0h9Deqh0bXsX1xNjpjHbsQrIOreaQjIVuhnWqO87q4dHZZa
-         yhyg==
-X-Gm-Message-State: AOAM532G9C90uDNtztx+j37X9eDNC0XfxGFP4VBWqQC8eq9WLmNgCyof
-        SJtYNNNcTlkDtkLb301qw+L/S/ar3k2tkbKkC+JwJcv4/Xz1tqGMMybqTxjLHEQtwYn+0ejYNWJ
-        LhzyCEAvDOmi5NvVa
-X-Received: by 2002:a05:6402:1d07:: with SMTP id dg7mr22695307edb.298.1625574261158;
-        Tue, 06 Jul 2021 05:24:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJby1RGzCn1Gca06LP2s5K/jnrSikyYrVATGHfhm9trFu1pZ9JszYw/LRTDwt00A5iKIl0NQ==
-X-Received: by 2002:a05:6402:1d07:: with SMTP id dg7mr22695295edb.298.1625574261032;
-        Tue, 06 Jul 2021 05:24:21 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id q17sm4422507eja.108.2021.07.06.05.24.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 05:24:20 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EA6F318072E; Tue,  6 Jul 2021 14:24:19 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf] libbpf: restore errno return for functions that were already returning it
-Date:   Tue,  6 Jul 2021 14:23:55 +0200
-Message-Id: <20210706122355.236082-1-toke@redhat.com>
-X-Mailer: git-send-email 2.32.0
+        id S235360AbhGFMzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:55:04 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:46848 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235125AbhGFMzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 08:55:03 -0400
+X-UUID: cbc380d870e948d9afe3487eb0f8f4d8-20210706
+X-UUID: cbc380d870e948d9afe3487eb0f8f4d8-20210706
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+        (envelope-from <rocco.yue@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1261492797; Tue, 06 Jul 2021 20:52:21 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 6 Jul 2021 20:52:20 +0800
+Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 6 Jul 2021 20:52:19 +0800
+From:   Rocco Yue <rocco.yue@mediatek.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
+        <rocco.yue@gmail.com>, <chao.song@mediatek.com>,
+        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
+        Rocco Yue <rocco.yue@mediatek.com>
+Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
+Date:   Tue, 6 Jul 2021 20:37:02 +0800
+Message-ID: <20210706123702.29375-1-rocco.yue@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
+References: <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The update to streamline libbpf error reporting intended to change all
-functions to return the errno as a negative return value if
-LIBBPF_STRICT_DIRECT_ERRS is set. However, if the flag is *not* set, the
-return value changes for the two functions that were already returning a
-negative errno unconditionally: bpf_link__unpin() and perf_buffer__poll().
+On Mon, 2021-07-05 at 10:35 -0600, David Ahern wrote:
+> On 7/1/21 2:51 AM, Rocco Yue wrote:
+>> On Wed, 2021-06-30 at 22:41 -0600, David Ahern wrote:
+>> 
+>> For mobile operators that don't need to support RFC7217, setting
+>> addr_gen_mode == 1 is sufficient;
+>> 
+>> But for some other mobile operators that need to support RFC7217, such as AT&T,
+>> the mobile device's addr_gen_mode will be switched to the
+>> IN6_ADDR_GEN_MODE_STABLE_PRIVACY, instead of using IN6_ADDR_GEN_MODE_NONE.
+>> The purpose is: in the IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, kernel can
+>> gererate a stable privacy global ipv6 address after receiveing RA, and
+>> network processes can use this global address to communicate with the
+>> outside network.
+>> 
+>> Of course, mobile operators that need to support RFC7217 should also meet
+>> the requirement of 3GPP TS 29.061, that is, MT should use IID assigned by
+>> the GGSN to build its ipv6 link-local address and use this address to send RS.
+>> We don't want the kernel to automatically generate an ipv6 link-local address
+>> when addr_gen_mode == 2. Otherwise, using the stable privacy ipv6 link-local
+>> address automatically generated by the kernel to send RS message, GGSN will
+>> not be able to respond to the RS and reply a RA message.
+>> 
+>> Therefore, after this patch, kernel will not generate ipv6 link-local address
+>> for the corresponding device when addr_gen_mode == 1 or addr_gen_mode == 2.
+>> 
+> 
+> I think another addr_gen_mode is better than a separate sysctl. It looks
+> like IN6_ADDR_GEN_MODE_STABLE_PRIVACY and IN6_ADDR_GEN_MODE_RANDOM are
+> the ones used for RAs, so add something like:
+> 
+> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+> IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
+> 
+> to in6_addr_gen_mode.
+> 
 
-This is a user-visible API change that breaks applications; so let's revert
-these two functions back to unconditionally returning a negative errno
-value.
+Hi David,
 
-Fixes: e9fc3ce99b34 ("libbpf: Streamline error reporting for high-level APIs")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/lib/bpf/libbpf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks for your reply.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 1e04ce724240..6f5e2757bb3c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10136,7 +10136,7 @@ int bpf_link__unpin(struct bpf_link *link)
- 
- 	err = unlink(link->pin_path);
- 	if (err != 0)
--		return libbpf_err_errno(err);
-+		return -errno;
- 
- 	pr_debug("link fd=%d: unpinned from %s\n", link->fd, link->pin_path);
- 	zfree(&link->pin_path);
-@@ -11197,7 +11197,7 @@ int perf_buffer__poll(struct perf_buffer *pb, int timeout_ms)
- 
- 	cnt = epoll_wait(pb->epoll_fd, pb->events, pb->cpu_cnt, timeout_ms);
- 	if (cnt < 0)
--		return libbpf_err_errno(cnt);
-+		return -errno;
- 
- 	for (i = 0; i < cnt; i++) {
- 		struct perf_cpu_buf *cpu_buf = pb->events[i].data.ptr;
--- 
-2.32.0
+According to your suggestion, I checked the ipv6 code again. In my
+opinion, adding another addr_gen_mode may not be suitable.
 
+(1)
+In the user space, the process enable the ipv6 stable privacy mode by
+setting the "/proc/sys/net/ipv6/conf/<iface>/stable_secret".
+
+In the kernel, the addr_gen_mode of a networking device is switched to
+IN6_ADDR_GEN_MODE_STABLE_PRIVACY by judging the bool value of
+"cnf.stable_secret.initialized".
+
+So, although adding an additional IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
+user space process has some trouble to let kernel switch the iface's
+addr_gen_mode to the IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA.
+
+This is not as flexible as adding a separate sysctl.
+
+(2)
+After adding "proc/sys/net/ipv6/<iface>/disable_gen_linklocal_addr",
+so that kernel can keep the original code logic of the stable_secret
+proc file, and expand when the subsequent kernel adds a new add_gen_mode
+more flexibility and applicability.
+
+And we only need to care about the networking device that do not
+generate an ipv6 link-local address, and not the addr_gen_mode that
+this device is using.
+
+Maybe adding a separate sysctl is a better choice.
+Looking forward to your professional reply again.
+
+Thanks,
+Rocco
