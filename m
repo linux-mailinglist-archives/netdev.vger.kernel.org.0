@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BC73BD5CB
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B4153BD5CD
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241372AbhGFMZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:25:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47598 "EHLO mail.kernel.org"
+        id S241601AbhGFMZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:25:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47602 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236807AbhGFLfl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 45C4B6135A;
-        Tue,  6 Jul 2021 11:24:23 +0000 (UTC)
+        id S236824AbhGFLfm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BC86A61A14;
+        Tue,  6 Jul 2021 11:24:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570664;
-        bh=UgTOyG//4UrPg7Ha48n4W39sIt64DI2Mai1IMIbKssA=;
+        s=k20201202; t=1625570667;
+        bh=lQCN/aGvWqrJQ8s0IVOENXBV3j5fyNsPjWA0grNed0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pjykY6nhAjSnP1TC5EQvRusK6oIrFYCbkpNjRW0BrUK2gDcqYlsMUqmbKLLNVOkBZ
-         +IBl8WYhycwdeeYimIsqPOpIZmvK6nRGIt5fg04SmPuv8wie16KEdiIjVGWr4AJFoD
-         bChyjuHSTCz2gj8IiH9Sx0rjfNUu9+G6xnar0l8Zk0nJFT/GGQ2e+mLFKlrMHmNVW3
-         wQRHBuKLm/Dz8xm1P7R5ubPHQrqWD5C/4b0jVUTlEn29Ar1SRPiQEzE6TdJOA0V2ST
-         +rH6iMZxWo1igRXW9r1gIam1GZMwHqyGfbtOV5A44ccbVbnfUx6XGN715/uux0iXD/
-         NyY3EhqSDMycw==
+        b=B6ntjH982QISCMSloSey4/S7NBsKtm91FKJKMP50vc295NUKcSsBmRngpAnA7F97J
+         3V8xO7YAxxaT8ru2jQXz9r/z7PL/LUsGUluFmmAhBM6TnBrhDiFW9QTE/MtOvmMEMx
+         WLD+fjhiYuJn1Em2fGruQs8+CaExnDr7xXj2eUWvPEpdtmEVYY9tccD5GY+HpUhXRl
+         demnj6TiN2jOnPKANyjuqH75RVz0GCx3VPG1VYCwVoZng+SdqGaGHKnpyIaSP5IDVM
+         bxwkwme8BYJCwaRIozA7c7KbDVosm4O1BIwKGXtevifapU6DL0v0v+fiUSH/EQMXJc
+         Vhk+Vo1t/yHUQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 108/137] iwlwifi: pcie: free IML DMA memory allocation
-Date:   Tue,  6 Jul 2021 07:21:34 -0400
-Message-Id: <20210706112203.2062605-108-sashal@kernel.org>
+Cc:     =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 111/137] sfc: error code if SRIOV cannot be disabled
+Date:   Tue,  6 Jul 2021 07:21:37 -0400
+Message-Id: <20210706112203.2062605-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,89 +43,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 310f60f53a86eba680d9bc20a371e13b06a5f903 ]
+[ Upstream commit 1ebe4feb8b442884f5a28d2437040096723dd1ea ]
 
-In the case of gen3 devices with image loader (IML) support,
-we were leaking the IML DMA allocation and never freeing it.
-Fix that.
+If SRIOV cannot be disabled during device removal or module unloading,
+return error code so it can be logged properly in the calling function.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618105614.07e117dbedb7.I7bb9ebbe0617656986c2a598ea5e827b533bd3b9@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Note that this can only happen if any VF is currently attached to a
+guest using Xen, but not with vfio/KVM. Despite that in that case the
+VFs won't work properly with PF removed and/or the module unloaded, I
+have let it as is because I don't know what side effects may have
+changing it, and also it seems to be the same that other drivers are
+doing in this situation.
+
+In the case of being called during SRIOV reconfiguration, the behavior
+hasn't changed because the function is called with force=false.
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c  | 15 ++++++++++-----
- .../net/wireless/intel/iwlwifi/pcie/internal.h    |  3 +++
- 2 files changed, 13 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-index ec1d6025081d..56f63f5f5dd3 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-@@ -126,7 +126,6 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 	struct iwl_prph_scratch *prph_scratch;
- 	struct iwl_prph_scratch_ctrl_cfg *prph_sc_ctrl;
- 	struct iwl_prph_info *prph_info;
--	void *iml_img;
- 	u32 control_flags = 0;
- 	int ret;
- 	int cmdq_size = max_t(u32, IWL_CMD_QUEUE_SIZE,
-@@ -234,14 +233,15 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 	trans_pcie->prph_scratch = prph_scratch;
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index a5d28b0f75ba..84041cd587d7 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -402,12 +402,17 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+ 	return rc;
+ }
  
- 	/* Allocate IML */
--	iml_img = dma_alloc_coherent(trans->dev, trans->iml_len,
--				     &trans_pcie->iml_dma_addr, GFP_KERNEL);
--	if (!iml_img) {
-+	trans_pcie->iml = dma_alloc_coherent(trans->dev, trans->iml_len,
-+					     &trans_pcie->iml_dma_addr,
-+					     GFP_KERNEL);
-+	if (!trans_pcie->iml) {
- 		ret = -ENOMEM;
- 		goto err_free_ctxt_info;
- 	}
++/* Disable SRIOV and remove VFs
++ * If some VFs are attached to a guest (using Xen, only) nothing is
++ * done if force=false, and vports are freed if force=true (for the non
++ * attachedc ones, only) but SRIOV is not disabled and VFs are not
++ * removed in either case.
++ */
+ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ {
+ 	struct pci_dev *dev = efx->pci_dev;
+-	unsigned int vfs_assigned = 0;
+-
+-	vfs_assigned = pci_vfs_assigned(dev);
++	unsigned int vfs_assigned = pci_vfs_assigned(dev);
++	int rc = 0;
  
--	memcpy(iml_img, trans->iml, trans->iml_len);
-+	memcpy(trans_pcie->iml, trans->iml, trans->iml_len);
+ 	if (vfs_assigned && !force) {
+ 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
+@@ -417,10 +422,12 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
  
- 	iwl_enable_fw_load_int_ctx_info(trans);
+ 	if (!vfs_assigned)
+ 		pci_disable_sriov(dev);
++	else
++		rc = -EBUSY;
  
-@@ -290,6 +290,11 @@ void iwl_pcie_ctxt_info_gen3_free(struct iwl_trans *trans)
- 	trans_pcie->ctxt_info_dma_addr = 0;
- 	trans_pcie->ctxt_info_gen3 = NULL;
+ 	efx_ef10_sriov_free_vf_vswitching(efx);
+ 	efx->vf_count = 0;
+-	return 0;
++	return rc;
+ }
  
-+	dma_free_coherent(trans->dev, trans->iml_len, trans_pcie->iml,
-+			  trans_pcie->iml_dma_addr);
-+	trans_pcie->iml_dma_addr = 0;
-+	trans_pcie->iml = NULL;
-+
- 	iwl_pcie_ctxt_info_free_fw_img(trans);
- 
- 	dma_free_coherent(trans->dev, sizeof(*trans_pcie->prph_scratch),
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/internal.h b/drivers/net/wireless/intel/iwlwifi/pcie/internal.h
-index ff542d2f0054..f05025e8d11d 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/internal.h
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/internal.h
-@@ -336,6 +336,8 @@ struct cont_rec {
-  *	Context information addresses will be taken from here.
-  *	This is driver's local copy for keeping track of size and
-  *	count for allocating and freeing the memory.
-+ * @iml: image loader image virtual address
-+ * @iml_dma_addr: image loader image DMA address
-  * @trans: pointer to the generic transport area
-  * @scd_base_addr: scheduler sram base address in SRAM
-  * @kw: keep warm address
-@@ -388,6 +390,7 @@ struct iwl_trans_pcie {
- 	};
- 	struct iwl_prph_info *prph_info;
- 	struct iwl_prph_scratch *prph_scratch;
-+	void *iml;
- 	dma_addr_t ctxt_info_dma_addr;
- 	dma_addr_t prph_info_dma_addr;
- 	dma_addr_t prph_scratch_dma_addr;
+ int efx_ef10_sriov_configure(struct efx_nic *efx, int num_vfs)
 -- 
 2.30.2
 
