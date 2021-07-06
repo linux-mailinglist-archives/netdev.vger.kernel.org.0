@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDD23BCC91
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642763BCC8F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232938AbhGFLTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:19:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55702 "EHLO mail.kernel.org"
+        id S232839AbhGFLT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:19:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232730AbhGFLTC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:19:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ED71761C43;
-        Tue,  6 Jul 2021 11:16:22 +0000 (UTC)
+        id S232744AbhGFLTD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:19:03 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0560061C75;
+        Tue,  6 Jul 2021 11:16:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570183;
-        bh=KZaRLMtRE0FWoJ0aN/q7uQVN7VWE0e1ynuofh4g/AEk=;
+        s=k20201202; t=1625570184;
+        bh=OUttnZfZ2XueT8ypLeni7GSulhpsz4hmA/8lKqb26xM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tj95WdxCw7otzXotXw792bJhFDCY+T6/obDDVXUZMCf8RxTdL1GhpusUBPiZNh85E
-         +B0AxtuTXCasQ6016QFsF2+JQzZKh/PpKvdJFTZ3rz/frWAD9NHIKjLb1ygXPeCRRz
-         ehdY+GrftZO+neSSGN1EHGAEo3klVemZQiiRahrcHE2Mi2JRDz2i+lXSBgdxgpRmpE
-         engw4lId+2bbNG5XcL62mEz/etFL4YnPgK6rh3m1VsdhZOdi9ey4JMqQaL+Z1cMqun
-         lp701VrBLO9isZOWf5WNojeSmTK6ni15bd74LDRnZoRu9YU3Opeum8sfhX8Q6MGlsO
-         yn1NdVbVoWjzA==
+        b=Aj7s3hcbifFEJmkxIWvsS6fEOkBcpitNx3KuLHx7oGq7tqxPd0AsNRplZ1CcKQonB
+         ySFhLDUH6VNTClMgLKtujCr480HJeHTdidNY5RfZf/KrQMzOOqfxjqiEVFp1lZBFFZ
+         F2tpGsFo2D2PJyynmhywU9/NSxgN5lVYbNhobXMd7qe5jD7FcIV5AeyBKY361OI9hJ
+         KRg4d1RnaYbJUGsR9w7Gb15L8jRMmRSUnq4US6r7gk+NJ9X9N6rfwFhjyqcje/ih2s
+         DXYAgdS33qr6xon/NY+5U7Gvs5P0kmhidOk4vDccgVJ+l9Uu1NE4yyiM9vaU6kETYX
+         b7ngvdY2ZaOeA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Yang Yingliang <yangyingliang@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 099/189] fjes: check return value after calling platform_get_resource()
-Date:   Tue,  6 Jul 2021 07:12:39 -0400
-Message-Id: <20210706111409.2058071-99-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.13 100/189] net: mido: mdio-mux-bcm-iproc: Use devm_platform_get_and_ioremap_resource()
+Date:   Tue,  6 Jul 2021 07:12:40 -0400
+Message-Id: <20210706111409.2058071-100-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -44,33 +45,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit f18c11812c949553d2b2481ecaa274dd51bed1e7 ]
+[ Upstream commit 8a55a73433e763c8aec4a3e8df5c28c821fc44b9 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+Use devm_platform_get_and_ioremap_resource() to simplify
+code and avoid a null-ptr-deref by checking 'res' in it.
 
 Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/fjes/fjes_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/mdio/mdio-mux-bcm-iproc.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index 466622664424..e449d9466122 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -1262,6 +1262,10 @@ static int fjes_probe(struct platform_device *plat_dev)
- 	adapter->interrupt_watch_enable = false;
+diff --git a/drivers/net/mdio/mdio-mux-bcm-iproc.c b/drivers/net/mdio/mdio-mux-bcm-iproc.c
+index 03261e6b9ceb..aa29d6bdbdf2 100644
+--- a/drivers/net/mdio/mdio-mux-bcm-iproc.c
++++ b/drivers/net/mdio/mdio-mux-bcm-iproc.c
+@@ -187,7 +187,9 @@ static int mdio_mux_iproc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	md->dev = &pdev->dev;
  
- 	res = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		err = -EINVAL;
-+		goto err_free_control_wq;
-+	}
- 	hw->hw_res.start = res->start;
- 	hw->hw_res.size = resource_size(res);
- 	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	md->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(md->base))
++		return PTR_ERR(md->base);
+ 	if (res->start & 0xfff) {
+ 		/* For backward compatibility in case the
+ 		 * base address is specified with an offset.
+@@ -196,9 +198,6 @@ static int mdio_mux_iproc_probe(struct platform_device *pdev)
+ 		res->start &= ~0xfff;
+ 		res->end = res->start + MDIO_REG_ADDR_SPACE_SIZE - 1;
+ 	}
+-	md->base = devm_ioremap_resource(&pdev->dev, res);
+-	if (IS_ERR(md->base))
+-		return PTR_ERR(md->base);
+ 
+ 	md->mii_bus = devm_mdiobus_alloc(&pdev->dev);
+ 	if (!md->mii_bus) {
 -- 
 2.30.2
 
