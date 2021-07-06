@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C053BC7D6
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 10:27:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B09F3BC7DE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 10:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbhGFIaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 04:30:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56080 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230472AbhGFIaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 04:30:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625560058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3+Dlpchiwm0YrXZpars7q0HTSVz/bJ6p/o8jrYNJ92c=;
-        b=dpiLfuOaa2yJQc7GzesBaiqXVSzzc7FNiNxYOg2w4qPliPFzHZcDGnz8OPvgR6LSNC56Bf
-        9ju1gOygrRgRv3ry0uUakQfUgL62/NgrBtYVqB22sldCT9f2X4AOYVF7VcyTHNuO/KXuAt
-        cawYoy0u/5Y28yvNUsW3AP4EPphu+KQ=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-314-8-BUbLXVP5mLri6h7aedCA-1; Tue, 06 Jul 2021 04:27:37 -0400
-X-MC-Unique: 8-BUbLXVP5mLri6h7aedCA-1
-Received: by mail-wr1-f71.google.com with SMTP id r11-20020a5d52cb0000b02901309f5e7298so3562279wrv.0
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 01:27:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3+Dlpchiwm0YrXZpars7q0HTSVz/bJ6p/o8jrYNJ92c=;
-        b=HZwmn2/kqDHYmi+4iN0XwpNhjFOVYlUxyw/ZIMM4Xx/y6rhJhUM6gc7KX7L3PRx57q
-         Tj2dFqPQIvoRXcFslryZWgtCviAkMfoYc2QkxIDAAsCE38UUX/7vq2r9bpMGLyjRFAiV
-         gOMrwsIbDOiLucOJ93olIyoY9MkMv2Ld3o2LYuoXYzxUjiwaxZAPg8gtdXP4eoHdGceF
-         jnavE7hA/d1TTVEHrkDTBi9+YP92pn/wDrZJX2VY7HzafRPn+UZO8Lh2tUp78TEs2Gqr
-         /IcHA/Zj/2GF+Qd5OsZ7SFbgCjJrlTh1Yy387/oxQ4okUR5nrpN1eIw8jsAtw2lTPf7p
-         LhCw==
-X-Gm-Message-State: AOAM5333VSe2uIOkJzziTa8zsGg9jELhunpa95LqZI44nKDKaQMW7X5O
-        EqtzYI12wy97d7n62kKBe3A4FoTTpaM+g6OzNdgMoT34i9N2Sbh2XnkjxdoQMQIGD9jeaBlANxL
-        iA4d49c711Td6Uv6W
-X-Received: by 2002:a05:6000:154c:: with SMTP id 12mr20618551wry.97.1625560056531;
-        Tue, 06 Jul 2021 01:27:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqP5No9SZ+9sYpIiCIhGRy/Vksn2bIxdp65oL19B09DuQu9d5ndrdi44faUJynRxpF9Fj7+A==
-X-Received: by 2002:a05:6000:154c:: with SMTP id 12mr20618532wry.97.1625560056325;
-        Tue, 06 Jul 2021 01:27:36 -0700 (PDT)
-Received: from localhost (net-188-218-31-199.cust.vodafonedsl.it. [188.218.31.199])
-        by smtp.gmail.com with ESMTPSA id o17sm2027690wmh.19.2021.07.06.01.27.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 01:27:35 -0700 (PDT)
-Date:   Tue, 6 Jul 2021 10:27:34 +0200
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
-        Paul Blakey <paulb@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>
+        id S230472AbhGFIdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 04:33:16 -0400
+Received: from mail-bn8nam11on2068.outbound.protection.outlook.com ([40.107.236.68]:56161
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230389AbhGFIdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 04:33:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fZ1x1t0CeVWqeXXPoJB4IyBPoIPFml+VIszZdxqLKpxYSAQCTrRTQP99jkl6L5GbOzRTYz53lHFSsUE58b2Amc43KT2Ir9VUIPRPzJUFtjXOBc/BozxWjpZKRorcj/ir8uVUJrxTkFRtPf302nfWRt11wyi70LQ+DKdrPA3siQVPlnz6H4jyGQRsFYF7L40btCrw78MjW7aXL5NKVE3X4Jl0M+b7c4GgyoqTjFvp9n8/fXlRSUMnaZCoe02yunRm2+Z0NNvbiSWTZVI06l4qeFTRmj76vaiTrMEh0gKhOq1oumVQmi6UlojrtgakbC2TlZHQHQfbIolfvjtfxlu6iA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9dkP0iIMswMAzvlxQK2GI33FHRDO8U64zoSWNnMMEOg=;
+ b=l/pUIGptMbAgG7dJ5PxZWFzXfdGKlsNLtVeOhtV1Op1EDQbb6S1INi9EweS9nMnWge69Cu46w3m9+F9zW2cYo+t+N/XlchwkXNedoLGxzSJ1IpYwqFtVGvIOt9cVp5Pqd7VwvJoVqXNoNCFdlCERRT26xVjfYRUL/v2rY9oraGjQ/pW3Ffof5ZTwikTwmqNmog9AMLQpIjkl8QD4b00qVTuhRSmWuqvJwH+zEPVMuEoQx0HbbzWCFoo5AK7Pw28uwpSujVyE6Pm04G9N37j7PWVzVH7X+6EeLRLxP6DLsPlUi6+AgJ3FR+N0rYWcVV4f1ScnxX0h5ah6/HEOLyTzaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=networkplumber.org
+ smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=nvidia.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9dkP0iIMswMAzvlxQK2GI33FHRDO8U64zoSWNnMMEOg=;
+ b=G5RmZlX1ooWFgy+z+HQO3sRwjn9aeZAydqcmqxLKjb9zyURFvuoz/ymVTAbs36brByj97tUbTYjgMwljqoC+J+Ol33xhudcWqF3rPzNco8QTB0E0dioGkPyAaKZSGVvW3cxbGk1kVGbFAS1AgHTCSpq3on2FR/u035DnEtwo1twCy1GAVrHHHzDKtrJFDgil9maGzKsLQQzoUtW76OZnXhwUDXfxSE/MN7l/Qze+oBcBm8iMwzfco8OADWJm0ns/hCKdyVL5cypyQac19SIaZJzlU83T5aCBJR2ijWQprGVPtaFS9wEsZVsQW3RNnxeIDPZAeN8ziupRavH+JsHuXg==
+Received: from MWHPR15CA0060.namprd15.prod.outlook.com (2603:10b6:301:4c::22)
+ by CY4PR1201MB0104.namprd12.prod.outlook.com (2603:10b6:910:1d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.30; Tue, 6 Jul
+ 2021 08:30:35 +0000
+Received: from CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:4c:cafe::6a) by MWHPR15CA0060.outlook.office365.com
+ (2603:10b6:301:4c::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
+ Transport; Tue, 6 Jul 2021 08:30:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
+ header.d=none;networkplumber.org; dmarc=pass action=none
+ header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT009.mail.protection.outlook.com (10.13.175.61) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4287.22 via Frontend Transport; Tue, 6 Jul 2021 08:30:35 +0000
+Received: from [172.27.11.204] (172.20.187.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 6 Jul
+ 2021 08:30:33 +0000
 Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
-Message-ID: <YOQT9lQuLAvLbaLn@dcaratti.users.ipa.redhat.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+CC:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
 References: <20210607064408.1668142-1-roid@nvidia.com>
- <YOLh4U4JM7lcursX@fedora>
+ <20210705092817.45e225d5@hermes.local>
+ <3678ebef-39b3-7e00-1ad1-114889aba683@gmail.com>
+From:   Roi Dayan <roid@nvidia.com>
+Message-ID: <5918cbc9-9569-15fb-6ee6-fea13a7cca2d@nvidia.com>
+Date:   Tue, 6 Jul 2021 11:30:31 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YOLh4U4JM7lcursX@fedora>
+In-Reply-To: <3678ebef-39b3-7e00-1ad1-114889aba683@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b8d40548-f7d2-4fd4-3f33-08d9405853ac
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB0104:
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB010421CDBFBA0B23E06CA4C2B81B9@CY4PR1201MB0104.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3337IqXFM6QGCHe7lss4k9/9g+PefPLzC9tQa0EiqqZId+EQPGKHNw5SJ+iaEpKdoQRuzO0HWv9cGg1W6XrZFzI2uev+D0GqQrOjNVsA53MeIBrc8qpQU6/RUtpRI3C2PN8QXGsLiM4w6GoqVGSv9AnWRXDN6tKwpHeHR/F6nKGWYZpvwodZb+Z7JJJlFJK+150sQ37dCDP4OG7uM8wo1U+642hVtJ15bCnDmqxD/Gx7erfKNTz/ZH/w6+W8IBySbUaVoGUCEXDvuFwhmBM9ZAMpj+j6srwbV9FHurQnr7g6ow83T8zpkOjLXC0DrFtJBWx9x2ukvUNExTCQUQbrDTlW1NWE9TU3SSV4kSsU1jEUQvH3DcFIRsr7bAfsIl3Y2Hmgwvf6VrzgPuRSqnVlY3A8BcK0Llr03Bgf4v6UUTzO9iB51u+peTw7TOAFCliys30/D9c8WfwdvQlhWLYg8qw6AKVv26tLW5O7jCFC9PrcvvlAOttyubS148KlzS7K/4jtnvF4CwV2DbaUa6zgQAkl2QFmb08zmFDI7+HKhKmTHOiFVVZywe+tsKv/8tv4SbqIwpuXzQ9JkmoGn31BOKq4fZTaEJlZMvJDfFUa9cZ7a8AKMlKMyj4Yk9a/zfN8LU1C2tAy66Xx4qIOnzVWQCyHPtg9ftgyjvVoqHSZSn5b6JVqrPpqwSvZnHg1+/wLdnNpfNVF8WCPIWK7hxPVeDDDYyPAZGtphvRUxMGK5UM=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(136003)(39860400002)(46966006)(36840700001)(82310400003)(86362001)(31686004)(7636003)(478600001)(31696002)(26005)(53546011)(186003)(82740400003)(47076005)(36756003)(16526019)(36906005)(4326008)(8676002)(336012)(36860700001)(356005)(2616005)(5660300002)(70586007)(70206006)(426003)(110136005)(16576012)(316002)(4744005)(54906003)(8936002)(2906002)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2021 08:30:35.3743
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8d40548-f7d2-4fd4-3f33-08d9405853ac
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 05, 2021 at 06:41:37PM +0800, Hangbin Liu wrote:
-> On Mon, Jun 07, 2021 at 09:44:08AM +0300, Roi Dayan wrote:
-> > Change to use the print wrappers instead of fprintf().
-> > 
-> > Signed-off-by: Roi Dayan <roid@nvidia.com>
-> > Reviewed-by: Paul Blakey <paulb@nvidia.com>
-> > ---
 
-hello Hangbin,
- 
-[...]
-> > 
-> > @@ -300,13 +301,13 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
-> >  	    RTA_PAYLOAD(tb[TCA_POLICE_RATE64]) >= sizeof(rate64))
-> >  		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
-> >  
-> > -	fprintf(f, " police 0x%x ", p->index);
-> > +	print_uint(PRINT_ANY, "index", "\t index %u ", p->index);
-> 
-> Hi everyone,
-> 
-> This update break all policy checking in kernel tc selftest actions/police.json.
-> As the new output would like 
 
-thanks for catching this!
+On 2021-07-05 7:30 PM, David Ahern wrote:
+> On 7/5/21 10:28 AM, Stephen Hemminger wrote:
+>> On Mon, 7 Jun 2021 09:44:08 +0300
+>> Roi Dayan <roid@nvidia.com> wrote:
+>>
+>>> -	fprintf(f, " police 0x%x ", p->index);
+>>> +	print_uint(PRINT_ANY, "index", "\t index %u ", p->index);
+>>
+>> Why did output format have to change here? Why not:
+>>
+>> 	print_hex(PRINT_ANY, "police", " police %#x", p->index);
+>>
+> 
+> it should not have. I caught it in the first version in a review
+> comment; missed it in v4 that was applied.
+> 
 
-> total acts 1
-> 
->         action order 0: police   index 1 rate 1Kbit burst 10Kb mtu 2Kb action reclassify overhead 0 ref 1 bind 0
-> 
-> 
-> And the current test checks like
-> 
-> 	"matchPattern": "action order [0-9]*:  police 0x1 rate 1Kbit burst 10Kb"
-> 
->  I plan to update the kselftest to mach the new output.
+Hi,
 
-my 2 cents:
+I replied to your review in v0 that I wanted to match all the other
+actions output which output as unsigned.
+Since I didn't get another reply I thought its ok to continue and sent
+another version which other changes that were required.
 
-what about using PRINT_FP / PRINT_JSON, so we fix the JSON output only to show "index", and
-preserve the human-readable printout iproute and kselftests? besides avoiding failures because
-of mismatching kselftests / iproute, this would preserve functionality of scripts that
-configure / dump the "police" action. WDYT?
-
-thanks,
--- 
-davide
 
