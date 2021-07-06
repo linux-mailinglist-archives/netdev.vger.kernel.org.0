@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 685FE3BD25D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF613BD257
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237529AbhGFLmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:42:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47594 "EHLO mail.kernel.org"
+        id S237509AbhGFLmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:42:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237498AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237501AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7565C61F1C;
-        Tue,  6 Jul 2021 11:28:12 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F135461F22;
+        Tue,  6 Jul 2021 11:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570893;
-        bh=zpPR9wcL8+H2sARlugzOS4AHiOpeCsblx6zpenS4A+Y=;
+        s=k20201202; t=1625570896;
+        bh=sCPVr7Zd+H5/hjvU4EXEkWQYTiG50FlZdz5A3qgX7zs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uQWEH98/eZ68OubzwhFLnbTBIBWh/aJQQzoVi0KbH0CgPS//g36lzdmgR+DsB6oJG
-         jK2GWbl0uGgYXkQvU5aar/QxufRu59lOEUEid/ewTdvO8nLP1ywuNJ2G3tAKXy0LKn
-         RPeBLk4j+OJpah4CRw4DSxyfAsG8tTSrxo1Exsx/JUrzlQjRzVHNBeX50bjf4XUzcO
-         pi/kIddgGuI0w8qIA3JCpJurHlovmSsZluWyj/LdRnbs2btljAYM9OW9R9SY848R5r
-         7lqPi4FGDh2LJooJMqxbLrSELy03cyxjRzpPw9QCkOy/JzI+NHLLMll3GMcbitY4/W
-         ea2f4bSVrlEIA==
+        b=mXrqxBjDbvPpKh7DwEEsPLEQj+Vmn6XXASYlgo8OzEiWFXwq5ulW2JOqcB9BH8a0x
+         +JXTBUeL8VkVr4w0dMXjkXBC4LtSZ2dmHLkUoJWU/h3QcgpiTThzD7ILVsdXYZdEed
+         +t/wbsZP09coSHBrALwN+UVHtt7iQC/dq/K/s1+1ciETiTtuWffCYUsYZcUHydHaIj
+         i6BJM7CEX30HPWAY1kH4VgdAxuTGRXh7aq86wHfwOTBQwcFsvaNpQSKeWDxyL0cPBc
+         FPWSPVjjZ23180TnWI9zAaNar21ojvR8mN/T1lfr1+5/Fiy9wslYDPhcWBIarZobNu
+         qvdrzpvkt3AMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 18/45] ipv6: use prandom_u32() for ID generation
-Date:   Tue,  6 Jul 2021 07:27:22 -0400
-Message-Id: <20210706112749.2065541-18-sashal@kernel.org>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 21/45] virtio_net: Remove BUG() to avoid machine dead
+Date:   Tue,  6 Jul 2021 07:27:25 -0400
+Message-Id: <20210706112749.2065541-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112749.2065541-1-sashal@kernel.org>
 References: <20210706112749.2065541-1-sashal@kernel.org>
@@ -43,92 +44,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit 62f20e068ccc50d6ab66fdb72ba90da2b9418c99 ]
+[ Upstream commit 85eb1389458d134bdb75dad502cc026c3753a619 ]
 
-This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
-table for IP ID generation"), but focusing on some specific aspects
-of IPv6.
+We should not directly BUG() when there is hdr error, it is
+better to output a print when such error happens. Currently,
+the caller of xmit_skb() already did it.
 
-Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
-minimum MTU of 1280, it's much less easy to force a remote peer to
-produce many fragments to explore its ID sequence. In addition packet
-IDs are 32-bit in IPv6, which further complicates their analysis. On
-the other hand, it is often easier to choose among plenty of possible
-source addresses and partially work around the bigger hash table the
-commit above permits, which leaves IPv6 partially exposed to some
-possibilities of remote analysis at the risk of weakening some
-protocols like DNS if some IDs can be predicted with a good enough
-probability.
-
-Given the wide range of permitted IDs, the risk of collision is extremely
-low so there's no need to rely on the positive increment algorithm that
-is shared with the IPv4 code via ip_idents_reserve(). We have a fast
-PRNG, so let's simply call prandom_u32() and be done with it.
-
-Performance measurements at 10 Gbps couldn't show any difference with
-the previous code, even when using a single core, because due to the
-large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
-of the random generation is completely offset by other operations and by
-the network transfer time. In addition, this change removes the need to
-update a shared entry in the idents table so it may even end up being
-slightly faster on large scale systems where this matters.
-
-The risk of at least one collision here is about 1/80 million among
-10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
-which remains very low compared to IPv4 where all IDs are reused
-every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
-
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20210529110746.6796-1-w@1wt.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/output_core.c | 28 +++++-----------------------
- 1 file changed, 5 insertions(+), 23 deletions(-)
+ drivers/net/virtio_net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
-index 868ae23dbae1..3829b565c645 100644
---- a/net/ipv6/output_core.c
-+++ b/net/ipv6/output_core.c
-@@ -14,29 +14,11 @@ static u32 __ipv6_select_ident(struct net *net,
- 			       const struct in6_addr *dst,
- 			       const struct in6_addr *src)
- {
--	const struct {
--		struct in6_addr dst;
--		struct in6_addr src;
--	} __aligned(SIPHASH_ALIGNMENT) combined = {
--		.dst = *dst,
--		.src = *src,
--	};
--	u32 hash, id;
--
--	/* Note the following code is not safe, but this is okay. */
--	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
--		get_random_bytes(&net->ipv4.ip_id_key,
--				 sizeof(net->ipv4.ip_id_key));
--
--	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
--
--	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
--	 * set the hight order instead thus minimizing possible future
--	 * collisions.
--	 */
--	id = ip_idents_reserve(hash, 1);
--	if (unlikely(!id))
--		id = 1 << 31;
-+	u32 id;
-+
-+	do {
-+		id = prandom_u32();
-+	} while (!id);
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 2d2a307c0231..71052d17c9ae 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1262,7 +1262,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
+ 	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+ 				    virtio_is_little_endian(vi->vdev), false,
+ 				    0))
+-		BUG();
++		return -EPROTO;
  
- 	return id;
- }
+ 	if (vi->mergeable_rx_bufs)
+ 		hdr->num_buffers = 0;
 -- 
 2.30.2
 
