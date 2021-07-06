@@ -2,171 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9503BD3C5
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F17CA3BD5D3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239580AbhGFL7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:59:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45123 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239728AbhGFL4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 07:56:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625572402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=v+KqBRx37GHazbrEYLLrAx3jPN6x/mr0O28bD/AHrEQ=;
-        b=Z9uqiUIn0Fb/mbiVmf/zZxHVY3KRpjD3V1hftmeg2sDembKOV3taqPtvZaMYlYHuLopekm
-        5wGGAnA4BEl6BV0lFGDdQzSpqxYpU3wtp+anRXjdgGvcmuWRhhdH6bYipBKSWcH+Um9szk
-        AuT983XuJLsCWvx2NCgOXNiBObp7tx0=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-561-NTWY3kLyPIeUVamqFZB66Q-1; Tue, 06 Jul 2021 07:53:21 -0400
-X-MC-Unique: NTWY3kLyPIeUVamqFZB66Q-1
-Received: by mail-ed1-f69.google.com with SMTP id cn11-20020a0564020cabb0290396d773d4c7so5886190edb.18
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 04:53:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v+KqBRx37GHazbrEYLLrAx3jPN6x/mr0O28bD/AHrEQ=;
-        b=lrT7h6kdZpXvcdEJtbpc7F+m+AvQV4jc4uTxM/ZxDPWPcGyY68wjmOqGo4Yap+3+FM
-         Y3k8SEUGiXV8LvohcQvpfE7prqI1dJkUQZsniRkZkdRiLVm5QB6zoZxYB4borBU2CV2A
-         9aWJ6mtxITmXQX7b1y6sGI2f1V41j+lj5+fTR9b9Cpnv2lRlMqkXP3NNv9TsT7QROfpv
-         179ULmczeXz/kk68XO13ToYGYI3aBGKYlkMV9LCVjUcZCPjI0qATwVaIW2Lt/22kzLM5
-         zWySXEy7ht/EFYd0FW8nejrmDCVyaSGlu9e9FEjhkwH2s6xxWtw5gHQB+Yc0rFg64gHZ
-         LNig==
-X-Gm-Message-State: AOAM531zS0bJO6zC81Th4+Xl9C9366eRZW22SDmBl8ZUk9BFeUaq+Tzx
-        kz1c2XiVH0hULHGZm5fPwHA8ZL5keTfcMAJPdi9n21WArWCJWW/PObzWvNNkRRUg3VrLXsNDaZF
-        GNovS7uLNen9xABYW
-X-Received: by 2002:a05:6402:28a1:: with SMTP id eg33mr22453603edb.249.1625572400272;
-        Tue, 06 Jul 2021 04:53:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzEfb/3dVMfJMNrITNAg2I1tARs2f2DFCfF9AM3+rFYnT+3k7BTi74dHnYH6VHbNpvZuTehtw==
-X-Received: by 2002:a05:6402:28a1:: with SMTP id eg33mr22453579edb.249.1625572400123;
-        Tue, 06 Jul 2021 04:53:20 -0700 (PDT)
-Received: from localhost (net-93-71-3-244.cust.vodafonedsl.it. [93.71.3.244])
-        by smtp.gmail.com with ESMTPSA id d13sm7039781edt.31.2021.07.06.04.53.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 04:53:19 -0700 (PDT)
-Date:   Tue, 6 Jul 2021 13:53:16 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
-Subject: Re: [PATCH v9 bpf-next 02/14] xdp: introduce flags field in
- xdp_buff/xdp_frame
-Message-ID: <YORELD7ve/RMYsua@lore-desk>
-References: <cover.1623674025.git.lorenzo@kernel.org>
- <1316f3ef2763ff4c02244fb726c61568c972514c.1623674025.git.lorenzo@kernel.org>
- <CAKgT0Ue7TsgwbQF+mfeDB-18Q-R29YZWe=y6Kgeg0xxbwds=vw@mail.gmail.com>
- <YNsVcy8e4Mgyg7g3@lore-desk>
- <CAKgT0Ucg5RbzKt63u5RfXee94kd+1oJ+o_qgUwCwnVCoQjDdPw@mail.gmail.com>
- <YOMq0WRu4lsGZJk2@lore-desk>
- <CAKgT0Udn90g9s3RYiGA0hFz7bXaepPNJNqgRjMtwjpdj1zZTDw@mail.gmail.com>
+        id S232666AbhGFM1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245141AbhGFMM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 08:12:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B204C08EC3E
+        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 04:58:04 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m0jiC-0006CI-Rg; Tue, 06 Jul 2021 13:58:00 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m0jiC-0002vT-6G; Tue, 06 Jul 2021 13:58:00 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        wg@grandegger.com
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        David Jander <david@protonic.nl>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+Subject: [PATCH v1 1/2] net: j1939: rename J1939_ERRQUEUE_* to J1939_ERRQUEUE_TX_*
+Date:   Tue,  6 Jul 2021 13:57:57 +0200
+Message-Id: <20210706115758.11196-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4gKitswv7GoTaRt2"
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Udn90g9s3RYiGA0hFz7bXaepPNJNqgRjMtwjpdj1zZTDw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Prepare the world for the J1939_ERRQUEUE_RX_ version
 
---4gKitswv7GoTaRt2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ net/can/j1939/j1939-priv.h | 6 +++---
+ net/can/j1939/socket.c     | 6 +++---
+ net/can/j1939/transport.c  | 8 ++++----
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-> On Mon, Jul 5, 2021 at 8:52 AM Lorenzo Bianconi
-> <lorenzo.bianconi@redhat.com> wrote:
-> >
-> > > On Tue, Jun 29, 2021 at 5:43 AM Lorenzo Bianconi
-> > > <lorenzo.bianconi@redhat.com> wrote:
-
-[...]
->=20
-> Hi Lorenzo,
->=20
-> What about doing something like breaking up the type value in
-> xdp_mem_info? The fact is having it as an enum doesn't get us much
-> since we have a 32b type field but are only storing 4 possible values
-> there currently
->=20
-> The way I see it, scatter-gather is just another memory model
-> attribute rather than being something entirely new. It makes as much
-> sense to have a bit there for MEM_TYPE_PAGE_SG as it does for
-> MEM_TYPE_PAGE_SHARED. I would consider either splitting the type field
-> into two 16b fields. For example you might have one field that
-> describes the source pool which is currently either allocated page
-> (ORDER0, SHARED), page_pool (PAGE_POOL), or XSK pool (XSK_BUFF_POOL),
-> and then two flags for type with there being either shared and/or
-> scatter-gather.
-
-Hi Alex,
-
-I am fine reducing the xdp_mem_info size defining type field as u16 instead=
- of
-u32 but I think mb is a per-xdp_buff/xdp_frame property since at runtime we=
- can
-receive a tiny single page xdp_buff/xdp_frame and a "jumbo" xdp_buff/xdp_fr=
-ame
-composed by multiple pages. According to the documentation available in
-include/net/xdp.h, xdp_rxq_info (where xdp_mem_info is contained for xdp_bu=
-ff)=20
-is "associated with the driver level RX-ring queues and it is information t=
-hat
-is specific to how the driver have configured a given RX-ring queue" so I g=
-uess
-it is a little bit counterintuitive to add this info there.
-Moreover we have the "issue" for devmap in dev_map_bpf_prog_run() when we
-perform XDP_REDIRECT with the approach you proposed and last we can reuse t=
-his
-new flags filed for XDP hw-hints support.
-What about reducing xdp_mem_info and add the flags field in xdp_buff/xdp_fr=
-ame
-in order to avoid increasing the xdp_buff/xdp_frame size? Am I missing
-something?
-
-Regards,
-Lorenzo
-
->=20
-> Also, looking over the code I don't see any reason why current
-> ORDER0/SHARED couldn't be merged as the free paths are essentially
-> identical since the MEM_TYPE_PAGE_SHARED path would function perfectly
-> fine to free MEM_TYPE_PAGE_ORDER0 pages.
->=20
-> Thanks,
->=20
-> - Alex
->=20
-
---4gKitswv7GoTaRt2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYOREKgAKCRA6cBh0uS2t
-rBYzAQDOsV2aChstpZW4dPa1vZ9yJzqGlm3aybO0ZgyCxT8J8AEAtqJojLaOE/i7
-tYTXiyq/jYSzSDFG9TaHO1dx/HuBnQY=
-=pqks
------END PGP SIGNATURE-----
-
---4gKitswv7GoTaRt2--
+diff --git a/net/can/j1939/j1939-priv.h b/net/can/j1939/j1939-priv.h
+index 12369b604ce9..93b8ad7f7d04 100644
+--- a/net/can/j1939/j1939-priv.h
++++ b/net/can/j1939/j1939-priv.h
+@@ -20,9 +20,9 @@
+ 
+ struct j1939_session;
+ enum j1939_sk_errqueue_type {
+-	J1939_ERRQUEUE_ACK,
+-	J1939_ERRQUEUE_SCHED,
+-	J1939_ERRQUEUE_ABORT,
++	J1939_ERRQUEUE_TX_ACK,
++	J1939_ERRQUEUE_TX_SCHED,
++	J1939_ERRQUEUE_TX_ABORT,
+ };
+ 
+ /* j1939 devices */
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index 56aa66147d5a..c2bf1c02597e 100644
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -961,7 +961,7 @@ void j1939_sk_errqueue(struct j1939_session *session,
+ 	serr = SKB_EXT_ERR(skb);
+ 	memset(serr, 0, sizeof(*serr));
+ 	switch (type) {
+-	case J1939_ERRQUEUE_ACK:
++	case J1939_ERRQUEUE_TX_ACK:
+ 		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_ACK)) {
+ 			kfree_skb(skb);
+ 			return;
+@@ -972,7 +972,7 @@ void j1939_sk_errqueue(struct j1939_session *session,
+ 		serr->ee.ee_info = SCM_TSTAMP_ACK;
+ 		state = "ACK";
+ 		break;
+-	case J1939_ERRQUEUE_SCHED:
++	case J1939_ERRQUEUE_TX_SCHED:
+ 		if (!(sk->sk_tsflags & SOF_TIMESTAMPING_TX_SCHED)) {
+ 			kfree_skb(skb);
+ 			return;
+@@ -983,7 +983,7 @@ void j1939_sk_errqueue(struct j1939_session *session,
+ 		serr->ee.ee_info = SCM_TSTAMP_SCHED;
+ 		state = "SCH";
+ 		break;
+-	case J1939_ERRQUEUE_ABORT:
++	case J1939_ERRQUEUE_TX_ABORT:
+ 		serr->ee.ee_errno = session->err;
+ 		serr->ee.ee_origin = SO_EE_ORIGIN_LOCAL;
+ 		serr->ee.ee_info = J1939_EE_INFO_TX_ABORT;
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index e09d087ba240..362cf38cacca 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -261,9 +261,9 @@ static void __j1939_session_drop(struct j1939_session *session)
+ static void j1939_session_destroy(struct j1939_session *session)
+ {
+ 	if (session->err)
+-		j1939_sk_errqueue(session, J1939_ERRQUEUE_ABORT);
++		j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ABORT);
+ 	else
+-		j1939_sk_errqueue(session, J1939_ERRQUEUE_ACK);
++		j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_ACK);
+ 
+ 	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
+ 
+@@ -1026,7 +1026,7 @@ static int j1939_simple_txnext(struct j1939_session *session)
+ 	if (ret)
+ 		return ret;
+ 
+-	j1939_sk_errqueue(session, J1939_ERRQUEUE_SCHED);
++	j1939_sk_errqueue(session, J1939_ERRQUEUE_TX_SCHED);
+ 	j1939_sk_queue_activate_next(session);
+ 
+ 	return 0;
+@@ -1405,7 +1405,7 @@ j1939_xtp_rx_cts_one(struct j1939_session *session, struct sk_buff *skb)
+ 		if (session->transmission) {
+ 			if (session->pkt.tx_acked)
+ 				j1939_sk_errqueue(session,
+-						  J1939_ERRQUEUE_SCHED);
++						  J1939_ERRQUEUE_TX_SCHED);
+ 			j1939_session_txtimer_cancel(session);
+ 			j1939_tp_schedule_txtimer(session, 0);
+ 		}
+-- 
+2.30.2
 
