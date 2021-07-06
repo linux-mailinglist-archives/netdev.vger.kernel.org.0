@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 497E03BC838
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 11:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328783BC85B
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 11:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbhGFJFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 05:05:14 -0400
-Received: from mga06.intel.com ([134.134.136.31]:47823 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230295AbhGFJFN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 05:05:13 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10036"; a="270202644"
-X-IronPort-AV: E=Sophos;i="5.83,328,1616482800"; 
-   d="scan'208";a="270202644"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2021 02:02:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,328,1616482800"; 
-   d="scan'208";a="559882172"
-Received: from peileeli.png.intel.com ([172.30.240.12])
-  by orsmga004.jf.intel.com with ESMTP; 06 Jul 2021 02:02:30 -0700
-From:   Ling Pei Lee <pei.lee.ling@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     pei.lee.ling@intel.com, weifeng.voon@intel.com,
-        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
-        mohammad.athari.ismail@intel.com
-Subject: [PATCH net] net: phy: skip disabling interrupt when WOL is enabled in shutdown
-Date:   Tue,  6 Jul 2021 17:02:09 +0800
-Message-Id: <20210706090209.1897027-1-pei.lee.ling@intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S230516AbhGFJQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 05:16:21 -0400
+Received: from host.78.145.23.62.rev.coltfrance.com ([62.23.145.78]:50338 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230295AbhGFJQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 05:16:20 -0400
+Received: from bretzel (unknown [10.16.0.57])
+        by proxy.6wind.com (Postfix) with ESMTPS id 5EB31A670CA;
+        Tue,  6 Jul 2021 11:13:41 +0200 (CEST)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1m0h9B-00087q-B2; Tue, 06 Jul 2021 11:13:41 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     steffen.klassert@secunet.com, netdev@vger.kernel.org,
+        dforster@brocade.com, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] ipv6: fix 'disable_policy' for fwd packets
+Date:   Tue,  6 Jul 2021 11:13:35 +0200
+Message-Id: <20210706091335.30103-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+The goal of commit df789fe75206 ("ipv6: Provide ipv6 version of
+"disable_policy" sysctl") was to have the disable_policy from ipv4
+available on ipv6.
+However, it's not exactly the same mechanism. On IPv4, all packets coming
+from an interface, which has disable_policy set, bypass the policy check.
+For ipv6, this is done only for local packets, ie for packets destinated to
+an address configured on the incoming interface.
 
-PHY WOL requires WOL interrupt event to trigger the WOL signal
-in order to wake up the system. Hence, the PHY driver should not
-disable the interrupt during shutdown if PHY WOL is enabled.
+Let's align ipv6 with ipv4 so that the 'disable_policy' sysctl has the same
+effect for both protocols.
 
-Fixes: e2f016cf7751 ("net: phy: add a shutdown procedure")
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Ling PeiLee <pei.lee.ling@intel.com>
+My first approach was to create a new kind of route cache entries, to be
+able to set DST_NOPOLICY without modifying routes. This would have added a
+lot of code. Because the local delivery path is already handled, I choose
+to focus on the forwarding path to minimize code churn.
+
+Fixes: df789fe75206 ("ipv6: Provide ipv6 version of "disable_policy" sysctl")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- drivers/net/phy/phy_device.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_output.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 1539ea021ac0..f4b88f613dc1 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2994,9 +2994,13 @@ static int phy_remove(struct device *dev)
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 984050f35c61..d4ee2169afd8 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -479,7 +479,9 @@ int ip6_forward(struct sk_buff *skb)
+ 	if (skb_warn_if_lro(skb))
+ 		goto drop;
  
- static void phy_shutdown(struct device *dev)
- {
-+	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
- 	struct phy_device *phydev = to_phy_device(dev);
- 
--	phy_disable_interrupts(phydev);
-+	/* If the device has WOL enabled, don't disable interrupts. */
-+	phy_ethtool_get_wol(phydev, &wol);
-+	if (!wol.wolopts)
-+		phy_disable_interrupts(phydev);
- }
- 
- /**
+-	if (!xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
++	if (!net->ipv6.devconf_all->disable_policy &&
++	    !idev->cnf.disable_policy &&
++	    !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
+ 		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+ 		goto drop;
+ 	}
 -- 
-2.25.1
+2.30.0
 
