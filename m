@@ -2,361 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 034863BC8B3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 11:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2B53BC8D9
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 11:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbhGFJ40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 05:56:26 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:20903 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230472AbhGFJ4Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 05:56:25 -0400
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4GJyYj4Cr1zBBJS;
-        Tue,  6 Jul 2021 11:53:45 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id oQkE2M0fqy9u; Tue,  6 Jul 2021 11:53:45 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4GJyYj3BH9zBBJJ;
-        Tue,  6 Jul 2021 11:53:45 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 579238B79E;
-        Tue,  6 Jul 2021 11:53:45 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 8NcbPEjczuQZ; Tue,  6 Jul 2021 11:53:45 +0200 (CEST)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5597F8B794;
-        Tue,  6 Jul 2021 11:53:44 +0200 (CEST)
-Subject: Re: [PATCH 3/4] bpf powerpc: Add BPF_PROBE_MEM support for 64bit JIT
-To:     Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        naveen.n.rao@linux.ibm.com, mpe@ellerman.id.au, ast@kernel.org,
-        daniel@iogearbox.net
-Cc:     songliubraving@fb.com, netdev@vger.kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kpsingh@kernel.org,
-        paulus@samba.org, sandipan@linux.ibm.com, yhs@fb.com,
-        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, kafai@fb.com,
-        linux-kernel@vger.kernel.org
-References: <20210706073211.349889-1-ravi.bangoria@linux.ibm.com>
- <20210706073211.349889-4-ravi.bangoria@linux.ibm.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <2bfcb782-3133-2db2-31a7-6886156d2048@csgroup.eu>
-Date:   Tue, 6 Jul 2021 11:53:43 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231225AbhGFJ7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 05:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231181AbhGFJ7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 05:59:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C838BC061760;
+        Tue,  6 Jul 2021 02:56:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=16iZcd8UM9edxy0w5wY5BQzXODSiQ7QkmW3vxkbk5D0=; b=a3mzSZ9zhXvQ7z72FKA8Fdnpk
+        LWcvpcuWofwRYcFCjviYZJk1oPXrs7M3uQJ+ywY1LHJEnj+NRwjgrzF1fC0F4Her/0HY+w0mU3H3Y
+        10CG8a1oWmfqpRlDsr7HNnDdAy6f+2/u33SyEsVG77yaTgZQwrs2MZiscSAA5F+AnLuDVz82jgC0J
+        lYqY2gLTqCI0RBtuMN88P4U2IEdFt2eygNpGPrRxU5Qv7iomPheSViajY02rYqXloTzTH8q6Js++w
+        YBqCoH4+kucnPqJUrbotraNf2h/vP6y9RzvkP75RGSjwQMJ9WI7C7sCONSx2yqdBujcUYV4c5FTfO
+        peWj6rYRg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45790)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1m0hoi-0006RU-5N; Tue, 06 Jul 2021 10:56:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1m0hoO-0001sr-Ht; Tue, 06 Jul 2021 10:56:16 +0100
+Date:   Tue, 6 Jul 2021 10:56:16 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Geoff Levand <geoff@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Wu Hao <hao.wu@intel.com>, Tom Rix <trix@redhat.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Michael Buesch <m@bues.ch>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Marc Zyngier <maz@kernel.org>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Qinglang Miao <miaoqinglang@huawei.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        SeongJae Park <sjpark@amazon.de>,
+        Julien Grall <jgrall@amazon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-acpi@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-cxl@vger.kernel.org,
+        nvdimm@lists.linux.dev, dmaengine@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-arm-msm@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        greybus-dev@lists.linaro.org, target-devel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH] bus: Make remove callback return void
+Message-ID: <20210706095616.GQ22278@shell.armlinux.org.uk>
+References: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210706073211.349889-4-ravi.bangoria@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Le 06/07/2021 Ã  09:32, Ravi Bangoria a Ã©critÂ :
-> BPF load instruction with BPF_PROBE_MEM mode can cause a fault
-> inside kernel. Append exception table for such instructions
-> within BPF program.
-
-Can you do the same for 32bit ?
-
+On Tue, Jul 06, 2021 at 11:50:37AM +0200, Uwe Kleine-König wrote:
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
 > 
-> Unlike other archs which uses extable 'fixup' field to pass dest_reg
-> and nip, BPF exception table on PowerPC follows the generic PowerPC
-> exception table design, where it populates both fixup and extable
-> sections witin BPF program. fixup section contains two instructions,
-> first instruction clears dest_reg and 2nd jumps to next instruction
-> in the BPF code. extable 'insn' field contains relative offset of
-> the instruction and 'fixup' field contains relative offset of the
-> fixup entry. Example layout of BPF program with extable present:
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
 > 
->               +------------------+
->               |                  |
->               |                  |
->     0x4020 -->| ld   r27,4(r3)   |
->               |                  |
->               |                  |
->     0x40ac -->| lwz  r3,0(r4)    |
->               |                  |
->               |                  |
->               |------------------|
->     0x4280 -->| xor r27,r27,r27  |  \ fixup entry
->               | b   0x4024       |  /
->     0x4288 -->| xor r3,r3,r3     |
->               | b   0x40b0       |
->               |------------------|
->     0x4290 -->| insn=0xfffffd90  |  \ extable entry
->               | fixup=0xffffffec |  /
->     0x4298 -->| insn=0xfffffe14  |
->               | fixup=0xffffffec |
->               +------------------+
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
 > 
->     (Addresses shown here are chosen random, not real)
-> 
-> Signed-off-by: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-> ---
->   arch/powerpc/net/bpf_jit.h        |  5 ++-
->   arch/powerpc/net/bpf_jit_comp.c   | 25 +++++++++----
->   arch/powerpc/net/bpf_jit_comp32.c |  2 +-
->   arch/powerpc/net/bpf_jit_comp64.c | 60 ++++++++++++++++++++++++++++++-
->   4 files changed, 83 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/powerpc/net/bpf_jit.h b/arch/powerpc/net/bpf_jit.h
-> index 411c63d945c7..e9408ad190d3 100644
-> --- a/arch/powerpc/net/bpf_jit.h
-> +++ b/arch/powerpc/net/bpf_jit.h
-> @@ -141,8 +141,11 @@ struct codegen_context {
->   	unsigned int idx;
->   	unsigned int stack_size;
->   	int b2p[ARRAY_SIZE(b2p)];
-> +	unsigned int exentry_idx;
->   };
->   
-> +#define BPF_FIXUP_LEN	8 /* Two instructions */
-> +
->   static inline void bpf_flush_icache(void *start, void *end)
->   {
->   	smp_wmb();	/* smp write barrier */
-> @@ -166,7 +169,7 @@ static inline void bpf_clear_seen_register(struct codegen_context *ctx, int i)
->   
->   void bpf_jit_emit_func_call_rel(u32 *image, struct codegen_context *ctx, u64 func);
->   int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
-> -		       u32 *addrs);
-> +		       u32 *addrs, int pass);
->   void bpf_jit_build_prologue(u32 *image, struct codegen_context *ctx);
->   void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx);
->   void bpf_jit_realloc_regs(struct codegen_context *ctx);
-> diff --git a/arch/powerpc/net/bpf_jit_comp.c b/arch/powerpc/net/bpf_jit_comp.c
-> index a9585e52a88d..3ebd8897cf09 100644
-> --- a/arch/powerpc/net/bpf_jit_comp.c
-> +++ b/arch/powerpc/net/bpf_jit_comp.c
-> @@ -89,6 +89,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   {
->   	u32 proglen;
->   	u32 alloclen;
-> +	u32 extable_len = 0;
-> +	u32 fixup_len = 0;
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Setting those to 0 doesn't seem to be needed, as it doesn't seem to exist any path to skip the 
-setting below. You should not perform unnecessary init at declaration as it is error prone.
+Yay! For ARM, Amba and related parts:
 
->   	u8 *image = NULL;
->   	u32 *code_base;
->   	u32 *addrs;
-> @@ -131,7 +133,6 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   		image = jit_data->image;
->   		bpf_hdr = jit_data->header;
->   		proglen = jit_data->proglen;
-> -		alloclen = proglen + FUNCTION_DESCR_SIZE;
->   		extra_pass = true;
->   		goto skip_init_ctx;
->   	}
-> @@ -149,7 +150,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   	cgctx.stack_size = round_up(fp->aux->stack_depth, 16);
->   
->   	/* Scouting faux-generate pass 0 */
-> -	if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
-> +	if (bpf_jit_build_body(fp, 0, &cgctx, addrs, 0)) {
->   		/* We hit something illegal or unsupported. */
->   		fp = org_fp;
->   		goto out_addrs;
-> @@ -162,7 +163,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   	 */
->   	if (cgctx.seen & SEEN_TAILCALL) {
->   		cgctx.idx = 0;
-> -		if (bpf_jit_build_body(fp, 0, &cgctx, addrs)) {
-> +		if (bpf_jit_build_body(fp, 0, &cgctx, addrs, 0)) {
->   			fp = org_fp;
->   			goto out_addrs;
->   		}
-> @@ -177,8 +178,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   	bpf_jit_build_prologue(0, &cgctx);
->   	bpf_jit_build_epilogue(0, &cgctx);
->   
-> +	fixup_len = fp->aux->num_exentries * BPF_FIXUP_LEN;
-> +	extable_len = fp->aux->num_exentries * sizeof(struct exception_table_entry);
-> +
->   	proglen = cgctx.idx * 4;
-> -	alloclen = proglen + FUNCTION_DESCR_SIZE;
-> +	alloclen = proglen + FUNCTION_DESCR_SIZE + fixup_len + extable_len;
->   
->   	bpf_hdr = bpf_jit_binary_alloc(alloclen, &image, 4, bpf_jit_fill_ill_insns);
->   	if (!bpf_hdr) {
-> @@ -186,6 +190,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   		goto out_addrs;
->   	}
->   
-> +	if (extable_len) {
-> +		fp->aux->extable = (void *)image + FUNCTION_DESCR_SIZE +
-> +				   proglen + fixup_len;
-> +	}
-> +
->   skip_init_ctx:
->   	code_base = (u32 *)(image + FUNCTION_DESCR_SIZE);
->   
-> @@ -210,7 +219,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   		/* Now build the prologue, body code & epilogue for real. */
->   		cgctx.idx = 0;
->   		bpf_jit_build_prologue(code_base, &cgctx);
-> -		bpf_jit_build_body(fp, code_base, &cgctx, addrs);
-> +		if (bpf_jit_build_body(fp, code_base, &cgctx, addrs, pass)) {
-> +			bpf_jit_binary_free(bpf_hdr);
-> +			fp = org_fp;
-> +			goto out_addrs;
-> +		}
->   		bpf_jit_build_epilogue(code_base, &cgctx);
->   
->   		if (bpf_jit_enable > 1)
-> @@ -234,7 +247,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *fp)
->   
->   	fp->bpf_func = (void *)image;
->   	fp->jited = 1;
-> -	fp->jited_len = alloclen;
-> +	fp->jited_len = proglen + FUNCTION_DESCR_SIZE;
->   
->   	bpf_flush_icache(bpf_hdr, (u8 *)bpf_hdr + (bpf_hdr->pages * PAGE_SIZE));
->   	if (!fp->is_func || extra_pass) {
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-This hunk does not apply on latest powerpc tree. You are missing commit 62e3d4210ac9c
-
-
-> diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-> index 1f81bea35aab..23ab5620a45a 100644
-> --- a/arch/powerpc/net/bpf_jit_comp32.c
-> +++ b/arch/powerpc/net/bpf_jit_comp32.c
-> @@ -266,7 +266,7 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
->   
->   /* Assemble the body code between the prologue & epilogue */
->   int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
-> -		       u32 *addrs)
-> +		       u32 *addrs, int pass)
->   {
->   	const struct bpf_insn *insn = fp->insnsi;
->   	int flen = fp->len;
-> diff --git a/arch/powerpc/net/bpf_jit_comp64.c b/arch/powerpc/net/bpf_jit_comp64.c
-> index 984177d9d394..1884c6dca89a 100644
-> --- a/arch/powerpc/net/bpf_jit_comp64.c
-> +++ b/arch/powerpc/net/bpf_jit_comp64.c
-> @@ -270,9 +270,51 @@ static void bpf_jit_emit_tail_call(u32 *image, struct codegen_context *ctx, u32
->   	/* out: */
->   }
->   
-> +static int add_extable_entry(struct bpf_prog *fp, u32 *image, int pass,
-> +			     u32 code, struct codegen_context *ctx, int dst_reg)
-> +{
-> +	off_t offset;
-> +	unsigned long pc;
-> +	struct exception_table_entry *ex;
-> +	u32 *fixup;
-> +
-> +	/* Populate extable entries only in the last pass */
-> +	if (pass != 2 || BPF_MODE(code) != BPF_PROBE_MEM)
-
-'code' is only used for that test, can you do the test before calling add_extable_entry() ?
-
-> +		return 0;
-> +
-> +	if (!fp->aux->extable ||
-> +	    WARN_ON_ONCE(ctx->exentry_idx >= fp->aux->num_exentries))
-> +		return -EINVAL;
-> +
-> +	pc = (unsigned long)&image[ctx->idx - 1];
-
-You should call this function before incrementing ctx->idx
-
-> +
-> +	fixup = (void *)fp->aux->extable -
-> +		(fp->aux->num_exentries * BPF_FIXUP_LEN) +
-> +		(ctx->exentry_idx * BPF_FIXUP_LEN);
-> +
-> +	fixup[0] = PPC_RAW_XOR(dst_reg, dst_reg, dst_reg);
-
-Prefered way to clear a reg in according to ISA is to do 'li reg, 0'
-
-> +	fixup[1] = (PPC_INST_BRANCH |
-> +		   (((long)(pc + 4) - (long)&fixup[1]) & 0x03fffffc));
-
-Would be nice if we could have a PPC_RAW_BRANCH() stuff, we could do something like 
-PPC_RAW_BRANCH((long)(pc + 4) - (long)&fixup[1])
-
-
-> +
-> +	ex = &fp->aux->extable[ctx->exentry_idx];
-> +
-> +	offset = pc - (long)&ex->insn;
-> +	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
-> +		return -ERANGE;
-> +	ex->insn = offset;
-> +
-> +	offset = (long)fixup - (long)&ex->fixup;
-> +	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
-> +		return -ERANGE;
-> +	ex->fixup = offset;
-> +
-> +	ctx->exentry_idx++;
-> +	return 0;
-> +}
-> +
->   /* Assemble the body code between the prologue & epilogue */
->   int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *ctx,
-> -		       u32 *addrs)
-> +		       u32 *addrs, int pass)
->   {
->   	const struct bpf_insn *insn = fp->insnsi;
->   	int flen = fp->len;
-> @@ -710,25 +752,41 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
->   		 */
->   		/* dst = *(u8 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_B:
-> +		case BPF_LDX | BPF_PROBE_MEM | BPF_B:
-
-Could do:
-+		case BPF_LDX | BPF_PROBE_MEM | BPF_B:
-+			ret = add_extable_entry(fp, image, pass, code, ctx, dst_reg);
-+			if (ret)
-+				return ret;
-   		case BPF_LDX | BPF_MEM | BPF_B:
-
->   			EMIT(PPC_RAW_LBZ(dst_reg, src_reg, off));
->   			if (insn_is_zext(&insn[i + 1]))
->   				addrs[++i] = ctx->idx * 4;
-> +			ret = add_extable_entry(fp, image, pass, code, ctx, dst_reg);
-> +			if (ret)
-> +				return ret;
->   			break;
->   		/* dst = *(u16 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_H:
-> +		case BPF_LDX | BPF_PROBE_MEM | BPF_H:
->   			EMIT(PPC_RAW_LHZ(dst_reg, src_reg, off));
->   			if (insn_is_zext(&insn[i + 1]))
->   				addrs[++i] = ctx->idx * 4;
-> +			ret = add_extable_entry(fp, image, pass, code, ctx, dst_reg);
-> +			if (ret)
-> +				return ret;
->   			break;
->   		/* dst = *(u32 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_W:
-> +		case BPF_LDX | BPF_PROBE_MEM | BPF_W:
->   			EMIT(PPC_RAW_LWZ(dst_reg, src_reg, off));
->   			if (insn_is_zext(&insn[i + 1]))
->   				addrs[++i] = ctx->idx * 4;
-> +			ret = add_extable_entry(fp, image, pass, code, ctx, dst_reg);
-> +			if (ret)
-> +				return ret;
->   			break;
->   		/* dst = *(u64 *)(ul) (src + off) */
->   		case BPF_LDX | BPF_MEM | BPF_DW:
-> +		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
->   			PPC_BPF_LL(dst_reg, src_reg, off);
-> +			ret = add_extable_entry(fp, image, pass, code, ctx, dst_reg);
-> +			if (ret)
-> +				return ret;
->   			break;
->   
->   		/*
-> 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
