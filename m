@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B2923BCD64
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAA13BCD6D
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232930AbhGFLVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:21:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55764 "EHLO mail.kernel.org"
+        id S233629AbhGFLVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:21:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56584 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233139AbhGFLUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:20:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A8FAF61C81;
-        Tue,  6 Jul 2021 11:17:15 +0000 (UTC)
+        id S233207AbhGFLUR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:20:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4606261C84;
+        Tue,  6 Jul 2021 11:17:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570236;
-        bh=HGekkCC/ze57AUR8GofCif+vLEiHASe+rnbp3h+2LsA=;
+        s=k20201202; t=1625570240;
+        bh=2ozA3x8WpznmspZinYc9ZWSLYqnmg4yNP8tlXOX0c2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RbXfn7lPCh+FDXe/0S1uYCgLl4BEFFdroMjabZMnbOwkjgvFarRvlU30CuANQLmj6
-         a8is1ZZ74PDo0JCqbB29/7skOVR2cxFLCIlqqGUB/V9TD6U9q//QoG7gPRVySB2Ls7
-         GPUEYQ+nrA3nKrLKXlr2+UIw1ByYr9GCp0Sl1w+Jo+RCCEHf3neOb5XZkptGctbrpQ
-         pWbbNCh/pFjr0Pd9vugQwgsyIM4uE0NEDcXeXSf9dg2A+/HJzwzp10kSwDURemu7Ee
-         6DEzJjqdY5dblfHy10b0tIZPHl/gDcaFm2r+cA/0xx6lbTrsusEO/NJSKM1AaJDlKO
-         bV+O+vABQ6sMA==
+        b=Ukzb37Ev09pgQIFC7Go1UiBoKnBu8e182eeFdGlq4cuVxOz/uBKi8NmyOklwCXpae
+         hhXWgDoQRnzvD4wjzrrXHryUBgoCs0nndtFy0TZJmS1dUwruozFVwQBIPky5lt4hfq
+         2lDcmPs7U0GZl3/qNfvBrJXBhVwTXJhphBBtIHtEvBiYVOocgnL/xr9SfyKO1yQeMh
+         mXhy9eV61l/KpxhoB3ciUERIaD2URtMlVFHkCthGVsbrdZU/7R9pxpwNFfrXfO+alh
+         rrmAkPbW4J7Xoh521evyOJWozRM5DS/5AEupu6BslGOsqkTzaFkzJKHvYxxnPOLg8L
+         Ae9gDP8PHtPkQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pascal Terjan <pterjan@google.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 138/189] rtl8xxxu: Fix device info for RTL8192EU devices
-Date:   Tue,  6 Jul 2021 07:13:18 -0400
-Message-Id: <20210706111409.2058071-138-sashal@kernel.org>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 141/189] net: fec: add FEC_QUIRK_HAS_MULTI_QUEUES represents i.MX6SX ENET IP
+Date:   Tue,  6 Jul 2021 07:13:21 -0400
+Message-Id: <20210706111409.2058071-141-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -43,145 +43,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pascal Terjan <pterjan@google.com>
+From: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-[ Upstream commit c240b044edefa3c3af4014a4030e017dd95b59a1 ]
+[ Upstream commit 471ff4455d61c9929ae912328859921708e1eafc ]
 
-Based on 2001:3319 and 2357:0109 which I used to test the fix and
-0bda:818b and 2357:0108 for which I found efuse dumps online.
+Frieder Schrempf reported a TX throuthput issue [1], it happens quite often
+that the measured bandwidth in TX direction drops from its expected/nominal
+value to something like ~50% (for 100M) or ~67% (for 1G) connections.
 
-== 2357:0109 ==
-=== Before ===
-Vendor: Realtek
-Product: \x03802.11n NI
-Serial:
-=== After ===
-Vendor: Realtek
-Product: 802.11n NIC
-Serial not available.
+[1] https://lore.kernel.org/linux-arm-kernel/421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de/
 
-== 2001:3319 ==
-=== Before ===
-Vendor: Realtek
-Product: Wireless N
-Serial: no USB Adap
-=== After ===
-Vendor: Realtek
-Product: Wireless N Nano USB Adapter
-Serial not available.
+The issue becomes clear after digging into it, Net core would select
+queues when transmitting packets. Since FEC have not impletemented
+ndo_select_queue callback yet, so it will call netdev_pick_tx to select
+queues randomly.
 
-Signed-off-by: Pascal Terjan <pterjan@google.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210424172959.1559890-1-pterjan@google.com
+For i.MX6SX ENET IP with AVB support, driver default enables this
+feature. According to the setting of QOS/RCMRn/DMAnCFG registers, AVB
+configured to Credit-based scheme, 50% bandwidth of each queue 1&2.
+
+With below tests let me think more:
+1) With FEC_QUIRK_HAS_AVB quirk, can reproduce TX bandwidth fluctuations issue.
+2) Without FEC_QUIRK_HAS_AVB quirk, can't reproduce TX bandwidth fluctuations issue.
+
+The related difference with or w/o FEC_QUIRK_HAS_AVB quirk is that, whether we
+program FTYPE field of TxBD or not. As I describe above, AVB feature is
+enabled by default. With FEC_QUIRK_HAS_AVB quirk, frames in queue 0
+marked as non-AVB, and frames in queue 1&2 marked as AVB Class A&B. It's
+unreasonable if frames in queue 1&2 are not required to be time-sensitive.
+So when Net core select tx queues ramdomly, Credit-based scheme would work
+and lead to TX bandwidth fluctuated. On the other hand, w/o
+FEC_QUIRK_HAS_AVB quirk, frames in queue 1&2 are all marked as non-AVB, so
+Credit-based scheme would not work.
+
+Till now, how can we fix this TX throughput issue? Yes, please remove
+FEC_QUIRK_HAS_AVB quirk if you suffer it from time-nonsensitive networking.
+However, this quirk is used to indicate i.MX6SX, other setting depends
+on it. So this patch adds a new quirk FEC_QUIRK_HAS_MULTI_QUEUES to
+represent i.MX6SX, it is safe for us remove FEC_QUIRK_HAS_AVB quirk
+now.
+
+FEC_QUIRK_HAS_AVB quirk is set by default in the driver, and users may
+not know much about driver details, they would waste effort to find the
+root cause, that is not we want. The following patch is a implementation
+to fix it and users don't need to modify the driver.
+
+Tested-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Reported-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  | 11 +---
- .../realtek/rtl8xxxu/rtl8xxxu_8192e.c         | 59 +++++++++++++++++--
- 2 files changed, 56 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/freescale/fec.h      |  5 +++++
+ drivers/net/ethernet/freescale/fec_main.c | 11 ++++++-----
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index d1a566cc0c9e..01735776345a 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-@@ -853,15 +853,10 @@ struct rtl8192eu_efuse {
- 	u8 usb_optional_function;
- 	u8 res9[2];
- 	u8 mac_addr[ETH_ALEN];		/* 0xd7 */
--	u8 res10[2];
--	u8 vendor_name[7];
--	u8 res11[2];
--	u8 device_name[0x0b];		/* 0xe8 */
--	u8 res12[2];
--	u8 serial[0x0b];		/* 0xf5 */
--	u8 res13[0x30];
-+	u8 device_info[80];
-+	u8 res11[3];
- 	u8 unknown[0x0d];		/* 0x130 */
--	u8 res14[0xc3];
-+	u8 res12[0xc3];
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 0602d5d5d2ee..2e002e4b4b4a 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -467,6 +467,11 @@ struct bufdesc_ex {
+  */
+ #define FEC_QUIRK_NO_HARD_RESET		(1 << 18)
+ 
++/* i.MX6SX ENET IP supports multiple queues (3 queues), use this quirk to
++ * represents this ENET IP.
++ */
++#define FEC_QUIRK_HAS_MULTI_QUEUES	(1 << 19)
++
+ struct bufdesc_prop {
+ 	int qid;
+ 	/* Address of Rx and Tx buffers */
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index ad82cffc6f3f..98cd38379275 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -122,7 +122,7 @@ static const struct fec_devinfo fec_imx6x_info = {
+ 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
+ 		  FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
+ 		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE |
+-		  FEC_QUIRK_CLEAR_SETUP_MII,
++		  FEC_QUIRK_CLEAR_SETUP_MII | FEC_QUIRK_HAS_MULTI_QUEUES,
  };
  
- struct rtl8xxxu_reg8val {
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-index cfe2dfdae928..b06508d0cdf8 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-@@ -554,9 +554,43 @@ rtl8192e_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
+ static const struct fec_devinfo fec_imx6ul_info = {
+@@ -421,6 +421,7 @@ fec_enet_txq_submit_frag_skb(struct fec_enet_priv_tx_q *txq,
+ 				estatus |= FEC_TX_BD_FTYPE(txq->bd.qid);
+ 			if (skb->ip_summed == CHECKSUM_PARTIAL)
+ 				estatus |= BD_ENET_TX_PINS | BD_ENET_TX_IINS;
++
+ 			ebdp->cbd_bdu = 0;
+ 			ebdp->cbd_esc = cpu_to_fec32(estatus);
+ 		}
+@@ -954,7 +955,7 @@ fec_restart(struct net_device *ndev)
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+ 	 * instead of reset MAC itself.
+ 	 */
+-	if (fep->quirks & FEC_QUIRK_HAS_AVB ||
++	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES ||
+ 	    ((fep->quirks & FEC_QUIRK_NO_HARD_RESET) && fep->link)) {
+ 		writel(0, fep->hwp + FEC_ECNTRL);
+ 	} else {
+@@ -1165,7 +1166,7 @@ fec_stop(struct net_device *ndev)
+ 	 * instead of reset MAC itself.
+ 	 */
+ 	if (!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
+-		if (fep->quirks & FEC_QUIRK_HAS_AVB) {
++		if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
+ 			writel(0, fep->hwp + FEC_ECNTRL);
+ 		} else {
+ 			writel(1, fep->hwp + FEC_ECNTRL);
+@@ -2570,7 +2571,7 @@ static void fec_enet_itr_coal_set(struct net_device *ndev)
+ 
+ 	writel(tx_itr, fep->hwp + FEC_TXIC0);
+ 	writel(rx_itr, fep->hwp + FEC_RXIC0);
+-	if (fep->quirks & FEC_QUIRK_HAS_AVB) {
++	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
+ 		writel(tx_itr, fep->hwp + FEC_TXIC1);
+ 		writel(rx_itr, fep->hwp + FEC_RXIC1);
+ 		writel(tx_itr, fep->hwp + FEC_TXIC2);
+@@ -3371,7 +3372,7 @@ static int fec_enet_init(struct net_device *ndev)
+ 		fep->csum_flags |= FLAG_RX_CSUM_ENABLED;
  	}
- }
  
-+static void rtl8192eu_log_next_device_info(struct rtl8xxxu_priv *priv,
-+					   char *record_name,
-+					   char *device_info,
-+					   unsigned int *record_offset)
-+{
-+	char *record = device_info + *record_offset;
-+
-+	/* A record is [ total length | 0x03 | value ] */
-+	unsigned char l = record[0];
-+
-+	/*
-+	 * The whole device info section seems to be 80 characters, make sure
-+	 * we don't read further.
-+	 */
-+	if (*record_offset + l > 80) {
-+		dev_warn(&priv->udev->dev,
-+			 "invalid record length %d while parsing \"%s\" at offset %u.\n",
-+			 l, record_name, *record_offset);
-+		return;
-+	}
-+
-+	if (l >= 2) {
-+		char value[80];
-+
-+		memcpy(value, &record[2], l - 2);
-+		value[l - 2] = '\0';
-+		dev_info(&priv->udev->dev, "%s: %s\n", record_name, value);
-+		*record_offset = *record_offset + l;
-+	} else {
-+		dev_info(&priv->udev->dev, "%s not available.\n", record_name);
-+	}
-+}
-+
- static int rtl8192eu_parse_efuse(struct rtl8xxxu_priv *priv)
- {
- 	struct rtl8192eu_efuse *efuse = &priv->efuse_wifi.efuse8192eu;
-+	unsigned int record_offset;
- 	int i;
- 
- 	if (efuse->rtl_id != cpu_to_le16(0x8129))
-@@ -604,12 +638,25 @@ static int rtl8192eu_parse_efuse(struct rtl8xxxu_priv *priv)
- 	priv->has_xtalk = 1;
- 	priv->xtalk = priv->efuse_wifi.efuse8192eu.xtal_k & 0x3f;
- 
--	dev_info(&priv->udev->dev, "Vendor: %.7s\n", efuse->vendor_name);
--	dev_info(&priv->udev->dev, "Product: %.11s\n", efuse->device_name);
--	if (memchr_inv(efuse->serial, 0xff, 11))
--		dev_info(&priv->udev->dev, "Serial: %.11s\n", efuse->serial);
--	else
--		dev_info(&priv->udev->dev, "Serial not available.\n");
-+	/*
-+	 * device_info section seems to be laid out as records
-+	 * [ total length | 0x03 | value ] so:
-+	 * - vendor length + 2
-+	 * - 0x03
-+	 * - vendor string (not null terminated)
-+	 * - product length + 2
-+	 * - 0x03
-+	 * - product string (not null terminated)
-+	 * Then there is one or 2 0x00 on all the 4 devices I own or found
-+	 * dumped online.
-+	 * As previous version of the code handled an optional serial
-+	 * string, I now assume there may be a third record if the
-+	 * length is not 0.
-+	 */
-+	record_offset = 0;
-+	rtl8192eu_log_next_device_info(priv, "Vendor", efuse->device_info, &record_offset);
-+	rtl8192eu_log_next_device_info(priv, "Product", efuse->device_info, &record_offset);
-+	rtl8192eu_log_next_device_info(priv, "Serial", efuse->device_info, &record_offset);
- 
- 	if (rtl8xxxu_debug & RTL8XXXU_DEBUG_EFUSE) {
- 		unsigned char *raw = priv->efuse_wifi.raw;
+-	if (fep->quirks & FEC_QUIRK_HAS_AVB) {
++	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
+ 		fep->tx_align = 0;
+ 		fep->rx_align = 0x3f;
+ 	}
 -- 
 2.30.2
 
