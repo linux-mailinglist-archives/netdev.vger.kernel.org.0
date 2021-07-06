@@ -2,123 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56C03BD738
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D743BD781
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 15:14:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235360AbhGFMzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:55:04 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:46848 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235125AbhGFMzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 08:55:03 -0400
-X-UUID: cbc380d870e948d9afe3487eb0f8f4d8-20210706
-X-UUID: cbc380d870e948d9afe3487eb0f8f4d8-20210706
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1261492797; Tue, 06 Jul 2021 20:52:21 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 6 Jul 2021 20:52:20 +0800
-Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 6 Jul 2021 20:52:19 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
-        <rocco.yue@gmail.com>, <chao.song@mediatek.com>,
-        <kuohong.wang@mediatek.com>, <zhuoliang.zhang@mediatek.com>,
-        Rocco Yue <rocco.yue@mediatek.com>
-Subject: Re: [PATCH] net: ipv6: don't generate link-local address in any addr_gen_mode
-Date:   Tue, 6 Jul 2021 20:37:02 +0800
-Message-ID: <20210706123702.29375-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
-References: <62c9f5b7-84bd-d809-4e33-39fed7a9d780@gmail.com>
+        id S231707AbhGFNQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 09:16:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53894 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231563AbhGFNQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 09:16:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625577259;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A+vURWiwExzHKQ1zqn329GpoJ8uorhaLWw889D3KLCk=;
+        b=TU2iM6Imqt1+5nnxGcjSw+++JzHS4c7U6pWq5EJuxZ4XnwX/wjPAFMqNxyDO59O0JXC2rx
+        m7P5RtxlhTVFzP6OZ55rJj24BR4GwUymeE0zSP80E7hBFj7Pvssz3S5IZrL0ZVzo/xNqm9
+        AJjArOgR/2NT3suCqJkgY2LbI+qDslI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-382-Rm8scm4zMfycpyJd6ld4yQ-1; Tue, 06 Jul 2021 09:14:15 -0400
+X-MC-Unique: Rm8scm4zMfycpyJd6ld4yQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 90CE7824F98;
+        Tue,  6 Jul 2021 13:14:14 +0000 (UTC)
+Received: from localhost (ovpn-115-23.ams2.redhat.com [10.36.115.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F3BF5DA60;
+        Tue,  6 Jul 2021 13:14:10 +0000 (UTC)
+Date:   Tue, 6 Jul 2021 14:14:09 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, xieyongji@bytedance.com
+Subject: Re: [PATCH 1/2] vdpa: support per virtqueue max queue size
+Message-ID: <YORXIS+WmDkX2DN7@stefanha-x1.localdomain>
+References: <20210705071910.31965-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="LaXrVM2vNYxuaCd2"
+Content-Disposition: inline
+In-Reply-To: <20210705071910.31965-1-jasowang@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-07-05 at 10:35 -0600, David Ahern wrote:
-> On 7/1/21 2:51 AM, Rocco Yue wrote:
->> On Wed, 2021-06-30 at 22:41 -0600, David Ahern wrote:
->> 
->> For mobile operators that don't need to support RFC7217, setting
->> addr_gen_mode == 1 is sufficient;
->> 
->> But for some other mobile operators that need to support RFC7217, such as AT&T,
->> the mobile device's addr_gen_mode will be switched to the
->> IN6_ADDR_GEN_MODE_STABLE_PRIVACY, instead of using IN6_ADDR_GEN_MODE_NONE.
->> The purpose is: in the IN6_ADDR_GEN_MODE_STABLE_PRIVACY mode, kernel can
->> gererate a stable privacy global ipv6 address after receiveing RA, and
->> network processes can use this global address to communicate with the
->> outside network.
->> 
->> Of course, mobile operators that need to support RFC7217 should also meet
->> the requirement of 3GPP TS 29.061, that is, MT should use IID assigned by
->> the GGSN to build its ipv6 link-local address and use this address to send RS.
->> We don't want the kernel to automatically generate an ipv6 link-local address
->> when addr_gen_mode == 2. Otherwise, using the stable privacy ipv6 link-local
->> address automatically generated by the kernel to send RS message, GGSN will
->> not be able to respond to the RS and reply a RA message.
->> 
->> Therefore, after this patch, kernel will not generate ipv6 link-local address
->> for the corresponding device when addr_gen_mode == 1 or addr_gen_mode == 2.
->> 
-> 
-> I think another addr_gen_mode is better than a separate sysctl. It looks
-> like IN6_ADDR_GEN_MODE_STABLE_PRIVACY and IN6_ADDR_GEN_MODE_RANDOM are
-> the ones used for RAs, so add something like:
-> 
-> IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
-> IN6_ADDR_GEN_MODE_RANDOM_NO_LLA,
-> 
-> to in6_addr_gen_mode.
-> 
 
-Hi David,
+--LaXrVM2vNYxuaCd2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your reply.
+On Mon, Jul 05, 2021 at 03:19:09PM +0800, Jason Wang wrote:
+> Virtio spec allows the device to specify the per virtqueue max queue
+> size. vDPA needs to adapt to this flexibility. E.g Qemu advertise a
+> small control virtqueue for virtio-net.
+>=20
+> So this patch adds a index parameter to get_vq_num_max bus operations
+> for the device to report its per virtqueue max queue size.
+>=20
+> Both VHOST_VDPA_GET_VRING_NUM and VDPA_ATTR_DEV_MAX_VQ_SIZE assume a
+> global maximum size. So we iterate all the virtqueues to return the
+> minimal size in this case. Actually, the VHOST_VDPA_GET_VRING_NUM is
+> not a must for the userspace. Userspace may choose to check the
+> VHOST_SET_VRING_NUM for proving or validating the maximum virtqueue
+> size. Anyway, we can invent a per vq version of
+> VHOST_VDPA_GET_VRING_NUM in the future if it's necessary.
+>=20
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c |  2 +-
+>  drivers/vdpa/vdpa.c               | 22 +++++++++++++++++++++-
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c  |  2 +-
+>  drivers/vdpa/virtio_pci/vp_vdpa.c |  2 +-
+>  drivers/vhost/vdpa.c              |  9 ++++++---
+>  drivers/virtio/virtio_vdpa.c      |  2 +-
+>  include/linux/vdpa.h              |  5 ++++-
+>  8 files changed, 36 insertions(+), 10 deletions(-)
 
-According to your suggestion, I checked the ipv6 code again. In my
-opinion, adding another addr_gen_mode may not be suitable.
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
-(1)
-In the user space, the process enable the ipv6 stable privacy mode by
-setting the "/proc/sys/net/ipv6/conf/<iface>/stable_secret".
+--LaXrVM2vNYxuaCd2
+Content-Type: application/pgp-signature; name="signature.asc"
 
-In the kernel, the addr_gen_mode of a networking device is switched to
-IN6_ADDR_GEN_MODE_STABLE_PRIVACY by judging the bool value of
-"cnf.stable_secret.initialized".
+-----BEGIN PGP SIGNATURE-----
 
-So, although adding an additional IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA,
-user space process has some trouble to let kernel switch the iface's
-addr_gen_mode to the IN6_ADDR_GEN_MODE_STABLE_PRIVACY_NO_LLA.
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDkVyEACgkQnKSrs4Gr
+c8hTKggAp8tSQbbf8/pQa6Bi9ldcTpa4FzjzvITQFELFg45XJ9q4WDx+eNMxRTpe
+IuvanLQoWiiQL2pYcUZCi/+PCGsj+bu44yJ24Uk9/cIWUbg+s8T+GLMxaNdEP8WO
+52McfMT5MK+waHfnbhZ2jaNEGAdo5EVRBIF1Q/7vdg9Lfr0YxRtVuZ6EVuuncW5y
+jETFKnKb0YdHpbO//gK/a7L6jLJEABTm0QQNK9OZnxnlbEuduUfeu8saUZSdDbWL
+G/7TR55TF+CFd27T7gTA7WLcQszFk1tg1fTbdnDUpU/588L6Gy5+6CoCb+5+a6Ts
+vdBRToz2iTg0KTFP/gYhTTQcxq7wmA==
+=eXQg
+-----END PGP SIGNATURE-----
 
-This is not as flexible as adding a separate sysctl.
+--LaXrVM2vNYxuaCd2--
 
-(2)
-After adding "proc/sys/net/ipv6/<iface>/disable_gen_linklocal_addr",
-so that kernel can keep the original code logic of the stable_secret
-proc file, and expand when the subsequent kernel adds a new add_gen_mode
-more flexibility and applicability.
-
-And we only need to care about the networking device that do not
-generate an ipv6 link-local address, and not the addr_gen_mode that
-this device is using.
-
-Maybe adding a separate sysctl is a better choice.
-Looking forward to your professional reply again.
-
-Thanks,
-Rocco
