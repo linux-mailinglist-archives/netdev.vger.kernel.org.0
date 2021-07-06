@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 976113BD33D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83F93BD186
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238445AbhGFLji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47570 "EHLO mail.kernel.org"
+        id S238489AbhGFLjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:39:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237365AbhGFLgH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237364AbhGFLgH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A77D761D66;
-        Tue,  6 Jul 2021 11:27:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B80761D77;
+        Tue,  6 Jul 2021 11:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570828;
-        bh=8IxkScLT3Fl2Ce32Fyz+sOwKKnHHbU65QvrVBL5PvPE=;
+        s=k20201202; t=1625570829;
+        bh=VdodptyE2GAk1rTtpPV2NfeKVvsJfvOCXSVUuquwcyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RkqgBjz+4MgP2mu/ePU0ujAAitPipE020J0W2nMBPWcbsKOz+tryHp6uosjGppyc4
-         rmszYoLvFQxmqznP1nKy8eo+E0871tmY35DfOhlcfH8JRvHROGn9rN5Kbc4CG3BNCj
-         bE1GZHTh2fhhb5KN+i3JxkocsZjoXVR+WBJiDN1O49NZ8hpmvH6RoxVuMp0L7KEuG4
-         pp+A/6tXfEy3CD/2GV+aSBZzWkBC+3N4PuIqXKcjlG7fjXHlgvSFP60dM8lbe2as+I
-         NCXdRFebMdqwAPXZCPNUyht0f62asO/R/Mwav9bvv+ZoasvIn5xph+GnrQv6mXRom9
-         9Omnql4idRJWQ==
+        b=Ay+NmuuLtai83bRw0haJITkE0PsGnU/c8d2moXJm3FiwwsKUfxvUyH+sHuyHK/pRn
+         SqNUzniWmmR5NdGHM0PLD2J1NM9//oVTIWqtgwCXRUsFPG6kGCp+Q4cIwcmsoT8kOP
+         LtE4ZsD8PiPPAAkv5xv++e/n0VJIIpDWBkF/ZLqylLlqEHQP5KtNrQ7FXxOPhiejsg
+         32MTvZYiMgPMrssJ/mXiDjT9oGn9LbbtyGKQXRLTj6Q7UbLab7Jr34d75kYJbSTl3H
+         yNpCn3jq5noKv9xoAwnuQY000mIZ9JdLgs1tcXb7HjbN6GEA2DuoyaV1Fh01eDcV6V
+         ywEymRb2SfK+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Liwei Song <liwei.song@windriver.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 23/55] ice: set the value of global config lock timeout longer
-Date:   Tue,  6 Jul 2021 07:26:06 -0400
-Message-Id: <20210706112638.2065023-23-sashal@kernel.org>
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 24/55] virtio_net: Remove BUG() to avoid machine dead
+Date:   Tue,  6 Jul 2021 07:26:07 -0400
+Message-Id: <20210706112638.2065023-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112638.2065023-1-sashal@kernel.org>
 References: <20210706112638.2065023-1-sashal@kernel.org>
@@ -44,42 +44,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Liwei Song <liwei.song@windriver.com>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit fb3612840d4f587a0af9511a11d7989d1fa48206 ]
+[ Upstream commit 85eb1389458d134bdb75dad502cc026c3753a619 ]
 
-It may need hold Global Config Lock a longer time when download DDP
-package file, extend the timeout value to 5000ms to ensure that
-download can be finished before other AQ command got time to run,
-this will fix the issue below when probe the device, 5000ms is a test
-value that work with both Backplane and BreakoutCable NVM image:
+We should not directly BUG() when there is hdr error, it is
+better to output a print when such error happens. Currently,
+the caller of xmit_skb() already did it.
 
-ice 0000:f4:00.0: VSI 12 failed lan queue config, error ICE_ERR_CFG
-ice 0000:f4:00.0: Failed to delete VSI 12 in FW - error: ICE_ERR_AQ_TIMEOUT
-ice 0000:f4:00.0: probe failed due to setup PF switch: -12
-ice: probe of 0000:f4:00.0 failed with error -12
-
-Signed-off-by: Liwei Song <liwei.song@windriver.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_type.h | 2 +-
+ drivers/net/virtio_net.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 5ca9d684429d..8105f11f0199 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -41,7 +41,7 @@ enum ice_aq_res_ids {
- /* FW update timeout definitions are in milliseconds */
- #define ICE_NVM_TIMEOUT			180000
- #define ICE_CHANGE_LOCK_TIMEOUT		1000
--#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	3000
-+#define ICE_GLOBAL_CFG_LOCK_TIMEOUT	5000
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 0b1c6a8906b9..84a82c4a9535 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1550,7 +1550,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
+ 	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
+ 				    virtio_is_little_endian(vi->vdev), false,
+ 				    0))
+-		BUG();
++		return -EPROTO;
  
- enum ice_aq_res_access_type {
- 	ICE_RES_READ = 1,
+ 	if (vi->mergeable_rx_bufs)
+ 		hdr->num_buffers = 0;
 -- 
 2.30.2
 
