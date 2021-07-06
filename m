@@ -2,197 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8257D3BDA6F
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 17:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E6643BDA72
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 17:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232756AbhGFPrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 11:47:15 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:38686 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232145AbhGFPrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 11:47:15 -0400
-Received: by mail-wr1-f41.google.com with SMTP id a8so14926915wrp.5;
-        Tue, 06 Jul 2021 08:44:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bKZq5qbhINauEqvCfmIrG9RDxQlurs+fI84Tr3Es6H0=;
-        b=TqsuAo0uz3dEtKxw/ZJE8FbirvsGz7RGgqBr71Ckb31+Psbc69935mRmkT03r1Vjm7
-         9tiv3nJ0jZZQN6OMCPXdQ//ORCWox/fn2aFNnmkO/Zj1I4SXWz7BK/P7HWLe4ab5IO/q
-         IKa81wEWs8a0dh1nQ+8apoQY+Q7am2v1WNfptEaYj7WGuzRExOcJU0jz7bBBjK3j9RA3
-         MDVqtfSPdOY7ZHh3UOifKrLytahPVXLuZl0bIcmyUExcFj17/7Mz7QKXuwwPdpoaPWL6
-         N5m3Yg5M8iwggBY55m7mgteWhKIINGUuHJCcYf+XJKaz1avuHdC+U+1m/yzXHDjtxqtw
-         Dq7w==
-X-Gm-Message-State: AOAM531QUWiymNfNluqziw9nCAOzs0e1QEVzQv1H2jp19GKLkKXF1zmp
-        m9K6jBXVt342rfLJwE/3m27TmFZbRXQ=
-X-Google-Smtp-Source: ABdhPJxx/Et+AQedt84FDz57T7Z+/lfL0ncYEwTlIodDqA2OSA3cU21wWopkV69x38hG82V40zDMVg==
-X-Received: by 2002:adf:9084:: with SMTP id i4mr22760890wri.23.1625586274261;
-        Tue, 06 Jul 2021 08:44:34 -0700 (PDT)
-Received: from msft-t490s.. (host-79-12-118-22.retail.telecomitalia.it. [79.12.118.22])
-        by smtp.gmail.com with ESMTPSA id v1sm18183321wre.20.2021.07.06.08.44.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 08:44:33 -0700 (PDT)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     linux-wireless@vger.kernel.org,
-        Cody Schuffelen <schuffelen@google.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] virt_wifi: fix error on connect
-Date:   Tue,  6 Jul 2021 17:44:23 +0200
-Message-Id: <20210706154423.11065-1-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.31.1
+        id S232741AbhGFPrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 11:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232502AbhGFPrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 11:47:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4717C061574
+        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 08:45:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=2wKE9phWCmUe4y2nochu0CWKczymhRnTd631xxpp5BM=; b=YjJvEzrVFlmQg/Img7Ig+pH/E
+        r5EA16W0oMYWtQs+DRxmpOEMwylzDggCSbkp/b5vkL8C/c6t/0DLCdijCSjCn1wjeBsbjh339HfT3
+        p/mepu0pQcQd1h7KW+g7I2H6k6y33LEnFSGote124nBHIuEB9Tr4xVz0jAHKyr44RXTTqAH/PaW1y
+        vEYgXGIcy5JGKjA2vUym/PfBTurEPvKhXPFNJfQnLUtUCoOLwEaSH5/ptLZBM8C2H7LryR7u1fTQK
+        Qez4T3y74Ncefs+FxzKuSVieDuwrBt82vUimNEUVz1X+zwpWwxWmo/b3do/hJ59EBTLmGAPqYNYyd
+        XUp4Xdz8w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45800)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1m0nFo-0006wO-UN; Tue, 06 Jul 2021 16:44:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1m0nFm-00027u-Qb; Tue, 06 Jul 2021 16:44:54 +0100
+Date:   Tue, 6 Jul 2021 16:44:54 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>
+Subject: Re: [PATCH v5 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <20210706154454.GR22278@shell.armlinux.org.uk>
+References: <20210701082658.21875-1-lxu@maxlinear.com>
+ <20210701082658.21875-2-lxu@maxlinear.com>
+ <7e2b16b4-839c-0e1d-4d36-3b3fbf5be9eb@maxlinear.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e2b16b4-839c-0e1d-4d36-3b3fbf5be9eb@maxlinear.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+On Tue, Jul 06, 2021 at 03:34:56PM +0000, Liang Xu wrote:
+> On 1/7/2021 4:26 pm, Xu Liang wrote:
+> > Add driver to support the Maxlinear GPY115, GPY211, GPY212, GPY215,
+> > GPY241, GPY245 PHYs. Separate from XWAY PHY driver because this series
+> > has different register layout and new features not supported in XWAY PHY.
+> >
+> > Signed-off-by: Xu Liang <lxu@maxlinear.com>
+> > ---
+> > v2 changes:
+> >   Fix format warning from checkpath and some comments.
+> >   Use smaller PHY ID mask.
+> >   Split FWV register mask.
+> >   Call phy_trigger_machine if necessary when clear interrupt.
+> > v3 changes:
+> >   Replace unnecessary phy_modify_mmd_changed with phy_modify_mmd
+> >   Move firmware version print to probe.
+> > v4 changes:
+> >   Separate PHY ID for new silicon.
+> >   Use full Maxlinear name in Kconfig.
+> >   Add and use C45 ID read API, and use genphy_c45_pma_read_abilities.
+> >   Use my name instead of company as author.
+> > v5 changes:
+> >   Fix comment for link speed 2.5G.
+> 
+> Hi Andrew,
+> 
+> 
+> Need your help on this patch.
+> 
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210701082658.21875-1-lxu@maxlinear.com/
+> 
+> I see the status is "Not applicable" and description "Guessing tree name 
+> failed - patch did not apply".
+> 
+> How should I fix the problem?
 
-When connecting without first doing a scan, the BSS list is empty
-and __cfg80211_connect_result() generates this warning:
+For netdev, the subject line should contain the tree that you want
+the patch applied to.
 
-$ iw dev wlan0 connect -w VirtWifi
-[   15.371989] ------------[ cut here ]------------
-[   15.372179] WARNING: CPU: 0 PID: 92 at net/wireless/sme.c:756 __cfg80211_connect_result+0x402/0x440
-[   15.372383] CPU: 0 PID: 92 Comm: kworker/u2:2 Not tainted 5.13.0-kvm #444
-[   15.372512] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-3.fc34 04/01/2014
-[   15.372597] Workqueue: cfg80211 cfg80211_event_work
-[   15.372756] RIP: 0010:__cfg80211_connect_result+0x402/0x440
-[   15.372818] Code: 48 2b 04 25 28 00 00 00 75 59 48 8b 3b 48 8b 76 10 48 8d 65 e0 5b 41 5c 41 5d 41 5e 5d 49 8d 65 f0 41 5d e9 d0 d4 fd ff 0f 0b <0f> 0b e9 f6 fd ff ff e8 f2 4a b4 ff e9 ec fd ff ff 0f 0b e9 19 fd
-[   15.372966] RSP: 0018:ffffc900005cbdc0 EFLAGS: 00010246
-[   15.373022] RAX: 0000000000000000 RBX: ffff8880028e2400 RCX: ffff8880028e2472
-[   15.373088] RDX: 0000000000000002 RSI: 00000000fffffe01 RDI: ffffffff815335ba
-[   15.373149] RBP: ffffc900005cbe00 R08: 0000000000000008 R09: ffff888002bdf8b8
-[   15.373209] R10: ffff88803ec208f0 R11: ffffffffffffe9ae R12: ffff88801d687d98
-[   15.373280] R13: ffff88801b5fe000 R14: ffffc900005cbdc0 R15: dead000000000100
-[   15.373330] FS:  0000000000000000(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
-[   15.373382] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   15.373425] CR2: 000056421c468958 CR3: 000000001b458001 CR4: 0000000000170eb0
-[   15.373478] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   15.373529] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   15.373580] Call Trace:
-[   15.373611]  ? cfg80211_process_wdev_events+0x10e/0x170
-[   15.373743]  cfg80211_process_wdev_events+0x10e/0x170
-[   15.373783]  cfg80211_process_rdev_events+0x21/0x40
-[   15.373846]  cfg80211_event_work+0x20/0x30
-[   15.373892]  process_one_work+0x1e9/0x340
-[   15.373956]  worker_thread+0x4b/0x3f0
-[   15.374017]  ? process_one_work+0x340/0x340
-[   15.374053]  kthread+0x11f/0x140
-[   15.374089]  ? set_kthread_struct+0x30/0x30
-[   15.374153]  ret_from_fork+0x1f/0x30
-[   15.374187] ---[ end trace 321ef0cb7e9c0be1 ]---
-wlan0 (phy #0): connected to 00:00:00:00:00:00
+So, "[PATCH net n/N] ..." or "[PATCH net-next n/N] ..."
 
-Add the fake bss just before the connect so that cfg80211_get_bss()
-finds the virtual network.
-As some code was duplicated, move it in a common function.
+In this case, because it isn't a fix, you want net-next. However, as
+we are in the upstream merge window, the net-next tree is currently
+closed to new submissions. Please wait until it has reopened, which
+will after -rc1 has been released.
 
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- drivers/net/wireless/virt_wifi.c | 52 ++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 20 deletions(-)
+You can check the current status of net-next at:
+	http://vger.kernel.org/~davem/net-next.html
 
-diff --git a/drivers/net/wireless/virt_wifi.c b/drivers/net/wireless/virt_wifi.c
-index 1df959532c7d..514f2c1124b6 100644
---- a/drivers/net/wireless/virt_wifi.c
-+++ b/drivers/net/wireless/virt_wifi.c
-@@ -136,6 +136,29 @@ static struct ieee80211_supported_band band_5ghz = {
- /* Assigned at module init. Guaranteed locally-administered and unicast. */
- static u8 fake_router_bssid[ETH_ALEN] __ro_after_init = {};
- 
-+static void virt_wifi_inform_bss(struct wiphy *wiphy)
-+{
-+	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
-+	struct cfg80211_bss *informed_bss;
-+	static const struct {
-+		u8 tag;
-+		u8 len;
-+		u8 ssid[8];
-+	} __packed ssid = {
-+		.tag = WLAN_EID_SSID,
-+		.len = 8,
-+		.ssid = "VirtWifi",
-+	};
-+
-+	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
-+					   CFG80211_BSS_FTYPE_PRESP,
-+					   fake_router_bssid, tsf,
-+					   WLAN_CAPABILITY_ESS, 0,
-+					   (void *)&ssid, sizeof(ssid),
-+					   DBM_TO_MBM(-50), GFP_KERNEL);
-+	cfg80211_put_bss(wiphy, informed_bss);
-+}
-+
- /* Called with the rtnl lock held. */
- static int virt_wifi_scan(struct wiphy *wiphy,
- 			  struct cfg80211_scan_request *request)
-@@ -156,28 +179,13 @@ static int virt_wifi_scan(struct wiphy *wiphy,
- /* Acquires and releases the rdev BSS lock. */
- static void virt_wifi_scan_result(struct work_struct *work)
- {
--	struct {
--		u8 tag;
--		u8 len;
--		u8 ssid[8];
--	} __packed ssid = {
--		.tag = WLAN_EID_SSID, .len = 8, .ssid = "VirtWifi",
--	};
--	struct cfg80211_bss *informed_bss;
- 	struct virt_wifi_wiphy_priv *priv =
- 		container_of(work, struct virt_wifi_wiphy_priv,
- 			     scan_result.work);
- 	struct wiphy *wiphy = priv_to_wiphy(priv);
- 	struct cfg80211_scan_info scan_info = { .aborted = false };
--	u64 tsf = div_u64(ktime_get_boottime_ns(), 1000);
- 
--	informed_bss = cfg80211_inform_bss(wiphy, &channel_5ghz,
--					   CFG80211_BSS_FTYPE_PRESP,
--					   fake_router_bssid, tsf,
--					   WLAN_CAPABILITY_ESS, 0,
--					   (void *)&ssid, sizeof(ssid),
--					   DBM_TO_MBM(-50), GFP_KERNEL);
--	cfg80211_put_bss(wiphy, informed_bss);
-+	virt_wifi_inform_bss(wiphy);
- 
- 	/* Schedules work which acquires and releases the rtnl lock. */
- 	cfg80211_scan_done(priv->scan_request, &scan_info);
-@@ -225,10 +233,12 @@ static int virt_wifi_connect(struct wiphy *wiphy, struct net_device *netdev,
- 	if (!could_schedule)
- 		return -EBUSY;
- 
--	if (sme->bssid)
-+	if (sme->bssid) {
- 		ether_addr_copy(priv->connect_requested_bss, sme->bssid);
--	else
-+	} else {
-+		virt_wifi_inform_bss(wiphy);
- 		eth_zero_addr(priv->connect_requested_bss);
-+	}
- 
- 	wiphy_debug(wiphy, "connect\n");
- 
-@@ -241,11 +251,13 @@ static void virt_wifi_connect_complete(struct work_struct *work)
- 	struct virt_wifi_netdev_priv *priv =
- 		container_of(work, struct virt_wifi_netdev_priv, connect.work);
- 	u8 *requested_bss = priv->connect_requested_bss;
--	bool has_addr = !is_zero_ether_addr(requested_bss);
- 	bool right_addr = ether_addr_equal(requested_bss, fake_router_bssid);
- 	u16 status = WLAN_STATUS_SUCCESS;
- 
--	if (!priv->is_up || (has_addr && !right_addr))
-+	if (is_zero_ether_addr(requested_bss))
-+		requested_bss = NULL;
-+
-+	if (!priv->is_up || (requested_bss && !right_addr))
- 		status = WLAN_STATUS_UNSPECIFIED_FAILURE;
- 	else
- 		priv->is_connected = true;
+Thanks.
+
 -- 
-2.31.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
