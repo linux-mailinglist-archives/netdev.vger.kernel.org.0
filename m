@@ -2,94 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F363BDB42
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 18:18:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE8B3BDB6E
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 18:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbhGFQVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 12:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        id S230077AbhGFQef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 12:34:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbhGFQVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 12:21:03 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430C7C061574
-        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 09:18:25 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id o4so9241577plg.1
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 09:18:25 -0700 (PDT)
+        with ESMTP id S229935AbhGFQef (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 12:34:35 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FE4C061574;
+        Tue,  6 Jul 2021 09:31:56 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id f5so12588812pgv.3;
+        Tue, 06 Jul 2021 09:31:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=heOFddTtgrhuQumvGosFIkqvaBbKX5iQAngvm3JOatY=;
-        b=l8zKmX3bM5XRdPPkmfXPJ1mOa+wshDo5BG0ixQoM9KBgzC4/EMqnz3YssA5oLl+Hcl
-         obvB+wyVXkk1q8zs2Dg2MDPH4HefVrgQTosxim6tMmLUY0QG/yE3fE8dTSUeK8LfTvj8
-         yqPdmciaCv7326fkZhW5rWqcb24kTtiS4h7dS+VH0ywAF6BHA6vqhxlxqB2oX9v+ySsV
-         a4bhc1Ys2ymRrzMWFJMmJaTbffLve01scCdkPJi8fVQV5+V+skRbaGUa7OAOQ1JHEiaM
-         0wMWOgza3mzBIXgNheaTsEYURduZeilrxhOwj3q6+GjppMs+3Zhur6+7qMxIXkUF9ner
-         +ztw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OE8Ug0nHbV0oYFi/5TL+dbVFHW3KswNUaumYncqBNAc=;
+        b=hdWzUiRJGT6RAe9LFzEFDYoYlHcoHFhBIXkfKNUu4XksNqHogu54HAJsRnRqZv/h79
+         /qWd7ooqHruDyDZI/e8RE5Cs4TJqAEOzl0ZMGBZtsdWM8QzBzTNvZ2v4W7+LW4vL2iiq
+         OQi62C//DFHzLhiA1wl71xXqX1/AHVeozfhd46RRiPTOPvRattuHMXiocuxnOu6n4wzG
+         +e9cFO6uKGLqHkNl61FFkeaW5oV2ROkSW030MsewstmC72zijJwcqcxM9gPYEYOT0swD
+         SsP+xj9VfKSQ9xuW0fAs4s7H6Ro4BhObJfaTR+V/FNE3bEwdOCvQUiEJ9k9Yil6qAkmu
+         KF4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=heOFddTtgrhuQumvGosFIkqvaBbKX5iQAngvm3JOatY=;
-        b=UVWpKI+zqjW0TvZYHOqD0iqdAYonCDQjtlt58MI+Ptv9liJyNydzhoLQ4MVS6ljM3j
-         82VnIHLEzchRYCUe0+qEp0uoakZoRMKlqLS7uvlvSN8fzRx7h8dITtYw3Z3hQ/1zN5NA
-         xhTOvcv5YF4gYJu2C/DHjh0xjQNXNlH9L0XA5/PLRMjVNwo6kLiKvGPtXeiWQSNd0vNg
-         7rXqe62T0YU4iWH4+E5ByzrWgVW4cBRN/1HcCpw7AkIikxO5DJpJXHDdWfmHOy9GexNJ
-         jayW3mPz15V77SInJtM3pyJfYZuKoZnKjNNkZw2iRh3f3zYHZikRLagUVfC4wUEG0mmH
-         nOMQ==
-X-Gm-Message-State: AOAM531eaH24Cww8dX077kNt5E8qCgHfGfZQKeAjNWeuhopvHlaMNyU5
-        hbhSm9L4kv/ZuK2o3/CXPamPww==
-X-Google-Smtp-Source: ABdhPJzKcbik1YBX2nimh+V7webbgLE1ew1nI7CeBOX2pNIGox4fqmY4WK2Q/din0oSjAGLk5Ae/mw==
-X-Received: by 2002:a17:90a:2c09:: with SMTP id m9mr1261502pjd.212.1625588304733;
-        Tue, 06 Jul 2021 09:18:24 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id 199sm16031455pfy.203.2021.07.06.09.18.24
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OE8Ug0nHbV0oYFi/5TL+dbVFHW3KswNUaumYncqBNAc=;
+        b=UGk/kdRIJzKUtG/d0aFh3yTIJ4keZBbJAnjnqEfSsJiRo1XEk3waSo0x+d5/d6k94s
+         xN/K4KdL0nKutTIuwtPk0cJOPyqcs9tchmdfeXoehfM7RCBeROkACP4aZTfKDXH7TFH9
+         TOV/yh+2k9fh/xTWGpuW0VWNYJ7R009ALjPDsFPTSi4hNAn5gCwHlsAx2QV20Lda73pN
+         KJ7BIBrnXH/B7VGsZtuBp7GjDRdDPFTP4wuBEVoh9p4RLk2M6KH/JGfgMcZuWfIffqpM
+         0M/dMNedaeIq7Z2Bdd6xGcVjoYAaA+P6Rkfwft6jbdwWQU/GORGtQkDT5QLX18C9DmX3
+         YAgw==
+X-Gm-Message-State: AOAM530jpl+edkEhouca64eet2/ILztj0RCJyfuzYYPByG76mISaShRX
+        z+hjEtNdubGR0foPbqO0Gv0=
+X-Google-Smtp-Source: ABdhPJw8YftT210m0Ez6BjT2PVc2eNhUo+BHasviAbB5epSUcOe/iX9pXoM3CTfNac1jYGlQIZJBNw==
+X-Received: by 2002:a63:1f25:: with SMTP id f37mr21476177pgf.61.1625589115908;
+        Tue, 06 Jul 2021 09:31:55 -0700 (PDT)
+Received: from localhost.localdomain (51.sub-174-204-201.myvzw.com. [174.204.201.51])
+        by smtp.gmail.com with ESMTPSA id b4sm14942570pji.52.2021.07.06.09.31.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 09:18:24 -0700 (PDT)
-Date:   Tue, 6 Jul 2021 09:18:21 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCHv4 iproute2] ip route: ignore ENOENT during save if
- RT_TABLE_MAIN is being dumped
-Message-ID: <20210706091821.7a5c2ce8@hermes.local>
-In-Reply-To: <20210706184415.baf59983a9cb5de56050389c@virtuozzo.com>
-References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210629155116.23464-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210706083407.76deb4c0@hermes.local>
-        <20210706184415.baf59983a9cb5de56050389c@virtuozzo.com>
+        Tue, 06 Jul 2021 09:31:55 -0700 (PDT)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
+        xiyou.wangcong@gmail.com
+Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf v3 0/2] potential sockmap memleak and proc stats fix
+Date:   Tue,  6 Jul 2021 09:31:48 -0700
+Message-Id: <20210706163150.112591-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Jul 2021 18:44:15 +0300
-Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
+While investigating a memleak in sockmap I found these two issues. Patch
+1 found doing code review, I wasn't able to get KASAN to trigger a
+memleak here, but should be necessary. Patch 2 fixes proc stats so when
+we use sockstats for debugging we get correct values.
 
-> On Tue, 6 Jul 2021 08:34:07 -0700
-> Stephen Hemminger <stephen@networkplumber.org> wrote:
-> 
-> > On Tue, 29 Jun 2021 18:51:15 +0300
-> > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> >   
-> > > +	const struct rtnl_dump_filter_arg a[2] = {
-> > > +		{ .filter = filter, .arg1 = arg1,
-> > > +		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
-> > > +		{ .filter = NULL,   .arg1 = NULL,
-> > > +		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
-> > >  	};  
-> > 
-> > I am OK with this as is. But you don't need to add initializers for fields
-> > that are 0/NULL (at least in C).  
-> 
-> Sure, I've made such explicit initializations just because in original
-> rtnl_dump_filter_nc() we already have them.
-> 
-> Do I need to resend with fixed initializations? ;)
+The fix for observered memleak will come after these, but requires some
+more discussion and potentially patch revert so I'll try to get the set
+here going now.
 
-Not worth it
+John Fastabend (2):
+  bpf, sockmap: fix potential memory leak on unlikely error case
+  bpf, sockmap: sk_prot needs inuse_idx set for proc stats
+
+ net/core/skmsg.c    | 10 ++++++----
+ net/core/sock_map.c | 11 ++++++++++-
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+-- 
+2.25.1
+
