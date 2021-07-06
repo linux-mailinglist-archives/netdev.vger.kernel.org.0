@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D993BCFBD
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DC43BD035
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234634AbhGFLbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:31:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42474 "EHLO mail.kernel.org"
+        id S232367AbhGFLcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:32:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235167AbhGFL3l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:29:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8731561D80;
-        Tue,  6 Jul 2021 11:20:39 +0000 (UTC)
+        id S235197AbhGFL3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:29:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F0AF561D74;
+        Tue,  6 Jul 2021 11:20:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570440;
-        bh=aAtpwhKuMZGDxNZ3FqxdQXfUEParfME5aHdCkcyIr3M=;
+        s=k20201202; t=1625570441;
+        bh=RPRNZmvuVCB5xcnAbD+p7zyjY3mC4jznPrHztNSsvbg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iy2UWrtLmCbQQags30F6mNT0dw09pcS2ROezDNSY+Sn1o+Fnx0qL5RKv1pAcG388S
-         5n0tycDcp9RN5DcmuqXGWxL9ye50NTBkbrHreAuUTqf7TpxRcdTEKDG32hyfF0lz4x
-         3HHt7LULYcPVtAmeFr+sSw9XN7Dqw5jjv0S32xbHADT2Bizg4g/T/dC+HpRAFNjyo9
-         FALx5U+Zr3oKQyt4372km6hvtE1OYGB8kVkI4+7sydjPhUCL/2eLZCh2AMLxcU3eK6
-         o4X3fvk65c4kcSX5uRyck3IPX04JlFjsVplusujdcWkyVFZLF3hSoYWAvy5gor6ca7
-         2LMCUbQvW1WeQ==
+        b=rwLM+VYWcfX66hlLYujZLzI55HgE16ltHHg7soUqI+AmQZTJRqJsgm7wu3E3KKWKa
+         IJTwdFOFv4Z4o5Cj9cfn/mUgastRW0lIvqsVoCTVUYzQ0NRuVtnwtR4gRrmT2SZ9OB
+         6p8/5oTTnUoCFpt/wuWEJ3D06e1zVbPBknYzMjsmsSetZe17rho76IAzrLI2Us7tSk
+         sJb02XweYrNoqHKxKzwQ6teDaeByfR+PwlNbmXJaaKyxQRGz8y8CZIjMMQFZSUm9hu
+         Iih/rpAGmaH3Up9WZPE3HioEq+pnHmRVraiBSQ4Jzc21ZxMAIRPo0LAiPjTlCZHOiG
+         pFZ7xzZ0zVZzA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 100/160] ice: mark PTYPE 2 as reserved
-Date:   Tue,  6 Jul 2021 07:17:26 -0400
-Message-Id: <20210706111827.2060499-100-sashal@kernel.org>
+Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.12 101/160] mt76: mt7615: fix fixed-rate tx status reporting
+Date:   Tue,  6 Jul 2021 07:17:27 -0400
+Message-Id: <20210706111827.2060499-101-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -44,38 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 0c526d440f76676733cb470b454db9d5507a3a50 ]
+[ Upstream commit ec8f1a90d006f7cedcf86ef19fd034a406a213d6 ]
 
-The entry for PTYPE 2 in the ice_ptype_lkup table incorrectly states
-that this is an L2 packet with no payload. According to the datasheet,
-this PTYPE is actually unused and reserved.
+Rely on the txs fixed-rate bit instead of info->control.rates
 
-Fix the lookup entry to indicate this is an unused entry that is
-reserved.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-index 98a7f27c532b..c0ee0541e53f 100644
---- a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-@@ -608,7 +608,7 @@ static const struct ice_rx_ptype_decoded ice_ptype_lkup[] = {
- 	/* L2 Packet types */
- 	ICE_PTT_UNUSED_ENTRY(0),
- 	ICE_PTT(1, L2, NONE, NOF, NONE, NONE, NOF, NONE, PAY2),
--	ICE_PTT(2, L2, NONE, NOF, NONE, NONE, NOF, NONE, NONE),
-+	ICE_PTT_UNUSED_ENTRY(2),
- 	ICE_PTT_UNUSED_ENTRY(3),
- 	ICE_PTT_UNUSED_ENTRY(4),
- 	ICE_PTT_UNUSED_ENTRY(5),
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 8dccb589b756..5a63869193f2 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -1194,22 +1194,20 @@ static bool mt7615_fill_txs(struct mt7615_dev *dev, struct mt7615_sta *sta,
+ 	int first_idx = 0, last_idx;
+ 	int i, idx, count;
+ 	bool fixed_rate, ack_timeout;
+-	bool probe, ampdu, cck = false;
++	bool ampdu, cck = false;
+ 	bool rs_idx;
+ 	u32 rate_set_tsf;
+ 	u32 final_rate, final_rate_flags, final_nss, txs;
+ 
+-	fixed_rate = info->status.rates[0].count;
+-	probe = !!(info->flags & IEEE80211_TX_CTL_RATE_CTRL_PROBE);
+-
+ 	txs = le32_to_cpu(txs_data[1]);
+-	ampdu = !fixed_rate && (txs & MT_TXS1_AMPDU);
++	ampdu = txs & MT_TXS1_AMPDU;
+ 
+ 	txs = le32_to_cpu(txs_data[3]);
+ 	count = FIELD_GET(MT_TXS3_TX_COUNT, txs);
+ 	last_idx = FIELD_GET(MT_TXS3_LAST_TX_RATE, txs);
+ 
+ 	txs = le32_to_cpu(txs_data[0]);
++	fixed_rate = txs & MT_TXS0_FIXED_RATE;
+ 	final_rate = FIELD_GET(MT_TXS0_TX_RATE, txs);
+ 	ack_timeout = txs & MT_TXS0_ACK_TIMEOUT;
+ 
+@@ -1231,7 +1229,7 @@ static bool mt7615_fill_txs(struct mt7615_dev *dev, struct mt7615_sta *sta,
+ 
+ 	first_idx = max_t(int, 0, last_idx - (count - 1) / MT7615_RATE_RETRY);
+ 
+-	if (fixed_rate && !probe) {
++	if (fixed_rate) {
+ 		info->status.rates[0].count = count;
+ 		i = 0;
+ 		goto out;
 -- 
 2.30.2
 
