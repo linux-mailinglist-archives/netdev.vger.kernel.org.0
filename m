@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 037713BCC3C
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 100AA3BCC20
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbhGFLSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:18:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53482 "EHLO mail.kernel.org"
+        id S232526AbhGFLS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:18:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53438 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232360AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232362AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:18:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8908961C22;
-        Tue,  6 Jul 2021 11:15:22 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CCC0361C3E;
+        Tue,  6 Jul 2021 11:15:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570123;
-        bh=qwDOPYoWnDfuwo7d96yAIbMByB5OAY5HzokkWBqgC+Q=;
+        s=k20201202; t=1625570124;
+        bh=MWXuWisZncxrhW+Gof0/n2Fystbk7rolGH5RF9Kpt5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4K9FovNyZWFz9aoYze++dt8RTkctRKZvMvLo0IqwHs9MbcUbc6sDGdez+FWyYhp+
-         832ac/w68VsJOaOumApmRBbmsSrw3WJ0+jDEP4rGpEKnnUw+D3Vtl7X165UwD4eDIH
-         D6hTUTpKSyklQ50lW7O98JJDlgtD8UvhTOaY45QTvQxTjhX8/ZsvjChT1wKO799BtP
-         aEP2mD45sEMxokkcxqsMw0ttJ7NPCgJ5FEu9TqFJQhHPKQAcLOb5REU7wVcjGoxYD3
-         yNPQvaRY4L2Vi9AGYAC9El+iLyA1JN1m5w7P0gSqfBHky5rYLe5VT8H90CKCgSiZ5T
-         LMFkWIdG9Y5Tw==
+        b=HA1fHeGP0m2qm3JFnyItrMUrBdC1aFWE5yaBHwdXTowdVZ/2vUFMqyfcyKOBbHMaL
+         eMrDEA8lRME1GFdPHeWZ3fE9MqNc0VmBICx7w26lAODWOrXYHeSZi+5P2iAvXiPBos
+         YxXI1HohDtMGkNcEx6QzUZbuMFPNsSjUfU/GjnKwzZjj1uQDdxb73/ywAIl4M4squU
+         V8MzwXY19Ab8TZNu/DBzv8fOQK3srnP7Dbtg5ACAOlgwd84jqdQN9NDq93KyGsCfhY
+         vkFiYwSI7kExeA+jyb4HzTZUYD4DxFXEdN5jNaB/4RwKyiHvQF7teqoC6gECX7TytL
+         6w99dHH9h75qw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Huy Nguyen <huyn@nvidia.com>, Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+Cc:     Eli Cohen <elic@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 052/189] net/mlx5e: IPsec/rep_tc: Fix rep_tc_update_skb drops IPsec packet
-Date:   Tue,  6 Jul 2021 07:11:52 -0400
-Message-Id: <20210706111409.2058071-52-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 053/189] net/mlx5: Fix lag port remapping logic
+Date:   Tue,  6 Jul 2021 07:11:53 -0400
+Message-Id: <20210706111409.2058071-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -43,49 +42,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huy Nguyen <huyn@nvidia.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit c07274ab1ab2c38fb128e32643c22c89cb319384 ]
+[ Upstream commit 8613641063617c1dfc731b403b3ee4935ef15f87 ]
 
-rep_tc copy REG_C1 to REG_B. IPsec crypto utilizes the whole REG_B
-register with BIT31 as IPsec marker. rep_tc_update_skb drops
-IPsec because it thought REG_B contains bad value.
+Fix the logic so that if both ports netdevices are enabled or disabled,
+use the trivial mapping without swapping.
 
-In previous patch, BIT 31 of REG_C1 is reserved for IPsec.
-Skip the rep_tc_update_skb if BIT31 of REG_B is set.
+If only one of the netdevice's tx is enabled, use it to remap traffic to
+that port.
 
-Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-Signed-off-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Eli Cohen <elic@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index f90894eea9e0..5346271974f5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1310,7 +1310,8 @@ static void mlx5e_handle_rx_cqe_rep(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe)
- 	if (rep->vlan && skb_vlan_tag_present(skb))
- 		skb_vlan_pop(skb);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index b8748390335f..9ce144ef8326 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -118,17 +118,24 @@ static bool __mlx5_lag_is_sriov(struct mlx5_lag *ldev)
+ static void mlx5_infer_tx_affinity_mapping(struct lag_tracker *tracker,
+ 					   u8 *port1, u8 *port2)
+ {
++	bool p1en;
++	bool p2en;
++
++	p1en = tracker->netdev_state[MLX5_LAG_P1].tx_enabled &&
++	       tracker->netdev_state[MLX5_LAG_P1].link_up;
++
++	p2en = tracker->netdev_state[MLX5_LAG_P2].tx_enabled &&
++	       tracker->netdev_state[MLX5_LAG_P2].link_up;
++
+ 	*port1 = 1;
+ 	*port2 = 2;
+-	if (!tracker->netdev_state[MLX5_LAG_P1].tx_enabled ||
+-	    !tracker->netdev_state[MLX5_LAG_P1].link_up) {
+-		*port1 = 2;
++	if ((!p1en && !p2en) || (p1en && p2en))
+ 		return;
+-	}
  
--	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
-+	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
-+		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
- 		dev_kfree_skb_any(skb);
- 		goto free_wqe;
- 	}
-@@ -1367,7 +1368,8 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
+-	if (!tracker->netdev_state[MLX5_LAG_P2].tx_enabled ||
+-	    !tracker->netdev_state[MLX5_LAG_P2].link_up)
++	if (p1en)
+ 		*port2 = 1;
++	else
++		*port1 = 2;
+ }
  
- 	mlx5e_complete_rx_cqe(rq, cqe, cqe_bcnt, skb);
- 
--	if (!mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv)) {
-+	if (unlikely(!mlx5_ipsec_is_rx_flow(cqe) &&
-+		     !mlx5e_rep_tc_update_skb(cqe, skb, &tc_priv))) {
- 		dev_kfree_skb_any(skb);
- 		goto mpwrq_cqe_out;
- 	}
+ void mlx5_modify_lag(struct mlx5_lag *ldev,
 -- 
 2.30.2
 
