@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 353ED3BCF61
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3213B3BCF6A
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234161AbhGFL2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:28:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35348 "EHLO mail.kernel.org"
+        id S232977AbhGFL2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:28:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233713AbhGFL0P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:26:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E7EEF61CC3;
-        Tue,  6 Jul 2021 11:19:44 +0000 (UTC)
+        id S233941AbhGFL0e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:26:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 30B7261D55;
+        Tue,  6 Jul 2021 11:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570385;
-        bh=aP/EM1b9qK2BBJm0OU5caXqsX2vV20/HThE6Niuaryw=;
+        s=k20201202; t=1625570394;
+        bh=6BREJ0k9L9mE1E4tZx8e9Dg/2tIQvEdSjFwZmz7JpRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E4V+KQ8pkzlMqbsCxr67PCSgIY4LQZ0qmVWWO5xKzj88B4BzM16HjAxwN4GwZ2aJL
-         P/397APfKyqWln11raOKa4bKZy/9VyayDi0zSpEQwVJvQznNYCThxUFYjQ7xcoc9ag
-         rzp65/X0TrAUmVc3nQAr8hNtZlaSCAkHXJM4UdljOjgqhF0HzEGKnrF/wgQMUmQzda
-         QS7HQQ8cFxxLB7wUuAby7pvhBplTkiVDpOv7r/fCN+Y/aaiMfHlXhZ1nzRmBYgiMdW
-         61ZHtdMruJGx5zwRDjSdJEayfVq01kQHIK6dhx7zBatSvuJz8PLfeo3JdvEvp0pV51
-         kN3nTj35nGpug==
+        b=eXHI01WHz051k/f6U7ZP7D2LgcIdbkrK3E4+3K7uVD8YEo/KtLT/Zj4SSGowYkGXP
+         Kj4t/hE/6ht1KFmW58a/TYLFR20ba1OJLHBjv01p6WhBeWHGadt9ADZQmJ98yqROcF
+         jatArWup4S7eIX1AWewvvp5w0pN6bUdG2DDqDK2zMvJKDrdfp+buuROCMDLFK9wsID
+         RI1dsKLRoIKOwYJrzpHv9jBm2gFTGVjrSjY/wmacbnd/gQnFknduvgRgBJ0Wl9104J
+         WtYKYcPHIa358/OyjK9ptS3UmPT4G8eeAVprDZOInMdCnqAyNQ7j1if3OTdAOBr807
+         dyxh3BMkvNagA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        mingkun bian <bianmingkun@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 059/160] net: tcp better handling of reordering then loss cases
-Date:   Tue,  6 Jul 2021 07:16:45 -0400
-Message-Id: <20210706111827.2060499-59-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 065/160] net: bridge: mrp: Update ring transitions.
+Date:   Tue,  6 Jul 2021 07:16:51 -0400
+Message-Id: <20210706111827.2060499-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -45,116 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yuchung Cheng <ycheng@google.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit a29cb6914681a55667436a9eb7a42e28da8cf387 ]
+[ Upstream commit fcb34635854a5a5814227628867ea914a9805384 ]
 
-This patch aims to improve the situation when reordering and loss are
-ocurring in the same flight of packets.
+According to the standard IEC 62439-2, the number of transitions needs
+to be counted for each transition 'between' ring state open and ring
+state closed and not from open state to closed state.
 
-Previously the reordering would first induce a spurious recovery, then
-the subsequent ACK may undo the cwnd (based on the timestamps e.g.).
-However the current loss recovery does not proceed to invoke
-RACK to install a reordering timer. If some packets are also lost, this
-may lead to a long RTO-based recovery. An example is
-https://groups.google.com/g/bbr-dev/c/OFHADvJbTEI
+Therefore fix this for both ring and interconnect ring.
 
-The solution is to after reverting the recovery, always invoke RACK
-to either mount the RACK timer to fast retransmit after the reordering
-window, or restarts the recovery if new loss is identified. Hence
-it is possible the sender may go from Recovery to Disorder/Open to
-Recovery again in one ACK.
-
-Reported-by: mingkun bian <bianmingkun@gmail.com>
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 45 +++++++++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 19 deletions(-)
+ net/bridge/br_mrp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 69a545db80d2..e567fff1d1a6 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2816,8 +2816,17 @@ static void tcp_process_loss(struct sock *sk, int flag, int num_dupack,
- 	*rexmit = REXMIT_LOST;
- }
+diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+index 12487f6fe9b4..58254fbfda85 100644
+--- a/net/bridge/br_mrp.c
++++ b/net/bridge/br_mrp.c
+@@ -620,8 +620,7 @@ int br_mrp_set_ring_state(struct net_bridge *br,
+ 	if (!mrp)
+ 		return -EINVAL;
  
-+static bool tcp_force_fast_retransmit(struct sock *sk)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	return after(tcp_highest_sack_seq(tp),
-+		     tp->snd_una + tp->reordering * tp->mss_cache);
-+}
-+
- /* Undo during fast recovery after partial ACK. */
--static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una)
-+static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una,
-+				 bool *do_lost)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
+-	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
+-	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
++	if (mrp->ring_state != state->ring_state)
+ 		mrp->ring_transitions++;
  
-@@ -2842,7 +2851,9 @@ static bool tcp_try_undo_partial(struct sock *sk, u32 prior_snd_una)
- 		tcp_undo_cwnd_reduction(sk, true);
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPPARTIALUNDO);
- 		tcp_try_keep_open(sk);
--		return true;
-+	} else {
-+		/* Partial ACK arrived. Force fast retransmit. */
-+		*do_lost = tcp_force_fast_retransmit(sk);
- 	}
- 	return false;
- }
-@@ -2866,14 +2877,6 @@ static void tcp_identify_packet_loss(struct sock *sk, int *ack_flag)
- 	}
- }
+ 	mrp->ring_state = state->ring_state;
+@@ -708,8 +707,7 @@ int br_mrp_set_in_state(struct net_bridge *br, struct br_mrp_in_state *state)
+ 	if (!mrp)
+ 		return -EINVAL;
  
--static bool tcp_force_fast_retransmit(struct sock *sk)
--{
--	struct tcp_sock *tp = tcp_sk(sk);
--
--	return after(tcp_highest_sack_seq(tp),
--		     tp->snd_una + tp->reordering * tp->mss_cache);
--}
--
- /* Process an event, which can update packets-in-flight not trivially.
-  * Main goal of this function is to calculate new estimate for left_out,
-  * taking into account both packets sitting in receiver's buffer and
-@@ -2943,17 +2946,21 @@ static void tcp_fastretrans_alert(struct sock *sk, const u32 prior_snd_una,
- 		if (!(flag & FLAG_SND_UNA_ADVANCED)) {
- 			if (tcp_is_reno(tp))
- 				tcp_add_reno_sack(sk, num_dupack, ece_ack);
--		} else {
--			if (tcp_try_undo_partial(sk, prior_snd_una))
--				return;
--			/* Partial ACK arrived. Force fast retransmit. */
--			do_lost = tcp_force_fast_retransmit(sk);
--		}
--		if (tcp_try_undo_dsack(sk)) {
--			tcp_try_keep_open(sk);
-+		} else if (tcp_try_undo_partial(sk, prior_snd_una, &do_lost))
- 			return;
--		}
-+
-+		if (tcp_try_undo_dsack(sk))
-+			tcp_try_keep_open(sk);
-+
- 		tcp_identify_packet_loss(sk, ack_flag);
-+		if (icsk->icsk_ca_state != TCP_CA_Recovery) {
-+			if (!tcp_time_to_recover(sk, flag))
-+				return;
-+			/* Undo reverts the recovery state. If loss is evident,
-+			 * starts a new recovery (e.g. reordering then loss);
-+			 */
-+			tcp_enter_recovery(sk, ece_ack);
-+		}
- 		break;
- 	case TCP_CA_Loss:
- 		tcp_process_loss(sk, flag, num_dupack, rexmit);
+-	if (mrp->in_state == BR_MRP_IN_STATE_CLOSED &&
+-	    state->in_state != BR_MRP_IN_STATE_CLOSED)
++	if (mrp->in_state != state->in_state)
+ 		mrp->in_transitions++;
+ 
+ 	mrp->in_state = state->in_state;
 -- 
 2.30.2
 
