@@ -2,39 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9A73BCEDB
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D5F3BCED2
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234348AbhGFL1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:27:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35476 "EHLO mail.kernel.org"
+        id S234312AbhGFL1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:27:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35478 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234824AbhGFLZG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234822AbhGFLZG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:25:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 540A261D26;
-        Tue,  6 Jul 2021 11:19:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E29EE61D31;
+        Tue,  6 Jul 2021 11:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570344;
-        bh=d09ir3kgb9xtU564t4rO0NluCjTTcHfF8TAcNZAL3Ak=;
+        s=k20201202; t=1625570345;
+        bh=nQS3t7wV/RZjdaFDVw4HYZ8B9wPxypO0wSp6Pk74WDw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=klYiS63SmGIlgwK11+yLmbF8CW28JIWNuun+Nx9vwEQiuF6imNPrleaQ2zYNdKrN5
-         r3DXHKgNmiKznVKg9R+59EHDQB95605QwCaFpleVykuR4XbqMc7xU2x8A4rB0fWK3Q
-         u5wVVHQ3X7hsZAFzh3wUlqL0yxyDEkuLu4LmA/Oy6skpOFwGTrWqGFB4T/b4PQEbTp
-         6Da9XYgQqK1+2rpLA6NcaEvXyXkeks1+Zbd+qUZ81uNWYhqopWy+njNcf0e8Y56dbb
-         otwnsgpY2XyPYwBveI/+J1mS52qxAzDpiJek20EC38CR/mQzQWFQAkuVp+ZOKhU2iu
-         Mo7N+pQiEW8qw==
+        b=mXhhVxRfnmcDDLkDdT9sRwqAw2Q5VWnpV3NhPVjF7QI+E5o+axQvbwR1CWjTLf9E6
+         ncaWgSgNysJ/r+VJWjS5HJM6IQBu28nK6B5u+YhBkaVuWSuqqwPEyj8Ey+UusJdEvN
+         cUrXViGrnMHCN1Wp1NQDnMXud2s1c2o05EY8MrmjpKbOMCgA37kpNuAJgeBHYPKut4
+         V4hUYKKdLy+tzXulAuhp7HeqTYw8mU8yvvyPA135LA36qLHInrVERraL95Q6dm6izs
+         ygLtVwIHnTCWhfRjbyewDzwZ5S1xsiU4WCplNkQABMJdKDr+snFSJzbSz9uEul6Aki
+         FEc0uCCsmjaIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Davide Caratti <dcaratti@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 027/160] net: mdio: provide shim implementation of devm_of_mdiobus_register
-Date:   Tue,  6 Jul 2021 07:16:13 -0400
-Message-Id: <20210706111827.2060499-27-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 028/160] net/sched: cls_api: increase max_reclassify_loop
+Date:   Tue,  6 Jul 2021 07:16:14 -0400
+Message-Id: <20210706111827.2060499-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -46,47 +42,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+From: Davide Caratti <dcaratti@redhat.com>
 
-[ Upstream commit 86544c3de6a2185409c5a3d02f674ea223a14217 ]
+[ Upstream commit 05ff8435e50569a0a6b95e5ceaea43696e8827ab ]
 
-Similar to the way in which of_mdiobus_register() has a fallback to the
-non-DT based mdiobus_register() when CONFIG_OF is not set, we can create
-a shim for the device-managed devm_of_mdiobus_register() which calls
-devm_mdiobus_register() and discards the struct device_node *.
+modern userspace applications, like OVN, can configure the TC datapath to
+"recirculate" packets several times. If more than 4 "recirculation" rules
+are configured, packets can be dropped by __tcf_classify().
+Changing the maximum number of reclassifications (from 4 to 16) should be
+sufficient to prevent drops in most use cases, and guard against loops at
+the same time.
 
-In particular, this solves a build issue with the qca8k DSA driver which
-uses devm_of_mdiobus_register and can be compiled without CONFIG_OF.
-
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/of_mdio.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/sched/cls_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-index 2b05e7f7c238..da633d34ab86 100644
---- a/include/linux/of_mdio.h
-+++ b/include/linux/of_mdio.h
-@@ -72,6 +72,13 @@ static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *
- 	return mdiobus_register(mdio);
- }
- 
-+static inline int devm_of_mdiobus_register(struct device *dev,
-+					   struct mii_bus *mdio,
-+					   struct device_node *np)
-+{
-+	return devm_mdiobus_register(dev, mdio);
-+}
-+
- static inline struct mdio_device *of_mdio_find_device(struct device_node *np)
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 94f6942d7ec1..2f82ac7c0f93 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1531,7 +1531,7 @@ static inline int __tcf_classify(struct sk_buff *skb,
+ 				 u32 *last_executed_chain)
  {
- 	return NULL;
+ #ifdef CONFIG_NET_CLS_ACT
+-	const int max_reclassify_loop = 4;
++	const int max_reclassify_loop = 16;
+ 	const struct tcf_proto *first_tp;
+ 	int limit = 0;
+ 
 -- 
 2.30.2
 
