@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3C0D3BCE71
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 779253BCC68
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:17:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233594AbhGFL0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:26:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54674 "EHLO mail.kernel.org"
+        id S232735AbhGFLTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:19:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54866 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232508AbhGFLS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:18:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7535E61C66;
-        Tue,  6 Jul 2021 11:15:48 +0000 (UTC)
+        id S232487AbhGFLSf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:18:35 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D37CC61C37;
+        Tue,  6 Jul 2021 11:15:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570149;
-        bh=bCoeEDpeakw8Oebug4Gh/pTMiYMIT4eJH2E2tGUXFGE=;
+        s=k20201202; t=1625570156;
+        bh=UIZQa9iSQhxcVaXMJJxbl1bvgrn5SEdBhZXIr0j9owk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kWcBZ/IxVu2u0SHlZu8DV1mfSubKI/X66B1ObOF2wONtL6OSkXisVWU9bakvCHtQu
-         Dqa/NixufAEx7GBu/Y29cT6s7kS7VyBVUp/HGwYTkOHkIvw0aw3/G9YJtksHndfCsu
-         pIitcOuPjQ8eROcYL3oUkwVjsXKR624+2upNu6We12J4wyQ3lnEeDVs9EKtUP7KfKs
-         51Ju2INMumMI8jOPuQ/wrpl8XZ3zI3pXwpEY4+vMf4pOK33Lgy/gkuBNCWKDXn5mV1
-         tdJB0dNba67eAOGTD8kmKI1NOz55QykjeKUZ73LfMS3vR6b8EXX2pEjyCLU8Wdvqza
-         GVvIg14ZHehWw==
+        b=Jtw9A6YhntZ9/WUFChD6fbVNxkJM5XymcKkRDFbIuOMGNfxbepMHhmzriv87GZC1Y
+         JTauwuVaMO4BZnlezQrsfgJbj6j49TSkero6BQNN4Jst568HdkEzqc4c55SULQd4tU
+         fJPSVogcU3GwMq7+7Y5Po5USVVo0RzDfzOWnoLeByrdFroimZZY210ECo62cHvDopR
+         JpEEDHlR/qw7E048bwUturxUepoAO8mJf20s/ILskQcy3tYQrJ5mxaXwFc0GY4423u
+         Au3/d3hTS8Ka35hBMZvntUDxCgqji6/F+4NvVZCc474MmEHtxqLP2CN12W626Q+8/2
+         iyPxpzCjfF9Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andreas Roeseler <andreas.a.roeseler@gmail.com>,
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 072/189] icmp: fix lib conflict with trinity
-Date:   Tue,  6 Jul 2021 07:12:12 -0400
-Message-Id: <20210706111409.2058071-72-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 078/189] net: bridge: mrp: Update ring transitions.
+Date:   Tue,  6 Jul 2021 07:12:18 -0400
+Message-Id: <20210706111409.2058071-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -42,57 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit e32ea44c7ae476f4c90e35ab0a29dc8ff082bc11 ]
+[ Upstream commit fcb34635854a5a5814227628867ea914a9805384 ]
 
-Including <linux/in.h> and <netinet/in.h> in the dependencies breaks
-compilation of trinity due to multiple definitions. <linux/in.h> is only
-used in <linux/icmp.h> to provide the definition of the struct in_addr,
-but this can be substituted out by using the datatype __be32.
+According to the standard IEC 62439-2, the number of transitions needs
+to be counted for each transition 'between' ring state open and ring
+state closed and not from open state to closed state.
 
-Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
+Therefore fix this for both ring and interconnect ring.
+
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/icmp.h | 3 +--
- net/ipv4/icmp.c           | 2 +-
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ net/bridge/br_mrp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/include/uapi/linux/icmp.h b/include/uapi/linux/icmp.h
-index c1da8244c5e1..163c0998aec9 100644
---- a/include/uapi/linux/icmp.h
-+++ b/include/uapi/linux/icmp.h
-@@ -20,7 +20,6 @@
+diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+index cd2b1e424e54..f7012b7d7ce4 100644
+--- a/net/bridge/br_mrp.c
++++ b/net/bridge/br_mrp.c
+@@ -627,8 +627,7 @@ int br_mrp_set_ring_state(struct net_bridge *br,
+ 	if (!mrp)
+ 		return -EINVAL;
  
- #include <linux/types.h>
- #include <asm/byteorder.h>
--#include <linux/in.h>
- #include <linux/if.h>
- #include <linux/in6.h>
+-	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
+-	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
++	if (mrp->ring_state != state->ring_state)
+ 		mrp->ring_transitions++;
  
-@@ -154,7 +153,7 @@ struct icmp_ext_echo_iio {
- 		struct {
- 			struct icmp_ext_echo_ctype3_hdr ctype3_hdr;
- 			union {
--				struct in_addr	ipv4_addr;
-+				__be32		ipv4_addr;
- 				struct in6_addr	ipv6_addr;
- 			} ip_addr;
- 		} addr;
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 752e392083e6..0a57f1892e7e 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -1066,7 +1066,7 @@ static bool icmp_echo(struct sk_buff *skb)
- 			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) +
- 					 sizeof(struct in_addr))
- 				goto send_mal_query;
--			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr.s_addr);
-+			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr);
- 			break;
- #if IS_ENABLED(CONFIG_IPV6)
- 		case ICMP_AFI_IP6:
+ 	mrp->ring_state = state->ring_state;
+@@ -715,8 +714,7 @@ int br_mrp_set_in_state(struct net_bridge *br, struct br_mrp_in_state *state)
+ 	if (!mrp)
+ 		return -EINVAL;
+ 
+-	if (mrp->in_state == BR_MRP_IN_STATE_CLOSED &&
+-	    state->in_state != BR_MRP_IN_STATE_CLOSED)
++	if (mrp->in_state != state->in_state)
+ 		mrp->in_transitions++;
+ 
+ 	mrp->in_state = state->in_state;
 -- 
 2.30.2
 
