@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0347E3BCECC
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A743BCED0
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234272AbhGFL1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:27:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35348 "EHLO mail.kernel.org"
+        id S234290AbhGFL1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:27:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234745AbhGFLZB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:25:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9EFB661D18;
-        Tue,  6 Jul 2021 11:18:52 +0000 (UTC)
+        id S234777AbhGFLZE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:25:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6592861D1B;
+        Tue,  6 Jul 2021 11:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570333;
-        bh=y0gRbwom6AqazrCT6MGLpInasUI5+N6SNnloQPIq5W4=;
+        s=k20201202; t=1625570336;
+        bh=dT8hcCxhperB/T+8aYy1wP8AerwINrRNIYBFnfhjs7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fYaIel/Em53FiJ10ovg9zhb2j1nkb7S9N1A4QR5cuYv8WqpxsUQtZbILb0H7FHOB9
-         RTo3OpZayBHmABP+Sqx36nKtLKsgAMMdNYc74XKp5rx8RfqP6GTpvb79xTkwXeCv38
-         Tg2LBsRAv8uHzdarqMdShu8r+zI6b11yrK8kHrqxdlSn3RtwisX0I82zzBwGKxsL7P
-         jTUh/rGOe9US5hwp5qiZplsmKb9nCn4Zv6o2c9PMcR8/Yggq9AHs0E6RLBwKBbAXlV
-         hSkEqsR47k7PNrAFg0Qk9Mb0pxZGHW6KURxOjLFBRVQczEGzhnc7r21clXEIEIkJ1w
-         PAVKUji3rQ+jw==
+        b=a43ZbDH3kD9W2AfJQC6dXonmvsMCKoq+EwVfiSPPysZmF+7QKBG1Nzpi83O0vAJfU
+         T2uyCZ4AkZ8j0AZS7TyjLax2t4mYzx5pVyeH4904Z3YePeaYB7YyS3OsSJFA1duy8D
+         xM/fGdozWO2nMcaoi6q5SriJXuQ8h2G0ZeAI34729EsxUHVP1S/whCwSCWFZyq5ip0
+         fo3b6WmgPIZkPSBqt+8lYtvacAV1ZsQzoJrud5yPK3d0wki020zhndHfnibCLCy1Jp
+         ARqDn3xln5GNAhQqog5uMcyHJ7qkYuA3tsgvFfOY36dRKKrQKbKLcLEOpbjl8NXT44
+         UblFgN72++e7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 019/160] net: Treat __napi_schedule_irqoff() as __napi_schedule() on PREEMPT_RT
-Date:   Tue,  6 Jul 2021 07:16:05 -0400
-Message-Id: <20210706111827.2060499-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 021/160] net: mdio: ipq8064: add regmap config to disable REGCACHE
+Date:   Tue,  6 Jul 2021 07:16:07 -0400
+Message-Id: <20210706111827.2060499-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -44,62 +43,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Ansuel Smith <ansuelsmth@gmail.com>
 
-[ Upstream commit 8380c81d5c4fced6f4397795a5ae65758272bbfd ]
+[ Upstream commit b097bea10215315e8ee17f88b4c1bbb521b1878c ]
 
-__napi_schedule_irqoff() is an optimized version of __napi_schedule()
-which can be used where it is known that interrupts are disabled,
-e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
-callbacks.
+mdio drivers should not use REGCHACHE. Also disable locking since it's
+handled by the mdio users and regmap is always accessed atomically.
 
-On PREEMPT_RT enabled kernels this assumptions is not true. Force-
-threaded interrupt handlers and spinlocks are not disabling interrupts
-and the NAPI hrtimer callback is forced into softirq context which runs
-with interrupts enabled as well.
-
-Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
-game so make __napi_schedule_irqoff() invoke __napi_schedule() for
-PREEMPT_RT kernels.
-
-The callers of ____napi_schedule() in the networking core have been
-audited and are correct on PREEMPT_RT kernels as well.
-
-Reported-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/mdio/mdio-ipq8064.c | 33 ++++++++++++++++++++++++---------
+ 1 file changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 963194474058..a8c89cad1ca4 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6472,11 +6472,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
-  * __napi_schedule_irqoff - schedule for receive
-  * @n: entry to schedule
-  *
-- * Variant of __napi_schedule() assuming hard irqs are masked
-+ * Variant of __napi_schedule() assuming hard irqs are masked.
-+ *
-+ * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
-+ * because the interrupt disabled assumption might not be true
-+ * due to force-threaded interrupts and spinlock substitution.
-  */
- void __napi_schedule_irqoff(struct napi_struct *n)
- {
--	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
-+		____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	else
-+		__napi_schedule(n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
+diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
+index 1bd18857e1c5..f0a6bfa61645 100644
+--- a/drivers/net/mdio/mdio-ipq8064.c
++++ b/drivers/net/mdio/mdio-ipq8064.c
+@@ -10,7 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/of_mdio.h>
+-#include <linux/phy.h>
++#include <linux/of_address.h>
+ #include <linux/platform_device.h>
+ #include <linux/mfd/syscon.h>
  
+@@ -96,14 +96,34 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
+ 	return ipq8064_mdio_wait_busy(priv);
+ }
+ 
++static const struct regmap_config ipq8064_mdio_regmap_config = {
++	.reg_bits = 32,
++	.reg_stride = 4,
++	.val_bits = 32,
++	.can_multi_write = false,
++	/* the mdio lock is used by any user of this mdio driver */
++	.disable_locking = true,
++
++	.cache_type = REGCACHE_NONE,
++};
++
+ static int
+ ipq8064_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct ipq8064_mdio *priv;
++	struct resource res;
+ 	struct mii_bus *bus;
++	void __iomem *base;
+ 	int ret;
+ 
++	if (of_address_to_resource(np, 0, &res))
++		return -ENOMEM;
++
++	base = ioremap(res.start, resource_size(&res));
++	if (!base)
++		return -ENOMEM;
++
+ 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
+ 	if (!bus)
+ 		return -ENOMEM;
+@@ -115,15 +135,10 @@ ipq8064_mdio_probe(struct platform_device *pdev)
+ 	bus->parent = &pdev->dev;
+ 
+ 	priv = bus->priv;
+-	priv->base = device_node_to_regmap(np);
+-	if (IS_ERR(priv->base)) {
+-		if (priv->base == ERR_PTR(-EPROBE_DEFER))
+-			return -EPROBE_DEFER;
+-
+-		dev_err(&pdev->dev, "error getting device regmap, error=%pe\n",
+-			priv->base);
++	priv->base = devm_regmap_init_mmio(&pdev->dev, base,
++					   &ipq8064_mdio_regmap_config);
++	if (IS_ERR(priv->base))
+ 		return PTR_ERR(priv->base);
+-	}
+ 
+ 	ret = of_mdiobus_register(bus, np);
+ 	if (ret)
 -- 
 2.30.2
 
