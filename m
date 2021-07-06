@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A64E33BD196
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A11923BD254
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238589AbhGFLjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47606 "EHLO mail.kernel.org"
+        id S237508AbhGFLmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:42:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237460AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237493AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C5B6B61F14;
-        Tue,  6 Jul 2021 11:28:02 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F294861F27;
+        Tue,  6 Jul 2021 11:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570883;
-        bh=qsIHHwD5PwQiuhnjDssTRMjsBvM7qqNQlrYb/pmkRdI=;
+        s=k20201202; t=1625570889;
+        bh=C5qzixDlRmk0upYPW9j1FH52VLpMsz/AoatQOBsCGKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NPTW818Dr5LYjXG05lSHZzKpF2By/ikB9d9NPZbggSneie3L5qlzs9cyqgOffbgRg
-         7L5un1yFIJpYBP1AKsaFm9rwpL3Atzn43NVtonwcml9KJv2MlC9NacRcQQR7RUMB1w
-         J/eaZdGPWZIUBayLwJZvKCMIBvf6DvBFVkWB/LPX81mVUATU3gWQ/x1MPMjos1xaL9
-         S+m5IbnaSr0JitrAw7T27KgSEVQ9dCp7GSOqG6/KMFVYLJlEmVvlz9z5+bd5jW97f2
-         nFGMybAV8jIEnuDQmpzJr+gVKkkd3iojQmbnAJGLNbjDyYijHxo94+7A/tg8wAnsD/
-         TZZaFjqL37xMA==
+        b=cOWF8J5Zc2hz1tFjrf2Mt5vOoKAnXr4lbi5k0o1zEYDg/9yLGM9bwmrObPBrmmHEn
+         y29TOIboH0Lh+5kJEB+v9QysTcXd7UJGDK8vZANODrZnH/J5ZRBSQoI9MZtHP3Z1i2
+         9Cs+4dZbeUJVopI0nZ+1t+6pQgLk3n5VMNNVDxsaqQDj3kUClz2h4MvQCY3BnWS4i6
+         cVIaixksw6Uw6BweJncfXBvR+6Jvlhdg2AcsjZ5UvVx91sezcM1wMt5sm3bEZGFzh+
+         usvLfyAZUyqpwW8jCP4tjFbOn8QkD+7o8jaxIiVtCCqXIN8qEoCLPc7irHnqM4sA/E
+         sSvE8KLMgnvYA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 10/45] net: Treat __napi_schedule_irqoff() as __napi_schedule() on PREEMPT_RT
-Date:   Tue,  6 Jul 2021 07:27:14 -0400
-Message-Id: <20210706112749.2065541-10-sashal@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 15/45] e100: handle eeprom as little endian
+Date:   Tue,  6 Jul 2021 07:27:19 -0400
+Message-Id: <20210706112749.2065541-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112749.2065541-1-sashal@kernel.org>
 References: <20210706112749.2065541-1-sashal@kernel.org>
@@ -44,62 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit 8380c81d5c4fced6f4397795a5ae65758272bbfd ]
+[ Upstream commit d4ef55288aa2e1b76033717242728ac98ddc4721 ]
 
-__napi_schedule_irqoff() is an optimized version of __napi_schedule()
-which can be used where it is known that interrupts are disabled,
-e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
-callbacks.
+Sparse tool was warning on some implicit conversions from
+little endian data read from the EEPROM on the e100 cards.
 
-On PREEMPT_RT enabled kernels this assumptions is not true. Force-
-threaded interrupt handlers and spinlocks are not disabling interrupts
-and the NAPI hrtimer callback is forced into softirq context which runs
-with interrupts enabled as well.
+Fix these by being explicit about the conversions using
+le16_to_cpu().
 
-Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
-game so make __napi_schedule_irqoff() invoke __napi_schedule() for
-PREEMPT_RT kernels.
-
-The callers of ____napi_schedule() in the networking core have been
-audited and are correct on PREEMPT_RT kernels as well.
-
-Reported-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/e100.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7ee89125cd53..aa419f3162b8 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5277,11 +5277,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
-  * __napi_schedule_irqoff - schedule for receive
-  * @n: entry to schedule
-  *
-- * Variant of __napi_schedule() assuming hard irqs are masked
-+ * Variant of __napi_schedule() assuming hard irqs are masked.
-+ *
-+ * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
-+ * because the interrupt disabled assumption might not be true
-+ * due to force-threaded interrupts and spinlock substitution.
-  */
- void __napi_schedule_irqoff(struct napi_struct *n)
- {
--	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
-+		____napi_schedule(this_cpu_ptr(&softnet_data), n);
-+	else
-+		__napi_schedule(n);
- }
- EXPORT_SYMBOL(__napi_schedule_irqoff);
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 90974462743b..a73102357bbd 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -1423,7 +1423,7 @@ static int e100_phy_check_without_mii(struct nic *nic)
+ 	u8 phy_type;
+ 	int without_mii;
  
+-	phy_type = (nic->eeprom[eeprom_phy_iface] >> 8) & 0x0f;
++	phy_type = (le16_to_cpu(nic->eeprom[eeprom_phy_iface]) >> 8) & 0x0f;
+ 
+ 	switch (phy_type) {
+ 	case NoSuchPhy: /* Non-MII PHY; UNTESTED! */
+@@ -1543,7 +1543,7 @@ static int e100_phy_init(struct nic *nic)
+ 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR, bmcr);
+ 	} else if ((nic->mac >= mac_82550_D102) || ((nic->flags & ich) &&
+ 	   (mdio_read(netdev, nic->mii.phy_id, MII_TPISTATUS) & 0x8000) &&
+-		(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
++	   (le16_to_cpu(nic->eeprom[eeprom_cnfg_mdix]) & eeprom_mdix_enabled))) {
+ 		/* enable/disable MDI/MDI-X auto-switching. */
+ 		mdio_write(netdev, nic->mii.phy_id, MII_NCONFIG,
+ 				nic->mii.force_media ? 0 : NCONFIG_AUTO_SWITCH);
+@@ -2290,9 +2290,9 @@ static int e100_asf(struct nic *nic)
+ {
+ 	/* ASF can be enabled from eeprom */
+ 	return (nic->pdev->device >= 0x1050) && (nic->pdev->device <= 0x1057) &&
+-	   (nic->eeprom[eeprom_config_asf] & eeprom_asf) &&
+-	   !(nic->eeprom[eeprom_config_asf] & eeprom_gcl) &&
+-	   ((nic->eeprom[eeprom_smbus_addr] & 0xFF) != 0xFE);
++	   (le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_asf) &&
++	   !(le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_gcl) &&
++	   ((le16_to_cpu(nic->eeprom[eeprom_smbus_addr]) & 0xFF) != 0xFE);
+ }
+ 
+ static int e100_up(struct nic *nic)
+@@ -2948,7 +2948,7 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* Wol magic packet can be enabled from eeprom */
+ 	if ((nic->mac >= mac_82558_D101_A4) &&
+-	   (nic->eeprom[eeprom_id] & eeprom_id_wol)) {
++	   (le16_to_cpu(nic->eeprom[eeprom_id]) & eeprom_id_wol)) {
+ 		nic->flags |= wol_magic;
+ 		device_set_wakeup_enable(&pdev->dev, true);
+ 	}
 -- 
 2.30.2
 
