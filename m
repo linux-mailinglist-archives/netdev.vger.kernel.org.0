@@ -2,100 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C223BDFA6
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 01:11:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 385283BDFA8
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 01:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbhGFXN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 19:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbhGFXN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 19:13:59 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 775A3C061574;
-        Tue,  6 Jul 2021 16:11:19 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GKJFv3Y82z9t0k;
-        Wed,  7 Jul 2021 09:11:14 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1625613075;
-        bh=0y4+TCTSpG29+lkSp8FnnBkU1yCSP9lCF2dUAo7xvW8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ViqpqNhOkmGk6omv3MdO5Xo9wzGltRzja/ebfjSkKjwXsDh8SnDomwNtOtFV7P0l8
-         0SI+j1dqdYD3EvS5ylVxiXGBjIYXWL4zYeMqW9i1s4uSsCiq4S6FWj8YAHsZcpd+Ff
-         7O3qsli2GO3Vltvsm4oOHmzrgJNj1OOxW2gUDcezL6xZat2zMH9RYkoEfK3xtIH/O5
-         NEJlHihHrBDv9QJIf95ZdlAkQ+YtzaHP+5xebkYFXYu/mgPxyo8qEkS0WxZQimaD/M
-         BPy9+sfLywWcGUA5wszMOUOhXeF1SCGNOu++jzK93dOraCRHwxbT5k0/zzZ7TdVUzE
-         pl4ajkiIBPccw==
-Date:   Wed, 7 Jul 2021 09:11:13 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Paul Blakey <paulb@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net tree
-Message-ID: <20210707091113.366cf39e@canb.auug.org.au>
+        id S230019AbhGFXOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 19:14:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51540 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230012AbhGFXOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 19:14:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7234E61CB0;
+        Tue,  6 Jul 2021 23:11:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625613092;
+        bh=EOwCeWrO1xda1Q1l3BgEjdJEqMXFJtlECZzdKuyENmg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Lpc+5ak7jRQozvjHcl2dFyXzsGreTkw3jC0fi9DmL8BfDe30k+Ch7l4BUi5NOqzca
+         Mddo7dHf+oVj1iHZozqNjRTBhobLL49Xy69cTqrMSV3blwcMswaQG9OnHU/nGY8JtL
+         FjlnUZlG/OKm/Vd0NK87+xR4YRyRVNAZUWgEXYOyUInRXn8+Crho2tzIdeYPc1MYlT
+         WQpsJpPjpbATI3FL4zZlTZbGn/TPOOBc6Si7Q0qZpmGvAEtkkuPh1DneXwDztG3gGw
+         eTbSkiReq6NkU4tL3MsdE4tSAG0sEMCMzbUto+i43HZlp+rvDQoBkPyo1mar3BBs48
+         HqtKahBgKWr3A==
+Received: by mail-lj1-f179.google.com with SMTP id k8so228042lja.4;
+        Tue, 06 Jul 2021 16:11:32 -0700 (PDT)
+X-Gm-Message-State: AOAM532nOZWngzjnMaotexetZHnZZ+8Thv5EDEDvDGn6sQZaI/w/NA9+
+        2vLTk21wlIA+OvPIjZfVSNXrMeAoLUyKXlcdlGQ=
+X-Google-Smtp-Source: ABdhPJzbyZggoQgHXszIIbrZCG7wCB7WIbfCbZIDFecoKGN4kVmYEnr8QixAH0LCuXep0FVddJFAS60XmnvyB69L6TQ=
+X-Received: by 2002:a2e:6a07:: with SMTP id f7mr8954651ljc.506.1625613090714;
+ Tue, 06 Jul 2021 16:11:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/vfgil2FE8QCzHJVA55lNhey";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20210706174409.15001-1-vjsanjay@gmail.com> <b87ad042-eaf0-d1ac-6760-b3c92439655d@fb.com>
+ <CAEf4BzZidvzFjw=m3zEmnrVhNYhrmy1pV-XgAfxMvgrb8Snw8w@mail.gmail.com>
+In-Reply-To: <CAEf4BzZidvzFjw=m3zEmnrVhNYhrmy1pV-XgAfxMvgrb8Snw8w@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 6 Jul 2021 16:11:19 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4EeY9CHE73Sy6zdteLhj6G-f+M9jSxrPuXpE81tPZoeA@mail.gmail.com>
+Message-ID: <CAPhsuW4EeY9CHE73Sy6zdteLhj6G-f+M9jSxrPuXpE81tPZoeA@mail.gmail.com>
+Subject: Re: [PATCH] tools/runqslower: use __state instead of state
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, SanjayKumar J <vjsanjay@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/vfgil2FE8QCzHJVA55lNhey
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jul 6, 2021 at 3:05 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Jul 6, 2021 at 11:26 AM Yonghong Song <yhs@fb.com> wrote:
+> >
+> >
+> >
+> > On 7/6/21 10:44 AM, SanjayKumar J wrote:
+> > >       task->state is renamed to task->__state in task_struct
+> >
+> > Could you add a reference to
+> >    2f064a59a11f ("sched: Change task_struct::state")
+> > which added this change?
+> >
+> > I think this should go to bpf tree as the change is in linus tree now.
+> > Could you annotate the tag as "[PATCH bpf]" ("[PATCH bpf v2]")?
+> >
+> > Please align comments to the left without margins.
+> >
+> > >
+> > >       Signed-off-by: SanjayKumar J <vjsanjay@gmail.com>
+> >
+> > This Singed-off-by is not needed.
+> >
+> > You can add my Ack in the next revision:
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> >
+> > >
+> > > Signed-off-by: SanjayKumar J <vjsanjay@gmail.com>
+> > > ---
+> > >   tools/bpf/runqslower/runqslower.bpf.c | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower/runqslower.bpf.c
+> > > index 645530ca7e98..ab9353f2fd46 100644
+> > > --- a/tools/bpf/runqslower/runqslower.bpf.c
+> > > +++ b/tools/bpf/runqslower/runqslower.bpf.c
+> > > @@ -74,7 +74,7 @@ int handle__sched_switch(u64 *ctx)
+> > >       u32 pid;
+> > >
+> > >       /* ivcsw: treat like an enqueue event and store timestamp */
+> > > -     if (prev->state == TASK_RUNNING)
+> > > +     if (prev->__state == TASK_RUNNING)
+> >
+> > Currently, runqslower.bpf.c uses vmlinux.h.
+> > I am thinking to use bpf_core_field_exists(), but we need to
+> > single out task_struct structure from vmlinux.h
+> > with both state and __state fields, we could make it work
+> > by *changes* like
+> >
+> > #define task_struct task_struct_orig
+> > #include "vmlinux.h"
+> > #undef task_struct
+> >
+> > struct task_struct {
+> >     ... state;
+> >     ... __state;
+> > ...
+> > };
+>
+>
+> no need for such surgery, recommended way is to use ___suffix to
+> declare incompatible struct definition:
+>
+> struct task_struct___old {
+>     int state;
+> };
+>
+> Then do casting in BPF code. We don't have to do it in kernel tree's
+> runqslower, but we'll definitely have to do that for libbpf-tools'
+> runqslower and runqlat.
 
-Hi all,
+Question on this topic: state and __state are of different sizes here. IIUC,
+bpf_core_types_are_compat() does allow size mismatch. But it may cause
+problems in some cases, no? For example, would some combination make
+task->state return 32 extra bits from another field and cause confusion?
 
-After merging the net tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
-
-net/core/dev.c: In function 'gro_list_prepare':
-net/core/dev.c:6015:51: error: 'TC_SKB_EXT' undeclared (first use in this f=
-unction)
- 6015 |    struct tc_skb_ext *skb_ext =3D skb_ext_find(skb, TC_SKB_EXT);
-      |                                                   ^~~~~~~~~~
-net/core/dev.c:6015:51: note: each undeclared identifier is reported only o=
-nce for each function it appears in
-net/core/dev.c:6020:19: error: invalid use of undefined type 'struct tc_skb=
-_ext'
- 6020 |     diffs |=3D p_ext->chain ^ skb_ext->chain;
-      |                   ^~
-net/core/dev.c:6020:36: error: invalid use of undefined type 'struct tc_skb=
-_ext'
- 6020 |     diffs |=3D p_ext->chain ^ skb_ext->chain;
-      |                                    ^~
-
-Caused by commit
-
-  8550ff8d8c75 ("skbuff: Release nfct refcount on napi stolen or re-used sk=
-bs")
-
-I have used the net tree from next-20210706 for today.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/vfgil2FE8QCzHJVA55lNhey
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDk4xEACgkQAVBC80lX
-0Gx3Tgf/a3fFpCF2jwJceBG4ctxIl23QAOO40LJKLb3hvj0QRwCZ0fYIwJ1s5Ry7
-SMzsPNqR7LvJUNBwv8FDfAZ0QozlOq9e+Xw8dW5st/aqD/UNe5GIWKqMhIO6xdEV
-01QonBEvDYu0m+ILRaitTihG1x146CvFzXuAGkUkN8TV37QqRjbUEjh2Qi+aXX4y
-lj0Oerp5xDiWaxnX8QZt6adfSVZLHoMLzfTFKIt+BYQsJTVsgh96GbF28bDYdW0G
-Ai0XLK3SDPXNZD+D3hnKhE8td9iC4HfsVmJdXW1j/jwVLF3+yRSZqkavhMKGbC/M
-b5LQWoO/U7YzCn5XANcftL/dIkVuQQ==
-=+SRs
------END PGP SIGNATURE-----
-
---Sig_/vfgil2FE8QCzHJVA55lNhey--
+Thanks,
+Song
