@@ -2,96 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B96883BC49E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 03:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1383BC4AE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 04:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbhGFBi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 21:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbhGFBi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 21:38:27 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F290C06175F;
-        Mon,  5 Jul 2021 18:35:49 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id oj10-20020a17090b4d8ab0290172f77377ebso82425pjb.0;
-        Mon, 05 Jul 2021 18:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EkHzJYg4aiSZ7PwP7OO3CqIBv9kFMsbKjd1eVH502Gs=;
-        b=vVdSAmUekAinM1YQD5T7wFBbxnofU8FXTV+HrfNtNGMId9GFhugC0Tz8wIBkgdiOzW
-         Z3BYwsEOXlanohwfRvRnTH05OQVR9mig1ibnCmDs9pg4z+lm73wBkgNzY8Rw2ACtB3Yu
-         0uzjkvUggu4JGqEY+monPF0JQ0DPCTNwy5mQVwOXhtRlWsdfECgLB1DbWJa4bKjU5g3g
-         ISNh/Fp7FhAbMEjhPrGV5Es59FW6JI0XQLK6jTuoVHxTB1dHhLO6Rpv0zVAJJVwbwlaJ
-         Gq+I1SEyO4X9a+q6z0nZIrSsrtAI6SwgIsrNz+KxT6tIhyz7CSDdk211/wbkPTGMJ+dA
-         +ETw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EkHzJYg4aiSZ7PwP7OO3CqIBv9kFMsbKjd1eVH502Gs=;
-        b=KF7aKt60JzFAy4OmKdsB5hbC8uqoS7Q4eHBxBzGAPcG7RIeHoNNieCetlbvHcVCG7s
-         Y6RlsXKhOtcNOQfvNHVd4y7YNlKrZhUb5zfpH80E/C7oZI5TU7hMSDgV/ijJtTTWjjOn
-         ta/y1HD+x7d4o9sVSvi6LSURBaQqnWOr2Fvwx5lwcoYIwkB2095b6cswgtohwSec+qDO
-         nHC5JK8zEPyHhvAI0QIEWVVEpW1oy2z48A591gTEh+WEfTn36ce82a+BU+TyS2a2uHep
-         mEwrHZp+0vxtfkKMVPK8TIk3B2JBWuUDQGtte5yPQDR4Egs4F4GEUwg6TZXCnOO/a/5q
-         u7Lw==
-X-Gm-Message-State: AOAM533kttF2DwekLKHc3kQ64/mcMCF8sl/WR3QxQdfSjmTWK3twT2bV
-        saqGSNGCH7WZjnjjMzcmsio=
-X-Google-Smtp-Source: ABdhPJzf/UYDNE+1Nlc+E73Zjk8TgdJfa/T0m1Zycipk7qYx+02TFSQSFf8HrRBRXkwIu+lqBH9n8w==
-X-Received: by 2002:a17:90b:14a:: with SMTP id em10mr18247534pjb.154.1625535348907;
-        Mon, 05 Jul 2021 18:35:48 -0700 (PDT)
-Received: from ubuntu.localdomain ([103.220.76.197])
-        by smtp.gmail.com with ESMTPSA id m24sm9338851pgd.60.2021.07.05.18.35.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Jul 2021 18:35:48 -0700 (PDT)
-From:   Gu Shengxian <gushengxian507419@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Gu Shengxian <gushengxian@yulong.com>
-Subject: [PATCH v3] tools: bpftool: close va_list 'ap' by va_end()
-Date:   Mon,  5 Jul 2021 18:35:43 -0700
-Message-Id: <20210706013543.671114-1-gushengxian507419@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229884AbhGFCGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 22:06:45 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:9479 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229740AbhGFCGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 22:06:44 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJm442kMtzZrBL;
+        Tue,  6 Jul 2021 10:00:52 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 6 Jul 2021 10:04:03 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 6 Jul 2021
+ 10:04:03 +0800
+Subject: Re: [PATCH net-next 1/2] tools: add missing infrastructure for
+ building ptr_ring.h
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jasowang@redhat.com>,
+        <nickhu@andestech.com>, <green.hu@gmail.com>,
+        <deanbo422@gmail.com>, <akpm@linux-foundation.org>,
+        <yury.norov@gmail.com>, <andriy.shevchenko@linux.intel.com>,
+        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
+ <1625457455-4667-2-git-send-email-linyunsheng@huawei.com>
+ <20210705143144-mutt-send-email-mst@kernel.org>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <cbc4053e-7eda-4c46-5b98-558c741e45b6@huawei.com>
+Date:   Tue, 6 Jul 2021 10:04:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210705143144-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gu Shengxian <gushengxian@yulong.com>
+On 2021/7/6 2:39, Michael S. Tsirkin wrote:
+> On Mon, Jul 05, 2021 at 11:57:34AM +0800, Yunsheng Lin wrote:
+>> In order to build ptr_ring.h in userspace, the cacheline
+>> aligning, cpu_relax() and slab related infrastructure is
+>> needed, so add them in this patch.
+>>
+>> As L1_CACHE_BYTES may be different for different arch, which
+>> is mostly defined in include/generated/autoconf.h, so user may
+>> need to do "make defconfig" before building a tool using the
+>> API in linux/cache.h.
+>>
+>> Also "linux/lockdep.h" is not added in "tools/include" yet,
+>> so remove it in "linux/spinlock.h", and the only place using
+>> "linux/spinlock.h" is tools/testing/radix-tree, removing that
+>> does not break radix-tree testing.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> 
+> This is hard to review.
+> Try to split this please. Functional changes separate from
+> merely moving code around.
 
-va_list 'ap' was opened but not closed by va_end(). It should be
-closed by va_end() before return.
+Sure.
 
-According to suggestion of Daniel Borkmann <daniel@iogearbox.net>.
-Signed-off-by: Gu Shengxian <gushengxian@yulong.com>
----
- tools/bpf/bpftool/jit_disasm.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> 
+>> ---
+>>  tools/include/asm/cache.h          | 56 ++++++++++++++++++++++++
+>>  tools/include/asm/processor.h      | 36 ++++++++++++++++
+>>  tools/include/generated/autoconf.h |  1 +
+>>  tools/include/linux/align.h        | 15 +++++++
+>>  tools/include/linux/cache.h        | 87 ++++++++++++++++++++++++++++++++++++++
+>>  tools/include/linux/gfp.h          |  4 ++
+>>  tools/include/linux/slab.h         | 46 ++++++++++++++++++++
+>>  tools/include/linux/spinlock.h     |  2 -
+>>  8 files changed, 245 insertions(+), 2 deletions(-)
+>>  create mode 100644 tools/include/asm/cache.h
+>>  create mode 100644 tools/include/asm/processor.h
+>>  create mode 100644 tools/include/generated/autoconf.h
+>>  create mode 100644 tools/include/linux/align.h
+>>  create mode 100644 tools/include/linux/cache.h
+>>  create mode 100644 tools/include/linux/slab.h
+>>
+>> diff --git a/tools/include/asm/cache.h b/tools/include/asm/cache.h
+>> new file mode 100644
+>> index 0000000..071e310
+>> --- /dev/null
+>> +++ b/tools/include/asm/cache.h
+>> @@ -0,0 +1,56 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +
+>> +#ifndef __TOOLS_LINUX_ASM_CACHE_H
+>> +#define __TOOLS_LINUX_ASM_CACHE_H
+>> +
+>> +#include <generated/autoconf.h>
+>> +
+>> +#if defined(__i386__) || defined(__x86_64__)
+>> +#define L1_CACHE_SHIFT	(CONFIG_X86_L1_CACHE_SHIFT)
+>> +#elif defined(__arm__)
+>> +#define L1_CACHE_SHIFT	(CONFIG_ARM_L1_CACHE_SHIFT)
+>> +#elif defined(__aarch64__)
+>> +#define L1_CACHE_SHIFT	(6)
+>> +#elif defined(__powerpc__)
+>> +
+>> +/* bytes per L1 cache line */
+>> +#if defined(CONFIG_PPC_8xx)
+>> +#define L1_CACHE_SHIFT	4
+>> +#elif defined(CONFIG_PPC_E500MC)
+>> +#define L1_CACHE_SHIFT	6
+>> +#elif defined(CONFIG_PPC32)
+>> +#if defined(CONFIG_PPC_47x)
+>> +#define L1_CACHE_SHIFT	7
+>> +#else
+>> +#define L1_CACHE_SHIFT	5
+>> +#endif
+>> +#else /* CONFIG_PPC64 */
+>> +#define L1_CACHE_SHIFT	7
+>> +#endif
+>> +
+>> +#elif defined(__sparc__)
+>> +#define L1_CACHE_SHIFT 5
+>> +#elif defined(__alpha__)
+>> +
+>> +#if defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_EV6)
+>> +#define L1_CACHE_SHIFT	6
+>> +#else
+>> +/* Both EV4 and EV5 are write-through, read-allocate,
+>> +   direct-mapped, physical.
+>> +*/
+>> +#define L1_CACHE_SHIFT	5
+>> +#endif
+>> +
+>> +#elif defined(__mips__)
+>> +#define L1_CACHE_SHIFT	CONFIG_MIPS_L1_CACHE_SHIFT
+>> +#elif defined(__ia64__)
+>> +#define L1_CACHE_SHIFT	CONFIG_IA64_L1_CACHE_SHIFT
+>> +#elif defined(__nds32__)
+>> +#define L1_CACHE_SHIFT	5
+>> +#else
+>> +#define L1_CACHE_SHIFT	5
+>> +#endif
+>> +
+>> +#define L1_CACHE_BYTES	(1 << L1_CACHE_SHIFT)
+>> +
+>> +#endif
+>> diff --git a/tools/include/asm/processor.h b/tools/include/asm/processor.h
+>> new file mode 100644
+>> index 0000000..3198ad6
+>> --- /dev/null
+>> +++ b/tools/include/asm/processor.h
+>> @@ -0,0 +1,36 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +
+>> +#ifndef __TOOLS_LINUX_ASM_PROCESSOR_H
+>> +#define __TOOLS_LINUX_ASM_PROCESSOR_H
+>> +
+>> +#include <pthread.h>
+>> +
+>> +#if defined(__i386__) || defined(__x86_64__)
+>> +#include "../../arch/x86/include/asm/vdso/processor.h"
+>> +#elif defined(__arm__)
+>> +#include "../../arch/arm/include/asm/vdso/processor.h"
+>> +#elif defined(__aarch64__)
+>> +#include "../../arch/arm64/include/asm/vdso/processor.h"
+>> +#elif defined(__powerpc__)
+>> +#include "../../arch/powerpc/include/vdso/processor.h"
+>> +#elif defined(__s390__)
+>> +#include "../../arch/s390/include/vdso/processor.h"
+>> +#elif defined(__sh__)
+>> +#include "../../arch/sh/include/asm/processor.h"
+>> +#elif defined(__sparc__)
+>> +#include "../../arch/sparc/include/asm/processor.h"
+>> +#elif defined(__alpha__)
+>> +#include "../../arch/alpha/include/asm/processor.h"
+>> +#elif defined(__mips__)
+>> +#include "../../arch/mips/include/asm/vdso/processor.h"
+>> +#elif defined(__ia64__)
+>> +#include "../../arch/ia64/include/asm/processor.h"
+>> +#elif defined(__xtensa__)
+>> +#include "../../arch/xtensa/include/asm/processor.h"
+>> +#elif defined(__nds32__)
+>> +#include "../../arch/nds32/include/asm/processor.h"
+>> +#else
+>> +#define cpu_relax()	sched_yield()
+> 
+> Does this have a chance to work outside of kernel?
 
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index e7e7eee9f172..24734f2249d6 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -43,11 +43,13 @@ static int fprintf_json(void *out, const char *fmt, ...)
- {
- 	va_list ap;
- 	char *s;
-+	int err;
- 
- 	va_start(ap, fmt);
--	if (vasprintf(&s, fmt, ap) < 0)
--		return -1;
-+	err = vasprintf(&s, fmt, ap);
- 	va_end(ap);
-+	if (err < 0)
-+		return -1;
- 
- 	if (!oper_count) {
- 		int i;
--- 
-2.25.1
+I am not sure I understand what you meant here.
+sched_yield() is a pthread API, so it should work in the
+user space.
+And it allow the rigntest to compile when it is built on
+the arch which is not handled as above.
+
+> 
+>> +#endif
+> 
+> did you actually test or even test build all these arches?
+> Not sure we need to bother with hacks like these.
+
+Only x86_64 and arm64 arches have been built and tested.
+
+This is added referring the tools/include/asm/barrier.h.
+
+> 
+> 
+>> +
 
