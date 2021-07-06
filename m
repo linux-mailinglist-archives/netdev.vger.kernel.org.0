@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A83F93BD186
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9253BD29F
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:44:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbhGFLjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47620 "EHLO mail.kernel.org"
+        id S236878AbhGFLoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:44:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237364AbhGFLgH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237366AbhGFLgH (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1B80761D77;
-        Tue,  6 Jul 2021 11:27:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7548361D76;
+        Tue,  6 Jul 2021 11:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570829;
-        bh=VdodptyE2GAk1rTtpPV2NfeKVvsJfvOCXSVUuquwcyw=;
+        s=k20201202; t=1625570831;
+        bh=OL9rfOiKRWJSA82b/JX3hAoWKFX5BaIrY0X3ziJ21aE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ay+NmuuLtai83bRw0haJITkE0PsGnU/c8d2moXJm3FiwwsKUfxvUyH+sHuyHK/pRn
-         SqNUzniWmmR5NdGHM0PLD2J1NM9//oVTIWqtgwCXRUsFPG6kGCp+Q4cIwcmsoT8kOP
-         LtE4ZsD8PiPPAAkv5xv++e/n0VJIIpDWBkF/ZLqylLlqEHQP5KtNrQ7FXxOPhiejsg
-         32MTvZYiMgPMrssJ/mXiDjT9oGn9LbbtyGKQXRLTj6Q7UbLab7Jr34d75kYJbSTl3H
-         yNpCn3jq5noKv9xoAwnuQY000mIZ9JdLgs1tcXb7HjbN6GEA2DuoyaV1Fh01eDcV6V
-         ywEymRb2SfK+g==
+        b=K26RXOjEIiOXLqt1DXOIrq+4Z7ijan04DS4x/vCsov2WmYlw23QWCJTTBXmv3tmK5
+         0UrZeA//q+WkYYXdEsQwthOBq59zBD5ht5gkZbgXDg+Qiyq/3g6AIun0RmB8ofV5pf
+         eNHWpMQBSPNk39HUun1Xc+k8ecMA+psCaVo57EllCaU+6UJsaqsnrzO2WUgIJ/X/5h
+         UpuvqvpVhttBrm0uYawDKzbRyhu96XodcItVA3nAZ7G1wNhRV//k/3SNP+0/6ozXZt
+         P564dd1t+6cYuCkj0p7FpucRIaccssUuqWF9PqKrRf/S7tSBc6TVl5bOmiXVbITaAQ
+         vwZ/9zp/cdmzQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 24/55] virtio_net: Remove BUG() to avoid machine dead
-Date:   Tue,  6 Jul 2021 07:26:07 -0400
-Message-Id: <20210706112638.2065023-24-sashal@kernel.org>
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 25/55] net: bcmgenet: check return value after calling platform_get_resource()
+Date:   Tue,  6 Jul 2021 07:26:08 -0400
+Message-Id: <20210706112638.2065023-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112638.2065023-1-sashal@kernel.org>
 References: <20210706112638.2065023-1-sashal@kernel.org>
@@ -44,35 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 85eb1389458d134bdb75dad502cc026c3753a619 ]
+[ Upstream commit 74325bf0104573c6dfce42837139aeef3f34be76 ]
 
-We should not directly BUG() when there is hdr error, it is
-better to output a print when such error happens. Currently,
-the caller of xmit_skb() already did it.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmmii.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 0b1c6a8906b9..84a82c4a9535 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1550,7 +1550,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
- 	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
- 				    virtio_is_little_endian(vi->vdev), false,
- 				    0))
--		BUG();
-+		return -EPROTO;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index a5049d637791..494601c39b84 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -428,6 +428,10 @@ static int bcmgenet_mii_register(struct bcmgenet_priv *priv)
+ 	int id, ret;
  
- 	if (vi->mergeable_rx_bufs)
- 		hdr->num_buffers = 0;
+ 	pres = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!pres) {
++		dev_err(&pdev->dev, "Invalid resource\n");
++		return -EINVAL;
++	}
+ 	memset(&res, 0, sizeof(res));
+ 	memset(&ppd, 0, sizeof(ppd));
+ 
 -- 
 2.30.2
 
