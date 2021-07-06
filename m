@@ -2,156 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 018263BDF06
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 23:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776ED3BDF16
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 23:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbhGFVkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 17:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbhGFVka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 17:40:30 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE21C061574;
-        Tue,  6 Jul 2021 14:37:51 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id h1-20020a17090a3d01b0290172d33bb8bcso2390238pjc.0;
-        Tue, 06 Jul 2021 14:37:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ocbz7plpl2GsaeWZtT2xSwu/ECmgcGgX+U0mFWoVx8o=;
-        b=fjV4+ka8h0vH05QQfb5mosysrP9nHimBGyZMIaa5AG6oYKlZIJ9fBu1u8zdUGxqK0V
-         Um+d4Woup62vh1nDeTEMfYQu/z07c7tU/WMAtzd8zyjZ+D++/9qAcGD3Qi5HWfAEidnP
-         LVIhoqq3BcdDCaWawKEqjjS8yu6I4JR+nAEzkK0jeMXN28vBiyhs3oL9vVM3I/zG4bRq
-         0ch+fVpWTwIZJdpOA5MGN4Hsas/DzY0s55S8/73rafQT0BQHzaPtbSSjdX9FgBPH3Kng
-         zdOUu0zymj0lCUC9mcaI5h90C5jAW9R9slEqBMssceloFyAtObCoJPafpr9GaUMLPWWg
-         1jSA==
+        id S229925AbhGFVrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 17:47:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34543 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229811AbhGFVrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 17:47:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625607876;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XwnIbM427oR/65dd6Qq3FeqQhr5cMU/5n4IUb56RPqo=;
+        b=UxNG+WiYSI7aeOKgLj1WeRlxnI7i+ncF6ZHVeBOyY6lIqfFILkwbh/uYpntJ5mw20NHSFl
+        mR1yJ0912sgKVW/RZ1wfwmt/sDg0aRDjFiYCb0iNiMw9DYTK+vAgYBgJGhJJ0Lgkih92a/
+        e1tT2g5cGQYV27zrVsPYvATKQ2yQhgg=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-442-CCiAZtyqOnqwRUO9zdemMQ-1; Tue, 06 Jul 2021 17:44:35 -0400
+X-MC-Unique: CCiAZtyqOnqwRUO9zdemMQ-1
+Received: by mail-ed1-f72.google.com with SMTP id f20-20020a0564020054b0290395573bbc17so195320edu.19
+        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 14:44:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ocbz7plpl2GsaeWZtT2xSwu/ECmgcGgX+U0mFWoVx8o=;
-        b=WK3yTWnvM5htSk/VSimnCQqje/FGFNelVEcwioYL2R7o83YW8eHgkZ6evNB3mBqPc0
-         b3GB1gLkWojJs9XG4BTClxxWXSVq9Gv09epEhdKJWYrb06H3nFuUuHgoZMgPD+WJybRF
-         3gZPab5P9vzwNlIIVEEo5Jl90VKSVHHxvBhjU3Pay3BEhOy6ShtVlTPAKjzUw+5LPvM3
-         g6Hpy3G6QibGd3AnFNfSCRKBRvetF31DDjQDeo8pnbGgCNJEzMmdhIwT1ify8AXwqciQ
-         XYOzvzRvY9jKXvHDc86y1R7eC14/aeggf/uWlHU2/VXBeEU0HO0uKcxPPx3BI1CBvsUI
-         0OtQ==
-X-Gm-Message-State: AOAM531T2RTDL3ySJyrUH9BdixZdoksL8kUK7Ivl7hx7XCT9buaF/thj
-        cTEAlptetL3RDzHa5EJYnN0=
-X-Google-Smtp-Source: ABdhPJyn2Hi8kaCYu+WokB25snaMIG+9Q6KwjeQoMDQJIrAIZd3JeXm641055Ca25Y6q1bD80UK2hA==
-X-Received: by 2002:a17:90a:3009:: with SMTP id g9mr2332932pjb.82.1625607470831;
-        Tue, 06 Jul 2021 14:37:50 -0700 (PDT)
-Received: from shinobu ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id h14sm14343197pgv.47.2021.07.06.14.37.41
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=XwnIbM427oR/65dd6Qq3FeqQhr5cMU/5n4IUb56RPqo=;
+        b=juEgINiM5hCjtcn/EQTW+mHzAiUFFMmTEDxNuPdf65eIaSIeDIsDSoDYA8TdtAuT8v
+         b/5VwHvKRnTTI/gboEpe6x2gG4z+I/KVvRDRtEz5eg9JWi1doG54f4QcqPvhS0+9ya6o
+         QUydoeNFutOpfNMSsh79Uya1ZOqkSdUaVgwPEVnxSh5xkWZRJnc1rXnCEcu71DP1GK05
+         QYNnfXz5x++D4W69zJCSnJi+BGodMDxxdMUKWzam6vVKDHziRFMKN6I9/qAr5VJL7dMC
+         7YtFkJ9rqjq8oOl5wJe8xTQPGNAzRXAA+P3D1dzTDQTU4vtP9PMR6Wj0fmixl76Tpv1N
+         vrmw==
+X-Gm-Message-State: AOAM533iXevm5zmlgrgtRlbKJfcESuKIzWc7nZXPKz75qxOiz4v0eOZd
+        pNyYVD6MrS4JsFyYVRfvriqVIgnuLEcknZqldoWIndjFeMUc3rbMLxqZH+3FuoW7giISlQ+vfka
+        0H5gfoDcBznKXE4fq
+X-Received: by 2002:a05:6402:308f:: with SMTP id de15mr25613258edb.151.1625607873789;
+        Tue, 06 Jul 2021 14:44:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxTylF9xQ4eYo13dNnGtIF9XDses/N8lwWMln+Lkr4vVHBOs+X83jp79QUNe8gtcKtSYr7GOA==
+X-Received: by 2002:a05:6402:308f:: with SMTP id de15mr25613247edb.151.1625607873579;
+        Tue, 06 Jul 2021 14:44:33 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id l14sm6143571ejx.103.2021.07.06.14.44.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 14:37:49 -0700 (PDT)
-Date:   Wed, 7 Jul 2021 06:37:39 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-acpi@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-cxl@vger.kernel.org,
-        nvdimm@lists.linux.dev, dmaengine@vger.kernel.org,
-        linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
-        linux-pci@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-arm-msm@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
-        greybus-dev@lists.linaro.org, target-devel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v2 4/4] bus: Make remove callback return void
-Message-ID: <YOTMp88HfFiy6+RM@shinobu>
-References: <20210706154803.1631813-1-u.kleine-koenig@pengutronix.de>
- <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
+        Tue, 06 Jul 2021 14:44:33 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4FCE118072E; Tue,  6 Jul 2021 23:44:32 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, shayagr@amazon.com, dsahern@kernel.org,
+        brouer@redhat.com, jasowang@redhat.com, alexander.duyck@gmail.com,
+        saeed@kernel.org, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, tirthendu.sarkar@intel.com
+Subject: Backwards compatibility for XDP multi-buff (was: Re: [PATCH v9
+ bpf-next 08/14] bpf: add multi-buff support to the bpf_xdp_adjust_tail()
+ API)
+In-Reply-To: <60d495a914773_2e84a2082d@john-XPS-13-9370.notmuch>
+References: <cover.1623674025.git.lorenzo@kernel.org>
+ <863f4934d251f44ad85a6be08b3737fac74f9b5a.1623674025.git.lorenzo@kernel.org>
+ <60d2744ee12c2_1342e208f7@john-XPS-13-9370.notmuch>
+ <4F52EE5B-1A3F-46CE-9A39-98475CA6B684@redhat.com>
+ <60d495a914773_2e84a2082d@john-XPS-13-9370.notmuch>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 06 Jul 2021 23:44:32 +0200
+Message-ID: <8735srxglb.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VOubNWsj2sFIOkFX"
-Content-Disposition: inline
-In-Reply-To: <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Changing the subject to address this point specifically:
 
---VOubNWsj2sFIOkFX
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Right that was my conclusion as well. Existing programs might have
+> subtle side effects if they start running on multibuffer drivers as
+> is. I don't have any good ideas though on how to handle this.
 
-On Tue, Jul 06, 2021 at 05:48:03PM +0200, Uwe Kleine-K=C3=B6nig wrote:
-> The driver core ignores the return value of this callback because there
-> is only little it can do when a device disappears.
->=20
-> This is the final bit of a long lasting cleanup quest where several
-> buses were converted to also return void from their remove callback.
-> Additionally some resource leaks were fixed that were caused by drivers
-> returning an error code in the expectation that the driver won't go
-> away.
->=20
-> With struct bus_type::remove returning void it's prevented that newly
-> implemented buses return an ignored error code and so don't anticipate
-> wrong expectations for driver authors.
->=20
-> Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk> (For ARM, Am=
-ba and related parts)
-> Acked-by: Mark Brown <broonie@kernel.org>
-> Acked-by: Chen-Yu Tsai <wens@csie.org> (for drivers/bus/sunxi-rsb.c)
-> Acked-by: Pali Roh=C3=A1r <pali@kernel.org>
-> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org> (for drivers/media)
-> Acked-by: Hans de Goede <hdegoede@redhat.com> (For drivers/platform)
-> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Acked-By: Vinod Koul <vkoul@kernel.org>
-> Acked-by: Juergen Gross <jgross@suse.com> (For Xen)
-> Acked-by: Lee Jones <lee.jones@linaro.org> (For drivers/mfd)
-> Acked-by: Johannes Thumshirn <jth@kernel.org> (For drivers/mcb)
-> Acked-by: Johan Hovold <johan@kernel.org>
-> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org> (For drive=
-rs/slimbus)
-> Acked-by: Kirti Wankhede <kwankhede@nvidia.com> (For drivers/vfio)
-> Acked-by: Maximilian Luz <luzmaximilian@gmail.com>
-> Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com> (For ulpi and=
- typec)
-> Acked-by: Samuel Iglesias Gons=C3=A1lvez <siglesias@igalia.com> (For ipac=
-k)
-> Reviewed-by: Tom Rix <trix@redhat.com> (For fpga)
-> Acked-by: Geoff Levand <geoff@infradead.org> (For ps3)
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
+So I had a chat about this with Lorenzo, Eelco and Jesper today, and
+promised I'd summarise our discussion to you all, so this is my attempt
+at that. Please excuse the long email, I'm just trying to be
+comprehensive :)
 
->  drivers/base/isa.c                        | 4 +---
+So first off, a problem description: If an existing XDP program is
+exposed to an xdp_buff that is really a multi-buffer, it may end up with
+subtle and hard-to-debug bugs: If it's parsing the packet it'll only see
+part of the payload and not be aware of that fact, and if it's
+calculating the packet length, that will also only be wrong (only
+counting the first fragment).
 
-Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+So what to do about this? First of all, to do anything about it, XDP
+programs need to be able to declare themselves "multi-buffer aware" (but
+see point 1 below). We could try to auto-detect it in the verifier by
+which helpers the program is using, but since existing programs could be
+perfectly happy to just keep running, it probably needs to be something
+the program communicates explicitly. One option is to use the
+expected_attach_type to encode this; programs can then declare it in the
+source by section name, or the userspace loader can set the type for
+existing programs if needed.
 
---VOubNWsj2sFIOkFX
-Content-Type: application/pgp-signature; name="signature.asc"
+With this, the kernel will know if a given XDP program is multi-buff
+aware and can decide what to do with that information. For this we came
+up with basically three options:
 
------BEGIN PGP SIGNATURE-----
+1. Do nothing. This would make it up to users / sysadmins to avoid
+   anything breaking by manually making sure to not enable multi-buffer
+   support while loading any XDP programs that will malfunction if
+   presented with an mb frame. This will probably break in interesting
+   ways, but it's nice and simple from an implementation PoV. With this
+   we don't need the declaration discussed above either.
 
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmDkzSMACgkQhvpINdm7
-VJLVFhAAyxEk2xOSRC1xhJSnjLQvNeb+KeTAJr+uaSAwwExERXcbGlIryhqCZSij
-fZRzkvgPIscNAegWidvmuhZlhkFJPwvPArfhB/pFIDvQ1xX0kCPH3T51Lncu35Tf
-vgluc4JhAW9+1UzoKZsv8RK4uY2ETRMBBeYs7epjqK2RhCvzG8rDMD+Dy49nxrYX
-eNdmcR+7EcK8RjLmb/YEfNXxcXdDW0KlU5ATAh+PKuAPKbOKpoKfKuYsOYS7VrGJ
-MAk5lC5J/bqbBWM4eqm+g5NbskWMr1N5WC60R7K3isMCoaEpnKNhSD3kvYIFe2Tf
-mWyIE2c7D+UWhzbp+Kq4+DHzBN4ajLBy0oMd28HrGOQmD+/chjjc1zTOK9uNBvKz
-xBRbxQl7OrAnKhUqcrgVpVL30EvTNajZIOZdwtGXhQCWW+MX747JE+H291VLg3gz
-a0p6IJ8TS+gOgGGvmNjVg6yHYuKv6XDbDfI7tc0dRJUOoVqfbkIHSvAQQzn0LIFn
-k/Ln4D8LDFj8X3fHbfz200+nzo9gwA5ZXhWXzvTKXhSEyBoc3+i+Ihn3bgYf6rI8
-j8LozqWaWpNxaLMBrLuy06ldAuzhnQ7wPw1JuGXDAY1vdMYVVRp1XcbjBSqybXMA
-weoaxx4Lwh05XikzxZpXDQBx5N+5V3sYRuqGrYs7H1ZUm0rT0I0=
-=yTaM
------END PGP SIGNATURE-----
+2. Add a check at runtime and drop the frames if they are mb-enabled and
+   the program doesn't understand it. This is relatively simple to
+   implement, but it also makes for difficult-to-understand issues (why
+   are my packets suddenly being dropped?), and it will incur runtime
+   overhead.
 
---VOubNWsj2sFIOkFX--
+3. Reject loading of programs that are not MB-aware when running in an
+   MB-enabled mode. This would make things break in more obvious ways,
+   and still allow a userspace loader to declare a program "MB-aware" to
+   force it to run if necessary. The problem then becomes at what level
+   to block this?
+
+   Doing this at the driver level is not enough: while a particular
+   driver knows if it's running in multi-buff mode, we can't know for
+   sure if a particular XDP program is multi-buff aware at attach time:
+   it could be tail-calling other programs, or redirecting packets to
+   another interface where it will be processed by a non-MB aware
+   program.
+
+   So another option is to make it a global toggle: e.g., create a new
+   sysctl to enable multi-buffer. If this is set, reject loading any XDP
+   program that doesn't support multi-buffer mode, and if it's unset,
+   disable multi-buffer mode in all drivers. This will make it explicit
+   when the multi-buffer mode is used, and prevent any accidental subtle
+   malfunction of existing XDP programs. The drawback is that it's a
+   mode switch, so more configuration complexity.
+
+None of these options are ideal, of course, but I hope the above
+explanation at least makes sense. If anyone has any better ideas (or can
+spot any flaws in the reasoning above) please don't hesitate to let us
+know!
+
+-Toke
+
