@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC543BD3BE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD213BD5B9
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239117AbhGFL73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:59:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238110AbhGFLjB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:39:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 00F6661FA1;
-        Tue,  6 Jul 2021 11:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625571009;
-        bh=WXq/Ij1/cKkAuJkhQc6Fzv5tex8hpFP0eYifhDzDPDY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JPzK4xkrWtz1BTWIW88/isGuw9l9pf+YB1l0WVKEYWHxfggMSjjeAGWNyi/TxdaxW
-         bRbOGAWbEHR7GrmizyOCwCc44SN5oOg3NrI1b76si1cbIsqV1+GBnZhHq5wZfZ1ph/
-         cpc3Ic7Sa/d+pPR7h4iK/g9MjmBC+53Urk3QFBVQHSHClLWcZx+k7AX0d5cz1rMKDd
-         s40MD84Oy3571LUiWa28qelYImMYXX2uVN03ZkPgNYfQzS4Rg5KXutGk9RmLF01N55
-         2TTC/Li90I3KD2UcrCDcDJNt6KdiRP6A1FttPvjV4uzkJo2u8VHZF0GXa7PoB73Q6a
-         yFX3cSSJ8NPWw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 31/31] sctp: add size validation when walking chunks
-Date:   Tue,  6 Jul 2021 07:29:31 -0400
-Message-Id: <20210706112931.2066397-31-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210706112931.2066397-1-sashal@kernel.org>
-References: <20210706112931.2066397-1-sashal@kernel.org>
+        id S242734AbhGFM1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242824AbhGFMDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 08:03:00 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DD1C0A8885
+        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 04:38:33 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m0jOz-0004xP-Sv; Tue, 06 Jul 2021 13:38:09 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m0jOw-0008Aw-5G; Tue, 06 Jul 2021 13:38:06 +0200
+Date:   Tue, 6 Jul 2021 13:38:06 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-can@vger.kernel.org
+Subject: Re: [PATCH net] can: j1939: j1939_xtp_rx_dat_one(): fix rxtimer
+ value between consecutive TP.DT to 750ms
+Message-ID: <20210706113806.tgcijzi5z7kxhiw2@pengutronix.de>
+References: <1625569210-47506-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1625569210-47506-1-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:35:02 up 216 days,  1:41, 45 users,  load average: 0.01, 0.04,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+On Tue, Jul 06, 2021 at 07:00:08PM +0800, Zhang Changzhong wrote:
+> For receive side, the max time interval between two consecutive TP.DT
+> should be 750ms.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 
-[ Upstream commit 50619dbf8db77e98d821d615af4f634d08e22698 ]
+ACK,
+according to: SAE-J1939-21: T1 time is 750ms
+according to: ISO 11783-3: T1 time is <=750ms
 
-The first chunk in a packet is ensured to be present at the beginning of
-sctp_rcv(), as a packet needs to have at least 1 chunk. But the second
-one, may not be completely available and ch->length can be over
-uninitialized memory.
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Fix here is by only trying to walk on the next chunk if there is enough to
-hold at least the header, and then proceed with the ch->length validation
-that is already there.
+> ---
+>  net/can/j1939/transport.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> index c3946c3..4113229 100644
+> --- a/net/can/j1939/transport.c
+> +++ b/net/can/j1939/transport.c
+> @@ -1869,7 +1869,7 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
+>  		if (!session->transmission)
+>  			j1939_tp_schedule_txtimer(session, 0);
+>  	} else {
+> -		j1939_tp_set_rxtimeout(session, 250);
+> +		j1939_tp_set_rxtimeout(session, 750);
+>  	}
+>  	session->last_cmd = 0xff;
+>  	consume_skb(se_skb);
+> -- 
+> 2.9.5
+> 
+> 
+> 
 
-Reported-by: Ilja Van Sprundel <ivansprundel@ioactive.com>
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sctp/input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 9fa89a35afcd..9dcc18db9918 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -1086,7 +1086,7 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
- 
- 		ch = (sctp_chunkhdr_t *) ch_end;
- 		chunk_num++;
--	} while (ch_end < skb_tail_pointer(skb));
-+	} while (ch_end + sizeof(*ch) < skb_tail_pointer(skb));
- 
- 	return asoc;
- }
 -- 
-2.30.2
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
