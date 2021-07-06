@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 720F63BCC96
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 635F23BCC9A
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbhGFLTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:19:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55802 "EHLO mail.kernel.org"
+        id S232975AbhGFLTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:19:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232758AbhGFLTF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:19:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 735BC61C4C;
-        Tue,  6 Jul 2021 11:16:26 +0000 (UTC)
+        id S232803AbhGFLTI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:19:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 071E861C52;
+        Tue,  6 Jul 2021 11:16:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570187;
-        bh=5TOr71VUDOiqYVGvZq2pvb41l1QmDcVK6CxhXV/U/8c=;
+        s=k20201202; t=1625570189;
+        bh=cVUpZ974XxVYD/7Fwp5542TVuNMT77tbrLYVujDkoW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=enFms4T1IPeN9lTcyMGxUR/7lggBnypnlKznvJ4HKDPnhJr08MxP63i0HD652uXsW
-         /dNN4hYdm5kFXIW+v6nKfPyzFNJaqaCx1U0j4xWfPlayQwApbIiTFfawj+ewkZslri
-         /RRN04b0AGVXeTlJXPj6r7z2OR9HYIAeT5+IpkgYySksLUL7kFiMROXnZ4ehFLHovb
-         ds/UguvBfR3xKgcVd2YmRfnWhC0tbCJIucJX/Q4rfolUPp7HsXdRz08YcQhuBG41Te
-         /YwMdp8E6ZbD59MFT3MMJV2Ae1yVF3t1Nhb9DmOmFK7HEiA3Mey9fR9yJpH/1zLMmO
-         uRSi35OfDs1uQ==
+        b=dP+e42/TE9lkNTvaBl4kpp4na/HtYPQW5WbQ2X0tpF9SKltfyITrbTi0QKD9S9b6n
+         4MISFoMgK8s4pC48IuC20zv61GESWTJfGLgYb00g0kSntQZAelPWkkSeyIVjszIkbU
+         mqsVX1FUjZV+X+i7YfIv4T5dgmzOpmogl+lTgQ+KDpr6As4f0m1RzPolvcOGtAIpDn
+         viQ4QeF0hAIe9rHgzK3hiavQqqp0fo+2TklDpcKw6Hq/FtFnlSxObCn98HEg3osE8/
+         ePNdeps4nhozcQ3Rk2jtRf9v3spaCYCycccjP9Q+2404x00i1Ti7qeC36qLi5qJdHQ
+         juD2G+Ltg3pWA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Koba Ko <koba.ko@canonical.com>,
+Cc:     Lijun Pan <lijunp213@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 102/189] r8169: avoid link-up interrupt issue on RTL8106e if user enables ASPM
-Date:   Tue,  6 Jul 2021 07:12:42 -0400
-Message-Id: <20210706111409.2058071-102-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 104/189] ibmvnic: fix kernel build warnings in build_hdr_descs_arr
+Date:   Tue,  6 Jul 2021 07:12:44 -0400
+Message-Id: <20210706111409.2058071-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -43,37 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Lijun Pan <lijunp213@gmail.com>
 
-[ Upstream commit 1ee8856de82faec9bc8bd0f2308a7f27e30ba207 ]
+[ Upstream commit 73214a690c50a134bd364e1a4430e0e7ac81a8d8 ]
 
-It has been reported that on RTL8106e the link-up interrupt may be
-significantly delayed if the user enables ASPM L1. Per default ASPM
-is disabled. The change leaves L1 enabled on the PCIe link (thus still
-allowing to reach higher package power saving states), but the
-NIC won't actively trigger it.
+Fix the following kernel build warnings:
+drivers/net/ethernet/ibm/ibmvnic.c:1516: warning: Function parameter or member 'skb' not described in 'build_hdr_descs_arr'
+drivers/net/ethernet/ibm/ibmvnic.c:1516: warning: Function parameter or member 'indir_arr' not described in 'build_hdr_descs_arr'
+drivers/net/ethernet/ibm/ibmvnic.c:1516: warning: Excess function parameter 'txbuff' description in 'build_hdr_descs_arr'
 
-Reported-by: Koba Ko <koba.ko@canonical.com>
-Tested-by: Koba Ko <koba.ko@canonical.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Lijun Pan <lijunp213@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 2ee72dc431cd..a0d4e052a79e 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3510,7 +3510,6 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
- 	rtl_eri_write(tp, 0x1b0, ERIAR_MASK_0011, 0x0000);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 5788bb956d73..a764a5e615fa 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1502,7 +1502,8 @@ static int create_hdr_descs(u8 hdr_field, u8 *hdr_data, int len, int *hdr_len,
  
- 	rtl_pcie_state_l2l3_disable(tp);
--	rtl_hw_aspm_clkreq_enable(tp, true);
- }
- 
- DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
+ /**
+  * build_hdr_descs_arr - build a header descriptor array
+- * @txbuff: tx buffer
++ * @skb: tx socket buffer
++ * @indir_arr: indirect array
+  * @num_entries: number of descriptors to be sent
+  * @hdr_field: bit field determining which headers will be sent
+  *
 -- 
 2.30.2
 
