@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F1033BD19E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A64E33BD196
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238651AbhGFLjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:39:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47546 "EHLO mail.kernel.org"
+        id S238589AbhGFLjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:39:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47606 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237481AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237460AbhGFLgL (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59C5461DBD;
-        Tue,  6 Jul 2021 11:28:01 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C5B6B61F14;
+        Tue,  6 Jul 2021 11:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570882;
-        bh=g9Sw7MyBt7zMmznR+yI0NtS/691d5v/HYyyeQfyXBxo=;
+        s=k20201202; t=1625570883;
+        bh=qsIHHwD5PwQiuhnjDssTRMjsBvM7qqNQlrYb/pmkRdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n7HegnZHu/CMvymmuvw+TTTPRCwyozb1dTYFhDSKxEIKrZfPWl2xUc67oafGAciD6
-         Gu0kZBzNj9HGxmefPNnEocHA0zxcWXoXHjNGdK1tDmeKoj/rcfNoh9F2rmCQjicOt8
-         1X92UYh1wOaQC70xwDSM8v8Nv/VUaB1gkYbwsUWTrc0qNSG5GTlQ1DRr7xazPse/6n
-         AowfIj/USY0ids7VmmKXhcdGWcBFmuFxPetHmMF5xpTD7J73RSxgcZ4Z0dfply9t7F
-         2zpWBpdW1ea3etEykDWVtkZe/yptIgN2R8K9/UpoDoTbGEEc72cDdSzSFnDM6Oi0ux
-         qT/Xf3UPuSxkA==
+        b=NPTW818Dr5LYjXG05lSHZzKpF2By/ikB9d9NPZbggSneie3L5qlzs9cyqgOffbgRg
+         7L5un1yFIJpYBP1AKsaFm9rwpL3Atzn43NVtonwcml9KJv2MlC9NacRcQQR7RUMB1w
+         J/eaZdGPWZIUBayLwJZvKCMIBvf6DvBFVkWB/LPX81mVUATU3gWQ/x1MPMjos1xaL9
+         S+m5IbnaSr0JitrAw7T27KgSEVQ9dCp7GSOqG6/KMFVYLJlEmVvlz9z5+bd5jW97f2
+         nFGMybAV8jIEnuDQmpzJr+gVKkkd3iojQmbnAJGLNbjDyYijHxo94+7A/tg8wAnsD/
+         TZZaFjqL37xMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zou Wei <zou_wei@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 09/45] atm: nicstar: Fix possible use-after-free in nicstar_cleanup()
-Date:   Tue,  6 Jul 2021 07:27:13 -0400
-Message-Id: <20210706112749.2065541-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/45] net: Treat __napi_schedule_irqoff() as __napi_schedule() on PREEMPT_RT
+Date:   Tue,  6 Jul 2021 07:27:14 -0400
+Message-Id: <20210706112749.2065541-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112749.2065541-1-sashal@kernel.org>
 References: <20210706112749.2065541-1-sashal@kernel.org>
@@ -43,38 +44,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zou Wei <zou_wei@huawei.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-[ Upstream commit 34e7434ba4e97f4b85c1423a59b2922ba7dff2ea ]
+[ Upstream commit 8380c81d5c4fced6f4397795a5ae65758272bbfd ]
 
-This module's remove path calls del_timer(). However, that function
-does not wait until the timer handler finishes. This means that the
-timer handler may still be running after the driver's remove function
-has finished, which would result in a use-after-free.
+__napi_schedule_irqoff() is an optimized version of __napi_schedule()
+which can be used where it is known that interrupts are disabled,
+e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
+callbacks.
 
-Fix by calling del_timer_sync(), which makes sure the timer handler
-has finished, and unable to re-schedule itself.
+On PREEMPT_RT enabled kernels this assumptions is not true. Force-
+threaded interrupt handlers and spinlocks are not disabling interrupts
+and the NAPI hrtimer callback is forced into softirq context which runs
+with interrupts enabled as well.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zou Wei <zou_wei@huawei.com>
+Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
+game so make __napi_schedule_irqoff() invoke __napi_schedule() for
+PREEMPT_RT kernels.
+
+The callers of ____napi_schedule() in the networking core have been
+audited and are correct on PREEMPT_RT kernels as well.
+
+Reported-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Juri Lelli <juri.lelli@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/nicstar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/dev.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
-index 7b2c5019bfcd..2c1a81b85816 100644
---- a/drivers/atm/nicstar.c
-+++ b/drivers/atm/nicstar.c
-@@ -298,7 +298,7 @@ static void __exit nicstar_cleanup(void)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7ee89125cd53..aa419f3162b8 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5277,11 +5277,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
+  * __napi_schedule_irqoff - schedule for receive
+  * @n: entry to schedule
+  *
+- * Variant of __napi_schedule() assuming hard irqs are masked
++ * Variant of __napi_schedule() assuming hard irqs are masked.
++ *
++ * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
++ * because the interrupt disabled assumption might not be true
++ * due to force-threaded interrupts and spinlock substitution.
+  */
+ void __napi_schedule_irqoff(struct napi_struct *n)
  {
- 	XPRINTK("nicstar: nicstar_cleanup() called.\n");
- 
--	del_timer(&ns_timer);
-+	del_timer_sync(&ns_timer);
- 
- 	pci_unregister_driver(&nicstar_driver);
+-	____napi_schedule(this_cpu_ptr(&softnet_data), n);
++	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		____napi_schedule(this_cpu_ptr(&softnet_data), n);
++	else
++		__napi_schedule(n);
+ }
+ EXPORT_SYMBOL(__napi_schedule_irqoff);
  
 -- 
 2.30.2
