@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 649683BD047
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 463A53BD050
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbhGFLd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:33:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42668 "EHLO mail.kernel.org"
+        id S234539AbhGFLde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:33:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235413AbhGFLaC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:30:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5779161D92;
-        Tue,  6 Jul 2021 11:20:59 +0000 (UTC)
+        id S235447AbhGFLaF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:30:05 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 42E7461D88;
+        Tue,  6 Jul 2021 11:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570460;
-        bh=QMZEI62nhCdbNul2Cz9sgO1rwB/vHYVKqfZ+XxwfKW8=;
+        s=k20201202; t=1625570463;
+        bh=ISM5bDQqpsoOP/W654LM/DUMv/RF/y7UugqhQDW91r8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=arQn3IzDZ79EP6cyfRc0nIOW4mCdJo+2frpjR7S+hg/iH3135h9rupPnagPNQfSOD
-         Gp7jPv9XIodUNHKZjtrq6ksFtaMcjjVm68lbTAmQ2uvXCSxswGNfiEehlF6vtD8PpR
-         f8hX6jxgpztNMUl3T4cxdgLEFp/8tPfbtffHUoh/IcmU0FQVDHmuQb+waPuDqJLS98
-         Bdak+nfpzowVVyx4nN+spcIE1fxRJp+aHLuRbkOiekklA8Xq9U3MTwNkdS27Gzpjtg
-         yJ+vlzDj0qKOFMtk0YHz82soBmOuVXgo7TlXf9dxdcnjeTIdp+CcnKwV4hmMzHlzGR
-         Td5vCMpPaA+Tg==
+        b=iO7hLnucrce068KE/f8BzuXBmwIjjqKwXkaHW3OknFs2VsdBCAaNrVkx5mMZX/CAU
+         FNT+ZJa6LIi9qeAwiF6hzyVtzUYXJ6qzTlc2QqyuXTVaF+hEY7AaAdtvoolY+VdI7X
+         W5pChHYcL2XsjOi0Tk1ji329kVZhO9+6cG8qoS5nIi8Vo9AwFvxvwaIHxcg7NtXx10
+         LRONPE2L5E7gomGGsmgaozoNsnxrxAG47Qu9hVhXQ7/L9myVs2AREXYNcw1qRADNrs
+         ch/G6wQQJBQW/7mHuC1kwTq7DZGl3WuXNLKRV93aU/C2WAOW8u2DZ4mUj5mJHNketw
+         MVXR9csW3B2qQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 114/160] net: fec: add FEC_QUIRK_HAS_MULTI_QUEUES represents i.MX6SX ENET IP
-Date:   Tue,  6 Jul 2021 07:17:40 -0400
-Message-Id: <20210706111827.2060499-114-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 116/160] atm: nicstar: use 'dma_free_coherent' instead of 'kfree'
+Date:   Tue,  6 Jul 2021 07:17:42 -0400
+Message-Id: <20210706111827.2060499-116-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -43,134 +43,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joakim Zhang <qiangqing.zhang@nxp.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 471ff4455d61c9929ae912328859921708e1eafc ]
+[ Upstream commit 6a1e5a4af17e440dd82a58a2c5f40ff17a82b722 ]
 
-Frieder Schrempf reported a TX throuthput issue [1], it happens quite often
-that the measured bandwidth in TX direction drops from its expected/nominal
-value to something like ~50% (for 100M) or ~67% (for 1G) connections.
+When 'nicstar_init_one' fails, 'ns_init_card_error' will be executed for
+error handling, but the correct memory free function should be used,
+otherwise it will cause an error. Since 'card->rsq.org' and
+'card->tsq.org' are allocated using 'dma_alloc_coherent' function, they
+should be freed using 'dma_free_coherent'.
 
-[1] https://lore.kernel.org/linux-arm-kernel/421cc86c-b66f-b372-32f7-21e59f9a98bc@kontron.de/
+Fix this by using 'dma_free_coherent' instead of 'kfree'
 
-The issue becomes clear after digging into it, Net core would select
-queues when transmitting packets. Since FEC have not impletemented
-ndo_select_queue callback yet, so it will call netdev_pick_tx to select
-queues randomly.
+This log reveals it:
 
-For i.MX6SX ENET IP with AVB support, driver default enables this
-feature. According to the setting of QOS/RCMRn/DMAnCFG registers, AVB
-configured to Credit-based scheme, 50% bandwidth of each queue 1&2.
+[    3.440294] kernel BUG at mm/slub.c:4206!
+[    3.441059] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[    3.441430] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #141
+[    3.441986] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.442780] RIP: 0010:kfree+0x26a/0x300
+[    3.443065] Code: e8 3a c3 b9 ff e9 d6 fd ff ff 49 8b 45 00 31 db a9 00 00 01 00 75 4d 49 8b 45 00 a9 00 00 01 00 75 0a 49 8b 45 08 a8 01 75 02 <0f> 0b 89 d9 b8 00 10 00 00 be 06 00 00 00 48 d3 e0 f7 d8 48 63 d0
+[    3.443396] RSP: 0000:ffffc90000017b70 EFLAGS: 00010246
+[    3.443396] RAX: dead000000000100 RBX: 0000000000000000 RCX: 0000000000000000
+[    3.443396] RDX: 0000000000000000 RSI: ffffffff85d3df94 RDI: ffffffff85df38e6
+[    3.443396] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000001
+[    3.443396] R10: 0000000000000000 R11: 0000000000000001 R12: ffff888107dc0000
+[    3.443396] R13: ffffea00001f0100 R14: ffff888101a8bf00 R15: ffff888107dc0160
+[    3.443396] FS:  0000000000000000(0000) GS:ffff88817bc80000(0000) knlGS:0000000000000000
+[    3.443396] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.443396] CR2: 0000000000000000 CR3: 000000000642e000 CR4: 00000000000006e0
+[    3.443396] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    3.443396] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    3.443396] Call Trace:
+[    3.443396]  ns_init_card_error+0x12c/0x220
+[    3.443396]  nicstar_init_one+0x10d2/0x1130
+[    3.443396]  local_pci_probe+0x4a/0xb0
+[    3.443396]  pci_device_probe+0x126/0x1d0
+[    3.443396]  ? pci_device_remove+0x100/0x100
+[    3.443396]  really_probe+0x27e/0x650
+[    3.443396]  driver_probe_device+0x84/0x1d0
+[    3.443396]  ? mutex_lock_nested+0x16/0x20
+[    3.443396]  device_driver_attach+0x63/0x70
+[    3.443396]  __driver_attach+0x117/0x1a0
+[    3.443396]  ? device_driver_attach+0x70/0x70
+[    3.443396]  bus_for_each_dev+0xb6/0x110
+[    3.443396]  ? rdinit_setup+0x40/0x40
+[    3.443396]  driver_attach+0x22/0x30
+[    3.443396]  bus_add_driver+0x1e6/0x2a0
+[    3.443396]  driver_register+0xa4/0x180
+[    3.443396]  __pci_register_driver+0x77/0x80
+[    3.443396]  ? uPD98402_module_init+0xd/0xd
+[    3.443396]  nicstar_init+0x1f/0x75
+[    3.443396]  do_one_initcall+0x7a/0x3d0
+[    3.443396]  ? rdinit_setup+0x40/0x40
+[    3.443396]  ? rcu_read_lock_sched_held+0x4a/0x70
+[    3.443396]  kernel_init_freeable+0x2a7/0x2f9
+[    3.443396]  ? rest_init+0x2c0/0x2c0
+[    3.443396]  kernel_init+0x13/0x180
+[    3.443396]  ? rest_init+0x2c0/0x2c0
+[    3.443396]  ? rest_init+0x2c0/0x2c0
+[    3.443396]  ret_from_fork+0x1f/0x30
+[    3.443396] Modules linked in:
+[    3.443396] Dumping ftrace buffer:
+[    3.443396]    (ftrace buffer empty)
+[    3.458593] ---[ end trace 3c6f8f0d8ef59bcd ]---
+[    3.458922] RIP: 0010:kfree+0x26a/0x300
+[    3.459198] Code: e8 3a c3 b9 ff e9 d6 fd ff ff 49 8b 45 00 31 db a9 00 00 01 00 75 4d 49 8b 45 00 a9 00 00 01 00 75 0a 49 8b 45 08 a8 01 75 02 <0f> 0b 89 d9 b8 00 10 00 00 be 06 00 00 00 48 d3 e0 f7 d8 48 63 d0
+[    3.460499] RSP: 0000:ffffc90000017b70 EFLAGS: 00010246
+[    3.460870] RAX: dead000000000100 RBX: 0000000000000000 RCX: 0000000000000000
+[    3.461371] RDX: 0000000000000000 RSI: ffffffff85d3df94 RDI: ffffffff85df38e6
+[    3.461873] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000001
+[    3.462372] R10: 0000000000000000 R11: 0000000000000001 R12: ffff888107dc0000
+[    3.462871] R13: ffffea00001f0100 R14: ffff888101a8bf00 R15: ffff888107dc0160
+[    3.463368] FS:  0000000000000000(0000) GS:ffff88817bc80000(0000) knlGS:0000000000000000
+[    3.463949] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.464356] CR2: 0000000000000000 CR3: 000000000642e000 CR4: 00000000000006e0
+[    3.464856] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    3.465356] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    3.465860] Kernel panic - not syncing: Fatal exception
+[    3.466370] Dumping ftrace buffer:
+[    3.466616]    (ftrace buffer empty)
+[    3.466871] Kernel Offset: disabled
+[    3.467122] Rebooting in 1 seconds..
 
-With below tests let me think more:
-1) With FEC_QUIRK_HAS_AVB quirk, can reproduce TX bandwidth fluctuations issue.
-2) Without FEC_QUIRK_HAS_AVB quirk, can't reproduce TX bandwidth fluctuations issue.
-
-The related difference with or w/o FEC_QUIRK_HAS_AVB quirk is that, whether we
-program FTYPE field of TxBD or not. As I describe above, AVB feature is
-enabled by default. With FEC_QUIRK_HAS_AVB quirk, frames in queue 0
-marked as non-AVB, and frames in queue 1&2 marked as AVB Class A&B. It's
-unreasonable if frames in queue 1&2 are not required to be time-sensitive.
-So when Net core select tx queues ramdomly, Credit-based scheme would work
-and lead to TX bandwidth fluctuated. On the other hand, w/o
-FEC_QUIRK_HAS_AVB quirk, frames in queue 1&2 are all marked as non-AVB, so
-Credit-based scheme would not work.
-
-Till now, how can we fix this TX throughput issue? Yes, please remove
-FEC_QUIRK_HAS_AVB quirk if you suffer it from time-nonsensitive networking.
-However, this quirk is used to indicate i.MX6SX, other setting depends
-on it. So this patch adds a new quirk FEC_QUIRK_HAS_MULTI_QUEUES to
-represent i.MX6SX, it is safe for us remove FEC_QUIRK_HAS_AVB quirk
-now.
-
-FEC_QUIRK_HAS_AVB quirk is set by default in the driver, and users may
-not know much about driver details, they would waste effort to find the
-root cause, that is not we want. The following patch is a implementation
-to fix it and users don't need to modify the driver.
-
-Tested-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Reported-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec.h      |  5 +++++
- drivers/net/ethernet/freescale/fec_main.c | 11 ++++++-----
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/atm/nicstar.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index 0602d5d5d2ee..2e002e4b4b4a 100644
---- a/drivers/net/ethernet/freescale/fec.h
-+++ b/drivers/net/ethernet/freescale/fec.h
-@@ -467,6 +467,11 @@ struct bufdesc_ex {
-  */
- #define FEC_QUIRK_NO_HARD_RESET		(1 << 18)
- 
-+/* i.MX6SX ENET IP supports multiple queues (3 queues), use this quirk to
-+ * represents this ENET IP.
-+ */
-+#define FEC_QUIRK_HAS_MULTI_QUEUES	(1 << 19)
-+
- struct bufdesc_prop {
- 	int qid;
- 	/* Address of Rx and Tx buffers */
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 89393fbc726f..15c9cffa8735 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -121,7 +121,7 @@ static const struct fec_devinfo fec_imx6x_info = {
- 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
- 		  FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
- 		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE |
--		  FEC_QUIRK_CLEAR_SETUP_MII,
-+		  FEC_QUIRK_CLEAR_SETUP_MII | FEC_QUIRK_HAS_MULTI_QUEUES,
- };
- 
- static const struct fec_devinfo fec_imx6ul_info = {
-@@ -420,6 +420,7 @@ fec_enet_txq_submit_frag_skb(struct fec_enet_priv_tx_q *txq,
- 				estatus |= FEC_TX_BD_FTYPE(txq->bd.qid);
- 			if (skb->ip_summed == CHECKSUM_PARTIAL)
- 				estatus |= BD_ENET_TX_PINS | BD_ENET_TX_IINS;
-+
- 			ebdp->cbd_bdu = 0;
- 			ebdp->cbd_esc = cpu_to_fec32(estatus);
- 		}
-@@ -953,7 +954,7 @@ fec_restart(struct net_device *ndev)
- 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
- 	 * instead of reset MAC itself.
- 	 */
--	if (fep->quirks & FEC_QUIRK_HAS_AVB ||
-+	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES ||
- 	    ((fep->quirks & FEC_QUIRK_NO_HARD_RESET) && fep->link)) {
- 		writel(0, fep->hwp + FEC_ECNTRL);
- 	} else {
-@@ -1164,7 +1165,7 @@ fec_stop(struct net_device *ndev)
- 	 * instead of reset MAC itself.
- 	 */
- 	if (!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
--		if (fep->quirks & FEC_QUIRK_HAS_AVB) {
-+		if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
- 			writel(0, fep->hwp + FEC_ECNTRL);
- 		} else {
- 			writel(1, fep->hwp + FEC_ECNTRL);
-@@ -2559,7 +2560,7 @@ static void fec_enet_itr_coal_set(struct net_device *ndev)
- 
- 	writel(tx_itr, fep->hwp + FEC_TXIC0);
- 	writel(rx_itr, fep->hwp + FEC_RXIC0);
--	if (fep->quirks & FEC_QUIRK_HAS_AVB) {
-+	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
- 		writel(tx_itr, fep->hwp + FEC_TXIC1);
- 		writel(rx_itr, fep->hwp + FEC_RXIC1);
- 		writel(tx_itr, fep->hwp + FEC_TXIC2);
-@@ -3356,7 +3357,7 @@ static int fec_enet_init(struct net_device *ndev)
- 		fep->csum_flags |= FLAG_RX_CSUM_ENABLED;
+diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
+index b015c3e14336..3a38720acd0e 100644
+--- a/drivers/atm/nicstar.c
++++ b/drivers/atm/nicstar.c
+@@ -839,10 +839,12 @@ static void ns_init_card_error(ns_dev *card, int error)
+ 			dev_kfree_skb_any(hb);
  	}
- 
--	if (fep->quirks & FEC_QUIRK_HAS_AVB) {
-+	if (fep->quirks & FEC_QUIRK_HAS_MULTI_QUEUES) {
- 		fep->tx_align = 0;
- 		fep->rx_align = 0x3f;
+ 	if (error >= 12) {
+-		kfree(card->rsq.org);
++		dma_free_coherent(&card->pcidev->dev, NS_RSQSIZE + NS_RSQ_ALIGNMENT,
++				card->rsq.org, card->rsq.dma);
  	}
+ 	if (error >= 11) {
+-		kfree(card->tsq.org);
++		dma_free_coherent(&card->pcidev->dev, NS_TSQSIZE + NS_TSQ_ALIGNMENT,
++				card->tsq.org, card->tsq.dma);
+ 	}
+ 	if (error >= 10) {
+ 		free_irq(card->pcidev->irq, card);
 -- 
 2.30.2
 
