@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2AD13BD03F
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82B453BD042
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232211AbhGFLdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:33:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35598 "EHLO mail.kernel.org"
+        id S233904AbhGFLdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:33:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42574 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234885AbhGFL3W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:29:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C5E2061C6E;
-        Tue,  6 Jul 2021 11:20:28 +0000 (UTC)
+        id S235274AbhGFL3v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:29:51 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3019C61D9A;
+        Tue,  6 Jul 2021 11:20:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570429;
-        bh=NQy8nTnLvXU/vhv4B5FMdCwgkqRgd+S+GC6IS4N4NfY=;
+        s=k20201202; t=1625570452;
+        bh=0Em+bgYmrDU1JOZhftUS5xrrOixdfruBKkFRuFCROBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZCUtU7hbTAZnfCHnp6Dn+Ugg5FaaFH8eyCMWZkUmc7bDiC0WlqDFo4uHQ6rnjn5m
-         llGLJd8WO6DXM8pLgvM1FKAzwsLSAt6aKeEOUTBucwgamTTk80AassSMAPZvTkcAPV
-         lUyJrUPrnmDTiCro55praPTSq25No28UF5oVztkaDejrS1OLckGsz1xwCpJznOCeM+
-         qMYbdkXuSHlnksc8cAZgcU4PmkMhM6WibY9p0bwgpija/2gBy4xFQALHhtK0AVJ2fV
-         6hj9eweMgOpaq7brFKLYwJb68M63zvCjCpgr2KBUDlLao3Ms/jITXsHai4R9+JCu1R
-         Jga5UIhWrr2VA==
+        b=ezmbkfPPBgn08cZzpOT0MzDt+NOvKBVcgESV38rpBroP97DOkBn7PAp5A02Xco46X
+         0Zzo3D8qE1a4bQ42deg9m3BPmAvQTXiQwtyFh6/QVsn0iX/WtlN0MR94Z9dBQ95ka0
+         +DbKICXP1viYQKd+eyYW9MbnnWA7Fuk3bO9fC6KYfO9fn9Enyo0kP7VgvHewhDPZX7
+         KYvsR0fjXOo6m4U/Pz/d9Dpu80DggStMO+11x5bADN6A1H77DnudWEMW+H18NWwmoX
+         jzgKBU+bo75DoSQv7wPJA5XsWG4s/D36cfRerGsieBOihTsseY53DZLijy8m6Gha4v
+         BbAwz06HDyXpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Carl Philipp Klemm <philipp@uvos.xyz>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 092/160] wlcore/wl12xx: Fix wl12xx get_mac error if device is in ELP
-Date:   Tue,  6 Jul 2021 07:17:18 -0400
-Message-Id: <20210706111827.2060499-92-sashal@kernel.org>
+Cc:     Evelyn Tsai <evelyn.tsai@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.12 109/160] mt76: mt7915: fix tssi indication field of DBDC NICs
+Date:   Tue,  6 Jul 2021 07:17:35 -0400
+Message-Id: <20210706111827.2060499-109-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -44,55 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Evelyn Tsai <evelyn.tsai@mediatek.com>
 
-[ Upstream commit 11ef6bc846dcdce838f0b00c5f6a562c57e5d43b ]
+[ Upstream commit 64cf5ad3c2fa841e4b416343a7ea69c63d60fa4e ]
 
-At least on wl12xx, reading the MAC after boot can fail with a warning
-at drivers/net/wireless/ti/wlcore/sdio.c:78 wl12xx_sdio_raw_read.
-The failed call comes from wl12xx_get_mac() that wlcore_nvs_cb() calls
-after request_firmware_work_func().
+Correct the bitfield which indicates TSSI on/off for MT7915D NIC.
 
-After the error, no wireless interface is created. Reloading the wl12xx
-module makes the interface work.
-
-Turns out the wlan controller can be in a low-power ELP state after the
-boot from the bootloader or kexec, and needs to be woken up first.
-
-Let's wake the hardware and add a sleep after that similar to
-wl12xx_pre_boot() is already doing.
-
-Note that a similar issue could exist for wl18xx, but I have not seen it
-so far. And a search for wl18xx_get_mac and wl12xx_sdio_raw_read did not
-produce similar errors.
-
-Cc: Carl Philipp Klemm <philipp@uvos.xyz>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210603062814.19464-1-tony@atomide.com
+Signed-off-by: Evelyn Tsai <evelyn.tsai@mediatek.com>
+Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ti/wl12xx/main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/wireless/mediatek/mt76/mt7915/eeprom.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wl12xx/main.c b/drivers/net/wireless/ti/wl12xx/main.c
-index 9d7dbfe7fe0c..c6da0cfb4afb 100644
---- a/drivers/net/wireless/ti/wl12xx/main.c
-+++ b/drivers/net/wireless/ti/wl12xx/main.c
-@@ -1503,6 +1503,13 @@ static int wl12xx_get_fuse_mac(struct wl1271 *wl)
- 	u32 mac1, mac2;
- 	int ret;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.h b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.h
+index 3ee8c27bb61b..40a51d99a781 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/eeprom.h
+@@ -116,12 +116,15 @@ static inline bool
+ mt7915_tssi_enabled(struct mt7915_dev *dev, enum nl80211_band band)
+ {
+ 	u8 *eep = dev->mt76.eeprom.data;
++	u8 val = eep[MT_EE_WIFI_CONF + 7];
  
-+	/* Device may be in ELP from the bootloader or kexec */
-+	ret = wlcore_write32(wl, WL12XX_WELP_ARM_COMMAND, WELP_ARM_COMMAND_VAL);
-+	if (ret < 0)
-+		goto out;
+-	/* TODO: DBDC */
+-	if (band == NL80211_BAND_5GHZ)
+-		return eep[MT_EE_WIFI_CONF + 7] & MT_EE_WIFI_CONF7_TSSI0_5G;
++	if (band == NL80211_BAND_2GHZ)
++		return val & MT_EE_WIFI_CONF7_TSSI0_2G;
 +
-+	usleep_range(500000, 700000);
-+
- 	ret = wlcore_set_partition(wl, &wl->ptable[PART_DRPW]);
- 	if (ret < 0)
- 		goto out;
++	if (dev->dbdc_support)
++		return val & MT_EE_WIFI_CONF7_TSSI1_5G;
+ 	else
+-		return eep[MT_EE_WIFI_CONF + 7] & MT_EE_WIFI_CONF7_TSSI0_2G;
++		return val & MT_EE_WIFI_CONF7_TSSI0_5G;
+ }
+ 
+ extern const struct sku_group mt7915_sku_groups[];
 -- 
 2.30.2
 
