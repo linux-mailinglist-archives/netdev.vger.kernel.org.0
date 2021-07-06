@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF86B3BD0C7
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6769E3BD0D4
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbhGFLge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:36:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42374 "EHLO mail.kernel.org"
+        id S235655AbhGFLhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:37:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235223AbhGFLb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:31:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9512A61CBB;
-        Tue,  6 Jul 2021 11:22:27 +0000 (UTC)
+        id S234824AbhGFLcc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:32:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 148EA61D13;
+        Tue,  6 Jul 2021 11:22:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570548;
-        bh=dT8hcCxhperB/T+8aYy1wP8AerwINrRNIYBFnfhjs7g=;
+        s=k20201202; t=1625570566;
+        bh=KIbEhNWMydI6SQGBDF9LHhWBX6rUno1XaXp/Wg9nNw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ucGbFEBE7at1wbioN34BjlhTx3PjuOQnSzE65Ks34wTzGwEokiB/4G0N5i1/ayjN3
-         ff16Rv7JBgl0ubjAQdai/FHpZP9a5PX2Xa1Q/HV37hzeqm7Kk/O3K10QvMT4M00gvw
-         SNvXkdzEQZiLXpgjBrtxqg/t5uXoKznR9zZyAZBM4C70fVc5ws+eOc+sx/mC9s48gu
-         V9ankXV8ZfDOqYfPqF29lDKLu+IpvfHdSMUdz+q26yrDUwlBp06f3PJAUaxF7EmDSK
-         iQERO1hk3Y16bDrbigXSVJ50rjIg6QcKe2afTn3a6vQU8Vx+qA3PsTEfOSSdXGrWQR
-         bVKGU2WrGJjmw==
+        b=O0nQSHTwfUamboD2Ba139VBNpWN5RzqYOp1SzdVEq04pB9tTis1AT+1QxECj4ld/O
+         E59Uf8DYgJO6Tc/LbUnBTWK8UeR4HtB5UFLUc3+RtPzFraBGUTtlI1yH44i3EvhcX3
+         pVhWCciWgdW5jm9OkEtt1iGw1tW+OD95m/LdxdvSHKPr1+FqMYt1e1NgIRRf+DYrEk
+         y/KQaHptMBQA5Kk0kg4+8lhHzK/YNjT/gF3roNZMNFJQbGd0uA8fEvu06a0qTDRiYR
+         9w//L+b5S6F4nVlTDvPc7t/OG/731gDOoBGbBNFN/fZqGlrAN109p4y0Be1YhVj8nU
+         hbDH6hYYP0gVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 018/137] net: mdio: ipq8064: add regmap config to disable REGCACHE
-Date:   Tue,  6 Jul 2021 07:20:04 -0400
-Message-Id: <20210706112203.2062605-18-sashal@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Dave Switzer <david.switzer@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 033/137] igb: handle vlan types with checker enabled
+Date:   Tue,  6 Jul 2021 07:20:19 -0400
+Message-Id: <20210706112203.2062605-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -43,88 +44,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit b097bea10215315e8ee17f88b4c1bbb521b1878c ]
+[ Upstream commit c7cbfb028b95360403d579c47aaaeef1ff140964 ]
 
-mdio drivers should not use REGCHACHE. Also disable locking since it's
-handled by the mdio users and regmap is always accessed atomically.
+The sparse build (C=2) finds some issues with how the driver
+dealt with the (very difficult) hardware that in some generations
+uses little-endian, and in others uses big endian, for the VLAN
+field. The code as written picks __le16 as a type and for some
+hardware revisions we override it to __be16 as done in this
+patch. This impacted the VF driver as well so fix it there too.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Also change the vlan_tci assignment to override the sparse
+warning without changing functionality.
+
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Dave Switzer <david.switzer@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/mdio/mdio-ipq8064.c | 33 ++++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 5 +++--
+ drivers/net/ethernet/intel/igbvf/netdev.c | 4 ++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
-index 1bd18857e1c5..f0a6bfa61645 100644
---- a/drivers/net/mdio/mdio-ipq8064.c
-+++ b/drivers/net/mdio/mdio-ipq8064.c
-@@ -10,7 +10,7 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/of_mdio.h>
--#include <linux/phy.h>
-+#include <linux/of_address.h>
- #include <linux/platform_device.h>
- #include <linux/mfd/syscon.h>
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 5c87c0a7ce3d..157683fbf61c 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -2643,7 +2643,8 @@ static int igb_parse_cls_flower(struct igb_adapter *adapter,
+ 			}
  
-@@ -96,14 +96,34 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
- 	return ipq8064_mdio_wait_busy(priv);
- }
+ 			input->filter.match_flags |= IGB_FILTER_FLAG_VLAN_TCI;
+-			input->filter.vlan_tci = match.key->vlan_priority;
++			input->filter.vlan_tci =
++				(__force __be16)match.key->vlan_priority;
+ 		}
+ 	}
  
-+static const struct regmap_config ipq8064_mdio_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.can_multi_write = false,
-+	/* the mdio lock is used by any user of this mdio driver */
-+	.disable_locking = true,
-+
-+	.cache_type = REGCACHE_NONE,
-+};
-+
- static int
- ipq8064_mdio_probe(struct platform_device *pdev)
+@@ -8617,7 +8618,7 @@ static void igb_process_skb_fields(struct igb_ring *rx_ring,
+ 
+ 		if (igb_test_staterr(rx_desc, E1000_RXDEXT_STATERR_LB) &&
+ 		    test_bit(IGB_RING_FLAG_RX_LB_VLAN_BSWAP, &rx_ring->flags))
+-			vid = be16_to_cpu(rx_desc->wb.upper.vlan);
++			vid = be16_to_cpu((__force __be16)rx_desc->wb.upper.vlan);
+ 		else
+ 			vid = le16_to_cpu(rx_desc->wb.upper.vlan);
+ 
+diff --git a/drivers/net/ethernet/intel/igbvf/netdev.c b/drivers/net/ethernet/intel/igbvf/netdev.c
+index ee9f8c1dca83..07c9e9e0546f 100644
+--- a/drivers/net/ethernet/intel/igbvf/netdev.c
++++ b/drivers/net/ethernet/intel/igbvf/netdev.c
+@@ -83,14 +83,14 @@ static int igbvf_desc_unused(struct igbvf_ring *ring)
+ static void igbvf_receive_skb(struct igbvf_adapter *adapter,
+ 			      struct net_device *netdev,
+ 			      struct sk_buff *skb,
+-			      u32 status, u16 vlan)
++			      u32 status, __le16 vlan)
  {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct ipq8064_mdio *priv;
-+	struct resource res;
- 	struct mii_bus *bus;
-+	void __iomem *base;
- 	int ret;
+ 	u16 vid;
  
-+	if (of_address_to_resource(np, 0, &res))
-+		return -ENOMEM;
-+
-+	base = ioremap(res.start, resource_size(&res));
-+	if (!base)
-+		return -ENOMEM;
-+
- 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
- 	if (!bus)
- 		return -ENOMEM;
-@@ -115,15 +135,10 @@ ipq8064_mdio_probe(struct platform_device *pdev)
- 	bus->parent = &pdev->dev;
- 
- 	priv = bus->priv;
--	priv->base = device_node_to_regmap(np);
--	if (IS_ERR(priv->base)) {
--		if (priv->base == ERR_PTR(-EPROBE_DEFER))
--			return -EPROBE_DEFER;
--
--		dev_err(&pdev->dev, "error getting device regmap, error=%pe\n",
--			priv->base);
-+	priv->base = devm_regmap_init_mmio(&pdev->dev, base,
-+					   &ipq8064_mdio_regmap_config);
-+	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
--	}
- 
- 	ret = of_mdiobus_register(bus, np);
- 	if (ret)
+ 	if (status & E1000_RXD_STAT_VP) {
+ 		if ((adapter->flags & IGBVF_FLAG_RX_LB_VLAN_BSWAP) &&
+ 		    (status & E1000_RXDEXT_STATERR_LB))
+-			vid = be16_to_cpu(vlan) & E1000_RXD_SPC_VLAN_MASK;
++			vid = be16_to_cpu((__force __be16)vlan) & E1000_RXD_SPC_VLAN_MASK;
+ 		else
+ 			vid = le16_to_cpu(vlan) & E1000_RXD_SPC_VLAN_MASK;
+ 		if (test_bit(vid, adapter->active_vlans))
 -- 
 2.30.2
 
