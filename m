@@ -2,305 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 747753BC4E3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 04:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A093BC4E4
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 04:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbhGFCrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Jul 2021 22:47:19 -0400
-Received: from mga06.intel.com ([134.134.136.31]:43640 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229781AbhGFCrP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Jul 2021 22:47:15 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10036"; a="270166581"
-X-IronPort-AV: E=Sophos;i="5.83,327,1616482800"; 
-   d="scan'208";a="270166581"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2021 19:44:35 -0700
-X-IronPort-AV: E=Sophos;i="5.83,327,1616482800"; 
-   d="scan'208";a="485783722"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.249.168.29]) ([10.249.168.29])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2021 19:44:34 -0700
-Subject: Re: [PATCH V2 2/2] vDPA/ifcvf: implement management netlink framework
- for ifcvf
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org
-References: <20210705141333.9262-1-lingshan.zhu@intel.com>
- <20210705141333.9262-3-lingshan.zhu@intel.com>
- <20210705142750-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <ba2fedb3-3251-dd50-9353-4f06d85fcdc1@intel.com>
-Date:   Tue, 6 Jul 2021 10:44:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S229956AbhGFCrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Jul 2021 22:47:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41378 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229781AbhGFCro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Jul 2021 22:47:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625539506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vnJzjlN8Z9nx1OV1WylAv0Iuq/Q/DMpUOyYrHh4Ncmk=;
+        b=VRPqUBCr2WxhrQif+Dy/SzR8bbxUypZdDjdDRECCbUMSBufepS305gFr2CowYNvFc8PUtL
+        BTlMsgKqKZ611Av4wXa/IlqgdZt/K6niCITOBbX2uUOcZD/SVmLOL9LXOX7BL12UeXpKVR
+        cdqOk9rPxzxB61jq+90BjITBlyO8vWw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-_gM-zSR5PTKpVcz4Xv4DDg-1; Mon, 05 Jul 2021 22:45:05 -0400
+X-MC-Unique: _gM-zSR5PTKpVcz4Xv4DDg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4F8C5802C80;
+        Tue,  6 Jul 2021 02:45:04 +0000 (UTC)
+Received: from fedora (ovpn-13-250.pek2.redhat.com [10.72.13.250])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 74DF419C79;
+        Tue,  6 Jul 2021 02:44:59 +0000 (UTC)
+Date:   Tue, 6 Jul 2021 10:44:55 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     Martynas Pumputis <m@lambda.lt>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com
+Subject: Re: [PATCH iproute2] libbpf: fix attach of prog with multiple
+ sections
+Message-ID: <YOPDp/UqkbX8DM2+@fedora>
+References: <20210705124307.201303-1-m@lambda.lt>
 MIME-Version: 1.0
-In-Reply-To: <20210705142750-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210705124307.201303-1-m@lambda.lt>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 05, 2021 at 02:43:07PM +0200, Martynas Pumputis wrote:
+> When BPF programs which consists of multiple executable sections via
+> iproute2+libbpf (configured with LIBBPF_FORCE=on), we noticed that a
+> wrong section can be attached to a device. E.g.:
+> 
+>     # tc qdisc replace dev lxc_health clsact
+>     # tc filter replace dev lxc_health ingress prio 1 \
+>         handle 1 bpf da obj bpf_lxc.o sec from-container
+>     # tc filter show dev lxc_health ingress filter protocol all
+>         pref 1 bpf chain 0 filter protocol all pref 1 bpf chain 0
+>         handle 0x1 bpf_lxc.o:[__send_drop_notify] <-- WRONG SECTION
+>         direct-action not_in_hw id 38 tag 7d891814eda6809e jited
+> 
+> After taking a closer look into load_bpf_object() in lib/bpf_libbpf.c,
+> we noticed that the filter used in the program iterator does not check
+> whether a program section name matches a requested section name
+> (cfg->section). This can lead to a wrong prog FD being used to attach
+> the program.
+> 
+> Fixes: 6d61a2b55799 ("lib: add libbpf support")
+> Signed-off-by: Martynas Pumputis <m@lambda.lt>
+> ---
+>  lib/bpf_libbpf.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
+> index d05737a4..f76b90d2 100644
+> --- a/lib/bpf_libbpf.c
+> +++ b/lib/bpf_libbpf.c
+> @@ -267,10 +267,12 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+>  	}
+>  
+>  	bpf_object__for_each_program(p, obj) {
+> +		bool prog_to_attach = !prog && cfg->section &&
+> +			!strcmp(get_bpf_program__section_name(p), cfg->section);
+> +
+>  		/* Only load the programs that will either be subsequently
+>  		 * attached or inserted into a tail call map */
+> -		if (find_legacy_tail_calls(p, obj) < 0 && cfg->section &&
+> -		    strcmp(get_bpf_program__section_name(p), cfg->section)) {
+> +		if (find_legacy_tail_calls(p, obj) < 0 && !prog_to_attach) {
+>  			ret = bpf_program__set_autoload(p, false);
+>  			if (ret)
+>  				return -EINVAL;
+> @@ -279,7 +281,8 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
+>  
+>  		bpf_program__set_type(p, cfg->type);
+>  		bpf_program__set_ifindex(p, cfg->ifindex);
+> -		if (!prog)
+> +
+> +		if (prog_to_attach)
+>  			prog = p;
+>  	}
+>  
+> -- 
+> 2.32.0
+> 
 
+Thanks for the fix.
 
-On 7/6/2021 2:30 AM, Michael S. Tsirkin wrote:
-> On Mon, Jul 05, 2021 at 10:13:33PM +0800, Zhu Lingshan wrote:
->> This commit implments the management netlink framework for ifcvf,
-> implements
->
->> including register and add / remove a device
->>
->> It works with iprouter2:
-> I am guessing iproute2?
-Thanks Michael, I have sent out a V3 series to fix these typos
->
->> [root@localhost lszhu]# vdpa mgmtdev show -jp
->> {
->>      "mgmtdev": {
->>          "pci/0000:01:00.5": {
->>              "supported_classes": [ "net" ]
->>          },
->>          "pci/0000:01:00.6": {
->>              "supported_classes": [ "net" ]
->>          }
->>      }
->> }
->>
->> [root@localhost lszhu]# vdpa dev add mgmtdev pci/0000:01:00.5 name vdpa0
->> [root@localhost lszhu]# vdpa dev add mgmtdev pci/0000:01:00.6 name vdpa1
->>
->> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->> ---
->>   drivers/vdpa/ifcvf/ifcvf_base.h |   6 ++
->>   drivers/vdpa/ifcvf/ifcvf_main.c | 154 ++++++++++++++++++++++++--------
->>   2 files changed, 124 insertions(+), 36 deletions(-)
->>
->> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
->> index ded1b1b5fb13..e5251fcbb200 100644
->> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
->> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->> @@ -104,6 +104,12 @@ struct ifcvf_lm_cfg {
->>   	struct ifcvf_vring_lm_cfg vring_lm_cfg[IFCVF_MAX_QUEUE_PAIRS];
->>   };
->>   
->> +struct ifcvf_vdpa_mgmt_dev {
->> +	struct vdpa_mgmt_dev mdev;
->> +	struct ifcvf_adapter *adapter;
->> +	struct pci_dev *pdev;
->> +};
->> +
->>   int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *dev);
->>   int ifcvf_start_hw(struct ifcvf_hw *hw);
->>   void ifcvf_stop_hw(struct ifcvf_hw *hw);
->> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
->> index 5f70ab1283a0..c72d9b36e4a0 100644
->> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
->> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
->> @@ -218,7 +218,7 @@ static void ifcvf_vdpa_set_status(struct vdpa_device *vdpa_dev, u8 status)
->>   	int ret;
->>   
->>   	vf  = vdpa_to_vf(vdpa_dev);
->> -	adapter = dev_get_drvdata(vdpa_dev->dev.parent);
->> +	adapter = vdpa_to_adapter(vdpa_dev);
->>   	status_old = ifcvf_get_status(vf);
->>   
->>   	if (status_old == status)
->> @@ -442,6 +442,16 @@ static const struct vdpa_config_ops ifc_vdpa_ops = {
->>   	.set_config_cb  = ifcvf_vdpa_set_config_cb,
->>   };
->>   
->> +static struct virtio_device_id id_table_net[] = {
->> +	{VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID},
->> +	{0},
->> +};
->> +
->> +static struct virtio_device_id id_table_blk[] = {
->> +	{VIRTIO_ID_BLOCK, VIRTIO_DEV_ANY_ID},
->> +	{0},
->> +};
->> +
->>   static u32 get_dev_type(struct pci_dev *pdev)
->>   {
->>   	u32 dev_type;
->> @@ -462,48 +472,30 @@ static u32 get_dev_type(struct pci_dev *pdev)
->>   	return dev_type;
->>   }
->>   
->> -static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->> +static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
->>   {
->> -	struct device *dev = &pdev->dev;
->> +	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
->>   	struct ifcvf_adapter *adapter;
->> +	struct pci_dev *pdev;
->>   	struct ifcvf_hw *vf;
->> +	struct device *dev;
->>   	int ret, i;
->>   
->> -	ret = pcim_enable_device(pdev);
->> -	if (ret) {
->> -		IFCVF_ERR(pdev, "Failed to enable device\n");
->> -		return ret;
->> -	}
->> -
->> -	ret = pcim_iomap_regions(pdev, BIT(0) | BIT(2) | BIT(4),
->> -				 IFCVF_DRIVER_NAME);
->> -	if (ret) {
->> -		IFCVF_ERR(pdev, "Failed to request MMIO region\n");
->> -		return ret;
->> -	}
->> -
->> -	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
->> -	if (ret) {
->> -		IFCVF_ERR(pdev, "No usable DMA configuration\n");
->> -		return ret;
->> -	}
->> -
->> -	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
->> -	if (ret) {
->> -		IFCVF_ERR(pdev,
->> -			  "Failed for adding devres for freeing irq vectors\n");
->> -		return ret;
->> -	}
->> +	ifcvf_mgmt_dev = container_of(mdev, struct ifcvf_vdpa_mgmt_dev, mdev);
->> +	if (ifcvf_mgmt_dev->adapter)
->> +		return -EOPNOTSUPP;
->>   
->> +	pdev = ifcvf_mgmt_dev->pdev;
->> +	dev = &pdev->dev;
->>   	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
->> -				    dev, &ifc_vdpa_ops, NULL);
->> -	if (adapter == NULL) {
->> +				    dev, &ifc_vdpa_ops, name);
->> +	if (!adapter) {
->>   		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
->>   		return -ENOMEM;
->>   	}
->>   
->> -	pci_set_master(pdev);
->> -	pci_set_drvdata(pdev, adapter);
->> +	ifcvf_mgmt_dev->adapter = adapter;
->> +	pci_set_drvdata(pdev, ifcvf_mgmt_dev);
->>   
->>   	vf = &adapter->vf;
->>   	vf->dev_type = get_dev_type(pdev);
->> @@ -523,9 +515,10 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>   
->>   	vf->hw_features = ifcvf_get_hw_features(vf);
->>   
->> -	ret = vdpa_register_device(&adapter->vdpa, IFCVF_MAX_QUEUE_PAIRS * 2);
->> +	adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
->> +	ret = _vdpa_register_device(&adapter->vdpa, IFCVF_MAX_QUEUE_PAIRS * 2);
->>   	if (ret) {
->> -		IFCVF_ERR(pdev, "Failed to register ifcvf to vdpa bus");
->> +		IFCVF_ERR(pdev, "Failed to register to vDPA bus");
->>   		goto err;
->>   	}
->>   
->> @@ -536,11 +529,100 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>   	return ret;
->>   }
->>   
->> +static void ifcvf_vdpa_dev_del(struct vdpa_mgmt_dev *mdev, struct vdpa_device *dev)
->> +{
->> +	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
->> +
->> +	ifcvf_mgmt_dev = container_of(mdev, struct ifcvf_vdpa_mgmt_dev, mdev);
->> +	_vdpa_unregister_device(dev);
->> +	ifcvf_mgmt_dev->adapter = NULL;
->> +}
->> +
->> +static const struct vdpa_mgmtdev_ops ifcvf_vdpa_mgmt_dev_ops = {
->> +	.dev_add = ifcvf_vdpa_dev_add,
->> +	.dev_del = ifcvf_vdpa_dev_del
->> +};
->> +
->> +static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->> +{
->> +	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
->> +	struct device *dev = &pdev->dev;
->> +	u32 dev_type;
->> +	int ret;
->> +
->> +	ifcvf_mgmt_dev = kzalloc(sizeof(struct ifcvf_vdpa_mgmt_dev), GFP_KERNEL);
->> +	if (!ifcvf_mgmt_dev) {
->> +		IFCVF_ERR(pdev, "Failed to alloc memory for the vDPA management device\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	dev_type = get_dev_type(pdev);
->> +	switch (dev_type) {
->> +	case VIRTIO_ID_NET:
->> +		ifcvf_mgmt_dev->mdev.id_table = id_table_net;
->> +		break;
->> +	case VIRTIO_ID_BLOCK:
->> +		ifcvf_mgmt_dev->mdev.id_table = id_table_blk;
->> +		break;
->> +	default:
->> +		IFCVF_ERR(pdev, "VIRTIO ID %u not supported\n", dev_type);
->> +		ret = -EOPNOTSUPP;
->> +		goto err;
->> +	}
->> +
->> +	ifcvf_mgmt_dev->mdev.ops = &ifcvf_vdpa_mgmt_dev_ops;
->> +	ifcvf_mgmt_dev->mdev.device = dev;
->> +	ifcvf_mgmt_dev->pdev = pdev;
->> +
->> +	ret = pcim_enable_device(pdev);
->> +	if (ret) {
->> +		IFCVF_ERR(pdev, "Failed to enable device\n");
->> +		goto err;
->> +	}
->> +
->> +	ret = pcim_iomap_regions(pdev, BIT(0) | BIT(2) | BIT(4),
->> +				 IFCVF_DRIVER_NAME);
->> +	if (ret) {
->> +		IFCVF_ERR(pdev, "Failed to request MMIO region\n");
->> +		goto err;
->> +	}
->> +
->> +	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(64));
->> +	if (ret) {
->> +		IFCVF_ERR(pdev, "No usable DMA configuration\n");
->> +		goto err;
->> +	}
->> +
->> +	ret = devm_add_action_or_reset(dev, ifcvf_free_irq_vectors, pdev);
->> +	if (ret) {
->> +		IFCVF_ERR(pdev,
->> +			  "Failed for adding devres for freeing irq vectors\n");
->> +		goto err;
->> +	}
->> +
->> +	pci_set_master(pdev);
->> +
->> +	ret = vdpa_mgmtdev_register(&ifcvf_mgmt_dev->mdev);
->> +	if (ret) {
->> +		IFCVF_ERR(pdev,
->> +			  "Failed to initialize the management interfaces\n");
->> +		goto err;
->> +	}
->> +
->> +	return 0;
->> +
->> +err:
->> +	kfree(ifcvf_mgmt_dev);
->> +	return ret;
->> +}
->> +
->>   static void ifcvf_remove(struct pci_dev *pdev)
->>   {
->> -	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
->> +	struct ifcvf_vdpa_mgmt_dev *ifcvf_mgmt_dev;
->>   
->> -	vdpa_unregister_device(&adapter->vdpa);
->> +	ifcvf_mgmt_dev = pci_get_drvdata(pdev);
->> +	vdpa_mgmtdev_unregister(&ifcvf_mgmt_dev->mdev);
->> +	kfree(ifcvf_mgmt_dev);
->>   }
->>   
->>   static struct pci_device_id ifcvf_pci_ids[] = {
->> -- 
->> 2.27.0
+Acked-by: Hangbin Liu <haliu@redhat.com>
 
