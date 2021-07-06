@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90C4A3BD5AF
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D107E3BD3B4
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236864AbhGFMYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:24:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42510 "EHLO mail.kernel.org"
+        id S235766AbhGFLhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:37:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232659AbhGFLbt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:31:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BE73261D0B;
-        Tue,  6 Jul 2021 11:22:36 +0000 (UTC)
+        id S235268AbhGFLcU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:32:20 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BFC8461D10;
+        Tue,  6 Jul 2021 11:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570557;
-        bh=vC2jNN6lJLLT6eGljA0ccjhw4SGacE5QaRnNIflnTyA=;
+        s=k20201202; t=1625570565;
+        bh=iyTp4dRrWPbcouAq0W/rTUEBIuDiwEYSot8BdnkRa8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=orcLSC7QtvZkJv1TgslZAS1DWvggG9B8JMsCZ3bt3UV5lRx4kRvucR3JCoftcLawf
-         6fwK3+DTGphdet12/mhgEnO16uXva3StUAxEoUM/qH+QtgoPVZPzCGVRyzpxauRk5m
-         AfA1gkP2Col7yTQF6LErvhmkqrLJlRsldEzIJUEbHBed/JaW0rz8VSelF8iLD8YksV
-         KGvKsc95+r46TxvJvUzd79BaSSj71uU2dpRwRj/jv3GtQCcsLhUY5ggsRZ5zf61fYe
-         jjIGSqu6AD3q7p3sZ5p+pvdZkpB6k1STCvGIVXXfKzm2dTmnhR7xnZ3PdfEbHgf2Gg
-         8vdb4yFQ3Praw==
+        b=c3bhm1LOjxSrh0TpmpC4ChydkkJlzYOVZav5cR1IeQ6g807M9EIlBjGeAkYxE8+bY
+         5ciUSH7+h9kwRbJ3s4QEosMoHwkdxM7INmU7OolFXFf9jeWCHRVIfb6E59aTZiRR/q
+         mrFQ8C5Fe70866Rvn6pqZOjR6M/xIi6DDwyXI9Nksfgoo7Rg/5FAByiPdFNX/ov/uH
+         So0c7U+jgmKDmo3jsZmEdqdLFjiZXLXuqPQg5nHgdvQaongsBblPLzCyHGdD8BOzSR
+         jvJ/7NUuPWXce/KlEwmfqW7Xt7VUgaYryJg1UArBGfLaCG0a1IoKz/VimGWHmJQ+5L
+         Q/pBmZWroStjg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 025/137] net/sched: cls_api: increase max_reclassify_loop
-Date:   Tue,  6 Jul 2021 07:20:11 -0400
-Message-Id: <20210706112203.2062605-25-sashal@kernel.org>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 032/137] e100: handle eeprom as little endian
+Date:   Tue,  6 Jul 2021 07:20:18 -0400
+Message-Id: <20210706112203.2062605-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -42,37 +43,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-[ Upstream commit 05ff8435e50569a0a6b95e5ceaea43696e8827ab ]
+[ Upstream commit d4ef55288aa2e1b76033717242728ac98ddc4721 ]
 
-modern userspace applications, like OVN, can configure the TC datapath to
-"recirculate" packets several times. If more than 4 "recirculation" rules
-are configured, packets can be dropped by __tcf_classify().
-Changing the maximum number of reclassifications (from 4 to 16) should be
-sufficient to prevent drops in most use cases, and guard against loops at
-the same time.
+Sparse tool was warning on some implicit conversions from
+little endian data read from the EEPROM on the e100 cards.
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix these by being explicit about the conversions using
+le16_to_cpu().
+
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/e100.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index a281da07bb1d..30090794b791 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1532,7 +1532,7 @@ static inline int __tcf_classify(struct sk_buff *skb,
- 				 u32 *last_executed_chain)
- {
- #ifdef CONFIG_NET_CLS_ACT
--	const int max_reclassify_loop = 4;
-+	const int max_reclassify_loop = 16;
- 	const struct tcf_proto *first_tp;
- 	int limit = 0;
+diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
+index 8cc651d37a7f..609e47b8287d 100644
+--- a/drivers/net/ethernet/intel/e100.c
++++ b/drivers/net/ethernet/intel/e100.c
+@@ -1395,7 +1395,7 @@ static int e100_phy_check_without_mii(struct nic *nic)
+ 	u8 phy_type;
+ 	int without_mii;
  
+-	phy_type = (nic->eeprom[eeprom_phy_iface] >> 8) & 0x0f;
++	phy_type = (le16_to_cpu(nic->eeprom[eeprom_phy_iface]) >> 8) & 0x0f;
+ 
+ 	switch (phy_type) {
+ 	case NoSuchPhy: /* Non-MII PHY; UNTESTED! */
+@@ -1515,7 +1515,7 @@ static int e100_phy_init(struct nic *nic)
+ 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR, bmcr);
+ 	} else if ((nic->mac >= mac_82550_D102) || ((nic->flags & ich) &&
+ 	   (mdio_read(netdev, nic->mii.phy_id, MII_TPISTATUS) & 0x8000) &&
+-		(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
++	   (le16_to_cpu(nic->eeprom[eeprom_cnfg_mdix]) & eeprom_mdix_enabled))) {
+ 		/* enable/disable MDI/MDI-X auto-switching. */
+ 		mdio_write(netdev, nic->mii.phy_id, MII_NCONFIG,
+ 				nic->mii.force_media ? 0 : NCONFIG_AUTO_SWITCH);
+@@ -2263,9 +2263,9 @@ static int e100_asf(struct nic *nic)
+ {
+ 	/* ASF can be enabled from eeprom */
+ 	return (nic->pdev->device >= 0x1050) && (nic->pdev->device <= 0x1057) &&
+-	   (nic->eeprom[eeprom_config_asf] & eeprom_asf) &&
+-	   !(nic->eeprom[eeprom_config_asf] & eeprom_gcl) &&
+-	   ((nic->eeprom[eeprom_smbus_addr] & 0xFF) != 0xFE);
++	   (le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_asf) &&
++	   !(le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_gcl) &&
++	   ((le16_to_cpu(nic->eeprom[eeprom_smbus_addr]) & 0xFF) != 0xFE);
+ }
+ 
+ static int e100_up(struct nic *nic)
+@@ -2920,7 +2920,7 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	/* Wol magic packet can be enabled from eeprom */
+ 	if ((nic->mac >= mac_82558_D101_A4) &&
+-	   (nic->eeprom[eeprom_id] & eeprom_id_wol)) {
++	   (le16_to_cpu(nic->eeprom[eeprom_id]) & eeprom_id_wol)) {
+ 		nic->flags |= wol_magic;
+ 		device_set_wakeup_enable(&pdev->dev, true);
+ 	}
 -- 
 2.30.2
 
