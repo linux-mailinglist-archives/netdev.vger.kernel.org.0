@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABACF3BD1F0
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 034BD3BD13C
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:36:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236491AbhGFLku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:40:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47606 "EHLO mail.kernel.org"
+        id S234771AbhGFLiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:38:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236823AbhGFLfm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:42 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F625619C5;
-        Tue,  6 Jul 2021 11:24:25 +0000 (UTC)
+        id S236860AbhGFLfn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 843B5610F7;
+        Tue,  6 Jul 2021 11:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570666;
-        bh=+8rqQbAuVd7Yc+LWivSX8JFw1Pu4KMR5sP8kZhHQ84g=;
+        s=k20201202; t=1625570671;
+        bh=bGPPZWBLMVLgaINi7y8s9K25vCFRqscWNsCygy0K0NQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CGcsCT2STuUnrH1D/vTHiNWBHRMCTndC0R7bXtetpRj6lT0otp1k0hADj3IwiyYo2
-         uuU0rdZWk4ByNLlCRZiW+kEOkbhh+WQj8d8qed1onunujrJgmM3QTDMeMBIlHTaTao
-         Rr1XAKVf5Za4D7252pI1D52ghxq3HEbWAC9Nzt7uSBliIVfzWIAXGgKDGcnbBTFKdD
-         dIO8P2CsYy1Ph6eBKOWXJ8Dzlv3vhZC/zAw/vaJmapnclGkHc2FUaQk1Eaen3VG/AU
-         cNLj3MM348AY6x0cQsr3MflEj+MWXWcrplDa8mN7cD3tWzHbD91FNa+mbR4wLOYSq2
-         5mBorGtjZLMFA==
+        b=QuNMC0aXhOlbVt7yVDRqJV7y2JeQCx+eDhu7EwZsNhU4wbppl6rfaFQnlYNjwK8AY
+         pxGt8iOtcLLOOF/7Pby2P0F+XX2HQfwrIUUiL0bUoIzu1iKZk1rftFdcYw73Fzvq1O
+         Cc8UVNtQ0moacChh/YJNKMVdQ1Sy6QAzKu9TGiVT+Y52UX9jQfN7mbg2NG4J/wBFMk
+         fvZkKvZuAIqQax06H4lx3kWSs/jihQ86yyCtuBs0C4HVZFb3bw47lOBGJGjSOnIy4f
+         xfSVYtgDpB5XP1Sf5pIsWPgR7kEYdSGfc12HbbwFu9tDVweMNP+2725uZL+eI4KNxI
+         /U9tWZuruRkaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 110/137] sfc: avoid double pci_remove of VFs
-Date:   Tue,  6 Jul 2021 07:21:36 -0400
-Message-Id: <20210706112203.2062605-110-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 114/137] cfg80211: fix default HE tx bitrate mask in 2G band
+Date:   Tue,  6 Jul 2021 07:21:40 -0400
+Message-Id: <20210706112203.2062605-114-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,92 +43,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 45423cff1db66cf0993e8a9bd0ac93e740149e49 ]
+[ Upstream commit 9df66d5b9f45c39b3925d16e8947cc10009b186d ]
 
-If pci_remove was called for a PF with VFs, the removal of the VFs was
-called twice from efx_ef10_sriov_fini: one directly with pci_driver->remove
-and another implicit by calling pci_disable_sriov, which also perform
-the VFs remove. This was leading to crashing the kernel on the second
-attempt.
+In 2G band, a HE sta can only supports HT and HE, but not supports VHT.
+In this case, default HE tx bitrate mask isn't filled, when we use iw to
+set bitrates without any parameter.
 
-Given that pci_disable_sriov already calls to pci remove function, get
-rid of the direct call to pci_driver->remove from the driver.
-
-2 different ways to trigger the bug:
-- Create one or more VFs, then attach the PF to a virtual machine (at
-  least with qemu/KVM)
-- Create one or more VFs, then remove the PF with:
-  echo 1 > /sys/bus/pci/devices/PF_PCI_ID/remove
-
-Removing sfc module does not trigger the error, at least for me, because
-it removes the VF first, and then the PF.
-
-Example of a log with the error:
-    list_del corruption, ffff967fd20a8ad0->next is LIST_POISON1 (dead000000000100)
-    ------------[ cut here ]------------
-    kernel BUG at lib/list_debug.c:47!
-    [...trimmed...]
-    RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x4c
-    [...trimmed...]
-    Call Trace:
-    efx_dissociate+0x1f/0x140 [sfc]
-    efx_pci_remove+0x27/0x150 [sfc]
-    pci_device_remove+0x3b/0xc0
-    device_release_driver_internal+0x103/0x1f0
-    pci_stop_bus_device+0x69/0x90
-    pci_stop_and_remove_bus_device+0xe/0x20
-    pci_iov_remove_virtfn+0xba/0x120
-    sriov_disable+0x2f/0xe0
-    efx_ef10_pci_sriov_disable+0x52/0x80 [sfc]
-    ? pcie_aer_is_native+0x12/0x40
-    efx_ef10_sriov_fini+0x72/0x110 [sfc]
-    efx_pci_remove+0x62/0x150 [sfc]
-    pci_device_remove+0x3b/0xc0
-    device_release_driver_internal+0x103/0x1f0
-    unbind_store+0xf6/0x130
-    kernfs_fop_write+0x116/0x190
-    vfs_write+0xa5/0x1a0
-    ksys_write+0x4f/0xb0
-    do_syscall_64+0x5b/0x1a0
-    entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://lore.kernel.org/r/20210609075944.51130-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10_sriov.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ net/wireless/nl80211.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
-index 21fa6c0e8873..a5d28b0f75ba 100644
---- a/drivers/net/ethernet/sfc/ef10_sriov.c
-+++ b/drivers/net/ethernet/sfc/ef10_sriov.c
-@@ -439,7 +439,6 @@ int efx_ef10_sriov_init(struct efx_nic *efx)
- void efx_ef10_sriov_fini(struct efx_nic *efx)
- {
- 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
--	unsigned int i;
- 	int rc;
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index daf3f29c7f0c..8fb0478888fb 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -4625,11 +4625,10 @@ static int nl80211_parse_tx_bitrate_mask(struct genl_info *info,
+ 		       sband->ht_cap.mcs.rx_mask,
+ 		       sizeof(mask->control[i].ht_mcs));
  
- 	if (!nic_data->vf) {
-@@ -449,14 +448,7 @@ void efx_ef10_sriov_fini(struct efx_nic *efx)
- 		return;
- 	}
+-		if (!sband->vht_cap.vht_supported)
+-			continue;
+-
+-		vht_tx_mcs_map = le16_to_cpu(sband->vht_cap.vht_mcs.tx_mcs_map);
+-		vht_build_mcs_mask(vht_tx_mcs_map, mask->control[i].vht_mcs);
++		if (sband->vht_cap.vht_supported) {
++			vht_tx_mcs_map = le16_to_cpu(sband->vht_cap.vht_mcs.tx_mcs_map);
++			vht_build_mcs_mask(vht_tx_mcs_map, mask->control[i].vht_mcs);
++		}
  
--	/* Remove any VFs in the host */
--	for (i = 0; i < efx->vf_count; ++i) {
--		struct efx_nic *vf_efx = nic_data->vf[i].efx;
--
--		if (vf_efx)
--			vf_efx->pci_dev->driver->remove(vf_efx->pci_dev);
--	}
--
-+	/* Disable SRIOV and remove any VFs in the host */
- 	rc = efx_ef10_pci_sriov_disable(efx, true);
- 	if (rc)
- 		netif_dbg(efx, drv, efx->net_dev,
+ 		he_cap = ieee80211_get_he_iftype_cap(sband, wdev->iftype);
+ 		if (!he_cap)
 -- 
 2.30.2
 
