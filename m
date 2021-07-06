@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A743BCED0
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 038643BCEE2
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234290AbhGFL1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:27:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35428 "EHLO mail.kernel.org"
+        id S232895AbhGFL12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:27:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234777AbhGFLZE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:25:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6592861D1B;
-        Tue,  6 Jul 2021 11:18:55 +0000 (UTC)
+        id S234823AbhGFLZG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:25:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C112C61D25;
+        Tue,  6 Jul 2021 11:19:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570336;
-        bh=dT8hcCxhperB/T+8aYy1wP8AerwINrRNIYBFnfhjs7g=;
+        s=k20201202; t=1625570342;
+        bh=dtaz5WaHJMcuKrjLxqgKVd0VmEwxN7a/SQ8NSOvtu2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a43ZbDH3kD9W2AfJQC6dXonmvsMCKoq+EwVfiSPPysZmF+7QKBG1Nzpi83O0vAJfU
-         T2uyCZ4AkZ8j0AZS7TyjLax2t4mYzx5pVyeH4904Z3YePeaYB7YyS3OsSJFA1duy8D
-         xM/fGdozWO2nMcaoi6q5SriJXuQ8h2G0ZeAI34729EsxUHVP1S/whCwSCWFZyq5ip0
-         fo3b6WmgPIZkPSBqt+8lYtvacAV1ZsQzoJrud5yPK3d0wki020zhndHfnibCLCy1Jp
-         ARqDn3xln5GNAhQqog5uMcyHJ7qkYuA3tsgvFfOY36dRKKrQKbKLcLEOpbjl8NXT44
-         UblFgN72++e7g==
+        b=F0nexKX+y+f3CeHJTzmRKQ9bRYROYpzQhswvlKykGfPn46g82Ucl1SZNEmdIB27n8
+         HaYWXUjHRCu5fvhe+kY2emuyYt/wRApBW75MpWgKjETBVWgS6LSbfRaHoDZ/4YUZz1
+         Rh/yuVa25i1Bevx8u5s0pzq4Tx7/JSnYbkH7iSAIrzyS5SsS6lHsv49cmQN5rSVews
+         mBbX7pw4/LMXzpb45WIpY0ePw5mJQZeioBuasew35dxWBaFFSi7zKKNMq4sfJMk7g9
+         qq6Vx3XAAcMTRkSyZxMMrmNaTKDFatuj2jpdPvosl64S4aRjesNZD0/kyvzH5tQYtK
+         HbMnoQE9eKlbw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 021/160] net: mdio: ipq8064: add regmap config to disable REGCACHE
-Date:   Tue,  6 Jul 2021 07:16:07 -0400
-Message-Id: <20210706111827.2060499-21-sashal@kernel.org>
+Cc:     Dongseok Yi <dseok.yi@samsung.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 026/160] bpf: Check for BPF_F_ADJ_ROOM_FIXED_GSO when bpf_skb_change_proto
+Date:   Tue,  6 Jul 2021 07:16:12 -0400
+Message-Id: <20210706111827.2060499-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -43,88 +44,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ansuel Smith <ansuelsmth@gmail.com>
+From: Dongseok Yi <dseok.yi@samsung.com>
 
-[ Upstream commit b097bea10215315e8ee17f88b4c1bbb521b1878c ]
+[ Upstream commit fa7b83bf3b156c767f3e4a25bbf3817b08f3ff8e ]
 
-mdio drivers should not use REGCHACHE. Also disable locking since it's
-handled by the mdio users and regmap is always accessed atomically.
+In the forwarding path GRO -> BPF 6 to 4 -> GSO for TCP traffic, the
+coalesced packet payload can be > MSS, but < MSS + 20.
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+bpf_skb_proto_6_to_4() will upgrade the MSS and it can be > the payload
+length. After then tcp_gso_segment checks for the payload length if it
+is <= MSS. The condition is causing the packet to be dropped.
+
+tcp_gso_segment():
+        [...]
+        mss = skb_shinfo(skb)->gso_size;
+        if (unlikely(skb->len <= mss))
+                goto out;
+        [...]
+
+Allow to upgrade/downgrade MSS only when BPF_F_ADJ_ROOM_FIXED_GSO is
+not set.
+
+Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/bpf/1620804453-57566-1-git-send-email-dseok.yi@samsung.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/mdio/mdio-ipq8064.c | 33 ++++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+ net/core/filter.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-ipq8064.c b/drivers/net/mdio/mdio-ipq8064.c
-index 1bd18857e1c5..f0a6bfa61645 100644
---- a/drivers/net/mdio/mdio-ipq8064.c
-+++ b/drivers/net/mdio/mdio-ipq8064.c
-@@ -10,7 +10,7 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/of_mdio.h>
--#include <linux/phy.h>
-+#include <linux/of_address.h>
- #include <linux/platform_device.h>
- #include <linux/mfd/syscon.h>
- 
-@@ -96,14 +96,34 @@ ipq8064_mdio_write(struct mii_bus *bus, int phy_addr, int reg_offset, u16 data)
- 	return ipq8064_mdio_wait_busy(priv);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 52f4359efbd2..849b08350a39 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3238,7 +3238,7 @@ static int bpf_skb_net_hdr_pop(struct sk_buff *skb, u32 off, u32 len)
+ 	return ret;
  }
  
-+static const struct regmap_config ipq8064_mdio_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.can_multi_write = false,
-+	/* the mdio lock is used by any user of this mdio driver */
-+	.disable_locking = true,
-+
-+	.cache_type = REGCACHE_NONE,
-+};
-+
- static int
- ipq8064_mdio_probe(struct platform_device *pdev)
+-static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
++static int bpf_skb_proto_4_to_6(struct sk_buff *skb, u64 flags)
  {
- 	struct device_node *np = pdev->dev.of_node;
- 	struct ipq8064_mdio *priv;
-+	struct resource res;
- 	struct mii_bus *bus;
-+	void __iomem *base;
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3267,7 +3267,9 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv6 header, MSS needs to be downgraded. */
+-		skb_decrease_gso_size(shinfo, len_diff);
++		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
++			skb_decrease_gso_size(shinfo, len_diff);
++
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3279,7 +3281,7 @@ static int bpf_skb_proto_4_to_6(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
++static int bpf_skb_proto_6_to_4(struct sk_buff *skb, u64 flags)
+ {
+ 	const u32 len_diff = sizeof(struct ipv6hdr) - sizeof(struct iphdr);
+ 	u32 off = skb_mac_header_len(skb);
+@@ -3308,7 +3310,9 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 		}
+ 
+ 		/* Due to IPv4 header, MSS can be upgraded. */
+-		skb_increase_gso_size(shinfo, len_diff);
++		if (!(flags & BPF_F_ADJ_ROOM_FIXED_GSO))
++			skb_increase_gso_size(shinfo, len_diff);
++
+ 		/* Header must be checked, and gso_segs recomputed. */
+ 		shinfo->gso_type |= SKB_GSO_DODGY;
+ 		shinfo->gso_segs = 0;
+@@ -3320,17 +3324,17 @@ static int bpf_skb_proto_6_to_4(struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto)
++static int bpf_skb_proto_xlat(struct sk_buff *skb, __be16 to_proto, u64 flags)
+ {
+ 	__be16 from_proto = skb->protocol;
+ 
+ 	if (from_proto == htons(ETH_P_IP) &&
+ 	      to_proto == htons(ETH_P_IPV6))
+-		return bpf_skb_proto_4_to_6(skb);
++		return bpf_skb_proto_4_to_6(skb, flags);
+ 
+ 	if (from_proto == htons(ETH_P_IPV6) &&
+ 	      to_proto == htons(ETH_P_IP))
+-		return bpf_skb_proto_6_to_4(skb);
++		return bpf_skb_proto_6_to_4(skb, flags);
+ 
+ 	return -ENOTSUPP;
+ }
+@@ -3340,7 +3344,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ {
  	int ret;
  
-+	if (of_address_to_resource(np, 0, &res))
-+		return -ENOMEM;
-+
-+	base = ioremap(res.start, resource_size(&res));
-+	if (!base)
-+		return -ENOMEM;
-+
- 	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
- 	if (!bus)
- 		return -ENOMEM;
-@@ -115,15 +135,10 @@ ipq8064_mdio_probe(struct platform_device *pdev)
- 	bus->parent = &pdev->dev;
+-	if (unlikely(flags))
++	if (unlikely(flags & ~(BPF_F_ADJ_ROOM_FIXED_GSO)))
+ 		return -EINVAL;
  
- 	priv = bus->priv;
--	priv->base = device_node_to_regmap(np);
--	if (IS_ERR(priv->base)) {
--		if (priv->base == ERR_PTR(-EPROBE_DEFER))
--			return -EPROBE_DEFER;
--
--		dev_err(&pdev->dev, "error getting device regmap, error=%pe\n",
--			priv->base);
-+	priv->base = devm_regmap_init_mmio(&pdev->dev, base,
-+					   &ipq8064_mdio_regmap_config);
-+	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
--	}
- 
- 	ret = of_mdiobus_register(bus, np);
- 	if (ret)
+ 	/* General idea is that this helper does the basic groundwork
+@@ -3360,7 +3364,7 @@ BPF_CALL_3(bpf_skb_change_proto, struct sk_buff *, skb, __be16, proto,
+ 	 * that. For offloads, we mark packet as dodgy, so that headers
+ 	 * need to be verified first.
+ 	 */
+-	ret = bpf_skb_proto_xlat(skb, proto);
++	ret = bpf_skb_proto_xlat(skb, proto, flags);
+ 	bpf_compute_data_pointers(skb);
+ 	return ret;
+ }
 -- 
 2.30.2
 
