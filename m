@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CA1D3BCFA0
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DE0D3BCFA6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234475AbhGFLaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:30:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35448 "EHLO mail.kernel.org"
+        id S234471AbhGFLa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:30:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233483AbhGFL2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:28:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D75E61D8A;
-        Tue,  6 Jul 2021 11:20:20 +0000 (UTC)
+        id S233796AbhGFL24 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:28:56 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C3A4C61D8E;
+        Tue,  6 Jul 2021 11:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570421;
-        bh=KZaRLMtRE0FWoJ0aN/q7uQVN7VWE0e1ynuofh4g/AEk=;
+        s=k20201202; t=1625570423;
+        bh=FB+80IiK/GSGLAobmQcnfjTV7K1piegwndlOBhjA61o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ptk5M2olsYy1rHNYHoou+AQJKdR7RDbAhFHm0Voc88DgN+XWqpYkip5ozWjMfqLt4
-         N1MJ+8PfTMli8OqVVvxV8+o67ibDmCsCQqmLdlfUw9elFMNF8tcowxSorQYM+2voi0
-         tI2RNDwYBfhgoi100V8bqHlyepMfTGWo9zDmceWFAvz8uLBBF6ueGjXtNELoau9E/c
-         E+8PBZDdHtZOmeeuapmvw8yZptfq+7O33O7ySPvomGFJC6ADCtVkZvKq23UDb8SRW4
-         +8+mDRPpi9SduWHwbHQREalqsqD8JvtZGPbvrF8fyZJ1JJbZG9n3MzXnsg89RXAUSM
-         4NBhVHClfuVNg==
+        b=PLUV/GUz4WInd3/uH1G3b+Hjy9nNGT86r2awQdAY/djVzhyYFb1PGmFr0WRJhE4rm
+         7RzlYn2XJoz+jb9gNP3ScRb9xll6HpVprXtW0tum+K9itCm763xq0GQ8XwyqfgiE6d
+         vbtj4XP3lndwqHTaYW7xSrMlGr000m3n0z9Ql6VerZWP4PXk5KBIf+UYp5fTsxXNta
+         W4mx+3Jv2IsN+CsdyQm1B2CGYLv8HYIeenEbsRPuwRoiU83ByUy6tUV7IC/t0vDpDq
+         MAiQOxflTY8Mt8ZpwL7d8d1sXWyjxeEa/rnu7MYRaC/z0MbpUEvI+L8DDquxyxLMyX
+         FQVFei/fjt4Xw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Koba Ko <koba.ko@canonical.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 085/160] fjes: check return value after calling platform_get_resource()
-Date:   Tue,  6 Jul 2021 07:17:11 -0400
-Message-Id: <20210706111827.2060499-85-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 087/160] r8169: avoid link-up interrupt issue on RTL8106e if user enables ASPM
+Date:   Tue,  6 Jul 2021 07:17:13 -0400
+Message-Id: <20210706111827.2060499-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -42,35 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit f18c11812c949553d2b2481ecaa274dd51bed1e7 ]
+[ Upstream commit 1ee8856de82faec9bc8bd0f2308a7f27e30ba207 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+It has been reported that on RTL8106e the link-up interrupt may be
+significantly delayed if the user enables ASPM L1. Per default ASPM
+is disabled. The change leaves L1 enabled on the PCIe link (thus still
+allowing to reach higher package power saving states), but the
+NIC won't actively trigger it.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reported-by: Koba Ko <koba.ko@canonical.com>
+Tested-by: Koba Ko <koba.ko@canonical.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/fjes/fjes_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/realtek/r8169_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index 466622664424..e449d9466122 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -1262,6 +1262,10 @@ static int fjes_probe(struct platform_device *plat_dev)
- 	adapter->interrupt_watch_enable = false;
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index f7a56e05ec8a..552164af2dd4 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -3477,7 +3477,6 @@ static void rtl_hw_start_8106(struct rtl8169_private *tp)
+ 	rtl_eri_write(tp, 0x1b0, ERIAR_MASK_0011, 0x0000);
  
- 	res = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		err = -EINVAL;
-+		goto err_free_control_wq;
-+	}
- 	hw->hw_res.start = res->start;
- 	hw->hw_res.size = resource_size(res);
- 	hw->hw_res.irq = platform_get_irq(plat_dev, 0);
+ 	rtl_pcie_state_l2l3_disable(tp);
+-	rtl_hw_aspm_clkreq_enable(tp, true);
+ }
+ 
+ DECLARE_RTL_COND(rtl_mac_ocp_e00e_cond)
 -- 
 2.30.2
 
