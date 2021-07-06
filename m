@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F233BCDE3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E97A3BCE77
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbhGFLXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:23:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56688 "EHLO mail.kernel.org"
+        id S233723AbhGFL0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:26:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232853AbhGFLVv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:21:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2659C61CDF;
-        Tue,  6 Jul 2021 11:17:49 +0000 (UTC)
+        id S232968AbhGFLWT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:22:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DEB3461CCF;
+        Tue,  6 Jul 2021 11:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570269;
-        bh=eGCsxFpG369ra2/yp5FBcSX3MxKYhKaMSefN2aQyDZU=;
+        s=k20201202; t=1625570272;
+        bh=9oZV2sweLG7QNjxJq5lidgr3AufUJfafWyGDoLTwjao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LhB5E9RTSLQofNUxO4kKtdvmkHYR85AuE4GynmnDfi54DVweg1tyMGBRmT07/o+x+
-         e0xhQXPISPnN3twyeWntsIjlRFbHbSSRtvYNyh5nLxUaqgtbJ5+Rg9+uoCo7g9r38S
-         4nVdASDdDF7x7HspFYCDf+X7nWiZF+4JWx7t5tOwUQRnZ8Np1NBiU5Gg6Rw+Qpb//r
-         FBRIjNRq/wtGy2k5FOY3sw7w+rPTVSysOa80PXojApNSqf8Ok0fpnMYlEx+ocBiX4T
-         KW+TVMzsAz4NNrB3OzKfmwB/pAkSj6MVNyB/ZmEgSrR97xuhyMgHNaeBjY5rHf8+5F
-         aclpQ8lA4Pt7Q==
+        b=DQqPS8W+Jd7nHe7k1BuMziAnV5Ys9SxcLxb/1XmZIRqDEvUZvcLzlgUxaHTsggrux
+         DDOXUIuDWv0jrNIWhirDfFSfPo58HDfRytzceZylLy3F/gUnj9dafm5qNoZnMgQ5gb
+         2+pnrqscWtIZvHkZjhStySkhNLdEUTxlo1Fws4suCKuFXBDv6pQnVX/cKHqy929+dy
+         1osbaf6KPBoVKYm7VYzVzHNCbJRqWzxT65PHZKT9Ciax3Jrauqmlp/ZOEMNF0WqfkD
+         GEm0U81vwTE7MTt8Xv88WCnY3AnmJPJPiUKZT0zy+11YW9nNbquvTIoLCmxukCx5Hx
+         caM7U1jUdxJYg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 164/189] mac80211: Properly WARN on HW scan before restart
-Date:   Tue,  6 Jul 2021 07:13:44 -0400
-Message-Id: <20210706111409.2058071-164-sashal@kernel.org>
+Cc:     Sean Young <sean@mess.org>, Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 166/189] media, bpf: Do not copy more entries than user space requested
+Date:   Tue,  6 Jul 2021 07:13:46 -0400
+Message-Id: <20210706111409.2058071-166-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -44,55 +42,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit 45daaa1318410794de956fb8e9d06aed2dbb23d0 ]
+[ Upstream commit 647d446d66e493d23ca1047fa8492b0269674530 ]
 
-The following race was possible:
+The syscall bpf(BPF_PROG_QUERY, &attr) should use the prog_cnt field to
+see how many entries user space provided and return ENOSPC if there are
+more programs than that. Before this patch, this is not checked and
+ENOSPC is never returned.
 
-1. The device driver requests HW restart.
-2. A scan is requested from user space and is propagated
-   to the driver. During this flow HW_SCANNING flag is set.
-3. The thread that handles the HW restart is scheduled,
-   and before starting the actual reconfiguration it
-   checks that HW_SCANNING is not set. The flow does so
-   without acquiring any lock, and thus the WARN fires.
+Note that one lirc device is limited to 64 bpf programs, and user space
+I'm aware of -- ir-keytable -- always gives enough space for 64 entries
+already. However, we should not copy program ids than are requested.
 
-Fix this by checking that HW_SCANNING is on only after RTNL is
-acquired, i.e., user space scan request handling is no longer
-in transit.
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20210618133832.8238ab3e19ab.I2693c581c70251472b4f9089e37e06fb2c18268f@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20210623213754.632-1-sean@mess.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/main.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/media/rc/bpf-lirc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index f33a3acd7f96..2481bfdfafd0 100644
---- a/net/mac80211/main.c
-+++ b/net/mac80211/main.c
-@@ -257,14 +257,13 @@ static void ieee80211_restart_work(struct work_struct *work)
- 	/* wait for scan work complete */
- 	flush_workqueue(local->workqueue);
- 	flush_work(&local->sched_scan_stopped_work);
-+	flush_work(&local->radar_detected_work);
-+
-+	rtnl_lock();
+diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+index 3fe3edd80876..afae0afe3f81 100644
+--- a/drivers/media/rc/bpf-lirc.c
++++ b/drivers/media/rc/bpf-lirc.c
+@@ -326,7 +326,8 @@ int lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
+ 	}
  
- 	WARN(test_bit(SCAN_HW_SCANNING, &local->scanning),
- 	     "%s called with hardware scan in progress\n", __func__);
+ 	if (attr->query.prog_cnt != 0 && prog_ids && cnt)
+-		ret = bpf_prog_array_copy_to_user(progs, prog_ids, cnt);
++		ret = bpf_prog_array_copy_to_user(progs, prog_ids,
++						  attr->query.prog_cnt);
  
--	flush_work(&local->radar_detected_work);
--	/* we might do interface manipulations, so need both */
--	rtnl_lock();
--	wiphy_lock(local->hw.wiphy);
- 	list_for_each_entry(sdata, &local->interfaces, list) {
- 		/*
- 		 * XXX: there may be more work for other vif types and even
+ unlock:
+ 	mutex_unlock(&ir_raw_handler_lock);
 -- 
 2.30.2
 
