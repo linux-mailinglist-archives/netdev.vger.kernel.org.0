@@ -2,94 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB573BD97E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 17:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 840D23BD9A5
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 17:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232465AbhGFPKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 11:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S232008AbhGFPOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 11:14:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbhGFPKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 11:10:15 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4C4C06178A;
-        Tue,  6 Jul 2021 08:07:36 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id q23so24817361oiw.11;
-        Tue, 06 Jul 2021 08:07:36 -0700 (PDT)
+        with ESMTP id S232394AbhGFPOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 11:14:17 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAA1C061787
+        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 08:11:36 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id g3so21076644ilj.7
+        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 08:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vsVIuO58gOtXBkn6kFoxxUXBMaX3JR62ZTMYsewLQZs=;
-        b=KNXgU2Tgn3EYwdul7Zmx6gmL9vpiL7QLdYnJ1UhdfsxP4JgK4yOoJ/ovVOux2T+dJp
-         AOSKqdZrrRkIJU3x4ClnF5H9zN+MLRS8lu06Smz80eDOYxYi35ieFlhHAc08JdJKk3Ps
-         TeOCWgXi4wDlNLCa7I9cJeBZ17e/pOw6RDu1ePKVLWXjBcgXjzEs9x2f0hi1qqc6i3bY
-         +F2Y7sShpGvuIQzm1o8L/LQSwePhg3J8mUq4ZKpIps5vu300oRn9TdYXv7bUMpEc0jaF
-         56t3HFsUHKypv7eCB7PkjcqlCOSTM14fGHPGAlZlz6AwR8piDaVMz2pn7AiNWxXDGW/g
-         s+Dg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4MFz8ETd/nmuIWZiubiifP+Omq2X9iSE9tCmj3gucYM=;
+        b=IvCXivhuxpkQcwCSP/v/Rrn0oejjH/xBgjRtfoGhDm7lPAT9ogutmMgacy+clPyi90
+         DRK6HgR8AmsyVM4QORABjf/IAyGQ3UrkgNOTqIRMXsHteuk6/x/Br3dCjgnqoJCe77/0
+         NoZ6+4GEFW/mdLd6ihS8LHap9sTax8kG5BzSjYrBjsLKheGiGE55U68yC8yRpvGR3lrH
+         i1lwKI80NFV0bQ+s0xhkaB3n4XHhOaW+jqS4RzYr17yLCz7jyCyj2zJOvQd/bsO7dMy8
+         2ctnoUx7hTSh3dWCQ/T9gwlXwnhJ8TT3KyPZF8lHiLfnzYjBh4g93fOsXwM2kjJbuutz
+         CEWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vsVIuO58gOtXBkn6kFoxxUXBMaX3JR62ZTMYsewLQZs=;
-        b=dli36OiFLSuvmSO0kZPquw48o6r39cT2x6Wie7jFuVgVJR/kCLR2GZ5y1oanwzePVU
-         ZvTUmH4MiZRmDi4b0meTZNEG3kJrt3F1aQWKMRXDjfqh/prV3gk4QAWsWB5Pc77S307M
-         mGHkeZG15LgFV0B2YXhKF907W7KFBX9641kp3GiYjuMIAcymnJpwgbZTLNMw2XzS6Ntk
-         qWTSgPmZufy9EcNU82GLyH0qasIvs/ngFY/JvmjIbBz8z4I85Kg3H2UX6xZ6y7bQcIxe
-         qpPZfEMrYIisd/2JNIM7di73Ig7vUr7nlr6b5KDs3Og6QPLcli+ouRUkqW5n2pAdUiXp
-         GcdA==
-X-Gm-Message-State: AOAM533BPZ+Vvd2fMq0M6qXERRCMpnOwTHIKAuzhsPnxPLHulvsLpvyM
-        y6FfJV4hOJwGPpcgtmSyhFAGS6Hv8Mc=
-X-Google-Smtp-Source: ABdhPJy/sxlvBY2WuNyZui3GBVgLgtxdvlePvL+9vO2D7EhRgQIdX4X9jeqt2ayN1gWkqxvxhya8Aw==
-X-Received: by 2002:aca:ad86:: with SMTP id w128mr14453402oie.77.1625584055278;
-        Tue, 06 Jul 2021 08:07:35 -0700 (PDT)
-Received: from ?IPv6:2600:1700:dfe0:49f0:3964:fbb4:5a94:e345? ([2600:1700:dfe0:49f0:3964:fbb4:5a94:e345])
-        by smtp.gmail.com with ESMTPSA id z5sm416062oib.14.2021.07.06.08.07.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Jul 2021 08:07:34 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 5.13 159/189] net: dsa: b53: Create default VLAN
- entry explicitly
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210706111409.2058071-1-sashal@kernel.org>
- <20210706111409.2058071-159-sashal@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <57a4d4ba-be97-3e25-0d7b-e698cb7511cf@gmail.com>
-Date:   Tue, 6 Jul 2021 08:07:34 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4MFz8ETd/nmuIWZiubiifP+Omq2X9iSE9tCmj3gucYM=;
+        b=qpYR1vVHPt977v7nieabDsyJeftpFVfQuSgOgMJB49bH2p2/GpJKov1s+uSayPNjty
+         mFS6ECF7uaghrmxkISDNFfkxoxDqZJVxt0doRKRo2/w29hA+ruGjBi3MKrSxYN7AyQ5t
+         yunvQoB7K70l1uDEEXrCtl+UH8RN4Wu/j3CDjkfDSLWq8xFGhfFePOwym9HkxelouUV5
+         iizRQDSYcRqSOY5fREHFbHxbqcAzXLF7CkiY/olCDMQYnx4uY4GNl99JY3/XAwro8+Ja
+         Qb7JBuaRmtYw8yWMfDMdcX1GuGHe1UEHdrMV/ozOKjb07PKDybBvAk2H7qvuY37dSZ78
+         NF3Q==
+X-Gm-Message-State: AOAM5328WCJyp9aNBJelo7ensjcTVJjCA/ahuEZn5NuvXb7qgDkQqnhf
+        fAXzkBSwKg8eGTZNpl4XJSmhrx+VUlBF4SRIt9ASQg==
+X-Google-Smtp-Source: ABdhPJzdclmD8PsHwW9RgRKWE0tJHszXQy4UssslzUqRBaLI9w/Jj1BdJnRyjKvoHgub8buDAUaWux7OCTROnp7miaQ=
+X-Received: by 2002:a05:6e02:1a0f:: with SMTP id s15mr14885840ild.58.1625584295743;
+ Tue, 06 Jul 2021 08:11:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210706111409.2058071-159-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20210706095037.1425211-1-u.kleine-koenig@pengutronix.de>
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+Date:   Tue, 6 Jul 2021 09:11:24 -0600
+Message-ID: <CANLsYkz_k3rBETkFWd9mm+Lgfcyp=YgiAM8rq8DaqaOcSofEkA@mail.gmail.com>
+Subject: Re: [PATCH] bus: Make remove callback return void
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Geoff Levand <geoff@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Wu Hao <hao.wu@intel.com>, Tom Rix <trix@redhat.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Michael Buesch <m@bues.ch>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Marc Zyngier <maz@kernel.org>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Qinglang Miao <miaoqinglang@huawei.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        SeongJae Park <sjpark@amazon.de>,
+        Julien Grall <jgrall@amazon.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-acpi@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        dmaengine@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-i3c@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc <linux-remoteproc@vger.kernel.org>,
+        linux-scsi@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        greybus-dev@lists.linaro.org, target-devel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 6 Jul 2021 at 03:56, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
+>
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
+>
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> ---
+> Hello,
+>
+> this patch depends on "PCI: endpoint: Make struct pci_epf_driver::remove
+> return void" that is not yet applied, see
+> https://lore.kernel.org/r/20210223090757.57604-1-u.kleine-koenig@pengutro=
+nix.de.
+>
+> I tested it using allmodconfig on amd64 and arm, but I wouldn't be
+> surprised if I still missed to convert a driver. So it would be great to
+> get this into next early after the merge window closes.
+>
+> I send this mail to all people that get_maintainer.pl emits for this
+> patch. I wonder how many recipents will refuse this mail because of the
+> long Cc: list :-)
+>
+> Best regards
+> Uwe
+>
+>  arch/arm/common/locomo.c                  | 3 +--
+>  arch/arm/common/sa1111.c                  | 4 +---
+>  arch/arm/mach-rpc/ecard.c                 | 4 +---
+>  arch/mips/sgi-ip22/ip22-gio.c             | 3 +--
+>  arch/parisc/kernel/drivers.c              | 5 ++---
+>  arch/powerpc/platforms/ps3/system-bus.c   | 3 +--
+>  arch/powerpc/platforms/pseries/ibmebus.c  | 3 +--
+>  arch/powerpc/platforms/pseries/vio.c      | 3 +--
+>  drivers/acpi/bus.c                        | 3 +--
+>  drivers/amba/bus.c                        | 4 +---
+>  drivers/base/auxiliary.c                  | 4 +---
+>  drivers/base/isa.c                        | 4 +---
+>  drivers/base/platform.c                   | 4 +---
+>  drivers/bcma/main.c                       | 6 ++----
+>  drivers/bus/sunxi-rsb.c                   | 4 +---
+>  drivers/cxl/core.c                        | 3 +--
+>  drivers/dax/bus.c                         | 4 +---
+>  drivers/dma/idxd/sysfs.c                  | 4 +---
+>  drivers/firewire/core-device.c            | 4 +---
+>  drivers/firmware/arm_scmi/bus.c           | 4 +---
+>  drivers/firmware/google/coreboot_table.c  | 4 +---
+>  drivers/fpga/dfl.c                        | 4 +---
+>  drivers/hid/hid-core.c                    | 4 +---
+>  drivers/hid/intel-ish-hid/ishtp/bus.c     | 4 +---
+>  drivers/hv/vmbus_drv.c                    | 5 +----
+>  drivers/hwtracing/intel_th/core.c         | 4 +---
+>  drivers/i2c/i2c-core-base.c               | 5 +----
+>  drivers/i3c/master.c                      | 4 +---
+>  drivers/input/gameport/gameport.c         | 3 +--
+>  drivers/input/serio/serio.c               | 3 +--
+>  drivers/ipack/ipack.c                     | 4 +---
+>  drivers/macintosh/macio_asic.c            | 4 +---
+>  drivers/mcb/mcb-core.c                    | 4 +---
+>  drivers/media/pci/bt8xx/bttv-gpio.c       | 3 +--
+>  drivers/memstick/core/memstick.c          | 3 +--
+>  drivers/mfd/mcp-core.c                    | 3 +--
+>  drivers/misc/mei/bus.c                    | 4 +---
+>  drivers/misc/tifm_core.c                  | 3 +--
+>  drivers/mmc/core/bus.c                    | 4 +---
+>  drivers/mmc/core/sdio_bus.c               | 4 +---
+>  drivers/net/netdevsim/bus.c               | 3 +--
+>  drivers/ntb/core.c                        | 4 +---
+>  drivers/ntb/ntb_transport.c               | 4 +---
+>  drivers/nvdimm/bus.c                      | 3 +--
+>  drivers/pci/endpoint/pci-epf-core.c       | 4 +---
+>  drivers/pci/pci-driver.c                  | 3 +--
+>  drivers/pcmcia/ds.c                       | 4 +---
+>  drivers/platform/surface/aggregator/bus.c | 4 +---
+>  drivers/platform/x86/wmi.c                | 4 +---
+>  drivers/pnp/driver.c                      | 3 +--
+>  drivers/rapidio/rio-driver.c              | 4 +---
+>  drivers/rpmsg/rpmsg_core.c                | 4 +---
 
-
-On 7/6/2021 4:13 AM, Sasha Levin wrote:
-> From: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> [ Upstream commit 64a81b24487f0d2fba0f033029eec2abc7d82cee ]
-> 
-> In case CONFIG_VLAN_8021Q is not set, there will be no call down to the
-> b53 driver to ensure that the default PVID VLAN entry will be configured
-> with the appropriate untagged attribute towards the CPU port. We were
-> implicitly relying on dsa_slave_vlan_rx_add_vid() to do that for us,
-> instead make it explicit.
-> 
-> Reported-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-
-Please discard back porting this patch from 5.13, 5.12 and 5.10 it is 
-part of a larger series and does not fix known uses until 5.14.
--- 
-Florian
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
