@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1C73BD08F
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B71F3BD0B6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235628AbhGFLeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:34:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42374 "EHLO mail.kernel.org"
+        id S233269AbhGFLg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:36:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235663AbhGFLaS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:30:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DE76B61DD1;
-        Tue,  6 Jul 2021 11:21:31 +0000 (UTC)
+        id S232157AbhGFLa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:30:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 241EE61DF8;
+        Tue,  6 Jul 2021 11:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570492;
-        bh=9oZV2sweLG7QNjxJq5lidgr3AufUJfafWyGDoLTwjao=;
+        s=k20201202; t=1625570541;
+        bh=wdCXofuB2KYAO8nzZBa7xRnRlrsESV5l62oHr9sXKgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OBh7oQaSo0YYvvG4w7JMZAnm56UlJjVFW8KXVkQv2G+AzuKQskiM6OUdBpLTNGPSt
-         NBD31PyIM/x+OLSBCFgR8wSmb5Hw74IYrc/svIG4MoIETdtlj+H6QhUfBAjVam98yL
-         Qjs0wLKeg6rPK/Tc7ZDctkpLlVNEhC523Pb405rf1RuBqTG3GFOTJpN+inE2Qe7mfT
-         I5hFm10ukLqXglw83XkHWwilbAonD3hk/GC1xXZBtwTUmDvVga4/EdsIJpsjN7n5UU
-         wqlLXLcSPilliBD2bKqJGWRCcIUOHGLvQ6yWd6WWoJkGjHGMDz6MhSpCjoXTFkvzH2
-         mMqyjTQdJGvSA==
+        b=Nhld0U5FURYtJUKujOxkEh/kMfP7Tenw9PTKN5jJuFPP5D1uuR8KbUb5mQ4CjpoDE
+         gKYlUaLmhJseN1PTY1loqGRHaUu3zhfYq75nDNyqEbOLJO4ywDxcOFyG3JzRU/2N+T
+         kxHCfkCW2Wqr0xULL9yYwhdeRhox5pUXJbss8Xd+SFa+/JI8tv0Tq1+RtVUV2cYBVL
+         c/WCaXllMVVr55b+jubtm02cHdP3j5/r8KGXYb0Z3+/UHxuPQvLDYmCH8tA7zk9o7G
+         j7lrW84k0Lk8xEQqHK7DVkdt1D5a3pFHKC0nvza/DlKNKDANV0zsXR9q2BXF11Dvpt
+         GKYlJXYPRGwqQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Young <sean@mess.org>, Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 138/160] media, bpf: Do not copy more entries than user space requested
-Date:   Tue,  6 Jul 2021 07:18:04 -0400
-Message-Id: <20210706111827.2060499-138-sashal@kernel.org>
+Cc:     Zou Wei <zou_wei@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 013/137] atm: iphase: fix possible use-after-free in ia_module_exit()
+Date:   Tue,  6 Jul 2021 07:19:59 -0400
+Message-Id: <20210706112203.2062605-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
-References: <20210706111827.2060499-1-sashal@kernel.org>
+In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
+References: <20210706112203.2062605-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,41 +43,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: Zou Wei <zou_wei@huawei.com>
 
-[ Upstream commit 647d446d66e493d23ca1047fa8492b0269674530 ]
+[ Upstream commit 1c72e6ab66b9598cac741ed397438a52065a8f1f ]
 
-The syscall bpf(BPF_PROG_QUERY, &attr) should use the prog_cnt field to
-see how many entries user space provided and return ENOSPC if there are
-more programs than that. Before this patch, this is not checked and
-ENOSPC is never returned.
+This module's remove path calls del_timer(). However, that function
+does not wait until the timer handler finishes. This means that the
+timer handler may still be running after the driver's remove function
+has finished, which would result in a use-after-free.
 
-Note that one lirc device is limited to 64 bpf programs, and user space
-I'm aware of -- ir-keytable -- always gives enough space for 64 entries
-already. However, we should not copy program ids than are requested.
+Fix by calling del_timer_sync(), which makes sure the timer handler
+has finished, and unable to re-schedule itself.
 
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20210623213754.632-1-sean@mess.org
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/bpf-lirc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/atm/iphase.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
-index 3fe3edd80876..afae0afe3f81 100644
---- a/drivers/media/rc/bpf-lirc.c
-+++ b/drivers/media/rc/bpf-lirc.c
-@@ -326,7 +326,8 @@ int lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr)
- 	}
+diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+index eef637fd90b3..a59554e5b8b0 100644
+--- a/drivers/atm/iphase.c
++++ b/drivers/atm/iphase.c
+@@ -3279,7 +3279,7 @@ static void __exit ia_module_exit(void)
+ {
+ 	pci_unregister_driver(&ia_driver);
  
- 	if (attr->query.prog_cnt != 0 && prog_ids && cnt)
--		ret = bpf_prog_array_copy_to_user(progs, prog_ids, cnt);
-+		ret = bpf_prog_array_copy_to_user(progs, prog_ids,
-+						  attr->query.prog_cnt);
+-        del_timer(&ia_timer);
++	del_timer_sync(&ia_timer);
+ }
  
- unlock:
- 	mutex_unlock(&ir_raw_handler_lock);
+ module_init(ia_module_init);
 -- 
 2.30.2
 
