@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A613BD5B4
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA403BD5B6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237676AbhGFMYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:24:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47558 "EHLO mail.kernel.org"
+        id S237736AbhGFMYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:24:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47594 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236303AbhGFLfB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 809E261E1B;
-        Tue,  6 Jul 2021 11:23:21 +0000 (UTC)
+        id S236360AbhGFLfO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5984261E01;
+        Tue,  6 Jul 2021 11:23:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570602;
-        bh=Cw2ARdHoUyronOO5hDgZF3fHmbP47LLSQ6y+NnXGX74=;
+        s=k20201202; t=1625570608;
+        bh=oaC2icxJ1FzLUjUeegnixedcm9xmDZEyvww90mFno2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e2hL5XqtikPp8bI1mHqPOjBoH5+QPFqnSe2waFUD8WlpVCz0DXmt2X02uNjWA2m5U
-         GTMrg3U2VTIbIbbRfU+oWR9ZOkWNapDAxQM88rbtF9CxvUcuAY3p3LGjlLpoHcMZNL
-         tv1uxltMayCNcgrnaE8EPNjzK3Aq/KnEqToQVQzoQDXAEBxwqU+iEBdVrJEzLdnCZE
-         eUHB9CRALCGS/6AruVzppbVAkqq4yXMHo6VRiEhYSx0MisYu/hoFkSNJFppNjKpQn4
-         L3bK7qyXWC9Z/MYROaqnAUOwN1W9YIQHixrhSaXQquI+r1WZ3U/RxPVHGUhJswt/3r
-         s7KzZ8j6xr0Mg==
+        b=q7Eh2xkldBWgKYThds0QJA5eZKy/3Or+l+yTFZk4X7tZoXCLMu0YyWbdmB5F+V7yo
+         KmdhJE6rKWUFmJ4ZMpJBZNMQkuKUAZ3BlYkX1n9x4V7/tLbH26lQ0KqNb1DHtZAvVF
+         Zxl+HT29eZC4RVcyTrGlSXBX8DpCGxUrx8K3fuvDj1H5ARLLnhm3GAMFS8CUdL9HVF
+         DDS8fovrrVCELzDfuOU2LwUfpTXCnhjEILprRja57i3blmTfMtGA7jI8+XsfGybCCD
+         59V1nJ5Fa2tdqvp9UhifW5SH3CBGytfJHZ8quqGva70PSRYQ3SoOXuZCUS/2aJuYC4
+         ++gZMflWgUORA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 061/137] virtio_net: Remove BUG() to avoid machine dead
-Date:   Tue,  6 Jul 2021 07:20:47 -0400
-Message-Id: <20210706112203.2062605-61-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 066/137] net: moxa: Use devm_platform_get_and_ioremap_resource()
+Date:   Tue,  6 Jul 2021 07:20:52 -0400
+Message-Id: <20210706112203.2062605-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -44,35 +42,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xianting Tian <xianting.tian@linux.alibaba.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 85eb1389458d134bdb75dad502cc026c3753a619 ]
+[ Upstream commit 35cba15a504bf4f585bb9d78f47b22b28a1a06b2 ]
 
-We should not directly BUG() when there is hdr error, it is
-better to output a print when such error happens. Currently,
-the caller of xmit_skb() already did it.
+Use devm_platform_get_and_ioremap_resource() to simplify
+code and avoid a null-ptr-deref by checking 'res' in it.
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/virtio_net.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/moxa/moxart_ether.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index e2c6c5675ec6..91e0e6254a01 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1563,7 +1563,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
- 	if (virtio_net_hdr_from_skb(skb, &hdr->hdr,
- 				    virtio_is_little_endian(vi->vdev), false,
- 				    0))
--		BUG();
-+		return -EPROTO;
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index 49fd843c4c8a..a4380c45f668 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -481,14 +481,13 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 	priv->ndev = ndev;
+ 	priv->pdev = pdev;
  
- 	if (vi->mergeable_rx_bufs)
- 		hdr->num_buffers = 0;
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ndev->base_addr = res->start;
+-	priv->base = devm_ioremap_resource(p_dev, res);
++	priv->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(priv->base)) {
+ 		dev_err(p_dev, "devm_ioremap_resource failed\n");
+ 		ret = PTR_ERR(priv->base);
+ 		goto init_fail;
+ 	}
++	ndev->base_addr = res->start;
+ 
+ 	spin_lock_init(&priv->txlock);
+ 
 -- 
 2.30.2
 
