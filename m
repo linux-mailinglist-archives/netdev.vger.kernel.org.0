@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C59B93BD1C3
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 443A33BD1C6
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238864AbhGFLkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:40:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47548 "EHLO mail.kernel.org"
+        id S238882AbhGFLkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:40:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237550AbhGFLgO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237552AbhGFLgO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:36:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B92B761F1B;
-        Tue,  6 Jul 2021 11:28:35 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DCF3E61F44;
+        Tue,  6 Jul 2021 11:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570916;
-        bh=XFIYqRr+Ko+Cclp+2bzYkg5sdLF66yLb3lyibASCLcg=;
+        s=k20201202; t=1625570917;
+        bh=4ZFyq6PViYjX6YJMkwwkUiKDYELK/goVqglVWxi70pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kSRNfThFlEpgkhYnlKNdi/ftRNfrT7Jy1sjxgZ6DFej9/1g+TsAlsgTk+BnWOcWyI
-         AWb1PC31rn3wC0cyOSwOIiILBsnvkHpGi2CywoMnhdZBJKxehqy6UPsbZwQzcIvZZU
-         1nQVztMaT0AqGaHQCPDNHgcgNfXChKgXsd0eX54l79dYwau93MvL9Su0/5ImWeJxth
-         m+Fnwg1vPaEUMeZjz09Eo91NJ/Z6SR/bFcbetUi+1Vp9KvKIO2hFePWuJXNMFqJDGt
-         dlWzc2RhBlOUZEBU8qyvmo9I3KnGrkOhVgDIKNFyd3FJTUr6+5KGmtbmSWpvIm1OEK
-         fa+HeSNFmY1SQ==
+        b=U8HEtL1e6ZdMAuv7kdMzTI88tAg2bl5MUlWxqvYpxZXvK75ZSynNjhJKnb14NfIsX
+         rpKhnuU1XXYBlE4rcYutx744/0cwmwX3Kv2gPtybtWuuk+Wcb2MTF1ZxUwit7V9MK/
+         7DdYPHiKs4gLzNfq2VS2omv8bONZKo88xRagl+GrSqdfhMoOGFqcNyRevM/7/JTUY1
+         IsTpYLUnYJJ+Nw9W5NxdZbSnd22M7Z8ASoTthj2gpAtx3aFZ0CLayATHseZTSJNLqX
+         W+eFnrymVB1I0UbLrMUjhAG0N+tdJkSAlpeGV6IuJ6Jd32InTB3G+TtJQQs9ryEoJO
+         n5VcTMeieLKpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 37/45] sfc: avoid double pci_remove of VFs
-Date:   Tue,  6 Jul 2021 07:27:41 -0400
-Message-Id: <20210706112749.2065541-37-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 38/45] sfc: error code if SRIOV cannot be disabled
+Date:   Tue,  6 Jul 2021 07:27:42 -0400
+Message-Id: <20210706112749.2065541-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112749.2065541-1-sashal@kernel.org>
 References: <20210706112749.2065541-1-sashal@kernel.org>
@@ -45,90 +45,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 45423cff1db66cf0993e8a9bd0ac93e740149e49 ]
+[ Upstream commit 1ebe4feb8b442884f5a28d2437040096723dd1ea ]
 
-If pci_remove was called for a PF with VFs, the removal of the VFs was
-called twice from efx_ef10_sriov_fini: one directly with pci_driver->remove
-and another implicit by calling pci_disable_sriov, which also perform
-the VFs remove. This was leading to crashing the kernel on the second
-attempt.
+If SRIOV cannot be disabled during device removal or module unloading,
+return error code so it can be logged properly in the calling function.
 
-Given that pci_disable_sriov already calls to pci remove function, get
-rid of the direct call to pci_driver->remove from the driver.
+Note that this can only happen if any VF is currently attached to a
+guest using Xen, but not with vfio/KVM. Despite that in that case the
+VFs won't work properly with PF removed and/or the module unloaded, I
+have let it as is because I don't know what side effects may have
+changing it, and also it seems to be the same that other drivers are
+doing in this situation.
 
-2 different ways to trigger the bug:
-- Create one or more VFs, then attach the PF to a virtual machine (at
-  least with qemu/KVM)
-- Create one or more VFs, then remove the PF with:
-  echo 1 > /sys/bus/pci/devices/PF_PCI_ID/remove
-
-Removing sfc module does not trigger the error, at least for me, because
-it removes the VF first, and then the PF.
-
-Example of a log with the error:
-    list_del corruption, ffff967fd20a8ad0->next is LIST_POISON1 (dead000000000100)
-    ------------[ cut here ]------------
-    kernel BUG at lib/list_debug.c:47!
-    [...trimmed...]
-    RIP: 0010:__list_del_entry_valid.cold.1+0x12/0x4c
-    [...trimmed...]
-    Call Trace:
-    efx_dissociate+0x1f/0x140 [sfc]
-    efx_pci_remove+0x27/0x150 [sfc]
-    pci_device_remove+0x3b/0xc0
-    device_release_driver_internal+0x103/0x1f0
-    pci_stop_bus_device+0x69/0x90
-    pci_stop_and_remove_bus_device+0xe/0x20
-    pci_iov_remove_virtfn+0xba/0x120
-    sriov_disable+0x2f/0xe0
-    efx_ef10_pci_sriov_disable+0x52/0x80 [sfc]
-    ? pcie_aer_is_native+0x12/0x40
-    efx_ef10_sriov_fini+0x72/0x110 [sfc]
-    efx_pci_remove+0x62/0x150 [sfc]
-    pci_device_remove+0x3b/0xc0
-    device_release_driver_internal+0x103/0x1f0
-    unbind_store+0xf6/0x130
-    kernfs_fop_write+0x116/0x190
-    vfs_write+0xa5/0x1a0
-    ksys_write+0x4f/0xb0
-    do_syscall_64+0x5b/0x1a0
-    entry_SYSCALL_64_after_hwframe+0x65/0xca
+In the case of being called during SRIOV reconfiguration, the behavior
+hasn't changed because the function is called with force=false.
 
 Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10_sriov.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/net/ethernet/sfc/ef10_sriov.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
-index 019cef1d3cf7..76c8d50882fc 100644
+index 76c8d50882fc..2f36b18fd109 100644
 --- a/drivers/net/ethernet/sfc/ef10_sriov.c
 +++ b/drivers/net/ethernet/sfc/ef10_sriov.c
-@@ -443,7 +443,6 @@ int efx_ef10_sriov_init(struct efx_nic *efx)
- void efx_ef10_sriov_fini(struct efx_nic *efx)
+@@ -406,12 +406,17 @@ static int efx_ef10_pci_sriov_enable(struct efx_nic *efx, int num_vfs)
+ 	return rc;
+ }
+ 
++/* Disable SRIOV and remove VFs
++ * If some VFs are attached to a guest (using Xen, only) nothing is
++ * done if force=false, and vports are freed if force=true (for the non
++ * attachedc ones, only) but SRIOV is not disabled and VFs are not
++ * removed in either case.
++ */
+ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
  {
- 	struct efx_ef10_nic_data *nic_data = efx->nic_data;
--	unsigned int i;
- 	int rc;
- 
- 	if (!nic_data->vf) {
-@@ -453,14 +452,7 @@ void efx_ef10_sriov_fini(struct efx_nic *efx)
- 		return;
- 	}
- 
--	/* Remove any VFs in the host */
--	for (i = 0; i < efx->vf_count; ++i) {
--		struct efx_nic *vf_efx = nic_data->vf[i].efx;
+ 	struct pci_dev *dev = efx->pci_dev;
+-	unsigned int vfs_assigned = 0;
 -
--		if (vf_efx)
--			vf_efx->pci_dev->driver->remove(vf_efx->pci_dev);
--	}
--
-+	/* Disable SRIOV and remove any VFs in the host */
- 	rc = efx_ef10_pci_sriov_disable(efx, true);
- 	if (rc)
- 		netif_dbg(efx, drv, efx->net_dev,
+-	vfs_assigned = pci_vfs_assigned(dev);
++	unsigned int vfs_assigned = pci_vfs_assigned(dev);
++	int rc = 0;
+ 
+ 	if (vfs_assigned && !force) {
+ 		netif_info(efx, drv, efx->net_dev, "VFs are assigned to guests; "
+@@ -421,10 +426,12 @@ static int efx_ef10_pci_sriov_disable(struct efx_nic *efx, bool force)
+ 
+ 	if (!vfs_assigned)
+ 		pci_disable_sriov(dev);
++	else
++		rc = -EBUSY;
+ 
+ 	efx_ef10_sriov_free_vf_vswitching(efx);
+ 	efx->vf_count = 0;
+-	return 0;
++	return rc;
+ }
+ 
+ int efx_ef10_sriov_configure(struct efx_nic *efx, int num_vfs)
 -- 
 2.30.2
 
