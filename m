@@ -2,192 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0433BDC7D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 19:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD513BDCBE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 20:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhGFRuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 13:50:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59235 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230195AbhGFRuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 13:50:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625593657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ud/FbbkqMLCe6Dt8tvS0TkRcWmpTAmpmuojmvS4Bzl0=;
-        b=Aj19BvmiIM+SWfzygXyZbzsVdKmmIPRlMFFmsfQoux2/GHGoC9AabuoPRNa91ysQT8jJyz
-        U3Wq9tav3O/X7WtPp362djAAhHg626Qc9UrluemQIiBjtFGSr+Kq8zQ6zpe0V0XgEDLBoK
-        9TewERh/K+b0WUaugaloa0WSqisUz1A=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-525-CXVnTPIbPLGpJAmEKcwxKQ-1; Tue, 06 Jul 2021 13:47:35 -0400
-X-MC-Unique: CXVnTPIbPLGpJAmEKcwxKQ-1
-Received: by mail-ed1-f71.google.com with SMTP id m21-20020a50ef150000b029039c013d5b80so1064679eds.7
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 10:47:35 -0700 (PDT)
+        id S230409AbhGFSLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 14:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230390AbhGFSLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 14:11:02 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1BCC061768
+        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 11:08:23 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id n99-20020a9d206c0000b029045d4f996e62so22493182ota.4
+        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 11:08:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rFh4HQBpaw9ewOD7eKuJ7KI9YAzHhN8tlxJ6LopMKHs=;
+        b=Sz6rE6fIxKghlltcLCE+UXPsQefAUgPvTMscjeRzq2kl6NTGV49umux5xM0XcDuF3f
+         KuSKKfkZ8nSISGEXHz3w1v+CP9bxuRJkim+LBmkXAMBhskBSVWy4R8UYC7L1pwY+g7hz
+         Zg3WKG3mRVhsusU5VFmdXh5UPocqhZf4lahEU95r9tDGNbsVfHF1Q4HkA+YZfm/i81fd
+         v0xNi9dJEaEvf856OdG6fjSc31APYItT+IUiPzbg0w9QbfcYoXqLRo58SwLlUHuXr/Qb
+         gjgu5RAVRwk/bKL57rYJjqGIxVt7qPeDusZUEamQ36NdV7/ZYwdc/uo7wSJkJLcpf0tD
+         jOXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Ud/FbbkqMLCe6Dt8tvS0TkRcWmpTAmpmuojmvS4Bzl0=;
-        b=WOCoGboH0N8bhaWENDx2a4I5D9QBWX13W587KinW5Xwc+qipCEpAYlKz2mT1og+HGz
-         9sPCPmst6jC+bdddpK9DiXLDFFFMeXP/+C7IUWJhTVm1esiAmgqTigub4ztNKjpAFj/a
-         X6f+06bdJz/9vo7a/YchV3acyhvDLb9UDgardexXPKJ+2AbtHcNiFrpGmEq73lXPfKfx
-         jzL5zR8HBYhYuiJV12C6OnYaTtj5vl5bHnDar5dtpws/GJrU2VMmy+t59UT5EAjtgPYi
-         Hq+bOrIq2lHyMwsEqPMxuSarPONUqnMIXd9g9/sRzhfrmsfZylRGVon3GNKtx7oTEWS3
-         gPjA==
-X-Gm-Message-State: AOAM530JpP5Jjs/1sNZ81hLdRStckeHdANJKZNcyi6h7IkolX/EPw1Sy
-        An7T438kC6jazYGvUr/57JRmiWO4CCnv2URH2+3IsKAvY+KBdxWIbIGjaikCa8Yrj+FaTUsRvJf
-        X7BUgbBrJDO//C9h8
-X-Received: by 2002:a17:907:3e0a:: with SMTP id hp10mr20028631ejc.110.1625593654283;
-        Tue, 06 Jul 2021 10:47:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy63BPqIFbjkuQBMUipQjDofizgnH2LF/eLNAGvSlGT1+C1e1zrpkylD+N1hEzc/Rl3Wefznw==
-X-Received: by 2002:a17:907:3e0a:: with SMTP id hp10mr20028599ejc.110.1625593654040;
-        Tue, 06 Jul 2021 10:47:34 -0700 (PDT)
-Received: from localhost (net-93-71-3-244.cust.vodafonedsl.it. [93.71.3.244])
-        by smtp.gmail.com with ESMTPSA id o9sm7501831edc.91.2021.07.06.10.47.33
+        bh=rFh4HQBpaw9ewOD7eKuJ7KI9YAzHhN8tlxJ6LopMKHs=;
+        b=KjZjibMyZXGkz9u7stOtsoe/2j1RJhqT1mwcgx/HQuivbOR4dBQ4fklKhaT6cAYV07
+         yNDV5JrNveAQ2CYO+IHv6LFGAcp1wMVPigOscdcTxo5wABoMDXaWX+zVky9w0/NSjw92
+         cUyoHLAKBcS60MqyBv1asK9JdzxSdo8DUksiYClL7qTlJmSctUqhSBOnNcuZS5oitzr1
+         VUEy6uzzpGjuqDz14Z0KRw4n/fuFiXZMiYjaJEpYf+GoZidDa0L3FczpLi86Ggnzj+Xo
+         wMCxUY3nK3GGWucDeE5Xk4SCQBECoHAbrxJA7clk37wOd63cKCl3qoSM6LucKW6lone0
+         orYg==
+X-Gm-Message-State: AOAM5308P8z+P85J2kA361YSmsE9cBcMxQLLLNcY87Z6OuGKxQFY23cB
+        lYVUT2yW1gr8acA5hyLnyau2JA==
+X-Google-Smtp-Source: ABdhPJwwC8pa+wbm0v5SSaX+DFJoQ7jJmXTjdD3iH0933Y2rw8Y2+zYlxp2w0qjcBNkHXGnjSvRJ6w==
+X-Received: by 2002:a9d:3d3:: with SMTP id f77mr16276146otf.43.1625594902170;
+        Tue, 06 Jul 2021 11:08:22 -0700 (PDT)
+Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 68sm497113otd.74.2021.07.06.11.08.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 10:47:33 -0700 (PDT)
-Date:   Tue, 6 Jul 2021 19:47:30 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Tirthendu <tirthendu.sarkar@intel.com>
-Subject: Re: [PATCH v9 bpf-next 02/14] xdp: introduce flags field in
- xdp_buff/xdp_frame
-Message-ID: <YOSXMkI3XM+1xqmf@lore-desk>
-References: <cover.1623674025.git.lorenzo@kernel.org>
- <1316f3ef2763ff4c02244fb726c61568c972514c.1623674025.git.lorenzo@kernel.org>
- <CAKgT0Ue7TsgwbQF+mfeDB-18Q-R29YZWe=y6Kgeg0xxbwds=vw@mail.gmail.com>
- <YNsVcy8e4Mgyg7g3@lore-desk>
- <CAKgT0Ucg5RbzKt63u5RfXee94kd+1oJ+o_qgUwCwnVCoQjDdPw@mail.gmail.com>
- <YOMq0WRu4lsGZJk2@lore-desk>
- <CAKgT0Udn90g9s3RYiGA0hFz7bXaepPNJNqgRjMtwjpdj1zZTDw@mail.gmail.com>
- <YORELD7ve/RMYsua@lore-desk>
- <CAKgT0UceWvSzYrt=0cJTqjhTE6CHiuo0nXV+YG+1qc9Nr2bJZg@mail.gmail.com>
+        Tue, 06 Jul 2021 11:08:21 -0700 (PDT)
+Date:   Tue, 6 Jul 2021 13:08:18 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Uwe Kleine-K?nig <u.kleine-koenig@pengutronix.de>
+Cc:     kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-acpi@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-cxl@vger.kernel.org, nvdimm@lists.linux.dev,
+        dmaengine@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-fpga@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-i3c@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-arm-msm@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        greybus-dev@lists.linaro.org, target-devel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v2 4/4] bus: Make remove callback return void
+Message-ID: <YOSb1+yeVeLxiSRc@yoga>
+References: <20210706154803.1631813-1-u.kleine-koenig@pengutronix.de>
+ <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yWLL6sKrVEZutc8e"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKgT0UceWvSzYrt=0cJTqjhTE6CHiuo0nXV+YG+1qc9Nr2bJZg@mail.gmail.com>
+In-Reply-To: <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue 06 Jul 10:48 CDT 2021, Uwe Kleine-K?nig wrote:
 
---yWLL6sKrVEZutc8e
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
+> 
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
+> 
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
+> 
 
-> On Tue, Jul 6, 2021 at 4:53 AM Lorenzo Bianconi
-> <lorenzo.bianconi@redhat.com> wrote:
-> >
-> > > On Mon, Jul 5, 2021 at 8:52 AM Lorenzo Bianconi
-> > > <lorenzo.bianconi@redhat.com> wrote:
-> > > >
-> > > > > On Tue, Jun 29, 2021 at 5:43 AM Lorenzo Bianconi
-> > > > > <lorenzo.bianconi@redhat.com> wrote:
-> >
-> > [...]
-> > >
-> > > Hi Lorenzo,
-> > >
-> > > What about doing something like breaking up the type value in
-> > > xdp_mem_info? The fact is having it as an enum doesn't get us much
-> > > since we have a 32b type field but are only storing 4 possible values
-> > > there currently
-> > >
-> > > The way I see it, scatter-gather is just another memory model
-> > > attribute rather than being something entirely new. It makes as much
-> > > sense to have a bit there for MEM_TYPE_PAGE_SG as it does for
-> > > MEM_TYPE_PAGE_SHARED. I would consider either splitting the type field
-> > > into two 16b fields. For example you might have one field that
-> > > describes the source pool which is currently either allocated page
-> > > (ORDER0, SHARED), page_pool (PAGE_POOL), or XSK pool (XSK_BUFF_POOL),
-> > > and then two flags for type with there being either shared and/or
-> > > scatter-gather.
-> >
-> > Hi Alex,
-> >
-> > I am fine reducing the xdp_mem_info size defining type field as u16 ins=
-tead of
-> > u32 but I think mb is a per-xdp_buff/xdp_frame property since at runtim=
-e we can
-> > receive a tiny single page xdp_buff/xdp_frame and a "jumbo" xdp_buff/xd=
-p_frame
-> > composed by multiple pages. According to the documentation available in
-> > include/net/xdp.h, xdp_rxq_info (where xdp_mem_info is contained for xd=
-p_buff)
-> > is "associated with the driver level RX-ring queues and it is informati=
-on that
-> > is specific to how the driver have configured a given RX-ring queue" so=
- I guess
-> > it is a little bit counterintuitive to add this info there.
->=20
-> It isn't really all that counterintuitive. However it does put the
-> onus on the driver to be consistent about things. So even a
-> single-buffer xdp_buff would technically have to be a scatter-gather
-> buff, but it would have no fragments in it. So the requirement would
-> be to initialize the frags and data_len fields to 0 for all xdp_buff
-> structures.
+Thanks for doing this!
 
-nr_frags and data_len are currently defined in skb_shared_info(xdp_buff)
-so I guess initialize them to 0 will trigger a cache miss (in fact we
-introduced the mb bit just to avoid this initialization and introduce
-penalties for legacy single-buffer use-case). Do you mean to have these
-fields in xdp_buff/xdp_frame structure?
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org> (rpmsg and apr)
 
->=20
-> > Moreover we have the "issue" for devmap in dev_map_bpf_prog_run() when =
-we
-> > perform XDP_REDIRECT with the approach you proposed and last we can reu=
-se this
-> > new flags filed for XDP hw-hints support.
-> > What about reducing xdp_mem_info and add the flags field in xdp_buff/xd=
-p_frame
-> > in order to avoid increasing the xdp_buff/xdp_frame size? Am I missing
-> > something?
->=20
-> The problem is there isn't a mem_info field in the xdp_buff. It is in
-> the Rx queue info structure.
+[..]
+> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+> index c1404d3dae2c..7f6fac618ab2 100644
+> --- a/drivers/rpmsg/rpmsg_core.c
+> +++ b/drivers/rpmsg/rpmsg_core.c
+> @@ -530,7 +530,7 @@ static int rpmsg_dev_probe(struct device *dev)
+>  	return err;
+>  }
+>  
+> -static int rpmsg_dev_remove(struct device *dev)
+> +static void rpmsg_dev_remove(struct device *dev)
+>  {
+>  	struct rpmsg_device *rpdev = to_rpmsg_device(dev);
+>  	struct rpmsg_driver *rpdrv = to_rpmsg_driver(rpdev->dev.driver);
+> @@ -546,8 +546,6 @@ static int rpmsg_dev_remove(struct device *dev)
+>  
+>  	if (rpdev->ept)
+>  		rpmsg_destroy_ept(rpdev->ept);
+> -
+> -	return err;
 
-yes, this is what I meant :)
+This leaves err assigned but never used, but I don't mind following up
+with a patch cleaning that up after this has landed.
+
+>  }
+>  
+>  static struct bus_type rpmsg_bus = {
 
 Regards,
-Lorenzo
-
->=20
-> Thanks,
->=20
-> - Alex
->=20
-
---yWLL6sKrVEZutc8e
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYOSXLwAKCRA6cBh0uS2t
-rFheAP0bbdKK5UUCfa61CqcMUW7ZVf/w0607zYEUWMVAbA8GswEAlc89xSiVJQmK
-dfJKdx91FZh7pHNf4rWT6CbPh++ZUgE=
-=TfkO
------END PGP SIGNATURE-----
-
---yWLL6sKrVEZutc8e--
-
+Bjorn
