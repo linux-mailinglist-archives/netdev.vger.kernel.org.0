@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF20F3BCD5D
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807163BCD59
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbhGFLV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:21:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56324 "EHLO mail.kernel.org"
+        id S233548AbhGFLVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:21:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233127AbhGFLUG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233130AbhGFLUG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 6 Jul 2021 07:20:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BEF1E61CD2;
-        Tue,  6 Jul 2021 11:17:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 254B561C8B;
+        Tue,  6 Jul 2021 11:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570231;
-        bh=zPynrgZnUW8h799GItUXt5kPDHnjShwvL0DdzVFIHdg=;
+        s=k20201202; t=1625570233;
+        bh=SKgrW86FCTuQ2U8shcCjpqm/B2ijXEQ1rAZcVr4+KE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fTmqegFjk1BEMjFEykmDd9VRxIp/w50CNl11EWRnKVDc3BzyuqryXtNNEkvW2fQj6
-         nHaN6k7cCPQDg27b58Wdu5VWX15kWycZTDUBLezuj7HlfRWvGmonXjvLoidOt5ChsB
-         7ANbelK3D+Hd1s4rm6ntEX8/slCOLYRxBwo4mHuWyjf/EaeNEVVAlb+iQjLeb1Kc+v
-         Vys7XWr4GrOmkuVsuZXm40il0cL7HWXGP4ewHM59iSW8+HEUVIvKiYzNU3Ub8bfYR7
-         MIXSa3u3yU8iE0RlTQG2sJNMWsmT02Efsh0ZzRVx1+6qRsZSNOPx1hYnXOJw5xjG/1
-         SOK5OpbaXo0Pg==
+        b=LuuEtTu4j6OS0eitfqCe+5BHCWJqS0HSOy97ejbjBJOiFi71vL6aJ4RnHAvMIasyK
+         +mdA2/zqti2lvrxlJaiqm7ycJSelfBQ1v06NkNnXI65MmWuplKTEFvlFQ/B1MJHHWd
+         y4kAJFnbfH0r5JKQ814eeSP403jklk/bqBpo4jH9JVOuyGFc23Ct8LxEl9qCeEOpVS
+         xJ6hWERP4NCDQNPTzY4GrFHVke5ZMfgMgrzPO8wx4Rk7OPot7PmkE5Tecgs/xHo3Cm
+         zAsPZI+lUTX3aQRAuavT6LfJX0dAmXNKW2JB8022S90R22Uv+b3XqxCAkwzgdbE/+o
+         XKTAuHHSKb8sg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+Cc:     Ryder Lee <ryder.lee@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.13 135/189] mt76: connac: fix the maximum interval schedule scan can support
-Date:   Tue,  6 Jul 2021 07:13:15 -0400
-Message-Id: <20210706111409.2058071-135-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 136/189] mt76: mt7915: fix IEEE80211_HE_PHY_CAP7_MAX_NC for station mode
+Date:   Tue,  6 Jul 2021 07:13:16 -0400
+Message-Id: <20210706111409.2058071-136-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -44,76 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit abded041a07467c2f3dfe10afd9ea10572c63cc9 ]
+[ Upstream commit 2707ff4dd7b1479dbd44ebb3c74788084cc95245 ]
 
-Maximum interval (in seconds) for schedule scan plan supported by
-the offload firmware can be U16_MAX.
+The value of station mode is always 0.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Fixed: 00b2e16e0063 ("mt76: mt7915: add TxBF capabilities")
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/init.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt76_connac.h     | 3 ++-
- drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7921/init.c     | 2 +-
- 4 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/init.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/init.c b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-index d20f05a7717d..0d01fd3c77b5 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-@@ -362,7 +362,7 @@ mt7615_init_wiphy(struct ieee80211_hw *hw)
- 	wiphy->reg_notifier = mt7615_regd_notifier;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/init.c b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+index 822f3aa6bb8b..feb2aa57ef22 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/init.c
+@@ -480,6 +480,9 @@ mt7915_set_stream_he_txbf_caps(struct ieee80211_sta_he_cap *he_cap,
+ 	if (nss < 2)
+ 		return;
  
- 	wiphy->max_sched_scan_plan_interval =
--		MT76_CONNAC_MAX_SCHED_SCAN_INTERVAL;
-+		MT76_CONNAC_MAX_TIME_SCHED_SCAN_INTERVAL;
- 	wiphy->max_sched_scan_ie_len = IEEE80211_MAX_DATA_LEN;
- 	wiphy->max_scan_ie_len = MT76_CONNAC_SCAN_IE_LEN;
- 	wiphy->max_sched_scan_ssids = MT76_CONNAC_MAX_SCHED_SCAN_SSID;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac.h b/drivers/net/wireless/mediatek/mt76/mt76_connac.h
-index 6c889b90fd12..5b50d29c1cb6 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac.h
-@@ -7,7 +7,8 @@
- #include "mt76.h"
++	/* the maximum cap is 4 x 3, (Nr, Nc) = (3, 2) */
++	elem->phy_cap_info[7] |= min_t(int, nss - 1, 2) << 3;
++
+ 	if (vif != NL80211_IFTYPE_AP)
+ 		return;
  
- #define MT76_CONNAC_SCAN_IE_LEN			600
--#define MT76_CONNAC_MAX_SCHED_SCAN_INTERVAL	10
-+#define MT76_CONNAC_MAX_NUM_SCHED_SCAN_INTERVAL	 10
-+#define MT76_CONNAC_MAX_TIME_SCHED_SCAN_INTERVAL U16_MAX
- #define MT76_CONNAC_MAX_SCHED_SCAN_SSID		10
- #define MT76_CONNAC_MAX_SCAN_MATCH		16
+@@ -493,9 +496,6 @@ mt7915_set_stream_he_txbf_caps(struct ieee80211_sta_he_cap *he_cap,
+ 	c = IEEE80211_HE_PHY_CAP6_TRIG_SU_BEAMFORMING_FB |
+ 	    IEEE80211_HE_PHY_CAP6_TRIG_MU_BEAMFORMING_PARTIAL_BW_FB;
+ 	elem->phy_cap_info[6] |= c;
+-
+-	/* the maximum cap is 4 x 3, (Nr, Nc) = (3, 2) */
+-	elem->phy_cap_info[7] |= min_t(int, nss - 1, 2) << 3;
+ }
  
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-index 61bed6e89427..6093f39ea1dc 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
-@@ -762,7 +762,7 @@ struct mt76_connac_sched_scan_req {
- 	u8 intervals_num;
- 	u8 scan_func; /* MT7663: BIT(0) eable random mac address */
- 	struct mt76_connac_mcu_scan_channel channels[64];
--	__le16 intervals[MT76_CONNAC_MAX_SCHED_SCAN_INTERVAL];
-+	__le16 intervals[MT76_CONNAC_MAX_NUM_SCHED_SCAN_INTERVAL];
- 	union {
- 		struct {
- 			u8 random_mac[ETH_ALEN];
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/init.c b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-index 1763ea0614ce..bd002b4247c7 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/init.c
-@@ -92,7 +92,7 @@ mt7921_init_wiphy(struct ieee80211_hw *hw)
- 	wiphy->max_scan_ie_len = MT76_CONNAC_SCAN_IE_LEN;
- 	wiphy->max_scan_ssids = 4;
- 	wiphy->max_sched_scan_plan_interval =
--		MT76_CONNAC_MAX_SCHED_SCAN_INTERVAL;
-+		MT76_CONNAC_MAX_TIME_SCHED_SCAN_INTERVAL;
- 	wiphy->max_sched_scan_ie_len = IEEE80211_MAX_DATA_LEN;
- 	wiphy->max_sched_scan_ssids = MT76_CONNAC_MAX_SCHED_SCAN_SSID;
- 	wiphy->max_match_sets = MT76_CONNAC_MAX_SCAN_MATCH;
+ static void
 -- 
 2.30.2
 
