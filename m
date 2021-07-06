@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDFC3BCE9E
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3D663BCEA3
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234023AbhGFL0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:26:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56654 "EHLO mail.kernel.org"
+        id S234062AbhGFL0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:26:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56688 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234156AbhGFLXv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:23:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CA19D61CF6;
-        Tue,  6 Jul 2021 11:18:13 +0000 (UTC)
+        id S234166AbhGFLXw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:23:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 531F561CD1;
+        Tue,  6 Jul 2021 11:18:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570294;
-        bh=0XRFg5hIq6dpQhf6aGNiDBR8wtXCngnhyGCW3ADbjSA=;
+        s=k20201202; t=1625570296;
+        bh=+Lx/Ybu2Aq/kX7lL1Obv6xgjVcG9zJEyTOFHv8wmvHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I/SBOK4r4sJj2SL73IkYkBCghYPt7Moun1BR21+2T6lUageP0eWks4rxqS2zXgP1K
-         Bf8RASvsKmvBPnSFqh9qTx5sXxMmaDQDFQEezpmf+ZLiRfDqqxkChFxve2dgEQmnrn
-         HJW1HhA5VwoMzDN5cfMjLGFv3dqUvzn9p1WYNQk9xFU52DMElB2jQbiY92OFh33Msb
-         ar7PylZGsP+HXxaX+32/JxWk+0rPLQLjfvXiiWj9/7ADu22x5l+GjTmZC2BRzDl3/m
-         u0T3wrJ6tia+t5FJYBEobfiZeRnqh+yEnI+6LJQemAZS9XRKwof81zKHm3j9BOaC7s
-         NNks1vEFIkDnw==
+        b=Y6ULEqWpnUQkFlAx1oclnFU6+ATTgcmo5Nx7pZ00Oba5o+YWc/hXPcgYQfYuknDQ1
+         BkO+H6SjQ3FXwhsDlS0hurBkmw9O1d4DkjYWGESghGcG1SmdH8CPIJzqDMW4rzDjUp
+         hISM6oPHOMyAeRr8/rqHycBztkaRqWdbZ5f0SxyhqLI5BrNlbnad+6H7Std3loMZCL
+         AFNrsvc7m9JJAf1yj4zzW+UdJrGu+YnUKVdpGI3Ye+JjtkvZJSQtIq3xLKkkYtampJ
+         ODjjB3/tDziO0akjPAcJ3kd4eZrevE98fI7VrkTYIIhea6afsfIHbR6sGFRqdZONCo
+         via3rep2Ept6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rustam Kovhaev <rkovhaev@gmail.com>,
-        syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 183/189] bpf: Fix false positive kmemleak report in bpf_ringbuf_area_alloc()
-Date:   Tue,  6 Jul 2021 07:14:03 -0400
-Message-Id: <20210706111409.2058071-183-sashal@kernel.org>
+Cc:     gushengxian <gushengxian@yulong.com>,
+        gushengxian <13145886936@163.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 184/189] flow_offload: action should not be NULL when it is referenced
+Date:   Tue,  6 Jul 2021 07:14:04 -0400
+Message-Id: <20210706111409.2058071-184-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -46,108 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rustam Kovhaev <rkovhaev@gmail.com>
+From: gushengxian <gushengxian@yulong.com>
 
-[ Upstream commit ccff81e1d028bbbf8573d3364a87542386c707bf ]
+[ Upstream commit 9ea3e52c5bc8bb4a084938dc1e3160643438927a ]
 
-kmemleak scans struct page, but it does not scan the page content. If we
-allocate some memory with kmalloc(), then allocate page with alloc_page(),
-and if we put kmalloc pointer somewhere inside that page, kmemleak will
-report kmalloc pointer as a false positive.
+"action" should not be NULL when it is referenced.
 
-We can instruct kmemleak to scan the memory area by calling kmemleak_alloc()
-and kmemleak_free(), but part of struct bpf_ringbuf is mmaped to user space,
-and if struct bpf_ringbuf changes we would have to revisit and review size
-argument in kmemleak_alloc(), because we do not want kmemleak to scan the
-user space memory. Let's simplify things and use kmemleak_not_leak() here.
-
-For posterity, also adding additional prior analysis from Andrii:
-
-  I think either kmemleak or syzbot are misreporting this. I've added a
-  bunch of printks around all allocations performed by BPF ringbuf. [...]
-  On repro side I get these two warnings:
-
-  [vmuser@archvm bpf]$ sudo ./repro
-  BUG: memory leak
-  unreferenced object 0xffff88810d538c00 (size 64):
-    comm "repro", pid 2140, jiffies 4294692933 (age 14.540s)
-    hex dump (first 32 bytes):
-      00 af 19 04 00 ea ff ff c0 ae 19 04 00 ea ff ff  ................
-      80 ae 19 04 00 ea ff ff c0 29 2e 04 00 ea ff ff  .........)......
-    backtrace:
-      [<0000000077bfbfbd>] __bpf_map_area_alloc+0x31/0xc0
-      [<00000000587fa522>] ringbuf_map_alloc.cold.4+0x48/0x218
-      [<0000000044d49e96>] __do_sys_bpf+0x359/0x1d90
-      [<00000000f601d565>] do_syscall_64+0x2d/0x40
-      [<0000000043d3112a>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-  BUG: memory leak
-  unreferenced object 0xffff88810d538c80 (size 64):
-    comm "repro", pid 2143, jiffies 4294699025 (age 8.448s)
-    hex dump (first 32 bytes):
-      80 aa 19 04 00 ea ff ff 00 ab 19 04 00 ea ff ff  ................
-      c0 ab 19 04 00 ea ff ff 80 44 28 04 00 ea ff ff  .........D(.....
-    backtrace:
-      [<0000000077bfbfbd>] __bpf_map_area_alloc+0x31/0xc0
-      [<00000000587fa522>] ringbuf_map_alloc.cold.4+0x48/0x218
-      [<0000000044d49e96>] __do_sys_bpf+0x359/0x1d90
-      [<00000000f601d565>] do_syscall_64+0x2d/0x40
-      [<0000000043d3112a>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-  Note that both reported leaks (ffff88810d538c80 and ffff88810d538c00)
-  correspond to pages array bpf_ringbuf is allocating and tracking properly
-  internally. Note also that syzbot repro doesn't close FD of created BPF
-  ringbufs, and even when ./repro itself exits with error, there are still
-  two forked processes hanging around in my system. So clearly ringbuf maps
-  are alive at that point. So reporting any memory leak looks weird at that
-  point, because that memory is being used by active referenced BPF ringbuf.
-
-  It's also a question why repro doesn't clean up its forks. But if I do a
-  `pkill repro`, I do see that all the allocated memory is /properly/ cleaned
-  up [and the] "leaks" are deallocated properly.
-
-  BTW, if I add close() right after bpf() syscall in syzbot repro, I see that
-  everything is immediately deallocated, like designed. And no memory leak
-  is reported. So I don't think the problem is anywhere in bpf_ringbuf code,
-  rather in the leak detection and/or repro itself.
-
-Reported-by: syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com
-Signed-off-by: Rustam Kovhaev <rkovhaev@gmail.com>
-[ Daniel: also included analysis from Andrii to the commit log ]
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Tested-by: syzbot+5d895828587f49e7fe9b@syzkaller.appspotmail.com
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/CAEf4BzYk+dqs+jwu6VKXP-RttcTEGFe+ySTGWT9CRNkagDiJVA@mail.gmail.com
-Link: https://lore.kernel.org/lkml/YNTAqiE7CWJhOK2M@nuc10
-Link: https://lore.kernel.org/lkml/20210615101515.GC26027@arm.com
-Link: https://syzkaller.appspot.com/bug?extid=5d895828587f49e7fe9b
-Link: https://lore.kernel.org/bpf/20210626181156.1873604-1-rkovhaev@gmail.com
+Signed-off-by: gushengxian <13145886936@163.com>
+Signed-off-by: gushengxian <gushengxian@yulong.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/ringbuf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/net/flow_offload.h | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index 84b3b35fc0d0..9e0c10c6892a 100644
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -8,6 +8,7 @@
- #include <linux/vmalloc.h>
- #include <linux/wait.h>
- #include <linux/poll.h>
-+#include <linux/kmemleak.h>
- #include <uapi/linux/btf.h>
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index dc5c1e69cd9f..69c9eabf8325 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -319,12 +319,14 @@ flow_action_mixed_hw_stats_check(const struct flow_action *action,
+ 	if (flow_offload_has_one_action(action))
+ 		return true;
  
- #define RINGBUF_CREATE_FLAG_MASK (BPF_F_NUMA_NODE)
-@@ -105,6 +106,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
- 	rb = vmap(pages, nr_meta_pages + 2 * nr_data_pages,
- 		  VM_ALLOC | VM_USERMAP, PAGE_KERNEL);
- 	if (rb) {
-+		kmemleak_not_leak(pages);
- 		rb->pages = pages;
- 		rb->nr_pages = nr_pages;
- 		return rb;
+-	flow_action_for_each(i, action_entry, action) {
+-		if (i && action_entry->hw_stats != last_hw_stats) {
+-			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
+-			return false;
++	if (action) {
++		flow_action_for_each(i, action_entry, action) {
++			if (i && action_entry->hw_stats != last_hw_stats) {
++				NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
++				return false;
++			}
++			last_hw_stats = action_entry->hw_stats;
+ 		}
+-		last_hw_stats = action_entry->hw_stats;
+ 	}
+ 	return true;
+ }
 -- 
 2.30.2
 
