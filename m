@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E5B3BCFC8
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73ECB3BCFCF
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbhGFLb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:31:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42666 "EHLO mail.kernel.org"
+        id S235376AbhGFLba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:31:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42510 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235412AbhGFLaC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:30:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C150261DAE;
-        Tue,  6 Jul 2021 11:21:00 +0000 (UTC)
+        id S235490AbhGFLaH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:30:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 296C361DB5;
+        Tue,  6 Jul 2021 11:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570461;
-        bh=AWt8MtIwfOEkzII2XUPUR49DdZGO10IyoYUx105z1Is=;
+        s=k20201202; t=1625570472;
+        bh=r8kwZdWEjeJQgavL3sZHDfFvoV3qOI6K31qBnTF5WkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bfWoQ0SJP8OZIgyIzvBRrSOjKg7tcu/Dyptr8NZ4bxL7LD34HcQbIv/PkGOcrL/K5
-         1FqIhRHxS5FReMw57Dk+qNcEoaHJJICh4Agcq97JBx+Ha73iOBfUcpcfuzS3UavAro
-         qiI8+299+sOBT3q7xbNhKmDSqsaLnY/VOSqfbUKBB/WJjKOBVeDhViny6zB9sm9xhn
-         ueXTwG3IlPmDAgcVSXzB6eZRvOijPgIaWSOI/yUb4DNzcJyTkRQY/sCUQPF3Yfgsac
-         oFekgPwJR5L2VFGnDST4hleLk3Zvtnl8HzZF6+vXqwZ2kpJ4PBN4Kplb36ssLqFT5T
-         9x46Oh4FXXUWg==
+        b=pOQeOgeVLP7TLPfCeVmWYetDyDhSVu0g/jSWFGYyyUVsknNTrFafhn8rWgdvEGiS5
+         oEG0kaHMCtlMN4deVg8k5+CdLSimpZpWSv9tm0inMMglHe9ZZnmp8CW0SfTSA1FLVO
+         7eIlqXffrBe6idb7rYBA2JEXfqKj20hPJPW/5GGIhxdj1HBnsBjxRPFLDXkiXPISVQ
+         l83JNSA+O4Fc3QYhLPglDSdbn4ZYereKEQ7YAmMjqo/Y5xwDR++14eYjmIVtiVmAt+
+         UuSsbNTglzd4BWcsboXUpKiD1kxXvFcE4INXCoI+Gjd01E0Zp4HvvtBzfWNLAz4en8
+         qwEAb/Eqi42hA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        kernel test robot <lkp@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 115/160] net: fec: add ndo_select_queue to fix TX bandwidth fluctuations
-Date:   Tue,  6 Jul 2021 07:17:41 -0400
-Message-Id: <20210706111827.2060499-115-sashal@kernel.org>
+Cc:     Shaul Triebitz <shaul.triebitz@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 123/160] iwlwifi: mvm: fix error print when session protection ends
+Date:   Tue,  6 Jul 2021 07:17:49 -0400
+Message-Id: <20210706111827.2060499-123-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111827.2060499-1-sashal@kernel.org>
 References: <20210706111827.2060499-1-sashal@kernel.org>
@@ -45,104 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+From: Shaul Triebitz <shaul.triebitz@intel.com>
 
-[ Upstream commit 52c4a1a85f4b346c39c896c0168f4a843b3385ff ]
+[ Upstream commit 976ac0af7ba2c5424bc305b926c0807d96fdcc83 ]
 
-As we know that AVB is enabled by default, and the ENET IP design is
-queue 0 for best effort, queue 1&2 for AVB Class A&B. Bandwidth of each
-queue 1&2 set in driver is 50%, TX bandwidth fluctuated when selecting
-tx queues randomly with FEC_QUIRK_HAS_AVB quirk available.
+When the session protection ends and the Driver is not
+associated or a beacon was not heard, the Driver
+prints "No beacons heard...".
+That's confusing for the case where not associated.
+Change the print when not associated to "Not associated...".
 
-This patch adds ndo_select_queue callback to select queues for
-transmitting to fix this issue. It will always return queue 0 if this is
-not a vlan packet, and return queue 1 or 2 based on priority of vlan
-packet.
-
-You may complain that in fact we only use single queue for trasmitting
-if we are not targeted to VLAN. Yes, but seems we have no choice, since
-AVB is enabled when the driver probed, we can't switch this feature
-dynamicly. After compare multiple queues to single queue, TX throughput
-almost no improvement.
-
-One way we can implemet is to configure the driver to multiple queues
-with Round-robin scheme by default. Then add ndo_setup_tc callback to
-enable/disable AVB feature for users. Unfortunately, ENET AVB IP seems
-not follow the standard 802.1Qav spec. We only can program
-DMAnCFG[IDLE_SLOPE] field to calculate bandwidth fraction. And idle
-slope is restricted to certain valus (a total of 19). It's far away from
-CBS QDisc implemented in Linux TC framework. If you strongly suggest to do
-this, I think we only can support limited numbers of bandwidth and reject
-others, but it's really urgly and wried.
-
-With this patch, VLAN tagged packets route to queue 0/1/2 based on vlan
-priority; VLAN untagged packets route to queue 0.
-
-Tested-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Reported-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20210617100544.41a5a5a894fa.I9eabb76e7a3a7f4abbed8f2ef918f1df8e825726@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 32 +++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 15c9cffa8735..6c097ae3bac5 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -75,6 +75,8 @@ static void fec_enet_itr_coal_init(struct net_device *ndev);
- 
- #define DRIVER_NAME	"fec"
- 
-+static const u16 fec_enet_vlan_pri_to_queue[8] = {0, 0, 1, 1, 1, 2, 2, 2};
-+
- /* Pause frame feild and FIFO threshold */
- #define FEC_ENET_FCE	(1 << 5)
- #define FEC_ENET_RSEM_V	0x84
-@@ -3228,10 +3230,40 @@ static int fec_set_features(struct net_device *netdev,
- 	return 0;
- }
- 
-+static u16 fec_enet_get_raw_vlan_tci(struct sk_buff *skb)
-+{
-+	struct vlan_ethhdr *vhdr;
-+	unsigned short vlan_TCI = 0;
-+
-+	if (skb->protocol == htons(ETH_P_ALL)) {
-+		vhdr = (struct vlan_ethhdr *)(skb->data);
-+		vlan_TCI = ntohs(vhdr->h_vlan_TCI);
-+	}
-+
-+	return vlan_TCI;
-+}
-+
-+static u16 fec_enet_select_queue(struct net_device *ndev, struct sk_buff *skb,
-+				 struct net_device *sb_dev)
-+{
-+	struct fec_enet_private *fep = netdev_priv(ndev);
-+	u16 vlan_tag;
-+
-+	if (!(fep->quirks & FEC_QUIRK_HAS_AVB))
-+		return netdev_pick_tx(ndev, skb, NULL);
-+
-+	vlan_tag = fec_enet_get_raw_vlan_tci(skb);
-+	if (!vlan_tag)
-+		return vlan_tag;
-+
-+	return fec_enet_vlan_pri_to_queue[vlan_tag >> 13];
-+}
-+
- static const struct net_device_ops fec_netdev_ops = {
- 	.ndo_open		= fec_enet_open,
- 	.ndo_stop		= fec_enet_close,
- 	.ndo_start_xmit		= fec_enet_start_xmit,
-+	.ndo_select_queue       = fec_enet_select_queue,
- 	.ndo_set_rx_mode	= set_multicast_list,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_tx_timeout		= fec_timeout,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index 0b012f8c9eb2..9a4a1b363254 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -289,6 +289,8 @@ static void iwl_mvm_te_handle_notif(struct iwl_mvm *mvm,
+ 			 * and know the dtim period.
+ 			 */
+ 			iwl_mvm_te_check_disconnect(mvm, te_data->vif,
++				!te_data->vif->bss_conf.assoc ?
++				"Not associated and the time event is over already..." :
+ 				"No beacon heard and the time event is over already...");
+ 			break;
+ 		default:
+@@ -787,6 +789,8 @@ void iwl_mvm_rx_session_protect_notif(struct iwl_mvm *mvm,
+ 			 * and know the dtim period.
+ 			 */
+ 			iwl_mvm_te_check_disconnect(mvm, vif,
++						    !vif->bss_conf.assoc ?
++						    "Not associated and the session protection is over already..." :
+ 						    "No beacon heard and the session protection is over already...");
+ 			spin_lock_bh(&mvm->time_event_lock);
+ 			iwl_mvm_te_clear_data(mvm, te_data);
 -- 
 2.30.2
 
