@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C563BD5B7
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B9C83BD5BA
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 14:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237982AbhGFMYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 08:24:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47608 "EHLO mail.kernel.org"
+        id S238505AbhGFMYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 08:24:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236435AbhGFLfV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:35:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EBC0861C6A;
-        Tue,  6 Jul 2021 11:23:35 +0000 (UTC)
+        id S236606AbhGFLfc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:35:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3078061E3F;
+        Tue,  6 Jul 2021 11:23:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570616;
-        bh=4wq+6xr6u201ec9VCBKH650shM95NMLWgbAR6Iwvqsg=;
+        s=k20201202; t=1625570630;
+        bh=NQy8nTnLvXU/vhv4B5FMdCwgkqRgd+S+GC6IS4N4NfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYlqbafK3EHKdLxmNsobnl1G/aqQGzjEjrYuPdLOlwMCAU2hB49cKnchX2r0KZKz9
-         0+kHRFY9EX6awrfHZQ/sbDviGYsFwE3PyqeaaW0DHLS/JgG8QBKnZSUvsp+eqw/O20
-         rUXEUXio6vmtzVd3WULxzB9bo+vlnu7NgyMFXiJb+8i0JW0O/X2sfY2UtfXbBnrEI1
-         I3uPMzCMUfAnz99v6aqXQW21H6Mu07TVF+BSQ1d8DIy0pMMtQhyJeQ5mqCDpVAyXgJ
-         FwuuQ7Vu61x0+QCcqBfc65R481ybK9xp5cs+5MW9PUSYQEjRuEL1p9J0fbhmH+Pig5
-         JLdqMcZjm+UXQ==
+        b=JUrLxS9KRY/4wQj4FwIsEKwveZCUDADaTKf4urI4KLtVgfrj+WFyzpZ5QsVNfqvqi
+         V7gto+4lZWzUUcqIeebc/Pu6JliES2buV6ri/y4LJxgEs1XjgkTLKGhH382R48KhWJ
+         B/EiuQVYlVfNKgZid7gnbKn8+BNXxLRFJpOFy/C3jWBkXLe4N427B0wfGIg0RlkFKH
+         k/xuLUZ96aZo2m2HhZZ9IF2+t93Fx57RMfP/qXKz61h5WbjK/aeS289hDBYe00czbg
+         5/0ociJFJbOxyUij+ch3MVpJxHyycqU8xYbmhfqZzRiI+MCWXADoNOHeQAuUUhyS7q
+         U9DDU4YqGe5RA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 072/137] net: phy: realtek: add delay to fix RXC generation issue
-Date:   Tue,  6 Jul 2021 07:20:58 -0400
-Message-Id: <20210706112203.2062605-72-sashal@kernel.org>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        Carl Philipp Klemm <philipp@uvos.xyz>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 082/137] wlcore/wl12xx: Fix wl12xx get_mac error if device is in ELP
+Date:   Tue,  6 Jul 2021 07:21:08 -0400
+Message-Id: <20210706112203.2062605-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112203.2062605-1-sashal@kernel.org>
 References: <20210706112203.2062605-1-sashal@kernel.org>
@@ -42,55 +44,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joakim Zhang <qiangqing.zhang@nxp.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit 6813cc8cfdaf401476e1a007cec8ae338cefa573 ]
+[ Upstream commit 11ef6bc846dcdce838f0b00c5f6a562c57e5d43b ]
 
-PHY will delay about 11.5ms to generate RXC clock when switching from
-power down to normal operation. Read/write registers would also cause RXC
-become unstable and stop for a while during this process. Realtek engineer
-suggests 15ms or more delay can workaround this issue.
+At least on wl12xx, reading the MAC after boot can fail with a warning
+at drivers/net/wireless/ti/wlcore/sdio.c:78 wl12xx_sdio_raw_read.
+The failed call comes from wl12xx_get_mac() that wlcore_nvs_cb() calls
+after request_firmware_work_func().
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+After the error, no wireless interface is created. Reloading the wl12xx
+module makes the interface work.
+
+Turns out the wlan controller can be in a low-power ELP state after the
+boot from the bootloader or kexec, and needs to be woken up first.
+
+Let's wake the hardware and add a sleep after that similar to
+wl12xx_pre_boot() is already doing.
+
+Note that a similar issue could exist for wl18xx, but I have not seen it
+so far. And a search for wl18xx_get_mac and wl12xx_sdio_raw_read did not
+produce similar errors.
+
+Cc: Carl Philipp Klemm <philipp@uvos.xyz>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210603062814.19464-1-tony@atomide.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/realtek.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ti/wl12xx/main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 575580d3ffe0..b4879306bb8a 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -246,6 +246,19 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- 	return 0;
- }
+diff --git a/drivers/net/wireless/ti/wl12xx/main.c b/drivers/net/wireless/ti/wl12xx/main.c
+index 9d7dbfe7fe0c..c6da0cfb4afb 100644
+--- a/drivers/net/wireless/ti/wl12xx/main.c
++++ b/drivers/net/wireless/ti/wl12xx/main.c
+@@ -1503,6 +1503,13 @@ static int wl12xx_get_fuse_mac(struct wl1271 *wl)
+ 	u32 mac1, mac2;
+ 	int ret;
  
-+static int rtl821x_resume(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = genphy_resume(phydev);
++	/* Device may be in ELP from the bootloader or kexec */
++	ret = wlcore_write32(wl, WL12XX_WELP_ARM_COMMAND, WELP_ARM_COMMAND_VAL);
 +	if (ret < 0)
-+		return ret;
++		goto out;
 +
-+	msleep(20);
++	usleep_range(500000, 700000);
 +
-+	return 0;
-+}
-+
- static int rtl8211e_config_init(struct phy_device *phydev)
- {
- 	int ret = 0, oldpage;
-@@ -624,7 +637,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.ack_interrupt	= &rtl8211f_ack_interrupt,
- 		.config_intr	= &rtl8211f_config_intr,
- 		.suspend	= genphy_suspend,
--		.resume		= genphy_resume,
-+		.resume		= rtl821x_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
- 	}, {
+ 	ret = wlcore_set_partition(wl, &wl->ptable[PART_DRPW]);
+ 	if (ret < 0)
+ 		goto out;
 -- 
 2.30.2
 
