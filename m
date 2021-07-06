@@ -2,136 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5443BC7EE
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 10:36:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7952D3BC819
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 10:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbhGFIjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 04:39:07 -0400
-Received: from mail-co1nam11on2086.outbound.protection.outlook.com ([40.107.220.86]:58977
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230356AbhGFIjH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 04:39:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ni9MUXj0lxiD/NJNLbQKFYVe4lbTW8yK8FgksfHeNw44GNNix3CxC3N2QsnTiC06mMG1eoVQCbrXIZZyx3pRUh1BF8BStGKYnMPu5OwIGtA8Y2XQs6TiCpEMmE9RL/QjwWlYFHsJfDf6YGYJH1uwai9jtDxRvXsLRXJgiuzTU/Aq0owsIEM+YEXIJah1ISIU6y51hSJREAZdJ7x44XiRUJ5H2BlxsFRVW6Dwog0e2HMXNTibYLBK73BNBsD7G4gpIG+cGfyF39HVpsq2FTGMxLIrE6SDvj7RZwuzGArGjRq8UTsazDxdSPTYX165r1kBxIjPzEXfb48SlWRjOPKxYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=odW6qTtv8zJ2S5LOmxyJwRtOM+uZQ1zHy0h92FaCz7E=;
- b=fJSOk8qiTUPFm1Ho3xg98dGxgf6izw32XCoZ+pTfRMfJuI5SLnf62ysnB1T1/EpO/Beh/TaBmQDmZYHMPEA5uJqfIKI25S1vVbVNflBYOEL/nHqWuRMcDtZopjmB/LxVgjSsGIFA1ljOdM2I3IEq3YE0Mpq5fXc+pWZS7pmBoUnc8FZv2ABhrWYQKkhoU59UnSrun2Oa5TRIzFU6WFdPOe1Ku1aEk9hLX8BoG3r3IaRDM9ujjrvT1JOiR8QcEhFhuNBgUEkFoJ25LohORNhwRIp8l29Zm7OQxiZJBXZDuflrpjbAkvIRa1SP67QuHZBl6Iptt7GgF8mOd8epmeEjkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=networkplumber.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=none sp=none pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=odW6qTtv8zJ2S5LOmxyJwRtOM+uZQ1zHy0h92FaCz7E=;
- b=jmoKbwyS1tKXZyxwyKI7dGcj5cb69UQYsmD4rffNSdDOurSs1kSrrm1p9aruRVQgB+DdPHGfFcEhybUrooHCUIcH9tJwewbAFfoUmknMwLNfGxCjQEkWiA4WjwpsPXcbWlapAry4xJUpHstqgdfwQ2ea5RF4oZsDb4vDDHEmfn+468Dpdn9viWk4Md73JYv2DSsG3v36TcA13TSVKyU9SszmAFGMtLC1l60y6XF9Vo/5BAGXYLEToks2x5+/Ismv2n9ynZZDoVeLG3vzuaEYbD9EQBVdx85X0QLXsdz94oestzFL5e9bQl4kry905Cyfj+nizh1Zwn6ptYud9MlIcA==
-Received: from DM5PR15CA0043.namprd15.prod.outlook.com (2603:10b6:4:4b::29) by
- CH2PR12MB4118.namprd12.prod.outlook.com (2603:10b6:610:a4::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4287.23; Tue, 6 Jul 2021 08:36:27 +0000
-Received: from DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:4b:cafe::60) by DM5PR15CA0043.outlook.office365.com
- (2603:10b6:4:4b::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.22 via Frontend
- Transport; Tue, 6 Jul 2021 08:36:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; networkplumber.org; dkim=none (message not signed)
- header.d=none;networkplumber.org; dmarc=pass action=none
- header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT028.mail.protection.outlook.com (10.13.173.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4287.22 via Frontend Transport; Tue, 6 Jul 2021 08:36:27 +0000
-Received: from [172.27.11.204] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 6 Jul
- 2021 08:36:24 +0000
-Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
-From:   Roi Dayan <roid@nvidia.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-CC:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>
-References: <20210607064408.1668142-1-roid@nvidia.com>
- <20210705092817.45e225d5@hermes.local>
- <3678ebef-39b3-7e00-1ad1-114889aba683@gmail.com>
- <5918cbc9-9569-15fb-6ee6-fea13a7cca2d@nvidia.com>
-Message-ID: <618dc534-d4e3-823f-9a7a-fcf5b8d9d7d9@nvidia.com>
-Date:   Tue, 6 Jul 2021 11:36:22 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230472AbhGFIwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 04:52:44 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:51767 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230295AbhGFIwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 04:52:43 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <colin.king@canonical.com>)
+        id 1m0gmE-0001VT-Rv; Tue, 06 Jul 2021 08:49:58 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] octeontx2-af: Fix a handful of spelling mistakes and typos
+Date:   Tue,  6 Jul 2021 09:49:58 +0100
+Message-Id: <20210706084958.17209-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <5918cbc9-9569-15fb-6ee6-fea13a7cca2d@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f66c4ff0-aa32-4c6c-1038-08d940592569
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4118:
-X-Microsoft-Antispam-PRVS: <CH2PR12MB41180B79D624194ACA284DAEB81B9@CH2PR12MB4118.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QCEJAs/2hgvK2f2q8TKyFHFBWRdaJB1csQ0GFoexrxcchK2hVjZG5pPMquS7KRPCjceXiGzOsSty7L0tG6Paa1WBD/vNbYPYrED8LOAeWXVZvCUoIRXO9dhCfM4F6+zg1k172JxKKNYeNDMkcJBhjDWQNF09b7oYLSqzhVBzP4nmj3Be4xltS4UUf1rsGpd5giCwsEU2WN9K4j1FsXX8y//NqUJndulkZSh0Cxbv+5FNcrO3YPD6l5jOlvsVt9LNdxG3xJGw6fzFh1ebaNH4o9ULfEvy98AHOskjLM2+1Rs166GOk4aErHmDBIviD4femtPCVlBIy6CnkdOxsfu8jW0jYa/TrHpHoZRuuniXOYYIgslZed6nBtxPgM/g7qqhY+9mkosjcvSuSUbBqJQw16l3rB+RMFcVEInenJnWEwtch/XGWyhdr206B7tlL+GSqE5ID5IkOjnwh7Gx8Kb/QewOLKGCgOaQ+llSId9iH1XSVytXV7daUe8NZVBLAZeIKqE8OVJ5Tb4t/WCE3AV/xLnYXjb/5AdScz1vSqLNtJ1HiXOVXeeUO3xG2PBwr0v8zy5HtwmcR81TgjCMsEIF6VkdQCH7K5kCHJRdXIGOr4a8h1PMejOVtzumOKGklCcWIx83GIj+S4uqaYydXyGnXCQC32rogb7yjB7UjlpXKalxrYN9N0fQSuhD4p7wvL6GqT6xCQJ1Yyn3vjwv6cZ+7MWmBvg1ycKjw8Ot0SFuuiY=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(136003)(346002)(46966006)(36840700001)(426003)(16576012)(110136005)(316002)(2906002)(83380400001)(54906003)(4326008)(82740400003)(36906005)(336012)(31686004)(47076005)(82310400003)(8676002)(478600001)(5660300002)(53546011)(31696002)(2616005)(70586007)(356005)(36756003)(186003)(7636003)(16526019)(8936002)(36860700001)(86362001)(70206006)(26005)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2021 08:36:27.2535
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f66c4ff0-aa32-4c6c-1038-08d940592569
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT028.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4118
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
+There are quite a few spelling mistakes in dev_err error messages
+and comments. Fix these.
 
-On 2021-07-06 11:30 AM, Roi Dayan wrote:
-> 
-> 
-> On 2021-07-05 7:30 PM, David Ahern wrote:
->> On 7/5/21 10:28 AM, Stephen Hemminger wrote:
->>> On Mon, 7 Jun 2021 09:44:08 +0300
->>> Roi Dayan <roid@nvidia.com> wrote:
->>>
->>>> -    fprintf(f, " police 0x%x ", p->index);
->>>> +    print_uint(PRINT_ANY, "index", "\t index %u ", p->index);
->>>
->>> Why did output format have to change here? Why not:
->>>
->>>     print_hex(PRINT_ANY, "police", " police %#x", p->index);
->>>
->>
->> it should not have. I caught it in the first version in a review
->> comment; missed it in v4 that was applied.
->>
-> 
-> Hi,
-> 
-> I replied to your review in v0 that I wanted to match all the other
-> actions output which output as unsigned.
-> Since I didn't get another reply I thought its ok to continue and sent
-> another version which other changes that were required.
-> 
-> 
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c  |  4 ++--
+ drivers/net/ethernet/marvell/octeontx2/af/ptp.c  |  4 ++--
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c    | 10 +++++-----
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c  |  4 ++--
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c  | 16 ++++++++--------
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c  | 12 ++++++------
+ 6 files changed, 25 insertions(+), 25 deletions(-)
 
-beside the unsigned the json output in all other actions use "index"
-as far as I notice.
-the action name, e.g. "police", being printed under "kind" also to
-match the other actions.
-So I wanted the json output for police to match with same keys as
-the other actions. at least the keys "kind" and "index" which all
-have and not each action use different key.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 9169849881bf..7b548bd7238c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -972,7 +972,7 @@ static int cgx_link_usertable_index_map(int speed)
+ static void set_mod_args(struct cgx_set_link_mode_args *args,
+ 			 u32 speed, u8 duplex, u8 autoneg, u64 mode)
+ {
+-	/* Fill default values incase of user did not pass
++	/* Fill default values in case of user did not pass
+ 	 * valid parameters
+ 	 */
+ 	if (args->duplex == DUPLEX_UNKNOWN)
+@@ -1183,7 +1183,7 @@ static irqreturn_t cgx_fwi_event_handler(int irq, void *data)
+ 		/* Ensure response is updated before thread context starts */
+ 		smp_wmb();
+ 
+-		/* There wont be separate events for link change initiated from
++		/* There won't be separate events for link change initiated from
+ 		 * software; Hence report the command responses as events
+ 		 */
+ 		if (cgx_cmdresp_is_linkevent(event))
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+index 1ee37853f338..4ceda6cdacf9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
+@@ -117,7 +117,7 @@ static int ptp_adjfine(struct ptp *ptp, long scaled_ppm)
+ 
+ 	/* The hardware adds the clock compensation value to the PTP clock
+ 	 * on every coprocessor clock cycle. Typical convention is that it
+-	 * represent number of nanosecond betwen each cycle. In this
++	 * represent number of nanosecond between each cycle. In this
+ 	 * convention compensation value is in 64 bit fixed-point
+ 	 * representation where upper 32 bits are number of nanoseconds
+ 	 * and lower is fractions of nanosecond.
+@@ -127,7 +127,7 @@ static int ptp_adjfine(struct ptp *ptp, long scaled_ppm)
+ 	 * arithmetic on following formula
+ 	 * comp = tbase + tbase * scaled_ppm / (1M * 2^16)
+ 	 * where tbase is the basic compensation value calculated
+-	 * initialy in the probe function.
++	 * initially in the probe function.
+ 	 */
+ 	comp = ((u64)1000000000ull << 32) / ptp->clock_rate;
+ 	/* convert scaled_ppm to ppb */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+index 8d48b64485c6..cd8c07e14c28 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+@@ -62,7 +62,7 @@ static int rvu_get_lmtaddr(struct rvu *rvu, u16 pcifunc,
+ 	int err;
+ 
+ 	if (!iova) {
+-		dev_err(rvu->dev, "%s Requested Null address for transulation\n", __func__);
++		dev_err(rvu->dev, "%s Requested Null address for translation\n", __func__);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -74,12 +74,12 @@ static int rvu_get_lmtaddr(struct rvu *rvu, u16 pcifunc,
+ 
+ 	err = rvu_poll_reg(rvu, BLKADDR_RVUM, RVU_AF_SMMU_ADDR_RSP_STS, BIT_ULL(0), false);
+ 	if (err) {
+-		dev_err(rvu->dev, "%s LMTLINE iova transulation failed\n", __func__);
++		dev_err(rvu->dev, "%s LMTLINE iova translation failed\n", __func__);
+ 		return err;
+ 	}
+ 	val = rvu_read64(rvu, BLKADDR_RVUM, RVU_AF_SMMU_ADDR_RSP_STS);
+ 	if (val & ~0x1ULL) {
+-		dev_err(rvu->dev, "%s LMTLINE iova transulation failed err:%llx\n", __func__, val);
++		dev_err(rvu->dev, "%s LMTLINE iova translation failed err:%llx\n", __func__, val);
+ 		return -EIO;
+ 	}
+ 	/* PA[51:12] = RVU_AF_SMMU_TLN_FLIT1[60:21]
+@@ -243,7 +243,7 @@ int rvu_set_channels_base(struct rvu *rvu)
+ 	/* If programmable channels are present then configure
+ 	 * channels such that all channel numbers are contiguous
+ 	 * leaving no holes. This way the new CPT channels can be
+-	 * accomodated. The order of channel numbers assigned is
++	 * accommodated. The order of channel numbers assigned is
+ 	 * LBK, SDP, CGX and CPT.
+ 	 */
+ 	hw->sdp_chan_base = hw->lbk_chan_base + hw->lbk_links *
+@@ -294,7 +294,7 @@ static void rvu_lbk_set_channels(struct rvu *rvu)
+ 	u16 chans;
+ 
+ 	/* To loopback packets between multiple NIX blocks
+-	 * mutliple LBK blocks are needed. With two NIX blocks,
++	 * multiple LBK blocks are needed. With two NIX blocks,
+ 	 * four LBK blocks are needed and each LBK block
+ 	 * source and destination are as follows:
+ 	 * LBK0 - source NIX0 and destination NIX1
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 370d4ca1e5ed..637d7c0052f2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -431,7 +431,7 @@ static void print_npa_qsize(struct seq_file *m, struct rvu_pfvf *pfvf)
+ /* The 'qsize' entry dumps current Aura/Pool context Qsize
+  * and each context's current enable/disable status in a bitmap.
+  */
+-static int rvu_dbg_qsize_display(struct seq_file *filp, void *unsused,
++static int rvu_dbg_qsize_display(struct seq_file *filp, void *unused,
+ 				 int blktype)
+ {
+ 	void (*print_qsize)(struct seq_file *filp,
+@@ -2141,7 +2141,7 @@ static void rvu_print_npc_mcam_info(struct seq_file *s,
+ 	}
+ }
+ 
+-static int rvu_dbg_npc_mcam_info_display(struct seq_file *filp, void *unsued)
++static int rvu_dbg_npc_mcam_info_display(struct seq_file *filp, void *unused)
+ {
+ 	struct rvu *rvu = filp->private;
+ 	int pf, vf, numvfs, blkaddr;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index aeae37704428..a611d43bc09a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -398,11 +398,11 @@ static int rvu_nix_get_bpid(struct rvu *rvu, struct nix_bp_cfg_req *req,
+ 	pfvf = rvu_get_pfvf(rvu, req->hdr.pcifunc);
+ 
+ 	/* Backpressure IDs range division
+-	 * CGX channles are mapped to (0 - 191) BPIDs
+-	 * LBK channles are mapped to (192 - 255) BPIDs
+-	 * SDP channles are mapped to (256 - 511) BPIDs
++	 * CGX channels are mapped to (0 - 191) BPIDs
++	 * LBK channels are mapped to (192 - 255) BPIDs
++	 * SDP channels are mapped to (256 - 511) BPIDs
+ 	 *
+-	 * Lmac channles and bpids mapped as follows
++	 * Lmac channels and bpids mapped as follows
+ 	 * cgx(0)_lmac(0)_chan(0 - 15) = bpid(0 - 15)
+ 	 * cgx(0)_lmac(1)_chan(0 - 15) = bpid(16 - 31) ....
+ 	 * cgx(1)_lmac(0)_chan(0 - 15) = bpid(64 - 79) ....
+@@ -1491,7 +1491,7 @@ static int nix_check_txschq_alloc_req(struct rvu *rvu, int lvl, u16 pcifunc,
+ 		return 0;
+ 	}
+ 
+-	/* Get free SCHQ count and check if request can be accomodated */
++	/* Get free SCHQ count and check if request can be accommodated */
+ 	if (hw->cap.nix_fixed_txschq_mapping) {
+ 		nix_get_txschq_range(rvu, pcifunc, link, &start, &end);
+ 		schq = start + (pcifunc & RVU_PFVF_FUNC_MASK);
+@@ -1625,7 +1625,7 @@ int rvu_mbox_handler_nix_txsch_alloc(struct rvu *rvu,
+ 	mutex_lock(&rvu->rsrc_lock);
+ 
+ 	/* Check if request is valid as per HW capabilities
+-	 * and can be accomodated.
++	 * and can be accommodated.
+ 	 */
+ 	for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++) {
+ 		rc = nix_check_txschq_alloc_req(rvu, lvl, pcifunc, nix_hw, req);
+@@ -3041,7 +3041,7 @@ static int reserve_flowkey_alg_idx(struct rvu *rvu, int blkaddr, u32 flow_cfg)
+ 			    NIX_AF_RX_FLOW_KEY_ALGX_FIELDX(hw->flowkey.in_use,
+ 							   fid), field[fid]);
+ 
+-	/* Store the flow_cfg for futher lookup */
++	/* Store the flow_cfg for further lookup */
+ 	rc = hw->flowkey.in_use;
+ 	hw->flowkey.flowkey[rc] = flow_cfg;
+ 	hw->flowkey.in_use++;
+@@ -3723,7 +3723,7 @@ static int rvu_nix_block_init(struct rvu *rvu, struct nix_hw *nix_hw)
+ 				    (ltdefs->rx_apad1.ltype_match << 4) |
+ 				    ltdefs->rx_apad1.ltype_mask);
+ 
+-			/* Receive ethertype defination register defines layer
++			/* Receive ethertype definition register defines layer
+ 			 * information in NPC_RESULT_S to identify the Ethertype
+ 			 * location in L2 header. Used for Ethertype overwriting
+ 			 * in inline IPsec flow.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index 3612e0a2cab3..35ef314a8b23 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1048,7 +1048,7 @@ void npc_enadis_default_mce_entry(struct rvu *rvu, u16 pcifunc,
+ 		return;
+ 	}
+ 
+-	/* return incase mce list is not enabled */
++	/* return in case mce list is not enabled */
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc & ~RVU_PFVF_FUNC_MASK);
+ 	if (hw->cap.nix_rx_multicast && is_vf(pcifunc) &&
+ 	    type != NIXLF_BCAST_ENTRY && !pfvf->use_mce_list)
+@@ -2298,7 +2298,7 @@ npc_get_mcam_search_range_priority(struct npc_mcam *mcam,
+ 	 * - If reference entry is not in hprio zone then
+ 	 *      search range: ref_entry to end.
+ 	 * - If reference entry is in hprio zone and if
+-	 *   request can be accomodated in non-hprio zone then
++	 *   request can be accommodated in non-hprio zone then
+ 	 *      search range: 'start of middle zone' to 'end'
+ 	 * - else search in reverse, so that less number of hprio
+ 	 *   zone entries are allocated.
+@@ -2325,7 +2325,7 @@ npc_get_mcam_search_range_priority(struct npc_mcam *mcam,
+ 	 * - If reference entry is not in lprio zone then
+ 	 *      search range: 0 to ref_entry.
+ 	 * - If reference entry is in lprio zone and if
+-	 *   request can be accomodated in middle zone then
++	 *   request can be accommodated in middle zone then
+ 	 *      search range: 'hprio_end' to 'lprio_start'
+ 	 */
+ 
+@@ -2376,7 +2376,7 @@ static int npc_mcam_alloc_entries(struct npc_mcam *mcam, u16 pcifunc,
+ 	 * Reverse bitmap is used to allocate entries
+ 	 * - when a higher priority entry is requested
+ 	 * - when available free entries are less.
+-	 * Lower priority ones out of avaialble free entries are always
++	 * Lower priority ones out of available free entries are always
+ 	 * chosen when 'high vs low' question arises.
+ 	 */
+ 
+@@ -2397,7 +2397,7 @@ static int npc_mcam_alloc_entries(struct npc_mcam *mcam, u16 pcifunc,
+ 	hp_fcnt = npc_mcam_get_free_count(mcam->bmap, 0, mcam->hprio_end);
+ 	fcnt = mcam->bmap_fcnt - lp_fcnt - hp_fcnt;
+ 
+-	/* Check if request can be accomodated in the middle zone */
++	/* Check if request can be accommodated in the middle zone */
+ 	if (fcnt > req->count) {
+ 		start = mcam->hprio_end;
+ 		end = mcam->lprio_start;
+@@ -2461,7 +2461,7 @@ static int npc_mcam_alloc_entries(struct npc_mcam *mcam, u16 pcifunc,
+ 		}
+ 	}
+ 
+-	/* If allocating requested no of entries is unsucessful,
++	/* If allocating requested no of entries is unsuccessful,
+ 	 * expand the search range to full bitmap length and retry.
+ 	 */
+ 	if (!req->priority && (rsp->count < req->count) &&
+-- 
+2.31.1
+
