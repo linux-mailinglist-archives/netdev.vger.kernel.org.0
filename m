@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D76983BCC25
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F40BD3BCC0E
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbhGFLS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:18:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54176 "EHLO mail.kernel.org"
+        id S232465AbhGFLSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:18:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232384AbhGFLSN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:18:13 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B73E961C43;
-        Tue,  6 Jul 2021 11:15:27 +0000 (UTC)
+        id S232417AbhGFLSP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:18:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C8C34610F7;
+        Tue,  6 Jul 2021 11:15:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570128;
-        bh=X0vuEX7gbgXVikkrOrMJN4xe+EpY/dDaKKOHLoFDWpc=;
+        s=k20201202; t=1625570136;
+        bh=V1WhxOyIFQLqjiaF2oJZ07H6AUOjeRoOfxJ0qS2zPMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L6dceCbZq3muGGnY7AX7Z+qDzAtxOd9okgbHeTGjdgOMUVoZRXgIlnED0SvqbmBJU
-         wVJ55jzc5xz3gdc39rpm0efkX1w/OqcM59AIENMgF9xTJd5+GhmzCaFqAhGhfDMlvH
-         KiU+OiBtjWCrpf/kVAdhLKkgOsYPFH1nIE5+W+kNys3a7zEK96PwJRfgYuQBPxdnfy
-         Y3cLaTqCPTuA2n3/C75Q4tmmT8damFFtkyKWYUGem4JuCzZ7gTdZHwfzY4bLFck5JO
-         4Db2EhOV1GJ8r2ntYGohG/Xm/2d13SOD1QJwfQk6XBURBsC3WFlxzs349gFPqsGxuK
-         vgnJE3gSJ1MAQ==
+        b=LGcI2lOL3cAktC9C/GKk0aSuLLE3fvQ6fKXP126KJcOXL3aUbXysCQKldkyf5O9u1
+         kmkptbip3/VOQHGFEhW/lO2pT7N9QPJJnQthC2nlxXaxFqoQDGOEX+MfWhUFP7lz++
+         dAaEfYUWJXHd8jQnYqWsxLRgKD3f3d1Q3oLvchYx8pdmaWfinWU2etut7mAFCLRvwi
+         dAkQuMSJ/2Vmg6nlJ5Fi/FnV5HiMPKBXbcNNlGvh/di4NM0xJmyg7fUl89BBNRAjJk
+         sP6Xt/iqKcXHXD9eC8HXbCXDNP0oKpOTL5L4CeLLQJwD8dleP9eNLsrrfLvTp9wW79
+         bXERlVHnWp6hA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+Cc:     Xie Yongji <xieyongji@bytedance.com>,
+        Jason Wang <jasowang@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.13 056/189] net: stmmac: the XPCS obscures a potential "PHY not found" error
-Date:   Tue,  6 Jul 2021 07:11:56 -0400
-Message-Id: <20210706111409.2058071-56-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 062/189] virtio-net: Add validation for used length
+Date:   Tue,  6 Jul 2021 07:12:02 -0400
+Message-Id: <20210706111409.2058071-62-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706111409.2058071-1-sashal@kernel.org>
 References: <20210706111409.2058071-1-sashal@kernel.org>
@@ -44,99 +44,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit 4751d2aa321f2828d8c5d2f7ce4ed18a01e47f46 ]
+[ Upstream commit ad993a95c508417acdeb15244109e009e50d8758 ]
 
-stmmac_mdio_register() has logic to search for PHYs on the MDIO bus and
-assign them IRQ lines, as well as to set priv->plat->phy_addr.
+This adds validation for used length (might come
+from an untrusted device) to avoid data corruption
+or loss.
 
-If no PHY is found, the "found" variable remains set to 0 and the
-function errors out.
-
-After the introduction of commit f213bbe8a9d6 ("net: stmmac: Integrate
-it with DesignWare XPCS"), the "found" variable was immediately reused
-for searching for a PCS on the same MDIO bus.
-
-This can result in 2 types of potential problems (none of them seems to
-be seen on the only Intel system that sets has_xpcs = true, otherwise it
-would have been reported):
-
-1. If a PCS is found but a PHY is not, then the code happily exits with
-   no error. One might say "yes, but this is not possible, because
-   of_mdiobus_register will probe a PHY for all MDIO addresses,
-   including for the XPCS, so if an XPCS exists, then a PHY certainly
-   exists too". Well, that is not true, see intel_mgbe_common_data():
-
-	/* Ensure mdio bus scan skips intel serdes and pcs-xpcs */
-	plat->mdio_bus_data->phy_mask = 1 << INTEL_MGBE_ADHOC_ADDR;
-	plat->mdio_bus_data->phy_mask |= 1 << INTEL_MGBE_XPCS_ADDR;
-
-2. A PHY is found but an MDIO device with the XPCS PHY ID isn't, and in
-   that case, the error message will be "No PHY found". Confusing.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20210527155959.3270478-1-olteanv@gmail.com
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20210531135852.113-1-xieyongji@bytedance.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 21 +++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ drivers/net/virtio_net.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index b750074f8f9c..e293bf1ce9f3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -503,6 +503,12 @@ int stmmac_mdio_register(struct net_device *ndev)
- 		found = 1;
- 	}
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 78a01c71a17c..252f6718d730 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -721,6 +721,12 @@ static struct sk_buff *receive_small(struct net_device *dev,
+ 	len -= vi->hdr_len;
+ 	stats->bytes += len;
  
-+	if (!found && !mdio_node) {
-+		dev_warn(dev, "No PHY found\n");
-+		err = -ENODEV;
-+		goto no_phy_found;
++	if (unlikely(len > GOOD_PACKET_LEN)) {
++		pr_debug("%s: rx error: len %u exceeds max size %d\n",
++			 dev->name, len, GOOD_PACKET_LEN);
++		dev->stats.rx_length_errors++;
++		goto err_len;
 +	}
-+
- 	/* Try to probe the XPCS by scanning all addresses. */
- 	if (priv->hw->xpcs) {
- 		struct mdio_xpcs_args *xpcs = &priv->hw->xpcs_args;
-@@ -511,6 +517,7 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 	rcu_read_lock();
+ 	xdp_prog = rcu_dereference(rq->xdp_prog);
+ 	if (xdp_prog) {
+@@ -824,6 +830,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+ err_xdp:
+ 	rcu_read_unlock();
+ 	stats->xdp_drops++;
++err_len:
+ 	stats->drops++;
+ 	put_page(page);
+ xdp_xmit:
+@@ -877,6 +884,12 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
+ 	head_skb = NULL;
+ 	stats->bytes += len - vi->hdr_len;
  
- 		xpcs->bus = new_bus;
- 
-+		found = 0;
- 		for (addr = 0; addr < max_addr; addr++) {
- 			xpcs->addr = addr;
- 
-@@ -520,13 +527,12 @@ int stmmac_mdio_register(struct net_device *ndev)
- 				break;
- 			}
- 		}
--	}
- 
--	if (!found && !mdio_node) {
--		dev_warn(dev, "No PHY found\n");
--		mdiobus_unregister(new_bus);
--		mdiobus_free(new_bus);
--		return -ENODEV;
-+		if (!found && !mdio_node) {
-+			dev_warn(dev, "No XPCS found\n");
-+			err = -ENODEV;
-+			goto no_xpcs_found;
-+		}
++	if (unlikely(len > truesize)) {
++		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
++			 dev->name, len, (unsigned long)ctx);
++		dev->stats.rx_length_errors++;
++		goto err_skb;
++	}
+ 	rcu_read_lock();
+ 	xdp_prog = rcu_dereference(rq->xdp_prog);
+ 	if (xdp_prog) {
+@@ -1004,13 +1017,6 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
  	}
+ 	rcu_read_unlock();
  
- bus_register_done:
-@@ -534,6 +540,9 @@ int stmmac_mdio_register(struct net_device *ndev)
- 
- 	return 0;
- 
-+no_xpcs_found:
-+no_phy_found:
-+	mdiobus_unregister(new_bus);
- bus_register_fail:
- 	mdiobus_free(new_bus);
- 	return err;
+-	if (unlikely(len > truesize)) {
+-		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
+-			 dev->name, len, (unsigned long)ctx);
+-		dev->stats.rx_length_errors++;
+-		goto err_skb;
+-	}
+-
+ 	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
+ 			       metasize, headroom);
+ 	curr_skb = head_skb;
 -- 
 2.30.2
 
