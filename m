@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 095483BD2FA
-	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDF23BD3AE
+	for <lists+netdev@lfdr.de>; Tue,  6 Jul 2021 13:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236957AbhGFLri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 07:47:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47548 "EHLO mail.kernel.org"
+        id S236734AbhGFL6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 07:58:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237783AbhGFLhV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:37:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57B0D61F7C;
-        Tue,  6 Jul 2021 11:29:46 +0000 (UTC)
+        id S234035AbhGFLic (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Jul 2021 07:38:32 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5686A61F80;
+        Tue,  6 Jul 2021 11:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625570987;
-        bh=44Xma6sR9QDFxx24O/PYwhH3IGAclEOgZ7kRlh4pOSA=;
+        s=k20201202; t=1625571000;
+        bh=n0U+kvtwUQr9ljXpuCRdRPhENSLFS5UKC6+L6CU1qVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VoS7Q9gl9iSnF8K55nEHwg7OIatIDM5wILHOBHXACdLZPRu2rn7YVQbny0n/n49oH
-         xibac25KQjI0xIaAfu8j4rLa0N9KBRNoLXKFhs/3bR2JyOOm3EZyAOXFJy3JVWPtkB
-         EQ5fMSjFu7LZi+iUHN/uhEqGXYR/05I5Q3gwJjf8hpKTzJ+bKE/OfIigzzt5ec24VT
-         Z9u4B3zoBZMEc8L5g08Jh9BB2ixi74gByJJY463GkOY1rVX07fdI82SCqhclSyjXIK
-         HuuuunwKMfkAQNJ65sDT197U5DPN5cTykPF/mmg7QIS0LQ0BdTJltENIPPb1QaaahT
-         y6RQmMQrwXhkA==
+        b=cnXi2TS3hmnNSDVwshgjgycEcg/ks8wpdqtexO70ErpMcQmRtaFweExh3wP9fWcqM
+         zrgrMbkSVo6eq1sxRTS8QtysnO6bWkuptnVX/+QGL8Clm/PtPzmeCR4MQv2ToRIVwm
+         sghcWimt2RTwvzXDUQJBi9cD6o4XtAP29A0ENsh5Uowug8IbeqmX82w+Sj15l7epDN
+         3prK4urfk3ATFMhxs9csMKY6bcckTbYwuIO5cFUMBDFsrNuw3XU2NwQ+MAKg+JAuoJ
+         7TTxGQa6K+iCCu8wICiCHiqI22jkfpl1X1+zn5/yRMAgCPLpedPMqypF9jj02iAoW4
+         LL9lyX0LbCLkw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Willy Tarreau <w@1wt.eu>, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 12/31] ipv6: use prandom_u32() for ID generation
-Date:   Tue,  6 Jul 2021 07:29:12 -0400
-Message-Id: <20210706112931.2066397-12-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 23/31] atm: nicstar: register the interrupt handler in the right place
+Date:   Tue,  6 Jul 2021 07:29:23 -0400
+Message-Id: <20210706112931.2066397-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210706112931.2066397-1-sashal@kernel.org>
 References: <20210706112931.2066397-1-sashal@kernel.org>
@@ -43,92 +43,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 62f20e068ccc50d6ab66fdb72ba90da2b9418c99 ]
+[ Upstream commit 70b639dc41ad499384e41e106fce72e36805c9f2 ]
 
-This is a complement to commit aa6dd211e4b1 ("inet: use bigger hash
-table for IP ID generation"), but focusing on some specific aspects
-of IPv6.
+Because the error handling is sequential, the application of resources
+should be carried out in the order of error handling, so the operation
+of registering the interrupt handler should be put in front, so as not
+to free the unregistered interrupt handler during error handling.
 
-Contary to IPv4, IPv6 only uses packet IDs with fragments, and with a
-minimum MTU of 1280, it's much less easy to force a remote peer to
-produce many fragments to explore its ID sequence. In addition packet
-IDs are 32-bit in IPv6, which further complicates their analysis. On
-the other hand, it is often easier to choose among plenty of possible
-source addresses and partially work around the bigger hash table the
-commit above permits, which leaves IPv6 partially exposed to some
-possibilities of remote analysis at the risk of weakening some
-protocols like DNS if some IDs can be predicted with a good enough
-probability.
+This log reveals it:
 
-Given the wide range of permitted IDs, the risk of collision is extremely
-low so there's no need to rely on the positive increment algorithm that
-is shared with the IPv4 code via ip_idents_reserve(). We have a fast
-PRNG, so let's simply call prandom_u32() and be done with it.
+[    3.438724] Trying to free already-free IRQ 23
+[    3.439060] WARNING: CPU: 5 PID: 1 at kernel/irq/manage.c:1825 free_irq+0xfb/0x480
+[    3.440039] Modules linked in:
+[    3.440257] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
+[    3.440793] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.441561] RIP: 0010:free_irq+0xfb/0x480
+[    3.441845] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
+[    3.443121] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
+[    3.443483] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
+[    3.443972] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
+[    3.444462] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
+[    3.444950] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
+[    3.444994] FS:  0000000000000000(0000) GS:ffff88817bd40000(0000) knlGS:0000000000000000
+[    3.444994] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    3.444994] CR2: 0000000000000000 CR3: 000000000642e000 CR4: 00000000000006e0
+[    3.444994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    3.444994] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    3.444994] Call Trace:
+[    3.444994]  ns_init_card_error+0x18e/0x250
+[    3.444994]  nicstar_init_one+0x10d2/0x1130
+[    3.444994]  local_pci_probe+0x4a/0xb0
+[    3.444994]  pci_device_probe+0x126/0x1d0
+[    3.444994]  ? pci_device_remove+0x100/0x100
+[    3.444994]  really_probe+0x27e/0x650
+[    3.444994]  driver_probe_device+0x84/0x1d0
+[    3.444994]  ? mutex_lock_nested+0x16/0x20
+[    3.444994]  device_driver_attach+0x63/0x70
+[    3.444994]  __driver_attach+0x117/0x1a0
+[    3.444994]  ? device_driver_attach+0x70/0x70
+[    3.444994]  bus_for_each_dev+0xb6/0x110
+[    3.444994]  ? rdinit_setup+0x40/0x40
+[    3.444994]  driver_attach+0x22/0x30
+[    3.444994]  bus_add_driver+0x1e6/0x2a0
+[    3.444994]  driver_register+0xa4/0x180
+[    3.444994]  __pci_register_driver+0x77/0x80
+[    3.444994]  ? uPD98402_module_init+0xd/0xd
+[    3.444994]  nicstar_init+0x1f/0x75
+[    3.444994]  do_one_initcall+0x7a/0x3d0
+[    3.444994]  ? rdinit_setup+0x40/0x40
+[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
+[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  kernel_init+0x13/0x180
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  ret_from_fork+0x1f/0x30
+[    3.444994] Kernel panic - not syncing: panic_on_warn set ...
+[    3.444994] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.12.4-g70e7f0549188-dirty #142
+[    3.444994] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    3.444994] Call Trace:
+[    3.444994]  dump_stack+0xba/0xf5
+[    3.444994]  ? free_irq+0xfb/0x480
+[    3.444994]  panic+0x155/0x3ed
+[    3.444994]  ? __warn+0xed/0x150
+[    3.444994]  ? free_irq+0xfb/0x480
+[    3.444994]  __warn+0x103/0x150
+[    3.444994]  ? free_irq+0xfb/0x480
+[    3.444994]  report_bug+0x119/0x1c0
+[    3.444994]  handle_bug+0x3b/0x80
+[    3.444994]  exc_invalid_op+0x18/0x70
+[    3.444994]  asm_exc_invalid_op+0x12/0x20
+[    3.444994] RIP: 0010:free_irq+0xfb/0x480
+[    3.444994] Code: 6e 08 74 6f 4d 89 f4 e8 c3 78 09 00 4d 8b 74 24 18 4d 85 f6 75 e3 e8 b4 78 09 00 8b 75 c8 48 c7 c7 a0 ac d5 85 e8 95 d7 f5 ff <0f> 0b 48 8b 75 c0 4c 89 ff e8 87 c5 90 03 48 8b 43 40 4c 8b a0 80
+[    3.444994] RSP: 0000:ffffc90000017b50 EFLAGS: 00010086
+[    3.444994] RAX: 0000000000000000 RBX: ffff888107c6f000 RCX: 0000000000000000
+[    3.444994] RDX: 0000000000000000 RSI: ffffffff8123f301 RDI: 00000000ffffffff
+[    3.444994] RBP: ffffc90000017b90 R08: 0000000000000001 R09: 0000000000000003
+[    3.444994] R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+[    3.444994] R13: ffff888107dc0000 R14: ffff888104f6bf00 R15: ffff888107c6f0a8
+[    3.444994]  ? vprintk_func+0x71/0x110
+[    3.444994]  ns_init_card_error+0x18e/0x250
+[    3.444994]  nicstar_init_one+0x10d2/0x1130
+[    3.444994]  local_pci_probe+0x4a/0xb0
+[    3.444994]  pci_device_probe+0x126/0x1d0
+[    3.444994]  ? pci_device_remove+0x100/0x100
+[    3.444994]  really_probe+0x27e/0x650
+[    3.444994]  driver_probe_device+0x84/0x1d0
+[    3.444994]  ? mutex_lock_nested+0x16/0x20
+[    3.444994]  device_driver_attach+0x63/0x70
+[    3.444994]  __driver_attach+0x117/0x1a0
+[    3.444994]  ? device_driver_attach+0x70/0x70
+[    3.444994]  bus_for_each_dev+0xb6/0x110
+[    3.444994]  ? rdinit_setup+0x40/0x40
+[    3.444994]  driver_attach+0x22/0x30
+[    3.444994]  bus_add_driver+0x1e6/0x2a0
+[    3.444994]  driver_register+0xa4/0x180
+[    3.444994]  __pci_register_driver+0x77/0x80
+[    3.444994]  ? uPD98402_module_init+0xd/0xd
+[    3.444994]  nicstar_init+0x1f/0x75
+[    3.444994]  do_one_initcall+0x7a/0x3d0
+[    3.444994]  ? rdinit_setup+0x40/0x40
+[    3.444994]  ? rcu_read_lock_sched_held+0x4a/0x70
+[    3.444994]  kernel_init_freeable+0x2a7/0x2f9
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  kernel_init+0x13/0x180
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  ? rest_init+0x2c0/0x2c0
+[    3.444994]  ret_from_fork+0x1f/0x30
+[    3.444994] Dumping ftrace buffer:
+[    3.444994]    (ftrace buffer empty)
+[    3.444994] Kernel Offset: disabled
+[    3.444994] Rebooting in 1 seconds..
 
-Performance measurements at 10 Gbps couldn't show any difference with
-the previous code, even when using a single core, because due to the
-large fragments, we're limited to only ~930 kpps at 10 Gbps and the cost
-of the random generation is completely offset by other operations and by
-the network transfer time. In addition, this change removes the need to
-update a shared entry in the idents table so it may even end up being
-slightly faster on large scale systems where this matters.
-
-The risk of at least one collision here is about 1/80 million among
-10 IDs, 1/850k among 100 IDs, and still only 1/8.5k among 1000 IDs,
-which remains very low compared to IPv4 where all IDs are reused
-every 4 to 80ms on a 10 Gbps flow depending on packet sizes.
-
-Reported-by: Amit Klein <aksecurity@gmail.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20210529110746.6796-1-w@1wt.eu
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/output_core.c | 28 +++++-----------------------
- 1 file changed, 5 insertions(+), 23 deletions(-)
+ drivers/atm/nicstar.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
-index 6b896cc9604e..e2de4b0479f6 100644
---- a/net/ipv6/output_core.c
-+++ b/net/ipv6/output_core.c
-@@ -14,29 +14,11 @@ static u32 __ipv6_select_ident(struct net *net,
- 			       const struct in6_addr *dst,
- 			       const struct in6_addr *src)
- {
--	const struct {
--		struct in6_addr dst;
--		struct in6_addr src;
--	} __aligned(SIPHASH_ALIGNMENT) combined = {
--		.dst = *dst,
--		.src = *src,
--	};
--	u32 hash, id;
--
--	/* Note the following code is not safe, but this is okay. */
--	if (unlikely(siphash_key_is_zero(&net->ipv4.ip_id_key)))
--		get_random_bytes(&net->ipv4.ip_id_key,
--				 sizeof(net->ipv4.ip_id_key));
--
--	hash = siphash(&combined, sizeof(combined), &net->ipv4.ip_id_key);
--
--	/* Treat id of 0 as unset and if we get 0 back from ip_idents_reserve,
--	 * set the hight order instead thus minimizing possible future
--	 * collisions.
--	 */
--	id = ip_idents_reserve(hash, 1);
--	if (unlikely(!id))
--		id = 1 << 31;
-+	u32 id;
-+
-+	do {
-+		id = prandom_u32();
-+	} while (!id);
+diff --git a/drivers/atm/nicstar.c b/drivers/atm/nicstar.c
+index 86f3e72e686f..56d464b58768 100644
+--- a/drivers/atm/nicstar.c
++++ b/drivers/atm/nicstar.c
+@@ -525,6 +525,15 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
+ 	/* Set the VPI/VCI MSb mask to zero so we can receive OAM cells */
+ 	writel(0x00000000, card->membase + VPM);
  
- 	return id;
- }
++	card->intcnt = 0;
++	if (request_irq
++	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
++		pr_err("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
++		error = 9;
++		ns_init_card_error(card, error);
++		return error;
++	}
++
+ 	/* Initialize TSQ */
+ 	card->tsq.org = dma_alloc_coherent(&card->pcidev->dev,
+ 					   NS_TSQSIZE + NS_TSQ_ALIGNMENT,
+@@ -751,15 +760,6 @@ static int ns_init_card(int i, struct pci_dev *pcidev)
+ 
+ 	card->efbie = 1;
+ 
+-	card->intcnt = 0;
+-	if (request_irq
+-	    (pcidev->irq, &ns_irq_handler, IRQF_SHARED, "nicstar", card) != 0) {
+-		printk("nicstar%d: can't allocate IRQ %d.\n", i, pcidev->irq);
+-		error = 9;
+-		ns_init_card_error(card, error);
+-		return error;
+-	}
+-
+ 	/* Register device */
+ 	card->atmdev = atm_dev_register("nicstar", &card->pcidev->dev, &atm_ops,
+ 					-1, NULL);
 -- 
 2.30.2
 
