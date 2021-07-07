@@ -2,89 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77AC43BEE92
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 20:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012563BEE96
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 20:22:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbhGGSWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 14:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
+        id S231392AbhGGSXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 14:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbhGGSWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 14:22:36 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6D1C061787;
-        Wed,  7 Jul 2021 11:18:38 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id h1-20020a17090a3d01b0290172d33bb8bcso4280225pjc.0;
-        Wed, 07 Jul 2021 11:18:38 -0700 (PDT)
+        with ESMTP id S231362AbhGGSXr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 14:23:47 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA08C061574;
+        Wed,  7 Jul 2021 11:21:06 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id p22so4593728yba.7;
+        Wed, 07 Jul 2021 11:21:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ixt+c2hw94PuELT3/7LW91LVqIKuIwXifyYu+SgDn8s=;
-        b=aNp6OZBz05XG9tdnfsmjQ30v/Jill+KIBTCc9YFClH2qS8ognYKKHhpuqeG7sYUEkq
-         bPWVU0ix2Hy+ULqA7z8ovcObtKSw+A8xRPY1vlTAFT905PLu3DKIVdm3sKooJRa7IiMs
-         /wcwbxZeFIYnMjKr0Qfua3S0BEunS0JAr15WHJhia/0ImSV0AzEcBfV5ZYDmGujt5Ces
-         1IxhcP1wAOgwtyNi+qkCeE6Ua53AwMvYJ6vjlFkljbVjzQScPEfVAhzYdzoZ8bKYerlT
-         L1mD5axzlIo7W1JnJtFmcG1z06HFLKbcDsCEy3CkMX//tfA5fXwzoMq1tUMImmDXcP0U
-         /PCg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0UsMR6dgbLAQ7a3v8mrVQ2c0/k46Bj91GFDCBaSCAW8=;
+        b=BmamxN7I7rJaC329iBWVyQyIczteQMFU3PqfDweMvffVAgXQB0hIfegSQCYp7/EDcu
+         33Cy2hxSqR8BclpCp8CPoIwbV7Rl0TPR5dAa7kqUSRX421oz2WA84zQ6+ypSa8oM5vwC
+         Ll8vAYRtiult7QIWRee0+w3XM1BJtokcCpIu1UQxq18542mZDQF7oP5WsyYLsSUS0RkL
+         dsuc/C00mCmqKHdcQmv8OaM3fHCMa5ZxjndYIYnoJUUDa5SzRYxeG6V8dI/xChHmeYlI
+         1cft7sLsyYNfr1Nnf5OUJyJPCCEEYJ6/SAhwpE0gUMqTxBrk9S4bNk32keLs9hQ7PCdv
+         ZVwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ixt+c2hw94PuELT3/7LW91LVqIKuIwXifyYu+SgDn8s=;
-        b=GC6Uvb1Vi0QDiUJ2EBtygkJ4qEhs8qhE1AQH+TmuZ0BwgvE5UPwtmP1EnRBXMCPxwa
-         qzYJvRd5Sj1UWM+uAGVHWcAIMLpbDmcrNPclXqG7h2FrvT3UUPixUg/GfJ5QnWFs+QIm
-         he2OdxBoLmUsU3c79fKOeQtIeSL2w7D0nIedkafd8HtJ1FhwDjgN1KMnWSxrQjFHF1Ef
-         d+NnHfi94q00P/LfuG/3GOgqfGIF1ERNwpXf+iz/eKQeC7hd7d89wEkz64thgQpZ4nTL
-         +5UhN+z73RYwfkp2p0ust0cP6ydoEad+jx7w/14yGlMcFmoNwYj8DTd/LC4zcX4r4rCt
-         xbiA==
-X-Gm-Message-State: AOAM5334/NHYWpNB8AoToBULn1/H8YbRUcOPlX/vejMEy2LP4rmKXZDL
-        cx4vzIteRJNIePUFXUbXnSiMFnKfXUHNqg==
-X-Google-Smtp-Source: ABdhPJyGi99q0BU6Nf/cL8htYi+irf7Ncgxsa6LoGtLPZnCU+HUrAw2xLrulfdTRXmi4PByxEJqB9A==
-X-Received: by 2002:a17:90a:d596:: with SMTP id v22mr327411pju.51.1625681918112;
-        Wed, 07 Jul 2021 11:18:38 -0700 (PDT)
-Received: from BALT-UROY.maxlinear.com ([202.8.116.91])
-        by smtp.gmail.com with ESMTPSA id b18sm7472598pjq.2.2021.07.07.11.18.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 11:18:37 -0700 (PDT)
-From:   UjjaL Roy <royujjal@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ipmr: Fix indentation issue
-Date:   Wed,  7 Jul 2021 23:48:33 +0530
-Message-Id: <20210707181833.165-1-royujjal@gmail.com>
-X-Mailer: git-send-email 2.31.1.windows.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0UsMR6dgbLAQ7a3v8mrVQ2c0/k46Bj91GFDCBaSCAW8=;
+        b=SXARANUREwZ58+bmOXr0RMrj9Emrd2M9jw5iRXCBEZ46LE1hUkIXQmssuK/lXBQNel
+         YuB2PqTCvsIbPbgets81NxamSlbuXUj/dR2O6GGzJ6VTTjEi5vzHn/O2IT19TL3sBszk
+         Uxk5OTzRfzjEhRm1Oo1v3JprbOilGM/Je+1Gq0E/jn9nj9rqEP+Ceeu7tR/ZhDPvFfqP
+         k4LgsnyrTrVj4+3FVEp/Yufcu5hruBQA2echUIUDzKrdarHZyUTrOnC3LL54T7LD0Bet
+         Nqq++87fK1W8Il3h2AqKHptkkJZzcQKChamraJjp3dp4n4ZYNWnwaZC2AOeq8kwosH5I
+         XU7w==
+X-Gm-Message-State: AOAM531vGAsKX8yRDAf5i53hZ0kdc/ktGeqqk0UcUfi5erl1fq+Cm7C4
+        Q2ONwPunVdsz3KWBLP6Eko66XHVHGTWa7wUBCRY=
+X-Google-Smtp-Source: ABdhPJxG8Um+aWqqNQ0d5o811N/Wy+woMR8wf8ICYG23RYwDvaAnPXg4AO1H0FQyV88Ez1SVlYXpyB348CcJv7N0ZiI=
+X-Received: by 2002:a25:be02:: with SMTP id h2mr34971749ybk.91.1625682065253;
+ Wed, 07 Jul 2021 11:21:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp> <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+In-Reply-To: <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 7 Jul 2021 11:20:54 -0700
+Message-ID: <CABBYNZ+Vpzy2+u=xYR-7Kxx5M6pAQFQ8TJHYV1-Jr-FvqZ8=OQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: call lock_sock() outside of spinlock section
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Roy, UjjaL" <royujjal@gmail.com>
+Hi Tetsuo,
 
-Fixed indentation by removing extra spaces.
+On Wed, Jul 7, 2021 at 2:43 AM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> syzbot is hitting might_sleep() warning at hci_sock_dev_event() due to
+> calling lock_sock() with rw spinlock held [1]. Defer calling lock_sock()
+> via sock_hold().
+>
+> Link: https://syzkaller.appspot.com/bug?extid=a5df189917e79d5e59c9 [1]
+> Reported-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Tested-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+> Fixes: e305509e678b3a4a ("Bluetooth: use correct lock to prevent UAF of hdev object")
+> ---
+> Changes in v2:
+>   Take hci_sk_list.lock for write in case bt_sock_unlink() is called after
+>   sk_hashed(sk) test, and defer hci_dev_put(hdev) till schedulable context.
+>
+>  net/bluetooth/hci_sock.c | 32 +++++++++++++++++++++++++++++---
+>  1 file changed, 29 insertions(+), 3 deletions(-)
+>
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index b04a5a02ecf3..d8e1ac1ae10d 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -758,20 +758,46 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>
+>         if (event == HCI_DEV_UNREG) {
+>                 struct sock *sk;
+> +               bool put_dev;
+>
+> +restart:
+> +               put_dev = false;
+>                 /* Detach sockets from device */
+>                 read_lock(&hci_sk_list.lock);
+>                 sk_for_each(sk, &hci_sk_list.head) {
+> +                       /* hci_sk_list.lock is preventing hci_sock_release()
+> +                        * from calling bt_sock_unlink().
+> +                        */
+> +                       if (hci_pi(sk)->hdev != hdev || sk_unhashed(sk))
+> +                               continue;
+> +                       /* Take a ref because we can't call lock_sock() with
+> +                        * hci_sk_list.lock held.
+> +                        */
+> +                       sock_hold(sk);
+> +                       read_unlock(&hci_sk_list.lock);
+>                         lock_sock(sk);
+> -                       if (hci_pi(sk)->hdev == hdev) {
+> +                       /* Since hci_sock_release() might have already called
+> +                        * bt_sock_unlink() while waiting for lock_sock(),
+> +                        * use sk_hashed(sk) for checking that bt_sock_unlink()
+> +                        * is not yet called.
+> +                        */
+> +                       write_lock(&hci_sk_list.lock);
+> +                       if (sk_hashed(sk) && hci_pi(sk)->hdev == hdev) {
+>                                 hci_pi(sk)->hdev = NULL;
+>                                 sk->sk_err = EPIPE;
+>                                 sk->sk_state = BT_OPEN;
+>                                 sk->sk_state_change(sk);
+> -
+> -                               hci_dev_put(hdev);
+> +                               put_dev = true;
+>                         }
+> +                       write_unlock(&hci_sk_list.lock);
+>                         release_sock(sk);
+> +                       sock_put(sk);
+> +                       if (put_dev)
+> +                               hci_dev_put(hdev);
+> +                       /* Restarting is safe, for hci_pi(sk)->hdev != hdev if
+> +                        * condition met and sk_unhashed(sk) == true otherwise.
+> +                        */
+> +                       goto restart;
 
-Signed-off-by: Roy, UjjaL <royujjal@gmail.com>
----
- net/ipv4/ipmr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This sounds a little too complicated, afaik backward goto is not even
+consider a good practice either, since it appears we don't unlink the
+sockets here we could perhaps don't release the reference to hdev
+either and leave hci_sock_release to deal with it and then perhaps we
+can take away the backward goto, actually why are you restarting to
+begin with? It is also weird that this only manifests in the Bluetooth
+HCI sockets or other subsystems don't use such locking mechanism
+anymore?
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 7b12a40dd465..2dda856ca260 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -2119,7 +2119,7 @@ int ip_mr_input(struct sk_buff *skb)
- 				raw_rcv(mroute_sk, skb);
- 				return 0;
- 			}
--		    }
-+		}
- 	}
- 
- 	/* already under rcu_read_lock() */
+
+>                 }
+>                 read_unlock(&hci_sk_list.lock);
+>         }
+> --
+> 2.18.4
+>
+>
+
+
 -- 
-2.17.1
-
+Luiz Augusto von Dentz
