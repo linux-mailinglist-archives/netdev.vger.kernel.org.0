@@ -2,188 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4C33BF1D8
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 00:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157AA3BF1E0
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 00:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbhGGWNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 18:13:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229717AbhGGWNY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 18:13:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A664E61CBE;
-        Wed,  7 Jul 2021 22:10:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625695844;
-        bh=Krj0NcI/vPoGRovvAGXcsL3NienP2oguEHItO3C5azU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=E8lXzKWTlyvg25yMM8pCFQT2dftOY0PgFQbHs08wXkuhnQDxizdK0Df+f5l8/BdK2
-         8IoQgVOdKECBLbcWNS5j1ZfJRUYxcrrLFcRjo3d5nUQIckhX1xSfb7yT/yMUMNqgF2
-         R6evXm8h72o7621UpUSQMHWyLGUFBU6GfZZHsny0JqhSX9zonU8r0vP1bTwV5MSpco
-         LWGOZ+y433AplT1sCKyFNUuyY8pnx1S2ky9MyBjhTCq+mKydbC1iLUU74kKrvMsHkn
-         eh92SnZ6t+Zh+r4nbeknVYkN5Lox4HScNeUJkrDjVCAEAfe3Q1SXztC13LzkRJNaEf
-         kbr+C2gOr7Gsw==
-Date:   Wed, 7 Jul 2021 17:10:42 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Aaron Ma <aaron.ma@canonical.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
-Message-ID: <20210707221042.GA939059@bjorn-Precision-5520>
+        id S232054AbhGGWPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 18:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229717AbhGGWPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 18:15:21 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76615C061574;
+        Wed,  7 Jul 2021 15:12:40 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id p22so5609251yba.7;
+        Wed, 07 Jul 2021 15:12:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MdPt0oq/vKS4ICfv8ZQphtQFxhDUMZFfKRMi4FYddHs=;
+        b=RkdfLZsNpHKWdt5fZkzMO6o6r4FmBjDyJSo292xzKLQlVhdGlxlwJbxQOBref2FRu9
+         USCF2w7/4pwLYKJMeCHhe8vVMLlWnLS+0b/l2y6lemaCqLnBl2VVTgzbEFl8Lk2ky7Qs
+         RdqBXLwPl25T8mz84Ron1ZZxERj5HdR2DpeZAlNYoVBzoZlvhO9oK+/BOyLdC133zI2E
+         r/GRIGWFSOYHHC8Q7p4UySmikkNqGpt1zI1tdLu20VKE39pdEM//3A8rOvMxNU0dZzMe
+         mktKgRgMGQn/VHfYdvq+/CTWNs6mIG3gQcccUxUEIsniSEZPlTSpgOV3Hnk18dYhF8No
+         NT5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MdPt0oq/vKS4ICfv8ZQphtQFxhDUMZFfKRMi4FYddHs=;
+        b=ZFAYViAdybNsJGKaBUz15cYsvjD6nOTjPPXKNxcjSIguPM+JIqvmbIy9eKDGngMqsA
+         3fgqHQcd/mPmMDNUeVHOUQ9j8sXwmAziK0Yvrfx83PUj51ip80ozbKzqRS7FVBH9YI9c
+         Z7FADW3xXml8f+Iz8wAooY9IF/LXgkjlRXVq2KmHk/f+CfWlO39YMiW0OShy5BC2tG4R
+         Cg3mFsLjMQQf8u9VaeThGD2RmDEWoOWXbxumE22vbluKeUMhGxra+XicDN0FY/6ZAr3I
+         CuLA47PwRj/PicJr4h4Y+rXJcmnsrArjGRpP+XMRQwVJU7HbCMaGD4rhmF0xRr5YoVp7
+         jO0g==
+X-Gm-Message-State: AOAM531pXatx9rSyunM4yARP8DhnZi+LPubhe7B5X356v8v7ksG7tSRr
+        PDOWHtuS2ORvWucaAprs1xxybrE/Qe0sPtbbICw=
+X-Google-Smtp-Source: ABdhPJzZwr8pCSLQ9N8a7YQsdKSZRDBgodDVU03Hl/qVSzaWuHLER0vD24i4DPNyN5ltxPC8HPQOLRjS8wA5903Q84k=
+X-Received: by 2002:a25:3787:: with SMTP id e129mr34273898yba.459.1625695959718;
+ Wed, 07 Jul 2021 15:12:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210707215337.lwbgvb6lxs3gmsbb@pali>
+References: <20210629095543.391ac606@oasis.local.home>
+In-Reply-To: <20210629095543.391ac606@oasis.local.home>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 7 Jul 2021 15:12:28 -0700
+Message-ID: <CAEf4BzZPb=cPf9V1Bz+USiq+b5opUTNkj4+CRjXdHcmExW3jVg@mail.gmail.com>
+Subject: Re: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist() for
+ BPF tracing
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 11:53:37PM +0200, Pali Rohár wrote:
-> On Tuesday 06 July 2021 15:12:41 Bjorn Helgaas wrote:
-> > On Fri, Jul 02, 2021 at 12:51:19PM +0800, Aaron Ma wrote:
-> > > Check PCI state when rd/wr iomem.
-> > > Implement wr32 function as rd32 too.
-> > > 
-> > > When unplug TBT dock with i225, rd/wr PCI iomem will cause error log:
-> > > Trace:
-> > > BUG: unable to handle page fault for address: 000000000000b604
-> > > Oops: 0000 [#1] SMP NOPTI
-> > > RIP: 0010:igc_rd32+0x1c/0x90 [igc]
-> > > Call Trace:
-> > > igc_ptp_suspend+0x6c/0xa0 [igc]
-> > > igc_ptp_stop+0x12/0x50 [igc]
-> > > igc_remove+0x7f/0x1c0 [igc]
-> > > pci_device_remove+0x3e/0xb0
-> > > __device_release_driver+0x181/0x240
-> > > 
-> > > Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-> > > ---
-> > >  drivers/net/ethernet/intel/igc/igc_main.c | 16 ++++++++++++++++
-> > >  drivers/net/ethernet/intel/igc/igc_regs.h |  7 ++-----
-> > >  2 files changed, 18 insertions(+), 5 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> > > index f1adf154ec4a..606b72cb6193 100644
-> > > --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> > > +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> > > @@ -5292,6 +5292,10 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
-> > >  	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-> > >  	u32 value = 0;
-> > >  
-> > > +	if (igc->pdev &&
-> > > +		igc->pdev->error_state == pci_channel_io_perm_failure)
-> > > +		return 0;
-> > 
-> > I don't think this solves the problem.
-> > 
-> >   - Driver calls igc_rd32().
-> > 
-> >   - "if (pci_channel_io_perm_failure)" evaluates to false (error_state
-> >     does not indicate an error).
-> > 
-> >   - Device is unplugged.
-> > 
-> >   - igc_rd32() calls readl(), which performs MMIO read, which fails
-> >     because the device is no longer present.  readl() returns ~0 on
-> >     most platforms.
-> > 
-> >   - Same page fault occurs.
-> 
-> Hi Bjorn! I think that backtrace show that this error happens when PCIe
-> hotplug get interrupt that device was unplugged and PCIe hotplug code
-> calls remove/unbind procedure to stop unplugged driver.
-> 
-> And in this case really does not make sense to try issuing MMIO read,
-> device is already unplugged.
-> 
-> I looked that PCIe hotplug driver calls pci_dev_set_disconnected() when
-> this unplug interrupt happens and pci_dev_set_disconnected() just sets
-> pci_channel_io_perm_failure flag.
-> 
-> drivers/pci/pci.h provides function pci_dev_is_disconnected() which
-> checks if that flag pci_channel_io_perm_failure is set.
-> 
-> So I think that pci_dev_is_disconnected() is useful and could be
-> exported also to drivers (like this one) so they can check if
-> pci_dev_set_disconnected() was called in past and PCI driver is now in
-> unbind/cleanup/remove state because PCIe device is already disconnected
-> and not accessible anymore.
-> 
-> But maybe this check should be on other place in driver unbound
-> procedure and not in general MMIO read function?
+On Tue, Jun 29, 2021 at 6:55 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+>
+> All internal use cases for tracepoint_probe_register() is set to not ever
+> be called with the same function and data. If it is, it is considered a
+> bug, as that means the accounting of handling tracepoints is corrupted.
+> If the function and data for a tracepoint is already registered when
+> tracepoint_probe_register() is called, it will call WARN_ON_ONCE() and
+> return with EEXISTS.
+>
+> The BPF system call can end up calling tracepoint_probe_register() with
+> the same data, which now means that this can trigger the warning because
+> of a user space process. As WARN_ON_ONCE() should not be called because
+> user space called a system call with bad data, there needs to be a way to
+> register a tracepoint without triggering a warning.
+>
+> Enter tracepoint_probe_register_may_exist(), which can be called, but will
+> not cause a WARN_ON() if the probe already exists. It will still error out
+> with EEXIST, which will then be sent to the user space that performed the
+> BPF system call.
+>
+> This keeps the previous testing for issues with other users of the
+> tracepoint code, while letting BPF call it with duplicated data and not
+> warn about it.
 
-If we add the check as proposed in this patch, I think people will
-read it and think this is the correct way to avoid MMIO errors.  It
-does happen to avoid some MMIO errors, but it cannot avoid them all,
-so it's not a complete solution and it gives a false sense of
-security.
+There doesn't seem to be anything conceptually wrong with attaching
+the same BPF program twice to the same tracepoint. Is it a hard
+requirement to have a unique tp+callback combination, or was it done
+mostly to detect an API misuse? How hard is it to support such use
+cases?
 
-A complete solution requires a test *after* the MMIO read.  If you
-have the test after the read, you don't really need one before.  Sure,
-testing before means you can avoid one MMIO read failure in some
-cases.  But avoiding that failure costs quite a lot in code clutter.
+I was surprised to discover this is not supported (though I never had
+a use for this, had to construct a test to see the warning).
 
-> > The only way is to check *after* the MMIO read to see whether an error
-> > occurred.  On most platforms that means checking for ~0 data.  If you
-> > see that, a PCI error *may* have occurred.
-> > 
-> > If you know that ~0 can never be valid, e.g., if you're reading a
-> > register where ~0 is not a valid value, you know for sure that an
-> > error has occurred.
-> > 
-> > If ~0 might be a valid value, e.g., if you're reading a buffer that
-> > contains arbitrary data, you have to look harder.   You might read a
-> > register than cannot contain ~0, and see if you get the data you
-> > expect.  Or you might read the Vendor ID or something from config
-> > space.
-> > 
-> > >  	value = readl(&hw_addr[reg]);
-> > >  
-> > >  	/* reads should not return all F's */
-> > > @@ -5308,6 +5312,18 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
-> > >  	return value;
-> > >  }
-> > >  
-> > > +void igc_wr32(struct igc_hw *hw, u32 reg, u32 val)
-> > > +{
-> > > +	struct igc_adapter *igc = container_of(hw, struct igc_adapter, hw);
-> > > +	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-> > > +
-> > > +	if (igc->pdev &&
-> > > +		igc->pdev->error_state == pci_channel_io_perm_failure)
-> > > +		return;
-> > > +
-> > > +	writel((val), &hw_addr[(reg)]);
-> > > +}
-> > > +
-> > >  int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
-> > >  {
-> > >  	struct igc_mac_info *mac = &adapter->hw.mac;
-> > > diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-> > > index cc174853554b..eb4be87d0e8b 100644
-> > > --- a/drivers/net/ethernet/intel/igc/igc_regs.h
-> > > +++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-> > > @@ -260,13 +260,10 @@ struct igc_hw;
-> > >  u32 igc_rd32(struct igc_hw *hw, u32 reg);
-> > >  
-> > >  /* write operations, indexed using DWORDS */
-> > > -#define wr32(reg, val) \
-> > > -do { \
-> > > -	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
-> > > -	writel((val), &hw_addr[(reg)]); \
-> > > -} while (0)
-> > > +void igc_wr32(struct igc_hw *hw, u32 reg, u32 val);
-> > >  
-> > >  #define rd32(reg) (igc_rd32(hw, reg))
-> > > +#define wr32(reg, val) (igc_wr32(hw, reg, val))
-> > >  
-> > >  #define wrfl() ((void)rd32(IGC_STATUS))
-> > >  
-> > > -- 
-> > > 2.30.2
-> > > 
+>
+> Link: https://lore.kernel.org/lkml/20210626135845.4080-1-penguin-kernel@I-love.SAKURA.ne.jp/
+> Link: https://syzkaller.appspot.com/bug?id=41f4318cf01762389f4d1c1c459da4f542fe5153 [1]`
+>
+> Cc: stable@vger.kernel.org
+> Fixes: c4f6699dfcb85 ("bpf: introduce BPF_RAW_TRACEPOINT")
+> Reported-by: syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
+> Reported-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> ---
+>
+> #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>
+>  include/linux/tracepoint.h | 10 ++++++++++
+>  kernel/trace/bpf_trace.c   |  3 ++-
+>  kernel/tracepoint.c        | 33 ++++++++++++++++++++++++++++++---
+>  3 files changed, 42 insertions(+), 4 deletions(-)
+>
+
+[...]
