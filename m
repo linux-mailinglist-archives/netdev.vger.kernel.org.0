@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0310F3BF1E9
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 00:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6BA73BF1EB
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 00:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbhGGWTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 18:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
+        id S229717AbhGGWTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 18:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbhGGWTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 18:19:47 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACA2C061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 15:17:06 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id d12so3789901pgd.9
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 15:17:06 -0700 (PDT)
+        with ESMTP id S231756AbhGGWTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 18:19:49 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A499AC061574
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 15:17:07 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id b5so1878769plg.2
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 15:17:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=riotgames.com; s=riotgames;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vCJ2vjtmZHMCWsNz6Dr7+zk1JKTc+6CNVa3EJes2r6Y=;
-        b=WybaUxC/xyGUNVzUnR1rSwmeNOau1hF3Yrv4B2EEDVO30piMHQsX0ISX6AsVdxUdcm
-         p15cu3Em7oEKP/FxoSUdvq0/1gtEvJ6TN4uqNV7CRC3McngwGFlB+/xSlVL7FjTrNDqf
-         Yi4iWYHb3qHTXUSIjhN9f9KVLGNyhqTwZq86I=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6WA3SzVjBCH0Q3Xq+A8Mtmumh+nsHK+be6i9Ea//A9I=;
+        b=bFRJTltoJw1lIXiDZnx8C5g+rPe43WZmVM1uJqjEvP70s+IFYyfYplA7M1tT8Wvv5Z
+         YeIQ/4Gn0FIFdd2SnNPX47/rWvfTYx9M9d106a0cKgO4D43m5V+u+4PkA8i7YNufxT+4
+         bWYPZz8MSAPmCOl6BCEHOHcYnfupe2KOs/N3Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vCJ2vjtmZHMCWsNz6Dr7+zk1JKTc+6CNVa3EJes2r6Y=;
-        b=SsqpMzUG9GiP+zx7i6nkqa6adfWJ4U9+KVbzuCbUQIWiWOoDEaiX3HxMPqIyfXsi+n
-         FoXNPt6nA6ANWf/4asr4UByi45BfWKX5Dkz/3nxJjIa79xtc9VqSxoldwaoi/ixe9vOC
-         mNyyxZgv08ar7jaFchB0Owzg4D+xVjOWdiSyxq3uGpzQcjkZEZXPvvuLigXb8c7XLMlH
-         Yr3Iaq8JQ0y1vSYB6v82e/WGyaj4KVkcaFlKvgCrx/hMVdO3PIjFRUvT5dEbDO/X3VGh
-         zPOiBRsWinXS8HYxUZO8i7501a2z1n5yktBT+NXULG8lnvZqX8ZX8GdhDYIUJHxodFyC
-         GvAQ==
-X-Gm-Message-State: AOAM533baUSEnt1gIpzJjdFqEx4lEihAkYmvXBXU6FzvXfgxlR1o45nB
-        KjfQwR0Kv/ErUjfCu64+ACVJPg==
-X-Google-Smtp-Source: ABdhPJy4myl+qui+gZm2zXFdoecY2JHnmovCajXaqly5YXsJrtfTJ+lxDTMsVsC6LxHknQmvlwK63A==
-X-Received: by 2002:a62:ed0b:0:b029:30c:7193:68f6 with SMTP id u11-20020a62ed0b0000b029030c719368f6mr28342189pfh.73.1625696226069;
-        Wed, 07 Jul 2021 15:17:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6WA3SzVjBCH0Q3Xq+A8Mtmumh+nsHK+be6i9Ea//A9I=;
+        b=P/on40tlwsLZRdrBDTZ3mkHtjIcIwMRF8x8dHf7epeY4peTvTghgLLkX0gx4FWfSAT
+         x+jBl5ToLeUj4mSDQNRweSU/Dm+fjlSavt0eIw4yPQHy5uo0LT761XUtL+Y0Mcr8BcHE
+         32+zlP5WYpu+tneMhUV34aZEsg6nSXILB7L+xDwsJuDSEtVdyA/OgKKGGjJnfn9Q17lF
+         esCDguq4PxJSDSK8xXwJluJBqqjjsoWW75TuLbYKtKlNSf3/GFU03VFiTC99ZwEn+gpt
+         wJR1OXkx4MTHLv3oFYIxYgcFQXi7ZBQ/ahfqxERju3IEHTFAdMoI/KHQPbSqmbIXFGFt
+         18Eg==
+X-Gm-Message-State: AOAM532OvTWP1eKYsTkl6u7BSZF/kkHs/kWGuizC+FAu/yfOIqBXe1Tb
+        pOZJ5rH4HkuvNSEhzHr6TZRMew==
+X-Google-Smtp-Source: ABdhPJzByQpIB335oijU1wzmQpsqh6DKiWnF0FRRtLtT6fWvJCpNxa7rT1bDs3rdeXu1FRx6puSx8w==
+X-Received: by 2002:a17:90a:17e7:: with SMTP id q94mr27667052pja.117.1625696227151;
+        Wed, 07 Jul 2021 15:17:07 -0700 (PDT)
 Received: from ip-10-184-182-114.us-west-2.compute.internal (ec2-54-191-147-77.us-west-2.compute.amazonaws.com. [54.191.147.77])
-        by smtp.gmail.com with ESMTPSA id 75sm203748pfx.71.2021.07.07.15.17.05
+        by smtp.gmail.com with ESMTPSA id 75sm203748pfx.71.2021.07.07.15.17.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 15:17:05 -0700 (PDT)
+        Wed, 07 Jul 2021 15:17:06 -0700 (PDT)
 From:   Zvi Effron <zeffron@riotgames.com>
 To:     bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -58,132 +58,73 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         Song Liu <songliubraving@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Zvi Effron <zeffron@riotgames.com>
-Subject: [PATCH bpf-next v8 0/4] bpf: support input xdp_md context in BPF_PROG_TEST_RUN
-Date:   Wed,  7 Jul 2021 22:16:53 +0000
-Message-Id: <20210707221657.3985075-1-zeffron@riotgames.com>
+        Zvi Effron <zeffron@riotgames.com>,
+        Cody Haas <chaas@riotgames.com>,
+        Lisa Watanabe <lwatanabe@riotgames.com>
+Subject: [PATCH bpf-next v8 1/4] bpf: add function for XDP meta data length check
+Date:   Wed,  7 Jul 2021 22:16:54 +0000
+Message-Id: <20210707221657.3985075-2-zeffron@riotgames.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210707221657.3985075-1-zeffron@riotgames.com>
+References: <20210707221657.3985075-1-zeffron@riotgames.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds support for passing an xdp_md via ctx_in/ctx_out in
-bpf_attr for BPF_PROG_TEST_RUN of XDP programs.
+This commit prepares to use the XDP meta data length check in multiple
+places by making it into a static inline function instead of a literal.
 
-Patch 1 adds a function to validate XDP meta data lengths.
+Co-developed-by: Cody Haas <chaas@riotgames.com>
+Signed-off-by: Cody Haas <chaas@riotgames.com>
+Co-developed-by: Lisa Watanabe <lwatanabe@riotgames.com>
+Signed-off-by: Lisa Watanabe <lwatanabe@riotgames.com>
+Signed-off-by: Zvi Effron <zeffron@riotgames.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ include/net/xdp.h | 5 +++++
+ net/core/filter.c | 4 ++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-Patch 2 adds initial support for passing XDP meta data in addition to
-packet data.
-
-Patch 3 adds support for also specifying the ingress interface and
-rx queue.
-
-Patch 4 adds selftests to ensure functionality is correct.
-
-Changelog:
-----------
-v7->v8
-v7: https://lore.kernel.org/bpf/20210624211304.90807-1-zeffron@riotgames.com/
-
- * Fix too long comment line in patch 3
-
-v6->v7
-v6: https://lore.kernel.org/bpf/20210617232904.1899-1-zeffron@riotgames.com/
-
- * Add Yonghong Song's Acked-by to commit message in patch 1
- * Add Yonghong Song's Acked-by to commit message in patch 2
- * Extracted the post-update of the xdp_md context into a function (again)
- * Validate that the rx queue was registered with XDP info
- * Decrement the reference count on a found netdevice on failure to find
-  a valid rx queue
- * Decrement the reference count on a found netdevice after the XDP
-  program is run
- * Drop Yonghong Song's Acked-By for patch 3 because of patch changes
- * Improve a comment in the selftests
- * Drop Yonghong Song's Acked-By for patch 4 because of patch changes
-
-v5->v6
-v5: https://lore.kernel.org/bpf/20210616224712.3243-1-zeffron@riotgames.com/
-
- * Correct commit messages in patches 1 and 3
- * Add Acked-by to commit message in patch 4
- * Use gotos instead of returns to correctly free resources in
-  bpf_prog_test_run_xdp
- * Rename xdp_metalen_valid to xdp_metalen_invalid
- * Improve the function signature for xdp_metalen_invalid
- * Merged declaration of ingress_ifindex and rx_queue_index into one line
-
-v4->v5
-v4: https://lore.kernel.org/bpf/20210604220235.6758-1-zeffron@riotgames.com/
-
- * Add new patch to introduce xdp_metalen_valid inline function to avoid
-  duplicated code from net/core/filter.c
- * Correct size of bad_ctx in selftests
- * Make all declarations reverse Christmas tree
- * Move data check from xdp_convert_md_to_buff to bpf_prog_test_run_xdp
- * Merge xdp_convert_buff_to_md into bpf_prog_test_run_xdp
- * Fix line too long
- * Extracted common checks in selftests to a helper function
- * Removed redundant assignment in selftests
- * Reordered test cases in selftests
- * Check data against 0 instead of data_meta in selftests
- * Made selftests use EINVAL instead of hardcoded 22
- * Dropped "_" from XDP function name
- * Changed casts in XDP program from unsigned long to long
- * Added a comment explaining the use of the loopback interface in selftests
- * Change parameter order in xdp_convert_md_to_buff to be input first
- * Assigned xdp->ingress_ifindex and xdp->rx_queue_index to local variables in
-  xdp_convert_md_to_buff
- * Made use of "meta data" versus "metadata" consistent in comments and commit
-  messages
-
-v3->v4
-v3: https://lore.kernel.org/bpf/20210602190815.8096-1-zeffron@riotgames.com/
-
- * Clean up nits
- * Validate xdp_md->data_end in bpf_prog_test_run_xdp
- * Remove intermediate metalen variables
-
-v2 -> v3
-v2: https://lore.kernel.org/bpf/20210527201341.7128-1-zeffron@riotgames.com/
-
- * Check errno first in selftests
- * Use DECLARE_LIBBPF_OPTS
- * Rename tattr to opts in selftests
- * Remove extra new line
- * Rename convert_xdpmd_to_xdpb to xdp_convert_md_to_buff
- * Rename convert_xdpb_to_xdpmd to xdp_convert_buff_to_md
- * Move declaration of device and rxqueue in xdp_convert_md_to_buff to
-  patch 2
- * Reorder the kfree calls in bpf_prog_test_run_xdp
-
-v1 -> v2
-v1: https://lore.kernel.org/bpf/20210524220555.251473-1-zeffron@riotgames.com
-
- * Fix null pointer dereference with no context
- * Use the BPF skeleton and replace CHECK with ASSERT macros
-
-Zvi Effron (4):
-  bpf: add function for XDP meta data length check
-  bpf: support input xdp_md context in BPF_PROG_TEST_RUN
-  bpf: support specifying ingress via xdp_md context in
-    BPF_PROG_TEST_RUN
-  selftests/bpf: Add test for xdp_md context in BPF_PROG_TEST_RUN
-
- include/net/xdp.h                             |   5 +
- include/uapi/linux/bpf.h                      |   3 -
- net/bpf/test_run.c                            | 109 ++++++++++++++++--
- net/core/filter.c                             |   4 +-
- .../bpf/prog_tests/xdp_context_test_run.c     | 105 +++++++++++++++++
- .../bpf/progs/test_xdp_context_test_run.c     |  20 ++++
- 6 files changed, 233 insertions(+), 13 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_context_test_run.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_context_test_run.c
-
-
-base-commit: 5e437416ff66981d8154687cfdf7de50b1d82bfc
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 5533f0ab2afc..ad5b02dcb6f4 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -276,6 +276,11 @@ xdp_data_meta_unsupported(const struct xdp_buff *xdp)
+ 	return unlikely(xdp->data_meta > xdp->data);
+ }
+ 
++static inline bool xdp_metalen_invalid(unsigned long metalen)
++{
++	return (metalen & (sizeof(__u32) - 1)) || (metalen > 32);
++}
++
+ struct xdp_attachment_info {
+ 	struct bpf_prog *prog;
+ 	u32 flags;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index d70187ce851b..f2c15b2a057a 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -77,6 +77,7 @@
+ #include <net/transp_v6.h>
+ #include <linux/btf_ids.h>
+ #include <net/tls.h>
++#include <net/xdp.h>
+ 
+ static const struct bpf_func_proto *
+ bpf_sk_base_func_proto(enum bpf_func_id func_id);
+@@ -3880,8 +3881,7 @@ BPF_CALL_2(bpf_xdp_adjust_meta, struct xdp_buff *, xdp, int, offset)
+ 	if (unlikely(meta < xdp_frame_end ||
+ 		     meta > xdp->data))
+ 		return -EINVAL;
+-	if (unlikely((metalen & (sizeof(__u32) - 1)) ||
+-		     (metalen > 32)))
++	if (unlikely(xdp_metalen_invalid(metalen)))
+ 		return -EACCES;
+ 
+ 	xdp->data_meta = meta;
 -- 
 2.31.1
 
