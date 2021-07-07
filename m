@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B2A3BF081
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 21:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FC03BF086
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 21:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233090AbhGGTt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 15:49:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33200 "EHLO
+        id S231535AbhGGTwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 15:52:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51395 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233086AbhGGTt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 15:49:58 -0400
+        by vger.kernel.org with ESMTP id S231378AbhGGTwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 15:52:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625687237;
+        s=mimecast20190719; t=1625687405;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=zbTjAalRT8G7ucBl7KamxhzUVx0mh7mTfA4EZ32X+1U=;
-        b=gwodM7Q5OGzlScxodxH/mBqHiQwVRtah9sz55ovP9qsFTX/Q4eqaLpl6919aB+qLPyjOTz
-        3cTQxNm6GL32zOc37v6UnJQKsJ5rkll646CMpbXH88Qxc0kgEZ1bSNTQLq/gPVQpCkLsRk
-        7W0aC0RA8ngkSSwXwWqCv8YMoVlPBU0=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-359-ym0Ub-7nPcKR7lvtAeWDtA-1; Wed, 07 Jul 2021 15:47:16 -0400
-X-MC-Unique: ym0Ub-7nPcKR7lvtAeWDtA-1
-Received: by mail-wr1-f71.google.com with SMTP id w4-20020a05600018c4b0290134e4f784e8so1127398wrq.10
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 12:47:16 -0700 (PDT)
+        bh=h201HihVDVgG3JVcBjzt3SE6MFp+AXOCveqf1WEGeZI=;
+        b=TSNMrP+xWw7J6yw6sUeKbiXRFC8CeqEZgaAHwLspQNaAlDhgMrqssGTZflOArMCdrIHzBN
+        I2D12o/QzUUd2/XJyzcapBlID8tKWAv40w5oWIIwAigKSJ6+qMW8sgOnDNHnh5WNLuDacZ
+        AcTYBCgGoMMUHbAHA3ZtwbXai/IE8+A=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-89-SLsN129gNF-rRXIwy0yeTQ-1; Wed, 07 Jul 2021 15:50:01 -0400
+X-MC-Unique: SLsN129gNF-rRXIwy0yeTQ-1
+Received: by mail-wr1-f72.google.com with SMTP id l12-20020a5d410c0000b029012b4f055c9bso1134086wrp.4
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 12:50:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zbTjAalRT8G7ucBl7KamxhzUVx0mh7mTfA4EZ32X+1U=;
-        b=dIXHl2xt1gwvHGYT5OaYum+KIx329Vnh/Srq012KVxOV4AQRaIcuDNGeIm2F2cz7DY
-         hg18JLbO8vSK/A+XzZ6WkYzmbrRVznbWs97++BKVhobWGDTm5OiAU/6VNcfHioPIghwA
-         oSWuWgbQhYTf4kemWXBQggNnZT+upfz7nryC/E4o+35w+D3zfbqYjt8bdgkO/4Kcq0/l
-         ADo8la4cdLAkK5Nzdkcuj88uH5v+YRmiv06c9yxDxMsAd4Vk9NeuwdafkF5Qg7tJgB21
-         1EkgcLdKZmUf+9wRJaNfhv8XwXRNUtgk148QqBwopK4JFirDHgtJdEEVs+vH9puGfzYV
-         Ad4w==
-X-Gm-Message-State: AOAM530vpzQvK2eODVnVxmiJWPukyiIn6sBZVkHk0ennh5QzdChWOIxk
-        5xz0h740mBsc8zPFmJYMBrFyc98MNM7l38oUP2PdWhAYlS6u6tLaVX10yuewUjKlbICCbYl0mhH
-        oYwrg9eAmHEwAKqkv
-X-Received: by 2002:a5d:4d4b:: with SMTP id a11mr5812959wru.325.1625687235391;
-        Wed, 07 Jul 2021 12:47:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxCeEyHGUskiHM337qfooE0f3Ro/cCDcwbEMlSi+dsBwOUNqQw0kh8Z0/fopTxAKcSeFTYUDw==
-X-Received: by 2002:a5d:4d4b:: with SMTP id a11mr5812949wru.325.1625687235220;
-        Wed, 07 Jul 2021 12:47:15 -0700 (PDT)
-Received: from krava.redhat.com ([185.153.78.55])
-        by smtp.gmail.com with ESMTPSA id l16sm7619853wmj.47.2021.07.07.12.47.13
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=h201HihVDVgG3JVcBjzt3SE6MFp+AXOCveqf1WEGeZI=;
+        b=TmKtXqSpar/1OOMzkPqVzBsMYkE9MQgvnfZowpZvxbaHNxT+S8IoU0xuNbxf8v1p6t
+         EqHt57vKshGf/buVzATJXU1zdKP/8H1YrtK29zAlYxhZlf4gAnSbGs95HDqTY9k5GLK+
+         hlgWG4rhbdloeH/pwuK46nftVJRfV/NO4Vmg5S1xzXExuwn2GKkY2aTMuZA8nzMjNu6z
+         HKVMTUtyDc2zUwUkXY6a+FoB+sAI6XwCy5A5S55Ha981QG8wTG+8pNSEwFjzyAQRt21t
+         FwICVRFjmDffg7QWZ40cAhajhcEZPp1M5q2ed5/thikqADIwGP79CSvLTkYodyF63H48
+         pcRQ==
+X-Gm-Message-State: AOAM533VNFc3ovXoGSlLG2prmjavRRG8Yy77FBODQYCKsFj0e6x5kO9O
+        FyvG1GWfgLRLVpDl/uM6DXmlOx9EqLVt35PgO3ryKx8/8WeZ8E6XjNUHLq74TzJ6kV279wSU8s4
+        fGlPBkiPpY6hJzAWE
+X-Received: by 2002:a05:600c:4f4d:: with SMTP id m13mr823764wmq.61.1625687400859;
+        Wed, 07 Jul 2021 12:50:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz6LTs2DvqAaK4ngj+fBHBL8E7uRYmTjaFCUG8EwHlDWxDI/amBX4dj0BDQuvSZlRcpceGhig==
+X-Received: by 2002:a05:600c:4f4d:: with SMTP id m13mr823750wmq.61.1625687400745;
+        Wed, 07 Jul 2021 12:50:00 -0700 (PDT)
+Received: from krava ([185.153.78.55])
+        by smtp.gmail.com with ESMTPSA id q7sm18307544wmq.33.2021.07.07.12.49.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 12:47:14 -0700 (PDT)
+        Wed, 07 Jul 2021 12:50:00 -0700 (PDT)
+Date:   Wed, 7 Jul 2021 21:49:57 +0200
 From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>
@@ -60,56 +59,73 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH 7/7] selftests/bpf: Add test for bpf_get_func_ip in kprobe+offset probe
-Date:   Wed,  7 Jul 2021 21:46:19 +0200
-Message-Id: <20210707194619.151676-8-jolsa@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210707194619.151676-1-jolsa@kernel.org>
+        Alan Maguire <alan.maguire@oracle.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCHv2 bpf-next 0/7] bpf, x86: Add bpf_get_func_ip helper
+Message-ID: <YOYFZeY4U2wl/Ru5@krava>
 References: <20210707194619.151676-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210707194619.151676-1-jolsa@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test for bpf_get_func_ip in kprobe+ofset probe.
-Because of the offset value it's arch specific, adding
-it only for x86_64 architecture.
+ugh forgot to cc Masami.. sorry, I can resend if needed
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../testing/selftests/bpf/progs/get_func_ip_test.c  | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+jirka
 
-diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-index 8ca54390d2b1..e8a9428a0ea3 100644
---- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-@@ -10,6 +10,7 @@ extern const void bpf_fentry_test2 __ksym;
- extern const void bpf_fentry_test3 __ksym;
- extern const void bpf_fentry_test4 __ksym;
- extern const void bpf_modify_return_test __ksym;
-+extern const void bpf_fentry_test6 __ksym;
- 
- __u64 test1_result = 0;
- SEC("fentry/bpf_fentry_test1")
-@@ -60,3 +61,15 @@ int BPF_PROG(fmod_ret_test, int a, int *b, int ret)
- 	test5_result = (const void *) addr == &bpf_modify_return_test;
- 	return ret;
- }
-+
-+#ifdef __x86_64__
-+__u64 test6_result = 0;
-+SEC("kprobe/bpf_fentry_test6+0x5")
-+int test6(struct pt_regs *ctx)
-+{
-+	__u64 addr = bpf_get_func_ip(ctx);
-+
-+	test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
-+	return 0;
-+}
-+#endif
--- 
-2.31.1
+On Wed, Jul 07, 2021 at 09:46:12PM +0200, Jiri Olsa wrote:
+> hi,
+> adding bpf_get_func_ip helper that returns IP address of the
+> caller function for trampoline and krobe programs.
+> 
+> There're 2 specific implementation of the bpf_get_func_ip
+> helper, one for trampoline progs and one for kprobe/kretprobe
+> progs.
+> 
+> The trampoline helper call is replaced/inlined by verifier
+> with simple move instruction. The kprobe/kretprobe is actual
+> helper call that returns prepared caller address.
+> 
+> Also available at:
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+>   bpf/get_func_ip
+> 
+> v2 changes:
+>   - use kprobe_running to get kprobe instead of cpu var [Masami]
+>   - added support to add kprobe on function+offset
+>     and test for that [Alan]
+> 
+> thanks,
+> jirka
+> 
+> 
+> ---
+> Alan Maguire (1):
+>       libbpf: allow specification of "kprobe/function+offset"
+> 
+> Jiri Olsa (6):
+>       bpf, x86: Store caller's ip in trampoline stack
+>       bpf: Enable BPF_TRAMP_F_IP_ARG for trampolines with call_get_func_ip
+>       bpf: Add bpf_get_func_ip helper for tracing programs
+>       bpf: Add bpf_get_func_ip helper for kprobe programs
+>       selftests/bpf: Add test for bpf_get_func_ip helper
+>       selftests/bpf: Add test for bpf_get_func_ip in kprobe+offset probe
+> 
+>  arch/x86/net/bpf_jit_comp.c                               | 19 +++++++++++++++++++
+>  include/linux/bpf.h                                       |  5 +++++
+>  include/linux/filter.h                                    |  3 ++-
+>  include/uapi/linux/bpf.h                                  |  7 +++++++
+>  kernel/bpf/trampoline.c                                   | 12 +++++++++---
+>  kernel/bpf/verifier.c                                     | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  kernel/trace/bpf_trace.c                                  | 32 ++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h                            |  7 +++++++
+>  tools/lib/bpf/libbpf.c                                    | 20 +++++++++++++++++---
+>  tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/get_func_ip_test.c      | 75 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  11 files changed, 270 insertions(+), 7 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/get_func_ip_test.c
 
