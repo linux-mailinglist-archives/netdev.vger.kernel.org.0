@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6529C3BEB2D
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 235653BEB3C
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:46:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231839AbhGGPtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 11:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S232171AbhGGPt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 11:49:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231533AbhGGPs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:48:59 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA90C061574;
-        Wed,  7 Jul 2021 08:46:17 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id b12so2538658pfv.6;
-        Wed, 07 Jul 2021 08:46:17 -0700 (PDT)
+        with ESMTP id S232035AbhGGPtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:49:18 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A70FC061574;
+        Wed,  7 Jul 2021 08:46:38 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id y2so1287736plc.8;
+        Wed, 07 Jul 2021 08:46:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=XEy9MBH2xC4dZEcS/mwpFTD3phu8HJFYvRE31VHkqO4=;
-        b=IJYcWyjtiAGyctd33d7WzD1Ya5MME4uy2kn7cW2sqewG9RXXR1GpEC/KQMeGYUDW11
-         CpTXGCQx+5YVMMyHklLmUqQ6FXM65pNimV5ZJZFHXYKFKUD4ga4dufPIfGqIdLt17/Iz
-         oVM+0Moyjz7WkBA5Z7oSvtgXg6NpqxRyfWI2qaBil+8DNBU8eyuLSKCl+DLUj39HNSHI
-         7fyY7LfXWyfUIuSgcaId0f6/nkqbXBVRdMPYL1UB2XyxRuRokathsSIffSmu29mHqW1v
-         Kkalb1N37LwiliV2z7KMFoFdNDiam9ySQBJDqytMl/g0VqVy4YaiQuUCHWOI5QAmAhE6
-         hXFA==
+        b=dVjU9z6yd+WtH5wOSKQA2aeo62Q55Ryf1sLhnW8ERHJkP5FeXEOXZo8pcwVX7GVsJl
+         SONowG0KutFyHhmZBl6O3rcPAlnySVD/WytMsY0wpDvq8vddH/VhKizYx5wu4u62y6WQ
+         yi5aDJkNgItUVJjPNZXit/rT1B2o9e71+ta9pdA5HqQDjq2R0RIMf5vCGZOg2KKKN+FY
+         Gra8VhDU9iGdsKsuKlCK2QwTwqi7BeC/5rjtSLQKB5l3xAShMlgnGvfWh76z37tFab2R
+         Y8p2fv9uiNRXN+g6vKG7/7Bq3LsuPRHd5FDg8+J0YDQp0lZbAJG5CoJxfVXOxaMhQNTT
+         FXZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=XEy9MBH2xC4dZEcS/mwpFTD3phu8HJFYvRE31VHkqO4=;
-        b=EzjZQlvYmesxFKg8WvgkDehBn0PgJIXvhIo4Bb1drM+RguTcDzvoM2uzfMPmKXw7Dg
-         KxPK6h5Zmiy77+5r5VlFzI9+jjvzAPmZT5C9/TyHWFqNK3eltkI/T0/lu0zuuURclujc
-         +G6wQJ7MLLf/VsPrmLLzQaIR4MN+/S9jhwsBSz4enQ1HFLuavGoOxn1pYS/EL0p4MWQc
-         VfgS4A5PvRCa1rnZuQIvh+YPLn7GS9TMEdBlYNPf9OR6JXlxTeMVYQ13aKPsfeAIXrqO
-         0m3h33tkzAimFkiXKRl9rjTvGNI1nHaabpYF7gj8Rl4CN9sfbNpRMB4iLNPflZ/oiRfT
-         /aTg==
-X-Gm-Message-State: AOAM530bLTS+eYXR/aEeOm1+goiFGvpLZM0jqsHImn3CzqcycdTggUl1
-        EXYxMmG5h/ivZbpyCbSRDgY=
-X-Google-Smtp-Source: ABdhPJy+Udd+5nfQjIRMeQLLR8/b7jtymgw9vnceB6ga/ifVauBDRWe6k84z/LyHbdn5WDkvZPN7uA==
-X-Received: by 2002:a62:fb13:0:b029:309:8d89:46b2 with SMTP id x19-20020a62fb130000b02903098d8946b2mr25765076pfm.67.1625672777549;
-        Wed, 07 Jul 2021 08:46:17 -0700 (PDT)
+        b=SMJ32/nRRlOWFkGzI5RgfURxG2Awmdk3VBm2VvZBSbPVeyvrGOXMJUABHfSNN9ajQs
+         u5R3zTR5mkcr7XMid0bgq7yMWFhHDqBhN2/u/GmlCLyd2QSJFaxnSCCJJyEkDb+d23ch
+         p9FDo3PIVmAkFN96qQ3S/6lyGy6URwGbpwEPF9F7RVSbmFcgg19eYo4K3fR3OYFPCMVx
+         FoT0vTMaGahHA9MRvtBbR4mqNiprZPzYItK9YVjyU+6nPchBZcU1DIEhKe5N2gANDqpS
+         RJkdvwNBHV+lW8/AY+l3vsfl7OkYJ1LGpow1I54URlIzl+8PVZyAvVgOyg/Ywop0u4nw
+         SLKg==
+X-Gm-Message-State: AOAM531fIuTtLnWAzTfvnD+n4TEROZYgFdcxXY6M1ogM9Vbz2kw6doaA
+        Yr6PBedQOjyrXjrvKkOsBP4=
+X-Google-Smtp-Source: ABdhPJwrapkvQmhsq7izULEH3/UVyZc58oEb1wOxgfRpgO104u8No2xwyPDqA0U4C/PdBpq28eDgPQ==
+X-Received: by 2002:a17:902:e843:b029:129:acb4:2464 with SMTP id t3-20020a170902e843b0290129acb42464mr7506834plg.77.1625672797807;
+        Wed, 07 Jul 2021 08:46:37 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:38:6b47:cf3e:bbf2:d229])
-        by smtp.gmail.com with ESMTPSA id y7sm19636443pfi.204.2021.07.07.08.46.16
+        by smtp.gmail.com with ESMTPSA id q18sm23093560pgj.8.2021.07.07.08.46.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 08:46:17 -0700 (PDT)
+        Wed, 07 Jul 2021 08:46:37 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -70,8 +70,8 @@ Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, brijesh.singh@amd.com, anparri@microsoft.com
 Subject: [Resend RFC PATCH V4 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
-Date:   Wed,  7 Jul 2021 11:45:07 -0400
-Message-Id: <20210707154523.3977287-1-ltykernel@gmail.com>
+Date:   Wed,  7 Jul 2021 11:46:14 -0400
+Message-Id: <20210707154629.3977369-1-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
