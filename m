@@ -2,95 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3981A3BF27C
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 01:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E94E3BF27F
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 01:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbhGGXfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 19:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbhGGXfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 19:35:15 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFFAC061574;
-        Wed,  7 Jul 2021 16:32:34 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id j34so2865229wms.5;
-        Wed, 07 Jul 2021 16:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VQfug0IHv4zPVKKbJZrt/5kYXexS/UlEn7UIdBqjdy0=;
-        b=LAWwwJqdNgjFcpi4SE+Ab48hR+5topHfVlfE1xj5KtLe5QirRqVneBa/P5KlxU6syQ
-         Ns5eUckdJE9rhr8LCBBp0RVl6TdCd1Xf+gKWPkBMtuWKHuF8xcuxq3C4QwIPAh3ytaZr
-         pURIMUCXlcMsknxknx5gPxW7JRO89FoVZRn2Q4yvzFgUwoj07qYez2RELuxAl4wF6yZp
-         yH9sXSKr44EN6a50SByQalvAUtNeBLIuOngHqK83lBKaeoCtn5qPT50SkJfUS9yfQHsx
-         FEon4AhUXeE56LpEnoahkpn0hZp37xOgHhmgpu1FTJfo+Ry95ixR7NfZO0pXGBm8eyZF
-         CNew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VQfug0IHv4zPVKKbJZrt/5kYXexS/UlEn7UIdBqjdy0=;
-        b=BzDRkZC696CPcqNZy78wg0msbK1DKLl9J16UBntS+Bbsciwgs4yunkJ1+vTwk8U69U
-         h6S4/gCYJuDB14FsUCh7c+T3U1Gvl2u48UhlhsX8XEc6f43wrCRo3NZSyO/hT2Xqi5Ww
-         rrHjkKL3zrUllSE8IyeouM82P7ediQz/LOQ69bCM4n1o96jy560/IZhAAwmypBhEnBFq
-         jzASNkKGTd/feXzqa3j2AkVTrWx432WXkX4sziBlN8pJ3M2hbaPJi8fKfWsyOmrbhNY7
-         pMGCUQVyTj0lFOMLozXqrPKZYXVj/6HJUGgIN/Ys+FatSW91s+CgbbfTIIm4ohm3JIX6
-         /9Cg==
-X-Gm-Message-State: AOAM530tlMaA2ih7WQWzCs6mKojToTPjfD+MeFVWhMGWzVSAq2syjLYw
-        M0GsWuKTic/Id6idgeeedhcIN7UJFXjsouY/nwM=
-X-Google-Smtp-Source: ABdhPJwPoDiNqiFkOfb2Qdr5lC15YXtFZuvpIyIUyx67hU04fAjkhwuzb0CqPqbNCnQoOA+B0MY22o19Dsvy/c/qEuY=
-X-Received: by 2002:a1c:7915:: with SMTP id l21mr1680459wme.62.1625700753215;
- Wed, 07 Jul 2021 16:32:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210707155633.1486603-1-mudongliangabcd@gmail.com>
- <CAD-N9QWZTRWv0HYX9EpYCiGjeCPkiRP1SLn+ObW8zK=s4DTrhQ@mail.gmail.com>
- <CAB_54W6VkOQ+Cf4gmwzJyQpjyK5MRqsGXkQD3fPa2UC2iLudtQ@mail.gmail.com> <CAD-N9QXZWA2rEYQV=E7ifqVTGA_ZLZJp=EA8GMLKufD7CMoyjQ@mail.gmail.com>
-In-Reply-To: <CAD-N9QXZWA2rEYQV=E7ifqVTGA_ZLZJp=EA8GMLKufD7CMoyjQ@mail.gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 7 Jul 2021 19:32:22 -0400
-Message-ID: <CAB_54W6BcPZYj+XTJgFXjktOcMs-RfL-ahfNs3K_yYu9_r4Rcg@mail.gmail.com>
-Subject: Re: [PATCH] ieee802154: hwsim: fix GPF in hwsim_new_edge_nl
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        id S231178AbhGGXgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 19:36:37 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:59711 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229986AbhGGXgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 19:36:36 -0400
+Received: from fsav314.sakura.ne.jp (fsav314.sakura.ne.jp [153.120.85.145])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 167NXad9056266;
+        Thu, 8 Jul 2021 08:33:36 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav314.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp);
+ Thu, 08 Jul 2021 08:33:36 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 167NXZAR056260
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 8 Jul 2021 08:33:36 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [PATCH v2] Bluetooth: call lock_sock() outside of spinlock
+ section
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Aring <aring@mojatatu.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <CABBYNZ+Vpzy2+u=xYR-7Kxx5M6pAQFQ8TJHYV1-Jr-FvqZ8=OQ@mail.gmail.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <79694c01-b69e-a039-6860-d7e612fbc008@i-love.sakura.ne.jp>
+Date:   Thu, 8 Jul 2021 08:33:32 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <CABBYNZ+Vpzy2+u=xYR-7Kxx5M6pAQFQ8TJHYV1-Jr-FvqZ8=OQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 2021/07/08 3:20, Luiz Augusto von Dentz wrote:
+>> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+>> index b04a5a02ecf3..d8e1ac1ae10d 100644
+>> --- a/net/bluetooth/hci_sock.c
+>> +++ b/net/bluetooth/hci_sock.c
+>> @@ -758,20 +758,46 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>>
+>>         if (event == HCI_DEV_UNREG) {
+>>                 struct sock *sk;
+>> +               bool put_dev;
+>>
+>> +restart:
+>> +               put_dev = false;
+>>                 /* Detach sockets from device */
+>>                 read_lock(&hci_sk_list.lock);
+>>                 sk_for_each(sk, &hci_sk_list.head) {
+>> +                       /* hci_sk_list.lock is preventing hci_sock_release()
+>> +                        * from calling bt_sock_unlink().
+>> +                        */
+>> +                       if (hci_pi(sk)->hdev != hdev || sk_unhashed(sk))
+>> +                               continue;
+>> +                       /* Take a ref because we can't call lock_sock() with
+>> +                        * hci_sk_list.lock held.
+>> +                        */
+>> +                       sock_hold(sk);
+>> +                       read_unlock(&hci_sk_list.lock);
+>>                         lock_sock(sk);
+>> -                       if (hci_pi(sk)->hdev == hdev) {
+>> +                       /* Since hci_sock_release() might have already called
+>> +                        * bt_sock_unlink() while waiting for lock_sock(),
+>> +                        * use sk_hashed(sk) for checking that bt_sock_unlink()
+>> +                        * is not yet called.
+>> +                        */
+>> +                       write_lock(&hci_sk_list.lock);
+>> +                       if (sk_hashed(sk) && hci_pi(sk)->hdev == hdev) {
+>>                                 hci_pi(sk)->hdev = NULL;
+>>                                 sk->sk_err = EPIPE;
+>>                                 sk->sk_state = BT_OPEN;
+>>                                 sk->sk_state_change(sk);
+>> -
+>> -                               hci_dev_put(hdev);
+>> +                               put_dev = true;
+>>                         }
+>> +                       write_unlock(&hci_sk_list.lock);
+>>                         release_sock(sk);
+>> +                       sock_put(sk);
+>> +                       if (put_dev)
+>> +                               hci_dev_put(hdev);
+>> +                       /* Restarting is safe, for hci_pi(sk)->hdev != hdev if
+>> +                        * condition met and sk_unhashed(sk) == true otherwise.
+>> +                        */
+>> +                       goto restart;
+> 
+> This sounds a little too complicated, afaik backward goto is not even
+> consider a good practice either, since it appears we don't unlink the
+> sockets here
 
-On Wed, 7 Jul 2021 at 19:15, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->
-> On Thu, Jul 8, 2021 at 2:55 AM Alexander Aring <alex.aring@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On Wed, 7 Jul 2021 at 12:11, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > >
-> > > On Wed, Jul 7, 2021 at 11:56 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
-> > > >
-> > > > Both MAC802154_HWSIM_ATTR_RADIO_ID and MAC802154_HWSIM_ATTR_RADIO_EDGE
-> > > > must be present to fix GPF.
-> > >
-> > > I double-check the whole file, and there is only one similar issue
-> > > left in Line 421.
-> > >
-> >
-> > What about "hwsim_del_edge_nl()" line 483, I think it has the same issue?
->
-> Eric already submitted a patch [1] to fix this function and the patch
-> is already merged in the mainline.
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0303b30375dff5351a79cc2c3c87dfa4fda29bed
+Because hci_sock_release() might be concurrently called while
+hci_sock_dev_event() from hci_unregister_dev() from vhci_release() is running.
 
-ah, yes. Thanks.
+While hci_sock_dev_event() itself does not unlink the sockets from hci_sk_list.head,
+bt_sock_unlink() from hci_sock_release() unlinks a socket from hci_sk_list.head.
 
-- Alex
+Therefore, as long as there is possibility that hci_sk_list is modified by other thread
+when current thread is traversing this list, we need to be prepared for such race.
+
+>              we could perhaps don't release the reference to hdev
+> either and leave hci_sock_release to deal with it and then perhaps we
+> can take away the backward goto, actually why are you restarting to
+> begin with?
+
+Do you mean something like
+
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index b04a5a02ecf3..0525883f4639 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -759,19 +759,14 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 	if (event == HCI_DEV_UNREG) {
+ 		struct sock *sk;
+ 
+-		/* Detach sockets from device */
++		/* Change socket state and notify */
+ 		read_lock(&hci_sk_list.lock);
+ 		sk_for_each(sk, &hci_sk_list.head) {
+-			lock_sock(sk);
+ 			if (hci_pi(sk)->hdev == hdev) {
+-				hci_pi(sk)->hdev = NULL;
+ 				sk->sk_err = EPIPE;
+ 				sk->sk_state = BT_OPEN;
+ 				sk->sk_state_change(sk);
+-
+-				hci_dev_put(hdev);
+ 			}
+-			release_sock(sk);
+ 		}
+ 		read_unlock(&hci_sk_list.lock);
+ 	}
+
+? I can't judge because I don't know how this works. I worry that
+without lock_sock()/release_sock(), this races with e.g. hci_sock_bind().
+
+We could take away the backward goto if we can do something like below.
+
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index b04a5a02ecf3..1ca03769badf 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -43,6 +43,8 @@ static DEFINE_IDA(sock_cookie_ida);
+ 
+ static atomic_t monitor_promisc = ATOMIC_INIT(0);
+ 
++static DEFINE_MUTEX(sock_list_lock);
++
+ /* ----- HCI socket interface ----- */
+ 
+ /* Socket info */
+@@ -760,7 +762,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 		struct sock *sk;
+ 
+ 		/* Detach sockets from device */
+-		read_lock(&hci_sk_list.lock);
++		mutex_lock(&sock_list_lock);
+ 		sk_for_each(sk, &hci_sk_list.head) {
+ 			lock_sock(sk);
+ 			if (hci_pi(sk)->hdev == hdev) {
+@@ -773,7 +775,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 			}
+ 			release_sock(sk);
+ 		}
+-		read_unlock(&hci_sk_list.lock);
++		mutex_unlock(&sock_list_lock);
+ 	}
+ }
+ 
+@@ -838,6 +840,7 @@ static int hci_sock_release(struct socket *sock)
+ 	if (!sk)
+ 		return 0;
+ 
++	mutex_lock(&sock_list_lock);
+ 	lock_sock(sk);
+ 
+ 	switch (hci_pi(sk)->channel) {
+@@ -860,6 +863,7 @@ static int hci_sock_release(struct socket *sock)
+ 	}
+ 
+ 	bt_sock_unlink(&hci_sk_list, sk);
++	mutex_unlock(&sock_list_lock);
+ 
+ 	hdev = hci_pi(sk)->hdev;
+ 	if (hdev) {
+@@ -2049,7 +2053,9 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
+ 	sock->state = SS_UNCONNECTED;
+ 	sk->sk_state = BT_OPEN;
+ 
++	mutex_lock(&sock_list_lock);
+ 	bt_sock_link(&hci_sk_list, sk);
++	mutex_unlock(&sock_list_lock);
+ 	return 0;
+ }
+ 
+
+>             It is also weird that this only manifests in the Bluetooth
+> HCI sockets or other subsystems don't use such locking mechanism
+> anymore?
+
+If other subsystems have similar problem, that should be handled by different
+patches. This patch fixes a regression introduced when fixing CVE-2021-3573,
+and I think that Linux distributors are waiting for this regression to be fixed
+so that they can backport commit e305509e678b3a4a ("Bluetooth: use correct lock
+to prevent UAF of hdev object"). Also, this regression is currently 7th top
+crashers for syzbot, and I'd like to apply this patch as soon as possible.
+
+I think that this patch can serve as a response to Lin's comment
+
+  > In short, I have no idea if there is any lock replacing solution for
+  > this bug. I need help and suggestions because the lock mechanism is
+  > just so difficult.
+
+at https://patchwork.kernel.org/project/bluetooth/patch/CAJjojJsj9pzF4j2MVvsM-hCpvyR7OkZn232yt3MdOGnLxOiRRg@mail.gmail.com
+without changing behavior.
+
+> 
+> 
+>>                 }
+>>                 read_unlock(&hci_sk_list.lock);
+>>         }
+>> --
+>> 2.18.4
+
