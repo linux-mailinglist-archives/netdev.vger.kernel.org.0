@@ -2,294 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5596F3BE7BF
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 754673BE7C0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbhGGMYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 08:24:46 -0400
-Received: from relay.sw.ru ([185.231.240.75]:44950 "EHLO relay.sw.ru"
+        id S231483AbhGGMZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 08:25:19 -0400
+Received: from relay.sw.ru ([185.231.240.75]:45024 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231383AbhGGMYq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 08:24:46 -0400
+        id S231383AbhGGMZS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 08:25:18 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=5IX6KlV0caxNfUE5goHuXfGviMPQWDaSVxSlLYKvEE8=; b=BygjXTIB6B9t
-        ElkDIZ5cGwgQChUZPf30Gj2IutWuc8we3QU9ORieZp1HOCJCPxCczO0m9E3I1thftxoSGu3t4KJzl
-        OLEcLJAUrb3WiWumUZcKUj9eZNvR4fjw5Pk8DL7gAT2UKNqt6kz1FxriSa5fxpw9EFFlaXgn0YXdZ
-        VOjK8=;
-Received: from [192.168.15.10] (helo=mikhalitsyn-laptop.lan)
+        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
+        :Date; bh=gJj7p9kNr2cb7vG6O+83AAok26C/WJLgF6Yib6CJS6c=; b=va5rUvZadbkxNm2n6xf
+        q4Hx4Mxulw+LUZPTyPLKjV3qZltmjwBgeXXXI6QG0kJB+dczb7SeJHh4EtVJYpkHDyMuh4zxgemFM
+        WY4GNn2IZ7ARZzyQA87OvmmAmpPT3HNZXWzl6db6wvDONQOfRaJegslF2nMkbqs3d3a6J8tXS2I=;
+Received: from [192.168.15.10] (helo=mikhalitsyn-laptop)
         by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1m16Z2-003Bm5-LS; Wed, 07 Jul 2021 15:22:04 +0300
+        id 1m16ZZ-003BmU-EJ; Wed, 07 Jul 2021 15:22:37 +0300
+Date:   Wed, 7 Jul 2021 15:22:36 +0300
 From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrei Vagin <avagin@gmail.com>,
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
         Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: [PATCHv5 iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
-Date:   Wed,  7 Jul 2021 15:22:01 +0300
-Message-Id: <20210707122201.14618-1-alexander.mikhalitsyn@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
+Subject: Re: [PATCHv4 iproute2] ip route: ignore ENOENT during save if
+ RT_TABLE_MAIN is being dumped
+Message-Id: <20210707152236.08ac5a20fc3be20adbb50879@virtuozzo.com>
+In-Reply-To: <20210706170545.680cfe43@hermes.local>
 References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        <20210629155116.23464-1-alexander.mikhalitsyn@virtuozzo.com>
+        <20210706083407.76deb4c0@hermes.local>
+        <20210706184415.baf59983a9cb5de56050389c@virtuozzo.com>
+        <20210706091821.7a5c2ce8@hermes.local>
+        <20210706201757.46678b763f35ae41a12f48c1@virtuozzo.com>
+        <20210706170545.680cfe43@hermes.local>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We started to use in-kernel filtering feature which allows to get only
-needed tables (see iproute_dump_filter()). From the kernel side it's
-implemented in net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c
-(inet6_dump_fib). The problem here is that behaviour of "ip route save"
-was changed after
-c7e6371bc ("ip route: Add protocol, table id and device to dump request").
-If filters are used, then kernel returns ENOENT error if requested table
-is absent, but in newly created net namespace even RT_TABLE_MAIN table
-doesn't exist. It is really allocated, for instance, after issuing
-"ip l set lo up".
+On Tue, 6 Jul 2021 17:05:45 -0700
+Stephen Hemminger <stephen@networkplumber.org> wrote:
 
-Reproducer is fairly simple:
-$ unshare -n ip route save > dump
-Error: ipv4: FIB table does not exist.
-Dump terminated
+> On Tue, 6 Jul 2021 20:17:57 +0300
+> Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
+> 
+> > On Tue, 6 Jul 2021 09:18:21 -0700
+> > Stephen Hemminger <stephen@networkplumber.org> wrote:
+> > 
+> > > On Tue, 6 Jul 2021 18:44:15 +0300
+> > > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
+> > >   
+> > > > On Tue, 6 Jul 2021 08:34:07 -0700
+> > > > Stephen Hemminger <stephen@networkplumber.org> wrote:
+> > > >   
+> > > > > On Tue, 29 Jun 2021 18:51:15 +0300
+> > > > > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
+> > > > >     
+> > > > > > +	const struct rtnl_dump_filter_arg a[2] = {
+> > > > > > +		{ .filter = filter, .arg1 = arg1,
+> > > > > > +		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
+> > > > > > +		{ .filter = NULL,   .arg1 = NULL,
+> > > > > > +		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
+> > > > > >  	};    
+> > > > > 
+> > > > > I am OK with this as is. But you don't need to add initializers for fields
+> > > > > that are 0/NULL (at least in C).    
+> > > > 
+> > > > Sure, I've made such explicit initializations just because in original
+> > > > rtnl_dump_filter_nc() we already have them.
+> > > > 
+> > > > Do I need to resend with fixed initializations? ;)  
+> > > 
+> > > Not worth it  
+> > 
+> > Ok, thanks!
+> > 
+> 
+> Looks like you need to send v5 anyway.
+> 
+> 
+> checkpatch.pl ~/Downloads/PATCHv4-iproute2-ip-route-ignore-ENOENT-during-save-if-RT_TABLE_MAIN-is-being-dumped.patch 
+> WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+> #62: 
+> We started to use in-kernel filtering feature which allows to get only needed
+> 
+> WARNING: 'extened' may be misspelled - perhaps 'extended'?
+> #84: 
+> easily extened by changing SUPPRESS_ERRORS_INIT macro).
+>        ^^^^^^^
+> 
+> WARNING: please, no space before tabs
+> #111: FILE: include/libnetlink.h:109:
+> + * ^Irtnl_dump_done()$
+> 
+> WARNING: please, no space before tabs
+> #112: FILE: include/libnetlink.h:110:
+> + * ^Irtnl_dump_error()$
+> 
+> WARNING: please, no space before tabs
+> #116: FILE: include/libnetlink.h:114:
+> + * ^Ierror handled as usual$
+> 
+> WARNING: please, no space before tabs
+> #118: FILE: include/libnetlink.h:116:
+> + * ^Ierror in nlmsg_type == NLMSG_DONE will be suppressed$
+> 
+> 
+> WARNING: please, no space before tabs
+> #120: FILE: include/libnetlink.h:118:
+> + * ^Ierror in nlmsg_type == NLMSG_ERROR will be suppressed$
+> 
+> WARNING: please, no space before tabs
+> #121: FILE: include/libnetlink.h:119:
+> + * ^Iand nlmsg will be skipped$
+> 
+> total: 0 errors, 8 warnings, 183 lines checked
 
-Expected result here is to get empty dump file (as it was before this
-change).
+Oh, sorry about that. I've sent v5 and checked with checkpatch.pl
+I've send two options for v5 - with initializers fix and without :)
 
-v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
-(see nl_dump_ext_ack_done() function). We want to suppress error messages
-in stderr about absent FIB table from kernel too.
-
-v3: reworked to make code clearer. Introduced rtnl_suppressed_errors(),
-rtnl_suppress_error() helpers. User may suppress up to 3 errors (may be
-easily extended by changing SUPPRESS_ERRORS_INIT macro).
-
-v4: reworked, rtnl_dump_filter_errhndlr() was introduced. Thanks
-to Stephen Hemminger for comments and suggestions
-
-v5: space fixes, commit message reformat, empty initializers
-
-Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
-Cc: David Ahern <dsahern@gmail.com>
-Cc: Stephen Hemminger <stephen@networkplumber.org>
-Cc: Andrei Vagin <avagin@gmail.com>
-Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
----
- include/libnetlink.h | 32 ++++++++++++++++++++++++++
- ip/iproute.c         | 15 +++++++++++-
- lib/libnetlink.c     | 54 +++++++++++++++++++++++++++++++++++---------
- 3 files changed, 89 insertions(+), 12 deletions(-)
-
-diff --git a/include/libnetlink.h b/include/libnetlink.h
-index b9073a6a..4401551f 100644
---- a/include/libnetlink.h
-+++ b/include/libnetlink.h
-@@ -104,6 +104,27 @@ struct rtnl_ctrl_data {
- 
- typedef int (*rtnl_filter_t)(struct nlmsghdr *n, void *);
- 
-+/**
-+ * rtnl error handler called from
-+ *      rtnl_dump_done()
-+ *      rtnl_dump_error()
-+ *
-+ * Return value is a bitmask of the following values:
-+ * RTNL_LET_NLERR
-+ *      error handled as usual
-+ * RTNL_SUPPRESS_NLMSG_DONE_NLERR
-+ *      error in nlmsg_type == NLMSG_DONE will be suppressed
-+ * RTNL_SUPPRESS_NLMSG_ERROR_NLERR
-+ *      error in nlmsg_type == NLMSG_ERROR will be suppressed
-+ *      and nlmsg will be skipped
-+ * RTNL_SUPPRESS_NLERR - suppress error in both previous cases
-+ */
-+#define RTNL_LET_NLERR				0x01
-+#define RTNL_SUPPRESS_NLMSG_DONE_NLERR		0x02
-+#define RTNL_SUPPRESS_NLMSG_ERROR_NLERR		0x04
-+#define RTNL_SUPPRESS_NLERR			0x06
-+typedef int (*rtnl_err_hndlr_t)(struct nlmsghdr *n, void *);
-+
- typedef int (*rtnl_listen_filter_t)(struct rtnl_ctrl_data *,
- 				    struct nlmsghdr *n, void *);
- 
-@@ -113,6 +134,8 @@ typedef int (*nl_ext_ack_fn_t)(const char *errmsg, uint32_t off,
- struct rtnl_dump_filter_arg {
- 	rtnl_filter_t filter;
- 	void *arg1;
-+	rtnl_err_hndlr_t errhndlr;
-+	void *arg2;
- 	__u16 nc_flags;
- };
- 
-@@ -121,6 +144,15 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
- 			void *arg, __u16 nc_flags);
- #define rtnl_dump_filter(rth, filter, arg) \
- 	rtnl_dump_filter_nc(rth, filter, arg, 0)
-+int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
-+				 rtnl_filter_t filter,
-+				 void *arg1,
-+				 rtnl_err_hndlr_t errhndlr,
-+				 void *arg2,
-+				 __u16 nc_flags);
-+#define rtnl_dump_filter_errhndlr(rth, filter, farg, errhndlr, earg) \
-+	rtnl_dump_filter_errhndlr_nc(rth, filter, farg, errhndlr, earg, 0)
-+
- int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
- 	      struct nlmsghdr **answer)
- 	__attribute__((warn_unused_result));
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 5853f026..e45f0bea 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1727,6 +1727,18 @@ static int iproute_flush(int family, rtnl_filter_t filter_fn)
- 	}
- }
- 
-+static int save_route_errhndlr(struct nlmsghdr *n, void *arg)
-+{
-+	int err = -*(int *)NLMSG_DATA(n);
-+
-+	if (n->nlmsg_type == NLMSG_DONE &&
-+	    filter.tb == RT_TABLE_MAIN &&
-+	    err == ENOENT)
-+		return RTNL_SUPPRESS_NLMSG_DONE_NLERR;
-+
-+	return RTNL_LET_NLERR;
-+}
-+
- static int iproute_list_flush_or_save(int argc, char **argv, int action)
- {
- 	int dump_family = preferred_family;
-@@ -1939,7 +1951,8 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
- 
- 	new_json_obj(json);
- 
--	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
-+	if (rtnl_dump_filter_errhndlr(&rth, filter_fn, stdout,
-+				      save_route_errhndlr, NULL) < 0) {
- 		fprintf(stderr, "Dump terminated\n");
- 		return -2;
- 	}
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c958aa57..e9b8c3bd 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -673,7 +673,8 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
- 	return sendmsg(rth->fd, &msg, 0);
- }
- 
--static int rtnl_dump_done(struct nlmsghdr *h)
-+static int rtnl_dump_done(struct nlmsghdr *h,
-+			  const struct rtnl_dump_filter_arg *a)
- {
- 	int len = *(int *)NLMSG_DATA(h);
- 
-@@ -683,11 +684,15 @@ static int rtnl_dump_done(struct nlmsghdr *h)
- 	}
- 
- 	if (len < 0) {
-+		errno = -len;
-+
-+		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_DONE_NLERR)
-+			return 0;
-+
- 		/* check for any messages returned from kernel */
- 		if (nl_dump_ext_ack_done(h, len))
- 			return len;
- 
--		errno = -len;
- 		switch (errno) {
- 		case ENOENT:
- 		case EOPNOTSUPP:
-@@ -708,8 +713,9 @@ static int rtnl_dump_done(struct nlmsghdr *h)
- 	return 0;
- }
- 
--static void rtnl_dump_error(const struct rtnl_handle *rth,
--			    struct nlmsghdr *h)
-+static int rtnl_dump_error(const struct rtnl_handle *rth,
-+			    struct nlmsghdr *h,
-+			    const struct rtnl_dump_filter_arg *a)
- {
- 
- 	if (h->nlmsg_len < NLMSG_LENGTH(sizeof(struct nlmsgerr))) {
-@@ -721,11 +727,16 @@ static void rtnl_dump_error(const struct rtnl_handle *rth,
- 		if (rth->proto == NETLINK_SOCK_DIAG &&
- 		    (errno == ENOENT ||
- 		     errno == EOPNOTSUPP))
--			return;
-+			return -1;
-+
-+		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_ERROR_NLERR)
-+			return 0;
- 
- 		if (!(rth->flags & RTNL_HANDLE_F_SUPPRESS_NLERR))
- 			perror("RTNETLINK answers");
- 	}
-+
-+	return -1;
- }
- 
- static int __rtnl_recvmsg(int fd, struct msghdr *msg, int flags)
-@@ -834,7 +845,7 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
- 					dump_intr = 1;
- 
- 				if (h->nlmsg_type == NLMSG_DONE) {
--					err = rtnl_dump_done(h);
-+					err = rtnl_dump_done(h, a);
- 					if (err < 0) {
- 						free(buf);
- 						return -1;
-@@ -845,9 +856,13 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
- 				}
- 
- 				if (h->nlmsg_type == NLMSG_ERROR) {
--					rtnl_dump_error(rth, h);
--					free(buf);
--					return -1;
-+					err = rtnl_dump_error(rth, h, a);
-+					if (err < 0) {
-+						free(buf);
-+						return -1;
-+					}
-+
-+					goto skip_it;
- 				}
- 
- 				if (!rth->dump_fp) {
-@@ -887,8 +902,25 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
- 		     void *arg1, __u16 nc_flags)
- {
- 	const struct rtnl_dump_filter_arg a[2] = {
--		{ .filter = filter, .arg1 = arg1, .nc_flags = nc_flags, },
--		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
-+		{ .filter = filter, .arg1 = arg1,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = nc_flags, },
-+		{ },
-+	};
-+
-+	return rtnl_dump_filter_l(rth, a);
-+}
-+
-+int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
-+		     rtnl_filter_t filter,
-+		     void *arg1,
-+		     rtnl_err_hndlr_t errhndlr,
-+		     void *arg2,
-+		     __u16 nc_flags)
-+{
-+	const struct rtnl_dump_filter_arg a[2] = {
-+		{ .filter = filter, .arg1 = arg1,
-+		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
-+		{ },
- 	};
- 
- 	return rtnl_dump_filter_l(rth, a);
--- 
-2.31.1
-
+Regards,
+Alex
