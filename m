@@ -2,80 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7AC33BE34C
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 08:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9663BE35D
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 09:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbhGGG4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 02:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbhGGG4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 02:56:17 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEB7C061574
-        for <netdev@vger.kernel.org>; Tue,  6 Jul 2021 23:53:36 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id w22so1260576pff.5
-        for <netdev@vger.kernel.org>; Tue, 06 Jul 2021 23:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9dO6qu6W+sggBKwJuAPJLjJF2cGAq0+eORoykvlURLg=;
-        b=LdqPUqDeXeqk28NXNOYUCTQLuAxj8pkYveSg6n+N7tyZEf8SrfeHJfrIQfrNCpnGWb
-         s/ecT3F1xD2Xk9vWtRgDCsUCpnjM6BGrxmPR1SH1uGFOJ+8qB4UGAL2jhbYRsUqG61B7
-         4y23Sah2USmSEaTw6vv1iPWxRDEFGIVh31N5L98vr8kivzNqHj1lt+7qd3gd5d1gctMl
-         +xYE+cgxISx1UWi/S0RHj8K8jQU4AZVkhzSbO+eER9s4dySW7YtDEWviEA7cS7NDxBTk
-         zNaR0rE36lIS07AGsxL0bHDLmmO94bPgeQLan6hmlDXHWlVuB2IsmnLfiQuIfdU5/yq5
-         9M0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9dO6qu6W+sggBKwJuAPJLjJF2cGAq0+eORoykvlURLg=;
-        b=XdBQNKeAiVfrbsD4HVv7mInPJx5CnBMlr2HgGU2eoZpvz/UM6mBCD5M7ZvyR1X2kxp
-         2LTNryLPFrJhdpDkp2DL0GDIzCWr/choGC8jg6zPK7CB3KyK6lUkwIrWK0uPpQeBdS4S
-         gYEhWyYD9lT7Oql2cGKSoBd/4LZD6YXawDbdGhk4LzHjmViRlZxO0o39ffVtVzycmMl5
-         7FOdWstRakUDShG6HNR51zkZjFMbsdohdivs9P+U+7il4OzAA194t72OF6K37nQ8bLMj
-         5Yu+/E+UhBiiXlm20JqefFkF6QM4EDAyUmhfVOeaK0o/xk1STgueXK5pie3u66lomj6s
-         QAqQ==
-X-Gm-Message-State: AOAM5326g9vkmvFKkEbqx/011WfQORZGkCKe8B5XDNO0cpnP8GrU05TG
-        OoSu9A6YmsMhMvVpB0GFX9E=
-X-Google-Smtp-Source: ABdhPJxYZrKgOud9XMUifO+h35BvWWeFB6IbR4WshjwwuoIVCcJW37pu5e8y3Xho5Ny+N8nqiWnhUQ==
-X-Received: by 2002:a62:3344:0:b029:25e:a0a8:1c51 with SMTP id z65-20020a6233440000b029025ea0a81c51mr24187026pfz.58.1625640816273;
-        Tue, 06 Jul 2021 23:53:36 -0700 (PDT)
-Received: from fedora ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w2sm16487928pjq.5.2021.07.06.23.53.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 23:53:35 -0700 (PDT)
-Date:   Wed, 7 Jul 2021 14:53:29 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Roi Dayan <roid@nvidia.com>, netdev@vger.kernel.org,
-        Paul Blakey <paulb@nvidia.com>,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
-Message-ID: <YOVPafYxzaNsQ1Qm@fedora>
-References: <20210607064408.1668142-1-roid@nvidia.com>
- <YOLh4U4JM7lcursX@fedora>
- <YOQT9lQuLAvLbaLn@dcaratti.users.ipa.redhat.com>
+        id S230376AbhGGHFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 03:05:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230312AbhGGHFo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 03:05:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CEBB461C82;
+        Wed,  7 Jul 2021 07:03:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625641384;
+        bh=7tAg32fZBNuoC3CL6Ig9nwQmfyHrXRZJzl9msb7tNXU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Opw0/Qnf0maQx5i0xrXCvxYz4iruyv0anc2s2/Yi8j2FibTvuZd72eSwqyzlwgv5c
+         3uvuNYklFsC/cmGR1ir7xHpgCugutKIj7FOFYu+/ocnEdRJfZutXprzzgG6Tvk6nQa
+         628ybg+RSg1CRj4bOIujhUob5TVhHdMYUDkr9fjB9KjywTHzkLf4YUjF//nNNZLwP2
+         hQuoSkeAUvTIVPfWtR7WCrvG5luMiDhE54qyFiHCviLOnq/ZvfATTc0/P3WEc3I6IB
+         /LL4EF/hv4Qc5ESJpS0USl3BU++e31Q8EzUfzeEvgOycU7EwguC8XsmRHEGjvf4QJZ
+         jE7zrpcBTUkkw==
+Received: by mail-lf1-f52.google.com with SMTP id f30so2318795lfj.1;
+        Wed, 07 Jul 2021 00:03:04 -0700 (PDT)
+X-Gm-Message-State: AOAM5300V/ChYahK3dtqfz/IxOoI9WDhjuUoLTLpDa+VtpSQWWTAfL+3
+        GLUSE7D0NM8B6PbH1Rbu6oOilo/5FXzUzOC8Fpc=
+X-Google-Smtp-Source: ABdhPJxbN4bL0q+HrIKopleZYUj1uHSBnNBtvm0u6Qu+/u/6iUE+OcL4H6ha/sp7iRUw6S8of6WjFEGj1+DtoUGNd6Q=
+X-Received: by 2002:ac2:42cb:: with SMTP id n11mr14678250lfl.160.1625641383121;
+ Wed, 07 Jul 2021 00:03:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YOQT9lQuLAvLbaLn@dcaratti.users.ipa.redhat.com>
+References: <20210707043811.5349-1-hefengqing@huawei.com> <20210707043811.5349-2-hefengqing@huawei.com>
+In-Reply-To: <20210707043811.5349-2-hefengqing@huawei.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 7 Jul 2021 00:02:52 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4RNWsOH5-NDiOF5RNgejsadrkqUbqN9Mh+fxWHQZOCMQ@mail.gmail.com>
+Message-ID: <CAPhsuW4RNWsOH5-NDiOF5RNgejsadrkqUbqN9Mh+fxWHQZOCMQ@mail.gmail.com>
+Subject: Re: [bpf-next 1/3] bpf: Move bpf_prog_clone_free into filter.h file
+To:     He Fengqing <hefengqing@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 06, 2021 at 10:27:34AM +0200, Davide Caratti wrote:
-> my 2 cents:
-> 
-> what about using PRINT_FP / PRINT_JSON, so we fix the JSON output only to show "index", and
-> preserve the human-readable printout iproute and kselftests? besides avoiding failures because
-> of mismatching kselftests / iproute, this would preserve functionality of scripts that
-> configure / dump the "police" action. WDYT?
+On Tue, Jul 6, 2021 at 8:53 PM He Fengqing <hefengqing@huawei.com> wrote:
+>
+> Move bpf_prog_clone_free function into filter.h, so we can use
+> it in other file.
+>
+> Signed-off-by: He Fengqing <hefengqing@huawei.com>
+> ---
+>  include/linux/filter.h | 15 +++++++++++++++
+>  kernel/bpf/core.c      | 20 +-------------------
+>  2 files changed, 16 insertions(+), 19 deletions(-)
+>
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 472f97074da0..f39e008a377d 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -884,6 +884,21 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>                                   gfp_t gfp_extra_flags);
+>  void __bpf_prog_free(struct bpf_prog *fp);
+>
+> +static inline void bpf_prog_clone_free(struct bpf_prog *fp)
+> +{
+> +       /* aux was stolen by the other clone, so we cannot free
+> +        * it from this path! It will be freed eventually by the
+> +        * other program on release.
+> +        *
+> +        * At this point, we don't need a deferred release since
+> +        * clone is guaranteed to not be locked.
+> +        */
+> +       fp->aux = NULL;
+> +       fp->stats = NULL;
+> +       fp->active = NULL;
+> +       __bpf_prog_free(fp);
+> +}
+> +
+>  static inline void bpf_prog_unlock_free(struct bpf_prog *fp)
+>  {
+>         __bpf_prog_free(fp);
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 034ad93a1ad7..49b0311f48c1 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -238,10 +238,7 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>                 /* We keep fp->aux from fp_old around in the new
+>                  * reallocated structure.
+>                  */
+After the change, we can remove the comment above.
 
-+1
+> -               fp_old->aux = NULL;
+> -               fp_old->stats = NULL;
+> -               fp_old->active = NULL;
+> -               __bpf_prog_free(fp_old);
+> +               bpf_prog_clone_free(fp_old);
+
+Please add a couple sentences in the commit log about this chanage.
+
+Thanks,
+Song
