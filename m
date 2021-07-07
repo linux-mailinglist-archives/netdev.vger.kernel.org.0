@@ -2,184 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 819FB3BEC45
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:30:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD9BF3BEC48
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:30:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbhGGQdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 12:33:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
+        id S230347AbhGGQde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 12:33:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbhGGQdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 12:33:12 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB18BC061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 09:30:31 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id r132so4070511yba.5
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 09:30:31 -0700 (PDT)
+        with ESMTP id S230375AbhGGQdd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 12:33:33 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582ADC061574
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 09:30:53 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id x192so4070775ybe.6
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 09:30:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=e8mEPqUsEMREjLYbb8BWV005DUlTdPVMLhBR8qZBZbU=;
-        b=mwKpdoO+6j+t7/42T+A4dKRVo9XAd0zrbPjH0qICDoehFeplBMc86VW3Sd0yGFMhRL
-         ayQaSqQf0FSVqyjgGImgp422caDMqBUOTutmgexs0FriPEJ+8XJmtbj54gL4VIBNbbd6
-         Zce8e+exOU/bkPLw48QgQefFpKXo/t3e/pFU8fqeq4WrKhWitzspQYcIoJPS18vI9bka
-         1dLKjsy+QdjiArVzSTF9k6KvnXNluf/RhBfIQ3zYvIM49HSKwj4BWBSOaQjEiDieZ2oF
-         vDPD2J75uaQKysCb+xVoo4mLBX1cKnBvrHoYa0IEkCggTA2Ud+dyKbxo1tZtVTDp4KDP
-         6CUw==
+         :cc;
+        bh=MQNISUULFgbKrhLAqw4Nwehw3NiOOIQmnixsb+iws/I=;
+        b=k8AG4+b4kEzHlqqMFY92SpLTa77GrdVMI08O8YYfP5dtrJnXzxV4emPApwRvn/mKSs
+         Dc9GRDruoEtVxW3dWqUI//leT3DFqdvfAHVV+AT4QdYGx3Y0ioZ9MHZZZvpgxuLbKeIG
+         xo8yG257z+Bj3gU+zt+7KmOIjsHnU2sCycnBiU7ZepC7anh93z5L12MKARZkelXRmB9P
+         Xnu8NMqRlCeYOn0mG2U8ltJx01/6NXvFWIiX3uxKgrL022s2F//bwKSDQ3M0SuN75yHM
+         OTWHEhAIuoskTn0ZWgvIBdsI3QiSKJANbNTUjErw3rwFS3O7+DKpzwJDjxdIkrvatyEu
+         B/Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=e8mEPqUsEMREjLYbb8BWV005DUlTdPVMLhBR8qZBZbU=;
-        b=HMriu8XfH76NWJJ0/c8ZKzE2zW1FdAGqsMWFDUgKBPQwh90GPd3q6SbO/dLoFCFXCC
-         qQvMHjOnUl8ihyErL/Upq22DhHIJ9XX4gRoB+1NMM95MGsd8Xt+LnYhHNB614jAN6wla
-         JeYem4uQqNPVIf+x9clJl+21oLUo0E/bhxki0AAiumUKfa9+jBAbv8F6eMWBL5dOHG8m
-         L2dJwJ8L/xIOaGyLnjQHXcCz4RFUlZIzg/05KnVMTsV/RJS4UvCOGfBZd+m8qkw4/Hfv
-         YIQ3vG2QI7dU8IvRIUBXZIpSHZOTBuDy71EMq8ZRK9hVFY82KYS9syRVQyRKp4qQgCCG
-         bVbA==
-X-Gm-Message-State: AOAM530FCMkeRTQppX+Q98HuJylqkyinTMrSZXVMhy4zjfqCDJVBX456
-        t9oI/9LNNzBAtul1t+tmt+an587LZFN4SpYfVJ8eog==
-X-Google-Smtp-Source: ABdhPJzWGaIYU++8QDGxLE63liZ/sN8WYpwiNh8kcBoIPdOCs6cakJXOVRKO6CLf7LCBo/KcuI9nShJxGcxTVPxD+DE=
-X-Received: by 2002:a25:5844:: with SMTP id m65mr34558165ybb.52.1625675430684;
- Wed, 07 Jul 2021 09:30:30 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=MQNISUULFgbKrhLAqw4Nwehw3NiOOIQmnixsb+iws/I=;
+        b=TtCfkDnWqo0he5+wXSDuiSUy8aUoPHLFrUQf5p/WmtzuYVL+7rD2tmjj3MhCWNA52r
+         LTDvsJ9K9wXX9z/6sqYVD2RRDyuViI9nobsrXm83/w7nr4DdUGS7T943NEj4DOf94qfP
+         mjITD29s/He+FLyolEThR1P+aE4cfPC8f7ppPog68YX3588oC+gkTw4zyEMtCUWFboKr
+         inwyZmjhHaGcR421myhBJQb4jgtOf7FLzE7ShDBVUcZMUfjtHpH1UuldM3Z0qtygys0q
+         U/y7UZVuG8nGpcXzkmfbQX2SqdQRTMGFotxPNaFcvIZd550DV9uOGds55xM1eMoFMdq8
+         ZcAA==
+X-Gm-Message-State: AOAM533rbLZFP7JeO4Jnh7jgwoi6ae1oubxn1REY9in6dm/mfVmwjq22
+        /4RpdqkUvNUnLe25ko0wtKb/4Z+BsYavTeafFtardg==
+X-Google-Smtp-Source: ABdhPJws3XEKqn6IZWY8NVMLVuK4iYYckAXQetAQHY3BYRw7JDkNBBIgvAbSNdmDQsbpVQjP8+Ssey86HoHHMLSPGoA=
+X-Received: by 2002:a25:f0b:: with SMTP id 11mr33824301ybp.518.1625675452228;
+ Wed, 07 Jul 2021 09:30:52 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210707154630.583448-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210707154630.583448-1-eric.dumazet@gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 7 Jul 2021 09:30:18 -0700
-Message-ID: <CANP3RGdrYJCfi0Lf=4+45b6bOaNAm8L8-bH5k-YY6yxFF_a6sA@mail.gmail.com>
+ <20210707155930.GE1978@1wt.eu> <CANn89iKroJhPxiFJFNhopS6cS-Y6u1z_RLDTDCnmH8PMkJwEsA@mail.gmail.com>
+ <20210707161535.GF1978@1wt.eu> <CANn89iJcEiYJa7dv+nwUw-EF4KpeNCCPHb1NBhn7M0Nhw9gVrg@mail.gmail.com>
+ <20210707162736.GA2337@1wt.eu>
+In-Reply-To: <20210707162736.GA2337@1wt.eu>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 7 Jul 2021 18:30:41 +0200
+Message-ID: <CANn89iKmv+UUfi2ea9QeDCWvjVRr5tzmoEPeKfX7NrmNWZs5hg@mail.gmail.com>
 Subject: Re: [PATCH net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
+        Maciej Zenczykowski <maze@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 8:46 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+On Wed, Jul 7, 2021 at 6:27 PM Willy Tarreau <w@1wt.eu> wrote:
 >
-> From: Eric Dumazet <edumazet@google.com>
+> On Wed, Jul 07, 2021 at 06:25:10PM +0200, Eric Dumazet wrote:
+> > On Wed, Jul 7, 2021 at 6:15 PM Willy Tarreau <w@1wt.eu> wrote:
+> >> One can hope that one day the issue will disappear.
 >
-> While TCP stack scales reasonably well, there is still one part that
-> can be used to DDOS it.
->
-> IPv6 Packet too big messages have to lookup/insert a new route,
-> and if abused by attackers, can easily put hosts under high stress,
-> with many cpus contending on a spinlock while one is stuck in fib6_run_gc=
-()
->
-> ip6_protocol_deliver_rcu()
->  icmpv6_rcv()
->   icmpv6_notify()
->    tcp_v6_err()
->     tcp_v6_mtu_reduced()
->      inet6_csk_update_pmtu()
->       ip6_rt_update_pmtu()
->        __ip6_rt_update_pmtu()
->         ip6_rt_cache_alloc()
->          ip6_dst_alloc()
->           dst_alloc()
->            ip6_dst_gc()
->             fib6_run_gc()
->              spin_lock_bh() ...
->
-> Some of our servers have been hit by malicious ICMPv6 packets
-> trying to _increase_ the MTU/MSS of TCP flows.
->
-> We believe these ICMPv6 packets are a result of a bug in one ISP stack,
-> since they were blindly sent back for _every_ (small) packet sent to them=
-.
->
-> These packets are for one TCP flow:
-> 09:24:36.266491 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.266509 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.316688 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.316704 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.608151 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
->
-> TCP stack can filter some silly requests :
->
-> 1) MTU below IPV6_MIN_MTU can be filtered early in tcp_v6_err()
-> 2) tcp_v6_mtu_reduced() can drop requests trying to increase current MSS.
->
-> This tests happen before the IPv6 routing stack is entered, thus
-> removing the potential contention and route exhaustion.
->
-> Note that IPv6 stack was performing these checks, but too late
-> (ie : after the route has been added, and after the potential
-> garbage collect war)
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Maciej =C5=BBenczykowski <maze@google.com>
-> ---
->  net/ipv6/tcp_ipv6.c | 19 +++++++++++++++++--
->  1 file changed, 17 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 593c32fe57ed13a218492fd6056f2593e601ec79..bc334a6f24992c7b5b2c415ea=
-b4b6cf51bf36cb4 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -348,11 +348,20 @@ static int tcp_v6_connect(struct sock *sk, struct s=
-ockaddr *uaddr,
->  static void tcp_v6_mtu_reduced(struct sock *sk)
->  {
->         struct dst_entry *dst;
-> +       u32 mtu;
->
->         if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE))
->                 return;
->
-> -       dst =3D inet6_csk_update_pmtu(sk, READ_ONCE(tcp_sk(sk)->mtu_info)=
-);
-> +       mtu =3D READ_ONCE(tcp_sk(sk)->mtu_info);
-> +
-> +       /* Drop requests trying to increase our current mss.
-> +        * Check done in __ip6_rt_update_pmtu() is too late.
-> +        */
-> +       if (tcp_mss_to_mtu(sk, mtu) >=3D tcp_sk(sk)->mss_cache)
-> +               return;
-> +
-> +       dst =3D inet6_csk_update_pmtu(sk, mtu);
->         if (!dst)
->                 return;
->
-> @@ -433,6 +442,8 @@ static int tcp_v6_err(struct sk_buff *skb, struct ine=
-t6_skb_parm *opt,
->         }
->
->         if (type =3D=3D ICMPV6_PKT_TOOBIG) {
-> +               u32 mtu =3D ntohl(info);
-> +
->                 /* We are not interested in TCP_LISTEN and open_requests
->                  * (SYN-ACKs send out by Linux are always <576bytes so
->                  * they should go through unfragmented).
-> @@ -443,7 +454,11 @@ static int tcp_v6_err(struct sk_buff *skb, struct in=
-et6_skb_parm *opt,
->                 if (!ip6_sk_accept_pmtu(sk))
->                         goto out;
->
-> -               WRITE_ONCE(tp->mtu_info, ntohl(info));
-> +               if (mtu < IPV6_MIN_MTU)
-> +                       goto out;
-> +
-> +               WRITE_ONCE(tp->mtu_info, mtu);
-> +
->                 if (!sock_owned_by_user(sk))
->                         tcp_v6_mtu_reduced(sk);
->                 else if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED,
-> --
-> 2.32.0.93.g670b81a890-goog
+> Aie. I thought you were speaking about million PPS. For sure if 10 pkt/s
+> already cause harm, there's little to nothing that can be achieved with
+> sampling!
 
-Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
+Yes, these routes expire after 600 seconds, and the ipv6/max_size
+default to 4096
+
+After a few minutes, the route cache is full and bad things happen.
