@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B6A83BE79A
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5596F3BE7BF
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbhGGMLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 08:11:53 -0400
-Received: from relay.sw.ru ([185.231.240.75]:43496 "EHLO relay.sw.ru"
+        id S231454AbhGGMYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 08:24:46 -0400
+Received: from relay.sw.ru ([185.231.240.75]:44950 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231358AbhGGMLx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 08:11:53 -0400
+        id S231383AbhGGMYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 08:24:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
-        Content-Type; bh=2GNcOPntf5ppE/661E2bRH8mfbEu1c9gjUrVuICOMOM=; b=F/sYh6gvcnGq
-        ObhhXfVB3V3XP1z17YhAcsDPcN3lp5es1Ib2LzNKEFVawy4ezQbbPNrdY82tSe1WlQI3q7POujtHj
-        mHoBgqUzsfZ9ILtpCMv4kfNAEdgC040/TDD8JI3zYOiY0g87QF2+E4dP26hrj7sOHAmUayq5Z64UE
-        nheaU=;
+        Content-Type; bh=5IX6KlV0caxNfUE5goHuXfGviMPQWDaSVxSlLYKvEE8=; b=BygjXTIB6B9t
+        ElkDIZ5cGwgQChUZPf30Gj2IutWuc8we3QU9ORieZp1HOCJCPxCczO0m9E3I1thftxoSGu3t4KJzl
+        OLEcLJAUrb3WiWumUZcKUj9eZNvR4fjw5Pk8DL7gAT2UKNqt6kz1FxriSa5fxpw9EFFlaXgn0YXdZ
+        VOjK8=;
 Received: from [192.168.15.10] (helo=mikhalitsyn-laptop.lan)
         by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1m16MZ-003BgA-34; Wed, 07 Jul 2021 15:09:11 +0300
+        id 1m16Z2-003Bm5-LS; Wed, 07 Jul 2021 15:22:04 +0300
 From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
@@ -30,8 +30,8 @@ Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
         Andrei Vagin <avagin@gmail.com>,
         Alexander Mikhalitsyn <alexander@mihalicyn.com>
 Subject: [PATCHv5 iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
-Date:   Wed,  7 Jul 2021 15:09:06 +0300
-Message-Id: <20210707120906.13402-1-alexander.mikhalitsyn@virtuozzo.com>
+Date:   Wed,  7 Jul 2021 15:22:01 +0300
+Message-Id: <20210707122201.14618-1-alexander.mikhalitsyn@virtuozzo.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
 References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
@@ -71,7 +71,7 @@ easily extended by changing SUPPRESS_ERRORS_INIT macro).
 v4: reworked, rtnl_dump_filter_errhndlr() was introduced. Thanks
 to Stephen Hemminger for comments and suggestions
 
-v5: space fixes, commit message reformat
+v5: space fixes, commit message reformat, empty initializers
 
 Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
 Cc: David Ahern <dsahern@gmail.com>
@@ -80,10 +80,10 @@ Cc: Andrei Vagin <avagin@gmail.com>
 Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
 Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
 ---
- include/libnetlink.h | 32 +++++++++++++++++++++++++
+ include/libnetlink.h | 32 ++++++++++++++++++++++++++
  ip/iproute.c         | 15 +++++++++++-
- lib/libnetlink.c     | 56 +++++++++++++++++++++++++++++++++++---------
- 3 files changed, 91 insertions(+), 12 deletions(-)
+ lib/libnetlink.c     | 54 +++++++++++++++++++++++++++++++++++---------
+ 3 files changed, 89 insertions(+), 12 deletions(-)
 
 diff --git a/include/libnetlink.h b/include/libnetlink.h
 index b9073a6a..4401551f 100644
@@ -176,7 +176,7 @@ index 5853f026..e45f0bea 100644
  		return -2;
  	}
 diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c958aa57..80a92e6f 100644
+index c958aa57..e9b8c3bd 100644
 --- a/lib/libnetlink.c
 +++ b/lib/libnetlink.c
 @@ -673,7 +673,8 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
@@ -262,7 +262,7 @@ index c958aa57..80a92e6f 100644
  				}
  
  				if (!rth->dump_fp) {
-@@ -887,8 +902,27 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
+@@ -887,8 +902,25 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
  		     void *arg1, __u16 nc_flags)
  {
  	const struct rtnl_dump_filter_arg a[2] = {
@@ -270,8 +270,7 @@ index c958aa57..80a92e6f 100644
 -		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
 +		{ .filter = filter, .arg1 = arg1,
 +		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = nc_flags, },
-+		{ .filter = NULL,   .arg1 = NULL,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
++		{ },
 +	};
 +
 +	return rtnl_dump_filter_l(rth, a);
@@ -287,8 +286,7 @@ index c958aa57..80a92e6f 100644
 +	const struct rtnl_dump_filter_arg a[2] = {
 +		{ .filter = filter, .arg1 = arg1,
 +		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
-+		{ .filter = NULL,   .arg1 = NULL,
-+		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
++		{ },
  	};
  
  	return rtnl_dump_filter_l(rth, a);
