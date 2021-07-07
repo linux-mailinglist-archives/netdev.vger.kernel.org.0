@@ -2,135 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3293BED3E
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 19:40:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F0C3BED47
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 19:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbhGGRnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 13:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S230408AbhGGRoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 13:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230130AbhGGRnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 13:43:14 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27AA7C061574;
-        Wed,  7 Jul 2021 10:40:34 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id p4-20020a17090a9304b029016f3020d867so2119795pjo.3;
-        Wed, 07 Jul 2021 10:40:34 -0700 (PDT)
+        with ESMTP id S230110AbhGGRo3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 13:44:29 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E645C061574;
+        Wed,  7 Jul 2021 10:41:48 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id a8so4017037wrp.5;
+        Wed, 07 Jul 2021 10:41:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BgQbhoVbzjmNN3b9sj7N5Nl4gKvJ3MMVqvNXk5zHkNo=;
-        b=bR47LD94Ihmmn+syU7HUJyHuGzItCzlwySdmlkOYI/yLYpYVon7pXNMaOD9WbOvGHh
-         SqeGoAWtPadPUZwLG9LePULyOje+tqo/OgSzMDdJii1uZfPbqeFYEmEqpHBNywGAbqHy
-         2iQt545mtIRNxxSdHd+w2YoLimLHvy+w6F2IHU8lAiQmJenx3+5YoqnFpXT13tHetrgy
-         dlzio48/8UmsOvEgsEkA+FcqO5LKFg6wjaBPvsL9Tq+yM5THIWAKi3BkCdR5u6sX/GJd
-         fT44xrPMKQbzunyhJl/zp8JqGkmruuVmLoS7qEzyjp8Frx+5bbCDFVaAl7M64v6s00ZW
-         AvJQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lA3hDr792hgobfyrQMbraHH3m59ZWiVGpciRaq1+pUE=;
+        b=vhIjqE2ALd4XXXh06sMcmJELw+L7AWFALPddHb12EhQNWJbZGClUcxJQ7fiPxegudN
+         /OOZvxb78sHoZLxiSRg20Cmw5lInY60zs1HIUdYPzWnzNX97eHwB9DVadtWNTNXF313l
+         +rNaOqMGGggXANoW8EPQKLeehcobgT4SRe+Wq6JNN69BxCTpFUGWrPFAFQPX1qyqbMoT
+         064ejKBH7k7lq4kDVpSi68JlnDkqKGt12KyliTICvFeeXFMNtsqyKTvccsYyYNb58+d4
+         mQr0PxIdbX2MvDeyxHQhTRvokOVwxHEKmUOxQNzhvcH2byuAn2fdQKfpzVCzN+8RFyRx
+         NT3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BgQbhoVbzjmNN3b9sj7N5Nl4gKvJ3MMVqvNXk5zHkNo=;
-        b=gCKAnK3WON5XurRZqYDx9wOnbeXoA/Ex/DUaMpDSSfwXsVBqePqxb+pB7hFXMYYgDF
-         ndhjKAmkFv/qeXDKFQkkgIm33wPilhvYoaP6/sC55SLd9i0RLdgwxiXPww0nrqSOhXf9
-         v4m5W1ztoZLI6AlJzloEIwfRl8HHMjuVkXvjbaLE/atuqpqZPb1NpYdG85TwYOmR6OZj
-         Dvj75rxC15efXLXpBTrSkAAZLJboVCH4JA9eiIjqg9Tzm8hftqKBIvCHFRh26xpaFmwx
-         x7NooOoGL/Y0ilZ+UhvlorigrfPNSAimfO135gXqIML45mJyO0HsDXwCL5+YzQdPYA0r
-         yJeA==
-X-Gm-Message-State: AOAM530cfpUmeVr6avTyOrfKpqVibjmGXxlRR2bmpzB2hMs1dfVebp5z
-        6029MfSQnYQ4G4StTtlgduE=
-X-Google-Smtp-Source: ABdhPJzCIAIXmtoc+TgNyipWd2WVTKXNqNE0xipLQsdFFIQOXHcVtnOxk+x8AeC7NNPt4aWeARXzww==
-X-Received: by 2002:a17:90a:948b:: with SMTP id s11mr28015165pjo.139.1625679633694;
-        Wed, 07 Jul 2021 10:40:33 -0700 (PDT)
-Received: from BALT-UROY.maxlinear.com ([202.8.116.91])
-        by smtp.gmail.com with ESMTPSA id r26sm15555376pfq.191.2021.07.07.10.40.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 10:40:33 -0700 (PDT)
-From:   UjjaL Roy <royujjal@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, clang-built-linux@googlegroups.com
-Subject: [PATCH] docs: bpf: Added more extension example
-Date:   Wed,  7 Jul 2021 23:10:22 +0530
-Message-Id: <20210707174022.517-1-royujjal@gmail.com>
-X-Mailer: git-send-email 2.31.1.windows.1
+        bh=lA3hDr792hgobfyrQMbraHH3m59ZWiVGpciRaq1+pUE=;
+        b=gPDmZd607Esb8NpaXAR2o2PdBeniezVqjYrznTpMQKbvSTU3a+UXjSoTZxZ2vdG8Q8
+         9TE7aVY3ByyT90oS4Ww1GN8Ivvg3njyt7KGwgjQk7oo5i/HeKdowjtqxtACmXKHKeIVj
+         9yy0On59G88NB58FdhbFRxOTdT3uizriRt9PEcaUyBnmqcq4gUhM3UM5j5v6TvrnYd1r
+         fovubmWY3hu3YfQqyx06ek7Wf5yuw9uRhrf0hloTp9/OYNDwVIk5vDAvKNQyw459RpXh
+         +yqjbrNyIaHbMDrapcRDCmIHRQaaQZbpCyvWdqyt/WtKBQijti3DzE/EY0hcvX9OjP58
+         lwVw==
+X-Gm-Message-State: AOAM533KV1RP+kZgS48aDCZxJDxsbYHRPxH9Po9/uqGjk6XJ5o9k+KXS
+        QeFu+058W9HVjFzdMoKrSq8EHfPsdVA=
+X-Google-Smtp-Source: ABdhPJwbkbndjTycaWgmbiEB+6RtI4zIbh92o7Cw787TdRjf7dZaoUfxNq3A7M96i3Ct7Y1o08e70A==
+X-Received: by 2002:a05:6000:1361:: with SMTP id q1mr28751207wrz.179.1625679706809;
+        Wed, 07 Jul 2021 10:41:46 -0700 (PDT)
+Received: from [192.168.98.98] (162.199.23.93.rev.sfr.net. [93.23.199.162])
+        by smtp.gmail.com with ESMTPSA id o11sm7671585wmc.2.2021.07.07.10.41.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Jul 2021 10:41:46 -0700 (PDT)
+Subject: Re: [PATCH IPV6 1/1] ipv6: allocate enough headroom in
+ ip6_finish_output2()
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
+Cc:     Vasily Averin <vvs@virtuozzo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1625665132.git.vvs@virtuozzo.com>
+ <3cb5a2e5-4e4c-728a-252d-4757b6c9612d@virtuozzo.com>
+ <8996db63-5554-d3dc-cd36-94570ade6d18@gmail.com>
+ <20210707094218.0e9b6ffc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <1cbf3c7b-455e-f3a5-cc2c-c18ce8be4ce1@gmail.com>
+Date:   Wed, 7 Jul 2021 19:41:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210707094218.0e9b6ffc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Roy, UjjaL" <royujjal@gmail.com>
 
-After reading this document observed that for new users it is
-hard to find an example of "extension" easily.
 
-So, added a new heading for extensions for better readability.
-Now, the new readers can easily identify "extension" examples.
-Also, added one more example of filtering interface index.
+On 7/7/21 6:42 PM, Jakub Kicinski wrote:
+> On Wed, 7 Jul 2021 08:45:13 -0600 David Ahern wrote:
+>> On 7/7/21 8:04 AM, Vasily Averin wrote:
+>>> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+>>> index ff4f9eb..e5af740 100644
+>>> --- a/net/ipv6/ip6_output.c
+>>> +++ b/net/ipv6/ip6_output.c
+>>> @@ -61,9 +61,24 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+>>>  	struct dst_entry *dst = skb_dst(skb);
+>>>  	struct net_device *dev = dst->dev;
+>>>  	const struct in6_addr *nexthop;
+>>> +	unsigned int hh_len = LL_RESERVED_SPACE(dev);
+>>>  	struct neighbour *neigh;
+>>>  	int ret;
+>>>  
+>>> +	/* Be paranoid, rather than too clever. */
+>>> +	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
+>>> +		struct sk_buff *skb2;
+>>> +
+>>> +		skb2 = skb_realloc_headroom(skb, LL_RESERVED_SPACE(dev));  
+>>
+>> why not use hh_len here?
+> 
+> Is there a reason for the new skb? Why not pskb_expand_head()?
 
-Signed-off-by: Roy, UjjaL <royujjal@gmail.com>
----
- Documentation/networking/filter.rst | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/networking/filter.rst b/Documentation/networking/filter.rst
-index 3e2221f4abe4..5f13905b12e0 100644
---- a/Documentation/networking/filter.rst
-+++ b/Documentation/networking/filter.rst
-@@ -320,13 +320,6 @@ Examples for low-level BPF:
-   ret #-1
-   drop: ret #0
- 
--**(Accelerated) VLAN w/ id 10**::
--
--  ld vlan_tci
--  jneq #10, drop
--  ret #-1
--  drop: ret #0
--
- **icmp random packet sampling, 1 in 4**::
- 
-   ldh [12]
-@@ -358,6 +351,22 @@ Examples for low-level BPF:
-   bad: ret #0             /* SECCOMP_RET_KILL_THREAD */
-   good: ret #0x7fff0000   /* SECCOMP_RET_ALLOW */
- 
-+Examples for low-level BPF extension:
-+
-+**Packet for interface index 13**::
-+
-+  ld ifidx
-+  jneq #13, drop
-+  ret #-1
-+  drop: ret #0
-+
-+**(Accelerated) VLAN w/ id 10**::
-+
-+  ld vlan_tci
-+  jneq #10, drop
-+  ret #-1
-+  drop: ret #0
-+
- The above example code can be placed into a file (here called "foo"), and
- then be passed to the bpf_asm tool for generating opcodes, output that xt_bpf
- and cls_bpf understands and can directly be loaded with. Example with above
--- 
-2.17.1
+pskb_expand_head() might crash, if skb is shared.
 
+We possibly can add a helper, factorizing all this,
+and eventually use pskb_expand_head() if safe.
