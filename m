@@ -2,79 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9BF3BEC48
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35C953BEC68
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbhGGQde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 12:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbhGGQdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 12:33:33 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582ADC061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 09:30:53 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id x192so4070775ybe.6
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 09:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MQNISUULFgbKrhLAqw4Nwehw3NiOOIQmnixsb+iws/I=;
-        b=k8AG4+b4kEzHlqqMFY92SpLTa77GrdVMI08O8YYfP5dtrJnXzxV4emPApwRvn/mKSs
-         Dc9GRDruoEtVxW3dWqUI//leT3DFqdvfAHVV+AT4QdYGx3Y0ioZ9MHZZZvpgxuLbKeIG
-         xo8yG257z+Bj3gU+zt+7KmOIjsHnU2sCycnBiU7ZepC7anh93z5L12MKARZkelXRmB9P
-         Xnu8NMqRlCeYOn0mG2U8ltJx01/6NXvFWIiX3uxKgrL022s2F//bwKSDQ3M0SuN75yHM
-         OTWHEhAIuoskTn0ZWgvIBdsI3QiSKJANbNTUjErw3rwFS3O7+DKpzwJDjxdIkrvatyEu
-         B/Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MQNISUULFgbKrhLAqw4Nwehw3NiOOIQmnixsb+iws/I=;
-        b=TtCfkDnWqo0he5+wXSDuiSUy8aUoPHLFrUQf5p/WmtzuYVL+7rD2tmjj3MhCWNA52r
-         LTDvsJ9K9wXX9z/6sqYVD2RRDyuViI9nobsrXm83/w7nr4DdUGS7T943NEj4DOf94qfP
-         mjITD29s/He+FLyolEThR1P+aE4cfPC8f7ppPog68YX3588oC+gkTw4zyEMtCUWFboKr
-         inwyZmjhHaGcR421myhBJQb4jgtOf7FLzE7ShDBVUcZMUfjtHpH1UuldM3Z0qtygys0q
-         U/y7UZVuG8nGpcXzkmfbQX2SqdQRTMGFotxPNaFcvIZd550DV9uOGds55xM1eMoFMdq8
-         ZcAA==
-X-Gm-Message-State: AOAM533rbLZFP7JeO4Jnh7jgwoi6ae1oubxn1REY9in6dm/mfVmwjq22
-        /4RpdqkUvNUnLe25ko0wtKb/4Z+BsYavTeafFtardg==
-X-Google-Smtp-Source: ABdhPJws3XEKqn6IZWY8NVMLVuK4iYYckAXQetAQHY3BYRw7JDkNBBIgvAbSNdmDQsbpVQjP8+Ssey86HoHHMLSPGoA=
-X-Received: by 2002:a25:f0b:: with SMTP id 11mr33824301ybp.518.1625675452228;
- Wed, 07 Jul 2021 09:30:52 -0700 (PDT)
+        id S230024AbhGGQl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 12:41:57 -0400
+Received: from novek.ru ([213.148.174.62]:36814 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229542AbhGGQl5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 12:41:57 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 5AD415038AC;
+        Wed,  7 Jul 2021 19:37:00 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 5AD415038AC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1625675826; bh=KUG75uoxgSFucoAifkm4LBkfxm/1OjsFkKnKyFyfhac=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=erBL1gQzw4wZ+d4gu9xkE0rt9PjsR/BF1zXkE8EyU/DClxKu+NTXoZhvbCeycWBHe
+         FkNw5UESpb4wgldAvXTQRAjyopVxETYOnwrPqn3MqXDJXtXYDj1lhuddznQ2GDDUaD
+         ghpFGNwyxSFUd0HLjhmyrx80+m65diDlvEAr+wjY=
+Subject: Re: Fw: [Bug 213669] New: PMTU dicovery not working for IPsec
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>
+References: <20210707070752.47946d92@hermes.local>
+ <3957720a-874b-6e89-e58c-3e16dc4570af@novek.ru>
+ <05ff89e1-1df1-a4df-14f1-ad6b15550481@gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <429d3487-dc5a-8f51-c8a0-7dbaed543b73@novek.ru>
+Date:   Wed, 7 Jul 2021 17:39:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210707154630.583448-1-eric.dumazet@gmail.com>
- <20210707155930.GE1978@1wt.eu> <CANn89iKroJhPxiFJFNhopS6cS-Y6u1z_RLDTDCnmH8PMkJwEsA@mail.gmail.com>
- <20210707161535.GF1978@1wt.eu> <CANn89iJcEiYJa7dv+nwUw-EF4KpeNCCPHb1NBhn7M0Nhw9gVrg@mail.gmail.com>
- <20210707162736.GA2337@1wt.eu>
-In-Reply-To: <20210707162736.GA2337@1wt.eu>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 7 Jul 2021 18:30:41 +0200
-Message-ID: <CANn89iKmv+UUfi2ea9QeDCWvjVRr5tzmoEPeKfX7NrmNWZs5hg@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Maciej Zenczykowski <maze@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <05ff89e1-1df1-a4df-14f1-ad6b15550481@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 6:27 PM Willy Tarreau <w@1wt.eu> wrote:
->
-> On Wed, Jul 07, 2021 at 06:25:10PM +0200, Eric Dumazet wrote:
-> > On Wed, Jul 7, 2021 at 6:15 PM Willy Tarreau <w@1wt.eu> wrote:
-> >> One can hope that one day the issue will disappear.
->
-> Aie. I thought you were speaking about million PPS. For sure if 10 pkt/s
-> already cause harm, there's little to nothing that can be achieved with
-> sampling!
-
-Yes, these routes expire after 600 seconds, and the ipv6/max_size
-default to 4096
-
-After a few minutes, the route cache is full and bad things happen.
+On 07.07.2021 17:06, David Ahern wrote:
+> On 7/7/21 9:52 AM, Vadim Fedorenko wrote:
+>> On 07.07.2021 15:07, Stephen Hemminger wrote:
+>>>
+>>>
+>>> Begin forwarded message:
+>>>
+>>> Date: Wed, 07 Jul 2021 09:08:07 +0000
+>>> From: bugzilla-daemon@bugzilla.kernel.org
+>>> To: stephen@networkplumber.org
+>>> Subject: [Bug 213669] New: PMTU dicovery not working for IPsec
+>>>
+>>>
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=213669
+>>>
+>>>               Bug ID: 213669
+>>>              Summary: PMTU dicovery not working for IPsec
+>>>              Product: Networking
+>>>              Version: 2.5
+>>>       Kernel Version: 5.12.13
+>>>             Hardware: x86-64
+>>>                   OS: Linux
+>>>                 Tree: Mainline
+>>>               Status: NEW
+>>>             Severity: high
+>>>             Priority: P1
+>>>            Component: IPV4
+>>>             Assignee: stephen@networkplumber.org
+>>>             Reporter: marek.gresko@protonmail.com
+>>>           Regression: No
+>>>
+>>> Hello,
+>>>
+>>> I have two sites interconnected using ipsec (libreswan)
+>>>
+>>> the situation is as follows:
+>>>
+>>> X <=> (a) <=> (Internet) <=> (b) <=> Y
+>>>
+>>> So you have two gateways a and b connected to the internet and their
+>>> corresponding internal subnets X and Y. The gateway a is connected to the
+>>> provider p using pppoe. The ipsec tunnel is created between a and b to
+>>> interconnect subnets X and Y. When gateway b with internal address y
+>>> itself is
+>>> communication to the gateway a using its internal address x. Addresses
+>>> x and y
+>>> are defined by leftsourceif and rightsourceip in the libreswan
+>>> configuration,
+>>> you get this behavior:
+>>>
+>>> b# ping -M do x -s 1392 -c 1
+>>> PING x (x.x.x.x) 1392(1420) bytes of data.
+>>>
+>>> --- ping statistics ---
+>>> 1 packets transmitted, 0 received, 100% packet loss, time 0ms
+>>>
+>>> b# ping -M do a -s 1460 -c 3
+>>> PING a (a.a.a.a) 1460(1488) bytes of data.
+>>>   From p (p.p.p.p) icmp_seq=1 Frag needed and DF set (mtu = 1480)
+>>> ping: local error: message too long, mtu=1480
+>>> ping: local error: message too long, mtu=1480
+>>>
+>>> --- ping statistics ---
+>>> 3 packets transmitted, 0 received, +3 errors, 100% packet loss, time
+>>> 2014ms
+>>>
+>>> b# ping -M do x -s 1392 -c 3
+>>> PING x (x.x.x.x) 1392(1420) bytes of data.
+>>> ping: local error: message too long, mtu=1418
+>>> ping: local error: message too long, mtu=1418
+>>> ping: local error: message too long, mtu=1418
+>>>
+>>> --- ping statistics ---
+>>> 3 packets transmitted, 0 received, +3 errors, 100% packet loss, time
+>>> 2046ms
+>>>
+>>>
+>>> Legend:
+>>> x.x.x.x is an inner ip address if the gateway (a) (or x from the inside).
+>>> a.a.a.a is an outer address of the gateway (a).
+>>> p.p.p.p is some address in the provider's network of the (a) side.
+>>>
+>>> So definitely the ipsec tunnel is aware of the mtu only when some outer
+>>> communication is in progress. The inner communication itself is not
+>>> aware of
+>>> icmp packets using for PMTU discovery. I had also a situation when
+>>> also the
+>>> outer pings did not help the ipsec to be aware of the MTU and after
+>>> reboot it
+>>> started to behave like discribed again.
+>>>
+>>> Did I describe it understandably or should I clarify things?
+>>>
+>>> Thanks
+>>>
+>>> Marek
+>>>
+>>
+>> Looks like I didn't cover one more case in my MTU patch series. I'll try
+>> to look
+>> deeper
+> 
+> 
+> pmtu.sh test script covers xfrm (esp) cases with vti devices. Could add
+> more ipsec test cases to it.
+> 
+Sure, I'll add tests too
