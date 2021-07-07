@@ -2,108 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 446853BEA51
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C4C3BEA98
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbhGGPIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 11:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232105AbhGGPIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:08:06 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB44C061574;
-        Wed,  7 Jul 2021 08:05:26 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id 65so1715582oie.11;
-        Wed, 07 Jul 2021 08:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vV+yejyaKmFblQMQhljd/KTv7T5WzF1kB2W0gv6r/cE=;
-        b=Voz5ggbq5byusiRtpmIrkvLAxxlNmKMlFKkmmE1D2B3AmWW7e0dI2GaLlhlFzZMKpC
-         cqx0NS2Sc9Gi3Wnkesq5BoD8FIhuAz3z13/K1sQSi8d10UD76vpiGRwCncvm24HyD6a/
-         RYVvhzA4Ny4mJiIYbg64zzZ+OsDAY3jeB9qj8RzbangxcpQNEaRwvCTDHpH9ZEWreu3d
-         1NmIQ2h1PL8RZ6NQp9XgxS3xjPGlqj/HIFCxdMXM/LXi037HERZmJEOw2bSB+4LIkWJV
-         U+DecBoAAwxYnNGgyfyRTEkdYA301nK0v4Gxzh7EcBt+BhSSZMn5w0tzbZvcmr5MmzEy
-         EWdQ==
+        id S232227AbhGGPWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 11:22:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35966 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232273AbhGGPWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:22:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625671175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tjNUgz6mqt/4pNa8w2Xldle8j77XowpLl5djQ8TARDs=;
+        b=BgAqVBq4qrsR3UAmSUoyoWs3p7opVH5/FaOSlJUbACeBAlYNAI0H76Qgbd/W0ZQb1dJXxf
+        lnB4TxjsQG0iVcKbxtcNmKkvgiHHAbxHCTg1iq24Ns82mAgTRZxQBiws8chIdacKqh3Ovc
+        Fc5G8WnoFFBHs96wC3+vfvCmXVVYFgY=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-132-37cmBiEJOf24B0KgBj87Rg-1; Wed, 07 Jul 2021 11:19:34 -0400
+X-MC-Unique: 37cmBiEJOf24B0KgBj87Rg-1
+Received: by mail-wr1-f69.google.com with SMTP id k3-20020a5d52430000b0290138092aea94so884577wrc.20
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 08:19:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vV+yejyaKmFblQMQhljd/KTv7T5WzF1kB2W0gv6r/cE=;
-        b=DEtW64D+VfEd94O+V25HMwgmACoFxqvawFXIeGWNqxc+U5Yc3Lha+k+i2gCdWiRyAO
-         W80WCdxFOYgNFQQTU/b86M1SNQs8XeM0KLd0LeFiV/jBLdZwxyYNmp0k5hJ9jKpNe0A2
-         yIuG0Trg7X7BYR5D+NLR2e26gtDPY6LUeEJr6rmzcG4p2AyZMoFrvZ3pbRRt0zmQ+rEw
-         LozMdJc6zXn3KE1pks6oDByjvZKWW9Xk9nw/JQVcNRK1DEtE74LYZ+lxKQ6b/Gv/KYSv
-         f6QAyOeWiVwRraUWx1PCQW/rSb7FuaLyeMqntFT9txeZ31qei+BCX3c+r1FKSsZOw/hU
-         gNbA==
-X-Gm-Message-State: AOAM532EWoZqRNaHsp+hn+wO13+ysEZjYIpH2LIuipzGsYN7dam7T6JE
-        YkUUiO42E03Apn+zN3YGbm9SIM2jo8JWlw==
-X-Google-Smtp-Source: ABdhPJyAcbTIDF2nomja+xTYgmiYBmUUKqr0PQRmc1euQgu5Dk/lZYteKgBLd4zXko/tju1WX6HGdA==
-X-Received: by 2002:aca:c207:: with SMTP id s7mr16847874oif.86.1625670325948;
-        Wed, 07 Jul 2021 08:05:25 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id t15sm3990552oiw.16.2021.07.07.08.05.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Jul 2021 08:05:25 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/4] selftests: forwarding: Test redirecting gre
- or ipip packets to Ethernet
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-References: <cover.1625056665.git.gnault@redhat.com>
- <0a4e63cd3cde3c71cfc422a7f0f5e9bc76c0c1f5.1625056665.git.gnault@redhat.com>
- <YN1Wxm0mOFFhbuTl@shredder> <20210701145943.GA3933@pc-32.home>
- <1932a3af-2fdd-229a-e5f5-6b1ef95361e1@gmail.com>
- <20210706190253.GA23236@pc-32.home>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f017bb67-73ff-7745-0da5-b267fe0f0501@gmail.com>
-Date:   Wed, 7 Jul 2021 09:05:24 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tjNUgz6mqt/4pNa8w2Xldle8j77XowpLl5djQ8TARDs=;
+        b=ck6SeJq7FLf3iRowqwcp0Khb0VCftEDM0VMhKrOgkxYddyMFfFB8MtxDLjWl1wppn+
+         mCCtsFhEYVAuxp1lwdiyYr848XrvVCHsn3SOsTLKLVnzsAeGfbVSMUXAz4GQU3crBxTm
+         Ac7+o6k3RhvT8Q5f/brJx307eGNGbksUSxUqe2X69lx2i84gN221dLg1fj01WTMwEzuY
+         02rMGbRDrBSOknnbRsoV5alTYuf3UL9XqBSOufW37YjFRMFJXmI8FqISxo/jJQOKDtBe
+         tfkkPV0IzeVYLCAl88fm1jDr3jO9KkRMJHNmdPW90obvc3s49wmwfUqf7ryRi4TkEYcC
+         o+Qg==
+X-Gm-Message-State: AOAM530SWmLna9BumZQRDF3SGqiCarEzqc6ua3a3Fx3KSgrYNZPGB9np
+        SNSfSoyMePuxiQ5gAAfLe0IiWSyXcbhWv2FjBiSd0YDW9CwBO1dhdlfIUNtBzCcgv+ECKoNGY2q
+        6gNAGMrh0rUbiKO8+
+X-Received: by 2002:a7b:cd8d:: with SMTP id y13mr130229wmj.131.1625671173187;
+        Wed, 07 Jul 2021 08:19:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwdE+ugbCW3ITOrPkMmaTxtBpHoLy9I0l8XyejJi96Rw+DLMfJGu+57QXoNart4pG1QZhzsJA==
+X-Received: by 2002:a7b:cd8d:: with SMTP id y13mr130221wmj.131.1625671173035;
+        Wed, 07 Jul 2021 08:19:33 -0700 (PDT)
+Received: from krava ([185.153.78.55])
+        by smtp.gmail.com with ESMTPSA id b21sm6636001wmj.35.2021.07.07.08.19.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jul 2021 08:19:32 -0700 (PDT)
+Date:   Wed, 7 Jul 2021 17:19:28 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [RFCv3 00/19] x86/ftrace/bpf: Add batch support for
+ direct/tracing attach
+Message-ID: <YOXGAHExKlDHjAvG@krava>
+References: <20210605111034.1810858-1-jolsa@kernel.org>
+ <CAEf4BzaK+t7zom6JHWf6XSPGDxjwhG4Wj3+CHKVshdmP3=FgnA@mail.gmail.com>
+ <YM2r139rHuXialVG@krava>
+ <CAEf4BzaCXG=Z4F=WQCZVRQFq2zYeY_tmxRVpOtZpgJ2Y+sVLgw@mail.gmail.com>
+ <CAEf4BzaGdD=B5qcaraSKVpNp_NQLBLLxiCsLEQB-0i7JxxA_Bw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210706190253.GA23236@pc-32.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaGdD=B5qcaraSKVpNp_NQLBLLxiCsLEQB-0i7JxxA_Bw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/6/21 1:02 PM, Guillaume Nault wrote:
-> On Thu, Jul 01, 2021 at 09:38:44AM -0600, David Ahern wrote:
->> On 7/1/21 8:59 AM, Guillaume Nault wrote:
->>> I first tried to write this selftest using VRFs, but there were some
->>> problems that made me switch to namespaces (I don't remember precisely
->>> which ones, probably virtual tunnel devices in collect_md mode).
->>
->> if you hit a problem with the test not working, send me the test script
->> and I will take a look.
-> 
-> So I've looked again at what it'd take to make a VRF-based selftest.
-> The problem is that we currently can't create collect_md tunnel
-> interfaces in different VRFs, if the VRFs are part of the same netns.
-> 
-> Most tunnels explicitely refuse to create a collect_md device if
-> another one already exists in the netns, no matter the rest of the
-> tunnel parameters. This is the behaviour of ip_gre, ipip, ip6_gre and
-> ip6_tunnel.
-> 
-> Then there's sit, which allows the creation of the second collect_md
-> device in the other VRF. However, iproute2 doesn't set the
-> IFLA_IPTUN_LINK attribute when it creates an external device, so it
-> can't set up such a configuration.
-> 
-> Bareudp simply doesn't support VRF.
-> 
-> Finally, vxlan allows devices with different IFLA_VXLAN_LINK attributes
-> to be created, but only when VXLAN_F_IPV6_LINKLOCAL is set. Removing
-> the VXLAN_F_IPV6_LINKLOCAL test at the end of vxlan_config_validate()
-> is enough to make two VXLAN-GPE devices work in a multi-VRF setup:
+On Tue, Jul 06, 2021 at 01:26:46PM -0700, Andrii Nakryiko wrote:
 
-Thanks for the details. In short, some work is needed to extend VRF
-support to these tunnels. That is worth doing if you have the time.
+SNIP
+
+> > > >
+> > > > It's a 10x speed up. And a good chunk of those 2.7 seconds is in some
+> > > > preparatory steps not related to fentry/fexit stuff.
+> > > >
+> > > > It's not exactly apples-to-apples, though, because the limitations you
+> > > > have right now prevents attaching both fentry and fexit programs to
+> > > > the same set of kernel functions. This makes it pretty useless for a
+> > >
+> > > hum, you could do link_update with fexit program on the link fd,
+> > > like in the selftest, right?
+> >
+> > Hm... I didn't realize we can attach two different prog FDs to the
+> > same link, honestly (and was too lazy to look through selftests
+> > again). I can try that later. But it's actually quite a
+> > counter-intuitive API (I honestly assumed that link_update can be used
+> > to add more BTF IDs, but not change prog_fd). Previously bpf_link was
+> > always associated with single BPF prog FD. It would be good to keep
+> > that property in the final version, but we can get back to that later.
+> 
+> Ok, I'm back from PTO and as a warm-up did a two-line change to make
+> retsnoop work end-to-end using this bpf_link_update() approach. See
+> [0]. I still think it's a completely confusing API to do
+> bpf_link_update() to have both fexit and fentry, but it worked for
+> this experiment.
+
+we need the same set of functions, and we have 'fd' representing
+that ;-) but that could hopefully go away with the new approach
+
+> 
+> BTW, adding ~900 fexit attachments is barely noticeable, which is
+> great, means that attachment is instantaneous.
+
+right I see similar not noticable time in bpftrace as well
+thanks for testing that,
+
+jirka
+
+> 
+> real    0m2.739s
+> user    0m0.351s
+> sys     0m2.370s
+> 
+>   [0] https://github.com/anakryiko/retsnoop/commit/c915d729d6e98f83601e432e61cb1bdf476ceefb
+> 
+
+SNIP
+
