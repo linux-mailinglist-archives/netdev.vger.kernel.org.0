@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC00A3BE74B
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:42:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C23C3BE76A
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231537AbhGGLnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 07:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbhGGLnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:43:01 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBEFC061574;
-        Wed,  7 Jul 2021 04:40:20 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id t6so2667467wrm.9;
-        Wed, 07 Jul 2021 04:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SjCPjtxsD7x8AhV/ce/R0ldaWbBbErIon5fucvDcAwE=;
-        b=ueaVWLeB2tT5vn1d5Ycrggbk01HiU0EeCp6+WRfAFR7CbfGVsoNdg5qMI2/xxukzdt
-         taZcicT/jA6fWn5me8Q3RODQyvPB3Mdiv3umhpbQ42sTlzvVJaPkBs56xJ1ESCKrAAMO
-         b2++HLpJaEv4hflgKY8Z9YUp6QVZWXys6qssFIF6d1o/u8i3lH20zcEboBWc8MnVfSLa
-         XBYx1KC50Zq0JeZic+F1OiVzv5eX6TkDNluBBz/VDavmu7XHDr4I63klnQ2D/JCmzzlS
-         VTdsvhjMdCC6UQPEyirHcKuTlU9xXN7WHO/D5dM0fFxbxKL7f+qoEV8V//+wT0rmwQgw
-         EKaQ==
+        id S231438AbhGGLwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 07:52:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29239 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231359AbhGGLwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:52:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625658594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V9IeRsZw5PJvZd39/8U4Y4h8zF+fv0utrTPDsntgLyw=;
+        b=GgFLIpRVoC4yvvgcpAWBF5KMYfxv9Fy186a+oxW6WYyulaUMBoWIsDSNVkL9sieID8cuXU
+        ZXYajQUfvP7doxI25r9k70FgjYifBn8Bs5bji0QvXEtEdfmIIEkrFpT3p5phC7No9mMXEn
+        XpE9RTycYHR0wNqd82Ozi6XsYSPeYzM=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-495-BOHkuAnlPDO9XDM20hk7_g-1; Wed, 07 Jul 2021 07:49:51 -0400
+X-MC-Unique: BOHkuAnlPDO9XDM20hk7_g-1
+Received: by mail-il1-f200.google.com with SMTP id j6-20020a926e060000b02901f2f7ba704aso1304735ilc.20
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 04:49:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SjCPjtxsD7x8AhV/ce/R0ldaWbBbErIon5fucvDcAwE=;
-        b=qrmrxnHNeJPv9hRF5ziS4rh1g9e+FrKIdr8gIZBM8Xf//G49zUi9y4cdiKJxzoI5X9
-         0GO0027K0E0aciq9mmGZnZs7XTi2xT6RTHz6QOTlnvyQXFcJBFJg5D7tLNmnDetXpyaQ
-         IT6bBKkvp9bFe9Z0V2XUyBADsgrXlQA8mx2YU9o0WQfWGW/U+uVZVt/RXVGi1t/eQCpa
-         kFPNxVZzLxtMY7vEZ00p5cHZVt4OVPt4XtKVZjwXLFhNbsmox3OHRRjjOR/eKBEn/mUn
-         ydXZqVLTwZ2DBurb+yr0AobJjmUKfypEGa0lgBsV8wL20LVQcLTyNVTHAM2QwdC38lLi
-         Qxlg==
-X-Gm-Message-State: AOAM531ZTLNoOLmzwF4RlDT8N+sRS2cT7X/2KXz6/JhKLM/Q10ojlJtM
-        csHdSDBVmt6T4VDIDZKYPjU=
-X-Google-Smtp-Source: ABdhPJw5kfrSS+ALXPvamQOvU6udjvmtDg48XjGbJbXG1PnD7ThQuRncHqaYXRdUk4VU2ZO3yKwJqQ==
-X-Received: by 2002:a5d:4001:: with SMTP id n1mr27826764wrp.159.1625658019235;
-        Wed, 07 Jul 2021 04:40:19 -0700 (PDT)
-Received: from localhost.localdomain ([85.255.234.206])
-        by smtp.gmail.com with ESMTPSA id p9sm18415790wmm.17.2021.07.07.04.40.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 04:40:18 -0700 (PDT)
-From:   Pavel Begunkov <asml.silence@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 4/4] io_uring: accept directly into fixed file table
-Date:   Wed,  7 Jul 2021 12:39:46 +0100
-Message-Id: <1a57d821f6f3c35aef26316febe70e16f39f7c7d.1625657451.git.asml.silence@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1625657451.git.asml.silence@gmail.com>
-References: <cover.1625657451.git.asml.silence@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=V9IeRsZw5PJvZd39/8U4Y4h8zF+fv0utrTPDsntgLyw=;
+        b=dwC45uLA0vNDFfiBsXnu4MJwPu7rOk1iWA4Wjy8Li59sOR1xQKETkNR0RVLJChe+KT
+         09H51f2tD7QMhD5VtkYDeLHHVPVqvKSq3aPo8rIPSelN2Gaq07FecYDKj6svrkvqFERR
+         0FnkSH1fXdpoo4UiHOwdKj+sbA2b1rwAB5v/UmPO0yOSLDvCXUrAw7PTU0tkzKShHNpr
+         w/0vc0sBN5X7jnxQAnACppWyEfw4keuHws5G7gBad3NrTxhGpRWR7KX55+3Bm6YIpEEQ
+         VpUcMrpNeEncxGwXap+Jhn4Y5BDsbWw1QRHsxzEHZ0q0HquENRb/j/hfRCIEuS63LWtH
+         NEuw==
+X-Gm-Message-State: AOAM532V5XSpYXzGW7vTsJ6jD4QaQ/2DttaDTPbM9bRhOVTcbdwV44tO
+        RKfpXQEb81rznMGpsgYWJC4F+E1szhmc1VWGA4FnqbYXB/YcYCkR3F/XBBKDs3pENPI+prc+YAU
+        /mEBR8V+YCuJGgdmA0TBRwKGuG+n8yGTO
+X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr21292756jav.94.1625658590882;
+        Wed, 07 Jul 2021 04:49:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw1PpXk8l3QPiePPFgU87c/Z7Y4/M0/ObejD1R0o+v/1m5fzGQGBRgt5e6UnX4NnAmxao/v/1ZmNlV0+xYGNpw=
+X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr21292740jav.94.1625658590743;
+ Wed, 07 Jul 2021 04:49:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210707081642.95365-1-ihuguet@redhat.com> <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
+In-Reply-To: <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Wed, 7 Jul 2021 13:49:40 +0200
+Message-ID: <CACT4oudw=usQQNO0dL=xhJw9TN+9V3o=TsKGvGh7extu+JWCqA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] sfc: revert "reduce the number of requested xdp ev queues"
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     habetsm.xilinx@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ivan@cloudflare.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As done with open opcodes, allow accept to skip installing fd into
-processes' file tables and put it directly into io_uring's fixed file
-table. Same restrictions and design as for open.
+On Wed, Jul 7, 2021 at 1:23 PM Edward Cree <ecree.xilinx@gmail.com> wrote:
+> Should we then be using min(tx_per_ev, EFX_MAX_TXQ_PER_CHANNEL) in the
+>  DIV_ROUND_UP?
 
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
----
- fs/io_uring.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+Could be another possibility, but currently that will always result in
+EFX_MAX_TXQ_PER_CHANNEL, because tx_per_ev will be 4 or 8 depending on
+the model. Anyway, I will add this change to v2, just in case any
+constant is changed in the future.
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index fd0dcee251b0..f7db43bf7dad 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4675,14 +4675,17 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 
- 	if (unlikely(req->ctx->flags & IORING_SETUP_IOPOLL))
- 		return -EINVAL;
--	if (sqe->ioprio || sqe->len || sqe->buf_index)
-+	if (sqe->ioprio || sqe->len)
- 		return -EINVAL;
- 
- 	accept->addr = u64_to_user_ptr(READ_ONCE(sqe->addr));
- 	accept->addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr2));
- 	accept->flags = READ_ONCE(sqe->accept_flags);
- 	accept->nofile = rlimit(RLIMIT_NOFILE);
-+	req->buf_index = READ_ONCE(sqe->file_index);
- 
-+	if (req->buf_index && (accept->flags & SOCK_CLOEXEC))
-+		return -EINVAL;
- 	if (accept->flags & ~(SOCK_CLOEXEC | SOCK_NONBLOCK))
- 		return -EINVAL;
- 	if (SOCK_NONBLOCK != O_NONBLOCK && (accept->flags & SOCK_NONBLOCK))
-@@ -4695,28 +4698,34 @@ static int io_accept(struct io_kiocb *req, unsigned int issue_flags)
- 	struct io_accept *accept = &req->accept;
- 	bool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;
- 	unsigned int file_flags = force_nonblock ? O_NONBLOCK : 0;
-+	bool fixed = !!req->buf_index;
- 	struct file *file;
- 	int ret, fd;
- 
- 	if (req->file->f_flags & O_NONBLOCK)
- 		req->flags |= REQ_F_NOWAIT;
- 
--	fd = __get_unused_fd_flags(accept->flags, accept->nofile);
--	if (unlikely(fd < 0))
--		return fd;
--
-+	if (!fixed) {
-+		fd = __get_unused_fd_flags(accept->flags, accept->nofile);
-+		if (unlikely(fd < 0))
-+			return fd;
-+	}
- 	file = do_accept(req->file, file_flags, accept->addr, accept->addr_len,
- 			 accept->flags);
- 	if (IS_ERR(file)) {
-+		if (!fixed)
-+			put_unused_fd(fd);
- 		ret = PTR_ERR(file);
- 		if (ret == -EAGAIN && force_nonblock)
- 			return -EAGAIN;
- 		if (ret == -ERESTARTSYS)
- 			ret = -EINTR;
- 		req_set_fail(req);
--	} else {
-+	} else if (!fixed) {
- 		fd_install(fd, file);
- 		ret = fd;
-+	} else {
-+		ret = io_install_fixed_file(req, file, issue_flags);
- 	}
- 	__io_req_complete(req, issue_flags, ret, 0);
- 	return 0;
--- 
-2.32.0
+> And on line 184 probably we need to set efx->xdp_tx_per_channel to the
+>  same thing, rather than blindly to EFX_MAX_TXQ_PER_CHANNEL as at
+>  present =E2=80=94 I suspect the issue you mention in patch #2 stemmed fr=
+om
+>  that.
+> Note that if we are in fact hitting this limitation (i.e. if
+>  tx_per_ev > EFX_MAX_TXQ_PER_CHANNEL), we could readily increase
+>  EFX_MAX_TXQ_PER_CHANNEL at the cost of a little host memory, enabling
+>  us to make more efficient use of our EVQs and thus retain XDP TX
+>  support up to a higher number of CPUs.
+
+Yes, that was a possibility I was thinking of as long term solution,
+or even allocate the queues dynamically. Would this be a problem?
+What's the reason for them being statically allocated? Also, what's
+the reason for the channels being limited to 32? The hardware can be
+configured to provide more than that, but the driver has this constant
+limit.
+
+Another question I have, thinking about the long term solution: would
+it be a problem to use the standard TX queues for XDP_TX/REDIRECT? At
+least in the case that we're hitting the resources limits, I think
+that they could be enqueued to these queues. I think that just taking
+netif_tx_lock would avoid race conditions, or a per-queue lock.
+
+In any case, these are 2 different things: one is fixing this bug as
+soon as possible, and another thinking and implementing the long term
+solution to the short-of-resources problem.
+
+Regards
+--=20
+=C3=8D=C3=B1igo Huguet
 
