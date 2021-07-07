@@ -2,137 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F5C93BEFFD
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 21:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9603BF073
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 21:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbhGGTF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 15:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230432AbhGGTFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 15:05:55 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37339C061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 12:03:14 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id p8so4303378wrr.1
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 12:03:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gEyVsUHVabbCcurt1vqr+nKmr7tjD0Zle1ugJOsxNk8=;
-        b=uQahgciwZnRHDS26dth70zA8+WBNEzYXuwzc5GVRJBSrJhp07jCDpwzSWiUiptb2xj
-         7cdrZCMoJaRDHDN5jl+6M3lZynZVuiOBQkMz4ZFxna6AQ2fmmt3NoX2BtkPno285C5Qw
-         02Rsz/SXQFpkQsz5wvsk6J2s8UlXFa3qb6dsebpiSGYpSXMfyI0NScRUnMx3wA5+3Wlc
-         CP9d3VQn8Zie43uo08Vg+N4sjAXt4UjVIUwqUSt0L6kfkiHBqSF9XtEn/ueEmIsCh9Xi
-         8XFnLAamPMICjrEtTWKoHF0iJRdn1t7BJmVvRBDpJW01CQqYM8C6/WMnpEUZ+9E3RpOY
-         fBYw==
+        id S232266AbhGGTtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 15:49:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57968 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231721AbhGGTtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 15:49:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625687184;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=08TrtkuSWJk38qiu/d57f1LF0OJ3zMr5MSSzzSnYovc=;
+        b=PevONGMs6nf+T8kNY/GkwmAX16+RotjzhFfbc6qlXnfyR/L8O7Mu1He9LI/TLnhxnhxjho
+        3ZiBtEAUFJthg8XcS7uEmFKicTm2EUVjdGTqA2M6hFRBLwEIx9TO5HdTB27YaTtzBZ0p/Z
+        TcBAjaRoyJySF1RWoezhK5jdVNTPzIA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-391-h5TJYSQfNoS14HjiyOlmzw-1; Wed, 07 Jul 2021 15:46:23 -0400
+X-MC-Unique: h5TJYSQfNoS14HjiyOlmzw-1
+Received: by mail-wm1-f72.google.com with SMTP id v25-20020a1cf7190000b0290197a4be97b7so1394466wmh.9
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 12:46:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gEyVsUHVabbCcurt1vqr+nKmr7tjD0Zle1ugJOsxNk8=;
-        b=TJrOYcuVC59XaDdL4rn+yUo7KL01pKiLLM0Bxq57qM32JRXVSv6/mnAn8+VoXblXf3
-         INSyeuzHdvE4mgJUD8pmm1MzQNqibZmxn/+HZMFEqoE6DhZGFY/Hl2GJAZScSUcSzJ6z
-         snluICl3LUEogw6ncBAN4HtzJAGmAUcSgoQD4fNsBkwvmVGpzecsc7HpxjEKNTf1w2Za
-         ZERLNKajsKulybxxpwKJ1soTpzsm3W/BA82sLX+2adn+vxVaYy28HI6lw3ViXrcewPAw
-         PVIy6EM+82qx+6T18+uSFTrFHseDvxI+MznYqnTpNuZ9tsuSIy0xibCXaCC5+vpnUsx9
-         +Z7w==
-X-Gm-Message-State: AOAM532qojFL5wVZQktY6qsV8b1J3MRla3aEwx1YarDu64ekxupO3rYW
-        B6cnUtIrc1ZA00AixVw1AnHI4Q==
-X-Google-Smtp-Source: ABdhPJySfCSiQ5cTbbS6d9OTSSfjP3HkNHiqbjLKAzqbl35lVyffDcd81DxCDMSy6xGV26L8R9f8Pg==
-X-Received: by 2002:a5d:61d1:: with SMTP id q17mr30439214wrv.162.1625684592806;
-        Wed, 07 Jul 2021 12:03:12 -0700 (PDT)
-Received: from enceladus (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
-        by smtp.gmail.com with ESMTPSA id c12sm23742825wrr.90.2021.07.07.12.03.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=08TrtkuSWJk38qiu/d57f1LF0OJ3zMr5MSSzzSnYovc=;
+        b=OQU0zTzJ8eISbmBTOUcfT1JC/C0O+7kcA4CBXt7Bc4P08M1YsUfMLXW0NAQTAh5y9u
+         Y5PQS2mwt4CpWC6g9vceDVFomZqMAaandEK1zmXFlA7jO3uu7l8ttwO0WUm3S7+zJ3QX
+         be9q+jfYPEnudf97ObzFcnRxWNwl0RBiFoyPHJ4WbCnUFeFLrCqK2ZntqlJt5qqX1p6A
+         6tYRaC69BiI2rrQOos+gG0G6WjBV+XpL34n5UY0ncupUSJmW5PxTwpzZkEHZvMKRdR4J
+         +Atarc3FyJiQXHzL3wrNsrKFtZLaUdYH0OJ6EuZ2OHlBQTN/lQ9/NmnT/qXfIpTJLsRX
+         p3yA==
+X-Gm-Message-State: AOAM532JinzABj4oMDbDAhJxgRRILcMMqzpKGuUfpOVP8YV5PlSLGFRv
+        1RPgq+sk8GL+hB/ynUyUExAlIb+2sWqVCZ+Vjr7RHc/Aeqk0WpEqQyuaqZvyBVMeNR/c/ZzJMnr
+        bMGKlYTdCboaYlcfd
+X-Received: by 2002:a5d:414f:: with SMTP id c15mr29172691wrq.86.1625687182491;
+        Wed, 07 Jul 2021 12:46:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwXtPRDXNkj6nVCUBWyGW9bk0IUrqAXUV690UhnJ9d4u/a+ANSYzGBGJI64FXaWjkgf2smWsw==
+X-Received: by 2002:a5d:414f:: with SMTP id c15mr29172668wrq.86.1625687182357;
+        Wed, 07 Jul 2021 12:46:22 -0700 (PDT)
+Received: from krava.redhat.com ([185.153.78.55])
+        by smtp.gmail.com with ESMTPSA id c16sm19415143wmr.2.2021.07.07.12.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 12:03:12 -0700 (PDT)
-Date:   Wed, 7 Jul 2021 22:03:08 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
-        thomas.petazzoni@bootlin.com, Marcin Wojtas <mw@semihalf.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        hawk@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Wed, 07 Jul 2021 12:46:22 -0700 (PDT)
+From:   Jiri Olsa <jolsa@redhat.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
-        guro@fb.com, peterx@redhat.com, Feng Tang <feng.tang@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, mcroce@microsoft.com,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, Kevin Hao <haokexin@gmail.com>,
-        nogikh@google.com, Marco Elver <elver@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC 1/2] page_pool: add page recycling support
- based on elevated refcnt
-Message-ID: <YOX6bPEL0cq8CgPG@enceladus>
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
- <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
- <CAKgT0Ueyc8BqjkdTVC_c-Upn-ghNeahYQrWJtQSqxoqN7VvMWA@mail.gmail.com>
- <29403911-bc26-dd86-83b8-da3c1784d087@huawei.com>
- <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
+        KP Singh <kpsingh@chromium.org>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCHv2 bpf-next 0/7] bpf, x86: Add bpf_get_func_ip helper
+Date:   Wed,  7 Jul 2021 21:46:12 +0200
+Message-Id: <20210707194619.151676-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi, Alexander
-> >
-> > Thanks for detailed reviewing.
-> >
+hi,
+adding bpf_get_func_ip helper that returns IP address of the
+caller function for trampoline and krobe programs.
 
-Likewise!
-I'll have a look on the entire conversation in a few days...
+There're 2 specific implementation of the bpf_get_func_ip
+helper, one for trampoline progs and one for kprobe/kretprobe
+progs.
 
-> > >
-> > > So this isn't going to work with the current recycling logic. The
-> > > expectation there is that we can safely unmap the entire page as soon
-> > > as the reference count is greater than 1.
-> >
-> > Yes, the expectation is changed to we can always recycle the page
-> > when the last user has dropped the refcnt that has given to it when
-> > the page is not pfmemalloced.
-> >
-> > The above expectation is based on that the last user will always
-> > call page_pool_put_full_page() in order to do the recycling or do
-> > the resource cleanup(dma unmaping..etc).
-> >
-> > As the skb_free_head() and skb_release_data() have both checked the
-> > skb->pp_recycle to call the page_pool_put_full_page() if needed, I
-> > think we are safe for most case, the one case I am not so sure above
-> > is the rx zero copy, which seems to also bump up the refcnt before
-> > mapping the page to user space, we might need to ensure rx zero copy
-> > is not the last user of the page or if it is the last user, make sure
-> > it calls page_pool_put_full_page() too.
-> 
-> Yes, but the skb->pp_recycle value is per skb, not per page. So my
-> concern is that carrying around that value can be problematic as there
-> are a number of possible cases where the pages might be
-> unintentionally recycled. All it would take is for a packet to get
-> cloned a few times and then somebody starts using pskb_expand_head and
-> you would have multiple cases, possibly simultaneously, of entities
-> trying to free the page. I just worry it opens us up to a number of
-> possible races.
+The trampoline helper call is replaced/inlined by verifier
+with simple move instruction. The kprobe/kretprobe is actual
+helper call that returns prepared caller address.
 
-Maybe I missde something, but I thought the cloned SKBs would never trigger
-the recycling path, since they are protected by the atomic dataref check in
-skb_release_data(). What am I missing?
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/get_func_ip
 
-[...]
+v2 changes:
+  - use kprobe_running to get kprobe instead of cpu var [Masami]
+  - added support to add kprobe on function+offset
+    and test for that [Alan]
 
-Thanks
-/Ilias
+thanks,
+jirka
+
+
+---
+Alan Maguire (1):
+      libbpf: allow specification of "kprobe/function+offset"
+
+Jiri Olsa (6):
+      bpf, x86: Store caller's ip in trampoline stack
+      bpf: Enable BPF_TRAMP_F_IP_ARG for trampolines with call_get_func_ip
+      bpf: Add bpf_get_func_ip helper for tracing programs
+      bpf: Add bpf_get_func_ip helper for kprobe programs
+      selftests/bpf: Add test for bpf_get_func_ip helper
+      selftests/bpf: Add test for bpf_get_func_ip in kprobe+offset probe
+
+ arch/x86/net/bpf_jit_comp.c                               | 19 +++++++++++++++++++
+ include/linux/bpf.h                                       |  5 +++++
+ include/linux/filter.h                                    |  3 ++-
+ include/uapi/linux/bpf.h                                  |  7 +++++++
+ kernel/bpf/trampoline.c                                   | 12 +++++++++---
+ kernel/bpf/verifier.c                                     | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ kernel/trace/bpf_trace.c                                  | 32 ++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                            |  7 +++++++
+ tools/lib/bpf/libbpf.c                                    | 20 +++++++++++++++++---
+ tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/get_func_ip_test.c      | 75 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 11 files changed, 270 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/get_func_ip_test.c
+
