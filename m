@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222CB3BEB02
+	by mail.lfdr.de (Postfix) with ESMTP id 6C98A3BEB03
 	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232541AbhGGPiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 11:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55448 "EHLO
+        id S232564AbhGGPiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 11:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbhGGPiP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:38:15 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA70C061760;
-        Wed,  7 Jul 2021 08:35:33 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id i13so1263023plb.10;
-        Wed, 07 Jul 2021 08:35:33 -0700 (PDT)
+        with ESMTP id S232507AbhGGPiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:38:17 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C14DC061574;
+        Wed,  7 Jul 2021 08:35:35 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id p4-20020a17090a9304b029016f3020d867so1888051pjo.3;
+        Wed, 07 Jul 2021 08:35:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HlyScOtQVoYnoHAZopBay4tlsKScaz3uD66IFgkGB/I=;
-        b=bxNW29cQvWv3ujr0f58UjRu80DYsbpoGdhnIi/lG1c6YsKb4ztVOaciTtQsat/2hmY
-         ylqCpErElnSmMMEwnm0xzwkPMzgpIThweHJbOgPQNWplt1zjoHk2gKy/i5mQUyxwK1nt
-         TSJoaaT4RSoZGSUJxQ46jxAq6r+VG8ydemfCRwxghzMJsVh4Yicqg2DXYqd01kIFu7jj
-         iNGBFRcmLAjLNa4rzkwkJZMtnKADBmqzdLPSaw+tM9QyLkOxDPEWpCIXBIfFVrmSZYPK
-         GdWEVdbpBPX/opp6/oIg4LO/ghCsDtY6L41B4UJGaDYzMk4mS2QYngShB3OVMKPn2jhE
-         f76w==
+        bh=TDHZQgnHR8D2Lbss+oxbhfWYDj9fVT4IV0q165q+scY=;
+        b=jlhWksTt9ZXMQ3V5VZdagp4ykYr1NEm+E0/uwOYCfTgwiWHndiHvF1l07h0g10O76p
+         /1E2rtwwZ9f1CUV+vUiBNbbCbTCtaahPxUZ7tRHr/nHBT2W6v86oKAwn8ZCCNPMumLn2
+         0rXBqE/jPPwXQxXwuI41eD0/HivvOqDW6houVOHuI1fZVGi2I+zpMwIEd/ablG8Mh+Xd
+         5CUPqxt1iAquu91aga4I00EZPhCMpR6UmUQsadux88HjkMINPdMyFaX59QQ6qLR52QGu
+         HmmUFOOXJe8oM/DULJDYHJsB1MTWsYHfYYloQags21tXXhIuF7MvwEDioPNBthxVDBiR
+         2eeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HlyScOtQVoYnoHAZopBay4tlsKScaz3uD66IFgkGB/I=;
-        b=NZO9pGFV/pfECTh/fW6hlA0UWZrf2BthAcIV7v9AIx1kp+XVK1W95yilobkeuqJBeU
-         PG7UMwMpiPLFudwnMCJqUlIe7U4bOgJZmB693P3AP4ftZLecBztPQe1eCjjsqgzPvMjA
-         bs2gb+Ds6tohSk0+ahnwfKn+LwohYR5cFuZonL5jJ4tkpHNVv1QTjPyGgl9N4PEUBah2
-         Hv4fdfTLnbqobrP5R9CAif1ZNESulWJux0ScoExbKeZG83FvUPEoLEe6dN3InZSBw/ZL
-         IDs5HV50WbdDblRWSl7laR38rEMYoW8tzszPl6gvzraZI6i5G/izThFz+MJJSO0+ihOi
-         XJrg==
-X-Gm-Message-State: AOAM533GNwx43RVNwVxudAt/f530Iipm1qlj6PQ8ILOI/kQE2kLKVefE
-        7t5yex2jir0NAcIwT2sddFI=
-X-Google-Smtp-Source: ABdhPJx3i9GuiMNnKWlirproWAKBg0JIByqpe9SRXfc5+rRXed51xGE09BIxEwoqau8Zy8jDwnsrlQ==
-X-Received: by 2002:a17:90a:c28a:: with SMTP id f10mr27527975pjt.15.1625672132814;
-        Wed, 07 Jul 2021 08:35:32 -0700 (PDT)
+        bh=TDHZQgnHR8D2Lbss+oxbhfWYDj9fVT4IV0q165q+scY=;
+        b=IDZUupkRUhpyNycUhy0vo8D0ug8b3DJMEvfMY06R9ZUaj9Z3mN+3vRxI9DJqXVIl0+
+         RZQoOYQyD5nP/SfFzBlf4vudetliWRRyIrnXAD+qRHUAac+WoCXfNaP3XhcnJ0KQ3FHy
+         aEPJaR1/Ha6chHeJFl1QW80xoky3vngbrTAd+ERKjpXETVJS0lqCoBA2ouHQkTDk56dY
+         oQ4rGsRbMQrfBkVOy9HIERVUoD8dVcQPFAOVqLvSYnqc++liibWUUm29JytNlampYY2E
+         IXL1COBs6ChXfAcPMNhi794GdXC/r1CKT9A5p8RtkxbFY9sgIHeHEUckn3zCEk521fNs
+         qQKw==
+X-Gm-Message-State: AOAM531waqw2u406sLXlyV5YvFHQ+sxvx3RWggWTNxJX3cFYzEDowzmY
+        aHlNzTrh00JhYuL8msGGaPg=
+X-Google-Smtp-Source: ABdhPJxmKhX5fK2x5od9d5gvzBUJ0Dcm3yqb9eF3Fi8VSAbfNgyMwfqdNVErf+9OlaGCHUhH+iCf7g==
+X-Received: by 2002:a17:902:b604:b029:128:bfa5:3c4c with SMTP id b4-20020a170902b604b0290128bfa53c4cmr21695343pls.29.1625672135173;
+        Wed, 07 Jul 2021 08:35:35 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:0:6b7f:cf3e:bbf2:d229])
-        by smtp.gmail.com with ESMTPSA id y11sm21096877pfo.160.2021.07.07.08.35.32
+        by smtp.gmail.com with ESMTPSA id y11sm21096877pfo.160.2021.07.07.08.35.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 08:35:32 -0700 (PDT)
+        Wed, 07 Jul 2021 08:35:34 -0700 (PDT)
 From:   Tianyu Lan <ltykernel@gmail.com>
 To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
         wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -69,9 +69,9 @@ Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
         vkuznets@redhat.com, brijesh.singh@amd.com, anparri@microsoft.com
-Subject: [RFC PATCH V4 11/12] HV/Storvsc: Add Isolation VM support for storvsc driver
-Date:   Wed,  7 Jul 2021 11:34:52 -0400
-Message-Id: <20210707153456.3976348-12-ltykernel@gmail.com>
+Subject: [RFC PATCH V4 12/12] x86/HV: Not set memory decrypted/encrypted during kexec alloc/free page in IVM
+Date:   Wed,  7 Jul 2021 11:34:53 -0400
+Message-Id: <20210707153456.3976348-13-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210707153456.3976348-1-ltykernel@gmail.com>
 References: <20210707153456.3976348-1-ltykernel@gmail.com>
@@ -83,160 +83,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still need to handle. Use DMA API to map/umap these
-memory during sending/receiving packet and Hyper-V DMA ops callback
-will use swiotlb function to allocate bounce buffer and copy data
-from/to bounce buffer.
+Hyper-V Isolation VM reuses set_memory_decrypted/encrypted function
+and not needs to decrypt/encrypt memory in arch_kexec_post_alloc(pre_free)
+_pages() just likes AMD SEV VM. So skip them.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 63 insertions(+), 5 deletions(-)
+ arch/x86/kernel/machine_kexec_64.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 403753929320..cc9cb32f6621 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/io.h>
-+#include <linux/dma-mapping.h>
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -427,6 +429,8 @@ struct storvsc_cmd_request {
- 	u32 payload_sz;
+diff --git a/arch/x86/kernel/machine_kexec_64.c b/arch/x86/kernel/machine_kexec_64.c
+index c078b0d3ab0e..0cadc64b6873 100644
+--- a/arch/x86/kernel/machine_kexec_64.c
++++ b/arch/x86/kernel/machine_kexec_64.c
+@@ -26,6 +26,7 @@
+ #include <asm/kexec-bzimage64.h>
+ #include <asm/setup.h>
+ #include <asm/set_memory.h>
++#include <asm/mshyperv.h>
  
- 	struct vstor_packet vstor_packet;
-+	u32 hvpg_count;
-+	struct hv_dma_range *dma_range;
- };
- 
- 
-@@ -509,6 +513,14 @@ struct storvsc_scan_work {
- 	u8 tgt_id;
- };
- 
-+#define storvsc_dma_map(dev, page, offset, size, dir) \
-+	dma_map_page(dev, page, offset, size, dir)
-+
-+#define storvsc_dma_unmap(dev, dma_range, dir)		\
-+		dma_unmap_page(dev, dma_range.dma,	\
-+			       dma_range.mapping_size,	\
-+			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-+
- static void storvsc_device_scan(struct work_struct *work)
+ #ifdef CONFIG_ACPI
+ /*
+@@ -598,7 +599,7 @@ void arch_kexec_unprotect_crashkres(void)
+  */
+ int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages, gfp_t gfp)
  {
- 	struct storvsc_scan_work *wrk;
-@@ -1267,6 +1279,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
-+	int i;
+-	if (sev_active())
++	if (sev_active() || hv_is_isolation_supported())
+ 		return 0;
  
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1321,6 +1334,15 @@ static void storvsc_on_channel_callback(void *context)
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
- 			}
+ 	/*
+@@ -611,7 +612,7 @@ int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages, gfp_t gfp)
  
-+			if (request->dma_range) {
-+				for (i = 0; i < request->hvpg_count; i++)
-+					storvsc_dma_unmap(&device->device,
-+						request->dma_range[i],
-+						request->vstor_packet.vm_srb.data_in == READ_TYPE);
-+
-+				kfree(request->dma_range);
-+			}
-+
- 			storvsc_on_receive(stor_device, packet, request);
- 			continue;
- 		}
-@@ -1817,7 +1839,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
-+		dma_addr_t dma;
- 		u64 hvpfn;
-+		u32 size;
+ void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages)
+ {
+-	if (sev_active())
++	if (sev_active() || hv_is_isolation_supported())
+ 		return;
  
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1831,6 +1855,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		cmd_request->dma_range = kcalloc(hvpg_count,
-+				 sizeof(*cmd_request->dma_range),
-+				 GFP_ATOMIC);
-+		if (!cmd_request->dma_range) {
-+			ret = -ENOMEM;
-+			goto free_payload;
-+		}
- 
- 		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
- 			/*
-@@ -1854,9 +1885,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * last sgl should be reached at the same time that
- 			 * the PFN array is filled.
- 			 */
--			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+			while (hvpfns_to_add--) {
-+				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
-+					   (unsigned long)length);
-+				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
-+						      offset_in_hvpg, size,
-+						      scmnd->sc_data_direction);
-+				if (dma_mapping_error(&dev->device, dma)) {
-+					ret = -ENOMEM;
-+					goto free_dma_range;
-+				}
-+
-+				if (offset_in_hvpg) {
-+					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-+					offset_in_hvpg = 0;
-+				}
-+
-+				cmd_request->dma_range[i].dma = dma;
-+				cmd_request->dma_range[i].mapping_size = size;
-+				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
-+				length -= size;
-+			}
- 		}
-+		cmd_request->hvpg_count = hvpg_count;
- 	}
- 
- 	cmd_request->payload = payload;
-@@ -1867,13 +1918,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	put_cpu();
- 
- 	if (ret == -EAGAIN) {
--		if (payload_sz > sizeof(cmd_request->mpb))
--			kfree(payload);
- 		/* no more space */
--		return SCSI_MLQUEUE_DEVICE_BUSY;
-+		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-+		goto free_dma_range;
- 	}
- 
- 	return 0;
-+
-+free_dma_range:
-+	kfree(cmd_request->dma_range);
-+
-+free_payload:
-+	if (payload_sz > sizeof(cmd_request->mpb))
-+		kfree(payload);
-+	return ret;
- }
- 
- static struct scsi_host_template scsi_driver = {
+ 	/*
 -- 
 2.25.1
 
