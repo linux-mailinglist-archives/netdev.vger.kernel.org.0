@@ -2,107 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C23C3BE76A
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:50:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6A83BE79A
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231438AbhGGLwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 07:52:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29239 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231359AbhGGLwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:52:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625658594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V9IeRsZw5PJvZd39/8U4Y4h8zF+fv0utrTPDsntgLyw=;
-        b=GgFLIpRVoC4yvvgcpAWBF5KMYfxv9Fy186a+oxW6WYyulaUMBoWIsDSNVkL9sieID8cuXU
-        ZXYajQUfvP7doxI25r9k70FgjYifBn8Bs5bji0QvXEtEdfmIIEkrFpT3p5phC7No9mMXEn
-        XpE9RTycYHR0wNqd82Ozi6XsYSPeYzM=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-495-BOHkuAnlPDO9XDM20hk7_g-1; Wed, 07 Jul 2021 07:49:51 -0400
-X-MC-Unique: BOHkuAnlPDO9XDM20hk7_g-1
-Received: by mail-il1-f200.google.com with SMTP id j6-20020a926e060000b02901f2f7ba704aso1304735ilc.20
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 04:49:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V9IeRsZw5PJvZd39/8U4Y4h8zF+fv0utrTPDsntgLyw=;
-        b=dwC45uLA0vNDFfiBsXnu4MJwPu7rOk1iWA4Wjy8Li59sOR1xQKETkNR0RVLJChe+KT
-         09H51f2tD7QMhD5VtkYDeLHHVPVqvKSq3aPo8rIPSelN2Gaq07FecYDKj6svrkvqFERR
-         0FnkSH1fXdpoo4UiHOwdKj+sbA2b1rwAB5v/UmPO0yOSLDvCXUrAw7PTU0tkzKShHNpr
-         w/0vc0sBN5X7jnxQAnACppWyEfw4keuHws5G7gBad3NrTxhGpRWR7KX55+3Bm6YIpEEQ
-         VpUcMrpNeEncxGwXap+Jhn4Y5BDsbWw1QRHsxzEHZ0q0HquENRb/j/hfRCIEuS63LWtH
-         NEuw==
-X-Gm-Message-State: AOAM532V5XSpYXzGW7vTsJ6jD4QaQ/2DttaDTPbM9bRhOVTcbdwV44tO
-        RKfpXQEb81rznMGpsgYWJC4F+E1szhmc1VWGA4FnqbYXB/YcYCkR3F/XBBKDs3pENPI+prc+YAU
-        /mEBR8V+YCuJGgdmA0TBRwKGuG+n8yGTO
-X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr21292756jav.94.1625658590882;
-        Wed, 07 Jul 2021 04:49:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw1PpXk8l3QPiePPFgU87c/Z7Y4/M0/ObejD1R0o+v/1m5fzGQGBRgt5e6UnX4NnAmxao/v/1ZmNlV0+xYGNpw=
-X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr21292740jav.94.1625658590743;
- Wed, 07 Jul 2021 04:49:50 -0700 (PDT)
+        id S231429AbhGGMLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 08:11:53 -0400
+Received: from relay.sw.ru ([185.231.240.75]:43496 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231358AbhGGMLx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 08:11:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=MIME-Version:Message-Id:Date:Subject:From:
+        Content-Type; bh=2GNcOPntf5ppE/661E2bRH8mfbEu1c9gjUrVuICOMOM=; b=F/sYh6gvcnGq
+        ObhhXfVB3V3XP1z17YhAcsDPcN3lp5es1Ib2LzNKEFVawy4ezQbbPNrdY82tSe1WlQI3q7POujtHj
+        mHoBgqUzsfZ9ILtpCMv4kfNAEdgC040/TDD8JI3zYOiY0g87QF2+E4dP26hrj7sOHAmUayq5Z64UE
+        nheaU=;
+Received: from [192.168.15.10] (helo=mikhalitsyn-laptop.lan)
+        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
+        id 1m16MZ-003BgA-34; Wed, 07 Jul 2021 15:09:11 +0300
+From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrei Vagin <avagin@gmail.com>,
+        Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Subject: [PATCHv5 iproute2] ip route: ignore ENOENT during save if RT_TABLE_MAIN is being dumped
+Date:   Wed,  7 Jul 2021 15:09:06 +0300
+Message-Id: <20210707120906.13402-1-alexander.mikhalitsyn@virtuozzo.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
+References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
-References: <20210707081642.95365-1-ihuguet@redhat.com> <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
-In-Reply-To: <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Wed, 7 Jul 2021 13:49:40 +0200
-Message-ID: <CACT4oudw=usQQNO0dL=xhJw9TN+9V3o=TsKGvGh7extu+JWCqA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] sfc: revert "reduce the number of requested xdp ev queues"
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     habetsm.xilinx@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ivan@cloudflare.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 1:23 PM Edward Cree <ecree.xilinx@gmail.com> wrote:
-> Should we then be using min(tx_per_ev, EFX_MAX_TXQ_PER_CHANNEL) in the
->  DIV_ROUND_UP?
+We started to use in-kernel filtering feature which allows to get only
+needed tables (see iproute_dump_filter()). From the kernel side it's
+implemented in net/ipv4/fib_frontend.c (inet_dump_fib), net/ipv6/ip6_fib.c
+(inet6_dump_fib). The problem here is that behaviour of "ip route save"
+was changed after
+c7e6371bc ("ip route: Add protocol, table id and device to dump request").
+If filters are used, then kernel returns ENOENT error if requested table
+is absent, but in newly created net namespace even RT_TABLE_MAIN table
+doesn't exist. It is really allocated, for instance, after issuing
+"ip l set lo up".
 
-Could be another possibility, but currently that will always result in
-EFX_MAX_TXQ_PER_CHANNEL, because tx_per_ev will be 4 or 8 depending on
-the model. Anyway, I will add this change to v2, just in case any
-constant is changed in the future.
+Reproducer is fairly simple:
+$ unshare -n ip route save > dump
+Error: ipv4: FIB table does not exist.
+Dump terminated
 
-> And on line 184 probably we need to set efx->xdp_tx_per_channel to the
->  same thing, rather than blindly to EFX_MAX_TXQ_PER_CHANNEL as at
->  present =E2=80=94 I suspect the issue you mention in patch #2 stemmed fr=
-om
->  that.
-> Note that if we are in fact hitting this limitation (i.e. if
->  tx_per_ev > EFX_MAX_TXQ_PER_CHANNEL), we could readily increase
->  EFX_MAX_TXQ_PER_CHANNEL at the cost of a little host memory, enabling
->  us to make more efficient use of our EVQs and thus retain XDP TX
->  support up to a higher number of CPUs.
+Expected result here is to get empty dump file (as it was before this
+change).
 
-Yes, that was a possibility I was thinking of as long term solution,
-or even allocate the queues dynamically. Would this be a problem?
-What's the reason for them being statically allocated? Also, what's
-the reason for the channels being limited to 32? The hardware can be
-configured to provide more than that, but the driver has this constant
-limit.
+v2: reworked, so, now it takes into account NLMSGERR_ATTR_MSG
+(see nl_dump_ext_ack_done() function). We want to suppress error messages
+in stderr about absent FIB table from kernel too.
 
-Another question I have, thinking about the long term solution: would
-it be a problem to use the standard TX queues for XDP_TX/REDIRECT? At
-least in the case that we're hitting the resources limits, I think
-that they could be enqueued to these queues. I think that just taking
-netif_tx_lock would avoid race conditions, or a per-queue lock.
+v3: reworked to make code clearer. Introduced rtnl_suppressed_errors(),
+rtnl_suppress_error() helpers. User may suppress up to 3 errors (may be
+easily extended by changing SUPPRESS_ERRORS_INIT macro).
 
-In any case, these are 2 different things: one is fixing this bug as
-soon as possible, and another thinking and implementing the long term
-solution to the short-of-resources problem.
+v4: reworked, rtnl_dump_filter_errhndlr() was introduced. Thanks
+to Stephen Hemminger for comments and suggestions
 
-Regards
---=20
-=C3=8D=C3=B1igo Huguet
+v5: space fixes, commit message reformat
+
+Fixes: c7e6371bc ("ip route: Add protocol, table id and device to dump request")
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Andrei Vagin <avagin@gmail.com>
+Cc: Alexander Mikhalitsyn <alexander@mihalicyn.com>
+Signed-off-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+---
+ include/libnetlink.h | 32 +++++++++++++++++++++++++
+ ip/iproute.c         | 15 +++++++++++-
+ lib/libnetlink.c     | 56 +++++++++++++++++++++++++++++++++++---------
+ 3 files changed, 91 insertions(+), 12 deletions(-)
+
+diff --git a/include/libnetlink.h b/include/libnetlink.h
+index b9073a6a..4401551f 100644
+--- a/include/libnetlink.h
++++ b/include/libnetlink.h
+@@ -104,6 +104,27 @@ struct rtnl_ctrl_data {
+ 
+ typedef int (*rtnl_filter_t)(struct nlmsghdr *n, void *);
+ 
++/**
++ * rtnl error handler called from
++ *      rtnl_dump_done()
++ *      rtnl_dump_error()
++ *
++ * Return value is a bitmask of the following values:
++ * RTNL_LET_NLERR
++ *      error handled as usual
++ * RTNL_SUPPRESS_NLMSG_DONE_NLERR
++ *      error in nlmsg_type == NLMSG_DONE will be suppressed
++ * RTNL_SUPPRESS_NLMSG_ERROR_NLERR
++ *      error in nlmsg_type == NLMSG_ERROR will be suppressed
++ *      and nlmsg will be skipped
++ * RTNL_SUPPRESS_NLERR - suppress error in both previous cases
++ */
++#define RTNL_LET_NLERR				0x01
++#define RTNL_SUPPRESS_NLMSG_DONE_NLERR		0x02
++#define RTNL_SUPPRESS_NLMSG_ERROR_NLERR		0x04
++#define RTNL_SUPPRESS_NLERR			0x06
++typedef int (*rtnl_err_hndlr_t)(struct nlmsghdr *n, void *);
++
+ typedef int (*rtnl_listen_filter_t)(struct rtnl_ctrl_data *,
+ 				    struct nlmsghdr *n, void *);
+ 
+@@ -113,6 +134,8 @@ typedef int (*nl_ext_ack_fn_t)(const char *errmsg, uint32_t off,
+ struct rtnl_dump_filter_arg {
+ 	rtnl_filter_t filter;
+ 	void *arg1;
++	rtnl_err_hndlr_t errhndlr;
++	void *arg2;
+ 	__u16 nc_flags;
+ };
+ 
+@@ -121,6 +144,15 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
+ 			void *arg, __u16 nc_flags);
+ #define rtnl_dump_filter(rth, filter, arg) \
+ 	rtnl_dump_filter_nc(rth, filter, arg, 0)
++int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
++				 rtnl_filter_t filter,
++				 void *arg1,
++				 rtnl_err_hndlr_t errhndlr,
++				 void *arg2,
++				 __u16 nc_flags);
++#define rtnl_dump_filter_errhndlr(rth, filter, farg, errhndlr, earg) \
++	rtnl_dump_filter_errhndlr_nc(rth, filter, farg, errhndlr, earg, 0)
++
+ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n,
+ 	      struct nlmsghdr **answer)
+ 	__attribute__((warn_unused_result));
+diff --git a/ip/iproute.c b/ip/iproute.c
+index 5853f026..e45f0bea 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -1727,6 +1727,18 @@ static int iproute_flush(int family, rtnl_filter_t filter_fn)
+ 	}
+ }
+ 
++static int save_route_errhndlr(struct nlmsghdr *n, void *arg)
++{
++	int err = -*(int *)NLMSG_DATA(n);
++
++	if (n->nlmsg_type == NLMSG_DONE &&
++	    filter.tb == RT_TABLE_MAIN &&
++	    err == ENOENT)
++		return RTNL_SUPPRESS_NLMSG_DONE_NLERR;
++
++	return RTNL_LET_NLERR;
++}
++
+ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+ {
+ 	int dump_family = preferred_family;
+@@ -1939,7 +1951,8 @@ static int iproute_list_flush_or_save(int argc, char **argv, int action)
+ 
+ 	new_json_obj(json);
+ 
+-	if (rtnl_dump_filter(&rth, filter_fn, stdout) < 0) {
++	if (rtnl_dump_filter_errhndlr(&rth, filter_fn, stdout,
++				      save_route_errhndlr, NULL) < 0) {
+ 		fprintf(stderr, "Dump terminated\n");
+ 		return -2;
+ 	}
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index c958aa57..80a92e6f 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -673,7 +673,8 @@ int rtnl_dump_request_n(struct rtnl_handle *rth, struct nlmsghdr *n)
+ 	return sendmsg(rth->fd, &msg, 0);
+ }
+ 
+-static int rtnl_dump_done(struct nlmsghdr *h)
++static int rtnl_dump_done(struct nlmsghdr *h,
++			  const struct rtnl_dump_filter_arg *a)
+ {
+ 	int len = *(int *)NLMSG_DATA(h);
+ 
+@@ -683,11 +684,15 @@ static int rtnl_dump_done(struct nlmsghdr *h)
+ 	}
+ 
+ 	if (len < 0) {
++		errno = -len;
++
++		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_DONE_NLERR)
++			return 0;
++
+ 		/* check for any messages returned from kernel */
+ 		if (nl_dump_ext_ack_done(h, len))
+ 			return len;
+ 
+-		errno = -len;
+ 		switch (errno) {
+ 		case ENOENT:
+ 		case EOPNOTSUPP:
+@@ -708,8 +713,9 @@ static int rtnl_dump_done(struct nlmsghdr *h)
+ 	return 0;
+ }
+ 
+-static void rtnl_dump_error(const struct rtnl_handle *rth,
+-			    struct nlmsghdr *h)
++static int rtnl_dump_error(const struct rtnl_handle *rth,
++			    struct nlmsghdr *h,
++			    const struct rtnl_dump_filter_arg *a)
+ {
+ 
+ 	if (h->nlmsg_len < NLMSG_LENGTH(sizeof(struct nlmsgerr))) {
+@@ -721,11 +727,16 @@ static void rtnl_dump_error(const struct rtnl_handle *rth,
+ 		if (rth->proto == NETLINK_SOCK_DIAG &&
+ 		    (errno == ENOENT ||
+ 		     errno == EOPNOTSUPP))
+-			return;
++			return -1;
++
++		if (a->errhndlr(h, a->arg2) & RTNL_SUPPRESS_NLMSG_ERROR_NLERR)
++			return 0;
+ 
+ 		if (!(rth->flags & RTNL_HANDLE_F_SUPPRESS_NLERR))
+ 			perror("RTNETLINK answers");
+ 	}
++
++	return -1;
+ }
+ 
+ static int __rtnl_recvmsg(int fd, struct msghdr *msg, int flags)
+@@ -834,7 +845,7 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
+ 					dump_intr = 1;
+ 
+ 				if (h->nlmsg_type == NLMSG_DONE) {
+-					err = rtnl_dump_done(h);
++					err = rtnl_dump_done(h, a);
+ 					if (err < 0) {
+ 						free(buf);
+ 						return -1;
+@@ -845,9 +856,13 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
+ 				}
+ 
+ 				if (h->nlmsg_type == NLMSG_ERROR) {
+-					rtnl_dump_error(rth, h);
+-					free(buf);
+-					return -1;
++					err = rtnl_dump_error(rth, h, a);
++					if (err < 0) {
++						free(buf);
++						return -1;
++					}
++
++					goto skip_it;
+ 				}
+ 
+ 				if (!rth->dump_fp) {
+@@ -887,8 +902,27 @@ int rtnl_dump_filter_nc(struct rtnl_handle *rth,
+ 		     void *arg1, __u16 nc_flags)
+ {
+ 	const struct rtnl_dump_filter_arg a[2] = {
+-		{ .filter = filter, .arg1 = arg1, .nc_flags = nc_flags, },
+-		{ .filter = NULL,   .arg1 = NULL, .nc_flags = 0, },
++		{ .filter = filter, .arg1 = arg1,
++		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = nc_flags, },
++		{ .filter = NULL,   .arg1 = NULL,
++		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
++	};
++
++	return rtnl_dump_filter_l(rth, a);
++}
++
++int rtnl_dump_filter_errhndlr_nc(struct rtnl_handle *rth,
++		     rtnl_filter_t filter,
++		     void *arg1,
++		     rtnl_err_hndlr_t errhndlr,
++		     void *arg2,
++		     __u16 nc_flags)
++{
++	const struct rtnl_dump_filter_arg a[2] = {
++		{ .filter = filter, .arg1 = arg1,
++		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
++		{ .filter = NULL,   .arg1 = NULL,
++		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
+ 	};
+ 
+ 	return rtnl_dump_filter_l(rth, a);
+-- 
+2.31.1
 
