@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE9143BF0EB
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 22:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820E63BF0F0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 22:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230418AbhGGUp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 16:45:59 -0400
+        id S230514AbhGGUqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 16:46:00 -0400
 Received: from mga03.intel.com ([134.134.136.65]:2127 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230363AbhGGUp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 16:45:57 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10037"; a="209424727"
+        id S230413AbhGGUp6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 16:45:58 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10037"; a="209424733"
 X-IronPort-AV: E=Sophos;i="5.84,221,1620716400"; 
-   d="scan'208";a="209424727"
+   d="scan'208";a="209424733"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 13:43:16 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 13:43:17 -0700
 X-IronPort-AV: E=Sophos;i="5.84,221,1620716400"; 
-   d="scan'208";a="457619682"
+   d="scan'208";a="457619696"
 Received: from jmcmilla-mobl.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.254.8.152])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 13:43:14 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 13:43:16 -0700
 From:   Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
@@ -41,9 +41,9 @@ Cc:     Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH v2 1/6] x86/tdx: Add TDREPORT TDX Module call support
-Date:   Wed,  7 Jul 2021 13:42:44 -0700
-Message-Id: <20210707204249.3046665-2-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v2 2/6] x86/tdx: Add GetQuote TDX hypercall support
+Date:   Wed,  7 Jul 2021 13:42:45 -0700
+Message-Id: <20210707204249.3046665-3-sathyanarayanan.kuppuswamy@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
@@ -53,92 +53,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TDX Guest-Host Communication Interface (GHCI) includes a module
-call (TDREPORT TDCALL) that a guest can make to acquire a copy of the
-attestation data that it needs to verify its trustworthiness.
+The second stage in the attestation process is for the guest to
+request the VMM generate and sign a quote based on the TDREPORT
+acquired earlier.
 
-Add a wrapper function tdx_mcall_tdreport() that makes the module
-call to get this data.
+Add tdx_hcall_get_quote() helper function to implement the GetQuote
+hypercall.
 
-See GHCI section 2.4.5 "TDCALL [TDG.MR.REPORT] leaf" for additional
-details.
+More details about the GetQuote TDVMCALL are in the Guest-Host
+Communication Interface (GHCI) Specification, sec 3.3, titled
+"TDG.VP.VMCALL<GetQuote>".
 
-[Xiaoyao: Proposed error code fix]
+This will be used by the TD attestation driver in follow-on patches.
+
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
  arch/x86/include/asm/tdx.h |  2 ++
- arch/x86/kernel/tdx.c      | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 35 insertions(+)
+ arch/x86/kernel/tdx.c      | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
 diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 48927fac9e12..4f1b5c14a09b 100644
+index 4f1b5c14a09b..1599aa4850e5 100644
 --- a/arch/x86/include/asm/tdx.h
 +++ b/arch/x86/include/asm/tdx.h
-@@ -96,6 +96,8 @@ extern int tdx_hcall_gpa_intent(phys_addr_t gpa, int numpages,
+@@ -98,6 +98,8 @@ bool tdg_filter_enabled(void);
  
- bool tdg_filter_enabled(void);
+ int tdx_mcall_tdreport(u64 data, u64 reportdata);
  
-+int tdx_mcall_tdreport(u64 data, u64 reportdata);
++int tdx_hcall_get_quote(u64 data);
 +
  /*
   * To support I/O port access in decompressor or early kernel init
   * code, since #VE exception handler cannot be used, use paravirt
 diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-index f76af7661046..0f797803f4c8 100644
+index 0f797803f4c8..eb3a90051604 100644
 --- a/arch/x86/kernel/tdx.c
 +++ b/arch/x86/kernel/tdx.c
-@@ -23,6 +23,7 @@
- /* TDX Module call Leaf IDs */
- #define TDINFO				1
- #define TDGETVEINFO			3
-+#define TDREPORT			4
- #define TDACCEPTPAGE			6
+@@ -28,6 +28,7 @@
  
  /* TDX hypercall Leaf IDs */
-@@ -30,6 +31,11 @@
+ #define TDVMCALL_MAP_GPA		0x10001
++#define TDVMCALL_GET_QUOTE		0x10002
  
  /* TDX Module call error codes */
  #define TDX_PAGE_ALREADY_ACCEPTED       0x8000000000000001
-+#define TDCALL_RETURN_CODE_MASK		0xFFFFFFFF00000000
-+#define TDCALL_OPERAND_BUSY		0x8000020000000000
-+#define TDCALL_INVALID_OPERAND		0x8000000000000000
-+#define TDCALL_RETURN_CODE(a)		((a) & TDCALL_RETURN_CODE_MASK)
-+
+@@ -36,6 +37,9 @@
+ #define TDCALL_INVALID_OPERAND		0x8000000000000000
+ #define TDCALL_RETURN_CODE(a)		((a) & TDCALL_RETURN_CODE_MASK)
+ 
++/* TDX hypercall error codes */
++#define TDVMCALL_INVALID_OPERAND	0x8000000000000000
++#define TDVMCALL_TDREPORT_FAILED	0x8000000000000001
  
  #define VE_IS_IO_OUT(exit_qual)		(((exit_qual) & 8) ? 0 : 1)
  #define VE_GET_IO_SIZE(exit_qual)	(((exit_qual) & 7) + 1)
-@@ -139,6 +145,33 @@ static bool tdg_perfmon_enabled(void)
- 	return td_info.attributes & BIT(63);
+@@ -172,6 +176,32 @@ int tdx_mcall_tdreport(u64 data, u64 reportdata)
  }
+ EXPORT_SYMBOL_GPL(tdx_mcall_tdreport);
  
 +/*
-+ * tdx_mcall_tdreport() - Generate TDREPORT_STRUCT using TDCALL.
++ * tdx_hcall_get_quote() - Generate TDQUOTE using TDREPORT_STRUCT.
 + *
-+ * @data        : Physical address of 1024B aligned data to store
++ * @data        : Physical address of 4KB GPA memory which contains
 + *                TDREPORT_STRUCT.
-+ * @reportdata  : Physical address of 64B aligned report data
 + *
 + * return 0 on success or failure error number.
 + */
-+int tdx_mcall_tdreport(u64 data, u64 reportdata)
++int tdx_hcall_get_quote(u64 data)
 +{
 +	u64 ret;
 +
-+	if (!data || !reportdata || !prot_guest_has(PR_GUEST_TDX))
++	if (!data || !prot_guest_has(PR_GUEST_TDX))
 +		return -EINVAL;
 +
-+	ret = __trace_tdx_module_call(TDREPORT, data, reportdata, 0, 0, NULL);
++	ret = _trace_tdx_hypercall(TDVMCALL_GET_QUOTE, data, 0, 0, 0, NULL);
 +
-+	if (TDCALL_RETURN_CODE(ret) == TDCALL_INVALID_OPERAND)
++	if (ret == TDVMCALL_INVALID_OPERAND)
 +		return -EINVAL;
-+	else if (TDCALL_RETURN_CODE(ret) == TDCALL_OPERAND_BUSY)
++	else if (ret == TDVMCALL_TDREPORT_FAILED)
 +		return -EBUSY;
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(tdx_mcall_tdreport);
++EXPORT_SYMBOL_GPL(tdx_hcall_get_quote);
 +
  static void tdg_get_info(void)
  {
