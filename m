@@ -2,130 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C4C3BEA98
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:19:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4029D3BEAA1
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 17:22:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbhGGPWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 11:22:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35966 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232273AbhGGPWQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 11:22:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625671175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tjNUgz6mqt/4pNa8w2Xldle8j77XowpLl5djQ8TARDs=;
-        b=BgAqVBq4qrsR3UAmSUoyoWs3p7opVH5/FaOSlJUbACeBAlYNAI0H76Qgbd/W0ZQb1dJXxf
-        lnB4TxjsQG0iVcKbxtcNmKkvgiHHAbxHCTg1iq24Ns82mAgTRZxQBiws8chIdacKqh3Ovc
-        Fc5G8WnoFFBHs96wC3+vfvCmXVVYFgY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-132-37cmBiEJOf24B0KgBj87Rg-1; Wed, 07 Jul 2021 11:19:34 -0400
-X-MC-Unique: 37cmBiEJOf24B0KgBj87Rg-1
-Received: by mail-wr1-f69.google.com with SMTP id k3-20020a5d52430000b0290138092aea94so884577wrc.20
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 08:19:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tjNUgz6mqt/4pNa8w2Xldle8j77XowpLl5djQ8TARDs=;
-        b=ck6SeJq7FLf3iRowqwcp0Khb0VCftEDM0VMhKrOgkxYddyMFfFB8MtxDLjWl1wppn+
-         mCCtsFhEYVAuxp1lwdiyYr848XrvVCHsn3SOsTLKLVnzsAeGfbVSMUXAz4GQU3crBxTm
-         Ac7+o6k3RhvT8Q5f/brJx307eGNGbksUSxUqe2X69lx2i84gN221dLg1fj01WTMwEzuY
-         02rMGbRDrBSOknnbRsoV5alTYuf3UL9XqBSOufW37YjFRMFJXmI8FqISxo/jJQOKDtBe
-         tfkkPV0IzeVYLCAl88fm1jDr3jO9KkRMJHNmdPW90obvc3s49wmwfUqf7ryRi4TkEYcC
-         o+Qg==
-X-Gm-Message-State: AOAM530SWmLna9BumZQRDF3SGqiCarEzqc6ua3a3Fx3KSgrYNZPGB9np
-        SNSfSoyMePuxiQ5gAAfLe0IiWSyXcbhWv2FjBiSd0YDW9CwBO1dhdlfIUNtBzCcgv+ECKoNGY2q
-        6gNAGMrh0rUbiKO8+
-X-Received: by 2002:a7b:cd8d:: with SMTP id y13mr130229wmj.131.1625671173187;
-        Wed, 07 Jul 2021 08:19:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwdE+ugbCW3ITOrPkMmaTxtBpHoLy9I0l8XyejJi96Rw+DLMfJGu+57QXoNart4pG1QZhzsJA==
-X-Received: by 2002:a7b:cd8d:: with SMTP id y13mr130221wmj.131.1625671173035;
-        Wed, 07 Jul 2021 08:19:33 -0700 (PDT)
-Received: from krava ([185.153.78.55])
-        by smtp.gmail.com with ESMTPSA id b21sm6636001wmj.35.2021.07.07.08.19.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 08:19:32 -0700 (PDT)
-Date:   Wed, 7 Jul 2021 17:19:28 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFCv3 00/19] x86/ftrace/bpf: Add batch support for
- direct/tracing attach
-Message-ID: <YOXGAHExKlDHjAvG@krava>
-References: <20210605111034.1810858-1-jolsa@kernel.org>
- <CAEf4BzaK+t7zom6JHWf6XSPGDxjwhG4Wj3+CHKVshdmP3=FgnA@mail.gmail.com>
- <YM2r139rHuXialVG@krava>
- <CAEf4BzaCXG=Z4F=WQCZVRQFq2zYeY_tmxRVpOtZpgJ2Y+sVLgw@mail.gmail.com>
- <CAEf4BzaGdD=B5qcaraSKVpNp_NQLBLLxiCsLEQB-0i7JxxA_Bw@mail.gmail.com>
+        id S232245AbhGGPZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 11:25:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44638 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232050AbhGGPZC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 11:25:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=N/88Mkb8xuG8nFUIgXNDURTCNhXu6zncd1fGitnNCyk=; b=P3EHOJ76pnMoz1OO6NfGMZLquJ
+        0cp/sShYG21Pyc1DSqu9aemkILeXZwIMrHg5AxMiKfji43JgLMR3FRJqCdM1miBmH7fwHm9P/WBhQ
+        +3ZQL+unIgaO/zSlvObShEN+Q+mG0Rk6RCB2flMGle4li8KuMUFl1OjdUYX0aWSwacNE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m19NP-00CX6V-I1; Wed, 07 Jul 2021 17:22:15 +0200
+Date:   Wed, 7 Jul 2021 17:22:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Liang Xu <lxu@maxlinear.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>
+Subject: Re: [PATCH v5 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
+Message-ID: <YOXGp39i6foOHv02@lunn.ch>
+References: <20210701082658.21875-1-lxu@maxlinear.com>
+ <20210701082658.21875-2-lxu@maxlinear.com>
+ <7e2b16b4-839c-0e1d-4d36-3b3fbf5be9eb@maxlinear.com>
+ <20210706154454.GR22278@shell.armlinux.org.uk>
+ <c4772ca8-42e3-9c9d-2388-e19acb19e073@maxlinear.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzaGdD=B5qcaraSKVpNp_NQLBLLxiCsLEQB-0i7JxxA_Bw@mail.gmail.com>
+In-Reply-To: <c4772ca8-42e3-9c9d-2388-e19acb19e073@maxlinear.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 06, 2021 at 01:26:46PM -0700, Andrii Nakryiko wrote:
+> Is the merging failure due to the tree declaration? Or something else I also
+> need take care.
 
-SNIP
+It is probably due to the tree declaration, assuming you are actually
+using the correct tree.
 
-> > > >
-> > > > It's a 10x speed up. And a good chunk of those 2.7 seconds is in some
-> > > > preparatory steps not related to fentry/fexit stuff.
-> > > >
-> > > > It's not exactly apples-to-apples, though, because the limitations you
-> > > > have right now prevents attaching both fentry and fexit programs to
-> > > > the same set of kernel functions. This makes it pretty useless for a
-> > >
-> > > hum, you could do link_update with fexit program on the link fd,
-> > > like in the selftest, right?
-> >
-> > Hm... I didn't realize we can attach two different prog FDs to the
-> > same link, honestly (and was too lazy to look through selftests
-> > again). I can try that later. But it's actually quite a
-> > counter-intuitive API (I honestly assumed that link_update can be used
-> > to add more BTF IDs, but not change prog_fd). Previously bpf_link was
-> > always associated with single BPF prog FD. It would be good to keep
-> > that property in the final version, but we can get back to that later.
-> 
-> Ok, I'm back from PTO and as a warm-up did a two-line change to make
-> retsnoop work end-to-end using this bpf_link_update() approach. See
-> [0]. I still think it's a completely confusing API to do
-> bpf_link_update() to have both fexit and fentry, but it worked for
-> this experiment.
+> When did the net-next was closed? I saw some other patches after 1 Jul were
+> accepted, how many days before the close should I submit?
 
-we need the same set of functions, and we have 'fd' representing
-that ;-) but that could hopefully go away with the new approach
+It varies by subsystem. ARM SoC tends to close around a week before
+the merge window opens. netdev sees some patches accepted one or two
+days after the merge window opens, but you should not assume patches
+will be accepted that late. Also, you should submit patches earlier,
+rather than later. They get more testing that way, you have time to
+fix issues etc.
 
-> 
-> BTW, adding ~900 fexit attachments is barely noticeable, which is
-> great, means that attachment is instantaneous.
+> Do I need re-submit the patch when net_next is open again, or the current patch
+> will be pulled in next open window?
 
-right I see similar not noticable time in bpftrace as well
-thanks for testing that,
+You need to resubmit.
 
-jirka
-
-> 
-> real    0m2.739s
-> user    0m0.351s
-> sys     0m2.370s
-> 
->   [0] https://github.com/anakryiko/retsnoop/commit/c915d729d6e98f83601e432e61cb1bdf476ceefb
-> 
-
-SNIP
-
+    Andrew
