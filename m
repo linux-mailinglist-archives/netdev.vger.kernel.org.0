@@ -2,79 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C00C3BEBD8
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B5783BEBE7
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 18:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbhGGQSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 12:18:24 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:57317 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229475AbhGGQSY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 12:18:24 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 167GFZTe002304;
-        Wed, 7 Jul 2021 18:15:35 +0200
-Date:   Wed, 7 Jul 2021 18:15:35 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Maciej Zenczykowski <maze@google.com>
-Subject: Re: [PATCH net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-Message-ID: <20210707161535.GF1978@1wt.eu>
-References: <20210707154630.583448-1-eric.dumazet@gmail.com>
- <20210707155930.GE1978@1wt.eu>
- <CANn89iKroJhPxiFJFNhopS6cS-Y6u1z_RLDTDCnmH8PMkJwEsA@mail.gmail.com>
+        id S230148AbhGGQVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 12:21:31 -0400
+Received: from mail.netfilter.org ([217.70.188.207]:55096 "EHLO
+        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230070AbhGGQV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 12:21:29 -0400
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        by mail.netfilter.org (Postfix) with ESMTPSA id 1C3FA61836;
+        Wed,  7 Jul 2021 18:18:36 +0200 (CEST)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 00/11] Netfilter fixes for net
+Date:   Wed,  7 Jul 2021 18:18:33 +0200
+Message-Id: <20210707161844.20827-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iKroJhPxiFJFNhopS6cS-Y6u1z_RLDTDCnmH8PMkJwEsA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 06:06:21PM +0200, Eric Dumazet wrote:
-> On Wed, Jul 7, 2021 at 5:59 PM Willy Tarreau <w@1wt.eu> wrote:
-> >
-> > Hi Eric,
-> >
-> > On Wed, Jul 07, 2021 at 08:46:30AM -0700, Eric Dumazet wrote:
-> > > From: Eric Dumazet <edumazet@google.com>
-> > >
-> > > While TCP stack scales reasonably well, there is still one part that
-> > > can be used to DDOS it.
-> > >
-> > > IPv6 Packet too big messages have to lookup/insert a new route,
-> > > and if abused by attackers, can easily put hosts under high stress,
-> > > with many cpus contending on a spinlock while one is stuck in fib6_run_gc()
-> >
-> > Just thinking loud, wouldn't it make sense to support randomly dropping
-> > such packets on input (or even better rate-limit them) ? After all, if
-> > a host on the net feels like it will need to send one, it will surely
-> > need to send a few more until one is taken into account so it's not
-> > dramatic. And this could help significantly reduce their processing cost.
-> 
-> Not sure what you mean by random.
+Hi,
 
-I just meant statistical randomness. E.g. drop 9/10 when under stress for
-example.
+The following patchset contains Netfilter fixes for net:
 
-> We probably want to process valid packets, if they ever reach us.
+1) Do not refresh timeout in SYN_SENT for syn retransmissions.
+   Add selftest for unreplied TCP connection, from Florian Westphal.
 
-That's indeed the other side of my question. I.e. if a server gets hit
-by such a flood, do we consider more important to spend the CPU cycles
-processing all received packets or can we afford dropping a lot of them.
+2) Fix null dereference from error path with hardware offload
+   in nftables.
 
-> In our case, we could simply drop all ICMPv6 " packet too big"
->  messages, since we clamp TCP/IPv6 MSS to the bare minimum anyway.
-> 
-> Adding a generic check in TCP/ipv6 stack is cheaper than an iptables
-> rule (especially if this is the only rule that must be used)
+3) Remove useless nf_ct_gre_keymap_flush() from netns exit path,
+   from Vasily Averin.
 
-Sure, I was not thinking about iptables here, rather a hard-coded
-prandom_u32() call or a percpu cycling counter.
+4) Missing rcu read-lock side in ctnetlink helper info dump,
+   also from Vasily.
 
-Willy
+5) Do not mark RST in the reply direction coming after SYN packet
+   for an out-of-sync entry, from Ali Abdallah and Florian Westphal.
+
+6) Add tcp_ignore_invalid_rst sysctl to allow to disable out of
+   segment RSTs, from Ali.
+
+7) KCSAN fix for nf_conntrack_all_lock(), from Manfred Spraul.
+
+8) Honor NFTA_LAST_SET in nft_last.
+
+9) Fix incorrect arithmetics when restore last_jiffies in nft_last.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 5140aaa4604ba96685dc04b4d2dde3384bbaecef:
+
+  s390: iucv: Avoid field over-reading memcpy() (2021-07-01 15:54:01 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to d322957ebfb9c21c2c72b66680f7c3ccd724e081:
+
+  netfilter: uapi: refer to nfnetlink_conntrack.h, not nf_conntrack_netlink.h (2021-07-07 17:39:15 +0200)
+
+----------------------------------------------------------------
+Ali Abdallah (2):
+      netfilter: conntrack: improve RST handling when tuple is re-used
+      netfilter: conntrack: add new sysctl to disable RST check
+
+Colin Ian King (1):
+      netfilter: nf_tables: Fix dereference of null pointer flow
+
+Duncan Roe (1):
+      netfilter: uapi: refer to nfnetlink_conntrack.h, not nf_conntrack_netlink.h
+
+Florian Westphal (2):
+      selftest: netfilter: add test case for unreplied tcp connections
+      netfilter: conntrack: do not renew entry stuck in tcp SYN_SENT state
+
+Manfred Spraul (1):
+      netfilter: conntrack: Mark access for KCSAN
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_last: honor NFTA_LAST_SET on restoration
+      netfilter: nft_last: incorrect arithmetics when restoring last used
+
+Vasily Averin (2):
+      netfilter: conntrack: nf_ct_gre_keymap_flush() removal
+      netfilter: ctnetlink: suspicious RCU usage in ctnetlink_dump_helpinfo
+
+ Documentation/networking/nf_conntrack-sysctl.rst   |   6 +
+ include/net/netfilter/nf_conntrack_core.h          |   1 -
+ include/net/netns/conntrack.h                      |   1 +
+ include/uapi/linux/netfilter/nfnetlink_log.h       |   2 +-
+ include/uapi/linux/netfilter/nfnetlink_queue.h     |   4 +-
+ net/netfilter/nf_conntrack_core.c                  |  11 +-
+ net/netfilter/nf_conntrack_netlink.c               |   3 +
+ net/netfilter/nf_conntrack_proto.c                 |   7 -
+ net/netfilter/nf_conntrack_proto_gre.c             |  13 --
+ net/netfilter/nf_conntrack_proto_tcp.c             |  69 ++++++---
+ net/netfilter/nf_conntrack_standalone.c            |  10 ++
+ net/netfilter/nf_tables_api.c                      |   3 +-
+ net/netfilter/nft_last.c                           |  12 +-
+ tools/testing/selftests/netfilter/Makefile         |   2 +-
+ .../selftests/netfilter/conntrack_tcp_unreplied.sh | 167 +++++++++++++++++++++
+ 15 files changed, 262 insertions(+), 49 deletions(-)
+ create mode 100755 tools/testing/selftests/netfilter/conntrack_tcp_unreplied.sh
