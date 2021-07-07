@@ -2,129 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754673BE7C0
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:22:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D838D3BE80A
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 14:34:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbhGGMZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 08:25:19 -0400
-Received: from relay.sw.ru ([185.231.240.75]:45024 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231383AbhGGMZS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 08:25:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:Mime-Version:Message-Id:Subject:From
-        :Date; bh=gJj7p9kNr2cb7vG6O+83AAok26C/WJLgF6Yib6CJS6c=; b=va5rUvZadbkxNm2n6xf
-        q4Hx4Mxulw+LUZPTyPLKjV3qZltmjwBgeXXXI6QG0kJB+dczb7SeJHh4EtVJYpkHDyMuh4zxgemFM
-        WY4GNn2IZ7ARZzyQA87OvmmAmpPT3HNZXWzl6db6wvDONQOfRaJegslF2nMkbqs3d3a6J8tXS2I=;
-Received: from [192.168.15.10] (helo=mikhalitsyn-laptop)
-        by relay.sw.ru with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <alexander.mikhalitsyn@virtuozzo.com>)
-        id 1m16ZZ-003BmU-EJ; Wed, 07 Jul 2021 15:22:37 +0300
-Date:   Wed, 7 Jul 2021 15:22:36 +0300
-From:   Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Subject: Re: [PATCHv4 iproute2] ip route: ignore ENOENT during save if
- RT_TABLE_MAIN is being dumped
-Message-Id: <20210707152236.08ac5a20fc3be20adbb50879@virtuozzo.com>
-In-Reply-To: <20210706170545.680cfe43@hermes.local>
-References: <20210625104441.37756-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210629155116.23464-1-alexander.mikhalitsyn@virtuozzo.com>
-        <20210706083407.76deb4c0@hermes.local>
-        <20210706184415.baf59983a9cb5de56050389c@virtuozzo.com>
-        <20210706091821.7a5c2ce8@hermes.local>
-        <20210706201757.46678b763f35ae41a12f48c1@virtuozzo.com>
-        <20210706170545.680cfe43@hermes.local>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S231562AbhGGMhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 08:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231789AbhGGMg4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 08:36:56 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD2FC061762
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 05:32:13 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id y38so2898792ybi.1
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 05:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0o/tc3UWp4uEa8O3pP1dD613UEK3mpfOAPKmpdjDsI8=;
+        b=ACgWk2NrZg9VaCj/FjYB5IGKNNpBZ/D8CrXxoAuoXJE79u/wdmv/S6N0AcTSbUkuw8
+         y+YZIzfW5lkZSWcQxk9Kq6nK5DnNcw0Za6syZOwIZ5RC6LIYWw/1k4xDvxuHuh56KB2z
+         XarNb6nSoAOEDRaUIcYF8qJ3hL9n7INu5oh0/9IdbVStq5sBnWJgDX8nKJKxF26SVill
+         Lji61Kn31sJgKiHxOjtAE9XGXXRonBnZJqMFv2t3frcIY77f+31WlvetD7c/O33Q/umb
+         1A0KfUCBa9RY4i5ZML+9fMKfYdH8764vwUsbQPBnLstZOPjvpI0FSdY5k9biTlYKG5ea
+         z0Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0o/tc3UWp4uEa8O3pP1dD613UEK3mpfOAPKmpdjDsI8=;
+        b=ZJM/mbAM/5Fe/f+swBOr9dglN8RrraI61xS47iTGqYpfQkjTIPv5Zfb1yWOeDnSokX
+         y8U554E0CmBhPEIuo740fokjc/J0bet4g9Y97U+5YKpGK0WzPa3BZSKdTtKxxCWS5cW9
+         cNlIt9OwF1VOFwmoUqmWCX33z23FpfHsyYTIlDizgYVPvoL1cdoD/kkiy1zbDatOHkGQ
+         4NJyLMQh+n5Dke4CelhRmM9S/r9sbsglYONL4rW9Ux0VRroObC+jLZv4y3eltavJbIXW
+         SQH7FmTvDtWgJcESXA+mYWEw5Zq9/2BC3C50mmGutHLSMFYvx4z7wFTxpqa7PCk2jzlI
+         dDjw==
+X-Gm-Message-State: AOAM533E9EtKLCe1qBdPTmvPtCujk3zFXyGwatiK5beahNVKkV0sU3o4
+        937wp4V2Ls25h5W0RvJkI6GtU2P9qgc5mEReu3kzAA==
+X-Google-Smtp-Source: ABdhPJzdEt6naCpXmZ9IIJLYfixymIUHK/O+dc1wvW77AMMmlKGT0B4i8MkYGlsFRfJ19rkT10kapVerherDg84HPog=
+X-Received: by 2002:a05:6902:4e2:: with SMTP id w2mr33237227ybs.132.1625661132215;
+ Wed, 07 Jul 2021 05:32:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210707092731.2499-1-slyfox@gentoo.org>
+In-Reply-To: <20210707092731.2499-1-slyfox@gentoo.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 7 Jul 2021 14:32:01 +0200
+Message-ID: <CANn89iL=uQto2PSNj9Xjt5NFrqKQgVzvYY1T++-Kw_OTfsPwgA@mail.gmail.com>
+Subject: Re: [PATCH] net: core: fix SO_TIMESTAMP_* option setting
+To:     Sergei Trofimovich <slyfox@gentoo.org>
+Cc:     netdev <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Jul 2021 17:05:45 -0700
-Stephen Hemminger <stephen@networkplumber.org> wrote:
+On Wed, Jul 7, 2021 at 11:27 AM Sergei Trofimovich <slyfox@gentoo.org> wrote:
+>
+> I noticed the problem as a systemd-timesyncd (and ntpsec) sync failures:
+>
+>     systemd-timesyncd[586]: Timed out waiting for reply from ...
+>     systemd-timesyncd[586]: Invalid packet timestamp.
+>
+> Bisected it down to commit 371087aa476
+> ("sock: expose so_timestamp options for mptcp").
+>
+> The commit should be a no-op but it accidentally reordered option type
+> and option value:
+>
+>     +void sock_set_timestamp(struct sock *sk, int optname, bool valbool);
+>     ...
+>     -     __sock_set_timestamps(sk, valbool, true, true);
+>     +     sock_set_timestamp(sk, valbool, optname);
+>
+> Tested the fix on systemd-timesyncd. The sync failures went away.
+>
+> CC: Paolo Abeni <pabeni@redhat.com>
+> CC: Florian Westphal <fw@strlen.de>
+> CC: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> CC: David S. Miller <davem@davemloft.net>
+> CC: Jakub Kicinski <kuba@kernel.org>
+> CC: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+> ---
 
-> On Tue, 6 Jul 2021 20:17:57 +0300
-> Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> 
-> > On Tue, 6 Jul 2021 09:18:21 -0700
-> > Stephen Hemminger <stephen@networkplumber.org> wrote:
-> > 
-> > > On Tue, 6 Jul 2021 18:44:15 +0300
-> > > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> > >   
-> > > > On Tue, 6 Jul 2021 08:34:07 -0700
-> > > > Stephen Hemminger <stephen@networkplumber.org> wrote:
-> > > >   
-> > > > > On Tue, 29 Jun 2021 18:51:15 +0300
-> > > > > Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com> wrote:
-> > > > >     
-> > > > > > +	const struct rtnl_dump_filter_arg a[2] = {
-> > > > > > +		{ .filter = filter, .arg1 = arg1,
-> > > > > > +		  .errhndlr = errhndlr, .arg2 = arg2, .nc_flags = nc_flags, },
-> > > > > > +		{ .filter = NULL,   .arg1 = NULL,
-> > > > > > +		  .errhndlr = NULL, .arg2 = NULL, .nc_flags = 0, },
-> > > > > >  	};    
-> > > > > 
-> > > > > I am OK with this as is. But you don't need to add initializers for fields
-> > > > > that are 0/NULL (at least in C).    
-> > > > 
-> > > > Sure, I've made such explicit initializations just because in original
-> > > > rtnl_dump_filter_nc() we already have them.
-> > > > 
-> > > > Do I need to resend with fixed initializations? ;)  
-> > > 
-> > > Not worth it  
-> > 
-> > Ok, thanks!
-> > 
-> 
-> Looks like you need to send v5 anyway.
-> 
-> 
-> checkpatch.pl ~/Downloads/PATCHv4-iproute2-ip-route-ignore-ENOENT-during-save-if-RT_TABLE_MAIN-is-being-dumped.patch 
-> WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
-> #62: 
-> We started to use in-kernel filtering feature which allows to get only needed
-> 
-> WARNING: 'extened' may be misspelled - perhaps 'extended'?
-> #84: 
-> easily extened by changing SUPPRESS_ERRORS_INIT macro).
->        ^^^^^^^
-> 
-> WARNING: please, no space before tabs
-> #111: FILE: include/libnetlink.h:109:
-> + * ^Irtnl_dump_done()$
-> 
-> WARNING: please, no space before tabs
-> #112: FILE: include/libnetlink.h:110:
-> + * ^Irtnl_dump_error()$
-> 
-> WARNING: please, no space before tabs
-> #116: FILE: include/libnetlink.h:114:
-> + * ^Ierror handled as usual$
-> 
-> WARNING: please, no space before tabs
-> #118: FILE: include/libnetlink.h:116:
-> + * ^Ierror in nlmsg_type == NLMSG_DONE will be suppressed$
-> 
-> 
-> WARNING: please, no space before tabs
-> #120: FILE: include/libnetlink.h:118:
-> + * ^Ierror in nlmsg_type == NLMSG_ERROR will be suppressed$
-> 
-> WARNING: please, no space before tabs
-> #121: FILE: include/libnetlink.h:119:
-> + * ^Iand nlmsg will be skipped$
-> 
-> total: 0 errors, 8 warnings, 183 lines checked
+I think this has been fixed five days ago in
 
-Oh, sorry about that. I've sent v5 and checked with checkpatch.pl
-I've send two options for v5 - with initializers fix and without :)
-
-Regards,
-Alex
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=81b4a0cc7565b08cadd0d02bae3434f127d1d72a
