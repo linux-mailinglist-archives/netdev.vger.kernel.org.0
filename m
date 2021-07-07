@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC21A3BE704
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB193BE73E
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbhGGL0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 07:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
+        id S231415AbhGGLm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 07:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbhGGL0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:26:09 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B4BC061760
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 04:23:29 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id x24so1695250qts.11
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 04:23:29 -0700 (PDT)
+        with ESMTP id S231358AbhGGLm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:42:57 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FF3C061574;
+        Wed,  7 Jul 2021 04:40:17 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v5so2704966wrt.3;
+        Wed, 07 Jul 2021 04:40:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=oprwMzod/6MUSDVVxVpcrq6F+k0HVSo1xTGIJxIoykE=;
-        b=DqW2cyZZIwZJ4L09491xinpuYZsp77ByyyyDW9DcccwdjOGPS2lSp4XwQTQw+10Biz
-         AmxuEZwOgXapFupyUCTp2Zcr6tKGoYXYJHaiTYdw2TDxiIPERZ5BVvP19Kt++JVxvQiF
-         NzFcee/8Vj4utri6qM1gZ03rKXDBski973YNremOlItHKXtvFEg6jHBOt0OqF34rN4YX
-         HHfnVYmtTSh5Mp6/zh/85oOZjpuPbrktYEuf6gLfG08/dBplI2ePq4mb+ZoKXrYHK75U
-         Ghb6TiFlB9yfud0zbPzBVLtA93WnICYt+Hdhrr5u7UpjYsKgl/RT4tiJRQdVkpAzePaK
-         fEcg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2uCkvq1OR+Q2+7RwQm8CsU1YV4vRtiyU/JB72/AtBw=;
+        b=usKyTp5FUQk85fJW07hOHal5Sw1D6ooqe0BFj+PsBWgqkuvbAm6x9SqSHlUjUiAUr4
+         kp4Iv/T6Txn8Ea2lfuhXax5EMPuwmx1EqcPO6l4pbvG5dDQE8539MlcvxBUP3LqsVuqE
+         FiWBVRbH7OD/J7JBeL3/ZYFI2qyjTYIrXmyvZMQ85zz+CDHcsJUypMVW2Sf01sL7rnqT
+         4FpRTjXRz2X74ywqKC8XLXGqCtS+dSKqw8cTMqupTxpBQulydjE7MuSpwHhTj4Sta9pU
+         sm/n/JdAoQ9H1VPcE2GzsOTYvdfYM7Q7uw9/vXE1z7n4ziIGQq+w44fsqeueRIzFmvzE
+         zmnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=oprwMzod/6MUSDVVxVpcrq6F+k0HVSo1xTGIJxIoykE=;
-        b=AQcr7pjbvx4WDKNxIwGxlTCv6dPOqHvnR9tOPZCs9tP7AT6XQ+YlZ3kf993qq5uoxD
-         BIPrcH3JZ8gE5GDVTxcDAFd+d9/oMHKc7GxZjzsOpEUJiDsqpwbKNDfgO7MtiXn2qLE0
-         +QBuS/CudtVJoykCp9i1iYnswtGDIZtyO/yLs1t6cexBBYqJKdbHYrrdWeltrJrzA1Fr
-         QdUpEcsdjig1VQf2WeUL10uTKbcDQCDyrUbz0WLU1JMUUwU0Vni2JSDwJy1yzHgAJ07u
-         p46eu3BM0saVwiVJetR+zqIKg3D476JYIu78HG1SYR68QLb0LPIwoZ5Qpr2m6RaGzS+1
-         sfUg==
-X-Gm-Message-State: AOAM5333hirmFR8P00b1S9HFIGY7zgXazWlnnxBFj1xR+wJDRFaEJmCT
-        /DIw4RbIREvOxdv/QZYyYw+XBA==
-X-Google-Smtp-Source: ABdhPJwGP0B7Jf4MSIvu3GKIZZEa50D7QRKZQ/AYy072z0n8z5dus4W4ssxepN+HHM/4Mm3C6f8myA==
-X-Received: by 2002:ac8:775c:: with SMTP id g28mr9059154qtu.193.1625657008528;
-        Wed, 07 Jul 2021 04:23:28 -0700 (PDT)
-Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
-        by smtp.googlemail.com with ESMTPSA id 3sm2353797qtz.5.2021.07.07.04.23.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Jul 2021 04:23:28 -0700 (PDT)
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, lartc@vger.kernel.org
-Cc:     lwn@lwn.net
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: Netdevconf 0x15 update
-Message-ID: <7892184b-c981-d5d1-0664-e64844b39686@mojatatu.com>
-Date:   Wed, 7 Jul 2021 07:23:23 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z2uCkvq1OR+Q2+7RwQm8CsU1YV4vRtiyU/JB72/AtBw=;
+        b=cdQzL14YPpKRVLcaBd8x56wobu6GWBIHfTc6poNb7K44qGhlXLaapj/9/BPGGcnxCt
+         eAKDzJzV9vKoKB/C04hGNthQf2Ejj1Sj3ALdBJLzDbezAwRSsGzz8CMaaChW6woyrPE6
+         xRcYcltcN7q8XTEzl2FR/K4YzNlgiDF7nVrvN6b584YEsjhCi6nxlyPjcf1KnXw+KuNw
+         m670Ez80ukKVK1+VU/UWHVcV6U/bqBXuRU6qEMbvetTV9fNWoRyxJ2w4HEvyo1MKCdit
+         pDH969o+6y7cgcZKZMgjDYCx5h6ajGH3tWWP9p/NEYFQWI7lgnhci/S8gXV1roQwRhHM
+         MwlQ==
+X-Gm-Message-State: AOAM531QqqCmAZSlh/Zzfxj2uPIdxmtTCXyW7OYl3x9izfpGom77FoWv
+        UX5KTXimx1jjT2LwuDfCOtU=
+X-Google-Smtp-Source: ABdhPJz+dTwJ0SaK8HojFyHxmzZuXH1YLmz/XkX0t8NVgpdZRZYuDEC1N4sTH6sFCaDwFvMMi2vA7Q==
+X-Received: by 2002:adf:ef87:: with SMTP id d7mr27445589wro.204.1625658015756;
+        Wed, 07 Jul 2021 04:40:15 -0700 (PDT)
+Received: from localhost.localdomain ([85.255.234.206])
+        by smtp.gmail.com with ESMTPSA id p9sm18415790wmm.17.2021.07.07.04.40.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jul 2021 04:40:15 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [RFC 0/4] open/accept directly into io_uring fixed file table 
+Date:   Wed,  7 Jul 2021 12:39:42 +0100
+Message-Id: <cover.1625657451.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Folks,
-Reminder that the virtual conference starts today with a keynote
-at 3PM UTC.
+Implement an old idea allowing open/accept io_uring requests to register
+a newly created file as a io_uring's fixed file instead of placing it
+into a task's file table. The switching is encoded in io_uring's SQEs
+by setting sqe->buf_index/file_index, so restricted to 2^16-1. Don't
+think we need more, but may be a good idea to scrap u32 somewhere
+instead.
 
-A lot of great content, see:
-https://netdevconf.info/0x15/accepted-sessions.html
-Registration is reel cheep at USD $50 (50% for students).
+From the net side only needs a function doing __sys_accept4_file()
+but not installing fd, see 2/4.
 
-The conference will be spread over the next 2+ weeks
-(Upto and including July 23). See schedule (and registration)
-here:
-https://netdevconf.info/0x15/virtual.html
-We never close registration - and this time to
-accommodate for the different timezones we are going
-to keep all the session recordings on site. So if you
-missed a session because of a conflict or because it was
-running when it is late in your location, as long as you
-are registered,  you can login and replay the session.
-As usual we will make all session videos, slides and papers
-public after the conference.
+Only RFC for now, the new functionality is tested only for open yet.
+I hope we can remember the author of the idea to add attribution.
 
-cheers,
-jamal
+Pavel Begunkov (4):
+  io_uring: allow open directly into fixed fd table
+  net: add an accept helper not installing fd
+  io_uring: hand code io_accept()' fd installing
+  io_uring: accept directly into fixed file table
+
+ fs/io_uring.c                 | 113 +++++++++++++++++++++++++++++-----
+ include/linux/socket.h        |   3 +
+ include/uapi/linux/io_uring.h |   2 +
+ net/socket.c                  |  71 +++++++++++----------
+ 4 files changed, 138 insertions(+), 51 deletions(-)
+
+-- 
+2.32.0
+
