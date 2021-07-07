@@ -2,96 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A1F3BE063
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 02:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B3C63BE0A0
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 03:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbhGGBAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Jul 2021 21:00:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43500 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229834AbhGGA76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Jul 2021 20:59:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PFdO1IFb7nHREoIMKuJxQUnPYfqQhmKfdkJlDTPz+ZQ=; b=tz9WkcgcRhBbek65RGv/T9WCEu
-        hNwvIC6w94JsukHcQsCPX4aTw7ceYwS6/p3qF8h3pOaKZeQl+EsRN4cd6V5fC4o8WPAEc0RtidtDd
-        EMQK9dRiaOhLD1BcicR85FQYS/tMCF+1V7NyIOZDuuklSbxZu71f3lOmv3SMlns0NBuo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m0vsD-00CRuE-C5; Wed, 07 Jul 2021 02:57:09 +0200
-Date:   Wed, 7 Jul 2021 02:57:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
-Cc:     "Ling, Pei Lee" <pei.lee.ling@intel.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "Wong, Vee Khee" <vee.khee.wong@intel.com>
-Subject: Re: [PATCH net] net: phy: skip disabling interrupt when WOL is
- enabled in shutdown
-Message-ID: <YOT75ZvoB0qnsK6W@lunn.ch>
-References: <20210706090209.1897027-1-pei.lee.ling@intel.com>
- <YORXMSmvqwYg7QA9@lunn.ch>
- <CO1PR11MB4771EF640CBB88E9D96693FFD51A9@CO1PR11MB4771.namprd11.prod.outlook.com>
+        id S230008AbhGGBk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Jul 2021 21:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229954AbhGGBk7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Jul 2021 21:40:59 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD61C061574;
+        Tue,  6 Jul 2021 18:38:19 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id k8so573825lja.4;
+        Tue, 06 Jul 2021 18:38:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cDuZteS2QwTI95+5VYx9oVAFvfkoqZKJL0R7UK6mN5o=;
+        b=op9HoDkw0wHwVMu2ZjWzEFSiO+0d476ts6xMjBMtzYmNb8v91OJQ1XXFJk0BIgWxPX
+         jNUrrjzGyaSrgRffc7sRdZ3ulYBcMyOPDkEl8vKe8GCCb6Ezs+pEfNEUF++3BGcbV+n/
+         BSYMWi8/Jl2vppXcpDiJUpbQZ9ZJ6I6XvquxcPSoZRuvqj6qYnDbktqEbwR4hFgJHIiZ
+         LF3ssFpKyq6GY5sYuY28oClPNkLslVfmXO68k/cNFZAqs4uzLwSuIs67p92BZ1F9EYlp
+         s86rmoRZIgMr9C++rRZmMMXYXhiqSwdaC+fAndvn6w2Cs55Shx26/s/3DUgalC/MNOpe
+         Icdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cDuZteS2QwTI95+5VYx9oVAFvfkoqZKJL0R7UK6mN5o=;
+        b=TQH72V4VMlP6bowpUMG+L6xH4wCn2gMz6WUr88ZnlTNt0nzQZMCABqJixWNSXhDQGt
+         lMDgiYlPxiKHZyk4QIYK0p5BdRveg8arkE0uglVmokXvQHOhfsMLDC7JGqGXyXvcRrd6
+         vNngmse1GjbtNjMs8BLHTM/I2rrWEBLlXBJonegKZmWCOrFE4dLH7j46AswznMxp9mOc
+         WLpNWGNwT12V4CTY7P4TgGN+9WgQrDbENXPzGkkDAQVWEbVo/dkYRWKomhhHji2SSvvK
+         MIchvQMEYTVbLEVrUCEZidaXOPyP7kMGg078YHGd2iYJ6cOYCBbr8dIz9vC8DStMMN6U
+         9ufg==
+X-Gm-Message-State: AOAM532pl5af/IfxWaocVywbO6rH132rSywplIOdaPtR1x0khz5iNm0f
+        p3YXXL1y2yU77pqc8Zlb1ZOMRFhk5GJuy+g7FCw=
+X-Google-Smtp-Source: ABdhPJzHedLLl3dv3JMO8nQRi6i+xdLp/K74FhJEvM7YrynBMK4eelex2HOP5Lj/K3jklXijej0Grt71Cak0FabEtWg=
+X-Received: by 2002:a2e:710b:: with SMTP id m11mr8711741ljc.258.1625621898255;
+ Tue, 06 Jul 2021 18:38:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB4771EF640CBB88E9D96693FFD51A9@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <20210701192044.78034-1-alexei.starovoitov@gmail.com>
+ <20210701192044.78034-2-alexei.starovoitov@gmail.com> <20210702010455.3h4v5c4g7wx2aeth@kafai-mbp.dhcp.thefacebook.com>
+ <CAADnVQKYGBdZJiMsxMVRX8axEbH_Uh+HekcECpiZqU2oWeWv2Q@mail.gmail.com>
+In-Reply-To: <CAADnVQKYGBdZJiMsxMVRX8axEbH_Uh+HekcECpiZqU2oWeWv2Q@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Jul 2021 18:38:06 -0700
+Message-ID: <CAADnVQLsUzQ=-n3mwgXxQBCdyLSKGgXt79Th-Z+yGVWU_BZnfA@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 1/9] bpf: Introduce bpf timers.
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 12:36:30AM +0000, Ismail, Mohammad Athari wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Tuesday, July 6, 2021 9:14 PM
-> > To: Ling, Pei Lee <pei.lee.ling@intel.com>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>; Russell King
-> > <linux@armlinux.org.uk>; davem@davemloft.net; Jakub Kicinski
-> > <kuba@kernel.org>; Ioana Ciornei <ioana.ciornei@nxp.com>;
-> > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Voon, Weifeng
-> > <weifeng.voon@intel.com>; vee.khee.wong@linux.intel.com; Wong, Vee Khee
-> > <vee.khee.wong@intel.com>; Ismail, Mohammad Athari
-> > <mohammad.athari.ismail@intel.com>
-> > Subject: Re: [PATCH net] net: phy: skip disabling interrupt when WOL is enabled
-> > in shutdown
-> > 
-> > On Tue, Jul 06, 2021 at 05:02:09PM +0800, Ling Pei Lee wrote:
-> > > From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-> > >
-> > > PHY WOL requires WOL interrupt event to trigger the WOL signal in
-> > > order to wake up the system. Hence, the PHY driver should not disable
-> > > the interrupt during shutdown if PHY WOL is enabled.
-> > 
-> > If the device is being used to wake the system up, why is it being shutdown?
-> > 
-> 
-> Hi Andrew,
-> 
+On Sun, Jul 4, 2021 at 7:19 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> > > +                     struct bpf_insn ld_addrs[2] = {
+> > > +                             BPF_LD_IMM64(BPF_REG_3, (long)prog),
+> > The "prog" pointer value is used here.
+> >
+> > > +                     };
+> > > +
+> > > +                     insn_buf[0] = ld_addrs[0];
+> > > +                     insn_buf[1] = ld_addrs[1];
+> > > +                     insn_buf[2] = *insn;
+> > > +                     cnt = 3;
+> > > +
+> > > +                     new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, cnt);
+> > > +                     if (!new_prog)
+> > > +                             return -ENOMEM;
+> > > +
+> > > +                     delta    += cnt - 1;
+> > > +                     env->prog = prog = new_prog;
+> > After bpf_patch_insn_data(), a new prog may be allocated.
+> > Is the above old "prog" pointer value updated accordingly?
+> > I could have missed something.
+>
+> excellent catch. The patching of prog can go bad either here
+> or later if patching of some other insn happened to change prog.
+> I'll try to switch to dynamic prog fetching via ksym.
+> The timers won't work in the interpreted mode though.
+> But that's better trade-off than link-list of insns to patch with a prog
+> after all of bpf_patch_insn_data are done?
+> Some other way to fix this issue?
 
-> When the platform goes to S5 state (ex: shutdown -h now), regardless
-> PHY WOL is enabled or not, phy_shutdown() is called. So, for the
-> platform that support WOL from S5, we need to make sure the PHY
-> still can trigger WOL event. Disabling the interrupt through
-> phy_disable_interrupts() in phy_shutdown() will disable WOL
-> interrupt as well and cause the PHY WOL not able to trigger.
-
-This sounds like a firmware problem. If linux is shutdown, linux is
-not controlling the hardware, the firmware is. So the firmware should
-probably be configuring the PHY after Linux powers off.
-
-If Linux is suspended, then Linux is still controlling the hardware,
-and it will not shutdown the PHY.
-
-    Andrew
+fyi we've discussed it with Martin offline and he came up with an excellent idea
+to patch prog->aux instead of prog here. I'll add that to a respin.
