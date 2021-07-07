@@ -2,76 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FAD3BF282
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 01:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 958553BF29D
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 01:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231281AbhGGXhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 19:37:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
+        id S230115AbhGGXwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 19:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbhGGXhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 19:37:23 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE43C061574;
-        Wed,  7 Jul 2021 16:34:41 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id k31-20020a05600c1c9fb029021727d66d33so1158345wms.0;
-        Wed, 07 Jul 2021 16:34:41 -0700 (PDT)
+        with ESMTP id S229542AbhGGXwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 19:52:19 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0187EC061574;
+        Wed,  7 Jul 2021 16:49:38 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id r135so6053879ybc.0;
+        Wed, 07 Jul 2021 16:49:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JzIIS7pK2VZwYIvomdFlbHweoT1DZsRECHEVFUap8N0=;
-        b=mmKrnf5V/DPMTkjm0+dI9aaWJsrn0mdZbXVoIX1D7IZebZR6UFLGNsbBpiqtYqIcEH
-         rbWFuWWo2rQDvs6XmwPs1h6hdBOWvdsQk1zUg7+2uF1yTYdeTIdOP4vD5C67FSRf+CR2
-         4l4qIvhuSu4txVMhaVttEkMMiXijI6mSy1Yq7rLIjenKagRbllh/3NG/HBDajF3F5NI3
-         V06LwCTl+usxFBjCr5+HZv8Px9K7L0JwscvlufXgWzrg6Sqmz8otdVuL3MXlWY11qWJu
-         aOyZ41OZASSnC228xiNgImxmd/yXYMUJoewCL7l4UkwbZ6b0dxpfieoQFPrtN/0F7xjs
-         3efg==
+        bh=M62+xgW8tbtCkoE/qKRY/F/lq3oX6OU+lrgDIeeGUJI=;
+        b=o81Nx/Y/DTY6FoB3IW6z6OqQpZil1gT/cBeR3xNdRkfiszkBgfH4ArUls8s4L6pEsj
+         2W3Fg7Hxm/xuZvzQmRwEF3VnPrgSFwxeWBuAjErcUvrI03tMX01AJ5DxZXATnK+WJybD
+         4EnJ5enwruhx7XUVlJz6rS7eA0M+WWo2NqVrznV/JNiTpUmdHM3AEXxqYeCaMupmzb0s
+         bk77vQ1jyhZnKJSLutkaHsccf24BcVbgwkiIwiDgK5IePs0wlH2bcr/7i4tN0Cr1yMcR
+         X2/lf+g+DcJfj3gqMYBz0GvUnYkYvL0imaOe/2sd2Vxk6Fy7ee0U9dPbf3gf08AQIaE1
+         i0lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JzIIS7pK2VZwYIvomdFlbHweoT1DZsRECHEVFUap8N0=;
-        b=a0hNSZWyVSQgYMjiRmsIfbe3ahSQ0ox8uHaH99iL1+ljETBK7Iq+YF5/qfQ3YkDjzD
-         WWp+7PcUASVE/A5TV9kOGflJNZ/A/OY6mYMtO1VibVmdV2InKoKj3ZaLIAWF7BvGU8vu
-         k7P0xKpZX5huNAWsg/DJr+LRBTaX5RgD7dWgvwB2vEoaYLDX2HDNSr/Y3Y6xzkKM5pbJ
-         KVvAY0dqGMhdR2yp3rbHAtOhVH/vHAOIWSSAY1Te/3bFPW05Z1J0VaISmtzvZF4EI8XO
-         RMR72S8zbup4RXMgF5v+4wvDhZbnfUFPXyuA1R/jBI1EN7JNqXhPRGeu3lAd5/jW4J40
-         NhaQ==
-X-Gm-Message-State: AOAM533p3AEhpbaQFV00FfxhGI5WdoYhBRdeiRRer6hre2U0u2M6cjx7
-        Rov5MHRgYh+LB9WQW54DvV3+I4RXfKroZNU2E58=
-X-Google-Smtp-Source: ABdhPJyjqOvwuRXlzs/0vfnHF+FzCxaSOOZF5m5uxFwpkelApM7oaAoF6x0LbTJ0zJ+a0sPvqoKj0RRfqzCxGTLJvmU=
-X-Received: by 2002:a1c:e485:: with SMTP id b127mr1650100wmh.91.1625700880220;
- Wed, 07 Jul 2021 16:34:40 -0700 (PDT)
+        bh=M62+xgW8tbtCkoE/qKRY/F/lq3oX6OU+lrgDIeeGUJI=;
+        b=p/fNHF5ZuVG2sUNAvq1eTGvfN5sgICFLRqLCUMnnvcqoqWjWRQ1KhtIdwF0JMzKc2l
+         /qzbF0UuNyXaANrGJUolHupKirFcYfcwWaOoGlF9bltkIBVzcJ17S6kseiTntj3B18PJ
+         RGstBZxqVRVgmCpgHNfiGY9k38ehf4NzmVe+X4PTSO5rr3TmCSMoZvA+6YeVfrv3V/Yx
+         DZz5Y98jZ/K9hKCvtdF0OcVoKS8b+ZiXoUAHv/l8bZSzh1Lo1mM8UaI4xXheGyQtlGxK
+         t9gKSP9WPJrujnFmwOz7ehcXrnLzkiAkao8kMBNibJOW/bHEIx/p24+rB9Ddq+Z/nmVP
+         feqw==
+X-Gm-Message-State: AOAM532/Jwao1ieQn5m66wUxXGIcruKtomLpYGxPek4Awhq7Hkkh2SXn
+        t+hfEILDiGxoy1ZeVN/WmNksplY7ehYgy1eK/gc=
+X-Google-Smtp-Source: ABdhPJyfABX1O38vDqWzo/jHf5GAudd8qlqgCVCYhgmC/vW6hNu9bpBNpYY6VmvHX4HxolQrS4k1Z1MMLmw6BeZJWQQ=
+X-Received: by 2002:a25:3787:: with SMTP id e129mr34722432yba.459.1625701777220;
+ Wed, 07 Jul 2021 16:49:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210707155633.1486603-1-mudongliangabcd@gmail.com>
-In-Reply-To: <20210707155633.1486603-1-mudongliangabcd@gmail.com>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 7 Jul 2021 19:34:29 -0400
-Message-ID: <CAB_54W5u9m3Xrfee8ywmWg7=aMB+Rx05w03kHfLuBpYVbxbEwQ@mail.gmail.com>
-Subject: Re: [PATCH] ieee802154: hwsim: fix GPF in hwsim_new_edge_nl
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>
+References: <20210629095543.391ac606@oasis.local.home> <CAEf4BzZPb=cPf9V1Bz+USiq+b5opUTNkj4+CRjXdHcmExW3jVg@mail.gmail.com>
+ <20210707184518.618ae497@rorschach.local.home>
+In-Reply-To: <20210707184518.618ae497@rorschach.local.home>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 7 Jul 2021 16:49:26 -0700
+Message-ID: <CAEf4BzZ=hFZw1RNx0Pw=kMNq2xRrqHYCQQ_TY_pt86Zg9HFJfA@mail.gmail.com>
+Subject: Re: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist() for
+ BPF tracing
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Wed, 7 Jul 2021 at 11:56, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+On Wed, Jul 7, 2021 at 3:45 PM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> Both MAC802154_HWSIM_ATTR_RADIO_ID and MAC802154_HWSIM_ATTR_RADIO_EDGE
-> must be present to fix GPF.
+> On Wed, 7 Jul 2021 15:12:28 -0700
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 >
-> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > There doesn't seem to be anything conceptually wrong with attaching
+> > the same BPF program twice to the same tracepoint. Is it a hard
+> > requirement to have a unique tp+callback combination, or was it done
+> > mostly to detect an API misuse? How hard is it to support such use
+> > cases?
+> >
+> > I was surprised to discover this is not supported (though I never had
+> > a use for this, had to construct a test to see the warning).
+>
+> The callback is identified by the function and its data combination. If
+> there's two callbacks calling the same function with the same data on
+> the same tracepoint, one question is, why? And the second is how do you
+> differentiate the two?
 
-Acked-by: Alexander Aring <aahringo@redhat.com>
+For places where multiple BPF programs can be attached (kprobes,
+cgroup programs, etc), we don't put a restriction that all programs
+have to be unique. It's totally legal to have the same program
+attached multiple times. So having this for tracepoints will be a
+one-off behavior.
 
-- Alex
+As for why the user might need that, it's up to the user and I don't
+want to speculate because it will always sound contrived without a
+specific production use case. But people are very creative and we try
+not to dictate how and what can be done if it doesn't break any
+fundamental assumption and safety.
+
+>
+> -- Steve
