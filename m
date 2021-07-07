@@ -2,115 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B153BE994
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 16:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB313BE960
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 16:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231935AbhGGOXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 10:23:11 -0400
-Received: from relay.sw.ru ([185.231.240.75]:58734 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231639AbhGGOXK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 10:23:10 -0400
-X-Greylist: delayed 940 seconds by postgrey-1.27 at vger.kernel.org; Wed, 07 Jul 2021 10:23:10 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=UA4eL064EWjYVJxhdfiFHZrrUTsuuc3X79KNj3RlB34=; b=mbqTa1AZhorrLPl+by3
-        0sC3kglVlC5BOS/53A7iEG3tVvLuPQYHZiPxaOcB+dpJOtPRqdPm70KyjTwm2ioYkDSO6m8Hu7lIM
-        CEoVucmPvAT0pfRAUzonf62MhYkYFIk7BE9qvxy/K7AJrapvd9JzFjGbPvDnGw60Bj7r8rzteXc=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m18AW-003ClR-Ck; Wed, 07 Jul 2021 17:04:52 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH IPV6 1/1] ipv6: allocate enough headroom in
- ip6_finish_output2()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <cover.1625665132.git.vvs@virtuozzo.com>
-Message-ID: <3cb5a2e5-4e4c-728a-252d-4757b6c9612d@virtuozzo.com>
-Date:   Wed, 7 Jul 2021 17:04:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231848AbhGGOKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 10:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230509AbhGGOKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 10:10:36 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF19CC061574
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 07:07:55 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id c15so1107154pls.13
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 07:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K0hkj1LylnIdpGSaYb3oPWajIGwhEUOsi//GUlIep2o=;
+        b=qHbW6maryYiWxWlDCqe53OVDUmWP8I0NjsRgV70x9/NPfdF+xNfL/9wKvYBm7OGNp/
+         5Hgbs2CGYFt2DuNQ1lycO85iknFDNqFqQtinb/eL3xTUfdTyEwM3Hfus74ARbZJDUB8u
+         EbixpEevlJ8yjQnfUAuiXZD/swWVmQ4Z3/7OdNkYnv1M2dRNDyCSsy2IB1yuzambZ/eF
+         MyKz7o+msZvtEhhYZA+q5lCMEZG39NwmuQ6kPQn8UDImrNipkkEc6fkWMkW1xsoDZ7Su
+         dJrXBzXgB07CcxB/yC5XPzsU1T6XTmbsd28qDnNzUD6THK6LUmQbfDl4+QT67XpqOMgr
+         E4mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K0hkj1LylnIdpGSaYb3oPWajIGwhEUOsi//GUlIep2o=;
+        b=U1wQU+Ge6oBg4snAl1rqrL8L7Etm5osTyQ7WuDCRdfpeiwOrC14QYy9DaR5HLZtNJ/
+         6iI8rWRID8xFGafx83+tDkpNVp+iI7hynw3rDQz2UFJEPlynwJW1HEI3Er1UM4SBE/FR
+         EBDbJP+nbwv/YM4VbWSih8egdztpbYLwtDyptT7haCREbVj+z93p0yJFw7sP1hbVyk4F
+         Bdvm8PIG4WCa+sLzar/F6hpCsbqSL4CIJLWFmVF0C4ExAoSb6V3ifpH9x1PQ2147CfI/
+         C9wxabz7HanGEwnmun+pTdgv3aGuZ6CowUc2RhpvhDvr7dc6YAW3ODpCSb9hVtws89nk
+         80Jg==
+X-Gm-Message-State: AOAM530qwHp6dB6t4oL42dZTtN1FKKwpTnQ0X65WijX8DL7UiEEBpLoH
+        wF7K8/1ExgPI+aJmjhIEhtWstXMZxFFTjw==
+X-Google-Smtp-Source: ABdhPJxgeeKzV24ixXf9JYp2zsJRzypzmXupGaYVBzvq/fdI4ABWt6mIW00iEWmd4Fx62kCDDdfGlA==
+X-Received: by 2002:a17:90a:c8b:: with SMTP id v11mr6156547pja.114.1625666874912;
+        Wed, 07 Jul 2021 07:07:54 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id e16sm13187404pgl.54.2021.07.07.07.07.54
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jul 2021 07:07:54 -0700 (PDT)
+Date:   Wed, 7 Jul 2021 07:07:52 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 213669] New: PMTU dicovery not working for IPsec
+Message-ID: <20210707070752.47946d92@hermes.local>
 MIME-Version: 1.0
-In-Reply-To: <cover.1625665132.git.vvs@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When TEE target mirrors traffic to another interface, sk_buff may
-not have enough headroom to be processed correctly.
-ip_finish_output2() detect this situation for ipv4 and allocates
-new skb with enogh headroom. However ipv6 lacks this logic in
-ip_finish_output2 and it leads to skb_under_panic:
 
- skbuff: skb_under_panic: text:ffffffffc0866ad4 len:96 put:24
- head:ffff97be85e31800 data:ffff97be85e317f8 tail:0x58 end:0xc0 dev:gre0
- ------------[ cut here ]------------
- kernel BUG at net/core/skbuff.c:110!
- invalid opcode: 0000 [#1] SMP PTI
- CPU: 2 PID: 393 Comm: kworker/2:2 Tainted: G           OE     5.13.0 #13
- Hardware name: Virtuozzo KVM, BIOS 1.11.0-2.vz7.4 04/01/2014
- Workqueue: ipv6_addrconf addrconf_dad_work
- RIP: 0010:skb_panic+0x48/0x4a
- Call Trace:
-  skb_push.cold.111+0x10/0x10
-  ipgre_header+0x24/0xf0 [ip_gre]
-  neigh_connected_output+0xae/0xf0
-  ip6_finish_output2+0x1a8/0x5a0
-  ip6_output+0x5c/0x110
-  nf_dup_ipv6+0x158/0x1000 [nf_dup_ipv6]
-  tee_tg6+0x2e/0x40 [xt_TEE]
-  ip6t_do_table+0x294/0x470 [ip6_tables]
-  nf_hook_slow+0x44/0xc0
-  nf_hook.constprop.34+0x72/0xe0
-  ndisc_send_skb+0x20d/0x2e0
-  ndisc_send_ns+0xd1/0x210
-  addrconf_dad_work+0x3c8/0x540
-  process_one_work+0x1d1/0x370
-  worker_thread+0x30/0x390
-  kthread+0x116/0x130
-  ret_from_fork+0x22/0x30
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/ipv6/ip6_output.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+Begin forwarded message:
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9eb..e5af740 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -61,9 +61,24 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net_device *dev = dst->dev;
- 	const struct in6_addr *nexthop;
-+	unsigned int hh_len = LL_RESERVED_SPACE(dev);
- 	struct neighbour *neigh;
- 	int ret;
- 
-+	/* Be paranoid, rather than too clever. */
-+	if (unlikely(skb_headroom(skb) < hh_len && dev->header_ops)) {
-+		struct sk_buff *skb2;
-+
-+		skb2 = skb_realloc_headroom(skb, LL_RESERVED_SPACE(dev));
-+		if (!skb2) {
-+			kfree_skb(skb);
-+			return -ENOMEM;
-+		}
-+		if (skb->sk)
-+			skb_set_owner_w(skb2, skb->sk);
-+		consume_skb(skb);
-+		skb = skb2;
-+	}
- 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
- 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
- 
--- 
-1.8.3.1
+Date: Wed, 07 Jul 2021 09:08:07 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 213669] New: PMTU dicovery not working for IPsec
 
+
+https://bugzilla.kernel.org/show_bug.cgi?id=3D213669
+
+            Bug ID: 213669
+           Summary: PMTU dicovery not working for IPsec
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.12.13
+          Hardware: x86-64
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: high
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: marek.gresko@protonmail.com
+        Regression: No
+
+Hello,
+
+I have two sites interconnected using ipsec (libreswan)
+
+the situation is as follows:
+
+X <=3D> (a) <=3D> (Internet) <=3D> (b) <=3D> Y
+
+So you have two gateways a and b connected to the internet and their
+corresponding internal subnets X and Y. The gateway a is connected to the
+provider p using pppoe. The ipsec tunnel is created between a and b to
+interconnect subnets X and Y. When gateway b with internal address y itself=
+ is
+communication to the gateway a using its internal address x. Addresses x an=
+d y
+are defined by leftsourceif and rightsourceip in the libreswan configuratio=
+n,
+you get this behavior:
+
+b# ping -M do x -s 1392 -c 1
+PING x (x.x.x.x) 1392(1420) bytes of data.
+
+--- ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+b# ping -M do a -s 1460 -c 3
+PING a (a.a.a.a) 1460(1488) bytes of data.
+=46rom p (p.p.p.p) icmp_seq=3D1 Frag needed and DF set (mtu =3D 1480)
+ping: local error: message too long, mtu=3D1480
+ping: local error: message too long, mtu=3D1480
+
+--- ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2014ms
+
+b# ping -M do x -s 1392 -c 3
+PING x (x.x.x.x) 1392(1420) bytes of data.
+ping: local error: message too long, mtu=3D1418
+ping: local error: message too long, mtu=3D1418
+ping: local error: message too long, mtu=3D1418
+
+--- ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2046ms
+
+
+Legend:
+x.x.x.x is an inner ip address if the gateway (a) (or x from the inside).
+a.a.a.a is an outer address of the gateway (a).
+p.p.p.p is some address in the provider's network of the (a) side.
+
+So definitely the ipsec tunnel is aware of the mtu only when some outer
+communication is in progress. The inner communication itself is not aware of
+icmp packets using for PMTU discovery. I had also a situation when also the
+outer pings did not help the ipsec to be aware of the MTU and after reboot =
+it
+started to behave like discribed again.
+
+Did I describe it understandably or should I clarify things?
+
+Thanks
+
+Marek
+
+--=20
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
