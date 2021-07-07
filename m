@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 223F93BE479
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 10:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8183BE4BD
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 10:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbhGGIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 04:36:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34290 "EHLO
+        id S231259AbhGGIzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 04:55:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26497 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230109AbhGGIgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 04:36:16 -0400
+        by vger.kernel.org with ESMTP id S230495AbhGGIzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 04:55:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625646815;
+        s=mimecast20190719; t=1625647984;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gsCgBjZOBNs8GkUNl/mNs2MJS9/AFWcuZUWnlsWxVR0=;
-        b=C6QgBlCyZUUpelWGhLrAdj0BZ/7N9vSBzNf8vgYT00N8UtnelS2fL0qj2PkwCpF0gxN/jo
-        zyXrNkMxaAYDymCkzmcerEhOMmuW6Ck/G93tWrdka1pgOu+PzxqIdvco7BAZaD2N1uSTm5
-        4vKYQ+Xq98O3P5GEM9zPyHmqWrH1Hnc=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-531-Vyof4_7NMwGm3fArqWxeYw-1; Wed, 07 Jul 2021 04:33:34 -0400
-X-MC-Unique: Vyof4_7NMwGm3fArqWxeYw-1
-Received: by mail-io1-f72.google.com with SMTP id d9-20020a0566023289b02904f58bb90366so1150261ioz.14
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 01:33:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gsCgBjZOBNs8GkUNl/mNs2MJS9/AFWcuZUWnlsWxVR0=;
-        b=CTTl8FmZYmF5fL6IYl4l0eAfCe5brfWQhbDQtUfzin0J518yKoqRvq5XHY4Pb9xszu
-         IrDRCCrkPcRaFr3woAaA0uAyTocyAsYnMAn21NvefiXT7NGgIW3Y2svcYUsNC0mdUeNs
-         IQ3EhUFCzVUdBfJqxrWRxDSCUwJV0/Dxh1GYcqEO6rdAviTs6nas8r4lhbEaEN3APzk7
-         Ulgo4u/9QFNQIVQaOQKhuvjtIGlLZxriAkV/uk9V0H2q54V2LuYhFbdoAtqNWS+qpH6W
-         Y7ws6o0c5MveYM/XphRsbggHeOCA83DKS2ICmdcuwU4zFS+pzGC9roPLjqDK/RcCMn/n
-         4shg==
-X-Gm-Message-State: AOAM532tAtIQrqSmBHDRHIe/kWHlbdy75eHiHTrlh44f+R14qvSEAD/O
-        VpWndPJrXdK/rV6/S08TGGZLRDUarpU8PQsa3ZTnl2wolATcaqDL1oGH8ZpaFtFIYGKfZzex8gf
-        vGVGWomuRl8KY5pI9vuZCpzjxph+vS9TD
-X-Received: by 2002:a05:6e02:921:: with SMTP id o1mr18424295ilt.57.1625646813915;
-        Wed, 07 Jul 2021 01:33:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjADIFFE8x66m44Qg1NdRzaMJgQ7eb1Hz+C+bh0cFgtAJbVgNwE4FSxW0Kh29twnqMKUFm/lNIaXceqGkzzWQ=
-X-Received: by 2002:a05:6e02:921:: with SMTP id o1mr18424282ilt.57.1625646813772;
- Wed, 07 Jul 2021 01:33:33 -0700 (PDT)
+        bh=RSGta0qNpB6QcJ/llRMjKtAhvAPIvAnC+iGh3rJx/qg=;
+        b=hJtnXPMJIcE5o8NZgK0nnNYUwrB/6eLhIX1CQcKNw/EZqNPt4cXqHG8in8yY7OfXwdXMBD
+        EFxLHaFVFpjcbkSXbtajKDTSiRScTnwz4QbCpTZiB2IlygToNIGPMsyN7ChEM7ITdTNSGy
+        r1dwppbklqiEsBN/O6dKbYXg1Yvoo4w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-68-v1nUrO-5Ov24IW-5AspE9w-1; Wed, 07 Jul 2021 04:53:03 -0400
+X-MC-Unique: v1nUrO-5Ov24IW-5AspE9w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4831F1800D41;
+        Wed,  7 Jul 2021 08:53:00 +0000 (UTC)
+Received: from localhost (ovpn-114-152.ams2.redhat.com [10.36.114.152])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A3E7719C44;
+        Wed,  7 Jul 2021 08:52:55 +0000 (UTC)
+Date:   Wed, 7 Jul 2021 09:52:54 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        dan.carpenter@oracle.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+Message-ID: <YOVrZtGIEjZZSSoU@stefanha-x1.localdomain>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-10-xieyongji@bytedance.com>
 MIME-Version: 1.0
-References: <202107070458.FO35EqwU-lkp@intel.com>
-In-Reply-To: <202107070458.FO35EqwU-lkp@intel.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Wed, 7 Jul 2021 10:33:22 +0200
-Message-ID: <CACT4ouf-v+G7oCAFRqZWYQUqs8o1GdSKRbqJwjjP_cNuPFKvgA@mail.gmail.com>
-Subject: Re: drivers/net/ethernet/chelsio/cxgb4/sge.c:2571 cxgb4_ethofld_send_flowc()
- warn: missing error code 'ret'
-To:     Dan Carpenter <dan.carpenter@oracle.com>, rajur@chelsio.com
-Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="FCq4Eu07/ej1hAmI"
+Content-Disposition: inline
+In-Reply-To: <20210615141331.407-10-xieyongji@bytedance.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 9:37 AM Dan Carpenter <dan.carpenter@oracle.com> wro=
-te:
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2564     if (tc !=3D FW_SC=
-HED_CLS_NONE) {
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2565             if (eosw_=
-txq->state !=3D CXGB4_EO_STATE_CLOSED)
-> 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05  2566            =
-         goto out_free_skb;
->                                                                         ^=
-^^^^^^^^^^^^^^^^
->
-> Are these error paths?
->
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2567
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2568             next_stat=
-e =3D CXGB4_EO_STATE_FLOWC_OPEN_SEND;
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2569     } else {
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2570             if (eosw_=
-txq->state !=3D CXGB4_EO_STATE_ACTIVE)
-> 52bfcdd87e83d9 =C3=8D=C3=B1igo Huguet        2021-05-05 @2571            =
-         goto out_free_skb;
->
-> Here too
->
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2572
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2573             next_stat=
-e =3D CXGB4_EO_STATE_FLOWC_CLOSE_SEND;
-> 0e395b3cb1fb82 Rahul Lakkireddy    2019-11-07  2574     }
 
-I'm not really sure, I just added the skb release in the exit path to
-fix a memory leak.
+--FCq4Eu07/ej1hAmI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I think it might not be an error path in this case, maybe just no
-actions must be done in this specific cases. CCing Raju Rangoju from
-Chelsio to see if he can confirm.
+On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
+> +static bool vduse_validate_config(struct vduse_dev_config *config)
+> +{
 
---=20
-=C3=8D=C3=B1igo Huguet
+The name field needs to be NUL terminated?
+
+> +	case VDUSE_CREATE_DEV: {
+> +		struct vduse_dev_config config;
+> +		unsigned long size = offsetof(struct vduse_dev_config, config);
+> +		void *buf;
+> +
+> +		ret = -EFAULT;
+> +		if (copy_from_user(&config, argp, size))
+> +			break;
+> +
+> +		ret = -EINVAL;
+> +		if (vduse_validate_config(&config) == false)
+> +			break;
+> +
+> +		buf = vmemdup_user(argp + size, config.config_size);
+> +		if (IS_ERR(buf)) {
+> +			ret = PTR_ERR(buf);
+> +			break;
+> +		}
+> +		ret = vduse_create_dev(&config, buf, control->api_version);
+> +		break;
+> +	}
+> +	case VDUSE_DESTROY_DEV: {
+> +		char name[VDUSE_NAME_MAX];
+> +
+> +		ret = -EFAULT;
+> +		if (copy_from_user(name, argp, VDUSE_NAME_MAX))
+> +			break;
+
+Is this missing a NUL terminator?
+
+--FCq4Eu07/ej1hAmI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDla2YACgkQnKSrs4Gr
+c8iwDwgAklDinwoNdcTKlrJAeuzd7lkg6g0pp6GgPOoSoPbIEzizyjezLIi98oHV
+vF5TkSJ9SmhwrTkrfniJQf7czNd+oWvB/PeLW+YOTNYnHkS4AlS4z4/Z48sAiees
+bjx0y6rK8AKEd1d2F5lOEbHr1hyPAEuA5j1trgrHzaUhKLKiRfCYQI0mJIaWYUTT
+5AJ6lKidGWNOayzU4/GQ+PfEPahMie3/T2g+ivR4j0E6YLNvJs7CFFerZYRNGLXQ
+D5MqzXxvgHF75J7QuXmOOYTRhRMzWoYI4K6EfwzZJHWIJrBhVeXogKJ0Z4tnp82W
+f66VauRbMPZNCJ5g0gXGzczBzlXh0A==
+=aR1n
+-----END PGP SIGNATURE-----
+
+--FCq4Eu07/ej1hAmI--
 
