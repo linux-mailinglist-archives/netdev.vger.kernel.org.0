@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E9C3BE701
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC21A3BE704
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 13:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231371AbhGGLZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 07:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        id S231415AbhGGL0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 07:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbhGGLZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:25:51 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE88C061574;
-        Wed,  7 Jul 2021 04:23:11 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id d12so2018482wre.13;
-        Wed, 07 Jul 2021 04:23:11 -0700 (PDT)
+        with ESMTP id S231321AbhGGL0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 07:26:09 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B4BC061760
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 04:23:29 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id x24so1695250qts.11
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 04:23:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gL5cUtdK5EGXi3fNGr0vY1hkj2DgJe4bNJxdsRkWjQI=;
-        b=pu005n7D9Hzp0ESMBU4UbTTUrbwJdrFNObu8W61tGdzJ8i+mhD9n9yhtQ8v6Zy2jce
-         AtFLI7Q0FGIB7auttSYxyvyYxwhK3nMBRiLXJ9CGdL4LKiPhJgdhqiIwf/nsC82Uz4Om
-         T81QcOgWUG7aVGq9nH+Nth1sXqtpYRlApanG2XsrxGrikO31V6SQsjMmoPT4SK7rUfCX
-         NhfzVX2GryNT8+LdqB3cc5PNjbBvz3QRYvCFF89LDEzA+WEau7MK1pVenLI03j/VY79g
-         jaqzmHJveX7tFsL2pnP0/fNecw+x6+lBtY9xsCxkgsCSuPdu4FflL3cyX7QrcmhmPXe/
-         UmNw==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=oprwMzod/6MUSDVVxVpcrq6F+k0HVSo1xTGIJxIoykE=;
+        b=DqW2cyZZIwZJ4L09491xinpuYZsp77ByyyyDW9DcccwdjOGPS2lSp4XwQTQw+10Biz
+         AmxuEZwOgXapFupyUCTp2Zcr6tKGoYXYJHaiTYdw2TDxiIPERZ5BVvP19Kt++JVxvQiF
+         NzFcee/8Vj4utri6qM1gZ03rKXDBski973YNremOlItHKXtvFEg6jHBOt0OqF34rN4YX
+         HHfnVYmtTSh5Mp6/zh/85oOZjpuPbrktYEuf6gLfG08/dBplI2ePq4mb+ZoKXrYHK75U
+         Ghb6TiFlB9yfud0zbPzBVLtA93WnICYt+Hdhrr5u7UpjYsKgl/RT4tiJRQdVkpAzePaK
+         fEcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gL5cUtdK5EGXi3fNGr0vY1hkj2DgJe4bNJxdsRkWjQI=;
-        b=kdRbRTVWcqVSGuqp+IcYN4ckuCuHuJuO+UqauUhbrZK9Z+Mm9smFWTvqR8YZ9CQSKM
-         PAKoYbL249ho+Z60c4VDcF8qKLRpyKudjIx1I6/yG5DvkTCKYB4aGPliarNg8BxCpttY
-         /gG+uuVwlkxBgl/ZZMGxjv0E5HsPqez/zlMtSFgkfrMHqXLWyIRu60GkpbYzIShJ2bUI
-         vPnYKteTuGfbzs80m4+fEN79o8ZZUlyanyny0o74tuzAjlFb3QhMmhcFNMY7WIgU0upT
-         4c8QZTee+OdJbHFNhrCVayyAVfqecaYAtaUWceIgaeIqUXXSoeF7LOmbtpWTsRdsR7Sl
-         Fexg==
-X-Gm-Message-State: AOAM530R4irClYqJOBuQsb43fPADxbxG295r03tMWjjyCT4TSeHeVNaM
-        VCv+QxbXyD+Nz60gFA5o6j1uFCOaWHsTbQ==
-X-Google-Smtp-Source: ABdhPJyI5fd9lLZ2Wv5DFMZCxe3Cw4BYc40SBq+RDenkiFtVt/eZPSf+7VxhuoNqOk39HOKV9BzYQg==
-X-Received: by 2002:a5d:6a0b:: with SMTP id m11mr27381626wru.240.1625656989856;
-        Wed, 07 Jul 2021 04:23:09 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id z7sm5947120wmi.1.2021.07.07.04.23.08
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=oprwMzod/6MUSDVVxVpcrq6F+k0HVSo1xTGIJxIoykE=;
+        b=AQcr7pjbvx4WDKNxIwGxlTCv6dPOqHvnR9tOPZCs9tP7AT6XQ+YlZ3kf993qq5uoxD
+         BIPrcH3JZ8gE5GDVTxcDAFd+d9/oMHKc7GxZjzsOpEUJiDsqpwbKNDfgO7MtiXn2qLE0
+         +QBuS/CudtVJoykCp9i1iYnswtGDIZtyO/yLs1t6cexBBYqJKdbHYrrdWeltrJrzA1Fr
+         QdUpEcsdjig1VQf2WeUL10uTKbcDQCDyrUbz0WLU1JMUUwU0Vni2JSDwJy1yzHgAJ07u
+         p46eu3BM0saVwiVJetR+zqIKg3D476JYIu78HG1SYR68QLb0LPIwoZ5Qpr2m6RaGzS+1
+         sfUg==
+X-Gm-Message-State: AOAM5333hirmFR8P00b1S9HFIGY7zgXazWlnnxBFj1xR+wJDRFaEJmCT
+        /DIw4RbIREvOxdv/QZYyYw+XBA==
+X-Google-Smtp-Source: ABdhPJwGP0B7Jf4MSIvu3GKIZZEa50D7QRKZQ/AYy072z0n8z5dus4W4ssxepN+HHM/4Mm3C6f8myA==
+X-Received: by 2002:ac8:775c:: with SMTP id g28mr9059154qtu.193.1625657008528;
+        Wed, 07 Jul 2021 04:23:28 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id 3sm2353797qtz.5.2021.07.07.04.23.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Jul 2021 04:23:09 -0700 (PDT)
-Subject: Re: [PATCH 1/3] sfc: revert "reduce the number of requested xdp ev
- queues"
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ivan@cloudflare.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210707081642.95365-1-ihuguet@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
-Date:   Wed, 7 Jul 2021 12:23:08 +0100
+        Wed, 07 Jul 2021 04:23:28 -0700 (PDT)
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, lartc@vger.kernel.org
+Cc:     lwn@lwn.net
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: Netdevconf 0x15 update
+Message-ID: <7892184b-c981-d5d1-0664-e64844b39686@mojatatu.com>
+Date:   Wed, 7 Jul 2021 07:23:23 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210707081642.95365-1-ihuguet@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/07/2021 09:16, Íñigo Huguet wrote:
-> The problem is that the TX queues are also contained inside the channel
-> structs, and there are only 4 queues per channel. Reducing the number of
-> channels means also reducing the number of queues, resulting in not
-> having the desired number of 1 queue per CPU.
-> 
-> This leads to getting errors on XDP_TX and XDP_REDIRECT if they're
-> executed from a high numbered CPU, because there only exist queues for
-> the low half of CPUs, actually.
+Folks,
+Reminder that the virtual conference starts today with a keynote
+at 3PM UTC.
 
-Should we then be using min(tx_per_ev, EFX_MAX_TXQ_PER_CHANNEL) in the
- DIV_ROUND_UP?
-And on line 184 probably we need to set efx->xdp_tx_per_channel to the
- same thing, rather than blindly to EFX_MAX_TXQ_PER_CHANNEL as at
- present — I suspect the issue you mention in patch #2 stemmed from
- that.
-Note that if we are in fact hitting this limitation (i.e. if
- tx_per_ev > EFX_MAX_TXQ_PER_CHANNEL), we could readily increase
- EFX_MAX_TXQ_PER_CHANNEL at the cost of a little host memory, enabling
- us to make more efficient use of our EVQs and thus retain XDP TX
- support up to a higher number of CPUs.
+A lot of great content, see:
+https://netdevconf.info/0x15/accepted-sessions.html
+Registration is reel cheep at USD $50 (50% for students).
 
--ed
+The conference will be spread over the next 2+ weeks
+(Upto and including July 23). See schedule (and registration)
+here:
+https://netdevconf.info/0x15/virtual.html
+We never close registration - and this time to
+accommodate for the different timezones we are going
+to keep all the session recordings on site. So if you
+missed a session because of a conflict or because it was
+running when it is late in your location, as long as you
+are registered,  you can login and replay the session.
+As usual we will make all session videos, slides and papers
+public after the conference.
+
+cheers,
+jamal
