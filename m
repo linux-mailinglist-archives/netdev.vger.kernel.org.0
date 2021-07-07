@@ -2,109 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B08273BE56E
-	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 11:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4055A3BE572
+	for <lists+netdev@lfdr.de>; Wed,  7 Jul 2021 11:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231281AbhGGJUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 05:20:51 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:53930 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbhGGJUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 05:20:50 -0400
-Received: from netfilter.org (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 29B716165A;
-        Wed,  7 Jul 2021 11:17:58 +0200 (CEST)
-Date:   Wed, 7 Jul 2021 11:18:07 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     iLifetruth <yixiaonn@gmail.com>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qiang Liu <cyruscyliu@gmail.com>, yajin@vm-kernel.org
-Subject: Re: netfilter: Use netlink_ns_capable to verify the permisions of
- netlink messages
-Message-ID: <20210707091807.GA16039@salvia>
-References: <CABv53a97_5iaAdOcoVdQDxNyyTxgXHx=mHm0Sfo4UJVLHoxosg@mail.gmail.com>
+        id S231356AbhGGJW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 05:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231193AbhGGJW1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 05:22:27 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA6EC061760
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 02:19:47 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id hc16so2142400ejc.12
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 02:19:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ntF5ShiMpxZzH3NgDCu0lj/qLit/wsTznB+iv/n6Jts=;
+        b=EkUktZhVW6Hw0D3CwFrVu6SPtBCLkJYy2M7BJM1xaa8T71w3Am8UIGnGLzZ7sZjGBy
+         oJPZFOsWMkQsg1Eor8GYHzrS0gvtg/qEnI+kjIYCFKEPoLzQIQX6UgYFrffMXB7uW8ud
+         DAJeTUNRxqnYoE0JTnNDRQ4iWBS+hwKVMh6CzB8D/Nd7MUwmVBFXb/1DGoN5IcQxOlxA
+         XEcMYCGgJ6/e1b9/F4uGKBE66Lafq27VxOH+bGLgnrQlIyePfFxmfVAzA2OsUgePTZRJ
+         T3ukDS1lDG6sIQr7dau/XyarH0KZbl27sp8FmAm/INCn+Zavbu6Ds2cG23H+ZLiJNIkK
+         nv1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ntF5ShiMpxZzH3NgDCu0lj/qLit/wsTznB+iv/n6Jts=;
+        b=ObOxWSWZjWRsv68O8mspSiPKuCc/6Gh+jvPW+1nYQuxWxNSDLOcU987KDmE3JcY/yk
+         O6PezjDSVm2cJtCRRgQ5gH7Vp0kNpEqLTyZSykGH/fsAYFPmTPMNzOTNYdF67SYq6SEP
+         /pzSaVJCE4MNvCOYXyoq8yVttx2FRyMAeE7RYUTY24ORJIUz/PgBk9EFL5htGS/e9u+D
+         79UT7+Bax3vnF6eMwNt8QmXTnIybyBzt+RYocoHQljUETKDcHc/KLO6k4W4axW2u6UAP
+         sfEKV0czbQ8WjCv88zTwhGt9w5K5gla/mVsqC3hyslnpIO7UATQSSsJMIcaV6+PRnTl9
+         Kfpg==
+X-Gm-Message-State: AOAM531D39XQqoAnaAJAGnH3HvW7q/3UcDPRyZKy2vS0fHM+FFliUuqC
+        F8PCP3VlOGM2owaRDsORiBn6SUW05lN5mLSuk8P/
+X-Google-Smtp-Source: ABdhPJwfUSLvIX93bY45nGlunKheveZx2mGwfBnicH+p8nMulhsjVrxLC9+PoE5I/qwuA5U0XX93SwRw5wHXZDNyzBo=
+X-Received: by 2002:a17:906:cb93:: with SMTP id mf19mr20870738ejb.427.1625649585892;
+ Wed, 07 Jul 2021 02:19:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CABv53a97_5iaAdOcoVdQDxNyyTxgXHx=mHm0Sfo4UJVLHoxosg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210615141331.407-1-xieyongji@bytedance.com> <20210615141331.407-10-xieyongji@bytedance.com>
+ <YOVrZtGIEjZZSSoU@stefanha-x1.localdomain>
+In-Reply-To: <YOVrZtGIEjZZSSoU@stefanha-x1.localdomain>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 7 Jul 2021 17:19:35 +0800
+Message-ID: <CACycT3tvvMpsjmJGhY5duNCXt5YyyWqQ2MpxRuMKQwmtpgF0Aw@mail.gmail.com>
+Subject: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>, songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 04:05:33PM +0800, iLifetruth wrote:
-> Hi, we have found that the same fix pattern of CVE-2014-0181 may not
-> forward ported to some netlink-related places in the latest linux
-> kernel(v5.13)
-> 
-> =============
-> Here is the description of CVE-2014-0181:
-> 
-> The Netlink implementation in the Linux kernel through 3.14.1 does not
-> provide a mechanism for authorizing socket operations based on the opener
-> of a socket, which allows local users to bypass intended access
-> restrictions and modify network configurations by using a Netlink socket
-> for the (1) stdout or (2) stderr of a setuid program.
-> 
-> ==========
-> And here is the solution to CVE-2014-0181:
-> 
-> To keep this from happening, replace bare capable and ns_capable calls with
-> netlink_capable, netlink_net_calls and netlink_ns_capable calls. Which act
-> the same as the previous calls *except they verify that the opener of the
-> socket had the desired permissions as well.*
-> 
-> ==========
-> The upstream patch commit of this vulnerability described in CVE-2014-0181
-> is:
->     90f62cf30a78721641e08737bda787552428061e (committed about 7 years ago)
-> 
-> =========
-> Capable() checks were added to these netlink-related places listed below
-> in netfilter by another upstream commit:
-> 4b380c42f7d00a395feede754f0bc2292eebe6e5(committed about 4 years ago)
-> 
-> In kernel v5.13:
->     File_1: linux/net/netfilter/nfnetlink_cthelper.c
->                        in line 424, line 623 and line 691
->     File_2: linux/net/netfilter/nfnetlink_osf.c
->                        in line 305 and line 351
+On Wed, Jul 7, 2021 at 4:53 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+>
+> On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
+> > +static bool vduse_validate_config(struct vduse_dev_config *config)
+> > +{
+>
+> The name field needs to be NUL terminated?
+>
 
-These subsystems depend on nfnetlink.
+I think so.
 
-nfnetlink_rcv() is called before passing the message to the
-corresponding backend, e.g. nfnetlink_osf.
+> > +     case VDUSE_CREATE_DEV: {
+> > +             struct vduse_dev_config config;
+> > +             unsigned long size = offsetof(struct vduse_dev_config, config);
+> > +             void *buf;
+> > +
+> > +             ret = -EFAULT;
+> > +             if (copy_from_user(&config, argp, size))
+> > +                     break;
+> > +
+> > +             ret = -EINVAL;
+> > +             if (vduse_validate_config(&config) == false)
+> > +                     break;
+> > +
+> > +             buf = vmemdup_user(argp + size, config.config_size);
+> > +             if (IS_ERR(buf)) {
+> > +                     ret = PTR_ERR(buf);
+> > +                     break;
+> > +             }
+> > +             ret = vduse_create_dev(&config, buf, control->api_version);
+> > +             break;
+> > +     }
+> > +     case VDUSE_DESTROY_DEV: {
+> > +             char name[VDUSE_NAME_MAX];
+> > +
+> > +             ret = -EFAULT;
+> > +             if (copy_from_user(name, argp, VDUSE_NAME_MAX))
+> > +                     break;
+>
+> Is this missing a NUL terminator?
 
-static void nfnetlink_rcv(struct sk_buff *skb)
-{
-        struct nlmsghdr *nlh = nlmsg_hdr(skb);
+Oh, yes. Looks like I need to set '\0' to name[VDUSE_VDUSE_NAME_MAX - 1] here.
 
-        if (skb->len < NLMSG_HDRLEN ||
-            nlh->nlmsg_len < NLMSG_HDRLEN ||
-            skb->len < nlh->nlmsg_len)
-                return;
-
-        if (!netlink_net_capable(skb, CAP_NET_ADMIN)) {
-                netlink_ack(skb, nlh, -EPERM, NULL);
-                return;
-        }
-        [...]
-
-which is calling netlink_net_capable().
-
-> But these checkers are still using bare capable instead of netlink_capable
-> calls. So this is likely to trigger the vulnerability described in the
-> CVE-2014-0181 without checking the desired permissions of the socket
-> opener. Now, shall we forward port the fix pattern from the patch of
-> CVE-2014-0181?
-> 
-> We would like to contact you to confirm this problem.
-
-I think these capable() calls in nfnetlink_cthelper and nfnetlink_osf
-are dead code that can be removed. As I explained these subsystems
-stay behind nfnetlink.
+Thanks,
+Yongji
