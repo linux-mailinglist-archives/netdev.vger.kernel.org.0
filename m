@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9438F3BF9E8
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A68B63BFA0F
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230396AbhGHMRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 08:17:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24248 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229795AbhGHMRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 08:17:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625746465;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I55zh2XXZG4Wh8FdZlPVvOlalnJqCExFPnbC3bw2voU=;
-        b=gCVKbwkFuXcZSDFBztb01rBSN1REjjsuGxaY81Op7Z1dGYrx8CYJnlqn8LUo+Tz5n7rNtj
-        T6Qhg6yY5w5wJtrPuSRvm5I6i6AhnPg85Dz8vMqYoXdXObPQHwfKwyHRPl8qN5TBXYBcCo
-        SG6qeug/PXMrchqNNhSsjxyEgqH47NI=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-350-FCh7NyBVM4Ck-ouEcB2Zyg-1; Thu, 08 Jul 2021 08:14:24 -0400
-X-MC-Unique: FCh7NyBVM4Ck-ouEcB2Zyg-1
-Received: by mail-il1-f199.google.com with SMTP id g16-20020a92c7d00000b02901fedf02bce4so3456154ilk.15
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 05:14:24 -0700 (PDT)
+        id S230495AbhGHM30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 08:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229659AbhGHM3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 08:29:25 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFC1C061574;
+        Thu,  8 Jul 2021 05:26:42 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id b14-20020a1c1b0e0000b02901fc3a62af78so6567666wmb.3;
+        Thu, 08 Jul 2021 05:26:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2BNe9rKXhY8MmWQX67o+G5gKAgLO+47b5LDxS9l4Meo=;
+        b=olyx2nDd+kC70burfasIdtGB3O5hE3fqw3l3Tg1BcdWGpI9BUvAtoUbHTyhixSBrDa
+         AHRa6CVMvdm+ROYzQeDNeLYkhb56HPeQ2tIS++yJ09jLKmJ+flmSbe7mEQnltNhX5MdR
+         rlv+/L0RUYPRYX9zJVHvW0Iv/GHXqCqwwFNNyEOnVLjDo+dK2vajysrfs6cTlJy52fhv
+         B0aKfjBKwtPtt5O1fMqDB/Z94RciRu7xqrHvMS3YzVtF266lmppQbGNZ9x/ZQHSPE87X
+         H7Of6CkYFdKyHoDwxLdCkrHSvt6Dq0Q1XvLmp993Ynb5QBAgnKMpIp5mSf/iyTsSGG9f
+         jzQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=I55zh2XXZG4Wh8FdZlPVvOlalnJqCExFPnbC3bw2voU=;
-        b=H4krfl+/o+xRRbyCzbAI+ezUVkj5hzjx+/Iu1/4Os5BJAW6vijyaj7tm5URWCSiUKh
-         J0/RytlIEhtTznlEpf8fhJhy3ERAxlSDnGnP1Hrlk6lMAwA73agL4L+y+lKdmN0l8kHa
-         UUc1B27Udx3AgLQTbM6R++svEnPk30T8VtrXFuzxpTeZi3CI3cx3RhmHAsv9urzqpOfu
-         7vn0gIpV4PcLG8J06dR4qbVK3QXIbOvHegaalUBGfgSpcg597yJ07OyLZiuq9hMxony+
-         wBitjpXx0UhUw6ys9uoobr2LG+wpW9Ye8OzPH8abfzjG0e0cImtCea0j+YwzCvBawmVf
-         KbHA==
-X-Gm-Message-State: AOAM533L5yBVCv/ORVPw5fZWP31VJ+g2PE5+vVkgLl5MQXAJL59ZJwJV
-        tJmtBiLzK7IRdW8bKtS4GN8Gv7dDDZqD5WQzIWqUjJxffi/fbfNMIsXXCT81ixyet1ltX6xuR2R
-        ReB5uY2KBLOx255fS3M44FlTzxqeitllU
-X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr26426568jav.94.1625746464045;
-        Thu, 08 Jul 2021 05:14:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy2Ybl/++F5bCkFRwxr1Df16nASMIT1l9l7RKaCM5kiK/gmVXr2wTAan2c6EykGJnA7ffNMJC1G/s1frAEY8uU=
-X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr26426536jav.94.1625746463835;
- Thu, 08 Jul 2021 05:14:23 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2BNe9rKXhY8MmWQX67o+G5gKAgLO+47b5LDxS9l4Meo=;
+        b=PHOa6KwMK8WcoJZFz8+Ieg5XMl1FSCGg3hIm1sgE0xQwv2+/S0NeO92xfaNtnoz6gU
+         MjcZCtlpFaeMbFsaJVN/YBs0RHvkF9wQasyia9UWTIOlN/wv41q/o0CCr3IGd6JbWMR/
+         RgiKSkTI3TONBaVKIIMqzh9+nrn7YGXfSu4cOfNOGkjnirPUuRIV/vyLyeL9oeCFdds3
+         cFoADrLnmZuC6023dpaL0EBzaTU1/PidfZVlzlyYEqOIIfdw6vJLm5cG4iIJz4tHgisx
+         Oq716bZ02TUfULcjTe1SqmUcjyuSoQIAStHKHe2G8YQk2sxZazKIchL253BS1bPkelUi
+         VSPg==
+X-Gm-Message-State: AOAM530xbdIq5sRQ+hAWCRI9frRP7IGGU9/PCUweLCRPDgYaX/h8ozVW
+        YDIMcRnIeJMN8Sl84lu6FjKG18IHsTg=
+X-Google-Smtp-Source: ABdhPJwqC/SZxrVdpL1dHpgkIsCDB6Ln1sdmIBorf2K9D6i2ebpS/Hh2T8uSDkVEftaMB12GuV2Yug==
+X-Received: by 2002:a05:600c:224a:: with SMTP id a10mr5073252wmm.7.1625747201217;
+        Thu, 08 Jul 2021 05:26:41 -0700 (PDT)
+Received: from [10.0.0.3] ([37.165.6.154])
+        by smtp.gmail.com with ESMTPSA id s1sm9105516wmj.8.2021.07.08.05.26.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Jul 2021 05:26:40 -0700 (PDT)
+Subject: Re: [PATCH v2] net: rtnetlink: Fix rtnl_dereference may be return
+ NULL
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Yajun Deng <yajun.deng@linux.dev>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ryazanov.s.a@gmail.com" <ryazanov.s.a@gmail.com>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "cong.wang@bytedance.com" <cong.wang@bytedance.com>,
+        "roopa@cumulusnetworks.com" <roopa@cumulusnetworks.com>,
+        "zhudi21@huawei.com" <zhudi21@huawei.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210708092936.20044-1-yajun.deng@linux.dev>
+ <3c160d187382677abe40606a6a88ddac0809c328.camel@sipsolutions.net>
+ <20210708111118.kti4jprkz7bus62g@skbuf>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7e11f410-9a97-c7d8-ee6a-fa776a4d1f0e@gmail.com>
+Date:   Thu, 8 Jul 2021 14:26:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210707081642.95365-1-ihuguet@redhat.com> <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
- <CACT4oudw=usQQNO0dL=xhJw9TN+9V3o=TsKGvGh7extu+JWCqA@mail.gmail.com> <20210707130140.rgbbhvboozzvfoe3@gmail.com>
-In-Reply-To: <20210707130140.rgbbhvboozzvfoe3@gmail.com>
-From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
-Date:   Thu, 8 Jul 2021 14:14:13 +0200
-Message-ID: <CACT4oud6R3tPFpGuiyNM9kjV5kXqzRcg8J_exv-2MaHWLPm-sA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] sfc: revert "reduce the number of requested xdp ev queues"
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ivan@cloudflare.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210708111118.kti4jprkz7bus62g@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 3:01 PM Martin Habets <habetsm.xilinx@gmail.com> wro=
-te:
-> > Another question I have, thinking about the long term solution: would
-> > it be a problem to use the standard TX queues for XDP_TX/REDIRECT? At
-> > least in the case that we're hitting the resources limits, I think
-> > that they could be enqueued to these queues. I think that just taking
-> > netif_tx_lock would avoid race conditions, or a per-queue lock.
->
-> We considered this but did not want normal traffic to get delayed for
-> XDP traffic. The perceived performance drop on a normal queue would
-> be tricky to diagnose, and the only way to prevent it would be to
-> disable XDP on the interface all together. There is no way to do the
-> latter per interface, and we felt the "solution" of disabling XDP
-> was not a good way forward.
-> Off course our design of this was all done several years ago.
 
-In my opinion, there is no reason to make that distinction between
-normal traffic and XDP traffic. XDP traffic redirected with XDP_TX or
-XDP_REDIRECT is traffic that the user has chosen to redirect that way,
-but pushing the work down in the stack. Without XDP, this traffic had
-gone up the stack to userspace, or at least to the firewall, and then
-redirected, passed again to the network stack and added to normal TX
-queues.
 
-If the user wants to prevent XDP from mixing with normal traffic, just
-not attaching an XDP program to the interface, or not using
-XDP_TX/REDIRECT in it would be enough. Probably I don't understand
-what you want to say here.
+On 7/8/21 1:11 PM, Vladimir Oltean wrote:
+> On Thu, Jul 08, 2021 at 11:43:20AM +0200, Johannes Berg wrote:
+>> On Thu, 2021-07-08 at 17:29 +0800, Yajun Deng wrote:
+>>> The value 'link' may be NULL in rtnl_unregister(), this leads to
+>>> kfree_rcu(NULL, xxx), so add this case handling.
+>>>
+>>
+>> I don't see how. It would require the caller to unregister something
+>> they never registered. That would be a bug there, but I don't see that
+>> it's very useful to actually be defensive about bugs there.
+> 
+> Besides, isn't kfree_rcu(NULL) safe anyway?
+> 
 
-Anyway, if you think that keeping XDP TX queues separated is the way
-to go, it's OK, but my proposal is to share the normal TX queues at
-least in the cases where dedicated queues cannot be allocated. As you
-say, the performance drop would be tricky to measure, if there's any,
-but in any case, even separating the queues, they're competing for
-resources of CPU, PCI bandwidth, network bandwidth...
+Only from linux-5.3 I think.
+(commit 12edff045bc6dd3ab1565cc02fa4841803c2a633 was not backported to old kernels)
 
-The fact is that the situation right now is this one:
-- Many times (or almost always with modern servers' processors)
-XDP_TX/REDIRECT doesn't work at all
-- The only workaround is reducing the number of normal channels to let
-free resources for XDP, but this is a much higher performance drop for
-normal traffic than sharing queues with XDP, IMHO.
-
-Increasing the maximum number of channels and queues, or even making
-them virtually unlimited, would be very good, I think, because people
-who knows how to configure the hardware would take advantage of it,
-but there will always be situations of getting short of resources:
-- Who knows how many cores we will be using 5 forward from now?
-- VFs normally have less resources available: 8 MSI-X vectors by default
-
-With some time, I can try to prepare some patches with these changes,
-if you agree.
-
-Regards
---=20
-=C3=8D=C3=B1igo Huguet
-
+But yes, this patch is not solving any bug, as I suspected.
