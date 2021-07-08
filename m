@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DED53C1551
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 16:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D3E3C1569
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 16:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbhGHOnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 10:43:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229738AbhGHOnJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 10:43:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 36E2161626;
-        Thu,  8 Jul 2021 14:40:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1625755227;
-        bh=MAsG3qSXfa86mRK76E2s86ws4T9P2wCUYmiHN8otjks=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qvATOC6gyo8yYJJC/n4YlM9JT0Gv5Ts61H3FTKx00SElcUROyVpDAIkKCtwtXcAX/
-         jyWGuT6u9PM139Bbe51z69jfJCi2kRM257QjUTUMu4TdfUNvQHr763zVSLZ/bdfA3W
-         KNtA5YvaUj447Xg8+Id01Gf7hDdytOsFQMI8M+D8=
-Date:   Thu, 8 Jul 2021 16:40:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Carlos Bilbao <bilbao@vt.edu>
-Cc:     alexander.deucher@amd.com, davem@davemloft.net,
-        mchehab+huawei@kernel.org, kuba@kernel.org,
-        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: Follow the indentation coding standard on
- printks
-Message-ID: <YOcOWDqlONm69zwo@kroah.com>
-References: <2784471.e9J7NaK4W3@iron-maiden>
+        id S232031AbhGHOri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 10:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231976AbhGHOrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 10:47:37 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42909C061574;
+        Thu,  8 Jul 2021 07:44:54 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id i5-20020a9d68c50000b02904b41fa91c97so1663520oto.5;
+        Thu, 08 Jul 2021 07:44:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=F/Awx1Vy2NafahXTtsnNysIQcjAXLo83SmFI5Ze6190=;
+        b=X2HAfGRyLnWiW354cxtjdeOSW0l6EWAOj897IYPhwDEhXdfBMBMWpcB2mbsHD5eYrB
+         2OLCQSwEme5sQ3zVp765w11BYdfcLRw1xklWreudoB44N8eJPTkehIXRu8hl5RDQYYIO
+         CxCzIBsQSY/eY5J24DarPG0ysUvF4/z2LatfGLLp14pL4lJ4e4Toc9xrVwufBidIOmAH
+         NJU8cEdCSpk7yHCBgQqVEzMYX8n7Q7E3KtafPenOfIKsSiiz17p3qJ6ussakPQzehhWv
+         gMvaC0gmhSIgm6yG8CieDX4M+3y6qdrEtr7MT5zUtmiBDgtKb7ej5XYZb0y+s745jW9l
+         fU7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=F/Awx1Vy2NafahXTtsnNysIQcjAXLo83SmFI5Ze6190=;
+        b=DX7t6zTeS9kth/BBLF5vIXADQBAPMK1hp7orkGp/Z62zI5NwnwgIMPUL1AUiWC/wLa
+         ay+4SqsZtE3Lsuv36fRHok2DCSKCZEQg7wfzsjOk1ML6bOZM0b317O43wBkEtNzK0Jea
+         lky7Z2JTbfBEYVQiZl5+G6t6w5UkUToFfEAuBZibyjifcYpwZ04jZoyLpF5bm6bGP9T1
+         zmhh9yL/r1Of8/mX+uJH1K4k5Ym9bAVZBSxCdr/6qLBjTqYnp0Tnr7mkaIhEVrN35oQd
+         0rW45vRj+Bt5K3ieunfqwBRmVMJVXtsDvNOtaR6wMt3nb3wf5T7ryUaHaKKIZXqlAYXj
+         VyEQ==
+X-Gm-Message-State: AOAM530C9OtSipeOl/toCrZeoKTdcyW5adpElEbZuxSpqPsDudb69KoM
+        MarL2ytc0we9tuvjvmuWCcw=
+X-Google-Smtp-Source: ABdhPJy3WMsXEufiA4YpxDjQhZcklIxgAuYy6pYCM8r86lpKnwJ1fUfkwTBPLIP57e+XI4Ufveg/8w==
+X-Received: by 2002:a05:6830:2497:: with SMTP id u23mr6996108ots.344.1625755493710;
+        Thu, 08 Jul 2021 07:44:53 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id m1sm522039otl.0.2021.07.08.07.44.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Jul 2021 07:44:52 -0700 (PDT)
+Subject: Re: [PATCH bpf] bpf: fix for BUG: kernel NULL pointer dereference,
+ address: 0000000000000000
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>, bpf@vger.kernel.org
+Cc:     brouer@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, Abaci <abaci@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        David Ahern <dsahern@kernel.org>
+References: <20210708080409.73525-1-xuanzhuo@linux.alibaba.com>
+ <c314bdcc-06fc-c869-5ad8-a74173a1e6f1@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f52ae16f-ee2b-c691-311a-51824c2d87e9@gmail.com>
+Date:   Thu, 8 Jul 2021 08:44:48 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2784471.e9J7NaK4W3@iron-maiden>
+In-Reply-To: <c314bdcc-06fc-c869-5ad8-a74173a1e6f1@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 08, 2021 at 09:10:01AM -0400, Carlos Bilbao wrote:
-> Fix indentation of printks that start at the beginning of the line. Change this 
-> for the right number of space characters, or tabs if the file uses them. 
+On 7/8/21 4:26 AM, Jesper Dangaard Brouer wrote:
 > 
-> Signed-off-by: Carlos Bilbao <bilbao@vt.edu>
-> ---
->  drivers/atm/eni.c                      | 2 +-
->  drivers/atm/iphase.c                   | 2 +-
->  drivers/atm/suni.c                     | 4 ++--
->  drivers/atm/zatm.c                     | 8 ++++----
->  drivers/net/ethernet/dec/tulip/de4x5.c | 2 +-
->  drivers/net/sb1000.c                   | 4 ++--
->  drivers/parisc/iosapic.c               | 4 ++--
->  drivers/parisc/sba_iommu.c             | 2 +-
->  8 files changed, 14 insertions(+), 14 deletions(-)
+> Thanks for catching this.
+> 
+> Cc: Ahern, are you okay with disabling this for the
+> bpf_prog_test_run_xdp() infra?
 
-Hi,
+yes.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+> 
+> I don't think the selftests/bpf (e.g. prog_tests/xdp_devmap_attach.c)
+> use the bpf_prog_test_run, right?
+> 
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- Your patch did many different things all at once, making it difficult
-  to review.  All Linux kernel patches need to only do one thing at a
-  time.  If you need to do multiple things (such as clean up all coding
-  style issues in a file/driver), do it in a sequence of patches, each
-  one doing only one thing.  This will make it easier to review the
-  patches to ensure that they are correct, and to help alleviate any
-  merge issues that larger patches can cause.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Acked-by: David Ahern <dsahern@kernel.org>
