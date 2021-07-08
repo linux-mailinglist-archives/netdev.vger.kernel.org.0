@@ -2,85 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 327FB3C18DB
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 20:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A1C3C1917
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 20:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230129AbhGHSG6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Jul 2021 14:06:58 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44064 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230106AbhGHSG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 14:06:57 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 168I17CC019708
-        for <netdev@vger.kernel.org>; Thu, 8 Jul 2021 11:04:15 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 39p39g1ff6-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 11:04:15 -0700
-Received: from intmgw002.06.ash9.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 8 Jul 2021 11:04:09 -0700
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id BE92DD7EA112; Thu,  8 Jul 2021 11:04:08 -0700 (PDT)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <davem@davemloft.net>, <dariobin@libero.it>,
-        <richardcochran@gmail.com>
-CC:     <kernel-team@fb.com>, <netdev@vger.kernel.org>
-Subject: [PATCH net] ptp: Relocate lookup cookie to correct block.
-Date:   Thu, 8 Jul 2021 11:04:08 -0700
-Message-ID: <20210708180408.3930614-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        id S229956AbhGHSUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 14:20:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60951 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229768AbhGHSUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 14:20:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625768279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SO03xakY40s8N1+WAWasQT2ggeCA8hIJcILoFkFBttY=;
+        b=DpVY8UpO5+r+U9o4zvoiV0Y4S0eLQv8NoRmU7NryUUWRfdHPQMTYnRPxdLte9xZvuwqO1m
+        U8eSEe0Nd/aRz77cjF5mChuNtTwgJDslMRaZ38OyzSUwV3dPhO7Uwo8IRmNvAcdzRKetlA
+        RXjG7pCicWxtn5KzSpM0tM4Kgc/d9tU=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-178-oIQzgSyLNEGSF-zJTSXiKg-1; Thu, 08 Jul 2021 14:17:57 -0400
+X-MC-Unique: oIQzgSyLNEGSF-zJTSXiKg-1
+Received: by mail-ej1-f72.google.com with SMTP id 16-20020a1709063010b029037417ca2d43so2199662ejz.5
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 11:17:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SO03xakY40s8N1+WAWasQT2ggeCA8hIJcILoFkFBttY=;
+        b=oD6l7nDniXMEqu0ihnko0AVZo+DY+h2j1NHVjb7sdWfPg337TFXg9OSMy1RXlXHrtr
+         H0jR+1nielnUPtu+tMJxj/8WYMvQGF7MgxPXAlDr8JW8EB2N/ODGvjmMwIP6PLw/9AW1
+         mRq+9N9wmaJUTHn/sd1JY+fx8C1lCHdQfv3sc50+5l7yO6pNCLyq2aUWG12dAu1O2Xs6
+         ji/mMvZacjYzGml/AIeID3pjaLLti+CRhWFgzHtUXK0zSVNEov4Ra4Rufc5ImpFoz95X
+         C8jZE+RfbRJiVpLfHtgCQKzYkANlVLevKB+uWjTRUuACb3J3ItV1DxBR5BoMWUblHHrw
+         Hl9A==
+X-Gm-Message-State: AOAM532nvpXHcf8RCPDe46+/sPgSer/NNMKfrb73SQNE/J4vpW46dIpu
+        bdzu9Tx1V3RNEeEZVJeYmt9tC2Xsh4gqDnaU9j6dPkiaDA31ejo1WOCv33m4vsGQHQbwypXEyXu
+        jT1xT1+GHzD5mbXctjaO2K4zwgi2MD97KzMWZt8uP9hh5oK8mQjPttaRvQfkpbGsFROkT
+X-Received: by 2002:aa7:d9c9:: with SMTP id v9mr40275622eds.42.1625768276277;
+        Thu, 08 Jul 2021 11:17:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzF+MdSofNjk71MMybcq+V6l3diSzd2mj1To6c8XO6nG3nanDwKFjr7Lj8eq8s/rL5e6xNORg==
+X-Received: by 2002:aa7:d9c9:: with SMTP id v9mr40275597eds.42.1625768276045;
+        Thu, 08 Jul 2021 11:17:56 -0700 (PDT)
+Received: from localhost (net-188-218-31-199.cust.vodafonedsl.it. [188.218.31.199])
+        by smtp.gmail.com with ESMTPSA id i11sm1620327edu.97.2021.07.08.11.17.55
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 11:17:55 -0700 (PDT)
+Date:   Thu, 8 Jul 2021 20:17:54 +0200
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/1] tc-testing: Update police test cases
+Message-ID: <YOdBUjdGZQUeqX8s@dcaratti.users.ipa.redhat.com>
+References: <20210708080006.3687598-1-roid@nvidia.com>
+ <54d152b2-1a0b-fbc5-33db-4d70a9ae61e6@mojatatu.com>
+ <1db8c734-bebe-fbe3-100f-f4e5bf50baaf@nvidia.com>
+ <f8328b65-c8db-a6ae-2e57-5d1807be4afd@mojatatu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: wuZCGBeQhpjjW_q2y8_wHojISgUwghlY
-X-Proofpoint-GUID: wuZCGBeQhpjjW_q2y8_wHojISgUwghlY
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-08_10:2021-07-08,2021-07-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
- priorityscore=1501 mlxlogscore=830 impostorscore=0 suspectscore=0
- adultscore=0 bulkscore=0 malwarescore=0 phishscore=0 spamscore=0
- lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2104190000 definitions=main-2107080094
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8328b65-c8db-a6ae-2e57-5d1807be4afd@mojatatu.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An earlier commit set the pps_lookup cookie, but the line
-was somehow added to the wrong code block.  Correct this.
+On Thu, Jul 08, 2021 at 09:05:03AM -0400, Jamal Hadi Salim wrote:
+> On 2021-07-08 8:11 a.m., Roi Dayan wrote:
+> 
+> [..]
+> > 
+> > no. old output doesn't have the string "index" and also output of index
+> > is in hex.
+> > 
+> > it is possible to make the old version work by allowing without index
+> > and looking for either the unsigned number or hex number/
+> > 
+> > but why do we need the old output to work? could use the "old" version
+> > of the test.
+> 
+> I think that would work if you assume this is only going to run
+> on the same kernel. But:
 
-Fixes: 8602e40fc813 ("ptp: Set lookup cookie when creating a PTP PPS source.")
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
- drivers/ptp/ptp_clock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+in my perspective, that's already an issue (though a small one), because
+somebody needs to ensure that a kernel is tested against a specific version
+of iproute2. I say "small", because most probably the test will be waived
+or skipped until all the changes (in iproute and kselftests) propagate.
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index ce6d9fc85607..4dfc52e06704 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -232,7 +232,6 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 			pr_err("failed to create ptp aux_worker %d\n", err);
- 			goto kworker_err;
- 		}
--		ptp->pps_source->lookup_cookie = ptp;
- 	}
- 
- 	/* PTP virtual clock is being registered under physical clock */
-@@ -268,6 +267,7 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 			pr_err("failed to register pps source\n");
- 			goto no_pps;
- 		}
-+		ptp->pps_source->lookup_cookie = ptp;
- 	}
- 
- 	/* Initialize a new device of our class in our clock structure. */
+> In this case because output json, which provides a formally parseable
+> output, then very likely someone's scripts are dependent on the old
+> output out there. So things have to be backward/forward compatible.
+> The new output does look better.
+
+the JSON output is something newly introduced  by this  commit, and I 
+agree  it's good / sane to see 'index' and decimal printout in there,
+like in other TC actions.
+
+> Maybe one approach is to have multiple matchPattern in the tests?
+> Davide?
+
+sure, that's a possibility, but then:
+
+> We will have to deal with support issues when someone says their
+> script is broken.
+
+that's probably something we need to care of. TC police is there since a
+lot of time, so there might be users expecting no "index" and hex
+printout in the human-readable format. If you use the old format
+string with PRINT_FP, and the new one with PRINT_JSON, you should be
+able to run tools/testing/selftests/net/forwarding/* and
+tools/testing/selftests/tc-testing with the same iproute program,
+with no "spoecial handling" for act_police.
+
+WDYT?
 -- 
-2.30.2
+davide
 
