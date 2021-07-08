@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC3D03BF43A
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:10:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3125B3BF440
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbhGHDNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 23:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
+        id S230405AbhGHDTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 23:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbhGHDNe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:13:34 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1E0C061574;
-        Wed,  7 Jul 2021 20:10:53 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id u18so10481571lff.9;
-        Wed, 07 Jul 2021 20:10:53 -0700 (PDT)
+        with ESMTP id S230201AbhGHDTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:19:31 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D01CC061574;
+        Wed,  7 Jul 2021 20:16:49 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id p21so10482410lfj.13;
+        Wed, 07 Jul 2021 20:16:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kNgZ72sUUZCWJIsDrS4mJIaf//FCuWEsLk2Ji0orB2Y=;
-        b=EFGe4SR3dcmL9nD3pgmEYdGyaeZraZmE8NR/1B3y3gv+udGz44/HWmthLtV5WBlohs
-         ytCr+uYLhxoMLINX/ITKu0npsYOMSjWfuk8tdptM4LhEowl3Ma63d5qc/+yxGBcTBRUJ
-         TAym4YBz6+gT2tvdZJ7oP+zlemCJpjSm/7sgIDNWfYk04egekmb+f+Oh4U4fjaMsjKKZ
-         El9/ak9+O4xbJnYdmGLlbuKOznqh6bYzmDSFIKjm+uRPk2rVJcjLM3HpjSGkXhGJIb+M
-         oy7BAB8wpZB75yjQt1ZDb7/8blk/LejACz7WIZJFrJzwIqkXIWru13tynTWNj3GTid8v
-         tknA==
+        bh=EuBitGCp9JesYh5sdj5eqPVCDuGNnzs3S7G9gvYO70w=;
+        b=qpNFpx5bxvVv1h0F6VLtN6W2IWGNHL+2J/ewNcUPtz6onCLvDYomy4A7MKtst86kYH
+         wFYfj4hiwIBbMaszradNZd4JF493z64kryks4Chu9Um9oDCO9k+en+9DJx6OVav1v2JD
+         vFK2Gd5Ii9QLGkx7X69ynqvdp1kuqwDxMmXVeLl90fbaS1rS3lXhztCt2hh95Bqp12bd
+         zf4rR3576PmWDvj+Boy0Btj62znU3Y9CVT6bA1RR5l0JAqp1prprT7rUTzSFLJTvHsjB
+         wBtBlygpkUmBmtoSv1f9jNS/nVLPsHsWyvImiP/owMr5On8QfgcWyWveX3AA9a8uvFB+
+         IVdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kNgZ72sUUZCWJIsDrS4mJIaf//FCuWEsLk2Ji0orB2Y=;
-        b=od5EpVDiQo5C+f1DaK1iQ6LfUOyAWXF4THzns+fK3zxghOeO7C5tNVJH9S6gGURDtE
-         aIpcEdF7fOKC46fkGL15grijBtArOM3CDV+USROec5sV5bxFN61UTu8W5VfCLCUJHg/x
-         cw7NECRDRJT7bW90hlpwGhdeOdOUjPh476jC/y5Q1m/2vBsAlcD8+ahqpW/Dk7xthtjc
-         +NH9rq512sVZLDaY4EAZTHwEpL1dcQkfGDsV/8TJnj8ImRLFYKMFGZRF+WbTxQY63xmp
-         E2OYp/vzOc6/nxXYTAGqc2US44Uijsw7UvSoFVWz7Wn4WZPnSB0HdtmNH1Hnzd/lDPhm
-         mHGw==
-X-Gm-Message-State: AOAM5333zJlJkr42YbH76fPN864BSt5m7urZxJ0dljOl+7Mlzk/lrGal
-        hPxLVpXBMTYRzkejcO/iiOC4JW8c0ovmcq+WSrs=
-X-Google-Smtp-Source: ABdhPJz6Amdt0GGaruxWLBehqdSG0c2PrphxnQQNdbaYyHbm2Hg/jijb8k2z6U7u1GtbbH3q0uajnmjkJbHKuignr08=
-X-Received: by 2002:a2e:b80e:: with SMTP id u14mr8483686ljo.204.1625713851792;
- Wed, 07 Jul 2021 20:10:51 -0700 (PDT)
+        bh=EuBitGCp9JesYh5sdj5eqPVCDuGNnzs3S7G9gvYO70w=;
+        b=HAhe53b+gLe44NcyyNmTE4S8xYozMcdVRLAahMI+9g5scnj61KnqtE/z3IB/ujhAd5
+         ouwxTWX7INi/kqmmj1iZXIxfjJ6s5vnWYES2FNQ2L2GALIOIn5+Freph6+5FTRgcsTOc
+         QyZd1yekSkD6rFBm2iajFZckWF1hG8jct856HVXjHJ8GFyeax4BEEGgeNV0LK5wawM2a
+         LPOmMYejs7rUh+2B22sJHSei0hn72tPnQINEAiviWWnzfLepvuNYW7Ho3gY2AY0p7GlT
+         YoN7rKQdMlSF1Di0/o3nsW4O/Vyhwgl3c3Rr8scIhZNKAhRsP8SpMI17O/tzng++4Q86
+         oRSQ==
+X-Gm-Message-State: AOAM531pm7qIGQx39tC1RNOLvZ1E5NxUeqS7MtCQri67OxcZ0Fl526fS
+        wDjP14gMws0GRpQyAg0uh1Ts044c0ESNR9Eax9Y=
+X-Google-Smtp-Source: ABdhPJy2VhIfF+IB0Zop6gyB8VX7dVvGHnVKbHU1VcZn9vFB13Gr84kZfOwE/m3z/c35KwTC6q4QsCxYC0AytsLx/Cg=
+X-Received: by 2002:ac2:4893:: with SMTP id x19mr1592041lfc.214.1625714208020;
+ Wed, 07 Jul 2021 20:16:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210702111825.491065-1-memxor@gmail.com>
-In-Reply-To: <20210702111825.491065-1-memxor@gmail.com>
+References: <20210707060328.3133074-1-Jianlin.Lv@arm.com>
+In-Reply-To: <20210707060328.3133074-1-Jianlin.Lv@arm.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 7 Jul 2021 20:10:40 -0700
-Message-ID: <CAADnVQKk-KvVzozdrOOAo8vZqKYcHuzeU32ths+DJ6oLfPCcTw@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 0/5] Generic XDP improvements
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Wed, 7 Jul 2021 20:16:36 -0700
+Message-ID: <CAADnVQ+FV6J-y3VkbP6B6cJEO0sFa40kHpinSuwVN1Rk2Fk=qA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: runqslower: fixed make install issue
+To:     Jianlin Lv <Jianlin.Lv@arm.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        Eric Leblond <eric@regit.org>, bpf <bpf@vger.kernel.org>
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>, iecedge@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 2, 2021 at 4:20 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+On Tue, Jul 6, 2021 at 11:03 PM Jianlin Lv <Jianlin.Lv@arm.com> wrote:
 >
-> This small series makes some improvements to generic XDP mode and brings it
-> closer to native XDP. Patch 1 splits out generic XDP processing into reusable
-> parts, patch 2 adds pointer friendly wrappers for bitops (not have to cast back
-> and forth the address of local pointer to unsigned long *), patch 3 implements
-> generic cpumap support (details in commit) and patch 4 allows devmap bpf prog
-> execution before generic_xdp_tx is called.
+> runqslower did not define install target, resulting in an installation
+> tool/bpf error:
+>         $ make -C tools/bpf/ install
 >
-> Patch 5 just updates a couple of selftests to adapt to changes in behavior (in
-> that specifying devmap/cpumap prog fd in generic mode is now allowed).
+>         make[1]: Entering directory './tools/bpf/runqslower'
+>         make[1]: *** No rule to make target 'install'.  Stop.
 >
-> Changelog:
-> ----------
-> v5 -> v6
-> v5: https://lore.kernel.org/bpf/20210701002759.381983-1-memxor@gmail.com
->  * Put rcpu->prog check before RCU-bh section to avoid do_softirq (Jesper)
+> Add install target for runqslower.
+>
+> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
 
-Applied. Thanks
+Andrii applied a patch that removed install target.
+I don't mind whichever way.
