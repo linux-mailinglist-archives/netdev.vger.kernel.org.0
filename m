@@ -2,56 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7C1E3C157F
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 16:54:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E751A3C15B0
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 17:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231977AbhGHO4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 10:56:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46336 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229738AbhGHO4l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 10:56:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vIHPBqwcqnXKFoiXAeTxLbtZeNi6FhyW5PLWXOKYBHU=; b=hQvJBZ6FwAhKO33+4IGNIZcCL6
-        rH/aqicIaKbbMjW89+BzXdEI3CcA/xdbJPL2nIhVqlNvls9pnWEPQAzw7Xp7o9edwlSaZMIvhoYqp
-        KJmflrhr/CDNv0IxUGKj3l2axHK3ITB6c8LjioXQTPVN+U7RsrGn0wzhIX0OSK75wekw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m1VPQ-00CeQb-QP; Thu, 08 Jul 2021 16:53:48 +0200
-Date:   Thu, 8 Jul 2021 16:53:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Carlos Bilbao <bilbao@vt.edu>
-Cc:     gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        davem@davemloft.net, mchehab+huawei@kernel.org, kuba@kernel.org,
-        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: Follow the indentation coding standard on
- printks
-Message-ID: <YOcRfBtS/UJ81CFq@lunn.ch>
-References: <2784471.e9J7NaK4W3@iron-maiden>
+        id S231896AbhGHPL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 11:11:27 -0400
+Received: from mailgw01.mediatek.com ([60.244.123.138]:42674 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229592AbhGHPLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 11:11:24 -0400
+X-UUID: 3c85a5a83be84b6ea866ee9c0a6f44be-20210708
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:To:From:Subject:Message-ID; bh=rmy3vTKrj+13anpiQhZfLEyONls/y6wLF5zWGoxVdF8=;
+        b=hD+qqujji0r8m3P9PDI2pnMaDxCMqpZ2iA7j9kUXLS7Bm41FTMOTTzpROgvrgPodbTxI7zxg2oo1FOLcMcwYXhexU7yj6uPtnpQSDxCXNRy2sadtBPP35cEdUTZFQrUfRZond4eqtm9BT5pLUTEbCse8EbAIynqlYzbCZn3SOTA=;
+X-UUID: 3c85a5a83be84b6ea866ee9c0a6f44be-20210708
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
+        (envelope-from <deren.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1688495760; Thu, 08 Jul 2021 23:08:36 +0800
+Received: from mtkcas07.mediatek.inc (172.21.101.84) by
+ mtkmbs02n1.mediatek.inc (172.21.101.77) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 8 Jul 2021 23:08:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas07.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 8 Jul 2021 23:08:30 +0800
+Message-ID: <1eaab818ef2478b115e1387dcca7427f633cc217.camel@mediatek.com>
+Subject: Re: [PATCH] mt76: mt7921: continue to probe driver when fw already
+ downloaded
+From:   Deren Wu <deren.wu@mediatek.com>
+To:     Aaron Ma <aaron.ma@canonical.com>, <nbd@nbd.name>,
+        <lorenzo.bianconi83@gmail.com>, <ryder.lee@mediatek.com>,
+        <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <matthias.bgg@gmail.com>, <sean.wang@mediatek.com>,
+        <Soul.Huang@mediatek.com>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Date:   Thu, 8 Jul 2021 23:08:30 +0800
+In-Reply-To: <20210708131710.695595-1-aaron.ma@canonical.com>
+References: <20210708131710.695595-1-aaron.ma@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2784471.e9J7NaK4W3@iron-maiden>
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/atm/suni.c
-> +++ b/drivers/atm/suni.c
-> @@ -328,8 +328,8 @@ static int suni_start(struct atm_dev *dev)
->  		timer_setup(&poll_timer, suni_hz, 0);
->  		poll_timer.expires = jiffies+HZ;
->  #if 0
-> -printk(KERN_DEBUG "[u] p=0x%lx,n=0x%lx\n",(unsigned long) poll_timer.list.prev,
-> -    (unsigned long) poll_timer.list.next);
-> +	printk(KERN_DEBUG "[u] p=0x%lx,n=0x%lx\n",(unsigned long) poll_timer.list.prev,
-> +	    (unsigned long) poll_timer.list.next);
+SGkgQWFyb24sDQoNClRoYW5rcyBmb3IgdGhpcyBwYXRjaC4gV2UgdmVyaWZpZWQgdGhpcyBpcyBn
+b29kIGhlcmUuDQoNCkNvdWxkIHlvdSBwbGVhc2UgYWRkIGZpeCB0YWcgYXMgd2VsbD8gSXQncyBi
+ZXR0ZXIgdG8gYmFja3BvcnQgdGhpcw0KcGF0Y2guDQoNCkZpeGVzOiAxYzA5OWFiNDQ3MjdjICgi
+bXQ3NjogbXQ3OTIxOiBhZGQgTUNVIHN1cHBvcnQiKQ0KDQoNClRoYW5rcywNCkRlcmVuDQoNCg0K
+T24gVGh1LCAyMDIxLTA3LTA4IGF0IDIxOjE3ICswODAwLCBBYXJvbiBNYSB3cm90ZToNCj4gV2hl
+biByZWJvb3Qgc3lzdGVtLCBubyBwb3dlciBjeWNsZXMsIGZpcm13YXJlIGlzIGFscmVhZHkgZG93
+bmxvYWRlZCwNCj4gcmV0dXJuIC1FSU8gd2lsbCBicmVhayBkcml2ZXIgYXMgZXJyb3I6DQo+IG10
+NzkyMWU6IHByb2JlIG9mIDAwMDA6MDM6MDAuMCBmYWlsZWQgd2l0aCBlcnJvciAtNQ0KPiANCj4g
+U2tpcCBmaXJtd2FyZSBkb3dubG9hZCBhbmQgY29udGludWUgdG8gcHJvYmUuDQo+IA0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBBYXJvbiBNYSA8YWFyb24ubWFAY2Fub25pY2FsLmNvbT4NCj4gLS0tDQo+ICBk
+cml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2L210NzkyMS9tY3UuYyB8IDMgKystDQo+
+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3Ni9tdDc5MjEvbWN1
+LmMNCj4gYi9kcml2ZXJzL25ldC93aXJlbGVzcy9tZWRpYXRlay9tdDc2L210NzkyMS9tY3UuYw0K
+PiBpbmRleCBjMmM0ZGMxOTY4MDIuLmNkNjkwYzY0ZjY1YiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
+cy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3Ni9tdDc5MjEvbWN1LmMNCj4gKysrIGIvZHJpdmVy
+cy9uZXQvd2lyZWxlc3MvbWVkaWF0ZWsvbXQ3Ni9tdDc5MjEvbWN1LmMNCj4gQEAgLTkzMSw3ICs5
+MzEsNyBAQCBzdGF0aWMgaW50IG10NzkyMV9sb2FkX2Zpcm13YXJlKHN0cnVjdCBtdDc5MjFfZGV2
+DQo+ICpkZXYpDQo+ICAJcmV0ID0gbXQ3Nl9nZXRfZmllbGQoZGV2LCBNVF9DT05OX09OX01JU0Ms
+DQo+IE1UX1RPUF9NSVNDMl9GV19OOV9SRFkpOw0KPiAgCWlmIChyZXQpIHsNCj4gIAkJZGV2X2Ri
+ZyhkZXYtPm10NzYuZGV2LCAiRmlybXdhcmUgaXMgYWxyZWFkeQ0KPiBkb3dubG9hZFxuIik7DQo+
+IC0JCXJldHVybiAtRUlPOw0KPiArCQlnb3RvIGZ3X2xvYWRlZDsNCj4gIAl9DQo+ICANCj4gIAly
+ZXQgPSBtdDc5MjFfbG9hZF9wYXRjaChkZXYpOw0KPiBAQCAtOTQ5LDYgKzk0OSw3IEBAIHN0YXRp
+YyBpbnQgbXQ3OTIxX2xvYWRfZmlybXdhcmUoc3RydWN0IG10NzkyMV9kZXYNCj4gKmRldikNCj4g
+IAkJcmV0dXJuIC1FSU87DQo+ICAJfQ0KPiAgDQo+ICtmd19sb2FkZWQ6DQo+ICAJbXQ3Nl9xdWV1
+ZV90eF9jbGVhbnVwKGRldiwgZGV2LT5tdDc2LnFfbWN1W01UX01DVVFfRldETF0sDQo+IGZhbHNl
+KTsNCj4gIA0KPiAgI2lmZGVmIENPTkZJR19QTQ0K
 
-Why not use DPRINTK(), defined at the start of suni.c?
-
-    Andrew
