@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D78723C19D0
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 21:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123693C19F6
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 21:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbhGHTct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 15:32:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49564 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229497AbhGHTcq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 15:32:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id D02C06161F;
-        Thu,  8 Jul 2021 19:30:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625772603;
-        bh=SWoxXU0iy/TzzQ1pwxyT82jQi+29J/oWDyMPH4cFMKk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uHokGR6Y9Db0WE5q8kAqapLmhkfYNR5E6bgZnvVRbzvGxd1kgigBuIcsgz6o/uune
-         ry82xqemydsKSEkmCts6Y+TzPIkeeu12jpZgY0iWO/yPZocleVNVEIFl7nJnIbbFEo
-         ZoT37MhA6dCwaaOpiBpPtwHXKPtxYKTPsG4jhfTypcEWmhCDQ7fo1I+Pz5Le6qx+9C
-         1XhOICfAzf4BuAsU2vsLdMtgWPFvpC+bgDxaBqswtQqDvl9LDPARK6/VYg9GhDl1zp
-         tFc0w7hUF612xynt8DSkah5GWu8TgN/u1l6F+m7YWzEURuIYkiMT08pZ39j+56OaA6
-         tz4Y8m0otzB7Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C34DA609E6;
-        Thu,  8 Jul 2021 19:30:03 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230307AbhGHTlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 15:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229631AbhGHTle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 15:41:34 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA28C061574;
+        Thu,  8 Jul 2021 12:38:51 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id ie21so4377637pjb.0;
+        Thu, 08 Jul 2021 12:38:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HEnWv7IGu0HtSK3XxPSRHi3prPm/smZKLsp7ziczGIE=;
+        b=UVPDHuxeP9EZ0wOBSxJk2IRxUBwEaymnZdwNwU25WiogOZqKOPe4+x6tfxb4EeNIFe
+         8keTEz0IfET86FMc8kgadUdq0zWOh0GQa2HYA2C9TEIXJM6ShCNkWWoTqOU9SotU64AT
+         3JR6ZwA+caJV2hdgtiyVk9OiMpmutNTVpXHYbqzc7359YEU0LQyulGwgiW+zxS4ar9nE
+         HwT44rU7wRRSLI7vnfVFFnfDr9+1lcv1WPrAuaqserYiwrXTvelw+qBC6Xc6EN0VdhNq
+         1isfUdPjNeCFKxqkWP1uEQAFMgfXxruSyBs6KryQbXAx51m1dZFcJjPPp5bP5SRW8VIc
+         6X/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HEnWv7IGu0HtSK3XxPSRHi3prPm/smZKLsp7ziczGIE=;
+        b=akyvo7ffPfzYeVizrnIgl3BoV3Gev4AvkcQBcJSG+Ld+aDVcsprFy4xE+pccBLL59R
+         hZ6F41dsC2NMw+kmQBy7LZpK+LVecPyRH7tFSoeHQ7oIaH4DxtTljdbOjJU4MV/7z2Gv
+         zmbi4VP5ccRjOd/7BhsDqDsz/WryuB33NKjR0BdLKb+4xnHKaF7OPt0QN/uaVDx6aVEW
+         ITuegdlSnb13DkAyGjQlSxmSDe3RguwpfY3kEq8mMVY7v5XgpvMEhAngeYytJ1T8JJN5
+         bUw5VCG8OTsSxQHlB5plsUompff5cjPW1EhtmB3eJ55uxecaRX+nty15ku71tpM7UoQv
+         JBfw==
+X-Gm-Message-State: AOAM531FjhEaMxX9LaPmWkCSVE0jAb2FSZXWk/YaZwldvAHdCcEWkqUf
+        0DJMs0D78CH1aa0NZ9HwdGYpP/MddX0a0cQQ3sE=
+X-Google-Smtp-Source: ABdhPJzD/ue07JAuFdrTSZLf90HnbyOJHZ0RO/RGSuLWTEZfXYOsrNhCj4pSpekVrA+Q3PGJchhGtGN4Qdo0raxIx34=
+X-Received: by 2002:a17:902:e801:b029:129:478c:4b3c with SMTP id
+ u1-20020a170902e801b0290129478c4b3cmr27562867plg.64.1625773131490; Thu, 08
+ Jul 2021 12:38:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162577260379.7578.8193016598326598928.git-patchwork-notify@kernel.org>
-Date:   Thu, 08 Jul 2021 19:30:03 +0000
-References: <20210708072109.1241563-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210708072109.1241563-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, maze@google.com, kafai@fb.com
+References: <20210706163150.112591-1-john.fastabend@gmail.com> <20210706163150.112591-2-john.fastabend@gmail.com>
+In-Reply-To: <20210706163150.112591-2-john.fastabend@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 8 Jul 2021 12:38:40 -0700
+Message-ID: <CAM_iQpWXDY=YeNS_Kn6eWZc-0MHF3Cr0fwFzGESYvtOJt0eD0A@mail.gmail.com>
+Subject: Re: [PATCH bpf v3 1/2] bpf, sockmap: fix potential memory leak on
+ unlikely error case
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Jul 6, 2021 at 9:31 AM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> If skb_linearize is needed and fails we could leak a msg on the error
+> handling. To fix ensure we kfree the msg block before returning error.
+> Found during code review.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+sk_psock_skb_ingress_self() also needs the same fix, right?
+Other than this, it looks good to me.
 
-On Thu,  8 Jul 2021 00:21:09 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> While TCP stack scales reasonably well, there is still one part that
-> can be used to DDOS it.
-> 
-> IPv6 Packet too big messages have to lookup/insert a new route,
-> and if abused by attackers, can easily put hosts under high stress,
-> with many cpus contending on a spinlock while one is stuck in fib6_run_gc()
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3,net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-    https://git.kernel.org/netdev/net/c/c7bb4b89033b
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
