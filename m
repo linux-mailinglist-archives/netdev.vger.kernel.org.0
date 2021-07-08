@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4473BF370
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:18:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807443BF374
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:18:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbhGHBV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 21:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S230314AbhGHBVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 21:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbhGHBV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 21:21:26 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23DBC061574;
-        Wed,  7 Jul 2021 18:18:44 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id u14so4197255pga.11;
-        Wed, 07 Jul 2021 18:18:44 -0700 (PDT)
+        with ESMTP id S230266AbhGHBV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 21:21:28 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0DAC061574;
+        Wed,  7 Jul 2021 18:18:46 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id q10so3925188pfj.12;
+        Wed, 07 Jul 2021 18:18:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fxq1khmxvhJCPEywLH5j4ieavAiBiNDqpiXDqrDME/Y=;
-        b=hKuOnz2ABR6UNX5NbAa19aXjR5GCUM5enSlFVvyAUFE4oyKLbinQpDfEuPsbrqqxeL
-         t7FICQynCsMnbE/zyKX9haiEGCHSzNmIrg+fyLt5aMvtUJgEp2P3Lvr671Wm8ocCB+04
-         8/zjAoLcBCMrD62xjGIVicSeQ3Kpchb02mGD3EC392hlRdkrBRkodexyzPq4O7qWeUsQ
-         SqIuTg4GPdTJk62l7BF2e2MlsVFGHNT7Opv99ZLZfexL3o1aQs/Q1V3jdfZzkNuW9cBV
-         64uh6MKLdb31/Ap10N1/SavNa5tcv7WvQXsL0E1MmkJDKltgEzegjnk+gkVAzROeLyDZ
-         eN2w==
+        bh=b5bXTMctrGiuYkOisntmpk5rXHpFme1XzOtvPb/WvUI=;
+        b=qC+5tUc0MwhhyiWD7MX7esKBwG2JHd0brLtUd7XKFGo2ryvi21xPtBG7eGx908TEnR
+         sVmIy6CkGFI7AfBVrZtArPbcYT16WZ9kuYsKObNZbdXd3SfUuS6aSMXDtQ10u4E4ectD
+         jpMQGqYVKZz+U9+4jXUqJKIebHTkluMi+c38I1WuB+ZG2/kIvWeDgz5uN+bFzbRYSHvA
+         cLS02X7cH9tff7iI10NkMKq5vfsr73m9pXUpWGT/AKZm6f7N58f8dml71kkAPxqwdMLo
+         PWnR2vkKCO3yYqJZwLdxeP4IAaHepOk+na2XVAfpQ2MFGjVyKEdJzJMGzl23R0KQh/re
+         BpQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=fxq1khmxvhJCPEywLH5j4ieavAiBiNDqpiXDqrDME/Y=;
-        b=tif119oi7lsDVw10PnJXh3+YVmEr3G9TKAeQyb7UW6d2tPnbOCCdKl3dx+xIXr2ujW
-         cb3h/yzSSCaBJHzcr52ujK29X+BSuXwGXe+jjO8DruJb1AKjH1KBycK+d0fvqv7i5zW+
-         0xenawMa5bBk7bp9/606FJfDDmuOuuYMlPSgM/xL1NjWU6PnQ0zSjkGyGiTJhBtQ8WhU
-         cxsqzcYNUsYp8gNBgjdG61yP2pIYo4pvSXyIEJJnlWto0CvtGF7L+1vFB3mU4JmRtmFm
-         bJXsWA3uxFB+CsBBwYra5SmVyos8CcxPH3QLBY2X+WPyx+ytSOpmpN5OiifWrV0K0Vs/
-         SWkw==
-X-Gm-Message-State: AOAM532xrSjhgn6+qt+xM1vWCT4jwuQsEBXDb1NXogQ02N3y6PdS6fT+
-        m77XejHVzfa/5wdaUAkKCkc=
-X-Google-Smtp-Source: ABdhPJy3573Ba/I0MFcz6qXt5+VqFCF4LVVD5HJWg90oMtfH8GOmeLkATQWT8XsjrLwNmK09gj1qiQ==
-X-Received: by 2002:aa7:9407:0:b029:31c:c870:4b05 with SMTP id x7-20020aa794070000b029031cc8704b05mr21892218pfo.23.1625707124258;
-        Wed, 07 Jul 2021 18:18:44 -0700 (PDT)
+        bh=b5bXTMctrGiuYkOisntmpk5rXHpFme1XzOtvPb/WvUI=;
+        b=m9QM6dasoxAKYi64ggrk84tLVO326nx2sh142XmgpGQNuJPEKSBSjunoGEC847sd+v
+         aM341cJ2EgxZvqdF+6z9ZrBK5TM0otZVhYGu0oJIvRZPTBIxLnaiXFr1lBlidKUfTTRX
+         skbsM8cLJhs+KeljFb5zQHOS7HZnwXXlGs6zz35tBdbFnA0jvzDSkRonDD9Og/gPBih5
+         p66Lmg4zAAxb16XRbp7aQqwN/g0wXpx0nzxssyGtHqh5VZ28ZfzlfTgdSGUVSfZ9psf/
+         l3+9QDAzhgWB/sLXFJMlZixfpLdkqoDovq7NcTpKF8YM+v8vV6AFDjkEbDLin0LwVBct
+         iPbg==
+X-Gm-Message-State: AOAM532dV8EaRqywpa/z5fykI8615BtPJRWg4LZuedskwBKzLD387YHc
+        IcDvjOH5vYGuE1bvuUNhV+A=
+X-Google-Smtp-Source: ABdhPJyhYOZlZJncvFckZtLSLLPhOmH+05WFsCJPTaSxbjaKaJG/njs09wLJN8s2SU4CXt2QzDKbdQ==
+X-Received: by 2002:a65:4382:: with SMTP id m2mr13053661pgp.205.1625707125878;
+        Wed, 07 Jul 2021 18:18:45 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:9f4e])
-        by smtp.gmail.com with ESMTPSA id d20sm417450pfn.219.2021.07.07.18.18.42
+        by smtp.gmail.com with ESMTPSA id d20sm417450pfn.219.2021.07.07.18.18.44
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Jul 2021 18:18:43 -0700 (PDT)
+        Wed, 07 Jul 2021 18:18:45 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v5 bpf-next 04/11] bpf: Add map side support for bpf timers.
-Date:   Wed,  7 Jul 2021 18:18:26 -0700
-Message-Id: <20210708011833.67028-5-alexei.starovoitov@gmail.com>
+Subject: [PATCH v5 bpf-next 05/11] bpf: Prevent pointer mismatch in bpf_timer_init.
+Date:   Wed,  7 Jul 2021 18:18:27 -0700
+Message-Id: <20210708011833.67028-6-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210708011833.67028-1-alexei.starovoitov@gmail.com>
 References: <20210708011833.67028-1-alexei.starovoitov@gmail.com>
@@ -62,710 +62,119 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Restrict bpf timers to array, hash (both preallocated and kmalloced), and
-lru map types. The per-cpu maps with timers don't make sense, since 'struct
-bpf_timer' is a part of map value. bpf timers in per-cpu maps would mean that
-the number of timers depends on number of possible cpus and timers would not be
-accessible from all cpus. lpm map support can be added in the future.
-The timers in inner maps are supported.
+bpf_timer_init() arguments are:
+1. pointer to a timer (which is embedded in map element).
+2. pointer to a map.
+Make sure that pointer to a timer actually belongs to that map.
 
-The bpf_map_update/delete_elem() helpers and sys_bpf commands cancel and free
-bpf_timer in a given map element.
-
-Similar to 'struct bpf_spin_lock' BTF is required and it is used to validate
-that map element indeed contains 'struct bpf_timer'.
-
-Make check_and_init_map_value() init both bpf_spin_lock and bpf_timer when
-map element data is reused in preallocated htab and lru maps.
-
-Teach copy_map_value() to support both bpf_spin_lock and bpf_timer in a single
-map element. There could be one of each, but not more than one. Due to 'one
-bpf_timer in one element' restriction do not support timers in global data,
-since global data is a map of single element, but from bpf program side it's
-seen as many global variables and restriction of single global timer would be
-odd. The sys_bpf map_freeze and sys_mmap syscalls are not allowed on maps with
-timers, since user space could have corrupted mmap element and crashed the
-kernel. The maps with timers cannot be readonly. Due to these restrictions
-search for bpf_timer in datasec BTF in case it was placed in the global data to
-report clear error.
-
-The previous patch allowed 'struct bpf_timer' as a first field in a map
-element only. Relax this restriction.
-
-Refactor lru map to s/bpf_lru_push_free/htab_lru_push_free/ to cancel and free
-the timer when lru map deletes an element as a part of it eviction algorithm.
-
-Make sure that bpf program cannot access 'struct bpf_timer' via direct load/store.
-The timer operation are done through helpers only.
-This is similar to 'struct bpf_spin_lock'.
+Use map_uid (which is unique id of inner map) to reject:
+inner_map1 = bpf_map_lookup_elem(outer_map, key1)
+inner_map2 = bpf_map_lookup_elem(outer_map, key2)
+if (inner_map1 && inner_map2) {
+    timer = bpf_map_lookup_elem(inner_map1);
+    if (timer)
+        // mismatch would have been allowed
+        bpf_timer_init(timer, inner_map2);
+}
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
 ---
- include/linux/bpf.h        |  44 ++++++++++++----
- include/linux/btf.h        |   1 +
- kernel/bpf/arraymap.c      |  22 ++++++++
- kernel/bpf/btf.c           |  77 ++++++++++++++++++++++-----
- kernel/bpf/hashtab.c       | 104 ++++++++++++++++++++++++++++++++-----
- kernel/bpf/local_storage.c |   4 +-
- kernel/bpf/map_in_map.c    |   2 +
- kernel/bpf/syscall.c       |  21 ++++++--
- kernel/bpf/verifier.c      |  30 +++++++++--
- 9 files changed, 259 insertions(+), 46 deletions(-)
+ include/linux/bpf_verifier.h |  9 ++++++++-
+ kernel/bpf/verifier.c        | 31 ++++++++++++++++++++++++++++---
+ 2 files changed, 36 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 72da9d4d070c..90e6c6d1404c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -198,24 +198,46 @@ static inline bool map_value_has_spin_lock(const struct bpf_map *map)
- 	return map->spin_lock_off >= 0;
- }
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index e774ecc1cd1f..5d3169b57e6e 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -53,7 +53,14 @@ struct bpf_reg_state {
+ 		/* valid when type == CONST_PTR_TO_MAP | PTR_TO_MAP_VALUE |
+ 		 *   PTR_TO_MAP_VALUE_OR_NULL
+ 		 */
+-		struct bpf_map *map_ptr;
++		struct {
++			struct bpf_map *map_ptr;
++			/* To distinguish map lookups from outer map
++			 * the map_uid is non-zero for registers
++			 * pointing to inner maps.
++			 */
++			u32 map_uid;
++		};
  
--static inline void check_and_init_map_lock(struct bpf_map *map, void *dst)
-+static inline bool map_value_has_timer(const struct bpf_map *map)
- {
--	if (likely(!map_value_has_spin_lock(map)))
--		return;
--	*(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
--		(struct bpf_spin_lock){};
-+	return map->timer_off >= 0;
- }
- 
--/* copy everything but bpf_spin_lock */
-+static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
-+{
-+	if (unlikely(map_value_has_spin_lock(map)))
-+		*(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
-+			(struct bpf_spin_lock){};
-+	if (unlikely(map_value_has_timer(map)))
-+		*(struct bpf_timer *)(dst + map->timer_off) =
-+			(struct bpf_timer){};
-+}
-+
-+/* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
- static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
- {
-+	u32 s_off = 0, s_sz = 0, t_off = 0, t_sz = 0;
-+
- 	if (unlikely(map_value_has_spin_lock(map))) {
--		u32 off = map->spin_lock_off;
-+		s_off = map->spin_lock_off;
-+		s_sz = sizeof(struct bpf_spin_lock);
-+	} else if (unlikely(map_value_has_timer(map))) {
-+		t_off = map->timer_off;
-+		t_sz = sizeof(struct bpf_timer);
-+	}
- 
--		memcpy(dst, src, off);
--		memcpy(dst + off + sizeof(struct bpf_spin_lock),
--		       src + off + sizeof(struct bpf_spin_lock),
--		       map->value_size - off - sizeof(struct bpf_spin_lock));
-+	if (unlikely(s_sz || t_sz)) {
-+		if (s_off < t_off || !s_sz) {
-+			swap(s_off, t_off);
-+			swap(s_sz, t_sz);
-+		}
-+		memcpy(dst, src, t_off);
-+		memcpy(dst + t_off + t_sz,
-+		       src + t_off + t_sz,
-+		       s_off - t_off - t_sz);
-+		memcpy(dst + s_off + s_sz,
-+		       src + s_off + s_sz,
-+		       map->value_size - s_off - s_sz);
- 	} else {
- 		memcpy(dst, src, map->value_size);
- 	}
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 94a0c976c90f..214fde93214b 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -99,6 +99,7 @@ bool btf_member_is_reg_int(const struct btf *btf, const struct btf_type *s,
- 			   const struct btf_member *m,
- 			   u32 expected_offset, u32 expected_size);
- int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t);
-+int btf_find_timer(const struct btf *btf, const struct btf_type *t);
- bool btf_type_is_void(const struct btf_type *t);
- s32 btf_find_by_name_kind(const struct btf *btf, const char *name, u8 kind);
- const struct btf_type *btf_type_skip_modifiers(const struct btf *btf,
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index 3c4105603f9d..7f07bb7adf63 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -287,6 +287,12 @@ static int array_map_get_next_key(struct bpf_map *map, void *key, void *next_key
- 	return 0;
- }
- 
-+static void check_and_free_timer_in_array(struct bpf_array *arr, void *val)
-+{
-+	if (unlikely(map_value_has_timer(&arr->map)))
-+		bpf_timer_cancel_and_free(val + arr->map.timer_off);
-+}
-+
- /* Called from syscall or from eBPF program */
- static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
- 				 u64 map_flags)
-@@ -321,6 +327,7 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
- 			copy_map_value_locked(map, val, value, false);
- 		else
- 			copy_map_value(map, val, value);
-+		check_and_free_timer_in_array(array, val);
- 	}
- 	return 0;
- }
-@@ -374,6 +381,19 @@ static void *array_map_vmalloc_addr(struct bpf_array *array)
- 	return (void *)round_down((unsigned long)array, PAGE_SIZE);
- }
- 
-+static void array_map_free_timers(struct bpf_map *map)
-+{
-+	struct bpf_array *array = container_of(map, struct bpf_array, map);
-+	int i;
-+
-+	if (likely(!map_value_has_timer(map)))
-+		return;
-+
-+	for (i = 0; i < array->map.max_entries; i++)
-+		bpf_timer_cancel_and_free(array->value + array->elem_size * i +
-+					  map->timer_off);
-+}
-+
- /* Called when map->refcnt goes to zero, either from workqueue or from syscall */
- static void array_map_free(struct bpf_map *map)
- {
-@@ -382,6 +402,7 @@ static void array_map_free(struct bpf_map *map)
- 	if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
- 		bpf_array_free_percpu(array);
- 
-+	array_map_free_timers(map);
- 	if (array->map.map_flags & BPF_F_MMAPABLE)
- 		bpf_map_area_free(array_map_vmalloc_addr(array));
- 	else
-@@ -668,6 +689,7 @@ const struct bpf_map_ops array_map_ops = {
- 	.map_alloc = array_map_alloc,
- 	.map_free = array_map_free,
- 	.map_get_next_key = array_map_get_next_key,
-+	.map_release_uref = array_map_free_timers,
- 	.map_lookup_elem = array_map_lookup_elem,
- 	.map_update_elem = array_map_update_elem,
- 	.map_delete_elem = array_map_delete_elem,
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index cb4b72997d9b..7780131f710e 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3046,43 +3046,92 @@ static void btf_struct_log(struct btf_verifier_env *env,
- 	btf_verifier_log(env, "size=%u vlen=%u", t->size, btf_type_vlen(t));
- }
- 
--/* find 'struct bpf_spin_lock' in map value.
-- * return >= 0 offset if found
-- * and < 0 in case of error
-- */
--int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t)
-+static int btf_find_struct_field(const struct btf *btf, const struct btf_type *t,
-+				 const char *name, int sz, int align)
- {
- 	const struct btf_member *member;
- 	u32 i, off = -ENOENT;
- 
--	if (!__btf_type_is_struct(t))
--		return -EINVAL;
--
- 	for_each_member(i, t, member) {
- 		const struct btf_type *member_type = btf_type_by_id(btf,
- 								    member->type);
- 		if (!__btf_type_is_struct(member_type))
- 			continue;
--		if (member_type->size != sizeof(struct bpf_spin_lock))
-+		if (member_type->size != sz)
- 			continue;
--		if (strcmp(__btf_name_by_offset(btf, member_type->name_off),
--			   "bpf_spin_lock"))
-+		if (strcmp(__btf_name_by_offset(btf, member_type->name_off), name))
- 			continue;
- 		if (off != -ENOENT)
--			/* only one 'struct bpf_spin_lock' is allowed */
-+			/* only one such field is allowed */
- 			return -E2BIG;
- 		off = btf_member_bit_offset(t, member);
- 		if (off % 8)
- 			/* valid C code cannot generate such BTF */
- 			return -EINVAL;
- 		off /= 8;
--		if (off % __alignof__(struct bpf_spin_lock))
--			/* valid struct bpf_spin_lock will be 4 byte aligned */
-+		if (off % align)
-+			return -EINVAL;
-+	}
-+	return off;
-+}
-+
-+static int btf_find_datasec_var(const struct btf *btf, const struct btf_type *t,
-+				const char *name, int sz, int align)
-+{
-+	const struct btf_var_secinfo *vsi;
-+	u32 i, off = -ENOENT;
-+
-+	for_each_vsi(i, t, vsi) {
-+		const struct btf_type *var = btf_type_by_id(btf, vsi->type);
-+		const struct btf_type *var_type = btf_type_by_id(btf, var->type);
-+
-+		if (!__btf_type_is_struct(var_type))
-+			continue;
-+		if (var_type->size != sz)
-+			continue;
-+		if (vsi->size != sz)
-+			continue;
-+		if (strcmp(__btf_name_by_offset(btf, var_type->name_off), name))
-+			continue;
-+		if (off != -ENOENT)
-+			/* only one such field is allowed */
-+			return -E2BIG;
-+		off = vsi->offset;
-+		if (off % align)
- 			return -EINVAL;
- 	}
- 	return off;
- }
- 
-+static int btf_find_field(const struct btf *btf, const struct btf_type *t,
-+			  const char *name, int sz, int align)
-+{
-+
-+	if (__btf_type_is_struct(t))
-+		return btf_find_struct_field(btf, t, name, sz, align);
-+	else if (btf_type_is_datasec(t))
-+		return btf_find_datasec_var(btf, t, name, sz, align);
-+	return -EINVAL;
-+}
-+
-+/* find 'struct bpf_spin_lock' in map value.
-+ * return >= 0 offset if found
-+ * and < 0 in case of error
-+ */
-+int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t)
-+{
-+	return btf_find_field(btf, t, "bpf_spin_lock",
-+			      sizeof(struct bpf_spin_lock),
-+			      __alignof__(struct bpf_spin_lock));
-+}
-+
-+int btf_find_timer(const struct btf *btf, const struct btf_type *t)
-+{
-+	return btf_find_field(btf, t, "bpf_timer",
-+			      sizeof(struct bpf_timer),
-+			      __alignof__(struct bpf_timer));
-+}
-+
- static void __btf_struct_show(const struct btf *btf, const struct btf_type *t,
- 			      u32 type_id, void *data, u8 bits_offset,
- 			      struct btf_show *show)
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 72c58cc516a3..4ac7d5511cea 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -228,6 +228,32 @@ static struct htab_elem *get_htab_elem(struct bpf_htab *htab, int i)
- 	return (struct htab_elem *) (htab->elems + i * (u64)htab->elem_size);
- }
- 
-+static bool htab_has_extra_elems(struct bpf_htab *htab)
-+{
-+	return !htab_is_percpu(htab) && !htab_is_lru(htab);
-+}
-+
-+static void htab_free_prealloced_timers(struct bpf_htab *htab)
-+{
-+	u32 num_entries = htab->map.max_entries;
-+	int i;
-+
-+	if (likely(!map_value_has_timer(&htab->map)))
-+		return;
-+	if (htab_has_extra_elems(htab))
-+		num_entries += num_possible_cpus();
-+
-+	for (i = 0; i < num_entries; i++) {
-+		struct htab_elem *elem;
-+
-+		elem = get_htab_elem(htab, i);
-+		bpf_timer_cancel_and_free(elem->key +
-+					  round_up(htab->map.key_size, 8) +
-+					  htab->map.timer_off);
-+		cond_resched();
-+	}
-+}
-+
- static void htab_free_elems(struct bpf_htab *htab)
- {
- 	int i;
-@@ -244,6 +270,7 @@ static void htab_free_elems(struct bpf_htab *htab)
- 		cond_resched();
- 	}
- free_elems:
-+	htab_free_prealloced_timers(htab);
- 	bpf_map_area_free(htab->elems);
- }
- 
-@@ -265,8 +292,11 @@ static struct htab_elem *prealloc_lru_pop(struct bpf_htab *htab, void *key,
- 	struct htab_elem *l;
- 
- 	if (node) {
-+		u32 key_size = htab->map.key_size;
- 		l = container_of(node, struct htab_elem, lru_node);
--		memcpy(l->key, key, htab->map.key_size);
-+		memcpy(l->key, key, key_size);
-+		check_and_init_map_value(&htab->map,
-+					 l->key + round_up(key_size, 8));
- 		return l;
- 	}
- 
-@@ -278,7 +308,7 @@ static int prealloc_init(struct bpf_htab *htab)
- 	u32 num_entries = htab->map.max_entries;
- 	int err = -ENOMEM, i;
- 
--	if (!htab_is_percpu(htab) && !htab_is_lru(htab))
-+	if (htab_has_extra_elems(htab))
- 		num_entries += num_possible_cpus();
- 
- 	htab->elems = bpf_map_area_alloc((u64)htab->elem_size * num_entries,
-@@ -695,6 +725,14 @@ static int htab_lru_map_gen_lookup(struct bpf_map *map,
- 	return insn - insn_buf;
- }
- 
-+static void check_and_free_timer(struct bpf_htab *htab, struct htab_elem *elem)
-+{
-+	if (unlikely(map_value_has_timer(&htab->map)))
-+		bpf_timer_cancel_and_free(elem->key +
-+					  round_up(htab->map.key_size, 8) +
-+					  htab->map.timer_off);
-+}
-+
- /* It is called from the bpf_lru_list when the LRU needs to delete
-  * older elements from the htab.
-  */
-@@ -719,6 +757,7 @@ static bool htab_lru_map_delete_node(void *arg, struct bpf_lru_node *node)
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
- 		if (l == tgt_l) {
- 			hlist_nulls_del_rcu(&l->hash_node);
-+			check_and_free_timer(htab, l);
- 			break;
- 		}
- 
-@@ -790,6 +829,7 @@ static void htab_elem_free(struct bpf_htab *htab, struct htab_elem *l)
- {
- 	if (htab->map.map_type == BPF_MAP_TYPE_PERCPU_HASH)
- 		free_percpu(htab_elem_get_ptr(l, htab->map.key_size));
-+	check_and_free_timer(htab, l);
- 	kfree(l);
- }
- 
-@@ -817,6 +857,7 @@ static void free_htab_elem(struct bpf_htab *htab, struct htab_elem *l)
- 	htab_put_fd_value(htab, l);
- 
- 	if (htab_is_prealloc(htab)) {
-+		check_and_free_timer(htab, l);
- 		__pcpu_freelist_push(&htab->freelist, &l->fnode);
- 	} else {
- 		atomic_dec(&htab->count);
-@@ -920,8 +961,8 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
- 			l_new = ERR_PTR(-ENOMEM);
- 			goto dec_count;
- 		}
--		check_and_init_map_lock(&htab->map,
--					l_new->key + round_up(key_size, 8));
-+		check_and_init_map_value(&htab->map,
-+					 l_new->key + round_up(key_size, 8));
- 	}
- 
- 	memcpy(l_new->key, key, key_size);
-@@ -1062,6 +1103,8 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		hlist_nulls_del_rcu(&l_old->hash_node);
- 		if (!htab_is_prealloc(htab))
- 			free_htab_elem(htab, l_old);
-+		else
-+			check_and_free_timer(htab, l_old);
- 	}
- 	ret = 0;
- err:
-@@ -1069,6 +1112,12 @@ static int htab_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	return ret;
- }
- 
-+static void htab_lru_push_free(struct bpf_htab *htab, struct htab_elem *elem)
-+{
-+	check_and_free_timer(htab, elem);
-+	bpf_lru_push_free(&htab->lru, &elem->lru_node);
-+}
-+
- static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 				    u64 map_flags)
- {
-@@ -1102,7 +1151,8 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	l_new = prealloc_lru_pop(htab, key, hash);
- 	if (!l_new)
- 		return -ENOMEM;
--	memcpy(l_new->key + round_up(map->key_size, 8), value, map->value_size);
-+	copy_map_value(&htab->map,
-+		       l_new->key + round_up(map->key_size, 8), value);
- 
- 	ret = htab_lock_bucket(htab, b, hash, &flags);
- 	if (ret)
-@@ -1128,9 +1178,9 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
- 	htab_unlock_bucket(htab, b, hash, flags);
- 
- 	if (ret)
--		bpf_lru_push_free(&htab->lru, &l_new->lru_node);
-+		htab_lru_push_free(htab, l_new);
- 	else if (l_old)
--		bpf_lru_push_free(&htab->lru, &l_old->lru_node);
-+		htab_lru_push_free(htab, l_old);
- 
- 	return ret;
- }
-@@ -1339,7 +1389,7 @@ static int htab_lru_map_delete_elem(struct bpf_map *map, void *key)
- 
- 	htab_unlock_bucket(htab, b, hash, flags);
- 	if (l)
--		bpf_lru_push_free(&htab->lru, &l->lru_node);
-+		htab_lru_push_free(htab, l);
- 	return ret;
- }
- 
-@@ -1359,6 +1409,34 @@ static void delete_all_elements(struct bpf_htab *htab)
- 	}
- }
- 
-+static void htab_free_malloced_timers(struct bpf_htab *htab)
-+{
-+	int i;
-+
-+	rcu_read_lock();
-+	for (i = 0; i < htab->n_buckets; i++) {
-+		struct hlist_nulls_head *head = select_bucket(htab, i);
-+		struct hlist_nulls_node *n;
-+		struct htab_elem *l;
-+
-+		hlist_nulls_for_each_entry(l, n, head, hash_node)
-+			check_and_free_timer(htab, l);
-+	}
-+	rcu_read_unlock();
-+}
-+
-+static void htab_map_free_timers(struct bpf_map *map)
-+{
-+	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-+
-+	if (likely(!map_value_has_timer(&htab->map)))
-+		return;
-+	if (!htab_is_prealloc(htab))
-+		htab_free_malloced_timers(htab);
-+	else
-+		htab_free_prealloced_timers(htab);
-+}
-+
- /* Called when map->refcnt goes to zero, either from workqueue or from syscall */
- static void htab_map_free(struct bpf_map *map)
- {
-@@ -1456,7 +1534,7 @@ static int __htab_map_lookup_and_delete_elem(struct bpf_map *map, void *key,
- 			else
- 				copy_map_value(map, value, l->key +
- 					       roundup_key_size);
--			check_and_init_map_lock(map, value);
-+			check_and_init_map_value(map, value);
- 		}
- 
- 		hlist_nulls_del_rcu(&l->hash_node);
-@@ -1467,7 +1545,7 @@ static int __htab_map_lookup_and_delete_elem(struct bpf_map *map, void *key,
- 	htab_unlock_bucket(htab, b, hash, bflags);
- 
- 	if (is_lru_map && l)
--		bpf_lru_push_free(&htab->lru, &l->lru_node);
-+		htab_lru_push_free(htab, l);
- 
- 	return ret;
- }
-@@ -1645,7 +1723,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 						      true);
- 			else
- 				copy_map_value(map, dst_val, value);
--			check_and_init_map_lock(map, dst_val);
-+			check_and_init_map_value(map, dst_val);
- 		}
- 		if (do_delete) {
- 			hlist_nulls_del_rcu(&l->hash_node);
-@@ -1672,7 +1750,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
- 	while (node_to_free) {
- 		l = node_to_free;
- 		node_to_free = node_to_free->batch_flink;
--		bpf_lru_push_free(&htab->lru, &l->lru_node);
-+		htab_lru_push_free(htab, l);
- 	}
- 
- next_batch:
-@@ -2034,6 +2112,7 @@ const struct bpf_map_ops htab_map_ops = {
- 	.map_alloc = htab_map_alloc,
- 	.map_free = htab_map_free,
- 	.map_get_next_key = htab_map_get_next_key,
-+	.map_release_uref = htab_map_free_timers,
- 	.map_lookup_elem = htab_map_lookup_elem,
- 	.map_lookup_and_delete_elem = htab_map_lookup_and_delete_elem,
- 	.map_update_elem = htab_map_update_elem,
-@@ -2055,6 +2134,7 @@ const struct bpf_map_ops htab_lru_map_ops = {
- 	.map_alloc = htab_map_alloc,
- 	.map_free = htab_map_free,
- 	.map_get_next_key = htab_map_get_next_key,
-+	.map_release_uref = htab_map_free_timers,
- 	.map_lookup_elem = htab_lru_map_lookup_elem,
- 	.map_lookup_and_delete_elem = htab_lru_map_lookup_and_delete_elem,
- 	.map_lookup_elem_sys_only = htab_lru_map_lookup_elem_sys,
-diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-index bd11db9774c3..95d70a08325d 100644
---- a/kernel/bpf/local_storage.c
-+++ b/kernel/bpf/local_storage.c
-@@ -173,7 +173,7 @@ static int cgroup_storage_update_elem(struct bpf_map *map, void *key,
- 		return -ENOMEM;
- 
- 	memcpy(&new->data[0], value, map->value_size);
--	check_and_init_map_lock(map, new->data);
-+	check_and_init_map_value(map, new->data);
- 
- 	new = xchg(&storage->buf, new);
- 	kfree_rcu(new, rcu);
-@@ -509,7 +509,7 @@ struct bpf_cgroup_storage *bpf_cgroup_storage_alloc(struct bpf_prog *prog,
- 						    map->numa_node);
- 		if (!storage->buf)
- 			goto enomem;
--		check_and_init_map_lock(map, storage->buf->data);
-+		check_and_init_map_value(map, storage->buf->data);
- 	} else {
- 		storage->percpu_buf = bpf_map_alloc_percpu(map, size, 8, gfp);
- 		if (!storage->percpu_buf)
-diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-index 39ab0b68cade..890dfe14e731 100644
---- a/kernel/bpf/map_in_map.c
-+++ b/kernel/bpf/map_in_map.c
-@@ -50,6 +50,7 @@ struct bpf_map *bpf_map_meta_alloc(int inner_map_ufd)
- 	inner_map_meta->map_flags = inner_map->map_flags;
- 	inner_map_meta->max_entries = inner_map->max_entries;
- 	inner_map_meta->spin_lock_off = inner_map->spin_lock_off;
-+	inner_map_meta->timer_off = inner_map->timer_off;
- 
- 	/* Misc members not needed in bpf_map_meta_equal() check. */
- 	inner_map_meta->ops = inner_map->ops;
-@@ -75,6 +76,7 @@ bool bpf_map_meta_equal(const struct bpf_map *meta0,
- 	return meta0->map_type == meta1->map_type &&
- 		meta0->key_size == meta1->key_size &&
- 		meta0->value_size == meta1->value_size &&
-+		meta0->timer_off == meta1->timer_off &&
- 		meta0->map_flags == meta1->map_flags;
- }
- 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 5d1fee634be8..9a2068e39d23 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -260,8 +260,8 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
- 				copy_map_value_locked(map, value, ptr, true);
- 			else
- 				copy_map_value(map, value, ptr);
--			/* mask lock, since value wasn't zero inited */
--			check_and_init_map_lock(map, value);
-+			/* mask lock and timer, since value wasn't zero inited */
-+			check_and_init_map_value(map, value);
- 		}
- 		rcu_read_unlock();
- 	}
-@@ -623,7 +623,8 @@ static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
- 	struct bpf_map *map = filp->private_data;
- 	int err;
- 
--	if (!map->ops->map_mmap || map_value_has_spin_lock(map))
-+	if (!map->ops->map_mmap || map_value_has_spin_lock(map) ||
-+	    map_value_has_timer(map))
- 		return -ENOTSUPP;
- 
- 	if (!(vma->vm_flags & VM_SHARED))
-@@ -793,6 +794,16 @@ static int map_check_btf(struct bpf_map *map, const struct btf *btf,
- 		}
- 	}
- 
-+	map->timer_off = btf_find_timer(btf, value_type);
-+	if (map_value_has_timer(map)) {
-+		if (map->map_flags & BPF_F_RDONLY_PROG)
-+			return -EACCES;
-+		if (map->map_type != BPF_MAP_TYPE_HASH &&
-+		    map->map_type != BPF_MAP_TYPE_LRU_HASH &&
-+		    map->map_type != BPF_MAP_TYPE_ARRAY)
-+			return -EOPNOTSUPP;
-+	}
-+
- 	if (map->ops->map_check_btf)
- 		ret = map->ops->map_check_btf(map, btf, key_type, value_type);
- 
-@@ -844,6 +855,7 @@ static int map_create(union bpf_attr *attr)
- 	mutex_init(&map->freeze_mutex);
- 
- 	map->spin_lock_off = -EINVAL;
-+	map->timer_off = -EINVAL;
- 	if (attr->btf_key_type_id || attr->btf_value_type_id ||
- 	    /* Even the map's value is a kernel's struct,
- 	     * the bpf_prog.o must have BTF to begin with
-@@ -1591,7 +1603,8 @@ static int map_freeze(const union bpf_attr *attr)
- 	if (IS_ERR(map))
- 		return PTR_ERR(map);
- 
--	if (map->map_type == BPF_MAP_TYPE_STRUCT_OPS) {
-+	if (map->map_type == BPF_MAP_TYPE_STRUCT_OPS ||
-+	    map_value_has_timer(map)) {
- 		fdput(f);
- 		return -ENOTSUPP;
- 	}
+ 		/* for PTR_TO_BTF_ID */
+ 		struct {
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 3d78933687ea..e44c36107d11 100644
+index e44c36107d11..cb393de3c818 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -3241,6 +3241,15 @@ static int check_map_access(struct bpf_verifier_env *env, u32 regno,
- 			return -EACCES;
- 		}
+@@ -255,6 +255,7 @@ struct bpf_call_arg_meta {
+ 	int mem_size;
+ 	u64 msize_max_value;
+ 	int ref_obj_id;
++	int map_uid;
+ 	int func_id;
+ 	struct btf *btf;
+ 	u32 btf_id;
+@@ -1135,6 +1136,10 @@ static void mark_ptr_not_null_reg(struct bpf_reg_state *reg)
+ 		if (map->inner_map_meta) {
+ 			reg->type = CONST_PTR_TO_MAP;
+ 			reg->map_ptr = map->inner_map_meta;
++			/* transfer reg's id which is unique for every map_lookup_elem
++			 * as UID of the inner map.
++			 */
++			reg->map_uid = reg->id;
+ 		} else if (map->map_type == BPF_MAP_TYPE_XSKMAP) {
+ 			reg->type = PTR_TO_XDP_SOCK;
+ 		} else if (map->map_type == BPF_MAP_TYPE_SOCKMAP ||
+@@ -4708,6 +4713,7 @@ static int process_timer_func(struct bpf_verifier_env *env, int regno,
+ 		verbose(env, "verifier bug. Two map pointers in a timer helper\n");
+ 		return -EFAULT;
  	}
-+	if (map_value_has_timer(map)) {
-+		u32 t = map->timer_off;
-+
-+		if (reg->smin_value + off < t + sizeof(struct bpf_timer) &&
-+		     t < reg->umax_value + off + size) {
-+			verbose(env, "bpf_timer cannot be accessed directly by load/store\n");
-+			return -EACCES;
-+		}
-+	}
- 	return err;
++	meta->map_uid = reg->map_uid;
+ 	meta->map_ptr = map;
+ 	return 0;
  }
+@@ -5006,11 +5012,29 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
  
-@@ -4675,9 +4684,24 @@ static int process_timer_func(struct bpf_verifier_env *env, int regno,
- 			map->name);
- 		return -EINVAL;
- 	}
--	if (val) {
--		/* This restriction will be removed in the next patch */
--		verbose(env, "bpf_timer field can only be first in the map value element\n");
-+	if (!map_value_has_timer(map)) {
-+		if (map->timer_off == -E2BIG)
-+			verbose(env,
-+				"map '%s' has more than one 'struct bpf_timer'\n",
-+				map->name);
-+		else if (map->timer_off == -ENOENT)
-+			verbose(env,
-+				"map '%s' doesn't have 'struct bpf_timer'\n",
-+				map->name);
-+		else
-+			verbose(env,
-+				"map '%s' is not a struct type or bpf_timer is mangled\n",
-+				map->name);
-+		return -EINVAL;
-+	}
-+	if (map->timer_off != val + reg->off) {
-+		verbose(env, "off %lld doesn't point to 'struct bpf_timer' that is at %d\n",
-+			val + reg->off, map->timer_off);
- 		return -EINVAL;
- 	}
- 	if (meta->map_ptr) {
+ 	if (arg_type == ARG_CONST_MAP_PTR) {
+ 		/* bpf_map_xxx(map_ptr) call: remember that map_ptr */
+-		if (meta->map_ptr && meta->map_ptr != reg->map_ptr) {
+-			verbose(env, "Map pointer doesn't match bpf_timer.\n");
+-			return -EINVAL;
++		if (meta->map_ptr) {
++			/* Use map_uid (which is unique id of inner map) to reject:
++			 * inner_map1 = bpf_map_lookup_elem(outer_map, key1)
++			 * inner_map2 = bpf_map_lookup_elem(outer_map, key2)
++			 * if (inner_map1 && inner_map2) {
++			 *     timer = bpf_map_lookup_elem(inner_map1);
++			 *     if (timer)
++			 *         // mismatch would have been allowed
++			 *         bpf_timer_init(timer, inner_map2);
++			 * }
++			 *
++			 * Comparing map_ptr is enough to distinguish normal and outer maps.
++			 */
++			if (meta->map_ptr != reg->map_ptr ||
++			    meta->map_uid != reg->map_uid) {
++				verbose(env,
++					"timer pointer in R1 map_uid=%d doesn't match map pointer in R2 map_uid=%d\n",
++					meta->map_uid, reg->map_uid);
++				return -EINVAL;
++			}
+ 		}
+ 		meta->map_ptr = reg->map_ptr;
++		meta->map_uid = reg->map_uid;
+ 	} else if (arg_type == ARG_PTR_TO_MAP_KEY) {
+ 		/* bpf_map_xxx(..., map_ptr, ..., key) call:
+ 		 * check that [key, key + map->key_size) are within
+@@ -6204,6 +6228,7 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+ 			return -EINVAL;
+ 		}
+ 		regs[BPF_REG_0].map_ptr = meta.map_ptr;
++		regs[BPF_REG_0].map_uid = meta.map_uid;
+ 		if (fn->ret_type == RET_PTR_TO_MAP_VALUE) {
+ 			regs[BPF_REG_0].type = PTR_TO_MAP_VALUE;
+ 			if (map_value_has_spin_lock(meta.map_ptr))
 -- 
 2.30.2
 
