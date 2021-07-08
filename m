@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A38BD3BFA15
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2DF3BFA16
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbhGHMah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 08:30:37 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:44986 "EHLO mta-01.yadro.com"
+        id S231486AbhGHMai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 08:30:38 -0400
+Received: from mta-02.yadro.com ([89.207.88.252]:45006 "EHLO mta-01.yadro.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229659AbhGHMaf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 08:30:35 -0400
+        id S231126AbhGHMah (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 08:30:37 -0400
 Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 04C1349E3D;
-        Thu,  8 Jul 2021 12:27:53 +0000 (UTC)
+        by mta-01.yadro.com (Postfix) with ESMTP id 3051F49E44;
+        Thu,  8 Jul 2021 12:27:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
         content-type:content-type:content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mta-01; t=1625747271; x=
-        1627561672; bh=bO6Qk1sZMJQVSInPZGyfZf+bln/u5E6eqcOxjG61nAI=; b=i
-        Uam7raNvzYwN4+UwSq3eZuNlTjP5MUUCB9cggKvAaJV3IMfiTp3tTfoELDGyU78C
-        PEE4y+++SLQ0O3+dxaPq0eYaGylne3oLUUs+TL6Z2B4I/Chyowea68IdB0NX7JDE
-        mkuJZZKICAA9p5ywlFHaQo0psLvNEQekFsKFZ4KTos=
+        :references:in-reply-to:x-mailer:message-id:date:date:subject
+        :subject:from:from:received:received:received; s=mta-01; t=
+        1625747273; x=1627561674; bh=vK96Sc7MNGUkW8R4Eq+yIewGLHOFKMnjDyv
+        qwGbS51s=; b=t7Jwd2X0qcTmF6cEfkt+UCjbb6s4kg16gqeDEe9e1BeWzKutVR4
+        frTxLgvoFAhWvUEu1Vx7XbGWlEfQvWXjAY0Qn1c7a+ED6JbBA8e+FvvWLJoN3JzE
+        42nZ02t515wPkjxfBpVViN0xrY/s/B26Fy1rYxOyH4nL0jO37Z10EDbM=
 X-Virus-Scanned: amavisd-new at yadro.com
 Received: from mta-01.yadro.com ([127.0.0.1])
         by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Wb_Ks_nfBjDz; Thu,  8 Jul 2021 15:27:51 +0300 (MSK)
+        with ESMTP id 2flJR5XKGTo4; Thu,  8 Jul 2021 15:27:53 +0300 (MSK)
 Received: from T-EXCH-03.corp.yadro.com (t-exch-03.corp.yadro.com [172.17.100.103])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 0320949F4C;
-        Thu,  8 Jul 2021 15:18:25 +0300 (MSK)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 0089D49F48;
+        Thu,  8 Jul 2021 15:18:27 +0300 (MSK)
 Received: from fedora.mshome.net (10.199.0.196) by T-EXCH-03.corp.yadro.com
  (172.17.100.103) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Thu, 8 Jul
@@ -44,10 +44,12 @@ CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <openbmc@lists.ozlabs.org>
-Subject: [PATCH v2 0/3] net/ncsi: Add NCSI Intel OEM command to keep PHY link up
-Date:   Thu, 8 Jul 2021 15:27:51 +0300
-Message-ID: <20210708122754.555846-1-i.mikhaylov@yadro.com>
+Subject: [PATCH v2 1/3] net/ncsi: fix restricted cast warning of sparse
+Date:   Thu, 8 Jul 2021 15:27:52 +0300
+Message-ID: <20210708122754.555846-2-i.mikhaylov@yadro.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210708122754.555846-1-i.mikhaylov@yadro.com>
+References: <20210708122754.555846-1-i.mikhaylov@yadro.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -58,28 +60,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add NCSI Intel OEM command to keep PHY link up and prevents any channel
-resets during the host load on i210. Also includes dummy response handler for
-Intel manufacturer id.
+Sparse reports:
+net/ncsi/ncsi-rsp.c:406:24: warning: cast to restricted __be32
+net/ncsi/ncsi-manage.c:732:33: warning: cast to restricted __be32
+net/ncsi/ncsi-manage.c:756:25: warning: cast to restricted __be32
+net/ncsi/ncsi-manage.c:779:25: warning: cast to restricted __be32
 
-Changes from v1:
- 1. sparse fixes about casts
- 2. put it after ncsi_dev_state_probe_cis instead of
-    ncsi_dev_state_probe_channel because sometimes channel is not ready
-    after it
- 3. inl -> intel
+Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+---
+ net/ncsi/ncsi-manage.c | 6 +++---
+ net/ncsi/ncsi-rsp.c    | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Ivan Mikhaylov (3):
-  net/ncsi: fix restricted cast warning of sparse
-  net/ncsi: add NCSI Intel OEM command to keep PHY up
-  net/ncsi: add dummy response handler for Intel boards
-
- net/ncsi/Kconfig       |  6 +++++
- net/ncsi/internal.h    |  5 +++++
- net/ncsi/ncsi-manage.c | 51 +++++++++++++++++++++++++++++++++++++++---
- net/ncsi/ncsi-rsp.c    | 11 +++++++--
- 4 files changed, 68 insertions(+), 5 deletions(-)
-
+diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
+index ca04b6df1341..42b54a3da2e6 100644
+--- a/net/ncsi/ncsi-manage.c
++++ b/net/ncsi/ncsi-manage.c
+@@ -700,7 +700,7 @@ static int ncsi_oem_gma_handler_bcm(struct ncsi_cmd_arg *nca)
+ 	nca->payload = NCSI_OEM_BCM_CMD_GMA_LEN;
+ 
+ 	memset(data, 0, NCSI_OEM_BCM_CMD_GMA_LEN);
+-	*(unsigned int *)data = ntohl(NCSI_OEM_MFR_BCM_ID);
++	*(unsigned int *)data = ntohl((__force __be32)NCSI_OEM_MFR_BCM_ID);
+ 	data[5] = NCSI_OEM_BCM_CMD_GMA;
+ 
+ 	nca->data = data;
+@@ -724,7 +724,7 @@ static int ncsi_oem_gma_handler_mlx(struct ncsi_cmd_arg *nca)
+ 	nca->payload = NCSI_OEM_MLX_CMD_GMA_LEN;
+ 
+ 	memset(&u, 0, sizeof(u));
+-	u.data_u32[0] = ntohl(NCSI_OEM_MFR_MLX_ID);
++	u.data_u32[0] = ntohl((__force __be32)NCSI_OEM_MFR_MLX_ID);
+ 	u.data_u8[5] = NCSI_OEM_MLX_CMD_GMA;
+ 	u.data_u8[6] = NCSI_OEM_MLX_CMD_GMA_PARAM;
+ 
+@@ -747,7 +747,7 @@ static int ncsi_oem_smaf_mlx(struct ncsi_cmd_arg *nca)
+ 	int ret = 0;
+ 
+ 	memset(&u, 0, sizeof(u));
+-	u.data_u32[0] = ntohl(NCSI_OEM_MFR_MLX_ID);
++	u.data_u32[0] = ntohl((__force __be32)NCSI_OEM_MFR_MLX_ID);
+ 	u.data_u8[5] = NCSI_OEM_MLX_CMD_SMAF;
+ 	u.data_u8[6] = NCSI_OEM_MLX_CMD_SMAF_PARAM;
+ 	memcpy(&u.data_u8[MLX_SMAF_MAC_ADDR_OFFSET],
+diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
+index 888ccc2d4e34..04bc50be5c01 100644
+--- a/net/ncsi/ncsi-rsp.c
++++ b/net/ncsi/ncsi-rsp.c
+@@ -403,7 +403,7 @@ static int ncsi_rsp_handler_ev(struct ncsi_request *nr)
+ 	/* Update to VLAN mode */
+ 	cmd = (struct ncsi_cmd_ev_pkt *)skb_network_header(nr->cmd);
+ 	ncm->enable = 1;
+-	ncm->data[0] = ntohl(cmd->mode);
++	ncm->data[0] = ntohl((__force __be32)cmd->mode);
+ 
+ 	return 0;
+ }
 -- 
 2.31.1
 
