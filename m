@@ -2,186 +2,1217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B09873BF3E2
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 04:11:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC333BF3FC
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 04:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230295AbhGHCOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 22:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbhGHCOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 22:14:08 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CEEC061574;
-        Wed,  7 Jul 2021 19:11:27 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id q10so4030013pfj.12;
-        Wed, 07 Jul 2021 19:11:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=316L5rfChZHhgSmIsa/mv70DJZD3Iupb/gjN06zoayI=;
-        b=CxL2vIKyB+heXsV3W+GzKGxtZG9oWQJ2esT6mMWs7TjKAe6Iun6crYP2cbm3Vpfp1n
-         8uky0MfjSGNI4hh8cBteEsPC47McDA3FUdDaA9D4O99axPqM+41R2GnsnlpfEE2eZysQ
-         4PbFxInS7pU9HpO8sio8jtFjMYkOwDmwX2+xn6RypDoPw+TypQZ7tOwRIxVkIEP5apDD
-         qQVT59ci0G73mgQ7s94OfCSv1pMnGqIw9l60XuxoAW4rFNn580urMI7048qJrEj99uhb
-         6SiGxGkfqmVtxtq8rcuRqyDNYpZ0onVxR69cwXot1mm8UNVpQorfgOIj52Od4LULixZN
-         LVww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=316L5rfChZHhgSmIsa/mv70DJZD3Iupb/gjN06zoayI=;
-        b=jeA9qNy0qvU/7PdqZ5CUd9+MrcCDXn8JMPPOKodZf+CTufvJCkfLiGxf2SU1/vtlH5
-         cQ2W+Y+auB7DaBNeP4/X29uZSElKq9sHBY20XKsd9lAY5p3YicB9VMybYBuRG7g7DaBQ
-         dLS1vbG2UGH4b7hu15MsAJ1A2H6CC565OJWMovP7c8uIgqgMeV3UIOP4cXbA7x5u4qeQ
-         DJSOaMZXbtGXGP6d2yOXS80FTUzo5g3qnyhq9Dmm1kWwzEJBu/vx/wrfVLmOKnUMtpWt
-         7i+dhO/8qvtKLFoopYi/8GXKmWC9QiXHRXFhMorUUF6mY427SOhaH637+VWvi2vbkKSq
-         otTw==
-X-Gm-Message-State: AOAM533a7POHpRDjY3LYSZR/NxX6jaWLtt7v8eMkS/Ze23KLKZ8NAPdE
-        a9Je3d4NIe8UQowI7X4fco4=
-X-Google-Smtp-Source: ABdhPJzcBxviwBOUhyWGhl7CoXwV1ndXf2osWEb4ceQH79KTYwfxQlrB5yKfq3sl/Lrrab5qCkNCiQ==
-X-Received: by 2002:a62:cd44:0:b029:316:643c:1ee3 with SMTP id o65-20020a62cd440000b0290316643c1ee3mr28744366pfg.5.1625710287335;
-        Wed, 07 Jul 2021 19:11:27 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9f4e])
-        by smtp.gmail.com with ESMTPSA id u23sm636960pgk.38.2021.07.07.19.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jul 2021 19:11:26 -0700 (PDT)
-Date:   Wed, 7 Jul 2021 19:11:23 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S230314AbhGHCaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 22:30:22 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:10291 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230188AbhGHCaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 22:30:21 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GL0Rb1pQ2z1CGXk;
+        Thu,  8 Jul 2021 10:22:03 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 8 Jul 2021 10:27:32 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 8 Jul 2021
+ 10:27:32 +0800
+Subject: Re: [PATCH net-next RFC 1/2] page_pool: add page recycling support
+ based on elevated refcnt
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, Marcin Wojtas <mw@semihalf.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: Re: [PATCHv3 bpf-next 3/7] bpf: Add bpf_get_func_ip helper for
- tracing programs
-Message-ID: <20210708021123.w4smo42jml57iowl@ast-mbp.dhcp.thefacebook.com>
-References: <20210707214751.159713-1-jolsa@kernel.org>
- <20210707214751.159713-4-jolsa@kernel.org>
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
+        <guro@fb.com>, <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
+        <cong.wang@bytedance.com>, Kevin Hao <haokexin@gmail.com>,
+        <nogikh@google.com>, Marco Elver <elver@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+ <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Ueyc8BqjkdTVC_c-Upn-ghNeahYQrWJtQSqxoqN7VvMWA@mail.gmail.com>
+ <29403911-bc26-dd86-83b8-da3c1784d087@huawei.com>
+ <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <36a46c57-0090-8f3b-a358-ebbb2512e4cd@huawei.com>
+Date:   Thu, 8 Jul 2021 10:27:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210707214751.159713-4-jolsa@kernel.org>
+In-Reply-To: <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 11:47:47PM +0200, Jiri Olsa wrote:
->  
-> +static bool allow_get_func_ip_tracing(struct bpf_verifier_env *env)
-> +{
-> +	return env->prog->jit_requested && IS_ENABLED(CONFIG_X86_64);
+On 2021/7/7 23:01, Alexander Duyck wrote:
+> On Tue, Jul 6, 2021 at 8:05 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2021/7/7 4:45, Alexander Duyck wrote:
+>>> On Wed, Jun 30, 2021 at 2:19 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>
+>>>> Currently page pool only support page recycling only when
+>>>> refcnt of page is one, which means it can not support the
+>>>> split page recycling implemented in the most ethernet driver.
+>>>>
+>>>> So add elevated refcnt support in page pool, and support
+>>>> allocating page frag to enable multi-frames-per-page based
+>>>> on the elevated refcnt support.
+>>>>
+>>>> As the elevated refcnt is per page, and there is no space
+>>>> for that in "struct page" now, so add a dynamically allocated
+>>>> "struct page_pool_info" to record page pool ptr and refcnt
+>>>> corrsponding to a page for now. Later, we can recycle the
+>>>> "struct page_pool_info" too, or use part of page memory to
+>>>> record pp_info.
+>>>>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>>
+>> Hi, Alexander
+>>
+>> Thanks for detailed reviewing.
+>>
+>>>
+>>> So this isn't going to work with the current recycling logic. The
+>>> expectation there is that we can safely unmap the entire page as soon
+>>> as the reference count is greater than 1.
+>>
+>> Yes, the expectation is changed to we can always recycle the page
+>> when the last user has dropped the refcnt that has given to it when
+>> the page is not pfmemalloced.
+>>
+>> The above expectation is based on that the last user will always
+>> call page_pool_put_full_page() in order to do the recycling or do
+>> the resource cleanup(dma unmaping..etc).
+>>
+>> As the skb_free_head() and skb_release_data() have both checked the
+>> skb->pp_recycle to call the page_pool_put_full_page() if needed, I
+>> think we are safe for most case, the one case I am not so sure above
+>> is the rx zero copy, which seems to also bump up the refcnt before
+>> mapping the page to user space, we might need to ensure rx zero copy
+>> is not the last user of the page or if it is the last user, make sure
+>> it calls page_pool_put_full_page() too.
+> 
+> Yes, but the skb->pp_recycle value is per skb, not per page. So my
+> concern is that carrying around that value can be problematic as there
+> are a number of possible cases where the pages might be
+> unintentionally recycled. All it would take is for a packet to get
+> cloned a few times and then somebody starts using pskb_expand_head and
+> you would have multiple cases, possibly simultaneously, of entities
+> trying to free the page. I just worry it opens us up to a number of
+> possible races.
 
-Why does it have to be gated by 'jited && x86_64' ?
-It's gated by bpf trampoline and it's only implemented on x86_64 so far.
-The trampoline has plenty of features. I would expect bpf trampoline
-for arm64 to implement all of them. If not the func_ip would be just
-one of the trampoline features that couldn't be implemented and at that
-time we'd need a flag mask of a sort, but I'd rather push of feature
-equivalence between trampoline implementations.
+I think page_ref_dec_return() in page_pool_bias_page_recyclable() will
+prevent the above race to happen.
 
-Then jited part also doesn't seem to be necessary.
-The trampoline passed pointer to a stack in R1.
-Interpreter should deal with BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8) insn
-the same way and it should work, since trampoline prepared it.
-What did I miss?
+As the page_ref_dec_return() and page_pool_bias_page_recyclable() return
+true, all user of the page have done with the p->pp_magic and p->pp_info,
+so it should be ok to reset the p->pp_magic and p->pp_info in any order?
 
-> +static int has_get_func_ip(struct bpf_verifier_env *env)
-> +{
-> +	enum bpf_attach_type eatype = env->prog->expected_attach_type;
-> +	enum bpf_prog_type type = resolve_prog_type(env->prog);
-> +	int func_id = BPF_FUNC_get_func_ip;
-> +
-> +	if (type == BPF_PROG_TYPE_TRACING) {
-> +		if (eatype != BPF_TRACE_FENTRY && eatype != BPF_TRACE_FEXIT &&
-> +		    eatype != BPF_MODIFY_RETURN) {
-> +			verbose(env, "func %s#%d supported only for fentry/fexit/fmod_ret programs\n",
-> +				func_id_name(func_id), func_id);
-> +			return -ENOTSUPP;
-> +		}
-> +		if (!allow_get_func_ip_tracing(env)) {
-> +			verbose(env, "func %s#%d for tracing programs supported only for JITed x86_64\n",
-> +				func_id_name(func_id), func_id);
-> +			return -ENOTSUPP;
-> +		}
-> +		return 0;
-> +	}
-> +
-> +	verbose(env, "func %s#%d not supported for program type %d\n",
-> +		func_id_name(func_id), func_id, type);
-> +	return -ENOTSUPP;
-> +}
-> +
->  static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
->  			     int *insn_idx_p)
->  {
-> @@ -6225,6 +6256,12 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
->  	if (func_id == BPF_FUNC_get_stackid || func_id == BPF_FUNC_get_stack)
->  		env->prog->call_get_stack = true;
->  
-> +	if (func_id == BPF_FUNC_get_func_ip) {
-> +		if (has_get_func_ip(env))
-> +			return -ENOTSUPP;
-> +		env->prog->call_get_func_ip = true;
-> +	}
-> +
->  	if (changes_data)
->  		clear_all_pkt_pointers(env);
->  	return 0;
-> @@ -12369,6 +12406,7 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
->  {
->  	struct bpf_prog *prog = env->prog;
->  	bool expect_blinding = bpf_jit_blinding_enabled(prog);
-> +	enum bpf_prog_type prog_type = resolve_prog_type(prog);
->  	struct bpf_insn *insn = prog->insnsi;
->  	const struct bpf_func_proto *fn;
->  	const int insn_cnt = prog->len;
-> @@ -12702,6 +12740,21 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
->  			continue;
->  		}
->  
-> +		/* Implement bpf_get_func_ip inline. */
-> +		if (prog_type == BPF_PROG_TYPE_TRACING &&
-> +		    insn->imm == BPF_FUNC_get_func_ip) {
-> +			/* Load IP address from ctx - 8 */
-> +			insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1, -8);
-> +
-> +			new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
-> +			if (!new_prog)
-> +				return -ENOMEM;
-> +
-> +			env->prog = prog = new_prog;
-> +			insn      = new_prog->insnsi + i + delta;
-> +			continue;
-> +		}
-> +
->  patch_call_imm:
->  		fn = env->ops->get_func_proto(insn->imm, env->prog);
->  		/* all functions that have prototype and verifier allowed
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 64bd2d84367f..9edd3b1a00ad 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -948,6 +948,19 @@ const struct bpf_func_proto bpf_snprintf_btf_proto = {
->  	.arg5_type	= ARG_ANYTHING,
->  };
->  
-> +BPF_CALL_1(bpf_get_func_ip_tracing, void *, ctx)
-> +{
-> +	/* Stub, the helper call is inlined in the program. */
-> +	return 0;
-> +}
+And page_ref_dec_return() has both __atomic_pre_full_fence() and
+__atomic_post_full_fence() to ensure the above ordering.
 
-may be add a WARN in here that it should never be executed ?
-Or may be add an actual implementation:
- return ((u64 *)ctx)[-1];
-and check that it works without inlining by the verifier?
+> 
+>>>
+>>> In addition I think I need to look over that code better as I am
+>>> wondering if there are potential issues assuming a path such as a
+>>> skb_clone followed by pskb_expand_head may lead to memory corruptions
+>>> since the clone will still have pp_recycle set but none of the pages
+>>> will be part of the page pool anymore.
+>>
+>> There is still page->pp_magic that decides if the page is from
+>> page_pool or not.
+> 
+> The problem with pp_magic is that it doesn't prevent races. The page
+> pool code was meant to be protected by NAPI to prevent simultaneous
+> access. With us now allowing the stack to be a part of the handling we
+> open things up to potential races in the code.
+
+As above.
+
+> 
+>>>
+>>> For us the pagecnt_bias would really represent the number of
+>>> additional mappings beyond the current page that are being held. I
+>>> have already been playing around with something similar. However the
+>>> general idea is that we want to keep track of how many references to
+>>> the page the device is holding onto. When that hits 0 and the actual
+>>> page count is 1 we can refill both, however if we hit 0 and there are
+>>> multiple references to the page still floating around we should just
+>>> unmap the page and turn it over to the stack or free it.
+>>
+>> I am not sure I understood the above.
+> 
+> As I have already mentioned, the fundamental problem with sharing a
+> page and using the page pool is that the page pool assumes that it can
+> unmap if it has a reference count greater than 0. That will no longer
+> be the case. It has to wait until all of the pagecnt_bias has been
+> cleared before it can unmap the page. Using get_page/put_page is fine
+> since it will have no impact on the DMA mappings, but we have to hold
+> off on calling things like page_pool_put_full_page or update it so
+> that it will not unmap as long as there is still pagecnt_bias in
+> place.
+
+Actually pagecnt_bias is never clear when the page is in use or is still
+recyclable, and DMA unmapping is only done when page is not in use and
+and the page is not recyclable(page is from pf_memealloced or pool->ring
+is full).
+
+The page_pool_bias_page_recyclable() is used to decide whether there is
+user using the page, if there is still other user using the page, current
+user calling the page_pool_bias_page_recyclable() just do a ref_dec and
+return, it is only the last user calling the page_pool_bias_page_recyclable()
+will do the DMA unmapping if the page is not recyclable.
+
+> 
+>> As page reusing in hns3 driver, pagecnt_bias means how many refcnt the
+>> driver is holding, and (page_count(cb->priv) - pagecnt_bias) means how
+>> many refcnt the stack is holding, see [1].
+>>
+>> static bool hns3_can_reuse_page(struct hns3_desc_cb *cb)
+>> {
+>>         return (page_count(cb->priv) - cb->pagecnt_bias) == 1;
+>> }
+> 
+> So one thing we have to be careful of is letting the page_count hit 0.
+> My preference is to keep the bias as one less than the total
+> page_count so that we always have the 1 around. So if pagecnt_bias
+> hits 0 and we have a page_count of 1 it means that the current thread
+> owns the only reference to the page.
+> 
+>> checking (page_count(cb->priv) - cb->pagecnt_bias) again one instead
+>> of zero is in hns3_can_reuse_page because there is "pagecnt_bias--"
+>> before checking hns3_can_reuse_page() in hns3_nic_reuse_page().
+>>
+>> "pagecnt_bias--" means the driver gives the one of its refcnt to the
+>> stack, it is the stack'job to release the refcnt when the skb is passed
+>> to the stack.
+>>
+>> 1. https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L2870
+> 
+> It is mostly just a matter of preference. As long as the difference is
+> a predictable value it can be worked with.
+> 
+>>>
+>>>> ---
+>>>>  drivers/net/ethernet/marvell/mvneta.c           |   6 +-
+>>>>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |   2 +-
+>>>>  include/linux/mm_types.h                        |   2 +-
+>>>>  include/linux/skbuff.h                          |   4 +-
+>>>>  include/net/page_pool.h                         |  30 +++-
+>>>>  net/core/page_pool.c                            | 215 ++++++++++++++++++++----
+>>>>  6 files changed, 207 insertions(+), 52 deletions(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+>>>> index 88a7550..5a29af2 100644
+>>>> --- a/drivers/net/ethernet/marvell/mvneta.c
+>>>> +++ b/drivers/net/ethernet/marvell/mvneta.c
+>>>> @@ -2327,7 +2327,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>>>>         if (!skb)
+>>>>                 return ERR_PTR(-ENOMEM);
+>>>>
+>>>> -       skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
+>>>> +       skb_mark_for_recycle(skb);
+>>>>
+>>>>         skb_reserve(skb, xdp->data - xdp->data_hard_start);
+>>>>         skb_put(skb, xdp->data_end - xdp->data);
+>>>> @@ -2339,10 +2339,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
+>>>>                 skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+>>>>                                 skb_frag_page(frag), skb_frag_off(frag),
+>>>>                                 skb_frag_size(frag), PAGE_SIZE);
+>>>> -               /* We don't need to reset pp_recycle here. It's already set, so
+>>>> -                * just mark fragments for recycling.
+>>>> -                */
+>>>> -               page_pool_store_mem_info(skb_frag_page(frag), pool);
+>>>>         }
+>>>>
+>>>>         return skb;
+>>>
+>>> So as I mentioned earlier the problem with recycling is that splitting
+>>> up the ownership of the page makes it difficult for us to clean it up.
+>>> Technically speaking if the pages are being allowed to leave while
+>>> holding references to DMA addresses that we cannot revoke then we
+>>> should be holding references to the device.
+>>>
+>>> That is one of the reasons why the previous code was just clearing the
+>>> mapping as soon as the refcount was greater than 1. However for this
+>>> to work out correctly we would have to track how many DMA mappings we
+>>> have outstanding in addition to the one we are working on currently.
+>>
+>> I think page pool has already handled the above case if I understand
+>> correctly, see page_pool_release().
+> 
+> The problem is pagecnt_bias is not multi-thread safe. You are just
+> accessing an int which is prone to races. In order to fix it you would
+> need to add either an atomic count or locks around the access of it
+> which would pretty much negate the point of it.
+
+As pagecnt_bias being not multi-thread safe, let's get back to it
+later.
+
+> 
+> Really in terms of the page pool recycling code I think it would have
+> made more sense to add the page pool release logic as an skb
+> destructor rather than trying to embed the page pool into the page
+> itself. At least with that if the device is going to go out of scope
+> by being orphaned or the like we could unmap the page and avoid
+> potential races.
+
+I suppose it is not the netdev relevant here, it is the "struct device"
+relevant here, right?
+
+I suppose the page_ref_dec_return() and get_device(pool->p.dev) in
+page_pool_init() is able to avoid the above race, as the unmaping
+is done after page_ref_dec_return()?
+
+> 
+>>>
+>>>> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>>>> index 3135220..540e387 100644
+>>>> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>>>> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>>>> @@ -3997,7 +3997,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+>>>>                 }
+>>>>
+>>>>                 if (pp)
+>>>> -                       skb_mark_for_recycle(skb, page, pp);
+>>>> +                       skb_mark_for_recycle(skb);
+>>>>                 else
+>>>>                         dma_unmap_single_attrs(dev->dev.parent, dma_addr,
+>>>>                                                bm_pool->buf_size, DMA_FROM_DEVICE,
+>>>> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+>>>> index 862f88a..cf613df 100644
+>>>> --- a/include/linux/mm_types.h
+>>>> +++ b/include/linux/mm_types.h
+>>>> @@ -101,7 +101,7 @@ struct page {
+>>>>                          * page_pool allocated pages.
+>>>>                          */
+>>>>                         unsigned long pp_magic;
+>>>> -                       struct page_pool *pp;
+>>>> +                       struct page_pool_info *pp_info;
+>>>>                         unsigned long _pp_mapping_pad;
+>>>>                         /**
+>>>>                          * @dma_addr: might require a 64-bit value on
+>>>
+>>> So the problem here is that this is creating a pointer chase, and the
+>>> need to allocate yet another structure to store it is going to be
+>>> expensive.
+>>>
+>>> As far as storing the pagecnt_bias it might make more sense to
+>>> repurpose the lower 12 bits of the dma address. A DMA mapping should
+>>> be page aligned anyway so the lower 12 bits would be reserved 0. When
+>>> we decrement the value so that the lower 12 bits are 0 we should be
+>>> unmapping the page anyway, or resetting the pagecnt_bias to PAGE_SIZE
+>>> - 1 and adding back the bias to the page to effectively reset it for
+>>> reuse.
+>>
+>> Yes, that is a great idea. I like it very much supposing page refcnt
+>> updating batching for 'PAGE_SIZE - 1" is enough for performance sake.
+>>
+>> Will take a look about it.
+>>
+>>>
+>>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>>>> index b2db9cd..7795979 100644
+>>>> --- a/include/linux/skbuff.h
+>>>> +++ b/include/linux/skbuff.h
+>>>> @@ -4711,11 +4711,9 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+>>>>  }
+>>>>
+>>>>  #ifdef CONFIG_PAGE_POOL
+>>>> -static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
+>>>> -                                       struct page_pool *pp)
+>>>> +static inline void skb_mark_for_recycle(struct sk_buff *skb)
+>>>>  {
+>>>>         skb->pp_recycle = 1;
+>>>> -       page_pool_store_mem_info(page, pp);
+>>>>  }
+>>>>  #endif
+>>>
+>>> I am not a fan of the pp_recycle flag either. We duplicate it via
+>>> skb_clone and from what I can tell if we call pskb_expand_head
+>>> afterwards I don't see how we avoid recycling the page frags twice.
+>>
+>> Acctually skb->pp_recycle is kind of duplicated, as there is
+>> still page->pp_magic to avoid recycling the page frags twice.
+>>
+>> The argument above adding skb->pp_recycle seems to be short
+>> cut code path for non-page_pool case in the previous disscusion,
+>> see [2].
+>>
+>> 2. https://lore.kernel.org/linux-mm/074b0d1d-9531-57f3-8e0e-a447387478d1@huawei.com/
+> 
+> Yes, but that doesn't guarantee atomic protections so you still have
+> race conditions possible. All it takes is something stalling during
+> the dma_unamp call. Worse yet from what I can tell it looks like you
+> clear page->pp before you clear page->pp_magic so you have the
+> potential for a NULL pointer issue since it is cleared before the
+> pp_magic value is.
+
+Hopefully the page_ref_dec_return() in page_pool_bias_page_recyclable()
+called by page_pool_put_page() will make the order of page->pp_magic
+clearing and page->pp clearing irrelevant?
+
+> 
+>>>
+>>>> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+>>>> index 3dd62dd..44e7545 100644
+>>>> --- a/include/net/page_pool.h
+>>>> +++ b/include/net/page_pool.h
+>>>> @@ -45,7 +45,9 @@
+>>>>                                         * Please note DMA-sync-for-CPU is still
+>>>>                                         * device driver responsibility
+>>>>                                         */
+>>>> -#define PP_FLAG_ALL            (PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
+>>>> +#define PP_FLAG_PAGECNT_BIAS   BIT(2)  /* Enable elevated refcnt */
+>>>> +#define PP_FLAG_ALL            (PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV |\
+>>>> +                                PP_FLAG_PAGECNT_BIAS)
+>>>>
+>>>>  /*
+>>>
+>>> It might be better to just put each flag on a seperate line for
+>>> PP_FLAG_ALL just to make it easier to read due to the wrapping. Either
+>>> that or you could look at converting this over to an enum with a MAX
+>>> value and then define the flags based on those enums, and PP_FLAG_ALL
+>>> being BIT(MAX) - 1.
+>>
+>> Will do the wrapping first:)
+> 
+> Sounds good.
+> 
+>>>
+>>>>   * Fast allocation side cache array/stack
+>>>> @@ -77,6 +79,7 @@ struct page_pool_params {
+>>>>         enum dma_data_direction dma_dir; /* DMA mapping direction */
+>>>>         unsigned int    max_len; /* max DMA sync memory size */
+>>>>         unsigned int    offset;  /* DMA addr offset */
+>>>> +       unsigned int    frag_size;
+>>>>  };
+>>>>
+>>>>  struct page_pool {
+>>>> @@ -88,6 +91,8 @@ struct page_pool {
+>>>>         unsigned long defer_warn;
+>>>>
+>>>>         u32 pages_state_hold_cnt;
+>>>> +       unsigned int frag_offset;
+>>>> +       struct page *frag_page;
+>>>>
+>>>>         /*
+>>>>          * Data structure for allocation side
+>>>> @@ -128,6 +133,11 @@ struct page_pool {
+>>>>         u64 destroy_cnt;
+>>>>  };
+>>>>
+>>>> +struct page_pool_info {
+>>>> +       struct page_pool *pp;
+>>>> +       int pagecnt_bias;
+>>>> +};
+>>>> +
+>>>
+>>> Rather than having a top-down structure here it might be better to
+>>> work bottom up. If you assume you are keeping a pagecnt_bias per page
+>>> it might make more sense to store this in the driver somewhere rather
+>>> than having it as a separate allocated buffer. One advantage of the
+>>> Intel drivers was doing this as we had the pagecnt_bias in a structure
+>>> that also pointed to the page. That way we were only updating that
+>>> count if we dropped the page and didn't have to even touch the page.
+>>> You could use that to batch updates to the pagecnt_bias if we did use
+>>> the lower 12 bits of the DMA address to store it as well.
+>>
+>> I am not sure I understood what "we dropped the page" meant.
+> 
+> For XDP_DROP if we are dropping the buffer we are dropping the page
+> which in our case means we just need to increment the pagecnt_bias
+> indicating we are putting it back and don't have to do anything with
+> the actual page refcount or struct.
+
+In that case, the driver not doing a page_pool_put_page() seems enough
+and reuse the page frag again?
+
+It seems to like the usecase as below in hns3 driver? If all the buffer
+has memcpy the head page, just reuse it.
+
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L3149
+
+> 
+>> The driver does not really need to call page_pool_put_full_page()
+>> if the page of a skb is passed to stack, the driver mainly call
+>> page_pool_put_full_page() when unloading or uniniting when the page
+>> is not passed to stack yet.
+> 
+> I was thinking mostly of something like XDP_TX cases when combined
+> with the pagecnt_bias. You will need to have something to return the
+> page to the pool after the XDP_TX is completed.
+
+I suppose XDP_TX is aware of page pool to call page_pool_put_full_page()
+when XDP_TX is completed now?
+
+I suppose the above should be handled as similar as the non-elevated refcnt
+case?
+
+> 
+>>> I'm assuming the idea with this is that you will be having multiple
+>>> buffers received off of a single page and so doing it that way you
+>>> should only have one update on allocation, maybe a trickle of updates
+>>> for XDP_TX, and another large update when the page is fully consumed
+>>> and you drop the remaining pagecnt_bias for Rx.
+>>
+>> I suppose "having multiple buffers received off of a single page" mean:
+>> use first half of a page for a desc, and the second half of the same page
+>> for another desc, intead of ping-pong way of reusing implemented in most
+>> driver currently?
+>>
+>> I am not so familiar with XDP to understand the latter part of comment too.
+> 
+> The alloc_frag logic below is an example of what I am talking about.
+> Basically taking a page and chopping it up into multiple pieces for
+> use as multiple receives instead of just one receive.
+
+Ok, but when multiple receives is passed to the stack and after the stack is
+done with all the receives, we should be able to recycle the page, right?
+
+> 
+>>>
+>>>>  struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
+>>>>
+>>>>  static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+>>>> @@ -137,6 +147,17 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+>>>>         return page_pool_alloc_pages(pool, gfp);
+>>>>  }
+>>>>
+>>>> +struct page *page_pool_alloc_frag(struct page_pool *pool,
+>>>> +                                 unsigned int *offset, gfp_t gfp);
+>>>> +
+>>>> +static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
+>>>> +                                                   unsigned int *offset)
+>>>> +{
+>>>> +       gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
+>>>> +
+>>>> +       return page_pool_alloc_frag(pool, offset, gfp);
+>>>> +}
+>>>> +
+>>>>  /* get the stored dma direction. A driver might decide to treat this locally and
+>>>>   * avoid the extra cache line from page_pool to determine the direction
+>>>>   */
+>>>> @@ -253,11 +274,4 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
+>>>>                 spin_unlock_bh(&pool->ring.producer_lock);
+>>>>  }
+>>>>
+>>>> -/* Store mem_info on struct page and use it while recycling skb frags */
+>>>> -static inline
+>>>> -void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
+>>>> -{
+>>>> -       page->pp = pp;
+>>>> -}
+>>>> -
+>>>>  #endif /* _NET_PAGE_POOL_H */
+>>>
+>>> So the issue as I see it with the page_pool recycling patch set is
+>>> that I don't think we had proper guarantees in place that the page->pp
+>>> value was flushed in all cases where skb->dev was changed. Basically
+>>> the logic we need to have in place to address those issues is that
+>>> skb->dev is changed we need to invalidate the DMA mappings on the
+>>> page_pool page.
+>>
+>> The DMA mappings invalidating is based on the pool->p.dev, is there
+>> any reason why the DMA mappings need invalidating when skb->dev is
+>> change, as fast I can tell, the tx is not aware of page pool, so
+>> when the skb is redirected, the page of the skb is always DMA mapped
+>> according to skb->dev before xmitting.
+>>
+>> Or it is about XDP redirected?
+>>
+>> Is there something obvious I missed here?
+> 
+> It is about unmapping the page. In order to do so we have to maintain
+> a pointer to the original DMA device. The page pool is doing that for
+> us currently.
+> 
+> Most netdevs have a parent  device that is used for DMA mapping.
+> Therefore if skb->dev is valid, then the parent device is still valid
+> since destroying the parent would destroy the children. If the
+> skb->dev is dropped or changed, then we cannot guarantee the parent
+> device is still present. So generally if skb->dev cannot be maintained
+> then we probably shouldn't be maintaining the DMA mapping or page->pp
+> across that boundary either.
+
+Does the get_device(pool->p.dev) in page_pool_init() not prevent the
+above case?
+
+> 
+>>>
+>>> I honestly wonder if it wouldn't be better for the recycling to just
+>>> make use of the page->lru pointers to keep a list of pages that are
+>>> outstanding so that it could release them if it is under DMA pressure.
+>>>
+>>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>>>> index 5e4eb45..95d94a7 100644
+>>>> --- a/net/core/page_pool.c
+>>>> +++ b/net/core/page_pool.c
+>>>> @@ -206,6 +206,49 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>>>>         return true;
+>>>>  }
+>>>>
+>>>> +static int page_pool_set_pp_info(struct page_pool *pool,
+>>>> +                                struct page *page, gfp_t gfp)
+>>>> +{
+>>>> +       struct page_pool_info *pp_info;
+>>>> +
+>>>> +       pp_info = kzalloc_node(sizeof(*pp_info), gfp, pool->p.nid);
+>>>> +       if (!pp_info)
+>>>> +               return -ENOMEM;
+>>>> +
+>>>> +       if (pool->p.flags & PP_FLAG_PAGECNT_BIAS) {
+>>>> +               page_ref_add(page, USHRT_MAX);
+>>>> +               pp_info->pagecnt_bias = USHRT_MAX;
+>>>> +       } else {
+>>>> +               pp_info->pagecnt_bias = 0;
+>>>> +       }
+>>>> +
+>>>> +       page->pp_magic |= PP_SIGNATURE;
+>>>> +       pp_info->pp = pool;
+>>>> +       page->pp_info = pp_info;
+>>>> +       return 0;
+>>>> +}
+>>>> +
+>>>
+>>> Having to perform a kzalloc in this path pretty much ruins the whole
+>>> point of the page_pool API in my opinion. We would be much better off
+>>> having a static structure that is to be maintained somewhere rather
+>>> than doing this dynamically as you would just make a memory hog able
+>>> to hold that much more memory.
+>>
+>> Let's see if repurposing the lower 12 bits of the dma address make sense?
+> 
+> Sounds good.
+> 
+>>>
+>>>> +static int page_pool_clear_pp_info(struct page *page)
+>>>> +{
+>>>> +       struct page_pool_info *pp_info = page->pp_info;
+>>>> +       int bias;
+>>>> +
+>>>> +       bias = pp_info->pagecnt_bias;
+>>>> +
+>>>> +       kfree(pp_info);
+>>>> +       page->pp_info = NULL;
+>>>> +       page->pp_magic = 0;
+>>>> +
+>>>> +       return bias;
+>>>> +}
+>>>> +
+>>>> +static void page_pool_clear_and_drain_page(struct page *page)
+>>>> +{
+>>>> +       int bias = page_pool_clear_pp_info(page);
+>>>> +
+>>>> +       __page_frag_cache_drain(page, bias + 1);
+>>>> +}
+>>>> +
+>>>>  static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+>>>>                                                  gfp_t gfp)
+>>>>  {
+>>>> @@ -216,13 +259,16 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+>>>>         if (unlikely(!page))
+>>>>                 return NULL;
+>>>>
+>>>> -       if ((pool->p.flags & PP_FLAG_DMA_MAP) &&
+>>>> -           unlikely(!page_pool_dma_map(pool, page))) {
+>>>> +       if (unlikely(page_pool_set_pp_info(pool, page, gfp))) {
+>>>>                 put_page(page);
+>>>>                 return NULL;
+>>>>         }
+>>>>
+>>>> -       page->pp_magic |= PP_SIGNATURE;
+>>>> +       if ((pool->p.flags & PP_FLAG_DMA_MAP) &&
+>>>> +           unlikely(!page_pool_dma_map(pool, page))) {
+>>>> +               page_pool_clear_and_drain_page(page);
+>>>> +               return NULL;
+>>>> +       }
+>>>>
+>>>>         /* Track how many pages are held 'in-flight' */
+>>>>         pool->pages_state_hold_cnt++;
+>>>> @@ -261,12 +307,17 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>>>>          */
+>>>>         for (i = 0; i < nr_pages; i++) {
+>>>>                 page = pool->alloc.cache[i];
+>>>> +               if (unlikely(page_pool_set_pp_info(pool, page, gfp))) {
+>>>> +                       put_page(page);
+>>>> +                       continue;
+>>>> +               }
+>>>> +
+>>>>                 if ((pp_flags & PP_FLAG_DMA_MAP) &&
+>>>>                     unlikely(!page_pool_dma_map(pool, page))) {
+>>>> -                       put_page(page);
+>>>> +                       page_pool_clear_and_drain_page(page);
+>>>>                         continue;
+>>>>                 }
+>>>
+>>> This seems backwards to me. I would have the pp_info populated after
+>>> you have generated the DMA mapping.
+>>
+>> Ok.
+>>
+>>>
+>>>> -               page->pp_magic |= PP_SIGNATURE;
+>>>> +
+>>>>                 pool->alloc.cache[pool->alloc.count++] = page;
+>>>>                 /* Track how many pages are held 'in-flight' */
+>>>>                 pool->pages_state_hold_cnt++;
+>>>> @@ -284,6 +335,25 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>>>>         return page;
+>>>>  }
+>>>>
+>>>> +static void page_pool_sub_bias(struct page *page, int nr)
+>>>> +{
+>>>> +       struct page_pool_info *pp_info = page->pp_info;
+>>>> +
+>>>> +       /* "pp_info->pagecnt_bias == 0" indicates the PAGECNT_BIAS
+>>>> +        * flags is not set.
+>>>> +        */
+>>>> +       if (!pp_info->pagecnt_bias)
+>>>> +               return;
+>>>> +
+>>>> +       /* Make sure pagecnt_bias > 0 for elevated refcnt case */
+>>>> +       if (unlikely(pp_info->pagecnt_bias <= nr)) {
+>>>> +               page_ref_add(page, USHRT_MAX);
+>>>> +               pp_info->pagecnt_bias += USHRT_MAX;
+>>>> +       }
+>>>> +
+>>>> +       pp_info->pagecnt_bias -= nr;
+>>>
+>>> So we should never have a case where pagecnt_bias is less than the
+>>> value we are subtracting. If we have that then it is a bug.
+>>
+>> Yes.
+> 
+> Sorry, I was referring to the code above comparing pagecnt_bias to nr.
+> At most nr should only ever be equal to pagecnt_bias, you should hold
+> off on recharging pagecnt_bias until you can verify the page_count
+> indicates we are the only holder of the page. Then we can recharge it
+> and reset any offsets.
+
+Actually the page pool is the only user of the page when the driver is
+calling page_pool_alloc_frag(), page is from pool->alloc/pool->ring or
+page allocator in page_pool_alloc_pages(), as memtioned above, the
+last user will put the page in pool->ring holding a lock, and when
+page_pool_alloc_pages() get a page (also holding the same lock) from
+pool->ring, there should be no user of the page other than the page pool.
+
+And page_pool_sub_bias() is called in page_pool_alloc_frag() and
+page_pool_alloc_pages().
+
+> 
+>>>
+>>> The general idea with the pagecnt_bias is that we want to batch the
+>>> release of the page from the device. So the assumption is we are going
+>>> to pull multiple references from the page and rather than doing
+>>> page_ref_inc repeatedly we want to batch it at the start, and we have
+>>> to perform a __page_frag_cache_drain to remove any unused references
+>>> when we need to free it.
+>>
+>> Yes, it is about batching the page_ref_inc() operation.
+>>
+>>>
+>>> What we should probably be checking for is "pp_info->pagecnt_bias -
+>>> page_count(page) > 1" when we hit the end of the page. If that is true
+>>> then we cannot recycle the page and so when we hit PAGE_SIZE for the
+>>> offset we have to drop the mapping and free the page subtracting any
+>>> remaining pagecnt_bias we are holding. If I recall I actually ran this
+>>> the other way and ran toward 0 in my implementation before as that
+>>> allows for not having to track via a value and instead simply checking
+>>> for a signed result.
+>>
+>>
+>> When allocating a page for frag, we have decided how many user is using
+>> the page, that is the "page_pool_sub_bias(frag_page, max_len / frag_size - 1)"
+>> in page_pool_alloc_frag().
+>>
+>> so it is up to the driver or stack to do multi page_pool_put_full_page()
+>> calling for the same page.
+> 
+> So that is one spot that I think is an issue. We normally only want
+> this called once per page and ideally after pagecnt_bias is 0. One
+> issue is that pagecnt_bias is non-atomic so we should really be
+> restricting this to just the driver calling it in softirq context.
+
+Let's discuss the pagecnt_bias handling at the end.
+
+> 
+>> Or the page pool will call page_pool_put_full_page() in page_pool_empty_frag()
+>> if some of the page frag is not allocated to the driver yet.
+>>
+>> It seems you are suggesting a slightly different way to do frag reusing.
+> 
+> As I mentioned I am not a fan of the current recycling scheme. There
+> are too many openings for it to end up unmapping the same page
+> multiple times or other possible issues.
+
+Other than the pagecnt_bias handling in non-atomic context, I think
+most of the race you mentioned above has been handled if I understand
+it correctly?
+
+> 
+> In my mind the driver or page_pool should own the page and just keep
+> it on a list to either be freed or recycled with the skb destructor
+> being used to trigger the recycling.
+
+The page_pool still own the page, it is just that when driver also own
+the page by calling page_pool_alloc_pages(), and the page is not on a
+list of page pool, the driver or stack calling the page_pool_put_full_page()
+will put the page back to the list of page pool(or do resource cleaning and
+put it back to page allocator) if it is the last user.
+
+I am not similar enough with destructor to say if using skb destructor
+has any difference here.
+
+> 
+>>>
+>>>> +}
+>>>> +
+>>>>  /* For using page_pool replace: alloc_pages() API calls, but provide
+>>>>   * synchronization guarantee for allocation side.
+>>>>   */
+>>>> @@ -293,15 +363,66 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
+>>>>
+>>>>         /* Fast-path: Get a page from cache */
+>>>>         page = __page_pool_get_cached(pool);
+>>>> -       if (page)
+>>>> +       if (page) {
+>>>> +               page_pool_sub_bias(page, 1);
+>>>>                 return page;
+>>>> +       }
+>>>
+>>> I'm not sure we should be subtracting from the bias here. Ideally if
+>>> you are getting a page you are getting the full 4K page. So having a
+>>> bias other than PAGE_SIZE - 1 wouldn't make much sense here.
+>>
+>> It seems we have different understanding about pagecnt_bias here,
+>> as the pagecnt_bias is hidden in the page pool now, the subtracting
+>> here mean we give one refcnt to the caller of page_pool_alloc_pages(),
+>> And in page_pool_alloc_frag(), we give different part of page to the
+>> driver, so it means more user too, so there is also subtracting in the
+>> page_pool_alloc_frag() too.
+> 
+> I see what you are getting at, however I think it depends on your use
+> case. In my mind since you are allocating the full page you should
+> have the full count available to you. I don't believe pagecnt_bias is
+> something that should be looked at outside of the driver, or at least
+> outside of the napi context of the device softirq.
+> 
+> So really in order for this to work correctly you would need to have
+> some minimum amount of bias reserved for the device to access if you
+> are going to break up page in to n usable buffers.
+
+Ensuring the pagecnt_bias > 0 in page_pool_sub_bias() seems enough
+to make sure the page pool always own the page?
+
+> 
+>>>
+>>>>
+>>>>         /* Slow-path: cache empty, do real allocation */
+>>>>         page = __page_pool_alloc_pages_slow(pool, gfp);
+>>>> +       if (page)
+>>>> +               page_pool_sub_bias(page, 1);
+>>>> +
+>>>
+>>> Same here. Really in both cases we should be getting initialized
+>>> pages, not ones that are already decrementing.
+>>>
+>>>>         return page;
+>>>>  }
+>>>>  EXPORT_SYMBOL(page_pool_alloc_pages);
+>>>>
+>>>> +struct page *page_pool_alloc_frag(struct page_pool *pool,
+>>>> +                                 unsigned int *offset, gfp_t gfp)
+>>>> +{
+>>>> +       unsigned int frag_offset = pool->frag_offset;
+>>>> +       unsigned int frag_size = pool->p.frag_size;
+>>>> +       struct page *frag_page = pool->frag_page;
+>>>> +       unsigned int max_len = pool->p.max_len;
+>>>> +
+>>>> +       if (!frag_page || frag_offset + frag_size > max_len) {
+>>>
+>>> These are two very different cases. If frag_page is set and just out
+>>> of space we need to be freeing the unused references.
+>>
+>> As mention above, we are depending on the last user to do the
+>> recycling or freeing the unused references.
+> 
+> But you are holding the pagecnt_bias for it aren't you? If so you need
+> to release it so that the last user knows that they were the last
+> user.
+
+The user will know it is the last user if page_pool_bias_page_recyclable()
+return true.
+
+> 
+> Once you aren't using the page you need to release the pagecnt_bias
+> since the page is on the path to being freed.
+It seems the above is more above what does the pagecnt_bias represent?
+
+> 
+>>>
+>>>> +               frag_page = page_pool_alloc_pages(pool, gfp);
+>>>
+>>> So as per my comment above the page should be coming in with a
+>>> pagecnt_bias of PAGE_SIZE - 1, and an actual page_ref_count of
+>>> PAGE_SIZE.
+>>
+>> Let's align the understanding of pagecnt_bias first?
+>>
+>> pagecnt_bias meant how many refcnt of a page belong to the page
+>> pool, and (page_ref_count() - pagecnt_bias) means how many refcnt
+
+Actually it is (page_ref_count() - (pagecnt_bias + 1))
+
+>> of a page belong to user of the page pool.
+> 
+> So my view is a slight variation on that. I view pagecnt_bias as the
+> count of references reserved by the page_pool, and page_ref_count -
+> pagecnt_bias is the actual reference count. So if I am going to free a
+> page I should deduct pagecnt_bias + 1 from the reference count to
+> account for dropping our bias and the one for the fact that we own the
+> page.
+
+So if (page_ref_count() - (pagecnt_bias + 1)) == 0 means only the page
+pool hold the page and it means whichever caller having the
+page_pool_bias_page_recyclable() returning true is the last user, right?
+
+> 
+>>>
+>>>> +               if (unlikely(!frag_page)) {
+>>>> +                       pool->frag_page = NULL;
+>>>> +                       return NULL;
+>>>> +               }
+>>>> +
+>>>> +               pool->frag_page = frag_page;
+>>>> +               frag_offset = 0;
+>>>> +
+>>>> +               page_pool_sub_bias(frag_page, max_len / frag_size - 1);
+>>>
+>>> Why are you doing division here? We should just be subtracting 1 from
+>>> the pagecnt_bias since that is the number of buffers that are being
+>>> used. The general idea is that when pagecnt_bias is 0 we cut the page
+>>> loose for potential recycling or freeing, otherwise we just subtract
+>>> our new value from pagecnt_bias until we reach it.
+>>
+>> As mentioned above, division is used to find out how many user may be
+>> using the page.
+> 
+> That doesn't make any sense to me because it won't tell you the actual
+> users, and from what I can tell it is buggy since if I use this to
+> allocate a chunk larger than 2K this comes out to 0 doesn't it? It
+> seems like you should just always use 1 as the count.
+
+There is already a page_pool_sub_bias(page, 1) in page_pool_alloc_pages(),
+so for 4K page, there is two users for a page with 2K frag size, and there
+is 32 users for 64K page with 2K frag size.
+
+The reason doing a page_pool_sub_bias(page, 1) in page_pool_alloc_pages()
+is that the caller is expected to use the page as a whole when using the
+page_pool_alloc_pages() directly, so it means only one user.
+
+> 
+>>>
+>>>> +       }
+>>>> +
+>>>> +       *offset = frag_offset;
+>>>> +       pool->frag_offset = frag_offset + frag_size;
+>>>> +
+>>>> +       return frag_page;
+>>>> +}
+>>>> +EXPORT_SYMBOL(page_pool_alloc_frag);
+>>>> +
+>>>> +static void page_pool_empty_frag(struct page_pool *pool)
+>>>> +{
+>>>> +       unsigned int frag_offset = pool->frag_offset;
+>>>> +       unsigned int frag_size = pool->p.frag_size;
+>>>> +       struct page *frag_page = pool->frag_page;
+>>>> +       unsigned int max_len = pool->p.max_len;
+>>>> +
+>>>> +       if (!frag_page)
+>>>> +               return;
+>>>> +
+>>>> +       while (frag_offset + frag_size <= max_len) {
+>>>> +               page_pool_put_full_page(pool, frag_page, false);
+>>>> +               frag_offset += frag_size;
+>>>> +       }
+>>>> +
+>>>> +       pool->frag_page = NULL;
+>>>> +}
+>>>> +
+>>>
+>>> It would be good to look over the page_frag_alloc_align and
+>>> __page_frag_cache_drain functions for examples of how to do most of
+>>> this. The one complication is that we have the dma mappings and
+>>> page_pool logic to deal with.
+>>
+>> Is it ok to rely on the user providing a aligning frag_size, so
+>> that do not need handling it here?
+> 
+> It is probably fine since the page pool should only have one consumer
+> so the requests just need to be aligned by them.
+> 
+>>>
+>>>>  /* Calculate distance between two u32 values, valid if distance is below 2^(31)
+>>>>   *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
+>>>>   */
+>>>> @@ -326,10 +447,11 @@ static s32 page_pool_inflight(struct page_pool *pool)
+>>>>   * a regular page (that will eventually be returned to the normal
+>>>>   * page-allocator via put_page).
+>>>>   */
+>>>> -void page_pool_release_page(struct page_pool *pool, struct page *page)
+>>>> +static int __page_pool_release_page(struct page_pool *pool,
+>>>> +                                   struct page *page)
+>>>>  {
+>>>>         dma_addr_t dma;
+>>>> -       int count;
+>>>> +       int bias, count;
+>>>>
+>>>>         if (!(pool->p.flags & PP_FLAG_DMA_MAP))
+>>>>                 /* Always account for inflight pages, even if we didn't
+>>>> @@ -345,22 +467,29 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
+>>>>                              DMA_ATTR_SKIP_CPU_SYNC);
+>>>>         page_pool_set_dma_addr(page, 0);
+>>>>  skip_dma_unmap:
+>>>> -       page->pp_magic = 0;
+>>>> +       bias = page_pool_clear_pp_info(page);
+>>>>
+>>>>         /* This may be the last page returned, releasing the pool, so
+>>>>          * it is not safe to reference pool afterwards.
+>>>>          */
+>>>>         count = atomic_inc_return(&pool->pages_state_release_cnt);
+>>>>         trace_page_pool_state_release(pool, page, count);
+>>>> +       return bias;
+>>>> +}
+>>>> +
+>>>> +void page_pool_release_page(struct page_pool *pool, struct page *page)
+>>>> +{
+>>>> +       int bias = __page_pool_release_page(pool, page);
+>>>> +
+>>>> +       WARN_ONCE(bias, "PAGECNT_BIAS is not supposed to be enabled\n");
+>>>>  }
+>>>>  EXPORT_SYMBOL(page_pool_release_page);
+>>>>
+>>>>  /* Return a page to the page allocator, cleaning up our state */
+>>>>  static void page_pool_return_page(struct page_pool *pool, struct page *page)
+>>>>  {
+>>>> -       page_pool_release_page(pool, page);
+>>>> +       __page_frag_cache_drain(page, __page_pool_release_page(pool, page) + 1);
+>>>>
+>>>> -       put_page(page);
+>>>>         /* An optimization would be to call __free_pages(page, pool->p.order)
+>>>>          * knowing page is not part of page-cache (thus avoiding a
+>>>>          * __page_cache_release() call).
+>>>> @@ -395,7 +524,16 @@ static bool page_pool_recycle_in_cache(struct page *page,
+>>>>         return true;
+>>>>  }
+>>>>
+>>>> -/* If the page refcnt == 1, this will try to recycle the page.
+>>>> +static bool page_pool_bias_page_recyclable(struct page *page, int bias)
+>>>> +{
+>>>> +       int ref = page_ref_dec_return(page);
+>>>> +
+>>>> +       WARN_ON(ref < bias);
+>>>> +       return ref == bias + 1;
+>>>> +}
+>>>> +
+>>>> +/* If pagecnt_bias == 0 and the page refcnt == 1, this will try to
+>>>> + * recycle the page.
+>>>>   * if PP_FLAG_DMA_SYNC_DEV is set, we'll try to sync the DMA area for
+>>>>   * the configured size min(dma_sync_size, pool->max_len).
+>>>>   * If the page refcnt != 1, then the page will be returned to memory
+>>>> @@ -405,16 +543,35 @@ static __always_inline struct page *
+>>>>  __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>>>                      unsigned int dma_sync_size, bool allow_direct)
+>>>>  {
+>>>> -       /* This allocator is optimized for the XDP mode that uses
+>>>> +       int bias = page->pp_info->pagecnt_bias;
+>>>> +
+>>>> +       /* Handle the elevated refcnt case first:
+>>>> +        * multi-frames-per-page, it is likely from the skb, which
+>>>> +        * is likely called in non-sofrirq context, so do not recycle
+>>>> +        * it in pool->alloc.
+>>>> +        *
+>>>> +        * Then handle non-elevated refcnt case:
+>>>>          * one-frame-per-page, but have fallbacks that act like the
+>>>>          * regular page allocator APIs.
+>>>> -        *
+>>>>          * refcnt == 1 means page_pool owns page, and can recycle it.
+>>>>          *
+>>>>          * page is NOT reusable when allocated when system is under
+>>>>          * some pressure. (page_is_pfmemalloc)
+>>>>          */
+>>>> -       if (likely(page_ref_count(page) == 1 && !page_is_pfmemalloc(page))) {
+>>>> +       if (bias) {
+>>>> +               /* We have gave some refcnt to the stack, so wait for
+>>>> +                * all refcnt of the stack to be decremented before
+>>>> +                * enabling recycling.
+>>>> +                */
+>>>> +               if (!page_pool_bias_page_recyclable(page, bias))
+>>>> +                       return NULL;
+>>>> +
+>>>> +               /* only enable recycling when it is not pfmemalloced */
+>>>> +               if (!page_is_pfmemalloc(page))
+>>>> +                       return page;
+>>>> +
+>>>
+>>> So this would be fine if this was only accessed from the driver. The
+>>> problem is the recycling code made it so that this is accessed in the
+>>> generic skb freeing path. As such I think this is prone to races since
+>>> you have to guarantee the ordering of things between the reference
+>>> count and pagecnt_bias.
+>>
+>> As reference count is handled atomically is page_pool_bias_page_recyclable,
+>> and pagecnt_bias is changed before any page is handled to the stack(maybe
+>> some READ_ONCE/WRITE_ONCE or barrier is still needed, will check it again),
+>> so I suppose the ordering is correct?
+> 
+> The problem is in order to get this working correctly you would likely
+> need to add a number of barriers so that reads and writes are in a
+> specific order. You would be much better off just not
+> reading/modifying the pagecnt_bias outside of the softirq paths.
+
+Most of the reusing implemented in the driver today may not be
+able to do reusing when the stack does not process the skb and
+dec the refcnt quick enough, this patch try to reuse the page
+as much as possible when above case happens.
+
+So it seems the pagecnt_bias need to be checked outside of the
+softirq to implement that?
+
+Let's break down the step of reusing a page:
+1. driver call page_pool_alloc_frag() to allocte a page frag.
+2. page pool sub the pagecnt_bias according to the user using the
+   page.
+3. driver fill the page info to the desc.
+4. driver notify the hw that desc is filled with page info.
+5. hw write the packet to page memory according to info in desc.
+6. driver process the desc and passed the skb(contianing the page
+   frag) to stack
+7. stack process the skb
+8. stack put the page to page pool calling page_pool_return_page(),
+   if it is the last user by checking pagecnt_bias, the page is recycled
+   in page pool or is returned to page allocated after cleaning the
+   resource.
+
+There is usually barrier in step 4 and step 6, at least in hns3 drvier,
+see the barrier does not seems to be necessary?
+
+see:
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L2867
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c#L3368
+
+
+> 
+>>>
+>>>> +       } else if (likely(page_ref_count(page) == 1 &&
+>>>> +                         !page_is_pfmemalloc(page))) {
+>>>>                 /* Read barrier done in page_ref_count / READ_ONCE */
+>>>>
+>>>>                 if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+>>>> @@ -428,22 +585,8 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>>>                 /* Page found as candidate for recycling */
+>>>>                 return page;
+>>>>         }
+>>>> -       /* Fallback/non-XDP mode: API user have elevated refcnt.
+>>>> -        *
+>>>> -        * Many drivers split up the page into fragments, and some
+>>>> -        * want to keep doing this to save memory and do refcnt based
+>>>> -        * recycling. Support this use case too, to ease drivers
+>>>> -        * switching between XDP/non-XDP.
+>>>> -        *
+>>>> -        * In-case page_pool maintains the DMA mapping, API user must
+>>>> -        * call page_pool_put_page once.  In this elevated refcnt
+>>>> -        * case, the DMA is unmapped/released, as driver is likely
+>>>> -        * doing refcnt based recycle tricks, meaning another process
+>>>> -        * will be invoking put_page.
+>>>> -        */
+>>>> -       /* Do not replace this with page_pool_return_page() */
+>>>> +
+>>>>         page_pool_release_page(pool, page);
+>>>> -       put_page(page);
+>>>>
+>>>>         return NULL;
+>>>>  }
+>>>> @@ -452,6 +595,7 @@ void page_pool_put_page(struct page_pool *pool, struct page *page,
+>>>>                         unsigned int dma_sync_size, bool allow_direct)
+>>>>  {
+>>>>         page = __page_pool_put_page(pool, page, dma_sync_size, allow_direct);
+>>>> +
+>>>>         if (page && !page_pool_recycle_in_ring(pool, page)) {
+>>>>                 /* Cache full, fallback to free pages */
+>>>>                 page_pool_return_page(pool, page);
+>>>> @@ -503,8 +647,11 @@ static void page_pool_empty_ring(struct page_pool *pool)
+>>>>
+>>>>         /* Empty recycle ring */
+>>>>         while ((page = ptr_ring_consume_bh(&pool->ring))) {
+>>>> -               /* Verify the refcnt invariant of cached pages */
+>>>> -               if (!(page_ref_count(page) == 1))
+>>>> +               /* Verify the refcnt invariant of cached pages for
+>>>> +                * non elevated refcnt case.
+>>>> +                */
+>>>> +               if (!(pool->p.flags & PP_FLAG_PAGECNT_BIAS) &&
+>>>> +                   !(page_ref_count(page) == 1))
+>>>>                         pr_crit("%s() page_pool refcnt %d violation\n",
+>>>>                                 __func__, page_ref_count(page));
+>>>>
+>>>> @@ -544,6 +691,7 @@ static void page_pool_empty_alloc_cache_once(struct page_pool *pool)
+>>>>
+>>>>  static void page_pool_scrub(struct page_pool *pool)
+>>>>  {
+>>>> +       page_pool_empty_frag(pool);
+>>>>         page_pool_empty_alloc_cache_once(pool);
+>>>>         pool->destroy_cnt++;
+>>>>
+>>>> @@ -637,14 +785,13 @@ bool page_pool_return_skb_page(struct page *page)
+>>>>         if (unlikely(page->pp_magic != PP_SIGNATURE))
+>>>>                 return false;
+>>>>
+>>>> -       pp = page->pp;
+>>>> +       pp = page->pp_info->pp;
+>>>>
+>>>>         /* Driver set this to memory recycling info. Reset it on recycle.
+>>>>          * This will *not* work for NIC using a split-page memory model.
+>>>>          * The page will be returned to the pool here regardless of the
+>>>>          * 'flipped' fragment being in use or not.
+>>>>          */
+>>>> -       page->pp = NULL;
+>>>>         page_pool_put_full_page(pp, page, false);
+>>>>
+>>>>         return true;
+>>>> --
+>>>> 2.7.4
+>>>>
+>>> .
+>>>
+> .
+> 
