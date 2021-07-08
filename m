@@ -2,122 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9793BF335
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:00:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0729D3BF367
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbhGHBDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 21:03:33 -0400
-Received: from mail.zju.edu.cn ([61.164.42.155]:43612 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230029AbhGHBDc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 21:03:32 -0400
-Received: by ajax-webmail-mail-app2 (Coremail) ; Thu, 8 Jul 2021 09:00:41
- +0800 (GMT+08:00)
-X-Originating-IP: [10.162.82.120]
-Date:   Thu, 8 Jul 2021 09:00:41 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   LinMa <linma@zju.edu.cn>
-To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        "Marcel Holtmann" <marcel@holtmann.org>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: Re: [PATCH v2] Bluetooth: call lock_sock() outside of spinlock
- section
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <79694c01-b69e-a039-6860-d7e612fbc008@i-love.sakura.ne.jp>
-References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
- <CABBYNZ+Vpzy2+u=xYR-7Kxx5M6pAQFQ8TJHYV1-Jr-FvqZ8=OQ@mail.gmail.com>
- <79694c01-b69e-a039-6860-d7e612fbc008@i-love.sakura.ne.jp>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S230130AbhGHBVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 21:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230106AbhGHBVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 21:21:19 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBD1C061574;
+        Wed,  7 Jul 2021 18:18:38 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id b8-20020a17090a4888b02901725eedd346so2765638pjh.4;
+        Wed, 07 Jul 2021 18:18:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/lxhq739fE59uqLHDsDnHPVFR5tUA59Nz8504QOZZSM=;
+        b=CV2bovhLX+ouOVzoq/SPCunxOqgHXzFWnh68vL8QMe1Zf3hWHPS2J9SaXiCHLnu7Nx
+         Le9Ko54F8XKSd45kUaj1T6871dsF7VZjYdi2HWOhVm1afDEBXc+/4ZyBdhZqrdt0Ef9Z
+         n7461wM6c+zflgifVKloFYWlx9o2GkdEH3BO/v0/+pLOzP64OVmP1EiqX4SqVBqggY4w
+         YaiVYWHQBZxIwrcLvAvNkOqrY7Wg/BCeIvUmAE8tT9aTQafG5l6xjkpQDPdYt2eYYQ12
+         M8zjB+MtF1xfX4Z9x2BvhngML6bWxiwDSwoMiESbGPvne5cPy/1u11+DUXyUABVgEPrH
+         KtDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/lxhq739fE59uqLHDsDnHPVFR5tUA59Nz8504QOZZSM=;
+        b=APttVNJZ4zk+h/Njld6Uei1hMP0jbkyjWEiCytbBupclqrVxjVLsuzwIa6S4WK80Gp
+         rgoY9axCaf33eRRZPNz3WmvitoX4X51twkqqrfM5IWS1iw8FsziXVbB+BAhmHUzrxYQ+
+         aXOfkS6KTVTakZ2bnykyXi1x+umTSDDqKcJNCWsiHYRXq9HtA74yRr7cI8fqzVags7Bm
+         khnrCvcXBhDiYaSCC/MX/0syUnChEE79wNnZxPOBl55V5q7MXway/CsL+nqJyJba/Na2
+         w+gEx/7yrC5x7Y+TwtTnb9lVUWlh86osK1nkoDSUhhjO5Idy6ldEZHg5nkNUZTBSB44p
+         O7KQ==
+X-Gm-Message-State: AOAM532Wc1DavBG1jKfIZ/spdmVnb/eCQLcHGjYzI+bYKZQGLnzWp0Kj
+        DnIpqQKZKiempvIaI6mJNWg=
+X-Google-Smtp-Source: ABdhPJzEqmmXWY9O8AUtuStQsYBl3ArpXsC5pkG4s7mcnwdsKOy71Jr0Y1N9Ei01LRFnt3Rb4i9ZJg==
+X-Received: by 2002:a17:90a:fa98:: with SMTP id cu24mr1944472pjb.0.1625707117424;
+        Wed, 07 Jul 2021 18:18:37 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:9f4e])
+        by smtp.gmail.com with ESMTPSA id d20sm417450pfn.219.2021.07.07.18.18.35
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 07 Jul 2021 18:18:36 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH v5 bpf-next 00/11] bpf: Introduce BPF timers.
+Date:   Wed,  7 Jul 2021 18:18:22 -0700
+Message-Id: <20210708011833.67028-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 MIME-Version: 1.0
-Message-ID: <5c823fa2.353ff.17a83a190e2.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: by_KCgA3WBQ5TuZg6qBJAQ--.23666W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwIAElNG3DbcsQABsA
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW3Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jIGIvbmV0L2JsdWV0b290
-aC9oY2lfc29jay5jCj4gaW5kZXggYjA0YTVhMDJlY2YzLi4wNTI1ODgzZjQ2MzkgMTAwNjQ0Cj4g
-LS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gKysrIGIvbmV0L2JsdWV0b290aC9oY2lf
-c29jay5jCj4gQEAgLTc1OSwxOSArNzU5LDE0IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0
-cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCj4gIAlpZiAoZXZlbnQgPT0gSENJX0RFVl9V
-TlJFRykgewo+ICAJCXN0cnVjdCBzb2NrICpzazsKPiAgCj4gLQkJLyogRGV0YWNoIHNvY2tldHMg
-ZnJvbSBkZXZpY2UgKi8KPiArCQkvKiBDaGFuZ2Ugc29ja2V0IHN0YXRlIGFuZCBub3RpZnkgKi8K
-PiAgCQlyZWFkX2xvY2soJmhjaV9za19saXN0LmxvY2spOwo+ICAJCXNrX2Zvcl9lYWNoKHNrLCAm
-aGNpX3NrX2xpc3QuaGVhZCkgewo+IC0JCQlsb2NrX3NvY2soc2spOwo+ICAJCQlpZiAoaGNpX3Bp
-KHNrKS0+aGRldiA9PSBoZGV2KSB7Cj4gLQkJCQloY2lfcGkoc2spLT5oZGV2ID0gTlVMTDsKPiAg
-CQkJCXNrLT5za19lcnIgPSBFUElQRTsKPiAgCQkJCXNrLT5za19zdGF0ZSA9IEJUX09QRU47Cj4g
-IAkJCQlzay0+c2tfc3RhdGVfY2hhbmdlKHNrKTsKPiAtCj4gLQkJCQloY2lfZGV2X3B1dChoZGV2
-KTsKPiAgCQkJfQo+IC0JCQlyZWxlYXNlX3NvY2soc2spOwo+ICAJCX0KPiAgCQlyZWFkX3VubG9j
-aygmaGNpX3NrX2xpc3QubG9jayk7Cj4gIAl9Cj4gCj4gPyBJIGNhbid0IGp1ZGdlIGJlY2F1c2Ug
-SSBkb24ndCBrbm93IGhvdyB0aGlzIHdvcmtzLiBJIHdvcnJ5IHRoYXQKPiB3aXRob3V0IGxvY2tf
-c29jaygpL3JlbGVhc2Vfc29jaygpLCB0aGlzIHJhY2VzIHdpdGggZS5nLiBoY2lfc29ja19iaW5k
-KCkuCj4gCj4gV2UgY291bGQgdGFrZSBhd2F5IHRoZSBiYWNrd2FyZCBnb3RvIGlmIHdlIGNhbiBk
-byBzb21ldGhpbmcgbGlrZSBiZWxvdy4KPiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2JsdWV0b290aC9o
-Y2lfc29jay5jIGIvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gaW5kZXggYjA0YTVhMDJlY2Yz
-Li4xY2EwMzc2OWJhZGYgMTAwNjQ0Cj4gLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4g
-KysrIGIvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gQEAgLTQzLDYgKzQzLDggQEAgc3RhdGlj
-IERFRklORV9JREEoc29ja19jb29raWVfaWRhKTsKPiAgCj4gIHN0YXRpYyBhdG9taWNfdCBtb25p
-dG9yX3Byb21pc2MgPSBBVE9NSUNfSU5JVCgwKTsKPiAgCj4gK3N0YXRpYyBERUZJTkVfTVVURVgo
-c29ja19saXN0X2xvY2spOwo+ICsKPiAgLyogLS0tLS0gSENJIHNvY2tldCBpbnRlcmZhY2UgLS0t
-LS0gKi8KPiAgCj4gIC8qIFNvY2tldCBpbmZvICovCj4gQEAgLTc2MCw3ICs3NjIsNyBAQCB2b2lk
-IGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2RldiAqaGRldiwgaW50IGV2ZW50KQo+ICAJ
-CXN0cnVjdCBzb2NrICpzazsKPiAgCj4gIAkJLyogRGV0YWNoIHNvY2tldHMgZnJvbSBkZXZpY2Ug
-Ki8KPiAtCQlyZWFkX2xvY2soJmhjaV9za19saXN0LmxvY2spOwo+ICsJCW11dGV4X2xvY2soJnNv
-Y2tfbGlzdF9sb2NrKTsKPiAgCQlza19mb3JfZWFjaChzaywgJmhjaV9za19saXN0LmhlYWQpIHsK
-PiAgCQkJbG9ja19zb2NrKHNrKTsKPiAgCQkJaWYgKGhjaV9waShzayktPmhkZXYgPT0gaGRldikg
-ewo+IEBAIC03NzMsNyArNzc1LDcgQEAgdm9pZCBoY2lfc29ja19kZXZfZXZlbnQoc3RydWN0IGhj
-aV9kZXYgKmhkZXYsIGludCBldmVudCkKPiAgCQkJfQo+ICAJCQlyZWxlYXNlX3NvY2soc2spOwo+
-ICAJCX0KPiAtCQlyZWFkX3VubG9jaygmaGNpX3NrX2xpc3QubG9jayk7Cj4gKwkJbXV0ZXhfdW5s
-b2NrKCZzb2NrX2xpc3RfbG9jayk7Cj4gIAl9Cj4gIH0KPiAgCj4gQEAgLTgzOCw2ICs4NDAsNyBA
-QCBzdGF0aWMgaW50IGhjaV9zb2NrX3JlbGVhc2Uoc3RydWN0IHNvY2tldCAqc29jaykKPiAgCWlm
-ICghc2spCj4gIAkJcmV0dXJuIDA7Cj4gIAo+ICsJbXV0ZXhfbG9jaygmc29ja19saXN0X2xvY2sp
-Owo+ICAJbG9ja19zb2NrKHNrKTsKPiAgCj4gIAlzd2l0Y2ggKGhjaV9waShzayktPmNoYW5uZWwp
-IHsKPiBAQCAtODYwLDYgKzg2Myw3IEBAIHN0YXRpYyBpbnQgaGNpX3NvY2tfcmVsZWFzZShzdHJ1
-Y3Qgc29ja2V0ICpzb2NrKQo+ICAJfQo+ICAKPiAgCWJ0X3NvY2tfdW5saW5rKCZoY2lfc2tfbGlz
-dCwgc2spOwo+ICsJbXV0ZXhfdW5sb2NrKCZzb2NrX2xpc3RfbG9jayk7Cj4gIAo+ICAJaGRldiA9
-IGhjaV9waShzayktPmhkZXY7Cj4gIAlpZiAoaGRldikgewo+IEBAIC0yMDQ5LDcgKzIwNTMsOSBA
-QCBzdGF0aWMgaW50IGhjaV9zb2NrX2NyZWF0ZShzdHJ1Y3QgbmV0ICpuZXQsIHN0cnVjdCBzb2Nr
-ZXQgKnNvY2ssIGludCBwcm90b2NvbCwKPiAgCXNvY2stPnN0YXRlID0gU1NfVU5DT05ORUNURUQ7
-Cj4gIAlzay0+c2tfc3RhdGUgPSBCVF9PUEVOOwo+ICAKPiArCW11dGV4X2xvY2soJnNvY2tfbGlz
-dF9sb2NrKTsKPiAgCWJ0X3NvY2tfbGluaygmaGNpX3NrX2xpc3QsIHNrKTsKPiArCW11dGV4X3Vu
-bG9jaygmc29ja19saXN0X2xvY2spOwo+ICAJcmV0dXJuIDA7Cj4gIH0KPiAgCj4gCj4gPiAgICAg
-ICAgICAgICBJdCBpcyBhbHNvIHdlaXJkIHRoYXQgdGhpcyBvbmx5IG1hbmlmZXN0cyBpbiB0aGUg
-Qmx1ZXRvb3RoCj4gPiBIQ0kgc29ja2V0cyBvciBvdGhlciBzdWJzeXN0ZW1zIGRvbid0IHVzZSBz
-dWNoIGxvY2tpbmcgbWVjaGFuaXNtCj4gPiBhbnltb3JlPwo+IAoKSGVsbG8gVGV0c3VvLAoKWWVh
-aCwgdGhhdCdzIGEgZ3JlYXQgcGF0Y2ggaW5kZWVkLiBBZGQgb25lIGV4dHJhIG11dGV4IGxvY2sg
-Zm9yIGhhbmRsaW5nIHRoaXMuCkluIGZhY3QsIEkgaGF2ZSB0cmllZCB0byByZXBsYWNlIGFsbCB0
-aGUgaGNpX3NrX2xpc3QubG9jayBmcm9tIHJ3bG9ja190IHRvIG11dGV4dC4KCj4gaHR0cHM6Ly9w
-YXRjaHdvcmsua2VybmVsLm9yZy9wcm9qZWN0L2JsdWV0b290aC9wYXRjaC9DQUpqb2pKc2o5cHpG
-NGoyTVZ2c00taENwdnlSN09rWm4yMzJ5dDNNZE9Hbkx4T2lSUmdAbWFpbC5nbWFpbC5jb20vCj4g
-SG93ZXZlciwgZnJvbSB0aGUgbG9jayBwcmluY2lwbGUgaW4gdGhlIExpbnV4IGtlcm5lbCwgdGhp
-cyBsb2NrCj4gcmVwbGFjZW1lbnQgaXMgbm90IGFwcHJvcHJpYXRlLiBJIHRha2UgYSBsb3Qgb2Yg
-dGltZSB0byB0cnkgd2l0aCBvdGhlcgo+IGxvY2sgY29tYmluYXRpb25zIGZvciB0aGlzIGNhc2Ug
-YnV0IGZhaWxlZC4gRm9yIGV4YW1wbGUsIEkgdHJpZWQgdG8KPiByZXBsYWNlIHRoZSByd2xvY2tf
-dCBpbiB0aGUgaGNpX3NrX2xpc3Qgd2l0aCBhIHNsZWVwLWFibGUgbXV0ZXggbG9jay4KCkJlY2F1
-c2UgSSBoYXZlIHNlZW0gb3RoZXIgcGFydCBvZiBjb2RlIGluIGtlcm5lbCB1c2VzIHRoaXMgY29t
-YmluYXRpb246IG11dGV4X3QgKyBsb2NrX3NvY2suIEl0IHNob3VsZG4ndCB0cmlnZ2VyIGFueSBs
-b2NraW5nIGVycm9ycy4gKFdpbGwgdGVzdCBpdCkKCj4gQWxzbywgdGhpcyByZWdyZXNzaW9uIGlz
-IGN1cnJlbnRseSA3dGggdG9wCj4gY3Jhc2hlcnMgZm9yIHN5emJvdCwgYW5kIEknZCBsaWtlIHRv
-IGFwcGx5IHRoaXMgcGF0Y2ggYXMgc29vbiBhcyBwb3NzaWJsZS4KPiAKClhELCBZZWFoLiBCZWNh
-dXNlIHRoZSBidWcgY3Jhc2ggcG9pbnQgaXMgbG9jYXRlZCBhdCBmdW5jdGlvbiBoY2lfc29ja19k
-ZXZfZXZlbnQoKS4gV2hlbmV2ZXIgc3l6a2FsbGVyIGZ1enplcyBCbHVldG9vdGggc3RhY2sgYW5k
-IHRoZSBleGVjdXRvciBleGl0cywgdGhlIGNyYXNoIGhhcHBlbnMuCgo+IEkgdGhpbmsgdGhhdCB0
-aGlzIHBhdGNoIGNhbiBzZXJ2ZSBhcyBhIHJlc3BvbnNlIHRvIExpbidzIGNvbW1lbnQKCj4gPiBJ
-biBzaG9ydCwgSSBoYXZlIG5vIGlkZWEgaWYgdGhlcmUgaXMgYW55IGxvY2sgcmVwbGFjaW5nIHNv
-bHV0aW9uIGZvcgo+ID4gdGhpcyBidWcuIEkgbmVlZCBoZWxwIGFuZCBzdWdnZXN0aW9ucyBiZWNh
-dXNlIHRoZSBsb2NrIG1lY2hhbmlzbSBpcwo+ID4ganVzdCBzbyBkaWZmaWN1bHQuCgpUaGFua3Mg
-Zm9yIHRoYXQsIGl0J3MgcXVpdGUgYXBwcmVjaWF0aW5nLgoKUmVnYXJkcwpMaW4gTWEK
+From: Alexei Starovoitov <ast@kernel.org>
+
+The first request to support timers in bpf was made in 2013 before sys_bpf syscall
+was added. That use case was periodic sampling. It was address with attaching
+bpf programs to perf_events. Then during XDP development the timers were requested
+to do garbage collection and health checks. They were worked around by implementing
+timers in user space and triggering progs with BPF_PROG_RUN command.
+The user space timers and perf_event+bpf timers are not armed by the bpf program.
+They're done asynchronously vs program execution. The XDP program cannot send a
+packet and arm the timer at the same time. The tracing prog cannot record an
+event and arm the timer right away. This large class of use cases remained
+unaddressed. The jiffy based and hrtimer based timers are essential part of the
+kernel development and with this patch set the hrtimer based timers will be
+available to bpf programs.
+
+TLDR: bpf timers is a wrapper of hrtimers with all the extra safety added
+to make sure bpf progs cannot crash the kernel.
+
+v4->v5:
+- Martin noticed the following issues:
+. prog could be reallocated bpf_patch_insn_data().
+Fixed by passing 'aux' into bpf_timer_set_callback, since 'aux' is stable
+during insn patching.
+. Added missing rcu_read_lock.
+. Removed redundant record_map.
+- Discovered few bugs with stress testing:
+. One cpu does htab_free_prealloced_timers->bpf_timer_cancel_and_free->hrtimer_cancel
+while another is trying to do something with the timer like bpf_timer_start/set_callback.
+Those ops try to acquire bpf_spin_lock that is already taken by bpf_timer_cancel_and_free,
+so both cpus spin forever. The same problem existed in bpf_timer_cancel().
+One bpf prog on one cpu might call bpf_timer_cancel and wait, while another cpu is in
+the timer callback that tries to do bpf_timer_*() helper on the same timer.
+The fix is to do drop_prog_refcnt() and unlock. And only then hrtimer_cancel.
+Because of this had to add callback_fn != NULL check to bpf_timer_cb().
+Also removed redundant bpf_prog_inc/put from bpf_timer_cb() and replaced
+with rcu_dereference_check similar to recent rcu_read_lock-removal from drivers.
+bpf_timer_cb is in softirq.
+. Managed to hit refcnt==0 while doing bpf_prog_put from bpf_timer_cancel_and_free().
+That exposed the issue that bpf_prog_put wasn't ready to be called from irq context.
+Fixed similar to bpf_map_put which is irq ready.
+- Refactored BPF_CALL_1(bpf_spin_lock) into __bpf_spin_lock_irqsave() to
+make the main logic more clear, since Martin and Yonghong brought up this concern.
+
+v3->v4:
+1.
+Split callback_fn from bpf_timer_start into bpf_timer_set_callback as
+suggested by Martin. That makes bpf timer api match one to one to
+kernel hrtimer api and provides greater flexibility.
+2.
+Martin also discovered the following issue with uref approach:
+bpftool prog load xdp_timer.o /sys/fs/bpf/xdp_timer type xdp
+bpftool net attach xdpgeneric pinned /sys/fs/bpf/xdp_timer dev lo
+rm /sys/fs/bpf/xdp_timer
+nc -6 ::1 8888
+bpftool net detach xdpgeneric dev lo
+The timer callback stays active in the kernel though the prog was detached
+and map usercnt == 0.
+It happened because 'bpftool prog load' pinned the prog only.
+The map usercnt went to zero. Subsequent attach and runs didn't
+affect map usercnt. The timer was able to start and bpf_prog_inc itself.
+When the prog was detached the prog stayed active.
+To address this issue added
+if (!atomic64_read(&(t->map->usercnt))) return -EPERM;
+to the first patch.
+Which means that timers are allowed only in the maps that are held
+by user space with open file descriptor or maps pinned in bpffs.
+3.
+Discovered that timers in inner maps were broken.
+The inner map pointers are dynamic. Therefore changed bpf_timer_init()
+to accept explicit map pointer supplied by the program instead
+of hidden map pointer supplied by the verifier.
+To make sure that pointer to a timer actually belongs to that map
+added the verifier check in patch 3.
+4.
+Addressed Yonghong's feedback. Improved comments and added
+dynamic in_nmi() check.
+Added Acks.
+
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com> # for the feature
+
+v2->v3:
+The v2 approach attempted to bump bpf_prog refcnt when bpf_timer_start is
+called to make sure callback code doesn't disappear when timer is active and
+drop refcnt when timer cb is done. That led to a ton of race conditions between
+callback running and concurrent bpf_timer_init/start/cancel on another cpu,
+and concurrent bpf_map_update/delete_elem, and map destroy.
+
+Then v2.5 approach skipped prog refcnt altogether. Instead it remembered all
+timers that bpf prog armed in a link list and canceled them when prog refcnt
+went to zero. The race conditions disappeared, but timers in map-in-map could
+not be supported cleanly, since timers in inner maps have inner map's life time
+and don't match prog's life time.
+
+This v3 approach makes timers to be owned by maps. It allows timers in inner
+maps to be supported from the start. This apporach relies on "user refcnt"
+scheme used in prog_array that stores bpf programs for bpf_tail_call. The
+bpf_timer_start() increments prog refcnt, but unlike 1st approach the timer
+callback does decrement the refcnt. The ops->map_release_uref is
+responsible for cancelling the timers and dropping prog refcnt when user space
+reference to a map is dropped. That addressed all the races and simplified
+locking.
+
+Andrii presented a use case where specifying callback_fn in bpf_timer_init()
+is inconvenient vs specifying in bpf_timer_start(). The bpf_timer_init()
+typically is called outside for timer callback, while bpf_timer_start() most
+likely will be called from the callback. 
+timer_cb() { ... bpf_timer_start(timer_cb); ...} looks like recursion and as
+infinite loop to the verifier. The verifier had to be made smarter to recognize
+such async callbacks. Patches 4,5,6 addressed that.
+
+Patch 1 implements bpf timer helpers and locking.
+Patch 2 implements map side of bpf timer support.
+Patch 3 adds support for BTF in inner maps.
+Patch 4 teaches check_cfg() pass to understand async callbacks.
+Patch 5 teaches do_check() pass to understand async callbacks.
+Patch 6 teaches check_max_stack_depth() pass to understand async callbacks.
+Patches 7 and 8 are the tests.
+
+v1->v2:
+- Addressed great feedback from Andrii and Toke.
+- Fixed race between parallel bpf_timer_*() ops.
+- Fixed deadlock between timer callback and LRU eviction or bpf_map_delete/update.
+- Disallowed mmap and global timers.
+- Allow spin_lock and bpf_timer in an element.
+- Fixed memory leaks due to map destruction and LRU eviction.
+- A ton more tests.
+
+Alexei Starovoitov (11):
+  bpf: Prepare bpf_prog_put() to be called from irq context.
+  bpf: Factor out bpf_spin_lock into helpers.
+  bpf: Introduce bpf timers.
+  bpf: Add map side support for bpf timers.
+  bpf: Prevent pointer mismatch in bpf_timer_init.
+  bpf: Remember BTF of inner maps.
+  bpf: Relax verifier recursion check.
+  bpf: Implement verifier support for validation of async callbacks.
+  bpf: Teach stack depth check about async callbacks.
+  selftests/bpf: Add bpf_timer test.
+  selftests/bpf: Add a test with bpf_timer in inner map.
+
+ include/linux/bpf.h                           |  47 ++-
+ include/linux/bpf_verifier.h                  |  19 +-
+ include/linux/btf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |  69 ++++
+ kernel/bpf/arraymap.c                         |  22 ++
+ kernel/bpf/btf.c                              |  77 +++-
+ kernel/bpf/hashtab.c                          | 104 +++++-
+ kernel/bpf/helpers.c                          | 334 +++++++++++++++++-
+ kernel/bpf/local_storage.c                    |   4 +-
+ kernel/bpf/map_in_map.c                       |   8 +
+ kernel/bpf/syscall.c                          |  53 ++-
+ kernel/bpf/verifier.c                         | 307 +++++++++++++++-
+ kernel/trace/bpf_trace.c                      |   2 +-
+ scripts/bpf_doc.py                            |   2 +
+ tools/include/uapi/linux/bpf.h                |  69 ++++
+ .../testing/selftests/bpf/prog_tests/timer.c  |  55 +++
+ .../selftests/bpf/prog_tests/timer_mim.c      |  69 ++++
+ tools/testing/selftests/bpf/progs/timer.c     | 297 ++++++++++++++++
+ tools/testing/selftests/bpf/progs/timer_mim.c |  88 +++++
+ .../selftests/bpf/progs/timer_mim_reject.c    |  74 ++++
+ 20 files changed, 1637 insertions(+), 64 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_mim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer_mim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/timer_mim_reject.c
+
+-- 
+2.30.2
+
