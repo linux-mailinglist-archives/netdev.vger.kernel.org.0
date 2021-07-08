@@ -2,205 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 578F83C1B3D
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 23:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D17B3C1B6C
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 00:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbhGHVvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 17:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbhGHVvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 17:51:19 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CFBC061574;
-        Thu,  8 Jul 2021 14:48:36 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id y38so11366243ybi.1;
-        Thu, 08 Jul 2021 14:48:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xEakQfDPZqzMk0enyglXM4chzTEgjaOUeR/qNJuU3OA=;
-        b=Ni4PDFmlIXIfT/NY37OXWkKbHh54Cd58HRzPmq9y7BGL6cXfRJLCaWDphtDzZgR47m
-         KzaSLhGT4MKJ6LXvK6Vs04KWArQiMyV5e77Dg2e2wcxGVRMh5C3XUXC56BQ4wKKRp5nP
-         wZtgswyjuoVsIAGaf7QgcLfG7mTpoqUA4gnuKdqMQ/GBLlkwr/qtkxw9Pdf9gRUNDyK8
-         eJSZwcliKUOV16lQtEaS2yqW91+V8+RAjhZM/4Z4WJFD30+OSgYKe5RtQtXOyFTlooX/
-         gB4wPavvp9MkA86S7FS2NHHRvcGPDA43MMO2eA/zRb13ze1oE4+NF5XbYvwzQPIgdVyF
-         NL6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xEakQfDPZqzMk0enyglXM4chzTEgjaOUeR/qNJuU3OA=;
-        b=iPj0s4z4d9pLSIgiUyalm9wD/6nJ40lUEiOWyCNrCCyL+EgPNQVfWid8JCq8rHH9QQ
-         gaDa8rGdx0sW+q1gqXvIVNCiFlMX7yJj3ENNrSRnz1ue33mOxCQWJU0GUyLVtPTc8fdj
-         tCx8S7re/yqTMcWMVFfWUaT50C5itIiqJYf3YW2P1pDjD002Y/GMJCtEMMn0brUsLXJl
-         L669l92Dik0TZD1Ou1BPeFbORWhgK1dsAzFtY/ByHaTs7jJEKQC8JZh8SeQ2S112+hry
-         Vg8PFH+ov/j1c/xFDX+xoDokxt0LR88vki0j1aqkTFJl2iO4MGB28PgOBJ0zoM3EKE7g
-         pVGA==
-X-Gm-Message-State: AOAM532vrG+5hZpK3IjvQv6mzgB5xjbRDORHm5q7cJdf12OuEydpDpIZ
-        M+1ywhCSYvz0tRi4EdNCX4+vM2oShCAJ6DH5wdWTj+H+Ku8=
-X-Google-Smtp-Source: ABdhPJx3/FvoFJlzRS1+mXtR9hdwwhA3dcTK6E3Tvev6ikSKUQtVa9nqqPDR1hdAZqxTpp0knXv7g8KJpQxw/2yiHaI=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr42490051ybo.230.1625780915431;
- Thu, 08 Jul 2021 14:48:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <1625749622-119334-1-git-send-email-chengshuyi@linux.alibaba.com>
-In-Reply-To: <1625749622-119334-1-git-send-email-chengshuyi@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 8 Jul 2021 14:48:24 -0700
-Message-ID: <CAEf4Bza_ua+tjxdhyy4nZ8Boeo+scipWmr_1xM1pC6N5wyuhAA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: Introduce 'btf_custom_path' to 'bpf_obj_open_opts'.
-To:     Shuyi Cheng <chengshuyi@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S230339AbhGHWYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 18:24:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44278 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229631AbhGHWYI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 18:24:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F700617ED;
+        Thu,  8 Jul 2021 22:21:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625782885;
+        bh=897f09UMwt0h/lwDJeDuOlz+iPLrpipRWFy/FQG4FkA=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=DpMVkpRy0/Q2BUH1Pg1OENWOvi+Q55403P1H3Ck+a+vSfgJg1a882wet1gD1EHVIW
+         2wWaxJpmw6O6VEW4/P7x/oY23JVPDVo5XgqKB77RtPj52gMzQIY7TJ6/dyiRCX1w4L
+         j9ZY+qPy+mB93pMeCh3tE3z97WRPIKATgTIYi/Egl+Z2pJXPjdB4spBdm6tNmCz+lQ
+         SB6CvHnNpGNL0rmuNpE2Di2axbHDeZ1yaFJRcfQUj95R9jsNUEPJBvMfBZWcoBTejF
+         jVOjY0xqJ7ucd6qAB04JTXdvirrEzxDU4ffkRwLiAhBeqkcTcu+1r+rT2wJYn1AZaO
+         CHhRR3hGLvtfg==
+Subject: Re: [PATCH v2 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20210707204249.3046665-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Message-ID: <06c85c19-e16c-3121-ed47-075cfa779b67@kernel.org>
+Date:   Thu, 8 Jul 2021 15:21:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210707204249.3046665-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 8, 2021 at 6:07 AM Shuyi Cheng <chengshuyi@linux.alibaba.com> wrote:
->
-> In order to enable the older kernel to use the CO-RE feature, load the
-> vmlinux btf of the specified path.
->
-> Learn from Andrii's comments in [0], add the btf_custom_path parameter
-> to bpf_obj_open_opts, you can directly use the skeleton's
-> <objname>_bpf__open_opts function to pass in the btf_custom_path
-> parameter.
->
-> Prior to this, there was also a developer who provided a patch with
-> similar functions. It is a pity that the follow-up did not continue to
-> advance. See [1].
->
->         [0]https://lore.kernel.org/bpf/CAEf4BzbJZLjNoiK8_VfeVg_Vrg=9iYFv+po-38SMe=UzwDKJ=Q@mail.gmail.com/#t
->         [1]https://yhbt.net/lore/all/CAEf4Bzbgw49w2PtowsrzKQNcxD4fZRE6AKByX-5-dMo-+oWHHA@mail.gmail.com/
->
-> Cc: Andrii Nakryiko <andrii@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+On 7/7/21 1:42 PM, Kuppuswamy Sathyanarayanan wrote:
+
+> The interaction with the TDX module is like a RPM protocol here. There
+> are several operations (get tdreport, get quote) that need to input a
+> blob, and then output another blob. It was considered to use a sysfs
+> interface for this, but it doesn't fit well into the standard sysfs
+> model for configuring values. It would be possible to do read/write on
+> files, but it would need multiple file descriptors, which would be
+> somewhat messy. ioctls seems to be the best fitting and simplest model
+> here. There is one ioctl per operation, that takes the input blob and
+> returns the output blob, and as well as auxiliary ioctls to return the
+> blob lengths. The ioctls are documented in the header file. 
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 > ---
-> v1: https://lore.kernel.org/bpf/CAEf4BzaGjEC4t1OefDo11pj2-HfNy0BLhs_G2UREjRNTmb2u=A@mail.gmail.com/t/#m4d9f7c6761fbd2b436b5dfe491cd864b70225804
-> v1->v2:
-> -- Change custom_btf_path to btf_custom_path.
-> -- If the length of btf_custom_path of bpf_obj_open_opts is too long,
->    return ERR_PTR(-ENAMETOOLONG).
-> -- Add `custom BTF is in addition to vmlinux BTF`
->    with btf_custom_path field.
->
->  tools/lib/bpf/libbpf.c | 27 ++++++++++++++++++++++++---
->  tools/lib/bpf/libbpf.h |  6 +++++-
->  2 files changed, 29 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 1e04ce7..aed156c 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -494,6 +494,10 @@ struct bpf_object {
->         struct btf *btf;
->         struct btf_ext *btf_ext;
->
-> +       /* custom BTF is in addition to vmlinux BTF (i.e., Use the CO-RE
-> +        * feature in the old kernel).
-> +        */
-> +       char *btf_custom_path;
->         /* Parse and load BTF vmlinux if any of the programs in the object need
->          * it at load time.
->          */
-> @@ -2679,8 +2683,15 @@ static int bpf_object__load_vmlinux_btf(struct bpf_object *obj, bool force)
->         if (!force && !obj_needs_vmlinux_btf(obj))
->                 return 0;
->
-> -       obj->btf_vmlinux = libbpf_find_kernel_btf();
-> -       err = libbpf_get_error(obj->btf_vmlinux);
-> +       if (obj->btf_custom_path) {
-> +               obj->btf_vmlinux = btf__parse(obj->btf_custom_path, NULL);
+>  drivers/platform/x86/Kconfig            |   9 ++
+>  drivers/platform/x86/Makefile           |   1 +
+>  drivers/platform/x86/intel_tdx_attest.c | 171 ++++++++++++++++++++++++
+>  include/uapi/misc/tdx.h                 |  37 +++++
+>  4 files changed, 218 insertions(+)
+>  create mode 100644 drivers/platform/x86/intel_tdx_attest.c
+>  create mode 100644 include/uapi/misc/tdx.h
+> 
+> diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+> index 60592fb88e7a..7d01c473aef6 100644
+> --- a/drivers/platform/x86/Kconfig
+> +++ b/drivers/platform/x86/Kconfig
+> @@ -1301,6 +1301,15 @@ config INTEL_SCU_IPC_UTIL
+>  	  low level access for debug work and updating the firmware. Say
+>  	  N unless you will be doing this on an Intel MID platform.
+>  
+> +config INTEL_TDX_ATTESTATION
+> +	tristate "Intel TDX attestation driver"
+> +	depends on INTEL_TDX_GUEST
+> +	help
+> +	  The TDX attestation driver provides IOCTL or MMAP interfaces to
+> +	  the user to request TDREPORT from the TDX module or request quote
+> +	  from VMM. It is mainly used to get secure disk decryption keys from
+> +	  the key server.
 
-I don't think this is right. Keep in mind the general case where
-vmlinux BTF might be available, but user wants to perform CO-RE using
-custom BTF (like we do in our selftests in core_reloc.c). In such
-cases all the other features that rely on vmlinux BTF would use real
-vmlinux BTF, but CO-RE relocations would use custom BTF. See the
-original patch you are referencing, it loaded btf_override separately
-from obj->btf_vmlinux.
+What's the MMAP interface
 
-> +               err = libbpf_get_error(obj->btf_vmlinux);
-> +               pr_debug("loading custom vmlinux BTF '%s': %d\n", obj->btf_custom_path, err);
-> +       } else {
-> +               obj->btf_vmlinux = libbpf_find_kernel_btf();
-> +               err = libbpf_get_error(obj->btf_vmlinux);
-> +       }
 > +
->         if (err) {
->                 pr_warn("Error loading vmlinux BTF: %d\n", err);
->                 obj->btf_vmlinux = NULL;
-> @@ -7554,7 +7565,7 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
->  __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
->                    const struct bpf_object_open_opts *opts)
->  {
-> -       const char *obj_name, *kconfig;
-> +       const char *obj_name, *kconfig, *btf_tmp_path;
->         struct bpf_program *prog;
->         struct bpf_object *obj;
->         char tmp_name[64];
-> @@ -7584,6 +7595,15 @@ int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
->         obj = bpf_object__new(path, obj_buf, obj_buf_sz, obj_name);
->         if (IS_ERR(obj))
->                 return obj;
+>  config INTEL_TELEMETRY
+>  	tristate "Intel SoC Telemetry Driver"
+>  	depends on X86_64
+> diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
+> index dcc8cdb95b4d..83439990ae47 100644
+> --- a/drivers/platform/x86/Makefile
+> +++ b/drivers/platform/x86/Makefile
+> @@ -138,6 +138,7 @@ obj-$(CONFIG_INTEL_SCU_PCI)		+= intel_scu_pcidrv.o
+>  obj-$(CONFIG_INTEL_SCU_PLATFORM)	+= intel_scu_pltdrv.o
+>  obj-$(CONFIG_INTEL_SCU_WDT)		+= intel_scu_wdt.o
+>  obj-$(CONFIG_INTEL_SCU_IPC_UTIL)	+= intel_scu_ipcutil.o
+> +obj-$(CONFIG_INTEL_TDX_ATTESTATION)	+= intel_tdx_attest.o
+>  obj-$(CONFIG_INTEL_TELEMETRY)		+= intel_telemetry_core.o \
+>  					   intel_telemetry_pltdrv.o \
+>  					   intel_telemetry_debugfs.o
+> diff --git a/drivers/platform/x86/intel_tdx_attest.c b/drivers/platform/x86/intel_tdx_attest.c
+> new file mode 100644
+> index 000000000000..a0225d053851
+> --- /dev/null
+> +++ b/drivers/platform/x86/intel_tdx_attest.c
+> @@ -0,0 +1,171 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * intel_tdx_attest.c - TDX guest attestation interface driver.
+> + *
+> + * Implements user interface to trigger attestation process and
+> + * read the TD Quote result.
+> + *
+> + * Copyright (C) 2020 Intel Corporation
+> + *
+> + * Author:
+> + *     Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> + */
 > +
-> +       btf_tmp_path = OPTS_GET(opts, btf_custom_path, NULL);
-> +       if (btf_tmp_path) {
-> +               if (strlen(btf_tmp_path) >= PATH_MAX)
-> +                       return ERR_PTR(-ENAMETOOLONG);
+> +#define pr_fmt(fmt) "x86/tdx: attest: " fmt
+> +
+> +#include <linux/module.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/uaccess.h>
+> +#include <linux/fs.h>
+> +#include <linux/mm.h>
+> +#include <linux/slab.h>
+> +#include <linux/set_memory.h>
+> +#include <linux/io.h>
+> +#include <asm/apic.h>
+> +#include <asm/tdx.h>
+> +#include <asm/irq_vectors.h>
+> +#include <uapi/misc/tdx.h>
+> +
+> +#define VERSION				"1.0"
+> +
+> +/* Used in Quote memory allocation */
+> +#define QUOTE_SIZE			(2 * PAGE_SIZE)
+> +
+> +/* Mutex to synchronize attestation requests */
+> +static DEFINE_MUTEX(attestation_lock);
+> +/* Completion object to track attestation status */
+> +static DECLARE_COMPLETION(attestation_done);
+> +
+> +static void attestation_callback_handler(void)
+> +{
+> +	complete(&attestation_done);
+> +}
+> +
+> +static long tdg_attest_ioctl(struct file *file, unsigned int cmd,
+> +			     unsigned long arg)
+> +{
+> +	u64 data = virt_to_phys(file->private_data);
 
-we are leaking obj here
 
-> +               obj->btf_custom_path = strdup(btf_tmp_path);
-> +               if (!obj->btf_custom_path)
-> +                       return ERR_PTR(-ENOMEM);
+> +	void __user *argp = (void __user *)arg;
+> +	u8 *reportdata;
+> +	long ret = 0;
+> +
+> +	mutex_lock(&attestation_lock);
+> +
+> +	reportdata = kzalloc(TDX_TDREPORT_LEN, GFP_KERNEL);
+> +	if (!reportdata) {
+> +		mutex_unlock(&attestation_lock);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	switch (cmd) {
+> +	case TDX_CMD_GET_TDREPORT:
+> +		if (copy_from_user(reportdata, argp, TDX_REPORT_DATA_LEN)) {
+> +			ret = -EFAULT;
+> +			break;
+> +		}
 
-and here
+This copies from user memory to reportdata.
 
-> +       }
->
->         kconfig = OPTS_GET(opts, kconfig, NULL);
->         if (kconfig) {
+> +
+> +		/* Generate TDREPORT_STRUCT */
+> +		if (tdx_mcall_tdreport(data, virt_to_phys(reportdata))) {
+> +			ret = -EIO;
+> +			break;
+> +		}
 
-And a few lines below. You didn't introduce this bug, I just spotted
-it while reviewing your patch, but it would be nice to fix it as well.
+This does the hypercall.
 
-> @@ -8702,6 +8722,7 @@ void bpf_object__close(struct bpf_object *obj)
->         for (i = 0; i < obj->nr_maps; i++)
->                 bpf_map__destroy(&obj->maps[i]);
->
-> +       zfree(&obj->btf_custom_path);
->         zfree(&obj->kconfig);
->         zfree(&obj->externs);
->         obj->nr_extern = 0;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 6e61342..5002d1f 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -94,8 +94,12 @@ struct bpf_object_open_opts {
->          * system Kconfig for CONFIG_xxx externs.
->          */
->         const char *kconfig;
-> +       /* custom BTF is in addition to vmlinux BTF (i.e., Use the CO-RE
-> +        * feature in the old kernel).
-> +        */
-> +       char *btf_custom_path;
->  };
-> -#define bpf_object_open_opts__last_field kconfig
-> +#define bpf_object_open_opts__last_field btf_custom_path
->
->  LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
->  LIBBPF_API struct bpf_object *
-> --
-> 1.8.3.1
->
+> +
+> +		if (copy_to_user(argp, file->private_data, TDX_TDREPORT_LEN))
+> +			ret = -EFAULT;
+
+This copies from private_data to user memory.  How did the report get to
+private_data?
+
+> +		break;
+> +	case TDX_CMD_GEN_QUOTE:
+> +		if (copy_from_user(reportdata, argp, TDX_REPORT_DATA_LEN)) {
+> +			ret = -EFAULT;
+> +			break;
+> +		}
+> +
+> +		/* Generate TDREPORT_STRUCT */
+> +		if (tdx_mcall_tdreport(data, virt_to_phys(reportdata))) {
+> +			ret = -EIO;
+> +			break;
+> +		}
+> +
+> +		ret = set_memory_decrypted((unsigned long)file->private_data,
+> +					   1UL << get_order(QUOTE_SIZE));
+> +		if (ret)
+> +			break;
+
+Now private_data is decrypted.  (And this operation is *expensive*.  Why
+is it done at ioctl time?)
+
+> +
+> +		/* Submit GetQuote Request */
+> +		if (tdx_hcall_get_quote(data)) {
+> +			ret = -EIO;
+> +			goto done;
+> +		}
+> +
+> +		/* Wait for attestation completion */
+> +		wait_for_completion_interruptible(&attestation_done);
+> +
+> +		if (copy_to_user(argp, file->private_data, QUOTE_SIZE))
+> +			ret = -EFAULT;
+> +done:
+> +		ret = set_memory_encrypted((unsigned long)file->private_data,
+> +					   1UL << get_order(QUOTE_SIZE));
+
+And this is, again, quite expensive.
+
+> +
+> +		break;
+> +	case TDX_CMD_GET_QUOTE_SIZE:
+> +		if (put_user(QUOTE_SIZE, (u64 __user *)argp))
+> +			ret = -EFAULT;
+> +
+> +		break;
+> +	default:
+> +		pr_err("cmd %d not supported\n", cmd);
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&attestation_lock);
+> +
+> +	kfree(reportdata);
+> +
+> +	return ret;
+> +}
+> +
+> +static int tdg_attest_open(struct inode *inode, struct file *file)
+> +{
+> +	/*
+> +	 * Currently tdg_event_notify_handler is only used in attestation
+> +	 * driver. But, WRITE_ONCE is used as benign data race notice.
+> +	 */
+> +	WRITE_ONCE(tdg_event_notify_handler, attestation_callback_handler);
+> +
+> +	file->private_data = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+> +						      get_order(QUOTE_SIZE));
+
+This allocation has negligible cost compared to changing memory to
+decrypted.
+
+Shouldn't you allocate a buffer once at driver load time or even at boot
+and just keep reusing it as needed?  You could have a few pages of
+shared memory for the specific purposes of hypercalls, and you could
+check them out and release them when you need some.
