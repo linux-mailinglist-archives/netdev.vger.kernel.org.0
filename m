@@ -2,191 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 076E33BF5DE
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 08:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7073BF5E2
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 08:57:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbhGHG7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 02:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230388AbhGHG7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 02:59:14 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C30C061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 23:56:33 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id e9so1539522vsk.13
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 23:56:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KpTOobZhEvkRiEkqUvwYcUmD0PwB1jpkFmeCSrxIhf8=;
-        b=iXj9DhwrvcPKZAUnTi0nzGhNAHWLAWvIfqAzkimjVgmYQpihE6cFKc3klnDEnf2Kb2
-         cNZrLVwEIk+TVyEyIruj60n6pF5Yu9bF8SEoBu8Peb9NuCGFROu7l8M/2GVBP8R7bkqb
-         QPZfEjnBKkj7t2mj6MKpjXoG2gZT5I18TH2aNyqr1x4A5bi2a2nhZvWcdGYC53l+5YlZ
-         keElyL6E8o4OPa85UjQ4hW/1b7NV0tX59NKnB5XULT8uY20UUPl9kOcLRgzON4smNEQ8
-         cV4uD54hKHet0zjOZSYB4PfyWxqaT+y9y6Qll+fBuRvs6V1mPAf+moEastMZnvPaNuCZ
-         VXbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KpTOobZhEvkRiEkqUvwYcUmD0PwB1jpkFmeCSrxIhf8=;
-        b=fMOWbflRqubaO+dgf7cXZwz6PXg6tt965qWbIRZbzUNxqgTINBDKiUCsHbcy8u5k7a
-         aiYUxeZXSEFLpw+p+eJ6r9O5J9FX0rNsqmwiD7N1yX5SQVSCUgIq9Aq5NFFTiDbWRyZX
-         RnRmmPpfttTKX8CgW7l4/ox0lmLqvF1hh+4JE/GF6yFFRNZuvsDmBcn0FwxxI3X+B4Al
-         3/4Xpl9Rbs/1XCWF2WpIi3sr9Adv/LJgzzdFzWerkeVGsnkv5rJ8cq1Cws0OmpWVwz3Y
-         PInEUIiTE4e7rdE3+HMgPLYO9//c8V21fj+pDvyAOqG1r4+sOv59965/fCo7RafTi5bu
-         ihdQ==
-X-Gm-Message-State: AOAM533zMMJNFkjHtfF/cC9SPA+rmV/67VmMni4znlagW6wlCz+6mjRs
-        mLiUKTvPK673BlKFgMqggGKOr6FCRRss5t4kYRrocw==
-X-Google-Smtp-Source: ABdhPJxHLXELahLQgPT/b2Cg6SkBOvSAroa4a4VEuLfqe/VQ/xSDvy+lYhoq/n27DNB9OXBFpERFzj0qsJUgFUqTEgM=
-X-Received: by 2002:a67:b606:: with SMTP id d6mr25732601vsm.55.1625727392234;
- Wed, 07 Jul 2021 23:56:32 -0700 (PDT)
+        id S230453AbhGHHAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 03:00:16 -0400
+Received: from mail-mw2nam10on2050.outbound.protection.outlook.com ([40.107.94.50]:32548
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229832AbhGHHAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 03:00:16 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Pj3b/Hzb4GVnqw44ungLPiDpMxhCvapxeNLlp94gCxZ9K+kJv8YCHAnHioZl3YlHR8/Jxv7lz86nqLbj49444bxv1xqzt7B1RYaAO6v3588gqxMRZ4dRC7mwQhkx2lSLeZCPpD8X+PEV5FXvPBjTPrm3Bp2x1l824C60k/MtE1edytCD6tXEblSox6TTaJYIG3HpEJtsOixy6FWs5N53HJjG/STXHB2SLQfTOl/y1N0DfvYT4bu8DkbDm8CBW9Zsy2m6POqGfS2CJdXPFwmTLcMs/Wjs/hN5mr7oZXvxMROkhBgGENDRtbNiaWouVaal53biFgSzwpbBnqgFlO37HA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lASPTMhYQcAU4JDmELGF+KRp0l344fpSAqacDDZjAKM=;
+ b=QK54chDBx34LJLwchY1b/dJpwIopckfHWqiOUYpoyszYkjO+wEw2/nFlS1JYFkbNXXBqmnLcD0TxXi4P1UsmnuTsaN0w1m4YdkSM3mpk86M+EiAyXLRdDFWs7F/qMvac2c/KVbusr0JHqzGlGj7GAG16Limlx814lX3DeJqAfrMZrbfn+sJa66/tbKBL/pVAxSGjSJzPHAu0gIXSPHPZGYVVyRdgkx23hcBUzaTY6qbBeAIeEV0diRPtp0tNB73tfmGGt+cQXssmInGUsR6jwVjnmFkTgQl/VpGkP6iawUijZdORLRiwETk7s2QOl9QAPHiTYu3g5OI8y0VBW11R8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lASPTMhYQcAU4JDmELGF+KRp0l344fpSAqacDDZjAKM=;
+ b=fdcWxMmvp7bJvWqr88NnK32E0D4UXGQGXxg9w+2RNWUd0BdhuIUpfGfaYLlbqFEB4slz5BLuBaMLRRSmicYmgva4Hb8OxoLL4hlc90qjT7ZTD5njC9io8RzBSQIZ+8Nmg5jbEKWDeHYX6WScLA41XTu61PIwKrT/u/LsNwt7HpvnVLsf31MWWOKk4P8WdDrxsr6yB9jiiqUhkT6HkwMOLmplno1fEOkcoEvtUDs3DhGYVKTSlg0VGMLVdN0TyzVOdBcE2HuWz2aKRfokaufZhfj4lwcMC2lJCDsoZjJ3eb7lI5OGV9KM8VytHYiLkVCPTDvJfD4gLceW1ydW7OSNAg==
+Received: from MW2PR2101CA0028.namprd21.prod.outlook.com (2603:10b6:302:1::41)
+ by BN9PR12MB5366.namprd12.prod.outlook.com (2603:10b6:408:103::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20; Thu, 8 Jul
+ 2021 06:57:31 +0000
+Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:302:1:cafe::ff) by MW2PR2101CA0028.outlook.office365.com
+ (2603:10b6:302:1::41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.2 via Frontend
+ Transport; Thu, 8 Jul 2021 06:57:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4308.20 via Frontend Transport; Thu, 8 Jul 2021 06:57:31 +0000
+Received: from [172.27.1.80] (172.20.187.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 8 Jul
+ 2021 06:57:28 +0000
+Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
+To:     Hangbin Liu <liuhangbin@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+CC:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        Roman Mashak <mrv@mojatatu.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>
+References: <20210607064408.1668142-1-roid@nvidia.com>
+ <YOLh4U4JM7lcursX@fedora> <YOQT9lQuLAvLbaLn@dcaratti.users.ipa.redhat.com>
+ <YOVPafYxzaNsQ1Qm@fedora>
+From:   Roi Dayan <roid@nvidia.com>
+Message-ID: <d8a97f9b-7d6b-839f-873c-f5f5f9c46eca@nvidia.com>
+Date:   Thu, 8 Jul 2021 09:57:26 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210708065001.1150422-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210708065001.1150422-1-eric.dumazet@gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 7 Jul 2021 23:56:20 -0700
-Message-ID: <CANP3RGczchzUK=ZxyPXS8t0NmuBdJB8ajfQ72MnSQwKRBZKh4w@mail.gmail.com>
-Subject: Re: [PATCH v2 net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YOVPafYxzaNsQ1Qm@fedora>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.187.5]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0850511-bc15-4877-2ce8-08d941dda841
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5366:
+X-Microsoft-Antispam-PRVS: <BN9PR12MB5366D8DDD597121AF70C7B0CB8199@BN9PR12MB5366.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WpmrEW8MminUfo4EFHrYpo1PercgKOZk9/REaqJls3GAARgDhCxzmelnCLIm2teCOVqWj/MooaWJf1ZNT2gGatVCGxO1UV+Mmizs/tvRI3aSsE4AuXA3lHBbuCeoUhblbI4r64QXP4AaGiMpccWqo2WHOXwPztd1/VYpxRYtM0SXb+TF+aMf6+8mmf+9a24khSmwCXhrqi/gPIHm4HacyyT439dwpshggmJKGmGsQuo39HvrKAP6EJOSj1R/G/l8//ORX4WeZg8Qa7ouC2z6J6atTvcc/PApsr+Eur12UiwB1Hq8jIZMFIWXMBaLHvHAzHWqv9ip1+H93oSdZ3VrMQWYAcYhXjPvEmvL8AOt5pXn+Ypqu18eS05b6aswk/ORGE1IqKMBEo3qWbnRiL1D5DxEG29a4WjQ0e6cwLxiUiFn1mO+RxkGQlrdW3h/PRBJceJXv8mfYPvF89jpNBpjm2OhKsArEdNmHt/R2Mx02DZsR9IrlnpHXgRVBfB7mmTqWYN7Mu/ltc3ReYhqZOlu9GOJLhh3d30NCVR/G8+5Vt+FB/LBdyZnx71xV1IUhdrNYps+McUD3ihFpSsscl2YnpYvMmbFo7uH4yWb23IhCTRsIzKdA8M4dMevX7jJaIQpA88O76sQsFUUpjkOK9hgPmlonbrZbkLlBA1vjMfJw7KG52ttvjKGLUhrinGknCh22VdnWg32jzq8HtTb3K0fVwTdM4l8YTc6/W+xo1VPTVY=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(376002)(136003)(46966006)(36840700001)(26005)(2616005)(31686004)(356005)(478600001)(336012)(8936002)(36756003)(426003)(8676002)(31696002)(83380400001)(5660300002)(186003)(16526019)(53546011)(86362001)(36906005)(47076005)(82310400003)(70586007)(316002)(54906003)(2906002)(110136005)(4326008)(70206006)(16576012)(82740400003)(7636003)(36860700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2021 06:57:31.5237
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0850511-bc15-4877-2ce8-08d941dda841
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5366
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 11:50 PM Eric Dumazet <eric.dumazet@gmail.com> wrote=
-:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> While TCP stack scales reasonably well, there is still one part that
-> can be used to DDOS it.
->
-> IPv6 Packet too big messages have to lookup/insert a new route,
-> and if abused by attackers, can easily put hosts under high stress,
-> with many cpus contending on a spinlock while one is stuck in fib6_run_gc=
-()
->
-> ip6_protocol_deliver_rcu()
->  icmpv6_rcv()
->   icmpv6_notify()
->    tcp_v6_err()
->     tcp_v6_mtu_reduced()
->      inet6_csk_update_pmtu()
->       ip6_rt_update_pmtu()
->        __ip6_rt_update_pmtu()
->         ip6_rt_cache_alloc()
->          ip6_dst_alloc()
->           dst_alloc()
->            ip6_dst_gc()
->             fib6_run_gc()
->              spin_lock_bh() ...
->
-> Some of our servers have been hit by malicious ICMPv6 packets
-> trying to _increase_ the MTU/MSS of TCP flows.
->
-> We believe these ICMPv6 packets are a result of a bug in one ISP stack,
-> since they were blindly sent back for _every_ (small) packet sent to them=
-.
->
-> These packets are for one TCP flow:
-> 09:24:36.266491 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.266509 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.316688 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.316704 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
-> 09:24:36.608151 IP6 Addr1 > Victim ICMP6, packet too big, mtu 1460, lengt=
-h 1240
->
-> TCP stack can filter some silly requests :
->
-> 1) MTU below IPV6_MIN_MTU can be filtered early in tcp_v6_err()
-> 2) tcp_v6_mtu_reduced() can drop requests trying to increase current MSS.
->
-> This tests happen before the IPv6 routing stack is entered, thus
-> removing the potential contention and route exhaustion.
->
-> Note that IPv6 stack was performing these checks, but too late
-> (ie : after the route has been added, and after the potential
-> garbage collect war)
->
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> ---
-> v2: fix typo caught by Martin, thanks !
->
->  net/ipv6/tcp_ipv6.c | 19 +++++++++++++++++--
->  1 file changed, 17 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 593c32fe57ed13a218492fd6056f2593e601ec79..323989927a0a6a2274bcbc1cd=
-0ac72e9d49b24ad 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -348,11 +348,20 @@ static int tcp_v6_connect(struct sock *sk, struct s=
-ockaddr *uaddr,
->  static void tcp_v6_mtu_reduced(struct sock *sk)
->  {
->         struct dst_entry *dst;
-> +       u32 mtu;
->
->         if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE))
->                 return;
->
-> -       dst =3D inet6_csk_update_pmtu(sk, READ_ONCE(tcp_sk(sk)->mtu_info)=
-);
-> +       mtu =3D READ_ONCE(tcp_sk(sk)->mtu_info);
-> +
-> +       /* Drop requests trying to increase our current mss.
-> +        * Check done in __ip6_rt_update_pmtu() is too late.
-> +        */
-> +       if (tcp_mtu_to_mss(sk, mtu) >=3D tcp_sk(sk)->mss_cache)
-> +               return;
-> +
-> +       dst =3D inet6_csk_update_pmtu(sk, mtu);
->         if (!dst)
->                 return;
->
-> @@ -433,6 +442,8 @@ static int tcp_v6_err(struct sk_buff *skb, struct ine=
-t6_skb_parm *opt,
->         }
->
->         if (type =3D=3D ICMPV6_PKT_TOOBIG) {
-> +               u32 mtu =3D ntohl(info);
-> +
->                 /* We are not interested in TCP_LISTEN and open_requests
->                  * (SYN-ACKs send out by Linux are always <576bytes so
->                  * they should go through unfragmented).
-> @@ -443,7 +454,11 @@ static int tcp_v6_err(struct sk_buff *skb, struct in=
-et6_skb_parm *opt,
->                 if (!ip6_sk_accept_pmtu(sk))
->                         goto out;
->
-> -               WRITE_ONCE(tp->mtu_info, ntohl(info));
-> +               if (mtu < IPV6_MIN_MTU)
-> +                       goto out;
-> +
-> +               WRITE_ONCE(tp->mtu_info, mtu);
-> +
->                 if (!sock_owned_by_user(sk))
->                         tcp_v6_mtu_reduced(sk);
->                 else if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED,
-> --
-> 2.32.0.93.g670b81a890-goog
 
-(this looks fine)
 
-btw. is there a need/desire for a similar change for ipv4?
+On 2021-07-07 9:53 AM, Hangbin Liu wrote:
+> On Tue, Jul 06, 2021 at 10:27:34AM +0200, Davide Caratti wrote:
+>> my 2 cents:
+>>
+>> what about using PRINT_FP / PRINT_JSON, so we fix the JSON output only to show "index", and
+>> preserve the human-readable printout iproute and kselftests? besides avoiding failures because
+>> of mismatching kselftests / iproute, this would preserve functionality of scripts that
+>> configure / dump the "police" action. WDYT?
+> 
+> +1
+> 
+
+
+why not fix the kselftest to look for the correct output?
+
+all actions output unsigned as the index.
+though I did find an issue with the fp output that you pasted
+that I missed.
+
+
+         action order 0: police   index 1 rate 1Kbit burst 10Kb mtu 2Kb 
+action reclassify overhead 0 ref 1 bind 0
+
+
+You asked about the \t before index and actually there is a missing
+print_nl() call before printing index and the rest as in the other
+actions.
+
+then the match should be something like this
+
+	"matchPattern": "action order [0-9]*: police.*index 0x1 rate 1Kbit 
+burst 10Kb"
