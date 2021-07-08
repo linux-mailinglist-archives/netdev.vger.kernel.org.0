@@ -2,349 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92ED23BFA50
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E353BFA68
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbhGHMh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 08:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S231565AbhGHMoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 08:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbhGHMh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 08:37:58 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48E7C06175F
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 05:35:16 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id eb14so8370459edb.0
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 05:35:16 -0700 (PDT)
+        with ESMTP id S230456AbhGHMoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 08:44:22 -0400
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1E3C06175F
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 05:41:40 -0700 (PDT)
+Received: by mail-vs1-xe31.google.com with SMTP id m12so3487653vst.8
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 05:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=Wu6CLUxv00p31WZM28ChgDvx5SJMPCO2QmCIwyWG3PM=;
-        b=U6cZtcKmsyh3H/V2n0Xzxvx7qb056VzwlcQctTwvLMUMF7slkyJ+u2HRsbCriFsE5h
-         SUlDNjw1DCRmDR9shjVBsYFZOliEE/j+TPhM+DIXwfPFBF4nh1YzjjoRUjw9PkkSo8+1
-         6ZQYklNc4VZwisy/3BW9hZsTz9E7w3aZJnIxE+m6PtL7D0WHhFDDMJpQKG5ewMF5TJ4k
-         oI5r664mikBWgjRcp6x0xUf2wlg9TVu8XFB8xm7C1bTAR/E6U9rpvAx6Px60jaeP2WJg
-         4+vxqTNbnUTzTp1ZuP7MIKav4u/N7a/hD83TcfqjElty1g7ECTCGbeQwaXefgo+8cvLP
-         lxfg==
+        bh=hP9H7HVTE7TFrRNTl1vyqWVVeZcuqXBCZg0bGqclL/A=;
+        b=VetX2Cfr8bdRNaZiWLEm04u6bqZW3l6DI4CAN74JIY7k4z1gUX2WPAhVDnzm350lf2
+         zN9Z12JQmbzlk/BWNUXvjVAbpB66ZXuvK3SPb444QQ5diXQOytBY51L2/oTaoUD9VeXU
+         uFurAnxdtCpnicZBLB0yD9ojUwv6W/qtm1PvBS9AFUFJNPr3tKxeC4wQWDvFkNeWRoRf
+         7SjXn45LyDiaoeLgbbyRwVPp/zZWqO3qYud0+Xn/514eUefuiFS0gjROioJ7tCP2C/ZN
+         ZUSLS7lmtDXFsaxdqMahs7f08oqXmzo9A5DfBGmAWg3PByPV9/9CFdzFbNZ8GtPMsFJE
+         z42g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Wu6CLUxv00p31WZM28ChgDvx5SJMPCO2QmCIwyWG3PM=;
-        b=BU2CwL4zXVoumjbLK8tvge2BQH+blwOttZunr3TuB0pG4/Yn66vCsiPgZJK3eKDCDX
-         y2woZtj3tpGZisa2fW6Nv6gig4Ho/2juGVOOZDikoo+AMm9B9I5cnMwW7V2I+PgYhyts
-         /GJMMK0pGzwxLxqjFbzR+lIPMY83y8JrUki8DaS0o89VNQDCTVUO/+uRjmWOX1y1TeRh
-         q4NaExjZ3tgs3F3DJHLfPLb8H9af09Q/g172letioheTJpgvRjFM4EG7efUbHR11FEr+
-         73GFmJyHx6Sn2i/HYR7lhStilO6iRIouFZjzUILcUydWz6GGwmPoHujmEVKjkbCHXamX
-         o6eQ==
-X-Gm-Message-State: AOAM530BihFtPQNkG5c1SHh6MXTKdgEPChsxrkC4gMeXGXOeZ6XSTJcA
-        IYL+tUUbcZ5W2o7fxOPreBedsACj2zxU2IogaydJ
-X-Google-Smtp-Source: ABdhPJxtQ9nu8TipqE3lXJxniWvpUcll2vH4zQXpuoPPvUTARTfDciLs1Ig+iG69XhWR8Dem3ACTnQ/cxZeiJpV2hy8=
-X-Received: by 2002:a05:6402:26d4:: with SMTP id x20mr24692796edd.118.1625747715313;
- Thu, 08 Jul 2021 05:35:15 -0700 (PDT)
+        bh=hP9H7HVTE7TFrRNTl1vyqWVVeZcuqXBCZg0bGqclL/A=;
+        b=pdReGA27eWkzoxJkfqfHwcSGrPht7PBG9kNxzxIBSPL+6WlFipETtwl0H77FN5FjAt
+         xwL7pQRwon3agJrmeTdSGBpg+ZCkwDMptn81KCcWDT/ZjQ9EO4R+9YKXPKw+OlcaLHWB
+         foJNvO1n2l/9U59ugVNSPp8giPmzADc/ldReUQuZKZ/9W8N6ppuwqx+NPtC9BfS8oTyU
+         kwytGaZK/MPQ4PtmPciVH9YEupYXpeJMxO5Ozbvzib9cXCyjL6smA6ibBIKTvboFAKS3
+         Ll+5Z//qlyWOnSqbsHq95BielIxiifP3HjamytQNHLq5Rglod7WW6JUbpkPVjeq999O2
+         n7Dg==
+X-Gm-Message-State: AOAM533ykVvLiK+Bfhr0cpQ9ugMeY16NCK7Va8MVJN06apIMKLY6D6dw
+        3QiAqOooer2qF3Qr/L56RmsT0UXfQrkGsphCwopM0A==
+X-Google-Smtp-Source: ABdhPJywz4fR2V+V+6/E9OWxEVi9/b58VFa4IZ2LlJTPpT0B9SRAdSG9PM7u1rPMHG2ZlSabjmUDzfVjnsqdUEe3bFI=
+X-Received: by 2002:a67:8783:: with SMTP id j125mr27888650vsd.42.1625748098931;
+ Thu, 08 Jul 2021 05:41:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <YOL/9mxkJaokKDHc@stefanha-x1.localdomain> <5b5107fa-3b32-8a3b-720d-eee6b2a84ace@redhat.com>
- <YOQtG3gDOhHDO5CQ@stefanha-x1.localdomain> <CACGkMEs2HHbUfarum8uQ6wuXoDwLQUSXTsa-huJFiqr__4cwRg@mail.gmail.com>
- <YOSOsrQWySr0andk@stefanha-x1.localdomain> <100e6788-7fdf-1505-d69c-bc28a8bc7a78@redhat.com>
- <YOVr801d01YOPzLL@stefanha-x1.localdomain> <a03c8627-7dac-2255-a2d9-603fc623b618@redhat.com>
- <YOXOMiPl7mKd7FoM@stefanha-x1.localdomain> <d5aef112-0828-6b79-4bce-753d3cd496c1@redhat.com>
- <YObAAkabn+nr3taJ@stefanha-x1.localdomain>
-In-Reply-To: <YObAAkabn+nr3taJ@stefanha-x1.localdomain>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 8 Jul 2021 20:35:04 +0800
-Message-ID: <CACycT3tOFXU=zfP2qKO3Cy8Ytof3q8Osos3LE+CwMvqnjMkhJg@mail.gmail.com>
-Subject: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
+References: <20210706154803.1631813-1-u.kleine-koenig@pengutronix.de> <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20210706154803.1631813-5-u.kleine-koenig@pengutronix.de>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 8 Jul 2021 14:41:02 +0200
+Message-ID: <CAPDyKFo0zuooWAkuR=BcsvcJ2pmSrcEoBhuC8+ne18GQphyPHA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] bus: Make remove callback return void
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Geoff Levand <geoff@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Wu Hao <hao.wu@intel.com>, Tom Rix <trix@redhat.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>, Lee Jones <lee.jones@linaro.org>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Michael Buesch <m@bues.ch>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Johan Hovold <johan@kernel.org>, Alex Elder <elder@kernel.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        "bcrl@kvack.org" <bcrl@kvack.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "songmuchun@bytedance.com" <songmuchun@bytedance.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Jason Wang <jasowang@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Marc Zyngier <maz@kernel.org>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Qinglang Miao <miaoqinglang@huawei.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Hannes Reinecke <hare@suse.de>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        SeongJae Park <sjpark@amazon.de>,
+        Julien Grall <jgrall@amazon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-acpi@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, linux-cxl@vger.kernel.org,
+        nvdimm@lists.linux.dev, dmaengine@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        linux-pci@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-arm-msm@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-staging@lists.linux.dev,
+        greybus-dev@lists.linaro.org, target-devel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        xen-devel@lists.xenproject.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Johannes Thumshirn <jth@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 8, 2021 at 5:06 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
+On Tue, 6 Jul 2021 at 17:53, Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
 >
-> On Thu, Jul 08, 2021 at 12:17:56PM +0800, Jason Wang wrote:
-> >
-> > =E5=9C=A8 2021/7/7 =E4=B8=8B=E5=8D=8811:54, Stefan Hajnoczi =E5=86=99=
-=E9=81=93:
-> > > On Wed, Jul 07, 2021 at 05:24:08PM +0800, Jason Wang wrote:
-> > > > =E5=9C=A8 2021/7/7 =E4=B8=8B=E5=8D=884:55, Stefan Hajnoczi =E5=86=
-=99=E9=81=93:
-> > > > > On Wed, Jul 07, 2021 at 11:43:28AM +0800, Jason Wang wrote:
-> > > > > > =E5=9C=A8 2021/7/7 =E4=B8=8A=E5=8D=881:11, Stefan Hajnoczi =E5=
-=86=99=E9=81=93:
-> > > > > > > On Tue, Jul 06, 2021 at 09:08:26PM +0800, Jason Wang wrote:
-> > > > > > > > On Tue, Jul 6, 2021 at 6:15 PM Stefan Hajnoczi <stefanha@re=
-dhat.com> wrote:
-> > > > > > > > > On Tue, Jul 06, 2021 at 10:34:33AM +0800, Jason Wang wrot=
-e:
-> > > > > > > > > > =E5=9C=A8 2021/7/5 =E4=B8=8B=E5=8D=888:49, Stefan Hajno=
-czi =E5=86=99=E9=81=93:
-> > > > > > > > > > > On Mon, Jul 05, 2021 at 11:36:15AM +0800, Jason Wang =
-wrote:
-> > > > > > > > > > > > =E5=9C=A8 2021/7/4 =E4=B8=8B=E5=8D=885:49, Yongji X=
-ie =E5=86=99=E9=81=93:
-> > > > > > > > > > > > > > > OK, I get you now. Since the VIRTIO specifica=
-tion says "Device
-> > > > > > > > > > > > > > > configuration space is generally used for rar=
-ely-changing or
-> > > > > > > > > > > > > > > initialization-time parameters". I assume the=
- VDUSE_DEV_SET_CONFIG
-> > > > > > > > > > > > > > > ioctl should not be called frequently.
-> > > > > > > > > > > > > > The spec uses MUST and other terms to define th=
-e precise requirements.
-> > > > > > > > > > > > > > Here the language (especially the word "general=
-ly") is weaker and means
-> > > > > > > > > > > > > > there may be exceptions.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > Another type of access that doesn't work with t=
-he VDUSE_DEV_SET_CONFIG
-> > > > > > > > > > > > > > approach is reads that have side-effects. For e=
-xample, imagine a field
-> > > > > > > > > > > > > > containing an error code if the device encounte=
-rs a problem unrelated to
-> > > > > > > > > > > > > > a specific virtqueue request. Reading from this=
- field resets the error
-> > > > > > > > > > > > > > code to 0, saving the driver an extra configura=
-tion space write access
-> > > > > > > > > > > > > > and possibly race conditions. It isn't possible=
- to implement those
-> > > > > > > > > > > > > > semantics suing VDUSE_DEV_SET_CONFIG. It's anot=
-her corner case, but it
-> > > > > > > > > > > > > > makes me think that the interface does not allo=
-w full VIRTIO semantics.
-> > > > > > > > > > > > Note that though you're correct, my understanding i=
-s that config space is
-> > > > > > > > > > > > not suitable for this kind of error propagating. An=
-d it would be very hard
-> > > > > > > > > > > > to implement such kind of semantic in some transpor=
-ts.  Virtqueue should be
-> > > > > > > > > > > > much better. As Yong Ji quoted, the config space is=
- used for
-> > > > > > > > > > > > "rarely-changing or intialization-time parameters".
-> > > > > > > > > > > >
-> > > > > > > > > > > >
-> > > > > > > > > > > > > Agreed. I will use VDUSE_DEV_GET_CONFIG in the ne=
-xt version. And to
-> > > > > > > > > > > > > handle the message failure, I'm going to add a re=
-turn value to
-> > > > > > > > > > > > > virtio_config_ops.get() and virtio_cread_* API so=
- that the error can
-> > > > > > > > > > > > > be propagated to the virtio device driver. Then t=
-he virtio-blk device
-> > > > > > > > > > > > > driver can be modified to handle that.
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > Jason and Stefan, what do you think of this way?
-> > > > > > > > > > > Why does VDUSE_DEV_GET_CONFIG need to support an erro=
-r return value?
-> > > > > > > > > > >
-> > > > > > > > > > > The VIRTIO spec provides no way for the device to rep=
-ort errors from
-> > > > > > > > > > > config space accesses.
-> > > > > > > > > > >
-> > > > > > > > > > > The QEMU virtio-pci implementation returns -1 from in=
-valid
-> > > > > > > > > > > virtio_config_read*() and silently discards virtio_co=
-nfig_write*()
-> > > > > > > > > > > accesses.
-> > > > > > > > > > >
-> > > > > > > > > > > VDUSE can take the same approach with
-> > > > > > > > > > > VDUSE_DEV_GET_CONFIG/VDUSE_DEV_SET_CONFIG.
-> > > > > > > > > > >
-> > > > > > > > > > > > I'd like to stick to the current assumption thich g=
-et_config won't fail.
-> > > > > > > > > > > > That is to say,
-> > > > > > > > > > > >
-> > > > > > > > > > > > 1) maintain a config in the kernel, make sure the c=
-onfig space read can
-> > > > > > > > > > > > always succeed
-> > > > > > > > > > > > 2) introduce an ioctl for the vduse usersapce to up=
-date the config space.
-> > > > > > > > > > > > 3) we can synchronize with the vduse userspace duri=
-ng set_config
-> > > > > > > > > > > >
-> > > > > > > > > > > > Does this work?
-> > > > > > > > > > > I noticed that caching is also allowed by the vhost-u=
-ser protocol
-> > > > > > > > > > > messages (QEMU's docs/interop/vhost-user.rst), but th=
-e device doesn't
-> > > > > > > > > > > know whether or not caching is in effect. The interfa=
-ce you outlined
-> > > > > > > > > > > above requires caching.
-> > > > > > > > > > >
-> > > > > > > > > > > Is there a reason why the host kernel vDPA code needs=
- to cache the
-> > > > > > > > > > > configuration space?
-> > > > > > > > > > Because:
-> > > > > > > > > >
-> > > > > > > > > > 1) Kernel can not wait forever in get_config(), this is=
- the major difference
-> > > > > > > > > > with vhost-user.
-> > > > > > > > > virtio_cread() can sleep:
-> > > > > > > > >
-> > > > > > > > >      #define virtio_cread(vdev, structname, member, ptr) =
-                    \
-> > > > > > > > >              do {                                        =
-                    \
-> > > > > > > > >                      typeof(((structname*)0)->member) vir=
-tio_cread_v;        \
-> > > > > > > > >                                                          =
-                    \
-> > > > > > > > >                      might_sleep();                      =
-                    \
-> > > > > > > > >                      ^^^^^^^^^^^^^^
-> > > > > > > > >
-> > > > > > > > > Which code path cannot sleep?
-> > > > > > > > Well, it can sleep but it can't sleep forever. For VDUSE, a
-> > > > > > > > buggy/malicious userspace may refuse to respond to the get_=
-config.
-> > > > > > > >
-> > > > > > > > It looks to me the ideal case, with the current virtio spec=
-, for VDUSE is to
-> > > > > > > >
-> > > > > > > > 1) maintain the device and its state in the kernel, userspa=
-ce may sync
-> > > > > > > > with the kernel device via ioctls
-> > > > > > > > 2) offload the datapath (virtqueue) to the userspace
-> > > > > > > >
-> > > > > > > > This seems more robust and safe than simply relaying everyt=
-hing to
-> > > > > > > > userspace and waiting for its response.
-> > > > > > > >
-> > > > > > > > And we know for sure this model can work, an example is TUN=
-/TAP:
-> > > > > > > > netdevice is abstracted in the kernel and datapath is done =
-via
-> > > > > > > > sendmsg()/recvmsg().
-> > > > > > > >
-> > > > > > > > Maintaining the config in the kernel follows this model and=
- it can
-> > > > > > > > simplify the device generation implementation.
-> > > > > > > >
-> > > > > > > > For config space write, it requires more thought but fortun=
-ately it's
-> > > > > > > > not commonly used. So VDUSE can choose to filter out the
-> > > > > > > > device/features that depends on the config write.
-> > > > > > > This is the problem. There are other messages like SET_FEATUR=
-ES where I
-> > > > > > > guess we'll face the same challenge.
-> > > > > > Probably not, userspace device can tell the kernel about the de=
-vice_features
-> > > > > > and mandated_features during creation, and the feature negotiat=
-ion could be
-> > > > > > done purely in the kernel without bothering the userspace.
-> > > >
-> > > > (For some reason I drop the list accidentally, adding them back, so=
-rry)
-> > > >
-> > > >
-> > > > > Sorry, I confused the messages. I meant SET_STATUS. It's a synchr=
-onous
-> > > > > interface where the driver waits for the device.
-> > > >
-> > > > It depends on how we define "synchronous" here. If I understand cor=
-rectly,
-> > > > the spec doesn't expect there will be any kind of failure for the o=
-peration
-> > > > of set_status itself.
-> > > >
-> > > > Instead, anytime it want any synchronization, it should be done via
-> > > > get_status():
-> > > >
-> > > > 1) re-read device status to make sure FEATURES_OK is set during fea=
-ture
-> > > > negotiation
-> > > > 2) re-read device status to be 0 to make sure the device has finish=
- the
-> > > > reset
-> > > >
-> > > >
-> > > > > VDUSE currently doesn't wait for the device emulation process to =
-handle
-> > > > > this message (no reply is needed) but I think this is a mistake b=
-ecause
-> > > > > VDUSE is not following the VIRTIO device model.
-> > > >
-> > > > With the trick that is done for FEATURES_OK above, I think we don't=
- need to
-> > > > wait for the reply.
-> > > >
-> > > > If userspace takes too long to respond, it can be detected since
-> > > > get_status() doesn't return the expected value for long time.
-> > > >
-> > > > And for the case that needs a timeout, we probably can use NEEDS_RE=
-SET.
-> > > I think you're right. get_status is the synchronization point, not
-> > > set_status.
-> > >
-> > > Currently there is no VDUSE GET_STATUS message. The
-> > > VDUSE_START/STOP_DATAPLANE messages could be changed to SET_STATUS so
-> > > that the device emulation program can participate in emulating the
-> > > Device Status field.
-> >
-> >
-> > I'm not sure I get this, but it is what has been done?
-> >
-> > +static void vduse_vdpa_set_status(struct vdpa_device *vdpa, u8 status)
-> > +{
-> > +    struct vduse_dev *dev =3D vdpa_to_vduse(vdpa);
-> > +    bool started =3D !!(status & VIRTIO_CONFIG_S_DRIVER_OK);
-> > +
-> > +    dev->status =3D status;
-> > +
-> > +    if (dev->started =3D=3D started)
-> > +        return;
-> > +
-> > +    dev->started =3D started;
-> > +    if (dev->started) {
-> > +        vduse_dev_start_dataplane(dev);
-> > +    } else {
-> > +        vduse_dev_reset(dev);
-> > +        vduse_dev_stop_dataplane(dev);
-> > +    }
-> > +}
-> >
-> >
-> > But the looks not correct:
-> >
-> > 1) !DRIVER_OK doesn't means a reset?
-> > 2) Need to deal with FEATURES_OK
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
 >
-> I'm not sure if this reply was to me or to Yongji Xie?
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
 >
-> Currently vduse_vdpa_set_status() does not allow the device emulation
-> program to participate fully in Device Status field changes. It hides
-> the status bits and only sends VDUSE_START/STOP_DATAPLANE.
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
 >
-> I suggest having GET_STATUS/SET_STATUS messages instead, allowing the
-> device emulation program to handle these parts of the VIRTIO device
-> model (e.g. rejecting combinations of features that are mutually
-> exclusive).
->
+> Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk> (For ARM, Am=
+ba and related parts)
+> Acked-by: Mark Brown <broonie@kernel.org>
+> Acked-by: Chen-Yu Tsai <wens@csie.org> (for drivers/bus/sunxi-rsb.c)
+> Acked-by: Pali Roh=C3=A1r <pali@kernel.org>
+> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org> (for drivers/media)
+> Acked-by: Hans de Goede <hdegoede@redhat.com> (For drivers/platform)
+> Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Acked-By: Vinod Koul <vkoul@kernel.org>
+> Acked-by: Juergen Gross <jgross@suse.com> (For Xen)
+> Acked-by: Lee Jones <lee.jones@linaro.org> (For drivers/mfd)
+> Acked-by: Johannes Thumshirn <jth@kernel.org> (For drivers/mcb)
+> Acked-by: Johan Hovold <johan@kernel.org>
+> Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org> (For drive=
+rs/slimbus)
+> Acked-by: Kirti Wankhede <kwankhede@nvidia.com> (For drivers/vfio)
+> Acked-by: Maximilian Luz <luzmaximilian@gmail.com>
+> Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com> (For ulpi and=
+ typec)
+> Acked-by: Samuel Iglesias Gons=C3=A1lvez <siglesias@igalia.com> (For ipac=
+k)
+> Reviewed-by: Tom Rix <trix@redhat.com> (For fpga)
+> Acked-by: Geoff Levand <geoff@infradead.org> (For ps3)
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 
-Yes, I will do this in the next version.
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org> # For MMC
 
-Thanks,
-Yongi
+[...]
+
+Kind regards
+Uffe
