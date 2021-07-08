@@ -2,107 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99BC93C1701
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 18:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F362C3C1705
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 18:24:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbhGHQZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 12:25:41 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:25300 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbhGHQZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 12:25:39 -0400
-Received: from v4.asicdesigners.com (v4.blr.asicdesigners.com [10.193.186.237])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 168GMocS018848;
-        Thu, 8 Jul 2021 09:22:50 -0700
-From:   Raju Rangoju <rajur@chelsio.com>
+        id S229592AbhGHQ1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 12:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229489AbhGHQ1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 12:27:37 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487A8C06175F
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 09:24:55 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id l7so7318707wrv.7
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 09:24:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K6n8sh6LGjBhE4XtolhUR5s1aOIcgEeUb5cKA4itJB4=;
+        b=yy5YSNmt72HDFQKc9NCrpGh0eyZFexVc0dNwPpyVAM4yyRE2yBf/7FqcNelJIJ3vD6
+         LL2gzco/awhqQIq6oLk5m3J4exXfYg1nYJOH9293RiwE0NTs+XraK3lqXIfGy2EAzu5N
+         88B92D/KUl1EScfOSenCCHFc3RSMarzHx2nCGQ6uKy/zhRT3gZKCKb0KgRI64qCrjQ0F
+         Rke8+aXJHAGcOTOWtZRVcIXvpPhLKCrt6906PGA0du90R4WtlKuqk3qw63LfkFEtzndA
+         WuxIoe4l6sI9TIP32C/EeAP2oz2iZsqH2y/riPtHHKFTAUbZ8WYVkl9G8RT0sGZjKqbE
+         q8UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K6n8sh6LGjBhE4XtolhUR5s1aOIcgEeUb5cKA4itJB4=;
+        b=ASWHKBpACcbG2SiHBGrLpL4si2VD+PcTuIBDhkaMafnfi/ujXayNTbdZcN4fiyKYAA
+         s0lxJRuqEBjRw/cu1vvNWYh5/VtGoqwMs8G4XBDTk8qJWE6/YUfYqYyJ1xqqP0m595Pk
+         wWSROgqsfCeVu4/laZ+npeBHQJNPg+UAPl13dY01f2Zknlg7Mx0KlQ26/zgphuXpL4CM
+         /pG2nufMfzNuWIdCvdH+VW9SwbcYsAzLTYZZbTp1b6/gCFMGkB8dygxGgMGre7lmNeEM
+         0adbez3LFi4k2qFFoyCu6boGtNkcFHqJsIQTb0Tjqa3T/bkDBveJHdqi+3AEAGMFxfsa
+         eIBA==
+X-Gm-Message-State: AOAM53329A+GahrYr43sZYRYA7Q2jyxwXUifvlnhTywcAb47O+j4TiBo
+        UR0/qRY3qjOyfDQbc9H/IIu8SxRvk06SY7sV
+X-Google-Smtp-Source: ABdhPJwAFAHhRu6O8+PDLej2JYaDDmqd0mYSt6TES+zRkJq9cNsk/cVWUksge6P3qEYiIxnFtIgsRg==
+X-Received: by 2002:a05:6000:1843:: with SMTP id c3mr36422947wri.301.1625761493705;
+        Thu, 08 Jul 2021 09:24:53 -0700 (PDT)
+Received: from localhost.localdomain (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
+        by smtp.gmail.com with ESMTPSA id m29sm9546071wms.13.2021.07.08.09.24.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 09:24:53 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, shahjada@chelsio.com,
-        rajur@chelsio.com
-Subject: [PATCH net] cxgb4: fix IRQ free race during driver unload
-Date:   Thu,  8 Jul 2021 21:51:56 +0530
-Message-Id: <20210708162156.6381-1-rajur@chelsio.com>
-X-Mailer: git-send-email 2.9.5
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] skbuff: Fix a potential race while recycling page_pool packets
+Date:   Thu,  8 Jul 2021 19:24:45 +0300
+Message-Id: <20210708162449.98764-1-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.32.0.rc0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shahjada Abul Husain <shahjada@chelsio.com>
+As Alexander points out, when we are trying to recycle a cloned/expanded
+SKB we might trigger a race.  The recycling code relies on the
+pp_recycle bit to trigger,  which we carry that over to cloned SKBs.
+When that cloned SKB gets expanded,  we are creating 2 separate instances
+accessing the page frags.  Since the skb_release_data() will first try to
+recycle the frags,  there's a potential race between the original and
+cloned SKB.
 
-IRQs are requested during driver's ndo_open() and then later
-freed up in disable_interrupts() during driver unload.
-A race exists where driver can set the CXGB4_FULL_INIT_DONE
-flag in ndo_open() after the disable_interrupts() in driver
-unload path checks it, and hence misses calling free_irq().
+Fix this by explicitly making the cloned/expanded SKB not recyclable.
+If the original SKB is freed first the pages are released.
+If it is released after the clone/expended skb then it can still be
+recycled.
 
-Fix by unregistering netdevice first and sync with driver's
-ndo_open(). This ensures disable_interrupts() checks the flag
-correctly and frees up the IRQs properly.
-
-Fixes: b37987e8db5f ("cxgb4: Disable interrupts and napi before unregistering netdev")
-Signed-off-by: Shahjada Abul Husain <shahjada@chelsio.com>
-Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
+Reported-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 18 ++++++++++--------
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c  |  3 +++
- 2 files changed, 13 insertions(+), 8 deletions(-)
+ net/core/skbuff.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 9a2b166d651e..dbf9a0e6601d 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -2643,6 +2643,9 @@ static void detach_ulds(struct adapter *adap)
- {
- 	unsigned int i;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 12aabcda6db2..0cb53c05ed76 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1718,6 +1718,13 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
+ 	}
+ 	off = (data + nhead) - skb->head;
  
-+	if (!is_uld(adap))
-+		return;
-+
- 	mutex_lock(&uld_mutex);
- 	list_del(&adap->list_node);
- 
-@@ -7141,10 +7144,13 @@ static void remove_one(struct pci_dev *pdev)
- 		 */
- 		destroy_workqueue(adapter->workq);
- 
--		if (is_uld(adapter)) {
--			detach_ulds(adapter);
--			t4_uld_clean_up(adapter);
--		}
-+		detach_ulds(adapter);
-+
-+		for_each_port(adapter, i)
-+			if (adapter->port[i]->reg_state == NETREG_REGISTERED)
-+				unregister_netdev(adapter->port[i]);
-+
-+		t4_uld_clean_up(adapter);
- 
- 		adap_free_hma_mem(adapter);
- 
-@@ -7152,10 +7158,6 @@ static void remove_one(struct pci_dev *pdev)
- 
- 		cxgb4_free_mps_ref_entries(adapter);
- 
--		for_each_port(adapter, i)
--			if (adapter->port[i]->reg_state == NETREG_REGISTERED)
--				unregister_netdev(adapter->port[i]);
--
- 		debugfs_remove_recursive(adapter->debugfs_root);
- 
- 		if (!is_t4(adapter->params.chip))
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
-index 743af9e654aa..17faac715882 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
-@@ -581,6 +581,9 @@ void t4_uld_clean_up(struct adapter *adap)
- {
- 	unsigned int i;
- 
-+	if (!is_uld(adap))
-+		return;
-+
- 	mutex_lock(&uld_mutex);
- 	for (i = 0; i < CXGB4_ULD_MAX; i++) {
- 		if (!adap->uld[i].handle)
++	/* If it's a cloned skb we expand with frags attached we must prohibit
++	 * the recycling code from running, otherwise we might trigger a race
++	 * while trying to recycle the fragments from the original and cloned
++	 * skb
++	 */
++	if (skb_cloned(skb))
++		skb->pp_recycle = 0;
+ 	skb->head     = data;
+ 	skb->head_frag = 0;
+ 	skb->data    += off;
 -- 
-2.9.5
+2.32.0.rc0
 
