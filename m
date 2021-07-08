@@ -2,216 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA8883BF531
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 07:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C5C3BF554
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 07:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229841AbhGHFlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 01:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        id S229691AbhGHFzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 01:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbhGHFlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 01:41:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E1CC061574
-        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 22:39:05 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m1MkA-0006EE-1O; Thu, 08 Jul 2021 07:38:38 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m1Mk9-00030H-1D; Thu, 08 Jul 2021 07:38:37 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m1Mk8-0007Hx-U3; Thu, 08 Jul 2021 07:38:36 +0200
-Date:   Thu, 8 Jul 2021 07:38:13 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     nvdimm@lists.linux.dev, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
-        Jens Taprogge <jens.taprogge@taprogge.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>, linux-fpga@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Maxim Levitsky <maximlevitsky@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
-        xen-devel@lists.xenproject.org,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Julien Grall <jgrall@amazon.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Alex Elder <elder@kernel.org>, linux-parisc@vger.kernel.org,
-        Geoff Levand <geoff@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Thorsten Scherer <t.scherer@eckelmann.de>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Jon Mason <jdmason@kudzu.us>, linux-ntb@googlegroups.com,
-        Wu Hao <hao.wu@intel.com>, David Woodhouse <dwmw@amazon.co.uk>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Manohar Vanga <manohar.vanga@gmail.com>,
-        linux-wireless@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        virtualization@lists.linux-foundation.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        target-devel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Ira Weiny <ira.weiny@intel.com>, Helge Deller <deller@gmx.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        industrypack-devel@lists.sourceforge.net,
-        linux-mips@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        alsa-devel@alsa-project.org, linux-arm-msm@vger.kernel.org,
-        linux-media <linux-media@vger.kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Johan Hovold <johan@kernel.org>, greybus-dev@lists.linaro.org,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Johannes Thumshirn <morbidrsa@gmail.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Joey Pabalan <jpabalanb@gmail.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
-        Bodo Stroesser <bostroesser@gmail.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Tom Rix <trix@redhat.com>, Jason Wang <jasowang@redhat.com>,
-        SeongJae Park <sjpark@amazon.de>, linux-hyperv@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, Frank Li <lznuaa@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        linux-staging@lists.linux.dev, Dexuan Cui <decui@microsoft.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Chen-Yu Tsai <wens@csie.org>, linux-input@vger.kernel.org,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Allen Hubbe <allenbh@gmail.com>, Alex Dubov <oakad@yahoo.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Moritz Fischer <mdf@kernel.org>, linux-cxl@vger.kernel.org,
-        Michael Buesch <m@bues.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Martyn Welch <martyn@welchs.me.uk>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-mmc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-remoteproc@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        linux-i3c@lists.infradead.org,
-        linux1394-devel@lists.sourceforge.net,
-        Lee Jones <lee.jones@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-scsi@vger.kernel.org,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andy Gross <agross@kernel.org>, linux-serial@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Jamet <michael.jamet@intel.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Juergen Gross <jgross@suse.com>, linuxppc-dev@lists.ozlabs.org,
-        Takashi Iwai <tiwai@suse.com>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, dmaengine@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH v2 0/4] bus: Make remove callback return void
-Message-ID: <20210708053813.pem2ufjuwkacptv3@pengutronix.de>
-References: <20210706154803.1631813-1-u.kleine-koenig@pengutronix.de>
- <CAGngYiWm4u27o-yy5L5tokMB5G1RUR5uYmKf2oXah2P3J=hK2A@mail.gmail.com>
+        with ESMTP id S229608AbhGHFzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 01:55:20 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C88C061574
+        for <netdev@vger.kernel.org>; Wed,  7 Jul 2021 22:52:38 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id i4so7143994ybe.2
+        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 22:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CWnJqaWA92MGxPRN6+GeFB6tFQJOaSokCSE6qL37UKk=;
+        b=OKQ0zg42R6AZ4tuVAtxuE+04M0BuTzqrz8u8nd3YklBciYl2I4UQ0WeruYBwTCHi55
+         9oRjnh7zv00VxKfg1Q5dodyVpXgg8l/s17G0XrSsiuz3TcwK49yz6YfnP4s3Sf41AJiV
+         65PFK3Od8THHVjMciwP96mWgkUJPPRq6xR7Lt9WG8lXHl8eC8dUMa10+nhcgOGmWyg0S
+         NYBYOGzAuea3l3iepKHKwHJMv/papr2kfIg5nlp2iUD4bTfsk0pwQJLYO7aOo3XEHGMv
+         avzZI1PTB16GWUGin9tyOC/y39pQ/4li+8WDENw5eaKLyXpGXZ3dckljuGdIi/oG9xK+
+         v82w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CWnJqaWA92MGxPRN6+GeFB6tFQJOaSokCSE6qL37UKk=;
+        b=MBXYqPdYp1CVIHp8758X/idhsSAvJb6EGUYKI5FQ1q4rGsSR30nkU6k6S++9zxWDYj
+         TY5TjXfmmewXKZGYKm1/StRCZSh+nH2VYwXCt25kg2u9goHtoPHnFs9seTRGB55CNkx5
+         D670Jjkfd2qY6yTKEgRO5qB5sjDOFGHzcesFCBjZQjDAJvnGrJwVJUo6OFJSgWbGNpGu
+         zkYMwJf9q5Dgnzfm4dTutf+YclXaGjWdyJy36lFdA0V8uLMZBRgDsXvqp+DVJ2JlmQh6
+         R4boAXpa/8kU7s96ESPBl7uTB+1M/UYDEbCntv9qG/wu5+3el0788vCtZU5Dct7Pq+uF
+         qJgA==
+X-Gm-Message-State: AOAM531g5jwSfPeB0SokufuX9C4js2TH5YgP8A9vO3hJCznxdJTX6r4A
+        sGENGZH+U8DRQxQU2anxyHGfgbd4NBF4VxLH+/10tg==
+X-Google-Smtp-Source: ABdhPJx0jHO3jYIX1vxbdm5TzsPnvZyRSw0sZSLAFu/CRLbRv4iywmVr0b9Er9+y0IktV+KcU4Fe7DvWzUseR3sRY+s=
+X-Received: by 2002:a25:8081:: with SMTP id n1mr38804218ybk.253.1625723557545;
+ Wed, 07 Jul 2021 22:52:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bpxpm3lcta7ifhrg"
-Content-Disposition: inline
-In-Reply-To: <CAGngYiWm4u27o-yy5L5tokMB5G1RUR5uYmKf2oXah2P3J=hK2A@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210707154630.583448-1-eric.dumazet@gmail.com> <20210707222555.tdhqvvqbz5ocbrep@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210707222555.tdhqvvqbz5ocbrep@kafai-mbp.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 8 Jul 2021 07:52:26 +0200
+Message-ID: <CANn89iLdc3U0WJB89CbU7mnrtgo160O+WkrbzaT95KX0Ji0Vvg@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: tcp: drop silly ICMPv6 packet too big messages
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---bpxpm3lcta7ifhrg
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jul 07, 2021 at 10:08:53PM -0400, Sven Van Asbroeck wrote:
-> On Tue, Jul 6, 2021 at 11:50 AM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
+On Thu, Jul 8, 2021 at 12:26 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Jul 07, 2021 at 08:46:30AM -0700, Eric Dumazet wrote:
+> [ ... ]
+>
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index 593c32fe57ed13a218492fd6056f2593e601ec79..bc334a6f24992c7b5b2c415eab4b6cf51bf36cb4 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -348,11 +348,20 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >  static void tcp_v6_mtu_reduced(struct sock *sk)
+> >  {
+> >       struct dst_entry *dst;
+> > +     u32 mtu;
 > >
-> >  drivers/staging/fieldbus/anybuss/host.c   | 4 +---
->=20
-> Awesome !
->=20
-> Acked-by: Sven Van Asbroeck <TheSven73@gmail.com>
+> >       if ((1 << sk->sk_state) & (TCPF_LISTEN | TCPF_CLOSE))
+> >               return;
+> >
+> > -     dst = inet6_csk_update_pmtu(sk, READ_ONCE(tcp_sk(sk)->mtu_info));
+> > +     mtu = READ_ONCE(tcp_sk(sk)->mtu_info);
+> > +
+> > +     /* Drop requests trying to increase our current mss.
+> > +      * Check done in __ip6_rt_update_pmtu() is too late.
+> > +      */
+> > +     if (tcp_mss_to_mtu(sk, mtu) >= tcp_sk(sk)->mss_cache)
+> Instead of tcp_mss_to_mtu, should this be calling tcp_mtu_to_mss to
+> compare with tcp_sk(sk)->mss_cache?
 
-I note that as an Ack for patch 4 only, as the others don't touch this
-file.
+Good catch Martin, let me add and run a few more tests before sending a v2.
 
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---bpxpm3lcta7ifhrg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmDmjzsACgkQwfwUeK3K
-7Alp5wf+LJkpxzkaW2ldAtFhGuqT1XfOqbe9d5vNgqvqupJS1Q+aeie0kH0038ba
-uN3KDJ2V2DAmMf6OIKUFucVxBpCC92myb63zIHRJs5kGzTu41BRp3yt/I650Xzdr
-+MB/xdEr/XFy2f9gDr/QdCojwh44TXqKzZPG6a7r6uQu8/AAUOdVEcfK6o01hN8W
-szxNTR1qtdQMHj9Ji8fo0wADdSPEez1kGe+HEOJVWBZnhdyCqS0jh774r7GsLjqY
-l8S7HhKPoY6/CCbEHKfYA15GUvexTA14O2tn6vuQPtiTTdDoh/Nl0wj0z5/WbWjX
-HF/tKnNb3l18s65PbEmxEKa2XonjFQ==
-=+Y+1
------END PGP SIGNATURE-----
-
---bpxpm3lcta7ifhrg--
+Thanks !
