@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 503973BF619
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 09:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 145313BF629
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 09:20:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230467AbhGHHRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 03:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbhGHHRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 03:17:30 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3236C061574
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 00:14:48 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id s129so7415735ybf.3
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 00:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KYDWOG3dkMgtX/f8MCypuLl2gSc01xMgtCmbx0p223w=;
-        b=pJ5cjEyY/NZNcLF6T3q3Tg5mdDTd6oY8HdgKig/Kj4YH6RUJXa/71XGtHH6UEInRLe
-         Y2TYnOKzei/YbpGkrWXAgd14/0lvxRZJnAHBWDqvVudeeh177n7YqgdZNHnHUiNZLQNM
-         qXtVYbPOfJVFbXVEYbG9fZEvSLlJ7VPNyxRKEKNcnG0AppFU1bd//zfrhsrTq8zNJGt/
-         hHyRpH1wQfZLrpzZadfdXH+6Jc6TPgbTsMRP1l8IFoalCGAgCC10ifSPnxdsK10oKvOb
-         9VQ9nFgYuKYeDYQLoeYiU7GZjRS+LBrWlRgiuN17CqXERU0H0oceplyfyhxoS0QBwZiK
-         if1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KYDWOG3dkMgtX/f8MCypuLl2gSc01xMgtCmbx0p223w=;
-        b=BBcubzVvPv1VO4wok+hVn6QycNi/BooyS/1dmwpy4nBPewYdVeoAN5K16i2RG+AaeH
-         XQCEYWvgnnAMEj5ZhB2yRzdT6kyWddSiGj7cSrm6urgD5grIwekmigrs3oPEBXuqAnp2
-         uWGNVQhmf34DraER52VRmJUcrlKMREZk96bgQR4vSjsYXym6/LrjO/XpVrk73sZs4vZQ
-         TBaNS1vTJ7sWJ7aL/AtYdTJ5HmGrVnCV7dTpMJnG0/VXmH7nt/tM2omNBsuX9ra2HLES
-         jmlQZVW6gJFCxSP8X1gHCljkzJ/19VlFs7ZgVw6qj4qWZHAD/bPws0xpg1lQ7oLIq2iE
-         gK6A==
-X-Gm-Message-State: AOAM533TwCRs4y3OL7J5hm93HzTsvYpaVDuuzheblRLjv1h+plNp61vo
-        hPdh7auQIa7Lo3b1d2zfrinhyMkGhHaBHv0gdJgYlzV+Y5I=
-X-Google-Smtp-Source: ABdhPJxDsJgtvLR6gu2FPnS3m/jE19Dz9UsK9beIsTVHEWxvhEGqsMgH9L3ll3TFOH9ZefkDBK0sBMowXLtzDUEd4m8=
-X-Received: by 2002:a25:bec2:: with SMTP id k2mr38209048ybm.234.1625728487747;
- Thu, 08 Jul 2021 00:14:47 -0700 (PDT)
+        id S229899AbhGHHWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 03:22:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53202 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229780AbhGHHWp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 03:22:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 310B761CE3;
+        Thu,  8 Jul 2021 07:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625728803;
+        bh=y9x//qnYbZ60iD5JC3r2b9vSUV5MTN0pVbCCPd5Nyhw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Hahe3Oht/a5/tbzsdoMI14oQzGn+ZACOsgojKLAuX1BDhoMWpcqG+cRb3Crt6O+mz
+         eGqCQ6vJT7FTQ6G3kI/YrIQ7UqDQPWVKvR3xU2cIE7HiQlCk2sdqMHFyjTMFfDCSZb
+         azpTENnU0kLRlwhNB2wY61zpCrtfYwB8Hh3rwvMPjLe5PlObGvLD45s8qhZ+xQXwSy
+         qv6+V5v7HwRlcFH9oMapy+spoaKZwts5Jf3YAzuTOEUS6gq+xbXSrpT9I3eNofMzZl
+         tJxEshgFx3M6HRuLH+IBhQtQEQ5vW7mxFhx0Wg9oixVODc/f/Jtvzn0+5r9HtZYEIH
+         HFoN73aUszJaA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2447E60A54;
+        Thu,  8 Jul 2021 07:20:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210708065001.1150422-1-eric.dumazet@gmail.com> <20210708.001318.1836277281789484963.davem@davemloft.net>
-In-Reply-To: <20210708.001318.1836277281789484963.davem@davemloft.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 8 Jul 2021 09:14:36 +0200
-Message-ID: <CANn89iKGNEJq-wngZzQkYiaWTjWAKh04v8LtV23CauOHhwS5zg@mail.gmail.com>
-Subject: Re: [PATCH v2 net] ipv6: tcp: drop silly ICMPv6 packet too big messages
-To:     David Miller <davem@davemloft.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] skbuff: Fix build with SKB extensions disabled
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162572880314.15901.10011561624152819596.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Jul 2021 07:20:03 +0000
+References: <20210708041051.17851-1-f.fainelli@gmail.com>
+In-Reply-To: <20210708041051.17851-1-f.fainelli@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, paulb@nvidia.com, eric.dumazet@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, mika.penttila@nextfour.com,
+        ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        saeedm@nvidia.com, ozsh@nvidia.com, roid@nvidia.com,
+        vladbu@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 8, 2021 at 9:13 AM David Miller <davem@davemloft.net> wrote:
->
-> tcp_mtu_to_mss needs to be exported
+Hello:
 
-Arg, right you are.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Thanks !
+On Wed,  7 Jul 2021 21:10:51 -0700 you wrote:
+> We will fail to build with CONFIG_SKB_EXTENSIONS disabled after
+> 8550ff8d8c75 ("skbuff: Release nfct refcount on napi stolen or re-used
+> skbs") since there is an unconditionally use of skb_ext_find() without
+> an appropriate stub. Simply build the code conditionally and properly
+> guard against both COFNIG_SKB_EXTENSIONS as well as
+> CONFIG_NET_TC_SKB_EXT being disabled.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] skbuff: Fix build with SKB extensions disabled
+    https://git.kernel.org/netdev/net/c/9615fe36b31d
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
