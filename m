@@ -2,91 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F40D3BF425
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE3743BF429
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbhGHDCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 23:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbhGHDCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:02:44 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E241C061574;
-        Wed,  7 Jul 2021 20:00:02 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id q18so10414681lfc.7;
-        Wed, 07 Jul 2021 20:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mC/f+QSHDMCqJrFCFmbwSJ3aarcLfRODUMWoBq8+yIc=;
-        b=norYH35CDzEHDF0uor9MmTTBuIFAMx4HLjWNM2Q4iNxbSqdyy8iSzFvqxnRm3bfHgh
-         ZFdzMlgqtcYtOCp8d6qYKwQPo/y4wVBeHoz5lTNVNlUEydAosUqZh5r7Z22P1yZsGhLr
-         txRN/75fQEXWM8zi1+h80xHm9NUW4zpvTsGRCx8MawKmxs33z4hIkHiS5M22LUDn28np
-         GZPwlVOggOm/0SNjsjDpEHX5kpTJCgMP77NgNfJ0jH5eILU4KrphKKx9yP/WvutZYzcM
-         8YmGRRoYFQgC0fiBUQpiSdP2SB8K/KkyjGlEbuEQNzlCP0HARE0CKTqvj6eKJTQi16UX
-         WQNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mC/f+QSHDMCqJrFCFmbwSJ3aarcLfRODUMWoBq8+yIc=;
-        b=isJFD6DhAvGIoN5f2u7Zh2Ua6oZhUJs6XxhNzLSXPQ4m+PEqOYHalmgd2S/DYYDTnK
-         2RfmIKvDRBh+OirC9lfzAuE5Uih1uTlGdsjLqD4IlPV2PQvZ/4CrvMEJxHRHZOr0vXsQ
-         OPeBPyoVwrw2s7p69pQbs4Bzrx9l725PkDCbUKpzZD/weojweDmtdCq/TZIp6aqSFFPK
-         1XEmkt0qyby7FbTb7t4bWhnSfWW0k0ddZFtIhhT+LHXBbSVGJknjljJw1sHmnTOfpOLp
-         kdWnDUFgaZPWu5vFtkhQj2y0OXOX+qC+Z4j7MGlZMdrEZmrlx0/8y660MGN43iIDDiFp
-         iTPA==
-X-Gm-Message-State: AOAM532D81WqsE46cKP6paWtAUgpQjxAp0vRwiDR7ylb+cEDjpjkSEq8
-        k6C1iG/jrIeJSatEy9bGoSw0c9CeYzH5G65IyAI=
-X-Google-Smtp-Source: ABdhPJw4lMaCj7uhWVqnI2lIvB257JQzz+UgagHG25KZgkjSbVWTwr+pQFqOCktx2BalKwbmRhiSscF+zfzyKyt2c9g=
-X-Received: by 2002:a2e:3302:: with SMTP id d2mr5033059ljc.32.1625713200455;
- Wed, 07 Jul 2021 20:00:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210707221657.3985075-1-zeffron@riotgames.com>
-In-Reply-To: <20210707221657.3985075-1-zeffron@riotgames.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 7 Jul 2021 19:59:48 -0700
-Message-ID: <CAADnVQK4HHSYDsR5Bjsn7k7nGP6bWwzmXAfr=R+6TSjD030_GQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 0/4] bpf: support input xdp_md context in BPF_PROG_TEST_RUN
-To:     Zvi Effron <zeffron@riotgames.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230359AbhGHDDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 23:03:24 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:10429 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230201AbhGHDDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:03:24 -0400
+Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GL1DS0scPzZqyG;
+        Thu,  8 Jul 2021 10:57:28 +0800 (CST)
+Received: from [10.67.110.55] (10.67.110.55) by dggeme751-chm.china.huawei.com
+ (10.3.19.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Thu, 8 Jul
+ 2021 11:00:39 +0800
+From:   He Fengqing <hefengqing@huawei.com>
+Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
+To:     Song Liu <song@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210707043811.5349-1-hefengqing@huawei.com>
+ <20210707043811.5349-4-hefengqing@huawei.com>
+ <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
+Message-ID: <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
+Date:   Thu, 8 Jul 2021 11:00:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
+MIME-Version: 1.0
+In-Reply-To: <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.55]
+X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
+ dggeme751-chm.china.huawei.com (10.3.19.97)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 3:17 PM Zvi Effron <zeffron@riotgames.com> wrote:
->
-> This patchset adds support for passing an xdp_md via ctx_in/ctx_out in
-> bpf_attr for BPF_PROG_TEST_RUN of XDP programs.
->
-> Patch 1 adds a function to validate XDP meta data lengths.
->
-> Patch 2 adds initial support for passing XDP meta data in addition to
-> packet data.
->
-> Patch 3 adds support for also specifying the ingress interface and
-> rx queue.
->
-> Patch 4 adds selftests to ensure functionality is correct.
->
-> Changelog:
-> ----------
-> v7->v8
-> v7: https://lore.kernel.org/bpf/20210624211304.90807-1-zeffron@riotgames.com/
 
-Applied. Thanks
+
+在 2021/7/7 15:25, Song Liu 写道:
+> On Tue, Jul 6, 2021 at 8:53 PM He Fengqing <hefengqing@huawei.com> wrote:
+>>
+>> In bpf_patch_insn_data, env->prog was input parameter of
+>> bpf_patch_insn_single function. bpf_patch_insn_single call
+>> bpf_prog_realloc to realloc ebpf prog. When we need to malloc new prog,
+>> bpf_prog_realloc will free the old prog, in this scenery is the
+>> env->prog.
+>> Then bpf_patch_insn_data function call adjust_insn_aux_data function, if
+>> adjust_insn_aux_data function return error, bpf_patch_insn_data will
+>> return NULL.
+>> In bpf_check->convert_ctx_accesses->bpf_patch_insn_data call chain, if
+>> bpf_patch_insn_data return NULL, env->prog has been freed in
+>> bpf_prog_realloc, then bpf_check will use the freed env->prog.
+> 
+> Besides "what is the bug", please also describe "how to fix it". For example,
+> add "Fix it by adding a free_old argument to bpf_prog_realloc(), and ...".
+> Also, for the subject of 0/3, it is better to say "fix potential
+> memory leak and ...".
+
+Thanks for your suggestion.
+
+> 
+>>
+>> Signed-off-by: He Fengqing <hefengqing@huawei.com>
+>> ---
+>>   include/linux/filter.h |  2 +-
+>>   kernel/bpf/core.c      |  9 ++++---
+>>   kernel/bpf/verifier.c  | 53 ++++++++++++++++++++++++++++++++----------
+>>   net/core/filter.c      |  2 +-
+>>   4 files changed, 49 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/include/linux/filter.h b/include/linux/filter.h
+>> index f39e008a377d..ec11a5ae92c2 100644
+>> --- a/include/linux/filter.h
+>> +++ b/include/linux/filter.h
+>> @@ -881,7 +881,7 @@ void bpf_prog_jit_attempt_done(struct bpf_prog *prog);
+>>   struct bpf_prog *bpf_prog_alloc(unsigned int size, gfp_t gfp_extra_flags);
+>>   struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flags);
+>>   struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>> -                                 gfp_t gfp_extra_flags);
+>> +                                 gfp_t gfp_extra_flags, bool free_old);
+>>   void __bpf_prog_free(struct bpf_prog *fp);
+>>
+>>   static inline void bpf_prog_clone_free(struct bpf_prog *fp)
+>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>> index 49b0311f48c1..e5616bb1665b 100644
+>> --- a/kernel/bpf/core.c
+>> +++ b/kernel/bpf/core.c
+>> @@ -218,7 +218,7 @@ void bpf_prog_fill_jited_linfo(struct bpf_prog *prog,
+>>   }
+>>
+>>   struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>> -                                 gfp_t gfp_extra_flags)
+>> +                                 gfp_t gfp_extra_flags, bool free_old)
+>>   {
+>>          gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
+>>          struct bpf_prog *fp;
+>> @@ -238,7 +238,8 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>>                  /* We keep fp->aux from fp_old around in the new
+>>                   * reallocated structure.
+>>                   */
+>> -               bpf_prog_clone_free(fp_old);
+>> +               if (free_old)
+>> +                       bpf_prog_clone_free(fp_old);
+>>          }
+>>
+>>          return fp;
+>> @@ -456,7 +457,7 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
+>>           * last page could have large enough tailroom.
+>>           */
+>>          prog_adj = bpf_prog_realloc(prog, bpf_prog_size(insn_adj_cnt),
+>> -                                   GFP_USER);
+>> +                                   GFP_USER, false);
+>>          if (!prog_adj)
+>>                  return ERR_PTR(-ENOMEM);
+>>
+>> @@ -1150,6 +1151,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
+>>                          return tmp;
+>>                  }
+>>
+>> +               if (tmp != clone)
+>> +                       bpf_prog_clone_free(clone);
+>>                  clone = tmp;
+>>                  insn_delta = rewritten - 1;
+>>
+>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>> index 41109f49b724..e75b933f69e4 100644
+>> --- a/kernel/bpf/verifier.c
+>> +++ b/kernel/bpf/verifier.c
+>> @@ -11855,7 +11855,10 @@ static int opt_subreg_zext_lo32_rnd_hi32(struct bpf_verifier_env *env,
+>>                  new_prog = bpf_patch_insn_data(env, adj_idx, patch, patch_len);
+>>                  if (!new_prog)
+>>                          return -ENOMEM;
+>> -               env->prog = new_prog;
+>> +               if (new_prog != env->prog) {
+>> +                       bpf_prog_clone_free(env->prog);
+>> +                       env->prog = new_prog;
+>> +               }
+> 
+> Can we move this check into bpf_patch_insn_data()?
+
+Ok, I will change this in next version.
+
+> 
+>>                  insns = new_prog->insnsi;
+>>                  aux = env->insn_aux_data;
+>>                  delta += patch_len - 1;
+> [...]
+> 
+>> diff --git a/net/core/filter.c b/net/core/filter.c
+>> index d70187ce851b..8a8d1a3ba5c2 100644
+>> --- a/net/core/filter.c
+>> +++ b/net/core/filter.c
+>> @@ -1268,7 +1268,7 @@ static struct bpf_prog *bpf_migrate_filter(struct bpf_prog *fp)
+>>
+>>          /* Expand fp for appending the new filter representation. */
+>>          old_fp = fp;
+>> -       fp = bpf_prog_realloc(old_fp, bpf_prog_size(new_len), 0);
+>> +       fp = bpf_prog_realloc(old_fp, bpf_prog_size(new_len), 0, true);
+> 
+> Can we add some logic here and not add free_old to bpf_prog_realloc()?
+
+Ok, maybe we can free old_fp here, never in bpf_prog_realloc.
+
+
+> 
+> Thanks,
+> Song
+> .
+> 
