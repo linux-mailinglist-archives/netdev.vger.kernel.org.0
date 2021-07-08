@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 620353BF437
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3D03BF43A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:10:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230420AbhGHDMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 23:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39990 "EHLO
+        id S230349AbhGHDNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 23:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230244AbhGHDMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:12:30 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4EDDC061574;
-        Wed,  7 Jul 2021 20:09:48 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id p21so10436286lfj.13;
-        Wed, 07 Jul 2021 20:09:48 -0700 (PDT)
+        with ESMTP id S230244AbhGHDNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:13:34 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1E0C061574;
+        Wed,  7 Jul 2021 20:10:53 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id u18so10481571lff.9;
+        Wed, 07 Jul 2021 20:10:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zOuVEKmSTO8HNKXM2OyBQMBqTxDYg4hfRl7sR8OpN38=;
-        b=DDMazZBAtPE2hBBF9mKL/ywFhnPN/012PNsBxLBxKjZXzUwQeXj3gWreF1Ia8IxEj8
-         CvZY2z+3Uw5dVh42M5Ra9t9MV+DbZmWOl3VD7mdrxEMqnOgvl9ydjpSF0PoKrawk8Ovo
-         MkzCOTkSt3xQnx6RtA2+WPWoNV0LLghCr6lZqM0nGndUtzBkem/SRFfwbf4st7xLMp+l
-         dOdUnjYPJn2UOckbc89ryN6Uc/0lhaXDTAZklRpfNXyci2JoYUv6Ln4Q6wF8YanroDqy
-         hWD590w0+EhNHOAQWbsoookxP9dbEo0DXnthjaifpd3wqP1vVLTduxFTPyQww2nFal/I
-         3Y6g==
+        bh=kNgZ72sUUZCWJIsDrS4mJIaf//FCuWEsLk2Ji0orB2Y=;
+        b=EFGe4SR3dcmL9nD3pgmEYdGyaeZraZmE8NR/1B3y3gv+udGz44/HWmthLtV5WBlohs
+         ytCr+uYLhxoMLINX/ITKu0npsYOMSjWfuk8tdptM4LhEowl3Ma63d5qc/+yxGBcTBRUJ
+         TAym4YBz6+gT2tvdZJ7oP+zlemCJpjSm/7sgIDNWfYk04egekmb+f+Oh4U4fjaMsjKKZ
+         El9/ak9+O4xbJnYdmGLlbuKOznqh6bYzmDSFIKjm+uRPk2rVJcjLM3HpjSGkXhGJIb+M
+         oy7BAB8wpZB75yjQt1ZDb7/8blk/LejACz7WIZJFrJzwIqkXIWru13tynTWNj3GTid8v
+         tknA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zOuVEKmSTO8HNKXM2OyBQMBqTxDYg4hfRl7sR8OpN38=;
-        b=teH+AU3m77yLZS0Q1G9PUrzMsxSNLV0SYWkPUDeKRE0wvw0MNXzaTxXQZGPVGCKEjB
-         7ohA8EVVBuczJpsuQ/4q9GXJ2Clo0vbeUeQAYwAOqghWzMRDpsCGRRRM7q03bGeoX0Wo
-         Nd5BHXay8r5kZCmwm7kEeFesXmiL3FNDPpbo7wiTJzad9hycTXoH8OQ9E6wYPIzBX+7U
-         r6qSadtPbivNITi3VyIo7acLBbSt7q6BmhxUJp/s0XCo2XGJZbZEvjQfKvplO8rwOj/0
-         TmGFg0XL9U0+2vmvewpDfDs2dBUehW5K59YXylQNZYRsOnbDGbysbGvZu/3EsrASy+Jr
-         KQrA==
-X-Gm-Message-State: AOAM532VPa6GKPn/J6jafPTDRvgussjOFAgTfdpta9HMSJ6NrVyLim1K
-        TCNvSQJ0plfgEbMzneG9CEUf0yCYmg6ahSEZBPU=
-X-Google-Smtp-Source: ABdhPJwKZdq15qpbv7h2OOlVXAf5ZGqkMjxXVrItgJi8vE0+oyYi7iePM1Uho4dCgqiu0sSqJod2tpDgv91ZtSU2dh0=
-X-Received: by 2002:a05:6512:3f1a:: with SMTP id y26mr22261665lfa.540.1625713787314;
- Wed, 07 Jul 2021 20:09:47 -0700 (PDT)
+        bh=kNgZ72sUUZCWJIsDrS4mJIaf//FCuWEsLk2Ji0orB2Y=;
+        b=od5EpVDiQo5C+f1DaK1iQ6LfUOyAWXF4THzns+fK3zxghOeO7C5tNVJH9S6gGURDtE
+         aIpcEdF7fOKC46fkGL15grijBtArOM3CDV+USROec5sV5bxFN61UTu8W5VfCLCUJHg/x
+         cw7NECRDRJT7bW90hlpwGhdeOdOUjPh476jC/y5Q1m/2vBsAlcD8+ahqpW/Dk7xthtjc
+         +NH9rq512sVZLDaY4EAZTHwEpL1dcQkfGDsV/8TJnj8ImRLFYKMFGZRF+WbTxQY63xmp
+         E2OYp/vzOc6/nxXYTAGqc2US44Uijsw7UvSoFVWz7Wn4WZPnSB0HdtmNH1Hnzd/lDPhm
+         mHGw==
+X-Gm-Message-State: AOAM5333zJlJkr42YbH76fPN864BSt5m7urZxJ0dljOl+7Mlzk/lrGal
+        hPxLVpXBMTYRzkejcO/iiOC4JW8c0ovmcq+WSrs=
+X-Google-Smtp-Source: ABdhPJz6Amdt0GGaruxWLBehqdSG0c2PrphxnQQNdbaYyHbm2Hg/jijb8k2z6U7u1GtbbH3q0uajnmjkJbHKuignr08=
+X-Received: by 2002:a2e:b80e:: with SMTP id u14mr8483686ljo.204.1625713851792;
+ Wed, 07 Jul 2021 20:10:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210707043811.5349-1-hefengqing@huawei.com> <20210707043811.5349-4-hefengqing@huawei.com>
- <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com> <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
-In-Reply-To: <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
+References: <20210702111825.491065-1-memxor@gmail.com>
+In-Reply-To: <20210702111825.491065-1-memxor@gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 7 Jul 2021 20:09:36 -0700
-Message-ID: <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
-Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
-To:     He Fengqing <hefengqing@huawei.com>
-Cc:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Date:   Wed, 7 Jul 2021 20:10:40 -0700
+Message-ID: <CAADnVQKk-KvVzozdrOOAo8vZqKYcHuzeU32ths+DJ6oLfPCcTw@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 0/5] Generic XDP improvements
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Leblond <eric@regit.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 8:00 PM He Fengqing <hefengqing@huawei.com> wrote:
+On Fri, Jul 2, 2021 at 4:20 AM Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
 >
-> Ok, I will change this in next version.
+> This small series makes some improvements to generic XDP mode and brings it
+> closer to native XDP. Patch 1 splits out generic XDP processing into reusable
+> parts, patch 2 adds pointer friendly wrappers for bitops (not have to cast back
+> and forth the address of local pointer to unsigned long *), patch 3 implements
+> generic cpumap support (details in commit) and patch 4 allows devmap bpf prog
+> execution before generic_xdp_tx is called.
+>
+> Patch 5 just updates a couple of selftests to adapt to changes in behavior (in
+> that specifying devmap/cpumap prog fd in generic mode is now allowed).
+>
+> Changelog:
+> ----------
+> v5 -> v6
+> v5: https://lore.kernel.org/bpf/20210701002759.381983-1-memxor@gmail.com
+>  * Put rcpu->prog check before RCU-bh section to avoid do_softirq (Jesper)
 
-before you spam the list with the next version
-please explain why any of these changes are needed?
-I don't see an explanation in the patches and I don't see a bug in the code.
-Did you check what is the prog clone ?
-When is it constructed? Why verifier has anything to do with it?
+Applied. Thanks
