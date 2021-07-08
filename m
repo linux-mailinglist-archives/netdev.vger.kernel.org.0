@@ -2,173 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D463C15C7
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 17:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B153C15E1
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 17:23:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231921AbhGHPUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 11:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60114 "EHLO
+        id S231942AbhGHP02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 11:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbhGHPUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 11:20:20 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCFBC061574
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 08:17:38 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id t14-20020a05600c198eb029020c8aac53d4so19604414wmq.1
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 08:17:38 -0700 (PDT)
+        with ESMTP id S231815AbhGHP00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 11:26:26 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7FAC06175F
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 08:23:43 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id f12so4083214qtf.5
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 08:23:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kBPZZuZvA3tt1Y2+1kdETFXSvF82J/FThyL+t3rVwqw=;
-        b=ghEZp4HqH5M8BPY7MnbLF8QXha1ILfbDe7kImumABs6BdQqHQIZVxJpuk9aQtSECdr
-         yp+pT2e3mEv1kJiPNaYkD32YhyqMBFHBJFBet3GKIJjbzccCsjZMPJ58+0Sp3wqnszeq
-         o3c5uh33T9/ppR6K4cVWz+5a9YWhB9nn0YkZvRvalvf8eTTG7ya6+IdO50h6YheHYUm/
-         To5tfKOzUHnCzIUDeNIjr9n9MeoMa4hhr+a4JyplCqXo0l9cd5MyYNEoGGruwYmXx4/L
-         G9A1Zho7uTlu5l7sl3jKD8vWlm7dN8u0YddEYnAV8Cp342Q6fZnTunse978bFnuralb/
-         0PIQ==
+        d=vt-edu.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization:mime-version
+         :content-transfer-encoding;
+        bh=+YN55qVJT6wyC2rtDdpkRhVOqaoHkRAE4/LgamoXOuY=;
+        b=GL38T1LqGKZ3ZHwIez67t3J3i336LrAK6A70RsakIVVAIHGIX2vhOyfY1moMZ6VgB/
+         rKVn1d7bUvZ0TjaVcdFyjkpfyPmXIK78Ko9q5Y7/trVXwrzbt4U3Ee8yRU+Np/SUF8Fc
+         U9NLuea2epXaRI02H6epKBE5wyVAACFpMm6TAdmuEqb/jZA9aT0YsSFL1Kpw0v3TPRYp
+         kkUubx0Q7PdBSVsPnVLCd1WAW0mPsVPFWMcslAaDfMEhM4JE0izWHRrlWji8QicUld0e
+         cSAhEDkYfsN/v8QVwF1ObMMfXPu0L8qhu2SvYsajphnXYg5SQGnO1hC4fH32FNcguNtr
+         mMaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kBPZZuZvA3tt1Y2+1kdETFXSvF82J/FThyL+t3rVwqw=;
-        b=IC3xTQw4l1mnT6BGurxa76TWO5YkQjeB3OQ/MNRnr4JAf2tBFIuNKOgtO0ckGgk0y8
-         UXIksjzk/U8dJEdrDtsMQdgClRzAFzVEsti1GsuFbFNANSIdOVwI2NO/kQKe/HO7VrGb
-         pv7A9CRt57txHREqxgHUPZ8H7FfZ5kKxtUV7vJssAg8v4NnZw7e2S/lZ8XzRF2i7GW21
-         U1qETZRiMVp4v4XdBL3BCmfhyncqAjHc7gKCSARm7Oh+mXywDA98N39EvMzb3oWL9D8+
-         dFwHnS4KldDMHHYefsagfdMauafpq0wngJO/pS6tJavFkUcOg6L1a2SgiPEYI0Wrt7Hw
-         Y+Yw==
-X-Gm-Message-State: AOAM531JLURQpWGflKhIIUMEGNfEIYVjNGWNRF66G9eZuEBGxoFHaiqr
-        HFKyiwiEluso99gA+Vj4ljmcIg==
-X-Google-Smtp-Source: ABdhPJxKGpc6uxlNFMBk8m5VVO35VgRe6qPMY9jKKrgSUzZeI1Kb/2c6VrhDeH8TBjdkbgZ4eVR8Lw==
-X-Received: by 2002:a05:600c:ad6:: with SMTP id c22mr9432875wmr.63.1625757456924;
-        Thu, 08 Jul 2021 08:17:36 -0700 (PDT)
-Received: from enceladus (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
-        by smtp.gmail.com with ESMTPSA id w9sm2251919wmc.19.2021.07.08.08.17.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization
+         :mime-version:content-transfer-encoding;
+        bh=+YN55qVJT6wyC2rtDdpkRhVOqaoHkRAE4/LgamoXOuY=;
+        b=NYIySfBDtssj9tyiJOooAF1pcirBltQptfFfIQvdqg8cYc7F+LUnHLHVWEGHSnIbez
+         W1QJXu7xKPx6XYjAi631yaHTJ8DbHsoXdbrtf65vNExqz0unXl/vWCY3muCqiDoeoNZq
+         4nQvBrh2Zqiu+ea7jPmCWYkdzay/nE8QWpNk7JkSR9U1Udb2Fxx24Vm2lrdcTYm+o5Bv
+         2ihKc9mU3XuNIoLhqluGOVCwTBQjpNSSyj1v0KAqZCUCwPVH+MJkmHKHjYDZ55eIUNKk
+         FE0lwdHmsIN9Mr/emJwYCjhC1CAwey7ETrNHyf4WaJ2LRhNQdU/6bACqOYvoAQ7Fw8Cu
+         0xtw==
+X-Gm-Message-State: AOAM531Pbs04Q74rjBh8mxFhUOf3xkR0mXBFA0JKot0sLpNaDJqhwV/S
+        MCffD0w3CZsPXuBTH08uu+mubA==
+X-Google-Smtp-Source: ABdhPJyoHqkFNIolSZv4+J+JG/HNwhwGEYBadtGOyri4ALLuNSj0/YY6m0VmS1fNECiTBIjazFHbnQ==
+X-Received: by 2002:ac8:5f86:: with SMTP id j6mr9022194qta.227.1625757823041;
+        Thu, 08 Jul 2021 08:23:43 -0700 (PDT)
+Received: from iron-maiden.localnet ([50.225.136.98])
+        by smtp.gmail.com with ESMTPSA id x9sm1072514qtf.76.2021.07.08.08.23.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jul 2021 08:17:36 -0700 (PDT)
-Date:   Thu, 8 Jul 2021 18:17:32 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
-        thomas.petazzoni@bootlin.com, Marcin Wojtas <mw@semihalf.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        hawk@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
-        guro@fb.com, peterx@redhat.com, Feng Tang <feng.tang@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, mcroce@microsoft.com,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, Kevin Hao <haokexin@gmail.com>,
-        nogikh@google.com, Marco Elver <elver@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC 1/2] page_pool: add page recycling support
- based on elevated refcnt
-Message-ID: <YOcXDISpR7Cf+eZG@enceladus>
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
- <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
- <CAKgT0Ueyc8BqjkdTVC_c-Upn-ghNeahYQrWJtQSqxoqN7VvMWA@mail.gmail.com>
- <29403911-bc26-dd86-83b8-da3c1784d087@huawei.com>
- <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
- <YOX6bPEL0cq8CgPG@enceladus>
- <CAKgT0UfPFbAptXMJ4BQyeAadaxyHfkKRfeiwhrVMwafNEM_0cw@mail.gmail.com>
- <YOcKASZ9Bp0/cz1d@enceladus>
- <CAKgT0UfJuvdkccr=SXWNUaGx7y5nUHFL-E9g3qi4sagY_jWUUQ@mail.gmail.com>
- <YOcQyKt6i+UeMzSS@enceladus>
+        Thu, 08 Jul 2021 08:23:42 -0700 (PDT)
+From:   Carlos Bilbao <bilbao@vt.edu>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch,
+        gregkh@linuxfoundation.org
+Subject: [PATCH] drivers: net: Follow the indentation coding standard on printks
+Date:   Thu, 08 Jul 2021 11:23:41 -0400
+Message-ID: <1884900.usQuhbGJ8B@iron-maiden>
+Organization: Virginia Tech
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YOcQyKt6i+UeMzSS@enceladus>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > >
-> > > > > > >
-> > >
-> > > [...]
-> > >
-> > > > > > > The above expectation is based on that the last user will always
-> > > > > > > call page_pool_put_full_page() in order to do the recycling or do
-> > > > > > > the resource cleanup(dma unmaping..etc).
-> > > > > > >
-> > > > > > > As the skb_free_head() and skb_release_data() have both checked the
-> > > > > > > skb->pp_recycle to call the page_pool_put_full_page() if needed, I
-> > > > > > > think we are safe for most case, the one case I am not so sure above
-> > > > > > > is the rx zero copy, which seems to also bump up the refcnt before
-> > > > > > > mapping the page to user space, we might need to ensure rx zero copy
-> > > > > > > is not the last user of the page or if it is the last user, make sure
-> > > > > > > it calls page_pool_put_full_page() too.
-> > > > > >
-> > > > > > Yes, but the skb->pp_recycle value is per skb, not per page. So my
-> > > > > > concern is that carrying around that value can be problematic as there
-> > > > > > are a number of possible cases where the pages might be
-> > > > > > unintentionally recycled. All it would take is for a packet to get
-> > > > > > cloned a few times and then somebody starts using pskb_expand_head and
-> > > > > > you would have multiple cases, possibly simultaneously, of entities
-> > > > > > trying to free the page. I just worry it opens us up to a number of
-> > > > > > possible races.
-> > > > >
-> > > > > Maybe I missde something, but I thought the cloned SKBs would never trigger
-> > > > > the recycling path, since they are protected by the atomic dataref check in
-> > > > > skb_release_data(). What am I missing?
-> > > >
-> > > > Are you talking about the head frag? So normally a clone wouldn't
-> > > > cause an issue because the head isn't changed. In the case of the
-> > > > head_frag we should be safe since pskb_expand_head will just kmalloc
-> > > > the new head and clears head_frag so it won't trigger
-> > > > page_pool_return_skb_page on the head_frag since the dataref just goes
-> > > > from 2 to 1.
-> > > >
-> > > > The problem is that pskb_expand_head memcopies the page frags over and
-> > > > takes a reference on the pages. At that point you would have two skbs
-> > > > both pointing to the same set of pages and each one ready to call
-> > > > page_pool_return_skb_page on the pages at any time and possibly racing
-> > > > with the other.
-> > >
-> > > Ok let me make sure I get the idea properly.
-> > > When pskb_expand_head is called, the new dataref will be 1, but the
-> > > head_frag will be set to 0, in which case the recycling code won't be
-> > > called for that skb.
-> > > So you are mostly worried about a race within the context of
-> > > pskb_expand_skb() between copying the frags, releasing the previous head
-> > > and preparing the new one (on a cloned skb)?
-> > 
-> > The race is between freeing the two skbs. So the original and the
-> > clone w/ the expanded head will have separate instances of the page. I
-> > am pretty certain there is a race if the two of them start trying to
-> > free the page frags at the same time.
-> > 
-> 
-> Right, I completely forgot calling __skb_frag_unref() before releasing the
-> head ...
-> You are right, this will be a race.  Let me go back to the original mail
-> thread and see what we can do
-> 
+Fix indentation of printks that start at the beginning of the line. Change this 
+for the right number of space characters, or tabs if the file uses them. 
 
-What do you think about resetting pp_recycle bit on pskb_expand_head()?
-If my memory serves me right Eric wanted that from the beginning. Then the
-cloned/expanded SKB won't trigger the recycling.  If that skb hits the free
-path first, we'll end up recycling the fragments eventually.  If the
-original one goes first, we'll just unmap the page(s) and freeing the cloned
-one will free all the remaining buffers.
+Signed-off-by: Carlos Bilbao <bilbao@vt.edu>
+---
+ drivers/net/ethernet/dec/tulip/de4x5.c | 2 +-
+ drivers/net/sb1000.c                   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Regards
-Ilias
-> Thanks!
-> /Ilias
-> > Thanks,
-> > 
-> > - Alex
+diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
+index b125d7faefdf..155cfe8800cd 100644
+--- a/drivers/net/ethernet/dec/tulip/de4x5.c
++++ b/drivers/net/ethernet/dec/tulip/de4x5.c
+@@ -3169,7 +3169,7 @@ dc2114x_autoconf(struct net_device *dev)
+ 
+     default:
+ 	lp->tcount++;
+-printk("Huh?: media:%02x\n", lp->media);
++	printk("Huh?: media:%02x\n", lp->media);
+ 	lp->media = INIT;
+ 	break;
+     }
+diff --git a/drivers/net/sb1000.c b/drivers/net/sb1000.c
+index e88af978f63c..54a7c7613434 100644
+--- a/drivers/net/sb1000.c
++++ b/drivers/net/sb1000.c
+@@ -760,7 +760,7 @@ sb1000_rx(struct net_device *dev)
+ 
+ 	insw(ioaddr, (unsigned short*) st, 1);
+ #ifdef XXXDEBUG
+-printk("cm0: received: %02x %02x\n", st[0], st[1]);
++	printk("cm0: received: %02x %02x\n", st[0], st[1]);
+ #endif /* XXXDEBUG */
+ 	lp->rx_frames++;
+ 
+@@ -805,7 +805,7 @@ printk("cm0: received: %02x %02x\n", st[0], st[1]);
+ 		/* get data length */
+ 		insw(ioaddr, buffer, NewDatagramHeaderSize / 2);
+ #ifdef XXXDEBUG
+-printk("cm0: IP identification: %02x%02x  fragment offset: %02x%02x\n", buffer[30], buffer[31], buffer[32], buffer[33]);
++		printk("cm0: IP identification: %02x%02x  fragment offset: %02x%02x\n", buffer[30], buffer[31], buffer[32], buffer[33]);
+ #endif /* XXXDEBUG */
+ 		if (buffer[0] != NewDatagramHeaderSkip) {
+ 			if (sb1000_debug > 1)
+-- 
+2.25.1
+
+
+
