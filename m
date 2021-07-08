@@ -2,155 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C303BF9E3
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:12:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9438F3BF9E8
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 14:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbhGHMOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 08:14:45 -0400
-Received: from mail-bn7nam10on2061.outbound.protection.outlook.com ([40.107.92.61]:60384
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231404AbhGHMOp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 08:14:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iIvCRRfiy1vbHPlHd9VWXzwMhNTB5a1RvjWtgd8GQcd0ny/Mr1YsY/DfXYsJzUnd2QJCz/JfMYf8uJfHIiiWy4pLnjkbziffpCv1xN8tXLgniqgP3inKTJFcWdhZESMSMbRqUwv4mvhcmKUc6HrCRjJcEYKoI2WQWVLjsraIe/pBGZuiVa3XhFEcPP8mY1aJVM+SJLgn2qoI+fKW46ojeWq1mfXnOqvOVsxaBXacV4iEBsD6oFbnzCiizhTHSM61tfCGF3iAFwCyhK2Ld/Mxutw9d3+k+5NBTBQq30M8oNHO+Q+vEGhjQfXBfa8FUz8GYiynd4W0euVCHc7CPiuJPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bMMA4rfa8EO00JV09GM9/6y6YVod4m8zKsxT4OSburU=;
- b=hyUApLMIToMJYGUNAxQrZ3sXwrZ4jHDgSHCTpSY1igkazuEwiZbPNK3jD52cO0YyMPiMC5srhpyPktkvrH8xi4/AR4mL3+rdN95YJCvkg2ufuukJ7TLk2H6niv0tn/KJEN8tGVVtcwzpL3NIVKhh7GI/Z8SY1f8QPBjCXp2XehHZuTDvhmRZQr1s3Q7rUHzgpPz1H7Q/hA+Z6tbgbV1rnXIwzcc7Nnh31aJfOoE3rLQX+d9hJ4mCvngbcLA0SQAPENa9Xau8zLJEEK8DXFS0r22RQcrBApuouOg9xT0KY9URK9Jkvu8nAWwyD5kk5LfaenjSzTVIvMbvZAS5ddCmBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bMMA4rfa8EO00JV09GM9/6y6YVod4m8zKsxT4OSburU=;
- b=Ki/ZFyfqI6wksw4q4rVbaG6O6cUAVq7uxXrutLb82eJ6VnK6A+PoxW4dbBwk60SYajjiGSk0K32HifIEYko6Lo1uqNvKSQwCqTPveCK2aqDYVBvzcaJqFnBECjXkJA0OcqU7ioHaAT85qLC0P23qSAdbg2xxxHxv4W4YFkkenmmC0MD425myOqsRBpP4a0xmdD8HrzHMCVR5RdPV4l4Fu4MRGS7h/SlL79fzVRzqgkSjATeyz9hlsit+BBOfvVPw71PJq1nDJP54yH0v1w0H3dG38bLthT7HrKq8XMB+uo9888SfNGD90igVdukZUt/lIQesSrNxi22xBcZWorwMpg==
-Received: from BN7PR06CA0043.namprd06.prod.outlook.com (2603:10b6:408:34::20)
- by MN2PR12MB4189.namprd12.prod.outlook.com (2603:10b6:208:1d8::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20; Thu, 8 Jul
- 2021 12:12:02 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:34:cafe::fb) by BN7PR06CA0043.outlook.office365.com
- (2603:10b6:408:34::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend
- Transport; Thu, 8 Jul 2021 12:12:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4308.20 via Frontend Transport; Thu, 8 Jul 2021 12:12:01 +0000
-Received: from [172.27.1.80] (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 8 Jul
- 2021 12:11:58 +0000
-Subject: Re: [PATCH net 1/1] tc-testing: Update police test cases
-To:     Jamal Hadi Salim <jhs@mojatatu.com>, <netdev@vger.kernel.org>
-CC:     David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "Paul Blakey" <paulb@nvidia.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        "Stephen Hemminger" <stephen@networkplumber.org>
-References: <20210708080006.3687598-1-roid@nvidia.com>
- <54d152b2-1a0b-fbc5-33db-4d70a9ae61e6@mojatatu.com>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <1db8c734-bebe-fbe3-100f-f4e5bf50baaf@nvidia.com>
-Date:   Thu, 8 Jul 2021 15:11:56 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230396AbhGHMRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 08:17:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:24248 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229795AbhGHMRH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 08:17:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625746465;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=I55zh2XXZG4Wh8FdZlPVvOlalnJqCExFPnbC3bw2voU=;
+        b=gCVKbwkFuXcZSDFBztb01rBSN1REjjsuGxaY81Op7Z1dGYrx8CYJnlqn8LUo+Tz5n7rNtj
+        T6Qhg6yY5w5wJtrPuSRvm5I6i6AhnPg85Dz8vMqYoXdXObPQHwfKwyHRPl8qN5TBXYBcCo
+        SG6qeug/PXMrchqNNhSsjxyEgqH47NI=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-350-FCh7NyBVM4Ck-ouEcB2Zyg-1; Thu, 08 Jul 2021 08:14:24 -0400
+X-MC-Unique: FCh7NyBVM4Ck-ouEcB2Zyg-1
+Received: by mail-il1-f199.google.com with SMTP id g16-20020a92c7d00000b02901fedf02bce4so3456154ilk.15
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 05:14:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=I55zh2XXZG4Wh8FdZlPVvOlalnJqCExFPnbC3bw2voU=;
+        b=H4krfl+/o+xRRbyCzbAI+ezUVkj5hzjx+/Iu1/4Os5BJAW6vijyaj7tm5URWCSiUKh
+         J0/RytlIEhtTznlEpf8fhJhy3ERAxlSDnGnP1Hrlk6lMAwA73agL4L+y+lKdmN0l8kHa
+         UUc1B27Udx3AgLQTbM6R++svEnPk30T8VtrXFuzxpTeZi3CI3cx3RhmHAsv9urzqpOfu
+         7vn0gIpV4PcLG8J06dR4qbVK3QXIbOvHegaalUBGfgSpcg597yJ07OyLZiuq9hMxony+
+         wBitjpXx0UhUw6ys9uoobr2LG+wpW9Ye8OzPH8abfzjG0e0cImtCea0j+YwzCvBawmVf
+         KbHA==
+X-Gm-Message-State: AOAM533L5yBVCv/ORVPw5fZWP31VJ+g2PE5+vVkgLl5MQXAJL59ZJwJV
+        tJmtBiLzK7IRdW8bKtS4GN8Gv7dDDZqD5WQzIWqUjJxffi/fbfNMIsXXCT81ixyet1ltX6xuR2R
+        ReB5uY2KBLOx255fS3M44FlTzxqeitllU
+X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr26426568jav.94.1625746464045;
+        Thu, 08 Jul 2021 05:14:24 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy2Ybl/++F5bCkFRwxr1Df16nASMIT1l9l7RKaCM5kiK/gmVXr2wTAan2c6EykGJnA7ffNMJC1G/s1frAEY8uU=
+X-Received: by 2002:a05:6638:372c:: with SMTP id k44mr26426536jav.94.1625746463835;
+ Thu, 08 Jul 2021 05:14:23 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <54d152b2-1a0b-fbc5-33db-4d70a9ae61e6@mojatatu.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ac451c36-3681-447b-66ac-08d9420997fb
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4189:
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4189155E09F1278239403AECB8199@MN2PR12MB4189.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: O8G2zsICXYwGTuPULeR9Z6rjtSBpPpuhs2jKnl1UYdCHDy9WO1p7xgYRRPuZWqRcX9m/ldOgWsse2w7AkQrrMicF1OGNvT1UcgCuuMaok0D5cYZABIfUPIwfMD7GJU0aiSuPNaEuWqJhAfd0WliL9CcP1nksHICeZAAJ3zNyhS2TBI7FfEExAZMpU0c8NGTODhrjH91gyOsNojWg6Z4XXGQRxbtVi73104lfoLLKdG1dyi9yk7oWbIG+RkONa/Iq5UNpw+8zglZt2tJEXN8XI7Kj+6cGKt8LBTS9fTO/hju5J6wZMyMBjOwPkRd4dAosGdW//bmJ/mSaHvY9hYMqMhzErni9iVKZtuka7ONBJ/7GYY4PhjUanS4Clthj6i4/bACD8h2fiUThCEK7NKf9q6fPfv1XhDFgHC2VkO/Nx9oIpMiOf/SLcZFza8CN36zR9m7VmNdzk9nvDjkYJ5/zCfhXcM1WNLtPOFVbyivuJcs8YuIYClLakmZAm8UGXMqH/Gjf6CKRILUXFBIVhOKKoB7j9vu2NSMS6V3WM95MdRMkLUOapv6nk9+QlGIAMlgOE6H9slQSGqpZ94GQUOrpScWcpRiECOLW8G4MGAaBXyuOOlxpNR4wFm0q+fYph7zCFBY5mzBh6eP1k5WkTII5uHOl2Qri65q0pXfwK3iUcbB6HrK/FJGvccr6gDKjzfLR63ID0w6jzg/PuTgh3tIeUDGq4ontkn3aelfUd2lxBI4=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(39860400002)(396003)(36840700001)(46966006)(26005)(8676002)(8936002)(356005)(82740400003)(53546011)(2906002)(16576012)(2616005)(70586007)(426003)(54906003)(7636003)(36906005)(316002)(110136005)(31686004)(70206006)(31696002)(36756003)(83380400001)(86362001)(336012)(5660300002)(36860700001)(4326008)(15650500001)(82310400003)(478600001)(186003)(47076005)(16526019)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2021 12:12:01.9821
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac451c36-3681-447b-66ac-08d9420997fb
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4189
+References: <20210707081642.95365-1-ihuguet@redhat.com> <0e6a7c74-96f6-686f-5cf5-cd30e6ca25f8@gmail.com>
+ <CACT4oudw=usQQNO0dL=xhJw9TN+9V3o=TsKGvGh7extu+JWCqA@mail.gmail.com> <20210707130140.rgbbhvboozzvfoe3@gmail.com>
+In-Reply-To: <20210707130140.rgbbhvboozzvfoe3@gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Thu, 8 Jul 2021 14:14:13 +0200
+Message-ID: <CACT4oud6R3tPFpGuiyNM9kjV5kXqzRcg8J_exv-2MaHWLPm-sA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] sfc: revert "reduce the number of requested xdp ev queues"
+To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, ivan@cloudflare.com,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 7, 2021 at 3:01 PM Martin Habets <habetsm.xilinx@gmail.com> wro=
+te:
+> > Another question I have, thinking about the long term solution: would
+> > it be a problem to use the standard TX queues for XDP_TX/REDIRECT? At
+> > least in the case that we're hitting the resources limits, I think
+> > that they could be enqueued to these queues. I think that just taking
+> > netif_tx_lock would avoid race conditions, or a per-queue lock.
+>
+> We considered this but did not want normal traffic to get delayed for
+> XDP traffic. The perceived performance drop on a normal queue would
+> be tricky to diagnose, and the only way to prevent it would be to
+> disable XDP on the interface all together. There is no way to do the
+> latter per interface, and we felt the "solution" of disabling XDP
+> was not a good way forward.
+> Off course our design of this was all done several years ago.
 
+In my opinion, there is no reason to make that distinction between
+normal traffic and XDP traffic. XDP traffic redirected with XDP_TX or
+XDP_REDIRECT is traffic that the user has chosen to redirect that way,
+but pushing the work down in the stack. Without XDP, this traffic had
+gone up the stack to userspace, or at least to the firewall, and then
+redirected, passed again to the network stack and added to normal TX
+queues.
 
-On 2021-07-08 2:17 PM, Jamal Hadi Salim wrote:
-> On 2021-07-08 4:00 a.m., Roi Dayan wrote:
->> Update to match fixed output.
->>
->> Signed-off-by: Roi Dayan <roid@nvidia.com>
->> ---
->>
->> Notes:
->>      Hi,
->>      This is related to commit that was merged
->>      55abdcf20a57 police: Add support for json output
->>      and also submitted another small fix commit titled
->>      "police: Small corrections for the output"
->>      Thanks,
->>      Roi
->>
->>   .../tc-testing/tc-tests/actions/police.json   | 62 +++++++++----------
->>   1 file changed, 31 insertions(+), 31 deletions(-)
->>
->> diff --git 
->> a/tools/testing/selftests/tc-testing/tc-tests/actions/police.json 
->> b/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
->> index 8e45792703ed..c9623c7afbd1 100644
->> --- a/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
->> +++ b/tools/testing/selftests/tc-testing/tc-tests/actions/police.json
->> @@ -17,7 +17,7 @@
->>           "cmdUnderTest": "$TC actions add action police rate 1kbit 
->> burst 10k index 1",
->>           "expExitCode": "0",
->>           "verifyCmd": "$TC actions ls action police",
->> -        "matchPattern": "action order [0-9]*:  police 0x1 rate 1Kbit 
->> burst 10Kb",
->> +        "matchPattern": "action order [0-9]*: police.*index 1 rate 
->> 1Kbit burst 10Kb",
->>           "matchCount": "1",
->>           "teardown": [
->>               "$TC actions flush action police"
-> 
-> Does the old output continue to work here?
-> 
-> cheers,
-> jamal
+If the user wants to prevent XDP from mixing with normal traffic, just
+not attaching an XDP program to the interface, or not using
+XDP_TX/REDIRECT in it would be enough. Probably I don't understand
+what you want to say here.
 
+Anyway, if you think that keeping XDP TX queues separated is the way
+to go, it's OK, but my proposal is to share the normal TX queues at
+least in the cases where dedicated queues cannot be allocated. As you
+say, the performance drop would be tricky to measure, if there's any,
+but in any case, even separating the queues, they're competing for
+resources of CPU, PCI bandwidth, network bandwidth...
 
-no. old output doesn't have the string "index" and also output of index
-is in hex.
+The fact is that the situation right now is this one:
+- Many times (or almost always with modern servers' processors)
+XDP_TX/REDIRECT doesn't work at all
+- The only workaround is reducing the number of normal channels to let
+free resources for XDP, but this is a much higher performance drop for
+normal traffic than sharing queues with XDP, IMHO.
 
-it is possible to make the old version work by allowing without index
-and looking for either the unsigned number or hex number/
+Increasing the maximum number of channels and queues, or even making
+them virtually unlimited, would be very good, I think, because people
+who knows how to configure the hardware would take advantage of it,
+but there will always be situations of getting short of resources:
+- Who knows how many cores we will be using 5 forward from now?
+- VFs normally have less resources available: 8 MSI-X vectors by default
 
-but why do we need the old output to work? could use the "old" version
-of the test.
+With some time, I can try to prepare some patches with these changes,
+if you agree.
+
+Regards
+--=20
+=C3=8D=C3=B1igo Huguet
 
