@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C1CE3BF3AD
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A08B13BF3B9
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 04:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230285AbhGHBxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 21:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
+        id S230282AbhGHCGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 22:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbhGHBxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 21:53:22 -0400
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD7DC061574;
-        Wed,  7 Jul 2021 18:50:41 -0700 (PDT)
-Received: by mail-ot1-x334.google.com with SMTP id x22-20020a9d6d960000b0290474a76f8bd4so4301936otp.5;
-        Wed, 07 Jul 2021 18:50:41 -0700 (PDT)
+        with ESMTP id S230110AbhGHCGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 22:06:54 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB6C061574;
+        Wed,  7 Jul 2021 19:04:13 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id e14so4173694qkl.9;
+        Wed, 07 Jul 2021 19:04:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iEVLnnKUTx52/0fMucAnzWE082XWeBdl7Fv1TW0tngs=;
-        b=pyXYLpmUH3RwaJJS99nW57KfKuXK84csZktYgBjQTTDRU5oxQTUvIwtUmJ5bGXWsxH
-         6/hBdLv1OsXI3LL44j4D8rXeHTeJK8/ufPoKyamA5/16aYRcKEPEYSMIPcOy9OUCs4vW
-         ZS0U1Q9JcP9v30GSnZ3Ww1oYR+JWiSDpykwnffTWg8Xgg1Qy1c7SBoG0yTfVC8vTh+jp
-         ETHx2oyaQlEzUwjTisqLxRTyOSP/NhBcmZdqkiPL4wyKTIUcKfeo8GWJht6A2AU/zgc4
-         wgsVMn+j152Ftv/Tk0Zak9Ov/OjnQmBCU+04fMlHQKjyK8TJ/QFGZxVF72zOpfZupBjK
-         xM5w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=79kwFs/IWOybBEWDpXckF21cEhoS06YNllAgNDTsoVg=;
+        b=hVGjXYQsWBZZw7yVg9bUUkTWh/xdX7LlFOHM+hJm2HhfcwAb+nl/0JPaJOTXWJTHQH
+         VbAMf9l6tBwOAKkMYIQguuVFEi2LLRDTn77c7pXcr8xn7TASO0f2/PYc1UxC2tAAXX1o
+         d1YvFq2qNQ+8NL353gnHQkhwRoRSEK9b1B7IeKR1qRJ1VdZ97U+t9LXi89I8qYvIdsOa
+         XSR8lKjTwQ1nqTiZTXC8KM0CyrnnYw4qyQ5XDvZ+lX7quf5g5/PA/uowPeOXcCsdYRk4
+         MDykq9kSUMC+IIt3+NuRghd5pSq7pyZ7b/M6OpoRWZhKqft2uBh1x51XyLJcqWcZXEUf
+         4Dig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iEVLnnKUTx52/0fMucAnzWE082XWeBdl7Fv1TW0tngs=;
-        b=nry2QKEVVHQSb2vzcsqycAcTM7atbkdvD8RpoTtThH8gmhljk6cbrOjVVITtDDG8wh
-         Wekeqt3l74eChAgpaldb3T43KqdCAqqgIsn933UXSEuVH9rsM/Xj/HKVHNfOqEsxUeLM
-         wjcMzG1ljVFDRjuY5lyChayvg/ZIjOq5hNutveyvwmS0YOEFR9954orQYVsqJ5BOTUxb
-         Sa4Vb1NhABSXRu0LGavifBoq1cUgrzCpfNS3JGQm8qZrfu26hH1SgR/jYau7p0/XDQmf
-         vq0Iz3e8slG4jFAIDS0nbAyVowZBp+dB6RiiokJ6vg5gPLO4A2E4eonzIum9umnERMUV
-         ivpQ==
-X-Gm-Message-State: AOAM530FEi0+/j6KvPhUUemQMQqIy0YxkiY7833rVUwM8gtewvQ2KstL
-        no9ZV8M5FJvVXiWdwXZIzkFdUjUryx76mA==
-X-Google-Smtp-Source: ABdhPJx0QfK9mvDctVujneOatljjyjWH/wdXTRzJbj1Dyk3qOEVni5jLnX9FTxgO3YGwsggfHn5GYA==
-X-Received: by 2002:a9d:82d:: with SMTP id 42mr21749901oty.235.1625709040614;
-        Wed, 07 Jul 2021 18:50:40 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id o20sm135632ook.40.2021.07.07.18.50.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Jul 2021 18:50:40 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/4] selftests: forwarding: Test redirecting gre
- or ipip packets to Ethernet
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-References: <cover.1625056665.git.gnault@redhat.com>
- <0a4e63cd3cde3c71cfc422a7f0f5e9bc76c0c1f5.1625056665.git.gnault@redhat.com>
- <YN1Wxm0mOFFhbuTl@shredder> <20210701145943.GA3933@pc-32.home>
- <1932a3af-2fdd-229a-e5f5-6b1ef95361e1@gmail.com>
- <20210706190253.GA23236@pc-32.home>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <391b6a56-b7e0-867c-617e-a05afec50b24@gmail.com>
-Date:   Wed, 7 Jul 2021 19:50:38 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=79kwFs/IWOybBEWDpXckF21cEhoS06YNllAgNDTsoVg=;
+        b=tsNCpGjcCQfHPk7Oc6GRMG3EUJfQdj2fuDo/lisn/P5g1DrpvPPOWcidXS1slhIGT8
+         HUAdhO9hrqnfA7jM/RDnz5tTCyXrVulQsvvcGldWzfiBfdj5GfLuaj4e33z7J/rvO9s+
+         2C8pbQKP1upfGLedW4kNn6smR/18RiruYaaQyeyvAskbUotoWrew4yh3sl/y07o4fWkb
+         /Ke5xVTjf6y7HcSwBxnfFX00Fv5jubd8gQkFiWMKIp/4UvEbFPL66HEpbKddusVCz0fj
+         nnYg/bs+mf1bNBOGVrlfUaSa+MMmOQNceVRLvuFemi5U/SuAbDf2xRr25w7PeX3oZQK8
+         jESQ==
+X-Gm-Message-State: AOAM532KPFofymnHJbkJQnLwt4D8+Q7X5gSEoaNI2ZrDBVOHluZlNTaK
+        Z1m+noD6+E9DOEPYZNcudGfFwM9kwHMaA/CCz9w=
+X-Google-Smtp-Source: ABdhPJz36Y73BP3gqp3tXPYbQSOgNuHy8oCF6MwJ+BkwlhSi6HtlRN1S+1M4GXUbV3xFm+jrlGDyHZpJD+Pya6GH38g=
+X-Received: by 2002:a37:e4a:: with SMTP id 71mr16713996qko.374.1625709853075;
+ Wed, 07 Jul 2021 19:04:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210706190253.GA23236@pc-32.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210707215337.lwbgvb6lxs3gmsbb@pali> <20210707221042.GA939059@bjorn-Precision-5520>
+In-Reply-To: <20210707221042.GA939059@bjorn-Precision-5520>
+From:   "Oliver O'Halloran" <oohall@gmail.com>
+Date:   Thu, 8 Jul 2021 12:04:02 +1000
+Message-ID: <CAOSf1CGVpogQGAatuY_N0db6OL2BFegGtj6VTLA9KFz0TqYBQg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Aaron Ma <aaron.ma@canonical.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/6/21 1:02 PM, Guillaume Nault wrote:
-> --- a/drivers/net/vxlan.c
-> +++ b/drivers/net/vxlan.c
-> @@ -3767,8 +3767,7 @@ static int vxlan_config_validate(struct net *src_net, struct vxlan_config *conf,
->  		    (conf->flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)))
->  			continue;
->  
-> -		if ((conf->flags & VXLAN_F_IPV6_LINKLOCAL) &&
-> -		    tmp->cfg.remote_ifindex != conf->remote_ifindex)
-> +		if (tmp->cfg.remote_ifindex != conf->remote_ifindex)
->  			continue;
->  
->  		NL_SET_ERR_MSG(extack,
+On Thu, Jul 8, 2021 at 8:40 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> If we add the check as proposed in this patch, I think people will
+> read it and think this is the correct way to avoid MMIO errors.  It
+> does happen to avoid some MMIO errors, but it cannot avoid them all,
+> so it's not a complete solution and it gives a false sense of
+> security.
 
-Looking at the vxlan driver and that restriction is unnecessary. While
-IPv6 LLA requires a device index, allowing separate LINK attributes is a
-legit use case - as VRF shows.
+I think it's helpful to classify MMIO errors as either benign or
+poisonous with the poison MMIOs causing some kind of crash. Most of
+the discussions about pci_dev_is_disconnected(), including this one,
+seem to stem from people trying to use it to avoid the poison case. I
+agree that using pci_dev_is_disconnected() that way is hacky and
+doesn't really fix the problem, but considering poison MMIOs usually
+stem from broken hardware or firmware  maybe we should allow it
+anyway. We can't do anything better and it's an improvement compared
+to crashing.
 
-Do you want to send a formal patch to fix this one since you have it
-diagnosed?
+> A complete solution requires a test *after* the MMIO read.  If you
+> have the test after the read, you don't really need one before.  Sure,
+> testing before means you can avoid one MMIO read failure in some
+> cases.  But avoiding that failure costs quite a lot in code clutter.
+
+It's not that much clutter if the checks are buried in the MMIO
+helpers which most drivers define. Speaking of which:
+
+> u32 igc_rd32(struct igc_hw *hw, u32 reg)
+> {
+>   struct igc_adapter *igc = container_of(hw, struct igc_adapter, hw);
+>   u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
+>   u32 value = 0;
+>
+>   value = readl(&hw_addr[reg]);
+>
+>   /* reads should not return all F's */
+>   if (!(~value) && (!reg || !(~readl(hw_addr)))) {
+>     struct net_device *netdev = igc->netdev;
+>
+>     hw->hw_addr = NULL;
+>     netif_device_detach(netdev);
+>     netdev_err(netdev, "PCIe link lost, device now detached\n");
+>     WARN(pci_device_is_present(igc->pdev),
+>          "igc: Failed to read reg 0x%x!\n", reg);
+>   }
+>
+>   return value;
+> }
+
+I think I found where that page fault is coming from.
+
+I wonder if we should provide drivers some way of invoking the error
+recovery mechanisms manually or even just flagging itself as broken.
+Right now even if the driver bothers with synchronous error detection
+the driver can't really do anything other than parking itself and
+hoping AER/EEH recovery kicks in.
+
+Oliver
