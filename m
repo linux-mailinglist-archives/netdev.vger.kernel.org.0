@@ -2,67 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE483C180B
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 19:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 715013C1824
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 19:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbhGHR2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 13:28:23 -0400
-Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:36842 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229469AbhGHR2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 13:28:20 -0400
-Received: from omf18.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id D35CB101C1B76;
-        Thu,  8 Jul 2021 17:25:36 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf18.hostedemail.com (Postfix) with ESMTPA id 8EF8D2EBF98;
-        Thu,  8 Jul 2021 17:25:33 +0000 (UTC)
-Message-ID: <5f054b8ea1057f1485f8af3546b45bdfd0c21acb.camel@perches.com>
-Subject: Re: [PATCH] checkpatch: Follow scripts/spdxcheck.py's switch to
- python3
-From:   Joe Perches <joe@perches.com>
-To:     Vincent Pelletier <plr.vincent@gmail.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        id S229737AbhGHRd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 13:33:29 -0400
+Received: from mail.efficios.com ([167.114.26.124]:41662 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229469AbhGHRd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 13:33:27 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 49C7D356D73;
+        Thu,  8 Jul 2021 13:30:44 -0400 (EDT)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id tso4qtwJn-oc; Thu,  8 Jul 2021 13:30:42 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id AFF91357023;
+        Thu,  8 Jul 2021 13:30:42 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com AFF91357023
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1625765442;
+        bh=yMCYyUaDxa0KOIyw0fOG9F7BxYnhCUATdYeNCkh9Sd8=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=DD66BDayNIPrk1AxZnelfo9LMYuU77BQ2RXKSI6d2ruOdKNi+D/1I/DaleCo9j9mi
+         I0nIX9jl9ByWQV14NlOXWtTtHwi1RhCqyQopPqMOdGoF2Tpk3MjOfw+iKVjrrhPPAq
+         a5JLtTdGIQLmvg7dGztILNzzDKpnHUDXNM2vErTa2tWvq6D00cwVudDsMYe6prVNRc
+         El6BT/7ir9Oh0siLaKjJmJgmeEEoaNclmAE56sZA0fXbQpsyFNnP+fRRg2LYYqETYj
+         zU0gMbEZiJE+vTS3KmTun6RQfI+rl5mHimQY7GUFzSbgFQZt/YSYw0hSfht6PiPKc8
+         3oSiIwuLO+wIw==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id wvLcxJ3AAWch; Thu,  8 Jul 2021 13:30:42 -0400 (EDT)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 98ABF356D6D;
+        Thu,  8 Jul 2021 13:30:42 -0400 (EDT)
+Date:   Thu, 8 Jul 2021 13:30:42 -0400 (EDT)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     rostedt <rostedt@goodmis.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Ingo Molnar <mingo@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Thu, 08 Jul 2021 10:25:32 -0700
-In-Reply-To: <73dca402670be1e7a8adf139621dafd0dfa03191.1625740121.git.plr.vincent@gmail.com>
-References: <73dca402670be1e7a8adf139621dafd0dfa03191.1625740121.git.plr.vincent@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Message-ID: <12904992.10404.1625765442490.JavaMail.zimbra@efficios.com>
+In-Reply-To: <CAEf4BzYRxRW8qR3oENuVEMBYtcvK0bUDEkoq+e4TRT5Hh0pV_Q@mail.gmail.com>
+References: <20210629095543.391ac606@oasis.local.home> <CAEf4BzZPb=cPf9V1Bz+USiq+b5opUTNkj4+CRjXdHcmExW3jVg@mail.gmail.com> <20210707184518.618ae497@rorschach.local.home> <CAEf4BzZ=hFZw1RNx0Pw=kMNq2xRrqHYCQQ_TY_pt86Zg9HFJfA@mail.gmail.com> <20210707200544.1fbfd42b@rorschach.local.home> <CAEf4BzYRxRW8qR3oENuVEMBYtcvK0bUDEkoq+e4TRT5Hh0pV_Q@mail.gmail.com>
+Subject: Re: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist()
+ for BPF tracing
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.28
-X-Stat-Signature: w88jg7r4gbmxmjyi3ggqc3oj66wpn44r
-X-Rspamd-Server: rspamout02
-X-Rspamd-Queue-Id: 8EF8D2EBF98
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18dGaW6l34mXYSU4/K7kkBKrXFusda6k2w=
-X-HE-Tag: 1625765133-768542
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4059 (ZimbraWebClient - FF89 (Linux)/8.8.15_GA_4059)
+Thread-Topic: tracepoint: Add tracepoint_probe_register_may_exist() for BPF tracing
+Thread-Index: zSZXTZdQDtLWPVa8QvQrrBDxNYsq7Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-08 at 10:29 +0000, Vincent Pelletier wrote:
-> Since commit d0259c42abff ("spdxcheck.py: Use Python 3") spdxcheck.py
-> expects to be run using python3. "python" may still be a python2 alias.
-> Instead, obey scripts/spdxcheck.py's shebang by executing it without
-> pre-selecting an interpreter.
-> Also, test python3 presence in path.
+----- On Jul 7, 2021, at 8:23 PM, Andrii Nakryiko andrii.nakryiko@gmail.com wrote:
 
-Thanks, but already done. See:
+> On Wed, Jul 7, 2021 at 5:05 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+>>
+>> On Wed, 7 Jul 2021 16:49:26 -0700
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>>
+>> > As for why the user might need that, it's up to the user and I don't
+>> > want to speculate because it will always sound contrived without a
+>> > specific production use case. But people are very creative and we try
+>> > not to dictate how and what can be done if it doesn't break any
+>> > fundamental assumption and safety.
+>>
+>> I guess it doesn't matter, because if they try to do it, the second
+>> attachment will simply fail to attach.
+>>
+> 
+> But not for the kprobe case.
+> 
+> And it might not always be possible to know that the same BPF program
+> is being attached. It could be attached by different processes that
+> re-use pinned program (without being aware of each other). Or it could
+> be done from some generic library that just accepts prog_fd and
+> doesn't really know the exact BPF program and whether it was already
+> attached.
+> 
+> Not sure why it doesn't matter that attachment will fail where it is
+> expected to succeed. The question is rather why such restriction?
 
-commit f9363b31d769245cb7ec8a660460800d4b466911
-Author: Guenter Roeck <linux@roeck-us.net>
-Date:   Wed Jun 30 18:56:19 2021 -0700
+Before eBPF came to exist, all in-kernel users of the tracepoint API never
+required multiple registrations for a given (tracepoint, probe, data) tuple.
 
-    checkpatch: scripts/spdxcheck.py now requires python3
+This allowed us to expose an API which can consider that the (tracepoint, probe, data)
+tuple is unique for each registration/unregistration pair, and therefore use that same
+tuple for unregistration. Refusing multiple registrations for a given tuple allows us to
+forgo the complexity of reference counting for duplicate registrations, and provide
+immediate feedback to misbehaving tracers which have duplicate registration or
+unbalanced registration/unregistration pairs.
 
+From the perspective of a ring buffer tracer, the notion of multiple instances of
+a given (tracepoint, probe, data) tuple is rather silly: it would mean that a given
+tracepoint hit would generate many instances of the exact same event into the
+same trace buffer.
 
+AFAIR, having the WARN_ON_ONCE() within the tracepoint code to highlight this kind of misuse
+allowed Steven to find a few unbalanced registration/unregistration issues while developing
+ftrace in the past. I vaguely recall that it triggered for blktrace at some point as well.
+
+Considering that allowing duplicates would add complexity to the tracepoint code,
+what is the use-case justifying allowing many instances of the exact same callback
+and data for a given tracepoint ?
+
+One key difference I notice here between eBPF and ring buffer tracers is what eBPF
+considers a "program". AFAIU (please let me know if I'm mistaken), the "callback"
+argument provided by eBPF to the tracepoint API is a limited set of trampoline routines.
+The bulk of the eBPF "program" is provided in the "data" argument. So this means the
+"program" is both the eBPF code and some context.
+
+So I understand that a given eBPF code could be loaded more than once for a given
+tracepoint, but I would expect that each registration on a given tracepoint be
+provided with its own "context", otherwise we end up in a similar situation as the
+ring buffer's duplicated events scenario I explained above.
+
+Also, we should discuss whether kprobes might benefit from being more strict by
+rejecting duplicated (instrumentation site, probe, data) tuples.
+
+Thanks,
+
+Mathieu
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
