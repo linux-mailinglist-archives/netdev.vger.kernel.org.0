@@ -2,88 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDF63BF2EF
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 02:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9793BF335
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 03:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbhGHAqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 20:46:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230000AbhGHAqW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Jul 2021 20:46:22 -0400
-Received: from rorschach.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D039261CAC;
-        Thu,  8 Jul 2021 00:43:40 +0000 (UTC)
-Date:   Wed, 7 Jul 2021 20:43:39 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        syzbot+721aa903751db87aa244@syzkaller.appspotmail.com,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH] tracepoint: Add tracepoint_probe_register_may_exist()
- for BPF tracing
-Message-ID: <20210707204339.5f415991@rorschach.local.home>
-In-Reply-To: <CAEf4BzYRxRW8qR3oENuVEMBYtcvK0bUDEkoq+e4TRT5Hh0pV_Q@mail.gmail.com>
-References: <20210629095543.391ac606@oasis.local.home>
-        <CAEf4BzZPb=cPf9V1Bz+USiq+b5opUTNkj4+CRjXdHcmExW3jVg@mail.gmail.com>
-        <20210707184518.618ae497@rorschach.local.home>
-        <CAEf4BzZ=hFZw1RNx0Pw=kMNq2xRrqHYCQQ_TY_pt86Zg9HFJfA@mail.gmail.com>
-        <20210707200544.1fbfd42b@rorschach.local.home>
-        <CAEf4BzYRxRW8qR3oENuVEMBYtcvK0bUDEkoq+e4TRT5Hh0pV_Q@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230195AbhGHBDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Jul 2021 21:03:33 -0400
+Received: from mail.zju.edu.cn ([61.164.42.155]:43612 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230029AbhGHBDc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Jul 2021 21:03:32 -0400
+Received: by ajax-webmail-mail-app2 (Coremail) ; Thu, 8 Jul 2021 09:00:41
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.162.82.120]
+Date:   Thu, 8 Jul 2021 09:00:41 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   LinMa <linma@zju.edu.cn>
+To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        "Marcel Holtmann" <marcel@holtmann.org>,
+        "Johan Hedberg" <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: Re: [PATCH v2] Bluetooth: call lock_sock() outside of spinlock
+ section
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+In-Reply-To: <79694c01-b69e-a039-6860-d7e612fbc008@i-love.sakura.ne.jp>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <CABBYNZ+Vpzy2+u=xYR-7Kxx5M6pAQFQ8TJHYV1-Jr-FvqZ8=OQ@mail.gmail.com>
+ <79694c01-b69e-a039-6860-d7e612fbc008@i-love.sakura.ne.jp>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Message-ID: <5c823fa2.353ff.17a83a190e2.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: by_KCgA3WBQ5TuZg6qBJAQ--.23666W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwIAElNG3DbcsQABsA
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW3Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Jul 2021 17:23:54 -0700
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-
-> On Wed, Jul 7, 2021 at 5:05 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> >
-> > On Wed, 7 Jul 2021 16:49:26 -0700
-> > Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >  
-> > > As for why the user might need that, it's up to the user and I don't
-> > > want to speculate because it will always sound contrived without a
-> > > specific production use case. But people are very creative and we try
-> > > not to dictate how and what can be done if it doesn't break any
-> > > fundamental assumption and safety.  
-> >
-> > I guess it doesn't matter, because if they try to do it, the second
-> > attachment will simply fail to attach.
-> >  
-> 
-> But not for the kprobe case.
-
-What do you mean "not for the kprobe case"? What kprobe case?
-
-You attach the same program twice to the same kprobe? Or do you create
-two kprobes at the same location?
-
-> 
-> And it might not always be possible to know that the same BPF program
-> is being attached. It could be attached by different processes that
-> re-use pinned program (without being aware of each other). Or it could
-> be done from some generic library that just accepts prog_fd and
-> doesn't really know the exact BPF program and whether it was already
-> attached.
-> 
-> Not sure why it doesn't matter that attachment will fail where it is
-> expected to succeed. The question is rather why such restriction?
-
-Why is it expected to succeed? It never did. And why such a
-restriction? Because it complicates the code, and there's no good use
-case to do so. Why complicate something for little reward?
-
--- Steve
+PiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jIGIvbmV0L2JsdWV0b290
+aC9oY2lfc29jay5jCj4gaW5kZXggYjA0YTVhMDJlY2YzLi4wNTI1ODgzZjQ2MzkgMTAwNjQ0Cj4g
+LS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gKysrIGIvbmV0L2JsdWV0b290aC9oY2lf
+c29jay5jCj4gQEAgLTc1OSwxOSArNzU5LDE0IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0
+cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCj4gIAlpZiAoZXZlbnQgPT0gSENJX0RFVl9V
+TlJFRykgewo+ICAJCXN0cnVjdCBzb2NrICpzazsKPiAgCj4gLQkJLyogRGV0YWNoIHNvY2tldHMg
+ZnJvbSBkZXZpY2UgKi8KPiArCQkvKiBDaGFuZ2Ugc29ja2V0IHN0YXRlIGFuZCBub3RpZnkgKi8K
+PiAgCQlyZWFkX2xvY2soJmhjaV9za19saXN0LmxvY2spOwo+ICAJCXNrX2Zvcl9lYWNoKHNrLCAm
+aGNpX3NrX2xpc3QuaGVhZCkgewo+IC0JCQlsb2NrX3NvY2soc2spOwo+ICAJCQlpZiAoaGNpX3Bp
+KHNrKS0+aGRldiA9PSBoZGV2KSB7Cj4gLQkJCQloY2lfcGkoc2spLT5oZGV2ID0gTlVMTDsKPiAg
+CQkJCXNrLT5za19lcnIgPSBFUElQRTsKPiAgCQkJCXNrLT5za19zdGF0ZSA9IEJUX09QRU47Cj4g
+IAkJCQlzay0+c2tfc3RhdGVfY2hhbmdlKHNrKTsKPiAtCj4gLQkJCQloY2lfZGV2X3B1dChoZGV2
+KTsKPiAgCQkJfQo+IC0JCQlyZWxlYXNlX3NvY2soc2spOwo+ICAJCX0KPiAgCQlyZWFkX3VubG9j
+aygmaGNpX3NrX2xpc3QubG9jayk7Cj4gIAl9Cj4gCj4gPyBJIGNhbid0IGp1ZGdlIGJlY2F1c2Ug
+SSBkb24ndCBrbm93IGhvdyB0aGlzIHdvcmtzLiBJIHdvcnJ5IHRoYXQKPiB3aXRob3V0IGxvY2tf
+c29jaygpL3JlbGVhc2Vfc29jaygpLCB0aGlzIHJhY2VzIHdpdGggZS5nLiBoY2lfc29ja19iaW5k
+KCkuCj4gCj4gV2UgY291bGQgdGFrZSBhd2F5IHRoZSBiYWNrd2FyZCBnb3RvIGlmIHdlIGNhbiBk
+byBzb21ldGhpbmcgbGlrZSBiZWxvdy4KPiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2JsdWV0b290aC9o
+Y2lfc29jay5jIGIvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gaW5kZXggYjA0YTVhMDJlY2Yz
+Li4xY2EwMzc2OWJhZGYgMTAwNjQ0Cj4gLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4g
+KysrIGIvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCj4gQEAgLTQzLDYgKzQzLDggQEAgc3RhdGlj
+IERFRklORV9JREEoc29ja19jb29raWVfaWRhKTsKPiAgCj4gIHN0YXRpYyBhdG9taWNfdCBtb25p
+dG9yX3Byb21pc2MgPSBBVE9NSUNfSU5JVCgwKTsKPiAgCj4gK3N0YXRpYyBERUZJTkVfTVVURVgo
+c29ja19saXN0X2xvY2spOwo+ICsKPiAgLyogLS0tLS0gSENJIHNvY2tldCBpbnRlcmZhY2UgLS0t
+LS0gKi8KPiAgCj4gIC8qIFNvY2tldCBpbmZvICovCj4gQEAgLTc2MCw3ICs3NjIsNyBAQCB2b2lk
+IGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2RldiAqaGRldiwgaW50IGV2ZW50KQo+ICAJ
+CXN0cnVjdCBzb2NrICpzazsKPiAgCj4gIAkJLyogRGV0YWNoIHNvY2tldHMgZnJvbSBkZXZpY2Ug
+Ki8KPiAtCQlyZWFkX2xvY2soJmhjaV9za19saXN0LmxvY2spOwo+ICsJCW11dGV4X2xvY2soJnNv
+Y2tfbGlzdF9sb2NrKTsKPiAgCQlza19mb3JfZWFjaChzaywgJmhjaV9za19saXN0LmhlYWQpIHsK
+PiAgCQkJbG9ja19zb2NrKHNrKTsKPiAgCQkJaWYgKGhjaV9waShzayktPmhkZXYgPT0gaGRldikg
+ewo+IEBAIC03NzMsNyArNzc1LDcgQEAgdm9pZCBoY2lfc29ja19kZXZfZXZlbnQoc3RydWN0IGhj
+aV9kZXYgKmhkZXYsIGludCBldmVudCkKPiAgCQkJfQo+ICAJCQlyZWxlYXNlX3NvY2soc2spOwo+
+ICAJCX0KPiAtCQlyZWFkX3VubG9jaygmaGNpX3NrX2xpc3QubG9jayk7Cj4gKwkJbXV0ZXhfdW5s
+b2NrKCZzb2NrX2xpc3RfbG9jayk7Cj4gIAl9Cj4gIH0KPiAgCj4gQEAgLTgzOCw2ICs4NDAsNyBA
+QCBzdGF0aWMgaW50IGhjaV9zb2NrX3JlbGVhc2Uoc3RydWN0IHNvY2tldCAqc29jaykKPiAgCWlm
+ICghc2spCj4gIAkJcmV0dXJuIDA7Cj4gIAo+ICsJbXV0ZXhfbG9jaygmc29ja19saXN0X2xvY2sp
+Owo+ICAJbG9ja19zb2NrKHNrKTsKPiAgCj4gIAlzd2l0Y2ggKGhjaV9waShzayktPmNoYW5uZWwp
+IHsKPiBAQCAtODYwLDYgKzg2Myw3IEBAIHN0YXRpYyBpbnQgaGNpX3NvY2tfcmVsZWFzZShzdHJ1
+Y3Qgc29ja2V0ICpzb2NrKQo+ICAJfQo+ICAKPiAgCWJ0X3NvY2tfdW5saW5rKCZoY2lfc2tfbGlz
+dCwgc2spOwo+ICsJbXV0ZXhfdW5sb2NrKCZzb2NrX2xpc3RfbG9jayk7Cj4gIAo+ICAJaGRldiA9
+IGhjaV9waShzayktPmhkZXY7Cj4gIAlpZiAoaGRldikgewo+IEBAIC0yMDQ5LDcgKzIwNTMsOSBA
+QCBzdGF0aWMgaW50IGhjaV9zb2NrX2NyZWF0ZShzdHJ1Y3QgbmV0ICpuZXQsIHN0cnVjdCBzb2Nr
+ZXQgKnNvY2ssIGludCBwcm90b2NvbCwKPiAgCXNvY2stPnN0YXRlID0gU1NfVU5DT05ORUNURUQ7
+Cj4gIAlzay0+c2tfc3RhdGUgPSBCVF9PUEVOOwo+ICAKPiArCW11dGV4X2xvY2soJnNvY2tfbGlz
+dF9sb2NrKTsKPiAgCWJ0X3NvY2tfbGluaygmaGNpX3NrX2xpc3QsIHNrKTsKPiArCW11dGV4X3Vu
+bG9jaygmc29ja19saXN0X2xvY2spOwo+ICAJcmV0dXJuIDA7Cj4gIH0KPiAgCj4gCj4gPiAgICAg
+ICAgICAgICBJdCBpcyBhbHNvIHdlaXJkIHRoYXQgdGhpcyBvbmx5IG1hbmlmZXN0cyBpbiB0aGUg
+Qmx1ZXRvb3RoCj4gPiBIQ0kgc29ja2V0cyBvciBvdGhlciBzdWJzeXN0ZW1zIGRvbid0IHVzZSBz
+dWNoIGxvY2tpbmcgbWVjaGFuaXNtCj4gPiBhbnltb3JlPwo+IAoKSGVsbG8gVGV0c3VvLAoKWWVh
+aCwgdGhhdCdzIGEgZ3JlYXQgcGF0Y2ggaW5kZWVkLiBBZGQgb25lIGV4dHJhIG11dGV4IGxvY2sg
+Zm9yIGhhbmRsaW5nIHRoaXMuCkluIGZhY3QsIEkgaGF2ZSB0cmllZCB0byByZXBsYWNlIGFsbCB0
+aGUgaGNpX3NrX2xpc3QubG9jayBmcm9tIHJ3bG9ja190IHRvIG11dGV4dC4KCj4gaHR0cHM6Ly9w
+YXRjaHdvcmsua2VybmVsLm9yZy9wcm9qZWN0L2JsdWV0b290aC9wYXRjaC9DQUpqb2pKc2o5cHpG
+NGoyTVZ2c00taENwdnlSN09rWm4yMzJ5dDNNZE9Hbkx4T2lSUmdAbWFpbC5nbWFpbC5jb20vCj4g
+SG93ZXZlciwgZnJvbSB0aGUgbG9jayBwcmluY2lwbGUgaW4gdGhlIExpbnV4IGtlcm5lbCwgdGhp
+cyBsb2NrCj4gcmVwbGFjZW1lbnQgaXMgbm90IGFwcHJvcHJpYXRlLiBJIHRha2UgYSBsb3Qgb2Yg
+dGltZSB0byB0cnkgd2l0aCBvdGhlcgo+IGxvY2sgY29tYmluYXRpb25zIGZvciB0aGlzIGNhc2Ug
+YnV0IGZhaWxlZC4gRm9yIGV4YW1wbGUsIEkgdHJpZWQgdG8KPiByZXBsYWNlIHRoZSByd2xvY2tf
+dCBpbiB0aGUgaGNpX3NrX2xpc3Qgd2l0aCBhIHNsZWVwLWFibGUgbXV0ZXggbG9jay4KCkJlY2F1
+c2UgSSBoYXZlIHNlZW0gb3RoZXIgcGFydCBvZiBjb2RlIGluIGtlcm5lbCB1c2VzIHRoaXMgY29t
+YmluYXRpb246IG11dGV4X3QgKyBsb2NrX3NvY2suIEl0IHNob3VsZG4ndCB0cmlnZ2VyIGFueSBs
+b2NraW5nIGVycm9ycy4gKFdpbGwgdGVzdCBpdCkKCj4gQWxzbywgdGhpcyByZWdyZXNzaW9uIGlz
+IGN1cnJlbnRseSA3dGggdG9wCj4gY3Jhc2hlcnMgZm9yIHN5emJvdCwgYW5kIEknZCBsaWtlIHRv
+IGFwcGx5IHRoaXMgcGF0Y2ggYXMgc29vbiBhcyBwb3NzaWJsZS4KPiAKClhELCBZZWFoLiBCZWNh
+dXNlIHRoZSBidWcgY3Jhc2ggcG9pbnQgaXMgbG9jYXRlZCBhdCBmdW5jdGlvbiBoY2lfc29ja19k
+ZXZfZXZlbnQoKS4gV2hlbmV2ZXIgc3l6a2FsbGVyIGZ1enplcyBCbHVldG9vdGggc3RhY2sgYW5k
+IHRoZSBleGVjdXRvciBleGl0cywgdGhlIGNyYXNoIGhhcHBlbnMuCgo+IEkgdGhpbmsgdGhhdCB0
+aGlzIHBhdGNoIGNhbiBzZXJ2ZSBhcyBhIHJlc3BvbnNlIHRvIExpbidzIGNvbW1lbnQKCj4gPiBJ
+biBzaG9ydCwgSSBoYXZlIG5vIGlkZWEgaWYgdGhlcmUgaXMgYW55IGxvY2sgcmVwbGFjaW5nIHNv
+bHV0aW9uIGZvcgo+ID4gdGhpcyBidWcuIEkgbmVlZCBoZWxwIGFuZCBzdWdnZXN0aW9ucyBiZWNh
+dXNlIHRoZSBsb2NrIG1lY2hhbmlzbSBpcwo+ID4ganVzdCBzbyBkaWZmaWN1bHQuCgpUaGFua3Mg
+Zm9yIHRoYXQsIGl0J3MgcXVpdGUgYXBwcmVjaWF0aW5nLgoKUmVnYXJkcwpMaW4gTWEK
