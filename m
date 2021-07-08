@@ -2,102 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2736A3BF484
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 06:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F113BF48A
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 06:24:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbhGHEVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 00:21:24 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:56174 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229554AbhGHEVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 00:21:22 -0400
-Received: from mail-pj1-f70.google.com ([209.85.216.70])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1m1LUm-0004aW-2Y
-        for netdev@vger.kernel.org; Thu, 08 Jul 2021 04:18:40 +0000
-Received: by mail-pj1-f70.google.com with SMTP id v4-20020a17090a4ec4b02901731757d1a2so2788572pjl.4
-        for <netdev@vger.kernel.org>; Wed, 07 Jul 2021 21:18:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4G9i8vQWT5nXUI2uXZLc2Au8KV/9r+vg878BWJ9X0yw=;
-        b=f3lTyhw73EMwM9x0vxmmpzSsMoLw1ZIyd9zqSYuVLaF78jSM91Vj8cUM6ZEi8qHN5+
-         J9XhWM6fCpH2Lsre53QZKpKNRh3VtvLoyTV5G+ZAPG5OAqUKvXslfGdF2TP+yQUIG8lq
-         5fWMTnICvpf8AreksJ2qPpug0zc/1x2KGE8/nyTEVcSYQu3xdIhALDEij58+JwmY5Yfa
-         qRAzSvMB0vUrFpjiWk1YpbDGNMDX/ms28mY28HDEi0p7kHQN9AodkcEBB/Rbfykc51r5
-         gBaRLq0zi3WIBO7tDu9wnbCu3AJAo4DxqmwHAW/op/CsQu9bFbKYyqVFs/zLa2RgxVwl
-         Rlgw==
-X-Gm-Message-State: AOAM533d7rkP/D2orLYTQp8e5FpJc2lWJVdjDUkim20VNH8Aznwew6Fp
-        5JrJzD0Breaq4VvOOCkgW/h7d/LtBKXTEa270d/lZG86Z+DbxtchNyGuJO2A2LMLFvbaKwSx7PA
-        qh0nb1mtsYXrFKa6NNeNZb95P+bLqzxYs/N70Y8kizD+uyml+
-X-Received: by 2002:a65:6659:: with SMTP id z25mr29667112pgv.291.1625717918562;
-        Wed, 07 Jul 2021 21:18:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy73Par1gV7DO9u9OB55lNW9eOWHyS+LnBRXdrclf95y+wZHPdXg7cl+6HhiGgE6qOgbxg95hFBfk9zlpCAcZY=
-X-Received: by 2002:a65:6659:: with SMTP id z25mr29667086pgv.291.1625717918266;
- Wed, 07 Jul 2021 21:18:38 -0700 (PDT)
+        id S229608AbhGHE1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 00:27:24 -0400
+Received: from mga03.intel.com ([134.134.136.65]:31750 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229482AbhGHE1Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 00:27:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10038"; a="209480889"
+X-IronPort-AV: E=Sophos;i="5.84,222,1620716400"; 
+   d="scan'208";a="209480889"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 21:24:41 -0700
+X-IronPort-AV: E=Sophos;i="5.84,222,1620716400"; 
+   d="scan'208";a="487400097"
+Received: from sneftin-mobl.ger.corp.intel.com (HELO [10.185.169.17]) ([10.185.169.17])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2021 21:24:38 -0700
+Subject: Re: [Intel-wired-lan] [PATCH 2/2] igc: wait for the MAC copy when
+ enabled MAC passthrough
+To:     Aaron Ma <aaron.ma@canonical.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Edri, Michael" <michael.edri@intel.com>,
+        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
+        "Shalev, Avi" <avi.shalev@intel.com>
+References: <20210702045120.22855-1-aaron.ma@canonical.com>
+ <20210702045120.22855-2-aaron.ma@canonical.com>
+ <613e2106-940a-49ed-6621-0bb00bc7dca5@intel.com>
+ <ad3d2d01-1d0a-8887-b057-e6a9531a05f4@canonical.com>
+ <f9f9408e-9ba3-7ed9-acc2-1c71913b04f0@intel.com>
+ <96106dfe-9844-1d9d-d865-619d78a0d150@canonical.com>
+From:   "Neftin, Sasha" <sasha.neftin@intel.com>
+Message-ID: <47117935-10d6-98e0-5894-ba104912ce25@intel.com>
+Date:   Thu, 8 Jul 2021 07:24:35 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210525113316.25416-1-po-hsu.lin@canonical.com> <87y2c1swnz.fsf@nvidia.com>
-In-Reply-To: <87y2c1swnz.fsf@nvidia.com>
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Thu, 8 Jul 2021 12:18:26 +0800
-Message-ID: <CAMy_GT_4dqEuSfUGND9GTBxGORcwf480-a46Z=J736YHo2RkDA@mail.gmail.com>
-Subject: Re: [PATCHv2] selftests: Use kselftest skip code for skipped tests
-To:     linux-kselftest@vger.kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        shuah <shuah@kernel.org>, Shuah Khan <skhan@linuxfoundation.org>,
-        ast@kernel.org, Petr Machata <petrm@nvidia.com>,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
-        nikolay@nvidia.com, gnault@redhat.com, vladimir.oltean@nxp.com,
-        idosch@nvidia.com, baowen.zheng@corigine.com, danieller@nvidia.com,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <96106dfe-9844-1d9d-d865-619d78a0d150@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 26, 2021 at 4:54 PM Petr Machata <petrm@nvidia.com> wrote:
->
->
-> Po-Hsu Lin <po-hsu.lin@canonical.com> writes:
->
-> > There are several test cases still using exit 0 when they need to be
-> > skipped. Use kselftest framework skip code instead so it can help us
-> > to distinguish the proper return status.
-> >
-> > Criterion to filter out what should be fixed in selftests directory:
-> >   grep -r "exit 0" -B1 | grep -i skip
-> >
-> > This change might cause some false-positives if people are running
-> > these test scripts directly and only checking their return codes,
-> > which will change from 0 to 4. However I think the impact should be
-> > small as most of our scripts here are already using this skip code.
-> > And there will be no such issue if running them with the kselftest
-> > framework.
-> >
-> > V2: router_mpath_nh.sh and outer_mpath_nh_res.sh sources lib.sh,
-> > there is no need to assign ksft_skip value in these two.
-> >
-> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
->
-> I want to note that defining ksft_skip=4 in every test separately is the
-> current practice. I agree with Willem (in a parallel thread) that this
-> stuff should live in a library of its own, but there is none currently.
-> When there is, it looks like the conversion would be mechanical.
->
-> Which is to say, IMHO this patch makes sense on its own as an
-> incremental improvement.
->
-> Reviewed-by: Petr Machata <petrm@nvidia.com>
+On 7/6/2021 09:46, Aaron Ma wrote:
+> 
+> On 7/5/21 7:54 PM, Neftin, Sasha wrote:
+>> Hello Aaron, Thanks to point me on this document. I see... This is 
+>> recommendation for Windows driver. Anyway, "delay" approach is 
+>> error-prone. We need rather ask for MNG FW confirmation (message) that 
+>> MAC address is copied.
+>> Can we call (in case we know that MNG FW copied MAC address):
+>> igc_rar_set (method from igc_mac.c), update the mac.addr and then 
+>> perform": memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len);?
+> 
+> Without delay, after igc_rar_set, the MAC address is all 0.
+> The MAC addr is the from dock instead of MAC passthrough with the 
+> original driver.
+I would to like suggest checking the following direction:
+1. principal question: can we update the netdev device address after it 
+is already set during probe? I meant perform another:
+memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len) up to demand
+2. We need to work with Intel's firmware engineer/group and define the 
+message/event: MAC addressis changed and should be updated.
+As I know MNG FW updates shadow registers. Since shadow registers are 
+different from RAL/RAH registers - it could be a notification that the 
+MAC address changed. Let's check it.
+> 
+> Thanks,
+> Aaron
 
-Hello folks,
-any other comment on this patch? Or if I should break this down to
-smaller patches for different suites in kselftests?
-Thanks!
-PHLin
