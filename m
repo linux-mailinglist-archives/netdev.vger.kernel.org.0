@@ -2,81 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3125B3BF440
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 05:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50F1E3BF460
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 06:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230405AbhGHDTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Jul 2021 23:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbhGHDTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Jul 2021 23:19:31 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D01CC061574;
-        Wed,  7 Jul 2021 20:16:49 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id p21so10482410lfj.13;
-        Wed, 07 Jul 2021 20:16:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EuBitGCp9JesYh5sdj5eqPVCDuGNnzs3S7G9gvYO70w=;
-        b=qpNFpx5bxvVv1h0F6VLtN6W2IWGNHL+2J/ewNcUPtz6onCLvDYomy4A7MKtst86kYH
-         wFYfj4hiwIBbMaszradNZd4JF493z64kryks4Chu9Um9oDCO9k+en+9DJx6OVav1v2JD
-         vFK2Gd5Ii9QLGkx7X69ynqvdp1kuqwDxMmXVeLl90fbaS1rS3lXhztCt2hh95Bqp12bd
-         zf4rR3576PmWDvj+Boy0Btj62znU3Y9CVT6bA1RR5l0JAqp1prprT7rUTzSFLJTvHsjB
-         wBtBlygpkUmBmtoSv1f9jNS/nVLPsHsWyvImiP/owMr5On8QfgcWyWveX3AA9a8uvFB+
-         IVdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EuBitGCp9JesYh5sdj5eqPVCDuGNnzs3S7G9gvYO70w=;
-        b=HAhe53b+gLe44NcyyNmTE4S8xYozMcdVRLAahMI+9g5scnj61KnqtE/z3IB/ujhAd5
-         ouwxTWX7INi/kqmmj1iZXIxfjJ6s5vnWYES2FNQ2L2GALIOIn5+Freph6+5FTRgcsTOc
-         QyZd1yekSkD6rFBm2iajFZckWF1hG8jct856HVXjHJ8GFyeax4BEEGgeNV0LK5wawM2a
-         LPOmMYejs7rUh+2B22sJHSei0hn72tPnQINEAiviWWnzfLepvuNYW7Ho3gY2AY0p7GlT
-         YoN7rKQdMlSF1Di0/o3nsW4O/Vyhwgl3c3Rr8scIhZNKAhRsP8SpMI17O/tzng++4Q86
-         oRSQ==
-X-Gm-Message-State: AOAM531pm7qIGQx39tC1RNOLvZ1E5NxUeqS7MtCQri67OxcZ0Fl526fS
-        wDjP14gMws0GRpQyAg0uh1Ts044c0ESNR9Eax9Y=
-X-Google-Smtp-Source: ABdhPJy2VhIfF+IB0Zop6gyB8VX7dVvGHnVKbHU1VcZn9vFB13Gr84kZfOwE/m3z/c35KwTC6q4QsCxYC0AytsLx/Cg=
-X-Received: by 2002:ac2:4893:: with SMTP id x19mr1592041lfc.214.1625714208020;
- Wed, 07 Jul 2021 20:16:48 -0700 (PDT)
+        id S229541AbhGHECp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 00:02:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57652 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229467AbhGHECo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 00:02:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6DF4861CDE;
+        Thu,  8 Jul 2021 04:00:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625716803;
+        bh=gaLB7CEkwL3YfQy/zTvUokaDhs+24Y7DrwCLjqi5zpc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u1MGKLuma4Vj/LsTcmaE6NMZ8w4lpy+RFMBsrRvoL7Ba0bQX5J3DKSL2DPR9lSFks
+         Gar4JOcw9XTK/6Lf2kvO4NNNtt+muSjST5iEvdZgs8BGuMsVVrfTRxJxN3SlEQZ9n2
+         ljvWCqwcSPSHdCvV27olT5eknt/MzCUosZx5MB3X9DQyHabKBhx3wM4qYvVysEjwAl
+         iUHp7OwpKAf9E+dxwi595BQrY3638gu6ahB/Ny8xS6fMayqisMPjEB0uFdkqjSa+r3
+         SxnNDEKvTDHhUK0y4TV6VnQ/nbu4MUpgimmknulXhKOqUNZV+42NwX9vK8GqLvgs2N
+         ZzYhnzGzuA/kQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5DBE7609B4;
+        Thu,  8 Jul 2021 04:00:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210707060328.3133074-1-Jianlin.Lv@arm.com>
-In-Reply-To: <20210707060328.3133074-1-Jianlin.Lv@arm.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 7 Jul 2021 20:16:36 -0700
-Message-ID: <CAADnVQ+FV6J-y3VkbP6B6cJEO0sFa40kHpinSuwVN1Rk2Fk=qA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: runqslower: fixed make install issue
-To:     Jianlin Lv <Jianlin.Lv@arm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>, iecedge@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] sock: unlock on error in sock_setsockopt()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162571680337.17275.10785864640779511123.git-patchwork-notify@kernel.org>
+Date:   Thu, 08 Jul 2021 04:00:03 +0000
+References: <YOV7XH5Sqx+ZHghC@mwanda>
+In-Reply-To: <YOV7XH5Sqx+ZHghC@mwanda>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     davem@davemloft.net, yangbo.lu@nxp.com, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        mathew.j.martineau@linux.intel.com, aahringo@redhat.com,
+        linmiaohe@huawei.com, fw@strlen.de, xiangxia.m.yue@gmail.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 6, 2021 at 11:03 PM Jianlin Lv <Jianlin.Lv@arm.com> wrote:
->
-> runqslower did not define install target, resulting in an installation
-> tool/bpf error:
->         $ make -C tools/bpf/ install
->
->         make[1]: Entering directory './tools/bpf/runqslower'
->         make[1]: *** No rule to make target 'install'.  Stop.
->
-> Add install target for runqslower.
->
-> Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+Hello:
 
-Andrii applied a patch that removed install target.
-I don't mind whichever way.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Wed, 7 Jul 2021 13:01:00 +0300 you wrote:
+> If copy_from_sockptr() then we need to unlock before returning.
+> 
+> Fixes: d463126e23f1 ("net: sock: extend SO_TIMESTAMPING for PHC binding")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  net/core/sock.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+
+Here is the summary with links:
+  - [net] sock: unlock on error in sock_setsockopt()
+    https://git.kernel.org/netdev/net/c/271dbc318432
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
