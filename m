@@ -2,71 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B35653BF64A
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 09:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B707C3BF663
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 09:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbhGHHfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 03:35:36 -0400
-Received: from smtp-34-i2.italiaonline.it ([213.209.12.34]:55603 "EHLO
-        libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229842AbhGHHff (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 03:35:35 -0400
-X-Greylist: delayed 488 seconds by postgrey-1.27 at vger.kernel.org; Thu, 08 Jul 2021 03:35:34 EDT
-Received: from oxapps-11-062.iol.local ([10.101.8.72])
-        by smtp-34.iol.local with ESMTPA
-        id 1OOpmO9WMLCum1OOpmcB8O; Thu, 08 Jul 2021 09:24:44 +0200
-x-libjamoibt: 1601
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1625729084; bh=ZFcvfYIu04Jwk1y4dAI4qU91JWbmprdVROAPFA3RXWc=;
-        h=From;
-        b=C33kLZ1+HYZH+/R5yvH7LKvjTfTKfgR8RAYMZfvuD8k646ZgEurp2uW26AMssQPjI
-         5E190UzuZED8k8ryFx1Pf+tR3qEabAGTMv/En+PzynC1vYpTyO74wFMMtHgScW+Sfj
-         R8JW2s2ZqRhphg348n1uMc3H+zeWgYU7kYUThl4tUIM92ngZMS412fcJEyM5nst+3B
-         RUjT8gN744QiBujwWYE+WZX79atRp3sl9HZpJ3/0S6guVkReWFkjqVSDcHLm2a/G/Y
-         xoSD5rNGdHGKY9b+4GxOZu7QTUJSPfcshpboD0lLKFumEf7RPQ8+z1REP3JrFlZS68
-         GM5ACjtmy54Lg==
-X-CNFS-Analysis: v=2.4 cv=a8D1SWeF c=1 sm=1 tr=0 ts=60e6a83c cx=a_exe
- a=ArCppHiS2LX9rvfu7+HyXQ==:117 a=C-c6dMTymFoA:10 a=IkcTkHD0fZMA:10
- a=vesc6bHxzc4A:10 a=J1Y8HTJGAAAA:8 a=NRFWTJTpNJUI3RitD60A:9 a=QEXdDO2ut3YA:10
- a=y1Q9-5lHfBjTkpIzbSAN:22
-Date:   Thu, 8 Jul 2021 09:24:43 +0200 (CEST)
-From:   dariobin@libero.it
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, jonathan.lemon@gmail.com,
-        richardcochran@gmail.com, netdev@vger.kernel.org
-Message-ID: <48220229.92708.1625729083880@mail1.libero.it>
-In-Reply-To: <20210708.001404.122934424143086559.davem@davemloft.net>
-References: <20210708050849.11959-1-dariobin@libero.it>
- <20210708.001404.122934424143086559.davem@davemloft.net>
-Subject: Re: [PATCH] ptp: fix PTP PPS source's lookup cookie set
+        id S230527AbhGHHmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 03:42:51 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.80]:11526 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229838AbhGHHmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 03:42:49 -0400
+X-Greylist: delayed 348 seconds by postgrey-1.27 at vger.kernel.org; Thu, 08 Jul 2021 03:42:48 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1625729648;
+    s=strato-dkim-0002; d=aepfle.de;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=Ie8bhNxcgTEIyaHnXue+qUsCeFcFU7OWzE+Hs21wg9g=;
+    b=nKxlYYk9ExTxZ9BuI9EhfpAje6vEfx0GVmBer00VZb2GlgTta4a3e6mEReme+AVLKJ
+    x1g28GBLyGoFvM6gaG5z7b+cV6ZJFLoem/obwXB9+z0+SoPV6pwNVVIIk3/UOPHsneyg
+    GWLwYXUqnjer9VpKH4m9Cx5Kv703S9RZFcbTVNL6kEIMVP91SRDKJaQgZM42hrAkVc4e
+    lmSSydRxnY+lu4pZdDi8VibLUhPOJminze/kIh5/0FPTHkurK2p5a/EfuKxM/KIN1xWG
+    WfgjyRn1yLU1J5t4Nvhf0XjMie6PdfNUCxeSR2W7CoeJ26/3wkjbXCgr0r3rPyjQAbxh
+    dA9w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2EQZWCpfu+qG7CngxMFH1J+3q8wa/QDiZbDmui9LcK/RdXt7GAQpV1nK0bLlEYINdoY/p1XzQbc+3kk9TsJTnzSvdM+YSIzPms="
+X-RZG-CLASS-ID: mo00
+Received: from aepfle.de
+    by smtp.strato.de (RZmta 47.28.1 AUTH)
+    with ESMTPSA id 30791cx687Y4Yio
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 8 Jul 2021 09:34:04 +0200 (CEST)
+Date:   Thu, 8 Jul 2021 09:34:00 +0200
+From:   Olaf Hering <olaf@aepfle.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        rppt@kernel.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, Tianyu.Lan@microsoft.com,
+        thomas.lendacky@amd.com, ardb@kernel.org,
+        nramas@linux.microsoft.com, robh@kernel.org, keescook@chromium.org,
+        rientjes@google.com, pgonda@google.com, martin.b.radev@gmail.com,
+        hannes@cmpxchg.org, saravanand@fb.com, krish.sadhukhan@oracle.com,
+        xen-devel@lists.xenproject.org, tj@kernel.org,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
+        anparri@microsoft.com
+Subject: Re: [RFC PATCH V4 01/12] x86/HV: Initialize shared memory boundary
+ in the Isolation VM.
+Message-ID: <20210708073400.GA28528@aepfle.de>
+References: <20210707153456.3976348-1-ltykernel@gmail.com>
+ <20210707153456.3976348-2-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.3-Rev34
-X-Originating-IP: 185.33.57.41
-X-Originating-Client: open-xchange-appsuite
-x-libjamsun: 3PyYk19zG1o8mnI2s2jZE59u2Tz78qKN
-x-libjamv: DavxN2eeZiI=
-X-CMAE-Envelope: MS4xfFCSJpA/OjFfBSSRErxdbTy+ce/E1c56GUHbCXQanXQOj0xvzrKIfkeubhPvW1Cj9OqhN6Wgro42DVt77NMDAJWbGw5p/svNATW8J9Z6K9VA0h+0vef7
- 3G/zfkLv4vJLqLsnMZfpbvp3bZDCtz6IhryfDkLDFS0RGbFExP2l6wVlfvDd8iND91A8f+3NpP9BJVF7UGj1WMvcbdXtVKnBleNcFF8tPZB733+GaYMv2PAS
- NHkqmrUhbCALPh3keEPPo6dhZop+KVFMq8tL9xr9wj4u8hoKTy8iJLXAs8qm3L+V9PcHtsktxC572SrelGWoUIG5ThJybzrsXT4EkRI52ROFEt/qBsTQHvyL
- coOdS5eR
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210707153456.3976348-2-ltykernel@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Wed, Jul 07, Tianyu Lan wrote:
 
-> Il 08/07/2021 09:14 David Miller <davem@davemloft.net> ha scritto:
-> 
->  
-> this pastch does not apply to the current net tree, that is why I keep marking it "Not Applicable"
-> in patchwork.
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -34,8 +34,18 @@ struct ms_hyperv_info {
 
-I applied and tested the patch this morning on the mainline kernel. What am I missing?
-Should I wait for the merge windows to end?
+>  	void  __percpu **ghcb_base;
 
-Thanks and regards,
-Dario
+It would be cool if the cover letter states which commit id this series is based on.
+
+Thanks,
+Olaf
