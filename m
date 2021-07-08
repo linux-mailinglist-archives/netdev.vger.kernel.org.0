@@ -2,71 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0488F3C185E
-	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 19:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C283C1893
+	for <lists+netdev@lfdr.de>; Thu,  8 Jul 2021 19:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbhGHRlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 13:41:12 -0400
-Received: from smtprelay0011.hostedemail.com ([216.40.44.11]:46104 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229815AbhGHRlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 13:41:12 -0400
-Received: from omf16.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id A11C1180A9C98;
-        Thu,  8 Jul 2021 17:38:29 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf16.hostedemail.com (Postfix) with ESMTPA id 3C77425511A;
-        Thu,  8 Jul 2021 17:38:28 +0000 (UTC)
-Message-ID: <ccf9f07a72c911652d24ceb6c6e925f834f1d338.camel@perches.com>
-Subject: Re: [PATCH net-next v2] drivers: net: Follow the indentation coding
- standard on printks
-From:   Joe Perches <joe@perches.com>
-To:     Carlos Bilbao <bilbao@vt.edu>, davem@davemloft.net
+        id S229863AbhGHRp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 13:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229568AbhGHRp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 13:45:57 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D40EC06175F
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 10:43:14 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id s4so6447750qkm.13
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 10:43:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=vt-edu.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=akExZlXfzzWeEV1vONzULN7Ly/6NeGtVmi8mRpEDmf8=;
+        b=MYsablPH0SXJSuED4xm417ftbm/7N7QfvP8SikmFuMTOS2BB5V7tIpQ1YadoPJJo+0
+         UPNc6MrdAuM4kSI86b1WIdJ2lNvxpn7CeNTzfsDR+tYCRq9Gi5pXebHhHZtOqEZDvdYT
+         plixrbg4URQzPOwSI+IKmKHwRvRQbU3uMT57WQt2eI6l7H7eukPos8cUVyhKhRlak3WN
+         KHxAYJE3CvEMnAgHjJ+dOXcLFRdgIx4yw8bHszChDe4Acck7S/DTOHxBruD3I0xEJCf3
+         +ET+IomWMrjjtVF0ECd65wfY0YseV+3NcSsB4MAok4HzbVxgwGGX1HJ5oheWoFsIhxrM
+         OsjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=akExZlXfzzWeEV1vONzULN7Ly/6NeGtVmi8mRpEDmf8=;
+        b=qaKiYP96t8I3/5AGMpxAVHncirIpfnJp/B0tY1/d5PP9+ScPpm6bPaikj/JqrWJ9QQ
+         oJquOiJJrUGhbpLDjncssQFIHOoRLhK0jsArqQH+tDEjo+Odh7cd98IvhVpytxsumsfs
+         jknFm1pWIwgJbaLhZie/a0RIqXuSidK0KPAhwMj9MGDcRmTBm0CjAfsRoy9xmJ40ibfW
+         XnVWp4BY0306Oq13bpCpqWNgJZRRj3HXzOellxBeNvW1tWDFMdP5UVYGVSX/NcMF1eI/
+         SlLxMB6aby+J3IWyOyOamDFOD+VIu8y0uWuz/KApVJ9InoUh/o8t9Jb20dV+Tgk2M7kk
+         jpDQ==
+X-Gm-Message-State: AOAM533nBjgd/C1qkZgIkFqStxEeSgXsQReerwOBZdAg2ZddsmooY68E
+        +iZ1ti4SDdELeHIplG7/Cl5zEQ==
+X-Google-Smtp-Source: ABdhPJyYsm1/iLiWMKCdcfBEnN7MW1bhFmg5WCVlAl/Wr88/YXS3yjWT/qM/xUOpH1oLO+Zfnax5iA==
+X-Received: by 2002:a37:468b:: with SMTP id t133mr32258137qka.189.1625766193206;
+        Thu, 08 Jul 2021 10:43:13 -0700 (PDT)
+Received: from iron-maiden.localnet ([50.225.136.98])
+        by smtp.gmail.com with ESMTPSA id y4sm1280556qkc.27.2021.07.08.10.43.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 10:43:12 -0700 (PDT)
+From:   Carlos Bilbao <bilbao@vt.edu>
+To:     davem@davemloft.net, Joe Perches <joe@perches.com>
 Cc:     kuba@kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, andrew@lunn.ch,
         gregkh@linuxfoundation.org
-Date:   Thu, 08 Jul 2021 10:38:26 -0700
-In-Reply-To: <5183009.Sb9uPGUboI@iron-maiden>
-References: <1884900.usQuhbGJ8B@iron-maiden>
-         <03ad1f2319a608bbfe3fc09e901742455bf733a0.camel@perches.com>
-         <5183009.Sb9uPGUboI@iron-maiden>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+Subject: Re: [PATCH net-next v2] drivers: net: Follow the indentation coding standard on printks
+Date:   Thu, 08 Jul 2021 13:43:12 -0400
+Message-ID: <1718548.TLkxdtWsSY@iron-maiden>
+Organization: Virginia Tech
+In-Reply-To: <ccf9f07a72c911652d24ceb6c6e925f834f1d338.camel@perches.com>
+References: <1884900.usQuhbGJ8B@iron-maiden> <5183009.Sb9uPGUboI@iron-maiden> <ccf9f07a72c911652d24ceb6c6e925f834f1d338.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.88
-X-Stat-Signature: 4r8o453uawndmydoihpe9mb65adrwyw8
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 3C77425511A
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18aO+OxNVt0tR2tBbw9r7VAFqEi8lL67G4=
-X-HE-Tag: 1625765908-184590
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-08 at 13:33 -0400, Carlos Bilbao wrote:
-> Fix indentation of printks that start at the beginning of the line. Change this 
-> for the right number of space characters, or tabs if the file uses them. 
+Hello Joe,
 
-You are touching 2 different drivers and this should really be
-2 separate patches.
+I apologize for the mess, I will send two different patches for the drivers now.
 
-> diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c.rej b/drivers/net/ethernet/dec/tulip/de4x5.c.rej
-[]
-> +++ b/drivers/net/ethernet/dec/tulip/de4x5.c.rej
-> @@ -0,0 +1,11 @@
-> +--- drivers/net/ethernet/dec/tulip/de4x5.c
-> ++++ drivers/net/ethernet/dec/tulip/de4x5.c
-> +@@ -3169,7 +3169,7 @@ dc2114x_autoconf(struct net_device *dev)
-> + 
-> +     default:
-> +        lp->tcount++;
-> +-printk("Huh?: media:%02x\n", lp->media);
-> ++       printk("Huh?: media:%02x\n", lp->media);
-> +        lp->media = INIT;
-> +        break;
-> +     }
+thanks,
+Carlos.
 
-This is an interdiff that should not be part of this change.
 
 
