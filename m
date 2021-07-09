@@ -2,163 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE8B3C1C94
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 02:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30F63C1C9B
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 02:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbhGIAXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 20:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
+        id S229949AbhGIA3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 20:29:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229627AbhGIAXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 20:23:13 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49111C061574
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 17:20:31 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id f17so7135081pfj.8
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 17:20:31 -0700 (PDT)
+        with ESMTP id S229637AbhGIA3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 20:29:55 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87ECC061574
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 17:27:11 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id p4-20020a17090a9304b029016f3020d867so5090897pjo.3
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 17:27:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TT5zfrLu6vWa/4z/bXKwUCLEUNEr9ejX8Ax6l+MRnD8=;
-        b=v0AZHEfeVGRVzZxjd5LP30OvggeS4fKO79WkNtCsGrSeRhi6eGID2oG40HP+atgPGH
-         RSNDFdKelYfFoy5BqW/u5DcmH0ApN48+QW/U5V1nVALFeJPJ/lIPtR1IA3VM0AWRTW6x
-         cWAwVsrzCrepazzvhvE89xtGAxQ9+y6i5su3X0VjrO+OqnW+ABfl/S7OwOqXhi5fKpT/
-         92nP2pU6IgzpoPPdMYv8UVmEY3iGvAgRcoqLOKs+fvNZE169ePydHXUe2+EE5YxuDerU
-         L3b5uVtmxZ/10Wbow8yKU2tg15UL+lUSFG1KnxBPnTLXJgkAjSR50HkT8oGzhDVq2wlo
-         EdCg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=kGUDF61kH7DuKZ9RNXka80YbVY+lTdsyFO1WYdrvzWw=;
+        b=wYMT0y5pftXlm42ofM/k5HL7GVLczsZ/CKpg++6+mXmjARsgGdDsHwSjjXQbPiqWih
+         E7Q+MiBJAIX41DXE5qm0jR8zcKFW/9KBolGwoQ+qpcziw8gydXHRqWRSEeFzeXlSB6k+
+         s4mc8r2N3h8vEv3iRRgyHMiGKudGuITJ4erphjRDkHuXtvwdCsgq1Wmdw9njoZrIQq9h
+         p+UE3aL4dhvVSCJLiJDn4Up2sXw7y06srHC7+0y45YoZTmYe/Vl3JfEf31ZcSWLflLNI
+         L3ZomiVtTkzgWrc+IOraMqu2s9aBB9k5nW2xdowPNPc1HDcCT0dUXwEy1JBl49hrQpcM
+         wfaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TT5zfrLu6vWa/4z/bXKwUCLEUNEr9ejX8Ax6l+MRnD8=;
-        b=A49qS1OMWZAbR2b6RudaOtm19kYspA5yEJYZbKavw6zvHEh4C3UmV4B39LdVncwPr/
-         XDOyhkVTnNaePf3hLX1zUdMvvSUTGzRV+BctBV6aetPID5tOqkcRaHFLK35SDW65DRfh
-         SqlrsIATs6FSX/38VwkvxMceT96MXmtLRQAn49JccPrGLdKR7hNbo7gfqv1XU278kqpJ
-         uanXrRYEGdDN03kI14IWVvcYQ+BGilXkYT9weDqk2/6Su0SuIVXTT/eIb0lQ+wUwlQw3
-         tbZSVwTBuoQeqkUPWQegGuTREamkEhiQHF7k9wTTiiVy1qGQj7VHHUeF+Nypn9YJBTB0
-         CqWg==
-X-Gm-Message-State: AOAM532jb0VCfcPRPMw5VJKVkF/tfgKVkxCUEcUEY2BGqiYuWJEM+3nT
-        psQwvgt7toJQ8mt6imLcj+CQaanST20HrtD2QJ1PPw==
-X-Google-Smtp-Source: ABdhPJzho1Wzz2jIdtaNYyVK4S67fvXLH+RcYyaPQATK2rlI06EzO9IB95vuvqpfmxw0CljZbQ6/ijjjTemokiCJZ60=
-X-Received: by 2002:a62:ce85:0:b029:316:8ca6:c2e with SMTP id
- y127-20020a62ce850000b02903168ca60c2emr33862440pfg.70.1625790030762; Thu, 08
- Jul 2021 17:20:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=kGUDF61kH7DuKZ9RNXka80YbVY+lTdsyFO1WYdrvzWw=;
+        b=MtvgoFrtb7G+X6Ni/BBgtqaFy4JGU52py7ISgHy0Pa6r7wYVznyrpXN0ne33Zr98Re
+         acmdvmUCPffIbyR38M4slmIWGdcSPvil8cU9y+70hVnRdKYRsfU1owSscnSwS+5d5Lxr
+         FFut386AdtfnbSG81pujaivHIzV0CjojuTfCihPY0U6DfeTU50ZEcwPgCB0lutYFvIJc
+         cSCgIpt+CY4NLtp0lWWrj/3I1M16CgRYgtI2GiIN4+aMl4WVuSe3v02IYMqe8SA+tKYs
+         +roiP3fHXs1Z2IPv7ddlEkzrs4Nqjr0mn10TyhHvmIZJoIT8NpoAZX2IY69JGa8j7Cu7
+         +aIg==
+X-Gm-Message-State: AOAM533x4R8OJo2vzyHAJ5izpAUNcg6Anw6MgQ9Ob89hFnSoNNEDnLkH
+        wUza5DN2HLxdawPPKKo6yrY9iQ==
+X-Google-Smtp-Source: ABdhPJwdz9geUWM9jxrc5l+YNr1Ebckl9l1sXse3W1hOWbs8iUeg6/elAtYObCaRypwAlF6HVmE4kA==
+X-Received: by 2002:a17:90a:aa8a:: with SMTP id l10mr34849991pjq.227.1625790431170;
+        Thu, 08 Jul 2021 17:27:11 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id a31sm4796676pgm.73.2021.07.08.17.27.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 17:27:10 -0700 (PDT)
+Date:   Thu, 8 Jul 2021 17:27:07 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
+Cc:     gregkh@linuxfoundation.org, Carlos Bilbao <bilbao@vt.edu>,
+        alexander.deucher@amd.com, davem@davemloft.net,
+        mchehab+huawei@kernel.org, kuba@kernel.org,
+        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: Follow the indentation coding standard on
+ printks
+Message-ID: <20210708172707.7c4a5d5f@hermes.local>
+In-Reply-To: <2148456.iZASKD2KPV@daneel.sf-tec.de>
+References: <2784471.e9J7NaK4W3@iron-maiden>
+        <2148456.iZASKD2KPV@daneel.sf-tec.de>
 MIME-Version: 1.0
-References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20210707204249.3046665-6-sathyanarayanan.kuppuswamy@linux.intel.com>
- <CAPcyv4h8SaVL_QGLv1DT0JuoyKmSBvxJQw0aamMuzarexaU7VA@mail.gmail.com> <24d8fd58-36c1-0e89-4142-28f29e2c434b@linux.intel.com>
-In-Reply-To: <24d8fd58-36c1-0e89-4142-28f29e2c434b@linux.intel.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Thu, 8 Jul 2021 17:20:19 -0700
-Message-ID: <CAPcyv4heA8gps2K_ckUV1gGJdjGeB+5dOSntS=TREEX5-0rtwQ@mail.gmail.com>
-Subject: Re: [PATCH v2 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-To:     "Kuppuswamy, Sathyanarayanan" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter H Anvin <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        X86 ML <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/osUijuuKOZk+rhcif3qc0dd";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 8, 2021 at 4:57 PM Kuppuswamy, Sathyanarayanan
-<sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
->
->
->
-> On 7/8/21 4:36 PM, Dan Williams wrote:
-> >> +static int tdg_attest_open(struct inode *inode, struct file *file)
-> >> +{
-> >> +       /*
-> >> +        * Currently tdg_event_notify_handler is only used in attestation
-> >> +        * driver. But, WRITE_ONCE is used as benign data race notice.
-> >> +        */
-> >> +       WRITE_ONCE(tdg_event_notify_handler, attestation_callback_handler);
-> > Why is this ioctl not part of the driver that registered the interrupt
->
-> We cannot club them because they are not functionally related. Even notification
-> is a separate common feature supported by TDX and configured using
-> SetupEventNotifyInterrupt hypercall. It is not related to TDX attestation.
-> Attestation just uses event notification interface to get the quote
-> completion event.
->
-> > handler for this callback in the first instance? I've never seen this
-> > style of cross-driver communication before.
->
-> This is similar to x86_platform_ipi_callback() acrn_setup_intr_handler()
-> use cases.
+--Sig_/osUijuuKOZk+rhcif3qc0dd
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Those appear to be for core functionality, not one off drivers. Where
-is the code that does the SetupEventNotifyInterrupt, is it a driver?
+On Thu, 08 Jul 2021 23:25:37 +0200
+Rolf Eike Beer <eike-kernel@sf-tec.de> wrote:
 
->
-> >
-> >> +
-> >> +       file->private_data = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-> >> +                                                     get_order(QUOTE_SIZE));
-> > Why does this driver abandon all semblance of type-safety and use
-> > ->private_data directly? This also seems an easy way to consume
-> > memory, just keep opening this device over and over again.
-> >
-> > AFAICS this buffer is only used ephemerally. I see no reason it needs
-> > to be allocated once per open file. Unless you need several threads to
-> > be running the attestation process in parallel just allocate a single
-> > buffer at module init (statically defined or on the heap) and use a
-> > lock to enforce only one user of this buffer at a time. That would
-> > also solve your direct-map fracturing problem.
->
-> Theoretically attestation requests can be sent in parallel. I have
-> allocated the memory in open() call mainly for this reason. But current
-> TDX ABI specification does not clearly specify this possibility and I am
-> not sure whether TDX KVM supports it. Let me confirm about it again with
-> TDX KVM owner. If such model is not currently supported, then I will move
-> the memory allocation to init code.
+> Am Donnerstag, 8. Juli 2021, 15:10:01 CEST schrieb Carlos Bilbao:
+> > Fix indentation of printks that start at the beginning of the line. Cha=
+nge
+> > this for the right number of space characters, or tabs if the file uses
+> > them. =20
+>=20
+> > diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
 
-If you have a lock would TDX KVM even notice that its parallel
-requests are being handled serially? I.e. even if they said "yes,
-multiple requests may happen in parallel", until it becomes an actual
-latency problem in practice it's not clear that this generous use of
-resources is justified.
+Does anyone still have Linux ATM devices?
 
-Scratch that... this driver already has the attestation_lock! So, it's
-already the case that only one thread can be attesting at a time. The
-per-file buffer is unecessary.
 
->
-> >
-> > All that said, this new user ABI for passing blobs in and out of the
-> > kernel is something that the keyutils API already does. Did you
-> > consider add_key() / request_key() for this case? That would also be
-> > the natural path for the end step of requesting the drive decrypt key.
-> > I.e. a chain of key payloads starting with establishing the
-> > attestation blob.
->
-> I am not sure whether we can use keyutil interface for attestation. AFAIK,
-> there are other use cases for attestation other than  getting keys for
-> encrypted drives.
+--Sig_/osUijuuKOZk+rhcif3qc0dd
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-keyutils supports generating and passing blobs into and out of the
-kernel with a handle associated to those blobs. This driver adds a TDX
-way to pass blobs into and out of the kernel. If Linux grows other
-TDX-like attestation requirements in the future (e.g. PCI SPDM) should
-each of those invent their own user ABI for passing blobs around?
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEn2/DRbBb5+dmuDyPgKd/YJXN5H4FAmDnl9sACgkQgKd/YJXN
+5H44YBAAnkAyswyrE/rskVunJmbFn2UtmB7idcIWZNhNmp7BkEhyEYyzCVcAx6bM
+bnk6ClVxxIJpdvdvlYcnloA6+MOWcYRXDeL2slbmTsm+B4WP0hoFqDot0y3SW9xo
+Y9XTyebLLT+x6xCBE8S+VeaIiIgHDmPiHCyB5XWxYulwcuQ38d3+vi0joRMBF1S7
+I6LJ/gQqQCzrjSOnuEFASNOwbVdGUz73UFz1N9FqInsU8w0ihdMHOdeheB73Ib/R
+GeEg58853dmIrwAZsejSbk9sgD+vMYpa4giHCyJgbus75SUCK9m246O/bnljf/oC
+3rGruoeFAHLvvHk530CMNy4QvyByXOKN8arPItYfXxaHIosjhy8x824fPpknRrnL
+emIlOQksSmma+MtUVCZmasKeEBcuWTXIrl1bRcnWtFBr72v/JEi5bH0Pu+z0kVNS
+lK46OJwWZy3dE1bkOyiYLIgIEPek9bqpmRsqqy9zDb8597wYjeK+qHZa83j75O0a
+vY0j6IvQmxAbmTehfgfjIeXS55x71981Y2wevmBk+8M7FB1oqKTjRefjIs2FbiMl
+nSdtBWPqTioCTDE4LR59IbeKOyVf09K1yKvl98BOQReRwPSVGzQ6KrJGMBDAoxbJ
+a5gx6B8wcJZjSGw6ydVDm18zrQ8wY1S/cbXvzlTDzXNl1vW9EE8=
+=ELNb
+-----END PGP SIGNATURE-----
+
+--Sig_/osUijuuKOZk+rhcif3qc0dd--
