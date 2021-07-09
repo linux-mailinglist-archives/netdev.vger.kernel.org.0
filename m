@@ -2,101 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E765E3C257B
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 16:02:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 706253C2581
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 16:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbhGIOE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 10:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbhGIOE5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 10:04:57 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852F0C0613DD
-        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 07:02:14 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id y38so14805037ybi.1
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 07:02:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WkW6fDyOZ+4zhT7qRRc0K4+EnrxH2x0ieuIpUvkKl9Y=;
-        b=ZYpz3yp7Tr8GkYHNRZNhqiyEb2Gv0LV0qxgEQTFV4OQIac4tfbmCyr1nWx5aR6HzXi
-         P5QcJOPda9mDJP3Ox8s/oEUJi3IYKoOOKZcNsHxXQUKn6S7xnNcTpAJVUvP1Qoq03mVP
-         m7dCoSOkKItgBkuhdx4UJ4jX4PcyzVf2zOoZLd0NeJEpP+gL9V0y3IlAbXe3JLonO6yC
-         /L22JKE7Y2p/No33YwmS1L2J2+Y+cr8l38ySz2rIqeECDh56yJLcz7r9MTxBCEef4D0/
-         +98QVGbYVh2sBexHovnSgl7kIw9dboAtRKahxlurTqqnJB3rkyqhcBmTsgKDfF/dKswP
-         khJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WkW6fDyOZ+4zhT7qRRc0K4+EnrxH2x0ieuIpUvkKl9Y=;
-        b=qUoa4mK+g4t1IhdEoOJrYEzwkl8Q7wxEiy7eqrlsLvOlWtecWXWW1He/l1d6pEpnhQ
-         Mr3jx6CSwiZPjk4A1BlSsrVtJloX8jlphVPDONLT8rbndDZrReymsVV9++YLoKVodrPt
-         Wx3JKUiirRAXwXDZ7u6YizESf+2oHIziXozIQ56GDBBMnZ0gRUzHb4P0yyR1Z+opXekm
-         jFJ6TKbLwlVWQpt6coMNWnEd6VuQmBvWMBjdyQ7J/FbheJL2+0IPuyd5/CeGHbwmFVRC
-         WB90f7vipSaND67nIkmgd+8jiWYDMLyjGxrqMCQ4MbKErfraINgZXVXjjDegGFoRV7Im
-         OSGg==
-X-Gm-Message-State: AOAM533j8mqlFJaVX8TQWq/XF/1vMi4yksHaTEv8JrrMZo4WfEdJk3oG
-        NXfOvleV3jOMJK93a8iQy8+sX8+evsmEIlPdGSiljQ==
-X-Google-Smtp-Source: ABdhPJyoPdrlcPUMf6cNewrJXFDfeZJwVMKkMukMlY1e5R34QBOHvxYLK5v440hEnU71qfWEaa2n5V6u60yX0Xen6ts=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr45655105ybj.504.1625839333205;
- Fri, 09 Jul 2021 07:02:13 -0700 (PDT)
+        id S232095AbhGIOGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 10:06:18 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:37730
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229499AbhGIOGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 10:06:17 -0400
+Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9F63C401BE;
+        Fri,  9 Jul 2021 14:03:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1625839412;
+        bh=ArzmOf/twC31usgyIHswXRtlXpE+DnHhLO+/s9grB20=;
+        h=To:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
+        b=HSeoB3pKLFNLm2ZlDuZDlFKnmPTST6OaUdDf0uWdwdaWTIe6didlgnnzagiEzeS6l
+         3/81HaWIsK5kdygO4gVtpafUpASSSNC05c/vNdww3hP/Oe4GYrdBWw4cVFquUkd3r8
+         mbuskyedQfceBvQ++NC/jFq9/gmaQSuKOnCKZd25M6bVCcSfvitiwCYLYOGjtxf9iH
+         VwMWHxNlpTsDFsvZQhs4obXz70eH2IyfnmH+CfA1QOoM3FGVHcHGU4EgkWfkeULu9C
+         2ZFjhf6unyhrW1m8Fyx6RA1j4YGsvYyquDsUA68uk+ims3gAYGUYHvND4uu3Gz4XnZ
+         afw9UkKLI34LQ==
+To:     Byungho An <bh74.an@samsung.com>,
+        Siva Reddy <siva.kallam@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: issue with unreachable code in net sxgbe driver
+Message-ID: <bac2783b-c7af-4e2e-5b3b-318196abfc20@canonical.com>
+Date:   Fri, 9 Jul 2021 15:03:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210709123512.6853-1-ovov@yandex-team.ru>
-In-Reply-To: <20210709123512.6853-1-ovov@yandex-team.ru>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 9 Jul 2021 16:02:02 +0200
-Message-ID: <CANn89iL=3VegNxgVqDz3OgbfjGPMmeLRgFTZqEKFrByqXotX1g@mail.gmail.com>
-Subject: Re: [PATCH] net: send SYNACK packet with accepted fwmark
-To:     Alexander Ovechkin <ovov@yandex-team.ru>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, zeil@yandex-team.ru
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 9, 2021 at 2:35 PM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
->
-> commit e05a90ec9e16 ("net: reflect mark on tcp syn ack packets")
-> fixed IPv4 only.
->
-> This part is for the IPv6 side.
->
-> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
-> Acked-by: Dmitry Yakunin <zeil@yandex-team.ru>
+Hi,
 
-Please add a standard tool-friendly Fixes: tag.
+Static analysis with Coverity has detected several occurrences of dead
+code in the sxgbe driver in function sxgbe_mtl_init. The issue was
+introduced with the following commit:
 
-Fixes: e05a90ec9e16 ("net: reflect mark on tcp syn ack packets")
+commit 1edb9ca69e8a7988900fc0283e10550b5592164d
+Author: Siva Reddy <siva.kallam@samsung.com>
+Date:   Tue Mar 25 12:10:54 2014 -0700
 
-> ---
->  net/ipv6/tcp_ipv6.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 323989927a0a..0ce52d46e4f8 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -555,7 +555,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
->                 opt = ireq->ipv6_opt;
->                 if (!opt)
->                         opt = rcu_dereference(np->opt);
-> -               err = ip6_xmit(sk, skb, fl6, sk->sk_mark, opt,
-> +               err = ip6_xmit(sk, skb, fl6, skb->mark ? : sk->sk_mark, opt,
->                                tclass, sk->sk_priority);
->                 rcu_read_unlock();
->                 err = net_xmit_eval(err);
-> --
-> 2.17.1
->
+    net: sxgbe: add basic framework for Samsung 10Gb ethernet driver
 
-ip6_xmit() overwrites skb->mark with its 4th argument, while
-ip_build_and_send_pkt()
-does the write if skb->mark is zero, so your patch seems fine to me, thanks.
+The analysis is as follows:
+
+ 20static void sxgbe_mtl_init(void __iomem *ioaddr, unsigned int etsalg,
+ 21                           unsigned int raa)
+ 22{
+ 23        u32 reg_val;
+ 24
+ 25        reg_val = readl(ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 26        reg_val &= ETS_RST;
+ 27
+ 28        /* ETS Algorith */
+ 29        switch (etsalg & SXGBE_MTL_OPMODE_ESTMASK) {
+
+Logically dead code (DEADCODE)
+
+ 30        case ETS_WRR:
+ 31                reg_val &= ETS_WRR;
+ 32                break;
 
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Logically dead code (DEADCODE)
+
+ 33        case ETS_WFQ:
+ 34                reg_val |= ETS_WFQ;
+ 35                break;
+
+Logically dead code (DEADCODE)
+
+ 36        case ETS_DWRR:
+ 37                reg_val |= ETS_DWRR;
+ 38                break;
+ 39        }
+
+SXGBE_MTL_OPMODE_ESTMASK is defined as 0x03
+ETS_WRR is 0xFFFFFF9F
+ETS_WFQ is 0x00000020
+ETS_DWRR is 0x00000040
+
+so the masking of etsalg & SXGBE_MTL_OPMODE_ESTMASK will never match any
+of the ETS_* values, hence the dead code.
+
+
+ 40        writel(reg_val, ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 41
+ 42        switch (raa & SXGBE_MTL_OPMODE_RAAMASK) {
+
+Logically dead code (DEADCODE)
+
+ 43        case RAA_SP:
+ 44                reg_val &= RAA_SP;
+ 45                break;
+
+Logically dead code (DEADCODE)
+
+ 46        case RAA_WSP:
+ 47                reg_val |= RAA_WSP;
+ 48                break;
+ 49        }
+ 50        writel(reg_val, ioaddr + SXGBE_MTL_OP_MODE_REG);
+ 51}
+
+SXGBE_MTL_OPMODE_RAAMASK is defined as 0x1
+RAA_SP is 0xFFFFFFFB
+RAA_WSP is 0x00000004
+
+so masking of raa & SXGBE_MTL_OPMODE_RAAMASK will never match any of the
+RAA_* values, hence the dead code.
+
+I don't think this is intentional. Not sure how to fix this hence I'm
+reporting this issue.
+
+Regards,
+
+Colin
