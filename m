@@ -2,258 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 221303C1FE1
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 09:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EAAD3C200A
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 09:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230515AbhGIHQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 03:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbhGIHQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 03:16:34 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADEE9C0613DD;
-        Fri,  9 Jul 2021 00:13:50 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id 59-20020a9d0ac10000b0290462f0ab0800so8503001otq.11;
-        Fri, 09 Jul 2021 00:13:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jr4ogZHqQ7zRi1sMqa0R1O1+zw4sLaP6ohLoK1fMMDA=;
-        b=n/DHTtUXSVuzF1Xnos9aimqdfW9QH7aIknywhLk6BxVNxLEmmnwqQoz+lGE66ZE8iq
-         1RCNT/IjdnE751iaxx45aHSfvJZd497Kmh5FWEHusd+H97AeXAMi/EuAeQsiKUp55NOs
-         1c8tzG8bYjTyOAKkcFArMs8w3A70fwFRuiAn+Yv+FOgi3ISW+WZkYrbSLL5C3cwC2gQp
-         YKArlmO0sGBDCR8r1CH1tuVi/yTrVWOxPTzGnN3vrI6p7Zg+2oaLRZMbIn5D1bnqgCWd
-         3ym7tlzQOQv7iJ0ZDWtywzjlilUWjKNnbmWdE1xUZ4b5lDzZ4rcrcBvzmicsx41qiVRI
-         GAQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jr4ogZHqQ7zRi1sMqa0R1O1+zw4sLaP6ohLoK1fMMDA=;
-        b=uPyJEDyTRCPMqjxB4Vt91VVVVdknEEqypwq8uYdtlVC8afG008sZZBLbmYobadZbmV
-         Rb4vU3jNDnWhU7k9bDbwUz2VReL/dTZ0JFHKfsDIQkaWQmhEhOfT6xf5I76RKuNyMjr8
-         duCHzCFTiO1eITPmWle1HFLXSWaQBsLmUP1+dt1iLiw77Zrf379Jhp2YZe7MWvgsjihB
-         DGFnHUQg7xSGexdUVSKL2c3eq1NNkwK5WjIVSS4e0IGm6ii7Aq072aJKSN3Ew2M8CtRy
-         eQMyraMOnUzBwrcw6Czx/53r1ddTyvoAMtLlV4hhQGEv37A/zAvIHdogyUFQzOMpitPI
-         MWvA==
-X-Gm-Message-State: AOAM531qf6yIddVxPLLMgOVOlkEXL2TG8HcQJK4gbAcL1BujxC9X0xKl
-        6cfgn5qJ2/XqJ20rLk4L9Uv2sqwPJQwsG+Fva08=
-X-Google-Smtp-Source: ABdhPJwXx9Y+ZgogxjgcXleD8BNl4B2h14hUIQAR+6xkzT6s1p9jrtncqLVmpcjytbyarhg742wb/HcJfm6otgmpsnI=
-X-Received: by 2002:a05:6830:160c:: with SMTP id g12mr517364otr.118.1625814829931;
- Fri, 09 Jul 2021 00:13:49 -0700 (PDT)
+        id S230527AbhGIHee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 03:34:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230121AbhGIHee (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 03:34:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 622806139A
+        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 07:31:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625815911;
+        bh=gO6fe7uu30K1aRnJxP7G3No2PQGO/1V5QqwZY5CeLI8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=lYUm+j8upcUL50Az08+EBU0dwWZU56oomKlMVyUoaxM97H4AamGMy2RrkkfudXlIE
+         cqJ2gLkAvGoZbEO90NOsfbu67/NjDxKqOH069tyq1nAm30PYCSlpMWWf1uho50HScs
+         rQjiYB0/AfoYcZXnZk7dGWxaoJNoBZPUSIvVeZF6xiL0bU8IRfoiTKh7/LTFF4q85v
+         taW8B2ZI2mgqfq974OwdagK8U5g1zmXzGzhDuYblIiREYvXrBpjyIrczTZRPYPpRfk
+         lBaOsQDgaYKq1dQ7Ok83R/zVXHZFQyfA25pUkugVP4jfKhXgH1MjTGc1tb7lvyH/sw
+         nQVOmCs7xc4GQ==
+Received: by mail-wr1-f43.google.com with SMTP id l7so9880775wrv.7
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 00:31:51 -0700 (PDT)
+X-Gm-Message-State: AOAM531N8rkW+pm17OuC/VfAAxyawLduHBWocF+hm/TpSApkGslZW/tM
+        KRPP+VZ5hLEyuJiQ7KmfLY8Wnq3UtKjf62VUJgo=
+X-Google-Smtp-Source: ABdhPJx+nO3v98cdGJnkOaQvoqTOXfH9nxd97AciSeiPNXpBfrmrt3WRl7pX/ZHJgpMDpo0uCU+jHrC4WYwrKpwfMp4=
+X-Received: by 2002:adf:b318:: with SMTP id j24mr15695932wrd.361.1625815909957;
+ Fri, 09 Jul 2021 00:31:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210707094133.24597-1-kerneljasonxing@gmail.com>
-In-Reply-To: <20210707094133.24597-1-kerneljasonxing@gmail.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Fri, 9 Jul 2021 15:13:14 +0800
-Message-ID: <CAL+tcoCc+r96Bv8aDXTwY5h_OYTz8sHxdpPW7OuNfdDz+ssYYg@mail.gmail.com>
-Subject: Re: [PATCH net] i40e: introduce pseudo number of cpus for compatibility
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        anthony.l.nguyen@intel.com, David Miller <davem@davemloft.net>,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>,
-        Shujin Li <lishujin@kuaishou.com>
+References: <60B24AC2.9050505@gmail.com> <60B611C6.2000801@gmail.com>
+ <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com>
+ <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com> <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk>
+ <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com>
+ <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk>
+ <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com>
+ <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com>
+ <60D22F1D.1000205@gmail.com> <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com>
+ <60D361FF.70905@gmail.com> <alpine.DEB.2.21.2106240044080.37803@angie.orcam.me.uk>
+ <CAK8P3a0u+usoPon7aNOAB_g+Jzkhbz9Q7-vyYci1ReHB6c-JMQ@mail.gmail.com>
+ <60DF62DA.6030508@gmail.com> <CAK8P3a2=d0wT9UWgkKDJS5Bd8dPYswah79O5tAg5tHpr4vMH4Q@mail.gmail.com>
+ <60E75057.60706@gmail.com>
+In-Reply-To: <60E75057.60706@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 9 Jul 2021 09:31:34 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0uFAsKXenAhPdJWXVNUNw1qjuyrY+5jaEtB25Tj8wK3w@mail.gmail.com>
+Message-ID: <CAK8P3a0uFAsKXenAhPdJWXVNUNw1qjuyrY+5jaEtB25Tj8wK3w@mail.gmail.com>
+Subject: Re: Realtek 8139 problem on 486.
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+Cc:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Oh, one more thing I missed in the last email is that all the failures
-are happening on the combination of X722 10GbE and 1GbE. So the value
-of @num_tx_qp  the driver fetches is 384 while the value is 768
-without x722 1GbE.
+On Thu, Jul 8, 2021 at 9:21 PM Nikolai Zhubr <zhubr.2@gmail.com> wrote:
+>
+> Hello Arnd,
+>
+> 03.07.2021 12:10, Arnd Bergmann:
+> > The simplest workaround would be to just move the
+> > "spin_lock_irqsave(&tp->lock, flags);" a few lines down, below the rx
+> > processing. This keeps the locking rules exactly how they were before
+>
+> Indeed, moving spin_lock_irqsave below rtl8139_rx eliminated the warn_on
+> message apparently, here is a new log:
+>
+> https://pastebin.com/dVFNVEu4
+>
+> and here is my resulting diff:
+>
+> https://pastebin.com/CzNzsUPu
 
-I get that information back here:
-$ lspci | grep -i ether
-5a:00.0 Ethernet controller: Intel Corporation Ethernet Connection
-X722 for 10GbE SFP+ (rev 09)
-5a:00.1 Ethernet controller: Intel Corporation Ethernet Connection
-X722 for 10GbE SFP+ (rev 09)
-5a:00.2 Ethernet controller: Intel Corporation Ethernet Connection
-X722 for 1GbE (rev 09)
-5a:00.3 Ethernet controller: Intel Corporation Ethernet Connection
-X722 for 1GbE (rev 09)
+Ok, great, the patch looks good to me, and I think we should just
+merge that, in addition to Maciej's bugfix for the platform.
 
-I know it's really stupid to control the number of online cpus, but
-finding a good way only to limit the @alloc_queue_pairs is not easy to
-go. So could someone point out a better way to fix this issue and take
-care of some relatively old nics with the number of cpus increasing?
+> My usual tests run fine. However I still see 2 issues:
+>
+> 1. I do not understand all this locking thing enough to do a good
+> cleanup myself, and it looks like it needs one;
 
-Thanks,
-Jason
+A lot of drivers need one. With your latest patch, I'm confident enough
+that it's not getting worse here and given the age of this device I don't
+think the cleanup is required. It's probably possible to squeeze out a
+little more performance from this device on SMP systems by
+improving it, but this would still be hopeless to compete against a
+$5 gigabit ethernet card.
 
-On Wed, Jul 7, 2021 at 5:41 PM <kerneljasonxing@gmail.com> wrote:
+> 2. It looks like in case of incorrect (edge) triggering mode, the "poll
+> approach" with no loop added in the poll function would still allow a
+> race window, as explained in following outline (from some previous mails):
 >
-> From: Jason Xing <xingwanli@kuaishou.com>
+> 22.06.2021 14:12, David Laight:
+>  > Typically you need to:
+>  > 1) stop the chip driving IRQ low.
+>  > 2) process all the completed RX and TX entries.
+>  > 3) clear the chip's interrupt pending bits (often write to clear).
+>  > 4) check for completed RX/TX entries, back to 2 if found.
+>  > 5) enable driving IRQ.
+>  >
+>  > The loop (4) is needed because of the timing window between
+>  > (2) and (3).
+>  > You can swap (2) and (3) over - but then you get an additional
+>  > interrupt if packets arrive during processing - which is common.
 >
-> The kernel will crash when loading xdpdrv with more than 64 cores and
-> Intel X722. Last time I submitted the fix (commit: 4e39a072a), but it only
-> solves the similar issue if the machine has less than 64 cores.
->
-> Crash log:
-> [305797.917411] Using feature eBPF/xdp.
-> [305798.054336] i40e 0000:1a:00.0: failed to get tracking for 256 queues
-> for VSI 0 err -12
-> [305798.055448] i40e 0000:1a:00.0: setup of MAIN VSI failed
-> [305798.056130] i40e 0000:1a:00.0: can't remove VEB 160 with 0 VSIs left
-> [305798.056856] BUG: unable to handle kernel NULL pointer dereference at
-> 0000000000000000
-> [305798.061190] RIP: 0010:i40e_xdp+0xae/0x110 [i40e]
-> [305798.075139] Call Trace:
-> [305798.075666]  dev_xdp_install+0x4f/0x70
-> [305798.076253]  dev_change_xdp_fd+0x11f/0x230
-> [305798.085182]  do_setlink+0xac7/0xe70
-> [305798.086344]  rtnl_newlink+0x72d/0x850
->
-> Here's how to reproduce:
-> 1) prepare one machine shipped with more than 64 cores and Intel X722
-> 10G.
-> 2) # mount bpffs -t bpf /sys/fs/bpf
-> 3) # ip link set dev eth01 xdpdrv obj ./bpf_xdp.o sec from-netdev
->
-> The reason is that the allocation of @rss_size_max is too large and then
-> affects the value of @vsi->alloc_queue_pairs which is 64. Later, if we
-> load the xdpdrv, it will reinit the vsi and assign double of the older
-> value to @alloc_queue_pairs which triggers the failure of finding the
-> lump.
->
-> We cannot simply add the limit of calculating @rss_size_max because
-> @pf->num_lan_qps will pick up the maximum (say, the number of cpus).
-> In fact, we don't need to allocate too many resources in accordance with
-> the number of cpus. It's limited by the hardware itself. So I introduce
-> the pseudo number of cpus to replace the real number to avoid the
-> unbalance.
->
-> After applying this feature, the machine with X722 nic will only use 64
-> cores no mather how large the number of cpus. The pseudo number
-> actually depends on @num_tx_qp.
->
-> Fixes: 41c445ff0f48 ("i40e: main driver core")
-> Co-developed-by: Shujin Li <lishujin@kuaishou.com>
-> Signed-off-by: Shujin Li <lishujin@kuaishou.com>
-> Signed-off-by: Jason Xing <xingwanli@kuaishou.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_main.c | 47 +++++++++++++++++++++++------
->  1 file changed, 38 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> index 861e59a..26de518 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-> @@ -100,6 +100,35 @@ static int i40e_get_capabilities(struct i40e_pf *pf,
->  static struct workqueue_struct *i40e_wq;
->
->  /**
-> + * i40e_pseudo_num_online_cpus - use as possible as what we can use actually
-> + * @pf: board private structure
-> + *
-> + * We mignt not use all the cores because some old nics are not compatible
-> + * with the machine which has a large number of cores, say, 128 cores
-> + * combined with X722 nic.
-> + *
-> + * We should avoid this situation where the number of core is too large
-> + * while the nic is a little bit old. Therefore, we have to limit the
-> + * actual number of cpus we can use by adding the calculation of parameters
-> + * of the hardware.
-> + *
-> + * The algorithm is violent and shrink the number exponentially, so that we
-> + * make sure that the driver can work definitely.
-> + */
-> +static u16 i40e_pseudo_num_online_cpus(struct i40e_pf *pf)
-> +{
-> +       u32 limit;
-> +       u16 pow;
-> +
-> +       limit = pf->hw.func_caps.num_tx_qp / 3;
-> +       pow = roundup_pow_of_two(num_online_cpus());
-> +       while (pow >= limit)
-> +               pow = rounddown_pow_of_two(pow - 1);
-> +
-> +       return pow;
-> +}
-> +
-> +/**
->   * i40e_allocate_dma_mem_d - OS specific memory alloc for shared code
->   * @hw:   pointer to the HW structure
->   * @mem:  ptr to mem struct to fill out
-> @@ -11395,7 +11424,7 @@ static int i40e_init_msix(struct i40e_pf *pf)
->          * will use any remaining vectors to reach as close as we can to the
->          * number of online CPUs.
->          */
-> -       cpus = num_online_cpus();
-> +       cpus = i40e_pseudo_num_online_cpus(pf);
->         pf->num_lan_msix = min_t(int, cpus, vectors_left / 2);
->         vectors_left -= pf->num_lan_msix;
->
-> @@ -11457,7 +11486,7 @@ static int i40e_init_msix(struct i40e_pf *pf)
->          * the number of vectors for num_lan_msix to be at most 50% of the
->          * available vectors, to allow for other features. Now, we add back
->          * the remaining vectors. However, we ensure that the total
-> -        * num_lan_msix will not exceed num_online_cpus(). To do this, we
-> +        * num_lan_msix will not exceed i40e_pseudo_num_online_cpus(). To do this, we
->          * calculate the number of vectors we can add without going over the
->          * cap of CPUs. For systems with a small number of CPUs this will be
->          * zero.
-> @@ -12102,7 +12131,7 @@ int i40e_reconfig_rss_queues(struct i40e_pf *pf, int queue_count)
->         if (!(pf->flags & I40E_FLAG_RSS_ENABLED))
->                 return 0;
->
-> -       queue_count = min_t(int, queue_count, num_online_cpus());
-> +       queue_count = min_t(int, queue_count, i40e_pseudo_num_online_cpus(pf));
->         new_rss_size = min_t(int, queue_count, pf->rss_size_max);
->
->         if (queue_count != vsi->num_queue_pairs) {
-> @@ -12348,13 +12377,13 @@ static int i40e_sw_init(struct i40e_pf *pf)
->                                  pf->hw.func_caps.num_tx_qp);
->
->         /* find the next higher power-of-2 of num cpus */
-> -       pow = roundup_pow_of_two(num_online_cpus());
-> +       pow = roundup_pow_of_two(i40e_pseudo_num_online_cpus(pf));
->         pf->rss_size_max = min_t(int, pf->rss_size_max, pow);
->
->         if (pf->hw.func_caps.rss) {
->                 pf->flags |= I40E_FLAG_RSS_ENABLED;
->                 pf->alloc_rss_size = min_t(int, pf->rss_size_max,
-> -                                          num_online_cpus());
-> +                                          i40e_pseudo_num_online_cpus(pf));
->         }
->
->         /* MFP mode enabled */
-> @@ -12446,16 +12475,16 @@ static int i40e_sw_init(struct i40e_pf *pf)
->             pf->hw.aq.fw_maj_ver >= 6)
->                 pf->hw_features |= I40E_HW_PTP_L4_CAPABLE;
->
-> -       if (pf->hw.func_caps.vmdq && num_online_cpus() != 1) {
-> +       if (pf->hw.func_caps.vmdq && i40e_pseudo_num_online_cpus(pf) != 1) {
->                 pf->num_vmdq_vsis = I40E_DEFAULT_NUM_VMDQ_VSI;
->                 pf->flags |= I40E_FLAG_VMDQ_ENABLED;
->                 pf->num_vmdq_qps = i40e_default_queues_per_vmdq(pf);
->         }
->
-> -       if (pf->hw.func_caps.iwarp && num_online_cpus() != 1) {
-> +       if (pf->hw.func_caps.iwarp && i40e_pseudo_num_online_cpus(pf) != 1) {
->                 pf->flags |= I40E_FLAG_IWARP_ENABLED;
->                 /* IWARP needs one extra vector for CQP just like MISC.*/
-> -               pf->num_iwarp_msix = (int)num_online_cpus() + 1;
-> +               pf->num_iwarp_msix = (int)i40e_pseudo_num_online_cpus(pf) + 1;
->         }
->         /* Stopping FW LLDP engine is supported on XL710 and X722
->          * starting from FW versions determined in i40e_init_adminq.
-> @@ -14805,7 +14834,7 @@ static void i40e_determine_queue_usage(struct i40e_pf *pf)
->                 }
->
->                 /* limit lan qps to the smaller of qps, cpus or msix */
-> -               q_max = max_t(int, pf->rss_size_max, num_online_cpus());
-> +               q_max = max_t(int, pf->rss_size_max, i40e_pseudo_num_online_cpus(pf));
->                 q_max = min_t(int, q_max, pf->hw.func_caps.num_tx_qp);
->                 q_max = min_t(int, q_max, pf->hw.func_caps.num_msix_vectors);
->                 pf->num_lan_qps = q_max;
-> --
-> 1.8.3.1
->
+> So in terms of such outline, the "poll approach" now implements 1, 2, 3,
+> 5 but still misses 4, and my understanding is that it is therefore still
+> not a complete solution for the broken triggering case (Although
+> practically, the time window might be too small for the race effect to
+> be ever observable) From my previous testing I know that such a loop
+> does not affect the perfomance too much anyway, so it seems quite safe
+> to add it. Maybe I've missunderstood something though.
+
+The latest version of your patch already does what David explained as
+the alternative: the 'ack'  (step 3) happens before processing the interrupts
+(2), so you don't need step 4 for correctness. You had that in the previous
+version of the patch that had the loop, and since you have experimentally
+shown that it makes no significant difference to performance, I'd rather
+leave it out for simplicity.
+
+If another event becomes pending after the Ack but before the
+napi_complete_done(), then we get an interrupt and call napi_schedule()
+again.
+
+For some reason, the TxErr bit is only cleared after tx processing, so
+we could miss an error event, but that seems fine as the tx errors are
+not handled in any way other than counting them, which is already
+unreliable if multiple transmits fail before the interrupt comes.
+
+       Arnd
