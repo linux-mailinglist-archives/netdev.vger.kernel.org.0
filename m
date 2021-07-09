@@ -2,148 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC92C3C22EF
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 13:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 476D33C2341
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 14:05:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbhGILjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 07:39:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36740 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230024AbhGILjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 07:39:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625830586;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0OcA0NiDPyHjWy8/Rt+bgKSOiJGaZbsmJimq14lPbh0=;
-        b=bfxAJp4cz5d/rlXP4sqrXpjMXcvF74LuuFUVzR4vPl7NXy3jQeD+5R7frgLlAp69k/AIVT
-        TNtuWCc2aaIQERepoDgtKewbZko4FJL9SWIYCTJhWf3BH+XMqa+7TYV9/xvg8hWRY17wAP
-        Viy+RDCpZ6G/H8FOT60/THFxdzo281E=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-311-EZdd70dSPmqpcQgCQCHDeA-1; Fri, 09 Jul 2021 07:36:25 -0400
-X-MC-Unique: EZdd70dSPmqpcQgCQCHDeA-1
-Received: by mail-ed1-f70.google.com with SMTP id w1-20020a0564022681b0290394cedd8a6aso5075157edd.14
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 04:36:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0OcA0NiDPyHjWy8/Rt+bgKSOiJGaZbsmJimq14lPbh0=;
-        b=ElS8kUM8WnM6XnxbQkhNlyiHmEAPKy3sqeJjH6uGqYcB6gKWkqii1h3RlG9cGoUWDT
-         6OBdjqNge2WIYYuQd9Yl4C7sy8z3ipS+9yzmtxytFW/YmsE8m6qk3ljBY3T4KiiVhDyB
-         oq93ZvcNqE+jgziEYSZUk7lqLFzM6knChKGeLvQt6G96hnIP0S8CJozYfSVCEHMasceU
-         0zdWtqyztGRbEN9f0isKfxFnj8WlNxP0lFcHEhfKrYlr9I9neohuIduHsJSvmFmxeQn4
-         kwdA3XR5Thx9Hms+z3Mb9ps/N+PmI4K8p2rN9HeIWF11xcvjGB1pd5WT1tCbr6Esi1S2
-         wMUA==
-X-Gm-Message-State: AOAM532gSt9VKO7wmll8iMG28yZYNG0OfYZ2v307iSAeGDk+sSiHbR/S
-        wK8E31wyZljd4ABYIU/EAK+mP2cOLWHt/SvKpkYOaCOkM8empGu3DN6NinpwMZK10m8LL+YyhGI
-        PhOKP204rvACntj5r
-X-Received: by 2002:a17:906:38f:: with SMTP id b15mr11359965eja.186.1625830584245;
-        Fri, 09 Jul 2021 04:36:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxGnb58qb7OOjvkU3chVhCrfX8pHwkL/UrnCYSF6HNcAn0J7692jf4clrlhijAaLaDHfz8N1Q==
-X-Received: by 2002:a17:906:38f:: with SMTP id b15mr11359931eja.186.1625830583879;
-        Fri, 09 Jul 2021 04:36:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id g8sm2865498edw.89.2021.07.09.04.36.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 04:36:23 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6FDF4180733; Fri,  9 Jul 2021 13:36:22 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC PATCH 1/3] veth: implement support for set_channel ethtool op
-In-Reply-To: <1c3d691c01121e4110f23d5947b2809d5cce056b.camel@redhat.com>
-References: <cover.1625823139.git.pabeni@redhat.com>
- <681c32be3a9172e9468893a89fb928b46c5c5ee6.1625823139.git.pabeni@redhat.com>
- <878s2fvln4.fsf@toke.dk>
- <1c3d691c01121e4110f23d5947b2809d5cce056b.camel@redhat.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 09 Jul 2021 13:36:22 +0200
-Message-ID: <87zguvu3bd.fsf@toke.dk>
+        id S231260AbhGIMHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 08:07:47 -0400
+Received: from mxout70.expurgate.net ([91.198.224.70]:4905 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230404AbhGIMHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 08:07:46 -0400
+X-Greylist: delayed 429 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Jul 2021 08:07:46 EDT
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m1p8Z-000JcM-2I; Fri, 09 Jul 2021 13:57:43 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m1p8X-0002pA-QA; Fri, 09 Jul 2021 13:57:41 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id D9AE6240041;
+        Fri,  9 Jul 2021 13:57:40 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 32F0C240040;
+        Fri,  9 Jul 2021 13:57:40 +0200 (CEST)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 9027D20196;
+        Fri,  9 Jul 2021 13:57:39 +0200 (CEST)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next] net: phy: intel-xway: Add RGMII internal delay configuration
+Date:   Fri,  9 Jul 2021 13:57:26 +0200
+Message-ID: <20210709115726.11897-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Content-Transfer-Encoding: quoted-printable
+X-purgate: clean
+X-purgate-ID: 151534::1625831862-000003B7-4942A3E1/0/0
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paolo Abeni <pabeni@redhat.com> writes:
+This adds the posibility to configure the RGMII RX/TX clock skew via
+devicetree.
 
-> Hello,
->
-> On Fri, 2021-07-09 at 12:15 +0200, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> > @@ -224,10 +226,49 @@ static void veth_get_channels(struct net_device =
-*dev,
->> >  {
->> >  	channels->tx_count =3D dev->real_num_tx_queues;
->> >  	channels->rx_count =3D dev->real_num_rx_queues;
->> > -	channels->max_tx =3D dev->real_num_tx_queues;
->> > -	channels->max_rx =3D dev->real_num_rx_queues;
->> > +	channels->max_tx =3D dev->num_tx_queues;
->> > +	channels->max_rx =3D dev->num_rx_queues;
->> >  	channels->combined_count =3D min(dev->real_num_rx_queues, dev->real_=
-num_tx_queues);
->> > -	channels->max_combined =3D min(dev->real_num_rx_queues, dev->real_nu=
-m_tx_queues);
->> > +	channels->max_combined =3D min(dev->num_rx_queues, dev->num_tx_queue=
-s);
->> > +}
->> > +
->> > +static int veth_close(struct net_device *dev);
->> > +static int veth_open(struct net_device *dev);
->> > +
->> > +static int veth_set_channels(struct net_device *dev,
->> > +			     struct ethtool_channels *ch)
->> > +{
->> > +	struct veth_priv *priv =3D netdev_priv(dev);
->> > +	struct veth_priv *peer_priv;
->> > +
->> > +	/* accept changes only on rx/tx */
->> > +	if (ch->combined_count !=3D min(dev->real_num_rx_queues, dev->real_n=
-um_tx_queues))
->> > +		return -EINVAL;
->> > +
->> > +	/* respect contraint posed at device creation time */
->> > +	if (ch->rx_count > dev->num_rx_queues || ch->tx_count > dev->num_tx_=
-queues)
->> > +		return -EINVAL;
->> > +
->> > +	if (!ch->rx_count || !ch->tx_count)
->> > +		return -EINVAL;
->> > +
->> > +	/* avoid braking XDP, if that is enabled */
->> > +	if (priv->_xdp_prog && ch->rx_count < priv->peer->real_num_tx_queues)
->> > +		return -EINVAL;
->> > +
->> > +	peer_priv =3D netdev_priv(priv->peer);
->> > +	if (peer_priv->_xdp_prog && ch->tx_count > priv->peer->real_num_rx_q=
-ueues)
->> > +		return -EINVAL;
->>=20
->> An XDP program could be loaded later, so I think it's better to enforce
->> this constraint unconditionally.
->
-> The relevant check is already present in veth_xdp_set(), the load will
-> be rejected with an appropriate extack message.
+Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and add
+the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
+devicetree.
 
-Ah, right, of course; silly me, that's fine then... :)
+Furthermore, a warning is now issued if the phy mode is configured to
+"rgmii" and an internal delay is set in the phy (e.g. by pin-strapping),
+as in the dp83867 driver.
 
-> I enforcing the above contraint uncontiditionally will make impossible
-> changing the number of real queues at runtime, as we must update dev
-> and peer in different moments.
->
->> (What happens on the regular xmit path if the number of TX queues is out
->> of sync with the peer RX queues, BTW?)
->
-> if tx < rx, the higly number of rx queue will not be used, if rx < tx,
-> XDP/gro can't take place: the normal veth path is used.
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+ drivers/net/phy/intel-xway.c | 91 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
 
-Right, OK, that's probably also fine then :)
-
--Toke
+diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
+index d453ec016168..6fc8f54247c2 100644
+--- a/drivers/net/phy/intel-xway.c
++++ b/drivers/net/phy/intel-xway.c
+@@ -9,10 +9,16 @@
+ #include <linux/phy.h>
+ #include <linux/of.h>
+=20
++#define XWAY_MDIO_MIICTRL		0x17	/* mii control */
+ #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
+ #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
+ #define XWAY_MDIO_LED			0x1B	/* led control */
+=20
++#define XWAY_MDIO_MIICTRL_RXSKEW_MASK	GENMASK(14, 12)
++#define XWAY_MDIO_MIICTRL_RXSKEW_SHIFT	12
++#define XWAY_MDIO_MIICTRL_TXSKEW_MASK	GENMASK(10, 8)
++#define XWAY_MDIO_MIICTRL_TXSKEW_SHIFT	8
++
+ /* bit 15:12 are reserved */
+ #define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function=
+ of LED3 */
+ #define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function=
+ of LED2 */
+@@ -157,6 +163,87 @@
+ #define PHY_ID_PHY11G_VR9_1_2		0xD565A409
+ #define PHY_ID_PHY22F_VR9_1_2		0xD565A419
+=20
++#if IS_ENABLED(CONFIG_OF_MDIO)
++static const int xway_internal_delay[] =3D {0, 500, 1000, 1500, 2000, 25=
+00,
++					 3000, 3500};
++
++static int xway_gphy_of_reg_init(struct phy_device *phydev)
++{
++	struct device *dev =3D &phydev->mdio.dev;
++	int delay_size =3D ARRAY_SIZE(xway_internal_delay);
++	s32 rx_int_delay;
++	s32 tx_int_delay;
++	int err =3D 0;
++	int val;
++
++	if (phy_interface_is_rgmii(phydev)) {
++		val =3D phy_read(phydev, XWAY_MDIO_MIICTRL);
++		if (val < 0)
++			return val;
++	}
++
++	/* Existing behavior was to use default pin strapping delay in rgmii
++	 * mode, but rgmii should have meant no delay.  Warn existing users.
++	 */
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII) {
++		const u16 txskew =3D (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
++				   XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
++		const u16 rxskew =3D (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
++				   XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
++
++		if (txskew > 0 || rxskew > 0)
++			phydev_warn(phydev,
++				    "PHY has delays (e.g. via pin strapping), but phy-mode =3D 'rgmi=
+i'\n"
++				    "Should be 'rgmii-id' to use internal delays txskew:%x rxskew:%x=
+\n",
++				    txskew, rxskew);
++	}
++
++	/* RX delay *must* be specified if internal delay of RX is used. */
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID) {
++		rx_int_delay =3D phy_get_internal_delay(phydev, dev,
++						      &xway_internal_delay[0],
++						      delay_size, true);
++
++		if (rx_int_delay < 0) {
++			phydev_err(phydev, "rx-internal-delay-ps must be specified\n");
++			return rx_int_delay;
++		}
++
++		val &=3D ~XWAY_MDIO_MIICTRL_RXSKEW_MASK;
++		val |=3D rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
++	}
++
++	/* TX delay *must* be specified if internal delay of TX is used. */
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID) {
++		tx_int_delay =3D phy_get_internal_delay(phydev, dev,
++						      &xway_internal_delay[0],
++						      delay_size, false);
++
++		if (tx_int_delay < 0) {
++			phydev_err(phydev, "tx-internal-delay-ps must be specified\n");
++			return tx_int_delay;
++		}
++
++		val &=3D ~XWAY_MDIO_MIICTRL_TXSKEW_MASK;
++		val |=3D tx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
++	}
++
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID)
++		err =3D phy_write(phydev, XWAY_MDIO_MIICTRL, val);
++
++	return err;
++}
++#else
++static int xway_gphy_of_reg_init(struct phy_device *phydev)
++{
++	return 0;
++}
++#endif /* CONFIG_OF_MDIO */
++
+ static int xway_gphy_config_init(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -204,6 +291,10 @@ static int xway_gphy_config_init(struct phy_device *=
+phydev)
+ 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
+ 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
+=20
++	err =3D xway_gphy_of_reg_init(phydev);
++	if (err)
++		return err;
++
+ 	return 0;
+ }
+=20
+--=20
+2.20.1
 
