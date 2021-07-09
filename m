@@ -2,117 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9EFD3C2135
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7ECE3C2181
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbhGIJIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 05:08:41 -0400
-Received: from relay.sw.ru ([185.231.240.75]:59616 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229563AbhGIJIl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 05:08:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=5IC5mFOPOS1MYS+1HKMaliBZpQ6ReLTErUGh1yA0hKY=; b=roQp0qK+YgXRwKYEp+z
-        l7PwAFEYtz3WeqRY/IrJU9/diaoq1Zk1Q/Lr6u65L9ig0A6WNH9Cy7ph0BILAb32936Q1aTxNpKWS
-        ntd4oP1wwx+DzQKy3pMA1EbRCU2wyY4hLLvY8nOp47BL1d7goP+cprx+hFxEmevg9pTf02a+Q0o=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m1mSK-003Pm1-Qs; Fri, 09 Jul 2021 12:05:56 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH IPV6 v2 4/4] ipv6: ip6_xmit refactoring
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1cbf3c7b-455e-f3a5-cc2c-c18ce8be4ce1@gmail.com>
- <cover.1625818825.git.vvs@virtuozzo.com>
-Message-ID: <a3120d9c-e6c6-13d0-31ce-6f9a9d8f57a6@virtuozzo.com>
-Date:   Fri, 9 Jul 2021 12:05:56 +0300
+        id S231924AbhGIJ12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 05:27:28 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37598 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231725AbhGIJ11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 05:27:27 -0400
+Received: from mail-wr1-f69.google.com ([209.85.221.69])
+        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <krzysztof.kozlowski@canonical.com>)
+        id 1m1mkV-0008Em-Cl
+        for netdev@vger.kernel.org; Fri, 09 Jul 2021 09:24:43 +0000
+Received: by mail-wr1-f69.google.com with SMTP id d9-20020adffbc90000b029011a3b249b10so2629833wrs.3
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 02:24:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7WNvZLwCMJPhU0LBKsV7xjBc2Y3AeokJ7ARXwaxrCLg=;
+        b=FpdgA5idRmsMb9sfuCjiQvy1wi9/s5KBR7BKWD6FtYeeeKtsZK1bgjL7ZdX5QcC+q5
+         fIix7r4m8gVK5IMhbGRHNmUl891rl1mGVogBo0TCHu0iP/zfipNfyfcPFbhU4vNMAAgL
+         1D1x2Of9MjE/SYGMB/nYJD+REuwdCL9s4UwL61h4832B69WYlpKt9MrDJrHZFDzO2vVh
+         8avNAyjRANW+QjfO+IRSqGYL8YK/mYhhePIxEgFDzW30U+kMMolOvx2tQ5BDKMx28FgG
+         l0WFlIh5yuGsWB9F7SLOL8wHAUQmClNIg+ygpPZk8VNTV0BIwjmEjN5JsV2eRL2qW/yu
+         NB1A==
+X-Gm-Message-State: AOAM532ESWu/Z9KGjEONoul2Y0sXD1QcDcoCZkc1fQ05DjXOhCcGl4m9
+        H3twhu38D4Vmq+zJ0vqr/RNhe7KoLH/8RFeNZMzHcs7GFZB+nzV1lFFGcxQWRcL0WZWaMn+5ryM
+        zpJ38okm/F20Do6vECvteaQUuoy3xWlHsEA==
+X-Received: by 2002:a05:600c:3644:: with SMTP id y4mr10822198wmq.85.1625822683084;
+        Fri, 09 Jul 2021 02:24:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwDDs/3crxV8R4sxhCWt0V09XDArwN4UwXG2P9xer0we+T7bW0lP7ZWheySa024sJYcbNmN9Q==
+X-Received: by 2002:a05:600c:3644:: with SMTP id y4mr10822184wmq.85.1625822682905;
+        Fri, 09 Jul 2021 02:24:42 -0700 (PDT)
+Received: from [192.168.3.211] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id t22sm4497799wmi.22.2021.07.09.02.24.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Jul 2021 02:24:42 -0700 (PDT)
+To:     Mark Greer <mgreer@animalcreek.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org
+References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
+ <961dc9c5-0eb0-586c-5e70-b21ca2f8e6f3@linaro.org>
+ <d498c949-3b1e-edaa-81ed-60573cfb6ee9@canonical.com>
+ <20210512164952.GA222094@animalcreek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [linux-nfc] Re: [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof
+ Kozlowski as maintainer
+Message-ID: <df2ec154-79fa-af7b-d337-913ed4a0692e@canonical.com>
+Date:   Fri, 9 Jul 2021 11:24:41 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <cover.1625818825.git.vvs@virtuozzo.com>
+In-Reply-To: <20210512164952.GA222094@animalcreek.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commonly used dereferences was replaced by variables.
+On 12/05/2021 18:49, Mark Greer wrote:
+> On Wed, May 12, 2021 at 11:43:13AM -0400, Krzysztof Kozlowski wrote:
+>> On 12/05/2021 11:11, Daniel Lezcano wrote:
+>>> On 12/05/2021 16:43, Krzysztof Kozlowski wrote:
+>>>> The NFC subsystem is orphaned.  I am happy to spend some cycles to
+>>>> review the patches, send pull requests and in general keep the NFC
+>>>> subsystem running.
+>>>>
+>>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>>>>
+>>>> ---
+>>>>
+>>>> I admit I don't have big experience in NFC part but this will be nice
+>>>> opportunity to learn something new. 
+>>>
+>>> NFC has been lost in the limbos since a while. Good to see someone
+>>> volunteering to take care of it.
+>>>
+>>> May I suggest to create a simple nfc reading program in the 'tools'
+>>> directory (could be a training exercise ;)
+>>>
+>>
+>> Noted, thanks. I also need to get a simple hardware dongle for this....
+> 
+> Krzysztof, the NFC portion of the kernel has a counterpart in userspace
+> called neard.  I'm supposed to be maintaining it but I have next to no
+> time to do so.  If you have spare cycles, any help would be appreciated.
+> 
+> Anyway, in neard, there are some simple test scripts (python2 - I/we need
+> to update to python3).  The current home of neard is:
+> 
+> git://git.kernel.org/pub/scm/network/nfc/neard.git
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/ipv6/ip6_output.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+I guess none of us have problem of too much spare time :), so it took me
+a while before I looked at neard.
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 9ae3baa..5e33429 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -273,6 +273,8 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 	const struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct in6_addr *first_hop = &fl6->daddr;
- 	struct dst_entry *dst = skb_dst(skb);
-+	struct net_device *dev = dst->dev;
-+	struct inet6_dev *idev = ip6_dst_idev(dst);
- 	unsigned int head_room;
- 	struct ipv6hdr *hdr;
- 	u8  proto = fl6->flowi6_proto;
-@@ -280,7 +282,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 	int delta, hlimit = -1;
- 	u32 mtu;
- 
--	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dst->dev);
-+	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
- 	if (opt)
- 		head_room += opt->opt_nflen + opt->opt_flen;
- 
-@@ -288,8 +290,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 	if (unlikely(delta > 0)) {
- 		skb = skb_expand_head(skb, delta);
- 		if (!skb) {
--			IP6_INC_STATS(net, ip6_dst_idev(dst),
--				      IPSTATS_MIB_OUTDISCARDS);
-+			IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTDISCARDS);
- 			return -ENOBUFS;
- 		}
- 	}
-@@ -333,8 +334,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 
- 	mtu = dst_mtu(dst);
- 	if ((skb->len <= mtu) || skb->ignore_df || skb_is_gso(skb)) {
--		IP6_UPD_PO_STATS(net, ip6_dst_idev(skb_dst(skb)),
--			      IPSTATS_MIB_OUT, skb->len);
-+		IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_OUT, skb->len);
- 
- 		/* if egress device is enslaved to an L3 master device pass the
- 		 * skb to its handler for processing
-@@ -347,17 +347,17 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
- 		 * we promote our socket to non const
- 		 */
- 		return NF_HOOK(NFPROTO_IPV6, NF_INET_LOCAL_OUT,
--			       net, (struct sock *)sk, skb, NULL, dst->dev,
-+			       net, (struct sock *)sk, skb, NULL, dev,
- 			       dst_output);
- 	}
- 
--	skb->dev = dst->dev;
-+	skb->dev = dev;
- 	/* ipv6_local_error() does not require socket lock,
- 	 * we promote our socket to non const
- 	 */
- 	ipv6_local_error((struct sock *)sk, EMSGSIZE, fl6, mtu);
- 
--	IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)), IPSTATS_MIB_FRAGFAILS);
-+	IP6_INC_STATS(net, idev, IPSTATS_MIB_FRAGFAILS);
- 	kfree_skb(skb);
- 	return -EMSGSIZE;
- }
--- 
-1.8.3.1
+With newer Gcc, neard did not even compile (which I am fixing now). I
+set up a fork:
+https://github.com/krzk/neard
+However I can give early disclaimer - playing with GLib userspace code
+is not something I am in long term interested. If this was written in
+Rust, would be different story. :)
 
+I also configured basic CI (or rather continuous building):
+https://github.com/krzk/neard/actions/runs/1014641944
+
+However I still do not have proper testing setup. No hardware. Would be
+nice if Samsung. ST, NXP or Intel could spare some development board
+with the NFC chip supported by kernel. Till then, I will try the NFC
+simulator and virtual NCI drivers.
+
+My next plan for neard is to extend the CI. There is no way I (or anyone
+else I believe) can keep good quality of releases without automated
+checks. I'll add some more distros, clang and later many some linters or
+cppcheck.
+
+
+Best regards,
+Krzysztof
