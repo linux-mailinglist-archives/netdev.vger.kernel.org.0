@@ -2,108 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 944603C2549
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 15:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E765E3C257B
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 16:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbhGIN4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 09:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52166 "EHLO
+        id S232082AbhGIOE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 10:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbhGIN4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 09:56:39 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEA6C0613DD
-        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 06:53:55 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id f17so12260179wrt.6
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 06:53:55 -0700 (PDT)
+        with ESMTP id S229499AbhGIOE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 10:04:57 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852F0C0613DD
+        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 07:02:14 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id y38so14805037ybi.1
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 07:02:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3D+gFfo5p6RDWb5yI0TJMiYcrkwxYsjy7kxukfHMzOQ=;
-        b=avg1C8uH27xW3nu845uw6mQFD3qdUmoHDm+r3k7/i4d3aARgzqiTNgPDModyw8cvpE
-         X2X2dwRL+IslWUrbd2518TNPYMILsnbFlH9ByQ/ctK6H8Oya1ZBVqP1B0Lai+Y2M4Obe
-         FkbarqsSoVYao7By9Jv1/0ECDXX1c9Otq2Yl4BTLvKJX9yZ4yix/tAOiawh+p7fnJwMZ
-         RVjVm2CfRKITJvnCsxq/w9Rd1iv5P+IVwYNX867ttm/5wYQ/jdE6CyzAtiD1UPAo3n4T
-         zLuhyKULv+aMeUSX7x8hDAdrP7b8PfE9zX3mNRiusgbGRNIZrBNYBTW/7Ejj8XKtU57q
-         iH0g==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WkW6fDyOZ+4zhT7qRRc0K4+EnrxH2x0ieuIpUvkKl9Y=;
+        b=ZYpz3yp7Tr8GkYHNRZNhqiyEb2Gv0LV0qxgEQTFV4OQIac4tfbmCyr1nWx5aR6HzXi
+         P5QcJOPda9mDJP3Ox8s/oEUJi3IYKoOOKZcNsHxXQUKn6S7xnNcTpAJVUvP1Qoq03mVP
+         m7dCoSOkKItgBkuhdx4UJ4jX4PcyzVf2zOoZLd0NeJEpP+gL9V0y3IlAbXe3JLonO6yC
+         /L22JKE7Y2p/No33YwmS1L2J2+Y+cr8l38ySz2rIqeECDh56yJLcz7r9MTxBCEef4D0/
+         +98QVGbYVh2sBexHovnSgl7kIw9dboAtRKahxlurTqqnJB3rkyqhcBmTsgKDfF/dKswP
+         khJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3D+gFfo5p6RDWb5yI0TJMiYcrkwxYsjy7kxukfHMzOQ=;
-        b=FKHbYHd1KK/1jwxsT/lAL+CFWYwA/MycXSIzxwOjlurMDaiu5m/cX0IU0Nlm5tNlg4
-         X67ONz124wtOwT6ctHG/94Jgp8KwCI/DtECrYLBJbUT+rfcCDN16I33Vco3W3wzLWQBq
-         M4xUKP4csOcadZ0JxEEVvvHCjE2WsJq5K/1rZplNp8/8A+pCBPR8Z83gNO05XGyuEK/n
-         k+lGMbzSVYIe2q3AGC8KjDbvH1vcvdB/3UQa14XX8JiJrMt2v8SNJX4a0Ouu//So17FW
-         6w/pUUDsDnipuD7S5GZM8dC8/bTON2aSsBMT5gvwyzNJ1SXfFIHPYsK8zgBf/XhkE43U
-         vrPA==
-X-Gm-Message-State: AOAM531NKfspT8R0nJtUY8+byhiHNSu7Is1di2EuSfpDgozZAtq+2OWY
-        ed7D22nK3ee+bzXRP1wp1e5PQgA+MZC8DA==
-X-Google-Smtp-Source: ABdhPJzOjEj/a25sdCwylej3QO5tL2mxCSu+yGaHKLi8q+KBcxj9eDZvzq9DUBWMEh9/E4SIl4c3VA==
-X-Received: by 2002:a05:6000:12c7:: with SMTP id l7mr40063396wrx.177.1625838833886;
-        Fri, 09 Jul 2021 06:53:53 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id b20sm5111392wmj.7.2021.07.09.06.53.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Jul 2021 06:53:53 -0700 (PDT)
-Subject: Re: [PATCH v2 2/3] sfc: revert "adjust efx->xdp_tx_queue_count with
- the real number of initialized queues"
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        habetsm.xilinx@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        ivan@cloudflare.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org
-References: <20210707081642.95365-1-ihuguet@redhat.com>
- <20210709125520.39001-1-ihuguet@redhat.com>
- <20210709125520.39001-3-ihuguet@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <4d8a691f-b447-8dbb-08a9-9dd8ca38e703@gmail.com>
-Date:   Fri, 9 Jul 2021 14:53:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WkW6fDyOZ+4zhT7qRRc0K4+EnrxH2x0ieuIpUvkKl9Y=;
+        b=qUoa4mK+g4t1IhdEoOJrYEzwkl8Q7wxEiy7eqrlsLvOlWtecWXWW1He/l1d6pEpnhQ
+         Mr3jx6CSwiZPjk4A1BlSsrVtJloX8jlphVPDONLT8rbndDZrReymsVV9++YLoKVodrPt
+         Wx3JKUiirRAXwXDZ7u6YizESf+2oHIziXozIQ56GDBBMnZ0gRUzHb4P0yyR1Z+opXekm
+         jFJ6TKbLwlVWQpt6coMNWnEd6VuQmBvWMBjdyQ7J/FbheJL2+0IPuyd5/CeGHbwmFVRC
+         WB90f7vipSaND67nIkmgd+8jiWYDMLyjGxrqMCQ4MbKErfraINgZXVXjjDegGFoRV7Im
+         OSGg==
+X-Gm-Message-State: AOAM533j8mqlFJaVX8TQWq/XF/1vMi4yksHaTEv8JrrMZo4WfEdJk3oG
+        NXfOvleV3jOMJK93a8iQy8+sX8+evsmEIlPdGSiljQ==
+X-Google-Smtp-Source: ABdhPJyoPdrlcPUMf6cNewrJXFDfeZJwVMKkMukMlY1e5R34QBOHvxYLK5v440hEnU71qfWEaa2n5V6u60yX0Xen6ts=
+X-Received: by 2002:a25:afcd:: with SMTP id d13mr45655105ybj.504.1625839333205;
+ Fri, 09 Jul 2021 07:02:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210709125520.39001-3-ihuguet@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <20210709123512.6853-1-ovov@yandex-team.ru>
+In-Reply-To: <20210709123512.6853-1-ovov@yandex-team.ru>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 9 Jul 2021 16:02:02 +0200
+Message-ID: <CANn89iL=3VegNxgVqDz3OgbfjGPMmeLRgFTZqEKFrByqXotX1g@mail.gmail.com>
+Subject: Re: [PATCH] net: send SYNACK packet with accepted fwmark
+To:     Alexander Ovechkin <ovov@yandex-team.ru>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, zeil@yandex-team.ru
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/07/2021 13:55, Íñigo Huguet wrote:
-> This reverts commit 99ba0ea616aa ("sfc: adjust efx->xdp_tx_queue_count
-> with the real number of initialized queues"). It intended to fix a
-> problem caused by a round up when calculating the number of XDP channels
-> and queues.
-> 
-> However, that was not the real problem. The real problem was that the
-> number of XDP TX queues created had been reduced to half in
-> commit e26ca4b53582 ("sfc: reduce the number of requested xdp ev queues"),
-> but the variable xdp_tx_queue_count had remained the same.
-> 
-> After reverting that commit in the previous patch of this series, this
-> also can be reverted since the error doesn't actually exist.
-> 
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+On Fri, Jul 9, 2021 at 2:35 PM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
+>
+> commit e05a90ec9e16 ("net: reflect mark on tcp syn ack packets")
+> fixed IPv4 only.
+>
+> This part is for the IPv6 side.
+>
+> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
+> Acked-by: Dmitry Yakunin <zeil@yandex-team.ru>
+
+Please add a standard tool-friendly Fixes: tag.
+
+Fixes: e05a90ec9e16 ("net: reflect mark on tcp syn ack packets")
+
 > ---
->  drivers/net/ethernet/sfc/efx_channels.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-> index 5b71f8a03a6d..e25c8f9d9ff4 100644
-> --- a/drivers/net/ethernet/sfc/efx_channels.c
-> +++ b/drivers/net/ethernet/sfc/efx_channels.c
-> @@ -915,8 +915,6 @@ int efx_set_channels(struct efx_nic *efx)
->  			}
->  		}
->  	}
-> -	if (xdp_queue_number)
-> -		efx->xdp_tx_queue_count = xdp_queue_number;
->  
+>  net/ipv6/tcp_ipv6.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> index 323989927a0a..0ce52d46e4f8 100644
+> --- a/net/ipv6/tcp_ipv6.c
+> +++ b/net/ipv6/tcp_ipv6.c
+> @@ -555,7 +555,7 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
+>                 opt = ireq->ipv6_opt;
+>                 if (!opt)
+>                         opt = rcu_dereference(np->opt);
+> -               err = ip6_xmit(sk, skb, fl6, sk->sk_mark, opt,
+> +               err = ip6_xmit(sk, skb, fl6, skb->mark ? : sk->sk_mark, opt,
+>                                tclass, sk->sk_priority);
+>                 rcu_read_unlock();
+>                 err = net_xmit_eval(err);
+> --
+> 2.17.1
+>
 
-Probably best to add in a WARN_ON[_ONCE] here to catch if these ever
- aren't already equal.  Or at least a netif_warn().
+ip6_xmit() overwrites skb->mark with its 4th argument, while
+ip_build_and_send_pkt()
+does the write if skb->mark is zero, so your patch seems fine to me, thanks.
 
--ed
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
