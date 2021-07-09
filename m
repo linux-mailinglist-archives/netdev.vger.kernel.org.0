@@ -2,133 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D533C1F89
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 08:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E90C3C1FCC
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 09:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbhGIGrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 02:47:14 -0400
-Received: from mout.gmx.net ([212.227.17.21]:46219 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231142AbhGIGrN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 02:47:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1625813029;
-        bh=vVAyzRrCSPuou7O8fmRuvcyN2SCr1akeu8W447VEfas=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=fr5BxgNYHXy8VM1OG43PPmyNVp/5Md7QYnwor0mUWd1HOEC0/FYGXAjLVXEd5pOiJ
-         UZ890ILtyzWhAyhR2gcHucpaVnCBXwngmVXQyReH2TF72VXiwfS47uZP7rMBPvd9WI
-         gbyoQF7VIFHVu7I79d7oxfr9oFWxs8Zp1qd3oNLo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.158.163]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M4s0t-1lzpMR3Nqh-001vwS; Fri, 09
- Jul 2021 08:43:48 +0200
-Subject: Re: [PATCH] drivers: Follow the indentation coding standard on
- printks
-To:     Rolf Eike Beer <eike-kernel@sf-tec.de>, gregkh@linuxfoundation.org,
-        Carlos Bilbao <bilbao@vt.edu>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <2784471.e9J7NaK4W3@iron-maiden>
- <2148456.iZASKD2KPV@daneel.sf-tec.de>
-From:   Helge Deller <deller@gmx.de>
-Message-ID: <6ce9de29-2669-deb5-ea0e-895992240bea@gmx.de>
-Date:   Fri, 9 Jul 2021 08:43:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230507AbhGIHDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 03:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229954AbhGIHDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 03:03:13 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA1CC0613DD;
+        Fri,  9 Jul 2021 00:00:30 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id c28so20781159lfp.11;
+        Fri, 09 Jul 2021 00:00:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UMuCvwIEyC2/SQfkOhMDs6Rgn07ioKFQMFhgb6LDuUk=;
+        b=bfYFMG6telRFvQWphNcx50h6aUNzvO7reACm8NSchtbMdoSp749e4XXqg4tpzflU6O
+         +oUomqRSz81MYkbhPraMPLo8RwIa20XZdJUa13+d0SHCVPiXpjqhrW/fu7cc72dRZ20x
+         bU6yBj0e1gJvs9vc874M3FV28rUWyzh/ANXfaNNS6CTr9KsQnGZnfDxwmDKz9VAx+279
+         cupj7pO8fRjCHnwywElMRkXuVLGmw4+UYvpwjYSEf7rPowbkjxyLGAoobpMbWs4AA+S2
+         DFebUY1j4YmPTJC55JlFoKGOs549ZhqexaByB+YBuTfOTqt0HuT1b+vt06ty0kpqZjFj
+         UEzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UMuCvwIEyC2/SQfkOhMDs6Rgn07ioKFQMFhgb6LDuUk=;
+        b=dpJEkXo23Zp843VlVMlgqMP4U3n9fk0JczpLRCgP3tMYQacJmYYHxpxrka74yUAFAv
+         y1Xdi1NpuBpaW0CBpxTagEeplugQFJk1yG4Qs3XnrHAPpEJvcnwW+vtSR5AethXckiD1
+         cDJypd0eVPV875rSeu8gMTYlNn0vajq9a37ZAhCOVf8O2FeZYpNIYwo1g8yC5e587hnl
+         mWLqfSLfMP3d9byPkeIft16Gqa5NfGDE28TmvTHT7I4TU/xypbiLl2V8c+BcE/GA6kKU
+         1iBR4wb/4osXcHiZ0cD45UTsnCdeC7bW19HsLhR4J8SgrnaLzwKZLVdIpayGQEENuq8n
+         9fOw==
+X-Gm-Message-State: AOAM533CHr5nKJDb/66aO/I9mAmDqhy4D+UQp8U00UKi7Bm00htq5bkH
+        FB5V4fhFlEmzQSd2i1OnuvG1Cxf72ouvLtvXZXw=
+X-Google-Smtp-Source: ABdhPJwxdWDFz/OQSnLV0gQ9tFMg7AvoBCqz6X4xk2DtvOu3ofKDTSgSijrutwMyOWzMq6Y5hdzrzEvvyzrNMUXrOfA=
+X-Received: by 2002:a19:5016:: with SMTP id e22mr24852606lfb.539.1625814027686;
+ Fri, 09 Jul 2021 00:00:27 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <2148456.iZASKD2KPV@daneel.sf-tec.de>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7dPUIMjRp2C2rFEX5BSD+HwTJsQVb/TG2TFwrk7tXcNW5j19Qlm
- bJWbeMS5Lro/lPgpvcSEiUeDr7PrJAL6WMwn+zlgl5kinZ8rQq8Qb7yTZf7pC5mM+uT8GFL
- 9woMuMqFfHIbBdRR47bPnO8g0U5t9VbAAU99Dm3DJ60DGabCQ9mcVr2Gi7OXZZEfnQLToAB
- ykwOZ1lbGsa0Z0knrflbA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:p2WCvwaIHB4=:kscVqtEG5RSPR7HjGOMCzr
- nhDBZT/vlA7xBPJ6/AEhg1p3uwSv8Gq8t/81aojwv1Dy+iSYaS7yNecE4KE0hFtsn1k3g32QA
- Zld9i8am6s7/tabMQSvJUpb9xoNc9NNpT5P+GYlqw90gfQ6GjCQkbtoXx++R64oHAKWVd4dTY
- 60ACFPSsBtY8Ta3dPaJsRmRfaa8POQeiUtWaTARpblq03aXVX2Z+fw+w3R7Ej3p3UlB8KT8IX
- T84aHD1m8xd4bG5sQjStS3KfYF+WPtTDpu7PUFqxoXDNfndjRBgCvhW/+bDiBSWzCtqQlFT7x
- EODpV6WAAKqi2p7+32+RIE9ytRxZ/ji+Fl6ERthzFEYBQP7v2IPktJgkZ0YyGE8FYphqx8GAN
- joqdc1LP9gwQ9OLo2MiKB8i7KH7tzIb+gRTufz+69xihngcznokbqIGUxhKHmV0nkoWPyI9Jn
- esq/M9kqtYaP08BNV9MmP3HE4O5iF/4b9oJxbgW3OLclDBUoJlV8WGZLnoJKexWVM4FbPlCZ2
- N5GV19nqnG8IZesh+ec64m/X0UWfJrARLLlB9m/2NuyVnZF4MA8okQZzu4awD84hLZAVfuVlJ
- bIGPN5FJCqzSqjQEWu52G/yg3ks5sxn+pGgd9mngmNtv5/HXtZ2M+ptTraE3slylmMyd1GdJE
- zLBO0yDijnmmAQD9Dbo2XTK7jdA1c6x8S5SYzvNVXX/Kq8md2QV7S6r3v7Ezm31wRm1qpw0zg
- OyjEXitZ9mxZ+FyyBnJ4uZhbByC3OAFVE2d/TwFcDc1dRXKznmOgeOQjUIMDiN3zZkyoVFGtQ
- ldqZgzh4pHq+nyzpTsiv695LjcWSAZeXnRb52Cj0dQ7Ze9utyHo+3ZtuYrtjtOcb9ETiwaAJs
- 7d5ml85Xq0yI2MmpI55q/+86ftUirzf1NDU0GIahDsGHhDkS6PMIdjLW9ZvnsoKSO59EdtOEa
- XQP09S8NhxCswgXqTBDVsVLQdtPLxrHyXMzw/U56EjBw/1lCYV08i9Mxbz5bWFkpiukc8znJj
- mTG59tJC17DKkkDm5xAwIx1vvsV1+5tAYK/byxADjb/ErAs4RlPNtN42i6vhh8VoIKwyhx2gQ
- p+GGJGTlkbb7XkSrk2DR1V1/BObvg2zWwN7
+References: <20210708011833.67028-1-alexei.starovoitov@gmail.com>
+ <20210708011833.67028-5-alexei.starovoitov@gmail.com> <20210709015119.l5kxp5kao24bjft7@kafai-mbp.dhcp.thefacebook.com>
+ <20210709035223.s2ni6phkdajhdg2i@ast-mbp.dhcp.thefacebook.com> <20210709060442.55py42lmbwfzd4zx@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210709060442.55py42lmbwfzd4zx@kafai-mbp.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 9 Jul 2021 00:00:16 -0700
+Message-ID: <CAADnVQKUEsW8kF4iJP_RF07wX2z06wz9yJ1h-CY9si70XzhsDA@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 04/11] bpf: Add map side support for bpf timers.
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/8/21 11:25 PM, Rolf Eike Beer wrote:
-> Am Donnerstag, 8. Juli 2021, 15:10:01 CEST schrieb Carlos Bilbao:
->> Fix indentation of printks that start at the beginning of the line. Cha=
-nge
->> this for the right number of space characters, or tabs if the file uses
->> them.
-> [...]
->> --- a/drivers/parisc/iosapic.c
->> +++ b/drivers/parisc/iosapic.c
->> @@ -633,7 +633,7 @@ static void iosapic_unmask_irq(struct irq_data *d)
->>   	printk("\n");
->>   }
->>
->> -printk("iosapic_enable_irq(): sel ");
->> +	printk("iosapic_enable_irq(): sel ");
->>   {
->>   	struct iosapic_info *isp =3D vi->iosapic;
->>
->> @@ -642,7 +642,7 @@ printk("iosapic_enable_irq(): sel ");
->>   		printk(" %x", d1);
->>   	}
->>   }
->> -printk("\n");
->> +	printk("\n");
->>   #endif
->>
->>   	/*
+On Thu, Jul 8, 2021 at 11:04 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> This is also debug code. It is basically unchanged since it has been imp=
-orted
-> into git. So it may be time to remove the whole block. Helge?
-
-I'd prefer to clean it proper up and keep it.
-
-
->> diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
->> index dce4cdf786cd..c3381facdfc5 100644
->> --- a/drivers/parisc/sba_iommu.c
->> +++ b/drivers/parisc/sba_iommu.c
->> @@ -1550,7 +1550,7 @@ static void sba_hw_init(struct sba_device *sba_de=
-v)
->>
->>
->>   #if 0
->> -printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x 0x%x\n",
->> PAGE0->mem_boot.hpa,
->> +	printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x
->> 0x%x\n", PAGE0->mem_boot.hpa, PAGE0->mem_boot.spa, PAGE0->mem_boot.pad,
->> PAGE0->mem_boot.cl_class);
->>
->>   	/*
+> On Thu, Jul 08, 2021 at 08:52:23PM -0700, Alexei Starovoitov wrote:
+> > On Thu, Jul 08, 2021 at 06:51:19PM -0700, Martin KaFai Lau wrote:
+> > > > +
+> > > >  /* Called when map->refcnt goes to zero, either from workqueue or from syscall */
+> > > >  static void array_map_free(struct bpf_map *map)
+> > > >  {
+> > > > @@ -382,6 +402,7 @@ static void array_map_free(struct bpf_map *map)
+> > > >   if (array->map.map_type == BPF_MAP_TYPE_PERCPU_ARRAY)
+> > > >           bpf_array_free_percpu(array);
+> > > >
+> > > > + array_map_free_timers(map);
+> > > array_map_free() is called when map->refcnt reached 0.
+> > > By then, map->usercnt should have reached 0 before
+> > > and array_map_free_timers() should have already been called,
+> > > so no need to call it here again?  The same goes for hashtab.
+> >
+> > Not sure it's that simple.
+> > Currently map->usercnt > 0 check is done for bpf_timer_set_callback only,
+> > because prog refcnting is what matters to usercnt and map_release_uref scheme.
+> > bpf_map_init doesn't have this check because there is no circular dependency
+> > prog->map->timer->prog to worry about.
+> > So after usercnt reached zero the prog can still do bpf_timer_init.
+> Ah. right. missed the bpf_timer_init().
 >
-> This is equally old. It should be either also removed, also this seems a=
-t
-> least worth as documentation. Maybe just switch it to pr_debug() or
-> dev_debug() while fixing the indentation.
+> > I guess we can add usercnt > 0 to bpf_timer_init as well.
+> > Need to think whether it's enough and the race between atomic64_read(usercnt)
+> > and atomic64_dec_and_test(usercnt) is addressed the same way as the race
+> > in set_callback and cancel_and_free. So far looks like it. Hmm.
+> hmm... right, checking usercnt > 0 seems ok.
+> When usercnt is 0, it may be better to also error out instead of allocating
+> a timer that cannot be used.
+>
+> I was mostly thinking avoiding changes in map_free could make future map
+> support a little easier.
 
-Yes, I'll clean it up too.
+ok. let me try with usercnt>0 in bpf_timer_init.
 
-@Carlos:
-Instead of just removing or fixing the indentation, I'll fix it for both p=
-arisc
-drivers. Unless you want to try...
+> >
+> > >
+> > > > +static void htab_free_malloced_timers(struct bpf_htab *htab)
+> > > > +{
+> > > > + int i;
+> > > > +
+> > > > + rcu_read_lock();
+> > > > + for (i = 0; i < htab->n_buckets; i++) {
+> > > > +         struct hlist_nulls_head *head = select_bucket(htab, i);
+> > > > +         struct hlist_nulls_node *n;
+> > > > +         struct htab_elem *l;
+> > > > +
+> > > > +         hlist_nulls_for_each_entry(l, n, head, hash_node)
+> > > May be put rcu_read_lock/unlock() in the loop and do a
+> > > cond_resched() in case the hashtab is large.
+> Just recalled cond_resched_rcu() may be cleaner, like:
+>
+> static void htab_free_malloced_timers(struct bpf_htab *htab)
+> {
+>         int i;
+>
+>         rcu_read_lock();
+>         for (i = 0; i < htab->n_buckets; i++) {
+>                 /* ... */
+>                 hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+>                         check_and_free_timer(htab, l);
+>                 cond_resched_rcu();
 
-Helge
+ahh. I didn't know about this flavor. Will give it a shot.
+Thanks!
+
+>         }
+>         rcu_read_unlock();
+> }
+>
