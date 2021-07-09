@@ -2,108 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 901843C2771
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 18:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 156733C2774
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 18:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229552AbhGIQYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 12:24:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23038 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229503AbhGIQYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 12:24:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625847696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qCqb8bTRGuT8LGCi+wzELAIbJWNbd2rPSZggl5JyHx0=;
-        b=UEEyUab+eGNfPXEQ7Ja2nmf/Z/AV6fyBW2qGqFaD+p4YsN5mSzqyeWrduEGpDM6vQ6Szrv
-        CEN+OAcXrjKnhIQgeMhCYRGi6krdXgfz2BiVSBMfzJeNlBTOseWrNtk963IAp4yYnkdXRD
-        9bvp7Jf+K2c0hhdKQWsC3owqKhzQ2uU=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-82-_0rVV38VNlu1syWpqUbIZQ-1; Fri, 09 Jul 2021 12:21:35 -0400
-X-MC-Unique: _0rVV38VNlu1syWpqUbIZQ-1
-Received: by mail-wr1-f70.google.com with SMTP id l21-20020a0560000235b029013564642c78so3106554wrz.9
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 09:21:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qCqb8bTRGuT8LGCi+wzELAIbJWNbd2rPSZggl5JyHx0=;
-        b=oYVlKqgv0paK5g9OrFHAnYemDwXiv9/dskSgfhc5PpGijzJOOck/gC0Vmw1YyXcz+f
-         eUe2mOuWINjx2EXzT1QlP3uMpFCBulG/ERnQRHK8TNrURVgIJcPMxg8QEPQ3JK/bFjDw
-         CRkqcrjw2usSMX4k9URnBZbkMSI8XSIUwly8yZs2rmgjiauOG7Y/xMrYz9xHhEAuHVLr
-         wzeyZz3ONg1Hz3tryIZFff5SKm48Z39KBlCmCPnhWyT4ME95U05f5r/j/3cn6VGImWKM
-         ZW0JYRsTEDkG/7LWlyIKnphOyp9pZaIPmMS21NEMaviU02CKwT1GS8uRsXkpQOOb6xRp
-         1Hiw==
-X-Gm-Message-State: AOAM533ymByqxNk9VbXZSocDoEdI474nm+jpvq/AxUUy/i6pau2mEqV2
-        iYwVeFZT1FwWSAv+XYr15kNrN1OjvGZcekrVa98tr9WHFXPRik6JOHLfOTvjcv1+/px25dzs7Pr
-        laf/f+ol1v5eZDZEa
-X-Received: by 2002:a5d:48ce:: with SMTP id p14mr43466902wrs.170.1625847694132;
-        Fri, 09 Jul 2021 09:21:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJye42yT/aBj7wlNzCf44RwRUaVOBD9mUJ/ZZ0FDTF/Ti6W/DoEv+IapeCfhWJ7go9gkzn1itA==
-X-Received: by 2002:a5d:48ce:: with SMTP id p14mr43466885wrs.170.1625847693993;
-        Fri, 09 Jul 2021 09:21:33 -0700 (PDT)
-Received: from pc-23.home (2a01cb058d44a7001b6d03f4d258668b.ipv6.abo.wanadoo.fr. [2a01:cb05:8d44:a700:1b6d:3f4:d258:668b])
-        by smtp.gmail.com with ESMTPSA id s13sm1600606wrm.13.2021.07.09.09.21.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 09:21:33 -0700 (PDT)
-Date:   Fri, 9 Jul 2021 18:21:23 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH net-next 1/4] selftests: forwarding: Test redirecting gre
- or ipip packets to Ethernet
-Message-ID: <20210709162123.GB19430@pc-23.home>
-References: <cover.1625056665.git.gnault@redhat.com>
- <0a4e63cd3cde3c71cfc422a7f0f5e9bc76c0c1f5.1625056665.git.gnault@redhat.com>
- <YN1Wxm0mOFFhbuTl@shredder>
- <20210701145943.GA3933@pc-32.home>
- <1932a3af-2fdd-229a-e5f5-6b1ef95361e1@gmail.com>
- <20210706190253.GA23236@pc-32.home>
- <391b6a56-b7e0-867c-617e-a05afec50b24@gmail.com>
+        id S229563AbhGIQZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 12:25:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47912 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229459AbhGIQZK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 12:25:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=IulwG137wVcX3Stl/d7lPCKJt/r5YrKnAVS4QDuPt9U=; b=lnmrYeJU3WD3nSTpNb7ebS3BzF
+        NVmCFo/iXoOZ7H6sbN0yKT1E09SO1YFAxfGWTZ/4yJU3AFcJWz33eC3jd52tVu8p05UTocmxJoQRk
+        1mZoYmYzgn/wrcPmes2W5pifweLwh0OfPUd6d53D8T/jBgedpF0QNklAggQC8QhBVAEc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m1tGf-00CnFw-2x; Fri, 09 Jul 2021 18:22:21 +0200
+Date:   Fri, 9 Jul 2021 18:22:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: PHY reset may still be asserted during MDIO probe
+Message-ID: <YOh3vRYH923pckb9@lunn.ch>
+References: <CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <391b6a56-b7e0-867c-617e-a05afec50b24@gmail.com>
+In-Reply-To: <CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 07:50:38PM -0600, David Ahern wrote:
-> On 7/6/21 1:02 PM, Guillaume Nault wrote:
-> > --- a/drivers/net/vxlan.c
-> > +++ b/drivers/net/vxlan.c
-> > @@ -3767,8 +3767,7 @@ static int vxlan_config_validate(struct net *src_net, struct vxlan_config *conf,
-> >  		    (conf->flags & (VXLAN_F_RCV_FLAGS | VXLAN_F_IPV6)))
-> >  			continue;
-> >  
-> > -		if ((conf->flags & VXLAN_F_IPV6_LINKLOCAL) &&
-> > -		    tmp->cfg.remote_ifindex != conf->remote_ifindex)
-> > +		if (tmp->cfg.remote_ifindex != conf->remote_ifindex)
-> >  			continue;
-> >  
-> >  		NL_SET_ERR_MSG(extack,
+On Fri, Jul 09, 2021 at 05:33:36PM +0200, Geert Uytterhoeven wrote:
+> Hi all,
 > 
-> Looking at the vxlan driver and that restriction is unnecessary. While
-> IPv6 LLA requires a device index, allowing separate LINK attributes is a
-> legit use case - as VRF shows.
+> I'm investigating a network failure after kexec on the Renesas Koelsch
+> and Salvator-XS development boards, using the sh-eth or ravb driver.
+> 
+> During normal boot, the Ethernet interface is working fine:
+> 
+>     libphy: get_phy_c22_id:814: sh_mii: mdiobus_read() MII_PHYSID1 returned 34
+>     libphy: get_phy_c22_id:824: sh_mii: mdiobus_read() MII_PHYSID2 returned 5431
+>     libphy: get_phy_c22_id:832: sh_mii: phy_id = 0x00221537
+>     libphy: get_phy_device:895: sh_mii: get_phy_c22_id() returned 0
+>     fwnode_mdiobus_register_phy:109: sh_mii: get_phy_device() returned (ptrval)
+>     fwnode_mdiobus_phy_device_register:46: sh_mii: fwnode_irq_get() returned 191
+>     libphy: mdiobus_register_gpiod:48: mdiodev->reset_gpio = (ptrval)
+>     mdio_bus ee700000.ethernet-ffffffff:01:
+> mdiobus_register_device:88: assert MDIO reset
+>     libphy: mdio_device_reset:124: calling gpiod_set_value_cansleep(..., 1)
+>     mdio_bus ee700000.ethernet-ffffffff:01: phy_device_register:931:
+> deassert PHY reset
+>     libphy: mdio_device_reset:124: calling gpiod_set_value_cansleep(..., 0)
+>     Micrel KSZ8041RNLI ee700000.ethernet-ffffffff:01: phy_probe:3026:
+> deassert PHY reset
+>     libphy: mdio_device_reset:124: calling gpiod_set_value_cansleep(..., 0)
+>     fwnode_mdiobus_phy_device_register:75: sh_mii:
+> phy_device_register() returned 0
+>     fwnode_mdiobus_register_phy:137: sh_mii:
+> fwnode_mdiobus_phy_device_register() returned 0
+>     of_mdiobus_register:188: of_mdiobus_register_phy(sh_mii,
+> /soc/ethernet@ee700000/ethernet-phy@1, 1) returned 0
+>     sh-eth ee700000.ethernet eth0: Base address at 0xee700000,
+> 2e:09:0a:00:6d:85, IRQ 126.
+> 
+> When using kexec, the PHY reset is asserted before starting the
+> new kernel:
+> 
+>     Micrel KSZ8041RNLI ee700000.ethernet-ffffffff:01: phy_detach:1759:
+> assert PHY reset
+>     libphy: mdio_device_reset:124: calling gpiod_set_value_cansleep(..., 1)
+>     kexec_core: Starting new kernel
+>     Bye!
+> 
+> The new kernel fails to probe the PHY, as the PHY reset is still
+> asserted:
+> 
+>     libphy: get_phy_c22_id:814: sh_mii: mdiobus_read() MII_PHYSID1
+> returned 65535
+>     libphy: get_phy_c22_id:824: sh_mii: mdiobus_read() MII_PHYSID2
+> returned 65535
 
-I believe there's more to do than just my quick hack patch. At least
-vxlan_vs_find_vni() probably needs to be modified too. At which point
-VXLAN_F_IPV6_LINKLOCAL would become essentially unused and should be
-removed.
+The per PHY reset is historically 'interesting'. It makes the
+assumption the PHY can be detected when in reset, because the PHY it
+was added for could be detected when in reset. And it turns out to be,
+most PHYs cannot be detected when held in reset.
 
-> Do you want to send a formal patch to fix this one since you have it
-> diagnosed?
+The simple solution is to make use of the MDIO bus reset property, as
+Russell suggested. If you don't want to do that, you need to put the
+PHY ID into DT. The core will then skip scanning the bus for the PHY,
+and go straight to instantiating the PHY, and then it should be
+brought out of reset.
 
-I'll work on that after net-next reopens. I might try to make bareudp
-compatible with VRF too, if time allows. If I get at least VXLAN and
-bareudp to work in a multi-VRF setup, then I'll rebase the selftests on
-the VRF infrastructure (and just remove the tests for tunnels still
-incompatible with this setup).
-
+	Andrew
