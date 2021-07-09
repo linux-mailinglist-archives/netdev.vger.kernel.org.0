@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B36AD3C23C5
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 14:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11DFC3C23C6
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 14:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbhGIM6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 08:58:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51792 "EHLO
+        id S231543AbhGIM6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 08:58:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49035 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229671AbhGIM6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 08:58:32 -0400
+        by vger.kernel.org with ESMTP id S229671AbhGIM6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 08:58:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625835348;
+        s=mimecast20190719; t=1625835358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yFfdGC6Oeg7LSbwIRyyh03s9uKTlbokVcLTyEfN1qik=;
-        b=UVhMxpa+/kN9E3kqCzM1YDwDPlQZHmJNU/zf53A/H5g1w+Nc0+62oo9arozmGuzIY6AbUP
-        DbnMzdQFEbA5tqyRLyAEnUu7Py8cH9PhMNWfATeMJAvgNy3g78dfKvQxoDI0Qmge0H6oTO
-        q/5/Nhsn/cPQfdMy8iOV7mrl4TQJdPs=
+        bh=cGDwobnrbpLC4pDhNpbm4TIrRgFq4Gv1yUsaX2+7VxU=;
+        b=A+R8KTH0/vRcQMtCOzO0c5DuGtd9nSg+BkoAvYF13uwcMCgVwYQlzwTx6LHpYybyVDc4Mv
+        WeTRjUEMZoS9lvo8JXK/MJ+sktNWjDAP5TMUpEiwgZzzh3O6M5vMTt3AEKA/hdodCB5uXz
+        sC+oKA/GoCLus+ID4V4zbUq4zxok8vI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-537-re_LSJV6PGOqLivn4jYxbg-1; Fri, 09 Jul 2021 08:55:47 -0400
-X-MC-Unique: re_LSJV6PGOqLivn4jYxbg-1
+ us-mta-441-MWlt0K4lMXmnMPLMFF4HeQ-1; Fri, 09 Jul 2021 08:55:55 -0400
+X-MC-Unique: MWlt0K4lMXmnMPLMFF4HeQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA49D659;
-        Fri,  9 Jul 2021 12:55:45 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6235E100C671;
+        Fri,  9 Jul 2021 12:55:53 +0000 (UTC)
 Received: from localhost.localdomain (ovpn-113-77.ams2.redhat.com [10.36.113.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2633B369A;
-        Fri,  9 Jul 2021 12:55:40 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5017D369A;
+        Fri,  9 Jul 2021 12:55:48 +0000 (UTC)
 From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
 To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
         davem@davemloft.net, kuba@kernel.org, ivan@cloudflare.com
 Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
         john.fastabend@gmail.com, netdev@vger.kernel.org,
         ihuguet@redhat.com
-Subject: [PATCH v2 1/3] sfc: fix lack of XDP TX queues - error XDP TX failed (-22)
-Date:   Fri,  9 Jul 2021 14:55:18 +0200
-Message-Id: <20210709125520.39001-2-ihuguet@redhat.com>
+Subject: [PATCH v2 2/3] sfc: revert "adjust efx->xdp_tx_queue_count with the real number of initialized queues"
+Date:   Fri,  9 Jul 2021 14:55:19 +0200
+Message-Id: <20210709125520.39001-3-ihuguet@redhat.com>
 In-Reply-To: <20210709125520.39001-1-ihuguet@redhat.com>
 References: <20210707081642.95365-1-ihuguet@redhat.com>
  <20210709125520.39001-1-ihuguet@redhat.com>
@@ -53,90 +53,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes: e26ca4b53582 sfc: reduce the number of requested xdp ev queues
+This reverts commit 99ba0ea616aa ("sfc: adjust efx->xdp_tx_queue_count
+with the real number of initialized queues"). It intended to fix a
+problem caused by a round up when calculating the number of XDP channels
+and queues.
 
-The buggy commit intended to allocate less channels for XDP in order to
-be more unlikely to reach the limit of 32 channels of the driver.
+However, that was not the real problem. The real problem was that the
+number of XDP TX queues created had been reduced to half in
+commit e26ca4b53582 ("sfc: reduce the number of requested xdp ev queues"),
+but the variable xdp_tx_queue_count had remained the same.
 
-The idea was to use each IRQ/eventqeue for more XDP TX queues than
-before, calculating which is the maximum number of TX queues that one
-event queue can handle. For example, in EF10 each event queue could
-handle up to 8 queues, better than the 4 they were handling before the
-change. This way, it would have to allocate half of channels than before
-for XDP TX.
-
-The problem is that the TX queues are also contained inside the channel
-structs, and there are only 4 queues per channel. Reducing the number of
-channels means also reducing the number of queues, resulting in not
-having the desired number of 1 queue per CPU.
-
-This leads to getting errors on XDP_TX and XDP_REDIRECT if they're
-executed from a high numbered CPU, because there only exist queues for
-the low half of CPUs, actually. If XDP_TX/REDIRECT is executed in a low
-numbered CPU, the error doesn't happen. This is the error in the logs
-(repeated many times, even rate limited):
-sfc 0000:5e:00.0 ens3f0np0: XDP TX failed (-22)
-
-This errors happens in function efx_xdp_tx_buffers, where it expects to
-have a dedicated XDP TX queue per CPU.
-
-Reverting the change makes again more likely to reach the limit of 32
-channels in machines with many CPUs. If this happen, no XDP_TX/REDIRECT
-will be possible at all, and we will have this log error messages:
-
-At interface probe:
-sfc 0000:5e:00.0: Insufficient resources for 12 XDP event queues (24 other channels, max 32)
-
-At every subsequent XDP_TX/REDIRECT failure, rate limited:
-sfc 0000:5e:00.0 ens3f0np0: XDP TX failed (-22)
-
-However, without reverting the change, it makes the user to think that
-everything is OK at probe time, but later it fails in an unpredictable
-way, depending on the CPU that handles the packet.
-
-It is better to restore the predictable behaviour. If the user sees the
-error message at probe time, he/she can try to configure the best way it
-fits his/her needs. At least, he/she will have 2 options:
-- Accept that XDP_TX/REDIRECT is not available (he/she may not need it)
-- Load sfc module with modparam 'rss_cpus' with a lower number, thus
-  creating less normal RX queues/channels, letting more free resources
-  for XDP, with some performance penalty.
-
-Anyway, let the calculation of maximum TX queues that can be handled by
-a single event queue, and use it only if it's less than the number of TX
-queues per channel. This doesn't happen in practice, but could happen if
-some constant values are tweaked in the future, such us
-EFX_MAX_TXQ_PER_CHANNEL, EFX_MAX_EVQ_SIZE or EFX_MAX_DMAQ_SIZE.
-
-Related mailing list thread:
-https://lore.kernel.org/bpf/20201215104327.2be76156@carbon/
+After reverting that commit in the previous patch of this series, this
+also can be reverted since the error doesn't actually exist.
 
 Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
 ---
- drivers/net/ethernet/sfc/efx_channels.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/efx_channels.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index a3ca406a3561..5b71f8a03a6d 100644
+index 5b71f8a03a6d..e25c8f9d9ff4 100644
 --- a/drivers/net/ethernet/sfc/efx_channels.c
 +++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -152,6 +152,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 	 * maximum size.
- 	 */
- 	tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
-+	tx_per_ev = min(tx_per_ev, EFX_MAX_TXQ_PER_CHANNEL);
- 	n_xdp_tx = num_possible_cpus();
- 	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
+@@ -915,8 +915,6 @@ int efx_set_channels(struct efx_nic *efx)
+ 			}
+ 		}
+ 	}
+-	if (xdp_queue_number)
+-		efx->xdp_tx_queue_count = xdp_queue_number;
  
-@@ -181,7 +182,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 		efx->xdp_tx_queue_count = 0;
- 	} else {
- 		efx->n_xdp_channels = n_xdp_ev;
--		efx->xdp_tx_per_channel = EFX_MAX_TXQ_PER_CHANNEL;
-+		efx->xdp_tx_per_channel = tx_per_ev;
- 		efx->xdp_tx_queue_count = n_xdp_tx;
- 		n_channels += n_xdp_ev;
- 		netif_dbg(efx, drv, efx->net_dev,
+ 	rc = netif_set_real_num_tx_queues(efx->net_dev, efx->n_tx_channels);
+ 	if (rc)
 -- 
 2.31.1
 
