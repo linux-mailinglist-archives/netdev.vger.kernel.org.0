@@ -2,83 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BC73C2223
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 12:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C6C13C2225
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 12:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhGIKYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 06:24:21 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:11242 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbhGIKYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 06:24:20 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GLpw41Crmz1CGwK;
-        Fri,  9 Jul 2021 18:16:04 +0800 (CST)
-Received: from dggpemm500008.china.huawei.com (7.185.36.136) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 9 Jul 2021 18:21:35 +0800
-Received: from localhost (10.174.242.204) by dggpemm500008.china.huawei.com
- (7.185.36.136) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 9 Jul 2021
- 18:21:35 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <mst@redhat.com>, <jasowang@redhat.com>,
-        <dingxiaoxiong@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net-next] virtio_net: check virtqueue_add_sgs() return value
-Date:   Fri, 9 Jul 2021 18:21:31 +0800
-Message-ID: <1625826091-42668-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S232138AbhGIKYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 06:24:40 -0400
+Received: from mail.zx2c4.com ([104.131.123.232]:53672 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232010AbhGIKYk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 06:24:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1625826113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7dR0/VUJHKDLRMz9yU5Zdn5RWQOxI+Wc0vq05RWjQvE=;
+        b=SvQ1Je064yhDKpHtC+rohJT39TVuxD85wqjML8PO3gxEcEu4/YVvk3iaUzENwcWcM5wqDH
+        thvwKk3BjAVh7F3FOpUHcQhDhnWXtVUhiWZl/AB9a/0FYWH9OU9sN96yOgwmH9E5N6HbE3
+        GTlcQVkPe26jsPPQ4IgmztdiwLeX+Qk=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9f8613a4 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 9 Jul 2021 10:21:53 +0000 (UTC)
+Received: by mail-yb1-f182.google.com with SMTP id i4so13900066ybe.2;
+        Fri, 09 Jul 2021 03:21:53 -0700 (PDT)
+X-Gm-Message-State: AOAM530r+Kr7cH0AcFJCCo1ELnziOet3mR32TnCgFpMWwWlssorqRFGU
+        rSp34naIb2vZUICKFFSYJZuEy4hw4D463fHCJwM=
+X-Google-Smtp-Source: ABdhPJw3hLruA2qeePGLKBjcD2sa6DYSkDPQlzvvzUhZwIUmRBHDfkI+Q8Yxy6ibaOCC6j/KSgkkwr+titsIhBFR4BE=
+X-Received: by 2002:a25:b684:: with SMTP id s4mr45457481ybj.178.1625826110246;
+ Fri, 09 Jul 2021 03:21:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.242.204]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500008.china.huawei.com (7.185.36.136)
-X-CFilter-Loop: Reflected
+References: <20210709021747.32737-1-rdunlap@infradead.org> <20210709021747.32737-7-rdunlap@infradead.org>
+In-Reply-To: <20210709021747.32737-7-rdunlap@infradead.org>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 9 Jul 2021 12:21:39 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rUJndFC-6KAxGL3w6Ka4WgyP_m5DS+1_vuHdQowonSOg@mail.gmail.com>
+Message-ID: <CAHmME9rUJndFC-6KAxGL3w6Ka4WgyP_m5DS+1_vuHdQowonSOg@mail.gmail.com>
+Subject: Re: [PATCH 6/6] net: wireguard: rename 'mod_init' & 'mod_exit'
+ functions to be module-specific
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andres Salomon <dilinger@queued.net>,
+        linux-geode@lists.infradead.org, Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Christian Gromm <christian.gromm@microchip.com>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>, linux-x25@vger.kernel.org,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+Hi Randy,
 
-As virtqueue_add_sgs() can fail, we should check the return value.
+The commit subject line should be:
 
-Addresses-Coverity-ID: 1464439 ("Unchecked return value")
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
-v2:
-  add warn log and remove fix tag
----
- drivers/net/virtio_net.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+wireguard: main: rename 'mod_init' & 'mod_exit' functions to be module-specific
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index b0b81458ca94..30a0ca2fef1a 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -1743,6 +1743,7 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
- {
- 	struct scatterlist *sgs[4], hdr, stat;
- 	unsigned out_num = 0, tmp;
-+	int ret;
- 
- 	/* Caller should know better */
- 	BUG_ON(!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_VQ));
-@@ -1762,7 +1763,12 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
- 	sgs[out_num] = &stat;
- 
- 	BUG_ON(out_num + 1 > ARRAY_SIZE(sgs));
--	virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
-+	ret = virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
-+	if (ret < 0) {
-+		dev_warn(&vi->vdev->dev,
-+			 "Failed to add sgs for vq: %d\n.", ret);
-+		return false;
-+	}
- 
- 	if (unlikely(!virtqueue_kick(vi->cvq)))
- 		return vi->ctrl->status == VIRTIO_NET_OK;
--- 
-2.23.0
+And:
 
+On Fri, Jul 9, 2021 at 4:17 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+> -static int __init mod_init(void)
+> +static int __init wireguard_init(void)
+
+wg_mod_init
+
+> -static void __exit mod_exit(void)
+> +static void __exit wireguard_exit(void)
+
+wg_mod_exit
+
+Thanks,
+Jason
