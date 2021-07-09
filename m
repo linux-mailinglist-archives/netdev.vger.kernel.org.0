@@ -2,301 +2,574 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0963C2597
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 16:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC5333C25B0
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 16:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhGIONp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 10:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        id S232248AbhGIOSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 10:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbhGIONo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 10:13:44 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCDFC0613DD;
-        Fri,  9 Jul 2021 07:11:00 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4GLw753K2SzQk3M;
-        Fri,  9 Jul 2021 16:10:57 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id ENcqCjhAKuMw; Fri,  9 Jul 2021 16:10:53 +0200 (CEST)
-Subject: Re: [RFC PATCH 2/3] mwifiex: pcie: add reset_d3cold quirk for Surface
- gen4+ devices
-To:     Amey Narkhede <ameynarkhede03@gmail.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210522131827.67551-1-verdre@v0yd.nl>
- <20210522131827.67551-3-verdre@v0yd.nl>
- <20210522184416.mscbmay27jciy2hv@archlinux>
- <1a844abf-2259-ff4f-d49d-de95870345dc@mailbox.org>
- <20210524202734.sgvv4qtzonlqmj7p@archlinux>
-From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
-Message-ID: <3fdadc15-220e-2cdf-e650-1f465e6f4a88@mailbox.org>
-Date:   Fri, 9 Jul 2021 16:10:20 +0200
+        with ESMTP id S231942AbhGIOSE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 10:18:04 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7B0C0613DD;
+        Fri,  9 Jul 2021 07:15:20 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id nd37so16489101ejc.3;
+        Fri, 09 Jul 2021 07:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y2eTCX80itF5TSOAbNkqRmoYgnQTvX2lCfBAxmy+dRk=;
+        b=UFDzCdF0STnoSvGm2xZTxq86jJI2/uDwT0QecArqsawJlszdODbtNem7ZlHTNyJLSf
+         K/m8XLs1w0FBe8UgPt91o7HaOpl6DbTkvEnYbEYSiR6ai9B6eQQstGFkQaXDBLJMsTrN
+         JZW6gtZB07l6LGJi03Dd8OgiZlqHpXTH0t0awWxv8XEcm5Y0EqkrlxAMlpRhHDWW0Qz/
+         jlC1AMo+FqVentL8egMZ7WDhLpTzf1jQ0uLP4wYWLpsKnpSq59i3ITdFdLe62zzzCi43
+         4/hZJqTvpiEsSqsI8/vF/15XXz63qkQP8nFmcpTTlwAgAh9+XOTq9ADr8cEKDlcVMd3k
+         IpDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y2eTCX80itF5TSOAbNkqRmoYgnQTvX2lCfBAxmy+dRk=;
+        b=qnp94ZRYiw9It4cS3FxL93dQqZeotuPE0N3FZIL8SR/ElREwwP19m4NB7bgrOs0HCI
+         UBp7GXZAtc0M86tAhh47aQbhR3NlgsSRL8tHsXrLEGOTFIdRxBF5+rT4RRAlE7cEzyF9
+         J2pZTx3YfzvlOHvT2yoIjp12eOFW2JCqMPuk9bMI7iinmwtdSGJ3aRUf8HOOOH6ni+u5
+         kaWPuvkHbXkEg/AuM/5bocAYcc3zcEgLqdzbgY9NZGzZD4PugjjR9reugXZVcB5VOSDq
+         IAeN0nzwx3k4q2igtNgzkljO9TAJPdnXFaZOu2Dd1iXhoaGT8lk6FXV7Y+U/3GpmB/1v
+         1+Vw==
+X-Gm-Message-State: AOAM533uuhPTdFrpg1gZRgrmrChuenfl/4tbWU7iQuGYPeWM2SWYmcOw
+        KrRUhNAwW5Xhr0hj6pQIBs2m/lGZ1vhweAN/MrY=
+X-Google-Smtp-Source: ABdhPJxJpB6H/DUH7P2y7uK4kwQSQDJytDl9e97BODw7jE2kzCASsupRrSy4tSPzUjLTRl7ysky3Rb+GTM/k1YZuhxc=
+X-Received: by 2002:a17:906:bc84:: with SMTP id lv4mr12195658ejb.493.1625840118328;
+ Fri, 09 Jul 2021 07:15:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210524202734.sgvv4qtzonlqmj7p@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.49 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 12CAA1823
-X-Rspamd-UID: 9d884b
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+ <1625044676-12441-2-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Ueyc8BqjkdTVC_c-Upn-ghNeahYQrWJtQSqxoqN7VvMWA@mail.gmail.com>
+ <29403911-bc26-dd86-83b8-da3c1784d087@huawei.com> <CAKgT0UcGDYcuZRXX1MaFAzzBySu3R4_TSdC6S0cyS7Ppt_dNng@mail.gmail.com>
+ <36a46c57-0090-8f3b-a358-ebbb2512e4cd@huawei.com> <CAKgT0UdS0ZgaxAaNHjKYX50-xmz1WmOHGn89FaYRYV0B3YG1Kg@mail.gmail.com>
+ <1e8c6695-2cd7-078e-4ac3-5d604ee88348@huawei.com>
+In-Reply-To: <1e8c6695-2cd7-078e-4ac3-5d604ee88348@huawei.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 9 Jul 2021 07:15:07 -0700
+Message-ID: <CAKgT0UemP3E+KTR7mmjs+_RY9S0jFVmOhM-yudi=z0osg-qUsA@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 1/2] page_pool: add page recycling support
+ based on elevated refcnt
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
+        thomas.petazzoni@bootlin.com, Marcin Wojtas <mw@semihalf.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        hawk@kernel.org, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
+        guro@fb.com, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, mcroce@microsoft.com,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
+        cong.wang@bytedance.com, Kevin Hao <haokexin@gmail.com>,
+        nogikh@google.com, Marco Elver <elver@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/24/21 10:27 PM, Amey Narkhede wrote:
- > On 21/05/23 12:28PM, Jonas Dreßler wrote:
- >> On 5/22/21 8:44 PM, Amey Narkhede wrote:
- >>> On 21/05/22 03:18PM, Jonas Dreßler wrote:
- >>>> From: Tsuchiya Yuto <kitakar@gmail.com>
- >>>>
- >>>> To reset mwifiex on Surface gen4+ (Pro 4 or later gen) devices, it
- >>>> seems that putting the wifi device into D3cold is required according
- >>>> to errata.inf file on Windows installation (Windows/INF/errata.inf).
- >>>>
- >>>> This patch adds a function that performs power-cycle (put into D3cold
- >>>> then D0) and call the function at the end of reset_prepare().
- >>>>
- >>>> Note: Need to also reset the parent device (bridge) of wifi on SB1;
- >>>> it might be because the bridge of wifi always reports it's in D3hot.
- >>>> When I tried to reset only the wifi device (not touching parent), 
-it gave
- >>>> the following error and the reset failed:
- >>>>
- >>>>       acpi device:4b: Cannot transition to power state D0 for 
-parent in D3hot
- >>>>       mwifiex_pcie 0000:03:00.0: can't change power state from 
-D3cold to D0 (config space inaccessible)
- >>>>
- >>> May I know how did you reset only the wifi device when you encountered
- >>> this error?
- >>
- >> Not exactly sure what you mean by that, the trick was to put the parent
- >> bridge into D3cold and then into D0 before transitioning the card into
- >> D0.
- >>
- > If the parent bridge has multiple devices attached to it, this can
- > have some side effects on other devices after the reset but as you
- > mentioned below that parent bridge is only connected to wifi card it
- > should be fine in that case.
- >
- >> That "Cannot transition to power state" warning is just the kernel
- >> enforcing ACPI specs afaik, and that prevents us from putting the device
- >> into ACPI state D0. This in turn means the device still has no power and
- >> we can't set the PCI power state to D0, which is the second error.
- >>
- >>>
- >>>> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
- >>>> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
- >>>> ---
- >>>>    drivers/net/wireless/marvell/mwifiex/pcie.c   |   7 +
- >>>>    .../wireless/marvell/mwifiex/pcie_quirks.c    | 123 
-++++++++++++++++++
- >>>>    .../wireless/marvell/mwifiex/pcie_quirks.h    |   3 +
- >>>>    3 files changed, 133 insertions(+)
- >>>>
- >>>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c 
-b/drivers/net/wireless/marvell/mwifiex/pcie.c
- >>>> index 02fdce926de5..d9acfea395ad 100644
- >>>> --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
- >>>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
- >>>> @@ -528,6 +528,13 @@ static void mwifiex_pcie_reset_prepare(struct 
-pci_dev *pdev)
- >>>>    	mwifiex_shutdown_sw(adapter);
- >>>>    	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
- >>>>    	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
- >>>> +
- >>>> +	/* For Surface gen4+ devices, we need to put wifi into D3cold right
- >>>> +	 * before performing FLR
- >>>> +	 */
- >>>> +	if (card->quirks & QUIRK_FW_RST_D3COLD)
- >>>> +		mwifiex_pcie_reset_d3cold_quirk(pdev);
- >>>> +
- >>>>    	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
- >>>>
- >>>>    	card->pci_reset_ongoing = true;
- >>>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c 
-b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
- >>>> index 4064f99b36ba..b5f214fc1212 100644
- >>>> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
- >>>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
- >>>> @@ -15,6 +15,72 @@
- >>>>
- >>>>    /* quirk table based on DMI matching */
- >>>>    static const struct dmi_system_id mwifiex_quirk_table[] = {
- >>>> +	{
- >>>> +		.ident = "Surface Pro 4",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Pro 5",
- >>>> +		.matches = {
- >>>> +			/* match for SKU here due to generic product name "Surface Pro" */
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Pro 5 (LTE)",
- >>>> +		.matches = {
- >>>> +			/* match for SKU here due to generic product name "Surface Pro" */
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Pro 6",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Book 1",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Book 2",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Laptop 1",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>> +	{
- >>>> +		.ident = "Surface Laptop 2",
- >>>> +		.matches = {
- >>>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- >>>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
- >>>> +		},
- >>>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- >>>> +	},
- >>>>    	{}
- >>>>    };
- >>>>
- >>>> @@ -29,4 +95,61 @@ void mwifiex_initialize_quirks(struct 
-pcie_service_card *card)
- >>>>
- >>>>    	if (!card->quirks)
- >>>>    		dev_info(&pdev->dev, "no quirks enabled\n");
- >>>> +	if (card->quirks & QUIRK_FW_RST_D3COLD)
- >>>> +		dev_info(&pdev->dev, "quirk reset_d3cold enabled\n");
- >>>> +}
- >>>> +
- >>>> +static void mwifiex_pcie_set_power_d3cold(struct pci_dev *pdev)
- >>>> +{
- >>>> +	dev_info(&pdev->dev, "putting into D3cold...\n");
- >>>> +
- >>>> +	pci_save_state(pdev);
- >>>> +	if (pci_is_enabled(pdev))
- >>>> +		pci_disable_device(pdev);
- >>>> +	pci_set_power_state(pdev, PCI_D3cold);
- >>>> +}
- >>> pci_set_power_state with PCI_D3cold state calls
- >>> pci_bus_set_current_state(dev->subordinate, PCI_D3cold).
- >>> Maybe this was the reason for the earlier problem you had?
- >>> Not 100% sure about this though CCing: Alex
- >>
- >> Hmm, so we'd only have to put the bridge into D3cold and that takes care
- >> of the device going to D3cold automatically?
- >>
- > Yeah I think it should do it. Have you tried this?
+On Thu, Jul 8, 2021 at 11:26 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/7/8 23:36, Alexander Duyck wrote:
+> > On Wed, Jul 7, 2021 at 7:27 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >>
+> >> On 2021/7/7 23:01, Alexander Duyck wrote:
+> >>> On Tue, Jul 6, 2021 at 8:05 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >>>>
+> >>>> On 2021/7/7 4:45, Alexander Duyck wrote:
+> >>>>> On Wed, Jun 30, 2021 at 2:19 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >>>>>>
+> >>>>>> Currently page pool only support page recycling only when
+> >>>>>> refcnt of page is one, which means it can not support the
+> >>>>>> split page recycling implemented in the most ethernet driver.
+> >>>>>>
+> >>>>>> So add elevated refcnt support in page pool, and support
+> >>>>>> allocating page frag to enable multi-frames-per-page based
+> >>>>>> on the elevated refcnt support.
+> >>>>>>
+> >>>>>> As the elevated refcnt is per page, and there is no space
+> >>>>>> for that in "struct page" now, so add a dynamically allocated
+> >>>>>> "struct page_pool_info" to record page pool ptr and refcnt
+> >>>>>> corrsponding to a page for now. Later, we can recycle the
+> >>>>>> "struct page_pool_info" too, or use part of page memory to
+> >>>>>> record pp_info.
+> >>>>>>
+> >>>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> >>>>
+> >>>> Hi, Alexander
+> >>>>
+> >>>> Thanks for detailed reviewing.
+> >>>>
+> >>>>>
+> >>>>> So this isn't going to work with the current recycling logic. The
+> >>>>> expectation there is that we can safely unmap the entire page as soon
+> >>>>> as the reference count is greater than 1.
+> >>>>
+> >>>> Yes, the expectation is changed to we can always recycle the page
+> >>>> when the last user has dropped the refcnt that has given to it when
+> >>>> the page is not pfmemalloced.
+> >>>>
+> >>>> The above expectation is based on that the last user will always
+> >>>> call page_pool_put_full_page() in order to do the recycling or do
+> >>>> the resource cleanup(dma unmaping..etc).
+> >>>>
+> >>>> As the skb_free_head() and skb_release_data() have both checked the
+> >>>> skb->pp_recycle to call the page_pool_put_full_page() if needed, I
+> >>>> think we are safe for most case, the one case I am not so sure above
+> >>>> is the rx zero copy, which seems to also bump up the refcnt before
+> >>>> mapping the page to user space, we might need to ensure rx zero copy
+> >>>> is not the last user of the page or if it is the last user, make sure
+> >>>> it calls page_pool_put_full_page() too.
+> >>>
+> >>> Yes, but the skb->pp_recycle value is per skb, not per page. So my
+> >>> concern is that carrying around that value can be problematic as there
+> >>> are a number of possible cases where the pages might be
+> >>> unintentionally recycled. All it would take is for a packet to get
+> >>> cloned a few times and then somebody starts using pskb_expand_head and
+> >>> you would have multiple cases, possibly simultaneously, of entities
+> >>> trying to free the page. I just worry it opens us up to a number of
+> >>> possible races.
+> >>
+> >> I think page_ref_dec_return() in page_pool_bias_page_recyclable() will
+> >> prevent the above race to happen.
+> >>
+> >> As the page_ref_dec_return() and page_pool_bias_page_recyclable() return
+> >> true, all user of the page have done with the p->pp_magic and p->pp_info,
+> >> so it should be ok to reset the p->pp_magic and p->pp_info in any order?
+> >>
+> >> And page_ref_dec_return() has both __atomic_pre_full_fence() and
+> >> __atomic_post_full_fence() to ensure the above ordering.
+> >
+> > So if I understand correctly what you are saying is that because of
+> > the pagecnt_bias check we will not hit the page_pool_release_page.
+> > That may help to address the issue introduced by the recycling patch
+> > but I don't think it completely resolves it. In addition there may be
+> > performance implications to this change since you are requiring the
+> > atomic dec for every page.
+> >
+> > The difference between pagecnt_bias and what you have here is that we
+> > freed the page when page_ref_count hit 0. With this approach you are
+> > effectively freeing the page when page_ref_count == pagecnt_bias +
+> > modifier. The two implementations have quite a number of differences
+> > in behavior.
+> >
+> > What you have effectively done here is make the page refcount and
+> > pagecnt_bias effectively into a ticket lock where we cannot call the
+> > free function until page_ref_cnt == pagecnt_bias + 1. So you need to
+> > keep the pagecnt_bias much lower than the page_ref_cnt otherwise you
+> > run the risk of frequent recycling. For the non-shared page_pool pages
+> > this is probably fine, however the frags implementation is horribly
+> > broken.
+>
+> Yes, if ticket lock is the name for that.
+>
+> I suppose "non-shared page_pool pages" mean caller allocates the page by
+> calling page_pool_alloc_pages() directly for elevated refcnt case, right?
+>
+> The main difference between page_pool_alloc_pages() and page_pool_alloc_frag()
+> for elevated refcnt case is how many tickets have been given out, so I
+> am not sure why giving out one ticket is ok, and giving out more than one
+> ticket is broken?
 
-Finally found some time to try that now and looks like it doesn't work. 
-First reset works fine, but on the second one the device can't switch 
-from D3cold to D0:
+The model for page_pool_alloc_frag is that you are giving out one
+slice of the page at a time. The general idea is you are allocating
+variable sized sections of the page, so normally you cannot predict
+exactly how many references will be needed.
 
-mwifiex_pcie 0000:01:00.0: can't change power state from D3cold to D0 
-(config space inaccessible)
+In addition division is an extremely expensive operation when you
+aren't working with a constant power of 2. As such for any fastpath
+thing such as an allocation you want to try to avoid it if at all
+possible.
 
-Thanks,
-Jonas
+> >
+> > Also the ticketlock approach is flawed because with something like
+> > that we shouldn't rewind the number we are currently serving like we
+> > do. We would have to wait until we are the only one holding the page
+> > before we could recycle previously used values.
+>
+> I am not sure I understand the above.
+>
+> I suppose it means we might not be able to clean up the resource(mainly
+> to do unmapping and drain the page_ref according to pagecnt_bias) while
+> the stack is still holding the reference to the page, which is possible
+> for the current reusing implemented in most driver.
+>
+> But one good thing come out of that is we might still be able to reuse
+> the page when the stack release the reference to the page later, which
+> is not possible for the current reusing implemented in most driver.
 
- >>>
- >>>> +
- >>>> +static int mwifiex_pcie_set_power_d0(struct pci_dev *pdev)
- >>>> +{
- >>>> +	int ret;
- >>>> +
- >>>> +	dev_info(&pdev->dev, "putting into D0...\n");
- >>>> +
- >>>> +	pci_set_power_state(pdev, PCI_D0);
- >>>> +	ret = pci_enable_device(pdev);
- >>>> +	if (ret) {
- >>>> +		dev_err(&pdev->dev, "pci_enable_device failed\n");
- >>>> +		return ret;
- >>>> +	}
- >>>> +	pci_restore_state(pdev);
- >>> On the side note just save and restore is enough in this case?
- >>> What would be the device <-> driver state after the reset as you
- >>> are calling this on parent_pdev below so that affects other
- >>> devices on bus?
- >>
- >> Not sure we can do anything more than save and restore, can we? I don't
- >> think it will affect other devices on the bus, the parent bridge is only
- >> connected to the wifi card, nothing else.
- >>
- > I was thinking of doing remove-reset-rescan but I think save-restore
- > should be ok if there is a single device connected to the parent bridge.
- >
- > Thanks,
- > Amey
- > [...]
- >>>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h 
-b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
- >>>> index 7a1fe3b3a61a..549093067813 100644
- >>>> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
- >>>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
- >>>> @@ -5,4 +5,7 @@
- >>>>
- >>>>    #include "pcie.h"
- >>>>
- >>>> +#define QUIRK_FW_RST_D3COLD	BIT(0)
- >>>> +
- >>>>    void mwifiex_initialize_quirks(struct pcie_service_card *card);
- >>>> +int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
- >>>> --
- >>>> 2.31.1
- >>>>
- >>
- >> Thanks for the review,
- >> Jonas
+There are several flaws with the approach.
+
+1. The fact that external entities can all get_page/put_page which may
+cause __page_pool_put_page to miss the case where it would have
+otherwise found that page_ref_count == pagecnt_bias.
+
+2. Rewinding the page without first verifying it owns all references.
+Technically that is an exploitable issue as someone would just have to
+take 64K references at just the right time to cause page_ref_count ==
+pagecnt_bias. Not a likely issue but technically not a correct thing
+to do either as it does open a window for exploitation.
+
+3. Generally any sort of count rewind waits until we know we are the
+only ones holding onto the page. Basically we have to verify the
+page_ref_count == 1 or page_ref_count == pagecnt_bias case before
+resetting offsets and assuming we can safely reuse the page.
+
+<...>
+> > last buffer we don't bother with decrementing the pagecnt_bias and
+> > instead just hand the page over to the stack. So what we should have
+> > is the page cycling between a pagecnt_bias that is +1-2 of the actual
+> > page_ref_count and when the two are equal we then perform the
+> > unmap/free or recycle of the page.
+>
+> What does "last buffer" mean?
+> The driver does not know whether the buffer is the last one or not as the
+> pagecnt_bias is hidden inside the page pool.
+
+It depends on use case. If we are doing something like classic
+page_pool with one use per page then every buffer would be the last
+buffer so we technically wouldn't need to decrement it after the page
+has been recycled. If we are doing the page_frag type model it would
+be the last fragment of the page being used.
+
+> >
+> > On the Tx and SKB side of things we are using the page_ref_count to
+> > track which instances can be recycled and should only ever be reading
+> > pagecnt_bias.
+>
+> pagecnt_bias in this patch *does* indeed being only read for SKB side.
+> I suppose Tx side is for XDP?
+
+Yes.
+
+> >
+> > At recycle time we will need to verify there are enough tickets to
+> > support another run through the allocator. We may want to look at
+> > adding a value to the page pool to track the maximum number of slices
+> > a page can be broken into in order to avoid having to update the
+> > page_ref_count and pagecnt_bias too often.
+>
+> Why is page_ref_count and pagecnt_bias not enough to do the job?
+> The user have provided the frag_size and we know about the page size, so
+> we should be able to ensure pagecnt_bias is big enough for the maximum
+> number of slices when allocating the first frag of page.
+
+As I mentioned before we shouldn't be just arbitrarily rewinding. And
+resetting every time the page is freed would be expensive. So the idea
+is to have a check and as long as pagecnt_bias is greater than the
+number of fragments we will break out of a single page we don't need
+to update pagecnt_bias or page_ref_count when the page is recycled.
+
+<...>
+> >>>>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> >>>>>> index b2db9cd..7795979 100644
+> >>>>>> --- a/include/linux/skbuff.h
+> >>>>>> +++ b/include/linux/skbuff.h
+> >>>>>> @@ -4711,11 +4711,9 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+> >>>>>>  }
+> >>>>>>
+> >>>>>>  #ifdef CONFIG_PAGE_POOL
+> >>>>>> -static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
+> >>>>>> -                                       struct page_pool *pp)
+> >>>>>> +static inline void skb_mark_for_recycle(struct sk_buff *skb)
+> >>>>>>  {
+> >>>>>>         skb->pp_recycle = 1;
+> >>>>>> -       page_pool_store_mem_info(page, pp);
+> >>>>>>  }
+> >>>>>>  #endif
+> >>>>>
+> >>>>> I am not a fan of the pp_recycle flag either. We duplicate it via
+> >>>>> skb_clone and from what I can tell if we call pskb_expand_head
+> >>>>> afterwards I don't see how we avoid recycling the page frags twice.
+> >>>>
+> >>>> Acctually skb->pp_recycle is kind of duplicated, as there is
+> >>>> still page->pp_magic to avoid recycling the page frags twice.
+> >>>>
+> >>>> The argument above adding skb->pp_recycle seems to be short
+> >>>> cut code path for non-page_pool case in the previous disscusion,
+> >>>> see [2].
+> >>>>
+> >>>> 2. https://lore.kernel.org/linux-mm/074b0d1d-9531-57f3-8e0e-a447387478d1@huawei.com/
+> >>>
+> >>> Yes, but that doesn't guarantee atomic protections so you still have
+> >>> race conditions possible. All it takes is something stalling during
+> >>> the dma_unamp call. Worse yet from what I can tell it looks like you
+> >>> clear page->pp before you clear page->pp_magic so you have the
+> >>> potential for a NULL pointer issue since it is cleared before the
+> >>> pp_magic value is.
+> >>
+> >> Hopefully the page_ref_dec_return() in page_pool_bias_page_recyclable()
+> >> called by page_pool_put_page() will make the order of page->pp_magic
+> >> clearing and page->pp clearing irrelevant?
+> >
+> > Really it doesn't address the issue. The problem is the clearing of
+> > pp_magic is after the dec_and_ref while the reading/clearing of
+> > page->pp is before it.
+> >
+> > So having code like the following is not safe:
+> >     pp = page->pp;
+> >     page->pp = NULL;
+> >
+> >     if (pp->something)
+> >         do_something();
+> >
+> > The check for page->pp_magic before this doens't resolve it because 2
+> > threads can get into the code path before either one has updated
+> > page->pp_magic.
+>
+> I suppose the above issue is the one you and Ilias are discussing?
+
+Yes. I think we are getting that sorted out.
+
+> >
+> > Arguably the pagecnt_bias does something to help, but what it has
+> > effectively done is created a ticket lock where until you can get
+> > page_ref_count to reach the pagecnt_bias value you cannot unmap or
+> > free the page. So the tradeoff is that if anyone takes a reference to
+> > the page you are now stuck and cannot unmap it nor remove the device
+> > while the page is still in use elsewhere.
+> >
+> > Also it just occurred to me that this will cause likely leaks because
+> > page_ref_count is also updated outside of page_pool so we would have
+> > to worry about someone calling get_page, then your call to
+> > page_pool_bias_page_recyclable, and then put page and at that point
+> > the page is leaked.
+>
+> Yes, as mentioned in the previous discussion:
+>
+> "Yes, the expectation is changed to we can always recycle the page
+> when the last user has dropped the refcnt that has given to it when
+> the page is not pfmemalloced.
+>
+> The above expectation is based on that the last user will always
+> call page_pool_put_full_page() in order to do the recycling or do
+> the resource cleanup(dma unmaping..etc).
+
+The problem is we cannot make that assumption. The memory management
+subsystem has a number of operations that will take a reference on the
+page as long as it is not zero and is completely unrelated to
+networking. So that breaks this whole concept. As does the fixes
+needed to deal with the skb_clone/pskb_expand_head issue.
+
+> As the skb_free_head() and skb_release_data() have both checked the
+> skb->pp_recycle to call the page_pool_put_full_page() if needed, I
+> think we are safe for most case, the one case I am not so sure above
+> is the rx zero copy, which seems to also bump up the refcnt before
+> mapping the page to user space, we might need to ensure rx zero copy
+> is not the last user of the page or if it is the last user, make sure
+> it calls page_pool_put_full_page() too."
+
+That isn't going to work. In order for this patch set to work you
+would effectively have to somehow modify put_page since that is used
+at a number of given points throughout the kernel on the page. That is
+the whole reason for the checks against page_ref_count != 1 in the
+__page_pool_put_page call since it is the first call to it that will
+have to perform the unmapping if something else is holding onto the
+page.
+
+<...>
+> >>>>>> @@ -284,6 +335,25 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> >>>>>>         return page;
+> >>>>>>  }
+> >>>>>>
+> >>>>>> +static void page_pool_sub_bias(struct page *page, int nr)
+> >>>>>> +{
+> >>>>>> +       struct page_pool_info *pp_info = page->pp_info;
+> >>>>>> +
+> >>>>>> +       /* "pp_info->pagecnt_bias == 0" indicates the PAGECNT_BIAS
+> >>>>>> +        * flags is not set.
+> >>>>>> +        */
+> >>>>>> +       if (!pp_info->pagecnt_bias)
+> >>>>>> +               return;
+> >>>>>> +
+> >>>>>> +       /* Make sure pagecnt_bias > 0 for elevated refcnt case */
+> >>>>>> +       if (unlikely(pp_info->pagecnt_bias <= nr)) {
+> >>>>>> +               page_ref_add(page, USHRT_MAX);
+> >>>>>> +               pp_info->pagecnt_bias += USHRT_MAX;
+> >>>>>> +       }
+> >>>>>> +
+> >>>>>> +       pp_info->pagecnt_bias -= nr;
+> >>>>>
+> >>>>> So we should never have a case where pagecnt_bias is less than the
+> >>>>> value we are subtracting. If we have that then it is a bug.
+> >>>>
+> >>>> Yes.
+> >>>
+> >>> Sorry, I was referring to the code above comparing pagecnt_bias to nr.
+> >>> At most nr should only ever be equal to pagecnt_bias, you should hold
+> >>> off on recharging pagecnt_bias until you can verify the page_count
+> >>> indicates we are the only holder of the page. Then we can recharge it
+> >>> and reset any offsets.
+> >>
+> >> Actually the page pool is the only user of the page when the driver is
+> >> calling page_pool_alloc_frag(), page is from pool->alloc/pool->ring or
+> >> page allocator in page_pool_alloc_pages(), as memtioned above, the
+> >> last user will put the page in pool->ring holding a lock, and when
+> >> page_pool_alloc_pages() get a page (also holding the same lock) from
+> >> pool->ring, there should be no user of the page other than the page pool.
+> >>
+> >> And page_pool_sub_bias() is called in page_pool_alloc_frag() and
+> >> page_pool_alloc_pages().
+> >
+> > I think we would need to see a version of this patch without the
+> > alloc_frag calls in order to really be able to do a review. The
+> > problem is I don't see how the page_pool_alloc_frag can expect to have
+> > sole ownership of the page if it is allocating fragments of the page.
+> > The frags call imply multiple users for a single page.
+>
+> The driver calls page_pool_alloc_frag(), and page_pool_alloc_frag()
+> will call page_pool_alloc_pages() to allocate a new page if the
+> pool->frag_page is NULL or there is no frag left in the pool->frag_page
+> (using pool->frag_offset and pool->frag_size to decide if there is any
+> frag left), and when the new page is allocated, it will decide how many
+> frag the page has by using PAGE_SIZE and pool->frag_size, which also mean
+> how many user will be using the page, so the "page_ref - (pagecnt_bias + 1)"
+> is the number of the user will using the page at the time when the first frag
+> is allocated, and pagecnt_bias is only updated for the first user of the page,
+> for subsequent user, just use the pool->frag_offset to decide which frag to
+> allocate if there is still frag left, and pagecnt_bias does not need changing
+> for subsequent user of the same page.
+
+The point I am getting at is that the patch is doing too much and we
+are essentially trying to discuss 3 to 4 patches worth of content in
+one email thread which has us going in circles. It would be better to
+break the page_frag case out of this patch and into one of its own for
+us to discuss separately as too many issues with the patch set are
+being conflated.
+
+<...>
+> >>>
+> >>>> Or the page pool will call page_pool_put_full_page() in page_pool_empty_frag()
+> >>>> if some of the page frag is not allocated to the driver yet.
+> >>>>
+> >>>> It seems you are suggesting a slightly different way to do frag reusing.
+> >>>
+> >>> As I mentioned I am not a fan of the current recycling scheme. There
+> >>> are too many openings for it to end up unmapping the same page
+> >>> multiple times or other possible issues.
+> >>
+> >> Other than the pagecnt_bias handling in non-atomic context, I think
+> >> most of the race you mentioned above has been handled if I understand
+> >> it correctly?
+> >
+> > The biggest issue is that if we assume this to be more of a ticket
+> > lock model, you have threads outside of this that are using
+> > get_page/put_page that will mess with your tickets and cause leaks
+> > because your unlocker may end up getting a non-matching ticket even
+> > though it is the last call to __page_pool_put_page.
+>
+> Yes, we need to make sure there is no get_page/put_page messing with
+> this process. Or if there is, make sure there is a __page_pool_put_page()
+> after get_page/put_page.
+
+We can't. That is the fundamental problem of this patch set. We won't
+be able to enforce that kind of change on the memory management
+subsystem.
+
+<...>
+> >
+> > Again this is why I think it would be better to just maintain a list
+> > of inflight pages and then unmap them fro the driver if they are still
+> > on the list greater than some fixed period of time.
+>
+> I am not sure if adding a list of inflight pages is the proper way
+> to solve the problem if the page is not returned to the page for a
+> very long time.
+>
+> Maybe we should find out why the page is not returned to page pool
+> and fix it if that happen?
+
+There are plenty of reasons for something like that to occur. For all
+we know it could be that we are sitting on the one 4K page in a 2M
+hugepage that prevents the memory subsystem from compacting it into a
+2M page instead of leaving it as a bunch of order 0 pages. In such a
+case the correct behavior would be for us to give up the page. We
+cannot assume we are safe to sit on a page for eternity.
+
+This is why in my mind it would make sense to just maintain a list of
+pages we have returned to the stack and if they aren't freed up in
+some given period of time we just unmap them and drop the reference we
+are holding to them.
+
+<...>
+> >>>>>
+> >>>>>> +               if (unlikely(!frag_page)) {
+> >>>>>> +                       pool->frag_page = NULL;
+> >>>>>> +                       return NULL;
+> >>>>>> +               }
+> >>>>>> +
+> >>>>>> +               pool->frag_page = frag_page;
+> >>>>>> +               frag_offset = 0;
+> >>>>>> +
+> >>>>>> +               page_pool_sub_bias(frag_page, max_len / frag_size - 1);
+> >>>>>
+> >>>>> Why are you doing division here? We should just be subtracting 1 from
+> >>>>> the pagecnt_bias since that is the number of buffers that are being
+> >>>>> used. The general idea is that when pagecnt_bias is 0 we cut the page
+> >>>>> loose for potential recycling or freeing, otherwise we just subtract
+> >>>>> our new value from pagecnt_bias until we reach it.
+> >>>>
+> >>>> As mentioned above, division is used to find out how many user may be
+> >>>> using the page.
+> >>>
+> >>> That doesn't make any sense to me because it won't tell you the actual
+> >>> users, and from what I can tell it is buggy since if I use this to
+> >>> allocate a chunk larger than 2K this comes out to 0 doesn't it? It
+> >>> seems like you should just always use 1 as the count.
+> >>
+> >> There is already a page_pool_sub_bias(page, 1) in page_pool_alloc_pages(),
+> >> so for 4K page, there is two users for a page with 2K frag size, and there
+> >> is 32 users for 64K page with 2K frag size.
+> >>
+> >> The reason doing a page_pool_sub_bias(page, 1) in page_pool_alloc_pages()
+> >> is that the caller is expected to use the page as a whole when using the
+> >> page_pool_alloc_pages() directly, so it means only one user.
+> >
+> > The logic doesn't make any sense. You shouldn't need to do any
+> > subtraction then. The idea is you subtract 1 per frag pulled from the
+> > page. The logic you have here just doesn't make sense as you are
+> > making smaller frags pull additional bias counts. If I pull a small
+> > fragment I could consume the entire bias in a single call.
+>
+> I am not sure I understand the above comment.
+> Basically the page returned from page_pool_alloc_pages() is expected
+> to be used by one user, when page_pool_alloc_frag() use that page to
+> serve more users, it decides the total user using "max_len / frag_size",
+> as there is already one user added in page_pool_alloc_pages(), so only
+> "max_len / frag_size - 1" more user need adding(adding more user is by
+> calling page_pool_sub_bias(), which is kind of confusing as the "sub"
+> word).
+
+I see. So effectively you are just batching the pagecnt_bias update.
+Still not a huge fan of the idea since that division effectively costs
+you about the same as something like a dozen or more decrement
+operations. You would be better off just updating once per frag
+instead of trying to batch that.
+
+<...>
+> > Ideally this would be broken out into smaller patches so it is easier
+> > to review as there are currently several issues that we are talking
+> > about here in parallel which is making the discussion confusing.
+>
+> Ok, will split this patch to more reviewable one.
+
+Thanks
