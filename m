@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A043C21B6
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2033D3C21B7
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhGIJno (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 05:43:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47482 "EHLO
+        id S232004AbhGIJns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 05:43:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53993 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229503AbhGIJnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 05:43:43 -0400
+        by vger.kernel.org with ESMTP id S231954AbhGIJnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 05:43:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625823660;
+        s=mimecast20190719; t=1625823664;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5527mjflLnN2mLn4IpQbwVLl4rkvXLkqkbz3xhAqkT8=;
-        b=ibE2V5Twxo7vgpcnjwiR3CfGZsRHMOi5q9W4KtsgWg08ZKcDlyzskp2G36uP4yjf1XG5Cf
-        MjBu232zDZGuvXGUOQXjUbtAkMjhFyjBk8aAcCUA5weObj2P52+Y+mLcsWihw9uWw1aZew
-        R5rX8d+9ACqFGCBL4Q37DJAqrnjoCgo=
+        bh=KWK+fkGO1BSGC/0eXaanXW3JGo/V+Biv7Cvpw/eIkjg=;
+        b=P7BiZq4DB6O4vsVV83frspWzCfjKydGc/dvNZcmr1KfuNNPsuXuzPwanr37hdfexevuu+T
+        ilXfPBstF7gi1Dh3gPwx8Cz5XjF943ghya74hga4F2unMpY/6hHWC7L0bi3JhT5FWT1VaO
+        FypE0PzsWU3AXJGrDQVqt8AHoFfBoY4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-506-YhigzxPFNB2xtkYXcJmwDQ-1; Fri, 09 Jul 2021 05:40:58 -0400
-X-MC-Unique: YhigzxPFNB2xtkYXcJmwDQ-1
+ us-mta-514-xKH6Hm0hPaekiB5WyIaY6g-1; Fri, 09 Jul 2021 05:41:02 -0400
+X-MC-Unique: xKH6Hm0hPaekiB5WyIaY6g-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F19E4100C661;
-        Fri,  9 Jul 2021 09:40:57 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C291804140;
+        Fri,  9 Jul 2021 09:41:02 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-113-68.ams2.redhat.com [10.36.113.68])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9F0D2369A;
-        Fri,  9 Jul 2021 09:40:54 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 519AA369A;
+        Fri,  9 Jul 2021 09:40:58 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, toke@redhat.com
-Subject: [RFC PATCH 2/3] veth: make queues nr configurable via kernel module params
-Date:   Fri,  9 Jul 2021 11:39:49 +0200
-Message-Id: <480e7a960c26c9ab84efe59ed706f1a1a459d38c.1625823139.git.pabeni@redhat.com>
+Subject: [RFC PATCH 3/3] selftests: net: veth: add tests for set_channel
+Date:   Fri,  9 Jul 2021 11:39:50 +0200
+Message-Id: <316d4ebdd40b03b56f4e342f8e239442313f9e65.1625823139.git.pabeni@redhat.com>
 In-Reply-To: <cover.1625823139.git.pabeni@redhat.com>
 References: <cover.1625823139.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -49,62 +49,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows configuring the number of tx and rx queues at
-module load time. A single module parameter controls
-both the default number of RX and TX queues created
-at device registration time.
+Simple functional test for the newly exposted features
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- drivers/net/veth.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ tools/testing/selftests/net/veth.sh | 65 +++++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 10360228a06a..787b4ad2cc87 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -27,6 +27,11 @@
- #include <linux/bpf_trace.h>
- #include <linux/net_tstamp.h>
- 
-+static int queues_nr	= 1;
-+
-+module_param(queues_nr, int, 0644);
-+MODULE_PARM_DESC(queues_nr, "Max number of RX and TX queues (default = 1)");
-+
- #define DRV_NAME	"veth"
- #define DRV_VERSION	"1.0"
- 
-@@ -1662,6 +1667,18 @@ static struct net *veth_get_link_net(const struct net_device *dev)
- 	return peer ? dev_net(peer) : dev_net(dev);
+diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
+index 11d7cdb898c0..1f4cdbe6ffe0 100755
+--- a/tools/testing/selftests/net/veth.sh
++++ b/tools/testing/selftests/net/veth.sh
+@@ -75,6 +75,31 @@ chk_tso_flag() {
+ 	__chk_flag "$1" $2 $3 tcp-segmentation-offload
  }
  
-+unsigned int veth_get_num_tx_queues(void)
-+{
-+	/* enforce the same queue limit as rtnl_create_link */
-+	int queues = queues_nr;
++chk_channels() {
++	local msg="$1"
++	local target=$2
++	local rx=$3
++	local tx=$4
 +
-+	if (queues < 1)
-+		queues = 1;
-+	if (queues > 4096)
-+		queues = 4096;
-+	return queues;
++	local dev=veth$target
++	local combined=$tx
++	[ $rx -lt $tx ] && combined=$rx
++
++	local cur_rx=`ip netns exec $BASE$target ethtool -l $dev |\
++		grep RX: | tail -n 1 | awk '{print $2}' `
++	local cur_tx=`ip netns exec $BASE$target ethtool -l $dev |\
++		grep TX: | tail -n 1 | awk '{print $2}'`
++	local cur_combined=`ip netns exec $BASE$target ethtool -l $dev |\
++		grep Combined: | tail -n 1 | awk '{print $2}'`
++
++	printf "%-60s" "$msg"
++	if [ "$cur_rx" = "$rx" -a "$cur_tx" = "$tx" -a "$cur_combined" = "$combined" ]; then
++		echo " ok "
++	else
++		echo " fail rx:$rx:$cur_rx tx:$tx:$cur_tx combined:$combined:$cur_combined"
++	fi
 +}
 +
- static struct rtnl_link_ops veth_link_ops = {
- 	.kind		= DRV_NAME,
- 	.priv_size	= sizeof(struct veth_priv),
-@@ -1672,6 +1689,10 @@ static struct rtnl_link_ops veth_link_ops = {
- 	.policy		= veth_policy,
- 	.maxtype	= VETH_INFO_MAX,
- 	.get_link_net	= veth_get_link_net,
-+	.get_num_tx_queues	= veth_get_num_tx_queues,
-+	.get_num_rx_queues	= veth_get_num_tx_queues, /* Use the same number
-+							   * as for TX queues
-+							   */
- };
+ chk_gro() {
+ 	local msg="$1"
+ 	local expected=$2
+@@ -122,6 +147,8 @@ ip netns exec $NS_SRC ethtool -K veth$SRC tx-udp-segmentation off
+ chk_gro "        - aggregation with TSO off" 10
+ cleanup
  
- /*
++# reset default, just in case
++echo 1 > /sys/module/veth/parameters/tx_queues
+ create_ns
+ ip netns exec $NS_DST ethtool -K veth$DST gro on
+ chk_gro_flag "with gro on - gro flag" $DST on
+@@ -134,6 +161,11 @@ chk_gro "        - aggregation with TSO off" 1
+ cleanup
+ 
+ create_ns
++chk_channels "default channels" $DST 1 1
++
++# will affect next veth device pair creation
++echo 128 > /sys/module/veth/parameters/tx_queues
++
+ ip -n $NS_DST link set dev veth$DST down
+ ip netns exec $NS_DST ethtool -K veth$DST gro on
+ chk_gro_flag "with gro enabled on link down - gro flag" $DST on
+@@ -147,7 +179,35 @@ chk_gro "        - aggregation with TSO off" 1
+ cleanup
+ 
+ create_ns
++
++ip netns exec $NS_DST ethtool -L veth$DST tx 2
++chk_channels "setting tx channels" $DST 128 2
++
++ip netns exec $NS_DST ethtool -L veth$DST rx 3 tx 4
++chk_channels "setting both rx and tx channels" $DST 3 4
++ip netns exec $NS_DST ethtool -L veth$DST combined 2 2>/dev/null
++chk_channels "bad setting: combined channels" $DST 3 4
++
++ip netns exec $NS_DST ethtool -L veth$DST tx 1025 2>/dev/null
++chk_channels "setting invalid channels nr" $DST 3 4
++
++printf "%-60s" "bad setting: XDP with RX nr less than TX"
++ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null &&\
++	echo "fail - set operation successful ?!?" || echo " ok "
++
++# the following tests will run with multiple channels active
++ip netns exec $NS_SRC ethtool -L veth$SRC tx 3
++
+ ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
++printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
++ip netns exec $NS_DST ethtool -L veth$DST rx 2 2>/dev/null &&\
++	echo "fail - set operation successful ?!?" || echo " ok "
++printf "%-60s" "bad setting: increasing peer TX nr above RX with XDP set"
++ip netns exec $NS_SRC ethtool -L veth$SRC tx 4 2>/dev/null &&\
++	echo "fail - set operation successful ?!?" || echo " ok "
++
++chk_channels "setting invalid channels nr" $DST 3 4
++
+ chk_gro_flag "with xdp attached - gro flag" $DST on
+ chk_gro_flag "        - peer gro flag" $SRC off
+ chk_tso_flag "        - tso flag" $SRC off
+@@ -167,8 +227,13 @@ chk_gro_flag "        - after gro on xdp off, gro flag" $DST on
+ chk_gro_flag "        - peer gro flag" $SRC off
+ chk_tso_flag "        - tso flag" $SRC on
+ chk_tso_flag "        - peer tso flag" $DST on
++
++ip netns exec $NS_DST ethtool -L veth$DST tx 5
++chk_channels "setting tx channels with device down" $DST 3 4
++
+ ip -n $NS_DST link set dev veth$DST up
+ ip -n $NS_SRC link set dev veth$SRC up
++chk_channels "[takes effect after link up]" $DST 3 5
+ chk_gro "        - aggregation" 1
+ 
+ ip netns exec $NS_DST ethtool -K veth$DST gro off
 -- 
 2.26.3
 
