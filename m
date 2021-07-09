@@ -2,104 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A7B3C2708
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 17:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04693C2718
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 17:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232405AbhGIPqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 11:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
+        id S232370AbhGIP5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 11:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232269AbhGIPqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 11:46:36 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B40C0613DD
-        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 08:43:51 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id d1so7891631qto.4
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 08:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wf5dC1+OO8X1FTDU3W8+cu2By12/7/1B+AQomCmsAiw=;
-        b=QbQQKMlzbBh5hAEj+ZUmKBoRrZjs6M5S024RPta5oLnlS1QFl/gm6fhOMfrLOM4Rk0
-         jsfiAV8xlRSi9DmvBPw3vqQvwGLzc4BLkbLGX7ktkzxuVn+g7OnoFqx3lHSqg5JuYOtr
-         J3MTUR/7bszyVqfjCWx898YAepAnL60iV5LhxhGlw3T5NPO+c2pArpGFCqV7NLpKN/KU
-         uUFAb+0GX7XNhpIKRoD9ZXPs1xSBbqJZx7yl2xBwWP/vUl2tmdvHoZap5zdVozRTzjVG
-         RcrYr8QcwVvMWGsZKfRt9ZNBFUoOHU3PtiUOt6NeL1MROBzriXVOp1BIJ8rs2EvZ7VSS
-         dL1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wf5dC1+OO8X1FTDU3W8+cu2By12/7/1B+AQomCmsAiw=;
-        b=BtOlw5gcvY2TdwdBN5u5KSw6dtUP0OYas5RUud48pvrQcQ0anzjBD9WsaJyt0VUj7g
-         H4n6SGXhBSXqpzeMaW+JUfsTAnoUvpy1kYs2c67hOMquK6l4LvwMH7lRsvmSFv0SzqqH
-         9zfomU1jNnGYzkHKZF2OQMIuN0i6cULxNkco/OvtSDx/grbI2uSpeU4xkqLTvs44oO+1
-         vGws8hiax1UTFJUVSqK+ZnKqFYlZCLdv9j4p+koNdGJ/G3flXYNzc5IuKjLb/4D13UHP
-         f3eXhOs3rpuRwRTsHSrTI3bjYnHhbch0yj+KF/vKnv6n9iTDhznHWYxxkVaYuJsCaIMT
-         +6vQ==
-X-Gm-Message-State: AOAM531fVmAjesMcIALFde8wv4YmA6SBTiYZ/z40T8kT2lsVthHZ3lUH
-        5xHbejYlOIQ00+WEvq2T05dhg9dtDwIzEg==
-X-Google-Smtp-Source: ABdhPJyGkvuOFpVyM3tFZyJ38THGFkFVNhx3T9VltBXv0gfRh8kG267qibZ0dvvg2mrI9A/lFiDg5A==
-X-Received: by 2002:ac8:74c4:: with SMTP id j4mr180203qtr.161.1625845430980;
-        Fri, 09 Jul 2021 08:43:50 -0700 (PDT)
-Received: from talalahmad1.nyc.corp.google.com ([2620:0:1003:312:1ee8:3b51:b598:8f8d])
-        by smtp.gmail.com with ESMTPSA id x28sm2441331qtm.71.2021.07.09.08.43.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 08:43:50 -0700 (PDT)
-From:   Talal Ahmad <mailtalalahmad@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Talal Ahmad <talalahmad@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net] tcp: call sk_wmem_schedule before sk_mem_charge in zerocopy path
-Date:   Fri,  9 Jul 2021 11:43:06 -0400
-Message-Id: <20210709154306.2276391-1-mailtalalahmad@gmail.com>
-X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
+        with ESMTP id S231976AbhGIP5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 11:57:30 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0355BC0613DD;
+        Fri,  9 Jul 2021 08:54:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Jsw/ngtLTGz+rX9IOc4ToB/qHLSDIH6IoMbYjr26N84=; b=BQWj9lG9sPMHYq+SZocXjF36l
+        Kf686SWmfxqe644Vwy0kAPJrFS1O4pNRSDP5COdHLWNQqQHVDp3FYsVLpco1PYV4okgZinEG7jpr9
+        79OHDMvu3/WGmycSN58LFuNV8lgyYAfQATMiNNC3mK8YywFFTNZuyZU2hPUoMn3xuL+yZGBANt2xq
+        bzTjSEVEkoZOyEX6IoJlgwoUynR7IqpxlpwiEsyJkk8dAKQsHLvQd+IGkizaBJuUWPdUBum3X8x7b
+        tc6R3nqnwy28k69fLtvkoJkAoa+5xelUNDK27HNBTcSxJNVkN9b8JU1c8unYxoInf8g2xfbZOdA+u
+        bVualvlaQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45920)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1m1spw-000200-Sn; Fri, 09 Jul 2021 16:54:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1m1spw-00055L-Ao; Fri, 09 Jul 2021 16:54:44 +0100
+Date:   Fri, 9 Jul 2021 16:54:44 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Subject: Re: PHY reset may still be asserted during MDIO probe
+Message-ID: <20210709155444.GB22278@shell.armlinux.org.uk>
+References: <CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXno2OUHqsAfO0z43JmGkFehD+FJ2dEjEsr_P53oAAPxA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Talal Ahmad <talalahmad@google.com>
+On Fri, Jul 09, 2021 at 05:33:36PM +0200, Geert Uytterhoeven wrote:
+> Hi all,
+> 
+> I'm investigating a network failure after kexec on the Renesas Koelsch
+> and Salvator-XS development boards, using the sh-eth or ravb driver.
 
-sk_wmem_schedule makes sure that sk_forward_alloc has enough
-bytes for charging that is going to be done by sk_mem_charge.
+Personally, I've never liked the reset support at PHY device level due
+to problems like the one you've identified here. I've tended to use the
+bus-level reset in preference to the PHY-level reset, particularly
+because when you have multiple PHYs on the bus all sharing a common
+reset, it seems to be the most sensible approach - and I see a single
+PHY as no different from multiple PHYs on the bus.
 
-In the transmit zerocopy path, there is sk_mem_charge but there was
-no call to sk_wmem_schedule. This change adds that call.
+However, I can see the argument for using the PHY level, but as you
+note, that can create chicken and egg issues. I'm not entirely sure
+why we decide to hold a PHY in reset when we've found it but not
+started to make use of it - we don't do that with other devices in
+the system. Why are PHYs special?
 
-Without this call to sk_wmem_schedule, sk_forward_alloc can go
-negetive which is a bug because sk_forward_alloc is a per-socket
-space that has been forward charged so this can't be negative.
-
-Fixes: f214f915e7db ("tcp: enable MSG_ZEROCOPY")
-Signed-off-by: Talal Ahmad <talalahmad@google.com>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index d5ab5f243640..8cb44040ec68 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1375,6 +1375,9 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 			}
- 			pfrag->offset += copy;
- 		} else {
-+			if (!sk_wmem_schedule(sk, copy))
-+				goto wait_for_space;
-+
- 			err = skb_zerocopy_iter_stream(sk, skb, msg, copy, uarg);
- 			if (err == -EMSGSIZE || err == -EEXIST) {
- 				tcp_mark_push(tp, skb);
 -- 
-2.32.0.93.g670b81a890-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
