@@ -2,190 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 235493C291B
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 20:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B9DA3C2921
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 20:44:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhGISld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 14:41:33 -0400
-Received: from mga18.intel.com ([134.134.136.126]:50624 "EHLO mga18.intel.com"
+        id S229750AbhGISrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 14:47:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229750AbhGISlb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 14:41:31 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10039"; a="197027788"
-X-IronPort-AV: E=Sophos;i="5.84,227,1620716400"; 
-   d="scan'208";a="197027788"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2021 11:38:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,227,1620716400"; 
-   d="scan'208";a="428866603"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by orsmga002.jf.intel.com with ESMTP; 09 Jul 2021 11:38:44 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Fri, 9 Jul 2021 11:38:38 -0700
-Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Fri, 9 Jul 2021 11:38:38 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Fri, 9 Jul 2021 11:38:38 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.4; Fri, 9 Jul 2021 11:38:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WoSSncqRqqrIfviFOjKBQTBCp3IMXjv0bTTZB5Kn+cshZSpeUWs41L1eR8RdEznL3C/GbxPgPlC/p2r0Ix47FZ4s6Xs10XcueoxXxaaKE0yuEyK20TFC6OTJSU3fH/ocva0YOicR4xMsnKhfi0Rt4unV0kpyEztXpTSSfzUUQtjpsQ/PJQe3fZeCRIHRhPrNdRUAFjBFk8Qq77rNujkEAaM/gMp5qIv9IG8uZem2GiMCv2LGXVV58A4HRzql1V7AoC50G6Ru3DNt71JPW+e3YkF4JRnXfVpoyix6ywmsYIfRjX5RMVD68SXUHZrybb5FxD8zEYqXaZbUhdi6rCEVAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+S1GC4iEmwwKuRN0HhDckyvaZDsmJQrI1mfq3R9fAi4=;
- b=FWEaIN6QqEFaG3C8THm+6nJ5IgIvjXw0hrcso5iODlsJMfWR3swPg9j2md5/L2ojAnG5ZMKbeQqzceXsLxwqOsEo9tlxx2Vlm627VeZTQEc6VRe+5oEyeVajKD8uvOwtvyxqaba2dUn7892bRKqqMREeVYNi8+tBsURwwdhqkakPNXuemYibZ8LOQSjcvX9atpwOOH7zMQsH9Q09G1GspSzeLicbx3qQZ1ALNuZSm/bWTE50PMiYYzO5ei/jyLLQDO/eWa0Ft7QUOjrXHBPVhDy/so2h6ehfThApGJTQQQn8zQV+Tc8FfOBHLfSw1VxCR29GfvurWZntoheIacZ72w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+S1GC4iEmwwKuRN0HhDckyvaZDsmJQrI1mfq3R9fAi4=;
- b=MrJHOK7dkEjgRiFzENPKcvQXeoJ2EvomjMucnurHHjzCV0Lg/sUkAzwfPoQLZyjZ0VXFyt0MReYcUyXNg2NhysfvHLwtpL7LM7E4UUMgIuTFM5fRtadmJbyu5G7O+CoqWAoFVhGRoPxd+6tO+9ZyaP696YFIB4HTu9sgcVh7WzE=
-Received: from MN2PR11MB4173.namprd11.prod.outlook.com (2603:10b6:208:137::20)
- by MN2PR11MB4256.namprd11.prod.outlook.com (2603:10b6:208:17b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.22; Fri, 9 Jul
- 2021 18:38:37 +0000
-Received: from MN2PR11MB4173.namprd11.prod.outlook.com
- ([fe80::4830:43ae:7d53:36d5]) by MN2PR11MB4173.namprd11.prod.outlook.com
- ([fe80::4830:43ae:7d53:36d5%7]) with mapi id 15.20.4308.023; Fri, 9 Jul 2021
- 18:38:37 +0000
-From:   "Fingerhut, John Andy" <john.andy.fingerhut@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: How to limit TCP packet lengths given to TC egress EBPF programs?
-Thread-Topic: How to limit TCP packet lengths given to TC egress EBPF
- programs?
-Thread-Index: Add08YrrJTQHjCMDQUqDNnOXswNLbA==
-Date:   Fri, 9 Jul 2021 18:38:36 +0000
-Message-ID: <MN2PR11MB4173595C36B9876CBF2CCFA1A6189@MN2PR11MB4173.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77611235-8637-451f-a956-08d94308c3a1
-x-ms-traffictypediagnostic: MN2PR11MB4256:
-x-microsoft-antispam-prvs: <MN2PR11MB425648B40CF4264815B29B80A6189@MN2PR11MB4256.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8ynthUQPrb9QNXxvEnaPnzfP2NNZHkgrs8GZUjNo3fvCXXYwn1DN2fVp+uvTRGAaexhqOVIZIqUGkjJpOX3TKKabhnwjMp6lXNZbbWW37j0QCai2iNSsdJuAA9y/6DmnR21XYSrsLE69AHfcXxHjzN8DLtr2WWxmohqK/Q0PaYe7dTYz5I9k6LYiW+8lKFZv6eafqLnP/ahq59R0xMjHVa7NZ+GmAoSlrlEBvuFwyvAV/pvnNdua28i/5JoYPTuvb9/8/FZp5JEtAZpn8d450NQGpxccAmMME0GnAlMigilfSRSkT9ouj2h90oDFUZqWBBPM/UJkRSjZtmCd/S2/1PvNTqLlBgVJqOuqRy4yVJEeNwXp8sdGvPkkNEM7Fcl5L6QWUKd1D+zUMogyPfSH6ffkDhGE4Q5ik0YTduTfiMCxZodtvsri9foEjxjb3m93XUan4m/Eu0StrD0MlpEDPot8LS0VH7bDo0DmhjjuwnxYC2lI6zt/lvgYd3IwkCtip546wfygmHB3Fmzfs5/UdX2bmHYAT6OGIoGHNGgWduD7raReMTJP6PdtAYxUEuz6grN0kxY73dc1UEu7o8d+t7mQWrMnLv6KzpPnESdn7aSUEMyMMS1AGCI2WAf7PWJzx3MDhU1I0yNR6eij5ktcPzxPFrUebQ82wWJTg6My043EZaIYRvHvUxm8v8NHVEeanBis1wBoYi2MaHSn71Ywu7YohAvv461IC/Cy3HUIAC4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4173.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39860400002)(346002)(136003)(366004)(396003)(71200400001)(9686003)(52536014)(55016002)(2906002)(5660300002)(186003)(478600001)(38100700002)(26005)(6506007)(86362001)(76116006)(33656002)(66556008)(64756008)(66476007)(66446008)(122000001)(7696005)(66946007)(6916009)(8936002)(8676002)(966005)(83380400001)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iusCDMokcfHJbiiS5HkmFmSb+FO/b/D6K/4PFH0iS5ddKR7lqqq60E4Sx8v/?=
- =?us-ascii?Q?i1sNo+j4LX4gchhNXXyJyItEsC/FxUDAaZviypH1YmyBls5BwTuTvoGJxza6?=
- =?us-ascii?Q?FUHMIKXR1LI2pHp3SFEVOm5qN2A/OvHq6GEvZrJqNtJIOPp1oUHds8NZ3RwA?=
- =?us-ascii?Q?E9D2P0SNbS3huglt7aD2TnLI+wD8sK7FNn5G+hQZHYP+TzJB2F4+UCrJ7fZ0?=
- =?us-ascii?Q?wdWVUHYG9J3F7fea6GWmUkOuiQY8fDO3436GO4D6ZJi+b/sVqMhjT40KulS+?=
- =?us-ascii?Q?u73TXWQSW/NQ42PVn8IZpVo3W7RncG5Djm+jPmdXFz+IihHiPd29ColFcp/N?=
- =?us-ascii?Q?koSlVRtNfxk3TYGRbiYsACi6VDiHStn/xFo3MjAuBLpyGmgM5U2OY29OtduJ?=
- =?us-ascii?Q?58u9jwR2G+EMhkXuag1M0BG+htBjI2PSx1Hu5dJE5XMwfCUtWHo6RcLmIONE?=
- =?us-ascii?Q?SgToiq+E8YO17NjbLJdAzavFwXHdzFZBOmS6Vsad0CT3MbE+xbmpCL8AdvPI?=
- =?us-ascii?Q?Car/Ns7gmX7u58lcR9zz1g683WRUGdT8PaGr0NOpBTpkNghHsEhP5It4oQ79?=
- =?us-ascii?Q?fy9zHWe43u9EHTyITD38CyQxCyc++QwSferDTtv/8Df/fptQgCpmwyCl2CoY?=
- =?us-ascii?Q?kQ+iYtQ0TSLfIn0ColBQHFdEv1F+CzBgCbYJaJ9Qq9c2ehmGi7boL9x5DKWM?=
- =?us-ascii?Q?VAs35RxUn6R+84c58Fg2P+NpqUMfiRvDIJZc9NRIX66poyoG6jUMuuWTtT/I?=
- =?us-ascii?Q?6B+6fxP8K+blXqFJE6gA1m00nErarS9YCd9raMQqW9v5Dt/lziV9d79YUaCG?=
- =?us-ascii?Q?vN+t2mCOyaAYfwuXuRgGDo8q7rdloqCs1xHiJacr5mrqU/7wGeuRBs0VSI95?=
- =?us-ascii?Q?z6VKmpHF04NHblshf/9YTJCY1oUMMPuJqI7RH6HTZx3jsUzUt5PRdWcA+C3y?=
- =?us-ascii?Q?bNsiTaZrHlBUunmyMCV8lQ14lSqb2x6+zgiTvZWJ074gZ3wP7z3YO5ckkrpV?=
- =?us-ascii?Q?Cy3lfIKwvlIHB/E11ap9MaO6CHbPsulmmrt6+swix6ePIr5zKPua05jj0ll8?=
- =?us-ascii?Q?GbckWmg0zSnlHyjICVrIq4G7ts7EZpCu84Yja/cVTyUzbvlGDwviBiGeQ13E?=
- =?us-ascii?Q?aFOSK8SK1CMnwXKxZ0Ml22acDNlawmwDdDQ+tXqhl0BTobPgr0N0+TcSSk23?=
- =?us-ascii?Q?TuGIq0IAZ9BHsu4zVyrWHLCA812xnNhEWTDIv2O19y5L4bbXSSLwVzKgpizM?=
- =?us-ascii?Q?b7QQP4i9awFdItW7ywbpDIAEmZHDv28pM6YKQxxDoHUoV2CPqKDOaQ/aqdHN?=
- =?us-ascii?Q?syXW43bSZ1kQ3cRqNRTyjH1i?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S229459AbhGISra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 14:47:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 98D9B60238;
+        Fri,  9 Jul 2021 18:44:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625856286;
+        bh=u4IGhXiKWHtarMynw8d7DvZQNHWKMfkObaDbgGNcKg8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aL94Dn3yx9EeVaiHjRMEwKQB+D46uURlIk9J830CpcL5mR2CKnKtISfBoapSjvlKJ
+         /WOidQXvGfoJToUKttM0lhpiXp2iYqpON6ReQqozRGPfAuWQFBGyMruwxufLk+wLhn
+         0mOwAQjpVF1HVgXquxw+E/6O8nUKy3eEclvXTHQCcnuRRCjsdvc7cD19lvN+Z1rp55
+         Gr/MOi03wrynUfXPz+eZTzYpFQkCd0WPqzpxqZCGsjCMMMOQmtXTc9+dd/PEF0CFVs
+         AfzbH9iHknuQ/gx42gHWLa6O0XW+Dm8hZm2wgxB6BywJ9xIzcyPigO3VP1ywBTAPQh
+         fE8xh/sUqOOpA==
+Received: by pali.im (Postfix)
+        id 1D77077D; Fri,  9 Jul 2021 20:44:44 +0200 (CEST)
+Date:   Fri, 9 Jul 2021 20:44:43 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
+ gen4+ devices
+Message-ID: <20210709184443.fxcbc77te6ptypar@pali>
+References: <20210709145831.6123-1-verdre@v0yd.nl>
+ <20210709145831.6123-3-verdre@v0yd.nl>
+ <20210709151800.7b2qqezlcicbgrqn@pali>
+ <b1002254-97c6-d271-c385-4a5c9fe0c914@mailbox.org>
+ <20210709161251.g4cvq3l4fnh4ve4r@pali>
+ <d9158206-8ebe-c857-7533-47155a6464e1@gmail.com>
+ <20210709173013.vkavxrtz767vrmej@pali>
+ <89a60b06-b22d-2ea8-d164-b74e4c92c914@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB4173.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77611235-8637-451f-a956-08d94308c3a1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jul 2021 18:38:36.9537
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /kc1g74ahS1DmCJ7itQtd2MOcQNFTSuzbkTUG2fo/yUF6tSSEh5YUR7whScuvCtircmhREWpwLyaT+HMjsY4OBgSK4YNwPn+m3aEqAAyF+w=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4256
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <89a60b06-b22d-2ea8-d164-b74e4c92c914@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings:
+On Friday 09 July 2021 20:16:49 Maximilian Luz wrote:
+> On 7/9/21 7:30 PM, Pali Rohár wrote:
+> > On Friday 09 July 2021 19:03:37 Maximilian Luz wrote:
+> > > On 7/9/21 6:12 PM, Pali Rohár wrote:
+> > > 
+> > > [...]
+> > > 
+> > > > > > Hello! Now I'm thinking loudly about this patch. Why this kind of reset
+> > > > > > is needed only for Surface devices? AFAIK these 88W8897 chips are same
+> > > > > > in all cards. Chip itself implements PCIe interface (and also SDIO) so
+> > > > > > for me looks very strange if this 88W8897 PCIe device needs DMI specific
+> > > > > > quirks. I cannot believe that Microsoft got some special version of
+> > > > > > these chips from Marvell which are different than version uses on cards
+> > > > > > in mPCIe form factor.
+> > > > > > 
+> > > > > > And now when I'm reading comment below about PCIe bridge to which is
+> > > > > > this 88W8897 PCIe chip connected, is not this rather an issue in that
+> > > > > > PCIe bridge (instead of mwifiex/88W8897) or in ACPI firmware which
+> > > > > > controls this bridge?
+> > > > > > 
+> > > > > > Or are having other people same issues on mPCIe form factor wifi cards
+> > > > > > with 88W8897 chips and then this quirk should not DMI dependent?
+> > > > > > 
+> > > > > > Note that I'm seeing issues with reset and other things also on chip
+> > > > > > 88W8997 when is connected to system via SDIO. These chips have both PCIe
+> > > > > > and SDIO buses, it just depends which pins are used.
+> > > > > > 
+> > > > > 
+> > > > > Hi and thanks for the quick reply! Honestly I've no idea, this is just the
+> > > > > first method we found that allows for a proper reset of the chip. What I
+> > > > > know is that some Surface devices need that ACPI DSM call (the one that was
+> > > > > done in the commit I dropped in this version of the patchset) to reset the
+> > > > > chip instead of this method.
+> > > > > 
+> > > > > Afaik other devices with this chip don't need this resetting method, at
+> > > > > least Marvell employees couldn't reproduce the issues on their testing
+> > > > > devices.
+> > > > > 
+> > > > > So would you suggest we just try to match for the pci chip 88W8897 instead?
+> > > > 
+> > > > Hello! Such suggestion makes sense when we know that it is 88W8897
+> > > > issue. But if you got information that issue cannot be reproduced on
+> > > > other 88W8897 cards then matching 88W8897 is not correct.
+> > > > 
+> > > >   From all this information looks like that it is problem in (Microsoft?)
+> > > > PCIe bridge to which is card connected. Otherwise I do not reason how it
+> > > > can be 88W8897 affected. Either it is reproducible on 88W8897 cards also
+> > > > in other devices or issue is not on 88W8897 card.
+> > > 
+> > > I doubt that it's an issue with the PCIe bridge (itself at least). The
+> > > same type of bridge is used for both dGPU and NVME SSD on my device (see
+> > > lspci output below) and those work fine. Also if I'm seeing that right
+> > > it's from the Intel CPU, so my guess is that a lot more people would
+> > > have issues with that then.
+> > 
+> >  From information below it seems to be related to surprise removal.
+> > Therefore is surprise removal working without issue for dGPU or NVME
+> > SSD? Not all PCIe bridges support surprise removal...
+> 
+> The dGPU on the Surface Book 2 is detachable (the whole base where that
+> is placed can be removed). As far as I can tell surprise removal works
+> perfectly fine for that one. The only thing that it needs is a driver for
+> out-of-band hot-plug signalling if the device is in D3cold while removed
+> as hotplug/removal notifications via PCI don't work in D3cold (this
+> works via ACPI, there is as far as I can tell no such mechanism for
+> WiFi, probably since it's not intended to be hot-unplugged).
 
-I am working on a project that runs an EBPF program on the Linux
-Traffic Control egress hook, which modifies selected packets to add
-headers to them that we use for some network telemetry.
+Ok. Thank you for confirmation.
 
-I know that this is _not_ what one wants to do to get maximum TCP
-performance, but at least for development purposes I was hoping to
-find a way to limit the length of all TCP packets that are processed
-by this EBPF program to be at most one MTU.
+> > > I don't know about the hardware side, so it might be possible that it's
+> > > an issue with integrating both bridge and wifi chip, in which case it's
+> > > still probably best handled via DMI quirks unless we know more.
+> > > 
+> > > Also as Tsuchiya mentioned in his original submission, on Windows the
+> > > device is reset via this D3cold method. I've only skimmed that
+> > > errata.inf file mentioned, but I think this is what he's referring to:
+> > > 
+> > >    Controls whether ACPIDeviceEnableD3ColdOnSurpriseRemoval rule will be
+> > >    evaluated or not on a given platform. Currently
+> > >    ACPIDeviceEnableD3ColdOnSurpriseRemoval rule only needs to be
+> > >    evaluated on Surface platforms which contain the Marvell WiFi
+> > >    controller which depends on device going through D3Cold as part of
+> > >    surprise-removal.
+> > > 
+> > > and
+> > > 
+> > >    Starting with Windows releases *after* Blue, ACPI will not put
+> > >    surprise-removed devices into D3Cold automatically. Some known
+> > >    scenarios (viz. WiFi reset/recovery) rely on the device cycling
+> > >    through D3Cold on surprise-removal. This hack allows surprise-removed
+> > >    devices to be put into D3Cold (if supported by the stack).
+> > > 
+> > > So, as far as I can tell, the chip doesn't like to be surprise-removed
+> > > (which seems to happen during reset) and then needs to be power-cycled,
+> > > which I think is likely due to some issue with firmware state.
+> > 
+> > Thanks for information. This really does not look like PCIe bridge
+> > specific if bridge itself can handle surprise-removed devices. lspci can
+> > tell us if bridge supports it or not (see below).
+> > 
+> > > So the quirk on Windows seems very Surface specific.
+> > > 
+> > > There also seem a bunch of revisions of these chips around, for example
+> > > my SB2 is affected by a bug that we've tied to the specific hardware
+> > > revision which causes some issues with host-sleep (IIRC chip switches
+> > > rapidly between wake and sleep states without any external influence,
+> > > which is not how it should behave and how it does behave on a later
+> > > hardware revision).
+> > 
+> > Interesting... This looks like the issue can be in 88W8897 chip and
+> > needs some special conditions to trigger? And Surface is triggering it
+> > always?
+> 
+> Not always. It's been a while since I've been actively looking at this
+> and I'm not sure we ever had a good way to reproduce this. Also, I've
+> never really dealt with it as in-depth as Tsuchiya and Jonas have.
+> 
+> My (very) quick attempt ('echo 1 > /sys/bus/pci/.../reset) at
+> reproducing this didn't work, so I think at very least a network
+> connection needs to be active.
 
-Towards that goal, we have tried several things, but regardless of
-which subset of the following things we have tried, there are some
-packets processed by our EBPF program that have IPv4 Total Length
-field that is some multiple of the MSS size, sometimes nearly 64
-KBytes.  If it makes a difference in configuration options available,
-we have primarily been testing with Ubuntu 20.04 Linux running the
-Linux kernel versions near 5.8.0-50-generic distributed by Canonical.
+This is doing PCIe function level reset. Maybe you can get more luck
+with PCIe Hot Reset. See following link how to trigger PCIe Hot Reset
+from userspace: https://alexforencich.com/wiki/en/pcie/hot-reset-linux
 
-Disable TSO and GSO on the network interface:
+> Unfortunately I can't test that with a
+> network connection (and without compiling a custom kernel for which I
+> don't have the time right now) because there's currently another bug
+> deadlocking on device removal if there's an active connection during
+> removal (which also seems to trigger on reset). That one ill be fixed
+> by
+> 
+>   https://lore.kernel.org/linux-wireless/20210515024227.2159311-1-briannorris@chromium.org/
+> 
+> Jonas might know more.
+> 
+> > > > > Then we'd probably have to check if there are any laptops where multiple
+> > > > > devices are connected to the pci bridge as Amey suggested in a review
+> > > > > before.
+> > > > 
+> > > > Well, I do not know... But if this is issue with PCIe bridge then
+> > > > similar issue could be observed also for other PCIe devices with this
+> > > > PCIe bridge. But question is if there are other laptops with this PCIe
+> > > > bridge. And also it can be a problem in ACPI firmware on those Surface
+> > > > devices, which implements some PCIe bridge functionality. So it is
+> > > > possible that issue is with PCIe bridge, not in HW, but in SW/firmware
+> > > > part which can be Microsoft specific... So too many questions to which
+> > > > we do not know answers.
+> > > > 
+> > > > Could you provide output of 'lspci -nn -vv' and 'lspci -tvnn' on
+> > > > affected machines? If you have already sent it in some previous email,
+> > > > just send a link. At least I'm not able to find it right now and output
+> > > > may contain something useful...
+> > > 
+> > >  From my Surface Book 2 (with the same issue):
+> > > 
+> > >   - lspci -tvnn: https://paste.ubuntu.com/p/mm3YpcZJ8N/
+> > >   - lspci -vv -nn: https://paste.ubuntu.com/p/dctTDP738N/
+> > 
+> > Could you re-run lspci under root account? There are missing important
+> > parts like "Capabilities: <access denied>" where is information if
+> > bridge supports surprise removal or not.
+> 
+> Ah sorry, sure thing. Here's the updated lspci -nn -vv log:
+> 
+>   https://paste.ubuntu.com/p/fzsmCvm86Y/
+> 
+> The log for lspci -tvnn is the same.
 
-    ethtool -K enp0s8 tso off gso off
+Ok. So bridge for wifi card (00:1c.0) indicates:
 
-Configuring TCP MSS using 'ip route' command:
+    SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug- Surprise-
+            Slot #0, PowerLimit 10.000W; Interlock- NoCompl+
 
-    ip route change 10.0.3.0/24 dev enp0s8 advmss 1424
+No support for surprise removal, nor for hotplug interrupt.
 
-The last command _does_ have some effect, in that many packets
-processed by our EBPF program have a length affected by that advmss
-value, but we still see many packets that are about twice as large,
-about three times as large, etc., which fit into that MSS after being
-segmented, I believe in the kernel GSO code.
+But bridge for nvidia card (00:1c.4) indicates:
 
-Is there some other configuration option we can change that can
-guarantee that when a TCP packet is given to a TC egress EBPF program,
-it will always be at most a specified length?
+    SltCap: AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug+ Surprise+
+            Slot #4, PowerLimit 25.000W; Interlock- NoCompl+
 
+And interesting, it supports hotplug interrupt and also surprise
+removal. Which matches what you wrote above about dGPU.
 
-Background:
+So another idea: maybe problem is really in 88W8897 and recovering is
+working only via bridge which supports surprise removal? Just guessing.
+Or kernel PCIe hotplug driver is doing something which is needed for
+recovering 88W8897 and because this bridge does not support surprise
+removal, it behaves differently?
 
-Intel is developing and releasing some open source EBPF programs and
-associated user space programs that modify packets to add INT (Inband
-Network Telemetry) headers, which can be used for some kinds of
-performance debugging reasons, e.g. triggering events when packet
-losses are detected, or significant changes in one-way packet latency
-between two hosts configured to run this Host INT code.  See the
-project home page for more details if you are interested:
-
-https://github.com/intel/host-int
-
-Note: The code published now is an alpha release.  We know there are
-bugs.  We know our development team is not what you would call EBPF
-experts (at least not yet), so feel free to point out bugs and/or
-anything that code is doing that might be a bad idea.
-
-Thanks,
-Andy Fingerhut
-Principal Engineer
-Intel Corporation
+> 
+> > > Regards,
+> > > Max
