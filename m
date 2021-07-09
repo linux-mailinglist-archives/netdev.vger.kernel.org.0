@@ -2,112 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E10523C20FE
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 10:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92BE63C2128
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbhGIIqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 04:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231585AbhGIIqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 04:46:53 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8DCC0613DD;
-        Fri,  9 Jul 2021 01:44:09 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id o4so4662659plg.1;
-        Fri, 09 Jul 2021 01:44:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7W/RXc+IBJu2j+yc4eqfnO/B+uIUaANtmNbBhY5N0bo=;
-        b=ssESuozzwrDfjs4SsestEH430LqnlOFIK4vttayikK1q0lOy53kSobtDETx1BZvA93
-         5IaLHRcJj11j3YH8WiqfYihNgWdtB0gRDLtWZMh0MvxDGzOOPERFcRfZSxdZtsKPbyhc
-         ZoT0+78m4DWWCPiFxWxLlu4iBFNJhaMOf2J18/EhD/dQA/ZjrQbbB5hTXkBm8vhaSbma
-         1swfVI6kpwLG7fzXZTkfF5+UCEaM1ytI3jVuTw1e62WyDJiPIQY68POjnVJeKhA929v3
-         ICcX1HIkikYDAd5uHngkIDKIefDlLe9KsCQnLeWHxdtMxw9LsAedeYMjv0iyZPM/n1RX
-         LjjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7W/RXc+IBJu2j+yc4eqfnO/B+uIUaANtmNbBhY5N0bo=;
-        b=OMn+YMR8AZ/y00NDvuYJU5VpC4oNppcw7TTOxRTClzSZZso0/zaFUapMgD7I/1REba
-         j5lWhpqxS/92ziJcWhRwRcTGHDBHXB/8xhRMgUOiKe9HFfpMG+zVuntNZ+KkqDE8CK0I
-         aABYF3PpD44ZW3KJIH5AoWFmGffSxE8UUNr0i/Xye0iKmuVNqiZs6U81xWmA04CPogMt
-         pfZETC8s0DZxqLfDdhOzdbLoSq+SROIMLrx/fe+Evydt1u9GdqnmRi1PQcCsE/dj4O2W
-         iGKzapmeNToJlZ0DvtTHCsJi8L3/91ZJu0NxC3bui29EyzVXZIBwaDtJTwluAu9QkfD5
-         yL+A==
-X-Gm-Message-State: AOAM531wzdDhPcg5b0pBZ9Bgfc/gZJW1GTzz20uXYi9/XSzD7HFXlLju
-        uPpqsEyVlA1QgKpQPXUzdjk=
-X-Google-Smtp-Source: ABdhPJyHHifuowhUFMdA+aX3uQQ86aA3zYGue1JjUk98DE9FLG4ZQOg4RRFDBOmCZIj7aYrQJMaabg==
-X-Received: by 2002:a17:902:aa92:b029:127:a70e:3197 with SMTP id d18-20020a170902aa92b0290127a70e3197mr30061236plr.30.1625820249319;
-        Fri, 09 Jul 2021 01:44:09 -0700 (PDT)
-Received: from localhost.localdomain ([154.16.166.216])
-        by smtp.gmail.com with ESMTPSA id x10sm5737169pfd.175.2021.07.09.01.44.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 01:44:08 -0700 (PDT)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     ath9k-devel@qca.qualcomm.com, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S231494AbhGIJHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 05:07:19 -0400
+Received: from relay.sw.ru ([185.231.240.75]:59358 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229563AbhGIJHT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 05:07:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=zFVuTQnyDA8cEkikltXIqvJF76UzOBgsQPGOznrl6Vk=; b=LurVBLVosc1opccJ312
+        Vcm11i6gYFWEZmwLmEu/cja+xeO7VLjW0yJuAp60Dvv/5pzkDHR3w3AnMM3SjhcPr8bd0ZHdTk4cI
+        vy+9ejMYprW2v7c2E/ZdA2175ktIHeWklAI+0qjnMv0ANvImx9HBNF1QZ1gFyILNzXD5gh6ttzY=;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1m1mQx-003PkY-Rg; Fri, 09 Jul 2021 12:04:31 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH IPV6 v2 0/4] ipv6: allocate enough headroom in
+ ip6_finish_output2()
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Brooke Basile <brookebasile@gmail.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ath9k: hif_usb: fix memory leak in ath9k_hif_usb_firmware_cb
-Date:   Fri,  9 Jul 2021 16:43:51 +0800
-Message-Id: <20210709084351.2087311-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1cbf3c7b-455e-f3a5-cc2c-c18ce8be4ce1@gmail.com>
+Message-ID: <74e90fba-df9f-5078-13de-41df54d2b257@virtuozzo.com>
+Date:   Fri, 9 Jul 2021 12:04:31 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1cbf3c7b-455e-f3a5-cc2c-c18ce8be4ce1@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 03fb92a432ea ("ath9k: hif_usb: fix race condition between
-usb_get_urb() and usb_kill_anchored_urbs()") adds three usb_get_urb
-in ath9k_hif_usb_dealloc_tx_urbs and usb_free_urb.
+Recently Syzkaller found one more issue on RHEL7-based OpenVz kernels.
+During its investigation I've found that upstream is affected too. 
 
-Fix this bug by adding corresponding usb_free_urb in
-ath9k_hif_usb_dealloc_tx_urbs other and hif_usb_stop.
+TEE target send sbk with small headroom into another interface which requires
+an increased headroom.
 
-Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
-Fixes: 03fb92a432ea ("ath9k: hif_usb: fix race condition between usb_get_urb() and usb_kill_anchored_urbs()")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/wireless/ath/ath9k/hif_usb.c | 3 +++
- 1 file changed, 3 insertions(+)
+ipv4 handles this problem in ip_finish_output2() and creates new skb with enough headroom,
+though ip6_finish_output2() lacks this logic.
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 860da13bfb6a..bda91ff3289b 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -457,6 +457,7 @@ static void hif_usb_stop(void *hif_handle)
- 		usb_kill_urb(tx_buf->urb);
- 		list_del(&tx_buf->list);
- 		usb_free_urb(tx_buf->urb);
-+		usb_free_urb(tx_buf->urb);
- 		kfree(tx_buf->buf);
- 		kfree(tx_buf);
- 		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
-@@ -779,6 +780,7 @@ static void ath9k_hif_usb_dealloc_tx_urbs(struct hif_device_usb *hif_dev)
- 		usb_kill_urb(tx_buf->urb);
- 		list_del(&tx_buf->list);
- 		usb_free_urb(tx_buf->urb);
-+		usb_free_urb(tx_buf->urb);
- 		kfree(tx_buf->buf);
- 		kfree(tx_buf);
- 		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
-@@ -797,6 +799,7 @@ static void ath9k_hif_usb_dealloc_tx_urbs(struct hif_device_usb *hif_dev)
- 		usb_kill_urb(tx_buf->urb);
- 		list_del(&tx_buf->list);
- 		usb_free_urb(tx_buf->urb);
-+		usb_free_urb(tx_buf->urb);
- 		kfree(tx_buf->buf);
- 		kfree(tx_buf);
- 		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+Suzkaller created C reproducer, it can be found in v1 cover-letter.
+
+v2 changes: 
+ new helper was created and used in ip6_finish_output2 and in ip6_xmit()
+ small refactoring in changed functions: commonly used dereferences was replaced by variables
+
+ToDo:
+ clarify proper name for helper,
+ move it into proper place,  
+ use it in other similar places:
+   pptp_xmit
+   vrf_finish_output
+   ax25_transmit_buffer
+   ax25_rt_build_path
+   bpf_out_neigh_v6
+   bpf_out_neigh_v4
+   ip_finish_output2
+   ip6_tnl_xmit
+   ipip6_tunnel_xmit
+   ip_vs_prepare_tunneled_skb
+
+Vasily Averin (4):
+  ipv6: allocate enough headroom in ip6_finish_output2()
+  ipv6: use new helper skb_expand_head() in ip6_xmit()
+  ipv6: ip6_finish_output2 refactoring
+  ipv6: ip6_xmit refactoring
+
+ net/ipv6/ip6_output.c | 89 ++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 59 insertions(+), 30 deletions(-)
+
 -- 
-2.25.1
+1.8.3.1
 
