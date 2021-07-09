@@ -2,190 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5098F3C2414
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 15:15:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4178F3C241B
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 15:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbhGINRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 09:17:51 -0400
-Received: from mxout70.expurgate.net ([194.37.255.70]:57099 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbhGINRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 09:17:50 -0400
-X-Greylist: delayed 780 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Jul 2021 09:17:50 EDT
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1m1q8g-0007AX-Il; Fri, 09 Jul 2021 15:01:54 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1m1q8d-0002Wf-0i; Fri, 09 Jul 2021 15:01:51 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 42704240041;
-        Fri,  9 Jul 2021 15:01:50 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 96504240040;
-        Fri,  9 Jul 2021 15:01:49 +0200 (CEST)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 35DF220196;
-        Fri,  9 Jul 2021 15:01:49 +0200 (CEST)
+        id S231747AbhGINT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 09:19:26 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:59392 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231543AbhGINT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 09:19:26 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 169DGHgd073398;
+        Fri, 9 Jul 2021 08:16:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1625836577;
+        bh=CUUFEgN3xsuhwmhWlIEAb6/KOqMMPnE+U548owx+oss=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=qjxo13jXQtpDYCi25Vlw+KgE7Ewhslkw3RoPZhVy0CqNAG1ceCYEa3Be/cUNtQHRh
+         y0R2pycGxKXS4OAuuunOd2aLyTU6rEeASES3Kz4Mt9XkcWrr1/xSMiIvKhNBrqEdoJ
+         ggdf2WaSNoZK5uZc4ecn9UXpgTLI+ynABNpbJYm8=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 169DGHUh101437
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 9 Jul 2021 08:16:17 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 9 Jul
+ 2021 08:16:17 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2 via
+ Frontend Transport; Fri, 9 Jul 2021 08:16:17 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 169DGEeX015573;
+        Fri, 9 Jul 2021 08:16:14 -0500
+Subject: Re: [RFC PATCH v2 net-next 04/10] net: bridge: switchdev: allow the
+ data plane forwarding to be offloaded
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        <bridge@lists.linux-foundation.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+References: <20210703115705.1034112-1-vladimir.oltean@nxp.com>
+ <20210703115705.1034112-5-vladimir.oltean@nxp.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <3686cff1-2a80-687e-7c64-cf070a0f5324@ti.com>
+Date:   Fri, 9 Jul 2021 16:16:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <20210703115705.1034112-5-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Fri, 09 Jul 2021 15:01:49 +0200
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
-        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: intel-xway: Add RGMII internal delay
- configuration
-Organization: TDT AG
-In-Reply-To: <20210709122658.GA22278@shell.armlinux.org.uk>
-References: <20210709115726.11897-1-ms@dev.tdt.de>
- <20210709122658.GA22278@shell.armlinux.org.uk>
-Message-ID: <2811b4b95827a8b2988e31afd47a6514@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.16
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-type: clean
-X-purgate-ID: 151534::1625835711-00007B90-695157FA/0/0
-X-purgate: clean
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-07-09 14:26, Russell King (Oracle) wrote:
-> On Fri, Jul 09, 2021 at 01:57:26PM +0200, Martin Schiller wrote:
->> +static int xway_gphy_of_reg_init(struct phy_device *phydev)
->> +{
->> +	struct device *dev = &phydev->mdio.dev;
->> +	int delay_size = ARRAY_SIZE(xway_internal_delay);
->> +	s32 rx_int_delay;
->> +	s32 tx_int_delay;
->> +	int err = 0;
->> +	int val;
->> +
->> +	if (phy_interface_is_rgmii(phydev)) {
->> +		val = phy_read(phydev, XWAY_MDIO_MIICTRL);
->> +		if (val < 0)
->> +			return val;
->> +	}
->> +
->> +	/* Existing behavior was to use default pin strapping delay in rgmii
->> +	 * mode, but rgmii should have meant no delay.  Warn existing users.
->> +	 */
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
->> +		const u16 txskew = (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
->> +				   XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
->> +		const u16 rxskew = (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
->> +				   XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
->> +
->> +		if (txskew > 0 || rxskew > 0)
->> +			phydev_warn(phydev,
->> +				    "PHY has delays (e.g. via pin strapping), but phy-mode = 
->> 'rgmii'\n"
->> +				    "Should be 'rgmii-id' to use internal delays txskew:%x 
->> rxskew:%x\n",
->> +				    txskew, rxskew);
->> +	}
->> +
->> +	/* RX delay *must* be specified if internal delay of RX is used. */
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
->> +		rx_int_delay = phy_get_internal_delay(phydev, dev,
->> +						      &xway_internal_delay[0],
->> +						      delay_size, true);
->> +
->> +		if (rx_int_delay < 0) {
->> +			phydev_err(phydev, "rx-internal-delay-ps must be specified\n");
->> +			return rx_int_delay;
->> +		}
->> +
->> +		val &= ~XWAY_MDIO_MIICTRL_RXSKEW_MASK;
->> +		val |= rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
->> +	}
->> +
->> +	/* TX delay *must* be specified if internal delay of TX is used. */
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
->> +		tx_int_delay = phy_get_internal_delay(phydev, dev,
->> +						      &xway_internal_delay[0],
->> +						      delay_size, false);
->> +
->> +		if (tx_int_delay < 0) {
->> +			phydev_err(phydev, "tx-internal-delay-ps must be specified\n");
->> +			return tx_int_delay;
->> +		}
->> +
->> +		val &= ~XWAY_MDIO_MIICTRL_TXSKEW_MASK;
->> +		val |= tx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
->> +	}
->> +
->> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
->> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
->> +		err = phy_write(phydev, XWAY_MDIO_MIICTRL, val);
->> +
->> +	return err;
->> +}
-> 
-> Please reconsider the above.  Maybe something like the following would
-> be better:
-> 
-> 	u16 mask = 0;
-> 	int val = 0;
-> 
-> 	if (!phy_interface_is_rgmii(phydev))
-> 		return;
-> 
-> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
-> 		u16 txskew, rxskew;
-> 
-> 		val = phy_read(phydev, XWAY_MDIO_MIICTRL);
-> 		if (val < 0)
-> 			return val;
-> 
-> 		txskew = (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
-> 			 XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
-> 		rxskew = (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
-> 			 XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
-> 
-> 		if (txskew > 0 || rxskew > 0)
-> 			phydev_warn(phydev,
-> 				    "PHY has delays (e.g. via pin strapping), but phy-mode = 
-> 'rgmii'\n"
-> 				    "Should be 'rgmii-id' to use internal delays txskew:%x 
-> rxskew:%x\n",
-> 				    txskew, rxskew);
-> 		return;
-> 	}
-> 
-> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
-> 		...
-> 		mask |= XWAY_MDIO_MIICTRL_RXSKEW_MASK;
-> 		val |= rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
-> 	}
-> 
-> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-> 		...
-> 		mask |= XWAY_MDIO_MIICTRL_TXSKEW_MASK;
-> 		val |= rx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
-> 	}
-> 
-> 	return phy_modify(phydev, XWAY_MDIO_MIICTRL, mask, val);
-> 
-> Using phy_modify() has the advantage that the read-modify-write is
-> done as a locked transaction on the bus, meaning that it is atomic.
-> There isn't a high cost to writing functions in a way that makes use
-> of that as can be seen from the above.
-> 
 
-Thanks for the hint. I'll update my patch.
+
+On 03/07/2021 14:56, Vladimir Oltean wrote:
+> From: Tobias Waldekranz <tobias@waldekranz.com>
+> 
+> Allow switchdevs to forward frames from the CPU in accordance with the
+> bridge configuration in the same way as is done between bridge
+> ports. This means that the bridge will only send a single skb towards
+> one of the ports under the switchdev's control, and expects the driver
+> to deliver the packet to all eligible ports in its domain.
+> 
+> Primarily this improves the performance of multicast flows with
+> multiple subscribers, as it allows the hardware to perform the frame
+> replication.
+> 
+> The basic flow between the driver and the bridge is as follows:
+> 
+> - The switchdev accepts the offload by returning a non-null pointer
+>    from .ndo_dfwd_add_station when the port is added to the bridge.
+> 
+> - The bridge sends offloadable skbs to one of the ports under the
+>    switchdev's control using dev_queue_xmit_accel.
+> 
+> - The switchdev notices the offload by checking for a non-NULL
+>    "sb_dev" in the core's call to .ndo_select_queue.
+
+Sry, I could be missing smth.
+
+Is there any possibility to just mark skb itself as "fwd_offload" (or smth), so driver can
+just check it and decide what to do. Following you series:
+- BR itself will send packet only once to one port if fwd offload possible and supported
+- switchdev driver can check/negotiate BR_FWD_OFFLOAD flag
+
+In our case, TI CPSW can send directed packet (default now), by specifying port_id if DMA desc
+or keep port_id == 0 which will allow HW to process packet internally, including MC duplication.
+
+Sry, again, but necessity to add 3 callbacks and manipulate with "virtual" queue to achieve
+MC offload (seems like one of the primary goals) from BR itself looks a bit over-complicated :(
+
+> 
+> v1->v2:
+> - convert br_input_skb_cb::fwd_hwdoms to a plain unsigned long
+> - introduce a static key "br_switchdev_fwd_offload_used" to minimize the
+>    impact of the newly introduced feature on all the setups which don't
+>    have hardware that can make use of it
+> - introduce a check for nbp->flags & BR_FWD_OFFLOAD to optimize cache
+>    line access
+> - reorder nbp_switchdev_frame_mark_accel() and br_handle_vlan() in
+>    __br_forward()
+> - do not strip VLAN on egress if forwarding offload on VLAN-aware bridge
+>    is being used
+> - propagate errors from .ndo_dfwd_add_station() if not EOPNOTSUPP
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>   include/linux/if_bridge.h |  1 +
+>   net/bridge/br_forward.c   | 18 +++++++-
+>   net/bridge/br_private.h   | 24 +++++++++++
+>   net/bridge/br_switchdev.c | 87 +++++++++++++++++++++++++++++++++++++--
+
+[...]
+
+-- 
+Best regards,
+grygorii
