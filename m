@@ -2,154 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CA453C2B0F
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 23:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 765F13C2B45
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 00:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231225AbhGIV7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 17:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbhGIV7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 17:59:22 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF5EC0613DD;
-        Fri,  9 Jul 2021 14:56:38 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id p22so16730812yba.7;
-        Fri, 09 Jul 2021 14:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4ZQWdvqRPhNq1P8JSH3VfP6OjgG/hoD3lYoJG9eyIrA=;
-        b=ig3y2j7FNS/Bg5gIM/u+IES6eCrcbG2Ml9WiaGfci4hUqBKj/nDEKgfH0XmGrv45MW
-         WX3jUSVfFVmCn1uz0WrDIcPeUCfry10EhkQ4yEP9c9VydC6469amCykRRg53e0Ofjktk
-         3y46kDYlx2COCZhb8hnKEGfraBnK6vSAlFS+UW/PgsMRqbPanXOETrXLH7oAQF/uGWSg
-         X8kOp26pT8kgI9IAY3GBTQbZJTYlCRRz9ARluM6uekqu8TaW9eRHsEScDUikjqwY0TmQ
-         3cEeStOPEEbx84svZXdt7rFoHQAE1L75xhgsE4iVm6jQbTmIZpIalhD97fvFn4YbPgtZ
-         T3Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ZQWdvqRPhNq1P8JSH3VfP6OjgG/hoD3lYoJG9eyIrA=;
-        b=r4w4F5Bb1VA3Y2779vPmw8QFCSJ/3NNtJvNEiEGga8SRiPQiLUqWcf4l2aMr4zBkWm
-         PlhTXDU2fftZAlR1DTGjYuFJawKP4jS7BGcjxqaqTicMQXIVnK9WdGTSdHpuB17tu0PH
-         VJ1XIo3WPa02+PFjbWgKmIfSEHtekEv03RDjSR9JQuG2OPOIyUk1jUSGSDh8Zh3LKwpD
-         TGa3Z0WoZm10P+Np7Kd5dRTBecXYfWFMechYg61/d3A7KuTkD+8VAqPpWcmB+G54AcI0
-         FbVRtBF4RXdl0XGUbhl489LNyTOud5L+LYsH7UTV/yj5DZ24uMqOFqkb95Bf1pvydlVg
-         3IjQ==
-X-Gm-Message-State: AOAM532Zoje7RuE8liJIafovuOujp59S/saE1AoQoUj6rVIG1DPpBKjm
-        LWgZx8bdbEBZDWSVkRhSNVLujnQedFiUasXauxE=
-X-Google-Smtp-Source: ABdhPJwxo9sYoS+h6m5rBHRJJOAZ7JAaus1SrN+Y2PVrVrttjZh4Qsl7nYVLf7iqnMZQpYZULrgHy/53u/fCsx78PYk=
-X-Received: by 2002:a25:d349:: with SMTP id e70mr49929874ybf.510.1625867797513;
- Fri, 09 Jul 2021 14:56:37 -0700 (PDT)
+        id S231163AbhGIWTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 18:19:36 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33938 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229542AbhGIWTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 18:19:35 -0400
+Received: from 65.47.5.85.dynamic.wline.res.cust.swisscom.ch ([85.5.47.65] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1m1ynh-000BAR-Ey; Sat, 10 Jul 2021 00:16:49 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-07-09
+Date:   Sat, 10 Jul 2021 00:16:49 +0200
+Message-Id: <20210709221649.30124-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <20210709025525.107314-1-xuanzhuo@linux.alibaba.com> <20210709124340.44bafef1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210709124340.44bafef1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 9 Jul 2021 14:56:26 -0700
-Message-ID: <CAEf4BzYuBYE1np+YwpwZT5_K5Zzed1NTPz57zbgn+0V5W1=nZg@mail.gmail.com>
-Subject: Re: [PATCH net v2] xdp, net: fix use-after-free in bpf_xdp_link_release
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Abaci <abaci@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26226/Fri Jul  9 13:16:15 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 9, 2021 at 12:43 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  9 Jul 2021 10:55:25 +0800 Xuan Zhuo wrote:
-> > The problem occurs between dev_get_by_index() and dev_xdp_attach_link().
-> > At this point, dev_xdp_uninstall() is called. Then xdp link will not be
-> > detached automatically when dev is released. But link->dev already
-> > points to dev, when xdp link is released, dev will still be accessed,
-> > but dev has been released.
-> >
-> > dev_get_by_index()        |
-> > link->dev = dev           |
-> >                           |      rtnl_lock()
-> >                           |      unregister_netdevice_many()
-> >                           |          dev_xdp_uninstall()
-> >                           |      rtnl_unlock()
-> > rtnl_lock();              |
-> > dev_xdp_attach_link()     |
-> > rtnl_unlock();            |
-> >                           |      netdev_run_todo() // dev released
-> > bpf_xdp_link_release()    |
-> >     /* access dev.        |
-> >        use-after-free */  |
-> >
-> > This patch adds a check of dev->reg_state in dev_xdp_attach_link(). If
-> > dev has been called release, it will return -EINVAL.
->
-> Please make sure to include a Fixes tag.
->
-> I must say I prefer something closet to v1. Maybe put the if
-> in the callee? Making ndo calls to unregistered netdevs is
-> not legit, it will be confusing for a person reading this
-> code to have to search callees to find where unregistered
-> netdevs are rejected.
+Hi David, hi Jakub,
 
-So I'm a bit confused about the intended use of dev_get_by_index(). It
-doesn't seem to be checking that device is unregistered and happily
-returns dev with refcnt bumped even though device is going away. Is it
-the intention that every caller of dev_get_by_index() needs to check
-the state of the device *and* do any subsequent actions under the same
-rtnl_lock/rtnl_unlock region? Seems a bit fragile. I suspect doing
-this state check inside dev_get_by_index() would have unintended
-consequences, though, right?
+The following pull-request contains BPF updates for your *net* tree.
 
-BTW, seems like netlink code doesn't check the state of the device and
-will report successful attachment to the dev that's unregistered? Is
-this something we should fix as well?
+We've added 9 non-merge commits during the last 9 day(s) which contain
+a total of 13 files changed, 118 insertions(+), 62 deletions(-).
 
-Xuan, if we do go with this approach, that dev->reg_state check should
-probably be done in dev_xdp_attach() instead, which is called for both
-bpf_link-based and bpf_prog-based XDP attachment.
+The main changes are:
 
-If not, then the cleanest solution would be to make this check right
-before dev_xdp_attach_link (though it's not clear what are we gaining
-with that, if we ever have another user of dev_xdp_attach_link beside
-bpf_xdp_link_attach, we'll probably miss similar situation), instead
-of spreading out rtnl_unlock.
+1) Fix runqslower task->state access from BPF, from SanjayKumar Jeyakumar.
 
-BTW, regardless of the approach, we still need to do link->dev = NULL
-if dev_xdp_attach_link() errors out.
+2) Fix subprog poke descriptor tracking use-after-free, from John Fastabend.
 
+3) Fix sparse complaint from prior devmap RCU conversion, from Toke Høiland-Jørgensen.
 
->
-> > Reported-by: Abaci <abaci@linux.alibaba.com>
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
->
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index c253c2aafe97..63c9a46ca853 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -9544,6 +9544,10 @@ static int dev_xdp_attach_link(struct net_device *dev,
-> >                              struct netlink_ext_ack *extack,
-> >                              struct bpf_xdp_link *link)
-> >  {
-> > +     /* ensure the dev state is ok */
-> > +     if (dev->reg_state != NETREG_REGISTERED)
-> > +             return -EINVAL;
-> > +
-> >       return dev_xdp_attach(dev, extack, link, NULL, NULL, link->flags);
-> >  }
+4) Fix missing va_end in bpftool JIT json dump's error path, from Gu Shengxian.
+
+5) Fix tools/bpf install target from missing runqslower install, from Wei Li.
+
+6) Fix xdpsock BPF sample to unload program on shared umem option, from Wang Hai.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+kernel test robot, Magnus Karlsson, Martin KaFai Lau, Paul E. McKenney, 
+Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit dbe69e43372212527abf48609aba7fc39a6daa27:
+
+  Merge tag 'net-next-5.14' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2021-06-30 15:51:09 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 1fb5ba29ad0835c5cbfc69a27f9c2733cb65726e:
+
+  bpf: Selftest to verify mixing bpf2bpf calls and tailcalls with insn patch (2021-07-09 12:08:40 +0200)
+
+----------------------------------------------------------------
+Gu Shengxian (1):
+      bpftool: Properly close va_list 'ap' by va_end() on error
+
+John Fastabend (2):
+      bpf: Track subprog poke descriptors correctly and fix use-after-free
+      bpf: Selftest to verify mixing bpf2bpf calls and tailcalls with insn patch
+
+SanjayKumar Jeyakumar (1):
+      tools/runqslower: Use __state instead of state
+
+Toke Høiland-Jørgensen (3):
+      bpf, devmap: Convert remaining READ_ONCE() to rcu_dereference_check()
+      bpf, samples: Add -fno-asynchronous-unwind-tables to BPF Clang invocation
+      libbpf: Restore errno return for functions that were already returning it
+
+Wang Hai (1):
+      bpf, samples: Fix xdpsock with '-M' parameter missing unload process
+
+Wei Li (1):
+      tools: bpf: Fix error in 'make -C tools/ bpf_install'
+
+ arch/x86/net/bpf_jit_comp.c                        |  3 ++
+ include/linux/bpf.h                                |  1 +
+ kernel/bpf/core.c                                  |  8 ++-
+ kernel/bpf/devmap.c                                |  6 ++-
+ kernel/bpf/verifier.c                              | 60 ++++++++--------------
+ samples/bpf/Makefile                               |  1 +
+ samples/bpf/xdpsock_user.c                         | 28 ++++++++++
+ tools/bpf/Makefile                                 |  7 +--
+ tools/bpf/bpftool/jit_disasm.c                     |  6 ++-
+ tools/bpf/runqslower/runqslower.bpf.c              |  2 +-
+ tools/lib/bpf/libbpf.c                             |  4 +-
+ tools/testing/selftests/bpf/prog_tests/tailcalls.c | 36 +++++++++----
+ .../selftests/bpf/progs/tailcall_bpf2bpf4.c        | 18 +++++++
+ 13 files changed, 118 insertions(+), 62 deletions(-)
