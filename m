@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8FEB3C229E
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 13:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE163C22AB
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 13:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbhGILOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 07:14:12 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:14060 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbhGILOL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 07:14:11 -0400
-Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GLr4D5kNPzbbbL;
-        Fri,  9 Jul 2021 19:08:12 +0800 (CST)
-Received: from [10.67.110.55] (10.67.110.55) by dggeme751-chm.china.huawei.com
- (10.3.19.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 9 Jul
- 2021 19:11:26 +0800
-Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20210707043811.5349-1-hefengqing@huawei.com>
- <20210707043811.5349-4-hefengqing@huawei.com>
- <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
- <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
- <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
-From:   He Fengqing <hefengqing@huawei.com>
-Message-ID: <bc75c9c5-7479-5021-58ea-ed8cf53fb331@huawei.com>
-Date:   Fri, 9 Jul 2021 19:11:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S230091AbhGILUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 07:20:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53992 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229641AbhGILUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 07:20:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625829474;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UJ6+jTPvm3zp6vRVEAiXqOney7J+GbGODAZVlnLKWIE=;
+        b=eDQ1OVjV5X7iWlIaxXEZte2hpLDqI0jeXrtQrCzHIPI4z1Ede+gtKcbkg0PALE3d+iE8PQ
+        1+8Q8gG7DWnCUFzVSDxRVb9c11GvFzRk4lAE26ehEc0n3PJlNqxJLi6U3Ys4S+yRkIiGuh
+        fWXDPvm34p++1+7sGAmYLZDLiS4kafs=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-494-K2dJnxP1NeiMKgEoN1qGBA-1; Fri, 09 Jul 2021 07:17:53 -0400
+X-MC-Unique: K2dJnxP1NeiMKgEoN1qGBA-1
+Received: by mail-ed1-f69.google.com with SMTP id f20-20020a0564020054b0290395573bbc17so5049662edu.19
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 04:17:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UJ6+jTPvm3zp6vRVEAiXqOney7J+GbGODAZVlnLKWIE=;
+        b=rNvbStSsWlY83SIalIn/nNVAqTqbbrBBbbDbk/nYUHuLlmVBe8o57hce/i3QmldJAP
+         YhJNAwrw1xk/SzJ1IVx/VMiyxB5hTq3CKBQ33kd06ok7ry3KsuYCzq5DNB4KwUNTV8bs
+         1IR2qQDk0kqDBLPjz55FeR6racV+e3lUCI0hAR/18yPazqthD8mtdCI8vDE1zxV05Pqj
+         A1g1l0pTh2XY1O92KzMwOylzh/hnYq6yh39YA9vjMx6Oun1zgWAqTkEOgM60TacT64zA
+         2H0LTL0cMGAgYchuBQKfmEWfalUy6D+15wptOtjI35AsBh/RBkT0y3l6+YshSjHAxEq2
+         TnKQ==
+X-Gm-Message-State: AOAM533R1qoQExfQ1LQu5z3if7d6Sod1xcSZPzhcltRbx798buTfbgr2
+        dzNkxrq1odtO/hXEdSZAiiy37jrYhApFjAzoOfnv5baLfC1zzK1L8bWW/OZvJNSH7gYvnsDJfqW
+        uwADI4kouYYtxSSHL
+X-Received: by 2002:a50:fc04:: with SMTP id i4mr34094549edr.285.1625829472634;
+        Fri, 09 Jul 2021 04:17:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz1Z4NMEv9yVGQ+I6pTSRYUGS0hxCozpWxVUL1H577kKHysyTvq8pucELd4qQ5eWTQyrENPzw==
+X-Received: by 2002:a50:fc04:: with SMTP id i4mr34094528edr.285.1625829472474;
+        Fri, 09 Jul 2021 04:17:52 -0700 (PDT)
+Received: from redhat.com ([2.55.150.102])
+        by smtp.gmail.com with ESMTPSA id lv15sm2259974ejb.76.2021.07.09.04.17.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jul 2021 04:17:51 -0700 (PDT)
+Date:   Fri, 9 Jul 2021 07:17:48 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        jasowang@redhat.com, dingxiaoxiong@huawei.com
+Subject: Re: [PATCH net-next] virtio_net: check virtqueue_add_sgs() return
+ value
+Message-ID: <20210709071626-mutt-send-email-mst@kernel.org>
+References: <1625826091-42668-1-git-send-email-wangyunjian@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.55]
-X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
- dggeme751-chm.china.huawei.com (10.3.19.97)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1625826091-42668-1-git-send-email-wangyunjian@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-在 2021/7/8 11:09, Alexei Starovoitov 写道:
-> On Wed, Jul 7, 2021 at 8:00 PM He Fengqing <hefengqing@huawei.com> wrote:
->>
->> Ok, I will change this in next version.
+On Fri, Jul 09, 2021 at 06:21:31PM +0800, wangyunjian wrote:
+> From: Yunjian Wang <wangyunjian@huawei.com>
 > 
-> before you spam the list with the next version
-> please explain why any of these changes are needed?
-> I don't see an explanation in the patches and I don't see a bug in the code.
-> Did you check what is the prog clone ?
-> When is it constructed? Why verifier has anything to do with it?
-> .
+> As virtqueue_add_sgs() can fail, we should check the return value.
 > 
+> Addresses-Coverity-ID: 1464439 ("Unchecked return value")
+> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> ---
+> v2:
+>   add warn log and remove fix tag
+> ---
+>  drivers/net/virtio_net.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index b0b81458ca94..30a0ca2fef1a 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1743,6 +1743,7 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+>  {
+>  	struct scatterlist *sgs[4], hdr, stat;
+>  	unsigned out_num = 0, tmp;
+> +	int ret;
+>  
+>  	/* Caller should know better */
+>  	BUG_ON(!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_VQ));
+> @@ -1762,7 +1763,12 @@ static bool virtnet_send_command(struct virtnet_info *vi, u8 class, u8 cmd,
+>  	sgs[out_num] = &stat;
+>  
+>  	BUG_ON(out_num + 1 > ARRAY_SIZE(sgs));
+> -	virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
+> +	ret = virtqueue_add_sgs(vi->cvq, sgs, out_num, 1, vi, GFP_ATOMIC);
+> +	if (ret < 0) {
+> +		dev_warn(&vi->vdev->dev,
+> +			 "Failed to add sgs for vq: %d\n.", ret);
 
 
-I'm sorry, I didn't describe these errors clearly.
-
-bpf_check(bpf_verifier_env)
-     |
-     |->do_misc_fixups(env)
-     |    |
-     |    |->bpf_patch_insn_data(env)
-     |    |    |
-     |    |    |->bpf_patch_insn_single(env->prog)
-     |    |    |    |
-     |    |    |    |->bpf_prog_realloc(env->prog)
-     |    |    |    |    |
-     |    |    |    |    |->construct new_prog
-     |    |    |    |    |    free old_prog(env->prog)
-     |    |    |    |    |
-     |    |    |    |    |->return new_prog;
-     |    |    |    |
-     |    |    |    |->return new_prog;
-     |    |    |
-     |    |    |->adjust_insn_aux_data
-     |    |    |    |
-     |    |    |    |->return ENOMEM;
-     |    |    |
-     |    |    |->return NULL;
-     |    |
-     |    |->return ENOMEM;
-
-bpf_verifier_env->prog had been freed in bpf_prog_realloc function.
+That's not too clear. Pls make it clear that it's the command vq
+that failed.
 
 
-There are two errors here, the first is memleak in the 
-bpf_patch_insn_data function, and the second is use after free in the 
-bpf_check function.
+> +		return false;
+> +	}
+>  
+>  	if (unlikely(!virtqueue_kick(vi->cvq)))
+>  		return vi->ctrl->status == VIRTIO_NET_OK;
+> -- 
+> 2.23.0
 
-memleak in bpf_patch_insn_data:
-
-Look at the call chain above, if adjust_insn_aux_data function return 
-ENOMEM, bpf_patch_insn_data will return NULL, but we do not free the 
-new_prog.
-
-So in the patch 2, before bpf_patch_insn_data return NULL, we free the 
-new_prog.
-
-use after free in bpf_check:
-
-If bpf_patch_insn_data function return NULL, we will not assign new_prog 
-to the bpf_verifier_env->prog, but bpf_verifier_env->prog has been freed 
-in the bpf_prog_realloc function. Then in bpf_check function, we will 
-use bpf_verifier_env->prog after do_misc_fixups function.
-
-In the patch 3, I added a free_old parameter to bpf_prog_realloc, in 
-this scenario we don't free old_prog. Instead, we free it in the 
-do_misc_fixups function when bpf_patch_insn_data return a valid new_prog.
-
-Thanks for your reviews.
