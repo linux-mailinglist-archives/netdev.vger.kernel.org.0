@@ -2,88 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 066F53C1DF2
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 05:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC673C1E0A
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 06:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbhGIDzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 23:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbhGIDzh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 23:55:37 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF60C061574;
-        Thu,  8 Jul 2021 20:52:54 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id h1so4319688plf.6;
-        Thu, 08 Jul 2021 20:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TM/0jwFZF0MmFPnIVVOWW7BfdA5pgZ+Dgbp4szXA2Dc=;
-        b=GkbgHBUZ/U8YO4X/gVA6WeVDCJ47faIUUv5GIG6YLR2BuVBm/gbF5QKmZJCDtqQeNL
-         S0TwSGk7jrmSBYhdR8L7HQJKkLXU+TDU6QSppDvfGZEsSaB/TP2WcVNo5YoFf6RCMpzW
-         HUk3igOsK5hV/oukFNNPd0LnAQTIyUoWA+DviPzki/WUnmATZcnoHLYGAm+524UNJbyM
-         EjEkc1pdTFk+Nu+Tu/GPmgjy5b4JI/eJ55nO52P1RoOS0uiiAVc9tnQPFs1t9sfCgzvg
-         02FhVgNvf0m4I2vCIVtMsqXM95sx0uE5Cj0x8quK9ifye2+n7r/e+74MGOkRmPuKuOQF
-         j7Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TM/0jwFZF0MmFPnIVVOWW7BfdA5pgZ+Dgbp4szXA2Dc=;
-        b=c3uUkbHTb5TAvogtFMFmMO6FeqLF/8uQ0UGeIzVc6TWbXsp7Xv/TSpyuriRDjv5J92
-         wcnp6KGk1sZSztCFDsDn7r2m3ufEymPMp1pnyDGMGK84MMiiGiBmAiYwCsWZU+P0TSr/
-         EYyy491uJQ2OSKUoLkHXnaamK2XN8lq6fZQlHpib4fF91KkFCE6ru0+UUU2J/6DE3ici
-         dbVRDjKE6A1EA6rup3mS91bISibK7vDFZdmG5EwBOaC4BOIQI84wnTU9YDjp/IIoVDSM
-         6WmxWMR3h7neIKZfxSVHQvNyqR4SgdzPUTI2XV+fmkF4ptEE8DH+peEbRBfnjLWgoMO5
-         KzSQ==
-X-Gm-Message-State: AOAM531qqC+Xl/rIfbPhv6q/Lq0NtsR5G/vg4eM1KF28HaTnliL2J2P5
-        5gxRaftQD7fSmlj2WvsaLUo=
-X-Google-Smtp-Source: ABdhPJwlpdqXWRSBufBzP0EDSuKWhddz9tcpJ6kZBKwCU0pP1XX0GAprCIuYo41pmkkt0YoXMvh3cg==
-X-Received: by 2002:a17:903:31d1:b029:120:2863:cba2 with SMTP id v17-20020a17090331d1b02901202863cba2mr29234455ple.28.1625802773776;
-        Thu, 08 Jul 2021 20:52:53 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7cf7])
-        by smtp.gmail.com with ESMTPSA id s15sm4495506pfu.97.2021.07.08.20.52.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jul 2021 20:52:53 -0700 (PDT)
-Date:   Thu, 8 Jul 2021 20:52:50 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v5 bpf-next 00/11] bpf: Introduce BPF timers.
-Message-ID: <20210709035250.tk35xdptiawpnu4x@ast-mbp.dhcp.thefacebook.com>
-References: <20210708011833.67028-1-alexei.starovoitov@gmail.com>
- <20210709015949.afjbtppsn54ebdrr@kafai-mbp.dhcp.thefacebook.com>
+        id S229623AbhGIETN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 00:19:13 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:33314 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229441AbhGIETM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 00:19:12 -0400
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 334F320B7178;
+        Thu,  8 Jul 2021 21:16:29 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 334F320B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1625804189;
+        bh=7YN2MB1o16HhRHqHTGbU97I3iPMBzy7xhI6gkzcCu0w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=qjAIcxU35cVdxuaBVKYVcDcj1mBtSyY9zOlFCNabzWRdVFAza31D36kjyq2xN0asx
+         BLbk7kKINgI/ODL8EoYCUSiwhRcqx2eF/gZ84xHnTmbUt02zvzR+uhR3vt70KUWDo3
+         1fyMoeXWCtnY16YtCDLpgiQk4TrtcsQSxIJocTrQ=
+Received: by mail-pg1-f175.google.com with SMTP id y4so6188455pgl.10;
+        Thu, 08 Jul 2021 21:16:29 -0700 (PDT)
+X-Gm-Message-State: AOAM530bq5emnfh5NK0tUDHTJsGKy6X6rSEWLxme/9fDVaAS8EaPelVK
+        xARTDDnS2eeXfFBnig+jEFtbK0r0bcK4coBjY8U=
+X-Google-Smtp-Source: ABdhPJxEqRVJU+XVeFuT1F5iksrgNMytcQvQQ+sMscueXp2JkOS8ADs6kJbwyH7yOpVW8c9rUjptMqZr60ii4FYX/k8=
+X-Received: by 2002:a63:fe41:: with SMTP id x1mr4010513pgj.272.1625804178026;
+ Thu, 08 Jul 2021 21:16:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210709015949.afjbtppsn54ebdrr@kafai-mbp.dhcp.thefacebook.com>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+ <20210702153947.7b44acdf@linux.microsoft.com> <20210706155131.GS22278@shell.armlinux.org.uk>
+ <CAFnufp1hM6WRDigAsSfM94yneRhkmxBoGG7NxRUkbfTR2WQvyA@mail.gmail.com> <CAPv3WKdQ5jYtMyZuiKshXhLjcf9b+7Dm2Lt2cjE=ATDe+n9A5g@mail.gmail.com>
+In-Reply-To: <CAPv3WKdQ5jYtMyZuiKshXhLjcf9b+7Dm2Lt2cjE=ATDe+n9A5g@mail.gmail.com>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Fri, 9 Jul 2021 06:15:42 +0200
+X-Gmail-Original-Message-ID: <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
+Message-ID: <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page pool
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        feng.tang@intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 08, 2021 at 06:59:49PM -0700, Martin KaFai Lau wrote:
-> On Wed, Jul 07, 2021 at 06:18:22PM -0700, Alexei Starovoitov wrote:
-> > From: Alexei Starovoitov <ast@kernel.org>
-> > 
-> > The first request to support timers in bpf was made in 2013 before sys_bpf syscall
-> > was added. That use case was periodic sampling. It was address with attaching
-> > bpf programs to perf_events. Then during XDP development the timers were requested
-> > to do garbage collection and health checks. They were worked around by implementing
-> > timers in user space and triggering progs with BPF_PROG_RUN command.
-> > The user space timers and perf_event+bpf timers are not armed by the bpf program.
-> > They're done asynchronously vs program execution. The XDP program cannot send a
-> > packet and arm the timer at the same time. The tracing prog cannot record an
-> > event and arm the timer right away. This large class of use cases remained
-> > unaddressed. The jiffy based and hrtimer based timers are essential part of the
-> > kernel development and with this patch set the hrtimer based timers will be
-> > available to bpf programs.
-> > 
-> > TLDR: bpf timers is a wrapper of hrtimers with all the extra safety added
-> > to make sure bpf progs cannot crash the kernel.
-> Looked more closely from 1-6.  Left minor comments in patch 4.
-> The later verifier changes make sense to me but I won't be very useful there.
+On Wed, Jul 7, 2021 at 6:50 PM Marcin Wojtas <mw@semihalf.com> wrote:
+>
+> Hi,
+>
+>
+> =C5=9Br., 7 lip 2021 o 01:20 Matteo Croce <mcroce@linux.microsoft.com> na=
+pisa=C5=82(a):
+> >
+> > On Tue, Jul 6, 2021 at 5:51 PM Russell King (Oracle)
+> > <linux@armlinux.org.uk> wrote:
+> > >
+> > > On Fri, Jul 02, 2021 at 03:39:47PM +0200, Matteo Croce wrote:
+> > > > On Wed, 30 Jun 2021 17:17:54 +0800
+> > > > Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > > >
+> > > > > This patchset adds elevated refcnt support for page pool
+> > > > > and enable skb's page frag recycling based on page pool
+> > > > > in hns3 drvier.
+> > > > >
+> > > > > Yunsheng Lin (2):
+> > > > >   page_pool: add page recycling support based on elevated refcnt
+> > > > >   net: hns3: support skb's frag page recycling based on page pool
+> > > > >
+> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++=
+-
+> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
+> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
+> > > > >  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
+> > > > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
+> > > > >  include/linux/mm_types.h                           |   2 +-
+> > > > >  include/linux/skbuff.h                             |   4 +-
+> > > > >  include/net/page_pool.h                            |  30 ++-
+> > > > >  net/core/page_pool.c                               | 215
+> > > > > +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
+> > > > > deletions(-)
+> > > > >
+> > > >
+> > > > Interesting!
+> > > > Unfortunately I'll not have access to my macchiatobin anytime soon,=
+ can
+> > > > someone test the impact, if any, on mvpp2?
+> > >
+> > > I'll try to test. Please let me know what kind of testing you're
+> > > looking for (I haven't been following these patches, sorry.)
+> > >
+> >
+> > A drop test or L2 routing will be enough.
+> > BTW I should have the macchiatobin back on friday.
+>
+> I have a 10G packet generator connected to 10G ports of CN913x-DB - I
+> will stress mvpp2 in l2 forwarding early next week (I'm mostly AFK
+> this until Monday).
+>
 
-Thanks a lot for detailed code review. Much appreciate it!
+I managed to to a drop test on mvpp2. Maybe there is a slowdown but
+it's below the measurement uncertainty.
+
+Perf top before:
+
+Overhead  Shared O  Symbol
+   8.48%  [kernel]  [k] page_pool_put_page
+   2.57%  [kernel]  [k] page_pool_refill_alloc_cache
+   1.58%  [kernel]  [k] page_pool_alloc_pages
+   0.75%  [kernel]  [k] page_pool_return_skb_page
+
+after:
+
+Overhead  Shared O  Symbol
+   8.34%  [kernel]  [k] page_pool_put_page
+   4.52%  [kernel]  [k] page_pool_return_skb_page
+   4.42%  [kernel]  [k] page_pool_sub_bias
+   3.16%  [kernel]  [k] page_pool_alloc_pages
+   2.43%  [kernel]  [k] page_pool_refill_alloc_cache
+
+Regards,
+--=20
+per aspera ad upstream
