@@ -2,155 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC673C1E0A
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 06:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3877E3C1ECB
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 07:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhGIETN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 00:19:13 -0400
-Received: from linux.microsoft.com ([13.77.154.182]:33314 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhGIETM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 00:19:12 -0400
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 334F320B7178;
-        Thu,  8 Jul 2021 21:16:29 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 334F320B7178
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1625804189;
-        bh=7YN2MB1o16HhRHqHTGbU97I3iPMBzy7xhI6gkzcCu0w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qjAIcxU35cVdxuaBVKYVcDcj1mBtSyY9zOlFCNabzWRdVFAza31D36kjyq2xN0asx
-         BLbk7kKINgI/ODL8EoYCUSiwhRcqx2eF/gZ84xHnTmbUt02zvzR+uhR3vt70KUWDo3
-         1fyMoeXWCtnY16YtCDLpgiQk4TrtcsQSxIJocTrQ=
-Received: by mail-pg1-f175.google.com with SMTP id y4so6188455pgl.10;
-        Thu, 08 Jul 2021 21:16:29 -0700 (PDT)
-X-Gm-Message-State: AOAM530bq5emnfh5NK0tUDHTJsGKy6X6rSEWLxme/9fDVaAS8EaPelVK
-        xARTDDnS2eeXfFBnig+jEFtbK0r0bcK4coBjY8U=
-X-Google-Smtp-Source: ABdhPJxEqRVJU+XVeFuT1F5iksrgNMytcQvQQ+sMscueXp2JkOS8ADs6kJbwyH7yOpVW8c9rUjptMqZr60ii4FYX/k8=
-X-Received: by 2002:a63:fe41:: with SMTP id x1mr4010513pgj.272.1625804178026;
- Thu, 08 Jul 2021 21:16:18 -0700 (PDT)
+        id S229762AbhGIFUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 01:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbhGIFUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 01:20:08 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD7CC061574
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 22:17:25 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id 14so8238789qkh.0
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 22:17:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Stq9NaXhoMxngm3X3gbu1sOKCEkZjhRMTkH6hXoUsuI=;
+        b=dsxwD48jxrqhC02ar6vrgD9NTe/46WthrUBNi8hGB2v2xgcvtCgMOY4DtTWg2OHuOT
+         IMbq0tt70VfpdX8Bqibu5hrqX2MlLUCJrZId2SWLwdaqKTBT3NhI42GJvngByDGOeT99
+         D0BkdkdLMw/VaC5l7Tp4IUK4SIkdakavXEYsnKEJRMYPTbRuMOCapmit6uWn+y91slS0
+         lqpW+xzXPuWtEsPAsDjXRvinwEvax1hphCPST7f//RAeEeRacQDL2r2XVXFeE0KLhDPM
+         fG0j/zFxRXe8U+bvwf3M9rOUx9rtSzrBxTsrggM7+vzQVNGsaCzfxCzwvx/hBL/vvlwm
+         3V3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Stq9NaXhoMxngm3X3gbu1sOKCEkZjhRMTkH6hXoUsuI=;
+        b=P6IZBlJUTpzBHfaQD4GS1UP5b0w7CIYhG18ObobT1C9LS6Qj/J6f4O2q10c8Pd85H+
+         JA/mwnW2T6in6GAeS4xE+dMeSfqB0G7lkw1JzyDN16jDGhusVAB7Z7F54S00Vymf8nRT
+         9uaVSXgwkXE6R+uc41V5b80wPepqD/uV23TOcv9cMdtizwElqWqIiogOkPp4OGuI4Elp
+         nuEQ16lCyUmG6PtuhJcYzS4+4gdvj06UPnBZyvh+O7ko367R6/vSFmk5piA8RaTVkgZ4
+         FixCYqK0L6adE9tOPLVD5cndsajaT4XjgcCVhKw2BZ6ktkeCfn2jDWdKfKptJsAMdkdo
+         o39Q==
+X-Gm-Message-State: AOAM532Jhv1qSD+Ru6Eu6bnzX3JYWp8t2c7tOaxxsaz/3PJVrFE2UEum
+        Ce4RU8KBFCDAeS3RasUe8Eq5w4uA9Nc=
+X-Google-Smtp-Source: ABdhPJzh2D9n0dOT1Anm0xxufZEbK30pTfqPcbU7z8Zdkr4LBLRXFAhCfFIjnlnBu7NiP9sohiBnXQ==
+X-Received: by 2002:a37:2f44:: with SMTP id v65mr34687050qkh.315.1625807844038;
+        Thu, 08 Jul 2021 22:17:24 -0700 (PDT)
+Received: from unknown.attlocal.net (76-217-55-94.lightspeed.sntcca.sbcglobal.net. [76.217.55.94])
+        by smtp.gmail.com with ESMTPSA id y9sm2028246qkb.3.2021.07.08.22.17.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 22:17:23 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Qitao Xu <qitao.xu@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch net-next] net: use %px to print skb address in trace_netif_receive_skb
+Date:   Thu,  8 Jul 2021 22:17:08 -0700
+Message-Id: <20210709051710.15831-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
- <20210702153947.7b44acdf@linux.microsoft.com> <20210706155131.GS22278@shell.armlinux.org.uk>
- <CAFnufp1hM6WRDigAsSfM94yneRhkmxBoGG7NxRUkbfTR2WQvyA@mail.gmail.com> <CAPv3WKdQ5jYtMyZuiKshXhLjcf9b+7Dm2Lt2cjE=ATDe+n9A5g@mail.gmail.com>
-In-Reply-To: <CAPv3WKdQ5jYtMyZuiKshXhLjcf9b+7Dm2Lt2cjE=ATDe+n9A5g@mail.gmail.com>
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-Date:   Fri, 9 Jul 2021 06:15:42 +0200
-X-Gmail-Original-Message-ID: <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
-Message-ID: <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page pool
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
-        feng.tang@intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>,
-        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 7, 2021 at 6:50 PM Marcin Wojtas <mw@semihalf.com> wrote:
->
-> Hi,
->
->
-> =C5=9Br., 7 lip 2021 o 01:20 Matteo Croce <mcroce@linux.microsoft.com> na=
-pisa=C5=82(a):
-> >
-> > On Tue, Jul 6, 2021 at 5:51 PM Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Fri, Jul 02, 2021 at 03:39:47PM +0200, Matteo Croce wrote:
-> > > > On Wed, 30 Jun 2021 17:17:54 +0800
-> > > > Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> > > >
-> > > > > This patchset adds elevated refcnt support for page pool
-> > > > > and enable skb's page frag recycling based on page pool
-> > > > > in hns3 drvier.
-> > > > >
-> > > > > Yunsheng Lin (2):
-> > > > >   page_pool: add page recycling support based on elevated refcnt
-> > > > >   net: hns3: support skb's frag page recycling based on page pool
-> > > > >
-> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++=
--
-> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
-> > > > >  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
-> > > > >  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
-> > > > >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
-> > > > >  include/linux/mm_types.h                           |   2 +-
-> > > > >  include/linux/skbuff.h                             |   4 +-
-> > > > >  include/net/page_pool.h                            |  30 ++-
-> > > > >  net/core/page_pool.c                               | 215
-> > > > > +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
-> > > > > deletions(-)
-> > > > >
-> > > >
-> > > > Interesting!
-> > > > Unfortunately I'll not have access to my macchiatobin anytime soon,=
- can
-> > > > someone test the impact, if any, on mvpp2?
-> > >
-> > > I'll try to test. Please let me know what kind of testing you're
-> > > looking for (I haven't been following these patches, sorry.)
-> > >
-> >
-> > A drop test or L2 routing will be enough.
-> > BTW I should have the macchiatobin back on friday.
->
-> I have a 10G packet generator connected to 10G ports of CN913x-DB - I
-> will stress mvpp2 in l2 forwarding early next week (I'm mostly AFK
-> this until Monday).
->
+From: Qitao Xu <qitao.xu@bytedance.com>
 
-I managed to to a drop test on mvpp2. Maybe there is a slowdown but
-it's below the measurement uncertainty.
+The print format of skb adress in tracepoint class net_dev_template
+is changed to %px from %p, because we want to use skb address
+as a quick way to identify a packet.
 
-Perf top before:
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
+---
+ include/trace/events/net.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Overhead  Shared O  Symbol
-   8.48%  [kernel]  [k] page_pool_put_page
-   2.57%  [kernel]  [k] page_pool_refill_alloc_cache
-   1.58%  [kernel]  [k] page_pool_alloc_pages
-   0.75%  [kernel]  [k] page_pool_return_skb_page
+diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+index 2399073c3afc..78c448c6ab4c 100644
+--- a/include/trace/events/net.h
++++ b/include/trace/events/net.h
+@@ -136,7 +136,7 @@ DECLARE_EVENT_CLASS(net_dev_template,
+ 		__assign_str(name, skb->dev->name);
+ 	),
+ 
+-	TP_printk("dev=%s skbaddr=%p len=%u",
++	TP_printk("dev=%s skbaddr=%px len=%u",
+ 		__get_str(name), __entry->skbaddr, __entry->len)
+ )
+ 
+-- 
+2.27.0
 
-after:
-
-Overhead  Shared O  Symbol
-   8.34%  [kernel]  [k] page_pool_put_page
-   4.52%  [kernel]  [k] page_pool_return_skb_page
-   4.42%  [kernel]  [k] page_pool_sub_bias
-   3.16%  [kernel]  [k] page_pool_alloc_pages
-   2.43%  [kernel]  [k] page_pool_refill_alloc_cache
-
-Regards,
---=20
-per aspera ad upstream
