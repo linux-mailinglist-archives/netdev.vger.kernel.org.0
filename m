@@ -2,90 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95D163C23C7
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 14:56:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5098F3C2414
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 15:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbhGIM6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 08:58:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26223 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229671AbhGIM6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 08:58:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625835365;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KnBrqqkjyyVhduPJxEqm+VtXVQ2YzzCLWcOyOy05cvc=;
-        b=YKBfU9K8FxnB4nM5vXKs5hm+SLiBWynDDPaTSEYKR2Ej8YNNf4NcoGon7jYutXggVxuooG
-        L07OlcrVUaF3LyhMu1BnEak3Mee8OO6niWTVc9bPwVZACgyGoh8YtvY5vGGWNrJusaxj5h
-        NStHvoqMgZ+rjoI2oUXfS9NIcgm7PRg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-182-lcZvSJDZOFqEkr3C9eE3vQ-1; Fri, 09 Jul 2021 08:56:01 -0400
-X-MC-Unique: lcZvSJDZOFqEkr3C9eE3vQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 391C281840A;
-        Fri,  9 Jul 2021 12:56:00 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-113-77.ams2.redhat.com [10.36.113.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B36D2369A;
-        Fri,  9 Jul 2021 12:55:54 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, ivan@cloudflare.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        ihuguet@redhat.com
-Subject: [PATCH v2 3/3] sfc: add logs explaining XDP_TX/REDIRECT is not available
-Date:   Fri,  9 Jul 2021 14:55:20 +0200
-Message-Id: <20210709125520.39001-4-ihuguet@redhat.com>
-In-Reply-To: <20210709125520.39001-1-ihuguet@redhat.com>
-References: <20210707081642.95365-1-ihuguet@redhat.com>
- <20210709125520.39001-1-ihuguet@redhat.com>
+        id S231696AbhGINRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 09:17:51 -0400
+Received: from mxout70.expurgate.net ([194.37.255.70]:57099 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231623AbhGINRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 09:17:50 -0400
+X-Greylist: delayed 780 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Jul 2021 09:17:50 EDT
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m1q8g-0007AX-Il; Fri, 09 Jul 2021 15:01:54 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m1q8d-0002Wf-0i; Fri, 09 Jul 2021 15:01:51 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 42704240041;
+        Fri,  9 Jul 2021 15:01:50 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 96504240040;
+        Fri,  9 Jul 2021 15:01:49 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 35DF220196;
+        Fri,  9 Jul 2021 15:01:49 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 09 Jul 2021 15:01:49 +0200
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: intel-xway: Add RGMII internal delay
+ configuration
+Organization: TDT AG
+In-Reply-To: <20210709122658.GA22278@shell.armlinux.org.uk>
+References: <20210709115726.11897-1-ms@dev.tdt.de>
+ <20210709122658.GA22278@shell.armlinux.org.uk>
+Message-ID: <2811b4b95827a8b2988e31afd47a6514@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate-ID: 151534::1625835711-00007B90-695157FA/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If it's not possible to allocate enough channels for XDP, XDP_TX and
-XDP_REDIRECT don't work. However, only a message saying that not enough
-channels were available was shown, but not saying what are the
-consequences in that case. The user didn't know if he/she can use XDP
-or not, if the performance is reduced, or what.
+On 2021-07-09 14:26, Russell King (Oracle) wrote:
+> On Fri, Jul 09, 2021 at 01:57:26PM +0200, Martin Schiller wrote:
+>> +static int xway_gphy_of_reg_init(struct phy_device *phydev)
+>> +{
+>> +	struct device *dev = &phydev->mdio.dev;
+>> +	int delay_size = ARRAY_SIZE(xway_internal_delay);
+>> +	s32 rx_int_delay;
+>> +	s32 tx_int_delay;
+>> +	int err = 0;
+>> +	int val;
+>> +
+>> +	if (phy_interface_is_rgmii(phydev)) {
+>> +		val = phy_read(phydev, XWAY_MDIO_MIICTRL);
+>> +		if (val < 0)
+>> +			return val;
+>> +	}
+>> +
+>> +	/* Existing behavior was to use default pin strapping delay in rgmii
+>> +	 * mode, but rgmii should have meant no delay.  Warn existing users.
+>> +	 */
+>> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
+>> +		const u16 txskew = (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
+>> +				   XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
+>> +		const u16 rxskew = (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
+>> +				   XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
+>> +
+>> +		if (txskew > 0 || rxskew > 0)
+>> +			phydev_warn(phydev,
+>> +				    "PHY has delays (e.g. via pin strapping), but phy-mode = 
+>> 'rgmii'\n"
+>> +				    "Should be 'rgmii-id' to use internal delays txskew:%x 
+>> rxskew:%x\n",
+>> +				    txskew, rxskew);
+>> +	}
+>> +
+>> +	/* RX delay *must* be specified if internal delay of RX is used. */
+>> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+>> +		rx_int_delay = phy_get_internal_delay(phydev, dev,
+>> +						      &xway_internal_delay[0],
+>> +						      delay_size, true);
+>> +
+>> +		if (rx_int_delay < 0) {
+>> +			phydev_err(phydev, "rx-internal-delay-ps must be specified\n");
+>> +			return rx_int_delay;
+>> +		}
+>> +
+>> +		val &= ~XWAY_MDIO_MIICTRL_RXSKEW_MASK;
+>> +		val |= rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
+>> +	}
+>> +
+>> +	/* TX delay *must* be specified if internal delay of TX is used. */
+>> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+>> +		tx_int_delay = phy_get_internal_delay(phydev, dev,
+>> +						      &xway_internal_delay[0],
+>> +						      delay_size, false);
+>> +
+>> +		if (tx_int_delay < 0) {
+>> +			phydev_err(phydev, "tx-internal-delay-ps must be specified\n");
+>> +			return tx_int_delay;
+>> +		}
+>> +
+>> +		val &= ~XWAY_MDIO_MIICTRL_TXSKEW_MASK;
+>> +		val |= tx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
+>> +	}
+>> +
+>> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
+>> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+>> +		err = phy_write(phydev, XWAY_MDIO_MIICTRL, val);
+>> +
+>> +	return err;
+>> +}
+> 
+> Please reconsider the above.  Maybe something like the following would
+> be better:
+> 
+> 	u16 mask = 0;
+> 	int val = 0;
+> 
+> 	if (!phy_interface_is_rgmii(phydev))
+> 		return;
+> 
+> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
+> 		u16 txskew, rxskew;
+> 
+> 		val = phy_read(phydev, XWAY_MDIO_MIICTRL);
+> 		if (val < 0)
+> 			return val;
+> 
+> 		txskew = (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
+> 			 XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
+> 		rxskew = (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
+> 			 XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
+> 
+> 		if (txskew > 0 || rxskew > 0)
+> 			phydev_warn(phydev,
+> 				    "PHY has delays (e.g. via pin strapping), but phy-mode = 
+> 'rgmii'\n"
+> 				    "Should be 'rgmii-id' to use internal delays txskew:%x 
+> rxskew:%x\n",
+> 				    txskew, rxskew);
+> 		return;
+> 	}
+> 
+> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+> 		...
+> 		mask |= XWAY_MDIO_MIICTRL_RXSKEW_MASK;
+> 		val |= rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
+> 	}
+> 
+> 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+> 		...
+> 		mask |= XWAY_MDIO_MIICTRL_TXSKEW_MASK;
+> 		val |= rx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
+> 	}
+> 
+> 	return phy_modify(phydev, XWAY_MDIO_MIICTRL, mask, val);
+> 
+> Using phy_modify() has the advantage that the read-modify-write is
+> done as a locked transaction on the bus, meaning that it is atomic.
+> There isn't a high cost to writing functions in a way that makes use
+> of that as can be seen from the above.
+> 
 
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/efx_channels.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index e25c8f9d9ff4..b51957e1a7de 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -170,6 +170,8 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 		netif_err(efx, drv, efx->net_dev,
- 			  "Insufficient resources for %d XDP event queues (%d other channels, max %d)\n",
- 			  n_xdp_ev, n_channels, max_channels);
-+		netif_err(efx, drv, efx->net_dev,
-+			  "XDP_TX and XDP_REDIRECT will not work on this interface");
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_tx_per_channel = 0;
- 		efx->xdp_tx_queue_count = 0;
-@@ -177,6 +179,8 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
- 		netif_err(efx, drv, efx->net_dev,
- 			  "Insufficient resources for %d XDP TX queues (%d other channels, max VIs %d)\n",
- 			  n_xdp_tx, n_channels, efx->max_vis);
-+		netif_err(efx, drv, efx->net_dev,
-+			  "XDP_TX and XDP_REDIRECT will not work on this interface");
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_tx_per_channel = 0;
- 		efx->xdp_tx_queue_count = 0;
--- 
-2.31.1
-
+Thanks for the hint. I'll update my patch.
