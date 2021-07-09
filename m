@@ -2,161 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48BB83C1DA3
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 04:55:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EAF73C1DE6
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 05:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbhGIC6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 22:58:12 -0400
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:47467 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229637AbhGIC6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 22:58:11 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R781e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UfAZEk5_1625799325;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UfAZEk5_1625799325)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 09 Jul 2021 10:55:25 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+        id S231160AbhGIDsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 23:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230462AbhGIDsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 23:48:00 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D489EC061574
+        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 20:45:17 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id a14so4315322pls.4
+        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 20:45:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fbmnfWR0VTKmQQpdEmQlhSbIvju7GrnnFUQ9ku9gI2o=;
+        b=VwFA4U3ilJVsy0iwd0+dncS7Hxp4ov8nHDX/Bjj1LzGKdoUyq9DLifdfXiPsJXclST
+         ntAeB15MQF9KLkaBcUH4yBK7Qh/UKzb1mVynbyzCYWfS0ug0MUGO0dLVVpx/4zft/LBX
+         podfAS2u7/y6TddQTEkz1irXhc/ToLCM87K1KQUE8o2psbIghkw8aBp1NF1GAaCm1O37
+         kAn55mau4iKwQA3+9ATEugVM5LlhSglE8Uvv9jtNQQMwH5oxTFuaDHra60MjSrrT+BwF
+         HojqYSKnpMDfC8I8c3kJ4CO79/IaY58hhHG6Q0vsWvEsIbHmnTMKs6Tjs3G4Aagp/pH3
+         +75w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fbmnfWR0VTKmQQpdEmQlhSbIvju7GrnnFUQ9ku9gI2o=;
+        b=i4CKYTBpM1H9M7Mut/E1E0yQ2ytnlYn1skzSP2G78qZ4/ivbt3SXSIMcsTDi1mmMRG
+         Qbpi/g4I12Y7pCni6rJvi1Hoppu2c6BX5h63Rd5SWMOLaJQ+HHEU0q3PPh5h/lGtV+//
+         DZg25lXcLnO0j6lcodrX/uGXn22KukYhjI2lUjrHSxTcG4xs2eBsd3TtfDZWhl24lZnF
+         NA9TOypNzaQEKwUO3SdP5e0mmPnzPrCWXBLSK4TCKMIqZLdj50G78N6rYd4ZPGuEAXOk
+         HDaOyBFjvdfhpwLIvLugJp+bZsefJ/Imlo2xq+gT3kSsVK6yEuSYMm+DeD7tZpNiNTZK
+         2odQ==
+X-Gm-Message-State: AOAM531Qvwy1XcsmFzHLop6+w31ytiiQ1xgt4wqaSEc5Cdk9UHYEzk6i
+        9hgJsg/I+Fo/wGzELJZerB3YPmKLzZ81DN/H
+X-Google-Smtp-Source: ABdhPJzfPFqlP+jx5LjqMduq3q3zArMAI+FYyUc9Xhc3psNKGMbl1B043Qc3YIP0/s+ImZLWKuVpZg==
+X-Received: by 2002:a17:90a:4091:: with SMTP id l17mr35031320pjg.12.1625802317121;
+        Thu, 08 Jul 2021 20:45:17 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i27sm4940289pgl.78.2021.07.08.20.45.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jul 2021 20:45:16 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
-        bpf@vger.kernel.org, Abaci <abaci@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>
-Subject: [PATCH net v2] xdp, net: fix use-after-free in bpf_xdp_link_release
-Date:   Fri,  9 Jul 2021 10:55:25 +0800
-Message-Id: <20210709025525.107314-1-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
+        Greg KH <gregkh@linuxfoundation.org>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jianlin Shi <jishi@redhat.com>
+Subject: [PATCH net] net: ip_tunnel: fix mtu calculation for ETHER tunnel devices
+Date:   Fri,  9 Jul 2021 11:45:02 +0800
+Message-Id: <20210709034502.1227174-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The problem occurs between dev_get_by_index() and dev_xdp_attach_link().
-At this point, dev_xdp_uninstall() is called. Then xdp link will not be
-detached automatically when dev is released. But link->dev already
-points to dev, when xdp link is released, dev will still be accessed,
-but dev has been released.
+Commit 28e104d00281 ("net: ip_tunnel: fix mtu calculation") removed
+dev->hard_header_len subtraction when calculate MTU for tunnel devices
+as there is an overhead for device that has header_ops.
 
-dev_get_by_index()        |
-link->dev = dev           |
-                          |      rtnl_lock()
-                          |      unregister_netdevice_many()
-                          |          dev_xdp_uninstall()
-                          |      rtnl_unlock()
-rtnl_lock();              |
-dev_xdp_attach_link()     |
-rtnl_unlock();            |
-                          |      netdev_run_todo() // dev released
-bpf_xdp_link_release()    |
-    /* access dev.        |
-       use-after-free */  |
+But there are ETHER tunnel devices, like gre_tap or erspan, which don't
+have header_ops but set dev->hard_header_len during setup. This makes
+pkts greater than (MTU - ETH_HLEN) could not be xmited. Fix it by
+subtracting the ETHER tunnel devices' dev->hard_header_len for MTU
+calculation.
 
-This patch adds a check of dev->reg_state in dev_xdp_attach_link(). If
-dev has been called release, it will return -EINVAL.
-
-[   45.966867] BUG: KASAN: use-after-free in bpf_xdp_link_release+0x3b8/0x3d0
-[   45.967619] Read of size 8 at addr ffff00000f9980c8 by task a.out/732
-[   45.968297]
-[   45.968502] CPU: 1 PID: 732 Comm: a.out Not tainted 5.13.0+ #22
-[   45.969222] Hardware name: linux,dummy-virt (DT)
-[   45.969795] Call trace:
-[   45.970106]  dump_backtrace+0x0/0x4c8
-[   45.970564]  show_stack+0x30/0x40
-[   45.970981]  dump_stack_lvl+0x120/0x18c
-[   45.971470]  print_address_description.constprop.0+0x74/0x30c
-[   45.972182]  kasan_report+0x1e8/0x200
-[   45.972659]  __asan_report_load8_noabort+0x2c/0x50
-[   45.973273]  bpf_xdp_link_release+0x3b8/0x3d0
-[   45.973834]  bpf_link_free+0xd0/0x188
-[   45.974315]  bpf_link_put+0x1d0/0x218
-[   45.974790]  bpf_link_release+0x3c/0x58
-[   45.975291]  __fput+0x20c/0x7e8
-[   45.975706]  ____fput+0x24/0x30
-[   45.976117]  task_work_run+0x104/0x258
-[   45.976609]  do_notify_resume+0x894/0xaf8
-[   45.977121]  work_pending+0xc/0x328
-[   45.977575]
-[   45.977775] The buggy address belongs to the page:
-[   45.978369] page:fffffc00003e6600 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4f998
-[   45.979522] flags: 0x7fffe0000000000(node=0|zone=0|lastcpupid=0x3ffff)
-[   45.980349] raw: 07fffe0000000000 fffffc00003e6708 ffff0000dac3c010 0000000000000000
-[   45.981309] raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-[   45.982259] page dumped because: kasan: bad access detected
-[   45.982948]
-[   45.983153] Memory state around the buggy address:
-[   45.983753]  ffff00000f997f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   45.984645]  ffff00000f998000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-[   45.985533] >ffff00000f998080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-[   45.986419]                                               ^
-[   45.987112]  ffff00000f998100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-[   45.988006]  ffff00000f998180: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-[   45.988895] ==================================================================
-[   45.989773] Disabling lock debugging due to kernel taint
-[   45.990552] Kernel panic - not syncing: panic_on_warn set ...
-[   45.991166] CPU: 1 PID: 732 Comm: a.out Tainted: G    B             5.13.0+ #22
-[   45.991929] Hardware name: linux,dummy-virt (DT)
-[   45.992448] Call trace:
-[   45.992753]  dump_backtrace+0x0/0x4c8
-[   45.993208]  show_stack+0x30/0x40
-[   45.993627]  dump_stack_lvl+0x120/0x18c
-[   45.994113]  dump_stack+0x1c/0x34
-[   45.994530]  panic+0x3a4/0x7d8
-[   45.994930]  end_report+0x194/0x198
-[   45.995380]  kasan_report+0x134/0x200
-[   45.995850]  __asan_report_load8_noabort+0x2c/0x50
-[   45.996453]  bpf_xdp_link_release+0x3b8/0x3d0
-[   45.997007]  bpf_link_free+0xd0/0x188
-[   45.997474]  bpf_link_put+0x1d0/0x218
-[   45.997942]  bpf_link_release+0x3c/0x58
-[   45.998429]  __fput+0x20c/0x7e8
-[   45.998833]  ____fput+0x24/0x30
-[   45.999247]  task_work_run+0x104/0x258
-[   45.999731]  do_notify_resume+0x894/0xaf8
-[   46.000236]  work_pending+0xc/0x328
-[   46.000697] SMP: stopping secondary CPUs
-[   46.001226] Dumping ftrace buffer:
-[   46.001663]    (ftrace buffer empty)
-[   46.002110] Kernel Offset: disabled
-[   46.002545] CPU features: 0x00000001,23202c00
-[   46.003080] Memory Limit: none
-
-Reported-by: Abaci <abaci@linux.alibaba.com>
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+Fixes: 28e104d00281 ("net: ip_tunnel: fix mtu calculation")
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
+ net/ipv4/ip_tunnel.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-v2: return err when dev was removed.
-
- net/core/dev.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c253c2aafe97..63c9a46ca853 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9544,6 +9544,10 @@ static int dev_xdp_attach_link(struct net_device *dev,
- 			       struct netlink_ext_ack *extack,
- 			       struct bpf_xdp_link *link)
- {
-+	/* ensure the dev state is ok */
-+	if (dev->reg_state != NETREG_REGISTERED)
-+		return -EINVAL;
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index f6cc26de5ed3..0dca00745ac3 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -317,7 +317,7 @@ static int ip_tunnel_bind_dev(struct net_device *dev)
+ 	}
+ 
+ 	dev->needed_headroom = t_hlen + hlen;
+-	mtu -= t_hlen;
++	mtu -= t_hlen + (dev->type == ARPHRD_ETHER ? dev->hard_header_len : 0);
+ 
+ 	if (mtu < IPV4_MIN_MTU)
+ 		mtu = IPV4_MIN_MTU;
+@@ -348,6 +348,9 @@ static struct ip_tunnel *ip_tunnel_create(struct net *net,
+ 	t_hlen = nt->hlen + sizeof(struct iphdr);
+ 	dev->min_mtu = ETH_MIN_MTU;
+ 	dev->max_mtu = IP_MAX_MTU - t_hlen;
++	if (dev->type == ARPHRD_ETHER)
++		dev->max_mtu -= dev->hard_header_len;
 +
- 	return dev_xdp_attach(dev, extack, link, NULL, NULL, link->flags);
- }
-
---
-2.31.0
+ 	ip_tunnel_add(itn, nt);
+ 	return nt;
+ 
+@@ -489,11 +492,14 @@ static int tnl_update_pmtu(struct net_device *dev, struct sk_buff *skb,
+ 
+ 	tunnel_hlen = md ? tunnel_hlen : tunnel->hlen;
+ 	pkt_size = skb->len - tunnel_hlen;
++	pkt_size -= dev->type == ARPHRD_ETHER ? dev->hard_header_len : 0;
+ 
+-	if (df)
++	if (df) {
+ 		mtu = dst_mtu(&rt->dst) - (sizeof(struct iphdr) + tunnel_hlen);
+-	else
++		mtu -= dev->type == ARPHRD_ETHER ? dev->hard_header_len : 0;
++	} else {
+ 		mtu = skb_valid_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
++	}
+ 
+ 	if (skb_valid_dst(skb))
+ 		skb_dst_update_pmtu_no_confirm(skb, mtu);
+@@ -972,6 +978,9 @@ int __ip_tunnel_change_mtu(struct net_device *dev, int new_mtu, bool strict)
+ 	int t_hlen = tunnel->hlen + sizeof(struct iphdr);
+ 	int max_mtu = IP_MAX_MTU - t_hlen;
+ 
++	if (dev->type == ARPHRD_ETHER)
++		max_mtu -= dev->hard_header_len;
++
+ 	if (new_mtu < ETH_MIN_MTU)
+ 		return -EINVAL;
+ 
+@@ -1149,6 +1158,9 @@ int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
+ 	if (tb[IFLA_MTU]) {
+ 		unsigned int max = IP_MAX_MTU - (nt->hlen + sizeof(struct iphdr));
+ 
++		if (dev->type == ARPHRD_ETHER)
++			max -= dev->hard_header_len;
++
+ 		mtu = clamp(dev->mtu, (unsigned int)ETH_MIN_MTU, max);
+ 	}
+ 
+-- 
+2.31.1
 
