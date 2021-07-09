@@ -2,156 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EDB3C26E0
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 17:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F6003C26E7
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 17:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbhGIPfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 11:35:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29941 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232408AbhGIPfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 11:35:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1625844784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EhLdp2EAi8bhqguWM4hlM+hzx+BaQvYDa0qBD6QQdRo=;
-        b=S2HuoUb1SIOkQJBSQKeuwv/bmUBOuoW5aidipAO8yJydD4v9s869v4fgDY9ACqv8SfxzKL
-        l7mKXrSvGzYHqtvhtHTWaQXDv1aAcSI5X27JQ+XdwehItiNOVn//2tyov/HvstwyyeU+FD
-        3l/AtK717bexN0KEx6Fiy0VPVQZDbVw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-188-Ds9QQRhZPqS8tBwnbHD7Fw-1; Fri, 09 Jul 2021 11:33:03 -0400
-X-MC-Unique: Ds9QQRhZPqS8tBwnbHD7Fw-1
-Received: by mail-wr1-f69.google.com with SMTP id y15-20020a5d614f0000b029013cd60e9baaso672556wrt.7
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 08:33:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=EhLdp2EAi8bhqguWM4hlM+hzx+BaQvYDa0qBD6QQdRo=;
-        b=VgdivUzoeCOwhu9mrDY+23geOwVm7J7yuFSkMt5RL4QbkCw6Ssrur5Ga7k4Bkyr8le
-         oRrXUjPygWwIcVfpNmYyZikcV6teaDvTRVYHNs+QiMWW6nL3JIrBtjjujHWpDl9AU1e4
-         4KUIxfCAGyBsj8mD0fnSr3vBYQk5wK2EyPOVU+ppSON6v1oTQpWcS4ro+aDsqmprA8PT
-         aq0QV/0nr7CqupT1NGcAQY6MlcI1v6Fl4qcwWof/s1hdbPWSmIIDfMa9A3MR2Cgv/29q
-         JQcvZqiUEAdhodASTWHrvt1NJrxKH3gyeH4NvEJkZxuT1M909u7gN80iuPaKQOq5zJGu
-         qGnQ==
-X-Gm-Message-State: AOAM5313JDR18Ew2bd5nPfrKTN8quCuhv8WM+8bYWuWc2IwpafM2i1PB
-        fKHxZ9mrGCoYKeTeCluJItDAArV7s2Ao+MfD8+GWqqwvduauPNziYGl6yPwMPoIMiQVTVYGaaO8
-        GM74VapD17ZvGMpS/
-X-Received: by 2002:adf:a350:: with SMTP id d16mr23794020wrb.207.1625844782001;
-        Fri, 09 Jul 2021 08:33:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxksxIq/odUSA7gynJBOKcdAhhT5GLgZ5IOMfz04TGNd7PTKbypxiLhm1u+GfcAxmbvBK2hgw==
-X-Received: by 2002:adf:a350:: with SMTP id d16mr23793986wrb.207.1625844781716;
-        Fri, 09 Jul 2021 08:33:01 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
-        by smtp.gmail.com with ESMTPSA id l16sm13037067wmj.47.2021.07.09.08.33.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 08:33:01 -0700 (PDT)
-Message-ID: <e425920ed8120597a3a2c129c5a19fa1bc4854a2.camel@redhat.com>
-Subject: Re: [RFC PATCH 2/3] veth: make queues nr configurable via kernel
- module params
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 09 Jul 2021 17:33:00 +0200
-In-Reply-To: <875yxjvl73.fsf@toke.dk>
-References: <cover.1625823139.git.pabeni@redhat.com>
-         <480e7a960c26c9ab84efe59ed706f1a1a459d38c.1625823139.git.pabeni@redhat.com>
-         <875yxjvl73.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S231976AbhGIPgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 11:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232318AbhGIPgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 11:36:44 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD3AC0613DD;
+        Fri,  9 Jul 2021 08:34:00 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4GLxys6W0HzQjlj;
+        Fri,  9 Jul 2021 17:33:57 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id 0FudsvOO8jHb; Fri,  9 Jul 2021 17:33:53 +0200 (CEST)
+Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
+ gen4+ devices
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20210709145831.6123-1-verdre@v0yd.nl>
+ <20210709145831.6123-3-verdre@v0yd.nl> <20210709151800.7b2qqezlcicbgrqn@pali>
+From:   =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+Message-ID: <b1002254-97c6-d271-c385-4a5c9fe0c914@mailbox.org>
+Date:   Fri, 9 Jul 2021 17:33:34 +0200
 MIME-Version: 1.0
+In-Reply-To: <20210709151800.7b2qqezlcicbgrqn@pali>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -2.77 / 15.00 / 15.00
+X-Rspamd-Queue-Id: F2B5C1893
+X-Rspamd-UID: 2d6149
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2021-07-09 at 12:24 +0200, Toke Høiland-Jørgensen wrote:
-> Paolo Abeni <pabeni@redhat.com> writes:
+On 7/9/21 5:18 PM, Pali Rohár wrote:
+> On Friday 09 July 2021 16:58:31 Jonas Dreßler wrote:
+>> From: Tsuchiya Yuto <kitakar@gmail.com>
+>>
+>> To reset mwifiex on Surface gen4+ (Pro 4 or later gen) devices, it
+>> seems that putting the wifi device into D3cold is required according
+>> to errata.inf file on Windows installation (Windows/INF/errata.inf).
+>>
+>> This patch adds a function that performs power-cycle (put into D3cold
+>> then D0) and call the function at the end of reset_prepare().
+>>
+>> Note: Need to also reset the parent device (bridge) of wifi on SB1;
+>> it might be because the bridge of wifi always reports it's in D3hot.
+>> When I tried to reset only the wifi device (not touching parent), it gave
+>> the following error and the reset failed:
+>>
+>>      acpi device:4b: Cannot transition to power state D0 for parent in D3hot
+>>      mwifiex_pcie 0000:03:00.0: can't change power state from D3cold to D0 (config space inaccessible)
+>>
+>> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+>> Signed-off-by: Jonas Dreßler <verdre@v0yd.nl>
+>> ---
+>>   drivers/net/wireless/marvell/mwifiex/pcie.c   |   7 +
+>>   .../wireless/marvell/mwifiex/pcie_quirks.c    | 123 ++++++++++++++++++
+>>   .../wireless/marvell/mwifiex/pcie_quirks.h    |   3 +
+>>   3 files changed, 133 insertions(+)
+>>
+>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+>> index a530832c9421..c6ccce426b49 100644
+>> --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
+>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+>> @@ -528,6 +528,13 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
+>>   	mwifiex_shutdown_sw(adapter);
+>>   	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
+>>   	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
+>> +
+>> +	/* On MS Surface gen4+ devices FLR isn't effective to recover from
+>> +	 * hangups, so we power-cycle the card instead.
+>> +	 */
+>> +	if (card->quirks & QUIRK_FW_RST_D3COLD)
+>> +		mwifiex_pcie_reset_d3cold_quirk(pdev);
+>> +
 > 
-> > This allows configuring the number of tx and rx queues at
-> > module load time. A single module parameter controls
-> > both the default number of RX and TX queues created
-> > at device registration time.
-> > 
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > ---
-> >  drivers/net/veth.c | 21 +++++++++++++++++++++
-> >  1 file changed, 21 insertions(+)
-> > 
-> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > index 10360228a06a..787b4ad2cc87 100644
-> > --- a/drivers/net/veth.c
-> > +++ b/drivers/net/veth.c
-> > @@ -27,6 +27,11 @@
-> >  #include <linux/bpf_trace.h>
-> >  #include <linux/net_tstamp.h>
-> >  
-> > +static int queues_nr	= 1;
-> > +
-> > +module_param(queues_nr, int, 0644);
-> > +MODULE_PARM_DESC(queues_nr, "Max number of RX and TX queues (default = 1)");
+> Hello! Now I'm thinking loudly about this patch. Why this kind of reset
+> is needed only for Surface devices? AFAIK these 88W8897 chips are same
+> in all cards. Chip itself implements PCIe interface (and also SDIO) so
+> for me looks very strange if this 88W8897 PCIe device needs DMI specific
+> quirks. I cannot believe that Microsoft got some special version of
+> these chips from Marvell which are different than version uses on cards
+> in mPCIe form factor.
 > 
-> Adding new module parameters is generally discouraged. Also, it's sort
-> of a cumbersome API that you'll have to set this first, then re-create
-> the device, and then use channels to get the number you want.
+> And now when I'm reading comment below about PCIe bridge to which is
+> this 88W8897 PCIe chip connected, is not this rather an issue in that
+> PCIe bridge (instead of mwifiex/88W8897) or in ACPI firmware which
+> controls this bridge?
 > 
-> So why not just default to allocating num_possible_cpus() number of
-> queues? Arguably that is the value that makes the most sense from a
-> scalability point of view anyway, but if we're concerned about behaviour
-> change (are we?), we could just default real_num_*_queues to 1, so that
-> the extra queues have to be explicitly enabled by ethtool?
+> Or are having other people same issues on mPCIe form factor wifi cards
+> with 88W8897 chips and then this quirk should not DMI dependent?
+> 
+> Note that I'm seeing issues with reset and other things also on chip
+> 88W8997 when is connected to system via SDIO. These chips have both PCIe
+> and SDIO buses, it just depends which pins are used.
+> 
 
-I was concerned by the amount of memory wasted memory (should be ~256
-bytes per rx queue, ~320 per tx, plus the sysfs entries).
+Hi and thanks for the quick reply! Honestly I've no idea, this is just 
+the first method we found that allows for a proper reset of the chip. 
+What I know is that some Surface devices need that ACPI DSM call (the 
+one that was done in the commit I dropped in this version of the 
+patchset) to reset the chip instead of this method.
 
-real_num_tx_queue > 1 will makes the xmit path slower, so we likely
-want to keep that to 1 by default - unless the userspace explicitly set
-numtxqueues via netlink.
+Afaik other devices with this chip don't need this resetting method, at 
+least Marvell employees couldn't reproduce the issues on their testing 
+devices.
 
-Finally, a default large num_tx_queue slows down device creation:
+So would you suggest we just try to match for the pci chip 88W8897 
+instead? Then we'd probably have to check if there are any laptops where 
+multiple devices are connected to the pci bridge as Amey suggested in a 
+review before.
 
-cat << ENDL > run.sh
-#!/bin/sh
-MAX=$1
-for I in `seq 1 $MAX`; do
-	ip link add name v$I type veth peer name pv$I
-done
-for I in `seq 1 $MAX`; do
-	ip link del dev v$I
-done
-ENDL
-chmod a+x run.sh
-
-# with num_tx_queue == 1
-time ./run.sh 100 
-real	0m2.276s
-user	0m0.107s
-sys	0m0.162s
-
-# with num_tx_queue == 128
-time ./run.sh 100 1
-real	0m4.199s
-user	0m0.091s
-sys	0m1.419s
-
-# with num_tx_queue == 4096
-time ./run.sh 100 
-real	0m24.519s
-user	0m0.089s
-sys	0m21.711s
-
-Still, if there is agreement I can switch to num_possible_cpus default,
-plus some trickery to keep real_num_{r,t}x_queue unchanged.
-
-WDYT?
-
-Thanks!
-
-Paolo
+>>   	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
+>>   
+>>   	card->pci_reset_ongoing = true;
+>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+>> index 4064f99b36ba..b5f214fc1212 100644
+>> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
+>> @@ -15,6 +15,72 @@
+>>   
+>>   /* quirk table based on DMI matching */
+>>   static const struct dmi_system_id mwifiex_quirk_table[] = {
+>> +	{
+>> +		.ident = "Surface Pro 4",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Pro 5",
+>> +		.matches = {
+>> +			/* match for SKU here due to generic product name "Surface Pro" */
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Pro 5 (LTE)",
+>> +		.matches = {
+>> +			/* match for SKU here due to generic product name "Surface Pro" */
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Pro 6",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Book 1",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Book 2",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Laptop 1",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>> +	{
+>> +		.ident = "Surface Laptop 2",
+>> +		.matches = {
+>> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+>> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
+>> +		},
+>> +		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
+>> +	},
+>>   	{}
+>>   };
+>>   
+>> @@ -29,4 +95,61 @@ void mwifiex_initialize_quirks(struct pcie_service_card *card)
+>>   
+>>   	if (!card->quirks)
+>>   		dev_info(&pdev->dev, "no quirks enabled\n");
+>> +	if (card->quirks & QUIRK_FW_RST_D3COLD)
+>> +		dev_info(&pdev->dev, "quirk reset_d3cold enabled\n");
+>> +}
+>> +
+>> +static void mwifiex_pcie_set_power_d3cold(struct pci_dev *pdev)
+>> +{
+>> +	dev_info(&pdev->dev, "putting into D3cold...\n");
+>> +
+>> +	pci_save_state(pdev);
+>> +	if (pci_is_enabled(pdev))
+>> +		pci_disable_device(pdev);
+>> +	pci_set_power_state(pdev, PCI_D3cold);
+>> +}
+>> +
+>> +static int mwifiex_pcie_set_power_d0(struct pci_dev *pdev)
+>> +{
+>> +	int ret;
+>> +
+>> +	dev_info(&pdev->dev, "putting into D0...\n");
+>> +
+>> +	pci_set_power_state(pdev, PCI_D0);
+>> +	ret = pci_enable_device(pdev);
+>> +	if (ret) {
+>> +		dev_err(&pdev->dev, "pci_enable_device failed\n");
+>> +		return ret;
+>> +	}
+>> +	pci_restore_state(pdev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev)
+>> +{
+>> +	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
+>> +	int ret;
+>> +
+>> +	/* Power-cycle (put into D3cold then D0) */
+>> +	dev_info(&pdev->dev, "Using reset_d3cold quirk to perform FW reset\n");
+>> +
+>> +	/* We need to perform power-cycle also for bridge of wifi because
+>> +	 * on some devices (e.g. Surface Book 1), the OS for some reasons
+>> +	 * can't know the real power state of the bridge.
+>> +	 * When tried to power-cycle only wifi, the reset failed with the
+>> +	 * following dmesg log:
+>> +	 * "Cannot transition to power state D0 for parent in D3hot".
+>> +	 */
+>> +	mwifiex_pcie_set_power_d3cold(pdev);
+>> +	mwifiex_pcie_set_power_d3cold(parent_pdev);
+>> +
+>> +	ret = mwifiex_pcie_set_power_d0(parent_pdev);
+>> +	if (ret)
+>> +		return ret;
+>> +	ret = mwifiex_pcie_set_power_d0(pdev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	return 0;
+>>   }
+>> diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+>> index 7a1fe3b3a61a..549093067813 100644
+>> --- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+>> +++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
+>> @@ -5,4 +5,7 @@
+>>   
+>>   #include "pcie.h"
+>>   
+>> +#define QUIRK_FW_RST_D3COLD	BIT(0)
+>> +
+>>   void mwifiex_initialize_quirks(struct pcie_service_card *card);
+>> +int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
+>> -- 
+>> 2.31.1
+>>
 
