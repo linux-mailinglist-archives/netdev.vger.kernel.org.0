@@ -2,124 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A94E33C1F58
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 08:29:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F37253C1F76
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 08:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbhGIGcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 02:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230146AbhGIGcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 02:32:32 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB7FC0613E5
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 23:29:49 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id w13so5602092wmc.3
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 23:29:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DRY3VnuG4gt8PiNy3Dy2u07H83mINghJPh114/ywsmE=;
-        b=LI1IHMKNWDRfPUWL1KvoHyjnYq1nGzxGQVHASD1zv0oN2h44sw5Bni6kc8yypoy12i
-         +L6UuTdqLa0jCR8Qdv74MniiSHcsel1TDiFoN/SFMsQHSZtt6M8O9MAzG219dM0ayw7N
-         RemunQ0P7AzFDft7vPOO1WMIv4GnoRMhYeNPDrAGbT2JfgiL0bZsTB/0FUbRSAWwLW7y
-         N9KN9udc6qUq+PdH35UqNT5U7PFCbC+T7YcyvfSVPdNAVaKGq0Yu4TwW8xhWsT8Y6TyQ
-         +fv5yzgaDAoVM7HwJWoH6ETXH668PhMQm2Gp/yG+Rsd3mICVqS1X48yus7ugxppL3JMX
-         oEyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DRY3VnuG4gt8PiNy3Dy2u07H83mINghJPh114/ywsmE=;
-        b=bd2gwGumxHCGq6yBnxWSwI04DE0mWs+CUS5KYxizqMtHRbXNqNUMNj99i+7Ubsxgq2
-         lAdxLlU2m2ba0pCu7JibyLF1fsNiJVib9JwWU7kgyQJVhyK3fD8o9gN1+ePTsLhQb3E5
-         7J0ZtUtWEbQyNvSCEZjsGJjZj/Oa2ifUvFfBxCY92WXcQy//LvAQgaIYN24LYrSrhQnd
-         agPOiJ1Emt5vDgCqi1wXAtjg0OI3kaIL6Biq/gumLSE1YuhLx9B3N0maqgeXX9dDyX2Z
-         IKuhSsSgM7zTWxOCpxLW//9TiAEzPtzd3t086KpGRg1X6P2VV2ScYKsl9aVcndzbUvqS
-         WhZQ==
-X-Gm-Message-State: AOAM531S0EeCAUFVhUyc16EGuSqy3whtBUb0ld1KWcVOKmaWXzds0517
-        6FOcJSvneB+0Y2iQJwJ6nIGHXrJgTsvjpDWv
-X-Google-Smtp-Source: ABdhPJwPSL+3/QNQGALmsjsDBfEPIvrnmq1TyuuFaOa2b0Pc1Y/x6luuUoLARvv0t0g3KXhiMSAQDA==
-X-Received: by 2002:a1c:9808:: with SMTP id a8mr36471404wme.54.1625812187750;
-        Thu, 08 Jul 2021 23:29:47 -0700 (PDT)
-Received: from localhost.localdomain (ppp-94-66-242-227.home.otenet.gr. [94.66.242.227])
-        by smtp.gmail.com with ESMTPSA id m6sm5183342wrw.9.2021.07.08.23.29.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jul 2021 23:29:47 -0700 (PDT)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
+        id S230470AbhGIGnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 02:43:00 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:10339 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230428AbhGIGm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 02:42:59 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GLk1x0cXWz77hb;
+        Fri,  9 Jul 2021 14:35:49 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 9 Jul 2021 14:40:04 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 9 Jul 2021
+ 14:40:03 +0800
+Subject: Re: [PATCH net-next RFC 0/2] add elevated refcnt support for page
+ pool
+To:     Matteo Croce <mcroce@linux.microsoft.com>,
+        Marcin Wojtas <mw@semihalf.com>
+CC:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        David Miller <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        "Matthew Wilcox" <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        <feng.tang@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
         Matteo Croce <mcroce@microsoft.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1 v2] skbuff: Fix a potential race while recycling page_pool packets
-Date:   Fri,  9 Jul 2021 09:29:39 +0300
-Message-Id: <20210709062943.101532-1-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.32.0.rc0
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <1625044676-12441-1-git-send-email-linyunsheng@huawei.com>
+ <20210702153947.7b44acdf@linux.microsoft.com>
+ <20210706155131.GS22278@shell.armlinux.org.uk>
+ <CAFnufp1hM6WRDigAsSfM94yneRhkmxBoGG7NxRUkbfTR2WQvyA@mail.gmail.com>
+ <CAPv3WKdQ5jYtMyZuiKshXhLjcf9b+7Dm2Lt2cjE=ATDe+n9A5g@mail.gmail.com>
+ <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <14a92860-67cc-b2ac-efba-dd482f03204b@huawei.com>
+Date:   Fri, 9 Jul 2021 14:40:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
+In-Reply-To: <CAFnufp0NaPSkMQC-3ne49FL3Ak+UV0a7QoXELvVuMzBR4+GZ_g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As Alexander points out, when we are trying to recycle a cloned/expanded
-SKB we might trigger a race.  The recycling code relies on the
-pp_recycle bit to trigger,  which we carry over to cloned SKBs.
-If that cloned SKB gets expanded or if we get references to the frags,
-call skbb_release_data() and overwrite skb->head, we are creating separate
-instances accessing the same page frags.  Since the skb_release_data()
-will first try to recycle the frags,  there's a potential race between
-the original and cloned SKB, since both will have the pp_recycle bit set.
+On 2021/7/9 12:15, Matteo Croce wrote:
+> On Wed, Jul 7, 2021 at 6:50 PM Marcin Wojtas <mw@semihalf.com> wrote:
+>>
+>> Hi,
+>>
+>>
+>> śr., 7 lip 2021 o 01:20 Matteo Croce <mcroce@linux.microsoft.com> napisał(a):
+>>>
+>>> On Tue, Jul 6, 2021 at 5:51 PM Russell King (Oracle)
+>>> <linux@armlinux.org.uk> wrote:
+>>>>
+>>>> On Fri, Jul 02, 2021 at 03:39:47PM +0200, Matteo Croce wrote:
+>>>>> On Wed, 30 Jun 2021 17:17:54 +0800
+>>>>> Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>
+>>>>>> This patchset adds elevated refcnt support for page pool
+>>>>>> and enable skb's page frag recycling based on page pool
+>>>>>> in hns3 drvier.
+>>>>>>
+>>>>>> Yunsheng Lin (2):
+>>>>>>   page_pool: add page recycling support based on elevated refcnt
+>>>>>>   net: hns3: support skb's frag page recycling based on page pool
+>>>>>>
+>>>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  79 +++++++-
+>>>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   3 +
+>>>>>>  drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
+>>>>>>  drivers/net/ethernet/marvell/mvneta.c              |   6 +-
+>>>>>>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 +-
+>>>>>>  include/linux/mm_types.h                           |   2 +-
+>>>>>>  include/linux/skbuff.h                             |   4 +-
+>>>>>>  include/net/page_pool.h                            |  30 ++-
+>>>>>>  net/core/page_pool.c                               | 215
+>>>>>> +++++++++++++++++---- 9 files changed, 285 insertions(+), 57
+>>>>>> deletions(-)
+>>>>>>
+>>>>>
+>>>>> Interesting!
+>>>>> Unfortunately I'll not have access to my macchiatobin anytime soon, can
+>>>>> someone test the impact, if any, on mvpp2?
+>>>>
+>>>> I'll try to test. Please let me know what kind of testing you're
+>>>> looking for (I haven't been following these patches, sorry.)
+>>>>
+>>>
+>>> A drop test or L2 routing will be enough.
+>>> BTW I should have the macchiatobin back on friday.
+>>
+>> I have a 10G packet generator connected to 10G ports of CN913x-DB - I
+>> will stress mvpp2 in l2 forwarding early next week (I'm mostly AFK
+>> this until Monday).
+>>
+> 
+> I managed to to a drop test on mvpp2. Maybe there is a slowdown but
+> it's below the measurement uncertainty.
+> 
+> Perf top before:
+> 
+> Overhead  Shared O  Symbol
+>    8.48%  [kernel]  [k] page_pool_put_page
+>    2.57%  [kernel]  [k] page_pool_refill_alloc_cache
+>    1.58%  [kernel]  [k] page_pool_alloc_pages
+>    0.75%  [kernel]  [k] page_pool_return_skb_page
+> 
+> after:
+> 
+> Overhead  Shared O  Symbol
+>    8.34%  [kernel]  [k] page_pool_put_page
+>    4.52%  [kernel]  [k] page_pool_return_skb_page
+>    4.42%  [kernel]  [k] page_pool_sub_bias
+>    3.16%  [kernel]  [k] page_pool_alloc_pages
+>    2.43%  [kernel]  [k] page_pool_refill_alloc_cache
 
-Fix this by explicitly those SKBs not recyclable.
-The atomic_sub_return effectively limits us to a single release case,
-and when we are calling skb_release_data we are also releasing the
-option to perform the recycling, or releasing the pages from the page pool.
+Hi, Matteo
+Thanks for the testing.
+it seems you have adapted the mvpp2 driver to use the new frag
+API for page pool, There is one missing optimization for XDP case,
+the page is always returned to the pool->ring regardless of the
+context of page_pool_put_page() for elevated refcnt case.
 
-Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
-Reported-by: Alexander Duyck <alexanderduyck@fb.com>
-Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
-Changes since v1:
-- Set the recycle bit to 0 during skb_release_data instead of the 
-  individual fucntions triggering the issue, in order to catch all 
-  cases
- net/core/skbuff.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Maybe adding back that optimization will close some gap of the above
+performance difference if the drop is happening in softirq context.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 12aabcda6db2..f91f09a824be 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -663,7 +663,7 @@ static void skb_release_data(struct sk_buff *skb)
- 	if (skb->cloned &&
- 	    atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
- 			      &shinfo->dataref))
--		return;
-+		goto exit;
- 
- 	skb_zcopy_clear(skb, true);
- 
-@@ -674,6 +674,8 @@ static void skb_release_data(struct sk_buff *skb)
- 		kfree_skb_list(shinfo->frag_list);
- 
- 	skb_free_head(skb);
-+exit:
-+	skb->pp_recycle = 0;
- }
- 
- /*
--- 
-2.32.0.rc0
-
+> 
+> Regards,
+> 
