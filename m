@@ -2,86 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BFD63C2201
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 11:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91BD3C2219
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 12:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbhGIKCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 06:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbhGIKCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 06:02:03 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F882C0613DD;
-        Fri,  9 Jul 2021 02:59:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=GDAKEVAY6G2FkEMJUuqWlfJMGpOgImfNbDfdp8SNumE=; b=IMZi9QswDZgjH87rP0vZpPXoF
-        hkkdXd5InlsEhhdJjWVgtPUSzH8uLG1mhs1nLgoJJGh1TJ/umARn53rRP2XFvZfTfrqhig93+SrEk
-        pwSdP0aiFbhBENQhAM0rgOslCQM6GiVkJkdzxlHoZ6jeDm+YEKs6hQ2Ef45vT8MpHaoShG9hM6lEL
-        2J4tVIIQoTMfyMszH1ymZ/IiUmcXyU8uMLVL3pza6vWQACxls3lgWLTjRQ5XiC6JP8UKk+/fQqkcJ
-        mhiCWgutwI1MQY2qUSq115qrial/eLIyOqV2+P74Tsp8YNW7Dhz6reW2bby88gZoY5TMXrPrUv4ff
-        gv1ZmfeKA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:45906)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1m1nHr-0001gg-Hc; Fri, 09 Jul 2021 10:59:11 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1m1nHi-0004ra-CP; Fri, 09 Jul 2021 10:59:02 +0100
-Date:   Fri, 9 Jul 2021 10:59:02 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andres Salomon <dilinger@queued.net>,
-        linux-geode@lists.infradead.org, Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-crypto@vger.kernel.org,
-        Christian Gromm <christian.gromm@microchip.com>,
-        Krzysztof Halasa <khc@pm.waw.pl>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>, linux-x25@vger.kernel.org,
-        wireguard@lists.zx2c4.com
-Subject: Re: [PATCH 1/6] arm: crypto: rename 'mod_init' & 'mod_exit'
- functions to be module-specific
-Message-ID: <20210709095902.GY22278@shell.armlinux.org.uk>
-References: <20210709021747.32737-1-rdunlap@infradead.org>
- <20210709021747.32737-2-rdunlap@infradead.org>
+        id S232036AbhGIKR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 06:17:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36000 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231864AbhGIKR7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 06:17:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625825715;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lhJ6tiif1JBj1r12vohofmrlsesDWEqh4MF11PwNUDo=;
+        b=fYOxqxrnZS7KEHELyPecVupQGVKOAj5oiq6Gb8zXZDu/2exlekvdd0kajJuEbfcPJXMqRD
+        jDKicDs0rLAolfK+NVR0m/v+kyeMnkULY7FRo0JZSp6gASwTHaFCBU1sy0EvDM3x/uEyC1
+        16/A3X6iu+ABJrE6WI4U5vo39XzBhzE=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-Q_eb_KzmOQCridMky0prSQ-1; Fri, 09 Jul 2021 06:15:14 -0400
+X-MC-Unique: Q_eb_KzmOQCridMky0prSQ-1
+Received: by mail-ej1-f72.google.com with SMTP id rl7-20020a1709072167b02904f7606bd58fso2503820ejb.11
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 03:15:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=lhJ6tiif1JBj1r12vohofmrlsesDWEqh4MF11PwNUDo=;
+        b=WaahGLEGiP1deOuma9y8VYb0d50xmsXLIRlgxbkttkgcwUOtUYPA/s9YO3fHBlHXVT
+         wic+YYisyl2vyEwh5JESo4+sU9UunxVq+bpYgVVpFeahpA1q/+Oqzq55Yo6fENYp/dw8
+         XVifFGxflMvEFd8ylOA6pfM/2JT2wXFgRBzCfe6FBdIOOLKx/tMobazZghzEAnmUy9GE
+         Xm05SyHjGNlgRoG+rd3nIsYFz3uZQ/DzCI45BLUs6qKdOzegTYlJkp1pr5nqbFXty2ev
+         10OxiWpyX3DQRMwPdU6AK35ZeW0URdiPQn895QEI+uDaw6qXoeAMJ7SLZLW5qdCNkEC3
+         F5TQ==
+X-Gm-Message-State: AOAM531G8Xjtr1fBovnOQiZIPriZW59upz+4QK8UYRL3gKVHGq9F0gEr
+        htX6EAS7g3Mpoq1CjyBhjKj5tMYm13qT2EWVX5niWhzyinrwYKewNcMr4+1iuikbyUvlMUw64I4
+        dg76+JpF1UsX0TrL3
+X-Received: by 2002:a05:6402:5142:: with SMTP id n2mr45452190edd.241.1625825712895;
+        Fri, 09 Jul 2021 03:15:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxhY1XiAnB9pjK9GTB727I0KdoOFeCGlcVnzS7EInD5UTVOj/Iz5bXhtG4cbViE9Jq1lGx7zA==
+X-Received: by 2002:a05:6402:5142:: with SMTP id n2mr45452166edd.241.1625825712708;
+        Fri, 09 Jul 2021 03:15:12 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id ch27sm989984edb.57.2021.07.09.03.15.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jul 2021 03:15:12 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 998CE180733; Fri,  9 Jul 2021 12:15:11 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [RFC PATCH 1/3] veth: implement support for set_channel ethtool op
+In-Reply-To: <681c32be3a9172e9468893a89fb928b46c5c5ee6.1625823139.git.pabeni@redhat.com>
+References: <cover.1625823139.git.pabeni@redhat.com>
+ <681c32be3a9172e9468893a89fb928b46c5c5ee6.1625823139.git.pabeni@redhat.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 09 Jul 2021 12:15:11 +0200
+Message-ID: <878s2fvln4.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210709021747.32737-2-rdunlap@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 08, 2021 at 07:17:42PM -0700, Randy Dunlap wrote:
-> Rename module_init & module_exit functions that are named
-> "mod_init" and "mod_exit" so that they are unique in both the
-> System.map file and in initcall_debug output instead of showing
-> up as almost anonymous "mod_init".
-> 
-> This is helpful for debugging and in determining how long certain
-> module_init calls take to execute.
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-> Cc: linux-arm-kernel@lists.infradead.org
+Paolo Abeni <pabeni@redhat.com> writes:
 
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> This change implements the set_channel() ethtool operation,
+> preserving the current defaults values and allowing up set
+> the number of queues in the range set ad device creation
+> time.
+>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+>  drivers/net/veth.c | 62 +++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 58 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index bdb7ce3cb054..10360228a06a 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -72,6 +72,8 @@ struct veth_priv {
+>  	atomic64_t		dropped;
+>  	struct bpf_prog		*_xdp_prog;
+>  	struct veth_rq		*rq;
+> +	unsigned int		num_tx_queues;
+> +	unsigned int		num_rx_queues;
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Why are these needed to be duplicated? Don't they just duplicate the
+'real_num_tx_queues' members in struct net_device?
+
+>  	unsigned int		requested_headroom;
+>  };
+>  
+> @@ -224,10 +226,49 @@ static void veth_get_channels(struct net_device *dev,
+>  {
+>  	channels->tx_count = dev->real_num_tx_queues;
+>  	channels->rx_count = dev->real_num_rx_queues;
+> -	channels->max_tx = dev->real_num_tx_queues;
+> -	channels->max_rx = dev->real_num_rx_queues;
+> +	channels->max_tx = dev->num_tx_queues;
+> +	channels->max_rx = dev->num_rx_queues;
+>  	channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+> -	channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+> +	channels->max_combined = min(dev->num_rx_queues, dev->num_tx_queues);
+> +}
+> +
+> +static int veth_close(struct net_device *dev);
+> +static int veth_open(struct net_device *dev);
+> +
+> +static int veth_set_channels(struct net_device *dev,
+> +			     struct ethtool_channels *ch)
+> +{
+> +	struct veth_priv *priv = netdev_priv(dev);
+> +	struct veth_priv *peer_priv;
+> +
+> +	/* accept changes only on rx/tx */
+> +	if (ch->combined_count != min(dev->real_num_rx_queues, dev->real_num_tx_queues))
+> +		return -EINVAL;
+> +
+> +	/* respect contraint posed at device creation time */
+> +	if (ch->rx_count > dev->num_rx_queues || ch->tx_count > dev->num_tx_queues)
+> +		return -EINVAL;
+> +
+> +	if (!ch->rx_count || !ch->tx_count)
+> +		return -EINVAL;
+> +
+> +	/* avoid braking XDP, if that is enabled */
+> +	if (priv->_xdp_prog && ch->rx_count < priv->peer->real_num_tx_queues)
+> +		return -EINVAL;
+> +
+> +	peer_priv = netdev_priv(priv->peer);
+> +	if (peer_priv->_xdp_prog && ch->tx_count > priv->peer->real_num_rx_queues)
+> +		return -EINVAL;
+
+An XDP program could be loaded later, so I think it's better to enforce
+this constraint unconditionally.
+
+(What happens on the regular xmit path if the number of TX queues is out
+of sync with the peer RX queues, BTW?)
+
+> +	if (netif_running(dev))
+> +		veth_close(dev);
+> +
+> +	priv->num_tx_queues = ch->tx_count;
+> +	priv->num_rx_queues = ch->rx_count;
+
+Why can't just you use netif_set_real_num_*_queues() here directly (and
+get rid of the priv members as above)?
+
+-Toke
+
