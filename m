@@ -2,176 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8BC23C229C
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 13:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8FEB3C229E
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 13:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbhGILNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 07:13:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52472 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230086AbhGILNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 07:13:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 58A57613DF;
-        Fri,  9 Jul 2021 11:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625829054;
-        bh=F74RfuThWM3VCJ0NJKKlwLmMuK+MUODpe2DFhaOpXBU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EPojYhGZcZIo5d7gNDJWHXpQq1O5gCmAuFAWrVbwipWgrtHMoSry04uBoRs8o9lMR
-         9UXVKhmVV7reKpg55YoQYp+TfrdYt9xxShXpt+XyU4gTOfSrES6Utdb5SD0t8t/15X
-         HOkVIdFpfuFwx9EgPxjWoNhd/E1WJfVw5nE+/8ELL7Z2y3fhdWoQZFM1y2UVF6OhtC
-         PcmMnP8HGWTaWIRtvgSAYjO6gOkPP6uDQAog09PlizHEJMrDT8RbtryRoLpDZGYwQv
-         YjCiND0LcFByacJdgHrmAPvCpps3snnAx2u1coAWuRCMR8VWnPqlmWDEkHSyRL7vE0
-         x566DdUL60rUA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, alexander.duyck@gmail.com, brouer@redhat.com,
-        echaudro@redhat.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH bpf-next 2/2] net: xdp: add xdp_update_skb_shared_info utility routine
-Date:   Fri,  9 Jul 2021 13:10:28 +0200
-Message-Id: <16f4244f5a506143f5becde501f1ecb120255b42.1625828537.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1625828537.git.lorenzo@kernel.org>
-References: <cover.1625828537.git.lorenzo@kernel.org>
+        id S230457AbhGILOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 07:14:12 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:14060 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229861AbhGILOL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 07:14:11 -0400
+Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GLr4D5kNPzbbbL;
+        Fri,  9 Jul 2021 19:08:12 +0800 (CST)
+Received: from [10.67.110.55] (10.67.110.55) by dggeme751-chm.china.huawei.com
+ (10.3.19.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 9 Jul
+ 2021 19:11:26 +0800
+Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210707043811.5349-1-hefengqing@huawei.com>
+ <20210707043811.5349-4-hefengqing@huawei.com>
+ <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
+ <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
+ <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
+From:   He Fengqing <hefengqing@huawei.com>
+Message-ID: <bc75c9c5-7479-5021-58ea-ed8cf53fb331@huawei.com>
+Date:   Fri, 9 Jul 2021 19:11:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
+In-Reply-To: <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.55]
+X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
+ dggeme751-chm.china.huawei.com (10.3.19.97)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp_update_skb_shared_info routine to update frags array
-metadata from a given xdp_buffer/xdp_frame. We do not need to reset
-frags array since it is already initialized by the driver.
-Rely on xdp_update_skb_shared_info in mvneta driver.
 
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/marvell/mvneta.c | 29 +++++++++++++++------------
- include/net/xdp.h                     |  3 +++
- net/core/xdp.c                        | 27 +++++++++++++++++++++++++
- 3 files changed, 46 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 361bc4fbe20b..abf2e50880e0 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2294,18 +2294,29 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
- 	rx_desc->buf_phys_addr = 0;
- 
- 	if (data_len > 0 && xdp_sinfo->nr_frags < MAX_SKB_FRAGS) {
--		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags++];
-+		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags];
- 
- 		skb_frag_off_set(frag, pp->rx_offset_correction);
- 		skb_frag_size_set(frag, data_len);
- 		__skb_frag_set_page(frag, page);
-+		/* We don't need to reset pp_recycle here. It's already set, so
-+		 * just mark fragments for recycling.
-+		 */
-+		page_pool_store_mem_info(page, rxq->page_pool);
-+
-+		/* first fragment */
-+		if (!xdp_sinfo->nr_frags)
-+			xdp_sinfo->gso_type = *size;
-+		xdp_sinfo->nr_frags++;
- 
- 		/* last fragment */
- 		if (len == *size) {
- 			struct skb_shared_info *sinfo;
- 
- 			sinfo = xdp_get_shared_info_from_buff(xdp);
-+			sinfo->xdp_frags_tsize = xdp_sinfo->nr_frags * PAGE_SIZE;
- 			sinfo->nr_frags = xdp_sinfo->nr_frags;
-+			sinfo->gso_type = xdp_sinfo->gso_type;
- 			memcpy(sinfo->frags, xdp_sinfo->frags,
- 			       sinfo->nr_frags * sizeof(skb_frag_t));
- 		}
-@@ -2320,7 +2331,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 		      struct xdp_buff *xdp, u32 desc_status)
- {
- 	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
--	int i, num_frags = sinfo->nr_frags;
-+	int num_frags = sinfo->nr_frags, size = sinfo->gso_type;
- 	struct sk_buff *skb;
- 
- 	skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
-@@ -2333,17 +2344,9 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 	skb_put(skb, xdp->data_end - xdp->data);
- 	skb->ip_summed = mvneta_rx_csum(pp, desc_status);
- 
--	for (i = 0; i < num_frags; i++) {
--		skb_frag_t *frag = &sinfo->frags[i];
--
--		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
--				skb_frag_page(frag), skb_frag_off(frag),
--				skb_frag_size(frag), PAGE_SIZE);
--		/* We don't need to reset pp_recycle here. It's already set, so
--		 * just mark fragments for recycling.
--		 */
--		page_pool_store_mem_info(skb_frag_page(frag), pool);
--	}
-+	if (num_frags)
-+		xdp_update_skb_shared_info(skb, num_frags, size,
-+					   sinfo->xdp_frags_tsize, sinfo);
- 
- 	return skb;
- }
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index ad5b02dcb6f4..08d151ea8400 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -164,6 +164,9 @@ void xdp_warn(const char *msg, const char *func, const int line);
- #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
- 
- struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
-+void xdp_update_skb_shared_info(struct sk_buff *skb, int nr_frags,
-+				int size, int truesize,
-+				struct skb_shared_info *sinfo);
- struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev);
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index cc92ccb38432..3f44c69e1f56 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -527,6 +527,33 @@ int xdp_alloc_skb_bulk(void **skbs, int n_skb, gfp_t gfp)
- }
- EXPORT_SYMBOL_GPL(xdp_alloc_skb_bulk);
- 
-+void xdp_update_skb_shared_info(struct sk_buff *skb, int nr_frags,
-+				int size, int truesize,
-+				struct skb_shared_info *sinfo)
-+{
-+	int i;
-+
-+	skb_shinfo(skb)->nr_frags = nr_frags;
-+
-+	skb->len += size;
-+	skb->data_len += size;
-+	skb->truesize += truesize;
-+
-+	if (skb->pfmemalloc)
-+		return;
-+
-+	for (i = 0; i < nr_frags; i++) {
-+		struct page *page = skb_frag_page(&sinfo->frags[i]);
-+
-+		page = compound_head(page);
-+		if (page_is_pfmemalloc(page)) {
-+			skb->pfmemalloc = true;
-+			break;
-+		}
-+	}
-+}
-+EXPORT_SYMBOL_GPL(xdp_update_skb_shared_info);
-+
- struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev)
--- 
-2.31.1
+在 2021/7/8 11:09, Alexei Starovoitov 写道:
+> On Wed, Jul 7, 2021 at 8:00 PM He Fengqing <hefengqing@huawei.com> wrote:
+>>
+>> Ok, I will change this in next version.
+> 
+> before you spam the list with the next version
+> please explain why any of these changes are needed?
+> I don't see an explanation in the patches and I don't see a bug in the code.
+> Did you check what is the prog clone ?
+> When is it constructed? Why verifier has anything to do with it?
+> .
+> 
 
+
+I'm sorry, I didn't describe these errors clearly.
+
+bpf_check(bpf_verifier_env)
+     |
+     |->do_misc_fixups(env)
+     |    |
+     |    |->bpf_patch_insn_data(env)
+     |    |    |
+     |    |    |->bpf_patch_insn_single(env->prog)
+     |    |    |    |
+     |    |    |    |->bpf_prog_realloc(env->prog)
+     |    |    |    |    |
+     |    |    |    |    |->construct new_prog
+     |    |    |    |    |    free old_prog(env->prog)
+     |    |    |    |    |
+     |    |    |    |    |->return new_prog;
+     |    |    |    |
+     |    |    |    |->return new_prog;
+     |    |    |
+     |    |    |->adjust_insn_aux_data
+     |    |    |    |
+     |    |    |    |->return ENOMEM;
+     |    |    |
+     |    |    |->return NULL;
+     |    |
+     |    |->return ENOMEM;
+
+bpf_verifier_env->prog had been freed in bpf_prog_realloc function.
+
+
+There are two errors here, the first is memleak in the 
+bpf_patch_insn_data function, and the second is use after free in the 
+bpf_check function.
+
+memleak in bpf_patch_insn_data:
+
+Look at the call chain above, if adjust_insn_aux_data function return 
+ENOMEM, bpf_patch_insn_data will return NULL, but we do not free the 
+new_prog.
+
+So in the patch 2, before bpf_patch_insn_data return NULL, we free the 
+new_prog.
+
+use after free in bpf_check:
+
+If bpf_patch_insn_data function return NULL, we will not assign new_prog 
+to the bpf_verifier_env->prog, but bpf_verifier_env->prog has been freed 
+in the bpf_prog_realloc function. Then in bpf_check function, we will 
+use bpf_verifier_env->prog after do_misc_fixups function.
+
+In the patch 3, I added a free_old parameter to bpf_prog_realloc, in 
+this scenario we don't free old_prog. Instead, we free it in the 
+do_misc_fixups function when bpf_patch_insn_data return a valid new_prog.
+
+Thanks for your reviews.
