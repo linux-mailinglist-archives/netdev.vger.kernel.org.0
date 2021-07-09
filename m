@@ -2,117 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 765F13C2B45
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 00:16:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 658E13C2B52
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 00:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231163AbhGIWTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 18:19:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:33938 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbhGIWTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 18:19:35 -0400
-Received: from 65.47.5.85.dynamic.wline.res.cust.swisscom.ch ([85.5.47.65] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m1ynh-000BAR-Ey; Sat, 10 Jul 2021 00:16:49 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-07-09
-Date:   Sat, 10 Jul 2021 00:16:49 +0200
-Message-Id: <20210709221649.30124-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S231283AbhGIW2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 18:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229542AbhGIW2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 18:28:24 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16E8C0613DD;
+        Fri,  9 Jul 2021 15:25:39 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id v20so18902410eji.10;
+        Fri, 09 Jul 2021 15:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+ntQZJpzij1w4h4k2ak0sfnEmP3r69+mLD4JchBnw40=;
+        b=koH5CtgXSRam9jL0guU8+1wnm5xSarmQYW5DrPFWqGvydm+TWj0SgHFXJ7aIRp5hTd
+         0bdBN0fSAjt3DsLL65TA+bh8VzCnZpZZs4H/O81iJzfG4Y10A4yMQDNl3+lus1DGIk1X
+         L4pU9Mc92efGHbb+7sHuy3fgDScyluuW/WKeGgZSVg0K/TBnBcylBzJvDT0b0v3GClhu
+         LY4MPU8fSGRjmsX3tvzWZ2g/NHjk7KnStM4xVF5lUSQLNIwvhOg9nVZF02Rzl9gmsT2A
+         g6R3iyqUU5LuCikx4XwBtmnz83BjncrLey0Dl0IPzDjRloe2r5of2bCDhBgbq+KJqoC7
+         bacg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+ntQZJpzij1w4h4k2ak0sfnEmP3r69+mLD4JchBnw40=;
+        b=VtWTQ1pPMNK/MT9+SGQMCcnOQokKPHKf67u/0AuwJqmpcpn067tzVpVV4qvwNT3e2+
+         RWL3asnlAZyN5jyPWH9OavdD9jCH42pqaDFCdpAIv0JbfxlP3Akdt0r/9xp811+Eubr/
+         kpGB+R9ovY8FcR7/dK8xVTtzccO6nJGJDswCuvRujgta0F1LEJ/IefNYZ7WyKeml+xNG
+         AIOiOwXWnbbezdFcHvcz7G83F1VF212yiSf6chJfEp/SwoHUJ/6K7Nku2aYHX06qxEzV
+         ixdcYf09491LZxL8uBozrVscvoR/sYPqqUldhn3VjlnA3uwgf1Xe9FHDoME5g/YtKmhS
+         PB2w==
+X-Gm-Message-State: AOAM530VQtrhtsxQn5KkM/EMapa8v+MtpaSCcxteM2u4ro+a3LNnF0jq
+        rT0bXf9pLSpeVuK561/hwLo=
+X-Google-Smtp-Source: ABdhPJzrngb4Eh3NWGeqbSd5808UnsLTbEhnoO/ORNUFyMsVTz4Zq6sILqA294Xv32/iLKbBrGIF/A==
+X-Received: by 2002:a17:907:d28:: with SMTP id gn40mr35224280ejc.175.1625869538365;
+        Fri, 09 Jul 2021 15:25:38 -0700 (PDT)
+Received: from [10.17.0.13] ([37.58.58.229])
+        by smtp.gmail.com with ESMTPSA id k8sm3636498edr.92.2021.07.09.15.25.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Jul 2021 15:25:37 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
+ gen4+ devices
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20210709151800.7b2qqezlcicbgrqn@pali>
+ <b1002254-97c6-d271-c385-4a5c9fe0c914@mailbox.org>
+ <20210709161251.g4cvq3l4fnh4ve4r@pali>
+ <d9158206-8ebe-c857-7533-47155a6464e1@gmail.com>
+ <20210709173013.vkavxrtz767vrmej@pali>
+ <89a60b06-b22d-2ea8-d164-b74e4c92c914@gmail.com>
+ <20210709184443.fxcbc77te6ptypar@pali>
+ <251bd696-9029-ec5a-8b0c-da78a0c8b2eb@gmail.com>
+ <20210709194401.7lto67x6oij23uc5@pali>
+ <4e35bfc1-c38d-7198-dedf-a1f2ec28c788@gmail.com>
+ <20210709212505.mmqxdplmxbemqzlo@pali>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Message-ID: <bfbb3b4d-07f7-1b97-54f0-21eba4766798@gmail.com>
+Date:   Sat, 10 Jul 2021 00:25:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20210709212505.mmqxdplmxbemqzlo@pali>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26226/Fri Jul  9 13:16:15 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On 7/9/21 11:25 PM, Pali Rohár wrote:
 
-The following pull-request contains BPF updates for your *net* tree.
+[...]
 
-We've added 9 non-merge commits during the last 9 day(s) which contain
-a total of 13 files changed, 118 insertions(+), 62 deletions(-).
+> PCIe Function Level Reset should reset only one PCIe part of device. And
+> seems that this type of reset does not work properly in some situations.
+> 
+> Note that PCIe Function Level Reset is independent of running firmware.
+> It is implement in hardware and (should) work also at early stage when
+> firmware is not loaded yet.
+> 
+> I'm starting to think more and more if quirk in this patch really needs
+> to be behind DMI check and if rather it should not be called on other
+> platforms too?
 
-The main changes are:
+Maybe? I'm not sure how well this behaves on other devices and if there
+even are any devices outside of the MS Surface line that really require
+or benefit from something like this. To me it seems safer to put it
+behind quirks, at least until we know more.
 
-1) Fix runqslower task->state access from BPF, from SanjayKumar Jeyakumar.
-
-2) Fix subprog poke descriptor tracking use-after-free, from John Fastabend.
-
-3) Fix sparse complaint from prior devmap RCU conversion, from Toke Høiland-Jørgensen.
-
-4) Fix missing va_end in bpftool JIT json dump's error path, from Gu Shengxian.
-
-5) Fix tools/bpf install target from missing runqslower install, from Wei Li.
-
-6) Fix xdpsock BPF sample to unload program on shared umem option, from Wang Hai.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-kernel test robot, Magnus Karlsson, Martin KaFai Lau, Paul E. McKenney, 
-Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit dbe69e43372212527abf48609aba7fc39a6daa27:
-
-  Merge tag 'net-next-5.14' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2021-06-30 15:51:09 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 1fb5ba29ad0835c5cbfc69a27f9c2733cb65726e:
-
-  bpf: Selftest to verify mixing bpf2bpf calls and tailcalls with insn patch (2021-07-09 12:08:40 +0200)
-
-----------------------------------------------------------------
-Gu Shengxian (1):
-      bpftool: Properly close va_list 'ap' by va_end() on error
-
-John Fastabend (2):
-      bpf: Track subprog poke descriptors correctly and fix use-after-free
-      bpf: Selftest to verify mixing bpf2bpf calls and tailcalls with insn patch
-
-SanjayKumar Jeyakumar (1):
-      tools/runqslower: Use __state instead of state
-
-Toke Høiland-Jørgensen (3):
-      bpf, devmap: Convert remaining READ_ONCE() to rcu_dereference_check()
-      bpf, samples: Add -fno-asynchronous-unwind-tables to BPF Clang invocation
-      libbpf: Restore errno return for functions that were already returning it
-
-Wang Hai (1):
-      bpf, samples: Fix xdpsock with '-M' parameter missing unload process
-
-Wei Li (1):
-      tools: bpf: Fix error in 'make -C tools/ bpf_install'
-
- arch/x86/net/bpf_jit_comp.c                        |  3 ++
- include/linux/bpf.h                                |  1 +
- kernel/bpf/core.c                                  |  8 ++-
- kernel/bpf/devmap.c                                |  6 ++-
- kernel/bpf/verifier.c                              | 60 ++++++++--------------
- samples/bpf/Makefile                               |  1 +
- samples/bpf/xdpsock_user.c                         | 28 ++++++++++
- tools/bpf/Makefile                                 |  7 +--
- tools/bpf/bpftool/jit_disasm.c                     |  6 ++-
- tools/bpf/runqslower/runqslower.bpf.c              |  2 +-
- tools/lib/bpf/libbpf.c                             |  4 +-
- tools/testing/selftests/bpf/prog_tests/tailcalls.c | 36 +++++++++----
- .../selftests/bpf/progs/tailcall_bpf2bpf4.c        | 18 +++++++
- 13 files changed, 118 insertions(+), 62 deletions(-)
+Also not sure if this is just my bias, but it feels like the Surface
+line always had more problems with that driver (and firmware) than
+others.  I'm honestly a bit surprised that MS stuck with them for this
+long (they decided to go with Intel for 7th gen devices). AFAICT they
+initially chose Marvell due to connected standby support, so maybe that
+causes issue for us and others simply aren't using that feature? Just
+guessing though.
