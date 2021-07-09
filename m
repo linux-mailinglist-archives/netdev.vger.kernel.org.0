@@ -2,133 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DCC3C223D
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 12:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C373C227D
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 12:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbhGIKd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 06:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232087AbhGIKd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 06:33:26 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D82C0613DD
-        for <netdev@vger.kernel.org>; Fri,  9 Jul 2021 03:30:43 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id v10so7257492qto.1
-        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 03:30:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=vt-edu.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:mime-version:subject:from:in-reply-to:cc
-         :date:message-id:references:to;
-        bh=R4f9OcyVi0mET/bLtkBejNC17JCe88k19yLDC/kZYfM=;
-        b=YxFxU691lXnAutW0FnLeCUrTs7YqGJranfETBjNtErjwPseDxpmnyG3ak7tViCtCat
-         ejDmRzA2SiHzqVP7XNGe5Lmo2v8lwnUwrqyAs2BbjyxdEToaxZd3MkmBEmzmSBcZDUSP
-         I7/QT+rGLSWFCzoqJVOoPFhvKZlsRQGMYbw91JBVptpCbqLL5tM5RiycKB8Ybx7490Ms
-         IgfHd2RNtBu4k1QKnHuSQOBD/5ctjLwksQqjEfQARfyjsy8Jx8oUGuQUY0mixi7A+EJw
-         9v7NBwr2XlD70wUcFqIWUxPiyWlAeKdZ3FOjnWVd8J2QKpP1BArzDX1gqBhImV0tiKW+
-         LgTQ==
+        id S229861AbhGIKw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 06:52:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35592 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229641AbhGIKw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 06:52:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1625827814;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p83o+aMbPDh4h88AiWWLaMRE7yX8WLUNTx7Dqv3Igy0=;
+        b=S/8J30/tPU8X7ttWoim/xdRqHvjqkCENFdYEJKKaz9Wo8mrBSogM0ithgAurnTDx34p9aS
+        Xh7tjV+VQfJ7LxaTh+gjAbkzSHP6u4kL6iEMZ1Y0lJEKFUOBW0fCFy9dxfVcoQLvcrpbz2
+        +YJxzUFjpKZ82UYeHowLw/Xwd3N/yQE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-344-Shm_kHwQNbazMfDPJzyZCA-1; Fri, 09 Jul 2021 06:50:11 -0400
+X-MC-Unique: Shm_kHwQNbazMfDPJzyZCA-1
+Received: by mail-wm1-f72.google.com with SMTP id k5-20020a7bc3050000b02901e081f69d80so1961172wmj.8
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 03:50:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:mime-version:subject
-         :from:in-reply-to:cc:date:message-id:references:to;
-        bh=R4f9OcyVi0mET/bLtkBejNC17JCe88k19yLDC/kZYfM=;
-        b=PIOnlH6o2OcNakGhWm6/tX7g39k+GhoBnXIVHgbnfCHgxHSJmeHW5Qbz1VmNcv4XGO
-         IH5WeryuI3OZz3KEcQgblZT792rsfRjCjyWAh3mpTpCbUsbFnJm7szg2W5wMIGbWBYrO
-         4qq+5LhMLuVZpf42Cv+d1nNILXrUkBD8HT/sKOkAMHjKpn2QLP496pUU3gOc2J6qpS6P
-         C/ok+RcpErIArVqZtxf0RS1Pt66F4XXmNzP5+oxX6ZUdpgrCNReU8gaeBH16JQqVvK1p
-         WfLeFRQvrI4jHrPqQKdnCTulbDRq7Wcd0UcL4Um6yv1BlnByJY5zvDxYGk+mel3bChrD
-         59OQ==
-X-Gm-Message-State: AOAM530GXXnVRwDzpvZ2wXaJ4U7Edw2+4N3Mek3zM4DpOF8HwlM3CFFi
-        +CaWNDJ15vwMtnqI0vFdG6WuQw==
-X-Google-Smtp-Source: ABdhPJx9xhE/6m1aZxxmq1DNh+zIf4kZefCaNDjFiHxrVVTjqM9Y7DKV6r8cjUfVbqK76mG6mINRPw==
-X-Received: by 2002:ac8:5bc8:: with SMTP id b8mr33190118qtb.386.1625826642154;
-        Fri, 09 Jul 2021 03:30:42 -0700 (PDT)
-Received: from smtpclient.apple ([50.225.136.98])
-        by smtp.gmail.com with ESMTPSA id bm42sm2209496qkb.97.2021.07.09.03.30.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Jul 2021 03:30:41 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH] drivers: Follow the indentation coding standard on printks
-From:   bilbao@vt.edu
-In-Reply-To: <6ce9de29-2669-deb5-ea0e-895992240bea@gmx.de>
-Cc:     Rolf Eike Beer <eike-kernel@sf-tec.de>, gregkh@linuxfoundation.org,
-        davem@davemloft.net, kuba@kernel.org,
-        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 9 Jul 2021 06:30:40 -0400
-Message-Id: <2693E7F6-4D6D-4EF4-B2B4-102C044AB2AC@vt.edu>
-References: <6ce9de29-2669-deb5-ea0e-895992240bea@gmx.de>
-To:     Helge Deller <deller@gmx.de>
-X-Mailer: iPhone Mail (18F72)
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=p83o+aMbPDh4h88AiWWLaMRE7yX8WLUNTx7Dqv3Igy0=;
+        b=F0WSnnuvFWqoEfwR9C9gAngv5zTHfwbr5KXCJCppPIY1gOT3TkGjKm8CgYMIaFWl2s
+         hzNO8g0iATrXTsg9PueLhO8ATW/C9QWHPN5xAtfZlaWu52X4zPyQBGWCRvWNwtGPMjuA
+         /IhJZSFU/TS4CASGHS1SaTCXPMYcQ4tYiizMSd8PnVTzbc6dkbp9vQd4kNcqSKbAX1NW
+         NqLMJmncZNVFQAd1KHRVUDMyscUatMJuYHLT1rvPok+vXmF0WGn42DBHrqXqPiXLYCY/
+         rGuq2VTE9+v88ISCODZlneUGJhI1aOfkasYcmozEWSwq31m/Mpgbm7p+an6fjc60oBeC
+         XDhA==
+X-Gm-Message-State: AOAM532ByVYUDJ+hsmfa3jFW9mod7JuPJ/nBmp9AGLy4oY+t+x3Aikt6
+        UVg9BwvwP/U44KXWN4htxufBp8YdsrRWnjBk8lg8LgvAcfgGYArXt6QO4mBwwCzJ5LYzraLSrlG
+        /rVFHfVi/TG96woGY
+X-Received: by 2002:a5d:64c2:: with SMTP id f2mr28592806wri.158.1625827810712;
+        Fri, 09 Jul 2021 03:50:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJykMJIhLYaWz4Hfh8mscDLdmV2xbdzLG9SKn2S2Fl2YwxHkFka8guBCilGLj2d/kuyYB4WFuA==
+X-Received: by 2002:a5d:64c2:: with SMTP id f2mr28592791wri.158.1625827810565;
+        Fri, 09 Jul 2021 03:50:10 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
+        by smtp.gmail.com with ESMTPSA id m6sm5942951wrw.9.2021.07.09.03.50.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jul 2021 03:50:10 -0700 (PDT)
+Message-ID: <1c3d691c01121e4110f23d5947b2809d5cce056b.camel@redhat.com>
+Subject: Re: [RFC PATCH 1/3] veth: implement support for set_channel ethtool
+ op
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Fri, 09 Jul 2021 12:49:59 +0200
+In-Reply-To: <878s2fvln4.fsf@toke.dk>
+References: <cover.1625823139.git.pabeni@redhat.com>
+         <681c32be3a9172e9468893a89fb928b46c5c5ee6.1625823139.git.pabeni@redhat.com>
+         <878s2fvln4.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Helge,
+Hello,
 
-I would like to finish what I started and take care of this, yes.
+On Fri, 2021-07-09 at 12:15 +0200, Toke Høiland-Jørgensen wrote:
+> > @@ -224,10 +226,49 @@ static void veth_get_channels(struct net_device *dev,
+> >  {
+> >  	channels->tx_count = dev->real_num_tx_queues;
+> >  	channels->rx_count = dev->real_num_rx_queues;
+> > -	channels->max_tx = dev->real_num_tx_queues;
+> > -	channels->max_rx = dev->real_num_rx_queues;
+> > +	channels->max_tx = dev->num_tx_queues;
+> > +	channels->max_rx = dev->num_rx_queues;
+> >  	channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+> > -	channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+> > +	channels->max_combined = min(dev->num_rx_queues, dev->num_tx_queues);
+> > +}
+> > +
+> > +static int veth_close(struct net_device *dev);
+> > +static int veth_open(struct net_device *dev);
+> > +
+> > +static int veth_set_channels(struct net_device *dev,
+> > +			     struct ethtool_channels *ch)
+> > +{
+> > +	struct veth_priv *priv = netdev_priv(dev);
+> > +	struct veth_priv *peer_priv;
+> > +
+> > +	/* accept changes only on rx/tx */
+> > +	if (ch->combined_count != min(dev->real_num_rx_queues, dev->real_num_tx_queues))
+> > +		return -EINVAL;
+> > +
+> > +	/* respect contraint posed at device creation time */
+> > +	if (ch->rx_count > dev->num_rx_queues || ch->tx_count > dev->num_tx_queues)
+> > +		return -EINVAL;
+> > +
+> > +	if (!ch->rx_count || !ch->tx_count)
+> > +		return -EINVAL;
+> > +
+> > +	/* avoid braking XDP, if that is enabled */
+> > +	if (priv->_xdp_prog && ch->rx_count < priv->peer->real_num_tx_queues)
+> > +		return -EINVAL;
+> > +
+> > +	peer_priv = netdev_priv(priv->peer);
+> > +	if (peer_priv->_xdp_prog && ch->tx_count > priv->peer->real_num_rx_queues)
+> > +		return -EINVAL;
+> 
+> An XDP program could be loaded later, so I think it's better to enforce
+> this constraint unconditionally.
 
-thanks,
-Carlos.
+The relevant check is already present in veth_xdp_set(), the load will
+be rejected with an appropriate extack message.
 
-> On Jul 9, 2021, at 2:43 AM, Helge Deller <deller@gmx.de> wrote:
->=20
-> =EF=BB=BFOn 7/8/21 11:25 PM, Rolf Eike Beer wrote:
->> Am Donnerstag, 8. Juli 2021, 15:10:01 CEST schrieb Carlos Bilbao:
->>> Fix indentation of printks that start at the beginning of the line. Chan=
-ge
->>> this for the right number of space characters, or tabs if the file uses
->>> them.
->> [...]
->>> --- a/drivers/parisc/iosapic.c
->>> +++ b/drivers/parisc/iosapic.c
->>> @@ -633,7 +633,7 @@ static void iosapic_unmask_irq(struct irq_data *d)
->>>     printk("\n");
->>> }
->>> -printk("iosapic_enable_irq(): sel ");
->>> +    printk("iosapic_enable_irq(): sel ");
->>> {
->>>     struct iosapic_info *isp =3D vi->iosapic;
->>> @@ -642,7 +642,7 @@ printk("iosapic_enable_irq(): sel ");
->>>         printk(" %x", d1);
->>>     }
->>> }
->>> -printk("\n");
->>> +    printk("\n");
->>> #endif
->>>     /*
->> This is also debug code. It is basically unchanged since it has been impo=
-rted
->> into git. So it may be time to remove the whole block. Helge?
->=20
-> I'd prefer to clean it proper up and keep it.
->=20
->=20
->>> diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
->>> index dce4cdf786cd..c3381facdfc5 100644
->>> --- a/drivers/parisc/sba_iommu.c
->>> +++ b/drivers/parisc/sba_iommu.c
->>> @@ -1550,7 +1550,7 @@ static void sba_hw_init(struct sba_device *sba_dev=
-)
->>> #if 0
->>> -printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x 0x%x\n",
->>> PAGE0->mem_boot.hpa,
->>> +    printk("sba_hw_init(): mem_boot 0x%x 0x%x 0x%x
->>> 0x%x\n", PAGE0->mem_boot.hpa, PAGE0->mem_boot.spa, PAGE0->mem_boot.pad,
->>> PAGE0->mem_boot.cl_class);
->>>     /*
->> This is equally old. It should be either also removed, also this seems at=
+I enforcing the above contraint uncontiditionally will make impossible
+changing the number of real queues at runtime, as we must update dev
+and peer in different moments.
 
->> least worth as documentation. Maybe just switch it to pr_debug() or
->> dev_debug() while fixing the indentation.
->=20
-> Yes, I'll clean it up too.
->=20
-> @Carlos:
-> Instead of just removing or fixing the indentation, I'll fix it for both p=
-arisc
-> drivers. Unless you want to try...
->=20
-> Helge
+> (What happens on the regular xmit path if the number of TX queues is out
+> of sync with the peer RX queues, BTW?)
+
+if tx < rx, the higly number of rx queue will not be used, if rx < tx,
+XDP/gro can't take place: the normal veth path is used.
+
+> > +	if (netif_running(dev))
+> > +		veth_close(dev);
+> > +
+> > +	priv->num_tx_queues = ch->tx_count;
+> > +	priv->num_rx_queues = ch->rx_count;
+> 
+> Why can't just you use netif_set_real_num_*_queues() here directly (and
+> get rid of the priv members as above)?
+
+Uhm... I haven't thought about it. Let me try ;)
+
+Thanks!
+
+/P
+
