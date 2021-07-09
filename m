@@ -2,109 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F30F63C1C9B
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 02:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6C53C1CD2
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 02:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbhGIA3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 20:29:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbhGIA3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Jul 2021 20:29:55 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87ECC061574
-        for <netdev@vger.kernel.org>; Thu,  8 Jul 2021 17:27:11 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p4-20020a17090a9304b029016f3020d867so5090897pjo.3
-        for <netdev@vger.kernel.org>; Thu, 08 Jul 2021 17:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version;
-        bh=kGUDF61kH7DuKZ9RNXka80YbVY+lTdsyFO1WYdrvzWw=;
-        b=wYMT0y5pftXlm42ofM/k5HL7GVLczsZ/CKpg++6+mXmjARsgGdDsHwSjjXQbPiqWih
-         E7Q+MiBJAIX41DXE5qm0jR8zcKFW/9KBolGwoQ+qpcziw8gydXHRqWRSEeFzeXlSB6k+
-         s4mc8r2N3h8vEv3iRRgyHMiGKudGuITJ4erphjRDkHuXtvwdCsgq1Wmdw9njoZrIQq9h
-         p+UE3aL4dhvVSCJLiJDn4Up2sXw7y06srHC7+0y45YoZTmYe/Vl3JfEf31ZcSWLflLNI
-         L3ZomiVtTkzgWrc+IOraMqu2s9aBB9k5nW2xdowPNPc1HDcCT0dUXwEy1JBl49hrQpcM
-         wfaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version;
-        bh=kGUDF61kH7DuKZ9RNXka80YbVY+lTdsyFO1WYdrvzWw=;
-        b=MtvgoFrtb7G+X6Ni/BBgtqaFy4JGU52py7ISgHy0Pa6r7wYVznyrpXN0ne33Zr98Re
-         acmdvmUCPffIbyR38M4slmIWGdcSPvil8cU9y+70hVnRdKYRsfU1owSscnSwS+5d5Lxr
-         FFut386AdtfnbSG81pujaivHIzV0CjojuTfCihPY0U6DfeTU50ZEcwPgCB0lutYFvIJc
-         cSCgIpt+CY4NLtp0lWWrj/3I1M16CgRYgtI2GiIN4+aMl4WVuSe3v02IYMqe8SA+tKYs
-         +roiP3fHXs1Z2IPv7ddlEkzrs4Nqjr0mn10TyhHvmIZJoIT8NpoAZX2IY69JGa8j7Cu7
-         +aIg==
-X-Gm-Message-State: AOAM533x4R8OJo2vzyHAJ5izpAUNcg6Anw6MgQ9Ob89hFnSoNNEDnLkH
-        wUza5DN2HLxdawPPKKo6yrY9iQ==
-X-Google-Smtp-Source: ABdhPJwdz9geUWM9jxrc5l+YNr1Ebckl9l1sXse3W1hOWbs8iUeg6/elAtYObCaRypwAlF6HVmE4kA==
-X-Received: by 2002:a17:90a:aa8a:: with SMTP id l10mr34849991pjq.227.1625790431170;
-        Thu, 08 Jul 2021 17:27:11 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id a31sm4796676pgm.73.2021.07.08.17.27.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jul 2021 17:27:10 -0700 (PDT)
-Date:   Thu, 8 Jul 2021 17:27:07 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc:     gregkh@linuxfoundation.org, Carlos Bilbao <bilbao@vt.edu>,
-        alexander.deucher@amd.com, davem@davemloft.net,
-        mchehab+huawei@kernel.org, kuba@kernel.org,
-        James.Bottomley@hansenpartnership.com, netdev@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drivers: Follow the indentation coding standard on
- printks
-Message-ID: <20210708172707.7c4a5d5f@hermes.local>
-In-Reply-To: <2148456.iZASKD2KPV@daneel.sf-tec.de>
-References: <2784471.e9J7NaK4W3@iron-maiden>
-        <2148456.iZASKD2KPV@daneel.sf-tec.de>
+        id S230242AbhGIAj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 20:39:28 -0400
+Received: from mga14.intel.com ([192.55.52.115]:39326 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229637AbhGIAj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 20:39:28 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10039"; a="209440428"
+X-IronPort-AV: E=Sophos;i="5.84,225,1620716400"; 
+   d="scan'208";a="209440428"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2021 17:36:45 -0700
+X-IronPort-AV: E=Sophos;i="5.84,225,1620716400"; 
+   d="scan'208";a="458088595"
+Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.212.178.170]) ([10.212.178.170])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2021 17:36:44 -0700
+Subject: Re: [PATCH v2 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
+ attestation interface driver
+To:     Dan Williams <dan.j.williams@intel.com>,
+        "Kuppuswamy, Sathyanarayanan" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter H Anvin <hpa@zytor.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        X86 ML <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>
+References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20210707204249.3046665-6-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <CAPcyv4h8SaVL_QGLv1DT0JuoyKmSBvxJQw0aamMuzarexaU7VA@mail.gmail.com>
+ <24d8fd58-36c1-0e89-4142-28f29e2c434b@linux.intel.com>
+ <CAPcyv4heA8gps2K_ckUV1gGJdjGeB+5dOSntS=TREEX5-0rtwQ@mail.gmail.com>
+From:   Andi Kleen <ak@linux.intel.com>
+Message-ID: <4972fc1a-1ffb-2b6d-e764-471210df96a3@linux.intel.com>
+Date:   Thu, 8 Jul 2021 17:36:44 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/osUijuuKOZk+rhcif3qc0dd";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <CAPcyv4heA8gps2K_ckUV1gGJdjGeB+5dOSntS=TREEX5-0rtwQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/osUijuuKOZk+rhcif3qc0dd
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, 08 Jul 2021 23:25:37 +0200
-Rolf Eike Beer <eike-kernel@sf-tec.de> wrote:
+On 7/8/2021 5:20 PM, Dan Williams wrote:
+>
+> If you have a lock would TDX KVM even notice that its parallel
+> requests are being handled serially? I.e. even if they said "yes,
+> multiple requests may happen in parallel", until it becomes an actual
+> latency problem in practice it's not clear that this generous use of
+> resources is justified.
+The worst case usage is 2 pages * file descriptor. There are lots of 
+other ways to use that much and more memory for each file descriptor.
 
-> Am Donnerstag, 8. Juli 2021, 15:10:01 CEST schrieb Carlos Bilbao:
-> > Fix indentation of printks that start at the beginning of the line. Cha=
-nge
-> > this for the right number of space characters, or tabs if the file uses
-> > them. =20
->=20
-> > diff --git a/drivers/atm/iphase.c b/drivers/atm/iphase.c
+>
+> Scratch that... this driver already has the attestation_lock! So, it's
+> already the case that only one thread can be attesting at a time. The
+> per-file buffer is unecessary.
 
-Does anyone still have Linux ATM devices?
+But then you couldn't free the buffer. So it would be leaked forever for 
+likely only one attestation.
+
+Not sure what problem you're trying to solve here.
 
 
---Sig_/osUijuuKOZk+rhcif3qc0dd
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+>
+> keyutils supports generating and passing blobs into and out of the
+> kernel with a handle associated to those blobs. This driver adds a TDX
+> way to pass blobs into and out of the kernel. If Linux grows other
+> TDX-like attestation requirements in the future (e.g. PCI SPDM) should
+> each of those invent their own user ABI for passing blobs around?
 
------BEGIN PGP SIGNATURE-----
+The TDX blobs are different than any blobs that keyutils supports today. 
+The TDX operations are different too.
 
-iQIzBAEBCAAdFiEEn2/DRbBb5+dmuDyPgKd/YJXN5H4FAmDnl9sACgkQgKd/YJXN
-5H44YBAAnkAyswyrE/rskVunJmbFn2UtmB7idcIWZNhNmp7BkEhyEYyzCVcAx6bM
-bnk6ClVxxIJpdvdvlYcnloA6+MOWcYRXDeL2slbmTsm+B4WP0hoFqDot0y3SW9xo
-Y9XTyebLLT+x6xCBE8S+VeaIiIgHDmPiHCyB5XWxYulwcuQ38d3+vi0joRMBF1S7
-I6LJ/gQqQCzrjSOnuEFASNOwbVdGUz73UFz1N9FqInsU8w0ihdMHOdeheB73Ib/R
-GeEg58853dmIrwAZsejSbk9sgD+vMYpa4giHCyJgbus75SUCK9m246O/bnljf/oC
-3rGruoeFAHLvvHk530CMNy4QvyByXOKN8arPItYfXxaHIosjhy8x824fPpknRrnL
-emIlOQksSmma+MtUVCZmasKeEBcuWTXIrl1bRcnWtFBr72v/JEi5bH0Pu+z0kVNS
-lK46OJwWZy3dE1bkOyiYLIgIEPek9bqpmRsqqy9zDb8597wYjeK+qHZa83j75O0a
-vY0j6IvQmxAbmTehfgfjIeXS55x71981Y2wevmBk+8M7FB1oqKTjRefjIs2FbiMl
-nSdtBWPqTioCTDE4LR59IbeKOyVf09K1yKvl98BOQReRwPSVGzQ6KrJGMBDAoxbJ
-a5gx6B8wcJZjSGw6ydVDm18zrQ8wY1S/cbXvzlTDzXNl1vW9EE8=
-=ELNb
------END PGP SIGNATURE-----
+TDREPORT doesn't even involve any keys, it's just attestation reports.
 
---Sig_/osUijuuKOZk+rhcif3qc0dd--
+keyutils today nothing related to attestation.
+
+I just don't see any commonality. If there was commonality it would be 
+more with the TPM interface, but TDX attestation is different enough 
+that it also isn't feasible to directly convert it into TPM operation 
+(apart from standard TPM being a beast that you better avoid as much as 
+possible anyways)
+
+-Andi
+
+
+
