@@ -2,208 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71AB93C27B6
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 18:42:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BE73C27FC
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 19:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhGIQpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 12:45:22 -0400
-Received: from mxout70.expurgate.net ([194.37.255.70]:54645 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhGIQpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 12:45:22 -0400
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1m1ta4-0004S8-CE; Fri, 09 Jul 2021 18:42:24 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1m1ta2-0006Kc-7t; Fri, 09 Jul 2021 18:42:22 +0200
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 1BB2A240041;
-        Fri,  9 Jul 2021 18:42:21 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 62A4A240040;
-        Fri,  9 Jul 2021 18:42:20 +0200 (CEST)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 9402520176;
-        Fri,  9 Jul 2021 18:42:19 +0200 (CEST)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
-        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next v3] net: phy: intel-xway: Add RGMII internal delay configuration
-Date:   Fri,  9 Jul 2021 18:42:16 +0200
-Message-ID: <20210709164216.18561-1-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
+        id S230129AbhGIRG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 13:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230048AbhGIRG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 13:06:27 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6FAC0613DD;
+        Fri,  9 Jul 2021 10:03:43 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id hr1so17441014ejc.1;
+        Fri, 09 Jul 2021 10:03:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dVvi+fZClluzxbZN95gNbThYay+2YwEvt12ff5eLbXk=;
+        b=tEu1JMlVzD8b1ypcdJPbklHbisxRVqJruL4zMITA4wwQWTQlw9JW2PCaAikP5hc6LH
+         nBO4sDB+3rIcpzI6li/thAFzEd1rtBgfFWRTm5mNUS7La79azOLXUrSbVXXP5NhVsOGV
+         LM/jRRmNQr7t8SFQn4Kjtn9nCHfLBaJbrxb/NfwURY5ptX1HVYBVxI9kYoMCoA1CJG+B
+         rN9bNSD0vWjGu8RjQyD/xmOETiz01jK0RSlEO5HgcqE9UcFlFhoke6elSE9u7jvk/nYv
+         H7COXhXsDnRgdniVwk8qxRZJUtmfGmCSIwRUksFkpOWEYSNgUAV9GHWb0erbuLdZ64il
+         qSzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dVvi+fZClluzxbZN95gNbThYay+2YwEvt12ff5eLbXk=;
+        b=HZLdsUUo3wInXSmrDF1vkopxUyIdt4CLAW4Zn6OPm6YPAovBhHplrsz9Bz5tVMYSjh
+         N8fka6U4JVwvJyVLI5NzkkNMEZhGXv5S0QUYf6PaRqas5erkgs/s8wXO4uCE/p7jKhPu
+         GA6bcYreAiMy5epMzF/AieyK0C7hDekhfe4zRECymX3O258kbMKOeyarwOYFpPOf3eTH
+         gw3NHhWs01mI+mXnGKkLPGGvc1wqGGtfbIivYEr+wn++nGMF4sQZVFfcjaL+G1apjbFG
+         ICzixd7ADqFyKZxrinZdBjcp4TzpfBxzMXa0vuZZXambu0ELSkTv9pdKq56tzWJHRbsK
+         0ukw==
+X-Gm-Message-State: AOAM5327Mo/LDyawBT3ocVkLXqOeGXLASQ/UxagocRrkkIXBUGmNNUH0
+        7w9TNKfTSS9HEgCqRXJDa4Q=
+X-Google-Smtp-Source: ABdhPJyNpj7VoaP/QFxXSqjELez4vxqyI7afRt1sdshszXWHVKMHr5T0zib4zwltcYgIr6pk8m7p/g==
+X-Received: by 2002:a17:907:1c98:: with SMTP id nb24mr39644300ejc.316.1625850221623;
+        Fri, 09 Jul 2021 10:03:41 -0700 (PDT)
+Received: from [10.17.0.13] ([37.58.58.229])
+        by smtp.gmail.com with ESMTPSA id zp1sm2581308ejb.92.2021.07.09.10.03.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Jul 2021 10:03:41 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
+ gen4+ devices
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+References: <20210709145831.6123-1-verdre@v0yd.nl>
+ <20210709145831.6123-3-verdre@v0yd.nl> <20210709151800.7b2qqezlcicbgrqn@pali>
+ <b1002254-97c6-d271-c385-4a5c9fe0c914@mailbox.org>
+ <20210709161251.g4cvq3l4fnh4ve4r@pali>
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Message-ID: <d9158206-8ebe-c857-7533-47155a6464e1@gmail.com>
+Date:   Fri, 9 Jul 2021 19:03:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-ID: 151534::1625848943-000072E2-E541AF66/0/0
-X-purgate: clean
-X-purgate-type: clean
+In-Reply-To: <20210709161251.g4cvq3l4fnh4ve4r@pali>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds the posibility to configure the RGMII RX/TX clock skew via
-devicetree.
+On 7/9/21 6:12 PM, Pali Rohár wrote:
 
-Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and add
-the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
-devicetree.
+[...]
 
-Furthermore, a warning is now issued if the phy mode is configured to
-"rgmii" and an internal delay is set in the phy (e.g. by pin-strapping),
-as in the dp83867 driver.
+>>> Hello! Now I'm thinking loudly about this patch. Why this kind of reset
+>>> is needed only for Surface devices? AFAIK these 88W8897 chips are same
+>>> in all cards. Chip itself implements PCIe interface (and also SDIO) so
+>>> for me looks very strange if this 88W8897 PCIe device needs DMI specific
+>>> quirks. I cannot believe that Microsoft got some special version of
+>>> these chips from Marvell which are different than version uses on cards
+>>> in mPCIe form factor.
+>>>
+>>> And now when I'm reading comment below about PCIe bridge to which is
+>>> this 88W8897 PCIe chip connected, is not this rather an issue in that
+>>> PCIe bridge (instead of mwifiex/88W8897) or in ACPI firmware which
+>>> controls this bridge?
+>>>
+>>> Or are having other people same issues on mPCIe form factor wifi cards
+>>> with 88W8897 chips and then this quirk should not DMI dependent?
+>>>
+>>> Note that I'm seeing issues with reset and other things also on chip
+>>> 88W8997 when is connected to system via SDIO. These chips have both PCIe
+>>> and SDIO buses, it just depends which pins are used.
+>>>
+>>
+>> Hi and thanks for the quick reply! Honestly I've no idea, this is just the
+>> first method we found that allows for a proper reset of the chip. What I
+>> know is that some Surface devices need that ACPI DSM call (the one that was
+>> done in the commit I dropped in this version of the patchset) to reset the
+>> chip instead of this method.
+>>
+>> Afaik other devices with this chip don't need this resetting method, at
+>> least Marvell employees couldn't reproduce the issues on their testing
+>> devices.
+>>
+>> So would you suggest we just try to match for the pci chip 88W8897 instead?
+> 
+> Hello! Such suggestion makes sense when we know that it is 88W8897
+> issue. But if you got information that issue cannot be reproduced on
+> other 88W8897 cards then matching 88W8897 is not correct.
+> 
+>  From all this information looks like that it is problem in (Microsoft?)
+> PCIe bridge to which is card connected. Otherwise I do not reason how it
+> can be 88W8897 affected. Either it is reproducible on 88W8897 cards also
+> in other devices or issue is not on 88W8897 card.
 
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
+I doubt that it's an issue with the PCIe bridge (itself at least). The
+same type of bridge is used for both dGPU and NVME SSD on my device (see
+lspci output below) and those work fine. Also if I'm seeing that right
+it's from the Intel CPU, so my guess is that a lot more people would
+have issues with that then.
 
-Changes to v2:
-o Fix missing whitespace in warning.
+I don't know about the hardware side, so it might be possible that it's
+an issue with integrating both bridge and wifi chip, in which case it's
+still probably best handled via DMI quirks unless we know more.
 
-Changes to v1:
-o code cleanup and use phy_modify().
-o use default of 2.0ns if delay property is absent instead of returning
-  an error.
+Also as Tsuchiya mentioned in his original submission, on Windows the
+device is reset via this D3cold method. I've only skimmed that
+errata.inf file mentioned, but I think this is what he's referring to:
 
----
- drivers/net/phy/intel-xway.c | 90 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+   Controls whether ACPIDeviceEnableD3ColdOnSurpriseRemoval rule will be
+   evaluated or not on a given platform. Currently
+   ACPIDeviceEnableD3ColdOnSurpriseRemoval rule only needs to be
+   evaluated on Surface platforms which contain the Marvell WiFi
+   controller which depends on device going through D3Cold as part of
+   surprise-removal.
 
-diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
-index d453ec016168..796e6f2eb2d5 100644
---- a/drivers/net/phy/intel-xway.c
-+++ b/drivers/net/phy/intel-xway.c
-@@ -9,10 +9,16 @@
- #include <linux/phy.h>
- #include <linux/of.h>
-=20
-+#define XWAY_MDIO_MIICTRL		0x17	/* mii control */
- #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
- #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
- #define XWAY_MDIO_LED			0x1B	/* led control */
-=20
-+#define XWAY_MDIO_MIICTRL_RXSKEW_MASK	GENMASK(14, 12)
-+#define XWAY_MDIO_MIICTRL_RXSKEW_SHIFT	12
-+#define XWAY_MDIO_MIICTRL_TXSKEW_MASK	GENMASK(10, 8)
-+#define XWAY_MDIO_MIICTRL_TXSKEW_SHIFT	8
-+
- /* bit 15:12 are reserved */
- #define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function=
- of LED3 */
- #define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function=
- of LED2 */
-@@ -157,6 +163,86 @@
- #define PHY_ID_PHY11G_VR9_1_2		0xD565A409
- #define PHY_ID_PHY22F_VR9_1_2		0xD565A419
-=20
-+#if IS_ENABLED(CONFIG_OF_MDIO)
-+static const int xway_internal_delay[] =3D {0, 500, 1000, 1500, 2000, 25=
-00,
-+					 3000, 3500};
-+
-+static int xway_gphy_of_reg_init(struct phy_device *phydev)
-+{
-+	struct device *dev =3D &phydev->mdio.dev;
-+	int delay_size =3D ARRAY_SIZE(xway_internal_delay);
-+	s32 rx_int_delay;
-+	s32 tx_int_delay;
-+	u16 mask =3D 0;
-+	int val =3D 0;
-+
-+	if (!phy_interface_is_rgmii(phydev))
-+		return 0;
-+
-+	/* Existing behavior was to use default pin strapping delay in rgmii
-+	 * mode, but rgmii should have meant no delay.  Warn existing users,
-+	 * but do not change anything at the moment.
-+	 */
-+	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII) {
-+		u16 txskew, rxskew;
-+
-+		val =3D phy_read(phydev, XWAY_MDIO_MIICTRL);
-+		if (val < 0)
-+			return val;
-+
-+		txskew =3D (val & XWAY_MDIO_MIICTRL_TXSKEW_MASK) >>
-+			 XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
-+		rxskew =3D (val & XWAY_MDIO_MIICTRL_RXSKEW_MASK) >>
-+			 XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
-+
-+		if (txskew > 0 || rxskew > 0)
-+			phydev_warn(phydev,
-+				    "PHY has delays (e.g. via pin strapping), but phy-mode =3D 'rgmi=
-i'\n"
-+				    "Should be 'rgmii-id' to use internal delays txskew:%d ps rxskew=
-:%d ps\n",
-+				    xway_internal_delay[txskew],
-+				    xway_internal_delay[rxskew]);
-+		return 0;
-+	}
-+
-+	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID) {
-+		rx_int_delay =3D phy_get_internal_delay(phydev, dev,
-+						      &xway_internal_delay[0],
-+						      delay_size, true);
-+
-+		if (rx_int_delay < 0) {
-+			phydev_warn(phydev, "rx-internal-delay-ps is missing, use default of =
-2.0 ns\n");
-+			rx_int_delay =3D 4; /* 2000 ps */
-+		}
-+
-+		mask |=3D XWAY_MDIO_MIICTRL_RXSKEW_MASK;
-+		val |=3D rx_int_delay << XWAY_MDIO_MIICTRL_RXSKEW_SHIFT;
-+	}
-+
-+	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID) {
-+		tx_int_delay =3D phy_get_internal_delay(phydev, dev,
-+						      &xway_internal_delay[0],
-+						      delay_size, false);
-+
-+		if (tx_int_delay < 0) {
-+			phydev_warn(phydev, "tx-internal-delay-ps is missing, use default of =
-2.0 ns\n");
-+			tx_int_delay =3D 4; /* 2000 ps */
-+		}
-+
-+		mask |=3D XWAY_MDIO_MIICTRL_TXSKEW_MASK;
-+		val |=3D tx_int_delay << XWAY_MDIO_MIICTRL_TXSKEW_SHIFT;
-+	}
-+
-+	return phy_modify(phydev, XWAY_MDIO_MIICTRL, mask, val);
-+}
-+#else
-+static int xway_gphy_of_reg_init(struct phy_device *phydev)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_OF_MDIO */
-+
- static int xway_gphy_config_init(struct phy_device *phydev)
- {
- 	int err;
-@@ -204,6 +290,10 @@ static int xway_gphy_config_init(struct phy_device *=
-phydev)
- 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
- 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
-=20
-+	err =3D xway_gphy_of_reg_init(phydev);
-+	if (err)
-+		return err;
-+
- 	return 0;
- }
-=20
---=20
-2.20.1
+and
 
+   Starting with Windows releases *after* Blue, ACPI will not put
+   surprise-removed devices into D3Cold automatically. Some known
+   scenarios (viz. WiFi reset/recovery) rely on the device cycling
+   through D3Cold on surprise-removal. This hack allows surprise-removed
+   devices to be put into D3Cold (if supported by the stack).
+
+So, as far as I can tell, the chip doesn't like to be surprise-removed
+(which seems to happen during reset) and then needs to be power-cycled,
+which I think is likely due to some issue with firmware state.
+
+So the quirk on Windows seems very Surface specific.
+
+There also seem a bunch of revisions of these chips around, for example
+my SB2 is affected by a bug that we've tied to the specific hardware
+revision which causes some issues with host-sleep (IIRC chip switches
+rapidly between wake and sleep states without any external influence,
+which is not how it should behave and how it does behave on a later
+hardware revision).
+
+>> Then we'd probably have to check if there are any laptops where multiple
+>> devices are connected to the pci bridge as Amey suggested in a review
+>> before.
+> 
+> Well, I do not know... But if this is issue with PCIe bridge then
+> similar issue could be observed also for other PCIe devices with this
+> PCIe bridge. But question is if there are other laptops with this PCIe
+> bridge. And also it can be a problem in ACPI firmware on those Surface
+> devices, which implements some PCIe bridge functionality. So it is
+> possible that issue is with PCIe bridge, not in HW, but in SW/firmware
+> part which can be Microsoft specific... So too many questions to which
+> we do not know answers.
+> 
+> Could you provide output of 'lspci -nn -vv' and 'lspci -tvnn' on
+> affected machines? If you have already sent it in some previous email,
+> just send a link. At least I'm not able to find it right now and output
+> may contain something useful...
+
+ From my Surface Book 2 (with the same issue):
+
+  - lspci -tvnn: https://paste.ubuntu.com/p/mm3YpcZJ8N/
+  - lspci -vv -nn: https://paste.ubuntu.com/p/dctTDP738N/
+
+Regards,
+Max
