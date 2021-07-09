@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D87363C1CD5
-	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 02:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2393C1D04
+	for <lists+netdev@lfdr.de>; Fri,  9 Jul 2021 03:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbhGIAl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Jul 2021 20:41:26 -0400
-Received: from mga06.intel.com ([134.134.136.31]:16188 "EHLO mga06.intel.com"
+        id S230139AbhGIBdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Jul 2021 21:33:23 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47014 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229637AbhGIAl0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Jul 2021 20:41:26 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10039"; a="270737872"
-X-IronPort-AV: E=Sophos;i="5.84,225,1620716400"; 
-   d="scan'208";a="270737872"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2021 17:38:42 -0700
-X-IronPort-AV: E=Sophos;i="5.84,225,1620716400"; 
-   d="scan'208";a="458088979"
-Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.212.178.170]) ([10.212.178.170])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2021 17:38:41 -0700
-Subject: Re: [PATCH v2 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Peter H Anvin <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20210707204249.3046665-6-sathyanarayanan.kuppuswamy@linux.intel.com>
- <06c85c19-e16c-3121-ed47-075cfa779b67@kernel.org>
- <169451ef-e8f6-5a07-f47a-61eaa085b4ef@intel.com>
-From:   Andi Kleen <ak@linux.intel.com>
-Message-ID: <ce0feeec-a949-35f8-3010-b0d69acbbc2e@linux.intel.com>
-Date:   Thu, 8 Jul 2021 17:38:41 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S229953AbhGIBdX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Jul 2021 21:33:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=iR/91e9r/pV24uz7F/ZCZMYq8GdTcOgKPN8iEDrQRb8=; b=ljJbRil4n+6JOT76mK3vtCkveF
+        C2LNsuSXdXSMa33p02M3bMCMeg7pG/fthTEeE0tLgoSIPmnM+KjC9vIP5nGaP4+UxR0hsAGWhZzK/
+        tcxWx0uksOw18Anq1E0EHrtFWfzMUKLu8F8p7+vd39w3GejF5pVaIuxOzD/A6sXzSaiE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m1fLS-00ChH2-OR; Fri, 09 Jul 2021 03:30:22 +0200
+Date:   Fri, 9 Jul 2021 03:30:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: phy: reconfigure PHY WOL in resume if WOL
+ option still enabled
+Message-ID: <YOemro4DJEBl+h6N@lunn.ch>
+References: <20210708004253.6863-1-mohammad.athari.ismail@intel.com>
+ <YOZTmfvVTj9eo+to@lunn.ch>
+ <4e159b98-ec02-33b7-862a-0e35832c3a5f@gmail.com>
+ <CO1PR11MB477144A2A055B390825A9FF4D5199@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <9871a015-bcfb-0bdb-c481-5e8f2356e5ba@gmail.com>
+ <CO1PR11MB47719C284F178753C916519FD5199@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <f167de1d-94cc-7465-2e6f-e1e71b66b009@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <169451ef-e8f6-5a07-f47a-61eaa085b4ef@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f167de1d-94cc-7465-2e6f-e1e71b66b009@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> Ah yes you are right, we just skip resume in that case. OK let me think
+> about it some more.
 
-> Expensive and permanently fractures the direct map.
->
-> I'm struggling to figure out why the direct map is even touched here.
-I think Sathya did it this way because the TD interface requires a 
-physical address.
-> Why not just use a vmalloc area mapping?  You really just need *a*
-> decrypted mapping to the page.  You don't need to make *every* mapping
-> to the page decrypted.
+The point here is, it is an interrupt, from the perspective of the PHY
+hardware and its driver. But the interrupt handler is never being
+called because the interrupt output from the chip is not causing an
+actual interrupt. Fix that, and your problem goes away. Or you need to
+add a whole new mechanism that you are using the interrupt hardware in
+the PHY some something else than an actual interrupt.
 
-Yes it would be possible to use vmap() on the page and only set the vmap 
-encrypted by passing the right flags directly.
-
-That would avoid breaking up the direct mapping.
-
-
--Andi
-
+    Andrew
 
