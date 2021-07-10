@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8F33C3520
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 17:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF8F3C3523
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 17:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbhGJPXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 11:23:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33944 "EHLO mail.kernel.org"
+        id S231420AbhGJPc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 11:32:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49064 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230325AbhGJPXu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Jul 2021 11:23:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C535C61375;
-        Sat, 10 Jul 2021 15:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625930465;
-        bh=rF8u2jQBxhx3PDpbzzimq05yM9RfWiVQUbblM3OrCiM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DQ4ogT1KINQvsIFaugeOIh1ZU3JhD6dK77Q044WMIN4+9+PR+a58HUQH9tAM0GOPc
-         G5hDJmZkdwcPvqrWLA4zmArRogoGGulcQT4PqSv3JhG82ux/f1EedSja2hH8z6Yq+o
-         JwsXnAh3eo5bR87NS8oZj2i3boVfVCwzwR5caBcIhFQe59oJElQJDoQg0kPnTKhHdh
-         JDVBXueJqhtP1hVIdF3D0sVMRU7hbEX3nWVB/kakLy37BMzPYxmlY746nWYL2ESgpz
-         1P04PdgUazikO6P21kZ/Kp+bS3U48pLKRyhHkrYU9EOQNvm5sf4IB4HcZHNhe7cmOC
-         C0qQllNTQmgAw==
-Received: by mail-pj1-f41.google.com with SMTP id i16-20020a17090acf90b02901736d9d2218so2785263pju.1;
-        Sat, 10 Jul 2021 08:21:05 -0700 (PDT)
-X-Gm-Message-State: AOAM533oAoiaREMeI9XX08e5mX286ojj8bbpcQfLpth8PIIomGsORQb1
-        YT48jXI+a7+89euN2YOjxPtcxRyNr+OlmNoByl0=
-X-Google-Smtp-Source: ABdhPJxAwJwB/+gS/7JG0EPNkRbIr7GN/8dlvUFI/dE5ARTixMwBhRaDTMh4bP9em8kWg4FGqSnc/L+rNC6IKVKtSrg=
-X-Received: by 2002:a17:90a:7d13:: with SMTP id g19mr44110440pjl.163.1625930465566;
- Sat, 10 Jul 2021 08:21:05 -0700 (PDT)
+        id S229805AbhGJPcZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Jul 2021 11:32:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TYiG2EqNKSzkSuCYPnt+Lx1AOJY2xXfDL9r7Cx7cDS8=; b=MseDGGphRUm/HogPIoPvVcqFvH
+        8SxiAv6z0IA3wio5xG3xk9geeD3cMQ8ddE9uqZhVv+tMUPYvX/gG/AxS1Aw0qOkFnOF58UQ8JnZiQ
+        Mr/1YRmRrQxfR9lqnWt4g+gsEq4QXdtbvPAZDoaRdhBTcJOrNwEcAVv6YAjsPWSegsUs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m2Ev4-00CtH5-8g; Sat, 10 Jul 2021 17:29:30 +0200
+Date:   Sat, 10 Jul 2021 17:29:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linuxarm@openeuler.org
+Subject: Re: [RFC net-next] net: extend netdev features
+Message-ID: <YOm82gTf/efnR7Fj@lunn.ch>
+References: <1625910047-56840-1-git-send-email-shenjian15@huawei.com>
 MIME-Version: 1.0
-References: <20210709142418.453-1-paskripkin@gmail.com> <CAOZdJXWm4=UHw42YjUAQLZTNd=qbxyRag7-MJ5V4aq_xf8-1Vw@mail.gmail.com>
- <20210710095717.140ec45a@gmail.com>
-In-Reply-To: <20210710095717.140ec45a@gmail.com>
-From:   Timur Tabi <timur@kernel.org>
-Date:   Sat, 10 Jul 2021 10:20:28 -0500
-X-Gmail-Original-Message-ID: <CAOZdJXVuaiWaJ-D7iZVPQzqW7KV=K9kPjK2LGacZecFdL0vNFw@mail.gmail.com>
-Message-ID: <CAOZdJXVuaiWaJ-D7iZVPQzqW7KV=K9kPjK2LGacZecFdL0vNFw@mail.gmail.com>
-Subject: Re: [PATCH] net: qcom/emac: fix UAF in emac_remove
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Timur Tabi <timur@kernel.org>, David Miller <davem@davemloft.net>,
-        kuba@kernel.org, netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1625910047-56840-1-git-send-email-shenjian15@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 10, 2021 at 1:57 AM Pavel Skripkin <paskripkin@gmail.com> wrote:
+On Sat, Jul 10, 2021 at 05:40:47PM +0800, Jian Shen wrote:
+> For the prototype of netdev_features_t is u64, and the number
+> of netdevice feature bits is 64 now. So there is no space to
+> introduce new feature bit.
 
-> David has already applied this pacth. So, should I send v2 or maybe
-> revert + v2? I haven't been in such situations yet :)
+The PHY subsystem had a similar problem a while back. supported and
+advertised link modes where represented as bits in a u64. We changed
+to a linux bitmap, with wrappers around it. Take a look at the
+linkmode_ API usage in drivers/net/phy, and some Ethernet drivers.
 
-No, don't worry about it.
+It is going to be a big change, but i think you need to do something
+similar here. Add a netdev_feature_ API for manipulating features,
+convert all users to this API, and then change the implementation of
+the API to allow more bits.
+
+You will want to make use of code re-writing tools to do most of the
+work.
+
+	Andrew
