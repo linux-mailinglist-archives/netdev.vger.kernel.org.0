@@ -2,94 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642553C36C7
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:32:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAF2C3C36CB
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:34:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbhGJUfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 16:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
+        id S230057AbhGJUhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 16:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbhGJUfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:35:16 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4DAC0613DD
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 13:32:31 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id m83so4538236pfd.0
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 13:32:31 -0700 (PDT)
+        with ESMTP id S229515AbhGJUhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:37:01 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B729C0613DD;
+        Sat, 10 Jul 2021 13:34:15 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id c17so23840989ejk.13;
+        Sat, 10 Jul 2021 13:34:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sL61vUB/PehkKkCSa/Fn/0uL70Pu7mLqTzvYlVhHxq0=;
-        b=yQoN3k13dbQ5sc1HDipeOiL7q+kwDagu+F/2JmHX79AbOYs+5hjnxVn0caMETbiA8Q
-         nXRqQgNhVHu6nfu1YCYRO/YsnevorUMu9Nl0SJf4IJHN+WkT35KWfu736DHaJvQ2jnKq
-         EiwXv1QmkEP9DpZyLe+FKl1TTpqfeqQvXyDAooWZbgbKPkZGoSR34+wIW5tbTOzBO8hC
-         olWCXY8WcKvzXcmr1wKIP//JfI1p1tAADEnww7PQdFvLh1jXWEnrSIF2aF/fSqsnwbYx
-         1WvQ3/BsHwgZrexYb8ipNEvS0l72HnnpyZyIn51MXKtyqdzVtGg4+LsVud3EvrHBskU0
-         k5Ow==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MPITH6hW87Dzz+BA0F4dfZufHvIwz3mBp2b8LY0PIYI=;
+        b=decWn1Dd9gN9XIO9xOLyFCgQ7wDLRDEsezyAG4ecduWDshNQWqfBo/xQRN3AcXMEg9
+         SqTs2IclFYAJGCm4fETpjeT22ZBJyL5mQHhrOk4aMn7JyAD/jMpW/puSJK1f5lU/ndgz
+         /JeZy2jp+h2jr0sh0WLZRKYycqrD3MDw8rx8VxEitN95VRFkCU+Ccvs7twNF/L6cIJow
+         BW71fNxOCCXXn5H+KkQGqzWC4tTB4XC6812HgwkrrFs0Cnd3wPo7tNjBKXmv3vaRwZze
+         KmJUQQrNhaBsja5DtppWpqD/Sni0NoSsx0LbCvIKHHqU4SUNvTNkI/uKhe9pt+LAI9Gj
+         98BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sL61vUB/PehkKkCSa/Fn/0uL70Pu7mLqTzvYlVhHxq0=;
-        b=ubk8J8KauD07qEHCCiZadjzfvel7+ZT39PQcwyU5UgfWbxRJ6bslL5cPLfguYcKd9V
-         mP56IKr3ANYiUTQ+NXWclPpLyO4X7lDsHJSQXTXaNkR6nJYWvwS/eC+Rq1gr3u9UtVHv
-         aeDaqHiQ6mUoF+uA0Sfhi4rMTQznwr8unDtBgFZ5E+D9JfrwbhlGxD2skFGDK++cKIgN
-         8nUc+MTlkvPgZW2h5F3TsWcw58pRzIF1Ljd8yGTA4M5dWQ4e3yttJ4GLHz7q46Yql72H
-         YiCA07ISwoPlZbqvb8/5m3EFEM9EZBZO9OnSFdO8Cta8tWNa2DQJ4lCyRX2Bj25lGZaj
-         2MEQ==
-X-Gm-Message-State: AOAM53044AiqnXWUPtZ52M/1dLcr83v1KEt7tDtA5a5RlWfcJ3BUR4oo
-        7HfuihWKHVJ+34U9J64bVL4Hkg==
-X-Google-Smtp-Source: ABdhPJxbnZad34gHtIG8Xclp9DZ7GprOe+4Rf4Xgg/2ZAMyY3YbFOAocNRXkgZc7ExJuPLP/GSJBxw==
-X-Received: by 2002:a62:2bc6:0:b029:2cc:242f:ab69 with SMTP id r189-20020a622bc60000b02902cc242fab69mr45153141pfr.16.1625949150002;
-        Sat, 10 Jul 2021 13:32:30 -0700 (PDT)
-Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
-        by smtp.gmail.com with ESMTPSA id z6sm2627697pjn.12.2021.07.10.13.32.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MPITH6hW87Dzz+BA0F4dfZufHvIwz3mBp2b8LY0PIYI=;
+        b=U4cSsERGTFPHWKAJJehbnI6Iz7oLM+ANkARv+RwtgxoavLhrGlx21Jb447hIafmFSH
+         OjBbvbPO8NZlDegUpjxXgyqO2q1fZ8dRCWMJ9jQfRqJzmyylHqPKourAPdZCT4P9OwHQ
+         qG+m+fVfVe9+/QA5o8O6B+pXJsfRFLMDBcQT0cJYnY5hvLR/JL2vGpnqbq1JoDij//6x
+         +fDOyoLXWHB0MIzvWBctBATGDIRyuEGxcdo8INI1bzoHjOcSPNYEyfmHfWuIo2HiHOjB
+         xqCl8PY/fWLEWYHZqCXq7YqaNJ1NlOXr3cv53eYPmBAIYlReqxaJXblq+KacG4l3ZrB6
+         llqw==
+X-Gm-Message-State: AOAM532ppkq2tLQZSQ0UImt3+oEYseHiWj/COOcN1O2V5ufKaGlKT6Ft
+        FYhcuSBR3mIIxBUs8rL/yNg=
+X-Google-Smtp-Source: ABdhPJyn+eqeGLvY0gTYmezpnwhOahOq/E7NuaQ1DLn6l7tVFb18HFvb58ZhcaUI6Y+tsf9Afnh/2g==
+X-Received: by 2002:a17:906:c34b:: with SMTP id ci11mr18969519ejb.223.1625949253688;
+        Sat, 10 Jul 2021 13:34:13 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id n13sm4159652ejk.97.2021.07.10.13.34.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jul 2021 13:32:29 -0700 (PDT)
-Date:   Sat, 10 Jul 2021 13:32:27 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Dave Taht <dave.taht@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jian Shen <shenjian15@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linuxarm@openeuler.org
-Subject: Re: [RFC net-next] net: extend netdev features
-Message-ID: <20210710133227.348899f8@hermes.local>
-In-Reply-To: <CAA93jw4uhezgu05uM2xohoPMbDvbMAVmivSf2wgPiO4OzScwRg@mail.gmail.com>
-References: <1625910047-56840-1-git-send-email-shenjian15@huawei.com>
-        <20210710081120.5570fb87@hermes.local>
-        <YOm5wgVv7PGx9AYi@lunn.ch>
-        <CAA93jw4uhezgu05uM2xohoPMbDvbMAVmivSf2wgPiO4OzScwRg@mail.gmail.com>
+        Sat, 10 Jul 2021 13:34:13 -0700 (PDT)
+Date:   Sat, 10 Jul 2021 23:34:11 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 net-next 8/8] Update documentation for the VSC7512
+ SPI device
+Message-ID: <20210710203411.nahqkyy4umqbtfwm@skbuf>
+References: <20210710192602.2186370-1-colin.foster@in-advantage.com>
+ <20210710192602.2186370-9-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210710192602.2186370-9-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 10 Jul 2021 08:35:52 -0700
-Dave Taht <dave.taht@gmail.com> wrote:
-
-> On Sat, Jul 10, 2021 at 8:18 AM Andrew Lunn <andrew@lunn.ch> wrote:
-> >  
-> > > Infrastructure changes must be done as part of the patch that
-> > > needs the new feature bit. It might be that your feature bit is
-> > > not accepted as part of the review cycle, or a better alternative
-> > > is proposed.  
-> >
-> > Hi Stephan
-> >
-> > I agree with what you are saying, but i also think there is no way to
-> > avoid needing more feature bits. So even if the new feature bit itself
-> > is rejected, the code to allow it could be useful.  
+On Sat, Jul 10, 2021 at 12:26:02PM -0700, Colin Foster wrote:
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> ---
+>  .../devicetree/bindings/net/dsa/ocelot.txt    | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
 > 
-> I would rather passionately like to expand several old currently 16
-> bit fields in tc and iptables to 32 bits,
-> and break the 1000 user limitation we have in things like this:
-> 
-> https://github.com/rchac/LibreQoS
+> diff --git a/Documentation/devicetree/bindings/net/dsa/ocelot.txt b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
+> index 7a271d070b72..f5d05bf8b093 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/ocelot.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
+> @@ -8,6 +8,7 @@ Currently the switches supported by the felix driver are:
+>  
+>  - VSC9959 (Felix)
+>  - VSC9953 (Seville)
+> +- VSC7511, VSC7512, VSC7513, VSC7514 via SPI
+>  
+>  The VSC9959 switch is found in the NXP LS1028A. It is a PCI device, part of the
+>  larger ENETC root complex. As a result, the ethernet-switch node is a sub-node
+> @@ -211,3 +212,70 @@ Example:
+>  		};
+>  	};
+>  };
+> +
+> +The VSC7513 and VSC7514 switches can be controlled internally via the MIPS
+> +processor. The VSC7511 and VSC7512 don't have this internal processor, but all
+> +four chips can be controlled externally through SPI with the following required
+> +properties:
+> +
+> +- compatible:
+> +	Can be "mscc,vsc7511", "mscc,vsc7512", "mscc,vsc7513", or
+> +	"mscc,vsc7514".
+> +
+> +Supported phy modes for all chips are:
+> +
+> +* phy_mode = "internal": on ports 0, 1, 2, 3
+> +
+> +Additionally, the VSC7512 and VSC7514 support SGMII and QSGMII on various ports,
+> +though that is currently untested.
+> +
+> +Example for control from a BeagleBone Black
+> +
+> +&spi0 {
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +	status = "okay";
+> +
+> +	vsc7512: vsc7512@0 {
 
-Unfortunately, no one has stepped up to the heavy lifting of having a UAPI
-compatibility layer for this.
+ethernet-switch@0
+
+> +		compatible = "mscc,vsc7512";
+> +		spi-max-frequency = <250000>;
+> +		reg = <0>;
+> +
+> +		ports {
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			port@0 {
+> +				reg = <0>;
+> +				ethernet = <&mac>;
+> +				phy-mode = "internal";
+> +
+> +				fixed-link {
+> +					speed = <100>;
+> +					full-duplex;
+> +				};
+> +			};
+> +
+> +			port@1 {
+> +				reg = <1>;
+> +				label = "swp1";
+> +				status = "okay";
+
+I am not convinced that the status = "okay" lines are useful in the
+example.
+
+> +				phy-mode = "internal";
+
+This syntax is ambiguous and does not obviously mean that the port has
+an internal copper PHY. Please see this discussion for other meanings of
+no 'phy-handle' and no 'fixed-link'.
+
+https://www.mail-archive.com/u-boot@lists.denx.de/msg409571.html
+
+I think it would be in the best interest of everyone to go through
+phylink_of_phy_connect() instead of phylink_connect_phy(), aka use the
+standard phy-handle property and create an mdio node under
+ethernet-switch@0 where the internal PHY OF nodes are defined.
+
+I don't know if this is true for VSC7512 or not, but for example on
+NXP SJA1110, the internal PHYs can be accessed in 2 modes:
+(a) through SPI transfers
+(b) through an MDIO slave access point exposed by the switch chip, which
+    can be connected to an external MDIO controller
+
+Some boards will use method (a), and others will use method (b).
+
+Requiring a phy-handle under the port property is an absolutely generic
+way to seamlessly deal with both cases. In case (a), the phy-handle
+points to a child of an MDIO bus provided by the ocelot driver, in case
+(b) the phy-handle points to a child provided by some other MDIO
+controller driver.
+
+> +			};
+> +
+> +			port@2 {
+> +				reg = <2>;
+> +				label = "swp2";
+> +				status = "okay";
+> +				phy-mode = "internal";
+> +			};
+> +
+> +			port@3 {
+> +				reg = <3>;
+> +				label = "swp3";
+> +				status = "okay";
+> +				phy-mode = "internal";
+> +			};
+> +		};
+> +	};
+> +};
+> -- 
+> 2.25.1
+> 
