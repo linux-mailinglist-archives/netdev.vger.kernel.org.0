@@ -2,152 +2,436 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 955CB3C2C46
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 03:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FBC23C2C4D
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 03:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbhGJBKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 21:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhGJBKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 21:10:22 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE36C0613DD;
-        Fri,  9 Jul 2021 18:07:37 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id l7so13519422wrv.7;
-        Fri, 09 Jul 2021 18:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ct0YeibkisPY8CafMvD3W5ikHpPUQC0YHDifJnV0HQY=;
-        b=BXqpBZq8TmYanq3uq6Biq3g2GSDzZFATlLPSECbEFYB3BJR7+ZfJNs7VM0zGfHaXNB
-         A2KU+mYhfQ96JbJ4mtmJitIYG/mjEDRTCEBh0rr65PVZspgWt/6BhKOWltm/KNad6NSB
-         4S7P6o1AJt1+teGTkkwyYfQVZs8EDiF6eNHBCHycfu5929bJjQL4UnJV5abB0WuYrGiw
-         jDeHEfWhSiaEI6hOH9KfwnTcakgVNRHWeenDZM2DT3AdcPRyCnhMyrm1HYNna7u32dlL
-         UaUrYUayaLzG+ZclbtIojpVeYPAdpd1S9jRF/xOeuZ5/P5liYfXK10IjIZq26d7H8IdZ
-         yI6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ct0YeibkisPY8CafMvD3W5ikHpPUQC0YHDifJnV0HQY=;
-        b=aTREq2FZF2I/Vbej2M/0Sd73tOj16pt0aCxaoghrFq96zhsuGzegGwBEFja5KyaxM2
-         AIi5UmCBPwvrKcE4Zbb5mpEpX8mfKvpNTenqF+fiXGnvSNzM5GGzRzCZWtBtTg87VJhm
-         IObjztODQKbapfR12kMV2SkOEw+liK9hjlb1CwbZp0770P/uhN6zwYPoR1wFDeUGe2II
-         O3hoXq+x3m2Vu949y6epiFXg5Gz7MP0u+pLeDYv14c4zBHj2pff6hsvTAt0RU3kBbdY3
-         PRe50iEKeHEKTjMKMg8G59zYqiDoX3jLSENUPhiDTqYYJRy8YS+CgCD86UZ0XF5TgUcC
-         qkOw==
-X-Gm-Message-State: AOAM530Fwkr7fsrHvLUjU2WdHJD+qHNeyLlHG9RLAFdzTF5d8Ief1U+s
-        GQZX7YGsSj80IFNvN9TkEVk=
-X-Google-Smtp-Source: ABdhPJy0av8vNdNG8LMLK5MQXKxUXxF9afvJrWxe/jub7GIm79s+x3PIllYuucye9OLZ0zWSqIQ52Q==
-X-Received: by 2002:adf:e586:: with SMTP id l6mr413840wrm.26.1625879256046;
-        Fri, 09 Jul 2021 18:07:36 -0700 (PDT)
-Received: from [192.168.2.202] (pd9e5a098.dip0.t-ipconnect.de. [217.229.160.152])
-        by smtp.gmail.com with ESMTPSA id g10sm7270760wrq.63.2021.07.09.18.07.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Jul 2021 18:07:35 -0700 (PDT)
-Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
- gen4+ devices
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     =?UTF-8?Q?Jonas_Dre=c3=9fler?= <verdre@v0yd.nl>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-References: <20210709184443.fxcbc77te6ptypar@pali>
- <251bd696-9029-ec5a-8b0c-da78a0c8b2eb@gmail.com>
- <20210709194401.7lto67x6oij23uc5@pali>
- <4e35bfc1-c38d-7198-dedf-a1f2ec28c788@gmail.com>
- <20210709212505.mmqxdplmxbemqzlo@pali>
- <bfbb3b4d-07f7-1b97-54f0-21eba4766798@gmail.com>
- <20210709225433.axpzdsfbyvieahvr@pali>
- <89c9d1b8-c204-d028-9f2c-80d580dabb8b@gmail.com>
- <20210710000756.4j3tte63t5u6bbt4@pali>
- <1d45c961-d675-ea80-abe4-8d4bcf3cf8d4@gmail.com>
- <20210710003826.clnk5sh3cvlamwjr@pali>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Message-ID: <2d7eef37-aab3-8986-800f-74ffc27b62c5@gmail.com>
-Date:   Sat, 10 Jul 2021 03:07:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231215AbhGJBOI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Jul 2021 21:14:08 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7874 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229506AbhGJBOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 21:14:08 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16A1AL7e021197
+        for <netdev@vger.kernel.org>; Fri, 9 Jul 2021 18:11:23 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 39pt84jchx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 09 Jul 2021 18:11:23 -0700
+Received: from intmgw001.05.ash7.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 9 Jul 2021 18:11:22 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 94D2E3D40D49; Fri,  9 Jul 2021 18:11:20 -0700 (PDT)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <linux-kernel@vger.kernel.org>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: [PATCH bpf-next] bpf: add ambient BPF runtime context stored in current
+Date:   Fri, 9 Jul 2021 18:11:17 -0700
+Message-ID: <20210710011117.1235487-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Zzv5Jow-3jlwMhXxSz5U-vWfg3UQ9YGu
+X-Proofpoint-GUID: Zzv5Jow-3jlwMhXxSz5U-vWfg3UQ9YGu
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <20210710003826.clnk5sh3cvlamwjr@pali>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-09_18:2021-07-09,2021-07-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1034
+ mlxlogscore=999 suspectscore=0 priorityscore=1501 phishscore=0 mlxscore=0
+ bulkscore=0 malwarescore=0 impostorscore=0 adultscore=0 lowpriorityscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107100005
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/10/21 2:38 AM, Pali Rohár wrote:
-> On Saturday 10 July 2021 02:18:12 Maximilian Luz wrote:
->> On 7/10/21 2:07 AM, Pali Rohár wrote:
->>
->> [...]
->>
->>>> Interesting, I was not aware of this. IIRC we've been experimenting with
->>>> the mwlwifi driver (which that lrdmwl driver seems to be based on?), but
->>>> couldn't get that to work with the firmware we have.
->>>
->>> mwlwifi is that soft-mac driver and uses completely different firmware.
->>> For sure it would not work with current full-mac firmware.
->>>
->>>> IIRC it also didn't
->>>> work with the Windows firmware (which seems to be significantly
->>>> different from the one we have for Linux and seems to use or be modeled
->>>> after some special Windows WiFi driver interface).
->>>
->>> So... Microsoft has different firmware for this chip? And it is working
->>> with mwifiex driver?
->>
->> I'm not sure how special that firmware really is (i.e. if it is Surface
->> specific or just what Marvell uses on Windows), only that it doesn't
->> look like the firmware included in the linux-firmware repo. The Windows
->> firmware doesn't work with either mwlwifi or mwifiex drivers (IIRC) and
->> on Linux we use the official firmware from the linux-firmware repo.
-> 
-> Version available in the linux-firmware repo is also what big companies
-> (like google) receive for their systems... sometimes just only older
-> version as Marvell/NXP is slow in updating files in linux-firmware.
-> Seems that it is also same what receive customers under NDA as more
-> companies dropped "proprietary" ex-Marvell/NXP driver on internet and it
-> contained this firmware with some sources of driver which looks like a
-> fork of mwifiex (or maybe mwifiex is "cleaned fork" of that driver :D)
-> 
-> There is old firmware documentation which describe RPC communication
-> between OS and firmware:
-> http://wiki.laptop.org/images/f/f3/Firmware-Spec-v5.1-MV-S103752-00.pdf
-> 
-> It is really old for very old wifi chips and when I checked it, it still
-> matches what mwifiex is doing with new chips. Just there are new and
-> more commands. And documentation is OS-neutral.
-> 
-> So if Microsoft has some "incompatible" firmware with this, it could
-> mean that they got something special which nobody else have? Maybe it
-> can explain that "connected standby" and maybe also better stability?
-> 
-> Or just windows distribute firmware in different format and needs to
-> "unpack" or "preprocess" prior downloading it to device?
+b910eaaaa4b8 ("bpf: Fix NULL pointer dereference in bpf_get_local_storage()
+helper") fixed the problem with cgroup-local storage use in BPF by
+pre-allocating per-CPU array of 8 cgroup storage pointers to accommodate
+possible BPF program preemptions and nested executions.
 
-If memory serves me right, Jonas did some reverse engineering on the
-Windows driver and found that it uses the "new" WDI Miniport API: It
-seems that originally both Windows and Linux drivers (and firmware)
-were pretty much the same (he mentioned there were similarities in
-terminology), but then they switched to that new API on Windows and
-changed the firmware with it, so that the driver now essentially only
-forwards the commands from that API to the firmware and the firmware
-handles the rest.
+While this seems to work good in practice, it introduces new and unnecessary
+failure mode in which not all BPF programs might be executed if we fail to
+find an unused slot for cgroup storage, however unlikely it is. It might also
+not be so unlikely when/if we allow sleepable cgroup BPF programs in the
+future.
 
-By reading the Windows docs on that API, that change might have been
-forced on them as some Windows 10 features apparently only work via
-that API.
+Further, the way that cgroup storage is implemented as ambiently-available
+property during entire BPF program execution is a convenient way to pass extra
+information to BPF program and helpers without requiring user code to pass
+around extra arguments explicitly. So it would be good to have a generic
+solution that can allow implementing this without arbitrary restrictions.
+Ideally, such solution would work for both preemptable and sleepable BPF
+programs in exactly the same way.
 
-He'll probably know more about that than I do.
+This patch introduces such solution, bpf_run_ctx. It adds one pointer field
+(bpf_ctx) to task_struct. This field is maintained by BPF_PROG_RUN family of
+macros in such a way that it always stays valid throughout BPF program
+execution. BPF program preemption is handled by remembering previous
+current->bpf_ctx value locally while executing nested BPF program and
+restoring old value after nested BPF program finishes. This is handled by two
+helper functions, bpf_set_run_ctx() and bpf_reset_run_ctx(), which are
+supposed to be used before and after BPF program runs, respectively.
+
+Restoring old value of the pointer handles preemption, while bpf_run_ctx
+pointer being a property of current task_struct naturally solves this problem
+for sleepable BPF programs by "following" BPF program execution as it is
+scheduled in and out of CPU. It would even allow CPU migration of BPF
+programs, even though it's not currently allowed by BPF infra.
+
+This patch cleans up cgroup local storage handling as a first application. The
+design itself is generic, though, with bpf_run_ctx being an empty struct that
+is supposed to be embedded into a specific struct for a given BPF program type
+(bpf_cg_run_ctx in this case). Follow up patches are planned that will expand
+this mechanism for other uses within tracing BPF programs.
+
+To verify that this change doesn't revert the fix to the original cgroup
+storage issue, I ran the same repro as in the original report ([0]) and didn't
+get any problems. Replacing bpf_reset_run_ctx(old_run_ctx) with
+bpf_reset_run_ctx(NULL) triggers the issue pretty quickly (so repro does work).
+
+  [0] https://lore.kernel.org/bpf/YEEvBUiJl2pJkxTd@krava/
+
+Cc: Yonghong Song <yhs@fb.com>
+Fixes: b910eaaaa4b8 ("bpf: Fix NULL pointer dereference in bpf_get_local_storage() helper")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ include/linux/bpf-cgroup.h | 54 --------------------------------------
+ include/linux/bpf.h        | 54 ++++++++++++++++++++++++--------------
+ include/linux/sched.h      |  3 +++
+ kernel/bpf/helpers.c       | 16 ++++-------
+ kernel/bpf/local_storage.c |  3 ---
+ kernel/fork.c              |  1 +
+ net/bpf/test_run.c         | 23 ++++++++--------
+ 7 files changed, 54 insertions(+), 100 deletions(-)
+
+diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
+index 8b77d08d4b47..a74cd1c3bd87 100644
+--- a/include/linux/bpf-cgroup.h
++++ b/include/linux/bpf-cgroup.h
+@@ -27,19 +27,6 @@ struct task_struct;
+ extern struct static_key_false cgroup_bpf_enabled_key[MAX_BPF_ATTACH_TYPE];
+ #define cgroup_bpf_enabled(type) static_branch_unlikely(&cgroup_bpf_enabled_key[type])
+ 
+-#define BPF_CGROUP_STORAGE_NEST_MAX	8
+-
+-struct bpf_cgroup_storage_info {
+-	struct task_struct *task;
+-	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+-};
+-
+-/* For each cpu, permit maximum BPF_CGROUP_STORAGE_NEST_MAX number of tasks
+- * to use bpf cgroup storage simultaneously.
+- */
+-DECLARE_PER_CPU(struct bpf_cgroup_storage_info,
+-		bpf_cgroup_storage_info[BPF_CGROUP_STORAGE_NEST_MAX]);
+-
+ #define for_each_cgroup_storage_type(stype) \
+ 	for (stype = 0; stype < MAX_BPF_CGROUP_STORAGE_TYPE; stype++)
+ 
+@@ -172,44 +159,6 @@ static inline enum bpf_cgroup_storage_type cgroup_storage_type(
+ 	return BPF_CGROUP_STORAGE_SHARED;
+ }
+ 
+-static inline int bpf_cgroup_storage_set(struct bpf_cgroup_storage
+-					 *storage[MAX_BPF_CGROUP_STORAGE_TYPE])
+-{
+-	enum bpf_cgroup_storage_type stype;
+-	int i, err = 0;
+-
+-	preempt_disable();
+-	for (i = 0; i < BPF_CGROUP_STORAGE_NEST_MAX; i++) {
+-		if (unlikely(this_cpu_read(bpf_cgroup_storage_info[i].task) != NULL))
+-			continue;
+-
+-		this_cpu_write(bpf_cgroup_storage_info[i].task, current);
+-		for_each_cgroup_storage_type(stype)
+-			this_cpu_write(bpf_cgroup_storage_info[i].storage[stype],
+-				       storage[stype]);
+-		goto out;
+-	}
+-	err = -EBUSY;
+-	WARN_ON_ONCE(1);
+-
+-out:
+-	preempt_enable();
+-	return err;
+-}
+-
+-static inline void bpf_cgroup_storage_unset(void)
+-{
+-	int i;
+-
+-	for (i = 0; i < BPF_CGROUP_STORAGE_NEST_MAX; i++) {
+-		if (unlikely(this_cpu_read(bpf_cgroup_storage_info[i].task) != current))
+-			continue;
+-
+-		this_cpu_write(bpf_cgroup_storage_info[i].task, NULL);
+-		return;
+-	}
+-}
+-
+ struct bpf_cgroup_storage *
+ cgroup_storage_lookup(struct bpf_cgroup_storage_map *map,
+ 		      void *key, bool locked);
+@@ -487,9 +436,6 @@ static inline int cgroup_bpf_prog_query(const union bpf_attr *attr,
+ 	return -EINVAL;
+ }
+ 
+-static inline int bpf_cgroup_storage_set(
+-	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE]) { return 0; }
+-static inline void bpf_cgroup_storage_unset(void) {}
+ static inline int bpf_cgroup_storage_assign(struct bpf_prog_aux *aux,
+ 					    struct bpf_map *map) { return 0; }
+ static inline struct bpf_cgroup_storage *bpf_cgroup_storage_alloc(
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 4afbff308ca3..8d72fdfba7bc 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1111,38 +1111,54 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 			struct bpf_prog *include_prog,
+ 			struct bpf_prog_array **new_array);
+ 
++struct bpf_run_ctx {};
++
++static inline struct bpf_run_ctx *bpf_set_run_ctx(struct bpf_run_ctx *new_ctx)
++{
++	struct bpf_run_ctx *old_ctx;
++
++	old_ctx = current->bpf_ctx;
++	current->bpf_ctx = new_ctx;
++	return old_ctx;
++}
++
++static inline void bpf_reset_run_ctx(struct bpf_run_ctx *old_ctx)
++{
++	current->bpf_ctx = old_ctx;
++}
++
++struct bpf_cg_run_ctx {
++	struct bpf_run_ctx run_ctx;
++	struct bpf_prog_array_item *prog_item;
++};
++
+ /* BPF program asks to bypass CAP_NET_BIND_SERVICE in bind. */
+ #define BPF_RET_BIND_NO_CAP_NET_BIND_SERVICE			(1 << 0)
+ /* BPF program asks to set CN on the packet. */
+ #define BPF_RET_SET_CN						(1 << 0)
+ 
+-/* For BPF_PROG_RUN_ARRAY_FLAGS and __BPF_PROG_RUN_ARRAY,
+- * if bpf_cgroup_storage_set() failed, the rest of programs
+- * will not execute. This should be a really rare scenario
+- * as it requires BPF_CGROUP_STORAGE_NEST_MAX number of
+- * preemptions all between bpf_cgroup_storage_set() and
+- * bpf_cgroup_storage_unset() on the same cpu.
+- */
+ #define BPF_PROG_RUN_ARRAY_FLAGS(array, ctx, func, ret_flags)		\
+ 	({								\
+ 		struct bpf_prog_array_item *_item;			\
+ 		struct bpf_prog *_prog;					\
+ 		struct bpf_prog_array *_array;				\
++		struct bpf_run_ctx *old_run_ctx;			\
++		struct bpf_cg_run_ctx run_ctx;				\
+ 		u32 _ret = 1;						\
+ 		u32 func_ret;						\
+ 		migrate_disable();					\
+ 		rcu_read_lock();					\
+ 		_array = rcu_dereference(array);			\
+ 		_item = &_array->items[0];				\
++		old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);	\
+ 		while ((_prog = READ_ONCE(_item->prog))) {		\
+-			if (unlikely(bpf_cgroup_storage_set(_item->cgroup_storage)))	\
+-				break;					\
++			run_ctx.prog_item = _item;			\
+ 			func_ret = func(_prog, ctx);			\
+ 			_ret &= (func_ret & 1);				\
+-			*(ret_flags) |= (func_ret >> 1);			\
+-			bpf_cgroup_storage_unset();			\
++			*(ret_flags) |= (func_ret >> 1);		\
+ 			_item++;					\
+ 		}							\
++		bpf_reset_run_ctx(old_run_ctx);				\
+ 		rcu_read_unlock();					\
+ 		migrate_enable();					\
+ 		_ret;							\
+@@ -1153,6 +1169,8 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 		struct bpf_prog_array_item *_item;	\
+ 		struct bpf_prog *_prog;			\
+ 		struct bpf_prog_array *_array;		\
++		struct bpf_run_ctx *old_run_ctx;	\
++		struct bpf_cg_run_ctx run_ctx;		\
+ 		u32 _ret = 1;				\
+ 		migrate_disable();			\
+ 		rcu_read_lock();			\
+@@ -1160,17 +1178,13 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 		if (unlikely(check_non_null && !_array))\
+ 			goto _out;			\
+ 		_item = &_array->items[0];		\
+-		while ((_prog = READ_ONCE(_item->prog))) {		\
+-			if (!set_cg_storage) {			\
+-				_ret &= func(_prog, ctx);	\
+-			} else {				\
+-				if (unlikely(bpf_cgroup_storage_set(_item->cgroup_storage)))	\
+-					break;			\
+-				_ret &= func(_prog, ctx);	\
+-				bpf_cgroup_storage_unset();	\
+-			}				\
++		old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);\
++		while ((_prog = READ_ONCE(_item->prog))) {	\
++			run_ctx.prog_item = _item;	\
++			_ret &= func(_prog, ctx);	\
+ 			_item++;			\
+ 		}					\
++		bpf_reset_run_ctx(old_run_ctx);		\
+ _out:							\
+ 		rcu_read_unlock();			\
+ 		migrate_enable();			\
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index ec8d07d88641..c64119aa2e60 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -42,6 +42,7 @@ struct backing_dev_info;
+ struct bio_list;
+ struct blk_plug;
+ struct bpf_local_storage;
++struct bpf_run_ctx;
+ struct capture_control;
+ struct cfs_rq;
+ struct fs_struct;
+@@ -1379,6 +1380,8 @@ struct task_struct {
+ #ifdef CONFIG_BPF_SYSCALL
+ 	/* Used by BPF task local storage */
+ 	struct bpf_local_storage __rcu	*bpf_storage;
++	/* Used for BPF run context */
++	struct bpf_run_ctx		*bpf_ctx;
+ #endif
+ 
+ #ifdef CONFIG_GCC_PLUGIN_STACKLEAK
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 62cf00383910..3d05674f4f85 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -383,8 +383,6 @@ const struct bpf_func_proto bpf_get_current_ancestor_cgroup_id_proto = {
+ };
+ 
+ #ifdef CONFIG_CGROUP_BPF
+-DECLARE_PER_CPU(struct bpf_cgroup_storage_info,
+-		bpf_cgroup_storage_info[BPF_CGROUP_STORAGE_NEST_MAX]);
+ 
+ BPF_CALL_2(bpf_get_local_storage, struct bpf_map *, map, u64, flags)
+ {
+@@ -393,17 +391,13 @@ BPF_CALL_2(bpf_get_local_storage, struct bpf_map *, map, u64, flags)
+ 	 * verifier checks that its value is correct.
+ 	 */
+ 	enum bpf_cgroup_storage_type stype = cgroup_storage_type(map);
+-	struct bpf_cgroup_storage *storage = NULL;
++	struct bpf_cgroup_storage *storage;
++	struct bpf_cg_run_ctx *ctx;
+ 	void *ptr;
+-	int i;
+ 
+-	for (i = 0; i < BPF_CGROUP_STORAGE_NEST_MAX; i++) {
+-		if (unlikely(this_cpu_read(bpf_cgroup_storage_info[i].task) != current))
+-			continue;
+-
+-		storage = this_cpu_read(bpf_cgroup_storage_info[i].storage[stype]);
+-		break;
+-	}
++	/* get current cgroup storage from BPF run context */
++	ctx = container_of(current->bpf_ctx, struct bpf_cg_run_ctx, run_ctx);
++	storage = ctx->prog_item->cgroup_storage[stype];
+ 
+ 	if (stype == BPF_CGROUP_STORAGE_SHARED)
+ 		ptr = &READ_ONCE(storage->buf)->data[0];
+diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
+index bd11db9774c3..1ef12f320a9b 100644
+--- a/kernel/bpf/local_storage.c
++++ b/kernel/bpf/local_storage.c
+@@ -11,9 +11,6 @@
+ 
+ #ifdef CONFIG_CGROUP_BPF
+ 
+-DEFINE_PER_CPU(struct bpf_cgroup_storage_info,
+-	       bpf_cgroup_storage_info[BPF_CGROUP_STORAGE_NEST_MAX]);
+-
+ #include "../cgroup/cgroup-internal.h"
+ 
+ #define LOCAL_STORAGE_CREATE_FLAG_MASK					\
+diff --git a/kernel/fork.c b/kernel/fork.c
+index bc94b2cc5995..e8b41e212110 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2083,6 +2083,7 @@ static __latent_entropy struct task_struct *copy_process(
+ #endif
+ #ifdef CONFIG_BPF_SYSCALL
+ 	RCU_INIT_POINTER(p->bpf_storage, NULL);
++	p->bpf_ctx = NULL;
+ #endif
+ 
+ 	/* Perform scheduler related setup. Assign this task to a CPU. */
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index cda8375bbbaf..8d46e2962786 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -88,17 +88,19 @@ static bool bpf_test_timer_continue(struct bpf_test_timer *t, u32 repeat, int *e
+ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 			u32 *retval, u32 *time, bool xdp)
+ {
+-	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
++	struct bpf_prog_array_item item = {.prog = prog};
++	struct bpf_run_ctx *old_ctx;
++	struct bpf_cg_run_ctx run_ctx;
+ 	struct bpf_test_timer t = { NO_MIGRATE };
+ 	enum bpf_cgroup_storage_type stype;
+ 	int ret;
+ 
+ 	for_each_cgroup_storage_type(stype) {
+-		storage[stype] = bpf_cgroup_storage_alloc(prog, stype);
+-		if (IS_ERR(storage[stype])) {
+-			storage[stype] = NULL;
++		item.cgroup_storage[stype] = bpf_cgroup_storage_alloc(prog, stype);
++		if (IS_ERR(item.cgroup_storage[stype])) {
++			item.cgroup_storage[stype] = NULL;
+ 			for_each_cgroup_storage_type(stype)
+-				bpf_cgroup_storage_free(storage[stype]);
++				bpf_cgroup_storage_free(item.cgroup_storage[stype]);
+ 			return -ENOMEM;
+ 		}
+ 	}
+@@ -107,22 +109,19 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
+ 		repeat = 1;
+ 
+ 	bpf_test_timer_enter(&t);
++	old_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
+ 	do {
+-		ret = bpf_cgroup_storage_set(storage);
+-		if (ret)
+-			break;
+-
++		run_ctx.prog_item = &item;
+ 		if (xdp)
+ 			*retval = bpf_prog_run_xdp(prog, ctx);
+ 		else
+ 			*retval = BPF_PROG_RUN(prog, ctx);
+-
+-		bpf_cgroup_storage_unset();
+ 	} while (bpf_test_timer_continue(&t, repeat, &ret, time));
++	bpf_reset_run_ctx(old_ctx);
+ 	bpf_test_timer_leave(&t);
+ 
+ 	for_each_cgroup_storage_type(stype)
+-		bpf_cgroup_storage_free(storage[stype]);
++		bpf_cgroup_storage_free(item.cgroup_storage[stype]);
+ 
+ 	return ret;
+ }
+-- 
+2.30.2
+
