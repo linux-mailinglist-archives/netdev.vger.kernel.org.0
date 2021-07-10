@@ -2,79 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C073C2CAD
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 03:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EF93C320A
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 04:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231602AbhGJBwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 21:52:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35624 "EHLO mail.kernel.org"
+        id S231761AbhGJC4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 22:56:32 -0400
+Received: from relay.sw.ru ([185.231.240.75]:37668 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229703AbhGJBws (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 21:52:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5E84461380;
-        Sat, 10 Jul 2021 01:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625881804;
-        bh=0Yhz7yAl6Bh6zU7uAzi1wSm1TqBShjzHPRxajVwVFsQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=k4b108BjoNAHE3tS7MGDgYZCKUl3Fujnl6xkjgumhkOoxc7ylZl/3wgkLQBOx2rSx
-         tbhnQ/bcf5so9WY1RORmx504FuY0OoNypaydFOYTtMHsktuUrV57179LZqSB0ava/9
-         QDtYQoU5rLMHEwukDDXpeOFL4mXthGEWOfjV0Z89pa3B+2ms9uyfqrnvu+jyPvs1yH
-         jI6qyBqA3N3wcg4W0xmuNZztE+vFDVNofAAVrP/G9GaC+xmx0u48/xKD/izsnof6oD
-         53oBHIMzta+mcsrMpQVJGWXmB2S/V78neyt7PxnaWTNqCyqUyImPyD6wkriynlW+is
-         6N8P+PmkEh2kw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 51CBE60A38;
-        Sat, 10 Jul 2021 01:50:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S230317AbhGJC4c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:56:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=DvvjK9wvjret8pU1Pj5Lq7SIL4y20uZLc1aae0vdGec=; b=DICbeliw9gTCfmXZ6
+        umqBTcFC6y0z4aLCHjZmYIoFqQvlqz+AFm5DePt69Xp/wwE8WE4p2vLK1z+sun2ewR3KPNZcW9kXq
+        gYEZzINKkFr5fRrNoNX8mP+K9DKzBwe+xyGpSqh+apJ06q4HjcKAOXsEzF4HgS3t2VIEVdXs+OPBw
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1m237g-003W99-5k; Sat, 10 Jul 2021 05:53:44 +0300
+Subject: Re: [PATCH IPV6 v2 1/4] ipv6: allocate enough headroom in
+ ip6_finish_output2()
+To:     David Miller <davem@davemloft.net>
+Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1cbf3c7b-455e-f3a5-cc2c-c18ce8be4ce1@gmail.com>
+ <cover.1625818825.git.vvs@virtuozzo.com>
+ <4f6a2b28-a137-2e19-bf62-5a8767d0d0ac@virtuozzo.com>
+ <20210709.105847.2246373390622335461.davem@davemloft.net>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <e5c78a48-47b9-85f9-bc60-eda0b7164ceb@virtuozzo.com>
+Date:   Sat, 10 Jul 2021 05:53:43 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/6] mptcp: Connection and accounting fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162588180432.5438.17537000783979929322.git-patchwork-notify@kernel.org>
-Date:   Sat, 10 Jul 2021 01:50:04 +0000
-References: <20210710002051.216010-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20210710002051.216010-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthieu.baerts@tessares.net, pabeni@redhat.com, fw@strlen.de,
-        geliangtang@gmail.com, mptcp@lists.linux.dev
+In-Reply-To: <20210709.105847.2246373390622335461.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Dear David,
+I'm happy to hear you again.
 
-This series was applied to netdev/net.git (refs/heads/master):
+On 7/9/21 8:58 PM, David Miller wrote:
+> Please do not use inline in foo.c files, let the compiler decde.
 
-On Fri,  9 Jul 2021 17:20:45 -0700 you wrote:
-> Here are some miscellaneous fixes for MPTCP:
-> 
-> Patch 1 modifies an MPTCP hash so it doesn't depend on one of skb->dev
-> and skb->sk being non-NULL.
-> 
-> Patch 2 removes an extra destructor call when rejecting a join due to
-> port mismatch.
-> 
-> [...]
+Thank you for the hint, I did not know it, and will follow him next time.
+This time I'm going to move this helper somewhere anyway: 
+either to net/core/skbuff.c as exported function where it will lost inline anyway,
+or to include/linux/skbuff.h where inline is (it seems?) acceptable.
 
-Here is the summary with links:
-  - [net,1/6] mptcp: fix warning in __skb_flow_dissect() when do syn cookie for subflow join
-    https://git.kernel.org/netdev/net/c/0c71929b5893
-  - [net,2/6] mptcp: remove redundant req destruct in subflow_check_req()
-    https://git.kernel.org/netdev/net/c/030d37bd1cd2
-  - [net,3/6] mptcp: fix syncookie process if mptcp can not_accept new subflow
-    https://git.kernel.org/netdev/net/c/8547ea5f52dd
-  - [net,4/6] mptcp: avoid processing packet if a subflow reset
-    https://git.kernel.org/netdev/net/c/6787b7e350d3
-  - [net,5/6] selftests: mptcp: fix case multiple subflows limited by server
-    https://git.kernel.org/netdev/net/c/a7da441621c7
-  - [net,6/6] mptcp: properly account bulk freed memory
-    https://git.kernel.org/netdev/net/c/ce599c516386
+Could you please help me to find better name for this helper?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I would like to change its current name: 'skb_expand_head' looks very similar
+to widely used 'pskb_expand_head' but have different semantic.
+I afraid they can be accidentally misused in future.
 
-
+Thank you,
+	Vasily Averin.
