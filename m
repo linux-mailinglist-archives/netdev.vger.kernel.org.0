@@ -2,267 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F004E3C3395
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 09:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D62003C33A9
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 09:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbhGJHq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 03:46:58 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:11251 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232010AbhGJHqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 03:46:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GMMMn0hnHz1CH1Y;
-        Sat, 10 Jul 2021 15:38:29 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sat, 10 Jul 2021 15:44:01 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Sat, 10 Jul 2021 15:44:01 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: [PATCH rfc v2 5/5] net: hns3: support skb's frag page recycling based on page pool
-Date:   Sat, 10 Jul 2021 15:43:22 +0800
-Message-ID: <1625903002-31619-6-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
-References: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+        id S231856AbhGJH6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 03:58:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230007AbhGJH6A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Jul 2021 03:58:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4AA0D6138C;
+        Sat, 10 Jul 2021 07:55:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625903715;
+        bh=I82NcPrpE2AF3Sa9S2uzODKoHfhwlgvUQmPEyDhgCWg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ro52pCSnuw7lIdE3lEdlAON16FNmS0DcEfJMUQZgKAyI/gcNQb4AAnNQg5NuSI44J
+         Gwb+m6CTI18ZNBWaIipyF9+MaqAq1g2sYyGuIBnk+Cr7unBV9adxkt8StSwCczndkD
+         5E/JLTSKYclTlRmvS38N0/ddK0bbJDU2YLPV6RNqk4VjBVUmAAI+NyDvu5OmTxT7E6
+         w0FIX5jHOBeeisEUXAYeL+yaaUGiAfB9GmDeNPNWd7TglUMM9KS6XDxsD+pJfQmk0/
+         JkyyypYxsI3fHDtxOq0Vpl3Q3qcP/S/btpAZZWTTCZ5o2ZPKq/nf8e+y3ocHaipbKo
+         457akoD8ACfwg==
+Date:   Sat, 10 Jul 2021 16:55:12 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: Re: [PATCHv3 bpf-next 4/7] bpf: Add bpf_get_func_ip helper for
+ kprobe programs
+Message-Id: <20210710165512.8b0ffc67a894fef9a883eef2@kernel.org>
+In-Reply-To: <20210707214751.159713-5-jolsa@kernel.org>
+References: <20210707214751.159713-1-jolsa@kernel.org>
+        <20210707214751.159713-5-jolsa@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds skb's frag page recycling support based on
-the elevated refcnt support in page pool.
+On Wed,  7 Jul 2021 23:47:48 +0200
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-The performance improves above 10~20% with IOMMU disabled.
-The performance improves about two times when IOMMU is enabled
-and iperf server shares the same cpu with irq/NAPI.
+> Adding bpf_get_func_ip helper for BPF_PROG_TYPE_KPROBE programs,
+> so it's now possible to call bpf_get_func_ip from both kprobe and
+> kretprobe programs.
+> 
+> Taking the caller's address from 'struct kprobe::addr', which is
+> defined for both kprobe and kretprobe.
+> 
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 79 +++++++++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  3 +
- 2 files changed, 77 insertions(+), 5 deletions(-)
+Note that the kp->addr of kretprobe will be the callee function
+address, even if the handler is called when the end of the callee.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cdb5f14..a76e0f7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3205,6 +3205,20 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	unsigned int order = hns3_page_order(ring);
- 	struct page *p;
- 
-+	if (ring->page_pool) {
-+		p = page_pool_dev_alloc_frag(ring->page_pool,
-+					     &cb->page_offset);
-+		if (unlikely(!p))
-+			return -ENOMEM;
-+
-+		cb->priv = p;
-+		cb->buf = page_address(p);
-+		cb->dma = page_pool_get_dma_addr(p);
-+		cb->type = DESC_TYPE_FRAG;
-+		cb->reuse_flag = 0;
-+		return 0;
-+	}
-+
- 	p = dev_alloc_pages(order);
- 	if (!p)
- 		return -ENOMEM;
-@@ -3227,8 +3241,12 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- 	if (cb->type & (DESC_TYPE_SKB | DESC_TYPE_BOUNCE_HEAD |
- 			DESC_TYPE_BOUNCE_ALL | DESC_TYPE_SGL_SKB))
- 		napi_consume_skb(cb->priv, budget);
--	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
--		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+	else if (!HNAE3_IS_TX_RING(ring)) {
-+		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
-+			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+		else if (cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, cb->priv, false);
-+	}
- 	memset(cb, 0, sizeof(*cb));
- }
- 
-@@ -3315,7 +3333,7 @@ static int hns3_alloc_and_map_buffer(struct hns3_enet_ring *ring,
- 	int ret;
- 
- 	ret = hns3_alloc_buffer(ring, cb);
--	if (ret)
-+	if (ret || ring->page_pool)
- 		goto out;
- 
- 	ret = hns3_map_buffer(ring, cb);
-@@ -3337,7 +3355,8 @@ static int hns3_alloc_and_attach_buffer(struct hns3_enet_ring *ring, int i)
- 	if (ret)
- 		return ret;
- 
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 
- 	return 0;
- }
-@@ -3367,7 +3386,8 @@ static void hns3_replace_buffer(struct hns3_enet_ring *ring, int i,
- {
- 	hns3_unmap_buffer(ring, &ring->desc_cb[i]);
- 	ring->desc_cb[i] = *res_cb;
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 	ring->desc[i].rx.bd_base_info = 0;
- }
- 
-@@ -3539,6 +3559,12 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	u32 frag_size = size - pull_len;
- 	bool reused;
- 
-+	if (ring->page_pool) {
-+		skb_add_rx_frag(skb, i, desc_cb->priv, frag_offset,
-+				frag_size, truesize);
-+		return;
-+	}
-+
- 	/* Avoid re-using remote or pfmem page */
- 	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
- 		goto out;
-@@ -3856,6 +3882,9 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		/* We can reuse buffer as-is, just make sure it is reusable */
- 		if (dev_page_is_reusable(desc_cb->priv))
- 			desc_cb->reuse_flag = 1;
-+		else if (desc_cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
-+						false);
- 		else /* This page cannot be reused so discard it */
- 			__page_frag_cache_drain(desc_cb->priv,
- 						desc_cb->pagecnt_bias);
-@@ -3863,6 +3892,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		hns3_rx_ring_move_fw(ring);
- 		return 0;
- 	}
-+
-+	if (ring->page_pool)
-+		skb_mark_for_recycle(skb);
-+
- 	u64_stats_update_begin(&ring->syncp);
- 	ring->stats.seg_pkt_cnt++;
- 	u64_stats_update_end(&ring->syncp);
-@@ -3901,6 +3934,10 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
- 					    "alloc rx fraglist skb fail\n");
- 				return -ENXIO;
- 			}
-+
-+			if (ring->page_pool)
-+				skb_mark_for_recycle(new_skb);
-+
- 			ring->frag_num = 0;
- 
- 			if (ring->tail_skb) {
-@@ -4705,6 +4742,30 @@ static void hns3_put_ring_config(struct hns3_nic_priv *priv)
- 	priv->ring = NULL;
- }
- 
-+static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
-+{
-+	struct page_pool_params pp_params = {
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGECNT_BIAS,
-+		.order = hns3_page_order(ring),
-+		.pool_size = ring->desc_num * hns3_buf_size(ring) / PAGE_SIZE,
-+		.nid = dev_to_node(ring_to_dev(ring)),
-+		.dev = ring_to_dev(ring),
-+		.dma_dir = DMA_FROM_DEVICE,
-+		.offset = 0,
-+		.max_len = PAGE_SIZE,
-+		.frag_size = hns3_buf_size(ring),
-+	};
-+
-+	ring->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(ring->page_pool)) {
-+		dev_warn(ring_to_dev(ring), "page pool creation failed: %ld\n",
-+			 PTR_ERR(ring->page_pool));
-+		ring->page_pool = NULL;
-+	} else {
-+		dev_info(ring_to_dev(ring), "page pool creation succeeded\n");
-+	}
-+}
-+
- static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- {
- 	int ret;
-@@ -4724,6 +4785,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- 		goto out_with_desc_cb;
- 
- 	if (!HNAE3_IS_TX_RING(ring)) {
-+		hns3_alloc_page_pool(ring);
-+
- 		ret = hns3_alloc_ring_buffers(ring);
- 		if (ret)
- 			goto out_with_desc;
-@@ -4764,6 +4827,12 @@ void hns3_fini_ring(struct hns3_enet_ring *ring)
- 		devm_kfree(ring_to_dev(ring), tx_spare);
- 		ring->tx_spare = NULL;
- 	}
-+
-+	if (!HNAE3_IS_TX_RING(ring) && ring->page_pool) {
-+		page_pool_destroy(ring->page_pool);
-+		ring->page_pool = NULL;
-+		dev_info(ring_to_dev(ring), "page pool destroyed\n");
-+	}
- }
- 
- static int hns3_buf_size2type(u32 buf_size)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 15af3d9..115c0ce 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/dim.h>
- #include <linux/if_vlan.h>
-+#include <net/page_pool.h>
- 
- #include "hnae3.h"
- 
-@@ -307,6 +308,7 @@ enum hns3_desc_type {
- 	DESC_TYPE_BOUNCE_ALL		= 1 << 3,
- 	DESC_TYPE_BOUNCE_HEAD		= 1 << 4,
- 	DESC_TYPE_SGL_SKB		= 1 << 5,
-+	DESC_TYPE_FRAG			= 1 << 6,
- };
- 
- struct hns3_desc_cb {
-@@ -451,6 +453,7 @@ struct hns3_enet_ring {
- 	struct hnae3_queue *tqp;
- 	int queue_index;
- 	struct device *dev; /* will be used for DMA mapping of descriptors */
-+	struct page_pool *page_pool;
- 
- 	/* statistic */
- 	struct ring_stats stats;
+Anyway, this looks good to me.
+
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+
+Thank you,
+
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  include/uapi/linux/bpf.h       |  2 +-
+>  kernel/bpf/verifier.c          |  2 ++
+>  kernel/trace/bpf_trace.c       | 17 +++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |  2 +-
+>  4 files changed, 21 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 83e87ffdbb6e..4894f99a1993 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4783,7 +4783,7 @@ union bpf_attr {
+>   *
+>   * u64 bpf_get_func_ip(void *ctx)
+>   * 	Description
+> - * 		Get address of the traced function (for tracing programs).
+> + * 		Get address of the traced function (for tracing and kprobe programs).
+>   * 	Return
+>   * 		Address of the traced function.
+>   */
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index f975a3aa9368..79eb9d81a198 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5979,6 +5979,8 @@ static int has_get_func_ip(struct bpf_verifier_env *env)
+>  			return -ENOTSUPP;
+>  		}
+>  		return 0;
+> +	} else if (type == BPF_PROG_TYPE_KPROBE) {
+> +		return 0;
+>  	}
+>  
+>  	verbose(env, "func %s#%d not supported for program type %d\n",
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 9edd3b1a00ad..55acf56b0c3a 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/error-injection.h>
+>  #include <linux/btf_ids.h>
+>  #include <linux/bpf_lsm.h>
+> +#include <linux/kprobes.h>
+>  
+>  #include <net/bpf_sk_storage.h>
+>  
+> @@ -961,6 +962,20 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_tracing = {
+>  	.arg1_type	= ARG_PTR_TO_CTX,
+>  };
+>  
+> +BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+> +{
+> +	struct kprobe *kp = kprobe_running();
+> +
+> +	return kp ? (u64) kp->addr : 0;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> +	.func		= bpf_get_func_ip_kprobe,
+> +	.gpl_only	= true,
+> +	.ret_type	= RET_INTEGER,
+> +	.arg1_type	= ARG_PTR_TO_CTX,
+> +};
+> +
+>  const struct bpf_func_proto *
+>  bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  {
+> @@ -1092,6 +1107,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  	case BPF_FUNC_override_return:
+>  		return &bpf_override_return_proto;
+>  #endif
+> +	case BPF_FUNC_get_func_ip:
+> +		return &bpf_get_func_ip_proto_kprobe;
+>  	default:
+>  		return bpf_tracing_func_proto(func_id, prog);
+>  	}
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 83e87ffdbb6e..4894f99a1993 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -4783,7 +4783,7 @@ union bpf_attr {
+>   *
+>   * u64 bpf_get_func_ip(void *ctx)
+>   * 	Description
+> - * 		Get address of the traced function (for tracing programs).
+> + * 		Get address of the traced function (for tracing and kprobe programs).
+>   * 	Return
+>   * 		Address of the traced function.
+>   */
+> -- 
+> 2.31.1
+> 
+
+
 -- 
-2.7.4
-
+Masami Hiramatsu <mhiramat@kernel.org>
