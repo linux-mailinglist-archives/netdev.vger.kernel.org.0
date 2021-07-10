@@ -2,79 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A7F3C3339
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 08:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF0C3C3355
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 08:57:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbhGJGgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 02:36:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51024 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229612AbhGJGgX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Jul 2021 02:36:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C333A61375;
-        Sat, 10 Jul 2021 06:33:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1625898819;
-        bh=VNm9/Ak6s/CzjktMVEDWaoLYk+ioO7EhXz5ijCF6AIE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=w8vIT1mXTYGGJE4vsScr2a8AU9r3OfMTIQC8GJwP+2M66YUBsfTOz9B+HauwQXqSI
-         ohsyQxRw8H//DYz3jCJqrS8bRf3fYcxdYnRnHWS6ugrFGgfNhcSP5wyi/orlVhjabj
-         1bs2PV+PKH46ycfj5Iyq2CNs6CKE5u+u272lJF9Q=
-Date:   Sat, 10 Jul 2021 08:33:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Davis Mosenkovs <davikovs@gmail.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Felix Fietkau <nbd@nbd.name>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: Posible memory corruption from "mac80211: do not accept/forward
- invalid EAPOL frames"
-Message-ID: <YOk/QNc0X71cF6Id@kroah.com>
-References: <CAHQn7pKcyC_jYmGyTcPCdk9xxATwW5QPNph=bsZV8d-HPwNsyA@mail.gmail.com>
- <a7f11cc2-7bef-4727-91b7-b51da218d2ee@nbd.name>
- <YNtdKb+2j02fxfJl@kroah.com>
- <872e3ea6-bbdf-f67c-58f9-4c2dafc2023a@nbd.name>
- <CAHQn7pJY4Vv_eWpeCvuH_C6SHwAvKrSE2cQ=cTir72Ffcr9VXg@mail.gmail.com>
- <56afa72ef9addbf759ffb130be103a21138712f9.camel@sipsolutions.net>
- <CAHQn7pLxUt03sgL0B2_H0_p0iS0DT-LOEpMOkO_kd_w_WVTKBA@mail.gmail.com>
+        id S231164AbhGJHAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 03:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229797AbhGJHAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 03:00:15 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DE7C0613DD;
+        Fri,  9 Jul 2021 23:57:31 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id f13so27987331lfh.6;
+        Fri, 09 Jul 2021 23:57:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NBcTamtXp24UNp39VrBbszNi7MPHaYOLPiju2AfDcAg=;
+        b=h/E9KNZ7oxCLC3Ux0hQ6M2WvPuI8ijIO7ehBy+aII8eIMiiGa0dQoujumej4oPh6kd
+         AoRfcKK6AHloDqM6z8Wm5SEjO9PeXV5PeEyrOJlopebWGM3EokZLt/dOW/50OZmwKh3O
+         1RGQ1fvdlBr7O36Yfo7lsbnlf9xizWHtFv7M+3NlpNYkDLT5N2Okb4k9ldUxHkBGgoOs
+         SbgntQiIwc0sONHiEY3HRO3ChCzGCvRf4YY7qgVUQ5TwqoqGfrikLOYKsW34V0nnrCk4
+         jH/LX78Z9G+IVkanFTC411qRRK3VqFBDoBas7/yRxeJWjS2M2vVJUr7XoD00HISImw0l
+         OWMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NBcTamtXp24UNp39VrBbszNi7MPHaYOLPiju2AfDcAg=;
+        b=jgYxiLIJSl8puiFqz0hDZxaJ31kSO8lSoF5inK9K0IgTA4MW8lB1YYd8SelOo12cUS
+         vUIlu2sSATTQ8AxRSoZj1AfqbUB/R/tiMnHxc6mS5F7wan+f51MH01RPmlTeR34Uc3Kt
+         aV79MD94UV7gSUOUB1BO/ZmojVZ0CnXomcXJCZy1C8BynvhRs7gypBtY+Z50DX9HWceE
+         ixmt7gUitjTjrobIXM+qFtioZm51oSeyLWcuubHmXxUNOh+WaeL/L/k234VwV/xRO8Ww
+         H+wuIZZrZ3BI4CZFU2hv1r/YPQXQV5XW62FpFp/6qsLhCb6krF9LIZS2iRJA3rx+YDJA
+         YiuA==
+X-Gm-Message-State: AOAM531E5eswF/mR2hosVziIDhwwIEVlVZWCuAuqLo6LNFINEyDRMBR2
+        wEwEgJiBovTQJGeeWoTTXd9C63uSPOUbTA==
+X-Google-Smtp-Source: ABdhPJyXM3lkyS7QMVSuQCuzH4E6XiR9jy1GvXOjrBvJAR+Y2hqWv/LZHsFCrmew/kfxbYSMhdz5fA==
+X-Received: by 2002:a05:6512:38a4:: with SMTP id o4mr31269888lft.288.1625900249145;
+        Fri, 09 Jul 2021 23:57:29 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.225.155])
+        by smtp.gmail.com with ESMTPSA id q14sm416655lfe.106.2021.07.09.23.57.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Jul 2021 23:57:28 -0700 (PDT)
+Date:   Sat, 10 Jul 2021 09:57:17 +0300
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     Timur Tabi <timur@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: qcom/emac: fix UAF in emac_remove
+Message-ID: <20210710095717.140ec45a@gmail.com>
+In-Reply-To: <CAOZdJXWm4=UHw42YjUAQLZTNd=qbxyRag7-MJ5V4aq_xf8-1Vw@mail.gmail.com>
+References: <20210709142418.453-1-paskripkin@gmail.com>
+        <CAOZdJXWm4=UHw42YjUAQLZTNd=qbxyRag7-MJ5V4aq_xf8-1Vw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHQn7pLxUt03sgL0B2_H0_p0iS0DT-LOEpMOkO_kd_w_WVTKBA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 09, 2021 at 10:48:06PM +0300, Davis Mosenkovs wrote:
-> On 2021-07-02 at 09:54 Johannes Berg (<johannes@sipsolutions.net>) wrote:
-> >
-> > > If testing procedure mentioned in my first email is sufficient (and
-> > > using skb->data is the correct solution in kernel trees where current
-> > > code doesn't work properly), I can make and test the patches.
-> > > Should I do that?
-> >
-> > Yes, please do.
-> >
-> > Thanks,
-> > johannes
-> >
-> I have done the testing on kernel versions 4.4.274, 4.9.274, 4.14.238,
-> 4.19.196, 5.4.130, 5.10.48, 5.12.15 and 5.13.1.
-> Only kernels 4.4.274, 4.9.274 and 4.14.238 are affected.
-> On kernels 4.19.196, 5.4.130, 5.10.48, 5.12.15 and 5.13.1 current code
-> works properly (and skb->data produces incorrect pointer when used
-> instead of skb_mac_header()).
-> I have submitted patches for the affected kernel versions:
-> https://lore.kernel.org/r/20210707213800.1087974-1-davis@mosenkovs.lv
-> https://lore.kernel.org/r/20210707213820.1088026-1-davis@mosenkovs.lv
-> https://lore.kernel.org/r/20210707213834.1088078-1-davis@mosenkovs.lv
+On Sat, 10 Jul 2021 00:02:26 -0500
+Timur Tabi <timur@kernel.org> wrote:
 
-Please resend and cc: the stable@vger.kernel.org list so these can
-actually be applied.
+> On Fri, Jul 9, 2021 at 9:24 AM Pavel Skripkin <paskripkin@gmail.com>
+> wrote:
+> >
+> > adpt is netdev private data and it cannot be
+> > used after free_netdev() call. Using adpt after free_netdev()
+> > can cause UAF bug. Fix it by moving free_netdev() at the end of the
+> > function.
+> 
+> Please spell out what "UAF" means, thanks.  If you fix that, then
+> 
+> Acked-by: Timur Tabi <timur@kernel.org>
+> 
+> Thanks.
 
-You have read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-right?
+Hi, Timur!
 
-thanks,
+Thank you for feedback. 
 
-greg k-h
+
+David has already applied this pacth. So, should I send v2 or maybe
+revert + v2? I haven't been in such situations yet :)
+
+
+
+
+With regards,
+Pavel Skripkin
