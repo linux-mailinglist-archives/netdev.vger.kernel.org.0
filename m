@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF2C3C36CB
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE353C36D0
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbhGJUhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 16:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
+        id S230439AbhGJUjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 16:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbhGJUhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:37:01 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B729C0613DD;
-        Sat, 10 Jul 2021 13:34:15 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id c17so23840989ejk.13;
-        Sat, 10 Jul 2021 13:34:15 -0700 (PDT)
+        with ESMTP id S229515AbhGJUjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:39:40 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8C2C0613DD;
+        Sat, 10 Jul 2021 13:36:54 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id h8so6596513eds.4;
+        Sat, 10 Jul 2021 13:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=MPITH6hW87Dzz+BA0F4dfZufHvIwz3mBp2b8LY0PIYI=;
-        b=decWn1Dd9gN9XIO9xOLyFCgQ7wDLRDEsezyAG4ecduWDshNQWqfBo/xQRN3AcXMEg9
-         SqTs2IclFYAJGCm4fETpjeT22ZBJyL5mQHhrOk4aMn7JyAD/jMpW/puSJK1f5lU/ndgz
-         /JeZy2jp+h2jr0sh0WLZRKYycqrD3MDw8rx8VxEitN95VRFkCU+Ccvs7twNF/L6cIJow
-         BW71fNxOCCXXn5H+KkQGqzWC4tTB4XC6812HgwkrrFs0Cnd3wPo7tNjBKXmv3vaRwZze
-         KmJUQQrNhaBsja5DtppWpqD/Sni0NoSsx0LbCvIKHHqU4SUNvTNkI/uKhe9pt+LAI9Gj
-         98BQ==
+        bh=wZoGYVD7fTRgT5wK85r18uGGhTvztJHkjBILIZcXG6E=;
+        b=rFVjdPrrtWXdT5OYdHE4ylW0nw/S5d/5nOY8DphMOtDdBXiVRWNPtzb+bT9Ez/+LrF
+         YOzoRSK1k9dHtcYyMrcOLgRny7EM+yO93h4zefRI4f875e2S5aJcbDSm0tzt1ZuFXEEn
+         yPsSKBJaHpNeMR1Js7wVAudwCN8j9w9lI1P7icduRSosX+gCn0ZI1/OOmg7+xvs7WIkE
+         LmKAT269cz3CI2EKMFm1oA0yIL8lpGQZRYYBkGv1eDbfLcv5EwJfimQuxcTG/QyC3SoA
+         cH+stPXWw0vbV87YIYO+R6r13B9uJLK4IHB7bhpJeG0LjW/27pUJlbNu6rsEmtPPK1Ku
+         o7dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=MPITH6hW87Dzz+BA0F4dfZufHvIwz3mBp2b8LY0PIYI=;
-        b=U4cSsERGTFPHWKAJJehbnI6Iz7oLM+ANkARv+RwtgxoavLhrGlx21Jb447hIafmFSH
-         OjBbvbPO8NZlDegUpjxXgyqO2q1fZ8dRCWMJ9jQfRqJzmyylHqPKourAPdZCT4P9OwHQ
-         qG+m+fVfVe9+/QA5o8O6B+pXJsfRFLMDBcQT0cJYnY5hvLR/JL2vGpnqbq1JoDij//6x
-         +fDOyoLXWHB0MIzvWBctBATGDIRyuEGxcdo8INI1bzoHjOcSPNYEyfmHfWuIo2HiHOjB
-         xqCl8PY/fWLEWYHZqCXq7YqaNJ1NlOXr3cv53eYPmBAIYlReqxaJXblq+KacG4l3ZrB6
-         llqw==
-X-Gm-Message-State: AOAM532ppkq2tLQZSQ0UImt3+oEYseHiWj/COOcN1O2V5ufKaGlKT6Ft
-        FYhcuSBR3mIIxBUs8rL/yNg=
-X-Google-Smtp-Source: ABdhPJyn+eqeGLvY0gTYmezpnwhOahOq/E7NuaQ1DLn6l7tVFb18HFvb58ZhcaUI6Y+tsf9Afnh/2g==
-X-Received: by 2002:a17:906:c34b:: with SMTP id ci11mr18969519ejb.223.1625949253688;
-        Sat, 10 Jul 2021 13:34:13 -0700 (PDT)
+        bh=wZoGYVD7fTRgT5wK85r18uGGhTvztJHkjBILIZcXG6E=;
+        b=ogG/u1nscI9A3QlxOn5gqSpo9I2YkbsrZAba8KI15ZTcIikYh2RG0GGZcRNj24e82/
+         nViRoavBpgPFBwhpKz1OlMh09sBf9TkwzejNt5qhNci8vQRJ5Jtibm/qDtoj14ZfEJA4
+         9rTW2S2z4ENw42QjGf6kZ3AJg96KkjLAa2umjIjrO9NxnkcwDGmaXTcK6KD/aohp8Vu0
+         devJt6Yai9LnOI9LLuqwZ1qeY0PA6SO1AfdbnoO2kvZkf5ALTWuA+YZvWKvjGp9OeGNl
+         HTKXae3JYh6DuE+Bmk3O08Q74GTKLIA64ibon0fXxuRgThDkOorDcPJfuucuLA7J8hAq
+         hx7A==
+X-Gm-Message-State: AOAM530xAC0D6k/3NN0zzMxRbz70k9zwccaVOLwgiRe3mFqv7zCMvHlT
+        s0W7KknEztXV9WOjCBtbTWs=
+X-Google-Smtp-Source: ABdhPJyHtc9Eok2zTTZJ69yARyVvJ/hPq3lLkJKKeNhpJUBxMY+Ujutl5DmvDKlNV1u/0SxYY+jUMQ==
+X-Received: by 2002:a05:6402:430f:: with SMTP id m15mr43679851edc.113.1625949413505;
+        Sat, 10 Jul 2021 13:36:53 -0700 (PDT)
 Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id n13sm4159652ejk.97.2021.07.10.13.34.12
+        by smtp.gmail.com with ESMTPSA id u4sm4124207eje.81.2021.07.10.13.36.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jul 2021 13:34:13 -0700 (PDT)
-Date:   Sat, 10 Jul 2021 23:34:11 +0300
+        Sat, 10 Jul 2021 13:36:53 -0700 (PDT)
+Date:   Sat, 10 Jul 2021 23:36:51 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
@@ -56,141 +56,66 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 net-next 8/8] Update documentation for the VSC7512
- SPI device
-Message-ID: <20210710203411.nahqkyy4umqbtfwm@skbuf>
+Subject: Re: [RFC PATCH v2 net-next 6/8] net: mscc: ocelot: expose ocelot wm
+ functions
+Message-ID: <20210710203651.k76teuhovyob52wq@skbuf>
 References: <20210710192602.2186370-1-colin.foster@in-advantage.com>
- <20210710192602.2186370-9-colin.foster@in-advantage.com>
+ <20210710192602.2186370-7-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210710192602.2186370-9-colin.foster@in-advantage.com>
+In-Reply-To: <20210710192602.2186370-7-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 10, 2021 at 12:26:02PM -0700, Colin Foster wrote:
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  .../devicetree/bindings/net/dsa/ocelot.txt    | 68 +++++++++++++++++++
->  1 file changed, 68 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/ocelot.txt b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-> index 7a271d070b72..f5d05bf8b093 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-> +++ b/Documentation/devicetree/bindings/net/dsa/ocelot.txt
-> @@ -8,6 +8,7 @@ Currently the switches supported by the felix driver are:
->  
->  - VSC9959 (Felix)
->  - VSC9953 (Seville)
-> +- VSC7511, VSC7512, VSC7513, VSC7514 via SPI
->  
->  The VSC9959 switch is found in the NXP LS1028A. It is a PCI device, part of the
->  larger ENETC root complex. As a result, the ethernet-switch node is a sub-node
-> @@ -211,3 +212,70 @@ Example:
->  		};
->  	};
->  };
+On Sat, Jul 10, 2021 at 12:26:00PM -0700, Colin Foster wrote:
+> diff --git a/drivers/net/ethernet/mscc/ocelot_wm.c b/drivers/net/ethernet/mscc/ocelot_wm.c
+> new file mode 100644
+> index 000000000000..f9a11a6a059d
+> --- /dev/null
+> +++ b/drivers/net/ethernet/mscc/ocelot_wm.c
+> @@ -0,0 +1,40 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/*
+> + * Microsemi Ocelot Switch driver
+> + *
+> + * Copyright (c) 2017 Microsemi Corporation
+> + */
 > +
-> +The VSC7513 and VSC7514 switches can be controlled internally via the MIPS
-> +processor. The VSC7511 and VSC7512 don't have this internal processor, but all
-> +four chips can be controlled externally through SPI with the following required
-> +properties:
+> +#include "ocelot.h"
 > +
-> +- compatible:
-> +	Can be "mscc,vsc7511", "mscc,vsc7512", "mscc,vsc7513", or
-> +	"mscc,vsc7514".
+> +/* Watermark encode
+> + * Bit 8:   Unit; 0:1, 1:16
+> + * Bit 7-0: Value to be multiplied with unit
+> + */
+> +u16 ocelot_wm_enc(u16 value)
+> +{
+> +	WARN_ON(value >= 16 * BIT(8));
 > +
-> +Supported phy modes for all chips are:
+> +	if (value >= BIT(8))
+> +		return BIT(8) | (value / 16);
 > +
-> +* phy_mode = "internal": on ports 0, 1, 2, 3
+> +	return value;
+> +}
+> +EXPORT_SYMBOL(ocelot_wm_enc);
 > +
-> +Additionally, the VSC7512 and VSC7514 support SGMII and QSGMII on various ports,
-> +though that is currently untested.
+> +u16 ocelot_wm_dec(u16 wm)
+> +{
+> +	if (wm & BIT(8))
+> +		return (wm & GENMASK(7, 0)) * 16;
 > +
-> +Example for control from a BeagleBone Black
+> +	return wm;
+> +}
+> +EXPORT_SYMBOL(ocelot_wm_dec);
 > +
-> +&spi0 {
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +	status = "okay";
+> +void ocelot_wm_stat(u32 val, u32 *inuse, u32 *maxuse)
+> +{
+> +	*inuse = (val & GENMASK(23, 12)) >> 12;
+> +	*maxuse = val & GENMASK(11, 0);
+> +}
+> +EXPORT_SYMBOL(ocelot_wm_stat);
 > +
-> +	vsc7512: vsc7512@0 {
 
-ethernet-switch@0
-
-> +		compatible = "mscc,vsc7512";
-> +		spi-max-frequency = <250000>;
-> +		reg = <0>;
-> +
-> +		ports {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +
-> +			port@0 {
-> +				reg = <0>;
-> +				ethernet = <&mac>;
-> +				phy-mode = "internal";
-> +
-> +				fixed-link {
-> +					speed = <100>;
-> +					full-duplex;
-> +				};
-> +			};
-> +
-> +			port@1 {
-> +				reg = <1>;
-> +				label = "swp1";
-> +				status = "okay";
-
-I am not convinced that the status = "okay" lines are useful in the
-example.
-
-> +				phy-mode = "internal";
-
-This syntax is ambiguous and does not obviously mean that the port has
-an internal copper PHY. Please see this discussion for other meanings of
-no 'phy-handle' and no 'fixed-link'.
-
-https://www.mail-archive.com/u-boot@lists.denx.de/msg409571.html
-
-I think it would be in the best interest of everyone to go through
-phylink_of_phy_connect() instead of phylink_connect_phy(), aka use the
-standard phy-handle property and create an mdio node under
-ethernet-switch@0 where the internal PHY OF nodes are defined.
-
-I don't know if this is true for VSC7512 or not, but for example on
-NXP SJA1110, the internal PHYs can be accessed in 2 modes:
-(a) through SPI transfers
-(b) through an MDIO slave access point exposed by the switch chip, which
-    can be connected to an external MDIO controller
-
-Some boards will use method (a), and others will use method (b).
-
-Requiring a phy-handle under the port property is an absolutely generic
-way to seamlessly deal with both cases. In case (a), the phy-handle
-points to a child of an MDIO bus provided by the ocelot driver, in case
-(b) the phy-handle points to a child provided by some other MDIO
-controller driver.
-
-> +			};
-> +
-> +			port@2 {
-> +				reg = <2>;
-> +				label = "swp2";
-> +				status = "okay";
-> +				phy-mode = "internal";
-> +			};
-> +
-> +			port@3 {
-> +				reg = <3>;
-> +				label = "swp3";
-> +				status = "okay";
-> +				phy-mode = "internal";
-> +			};
-> +		};
-> +	};
-> +};
-> -- 
-> 2.25.1
-> 
+Do not use blank lines at the end of files, 'git am' will complain that
+the patches are whitespace damaged.
