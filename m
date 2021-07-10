@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE353C36D0
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711143C36D7
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 22:52:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhGJUjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 16:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
+        id S229794AbhGJUyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 16:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbhGJUjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:39:40 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8C2C0613DD;
-        Sat, 10 Jul 2021 13:36:54 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id h8so6596513eds.4;
-        Sat, 10 Jul 2021 13:36:54 -0700 (PDT)
+        with ESMTP id S229515AbhGJUyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 16:54:54 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E12C0613DD;
+        Sat, 10 Jul 2021 13:52:08 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id o5so24035859ejy.7;
+        Sat, 10 Jul 2021 13:52:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=wZoGYVD7fTRgT5wK85r18uGGhTvztJHkjBILIZcXG6E=;
-        b=rFVjdPrrtWXdT5OYdHE4ylW0nw/S5d/5nOY8DphMOtDdBXiVRWNPtzb+bT9Ez/+LrF
-         YOzoRSK1k9dHtcYyMrcOLgRny7EM+yO93h4zefRI4f875e2S5aJcbDSm0tzt1ZuFXEEn
-         yPsSKBJaHpNeMR1Js7wVAudwCN8j9w9lI1P7icduRSosX+gCn0ZI1/OOmg7+xvs7WIkE
-         LmKAT269cz3CI2EKMFm1oA0yIL8lpGQZRYYBkGv1eDbfLcv5EwJfimQuxcTG/QyC3SoA
-         cH+stPXWw0vbV87YIYO+R6r13B9uJLK4IHB7bhpJeG0LjW/27pUJlbNu6rsEmtPPK1Ku
-         o7dA==
+        bh=79nDPPhzMUdqY/HoQvtNoGx5K1d4gf+exWkNwx3ridI=;
+        b=ebGmXZhKg5B3ySOC3CMoPRdgy5KbrSu5oP9GL9eo8B8OoveTFjEeMLxGaImy/ym+h4
+         8D/O2YrirP1MXOb/ajnNn8lChcx8Ny5KERXXNWRmN62vhoP7OdsAT8cuC7tIKtoYCzzG
+         0kFXouvkCFaLXw3lgDF9ziL8ECYgjtJS1hvUClpjTrjbazX5QyN3oeAmPpzK70EqgPcD
+         kdi5ehNxkNR3wYmiKwy8iU/jrP1zldPeffHxIczH5qqtQLXn/+bZKfz2au0ixQplBNd9
+         WwopNOwJiSUF7Z1vuxBnzhx1v75xT8Okq7sGXuz3YFOg23HnE6glbn9b8HPuzkROxuBO
+         LwNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wZoGYVD7fTRgT5wK85r18uGGhTvztJHkjBILIZcXG6E=;
-        b=ogG/u1nscI9A3QlxOn5gqSpo9I2YkbsrZAba8KI15ZTcIikYh2RG0GGZcRNj24e82/
-         nViRoavBpgPFBwhpKz1OlMh09sBf9TkwzejNt5qhNci8vQRJ5Jtibm/qDtoj14ZfEJA4
-         9rTW2S2z4ENw42QjGf6kZ3AJg96KkjLAa2umjIjrO9NxnkcwDGmaXTcK6KD/aohp8Vu0
-         devJt6Yai9LnOI9LLuqwZ1qeY0PA6SO1AfdbnoO2kvZkf5ALTWuA+YZvWKvjGp9OeGNl
-         HTKXae3JYh6DuE+Bmk3O08Q74GTKLIA64ibon0fXxuRgThDkOorDcPJfuucuLA7J8hAq
-         hx7A==
-X-Gm-Message-State: AOAM530xAC0D6k/3NN0zzMxRbz70k9zwccaVOLwgiRe3mFqv7zCMvHlT
-        s0W7KknEztXV9WOjCBtbTWs=
-X-Google-Smtp-Source: ABdhPJyHtc9Eok2zTTZJ69yARyVvJ/hPq3lLkJKKeNhpJUBxMY+Ujutl5DmvDKlNV1u/0SxYY+jUMQ==
-X-Received: by 2002:a05:6402:430f:: with SMTP id m15mr43679851edc.113.1625949413505;
-        Sat, 10 Jul 2021 13:36:53 -0700 (PDT)
+        bh=79nDPPhzMUdqY/HoQvtNoGx5K1d4gf+exWkNwx3ridI=;
+        b=R0witO7j6wbOSneqiggVJTDL++s/f/bwZ4RoKPogaPIDpfr5E0reOd9mqTKU/LoOkg
+         +kTbXKfC+p9NM6CXFBMudFjVzrBKb0XDpg98wMDPquzARAZ8yv3Dw2dZYVFUAPY1OnJf
+         FF8+J2SyVNfWERN8O/AieYAHTKlQvxTQ8SEoGgpkCq7UAy8kF33u4XRUlZdKSS4V79CX
+         IOfgvqa7vV50QWsa5synxzH8GV+2k9TL3WQnXITn14Ur5umFiYj7PQS2jy41el1TNc1F
+         kPub/C64oGC2GIKIuzu/mOV+vGswl1GN74RME7eogSypzGLco38pY/o3taeLc+d7SrfT
+         3Ahg==
+X-Gm-Message-State: AOAM531UUAUDJL6GWcl7phQg6FLBniMBi126R/j6+hJ+npuT2/c1yD6N
+        y1iyO7JsUrAqQzinDBGG4DY=
+X-Google-Smtp-Source: ABdhPJzqaC35oHHK1IQahspaoHYpcQH0liZDpevV/3puO3dyOGvCcsB//CA6bdQ4KWYVMp1CMgcZpg==
+X-Received: by 2002:a17:907:990d:: with SMTP id ka13mr45551211ejc.392.1625950326866;
+        Sat, 10 Jul 2021 13:52:06 -0700 (PDT)
 Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id u4sm4124207eje.81.2021.07.10.13.36.52
+        by smtp.gmail.com with ESMTPSA id ce21sm1724473ejc.25.2021.07.10.13.52.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Jul 2021 13:36:53 -0700 (PDT)
-Date:   Sat, 10 Jul 2021 23:36:51 +0300
+        Sat, 10 Jul 2021 13:52:06 -0700 (PDT)
+Date:   Sat, 10 Jul 2021 23:52:05 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
@@ -56,66 +56,59 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 net-next 6/8] net: mscc: ocelot: expose ocelot wm
- functions
-Message-ID: <20210710203651.k76teuhovyob52wq@skbuf>
+Subject: Re: [RFC PATCH v2 net-next 7/8] net: dsa: ocelot: felix: add support
+ for VSC75XX control over SPI
+Message-ID: <20210710205205.blitrpvdwmf4au7z@skbuf>
 References: <20210710192602.2186370-1-colin.foster@in-advantage.com>
- <20210710192602.2186370-7-colin.foster@in-advantage.com>
+ <20210710192602.2186370-8-colin.foster@in-advantage.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210710192602.2186370-7-colin.foster@in-advantage.com>
+In-Reply-To: <20210710192602.2186370-8-colin.foster@in-advantage.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 10, 2021 at 12:26:00PM -0700, Colin Foster wrote:
-> diff --git a/drivers/net/ethernet/mscc/ocelot_wm.c b/drivers/net/ethernet/mscc/ocelot_wm.c
-> new file mode 100644
-> index 000000000000..f9a11a6a059d
-> --- /dev/null
-> +++ b/drivers/net/ethernet/mscc/ocelot_wm.c
-> @@ -0,0 +1,40 @@
-> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-> +/*
-> + * Microsemi Ocelot Switch driver
-> + *
-> + * Copyright (c) 2017 Microsemi Corporation
-> + */
+On Sat, Jul 10, 2021 at 12:26:01PM -0700, Colin Foster wrote:
+> +static const struct felix_info ocelot_spi_info = {
+> +	.target_io_res			= vsc7512_target_io_res,
+> +	.port_io_res			= vsc7512_port_io_res,
+> +	.regfields			= vsc7512_regfields,
+> +	.map				= vsc7512_regmap,
+> +	.ops				= &vsc7512_ops,
+> +	.stats_layout			= vsc7512_stats_layout,
+> +	.num_stats			= ARRAY_SIZE(vsc7512_stats_layout),
+> +	.vcap				= vsc7512_vcap_props,
+> +	.num_mact_rows			= 1024,
 > +
-> +#include "ocelot.h"
-> +
-> +/* Watermark encode
-> + * Bit 8:   Unit; 0:1, 1:16
-> + * Bit 7-0: Value to be multiplied with unit
-> + */
-> +u16 ocelot_wm_enc(u16 value)
-> +{
-> +	WARN_ON(value >= 16 * BIT(8));
-> +
-> +	if (value >= BIT(8))
-> +		return BIT(8) | (value / 16);
-> +
-> +	return value;
-> +}
-> +EXPORT_SYMBOL(ocelot_wm_enc);
-> +
-> +u16 ocelot_wm_dec(u16 wm)
-> +{
-> +	if (wm & BIT(8))
-> +		return (wm & GENMASK(7, 0)) * 16;
-> +
-> +	return wm;
-> +}
-> +EXPORT_SYMBOL(ocelot_wm_dec);
-> +
-> +void ocelot_wm_stat(u32 val, u32 *inuse, u32 *maxuse)
-> +{
-> +	*inuse = (val & GENMASK(23, 12)) >> 12;
-> +	*maxuse = val & GENMASK(11, 0);
-> +}
-> +EXPORT_SYMBOL(ocelot_wm_stat);
-> +
+> +	/* The 7512 and 7514 both have support for up to 10 ports. The 7511 and
+> +	 * 7513 have support for 4. Due to lack of hardware to test and
+> +	 * validate external phys, this is currently limited to 4 ports.
+> +	 * Expanding this to 10 for the 7512 and 7514 and defining the
+> +	 * appropriate phy-handle values in the device tree should be possible.
+> +	 */
+> +	.num_ports			= 4,
 
-Do not use blank lines at the end of files, 'git am' will complain that
-the patches are whitespace damaged.
+Ouch, this was probably not a good move.
+felix_setup() -> felix_init_structs sets ocelot->num_phys_ports based on
+this value.
+If you search for ocelot->num_phys_ports in ocelot and in felix, it is
+widely used to denote "the index of the CPU port module within the
+analyzer block", since the CPU port module's number is equal to the
+number of the last physical port + 1. If VSC7512 has 10 ports, then the
+CPU port module is port 10, and if you set num_ports to 4 you will cause
+the driver to misbehave.
+
+> +	.num_tx_queues			= OCELOT_NUM_TC,
+> +	.mdio_bus_alloc			= felix_mdio_bus_alloc,
+> +	.mdio_bus_free			= felix_mdio_bus_free,
+> +	.phylink_validate		= vsc7512_phylink_validate,
+> +	.prevalidate_phy_mode		= vsc7512_prevalidate_phy_mode,
+> +	.port_setup_tc			= vsc7512_port_setup_tc,
+> +	.init_regmap			= vsc7512_regmap_init,
+> +};
+
+> +	/* Not sure about this */
+> +	ocelot->num_flooding_pgids = 1;
+
+Why are you not sure? It's the same as ocelot.
