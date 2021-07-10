@@ -2,171 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF733C2C02
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 02:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8E943C2C22
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 02:38:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbhGJAXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 20:23:53 -0400
-Received: from mga06.intel.com ([134.134.136.31]:60426 "EHLO mga06.intel.com"
+        id S231679AbhGJAlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 20:41:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56848 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231549AbhGJAXr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Jul 2021 20:23:47 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10040"; a="270913473"
-X-IronPort-AV: E=Sophos;i="5.84,228,1620716400"; 
-   d="scan'208";a="270913473"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2021 17:20:58 -0700
-X-IronPort-AV: E=Sophos;i="5.84,228,1620716400"; 
-   d="scan'208";a="462343540"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.240.68])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2021 17:20:58 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, matthieu.baerts@tessares.net, fw@strlen.de,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 6/6] mptcp: properly account bulk freed memory
-Date:   Fri,  9 Jul 2021 17:20:51 -0700
-Message-Id: <20210710002051.216010-7-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210710002051.216010-1-mathew.j.martineau@linux.intel.com>
-References: <20210710002051.216010-1-mathew.j.martineau@linux.intel.com>
+        id S230428AbhGJAlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Jul 2021 20:41:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C26A613BF;
+        Sat, 10 Jul 2021 00:38:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1625877509;
+        bh=QphO8XZjqunxxjGgJByk//J7MuSxi98V+e0NXlqw/yA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M+8O2OLOEZGXtGoTzRv9f9LfFeXq4W26UkwbgGdHT5trKE10R8vU++Lj4n0yh1wTb
+         NGmnijiLfnrQAmWl6LzRCMxHO9pjETcbfRqxx33D6OJj5QyO9gtS7B8Ti0yx1xjyMp
+         J0zV08hilomQzno2peGC0NafMhEqvN+bQN2oAmsx5GzTmjkaXzhi7aw6E/5ttNjNP+
+         3xIcKZvLRFPcC7eDTBd4YJd8DOS27LMEAKMmT2lUOSsYQJIvGyrVqJ96CrEaMLA4C0
+         8cltALToiFtut8rZtnd3hsSjh3g9j4mJME4LAJ3dC39zt8lvQoHY1Mz4z0qHDF6RY6
+         gKTXOGNe+ae2g==
+Received: by pali.im (Postfix)
+        id 7D4E577D; Sat, 10 Jul 2021 02:38:26 +0200 (CEST)
+Date:   Sat, 10 Jul 2021 02:38:26 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
+ gen4+ devices
+Message-ID: <20210710003826.clnk5sh3cvlamwjr@pali>
+References: <20210709184443.fxcbc77te6ptypar@pali>
+ <251bd696-9029-ec5a-8b0c-da78a0c8b2eb@gmail.com>
+ <20210709194401.7lto67x6oij23uc5@pali>
+ <4e35bfc1-c38d-7198-dedf-a1f2ec28c788@gmail.com>
+ <20210709212505.mmqxdplmxbemqzlo@pali>
+ <bfbb3b4d-07f7-1b97-54f0-21eba4766798@gmail.com>
+ <20210709225433.axpzdsfbyvieahvr@pali>
+ <89c9d1b8-c204-d028-9f2c-80d580dabb8b@gmail.com>
+ <20210710000756.4j3tte63t5u6bbt4@pali>
+ <1d45c961-d675-ea80-abe4-8d4bcf3cf8d4@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1d45c961-d675-ea80-abe4-8d4bcf3cf8d4@gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+On Saturday 10 July 2021 02:18:12 Maximilian Luz wrote:
+> On 7/10/21 2:07 AM, Pali Rohár wrote:
+> 
+> [...]
+> 
+> > > Interesting, I was not aware of this. IIRC we've been experimenting with
+> > > the mwlwifi driver (which that lrdmwl driver seems to be based on?), but
+> > > couldn't get that to work with the firmware we have.
+> > 
+> > mwlwifi is that soft-mac driver and uses completely different firmware.
+> > For sure it would not work with current full-mac firmware.
+> > 
+> > > IIRC it also didn't
+> > > work with the Windows firmware (which seems to be significantly
+> > > different from the one we have for Linux and seems to use or be modeled
+> > > after some special Windows WiFi driver interface).
+> > 
+> > So... Microsoft has different firmware for this chip? And it is working
+> > with mwifiex driver?
+> 
+> I'm not sure how special that firmware really is (i.e. if it is Surface
+> specific or just what Marvell uses on Windows), only that it doesn't
+> look like the firmware included in the linux-firmware repo. The Windows
+> firmware doesn't work with either mwlwifi or mwifiex drivers (IIRC) and
+> on Linux we use the official firmware from the linux-firmware repo.
 
-After commit 879526030c8b ("mptcp: protect the rx path with
-the msk socket spinlock") the rmem currently used by a given
-msk is really sk_rmem_alloc - rmem_released.
+Version available in the linux-firmware repo is also what big companies
+(like google) receive for their systems... sometimes just only older
+version as Marvell/NXP is slow in updating files in linux-firmware.
+Seems that it is also same what receive customers under NDA as more
+companies dropped "proprietary" ex-Marvell/NXP driver on internet and it
+contained this firmware with some sources of driver which looks like a
+fork of mwifiex (or maybe mwifiex is "cleaned fork" of that driver :D)
 
-The safety check in mptcp_data_ready() does not take the above
-in due account, as a result legit incoming data is kept in
-subflow receive queue with no reason, delaying or blocking
-MPTCP-level ack generation.
+There is old firmware documentation which describe RPC communication
+between OS and firmware:
+http://wiki.laptop.org/images/f/f3/Firmware-Spec-v5.1-MV-S103752-00.pdf
 
-This change addresses the issue introducing a new helper to fetch
-the rmem memory and using it as needed. Additionally add a MIB
-counter for the exceptional event described above - the peer is
-misbehaving.
+It is really old for very old wifi chips and when I checked it, it still
+matches what mwifiex is doing with new chips. Just there are new and
+more commands. And documentation is OS-neutral.
 
-Finally, introduce the required annotation when rmem_released is
-updated.
+So if Microsoft has some "incompatible" firmware with this, it could
+mean that they got something special which nobody else have? Maybe it
+can explain that "connected standby" and maybe also better stability?
 
-Fixes: 879526030c8b ("mptcp: protect the rx path with the msk socket spinlock")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/211
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/mib.c      |  1 +
- net/mptcp/mib.h      |  1 +
- net/mptcp/protocol.c | 12 +++++++-----
- net/mptcp/protocol.h | 10 +++++++++-
- 4 files changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
-index 52ea2517e856..ff2cc0e3273d 100644
---- a/net/mptcp/mib.c
-+++ b/net/mptcp/mib.c
-@@ -44,6 +44,7 @@ static const struct snmp_mib mptcp_snmp_list[] = {
- 	SNMP_MIB_ITEM("RmSubflow", MPTCP_MIB_RMSUBFLOW),
- 	SNMP_MIB_ITEM("MPPrioTx", MPTCP_MIB_MPPRIOTX),
- 	SNMP_MIB_ITEM("MPPrioRx", MPTCP_MIB_MPPRIORX),
-+	SNMP_MIB_ITEM("RcvPruned", MPTCP_MIB_RCVPRUNED),
- 	SNMP_MIB_SENTINEL
- };
- 
-diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
-index 193466c9b549..0663cb12b448 100644
---- a/net/mptcp/mib.h
-+++ b/net/mptcp/mib.h
-@@ -37,6 +37,7 @@ enum linux_mptcp_mib_field {
- 	MPTCP_MIB_RMSUBFLOW,		/* Remove a subflow */
- 	MPTCP_MIB_MPPRIOTX,		/* Transmit a MP_PRIO */
- 	MPTCP_MIB_MPPRIORX,		/* Received a MP_PRIO */
-+	MPTCP_MIB_RCVPRUNED,		/* Incoming packet dropped due to memory limit */
- 	__MPTCP_MIB_MAX
- };
- 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 7a5afa8c6866..a88924947815 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -474,7 +474,7 @@ static void mptcp_cleanup_rbuf(struct mptcp_sock *msk)
- 	bool cleanup, rx_empty;
- 
- 	cleanup = (space > 0) && (space >= (old_space << 1));
--	rx_empty = !atomic_read(&sk->sk_rmem_alloc);
-+	rx_empty = !__mptcp_rmem(sk);
- 
- 	mptcp_for_each_subflow(msk, subflow) {
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-@@ -720,8 +720,10 @@ void mptcp_data_ready(struct sock *sk, struct sock *ssk)
- 		sk_rbuf = ssk_rbuf;
- 
- 	/* over limit? can't append more skbs to msk, Also, no need to wake-up*/
--	if (atomic_read(&sk->sk_rmem_alloc) > sk_rbuf)
-+	if (__mptcp_rmem(sk) > sk_rbuf) {
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_RCVPRUNED);
- 		return;
-+	}
- 
- 	/* Wake-up the reader only for in-sequence data */
- 	mptcp_data_lock(sk);
-@@ -1754,7 +1756,7 @@ static int __mptcp_recvmsg_mskq(struct mptcp_sock *msk,
- 		if (!(flags & MSG_PEEK)) {
- 			/* we will bulk release the skb memory later */
- 			skb->destructor = NULL;
--			msk->rmem_released += skb->truesize;
-+			WRITE_ONCE(msk->rmem_released, msk->rmem_released + skb->truesize);
- 			__skb_unlink(skb, &msk->receive_queue);
- 			__kfree_skb(skb);
- 		}
-@@ -1873,7 +1875,7 @@ static void __mptcp_update_rmem(struct sock *sk)
- 
- 	atomic_sub(msk->rmem_released, &sk->sk_rmem_alloc);
- 	sk_mem_uncharge(sk, msk->rmem_released);
--	msk->rmem_released = 0;
-+	WRITE_ONCE(msk->rmem_released, 0);
- }
- 
- static void __mptcp_splice_receive_queue(struct sock *sk)
-@@ -2380,7 +2382,7 @@ static int __mptcp_init_sock(struct sock *sk)
- 	msk->out_of_order_queue = RB_ROOT;
- 	msk->first_pending = NULL;
- 	msk->wmem_reserved = 0;
--	msk->rmem_released = 0;
-+	WRITE_ONCE(msk->rmem_released, 0);
- 	msk->tx_pending_data = 0;
- 
- 	msk->first = NULL;
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 426ed80fe72f..0f0c026c5f8b 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -296,9 +296,17 @@ static inline struct mptcp_sock *mptcp_sk(const struct sock *sk)
- 	return (struct mptcp_sock *)sk;
- }
- 
-+/* the msk socket don't use the backlog, also account for the bulk
-+ * free memory
-+ */
-+static inline int __mptcp_rmem(const struct sock *sk)
-+{
-+	return atomic_read(&sk->sk_rmem_alloc) - READ_ONCE(mptcp_sk(sk)->rmem_released);
-+}
-+
- static inline int __mptcp_space(const struct sock *sk)
- {
--	return tcp_space(sk) + READ_ONCE(mptcp_sk(sk)->rmem_released);
-+	return tcp_win_from_space(sk, READ_ONCE(sk->sk_rcvbuf) - __mptcp_rmem(sk));
- }
- 
- static inline struct mptcp_data_frag *mptcp_send_head(const struct sock *sk)
--- 
-2.32.0
-
+Or just windows distribute firmware in different format and needs to
+"unpack" or "preprocess" prior downloading it to device?
