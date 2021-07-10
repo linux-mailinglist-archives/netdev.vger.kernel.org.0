@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A0F3C322C
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 05:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF153C3234
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 05:16:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhGJDOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Jul 2021 23:14:15 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:36599 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230233AbhGJDOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 23:14:14 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R871e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UfGEv.N_1625886688;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UfGEv.N_1625886688)
+        id S231246AbhGJDTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Jul 2021 23:19:23 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:57424 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230233AbhGJDTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Jul 2021 23:19:22 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0UfGEvcR_1625886995;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UfGEvcR_1625886995)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 10 Jul 2021 11:11:28 +0800
+          Sat, 10 Jul 2021 11:16:35 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -33,9 +33,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
         bpf@vger.kernel.org, Abaci <abaci@linux.alibaba.com>,
         Dust Li <dust.li@linux.alibaba.com>
-Subject: [PATCH net v3] xdp, net: fix use-after-free in bpf_xdp_link_release
-Date:   Sat, 10 Jul 2021 11:11:28 +0800
-Message-Id: <20210710031128.35937-1-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net v4] xdp, net: fix use-after-free in bpf_xdp_link_release
+Date:   Sat, 10 Jul 2021 11:16:35 +0800
+Message-Id: <20210710031635.41649-1-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,9 +62,6 @@ rtnl_unlock();            |
 bpf_xdp_link_release()    |
     /* access dev.        |
        use-after-free */  |
-
-This patch adds a check of dev->reg_state in dev_xdp_attach_link(). If
-dev has been called release, it will return -EINVAL.
 
 [   45.966867] BUG: KASAN: use-after-free in bpf_xdp_link_release+0x3b8/0x3d0
 [   45.967619] Read of size 8 at addr ffff00000f9980c8 by task a.out/732
@@ -137,6 +134,8 @@ Reported-by: Abaci <abaci@linux.alibaba.com>
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
 ---
+
+v4: fix commit message
 
 v3: v1 + "link->dev = NULL"
 
