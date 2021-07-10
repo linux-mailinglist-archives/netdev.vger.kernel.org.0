@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B12D93C37E2
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 01:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA7633C3867
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 01:52:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233200AbhGJXxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 19:53:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39816 "EHLO mail.kernel.org"
+        id S233888AbhGJXyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 19:54:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232988AbhGJXw5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Jul 2021 19:52:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 838F06135B;
-        Sat, 10 Jul 2021 23:50:10 +0000 (UTC)
+        id S233544AbhGJXx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Jul 2021 19:53:57 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D120D613C3;
+        Sat, 10 Jul 2021 23:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625961011;
-        bh=SKpTulOQsB1muIIu1mUb1yLPC2hghqOH6HIQtYxWNco=;
+        s=k20201202; t=1625961063;
+        bh=ghpaVWJ+td67lKFErmQY2um8C1Z1cHXdrgKEpehURYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfVKDKzCGcHfzUAqk9SSlOEYTf0Q6eVmKAgVYsS5RIKh+UMJBwCMJs/a7nLH5rp9O
-         CqfE76Y+K20CMd8MgiH+7dxnkgvyptn5xO4J16cKmPzm1COZb+8M+LqLleoYnIQ+9S
-         NEyU4kevSXWfKkF+YuI2gwxS2Up6z6CoyP2mUEsTdT7LDSyjpUpxOb0hyceIKkXRE1
-         uKvlMgcRjL98vIfVSBxIv63weNYVrRRttvRpv2FvOg2Tg7a5uOoWxvc7AAKG/Pw3jC
-         5S1/kUUrdoMMvnVEGwS0YwHPx+NR+LehkjIAqMLIMlPx8mKYKoKE5m0P6jHgbdBJVl
-         kIO1AYYONMGbQ==
+        b=rk41BMmB+7iWTqwy7/h92I/5l7GNOnfRi25vXwdFAoOwLUDl00yEOwNopyT8LEs/G
+         g9UyrkshVP2/l9byd7xBTynrT2qngvtuMh7FwT52Ctk905XIVeIo4ZGRKxj6bmNfE4
+         LDawvi0NWwNvco3qEtpw5i3uuWGu0GBAmQcrs+jL5o5dPG2UuOkHzLGhIZiCK8gbBC
+         ytBD4qKqC0kW5vDHhpGdOO3ySs9i5KpyycsHezt7RAUpYZwQQFepyXXJD8vCmDIm5c
+         Dda3SoQ25zjUiSJbjTycfdCiuARd3LS85RTJxR6Uzy8TBa2PRxcr4YBK+I8bbtJU8t
+         viBdbl/tyo/Hw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Xie Yongji <xieyongji@bytedance.com>,
@@ -30,12 +30,12 @@ Cc:     Xie Yongji <xieyongji@bytedance.com>,
         "Michael S . Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 40/43] virtio_net: Fix error handling in virtnet_restore()
-Date:   Sat, 10 Jul 2021 19:49:12 -0400
-Message-Id: <20210710234915.3220342-40-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 35/37] virtio_net: Fix error handling in virtnet_restore()
+Date:   Sat, 10 Jul 2021 19:50:13 -0400
+Message-Id: <20210710235016.3221124-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710234915.3220342-1-sashal@kernel.org>
-References: <20210710234915.3220342-1-sashal@kernel.org>
+In-Reply-To: <20210710235016.3221124-1-sashal@kernel.org>
+References: <20210710235016.3221124-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,10 +60,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 0824e6999e49..9007d73863d0 100644
+index 286f836a53bf..0e7a99424fc7 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -3223,8 +3223,11 @@ static __maybe_unused int virtnet_restore(struct virtio_device *vdev)
+@@ -3228,8 +3228,11 @@ static __maybe_unused int virtnet_restore(struct virtio_device *vdev)
  	virtnet_set_queues(vi, vi->curr_queue_pairs);
  
  	err = virtnet_cpu_notif_add(vi);
