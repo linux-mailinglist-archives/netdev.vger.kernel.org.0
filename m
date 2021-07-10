@@ -2,94 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CEA3C352F
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 17:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CB13C353C
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 17:41:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbhGJPit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 11:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbhGJPit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 11:38:49 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7523CC0613DD
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 08:36:04 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id e13so14121907ilc.1
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 08:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dxwIqH/ulbxlU3DAnabSwL337pnBzj6ZytE08T/Y00M=;
-        b=mq+yXyti3ySp80Pak5oHPf+jb5iZhvarv2yqDG5/CyJIkv+LnVQi665rHVf9Pz4RtE
-         56FguxtQMl0IsPnmX0J0b5LxXC/wBKxWK/yniXR5ALv/iBFUpUVhFUrfWV/g7c8TX4pB
-         /6xkKpnRkWTSu/dfBIhqu0xEd2VOVBv1cu0fL8rhzIOgN9/3H/4FKzifMDKbTqcMmWjZ
-         ibGn2RESNeyDutaxDSX9yzR5vHE/EDbAaS6mrwmYBwZv2zPm7QpiRwfhd6IsjNwRnfSz
-         j4jAaYOZLFO5ONRuePfQxBF6oo0NyarVuOiCQQsdyR1ZPA9q453QVZpboV2m135akW47
-         RX9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dxwIqH/ulbxlU3DAnabSwL337pnBzj6ZytE08T/Y00M=;
-        b=QezJ+kxkW0YUSaymLPvSROVfe45aOqygY3QYDevnEheN4vC0ucbdj8K54WLM75kEtN
-         JamILQi3/Lt5vdaUDQ6QnytD8rElWiBSB3jMc4UTFGV8Oy753un0Rz6C7gLKjA9b/FUW
-         U+Wjfd/7lfYyEn2BK6HYRaCOX9g6e+ewrP3aCgGx454Ousa+mx2zZiNuw1tc3GwhsLgL
-         WHOxVZWDOP759N5JbeJLF/qkq+S4VV7oeAPuVfpmQx+KJ1VO3sR0lsbrYfHCwMqJrhzT
-         cI0VwkOTcA89vCIeOL4hBF9Zh84sc8Nj+A1nVe6YGWvH4f3rb+NfnpyvN32c3koROw4g
-         RKMA==
-X-Gm-Message-State: AOAM5320zZk+1e9BIbXeK0FTuu6VjYaXiN3Pmci7pGAuLYbcDnvO75N8
-        SovmX99mVlyJ4gWrKZH+s4gzxFIeo2OgeU6I2tH1dF+nkZ1m6g==
-X-Google-Smtp-Source: ABdhPJyafv2bKzYtQ7DDZlr0gvDDDhO4/MLx4A8AGG51xFIRtvCE09P+IOGPiuT895mcYXyWZL32JpxobtTbZVhylhU=
-X-Received: by 2002:a92:c644:: with SMTP id 4mr10024504ill.246.1625931363603;
- Sat, 10 Jul 2021 08:36:03 -0700 (PDT)
+        id S232240AbhGJPo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 11:44:26 -0400
+Received: from linux.microsoft.com ([13.77.154.182]:35480 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230325AbhGJPo0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 11:44:26 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 953C420B7178;
+        Sat, 10 Jul 2021 08:41:40 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 953C420B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1625931700;
+        bh=KhF9I+Y91rxYPQlmhH47nudYd4aSbMl0azX4Aaq10yE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=J3TN/kzDcpLltdM5dLTvzYscS5+4ibNr5/MjNHBx/0DdxPI4uKALRgGhYLjQMtJ+R
+         XQFPyVFSvBU3tAfj6jTnXfy6PraPb1VNoI0pdCbGmTzRQq4xsGdy+CevZDR3HlWJLU
+         RzYVJr4+HIJyoMsgYoTujLpj/US39oSqJnP4fS44=
+Received: by mail-oi1-f171.google.com with SMTP id c145so1337604oib.2;
+        Sat, 10 Jul 2021 08:41:40 -0700 (PDT)
+X-Gm-Message-State: AOAM533wV/76MYn0FEx61k7EWOwBwmEK6YyjBKy59qCmWTjXs4ZIhe1Q
+        w3HQg8ZS097KfjXn67CkAI3IqDEQFClRv/SUEZM=
+X-Google-Smtp-Source: ABdhPJy/uy2dwsXHp5mBB6WF61ieJ7+JBRsl6NCE+f81Nd3pkshmqTHllqDLOxL6ZlRxSd1DHCUMmmE3JxUoNRKS4/o=
+X-Received: by 2002:a17:90a:43c3:: with SMTP id r61mr4950050pjg.11.1625931689477;
+ Sat, 10 Jul 2021 08:41:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <1625910047-56840-1-git-send-email-shenjian15@huawei.com>
- <20210710081120.5570fb87@hermes.local> <YOm5wgVv7PGx9AYi@lunn.ch>
-In-Reply-To: <YOm5wgVv7PGx9AYi@lunn.ch>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Sat, 10 Jul 2021 08:35:52 -0700
-Message-ID: <CAA93jw4uhezgu05uM2xohoPMbDvbMAVmivSf2wgPiO4OzScwRg@mail.gmail.com>
-Subject: Re: [RFC net-next] net: extend netdev features
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jian Shen <shenjian15@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linuxarm@openeuler.org
+References: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
+From:   Matteo Croce <mcroce@linux.microsoft.com>
+Date:   Sat, 10 Jul 2021 17:40:53 +0200
+X-Gmail-Original-Message-ID: <CAFnufp3RXwrJy24r50dHG6ouM2tsGY3JgPq9h1B5C0TOYCDHrQ@mail.gmail.com>
+Message-ID: <CAFnufp3RXwrJy24r50dHG6ouM2tsGY3JgPq9h1B5C0TOYCDHrQ@mail.gmail.com>
+Subject: Re: [PATCH rfc v2 0/5] add elevated refcnt support for page pool
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, alexander.duyck@gmail.com,
+        Russell King <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Roman Gushchin <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        feng.tang@intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>,
+        wenxu <wenxu@ucloud.cn>, Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 10, 2021 at 8:18 AM Andrew Lunn <andrew@lunn.ch> wrote:
+On Sat, Jul 10, 2021 at 9:44 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
 >
-> > Infrastructure changes must be done as part of the patch that
-> > needs the new feature bit. It might be that your feature bit is
-> > not accepted as part of the review cycle, or a better alternative
-> > is proposed.
+> This patchset adds elevated refcnt support for page pool
+> and enable skb's page frag recycling based on page pool
+> in hns3 drvier.
 >
-> Hi Stephan
+> RFC v2:
+> 1. Split patch 1 to more reviewable one.
+> 2. Repurpose the lower 12 bits of the dma address to store the
+>    pagecnt_bias as suggested by Alexander.
+> 3. support recycling to pool->alloc for elevated refcnt case
+>    too.
 >
-> I agree with what you are saying, but i also think there is no way to
-> avoid needing more feature bits. So even if the new feature bit itself
-> is rejected, the code to allow it could be useful.
-
-I would rather passionately like to expand several old currently 16
-bit fields in tc and iptables to 32 bits,
-and break the 1000 user limitation we have in things like this:
-
-https://github.com/rchac/LibreQoS
-
+> Yunsheng Lin (5):
+>   page_pool: keep pp info as long as page pool owns the page
+>   page_pool: add interface for getting and setting pagecnt_bias
+>   page_pool: add page recycling support based on elevated refcnt
+>   page_pool: support page frag API for page pool
+>   net: hns3: support skb's frag page recycling based on page pool
 >
->           Andrew
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c |  79 ++++++++++-
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |   3 +
+>  drivers/net/ethernet/marvell/mvneta.c           |   6 +-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |   2 +-
+>  drivers/net/ethernet/ti/cpsw.c                  |   2 +-
+>  drivers/net/ethernet/ti/cpsw_new.c              |   2 +-
+>  include/linux/skbuff.h                          |   4 +-
+>  include/net/page_pool.h                         |  50 +++++--
+>  net/core/page_pool.c                            | 172 ++++++++++++++++++++----
+>  9 files changed, 266 insertions(+), 54 deletions(-)
+>
+> --
+> 2.7.4
+>
 
+For mvpp2:
 
+Tested-by: Matteo Croce <mcroce@microsoft.com>
 
---=20
-Latest Podcast:
-https://www.linkedin.com/feed/update/urn:li:activity:6791014284936785920/
-
-Dave T=C3=A4ht CTO, TekLibre, LLC
+-- 
+per aspera ad upstream
