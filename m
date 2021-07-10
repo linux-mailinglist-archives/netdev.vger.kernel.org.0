@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC303C3393
-	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 09:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1773C3396
+	for <lists+netdev@lfdr.de>; Sat, 10 Jul 2021 09:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232267AbhGJHq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Jul 2021 03:46:56 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6905 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232012AbhGJHqs (ORCPT
+        id S232413AbhGJHq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Jul 2021 03:46:59 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:6798 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232004AbhGJHqs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 10 Jul 2021 03:46:48 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GMMQ75PvBz79mb;
-        Sat, 10 Jul 2021 15:40:31 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GMMMm0x3dzXrLh;
+        Sat, 10 Jul 2021 15:38:28 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Sat, 10 Jul 2021 15:44:00 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -39,9 +39,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>
-Subject: [PATCH rfc v2 1/5] page_pool: keep pp info as long as page pool owns the page
-Date:   Sat, 10 Jul 2021 15:43:18 +0800
-Message-ID: <1625903002-31619-2-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH rfc v2 2/5] page_pool: add interface for getting and setting pagecnt_bias
+Date:   Sat, 10 Jul 2021 15:43:19 +0800
+Message-ID: <1625903002-31619-3-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
 References: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
@@ -55,183 +55,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, page->pp is cleared and set everytime the page
-is recycled, which is unnecessary.
+As suggested by Alexander, "A DMA mapping should be page
+aligned anyway so the lower 12 bits would be reserved 0",
+so it might make more sense to repurpose the lower 12 bits
+of the dma address to store the pagecnt_bias for elevated
+refcnt case in page pool.
 
-So only set the page->pp when the page is added to the page
-pool and only clear it when the page is released from the
-page pool.
+As newly added page_pool_get_pagecnt_bias() may be called
+outside of the softirq context, so annotate the access to
+page->dma_addr[0] with READ_ONCE() and WRITE_ONCE().
 
-This is also a preparation to support elevated refcnt in page
-pool.
+Other three interfaces using page->dma_addr[0] is only called
+in the softirq context during normal rx processing, hopefully
+the barrier in the rx processing will ensure the correct order
+between getting and setting pagecnt_bias.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c           |  6 +-----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |  2 +-
- drivers/net/ethernet/ti/cpsw.c                  |  2 +-
- drivers/net/ethernet/ti/cpsw_new.c              |  2 +-
- include/linux/skbuff.h                          |  4 +---
- include/net/page_pool.h                         |  7 -------
- net/core/page_pool.c                            | 21 +++++++++++++++++----
- 7 files changed, 22 insertions(+), 22 deletions(-)
+ include/net/page_pool.h | 24 ++++++++++++++++++++++--
+ 1 file changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 361bc4f..89bf31fd 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2327,7 +2327,7 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--	skb_mark_for_recycle(skb, virt_to_page(xdp->data), pool);
-+	skb_mark_for_recycle(skb);
- 
- 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
- 	skb_put(skb, xdp->data_end - xdp->data);
-@@ -2339,10 +2339,6 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct page_pool *pool,
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
- 				skb_frag_page(frag), skb_frag_off(frag),
- 				skb_frag_size(frag), PAGE_SIZE);
--		/* We don't need to reset pp_recycle here. It's already set, so
--		 * just mark fragments for recycling.
--		 */
--		page_pool_store_mem_info(skb_frag_page(frag), pool);
- 	}
- 
- 	return skb;
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 3229baf..320eddb 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3995,7 +3995,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 		}
- 
- 		if (pp)
--			skb_mark_for_recycle(skb, page, pp);
-+			skb_mark_for_recycle(skb);
- 		else
- 			dma_unmap_single_attrs(dev->dev.parent, dma_addr,
- 					       bm_pool->buf_size, DMA_FROM_DEVICE,
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index cbbd0f6..9d59143 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -431,7 +431,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
- 	/* mark skb for recycling */
--	skb_mark_for_recycle(skb, page, pool);
-+	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 57d279f..a4234a3 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -374,7 +374,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 	skb->protocol = eth_type_trans(skb, ndev);
- 
- 	/* mark skb for recycling */
--	skb_mark_for_recycle(skb, page, pool);
-+	skb_mark_for_recycle(skb);
- 	netif_receive_skb(skb);
- 
- 	ndev->stats.rx_bytes += len;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index b2db9cd..7795979 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4711,11 +4711,9 @@ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
- }
- 
- #ifdef CONFIG_PAGE_POOL
--static inline void skb_mark_for_recycle(struct sk_buff *skb, struct page *page,
--					struct page_pool *pp)
-+static inline void skb_mark_for_recycle(struct sk_buff *skb)
- {
- 	skb->pp_recycle = 1;
--	page_pool_store_mem_info(page, pp);
- }
- #endif
- 
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 3dd62dd..8d7744d 100644
+index 8d7744d..5746f17 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -253,11 +253,4 @@ static inline void page_pool_ring_unlock(struct page_pool *pool)
- 		spin_unlock_bh(&pool->ring.producer_lock);
- }
+@@ -200,7 +200,7 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
  
--/* Store mem_info on struct page and use it while recycling skb frags */
--static inline
--void page_pool_store_mem_info(struct page *page, struct page_pool *pp)
--{
--	page->pp = pp;
--}
--
- #endif /* _NET_PAGE_POOL_H */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 5e4eb45..78838c6 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -206,6 +206,19 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
- 	return true;
- }
- 
-+static void page_pool_set_pp_info(struct page_pool *pool,
-+				  struct page *page)
-+{
-+	page->pp = pool;
-+	page->pp_magic |= PP_SIGNATURE;
-+}
-+
-+static void page_pool_clear_pp_info(struct page *page)
-+{
-+	page->pp_magic = 0;
-+	page->pp = NULL;
-+}
-+
- static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 						 gfp_t gfp)
+ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
  {
-@@ -222,7 +235,7 @@ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 		return NULL;
- 	}
+-	dma_addr_t ret = page->dma_addr[0];
++	dma_addr_t ret = READ_ONCE(page->dma_addr[0]) & PAGE_MASK;
+ 	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+ 		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
+ 	return ret;
+@@ -208,11 +208,31 @@ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
  
--	page->pp_magic |= PP_SIGNATURE;
-+	page_pool_set_pp_info(pool, page);
- 
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
-@@ -266,7 +279,8 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 			put_page(page);
- 			continue;
- 		}
--		page->pp_magic |= PP_SIGNATURE;
+ static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+ {
+-	page->dma_addr[0] = addr;
++	unsigned long dma_addr_0 = READ_ONCE(page->dma_addr[0]);
 +
-+		page_pool_set_pp_info(pool, page);
- 		pool->alloc.cache[pool->alloc.count++] = page;
- 		/* Track how many pages are held 'in-flight' */
- 		pool->pages_state_hold_cnt++;
-@@ -345,7 +359,7 @@ void page_pool_release_page(struct page_pool *pool, struct page *page)
- 			     DMA_ATTR_SKIP_CPU_SYNC);
- 	page_pool_set_dma_addr(page, 0);
- skip_dma_unmap:
--	page->pp_magic = 0;
-+	page_pool_clear_pp_info(page);
++	dma_addr_0 &= ~PAGE_MASK;
++	dma_addr_0 |= (addr & PAGE_MASK);
++	WRITE_ONCE(page->dma_addr[0], dma_addr_0);
++
+ 	if (sizeof(dma_addr_t) > sizeof(unsigned long))
+ 		page->dma_addr[1] = upper_32_bits(addr);
+ }
  
- 	/* This may be the last page returned, releasing the pool, so
- 	 * it is not safe to reference pool afterwards.
-@@ -644,7 +658,6 @@ bool page_pool_return_skb_page(struct page *page)
- 	 * The page will be returned to the pool here regardless of the
- 	 * 'flipped' fragment being in use or not.
- 	 */
--	page->pp = NULL;
- 	page_pool_put_full_page(pp, page, false);
- 
- 	return true;
++static inline int page_pool_get_pagecnt_bias(struct page *page)
++{
++	return (READ_ONCE(page->dma_addr[0]) & ~PAGE_MASK);
++}
++
++static inline void page_pool_set_pagecnt_bias(struct page *page, int bias)
++{
++	unsigned long dma_addr_0 = READ_ONCE(page->dma_addr[0]);
++
++	dma_addr_0 &= PAGE_MASK;
++	dma_addr_0 |= (bias & ~PAGE_MASK);
++
++	WRITE_ONCE(page->dma_addr[0], dma_addr_0);
++}
++
+ static inline bool is_page_pool_compiled_in(void)
+ {
+ #ifdef CONFIG_PAGE_POOL
 -- 
 2.7.4
 
