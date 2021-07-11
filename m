@@ -2,166 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 044BA3C3ED5
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 21:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBCD3C3F62
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 23:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbhGKTGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 15:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45980 "EHLO
+        id S230504AbhGKVHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 17:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhGKTGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 15:06:09 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19384C0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 12:03:21 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id z12so12111613qtj.3
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 12:03:21 -0700 (PDT)
+        with ESMTP id S229660AbhGKVHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 17:07:19 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F15C0613DD;
+        Sun, 11 Jul 2021 14:04:32 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id r17so1371614qtp.5;
+        Sun, 11 Jul 2021 14:04:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=olE1p8t6bJ0GRj5U1Uz9/BHCvrL8dNzA2ret69hHCsQ=;
-        b=t+8ejIzezQPgj3aWZYQ91RyodFzFhsHn+7sODycK9V7cLg6/+eqk+YbJb5NVlsLwDY
-         FDO4DB6P5oXm5qhi9ykzzWLenzMK0+DoYBJZW7JHV1VUXQXZMt+IN7g/vHzO8qiDLp7S
-         d3xTzTgodNW/8fmEN5hhJ4kgCxiMRfsGX5PCkPLWOshwko598VifWTKvMfQebmoA3kCF
-         gYLpol1tSYIIgaZ4W6ZLXHYuVf1lPXcb0V8a7gW2g4ppreJ3nDwtbI349KUf8U9D4P5v
-         ZaAhzsIsBq/OUlONZtCDCftXsEGFbhrKgjHUFPpo/JWGjx7VTZj7gbhMEkWBEQ2UbfIp
-         99gw==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=WhI1md3MVLVayd7+5Y8GQbHIv806Js5uafanhivIZcs=;
+        b=uGB4DNtnY9qeRDA7+F1VQBOUJrIl0GDPIyjmxqjNEnqYUcXzrLtABmckPOnU3WAVR7
+         Imp+vparzr1xQ8Q5RGEcBhwlHjY/XPh6yUYef06/rqdLqBHYb52kZ5FxdkSCyc+YvC6h
+         PqpFNFfK2mxqYavlfbwORnDtC6vndNV8WtR2AAMqaTXKPVmi2WHQ1JjTA8F4WhKW63lQ
+         9klGdXh4BOsEOyQ2P0npmL0L+B4hR/k+ZfsIvZh2/5rfoZr9GlsopZt0hXyxiy4e795Z
+         vBy8V3kzpoP9jLv1oqf154xxEeMF6D9LKZYLVATJyl0//DRUTP4aNMIVZRrKlXGYGVGz
+         4VuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=olE1p8t6bJ0GRj5U1Uz9/BHCvrL8dNzA2ret69hHCsQ=;
-        b=OFYIEhudeJW7JWSLbxoH8hJ6yPlr3AAMX7uNyKKGy9755w1+mVfTZ3kuVjjS5s3kJD
-         c+yrx+hQe3hGRlKpkhlzLQ+fTm17GVHvOUyEa4Y/9CmiAs6kXz8yayBI5fRNYJXsMDcE
-         gp29BlKaITNYoSFY8BSCGbTyzQrfHfAJrPVfv2XOLwgQRU0x3S+RYPH4Zz8Sa8ljwy2D
-         QAAcejO0+a+1GSzc60mypLgAUaRmH7mjrb34EHcxFyGn8yr8Ak8u3SAEm/wocoKPA+bI
-         2sec7VbrqH2oOZCrsOiQOVGPN3T9oI06I9PWCi3wE6Y0Rkc03Gy8aWX8W2AqkFAzLlP9
-         6aEw==
-X-Gm-Message-State: AOAM531OqsS8iKtCrbQAk7YddH5B1E6OEeR/gMpL4u2/k1a85te88Td5
-        EP9zUj/3zw8mh21cCNidCT3kbmBT1vU=
-X-Google-Smtp-Source: ABdhPJycKsgBVJXxzpgsPkWNxLzTk6v8dOHOhF0UYWaf29+Rhpwo4bUUmyXRxer/u1fJCv5g3t+LRA==
-X-Received: by 2002:a05:622a:170d:: with SMTP id h13mr43579531qtk.264.1626030200008;
-        Sun, 11 Jul 2021 12:03:20 -0700 (PDT)
-Received: from unknown.attlocal.net (76-217-55-94.lightspeed.sntcca.sbcglobal.net. [76.217.55.94])
-        by smtp.gmail.com with ESMTPSA id f16sm2455179qtf.19.2021.07.11.12.03.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=WhI1md3MVLVayd7+5Y8GQbHIv806Js5uafanhivIZcs=;
+        b=Qg4ZXstaqkkJQxu2WpRbfwo7BuQRspCgqAsMvV9Dj27an4+5SN6Uxa/q3i4nNUyfQJ
+         S6z3j9zXeH7/WU5prVHd969ZmzVQVDpB74Z8l9LXXg+UzXkVybyBpElVqSYQWM0ATfUH
+         Z4699fq2WcSuq60yqh8hQdh1EXBKRyDcztTMaypoH0X7XWGqWGf/O6lXGPFZV8RifAai
+         HSoXvEPabt3RPxsPQE1kxkDSZXcF8JQaso3XjRR/nFsTQ2IcU3qsoQcic+Icpz0kauIt
+         g3c5RqNTCqG0kuwZGz9oVF9dahIXM9wTdCeituG0fNTCrZYRnXl2tsmLTJtCcg6Aj73a
+         ekwg==
+X-Gm-Message-State: AOAM532PYdMeXaJNvNI3a0wJAsszU9angDNBR2NRlYC9vr3EmWfQvirx
+        imZuhO8PTuX9jyUhU6idLMk=
+X-Google-Smtp-Source: ABdhPJxvsUoBDGxLnigrToM3BQefVJ/loAzJLRt0sh45QiioduOS5NRs6MKKYkmcCW9Q9VJxcNK/1A==
+X-Received: by 2002:ac8:708f:: with SMTP id y15mr37409307qto.392.1626037471289;
+        Sun, 11 Jul 2021 14:04:31 -0700 (PDT)
+Received: from Zekuns-MBP-16.fios-router.home (cpe-74-73-56-100.nyc.res.rr.com. [74.73.56.100])
+        by smtp.gmail.com with ESMTPSA id c27sm5430097qkk.59.2021.07.11.14.04.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Jul 2021 12:03:19 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     xiangxia.m.yue@gmail.com, Qitao Xu <qitao.xu@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [Patch net-next v2] net_sched: introduce tracepoint trace_qdisc_enqueue()
-Date:   Sun, 11 Jul 2021 12:03:08 -0700
-Message-Id: <20210711190308.8476-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Sun, 11 Jul 2021 14:04:30 -0700 (PDT)
+Date:   Sun, 11 Jul 2021 17:04:28 -0400
+From:   Zekun Shen <bruceshenzk@gmail.com>
+To:     bruceshenzk@gmail.com
+Cc:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [net][atlantic] Fix buff_ring OOB in aq_ring_rx_clean
+Message-ID: <YOtc3GEEVonOb1lf@Zekuns-MBP-16.fios-router.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qitao Xu <qitao.xu@bytedance.com>
+The function obtain the next buffer without boundary check.
+We should return with I/O error code.
 
-Tracepoint trace_qdisc_enqueue() is introduced to trace skb at
-the entrance of TC layer on TX side. This is kinda symmetric to
-trace_qdisc_dequeue(), and together they can be used to calculate
-the packet queueing latency. It is more accurate than
-trace_net_dev_queue(), because we already successfully enqueue
-the packet at that point.
+The bug is found by fuzzing and the crash report is attached.
+It is an OOB bug although reported as use-after-free.
 
-Note, trace ring buffer is only accessible to privileged users,
-it is safe to use %px to print a real kernel address here.
+[    4.804724] BUG: KASAN: use-after-free in aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.805661] Read of size 4 at addr ffff888034fe93a8 by task ksoftirqd/0/9
+[    4.806505]
+[    4.806703] CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #34
+[    4.807636] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+[    4.809030] Call Trace:
+[    4.809343]  dump_stack+0x76/0xa0
+[    4.809755]  print_address_description.constprop.0+0x16/0x200
+[    4.810455]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.811234]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.813183]  __kasan_report.cold+0x37/0x7c
+[    4.813715]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.814393]  kasan_report+0xe/0x20
+[    4.814837]  aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.815499]  ? hw_atl_b0_hw_ring_rx_receive+0x9a5/0xb90 [atlantic]
+[    4.816290]  aq_vec_poll+0x179/0x5d0 [atlantic]
+[    4.816870]  ? _GLOBAL__sub_I_65535_1_aq_pci_func_init+0x20/0x20 [atlantic]
+[    4.817746]  ? __next_timer_interrupt+0xba/0xf0
+[    4.818322]  net_rx_action+0x363/0xbd0
+[    4.818803]  ? call_timer_fn+0x240/0x240
+[    4.819302]  ? __switch_to_asm+0x40/0x70
+[    4.819809]  ? napi_busy_loop+0x520/0x520
+[    4.820324]  __do_softirq+0x18c/0x634
+[    4.820797]  ? takeover_tasklets+0x5f0/0x5f0
+[    4.821343]  run_ksoftirqd+0x15/0x20
+[    4.821804]  smpboot_thread_fn+0x2f1/0x6b0
+[    4.822331]  ? smpboot_unregister_percpu_thread+0x160/0x160
+[    4.823041]  ? __kthread_parkme+0x80/0x100
+[    4.823571]  ? smpboot_unregister_percpu_thread+0x160/0x160
+[    4.824301]  kthread+0x2b5/0x3b0
+[    4.824723]  ? kthread_create_on_node+0xd0/0xd0
+[    4.825304]  ret_from_fork+0x35/0x40
 
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
 ---
- include/trace/events/qdisc.h | 26 ++++++++++++++++++++++++++
- net/core/dev.c               |  9 +++++++++
- 2 files changed, 35 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
-index 58209557cb3a..c3006c6b4a87 100644
---- a/include/trace/events/qdisc.h
-+++ b/include/trace/events/qdisc.h
-@@ -46,6 +46,32 @@ TRACE_EVENT(qdisc_dequeue,
- 		  __entry->txq_state, __entry->packets, __entry->skbaddr )
- );
- 
-+TRACE_EVENT(qdisc_enqueue,
-+
-+	TP_PROTO(struct Qdisc *qdisc, const struct netdev_queue *txq, struct sk_buff *skb),
-+
-+	TP_ARGS(qdisc, txq, skb),
-+
-+	TP_STRUCT__entry(
-+		__field(struct Qdisc *, qdisc)
-+		__field(void *,	skbaddr)
-+		__field(int, ifindex)
-+		__field(u32, handle)
-+		__field(u32, parent)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->qdisc = qdisc;
-+		__entry->skbaddr = skb;
-+		__entry->ifindex = txq->dev ? txq->dev->ifindex : 0;
-+		__entry->handle	 = qdisc->handle;
-+		__entry->parent	 = qdisc->parent;
-+	),
-+
-+	TP_printk("enqueue ifindex=%d qdisc handle=0x%X parent=0x%X skbaddr=%px",
-+		  __entry->ifindex, __entry->handle, __entry->parent, __entry->skbaddr)
-+);
-+
- TRACE_EVENT(qdisc_reset,
- 
- 	TP_PROTO(struct Qdisc *q),
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c253c2aafe97..20b9376de301 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -131,6 +131,7 @@
- #include <trace/events/napi.h>
- #include <trace/events/net.h>
- #include <trace/events/skb.h>
-+#include <trace/events/qdisc.h>
- #include <linux/inetdevice.h>
- #include <linux/cpu_rmap.h>
- #include <linux/static_key.h>
-@@ -3864,6 +3865,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 			if (unlikely(!nolock_qdisc_is_empty(q))) {
- 				rc = q->enqueue(skb, q, &to_free) &
- 					NET_XMIT_MASK;
-+				if (rc == NET_XMIT_SUCCESS)
-+					trace_qdisc_enqueue(q, txq, skb);
- 				__qdisc_run(q);
- 				qdisc_run_end(q);
- 
-@@ -3880,6 +3883,9 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 		}
- 
- 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-+		if (rc == NET_XMIT_SUCCESS)
-+			trace_qdisc_enqueue(q, txq, skb);
-+
- 		qdisc_run(q);
- 
- no_lock_out:
-@@ -3924,6 +3930,9 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 		rc = NET_XMIT_SUCCESS;
- 	} else {
- 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-+		if (rc == NET_XMIT_SUCCESS)
-+			trace_qdisc_enqueue(q, txq, skb);
-+
- 		if (qdisc_run_begin(q)) {
- 			if (unlikely(contended)) {
- 				spin_unlock(&q->busylock);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 24122ccda614..f915b4885831 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -365,6 +365,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+ 			do {
++				if (buff_->next >= self->size) {
++					err = -EIO;
++					goto err_exit;
++				}
+ 				next_ = buff_->next,
+ 				buff_ = &self->buff_ring[next_];
+ 				is_rsc_completed =
 -- 
-2.27.0
+2.23.0.rc1
 
