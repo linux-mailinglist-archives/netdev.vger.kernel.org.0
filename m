@@ -2,162 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A663C3E2A
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 19:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87DE43C3E2E
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 19:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbhGKREp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 13:04:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38906 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229688AbhGKREp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Jul 2021 13:04:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8AE1610A6;
-        Sun, 11 Jul 2021 17:01:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626022918;
-        bh=XiwSCptAfKifULMy9fRRaw604V6wMcanQF7EaUJ+Kb0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V2up30sic42QEo3JlF7zsEZXxqmAEpu7iqQnAjKt47MhF0clgWLmKkFjNPsWeaAjq
-         dCJtXpKdXPArMWt4k7WGeLZq0LYZrpe7miqE1X6liSvXrD9JE1jxOp0SX3j+0pKHfS
-         HpgWa9apHIx0zZB6BR7HWRB0LZw16uybzKXh82s2+mtHSYgX9tNeQHXcPf7ZO3WrAo
-         WZCsKucUVUdZ1dEo60fLQV3gUZK+Yk9vFfcRAEKG8t46Z6e7PANvzb4YUMgJTGhO4i
-         evKlsPRR90/v1oniEUQJDgcbRu+0ggpvBB0l+13lU3HIZ6Mndoi7cQUzDLbYJCKnyT
-         eYGRMkpRF6PUQ==
-Received: by pali.im (Postfix)
-        id 9577C773; Sun, 11 Jul 2021 19:01:55 +0200 (CEST)
-Date:   Sun, 11 Jul 2021 19:01:55 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 2/2] mwifiex: pcie: add reset_d3cold quirk for Surface
- gen4+ devices
-Message-ID: <20210711170155.zt5mpig6sgusifs3@pali>
-References: <4e35bfc1-c38d-7198-dedf-a1f2ec28c788@gmail.com>
- <20210709212505.mmqxdplmxbemqzlo@pali>
- <bfbb3b4d-07f7-1b97-54f0-21eba4766798@gmail.com>
- <20210709225433.axpzdsfbyvieahvr@pali>
- <89c9d1b8-c204-d028-9f2c-80d580dabb8b@gmail.com>
- <20210710000756.4j3tte63t5u6bbt4@pali>
- <1d45c961-d675-ea80-abe4-8d4bcf3cf8d4@gmail.com>
- <20210710003826.clnk5sh3cvlamwjr@pali>
- <2d7eef37-aab3-8986-800f-74ffc27b62c5@gmail.com>
- <fc1f39b0-2d61-387f-303f-9715781a2c4a@mailbox.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S232756AbhGKRMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 13:12:21 -0400
+Received: from mail-mw2nam12on2119.outbound.protection.outlook.com ([40.107.244.119]:46176
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229801AbhGKRMS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Jul 2021 13:12:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=avBEn/wLdl6o/9XFJJFnQB8GGcTsFnRyzGy15MFo8hmuNlJDYM5gFB+srwW11B1PAMze2hnPQcqpMZSjPFcnqHutNtVsn4OUAAcT4Vi2tWMfhyxLx8lvkg9/WAnDDDJP9AUHjx2TrqwmCM7hith6LqcRuQVfM5gTMV8aCso1T2tx7cxgY8xyWM6fXUoJQJ/GwtHmouYefbN18yqe4XMVxsik2RE1rg1cUbYni300DsTcv3cFsV+Q5ILeU6AQiDtBWROUx/rm/h7WqyYVzfkDmchRkNzb5Pk9oGftqULe/czHxGdGARk2+/tymvjj3G8GdlmMqeDFXwId7sxekWiUPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ll8rolpSxFM/SgComeoW1Co3BcFE/QMgkv8RTYwR7ls=;
+ b=Wuq6HtqscYjQDsILhTE9Pqm5Y1T8np07YIguhRevOpbmVivHqBS0JcnSZruYD87XJA1Ps1KaX4dfpKw7LO9jxC9Jc7vcogJjW52BCAFKeNA2QQAKj4oqjUlG+jkcSggO2bZ2J/HrKBe3ASM4PT6V3l2c8j1IcQ7VZgkGT7/dZQ57yfrCE1+eq+PXVQVaRsoB90dEmJYeVhJLCHs/Sc2DPe8gYmFIqXCmWKOHpX0K0TQnKKchJLWNESDiqMOhJh3OZnyk5j1jhqownW0t5v7OJ+j0Hf4MZ2uP+Up3h4RSAEOHVxibF9mhsFOl/FNDY42NmNVIXaviAeenfyAX+2expg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ll8rolpSxFM/SgComeoW1Co3BcFE/QMgkv8RTYwR7ls=;
+ b=wiq/L34dnO5stlewbCSe/k/8y8GOaFcROAvfvvTpFt41K547S/RXHNvl9O0KFEibIcB3QK7uqy0lyw4xvOANQJnDNrqDQajMueZxiZTHMs4Ucw6K+/z9AP4QacSkOHIoE2RxXA+TgUSmHoMbeLI2Z4lvQIqHcyL35FSwM8WyD54=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CO1PR10MB4420.namprd10.prod.outlook.com
+ (2603:10b6:303:97::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23; Sun, 11 Jul
+ 2021 17:09:30 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::e81f:cf8e:6ad6:d24d]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::e81f:cf8e:6ad6:d24d%3]) with mapi id 15.20.4308.026; Sun, 11 Jul 2021
+ 17:09:30 +0000
+Date:   Sun, 11 Jul 2021 10:09:27 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 net-next 7/8] net: dsa: ocelot: felix: add support
+ for VSC75XX control over SPI
+Message-ID: <20210711170927.GG2219684@euler>
+References: <20210710192602.2186370-1-colin.foster@in-advantage.com>
+ <20210710192602.2186370-8-colin.foster@in-advantage.com>
+ <20210710205205.blitrpvdwmf4au7z@skbuf>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fc1f39b0-2d61-387f-303f-9715781a2c4a@mailbox.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20210710205205.blitrpvdwmf4au7z@skbuf>
+X-ClientProxiedBy: MW3PR05CA0029.namprd05.prod.outlook.com
+ (2603:10b6:303:2b::34) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from euler (67.185.175.147) by MW3PR05CA0029.namprd05.prod.outlook.com (2603:10b6:303:2b::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.10 via Frontend Transport; Sun, 11 Jul 2021 17:09:29 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 14ed7193-55d5-4938-9f8d-08d9448ea539
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4420:
+X-Microsoft-Antispam-PRVS: <CO1PR10MB44201A55045DF977F480E5F7A4169@CO1PR10MB4420.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VRauUL1ZZY53KCfUm3uc1ECyz+jo70an43gC+sUv5zfzxvDltzLSVStT9TGGzAXobOoMCvHfM7fA2gZoElU4aide3qmhmzmyJOHCPpwt1maHnWyTNKTHnlE6ijcvi78gCvH9v4Xm/AxRQv8TYEGVJn3c9+rSyjc0HKO0iBFyFknJRi05pHjt0py3UsrJqnpP3v2pxNK9sxK4GjjwVvY96wC9qy2Mx8AFlCIYXkWyYhPYDWV7LLn17ALrh24+zrSXluXzSPylEjgCKGKUMZkmqrbTAE5xmySbh/liKyLUPrl6pdE6oPYtXI9Fmw7d0FqIeOQ/2kLQi9oCkAU+EHKxvN2DZSVtMs3QLGNRVVBgDpIRh7K/HS+nF7oCBTE/OkWUeXpzsuwbQIcLUPy58XWZRTJdgesEAX6D2G+oKgUeTLipQgjgYIwAFGD2hJRH+xqGHgyzgv5+GCrCBpKtLV/49pDFsneJAU9kZ/MGK672TZvJUQok8xByBGrUlqy4P5YKp7/YCaKZk0C3R1TN9ms4B/HnBn8AqvHfSxIhdqXWPCSfrZViNZKURbbnYx+eK1/Ke33lPBiJRba8DvmUXmXqw494SZ5iBXgaFWgP3HHSzXU6QcGYdgeuTGYqohXvjmT3QfsVGeOymstTq2rSvDT7q51hjBU7PjloHyFKVAFDAgXTq8+vBoVRahcnd09V+taqusD/3OVSDPhoENvl8jn5zw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(39830400003)(366004)(396003)(376002)(26005)(956004)(66476007)(55016002)(66556008)(33656002)(316002)(478600001)(186003)(38100700002)(66946007)(6916009)(5660300002)(38350700002)(8676002)(8936002)(86362001)(9576002)(83380400001)(6496006)(52116002)(9686003)(33716001)(4326008)(7416002)(2906002)(1076003)(44832011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QYG4IoNiZXCjU0C63S39uJPgfRYi7QBAe0M0ataCJl6Ov32auen97A+iB3Fh?=
+ =?us-ascii?Q?IVYW6KlKghntxVTK+f5xBMphiYPQPSz/G4iAz76NZJvhx3UBzSCGoz+tzxAl?=
+ =?us-ascii?Q?QVRq5I9QJOmez73vGwk9YrHztMF+0/LqCpfO225sy0W67KLFyGAffwMHQ7m+?=
+ =?us-ascii?Q?SBXC2YTOJ1D6cKGSqHC2TjSupWytxYiRHWYO9Mi+7X46NauI0CvsC10RM+sg?=
+ =?us-ascii?Q?HZRIu5FuMqfc0wCgj6W+FbqOdhIUXeJIpOQyCHO+XqXejy6kSONRxr2wd33m?=
+ =?us-ascii?Q?vOiveeZZ7toVTNP30hVAzHSGzgD0c1Jq1svKfLnGbKF3IxWzkMKdk5sqXBHx?=
+ =?us-ascii?Q?3OiozCdO8kWkI44vCjpfVPxaJq7Fmt3bBi4D8MhffQt9hV4I8yUhmTinlHpS?=
+ =?us-ascii?Q?qMXzj67qsdsU/uodIIFAFZpVXzcguSE6YXWXatb0Sw9S7GxEGuxqVZ9GNnoN?=
+ =?us-ascii?Q?kRH5gin+Z28pGFfyhL14vneEAh7wXdWnAy9O+ruEnJr67CYuvt1UicrX+cwL?=
+ =?us-ascii?Q?QPsaFf3KSsV5TI/jOoMSHCwOG5RCkg2grWGTJJJjOUiz+bY9afGCE/mXI2g2?=
+ =?us-ascii?Q?sl89b+Uhq6ic0FsjHK3Q/1/6LscQzqgNKd5x3sbi55s4xfC0xG7OIxudCy1j?=
+ =?us-ascii?Q?rD3RVpkB2ZSWZYZUknXM9DmdtyP5r1S/e+lAxu69SDGqqwgb6Qh2AKVLsblY?=
+ =?us-ascii?Q?f7YI6bhYZjSDjttwLGkNQNBcLQvacgaxxT08X7FRNQjqiak+ahwJIHAupq1v?=
+ =?us-ascii?Q?eKGuBwIMHydh7stJWhyH5zuN67SUzNzCHBv4RDL2UKjzqy1jxkQQ2v9u/3UC?=
+ =?us-ascii?Q?QkWjTTTmPucGkIMgbDlZxh3ViQ6Q06QTWhHAUKGOKN765cU84GbPZrctyoqN?=
+ =?us-ascii?Q?uQFWTD4UJle7UlEsfcCFkMoQ8w9F8LIQOiBLfuRlF0VNQFUl1yRwWlsIfNz2?=
+ =?us-ascii?Q?ZYIghmKJRVieogcTCJ7pvpevBvaaH7chaWuOg7BZgJfKS8FtgecN7/Lkpict?=
+ =?us-ascii?Q?TkAUsSqtWZ+XwM3DgMrQC41K4l1RWYTZUljTIpmoFfeq/4xDHeWLq96r7iIU?=
+ =?us-ascii?Q?Aqc2EIPL6ttvEPi0DZbB4Tjmid8BTinfVDjJkWjJ5VzfkM8kmSmeWXM4c7i3?=
+ =?us-ascii?Q?dGXS+Hn8mdqZMAF5AZ0y4PIvzGKZ7IL2XHbYvh97nZrOLlP4TkFthbXzCY82?=
+ =?us-ascii?Q?u+XyGr7oM9Gd6o0lwbzLck2t9vT29o7IQ/rBmnlzuVxEzkcs6Lb1ze8bsiuc?=
+ =?us-ascii?Q?CjFOoaLkyS8F90vBPlSQEfM83s+ut7fBjMaxH0nOz9hqEEQUUbpwNScjCPYR?=
+ =?us-ascii?Q?mY+ZwPDmzjDXk9Gf1Ds+WSFu?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14ed7193-55d5-4938-9f8d-08d9448ea539
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2021 17:09:30.0386
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qAgn73AoR4w9PB5wl0dp176G1U1hnmDO9AK34jSSsp9qssi95TJkqETin2I3HV5Ebu9ZORWeuJ/bPGhDfpxhZBJck6fnSYGToFvJKXtT00I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4420
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sunday 11 July 2021 18:53:32 Jonas Dreßler wrote:
-> On 7/10/21 3:07 AM, Maximilian Luz wrote:
-> > On 7/10/21 2:38 AM, Pali Rohár wrote:
-> > > On Saturday 10 July 2021 02:18:12 Maximilian Luz wrote:
-> > > > On 7/10/21 2:07 AM, Pali Rohár wrote:
-> > > > 
-> > > > [...]
-> > > > 
-> > > > > > Interesting, I was not aware of this. IIRC we've been
-> > > > > > experimenting with
-> > > > > > the mwlwifi driver (which that lrdmwl driver seems to be
-> > > > > > based on?), but
-> > > > > > couldn't get that to work with the firmware we have.
-> > > > > 
-> > > > > mwlwifi is that soft-mac driver and uses completely different firmware.
-> > > > > For sure it would not work with current full-mac firmware.
-> > > > > 
-> > > > > > IIRC it also didn't
-> > > > > > work with the Windows firmware (which seems to be significantly
-> > > > > > different from the one we have for Linux and seems to
-> > > > > > use or be modeled
-> > > > > > after some special Windows WiFi driver interface).
-> > > > > 
-> > > > > So... Microsoft has different firmware for this chip? And it is working
-> > > > > with mwifiex driver?
-> > > > 
-> > > > I'm not sure how special that firmware really is (i.e. if it is Surface
-> > > > specific or just what Marvell uses on Windows), only that it doesn't
-> > > > look like the firmware included in the linux-firmware repo. The Windows
-> > > > firmware doesn't work with either mwlwifi or mwifiex drivers (IIRC) and
-> > > > on Linux we use the official firmware from the linux-firmware repo.
-> > > 
-> > > Version available in the linux-firmware repo is also what big companies
-> > > (like google) receive for their systems... sometimes just only older
-> > > version as Marvell/NXP is slow in updating files in linux-firmware.
-> > > Seems that it is also same what receive customers under NDA as more
-> > > companies dropped "proprietary" ex-Marvell/NXP driver on internet and it
-> > > contained this firmware with some sources of driver which looks like a
-> > > fork of mwifiex (or maybe mwifiex is "cleaned fork" of that driver :D)
-> > > 
-> > > There is old firmware documentation which describe RPC communication
-> > > between OS and firmware:
-> > > http://wiki.laptop.org/images/f/f3/Firmware-Spec-v5.1-MV-S103752-00.pdf
-> > > 
-> > > It is really old for very old wifi chips and when I checked it, it still
-> > > matches what mwifiex is doing with new chips. Just there are new and
-> > > more commands. And documentation is OS-neutral.
-> > > 
-> > > So if Microsoft has some "incompatible" firmware with this, it could
-> > > mean that they got something special which nobody else have? Maybe it
-> > > can explain that "connected standby" and maybe also better stability?
-> > > 
-> > > Or just windows distribute firmware in different format and needs to
-> > > "unpack" or "preprocess" prior downloading it to device?
-> > 
-> > If memory serves me right, Jonas did some reverse engineering on the
-> > Windows driver and found that it uses the "new" WDI Miniport API: It
-> > seems that originally both Windows and Linux drivers (and firmware)
-> > were pretty much the same (he mentioned there were similarities in
-> > terminology), but then they switched to that new API on Windows and
-> > changed the firmware with it, so that the driver now essentially only
-> > forwards the commands from that API to the firmware and the firmware
-> > handles the rest.
-> > 
-> > By reading the Windows docs on that API, that change might have been
-> > forced on them as some Windows 10 features apparently only work via
-> > that API.
-> > 
-> > He'll probably know more about that than I do.
+On Sat, Jul 10, 2021 at 11:52:05PM +0300, Vladimir Oltean wrote:
+> On Sat, Jul 10, 2021 at 12:26:01PM -0700, Colin Foster wrote:
+> > +static const struct felix_info ocelot_spi_info = {
+> > +	.target_io_res			= vsc7512_target_io_res,
+> > +	.port_io_res			= vsc7512_port_io_res,
+> > +	.regfields			= vsc7512_regfields,
+> > +	.map				= vsc7512_regmap,
+> > +	.ops				= &vsc7512_ops,
+> > +	.stats_layout			= vsc7512_stats_layout,
+> > +	.num_stats			= ARRAY_SIZE(vsc7512_stats_layout),
+> > +	.vcap				= vsc7512_vcap_props,
+> > +	.num_mact_rows			= 1024,
+> > +
+> > +	/* The 7512 and 7514 both have support for up to 10 ports. The 7511 and
+> > +	 * 7513 have support for 4. Due to lack of hardware to test and
+> > +	 * validate external phys, this is currently limited to 4 ports.
+> > +	 * Expanding this to 10 for the 7512 and 7514 and defining the
+> > +	 * appropriate phy-handle values in the device tree should be possible.
+> > +	 */
+> > +	.num_ports			= 4,
 > 
-> Not much I can add there, it seemed a lot like both mwifiex and the Windows
-> 10 WDI miniport driver were both derived from the same codebase originally,
-> but in order to be compatible with the WDI miniport API and other stuff
-> Windows requires from wifi devices (I recall there was some SAR-value
-> control/reporting stuff too), some parts of the firmware had to be
-> rewritten.
-> 
-> In the end, the Windows firmware is updated a lot more often and likely
-> includes a bunch of bugfixes the linux firmware doesn't have, but it can't
-> be used on linux without a ton of work that would probably include
-> rebuilding proprietary APIs from Windows.
-> 
-> Also, from my testing with custom APs and sniffing packets with Wireshark,
-> the functionality, limitations and weird "semi-spec-compliant" behaviors
-> were exactly the same with the Windows firmware: It doesn't support WPA3, it
-> can't connect to fast transition APs (funnily enough that's opposed to what
-> MS claims) and it also can't spawn an AP with WPA-PSK-SHA256 AKM ciphers. So
-> not sure there's a lot of sense in spending more time trying to go down that
-> path.
+> Ouch, this was probably not a good move.
+> felix_setup() -> felix_init_structs sets ocelot->num_phys_ports based on
+> this value.
+> If you search for ocelot->num_phys_ports in ocelot and in felix, it is
+> widely used to denote "the index of the CPU port module within the
+> analyzer block", since the CPU port module's number is equal to the
+> number of the last physical port + 1. If VSC7512 has 10 ports, then the
+> CPU port module is port 10, and if you set num_ports to 4 you will cause
+> the driver to misbehave.
 
-New version of firmware files are available on NXP portal, where are
-updated more frequently, but only for companies which have NXP accounts
-and signed NDA with NXP. Not for end users.
+Yes, this is part of my concern with the CPU / NPI module mentioned
+before. In my hardware, I'd have port 0 plugged to the external CPU. In
+Ocelot it is the internal bus, and in Felix it is the NPI. In this SPI
+design, does the driver lose significant functionality by not having
+access to those ports?
 
-If you want these new firmware files, you need to ask NXP developers as
-only they can ask for non-NDA distribution and include new version into
-linux-firmware repository. Like in this pull request where is new SDIO
-firmware for 88W8897:
-https://lore.kernel.org/linux-firmware/DB7PR04MB453855B0D6C41923BCB0922EFC1C9@DB7PR04MB4538.eurprd04.prod.outlook.com/
+In my test setup (and our expected production) we'd have port 0
+connected to the external chip, and ports 1-3 exposed. Does Ocelot need
+to be modified to allow a parameter for the CPU port?
+
+And obviously I'd imagine this would want to be done in such a way that
+it doesn't break existing device trees...
+
+> 
+> > +	.num_tx_queues			= OCELOT_NUM_TC,
+> > +	.mdio_bus_alloc			= felix_mdio_bus_alloc,
+> > +	.mdio_bus_free			= felix_mdio_bus_free,
+> > +	.phylink_validate		= vsc7512_phylink_validate,
+> > +	.prevalidate_phy_mode		= vsc7512_prevalidate_phy_mode,
+> > +	.port_setup_tc			= vsc7512_port_setup_tc,
+> > +	.init_regmap			= vsc7512_regmap_init,
+> > +};
+> 
+> > +	/* Not sure about this */
+> > +	ocelot->num_flooding_pgids = 1;
+> 
+> Why are you not sure? It's the same as ocelot.
+
+Sorry - missed removing that comment... Removed.
