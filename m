@@ -2,100 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8133C3F7B
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 23:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C95F3C3F9C
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 00:13:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230504AbhGKVXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 17:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbhGKVXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 17:23:24 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2BBC0613DD;
-        Sun, 11 Jul 2021 14:20:36 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 37so16084001pgq.0;
-        Sun, 11 Jul 2021 14:20:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ypILE7NYOrMPmGCakPLaEPBTF1A+EJrOA0XigYcFvAo=;
-        b=Czo+sVY8+D//IO63y+eQ497rQG+c8rSrf0VOqpFoOPkUDQCpfZZJbt1aDXUylCysob
-         UKK8zF1uC9SjT2rIEA/37t1N3q9IHTwDtE68ktULHxtCx7bWLnj5KpfLvXVtAuFGdd2L
-         N7ODpmW40qDHp2J954ED7rCpxn4Ghg0EDM/MsHnl3W9jJZkU1ZSDcDSiCF4amKUYFPwR
-         tz49cUX8jwYjiQdXUgs1wToKrqZHAToCQuIiE2RwirjR4t0fptTJAl6R0Gn+EcfqQtkD
-         Ay3JsURV8aujHVds9rmPpbV572/Fp7G3Ldx06HAlCIdjp1vZyexN6cbCFhuINp6nSyiy
-         R3Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ypILE7NYOrMPmGCakPLaEPBTF1A+EJrOA0XigYcFvAo=;
-        b=j+BU08YaToNE0lDdZkFqfZiqH3fDalora205cl84imK1WbY8+vFumQSWGAzVjvyIAR
-         ZHtr8ddMt5PhnCW50ARH2/ZheRJxstAYnYOy4gH9Ie99TJvPAqdbTmMvLGnuNRxSufX9
-         E6gpRJNlNhF5UcWU2d4vFc3o6AfkCSgnX6GiW1sizkbHWKKGJ/YQDF9T/apm/jp/2CjJ
-         S69MsCmezhufcsvbUnqddqc4aaYKfrd6bX+8NFAkHwFjIAiAUmzEGF/LjPgUBT+LixOx
-         yoinCaoRDadUyOEQ62CDQFBI8UBekCtok4X6IlGNDQmuQLHmng3c1t98PTe4Jx5zZSQF
-         R8sg==
-X-Gm-Message-State: AOAM533exJ5WEveL1j26QiduA1d3y1/N6VGfkclRM1rbjdoTL1nS5ah2
-        VsvVw2M0rNIOCxNP/fiApts=
-X-Google-Smtp-Source: ABdhPJwPVRKecWtClVfKr2ynPAgjzomivAh+fPXso7b9MOSSGNXgJDnKN4io3JIptMNHqnEO7U5gOA==
-X-Received: by 2002:a65:6449:: with SMTP id s9mr17941619pgv.285.1626038436233;
-        Sun, 11 Jul 2021 14:20:36 -0700 (PDT)
-Received: from [10.230.31.46] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j129sm13083668pfb.132.2021.07.11.14.20.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Jul 2021 14:20:35 -0700 (PDT)
-Subject: Re: [PATCH] dsa: fix for_each_child.cocci warnings
-To:     patchwork-bot+netdevbpf@kernel.org,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     alobakin@pm.me, olteanv@gmail.com, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kbuild-all@lists.01.org
-References: <alpine.DEB.2.22.394.2107111810480.13622@hadrien>
- <162602340362.16607.1326301834403328626.git-patchwork-notify@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4512cb06-bf25-2ba4-dcc0-42ad91b2bd80@gmail.com>
-Date:   Sun, 11 Jul 2021 14:20:28 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230386AbhGKWQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 18:16:16 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:61429 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229544AbhGKWQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 18:16:16 -0400
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 0C4BC40004;
+        Sun, 11 Jul 2021 22:13:24 +0000 (UTC)
+Date:   Mon, 12 Jul 2021 00:13:24 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        claudiu.manoil@nxp.com, UNGLinuxDriver@microchip.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 net-next 7/8] net: dsa: ocelot: felix: add support
+ for VSC75XX control over SPI
+Message-ID: <YOttBHN7AJvqDXe8@piout.net>
+References: <20210710192602.2186370-1-colin.foster@in-advantage.com>
+ <20210710192602.2186370-8-colin.foster@in-advantage.com>
+ <20210710205205.blitrpvdwmf4au7z@skbuf>
+ <20210711170927.GG2219684@euler>
 MIME-Version: 1.0
-In-Reply-To: <162602340362.16607.1326301834403328626.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210711170927.GG2219684@euler>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/11/2021 10:10 AM, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
+On 11/07/2021 10:09:27-0700, Colin Foster wrote:
+> On Sat, Jul 10, 2021 at 11:52:05PM +0300, Vladimir Oltean wrote:
+> > On Sat, Jul 10, 2021 at 12:26:01PM -0700, Colin Foster wrote:
+> > > +static const struct felix_info ocelot_spi_info = {
+> > > +	.target_io_res			= vsc7512_target_io_res,
+> > > +	.port_io_res			= vsc7512_port_io_res,
+> > > +	.regfields			= vsc7512_regfields,
+> > > +	.map				= vsc7512_regmap,
+> > > +	.ops				= &vsc7512_ops,
+> > > +	.stats_layout			= vsc7512_stats_layout,
+> > > +	.num_stats			= ARRAY_SIZE(vsc7512_stats_layout),
+> > > +	.vcap				= vsc7512_vcap_props,
+> > > +	.num_mact_rows			= 1024,
+> > > +
+> > > +	/* The 7512 and 7514 both have support for up to 10 ports. The 7511 and
+> > > +	 * 7513 have support for 4. Due to lack of hardware to test and
+> > > +	 * validate external phys, this is currently limited to 4 ports.
+> > > +	 * Expanding this to 10 for the 7512 and 7514 and defining the
+> > > +	 * appropriate phy-handle values in the device tree should be possible.
+> > > +	 */
+> > > +	.num_ports			= 4,
+> > 
+> > Ouch, this was probably not a good move.
+> > felix_setup() -> felix_init_structs sets ocelot->num_phys_ports based on
+> > this value.
+> > If you search for ocelot->num_phys_ports in ocelot and in felix, it is
+> > widely used to denote "the index of the CPU port module within the
+> > analyzer block", since the CPU port module's number is equal to the
+> > number of the last physical port + 1. If VSC7512 has 10 ports, then the
+> > CPU port module is port 10, and if you set num_ports to 4 you will cause
+> > the driver to misbehave.
 > 
-> This patch was applied to netdev/net.git (refs/heads/master):
+> Yes, this is part of my concern with the CPU / NPI module mentioned
+> before. In my hardware, I'd have port 0 plugged to the external CPU. In
+> Ocelot it is the internal bus, and in Felix it is the NPI. In this SPI
+> design, does the driver lose significant functionality by not having
+> access to those ports?
 > 
-> On Sun, 11 Jul 2021 18:12:56 +0200 (CEST) you wrote:
->> From: kernel test robot <lkp@intel.com>
->>
->> For_each_available_child_of_node should have of_node_put() before
->> return around line 423.
->>
->> Generated by: scripts/coccinelle/iterators/for_each_child.cocci
->>
->> [...]
+
+From the switchdev driver perspective, the CPU port is special because
+it is the one allowing to send and receive frames to/from the exposed
+ethernet interfaces. However, the goal is definitively to use that as
+little as possible (especially since as implemented right now,
+throughput is about 20Mbps).
+
+I didn't have a look at the DSA implementation but I wouldn't expect the
+NPI port to be that special.
+
+> In my test setup (and our expected production) we'd have port 0
+> connected to the external chip, and ports 1-3 exposed. Does Ocelot need
+> to be modified to allow a parameter for the CPU port?
 > 
-> Here is the summary with links:
->    - dsa: fix for_each_child.cocci warnings
->      https://git.kernel.org/netdev/net/c/84f7e0bb4809
 
-The patch subject should have been:
+DSA is what allows you to select which of the port is the port connected
+to the BBB (this is the CPU port in DSA parlance). This is what you see
+in the example in Documentation/devicetree/bindings/net/dsa/ocelot.txt
 
-net: dsa: microchip: fix for_each_child.cocci warning
-
-(singular, not plural), yes I like to paint my bike shed blue.
---
-Florian
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
