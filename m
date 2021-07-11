@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629423C3FB6
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 00:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EDA33C3FC9
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 00:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232000AbhGKWep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 18:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
+        id S231567AbhGKWen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 18:34:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbhGKWem (ORCPT
+        with ESMTP id S229544AbhGKWem (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 18:34:42 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B53C0613E5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B4B4C0613DD;
         Sun, 11 Jul 2021 15:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=TGRhbMUsl1yRfRw9a46SZWtCcXw/VTCt/x/NlatoqFI=; b=rCutemvyW97aDoDJnIHx9zNGr5
-        P4KjtYJoRO4HGCeQEwObV7IsSabg03DpqPRvbTp48NFcCFjFITzbbUfDCJP3wXrY89rDg+y6t34TT
-        yehA9kBkncbOaCUjNOjck8pbW7r2xxqmoZtyQwoNJ0TeHyroaOr1zjbaApIQBgIXd1oPWsjO9fb4g
-        Q3ap7qAeqvGugj3Bd44VW2iHg/E+C3627osokc78k+RsnYklgI5n1PxyiR2QXcRgwTjFputCO8c2t
-        ZFCC2ux0W6lzRw5Va7FiIKLvXg2ZXj51QvVT2O6HYLyWkBZRHYRzXbYSK0/WO/8fSV5Dq8cTl9jTd
-        J7u4mZRA==;
+        bh=H7RHC9PAGo7nFqGD22lHzISKCO3dCV+vM/OnCERLMj0=; b=0tg9x+gIqCAtRRWK4CGLvarT1M
+        FwzOnutPg7Isls3CQeaHSgUlMGUH768rgd+x6J/sKo2k+cA/CpXJmoAwhxchiBY17ZPBYBIEoq+Q0
+        2FxMAVdvtYvkFu3urD+szA6LmlFn+3RYeoLqPw+ciReHsPbXWE9ZEFULxMDgCDgPJtrGiaB+bmgGk
+        q6dAXvzyJvTi/JCucxpK7meGmk9n6/oNUcL028PlBl+PZn0opSdYUGGBHx76tYZo1YjPMvuJoMQ1V
+        Xhqko7QjQcExEKk50ttJ1ME+t1lucqDoujFAGH4Smgr+BO1fG5Q+dVNKqb5SLP3fp7siUsI9Fe4mT
+        IFJzp0jw==;
 Received: from [2601:1c0:6280:3f0::aefb] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m2hzM-005U4u-8Y; Sun, 11 Jul 2021 22:31:52 +0000
+        id 1m2hzN-005U4u-1u; Sun, 11 Jul 2021 22:31:53 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -45,9 +45,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Martin Schiller <ms@dev.tdt.de>, linux-x25@vger.kernel.org,
         wireguard@lists.zx2c4.com
-Subject: [PATCH 2/6 v2] hw_random: rename 'mod_init' & 'mod_exit' functions to be module-specific
-Date:   Sun, 11 Jul 2021 15:31:44 -0700
-Message-Id: <20210711223148.5250-3-rdunlap@infradead.org>
+Subject: [PATCH 3/6 v2] lib: crypto: rename 'mod_init' & 'mod_exit' functions to be module-specific
+Date:   Sun, 11 Jul 2021 15:31:45 -0700
+Message-Id: <20210711223148.5250-4-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210711223148.5250-1-rdunlap@infradead.org>
 References: <20210711223148.5250-1-rdunlap@infradead.org>
@@ -66,11 +66,6 @@ This is helpful for debugging and in determining how long certain
 module_init calls take to execute.
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andres Salomon <dilinger@queued.net>
-Cc: linux-geode@lists.infradead.org
-Cc: Matt Mackall <mpm@selenic.com>
 Cc: Herbert Xu <herbert@gondor.apana.org.au>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: linux-crypto@vger.kernel.org
@@ -78,130 +73,89 @@ Cc: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
 v2: no change
 
- drivers/char/hw_random/amd-rng.c   |    8 ++++----
- drivers/char/hw_random/geode-rng.c |    8 ++++----
- drivers/char/hw_random/intel-rng.c |    8 ++++----
- drivers/char/hw_random/via-rng.c   |    8 ++++----
- 4 files changed, 16 insertions(+), 16 deletions(-)
+ lib/crypto/blake2s.c          |    8 ++++----
+ lib/crypto/chacha20poly1305.c |    8 ++++----
+ lib/crypto/curve25519.c       |    8 ++++----
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
---- linux-next-20210708.orig/drivers/char/hw_random/amd-rng.c
-+++ linux-next-20210708/drivers/char/hw_random/amd-rng.c
-@@ -124,7 +124,7 @@ static struct hwrng amd_rng = {
- 	.read		= amd_rng_read,
- };
+--- linux-next-20210708.orig/lib/crypto/blake2s.c
++++ linux-next-20210708/lib/crypto/blake2s.c
+@@ -73,7 +73,7 @@ void blake2s256_hmac(u8 *out, const u8 *
+ }
+ EXPORT_SYMBOL(blake2s256_hmac);
  
 -static int __init mod_init(void)
-+static int __init amd_rng_mod_init(void)
++static int __init blake2s_mod_init(void)
  {
- 	int err;
- 	struct pci_dev *pdev = NULL;
-@@ -188,7 +188,7 @@ out:
- 	return err;
+ 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
+ 	    WARN_ON(!blake2s_selftest()))
+@@ -81,12 +81,12 @@ static int __init mod_init(void)
+ 	return 0;
  }
  
 -static void __exit mod_exit(void)
-+static void __exit amd_rng_mod_exit(void)
++static void __exit blake2s_mod_exit(void)
  {
- 	struct amd768_priv *priv;
- 
-@@ -203,8 +203,8 @@ static void __exit mod_exit(void)
- 	kfree(priv);
  }
  
 -module_init(mod_init);
 -module_exit(mod_exit);
-+module_init(amd_rng_mod_init);
-+module_exit(amd_rng_mod_exit);
- 
- MODULE_AUTHOR("The Linux Kernel team");
- MODULE_DESCRIPTION("H/W RNG driver for AMD chipsets");
---- linux-next-20210708.orig/drivers/char/hw_random/geode-rng.c
-+++ linux-next-20210708/drivers/char/hw_random/geode-rng.c
-@@ -83,7 +83,7 @@ static struct hwrng geode_rng = {
- };
- 
++module_init(blake2s_mod_init);
++module_exit(blake2s_mod_exit);
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("BLAKE2s hash function");
+ MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
+--- linux-next-20210708.orig/lib/crypto/chacha20poly1305.c
++++ linux-next-20210708/lib/crypto/chacha20poly1305.c
+@@ -354,7 +354,7 @@ bool chacha20poly1305_decrypt_sg_inplace
+ }
+ EXPORT_SYMBOL(chacha20poly1305_decrypt_sg_inplace);
  
 -static int __init mod_init(void)
-+static int __init geode_rng_init(void)
++static int __init chacha20poly1305_init(void)
  {
- 	int err = -ENODEV;
- 	struct pci_dev *pdev = NULL;
-@@ -124,7 +124,7 @@ err_unmap:
- 	goto out;
+ 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
+ 	    WARN_ON(!chacha20poly1305_selftest()))
+@@ -362,12 +362,12 @@ static int __init mod_init(void)
+ 	return 0;
  }
  
 -static void __exit mod_exit(void)
-+static void __exit geode_rng_exit(void)
++static void __exit chacha20poly1305_exit(void)
  {
- 	void __iomem *mem = (void __iomem *)geode_rng.priv;
- 
-@@ -132,8 +132,8 @@ static void __exit mod_exit(void)
- 	iounmap(mem);
  }
  
 -module_init(mod_init);
 -module_exit(mod_exit);
-+module_init(geode_rng_init);
-+module_exit(geode_rng_exit);
- 
- MODULE_DESCRIPTION("H/W RNG driver for AMD Geode LX CPUs");
- MODULE_LICENSE("GPL");
---- linux-next-20210708.orig/drivers/char/hw_random/intel-rng.c
-+++ linux-next-20210708/drivers/char/hw_random/intel-rng.c
-@@ -325,7 +325,7 @@ PFX "RNG, try using the 'no_fwh_detect'
- }
- 
++module_init(chacha20poly1305_init);
++module_exit(chacha20poly1305_exit);
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("ChaCha20Poly1305 AEAD construction");
+ MODULE_AUTHOR("Jason A. Donenfeld <Jason@zx2c4.com>");
+--- linux-next-20210708.orig/lib/crypto/curve25519.c
++++ linux-next-20210708/lib/crypto/curve25519.c
+@@ -13,7 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
  
 -static int __init mod_init(void)
-+static int __init intel_rng_mod_init(void)
++static int __init curve25519_init(void)
  {
- 	int err = -ENODEV;
- 	int i;
-@@ -403,7 +403,7 @@ out:
- 
+ 	if (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&
+ 	    WARN_ON(!curve25519_selftest()))
+@@ -21,12 +21,12 @@ static int __init mod_init(void)
+ 	return 0;
  }
  
 -static void __exit mod_exit(void)
-+static void __exit intel_rng_mod_exit(void)
++static void __exit curve25519_exit(void)
  {
- 	void __iomem *mem = (void __iomem *)intel_rng.priv;
- 
-@@ -411,8 +411,8 @@ static void __exit mod_exit(void)
- 	iounmap(mem);
  }
  
 -module_init(mod_init);
 -module_exit(mod_exit);
-+module_init(intel_rng_mod_init);
-+module_exit(intel_rng_mod_exit);
++module_init(curve25519_init);
++module_exit(curve25519_exit);
  
- MODULE_DESCRIPTION("H/W RNG driver for Intel chipsets");
- MODULE_LICENSE("GPL");
---- linux-next-20210708.orig/drivers/char/hw_random/via-rng.c
-+++ linux-next-20210708/drivers/char/hw_random/via-rng.c
-@@ -192,7 +192,7 @@ static struct hwrng via_rng = {
- };
- 
- 
--static int __init mod_init(void)
-+static int __init via_rng_mod_init(void)
- {
- 	int err;
- 
-@@ -209,13 +209,13 @@ static int __init mod_init(void)
- out:
- 	return err;
- }
--module_init(mod_init);
-+module_init(via_rng_mod_init);
- 
--static void __exit mod_exit(void)
-+static void __exit via_rng_mod_exit(void)
- {
- 	hwrng_unregister(&via_rng);
- }
--module_exit(mod_exit);
-+module_exit(via_rng_mod_exit);
- 
- static struct x86_cpu_id __maybe_unused via_rng_cpu_id[] = {
- 	X86_MATCH_FEATURE(X86_FEATURE_XSTORE, NULL),
+ MODULE_LICENSE("GPL v2");
+ MODULE_DESCRIPTION("Curve25519 scalar multiplication");
