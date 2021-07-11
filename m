@@ -2,151 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0400E3C3D70
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 16:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8223C3D82
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 16:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233482AbhGKOvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 10:51:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53401 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233472AbhGKOvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 10:51:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626014928;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZELnrKJVBGNx6wxd3yY5U2LdTh0ylxyvqNslHbnINcw=;
-        b=Sr+7XzCdFqmDrhyxKos6P6uVoRe/kMWyO3idMngfdhFmvhCIjY6PKdn+8GiMiw6ojic1f+
-        ZrYO9VLTv6QXIJMPFPgj7mTY17JOvsz/uZ906kn4akd+YNtKFXNUOz1adDEQX5A3BpDNDE
-        nF5+3PtjCEX7bc9+FBFHR0Ei0OxK9eQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-599-jBa6s677OjWaas6Wrw8Fqg-1; Sun, 11 Jul 2021 10:48:47 -0400
-X-MC-Unique: jBa6s677OjWaas6Wrw8Fqg-1
-Received: by mail-ed1-f72.google.com with SMTP id cw12-20020a056402228cb02903a4b3e93e15so1950383edb.2
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 07:48:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZELnrKJVBGNx6wxd3yY5U2LdTh0ylxyvqNslHbnINcw=;
-        b=DINgcGETC2oepWCA5AGDgzj+BTvhjJXcjOt0f9crvEE5/39TwAis6FV3yH+gVQJt+o
-         OIhGoIARabNSn3glqnK6Etg9XZLYdmKrFZl69cFH4n5v8wcfK9D3SvSPjuKQ5BCdzVPX
-         fIuSERrDPp34CthEhDO7AKHei8EW7PwRRJzg1UDCpOO6ijPpqFxVA+ZfhlELaDZVzLY2
-         u0Mbk+LU9Er6U1VjHRL103EvayBq42ZN5WcP3gqWDps0DOPc+NP7aZC2e9suTgAPt/6t
-         kzjADj8xkRFN/Kuzk0/Z7f9Q4wOZDnbYZGbarIQtZbr6AZb4MOR0cEEiWasTHZGu/XhX
-         FDag==
-X-Gm-Message-State: AOAM532KynbIAufVpp9pZH930jvh2+BmWrBuYMTqx9w0j7HOZP2gp5S/
-        /CkmLgIwYFgNF+T/W8bC1QwwJ3S9b2VbqPQxvPJHpddvIilcNLfj2aaR24QtDmyVe6SDJBTlMgj
-        TFz4Qf40jDpSsTJni
-X-Received: by 2002:a17:907:2d0a:: with SMTP id gs10mr48067162ejc.207.1626014926046;
-        Sun, 11 Jul 2021 07:48:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxeIhUhM/RTo9XOQB45I05Fu6x+0BB6/xj84NS+GNlkUkEEcnMkLaUYPeeX8BtS/vcZKwrzPA==
-X-Received: by 2002:a17:907:2d0a:: with SMTP id gs10mr48067149ejc.207.1626014925891;
-        Sun, 11 Jul 2021 07:48:45 -0700 (PDT)
-Received: from krava ([5.171.250.127])
-        by smtp.gmail.com with ESMTPSA id ch27sm4491068edb.57.2021.07.11.07.48.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Jul 2021 07:48:45 -0700 (PDT)
-Date:   Sun, 11 Jul 2021 16:48:42 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: Re: [PATCHv3 bpf-next 6/7] libbpf: allow specification of
- "kprobe/function+offset"
-Message-ID: <YOsEysoNkEOgEny2@krava>
-References: <20210707214751.159713-1-jolsa@kernel.org>
- <20210707214751.159713-7-jolsa@kernel.org>
- <CAEf4BzbBk+0OHawjkCQdr2PNntEnfU-uov0fr=hk7jYokNrSDA@mail.gmail.com>
+        id S234241AbhGKPCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 11:02:01 -0400
+Received: from out07.smtpout.orange.fr ([193.252.22.91]:53854 "EHLO
+        out.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234200AbhGKPB7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 11:01:59 -0400
+X-Greylist: delayed 451 seconds by postgrey-1.27 at vger.kernel.org; Sun, 11 Jul 2021 11:01:59 EDT
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d67 with ME
+        id Tqrb2500921Fzsu03qrbGm; Sun, 11 Jul 2021 16:51:39 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 11 Jul 2021 16:51:39 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     m.chetan.kumar@intel.com, linuxwwan@intel.com,
+        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: wwan: iosm: switch from 'pci_' to 'dma_' API
+Date:   Sun, 11 Jul 2021 16:51:33 +0200
+Message-Id: <dd34ecd3c8afe5a9a29e026035a4a11c63e033ae.1626014972.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbBk+0OHawjkCQdr2PNntEnfU-uov0fr=hk7jYokNrSDA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 05:14:20PM -0700, Andrii Nakryiko wrote:
-> On Wed, Jul 7, 2021 at 2:54 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > From: Alan Maguire <alan.maguire@oracle.com>
-> >
-> > kprobes can be placed on most instructions in a function, not
-> > just entry, and ftrace and bpftrace support the function+offset
-> > notification for probe placement.  Adding parsing of func_name
-> > into func+offset to bpf_program__attach_kprobe() allows the
-> > user to specify
-> >
-> > SEC("kprobe/bpf_fentry_test5+0x6")
-> >
-> > ...for example, and the offset can be passed to perf_event_open_probe()
-> > to support kprobe attachment.
-> >
-> > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 20 +++++++++++++++++---
-> >  1 file changed, 17 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 1e04ce724240..60c9e3e77684 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -10309,11 +10309,25 @@ struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
-> >                                             const char *func_name)
-> 
-> I think we should add bpf_program__attach_kprobe_opts instead for the
-> programmatic API instead of parsing it here from func_name. It's a
-> cumbersome API.
-> 
-> Parsing SEC() is fine, of course, but then it has to call into
-> bpf_program__attach_kprobe_opts() internally.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-ok, Alan, will you make the change, or should I do that?
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-thanks,
-jirka
+When memory is allocated in 'ipc_protocol_init()' GFP_KERNEL can be used
+because this flag is already used a few lines above and no lock is
+acquired in the between.
 
-> 
-> >  {
-> >         char errmsg[STRERR_BUFSIZE];
-> > +       char func[BPF_OBJ_NAME_LEN];
-> > +       unsigned long offset = 0;
-> >         struct bpf_link *link;
-> > -       int pfd, err;
-> > +       int pfd, err, n;
-> > +
-> > +       n = sscanf(func_name, "%[a-zA-Z0-9_.]+%lx", func, &offset);
-> > +       if (n < 1) {
-> > +               err = -EINVAL;
-> > +               pr_warn("kprobe name is invalid: %s\n", func_name);
-> > +               return libbpf_err_ptr(err);
-> > +       }
-> > +       if (retprobe && offset != 0) {
-> > +               err = -EINVAL;
-> > +               pr_warn("kretprobes do not support offset specification\n");
-> > +               return libbpf_err_ptr(err);
-> > +       }
-> >
-> > -       pfd = perf_event_open_probe(false /* uprobe */, retprobe, func_name,
-> > -                                   0 /* offset */, -1 /* pid */);
-> > +       pfd = perf_event_open_probe(false /* uprobe */, retprobe, func,
-> > +                                   offset, -1 /* pid */);
-> >         if (pfd < 0) {
-> >                 pr_warn("prog '%s': failed to create %s '%s' perf event: %s\n",
-> >                         prog->name, retprobe ? "kretprobe" : "kprobe", func_name,
-> > --
-> > 2.31.1
-> >
-> 
+When memory is allocated in 'ipc_protocol_msg_prepipe_open()' GFP_ATOMIC
+should be used because this flag is already used a few lines above.
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+
+When memory is allocated in 'ipc_protocol_msg_prepipe_open()', I think
+that GFP_KERNEL could be used, but I've not dug enough to be sure. So,
+better safe that sorry.
+---
+ drivers/net/wwan/iosm/iosm_ipc_protocol.c     | 10 +++++-----
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c | 13 ++++++-------
+ 2 files changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol.c b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
+index 834d8b146a94..63fc7012f09f 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol.c
+@@ -239,9 +239,9 @@ struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem)
+ 	ipc_protocol->old_msg_tail = 0;
+ 
+ 	ipc_protocol->p_ap_shm =
+-		pci_alloc_consistent(ipc_protocol->pcie->pci,
+-				     sizeof(*ipc_protocol->p_ap_shm),
+-				     &ipc_protocol->phy_ap_shm);
++		dma_alloc_coherent(&ipc_protocol->pcie->pci->dev,
++				   sizeof(*ipc_protocol->p_ap_shm),
++				   &ipc_protocol->phy_ap_shm, GFP_KERNEL);
+ 
+ 	if (!ipc_protocol->p_ap_shm) {
+ 		dev_err(ipc_protocol->dev, "pci shm alloc error");
+@@ -275,8 +275,8 @@ struct iosm_protocol *ipc_protocol_init(struct iosm_imem *ipc_imem)
+ 
+ void ipc_protocol_deinit(struct iosm_protocol *proto)
+ {
+-	pci_free_consistent(proto->pcie->pci, sizeof(*proto->p_ap_shm),
+-			    proto->p_ap_shm, proto->phy_ap_shm);
++	dma_free_coherent(&proto->pcie->pci->dev, sizeof(*proto->p_ap_shm),
++			  proto->p_ap_shm, proto->phy_ap_shm);
+ 
+ 	ipc_pm_deinit(proto);
+ 	kfree(proto);
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+index 91109e27efd3..a53ad97abb98 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+@@ -74,9 +74,9 @@ static int ipc_protocol_msg_prepipe_open(struct iosm_protocol *ipc_protocol,
+ 		return -ENOMEM;
+ 
+ 	/* Allocate the transfer descriptors for the pipe. */
+-	tdr = pci_alloc_consistent(ipc_protocol->pcie->pci,
+-				   pipe->nr_of_entries * sizeof(*tdr),
+-				   &pipe->phy_tdr_start);
++	tdr = dma_alloc_coherent(&ipc_protocol->pcie->pci->dev,
++				 pipe->nr_of_entries * sizeof(*tdr),
++				 &pipe->phy_tdr_start, GFP_ATOMIC);
+ 	if (!tdr) {
+ 		kfree(skbr);
+ 		dev_err(ipc_protocol->dev, "tdr alloc error");
+@@ -492,10 +492,9 @@ void ipc_protocol_pipe_cleanup(struct iosm_protocol *ipc_protocol,
+ 
+ 	/* Free and reset the td and skbuf circular buffers. kfree is save! */
+ 	if (pipe->tdr_start) {
+-		pci_free_consistent(ipc_protocol->pcie->pci,
+-				    sizeof(*pipe->tdr_start) *
+-					    pipe->nr_of_entries,
+-				    pipe->tdr_start, pipe->phy_tdr_start);
++		dma_free_coherent(&ipc_protocol->pcie->pci->dev,
++				  sizeof(*pipe->tdr_start) * pipe->nr_of_entries,
++				  pipe->tdr_start, pipe->phy_tdr_start);
+ 
+ 		pipe->tdr_start = NULL;
+ 	}
+-- 
+2.30.2
 
