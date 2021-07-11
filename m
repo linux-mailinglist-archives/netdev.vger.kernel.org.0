@@ -2,58 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3F43C3C6C
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 14:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D8A3C3CBE
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 15:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232789AbhGKMlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 08:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbhGKMlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 08:41:20 -0400
-Received: from mail-ua1-x930.google.com (mail-ua1-x930.google.com [IPv6:2607:f8b0:4864:20::930])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E17C0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 05:38:32 -0700 (PDT)
-Received: by mail-ua1-x930.google.com with SMTP id 109so1500788uar.10
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 05:38:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=fW1OWJwWcEbw1rZlxfp/mGRibfFSmzVLOGGMy0QSBFxnAXSuMrItRwE3DrPKS492AM
-         af9w7ezumA0ZdI6BK62etd2Xnwa0Jg4MtzyrwKIUFuyEdWovNUo8RrCiNVh95cKFc4LE
-         X8ZN3t+mko1X5PfB9rDR7KZgTgBBuU5NMbTfVXpx3jlMMTjUEDjOmGoNX6hsOsHWbPqZ
-         VaWzTRm+pQwatglLsUCqrGTmFciXIWT7ehRBV8s9+hJLOa2rZP1HTvaP4u3mFa1BwiC1
-         KaohwS7fTdRmR0QRf45JBNMiiVgg0iv007FzM9BRaTDOvENIIBKFBUk62yA4wHtWoU4m
-         3OgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        b=ia2zuB76H/RasOng/6b+RLYR28m3Q4CJ32iiHaZGEVJIotcTJxSnJiNfxP2bKC/UpO
-         EIg8u2OYqy1KrU4DXOqT0yWwKOQdQxe9dd+In88atfu7kfob19ODzc+nF9syZgy9fyI2
-         034/HLfJ2GSaikNoolnL5FPA8x9ay9QzNpMMawncp0RlHQmKUvCirVMmHTxWief4GKer
-         kTMxYwMQx0RSt3nmd4hq755l6icYMM2meEzeCrXV0wZ6T6k458kGWWzssUemk7FltKu6
-         R98b+wYmIV6TfY1Kz1j0sg0aBsdJMbaPjJEmh5nIG8GZVNFIGjRvcqX21skoqRR9HqPZ
-         jpzA==
-X-Gm-Message-State: AOAM532HymYwG8R+FFjluhW7yUIYxopR+HAyvG9hrK9ssc1+IHwdygV9
-        W2uNfd5XsQbARf5XGlPoHrgPQv/L65GHfKZfP48=
-X-Google-Smtp-Source: ABdhPJxPjBw6ifLZ08LjDB0JBZPSrVI30aeNnVmsE5KctjfMPrlls3Yvmk5MiAy0CH1Z2NACTuumjlfnBFnPDcRpwEY=
-X-Received: by 2002:a9f:326c:: with SMTP id y41mr34409848uad.52.1626007111831;
- Sun, 11 Jul 2021 05:38:31 -0700 (PDT)
+        id S232756AbhGKNM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 09:12:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231658AbhGKNM3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Jul 2021 09:12:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6B3C0610A7;
+        Sun, 11 Jul 2021 13:09:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626008982;
+        bh=CPopi/6VucVgtuP6wNJQWL88ep64+0x8+PQZEG4nrlM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z0QVRGlhNTyby5GNHh5xnFrSNptr7YAdg4xWNqt8F5VDHVK5pFuJZROIxYgXj7j+w
+         fvhjuZTdOvuBTybXKrh/q1TDJA3VCBW36v5YPND7/5XK2JtjOqRgnaUXWcqKtNVvnO
+         pVdJj+37gFbuah6akbdgh9fYBqpKWGWaSeSadrUrY0HsL64yIUVUE5wQFGePK0SeLW
+         CDjfOlsrEnhOUCNPmHY+VudNammKdt1QFFlb0EBZrMNN/fjmP6RbLzOAj8Pb8t248C
+         O+Ga38FmXKxYWrB7zODjyhLy3ebpt1WPY6BkjAOrAaHQdUMNbR4ECXVY7gapYmfrQu
+         OoW/B+mS0hjfA==
+Date:   Sun, 11 Jul 2021 15:09:36 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v4 11/16] net: phy: marvell10g: add separate
+ structure for 88X3340
+Message-ID: <20210711150936.776497a3@thinkpad>
+In-Reply-To: <CAFnufp3CokRFn5zfsWgJdZTE2TrHPtqjpPJnBxhDXowUQfxLwQ@mail.gmail.com>
+References: <20210407202254.29417-1-kabel@kernel.org>
+        <20210407202254.29417-12-kabel@kernel.org>
+        <CAFnufp3CokRFn5zfsWgJdZTE2TrHPtqjpPJnBxhDXowUQfxLwQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Received: by 2002:a67:af14:0:0:0:0:0 with HTTP; Sun, 11 Jul 2021 05:38:31
- -0700 (PDT)
-Reply-To: info.cherrykona@gmail.com
-From:   Cherry kona <tonyelumelu67@gmail.com>
-Date:   Sun, 11 Jul 2021 05:38:31 -0700
-Message-ID: <CAAVnhxL4=5WENS_unin8sir4Do2JTwnpZyaJxG8exXPez5RtaA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 10 Jul 2021 18:12:24 +0200
+Matteo Croce <mcroce@linux.microsoft.com> wrote:
 
+> On Wed, Apr 7, 2021 at 10:24 PM Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> >
+> > The 88X3340 contains 4 cores similar to 88X3310, but there is a
+> > difference: it does not support xaui host mode. Instead the
+> > corresponding MACTYPE means
+> >   rxaui / 5gbase-r / 2500base-x / sgmii without AN
+> >
+> > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
+> > --- =20
+>=20
+> Hi,
+>=20
+> this breaks the 10G ports on my MacchiatoBIN.
+> No packets can be received with this commit in, but booting an old
+> kernel and rebooting into net-next fixes it until the next power
+> cycle.
+>=20
+> I tried to revert it and the 10G ports now works again, even after a cold=
+ boot.
+>=20
+> Regards,
+
+Will look into this and send a fix.
+Marek
