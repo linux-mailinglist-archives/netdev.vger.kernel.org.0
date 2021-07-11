@@ -2,161 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD193C3AA9
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 07:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 986E83C3B63
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 11:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229800AbhGKFDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 01:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
+        id S232038AbhGKKAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 06:00:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbhGKFDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 01:03:04 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1DAC0613DD
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 22:00:17 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id y17so14482142pgf.12
-        for <netdev@vger.kernel.org>; Sat, 10 Jul 2021 22:00:17 -0700 (PDT)
+        with ESMTP id S231857AbhGKKAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 06:00:49 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8763C0613E5
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 02:58:02 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id a5-20020a7bc1c50000b02901e3bbe0939bso9278717wmj.0
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 02:58:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PL2ex365BMFyW6fegRkrYN1g3SJvnpB5LLT+JuMQvCE=;
-        b=Kv0rUKwK0xgWgitPZ3znLrZreyRtX2pVQFtuEab+HaRvEEwdFnLRTRIoqCTJk0yfFZ
-         X+4x0ObwZbhz6/k6TG2C+l/WTuCaul3nI2wBjJGQfh8n3TEo+RmC4l8hcOUCG+49bjr1
-         NPf1pxhy92G0CIQNpXjTsNhCkRgv39Q4Li8hw4vn8SZBpiqb0VM99G2T0SFLK8CaLAod
-         pecT3R2/+KtqIqy1pL5O80dNPilUHe95L3VhKRaq+X5EhR3zRMfzjl3hI3u0N2Lw+45d
-         XvZsLAkDsHXdBNPBoLZuFI8rJ+W3CQSen2V0HIpaBR5x2gV3sj3v2vv/YH6d8uP3DIc/
-         l9GA==
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=56+H0JW/2Pf8Zd1MqwXSgnDI7f6wt6P7h2rgDhNLDzw=;
+        b=2SWIhAmM/X3Wr1qK+Dv/WefXxS8j/OeK/rYdidcI2C8scWZphuHeyX+27t7ecpw0Yy
+         IhDrog9fyOANod3Ks0XB7rUyIRphlclCh+nttWNI0WvJRwJA6CWT2Cv5eqCcr8jPu/P9
+         ApimnWJ9MaqywU7Afg3cl3NxCXM4zsIaMmxfjY0aLBZTGt0ZL7XsFR1s0w5bJgLK0h5A
+         hNOCCqOl7xDNa+BBrsFu9Rh+PvCkiN1u0mEZIdbJ1F2h1kRC9Tbb1JHWRQbVTa0EBZSe
+         Y/w79cyZp7Jkxzz+T8ZkhltkXa6TIPMYIwvGQZxg37W6YjgAgG0xhzwQ8eQVHu479Te8
+         h83Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PL2ex365BMFyW6fegRkrYN1g3SJvnpB5LLT+JuMQvCE=;
-        b=PfQt0xePjjhrwEWcA6TTSK2u7zat2L4HEpe4xIPtdtNn8DjyHbWobk+2O9nvb6QUGt
-         vlfpsWNHNOLhrfRjI7R8iR8tLxg1ycEzMGh3a1m1WObuYRxMFgLYrK2aspYekJxiiw73
-         qvViQU8wah13onY4s1AebMeMY6HOHN/Htqtmbvwr6JZDtjIVFXz+alfRRCctvqzhc1oR
-         UbrvvK7HMwzbXcACU5wrytHcA8wy1mbznad4vC46WPwI/7Bf2+milzwV/wNzApcMTEcZ
-         +k4nEcAXs5iXpWuPSuqTp9S6ukkLABxS60v+kFzy77J81T3iu8BX0mqNOHFy3FBqrd1H
-         X9Zw==
-X-Gm-Message-State: AOAM532963r20nN584dOMdgNh6BaSsxV6efsNW7iHkHR04ZXj+CGfAgJ
-        siWk2YJlSqPDCGHSgdmKnnQ=
-X-Google-Smtp-Source: ABdhPJxSsuM+DUqln7Rx2HE8rZf6PGNRmMo5tl0lglCQrLIYV8hsiyuxdyVLt/FPumnzQece4TcKhw==
-X-Received: by 2002:a05:6a00:b42:b029:31c:abd1:53ec with SMTP id p2-20020a056a000b42b029031cabd153ecmr39702662pfo.45.1625979616663;
-        Sat, 10 Jul 2021 22:00:16 -0700 (PDT)
-Received: from localhost.localdomain ([111.204.182.99])
-        by smtp.gmail.com with ESMTPSA id u37sm11147448pfg.140.2021.07.10.22.00.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 10 Jul 2021 22:00:16 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     xiyou.wangcong@gmail.com, jhs@mojatatu.com
-Cc:     netdev@vger.kernel.org, Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [net-next 2/2] qdisc: add tracepoint qdisc:qdisc_requeue for requeued SKBs
-Date:   Sun, 11 Jul 2021 13:00:07 +0800
-Message-Id: <20210711050007.1200-2-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
-References: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=56+H0JW/2Pf8Zd1MqwXSgnDI7f6wt6P7h2rgDhNLDzw=;
+        b=mJs4jamwxWJVLRl/dxNF/WMxzyVmW/xNW1SooZPkmL6C/PbNe25nAv+gBO/2CH0EAn
+         LlsDZOfGj9bYyGpnHRZQskPyo/QaXltciqZ5RvZrK9AmMDaAvTyQ+QpMoWY+k80dK6z9
+         cRDmu4zS8JewwdnnhnarhmJJaaQw3dSB5uyROgAWfn0D6OcxhUMmffgsKMVXcklzRY/O
+         NTGcYiAgAexAX4Vf756DflIe0ReJwr/IjKjjtUydkYpMDJdBS+kVvTrwxm4Sf0LVJKLN
+         1NPh6blUOKPNb+2Ad9Y+t0KjBkQOCghov2LHRxyWNyuIylRyTUc2HblwRkHG5qbZv69r
+         lofg==
+X-Gm-Message-State: AOAM533VEh2PkgDAcnY4yn7PZOIuRiCbys+Z2nxNwfno64wRclDcHthv
+        16dhOowjHSN16H02WA58o9lJdKz5SmReB2PsOrc=
+X-Google-Smtp-Source: ABdhPJwSBLwReyDtz2OpqQaw1MV+mnyo5FLW9+AhuJbYvT3hwZIIOotUastfEa+IUTAVKxBKFekZaA==
+X-Received: by 2002:a1c:1bd4:: with SMTP id b203mr8725783wmb.171.1625997481209;
+        Sun, 11 Jul 2021 02:58:01 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id m18sm9095567wmq.45.2021.07.11.02.58.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Jul 2021 02:58:00 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     stable@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net 0/2] net: bridge: multicast: fix automatic router port marking races
+Date:   Sun, 11 Jul 2021 12:56:27 +0300
+Message-Id: <20210711095629.2986949-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-The main purpose of this tracepoint is to monitor what,
-how many and why packets were requeued. The txq_state can
-be used for determining the reason for packets requeued.
+Hi,
+While working on per-vlan multicast snooping I found two race conditions
+when multicast snooping is enabled. They're identical and happen when
+the router port list is modified without the multicast lock. One requires
+a PIM hello message to be received on a port and the other an MRD
+advertisement. To fix them we just need to take the multicast_lock when
+adding the ports to the router port list (marking them as router ports).
+Tested on an affected setup by generating the required packets while
+modifying the port list in parallel.
 
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- include/trace/events/qdisc.h | 32 ++++++++++++++++++++++++++++++++
- net/sched/sch_generic.c      |  8 +++++---
- 2 files changed, 37 insertions(+), 3 deletions(-)
+Thanks,
+ Nik
 
-diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
-index b0e76237bb74..c6187a8fc103 100644
---- a/include/trace/events/qdisc.h
-+++ b/include/trace/events/qdisc.h
-@@ -78,6 +78,38 @@ TRACE_EVENT(qdisc_dequeue,
- 		  __entry->txq_state, __entry->packets, __entry->skbaddr )
- );
- 
-+TRACE_EVENT(qdisc_requeue,
-+
-+	TP_PROTO(struct sk_buff *skb, struct Qdisc *qdisc,
-+		 const struct netdev_queue *txq),
-+
-+	TP_ARGS(skb, qdisc, txq),
-+
-+	TP_STRUCT__entry(
-+		__field(	struct Qdisc *,		qdisc	)
-+		__field(const	struct netdev_queue *,	txq	)
-+		__field(	void *,			skbaddr	)
-+		__field(	int,			ifindex	)
-+		__field(	u32,			handle	)
-+		__field(	u32,			parent	)
-+		__field(	unsigned long,		txq_state)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->qdisc		= qdisc;
-+		__entry->txq		= txq;
-+		__entry->skbaddr	= skb;
-+		__entry->ifindex	= txq->dev ? txq->dev->ifindex : 0;
-+		__entry->handle		= qdisc->handle;
-+		__entry->parent		= qdisc->parent;
-+		__entry->txq_state	= txq->state;
-+	),
-+
-+	TP_printk("requeue ifindex=%d qdisc handle=0x%X parent=0x%X txq_state=0x%lX skbaddr=%p",
-+		  __entry->ifindex, __entry->handle, __entry->parent,
-+		  __entry->txq_state, __entry->skbaddr)
-+);
-+
- TRACE_EVENT(qdisc_reset,
- 
- 	TP_PROTO(struct Qdisc *q),
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 75605075178f..0701d1e9d221 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -137,7 +137,8 @@ static inline void qdisc_enqueue_skb_bad_txq(struct Qdisc *q,
- 		spin_unlock(lock);
- }
- 
--static inline void dev_requeue_skb(struct sk_buff *skb, struct Qdisc *q)
-+static inline void dev_requeue_skb(struct sk_buff *skb, struct Qdisc *q,
-+				   struct netdev_queue *txq)
- {
- 	spinlock_t *lock = NULL;
- 
-@@ -149,6 +150,7 @@ static inline void dev_requeue_skb(struct sk_buff *skb, struct Qdisc *q)
- 	while (skb) {
- 		struct sk_buff *next = skb->next;
- 
-+		trace_qdisc_requeue(skb, q, txq);
- 		__skb_queue_tail(&q->gso_skb, skb);
- 
- 		/* it's still part of the queue */
-@@ -325,7 +327,7 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
- 		if (root_lock)
- 			spin_lock(root_lock);
- 
--		dev_requeue_skb(skb, q);
-+		dev_requeue_skb(skb, q, txq);
- 		return false;
- 	}
- #endif
-@@ -353,7 +355,7 @@ bool sch_direct_xmit(struct sk_buff *skb, struct Qdisc *q,
- 			net_warn_ratelimited("BUG %s code %d qlen %d\n",
- 					     dev->name, ret, q->q.qlen);
- 
--		dev_requeue_skb(skb, q);
-+		dev_requeue_skb(skb, q, txq);
- 		return false;
- 	}
- 
+Nikolay Aleksandrov (2):
+  net: bridge: multicast: fix PIM hello router port marking race
+  net: bridge: multicast: fix MRD advertisement router port marking race
+
+ net/bridge/br_multicast.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
 -- 
-2.27.0
+2.31.1
 
