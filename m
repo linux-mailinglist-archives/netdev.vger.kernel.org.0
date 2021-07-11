@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 174BF3C3DDF
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 18:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A4A3C3DED
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 18:24:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbhGKQPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 12:15:45 -0400
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:62471 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229688AbhGKQPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 12:15:45 -0400
-IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AGO3MtKBQts1LjwjlHenG55DYdb4zR+YMi2TD?=
- =?us-ascii?q?tnoddfU7SKOlfqyV8sjzqyWZtN95YhhJ8uxoU5PrfZqzz/9I3bU=3D?=
-X-IronPort-AV: E=Sophos;i="5.84,231,1620684000"; 
-   d="scan'208";a="519399375"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Jul 2021 18:12:56 +0200
-Date:   Sun, 11 Jul 2021 18:12:56 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Alexander Lobakin <alobakin@pm.me>
-cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dsa: fix for_each_child.cocci warnings
-Message-ID: <alpine.DEB.2.22.394.2107111810480.13622@hadrien>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        id S230050AbhGKQ0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 12:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229665AbhGKQ0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 12:26:35 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5568C0613DD
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 09:23:47 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id w15-20020a056830144fb02904af2a0d96f3so15802490otp.6
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 09:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=B3CqA+AxSniV0MpzXT5ucyWp/lZXKZaZKilQOTJs1Jo=;
+        b=YjVfbavdkHi0b/6WiHx1EvC2B4i1WpNAmR1d04phBa2u2uAtKHaaiZmHoyKhuZXGpU
+         DFMta0xB1xyMVQ9FSp5Cq2z+9jIh39udr0i3VmifaHa8eLcYSMREvPQohlIHJLTz3k5L
+         JvhqOEFVtnxnqSlsDm0ELSw8cg2MUO3CX8c/C1o0looau9YylpoOnPGtb1eSIfwhbm/N
+         VdGBjKbi1RRp14iNiq8CKig6Xp/3Kr5gMZQE11QWb3n75l8Wt5IhJ+A3gLlYPOvvNGHZ
+         kqkdokN0M1UIEcRCAcdslgePTFKh0oUkPENu68Ze+TeiXF4Cx2+BBIuW7nBWmQmLh7vF
+         g7ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=B3CqA+AxSniV0MpzXT5ucyWp/lZXKZaZKilQOTJs1Jo=;
+        b=T2fpt5dLM/+9/IzrtbpqWL99UJXhRpxmJdOnDLIN5upNiECWUnNYwHQv/NeloBqYMt
+         /eHYwytAYeDIzqq/SLqXdwSPDZZmXFjDvEAu8f00qb3xYn5aFavUx7h+/zloqTl6JuJl
+         RgCk+fB60MUsTaR3w67mhvj9Qaxa/ITa9uhoM9Lz6ANcHoe7vt0j+EH+WkFFnbRuBnzl
+         NicDkJW+3WbQ9tugfxZGcMmETKLmyWIHa4L0hWMmSlBp7MqUj63WoUqaoDRbwS/H3oDI
+         8kEkm8LEHhpoL0oUy7MbSJpsXFF5MSuv5WwwVvFHW3bKdYXHYclDG+FAYEGR0+paPFtw
+         slHw==
+X-Gm-Message-State: AOAM531aNOPGJY02MhBun1qaUNqANDGEP113Uc47GCGRo+Ap1312uwEP
+        5pQmnSihUC9Atg1iO7jlkhE=
+X-Google-Smtp-Source: ABdhPJy/OMO+VhJFVf17vpdzjdgyUBMWAr9dg5kVuF1lqYIk5+aWZdR9K5eMFugpxRXR5UII8ez8Kw==
+X-Received: by 2002:a9d:5f07:: with SMTP id f7mr37334186oti.183.1626020626792;
+        Sun, 11 Jul 2021 09:23:46 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id w26sm2528301oth.75.2021.07.11.09.23.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Jul 2021 09:23:46 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] net: ipv6: introduce
+ ip6_dst_mtu_maybe_forward
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+References: <20210705213617.18317-1-vfedorenko@novek.ru>
+ <20210705213617.18317-2-vfedorenko@novek.ru>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <897c968b-866f-b5c3-7f59-eab0c92f166b@gmail.com>
+Date:   Sun, 11 Jul 2021 10:23:44 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210705213617.18317-2-vfedorenko@novek.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On 7/5/21 3:36 PM, Vadim Fedorenko wrote:
+> Replace ip6_dst_mtu_forward with ip6_dst_mtu_maybe_forward and
+> reuse this code in ip6_mtu. Actually these two functions were
+> almost duplicates, this change will simplify the maintaince of
+> mtu calculation code.
+> 
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> ---
+>  include/net/ip6_route.h            |  5 +++--
+>  net/ipv6/ip6_output.c              |  2 +-
+>  net/ipv6/route.c                   | 20 +-------------------
+>  net/netfilter/nf_flow_table_core.c |  2 +-
+>  4 files changed, 6 insertions(+), 23 deletions(-)
+> 
 
-For_each_available_child_of_node should have of_node_put() before
-return around line 423.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Generated by: scripts/coccinelle/iterators/for_each_child.cocci
 
-CC: Alexander Lobakin <alobakin@pm.me>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
----
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   de5540965853e514a85d3b775e9049deb85a2ff3
-commit: 227d72063fccb2d19b30fb4197fba478514f7d83 dsa: simplify Kconfig symbols and dependencies
-:::::: branch date: 15 hours ago
-:::::: commit date: 4 months ago
-
- ksz_common.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -419,8 +419,10 @@ int ksz_switch_register(struct ksz_devic
- 				if (of_property_read_u32(port, "reg",
- 							 &port_num))
- 					continue;
--				if (!(dev->port_mask & BIT(port_num)))
-+				if (!(dev->port_mask & BIT(port_num))) {
-+					of_node_put(port);
- 					return -EINVAL;
-+				}
- 				of_get_phy_mode(port,
- 						&dev->ports[port_num].interface);
- 			}
