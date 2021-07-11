@@ -2,80 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57DC73C3EBF
-	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 20:26:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FCA83C3EC3
+	for <lists+netdev@lfdr.de>; Sun, 11 Jul 2021 20:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235734AbhGKS1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 14:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
+        id S235716AbhGKSfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 14:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235375AbhGKS1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 14:27:52 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B8CC0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 11:25:05 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id y17so15710864pgf.12
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 11:25:05 -0700 (PDT)
+        with ESMTP id S231277AbhGKSfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 14:35:34 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2672AC0613DD
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 11:32:46 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id e1-20020a9d63c10000b02904b8b87ecc43so2163884otl.4
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 11:32:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xoFzYg5h5QNv4Vsky+W5HTQZHAEgpoKAh+4KonLxFAU=;
-        b=jdkJ7bcOvuMxNGZ7PGb8zEdqLuCQlKMbSo7RFaTlTR4CiNMBtPW5VBfqYUsrRshK7+
-         ZVtgPuxR4idJZh9P3wahwqNLfMcD/WKQ9jw8yTfEDHHgr8KZEJk7rnQHds5He2mCsffh
-         C65tRKM2sKN5mXxCMt5Db5Pi96qULTBVpoV3FqWXbhk+DxuAHYg+thdt1nwFZNLPAduQ
-         UNkFetntFhKUssMIzVYPLGvMQ4/npYjRF8yxnTZhuivFM9JnkMKe4aMG+NQC4YYMdSBV
-         G6rgntyu5u08QvhE9Ije06zUKW6Z74xo/2ID4/jY3nVEt4c+K1ULPzQLT0ph2yK4Xrs1
-         PyVg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rg9L3Dk0joAl/Y4W8CAVXRIHURFOXJ22e73C4jmmn+Q=;
+        b=aHyaSCzrNoVtOp5+bkZjRuiaxLs1HrsTpJxw3rvZ0n/vD3Fg2RU0eSRVI/heBVCWXc
+         zBAFn+mzhJhrPoxjTi4G76orIQ+fX+MLbaLtEgkwqTy81VVF3qHdwfnTU9xmCQuS5ILW
+         Og4PPuriP7UiSMRGss0BZBmvGCHVXv2CeBXvBrbHjhJKMulyi4l/z3BHw6CCiWoH+P4p
+         sfVzTatHgs81ibP38aPTLnXY5s2We4ecNyNHF6iT2x0NAwiGF+5cPMP68wHeB3DnLnRb
+         x452RKilpeL8ljFvPnMSX13cKNgc2Hz4ieRPFipvYwcnNtwxcDA91AQGnR9qCcJbiOyj
+         09nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xoFzYg5h5QNv4Vsky+W5HTQZHAEgpoKAh+4KonLxFAU=;
-        b=h4dUflIrMpYja9mqxSTRC0aQMHdLr5p1xMdSIEgHdE+DWL1lHHI+6Y4GS4vk5RDmRp
-         3Gd3w9tger7JZ7iA5MFxqpqwAb3p0MpWAdK9Qh52lz+avQzeZyJtIAFUV63uygML9Zxz
-         J6+u1ZYW34YuRrklJdpoes8ncO8lRH76QAJv5ZKp8UogkBcG3cXVdkwhJdMQpHCvVsHg
-         Wf3fz7bYWYzKeW6hP2cPw547i/U5lK96RQufZjj1D4U6A0hoFMlPG5aLz36UjL78001Q
-         64ajTRtgx7V9cLYRiFq/ZlTymZFbizINbYsaFTjepSR71VUCEtmVHnf9Ic52R93pHSsS
-         rVxQ==
-X-Gm-Message-State: AOAM532HAeQ6Tuu2EtZIBfNhHfZLMm5Aklnd0EI75L2TNaUy2HprXMTG
-        LOPs6b4ebUvS5ypkRawd7uJ6/UxT/mi0DTgdXGM=
-X-Google-Smtp-Source: ABdhPJyJEYL8dleFCH3CUNh9idB9bFZrTjg3NjoVzbupJL9xgkEZJHToP9j/onQqcVnFQfouBUfNZaZpO5pPHxtbfAg=
-X-Received: by 2002:a63:4302:: with SMTP id q2mr49178855pga.428.1626027904965;
- Sun, 11 Jul 2021 11:25:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
-In-Reply-To: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rg9L3Dk0joAl/Y4W8CAVXRIHURFOXJ22e73C4jmmn+Q=;
+        b=SNUYncyAYjnyJ9vhrJffiW91uYZC1A2soaKpjtmq+VmRLnF2nXQLWKCIOYfSs7QDTn
+         zQ+S/D+htl0TtzID9r7xSn1JyLoFurLI5mYx3lH9xMk/kFWvP/oX1e+IZRK8iNEsUqBw
+         qVpinYDeQzx3sV+DSfdWA4AcCMmY5b9h7J+f3xOxVfSTGVwpXRcGsJx0STmDB187Yjlt
+         tgRuX47Y+6C4jL5QmYizydX6QeJPgXkk9ru6kfBfTjYl3D4K7ot5GUsWh5cyD98bxTfc
+         cNIRLAQLF0m14lkLWcqgK9s+BzDvqftW1BqIsuZrwb1sEq77VG4FvpGAIalozEWouYrw
+         9QHQ==
+X-Gm-Message-State: AOAM533Mr99dBrStUCzTm238iYzciUlJLeBM2p13M3IoOatA5csLVDSg
+        ZRV7xiBa+HstE1j2POTMCqEtBxkKaMw=
+X-Google-Smtp-Source: ABdhPJz21L2vPSerHarNIdSIJ2Mt6OwIeiphZsKUCqOvgkdk+rdLAlQa+VLsbBUgHE/9IBjwEhSKqg==
+X-Received: by 2002:a9d:5381:: with SMTP id w1mr37468167otg.259.1626028365319;
+        Sun, 11 Jul 2021 11:32:45 -0700 (PDT)
+Received: from unknown.attlocal.net (76-217-55-94.lightspeed.sntcca.sbcglobal.net. [76.217.55.94])
+        by smtp.gmail.com with ESMTPSA id o1sm2648675oik.19.2021.07.11.11.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Jul 2021 11:32:44 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 11 Jul 2021 11:24:54 -0700
-Message-ID: <CAM_iQpVewx4pDv7BHX0Tf_8px11R31H4jKpLQ+APT3YYcEr=YA@mail.gmail.com>
-Subject: Re: [net-next 1/2] qdisc: add tracepoint qdisc:qdisc_enqueue for
- enqueued SKBs
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     netdev@vger.kernel.org
+Cc:     Qitao Xu <qitao.xu@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch net-next v2] net: use %px to print skb address in trace_netif_receive_skb
+Date:   Sun, 11 Jul 2021 11:32:33 -0700
+Message-Id: <20210711183234.7889-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 10, 2021 at 10:00 PM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> This tracepoint can work with qdisc:qdisc_dequeue to measure
-> packets latency in qdisc queue. In some case, for example,
-> if TX queues are stopped or frozen, sch_direct_xmit will invoke
-> the dev_requeue_skb to requeue SKBs to qdisc->gso_skb, that may
-> delay the SKBs in qdisc queue.
->
-> With this patch, we can measure packets latency.
+From: Qitao Xu <qitao.xu@bytedance.com>
 
-Coincidentally, we have a nearly same patch:
-https://marc.info/?l=linux-netdev&m=162580785123913&w=2
+The print format of skb adress in tracepoint class net_dev_template
+is changed to %px from %p, because we want to use skb address
+as a quick way to identify a packet.
 
-Also, '%p' certainly does not work, it produces same address for
-different packets. This is why we changed it to '%px', see:
-https://marc.info/?l=linux-netdev&m=162580784823909&w=2
+Note, trace ring buffer is only accessible to privileged users,
+it is safe to use a real kernel address here.
 
-Thanks.
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
+---
+ include/trace/events/net.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/trace/events/net.h b/include/trace/events/net.h
+index 2399073c3afc..78c448c6ab4c 100644
+--- a/include/trace/events/net.h
++++ b/include/trace/events/net.h
+@@ -136,7 +136,7 @@ DECLARE_EVENT_CLASS(net_dev_template,
+ 		__assign_str(name, skb->dev->name);
+ 	),
+ 
+-	TP_printk("dev=%s skbaddr=%p len=%u",
++	TP_printk("dev=%s skbaddr=%px len=%u",
+ 		__get_str(name), __entry->skbaddr, __entry->len)
+ )
+ 
+-- 
+2.27.0
+
