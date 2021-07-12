@@ -2,83 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2067A3C5D51
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 15:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 386C93C5D5C
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 15:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232868AbhGLNgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 09:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbhGLNgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 09:36:52 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0E3C0613DD;
-        Mon, 12 Jul 2021 06:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=nFGGuHlvEXY4zdDRoyLf+swK2e480mjKXj4i1cAvTZ8=; b=eFFK3GxXel8RRkjH2Ov1oEsu6
-        j9/cjSGdfXF1AsdV4R7XmXPTWgpnILTlEHPGEnovl+xttb9BZt9UKXNm2udHXS5B4dmOs4x+Q/a/w
-        TCnabhaXv7qJxwZ4QzM5RVARhX1VWPZ8wXyIOB0wIkOkSQM3EzDRbNO5wTx6m57EsdHYfsMmxOcyv
-        tMZDcl3wQJudJTLXC7Ni2gKUjrLOW0hd21tLgx8pbm/QJG3QUaDAwoWxWzn54TnbVmabqmYez84hr
-        6qLgHjQMx7C3mB4yItOnXTgyo5spSXiEZU+SitscoWAwtIVuBt4Qzkdw7O9Ap1st2mCiqYwnuPsJm
-        GJlfIsYdw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46016)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1m2w4P-0004oI-4l; Mon, 12 Jul 2021 14:34:01 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1m2w4N-0007o3-02; Mon, 12 Jul 2021 14:33:59 +0100
-Date:   Mon, 12 Jul 2021 14:33:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     alexandru.tachici@analog.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org
-Subject: Re: [PATCH v2 0/7] net: phy: adin1100: Add initial support for
- ADIN1100 industrial PHY
-Message-ID: <20210712133358.GD22278@shell.armlinux.org.uk>
-References: <20210712130631.38153-1-alexandru.tachici@analog.com>
+        id S234255AbhGLNh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 09:37:57 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:59298
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234153AbhGLNh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 09:37:56 -0400
+Received: from localhost (1.general.khfeng.us.vpn [10.172.68.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id F408D40325;
+        Mon, 12 Jul 2021 13:35:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626096906;
+        bh=wPRu7NWwQMf97Gb7KzQ3v7mTH8FGJGWMqE4KG+HRscU=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=XAUDQllqtT1gHhlA5AA5BuokS6u5KXIfbqPUePiJ1t1LkPdfuGXAUBcc9EvuLSHUw
+         ln05CWNoQJurvJLtXz0vU/JcJiZR7S1is/a56bqfj8+HNvYoB+EKvAq507lAUofU5c
+         AqXuvMeS53Rek83L3KL5z+zjqQAVslQTSM8K/6IET2awfb7Z6tfcbtVWTOd/1+r7ot
+         EgcgvuMwlu1gX45QP1upLVV7oPaj7D4yGAuvoR3Q5gpuDUDm11r3hLvlSaavnF0J4b
+         kVYPJmESb3kz34S0OEctMJkf7tK1ORnKTNvMx5ChjjpF8NPa+zqltwSoA/Th6TfSIG
+         XVcK2etrEsVWg==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
+Cc:     acelan.kao@canonical.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 1/3] e1000e: Separate TGP from SPT
+Date:   Mon, 12 Jul 2021 21:34:57 +0800
+Message-Id: <20210712133500.1126371-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210712130631.38153-1-alexandru.tachici@analog.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 04:06:24PM +0300, alexandru.tachici@analog.com wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
-> 
-> The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
-> industrial Ethernet applications and is compliant with the IEEE 802.3cg
-> Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
-> 
-> Ethtool output:
->         Settings for eth1:
->         Supported ports: [ TP	 MII ]
->         Supported link modes:   10baseT1L/Full
->                                 2400mv
->                                 1000mv
+Separate TGP from SPT so we can apply specific quirks to TGP.
 
-The SI unit of voltage is V not v, so milli-volts is mV not mv. Surely,
-at the very least, we should be using the SI designation in user
-visible strings?
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/e1000e/e1000.h   |  4 +++-
+ drivers/net/ethernet/intel/e1000e/ich8lan.c | 20 ++++++++++++++++++++
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 13 +++++++------
+ 3 files changed, 30 insertions(+), 7 deletions(-)
 
-It may also be worth providing a brief description of 10BASE-T1L in the
-cover letter so (e.g.) one doesn't have to look up the fact that the
-voltage level is negotiated via bit 13 of the base page. I've found
-that by searching google and finding dp83td510e.pdf
-
-Thanks.
-
+diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
+index 5b2143f4b1f8..3178efd98006 100644
+--- a/drivers/net/ethernet/intel/e1000e/e1000.h
++++ b/drivers/net/ethernet/intel/e1000e/e1000.h
+@@ -113,7 +113,8 @@ enum e1000_boards {
+ 	board_pch2lan,
+ 	board_pch_lpt,
+ 	board_pch_spt,
+-	board_pch_cnp
++	board_pch_cnp,
++	board_pch_tgp
+ };
+ 
+ struct e1000_ps_page {
+@@ -499,6 +500,7 @@ extern const struct e1000_info e1000_pch2_info;
+ extern const struct e1000_info e1000_pch_lpt_info;
+ extern const struct e1000_info e1000_pch_spt_info;
+ extern const struct e1000_info e1000_pch_cnp_info;
++extern const struct e1000_info e1000_pch_tgp_info;
+ extern const struct e1000_info e1000_es2_info;
+ 
+ void e1000e_ptp_init(struct e1000_adapter *adapter);
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index cf7b3887da1d..654dbe798e55 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -5967,3 +5967,23 @@ const struct e1000_info e1000_pch_cnp_info = {
+ 	.phy_ops		= &ich8_phy_ops,
+ 	.nvm_ops		= &spt_nvm_ops,
+ };
++
++const struct e1000_info e1000_pch_tgp_info = {
++	.mac			= e1000_pch_tgp,
++	.flags			= FLAG_IS_ICH
++				  | FLAG_HAS_WOL
++				  | FLAG_HAS_HW_TIMESTAMP
++				  | FLAG_HAS_CTRLEXT_ON_LOAD
++				  | FLAG_HAS_AMT
++				  | FLAG_HAS_FLASH
++				  | FLAG_HAS_JUMBO_FRAMES
++				  | FLAG_APME_IN_WUC,
++	.flags2			= FLAG2_HAS_PHY_STATS
++				  | FLAG2_HAS_EEE,
++	.pba			= 26,
++	.max_hw_frame_size	= 9022,
++	.get_variants		= e1000_get_variants_ich8lan,
++	.mac_ops		= &ich8_mac_ops,
++	.phy_ops		= &ich8_phy_ops,
++	.nvm_ops		= &spt_nvm_ops,
++};
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index d150dade06cf..5835d6cf2f51 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -51,6 +51,7 @@ static const struct e1000_info *e1000_info_tbl[] = {
+ 	[board_pch_lpt]		= &e1000_pch_lpt_info,
+ 	[board_pch_spt]		= &e1000_pch_spt_info,
+ 	[board_pch_cnp]		= &e1000_pch_cnp_info,
++	[board_pch_tgp]		= &e1000_pch_tgp_info,
+ };
+ 
+ struct e1000_reg_info {
+@@ -7843,12 +7844,12 @@ static const struct pci_device_id e1000_pci_tbl[] = {
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V11), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_LM12), board_pch_spt },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V12), board_pch_spt },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM13), board_pch_cnp },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V13), board_pch_cnp },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM14), board_pch_cnp },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_cnp },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_cnp },
+-	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM13), board_pch_tgp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V13), board_pch_tgp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM14), board_pch_tgp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_tgp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_tgp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_tgp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_cnp },
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.31.1
+
