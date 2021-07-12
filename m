@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAEED3C41F5
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 05:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF993C41FF
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 05:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232912AbhGLDhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 23:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44982 "EHLO
+        id S233321AbhGLDi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 23:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231981AbhGLDhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 23:37:32 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA56C0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 20:34:44 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id d9-20020a17090ae289b0290172f971883bso11344317pjz.1
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 20:34:44 -0700 (PDT)
+        with ESMTP id S229998AbhGLDi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 23:38:59 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8373AC0613DD
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 20:36:10 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id hr1so31703837ejc.1
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 20:36:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yyP/maQwxXT8Ltx2k6ZQ9I0pl6K2MppXwz13RerjOB8=;
-        b=tIqw35n5bi64uOKYa4YfynA9jlHN0VCo3wIDMS+CpMoMnQLsCJPZjpMBziSvUn5Ic7
-         AcAuce39bU5qgxF4LQBNbuiUdy155aO2Wt+hi2aypHIXuV9X95ysITtp2Tjep1NGrN4s
-         RXVHAFwWvqs8ZecHh7nhjFugt/fxr+n0XuNAb6xWNsVxHqUddTS1G4PDIJ4Jiy/l2Dz2
-         Ma+17vqfwLFfaMSohcV9SyvzCXB9qwIv0akCXCpMoWcloYZsdNOKkmYsDdY1V5BQZoe+
-         Rx3nZ2dcaeZBAD/hocnmUzvhb/tdQtjH9Plqk8s+RWEnYVy2TQ8kS5bbz7WouwiIYP89
-         SQqA==
+        bh=a654pq7T0O/qrfgJ5BzV4SlCfsBSJavGvdxWNkrLNy0=;
+        b=k890c5TG25onpI7nUPSB/3KueeKuDfvT7xBJ9uERkq0Cbh+nVbQ0ykYwtwFK1CPVck
+         jpJOJrHAbNzQE/gzAGFgDCJ7Ychb258OQUjRSmsqQ48SZBU9r51i9qxAv+rqYlv9L0Jq
+         vIXOucs/KeNgJalJpt5jBYy87dKnLK0qQjrUo6gTQk60C++y+JgzFSbIeVH4j9VDDTV6
+         ucRZlSN/yFsuE0mf681i+3AUe6Vpvu+1fMtG3K6xm17E7nX/72lDGhFzkxQy6WR1cYzd
+         SjTojCcIeYhuO5Js+FydeuSvz9dztT97fX3/VFIgZORnz9bYW6dSAiC0F6+/c0k/T50R
+         r9Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yyP/maQwxXT8Ltx2k6ZQ9I0pl6K2MppXwz13RerjOB8=;
-        b=ZfSazoejZSC4+smYn+oacJCRP0b+qO2kjwYBAn2cSN44/Fow9JFrNHWo40BnaJOHU5
-         LUtph1u84RTYDUpd7+GdRkEtYjx2g0l60b1SE3C3D7V0/Yo8S/MBJ1MpM3EYPUpDdSES
-         xdXF/Xsez/GNErsTcDr809K4q6ia12dCV6ZG7b/aSRrw3rvhUGzcvAyCPwiNeUVP5MxT
-         QWv8xP1U0ys4S4qVzm/E2u47aOXR3ZVrvCVZ8tjWyxQ3X0F+LV7ejf5rYbEduMhGMs6X
-         AG8nUG3tR8S7I/NXDrVWeL7H8/Pr2wrVwkebr8zLDqayhv0jeBP8HXVDz3kDBZNOS8bS
-         CWkw==
-X-Gm-Message-State: AOAM533LS1Sz8orRxw1dErjWtLqlLtzhTvTLgiynxuoGoBeusbmbDRHm
-        9EkL9sc8B2/yhSsvWRd45p3Ua7pdLD22hvUa3IA=
-X-Google-Smtp-Source: ABdhPJxlIihlyvTjKzn+tpfQgBH2L3Mko4ZNyARQG8NAgYrgFl4lmP0HtclXSXAkeoNkgYLKExhl8UWk26qGXRkGZdE=
-X-Received: by 2002:a17:903:3015:b029:12a:f5ab:e040 with SMTP id
- o21-20020a1709033015b029012af5abe040mr7957390pla.64.1626060884202; Sun, 11
- Jul 2021 20:34:44 -0700 (PDT)
+        bh=a654pq7T0O/qrfgJ5BzV4SlCfsBSJavGvdxWNkrLNy0=;
+        b=HrhZcnbXa2pXBUzpR+vtcRvvfJTXdidA1LiSIpXn31pqPSeRVbdcQrP7saytV0OwoR
+         nJuWTlCDNMloNFkpWitZX3ZWG59wbStDTS/73avuzuAe8bsM3YkaAuOb0qhfwAwE/5HN
+         P21ZFJVK9VP5LmaDYtAs1+PeJuzOTTkN4wq+ueKZcA+d/fYQ8Kv0NINnZrVb5vJcpaYr
+         i/cnW3oAYUsGcC0z5mZcj8pXBskI/nsfWYd8MwXLWYkeF3BBkwmX9uczchFaIJVzrXAs
+         ef2vsZuc1iGTlCW8JflH1qWGLGX1RJe3ALMqhxq3Hhk2PUkM1SEhQAY9se91HVTlmXXA
+         QfUw==
+X-Gm-Message-State: AOAM533fevlvOIG5+1SLsFqKUM9mukqj7ZLtT8xMiESUr9OJS/MPK0b7
+        kFfNeDvOrMPFjxnGYuhkw5WJ1SJw9XFsK6cSF7s=
+X-Google-Smtp-Source: ABdhPJzATlWPAg7i/mrNSCjJUIaFvMJsnoTzU4guoLxWUvwfkN/xFnwMiYc+S/xjWZSrCohJwFZo7zTlSkvLJEt7nmw=
+X-Received: by 2002:a17:907:3f0c:: with SMTP id hq12mr45513416ejc.117.1626060969102;
+ Sun, 11 Jul 2021 20:36:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210711190308.8476-1-xiyou.wangcong@gmail.com> <40afda00-0737-d4cc-e801-85a7544fb26b@huawei.com>
-In-Reply-To: <40afda00-0737-d4cc-e801-85a7544fb26b@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 11 Jul 2021 20:34:32 -0700
-Message-ID: <CAM_iQpV3LjswT8pwGc755Ncc0cT1qH433KhD8VZ-7FKQOTs3Fg@mail.gmail.com>
+References: <20210711190308.8476-1-xiyou.wangcong@gmail.com>
+ <CAMDZJNWWq2TGb6-nZRbBNfLevOyD2oSn941Nw_+7q0QzVep_GA@mail.gmail.com>
+ <CAM_iQpUmO8S-7cgG=yy2TsNoc9nHpW__-WCfhcfV-_eAf46K7A@mail.gmail.com>
+ <CAMDZJNXbwzXrHX1UT+DLsJvbKPh70-OPyrkTV=D05a5Mwcko3w@mail.gmail.com> <CAM_iQpUG28PBhXmqQeEzcWq8cNLFH1BzXaZ1FWGu1jqObGfdwg@mail.gmail.com>
+In-Reply-To: <CAM_iQpUG28PBhXmqQeEzcWq8cNLFH1BzXaZ1FWGu1jqObGfdwg@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 12 Jul 2021 11:35:33 +0800
+Message-ID: <CAMDZJNV9tbGE0Y1nZgMcp2Z5LU5Cb7YfJ+mS9rVogrin8SGxjQ@mail.gmail.com>
 Subject: Re: [Patch net-next v2] net_sched: introduce tracepoint trace_qdisc_enqueue()
-To:     Yunsheng Lin <linyunsheng@huawei.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
 Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
         Qitao Xu <qitao.xu@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -63,108 +64,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 11, 2021 at 8:01 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+On Mon, Jul 12, 2021 at 11:23 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On 2021/7/12 3:03, Cong Wang wrote:
-> > From: Qitao Xu <qitao.xu@bytedance.com>
+> On Sun, Jul 11, 2021 at 8:02 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 > >
-> > Tracepoint trace_qdisc_enqueue() is introduced to trace skb at
-> > the entrance of TC layer on TX side. This is kinda symmetric to
-> > trace_qdisc_dequeue(), and together they can be used to calculate
-> > the packet queueing latency. It is more accurate than
-> > trace_net_dev_queue(), because we already successfully enqueue
-> > the packet at that point.
+> > On Mon, Jul 12, 2021 at 9:47 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Sun, Jul 11, 2021 at 5:50 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > > >
+> > > > On Mon, Jul 12, 2021 at 3:03 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > > >
+> > > > > From: Qitao Xu <qitao.xu@bytedance.com>
+> > > > >
+> > > > > Tracepoint trace_qdisc_enqueue() is introduced to trace skb at
+> > > > > the entrance of TC layer on TX side. This is kinda symmetric to
+> > > > > trace_qdisc_dequeue(), and together they can be used to calculate
+> > > > > the packet queueing latency. It is more accurate than
+> > > > > trace_net_dev_queue(), because we already successfully enqueue
+> > > > > the packet at that point.
+> > > > >
+> > > > > Note, trace ring buffer is only accessible to privileged users,
+> > > > > it is safe to use %px to print a real kernel address here.
+> > > > >
+> > > > > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> > > > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> > > > > Cc: Jiri Pirko <jiri@resnulli.us>
+> > > > > Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
+> > > > > ---
+> > > > >  include/trace/events/qdisc.h | 26 ++++++++++++++++++++++++++
+> > > > >  net/core/dev.c               |  9 +++++++++
+> > > > >  2 files changed, 35 insertions(+)
+> > > > >
+> > > > > diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
+> > > > > index 58209557cb3a..c3006c6b4a87 100644
+> > > > > --- a/include/trace/events/qdisc.h
+> > > > > +++ b/include/trace/events/qdisc.h
+> > > > > @@ -46,6 +46,32 @@ TRACE_EVENT(qdisc_dequeue,
+> > > > >                   __entry->txq_state, __entry->packets, __entry->skbaddr )
+> > > > >  );
+> > > > >
+> > > > > +TRACE_EVENT(qdisc_enqueue,
+> > > > > +
+> > > > > +       TP_PROTO(struct Qdisc *qdisc, const struct netdev_queue *txq, struct sk_buff *skb),
+> > > > > +
+> > > > > +       TP_ARGS(qdisc, txq, skb),
+> > > > > +
+> > > > > +       TP_STRUCT__entry(
+> > > > > +               __field(struct Qdisc *, qdisc)
+> > > > > +               __field(void *, skbaddr)
+> > > > > +               __field(int, ifindex)
+> > > > > +               __field(u32, handle)
+> > > > > +               __field(u32, parent)
+> > > > > +       ),
+> > > > > +
+> > > > > +       TP_fast_assign(
+> > > > > +               __entry->qdisc = qdisc;
+> > > > > +               __entry->skbaddr = skb;
+> > > > > +               __entry->ifindex = txq->dev ? txq->dev->ifindex : 0;
+> > > > > +               __entry->handle  = qdisc->handle;
+> > > > > +               __entry->parent  = qdisc->parent;
+> > > > > +       ),
+> > > > Hi qitao, cong
+> > > > Why not support the txq, we get more info from txq.
+> > >
+> > > Because we only want to calculate queueing latency, not anything
+> > > else. If you need it, you are welcome to add anything reasonable
+> > > in the future, it won't break ABI (see 3dd344ea84e122f791ab).
+> > Thanks!
+> > > > and we should take care of the return value of q->enqueue, because we
+> > > > can know what happens in the qdisc queue(not necessary to work with
+> > > > qdisc:dequeue).
+> > > > and we can use a tracepoint filter for the return value too.
+> > >
+> > > Disagree. Because we really have no interest in dropped packets.
+> > > Even if we really do, we could trace kfree_skb(), not really here.
+> > The qdisc returns not only the NET_XMIT_DROP, right ?
+> > skbprio_enqueue, sfq_enqueue and red_enqueue may return the NET_XMIT_CN.
 > >
-> > Note, trace ring buffer is only accessible to privileged users,
-> > it is safe to use %px to print a real kernel address here.
-> >
-> > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > Cc: Jiri Pirko <jiri@resnulli.us>
-> > Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
-> > ---
-> >  include/trace/events/qdisc.h | 26 ++++++++++++++++++++++++++
-> >  net/core/dev.c               |  9 +++++++++
-> >  2 files changed, 35 insertions(+)
-> >
-> > diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
-> > index 58209557cb3a..c3006c6b4a87 100644
-> > --- a/include/trace/events/qdisc.h
-> > +++ b/include/trace/events/qdisc.h
-> > @@ -46,6 +46,32 @@ TRACE_EVENT(qdisc_dequeue,
-> >                 __entry->txq_state, __entry->packets, __entry->skbaddr )
-> >  );
-> >
-> > +TRACE_EVENT(qdisc_enqueue,
-> > +
-> > +     TP_PROTO(struct Qdisc *qdisc, const struct netdev_queue *txq, struct sk_buff *skb),
-> > +
-> > +     TP_ARGS(qdisc, txq, skb),
-> > +
-> > +     TP_STRUCT__entry(
-> > +             __field(struct Qdisc *, qdisc)
-> > +             __field(void *, skbaddr)
-> > +             __field(int, ifindex)
-> > +             __field(u32, handle)
-> > +             __field(u32, parent)
-> > +     ),
-> > +
-> > +     TP_fast_assign(
-> > +             __entry->qdisc = qdisc;
-> > +             __entry->skbaddr = skb;
-> > +             __entry->ifindex = txq->dev ? txq->dev->ifindex : 0;
-> > +             __entry->handle  = qdisc->handle;
-> > +             __entry->parent  = qdisc->parent;
-> > +     ),
-> > +
-> > +     TP_printk("enqueue ifindex=%d qdisc handle=0x%X parent=0x%X skbaddr=%px",
-> > +               __entry->ifindex, __entry->handle, __entry->parent, __entry->skbaddr)
-> > +);
-> > +
-> >  TRACE_EVENT(qdisc_reset,
-> >
-> >       TP_PROTO(struct Qdisc *q),
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index c253c2aafe97..20b9376de301 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -131,6 +131,7 @@
-> >  #include <trace/events/napi.h>
-> >  #include <trace/events/net.h>
-> >  #include <trace/events/skb.h>
-> > +#include <trace/events/qdisc.h>
-> >  #include <linux/inetdevice.h>
-> >  #include <linux/cpu_rmap.h>
-> >  #include <linux/static_key.h>
-> > @@ -3864,6 +3865,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
-> >                       if (unlikely(!nolock_qdisc_is_empty(q))) {
-> >                               rc = q->enqueue(skb, q, &to_free) &
-> >                                       NET_XMIT_MASK;
-> > +                             if (rc == NET_XMIT_SUCCESS)
 >
-> If NET_XMIT_CN is returned, the skb seems to be enqueued too?
+> Sure, in that case a different packet is dropped, once again you
+> can trace it with kfree_skb() if you want. What's the problem?
+It's ok, but we can make it better. Yunsheng Lin may have explained why?
+> >
+> > > > we should introduce a new function to instead of now codes, that may
+> > > > make the codes clean.  Please review my patch for more info.
+> > >
+> > > Just 3 lines of code, it is totally personal taste.
+> > >
+> > > > https://patchwork.kernel.org/project/netdevbpf/patch/20210711050007.1200-1-xiangxia.m.yue@gmail.com/
+> > >
+> > > I did review it. Like I said, %p does not work. Have you tested your
+> > > patches? ;)
+> > Yes, I tested them, I didn't find the error.  my patch is based on
+> > commit id 89212e160b81e778f829b89743570665810e3b13
+>
+> I seriously doubt it, because we actually used %p in the beginning
+> too and got the same address for two different packets, this is why
+> we have to move to %px. It is 100% reproducible, so it probably
+> means you didn't test it at all.
+I use iperf to send the packets, not found the same address really
 
-Sure. See the other reply from on why dropped packets are not
-interesting here.
+          <idle>-0       [043] ..s.    62.493634: qdisc_enqueue:
+enqueue ifindex=2 qdisc handle=0x0 parent=0x2C
+skbaddr=00000000a40f93fb ret=0
+          <idle>-0       [043] ..s.    62.494641: qdisc_enqueue:
+enqueue ifindex=2 qdisc handle=0x0 parent=0x20
+skbaddr=00000000c3c53e95 ret=0
+          <idle>-0       [014] ..s.    64.473877: qdisc_enqueue:
+enqueue ifindex=2 qdisc handle=0x0 parent=0x20
+skbaddr=00000000ad610424 ret=0
+          <idle>-0       [014] ..s.    64.473896: qdisc_enqueue:
+enqueue ifindex=2 qdisc handle=0x0 parent=0x20
+skbaddr=00000000112a562d ret=0
 
 >
-> Also instead of checking the rc before calling the trace_*, maybe
-> it make more sense to add the rc to the tracepoint, so that the checking
-> is avoided, and we are able to tell the enqueuing result of a specific skb
-> from that tracepoint too.
+> Thanks.
 
-Totally disagree, because trace_qdisc_dequeue() is only called for
-successful cases too (see dequeue_skb()), it does not make sense
-to let them be different.
 
->
-> > +                                     trace_qdisc_enqueue(q, txq, skb);
->
-> Does it make sense to wrap the about to something like:
 
-Nope. Because ->enqueue() is called by lower layer qdisc's
-too, but here we only want to track root, aka, entrance of TC.
-I know this may be confusing, please blame trace_qdisc_dequeue()
-which only tracks the exit. ;)
-
-Thanks.
+-- 
+Best regards, Tonghao
