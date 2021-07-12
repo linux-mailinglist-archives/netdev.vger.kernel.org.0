@@ -2,107 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3173C5AE8
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54E933C5B1F
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbhGLKsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 06:48:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50121 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233095AbhGLKsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 06:48:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626086719;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vD/7oIR83LoencqbZJUI7JRLQahbk/f1HBWavcAemOg=;
-        b=HgPs7fR5kNKsNBARU9zcBQZCNALD51F1lhqpcdLat4l8rjZK1cPzXBld+CWeeSAIMPPW/L
-        AucGIatnXu2oVojiUXeUoMAmS0TxjdgveMSavdwm8HVNfvE2IBiegMpD9syQKUxjBTHXDD
-        +ZK155doe/CDH9ciGbdj3/W3Q463zbw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-4KMHC5ywPEGX6tuQ_8TO_w-1; Mon, 12 Jul 2021 06:45:15 -0400
-X-MC-Unique: 4KMHC5ywPEGX6tuQ_8TO_w-1
-Received: by mail-wr1-f71.google.com with SMTP id 32-20020adf82a30000b029013b21c75294so5758819wrc.14
-        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 03:45:15 -0700 (PDT)
+        id S234887AbhGLLFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 07:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234036AbhGLLFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 07:05:31 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4F3C0613DD
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 04:02:42 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id 9so17501138qkf.3
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 04:02:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=C6NcBH3JZ6eK6QArJo0y33EQcW17suwtnIeGIcgQByg=;
+        b=YRz+bfkq7fBp3sFP63zMWOOcc4fIKG/u2GvxpcpvJX43XQxDv95/kV+bSoffbICPln
+         6fTno4NCMEBazke+jDr0bfGWXDZIByfSRXiUkNAkEhtv4bHOSf8n11kL6Lrw3S3CxdgP
+         0jMDwQ53OVi0rxoNx4raYfchuPzYNHcVz66p/PL8ksILTbVAAaMw6dttDmIm9+el/Trq
+         2JWE0FKQ/7x+Ke/18HMbnE+pMGQ69WRXLo6ii2S226Rs+H3K1dAjCRziRF7hIUxtrKoV
+         YIy/dl8KYUtU7ge+qW+vcwQsrUAaJK1p6Kh5zAeghYrd4TsW0J5BVwrqxvW5RDY1y2X1
+         5GvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vD/7oIR83LoencqbZJUI7JRLQahbk/f1HBWavcAemOg=;
-        b=INGCLamxuV8p+YXuVh9yMiTcfXUvkuoRsY+8FMbjkuJXnNeVezS2ODNErRxtJPE+iI
-         In6cpxCjCTHHLYpZS1ek+2Y/7qt9fmbpoa9j7WzcvTNFrbMyMEeh5LblmAOUx1yY5kVw
-         qarFq9ipu3t1LLQcQDXFCiivcyScFkDp2TbuEEzqHk+nMrFn4DouZDbC6zdc7cXgpxb4
-         9Br7A/FTdf7IgYQsG15W9nHSGu1nxx7uSkm8Y49w5zMxVzUyTqm5272GDvQ94SHo3dvs
-         LETvW7eizy7VBP1CvuMpVGvgGQzIt/ske0wO1+CiOYzcIgShI+njZX14qrYL3WygPDx8
-         jR4Q==
-X-Gm-Message-State: AOAM531PynEhOKJTZrQYv1PTT5xCrk3JziIpsOTLVDhgIUT9VPTM+515
-        BDRm25RYad/Eh1P/ylbPUaZdScwsI/JwmUl9sVO2VPZCISF5XcFlIvR19+4NTfi127catoJc2c4
-        znfKLK41r7uP3EqYS
-X-Received: by 2002:a05:600c:17c3:: with SMTP id y3mr53350400wmo.40.1626086714719;
-        Mon, 12 Jul 2021 03:45:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzkcqstZrs7fO7b/Il4nlF1HkQIoPsKlDWfbXMwAe+89ztS9WSbUC8XPbhXsc1ZiaFv019Z/A==
-X-Received: by 2002:a05:600c:17c3:: with SMTP id y3mr53350378wmo.40.1626086714525;
-        Mon, 12 Jul 2021 03:45:14 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
-        by smtp.gmail.com with ESMTPSA id n23sm4949382wmc.38.2021.07.12.03.45.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jul 2021 03:45:14 -0700 (PDT)
-Message-ID: <26432bbc3556fd23bd58f6d359395e5dfa2eaf8c.camel@redhat.com>
-Subject: Re: [RFC PATCH 1/3] veth: implement support for set_channel ethtool
- op
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        toke@redhat.com
-Date:   Mon, 12 Jul 2021 12:45:13 +0200
-In-Reply-To: <f99875f7-c8c2-7a33-781c-a131d4b35273@gmail.com>
-References: <cover.1625823139.git.pabeni@redhat.com>
-         <681c32be3a9172e9468893a89fb928b46c5c5ee6.1625823139.git.pabeni@redhat.com>
-         <20210709125431.3597a126@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <f99875f7-c8c2-7a33-781c-a131d4b35273@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=C6NcBH3JZ6eK6QArJo0y33EQcW17suwtnIeGIcgQByg=;
+        b=jl5e9oBjqg9ZHe2Mba6ZvCVmpUMX3LOBr0YvHR8rCLxHyCjJA9BwCJ0gfi2a0obtXQ
+         AMAEVLdAOR0sle4WTqa7R4N6NNDw7IcFTzYrs/uppsjqJxYK0PoGV59eKZYZqXGV81zj
+         qbCNQLzlwR2x5f5p13NZv4QaMai2FY/UIzQIvrxKmRsqQf6UTb04/TbxNxtu7WRekJpd
+         /cYdjiUDun0zIoUHFCj+tW77BkIs9ROjpHeZz/hA9DRo+bIUM7dw0UCS2AlvA3WEIrxV
+         fbcwxlsc4sZ9eu8iIjoN3Xej5hnbRxX4jVZBYmN2uA7wP2YounoVkGTEgUP+Cp11V+wa
+         thyA==
+X-Gm-Message-State: AOAM533NCD0qEZ2FwcTru19uWeNUeLFPtFMeEyf9zzR2ZPcSr34yJT/1
+        DH0FiRKdtJNbvjExJNbsmYloSw==
+X-Google-Smtp-Source: ABdhPJzy0E2ftqYDnAToJPyRRyQkFObXcDrk6AyTCx0wIr4F+PEHBv0bB41UAuVq8QY8KKdwZcAwkw==
+X-Received: by 2002:a05:620a:15da:: with SMTP id o26mr28328153qkm.285.1626087762030;
+        Mon, 12 Jul 2021 04:02:42 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id h4sm5676027qti.0.2021.07.12.04.02.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Jul 2021 04:02:41 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v4 1/1] police: Add support for json output
+To:     David Ahern <dsahern@gmail.com>, Roi Dayan <roid@nvidia.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Roman Mashak <mrv@mojatatu.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>
+References: <20210607064408.1668142-1-roid@nvidia.com>
+ <YOLh4U4JM7lcursX@fedora> <YOQT9lQuLAvLbaLn@dcaratti.users.ipa.redhat.com>
+ <YOVPafYxzaNsQ1Qm@fedora> <d8a97f9b-7d6b-839f-873c-f5f5f9c46eca@nvidia.com>
+ <ba39e6d0-c21f-428a-01b1-b923442ef73c@gmail.com>
+ <37a0aae7-d32b-4dfd-9832-5b443d73abb6@nvidia.com>
+ <db692da0-680f-a6a9-138b-752e262bf899@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <5324ca9a-6671-2698-f6a4-4ac94ad7bc26@mojatatu.com>
+Date:   Mon, 12 Jul 2021 07:02:40 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <db692da0-680f-a6a9-138b-752e262bf899@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2021-07-11 12:00 p.m., David Ahern wrote:
 
-On Sun, 2021-07-11 at 19:44 -0600, David Ahern wrote:
-> On 7/9/21 1:54 PM, Jakub Kicinski wrote:
-> > On Fri,  9 Jul 2021 11:39:48 +0200 Paolo Abeni wrote:
-> > > +	/* accept changes only on rx/tx */
-> > > +	if (ch->combined_count != min(dev->real_num_rx_queues, dev->real_num_tx_queues))
-> > > +		return -EINVAL;
-> > 
-> > Ah damn, I must have missed the get_channels being added. I believe the
-> > correct interpretation of the params is rx means NAPI with just Rx
-> > queue(s), tx NAPI with just Tx queue(s) and combined has both.
-> > IOW combined != min(rx, tx).
-> > Instead real_rx = combined + rx; real_tx = combined + tx.
-> > Can we still change this?
+>> ...
+>>          action order 1:  police 0x1 rate 1Mbit burst 20Kb mtu 2Kb action
+>> reclassify overhead 0b
+>>
+>>
+>>
+>>
+>> -       print_string(PRINT_ANY, "kind", "%s", "police");
+>> +       print_string(PRINT_JSON, "kind", "%s", "police");
+>>
+>> -       print_uint(PRINT_ANY, "index", "\tindex %u ", p->index);
+>> +       print_hex(PRINT_FP, NULL, " police 0x%x ", p->index);
+>> +       print_uint(PRINT_JSON, "index", NULL, p->index);
+>>
+>>
 > 
-> Is it not an 'either' / 'or' situation? ie., you can either control the
-> number of Rx and Tx queues or you control the combined value but not
-> both. That is what I recall from nics (e.g., ConnectX).
+> Jamal: opinions?
 
-Thanks for the feedback. My understanding was quite alike what David
-stated - and indeed that is what ConnectX enforces AFAICS. Anyhow the
-core ethtool code allows for what Jackub said, so I guess I need to
-deal with that.
+Looks good to me. Roi please run the kernel tests to make sure
+nothing breaks.
 
-@Jakub: if we are still on time about changing the veth_get_channel()
-exposed behaviour, what about just showing nr combined == 0 and
-enforcing comined_max == 0? that would both describe more closely the
-veth architecture and will make the code simpler - beyond fixing the
-current uncorrect nr channels report.
-
-Thanks!
-
-Paolo
+cheers,
+jamal
 
