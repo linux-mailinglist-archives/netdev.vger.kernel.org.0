@@ -2,268 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31FD3C5BFD
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5A513C5C26
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234001AbhGLMUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 08:20:15 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:11265 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbhGLMUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 08:20:07 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GNjL53JHkz1CJ3N;
-        Mon, 12 Jul 2021 20:11:41 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 20:17:16 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 20:17:16 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH rfc v3 4/4] net: hns3: support skb's frag page recycling based on page pool
-Date:   Mon, 12 Jul 2021 20:16:35 +0800
-Message-ID: <1626092196-44697-5-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1626092196-44697-1-git-send-email-linyunsheng@huawei.com>
-References: <1626092196-44697-1-git-send-email-linyunsheng@huawei.com>
+        id S233783AbhGLMaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 08:30:02 -0400
+Received: from mail-dm6nam10on2041.outbound.protection.outlook.com ([40.107.93.41]:16067
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230210AbhGLMaB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 08:30:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LusUqCZWuRRumUGtOTNusodMQbKe1Y1YXcn2xhiAPOtBnLwYRuDaJwQLidSQ/HBfIWnP5NBHfG6cCaTekJW9xqdZA2eVhMbUwVPfUCnc8h3NnooQVR9uQDZds8JdVKi0x3Hqj8O+PiHlweUgKIILNle2Q2t75zzLsadS0/fIHryyvHLqchOHFCrkVduhbg9KlGl0f8CbmvQDunaoaXAs0ugCQBjKEAlrOMkYZvQWio5pEI9Mjw8gXWbMlIDpbaFzfrFuUsaWMAxw6xAY6pOhYingnNoMbLkl/rRmMyc2HHzTteQBMh72ZPWLhMzh3+TxfkjewRIwBN2lrLX85rKuoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5N4JUejIw0XxvpMVZQ+G3PCyzzxM76s3vl0UiGPhdgk=;
+ b=mfbKM3xwAEW398X2v15IqaKYOss94zuvdhv7nBINfarV2RgtvvsQ9Gpsn5ZQtffndUViMCt04psT7szXbo/5QzJWUmgk/9vo+iJ2OolIhmmtTcVSZtgB3ks6o2m+vJoGFcBiP8HbCGHM8dNPBiflsJQd3j2S8Rb0jHqi1x9fnjGvkJQcGxEElC210HxwsNxiQ0ZnujjepWGgVsSsxD2ggw5mDvekJhgy80HG579m9v6QWTYQMG8VF6WKZR1q+e3126alGDkDWIQGOqIz2xXmHd8wFa94xFajHbTlZBh8BL18jiltCABZv20/CJYFpn2K7wXfcgtqwjg/mhyYi4mdvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.32) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5N4JUejIw0XxvpMVZQ+G3PCyzzxM76s3vl0UiGPhdgk=;
+ b=GMdhhv0RIzs6UgntZd0kwta8oLV0TGjmRqVIdfy3VGMYZTxIS2TZtg9/JdbhBvlBnMP0mDsij6N9wb53T1rN5h/oXFfpQwUKGbi7dh5n4hWlx7BZnfCt991Wx6ON5ShYbXd7dxGferX+fxj50MWyP5RwO5dPCnWXH9XMsEZ8z2dvlRvQz4AqGgs+3YNUNUWuC5aE+eyZIRoLuWUdBHV37dGTD2I2Bn398wJEqmhRP+fHE1nAw7odZNwl8gcfXA6R1lOiblpPa/cLUljKkPNYwFnr/WW4yX2CVsS+1HRZTUg9Z/31Q7Tf5aglwh81HFu9BMhsldw7oVKnkqzZ8Nk0zQ==
+Received: from DM6PR07CA0082.namprd07.prod.outlook.com (2603:10b6:5:337::15)
+ by DM6PR12MB4372.namprd12.prod.outlook.com (2603:10b6:5:2af::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.21; Mon, 12 Jul
+ 2021 12:27:12 +0000
+Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:337:cafe::c7) by DM6PR07CA0082.outlook.office365.com
+ (2603:10b6:5:337::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.19 via Frontend
+ Transport; Mon, 12 Jul 2021 12:27:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
+ smtp.mailfrom=nvidia.com; mojatatu.com; dkim=none (message not signed)
+ header.d=none;mojatatu.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.32; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.32) by
+ DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4308.20 via Frontend Transport; Mon, 12 Jul 2021 12:27:12 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 12 Jul
+ 2021 05:27:11 -0700
+Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.187.6) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 12 Jul 2021 12:27:09 +0000
+From:   Roi Dayan <roid@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Roi Dayan <roid@nvidia.com>, David Ahern <dsahern@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Paul Blakey <paulb@nvidia.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Roman Mashak <mrv@mojatatu.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        "Stephen Hemminger" <stephen@networkplumber.org>
+Subject: [PATCH iproute2 1/1] police: Fix normal output back to what it was
+Date:   Mon, 12 Jul 2021 15:26:53 +0300
+Message-ID: <20210712122653.100652-1-roid@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a699fbb7-b4f4-41ce-a125-08d94530603a
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4372:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4372C98F98C6B91472C5A672B8159@DM6PR12MB4372.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:291;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 47Z4+OkG/CRp5Ddvj8XMN3fqyBMloxgDohTpMlEjNQ8wy8DgoFXFeNx3tdpmC5Rlyk+Ikd263J/FdqhmAsdsFKlDHiDqiM5/6zbpQQXmE5o2V3y10guzv5oADqNvFqWLB92lAO/EnnzqHFZwo+BwIrI+14seJQ0EApVcJYtTd+cy1+sUss9i2Qw60wlA1Tq0qSPedWtkBYxT9i9ZtZ40zKYsttLHgywjuNO0MvmBC/L8Y8JHjSwSKiEicpRE9gk/SfGL2AuwWZGRiNcTZFOADnyvzB88ejhAq5Kol4rHwm+r007lltGrljvRysuGL6GvV4eF3IsmifBLWGqJlH1lyqX+3yR8W2jBdZQO+37pDNK+FV67GUkzA/dG9Gi2YkQj6JkESV3eqyjLpYPvEuyns3rei75f0qUYo5ECBcLYa6H2JFJd2XU9tFmLVrmfJu2sFaBvkSFLO0BXntWf4sZ5pGVeQykvbgMnUdnHIpXNC2+QmYOH6SzbPaCUSWuXdBFolXnrqA0wQX0bFC2KOG1t8a1CqG6hbYMGIqPazONSokBiKkqdxVwv20EYTbX+QCUOA7XzI1hLqcN4dcquU+gleW3ZrHe9YTI0idWnvRd8URv8qM3I9oFOsxVFLtCiYEY3WHxZuuJ9IBjpphGe6jYZ5PtjvQet6SQxdLMHlO8gjgOJAvJ2Y4+HPcEVbA5M5G4onqm+c6REseKzekWYV0vhnEZH37ReZkecQbom1bbhHm8=
+X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(136003)(396003)(36840700001)(46966006)(336012)(1076003)(426003)(6666004)(2906002)(34020700004)(82310400003)(36860700001)(82740400003)(186003)(6916009)(70206006)(47076005)(316002)(70586007)(26005)(478600001)(54906003)(36756003)(83380400001)(86362001)(7636003)(2616005)(356005)(5660300002)(8676002)(4326008)(8936002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2021 12:27:12.3728
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a699fbb7-b4f4-41ce-a125-08d94530603a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4372
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds skb's frag page recycling support based on
-the elevated refcnt support in page pool.
+With the json support fix the normal output was
+changed. set it back to what it was.
+Print overhead with print_size().
+Print newline before ref.
 
-The performance improves above 10~20% with IOMMU disabled.
-The performance improves about 200% when IOMMU is enabled
-and iperf server shares the same cpu with irq/NAPI.
-
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: 0d5cf51e0d6c ("police: Add support for json output")
+Signed-off-by: Roi Dayan <roid@nvidia.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 79 +++++++++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  3 +
- 2 files changed, 77 insertions(+), 5 deletions(-)
+ tc/m_police.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cdb5f14..c799129 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3205,6 +3205,21 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	unsigned int order = hns3_page_order(ring);
- 	struct page *p;
+diff --git a/tc/m_police.c b/tc/m_police.c
+index 2594c08979e0..f38ab90a3039 100644
+--- a/tc/m_police.c
++++ b/tc/m_police.c
+@@ -278,7 +278,7 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+ 	__u64 rate64, prate64;
+ 	__u64 pps64, ppsburst64;
  
-+	if (ring->page_pool) {
-+		p = page_pool_dev_alloc_frag(ring->page_pool,
-+					     &cb->page_offset,
-+					     hns3_buf_size(ring));
-+		if (unlikely(!p))
-+			return -ENOMEM;
-+
-+		cb->priv = p;
-+		cb->buf = page_address(p);
-+		cb->dma = page_pool_get_dma_addr(p);
-+		cb->type = DESC_TYPE_FRAG;
-+		cb->reuse_flag = 0;
-+		return 0;
-+	}
-+
- 	p = dev_alloc_pages(order);
- 	if (!p)
- 		return -ENOMEM;
-@@ -3227,8 +3242,12 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- 	if (cb->type & (DESC_TYPE_SKB | DESC_TYPE_BOUNCE_HEAD |
- 			DESC_TYPE_BOUNCE_ALL | DESC_TYPE_SGL_SKB))
- 		napi_consume_skb(cb->priv, budget);
--	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
--		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+	else if (!HNAE3_IS_TX_RING(ring)) {
-+		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
-+			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+		else if (cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, cb->priv, false);
-+	}
- 	memset(cb, 0, sizeof(*cb));
- }
- 
-@@ -3315,7 +3334,7 @@ static int hns3_alloc_and_map_buffer(struct hns3_enet_ring *ring,
- 	int ret;
- 
- 	ret = hns3_alloc_buffer(ring, cb);
--	if (ret)
-+	if (ret || ring->page_pool)
- 		goto out;
- 
- 	ret = hns3_map_buffer(ring, cb);
-@@ -3337,7 +3356,8 @@ static int hns3_alloc_and_attach_buffer(struct hns3_enet_ring *ring, int i)
- 	if (ret)
- 		return ret;
- 
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 
- 	return 0;
- }
-@@ -3367,7 +3387,8 @@ static void hns3_replace_buffer(struct hns3_enet_ring *ring, int i,
- {
- 	hns3_unmap_buffer(ring, &ring->desc_cb[i]);
- 	ring->desc_cb[i] = *res_cb;
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 	ring->desc[i].rx.bd_base_info = 0;
- }
- 
-@@ -3539,6 +3560,12 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	u32 frag_size = size - pull_len;
- 	bool reused;
- 
-+	if (ring->page_pool) {
-+		skb_add_rx_frag(skb, i, desc_cb->priv, frag_offset,
-+				frag_size, truesize);
-+		return;
-+	}
-+
- 	/* Avoid re-using remote or pfmem page */
- 	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
- 		goto out;
-@@ -3856,6 +3883,9 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		/* We can reuse buffer as-is, just make sure it is reusable */
- 		if (dev_page_is_reusable(desc_cb->priv))
- 			desc_cb->reuse_flag = 1;
-+		else if (desc_cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
-+						false);
- 		else /* This page cannot be reused so discard it */
- 			__page_frag_cache_drain(desc_cb->priv,
- 						desc_cb->pagecnt_bias);
-@@ -3863,6 +3893,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		hns3_rx_ring_move_fw(ring);
+-	print_string(PRINT_ANY, "kind", "%s", "police");
++	print_string(PRINT_JSON, "kind", "%s", "police");
+ 	if (arg == NULL)
  		return 0;
+ 
+@@ -301,7 +301,8 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+ 	    RTA_PAYLOAD(tb[TCA_POLICE_RATE64]) >= sizeof(rate64))
+ 		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
+ 
+-	print_uint(PRINT_ANY, "index", "\t index %u ", p->index);
++	print_hex(PRINT_FP, NULL, " police 0x%x ", p->index);
++	print_uint(PRINT_JSON, "index", NULL, p->index);
+ 	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
+ 	buffer = tc_calc_xmitsize(rate64, p->burst);
+ 	print_size(PRINT_FP, NULL, "burst %s ", buffer);
+@@ -342,12 +343,13 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+ 		print_string(PRINT_FP, NULL, " ", NULL);
  	}
-+
-+	if (ring->page_pool)
-+		skb_mark_for_recycle(skb);
-+
- 	u64_stats_update_begin(&ring->syncp);
- 	ring->stats.seg_pkt_cnt++;
- 	u64_stats_update_end(&ring->syncp);
-@@ -3901,6 +3935,10 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
- 					    "alloc rx fraglist skb fail\n");
- 				return -ENXIO;
- 			}
-+
-+			if (ring->page_pool)
-+				skb_mark_for_recycle(new_skb);
-+
- 			ring->frag_num = 0;
  
- 			if (ring->tail_skb) {
-@@ -4705,6 +4743,29 @@ static void hns3_put_ring_config(struct hns3_nic_priv *priv)
- 	priv->ring = NULL;
- }
- 
-+static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
-+{
-+	struct page_pool_params pp_params = {
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG,
-+		.order = hns3_page_order(ring),
-+		.pool_size = ring->desc_num * hns3_buf_size(ring) / PAGE_SIZE,
-+		.nid = dev_to_node(ring_to_dev(ring)),
-+		.dev = ring_to_dev(ring),
-+		.dma_dir = DMA_FROM_DEVICE,
-+		.offset = 0,
-+		.max_len = 0,
-+	};
-+
-+	ring->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(ring->page_pool)) {
-+		dev_warn(ring_to_dev(ring), "page pool creation failed: %ld\n",
-+			 PTR_ERR(ring->page_pool));
-+		ring->page_pool = NULL;
-+	} else {
-+		dev_info(ring_to_dev(ring), "page pool creation succeeded\n");
-+	}
-+}
-+
- static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- {
- 	int ret;
-@@ -4724,6 +4785,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- 		goto out_with_desc_cb;
- 
- 	if (!HNAE3_IS_TX_RING(ring)) {
-+		hns3_alloc_page_pool(ring);
-+
- 		ret = hns3_alloc_ring_buffers(ring);
- 		if (ret)
- 			goto out_with_desc;
-@@ -4764,6 +4827,12 @@ void hns3_fini_ring(struct hns3_enet_ring *ring)
- 		devm_kfree(ring_to_dev(ring), tx_spare);
- 		ring->tx_spare = NULL;
- 	}
-+
-+	if (!HNAE3_IS_TX_RING(ring) && ring->page_pool) {
-+		page_pool_destroy(ring->page_pool);
-+		ring->page_pool = NULL;
-+		dev_info(ring_to_dev(ring), "page pool destroyed\n");
-+	}
- }
- 
- static int hns3_buf_size2type(u32 buf_size)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 15af3d9..115c0ce 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/dim.h>
- #include <linux/if_vlan.h>
-+#include <net/page_pool.h>
- 
- #include "hnae3.h"
- 
-@@ -307,6 +308,7 @@ enum hns3_desc_type {
- 	DESC_TYPE_BOUNCE_ALL		= 1 << 3,
- 	DESC_TYPE_BOUNCE_HEAD		= 1 << 4,
- 	DESC_TYPE_SGL_SKB		= 1 << 5,
-+	DESC_TYPE_FRAG			= 1 << 6,
- };
- 
- struct hns3_desc_cb {
-@@ -451,6 +453,7 @@ struct hns3_enet_ring {
- 	struct hnae3_queue *tqp;
- 	int queue_index;
- 	struct device *dev; /* will be used for DMA mapping of descriptors */
-+	struct page_pool *page_pool;
- 
- 	/* statistic */
- 	struct ring_stats stats;
+-	print_uint(PRINT_ANY, "overhead", "overhead %u ", p->rate.overhead);
++	print_size(PRINT_ANY, "overhead", "overhead %s ", p->rate.overhead);
+ 	linklayer = (p->rate.linklayer & TC_LINKLAYER_MASK);
+ 	if (linklayer > TC_LINKLAYER_ETHERNET || show_details)
+ 		print_string(PRINT_ANY, "linklayer", "linklayer %s ",
+ 			     sprint_linklayer(linklayer, b2));
+-	print_int(PRINT_ANY, "ref", "ref %d ", p->refcnt);
++	print_nl();
++	print_int(PRINT_ANY, "ref", "\tref %d ", p->refcnt);
+ 	print_int(PRINT_ANY, "bind", "bind %d ", p->bindcnt);
+ 	if (show_stats) {
+ 		if (tb[TCA_POLICE_TM]) {
 -- 
-2.7.4
+2.26.2
 
