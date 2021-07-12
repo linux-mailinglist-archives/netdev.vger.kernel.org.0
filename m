@@ -2,83 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B216D3C622A
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 19:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D85563C6236
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 19:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235770AbhGLRtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 13:49:31 -0400
-Received: from mail-io1-f53.google.com ([209.85.166.53]:40603 "EHLO
-        mail-io1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232979AbhGLRt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 13:49:27 -0400
-Received: by mail-io1-f53.google.com with SMTP id l5so23694153iok.7;
-        Mon, 12 Jul 2021 10:46:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kypqM6y1X5Uap1Yv9eo3AY26jWp58MtC35uqeVy+D/s=;
-        b=jgAcPzG8Pfk96sQoJIA47dROj8Ii09I36kZbD/xyPmHCnjolWCvLiKF7l8zjvWu2wQ
-         oXVXgdS72DlV38t+uGVdytvj+O4NzeMbA+s9r9f8I/I9ND+QLKGN6ZTBk3qd05IP1HuI
-         cZ1OZIoNOgJs3neEyyEwxLzru5TzPB0KDnJzLU+/nJ/eezmCHAcv3cPMaM9c1jBAzAnK
-         mUGFuHQYvMzaFxZ6bw2NMH8idxJAA2ukcaSh9Aesvl4pvO92zvS3bevPqPvEEYkrHc7d
-         ALzsCtHGdHH1YcI2WziDy80YLgNafkQk7uM2lag1Tx6qU5rjajKDEQgjZL3MGvmBM4FD
-         QuUg==
-X-Gm-Message-State: AOAM532Wn3q1jCLvGu57p8Y8IBnE2ivUF9iGNrl2gDzhxK2ScOmqBMCE
-        6oS4X4j6xEv7YbV5hbFWwg==
-X-Google-Smtp-Source: ABdhPJxxmnJl24dnArleMtbmuSzlu+wFSZfgs9MLtXLeofedAdnLogZXPQzDxVZDnRWKYHlZECdGFA==
-X-Received: by 2002:a5d:8996:: with SMTP id m22mr106500iol.6.1626111997867;
-        Mon, 12 Jul 2021 10:46:37 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id y13sm7878335ioa.51.2021.07.12.10.46.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Jul 2021 10:46:37 -0700 (PDT)
-Received: (nullmailer pid 2180397 invoked by uid 1000);
-        Mon, 12 Jul 2021 17:46:35 -0000
-Date:   Mon, 12 Jul 2021 11:46:35 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     alexandru.tachici@analog.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, andrew@lunn.ch,
-        davem@davemloft.net
-Subject: Re: [PATCH v2 7/7] dt-bindings: adin1100: Add binding for ADIN1100
- Ethernet PHY
-Message-ID: <20210712174635.GA2178411@robh.at.kernel.org>
-References: <20210712130631.38153-1-alexandru.tachici@analog.com>
- <20210712130631.38153-8-alexandru.tachici@analog.com>
- <1626099173.624231.1850544.nullmailer@robh.at.kernel.org>
+        id S233621AbhGLRwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 13:52:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34858 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231592AbhGLRww (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 13:52:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D285A611C1;
+        Mon, 12 Jul 2021 17:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626112203;
+        bh=m1u+wsv4BJOX3LivCYyJp0GfsFgFqYK+vfWFUwQLN38=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=b+uicz15iiBfEcOLpE4brAL1ii21QEunJ698xJX21eGLJP/q4iRHLmc1vsTEm5TuK
+         f/JSlbXiCLwTE2Jm7rOnUbqpzfZie5El9np9MsQkGIgJrWteDWOwE7caZfKFXYyMCX
+         SnyPwPoIdG1JWRCvRE4c8LTA193tN9o+eAvl8ZtcZ7s7FHWK08dnBJmFeOTGifvZ8A
+         rSkFQWewoy1RU50hmdYg9O+P6NSjG83l9yNYZEGxCDR5VfWrnpZti1kczHa29dO0ba
+         T687BCvCPT6AR2DTk06xaFmLzStmWySiPj+tU43pJHJHAANbwnWDiYNkbjLxfaRfu9
+         P+Wd/PY5v6NXA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C5C1460A54;
+        Mon, 12 Jul 2021 17:50:03 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1626099173.624231.1850544.nullmailer@robh.at.kernel.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] net: bridge: multicast: fix automatic router port
+ marking races
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162611220380.1672.9078277385481579129.git-patchwork-notify@kernel.org>
+Date:   Mon, 12 Jul 2021 17:50:03 +0000
+References: <20210711095629.2986949-1-razor@blackwall.org>
+In-Reply-To: <20210711095629.2986949-1-razor@blackwall.org>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, nikolay@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 08:12:53AM -0600, Rob Herring wrote:
-> On Mon, 12 Jul 2021 16:06:31 +0300, alexandru.tachici@analog.com wrote:
-> > From: Alexandru Tachici <alexandru.tachici@analog.com>
-> > 
-> > DT bindings for the ADIN1100 10BASE-T1L Ethernet PHY.
-> > 
-> > Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> > ---
-> >  .../devicetree/bindings/net/adi,adin1100.yaml | 45 +++++++++++++++++++
-> >  1 file changed, 45 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1100.yaml
-> > 
-> 
-> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-> on your patch (DT_CHECKER_FLAGS is new in v5.13):
-> 
-> yamllint warnings/errors:
-> 
-> dtschema/dtc warnings/errors:
-> Documentation/devicetree/bindings/net/adi,adin1100.example.dt.yaml:0:0: /example-0/ethernet@e000c000: failed to match any schema with compatible: ['cdns,zynq-gem', 'cdns,gem']
-> Documentation/devicetree/bindings/net/adi,adin1100.example.dt.yaml:0:0: /example-0/ethernet@e000c000: failed to match any schema with compatible: ['cdns,zynq-gem', 'cdns,gem']
+Hello:
 
-Please either convert the above binding or use something that already 
-has a schema.
+This series was applied to netdev/net.git (refs/heads/master):
 
-Rob
+On Sun, 11 Jul 2021 12:56:27 +0300 you wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> Hi,
+> While working on per-vlan multicast snooping I found two race conditions
+> when multicast snooping is enabled. They're identical and happen when
+> the router port list is modified without the multicast lock. One requires
+> a PIM hello message to be received on a port and the other an MRD
+> advertisement. To fix them we just need to take the multicast_lock when
+> adding the ports to the router port list (marking them as router ports).
+> Tested on an affected setup by generating the required packets while
+> modifying the port list in parallel.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/2] net: bridge: multicast: fix PIM hello router port marking race
+    https://git.kernel.org/netdev/net/c/04bef83a3358
+  - [net,2/2] net: bridge: multicast: fix MRD advertisement router port marking race
+    https://git.kernel.org/netdev/net/c/000b7287b675
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
