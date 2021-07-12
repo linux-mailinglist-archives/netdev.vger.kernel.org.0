@@ -2,234 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 669F63C66E9
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 01:22:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7445F3C6701
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 01:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbhGLXZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 19:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
+        id S233357AbhGLXf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 19:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230137AbhGLXZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 19:25:39 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85487C0613DD;
-        Mon, 12 Jul 2021 16:22:49 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id b13so31743071ybk.4;
-        Mon, 12 Jul 2021 16:22:49 -0700 (PDT)
+        with ESMTP id S229587AbhGLXf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 19:35:26 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A72FC0613DD;
+        Mon, 12 Jul 2021 16:32:37 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id k184so31738338ybf.12;
+        Mon, 12 Jul 2021 16:32:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zQfeDJbiNEXtYkXXzSo9DJBIXTxsz1leGy7dEyIJUI8=;
-        b=S8b2fbMpDAH/i0fTN+NOSpv9UhUm9ieTMyitzYFVrZllSmFh3BXEqoxDn+lC8OAHqC
-         O9fAVzQ56o55TUUEx+Mn0CeiMVUPNyNBczwDmTHsi0ChZS/ROH5tKPaIS9F3iEXnEJFt
-         VYnzjF5HCz4u6SqTLYYwnw4IZbhE9F1nDc87fVcPFLJ09Wt6dUWVosd5UfsDrqs7LrX9
-         oaAIFB1GDmirW541dh1FMFpZ9dVwijyL0zgHyu5YPXFeDASWq+/gQWs2/9YggXuMzgnp
-         rqPehneNlJ9xyLGdqNmJNRNrjVA8+6qZkKsdrL5tEBFgR9HY2FtDicoblRPBhM0YRIq7
-         Omrg==
+        bh=PZPtH4nVdxlVXkZmk51f+RlarZoc6wW1S0RE0OujGy0=;
+        b=YjQK7qfppcSq3P/TkSX0iKabfN/zXXobkOItLw1RPAzgLFkqJwf14Kh9yQCr+iiWUv
+         Iy9r6wiQwJayjH79DWEM+QKtK2Y/WHdnnaZMAclg2ed20X1A5f4uB1dxNOc070yM8TwX
+         KSrk/LZk6N6kj32z1PwNnp37GfCfUgUVBB1IgZCq/rZwDfhkI8MXF6WVnk2NIJENT9VQ
+         S03xlMB9CYy7oPnYZqGJmbLaNScVfWjgPqyeHgPMS8XhlmZxlHrNdf26vK8Ge776bb+q
+         z1T2tFtE/VyCS0n9hf10/3l7/3oxd3vWrssgm19cD8jXG63vvJt/lqkGVyqM1jLUF/LG
+         Exsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zQfeDJbiNEXtYkXXzSo9DJBIXTxsz1leGy7dEyIJUI8=;
-        b=NwXkisn5Df8Hj6FfBvU0V3XnkNOoJak2OYdAtsJIr5YpKUHfojB44fPJFIsPW95X+e
-         N+oRDpHMo/s4qSG3A0I6HYtz9cUOcWxuj08gYGmboRFkVIuv4sPz7hcstV57rmEWJUNM
-         P0rKmBDxg17JugqUHuBrGSxTiJckcq9uRusDpFtv3TJFx9oZkiwiWaLFl4qgw+4ABlBK
-         dcu+SQkGnUIENtQER3K2kQ3u+LuzmlfZtFcqfsuHvXGxOunjUImCCuD1otuXxQqDKnkU
-         IyGAi7d+rrRDk4s3cZHN3hnw0iZtKNlPjsUEGJuAGms7KzLV+qMm8COfqd7xxl3r9Zl9
-         jaew==
-X-Gm-Message-State: AOAM533VDNXu6Vp+IVaPcPvrQFc9BVqSSVRkBkjAt+MT1uGn+Ewb81zU
-        BInR4vBk0O7TUR8M8wSFABDz2G8bzoeGdHzyDwK9QKmFdvnHjA==
-X-Google-Smtp-Source: ABdhPJwhwBW0CyZ0SHfNJc8uRA3mEumLQhCC0G5wEfhirLhfxGVR3x9VrpD+XR2PwaEO4MOwSj43dEz4fYIRzTTb1Us=
-X-Received: by 2002:a25:bd09:: with SMTP id f9mr1962367ybk.27.1626132168816;
- Mon, 12 Jul 2021 16:22:48 -0700 (PDT)
+        bh=PZPtH4nVdxlVXkZmk51f+RlarZoc6wW1S0RE0OujGy0=;
+        b=XrZND3ngVTheL1brlmqfwr/uUlO9nBG0Yi2aEcKMWtCBunyHCwVffIrFXowheQvGvK
+         yIBRCE3MeBP0PsYtyZ8jihbrhT3GfF+0Q4YThmiI/Fc3IoLSyui+B9vms+l0ueuajRVu
+         0KlpdKA8hfVU2QRxPWmMon/i5t/D4szYik//TFO7SKYEIncMFneopXQ8uoKchqz8xRQU
+         uwrO5OZbckJyPbbO7P8NSDTOMuI/76h+MeT8gYjKnFEoAob9KwJnd1o7ig+xv/ttZeWw
+         qtg2nNrnpZVZ+DVYqu6fkzzesW2GxP44wxcCq76Kl3bb1VjN9V+zD2He1v6ZK55t43kV
+         hm/w==
+X-Gm-Message-State: AOAM533JjimOSBxv6WklK06mkgJs/EbqvGEkaWwMowWR60Z6tFeb0NeG
+        WUgMC20OteNpJEpi0ey9Z2nACRWtDdwkDwvm5OA=
+X-Google-Smtp-Source: ABdhPJx1IutpkW/TgoAbxFW4w5X6X9Jjk3DSYhzGzkIb8BzyeyRns/ckqWWcZ/kjdyNhDoj6qrT3jTAu/PoVQNMkJtY=
+X-Received: by 2002:a25:1455:: with SMTP id 82mr1920085ybu.403.1626132756474;
+ Mon, 12 Jul 2021 16:32:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210710031635.41649-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <20210710031635.41649-1-xuanzhuo@linux.alibaba.com>
+References: <20210707214751.159713-1-jolsa@kernel.org> <20210707214751.159713-8-jolsa@kernel.org>
+ <CAEf4Bzb9DTtGWubdEgMYirWLT-AiYbU2LfB-cSpGNzk6L0z8Kg@mail.gmail.com> <YOsEsb1sMasi1WyR@krava>
+In-Reply-To: <YOsEsb1sMasi1WyR@krava>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 12 Jul 2021 16:22:37 -0700
-Message-ID: <CAEf4BzZ7dwAY0bcR=aKnbJZmehj3BbcY5mRT6fZxzcutAAypsQ@mail.gmail.com>
-Subject: Re: [PATCH net v4] xdp, net: fix use-after-free in bpf_xdp_link_release
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 12 Jul 2021 16:32:25 -0700
+Message-ID: <CAEf4BzYQfe6-UngVn=kTE9gg6Gc7HFdDQ2NGX7p0+uuO27RETA@mail.gmail.com>
+Subject: Re: [PATCHv3 bpf-next 7/7] selftests/bpf: Add test for
+ bpf_get_func_ip in kprobe+offset probe
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Wei Wang <weiwan@google.com>, Taehee Yoo <ap420073@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Abaci <abaci@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 9, 2021 at 8:16 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Sun, Jul 11, 2021 at 7:48 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> The problem occurs between dev_get_by_index() and dev_xdp_attach_link().
-> At this point, dev_xdp_uninstall() is called. Then xdp link will not be
-> detached automatically when dev is released. But link->dev already
-> points to dev, when xdp link is released, dev will still be accessed,
-> but dev has been released.
+> On Wed, Jul 07, 2021 at 05:18:49PM -0700, Andrii Nakryiko wrote:
+> > On Wed, Jul 7, 2021 at 2:54 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > Adding test for bpf_get_func_ip in kprobe+ofset probe.
+> >
+> > typo: offset
+> >
+> > > Because of the offset value it's arch specific, adding
+> > > it only for x86_64 architecture.
+> >
+> > I'm not following, you specified +0x5 offset explicitly, why is this
+> > arch-specific?
 >
-> dev_get_by_index()        |
-> link->dev = dev           |
->                           |      rtnl_lock()
->                           |      unregister_netdevice_many()
->                           |          dev_xdp_uninstall()
->                           |      rtnl_unlock()
-> rtnl_lock();              |
-> dev_xdp_attach_link()     |
-> rtnl_unlock();            |
->                           |      netdev_run_todo() // dev released
-> bpf_xdp_link_release()    |
->     /* access dev.        |
->        use-after-free */  |
->
-> [   45.966867] BUG: KASAN: use-after-free in bpf_xdp_link_release+0x3b8/0x3d0
-> [   45.967619] Read of size 8 at addr ffff00000f9980c8 by task a.out/732
-> [   45.968297]
-> [   45.968502] CPU: 1 PID: 732 Comm: a.out Not tainted 5.13.0+ #22
-> [   45.969222] Hardware name: linux,dummy-virt (DT)
-> [   45.969795] Call trace:
-> [   45.970106]  dump_backtrace+0x0/0x4c8
-> [   45.970564]  show_stack+0x30/0x40
-> [   45.970981]  dump_stack_lvl+0x120/0x18c
-> [   45.971470]  print_address_description.constprop.0+0x74/0x30c
-> [   45.972182]  kasan_report+0x1e8/0x200
-> [   45.972659]  __asan_report_load8_noabort+0x2c/0x50
-> [   45.973273]  bpf_xdp_link_release+0x3b8/0x3d0
-> [   45.973834]  bpf_link_free+0xd0/0x188
-> [   45.974315]  bpf_link_put+0x1d0/0x218
-> [   45.974790]  bpf_link_release+0x3c/0x58
-> [   45.975291]  __fput+0x20c/0x7e8
-> [   45.975706]  ____fput+0x24/0x30
-> [   45.976117]  task_work_run+0x104/0x258
-> [   45.976609]  do_notify_resume+0x894/0xaf8
-> [   45.977121]  work_pending+0xc/0x328
-> [   45.977575]
-> [   45.977775] The buggy address belongs to the page:
-> [   45.978369] page:fffffc00003e6600 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4f998
-> [   45.979522] flags: 0x7fffe0000000000(node=0|zone=0|lastcpupid=0x3ffff)
-> [   45.980349] raw: 07fffe0000000000 fffffc00003e6708 ffff0000dac3c010 0000000000000000
-> [   45.981309] raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-> [   45.982259] page dumped because: kasan: bad access detected
-> [   45.982948]
-> [   45.983153] Memory state around the buggy address:
-> [   45.983753]  ffff00000f997f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> [   45.984645]  ffff00000f998000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-> [   45.985533] >ffff00000f998080: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-> [   45.986419]                                               ^
-> [   45.987112]  ffff00000f998100: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-> [   45.988006]  ffff00000f998180: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-> [   45.988895] ==================================================================
-> [   45.989773] Disabling lock debugging due to kernel taint
-> [   45.990552] Kernel panic - not syncing: panic_on_warn set ...
-> [   45.991166] CPU: 1 PID: 732 Comm: a.out Tainted: G    B             5.13.0+ #22
-> [   45.991929] Hardware name: linux,dummy-virt (DT)
-> [   45.992448] Call trace:
-> [   45.992753]  dump_backtrace+0x0/0x4c8
-> [   45.993208]  show_stack+0x30/0x40
-> [   45.993627]  dump_stack_lvl+0x120/0x18c
-> [   45.994113]  dump_stack+0x1c/0x34
-> [   45.994530]  panic+0x3a4/0x7d8
-> [   45.994930]  end_report+0x194/0x198
-> [   45.995380]  kasan_report+0x134/0x200
-> [   45.995850]  __asan_report_load8_noabort+0x2c/0x50
-> [   45.996453]  bpf_xdp_link_release+0x3b8/0x3d0
-> [   45.997007]  bpf_link_free+0xd0/0x188
-> [   45.997474]  bpf_link_put+0x1d0/0x218
-> [   45.997942]  bpf_link_release+0x3c/0x58
-> [   45.998429]  __fput+0x20c/0x7e8
-> [   45.998833]  ____fput+0x24/0x30
-> [   45.999247]  task_work_run+0x104/0x258
-> [   45.999731]  do_notify_resume+0x894/0xaf8
-> [   46.000236]  work_pending+0xc/0x328
-> [   46.000697] SMP: stopping secondary CPUs
-> [   46.001226] Dumping ftrace buffer:
-> [   46.001663]    (ftrace buffer empty)
-> [   46.002110] Kernel Offset: disabled
-> [   46.002545] CPU features: 0x00000001,23202c00
-> [   46.003080] Memory Limit: none
->
-> Fixes: aa8d3a716b59db6c ("bpf, xdp: Add bpf_link-based XDP attachment API")
-> Reported-by: Abaci <abaci@linux.alibaba.com>
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
+> I need some instruction offset != 0 in the traced function,
+> x86_64's fentry jump is 5 bytes, other archs will be different
 
-LGTM, thanks for the fix!
+Right, ok. I don't see an easy way to detect this offset, but the
+#ifdef __x86_64__ detection doesn't work because we are compiling with
+-target bpf. Please double-check that it actually worked in the first
+place.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+I think a better way would be to have test6 defined unconditionally in
+BPF code, but then disable loading test6 program on anything but
+x86_64 platform at runtime with bpf_program__set_autoload(false).
 
 >
-> v4: fix commit message
+> >
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  .../testing/selftests/bpf/progs/get_func_ip_test.c  | 13 +++++++++++++
+> > >  1 file changed, 13 insertions(+)
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > index 8ca54390d2b1..e8a9428a0ea3 100644
+> > > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > @@ -10,6 +10,7 @@ extern const void bpf_fentry_test2 __ksym;
+> > >  extern const void bpf_fentry_test3 __ksym;
+> > >  extern const void bpf_fentry_test4 __ksym;
+> > >  extern const void bpf_modify_return_test __ksym;
+> > > +extern const void bpf_fentry_test6 __ksym;
+> > >
+> > >  __u64 test1_result = 0;
+> > >  SEC("fentry/bpf_fentry_test1")
+> > > @@ -60,3 +61,15 @@ int BPF_PROG(fmod_ret_test, int a, int *b, int ret)
+> > >         test5_result = (const void *) addr == &bpf_modify_return_test;
+> > >         return ret;
+> > >  }
+> > > +
+> > > +#ifdef __x86_64__
+> > > +__u64 test6_result = 0;
+> >
+> > see, and you just forgot to update the user-space part of the test to
+> > even check test6_result...
+> >
+> > please group variables together and do explicit ASSERT_EQ
 >
-> v3: v1 + "link->dev = NULL"
+> right.. will change
 >
->  net/core/dev.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
+> thanks,
+> jirka
 >
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index c253c2aafe97..9f508c597037 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9684,14 +9684,17 @@ int bpf_xdp_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
->         struct net_device *dev;
->         int err, fd;
->
-> +       rtnl_lock();
->         dev = dev_get_by_index(net, attr->link_create.target_ifindex);
-> -       if (!dev)
-> +       if (!dev) {
-> +               rtnl_unlock();
->                 return -EINVAL;
-> +       }
->
->         link = kzalloc(sizeof(*link), GFP_USER);
->         if (!link) {
->                 err = -ENOMEM;
-> -               goto out_put_dev;
-> +               goto unlock;
->         }
->
->         bpf_link_init(&link->link, BPF_LINK_TYPE_XDP, &bpf_xdp_link_lops, prog);
-> @@ -9701,14 +9704,14 @@ int bpf_xdp_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
->         err = bpf_link_prime(&link->link, &link_primer);
->         if (err) {
->                 kfree(link);
-> -               goto out_put_dev;
-> +               goto unlock;
->         }
->
-> -       rtnl_lock();
->         err = dev_xdp_attach_link(dev, NULL, link);
->         rtnl_unlock();
->
->         if (err) {
-> +               link->dev = NULL;
->                 bpf_link_cleanup(&link_primer);
->                 goto out_put_dev;
->         }
-> @@ -9718,6 +9721,9 @@ int bpf_xdp_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
->         dev_put(dev);
->         return fd;
->
-> +unlock:
-> +       rtnl_unlock();
-> +
->  out_put_dev:
->         dev_put(dev);
->         return err;
-> --
-> 2.31.0
+> >
+> > > +SEC("kprobe/bpf_fentry_test6+0x5")
+> > > +int test6(struct pt_regs *ctx)
+> > > +{
+> > > +       __u64 addr = bpf_get_func_ip(ctx);
+> > > +
+> > > +       test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
+> > > +       return 0;
+> > > +}
+> > > +#endif
+> > > --
+> > > 2.31.1
+> > >
+> >
 >
