@@ -2,217 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CC23C5A72
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:04:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3377D3C5A7F
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbhGLJ53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 05:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
+        id S231302AbhGLKFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 06:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbhGLJ52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 05:57:28 -0400
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61A2C0613E8;
-        Mon, 12 Jul 2021 02:54:40 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4GNfHy2pHbzQk58;
-        Mon, 12 Jul 2021 11:54:38 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1626083674;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/+7tPSemAYvLcNGYAc+R6iylhPYCgbXPYUoGD293BwI=;
-        b=fs9YBoZK4RAQP7In8z3xC2OSwMseotD77zvLF4vGJrijiwSz47JURCEomb5gU3rGweL0NN
-        T6aXm2KDrAtD9oktSYa5nU8ALZE1GaecZJv/wsyxBGJmsA/DkvajSRVlGn3k3WerIvt3EC
-        qzVAIxKbQUm/ANyk393g/7YCuAA4nEEE5ozD/paXAZDAMbUkxFPYxMXsyE6ObmR2yxat/C
-        d7WQCQ514vqqokasH4SoqtSZUw5IfUdG51CyGvDIuXc9lH/OORHmJoYBEqb7NjLb/vLLME
-        9FJNb0VpnNA4B9xp9cdfx2y6gBqnRjTIz6fJnEcVA8VQEVuAWNTEDpPjGghqwQ==
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
-        with ESMTP id Uz5qEtT4HP5A; Mon, 12 Jul 2021 11:54:32 +0200 (CEST)
-Subject: Re: [PATCH net-next v5] net: phy: intel-xway: Add RGMII internal
- delay configuration
-To:     Martin Schiller <ms@dev.tdt.de>,
-        martin.blumenstingl@googlemail.com, f.fainelli@gmail.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210712072413.11490-1-ms@dev.tdt.de>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Message-ID: <e7b84ec3-2ef3-9ad0-b5e3-10ced20e433f@hauke-m.de>
-Date:   Mon, 12 Jul 2021 11:54:30 +0200
+        with ESMTP id S237442AbhGLKE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 06:04:56 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E2BC0613EE;
+        Mon, 12 Jul 2021 03:02:00 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id 201so3276041qkj.13;
+        Mon, 12 Jul 2021 03:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CcO+S5Zayg1q6m7Eey60LqzwAIbIXqOmOIasgtmtdWM=;
+        b=MCP6NgccAbXkgNOyU8PjjtW+CaZ7oJES3A1BuZHkfY9A8y1fMr4He+CdYMYcuRix/r
+         9IvHgi6aIBLvq2cAVRkA22LomSKzrxCrnUir37IDi+NpvNliIBXf5OvLu5fJgrrYuGVS
+         4ASPEkH6ZauE2823e0+AF8kOmijxbZXmOU97o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CcO+S5Zayg1q6m7Eey60LqzwAIbIXqOmOIasgtmtdWM=;
+        b=AqscvtWKKln9HMA11NjSPckYfOLtZ80wnccWV2FLeskxv6i/HtP3G7GvBa/vSOVdKv
+         tyUx9dSyz6Vi/sIVGnmCf67AHqBeaiMPVygSRtRAmG+3+mgEAUlx6y7NGXfO1dAqLCv0
+         ClwHBTSPjX9Fur5QzJYtZqLWjQ6mgNix+kvsYlBqSaTZ0/wflK5HqzV3dg3AGU4kCR7R
+         j2bXBLxDeHCKQID2K4aWRKZLb2JH//MP0tCpITc4gFBruKjff1A0ZBp7sL1Hg15eQCs8
+         TD5xNly1ymOUsTtNo50cwQeyKKKdNlRsmOIKeofe9RcZTrA6ProKU4Ou5IX/9jmzs+th
+         NiqQ==
+X-Gm-Message-State: AOAM5312yRtFRhppb2c0XUU1Hr+LPEoMInsYxxRoOTei9wBvLzDpaTw5
+        77IMGH4Ib0XUqZiF5YpJJPvtKNS0lOXSjrC0XHg=
+X-Google-Smtp-Source: ABdhPJyVI/uQ7Ws4s58SXJjB9pKH3dBVfAjweUVQV4zxTjzi0eljD2r56wjEaDSjQvDReuSntb16NqQ+iI4cgMDMquA=
+X-Received: by 2002:a37:9d41:: with SMTP id g62mr21436759qke.55.1626084119810;
+ Mon, 12 Jul 2021 03:01:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210712072413.11490-1-ms@dev.tdt.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.77 / 15.00 / 15.00
-X-Rspamd-Queue-Id: C82C0184A
-X-Rspamd-UID: 47149b
+References: <20210708122754.555846-1-i.mikhaylov@yadro.com> <20210708122754.555846-3-i.mikhaylov@yadro.com>
+In-Reply-To: <20210708122754.555846-3-i.mikhaylov@yadro.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 12 Jul 2021 10:01:45 +0000
+Message-ID: <CACPK8Xff9c-_9A_tfZ4UBjucUgRmy8iOOdzcV5dg8VUCOB29AQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] net/ncsi: add NCSI Intel OEM command to keep PHY up
+To:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Eddie James <eajames@linux.ibm.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/12/21 9:24 AM, Martin Schiller wrote:
-> This adds the possibility to configure the RGMII RX/TX clock skew via
-> devicetree.
-> 
-> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and add
-> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
-> devicetree.
-> 
-> Furthermore, a warning is now issued if the phy mode is configured to
-> "rgmii" and an internal delay is set in the phy (e.g. by pin-strapping),
-> as in the dp83867 driver.
-> 
-> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+On Thu, 8 Jul 2021 at 12:27, Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
+>
+> This allows to keep PHY link up and prevents any channel resets during
+> the host load.
+>
+> It is KEEP_PHY_LINK_UP option(Veto bit) in i210 datasheet which
+> block PHY reset and power state changes.
 
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+How about using runtime configuration over using kconfig for this, so
+the same kernel config can be used on different machines. Something
+device tree based?
 
+Another option is to use the netlink handler to send the OEM command
+from userspace. Eddie has worked on this for an IBM machine, and I've
+asked him to post those changes. I would prefer the kernel option
+though.
+
+
+>
+> Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
 > ---
-> 
-> Changes to v4:
-> o Fix Alignment to match open parenthesis
-> 
-> Changes to v3:
-> o Fix typo in commit message
-> o use FIELD_PREP() and FIELD_GET() macros
-> o further code cleanups
-> o always mask rxskew AND txskew value in the register value
-> 
-> Changes to v2:
-> o Fix missing whitespace in warning.
-> 
-> Changes to v1:
-> o code cleanup and use phy_modify().
-> o use default of 2.0ns if delay property is absent instead of returning
->    an error.
-> 
-> ---
->   drivers/net/phy/intel-xway.c | 85 ++++++++++++++++++++++++++++++++++++
->   1 file changed, 85 insertions(+)
-> 
-> diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
-> index d453ec016168..bc7e2fdb8ea7 100644
-> --- a/drivers/net/phy/intel-xway.c
-> +++ b/drivers/net/phy/intel-xway.c
-> @@ -8,11 +8,16 @@
->   #include <linux/module.h>
->   #include <linux/phy.h>
->   #include <linux/of.h>
-> +#include <linux/bitfield.h>
->   
-> +#define XWAY_MDIO_MIICTRL		0x17	/* mii control */
->   #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
->   #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
->   #define XWAY_MDIO_LED			0x1B	/* led control */
->   
-> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK	GENMASK(14, 12)
-> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK	GENMASK(10, 8)
+>  net/ncsi/Kconfig       |  6 ++++++
+>  net/ncsi/internal.h    |  5 +++++
+>  net/ncsi/ncsi-manage.c | 45 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 56 insertions(+)
+>
+> diff --git a/net/ncsi/Kconfig b/net/ncsi/Kconfig
+> index 93309081f5a4..ea1dd32b6b1f 100644
+> --- a/net/ncsi/Kconfig
+> +++ b/net/ncsi/Kconfig
+> @@ -17,3 +17,9 @@ config NCSI_OEM_CMD_GET_MAC
+>         help
+>           This allows to get MAC address from NCSI firmware and set them back to
+>                 controller.
+> +config NCSI_OEM_CMD_KEEP_PHY
+> +       bool "Keep PHY Link up"
+> +       depends on NET_NCSI
+> +       help
+> +         This allows to keep PHY link up and prevents any channel resets during
+> +         the host load.
+> diff --git a/net/ncsi/internal.h b/net/ncsi/internal.h
+> index cbbb0de4750a..0b6cfd3b31e0 100644
+> --- a/net/ncsi/internal.h
+> +++ b/net/ncsi/internal.h
+> @@ -78,6 +78,9 @@ enum {
+>  /* OEM Vendor Manufacture ID */
+>  #define NCSI_OEM_MFR_MLX_ID             0x8119
+>  #define NCSI_OEM_MFR_BCM_ID             0x113d
+> +#define NCSI_OEM_MFR_INTEL_ID           0x157
+> +/* Intel specific OEM command */
+> +#define NCSI_OEM_INTEL_CMD_KEEP_PHY     0x20   /* CMD ID for Keep PHY up */
+>  /* Broadcom specific OEM Command */
+>  #define NCSI_OEM_BCM_CMD_GMA            0x01   /* CMD ID for Get MAC */
+>  /* Mellanox specific OEM Command */
+> @@ -86,6 +89,7 @@ enum {
+>  #define NCSI_OEM_MLX_CMD_SMAF           0x01   /* CMD ID for Set MC Affinity */
+>  #define NCSI_OEM_MLX_CMD_SMAF_PARAM     0x07   /* Parameter for SMAF         */
+>  /* OEM Command payload lengths*/
+> +#define NCSI_OEM_INTEL_CMD_KEEP_PHY_LEN 7
+>  #define NCSI_OEM_BCM_CMD_GMA_LEN        12
+>  #define NCSI_OEM_MLX_CMD_GMA_LEN        8
+>  #define NCSI_OEM_MLX_CMD_SMAF_LEN        60
+> @@ -271,6 +275,7 @@ enum {
+>         ncsi_dev_state_probe_mlx_gma,
+>         ncsi_dev_state_probe_mlx_smaf,
+>         ncsi_dev_state_probe_cis,
+> +       ncsi_dev_state_probe_keep_phy,
+>         ncsi_dev_state_probe_gvi,
+>         ncsi_dev_state_probe_gc,
+>         ncsi_dev_state_probe_gls,
+> diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
+> index 42b54a3da2e6..89c7742cd72e 100644
+> --- a/net/ncsi/ncsi-manage.c
+> +++ b/net/ncsi/ncsi-manage.c
+> @@ -689,6 +689,35 @@ static int set_one_vid(struct ncsi_dev_priv *ndp, struct ncsi_channel *nc,
+>         return 0;
+>  }
+>
+> +#if IS_ENABLED(CONFIG_NCSI_OEM_CMD_KEEP_PHY)
 > +
->   /* bit 15:12 are reserved */
->   #define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function of LED3 */
->   #define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function of LED2 */
-> @@ -157,6 +162,82 @@
->   #define PHY_ID_PHY11G_VR9_1_2		0xD565A409
->   #define PHY_ID_PHY22F_VR9_1_2		0xD565A419
->   
-> +#if IS_ENABLED(CONFIG_OF_MDIO)
-> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000, 2500,
-> +					 3000, 3500};
-> +
-> +static int xway_gphy_of_reg_init(struct phy_device *phydev)
+> +static int ncsi_oem_keep_phy_intel(struct ncsi_cmd_arg *nca)
 > +{
-> +	struct device *dev = &phydev->mdio.dev;
-> +	unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
-> +	s32 int_delay;
-> +	int val = 0;
+> +       unsigned char data[NCSI_OEM_INTEL_CMD_KEEP_PHY_LEN];
+> +       int ret = 0;
 > +
-> +	if (!phy_interface_is_rgmii(phydev))
-> +		return 0;
+> +       nca->payload = NCSI_OEM_INTEL_CMD_KEEP_PHY_LEN;
 > +
-> +	/* Existing behavior was to use default pin strapping delay in rgmii
-> +	 * mode, but rgmii should have meant no delay.  Warn existing users,
-> +	 * but do not change anything at the moment.
-> +	 */
-> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
-> +		u16 txskew, rxskew;
+> +       memset(data, 0, NCSI_OEM_INTEL_CMD_KEEP_PHY_LEN);
+> +       *(unsigned int *)data = ntohl((__force __be32)NCSI_OEM_MFR_INTEL_ID);
 > +
-> +		val = phy_read(phydev, XWAY_MDIO_MIICTRL);
-> +		if (val < 0)
-> +			return val;
+> +       data[4] = NCSI_OEM_INTEL_CMD_KEEP_PHY;
 > +
-> +		txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
-> +		rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK, val);
+> +       /* PHY Link up attribute */
+> +       data[6] = 0x1;
 > +
-> +		if (txskew > 0 || rxskew > 0)
-> +			phydev_warn(phydev,
-> +				    "PHY has delays (e.g. via pin strapping), but phy-mode = 'rgmii'\n"
-> +				    "Should be 'rgmii-id' to use internal delays txskew:%d ps rxskew:%d ps\n",
-> +				    xway_internal_delay[txskew],
-> +				    xway_internal_delay[rxskew]);
-> +		return 0;
-> +	}
+> +       nca->data = data;
 > +
-> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
-> +		int_delay = phy_get_internal_delay(phydev, dev,
-> +						   xway_internal_delay,
-> +						   delay_size, true);
-> +
-> +		if (int_delay < 0) {
-> +			phydev_warn(phydev, "rx-internal-delay-ps is missing, use default of 2.0 ns\n");
-> +			int_delay = 4; /* 2000 ps */
-> +		}
-> +
-> +		val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK, int_delay);
-> +	}
-> +
-> +	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-> +		int_delay = phy_get_internal_delay(phydev, dev,
-> +						   xway_internal_delay,
-> +						   delay_size, false);
-> +
-> +		if (int_delay < 0) {
-> +			phydev_warn(phydev, "tx-internal-delay-ps is missing, use default of 2.0 ns\n");
-> +			int_delay = 4; /* 2000 ps */
-> +		}
-> +
-> +		val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK, int_delay);
-> +	}
-> +
-> +	return phy_modify(phydev, XWAY_MDIO_MIICTRL,
-> +			  XWAY_MDIO_MIICTRL_RXSKEW_MASK |
-> +			  XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
+> +       ret = ncsi_xmit_cmd(nca);
+> +       if (ret)
+> +               netdev_err(nca->ndp->ndev.dev,
+> +                          "NCSI: Failed to transmit cmd 0x%x during configure\n",
+> +                          nca->type);
+> +       return ret;
 > +}
-> +#else
-> +static int xway_gphy_of_reg_init(struct phy_device *phydev)
-> +{
-> +	return 0;
-> +}
-> +#endif /* CONFIG_OF_MDIO */
 > +
->   static int xway_gphy_config_init(struct phy_device *phydev)
->   {
->   	int err;
-> @@ -204,6 +285,10 @@ static int xway_gphy_config_init(struct phy_device *phydev)
->   	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
->   	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
->   
-> +	err = xway_gphy_of_reg_init(phydev);
-> +	if (err)
-> +		return err;
+> +#endif
 > +
->   	return 0;
->   }
->   
-> 
-
+>  #if IS_ENABLED(CONFIG_NCSI_OEM_CMD_GET_MAC)
+>
+>  /* NCSI OEM Command APIs */
+> @@ -1391,8 +1420,24 @@ static void ncsi_probe_channel(struct ncsi_dev_priv *ndp)
+>                                 goto error;
+>                 }
+>
+> +               nd->state = ncsi_dev_state_probe_gvi;
+> +               if (IS_ENABLED(CONFIG_NCSI_OEM_CMD_KEEP_PHY))
+> +                       nd->state = ncsi_dev_state_probe_keep_phy;
+> +               break;
+> +#if IS_ENABLED(CONFIG_NCSI_OEM_CMD_KEEP_PHY)
+> +       case ncsi_dev_state_probe_keep_phy:
+> +               ndp->pending_req_num = 1;
+> +
+> +               nca.type = NCSI_PKT_CMD_OEM;
+> +               nca.package = ndp->active_package->id;
+> +               nca.channel = 0;
+> +               ret = ncsi_oem_keep_phy_intel(&nca);
+> +               if (ret)
+> +                       goto error;
+> +
+>                 nd->state = ncsi_dev_state_probe_gvi;
+>                 break;
+> +#endif /* CONFIG_NCSI_OEM_CMD_KEEP_PHY */
+>         case ncsi_dev_state_probe_gvi:
+>         case ncsi_dev_state_probe_gc:
+>         case ncsi_dev_state_probe_gls:
+> --
+> 2.31.1
+>
