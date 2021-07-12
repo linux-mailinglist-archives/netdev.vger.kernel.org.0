@@ -2,149 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5A513C5C26
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A8133C5C27
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233783AbhGLMaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 08:30:02 -0400
-Received: from mail-dm6nam10on2041.outbound.protection.outlook.com ([40.107.93.41]:16067
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230210AbhGLMaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 08:30:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LusUqCZWuRRumUGtOTNusodMQbKe1Y1YXcn2xhiAPOtBnLwYRuDaJwQLidSQ/HBfIWnP5NBHfG6cCaTekJW9xqdZA2eVhMbUwVPfUCnc8h3NnooQVR9uQDZds8JdVKi0x3Hqj8O+PiHlweUgKIILNle2Q2t75zzLsadS0/fIHryyvHLqchOHFCrkVduhbg9KlGl0f8CbmvQDunaoaXAs0ugCQBjKEAlrOMkYZvQWio5pEI9Mjw8gXWbMlIDpbaFzfrFuUsaWMAxw6xAY6pOhYingnNoMbLkl/rRmMyc2HHzTteQBMh72ZPWLhMzh3+TxfkjewRIwBN2lrLX85rKuoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5N4JUejIw0XxvpMVZQ+G3PCyzzxM76s3vl0UiGPhdgk=;
- b=mfbKM3xwAEW398X2v15IqaKYOss94zuvdhv7nBINfarV2RgtvvsQ9Gpsn5ZQtffndUViMCt04psT7szXbo/5QzJWUmgk/9vo+iJ2OolIhmmtTcVSZtgB3ks6o2m+vJoGFcBiP8HbCGHM8dNPBiflsJQd3j2S8Rb0jHqi1x9fnjGvkJQcGxEElC210HxwsNxiQ0ZnujjepWGgVsSsxD2ggw5mDvekJhgy80HG579m9v6QWTYQMG8VF6WKZR1q+e3126alGDkDWIQGOqIz2xXmHd8wFa94xFajHbTlZBh8BL18jiltCABZv20/CJYFpn2K7wXfcgtqwjg/mhyYi4mdvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.32) smtp.rcpttodomain=mojatatu.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5N4JUejIw0XxvpMVZQ+G3PCyzzxM76s3vl0UiGPhdgk=;
- b=GMdhhv0RIzs6UgntZd0kwta8oLV0TGjmRqVIdfy3VGMYZTxIS2TZtg9/JdbhBvlBnMP0mDsij6N9wb53T1rN5h/oXFfpQwUKGbi7dh5n4hWlx7BZnfCt991Wx6ON5ShYbXd7dxGferX+fxj50MWyP5RwO5dPCnWXH9XMsEZ8z2dvlRvQz4AqGgs+3YNUNUWuC5aE+eyZIRoLuWUdBHV37dGTD2I2Bn398wJEqmhRP+fHE1nAw7odZNwl8gcfXA6R1lOiblpPa/cLUljKkPNYwFnr/WW4yX2CVsS+1HRZTUg9Z/31Q7Tf5aglwh81HFu9BMhsldw7oVKnkqzZ8Nk0zQ==
-Received: from DM6PR07CA0082.namprd07.prod.outlook.com (2603:10b6:5:337::15)
- by DM6PR12MB4372.namprd12.prod.outlook.com (2603:10b6:5:2af::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.21; Mon, 12 Jul
- 2021 12:27:12 +0000
-Received: from DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:337:cafe::c7) by DM6PR07CA0082.outlook.office365.com
- (2603:10b6:5:337::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.19 via Frontend
- Transport; Mon, 12 Jul 2021 12:27:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.32)
- smtp.mailfrom=nvidia.com; mojatatu.com; dkim=none (message not signed)
- header.d=none;mojatatu.com; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.32 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.32; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.32) by
- DM6NAM11FT064.mail.protection.outlook.com (10.13.172.234) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4308.20 via Frontend Transport; Mon, 12 Jul 2021 12:27:12 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 12 Jul
- 2021 05:27:11 -0700
-Received: from dev-r-vrt-138.mtr.labs.mlnx (172.20.187.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 12 Jul 2021 12:27:09 +0000
-From:   Roi Dayan <roid@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     Roi Dayan <roid@nvidia.com>, David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        "Stephen Hemminger" <stephen@networkplumber.org>
-Subject: [PATCH iproute2 1/1] police: Fix normal output back to what it was
-Date:   Mon, 12 Jul 2021 15:26:53 +0300
-Message-ID: <20210712122653.100652-1-roid@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S232067AbhGLMbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 08:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230207AbhGLMbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 08:31:33 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8AAC0613DD
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 05:28:45 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id s18so23925186ljg.7
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 05:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=PV4kOyQL1JsbRKkeKC/Gl82LBI1CwryP6/UZTJktqvo=;
+        b=tRz8ZITx4e8sWUdV8lpH2Z6whRgaAkR9OpCccL8jSs2TzORA/IVUkCDmQK2WCknzeW
+         vg3O1mfMxtssvqo/nq0mRAinJRmmzHw7Rc9NPdc+jQ8ZHuwbKvL6G4naQIo6WGUO7zqd
+         juoe4xbiqcQDq4BQeeY6XJSHqk/xPC7rRVlPppx2kYUE5l0v/9at6ONt4WkwHRof1quL
+         3Y61qBrKoQ2CRMxfUUSF5dSybuRj+Xw3antKhYRjjEj5oKVWGsYta7W5WEBpcD55mxbL
+         ueS+Q18YETQpSs+AxPWo18EE59zDf75jCezvxQad3LvKTdSebHEZI5eSvuTedFGeLRG1
+         K45g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=PV4kOyQL1JsbRKkeKC/Gl82LBI1CwryP6/UZTJktqvo=;
+        b=lw8h/6u6Ax65wCqMK8l9mP52ekMYB07p9+UHgaggo/mQfBmoJUXbkeBewpL+9VA3C/
+         cBwlC8f/2WLavyZZqtEh4AsAghuoNu/5scj0qNpwowxykdm/7yoSTAP0B2lRibWIsM+P
+         q26NtKsPc/a6r9Te1JAD6i3yzF2MmRHicnWOH7j/0UtnEHIapVRAHphbOpDDm2iGBuOd
+         URzPuTVEmNDOPPplEXw+tFdr5GW9Og1SDJdbrVf2duN4RcBbDXa4X2SePgooOhF2iaFQ
+         2THKtsIYs5YA3ate2CO2Rz77Bv8Rjx9wotdsgXdK02AupYngGkgEuebGHJ4hhSJVB+K5
+         Bp8w==
+X-Gm-Message-State: AOAM531YtnzKmFuZCOXRyiiumv/HNAw+JAOZyn+Fq8ICQWW61eWDQnNX
+        PPD+ky0JKzovy0drLLelXe5pdw==
+X-Google-Smtp-Source: ABdhPJwSizldBKVPyfAIoWGmj7tVm64OWq085uMjLYhDEQJnU3uRoGIjzTZ4JFBUEIeUQMTheSePcg==
+X-Received: by 2002:a05:651c:555:: with SMTP id q21mr15349536ljp.62.1626092923916;
+        Mon, 12 Jul 2021 05:28:43 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id u11sm1569978lja.129.2021.07.12.05.28.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jul 2021 05:28:43 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "bridge\@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [RFC PATCH v2 net-next 04/10] net: bridge: switchdev: allow the data plane forwarding to be offloaded
+In-Reply-To: <20210709140940.4ak5vvt5hxay3wus@skbuf>
+References: <20210703115705.1034112-1-vladimir.oltean@nxp.com> <20210703115705.1034112-5-vladimir.oltean@nxp.com> <3686cff1-2a80-687e-7c64-cf070a0f5324@ti.com> <20210709140940.4ak5vvt5hxay3wus@skbuf>
+Date:   Mon, 12 Jul 2021 14:28:42 +0200
+Message-ID: <87r1g37m2t.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a699fbb7-b4f4-41ce-a125-08d94530603a
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4372:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4372C98F98C6B91472C5A672B8159@DM6PR12MB4372.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:291;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 47Z4+OkG/CRp5Ddvj8XMN3fqyBMloxgDohTpMlEjNQ8wy8DgoFXFeNx3tdpmC5Rlyk+Ikd263J/FdqhmAsdsFKlDHiDqiM5/6zbpQQXmE5o2V3y10guzv5oADqNvFqWLB92lAO/EnnzqHFZwo+BwIrI+14seJQ0EApVcJYtTd+cy1+sUss9i2Qw60wlA1Tq0qSPedWtkBYxT9i9ZtZ40zKYsttLHgywjuNO0MvmBC/L8Y8JHjSwSKiEicpRE9gk/SfGL2AuwWZGRiNcTZFOADnyvzB88ejhAq5Kol4rHwm+r007lltGrljvRysuGL6GvV4eF3IsmifBLWGqJlH1lyqX+3yR8W2jBdZQO+37pDNK+FV67GUkzA/dG9Gi2YkQj6JkESV3eqyjLpYPvEuyns3rei75f0qUYo5ECBcLYa6H2JFJd2XU9tFmLVrmfJu2sFaBvkSFLO0BXntWf4sZ5pGVeQykvbgMnUdnHIpXNC2+QmYOH6SzbPaCUSWuXdBFolXnrqA0wQX0bFC2KOG1t8a1CqG6hbYMGIqPazONSokBiKkqdxVwv20EYTbX+QCUOA7XzI1hLqcN4dcquU+gleW3ZrHe9YTI0idWnvRd8URv8qM3I9oFOsxVFLtCiYEY3WHxZuuJ9IBjpphGe6jYZ5PtjvQet6SQxdLMHlO8gjgOJAvJ2Y4+HPcEVbA5M5G4onqm+c6REseKzekWYV0vhnEZH37ReZkecQbom1bbhHm8=
-X-Forefront-Antispam-Report: CIP:216.228.112.32;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid01.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(136003)(396003)(36840700001)(46966006)(336012)(1076003)(426003)(6666004)(2906002)(34020700004)(82310400003)(36860700001)(82740400003)(186003)(6916009)(70206006)(47076005)(316002)(70586007)(26005)(478600001)(54906003)(36756003)(83380400001)(86362001)(7636003)(2616005)(356005)(5660300002)(8676002)(4326008)(8936002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2021 12:27:12.3728
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a699fbb7-b4f4-41ce-a125-08d94530603a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.32];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4372
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the json support fix the normal output was
-changed. set it back to what it was.
-Print overhead with print_size().
-Print newline before ref.
+On Fri, Jul 09, 2021 at 14:09, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> Hi Grygorii,
+>
+> On Fri, Jul 09, 2021 at 04:16:13PM +0300, Grygorii Strashko wrote:
+>> On 03/07/2021 14:56, Vladimir Oltean wrote:
+>> > From: Tobias Waldekranz <tobias@waldekranz.com>
+>> >
+>> > Allow switchdevs to forward frames from the CPU in accordance with the
+>> > bridge configuration in the same way as is done between bridge
+>> > ports. This means that the bridge will only send a single skb towards
+>> > one of the ports under the switchdev's control, and expects the driver
+>> > to deliver the packet to all eligible ports in its domain.
+>> >
+>> > Primarily this improves the performance of multicast flows with
+>> > multiple subscribers, as it allows the hardware to perform the frame
+>> > replication.
+>> >
+>> > The basic flow between the driver and the bridge is as follows:
+>> >
+>> > - The switchdev accepts the offload by returning a non-null pointer
+>> >    from .ndo_dfwd_add_station when the port is added to the bridge.
+>> >
+>> > - The bridge sends offloadable skbs to one of the ports under the
+>> >    switchdev's control using dev_queue_xmit_accel.
+>> >
+>> > - The switchdev notices the offload by checking for a non-NULL
+>> >    "sb_dev" in the core's call to .ndo_select_queue.
+>>
+>> Sry, I could be missing smth.
+>>
+>> Is there any possibility to just mark skb itself as "fwd_offload" (or smth), so driver can
+>> just check it and decide what to do. Following you series:
+>> - BR itself will send packet only once to one port if fwd offload possible and supported
+>> - switchdev driver can check/negotiate BR_FWD_OFFLOAD flag
+>>
+>> In our case, TI CPSW can send directed packet (default now), by specifying port_id if DMA desc
+>> or keep port_id == 0 which will allow HW to process packet internally, including MC duplication.
+>>
+>> Sry, again, but necessity to add 3 callbacks and manipulate with "virtual" queue to achieve
+>> MC offload (seems like one of the primary goals) from BR itself looks a bit over-complicated :(
+>
+> After cutting my teeth myself with Tobias' patches, I tend to agree with
+> the idea that the macvlan offload framework is not a great fit for the
+> software bridge data plane TX offloading. Some reasons:
 
-Fixes: 0d5cf51e0d6c ("police: Add support for json output")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
----
- tc/m_police.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+I agree. I was trying to find an API that would not require adding new
+.ndos or other infrastructure. You can see in my original RFC cover that
+this was something I wrestled with. 
 
-diff --git a/tc/m_police.c b/tc/m_police.c
-index 2594c08979e0..f38ab90a3039 100644
---- a/tc/m_police.c
-+++ b/tc/m_police.c
-@@ -278,7 +278,7 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
- 	__u64 rate64, prate64;
- 	__u64 pps64, ppsburst64;
- 
--	print_string(PRINT_ANY, "kind", "%s", "police");
-+	print_string(PRINT_JSON, "kind", "%s", "police");
- 	if (arg == NULL)
- 		return 0;
- 
-@@ -301,7 +301,8 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
- 	    RTA_PAYLOAD(tb[TCA_POLICE_RATE64]) >= sizeof(rate64))
- 		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
- 
--	print_uint(PRINT_ANY, "index", "\t index %u ", p->index);
-+	print_hex(PRINT_FP, NULL, " police 0x%x ", p->index);
-+	print_uint(PRINT_JSON, "index", NULL, p->index);
- 	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
- 	buffer = tc_calc_xmitsize(rate64, p->burst);
- 	print_size(PRINT_FP, NULL, "burst %s ", buffer);
-@@ -342,12 +343,13 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
- 		print_string(PRINT_FP, NULL, " ", NULL);
- 	}
- 
--	print_uint(PRINT_ANY, "overhead", "overhead %u ", p->rate.overhead);
-+	print_size(PRINT_ANY, "overhead", "overhead %s ", p->rate.overhead);
- 	linklayer = (p->rate.linklayer & TC_LINKLAYER_MASK);
- 	if (linklayer > TC_LINKLAYER_ETHERNET || show_details)
- 		print_string(PRINT_ANY, "linklayer", "linklayer %s ",
- 			     sprint_linklayer(linklayer, b2));
--	print_int(PRINT_ANY, "ref", "ref %d ", p->refcnt);
-+	print_nl();
-+	print_int(PRINT_ANY, "ref", "\tref %d ", p->refcnt);
- 	print_int(PRINT_ANY, "bind", "bind %d ", p->bindcnt);
- 	if (show_stats) {
- 		if (tb[TCA_POLICE_TM]) {
--- 
-2.26.2
+> - the sb_dev pointer is necessary for macvlan because you can have
+>   multiple macvlan uppers and you need to know which one this packet
+>   came from. Whereas in the case of a bridge, any given switchdev net
+>   device can have a single bridge upper. So a single bit per skb,
+>   possibly even skb->offload_fwd_mark, could be used to encode this bit
+>   of information: please look up your FDB for this packet and
+>   forward/replicate it accordingly.
 
+In fact, in the version I was about to publish, I reused
+skb->offload_fwd_mark to encode precisely this property. It works really
+well. Maybe I should just publish it, even with the issues regarding
+mv88e6xxx. Let me know if you want to take a look at it.
+
+> - I am a bit on the fence about the "net: allow ndo_select_queue to go
+>   beyond dev->num_real_tx_queues" and "net: extract helpers for binding
+>   a subordinate device to TX queues" patches, they look like the wrong
+>   approach overall, just to shoehorn our use case into a framework that
+>   was not meant to cover it.
+
+Yep.
+
+> - most importantly: Ido asked about the possibility for a switchdev to
+>   accelerate the data plane for a bridge port that is a LAG upper. In the
+>   current design, where the bridge attempts to call the
+>   .ndo_dfwd_add_station method of the bond/team driver, this will not
+>   work. Traditionally, switchdev has migrated away from ndo's towards
+>   notifiers because of the ability for a switchdev to intercept the
+>   notifier emitted by the bridge for the bonding interface, and to treat
+>   it by itself. So, logically speaking, it would make more sense to
+>   introduce a new switchdev notifier for TX data plane offloading per
+>   port. Actually, now that I'm thinking even more about this, it would
+>   be great not only if we could migrate towards notifiers, but if the
+>   notification could be emitted by the switchdev driver itself, at
+
+I added pass-through implementations of these .ndos to make it work on
+top of LAGs, but a notifier is much cleaner.
+
+>   bridge join time. Once upon a time I had an RFC patch that changed all
+>   switchdev drivers to inform the bridge that they are capable of
+>   offloading the RX data plane:
+>   https://patchwork.kernel.org/project/netdevbpf/patch/20210318231829.3892920-17-olteanv@gmail.com/
+
+Really like this approach! It also opens up the possibility of disabling
+it manually (something like `ethtool -K swp0 bridge-{rx, tx} off`). This
+will allow you to run a DPI firewall on a specific port in a LAN, for
+example.
+
+>   That patch was necessary because the bridge, when it sees a bridge
+>   port that is a LAG, and the LAG is on top of a switchdev, will assign
+>   the port hwdom based on the devlink switch ID of the switchdev. This
+>   is wrong because it assumes that the switchdev offloads the LAG, but
+>   in the vast majority of cases this is false, only a handful of
+>   switchdev drivers have LAG offload right now. So the expectation is
+>   that the bridge can do software forwarding between such LAG comprised
+>   of two switchdev interfaces, and a third (standalone) switchdev
+>   interface, but it doesn't do that, because to the bridge, all ports
+>   have the same hwdom.
+>   Now it seems common sense that I pick up this patch again and make the
+>   switchdev drivers give 2 pieces of information:
+>   (a) can I offload the RX data path
+>   (b) can I offload the TX data path
+>
+> I can try to draft another RFC with these changes.
