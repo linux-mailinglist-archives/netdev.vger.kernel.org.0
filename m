@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E47D3C513B
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EABB13C4C0B
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345589AbhGLHi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 03:38:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56796 "EHLO mail.kernel.org"
+        id S242168AbhGLHB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 03:01:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347328AbhGLHer (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 03:34:47 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EF57B6140E;
-        Mon, 12 Jul 2021 07:31:43 +0000 (UTC)
+        id S242176AbhGLG7t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 02:59:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 170086102A;
+        Mon, 12 Jul 2021 06:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1626075104;
+        s=korg; t=1626073021;
         bh=VxsMsNEiiHntLXbNFK2z5oizrRdubsB1rGTW5mKr68U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g1vCap3UZjMvmpgQ+KDe7S0sOF5FWGETR+TeIlTzBFNzbe0JgB12p8iLXdiHuUvjA
-         lObQ87EWqJgaFeJT8OMoiPFFtV3COnT/QicAvBbuCHqlYwBZhwZeeKAM/gGDrQZJop
-         EwTRws2BoM8F8VqUi8WsPpFFFnVSZfFKvVIAl56I=
+        b=vKjDDZPs0Brtqig1Runf6e0jMiR4cSTb6GMUEK2TGPsPJBVOnGMQbGmh57Bnez03S
+         7N6nxCuwQhngDqwKDo2F4igjqavmrGB9iBevPkOkYM1h8QlgL3b9P/xcLa9SvLdv1h
+         lC5NPbYBqFtmP9sPbfjbUKXrjg6L4q3KUTlV7A8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -34,12 +34,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
         Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
         Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 5.13 106/800] rsi: Assign beacon rate settings to the correct rate_info descriptor field
-Date:   Mon, 12 Jul 2021 08:02:09 +0200
-Message-Id: <20210712060927.947850173@linuxfoundation.org>
+Subject: [PATCH 5.12 100/700] rsi: Assign beacon rate settings to the correct rate_info descriptor field
+Date:   Mon, 12 Jul 2021 08:03:03 +0200
+Message-Id: <20210712060938.952747681@linuxfoundation.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210712060912.995381202@linuxfoundation.org>
-References: <20210712060912.995381202@linuxfoundation.org>
+In-Reply-To: <20210712060924.797321836@linuxfoundation.org>
+References: <20210712060924.797321836@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
