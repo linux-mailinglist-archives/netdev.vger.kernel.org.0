@@ -2,142 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C223C411A
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 03:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F33713C4125
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 04:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbhGLBua (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 21:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbhGLBua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 21:50:30 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F76C0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 18:47:41 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id h1-20020a17090a3d01b0290172d33bb8bcso11844600pjc.0
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 18:47:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u4xbfLFX+/W2B7LYHKOHHB5UcvMTe8xD2T2DiUU3L/0=;
-        b=A0XriHvfmdq0x6krcPQmnuguoqqKZ0KDz6p8dazbD6IoXJ+bFNbexZkwVBffxbJV2e
-         86qyX1nWzZ4v5P3PszaU1DbIRoK1UkiwtHqDpHEQU/NmjSZPTitLaKdydpgwLBwKVRDv
-         bdTScWHTedKighbVruQNxJMEXdJwxnl0AqkZNfe1ZVXnVkscCA1hWkpOCTojgRx7UjAw
-         PZNs9YisXWvVzJbmIzXi80Y80D23NzJpGR3nOW6mJSbH6eIpkEEFuGPfgvoeadAhOmIN
-         LkrXi1vA6ZNJZTb7D82vtICRnIK9I7ERveaCLUlPXcqQc43Ctyz5eqUrf1122FDUXuS+
-         8OxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u4xbfLFX+/W2B7LYHKOHHB5UcvMTe8xD2T2DiUU3L/0=;
-        b=eJPI0lcYLQYWwfNJNmXFK00Mr3TlllELC0Z7pPeJSaPHtE2yP8FZowAktFSc/dwXif
-         /hIhoFl5SetguQVQmzze+cMur7gji2GOsuHHEJhpt2uy/ZSfpcP2Nz2W8xA7Xy4l3EeU
-         TqCP2QwF+8Hbo4bz9Xedm+0OlwOr6u8cLhQ+W3DJIZLpyofM7JCV+ldpC03RImeohuA2
-         F5SzL+MCiNPnC0YxKqbI8yT7EMo1RubuhHZAivWVWN5/u/vrt6MknyqAfGvOlnt3FP1K
-         z5/8JwHHtpFOaifSXHtjt7rp8YxosMUY2c2bNTLkXo5K2iKQBRIabMc26Kji1G2b37JG
-         mqjg==
-X-Gm-Message-State: AOAM532p1Szni4zebX9DNaFGDPw84/nImtAkrbU5d/TUiNLlc0BaEkPT
-        DPNv/Dqh1m8W/RAFp/8DSfiyOi5ttPxofCW8UaY=
-X-Google-Smtp-Source: ABdhPJzAwgzZDqtejJYzyYuP/oW+s/zjRjq5ztW+tfKQXrKrEtSS0C4yMNK92Pmf14QBepBnwow3JVfdaBohjvOJC1k=
-X-Received: by 2002:a17:90a:7bc3:: with SMTP id d3mr2228698pjl.145.1626054461442;
- Sun, 11 Jul 2021 18:47:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210711190308.8476-1-xiyou.wangcong@gmail.com> <CAMDZJNWWq2TGb6-nZRbBNfLevOyD2oSn941Nw_+7q0QzVep_GA@mail.gmail.com>
-In-Reply-To: <CAMDZJNWWq2TGb6-nZRbBNfLevOyD2oSn941Nw_+7q0QzVep_GA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 11 Jul 2021 18:47:30 -0700
-Message-ID: <CAM_iQpUmO8S-7cgG=yy2TsNoc9nHpW__-WCfhcfV-_eAf46K7A@mail.gmail.com>
-Subject: Re: [Patch net-next v2] net_sched: introduce tracepoint trace_qdisc_enqueue()
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Qitao Xu <qitao.xu@bytedance.com>,
+        id S232240AbhGLCJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Jul 2021 22:09:15 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:6911 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229660AbhGLCJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 22:09:14 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GNRqc4rdBz7BQ6;
+        Mon, 12 Jul 2021 10:02:52 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 12 Jul 2021 10:06:02 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 12 Jul
+ 2021 10:06:02 +0800
+Subject: Re: [PATCH rfc v2 3/5] page_pool: add page recycling support based on
+ elevated refcnt
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, "Salil Mehta" <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
+        <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Alexander Lobakin" <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
         Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+        Kevin Hao <haokexin@gmail.com>, <nogikh@google.com>,
+        Marco Elver <elver@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
+ <1625903002-31619-4-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Udnb_KgHyWiwxDF+r+DkytgZd4CQJz4QR85JpinhZAJzw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <d45619d1-5235-9dd4-77aa-497fa1115c80@huawei.com>
+Date:   Mon, 12 Jul 2021 10:06:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
+MIME-Version: 1.0
+In-Reply-To: <CAKgT0Udnb_KgHyWiwxDF+r+DkytgZd4CQJz4QR85JpinhZAJzw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme719-chm.china.huawei.com (10.1.199.115) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 11, 2021 at 5:50 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> On Mon, Jul 12, 2021 at 3:03 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > From: Qitao Xu <qitao.xu@bytedance.com>
-> >
-> > Tracepoint trace_qdisc_enqueue() is introduced to trace skb at
-> > the entrance of TC layer on TX side. This is kinda symmetric to
-> > trace_qdisc_dequeue(), and together they can be used to calculate
-> > the packet queueing latency. It is more accurate than
-> > trace_net_dev_queue(), because we already successfully enqueue
-> > the packet at that point.
-> >
-> > Note, trace ring buffer is only accessible to privileged users,
-> > it is safe to use %px to print a real kernel address here.
-> >
-> > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > Cc: Jiri Pirko <jiri@resnulli.us>
-> > Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
-> > ---
-> >  include/trace/events/qdisc.h | 26 ++++++++++++++++++++++++++
-> >  net/core/dev.c               |  9 +++++++++
-> >  2 files changed, 35 insertions(+)
-> >
-> > diff --git a/include/trace/events/qdisc.h b/include/trace/events/qdisc.h
-> > index 58209557cb3a..c3006c6b4a87 100644
-> > --- a/include/trace/events/qdisc.h
-> > +++ b/include/trace/events/qdisc.h
-> > @@ -46,6 +46,32 @@ TRACE_EVENT(qdisc_dequeue,
-> >                   __entry->txq_state, __entry->packets, __entry->skbaddr )
-> >  );
-> >
-> > +TRACE_EVENT(qdisc_enqueue,
-> > +
-> > +       TP_PROTO(struct Qdisc *qdisc, const struct netdev_queue *txq, struct sk_buff *skb),
-> > +
-> > +       TP_ARGS(qdisc, txq, skb),
-> > +
-> > +       TP_STRUCT__entry(
-> > +               __field(struct Qdisc *, qdisc)
-> > +               __field(void *, skbaddr)
-> > +               __field(int, ifindex)
-> > +               __field(u32, handle)
-> > +               __field(u32, parent)
-> > +       ),
-> > +
-> > +       TP_fast_assign(
-> > +               __entry->qdisc = qdisc;
-> > +               __entry->skbaddr = skb;
-> > +               __entry->ifindex = txq->dev ? txq->dev->ifindex : 0;
-> > +               __entry->handle  = qdisc->handle;
-> > +               __entry->parent  = qdisc->parent;
-> > +       ),
-> Hi qitao, cong
-> Why not support the txq, we get more info from txq.
+On 2021/7/11 1:31, Alexander Duyck wrote:
+> On Sat, Jul 10, 2021 at 12:44 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> <snip>
+>> @@ -419,6 +471,20 @@ static __always_inline struct page *
+>>  __page_pool_put_page(struct page_pool *pool, struct page *page,
+>>                      unsigned int dma_sync_size, bool allow_direct)
+>>  {
+>> +       int bias = page_pool_get_pagecnt_bias(page);
+>> +
+>> +       /* Handle the elevated refcnt case first */
+>> +       if (bias) {
+>> +               /* It is not the last user yet */
+>> +               if (!page_pool_bias_page_recyclable(page, bias))
+>> +                       return NULL;
+>> +
+>> +               if (likely(!page_is_pfmemalloc(page)))
+>> +                       goto recyclable;
+>> +               else
+>> +                       goto unrecyclable;
+>> +       }
+>> +
+> 
+> So this part is still broken. Anything that takes a reference to the
+> page and holds it while this is called will cause it to break. For
+> example with the recent fixes we put in place all it would take is a
+> skb_clone followed by pskb_expand_head and this starts leaking memory.
 
-Because we only want to calculate queueing latency, not anything
-else. If you need it, you are welcome to add anything reasonable
-in the future, it won't break ABI (see 3dd344ea84e122f791ab).
+Ok, it seems the fix is confilcting with the expectation this patch is
+based, which is "the last user will always call page_pool_put_full_page()
+in order to do the recycling or do the resource cleanup(dma unmaping..etc)
+and freeing.".
 
-> and we should take care of the return value of q->enqueue, because we
-> can know what happens in the qdisc queue(not necessary to work with
-> qdisc:dequeue).
-> and we can use a tracepoint filter for the return value too.
+As the user of the new skb after skb_clone() and pskb_expand_head() is
+not aware of that their frag page may still be in the page pool after
+the fix?
 
-Disagree. Because we really have no interest in dropped packets.
-Even if we really do, we could trace kfree_skb(), not really here.
+> 
+> One of the key bits in order for pagecnt_bias to work is that you have
+> to deduct the bias once there are no more parties using it. Otherwise
+> you leave the reference count artificially inflated and the page will
+> never be freed. It works fine for the single producer single consumer
+> case but once you introduce multiple consumers this is going to fall
+> apart.
 
-> we should introduce a new function to instead of now codes, that may
-> make the codes clean.  Please review my patch for more info.
+It seems we have diffferent understanding about consumer, I treat the
+above user of new skb after skb_clone() and pskb_expand_head() as the
+consumer of the page pool too, so that new skb should keep the recycle
+bit in order for that to happen.
 
-Just 3 lines of code, it is totally personal taste.
+If the semantic is "the new user of a page should not be handled by page
+pool if page pool is not aware of the new user(the new user is added by
+calling page allocator API instead of calling the page pool API, like the
+skb_clone() and pskb_expand_head() above) ", I suppose I am ok with that
+semantic too as long as the above semantic is aligned with the people
+involved.
 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210711050007.1200-1-xiangxia.m.yue@gmail.com/
+Also, it seems _refcount and dma_addr in "struct page" is in the same cache
+line, which means there is already cache line bouncing already between _refcount
+and dma_addr updating, so it may makes senses to only use bias to indicate
+number of the page pool user for a page, instead of using "bias - page_ref_count",
+as the page_ref_count is not reliable if somebody is using the page allocator API
+directly.
 
-I did review it. Like I said, %p does not work. Have you tested your
-patches? ;)
+And the trick part seems to be how to make the bias atomic for allocating and
+freeing.
 
-Thanks.
+Any better idea?
+
+> .
+> 
