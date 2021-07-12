@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26BA23C5BDD
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFB23C5BF1
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233640AbhGLML5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 08:11:57 -0400
-Received: from novek.ru ([213.148.174.62]:50896 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230074AbhGLMLz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 08:11:55 -0400
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S233866AbhGLMRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 08:17:40 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:53964
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230074AbhGLMRh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 08:17:37 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id ACF5C503D9C;
-        Mon, 12 Jul 2021 15:06:49 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru ACF5C503D9C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1626091610; bh=R1OLzsI/VyWD5qZhdtHwndBDDqOtO0Ksy0X719XDFV4=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=q11ggXyEGXkCp+viGvWYWxhLMyEm0cRLUWs0lJ7QwxTD+GIqPUN2x7cIBRI4ncRaH
-         hY7175PhI7xklyMRTntoYvbnQ4+U181faA9WNNmMLCoeKOUNo22DzqlJVDC/8US1NL
-         UEGJL8lIvW+GTGtA0dAzmhcmplPT+VwXciJBHasU=
-Subject: Re: [PATCH net 2/3] udp: check encap socket in __udp_lib_err
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Ahern <dsahern@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Xin Long <lucien.xin@gmail.com>,
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 5174B405AE;
+        Mon, 12 Jul 2021 12:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626092081;
+        bh=9cd7SB+YDylOyt5Q5dBTF8mzwTTXz59sqh18sE/UjxM=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=siSb/6wSXYwWx+DNORGB6EzQlm7CHMJFGVlLZNSB05IJkhUNQhl/VaepdhWdi0u7X
+         SIeKZP1dWfcSa+LuFRtWFNz40UMNjioQoGJe9Y5nAT40qp5bgEvqjAfjlA1MJjRgSW
+         92a7aGdOqs/aU0yDuJYB9T3Z3EaUbsFZvWNOLUdvGHK44UScXBK1UFHKSvisxDczLn
+         sp3T2G4Vb6tw5SkMh9oocoZMduXmS1VQwZbNVdLay2/kxdAyVGX5k8rnqP9YeL6cqw
+         GV0iwaXi0msLt1PtoEnn9Gv75RqGozxf5JnSzSiKw9/HKdRr53tuZZYcLyDrJRe3OW
+         3Hrm6BaTEIYvg==
+From:   Colin King <colin.king@canonical.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210712005554.26948-1-vfedorenko@novek.ru>
- <20210712005554.26948-3-vfedorenko@novek.ru>
- <CA+FuTSdCMqVqvUKfM3+3=B0k+2MQzB0+aNJJYQZP+d=k2dy34A@mail.gmail.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <ad38c217-b97d-d4ad-7689-f2728a804fbf@novek.ru>
-Date:   Mon, 12 Jul 2021 13:09:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Stefan Schmidt <stefan@osg.samsung.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] 6lowpan: iphc: Fix an off-by-one check of array index
+Date:   Mon, 12 Jul 2021 13:14:40 +0100
+Message-Id: <20210712121440.17860-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSdCMqVqvUKfM3+3=B0k+2MQzB0+aNJJYQZP+d=k2dy34A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.07.2021 08:59, Willem de Bruijn wrote:
-> On Mon, Jul 12, 2021 at 2:56 AM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
->>
->> Commit d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
->> added checks for encapsulated sockets but it broke cases when there is
->> no implementation of encap_err_lookup for encapsulation, i.e. ESP in
->> UDP encapsulation. Fix it by calling encap_err_lookup only if socket
->> implements this method otherwise treat it as legal socket.
->>
->> Fixes: d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
->> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->> ---
->>   net/ipv4/udp.c | 24 +++++++++++++++++++++++-
->>   net/ipv6/udp.c | 22 ++++++++++++++++++++++
->>   2 files changed, 45 insertions(+), 1 deletion(-)
-> 
-> This duplicates __udp4_lib_err_encap and __udp6_lib_err_encap.
-> 
-> Can we avoid open-coding that logic multiple times?
-> 
-Yes, sure. I was thinking about the same but wanted to get a feedback
-on approach itself. I will try to implement parts of that duplicates
-as helpers next round.
+From: Colin Ian King <colin.king@canonical.com>
+
+The bounds check of id is off-by-one and the comparison should
+be >= rather >. Currently the WARN_ON_ONCE check does not stop
+the out of range indexing of &ldev->ctx.table[id] so also add
+a return path if the bounds are out of range.
+
+Addresses-Coverity: ("Illegal address computation").
+Fixes: 5609c185f24d ("6lowpan: iphc: add support for stateful compression")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ net/6lowpan/debugfs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/6lowpan/debugfs.c b/net/6lowpan/debugfs.c
+index 1c140af06d52..600b9563bfc5 100644
+--- a/net/6lowpan/debugfs.c
++++ b/net/6lowpan/debugfs.c
+@@ -170,7 +170,8 @@ static void lowpan_dev_debugfs_ctx_init(struct net_device *dev,
+ 	struct dentry *root;
+ 	char buf[32];
+ 
+-	WARN_ON_ONCE(id > LOWPAN_IPHC_CTX_TABLE_SIZE);
++	if (WARN_ON_ONCE(id >= LOWPAN_IPHC_CTX_TABLE_SIZE))
++		return;
+ 
+ 	sprintf(buf, "%d", id);
+ 
+-- 
+2.31.1
+
