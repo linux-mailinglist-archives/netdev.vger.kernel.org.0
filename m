@@ -2,306 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E81053C5A1D
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8883C5A3E
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:03:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379987AbhGLJb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 05:31:27 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6916 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379931AbhGLJbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 05:31:25 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GNddp0G6lz7BZL;
-        Mon, 12 Jul 2021 17:25:02 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 17:28:33 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 12 Jul
- 2021 17:28:33 +0800
-Subject: Re: [Linuxarm] [PATCH rfc v3 3/4] page_pool: add page recycling
- support based on elevated refcnt
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-References: <1626081581-54524-1-git-send-email-linyunsheng@huawei.com>
- <1626081581-54524-5-git-send-email-linyunsheng@huawei.com>
-Message-ID: <7342ad1a-f272-f599-2ce4-e8019acbcbcb@huawei.com>
-Date:   Mon, 12 Jul 2021 17:28:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S237833AbhGLJnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 05:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237774AbhGLJnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 05:43:19 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF164C0613E5;
+        Mon, 12 Jul 2021 02:40:27 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id p4so4614513plo.11;
+        Mon, 12 Jul 2021 02:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=k4GGfq+hVsQvPEL9sGnkKkX1T5cHEpElvgl+H/D8GGg=;
+        b=EkbTRNsENXQloBh/r+302XMpUfivY4n/w5cVp65wMsO8W0nGbNZWXtUpGIviZUFMAy
+         hVFPC6f41UQksp8J6hOtkXkI1ILbHE9sNZcJkJnKx0RudbrlBVNOQLGk52plindDLFMf
+         0HidNEe5dnhfekaP3FOVdL3ce/SvQgBj9ik/lEvFt5vP9q7wJ5ZuDvmEpmvcF5JRom1t
+         2eapWgs0Md02bchF5N+TVdbkrIOrWMIsIpK0TzcTloe094d/by9NBbGKhQB62sMXf/ds
+         jqItDVYo/8NVUWioCBvu/2MyBq3LvV1RB8PjsNypw3SWcxG1OHtv43K0i0bJE0RuT+wZ
+         vSmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=k4GGfq+hVsQvPEL9sGnkKkX1T5cHEpElvgl+H/D8GGg=;
+        b=KnP1sN2evsKEsm/t9sSHosV4Vs/C8PVO8iFYGv9NXf+nVgq94saknqwyVtnDnYRp8G
+         5UdLUBNQ1hMJ4LWvsvEGb18f/x6Gbw7xACZHr9hqUCuJ/gN2jyu/3GJ7eFDjiSLPhnLm
+         4XkcIZvPqUM9QC7w9V8lPMH/pgQvHva2sjcvY+Z6KY5eDdyaSjbQuEAzfy/68pcjUE0o
+         ppy89XrE7XP2DQ3lL9riXPgyVIH+ajNW0fKygVi4cqFhadsTp9IfkNU90WQgUyX8x1kY
+         WeYdckF9+pC5JN78NiwMfYvT52thrwhwze1MlmZL7ACvj4DIrLHqadID9PjQHrkBxeSm
+         yW9Q==
+X-Gm-Message-State: AOAM532vPCjvcsVPN2QiRe7dWyAl38hkI9PtGJhD98Ysnl/A22QuUxEY
+        i1yeEeIFnbcr/8GIwCD12QQ=
+X-Google-Smtp-Source: ABdhPJwRdZQLr6WcRQHTJmvy3QekS6aYpqqDhr3YMzQ3fQO9CQGmdbyBFz8czGBJt97d+duRqdeEsg==
+X-Received: by 2002:a17:90b:4a4d:: with SMTP id lb13mr13276916pjb.221.1626082827215;
+        Mon, 12 Jul 2021 02:40:27 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+        by smtp.gmail.com with ESMTPSA id 31sm16879517pgu.17.2021.07.12.02.40.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Jul 2021 02:40:26 -0700 (PDT)
+Subject: Re: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address
+ setting function
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        arnd@arndb.de, dave.hansen@linux.intel.com, luto@kernel.org,
+        peterz@infradead.org, akpm@linux-foundation.org,
+        kirill.shutemov@linux.intel.com, rppt@kernel.org,
+        hannes@cmpxchg.org, cai@lca.pw, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, Tianyu.Lan@microsoft.com,
+        konrad.wilk@oracle.com, m.szyprowski@samsung.com,
+        boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+        xen-devel@lists.xenproject.org, davem@davemloft.net,
+        kuba@kernel.org, jejb@linux.ibm.com, martin.petersen@oracle.com,
+        iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, sunilmut@microsoft.com
+References: <20210530150628.2063957-1-ltykernel@gmail.com>
+ <20210530150628.2063957-9-ltykernel@gmail.com>
+ <20210607064312.GB24478@lst.de>
+ <94038087-a33c-93c5-27bf-7ec1f6f5f0e3@arm.com> <20210614153252.GA1741@lst.de>
+ <9e347c4c-d4b9-129c-10d2-0d7ff1b917cc@gmail.com>
+Message-ID: <873a6872-e2f5-7c6c-ec57-d21305380cd9@gmail.com>
+Date:   Mon, 12 Jul 2021 17:40:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <1626081581-54524-5-git-send-email-linyunsheng@huawei.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <9e347c4c-d4b9-129c-10d2-0d7ff1b917cc@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please ignore this one, the title name has been changed to:
-"page_pool: add frag page recycling support in page pool".
+Hi Christoph and Robin:
+      I introduced new interface set_memory_decrypted_map() to hide all
+the hypervisor code behind it in the latest version. In current generic
+code, only swiotlb bounce buffer needs to be decrypted and remapped in 
+the same time and so keep set_memory_decrypted(). If there were more 
+requests of set_memory_decrypted_map() for other platform, we may
+replace set_memory_decrypted() step by step. Please have a look.
+       https://lkml.org/lkml/2021/7/7/570
 
-On 2021/7/12 17:19, Yunsheng Lin wrote:
-> Currently page pool only support page recycling only when
-> there is only one user of the page, and the split page
-> reusing implemented in the most driver can not use the
-> page pool as bing-pong way of reusing requires the elevated
-> refcnt support.
+Thanks.
+
+On 6/15/2021 11:24 PM, Tianyu Lan wrote:
+> On 6/14/2021 11:32 PM, Christoph Hellwig wrote:
+>> On Mon, Jun 14, 2021 at 02:49:51PM +0100, Robin Murphy wrote:
+>>> FWIW, I think a better generalisation for this would be allowing
+>>> set_memory_decrypted() to return an address rather than implicitly
+>>> operating in-place, and hide all the various hypervisor hooks behind 
+>>> that.
+>>
+>> Yes, something like that would be a good idea.  As-is
+>> set_memory_decrypted is a pretty horribly API anyway due to passing
+>> the address as void, and taking a size parameter while it works in units
+>> of pages.  So I'd very much welcome a major overhaul of this API.
+>>
 > 
-> Those reusing or recycling has below limitations:
-> 1. page from page pool can only be used be one user in order
->    for the page recycling to happen.
-> 2. Bing-pong way of reusing in most driver does not support
->    multi desc using different part of the same page in order
->    to save memory.
+> Hi Christoph and Robin:
+>      Thanks for your suggestion. I will try this idea in the next 
+> version. Besides make the address translation into set_memory_
+> decrypted() and return address, do you want to make other changes to the 
+> API in order to make it more reasonable(e.g size parameter)?
 > 
-> So add elevated refcnt support in page pool to in order to
-> overcome the above limitation.
-> 
-> This is a preparation to support allocating page frag in page
-> pool.
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->  include/net/page_pool.h |  22 ++++++++-
->  net/core/page_pool.c    | 121 ++++++++++++++++++++++++++++++++++++++++++------
->  2 files changed, 129 insertions(+), 14 deletions(-)
-> 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 84cd972..d9a736f 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -45,7 +45,10 @@
->  					* Please note DMA-sync-for-CPU is still
->  					* device driver responsibility
->  					*/
-> -#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
-> +#define PP_FLAG_PAGE_FRAG	BIT(2)	/* for page frag feature */
-> +#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP |\
-> +				 PP_FLAG_DMA_SYNC_DEV |\
-> +				 PP_FLAG_PAGE_FRAG)
->  
->  /*
->   * Fast allocation side cache array/stack
-> @@ -88,6 +91,9 @@ struct page_pool {
->  	unsigned long defer_warn;
->  
->  	u32 pages_state_hold_cnt;
-> +	unsigned int frag_offset;
-> +	int frag_bias;
-> +	struct page *frag_page;
->  
->  	/*
->  	 * Data structure for allocation side
-> @@ -137,6 +143,20 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
->  	return page_pool_alloc_pages(pool, gfp);
->  }
->  
-> +struct page *page_pool_alloc_frag(struct page_pool *pool,
-> +				  unsigned int *offset,
-> +				  unsigned int size,
-> +				  gfp_t gfp);
-> +
-> +static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
-> +						    unsigned int *offset,
-> +						    unsigned int size)
-> +{
-> +	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
-> +
-> +	return page_pool_alloc_frag(pool, offset, size, gfp);
-> +}
-> +
->  /* get the stored dma direction. A driver might decide to treat this locally and
->   * avoid the extra cache line from page_pool to determine the direction
->   */
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 1abefc6..9f518dc 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -24,6 +24,8 @@
->  #define DEFER_TIME (msecs_to_jiffies(1000))
->  #define DEFER_WARN_INTERVAL (60 * HZ)
->  
-> +#define BIAS_MAX	(PAGE_SIZE - 1)
-> +
->  static int page_pool_init(struct page_pool *pool,
->  			  const struct page_pool_params *params)
->  {
-> @@ -304,6 +306,33 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
->  	return page;
->  }
->  
-> +/* nr could be negative */
-> +static int page_pool_atomic_add_bias(struct page *page, int nr)
-> +{
-> +	unsigned long *bias_ptr = page_pool_pagecnt_bias_ptr(page);
-> +	unsigned long old_bias = READ_ONCE(*bias_ptr);
-> +	unsigned long new_bias;
-> +
-> +	do {
-> +		int bias = (int)(old_bias & ~PAGE_MASK);
-> +
-> +		/* Warn when page_pool_dev_alloc_pages() is called
-> +		 * with PP_FLAG_PAGE_FRAG flag in driver.
-> +		 */
-> +		WARN_ON(!bias);
-> +
-> +		/* already the last user */
-> +		if (!(bias + nr))
-> +			return 0;
-> +
-> +		new_bias = old_bias + nr;
-> +	} while (!try_cmpxchg(bias_ptr, &old_bias, new_bias));
-> +
-> +	WARN_ON((new_bias & PAGE_MASK) != (old_bias & PAGE_MASK));
-> +
-> +	return new_bias & ~PAGE_MASK;
-> +}
-> +
->  /* For using page_pool replace: alloc_pages() API calls, but provide
->   * synchronization guarantee for allocation side.
->   */
-> @@ -425,6 +454,11 @@ static __always_inline struct page *
->  __page_pool_put_page(struct page_pool *pool, struct page *page,
->  		     unsigned int dma_sync_size, bool allow_direct)
->  {
-> +	/* It is not the last user for the page frag case */
-> +	if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
-> +	    page_pool_atomic_add_bias(page, -1))
-> +		return NULL;
-> +
->  	/* This allocator is optimized for the XDP mode that uses
->  	 * one-frame-per-page, but have fallbacks that act like the
->  	 * regular page allocator APIs.
-> @@ -448,19 +482,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
->  		/* Page found as candidate for recycling */
->  		return page;
->  	}
-> -	/* Fallback/non-XDP mode: API user have elevated refcnt.
-> -	 *
-> -	 * Many drivers split up the page into fragments, and some
-> -	 * want to keep doing this to save memory and do refcnt based
-> -	 * recycling. Support this use case too, to ease drivers
-> -	 * switching between XDP/non-XDP.
-> -	 *
-> -	 * In-case page_pool maintains the DMA mapping, API user must
-> -	 * call page_pool_put_page once.  In this elevated refcnt
-> -	 * case, the DMA is unmapped/released, as driver is likely
-> -	 * doing refcnt based recycle tricks, meaning another process
-> -	 * will be invoking put_page.
-> -	 */
-> +
->  	/* Do not replace this with page_pool_return_page() */
->  	page_pool_release_page(pool, page);
->  	put_page(page);
-> @@ -517,6 +539,77 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
->  }
->  EXPORT_SYMBOL(page_pool_put_page_bulk);
->  
-> +/* When BIAS_RESERVE to avoid frag page being recycled back to
-> + * page pool while the frag page is still in pool->frag_page
-> + * waiting for more user. As minimum align size for DMA seems to
-> + * be 32, so we support max size of 2047 * 32 for 4K page size.
-> + */
-> +#define BIAS_RESERVE		((int)(BIAS_MAX / 2 + 1))
-> +#define BIAS_NEGATIVE_RESERVE	(0 - BIAS_RESERVE)
-> +
-> +static struct page *page_pool_drain_frag(struct page_pool *pool,
-> +					 struct page *page)
-> +{
-> +	/* page pool is not the last user */
-> +	if (page_pool_atomic_add_bias(page, pool->frag_bias +
-> +				      BIAS_NEGATIVE_RESERVE))
-> +		return NULL;
-> +	else
-> +		return page;
-> +}
-> +
-> +static void page_pool_free_frag(struct page_pool *pool)
-> +{
-> +	struct page *page = pool->frag_page;
-> +
-> +	if (!page ||
-> +	    page_pool_atomic_add_bias(page, pool->frag_bias +
-> +				      BIAS_NEGATIVE_RESERVE))
-> +		return;
-> +
-> +	page_pool_return_page(pool, page);
-> +	pool->frag_page = NULL;
-> +}
-> +
-> +struct page *page_pool_alloc_frag(struct page_pool *pool,
-> +				  unsigned int *offset,
-> +				  unsigned int size,
-> +				  gfp_t gfp)
-> +{
-> +	unsigned int max_size = PAGE_SIZE << pool->p.order;
-> +	unsigned int frag_offset = pool->frag_offset;
-> +	struct page *frag_page = pool->frag_page;
-> +
-> +	if (WARN_ON(!(pool->p.flags & PP_FLAG_PAGE_FRAG) ||
-> +		    size > max_size))
-> +		return NULL;
-> +
-> +	size = ALIGN(size, dma_get_cache_alignment());
-> +
-> +	if (frag_page && frag_offset + size > max_size)
-> +		frag_page = page_pool_drain_frag(pool, frag_page);
-> +
-> +	if (!frag_page) {
-> +		frag_page = page_pool_alloc_pages(pool, gfp);
-> +		if (unlikely(!frag_page)) {
-> +			pool->frag_page = NULL;
-> +			return NULL;
-> +		}
-> +
-> +		pool->frag_page = frag_page;
-> +		pool->frag_bias = 0;
-> +		frag_offset = 0;
-> +		page_pool_set_pagecnt_bias(frag_page, BIAS_RESERVE);
-> +	}
-> +
-> +	pool->frag_bias++;
-> +	*offset = frag_offset;
-> +	pool->frag_offset = frag_offset + size;
-> +
-> +	return frag_page;
-> +}
-> +EXPORT_SYMBOL(page_pool_alloc_frag);
-> +
->  static void page_pool_empty_ring(struct page_pool *pool)
->  {
->  	struct page *page;
-> @@ -622,6 +715,8 @@ void page_pool_destroy(struct page_pool *pool)
->  	if (!page_pool_put(pool))
->  		return;
->  
-> +	page_pool_free_frag(pool);
-> +
->  	if (!page_pool_release(pool))
->  		return;
->  
-> 
+> Thanks
