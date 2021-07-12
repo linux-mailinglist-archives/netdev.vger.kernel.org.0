@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA263C62CC
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 20:41:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F803C62DF
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 20:45:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbhGLSoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 14:44:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44368 "EHLO mail.kernel.org"
+        id S235975AbhGLSsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 14:48:24 -0400
+Received: from relay.sw.ru ([185.231.240.75]:55846 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236017AbhGLSoE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 14:44:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5DE80611CB;
-        Mon, 12 Jul 2021 18:41:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626115275;
-        bh=e//PfPkISlb21wssK1bjd4TW7DNOcSX1l1Av6v2WG+s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c1xjBxYT38Be4lYoF3QXwQnD+SMr+rg6afZfryQrS0hBPVS/DklJVY08nPAVRJ8/9
-         d0fyv4iiytXvr2OzTbXDakQNEZtiD4jpyfiStQJwaTUL8Rt/Uh8eAxdOVtuOQDjhoj
-         ZFbay6aZ0rZDk419K82DI0RWixnK/F+WqeX0hyK0CJcFlPpUikxi/QBHBo42Yr1By4
-         +gQGMU3eLY7lTx3ZUQki+Nwvf0mzPH+hTSLcWtA0YWX/QpSfhoeZqmKjWlHxP+Ef20
-         TFVGSjyHwFuTLcUvEjEBx1YaSMkKjs3qxbDUqfo1JOCsbkW/OlclqgagbAUr2oZ7P/
-         khBDK7uXuA0Gg==
-Date:   Mon, 12 Jul 2021 11:41:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <alexandru.tachici@analog.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>
-Subject: Re: [PATCH v2 4/7] net: phy: adin1100: Add ethtool get_stats
- support
-Message-ID: <20210712114114.35d7771b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210712130631.38153-5-alexandru.tachici@analog.com>
-References: <20210712130631.38153-1-alexandru.tachici@analog.com>
-        <20210712130631.38153-5-alexandru.tachici@analog.com>
+        id S234000AbhGLSsY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 14:48:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=iAEZINJDepSq91s49rJlKY2GlIRP1NxaA+57Jcf/IuU=; b=UaNeQisPHAhOQk6p0
+        R/9EJQTjFYSh2IJceO9Hc061xF5a/sUDJn9crRZpai/N012INLJB0oqw8nDXnjkyzP6Ione0d+Pj1
+        1IOuh5ejnGq0uiq9sSQrEN4CA2BgWiHBbfVdPXL7S+bMj52C8x5H7F9IgSyAzNLJyZY+Jm4aYZTY0
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1m30vo-003k5b-Pt; Mon, 12 Jul 2021 21:45:28 +0300
+Subject: Re: [PATCH NET 1/7] skbuff: introduce pskb_realloc_headroom()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        Joerg Reuter <jreuter@yaina.de>,
+        Ralf Baechle <ralf@linux-mips.org>, linux-hams@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <74e90fba-df9f-5078-13de-41df54d2b257@virtuozzo.com>
+ <cover.1626093470.git.vvs@virtuozzo.com>
+ <8049e16b-3d7a-64c3-c948-ec504590a136@virtuozzo.com>
+ <20210712105310.46d265a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <55c9e2ae-b060-baa2-460c-90eb3e9ded5c@virtuozzo.com>
+Date:   Mon, 12 Jul 2021 21:45:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210712105310.46d265a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Jul 2021 16:06:28 +0300 alexandru.tachici@analog.com wrote:
-> +static const struct adin_hw_stat adin_hw_stats[] = {
-> +	{ "total_frames_error_count",		0x8008 },
-> +	{ "total_frames_count",			0x8009, 0x800A }, /* hi, lo */
-> +	{ "length_error_frames_count",		0x800B },
-> +	{ "alignment_error_frames_count",	0x800C },
-> +	{ "symbol_error_count",			0x800D },
-> +	{ "oversized_frames_count",		0x800E },
-> +	{ "undersized_frames_count",		0x800F },
-> +	{ "odd_nibble_frames_count",		0x8010 },
-> +	{ "odd_preamble_packet_count",		0x8011 },
-> +	{ "false_carrier_events_count",		0x8013 },
-> +};
+On 7/12/21 8:53 PM, Jakub Kicinski wrote:
+> I saw you asked about naming in a different sub-thread, what do you
+> mean by "'pskb_expand_head' have different semantic"? AFAIU the 'p'
+> in pskb stands for "private", meaning not shared. In fact
+> skb_realloc_headroom() should really be pskb... but it predates the 
+> 'pskb' naming pattern by quite a while. Long story short
+> skb_expand_head() seems like a good name. With the current patch
+> pskb_realloc_headroom() vs skb_realloc_headroom() would give people
+> exactly the opposite intuition of what the code does.
 
-Since this phy seems to implement a lot MAC stats would it make sense
-to plumb thru the new ethtool API for PHYs (ethtool_eth_mac_stats etc.)
-rather than let the same string proliferation problem spring up in
-another section of the code?
+Thank you for feedback,
+I'll change helper name back to skb_expand_head() in next patch version.
+
+	Vasily Averin
