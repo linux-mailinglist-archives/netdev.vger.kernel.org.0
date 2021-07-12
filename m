@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5CB33C5A0C
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7593C5A07
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 13:03:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347057AbhGLJXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 05:23:32 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:11261 "EHLO
+        id S1358975AbhGLJXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 05:23:22 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:11260 "EHLO
         szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350458AbhGLJXS (ORCPT
+        with ESMTP id S1350313AbhGLJXS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 05:23:18 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GNdQ35Tc0z1CJ3y;
-        Mon, 12 Jul 2021 17:14:51 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GNdQ033M2z1CJ4n;
+        Mon, 12 Jul 2021 17:14:48 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 17:20:22 +0800
+ 15.1.2176.2; Mon, 12 Jul 2021 17:20:23 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -40,9 +40,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
         <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH rfc v3 3/4] page_pool: add frag page recycling support in page pool
-Date:   Mon, 12 Jul 2021 17:19:39 +0800
-Message-ID: <1626081581-54524-4-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH rfc v3 3/4] page_pool: add page recycling support based on elevated refcnt
+Date:   Mon, 12 Jul 2021 17:19:40 +0800
+Message-ID: <1626081581-54524-5-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1626081581-54524-1-git-send-email-linyunsheng@huawei.com>
 References: <1626081581-54524-1-git-send-email-linyunsheng@huawei.com>
@@ -59,8 +59,8 @@ X-Mailing-List: netdev@vger.kernel.org
 Currently page pool only support page recycling only when
 there is only one user of the page, and the split page
 reusing implemented in the most driver can not use the
-page pool as bing-pong way of reusing requires the multi
-user support in page pool.
+page pool as bing-pong way of reusing requires the elevated
+refcnt support.
 
 Those reusing or recycling has below limitations:
 1. page from page pool can only be used be one user in order
@@ -69,8 +69,11 @@ Those reusing or recycling has below limitations:
    multi desc using different part of the same page in order
    to save memory.
 
-So add multi-users support and frag page recycling in page pool
-to overcome the above limitation.
+So add elevated refcnt support in page pool to in order to
+overcome the above limitation.
+
+This is a preparation to support allocating page frag in page
+pool.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
