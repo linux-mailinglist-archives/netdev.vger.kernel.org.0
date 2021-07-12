@@ -2,218 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1B53C40FF
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 03:39:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7848F3C410F
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 03:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233028AbhGLBl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Jul 2021 21:41:26 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:14067 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232943AbhGLBlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 21:41:24 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GNRCq5xpjzbbr0;
-        Mon, 12 Jul 2021 09:35:19 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 09:38:25 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 12 Jul 2021 09:38:25 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 9/9] net: hns3: add support for VF setting rx/tx buffer size by devlink param
-Date:   Mon, 12 Jul 2021 09:34:58 +0800
-Message-ID: <1626053698-46849-10-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1626053698-46849-1-git-send-email-huangguangbin2@huawei.com>
-References: <1626053698-46849-1-git-send-email-huangguangbin2@huawei.com>
+        id S232307AbhGLBqi convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Jul 2021 21:46:38 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:53672 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229598AbhGLBqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Jul 2021 21:46:36 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16C1hI9l9017941, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16C1hI9l9017941
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 12 Jul 2021 09:43:18 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 12 Jul 2021 09:43:17 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 12 Jul 2021 09:43:17 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
+ RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
+ 15.01.2106.013; Mon, 12 Jul 2021 09:43:17 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Len Baker <len.baker@gmx.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Stanislaw Gruszka <sgruszka@redhat.com>,
+        Brian Norris <briannorris@chromium.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] rtw88: Fix out-of-bounds write
+Thread-Topic: [PATCH] rtw88: Fix out-of-bounds write
+Thread-Index: AQHXdl+EGA/su576nUeih433YVyLrqs+jtWA
+Date:   Mon, 12 Jul 2021 01:43:16 +0000
+Message-ID: <b0811e08c4a04d2093f3251c55c0edb8@realtek.com>
+References: <20210711141634.6133-1-len.baker@gmx.com>
+In-Reply-To: <20210711141634.6133-1-len.baker@gmx.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.146]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/7/11_=3F=3F_01:07:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?us-ascii?Q?Clean,_bases:_2021/7/12_=3F=3F_12:23:00?=
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/12/2021 01:29:20
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 164962 [Jul 11 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
+X-KSE-AntiSpam-Info: {Tracking_from_exist}
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/12/2021 01:32:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
 
-Add support for VF setting rx/tx buffer size by devlink param
+> -----Original Message-----
+> From: Len Baker [mailto:len.baker@gmx.com]
+> Sent: Sunday, July 11, 2021 10:17 PM
+> To: Yan-Hsuan Chuang; Kalle Valo; David S. Miller; Jakub Kicinski
+> Cc: Len Baker; Stanislaw Gruszka; Brian Norris; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
+> linux-kernel@vger.kernel.org; stable@vger.kernel.org
+> Subject: [PATCH] rtw88: Fix out-of-bounds write
+> 
+> In the rtw_pci_init_rx_ring function the "if (len > TRX_BD_IDX_MASK)"
+> statement guarantees that len is less than or equal to GENMASK(11, 0) or
+> in other words that len is less than or equal to 4095. However the
+> rx_ring->buf has a size of RTK_MAX_RX_DESC_NUM (defined as 512). This
+> way it is possible an out-of-bounds write in the for statement due to
+> the i variable can exceed the rx_ring->buff size.
+> 
+> Fix it using the ARRAY_SIZE macro.
+> 
+> Cc: stable@vger.kernel.org
+> Addresses-Coverity-ID: 1461515 ("Out-of-bounds write")
+> Fixes: e3037485c68ec ("rtw88: new Realtek 802.11ac driver")
+> Signed-off-by: Len Baker <len.baker@gmx.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/pci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+> index e7d17ab8f113..b9d8c049e776 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -280,7 +280,7 @@ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwdev,
 
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.c        | 88 +++++++++++++++++++++-
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.h        |  7 ++
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  3 +
- 3 files changed, 97 insertions(+), 1 deletion(-)
+I think "if (len > TRX_BD_IDX_MASK)" you mentioned is
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-index bce598913dc3..4c364055e464 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-@@ -34,6 +34,37 @@ static int hclgevf_devlink_info_get(struct devlink *devlink,
- 						version_str);
- }
- 
-+static void hclgevf_devlink_get_param_setting(struct devlink *devlink)
-+{
-+	struct hclgevf_devlink_priv *priv = devlink_priv(devlink);
-+	struct hclgevf_dev *hdev = priv->hdev;
-+	struct pci_dev *pdev = hdev->pdev;
-+	union devlink_param_value val;
-+	int i, ret;
-+
-+	ret = devlink_param_driverinit_value_get(devlink,
-+						 HCLGEVF_DEVLINK_PARAM_ID_RX_BUF_LEN,
-+						 &val);
-+	if (!ret) {
-+		hdev->rx_buf_len = val.vu32;
-+		hdev->nic.kinfo.rx_buf_len = hdev->rx_buf_len;
-+		for (i = 0; i < hdev->num_tqps; i++)
-+			hdev->htqp[i].q.buf_size = hdev->rx_buf_len;
-+	} else {
-+		dev_err(&pdev->dev,
-+			"failed to get rx buffer size, ret = %d\n", ret);
-+	}
-+
-+	ret = devlink_param_driverinit_value_get(devlink,
-+						 HCLGEVF_DEVLINK_PARAM_ID_TX_BUF_SIZE,
-+						 &val);
-+	if (!ret)
-+		hdev->nic.kinfo.devlink_tx_spare_buf_size = val.vu32;
-+	else
-+		dev_err(&pdev->dev,
-+			"failed to get tx buffer size, ret = %d\n", ret);
-+}
-+
- static int hclgevf_devlink_reload_down(struct devlink *devlink,
- 				       bool netns_change,
- 				       enum devlink_reload_action action,
-@@ -106,6 +137,49 @@ static const struct devlink_ops hclgevf_devlink_ops = {
- 	.reload_up = hclgevf_devlink_reload_up,
- };
- 
-+static int
-+hclgevf_devlink_rx_buffer_size_validate(struct devlink *devlink, u32 id,
-+					union devlink_param_value val,
-+					struct netlink_ext_ack *extack)
-+{
-+#define HCLGEVF_RX_BUF_LEN_2K	2048
-+#define HCLGEVF_RX_BUF_LEN_4K	4096
-+
-+	if (val.vu32 != HCLGEVF_RX_BUF_LEN_2K &&
-+	    val.vu32 != HCLGEVF_RX_BUF_LEN_4K) {
-+		NL_SET_ERR_MSG_MOD(extack, "Supported size is 2048 or 4096");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct devlink_param hclgevf_devlink_params[] = {
-+	DEVLINK_PARAM_DRIVER(HCLGEVF_DEVLINK_PARAM_ID_RX_BUF_LEN,
-+			     "rx_buffer_len", DEVLINK_PARAM_TYPE_U32,
-+			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
-+			     NULL, NULL,
-+			     hclgevf_devlink_rx_buffer_size_validate),
-+	DEVLINK_PARAM_DRIVER(HCLGEVF_DEVLINK_PARAM_ID_TX_BUF_SIZE,
-+			     "tx_buffer_size", DEVLINK_PARAM_TYPE_U32,
-+			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
-+			     NULL, NULL, NULL),
-+};
-+
-+void hclgevf_devlink_set_params_init_values(struct hclgevf_dev *hdev)
-+{
-+	union devlink_param_value value;
-+
-+	value.vu32 = hdev->rx_buf_len;
-+	devlink_param_driverinit_value_set(hdev->devlink,
-+					   HCLGEVF_DEVLINK_PARAM_ID_RX_BUF_LEN,
-+					   value);
-+	value.vu32 = 0;
-+	devlink_param_driverinit_value_set(hdev->devlink,
-+					   HCLGEVF_DEVLINK_PARAM_ID_TX_BUF_SIZE,
-+					   value);
-+}
-+
- int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- {
- 	struct pci_dev *pdev = hdev->pdev;
-@@ -130,10 +204,20 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 
- 	hdev->devlink = devlink;
- 
-+	ret = devlink_params_register(devlink, hclgevf_devlink_params,
-+				      ARRAY_SIZE(hclgevf_devlink_params));
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"failed to register devlink params, ret = %d\n", ret);
-+		goto out_param_reg_fail;
-+	}
-+
- 	devlink_reload_enable(devlink);
- 
- 	return 0;
--
-+out_param_reg_fail:
-+	hdev->devlink = NULL;
-+	devlink_unregister(devlink);
- out_reg_fail:
- 	devlink_free(devlink);
- 	return ret;
-@@ -148,6 +232,8 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
- 
- 	devlink_reload_disable(devlink);
- 
-+	devlink_params_unregister(devlink, hclgevf_devlink_params,
-+				  ARRAY_SIZE(hclgevf_devlink_params));
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.h
-index e09ea3d8a963..2159ec4a3523 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.h
-@@ -6,10 +6,17 @@
- 
- #include "hclgevf_main.h"
- 
-+enum hclgevf_devlink_param_id {
-+	HCLGEVF_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
-+	HCLGEVF_DEVLINK_PARAM_ID_RX_BUF_LEN,
-+	HCLGEVF_DEVLINK_PARAM_ID_TX_BUF_SIZE,
-+};
-+
- struct hclgevf_devlink_priv {
- 	struct hclgevf_dev *hdev;
- };
- 
-+void hclgevf_devlink_set_params_init_values(struct hclgevf_dev *hdev);
- int hclgevf_devlink_init(struct hclgevf_dev *hdev);
- void hclgevf_devlink_uninit(struct hclgevf_dev *hdev);
- #endif
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 1e03c4d16125..ce7d652594e1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -3374,6 +3374,9 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 		goto err_config;
- 	}
- 
-+	hclgevf_devlink_set_params_init_values(hdev);
-+	devlink_params_publish(hdev->devlink);
-+
- 	ret = hclgevf_alloc_tqps(hdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed(%d) to allocate TQPs\n", ret);
--- 
-2.8.1
+	if (len > TRX_BD_IDX_MASK) {
+		rtw_err(rtwdev, "len %d exceeds maximum RX entries\n", len);
+		return -EINVAL;
+	}
+
+This statement is used to ensure the length doesn't exceed hardware capability.
+
+To prevent the 'len' argument from exceeding the array size of rx_ring->buff, I
+suggest to add another checking statement, like
+
+	if (len > ARRAY_SIZE(rx_ring->buf)) {
+		rtw_err(rtwdev, "len %d exceeds maximum RX ring buffer\n", len);
+		return -EINVAL;
+	}
+
+But, I wonder if this a false alarm because 'len' is equal to ARRAY_SIZE(rx_ring->buf)
+for now.
+
+
+>  	}
+>  	rx_ring->r.head = head;
+> 
+> -	for (i = 0; i < len; i++) {
+> +	for (i = 0; i < ARRAY_SIZE(rx_ring->buf); i++) {
+>  		skb = dev_alloc_skb(buf_sz);
+>  		if (!skb) {
+>  			allocated = i;
+> --
+> 2.25.1
+
+--
+Ping-Ke
 
