@@ -2,188 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576CC3C5C8F
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:46:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 988513C5CA8
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 14:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbhGLMsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 08:48:25 -0400
-Received: from novek.ru ([213.148.174.62]:51920 "EHLO novek.ru"
+        id S234172AbhGLM4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 08:56:22 -0400
+Received: from out0.migadu.com ([94.23.1.103]:20253 "EHLO out0.migadu.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230361AbhGLMsZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 08:48:25 -0400
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id DE5C8503D9C;
-        Mon, 12 Jul 2021 15:43:19 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru DE5C8503D9C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1626093801; bh=EtYW4qD/2YH4kIS7pgePjJXO+sUzvkxJzPl9620Jn94=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=dzDh3sPFTsXNBxqCRDs9dzTwdf06myzrtx2z1QAXJXm7Om+EOjEFlew+satDPT0/L
-         8ko0+JR+ADfkLcP4fOcewWZSd1vsgJ1MpvWhSj2Ea+DWDVussn+CkR2OXtfOdoobpQ
-         cY4klyjDBSde2oTnQSFH0Qu3DRqKMO4svipEm/AQ=
-Subject: Re: [PATCH net 2/3] udp: check encap socket in __udp_lib_err
-To:     Paolo Abeni <pabeni@redhat.com>, David Ahern <dsahern@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Xin Long <lucien.xin@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20210712005554.26948-1-vfedorenko@novek.ru>
- <20210712005554.26948-3-vfedorenko@novek.ru>
- <4cf247328ea397c28c9c404094fb0f952a41f3c6.camel@redhat.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <161cf19b-6ed6-affb-ab67-e8627f6ed6d9@novek.ru>
-Date:   Mon, 12 Jul 2021 13:45:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S231205AbhGLM4V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 08:56:21 -0400
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626094409;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nLeorn7JAX1a2d/hq7DI3yYWcR2plTGaxbLKNq9l55M=;
+        b=W7corV9zVpilvj/nQG0SESgZO3fyTjFe1Ob5uoNvC+WH/f9RP6k1dKiGaiJDNAQb2BIMr+
+        j1maKRLZOvrqQYEOUd7SYNueYLRtciS9LAfQc6WBcUq2PQfBfnaAF6HuvoPX7m7U8AAd4H
+        RKforoo6ouQvMKOBE6sa7n38iimfQtI=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
+        johannes.berg@intel.com, ast@kernel.org, yhs@fb.com,
+        0x7f454c46@gmail.com, yajun.deng@linux.dev, aahringo@redhat.com,
+        rdunlap@infradead.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mptcp@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-sctp@vger.kernel.org
+Subject: [PATCH] net: Use nlmsg_unicast() instead of netlink_unicast()
+Date:   Mon, 12 Jul 2021 20:53:01 +0800
+Message-Id: <20210712125301.14248-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <4cf247328ea397c28c9c404094fb0f952a41f3c6.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.07.2021 10:07, Paolo Abeni wrote:
-> Hello,
-> 
-> On Mon, 2021-07-12 at 03:55 +0300, Vadim Fedorenko wrote:
->> Commit d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
->> added checks for encapsulated sockets but it broke cases when there is
->> no implementation of encap_err_lookup for encapsulation, i.e. ESP in
->> UDP encapsulation. Fix it by calling encap_err_lookup only if socket
->> implements this method otherwise treat it as legal socket.
->>
->> Fixes: d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
->> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->> ---
->>   net/ipv4/udp.c | 24 +++++++++++++++++++++++-
->>   net/ipv6/udp.c | 22 ++++++++++++++++++++++
->>   2 files changed, 45 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
->> index e5cb7fedfbcd..4980e0f19990 100644
->> --- a/net/ipv4/udp.c
->> +++ b/net/ipv4/udp.c
->> @@ -707,7 +707,29 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
->>   	sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
->>   			       iph->saddr, uh->source, skb->dev->ifindex,
->>   			       inet_sdif(skb), udptable, NULL);
->> -	if (!sk || udp_sk(sk)->encap_enabled) {
->> +	if (sk && udp_sk(sk)->encap_enabled) {
->> +		int (*lookup)(struct sock *sk, struct sk_buff *skb);
->> +
->> +		lookup = READ_ONCE(udp_sk(sk)->encap_err_lookup);
->> +		if (lookup) {
->> +			int network_offset, transport_offset;
->> +
->> +			network_offset = skb_network_offset(skb);
->> +			transport_offset = skb_transport_offset(skb);
->> +
->> +			/* Network header needs to point to the outer IPv4 header inside ICMP */
->> +			skb_reset_network_header(skb);
->> +
->> +			/* Transport header needs to point to the UDP header */
->> +			skb_set_transport_header(skb, iph->ihl << 2);
->> +			if (lookup(sk, skb))
->> +				sk = NULL;
->> +			skb_set_transport_header(skb, transport_offset);
->> +			skb_set_network_header(skb, network_offset);
->> +		}
->> +	}
->> +
->> +	if (!sk) {
->>   		/* No socket for error: try tunnels before discarding */
->>   		sk = ERR_PTR(-ENOENT);
->>   		if (static_branch_unlikely(&udp_encap_needed_key)) {
->> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
->> index 798916d2e722..ed49a8589d9f 100644
->> --- a/net/ipv6/udp.c
->> +++ b/net/ipv6/udp.c
->> @@ -558,6 +558,28 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->>   
->>   	sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
->>   			       inet6_iif(skb), inet6_sdif(skb), udptable, NULL);
->> +	if (sk && udp_sk(sk)->encap_enabled) {
->> +		int (*lookup)(struct sock *sk, struct sk_buff *skb);
->> +
->> +		lookup = READ_ONCE(udp_sk(sk)->encap_err_lookup);
->> +		if (lookup) {
->> +			int network_offset, transport_offset;
->> +
->> +			network_offset = skb_network_offset(skb);
->> +			transport_offset = skb_transport_offset(skb);
->> +
->> +			/* Network header needs to point to the outer IPv6 header inside ICMP */
->> +			skb_reset_network_header(skb);
->> +
->> +			/* Transport header needs to point to the UDP header */
->> +			skb_set_transport_header(skb, offset);
->> +			if (lookup(sk, skb))
->> +				sk = NULL;
->> +			skb_set_transport_header(skb, transport_offset);
->> +			skb_set_network_header(skb, network_offset);
->> +		}
->> +	}
-> 
-> I can't follow this code. I guess that before d26796ae5894,
-> __udp6_lib_err() used to invoke ICMP processing on the ESP in UDP
-> socket, and after d26796ae5894 'sk' was cleared
-> by __udp4_lib_err_encap(), is that correct?
+There has 'if (err >0 )' in nlmsg_unicast(), so use nlmsg_unicast()
+instead of netlink_unicast(), this looks more concise.
 
-Actually it was cleared just before __udp4_lib_err_encap() and after
-it we totally loose the information of socket found by __udp4_lib_lookup()
-because __udp4_lib_err_encap() uses different combination of ports
-(source and destination ports are exchanged) and could find different
-socket.
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/ipv4/fib_frontend.c    | 2 +-
+ net/ipv4/inet_diag.c       | 5 +----
+ net/ipv4/raw_diag.c        | 7 ++-----
+ net/ipv4/udp_diag.c        | 6 ++----
+ net/mptcp/mptcp_diag.c     | 6 ++----
+ net/netfilter/nft_compat.c | 6 ++----
+ net/netlink/af_netlink.c   | 2 +-
+ net/sctp/diag.c            | 6 ++----
+ net/unix/diag.c            | 6 ++----
+ 9 files changed, 15 insertions(+), 31 deletions(-)
 
-> 
-> After this patch, the above chunk will not clear 'sk' for packets
-> targeting ESP in UDP sockets, but AFAICS we will still enter the
-> following conditional, preserving the current behavior - no ICMP
-> processing.
-
-We will not enter following conditional for ESP in UDP case because
-there is no more check for encap_type or encap_enabled. Just for
-case of no udp socket as it was before d26796ae5894. But we still
-have to check if the socket found by __udp4_lib_lookup() is correct
-for received ICMP packet that's why I added code about encap_err_lookup.
-
-I maybe missing something but d26796ae5894 doesn't actually explain
-which particular situation should be avoided by this additional check
-and no tests were added to simply reproduce the problem. If you can
-explain it a bit more it would greatly help me to improve the fix.
-
-Thanks
-> 
-> Can you please clarify?
-> 
-> Why can't you use something alike the following instead?
-> 
-> ---
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index c0f9f3260051..96a3b640e4da 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -707,7 +707,7 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
->          sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
->                                 iph->saddr, uh->source, skb->dev->ifindex,
->                                 inet_sdif(skb), udptable, NULL);
-> -       if (!sk || udp_sk(sk)->encap_type) {
-> +       if (!sk || READ_ONCE(udp_sk(sk)->encap_err_lookup)) {
->                  /* No socket for error: try tunnels before discarding */
->                  sk = ERR_PTR(-ENOENT);
->                  if (static_branch_unlikely(&udp_encap_needed_key)) {
-> 
-> ---
-> 
-> Thanks!
-> 
-> /P
-> 
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index a933bd6345b1..9fe13e4f5d08 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -1376,7 +1376,7 @@ static void nl_fib_input(struct sk_buff *skb)
+ 	portid = NETLINK_CB(skb).portid;      /* netlink portid */
+ 	NETLINK_CB(skb).portid = 0;        /* from kernel */
+ 	NETLINK_CB(skb).dst_group = 0;  /* unicast */
+-	netlink_unicast(net->ipv4.fibnl, skb, portid, MSG_DONTWAIT);
++	nlmsg_unicast(net->ipv4.fibnl, skb, portid);
+ }
+ 
+ static int __net_init nl_fib_lookup_init(struct net *net)
+diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+index e65f4ef024a4..ef7897226f08 100644
+--- a/net/ipv4/inet_diag.c
++++ b/net/ipv4/inet_diag.c
+@@ -580,10 +580,7 @@ int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
+ 		nlmsg_free(rep);
+ 		goto out;
+ 	}
+-	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
+ 
+ out:
+ 	if (sk)
+diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
+index 1b5b8af27aaf..ccacbde30a2c 100644
+--- a/net/ipv4/raw_diag.c
++++ b/net/ipv4/raw_diag.c
+@@ -119,11 +119,8 @@ static int raw_diag_dump_one(struct netlink_callback *cb,
+ 		return err;
+ 	}
+ 
+-	err = netlink_unicast(net->diag_nlsk, rep,
+-			      NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
++
+ 	return err;
+ }
+ 
+diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
+index b2cee9a307d4..1ed8c4d78e5c 100644
+--- a/net/ipv4/udp_diag.c
++++ b/net/ipv4/udp_diag.c
+@@ -77,10 +77,8 @@ static int udp_dump_one(struct udp_table *tbl,
+ 		kfree_skb(rep);
+ 		goto out;
+ 	}
+-	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
++
+ out:
+ 	if (sk)
+ 		sock_put(sk);
+diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
+index 8f88ddeab6a2..f48eb6315bbb 100644
+--- a/net/mptcp/mptcp_diag.c
++++ b/net/mptcp/mptcp_diag.c
+@@ -57,10 +57,8 @@ static int mptcp_diag_dump_one(struct netlink_callback *cb,
+ 		kfree_skb(rep);
+ 		goto out;
+ 	}
+-	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
++
+ out:
+ 	sock_put(sk);
+ 
+diff --git a/net/netfilter/nft_compat.c b/net/netfilter/nft_compat.c
+index 639c337c885b..aa3397eec330 100644
+--- a/net/netfilter/nft_compat.c
++++ b/net/netfilter/nft_compat.c
+@@ -683,10 +683,8 @@ static int nfnl_compat_get_rcu(struct sk_buff *skb,
+ 		goto out_put;
+ 	}
+ 
+-	ret = netlink_unicast(info->sk, skb2, NETLINK_CB(skb).portid,
+-			      MSG_DONTWAIT);
+-	if (ret > 0)
+-		ret = 0;
++	ret = nlmsg_unicast(info->sk, skb2, NETLINK_CB(skb).portid);
++
+ out_put:
+ 	rcu_read_lock();
+ 	module_put(THIS_MODULE);
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index d233ac4a91b6..380f95aacdec 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2471,7 +2471,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 
+ 	nlmsg_end(skb, rep);
+ 
+-	netlink_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid, MSG_DONTWAIT);
++	nlmsg_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid);
+ }
+ EXPORT_SYMBOL(netlink_ack);
+ 
+diff --git a/net/sctp/diag.c b/net/sctp/diag.c
+index 493fc01e5d2b..760b367644c1 100644
+--- a/net/sctp/diag.c
++++ b/net/sctp/diag.c
+@@ -284,10 +284,8 @@ static int sctp_tsp_dump_one(struct sctp_transport *tsp, void *p)
+ 		goto out;
+ 	}
+ 
+-	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
++
+ out:
+ 	return err;
+ }
+diff --git a/net/unix/diag.c b/net/unix/diag.c
+index 9ff64f9df1f3..7e7d7f45685a 100644
+--- a/net/unix/diag.c
++++ b/net/unix/diag.c
+@@ -295,10 +295,8 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
+ 
+ 		goto again;
+ 	}
+-	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
+-			      MSG_DONTWAIT);
+-	if (err > 0)
+-		err = 0;
++	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
++
+ out:
+ 	if (sk)
+ 		sock_put(sk);
+-- 
+2.32.0
 
