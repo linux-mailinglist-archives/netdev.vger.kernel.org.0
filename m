@@ -2,106 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715D23C42B8
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 06:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7BE93C42D3
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 06:18:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbhGLEPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 00:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        id S231499AbhGLEVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 00:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229465AbhGLEPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 00:15:39 -0400
+        with ESMTP id S230272AbhGLEVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 00:21:15 -0400
 Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C51AC0613DD
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 21:12:50 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id he13so31787277ejc.11
-        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 21:12:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35895C0613DD
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 21:18:27 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id go30so4786073ejc.8
+        for <netdev@vger.kernel.org>; Sun, 11 Jul 2021 21:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+w773fSAbp2IeNQ2T07cIjy6rYxfln7naSunEDB1/w8=;
-        b=uKXnKaPSg0hT308pr03uVk6wORV3mjaBV9VoEHM59L4QWyc3dGhVlDf2+KmeLaASTX
-         tNTcY3i0GmvHx5s1QCilvyCRLuTTIRqt8wmmirarsgbZ1yJgrIdVuC2Is5VgQUhSRPQG
-         darTxP/7mRMIp+B+rUHKGVOaA7/Ga8AFpZDgN4JYzi1im/xNcbiZvNSOZSYyg5McVYcE
-         Skvgwz0rLoeNDaZLBHRtBNyzuzlZz1bXKy65Bhn7+uQ96WzWbp45Pn9z61fyaylKMGDw
-         Vo8Qv6Wr7qxi7YEDwLXGVy8JO1uo5D41GIGtZUdMMeHinAOLw35k5ncSvOi1RkMQrDsr
-         5hQw==
+        bh=Wch4ogmoRir2iW4GNTb1XcG6qhjlMSCAArvFTJAulaw=;
+        b=k23GUR4y5/Cg+LCw/O2siv/JiRi8tjKYlxQKmE6p3gsVf1/8zQsnuPrZvx+MX7yKfJ
+         MEfRmyynSc6/FXTehBQEMlwCtxnpdy/4KAd/SZ9grnoRiH4ucir3B8X+7auxNx3kBcFn
+         mlPqhtRonzeYpb33eLKq7XFgG+PFWgH27oDKvBPtJCCtvz6r88rtyoNrA05FCnWXojn6
+         GdtD1WCG8WSLf6YAR6AJcnbNqHGCnmOuyUQ8UVPv/5Hhchm5X2diDfspdQaI0ALrNS4/
+         HTQ37raJigBE37vIW0CExWEpCWh8VkWCCRLgQJ8qp48OQRMM6PXd5MsyKLXOJwORWw2M
+         wo9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=+w773fSAbp2IeNQ2T07cIjy6rYxfln7naSunEDB1/w8=;
-        b=as+PSYj0rI4JibNoLDnzDKSuebaPqEqhQqoD5mkTBnrDrfZ0TEHplyzBHM9ywoTWjy
-         XcFw8+y5qb9p+yTGVcigtLKrCDU75aAfeFdJELGGWRDw3uPo3JsU3ESAYxrwSYXJLzrr
-         JFklS4gM2VSYIshdvMxarXIOm3Dh+6fk+c27RjaNi+Vdtb5INWKC+3a/+cisQl22UYg2
-         kd6r0ZE1shnMbO1YatJh5hdDUivDFjhyuH5gtzI9AaX+3uEFqhvUsGVLs/XFPfxZ2ZTi
-         4qfOGSiOnZFwLPYe4SeLC5GV4vb2kiIlx9AQI9OAuvf+I60sK76013b2gDrxRcdAH8nn
-         oQ1A==
-X-Gm-Message-State: AOAM533Bchi6VuS1lrB0xgZAuEZJmF5rxAomv/ysBxqwXM1N5D1p0/uM
-        NUkjVhuC3VTz0UAdZaMfC2ac98vI0Jhamr8w9Jw=
-X-Google-Smtp-Source: ABdhPJx65JcMd1dGBdBiF+x8WkzVxzU0Qy+Nhp+crG465qErWO5DQ+A7kzT0AG2Hy53EC2Saiklxn+eIKSEZrjXq3Ug=
-X-Received: by 2002:a17:906:eda7:: with SMTP id sa7mr5640056ejb.135.1626063168603;
- Sun, 11 Jul 2021 21:12:48 -0700 (PDT)
+        bh=Wch4ogmoRir2iW4GNTb1XcG6qhjlMSCAArvFTJAulaw=;
+        b=CLnAI1HSvBn2H0R5EU2BeC225gUU7L8obgepUhR7FeDfMbOyBlsJ4lapLa/Y1mf3fD
+         le99GermpcHzFiuVK4DoujtOQsxZGj+RM+ccvZ7HbFv2sUW/RUnwgEf22zW5vV8tIlzE
+         Q2sH3Eqc9JYwgtuCx2SwcVcA3o14N5EqUxsCwjcm1JMD+qrZvch5BAVkpzM8w551oSUu
+         YWwwWano+PTNKVgivdO2vVTTfOLYt24V2Ml8p7ri1G51Utdwv33ANpvi5lWsv5k/KPv9
+         L7qcaRc7Cg0bs58HEMqRt9z+5oX+Hs++0KqRZAC407mo7Yi8le8WRxH6Qu2TjBLpGq06
+         3Dkg==
+X-Gm-Message-State: AOAM531/E5HRu+l21OMBZSib5+teNAk2hzlFzOxeKqouGdHTJ6akLmNc
+        D4k/3/XVBmrEpKUIi1Yf/0flXWeQtwegX0+FtbE=
+X-Google-Smtp-Source: ABdhPJy61wTNwY8RT56gezLQHBKypXDWloPWbxBxLb8+hzAd7zanj1Ci42YxghxnSKmLoOq/QxxPMTEDafZYggeIoVc=
+X-Received: by 2002:a17:907:7293:: with SMTP id dt19mr10938718ejc.122.1626063505890;
+ Sun, 11 Jul 2021 21:18:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210711190308.8476-1-xiyou.wangcong@gmail.com>
- <CAMDZJNWWq2TGb6-nZRbBNfLevOyD2oSn941Nw_+7q0QzVep_GA@mail.gmail.com>
- <CAM_iQpUmO8S-7cgG=yy2TsNoc9nHpW__-WCfhcfV-_eAf46K7A@mail.gmail.com>
- <CAMDZJNXbwzXrHX1UT+DLsJvbKPh70-OPyrkTV=D05a5Mwcko3w@mail.gmail.com>
- <CAM_iQpUG28PBhXmqQeEzcWq8cNLFH1BzXaZ1FWGu1jqObGfdwg@mail.gmail.com>
- <CAMDZJNV9tbGE0Y1nZgMcp2Z5LU5Cb7YfJ+mS9rVogrin8SGxjQ@mail.gmail.com>
- <CAM_iQpVAuF0Pq1qmKRWoOvBPPMSaf1seKykEwYvVhm0tRkNo4A@mail.gmail.com>
- <CAMDZJNW5F3MDPYaRhx1o1ifPXQPnW_fdML=ap+Gis2PG9FB9Pg@mail.gmail.com> <CAM_iQpWHvY1h-xdUxWk+PhQcMRqSmnDpzxvBLXKh1mARYzQfmg@mail.gmail.com>
-In-Reply-To: <CAM_iQpWHvY1h-xdUxWk+PhQcMRqSmnDpzxvBLXKh1mARYzQfmg@mail.gmail.com>
+References: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
+ <20210711050007.1200-2-xiangxia.m.yue@gmail.com> <CAM_iQpUtQGDx6yJtY5sxYVd3wNqBSDYAZ4uHZonkFQDrnLo8cQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpUtQGDx6yJtY5sxYVd3wNqBSDYAZ4uHZonkFQDrnLo8cQ@mail.gmail.com>
 From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Mon, 12 Jul 2021 12:12:12 +0800
-Message-ID: <CAMDZJNUMXFYJ9_UdWnv8j74fJZ4T6psdxMvbmRBzTAJuZBeQAA@mail.gmail.com>
-Subject: Re: [Patch net-next v2] net_sched: introduce tracepoint trace_qdisc_enqueue()
+Date:   Mon, 12 Jul 2021 12:17:49 +0800
+Message-ID: <CAMDZJNWfRQ_M=6E=jyOSKWMso73nNY1iKw4jyN8JU7NkSyDQcA@mail.gmail.com>
+Subject: Re: [net-next 2/2] qdisc: add tracepoint qdisc:qdisc_requeue for
+ requeued SKBs
 To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Qitao Xu <qitao.xu@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 12:02 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Mon, Jul 12, 2021 at 11:51 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On Sun, Jul 11, 2021 at 8:49 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> On Sat, Jul 10, 2021 at 10:00 PM <xiangxia.m.yue@gmail.com> wrote:
 > >
-> > On Mon, Jul 12, 2021 at 11:39 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > On Sun, Jul 11, 2021 at 8:36 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > > >
-> > > > On Mon, Jul 12, 2021 at 11:23 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > > > Sure, in that case a different packet is dropped, once again you
-> > > > > can trace it with kfree_skb() if you want. What's the problem?
-> > > > It's ok, but we can make it better. Yunsheng Lin may have explained why?
-> > >
-> > > Why it is better to trace dropped packets both in enqueue and in kfree_skb()?
-> > I mean we can use one tracepoint to know what happened in the queue,
-> > not necessary to trace enqueue and  kfree_skb()
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > The main purpose of this tracepoint is to monitor what,
+> > how many and why packets were requeued. The txq_state can
+> > be used for determining the reason for packets requeued.
 >
-> This is wrong, packets can be dropped for other reasons too, tracing
-no matter where the packet is dropped, we should allow user to know
-whether dropped in the enqueue.  and the
-what the return value.
-> enqueue is clearly not sufficient even if you trace it unconditionally.
-> For a quick example, codel drops packets at dequeue rather than
-> enqueue. ;)
->
-> > If so, we must match when the packet is dropped and what packets. if
-> > we use the return value in trace_qdisc_requeue. It
-> > is easy to know what happened(when, where, what packets were dropped ).
->
-> I am afraid you have to watch the dropped packets.
+> Hmm, how can I figure out the requeue is caused by
+> validate_xmit_skb_list() when it returns again==true?
+> I fail to see you trace it.
+This patch looks not good.
+> For the other case, we can figure it out by trace_net_dev_xmit().
+> So, in short, your patch looks useless.
 >
 > Thanks.
 
 
 
--- 
+--
 Best regards, Tonghao
