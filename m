@@ -2,130 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 107CB3C4A26
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B917B3C4DA9
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238607AbhGLGs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 02:48:56 -0400
-Received: from relay.sw.ru ([185.231.240.75]:60390 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237047AbhGLGr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 02:47:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=WroNvOEs8to4jVJ8U9lM1xYbBZUEjlNXAlwf7B0aUgU=; b=EbdA1F0pBuM675u9Hg/
-        i1rClbvjDNENc5BWlcOQzRQ/nDSkmUMqbfH9c38jHWoBJi5lrK7In5A1A0wV/NYoRDIeNc6QGj0+F
-        uxKYvxweuYH9kryAbXDjuFOG97dTm87f7bkEeI2G5ACr6EucwRPmHXk8H4wc6Qev5I29rHCdz48=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m2pgg-003ewK-He; Mon, 12 Jul 2021 09:45:06 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH IPV6 v3 1/1] ipv6: allocate enough headroom in
- ip6_finish_output2()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <74e90fba-df9f-5078-13de-41df54d2b257@virtuozzo.com>
- <cover.1626069562.git.vvs@virtuozzo.com>
-Message-ID: <1b1efd52-dd34-2023-021c-c6c6df6fec5f@virtuozzo.com>
-Date:   Mon, 12 Jul 2021 09:45:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S240825AbhGLHNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 03:13:51 -0400
+Received: from mxout70.expurgate.net ([194.37.255.70]:39163 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243736AbhGLHIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 03:08:52 -0400
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m2q0T-0001NZ-VM; Mon, 12 Jul 2021 09:05:34 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m2q0Q-000ByW-Je; Mon, 12 Jul 2021 09:05:30 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 7E6FB240041;
+        Mon, 12 Jul 2021 09:05:28 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id CFD03240040;
+        Mon, 12 Jul 2021 09:05:27 +0200 (CEST)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 2E7532029C;
+        Mon, 12 Jul 2021 09:05:27 +0200 (CEST)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     hauke@hauke-m.de, martin.blumenstingl@googlemail.com,
+        f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v4] net: phy: intel-xway: Add RGMII internal delay configuration
+Date:   Mon, 12 Jul 2021 09:04:53 +0200
+Message-ID: <20210712070453.8167-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <cover.1626069562.git.vvs@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate-ID: 151534::1626073531-00007B90-193A2682/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When TEE target mirrors traffic to another interface, sk_buff may
-not have enough headroom to be processed correctly.
-ip_finish_output2() detect this situation for ipv4 and allocates
-new skb with enogh headroom. However ipv6 lacks this logic in
-ip_finish_output2 and it leads to skb_under_panic:
+This adds the possibility to configure the RGMII RX/TX clock skew via
+devicetree.
 
- skbuff: skb_under_panic: text:ffffffffc0866ad4 len:96 put:24
- head:ffff97be85e31800 data:ffff97be85e317f8 tail:0x58 end:0xc0 dev:gre0
- ------------[ cut here ]------------
- kernel BUG at net/core/skbuff.c:110!
- invalid opcode: 0000 [#1] SMP PTI
- CPU: 2 PID: 393 Comm: kworker/2:2 Tainted: G           OE     5.13.0 #13
- Hardware name: Virtuozzo KVM, BIOS 1.11.0-2.vz7.4 04/01/2014
- Workqueue: ipv6_addrconf addrconf_dad_work
- RIP: 0010:skb_panic+0x48/0x4a
- Call Trace:
-  skb_push.cold.111+0x10/0x10
-  ipgre_header+0x24/0xf0 [ip_gre]
-  neigh_connected_output+0xae/0xf0
-  ip6_finish_output2+0x1a8/0x5a0
-  ip6_output+0x5c/0x110
-  nf_dup_ipv6+0x158/0x1000 [nf_dup_ipv6]
-  tee_tg6+0x2e/0x40 [xt_TEE]
-  ip6t_do_table+0x294/0x470 [ip6_tables]
-  nf_hook_slow+0x44/0xc0
-  nf_hook.constprop.34+0x72/0xe0
-  ndisc_send_skb+0x20d/0x2e0
-  ndisc_send_ns+0xd1/0x210
-  addrconf_dad_work+0x3c8/0x540
-  process_one_work+0x1d1/0x370
-  worker_thread+0x30/0x390
-  kthread+0x116/0x130
-  ret_from_fork+0x22/0x30
+Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and add
+the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
+devicetree.
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+Furthermore, a warning is now issued if the phy mode is configured to
+"rgmii" and an internal delay is set in the phy (e.g. by pin-strapping),
+as in the dp83867 driver.
+
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
 ---
- net/ipv6/ip6_output.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9eb..0efcb9b 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -60,10 +60,38 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
- {
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net_device *dev = dst->dev;
-+	unsigned int hh_len = LL_RESERVED_SPACE(dev);
-+	int delta = hh_len - skb_headroom(skb);
- 	const struct in6_addr *nexthop;
- 	struct neighbour *neigh;
- 	int ret;
- 
-+	/* Be paranoid, rather than too clever. */
-+	if (unlikely(delta > 0) && dev->header_ops) {
-+		/* pskb_expand_head() might crash, if skb is shared */
-+		if (skb_shared(skb)) {
-+			struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
+Changes to v3:
+o Fix typo in commit message
+o use FIELD_PREP() and FIELD_GET() macros
+o further code cleanups
+o always mask rxskew AND txskew value in the register value
+
+Changes to v2:
+o Fix missing whitespace in warning.
+
+Changes to v1:
+o code cleanup and use phy_modify().
+o use default of 2.0ns if delay property is absent instead of returning
+  an error.
+
+---
+ drivers/net/phy/intel-xway.c | 85 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 85 insertions(+)
+
+diff --git a/drivers/net/phy/intel-xway.c b/drivers/net/phy/intel-xway.c
+index d453ec016168..5a626cd27ed4 100644
+--- a/drivers/net/phy/intel-xway.c
++++ b/drivers/net/phy/intel-xway.c
+@@ -8,11 +8,16 @@
+ #include <linux/module.h>
+ #include <linux/phy.h>
+ #include <linux/of.h>
++#include <linux/bitfield.h>
+=20
++#define XWAY_MDIO_MIICTRL		0x17	/* mii control */
+ #define XWAY_MDIO_IMASK			0x19	/* interrupt mask */
+ #define XWAY_MDIO_ISTAT			0x1A	/* interrupt status */
+ #define XWAY_MDIO_LED			0x1B	/* led control */
+=20
++#define XWAY_MDIO_MIICTRL_RXSKEW_MASK	GENMASK(14, 12)
++#define XWAY_MDIO_MIICTRL_TXSKEW_MASK	GENMASK(10, 8)
 +
-+			if (likely(nskb)) {
-+				if (skb->sk)
-+					skb_set_owner_w(skb, skb->sk);
-+				consume_skb(skb);
-+			} else {
-+				kfree_skb(skb);
-+			}
-+			skb = nskb;
-+		}
-+		if (skb &&
-+		    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
-+			kfree_skb(skb);
-+			skb = NULL;
-+		}
-+		if (!skb) {
-+			IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTDISCARDS);
-+			return -ENOMEM;
-+		}
+ /* bit 15:12 are reserved */
+ #define XWAY_MDIO_LED_LED3_EN		BIT(11)	/* Enable the integrated function=
+ of LED3 */
+ #define XWAY_MDIO_LED_LED2_EN		BIT(10)	/* Enable the integrated function=
+ of LED2 */
+@@ -157,6 +162,82 @@
+ #define PHY_ID_PHY11G_VR9_1_2		0xD565A409
+ #define PHY_ID_PHY22F_VR9_1_2		0xD565A419
+=20
++#if IS_ENABLED(CONFIG_OF_MDIO)
++static const int xway_internal_delay[] =3D {0, 500, 1000, 1500, 2000, 25=
+00,
++					 3000, 3500};
++
++static int xway_gphy_of_reg_init(struct phy_device *phydev)
++{
++	struct device *dev =3D &phydev->mdio.dev;
++	unsigned int delay_size =3D ARRAY_SIZE(xway_internal_delay);
++	s32 int_delay;
++	int val =3D 0;
++
++	if (!phy_interface_is_rgmii(phydev))
++		return 0;
++
++	/* Existing behavior was to use default pin strapping delay in rgmii
++	 * mode, but rgmii should have meant no delay.  Warn existing users,
++	 * but do not change anything at the moment.
++	 */
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII) {
++		u16 txskew, rxskew;
++
++		val =3D phy_read(phydev, XWAY_MDIO_MIICTRL);
++		if (val < 0)
++			return val;
++
++		txskew =3D FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
++		rxskew =3D FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK, val);
++
++		if (txskew > 0 || rxskew > 0)
++			phydev_warn(phydev,
++				    "PHY has delays (e.g. via pin strapping), but phy-mode =3D 'rgmi=
+i'\n"
++				    "Should be 'rgmii-id' to use internal delays txskew:%d ps rxskew=
+:%d ps\n",
++				    xway_internal_delay[txskew],
++				    xway_internal_delay[rxskew]);
++		return 0;
 +	}
 +
- 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
- 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
- 
--- 
-1.8.3.1
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID) {
++		int_delay =3D phy_get_internal_delay(phydev, dev,
++						      xway_internal_delay,
++						      delay_size, true);
++
++		if (int_delay < 0) {
++			phydev_warn(phydev, "rx-internal-delay-ps is missing, use default of =
+2.0 ns\n");
++			int_delay =3D 4; /* 2000 ps */
++		}
++
++		val |=3D FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK, int_delay);
++	}
++
++	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
++	    phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID) {
++		int_delay =3D phy_get_internal_delay(phydev, dev,
++						      xway_internal_delay,
++						      delay_size, false);
++
++		if (int_delay < 0) {
++			phydev_warn(phydev, "tx-internal-delay-ps is missing, use default of =
+2.0 ns\n");
++			int_delay =3D 4; /* 2000 ps */
++		}
++
++		val |=3D FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK, int_delay);
++	}
++
++	return phy_modify(phydev, XWAY_MDIO_MIICTRL,
++			  XWAY_MDIO_MIICTRL_RXSKEW_MASK |
++			  XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
++}
++#else
++static int xway_gphy_of_reg_init(struct phy_device *phydev)
++{
++	return 0;
++}
++#endif /* CONFIG_OF_MDIO */
++
+ static int xway_gphy_config_init(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -204,6 +285,10 @@ static int xway_gphy_config_init(struct phy_device *=
+phydev)
+ 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
+ 	phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
+=20
++	err =3D xway_gphy_of_reg_init(phydev);
++	if (err)
++		return err;
++
+ 	return 0;
+ }
+=20
+--=20
+2.20.1
 
