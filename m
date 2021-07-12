@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67CD3C6576
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 23:27:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF953C65BA
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 23:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234947AbhGLVai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 17:30:38 -0400
-Received: from lists.nic.cz ([217.31.204.67]:47240 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234768AbhGLVah (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 17:30:37 -0400
-Received: from thinkpad (unknown [172.20.6.87])
-        by mail.nic.cz (Postfix) with ESMTPSA id BB184142495;
-        Mon, 12 Jul 2021 23:27:47 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1626125268; bh=toepWkfRML1/8Hzxu6Wv/n7MSw1+daI+0fyt+ivfkCQ=;
-        h=Date:From:To;
-        b=LQZFeBr+O+4Z9BN4jJODy05+ZAIhSXX+FzfpBI1Wmgbu6yhNE5mFYIo17Nfoewqjj
-         Dy2rbyD0R3i3GlU0ZF6NXB9hcEKR/wOpWRHci5lp1YZ7uayzoNtdD9CyEqcsrr3Z9J
-         bboZ9Skg3DkNog3ImPlqUdLVb0Tj/exJ20VWJxQo=
-Date:   Mon, 12 Jul 2021 23:27:47 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marcin Wojtas <mw@semihalf.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC PATCH net-next] net: mvpp2: deny disabling autoneg for
- 802.3z modes
-Message-ID: <20210712232747.661b4116@thinkpad>
-In-Reply-To: <E1m2y9R-0005wP-7n@rmk-PC.armlinux.org.uk>
-References: <E1m2y9R-0005wP-7n@rmk-PC.armlinux.org.uk>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230156AbhGLVzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 17:55:51 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:46240 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229477AbhGLVzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 17:55:50 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id EC63C1C0B77; Mon, 12 Jul 2021 23:52:59 +0200 (CEST)
+Date:   Mon, 12 Jul 2021 23:52:59 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 016/137] net: Treat __napi_schedule_irqoff()
+ as __napi_schedule() on PREEMPT_RT
+Message-ID: <20210712215258.GB8934@amd>
+References: <20210706112203.2062605-1-sashal@kernel.org>
+ <20210706112203.2062605-16-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="rS8CxjVDS/+yyDmU"
+Content-Disposition: inline
+In-Reply-To: <20210706112203.2062605-16-sashal@kernel.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Jul 2021 16:47:21 +0100
-"Russell King (Oracle)" <rmk+kernel@armlinux.org.uk> wrote:
 
-> The documentation for Armada 8040 says:
->=20
->   Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
->   When <PortType> =3D 1 (1000BASE-X) this field must be set to 1.
->=20
-> We presently ignore whether userspace requests autonegotiation or not
-> through the ethtool ksettings interface. However, we have some network
-> interfaces that wish to do this. To offer a consistent API across
-> network interfaces, deny the ability to disable autonegotiation on
-> mvneta hardware when in 1000BASE-X and 2500BASE-X.
->=20
-> This means the only way to switch between 2500BASE-X and 1000BASE-X
-> on SFPs that support this will be:
->=20
->  # ethtool -s ethX advertise 0x20000006000 # 1000BASE-X Pause AsymPause
->  # ethtool -s ethX advertise 0xe000        # 2500BASE-X Pause AsymPause
->=20
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
-> net-next is currently closed, but I'd like to collect acks for this
-> patch. Thanks.
->=20
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
-t/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 3229bafa2a2c..878fb17dea41 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6269,6 +6269,15 @@ static void mvpp2_phylink_validate(struct phylink_=
-config *config,
->  		if (!mvpp2_port_supports_rgmii(port))
->  			goto empty_set;
->  		break;
-> +	case PHY_INTERFACE_MODE_1000BASEX:
-> +	case PHY_INTERFACE_MODE_2500BASEX:
-> +		/* When in 802.3z mode, we must have AN enabled:
-> +		 * Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
-> +		 * When <PortType> =3D 1 (1000BASE-X) this field must be set to 1.
-> +		 */
-> +		if (!phylink_test(state->advertising, Autoneg))
-> +			goto empty_set;
-> +		break;
->  	default:
->  		break;
->  	}
+--rS8CxjVDS/+yyDmU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Marek Beh=C3=BAn <kabel@kernel.org>
+Hi!
+
+> __napi_schedule_irqoff() is an optimized version of __napi_schedule()
+> which can be used where it is known that interrupts are disabled,
+> e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
+> callbacks.
+>=20
+> On PREEMPT_RT enabled kernels this assumptions is not true. Force-
+> threaded interrupt handlers and spinlocks are not disabling interrupts
+> and the NAPI hrtimer callback is forced into softirq context which runs
+> with interrupts enabled as well.
+>=20
+> Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
+> game so make __napi_schedule_irqoff() invoke __napi_schedule() for
+> PREEMPT_RT kernels.
+>=20
+> The callers of ____napi_schedule() in the networking core have been
+> audited and are correct on PREEMPT_RT kernels as well.
+
+I see this is queued to kernels as old as 4.4... Is it good idea?
+PREEMPT_RT is not usable there without extra patches, so it does not
+really fix anything user visible....
+
+Best regards,
+								Pavel
+							=09
+> index 0c9ce36afc8c..2fdf30eefc59 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6433,11 +6433,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
+>   * __napi_schedule_irqoff - schedule for receive
+>   * @n: entry to schedule
+>   *
+> - * Variant of __napi_schedule() assuming hard irqs are masked
+> + * Variant of __napi_schedule() assuming hard irqs are masked.
+> + *
+> + * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
+> + * because the interrupt disabled assumption might not be true
+> + * due to force-threaded interrupts and spinlock substitution.
+>   */
+>  void __napi_schedule_irqoff(struct napi_struct *n)
+>  {
+> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+> +		____napi_schedule(this_cpu_ptr(&softnet_data), n);
+> +	else
+> +		__napi_schedule(n);
+>  }
+>  EXPORT_SYMBOL(__napi_schedule_irqoff);
+> =20
+
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--rS8CxjVDS/+yyDmU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmDsuboACgkQMOfwapXb+vLvvACffTukjrW71y6YKE1ySo+48aN2
+bFIAn1ntM7CS2o6IrhJD/6GFlrQPmDb+
+=5f+k
+-----END PGP SIGNATURE-----
+
+--rS8CxjVDS/+yyDmU--
