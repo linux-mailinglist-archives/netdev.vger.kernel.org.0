@@ -2,84 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DB63C5FBC
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 17:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5B53C5FAF
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 17:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235570AbhGLPww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 11:52:52 -0400
-Received: from mail-proxyout-mua-31.websupport.eu ([37.9.172.181]:43203 "EHLO
-        mail-proxyout-mua-31.websupport.eu" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230228AbhGLPwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 11:52:51 -0400
-X-Greylist: delayed 539 seconds by postgrey-1.27 at vger.kernel.org; Mon, 12 Jul 2021 11:52:51 EDT
-Received: from in-6.websupport.sk (unknown [10.10.2.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail-proxyout-mua-31.websupport.eu (Postfix) with ESMTPS id C85D1C0015;
-        Mon, 12 Jul 2021 17:41:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=blackhole.sk;
-        s=mail; t=1626104461;
-        bh=RWYhEtAwTgLXUQOVcWGtAxGzTFa/bMHHrTYq7ywzREE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=kwOYoP0vDwN7lEgYWF+w/8XPSj4+0UK18zCtnWvMuutSLKZR2tnK/ZAoGhV/ggRXp
-         3QC1iQ3StGFLmXr+sLecOpX3rRWb99ntnpSzFpF0koTVkTJlyfu4OuDIy10i0TZ8p4
-         go0HudYCEd+31SrgBXwYDhlOPrsaEVPNuJlTA3AU=
-Received: from thinkpad (otava-0257.koleje.cuni.cz [78.128.181.4])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kabel@blackhole.sk)
-        by in-6.websupport.sk (Postfix) with ESMTPSA id 4GNnzd1fWGz12Nlk;
-        Mon, 12 Jul 2021 17:41:01 +0200 (CEST)
-Date:   Mon, 12 Jul 2021 17:40:59 +0200
-From:   Marek Behun <kabel@blackhole.sk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [RFC PATCH v3 net-next 00/24] Allow forwarding for the software
- bridge data path to be offloaded to capable devices
-Message-ID: <20210712174059.7916c0da@thinkpad>
-In-Reply-To: <20210712152142.800651-1-vladimir.oltean@nxp.com>
-References: <20210712152142.800651-1-vladimir.oltean@nxp.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S235577AbhGLPuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 11:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230364AbhGLPuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 11:50:02 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C1BC0613DD
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 08:47:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nt5J5/RTU1DONePIX8vjCTiKZRWD2bZ9I57wvNMZAKI=; b=L72ZY+PVj1UCE6YxOZdBVNSCNH
+        4OjOxsy6oelf0XUymPkHEs7Iej3SxvvQK2Hx9FQHV8scTkQcB0GcubFfo2aputTkfyV8ne2amPfL/
+        dE2oIpNdfRz+ikv5iO5g6vgJwT19nbZt/2+jPwAy1AT0nYHNHfzE0qjnXoiWraMttyVnArTnrvAEN
+        Y3HEOz35fS5yKvGUsLO/DhlQTCxhIy/tck+5YCZGSK/eyZ5cQg1rLyP1jDrNI3Xw7NoW62F474Kd/
+        bSj78Ac1p5QVoNdZ1Hv44iSvOV8Rjy+iMUqw1Acxt2xQv6NA3TrHAbo0+iHWGvLgH12HBiSn4xzLi
+        JqyEsi8A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:40094 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1m2y9H-0004ys-74; Mon, 12 Jul 2021 16:47:11 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1m2y9G-0005vm-Vm; Mon, 12 Jul 2021 16:47:11 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [RFC PATCH net-next] net: dpaa2-mac: add support for more ethtool 10G
+ link modes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Out-Spamd-Result: default: False [1.90 / 1000.00];
-         ARC_NA(0.00)[];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         RCPT_COUNT_TWELVE(0.00)[15];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         MID_RHS_NOT_FQDN(0.50)[];
-         ASN(0.00)[asn:2852, ipnet:78.128.128.0/17, country:CZ];
-         FREEMAIL_CC(0.00)[vger.kernel.org,kernel.org,davemloft.net,lunn.ch,gmail.com,resnulli.us,idosch.org,waldekranz.com,nvidia.com,networkplumber.org,lists.linux-foundation.org,ti.com];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Out-Rspamd-Server: mail-antispam-4
-X-Out-Rspamd-Queue-Id: 4GNnzd1fWGz12Nlk
-Authentication-Results: in-6.websupport.sk;
-        auth=pass smtp.auth=kabel@blackhole.sk smtp.mailfrom=kabel@blackhole.sk
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1m2y9G-0005vm-Vm@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Mon, 12 Jul 2021 16:47:10 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir, on what mv88e6xxx devices are you developing this stuff?
-Do you use Turris MOX for this?
+Phylink documentation says:
+ * Note that the PHY may be able to transform from one connection
+ * technology to another, so, eg, don't clear 1000BaseX just
+ * because the MAC is unable to BaseX mode. This is more about
+ * clearing unsupported speeds and duplex settings. The port modes
+ * should not be cleared; phylink_set_port_modes() will help with this.
 
-Marek
+So add the missing 10G modes.
+
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+net-next is currently closed, but I'd like to collect acks for this
+patch. Thanks.
+
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index ae6d382d8735..543c1f202420 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -140,6 +140,11 @@ static void dpaa2_mac_validate(struct phylink_config *config,
+ 	case PHY_INTERFACE_MODE_10GBASER:
+ 	case PHY_INTERFACE_MODE_USXGMII:
+ 		phylink_set(mask, 10000baseT_Full);
++		phylink_set(mask, 10000baseCR_Full);
++		phylink_set(mask, 10000baseSR_Full);
++		phylink_set(mask, 10000baseLR_Full);
++		phylink_set(mask, 10000baseLRM_Full);
++		phylink_set(mask, 10000baseER_Full);
+ 		if (state->interface == PHY_INTERFACE_MODE_10GBASER)
+ 			break;
+ 		phylink_set(mask, 5000baseT_Full);
+-- 
+2.20.1
+
