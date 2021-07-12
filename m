@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EBDB3C5F23
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 17:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1CC23C5F27
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 17:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235527AbhGLPZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 11:25:20 -0400
-Received: from mail-db8eur05on2067.outbound.protection.outlook.com ([40.107.20.67]:23777
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S235372AbhGLPZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 11:25:30 -0400
+Received: from mail-am6eur05on2085.outbound.protection.outlook.com ([40.107.22.85]:46304
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235495AbhGLPZN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 11:25:13 -0400
+        id S235511AbhGLPZT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 11:25:19 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GP/UBJSm1anMp/xsWteTdtCdyPisd9JpZT8b6lsMfBZVxZ2Fx6UktnS7HSlroMcYpa2VDBtvHWud0RPYj8wP9bYuieHV9DWK79kwYmJsW/ReddXzkWRzhrtEEHVmHWUdoiYqyDW9UC4k2pPyFY+zcdPxTOzpmpo7yX3aZOGe3G7XwpsDQCEXF7xtE7IGxlsqHImNExQykCPAUFZV3nV5eB2zVSbY2DGPBLNoTkc8RM9XwgMbFPEjALhaGqD91Nu85Lge8qFw1F1dWkv5T80srPWZcMGM1HDDDpiQqp9SWao6zEQFvuxEQihsQUeKtlKJ5ZLQo6Ml3Z5ngk+ZCBtzmw==
+ b=ajoj2t7PEyIu10xH4omQgex9bYQ5o9amUF1L265spWfs9pNz3/BIgtPp2l18TSSwqyC2cwQpMHHZllHvC3+BbGZKo/+LZZoeImUTq/1LYRjtisUu7PTwlbF09jzfNOkXYNtDWWpGSUXiysRR5R0VRBuZvlnx8Q18kxXahQ2IIog+r1mzkxPtN4zo8MuZF8MTFpFK5llCjgO0PFQUzBxWiIJWLD8i8p6ME6DhLJduGxudTIvtlR8IdRdXzig0R9bJB/bKzCKzkCB+nRQtZQtriFWPSguEZsfeYRWJeIEIz4VMG9A8qkb3/VHnFgfAE1umuwZRxpjg4NCjpSL9yByFJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yMV1rNTy+B73je0YKCFaLZbYflrMYlTRHnsjo3Wx6zU=;
- b=mLgZIGOgvcswiW0LJqWa0ksRkmi+B+LvkTIoQXfAwxz8NysCW8JXm61qKbk28X2iDtrsH6wXa4KoSkXy1OML25psEl8402k4APGuebGLdsemCC9/qgN7cAcwAszxikXHCHxHT79yQgfd/Fx/vELJHLM+i9QZgF4GcEnkhp5VcIy17sqik9wMW4+jddzHP1X7lSEwMn5Rii0U9pZrAxVsyhUjfeRPBhCNqsey/1K+3RFfmmF61LnCZRVPe5a2EuMTH3A0zGIpkqo7y23N5tA7OhgjKKG+r17+3z1E2GClrbY5MEhPIpneCf6Y3CQRuSSgJijfb8wjx9CIqscjReCAdw==
+ bh=lKBM7Fl6q1XMHGHXHcaKF/ZFWalOLNVhEubPkfDeL4w=;
+ b=Evr4Ur8tiNyKHhYXQHK2cDqybQySd+LZ6P1ry7ac9h0P8IUnteyhqhAqde+ONmFVy8kUegOI/41S1wNkpqqiAvUVSV40tKzvz7qhEPWKo5hTrQmotKZbMAvfp8yUIWt7S61JEdv12F26wowtaNrQ/tGwPNzcakR4WW9mtl5vDgV+004UkIK+utuX6ySNW8krWrWPRI962u6dNxzKcCaBTJLFF0PaPkvDPgqxzEzmL73ceJ5J6EgU9YjPCOOWX6p/uPOtD882Uj5IAIxCnGk9SEJ+Wh6/yZFo0vGUxXEowNKdmjMU8uCwili6vKkNpqHgXM77/LZ08UQgUHzwQoe77Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yMV1rNTy+B73je0YKCFaLZbYflrMYlTRHnsjo3Wx6zU=;
- b=d7e7bcWSJJT1bCTeJk40jf7yVWOU+NDWX1c/VCVpODDi3YCfLKTmULaJVdsiluP+PCOyf35e+/DzQfFrZFT6hJoYzvB9ru76UyB/Sbv1awEGaD1Y6+J2zYtb33bNVYU5zIebHEnboV3114Z4lMLWsLX+BzceSgEYtxUIkXOmkjo=
+ bh=lKBM7Fl6q1XMHGHXHcaKF/ZFWalOLNVhEubPkfDeL4w=;
+ b=f8OW6qD//2ld8FH9FLRr5yy1/9SLRXFAxM3wNxhJR6WCMYXmw3SarqI931pJYs0jdSAi0p/tsuflxbTPsPfqOir4Af9N4Zh1IRak/pFW6FkMrcZqaMhrVbznTRugywbxcRcJZT4Aorwij0CbVNNE8pvRJHAX2ropJuV9XRWEjp0=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3549.eurprd04.prod.outlook.com (2603:10a6:803:8::30) with
+ by VI1PR04MB6271.eurprd04.prod.outlook.com (2603:10a6:803:f7::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23; Mon, 12 Jul
- 2021 15:22:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20; Mon, 12 Jul
+ 2021 15:22:25 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4308.026; Mon, 12 Jul 2021
- 15:22:23 +0000
+ 15:22:25 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -51,9 +51,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Stephen Hemminger <stephen@networkplumber.org>,
         bridge@lists.linux-foundation.org,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [RFC PATCH v3 net-next 12/24] net: bridge: drop context pointer from br_fdb_replay
-Date:   Mon, 12 Jul 2021 18:21:30 +0300
-Message-Id: <20210712152142.800651-13-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH v3 net-next 13/24] net: bridge: use the public notifier chain for br_fdb_replay
+Date:   Mon, 12 Jul 2021 18:21:31 +0300
+Message-Id: <20210712152142.800651-14-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210712152142.800651-1-vladimir.oltean@nxp.com>
 References: <20210712152142.800651-1-vladimir.oltean@nxp.com>
@@ -64,190 +64,244 @@ X-ClientProxiedBy: AM4PR0101CA0058.eurprd01.prod.exchangelabs.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM4PR0101CA0058.eurprd01.prod.exchangelabs.com (2603:10a6:200:41::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend Transport; Mon, 12 Jul 2021 15:22:22 +0000
+Received: from localhost.localdomain (82.76.66.29) by AM4PR0101CA0058.eurprd01.prod.exchangelabs.com (2603:10a6:200:41::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend Transport; Mon, 12 Jul 2021 15:22:23 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d0a6b6a3-985d-430b-5b2a-08d94548d949
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3549:
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3549A4019530AEF937791916E0159@VI1PR0402MB3549.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 27e74d2b-7177-4e73-72f4-08d94548da21
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6271:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB62715D790CB1DD2585797A6EE0159@VI1PR04MB6271.eurprd04.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sSQwQXrof0OXl5XO6iCPXrlL7pYNLeojXPrK/VJtbY64E9XExzJveYcTdkk13oxAvObGeL2InZuBqrHS35MXu+Gs6x4OqQkSOp5ynp3Dbqhdee86JTAwQilgWbinayTrd6phjcUA/XSuNJLqH7bRI3BdUfhRI+nY47EgbZCag1aIRZoYTcaIYYPfLN9y4GIuZvRRj9g+ReAxMoMlvSpBYe/meG10XwLmGxvBaYCqfWBQeb5OUmcJNdi0tlT4GIOJCnDt/YR/lqIlmNyZNZp/57JbXM/Pm3diMDXyxMtxuISq26zWLA+eaqZuqKo5Z61T/0EktNd6ImqHECL5+aLkgIkFx5ZZcYDMI/u2dXrrgP67A6MypFITcJ73iE2wiWm/PxQGd9N4/YGro8F2vPp9fGVhpCAhkWjTR2P96XySTFWGySt6PLoUHqXzldGaJRC/y6L2/xEZjug4+AXBJi98rek0PKfzMGAUsVALpD+uQJ4r3naRLT7H2u6qplTBQUh5qEiUutI9KDArl0wAFzlc6jjinWsHVXMK85lAaDhsGmvXEFRHjo8/lBkiDrTDHDXrZR0pHUUZMOltDjjurRY1/VgqIIxJdXFqDtdxN9a6TfgF2deClZvsNncWVieKDFpE4tu6M6Fhv7uV7nUunGkfQkYaLJseg8ZCvthuU903311Vd8zaDomE8VP1+v65+wckGZaXjFeEe0cdLCMQPHcqUg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39850400004)(136003)(366004)(6506007)(6666004)(478600001)(26005)(186003)(83380400001)(66476007)(66556008)(2616005)(2906002)(7416002)(6512007)(316002)(956004)(44832011)(54906003)(110136005)(4326008)(8676002)(66946007)(8936002)(86362001)(38100700002)(52116002)(1076003)(5660300002)(6486002)(38350700002)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: RQxES6N/cDzMK+k5vg56lsnl8JsxuNQBXosEuWd7TvWrQJbcLGLbU/Gt6w35SPyBQci0K8RPSS4+7QPrfrst6LYAD/ZUkKqpkeR1t53GrVjKe0KbQ+IMacMBBDj0lBGI21ueCqr4MUdVEnRD28NZCKJYCPjv9+Dvc0bUAOu3ABpxMhIJ3uVxxL3yt88u9jYb/9RfqxQYJFmC66RvhDj1i2J9r14P8dhJbdH2qQP8Z8axbnCk1rI9gtsHYamsa+LuCqJzEMb0wh6eDcwI7g2bXQA16ycnqPu9s6VGPb6o9K4/xp/PEJ5HGFnuidi1HTqedh2kN+F5oVXcZWefZC4BJmmcz9SHZmq2f6K/tDqz+34XIttsxvkqaU7FTnroLV6iBTZUcDOuNAZohnw0iePrIyPXxMMZmh0beAodJsRPhtb7GSJ7+m+dkVy2iynE7/Wh28WFFwaKfw+XuPfY/WMTh/pT5kDQN+UQBCuswj2C3jG75SzJzlnzcllJyqQ9vRYDMGb+S5aV9xWz5zYfS5ihMHqPTbLWM9BGm77ql4F03c4743fWCz7VX9l0rcqkYYm0vjNAtGoNfoThQPnZr3rQhZuf2nPQ2SMdZmoz+RPkEA89kk1lnXrP+GSsmmYVbEEbxciVjswod/G4htZdlcmsGYEbXpbDFPRUOq9Lr77WN38E6ZAwrFDmx/N+jIsR60hpGVjzjOijGjtYB+PyJeJ3rw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(39850400004)(396003)(346002)(366004)(26005)(2906002)(66476007)(6666004)(83380400001)(66556008)(38100700002)(8676002)(38350700002)(66946007)(5660300002)(4326008)(54906003)(52116002)(7416002)(1076003)(110136005)(6506007)(316002)(86362001)(44832011)(478600001)(2616005)(956004)(6486002)(8936002)(36756003)(186003)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?91yA75kC1wCNNjIOnGxofJEhrf9C1GCGS+fgYgFCqEbL5Mnewm6YZWsHB47N?=
- =?us-ascii?Q?WcyyduQiciVdygylNPGuF2pM2Pm73D5uCUdqLJo5BF5oqWEUu+rOvXm/5bkZ?=
- =?us-ascii?Q?iE5j7JANrC3UsyM3GtmIkl5ClWpgRe2OfWf/UmCOYuLnDDfOj9BsvqxujrsX?=
- =?us-ascii?Q?kun1rHWAqeyquhplLUPI8HZ4i8v3uc4DzKGVGNmhO/gCrcWOgeXa7CkNKk5h?=
- =?us-ascii?Q?EXF0g4cp90bytuSH99s+jKyPIM8frEUg22u/vz7nM/ClVyg8g0e12o/yg4/W?=
- =?us-ascii?Q?AbRXF7elrbCfiIszSQCxn8SoezJJ27kASjef9kJJ7LDtz2BAHB4tql63oz8x?=
- =?us-ascii?Q?pEyHslU60OqbbzZGduylgVlejTlFk+RkiAxkfkamXJyTa3qQVj2oGVJvCclE?=
- =?us-ascii?Q?XlBa3CzEUvpFOMy/jRGwtq2CUyfC5f/ijSwYfs0DY/vQd+PsQ4wVRIIjDFlI?=
- =?us-ascii?Q?V1Zb2GtlMXhp1J46ldtibiUQBL+Ky9oll1ovV80o+M4+zxluf+vZ3oslpWc0?=
- =?us-ascii?Q?/0pD4LfqL73v00dL4/zxRdN7rQDd9+AV9e4BJuF6sgCIlhbwW1ssItCQaAG1?=
- =?us-ascii?Q?JAN0rHlK5/IiTya0dbGH8/sDomhUfPtsVM4dgt4zOOdIMBScWo98liijezTE?=
- =?us-ascii?Q?wZJc2Jab6xYFzQAxPrKkwM6qlAXq0f2LHiYF2Bd/beWwTLxkWbJyY4ajMIjR?=
- =?us-ascii?Q?JUX+URPOblAVBfNGA6Q+6O8MgqvMvHGS2zHUjdhOw2hMOA5Hi+xmO5SALMSM?=
- =?us-ascii?Q?3bfrjFrOHB+PjfhiBhxua8nqgtxzacEF3naH52KQQ7l10TDevcwkvG0P89LZ?=
- =?us-ascii?Q?do6SCabzoaM/h3H9Q8fcPr+XUcHZxnwH1LttBUwjrGdw5qwrAXOUUkoW5Zf2?=
- =?us-ascii?Q?bTO4uCER4EVS+EBFLdLOmVaZRRK6HpLY78twFyP4vTyz040RcVuEWWvBpzi0?=
- =?us-ascii?Q?yWyU2wjFZTXL+g25kxDAzSSiDu3MlHANd3ZXNtFBilyrBaZ8IcDiwH04yG3/?=
- =?us-ascii?Q?kdcTipxueOt30snReatstzlRyMuy2yEuZ7U637kR3Obkq7jmlpfW5AldwSwf?=
- =?us-ascii?Q?unAIiiQWFiuSDl+neJLLSC9AhZsyGMtfPBUIdNJ36hBsJqT6jXLIEs7XTX0t?=
- =?us-ascii?Q?mmczU9GeT1FMgKy0zB9njBZGhHg/uBA/JLuo8yPIx7aZ8hvGqgOBy1ReS8rR?=
- =?us-ascii?Q?h/NweuqXoFDTOzY5Le+UCml/eGQFWjWr94plrZGxnPYEy4LDuKBKlJwEMyiI?=
- =?us-ascii?Q?oDg2ZnVu8f0gGRVbOVDaprln3S0wgXz4QOg2ayDVMN+aEr44D08Ic/NMQVz+?=
- =?us-ascii?Q?4RfR0PZy4M5kGkCkosOD3tw9?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2Nv0/ub9jYrfUnKPjqao3iZFaUaq94IXLOQCmFdZ6hRj+CV6/JY4VMgZOcGk?=
+ =?us-ascii?Q?jEMRi0rVQ6Our6DQYIT0oX6ZmH5g89imq8LZH4GNYGBGl6sZZBqwnhTOoOJj?=
+ =?us-ascii?Q?BQ6T7Fr729G21UaLrLfzVYbSC2LzQKtTWRoJYdo/+IsCEbjvJryG3OY1VdOV?=
+ =?us-ascii?Q?GfrrNRNlXXG6bwI7hvI/arWrTBlanykXO9j9bheNlV95upPXPSNGMOYuJHJk?=
+ =?us-ascii?Q?0f6KIt8o0wSxszq0I8yjJdHq45pCH3RtCvLZNzgopG4iVzox6F7foGYuoL5T?=
+ =?us-ascii?Q?Fv+Rvp9srlVp2yfptNUbPEuXJZnCJxagZIpPLKXUEsvSwsdwIY1J/oN+FPWy?=
+ =?us-ascii?Q?fdT9ylEMppSaCiG/fql9RK41wlT3V9itXDc9ZX01384e8Eo5v10r8055LC4S?=
+ =?us-ascii?Q?NRJLe67qSC7y5Frj36MoZxe69O6+lOoP62fygG/W7PM+z37l+bk/XyLD3SSO?=
+ =?us-ascii?Q?lSQcI15cgUnIUUqmS6UhGd5Zyfa6bH5KS9wphVMvA1ihCHZ3LtDsT5+AzCuB?=
+ =?us-ascii?Q?j55Qn4Wo9ctpR7PvWMdT/0PEj9/fZcSBBL/7wkxunFvK9cidAONcgfEMiuiM?=
+ =?us-ascii?Q?wzArPISncTisv35/p7PVsCEGvsWTu6HGNVJ11HxXvk4DHRzFGBAfrZt3Sbk5?=
+ =?us-ascii?Q?J3dWnRK3hfWc1aWEFoKYWMeAMApBoB/iilq33wPS1v/5lY4OFvglrjrPFJ0V?=
+ =?us-ascii?Q?6i/OPiuXWpgGUJzaS8vBpLflRJxM206BR++KdA8eKY5V0/iHy66ogD2MROZb?=
+ =?us-ascii?Q?5Xw5BXXer3Q3rllIV0E+Im3MsrJMlPb9LxdnkWuonEL83eW/PRWfaKQOBI6k?=
+ =?us-ascii?Q?lF4k94yipUf4SuQZEdQChObklAoctapH4MzD56p5lkgPGkI21k/ENPx/IXMm?=
+ =?us-ascii?Q?xM6eX9APNHAOGsi5v2TUAKE7dUpZ7owggSpbzr8D6rPtEZ7PgCdq8ycO8vAW?=
+ =?us-ascii?Q?nY8JmGUTBlfLRI8i0P/hvxUgTMeGO0ryqbxmwU8UZ1YA/hSvOalCWHnCvtTc?=
+ =?us-ascii?Q?Us7suoGaVsrar8BBxKoE5zPMQ+mT/sGF96Jo5OB7oqKqSERHcweM+3B2HFj7?=
+ =?us-ascii?Q?/1yGKBixv/BXhIWDdD2SMsn53RkQXMdYqNP3viveV0bzyXFRe4BxmNPgLYhz?=
+ =?us-ascii?Q?JewMqJA0YX/oBp1D61BLdyFp9GNj+Ru8XIcBuKgMAImTtgC57vUF2oc5rtpq?=
+ =?us-ascii?Q?HHIui5Z+EFp2wMJg8hbUJ/LIJp4f6qPiTagLoD0eGZAIG3D/0jziN8Rm7Uto?=
+ =?us-ascii?Q?5WBCazakMlvjYJcQarSx2UStqrmn3cJR0uxWtYUE3HUy4FcY3mp2z5k+JCEa?=
+ =?us-ascii?Q?TuAs0iZgpTMe1/3wvbhq9nIY?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0a6b6a3-985d-430b-5b2a-08d94548d949
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27e74d2b-7177-4e73-72f4-08d94548da21
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2021 15:22:23.6720
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2021 15:22:25.0811
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bdrTrYUkzvJgMwEEVfX/wAuBJuMIk2pr9XYQA6QuGKFkOIp9V/ksY4RCdL3guoHQLHKWxibyBonL4uddH6dXRA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3549
+X-MS-Exchange-CrossTenant-UserPrincipalName: asdR3QcINuvDC/McIst9zVBbNzdmlWJuj9xGuYkC6GtJTq9N6FRnq2VphBnpaZhdtPTtcf7EppENAfutXnZOAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6271
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As opposed to the port objects (mdb, vlan), the FDB entries on a LAG are
-a bit special.
+Currently, switchdev users of br_fdb_replay pass a pointer to their
+atomic notifier block for the bridge to replay the FDB entries on the
+port and local to the bridge, and the bridge whispers those FDB entries
+to that driver only, and not publicly on the switchdev atomic notifier
+call chain.
 
-While a VLAN installed on a bridge port that is a LAG can reasonably be
-modeled from the bridge's perspective as individual VLANs being
-installed on all physical ports that are beneath that LAG (and similar
-for multicast addresses), the same cannot really be said about a unicast
-forwarding destination MAC address.
+Going forward we would like to introduce push-mode FDB replays for all
+switchdev drivers, and there are at least two reasons why the current
+setup is not ideal.
 
-Actually there is no driver today that makes meaningful use of FDB
-entries towards bridge ports that are LAG (bond/team) interfaces, so it
-is hard to assume anything. But intuitively, since FDB entries are
-usually exclusive to a single destination port, replicating them on all
-LAG lowers sounds like a bad idea. Maybe, instead, the switchdev driver
-models the LAG as a logical port, and the FDB entries associated with
-the LAG target that.
+First and most obvious, every driver would have to be changed to pass
+its atomic notifier block to the switchdev_bridge_port_offload() and
+switchdev_bridge_port_unoffload() calls, which gets a bit cumbersome.
 
-Anyway, do not assume anything and drop the context pointer from the fdb
-replay helpers. The context pointer was introduced specifically for the
-case where the bridge port is a LAG, beneath which there are multiple
-switchdev lowers, all of which must do the same thing when offloading a
-given switchdev object, and none of the ports must act on the same
-object twice. It appears that in the case of FDB entries it is not
-useful: the driver appears to be required to be able to do something
-more elaborate even though it is not clear what.
+The second is that it wasn't a good idea in the first place for the
+other switchdev drivers to not hear anything about the FDB entries on
+foreign interfaces. For example, DSA treats these FDB entries in a
+special way since commit 3068d466a67e ("net: dsa: sync static FDB
+entries on foreign interfaces to hardware"). With the static FDB entry
+addition being public on everybody's notifier block but the deletion
+being whispered only to the driver whose port leaves the bridge, DSA
+would have a lingering static FDB entry pointing towards the host.
 
-The trouble, really, is that call_switchdev_notifiers() is not able
-today to pass the context pointer, but br_fdb_replay calls a hand-coded
-version of that function which is. Refactoring call_switchdev_notifiers
-does not appear really worth it without at least knowing the requrements,
-so drop the functionality with no users for now.
+Making br_fdb_replay() use the atomic switchdev call chain solves both
+problems.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/if_bridge.h | 4 ++--
- net/bridge/br_fdb.c       | 8 +++-----
- net/dsa/port.c            | 8 ++++----
- 3 files changed, 9 insertions(+), 11 deletions(-)
+ include/linux/if_bridge.h |  4 ++--
+ net/bridge/br_fdb.c       | 43 +++++++--------------------------------
+ net/dsa/dsa_priv.h        |  1 -
+ net/dsa/port.c            | 10 ++++-----
+ net/dsa/slave.c           |  2 +-
+ 5 files changed, 14 insertions(+), 46 deletions(-)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index d0bec83488b9..13acc1ff476c 100644
+index 13acc1ff476c..8d4a157d249d 100644
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -168,7 +168,7 @@ bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
  u8 br_port_get_stp_state(const struct net_device *dev);
  clock_t br_get_ageing_time(const struct net_device *br_dev);
  int br_fdb_replay(const struct net_device *br_dev, const struct net_device *dev,
--		  const void *ctx, bool adding, struct notifier_block *nb);
-+		  bool adding, struct notifier_block *nb);
+-		  bool adding, struct notifier_block *nb);
++		  bool adding);
  #else
  static inline struct net_device *
  br_fdb_find_port(const struct net_device *br_dev,
-@@ -199,7 +199,7 @@ static inline clock_t br_get_ageing_time(const struct net_device *br_dev)
- }
+@@ -200,7 +200,7 @@ static inline clock_t br_get_ageing_time(const struct net_device *br_dev)
  
  static inline int br_fdb_replay(const struct net_device *br_dev,
--				const struct net_device *dev, const void *ctx,
-+				const struct net_device *dev,
- 				bool adding, struct notifier_block *nb)
+ 				const struct net_device *dev,
+-				bool adding, struct notifier_block *nb)
++				bool adding)
  {
  	return -EOPNOTSUPP;
+ }
 diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 2b862cffc03a..c93a2b3a0ad8 100644
+index c93a2b3a0ad8..4434aee4cfbc 100644
 --- a/net/bridge/br_fdb.c
 +++ b/net/bridge/br_fdb.c
-@@ -734,8 +734,7 @@ static inline size_t fdb_nlmsg_size(void)
- 
- static int br_fdb_replay_one(struct notifier_block *nb,
- 			     const struct net_bridge_fdb_entry *fdb,
--			     struct net_device *dev, unsigned long action,
--			     const void *ctx)
-+			     struct net_device *dev, unsigned long action)
- {
- 	struct switchdev_notifier_fdb_info item;
- 	int err;
-@@ -746,14 +745,13 @@ static int br_fdb_replay_one(struct notifier_block *nb,
- 	item.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
- 	item.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
- 	item.info.dev = dev;
--	item.info.ctx = ctx;
- 
- 	err = nb->notifier_call(nb, action, &item);
- 	return notifier_to_errno(err);
+@@ -732,31 +732,12 @@ static inline size_t fdb_nlmsg_size(void)
+ 		+ nla_total_size(sizeof(u8)); /* NFEA_ACTIVITY_NOTIFY */
  }
  
+-static int br_fdb_replay_one(struct notifier_block *nb,
+-			     const struct net_bridge_fdb_entry *fdb,
+-			     struct net_device *dev, unsigned long action)
+-{
+-	struct switchdev_notifier_fdb_info item;
+-	int err;
+-
+-	item.addr = fdb->key.addr.addr;
+-	item.vid = fdb->key.vlan_id;
+-	item.added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+-	item.offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+-	item.is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
+-	item.info.dev = dev;
+-
+-	err = nb->notifier_call(nb, action, &item);
+-	return notifier_to_errno(err);
+-}
+-
  int br_fdb_replay(const struct net_device *br_dev, const struct net_device *dev,
--		  const void *ctx, bool adding, struct notifier_block *nb)
-+		  bool adding, struct notifier_block *nb)
+-		  bool adding, struct notifier_block *nb)
++		  bool adding)
  {
  	struct net_bridge_fdb_entry *fdb;
  	struct net_bridge *br;
-@@ -783,7 +781,7 @@ int br_fdb_replay(const struct net_device *br_dev, const struct net_device *dev,
- 		if (dst_dev != br_dev && dst_dev != dev)
- 			continue;
+-	unsigned long action;
+-	int err = 0;
++	int type;
  
--		err = br_fdb_replay_one(nb, fdb, dst_dev, action, ctx);
-+		err = br_fdb_replay_one(nb, fdb, dst_dev, action);
- 		if (err)
- 			break;
- 	}
+ 	if (!netif_is_bridge_master(br_dev))
+ 		return -EINVAL;
+@@ -767,28 +748,18 @@ int br_fdb_replay(const struct net_device *br_dev, const struct net_device *dev,
+ 	br = netdev_priv(br_dev);
+ 
+ 	if (adding)
+-		action = SWITCHDEV_FDB_ADD_TO_DEVICE;
++		type = RTM_NEWNEIGH;
+ 	else
+-		action = SWITCHDEV_FDB_DEL_TO_DEVICE;
++		type = RTM_DELNEIGH;
+ 
+ 	rcu_read_lock();
+ 
+-	hlist_for_each_entry_rcu(fdb, &br->fdb_list, fdb_node) {
+-		const struct net_bridge_port *dst = READ_ONCE(fdb->dst);
+-		struct net_device *dst_dev;
+-
+-		dst_dev = dst ? dst->dev : br->dev;
+-		if (dst_dev != br_dev && dst_dev != dev)
+-			continue;
+-
+-		err = br_fdb_replay_one(nb, fdb, dst_dev, action);
+-		if (err)
+-			break;
+-	}
++	hlist_for_each_entry_rcu(fdb, &br->fdb_list, fdb_node)
++		br_switchdev_fdb_notify(br, fdb, type);
+ 
+ 	rcu_read_unlock();
+ 
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(br_fdb_replay);
+ 
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index f201c33980bf..20003512d8f8 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -285,7 +285,6 @@ static inline bool dsa_tree_offloads_bridge_port(struct dsa_switch_tree *dst,
+ 
+ /* slave.c */
+ extern const struct dsa_device_ops notag_netdev_ops;
+-extern struct notifier_block dsa_slave_switchdev_notifier;
+ extern struct notifier_block dsa_slave_switchdev_blocking_notifier;
+ 
+ void dsa_slave_mii_bus_init(struct dsa_switch *ds);
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index b824b6f8aa84..34b7f64348c2 100644
+index 34b7f64348c2..ccf11bc518fe 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -200,13 +200,13 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
+@@ -200,13 +200,12 @@ static int dsa_port_switchdev_sync(struct dsa_port *dp,
  		return err;
  
  	/* Forwarding and termination FDB entries on the port */
--	err = br_fdb_replay(br, brport_dev, dp, true,
-+	err = br_fdb_replay(br, brport_dev, true,
- 			    &dsa_slave_switchdev_notifier);
+-	err = br_fdb_replay(br, brport_dev, true,
+-			    &dsa_slave_switchdev_notifier);
++	err = br_fdb_replay(br, brport_dev, true);
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
  	/* Termination FDB entries on the bridge itself */
--	err = br_fdb_replay(br, br, dp, true, &dsa_slave_switchdev_notifier);
-+	err = br_fdb_replay(br, br, true, &dsa_slave_switchdev_notifier);
+-	err = br_fdb_replay(br, br, true, &dsa_slave_switchdev_notifier);
++	err = br_fdb_replay(br, br, true);
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
-@@ -232,13 +232,13 @@ static int dsa_port_switchdev_unsync_objs(struct dsa_port *dp,
+@@ -232,13 +231,12 @@ static int dsa_port_switchdev_unsync_objs(struct dsa_port *dp,
  		return err;
  
  	/* Forwarding and termination FDB entries on the port */
--	err = br_fdb_replay(br, brport_dev, dp, false,
-+	err = br_fdb_replay(br, brport_dev, false,
- 			    &dsa_slave_switchdev_notifier);
+-	err = br_fdb_replay(br, brport_dev, false,
+-			    &dsa_slave_switchdev_notifier);
++	err = br_fdb_replay(br, brport_dev, false);
  	if (err && err != -EOPNOTSUPP)
  		return err;
  
  	/* Termination FDB entries on the bridge itself */
--	err = br_fdb_replay(br, br, dp, false, &dsa_slave_switchdev_notifier);
-+	err = br_fdb_replay(br, br, false, &dsa_slave_switchdev_notifier);
+-	err = br_fdb_replay(br, br, false, &dsa_slave_switchdev_notifier);
++	err = br_fdb_replay(br, br, false);
  	if (err && err != -EOPNOTSUPP)
  		return err;
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index ffbba1e71551..461c80bc066a 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2517,7 +2517,7 @@ static struct notifier_block dsa_slave_nb __read_mostly = {
+ 	.notifier_call  = dsa_slave_netdevice_event,
+ };
+ 
+-struct notifier_block dsa_slave_switchdev_notifier = {
++static struct notifier_block dsa_slave_switchdev_notifier = {
+ 	.notifier_call = dsa_slave_switchdev_event,
+ };
  
 -- 
 2.25.1
