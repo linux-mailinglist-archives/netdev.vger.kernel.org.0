@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EABB13C4C0B
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:37:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2078E3C4A24
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242168AbhGLHB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 03:01:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34396 "EHLO mail.kernel.org"
+        id S237208AbhGLGsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 02:48:54 -0400
+Received: from relay.sw.ru ([185.231.240.75]:60354 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242176AbhGLG7t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Jul 2021 02:59:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 170086102A;
-        Mon, 12 Jul 2021 06:57:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1626073021;
-        bh=VxsMsNEiiHntLXbNFK2z5oizrRdubsB1rGTW5mKr68U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vKjDDZPs0Brtqig1Runf6e0jMiR4cSTb6GMUEK2TGPsPJBVOnGMQbGmh57Bnez03S
-         7N6nxCuwQhngDqwKDo2F4igjqavmrGB9iBevPkOkYM1h8QlgL3b9P/xcLa9SvLdv1h
-         lC5NPbYBqFtmP9sPbfjbUKXrjg6L4q3KUTlV7A8s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S236933AbhGLGrz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Jul 2021 02:47:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
+        :From; bh=Aq0ET5YTdm1rWPpNSi7B0UtAwwipZjr7vSxwvu8q6+A=; b=DVMWWJtSkNLQF/ICmSU
+        bW047YV+ka+RNu6XiOdkh7P0ExSAGs6n9Pa20Fl9wfyvD9BCG+gEt5xveo7GX/LsC+s961T1Bt+2r
+        EjHknLjKwndyNObMzC3GBbJpCOGgmIgzL0YaSPMWSKaKkZcwiPdlAg9ZprTpWRQrg+M9Z10QOkg=;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1m2pgX-003ew1-9p; Mon, 12 Jul 2021 09:44:57 +0300
+From:   Vasily Averin <vvs@virtuozzo.com>
+Subject: [PATCH IPV6 v3 0/1] ipv6: allocate enough headroom in
+ ip6_finish_output2()
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 5.12 100/700] rsi: Assign beacon rate settings to the correct rate_info descriptor field
-Date:   Mon, 12 Jul 2021 08:03:03 +0200
-Message-Id: <20210712060938.952747681@linuxfoundation.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210712060924.797321836@linuxfoundation.org>
-References: <20210712060924.797321836@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <74e90fba-df9f-5078-13de-41df54d2b257@virtuozzo.com>
+Message-ID: <a2470406-786a-542e-6286-43ffbb97f9cb@virtuozzo.com>
+Date:   Mon, 12 Jul 2021 09:44:56 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <74e90fba-df9f-5078-13de-41df54d2b257@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+Recently Syzkaller found one more issue on RHEL7-based OpenVz kernels.
+During its investigation I've found that upstream is affected too. 
 
-commit b1c3a24897bd528f2f4fda9fea7da08a84ae25b6 upstream.
+TEE target send sbk with small headroom into another interface which requires
+an increased headroom.
 
-The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
-field. The rest of the driver does it correctly, except this one place,
-so fix it. This is also aligned with the RSI downstream vendor driver.
-Without this patch, an AP operating at 5 GHz does not transmit any
-beacons at all, this patch fixes that.
+ipv4 handles this problem in ip_finish_output2() and creates new skb with enough headroom,
+though ip6_finish_output2() lacks this logic.
 
-Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210507213105.140138-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Suzkaller created C reproducer, it can be found in v1 cover-letter 
+https://lkml.org/lkml/2021/7/7/467
 
----
- drivers/net/wireless/rsi/rsi_91x_hal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v3 changes:
+ now I think it's better to separate bugfix itself and creation of new helper.
+ now bugfix does not create new inline function. Unlike from v1 it creates new skb
+ only when it is necessary, i.e. for shared skb only.
+ In case of failure it updates IPSTATS_MIB_OUTDISCARDS counter
+ Patch set with new helper will be sent separately.
 
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -470,9 +470,9 @@ int rsi_prepare_beacon(struct rsi_common
- 	}
- 
- 	if (common->band == NL80211_BAND_2GHZ)
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
- 	else
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
- 
- 	if (mac_bcn->data[tim_offset + 2] == 0)
- 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
+v2 changes: 
+ new helper was created and used in ip6_finish_output2 and in ip6_xmit()
+ small refactoring in changed functions: commonly used dereferences was replaced by variables
 
+Vasily Averin (1):
+  ipv6: allocate enough headroom in ip6_finish_output2()
+
+ net/ipv6/ip6_output.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+-- 
+1.8.3.1
 
