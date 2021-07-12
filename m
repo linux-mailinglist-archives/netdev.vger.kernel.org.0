@@ -2,111 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF953C65BA
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 23:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5733C65E5
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 00:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhGLVzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 17:55:51 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:46240 "EHLO
+        id S230382AbhGLWGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 18:06:34 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:47198 "EHLO
         jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbhGLVzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 17:55:50 -0400
+        with ESMTP id S229503AbhGLWGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 18:06:33 -0400
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id EC63C1C0B77; Mon, 12 Jul 2021 23:52:59 +0200 (CEST)
-Date:   Mon, 12 Jul 2021 23:52:59 +0200
+        id 97E481C0B7C; Tue, 13 Jul 2021 00:03:43 +0200 (CEST)
+Date:   Tue, 13 Jul 2021 00:03:43 +0200
 From:   Pavel Machek <pavel@denx.de>
 To:     Sasha Levin <sashal@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.10 016/137] net: Treat __napi_schedule_irqoff()
- as __napi_schedule() on PREEMPT_RT
-Message-ID: <20210712215258.GB8934@amd>
+        Tony Lindgren <tony@atomide.com>,
+        Carl Philipp Klemm <philipp@uvos.xyz>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 082/137] wlcore/wl12xx: Fix wl12xx get_mac
+ error if device is in ELP
+Message-ID: <20210712220343.GA9766@amd>
 References: <20210706112203.2062605-1-sashal@kernel.org>
- <20210706112203.2062605-16-sashal@kernel.org>
+ <20210706112203.2062605-82-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="rS8CxjVDS/+yyDmU"
+        protocol="application/pgp-signature"; boundary="ZGiS0Q5IWpPtfppv"
 Content-Disposition: inline
-In-Reply-To: <20210706112203.2062605-16-sashal@kernel.org>
+In-Reply-To: <20210706112203.2062605-82-sashal@kernel.org>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---rS8CxjVDS/+yyDmU
+--ZGiS0Q5IWpPtfppv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> __napi_schedule_irqoff() is an optimized version of __napi_schedule()
-> which can be used where it is known that interrupts are disabled,
-> e.g. in interrupt-handlers, spin_lock_irq() sections or hrtimer
-> callbacks.
+> From: Tony Lindgren <tony@atomide.com>
 >=20
-> On PREEMPT_RT enabled kernels this assumptions is not true. Force-
-> threaded interrupt handlers and spinlocks are not disabling interrupts
-> and the NAPI hrtimer callback is forced into softirq context which runs
-> with interrupts enabled as well.
+> [ Upstream commit 11ef6bc846dcdce838f0b00c5f6a562c57e5d43b ]
 >=20
-> Chasing all usage sites of __napi_schedule_irqoff() is a whack-a-mole
-> game so make __napi_schedule_irqoff() invoke __napi_schedule() for
-> PREEMPT_RT kernels.
->=20
-> The callers of ____napi_schedule() in the networking core have been
-> audited and are correct on PREEMPT_RT kernels as well.
+> At least on wl12xx, reading the MAC after boot can fail with a warning
+> at drivers/net/wireless/ti/wlcore/sdio.c:78 wl12xx_sdio_raw_read.
+> The failed call comes from wl12xx_get_mac() that wlcore_nvs_cb() calls
+> after request_firmware_work_func().
 
-I see this is queued to kernels as old as 4.4... Is it good idea?
-PREEMPT_RT is not usable there without extra patches, so it does not
-really fix anything user visible....
+> +++ b/drivers/net/wireless/ti/wl12xx/main.c
+> @@ -1503,6 +1503,13 @@ static int wl12xx_get_fuse_mac(struct wl1271 *wl)
+>  	u32 mac1, mac2;
+>  	int ret;
+> =20
+> +	/* Device may be in ELP from the bootloader or kexec */
+> +	ret =3D wlcore_write32(wl, WL12XX_WELP_ARM_COMMAND, WELP_ARM_COMMAND_VA=
+L);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	usleep_range(500000, 700000);
+> +
+
+While this probably improves things.... I don't believe delaying boot
+by extra 200msec is good idea. This should simply be msleep(500),
+AFAICT.
 
 Best regards,
 								Pavel
-							=09
-> index 0c9ce36afc8c..2fdf30eefc59 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6433,11 +6433,18 @@ EXPORT_SYMBOL(napi_schedule_prep);
->   * __napi_schedule_irqoff - schedule for receive
->   * @n: entry to schedule
->   *
-> - * Variant of __napi_schedule() assuming hard irqs are masked
-> + * Variant of __napi_schedule() assuming hard irqs are masked.
-> + *
-> + * On PREEMPT_RT enabled kernels this maps to __napi_schedule()
-> + * because the interrupt disabled assumption might not be true
-> + * due to force-threaded interrupts and spinlock substitution.
->   */
->  void __napi_schedule_irqoff(struct napi_struct *n)
->  {
-> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
-> +		____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +	else
-> +		__napi_schedule(n);
->  }
->  EXPORT_SYMBOL(__napi_schedule_irqoff);
-> =20
-
 --=20
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---rS8CxjVDS/+yyDmU
+--ZGiS0Q5IWpPtfppv
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAmDsuboACgkQMOfwapXb+vLvvACffTukjrW71y6YKE1ySo+48aN2
-bFIAn1ntM7CS2o6IrhJD/6GFlrQPmDb+
-=5f+k
+iEYEARECAAYFAmDsvD8ACgkQMOfwapXb+vJPiwCgiYvjMnNc1w8GNzQG94q0TJtI
+QmEAmgNMcJxKnmRmIegdv7JldHsIwxpq
+=Uehq
 -----END PGP SIGNATURE-----
 
---rS8CxjVDS/+yyDmU--
+--ZGiS0Q5IWpPtfppv--
