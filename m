@@ -2,108 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D84C3C5D8D
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 15:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B663C5D68
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 15:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234763AbhGLNpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 09:45:21 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:54222
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234638AbhGLNpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 09:45:19 -0400
-X-Greylist: delayed 438 seconds by postgrey-1.27 at vger.kernel.org; Mon, 12 Jul 2021 09:45:19 EDT
-Received: from localhost (1.general.khfeng.us.vpn [10.172.68.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 537044061A;
-        Mon, 12 Jul 2021 13:35:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626096917;
-        bh=LGxqAkOoOm8w+lN//0OhPBiSVWFP77FniFSghw2+jBI=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=WfL2fbkya76HeKTJFQj5gPuZN/mcJPgwf6A8Gi6FcwKhiP6snnQcuSs5NVfQGn4JD
-         DWUaFe53uuwHYTsaDZsUI+ttrmNFtqTO5PNWx7tM3bh2P/VJdaGG8feKh05cO5dQT4
-         YZXGHD9ItRJRRzsngbZOhdJfFQF3vlgmB6VOqpfh0ZttxBUaXW6o0JPfBWeRGczP3M
-         v4TgPMO+OsUfs8CHiar8j3KXcH+D0w90GsFzVrIdBW8GirCjzxBV2IP6zJ2CMywJwl
-         O2/7JFTrijYirOw4yDzkdqD6yMiAS8IXBQGMulCkB0UBSY/vDFNv9qrBXzr3FxXQQj
-         YHJF8qAgijL4Q==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
-Cc:     acelan.kao@canonical.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 3/3] e1000e: Serialize TGP e1000e PM ops
-Date:   Mon, 12 Jul 2021 21:34:59 +0800
-Message-Id: <20210712133500.1126371-3-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210712133500.1126371-1-kai.heng.feng@canonical.com>
-References: <20210712133500.1126371-1-kai.heng.feng@canonical.com>
+        id S234226AbhGLNkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 09:40:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49891 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229503AbhGLNkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 09:40:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626097040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0B6y9XvXor57GA/hxJxR7W6Fn894NQsjTKulVQ8mTK4=;
+        b=ey7L/lga4G4K6iAyPtHW9pL1c9h2BMvUo8isQKiCiVWiGuo4Z1PTGzJnqu7xF0drdJGSuJ
+        l5RrwD7xDCX1upXej4UVXjSUN5uX1fueqw8Scjnq19NUoS1g0UY8XE1c5pt+BKZo/aA7N9
+        ns19Z0DEXvUVLKCC3qYUuZK9H8tx82w=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-101-zfxEE70BMriwtN0Tl6W7Ug-1; Mon, 12 Jul 2021 09:37:19 -0400
+X-MC-Unique: zfxEE70BMriwtN0Tl6W7Ug-1
+Received: by mail-wm1-f71.google.com with SMTP id f16-20020a1c6a100000b0290210c73f067aso2893579wmc.6
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 06:37:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=0B6y9XvXor57GA/hxJxR7W6Fn894NQsjTKulVQ8mTK4=;
+        b=cEkX9xOMIbBFsBMSpHpASW1ODQ0/pjfjDT0gsCj7ElsWq0u8Qr7QzW6VS1wrykyUFx
+         fFUBGJBeAuyNsadEiPciceeZZCJZTnuOBQHN4magbYzuX9GOagoqcKpbTvhLgipfCv9M
+         MhckHQQI4hfA9GydYTBreFZIu76sZHU/Qo0z7y3iiwRVGlKMlc7aD8b1pfI049uY8LFM
+         TYiBDdasWQavUDSzQmYzL2DRFdzy2rGFGbM3epti0+BsGR1QWirIWxNFO7K1xzhvuco5
+         Z8a8vzZ89h3jWKyM//BjkPQ8GRAg00eAa11CGfEj9vVm1TGMdpUFMWdJkALtDM15d39c
+         gpww==
+X-Gm-Message-State: AOAM533FmsrGOwmWKnPVIHLzt4emV8fMUrfhnOMAt4ajH/YZ/4aPK/5M
+        H6GubVeLKAnh3TgOpA/+/6vKxtlJukR7puUaQtpkBFtIbsAB1CAw3BL//TQ2SIC8MHWM9f4cZcP
+        2ad738UyR1vSKy3Dm
+X-Received: by 2002:adf:a183:: with SMTP id u3mr39567070wru.175.1626097038496;
+        Mon, 12 Jul 2021 06:37:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxQvEjXp9mjD/4zB+hRQSwhkk3YjPcsE+XjvthJ54/x4Qhs7aE9axkgGisoHf47SJC870FIsA==
+X-Received: by 2002:adf:a183:: with SMTP id u3mr39567043wru.175.1626097038205;
+        Mon, 12 Jul 2021 06:37:18 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-171.dyn.eolo.it. [146.241.112.171])
+        by smtp.gmail.com with ESMTPSA id c125sm18948351wme.36.2021.07.12.06.37.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jul 2021 06:37:17 -0700 (PDT)
+Message-ID: <cb9830bd8ef1edc3b5a5f11546618cd50ed82f21.camel@redhat.com>
+Subject: Re: [PATCH net 2/3] udp: check encap socket in __udp_lib_err
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Date:   Mon, 12 Jul 2021 15:37:16 +0200
+In-Reply-To: <161cf19b-6ed6-affb-ab67-e8627f6ed6d9@novek.ru>
+References: <20210712005554.26948-1-vfedorenko@novek.ru>
+         <20210712005554.26948-3-vfedorenko@novek.ru>
+         <4cf247328ea397c28c9c404094fb0f952a41f3c6.camel@redhat.com>
+         <161cf19b-6ed6-affb-ab67-e8627f6ed6d9@novek.ru>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On TGL systems, PCI_COMMAND may randomly flip to 0 on system resume.
-This is devastating to drivers that use pci_set_master(), like NVMe and
-xHCI, to enable DMA in their resume routine, as pci_set_master() can
-inadvertently disable PCI_COMMAND_IO and PCI_COMMAND_MEMORY, making
-resources inaccessible.
+On Mon, 2021-07-12 at 13:45 +0100, Vadim Fedorenko wrote:
+> 
+> > After this patch, the above chunk will not clear 'sk' for packets
+> > targeting ESP in UDP sockets, but AFAICS we will still enter the
+> > following conditional, preserving the current behavior - no ICMP
+> > processing.
+> 
+> We will not enter following conditional for ESP in UDP case because
+> there is no more check for encap_type or encap_enabled. 
 
-The issue is reproducible on all kernel releases, but the situation is
-exacerbated by commit 6cecf02e77ab ("Revert "e1000e: disable s0ix entry
-and exit flows for ME systems"").
+I see. You have a bug in the ipv6 code-path. With your patch applied:
 
-Seems like ME can do many things to other PCI devices until it's finally out of
-ULP polling. So ensure e1000e PM ops are serialized by enforcing suspend/resume
-order to workaround the issue.
-
-Of course this will make system suspend and resume a bit slower, but we
-probably need to settle on this workaround until ME is fully supported.
-
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=212039
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ 	sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
+                               inet6_iif(skb), inet6_sdif(skb), udptable, NULL);
+        if (sk && udp_sk(sk)->encap_enabled) {
+		//...
+        }
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index e63445a8ce12..0244d3dd90a3 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7319,7 +7319,8 @@ static const struct net_device_ops e1000e_netdev_ops = {
- 
- static void e1000e_create_device_links(struct pci_dev *pdev)
- {
--	struct pci_dev *tgp_mei_me;
-+	struct pci_bus *bus = pdev->bus;
-+	struct pci_dev *tgp_mei_me, *p;
- 
- 	/* Find TGP mei_me devices and make e1000e power depend on mei_me */
- 	tgp_mei_me = pci_get_device(PCI_VENDOR_ID_INTEL, 0xa0e0, NULL);
-@@ -7335,6 +7336,17 @@ static void e1000e_create_device_links(struct pci_dev *pdev)
- 		pci_info(pdev, "System and runtime PM depends on %s\n",
- 			 pci_name(tgp_mei_me));
- 
-+	/* Find other devices in the SoC and make them depend on e1000e */
-+	list_for_each_entry(p, &bus->devices, bus_list) {
-+		if (&p->dev == &pdev->dev || &p->dev == &tgp_mei_me->dev)
-+			continue;
-+
-+		if (device_link_add(&p->dev, &pdev->dev,
-+				    DL_FLAG_AUTOREMOVE_SUPPLIER))
-+			pci_info(p, "System PM depends on %s\n",
-+				 pci_name(pdev));
-+	}
-+
- 	pci_dev_put(tgp_mei_me);
- }
- 
--- 
-2.31.1
+        if (!sk || udp_sk(sk)->encap_enabled) {
+	// can still enter here...
+---	
+
+> I maybe missing something but d26796ae5894 doesn't actually explain
+> which particular situation should be avoided by this additional check
+> and no tests were added to simply reproduce the problem. If you can
+> explain it a bit more it would greatly help me to improve the fix.
+
+Xin knows better, but AFAICS it used to cover the situation you
+explicitly tests in patch 3/3 - incoming packet with src-port == dst-
+port == tunnel port - for e.g. vxlan tunnels.
+
+> > Why can't you use something alike the following instead?
+> > 
+> > ---
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index c0f9f3260051..96a3b640e4da 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -707,7 +707,7 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
+> >          sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
+> >                                 iph->saddr, uh->source, skb->dev->ifindex,
+> >                                 inet_sdif(skb), udptable, NULL);
+> > -       if (!sk || udp_sk(sk)->encap_type) {
+> > +       if (!sk || READ_ONCE(udp_sk(sk)->encap_err_lookup)) {
+> >                  /* No socket for error: try tunnels before discarding */
+> >                  sk = ERR_PTR(-ENOENT);
+> >                  if (static_branch_unlikely(&udp_encap_needed_key)) {
+> > 
+> > ---
+
+Could you please have a look at the above ?
+
+Thanks!
+
+/P
 
