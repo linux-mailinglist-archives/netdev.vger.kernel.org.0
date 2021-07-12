@@ -2,225 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 014CE3C54F9
-	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 099CA3C54FC
+	for <lists+netdev@lfdr.de>; Mon, 12 Jul 2021 12:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346444AbhGLII2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 04:08:28 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:11257 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352915AbhGLIAp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 04:00:45 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GNbZg4LxNz1CJ01;
-        Mon, 12 Jul 2021 15:52:11 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 12 Jul 2021 15:57:46 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Mon, 12 Jul
- 2021 15:57:46 +0800
-Subject: Re: [PATCH rfc v2 4/5] page_pool: support page frag API for page pool
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Marcin Wojtas <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, "Salil Mehta" <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
-        <guro@fb.com>, Peter Xu <peterx@redhat.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Alexander Lobakin" <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>, <nogikh@google.com>,
-        Marco Elver <elver@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <1625903002-31619-1-git-send-email-linyunsheng@huawei.com>
- <1625903002-31619-5-git-send-email-linyunsheng@huawei.com>
- <CAKgT0UeDf1+-CjzsCo0Chtd2kn_mFV7=my1ygeKMBHBSdjrAHQ@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <2d31020f-2b94-e4ad-1100-378778424b12@huawei.com>
-Date:   Mon, 12 Jul 2021 15:57:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1346538AbhGLIIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 04:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354902AbhGLIEz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 04:04:55 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F04C06127E
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 00:59:45 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id hr1so32896291ejc.1
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 00:59:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xqzLCAD8n6/TJxpcOzgSFurYcUcekLK3Sst5Bp4tPmE=;
+        b=cBu3zPqUiLDekKNV9n8THvGT6qR+qYMwfJRfH/5vc9SdU2qmtbWG6TOdPoUxYmISIj
+         lag6WWFjuZ0vzTiNaK6xmPbuMzVoy4Ku4yrqSWJwlZFc6oMfizUcgkg1CCZ0wJGjPn9e
+         HH8pULJ8YPhGJNlE3G5EzyuVK7LVO/HnPXpPlStD+CIL7JAtMTVWnX9ElklU07fZUoB1
+         8/96Nku0x1/o4BwyojLplE3vJ20yHnprIpF7eqjUlvO99BZQoxhJWltoTMFLasXAWBOQ
+         3uSRWDWkH7lEHYRaBbSeyJpRynDUP3AIq+NI2ZnIIr8l0R5hSYa1V94GydTr6haF/LH0
+         4ITA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xqzLCAD8n6/TJxpcOzgSFurYcUcekLK3Sst5Bp4tPmE=;
+        b=WDXPQstRDTDnXBERgUfdvST43RVihpBGiym01t/OVQHQ2/675xb39bVyYD4viwSltT
+         F8bEi6o+Ml4kkTH7N8lf0BkmlhkLb0BDMXUQzuFaNp+vVQf7THsL27S8wk/kRaHnRFM/
+         Gh1ob2WqNT07t7IRcA3A8x74JxB9FY2d+OKPwpez4/zLls53xMpcj3u6N2lNacMNtFl/
+         zXaWLOXesRruiaxuY/o6rtf8w0uAW5SVUmXPW3Qw/uXFX78MQKxt77omuk8PZYMJY4CI
+         8ocXKcjX5Ww/+aGv36fmYtio1xRsR1M7D9w9fZMQen8Od/DFfSrRmVkD1Dh42JtA/z4/
+         DZ9A==
+X-Gm-Message-State: AOAM530+RAIsCWxb4h+Lajla+AXXXUIs2rrCnVCSWNrPTCM0sEWZ+oGt
+        X1CGoMpWA4OcovbvpmLwUk4wqBEJizZOIA==
+X-Google-Smtp-Source: ABdhPJwl1HkjH2HYl8DwaaerC+xgKRXlsucuQPILTe3u3+9CXDn7EBgc7LVIHhT59DhqUozVd+KHkA==
+X-Received: by 2002:a17:906:6b1b:: with SMTP id q27mr50667395ejr.169.1626076784414;
+        Mon, 12 Jul 2021 00:59:44 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id q11sm5712304eds.60.2021.07.12.00.59.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Jul 2021 00:59:43 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id a13so24271656wrf.10
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 00:59:43 -0700 (PDT)
+X-Received: by 2002:adf:b605:: with SMTP id f5mr57402308wre.419.1626076782845;
+ Mon, 12 Jul 2021 00:59:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0UeDf1+-CjzsCo0Chtd2kn_mFV7=my1ygeKMBHBSdjrAHQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme720-chm.china.huawei.com (10.1.199.116) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210712005554.26948-1-vfedorenko@novek.ru> <20210712005554.26948-3-vfedorenko@novek.ru>
+In-Reply-To: <20210712005554.26948-3-vfedorenko@novek.ru>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 12 Jul 2021 09:59:04 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSdCMqVqvUKfM3+3=B0k+2MQzB0+aNJJYQZP+d=k2dy34A@mail.gmail.com>
+Message-ID: <CA+FuTSdCMqVqvUKfM3+3=B0k+2MQzB0+aNJJYQZP+d=k2dy34A@mail.gmail.com>
+Subject: Re: [PATCH net 2/3] udp: check encap socket in __udp_lib_err
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     David Ahern <dsahern@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/7/11 1:43, Alexander Duyck wrote:
-> On Sat, Jul 10, 2021 at 12:44 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> Currently each desc use a whole page to do ping-pong page
->> reusing in most driver. As the page pool has support page
->> recycling based on elevated refcnt, it makes sense to add
->> a page frag API in page pool to split a page to different
->> frag to serve multi descriptions.
->>
->> This means a huge memory saving for kernel with page size of
->> 64K, as a page can be used by 32 descriptions with 2k buffer
->> size, comparing to each desc using one page currently.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>  include/net/page_pool.h | 14 ++++++++++++++
->>  net/core/page_pool.c    | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
->>  2 files changed, 63 insertions(+)
->>
->> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
->> index f0e708d..06a5e43 100644
->> --- a/include/net/page_pool.h
->> +++ b/include/net/page_pool.h
->> @@ -80,6 +80,7 @@ struct page_pool_params {
->>         enum dma_data_direction dma_dir; /* DMA mapping direction */
->>         unsigned int    max_len; /* max DMA sync memory size */
->>         unsigned int    offset;  /* DMA addr offset */
->> +       unsigned int    frag_size;
->>  };
->>
->>  struct page_pool {
->> @@ -91,6 +92,8 @@ struct page_pool {
->>         unsigned long defer_warn;
->>
->>         u32 pages_state_hold_cnt;
->> +       unsigned int frag_offset;
->> +       struct page *frag_page;
->>
->>         /*
->>          * Data structure for allocation side
->> @@ -140,6 +143,17 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
->>         return page_pool_alloc_pages(pool, gfp);
->>  }
->>
->> +struct page *page_pool_alloc_frag(struct page_pool *pool,
->> +                                 unsigned int *offset, gfp_t gfp);
->> +
->> +static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
->> +                                                   unsigned int *offset)
->> +{
->> +       gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
->> +
->> +       return page_pool_alloc_frag(pool, offset, gfp);
->> +}
->> +
->>  /* get the stored dma direction. A driver might decide to treat this locally and
->>   * avoid the extra cache line from page_pool to determine the direction
->>   */
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index a87cbe1..b787033 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -350,6 +350,53 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
->>  }
->>  EXPORT_SYMBOL(page_pool_alloc_pages);
->>
->> +struct page *page_pool_alloc_frag(struct page_pool *pool,
->> +                                 unsigned int *offset, gfp_t gfp)
->> +{
->> +       unsigned int frag_offset = pool->frag_offset;
->> +       unsigned int frag_size = pool->p.frag_size;
->> +       struct page *frag_page = pool->frag_page;
->> +       unsigned int max_len = pool->p.max_len;
->> +
->> +       if (!frag_page || frag_offset + frag_size > max_len) {
->> +               frag_page = page_pool_alloc_pages(pool, gfp);
->> +               if (unlikely(!frag_page)) {
->> +                       pool->frag_page = NULL;
->> +                       return NULL;
->> +               }
->> +
->> +               pool->frag_page = frag_page;
->> +               frag_offset = 0;
->> +
->> +               page_pool_sub_bias(pool, frag_page,
->> +                                  max_len / frag_size - 1);
->> +       }
->> +
->> +       *offset = frag_offset;
->> +       pool->frag_offset = frag_offset + frag_size;
->> +
->> +       return frag_page;
->> +}
->> +EXPORT_SYMBOL(page_pool_alloc_frag);
-> 
-> I'm still not a fan of the fixed implementation. For the cost of the
-> division as I said before you could make this flexible like
-> page_frag_alloc_align and just decrement the bias by one per
-> allocation instead of trying to batch it.
-> 
-> I'm sure there would likely be implementations that might need to
-> operate at two different sizes, for example a header and payload size.
+On Mon, Jul 12, 2021 at 2:56 AM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>
+> Commit d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
+> added checks for encapsulated sockets but it broke cases when there is
+> no implementation of encap_err_lookup for encapsulation, i.e. ESP in
+> UDP encapsulation. Fix it by calling encap_err_lookup only if socket
+> implements this method otherwise treat it as legal socket.
+>
+> Fixes: d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> ---
+>  net/ipv4/udp.c | 24 +++++++++++++++++++++++-
+>  net/ipv6/udp.c | 22 ++++++++++++++++++++++
+>  2 files changed, 45 insertions(+), 1 deletion(-)
 
-Will try to implement the frag allocation of different sizes
-in new version.
+This duplicates __udp4_lib_err_encap and __udp6_lib_err_encap.
 
-> 
->> +static void page_pool_empty_frag(struct page_pool *pool)
->> +{
->> +       unsigned int frag_offset = pool->frag_offset;
->> +       unsigned int frag_size = pool->p.frag_size;
->> +       struct page *frag_page = pool->frag_page;
->> +       unsigned int max_len = pool->p.max_len;
->> +
->> +       if (!frag_page)
->> +               return;
->> +
->> +       while (frag_offset + frag_size <= max_len) {
->> +               page_pool_put_full_page(pool, frag_page, false);
->> +               frag_offset += frag_size;
->> +       }
->> +
-> 
-> Having to call this to free the page seems confusing. Rather than
-> reserving multiple and having to free the page multiple times I really
-> think you would be better off just holding one bias reservation on the
-> page at a time.
-
-will remove the above freeing the page multiple times.
-
-> 
->> +       pool->frag_page = NULL;
->> +}
->> +
->>  /* Calculate distance between two u32 values, valid if distance is below 2^(31)
->>   *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
->>   */
->> @@ -670,6 +717,8 @@ void page_pool_destroy(struct page_pool *pool)
->>         if (!page_pool_put(pool))
->>                 return;
->>
->> +       page_pool_empty_frag(pool);
->> +
->>         if (!page_pool_release(pool))
->>                 return;
->>
->> --
->> 2.7.4
->>
-> .
-> 
+Can we avoid open-coding that logic multiple times?
