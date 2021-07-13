@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B48603C6FB4
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 13:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C46533C6FB8
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 13:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235922AbhGML2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 07:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbhGML2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 07:28:35 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E549EC0613EF
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 04:25:45 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id o5so40852259ejy.7
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 04:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V8C4AR1JulD0IJ4qJZ289RJQRxJBo+SCCExitFLHqJk=;
-        b=wtJXjCEWs9J3rL4DSbhsQAMH3vsFxI36IhkimPxEp2z4B5KWy98HTgCthwKoCh00MH
-         +Cw8MMZs162i1bbwc0H61Fw5Ddld5ixxj9xUkmvXXZrUQ8YV5rCYkVT5n/hIFcFZvbG5
-         UGUIKGFHSwYgIS/J+U3XRlILf+pCFDWnBeWFuxoS92ixmz4Ka5l+fJkUYsgiqEz8I8/Q
-         1OBeJRTT2X4sFe8UvVyTYuBfz2DBXBRafijnzoDQZ9rYwg7QbMci3cjSlkUfbdcDpKUW
-         mrzXomF0nVPSBmTfOX3T/h4LolCD841RkQpBBmtak+CUXtvU4hKRPg/aN6BgjFAqGdri
-         H8xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V8C4AR1JulD0IJ4qJZ289RJQRxJBo+SCCExitFLHqJk=;
-        b=hEHjNt+06Bo1erajTV/o3I71OP5HrgAvTfFjfPaMpgVAOM7R3WUjAQIOAXhi3YSw/w
-         3Jxq02BTT2CiOaJHz/fyOImWk9mzRxxKjNTtH4ijCyV5Uj0ZFyibKRlYcFAiypNLrlGZ
-         qVCEI3uT74Pedpx7zeRBfyYfieX6kxRtx7rtMVQIG58kwdW3BJDWvJ2ynnuSV11ZBq8i
-         WqEc+Y8foNhjydtgLRltHh2655oQCUeovzpXcnmw0YIjpJRNozqZCKfNsE8tc7moXXuY
-         gmVPxRRzVGfAaebTT0Gt/7D4GbHT+/zQa0CBFiFTZfwmFU0DrJiPahDuilXgfmuXmgCa
-         Miow==
-X-Gm-Message-State: AOAM533Uu47w82QekLhqiQ8ozLNAGeH9cc/uJ1BvTYoJzrtOxD5JIEMb
-        O8MtNPBvkBUhRLEQdUsqn/unDzJj+5G05XmbZJHp
-X-Google-Smtp-Source: ABdhPJwEjj4lrSamVi9duSpQV4fbH1XcdO8oLpStHQXALyLK5+815GxTksXcYRUer+qlnlDcQeYitChfiKeAXWFWuFI=
-X-Received: by 2002:a17:906:d10c:: with SMTP id b12mr4908301ejz.395.1626175544482;
- Tue, 13 Jul 2021 04:25:44 -0700 (PDT)
+        id S235859AbhGMLbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 07:31:02 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:56390 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235574AbhGMLbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 07:31:02 -0400
+Received: from fsav313.sakura.ne.jp (fsav313.sakura.ne.jp [153.120.85.144])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 16DBRpRX036255;
+        Tue, 13 Jul 2021 20:27:51 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav313.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp);
+ Tue, 13 Jul 2021 20:27:51 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav313.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 16DBRp4q036252
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 13 Jul 2021 20:27:51 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Subject: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock section
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
+        netdev@vger.kernel.org
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+Message-ID: <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+Date:   Tue, 13 Jul 2021 20:27:49 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210713084656.232-1-xieyongji@bytedance.com> <20210713084656.232-8-xieyongji@bytedance.com>
- <20210713110211.GK1954@kadam>
-In-Reply-To: <20210713110211.GK1954@kadam>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Tue, 13 Jul 2021 19:25:33 +0800
-Message-ID: <CACycT3sJpAqQ1JkO2kekSf=wya1TJSK5hj+Z0zejVbCTU4eG0g@mail.gmail.com>
-Subject: Re: [PATCH v9 07/17] virtio: Don't set FAILED status bit on device
- index allocation failure
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        joro@8bytes.org, Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 7:02 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Tue, Jul 13, 2021 at 04:46:46PM +0800, Xie Yongji wrote:
-> > We don't need to set FAILED status bit on device index allocation
-> > failure since the device initialization hasn't been started yet.
->
-> The commit message should say what the effect of this change is to the
-> user.  Is this a bugfix?  Will it have any effect on runtime at all?
->
+syzbot is hitting might_sleep() warning at hci_sock_dev_event() due to
+calling lock_sock() with rw spinlock held [1]. Among three possible
+approaches [2], this patch chose holding a refcount via sock_hold() and
+revalidating the element via sk_hashed().
 
-Thanks for the reminder. Will update the commit message.
+Link: https://syzkaller.appspot.com/bug?extid=a5df189917e79d5e59c9 [1]
+Link: https://lkml.kernel.org/r/05535d35-30d6-28b6-067e-272d01679d24@i-love.sakura.ne.jp [2]
+Reported-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+Fixes: e305509e678b3a4a ("Bluetooth: use correct lock to prevent UAF of hdev object")
+---
+Changes in v3:
+  Don't use unlocked hci_pi(sk)->hdev != hdev test, for it is racy.
+  No need to defer hci_dev_put(hdev), for it can't be the last reference.
 
-> To me, hearing your thoughts on this is valuable even if you have to
-> guess.  "I noticed this mistake during review and I don't think it will
-> affect runtime."
->
+Changes in v2:
+  Take hci_sk_list.lock for write in case bt_sock_unlink() is called after
+  sk_hashed(sk) test, and defer hci_dev_put(hdev) till schedulable context.
 
-Yes, that's what I thought.
+ net/bluetooth/hci_sock.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
 
-Thanks,
-Yongji
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index b04a5a02ecf3..786a06a232fd 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -760,10 +760,18 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 		struct sock *sk;
+ 
+ 		/* Detach sockets from device */
++restart:
+ 		read_lock(&hci_sk_list.lock);
+ 		sk_for_each(sk, &hci_sk_list.head) {
++			/* This sock_hold(sk) is safe, for bt_sock_unlink(sk)
++			 * is not called yet.
++			 */
++			sock_hold(sk);
++			read_unlock(&hci_sk_list.lock);
+ 			lock_sock(sk);
+-			if (hci_pi(sk)->hdev == hdev) {
++			write_lock(&hci_sk_list.lock);
++			/* Check that bt_sock_unlink(sk) is not called yet. */
++			if (sk_hashed(sk) && hci_pi(sk)->hdev == hdev) {
+ 				hci_pi(sk)->hdev = NULL;
+ 				sk->sk_err = EPIPE;
+ 				sk->sk_state = BT_OPEN;
+@@ -771,7 +779,27 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+ 
+ 				hci_dev_put(hdev);
+ 			}
++			write_unlock(&hci_sk_list.lock);
+ 			release_sock(sk);
++			read_lock(&hci_sk_list.lock);
++			/* If bt_sock_unlink(sk) is not called yet, we can
++			 * continue iteration. We can use __sock_put(sk) here
++			 * because hci_sock_release() will call sock_put(sk)
++			 * after bt_sock_unlink(sk).
++			 */
++			if (sk_hashed(sk)) {
++				__sock_put(sk);
++				continue;
++			}
++			/* Otherwise, we need to restart iteration, for the
++			 * next socket pointed by sk->next might be already
++			 * gone. We can't use __sock_put(sk) here because
++			 * hci_sock_release() might have already called
++			 * sock_put(sk) after bt_sock_unlink(sk).
++			 */
++			read_unlock(&hci_sk_list.lock);
++			sock_put(sk);
++			goto restart;
+ 		}
+ 		read_unlock(&hci_sk_list.lock);
+ 	}
+-- 
+2.18.4
+
