@@ -2,193 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E363C6B52
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 09:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A2F13C6B4A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 09:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbhGMHke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 03:40:34 -0400
-Received: from mx-lax3-2.ucr.edu ([169.235.156.37]:8335 "EHLO
-        mx-lax3-2.ucr.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233762AbhGMHkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 03:40:33 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Jul 2021 03:40:33 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1626161864; x=1657697864;
-  h=mime-version:references:in-reply-to:from:date:message-id:
-   subject:to:cc;
-  bh=Uy3h8jSbfs/h+jDYaxXZtCw4dzE0irLxzHb3QVi8SvA=;
-  b=M1q3vWle0xUOVXvtVGKKzQxGKC1FKA4/dw512lxzLuDWMeLw/UhIpTY8
-   PUhJpJr+8C8Ebk2Wc2x3hYeFOlDmvK9//SoEzafgLtzAwSHonPVBcoYI6
-   Iqn08otHWzwuqXYgcRk8iWs+exjg2QrlQjpXOqwLGlObzUaTUPpr1KSAP
-   /8FKTv9i2MwQx0fAEgszwmq6bim0FajN+bnhBSF5j8QqjbwD4iV1coQZ2
-   Rk+rqdzWvEkRNpTzr+TjQuslJUPoFrZWXG/7x1M1QfuawByW0I710A1EF
-   RsegzLhVNX5fsO//5MskKbUPJfhYXSneKmGOsm3Rxsy24IQQ/C1L/PtAU
-   Q==;
-IronPort-SDR: l1QjJMp1rLxGL2MjasTXzIq9bgm4UOtURImyNDx5g09cdmL1fGMay13pieze1csoZyHzEBZXVG
- EP1dzWNNch/7+zpKn5HXZkSKrsAxxFubAqwnfM+rYeVj1uNJ8lZi8PaG+2mjG1ObWTyIsZjw0C
- +r3MAj1eoxSmZ2xOozB3DxO/ozNuiEjzzkh5b3XOeRtG3dCq5kC9POJ9epbCM6uDMtfuFrgtZR
- BCDSprpRz8I6ZbFjJkSBVA0IHvF1x5/YGH1IoQwpr5O1knvNXOYfF/y/8nEXnAxmCpWdfG46tR
- FEs=
-X-IPAS-Result: =?us-ascii?q?A2GjAgAsQO1gdMenVdFaHgEBCxIMQIFOC4N4bIRIkVwDl?=
- =?us-ascii?q?huFP4F8AgkBAQEPQQQBAYRUAoJ5AiU0CQ4CBAEBAQEDAgMBAQEBBQEBBgEBA?=
- =?us-ascii?q?QEBAQUEAQECEAFvhS9GgjgpAYNtAQEBAxIRBFIQCwsNAgImAgIiEgEFARwGE?=
- =?us-ascii?q?yKFV5tTgQQ9izJ/M4EBiCEBCQ2BYxJ+KocJhmIngimBS4EFgWo+h1uCZASDG?=
- =?us-ascii?q?UxVOFuBP0BTAQEBnwqadoIPAQYCgwocnjQrg2ORV0KQWC2UR6BihUkQI4E4g?=
- =?us-ascii?q?hUzGiV/BmeBS1AZDod/hiwWjkwkLzgCBgoBAQMJh2cBAQ?=
-IronPort-PHdr: A9a23:iEcRkRSPnOA38OHj3KxO4xqvmNpsoqSfAWYlg6HPa5pwe6iut67vI
- FbYra00ygOTBcOCt7ka1aKW6/mmBTVRp87Z8TgrS99lb1c9k8IYnggtUoauKHbQC7rUVRE8B
- 9lIT1R//nu2YgB/Ecf6YEDO8DXptWZBUhrwOhBoKevrB4Xck9q41/yo+53Ufg5EmCexbal9I
- RmosQndrNQajIRtJqswyxbCv39Ed/hLyW9yKl+fghLx6t2s8JJ/9ihbpu4s+dNHXajmZaozU
- KZWDC4hM2A75c3rsQfMQA6S7XYCUWsYjwRFDRHd4B71Qpn+vC36tvFg2CaBJs35Uao0WTW54
- Kh1ThLjlToKOCQ48GHTjcxwkb5brRe8rBFx34LYfIeYP+dlc6jDYd0VW3ZOXsdJVyxAHIy8a
- ZcPD/EcNupctoXxukcCoQe7CQSqGejhyCJHhmXu0KI13eQuEwHI0gIjEdwTrnrbsM74NLsOX
- e2v0KXE0SnPYvFQ1Dzg6IbIaBchofSUUL1xcMre004vGB/FjlqOr4zuIjCa1uMQs2OG6OdhW
- uOui2k6qw1tvzSixNwhipTViYIP0FzL6zh2wJssKNC+VUV0bsKqHoFKuCGGK4t5XNkiQ2dwt
- Ss11LAKpZC2cSoJxZkmyRPRZPyJfoqK7x7/VOucPzR1iXN4db+xhxi/8ketxOPyW8S2zlpGs
- jZIn9jCuH4NyxDe7NWMRPhl/kq5xzqDywTe5vtHLE00j6bXNp8sz7wqmpYOtUnOGin7k1jsg
- qCMbEUr4O2o5vziYrXhu5CTKZd5ihr7MqQygsy/Bvk4MhQWU2ib5+u80Lrj8FX8QLpQj/02l
- rDVsJfbJcgGv6K5DRJZ34In5hqlADem19MYnXYDLF1bYh6Ik4/pO1TWLPD5C/ewnUisnS91y
- /zaOrDtGJbAI3jZnLv8fLtw6VRQxBc3wN1b/55UD6sOIPP3Wk//rtzYCRo5PhS7wufmD9V9y
- 58SVX+ND6KCLaPdrUWI6vgxLOaReY8ZoCz9JOQ95/7ykX85nkcQfa+30psLdX+3AOpmLl6HY
- XrjnNgBC30GvgkgQ+zwjl2NTzpTa2y1X6Im6TFoQL6hWKjZS4/lo5zJiCihE5J+ZXpBA1DKG
- nDtIdaqQfAJPRKTK8hqkjECHYqmVsd1xQOpqVejlJJ6JfCS9yEF48GwnONp7vHewElhvQd/C
- N6QhiTUFzkcow==
-IronPort-HdrOrdr: A9a23:VydHh6B8tcbo/HTlHemX55DYdb4zR+YMi2TDGXoBMCC9E/bo7/
- xG885rsCMc5AxhOk3I3OrwW5VoIkm8yXcW2/h0AV7KZmCP01dAbrsD0WKI+UyGJ8SRzJ866U
- 6iScVD4R/LZ2SSQfyU3OBwKbpP/OW6
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="5.84,235,1620716400"; 
-   d="scan'208";a="53784583"
-Received: from mail-oi1-f199.google.com ([209.85.167.199])
-  by smtp-lax3-2.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 13 Jul 2021 00:30:37 -0700
-Received: by mail-oi1-f199.google.com with SMTP id n84-20020acaef570000b029022053bcedd7so14753378oih.17
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 00:30:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aDD2Q+fBWLzKLVqo6MihicdQ+2ekQXHH6v82dt1m7ug=;
-        b=BQiop+lXWrFoks6f4Ls+hT38aU0kRJOngcybQ0Sziai5KONwctbH71sUahc7CNAwCh
-         dYwAtH//3VDGl5G2+4bCegbaF/e5/410TrdhhMpHc0XkeRH99akzy82rEyitnqN+6s/a
-         E4W+IYkwPirT7T+u43YSznhMpe9Kt5W01pyIWrUurHdhvsfRXtAiNeVDOysImyNKSTn1
-         maUG6Z75HzAKxGkhCODD2lI8ZkormIiXJKPA+nWdRtrwLiR3Ue6OmT3qd+X+PJFMY/Er
-         8o/wPtQLXq+xtP/a6plvingLQ5a0cjwv/jhxj0m9lYlrA34r3VEeBRv2MS+fzu/ikywc
-         HkPQ==
-X-Gm-Message-State: AOAM533a6pyF+v50AetKAT6kPfqQeyPGeivucXTXyJEmFyqed/3GqmDS
-        9dQY0EzFu1Lv4mxh/rtRyslyItIEUQf375HZQkYdG61hM6ERoJ5v5eMQCUGJ9h5EPVervXngDg4
-        RAOvG9vUbaaHrqp19Cim+hIf11c07FT1a9Q==
-X-Received: by 2002:a05:6830:1604:: with SMTP id g4mr2357899otr.57.1626161436684;
-        Tue, 13 Jul 2021 00:30:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwV3NlabbiVN4+hSJ2ftBWmY3gwiUebuedfsGMLB8buEyZLOA0TyY1lXUMhXESUXtUWj6GuSM/9a0TgGVowM5Y=
-X-Received: by 2002:a05:6830:1604:: with SMTP id g4mr2357887otr.57.1626161436495;
- Tue, 13 Jul 2021 00:30:36 -0700 (PDT)
-MIME-Version: 1.0
+        id S234326AbhGMHiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 03:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234014AbhGMHiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 03:38:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7839DC0613DD
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 00:35:30 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m3Cwu-0003OU-FR; Tue, 13 Jul 2021 09:35:24 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:94d2:2c3c:56f3:5c10] (unknown [IPv6:2a03:f580:87bc:d400:94d2:2c3c:56f3:5c10])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D681164E38B;
+        Tue, 13 Jul 2021 07:35:22 +0000 (UTC)
+Subject: Re: Use-after-free access in j1939_session_deactivate
+To:     Xiaochen Zou <xzou017@ucr.edu>, Greg KH <greg@kroah.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        kernel@pengutronix.de, linux-can@vger.kernel.org
 References: <CAE1SXrtrg4CrWg_rZLUHqWWFHkGnK5Ez0PExJq8-A9d5NjE_-w@mail.gmail.com>
  <YO0Z7s8p7CoetxdW@kroah.com>
-In-Reply-To: <YO0Z7s8p7CoetxdW@kroah.com>
-From:   Xiaochen Zou <xzou017@ucr.edu>
-Date:   Tue, 13 Jul 2021 00:30:34 -0700
-Message-ID: <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
-Subject: Re: Use-after-free access in j1939_session_deactivate
-To:     Greg KH <greg@kroah.com>
-Cc:     kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+ <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <e1f71c33-a5dd-82b1-2dce-be4f052d6aa6@pengutronix.de>
+Date:   Tue, 13 Jul 2021 09:35:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="gKiOBCmfSPetZNd56Z1785mDvKwcW2dIz"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-j1939_session_destroy() will free both session and session->priv. It
-leads to multiple use-after-free read and write in
-j1939_session_deactivate() when session was freed in
-j1939_session_deactivate_locked(). The free chain is
-j1939_session_deactivate_locked()->
-j1939_session_put()->__j1939_session_release()->j1939_session_destroy().
-To fix this bug, I moved j1939_session_put() behind
-j1939_session_deactivate_locked() and guarded it with a check of
-active since the session would be freed only if active is true.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gKiOBCmfSPetZNd56Z1785mDvKwcW2dIz
+Content-Type: multipart/mixed; boundary="P46PSwCSilXkrFR5S37m3uMrtVL0qF4Tg";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Xiaochen Zou <xzou017@ucr.edu>, Greg KH <greg@kroah.com>
+Cc: netdev@vger.kernel.org, stable@vger.kernel.org, kernel@pengutronix.de,
+ linux-can@vger.kernel.org
+Message-ID: <e1f71c33-a5dd-82b1-2dce-be4f052d6aa6@pengutronix.de>
+Subject: Re: Use-after-free access in j1939_session_deactivate
+References: <CAE1SXrtrg4CrWg_rZLUHqWWFHkGnK5Ez0PExJq8-A9d5NjE_-w@mail.gmail.com>
+ <YO0Z7s8p7CoetxdW@kroah.com>
+ <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
+In-Reply-To: <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index e5f1a56994c6..b6448f29a4bd 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -1018,7 +1018,6 @@ static bool
-j1939_session_deactivate_locked(struct j1939_session *session)
+--P46PSwCSilXkrFR5S37m3uMrtVL0qF4Tg
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-        list_del_init(&session->active_session_list_entry);
-        session->state = J1939_SESSION_DONE;
--       j1939_session_put(session);
-    }
+On 7/13/21 9:30 AM, Xiaochen Zou wrote:
+> j1939_session_destroy() will free both session and session->priv. It
+> leads to multiple use-after-free read and write in
+> j1939_session_deactivate() when session was freed in
+> j1939_session_deactivate_locked(). The free chain is
+> j1939_session_deactivate_locked()->
+> j1939_session_put()->__j1939_session_release()->j1939_session_destroy()=
+=2E
+> To fix this bug, I moved j1939_session_put() behind
+> j1939_session_deactivate_locked() and guarded it with a check of
+> active since the session would be freed only if active is true.
 
-    return active;
-@@ -1031,6 +1030,9 @@ static bool j1939_session_deactivate(struct
-j1939_session *session)
-    j1939_session_list_lock(session->priv);
-    active = j1939_session_deactivate_locked(session);
-    j1939_session_list_unlock(session->priv);
-+   if (active) {
-+       j1939_session_put(session);
-+   }
+Please include your Signed-off-by.
+See
+https://elixir.bootlin.com/linux/v5.12/source/Documentation/process/submi=
+tting-patches.rst#L356
 
-    return active;
- }
-@@ -2021,6 +2023,7 @@ void j1939_simple_recv(struct j1939_priv *priv,
-struct sk_buff *skb)
- int j1939_cancel_active_session(struct j1939_priv *priv, struct sock *sk)
- {
-    struct j1939_session *session, *saved;
-+   bool active;
+Marc
 
-    netdev_dbg(priv->ndev, "%s, sk: %p\n", __func__, sk);
-    j1939_session_list_lock(priv);
-@@ -2030,7 +2033,10 @@ int j1939_cancel_active_session(struct
-j1939_priv *priv, struct sock *sk)
-        if (!sk || sk == session->sk) {
-            j1939_session_timers_cancel(session);
-            session->err = ESHUTDOWN;
--           j1939_session_deactivate_locked(session);
-+           active = j1939_session_deactivate_locked(session);
-+           if (active) {
-+               j1939_session_put(session);
-+           }
-        }
-    }
-    j1939_session_list_unlock(priv);
-
-On Mon, Jul 12, 2021 at 9:44 PM Greg KH <greg@kroah.com> wrote:
->
-> On Mon, Jul 12, 2021 at 03:40:46PM -0700, Xiaochen Zou wrote:
-> > Hi,
-> > It looks like there are multiple use-after-free accesses in
-> > j1939_session_deactivate()
-> >
-> > static bool j1939_session_deactivate(struct j1939_session *session)
-> > {
-> > bool active;
-> >
-> > j1939_session_list_lock(session->priv);
-> > active = j1939_session_deactivate_locked(session); //session can be freed inside
-> > j1939_session_list_unlock(session->priv); // It causes UAF read and write
-> >
-> > return active;
-> > }
-> >
-> > session can be freed by
-> > j1939_session_deactivate_locked->j1939_session_put->__j1939_session_release->j1939_session_destroy->kfree.
-> > Therefore it makes the unlock function perform UAF access.
->
-> Great, can you make up a patch to fix this issue so you can get credit
-> for finding and solving it?
->
-> thanks,
->
-> greg k-h
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
+--P46PSwCSilXkrFR5S37m3uMrtVL0qF4Tg--
 
--- 
-Xiaochen Zou
-PhD Student
-Department of Computer Science & Engineering
-University of California, Riverside
+--gKiOBCmfSPetZNd56Z1785mDvKwcW2dIz
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDtQjcACgkQqclaivrt
+76ntJwgAk2moWK01Mwxcutg4De5oarZEMC8iSHIRZEikJXT32p37S4b++lS7weRD
+eevxhLx2ryh66nTo/B6oQsMRqD4RDBsnkdDfWt/78CbueR5jayOQNJmAuqmxxO5u
+RcacC6xcWuJ/wwR0z1gsXjMcnPCJ2x0mgouh+flc0TG/DCuxNBLSaQkwbiaMLiYm
+NViuTT0gS0qDq2TON9hLUFMM8WO4DbAByhwpld/9M//xylulZ6+tmmKfBMC88Hgc
+mK5KaEQsU3+WxCKdEqusVk741i8Na8YYki/GGOKJn1/55Bzda7uWJu8HUQX+MbzZ
+8kFpGCo9X/ESjdEcQQujpns1jbo6ng==
+=ZzTk
+-----END PGP SIGNATURE-----
+
+--gKiOBCmfSPetZNd56Z1785mDvKwcW2dIz--
