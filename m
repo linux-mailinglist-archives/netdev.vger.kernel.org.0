@@ -2,135 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8DF3C71CD
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 16:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232B73C71ED
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 16:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236793AbhGMOHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 10:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236721AbhGMOHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 10:07:05 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADADC0613DD;
-        Tue, 13 Jul 2021 07:04:14 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id l1so11535895edr.11;
-        Tue, 13 Jul 2021 07:04:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=arUYuAy2PN4/feE5llijqQYwxfh81atG4dBl/yi0Yrc=;
-        b=Qbcg0RVjBLBhe4in65MsZo8Itjh7iHNOFBSeAIXck14Ga87IMfIcv/An5nl2Tc8Loq
-         YuS3FN/XuAJnxd1S0mBfSMcHGzhJdVfBaOXP8DqGDSMWqPLgB+pYQRSmd0G2mi7O4WnW
-         /8VAD114iWB3/gr9CjAFkl3GtQ38FdsrfKcfe9wmyXnz8fvGuTw6bAAin5qUDQyFq+Sw
-         Zz2h9v1YanLFiVAWc/N4vhd31D+B5S5hH2ySzaaPXiA6QiEaxsoZ5nj9dIntDp/UGh/P
-         ZQzlZNovrou6iVI1MudTvuwyY6c+bQ2+vypD54l504Sjd4u6ojxskWQNv1KM9ffDdkTj
-         7PUw==
+        id S236737AbhGMOR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 10:17:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58227 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236710AbhGMOR5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 10:17:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626185707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mLkk+cKF9D7a7EE6O0W6DpvhUQ4QSgIqQQqruwzRfZk=;
+        b=SW+JeY5UtbVpKtqSD8zKIG3u3w1Z8eN8qNRlxMV0EMnANXB4QuOgKc5ghoK9GmxlmpT0Em
+        iAiSN27K1dAUQ+cgEDRw7tuDweJNZ5IvXtz8tckzmWcNerA4ONZnhXzf/mxh9+vvtC7Dkr
+        fZ8LLGVT+MeWVcyYvp1H8ifyJlJjqgE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-336-J9rDKtTlONigciYGe7XeVg-1; Tue, 13 Jul 2021 10:15:05 -0400
+X-MC-Unique: J9rDKtTlONigciYGe7XeVg-1
+Received: by mail-wm1-f70.google.com with SMTP id l6-20020a05600c1d06b0290225338d8f53so1521017wms.8
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 07:15:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=arUYuAy2PN4/feE5llijqQYwxfh81atG4dBl/yi0Yrc=;
-        b=eLBWUdxqfzZba//2wRy6E3TPql0LmW4A7taZjxZ9Ni1nZNN3b1p/wSPIJrssQAf7Jv
-         JtD0p9OpICmMjHQ57+B0xpUdvkTIIAJ/QFuvccwUbrd3srzeAVq8I3E98kerApQij2Ze
-         PAtlGpHZVPNm3LibG6gE87XlAxtEad5Mz+pexkOYtgAT7sCsIAQl2x7muQcBYrOEYplw
-         pwucZY9OnNGhQhmhPBkjPpLHHuIL0eDy2zoZmBuVWHRkd6Sx//hvAzn7RQ4h2ngBdOVu
-         6oyDq7Z0mOOXGCtLbcEAvnek9229jP9zP+P4Fmu/xq+li7wVVVvq86Hy5HwGIlMb331M
-         Z/tA==
-X-Gm-Message-State: AOAM531n++ZP+dF5rjz/Pnib7tuTJ0Vag8B/McmF7SVaMFLTVMykT7Jk
-        JFuoSPj4EIuZ8dblRGuejpy/NGt/grl4iS8PLls=
-X-Google-Smtp-Source: ABdhPJy+Xb1snyVwx0jEahtGtFKIsgzL7Mg1DFZsm5Jjzxhey/YtgT0ZllwPsn1jkBcPBqr+D2RAXpAP+lQVJyIJtxc=
-X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr6035528edd.66.1626185051561;
- Tue, 13 Jul 2021 07:04:11 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mLkk+cKF9D7a7EE6O0W6DpvhUQ4QSgIqQQqruwzRfZk=;
+        b=eBNXyE3qVLGxAM+Ymd2aT9GqZO3Ok00XuAaC9uAlNUAuV2Hdu1PYl3slurkS8kwRJx
+         GAMuKgJwVMH0IcXUXt8XBN1gw8P/S9Zg3oF9B65hmqvzCCZ03P/NNrpFVD4hGAnDf59/
+         wAVOTtDK/ZpPK8wsiW+OpKpz0pV+DE3hz7rDU2/iuRQi+6DllVZkVMvmto6thDNfo0um
+         nlCAH2oq1CIGq4VMT1hNNZMvdyHN3af/xt697nXtLn0E1UH7L1zWoaBRBuepVChVGtsQ
+         +YGXNQO/rqEa5sdl3GfCQOZi8XzWecBBH78SeQm01Qz1WSzhwpXbvbr8K7UsIOT61lCu
+         4pBg==
+X-Gm-Message-State: AOAM5303EWcxhF6M2hOxze+n0WqHarj2EoIezu4aRa9jbfz8sc99nk5x
+        gJ/sCi2XWHlB2jgxI6icT6TiN+E81eazSGX15mcyuNG29iC5JfhcAKAE7tiZEt/QFM/tlTyO0Dv
+        sMxEyfcB706uI4AFs
+X-Received: by 2002:adf:e581:: with SMTP id l1mr5936182wrm.116.1626185704889;
+        Tue, 13 Jul 2021 07:15:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxWfXidFyPQHiMoamF/HVX5qiODoBJ6g82KbS2BIxWa8E53bpU6nmqRtih3iZfLh97h1om3dA==
+X-Received: by 2002:adf:e581:: with SMTP id l1mr5936160wrm.116.1626185704755;
+        Tue, 13 Jul 2021 07:15:04 -0700 (PDT)
+Received: from krava ([5.171.236.3])
+        by smtp.gmail.com with ESMTPSA id o14sm12078342wrj.66.2021.07.13.07.15.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jul 2021 07:15:04 -0700 (PDT)
+Date:   Tue, 13 Jul 2021 16:15:00 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: Re: [PATCHv3 bpf-next 7/7] selftests/bpf: Add test for
+ bpf_get_func_ip in kprobe+offset probe
+Message-ID: <YO2f5HFFjeG26R8f@krava>
+References: <20210707214751.159713-1-jolsa@kernel.org>
+ <20210707214751.159713-8-jolsa@kernel.org>
+ <CAEf4Bzb9DTtGWubdEgMYirWLT-AiYbU2LfB-cSpGNzk6L0z8Kg@mail.gmail.com>
+ <YOsEsb1sMasi1WyR@krava>
+ <CAEf4BzYQfe6-UngVn=kTE9gg6Gc7HFdDQ2NGX7p0+uuO27RETA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210713054019.409273-1-mudongliangabcd@gmail.com> <CAB_54W6DkBkASH5ojbChSoPB6ogQNy+7rq2kr=m9PNLmzATHtQ@mail.gmail.com>
-In-Reply-To: <CAB_54W6DkBkASH5ojbChSoPB6ogQNy+7rq2kr=m9PNLmzATHtQ@mail.gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 13 Jul 2021 22:03:45 +0800
-Message-ID: <CAD-N9QWcjQ8YkpunPgDU3j5CtS5coHrFwsmsJoYG9DH39T0yzA@mail.gmail.com>
-Subject: Re: [PATCH] ieee802154: hwsim: fix memory leak in __pskb_copy_fclone
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Aring <aring@mojatatu.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYQfe6-UngVn=kTE9gg6Gc7HFdDQ2NGX7p0+uuO27RETA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 9:47 PM Alexander Aring <alex.aring@gmail.com> wrote:
->
-> Hi,
->
-> On Tue, 13 Jul 2021 at 01:40, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+On Mon, Jul 12, 2021 at 04:32:25PM -0700, Andrii Nakryiko wrote:
+> On Sun, Jul 11, 2021 at 7:48 AM Jiri Olsa <jolsa@redhat.com> wrote:
 > >
-> > hwsim_hw_xmit fails to deallocate the newskb copied by pskb_copy. Fix
-> > this by adding kfree_skb after ieee802154_rx_irqsafe.
+> > On Wed, Jul 07, 2021 at 05:18:49PM -0700, Andrii Nakryiko wrote:
+> > > On Wed, Jul 7, 2021 at 2:54 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > >
+> > > > Adding test for bpf_get_func_ip in kprobe+ofset probe.
+> > >
+> > > typo: offset
+> > >
+> > > > Because of the offset value it's arch specific, adding
+> > > > it only for x86_64 architecture.
+> > >
+> > > I'm not following, you specified +0x5 offset explicitly, why is this
+> > > arch-specific?
 > >
-> >   [<ffffffff836433fb>] __alloc_skb+0x22b/0x250 net/core/skbuff.c:414
-> >   [<ffffffff8364ad95>] __pskb_copy_fclone+0x75/0x360 net/core/skbuff.c:1609
-> >   [<ffffffff82ae65e3>] __pskb_copy include/linux/skbuff.h:1176 [inline]
-> >   [<ffffffff82ae65e3>] pskb_copy include/linux/skbuff.h:3207 [inline]
-> >   [<ffffffff82ae65e3>] hwsim_hw_xmit+0xd3/0x140 drivers/net/ieee802154/mac802154_hwsim.c:132
-> >   [<ffffffff83ff8f47>] drv_xmit_async net/mac802154/driver-ops.h:16 [inline]
-> >   [<ffffffff83ff8f47>] ieee802154_tx+0xc7/0x190 net/mac802154/tx.c:83
-> >   [<ffffffff83ff9138>] ieee802154_subif_start_xmit+0x58/0x70 net/mac802154/tx.c:132
-> >   [<ffffffff83670b82>] __netdev_start_xmit include/linux/netdevice.h:4944 [inline]
-> >   [<ffffffff83670b82>] netdev_start_xmit include/linux/netdevice.h:4958 [inline]
-> >   [<ffffffff83670b82>] xmit_one net/core/dev.c:3658 [inline]
-> >   [<ffffffff83670b82>] dev_hard_start_xmit+0xe2/0x330 net/core/dev.c:3674
-> >   [<ffffffff83718028>] sch_direct_xmit+0xf8/0x520 net/sched/sch_generic.c:342
-> >   [<ffffffff8367193b>] __dev_xmit_skb net/core/dev.c:3874 [inline]
-> >   [<ffffffff8367193b>] __dev_queue_xmit+0xa3b/0x1360 net/core/dev.c:4241
-> >   [<ffffffff83ff5437>] dgram_sendmsg+0x437/0x570 net/ieee802154/socket.c:682
-> >   [<ffffffff836345b6>] sock_sendmsg_nosec net/socket.c:702 [inline]
-> >   [<ffffffff836345b6>] sock_sendmsg+0x56/0x80 net/socket.c:722
+> > I need some instruction offset != 0 in the traced function,
+> > x86_64's fentry jump is 5 bytes, other archs will be different
+> 
+> Right, ok. I don't see an easy way to detect this offset, but the
+> #ifdef __x86_64__ detection doesn't work because we are compiling with
+> -target bpf. Please double-check that it actually worked in the first
+> place.
+
+ugh, right
+
+> 
+> I think a better way would be to have test6 defined unconditionally in
+> BPF code, but then disable loading test6 program on anything but
+> x86_64 platform at runtime with bpf_program__set_autoload(false).
+
+great, I did not know about this function, will be easier
+
+thanks,
+jirka
+
+> 
 > >
-> > Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
->
-> sorry, I don't get the fix. Is this a memory leak? I remember there
-> was something reported by syzkaller [0] but I wasn't able yet to get
-> into it. Is it what you referring to?
+> > >
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >  .../testing/selftests/bpf/progs/get_func_ip_test.c  | 13 +++++++++++++
+> > > >  1 file changed, 13 insertions(+)
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > index 8ca54390d2b1..e8a9428a0ea3 100644
+> > > > --- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > +++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
+> > > > @@ -10,6 +10,7 @@ extern const void bpf_fentry_test2 __ksym;
+> > > >  extern const void bpf_fentry_test3 __ksym;
+> > > >  extern const void bpf_fentry_test4 __ksym;
+> > > >  extern const void bpf_modify_return_test __ksym;
+> > > > +extern const void bpf_fentry_test6 __ksym;
+> > > >
+> > > >  __u64 test1_result = 0;
+> > > >  SEC("fentry/bpf_fentry_test1")
+> > > > @@ -60,3 +61,15 @@ int BPF_PROG(fmod_ret_test, int a, int *b, int ret)
+> > > >         test5_result = (const void *) addr == &bpf_modify_return_test;
+> > > >         return ret;
+> > > >  }
+> > > > +
+> > > > +#ifdef __x86_64__
+> > > > +__u64 test6_result = 0;
+> > >
+> > > see, and you just forgot to update the user-space part of the test to
+> > > even check test6_result...
+> > >
+> > > please group variables together and do explicit ASSERT_EQ
+> >
+> > right.. will change
+> >
+> > thanks,
+> > jirka
+> >
+> > >
+> > > > +SEC("kprobe/bpf_fentry_test6+0x5")
+> > > > +int test6(struct pt_regs *ctx)
+> > > > +{
+> > > > +       __u64 addr = bpf_get_func_ip(ctx);
+> > > > +
+> > > > +       test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
+> > > > +       return 0;
+> > > > +}
+> > > > +#endif
+> > > > --
+> > > > 2.31.1
+> > > >
+> > >
+> >
+> 
 
-Yes, you're right.
-
-I get this memory leak many times in my local syzkaller instance but
-do not recognize there is already a bug report in the syzbot
-dashboard.
-
-> __pskb_copy_fclone() shows "The returned buffer has a reference count
-> of 1" and ieee802154_rx_irqsafe() will queue the skb for a tasklet.
-> With your patch it will be immediately freed and a use after free will
-> occur.
-
-Thanks for your feedback. I am sorry about this fix since I did not
-observe UAF in my testing.
-
-I will keep learning more materials about socket in Linux kernel. :)
-
-> I believe there is something wrong in the error path of
-> 802.15.4 frame parsing and that's why we sometimes have a leaks there.
-
-Should be yes, it occurs many times in my local syzkaller instance.
-
->
-> I need to test this patch, but I don't get how this patch is supposed
-> to fix the issue.
-
-This patch should be incorrect. Please directly focus on bug reports
-on the syzbot dashboard. If possible, please cc me your final patch
-about this bug. I can learn something from this bug.
-
-Best regards
-Dongliang Mu
-
->
-> - Alex
->
-> [0] https://groups.google.com/g/syzkaller-bugs/c/EoIvZbk3Zfo/m/AlKUiErlAwAJ
