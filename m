@@ -2,97 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B365E3C6E36
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 12:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4AA3C6EB1
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 12:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235338AbhGMKJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 06:09:16 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:43958 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235109AbhGMKJQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Jul 2021 06:09:16 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 818A149DF5;
-        Tue, 13 Jul 2021 10:06:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-transfer-encoding:mime-version:user-agent:content-type
-        :content-type:organization:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received:received; s=
-        mta-01; t=1626170784; x=1627985185; bh=ygupXc4lMRIGiPL6uvH/IC3wh
-        N2q8kFut/9Bk5A6nZc=; b=qcgv65a0DzSzNjeHNwdR6kwb1EOlGhV00P+jL8j9O
-        a1ZedZcK94BSNPscDmhvywjrxC4qgdZO1jK7ru43l53VyB1Op8CSdqBCTV+Gz8ua
-        5aEKkTs43ME5UktyMI26Jjxb8IcX9gLbEkH/K8El1EAY2nqDEgvY5YRkBBclFjKo
-        ps=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id SeLZvwBkyIei; Tue, 13 Jul 2021 13:06:24 +0300 (MSK)
-Received: from T-EXCH-03.corp.yadro.com (t-exch-03.corp.yadro.com [172.17.100.103])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id E6B40412FB;
-        Tue, 13 Jul 2021 13:06:22 +0300 (MSK)
-Received: from [10.199.0.247] (10.199.0.247) by T-EXCH-03.corp.yadro.com
- (172.17.100.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Tue, 13
- Jul 2021 13:06:22 +0300
-Message-ID: <2e961640f0d14fec87854a6c11c5f86b2380516d.camel@yadro.com>
-Subject: Re: [PATCH v2 2/3] net/ncsi: add NCSI Intel OEM command to keep PHY
- up
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     Joel Stanley <joel@jms.id.au>, Eddie James <eajames@linux.ibm.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>
-Date:   Tue, 13 Jul 2021 13:16:09 +0300
-In-Reply-To: <CACPK8Xff9c-_9A_tfZ4UBjucUgRmy8iOOdzcV5dg8VUCOB29AQ@mail.gmail.com>
-References: <20210708122754.555846-1-i.mikhaylov@yadro.com>
-         <20210708122754.555846-3-i.mikhaylov@yadro.com>
-         <CACPK8Xff9c-_9A_tfZ4UBjucUgRmy8iOOdzcV5dg8VUCOB29AQ@mail.gmail.com>
-Organization: YADRO
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S235616AbhGMKkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 06:40:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39946 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235408AbhGMKkk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Jul 2021 06:40:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E4936120A;
+        Tue, 13 Jul 2021 10:37:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1626172669;
+        bh=AgjVuCrRhRFKJ6UIPQshihlxJ0+9rq4qKDL2Tch43Pk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sOGO+dHAUoasROuQDK8NKfLCxtos2xyt63I6H6tnRHDBhdCaWkiHytREWqsU7TkPj
+         wzWNT+ExXmlC7Ta+yFqQdXjyW4p8Kb9KFZ8wWoHHuzGUlrMLtvAwTdpnK1sDahagye
+         JAeuIDuxsmviT/zr1ArOqaoojkBXLGPPu9Mobe8Q=
+Date:   Tue, 13 Jul 2021 12:37:46 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Thomas Graf <tgraf@suug.ch>,
+        Andrew Morton <akpm@linux-foundation.org>, jic23@kernel.org,
+        linux@rasmusvillemoes.dk
+Subject: Re: [PATCH v1 3/3] kernel.h: Split out container_of() and
+ typeof_memeber() macros
+Message-ID: <YO1s+rHEqC9RjMva@kroah.com>
+References: <20210713084541.7958-1-andriy.shevchenko@linux.intel.com>
+ <20210713084541.7958-3-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.199.0.247]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-03.corp.yadro.com (172.17.100.103)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210713084541.7958-3-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-07-12 at 10:01 +0000, Joel Stanley wrote:
-> On Thu, 8 Jul 2021 at 12:27, Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
-> > 
-> > This allows to keep PHY link up and prevents any channel resets during
-> > the host load.
-> > 
-> > It is KEEP_PHY_LINK_UP option(Veto bit) in i210 datasheet which
-> > block PHY reset and power state changes.
+On Tue, Jul 13, 2021 at 11:45:41AM +0300, Andy Shevchenko wrote:
+> kernel.h is being used as a dump for all kinds of stuff for a long time.
+> Here is the attempt cleaning it up by splitting out container_of() and
+> typeof_memeber() macros.
+
+That feels messy, why?  Reading one .h file for these common
+macros/defines is fine, why are container_of and typeof somehow
+deserving of their own .h files?  What speedups are you seeing by
+splitting this up?
+
+> At the same time convert users in the header and other folders to use it.
+> Though for time being include new header back to kernel.h to avoid twisted
+> indirected includes for existing users.
 > 
-> How about using runtime configuration over using kconfig for this, so
-> the same kernel config can be used on different machines. Something
-> device tree based?
-
-As I see there is already the way with Kconfig option, with previous
-broadcom/mellanox get mac address and set affinity for mellanox commands.
-I'm not sure about dts based solution. As I see there is two ways:
-1. make everything related OEM into dts based options
-2. or this way, with Kconfig
-
+> Note, there are _a lot_ of headers and modules that include kernel.h solely
+> for one of these macros and this allows to unburden compiler for the twisted
+> inclusion paths and to make new code cleaner in the future.
 > 
-> Another option is to use the netlink handler to send the OEM command
-> from userspace. Eddie has worked on this for an IBM machine, and I've
-> asked him to post those changes. I would prefer the kernel option
-> though.
-> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  include/kunit/test.h         | 14 ++++++++++++--
+>  include/linux/container_of.h | 37 ++++++++++++++++++++++++++++++++++++
+>  include/linux/kernel.h       | 31 +-----------------------------
+>  include/linux/kobject.h      | 14 +++++++-------
 
-I like the idea, it may help with debugging.
+Why are all of these changes needed to kobject.h for this one change?
+This diff:
 
-Thanks.
-> 
+> --- a/include/linux/kobject.h
+> +++ b/include/linux/kobject.h
+> @@ -15,18 +15,18 @@
+>  #ifndef _KOBJECT_H_
+>  #define _KOBJECT_H_
+>  
+> -#include <linux/types.h>
+> -#include <linux/list.h>
+> -#include <linux/sysfs.h>
+> +#include <linux/atomic.h>
+>  #include <linux/compiler.h>
+> -#include <linux/spinlock.h>
+> +#include <linux/container_of.h>
+> +#include <linux/list.h>
+>  #include <linux/kref.h>
+>  #include <linux/kobject_ns.h>
+> -#include <linux/kernel.h>
+>  #include <linux/wait.h>
+> -#include <linux/atomic.h>
+> -#include <linux/workqueue.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/types.h>
+>  #include <linux/uidgid.h>
+> +#include <linux/workqueue.h>
 
+Is a lot more changes than the "split the macros out" deserves.
+
+Please make this a separate change, remember to only do one thing at a
+time (this patch is at least 2 changes...)
+
+so NAK, this change isn't ok as-is.
+
+greg k-h
