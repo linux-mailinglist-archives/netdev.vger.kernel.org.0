@@ -2,295 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E213C6A80
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 08:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DE83C6AAB
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 08:39:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234102AbhGMGai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 02:30:38 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:59296 "EHLO
-        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233899AbhGMGaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 02:30:16 -0400
-Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id 662E02145A; Tue, 13 Jul 2021 14:21:40 +0800 (AWST)
-From:   Jeremy Kerr <jk@codeconstruct.com.au>
-To:     netdev@vger.kernel.org
-Cc:     Matt Johnston <matt@codeconstruct.com.au>,
-        Andrew Jeffery <andrew@aj.id.au>
-Subject: [PATCH RFC net-next v2 16/16] mctp: Add MCTP overview document
-Date:   Tue, 13 Jul 2021 14:20:23 +0800
-Message-Id: <20210713062023.3286895-17-jk@codeconstruct.com.au>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210713062023.3286895-1-jk@codeconstruct.com.au>
-References: <20210713062023.3286895-1-jk@codeconstruct.com.au>
+        id S233831AbhGMGlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 02:41:45 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:14074 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232908AbhGMGlo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 02:41:44 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GP9qp6GhTzbbwx;
+        Tue, 13 Jul 2021 14:35:34 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 13 Jul 2021 14:38:51 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Tue, 13 Jul
+ 2021 14:38:50 +0800
+Subject: Re: [PATCH rfc v3 2/4] page_pool: add interface for getting and
+ setting pagecnt_bias
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+CC:     Alexander Duyck <alexander.duyck@gmail.com>, <brouer@redhat.com>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Russell King - ARM Linux" <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, Salil Mehta <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
+        <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Alexander Lobakin" <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>, <nogikh@google.com>,
+        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
+        <kpsingh@kernel.org>, <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>, <songliubraving@fb.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1626092196-44697-1-git-send-email-linyunsheng@huawei.com>
+ <1626092196-44697-3-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Uf1W1H_0jK+zTDHdQnpa-dFSfcAtANqhPTJyZ21VeGmjg@mail.gmail.com>
+ <2d9a3d29-8e6b-8462-c410-6b7fd4518c9d@redhat.com>
+ <YOyFAkahxxMKNeGb@enceladus>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <b217802f-368f-2d7d-d216-6614305acfa2@huawei.com>
+Date:   Tue, 13 Jul 2021 14:38:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YOyFAkahxxMKNeGb@enceladus>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme710-chm.china.huawei.com (10.1.199.106) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds a brief document about the sockets API provided for
-sending and receiving MCTP messages from userspace.
+On 2021/7/13 2:08, Ilias Apalodimas wrote:
+> [...]
+>>>> +static inline bool page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
+>>>>   {
+>>>> +       if (WARN_ON(addr & ~PAGE_MASK))
+>>>> +               return false;
+>>>> +
+>>>>          page->dma_addr[0] = addr;
+>>>>          if (sizeof(dma_addr_t) > sizeof(unsigned long))
+>>>>                  page->dma_addr[1] = upper_32_bits(addr);
+>>>> +
+>>>> +       return true;
+>>>> +}
+>>>> +
+>>>
+>>> Rather than making this a part of the check here it might make more
+>>> sense to pull this out and perform the WARN_ON after the check for
+>>> dma_mapping_error.
+>>
+>> I need to point out that I don't like WARN_ON and BUG_ON code in fast-path
+>> code, because compiler adds 'ud2' assembler instructions that influences the
+>> instruction-cache fetching in the CPU.  Yes, I have seen a measuresable
+>> impact from this before.
+>>
+>>
+>>> Also it occurs to me that we only really have to do this in the case
+>>> where dma_addr_t is larger than the size of a long. Otherwise we could
+>>> just have the code split things so that dma_addr[0] is the dma_addr
+>>> and dma_addr[1] is our pagecnt_bias value in which case we could
+>>> probably just skip the check.
+>>
+>> The dance to get 64-bit DMA addr on 32-bit systems is rather ugly and
+>> confusing, sadly.  We could take advantage of this, I just hope this will
+>> not make it uglier.
+> 
+> Note here that we can only use this because dma_addr is not aliased to
+> compound page anymore (after the initial page_pool recycling patchset). 
+> We must keep this in mind if we even restructure struct page.
+> 
+> Can we do something more radical for this? The 64/32 bit dance is only
+> there for 32 bit systems with 64 bit dma.  Since the last time we asked
+> about this no one seemed to care about these, and I really doubt we'll get
+> an ethernet driver for them (that needs recycling....), can we *only* support 
+> frag allocation and recycling for 'normal' systems? We could always just r
+> e-purpose dma_addr[1] for those.
 
-This is roughly based on the OpenBMC design document, at:
+Will define a macro for "sizeof(dma_addr_t) > sizeof(unsigned long)" to
+decide whether to use the dma_addr[1], hopefully the compiler will optimize
+out the unused code in a specific system.
 
-  https://github.com/openbmc/docs/blob/master/designs/mctp/mctp-kernel.md
+> 
+> Regards
+> /Ilias
+> 
+>>
+>>
+>>>> +static inline int page_pool_get_pagecnt_bias(struct page *page)
+>>>> +{
+>>>> +       return READ_ONCE(page->dma_addr[0]) & ~PAGE_MASK;
+>>>> +}
+>>>> +
+>>>> +static inline unsigned long *page_pool_pagecnt_bias_ptr(struct page *page)
+>>>> +{
+>>>> +       return page->dma_addr;
+>>>> +}
+>>>> +
+>>>> +static inline void page_pool_set_pagecnt_bias(struct page *page, int bias)
+>>>> +{
+>>>> +       unsigned long dma_addr_0 = READ_ONCE(page->dma_addr[0]);
+>>>> +
+>>>> +       dma_addr_0 &= PAGE_MASK;
+>>>> +       dma_addr_0 |= bias;
+>>>> +
+>>>> +       WRITE_ONCE(page->dma_addr[0], dma_addr_0);
+>>>>   }
+>>>>
+>>>>   static inline bool is_page_pool_compiled_in(void)
+>>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>>>> index 78838c6..1abefc6 100644
+>>>> --- a/net/core/page_pool.c
+>>>> +++ b/net/core/page_pool.c
+>>>> @@ -198,7 +198,13 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+>>>>          if (dma_mapping_error(pool->p.dev, dma))
+>>>>                  return false;
+>>>>
+>>>
+>>> So instead of adding to the function below you could just add your
+>>> WARN_ON check here with the unmapping call.
 
-Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
+Ok.
 
----
-v2:
- - Controller -> component
----
- Documentation/networking/index.rst |   1 +
- Documentation/networking/mctp.rst  | 213 +++++++++++++++++++++++++++++
- MAINTAINERS                        |   1 +
- 3 files changed, 215 insertions(+)
- create mode 100644 Documentation/networking/mctp.rst
-
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index e9ce55992aa9..eea3a79f4ea0 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -68,6 +68,7 @@ Contents:
-    l2tp
-    lapb-module
-    mac80211-injection
-+   mctp
-    mpls-sysctl
-    mptcp-sysctl
-    multiqueue
-diff --git a/Documentation/networking/mctp.rst b/Documentation/networking/mctp.rst
-new file mode 100644
-index 000000000000..6100cdc220f6
---- /dev/null
-+++ b/Documentation/networking/mctp.rst
-@@ -0,0 +1,213 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==============================================
-+Management Component Transport Protocol (MCTP)
-+==============================================
-+
-+net/mctp/ contains protocol support for MCTP, as defined by DMTF standard
-+DSP0236. Physical interface drivers ("bindings" in the specification) are
-+provided in drivers/net/mctp/.
-+
-+The core code provides a socket-based interface to send and receive MCTP
-+messages, through an AF_MCTP, SOCK_DGRAM socket.
-+
-+Structure: interfaces & networks
-+================================
-+
-+The kernel models the local MCTP topology through two items: interfaces and
-+networks.
-+
-+An interface (or "link") is an instance of an MCTP physical transport binding
-+(as defined by DSP0236, section 3.2.47), likely connected to a specific hardware
-+device. This is represented as a ``struct netdevice``.
-+
-+A network defines a unique address space for MCTP endpoints by endpoint-ID
-+(described by DSP0236, section 3.2.31). A network has a user-visible identifier
-+to allow references from userspace. Route definitions are specific to one
-+network.
-+
-+Interfaces are associated with one network. A network may be associated with one
-+or more interfaces.
-+
-+If multiple networks are present, each may contain endpoint IDs (EIDs) that are
-+also present on other networks.
-+
-+Sockets API
-+===========
-+
-+Protocol definitions
-+--------------------
-+
-+MCTP uses ``AF_MCTP`` / ``PF_MCTP`` for the address- and protocol- families.
-+Since MCTP is message-based, only ``SOCK_DGRAM`` sockets are supported.
-+
-+.. code-block:: C
-+
-+    int sd = socket(AF_MCTP, SOCK_DGRAM, 0);
-+
-+The only (current) value for the ``protocol`` argument is 0.
-+
-+As with all socket address families, source and destination addresses are
-+specified with a ``sockaddr`` type, with a single-byte endpoint address:
-+
-+.. code-block:: C
-+
-+    typedef __u8		mctp_eid_t;
-+
-+    struct mctp_addr {
-+            mctp_eid_t		s_addr;
-+    };
-+
-+    struct sockaddr_mctp {
-+            unsigned short int	smctp_family;
-+            int			smctp_network;
-+            struct mctp_addr	smctp_addr;
-+            __u8		smctp_type;
-+            __u8		smctp_tag;
-+    };
-+
-+    #define MCTP_NET_ANY	0x0
-+    #define MCTP_ADDR_ANY	0xff
-+
-+
-+Syscall behaviour
-+-----------------
-+
-+The following sections describe the MCTP-specific behaviours of the standard
-+socket system calls. These behaviours have been chosen to map closely to the
-+existing sockets APIs.
-+
-+``bind()`` : set local socket address
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+Sockets that receive incoming request packets will bind to a local address,
-+using the ``bind()`` syscall.
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+
-+    addr.smctp_family = AF_MCTP;
-+    addr.smctp_network = MCTP_NET_ANY;
-+    addr.smctp_addr.s_addr = MCTP_ADDR_ANY;
-+    addr.smctp_type = MCTP_TYPE_PLDM;
-+    addr.smctp_tag = MCTP_TAG_OWNER;
-+
-+    int rc = bind(sd, (struct sockaddr *)&addr, sizeof(addr));
-+
-+This establishes the local address of the socket. Incoming MCTP messages that
-+match the network, address, and message type will be received by this socket.
-+The reference to 'incoming' is important here; a bound socket will only receive
-+messages with the TO bit set, to indicate an incoming request message, rather
-+than a response.
-+
-+The ``smctp_tag`` value will configure the tags accepted from the remote side of
-+this socket. Given the above, the only valid value is ``MCTP_TAG_OWNER``, which
-+will result in remotely "owned" tags being routed to this socket. Since
-+``MCTP_TAG_OWNER`` is set, the 3 least-significant bits of ``smctp_tag`` are not
-+used; callers must set them to zero.
-+
-+A ``smctp_network`` value of ``MCTP_NET_ANY`` will configure the socket to
-+receive incoming packets from any locally-connected network. A specific network
-+value will cause the socket to only receive incoming messages from that network.
-+
-+The ``smctp_addr`` field specifies a local address to bind to. A value of
-+``MCTP_ADDR_ANY`` configures the socket to receive messages addressed to any
-+local destination EID.
-+
-+The ``smctp_type`` field specifies which message types to receive. Only the
-+lower 7 bits of the type is matched on incoming messages (ie., the
-+most-significant IC bit is not part of the match). This results in the socket
-+receiving packets with and without a message integrity check footer.
-+
-+``sendto()``, ``sendmsg()``, ``send()`` : transmit an MCTP message
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+An MCTP message is transmitted using one of the ``sendto()``, ``sendmsg()`` or
-+``send()`` syscalls. Using ``sendto()`` as the primary example:
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+    char buf[14];
-+    ssize_t len;
-+
-+    /* set message destination */
-+    addr.smctp_family = AF_MCTP;
-+    addr.smctp_network = 0;
-+    addr.smctp_addr.s_addr = 8;
-+    addr.smctp_tag = MCTP_TAG_OWNER;
-+    addr.smctp_type = MCTP_TYPE_ECHO;
-+
-+    /* arbitrary message to send, with message-type header */
-+    buf[0] = MCTP_TYPE_ECHO;
-+    memcpy(buf + 1, "hello, world!", sizeof(buf) - 1);
-+
-+    len = sendto(sd, buf, sizeof(buf), 0,
-+                    (struct sockaddr_mctp *)&addr, sizeof(addr));
-+
-+The network and address fields of ``addr`` define the remote address to send to.
-+If ``smctp_tag`` has the ``MCTP_TAG_OWNER``, the kernel will ignore any bits set
-+in ``MCTP_TAG_VALUE``, and generate a tag value suitable for the destination
-+EID. If ``MCTP_TAG_OWNER`` is not set, the message will be sent with the tag
-+value as specified. If a tag value cannot be allocated, the system call will
-+report an errno of ``EAGAIN``.
-+
-+The application must provide the message type byte as the first byte of the
-+message buffer passed to ``sendto()``. If a message integrity check is to be
-+included in the transmitted message, it must also be provided in the message
-+buffer, and the most-significant bit of the message type byte must be 1.
-+
-+The ``sendmsg()`` system call allows a more compact argument interface, and the
-+message buffer to be specified as a scatter-gather list. At present no ancillary
-+message types (used for the ``msg_control`` data passed to ``sendmsg()``) are
-+defined.
-+
-+Transmitting a message on an unconnected socket with ``MCTP_TAG_OWNER``
-+specified will cause an allocation of a tag, if no valid tag is already
-+allocated for that destination. The (destination-eid,tag) tuple acts as an
-+implicit local socket address, to allow the socket to receive responses to this
-+outgoing message. If any previous allocation has been performed (to for a
-+different remote EID), that allocation is lost.
-+
-+Sockets will only receive responses to requests they have sent (with TO=1) and
-+may only respond (with TO=0) to requests they have received.
-+
-+``recvfrom()``, ``recvmsg()``, ``recv()`` : receive an MCTP message
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+An MCTP message can be received by an application using one of the
-+``recvfrom()``, ``recvmsg()``, or ``recv()`` system calls. Using ``recvfrom()``
-+as the primary example:
-+
-+.. code-block:: C
-+
-+    struct sockaddr_mctp addr;
-+    socklen_t addrlen;
-+    char buf[14];
-+    ssize_t len;
-+
-+    addrlen = sizeof(addr);
-+
-+    len = recvfrom(sd, buf, sizeof(buf), 0,
-+                    (struct sockaddr_mctp *)&addr, &addrlen);
-+
-+    /* We can expect addr to describe an MCTP address */
-+    assert(addrlen >= sizeof(buf));
-+    assert(addr.smctp_family == AF_MCTP);
-+
-+    printf("received %zd bytes from remote EID %d\n", rc, addr.smctp_addr);
-+
-+The address argument to ``recvfrom`` and ``recvmsg`` is populated with the
-+remote address of the incoming message, including tag value (this will be needed
-+in order to reply to the message).
-+
-+The first byte of the message buffer will contain the message type byte. If an
-+integrity check follows the message, it will be included in the received buffer.
-+
-+The ``recv()`` system call behaves in a similar way, but does not provide a
-+remote address to the application. Therefore, these are only useful if the
-+remote address is already known, or the message does not require a reply.
-+
-+Like the send calls, sockets will only receive responses to requests they have
-+sent (TO=1) and may only respond (TO=0) to requests they have received.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9a591fa2384d..c73c6dd598a0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10874,6 +10874,7 @@ M:	Jeremy Kerr <jk@codeconstruct.com.au>
- M:	Matt Johnston <matt@codeconstruct.com.au>
- L:	netdev@vger.kernel.org
- S:	Maintained
-+F:	Documentation/networking/mctp.rst
- F:	drivers/net/mctp/
- F:	include/net/mctp.h
- F:	include/net/mctpdevice.h
--- 
-2.30.2
-
+>>>
+>>>> -       page_pool_set_dma_addr(page, dma);
+>>>> +       if (unlikely(!page_pool_set_dma_addr(page, dma))) {
+>>>> +               dma_unmap_page_attrs(pool->p.dev, dma,
+>>>> +                                    PAGE_SIZE << pool->p.order,
+>>>> +                                    pool->p.dma_dir,
+>>>> +                                    DMA_ATTR_SKIP_CPU_SYNC);
+>>>> +               return false;
+>>>> +       }
+>>>>
+>>>>          if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+>>>>                  page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+>>>> --
+>>>> 2.7.4
+>>>>
+>>>
+>>
+> .
+> 
