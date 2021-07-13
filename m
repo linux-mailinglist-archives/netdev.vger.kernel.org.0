@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F2993C6A7B
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 08:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91DBD3C6A74
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 08:27:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234165AbhGMGa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 02:30:26 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:59290 "EHLO
+        id S234014AbhGMGaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 02:30:17 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:59276 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233866AbhGMGaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 02:30:16 -0400
+        with ESMTP id S233765AbhGMGaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 02:30:13 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id B65FF21458; Tue, 13 Jul 2021 14:21:39 +0800 (AWST)
+        id 12C6F21459; Tue, 13 Jul 2021 14:21:40 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         Andrew Jeffery <andrew@aj.id.au>
-Subject: [PATCH RFC net-next v2 14/16] mctp: Allow per-netns default networks
-Date:   Tue, 13 Jul 2021 14:20:21 +0800
-Message-Id: <20210713062023.3286895-15-jk@codeconstruct.com.au>
+Subject: [PATCH RFC net-next v2 15/16] mctp: Allow MCTP on tun devices
+Date:   Tue, 13 Jul 2021 14:20:22 +0800
+Message-Id: <20210713062023.3286895-16-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210713062023.3286895-1-jk@codeconstruct.com.au>
 References: <20210713062023.3286895-1-jk@codeconstruct.com.au>
@@ -31,127 +31,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Matt Johnston <matt@codeconstruct.com.au>
 
-Currently we have a compile-time default network
-(MCTP_INITIAL_DEFAULT_NET). This change introduces a default_net field
-on the net namespace, allowing future configuration for new interfaces.
+Allowing TUN is useful for testing, to route packets to userspace or to
+tunnel between machines.
 
 Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
 ---
- include/net/mctp.h        |  4 ++++
- include/net/netns/mctp.h  |  3 +++
- include/uapi/linux/mctp.h |  1 -
- net/mctp/af_mctp.c        |  3 +++
- net/mctp/device.c         |  2 +-
- net/mctp/route.c          | 14 ++++++++++++++
- 6 files changed, 25 insertions(+), 2 deletions(-)
+ net/mctp/device.c |  7 +++++--
+ net/mctp/route.c  | 13 ++++++++-----
+ 2 files changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 34d980bd5949..17705210e4f9 100644
---- a/include/net/mctp.h
-+++ b/include/net/mctp.h
-@@ -37,6 +37,8 @@ struct mctp_hdr {
- 
- #define MCTP_HEADER_MAXLEN	4
- 
-+#define MCTP_INITIAL_DEFAULT_NET	1
-+
- static inline bool mctp_address_ok(mctp_eid_t eid)
- {
- 	return eid >= 8 && eid < 255;
-@@ -189,6 +191,8 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag);
- 
- /* routing <--> device interface */
-+unsigned int mctp_default_net(struct net *net);
-+int mctp_default_net_set(struct net *net, unsigned int index);
- int mctp_route_add(struct mctp_dev *mdev, mctp_eid_t daddr_start,
- 		   unsigned int daddr_extent, unsigned int mtu, bool is_local);
- int mctp_route_remove(struct mctp_dev *mdev, mctp_eid_t daddr_start,
-diff --git a/include/net/netns/mctp.h b/include/net/netns/mctp.h
-index 14ae6d37e52a..acedef12a35e 100644
---- a/include/net/netns/mctp.h
-+++ b/include/net/netns/mctp.h
-@@ -25,6 +25,9 @@ struct netns_mctp {
- 	spinlock_t keys_lock;
- 	struct hlist_head keys;
- 
-+	/* MCTP network */
-+	unsigned int default_net;
-+
- 	/* neighbour table */
- 	struct mutex neigh_lock;
- 	struct list_head neighbours;
-diff --git a/include/uapi/linux/mctp.h b/include/uapi/linux/mctp.h
-index 7be546e7abe7..5c6a2e0c4e59 100644
---- a/include/uapi/linux/mctp.h
-+++ b/include/uapi/linux/mctp.h
-@@ -26,7 +26,6 @@ struct sockaddr_mctp {
- };
- 
- #define MCTP_NET_ANY		0x0
--#define MCTP_NET_DEFAULT	0x0
- 
- #define MCTP_ADDR_NULL		0x00
- #define MCTP_ADDR_ANY		0xff
-diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 9ca836df19d0..84f722d31fd7 100644
---- a/net/mctp/af_mctp.c
-+++ b/net/mctp/af_mctp.c
-@@ -94,6 +94,9 @@ static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	if (!capable(CAP_NET_RAW))
- 		return -EACCES;
- 
-+	if (addr->smctp_network == MCTP_NET_ANY)
-+		addr->smctp_network = mctp_default_net(sock_net(sk));
-+
- 	rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
- 			       addr->smctp_addr.s_addr);
- 	if (!rt)
 diff --git a/net/mctp/device.c b/net/mctp/device.c
-index 280679798a2e..4c2f83fc4abc 100644
+index 4c2f83fc4abc..06f9fc633598 100644
 --- a/net/mctp/device.c
 +++ b/net/mctp/device.c
-@@ -208,7 +208,7 @@ static struct mctp_dev *mctp_add_dev(struct net_device *dev)
+@@ -302,9 +302,12 @@ static int mctp_register(struct net_device *dev)
+ 	if (rtnl_dereference(dev->mctp_ptr))
+ 		return 0;
  
- 	INIT_LIST_HEAD(&mdev->addrs);
+-	/* only register specific types; MCTP-specific and loopback for now */
+-	if (dev->type != ARPHRD_MCTP && dev->type != ARPHRD_LOOPBACK)
++	/* only register specific types (inc. NONE for TUN devices) */
++	if (!(dev->type == ARPHRD_MCTP ||
++	      dev->type == ARPHRD_LOOPBACK ||
++	      dev->type == ARPHRD_NONE)) {
+ 		return 0;
++	}
  
--	mdev->net = MCTP_INITIAL_DEFAULT_NET;
-+	mdev->net = mctp_default_net(dev_net(dev));
- 
- 	/* associate to net_device */
- 	rcu_assign_pointer(dev->mctp_ptr, mdev);
+ 	mdev = mctp_add_dev(dev);
+ 	if (IS_ERR(mdev))
 diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 77e37ac03b05..b9dd6d5bbf33 100644
+index b9dd6d5bbf33..5ea236f2afee 100644
 --- a/net/mctp/route.c
 +++ b/net/mctp/route.c
-@@ -431,6 +431,19 @@ static struct mctp_route *mctp_route_alloc(void)
- 	return rt;
- }
+@@ -797,13 +797,18 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 				struct net_device *orig_dev)
+ {
+ 	struct net *net = dev_net(dev);
++	struct mctp_dev *mdev;
+ 	struct mctp_skb_cb *cb;
+ 	struct mctp_route *rt;
+ 	struct mctp_hdr *mh;
  
-+unsigned int mctp_default_net(struct net *net)
-+{
-+	return READ_ONCE(net->mctp.default_net);
-+}
-+
-+int mctp_default_net_set(struct net *net, unsigned int index)
-+{
-+	if (index == 0)
-+		return -EINVAL;
-+	WRITE_ONCE(net->mctp.default_net, index);
-+	return 0;
-+}
-+
- /* tag management */
- static void mctp_reserve_tag(struct net *net, struct mctp_sk_key *key,
- 			     struct mctp_sock *msk)
-@@ -1029,6 +1042,7 @@ static int __net_init mctp_routes_net_init(struct net *net)
- 	mutex_init(&ns->bind_lock);
- 	INIT_HLIST_HEAD(&ns->keys);
- 	spin_lock_init(&ns->keys_lock);
-+	WARN_ON(mctp_default_net_set(net, MCTP_INITIAL_DEFAULT_NET));
- 	return 0;
- }
+-	/* basic non-data sanity checks */
+-	if (dev->type != ARPHRD_MCTP)
++	rcu_read_lock();
++	mdev = __mctp_dev_get(dev);
++	rcu_read_unlock();
++	if (!mdev) {
++		/* basic non-data sanity checks */
+ 		goto err_drop;
++	}
  
+ 	if (!pskb_may_pull(skb, sizeof(struct mctp_hdr)))
+ 		goto err_drop;
+@@ -817,9 +822,7 @@ static int mctp_pkttype_receive(struct sk_buff *skb, struct net_device *dev,
+ 		goto err_drop;
+ 
+ 	cb = __mctp_cb(skb);
+-	rcu_read_lock();
+-	cb->net = READ_ONCE(__mctp_dev_get(dev)->net);
+-	rcu_read_unlock();
++	cb->net = READ_ONCE(mdev->net);
+ 
+ 	rt = mctp_route_lookup(net, cb->net, mh->dest);
+ 	if (!rt)
 -- 
 2.30.2
 
