@@ -2,72 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4942A3C7169
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D123C7171
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbhGMNsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 09:48:14 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:48448
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236222AbhGMNsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 09:48:13 -0400
-Received: from [192.168.1.18] (unknown [222.129.38.167])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 08DE1405E6;
-        Tue, 13 Jul 2021 13:45:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626183922;
-        bh=XFchaAmc9L6ZJAbgvoritLLDGb3RUOvHfIzleghA+mI=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=habbnrJBNcH29BI7CQh8bNqPF/4LUngU9TvbzFiOCYIGJuBzIWvsI16wSn29vO9/o
-         2PMGpzdlTGZLSp8joo0aiJkCC4tHsoe4gzSPN8fxq39b0ap1od9qrZUUTBeO+NlhvB
-         bAFsl6roxPoTV18hoIdUyjCeu9n7bTq3mNve10yqVUfIps5vjT7XNrjLDxShl20w2r
-         Qg6V+AN9o438AqKbrJldHbtRBTlvXWimys19reH0SEsxDpG2MsYbJ8EEKOHs9Y63OU
-         htdhkg538ytmoern4qT72H8mtHrTgvN7g5CUFUnHIheh9w4FsihIEdt1lEk1EDrMh4
-         IOJdkDFyleHTw==
-Subject: Re: [Intel-wired-lan] [PATCH 2/2] igc: wait for the MAC copy when
- enabled MAC passthrough
-To:     "Neftin, Sasha" <sasha.neftin@intel.com>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Edri, Michael" <michael.edri@intel.com>,
-        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
-        "Shalev, Avi" <avi.shalev@intel.com>
-References: <20210702045120.22855-1-aaron.ma@canonical.com>
- <20210702045120.22855-2-aaron.ma@canonical.com>
- <613e2106-940a-49ed-6621-0bb00bc7dca5@intel.com>
- <ad3d2d01-1d0a-8887-b057-e6a9531a05f4@canonical.com>
- <f9f9408e-9ba3-7ed9-acc2-1c71913b04f0@intel.com>
- <96106dfe-9844-1d9d-d865-619d78a0d150@canonical.com>
- <47117935-10d6-98e0-5894-ba104912ce25@intel.com>
-From:   Aaron Ma <aaron.ma@canonical.com>
-Message-ID: <1a539d4d-10b4-5b9b-31e7-6aec57120356@canonical.com>
-Date:   Tue, 13 Jul 2021 21:45:10 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S236672AbhGMNuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 09:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236222AbhGMNuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 09:50:13 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3972FC0613DD;
+        Tue, 13 Jul 2021 06:47:23 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id p8so30550186wrr.1;
+        Tue, 13 Jul 2021 06:47:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X/AEnKgR35dch3/Dd4uftg3ppYbt85cCwHqG8mB8H40=;
+        b=hHPV0jO0A53LsFdk1uIC2UDPRjwsgp6Khb9VjaAoaF31e/tfTM/VZeelFGvz4A1LhQ
+         VqIsT7exIXTKWb635pIeS2si1JfsMbllUg1pTpFXsgyiobOVnFTfPr6Zdqub1qB0GL2p
+         Z4K9vbagjhnMaI+y9VE2nbP/7Na7sf/NnDzveuSHKPfogbo11SPevbH3ZJauTo7nso/H
+         9gq4gSxmaXQ6I83ipChNMc3ow8UhHjeN1dtMvapBqI6quoHXubYjckkF0g8vlcQAa6OM
+         zLrInzQEl/8ObWfTF2c4kPlyViBRTBLGzryI2xPP371Yz51cRxZIaVGkgTKH1JLbyv/w
+         huFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X/AEnKgR35dch3/Dd4uftg3ppYbt85cCwHqG8mB8H40=;
+        b=mEi5TdzyNO4XNJ44hfSfEnDO+B+32UYSmZ3lJkt9tJZ+yeFwevSRz4AIZ3NhbXg/8T
+         FdjxHIn3Pnw1xpgVvKiWLBq2nulB7XnJHlvo9KBhxUg46UOOxCB8sgX9N2KB3jxf5lxw
+         Oc75nj1SKDgzKvpvV0aXAVtZEsCcL9LhCpcqqOGWHKW2DDolIJxxA6f3+Jf+ClEt2jGr
+         wkM0OvRUIUUBKKLSANv8Nh6/FXF7v8sE1G9Jj/YB6++7czQjLdb9rqfpdfa7YWjpIXyd
+         mVg5BFDc7fUXdi6N7Ym7e5QXgUQoPoei/45AVh3+QVAAmdcnvIYARBam8/qGyZ6keFES
+         daqA==
+X-Gm-Message-State: AOAM531kOCCaa0aE61+Wt1bE8wCJ7Z14y9p82EPceqMPVTF8gE2ooz6l
+        zsZEsbo5HcanCgMEgLXOW5us3LMAceheG+EUfLg=
+X-Google-Smtp-Source: ABdhPJxz/AMLqAjw+OLCeNgQzB+GRtUscV/kpXH6OPXF7N3eeXF6ZvPSvKnOblE9jj+X0nhUUX+w/Dq7KnNhXY8VWHQ=
+X-Received: by 2002:a5d:530b:: with SMTP id e11mr2420650wrv.65.1626184041894;
+ Tue, 13 Jul 2021 06:47:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <47117935-10d6-98e0-5894-ba104912ce25@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210713054019.409273-1-mudongliangabcd@gmail.com>
+In-Reply-To: <20210713054019.409273-1-mudongliangabcd@gmail.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 13 Jul 2021 09:47:10 -0400
+Message-ID: <CAB_54W6DkBkASH5ojbChSoPB6ogQNy+7rq2kr=m9PNLmzATHtQ@mail.gmail.com>
+Subject: Re: [PATCH] ieee802154: hwsim: fix memory leak in __pskb_copy_fclone
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Aring <aring@mojatatu.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 7/8/21 12:24 PM, Neftin, Sasha wrote:
-> I would to like suggest checking the following direction:
-> 1. principal question: can we update the netdev device address after it is already set during probe? I meant perform another:
-> memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len) up to demand
+On Tue, 13 Jul 2021 at 01:40, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> hwsim_hw_xmit fails to deallocate the newskb copied by pskb_copy. Fix
+> this by adding kfree_skb after ieee802154_rx_irqsafe.
+>
+>   [<ffffffff836433fb>] __alloc_skb+0x22b/0x250 net/core/skbuff.c:414
+>   [<ffffffff8364ad95>] __pskb_copy_fclone+0x75/0x360 net/core/skbuff.c:1609
+>   [<ffffffff82ae65e3>] __pskb_copy include/linux/skbuff.h:1176 [inline]
+>   [<ffffffff82ae65e3>] pskb_copy include/linux/skbuff.h:3207 [inline]
+>   [<ffffffff82ae65e3>] hwsim_hw_xmit+0xd3/0x140 drivers/net/ieee802154/mac802154_hwsim.c:132
+>   [<ffffffff83ff8f47>] drv_xmit_async net/mac802154/driver-ops.h:16 [inline]
+>   [<ffffffff83ff8f47>] ieee802154_tx+0xc7/0x190 net/mac802154/tx.c:83
+>   [<ffffffff83ff9138>] ieee802154_subif_start_xmit+0x58/0x70 net/mac802154/tx.c:132
+>   [<ffffffff83670b82>] __netdev_start_xmit include/linux/netdevice.h:4944 [inline]
+>   [<ffffffff83670b82>] netdev_start_xmit include/linux/netdevice.h:4958 [inline]
+>   [<ffffffff83670b82>] xmit_one net/core/dev.c:3658 [inline]
+>   [<ffffffff83670b82>] dev_hard_start_xmit+0xe2/0x330 net/core/dev.c:3674
+>   [<ffffffff83718028>] sch_direct_xmit+0xf8/0x520 net/sched/sch_generic.c:342
+>   [<ffffffff8367193b>] __dev_xmit_skb net/core/dev.c:3874 [inline]
+>   [<ffffffff8367193b>] __dev_queue_xmit+0xa3b/0x1360 net/core/dev.c:4241
+>   [<ffffffff83ff5437>] dgram_sendmsg+0x437/0x570 net/ieee802154/socket.c:682
+>   [<ffffffff836345b6>] sock_sendmsg_nosec net/socket.c:702 [inline]
+>   [<ffffffff836345b6>] sock_sendmsg+0x56/0x80 net/socket.c:722
+>
+> Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Updating MAC addr may work.
-Even at the end of probe, it still got the wrong MAC address, delay is still needed.
+sorry, I don't get the fix. Is this a memory leak? I remember there
+was something reported by syzkaller [0] but I wasn't able yet to get
+into it. Is it what you referring to?
+__pskb_copy_fclone() shows "The returned buffer has a reference count
+of 1" and ieee802154_rx_irqsafe() will queue the skb for a tasklet.
+With your patch it will be immediately freed and a use after free will
+occur. I believe there is something wrong in the error path of
+802.15.4 frame parsing and that's why we sometimes have a leaks there.
 
-Aaron
+I need to test this patch, but I don't get how this patch is supposed
+to fix the issue.
 
-> 2. We need to work with Intel's firmware engineer/group and define the message/event: MAC addressis changed and should be updated.
-> As I know MNG FW updates shadow registers. Since shadow registers are different from RAL/RAH registers - it could be a notification that the MAC address changed. Let's check it.
+- Alex
+
+[0] https://groups.google.com/g/syzkaller-bugs/c/EoIvZbk3Zfo/m/AlKUiErlAwAJ
