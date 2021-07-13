@@ -2,134 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99BCA3C6752
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 02:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A3A3C676F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 02:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233505AbhGMAFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 20:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        id S233705AbhGMA2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Jul 2021 20:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbhGMAFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 20:05:00 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B6DC0613DD;
-        Mon, 12 Jul 2021 17:02:11 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id a16so31846450ybt.8;
-        Mon, 12 Jul 2021 17:02:11 -0700 (PDT)
+        with ESMTP id S230099AbhGMA2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 20:28:03 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F25C0613DD
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 17:25:14 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id v14so177419qtc.8
+        for <netdev@vger.kernel.org>; Mon, 12 Jul 2021 17:25:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1XFbfONQrym8mWajHQrDI6DaCktdaoVNGOfVNXqTlqU=;
-        b=dFuo6cSgucUqZuu2e1mCUzI76+ZbW+FwTOnXkPhopfaqqdCvv54WRJwT9SOkXZ9zvB
-         T+4TSQSOPmLL9yZlxlGzV+JanROOHXB2j14q69PUbh02cUdK+EdBmoqMx9BoLfuJR/F/
-         eYYeLPuH9Og4ZXL5SarOHtAPy1H/aTUqIzcv4+hWcJryPblOR60mJpgimNMODPbqI+Re
-         GH2u1FAge19dg8I3sP26/fWtyqz4vXsO+6fueMpHQ6hWrdTWWQaauPjW2FKnavAav9Aj
-         b9V4CKEgIPsBRES2Cbd7Ld0X/fVCM4ChmCEquO49LAJpVfY2Nql/GGdfy9XOZZGomtot
-         5GVw==
+         :cc:content-transfer-encoding;
+        bh=w20DmUyhGwyvm6OG3nMhHQGwJ507eSHhoqM5kvg9RsA=;
+        b=kAYRK1NSb+PDjJvOpeyaT3+bJTaQRx5t+5ikdPz7tFL9YEaJ4QempD6HMKateobWFY
+         okps/Y26K/uNa21FAHuGj1AydVDvXg+11Gr8EFqmniWH/ZWQzztx8kzJrBfWkS6nh/O/
+         Bvg/vUOgSufvLPkArx6aqa5UNgslh/aN7dHZVdh3ZvDAIbKGgVACP3L0bV+jGPtzryV6
+         AAncXjd7Vefe9PF5IxvIY5vVx+IV+3PGu74pywcPve4PilGoc0H5YahTdj6iDwdBkhH/
+         ILz1rDEvYDUJjTrNPxKvTwQ2zDpWtA3OxToIKEw4ujz7YiIYrjVaCyu099jaGrFv/ATf
+         YoSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1XFbfONQrym8mWajHQrDI6DaCktdaoVNGOfVNXqTlqU=;
-        b=JME83li+8S3v5z92ay3yvZHOeEXUQzeMBDSL7mqW+q3r8k1Ixe10BPUfx1LmK63Ccb
-         uTWb1hO3jwHAxl3OysIbMdm/3ecOupen9rosgZFzGD3RxO6UnPIj2ZueUd8F6qKyQhCQ
-         xQbCD0NF+y2vMVDGy2L5ez4J/B81smJDk1NFg70z9A2COPqhvshYQDn9N7tY0s19oIGw
-         IMMzNqXM93mllET1OmsD0VaHMSHM5APU+QmO4fitYwEz07IIkEnPHtScEOkznZArMI6i
-         3TIL72YsBI51O8iKNVQtRC5GS3jidpCnfRObI4tBw88c77z9vyALmZ9fUd4mdk5kTsPE
-         Uh9A==
-X-Gm-Message-State: AOAM530Lpibw3jkQw++rv1TfyhLw61vbudzP6YRs8++dnVdtKx2Rx+fl
-        ljhW2TKG649uTL2JJbNuWxbFzTsEZwQSSF1mwOM=
-X-Google-Smtp-Source: ABdhPJxfmS8rAuGqe5Gx3gBkVhzBs921u4akX2EPI7WTdjUZOq6zhHh1HyDDXSZmfEtal+GHBRE+TQ3236wW2/bwu/g=
-X-Received: by 2002:a25:3787:: with SMTP id e129mr2026342yba.459.1626134530328;
- Mon, 12 Jul 2021 17:02:10 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=w20DmUyhGwyvm6OG3nMhHQGwJ507eSHhoqM5kvg9RsA=;
+        b=TsMRVLfATbv9nUexZNUWq/sjMX9lfPvecfcBAs1BJ89IQY37uLD1p24YsU+GNUwbaD
+         AmV4qBkrB7QW1oulQyUj3ImSxmHloEKIrmT+8sWONHctu5GEP4pl0v2UMWyKysWBzIfx
+         ufJRKs2VBZIMQSKEb9gOypZSdMxqG8ZToLRZYNfwbfM3+RTVDpPokYRthViJasmS08L5
+         TqJ+/HjaiUkbos2umfNJrJP7F1C0KH1u5R2CXfOETCZK1wbm7jROti398vy66oHExvf0
+         ZKPia/OJl+GzV83kwqdgyeqp4efWMSH56t3L1A+1bwDHB+2mUJpXuHzOrBwM6goYfuT1
+         d6JA==
+X-Gm-Message-State: AOAM530x5eS2XJMjM/9UA/QisWGgwCe6OQB7t+4rcrLpJkqe3lNEdrc4
+        +Y85vlBms5ei5EH8D7MU6XYH5RuKGB8QASdAVZbdkA==
+X-Google-Smtp-Source: ABdhPJzPWa034XkRwg//pBCjxXu5M5VNgmFsdfDouuOwSLkWT3hWBG8JlR7tWzMD7mzfvjmnqUYzmNU5HjyFeghLjpk=
+X-Received: by 2002:ac8:5c06:: with SMTP id i6mr1441095qti.343.1626135913802;
+ Mon, 12 Jul 2021 17:25:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <1625798873-55442-1-git-send-email-chengshuyi@linux.alibaba.com>
-In-Reply-To: <1625798873-55442-1-git-send-email-chengshuyi@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 12 Jul 2021 17:01:59 -0700
-Message-ID: <CAEf4BzY2cdT44bfbMus=gei27ViqGE1BtGo6XrErSsOCnqtVJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/2] libbpf: Introduce 'btf_custom_path' to 'bpf_obj_open_opts'
-To:     Shuyi Cheng <chengshuyi@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
+References: <E1m2y9R-0005wP-7n@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1m2y9R-0005wP-7n@rmk-PC.armlinux.org.uk>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 13 Jul 2021 02:25:03 +0200
+Message-ID: <CAPv3WKf8bYkPTtQ-t7MYcDo1LVsHWA5KPDLsT6sZJmSNRsFJfg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: mvpp2: deny disabling autoneg for
+ 802.3z modes
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 8, 2021 at 7:48 PM Shuyi Cheng <chengshuyi@linux.alibaba.com> wrote:
+Hi,
+
+pon., 12 lip 2021 o 17:47 Russell King (Oracle)
+<rmk+kernel@armlinux.org.uk> napisa=C5=82(a):
 >
-> Patch 1: Add 'btf_custom_path' to 'bpf_obj_open_opts', allow developers
-> to use custom btf to perform CO-RE relocation.
+> The documentation for Armada 8040 says:
 >
-> Patch 2: Fixed the memory leak problem pointed out by Andrii.
+>   Bit 2 Field InBandAnEn In-band Auto-Negotiation enable. ...
+>   When <PortType> =3D 1 (1000BASE-X) this field must be set to 1.
+>
+> We presently ignore whether userspace requests autonegotiation or not
+> through the ethtool ksettings interface. However, we have some network
+> interfaces that wish to do this. To offer a consistent API across
+> network interfaces, deny the ability to disable autonegotiation on
+> mvneta hardware when in 1000BASE-X and 2500BASE-X.
 >
 
-Please note that the cover letter should have a high-level overview of
-what the set of patches you are sending is doing, not just a
-changelog. So in this case, as an example for the future
-contributions, I'd write something like this:
+s/mvneta/mvpp2/
 
-```
-This patch set adds the ability to point to a custom BTF for the
-purposes of BPF CO-RE relocations. This is useful for using BPF CO-RE
-on old kernels that don't yet natively support kernel (vmlinux) BTF
-and thus libbpf needs application's help in locating kernel BTF
-generated separately from the kernel itself. This was already possible
-to do through bpf_object__load's attribute struct, but that makes it
-inconvenient to use with BPF skeleton, which only allows to specify
-bpf_object_open_opts during the open step. Thus, add the ability to
-override vmlinux BTF at open time.
+With that change you can add my:
+Acked-by: Marcin Wojtas <mw@semihalf.com>
 
-Patch #1 adds libbpf changes. Patch #2 fixes pre-existing memory leak
-detected during the code review. Patch #3 switches existing selftests
-to using open_opts for custom BTF.
-```
+Thanks,
+Marcin
 
-BTW, see the description above about selftests (fictional patch #3).
-Please update selftests core_autosize.c and core_reloc.c to use the
-new functionality instead of load_attr.target_btf_path. It's a general
-rule to always add a new test or update existing test to utilize newly
-added functionality. That way we can know that it actually works as
-expected.
-
-
-> Changelog:
-> ----------
+> This means the only way to switch between 2500BASE-X and 1000BASE-X
+> on SFPs that support this will be:
 >
-> v2: https://lore.kernel.org/bpf/CAEf4Bza_ua+tjxdhyy4nZ8Boeo+scipWmr_1xM1pC6N5wyuhAA@mail.gmail.com/T/#mf9cf86ae0ffa96180ac29e4fd12697eb70eccd0f
-> v2->v3:
-> --- Load the BTF specified by btf_custom_path to btf_vmlinux_override
->     instead of btf_bmlinux.
-> --- Fix the memory leak that may be introduced by the second version
->     of the patch.
-> --- Add a new patch to fix the possible memory leak caused by
->     obj->kconfig.
+>  # ethtool -s ethX advertise 0x20000006000 # 1000BASE-X Pause AsymPause
+>  # ethtool -s ethX advertise 0xe000        # 2500BASE-X Pause AsymPause
 >
-> v1: https://lore.kernel.org/bpf/CAEf4BzaGjEC4t1OefDo11pj2-HfNy0BLhs_G2UREjRNTmb2u=A@mail.gmail.com/t/#m4d9f7c6761fbd2b436b5dfe491cd864b70225804
-> v1->v2:
-> -- Change custom_btf_path to btf_custom_path.
-> -- If the length of btf_custom_path of bpf_obj_open_opts is too long,
->    return ERR_PTR(-ENAMETOOLONG).
-> -- Add `custom BTF is in addition to vmlinux BTF`
->    with btf_custom_path field.
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> ---
+> net-next is currently closed, but I'd like to collect acks for this
+> patch. Thanks.
 >
-> Shuyi Cheng (2):
->   libbpf: Introduce 'btf_custom_path' to 'bpf_obj_open_opts'
->   libbpf: Fix the possible memory leak caused by obj->kconfig
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 >
->  tools/lib/bpf/libbpf.c | 52 ++++++++++++++++++++++++++++++++++++++++++++++----
->  tools/lib/bpf/libbpf.h |  6 +++++-
->  2 files changed, 53 insertions(+), 5 deletions(-)
->
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
+t/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 3229bafa2a2c..878fb17dea41 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -6269,6 +6269,15 @@ static void mvpp2_phylink_validate(struct phylink_=
+config *config,
+>                 if (!mvpp2_port_supports_rgmii(port))
+>                         goto empty_set;
+>                 break;
+> +       case PHY_INTERFACE_MODE_1000BASEX:
+> +       case PHY_INTERFACE_MODE_2500BASEX:
+> +               /* When in 802.3z mode, we must have AN enabled:
+> +                * Bit 2 Field InBandAnEn In-band Auto-Negotiation enable=
+. ...
+> +                * When <PortType> =3D 1 (1000BASE-X) this field must be =
+set to 1.
+> +                */
+> +               if (!phylink_test(state->advertising, Autoneg))
+> +                       goto empty_set;
+> +               break;
+>         default:
+>                 break;
+>         }
 > --
-> 1.8.3.1
+> 2.20.1
 >
