@@ -2,187 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E852C3C7437
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 18:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 711553C746E
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 18:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230074AbhGMQUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 12:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
+        id S229867AbhGMQ1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 12:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229978AbhGMQT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 12:19:59 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97694C0613DD;
-        Tue, 13 Jul 2021 09:17:08 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id o139so35619328ybg.9;
-        Tue, 13 Jul 2021 09:17:08 -0700 (PDT)
+        with ESMTP id S229437AbhGMQ1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 12:27:13 -0400
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA6BC0613E9;
+        Tue, 13 Jul 2021 09:24:23 -0700 (PDT)
+Received: by mail-ot1-x32e.google.com with SMTP id 7-20020a9d0d070000b0290439abcef697so23070278oti.2;
+        Tue, 13 Jul 2021 09:24:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mKh8hxnnNX4ICQ6dn6i89iBSBLL0vLdc18PMBvIwanA=;
-        b=I3tbdibfE7JpwHDyExDbKRP5EoqnTMzUWVsA7HGxavvZo4PhJRka+vI/IbZ2nqP/eh
-         ouQ//gkTMJmZ7cCubCvFmwsqwv/gqqBEBUgU1F0eDs7malWIcKXRB3DXyajBB8v9ws4m
-         1Tp0wgKczBIazeZqFXnk5rSLrloZeOiUD6z/OY4NkE7mvNTiUqrbB4CTdoFoRa31P7+m
-         C43Bs+1MMwk9tYxbA5vuxZsgCE6uJ3Eg00CGOF4m6//LyQaEr2rapsreMfrBeMZfMZ8p
-         pExpJwNUi/SwZVIB1ZAdVsILsFFkSzQVpaR2Dp/P5EJnQRYdsUBdB/jj/fDKfsTZchBD
-         dZAQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xczKCTyuhtwoZjASSpqKqupD2qvCeMqp8pYEr+GbpNU=;
+        b=D7+eSBGkcYe9VJAe//BclzJZaP77VVPBtIXqCryLaHfmOTlOsOUQUhhy1RAeTS7B6P
+         6PY910s0Hd46vFDMGWRM4H1rA2MhXvxZp0z65kWIrMFOI9q+JjjLI/qw61Ut3z0MyGem
+         WqKFkLr21TK4zvyAM2R6vVJAMHjW7lfsnu5ZoPQRmWjSrM/x4UETCbnx3QMRjBAKoQcH
+         du7XKpCvrDdxTEdtCe9Dp/rxjkkNPqYSDUxkHm5EolWpg5WiQ73SrvF/Y4YprLHOo8t3
+         wEuBRy21csCxfkTnXbpETZv3bC6a7h4RNa2XgdQoGFoKTocewl87AQOo1e0lJe0Zoeco
+         589A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mKh8hxnnNX4ICQ6dn6i89iBSBLL0vLdc18PMBvIwanA=;
-        b=GUoPpJzmi/8JwE8QdinIkmQSNAQKJ0mUOU7rbcQdbWIMVcuH+aTt4sRFDFQQTu5cC8
-         RDZwKaAH89T/oldxFihYoW+5C9FnMEed2OmufiC9FP5Esmi2nm4Q5KM4wAndSn8GlZUd
-         y1Q0tuPwVWW4LJz+/2zs8tdsaH7Yi347Hh5+Too4uYqNLCEB8y6uzdyfrX6qv7KKqOql
-         tWUBJbPdvhaNQhGtu9djWApC6iC1F47EAy9Y0d3E4MaF2riaA2vU4lUBmStRdGdsA68v
-         5OjEgeDxu8/3A9ldJSxprpJC4b0RznHgxO1u2OBmVKnT+GV/gyAujhWJGffLOMhDWBg/
-         5IJQ==
-X-Gm-Message-State: AOAM532J4gGmF3APC6RCH5dyVBskZ7HjM+F8zVmZSkB0e4cLXdELlLky
-        yZrQETj76vQjGYkjyPeAx0EDSBJPnMD8lO38f2o=
-X-Google-Smtp-Source: ABdhPJyaLBE2utwiPYeIKxoGBQnpN0gS/ovWYsOG+a2AlWaZi+FSv98S4VSo9iNIvZje0RP11aeM1GdxRxqrCzjmJZE=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr6895486ybu.403.1626193027922;
- Tue, 13 Jul 2021 09:17:07 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xczKCTyuhtwoZjASSpqKqupD2qvCeMqp8pYEr+GbpNU=;
+        b=MZ4kh5L2vj+05xgAyTNFjNTJ33e+IqSxOK/Mzg0wHuRaAexozsQIFU5zeOpay6+GOr
+         NGCsjm7sl2VAb1lBZKfoA0Jsxqr6FLacUKhLvIiG6EjiJ0NeIEMDETZS7yJW6QzR+3kG
+         yLoX3XTidK+9DJFU0U7bZK1c8FrMN4rjNC9xexC8bLaFLLgKEI96Lje6asXPrzrrsorh
+         HFSkuL5cju8YGqN0MLAgOibi8rS5aaypDSLo8tuR60MoMFq0L0F4tWFq8Y42E+b8/9wi
+         X+pbcQSAGYyc1s0IdWGeJdFdw0/BsT8JLdQXqpEb8tWv8BH933sD/NcuZsyPjVMV5YRE
+         GcpQ==
+X-Gm-Message-State: AOAM532XCYU17YapFjXPEbDiC8VEoLof+xCXYSXbAkjDlf46NnoZCC4b
+        Hja0w6lm5eNOczkjdboB66kmJVu3Ia9fdg==
+X-Google-Smtp-Source: ABdhPJzTppdsBnWIA1Bvcrk2KcTfjzyz0Kad81Vma9wuL00XsCV/K3wYWyRovp//eCvs/0AUhpprGA==
+X-Received: by 2002:a9d:1b41:: with SMTP id l59mr4431102otl.8.1626193462339;
+        Tue, 13 Jul 2021 09:24:22 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id v11sm946831ook.7.2021.07.13.09.24.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jul 2021 09:24:21 -0700 (PDT)
+Subject: Re: [PATCH v2] net: Use nlmsg_unicast() instead of netlink_unicast()
+To:     Yajun Deng <yajun.deng@linux.dev>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, johannes.berg@intel.com, ast@kernel.org,
+        yhs@fb.com, 0x7f454c46@gmail.com, aahringo@redhat.com,
+        rdunlap@infradead.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mptcp@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-sctp@vger.kernel.org
+References: <20210713024824.14359-1-yajun.deng@linux.dev>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <55d96ad0-f9e3-ce17-0f7d-5e4c57faeac3@gmail.com>
+Date:   Tue, 13 Jul 2021 10:24:19 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
-In-Reply-To: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 13 Jul 2021 09:16:57 -0700
-Message-ID: <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
-Subject: Re: Ask for help about bpf map
-To:     "luwei (O)" <luwei32@huawei.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Ahern <dahern@digitalocean.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210713024824.14359-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 11:35 PM luwei (O) <luwei32@huawei.com> wrote:
->
-> Hi, List:
->
->        I am a beginner about bpf and working on XDP now. I meet a
-> problem and feel difficult to figure it out.
->
->        In my following codes, I use two ways to define my_map: in SEC
-> maps and SEC .maps respectively. When I load the xdp_kern.o file,
->
-> It has different results. The way I load is: ip link set dev ens3 xdp
-> obj xdp1_kern.o sec xdp1.
->
->        when I define my_map using SEC maps, it loads successfully but
-> fails to load using SEC .maps, it reports:
->
-> "
->
-> [12] TYPEDEF __u32 type_id=13
-> [13] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
-> [14] FUNC_PROTO (anon) return=2 args=(10 ctx)
-> [15] FUNC xdp_prog1 type_id=14
-> [16] INT char size=1 bits_offset=0 nr_bits=8 encoding=SIGNED
-> [17] ARRAY (anon) type_id=16 index_type_id=4 nr_elems=4
-> [18] VAR _license type_id=17 linkage=1
-> [19] DATASEC .maps size=0 vlen=1 size == 0
->
->
-> Prog section 'xdp1' rejected: Permission denied (13)!
->   - Type:         6
->   - Instructions: 9 (0 over limit)
->   - License:      GPL
->
-> Verifier analysis:
->
-> 0: (b7) r1 = 0
-> 1: (63) *(u32 *)(r10 -4) = r1
-> last_idx 1 first_idx 0
-> regs=2 stack=0 before 0: (b7) r1 = 0
-> 2: (bf) r2 = r10
-> 3: (07) r2 += -4
-> 4: (18) r1 = 0x0
+On 7/12/21 8:48 PM, Yajun Deng wrote:
+> diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
+> index 1b5b8af27aaf..ccacbde30a2c 100644
+> --- a/net/ipv4/raw_diag.c
+> +++ b/net/ipv4/raw_diag.c
+> @@ -119,11 +119,8 @@ static int raw_diag_dump_one(struct netlink_callback *cb,
+>  		return err;
+>  	}
+>  
+> -	err = netlink_unicast(net->diag_nlsk, rep,
+> -			      NETLINK_CB(in_skb).portid,
+> -			      MSG_DONTWAIT);
+> -	if (err > 0)
+> -		err = 0;
+> +	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
+> +
+>  	return err;
 
-this shouldn't be 0x0.
+can be shortened to:
 
-I suspect you have an old iproute2 which doesn't yet use libbpf to
-load BPF programs, so .maps definition is not yet supported. cc'ing
-netdev@vger, David and Toke
+	return nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
 
-> 6: (85) call bpf_map_lookup_elem#1
-> R1 type=inv expected=map_ptr
-> processed 6 insns (limit 1000000) max_states_per_insn 0 total_states 0
-> peak_states 0 mark_read 0
->
-> Error fetching program/map!
->
-> "
->
-> I tried to search google, and only found the following page:
->
-> https://stackoverflow.com/questions/67553794/what-is-variable-attribute-sec-means
->
-> Does anyone meet the same problem or help to explain this or provide me
-> some suggestions ? Thanks !
->
->
-> === xdp1_kern.c ===
->
-> #define KBUILD_MODNAME "foo"
-> #include <uapi/linux/bpf.h>
-> #include <linux/time.h>
-> #include <linux/in.h>
-> #include <linux/if_ether.h>
-> #include <linux/if_packet.h>
-> #include <linux/if_vlan.h>
-> #include <linux/ip.h>
-> #include <linux/ipv6.h>
-> #include <bpf/bpf_helpers.h>
->
-> struct {
->      __uint(type, BPF_MAP_TYPE_HASH);
->      __uint(max_entries, 1024);
->      __type(key, int);
->      __type(value, int);
-> } my_map SEC(".maps");
->
-> #if 0
-> #define PIN_GLOBAL_NS           2
-> struct bpf_elf_map {
->          __u32 type;
->          __u32 size_key;
->          __u32 size_value;
->          __u32 max_elem;
->          __u32 flags;
->          __u32 id;
->          __u32 pinning;
-> };
->
-> struct bpf_elf_map SEC("maps") my_map = {
->          .type = BPF_MAP_TYPE_HASH,
->          .size_key = sizeof(int),
->          .size_value = sizeof(int),
->          .pinning        = PIN_GLOBAL_NS,
->          .max_elem = 65535,
-> };
-> #endif
->
-> SEC("xdp1")
-> int xdp_prog1(struct xdp_md *ctx)
-> {
->      int key = 0;
->      struct map_elem *val;
->
->      val = bpf_map_lookup_elem(&my_map, &key);
->      if (val) {
->          return XDP_PASS;
->      }
->
->      return XDP_PASS;
-> }
->
-> char _license[] SEC("license") = "GPL";
->
-> --
-> Best Regards,
-> Lu Wei
->
+
+
+other than that it's a good cleanup:
+
+Reviewed-by: David Ahern <dsahern@kernel.org>
