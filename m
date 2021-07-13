@@ -2,91 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D59A3C767B
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 20:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E4E3C7689
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 20:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234103AbhGMSex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 14:34:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53088 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229478AbhGMSew (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Jul 2021 14:34:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9YX3KaYPNTTmjOqBKaIiOKVXMBstGoy/1b6T+CZC0ck=; b=H6tJizJFpKicvb4o0o7PicCO8U
-        NJHCGYB5r0WQBKZm2BePBdcb2fBVVqI/kojVDQljkJZUHVKxtWBNGpIqbDqS3E6eb8BuLQVWD80aR
-        iF0Oa0LyJzjlAM+b4QzwbgKhjPt8dI5x67rYCnaMS3ZtYvAHWxTRiTtMw4uRnRrqHofk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m3NCI-00DFC4-So; Tue, 13 Jul 2021 20:31:58 +0200
-Date:   Tue, 13 Jul 2021 20:31:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pablo@netfilter.org, ryder.lee@mediatek.com
-Subject: Re: [RFC 2/7] net: ethernet: mtk_eth_soc: add support for Wireless
- Ethernet Dispatch (WED)
-Message-ID: <YO3cHoEGwzpWDxnI@lunn.ch>
-References: <20210713160745.59707-1-nbd@nbd.name>
- <20210713160745.59707-3-nbd@nbd.name>
+        id S234172AbhGMSm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 14:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229500AbhGMSmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 14:42:24 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D84C0613DD;
+        Tue, 13 Jul 2021 11:39:33 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id z11so6723450iow.0;
+        Tue, 13 Jul 2021 11:39:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dvhTzTGuwGaxvYP49OCa62HCoxmtDuXHty07kjzc4tQ=;
+        b=p6lH0Pf9OmSWBFQl92qBpyl7xdKbccrbq7NjhAgHC62ORJ3ULLCws7qTa69osGy8iu
+         s/K9I8Olglp/uwNswevPsbwUoNKYGTVFwQ+BbwK5YiQLlybmy/HbOb+XM63SYyINJfoh
+         vXPWhKbLoGArVyOXDMl+JEjtzN2zz32Tb6pEdD/Tz6JhE1kbmLFysAK346kieRxVHq7D
+         9gksqPeVhIfxmvr22kO529va1RrB8yYhQU1ia2PpHj+q5kEmdAiBWCmLNU7hzm7QJZBZ
+         645Oyk+6vnYwhZfydXCzUMjRrM1DbqfO1IakvrKXyR76lPNF5ttk2Rz7bLRJyLZh5ICI
+         Elfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dvhTzTGuwGaxvYP49OCa62HCoxmtDuXHty07kjzc4tQ=;
+        b=psIPaC5HMH+bO4rfXClXinEbSVeeRPhtNblbG0+AUzsHmITwOk5a3pJwl+YrPJXwmE
+         qn7FKoocU6VnFkbqoX1TGSkvzO0OB5PiHGFcjLcEVCSnAUWPGxXeG+GVVGUhK3FDk6ep
+         Wj280F1v/HWm5L89ZPVjNoe1+SmkOiYMQ9iRSHL3/x1JCIS3+txHRDAh8ebecDlSNVDA
+         pUne4TE9kGk1tVws9hzn+Zrc0W9lAMJyuEZjljrrUDAvVuKv1vgqDsZtsnTtcuzQtnAA
+         /JEemOVjxc2+MJL0mT9H2auzNLHB7NrxCfX4RWoBmRgA7ACdOlpPQPG5bivoZ4UbxX7B
+         YRbw==
+X-Gm-Message-State: AOAM530AWa6hI+73szbKsC1MfqVKGhqKKdchlLoWEJBqdX4SJ29Lc3tG
+        jBQC35IyxIBgwE0zYIRTm9Z5q0D2x7LG6lE0UuU=
+X-Google-Smtp-Source: ABdhPJwpTjUp3UniqBaKrgdpc+yOJB6FaS6hkA5OBwgCiueGrCrCf7PVlzeQETyowNt2XoKgBr9TdfK/YQqEyQIzWmA=
+X-Received: by 2002:a02:2b21:: with SMTP id h33mr5075656jaa.31.1626201573037;
+ Tue, 13 Jul 2021 11:39:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210713160745.59707-3-nbd@nbd.name>
+References: <20210713084541.7958-1-andriy.shevchenko@linux.intel.com>
+ <20210713084541.7958-3-andriy.shevchenko@linux.intel.com> <YO1s+rHEqC9RjMva@kroah.com>
+ <YO12ARa3i1TprGnJ@smile.fi.intel.com> <YO13lSUdPfNGOnC3@kroah.com>
+In-Reply-To: <YO13lSUdPfNGOnC3@kroah.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 13 Jul 2021 20:39:22 +0200
+Message-ID: <CANiq72=vs8-88h3Z+BON=qA4CZQ1pS1nggnCFHDEHYyG+Y+3JQ@mail.gmail.com>
+Subject: Re: [PATCH v1 3/3] kernel.h: Split out container_of() and
+ typeof_memeber() macros
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, kunit-dev@googlegroups.com,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Thomas Graf <tgraf@suug.ch>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_wed.c b/drivers/net/ethernet/mediatek/mtk_wed.c
-> +
-> +static inline void
-> +wed_m32(struct mtk_wed_device *dev, u32 reg, u32 mask, u32 val)
-> +{
-> +	regmap_update_bits(dev->hw->regs, reg, mask | val, val);
-> +}
+On Tue, Jul 13, 2021 at 1:23 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> Life is messy and can not easily be partitioned into tiny pieces.  That
+> way usually ends up being even messier in the end...
 
-Please don't use inline functions in .c files. Let the compiler
-decide.
+I agree measurements would be ideal.
 
-> +static void
-> +mtk_wed_reset(struct mtk_wed_device *dev, u32 mask)
-> +{
-> +	int i;
-> +
-> +	wed_w32(dev, MTK_WED_RESET, mask);
-> +	for (i = 0; i < 100; i++) {
-> +		if (wed_r32(dev, MTK_WED_RESET) & mask)
-> +			continue;
-> +
-> +		return;
-> +	}
+Having said that, even if it makes no performance difference, I think
+it is reasonable to split things (within reason) and makes a bunch of
+other things easier, plus sometimes one can enforce particular
+conventions in the separate header (like I did when introducing
+`compiler_attributes.h`).
 
-It may be better to use something from iopoll.h
-
-> +static inline int
-> +mtk_wed_device_attach(struct mtk_wed_device *dev)
-> +{
-> +	int ret = -ENODEV;
-> +
-> +#ifdef CONFIG_NET_MEDIATEK_SOC_WED
-
-if (IS_ENABLED(CONFIG_NET_MEDIATEK_SOC_WED) is better, since it
-compiles the code, and then the optimizer throws away.
-
-> +	rcu_read_lock();
-> +	dev->ops = rcu_dereference(mtk_soc_wed_ops);
-> +	if (dev->ops)
-> +		ret = dev->ops->attach(dev);
-> +	rcu_read_unlock();
-> +
-> +	if (ret)
-> +		dev->ops = NULL;
-> +#endif
-> +
-> +	return ret;
-> +}
-
-  Andrew
+Cheers,
+Miguel
