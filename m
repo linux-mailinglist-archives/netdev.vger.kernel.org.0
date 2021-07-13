@@ -2,44 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB573C7512
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 18:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E2F3C7515
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 18:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbhGMQmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 12:42:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42560 "EHLO mail.kernel.org"
+        id S233014AbhGMQm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 12:42:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230087AbhGMQmx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230132AbhGMQmx (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 13 Jul 2021 12:42:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8856460FF4;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9502C6128E;
         Tue, 13 Jul 2021 16:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1626194403;
-        bh=dIzjORgVfyazFDF9NHfZplwarqYDhNoktd5DuLwYqvg=;
+        bh=DgebdvLjqE0RN6YbiHJD8f6gPMTe/vpQYXAV3mWqAeM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=m8BLs1jNhKqi+BNe2FhRQWCsCT8dOKxm5ljj6uRWgf6CLZu14uwZ25vWaJB1+gWzD
-         7pUccVLcs8E9Ett7EztpUcfbwhrxYZpNs9hU1mm+EyfWL/q0OGAqYRxFRFlDmIBAsp
-         isuzdSpU6VApLAzGyp0otz7/6HAHBXibedhQNcvL5H4Pe27FwqlLXB83uvvWrKjwfJ
-         mEdwzzwW+3BOAhuHiEvmSlh3ctRSBNDPK1jQtSWcqIcQMbslR00FnCAygsp0lGSjP+
-         13MmKzR8Euo10WCTaKyfRxB6oEmTQOSJCtFL/3IvZDi1RgWqrTXRh6CGGVnDM0vEAv
-         Cc9BwDfMP9YQw==
+        b=o9g9y5k8BWyexBWlAlBw+o/OTC10fjEfZuFF35eHJAGkc7We3ZZysecgwAN1taKk4
+         0hZGNbJQisiLLZZnN6YYANCSpaOg9P+L5o499TJqvvCgZKe6LsRsBZNmGnMeGvaTXu
+         t23MKygot+/chMiv12he1SX2NjSVRCzrbQqCQWRJj6YadT8nlQxlDw1byHDqx+ZZEi
+         lKwGHwPaRVpIAKis0V+UZygRSw6fMug/aHhXDWD7Y5KBTdftdIxUvBwbTb59CBr5k9
+         kOYof7XFoSfHly7VghpaKjeIZf9CMmoTUApu5FX/FiaJzY+h9x1ST7abRmjxGsyCBA
+         JwDGZ6w41063Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7F3EB60A49;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 89F4860CE4;
         Tue, 13 Jul 2021 16:40:03 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ocelot: fix switchdev objects synced for wrong
- netdev with LAG offload
+Subject: Re: [PATCH v2] net: Use nlmsg_unicast() instead of netlink_unicast()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162619440351.1289.6066043113914320699.git-patchwork-notify@kernel.org>
+Message-Id: <162619440355.1289.14646732123262264150.git-patchwork-notify@kernel.org>
 Date:   Tue, 13 Jul 2021 16:40:03 +0000
-References: <20210713093350.939559-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20210713093350.939559-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com
+References: <20210713024824.14359-1-yajun.deng@linux.dev>
+In-Reply-To: <20210713024824.14359-1-yajun.deng@linux.dev>
+To:     Yajun Deng <yajun.deng@linux.dev>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
+        johannes.berg@intel.com, ast@kernel.org, yhs@fb.com,
+        0x7f454c46@gmail.com, aahringo@redhat.com, rdunlap@infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mptcp@lists.linux.dev, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-sctp@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,19 +54,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 13 Jul 2021 12:33:50 +0300 you wrote:
-> The point with a *dev and a *brport_dev is that when we have a LAG net
-> device that is a bridge port, *dev is an ocelot net device and
-> *brport_dev is the bonding/team net device. The ocelot net device
-> beneath the LAG does not exist from the bridge's perspective, so we need
-> to sync the switchdev objects belonging to the brport_dev and not to the
-> dev.
+On Tue, 13 Jul 2021 10:48:24 +0800 you wrote:
+> It has 'if (err >0 )' statement in nlmsg_unicast(), so use nlmsg_unicast()
+> instead of netlink_unicast(), this looks more concise.
+> 
+> v2: remove the change in netfilter.
+> 
+> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: ocelot: fix switchdev objects synced for wrong netdev with LAG offload
-    https://git.kernel.org/netdev/net/c/e56c6bbd98dc
+  - [v2] net: Use nlmsg_unicast() instead of netlink_unicast()
+    https://git.kernel.org/netdev/net/c/01757f536ac8
 
 You are awesome, thank you!
 --
