@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B541E3C7012
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FFD3C7014
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbhGMMEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 08:04:01 -0400
-Received: from relay.sw.ru ([185.231.240.75]:54432 "EHLO relay.sw.ru"
+        id S236080AbhGMMEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 08:04:06 -0400
+Received: from relay.sw.ru ([185.231.240.75]:54452 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235797AbhGMMEB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Jul 2021 08:04:01 -0400
+        id S235797AbhGMMEG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Jul 2021 08:04:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=XdVSeYsWM6gpkohRLdjfHrqyvOYT/lKERJYnjF+csFw=; b=yJ3he1RbKYdlrK/Y8YO
-        rGj7smjCQp2KnyoyEWpCSveyvJhUjsoDrxlNA72QxeHxO+/nqRuZA1poxEwj/LY1I+N72D6ks+GNY
-        YGHNv/FlKvRdunOeDJbbYcGjIe3n3TP9oeTjm9186KoReM/sVRtIKjOKeQY8UsYVVtUAGGIT8bk=;
+        :From; bh=WqHA6WCcYZ0072a3tlO4GBh019ffg4nrngZQQG462K0=; b=TqBoTNbgYrfOncHqcYZ
+        7FD73wF5nnlV/p1FvuqAr0wyZcmX7Z0KD5QUtd6qHQM8kb/E+yJALdquWZX836T7PSFzmkWPRINib
+        ttHZwdfHLPwhrvg9g7k5HcmLod/XwS7ccrc8diri18hq6VARl6EwvXjPF/+44RgZedqOso6r4jQ=;
 Received: from [10.93.0.56]
         by relay.sw.ru with esmtp (Exim 4.94.2)
         (envelope-from <vvs@virtuozzo.com>)
-        id 1m3H63-003pDM-9n; Tue, 13 Jul 2021 15:01:07 +0300
+        id 1m3H6B-003pDZ-C4; Tue, 13 Jul 2021 15:01:15 +0300
 From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH NET v4 0/1] ipv6: allocate enough headroom in
+Subject: [PATCH NET v4 1/1] ipv6: allocate enough headroom in
  ip6_finish_output2()
 To:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
@@ -30,12 +30,13 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <e44bfeb9-5a5a-9f44-12bd-ec3d61eb3a14@virtuozzo.com>
-Message-ID: <8bad3fda-2f74-75d7-8461-e49a7e6fdbd9@virtuozzo.com>
-Date:   Tue, 13 Jul 2021 15:01:06 +0300
+ <cover.1626177047.git.vvs@virtuozzo.com>
+Message-ID: <dc51dab2-8434-9f88-d6cd-4e6754383413@virtuozzo.com>
+Date:   Tue, 13 Jul 2021 15:01:14 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <e44bfeb9-5a5a-9f44-12bd-ec3d61eb3a14@virtuozzo.com>
+In-Reply-To: <cover.1626177047.git.vvs@virtuozzo.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -43,39 +44,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recently Syzkaller found one more issue on RHEL7-based OpenVz kernels.
-During its investigation I've found that upstream is affected too. 
+When TEE target mirrors traffic to another interface, sk_buff may
+not have enough headroom to be processed correctly.
+ip_finish_output2() detect this situation for ipv4 and allocates
+new skb with enogh headroom. However ipv6 lacks this logic in
+ip_finish_output2 and it leads to skb_under_panic:
 
-TEE target send sbk with small headroom into another interface which requires
-an increased headroom.
+ skbuff: skb_under_panic: text:ffffffffc0866ad4 len:96 put:24
+ head:ffff97be85e31800 data:ffff97be85e317f8 tail:0x58 end:0xc0 dev:gre0
+ ------------[ cut here ]------------
+ kernel BUG at net/core/skbuff.c:110!
+ invalid opcode: 0000 [#1] SMP PTI
+ CPU: 2 PID: 393 Comm: kworker/2:2 Tainted: G           OE     5.13.0 #13
+ Hardware name: Virtuozzo KVM, BIOS 1.11.0-2.vz7.4 04/01/2014
+ Workqueue: ipv6_addrconf addrconf_dad_work
+ RIP: 0010:skb_panic+0x48/0x4a
+ Call Trace:
+  skb_push.cold.111+0x10/0x10
+  ipgre_header+0x24/0xf0 [ip_gre]
+  neigh_connected_output+0xae/0xf0
+  ip6_finish_output2+0x1a8/0x5a0
+  ip6_output+0x5c/0x110
+  nf_dup_ipv6+0x158/0x1000 [nf_dup_ipv6]
+  tee_tg6+0x2e/0x40 [xt_TEE]
+  ip6t_do_table+0x294/0x470 [ip6_tables]
+  nf_hook_slow+0x44/0xc0
+  nf_hook.constprop.34+0x72/0xe0
+  ndisc_send_skb+0x20d/0x2e0
+  ndisc_send_ns+0xd1/0x210
+  addrconf_dad_work+0x3c8/0x540
+  process_one_work+0x1d1/0x370
+  worker_thread+0x30/0x390
+  kthread+0x116/0x130
+  ret_from_fork+0x22/0x30
 
-ipv4 handles this problem in ip_finish_output2() and creates new skb with enough headroom,
-though ip6_finish_output2() lacks this logic.
-
-Suzkaller created C reproducer, it can be found in v1 cover-letter 
-https://lkml.org/lkml/2021/7/7/467
-
-v4 changes:
- fixed skb_set_owner_w() call: it should set sk on new nskb
-
-v3 changes:
- now I think it's better to separate bugfix itself and creation of new helper.
- now bugfix does not create new inline function. Unlike from v1 it creates new skb
- only when it is necessary, i.e. for shared skb only.
- In case of failure it updates IPSTATS_MIB_OUTDISCARDS counter
- Patch set with new helper will be sent separately.
-
-v2 changes: 
- new helper was created and used in ip6_finish_output2 and in ip6_xmit()
- small refactoring in changed functions: commonly used dereferences was replaced by variables
-
-
-Vasily Averin (1):
-  ipv6: allocate enough headroom in ip6_finish_output2()
-
+Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+---
  net/ipv6/ip6_output.c | 28 ++++++++++++++++++++++++++++
  1 file changed, 28 insertions(+)
 
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index ff4f9eb..25144c7 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -60,10 +60,38 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ {
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct net_device *dev = dst->dev;
++	unsigned int hh_len = LL_RESERVED_SPACE(dev);
++	int delta = hh_len - skb_headroom(skb);
+ 	const struct in6_addr *nexthop;
+ 	struct neighbour *neigh;
+ 	int ret;
+ 
++	/* Be paranoid, rather than too clever. */
++	if (unlikely(delta > 0) && dev->header_ops) {
++		/* pskb_expand_head() might crash, if skb is shared */
++		if (skb_shared(skb)) {
++			struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
++
++			if (likely(nskb)) {
++				if (skb->sk)
++					skb_set_owner_w(nskb, skb->sk);
++				consume_skb(skb);
++			} else {
++				kfree_skb(skb);
++			}
++			skb = nskb;
++		}
++		if (skb &&
++		    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
++			kfree_skb(skb);
++			skb = NULL;
++		}
++		if (!skb) {
++			IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTDISCARDS);
++			return -ENOMEM;
++		}
++	}
++
+ 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
+ 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
+ 
 -- 
 1.8.3.1
 
