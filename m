@@ -2,130 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56FFD3C7014
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83373C701A
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236080AbhGMMEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 08:04:06 -0400
-Received: from relay.sw.ru ([185.231.240.75]:54452 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235797AbhGMMEG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Jul 2021 08:04:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=WqHA6WCcYZ0072a3tlO4GBh019ffg4nrngZQQG462K0=; b=TqBoTNbgYrfOncHqcYZ
-        7FD73wF5nnlV/p1FvuqAr0wyZcmX7Z0KD5QUtd6qHQM8kb/E+yJALdquWZX836T7PSFzmkWPRINib
-        ttHZwdfHLPwhrvg9g7k5HcmLod/XwS7ccrc8diri18hq6VARl6EwvXjPF/+44RgZedqOso6r4jQ=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m3H6B-003pDZ-C4; Tue, 13 Jul 2021 15:01:15 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH NET v4 1/1] ipv6: allocate enough headroom in
- ip6_finish_output2()
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <e44bfeb9-5a5a-9f44-12bd-ec3d61eb3a14@virtuozzo.com>
- <cover.1626177047.git.vvs@virtuozzo.com>
-Message-ID: <dc51dab2-8434-9f88-d6cd-4e6754383413@virtuozzo.com>
-Date:   Tue, 13 Jul 2021 15:01:14 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S236085AbhGMMIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 08:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235797AbhGMMIB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 08:08:01 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EECCC0613DD;
+        Tue, 13 Jul 2021 05:05:10 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id k184so34335242ybf.12;
+        Tue, 13 Jul 2021 05:05:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G4qUuiRcnCqECtHAPnwTFpmFpYXByDpjZoDpTuZyyA0=;
+        b=m/+o0ouN8yGbzHGH+fsTvse9H7ZEqDZwjDRjh9TWqyhEcJI28Ywq2C6WgRHl7VUVqk
+         dRux8kDtNTCWmv1K14fGv+U8qb6I/3tE/AMhMs5Hd+BjxxiD1QeTyrd6iYc4PmM9wCwm
+         Tgn3BPqYifaSbHpAGcnYiJHQWC9CYGZkKPirQPjak+iwqvkZYd9XHe/ZFiARBO7BMNzh
+         JJSsGRMrKjC92G+tVcD4R6yRHNkjms3DvKxHQzdqdIRrs/5yHW4HwHrYXEF0DYLlnVXz
+         3RUVzivnJznL2Hrr8HIkO84Hg8nAzvyOD1L8AxysH2Gt3HmL14yX8HoeFfRotr17hOYw
+         DD0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G4qUuiRcnCqECtHAPnwTFpmFpYXByDpjZoDpTuZyyA0=;
+        b=W//3IAOBx3y1+A7UG28Lj6wIPjAOlunT4PotCvYU0AdNuSwuFkFpCnW2Oit8U9QV1t
+         ry1K7ez7Smg/bOBbfbRBRMH2nU3N8pq9aSZrRqxogqVwMVorItLCqedMB3BMOL593rHR
+         eK4HENqYGma7S7svuVtNSNJ3COjdeEXYdDbH6dRSs+YrJkvisT5JLH5ij0Ni0+494+Vc
+         PqZFsw3d33I+OHOVd+c8bfwooMwrUYwGxc/6UtBOmcVx5QHOvIYqj4bfpabfo5422Prb
+         GMW0+ngf2sl8UB01gggCXini7+rIM/uCkYdRCa0NCDw7bYwencs4DEdMxoacgv6MCFjY
+         UpcA==
+X-Gm-Message-State: AOAM532C/QlE/JCD4wD53fBOtpqNSe07bd/fKc6HTuFLWYs9Vw+QiQmx
+        UDuWUlHmyqnwjNB6fE6kxlmWNLftSQ/OxIRnSAE=
+X-Google-Smtp-Source: ABdhPJxzbiMIFK6e9wYRrK4smZN209wow+vMaQRxI8Sn+Una/ZyJF+g1mVl1oHxCN5MYCBuxySSi/En7yAzSI+7pyXI=
+X-Received: by 2002:a25:7415:: with SMTP id p21mr5056281ybc.464.1626177909786;
+ Tue, 13 Jul 2021 05:05:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <cover.1626177047.git.vvs@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210713094158.450434-1-mudongliangabcd@gmail.com>
+ <CAKXUXMwMvWmS1jMfGe15tJKXpKdqGnhjsOhBKPkQ6_+twZpKxA@mail.gmail.com> <CAD-N9QUipQHb7WS1V=3MXmuO4uweYqX-=BMfmV_fUVhSxqXFHA@mail.gmail.com>
+In-Reply-To: <CAD-N9QUipQHb7WS1V=3MXmuO4uweYqX-=BMfmV_fUVhSxqXFHA@mail.gmail.com>
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Date:   Tue, 13 Jul 2021 14:04:58 +0200
+Message-ID: <CAKXUXMyFRN=p-JtgFHXneTx8rF+tWLb4sBgjLRWdzZ_wz=pZiw@mail.gmail.com>
+Subject: Re: [PATCH] audit: fix memory leak in nf_tables_commit
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Moore <paul@paul-moore.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When TEE target mirrors traffic to another interface, sk_buff may
-not have enough headroom to be processed correctly.
-ip_finish_output2() detect this situation for ipv4 and allocates
-new skb with enogh headroom. However ipv6 lacks this logic in
-ip_finish_output2 and it leads to skb_under_panic:
+On Tue, Jul 13, 2021 at 1:52 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> On Tue, Jul 13, 2021 at 7:47 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+> >
+> > On Tue, Jul 13, 2021 at 11:42 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> > >
 
- skbuff: skb_under_panic: text:ffffffffc0866ad4 len:96 put:24
- head:ffff97be85e31800 data:ffff97be85e317f8 tail:0x58 end:0xc0 dev:gre0
- ------------[ cut here ]------------
- kernel BUG at net/core/skbuff.c:110!
- invalid opcode: 0000 [#1] SMP PTI
- CPU: 2 PID: 393 Comm: kworker/2:2 Tainted: G           OE     5.13.0 #13
- Hardware name: Virtuozzo KVM, BIOS 1.11.0-2.vz7.4 04/01/2014
- Workqueue: ipv6_addrconf addrconf_dad_work
- RIP: 0010:skb_panic+0x48/0x4a
- Call Trace:
-  skb_push.cold.111+0x10/0x10
-  ipgre_header+0x24/0xf0 [ip_gre]
-  neigh_connected_output+0xae/0xf0
-  ip6_finish_output2+0x1a8/0x5a0
-  ip6_output+0x5c/0x110
-  nf_dup_ipv6+0x158/0x1000 [nf_dup_ipv6]
-  tee_tg6+0x2e/0x40 [xt_TEE]
-  ip6t_do_table+0x294/0x470 [ip6_tables]
-  nf_hook_slow+0x44/0xc0
-  nf_hook.constprop.34+0x72/0xe0
-  ndisc_send_skb+0x20d/0x2e0
-  ndisc_send_ns+0xd1/0x210
-  addrconf_dad_work+0x3c8/0x540
-  process_one_work+0x1d1/0x370
-  worker_thread+0x30/0x390
-  kthread+0x116/0x130
-  ret_from_fork+0x22/0x30
+> > >
+> > > Reported-by: syzbot <syzkaller@googlegroups.com>
+> >
+> > As far as I see, the more default way is to reference to syzbot by:
+> >
+> > Reported-by: syzbot+[[20-letter hex reference]]@syzkaller.appspotmail.com
+> >
+>
+> Hi Lukas,
+>
+> this bug is not listed on the syzbot dashboard. I found this bug by
+> setting up a local syzkaller instance, so I only list syzbot other
+> than concrete syzbot id.
+>
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/ipv6/ip6_output.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+I see. Thanks for your explanation.
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index ff4f9eb..25144c7 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -60,10 +60,38 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
- {
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct net_device *dev = dst->dev;
-+	unsigned int hh_len = LL_RESERVED_SPACE(dev);
-+	int delta = hh_len - skb_headroom(skb);
- 	const struct in6_addr *nexthop;
- 	struct neighbour *neigh;
- 	int ret;
- 
-+	/* Be paranoid, rather than too clever. */
-+	if (unlikely(delta > 0) && dev->header_ops) {
-+		/* pskb_expand_head() might crash, if skb is shared */
-+		if (skb_shared(skb)) {
-+			struct sk_buff *nskb = skb_clone(skb, GFP_ATOMIC);
-+
-+			if (likely(nskb)) {
-+				if (skb->sk)
-+					skb_set_owner_w(nskb, skb->sk);
-+				consume_skb(skb);
-+			} else {
-+				kfree_skb(skb);
-+			}
-+			skb = nskb;
-+		}
-+		if (skb &&
-+		    pskb_expand_head(skb, SKB_DATA_ALIGN(delta), 0, GFP_ATOMIC)) {
-+			kfree_skb(skb);
-+			skb = NULL;
-+		}
-+		if (!skb) {
-+			IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTDISCARDS);
-+			return -ENOMEM;
-+		}
-+	}
-+
- 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
- 		struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
- 
--- 
-1.8.3.1
-
+Lukas
