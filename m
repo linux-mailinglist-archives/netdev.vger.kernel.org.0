@@ -2,101 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C436D3C6BA4
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 09:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA3D3C6BAA
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 09:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234267AbhGMHqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 03:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234202AbhGMHqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 03:46:54 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0D6C0613E9
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 00:44:04 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id a18so28556690ljk.6
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 00:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qFpyRO99ImWOuNCn8/HimLZ/mqydcab4g/ak3WshCTc=;
-        b=khgdXV5a2NA61l6XXxz9m4PC/1GNAAsugPaeSdcMZUL79dv9FJMpE4l5dlCNKVDy5o
-         E7ufI9zhtX95vIVXQ2LD0rjnfR8/DgcA07ygmXcXvlG7z6wG8LxAYq1GAEnpsgQ60w5i
-         J2LNk+95e7dKPqCPyXC7livf+WlEwYNkMIGuA=
+        id S234348AbhGMHtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 03:49:01 -0400
+Received: from mx-lax3-1.ucr.edu ([169.235.156.35]:34785 "EHLO
+        mx-lax3-1.ucr.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234121AbhGMHtA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 03:49:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1626162372; x=1657698372;
+  h=mime-version:references:in-reply-to:from:date:message-id:
+   subject:to:cc;
+  bh=/PDBt9wlRWM1iCLp+k/CLplY3xQTV5OM8VyXbBUUaog=;
+  b=AgJvR9YPOYo55oU70TRbahZTMKg6od1iLRg1jd/q48MB0yRH647MZzGo
+   J0kj0Itca9NCmteud7SkvM1D4IT24kdwANMioLhFdIcLFwMZp0Qk81k3U
+   dApJ92iDZQyQ0dHxDteJs4GxJGap15IX4vMRMHGIa9O7+I6syVgXkFhHe
+   D9UZ20fk33PGPNj8w3Hs1L3juNk5b7GpsuMdORnCky/hL8wqCWxii+Zna
+   7W7VUk/wPIA3rbF5sTyzNMEdF9Zo02seGtb/0gWCaZkbHG+1ct1fhDu/C
+   3Fna1tWb3W4YyVTzLvSq9/6kwyHZk/ptnN8+lA1KF14Gqcwn3Yf33u9TP
+   A==;
+IronPort-SDR: dHlj/TllYxveIShof/sAcdPj3C637vmUtmpiRpWQluC0pdxC0enlkgcxP3y/3rMsw+WbtNLUhe
+ Cf8g/sYRTNobvsrlqvtd3IeKKmkH22uEg2TKbh6DNe7H8mmjspwVteuTNP1YGCZx9WRi93zoNR
+ Mfy9FcqAT6Nnz39KpwD6JJvV2/iGLS6y2hOEZScdo+X6emRGyaAczBoGuLALeZdTirxmphjdkY
+ fS8NmJ3zpO1s29Xg6Uje3A1FTr3fd+x38STIwXAgpiAe7GvY2Gdmqi7T17w08iR5jOiILQBwfA
+ /sI=
+X-IPAS-Result: =?us-ascii?q?A2HjAgDOQ+1gdEihVdFaHgEBCxIMQIFOC4MiVmwCGIQuk?=
+ =?us-ascii?q?VsDlhuCa4JUgXwCCQEBAQ83CgQBAQMBA4ESgndEAm2CDAIlNAkOAgQBAQEBA?=
+ =?us-ascii?q?wIDAQEBAQUBAQYBAQEBAQEFBAEBAhABb4UvOQ2COCkBUhIDDVYBAQEBAQEBA?=
+ =?us-ascii?q?QEBAQEBAQEBIAIBAQEmAggFTQVnAQEBAxIRBFIOAgsLDQICJgICGwcSAQUBH?=
+ =?us-ascii?q?AYTCBqCUIMHD5s6gQQ9izJ/M4EBiCEBCQ2BXQYFDX4qhwmGYieCKYFLgQWBa?=
+ =?us-ascii?q?j6CYgSEdYJkBIMZTFUYe1JtQFMBAQGfCpp2gg8BBgKDChyKMpQCK4Nji1yFe?=
+ =?us-ascii?q?0KQWC2UR41AkxcLhUkQI4E4ghUzGiV/BmeBS1AZDod/hiwWg04zikskLwIBD?=
+ =?us-ascii?q?CkCBgoBAQMJh2cBAQ?=
+IronPort-PHdr: A9a23:SiugfxYabDvWuUTFlKq/HOv/LTGI0IqcDmcuAnoPtbtCf+yZ8oj4O
+ wSHvLMx1gePBNmQtawMy7KP9fy5CCpYudfJmUtBWaQEbwUCh8QSkl5oK+++Imq/EsTXaTcnF
+ t9JTl5v8iLzG0FUHMHjew+a+SXqvnYdFRrlKAV6OPn+FJLMgMSrzeCy/IDYbxlViDanbr5+M
+ gm6oR/MusQZjodvK6c8wQbNrndUZuha32xlKU+Xkhrm+su84Jtv+DlMtvw88MJNTb/0dLkiQ
+ 7xCCzQmPWE15Mn1uhTGUACC+HgSXHgInxRRGwTK4w30UZn3sivhq+pywzKaMtHsTbA1Qjut8
+ aFmQwL1hSgdNj459GbXitFsjK9evRmsqQBzz5LSbYqIL/d1YL/Tcs0GSmpARsZRVjJOAoWgb
+ 4sUEuENOf9Uo5Thq1cSqBezAxSnCuHyxT9SnnL50qM63OYhHw/I3wIuAswAv2jPodXpKKsfS
+ /y5wLXUwTjBaf5dxDfz6JLPchAkufyDXLNwftDWyUYzFwPKkFOQopHmMDOSy+QGrm+W7uVhV
+ OKolm4rtxx9rzq0y8cxlobJnJgZxU7Z+iVk2Ys4I8CzR0Fnb9C+CpRQqz2aOJVsQsMkW2xlt
+ ig0x6AYtZKmfyUG1IoqyhzeZvKIc4aF/xLuWeaPLDp6inxofLyyigu9/0WiyuPxV8e63lZJo
+ yZZkNTBqH4A2hrO4caJTft9+12u2TeJ1w3L8e5EJkc0lbbfK54gxL48jIYcsUPGHiPugEX5k
+ qmWdko5+ui08eTnZbPmpp6TNoNulw7xLKIjkdG8D+QgKgUCQXSX9OCm2LDg/UD1WqhGg/wrn
+ qXDsp3WO8IWrbOjDQBPyIYs8RO/Ai+j0NQfgHYIMkpIeAmCj4j1I1HOJ+34Deunj1Ssjjhrw
+ /fGM6XkAprXL3jDlK7tfbF660JB0QYzw9JS64xOBrEOJ/LzXUDxtNjGARMjLwO0xOPnBM181
+ oMYR22PHreUPL3OvVKM/O4iIOmBaJUItDv8NvQp/fzjgWEhlV8YZ6ap3J8XaH6iHvRhJkWUe
+ XXtg9YGEWcXogYyUe7nhUafUTFPfXa+Rbwz6SwmCI6+F4fMWpitgKCd3Ce8BpBWYH5JCkyRH
+ nj2aYWJQOkMaC2MLc97iDAEVqauS5Un1R6wsA/20b1nLvDb+n5QiZW28dFv7KXwkRwz8zExJ
+ dmR32zFG2R3mksQSjk5wbxlpkp82hGP3P4rreZfEIlj5vpOWQc3M9buyPEyX8DgXR+ZJ4ihV
+ V28BNiqHGdiHZoK39YSbhMlSJ2ZhRfZ0n/vWudN/4E=
+IronPort-HdrOrdr: A9a23:KR7So6yAbJeyArRdBqgtKrPwF71zdoMgy1knxilNoNJuA7Wlfq
+ GV7YwmPHDP+VMssR0b6LK90ey7MBDhHP1OgLX5X43SODUO0VHAROpfBMnZowEIcBeOkdK1u5
+ 0QFZSWy+ecMbG5t6zHCcWDfOrICePqnpyVuQ==
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-AV: E=Sophos;i="5.84,236,1620716400"; 
+   d="scan'208";a="53814363"
+Received: from mail-oo1-f72.google.com ([209.85.161.72])
+  by smtp-lax3-1.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 13 Jul 2021 00:46:11 -0700
+Received: by mail-oo1-f72.google.com with SMTP id k13-20020a4ad10d0000b029025ec20a413eso2066314oor.11
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 00:46:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qFpyRO99ImWOuNCn8/HimLZ/mqydcab4g/ak3WshCTc=;
-        b=hLu3cLNz76/agTAEj9OwIofW8x89qPQqRVE/n8bIAa4l1LVSFKtgs1WXgIDqav1eE5
-         bFvPWm+cH1LdjmQwC+V/efNLARn4xePBeYK7xWD6+dmFgtCz0WjthDaVyF0cxFFqX0J1
-         rvusTnAWXjTFgjA7eEvWkCw4f3Tzb6D6ENKv0xz0UQf6oD4v50Baw8JnI/jkCDte6kUK
-         C0r5mncENP4T2LrfS7PoAu7m6CVXTujLq0lU3eU8+ckeDbIN/DLhXPg/htcuiTm7P9za
-         8WNL1Riv65IQ0DVk/YeHai5TdaGeYQD2Bk0K0UGf2+IGO9CUBxqowB5m8vroQ1p2BiNt
-         rniQ==
-X-Gm-Message-State: AOAM532MUjWRxbQsamdoo+hWRF/bzdUxBmNy06aELq2tx353blot94VY
-        7Hx/sgTBNC3Q9Xbk8vdoVyCbhg==
-X-Google-Smtp-Source: ABdhPJwLnscA/GazgXVnd9ZedkkhutIuxZqTAlB1ciTtJ/1jQBbYkpmoz7G+LVEMNjVpqO2JVGQ29w==
-X-Received: by 2002:a2e:8110:: with SMTP id d16mr3052375ljg.42.1626162242723;
-        Tue, 13 Jul 2021 00:44:02 -0700 (PDT)
-Received: from cloudflare.com (79.191.183.149.ipv4.supernova.orange.pl. [79.191.183.149])
-        by smtp.gmail.com with ESMTPSA id b14sm1392754lfb.132.2021.07.13.00.44.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jul 2021 00:44:02 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf] bpf, sockmap, udp: sk_prot needs inuse_idx set for proc stats
-Date:   Tue, 13 Jul 2021 09:44:01 +0200
-Message-Id: <20210713074401.475209-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.31.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E0c/itnJRqvseiRzZWaYFdOYbaZVWfzwqyJIgaHRkI4=;
+        b=sO1sUxX/EIFtS38HCtE6GBlMPGNuFN9K9dJL1iYohpEUr0A0gKPZBG+1kc1KbZM4zn
+         7Tz7ir+iduZ9mO09aJGWWKZ94yQW8WURUmhKjhYu2ATVQ2HNLML3P0EiNi0wzikpEKhk
+         LaL/7M3OeCjcVcfPuymW/UCEjjuKOiFJXUrWMgvPqEQkcSjNsrDoNEAh5qwnS5GBdPAb
+         7zCC/MG8MFftAyndjgaseIoIg+Cbw/D+XRVd41QRCLZdPb0Fy8cC8LsVq6kXFC2VizML
+         Ax/KkD7XPgO9MHVawUadowPwEt+fR3N6Ps7A+z7xizgpLLaguHoE1rmX4AqKgulmgNkM
+         yjGg==
+X-Gm-Message-State: AOAM531Q5jbkaixK7Lt2iPRakRLh3LnH4ObAQSuOICAK658re1htsPka
+        R6vCrKKCPXvJTBkWGhPhKLlIAYanHJ8e82P5lymZOzJSeqD66GIoh7uQRaV5n10VLLJs/v9aL4h
+        +4PmaCFC2KSNUmrG/oKH+wCYuAGwh8rzo7A==
+X-Received: by 2002:a05:6830:1e42:: with SMTP id e2mr2537582otj.135.1626162369808;
+        Tue, 13 Jul 2021 00:46:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwBf6asctnycGHrf0aHsUd7mMNxKyN11KyP8TucFVKHbFU6gvW9YJZO6cqXJ6+ucEspUXAJ06v7fWy8ISSDRwE=
+X-Received: by 2002:a05:6830:1e42:: with SMTP id e2mr2537573otj.135.1626162369633;
+ Tue, 13 Jul 2021 00:46:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAE1SXrtrg4CrWg_rZLUHqWWFHkGnK5Ez0PExJq8-A9d5NjE_-w@mail.gmail.com>
+ <YO0Z7s8p7CoetxdW@kroah.com> <CAE1SXrv2Et9icDf2NesjWmrwbjXL8067Y=D3RnwqpEeZT4OgTg@mail.gmail.com>
+ <e1f71c33-a5dd-82b1-2dce-be4f052d6aa6@pengutronix.de>
+In-Reply-To: <e1f71c33-a5dd-82b1-2dce-be4f052d6aa6@pengutronix.de>
+From:   Xiaochen Zou <xzou017@ucr.edu>
+Date:   Tue, 13 Jul 2021 00:46:07 -0700
+Message-ID: <CAE1SXrv3Ouwt4Y9NEWGi0WO701w1YP1ruMSxraZr4PZTGsUZgg@mail.gmail.com>
+Subject: Re: Use-after-free access in j1939_session_deactivate
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Greg KH <greg@kroah.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org, kernel@pengutronix.de,
+        linux-can@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Proc socket stats use sk_prot->inuse_idx value to record inuse sock stats.
-We currently do not set this correctly from sockmap side. The result is
-reading sock stats '/proc/net/sockstat' gives incorrect values. The
-socket counter is incremented correctly, but because we don't set the
-counter correctly when we replace sk_prot we may omit the decrement.
+j1939_session_destroy() will free both session and session->priv. It
+leads to multiple use-after-free read and write in
+j1939_session_deactivate() when session was freed in
+j1939_session_deactivate_locked(). The free chain is
+j1939_session_deactivate_locked()->j1939_session_put()->__j1939_session_release()->j1939_session_destroy().
+To fix this bug, I moved j1939_session_put() behind
+j1939_session_deactivate_locked() and guarded it with a check of
+active since the session would be freed only if active is true.
 
-To get the correct inuse_idx value move the core_initcall that initializes
-the udp proto handlers to late_initcall. This way it is initialized after
-UDP has the chance to assign the inuse_idx value from the register protocol
-handler.
+Signed-off-by: Xiaochen Zou <xzou017@ucr.edu>
 
-Fixes: 5e21bb4e8125 ("bpf, test: fix NULL pointer dereference on invalid expected_attach_type")
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index e5f1a56994c6..b6448f29a4bd 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -1018,7 +1018,6 @@ static bool
+j1939_session_deactivate_locked(struct j1939_session *session)
 
-Missing bit from John's fix [1].
+        list_del_init(&session->active_session_list_entry);
+        session->state = J1939_SESSION_DONE;
+-       j1939_session_put(session);
+    }
 
-[1] https://lore.kernel.org/bpf/20210712195546.423990-1-john.fastabend@gmail.com/T/#mba9e0b6aa8dd0c01d7421a084c62ec93c9eea764
+    return active;
+@@ -1031,6 +1030,9 @@ static bool j1939_session_deactivate(struct
+j1939_session *session)
+    j1939_session_list_lock(session->priv);
+    active = j1939_session_deactivate_locked(session);
+    j1939_session_list_unlock(session->priv);
++   if (active) {
++       j1939_session_put(session);
++   }
 
-
- net/ipv4/udp_bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 45b8782aec0c..9f5a5cdc38e6 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -134,7 +134,7 @@ static int __init udp_bpf_v4_build_proto(void)
- 	udp_bpf_rebuild_protos(&udp_bpf_prots[UDP_BPF_IPV4], &udp_prot);
- 	return 0;
+    return active;
  }
--core_initcall(udp_bpf_v4_build_proto);
-+late_initcall(udp_bpf_v4_build_proto);
- 
- int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
+@@ -2021,6 +2023,7 @@ void j1939_simple_recv(struct j1939_priv *priv,
+struct sk_buff *skb)
+ int j1939_cancel_active_session(struct j1939_priv *priv, struct sock *sk)
  {
--- 
-2.31.1
+    struct j1939_session *session, *saved;
++   bool active;
 
+    netdev_dbg(priv->ndev, "%s, sk: %p\n", __func__, sk);
+    j1939_session_list_lock(priv);
+@@ -2030,7 +2033,10 @@ int j1939_cancel_active_session(struct
+j1939_priv *priv, struct sock *sk)
+        if (!sk || sk == session->sk) {
+            j1939_session_timers_cancel(session);
+            session->err = ESHUTDOWN;
+-           j1939_session_deactivate_locked(session);
++           active = j1939_session_deactivate_locked(session);
++           if (active) {
++               j1939_session_put(session);
++           }
+        }
+    }
+    j1939_session_list_unlock(priv);
+
+On Tue, Jul 13, 2021 at 12:35 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 7/13/21 9:30 AM, Xiaochen Zou wrote:
+> > j1939_session_destroy() will free both session and session->priv. It
+> > leads to multiple use-after-free read and write in
+> > j1939_session_deactivate() when session was freed in
+> > j1939_session_deactivate_locked(). The free chain is
+> > j1939_session_deactivate_locked()->
+> > j1939_session_put()->__j1939_session_release()->j1939_session_destroy().
+> > To fix this bug, I moved j1939_session_put() behind
+> > j1939_session_deactivate_locked() and guarded it with a check of
+> > active since the session would be freed only if active is true.
+>
+> Please include your Signed-off-by.
+> See
+> https://elixir.bootlin.com/linux/v5.12/source/Documentation/process/submitting-patches.rst#L356
+>
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+>
+
+
+-- 
+Xiaochen Zou
+PhD Student
+Department of Computer Science & Engineering
+University of California, Riverside
