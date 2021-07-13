@@ -2,112 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D453C7059
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 381C03C7083
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236245AbhGMMhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 08:37:05 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:10478 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbhGMMhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 08:37:03 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GPKjn2RcBzcbkr;
-        Tue, 13 Jul 2021 20:30:53 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Tue, 13 Jul 2021 20:34:10 +0800
-Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
- (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Tue, 13
- Jul 2021 20:34:09 +0800
-Subject: Re: [PATCH net-next 1/9] devlink: add documentation for hns3 driver
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <jiri@nvidia.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
-        <chenhao288@hisilicon.com>
-References: <1626053698-46849-1-git-send-email-huangguangbin2@huawei.com>
- <1626053698-46849-2-git-send-email-huangguangbin2@huawei.com>
- <20210712113243.2d786fe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
-Message-ID: <09d3972e-20d9-095e-ead3-b3ed7fcf2767@huawei.com>
-Date:   Tue, 13 Jul 2021 20:34:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S236203AbhGMMkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 08:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236137AbhGMMkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 08:40:11 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC70C0613DD;
+        Tue, 13 Jul 2021 05:37:21 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626179839;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=m8rIX22IAGVfsJ3iDpBk4wsSFJiQUHqAci2MV1lrwys=;
+        b=i/+tzeMzZdY4Ywz4r+O+7GR+rNL4PqoEkQl4XEDqxxeD1/ortCaI3dnPMn6rCzQh355hT8
+        m/jcbO8xaUkbSQpRlPcPrq+Xb6GCIMyebdI4zMRv0iBfpadceUpjHCcQPs683lwG/1sjEc
+        3JjcZQQdRhVL3D5Ebn7yXLt6FdobgCE=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, yajun.deng@linux.dev,
+        johannes.berg@intel.com, ryazanov.s.a@gmail.com, avagin@gmail.com,
+        vladimir.oltean@nxp.com, roopa@cumulusnetworks.com,
+        zhudi21@huawei.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 0/2] net: Use nlmsg_{multicast, unicast} that contain if statement
+Date:   Tue, 13 Jul 2021 20:36:52 +0800
+Message-Id: <20210713123654.31174-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20210712113243.2d786fe3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.102.67]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Patch1: use nlmsg_{multicast, unicast} instead of netlink_
+{broadcast,unicast} in rtnetlink.
+Patch2: The caller no need deal with the if statements and use
+the rename function.
 
+Yajun Deng (2):
+  rtnetlink: use nlmsg_{multicast, unicast} instead of
+    netlink_{broadcast,unicast}
+  net/sched: Remove unnecessary judgment statements
 
-On 2021/7/13 2:32, Jakub Kicinski wrote:
-> On Mon, 12 Jul 2021 09:34:50 +0800 Guangbin Huang wrote:
->> +Parameters
->> +==========
->> +
->> +The ``hns3`` driver implements the following driver-specific
->> +parameters.
->> +
->> +.. list-table:: Driver-specific parameters implemented
->> +   :widths: 10 10 10 70
->> +
->> +   * - Name
->> +     - Type
->> +     - Mode
->> +     - Description
->> +   * - ``rx_buf_len``
->> +     - U32
->> +     - driverinit
->> +     - Set rx BD buffer size.
->> +       * Now only support setting 2048 and 4096.
-> 
-> Can you elaborate further? If I was a user reading this I'd still have
-> little confidence what this does. Does it change the size of each
-> buffer put on the Rx ring between 2k and 4k? Why is that a devlink
-> feature, we configure rings via ethtool.
-> 
-Yes, we can add more detailed descriptions about this feature and tx_buf_size
-in V2. This devlink feature is to change the buffer size of each BD of Rx ring
-between 2KB and 4KB.
+ include/linux/rtnetlink.h |  2 +-
+ net/core/rtnetlink.c      | 13 +++++++------
+ net/sched/act_api.c       | 20 ++++++--------------
+ net/sched/cls_api.c       | 28 +++++++++++-----------------
+ net/sched/sch_api.c       | 18 ++++++------------
+ 5 files changed, 31 insertions(+), 50 deletions(-)
 
-Now ethtool -G paramter supports setting some ring configurations such as
-queue depth and so on，but not supports setting rx BD buffer size. And
-devlink can support this function.
+-- 
+2.32.0
 
-For another thing, setting rx BD buffer size needs to reload resource
-pool(for resource pool details, see the link: [1]) to take effect, so
-even if ethtool support this function, it still needs next reload to
-take effect. Now devlink supports reload operation(patch 6/9), so we can
-set rx BD buffer size via devlink, then do devlink reload operation to
-make it take effect.
-
-To sum up, we choose devlink to set rx BD buffer size.
-
->> +   * - ``tx_buf_size``
->> +     - U32
->> +     - driverinit
->> +     - Set tx spare buf size.
->> +
->> +       * The size is setted for tx bounce feature.
-> 
-> ... and what is the tx bounce feature?
-> .
-> 
-Tx bounce buffer feature is used for small size packet or frag. It adds a queue
-based tx shared bounce buffer to memcpy the small packet when the len of xmitted
-skb is below tx_copybreak(value to distinguish small size and normal size), and
-reduce the overhead of dma map and unmap when IOMMU is on. For more details, see
-link: [2], this devlink feature is setting tx bounce buffer size for it.
-
-
-1.  https://lore.kernel.org/patchwork/cover/816549/
-2.  https://patchwork.kernel.org/project/netdevbpf/patch/1623825377-41948-4-git-send-email-huangguangbin2@huawei.com/
