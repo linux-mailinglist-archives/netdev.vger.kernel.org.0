@@ -2,268 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0FD3C6D51
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 11:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13ED3C6D64
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 11:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235226AbhGMJ2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 05:28:18 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6920 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbhGMJ2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 05:28:15 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GPFWg6xfPz7C0B;
-        Tue, 13 Jul 2021 17:21:51 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 13 Jul 2021 17:25:13 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 13 Jul 2021 17:25:13 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH rfc v4 4/4] net: hns3: support skb's frag page recycling based on page pool
-Date:   Tue, 13 Jul 2021 17:24:32 +0800
-Message-ID: <1626168272-25622-5-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1626168272-25622-1-git-send-email-linyunsheng@huawei.com>
-References: <1626168272-25622-1-git-send-email-linyunsheng@huawei.com>
-MIME-Version: 1.0
+        id S235035AbhGMJbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 05:31:25 -0400
+Received: from mail-vi1eur05on2087.outbound.protection.outlook.com ([40.107.21.87]:26546
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234819AbhGMJbY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Jul 2021 05:31:24 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WzQ0axh9FZSMpYLY/yqaOIjeCoGF5bOEPnzff/1QEw6ybU3mNUPQG/g1e//ReC0aAN2Qa3t3i1ykDNaBpo2M5MI+Abo6PlgST4Qw8Ulkc87xgR8BMm1JXhTppkmmhBBsX1kvrJuEerYRUUZKn3FBQK7yGtfXbdB49G/QHlOdtIHYEkJReTcnYYcwprivjvK+sXpqlRxE6pQC5n00tMcMa1jM8vMvYhMKeFw0xYJn+QM37h287IRxNtNVyBczp2LfaSfpwtmkzqk7TSiFBgZEmF2C+D6qXIHNRq9/zx8vjBfU/3YfBtA2YHceXtC9aKp0aMkVxaouRah8t0mzjKVang==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mBSqsCdvCyblflGOv12u6EbIfLBZ8HlWB9gGAw+CmPU=;
+ b=niCyPJkeMOpmaXb2O8SndOcgW0hLLIvQaO6RzcdDkwGDpdF7/FnR5hbDhuHs7NODSRSI+a2Tbv/ABWD3YlWbDKy+DITCAOIBH6yALZEM2bQKcEKLctlhvq+8j5FDwWsP+TKgbuIWLs5Crfp4bKxcge4PsUHbKfaZ786fUBW0m4Yb2dnF6M0Y3/+fYEPLdCdIpctnZFP9kXaoTbAXfds26z15EvBLwVX1Vp464D6cQ3tE++NnZpqv872cigWGwJHKUQuE8ZMhPaOhIi9OsMTOIWVXeGeOzF2AJst1toX7LBB5NO0PEOk6vtljYOafV9UMcNoNYFER2Fvvu5+ujZoQLA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mBSqsCdvCyblflGOv12u6EbIfLBZ8HlWB9gGAw+CmPU=;
+ b=F2S4Zq4y52qUEkMHefi5+6k5k5B2DeLb2x4J/caVpdYfogV86Tc7UNOA9+tJZXu93tiylnpuVc2OlsmBAnq5w/+9y/6NMRyM9E+OfH0dtdp5ureaaU/lVmtfkfldvNzZyT+wr+JW6mbobV+udQ5sq005+k9xiUoL27rXPHB85mQ=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.22; Tue, 13 Jul
+ 2021 09:28:32 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::b1a0:d654:a578:53ab%7]) with mapi id 15.20.4308.027; Tue, 13 Jul 2021
+ 09:28:32 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: [PATCH net] net: marvell: prestera: if the LAG that we're joining is under a bridge, join it
+Date:   Tue, 13 Jul 2021 12:28:04 +0300
+Message-Id: <20210713092804.938365-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+X-ClientProxiedBy: PR2P264CA0030.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:101:1::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (82.76.66.29) by PR2P264CA0030.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101:1::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend Transport; Tue, 13 Jul 2021 09:28:31 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d507c9f3-5a7f-4516-56a1-08d945e094f8
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5136845F8D2F1C00E6716E13E0149@VI1PR04MB5136.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:359;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tiaWC7qlx8azxD6oSERrjSWtBfmv1EQgTpTKhJUuO8A6LFJwIYN/YKOtp1HPGNQKXIn+6hGjoGMChtaro0mLLQH+tD41OrmCjIV+v+BPa3kulP2cj3upRLXidziGfBSoH08PxuL0ZdCB4zm/Z+RKYaBei4cWGsIK/MmTtLXAXuVoDQSepQYxun8De8M6AUUXS1gmVq2Uko8XKyobHTB139EeR99oFZQGUjvuNctysODwd6UWf0qcXF3hQ5Pca/7lWRt63qeqMPYVaBCDR5u5MmvGVl/SwrGfgMl6+E9TZVgYv4asZqB0cwcZ7ZZiCnf/nLSBGRh1TaLHm+nOtd59D+0jxbQ9x/YpwmqgxmYUsBcnndOkh3AuVcbpEA40fZ+EIqB4PmBpG0/q6L3snUUwYUjsnSJsYYo0c9jkoI07cWgqJT2+DEGza4QUBqe4DDB301xd/P4JyQLZctfbCkQm/1mFUWu8Y8omHET4wagK9yaO2pTk85KVjcrHFM2mSXVibRh5H/Gov1Ox/0I/gmyGMgcBR4v1j6p7Bfl2DV2qrgINmBqVggyQpYbd4HioW7Jq8L46M3Ci6PlGkNbQjhg0RXjq3hWNmSAoPjgKqpKSDzkxSVJARv7j+MEvQckvXHQ63nzmdth1GFYO6C2TBpgtCW6xU5hDOYm/IxSe6LotljefoEwWfVsUqZ4nGiHCliZFxGUPU0H7GudUIYp57G4mVw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(346002)(376002)(396003)(136003)(66476007)(66946007)(186003)(52116002)(6666004)(5660300002)(1076003)(86362001)(26005)(6512007)(66556008)(6506007)(36756003)(44832011)(38100700002)(956004)(8676002)(316002)(8936002)(7416002)(4326008)(2616005)(38350700002)(6486002)(110136005)(2906002)(54906003)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?loYSotq8tbaHeFCUe+PwXzcpQlKfkG1TdnsLukCA0KZT0KAcRbHPqVgY7lh1?=
+ =?us-ascii?Q?OtkjmxRlqZXEOz1y40x0O2AgIdDcZvHVDbzEtAo3nAUHJIHfTWOXa+W7gSMX?=
+ =?us-ascii?Q?3CPKJMwFPRcHDp16amsBSLuD0JQEmWfUUCRkGKymWw6/sFHmMbf+ZW5LSKvQ?=
+ =?us-ascii?Q?9glxO0gxnnIYSLB6r6MGeM0DnxpeqSwa+OpWwaEBA+E/fdkEOFWJkVMuwXsI?=
+ =?us-ascii?Q?Y/kvSiT/jZb/QvXx0PmunAqQjPrZ5Hg5XVaBPw+69FPXOuukY4A+AppAS8l6?=
+ =?us-ascii?Q?YZJQ0lslJWMVSM67MJDWSg93jHhQbU7bstKhvKQOogwlBgSCL4zAeougoMZS?=
+ =?us-ascii?Q?BQreHLlBAMCtxGYQw3kxv1p1ZpuZffec2jSaIbWUt2RU00gNyKyODRaKfhJx?=
+ =?us-ascii?Q?3rRhQUJ9IiOZdYx9l6+EHbKjC694YoqxzJO2dQMt3OR/jufAErDn7NDQvAoO?=
+ =?us-ascii?Q?Q1G9bbmYf/o22WegeXvmMhkXHfZl9AWlpaRcd7xL28Vs+UUmRQ7p89oqDXAJ?=
+ =?us-ascii?Q?XSmma1tTPLXl/Zh+B6UmzfXjugxw44s/2zzSiKXa8aY3O5q4DLnMjM48Wp/p?=
+ =?us-ascii?Q?HuNVH7MB3THwkMxAgINzXAgg6TCmCh7+f4xH8MHG+ZO3Fl63W93hsPsiVuh6?=
+ =?us-ascii?Q?WiJTZ+yfNNSw1RVOPOPGYkyQDt3Dwxm9JmihkyoVSd0sRZKJ6WdUUX1oajkB?=
+ =?us-ascii?Q?Tzb3jcHygdAOcSyU+N8MHS6AMc0X/pfSdduGGuLMmzZDH1MFQ3EdVqcyEnlB?=
+ =?us-ascii?Q?r2cTzSjZQuUMFnGbnHr7lky/qp0BeEp5hH9ly8AUTelOV0rgxo9hFgGeRwgd?=
+ =?us-ascii?Q?ey/v97AAiFqKF4goBhxq/LTtt8vF2IKUIfWH8fkqwYFFmayliC4kC+53x4x2?=
+ =?us-ascii?Q?fmqnQTOmJg5YCIdT6K/Vce1vwEAHMLK+V1eB9HnSjkSttMaeboHafoHukkH9?=
+ =?us-ascii?Q?6U3yuKdTw4B06n2DwnV2D8GOTD5QI2M127C92G7Mf8qMfVXZmLb0oVgqr/vW?=
+ =?us-ascii?Q?67ZXzJdegupEkDkX915zq4aTXVQ3hxnNncjQrhHPs6ClHcyrRi+enAEp4NDp?=
+ =?us-ascii?Q?ihT9y+2U6lW1DGjXFwUWtBpyFpYJESF+e9GNyouCZ8sJ5Du3ZtCwXutW5Goc?=
+ =?us-ascii?Q?TPkmwIX2e4JMuRJ/oiJAy1Qp92TwjXvrO+qtPRlvsv1820Wii3/5kr2kqrBW?=
+ =?us-ascii?Q?J/oII5CXCjVvFMaSrYEiaCoISh7LPG3HK8GlRsoqi1db2m2a3r0zibytOXrL?=
+ =?us-ascii?Q?TYDjAM+F0ZLwAeiHOurSifusqJkfxWcPV3mXpNbrH2pyJeoFMtVOxFeiRYim?=
+ =?us-ascii?Q?u7BgxPX/DEaIpXBIL5zyU7hK?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d507c9f3-5a7f-4516-56a1-08d945e094f8
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2021 09:28:32.5728
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 610p/PLC0lLs5krXu0D5GVEiLJWiOtP9lI+xs0Y9PMdrtDmCZqAM0v1Wlt6Yg6ZY/8RJQR8NpA7ha7gB3Gzjjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5136
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds skb's frag page recycling support based on
-the elevated refcnt support in page pool.
+Some switchdev drivers, like mlxsw since commit 25cc72a33835 ("mlxsw:
+spectrum: Forbid linking to devices that have uppers"), refuse to join a
+LAG that already is under a bridge, while others, like DSA since commit
+185c9a760a61 ("net: dsa: call dsa_port_bridge_join when joining a LAG
+that is already in a bridge"), prefer to handle that case and join the
+bridge that is an upper of the LAG, if that exists.
 
-The performance improves above 10~20% with IOMMU disabled.
-The performance improves about 200% when IOMMU is enabled
-and iperf server shares the same cpu with irq/NAPI.
+The prestera driver does none of those, so let's replicate what DSA
+does.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Fixes: 255213ca6887 ("net: marvell: prestera: add LAG support")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 79 +++++++++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  3 +
- 2 files changed, 77 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cdb5f14..c799129 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3205,6 +3205,21 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	unsigned int order = hns3_page_order(ring);
- 	struct page *p;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 226f4ff29f6e..979214ce1952 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -567,6 +567,14 @@ static int prestera_lag_port_add(struct prestera_port *port,
+ 	lag->member_count++;
+ 	port->lag = lag;
  
-+	if (ring->page_pool) {
-+		p = page_pool_dev_alloc_frag(ring->page_pool,
-+					     &cb->page_offset,
-+					     hns3_buf_size(ring));
-+		if (unlikely(!p))
-+			return -ENOMEM;
++	if (netif_is_bridge_port(lag_dev)) {
++		struct net_device *br_dev;
 +
-+		cb->priv = p;
-+		cb->buf = page_address(p);
-+		cb->dma = page_pool_get_dma_addr(p);
-+		cb->type = DESC_TYPE_FRAG;
-+		cb->reuse_flag = 0;
-+		return 0;
++		br_dev = netdev_master_upper_dev_get(lag_dev);
++
++		return prestera_bridge_port_join(br_dev, port);
 +	}
 +
- 	p = dev_alloc_pages(order);
- 	if (!p)
- 		return -ENOMEM;
-@@ -3227,8 +3242,12 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- 	if (cb->type & (DESC_TYPE_SKB | DESC_TYPE_BOUNCE_HEAD |
- 			DESC_TYPE_BOUNCE_ALL | DESC_TYPE_SGL_SKB))
- 		napi_consume_skb(cb->priv, budget);
--	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
--		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+	else if (!HNAE3_IS_TX_RING(ring)) {
-+		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
-+			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+		else if (cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, cb->priv, false);
-+	}
- 	memset(cb, 0, sizeof(*cb));
- }
- 
-@@ -3315,7 +3334,7 @@ static int hns3_alloc_and_map_buffer(struct hns3_enet_ring *ring,
- 	int ret;
- 
- 	ret = hns3_alloc_buffer(ring, cb);
--	if (ret)
-+	if (ret || ring->page_pool)
- 		goto out;
- 
- 	ret = hns3_map_buffer(ring, cb);
-@@ -3337,7 +3356,8 @@ static int hns3_alloc_and_attach_buffer(struct hns3_enet_ring *ring, int i)
- 	if (ret)
- 		return ret;
- 
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 
  	return 0;
  }
-@@ -3367,7 +3387,8 @@ static void hns3_replace_buffer(struct hns3_enet_ring *ring, int i,
- {
- 	hns3_unmap_buffer(ring, &ring->desc_cb[i]);
- 	ring->desc_cb[i] = *res_cb;
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 	ring->desc[i].rx.bd_base_info = 0;
- }
  
-@@ -3539,6 +3560,12 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	u32 frag_size = size - pull_len;
- 	bool reused;
- 
-+	if (ring->page_pool) {
-+		skb_add_rx_frag(skb, i, desc_cb->priv, frag_offset,
-+				frag_size, truesize);
-+		return;
-+	}
-+
- 	/* Avoid re-using remote or pfmem page */
- 	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
- 		goto out;
-@@ -3856,6 +3883,9 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		/* We can reuse buffer as-is, just make sure it is reusable */
- 		if (dev_page_is_reusable(desc_cb->priv))
- 			desc_cb->reuse_flag = 1;
-+		else if (desc_cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
-+						false);
- 		else /* This page cannot be reused so discard it */
- 			__page_frag_cache_drain(desc_cb->priv,
- 						desc_cb->pagecnt_bias);
-@@ -3863,6 +3893,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		hns3_rx_ring_move_fw(ring);
- 		return 0;
- 	}
-+
-+	if (ring->page_pool)
-+		skb_mark_for_recycle(skb);
-+
- 	u64_stats_update_begin(&ring->syncp);
- 	ring->stats.seg_pkt_cnt++;
- 	u64_stats_update_end(&ring->syncp);
-@@ -3901,6 +3935,10 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
- 					    "alloc rx fraglist skb fail\n");
- 				return -ENXIO;
- 			}
-+
-+			if (ring->page_pool)
-+				skb_mark_for_recycle(new_skb);
-+
- 			ring->frag_num = 0;
- 
- 			if (ring->tail_skb) {
-@@ -4705,6 +4743,29 @@ static void hns3_put_ring_config(struct hns3_nic_priv *priv)
- 	priv->ring = NULL;
- }
- 
-+static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
-+{
-+	struct page_pool_params pp_params = {
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG,
-+		.order = hns3_page_order(ring),
-+		.pool_size = ring->desc_num * hns3_buf_size(ring) / PAGE_SIZE,
-+		.nid = dev_to_node(ring_to_dev(ring)),
-+		.dev = ring_to_dev(ring),
-+		.dma_dir = DMA_FROM_DEVICE,
-+		.offset = 0,
-+		.max_len = 0,
-+	};
-+
-+	ring->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(ring->page_pool)) {
-+		dev_warn(ring_to_dev(ring), "page pool creation failed: %ld\n",
-+			 PTR_ERR(ring->page_pool));
-+		ring->page_pool = NULL;
-+	} else {
-+		dev_info(ring_to_dev(ring), "page pool creation succeeded\n");
-+	}
-+}
-+
- static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- {
- 	int ret;
-@@ -4724,6 +4785,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- 		goto out_with_desc_cb;
- 
- 	if (!HNAE3_IS_TX_RING(ring)) {
-+		hns3_alloc_page_pool(ring);
-+
- 		ret = hns3_alloc_ring_buffers(ring);
- 		if (ret)
- 			goto out_with_desc;
-@@ -4764,6 +4827,12 @@ void hns3_fini_ring(struct hns3_enet_ring *ring)
- 		devm_kfree(ring_to_dev(ring), tx_spare);
- 		ring->tx_spare = NULL;
- 	}
-+
-+	if (!HNAE3_IS_TX_RING(ring) && ring->page_pool) {
-+		page_pool_destroy(ring->page_pool);
-+		ring->page_pool = NULL;
-+		dev_info(ring_to_dev(ring), "page pool destroyed\n");
-+	}
- }
- 
- static int hns3_buf_size2type(u32 buf_size)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 15af3d9..115c0ce 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/dim.h>
- #include <linux/if_vlan.h>
-+#include <net/page_pool.h>
- 
- #include "hnae3.h"
- 
-@@ -307,6 +308,7 @@ enum hns3_desc_type {
- 	DESC_TYPE_BOUNCE_ALL		= 1 << 3,
- 	DESC_TYPE_BOUNCE_HEAD		= 1 << 4,
- 	DESC_TYPE_SGL_SKB		= 1 << 5,
-+	DESC_TYPE_FRAG			= 1 << 6,
- };
- 
- struct hns3_desc_cb {
-@@ -451,6 +453,7 @@ struct hns3_enet_ring {
- 	struct hnae3_queue *tqp;
- 	int queue_index;
- 	struct device *dev; /* will be used for DMA mapping of descriptors */
-+	struct page_pool *page_pool;
- 
- 	/* statistic */
- 	struct ring_stats stats;
 -- 
-2.7.4
+2.25.1
 
