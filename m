@@ -2,143 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B853C710B
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBFC53C70E3
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbhGMNKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 09:10:23 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:45966
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236737AbhGMNKX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 09:10:23 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Jul 2021 09:10:22 EDT
-Received: from localhost.localdomain (unknown [222.129.38.167])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 95C6E405D1;
-        Tue, 13 Jul 2021 13:00:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626181251;
-        bh=wtJCO3QYrNDXs3ubXQGWVjwF5MFQxhxZ9W+dp4w8uV8=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=ZbHhxMnkFheoGVQFyShRrFC2aHIvKFaP85Du3D2Z4ryhkQQkcRVRkx9sC/ta67HcQ
-         Qg17jNp12JAdFxtei1VM84Er9OjKAzkHb1A79FhRkqXLku7OH5ZOXup56Zf5cdfQ7q
-         bB2GD04rS0vbE8EZxd3rprc2n/A4aUbSwky1T2owb6IJcVa3+nTtnPnvqyC3W+iHb3
-         Y1uH3wP7BGYRAS1FAadkWQib39xfbr00CRRyC5SQG4sf2+isA7aHhnPl0HllgbL83q
-         unH5tAr3pit/9oaN/ZnGn7Hr0l3nVCqTIcIGdNQhlRd3FrPIg/3QmJ6h7Agd6suO5w
-         IQiiIz8wvXlNA==
-From:   Aaron Ma <aaron.ma@canonical.com>
-To:     aaron.ma@canonical.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] igc: fix page fault when thunderbolt is unplugged
-Date:   Tue, 13 Jul 2021 21:00:36 +0800
-Message-Id: <20210713130036.741188-1-aaron.ma@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210702045120.22855-1-aaron.ma@canonical.com>
-References: <20210702045120.22855-1-aaron.ma@canonical.com>
+        id S236493AbhGMNGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 09:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236249AbhGMNGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 09:06:53 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902F3C0613DD;
+        Tue, 13 Jul 2021 06:04:02 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id k20so14581458pgg.7;
+        Tue, 13 Jul 2021 06:04:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wICO7mAwhqJD1edb3nvOclBABQKgJ4d++G/031aYfk4=;
+        b=NeSEYEwpwaMAY/u6wfT8YqxYJ29jDeD4nKlvqwUM2Q2EhDJhGPqnAJL7BXdPCC6YdD
+         XkDaCKAWWILQJkAQG32yIaGA6opOub7y7pgqeaQOxxBgJlqElvz1PAMQINvdgzlgu5mi
+         EcRgCskZ56y6pKWRQRoQ68lK0iBp5vdb9jVecO/RlowkRnxISCaz1EnLSL5lnTkoMkoK
+         hhq4+N2HO2HyudtZyuEoR92SLtA7bbU/sdKgr7M/xYQ/Q4X4/KmUhoPCP2lbZhhTRZTA
+         MJk4spuP6i+GyS2+YhdYkCOqPu3XcAsXrOQieeByWWQ7+8WG5J6mfkM/kODxrpClgYbD
+         9bJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wICO7mAwhqJD1edb3nvOclBABQKgJ4d++G/031aYfk4=;
+        b=QenehPU+/eEtkT12s0KmDsdJnrtuuyCGHBs5NvQ1kv7DQOirkGzSLD8hM1ddj2T586
+         SztqzrhLm8jcciXetuiu+N+HSS3VNt+jpPREhXiZe76ZmTEN6mgEp0Us4T2EEimo5b3M
+         lxnnMQPTGmW0JuLm85xvIqK3reGeQ3yG6GQIPKThYOdG5ZyBMKt3/fJ6+qJfrbDru5P2
+         EChGb/WSFzLxMB5XRRav1hqKt/J3M4oi7RtiTD+WJXwVzpTlZOPN/eWuFjarC/Wff3at
+         SGE2+EICJrHetMH4Mif6F0Dkcr/cBVjlakgJGXorX0LjZyNe4IJIc2KLRinybaZnthl/
+         AhGg==
+X-Gm-Message-State: AOAM532HpTmuQy2Bih1tFb3cSry77RNKf2PUSTevHwwIFS2ZLM6733YL
+        ZG+MWU/okno9xE39zfmItPg=
+X-Google-Smtp-Source: ABdhPJxHvb2e9OGV+rWBRwtvIifXpJ70kyVgCHmlO0ZAbHm20/q1TEey5dmlakW8q1Gl8ileAPwlyg==
+X-Received: by 2002:a63:f64d:: with SMTP id u13mr4256994pgj.156.1626181441973;
+        Tue, 13 Jul 2021 06:04:01 -0700 (PDT)
+Received: from localhost.localdomain ([154.16.166.218])
+        by smtp.gmail.com with ESMTPSA id w2sm3184238pjf.2.2021.07.13.06.03.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Jul 2021 06:04:01 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        kernel test robot <lkp@intel.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] audit: fix memory leak in nf_tables_commit
+Date:   Tue, 13 Jul 2021 21:03:44 +0800
+Message-Id: <20210713130344.473646-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After unplug thunerbolt dock with i225, pciehp interrupt is triggered,
-remove call will read/write mmio address which is already disconnected,
-then cause page fault and make system hang.
+In nf_tables_commit, if nf_tables_commit_audit_alloc fails, it does not
+free the adp variable.
 
-Check PCI state to remove device safely.
+Fix this by freeing the linked list with head adl.
 
-Trace:
-BUG: unable to handle page fault for address: 000000000000b604
-Oops: 0000 [#1] SMP NOPTI
-RIP: 0010:igc_rd32+0x1c/0x90 [igc]
-Call Trace:
-igc_ptp_suspend+0x6c/0xa0 [igc]
-igc_ptp_stop+0x12/0x50 [igc]
-igc_remove+0x7f/0x1c0 [igc]
-pci_device_remove+0x3e/0xb0
-__device_release_driver+0x181/0x240
+backtrace:
+  kmalloc include/linux/slab.h:591 [inline]
+  kzalloc include/linux/slab.h:721 [inline]
+  nf_tables_commit_audit_alloc net/netfilter/nf_tables_api.c:8439 [inline]
+  nf_tables_commit+0x16e/0x1760 net/netfilter/nf_tables_api.c:8508
+  nfnetlink_rcv_batch+0x512/0xa80 net/netfilter/nfnetlink.c:562
+  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
+  nfnetlink_rcv+0x1fa/0x220 net/netfilter/nfnetlink.c:652
+  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+  netlink_unicast+0x2c7/0x3e0 net/netlink/af_netlink.c:1340
+  netlink_sendmsg+0x36b/0x6b0 net/netlink/af_netlink.c:1929
+  sock_sendmsg_nosec net/socket.c:702 [inline]
+  sock_sendmsg+0x56/0x80 net/socket.c:722
 
-Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: c520292f29b8 ("audit: log nftables configuration change events once per table")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 32 ++++++++++++++---------
- drivers/net/ethernet/intel/igc/igc_ptp.c  |  3 ++-
- 2 files changed, 21 insertions(+), 14 deletions(-)
+v1->v2: fix the compile issue
+ net/netfilter/nf_tables_api.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 95323095094d..3c72f135fc29 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -149,6 +149,9 @@ static void igc_release_hw_control(struct igc_adapter *adapter)
- 	struct igc_hw *hw = &adapter->hw;
- 	u32 ctrl_ext;
- 
-+	if (!pci_device_is_present(adapter->pdev))
-+		return;
-+
- 	/* Let firmware take over control of h/w */
- 	ctrl_ext = rd32(IGC_CTRL_EXT);
- 	wr32(IGC_CTRL_EXT,
-@@ -4447,26 +4450,29 @@ void igc_down(struct igc_adapter *adapter)
- 
- 	igc_ptp_suspend(adapter);
- 
--	/* disable receives in the hardware */
--	rctl = rd32(IGC_RCTL);
--	wr32(IGC_RCTL, rctl & ~IGC_RCTL_EN);
--	/* flush and sleep below */
--
-+	if (pci_device_is_present(adapter->pdev)) {
-+		/* disable receives in the hardware */
-+		rctl = rd32(IGC_RCTL);
-+		wr32(IGC_RCTL, rctl & ~IGC_RCTL_EN);
-+		/* flush and sleep below */
-+	}
- 	/* set trans_start so we don't get spurious watchdogs during reset */
- 	netif_trans_update(netdev);
- 
- 	netif_carrier_off(netdev);
- 	netif_tx_stop_all_queues(netdev);
- 
--	/* disable transmits in the hardware */
--	tctl = rd32(IGC_TCTL);
--	tctl &= ~IGC_TCTL_EN;
--	wr32(IGC_TCTL, tctl);
--	/* flush both disables and wait for them to finish */
--	wrfl();
--	usleep_range(10000, 20000);
-+	if (pci_device_is_present(adapter->pdev)) {
-+		/* disable transmits in the hardware */
-+		tctl = rd32(IGC_TCTL);
-+		tctl &= ~IGC_TCTL_EN;
-+		wr32(IGC_TCTL, tctl);
-+		/* flush both disables and wait for them to finish */
-+		wrfl();
-+		usleep_range(10000, 20000);
- 
--	igc_irq_disable(adapter);
-+		igc_irq_disable(adapter);
-+	}
- 
- 	adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
- 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
-index 69617d2c1be2..4ae19c6a3247 100644
---- a/drivers/net/ethernet/intel/igc/igc_ptp.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
-@@ -849,7 +849,8 @@ void igc_ptp_suspend(struct igc_adapter *adapter)
- 	adapter->ptp_tx_skb = NULL;
- 	clear_bit_unlock(__IGC_PTP_TX_IN_PROGRESS, &adapter->state);
- 
--	igc_ptp_time_save(adapter);
-+	if (pci_device_is_present(adapter->pdev))
-+		igc_ptp_time_save(adapter);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 390d4466567f..7f45b291be13 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8444,6 +8444,16 @@ static int nf_tables_commit_audit_alloc(struct list_head *adl,
+ 	return 0;
  }
  
- /**
++static void nf_tables_commit_free(struct list_head *adl)
++{
++	struct nft_audit_data *adp, *adn;
++
++	list_for_each_entry_safe(adp, adn, adl, list) {
++		list_del(&adp->list);
++		kfree(adp);
++	}
++}
++
+ static void nf_tables_commit_audit_collect(struct list_head *adl,
+ 					   struct nft_table *table, u32 op)
+ {
+@@ -8508,6 +8518,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
+ 		ret = nf_tables_commit_audit_alloc(&adl, trans->ctx.table);
+ 		if (ret) {
+ 			nf_tables_commit_chain_prepare_cancel(net);
++			nf_tables_commit_free(&adl);
+ 			return ret;
+ 		}
+ 		if (trans->msg_type == NFT_MSG_NEWRULE ||
+@@ -8517,6 +8528,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
+ 			ret = nf_tables_commit_chain_prepare(net, chain);
+ 			if (ret < 0) {
+ 				nf_tables_commit_chain_prepare_cancel(net);
++				nf_tables_commit_free(&adl);
+ 				return ret;
+ 			}
+ 		}
 -- 
-2.30.2
+2.25.1
 
