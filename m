@@ -2,107 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A303C71A0
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8DF3C71CD
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 16:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236750AbhGMOBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 10:01:22 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:41890 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236682AbhGMOBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 10:01:21 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-285-sJWatQGHMAyOI0dV9jVZtg-1; Tue, 13 Jul 2021 14:58:28 +0100
-X-MC-Unique: sJWatQGHMAyOI0dV9jVZtg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.18; Tue, 13 Jul 2021 14:58:26 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.018; Tue, 13 Jul 2021 14:58:26 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Andy Shevchenko' <andy.shevchenko@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Alexey Dobriyan" <adobriyan@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        "Mauro Carvalho Chehab" <mchehab+huawei@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Thomas Graf <tgraf@suug.ch>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: RE: [PATCH v1 3/3] kernel.h: Split out container_of() and
- typeof_memeber() macros
-Thread-Topic: [PATCH v1 3/3] kernel.h: Split out container_of() and
- typeof_memeber() macros
-Thread-Index: AQHXd+UckMMEGGzpqkiHoJNy6jDReatA637g
-Date:   Tue, 13 Jul 2021 13:58:25 +0000
-Message-ID: <8a81e53ed3fb4f92878cd7f0d2552861@AcuMS.aculab.com>
-References: <20210713084541.7958-1-andriy.shevchenko@linux.intel.com>
- <20210713084541.7958-3-andriy.shevchenko@linux.intel.com>
- <YO1s+rHEqC9RjMva@kroah.com> <YO12ARa3i1TprGnJ@smile.fi.intel.com>
- <YO13lSUdPfNGOnC3@kroah.com> <20210713121944.GA24157@gondor.apana.org.au>
- <CAHp75VfGd6VYyCjbqxO91B4RyyYuNQd_XKJA=yLMWJpa7-Yi9Q@mail.gmail.com>
-In-Reply-To: <CAHp75VfGd6VYyCjbqxO91B4RyyYuNQd_XKJA=yLMWJpa7-Yi9Q@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S236793AbhGMOHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 10:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236721AbhGMOHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 10:07:05 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADADC0613DD;
+        Tue, 13 Jul 2021 07:04:14 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id l1so11535895edr.11;
+        Tue, 13 Jul 2021 07:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=arUYuAy2PN4/feE5llijqQYwxfh81atG4dBl/yi0Yrc=;
+        b=Qbcg0RVjBLBhe4in65MsZo8Itjh7iHNOFBSeAIXck14Ga87IMfIcv/An5nl2Tc8Loq
+         YuS3FN/XuAJnxd1S0mBfSMcHGzhJdVfBaOXP8DqGDSMWqPLgB+pYQRSmd0G2mi7O4WnW
+         /8VAD114iWB3/gr9CjAFkl3GtQ38FdsrfKcfe9wmyXnz8fvGuTw6bAAin5qUDQyFq+Sw
+         Zz2h9v1YanLFiVAWc/N4vhd31D+B5S5hH2ySzaaPXiA6QiEaxsoZ5nj9dIntDp/UGh/P
+         ZQzlZNovrou6iVI1MudTvuwyY6c+bQ2+vypD54l504Sjd4u6ojxskWQNv1KM9ffDdkTj
+         7PUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=arUYuAy2PN4/feE5llijqQYwxfh81atG4dBl/yi0Yrc=;
+        b=eLBWUdxqfzZba//2wRy6E3TPql0LmW4A7taZjxZ9Ni1nZNN3b1p/wSPIJrssQAf7Jv
+         JtD0p9OpICmMjHQ57+B0xpUdvkTIIAJ/QFuvccwUbrd3srzeAVq8I3E98kerApQij2Ze
+         PAtlGpHZVPNm3LibG6gE87XlAxtEad5Mz+pexkOYtgAT7sCsIAQl2x7muQcBYrOEYplw
+         pwucZY9OnNGhQhmhPBkjPpLHHuIL0eDy2zoZmBuVWHRkd6Sx//hvAzn7RQ4h2ngBdOVu
+         6oyDq7Z0mOOXGCtLbcEAvnek9229jP9zP+P4Fmu/xq+li7wVVVvq86Hy5HwGIlMb331M
+         Z/tA==
+X-Gm-Message-State: AOAM531n++ZP+dF5rjz/Pnib7tuTJ0Vag8B/McmF7SVaMFLTVMykT7Jk
+        JFuoSPj4EIuZ8dblRGuejpy/NGt/grl4iS8PLls=
+X-Google-Smtp-Source: ABdhPJy+Xb1snyVwx0jEahtGtFKIsgzL7Mg1DFZsm5Jjzxhey/YtgT0ZllwPsn1jkBcPBqr+D2RAXpAP+lQVJyIJtxc=
+X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr6035528edd.66.1626185051561;
+ Tue, 13 Jul 2021 07:04:11 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20210713054019.409273-1-mudongliangabcd@gmail.com> <CAB_54W6DkBkASH5ojbChSoPB6ogQNy+7rq2kr=m9PNLmzATHtQ@mail.gmail.com>
+In-Reply-To: <CAB_54W6DkBkASH5ojbChSoPB6ogQNy+7rq2kr=m9PNLmzATHtQ@mail.gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Tue, 13 Jul 2021 22:03:45 +0800
+Message-ID: <CAD-N9QWcjQ8YkpunPgDU3j5CtS5coHrFwsmsJoYG9DH39T0yzA@mail.gmail.com>
+Subject: Re: [PATCH] ieee802154: hwsim: fix memory leak in __pskb_copy_fclone
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Aring <aring@mojatatu.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBUaGUgd2hvbGUgaWRlYSBjYW1lIHdoZW4gZGlzY3Vzc2luZyBkcml2ZXJzLCBlc3AuIElJTyBv
-bmVzLiBUaGV5IG9mdGVuDQo+IGFyZSB1c2luZyBBUlJBWV9TSVpFKCkgKyBjb250YWluZXJfb2Yo
-KS4ga2VybmVsLmggaXMgYSBiaWcgb3ZlcmtpbGwNCj4gdGhlcmUuDQoNCkl0IHByb2JhYmx5IG1h
-a2VzIG5vIGRpZmZlcmVuY2UuDQpFdmVuIGFwcGFyZW50bHkgdHJpdmlhbCBpbmNsdWRlcyBwdWxs
-IGluIG1vc3Qgb2YgdGhlIHdvcmxkLg0KDQpJIG1hbmFnZWQgdG8gZ2V0IGEgY29tcGlsZSBlcnJv
-ciBmcm9tIG9uZSBvZiB0aGUgZGVmaW5lcw0KaW4gc3lzL2lvY3RsLmggLSB0aGUgaW5jbHVkZSBz
-ZXF1ZW5jZSB0aGUgY29tcGlsZXIgZ2F2ZQ0KbWUgd2FzIGFib3V0IDIwIGRlZXAuDQpJJ3ZlIGZv
-cmdvdHRlbiB3aGVyZSBpdCBzdGFydGVkLCBidXQgaXQgbWVhbmRlcmVkIHRocm91Z2gNCnNvbWUg
-YXJjaC94ODYgZGlyZWN0b3JpZXMuDQoNCkkgc3VzcGVjdCB0aGF0IHNvbWUgZmlsZXMgaGF2ZSBh
-ICNpbmNsdWRlIHdoZXJlIGp1c3QgYQ0KJ3N0cnVjdCBmb28nIHdvdWxkIHN1ZmZpY2UuDQoNClRo
-ZXJlIHdpbGwgYWxzbyBiZSAuaCBmaWxlcyB3aGljaCBpbmNsdWRlIGJvdGggdGhlICdwdWJsaWMn
-DQppbnRlcmZhY2UgYW5kICdwcml2YXRlJyBkZWZpbml0aW9ucy4NClNvbWV0aW1lcyBzcGxpdHRp
-bmcgdGhvc2UgY2FuIHJlZHVjZSB0aGUgbnVtYmVyIG9mIGluY2x1ZGVzLg0KVGhpcyBpcyBtb3N0
-IG5vdGljZWFibGUgY29tcGlsaW5nIHRyaXZpYWwgZHJpdmVycy4NCg0KVGhlIG90aGVyIHdheSB0
-byBzcGVlZCB1cCBjb21waWxhdGlvbnMgaXMgdG8gcmVkdWNlIHRoZSAtSQ0KcGF0aCBsaXN0IHRv
-IHRoZSBjb21waWxlci4NClRoaXMgaXMgcGFydGljdWxhcmx5IHNpZ25pZmljYW50IGlmIGNvbXBp
-bGluZyBvdmVyIE5GUy4NCihXZWxsIE5GUyBtaWdodCBoYXZlIGNoYW5nZWQsIGJ1dC4uLikNCg0K
-CURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBN
-b3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAx
-Mzk3Mzg2IChXYWxlcykNCg==
+On Tue, Jul 13, 2021 at 9:47 PM Alexander Aring <alex.aring@gmail.com> wrote:
+>
+> Hi,
+>
+> On Tue, 13 Jul 2021 at 01:40, Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> >
+> > hwsim_hw_xmit fails to deallocate the newskb copied by pskb_copy. Fix
+> > this by adding kfree_skb after ieee802154_rx_irqsafe.
+> >
+> >   [<ffffffff836433fb>] __alloc_skb+0x22b/0x250 net/core/skbuff.c:414
+> >   [<ffffffff8364ad95>] __pskb_copy_fclone+0x75/0x360 net/core/skbuff.c:1609
+> >   [<ffffffff82ae65e3>] __pskb_copy include/linux/skbuff.h:1176 [inline]
+> >   [<ffffffff82ae65e3>] pskb_copy include/linux/skbuff.h:3207 [inline]
+> >   [<ffffffff82ae65e3>] hwsim_hw_xmit+0xd3/0x140 drivers/net/ieee802154/mac802154_hwsim.c:132
+> >   [<ffffffff83ff8f47>] drv_xmit_async net/mac802154/driver-ops.h:16 [inline]
+> >   [<ffffffff83ff8f47>] ieee802154_tx+0xc7/0x190 net/mac802154/tx.c:83
+> >   [<ffffffff83ff9138>] ieee802154_subif_start_xmit+0x58/0x70 net/mac802154/tx.c:132
+> >   [<ffffffff83670b82>] __netdev_start_xmit include/linux/netdevice.h:4944 [inline]
+> >   [<ffffffff83670b82>] netdev_start_xmit include/linux/netdevice.h:4958 [inline]
+> >   [<ffffffff83670b82>] xmit_one net/core/dev.c:3658 [inline]
+> >   [<ffffffff83670b82>] dev_hard_start_xmit+0xe2/0x330 net/core/dev.c:3674
+> >   [<ffffffff83718028>] sch_direct_xmit+0xf8/0x520 net/sched/sch_generic.c:342
+> >   [<ffffffff8367193b>] __dev_xmit_skb net/core/dev.c:3874 [inline]
+> >   [<ffffffff8367193b>] __dev_queue_xmit+0xa3b/0x1360 net/core/dev.c:4241
+> >   [<ffffffff83ff5437>] dgram_sendmsg+0x437/0x570 net/ieee802154/socket.c:682
+> >   [<ffffffff836345b6>] sock_sendmsg_nosec net/socket.c:702 [inline]
+> >   [<ffffffff836345b6>] sock_sendmsg+0x56/0x80 net/socket.c:722
+> >
+> > Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+>
+> sorry, I don't get the fix. Is this a memory leak? I remember there
+> was something reported by syzkaller [0] but I wasn't able yet to get
+> into it. Is it what you referring to?
 
+Yes, you're right.
+
+I get this memory leak many times in my local syzkaller instance but
+do not recognize there is already a bug report in the syzbot
+dashboard.
+
+> __pskb_copy_fclone() shows "The returned buffer has a reference count
+> of 1" and ieee802154_rx_irqsafe() will queue the skb for a tasklet.
+> With your patch it will be immediately freed and a use after free will
+> occur.
+
+Thanks for your feedback. I am sorry about this fix since I did not
+observe UAF in my testing.
+
+I will keep learning more materials about socket in Linux kernel. :)
+
+> I believe there is something wrong in the error path of
+> 802.15.4 frame parsing and that's why we sometimes have a leaks there.
+
+Should be yes, it occurs many times in my local syzkaller instance.
+
+>
+> I need to test this patch, but I don't get how this patch is supposed
+> to fix the issue.
+
+This patch should be incorrect. Please directly focus on bug reports
+on the syzbot dashboard. If possible, please cc me your final patch
+about this bug. I can learn something from this bug.
+
+Best regards
+Dongliang Mu
+
+>
+> - Alex
+>
+> [0] https://groups.google.com/g/syzkaller-bugs/c/EoIvZbk3Zfo/m/AlKUiErlAwAJ
