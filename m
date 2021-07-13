@@ -2,139 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBFC53C70E3
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D8DE3C7109
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 15:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236493AbhGMNGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 09:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236249AbhGMNGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 09:06:53 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902F3C0613DD;
-        Tue, 13 Jul 2021 06:04:02 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id k20so14581458pgg.7;
-        Tue, 13 Jul 2021 06:04:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wICO7mAwhqJD1edb3nvOclBABQKgJ4d++G/031aYfk4=;
-        b=NeSEYEwpwaMAY/u6wfT8YqxYJ29jDeD4nKlvqwUM2Q2EhDJhGPqnAJL7BXdPCC6YdD
-         XkDaCKAWWILQJkAQG32yIaGA6opOub7y7pgqeaQOxxBgJlqElvz1PAMQINvdgzlgu5mi
-         EcRgCskZ56y6pKWRQRoQ68lK0iBp5vdb9jVecO/RlowkRnxISCaz1EnLSL5lnTkoMkoK
-         hhq4+N2HO2HyudtZyuEoR92SLtA7bbU/sdKgr7M/xYQ/Q4X4/KmUhoPCP2lbZhhTRZTA
-         MJk4spuP6i+GyS2+YhdYkCOqPu3XcAsXrOQieeByWWQ7+8WG5J6mfkM/kODxrpClgYbD
-         9bJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wICO7mAwhqJD1edb3nvOclBABQKgJ4d++G/031aYfk4=;
-        b=QenehPU+/eEtkT12s0KmDsdJnrtuuyCGHBs5NvQ1kv7DQOirkGzSLD8hM1ddj2T586
-         SztqzrhLm8jcciXetuiu+N+HSS3VNt+jpPREhXiZe76ZmTEN6mgEp0Us4T2EEimo5b3M
-         lxnnMQPTGmW0JuLm85xvIqK3reGeQ3yG6GQIPKThYOdG5ZyBMKt3/fJ6+qJfrbDru5P2
-         EChGb/WSFzLxMB5XRRav1hqKt/J3M4oi7RtiTD+WJXwVzpTlZOPN/eWuFjarC/Wff3at
-         SGE2+EICJrHetMH4Mif6F0Dkcr/cBVjlakgJGXorX0LjZyNe4IJIc2KLRinybaZnthl/
-         AhGg==
-X-Gm-Message-State: AOAM532HpTmuQy2Bih1tFb3cSry77RNKf2PUSTevHwwIFS2ZLM6733YL
-        ZG+MWU/okno9xE39zfmItPg=
-X-Google-Smtp-Source: ABdhPJxHvb2e9OGV+rWBRwtvIifXpJ70kyVgCHmlO0ZAbHm20/q1TEey5dmlakW8q1Gl8ileAPwlyg==
-X-Received: by 2002:a63:f64d:: with SMTP id u13mr4256994pgj.156.1626181441973;
-        Tue, 13 Jul 2021 06:04:01 -0700 (PDT)
-Received: from localhost.localdomain ([154.16.166.218])
-        by smtp.gmail.com with ESMTPSA id w2sm3184238pjf.2.2021.07.13.06.03.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Jul 2021 06:04:01 -0700 (PDT)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        kernel test robot <lkp@intel.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] audit: fix memory leak in nf_tables_commit
-Date:   Tue, 13 Jul 2021 21:03:44 +0800
-Message-Id: <20210713130344.473646-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S236724AbhGMNKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 09:10:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52670 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236677AbhGMNKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Jul 2021 09:10:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=U96NI2AGJuhqP5+/xjUH0gQkh60Cu2uwD9mCLAs6TFA=; b=bpHciKamB0LY4LVzoJGeG2kXPh
+        vluHAzAiNVOkFARFf+mHlBBta/BiEIBRVex9/iNaEW01yMUzEbvBLBsYnYLp7mDo+wBqK4+DfP5cj
+        gUerjKmV0wDDsMJx73LhdLx5pLIj3GCSLu2lgZwBzSKvLm1YXyoFp1We0wzCy7e+3wQU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m3I7k-00DDBM-DO; Tue, 13 Jul 2021 15:06:56 +0200
+Date:   Tue, 13 Jul 2021 15:06:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+Message-ID: <YO2P8J4Ln+RwxkfO@lunn.ch>
+References: <20210709164216.18561-1-ms@dev.tdt.de>
+ <CAFBinCCw9+oCV==1DrNFU6Lu02h3OyZu9wM=78RKGMCZU6ObEA@mail.gmail.com>
+ <fcb3203ea82d1180a6e471f22e39e817@dev.tdt.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fcb3203ea82d1180a6e471f22e39e817@dev.tdt.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In nf_tables_commit, if nf_tables_commit_audit_alloc fails, it does not
-free the adp variable.
+> > [...]
+> > > +#if IS_ENABLED(CONFIG_OF_MDIO)
+> > is there any particular reason why we need to guard this with
+> > CONFIG_OF_MDIO?
+> > The dp83822 driver does not use this #if either (as far as I
+> > understand at least)
+> > 
+> 
+> It makes no sense to retrieve properties from the device tree if we are
+> compiling for a target that does not support a device tree.
+> At least that is my understanding of this condition.
 
-Fix this by freeing the linked list with head adl.
+There should be stubs for all these functions, so if OF is not part of
+the configured kernel, stub functions take their place. That has the
+advantage of at least compiling the code, so checking parameter types
+etc. We try to avoid #ifdef where possible, so we get better compiler
+build test coverage. The more #ifef there are, the more different
+configurations that need compiling in order to get build coverage.
 
-backtrace:
-  kmalloc include/linux/slab.h:591 [inline]
-  kzalloc include/linux/slab.h:721 [inline]
-  nf_tables_commit_audit_alloc net/netfilter/nf_tables_api.c:8439 [inline]
-  nf_tables_commit+0x16e/0x1760 net/netfilter/nf_tables_api.c:8508
-  nfnetlink_rcv_batch+0x512/0xa80 net/netfilter/nfnetlink.c:562
-  nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
-  nfnetlink_rcv+0x1fa/0x220 net/netfilter/nfnetlink.c:652
-  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
-  netlink_unicast+0x2c7/0x3e0 net/netlink/af_netlink.c:1340
-  netlink_sendmsg+0x36b/0x6b0 net/netlink/af_netlink.c:1929
-  sock_sendmsg_nosec net/socket.c:702 [inline]
-  sock_sendmsg+0x56/0x80 net/socket.c:722
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: c520292f29b8 ("audit: log nftables configuration change events once per table")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
-v1->v2: fix the compile issue
- net/netfilter/nf_tables_api.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 390d4466567f..7f45b291be13 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8444,6 +8444,16 @@ static int nf_tables_commit_audit_alloc(struct list_head *adl,
- 	return 0;
- }
- 
-+static void nf_tables_commit_free(struct list_head *adl)
-+{
-+	struct nft_audit_data *adp, *adn;
-+
-+	list_for_each_entry_safe(adp, adn, adl, list) {
-+		list_del(&adp->list);
-+		kfree(adp);
-+	}
-+}
-+
- static void nf_tables_commit_audit_collect(struct list_head *adl,
- 					   struct nft_table *table, u32 op)
- {
-@@ -8508,6 +8518,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 		ret = nf_tables_commit_audit_alloc(&adl, trans->ctx.table);
- 		if (ret) {
- 			nf_tables_commit_chain_prepare_cancel(net);
-+			nf_tables_commit_free(&adl);
- 			return ret;
- 		}
- 		if (trans->msg_type == NFT_MSG_NEWRULE ||
-@@ -8517,6 +8528,7 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			ret = nf_tables_commit_chain_prepare(net, chain);
- 			if (ret < 0) {
- 				nf_tables_commit_chain_prepare_cancel(net);
-+				nf_tables_commit_free(&adl);
- 				return ret;
- 			}
- 		}
--- 
-2.25.1
-
+	       Andrew
