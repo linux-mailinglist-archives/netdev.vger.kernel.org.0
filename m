@@ -2,149 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D71CA3C6997
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 07:01:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788B83C69CD
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 07:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhGMFEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 01:04:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229470AbhGMFEX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Jul 2021 01:04:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3BE7260725;
-        Tue, 13 Jul 2021 05:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626152494;
-        bh=pi3/8CoqzjVtefalb1lWMBNyAW91jVNorghWkKWho4Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EqaYF2N5sMlq0M0fk5mUicFGrE6aNAmXHAc2fMoL2DSv0gKGJ2/60bUYhr+1OQX8J
-         8jsjHtpmgjqkCNQ0K59/TPvzZI+TjecAjGMpek0JQPn35c5Lo6z9N9CFzWxdasDR8U
-         207WXhjs27NbxS7Z8XNNQUjJZuoto1O3YZNMDo+/lObOZ1LccEt/vmK4N+Ng7xMawH
-         vf+Vz+Ybr8U211B6xEfeH71tSFQi5x0T+olygk3gNRRf/2HESt2q/mX/8yEfL8XSpT
-         q2tvic72ShedZz/IOiSP/DHwFN/Z4ieixhGNdCJNbsTQJMo2KgeOZrS4U4OICgLquT
-         2fbdSdrAsDzKw==
-Date:   Tue, 13 Jul 2021 08:01:30 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Nitesh Lal <nilal@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-pci@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
-        frederic@kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, rostedt@goodmis.org,
-        peterz@infradead.org, davem@davemloft.net,
-        akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com,
-        Stefan Assmann <sassmann@redhat.com>,
-        Tomas Henzl <thenzl@redhat.com>, kashyap.desai@broadcom.com,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, Ken Cox <jkc@redhat.com>,
-        faisal.latif@intel.com, shiraz.saleem@intel.com, tariqt@nvidia.com,
-        Alaa Hleihel <ahleihel@redhat.com>,
-        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
-        saeedm@nvidia.com, benve@cisco.com, govind@gmx.com,
-        jassisinghbrar@gmail.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        "Nikolova, Tatyana E" <tatyana.e.nikolova@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        Al Stone <ahs3@redhat.com>
-Subject: Re: [PATCH v2 00/14] genirq: Cleanup the usage of
- irq_set_affinity_hint
-Message-ID: <YO0eKv2GJcADQTHH@unreal>
-References: <20210629152746.2953364-1-nitesh@redhat.com>
- <CAFki+LnUGiEE-7Uf-x8-TQZYZ+3Migrr=81gGLYszxaK-6A9WQ@mail.gmail.com>
- <YOrWqPYPkZp6nRLS@unreal>
- <CAFki+L=FYOTQ1+-MHWmTuA6ZxTUcZA9t41HRL2URYgv03oFbDg@mail.gmail.com>
+        id S231922AbhGMFnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 01:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231261AbhGMFnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 01:43:24 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22D8C0613DD;
+        Mon, 12 Jul 2021 22:40:34 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id h4so20626699pgp.5;
+        Mon, 12 Jul 2021 22:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nCoykUfAeCmm7EweIlj2EVckVQsnC0tULaDKLSufM14=;
+        b=IQcarGJNgxbM+9PEbA2hjgnAzguOJ6Fl8BtlwbD+QiGIWR2QMTzdNYqfV8/O5RePMu
+         jc+dxLQtSRSvJd5BvPgOvvLJ5OeW0woWRuZQVOXF5jGWBxWJsiXTQcKd+XRV+mHg8sqx
+         +w4nFQh3mtoYFNWwMqwL8aDxwxO4NBFoHE6iVr0d9Lwm7Ec2Q2hRYnlojrMdxLu9ICzW
+         s8ZMU++QeEBFGBOF2ZFYYlhO8fjIHEh3A8gHxCjvIPXDq2/yN6wwBKOfr/SJGk4gR6Uy
+         p38QX2Gm7WcgYXi5HiI76B0oFzTiPA+hGlMBBmhSccKY5AEKuaI5ZTtidS9bx/RVvo9U
+         BW/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nCoykUfAeCmm7EweIlj2EVckVQsnC0tULaDKLSufM14=;
+        b=Cw03a2WLrpqM6m+bEDPC1IFezzTr1a7sc4RthRIIqxB1G2RRmhuSBjKTKtdrRXIoza
+         zxQCuED1luUn4oeEGHAbGEc62/ZjkbL8VQ1SykEfpdn3NmL1BAx0/IJtfaFKLZ85QPBQ
+         ULwDO6lCgK7FFY0mlURc+mO7i7ywSC5XWd7/RzC44DWTUM8JQN8JTKRWBDcMrLe/1lp3
+         DTRII50GK6x2lbHDAOPk6j07CViCIMnfEtst5c2q4SFnJtCt1wHKkPL6sAf/lhVJpQTN
+         FpIFBpXIVbhAfDH9Mc9U3oPXKmbc2ivZ8g2g9z1xqBysY12ealUlA3neDqAqP3Ie04k/
+         6GeA==
+X-Gm-Message-State: AOAM530cjOuxCeajUDdNiehurLAum6K2PoOALOlBCelU2p4gcHZ0y3Xb
+        XMJ2cQw8KRYh49qs9dsZkS4=
+X-Google-Smtp-Source: ABdhPJwavFVmwmu61Q4RhV1CUjL6kBCllpAgmQF59n/2dp1wTEUND5wCoYi7BpbOIEhOSkWuQCDw9w==
+X-Received: by 2002:a62:cd47:0:b029:329:714e:cce2 with SMTP id o68-20020a62cd470000b0290329714ecce2mr2925551pfg.22.1626154834013;
+        Mon, 12 Jul 2021 22:40:34 -0700 (PDT)
+Received: from localhost.localdomain ([154.16.166.164])
+        by smtp.gmail.com with ESMTPSA id q14sm9232593pff.209.2021.07.12.22.40.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jul 2021 22:40:33 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        Alexander Aring <aring@mojatatu.com>,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ieee802154: hwsim: fix memory leak in __pskb_copy_fclone
+Date:   Tue, 13 Jul 2021 13:40:18 +0800
+Message-Id: <20210713054019.409273-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFki+L=FYOTQ1+-MHWmTuA6ZxTUcZA9t41HRL2URYgv03oFbDg@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 05:27:05PM -0400, Nitesh Lal wrote:
-> Hi Leon,
-> 
-> On Sun, Jul 11, 2021 at 7:32 AM Leon Romanovsky <leonro@nvidia.com> wrote:
-> >
-> > On Thu, Jul 08, 2021 at 03:24:20PM -0400, Nitesh Lal wrote:
-> > > On Tue, Jun 29, 2021 at 11:28 AM Nitesh Narayan Lal <nitesh@redhat.com> wrote:
-> >
-> > <...>
-> >
-> > > >
-> > > >  drivers/infiniband/hw/i40iw/i40iw_main.c      |  4 +-
-> > > >  drivers/mailbox/bcm-flexrm-mailbox.c          |  4 +-
-> > > >  drivers/net/ethernet/cisco/enic/enic_main.c   |  8 +--
-> > > >  drivers/net/ethernet/emulex/benet/be_main.c   |  4 +-
-> > > >  drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  4 +-
-> > > >  drivers/net/ethernet/intel/i40e/i40e_main.c   |  8 +--
-> > > >  drivers/net/ethernet/intel/iavf/iavf_main.c   |  8 +--
-> > > >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 10 ++--
-> > > >  drivers/net/ethernet/mellanox/mlx4/eq.c       |  8 ++-
-> > > >  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  6 +--
-> > > >  drivers/scsi/lpfc/lpfc_init.c                 |  4 +-
-> > > >  drivers/scsi/megaraid/megaraid_sas_base.c     | 27 +++++-----
-> > > >  drivers/scsi/mpt3sas/mpt3sas_base.c           | 21 ++++----
-> > > >  include/linux/interrupt.h                     | 53 ++++++++++++++++++-
-> > > >  kernel/irq/manage.c                           |  8 +--
-> > > >  15 files changed, 113 insertions(+), 64 deletions(-)
-> > > >
-> > > > --
-> > > >
-> > > >
-> > >
-> > > Gentle ping.
-> > > Any comments or suggestions on any of the patches included in this series?
-> >
-> > Please wait for -rc1, rebase and resend.
-> > At least i40iw was deleted during merge window.
-> >
-> 
-> In -rc1 some non-trivial mlx5 changes also went in.  I was going through
-> these changes and it seems after your patch
-> 
-> e4e3f24b822f: ("net/mlx5: Provide cpumask at EQ creation phase")
-> 
-> we do want to control the affinity for the mlx5 interrupts from the driver.
-> Is that correct? 
+hwsim_hw_xmit fails to deallocate the newskb copied by pskb_copy. Fix
+this by adding kfree_skb after ieee802154_rx_irqsafe.
 
-We would like to create devices with correct affinity from the
-beginning. For this, we will introduce extension to devlink to control
-affinity that will be used prior initialization sequence.
+  [<ffffffff836433fb>] __alloc_skb+0x22b/0x250 net/core/skbuff.c:414
+  [<ffffffff8364ad95>] __pskb_copy_fclone+0x75/0x360 net/core/skbuff.c:1609
+  [<ffffffff82ae65e3>] __pskb_copy include/linux/skbuff.h:1176 [inline]
+  [<ffffffff82ae65e3>] pskb_copy include/linux/skbuff.h:3207 [inline]
+  [<ffffffff82ae65e3>] hwsim_hw_xmit+0xd3/0x140 drivers/net/ieee802154/mac802154_hwsim.c:132
+  [<ffffffff83ff8f47>] drv_xmit_async net/mac802154/driver-ops.h:16 [inline]
+  [<ffffffff83ff8f47>] ieee802154_tx+0xc7/0x190 net/mac802154/tx.c:83
+  [<ffffffff83ff9138>] ieee802154_subif_start_xmit+0x58/0x70 net/mac802154/tx.c:132
+  [<ffffffff83670b82>] __netdev_start_xmit include/linux/netdevice.h:4944 [inline]
+  [<ffffffff83670b82>] netdev_start_xmit include/linux/netdevice.h:4958 [inline]
+  [<ffffffff83670b82>] xmit_one net/core/dev.c:3658 [inline]
+  [<ffffffff83670b82>] dev_hard_start_xmit+0xe2/0x330 net/core/dev.c:3674
+  [<ffffffff83718028>] sch_direct_xmit+0xf8/0x520 net/sched/sch_generic.c:342
+  [<ffffffff8367193b>] __dev_xmit_skb net/core/dev.c:3874 [inline]
+  [<ffffffff8367193b>] __dev_queue_xmit+0xa3b/0x1360 net/core/dev.c:4241
+  [<ffffffff83ff5437>] dgram_sendmsg+0x437/0x570 net/ieee802154/socket.c:682
+  [<ffffffff836345b6>] sock_sendmsg_nosec net/socket.c:702 [inline]
+  [<ffffffff836345b6>] sock_sendmsg+0x56/0x80 net/socket.c:722
 
-Currently, netdev users who don't want irqbalance are digging into
-their procfs, reconfigure affinity on already existing devices and
-hope for the best. 
+Fixes: f25da51fdc38 ("ieee802154: hwsim: add replacement for fakelb")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ drivers/net/ieee802154/mac802154_hwsim.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-This is even more cumbersome for the SIOV use case, where every physical
-NIC PCI device will/can create thousands of lightweights netdevs that will
-be forwarded to the containers later. These containers are limited to known
-CPU cores, so no reason do not limit netdev device too.
+diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+index ebc976b7fcc2..d97ed033ac77 100644
+--- a/drivers/net/ieee802154/mac802154_hwsim.c
++++ b/drivers/net/ieee802154/mac802154_hwsim.c
+@@ -132,9 +132,11 @@ static int hwsim_hw_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
+ 			struct sk_buff *newskb = pskb_copy(skb, GFP_ATOMIC);
+ 
+ 			einfo = rcu_dereference(e->info);
+-			if (newskb)
++			if (newskb) {
+ 				ieee802154_rx_irqsafe(e->endpoint->hw, newskb,
+ 						      einfo->lqi);
++				kfree_skb(newskb);
++			}
+ 		}
+ 	}
+ 	rcu_read_unlock();
+-- 
+2.25.1
 
-The same goes for other sub-functions of that PCI device, like RDMA,
-vdpa e.t.c.
-
-> This would mean that we should use irq_set_affinity_and_hint() instead
-> of irq_update_affinity_hint().
-
-I think so.
-
-Thanks
-
-> 
-> -- 
-> Thanks
-> Nitesh
-> 
