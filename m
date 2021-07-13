@@ -2,197 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9233C68A7
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 04:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7EC73C697F
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 06:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbhGMCvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Jul 2021 22:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbhGMCvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Jul 2021 22:51:41 -0400
-X-Greylist: delayed 50121 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 12 Jul 2021 19:48:52 PDT
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A27C0613DD;
-        Mon, 12 Jul 2021 19:48:52 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1626144530;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lStPFj8qvcgCwMoBQwKRWxIuDXA8OI5V+DDbWuXsQ9U=;
-        b=XzYsqY3+/nv4P9vUmEQymCL4lGnzA57LHW8zpl3Y/doBSkAOzY76fsHZI/0sWM0RM1R3vT
-        UdN99HvXA36JVXmUCg+Y1B2VrO25234DF61j2zoglEoKOff1WtkkXb2y7hxp9WbQJnzauq
-        OHM95gDhuL1iftdz9mXvLYFoGRoECnA=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
-        johannes.berg@intel.com, ast@kernel.org, yhs@fb.com,
-        0x7f454c46@gmail.com, yajun.deng@linux.dev, aahringo@redhat.com,
-        rdunlap@infradead.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mptcp@lists.linux.dev, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-sctp@vger.kernel.org
-Subject: [PATCH v2] net: Use nlmsg_unicast() instead of netlink_unicast()
-Date:   Tue, 13 Jul 2021 10:48:24 +0800
-Message-Id: <20210713024824.14359-1-yajun.deng@linux.dev>
+        id S230122AbhGMEqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 00:46:19 -0400
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:41765 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229470AbhGMEqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 00:46:19 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 7B21632008FA;
+        Tue, 13 Jul 2021 00:43:29 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 13 Jul 2021 00:43:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=vmxs6mKI24WNUXecEoptHIh1qYG
+        OvaWRWtHD0PBgWSA=; b=nurOFU7jp1IWxaBtshahbg4jr1Gbzzz/N3SCwtrf9A/
+        aqE1lRcpum7zRtot0DIrvANvEnAsfN5cjU5Kz+BRjPlJyJFKzGKXK1+wmhCQeBUt
+        6OI9gKqkB1JEA1qNGgmQeKGC0245ajEZQkUVAQSFpae1mdgmJzIj++VXwvptWNoV
+        P4jLsCzD+DNZ7uZujCgQ/gSjNM4wjJnCeiZzurCIM0Nx17hH+uTKW3hR4EOVdqXg
+        JU6eIPVVhzMU+eHAQxqAl0WT+ZXRk1EVZCzsArRKP38Jbq8PcmOZiGwB5+OZXag1
+        qbTdvLYWW5MuGQq1jyol0SlgPSsl3bcQySlHnLvdKuA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=vmxs6m
+        KI24WNUXecEoptHIh1qYGOvaWRWtHD0PBgWSA=; b=oyAKvF6gJqdDlQTglMgLpT
+        4qcMaXw1NW4eWQvv5m7L59LMmI+wzkZZxA6UH06Vje5UwPSfK5tOz8SfTozhl24x
+        tWQBc1zswqDE/FMCRT0oWi5v6/8kAGU/SHvnJI+vphMhB/T/+btEgViFmfqXsdBE
+        /b0f6D6fPxk5+0XceggI5IDAO8lcQFkPTqMd3qsPWpZ/r+Go8xVrD01O2yNaA6Ol
+        KzCD9YL6/vnSa79Uhg5nVqeUOmS+MLnRQuNa7Tp85sLeTCbD7LVec+z8EaCY/Y+Q
+        Fy8XxLDq4mjhK3I79AaRPGM7yCkJgwrWzisYBDFAlt3RZ5+k7DnrrTIOGOGbI/wQ
+        ==
+X-ME-Sender: <xms:8BntYIu8slazLnmjwpq0e_zoEl6j8AVn798XGnH8l8dvuow3h0sZUg>
+    <xme:8BntYFdFmSGRNtFqFjOb7FOB7wa82olVd5SGP0aXFdigMHrDJi52gPTxX0IHN1rw0
+    gjnGVAY2J50qw>
+X-ME-Received: <xmr:8BntYDwII1go2yI5CqzWyO4VACEcE7SjxrX-7a1anre_thah7mPF2gCnL4-eeqR9JCQ3fRdSFM6vxB7SFNfzi2TOmg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeggdehvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
+    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuheejgf
+    ffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecuvehluhhsthgv
+    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrd
+    gtohhm
+X-ME-Proxy: <xmx:8BntYLPVg-TlH1-M6DfSLz9WS4WI-siJNTnRARVD4YQIyCbrc-iBUQ>
+    <xmx:8BntYI-TaDWrTbKPZ1YOXdIvB17B2HRtRxhdwR82XfshrwWHdumIbQ>
+    <xmx:8BntYDXq0zyDP6Y12WQqoC3j7M5GxCFYgoi5hLCp6VRH3UZJ8dF2fA>
+    <xmx:8RntYMR31BmV550b3r00CWMjQyVJBGuxe0gyKT4Nr82_AqZzy0vF-A>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 13 Jul 2021 00:43:28 -0400 (EDT)
+Date:   Tue, 13 Jul 2021 06:43:26 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Xiaochen Zou <xzou017@ucr.edu>
+Cc:     kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: Use-after-free access in j1939_session_deactivate
+Message-ID: <YO0Z7s8p7CoetxdW@kroah.com>
+References: <CAE1SXrtrg4CrWg_rZLUHqWWFHkGnK5Ez0PExJq8-A9d5NjE_-w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAE1SXrtrg4CrWg_rZLUHqWWFHkGnK5Ez0PExJq8-A9d5NjE_-w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It has 'if (err >0 )' statement in nlmsg_unicast(), so use nlmsg_unicast()
-instead of netlink_unicast(), this looks more concise.
+On Mon, Jul 12, 2021 at 03:40:46PM -0700, Xiaochen Zou wrote:
+> Hi,
+> It looks like there are multiple use-after-free accesses in
+> j1939_session_deactivate()
+> 
+> static bool j1939_session_deactivate(struct j1939_session *session)
+> {
+> bool active;
+> 
+> j1939_session_list_lock(session->priv);
+> active = j1939_session_deactivate_locked(session); //session can be freed inside
+> j1939_session_list_unlock(session->priv); // It causes UAF read and write
+> 
+> return active;
+> }
+> 
+> session can be freed by
+> j1939_session_deactivate_locked->j1939_session_put->__j1939_session_release->j1939_session_destroy->kfree.
+> Therefore it makes the unlock function perform UAF access.
 
-v2: remove the change in netfilter.
+Great, can you make up a patch to fix this issue so you can get credit
+for finding and solving it?
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/ipv4/fib_frontend.c  | 2 +-
- net/ipv4/inet_diag.c     | 5 +----
- net/ipv4/raw_diag.c      | 7 ++-----
- net/ipv4/udp_diag.c      | 6 ++----
- net/mptcp/mptcp_diag.c   | 6 ++----
- net/netlink/af_netlink.c | 2 +-
- net/sctp/diag.c          | 6 ++----
- net/unix/diag.c          | 6 ++----
- 8 files changed, 13 insertions(+), 27 deletions(-)
+thanks,
 
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index a933bd6345b1..9fe13e4f5d08 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1376,7 +1376,7 @@ static void nl_fib_input(struct sk_buff *skb)
- 	portid = NETLINK_CB(skb).portid;      /* netlink portid */
- 	NETLINK_CB(skb).portid = 0;        /* from kernel */
- 	NETLINK_CB(skb).dst_group = 0;  /* unicast */
--	netlink_unicast(net->ipv4.fibnl, skb, portid, MSG_DONTWAIT);
-+	nlmsg_unicast(net->ipv4.fibnl, skb, portid);
- }
- 
- static int __net_init nl_fib_lookup_init(struct net *net)
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index e65f4ef024a4..ef7897226f08 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -580,10 +580,7 @@ int inet_diag_dump_one_icsk(struct inet_hashinfo *hashinfo,
- 		nlmsg_free(rep);
- 		goto out;
- 	}
--	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
- 
- out:
- 	if (sk)
-diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
-index 1b5b8af27aaf..ccacbde30a2c 100644
---- a/net/ipv4/raw_diag.c
-+++ b/net/ipv4/raw_diag.c
-@@ -119,11 +119,8 @@ static int raw_diag_dump_one(struct netlink_callback *cb,
- 		return err;
- 	}
- 
--	err = netlink_unicast(net->diag_nlsk, rep,
--			      NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
-+
- 	return err;
- }
- 
-diff --git a/net/ipv4/udp_diag.c b/net/ipv4/udp_diag.c
-index b2cee9a307d4..1ed8c4d78e5c 100644
---- a/net/ipv4/udp_diag.c
-+++ b/net/ipv4/udp_diag.c
-@@ -77,10 +77,8 @@ static int udp_dump_one(struct udp_table *tbl,
- 		kfree_skb(rep);
- 		goto out;
- 	}
--	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
-+
- out:
- 	if (sk)
- 		sock_put(sk);
-diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
-index 8f88ddeab6a2..f48eb6315bbb 100644
---- a/net/mptcp/mptcp_diag.c
-+++ b/net/mptcp/mptcp_diag.c
-@@ -57,10 +57,8 @@ static int mptcp_diag_dump_one(struct netlink_callback *cb,
- 		kfree_skb(rep);
- 		goto out;
- 	}
--	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
-+
- out:
- 	sock_put(sk);
- 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index d233ac4a91b6..380f95aacdec 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2471,7 +2471,7 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 
- 	nlmsg_end(skb, rep);
- 
--	netlink_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid, MSG_DONTWAIT);
-+	nlmsg_unicast(in_skb->sk, skb, NETLINK_CB(in_skb).portid);
- }
- EXPORT_SYMBOL(netlink_ack);
- 
-diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index 493fc01e5d2b..760b367644c1 100644
---- a/net/sctp/diag.c
-+++ b/net/sctp/diag.c
-@@ -284,10 +284,8 @@ static int sctp_tsp_dump_one(struct sctp_transport *tsp, void *p)
- 		goto out;
- 	}
- 
--	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
-+
- out:
- 	return err;
- }
-diff --git a/net/unix/diag.c b/net/unix/diag.c
-index 9ff64f9df1f3..7e7d7f45685a 100644
---- a/net/unix/diag.c
-+++ b/net/unix/diag.c
-@@ -295,10 +295,8 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- 
- 		goto again;
- 	}
--	err = netlink_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid,
--			      MSG_DONTWAIT);
--	if (err > 0)
--		err = 0;
-+	err = nlmsg_unicast(net->diag_nlsk, rep, NETLINK_CB(in_skb).portid);
-+
- out:
- 	if (sk)
- 		sock_put(sk);
--- 
-2.32.0
-
+greg k-h
