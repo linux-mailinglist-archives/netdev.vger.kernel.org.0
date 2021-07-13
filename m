@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 239623C708C
-	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:40:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 805B73C7092
+	for <lists+netdev@lfdr.de>; Tue, 13 Jul 2021 14:43:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236247AbhGMMm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 08:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236098AbhGMMm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 08:42:58 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6614FC0613DD;
-        Tue, 13 Jul 2021 05:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=21fOiOl5AIb9k8jOb9DFHX2kphCTyaUt0xG/F43XaZg=; b=jVHxEXQbkgT1ZHlGrYA/TifJEI
-        5u+Ow777DU0VDfM5msD7HCkdgv+D3fkhdi1YWY9zgsL3D8Cg8uUzgCie6Nkrq0HUU1Lqw2QLitbC4
-        aPPHzf1EKiHjLSWJJLGfcI7kgMnQnzakd7Wi82qgH9c4Jy2suQzqkeMFswAfih1LwOMS2FdqcLuVM
-        s0jrOhS+Su19G0BpV+NCMGcXaH0zV5Aj7zNvxPhzoR2pp5N9VojgVH1m5vYCI19wKYpsRjbgidkjF
-        6eLTCc1mnLyQzHTX+H/MTGxaRTO5avSyknan9YqAdih1HlK2lCffZKHePGCdGAisBY5bHoOdXovGF
-        cy4z9kkg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m3HgV-0016Vd-GU; Tue, 13 Jul 2021 12:38:53 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D0A3A987782; Tue, 13 Jul 2021 14:38:45 +0200 (CEST)
-Date:   Tue, 13 Jul 2021 14:38:45 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Thomas Graf <tgraf@suug.ch>,
-        Andrew Morton <akpm@linux-foundation.org>, jic23@kernel.org,
-        linux@rasmusvillemoes.dk
-Subject: Re: [PATCH v1 1/3] kernel.h: Don't pollute header with single user
- macros
-Message-ID: <20210713123845.GA4170@worktop.programming.kicks-ass.net>
-References: <20210713084541.7958-1-andriy.shevchenko@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210713084541.7958-1-andriy.shevchenko@linux.intel.com>
+        id S236205AbhGMMqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 08:46:15 -0400
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:24985 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236098AbhGMMqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 08:46:14 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=chengshuyi@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0UfgPhp1_1626180194;
+Received: from localhost(mailfrom:chengshuyi@linux.alibaba.com fp:SMTPD_---0UfgPhp1_1626180194)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 13 Jul 2021 20:43:22 +0800
+From:   Shuyi Cheng <chengshuyi@linux.alibaba.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Shuyi Cheng <chengshuyi@linux.alibaba.com>
+Subject: [PATCH bpf-next v4 0/3] Add btf_custom_path in bpf_obj_open_opts
+Date:   Tue, 13 Jul 2021 20:42:36 +0800
+Message-Id: <1626180159-112996-1-git-send-email-chengshuyi@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 11:45:39AM +0300, Andy Shevchenko wrote:
-> The COUNT_ARGS() and CONCATENATE() macros are used by a single user.
-> Let move them to it.
+This patch set adds the ability to point to a custom BTF for the
+purposes of BPF CO-RE relocations. This is useful for using BPF CO-RE
+on old kernels that don't yet natively support kernel (vmlinux) BTF
+and thus libbpf needs application's help in locating kernel BTF
+generated separately from the kernel itself. This was already possible
+to do through bpf_object__load's attribute struct, but that makes it
+inconvenient to use with BPF skeleton, which only allows to specify
+bpf_object_open_opts during the open step. Thus, add the ability to
+override vmlinux BTF at open time.
 
-That seems to be because people like re-implementing it instead of
-reusing existing ones:
+Patch #1 adds libbpf changes. 
+Patch #2 fixes pre-existing memory leak detected during the code review. 
+Patch #3 switches existing selftests to using open_opts for custom BTF.
 
-arch/x86/include/asm/efi.h:#define __efi_nargs__(_0, _1, _2, _3, _4, _5, _6, _7, n, ...)        \
-arch/x86/include/asm/rmwcc.h:#define __RMWcc_ARGS(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _n, X...) _n
-include/linux/arm-smccc.h:#define ___count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, x, ...) x
-include/linux/kernel.h:#define __COUNT_ARGS(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _n, X...) _n
+Changelog:
+----------
+
+v3: https://lore.kernel.org/bpf/CAEf4BzY2cdT44bfbMus=gei27ViqGE1BtGo6XrErSsOCnqtVJg@mail.gmail.com/T/#m877eed1d4cf0a1d3352d3f3d6c5ff158be45c542
+v3->v4:
+--- Follow Andrii's suggestion to modify cover letter description.
+--- Delete function bpf_object__load_override_btf.
+--- Follow Dan's suggestion to add fixes tag and modify commit msg to patch #2.
+--- Add pathch #3 to switch existing selftests to using open_opts.
+
+v2: https://lore.kernel.org/bpf/CAEf4Bza_ua+tjxdhyy4nZ8Boeo+scipWmr_1xM1pC6N5wyuhAA@mail.gmail.com/T/#mf9cf86ae0ffa96180ac29e4fd12697eb70eccd0f
+v2->v3:
+--- Load the BTF specified by btf_custom_path to btf_vmlinux_override 
+    instead of btf_bmlinux.
+--- Fix the memory leak that may be introduced by the second version 
+    of the patch.
+--- Add a new patch to fix the possible memory leak caused by 
+    obj->kconfig.
+
+v1: https://lore.kernel.org/bpf/CAEf4BzaGjEC4t1OefDo11pj2-HfNy0BLhs_G2UREjRNTmb2u=A@mail.gmail.com/t/#m4d9f7c6761fbd2b436b5dfe491cd864b70225804
+v1->v2:
+-- Change custom_btf_path to btf_custom_path.
+-- If the length of btf_custom_path of bpf_obj_open_opts is too long, 
+   return ERR_PTR(-ENAMETOOLONG).
+-- Add `custom BTF is in addition to vmlinux BTF`
+   with btf_custom_path field.
+
+Shuyi Cheng (3):
+  libbpf: Introduce 'btf_custom_path' to 'bpf_obj_open_opts'
+  libbpf: Fix the possible memory leak on error
+  selftests/bpf: switches existing selftests to using open_opts for custom BTF
+
+ tools/lib/bpf/libbpf.c                             | 42 +++++++++++++++++-----
+ tools/lib/bpf/libbpf.h                             |  9 ++++-
+ .../selftests/bpf/prog_tests/core_autosize.c       | 22 ++++++------
+ .../testing/selftests/bpf/prog_tests/core_reloc.c  | 28 +++++++--------
+ 4 files changed, 66 insertions(+), 35 deletions(-)
+
+-- 
+1.8.3.1
 
