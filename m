@@ -2,93 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A483C8B83
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA9193C8B8C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240144AbhGNTVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 15:21:16 -0400
-Received: from mout.gmx.net ([212.227.15.18]:48889 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230185AbhGNTVM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 15:21:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1626290287;
-        bh=0Vu294fMLWIi7gFkQR70Ggc20BScAncxP5pTxianCVo=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QLHTr+1KaDMeaIooUyH6iPx6kKaUUXbvZ9290LCAN0rZWfYJnObH8KTsPxpEjKkw1
-         OGUdDUTTSMQp4VVPCE7PWIUb0ks82jg2X8zMzzENm7rVOpix9fZ3ku87j2852FVqVx
-         5CLlvdV4ypEd/PzBlmzJqCYMSIckFgbzHOzYCwGY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.67]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MWRRZ-1lejeW1jWF-00XvkV; Wed, 14
- Jul 2021 21:18:07 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     woojung.huh@microchip.com
-Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware process the layer 4 checksum
-Date:   Wed, 14 Jul 2021 21:17:23 +0200
-Message-Id: <20210714191723.31294-3-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
-References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
+        id S240089AbhGNTXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 15:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230129AbhGNTXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 15:23:19 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0340C06175F;
+        Wed, 14 Jul 2021 12:20:26 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id r135so5054271ybc.0;
+        Wed, 14 Jul 2021 12:20:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jjSz1JmEJaotKApoc0SCfbkh4lIXQPiTHol15ysgTs0=;
+        b=d1q07o+6HBG7oYjBg23TbFv555t1qmOmcDJkUv2Xzf6htne/ItLhesZHIqSii3TLg+
+         W+5zQRQzaMkIdnP/NdXzUmfd5qK+u8Q7DXzT6QKsPBjPGDPCrdvmHJK6OYKpWYuwJrSP
+         I/oL4ZaBGSxetWqzlZXIktVa6xf+anEAIPgdN8EkDyVXA8sOuba7ZZ1y6NrttJDqURRL
+         YqtIaDUzRjcIWvJI/WCcaqLrEQaGmSkniX+xw11U0P+TdOPKFrtDia+uR9Qtw4hzw5Wi
+         V2XIIQv0JuN/prYd8nHhGZACuQ21tGgfY54ITUAkII01DMMFcx4gcx90aJ5P6n3WblPb
+         l73Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jjSz1JmEJaotKApoc0SCfbkh4lIXQPiTHol15ysgTs0=;
+        b=LmLI3APJt5muIzAN4gEKhW6EikeGUN0/tV4y62/zBb2UKhk7SL66sB+qVDQnpbBKHS
+         QiYtgUtOuVvlDFKb39Hnk5TV9ovcjhps+jZR/ikeKVVBBihZjV9tAPnU1Tnx0tykTkKr
+         /SpTeWY2PHF63J/7/3HA4GNR4R5N8kb4GUIoP/AyWtXjATh2B1NG5CXXXWSef3ocYya2
+         z7PlpTDa1VkrZRP45YxH/FlJ6D/KLdBhYnsOJ7z3/Bk+rrszCi3GJakqeZ7A8YJnkQUj
+         7kljhwmqywTFukteoNLBnHN1NTLgc8VklE2y6GRGMqQwM7rxouGaViTjwHbzlC8gJjlo
+         UlaA==
+X-Gm-Message-State: AOAM533aorhDESxD6xyHkZpBpX+iBjuMLK2HGORh0VrV6WKj2vIdwgET
+        ih/firMQFYkB5uA18gAB5Ab7vefKBGBqAaIFNZt+SUcoX7wbYQ==
+X-Google-Smtp-Source: ABdhPJyQvZrocf7QPQ2nhuK6uKl8uEmK6X6piIdPdvESIA9xatNnXIpJFGQguAwvs4HOL0wYvl2FDn2IssPgxXa79ZQ=
+X-Received: by 2002:a25:8205:: with SMTP id q5mr15052420ybk.440.1626290425963;
+ Wed, 14 Jul 2021 12:20:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:JCoB5BM+Bai/xCSzcnAL1DpJwVTKmW5Z3yW1PB+KpAG290y0d/2
- nsDriOHoXw8vLXrLGyqKwZJX7CpsFKZUIY41S1ydmFF1CIAhg6tHUqFFE340YBg+uftBTgY
- ilN55HxyelA7ZZAiPyykc0Zq5XQkPD2lRi2ozjqtUaBk3rJb1vAAUqkwTZGkJ4TWZLzU0dH
- lzwcvFsCy6S9gv5qFnQ7w==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Dy0uXD9Ok10=:D3rSzTC6gEaoRX4EfHM7xC
- RJonplED3trLlh7qeMMCKBIEF9MdfWCe/divPw1ewAwaTbj4ZqazDXG5qJaLX29o27zXeWhvy
- 8wFFHRsBpWN6jcMJF/FNFsaw7lNWT7kYRnvh1AY2fRGU0UakrmHmzbRwE0xr09VxMyHhcE5Ak
- mxrl3nsXJ5n5YzX/AIL1BdZaF6Lp+uVoFz//YRv2cDSPIJ42TRVeKJHMq5bm4L3M+HTsPmRZA
- dQO1FoO8uzGhnTRGUAebZu3Zl1JFFa/mraN+arWdPcj1q//9h8jvCsIIGc1zL4/FZw6C7di1n
- xM3TayDXRMWDVj0gvq7Cu8n60JsyLbD7kHicZ83merUjaxygf2LFnBRyzoY8uMlDnZ+OKPbra
- 1vgJTRHHlk/J9C0rz6OABSqbudqQjRI269OtrpcU0xTTLMo3/T15Pqxs6BbtqawJiW+JonsoF
- i1ZfA3Q6Cndb7QHKu4z1WIRpGwkb+Y7Q3AI8CTmFkQSqOlZcPIV4NJNgyTP7CshpgvGl7GMVk
- sz0XDJNpsWSZMK/T8DaySGCdl4ajS/sRu0JoIIQnaB87sFHJ894Y3EdspIYMsgGwSah2YHqVV
- VnFX35OL5mr9LYGv92lm18olFAJlMo/82ZGFZUUk83PrJfEkEW8M/ggsiAxSNJVX3napGCFFA
- UQYR5/HPhMUysE7dscttak8qlMC7NoGOguqZ+a/29rAe3E+TfPI9s4DuCLHdStSUmls5xhTvf
- T9krDnnFtRoHkrEpBVC/odCcEiZMz0BzeXOEJdazvhKGx9BjDJCBdufCwUtQdz7XXBcVx2UVy
- Sf/O94ILGXaM6nIa7u6jHtkKUZlpdARBrs7mSPGcO62+3BbcIfdCUitaP+ntfUVpXWfXrI4mY
- 1gJr60cSEEM+jjwMMHgGlldhA/RTQYZtTrWDi9YeEUTB5a3B/xiKeWvgnwQNROfy2yuokYg5l
- zDJ6KFiWjzAhZuK/2bnkwnST7joDI2EpTfsWY8j3RlWxQFPlyFDxT7IDrpp4+dOb1gTFD2vsW
- hwtx0KtQGItAw2H7IgpwYfKbq35BtG1IGWM1ArOScDGM7MroPgTDrfX9K5f2l2rSAZUbOFDGI
- h5FGQ7yao+gy34MUm7CtdmfX/S3zQ9biyyr+T/cZgi7GvYeyoXGp+TtLw==
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp> <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+In-Reply-To: <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Wed, 14 Jul 2021 12:20:15 -0700
+Message-ID: <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+Subject: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock section
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SWYgdGhlIGNoZWNrc3VtIGNhbGN1bGF0aW9uIGlzIG9mZmxvYWRlZCB0byB0aGUgbmV0d29yayBk
-ZXZpY2UgKGUuZyBkdWUgdG8KTkVUSUZfRl9IV19DU1VNIGluaGVyaXRlZCBmcm9tIHRoZSBEU0Eg
-bWFzdGVyIGRldmljZSksIHRoZSBjYWxjdWxhdGVkCmxheWVyIDQgY2hlY2tzdW0gaXMgaW5jb3Jy
-ZWN0LiBUaGlzIGlzIHNpbmNlIHRoZSBEU0EgdGFnIHdoaWNoIGlzIHBsYWNlZAphZnRlciB0aGUg
-bGF5ZXIgNCBkYXRhIGlzIHNlZW4gYXMgYSBwYXJ0IG9mIHRoZSBkYXRhIHBvcnRpb24gYW5kIHRo
-dXMKZXJyb3JuZW91c2x5IGluY2x1ZGVkIGludG8gdGhlIGNoZWNrc3VtIGNhbGN1bGF0aW9uLgpU
-byBhdm9pZCB0aGlzLCBhbHdheXMgY2FsY3VsYXRlIHRoZSBsYXllciA0IGNoZWNrc3VtIGluIHNv
-ZnR3YXJlLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmlsaXBwb0Bn
-bXguZGU+Ci0tLQogbmV0L2RzYS90YWdfa3N6LmMgfCA5ICsrKysrKysrKwogMSBmaWxlIGNoYW5n
-ZWQsIDkgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL25ldC9kc2EvdGFnX2tzei5jIGIvbmV0
-L2RzYS90YWdfa3N6LmMKaW5kZXggMzY0ZjUwOWQ3Y2Q3Li5kNTlmMGU3MDE5ZTIgMTAwNjQ0Ci0t
-LSBhL25ldC9kc2EvdGFnX2tzei5jCisrKyBiL25ldC9kc2EvdGFnX2tzei5jCkBAIC01Niw2ICs1
-Niw5IEBAIHN0YXRpYyBzdHJ1Y3Qgc2tfYnVmZiAqa3N6ODc5NV94bWl0KHN0cnVjdCBza19idWZm
-ICpza2IsIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCiAJaWYgKHNrYl9saW5lYXJpemUoc2tiKSkK
-IAkJcmV0dXJuIE5VTEw7CiAKKwlpZiAoc2tiLT5pcF9zdW1tZWQgPT0gQ0hFQ0tTVU1fUEFSVElB
-TCAmJiBza2JfY2hlY2tzdW1faGVscChza2IpKQorCQlyZXR1cm4gTlVMTDsKKwogCS8qIFRhZyBl
-bmNvZGluZyAqLwogCXRhZyA9IHNrYl9wdXQoc2tiLCBLU1pfSU5HUkVTU19UQUdfTEVOKTsKIAlh
-ZGRyID0gc2tiX21hY19oZWFkZXIoc2tiKTsKQEAgLTEyMCw2ICsxMjMsOSBAQCBzdGF0aWMgc3Ry
-dWN0IHNrX2J1ZmYgKmtzejk0NzdfeG1pdChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLAogCWlmIChza2Jf
-bGluZWFyaXplKHNrYikpCiAJCXJldHVybiBOVUxMOwogCisJaWYgKHNrYi0+aXBfc3VtbWVkID09
-IENIRUNLU1VNX1BBUlRJQUwgJiYgc2tiX2NoZWNrc3VtX2hlbHAoc2tiKSkKKwkJcmV0dXJuIE5V
-TEw7CisKIAkvKiBUYWcgZW5jb2RpbmcgKi8KIAl0YWcgPSBza2JfcHV0KHNrYiwgS1NaOTQ3N19J
-TkdSRVNTX1RBR19MRU4pOwogCWFkZHIgPSBza2JfbWFjX2hlYWRlcihza2IpOwpAQCAtMTczLDYg
-KzE3OSw5IEBAIHN0YXRpYyBzdHJ1Y3Qgc2tfYnVmZiAqa3N6OTg5M194bWl0KHN0cnVjdCBza19i
-dWZmICpza2IsCiAJaWYgKHNrYl9saW5lYXJpemUoc2tiKSkKIAkJcmV0dXJuIE5VTEw7CiAKKwlp
-ZiAoc2tiLT5pcF9zdW1tZWQgPT0gQ0hFQ0tTVU1fUEFSVElBTCAmJiBza2JfY2hlY2tzdW1faGVs
-cChza2IpKQorCQlyZXR1cm4gTlVMTDsKKwogCS8qIFRhZyBlbmNvZGluZyAqLwogCXRhZyA9IHNr
-Yl9wdXQoc2tiLCBLU1pfSU5HUkVTU19UQUdfTEVOKTsKIAlhZGRyID0gc2tiX21hY19oZWFkZXIo
-c2tiKTsKLS0gCjIuMzIuMAoK
+Hi Tetsuo,
+
+On Tue, Jul 13, 2021 at 4:28 AM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> syzbot is hitting might_sleep() warning at hci_sock_dev_event() due to
+> calling lock_sock() with rw spinlock held [1]. Among three possible
+> approaches [2], this patch chose holding a refcount via sock_hold() and
+> revalidating the element via sk_hashed().
+>
+> Link: https://syzkaller.appspot.com/bug?extid=a5df189917e79d5e59c9 [1]
+> Link: https://lkml.kernel.org/r/05535d35-30d6-28b6-067e-272d01679d24@i-love.sakura.ne.jp [2]
+> Reported-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> Tested-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
+> Fixes: e305509e678b3a4a ("Bluetooth: use correct lock to prevent UAF of hdev object")
+> ---
+> Changes in v3:
+>   Don't use unlocked hci_pi(sk)->hdev != hdev test, for it is racy.
+>   No need to defer hci_dev_put(hdev), for it can't be the last reference.
+>
+> Changes in v2:
+>   Take hci_sk_list.lock for write in case bt_sock_unlink() is called after
+>   sk_hashed(sk) test, and defer hci_dev_put(hdev) till schedulable context.
+
+How about we revert back to use bh_lock_sock_nested but use
+local_bh_disable like the following patch:
+
+https://patchwork.kernel.org/project/bluetooth/patch/20210713162838.693266-1-desmondcheongzx@gmail.com/
+
+>  net/bluetooth/hci_sock.c | 30 +++++++++++++++++++++++++++++-
+>  1 file changed, 29 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index b04a5a02ecf3..786a06a232fd 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -760,10 +760,18 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>                 struct sock *sk;
+>
+>                 /* Detach sockets from device */
+> +restart:
+>                 read_lock(&hci_sk_list.lock);
+>                 sk_for_each(sk, &hci_sk_list.head) {
+> +                       /* This sock_hold(sk) is safe, for bt_sock_unlink(sk)
+> +                        * is not called yet.
+> +                        */
+> +                       sock_hold(sk);
+> +                       read_unlock(&hci_sk_list.lock);
+>                         lock_sock(sk);
+> -                       if (hci_pi(sk)->hdev == hdev) {
+> +                       write_lock(&hci_sk_list.lock);
+> +                       /* Check that bt_sock_unlink(sk) is not called yet. */
+> +                       if (sk_hashed(sk) && hci_pi(sk)->hdev == hdev) {
+>                                 hci_pi(sk)->hdev = NULL;
+>                                 sk->sk_err = EPIPE;
+>                                 sk->sk_state = BT_OPEN;
+> @@ -771,7 +779,27 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>
+>                                 hci_dev_put(hdev);
+>                         }
+> +                       write_unlock(&hci_sk_list.lock);
+>                         release_sock(sk);
+> +                       read_lock(&hci_sk_list.lock);
+> +                       /* If bt_sock_unlink(sk) is not called yet, we can
+> +                        * continue iteration. We can use __sock_put(sk) here
+> +                        * because hci_sock_release() will call sock_put(sk)
+> +                        * after bt_sock_unlink(sk).
+> +                        */
+> +                       if (sk_hashed(sk)) {
+> +                               __sock_put(sk);
+> +                               continue;
+> +                       }
+> +                       /* Otherwise, we need to restart iteration, for the
+> +                        * next socket pointed by sk->next might be already
+> +                        * gone. We can't use __sock_put(sk) here because
+> +                        * hci_sock_release() might have already called
+> +                        * sock_put(sk) after bt_sock_unlink(sk).
+> +                        */
+> +                       read_unlock(&hci_sk_list.lock);
+> +                       sock_put(sk);
+> +                       goto restart;
+>                 }
+>                 read_unlock(&hci_sk_list.lock);
+>         }
+> --
+> 2.18.4
+>
+
+
+-- 
+Luiz Augusto von Dentz
