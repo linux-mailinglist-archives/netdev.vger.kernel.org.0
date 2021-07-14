@@ -2,101 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B8F3C87F0
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:47:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2F053C87FA
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239701AbhGNPur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 11:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232318AbhGNPur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 11:50:47 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474C5C06175F
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 08:47:55 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id i5so4409530lfe.2
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 08:47:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lgEu55wIweQXk+rwT4ltUksXYjzK50iHIOkTGVvZXrI=;
-        b=sauXd+CpZoMmcv+/BbUhRDJdIDPk23FAQd0VIkzxdllLuFe3Xt9WjAysw6/JPDWxYI
-         uqnp9qIJReFeoVxbIJbP/ICYw+GFaX4YfvSce+pzf08bZn82TUTqSQeq9yZB9sTWwXNq
-         3HNk7Cb/7/FfSDoCRPVv1LJ7qVNAhngqMnyjM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lgEu55wIweQXk+rwT4ltUksXYjzK50iHIOkTGVvZXrI=;
-        b=ppK8ut+dUb6EMh5LJmggurHrtbl0jbCNVtjtHCbnatnrdN8fjeOmHFxu9VtjtVEYr8
-         dsUIg5CN3Dmcq5iWQ0H/C25+9+GFzZ2wX7ntxYXhxYbilOpP//W5PQcVHg9PUb/beyOk
-         fCwluslOWUNjPT5e8PbdZCrKktcxEVUAdn9d+7xKQZiVQbuFIbvqTHOBhOFn+FB8aoQL
-         k79qK4DOWzf+5XWKiFVLHmZ2uMc8loiUDICW9GU++bAPeuHPHkoN1GHaf+8aiZl3i5NE
-         Q/Z0B3N1RqUl5xANQPcGjMpOfYPmCsbOeLjju7ZUmULDrezG6CCGiFKXcMzJoBSvVcPb
-         NvsQ==
-X-Gm-Message-State: AOAM531QYYCNF0yIvi97BuAMwl6knlV4JKpRIezkXhqYcgx8LiJrpLn8
-        XfJu2ZS6ssarz2u3XAhAdOq9ug==
-X-Google-Smtp-Source: ABdhPJzDI7Z0S9YxxtZKjQ+5IkN9C4mlUg8kVpEkDNvk7IeNJGYLNE/oCsPxTiqqoDlN+4ntGRijCw==
-X-Received: by 2002:a19:4411:: with SMTP id r17mr8784205lfa.82.1626277672893;
-        Wed, 14 Jul 2021 08:47:52 -0700 (PDT)
-Received: from cloudflare.com (79.191.183.149.ipv4.supernova.orange.pl. [79.191.183.149])
-        by smtp.gmail.com with ESMTPSA id e20sm265174lji.140.2021.07.14.08.47.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jul 2021 08:47:52 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf v2] bpf, sockmap, udp: sk_prot needs inuse_idx set for proc stats
-Date:   Wed, 14 Jul 2021 17:47:50 +0200
-Message-Id: <20210714154750.528206-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.31.1
+        id S239734AbhGNPxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 11:53:08 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:35653 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239625AbhGNPxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 11:53:07 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7063F5C017D;
+        Wed, 14 Jul 2021 11:50:15 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 14 Jul 2021 11:50:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ipmtRU
+        Igf3L0in0VPeRm8RyFb6KTk8DzNVYnk43l6F4=; b=XzleKI3T9tGTqYto49SUZ/
+        0Ogn296RCdDA5VKZF67nQEYwHOkt/j8OvIr6/S3ykMz0lowucHMdM+VvBQWnQH9+
+        JRJ+u/EW2zxx9WU8pakPxVGC1fQj1Dgz1SgDrBYJBw1N3BOQxa6WZIAG2yM2UqR4
+        ILi3vg++owqKcd6pHHPXXrFUKu7+z0qniK7AUZtfD3rHHZSM5kkv1+zOH/k858YA
+        f39ixV6fgIPFqvJ3NmRnzB2zGsuUqn3ZzSwgga2HN0NCiGD/itc68PhKHdNBAcQV
+        /9rd79jqG2XUlJFjHwStxf2HRz4kPNCTE6+Nzsvb5qkOrRL+4JQR0X+4ghSbw2oQ
+        ==
+X-ME-Sender: <xms:twfvYFWsvCsKay1Iq4ha84H6YJNuo9sfYhFOek2bEX5LtfhoTDdp_w>
+    <xme:twfvYFnae_6HWVw66hAqBM9RP7L6eC-L-5fBetlJuqBsLoKHNZQY84FY8IXI9X42h
+    09V0Z8myf38G_U>
+X-ME-Received: <xmr:twfvYBZGVBDiW8taH0jgjPlQ8p85LUgqVU1BwiIcuUf2cB2Dqvglm-HPOENlkzLskHGQ9X68cXL8xmrtFyl0kXUBGo07jQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudekgdeltdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:twfvYIUHBaDGZBFVQxACPkUTOC5mwUC0_cuTet1TvjMfgku1akHvzQ>
+    <xmx:twfvYPl1xSe1BwzHE3eFCMw8LLHFZ5d70XfA4qA4eKxrQQi4yfSqSA>
+    <xmx:twfvYFeNg4eXLs2-jBdn4vVaamz9O84q5b-FJHar7i5JxJCE4CAT0Q>
+    <xmx:twfvYKvxwW3TYqmACVbHQDNMaaQ_5-83WH8tafBRfG4G0p2fxjSwjA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 14 Jul 2021 11:50:14 -0400 (EDT)
+Date:   Wed, 14 Jul 2021 18:50:09 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     jiri@nvidia.com, idosch@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: switchdev: Simplify 'mlxsw_sp_mc_write_mdb_entry()'
+Message-ID: <YO8HsWjq0Y1S08Uj@shredder>
+References: <fbc480268644caf24aef68a3b893bdaef71d7306.1626251484.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fbc480268644caf24aef68a3b893bdaef71d7306.1626251484.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Proc socket stats use sk_prot->inuse_idx value to record inuse sock stats.
-We currently do not set this correctly from sockmap side. The result is
-reading sock stats '/proc/net/sockstat' gives incorrect values. The
-socket counter is incremented correctly, but because we don't set the
-counter correctly when we replace sk_prot we may omit the decrement.
+On Wed, Jul 14, 2021 at 10:32:33AM +0200, Christophe JAILLET wrote:
+> Use 'bitmap_alloc()/bitmap_free()' instead of hand-writing it.
+> This makes the code less verbose.
+> 
+> Also, use 'bitmap_alloc()' instead of 'bitmap_zalloc()' because the bitmap
+> is fully overridden by a 'bitmap_copy()' call just after its allocation.
+> 
+> While at it, remove an extra and unneeded space.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-To get the correct inuse_idx value move the core_initcall that initializes
-the udp proto handlers to late_initcall. This way it is initialized after
-UDP has the chance to assign the inuse_idx value from the register protocol
-handler.
+For net-next:
 
-Fixes: edc6741cc660 ("bpf: Add sockmap hooks for UDP sockets")
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-v2:
-- Fixed "Fixes" tag (Cong Wang)
+Note that net-next is closed [1] so you might need to re-submit, if it
+does not open soon.
 
- net/ipv4/udp_bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for the patch.
 
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 45b8782aec0c..9f5a5cdc38e6 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -134,7 +134,7 @@ static int __init udp_bpf_v4_build_proto(void)
- 	udp_bpf_rebuild_protos(&udp_bpf_prots[UDP_BPF_IPV4], &udp_prot);
- 	return 0;
- }
--core_initcall(udp_bpf_v4_build_proto);
-+late_initcall(udp_bpf_v4_build_proto);
- 
- int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
- {
--- 
-2.31.1
-
+[1] http://vger.kernel.org/~davem/net-next.html
