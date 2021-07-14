@@ -2,156 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9193C8B8C
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA89A3C8BA2
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240089AbhGNTXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 15:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        id S229581AbhGNT3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 15:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230129AbhGNTXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 15:23:19 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0340C06175F;
-        Wed, 14 Jul 2021 12:20:26 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id r135so5054271ybc.0;
-        Wed, 14 Jul 2021 12:20:26 -0700 (PDT)
+        with ESMTP id S229506AbhGNT3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 15:29:02 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057F1C06175F;
+        Wed, 14 Jul 2021 12:26:10 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id 22so5455570lfy.12;
+        Wed, 14 Jul 2021 12:26:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jjSz1JmEJaotKApoc0SCfbkh4lIXQPiTHol15ysgTs0=;
-        b=d1q07o+6HBG7oYjBg23TbFv555t1qmOmcDJkUv2Xzf6htne/ItLhesZHIqSii3TLg+
-         W+5zQRQzaMkIdnP/NdXzUmfd5qK+u8Q7DXzT6QKsPBjPGDPCrdvmHJK6OYKpWYuwJrSP
-         I/oL4ZaBGSxetWqzlZXIktVa6xf+anEAIPgdN8EkDyVXA8sOuba7ZZ1y6NrttJDqURRL
-         YqtIaDUzRjcIWvJI/WCcaqLrEQaGmSkniX+xw11U0P+TdOPKFrtDia+uR9Qtw4hzw5Wi
-         V2XIIQv0JuN/prYd8nHhGZACuQ21tGgfY54ITUAkII01DMMFcx4gcx90aJ5P6n3WblPb
-         l73Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5z77xaqgcAqQS574mQicaaSoe0tH1/ryQFhzvKaFXvk=;
+        b=sGr1dk+k+2PVV6xOZ5MfjqYFVUsiyv0MiYKp670dHKV/DCcfb+1Mcy+z/ZCFOg0ISb
+         OJdgw+OHPmhZ1iAHtoRJUvZ9SN/t+QD3JXgmsA1MWQjHce2Lxh1CGmuCDyT0BhjV+mJg
+         P6Z6uXdK1TJxbHXluJl+8rGTaPpmW8x5tAIootQ2p4bz2KkiY7z9UoZr862s3wXwZJGX
+         moyF6DRyj+HaCUO4DTcqb71L0l7a6Pw1vK7GIjf/xOBjic8h1Ed1NIcI5+94ptGzYlU1
+         aN3JN91moEPkObC7PMc8ygt2lMtHYVQ9aD0Tm+c4gfYJ8hOltXGK7Fuw16DotiZOzuA6
+         BJpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jjSz1JmEJaotKApoc0SCfbkh4lIXQPiTHol15ysgTs0=;
-        b=LmLI3APJt5muIzAN4gEKhW6EikeGUN0/tV4y62/zBb2UKhk7SL66sB+qVDQnpbBKHS
-         QiYtgUtOuVvlDFKb39Hnk5TV9ovcjhps+jZR/ikeKVVBBihZjV9tAPnU1Tnx0tykTkKr
-         /SpTeWY2PHF63J/7/3HA4GNR4R5N8kb4GUIoP/AyWtXjATh2B1NG5CXXXWSef3ocYya2
-         z7PlpTDa1VkrZRP45YxH/FlJ6D/KLdBhYnsOJ7z3/Bk+rrszCi3GJakqeZ7A8YJnkQUj
-         7kljhwmqywTFukteoNLBnHN1NTLgc8VklE2y6GRGMqQwM7rxouGaViTjwHbzlC8gJjlo
-         UlaA==
-X-Gm-Message-State: AOAM533aorhDESxD6xyHkZpBpX+iBjuMLK2HGORh0VrV6WKj2vIdwgET
-        ih/firMQFYkB5uA18gAB5Ab7vefKBGBqAaIFNZt+SUcoX7wbYQ==
-X-Google-Smtp-Source: ABdhPJyQvZrocf7QPQ2nhuK6uKl8uEmK6X6piIdPdvESIA9xatNnXIpJFGQguAwvs4HOL0wYvl2FDn2IssPgxXa79ZQ=
-X-Received: by 2002:a25:8205:: with SMTP id q5mr15052420ybk.440.1626290425963;
- Wed, 14 Jul 2021 12:20:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp> <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
-In-Reply-To: <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 14 Jul 2021 12:20:15 -0700
-Message-ID: <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
-Subject: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock section
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5z77xaqgcAqQS574mQicaaSoe0tH1/ryQFhzvKaFXvk=;
+        b=HWhcKSnau+6sTD2VcvKb3HHcifMRnoXJUCeoQR7+ru5A/WqckgqEa0N+xhzUbCfVh7
+         R8LQL4zkhlfueaP6VvEYHuwIh/nzvAzYaaw3HFhvay+VblZTgHsJuFoDgyEHEAhfdd5F
+         WjVraWmOQ/Xfv7iuf6B6Ez9BbhT75Rk7Kg0rCBC/pTs88w8a0qQGEmG89/i+427KX5rm
+         5lwm7E9HVGYU3ftFA27MmxyHZpWq7jsNgHP0Fan8ooU58QaxKL5ruyrc+NyWpig15Pbp
+         nKCsPzVSJzfmAxu5m9uid9tYw5XX0QPhE/phgVNpuhcE0GilpyP31Xv/Et8NrcQpkDPC
+         7vVA==
+X-Gm-Message-State: AOAM531UoxRhValRhkbJlY99oxBWyWVyJoJXfn09xFN40VuUqMNw+arF
+        I2qcaYiTxGXsI9etCJowWxU=
+X-Google-Smtp-Source: ABdhPJwZ7ygrDubZJW72ZUOVUjXjqomTBBMDhWMnQmbE0RJPyTMKBV546hy4a+ClkkxW2tcgw7pAAg==
+X-Received: by 2002:ac2:4c49:: with SMTP id o9mr8961196lfk.212.1626290768377;
+        Wed, 14 Jul 2021 12:26:08 -0700 (PDT)
+Received: from [192.168.1.102] ([31.173.80.53])
+        by smtp.gmail.com with ESMTPSA id e12sm357214lji.90.2021.07.14.12.26.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Jul 2021 12:26:07 -0700 (PDT)
+Subject: Re: [PATCH/RFC 0/2] Add Gigabit Ethernet driver support
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Lin Ma <linma@zju.edu.cn>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <db9c3972-8b55-e0df-3101-20aa38eba1b1@gmail.com>
+Date:   Wed, 14 Jul 2021 22:26:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+MIME-Version: 1.0
+In-Reply-To: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tetsuo,
+On 7/14/21 5:54 PM, Biju Das wrote:
 
-On Tue, Jul 13, 2021 at 4:28 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> syzbot is hitting might_sleep() warning at hci_sock_dev_event() due to
-> calling lock_sock() with rw spinlock held [1]. Among three possible
-> approaches [2], this patch chose holding a refcount via sock_hold() and
-> revalidating the element via sk_hashed().
->
-> Link: https://syzkaller.appspot.com/bug?extid=a5df189917e79d5e59c9 [1]
-> Link: https://lkml.kernel.org/r/05535d35-30d6-28b6-067e-272d01679d24@i-love.sakura.ne.jp [2]
-> Reported-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Tested-by: syzbot <syzbot+a5df189917e79d5e59c9@syzkaller.appspotmail.com>
-> Fixes: e305509e678b3a4a ("Bluetooth: use correct lock to prevent UAF of hdev object")
-> ---
-> Changes in v3:
->   Don't use unlocked hci_pi(sk)->hdev != hdev test, for it is racy.
->   No need to defer hci_dev_put(hdev), for it can't be the last reference.
->
-> Changes in v2:
->   Take hci_sk_list.lock for write in case bt_sock_unlink() is called after
->   sk_hashed(sk) test, and defer hci_dev_put(hdev) till schedulable context.
+> The DMAC and EMAC blocks of Gigabit Ethernet IP is almost
+> similar to Ethernet AVB.
+> 
+> The Gigabit Etherner IP consists of Ethernet controller (E-MAC),
+> Internal TCP/IP Offload Engine (TOE) and Dedicated Direct memory
+> access controller (DMAC).
 
-How about we revert back to use bh_lock_sock_nested but use
-local_bh_disable like the following patch:
+   Do you have a mnaual for this SoC? I haven't found any...
 
-https://patchwork.kernel.org/project/bluetooth/patch/20210713162838.693266-1-desmondcheongzx@gmail.com/
+> With few canges in driver, we can support Gigabit ethernet driver as well.
+> I have prototyped the driver and tested with renesas-drivers master branch.
+> 
+> Please share your valuable comments.
 
->  net/bluetooth/hci_sock.c | 30 +++++++++++++++++++++++++++++-
->  1 file changed, 29 insertions(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-> index b04a5a02ecf3..786a06a232fd 100644
-> --- a/net/bluetooth/hci_sock.c
-> +++ b/net/bluetooth/hci_sock.c
-> @@ -760,10 +760,18 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
->                 struct sock *sk;
->
->                 /* Detach sockets from device */
-> +restart:
->                 read_lock(&hci_sk_list.lock);
->                 sk_for_each(sk, &hci_sk_list.head) {
-> +                       /* This sock_hold(sk) is safe, for bt_sock_unlink(sk)
-> +                        * is not called yet.
-> +                        */
-> +                       sock_hold(sk);
-> +                       read_unlock(&hci_sk_list.lock);
->                         lock_sock(sk);
-> -                       if (hci_pi(sk)->hdev == hdev) {
-> +                       write_lock(&hci_sk_list.lock);
-> +                       /* Check that bt_sock_unlink(sk) is not called yet. */
-> +                       if (sk_hashed(sk) && hci_pi(sk)->hdev == hdev) {
->                                 hci_pi(sk)->hdev = NULL;
->                                 sk->sk_err = EPIPE;
->                                 sk->sk_state = BT_OPEN;
-> @@ -771,7 +779,27 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
->
->                                 hci_dev_put(hdev);
->                         }
-> +                       write_unlock(&hci_sk_list.lock);
->                         release_sock(sk);
-> +                       read_lock(&hci_sk_list.lock);
-> +                       /* If bt_sock_unlink(sk) is not called yet, we can
-> +                        * continue iteration. We can use __sock_put(sk) here
-> +                        * because hci_sock_release() will call sock_put(sk)
-> +                        * after bt_sock_unlink(sk).
-> +                        */
-> +                       if (sk_hashed(sk)) {
-> +                               __sock_put(sk);
-> +                               continue;
-> +                       }
-> +                       /* Otherwise, we need to restart iteration, for the
-> +                        * next socket pointed by sk->next might be already
-> +                        * gone. We can't use __sock_put(sk) here because
-> +                        * hci_sock_release() might have already called
-> +                        * sock_put(sk) after bt_sock_unlink(sk).
-> +                        */
-> +                       read_unlock(&hci_sk_list.lock);
-> +                       sock_put(sk);
-> +                       goto restart;
->                 }
->                 read_unlock(&hci_sk_list.lock);
->         }
-> --
-> 2.18.4
->
+   Commented on the patch 1/2 already, will continue with patch 2/2 review
+tomorrow...
 
+[...]
 
--- 
-Luiz Augusto von Dentz
+MBR, Sergei
