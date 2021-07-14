@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD363C81BA
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C64BA3C81B7
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:35:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238889AbhGNJiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 05:38:24 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15012 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238362AbhGNJiT (ORCPT
+        id S238860AbhGNJiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 05:38:21 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:6925 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238337AbhGNJiT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:38:19 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GPsj50DW4zbc2x;
-        Wed, 14 Jul 2021 17:32:09 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GPshn1tjgz7Bjs;
+        Wed, 14 Jul 2021 17:31:53 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Wed, 14 Jul 2021 17:35:26 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Jul 2021 17:35:25 +0800
+ 15.1.2176.2; Wed, 14 Jul 2021 17:35:26 +0800
 From:   Yunsheng Lin <linyunsheng@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
@@ -40,9 +40,9 @@ CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
         <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH rfc v5 2/4] page_pool: add interface to manipulate frag count in page pool
-Date:   Wed, 14 Jul 2021 17:34:43 +0800
-Message-ID: <1626255285-5079-3-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH rfc v5 3/4] page_pool: add frag page recycling support in page pool
+Date:   Wed, 14 Jul 2021 17:34:44 +0800
+Message-ID: <1626255285-5079-4-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
 References: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
@@ -56,150 +56,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As suggested by Alexander, "A DMA mapping should be page
-aligned anyway so the lower 12 bits would be reserved 0",
-so it might make more sense to repurpose the lower 12 bits
-of the dma address to store the frag count for frag page
-support in page pool for 32 bit systems with 64 bit dma,
-which should be rare those days.
+Currently page pool only support page recycling when there
+is only one user of the page, and the split page reusing
+implemented in the most driver can not use the page pool as
+bing-pong way of reusing requires the multi user support in
+page pool.
 
-For normal system, the dma_addr[1] in 'struct page' is not
-used, so we can reuse one of the dma_addr for storing frag
-count, which means how many frags this page might be splited
-to.
+Those reusing or recycling has below limitations:
+1. page from page pool can only be used be one user in order
+   for the page recycling to happen.
+2. Bing-pong way of reusing in most driver does not support
+   multi desc using different part of the same page in order
+   to save memory.
 
-The PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to decide
-where to store the frag count, as the "sizeof(dma_addr_t) >
-sizeof(unsigned long)" is false for most systems those days,
-so hopefully the compiler will optimize out the unused code
-for those systems.
-
-The newly added page_pool_set_frag_count() should be called
-before the page is passed to any user. Otherwise, call the
-newly added page_pool_atomic_sub_frag_count_return().
+So add multi-users support and frag page recycling in page
+pool to overcome the above limitation.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- include/linux/mm_types.h |  8 +++++--
- include/net/page_pool.h  | 54 ++++++++++++++++++++++++++++++++++++++++++------
- net/core/page_pool.c     | 10 +++++++++
- 3 files changed, 64 insertions(+), 8 deletions(-)
+ include/net/page_pool.h |  22 +++++++++-
+ net/core/page_pool.c    | 109 ++++++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 117 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index d33d97c..82bcbb0 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -103,11 +103,15 @@ struct page {
- 			unsigned long pp_magic;
- 			struct page_pool *pp;
- 			unsigned long _pp_mapping_pad;
-+			atomic_long_t pp_frag_count;
- 			/**
- 			 * @dma_addr: might require a 64-bit value on
--			 * 32-bit architectures.
-+			 * 32-bit architectures, if so, store the lower 32
-+			 * bits in pp_frag_count, and a DMA mapping should
-+			 * be page aligned, so the frag count can be stored
-+			 * in lower 12 bits for 4K page size.
- 			 */
--			unsigned long dma_addr[2];
-+			unsigned long dma_addr;
- 		};
- 		struct {	/* slab, slob and slub */
- 			union {
 diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 8d7744d..ef449c2 100644
+index ef449c2..3159b3a 100644
 --- a/include/net/page_pool.h
 +++ b/include/net/page_pool.h
-@@ -198,19 +198,61 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
- 	page_pool_put_full_page(pool, page, true);
+@@ -45,7 +45,10 @@
+ 					* Please note DMA-sync-for-CPU is still
+ 					* device driver responsibility
+ 					*/
+-#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV)
++#define PP_FLAG_PAGE_FRAG	BIT(2)	/* for page frag feature */
++#define PP_FLAG_ALL		(PP_FLAG_DMA_MAP |\
++				 PP_FLAG_DMA_SYNC_DEV |\
++				 PP_FLAG_PAGE_FRAG)
+ 
+ /*
+  * Fast allocation side cache array/stack
+@@ -88,6 +91,9 @@ struct page_pool {
+ 	unsigned long defer_warn;
+ 
+ 	u32 pages_state_hold_cnt;
++	unsigned int frag_offset;
++	long frag_allocated;
++	struct page *frag_page;
+ 
+ 	/*
+ 	 * Data structure for allocation side
+@@ -137,6 +143,20 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+ 	return page_pool_alloc_pages(pool, gfp);
  }
  
-+#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
-+			(sizeof(dma_addr_t) > sizeof(unsigned long))
++struct page *page_pool_alloc_frag(struct page_pool *pool,
++				  unsigned int *offset,
++				  unsigned int size,
++				  gfp_t gfp);
 +
- static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
- {
--	dma_addr_t ret = page->dma_addr[0];
--	if (sizeof(dma_addr_t) > sizeof(unsigned long))
--		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
-+	dma_addr_t ret = page->dma_addr;
++static inline struct page *page_pool_dev_alloc_frag(struct page_pool *pool,
++						    unsigned int *offset,
++						    unsigned int size)
++{
++	gfp_t gfp = (GFP_ATOMIC | __GFP_NOWARN);
 +
-+	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-+		ret <<= 32;
-+		ret |= atomic_long_read(&page->pp_frag_count) & PAGE_MASK;
-+	}
-+
- 	return ret;
- }
- 
- static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
- {
--	page->dma_addr[0] = addr;
--	if (sizeof(dma_addr_t) > sizeof(unsigned long))
--		page->dma_addr[1] = upper_32_bits(addr);
-+	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-+		atomic_long_set(&page->pp_frag_count, addr & PAGE_MASK);
-+		addr >>= 32;
-+	}
-+
-+	page->dma_addr = addr;
++	return page_pool_alloc_frag(pool, offset, size, gfp);
 +}
 +
-+static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
-+							  long nr)
-+{
-+	long frag_count = atomic_long_read(&page->pp_frag_count);
-+	long ret;
-+
-+	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-+		if ((frag_count & ~PAGE_MASK) == nr)
-+			return 0;
-+
-+		ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-+		WARN_ON((ret & PAGE_MASK) != (frag_count & PAGE_MASK));
-+		ret &= ~PAGE_MASK;
-+	} else {
-+		if (frag_count == nr)
-+			return 0;
-+
-+		ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-+		WARN_ON(ret < 0);
-+	}
-+
-+	return ret;
-+}
-+
-+static inline void page_pool_set_frag_count(struct page *page, long nr)
-+{
-+	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-+		nr |= atomic_long_read(&page->pp_frag_count) & PAGE_MASK;
-+
-+	atomic_long_set(&page->pp_frag_count, nr);
- }
- 
- static inline bool is_page_pool_compiled_in(void)
+ /* get the stored dma direction. A driver might decide to treat this locally and
+  * avoid the extra cache line from page_pool to determine the direction
+  */
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 78838c6..0082f33 100644
+index 0082f33..e89434c 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -198,6 +198,16 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
- 	if (dma_mapping_error(pool->p.dev, dma))
- 		return false;
+@@ -24,6 +24,8 @@
+ #define DEFER_TIME (msecs_to_jiffies(1000))
+ #define DEFER_WARN_INTERVAL (60 * HZ)
  
-+	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
-+	    WARN_ON(pool->p.flags & PP_FLAG_PAGE_FRAG &&
-+		    dma & ~PAGE_MASK)) {
-+		dma_unmap_page_attrs(pool->p.dev, dma,
-+				     PAGE_SIZE << pool->p.order,
-+				     pool->p.dma_dir,
-+				     DMA_ATTR_SKIP_CPU_SYNC);
-+		return false;
++#define BIAS_MAX	(PAGE_SIZE - 1)
++
+ static int page_pool_init(struct page_pool *pool,
+ 			  const struct page_pool_params *params)
+ {
+@@ -67,6 +69,14 @@ static int page_pool_init(struct page_pool *pool,
+ 		 */
+ 	}
+ 
++	/* Make sure there is at least one bias left as we depend on that
++	 * to ensure the frag page is reserved to serve more users.
++	 */
++	if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
++	    (PAGE_SIZE << pool->p.order >
++	     dma_get_cache_alignment() * (BIAS_MAX - 1)))
++		return -EINVAL;
++
+ 	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
+ 		return -ENOMEM;
+ 
+@@ -429,6 +439,11 @@ static __always_inline struct page *
+ __page_pool_put_page(struct page_pool *pool, struct page *page,
+ 		     unsigned int dma_sync_size, bool allow_direct)
+ {
++	/* It is not the last user for the page frag case */
++	if (pool->p.flags & PP_FLAG_PAGE_FRAG &&
++	    page_pool_atomic_sub_frag_count_return(page, 1))
++		return NULL;
++
+ 	/* This allocator is optimized for the XDP mode that uses
+ 	 * one-frame-per-page, but have fallbacks that act like the
+ 	 * regular page allocator APIs.
+@@ -452,19 +467,7 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+ 		/* Page found as candidate for recycling */
+ 		return page;
+ 	}
+-	/* Fallback/non-XDP mode: API user have elevated refcnt.
+-	 *
+-	 * Many drivers split up the page into fragments, and some
+-	 * want to keep doing this to save memory and do refcnt based
+-	 * recycling. Support this use case too, to ease drivers
+-	 * switching between XDP/non-XDP.
+-	 *
+-	 * In-case page_pool maintains the DMA mapping, API user must
+-	 * call page_pool_put_page once.  In this elevated refcnt
+-	 * case, the DMA is unmapped/released, as driver is likely
+-	 * doing refcnt based recycle tricks, meaning another process
+-	 * will be invoking put_page.
+-	 */
++
+ 	/* Do not replace this with page_pool_return_page() */
+ 	page_pool_release_page(pool, page);
+ 	put_page(page);
+@@ -521,6 +524,84 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+ }
+ EXPORT_SYMBOL(page_pool_put_page_bulk);
+ 
++static struct page *page_pool_drain_frag(struct page_pool *pool,
++					 struct page *page)
++{
++	long drain_count = BIAS_MAX - pool->frag_allocated;
++
++	/* page pool is not the last user */
++	if (page_pool_atomic_sub_frag_count_return(page, drain_count))
++		return NULL;
++
++	if (likely(page_ref_count(page) == 1 &&
++		   !page_is_pfmemalloc(page))) {
++		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
++			page_pool_dma_sync_for_device(pool, page, -1);
++
++		return page;
 +	}
 +
- 	page_pool_set_dma_addr(page, dma);
++	page_pool_return_page(pool, page);
++	return NULL;
++}
++
++static void page_pool_free_frag(struct page_pool *pool)
++{
++	long drain_count = BIAS_MAX - pool->frag_allocated;
++	struct page *page = pool->frag_page;
++
++	pool->frag_page = NULL;
++
++	if (!page ||
++	    page_pool_atomic_sub_frag_count_return(page, drain_count))
++		return;
++
++	page_pool_return_page(pool, page);
++}
++
++struct page *page_pool_alloc_frag(struct page_pool *pool,
++				  unsigned int *offset,
++				  unsigned int size, gfp_t gfp)
++{
++	unsigned int max_size = PAGE_SIZE << pool->p.order;
++	struct page *page = pool->frag_page;
++
++	if (WARN_ON(!(pool->p.flags & PP_FLAG_PAGE_FRAG) ||
++		    size > max_size))
++		return NULL;
++
++	size = ALIGN(size, dma_get_cache_alignment());
++	*offset = pool->frag_offset;
++
++	if (page && *offset + size > max_size) {
++		page = page_pool_drain_frag(pool, page);
++		if (page)
++			goto frag_reset;
++	}
++
++	if (!page) {
++		page = page_pool_alloc_pages(pool, gfp);
++		if (unlikely(!page)) {
++			pool->frag_page = NULL;
++			return NULL;
++		}
++
++		pool->frag_page = page;
++
++frag_reset:
++		pool->frag_allocated = 1;
++		*offset = 0;
++		pool->frag_offset = size;
++		page_pool_set_frag_count(page, BIAS_MAX);
++		return page;
++	}
++
++	pool->frag_allocated++;
++	pool->frag_offset = *offset + size;
++	return page;
++}
++EXPORT_SYMBOL(page_pool_alloc_frag);
++
+ static void page_pool_empty_ring(struct page_pool *pool)
+ {
+ 	struct page *page;
+@@ -626,6 +707,8 @@ void page_pool_destroy(struct page_pool *pool)
+ 	if (!page_pool_put(pool))
+ 		return;
  
- 	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
++	page_pool_free_frag(pool);
++
+ 	if (!page_pool_release(pool))
+ 		return;
+ 
 -- 
 2.7.4
 
