@@ -2,116 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D265F3C7F3A
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 09:16:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B033C7F46
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 09:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238289AbhGNHTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 03:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S238267AbhGNHZk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 03:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238251AbhGNHTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 03:19:12 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17487C061574;
-        Wed, 14 Jul 2021 00:16:20 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id jx7-20020a17090b46c7b02901757deaf2c8so873890pjb.0;
-        Wed, 14 Jul 2021 00:16:20 -0700 (PDT)
+        with ESMTP id S238104AbhGNHZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 03:25:40 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BB1C06175F;
+        Wed, 14 Jul 2021 00:22:48 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id l1so1737601edr.11;
+        Wed, 14 Jul 2021 00:22:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4jskSB1DiBrCiUAFGdix3WJoQ/5LpAf9kLsHxzYGWlc=;
-        b=aBnm4uMqxZz/6szSq4h3/Lvp5XYySG8q5QI6oVkY5qjzZC4JfcgSfMK5SWr9wYC3RV
-         d2ejs98KdVRLplXz9TnVZ5PS9VUifrC2E0MpdQtZ+BIxS0u/3KPqsH5ZCq5nZ2r4060I
-         K3aqYT2vmmcjBM7ApJsS93Sndqj47afxjL22lLoHy9b+fxt9sPHZN+V7yI2ztNEHIgBg
-         YtOM/uZIgT+OB9zhQ+iooVzsJCGofqbUGqD1Q2q3Keh2S5v7ff30BRYBScpH0ldyOJSI
-         Ho7KEmwKC2601WcLw6k4SXHZcFBwlpLF85LMEj5V97EGa1DRgLogrFas5mUM4rdRMWh9
-         iSag==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uv3bCFjkxBCn0hMrBP7maAjSxRY6anVlaVgiurra1AU=;
+        b=HmfWf/AQhD2d01pTTC9DYogNenYxfj+pS7Z+wnwv+tCY5xEgptGiQAOQLvWPu04auT
+         uWh95+TLP4hfjCi6MyYyQLf+u5aOxAyoPnVEnG/n8x/025D1cQ9mH1TaxGoZ45+MBqM9
+         Q0LbR43J13fq1o6KFgs8dM8n08moHcwLHSbEN+/lwDHAJmH0Eh2jV8DRMaet7UHpjIbN
+         jxFXHzcfbOTJhNGyKDI6dh4fPmpkKu9zMqPLZ2uX+P+tXJGz48N9GQx6AgUxqrVpb/jX
+         kCWaqYbgCSzAFnaOY0ZFdgxZIaWAFbpiHiNuFMSoPsXG3EP7o2ZTPJSgnigNb2WvpfB5
+         YtuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4jskSB1DiBrCiUAFGdix3WJoQ/5LpAf9kLsHxzYGWlc=;
-        b=qViiocWBSwa3CdUlt4IXGgblCeQcpQm3eXnGvYj+nVcpjGyIJNSeAkYZS/U5W8c+z0
-         uM0qlNQ6bYlB3v4HGP90G3Vz0DACjq+ynp9zo3PC75igaYJIMvP4na+4GqYdL2W+bK44
-         2nBVqSsjY+sBA0o9ZAt9YN12reO4lhkz6BCLT4FHqsj4FZUoQaE1AnmDT/Y6RqyAK56K
-         ThCK/4+9qA6xKnG+49poHbc7Pc1oZYOjtcqZiMftFEm63ynJe0FiZDC+QqeQ3To8ZYJu
-         lCCFUNF5Aldxjy56+Vt8xbpJUyhlMAvGOnHP1afqmRe4jRZ3h7k6n35Ir1tdTX3igrnY
-         sMrg==
-X-Gm-Message-State: AOAM532cKVpYQ87tZD7s6ZSio5QG97QvKaRnD3WhTm+/YYu63LFJ8Z3T
-        GQTDXiJnsz/DtteQtuBQC5M=
-X-Google-Smtp-Source: ABdhPJyM8jMHSnCRzzj3bfdyJuQOdTHPQcEJPFcr+YrIBVa+uFcpvm4t8wVSK6oC2YVjFrQEbATvdQ==
-X-Received: by 2002:a17:902:830a:b029:128:bcba:6be9 with SMTP id bd10-20020a170902830ab0290128bcba6be9mr6674289plb.53.1626246979637;
-        Wed, 14 Jul 2021 00:16:19 -0700 (PDT)
-Received: from localhost.localdomain ([154.16.166.218])
-        by smtp.gmail.com with ESMTPSA id 133sm1583623pfx.39.2021.07.14.00.16.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jul 2021 00:16:19 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uv3bCFjkxBCn0hMrBP7maAjSxRY6anVlaVgiurra1AU=;
+        b=md+gmrCPVBo9BmkhFse5sY8mMOrKf7V4eaHI4qUlw1fuc9flMP/fbnFbm8wv1w+PcO
+         TtYWmsGz5zwt9TEpzvUzfaIk0GMtiYCWMKpefeFgY+zUjqK/lZ6OUkROZ6ZBN6rQygUE
+         pS8YGJJKE2RmcqyXxLLW88x5w4UCf5eCyhZ72eqne22zGAVbPntyo9ErP3xysvxqtbzs
+         YM6/1xr2jhYBRveY7y+uLXWZ0vRUipOziv299No8h7J5HZBysLgmdseoduItMXDJRByx
+         EUgWEiQaxLnocDsw+AAJ5w4OV4YdYYh62lxBAh+rHywYK0eRWjXJao7Ur+6Hz1ZFcykQ
+         GP3Q==
+X-Gm-Message-State: AOAM5339iRywkGRSUtWgjbznFL4Q24Zc0SDICL1eP9dAXNN9N2aUJ1Z9
+        cOgEtUjZZ4aAexHKfmvGWskbK6NXLaRXjNwmf2w=
+X-Google-Smtp-Source: ABdhPJzROsMTZKGlUUV+Tj3OQ0xOEDQoQeH1O37LsNOxpdWhf0jIIcfhqJ+/ZlMR6Cj+fEPPk5dzdA8L/uBDTdM9dtU=
+X-Received: by 2002:a50:ff02:: with SMTP id a2mr11487150edu.214.1626247366720;
+ Wed, 14 Jul 2021 00:22:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210714071547.656587-1-mudongliangabcd@gmail.com>
+In-Reply-To: <20210714071547.656587-1-mudongliangabcd@gmail.com>
 From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Wed, 14 Jul 2021 15:22:20 +0800
+Message-ID: <CAD-N9QVC2Kza-7H42UdVb1bb2Y9fM+n3CYjQb_j9BAS2u_eyvA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] usb: hso: fix error handling code of hso_create_net_device
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         Oliver Neukum <oneukum@suse.com>,
-        Anirudh Rayabharam <mail@anirudhrb.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Dongliang Mu <mudongliangabcd@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         YueHaibing <yuehaibing@huawei.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Emil Renner Berthing <kernel@esmil.dk>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] usb: hso: remove the bailout parameter
-Date:   Wed, 14 Jul 2021 15:15:33 +0800
-Message-Id: <20210714071547.656587-2-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210714071547.656587-1-mudongliangabcd@gmail.com>
-References: <20210714071547.656587-1-mudongliangabcd@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Anirudh Rayabharam <mail@anirudhrb.com>
+Cc:     syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        linux-usb@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two invocation sites of hso_free_net_device. After
-refactoring hso_create_net_device, this parameter is useless.
-Remove the bailout in the hso_free_net_device and change the invocation
-sites of this function
+On Wed, Jul 14, 2021 at 3:16 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+>
+> The current error handling code of hso_create_net_device is
+> hso_free_net_device, no matter which errors lead to. For example,
+> WARNING in hso_free_net_device [1].
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/usb/hso.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Although there is already a patch for the above bug report, I don't
+think it cannot handle all kinds of errors caused in
+hso_create_net_device.
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index 90fa4d9fa119..91cace7aa657 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -2353,7 +2353,7 @@ static int remove_net_device(struct hso_device *hso_dev)
- }
- 
- /* Frees our network device */
--static void hso_free_net_device(struct hso_device *hso_dev, bool bailout)
-+static void hso_free_net_device(struct hso_device *hso_dev)
- {
- 	int i;
- 	struct hso_net *hso_net = dev2net(hso_dev);
-@@ -2376,7 +2376,7 @@ static void hso_free_net_device(struct hso_device *hso_dev, bool bailout)
- 	kfree(hso_net->mux_bulk_tx_buf);
- 	hso_net->mux_bulk_tx_buf = NULL;
- 
--	if (hso_net->net && !bailout)
-+	if (hso_net->net)
- 		free_netdev(hso_net->net);
- 
- 	kfree(hso_dev);
-@@ -3137,7 +3137,7 @@ static void hso_free_interface(struct usb_interface *interface)
- 				rfkill_unregister(rfk);
- 				rfkill_destroy(rfk);
- 			}
--			hso_free_net_device(network_table[i], false);
-+			hso_free_net_device(network_table[i]);
- 		}
- 	}
- }
--- 
-2.25.1
+So refactoring the error handling code is the only way to fix this issue.
 
+[1] https://syzkaller.appspot.com/text?tag=Patch&x=1188fcc6600000
+
+>
+> Fix this by refactoring the error handling code of
+> hso_create_net_device by handling different errors by different code.
+>
+> [1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
+>
+> Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
+> Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
+> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> ---
+>  drivers/net/usb/hso.c | 37 +++++++++++++++++++++++++++----------
+>  1 file changed, 27 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+> index 54ef8492ca01..90fa4d9fa119 100644
+> --- a/drivers/net/usb/hso.c
+> +++ b/drivers/net/usb/hso.c
+> @@ -2495,7 +2495,9 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+>                            hso_net_init);
+>         if (!net) {
+>                 dev_err(&interface->dev, "Unable to create ethernet device\n");
+> -               goto exit;
+> +               kfree(hso_dev);
+> +       usb_free_urb(hso_net->mux_bulk_tx_urb);
+> +               return NULL;
+>         }
+>
+>         hso_net = netdev_priv(net);
+> @@ -2508,13 +2510,13 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+>                                       USB_DIR_IN);
+>         if (!hso_net->in_endp) {
+>                 dev_err(&interface->dev, "Can't find BULK IN endpoint\n");
+> -               goto exit;
+> +               goto err_get_ep;
+>         }
+>         hso_net->out_endp = hso_get_ep(interface, USB_ENDPOINT_XFER_BULK,
+>                                        USB_DIR_OUT);
+>         if (!hso_net->out_endp) {
+>                 dev_err(&interface->dev, "Can't find BULK OUT endpoint\n");
+> -               goto exit;
+> +               goto err_get_ep;
+>         }
+>         SET_NETDEV_DEV(net, &interface->dev);
+>         SET_NETDEV_DEVTYPE(net, &hso_type);
+> @@ -2523,18 +2525,18 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+>         for (i = 0; i < MUX_BULK_RX_BUF_COUNT; i++) {
+>                 hso_net->mux_bulk_rx_urb_pool[i] = usb_alloc_urb(0, GFP_KERNEL);
+>                 if (!hso_net->mux_bulk_rx_urb_pool[i])
+> -                       goto exit;
+> +                       goto err_mux_bulk_rx;
+>                 hso_net->mux_bulk_rx_buf_pool[i] = kzalloc(MUX_BULK_RX_BUF_SIZE,
+>                                                            GFP_KERNEL);
+>                 if (!hso_net->mux_bulk_rx_buf_pool[i])
+> -                       goto exit;
+> +                       goto err_mux_bulk_rx;
+>         }
+>         hso_net->mux_bulk_tx_urb = usb_alloc_urb(0, GFP_KERNEL);
+>         if (!hso_net->mux_bulk_tx_urb)
+> -               goto exit;
+> +               goto err_mux_bulk_tx;
+>         hso_net->mux_bulk_tx_buf = kzalloc(MUX_BULK_TX_BUF_SIZE, GFP_KERNEL);
+>         if (!hso_net->mux_bulk_tx_buf)
+> -               goto exit;
+> +               goto err_mux_bulk_tx;
+>
+>         add_net_device(hso_dev);
+>
+> @@ -2542,7 +2544,7 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+>         result = register_netdev(net);
+>         if (result) {
+>                 dev_err(&interface->dev, "Failed to register device\n");
+> -               goto exit;
+> +               goto err_register;
+>         }
+>
+>         hso_log_port(hso_dev);
+> @@ -2550,8 +2552,23 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+>         hso_create_rfkill(hso_dev, interface);
+>
+>         return hso_dev;
+> -exit:
+> -       hso_free_net_device(hso_dev, true);
+> +
+> +err_register:
+> +       unregister_netdev(net);
+> +       remove_net_device(hso_dev);
+> +err_mux_bulk_tx:
+> +       kfree(hso_net->mux_bulk_tx_buf);
+> +       hso_net->mux_bulk_tx_buf = NULL;
+> +       usb_free_urb(hso_net->mux_bulk_tx_urb);
+> +err_mux_bulk_rx:
+> +       for (i = 0; i < MUX_BULK_RX_BUF_COUNT; i++) {
+> +               usb_free_urb(hso_net->mux_bulk_rx_urb_pool[i]);
+> +               kfree(hso_net->mux_bulk_rx_buf_pool[i]);
+> +               hso_net->mux_bulk_rx_buf_pool[i] = NULL;
+> +       }
+> +err_get_ep:
+> +       free_netdev(net);
+> +       kfree(hso_dev);
+>         return NULL;
+>  }
+>
+> --
+> 2.25.1
+>
