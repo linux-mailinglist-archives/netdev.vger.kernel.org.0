@@ -2,90 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD5063C87DB
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B8F3C87F0
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:47:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239570AbhGNPmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 11:42:24 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54766 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232318AbhGNPmX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 11:42:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=iXlJK4yq9w48JGg+FZEsnZ7jfqJ1YcqG77mZJHNmuCo=; b=eHZ9V+lHdRtukaVg8f9GJvaxTC
-        4JPmndMdZMkxsy9wD9k0YB1Sx2vxihKkLmDFCUOjuUxTcDPckb2q6h85SnaTRZGJ3BhAMpx2LlSxi
-        6Wz1nezy7AgvcA8y/UTdbu2B+6lfbklp9UOnWLiILCOG/masPzBu3f9UWqm1QCIuHftg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m3gyZ-00DMz3-C6; Wed, 14 Jul 2021 17:39:07 +0200
-Date:   Wed, 14 Jul 2021 17:39:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH/RFC 1/2] ravb: Preparation for supporting Gigabit
- Ethernet driver
-Message-ID: <YO8FG0zJoG3GI9S9@lunn.ch>
-References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
- <20210714145408.4382-2-biju.das.jz@bp.renesas.com>
+        id S239701AbhGNPur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 11:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232318AbhGNPur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 11:50:47 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474C5C06175F
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 08:47:55 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id i5so4409530lfe.2
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 08:47:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lgEu55wIweQXk+rwT4ltUksXYjzK50iHIOkTGVvZXrI=;
+        b=sauXd+CpZoMmcv+/BbUhRDJdIDPk23FAQd0VIkzxdllLuFe3Xt9WjAysw6/JPDWxYI
+         uqnp9qIJReFeoVxbIJbP/ICYw+GFaX4YfvSce+pzf08bZn82TUTqSQeq9yZB9sTWwXNq
+         3HNk7Cb/7/FfSDoCRPVv1LJ7qVNAhngqMnyjM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lgEu55wIweQXk+rwT4ltUksXYjzK50iHIOkTGVvZXrI=;
+        b=ppK8ut+dUb6EMh5LJmggurHrtbl0jbCNVtjtHCbnatnrdN8fjeOmHFxu9VtjtVEYr8
+         dsUIg5CN3Dmcq5iWQ0H/C25+9+GFzZ2wX7ntxYXhxYbilOpP//W5PQcVHg9PUb/beyOk
+         fCwluslOWUNjPT5e8PbdZCrKktcxEVUAdn9d+7xKQZiVQbuFIbvqTHOBhOFn+FB8aoQL
+         k79qK4DOWzf+5XWKiFVLHmZ2uMc8loiUDICW9GU++bAPeuHPHkoN1GHaf+8aiZl3i5NE
+         Q/Z0B3N1RqUl5xANQPcGjMpOfYPmCsbOeLjju7ZUmULDrezG6CCGiFKXcMzJoBSvVcPb
+         NvsQ==
+X-Gm-Message-State: AOAM531QYYCNF0yIvi97BuAMwl6knlV4JKpRIezkXhqYcgx8LiJrpLn8
+        XfJu2ZS6ssarz2u3XAhAdOq9ug==
+X-Google-Smtp-Source: ABdhPJzDI7Z0S9YxxtZKjQ+5IkN9C4mlUg8kVpEkDNvk7IeNJGYLNE/oCsPxTiqqoDlN+4ntGRijCw==
+X-Received: by 2002:a19:4411:: with SMTP id r17mr8784205lfa.82.1626277672893;
+        Wed, 14 Jul 2021 08:47:52 -0700 (PDT)
+Received: from cloudflare.com (79.191.183.149.ipv4.supernova.orange.pl. [79.191.183.149])
+        by smtp.gmail.com with ESMTPSA id e20sm265174lji.140.2021.07.14.08.47.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jul 2021 08:47:52 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf v2] bpf, sockmap, udp: sk_prot needs inuse_idx set for proc stats
+Date:   Wed, 14 Jul 2021 17:47:50 +0200
+Message-Id: <20210714154750.528206-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210714145408.4382-2-biju.das.jz@bp.renesas.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 03:54:07PM +0100, Biju Das wrote:
-> The DMAC and EMAC blocks of Gigabit Ethernet IP is almost
-> similar to Ethernet AVB. With few canges in driver we can
+Proc socket stats use sk_prot->inuse_idx value to record inuse sock stats.
+We currently do not set this correctly from sockmap side. The result is
+reading sock stats '/proc/net/sockstat' gives incorrect values. The
+socket counter is incremented correctly, but because we don't set the
+counter correctly when we replace sk_prot we may omit the decrement.
 
-changes
+To get the correct inuse_idx value move the core_initcall that initializes
+the udp proto handlers to late_initcall. This way it is initialized after
+UDP has the chance to assign the inuse_idx value from the register protocol
+handler.
 
-> support both the IP. This patch is in preparation for
-> supporting the same.
+Fixes: edc6741cc660 ("bpf: Add sockmap hooks for UDP sockets")
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
 
-Please break this up a bit, it is hard to review. You can put all the
-refactoring into helpers into one patch. But changes like
+v2:
+- Fixed "Fixes" tag (Cong Wang)
 
-> -			if (priv->chip_id == RCAR_GEN2) {
-> +			if (priv->chip_id != RCAR_GEN3) {
+ net/ipv4/udp_bpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-should be in a seperate patch with an explanation.
+diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
+index 45b8782aec0c..9f5a5cdc38e6 100644
+--- a/net/ipv4/udp_bpf.c
++++ b/net/ipv4/udp_bpf.c
+@@ -134,7 +134,7 @@ static int __init udp_bpf_v4_build_proto(void)
+ 	udp_bpf_rebuild_protos(&udp_bpf_prots[UDP_BPF_IPV4], &udp_prot);
+ 	return 0;
+ }
+-core_initcall(udp_bpf_v4_build_proto);
++late_initcall(udp_bpf_v4_build_proto);
+ 
+ int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
+ {
+-- 
+2.31.1
 
-You are aiming for lots of very simple patches which are obviously
-correct.
-
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index 86a1eb0634e8..80e62ca2e3d3 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -864,7 +864,7 @@ enum GECMR_BIT {
->  
->  /* The Ethernet AVB descriptor definitions. */
->  struct ravb_desc {
-> -	__le16 ds;		/* Descriptor size */
-> +	__le16 ds;	/* Descriptor size */
->  	u8 cc;		/* Content control MSBs (reserved) */
->  	u8 die_dt;	/* Descriptor interrupt enable and type */
->  	__le32 dptr;	/* Descriptor pointer */
-
-Please put white spaces changes in a patch of its own.
-
-       Andrew
