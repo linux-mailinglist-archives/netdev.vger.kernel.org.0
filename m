@@ -2,152 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E3B3C81FE
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A9B3C821A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238958AbhGNJsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 05:48:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42765 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238894AbhGNJsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:48:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626255910;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZN3a1tvndTSdC7YsooBDBFTgb7MR0oz3akD0iS1avfE=;
-        b=UHjzfvzWl9ExW2XTfoR19g13E/VIPrL74CEMuD2dzXUzOXt7++XBxF0Ih2du1U5AWaaeA/
-        NEbf79NzWklqzGNtjcKLDcCYoLiV0IX3bmH+WIdFupObhD1fGUxL1aVIkqbDPW5BI+Si80
-        cgkd0Lk4TjnqZoZ+oTsCwPmLevc7RbY=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-56-bVejZXFKOOK69lmW0tZzpQ-1; Wed, 14 Jul 2021 05:45:09 -0400
-X-MC-Unique: bVejZXFKOOK69lmW0tZzpQ-1
-Received: by mail-wr1-f69.google.com with SMTP id u13-20020a5d6dad0000b029012e76845945so1205942wrs.11
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 02:45:09 -0700 (PDT)
+        id S238972AbhGNJzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 05:55:25 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:38404
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238954AbhGNJzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:55:25 -0400
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 5966D40562
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 09:52:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626256351;
+        bh=80zXfnJOV6lMeG5E5RjQ3UMMrg6S4mJKlz3aPhaJln4=;
+        h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type;
+        b=MJVL1E7f4cVZn4DDpqfig9e7WeOFR2h5wX3mWyojjMstVHRgeT+2zOuyhAWD2Mjfb
+         Q2acS3cd4pvgag/CKj8/1X086KYgM9AYPx5GXB9HOSfizTX5SyVA2DMGi2BJ+G7gkA
+         O9xmo+1DU8StsHz8oxXOHi2eXjOp0kGBlyYZmIvpXkmy1aP7JqwyNmTiQFosB4XHYy
+         d5xzeMt3GO69Vb52Q5z+AO+by0L7TeHOYtgdZ1DejBTiMbtLqaDrNNRFOaSvsQX0vc
+         bPmfKXlFJgvIpCvj5z47sb7WRLOGwWRSCre14M3usXAY12ji7EsnibQBhK2UH+Gqb1
+         5MDZKh2rf4nqA==
+Received: by mail-ej1-f70.google.com with SMTP id g6-20020a1709063b06b029051a448bab28so567416ejf.17
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 02:52:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZN3a1tvndTSdC7YsooBDBFTgb7MR0oz3akD0iS1avfE=;
-        b=jKTusLNWEx8yQWX81TrGpl6TUdk/LeVjVyaSuplgUif1FUpaLRnajZXkAU+u3B4mGE
-         F6KBxgfwLtTiBoxMsrHLLU9qjRNwVNHG7iTHOKwHK5YUczUFwdDym9otkM2P5WCuszJV
-         /K/DGDz69gk/xheGSI7W2CGq/tY4OqxUlLT9VBpjqer8muohS37yOvk28EI0D9cFMdN/
-         6iJ2QWL+akJH7+o1T2FU4fJYfPzB5MYB5uIjXjSUAp/1mUeP0fLFc13G37LnpJ93+5Qf
-         vnFB7qQMSbx0y7qUxxRP6KjBtUDZ0PYBaPechbNQAx0r9bqTknnIASyZYFmb0l3uDa8i
-         hcEg==
-X-Gm-Message-State: AOAM533SGsdr/RjhGGVDYLeZAy5KSBzuOMwHr1BrRwDrBb0XPeSNQLYp
-        k2voAVE4WuGNU0Ez/BjOZEzu5hsHdwlCy2CnxnOSus1GU8/b9aIBso0MlWsRo/jCCblz3EpFy57
-        AOi3EVGzRf8bbuEAj
-X-Received: by 2002:a5d:64aa:: with SMTP id m10mr11766430wrp.351.1626255908343;
-        Wed, 14 Jul 2021 02:45:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLVyxjqH+zKP2iLuw7jWabuqEbAAePGdeqkySMndl6Fvplu9NljgNilCAW5cz7H5MlpEdX0w==
-X-Received: by 2002:a5d:64aa:: with SMTP id m10mr11766409wrp.351.1626255908218;
-        Wed, 14 Jul 2021 02:45:08 -0700 (PDT)
-Received: from krava.redhat.com ([5.171.203.6])
-        by smtp.gmail.com with ESMTPSA id o18sm1953328wrx.21.2021.07.14.02.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jul 2021 02:45:07 -0700 (PDT)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCHv4 bpf-next 8/8] selftests/bpf: Add test for bpf_get_func_ip in kprobe+offset probe
-Date:   Wed, 14 Jul 2021 11:44:00 +0200
-Message-Id: <20210714094400.396467-9-jolsa@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210714094400.396467-1-jolsa@kernel.org>
-References: <20210714094400.396467-1-jolsa@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=80zXfnJOV6lMeG5E5RjQ3UMMrg6S4mJKlz3aPhaJln4=;
+        b=ettegTDgbs0KIJ2GQ6PVU+EyqrXzUMoeL7T4/cptA5TsGUgmPr90XNOzRIdBKWjAPH
+         Y4u2Q2Zo1UUlN8N+3fu5hWMf8Ys4vLYDKmGwycrtl+0pGncElRmqKRirW0TALwDHQ44j
+         VISdIkCRxg7LODvtEtpGOTgAa9bMlAj6hF8AwiVsrenwcWBCbHz46ewClXKJLDqyLDYO
+         qfLhdHwlYOdKcIgkgN3qFg1rTkpINHSygLVRonK07NxWdcOCWO2xuNhKWoB7zDpcGxH8
+         TcgmHA5qMtcUueK36ZElaE78a1ASdQPixfAjiL7O+eNWml3tz/u8do99AUOYV0PT5BRS
+         cAhQ==
+X-Gm-Message-State: AOAM533uorS8Jac5QXWyS+OFbmQCbZOPqzhqlgw3U/QzsWuR4H1CTx3j
+        ZAYX4TyYACtXWRGnEagLgjLznp005uCxGbNwx1xn+Ksl0JjhN3VPDtnULV115HxcpIljCVQRea3
+        lYyCdN7OQSvsx4qFkybsNUpOJzy9lt1vVKvSkNOoAyPDy40LXGg==
+X-Received: by 2002:a17:906:17c2:: with SMTP id u2mr2167081eje.117.1626256351024;
+        Wed, 14 Jul 2021 02:52:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6o86w5XcTXx0rweh1OQO8vQJqb2pD8eu/0VlUBpbyR5Fo/OYq0Lk+k1MJzySGibta0hOHd2nc95S32JqueFc=
+X-Received: by 2002:a17:906:17c2:: with SMTP id u2mr2167061eje.117.1626256350762;
+ Wed, 14 Jul 2021 02:52:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210712133500.1126371-1-kai.heng.feng@canonical.com>
+ <20210712133500.1126371-2-kai.heng.feng@canonical.com> <3947d70a-58d0-df93-24f1-1899fd567534@intel.com>
+ <CAAd53p79BwxPGRECYGrpCQbSJz8NY2WrG+AJCuaj89XNqCy59Q@mail.gmail.com> <16e188d5-f06e-23dc-2f71-c935240dd3b4@intel.com>
+In-Reply-To: <16e188d5-f06e-23dc-2f71-c935240dd3b4@intel.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Wed, 14 Jul 2021 17:52:18 +0800
+Message-ID: <CAAd53p5Pyk80c0FjmqF9cjicNF8t0eTC7Y3BP-rWqW3O53K1Mg@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH 2/3] e1000e: Make mei_me active when
+ e1000e is in use
+To:     "Ruinskiy, Dima" <dima.ruinskiy@intel.com>
+Cc:     Sasha Neftin <sasha.neftin@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        AceLan Kao <acelan.kao@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devora.fuxbrumer@intel.com, alexander.usyskin@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test for bpf_get_func_ip in kprobe+ofset probe.
-Because of the offset value it's arch specific, enabling
-the new test only for x86_64 architecture.
+On Wed, Jul 14, 2021 at 5:06 PM Ruinskiy, Dima <dima.ruinskiy@intel.com> wrote:
+>
+> On 14/07/2021 9:28, Kai-Heng Feng wrote:
+> >> I do not know how MEI driver affect 1Gbe driver - so, I would suggest to
+> >> involve our CSME engineer (alexander.usyskin@intel.com) and try to
+> >> investigate this problem.
+> >> Does this problem observed on Dell systems? As I heard no reproduction
+> >> on Intel's RVP platform.
+> >> Another question: does disable mei_me runpm solve your problem?
+> >
+> > Yes, disabling runpm on mei_me can workaround the issue, and that's
+> > essentially what this patch does by adding DL_FLAG_PM_RUNTIME |
+> > DL_FLAG_RPM_ACTIVE flag.
+> >
+> > Kai-Heng
+> Hi, Kai-Heng,
+>
+> If the goal of the patch is to essentially disable runpm on mei_me, then
+> why is the patch touching code in the e1000e driver?
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../bpf/prog_tests/get_func_ip_test.c          | 18 ++++++++++++++++--
- .../selftests/bpf/progs/get_func_ip_test.c     | 11 +++++++++++
- 2 files changed, 27 insertions(+), 2 deletions(-)
+We can put the workaround in e1000e, mei_me or as PCI quirk.
+But since the bug itself manifests in e1000e, I think it's more
+appropriate to put it here.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-index 8bb18a8d31a0..088b3653610d 100644
---- a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-@@ -8,10 +8,21 @@ void test_get_func_ip_test(void)
- 	__u32 duration = 0, retval;
- 	int err, prog_fd;
- 
--	skel = get_func_ip_test__open_and_load();
--	if (!ASSERT_OK_PTR(skel, "get_func_ip_test__open_and_load"))
-+	skel = get_func_ip_test__open();
-+	if (!ASSERT_OK_PTR(skel, "get_func_ip_test__open"))
- 		return;
- 
-+	/* test6 is x86_64 specifc because of the instruction
-+	 * offset, disabling it for all other archs
-+	 */
-+#ifndef __x86_64__
-+	bpf_program__set_autoload(skel->progs.test6, false);
-+#endif
-+
-+	err = get_func_ip_test__load(skel);
-+	if (!ASSERT_OK(err, "get_func_ip_test__load"))
-+		goto cleanup;
-+
- 	err = get_func_ip_test__attach(skel);
- 	if (!ASSERT_OK(err, "get_func_ip_test__attach"))
- 		goto cleanup;
-@@ -33,6 +44,9 @@ void test_get_func_ip_test(void)
- 	ASSERT_EQ(skel->bss->test3_result, 1, "test3_result");
- 	ASSERT_EQ(skel->bss->test4_result, 1, "test4_result");
- 	ASSERT_EQ(skel->bss->test5_result, 1, "test5_result");
-+#ifdef __x86_64__
-+	ASSERT_EQ(skel->bss->test6_result, 1, "test6_result");
-+#endif
- 
- cleanup:
- 	get_func_ip_test__destroy(skel);
-diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-index ba3e107b52dd..acd587b6e859 100644
---- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-@@ -10,6 +10,7 @@ extern const void bpf_fentry_test2 __ksym;
- extern const void bpf_fentry_test3 __ksym;
- extern const void bpf_fentry_test4 __ksym;
- extern const void bpf_modify_return_test __ksym;
-+extern const void bpf_fentry_test6 __ksym;
- 
- __u64 test1_result = 0;
- SEC("fentry/bpf_fentry_test1")
-@@ -60,3 +61,13 @@ int BPF_PROG(test5, int a, int *b, int ret)
- 	test5_result = (const void *) addr == &bpf_modify_return_test;
- 	return ret;
- }
-+
-+__u64 test6_result = 0;
-+SEC("kprobe/bpf_fentry_test6+0x5")
-+int test6(struct pt_regs *ctx)
-+{
-+	__u64 addr = bpf_get_func_ip(ctx);
-+
-+	test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
-+	return 0;
-+}
--- 
-2.31.1
+To be more specific, it doesn't disable runtime suspend on mei_me, it
+makes mei_me the power supplier of e1000e.
+So when e1000e can be runtime suspended (i.e. no link partner), mei_me
+can also get runtime suspended too.
 
+>
+> I agree with Sasha Neftin; it seems like the wrong location, and the
+> wrong way to do it, even if it currently works. We need to understand
+> what causes runpm of mei_me to adversely affect LAN Rx, and for this we
+> need the involvement of mei_me owners.
+
+I think it's the right location, however I totally agree with your
+other arguments.
+There are many users already affected by this bug, so if a proper fix
+isn't available for now, the temporary workaround can help here.
+
+Kai-Heng
+
+>
+> --Dima
+> ---------------------------------------------------------------------
+> Intel Israel (74) Limited
+>
+> This e-mail and any attachments may contain confidential material for
+> the sole use of the intended recipient(s). Any review or distribution
+> by others is strictly prohibited. If you are not the intended
+> recipient, please contact the sender and delete all copies.
