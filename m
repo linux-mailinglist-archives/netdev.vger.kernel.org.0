@@ -2,60 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B2E3C88D7
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 18:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 596C23C893C
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235671AbhGNQpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 12:45:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49676 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229595AbhGNQpu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 12:45:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id C2D6F6100C;
-        Wed, 14 Jul 2021 16:42:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626280978;
-        bh=T8mqkKygrYZvIpwHDod+nT5H+CCrERZ3658bVnE845E=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=e/RBwqi5vdRS1Zju1sWSJBPi0j7IQ75ThD/bUq3REUxvkb+9aMZgeeAFwTQNzoOjz
-         +zH51BkkguGULoZLI7XwgJEu+9rL8HNUVUKvd/WqwF3IQeUSJHfFlX8KfyEYmO843c
-         h8uJz5akMMvkXZVjlMYP/CzY0b+Kx/AcQft/7it7eE8RL2C2jQCro2cIa1vOc09jFi
-         wETC29dg5eOvMng7Al7CKA50IwIeQLEG266BAWH7iCwGpO8jI+Joozca9fCG2ZI8zY
-         HGuTGOQRqbcN2EfJdfdxvwZkiUfj9JYjxp0SwZz0g/UT1/SegM9s0ObEY+eJi1lO73
-         dwzI5qesbtjUA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF9E0609CD;
-        Wed, 14 Jul 2021 16:42:58 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking for 5.14-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20210714130001.3799721-1-kuba@kernel.org>
-References: <20210714130001.3799721-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20210714130001.3799721-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc2
-X-PR-Tracked-Commit-Id: bcb9928a155444dbd212473e60241ca0a7f641e1
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8096acd7442e613fad0354fc8dfdb2003cceea0b
-Message-Id: <162628097865.10383.5183370000051728204.pr-tracker-bot@kernel.org>
-Date:   Wed, 14 Jul 2021 16:42:58 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
+        id S237208AbhGNRDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 13:03:22 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:38426 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236088AbhGNRDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 13:03:20 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 074CE22880;
+        Wed, 14 Jul 2021 17:00:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1626282028; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=S4vNGptK/WGYFTuFWxzLASruFqw+TKKAeEWLzHzM8l8=;
+        b=qcoXBv+Bs0W6F/Es1JVAb+/gaGvcCpbs9FJoVWGfuTq9UrKsgKMPCzA7gTep8xmjNZnsey
+        8e/n9+BAy3vHHSTgSLH2hghGJ7KYSbZqJ2aOtK3ak118/81b06gziRhyPxhABIVbeZT0wV
+        6Cb54ayALxuWPjuFlAnsIFuhQXbC9sU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1626282028;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=S4vNGptK/WGYFTuFWxzLASruFqw+TKKAeEWLzHzM8l8=;
+        b=s/AvZLc3iZfrAcDW13NWGXnj6XoEn55a9IPTJ1lNB5jOTFqvvrSK1vrusklJoY6pYYx3Qs
+        YSYywZzJMck/7uCg==
+Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 896ECA3B88;
+        Wed, 14 Jul 2021 17:00:27 +0000 (UTC)
+From:   Takashi Iwai <tiwai@suse.de>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH 0/2] r8152: Fix a couple of PM problems
+Date:   Wed, 14 Jul 2021 19:00:20 +0200
+Message-Id: <20210714170022.8162-1-tiwai@suse.de>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Wed, 14 Jul 2021 06:00:01 -0700:
+Hi,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.14-rc2
+it seems that r8152 driver suffers from the deadlock at both runtime
+and system PM.  Formerly, it was seen more often at hibernation
+resume, but now it's triggered more frequently, as reported in SUSE
+Bugzilla:
+  https://bugzilla.suse.com/show_bug.cgi?id=1186194
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8096acd7442e613fad0354fc8dfdb2003cceea0b
+While debugging the problem, I stumbled on a few obvious bugs and here
+is the results with two patches for addressing the resume problem.
 
-Thank you!
+***
+
+However, the story doesn't end here, unfortunately, and those patches
+don't seem sufficing.  The rest major problem is that the driver calls
+napi_disable() and napi_enable() in the PM suspend callbacks.  This
+makes the system stalling at (runtime-)suspend.  If we drop
+napi_disable() and napi_enable() calls in the PM suspend callbacks, it
+starts working (that was the result in Bugzilla comment 13):
+  https://bugzilla.suse.com/show_bug.cgi?id=1186194#c13
+
+So, my patches aren't enough and we still need to investigate
+further.  It'd be appreciated if anyone can give a fix or a hint for
+more debugging.  The usage of napi_disable() at PM callbacks is unique
+in this driver and looks rather suspicious to me; but I'm no expert in
+this area so I might be wrong...
+
+
+Thanks!
+
+Takashi
+
+===
+
+Takashi Iwai (2):
+  r8152: Fix potential PM refcount imbalance
+  r8152: Fix a deadlock by doubly PM resume
+
+ drivers/net/usb/r8152.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.26.2
+
