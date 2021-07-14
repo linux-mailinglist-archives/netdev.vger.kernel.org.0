@@ -2,268 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5903C8074
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 10:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768D53C8097
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 10:44:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238641AbhGNIqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 04:46:18 -0400
-Received: from mga18.intel.com ([134.134.136.126]:35427 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238500AbhGNIqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 04:46:17 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10044"; a="197582361"
-X-IronPort-AV: E=Sophos;i="5.84,238,1620716400"; 
-   d="scan'208";a="197582361"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2021 01:43:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,238,1620716400"; 
-   d="scan'208";a="452010536"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga007.jf.intel.com with ESMTP; 14 Jul 2021 01:43:25 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Wed, 14 Jul 2021 01:43:24 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Wed, 14 Jul 2021 01:43:24 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Wed, 14 Jul 2021 01:43:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UvZvJTr5JKRU0uExC/VMqw6KI6zDhNLuhTzM+5lbvABlghuBx6ulrYoKa7irQgPuxzYy4VZ3YOGvgy2ASjhDfbPM+2auCXahIVbzwgyCkBlX0JkM4QXm+3E3NRRSO99Q8TEAgOrJMWCwzdgRwCmHVXADMztM0iX14e7/+wgD/Z4F9Yrdt41nBZQdPVT/0+jR4e1bUKm1zGznyHj87OHq6mfosC5TdwzSEYfYmBlVNhIhywMpQlyMyQ/c3Kv8g545CHf8R5NxsVlHFGgQyMCEiLriy4x0aDaTL9xBmo633k6hd4e0JoI6FD8MyRGEf5AEgW8JhFo7lccHN9Rb8nAcPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tHZbB29OiHIJHaM69D7vy74SKv2hAwNRKiBgIbn7l8U=;
- b=eYShKlnIe46DZZskUeQet1UZSm+gZEK2OmrvRB0xGvDeeGHo8dW0VLaVpEzHtqtmjV//EfxqRixAr/01BAQlVEo4idA8kha3hqLeOkAXS7YSOkzyg+O/TvruReaueLETK3Y15dJDZq4z8k4azuyDqTNma8pBYXx+87d1H4K2pc2ii0Lz43zZk6S0P2dTscBTC8tYASVsJ0/zxjT9MLsc5/siy6n+FTJqc71FF0SL3K4pK93ctQhBRHIeTQFCH025pewMEFWf24M3lY2GLTqwUm3yt7nt9RlN3jhsDeTPdIlSGADgjbhk1bPoZ3ET9fNwYF4+6w7FAJxytpYQWbaNyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tHZbB29OiHIJHaM69D7vy74SKv2hAwNRKiBgIbn7l8U=;
- b=jNRIXd1uipP+GIPO99oB4pvTrO/vT6YW+VVP1hMisLcvZQkFwkz7aCiyfmUdwxVa9oDojzc6qb/LoP3KqFmOE021I6IFXvDhas8a29nErOQnxmtuE+6afuVIXGw8FSl5D5ZFvtehIwE5yCGjUe2HKbBZQm21tsQClUQ0s/CAegE=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4787.namprd11.prod.outlook.com (2603:10b6:303:6e::10)
- by MWHPR1101MB2286.namprd11.prod.outlook.com (2603:10b6:301:5b::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23; Wed, 14 Jul
- 2021 08:43:22 +0000
-Received: from CO1PR11MB4787.namprd11.prod.outlook.com
- ([fe80::b856:1bc7:d077:6e74]) by CO1PR11MB4787.namprd11.prod.outlook.com
- ([fe80::b856:1bc7:d077:6e74%4]) with mapi id 15.20.4331.022; Wed, 14 Jul 2021
- 08:43:22 +0000
-Subject: Re: [Intel-wired-lan] [PATCH 1/3] e1000e: Separate TGP from SPT
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-CC:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "AceLan Kao" <acelan.kao@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        <alexander.usyskin@intel.com>,
-        "Ruinskiy, Dima" <dima.ruinskiy@intel.com>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>
-References: <20210712133500.1126371-1-kai.heng.feng@canonical.com>
- <d0bc9dbd-9b7a-5807-2ade-e710964a05a1@intel.com>
- <CAAd53p5rKLNv9w4Z8YBSW=ztLAV68mc+BxUSyfOi11TLSuh6bg@mail.gmail.com>
-From:   Sasha Neftin <sasha.neftin@intel.com>
-Message-ID: <f7c867e5-ee94-cd40-fe88-f8b5b383f8f5@intel.com>
-Date:   Wed, 14 Jul 2021 11:43:13 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
-In-Reply-To: <CAAd53p5rKLNv9w4Z8YBSW=ztLAV68mc+BxUSyfOi11TLSuh6bg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MR2P264CA0083.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:32::23) To CO1PR11MB4787.namprd11.prod.outlook.com
- (2603:10b6:303:6e::10)
+        id S238720AbhGNIrU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Jul 2021 04:47:20 -0400
+Received: from mail-ua1-f46.google.com ([209.85.222.46]:34628 "EHLO
+        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238628AbhGNIrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 04:47:11 -0400
+Received: by mail-ua1-f46.google.com with SMTP id s13so354504uao.1;
+        Wed, 14 Jul 2021 01:44:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=r5k/nzvm++7I0kjlsxJbLPoLxldn2GkCJzAXrc4Q3tE=;
+        b=HYt7OhlyET59fENYKovpSBxCiijoiIfp5U60wYyF5ej4/UeoD4xedkgIaeL3k7LJVH
+         TFze34BROVl/KqQ3w4nOvT/eOaJmDh76UNAOdy0C9f1/iPJ2qoKaiU+FtqK5Qm7bNfFy
+         5Jk+Y1W+duADFwm4YoWkJOtejE+Vpnti5lX2qEm5lw2Kbs583dGx5CHcs6i13RnIavhI
+         cKdHiytSHoEWOGUdyv5Bz7FQchQx3Hqe0uBmn2LxnTS9mLHIECd0WOotulSh0J5Xv6DC
+         DLtXPtgD396qs2ITEF0XmaeW9vtjmgzRpce2p0L2jWP7PQl6hIoMf5mGaR+nqm4aBa1s
+         z+Hw==
+X-Gm-Message-State: AOAM530Zu8yDBrP+j3r5+DR4jetcwqgK5OwAdfqEjH0b/Pc9esWnl1vj
+        xEFUtJ5uYfxtLQwC4wcSCbbCm5TzvJ6wFLFuh6k=
+X-Google-Smtp-Source: ABdhPJw+Y3tnjfY/zI+Y1qOhR0PNRzn2MQD3PHuwf/AzIRJfXjUIjP825Ll9FtnbmVsf04QAqWLG0Tq2dErAW2+m0rM=
+X-Received: by 2002:a9f:3f0d:: with SMTP id h13mr12412958uaj.100.1626252258156;
+ Wed, 14 Jul 2021 01:44:18 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.168] (84.108.64.141) by MR2P264CA0083.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500:32::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 14 Jul 2021 08:43:18 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8529527f-adb7-404a-8449-08d946a36fc5
-X-MS-TrafficTypeDiagnostic: MWHPR1101MB2286:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR1101MB2286AD40F29CF024EF1C573497139@MWHPR1101MB2286.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fbw98KwjFF/jdTxlSCQ/IvSVKwlERG3hOZfiwfZrrJLh9nWvBFkAIQuqL0DSJGlZaUwfGxYB/mOXMbTihSVAPDDbgOf5j5gW05mSaYuXRQr/VZ05RpPfwBxgH2MYGsPy+NGGlm3/gx+f0zwRH8riY9oHVMfZFbsir9X6e0acD9chAP1n+BVztL9LkBj/rY44uROqKQkxpki5TRAECCNrGPhllJ2z7A0frv5jy6GFpTc0Z47yJQPzgUMkYrWTGDq6+WAkbd0TfkXomlEAvXxsd4Jt2dk+CEY1CCHofc84rQu7TU/u/b3pRGzFQnPPTbdStMEhN9Nf9u5g3tRl0UFAlNPiuMYFFcF9Na83SA+pKC0TXlmfp7TPiPHB4oneWqkNAv1pxa49w/uPUZz8INjmmGS+VOZ/591zDXb8CXU8NIeIDiHoe+EaldybVQqD1SYyjr5Odwjhv8BedG0vflUghMkuGz/6FZHm+gNL0RBRQROxBuO/RWN+x6TN5+htJGfwOfSx4hfcCqLiZlwPgRYKUQyy4XEm+fp2AK9xo3ep7uIqb42cmMTatISSb0Pm3wq6WYfL0GChb5T1zzrKp0jG9Ra7qcIOIgqMuyMa/tPZXY/oux1gRH8LjYE9RwFxNKXvUFn6LHqcXAbzBSq+x8N5ltbYmqfUO9mRO1IW4XmW3K+mSnswYcXf4OMCC9zixqt/xD+pAbRFV2OC3T0uyCfYOSazfcCFWCVFw+s64Hg9XWL72NkFodEss5SLtQ8wjqxpvZGvGYOS9Cl8e6l98zKTeUt0EDcMoKU/qhLxLKo3BGZSkvSgtO0XLrBskOqXvsOr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4787.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(366004)(136003)(376002)(966005)(31696002)(36756003)(4326008)(316002)(83380400001)(5660300002)(26005)(53546011)(86362001)(6486002)(2906002)(66476007)(66946007)(16576012)(186003)(66556008)(44832011)(107886003)(6916009)(2616005)(8936002)(31686004)(956004)(38100700002)(6666004)(8676002)(478600001)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q0lkeUhFL1daRDBNWXZ2eExtdVFyZm9KbE10WDJLeUNtSWlFZXYxeWo0N29w?=
- =?utf-8?B?OFU1Tzg2b0RoUFpwdDdlRWRBcDBYK1hqdGZiRDJUZVA2N3JlS2p1OUFwQVBl?=
- =?utf-8?B?b3VaUlJNUlhVZ0lRWCtCMkliNzRMaUwwWnpLb1VXbW95bXEwN05mQ1oydnhQ?=
- =?utf-8?B?SUsvbjZaYVg1d2xsU0FpRHBpdXdtbEdCLzhCcGlYQWdBc2hJNUFmOUhCaDVu?=
- =?utf-8?B?K0tLc0ZLNGF5dHA1SEg2dTd6eDJhWmNxcXVSYVJuM1hBUWx4NlF1WFVKOXgz?=
- =?utf-8?B?U3RHWERIZUZvVzBPN0VibkNGMnoyWnNGSWx2TWwyR1J3ZUQ1a3JGNGZBNkpy?=
- =?utf-8?B?VTdVVWgzakhQWHQ5d2VYcnhvT1l0OFQ1WVgrNDFsVi9GdGNlc01sSEJyTFpQ?=
- =?utf-8?B?bTIrRGo3YjVxOWJuRGtrTk15dFAvRjFaVlNOeTJ4L3hKQmJDY1VsUGhzL2ZE?=
- =?utf-8?B?YlNEdzZzSUJMeWJ4U3BKZm9EU0FtRFZkSU15amg4eUZjd0JnVkJsSkhsNnlv?=
- =?utf-8?B?QmFONmtTZ2RMd29XV29WcEZUTzczZ2ZXbDVtV1R1RTREVE52R3FoNDRicVVJ?=
- =?utf-8?B?cGdtZytqenEwRDA0bERGWWQvdFlOTTQ0NGtBZU1SRTBvN1dxaWh1Qm1wOTl1?=
- =?utf-8?B?eXZTNmZMdXBBa3dWd1V4Z1Z1ZW1BenpLQndnQmVLSkEzbHVHUGZEOGpDQzNC?=
- =?utf-8?B?a0pJdEJBWjlUODlQS2IzRjRaNGZ5M1RBWkRYM2luampsVXRsMGJBM3ZoTG16?=
- =?utf-8?B?M2FyYnNRK0cxTTh5dlRGZUgrb1dCYTB5OXhTSUQxYnJnSkR0bkp0R3M4bWV6?=
- =?utf-8?B?b0c1ak9oREJlS0UySkw1RElZaG5yakxpWmNsOGhENEpjYmxZWWFJcWRQM1Qv?=
- =?utf-8?B?K3M4ZkRwQU80cFJhMzZuRHMvcGE1VmtlUjFYTllBbXdBMlZBc0dKRGpvUWpS?=
- =?utf-8?B?c3AweWVzdVVkVUtPTWZJZnVTSWk0TmxiVVdNMEp3eXpDa3RwTlowS1p6ZGlq?=
- =?utf-8?B?eXVYZVBTT2pyV05JNkRTeHhtSHpRa2ZkVjNtaFVUUjdwOUwxOVlubzRKRWpU?=
- =?utf-8?B?NmRLNUZjNDJ4dW9EalMwSWVXdVRxaUZZN3hVb0ovVFNiamZtSWRMbERWZVhU?=
- =?utf-8?B?Tm9XT0N4U2ZpT3dGNU1BQ0FsUEx5UkRJQUxpVzNYc21mT2p4RzFON29HZTBh?=
- =?utf-8?B?TjR6SVRqQnh2Unl6U2JoZXg4NVROeWhxbTkvenV0b2JqUklrNVdOZHlEbUlN?=
- =?utf-8?B?V01TeElNb0JONXh3RjJmb0U4Q0FoTWJKdnZsK3piTVJQSTJOc05NSUV0cGsy?=
- =?utf-8?B?Tm40cW9aVks2b1J0MzFzd2F6RmdXcUtRZ1NLNXRzRGRPWTduUGZxa1hXanhl?=
- =?utf-8?B?UXlpbWQzd1BSTU9aYjhtSjQ1L0RRZVZ0cndLcU15cDlkUm9ucWRGUGtCbjVM?=
- =?utf-8?B?MC9QWUQyZVl6bFNlVFhkT1BxMXB4alpuK3NjUjlxL3diY3lXR2xFSlc0QU1Q?=
- =?utf-8?B?d3c4MnJvb01pTjNhcWtuSmQvMkYwbFJZQi9ONHhDemNLZDdQMG5ZMk9qZG5j?=
- =?utf-8?B?alNia09vRk1acmdnMktqMUtMQklhMHdwaE8ra05EcHVMQXc2WFduRE40a2Zu?=
- =?utf-8?B?RHlxanEyT1ZYSUUxdEljZG05MFhRV1ZBbUdjbm0xWjkyMjFGRjloU0kzUTZz?=
- =?utf-8?B?SnhLOXBkaXROam5xZERCN20xdWdIckNDMm1hZVlGemdXZGovdUhOa0FKb3RK?=
- =?utf-8?Q?5BllztHYkPsloM+SxSDrlHZH05d0p0xMpd+y7re?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8529527f-adb7-404a-8449-08d946a36fc5
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4787.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2021 08:43:21.9779
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: C437uhLRybAdlyACxZ6hF/U+ABWbU4CipqsYc4lG9Q/C0yFoY6K2hCHCwVMPNJqD4oN8fsaZBfe3CvkpTmrrxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2286
-X-OriginatorOrg: intel.com
+References: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de> <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 14 Jul 2021 10:44:06 +0200
+Message-ID: <CAMuHMdW8r6u4O5zv2ee-3=jPP6qwnOSHdSzf8pPE_y=jY3Bn5A@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] bus: Make remove callback return void
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Dexuan Cui <decui@microsoft.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Geoff Levand <geoff@infradead.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Wang <jasowang@redhat.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
+        Julien Grall <jgrall@amazon.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Mark Gross <mgross@linux.intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Jamet <michael.jamet@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Rich Felker <dalias@libc.org>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Samuel Holland <samuel@sholland.org>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        SeongJae Park <sjpark@amazon.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Tom Rix <trix@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Yufen Yu <yuyufen@huawei.com>, alsa-devel@alsa-project.org,
+        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
+        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-media@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-parisc@vger.kernel.org,
+        linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
+        platform-driver-x86@vger.kernel.org, sparclinux@vger.kernel.org,
+        target-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org,
+        Johannes Thumshirn <jth@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/2021 07:19, Kai-Heng Feng wrote:
-> Hi Sasha,
-> 
-> On Wed, Jul 14, 2021 at 1:58 AM Sasha Neftin <sasha.neftin@intel.com> wrote:
->>
->> On 7/12/2021 16:34, Kai-Heng Feng wrote:
->>> Separate TGP from SPT so we can apply specific quirks to TGP.
->>>
->>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->>> ---
->>>    drivers/net/ethernet/intel/e1000e/e1000.h   |  4 +++-
->>>    drivers/net/ethernet/intel/e1000e/ich8lan.c | 20 ++++++++++++++++++++
->>>    drivers/net/ethernet/intel/e1000e/netdev.c  | 13 +++++++------
->>>    3 files changed, 30 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
->>> index 5b2143f4b1f8..3178efd98006 100644
->>> --- a/drivers/net/ethernet/intel/e1000e/e1000.h
->>> +++ b/drivers/net/ethernet/intel/e1000e/e1000.h
->>> @@ -113,7 +113,8 @@ enum e1000_boards {
->>>        board_pch2lan,
->>>        board_pch_lpt,
->>>        board_pch_spt,
->>> -     board_pch_cnp
->>> +     board_pch_cnp,
->> Hello Kai-Heng,
->> I would agree with you here. I would suggest extending it also for other
->> PCH (at least ADP and MTP).  The same controller on a different PCH.
->> We will be able to differentiate between boards via MAC type and submit
->> quirks if need.
-> 
-> Sure, will do in v2.
-> 
-> The issue patch [3/3] addresses may be fixed by [1], but I'll need to
-> dig the affected system out and do some testing.
-> Meanwhile, many users are affected by the RX issue patch [2/3]
-> addresses, so it'll be great if someone can review it.
-> 
-> [1] https://patchwork.ozlabs.org/project/intel-wired-lan/list/?series=250480
-regards patches 2/3 and 3/3: looks it is not right place for temporary 
-w.a. Let's work with alexander.usyskin@intel.com to understand to root 
-cause and right place.
-> 
-> Kai-Heng
-> 
->>> +     board_pch_tgp
->>>    };
->>>
->>>    struct e1000_ps_page {
->>> @@ -499,6 +500,7 @@ extern const struct e1000_info e1000_pch2_info;
->>>    extern const struct e1000_info e1000_pch_lpt_info;
->>>    extern const struct e1000_info e1000_pch_spt_info;
->>>    extern const struct e1000_info e1000_pch_cnp_info;
->>> +extern const struct e1000_info e1000_pch_tgp_info;
->>>    extern const struct e1000_info e1000_es2_info;
->>>
->>>    void e1000e_ptp_init(struct e1000_adapter *adapter);
->>> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>> index cf7b3887da1d..654dbe798e55 100644
->>> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>> @@ -5967,3 +5967,23 @@ const struct e1000_info e1000_pch_cnp_info = {
->>>        .phy_ops                = &ich8_phy_ops,
->>>        .nvm_ops                = &spt_nvm_ops,
->>>    };
->>> +
->>> +const struct e1000_info e1000_pch_tgp_info = {
->>> +     .mac                    = e1000_pch_tgp,
->>> +     .flags                  = FLAG_IS_ICH
->>> +                               | FLAG_HAS_WOL
->>> +                               | FLAG_HAS_HW_TIMESTAMP
->>> +                               | FLAG_HAS_CTRLEXT_ON_LOAD
->>> +                               | FLAG_HAS_AMT
->>> +                               | FLAG_HAS_FLASH
->>> +                               | FLAG_HAS_JUMBO_FRAMES
->>> +                               | FLAG_APME_IN_WUC,
->>> +     .flags2                 = FLAG2_HAS_PHY_STATS
->>> +                               | FLAG2_HAS_EEE,
->>> +     .pba                    = 26,
->>> +     .max_hw_frame_size      = 9022,
->>> +     .get_variants           = e1000_get_variants_ich8lan,
->>> +     .mac_ops                = &ich8_mac_ops,
->>> +     .phy_ops                = &ich8_phy_ops,
->>> +     .nvm_ops                = &spt_nvm_ops,
->>> +};
->>> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
->>> index d150dade06cf..5835d6cf2f51 100644
->>> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
->>> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
->>> @@ -51,6 +51,7 @@ static const struct e1000_info *e1000_info_tbl[] = {
->>>        [board_pch_lpt]         = &e1000_pch_lpt_info,
->>>        [board_pch_spt]         = &e1000_pch_spt_info,
->>>        [board_pch_cnp]         = &e1000_pch_cnp_info,
->>> +     [board_pch_tgp]         = &e1000_pch_tgp_info,
->>>    };
->>>
->>>    struct e1000_reg_info {
->>> @@ -7843,12 +7844,12 @@ static const struct pci_device_id e1000_pci_tbl[] = {
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V11), board_pch_cnp },
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_LM12), board_pch_spt },
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V12), board_pch_spt },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM13), board_pch_cnp },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V13), board_pch_cnp },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM14), board_pch_cnp },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_cnp },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_cnp },
->>> -     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_cnp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM13), board_pch_tgp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V13), board_pch_tgp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM14), board_pch_tgp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V14), board_pch_tgp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_LM15), board_pch_tgp },
->>> +     { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_TGP_I219_V15), board_pch_tgp },
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM16), board_pch_cnp },
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_V16), board_pch_cnp },
->>>        { PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ADP_I219_LM17), board_pch_cnp },
->>>
->> Thanks,
->> Sasha
+On Tue, Jul 13, 2021 at 9:35 PM Uwe Kleine-König
+<u.kleine-koenig@pengutronix.de> wrote:
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
+>
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
+>
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
 
+>  drivers/zorro/zorro-driver.c              | 3 +--
+
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
