@@ -2,186 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4F33C7B2D
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 03:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 960BE3C7B46
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 04:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237376AbhGNB4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 21:56:41 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:11298 "EHLO
+        id S237416AbhGNCFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 22:05:04 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:11299 "EHLO
         szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbhGNB4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 21:56:40 -0400
-Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GPgR26GCCz8sd4;
-        Wed, 14 Jul 2021 09:49:18 +0800 (CST)
-Received: from [10.67.110.55] (10.67.110.55) by dggeme751-chm.china.huawei.com
- (10.3.19.97) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
- Jul 2021 09:53:46 +0800
-Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20210707043811.5349-1-hefengqing@huawei.com>
- <20210707043811.5349-4-hefengqing@huawei.com>
- <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
- <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
- <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
- <bc75c9c5-7479-5021-58ea-ed8cf53fb331@huawei.com>
- <CAADnVQJ2DnoC07XLki_=xPti7V=wH153tQb1bowP+xdLwn580w@mail.gmail.com>
- <21d8cd9e-487e-411f-1cfd-67cebc86b221@huawei.com>
- <CAADnVQ+XGGaXfte6aDdEp6euYckGtyP6S+VDUe4JusUz7xDLLg@mail.gmail.com>
-From:   He Fengqing <hefengqing@huawei.com>
-Message-ID: <cdb39df7-dbfa-c935-e819-97c2134dd2cf@huawei.com>
-Date:   Wed, 14 Jul 2021 09:53:46 +0800
+        with ESMTP id S237371AbhGNCFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 22:05:03 -0400
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GPgck4H75z8sd4;
+        Wed, 14 Jul 2021 09:57:42 +0800 (CST)
+Received: from [10.174.178.171] (10.174.178.171) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Wed, 14 Jul 2021 10:02:10 +0800
+Subject: Re: Ask for help about bpf map
+From:   "luwei (O)" <luwei32@huawei.com>
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        David Ahern <dahern@digitalocean.com>
+References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
+ <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
+ <8735sidtwe.fsf@toke.dk> <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
+Message-ID: <26db412c-a8b7-6d37-844f-7909a0c5744b@huawei.com>
+Date:   Wed, 14 Jul 2021 10:02:10 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQ+XGGaXfte6aDdEp6euYckGtyP6S+VDUe4JusUz7xDLLg@mail.gmail.com>
+In-Reply-To: <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.55]
-X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
- dggeme751-chm.china.huawei.com (10.3.19.97)
+X-Originating-IP: [10.174.178.171]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+I tried 5.13 version in this page: 
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git , still 
+failed with the same error.
 
-
-在 2021/7/14 7:17, Alexei Starovoitov 写道:
-> On Sun, Jul 11, 2021 at 7:17 PM He Fengqing <hefengqing@huawei.com> wrote:
+在 2021/7/14 9:05 AM, luwei (O) 写道:
+> I have updated the iproute2 according this page: 
+> https://github.com/cilium/cilium/issues/7446
+>
+> Now I use this version of iproute2: 
+> https://github.com/shemminger/iproute2
+>
+> The version of iproute2 is 5.11, and the kernel version is 5.13(the 
+> latest version).
+>
+>
+> 在 2021/7/14 1:07 AM, Toke Høiland-Jørgensen 写道:
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 >>
->>
->>
->> 在 2021/7/9 23:12, Alexei Starovoitov 写道:
->>> On Fri, Jul 9, 2021 at 4:11 AM He Fengqing <hefengqing@huawei.com> wrote:
+>>> On Mon, Jul 12, 2021 at 11:35 PM luwei (O) <luwei32@huawei.com> wrote:
+>>>> Hi, List:
+>>>>
+>>>>         I am a beginner about bpf and working on XDP now. I meet a
+>>>> problem and feel difficult to figure it out.
+>>>>
+>>>>         In my following codes, I use two ways to define my_map: in SEC
+>>>> maps and SEC .maps respectively. When I load the xdp_kern.o file,
+>>>>
+>>>> It has different results. The way I load is: ip link set dev ens3 xdp
+>>>> obj xdp1_kern.o sec xdp1.
+>>>>
+>>>>         when I define my_map using SEC maps, it loads successfully but
+>>>> fails to load using SEC .maps, it reports:
+>>>>
+>>>> "
+>>>>
+>>>> [12] TYPEDEF __u32 type_id=13
+>>>> [13] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
+>>>> [14] FUNC_PROTO (anon) return=2 args=(10 ctx)
+>>>> [15] FUNC xdp_prog1 type_id=14
+>>>> [16] INT char size=1 bits_offset=0 nr_bits=8 encoding=SIGNED
+>>>> [17] ARRAY (anon) type_id=16 index_type_id=4 nr_elems=4
+>>>> [18] VAR _license type_id=17 linkage=1
+>>>> [19] DATASEC .maps size=0 vlen=1 size == 0
 >>>>
 >>>>
+>>>> Prog section 'xdp1' rejected: Permission denied (13)!
+>>>>    - Type:         6
+>>>>    - Instructions: 9 (0 over limit)
+>>>>    - License:      GPL
 >>>>
->>>> 在 2021/7/8 11:09, Alexei Starovoitov 写道:
->>>>> On Wed, Jul 7, 2021 at 8:00 PM He Fengqing <hefengqing@huawei.com> wrote:
->>>>>>
->>>>>> Ok, I will change this in next version.
->>>>>
->>>>> before you spam the list with the next version
->>>>> please explain why any of these changes are needed?
->>>>> I don't see an explanation in the patches and I don't see a bug in the code.
->>>>> Did you check what is the prog clone ?
->>>>> When is it constructed? Why verifier has anything to do with it?
->>>>> .
->>>>>
+>>>> Verifier analysis:
 >>>>
->>>>
->>>> I'm sorry, I didn't describe these errors clearly.
->>>>
->>>> bpf_check(bpf_verifier_env)
->>>>        |
->>>>        |->do_misc_fixups(env)
->>>>        |    |
->>>>        |    |->bpf_patch_insn_data(env)
->>>>        |    |    |
->>>>        |    |    |->bpf_patch_insn_single(env->prog)
->>>>        |    |    |    |
->>>>        |    |    |    |->bpf_prog_realloc(env->prog)
->>>>        |    |    |    |    |
->>>>        |    |    |    |    |->construct new_prog
->>>>        |    |    |    |    |    free old_prog(env->prog)
->>>>        |    |    |    |    |
->>>>        |    |    |    |    |->return new_prog;
->>>>        |    |    |    |
->>>>        |    |    |    |->return new_prog;
->>>>        |    |    |
->>>>        |    |    |->adjust_insn_aux_data
->>>>        |    |    |    |
->>>>        |    |    |    |->return ENOMEM;
->>>>        |    |    |
->>>>        |    |    |->return NULL;
->>>>        |    |
->>>>        |    |->return ENOMEM;
->>>>
->>>> bpf_verifier_env->prog had been freed in bpf_prog_realloc function.
->>>>
->>>>
->>>> There are two errors here, the first is memleak in the
->>>> bpf_patch_insn_data function, and the second is use after free in the
->>>> bpf_check function.
->>>>
->>>> memleak in bpf_patch_insn_data:
->>>>
->>>> Look at the call chain above, if adjust_insn_aux_data function return
->>>> ENOMEM, bpf_patch_insn_data will return NULL, but we do not free the
->>>> new_prog.
->>>>
->>>> So in the patch 2, before bpf_patch_insn_data return NULL, we free the
->>>> new_prog.
->>>>
->>>> use after free in bpf_check:
->>>>
->>>> If bpf_patch_insn_data function return NULL, we will not assign new_prog
->>>> to the bpf_verifier_env->prog, but bpf_verifier_env->prog has been freed
->>>> in the bpf_prog_realloc function. Then in bpf_check function, we will
->>>> use bpf_verifier_env->prog after do_misc_fixups function.
->>>>
->>>> In the patch 3, I added a free_old parameter to bpf_prog_realloc, in
->>>> this scenario we don't free old_prog. Instead, we free it in the
->>>> do_misc_fixups function when bpf_patch_insn_data return a valid new_prog.
+>>>> 0: (b7) r1 = 0
+>>>> 1: (63) *(u32 *)(r10 -4) = r1
+>>>> last_idx 1 first_idx 0
+>>>> regs=2 stack=0 before 0: (b7) r1 = 0
+>>>> 2: (bf) r2 = r10
+>>>> 3: (07) r2 += -4
+>>>> 4: (18) r1 = 0x0
+>>> this shouldn't be 0x0.
 >>>
->>> Thanks for explaining.
->>> Why not to make adjust_insn_aux_data() in bpf_patch_insn_data() first then?
->>> Just changing the order will resolve both issues, no?
->>> .
->>>
->> adjust_insn_aux_data() need the new constructed new_prog as an input
->> parameter, so we must call bpf_patch_insn_single() before
->> adjust_insn_aux_data().
-> 
-> Right. I forgot about insn_has_def32() logic and
-> commit b325fbca4b13 ("bpf: verifier: mark patched-insn with
-> sub-register zext flag")
-> that added that extra parameter.
-> 
->> But we can make adjust_insn_aux_data() never return ENOMEM. In
->> bpf_patch_insn_data(), first we pre-malloc memory for new aux_data, then
->> call bpf_patch_insn_single() to constructed the new_prog, at last call
->> adjust_insn_aux_data() functin. In this way, adjust_insn_aux_data()
->> never fails.
+>>> I suspect you have an old iproute2 which doesn't yet use libbpf to
+>>> load BPF programs, so .maps definition is not yet supported. cc'ing
+>>> netdev@vger, David and Toke
+>> That would be my guess as well; what's the output of 'ip -V'?
 >>
->> bpf_patch_insn_data(env) {
->>          struct bpf_insn_aux_data *new_data = vzalloc();
->>          struct bpf_prog *new_prog;
->>          if (new_data == NULL)
->>                  return NULL;
+>> -Toke
 >>
->>          new_prog = bpf_patch_insn_single(env->prog);
->>          if (new_prog == NULL) {
->>                  vfree(new_data);
->>                  return NULL;
->>          }
->>
->>          adjust_insn_aux_data(new_prog, new_data);
->>          return new_prog;
->> }
->> What do you think about it?
-> 
-> That's a good idea. Let's do that. The new size for vzalloc is easy to compute.
-> What should be the commit in the Fixes tag?
-> commit 8041902dae52 ("bpf: adjust insn_aux_data when patching insns")
-> right?
+>> .
+>
+-- 
+Best Regards,
+Lu Wei
 
-Ok, I will add this in the commit message.
-
-> 4 year old bug then.
-> I wonder why syzbot with malloc error injection didn't catch it sooner.
-> .
-> 
