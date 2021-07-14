@@ -2,253 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 114FA3C82A1
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 12:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B783C82CC
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 12:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239051AbhGNKVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 06:21:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22442 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238359AbhGNKVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 06:21:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626257929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LfBNZ1nRgQ8vQTHVhw7mjr+RaP8o0JiRU/ocXdcO9YA=;
-        b=NCzLOh3t9lZfuELQovu8AhcLkkGA3mP2QnX+tTOqCwKqGo6Avwzrs2pe7sNlTPbuXXwFdd
-        GKqcWDjyfRBJHvPEZ0q3pDUuqfKZZE29+0Cqdb2P7rMkJrSH1m7n5nPasp//ARaNft+nio
-        xyxFt8IgjV41w8OK7B5daowAvFgpaoA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-373-CroGQDxzNYKIGgN-KrFAvA-1; Wed, 14 Jul 2021 06:18:48 -0400
-X-MC-Unique: CroGQDxzNYKIGgN-KrFAvA-1
-Received: by mail-wm1-f71.google.com with SMTP id m40-20020a05600c3b28b02901f42375a73fso604348wms.5
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 03:18:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:cc:subject:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LfBNZ1nRgQ8vQTHVhw7mjr+RaP8o0JiRU/ocXdcO9YA=;
-        b=gLt0NlJWe3zmYxuq9GM5adhMcNPehs10OCGAWMqErBnSgdpgdL2Ec0C0pRe9PFHRte
-         f3FnR+I1ILLqtl5EP1JiTbOITR+78Xx9Eug9aHuX5FX+gqU3aCjlI8OQeqv8TsvD4FzP
-         J2QWlkkcgCZB9RbAt++1Bh34xiXyn/O0X2gf9bhX39cGE6gY3did4A7fYlUix+SXqsdz
-         xiIcdHYJ1t274Ybwd6TWAilCgwH1vaZ8ES7Tht+fSxLQ/E8k7VkDHSk1h0iqK4nG9cNb
-         /Y1f1Jrlp1YvduzcHevlyiDJEMUxvGDd46XXlMOq+zG2ExbilSO0FHMCJkt+8q5NyLp/
-         nlZQ==
-X-Gm-Message-State: AOAM5320/S2wtfDUTiKhUCYmRgpNLK9sivyDFoByRA4EzqMqFqKeA7Hk
-        mRg0h5W1ygl3t4U6XGjBS0PWFVlrQfzVPPxGSsmSaHzvQouf0waCqF1b93O+KI5YjulK7vC9GFZ
-        9el9Q8/BeTcHwle3+
-X-Received: by 2002:a5d:6b8d:: with SMTP id n13mr11957073wrx.258.1626257927316;
-        Wed, 14 Jul 2021 03:18:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgfZFM3rD5Ku3g+Nf/khVvTbnZKuQr/7PrPxOlAJJ44Gr2x6+IQc7EVQyw6OkLkr42lsqTBw==
-X-Received: by 2002:a5d:6b8d:: with SMTP id n13mr11957029wrx.258.1626257927046;
-        Wed, 14 Jul 2021 03:18:47 -0700 (PDT)
-Received: from [192.168.42.238] (3-14-107-185.static.kviknet.dk. [185.107.14.3])
-        by smtp.gmail.com with ESMTPSA id t9sm1812790wmq.14.2021.07.14.03.18.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jul 2021 03:18:46 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     brouer@redhat.com, alexander.duyck@gmail.com,
-        linux@armlinux.org.uk, mw@semihalf.com, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        thomas.petazzoni@bootlin.com, hawk@kernel.org,
-        ilias.apalodimas@linaro.org, ast@kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, akpm@linux-foundation.org,
-        peterz@infradead.org, will@kernel.org, willy@infradead.org,
-        vbabka@suse.cz, fenghua.yu@intel.com, guro@fb.com,
-        peterx@redhat.com, feng.tang@intel.com, jgg@ziepe.ca,
-        mcroce@microsoft.com, hughd@google.com, jonathan.lemon@gmail.com,
-        alobakin@pm.me, willemb@google.com, wenxu@ucloud.cn,
-        cong.wang@bytedance.com, haokexin@gmail.com, nogikh@google.com,
-        elver@google.com, yhs@fb.com, kpsingh@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH rfc v5 2/4] page_pool: add interface to manipulate frag
- count in page pool
-To:     Yunsheng Lin <linyunsheng@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-References: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
- <1626255285-5079-3-git-send-email-linyunsheng@huawei.com>
-Message-ID: <79d9e41c-6433-efe1-773a-4f5e91e8de0f@redhat.com>
-Date:   Wed, 14 Jul 2021 12:18:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S239109AbhGNKaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 06:30:00 -0400
+Received: from foss.arm.com ([217.140.110.172]:32922 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230270AbhGNK3w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Jul 2021 06:29:52 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 354A311D4;
+        Wed, 14 Jul 2021 03:27:00 -0700 (PDT)
+Received: from bogus (unknown [10.57.79.213])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2FF633F774;
+        Wed, 14 Jul 2021 03:26:27 -0700 (PDT)
+Date:   Wed, 14 Jul 2021 11:25:29 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@pengutronix.de, Sudeep Holla <sudeep.holla@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Dexuan Cui <decui@microsoft.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Geoff Levand <geoff@infradead.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Wang <jasowang@redhat.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
+        Julien Grall <jgrall@amazon.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Mark Gross <mgross@linux.intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Jamet <michael.jamet@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Rich Felker <dalias@libc.org>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Samuel Holland <samuel@sholland.org>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        SeongJae Park <sjpark@amazon.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Tom Rix <trix@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Yufen Yu <yuyufen@huawei.com>, alsa-devel@alsa-project.org,
+        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
+        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-media@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-parisc@vger.kernel.org,
+        linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
+        platform-driver-x86@vger.kernel.org, sparclinux@vger.kernel.org,
+        target-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org,
+        Johannes Thumshirn <jth@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v4 5/5] bus: Make remove callback return void
+Message-ID: <20210714102529.ehwquc2s2qlbccyg@bogus>
+References: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de>
+ <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <1626255285-5079-3-git-send-email-linyunsheng@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210713193522.1770306-6-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 14/07/2021 11.34, Yunsheng Lin wrote:
-> As suggested by Alexander, "A DMA mapping should be page
-> aligned anyway so the lower 12 bits would be reserved 0",
-> so it might make more sense to repurpose the lower 12 bits
-> of the dma address to store the frag count for frag page
-> support in page pool for 32 bit systems with 64 bit dma,
-> which should be rare those days.
-
-Do we have any real driver users with 32-bit arch and 64-bit DMA, that 
-want to use this new frag-count system you are adding to page_pool?
-
-This "lower 12-bit use" complicates the code we need to maintain 
-forever. My guess is that it is never used, but we need to update and 
-maintain it, and it will never be tested.
-
-Why don't you simply reject using page_pool flag PP_FLAG_PAGE_FRAG 
-during setup of the page_pool for this case?
-
-  if ((pool->p.flags & PP_FLAG_PAGE_FRAG) &&
-      (sizeof(dma_addr_t) > sizeof(unsigned long)))
-    goto reject-setup;
-
-
-> For normal system, the dma_addr[1] in 'struct page' is not
-> used, so we can reuse one of the dma_addr for storing frag
-> count, which means how many frags this page might be splited
-> to.
+On Tue, Jul 13, 2021 at 09:35:22PM +0200, Uwe Kleine-König wrote:
+> The driver core ignores the return value of this callback because there
+> is only little it can do when a device disappears.
 > 
-> The PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to decide
-> where to store the frag count, as the "sizeof(dma_addr_t) >
-> sizeof(unsigned long)" is false for most systems those days,
-> so hopefully the compiler will optimize out the unused code
-> for those systems.
+> This is the final bit of a long lasting cleanup quest where several
+> buses were converted to also return void from their remove callback.
+> Additionally some resource leaks were fixed that were caused by drivers
+> returning an error code in the expectation that the driver won't go
+> away.
 > 
-> The newly added page_pool_set_frag_count() should be called
-> before the page is passed to any user. Otherwise, call the
-> newly added page_pool_atomic_sub_frag_count_return().
-> 
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
-> ---
->   include/linux/mm_types.h |  8 +++++--
->   include/net/page_pool.h  | 54 ++++++++++++++++++++++++++++++++++++++++++------
->   net/core/page_pool.c     | 10 +++++++++
->   3 files changed, 64 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index d33d97c..82bcbb0 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -103,11 +103,15 @@ struct page {
->   			unsigned long pp_magic;
->   			struct page_pool *pp;
->   			unsigned long _pp_mapping_pad;
-> +			atomic_long_t pp_frag_count;
->   			/**
->   			 * @dma_addr: might require a 64-bit value on
-> -			 * 32-bit architectures.
-> +			 * 32-bit architectures, if so, store the lower 32
-> +			 * bits in pp_frag_count, and a DMA mapping should
-> +			 * be page aligned, so the frag count can be stored
-> +			 * in lower 12 bits for 4K page size.
->   			 */
-> -			unsigned long dma_addr[2];
-> +			unsigned long dma_addr;
->   		};
->   		struct {	/* slab, slob and slub */
->   			union {
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 8d7744d..ef449c2 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -198,19 +198,61 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
->   	page_pool_put_full_page(pool, page, true);
->   }
->   
-> +#define PAGE_POOL_DMA_USE_PP_FRAG_COUNT	\
-> +			(sizeof(dma_addr_t) > sizeof(unsigned long))
-> +
->   static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->   {
-> -	dma_addr_t ret = page->dma_addr[0];
-> -	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> -		ret |= (dma_addr_t)page->dma_addr[1] << 16 << 16;
-> +	dma_addr_t ret = page->dma_addr;
-> +
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-> +		ret <<= 32;
-> +		ret |= atomic_long_read(&page->pp_frag_count) & PAGE_MASK;
-> +	}
-> +
->   	return ret;
->   }
->   
->   static inline void page_pool_set_dma_addr(struct page *page, dma_addr_t addr)
->   {
-> -	page->dma_addr[0] = addr;
-> -	if (sizeof(dma_addr_t) > sizeof(unsigned long))
-> -		page->dma_addr[1] = upper_32_bits(addr);
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-> +		atomic_long_set(&page->pp_frag_count, addr & PAGE_MASK);
-> +		addr >>= 32;
-> +	}
-> +
-> +	page->dma_addr = addr;
-> +}
-> +
-> +static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
-> +							  long nr)
-> +{
-> +	long frag_count = atomic_long_read(&page->pp_frag_count);
-> +	long ret;
-> +
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT) {
-> +		if ((frag_count & ~PAGE_MASK) == nr)
-> +			return 0;
-> +
-> +		ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-> +		WARN_ON((ret & PAGE_MASK) != (frag_count & PAGE_MASK));
-> +		ret &= ~PAGE_MASK;
-> +	} else {
-> +		if (frag_count == nr)
-> +			return 0;
-> +
-> +		ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-> +		WARN_ON(ret < 0);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static inline void page_pool_set_frag_count(struct page *page, long nr)
-> +{
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT)
-> +		nr |= atomic_long_read(&page->pp_frag_count) & PAGE_MASK;
-> +
-> +	atomic_long_set(&page->pp_frag_count, nr);
->   }
->   
->   static inline bool is_page_pool_compiled_in(void)
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 78838c6..0082f33 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -198,6 +198,16 @@ static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
->   	if (dma_mapping_error(pool->p.dev, dma))
->   		return false;
->   
-> +	if (PAGE_POOL_DMA_USE_PP_FRAG_COUNT &&
-> +	    WARN_ON(pool->p.flags & PP_FLAG_PAGE_FRAG &&
-> +		    dma & ~PAGE_MASK)) {
-> +		dma_unmap_page_attrs(pool->p.dev, dma,
-> +				     PAGE_SIZE << pool->p.order,
-> +				     pool->p.dma_dir,
-> +				     DMA_ATTR_SKIP_CPU_SYNC);
-> +		return false;
-> +	}
-> +
->   	page_pool_set_dma_addr(page, dma);
->   
->   	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> With struct bus_type::remove returning void it's prevented that newly
+> implemented buses return an ignored error code and so don't anticipate
+> wrong expectations for driver authors.
 > 
 
+[...]
+
+> diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
+> index 784cf0027da3..2682c3df651c 100644
+> --- a/drivers/firmware/arm_scmi/bus.c
+> +++ b/drivers/firmware/arm_scmi/bus.c
+> @@ -116,15 +116,13 @@ static int scmi_dev_probe(struct device *dev)
+>  	return scmi_drv->probe(scmi_dev);
+>  }
+>  
+> -static int scmi_dev_remove(struct device *dev)
+> +static void scmi_dev_remove(struct device *dev)
+>  {
+>  	struct scmi_driver *scmi_drv = to_scmi_driver(dev->driver);
+>  	struct scmi_device *scmi_dev = to_scmi_dev(dev);
+>  
+>  	if (scmi_drv->remove)
+>  		scmi_drv->remove(scmi_dev);
+> -
+> -	return 0;
+>  }
+>  
+>  static struct bus_type scmi_bus_type = {
+
+Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+
+--
+Regards,
+Sudeep
