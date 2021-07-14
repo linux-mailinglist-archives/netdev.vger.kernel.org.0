@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 692983C8138
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D42103C8149
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:18:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238450AbhGNJRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 05:17:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48162 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238647AbhGNJRx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 05:17:53 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5FC8961369;
-        Wed, 14 Jul 2021 09:15:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626254102;
-        bh=yA6BI8oJjYrNrQ7CFZtz8jy476hE4euezlpCYdt1+fM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C1yyx22oADKVV3UHknoSEAU95BzEedKZTIMZrWuDaKvBB0Fj2AT9uDax7sIsXjE2l
-         GTZ+eULQPrNByhxCX6HT/+V0k7ddMz3wQk6WybiHv6u6jt11Y6ONS26prGZkkaETd8
-         /6c6BRfWGrMUKwPfBNeGhdJJuZdrQJO7tUEmwnzvwyWtrZnOw2fzj+g49EyeG3Uith
-         26/AOHx8uSeDkKvaNUZ64ARiry4BLKRcAZ7KaAUzIgqk0NGcgO3ujnupjUVMcrWSOp
-         aUojbv3LZj+9FacvcWdetHHRzTgDkAgdXVaoZKexyae8yZG8Gg5KIBahGT5BbWV0zS
-         zetkHXI/0jonw==
-Date:   Wed, 14 Jul 2021 12:14:58 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     shiraz.saleem@intel.com
-Cc:     zyjzyj2000@gmail.com, yanjun.zhu@intel.com,
-        mustafa.ismail@intel.com, dledford@redhat.com, jgg@ziepe.ca,
-        linux-rdma@vger.kernel.org, yanjun.zhu@linux.dev,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/3] RDMA/irdma: change the returned type of
- irdma_sc_repost_aeq_entries to void
-Message-ID: <YO6rEkoHgsYh+w37@unreal>
-References: <20210714031130.1511109-1-yanjun.zhu@linux.dev>
- <20210714031130.1511109-2-yanjun.zhu@linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210714031130.1511109-2-yanjun.zhu@linux.dev>
+        id S238624AbhGNJUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 05:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238489AbhGNJUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:20:50 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F19C061760
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 02:17:58 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z39-20020a25ada70000b029056092741626so1725785ybi.19
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 02:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=wlrejQF48WL4uSnd99LoOFS/aI1Cbh+kk7n1cuLb8Cw=;
+        b=P1U+2qmKrZFPH1F205C0/YpTnPSOtrtZBISVrVuEwKIgIwSqtTHUeBOxhmFB/MvPem
+         2cLbH//lBQbItf6/Yc3FkRmungVvfG2zSsBaUwKDE/P5z4CjvB7jWDetnL+2r9KzMUpi
+         gIbMOZMlPnGP5E9kj/cEmpbjW9wnXRnCakZzq6OaxHE7giuBuEMO2O54imLNby/x/Nsp
+         IE/Ktf90LufxxRvIiKvriv4sSdGNeXul5YdCxx2YJF0bfpJOYOhZIHbjzQAsMkbNOvRp
+         4jz/2/2oT3h6NQysEUnSd2ysPyr0MMSn/tdotxY0VoZTkoQ6It9txcbkrvge+5gddc90
+         3BUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=wlrejQF48WL4uSnd99LoOFS/aI1Cbh+kk7n1cuLb8Cw=;
+        b=Clh4mNg6YSQ7Xbvnr2BM+/Xp8DqQuWTw0auAtkFCOZ6RH7zQxxVpF5evTbe+c8N1D8
+         3+oOZTxb/Vtb+oLaC6QeMZo8aKrqIn8caHgTnePH4nzyk29civoiFR1qmzTwYpWPgipS
+         yOcIwMoABMsQPLHpki7sGem0Q2ppSIVQfzot4CNmLF6MHtZiACNQ9EyVcdTpegEATgGF
+         BuCMGtQ3JfCjbhmyTuleAs71Y6GoNvpKhMGjjOmVx0TuRBIDPBppcufA822RAIu5bIb/
+         /XpAIRUBU2cYqr6Afm9p+QVCo1sp3PJajVBpt6lawbE4uYAEGGle7xzwxwvZUSO04qev
+         VLBA==
+X-Gm-Message-State: AOAM533yilwgOLKZlYbB8V7fY6zaRuk00KwNXUPiYQaEKpbwdKFh2JGi
+        AzMDKBcMUEFGJSIvzZVUelLpKHDi
+X-Google-Smtp-Source: ABdhPJzvZoBrVMLmKVofazWugPLVIdobBxAIACgaacdGRcC6DEb+OIp6+hpvaCQiE14wFI8hFJkY3Qjipw==
+X-Received: from fawn.svl.corp.google.com ([2620:15c:2cd:202:c569:463c:c488:ac2])
+ (user=morbo job=sendgmr) by 2002:a25:764b:: with SMTP id r72mr12013800ybc.254.1626254277400;
+ Wed, 14 Jul 2021 02:17:57 -0700 (PDT)
+Date:   Wed, 14 Jul 2021 02:17:44 -0700
+Message-Id: <20210714091747.2814370-1-morbo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
+Subject: [PATCH 0/3] Fix clang -Wunused-but-set-variable warnings
+From:   Bill Wendling <morbo@google.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Nilesh Javali <njavali@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>
+Cc:     Bill Wendling <morbo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 11:11:28PM -0400, yanjun.zhu@linux.dev wrote:
-> From: Zhu Yanjun <yanjun.zhu@linux.dev>
-> 
-> The function irdma_sc_repost_aeq_entries always returns zero. So
-> the returned type is changed to void.
-> 
-> Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-> ---
->  drivers/infiniband/hw/irdma/ctrl.c | 4 +---
->  drivers/infiniband/hw/irdma/type.h | 3 +--
->  2 files changed, 2 insertions(+), 5 deletions(-)
+These patches clean up warnings from clang's '-Wunused-but-set-variable' flag.
 
-<...>
+Bill Wendling (3):
+  base: remove unused variable 'no_warn'
+  bnx2x: remove unused variable 'cur_data_offset'
+  scsi: qla2xxx: remove unused variable 'status'
 
-> -enum irdma_status_code irdma_sc_repost_aeq_entries(struct irdma_sc_dev *dev,
-> -						   u32 count);
+ drivers/base/module.c                             | 6 ++----
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c | 6 ------
+ drivers/scsi/qla2xxx/qla_nx.c                     | 2 --
+ 3 files changed, 2 insertions(+), 12 deletions(-)
 
-I clearly remember that Jakub asked for more than once to remo remove
-custom ice/irdma error codes. Did it happen? Can we get rid from them
-in RDMA too?
+-- 
+2.32.0.93.g670b81a890-goog
 
-Thanks
