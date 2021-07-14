@@ -2,88 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D9F3C8790
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD5063C87DB
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 17:39:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239879AbhGNPeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 11:34:11 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:58130 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S239868AbhGNPeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 11:34:09 -0400
-X-UUID: 2de3c61ee52744549a0ccee3a3b85973-20210714
-X-UUID: 2de3c61ee52744549a0ccee3a3b85973-20210714
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
-        (envelope-from <rocco.yue@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1787064300; Wed, 14 Jul 2021 23:31:14 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 14 Jul 2021 23:31:12 +0800
-Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 14 Jul 2021 23:31:12 +0800
-From:   Rocco Yue <rocco.yue@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        id S239570AbhGNPmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 11:42:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54766 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232318AbhGNPmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Jul 2021 11:42:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=iXlJK4yq9w48JGg+FZEsnZ7jfqJ1YcqG77mZJHNmuCo=; b=eHZ9V+lHdRtukaVg8f9GJvaxTC
+        4JPmndMdZMkxsy9wD9k0YB1Sx2vxihKkLmDFCUOjuUxTcDPckb2q6h85SnaTRZGJ3BhAMpx2LlSxi
+        6Wz1nezy7AgvcA8y/UTdbu2B+6lfbklp9UOnWLiILCOG/masPzBu3f9UWqm1QCIuHftg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m3gyZ-00DMz3-C6; Wed, 14 Jul 2021 17:39:07 +0200
+Date:   Wed, 14 Jul 2021 17:39:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>,
-        <rocco.yue@gmail.com>, Rocco Yue <rocco.yue@mediatek.com>
-Subject: [PATCH] ipv6: remove unused local variable
-Date:   Wed, 14 Jul 2021 23:15:33 +0800
-Message-ID: <20210714151533.6210-1-rocco.yue@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH/RFC 1/2] ravb: Preparation for supporting Gigabit
+ Ethernet driver
+Message-ID: <YO8FG0zJoG3GI9S9@lunn.ch>
+References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
+ <20210714145408.4382-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210714145408.4382-2-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The local variable "struct net *net" in the two functions of
-inet6_rtm_getaddr() and inet6_dump_addr() are actually useless,
-so remove them.
+On Wed, Jul 14, 2021 at 03:54:07PM +0100, Biju Das wrote:
+> The DMAC and EMAC blocks of Gigabit Ethernet IP is almost
+> similar to Ethernet AVB. With few canges in driver we can
 
-Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
----
- net/ipv6/addrconf.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+changes
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 3bf685fe64b9..e2f625e39455 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5211,8 +5211,7 @@ static int inet6_dump_addr(struct sk_buff *skb, struct netlink_callback *cb,
- 		.netnsid = -1,
- 		.type = type,
- 	};
--	struct net *net = sock_net(skb->sk);
--	struct net *tgt_net = net;
-+	struct net *tgt_net = sock_net(skb->sk);
- 	int idx, s_idx, s_ip_idx;
- 	int h, s_h;
- 	struct net_device *dev;
-@@ -5351,7 +5350,7 @@ static int inet6_rtm_valid_getaddr_req(struct sk_buff *skb,
- static int inet6_rtm_getaddr(struct sk_buff *in_skb, struct nlmsghdr *nlh,
- 			     struct netlink_ext_ack *extack)
- {
--	struct net *net = sock_net(in_skb->sk);
-+	struct net *tgt_net = sock_net(in_skb->sk);
- 	struct inet6_fill_args fillargs = {
- 		.portid = NETLINK_CB(in_skb).portid,
- 		.seq = nlh->nlmsg_seq,
-@@ -5359,7 +5358,6 @@ static int inet6_rtm_getaddr(struct sk_buff *in_skb, struct nlmsghdr *nlh,
- 		.flags = 0,
- 		.netnsid = -1,
- 	};
--	struct net *tgt_net = net;
- 	struct ifaddrmsg *ifm;
- 	struct nlattr *tb[IFA_MAX+1];
- 	struct in6_addr *addr = NULL, *peer;
--- 
-2.18.0
+> support both the IP. This patch is in preparation for
+> supporting the same.
 
+Please break this up a bit, it is hard to review. You can put all the
+refactoring into helpers into one patch. But changes like
+
+> -			if (priv->chip_id == RCAR_GEN2) {
+> +			if (priv->chip_id != RCAR_GEN3) {
+
+should be in a seperate patch with an explanation.
+
+You are aiming for lots of very simple patches which are obviously
+correct.
+
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index 86a1eb0634e8..80e62ca2e3d3 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -864,7 +864,7 @@ enum GECMR_BIT {
+>  
+>  /* The Ethernet AVB descriptor definitions. */
+>  struct ravb_desc {
+> -	__le16 ds;		/* Descriptor size */
+> +	__le16 ds;	/* Descriptor size */
+>  	u8 cc;		/* Content control MSBs (reserved) */
+>  	u8 die_dt;	/* Descriptor interrupt enable and type */
+>  	__le32 dptr;	/* Descriptor pointer */
+
+Please put white spaces changes in a patch of its own.
+
+       Andrew
