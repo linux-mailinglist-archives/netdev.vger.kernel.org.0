@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E56383C937F
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 00:01:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E5243C93FC
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 00:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236247AbhGNWDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 18:03:36 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:37714
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229498AbhGNWDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 18:03:35 -0400
-Received: from famine.localdomain (1.general.jvosburgh.us.vpn [10.172.68.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 194E140616;
-        Wed, 14 Jul 2021 22:00:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626300036;
-        bh=ERoUc/vzyGCRXP8MOtYZ/pVSmZpxoxwUYE99SyGVTro=;
-        h=From:To:Subject:MIME-Version:Content-Type:Date:Message-ID;
-        b=tVnU79lBWU7ZF93LXSUwyakQQjPlWXSTH317+JZ5IHPmbp2cgO8u8QJr0Go/TPcy4
-         ApgeQ6zG2KuY59eSi0cYqOPiiIS5IJmo792Tn9/8goK9T7Yu4ltH7ZZTuz0PdYrzie
-         mOXPHfEy78TLUtV5ujgHLp6A06GfqBvrY6WuvVyHifTKpZz1sjh+q2LAv33gnuET/V
-         L4FFcYzIajVAO/0J8S1Qfup7faWpXSRphPEBal0jsIYtVipjDx24jYgtfL97DfpWc4
-         byXG9vxZCyz8xtKIciqr99mOFWFtpO3bCYGOdQeC20zxycyHB8YnzIEQMceVX4zNok
-         nX6imWQwQdRgA==
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 689095FBC1; Wed, 14 Jul 2021 15:00:34 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 61C40A040B;
-        Wed, 14 Jul 2021 15:00:34 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-cc:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
-        netdev@vger.kernel.org, vfalico@gmail.com, andy@greyhouse.net,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        jarod@redhat.com, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH net v2 0/9] net: fix bonding ipsec offload problems
-In-reply-to: <20210705153814.11453-1-ap420073@gmail.com>
-References: <20210705153814.11453-1-ap420073@gmail.com>
-Comments: In-reply-to Taehee Yoo <ap420073@gmail.com>
-   message dated "Mon, 05 Jul 2021 15:38:05 -0000."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S234174AbhGNWsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 18:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231736AbhGNWsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 18:48:39 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C6AC061760
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 15:45:47 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id e20so5775728ljn.8
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 15:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VZY1MuucrPtSmSp30OAQiYqQAOnsQCoU9oTNEDnDA2c=;
+        b=kR7bqFDg5swVOvJGwGKJAKZpmRG8WEVb7WX8p8aUJH2GLKjUGvyXzOPI67BUGEhaR+
+         kEhqtVlVnFgNIpjMym1ZBneUelCELU/v43djuxMRgQ32Z3SxwdZ0YsvKR/NPXIR5j/yL
+         pBQvn+1zBRt6Qk/mWx8T9NSEZ5IxZNo9KWMkwPBnmw1+4qrk1iuUhMG8sBxara0JAAXh
+         QQYN4kbyi6XvD+XycCHZCRjJJfXi3WKSdSPmgHVrIh6YjVNqQk8jHNuzmO47bgnSLBu9
+         vCSveCyyMLYLU/b2W00xx41wPNQ3e7a7IE++nBE2EpOeemD8xG8saX0TTM6NAv6o4sSy
+         6f0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VZY1MuucrPtSmSp30OAQiYqQAOnsQCoU9oTNEDnDA2c=;
+        b=TlMUGh1EKhOl25q0vxQhVen1mT4ifW9UnWYUayM8AnFv5Tf3QJflDzKdIoePt3CArZ
+         1ySkKLRIrrAa60JO8xpCHLBMHcueh0PDn1t44PTESl+ucljdMaML5Aw28Q8edr7CQyxn
+         Tc1SAc/phqzYVRLRvKo3GubOBmvxq9vac3ix7iM9l4GgckVzfpsKGD4RuFk5ZTvWCahb
+         FNjIFc26Ee6qW7y560upueGT/BzsRkxR+92HNFErx2tRT/5GIfJTYug00zaE713CP6fH
+         C8NKLUXD3aVICfdH5R7BiIxhs7NQaO0eeFrtGBlaxdX7qocmV/YphUip4Rb2sR6t/zQ9
+         diuw==
+X-Gm-Message-State: AOAM531O0obLssPjQ2/s4xx2TVQp4tE1L39FYrdS4cVSeoaFJAfDouzP
+        9pxq3EeIPnVFprLX1ixy34Pw3yqapx+VqH6IJWVyfA==
+X-Google-Smtp-Source: ABdhPJzQQmKwrYEowCzDGnEbtSR4Nzl53qXWclJ23SGLzmPTEsbmXHiK8oAw3gtNqbTVm8GJLWF635Cnsj2CYWkuYhI=
+X-Received: by 2002:a05:651c:308:: with SMTP id a8mr140735ljp.337.1626302745344;
+ Wed, 14 Jul 2021 15:45:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <25260.1626300034.1@famine>
-Date:   Wed, 14 Jul 2021 15:00:34 -0700
-Message-ID: <25261.1626300034@famine>
+References: <20210714073501.133736-1-haiyue.wang@intel.com>
+In-Reply-To: <20210714073501.133736-1-haiyue.wang@intel.com>
+From:   Catherine Sullivan <csully@google.com>
+Date:   Wed, 14 Jul 2021 15:45:09 -0700
+Message-ID: <CAH_-1qzu_X26sUehY9721+yG3xYVw_0eiPGb=0X4p0m7Jv+ddg@mail.gmail.com>
+Subject: Re: [PATCH v1] gve: fix the wrong AdminQ buffer overflow check
+To:     Haiyue Wang <haiyue.wang@intel.com>
+Cc:     netdev@vger.kernel.org, Sagi Shahar <sagis@google.com>,
+        Jon Olson <jonolson@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Awogbemila <awogbemila@google.com>,
+        Yangchun Fu <yangchun@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Bailey Forrest <bcf@google.com>, Kuo Zhao <kuozhao@google.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Taehee Yoo <ap420073@gmail.com> wrote:
-
->This series fixes some problems related to bonding ipsec offload.
+On Wed, Jul 14, 2021 at 12:58 AM Haiyue Wang <haiyue.wang@intel.com> wrote:
 >
->The 1, 5, and 8th patches are to add a missing rcu_read_lock().
->The 2nd patch is to add null check code to bond_ipsec_add_sa.
->When bonding interface doesn't have an active real interface, the
->bond->curr_active_slave pointer is null.
->But bond_ipsec_add_sa() uses that pointer without null check.
->So that it results in null-ptr-deref.
->The 3 and 4th patches are to replace xs->xso.dev with xs->xso.real_dev.
->The 6th patch is to disallow to set ipsec offload if a real interface
->type is bonding.
->The 7th patch is to add struct bond_ipsec to manage SA.
->If bond mode is changed, or active real interface is changed, SA should
->be removed from old current active real interface then it should be added
->to new active real interface.
->But it can't, because it doesn't manage SA.
->The 9th patch is to fix incorrect return value of bond_ipsec_offload_ok().
+> The 'tail' pointer is also free-running count, so it needs to be masked
+> as 'adminq_prod_cnt' does, to become an index value of AdminQ buffer.
 >
->v1 -> v2:
-> - Add 9th patch.
-> - Do not print warning when there is no SA in bond_ipsec_add_sa_all().
-> - Add comment for ipsec_lock.
+> Fixes: 5cdad90de62c ("gve: Batch AQ commands for creating and destroying queues.")
+> Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+
+Reviewed-by: Catherine Sullivan <csully@google.com>
+
+> ---
+>  drivers/net/ethernet/google/gve/gve_adminq.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 >
->Taehee Yoo (9):
->  bonding: fix suspicious RCU usage in bond_ipsec_add_sa()
->  bonding: fix null dereference in bond_ipsec_add_sa()
->  net: netdevsim: use xso.real_dev instead of xso.dev in callback
->    functions of struct xfrmdev_ops
->  ixgbevf: use xso.real_dev instead of xso.dev in callback functions of
->    struct xfrmdev_ops
->  bonding: fix suspicious RCU usage in bond_ipsec_del_sa()
->  bonding: disallow setting nested bonding + ipsec offload
->  bonding: Add struct bond_ipesc to manage SA
->  bonding: fix suspicious RCU usage in bond_ipsec_offload_ok()
->  bonding: fix incorrect return value of bond_ipsec_offload_ok()
+> diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+> index 5bb56b454541..f089d33dd48e 100644
+> --- a/drivers/net/ethernet/google/gve/gve_adminq.c
+> +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+> @@ -322,7 +322,8 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
+>         tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
 >
-> drivers/net/bonding/bond_main.c            | 181 +++++++++++++++++----
-> drivers/net/ethernet/intel/ixgbevf/ipsec.c |  20 ++-
-> drivers/net/netdevsim/ipsec.c              |   8 +-
-> include/net/bonding.h                      |   9 +-
-> 4 files changed, 178 insertions(+), 40 deletions(-)
+>         // Check if next command will overflow the buffer.
+> -       if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) == tail) {
+> +       if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) ==
+> +           (tail & priv->adminq_mask)) {
+>                 int err;
+>
+>                 // Flush existing commands to make room.
+> @@ -332,7 +333,8 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
+>
+>                 // Retry.
+>                 tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
+> -               if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) == tail) {
+> +               if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) ==
+> +                   (tail & priv->adminq_mask)) {
+>                         // This should never happen. We just flushed the
+>                         // command queue so there should be enough space.
+>                         return -ENOMEM;
+> --
+> 2.32.0
+>
 
-	The bonding portion looks good to me.
-
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Thanks!
