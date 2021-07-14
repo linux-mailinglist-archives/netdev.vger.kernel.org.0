@@ -2,85 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 270A03C89BE
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4AC3C8A0A
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239748AbhGNR26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 13:28:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54976 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229559AbhGNR25 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 13:28:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AlrjkHfgiupumNx/+6p/tkKKGBLAJCwsWpH5ndO4cYQ=; b=fEsf9QmUcUYrX3xSZYBzABCnCm
-        1B3S4wxmaZBVgRg1oV2+Q1v53JDbHCNlYKeSvDfmY4Zig+T6IL2VSdPnDgbaeDaObYpllAek3I5UD
-        ijKZ9QUMSO4gp6M1GQ7Bjf7wz0lkZCZxjS0o0RMB8AKjdaTLHJHIAZDgjokMpyxdgWJ4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m3ids-00DNbk-7K; Wed, 14 Jul 2021 19:25:52 +0200
-Date:   Wed, 14 Jul 2021 19:25:52 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH/RFC 2/2] ravb: Add GbEthernet driver support
-Message-ID: <YO8eILdf4orh0ISY@lunn.ch>
-References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
- <20210714145408.4382-3-biju.das.jz@bp.renesas.com>
- <YO8KeCg8bQPjI/a5@lunn.ch>
- <OS0PR01MB59225983D7FB35F82213911686139@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        id S238965AbhGNRtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 13:49:15 -0400
+Received: from baldur.buserror.net ([165.227.176.147]:60168 "EHLO
+        baldur.buserror.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230217AbhGNRtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 13:49:14 -0400
+X-Greylist: delayed 1991 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Jul 2021 13:49:14 EDT
+Received: from [2601:449:8480:af0::97c7]
+        by baldur.buserror.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <oss@buserror.net>)
+        id 1m3iQJ-0004e6-4c; Wed, 14 Jul 2021 12:11:51 -0500
+Message-ID: <63a72f648297e96c140a1412c20bd3796398a932.camel@buserror.net>
+From:   Scott Wood <oss@buserror.net>
+To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 14 Jul 2021 12:11:49 -0500
+In-Reply-To: <20210704134325.24842-1-pali@kernel.org>
+References: <20210604233455.fwcu2chlsed2gwmu@pali>
+         <20210704134325.24842-1-pali@kernel.org>
+Organization: Red Hat
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OS0PR01MB59225983D7FB35F82213911686139@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2601:449:8480:af0::97c7
+X-SA-Exim-Rcpt-To: pali@kernel.org, andrew@lunn.ch, linux@armlinux.org.uk, madalin.bucur@nxp.com, camelia.groza@oss.nxp.com, robh+dt@kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org, kabel@kernel.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: oss@buserror.net
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on baldur.localdomain
+X-Spam-Level: 
+X-Spam-Status: No, score=-16.0 required=5.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  -15 BAYES_00 BODY: Bayes spam probability is 0 to 1%
+        *      [score: 0.0000]
+Subject: Re: [PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 05:01:34PM +0000, Biju Das wrote:
-> Hi Andrew Lunn,
+On Sun, 2021-07-04 at 15:43 +0200, Pali Rohár wrote:
+> Property phy-connection-type contains invalid value "sgmii-2500" per scheme
+> defined in file ethernet-controller.yaml.
 > 
-> Thanks for the feedback.
+> Correct phy-connection-type value should be "2500base-x".
 > 
-> > Subject: Re: [PATCH/RFC 2/2] ravb: Add GbEthernet driver support
-> > 
-> > > +	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID) {
-> > > +		ravb_write(ndev, ravb_read(ndev, CXR31)
-> > > +			 | CXR31_SEL_LINK0, CXR31);
-> > > +	} else {
-> > > +		ravb_write(ndev, ravb_read(ndev, CXR31)
-> > > +			 & ~CXR31_SEL_LINK0, CXR31);
-> > > +	}
-> > 
-> > You need to be very careful here. What value is passed to the PHY?
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the
+> board device tree(s)")
+> ---
+>  arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> PHY_INTERFACE_MODE_RGMII is the value passed to PHY.
+> diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> index 5ba6fbfca274..f82f85c65964 100644
+> --- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> +++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
+> @@ -154,7 +154,7 @@
+>  
+>                         fm1mac3: ethernet@e4000 {
+>                                 phy-handle = <&sgmii_aqr_phy3>;
+> -                               phy-connection-type = "sgmii-2500";
+> +                               phy-connection-type = "2500base-x";
+>                                 sleep = <&rcpm 0x20000000>;
+>                         };
+>  
 
-In all four cases? So if DT contains rgmii-txid, or rgmii-rxid, the
-requested delay will not happen in either the MAC or the PHY?
+Acked-by: Scott Wood <oss@buserror.net>
 
-In general in Linux, MAC drivers don't add any delays, and request the
-PHY to do it. There are some MAC drivers which do it differently, they
-add the delays, but that is uncommon. So unless you have a good reason
-not to, i would suggest you leave the PHY to do the delays.
+-Scott
 
-	  Andrew
 
