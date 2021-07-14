@@ -2,215 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 947DB3C7FBF
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 10:06:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17B53C7FCF
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 10:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238403AbhGNIJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 04:09:08 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:52434 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238287AbhGNIJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 04:09:07 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16E82viB002641;
-        Wed, 14 Jul 2021 08:05:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=corp-2020-01-29;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=ljXnHRU52sls3Lxw0akVaXTOPNR3XOqMh2oBM0A5DeB4ZG37zmVjW4mq69Tst2R9XS3X
- oUSOKSVDdMWnaTMJJBJtNgrWL5QPRJQS4ciqNlQuOo0+pEhsANDufyz8LU/bSUkCEiw2
- v88Zn5QxXR1MJ4yPc3d7bkm4RdtNQ47mEzx5IpwEMIw+LTZ3TvPiif11BFeLMuCCEUc6
- CJxTB/AA46+CKYAvzJ4nvQcFUhzzs0zmK5pTuO/9abO8pXKRc9PRDGezSKHf2N/jjC+w
- TXgbj7ilYW4EUPgXOkDzCIAYpu0OtLHX1ljG5o/38Gqsun40f37cWN/59KuOIvfgp77v jw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 39rpd8vbtv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 14 Jul 2021 08:05:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16E80mpI146936;
-        Wed, 14 Jul 2021 08:05:55 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2049.outbound.protection.outlook.com [104.47.73.49])
-        by aserp3020.oracle.com with ESMTP id 39q3cekgef-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 14 Jul 2021 08:05:55 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ftkGNcPwybH7eN3kw8gkIagWC9onMEQd0EUFZoCqAbFr/6Ge2EKZLkMxV/bTvrAZ0WZWkR3pdzfYoSpVCwOqYq5VNYbjtqF2Odt5CxboCLgp6haJ8IywE3pgJF6bYwVEX54Q2kNZC1Cttz+XVDG04qmLC28FT4MJkJVqMy+N/USuJABkHZxuKamOddachC3dVDfevX/+X7ikk9eCINosaQZfcakqCBQCRfH0OkEM+ZnTrWQQTnLbzK6RqD7mXRMu6BlMFbzUZft44xE/QMbDtmcJMVD37d63CGL2aDBF49Omu8cPdAcvH2Og2LIPyPI7A9ZSyaN7sTxeXD7b7ULj3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=b9y5A+gmqgvVivjZuPnl/c74WJveCF6cVq1R2bjfBCnrylan/a62PZzyeIiQUZvbHHFCwyITk8ToNHKMCXtFY+kTA7O6p3OsN3WGBFbR+tXyYLoMzckDftnOCrcoqRCY2NtdNqHxQkAH6iA1v6mc1yqzkuaTKooK+axv1TrJOQJ4Z7cWDgK0NZR76BV0eddAdiamKirfI8nQfgevnWbyw9SWMLNjpoW/C/odWiDrOqQh8MpsTurpneEoCoIJpSHGOMnpnr5B9zWqiPOLAp6aSNR1F+FSK+/O6/t7ENcAqoR66Ngiq9EU9C090vBhECm8XYgrcO00QhYy8RaYCBumWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        id S238456AbhGNIOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 04:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238398AbhGNIOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 04:14:40 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3378DC06175F;
+        Wed, 14 Jul 2021 01:11:49 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id y17so1572686pgf.12;
+        Wed, 14 Jul 2021 01:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=JtVcghPlZTFacNHYoxIfYz6Quvf29l77Z/dIqKFngkXiasaRw/MrQ2AQVcG7Tgsn2A+upEjck+idqI7yAsSf7kb56vC0EFjekI5RAu8jNyTOQ8mO8Bllp+/tgVe27MTJS32tBQ0bZzEJKeZtN5JpKdOITv0g2FbzS75CU6LnF3w=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4483.namprd10.prod.outlook.com
- (2603:10b6:303:98::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Wed, 14 Jul
- 2021 08:05:53 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73%5]) with mapi id 15.20.4308.027; Wed, 14 Jul 2021
- 08:05:53 +0000
-Date:   Wed, 14 Jul 2021 11:05:12 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        hch@infradead.org, christian.brauner@canonical.com,
-        rdunlap@infradead.org, willy@infradead.org,
-        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
-        corbet@lwn.net, mika.penttila@nextfour.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, zhe.he@windriver.com,
-        xiaodong.liu@intel.com, songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and
- vhost_vdpa_pa_unmap()
-Message-ID: <20210714080512.GW1954@kadam>
-References: <20210713084656.232-1-xieyongji@bytedance.com>
- <20210713084656.232-14-xieyongji@bytedance.com>
- <20210713113114.GL1954@kadam>
- <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vcI74ijnf4LIifxIqiDc51FiY2t+xKmqpG5BxGMZfd4=;
+        b=e3LGc2uGmgh8b8NL0RXnr7jMvPs/r1poq5wBhlg3cvTniumhdhoGPBTizUaP/lnsPg
+         hzWiFSk3/AWc18q5YtnW5IfC4eFo02jaRjpF4R2wnUNeqS9/cTw5TyS38gOBVEAJ7sqh
+         rQoBFKjmRk55BArhTcilvklXKOIjsm5iqkxKokcT63E1gM8KQ54sfweuhNbA3VWDHQq1
+         Nv+7uA3nY6PxHKQJ/rkABcPTchfG6S0DHNQZXGED8DZmNr6XUmBbCtvsL2oq+LbmjQEc
+         F99K0jzpLur+ok4FfJQ2j/VXniSZ174VYrphuONd6em5lkBcW/4J1vE8ZQfwkEldkLeR
+         lpkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vcI74ijnf4LIifxIqiDc51FiY2t+xKmqpG5BxGMZfd4=;
+        b=iO00bHXqPFYse+ELxizk/gyADFxsVMWhUnuAsAo0KA57RyMiJjTGrehyUxT6iainno
+         OnO3MW0ntYijIQc5Bx7E9pRu+qeotBylipzOz2MqKlefntZgIfvw3NmyGdThgBSWB5Mz
+         +vImd541yzFcF8c9HMILGmaxPViB3AuXKOcb7HtWgnNLxUJg6B0G7xWMXhUYFZyQmal8
+         +J0qzMRF4if4cOqoTUqiPRJn7oEGUbACs3ylShJ417Ry9ZNdFGjdfMoQCTvpLsipwb1m
+         VBq4VMWFmKLmoNvJRadYEBJAeU2k8/iKNtKMvlmyqKWcEw/xSGt3l5zRfSsz+04TGiRQ
+         g8zg==
+X-Gm-Message-State: AOAM533CsEiKiDkxryWhI3ROTl/UlYzYJVS1+c8z1s4kn9V5JERE/rTy
+        Jkkoc1mstJeEpsDOWunHDfs=
+X-Google-Smtp-Source: ABdhPJz5ljEe2fRBvE/8vVluA/KFz4z7b4AWD9D4sAJe7RzlGUzEmi/9fy7+1zZcPv0eW4/Lh4I+Mg==
+X-Received: by 2002:a62:a507:0:b029:30d:82e1:ce14 with SMTP id v7-20020a62a5070000b029030d82e1ce14mr8982240pfm.29.1626250308658;
+        Wed, 14 Jul 2021 01:11:48 -0700 (PDT)
+Received: from localhost.localdomain ([154.16.166.218])
+        by smtp.gmail.com with ESMTPSA id n4sm1722090pff.51.2021.07.14.01.11.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jul 2021 01:11:48 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>
+Cc:     syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] usb: hso: fix error handling code of hso_create_net_device
+Date:   Wed, 14 Jul 2021 16:11:22 +0800
+Message-Id: <20210714081127.675743-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kadam (102.222.70.252) by JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 14 Jul 2021 08:05:29 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd917d8d-68ca-4805-5f80-08d9469e3338
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4483:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO1PR10MB44834A42145BD63D9730C1ED8E139@CO1PR10MB4483.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M0OaoS6zF+rsSwlJZaOGZm7h2cBuTijTMvEcizkW0BXuwNO96fV1UqLA5GJSWngw4RtBP8BQpujnjGTjCPacw+W3dQ1epkjHqmXJap5cuzv/ec0mzb8ZBMIsSuyikyTG7ezUM0R3jgmnaGG5ZdNczqcKhi0NP60X3m0dIGZ5i5Wnk+r3wvHY5vKsGwY4C9w4w8mDN5jIjSXI6o3rG6XYM+wPoeA6mJX+fYCoytazd8pXeiroimKHQCypFYSnLnO8D+zl0HKbWvxpcRu0Dy4fFoJbxVlcqV457pDaSNwCDO4Guw6qVcAgKXIQfs+vWdAEhXI+Q2M3K9rta7tnisnRhEi4/TsbFMCWIKdM7FrZYbRztkJ39exmfOHe1KS8oRd1QN8TLVxz/W6/bhPWUMeYTL9XVFQk7b4i0/XKIRYkJRRWKimZjSGh8bFxxSn9il2+vLBlRZ5D/PmISdJN+WqOSuXbwJjZO1/rjA4fzznkOL3Lyqtz3owwUlRQoNRrTH5WcCZdkwNoqxPAyOAKKlhWub5RNw8Dzy4YtzmQkoASb3Xg6F60xAc/620SaRL9tp/ql+4gtoMihhZ8dAhTmYM5mkvayNehvWPsEvivkbL73M62xHjChixElTLMKg/rgt/txxIlMy/5OSz2ZPYhToABJ/fQfL5oDvckQiPbDmokAqV37pm6MG1wCAN2dfbxw1s8x4FKjSNZCGj8uHaAqxeleQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(136003)(366004)(39860400002)(478600001)(55016002)(9686003)(8936002)(8676002)(33656002)(83380400001)(4326008)(6666004)(6916009)(38100700002)(38350700002)(9576002)(316002)(956004)(2906002)(7416002)(1076003)(52116002)(6496006)(186003)(66476007)(5660300002)(66946007)(86362001)(66556008)(33716001)(26005)(44832011);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YUp4cmJnY28vTW5QZ0JrTTFhb3RhQkhsWkMzQ0R4Y1V0Q1N6S3lIU0lza0RY?=
- =?utf-8?B?cDhUTytiVzhIQktyYzBLaWxpNXF0RmZ4LzJSeUZIQzNZallUbVdKVDRkcm9o?=
- =?utf-8?B?b3Z2NWJETWxxOEZpNlVtZVA1WXRaVG84azdXZ0NNRFhsRlJTVkh4emcwWFpm?=
- =?utf-8?B?cWwrdVR0T0pNcDFZZko4MkhKajZ3VWlLK1lsR2NmY3A2VDduTWRBY3o5bEYz?=
- =?utf-8?B?Y01ZaVlQOWtyRFowNEswSTM1QlU2WGRqQktHNzQvNTQxTHZCMTgxUitDVUUx?=
- =?utf-8?B?UEYzQWU5NEV3di92c0xZSG5PUWxFRDMxVjF1clF4eUNiOTFzWVYxSjMzM3lJ?=
- =?utf-8?B?cVJOUmorS3Rrcyt3UldNTVdrM0lqTDFnTkE4RjZ0QlVac2p1RHIydE05bVoy?=
- =?utf-8?B?aWgxamo0cEp1TlMrMmcwWjBrWlROK3Q3a2xnZHNSb29rWXJXNkQ0UHg5aUZS?=
- =?utf-8?B?a1pzcGRNaDNCUnhPbUJIZ3lFOXYwVGd1WG9aWVNGNkRMbkFieVExK2wxYU9Y?=
- =?utf-8?B?aXdVbU01VERieGFoOEdjUmFTK1Z4cmpOWndKbCszL2E3aGErU0hwY2tWQW5E?=
- =?utf-8?B?QXhnQkZLSXdhb0F1RHRFL3FoZU14Tm1ibDEybUkwaGF0VUJwWUJqUXZmWlB6?=
- =?utf-8?B?Zi8ydVpBbEdpN0o3YWw4Tk9FUzkyRWRodjF6eHF4SmJqb1hkREdHL2MrSGFG?=
- =?utf-8?B?VmdGczBIYXpqSDBZV1NFRVNNU2RUd3ZNd3dGdTFIZVlhT05NeDJ3VDl3VTdG?=
- =?utf-8?B?dVNOMUpmdjc3REF2d2RHQkoyUnB4aGc4SHVKVnQxUWdZMmZtUzNMQlNWQWE5?=
- =?utf-8?B?RTFjRUpMRzBhZWhCaEtTOEVjQng0NjNFWVJMRTkyOGR0d0o2Kyt6UkdUMmxz?=
- =?utf-8?B?bFVlRmEwRWVFdE5keFlNcXN6ZUpaek5qT2drL1lweER0R0ZDcXBlMWdnSUtz?=
- =?utf-8?B?UTZHZUZCUG9ENEJYWUtYTjd1REVLWENqYi9qMmphTVVlMFVLVmYrWTQwZnVH?=
- =?utf-8?B?cHZ5NkYwemRzM2pHY1NiWSt4TVQyUzZ5eWhOUW1PdDJydUtyZGd6STYvclBT?=
- =?utf-8?B?Vmx0TnQ0b3NNdnpEaDRYYnZFczdFZWtsMlA0NjdwOEg0MlVYRmxOV1RqMTZZ?=
- =?utf-8?B?Tzc1d0VOOUlNTjZHaW9pNUtQNTJSRE53T0ZJZFVYa1dOdm5BK3VVb29wWFB1?=
- =?utf-8?B?ZHU5UWNQaE5EcnJZaG1JZkVYemVmQTJLQWRsSC85MnJKeXRXZ2k4QW15djNv?=
- =?utf-8?B?T3I5VHJJYmhLTXhCZlFyK2UrSWsrM3hRS3VoU3NtYitxOW4zZnpVNjF0YXNs?=
- =?utf-8?B?TS9YK1QzV2ZoYlh4ZTNON05SWllFZUFPWDNqU3dPcm1uc2QyZXpwMlRCcGxG?=
- =?utf-8?B?RTFxejFQVGVyWWNCY29WRUx3RjRzcUV1T0FrQmNkdm9vMk41cDRMT3pwc29P?=
- =?utf-8?B?WDMrVGYxVlI5Q1kyeW41enBJZ2paNDRaeXM1ekJBdGpiOXhYWU1ncVg4cnhv?=
- =?utf-8?B?K3ErcWI3S2d6Uk9palV4QVZiS3hrOWFFYkQ3YjRkcUowYi9PQkY5ZjBGUE1l?=
- =?utf-8?B?aktCa2NlSURLK1FtYnJ3NlQzR1RkSzh2aE94ckZOczdXNHRqZDAyaDN2M2Rn?=
- =?utf-8?B?b3dISC9FSEhWTEFhQ3dBYXlVQ09zdWhUZ241ZXJmVzNzUjVkdTRYbDhmdVAy?=
- =?utf-8?B?Z1lncUdvZlpyNmFDWHA2MWVOWjhqWWdHeWZ6WExYUkUvbHNZeWV5ZmdNaW5x?=
- =?utf-8?Q?c+aNIVVq//2JME5PJyiK9l3Hg4tu/TfVvDm0oBX?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd917d8d-68ca-4805-5f80-08d9469e3338
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2021 08:05:53.3112
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SUhx5rHBP/c9tDOnZRauYWqXXZ9aE4oEJND9iXUm8H9whENcj8JCyNVCMx+ryNMHAMwJo2C8upQnhFptEfl6FJ0ZKhIndBtm59+jrH7QiKE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4483
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10044 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 mlxscore=0
- suspectscore=0 phishscore=0 adultscore=0 mlxlogscore=870 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2107140051
-X-Proofpoint-GUID: Xy6BNIYKnJ9bTEb3yuv1KWtknz2jLlMB
-X-Proofpoint-ORIG-GUID: Xy6BNIYKnJ9bTEb3yuv1KWtknz2jLlMB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 10:14:32AM +0800, Jason Wang wrote:
-> 
-> 在 2021/7/13 下午7:31, Dan Carpenter 写道:
-> > On Tue, Jul 13, 2021 at 04:46:52PM +0800, Xie Yongji wrote:
-> > > @@ -613,37 +618,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
-> > >   	}
-> > >   }
-> > > -static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
-> > > -					   struct vhost_iotlb_msg *msg)
-> > > +static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
-> > > +			     u64 iova, u64 size, u64 uaddr, u32 perm)
-> > >   {
-> > >   	struct vhost_dev *dev = &v->vdev;
-> > > -	struct vhost_iotlb *iotlb = dev->iotlb;
-> > >   	struct page **page_list;
-> > >   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
-> > >   	unsigned int gup_flags = FOLL_LONGTERM;
-> > >   	unsigned long npages, cur_base, map_pfn, last_pfn = 0;
-> > >   	unsigned long lock_limit, sz2pin, nchunks, i;
-> > > -	u64 iova = msg->iova;
-> > > +	u64 start = iova;
-> > >   	long pinned;
-> > >   	int ret = 0;
-> > > -	if (msg->iova < v->range.first ||
-> > > -	    msg->iova + msg->size - 1 > v->range.last)
-> > > -		return -EINVAL;
-> > This is not related to your patch, but can the "msg->iova + msg->size"
-> > addition can have an integer overflow.  From looking at the callers it
-> > seems like it can.  msg comes from:
-> >    vhost_chr_write_iter()
-> >    --> dev->msg_handler(dev, &msg);
-> >        --> vhost_vdpa_process_iotlb_msg()
-> >           --> vhost_vdpa_process_iotlb_update()
-> 
-> 
-> Yes.
-> 
-> 
-> > 
-> > If I'm thinking of the right thing then these are allowed to overflow to
-> > 0 because of the " - 1" but not further than that.  I believe the check
-> > needs to be something like:
-> > 
-> > 	if (msg->iova < v->range.first ||
-> > 	    msg->iova - 1 > U64_MAX - msg->size ||
-> 
-> 
-> I guess we don't need - 1 here?
+The current error handling code of hso_create_net_device is
+hso_free_net_device, no matter which errors lead to. For example,
+WARNING in hso_free_net_device [1].
 
-The - 1 is important.  The highest address is 0xffffffff.  So it goes
-start + size = 0 and then start + size - 1 == 0xffffffff.
+Fix this by refactoring the error handling code of
+hso_create_net_device by handling different errors by different code.
 
-I guess we could move the - 1 to the other side?
+[1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
 
-	msg->iova > U64_MAX - msg->size + 1 ||
+Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
+Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ drivers/net/usb/hso.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-regards,
-dan carpenter
-
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 54ef8492ca01..39c4e88eab62 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -2495,7 +2495,7 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+ 			   hso_net_init);
+ 	if (!net) {
+ 		dev_err(&interface->dev, "Unable to create ethernet device\n");
+-		goto exit;
++		goto err_hso_dev;
+ 	}
+ 
+ 	hso_net = netdev_priv(net);
+@@ -2508,13 +2508,13 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+ 				      USB_DIR_IN);
+ 	if (!hso_net->in_endp) {
+ 		dev_err(&interface->dev, "Can't find BULK IN endpoint\n");
+-		goto exit;
++		goto err_net;
+ 	}
+ 	hso_net->out_endp = hso_get_ep(interface, USB_ENDPOINT_XFER_BULK,
+ 				       USB_DIR_OUT);
+ 	if (!hso_net->out_endp) {
+ 		dev_err(&interface->dev, "Can't find BULK OUT endpoint\n");
+-		goto exit;
++		goto err_net;
+ 	}
+ 	SET_NETDEV_DEV(net, &interface->dev);
+ 	SET_NETDEV_DEVTYPE(net, &hso_type);
+@@ -2523,18 +2523,18 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+ 	for (i = 0; i < MUX_BULK_RX_BUF_COUNT; i++) {
+ 		hso_net->mux_bulk_rx_urb_pool[i] = usb_alloc_urb(0, GFP_KERNEL);
+ 		if (!hso_net->mux_bulk_rx_urb_pool[i])
+-			goto exit;
++			goto err_mux_bulk_rx;
+ 		hso_net->mux_bulk_rx_buf_pool[i] = kzalloc(MUX_BULK_RX_BUF_SIZE,
+ 							   GFP_KERNEL);
+ 		if (!hso_net->mux_bulk_rx_buf_pool[i])
+-			goto exit;
++			goto err_mux_bulk_rx;
+ 	}
+ 	hso_net->mux_bulk_tx_urb = usb_alloc_urb(0, GFP_KERNEL);
+ 	if (!hso_net->mux_bulk_tx_urb)
+-		goto exit;
++		goto err_mux_bulk_rx;
+ 	hso_net->mux_bulk_tx_buf = kzalloc(MUX_BULK_TX_BUF_SIZE, GFP_KERNEL);
+ 	if (!hso_net->mux_bulk_tx_buf)
+-		goto exit;
++		goto err_mux_bulk_tx;
+ 
+ 	add_net_device(hso_dev);
+ 
+@@ -2542,7 +2542,7 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+ 	result = register_netdev(net);
+ 	if (result) {
+ 		dev_err(&interface->dev, "Failed to register device\n");
+-		goto exit;
++		goto err_register;
+ 	}
+ 
+ 	hso_log_port(hso_dev);
+@@ -2550,8 +2550,21 @@ static struct hso_device *hso_create_net_device(struct usb_interface *interface,
+ 	hso_create_rfkill(hso_dev, interface);
+ 
+ 	return hso_dev;
+-exit:
+-	hso_free_net_device(hso_dev, true);
++
++err_register:
++	remove_net_device(hso_dev);
++	kfree(hso_net->mux_bulk_tx_buf);
++err_mux_bulk_tx:
++	usb_free_urb(hso_net->mux_bulk_tx_urb);
++err_mux_bulk_rx:
++	for (i = 0; i < MUX_BULK_RX_BUF_COUNT; i++) {
++		usb_free_urb(hso_net->mux_bulk_rx_urb_pool[i]);
++		kfree(hso_net->mux_bulk_rx_buf_pool[i]);
++	}
++err_net:
++	free_netdev(net);
++err_hso_dev:
++	kfree(hso_dev);
+ 	return NULL;
+ }
+ 
+-- 
+2.25.1
 
