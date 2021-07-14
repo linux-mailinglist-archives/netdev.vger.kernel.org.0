@@ -2,170 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 161F03C7D59
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 06:20:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 173D23C7DD9
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 07:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237803AbhGNEXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 00:23:10 -0400
-Received: from smtprelay0246.hostedemail.com ([216.40.44.246]:37952 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229712AbhGNEXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 00:23:09 -0400
-Received: from omf20.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 8829C1844C6AC;
-        Wed, 14 Jul 2021 04:20:17 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id A90B018A600;
-        Wed, 14 Jul 2021 04:20:10 +0000 (UTC)
-Message-ID: <8aa028a0117ecb51d209861f926a84ce74fe0c46.camel@perches.com>
-Subject: Re: [PATCH v9 03/17] vdpa: Fix code indentation
-From:   Joe Perches <joe@perches.com>
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
-        parav@nvidia.com, hch@infradead.org,
-        christian.brauner@canonical.com, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
-        dan.carpenter@oracle.com, joro@8bytes.org,
-        gregkh@linuxfoundation.org, zhe.he@windriver.com,
-        xiaodong.liu@intel.com
-Cc:     songmuchun@bytedance.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Date:   Tue, 13 Jul 2021 21:20:09 -0700
-In-Reply-To: <20210713084656.232-4-xieyongji@bytedance.com>
-References: <20210713084656.232-1-xieyongji@bytedance.com>
-         <20210713084656.232-4-xieyongji@bytedance.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.0-1 
+        id S237892AbhGNFQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 01:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229451AbhGNFQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 01:16:48 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3326EC0613DD
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:13:56 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id ay16so433900qvb.12
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZdQWrmG6M3XUqNOIsR3BE6OkJLacu7dzCjviod9+YhI=;
+        b=QTziq5m0E1ucoN1dWIZxCPqk9/SFIezVPWo5QTcNJM6S+Nq4gu5ef+MV4g/xQMKGhx
+         INZ+XY2BMlgHlkc8CJRHX+cBHWAozMTVef+x/lQT4SeGXmAfE4s0XilBm60/tcMlL9b5
+         N6I13oiqPtD9EpjHljgW7Nky5y4KXjViYXG5iXtrEBirLXRQG0g208B3Tgx77SMCgoSo
+         qp4J5zMqbX4rpXk1ctGZRXQ9uSCO/GjJ/NeJggDx22XL+9TkHlKxUI/RuAHBU1UpiBn5
+         H0hAtrcf0ZPjanpKfYfU/EBSsY34sY3aPQBWF0pvGCCb11bU/mA2jOXGTosXSWUaMc08
+         sfuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZdQWrmG6M3XUqNOIsR3BE6OkJLacu7dzCjviod9+YhI=;
+        b=eFhe2g6ewQDlMGMQTRePtpYt82l6B15kAiK/2eH2Btdltb7Fe+xAcTN2MUjgZZ9OFO
+         H6tRnbemZWbeGCmFBNy3tYBCms75OED7G9mPKX2opf1eMcjgdbXR5at79x9ETa5qCVPZ
+         qqKUB3eouYPKUX5QcRBLoGq4e4QzQGv2afHkgBnx81vk5CkTlYayXjNTwOfbRyNQdxRa
+         GkZv01ZpF7iFxEdvlMDK2V2DVWJmvuFptZg1tfZSgXcM8XjAgWlN1BPliAv4/eTsg6+d
+         O2feg9K0XRS0eYiwb2CYIVb6ohuK9aeFakCar+AbaPa1wFS+PqryIrwi/7F0kwR0kYp9
+         rvRQ==
+X-Gm-Message-State: AOAM5336EPie1+aCZLDQnKVhaIvlsB9/Ri2CR96RKzkR4S4QQrYTBX/X
+        LPRo10Snd0ZbOY/fPfdNcY+1aNh3HOQ7qklC/Nw=
+X-Google-Smtp-Source: ABdhPJzSaGJea92VDK8uQSe2xM9Dl/cv2iQLcugmvZnlNdd3+GpOQitQ2CdDrrurV39j7EjgC3El6z1ppc+w8Nwo93s=
+X-Received: by 2002:a0c:e7c9:: with SMTP id c9mr8812238qvo.47.1626239635222;
+ Tue, 13 Jul 2021 22:13:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: A90B018A600
-X-Spam-Status: No, score=-2.29
-X-Stat-Signature: w8c8skx4hq53kyxkkcs5f64b7rox7x57
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19IxVK6JNPE/co+tp8AToMXmxFv5EZRX50=
-X-HE-Tag: 1626236410-955187
+References: <20210707051241.20565-1-vjsanjay@gmail.com> <202107130145.OLy5XU3h-lkp@intel.com>
+In-Reply-To: <202107130145.OLy5XU3h-lkp@intel.com>
+From:   Sanjay Kumar J <vjsanjay@gmail.com>
+Date:   Wed, 14 Jul 2021 10:44:08 +0530
+Message-ID: <CAN7cG1a1sSQLuotMie44-SHyCQu5E1QCWwJxhqvVWGASaLh1PA@mail.gmail.com>
+Subject: Re: [PATCH v2] tools/runqslower: use __state instead of state
+To:     kernel test robot <lkp@intel.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, kbuild-all@lists.01.org,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-07-13 at 16:46 +0800, Xie Yongji wrote:
-> Use tabs to indent the code instead of spaces.
-
-There are a lot more of these in this file.
-
-$ ./scripts/checkpatch.pl --fix-inplace --strict include/linux/vdpa.h
-
-and a little typing gives:
----
- include/linux/vdpa.h | 50 +++++++++++++++++++++++++-------------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
-
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 3357ac98878d4..14cd4248e59fd 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
-  * @last_used_idx: used index
-  */
- struct vdpa_vq_state_packed {
--        u16	last_avail_counter:1;
--        u16	last_avail_idx:15;
--        u16	last_used_counter:1;
--        u16	last_used_idx:15;
-+	u16	last_avail_counter:1;
-+	u16	last_avail_idx:15;
-+	u16	last_used_counter:1;
-+	u16	last_used_idx:15;
- };
- 
- struct vdpa_vq_state {
--     union {
--          struct vdpa_vq_state_split split;
--          struct vdpa_vq_state_packed packed;
--     };
-+	union {
-+		struct vdpa_vq_state_split split;
-+		struct vdpa_vq_state_packed packed;
-+	};
- };
- 
- struct vdpa_mgmt_dev;
-@@ -131,7 +131,7 @@ struct vdpa_iova_range {
-  *				@vdev: vdpa device
-  *				@idx: virtqueue index
-  *				@state: pointer to returned state (last_avail_idx)
-- * @get_vq_notification: 	Get the notification area for a virtqueue
-+ * @get_vq_notification:	Get the notification area for a virtqueue
-  *				@vdev: vdpa device
-  *				@idx: virtqueue index
-  *				Returns the notifcation area
-@@ -277,13 +277,13 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 					const struct vdpa_config_ops *config,
- 					size_t size, const char *name);
- 
--#define vdpa_alloc_device(dev_struct, member, parent, config, name)   \
--			  container_of(__vdpa_alloc_device( \
--				       parent, config, \
--				       sizeof(dev_struct) + \
--				       BUILD_BUG_ON_ZERO(offsetof( \
--				       dev_struct, member)), name), \
--				       dev_struct, member)
-+#define vdpa_alloc_device(dev_struct, member, parent, config, name)	\
-+	container_of(__vdpa_alloc_device(parent, config,		\
-+					 sizeof(dev_struct) +		\
-+					 BUILD_BUG_ON_ZERO(offsetof(dev_struct,	\
-+								    member)), \
-+					 name),				\
-+		     dev_struct, member)
- 
- int vdpa_register_device(struct vdpa_device *vdev, int nvqs);
- void vdpa_unregister_device(struct vdpa_device *vdev);
-@@ -308,8 +308,8 @@ struct vdpa_driver {
- int __vdpa_register_driver(struct vdpa_driver *drv, struct module *owner);
- void vdpa_unregister_driver(struct vdpa_driver *drv);
- 
--#define module_vdpa_driver(__vdpa_driver) \
--	module_driver(__vdpa_driver, vdpa_register_driver,	\
-+#define module_vdpa_driver(__vdpa_driver)				\
-+	module_driver(__vdpa_driver, vdpa_register_driver,		\
- 		      vdpa_unregister_driver)
- 
- static inline struct vdpa_driver *drv_to_vdpa(struct device_driver *driver)
-@@ -339,25 +339,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
- 
- static inline void vdpa_reset(struct vdpa_device *vdev)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	vdev->features_valid = false;
--        ops->set_status(vdev, 0);
-+	ops->set_status(vdev, 0);
- }
- 
- static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	vdev->features_valid = true;
--        return ops->set_features(vdev, features);
-+	return ops->set_features(vdev, features);
- }
- 
--
--static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
-+static inline void vdpa_get_config(struct vdpa_device *vdev,
-+				   unsigned int offset,
- 				   void *buf, unsigned int len)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	/*
- 	 * Config accesses aren't supposed to trigger before features are set.
-
-
+On Mon, Jul 12, 2021 at 11:12 PM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi SanjayKumar,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on bpf-next/master]
+> [also build test ERROR on vhost/linux-next ipvs/master v5.14-rc1]
+> [cannot apply to bpf/master next-20210712]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+v4 version of the patch is already accepted in bpf tree
+commit-id:5616e895ecc56 and also in net tree ommit:5616e895ecc56
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>
+> url:    https://github.com/0day-ci/linux/commits/SanjayKumar-J/tools-runqslower-use-__state-instead-of-state/20210707-131703
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+> config: x86_64-rhel-8.3-kselftests (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> reproduce (this is a W=1 build):
+>         # https://github.com/0day-ci/linux/commit/0e86dc86c0f18512dc19ba3d0b001b3f06338a0d
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review SanjayKumar-J/tools-runqslower-use-__state-instead-of-state/20210707-131703
+>         git checkout 0e86dc86c0f18512dc19ba3d0b001b3f06338a0d
+>         # save the attached .config to linux build tree
+>         mkdir build_dir
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash -C tools/testing/selftests/bpf install
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+> >> runqslower.bpf.c:77:12: error: no member named '__state' in 'struct task_struct'; did you mean 'state'?
+>            if (prev->__state == TASK_RUNNING)
+>                      ^~~~~~~
+>                      state
+>    /tools/vmlinux.h:1096:20: note: 'state' declared here
+>            volatile long int state;
+>                              ^
+>    1 error generated.
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
