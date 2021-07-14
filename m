@@ -2,101 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA89A3C8BA2
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B64B3C8BB3
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 21:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbhGNT3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 15:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
+        id S229771AbhGNTfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 15:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhGNT3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 15:29:02 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057F1C06175F;
-        Wed, 14 Jul 2021 12:26:10 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id 22so5455570lfy.12;
-        Wed, 14 Jul 2021 12:26:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5z77xaqgcAqQS574mQicaaSoe0tH1/ryQFhzvKaFXvk=;
-        b=sGr1dk+k+2PVV6xOZ5MfjqYFVUsiyv0MiYKp670dHKV/DCcfb+1Mcy+z/ZCFOg0ISb
-         OJdgw+OHPmhZ1iAHtoRJUvZ9SN/t+QD3JXgmsA1MWQjHce2Lxh1CGmuCDyT0BhjV+mJg
-         P6Z6uXdK1TJxbHXluJl+8rGTaPpmW8x5tAIootQ2p4bz2KkiY7z9UoZr862s3wXwZJGX
-         moyF6DRyj+HaCUO4DTcqb71L0l7a6Pw1vK7GIjf/xOBjic8h1Ed1NIcI5+94ptGzYlU1
-         aN3JN91moEPkObC7PMc8ygt2lMtHYVQ9aD0Tm+c4gfYJ8hOltXGK7Fuw16DotiZOzuA6
-         BJpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5z77xaqgcAqQS574mQicaaSoe0tH1/ryQFhzvKaFXvk=;
-        b=HWhcKSnau+6sTD2VcvKb3HHcifMRnoXJUCeoQR7+ru5A/WqckgqEa0N+xhzUbCfVh7
-         R8LQL4zkhlfueaP6VvEYHuwIh/nzvAzYaaw3HFhvay+VblZTgHsJuFoDgyEHEAhfdd5F
-         WjVraWmOQ/Xfv7iuf6B6Ez9BbhT75Rk7Kg0rCBC/pTs88w8a0qQGEmG89/i+427KX5rm
-         5lwm7E9HVGYU3ftFA27MmxyHZpWq7jsNgHP0Fan8ooU58QaxKL5ruyrc+NyWpig15Pbp
-         nKCsPzVSJzfmAxu5m9uid9tYw5XX0QPhE/phgVNpuhcE0GilpyP31Xv/Et8NrcQpkDPC
-         7vVA==
-X-Gm-Message-State: AOAM531UoxRhValRhkbJlY99oxBWyWVyJoJXfn09xFN40VuUqMNw+arF
-        I2qcaYiTxGXsI9etCJowWxU=
-X-Google-Smtp-Source: ABdhPJwZ7ygrDubZJW72ZUOVUjXjqomTBBMDhWMnQmbE0RJPyTMKBV546hy4a+ClkkxW2tcgw7pAAg==
-X-Received: by 2002:ac2:4c49:: with SMTP id o9mr8961196lfk.212.1626290768377;
-        Wed, 14 Jul 2021 12:26:08 -0700 (PDT)
-Received: from [192.168.1.102] ([31.173.80.53])
-        by smtp.gmail.com with ESMTPSA id e12sm357214lji.90.2021.07.14.12.26.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jul 2021 12:26:07 -0700 (PDT)
-Subject: Re: [PATCH/RFC 0/2] Add Gigabit Ethernet driver support
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <db9c3972-8b55-e0df-3101-20aa38eba1b1@gmail.com>
-Date:   Wed, 14 Jul 2021 22:26:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S229498AbhGNTfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 15:35:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5324C06175F
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 12:32:21 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m3kc9-00037Y-BM; Wed, 14 Jul 2021 21:32:13 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:1d5a:f852:d9c2:1ad3])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 753FC64F576;
+        Wed, 14 Jul 2021 19:32:06 +0000 (UTC)
+Date:   Wed, 14 Jul 2021 21:32:05 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
+        Xiaochen Zou <xzou017@ucr.edu>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        David Jander <david@protonic.nl>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+Subject: Re: [PATCH v1] can: j1939: j1939_session_deactivate(): clarify
+ lifetime of session object
+Message-ID: <20210714193205.jsygqqnimcqarety@pengutronix.de>
+References: <20210714111602.24021-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dz7anhbgfjbiwfae"
+Content-Disposition: inline
+In-Reply-To: <20210714111602.24021-1-o.rempel@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/14/21 5:54 PM, Biju Das wrote:
 
-> The DMAC and EMAC blocks of Gigabit Ethernet IP is almost
-> similar to Ethernet AVB.
-> 
-> The Gigabit Etherner IP consists of Ethernet controller (E-MAC),
-> Internal TCP/IP Offload Engine (TOE) and Dedicated Direct memory
-> access controller (DMAC).
+--dz7anhbgfjbiwfae
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-   Do you have a mnaual for this SoC? I haven't found any...
+On 14.07.2021 13:16:02, Oleksij Rempel wrote:
+> The j1939_session_deactivate() is decrementing the session ref-count and
+> potentially can free() the session. This would cause use-after-free
+> situation.
+>=20
+> However, the code calling j1939_session_deactivate() does always hold
+> another reference to the session, so that it would not be free()ed in
+> this code path.
+>=20
+> This patch adds a comment to make this clear and a WARN_ON, to ensure
+> that future changes will not violate this requirement. Further this
+> patch avoids dereferencing the session pointer as a precaution to avoid
+> use-after-free if the session is actually free()ed.
+>=20
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Reported-by: Xiaochen Zou <xzou017@ucr.edu>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-> With few canges in driver, we can support Gigabit ethernet driver as well.
-> I have prototyped the driver and tested with renesas-drivers master branch.
-> 
-> Please share your valuable comments.
+Added to linux-can/testing
 
-   Commented on the patch 1/2 already, will continue with patch 2/2 review
-tomorrow...
+regards,
+Marc
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-[...]
+--dz7anhbgfjbiwfae
+Content-Type: application/pgp-signature; name="signature.asc"
 
-MBR, Sergei
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDvO7MACgkQqclaivrt
+76mGSAgAsLSRfsllRRbGlDGyUpGnatoujGqN/9WIUXnFcrLCnYIobnxirDez9DzY
+Cb/vyUZ/qFESv8GCMOOTllg30+gGRW6FA0jusEO45CBklTR2CiqT6XrWG3n1hbA+
+mf+RXareY5+M2SG1fNMvtsrGOWLatYDkxuIL6mC9F8MYXTwmHYWwnUh1ctxHnQqV
+nryZ6cF/9/tbHpEEV567+r1hGTVjlOSOUu3eLfzPYMnE2TeU2Jg3KuP09z2G/Gl2
+sf2n03rsjfDTMeUWXpvZzcV+nt6eWD7evTieYGHrO9bMx9QO2rEX4Ko/xForYEEg
+nVVskpTBqmFjGUPZe0/LjeF5HL1kNw==
+=YbdO
+-----END PGP SIGNATURE-----
+
+--dz7anhbgfjbiwfae--
