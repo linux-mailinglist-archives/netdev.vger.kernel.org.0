@@ -2,76 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D0A3C7AA3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 02:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7883C7AB6
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 02:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237245AbhGNAiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 20:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        id S237186AbhGNAy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 20:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237159AbhGNAiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 20:38:14 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6520BC0613DD;
-        Tue, 13 Jul 2021 17:35:23 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id x10so10705545ion.9;
-        Tue, 13 Jul 2021 17:35:23 -0700 (PDT)
+        with ESMTP id S237113AbhGNAyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 20:54:55 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF46C0613DD;
+        Tue, 13 Jul 2021 17:52:04 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id h6so29587922iok.6;
+        Tue, 13 Jul 2021 17:52:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=EnP6Ly2WIp+QXLx5YSmZimw+qV+B8DDZxemfoa3U0L8=;
-        b=VtJwVTQKoLJQtwX4Huobmad7hRfohuGFJf4zqLpRGFzU3rX9kZ+rTBzNU6Q07vHptJ
-         dl5TjJ92fMLfV+QVqicYpzD6fLmiS8dlole4MX0CBilUJfjPuPz/cZ6VDX4VMMMdleFN
-         SYbj7XvPycQg2NdwsoDD1jl54WjICkrcdk6GmvB5JsCJ/6QtxdB5MhojNK/3Q2Ma45ln
-         MZ3At2GqjsVJqwpMubnVRqLZ6eGyb+eu5QULSDpttDXXCF9OrKltesQEKW2g2R5zvGop
-         VA6UairaMgSGR4WlOgvvqBSEdSriEiYdWZYQMnT4gRrGCT6ranuoGDIa8I9vWYdcn3/8
-         gvgA==
+        bh=icgf3yqZNru0Ph46l7DfzCfI9W0m9sMz9X1UBv2Jl7o=;
+        b=mD8D9VKlOscgp9QrdFgUYcQwrq3Nr+s9LRFmS1KUEQ6s333ojouJ/dUmmDbnag8k4h
+         GGS8XE2G2DyUrRVt8MpzBKL/OrUXtE73NIDGRNMCTT72mbEdIXsLN1GfaWSZivFUINSh
+         DTsnoBQmpKbp4GoqxhSsAVofzI2Y9NKlE2RZqxyY+nTJb+aa0SELVaFtBY+KX4ScmHpb
+         4tpZqUF525i4ew4DVx0l9V/W3xEvwzz2mFiRcLpqiXWDa1P2BueXKJz18zzpIgnGl1GY
+         dIQvVwSjSAWA1nPPZMiywc5OOstNh45OIJw1bhiLHgU0h4t03SUddqLEFHQSUL77qjz/
+         RfOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EnP6Ly2WIp+QXLx5YSmZimw+qV+B8DDZxemfoa3U0L8=;
-        b=Fx1NpgiLQSTeR7ClyThRLpRGZhE4w0vq7wqVe13abL2SUs90YNyt6/W1kcysGDcrts
-         k2rbUakxXN6qZ2GOifAmBDfVxMiR/my1O28CI4P9rO2VORKrH+F9BMzZtlxB9fOCIrNH
-         fp4NsuLW4c/KmsuXUs5o2pectWK3jMU9nZqXehF9AcnZSefAJ7ta7DpuGmqjX6Ig8oJp
-         PmXCaARCinuRJeZ9wjo+MZH2Odgbq4pYsP5DiL/4Jgpb/Pj0qYSl4dRI8AD+7zkGJzM2
-         RcRkEdRnMJLewxj6vQPaYQWCkwWnnJ8/ujKgui3tPRTGJlUXn3JcepIildWVwPi9nMiH
-         l4CQ==
-X-Gm-Message-State: AOAM5316bymOEbvgyKuasfxjuJ9RfCR3OMFfHVRBhQEjfc+S5jMJqu+0
-        oZwLbQsydK3ybB1h3aOTDdYXuuLOyELFc8uHedA=
-X-Google-Smtp-Source: ABdhPJzUA49Pg3dKLHsrWS/Uh+0ggz1s2KHjA/eW6Os5kHsNTqL30qzM0H+GHykxj/uq1evXg9jcDwTCPEELZ7gzQ0Y=
-X-Received: by 2002:a02:3505:: with SMTP id k5mr6369942jaa.123.1626222922944;
- Tue, 13 Jul 2021 17:35:22 -0700 (PDT)
+        bh=icgf3yqZNru0Ph46l7DfzCfI9W0m9sMz9X1UBv2Jl7o=;
+        b=Zz/VJ7MS06UR04Et4jMgjmgZ0A8YhMfW9Ei/xt+N6Z7b2O8+4kDi6W5tb4nXcIz6H/
+         mrv4u9ByBLnTA5pRX8XYzMwhNBUhHwwic6Tj6tbVNk3IaZvObhjDAa213/eLSUqZ00dO
+         qia/5sS0G8Bvqg8IDZbytXGCXE5UH8dwa/fSGpPDKtvHX2T1Gs9tnGz6zrFj89+fhlni
+         ccMwp8urxwsLVQRcFsVpvWWbez0vpS9TcRX9T0zntO6yTOuagPwyisk7lvZyd3kxDsNQ
+         JyJBt6HxvIpnSdXyRIekDytsEnMArieBTVP7AyxnzTsIAFGF5qnDcG3CFIzJ13ka5TF4
+         S0Hw==
+X-Gm-Message-State: AOAM533UXGAWX7rCoPq+rgWNwuSUz93zQtGoQpK9KptFYsAN/B7TtA5X
+        FxXPTmwfyE9aHV0H7u44gDE+3G/ovTm2AnLbeXE=
+X-Google-Smtp-Source: ABdhPJycjZqEHZYZzTbFxF623OsQYXJxQJjI+wupqu1Mw4Q4un3pDXcJZG0I6aPjNJrYu3JIlYlh5WnZ4mLgJG5x1kU=
+X-Received: by 2002:a05:6638:1204:: with SMTP id n4mr6421242jas.135.1626223923467;
+ Tue, 13 Jul 2021 17:52:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210712195546.423990-1-john.fastabend@gmail.com> <20210712195546.423990-2-john.fastabend@gmail.com>
-In-Reply-To: <20210712195546.423990-2-john.fastabend@gmail.com>
+References: <20210713074401.475209-1-jakub@cloudflare.com>
+In-Reply-To: <20210713074401.475209-1-jakub@cloudflare.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 13 Jul 2021 17:35:11 -0700
-Message-ID: <CAM_iQpWQh2s_vRoGZVsKgkZj1SvDX6=-Q5esj0omZwL39hfA3w@mail.gmail.com>
-Subject: Re: [PATCH bpf v4 1/2] bpf, sockmap: fix potential memory leak on
- unlikely error case
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
+Date:   Tue, 13 Jul 2021 17:51:52 -0700
+Message-ID: <CAM_iQpVV1XRTsbyEbG_GTb4GHHx47m+TOYYw_z3euX3UYvDt9Q@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf, sockmap, udp: sk_prot needs inuse_idx set for
+ proc stats
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 12:56 PM John Fastabend
-<john.fastabend@gmail.com> wrote:
+On Tue, Jul 13, 2021 at 12:44 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> If skb_linearize is needed and fails we could leak a msg on the error
-> handling. To fix ensure we kfree the msg block before returning error.
-> Found during code review.
+> Proc socket stats use sk_prot->inuse_idx value to record inuse sock stats.
+> We currently do not set this correctly from sockmap side. The result is
+> reading sock stats '/proc/net/sockstat' gives incorrect values. The
+> socket counter is incremented correctly, but because we don't set the
+> counter correctly when we replace sk_prot we may omit the decrement.
 >
-> Fixes: 4363023d2668e ("bpf, sockmap: Avoid failures from skb_to_sgvec when skb has frag_list")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> To get the correct inuse_idx value move the core_initcall that initializes
+> the udp proto handlers to late_initcall. This way it is initialized after
+> UDP has the chance to assign the inuse_idx value from the register protocol
+> handler.
 
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Interesting. What about IPv6 module? Based on my understanding, it should
+always be loaded before we can trigger udp_bpf_check_v6_needs_rebuild().
+If so, your patch is complete.
 
-Thanks for the update.
+>
+> Fixes: 5e21bb4e8125 ("bpf, test: fix NULL pointer dereference on invalid expected_attach_type")
+
+Should be commit edc6741cc66059532ba621928e3f1b02a53a2f39
+(bpf: Add sockmap hooks for UDP sockets), right?
+
+Thanks.
