@@ -2,158 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E78863C8850
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 18:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BAC73C886D
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 18:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235966AbhGNQFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 12:05:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54820 "EHLO vps0.lunn.ch"
+        id S235394AbhGNQOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 12:14:41 -0400
+Received: from novek.ru ([213.148.174.62]:38380 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235647AbhGNQFH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 12:05:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=UYyuoUFjTM6neNIQX8u+iPUtyx76GpoZIISiOp9Fi7c=; b=5AhLjlUDNYBVD/1uep9S0Y2JCo
-        xmXFM+9wTq9WG8oN3Q6f+lxwIVS84jtthnFlz4JvoPy7W/2kxVl15aoaSHvYYyPedcPDo15Kquf29
-        2Gqsft6Kst3AlBjbN2tMuxUnhqw0VTUmSZxtQc8sV4tXfA982F+YEDNp47rS7c+GsK4A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m3hKi-00DN9O-3E; Wed, 14 Jul 2021 18:02:00 +0200
-Date:   Wed, 14 Jul 2021 18:02:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH/RFC 2/2] ravb: Add GbEthernet driver support
-Message-ID: <YO8KeCg8bQPjI/a5@lunn.ch>
-References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
- <20210714145408.4382-3-biju.das.jz@bp.renesas.com>
+        id S231338AbhGNQOl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Jul 2021 12:14:41 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 1B03C500FB3;
+        Wed, 14 Jul 2021 19:09:30 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 1B03C500FB3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1626278971; bh=1c0iXo2pB5OzOqjT+i7qowH80X6NT31LoWRjb09Whhw=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=e6+63jIc1eBJYRwp1n8rp0RYtSJdqskskwzsd8oiisgb0BSAa6AHn+e6cPAVCHT5x
+         unc62nj6FjMwWP0HR3BUm3C+XoE4CGNycHtpFQCe7ZcH4CFQagHqU97jZUkyhujEtw
+         x3lK3pNrxX1es9/ClZlUZzjApxV8ngDG6rzknBPU=
+Subject: Re: Fw: [Bug 213729] New: PMTUD failure with ECMP.
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20210714081318.40500a1b@hermes.local>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <76039c52-5637-23a1-6ad8-36b16204ae29@novek.ru>
+Date:   Wed, 14 Jul 2021 17:11:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210714145408.4382-3-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20210714081318.40500a1b@hermes.local>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID) {
-> +		ravb_write(ndev, ravb_read(ndev, CXR31)
-> +			 | CXR31_SEL_LINK0, CXR31);
-> +	} else {
-> +		ravb_write(ndev, ravb_read(ndev, CXR31)
-> +			 & ~CXR31_SEL_LINK0, CXR31);
-> +	}
-
-You need to be very careful here. What value is passed to the PHY?
-
-There is some funky code:
-
-       /* Fall back to legacy rgmii-*id behavior */
-        if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
-            priv->phy_interface == PHY_INTERFACE_MODE_RGMII_RXID) {
-                priv->rxcidm = 1;
-                priv->rgmii_override = 1;
-        }
-
-        if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID ||
-            priv->phy_interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-                if (!WARN(soc_device_match(ravb_delay_mode_quirk_match),
-                          "phy-mode %s requires TX clock internal delay mode which is not supported by this hardware revision. Please update device tree",
-                          phy_modes(priv->phy_interface))) {
-                        priv->txcidm = 1;
-                        priv->rgmii_override = 1;
-                }
-        }
-...
-
-        iface = priv->rgmii_override ? PHY_INTERFACE_MODE_RGMII
-                                     : priv->phy_interface;
-        phydev = of_phy_connect(ndev, pn, ravb_adjust_link, 0, iface);
-
-So it looks like, with PHY_INTERFACE_MODE_RGMII_ID,
-PHY_INTERFACE_MODE_RGMII_TXID, PHY_INTERFACE_MODE_RGMII_RXID the PHY
-is passed PHY_INTERFACE_MODE_RGMII, with the assumption the MAC is
-adding the delay. But it looks like you are only adding a delay for
-PHY_INTERFACE_MODE_RGMII_ID. So this appears wrong.
-
-> @@ -1082,15 +1440,23 @@ static int ravb_phy_init(struct net_device *ndev)
->  		netdev_info(ndev, "limited PHY to 100Mbit/s\n");
->  	}
->  
-> -	/* 10BASE, Pause and Asym Pause is not supported */
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Pause_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Asym_Pause_BIT);
-> +	if (priv->chip_id == RZ_G2L) {
-> +		if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID)
-> +			ravb_write(ndev, ravb_read(ndev, CXR35) | CXR35_SEL_MODIN, CXR35);
-> +		else if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII)
-> +			ravb_write(ndev, 0x3E80000, CXR35);
-
-This is not obviously correct. What about the other two RGMII modes?
-
-> @@ -1348,6 +1741,21 @@ static const struct ethtool_ops ravb_ethtool_ops = {
->  	.set_wol		= ravb_set_wol,
->  };
->  
-> +static const struct ethtool_ops rgeth_ethtool_ops = {
-> +	.nway_reset		= phy_ethtool_nway_reset,
-> +	.get_msglevel		= ravb_get_msglevel,
-> +	.set_msglevel		= ravb_set_msglevel,
-> +	.get_link		= ethtool_op_get_link,
-> +	.get_strings		= ravb_get_strings,
-> +	.get_ethtool_stats	= ravb_get_ethtool_stats,
-> +	.get_sset_count		= ravb_get_sset_count,
-> +	.get_ringparam		= ravb_get_ringparam,
-> +	.set_ringparam		= ravb_set_ringparam,
-> +	.get_ts_info		= ravb_get_ts_info,
-> +	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
-> +	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
-> +};
-
-It is not obvious why you need a seperate ethtool_ops structure? Does
-it not support WOL?
-
-> +static const struct net_device_ops rgeth_netdev_ops = {
-> +	.ndo_open               = ravb_open,
-> +	.ndo_stop               = ravb_close,
-> +	.ndo_start_xmit         = ravb_start_xmit,
-> +	.ndo_select_queue       = ravb_select_queue,
-> +	.ndo_get_stats          = ravb_get_stats,
-> +	.ndo_set_rx_mode        = ravb_set_rx_mode,
-> +	.ndo_tx_timeout         = ravb_tx_timeout,
-> +	.ndo_do_ioctl           = ravb_do_ioctl,
-> +	.ndo_validate_addr      = eth_validate_addr,
-> +	.ndo_set_mac_address    = eth_mac_addr,
-> +	.ndo_set_features       = rgeth_set_features,
-
-It seems like .ndo_set_features is the only difference. Maybe handle
-that in actual function?
-
-> @@ -1965,6 +2446,7 @@ static const struct of_device_id ravb_match_table[] = {
->  	{ .compatible = "renesas,etheravb-rcar-gen2", .data = (void *)RCAR_GEN2 },
->  	{ .compatible = "renesas,etheravb-r8a7795", .data = (void *)RCAR_GEN3 },
->  	{ .compatible = "renesas,etheravb-rcar-gen3", .data = (void *)RCAR_GEN3 },
-> +	{ .compatible = "renesas,rzg2l-gether", .data = (void *)RZ_G2L },
->  	{ }
->  };
-
-Please document the new compatible string in the DT binding.
-
-       Andrew
+On 14.07.2021 16:13, Stephen Hemminger wrote:
+> 
+> 
+> Begin forwarded message:
+> 
+> Date: Wed, 14 Jul 2021 13:43:51 +0000
+> From: bugzilla-daemon@bugzilla.kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 213729] New: PMTUD failure with ECMP.
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=213729
+> 
+>              Bug ID: 213729
+>             Summary: PMTUD failure with ECMP.
+>             Product: Networking
+>             Version: 2.5
+>      Kernel Version: 5.13.0-rc5
+>            Hardware: x86-64
+>                  OS: Linux
+>                Tree: Mainline
+>              Status: NEW
+>            Severity: normal
+>            Priority: P1
+>           Component: IPV4
+>            Assignee: stephen@networkplumber.org
+>            Reporter: skappen@mvista.com
+>          Regression: No
+> 
+> Created attachment 297849
+>    --> https://bugzilla.kernel.org/attachment.cgi?id=297849&action=edit
+> Ecmp pmtud test setup
+> 
+> PMTUD failure with ECMP.
+> 
+> We have observed failures when PMTUD and ECMP work together.
+> Ping fails either through gateway1 or gateway2 when using MTU greater than
+> 1500.
+> The Issue has been tested and reproduced on CentOS 8 and mainline kernels.
+> 
+> 
+> Kernel versions:
+> [root@localhost ~]# uname -a
+> Linux localhost.localdomain 4.18.0-305.3.1.el8.x86_64 #1 SMP Tue Jun 1 16:14:33
+> UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+> 
+> [root@localhost skappen]# uname -a
+> Linux localhost.localdomain 5.13.0-rc5 #2 SMP Thu Jun 10 05:06:28 EDT 2021
+> x86_64 x86_64 x86_64 GNU/Linux
+> 
+> 
+> Static routes with ECMP are configured like this:
+> 
+> [root@localhost skappen]#ip route
+> default proto static
+>          nexthop via 192.168.0.11 dev enp0s3 weight 1
+>          nexthop via 192.168.0.12 dev enp0s3 weight 1
+> 192.168.0.0/24 dev enp0s3 proto kernel scope link src 192.168.0.4 metric 100
+> 
+> So the host would pick the first or the second nexthop depending on ECMP's
+> hashing algorithm.
+> 
+> When pinging the destination with MTU greater than 1500 it works through the
+> first gateway.
+> 
+> [root@localhost skappen]# ping -s1700 10.0.3.17
+> PING 10.0.3.17 (10.0.3.17) 1700(1728) bytes of data.
+>  From 192.168.0.11 icmp_seq=1 Frag needed and DF set (mtu = 1500)
+> 1708 bytes from 10.0.3.17: icmp_seq=2 ttl=63 time=0.880 ms
+> 1708 bytes from 10.0.3.17: icmp_seq=3 ttl=63 time=1.26 ms
+> ^C
+> --- 10.0.3.17 ping statistics ---
+> 3 packets transmitted, 2 received, +1 errors, 33.3333% packet loss, time 2003ms
+> rtt min/avg/max/mdev = 0.880/1.067/1.255/0.190 ms
+> 
+> The MTU also gets cached for this route as per rfc6754:
+> 
+> [root@localhost skappen]# ip route get 10.0.3.17
+> 10.0.3.17 via 192.168.0.11 dev enp0s3 src 192.168.0.4 uid 0
+>      cache expires 540sec mtu 1500
+> 
+> [root@localhost skappen]# tracepath -n 10.0.3.17
+>   1?: [LOCALHOST]                      pmtu 1500
+>   1:  192.168.0.11                                          1.475ms
+>   1:  192.168.0.11                                          0.995ms
+>   2:  192.168.0.11                                          1.075ms !H
+>       Resume: pmtu 1500
+> 
+> However when the second nexthop is picked PMTUD breaks. In this example I ping
+> a second interface configured on the same destination
+> from the same host, using the same routes and gateways. Based on ECMP's hashing
+> algorithm this host would pick the second nexthop (.2):
+> 
+> [root@localhost skappen]# ping -s1700 10.0.3.18
+> PING 10.0.3.18 (10.0.3.18) 1700(1728) bytes of data.
+>  From 192.168.0.12 icmp_seq=1 Frag needed and DF set (mtu = 1500)
+>  From 192.168.0.12 icmp_seq=2 Frag needed and DF set (mtu = 1500)
+>  From 192.168.0.12 icmp_seq=3 Frag needed and DF set (mtu = 1500)
+> ^C
+> --- 10.0.3.18 ping statistics ---
+> 3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2062ms
+> [root@localhost skappen]# ip route get 10.0.3.18
+> 10.0.3.18 via 192.168.0.12 dev enp0s3 src 192.168.0.4 uid 0
+>      cache
+> 
+> [root@localhost skappen]# tracepath -n 10.0.3.18
+>   1?: [LOCALHOST]                      pmtu 9000
+>   1:  192.168.0.12                                          3.147ms
+>   1:  192.168.0.12                                          0.696ms
+>   2:  192.168.0.12                                          0.648ms pmtu 1500
+>   2:  192.168.0.12                                          0.761ms !H
+>       Resume: pmtu 1500
+> 
+> The ICMP frag needed reaches the host, but in this case it is ignored.
+> The MTU for this route does not get cached either.
+> 
+> 
+> It looks like mtu value from the next hop is not properly updated for some
+> reason.
+> 
+> 
+> Test Case:
+> Create 2 networks: Internal, External
+> Create 4 virtual machines: Client, GW-1, GW-2, Destination
+> 
+> Client
+> configure 1 NIC to internal with MTU 9000
+> configure static route with ECMP to GW-1 and GW-2 internal address
+> 
+> GW-1, GW-2
+> configure 2 NICs
+> - to internal with MTU 9000
+> - to external MTU 1500
+> - enable ip_forward
+> - enable packet forward
+> 
+> Target
+> configure 1 NIC to external MTU with 1500
+> configure multiple IP address(say IP1, IP2, IP3, IP4) on the same interface, so
+> ECMP's hashing algorithm would pick different routes
+> 
+> Test
+> ping from client to target with larger than 1500 bytes
+> ping the other addresses of the target so ECMP would use the other route too
+> 
+> Results observed:
+> Through GW-1 PMTUD works, after the first frag needed message the MTU is
+> lowered on the client side for this target. Through the GW-2 PMTUD does not,
+> all responses to ping are ICMP frag needed, which are not obeyed by the kernel.
+> In all failure cases mtu is not cashed on "ip route get".
+> 
+Looks like I'm in context of PMTU and also I'm working on implementing several
+new test cases for pmtu.sh test, so I will take care of this one too
