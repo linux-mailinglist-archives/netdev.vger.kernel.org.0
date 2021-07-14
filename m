@@ -2,175 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9EC3C864C
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 16:44:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6780B3C8650
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 16:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbhGNOrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 10:47:11 -0400
-Received: from mail-vs1-f49.google.com ([209.85.217.49]:33488 "EHLO
-        mail-vs1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231977AbhGNOrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 10:47:10 -0400
-Received: by mail-vs1-f49.google.com with SMTP id j8so1131366vsd.0;
-        Wed, 14 Jul 2021 07:44:17 -0700 (PDT)
+        id S239521AbhGNOtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 10:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231977AbhGNOtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 10:49:25 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13293C06175F;
+        Wed, 14 Jul 2021 07:46:32 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id go30so3734696ejc.8;
+        Wed, 14 Jul 2021 07:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jmnbKaeHY43auiwf/DJpFy/yehvSWlUJXGgTgX78hTk=;
+        b=X48xVSzqMOxd9X+khEzyTkk+2q6TnzjLet7Hjup7n7vZ4tQ+UbAb23MF4d6CvWqsJW
+         YGXDu1RK+/MvfyXzMFnNL7Z+Uwrj+ErGDVZeFqB/y2juOr/P+C8gZsCaATnpcjN4fi+Z
+         6saa2ZfyAwxfdfaUeJr4Th3GPpktbWBQK/XN6U7SeRzfArMJTQSyAgGtSFb5RUw3bohp
+         C2fL7TTLpC0gfbg2wu29vPp5lar5Noqu2/EFAX2HlYJ9qYaSPLxM8xwobkn72sKAYAzq
+         VG2sULjsAiyIf6CRA8k6NArXXKQs3NDKyWbSL68r3RTQhqKmYbSeHOAuGVk7hnvym5cV
+         NwVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=0AK4IWMPZivSss56HDU1sJl/SWfYmT+xP3wCgy5bOzE=;
-        b=nAetLVf0ltaACsif5FLoxqqENn95kAiHwJx9+ktR6uFNe/ARjVgM5c4WVnTujx64f8
-         pKJDfu7MfqXRNe3E9rwlhxSDg/xWd/6Z/iF+oz66bck2J5mnol5zJTeCLY2atYnVb4Q9
-         UgIwvW+kw1TWjfRUxj5CT4lpf57FOzhRhIcZqS4fL4BmQt8Ug2Re8kpx/gO+WkUJY5Ez
-         ZucwzIZ6vbCby1MPX8kL8ImHErceJJmysPrSPFK7cYhfvbA++bwQeq/4dqSsFpknPGKs
-         JxKfD/0IznM60PD1nqfTkkibBIoNqALSlNkSFZ23VWYuvuDx572oaoCO+uQT4x5Mnv/8
-         4Vnw==
-X-Gm-Message-State: AOAM533RaDdjYox7jcJOdcnni88anKExiFIlRzi/UBu7PsAgM4b00+d2
-        y5C7BIbQYD7MDNAtbu8GnnssfM8nH1iRMBEA77HfHOrAY1bdCw==
-X-Google-Smtp-Source: ABdhPJzO7ea/93MKk1mguNlLtQP8+Dk3hK7wTMIvOdXsCZms2gOrY6R4Mlyh7S+xBHzJd1yp5bpxzFpvAhS5zZCgL74=
-X-Received: by 2002:a67:3c2:: with SMTP id 185mr14479038vsd.42.1626273857075;
- Wed, 14 Jul 2021 07:44:17 -0700 (PDT)
+        bh=jmnbKaeHY43auiwf/DJpFy/yehvSWlUJXGgTgX78hTk=;
+        b=gR0Rz2aJPe3g9qr7MajWPULRUNlKm1f/aRO0741bhnwNWhh5OJzRCPEqgcbd2I3YNV
+         pYKloe5FFb8TuPeb9Pkn5rLSHI7HlwuK1Er/EKViVHug0UAsJ6hr8NDLOPwwUEIMJkh1
+         6PFlGKXXvzclZjEqVIutbgGLaWybWkKsoT+Lmb7btDCHUGOPi9wxwLBgwN5Rt6yCNP3L
+         ztyEeKTHoMRX3XbSBpRch3CLTMcWEonhp8DGRVNiGXwUAxTmjLAaNe8aEyvsATzQm9Wu
+         fW5Qt43n0o3DOKArLxJ4qnpNSHyRjow/UWgPDpBR/XF4oUuoKFZsf5JeTIvinHB2nREd
+         zesg==
+X-Gm-Message-State: AOAM533DpD8UunBkyd2uW8z8O9mf2fwisZAgcgDew4aohFizL31cQQ6u
+        IR4PlqGo8x1B2knRaRXNQfFrR12kepyriArxYfQ=
+X-Google-Smtp-Source: ABdhPJzMT6CwpM7xMbhSoLInIM9EY+2bBrzCXMJN3RjfYNDiZAE1VXuCklrd2QwE147vNkfmxVzqJSZ64aHAPnOck8Y=
+X-Received: by 2002:a17:907:3d94:: with SMTP id he20mr5064713ejc.473.1626273990557;
+ Wed, 14 Jul 2021 07:46:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210714143239.2529044-1-geert@linux-m68k.org>
-In-Reply-To: <20210714143239.2529044-1-geert@linux-m68k.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 14 Jul 2021 16:44:05 +0200
-Message-ID: <CAMuHMdWv8-6fBDLb8cFvvLxsb7RkEVkLNUBeCm-9yN9_iJkg-g@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.14-rc1
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Marco Elver <elver@google.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        linux-um <linux-um@lists.infradead.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        netdev <netdev@vger.kernel.org>
+References: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
+ <1626255285-5079-3-git-send-email-linyunsheng@huawei.com> <79d9e41c-6433-efe1-773a-4f5e91e8de0f@redhat.com>
+In-Reply-To: <79d9e41c-6433-efe1-773a-4f5e91e8de0f@redhat.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 14 Jul 2021 07:46:19 -0700
+Message-ID: <CAKgT0UcDxSmMqCGvrWeYFiKNsxWXskF+pUhKQVCC6totduUyDQ@mail.gmail.com>
+Subject: Re: [PATCH rfc v5 2/4] page_pool: add interface to manipulate frag
+ count in page pool
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
+        thomas.petazzoni@bootlin.com, hawk@kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
+        guro@fb.com, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
+        Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>, nogikh@google.com,
+        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, andrii@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>, songliubraving@fb.com,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 4:35 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> Below is the list of build error/warning regressions/improvements in
-> v5.14-rc1[1] compared to v5.13+[2].
->
-> Summarized:
->   - build errors: +24/-4
->   - build warnings: +71/-65
->
-> Happy fixing! ;-)
->
-> Thanks to the linux-next team for providing the build service.
->
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/e73f0f0ee7541171d89f2e2491130c7771ba58d3/ (all 189 configs)
-> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/66d9282523b3228183b14d9f812872dd2620704d/ (all 189 configs)
+On Wed, Jul 14, 2021 at 3:18 AM Jesper Dangaard Brouer
+<jbrouer@redhat.com> wrote:
 >
 >
-> *** ERRORS ***
 >
-> 24 error regressions:
+> On 14/07/2021 11.34, Yunsheng Lin wrote:
+> > As suggested by Alexander, "A DMA mapping should be page
+> > aligned anyway so the lower 12 bits would be reserved 0",
+> > so it might make more sense to repurpose the lower 12 bits
+> > of the dma address to store the frag count for frag page
+> > support in page pool for 32 bit systems with 64 bit dma,
+> > which should be rare those days.
+>
+> Do we have any real driver users with 32-bit arch and 64-bit DMA, that
+> want to use this new frag-count system you are adding to page_pool?
+>
+> This "lower 12-bit use" complicates the code we need to maintain
+> forever. My guess is that it is never used, but we need to update and
+> maintain it, and it will never be tested.
+>
+> Why don't you simply reject using page_pool flag PP_FLAG_PAGE_FRAG
+> during setup of the page_pool for this case?
+>
+>   if ((pool->p.flags & PP_FLAG_PAGE_FRAG) &&
+>       (sizeof(dma_addr_t) > sizeof(unsigned long)))
+>     goto reject-setup;
+>
+>
 
-  + /kisskb/src/drivers/dma/idxd/init.c: error: implicit declaration
-of function 'cpu_feature_enabled'
-[-Werror=implicit-function-declaration]:  => 805:7
-  + /kisskb/src/drivers/dma/idxd/perfmon.h: error: 'struct perf_event'
-has no member named 'pmu':  => 24:13, 35:13
-  + /kisskb/src/drivers/dma/ioat/dca.c: error: implicit declaration of
-function 'boot_cpu_has' [-Werror=implicit-function-declaration]:  =>
-74:6
-  + /kisskb/src/drivers/dma/ioat/dca.c: error: implicit declaration of
-function 'cpuid_eax' [-Werror=implicit-function-declaration]:  =>
-64:18
-  + /kisskb/src/drivers/dma/ioat/dca.c: error: implicit declaration of
-function 'cpuid_ebx' [-Werror=implicit-function-declaration]:  =>
-17:31
-  + /kisskb/src/drivers/pci/controller/vmd.c: error:
-'X86_MSI_BASE_ADDRESS_HIGH' undeclared (first use in this function):
-=> 150:20
-  + /kisskb/src/drivers/pci/controller/vmd.c: error:
-'X86_MSI_BASE_ADDRESS_LOW' undeclared (first use in this function):
-=> 151:35
-  + /kisskb/src/drivers/pci/controller/vmd.c: error:
-'arch_msi_msg_addr_lo_t {aka struct arch_msi_msg_addr_lo}' has no
-member named 'base_address':  => 151:19
-  + /kisskb/src/drivers/pci/controller/vmd.c: error:
-'arch_msi_msg_addr_lo_t {aka struct arch_msi_msg_addr_lo}' has no
-member named 'destid_0_7':  => 152:19
-  + /kisskb/src/drivers/pci/controller/vmd.c: error: control reaches
-end of non-void function [-Werror=return-type]:  => 127:1
-  + /kisskb/src/drivers/pci/controller/vmd.c: error: dereferencing
-pointer to incomplete type 'struct pci_sysdata':  => 700:4
-  + /kisskb/src/drivers/pci/controller/vmd.c: error: field 'sysdata'
-has incomplete type:  => 116:21
+That sounds good to me if we want to go that route. It would simplify
+this quite a bit since essentially we could just drop these if blocks.
 
-um-x86_64/um-all{mod,yes}config
+Thanks.
 
-  + /kisskb/src/drivers/scsi/arm/fas216.c: error: 'GOOD' undeclared
-(first use in this function):  => 2013:47
-
-arm-gcc4.9/rpc_defconfig
-
-  + /kisskb/src/drivers/tty/synclink_gt.c: error: conflicting types
-for 'set_signals':  => 442:13
-
-um-x86_64/um-allmodconfig
-
-  + /kisskb/src/include/linux/compiler_attributes.h: error:
-"__GCC4_has_attribute___no_sanitize_coverage__" is not defined
-[-Werror=undef]:  => 29:29
-
-mips-gcc4.9/mips-allmodconfig
-s390x-gcc4.9/s390-allyesconfig
-
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_1857' declared with attribute error: FIELD_PREP:
-value too large for the field:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_1864' declared with attribute error: FIELD_PREP:
-value too large for the field:  => 328:38
-
-arm64-gcc5.4/arm64-allmodconfig
-arm64-gcc8/arm64-allmodconfig
-
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_399' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_417' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_418' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_431' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_433' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_450' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-  + /kisskb/src/include/linux/compiler_types.h: error: call to
-'__compiletime_assert_517' declared with attribute error: Unsupported
-width, must be <= 40:  => 328:38
-
-arm64-gcc5.4/arm64-allmodconfig
-mipsel/mips-allmodconfig
-mips-gcc4.9/mips-allmodconfig
-powerpc-gcc4.9/allmodconfig+64K_PAGES
-powerpc-gcc4.9/powerpc-allmodconfig
-powerpc-gcc4.9/powerpc-allyesconfig
-powerpc-gcc4.9/ppc64_book3e_allmodconfig
-s390x-gcc4.9/s390-allyesconfig
-sparc64/sparc64-allmodconfig
-sparc64/sparc-allmodconfig
-xtensa/xtensa-allmodconfig
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+- Alex
