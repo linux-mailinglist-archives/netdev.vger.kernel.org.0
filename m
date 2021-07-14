@@ -2,275 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E29C3C81BC
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BE3D3C81DE
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 11:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238903AbhGNJiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 05:38:25 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:6926 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238852AbhGNJiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:38:22 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GPshq6RRrz7C21;
-        Wed, 14 Jul 2021 17:31:55 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Jul 2021 17:35:26 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 14 Jul 2021 17:35:26 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <alexander.duyck@gmail.com>, <linux@armlinux.org.uk>,
-        <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        <ilias.apalodimas@linaro.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
-        <akpm@linux-foundation.org>, <peterz@infradead.org>,
-        <will@kernel.org>, <willy@infradead.org>, <vbabka@suse.cz>,
-        <fenghua.yu@intel.com>, <guro@fb.com>, <peterx@redhat.com>,
-        <feng.tang@intel.com>, <jgg@ziepe.ca>, <mcroce@microsoft.com>,
-        <hughd@google.com>, <jonathan.lemon@gmail.com>, <alobakin@pm.me>,
-        <willemb@google.com>, <wenxu@ucloud.cn>, <cong.wang@bytedance.com>,
-        <haokexin@gmail.com>, <nogikh@google.com>, <elver@google.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH rfc v5 4/4] net: hns3: support skb's frag page recycling based on page pool
-Date:   Wed, 14 Jul 2021 17:34:45 +0800
-Message-ID: <1626255285-5079-5-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
-References: <1626255285-5079-1-git-send-email-linyunsheng@huawei.com>
+        id S238189AbhGNJpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 05:45:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40176 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238481AbhGNJpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 05:45:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626255729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZplaldvdPUqWqjFHRQy6XqAYb6B2IbOETrAj7lOt6Jc=;
+        b=U/iYW3aw5IvGT0aLmnDGEgbNSbd3zFCuMNZvKUaU6vdvh/QQ3wHtRhFO8uI/3Yie8wQicU
+        A0VzkvKIq4XVYe2Pz89y/TfGPrHHYaqbLAtkTA32Rg5QWVy+NaiLybW60HuUIXYIm1eYq7
+        IR5D4ADt9M7YDgtgA9PJudwghn9bWfk=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-397-GVOVLMMpP72esaGWk9kIOA-1; Wed, 14 Jul 2021 05:42:08 -0400
+X-MC-Unique: GVOVLMMpP72esaGWk9kIOA-1
+Received: by mail-pj1-f72.google.com with SMTP id x2-20020a17090ab002b029016e8b858193so1156112pjq.3
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 02:42:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ZplaldvdPUqWqjFHRQy6XqAYb6B2IbOETrAj7lOt6Jc=;
+        b=cQw9fuLBav3OvnBIdVNFxigilgjIzunxU8D90+Q9dX97xhEx7PT+Z4BUcmnJPhkIXD
+         M7rSAnrsrH+ibR56U19vmZM8es2U5CW0iJgNT7VlUuZaFOLHEsgLIf2d2S0NRyU8WU4d
+         ENn3NoQoJu0Ca72WAe38sh0viigD3AnGcWGqIlsHVIaOfKDUSbzEIwsIuy/Ckvurb7Ju
+         glC10tX35dQqnwbYZQYPs32NGiDjbfkRn86/DSw4lAom8ZFkQLO3+wYkQnLbdx4etNXI
+         slczkwX2kkRPEkzYaxiC2UylG9iTxFOPKUvA5nI4gBoupZGulsVAvBk1Nbvq3vIpfyaO
+         laVg==
+X-Gm-Message-State: AOAM530zxne6pMTfeq/2mIG9p0Q1spH89jDrw+/livN/Lae4r0FYHKDu
+        CxbdV9R8pu1suE9Dt0z1+eKs4yWGCd8uUaXaqLOZDR/7+NDjdHrYkwHVVR8zNMc1BpTjM3TIoJj
+        vAA1UTPJvCqqNCxuC
+X-Received: by 2002:a17:90a:7a86:: with SMTP id q6mr3009916pjf.141.1626255727203;
+        Wed, 14 Jul 2021 02:42:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzB8iUML1glTVs5bknbuEkym014DDJoi+0qmllMveSYsw48CwsnGAccGqgHSeXUC5btvXZSoA==
+X-Received: by 2002:a17:90a:7a86:: with SMTP id q6mr3009902pjf.141.1626255726913;
+        Wed, 14 Jul 2021 02:42:06 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id p5sm2075572pfn.46.2021.07.14.02.41.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Jul 2021 02:42:06 -0700 (PDT)
+Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and
+ vhost_vdpa_pa_unmap()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        hch@infradead.org, christian.brauner@canonical.com,
+        rdunlap@infradead.org, willy@infradead.org,
+        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net, mika.penttila@nextfour.com, joro@8bytes.org,
+        gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-14-xieyongji@bytedance.com> <20210713113114.GL1954@kadam>
+ <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
+ <20210714080512.GW1954@kadam>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <db02315d-0ffe-f4a2-da67-5a014060fa4a@redhat.com>
+Date:   Wed, 14 Jul 2021 17:41:54 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210714080512.GW1954@kadam>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds skb's frag page recycling support based on
-the frag page support in page pool.
 
-The performance improves above 10~20% for single thread iperf
-TCP flow with IOMMU disabled when iperf server and irq/NAPI
-have a different CPU.
+在 2021/7/14 下午4:05, Dan Carpenter 写道:
+> On Wed, Jul 14, 2021 at 10:14:32AM +0800, Jason Wang wrote:
+>> 在 2021/7/13 下午7:31, Dan Carpenter 写道:
+>>> On Tue, Jul 13, 2021 at 04:46:52PM +0800, Xie Yongji wrote:
+>>>> @@ -613,37 +618,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+>>>>    	}
+>>>>    }
+>>>> -static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>>>> -					   struct vhost_iotlb_msg *msg)
+>>>> +static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+>>>> +			     u64 iova, u64 size, u64 uaddr, u32 perm)
+>>>>    {
+>>>>    	struct vhost_dev *dev = &v->vdev;
+>>>> -	struct vhost_iotlb *iotlb = dev->iotlb;
+>>>>    	struct page **page_list;
+>>>>    	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+>>>>    	unsigned int gup_flags = FOLL_LONGTERM;
+>>>>    	unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+>>>>    	unsigned long lock_limit, sz2pin, nchunks, i;
+>>>> -	u64 iova = msg->iova;
+>>>> +	u64 start = iova;
+>>>>    	long pinned;
+>>>>    	int ret = 0;
+>>>> -	if (msg->iova < v->range.first ||
+>>>> -	    msg->iova + msg->size - 1 > v->range.last)
+>>>> -		return -EINVAL;
+>>> This is not related to your patch, but can the "msg->iova + msg->size"
+>>> addition can have an integer overflow.  From looking at the callers it
+>>> seems like it can.  msg comes from:
+>>>     vhost_chr_write_iter()
+>>>     --> dev->msg_handler(dev, &msg);
+>>>         --> vhost_vdpa_process_iotlb_msg()
+>>>            --> vhost_vdpa_process_iotlb_update()
+>>
+>> Yes.
+>>
+>>
+>>> If I'm thinking of the right thing then these are allowed to overflow to
+>>> 0 because of the " - 1" but not further than that.  I believe the check
+>>> needs to be something like:
+>>>
+>>> 	if (msg->iova < v->range.first ||
+>>> 	    msg->iova - 1 > U64_MAX - msg->size ||
+>>
+>> I guess we don't need - 1 here?
+> The - 1 is important.  The highest address is 0xffffffff.  So it goes
+> start + size = 0 and then start + size - 1 == 0xffffffff.
 
-The performance improves about 135%(14Gbit to 33Gbit) for single
-thread iperf TCP flow IOMMU is in strict mode and iperf server
-shares the same cpu with irq/NAPI.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 82 +++++++++++++++++++++++--
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  3 +
- 2 files changed, 80 insertions(+), 5 deletions(-)
+Right, so actually
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cdb5f14..f3f9b13 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -3205,6 +3205,21 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	unsigned int order = hns3_page_order(ring);
- 	struct page *p;
- 
-+	if (ring->page_pool) {
-+		p = page_pool_dev_alloc_frag(ring->page_pool,
-+					     &cb->page_offset,
-+					     hns3_buf_size(ring));
-+		if (unlikely(!p))
-+			return -ENOMEM;
-+
-+		cb->priv = p;
-+		cb->buf = page_address(p);
-+		cb->dma = page_pool_get_dma_addr(p);
-+		cb->type = DESC_TYPE_FRAG;
-+		cb->reuse_flag = 0;
-+		return 0;
-+	}
-+
- 	p = dev_alloc_pages(order);
- 	if (!p)
- 		return -ENOMEM;
-@@ -3227,8 +3242,13 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- 	if (cb->type & (DESC_TYPE_SKB | DESC_TYPE_BOUNCE_HEAD |
- 			DESC_TYPE_BOUNCE_ALL | DESC_TYPE_SGL_SKB))
- 		napi_consume_skb(cb->priv, budget);
--	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
--		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+	else if (!HNAE3_IS_TX_RING(ring)) {
-+		if (cb->type & DESC_TYPE_PAGE && cb->pagecnt_bias)
-+			__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
-+		else if (cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, cb->priv,
-+						false);
-+	}
- 	memset(cb, 0, sizeof(*cb));
- }
- 
-@@ -3315,7 +3335,7 @@ static int hns3_alloc_and_map_buffer(struct hns3_enet_ring *ring,
- 	int ret;
- 
- 	ret = hns3_alloc_buffer(ring, cb);
--	if (ret)
-+	if (ret || ring->page_pool)
- 		goto out;
- 
- 	ret = hns3_map_buffer(ring, cb);
-@@ -3337,7 +3357,8 @@ static int hns3_alloc_and_attach_buffer(struct hns3_enet_ring *ring, int i)
- 	if (ret)
- 		return ret;
- 
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 
- 	return 0;
- }
-@@ -3367,7 +3388,8 @@ static void hns3_replace_buffer(struct hns3_enet_ring *ring, int i,
- {
- 	hns3_unmap_buffer(ring, &ring->desc_cb[i]);
- 	ring->desc_cb[i] = *res_cb;
--	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma);
-+	ring->desc[i].addr = cpu_to_le64(ring->desc_cb[i].dma +
-+					 ring->desc_cb[i].page_offset);
- 	ring->desc[i].rx.bd_base_info = 0;
- }
- 
-@@ -3539,6 +3561,12 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	u32 frag_size = size - pull_len;
- 	bool reused;
- 
-+	if (ring->page_pool) {
-+		skb_add_rx_frag(skb, i, desc_cb->priv, frag_offset,
-+				frag_size, truesize);
-+		return;
-+	}
-+
- 	/* Avoid re-using remote or pfmem page */
- 	if (unlikely(!dev_page_is_reusable(desc_cb->priv)))
- 		goto out;
-@@ -3856,6 +3884,9 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		/* We can reuse buffer as-is, just make sure it is reusable */
- 		if (dev_page_is_reusable(desc_cb->priv))
- 			desc_cb->reuse_flag = 1;
-+		else if (desc_cb->type & DESC_TYPE_FRAG)
-+			page_pool_put_full_page(ring->page_pool, desc_cb->priv,
-+						false);
- 		else /* This page cannot be reused so discard it */
- 			__page_frag_cache_drain(desc_cb->priv,
- 						desc_cb->pagecnt_bias);
-@@ -3863,6 +3894,10 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		hns3_rx_ring_move_fw(ring);
- 		return 0;
- 	}
-+
-+	if (ring->page_pool)
-+		skb_mark_for_recycle(skb);
-+
- 	u64_stats_update_begin(&ring->syncp);
- 	ring->stats.seg_pkt_cnt++;
- 	u64_stats_update_end(&ring->syncp);
-@@ -3901,6 +3936,10 @@ static int hns3_add_frag(struct hns3_enet_ring *ring)
- 					    "alloc rx fraglist skb fail\n");
- 				return -ENXIO;
- 			}
-+
-+			if (ring->page_pool)
-+				skb_mark_for_recycle(new_skb);
-+
- 			ring->frag_num = 0;
- 
- 			if (ring->tail_skb) {
-@@ -4705,6 +4744,31 @@ static void hns3_put_ring_config(struct hns3_nic_priv *priv)
- 	priv->ring = NULL;
- }
- 
-+static void hns3_alloc_page_pool(struct hns3_enet_ring *ring)
-+{
-+	struct page_pool_params pp_params = {
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_PAGE_FRAG |
-+				PP_FLAG_DMA_SYNC_DEV,
-+		.order = hns3_page_order(ring),
-+		.pool_size = ring->desc_num * hns3_buf_size(ring) /
-+				(PAGE_SIZE << hns3_page_order(ring)),
-+		.nid = dev_to_node(ring_to_dev(ring)),
-+		.dev = ring_to_dev(ring),
-+		.dma_dir = DMA_FROM_DEVICE,
-+		.offset = 0,
-+		.max_len = PAGE_SIZE << hns3_page_order(ring),
-+	};
-+
-+	ring->page_pool = page_pool_create(&pp_params);
-+	if (IS_ERR(ring->page_pool)) {
-+		dev_warn(ring_to_dev(ring), "page pool creation failed: %ld\n",
-+			 PTR_ERR(ring->page_pool));
-+		ring->page_pool = NULL;
-+	} else {
-+		dev_info(ring_to_dev(ring), "page pool creation succeeded\n");
-+	}
-+}
-+
- static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- {
- 	int ret;
-@@ -4724,6 +4788,8 @@ static int hns3_alloc_ring_memory(struct hns3_enet_ring *ring)
- 		goto out_with_desc_cb;
- 
- 	if (!HNAE3_IS_TX_RING(ring)) {
-+		hns3_alloc_page_pool(ring);
-+
- 		ret = hns3_alloc_ring_buffers(ring);
- 		if (ret)
- 			goto out_with_desc;
-@@ -4764,6 +4830,12 @@ void hns3_fini_ring(struct hns3_enet_ring *ring)
- 		devm_kfree(ring_to_dev(ring), tx_spare);
- 		ring->tx_spare = NULL;
- 	}
-+
-+	if (!HNAE3_IS_TX_RING(ring) && ring->page_pool) {
-+		page_pool_destroy(ring->page_pool);
-+		ring->page_pool = NULL;
-+		dev_info(ring_to_dev(ring), "page pool destroyed\n");
-+	}
- }
- 
- static int hns3_buf_size2type(u32 buf_size)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 15af3d9..115c0ce 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/dim.h>
- #include <linux/if_vlan.h>
-+#include <net/page_pool.h>
- 
- #include "hnae3.h"
- 
-@@ -307,6 +308,7 @@ enum hns3_desc_type {
- 	DESC_TYPE_BOUNCE_ALL		= 1 << 3,
- 	DESC_TYPE_BOUNCE_HEAD		= 1 << 4,
- 	DESC_TYPE_SGL_SKB		= 1 << 5,
-+	DESC_TYPE_FRAG			= 1 << 6,
- };
- 
- struct hns3_desc_cb {
-@@ -451,6 +453,7 @@ struct hns3_enet_ring {
- 	struct hnae3_queue *tqp;
- 	int queue_index;
- 	struct device *dev; /* will be used for DMA mapping of descriptors */
-+	struct page_pool *page_pool;
- 
- 	/* statistic */
- 	struct ring_stats stats;
--- 
-2.7.4
+msg->iova = 0xfffffffe, msg->size=2 is valid.
+
+Thanks
+
+
+>
+> I guess we could move the - 1 to the other side?
+>
+> 	msg->iova > U64_MAX - msg->size + 1 ||
+>
+> regards,
+> dan carpenter
+>
+>
 
