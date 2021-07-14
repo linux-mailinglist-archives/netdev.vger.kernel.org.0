@@ -2,134 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A923C7B29
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 03:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4F33C7B2D
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 03:53:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237377AbhGNBvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 21:51:05 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:40179 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbhGNBvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 21:51:04 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16E1m6gS5012585, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16E1m6gS5012585
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 14 Jul 2021 09:48:06 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 14 Jul 2021 09:48:05 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 14 Jul 2021 09:48:04 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
- RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
- 15.01.2106.013; Wed, 14 Jul 2021 09:48:04 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Tzu-En Huang <tehuang@realtek.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: RE: rtw88: rtw_{read,write}_rf locking questions
-Thread-Topic: rtw88: rtw_{read,write}_rf locking questions
-Thread-Index: AQHXeAdXGqHSvvyH0USPP4DUS+6k4KtBq4Fg
-Date:   Wed, 14 Jul 2021 01:48:04 +0000
-Message-ID: <3c61fae611294e5098e6e0044a7a4199@realtek.com>
-References: <CAFBinCDMPPJ7qW7xTkep1Trg+zP0B9Jxei6sgjqmF4NDA1JAhQ@mail.gmail.com>
-In-Reply-To: <CAFBinCDMPPJ7qW7xTkep1Trg+zP0B9Jxei6sgjqmF4NDA1JAhQ@mail.gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.146]
-x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzcvMTMg5LiL5Y2IIDEwOjE3OjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S237376AbhGNB4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 21:56:41 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:11298 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229843AbhGNB4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 21:56:40 -0400
+Received: from dggeme751-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GPgR26GCCz8sd4;
+        Wed, 14 Jul 2021 09:49:18 +0800 (CST)
+Received: from [10.67.110.55] (10.67.110.55) by dggeme751-chm.china.huawei.com
+ (10.3.19.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 14
+ Jul 2021 09:53:46 +0800
+Subject: Re: [bpf-next 3/3] bpf: Fix a use after free in bpf_check()
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Song Liu <song@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210707043811.5349-1-hefengqing@huawei.com>
+ <20210707043811.5349-4-hefengqing@huawei.com>
+ <CAPhsuW7ssFzvS5-kdZa3tY-2EJk8QUdVpQCJYVBr+vD11JzrsQ@mail.gmail.com>
+ <1c5b393d-6848-3d10-30cf-7063a331f76c@huawei.com>
+ <CAADnVQJ0Q0dLVs5UM-CyJe90N+KHomccAy-S_LOOARa9nXkXsA@mail.gmail.com>
+ <bc75c9c5-7479-5021-58ea-ed8cf53fb331@huawei.com>
+ <CAADnVQJ2DnoC07XLki_=xPti7V=wH153tQb1bowP+xdLwn580w@mail.gmail.com>
+ <21d8cd9e-487e-411f-1cfd-67cebc86b221@huawei.com>
+ <CAADnVQ+XGGaXfte6aDdEp6euYckGtyP6S+VDUe4JusUz7xDLLg@mail.gmail.com>
+From:   He Fengqing <hefengqing@huawei.com>
+Message-ID: <cdb39df7-dbfa-c935-e819-97c2134dd2cf@huawei.com>
+Date:   Wed, 14 Jul 2021 09:53:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/14/2021 01:24:03
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165027 [Jul 13 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_from_exist}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: github.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 07/14/2021 01:27:00
+In-Reply-To: <CAADnVQ+XGGaXfte6aDdEp6euYckGtyP6S+VDUe4JusUz7xDLLg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.55]
+X-ClientProxiedBy: dggeme713-chm.china.huawei.com (10.1.199.109) To
+ dggeme751-chm.china.huawei.com (10.3.19.97)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcnRpbiBCbHVtZW5zdGlu
-Z2wgW21haWx0bzptYXJ0aW4uYmx1bWVuc3RpbmdsQGdvb2dsZW1haWwuY29tXQ0KPiBTZW50OiBX
-ZWRuZXNkYXksIEp1bHkgMTQsIDIwMjEgMTI6NTEgQU0NCj4gVG86IFlhbi1Ic3VhbiBDaHVhbmc7
-IFBrc2hpaDsgVHp1LUVuIEh1YW5nDQo+IENjOiBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5v
-cmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7
-IE5lbyBKb3U7DQo+IEplcm5laiBTa3JhYmVjDQo+IFN1YmplY3Q6IHJ0dzg4OiBydHdfe3JlYWQs
-d3JpdGV9X3JmIGxvY2tpbmcgcXVlc3Rpb25zDQo+IA0KPiBIZWxsbyBydHc4OCBtYWludGFpbmVy
-cyBhbmQgY29udHJpYnV0b3JzLA0KPiANCj4gdGhlcmUgaXMgYW4gb25nb2luZyBlZmZvcnQgd2hl
-cmUgSmVybmVqIGFuZCBJIGFyZSB3b3JraW5nIG9uIGFkZGluZw0KPiBTRElPIHN1cHBvcnQgdG8g
-dGhlIHJ0dzg4IGRyaXZlci4NCj4gVGhlIGhhcmR3YXJlIHdlIHVzZSBhdCB0aGUgbW9tZW50IGlz
-IFJUTDg4MjJCUyBhbmQgUlRMODgyMkNTLg0KPiBXb3JrLWluLXByb2dyZXNzIGNvZGUgY2FuIGJl
-IGZvdW5kIGluIEplcm5laidzIHJlcG8gKG5vdGU6IHRoaXMgbWF5IGJlDQo+IHJlYmFzZWQpOiBb
-MF0NCg0KVGhhbmtzIGZvciB5b3VyIG5pY2Ugd29yayENCg0KPiANCj4gV2UgYXJlIGF0IGEgcG9p
-bnQgd2hlcmUgd2UgY2FuIGNvbW11bmljYXRlIHdpdGggdGhlIFNESU8gY2FyZCBhbmQNCj4gc3Vj
-Y2Vzc2Z1bGx5IHVwbG9hZCB0aGUgZmlybXdhcmUgdG8gaXQuDQo+IFJpZ2h0IG5vdyBJIGhhdmUg
-dHdvIHF1ZXN0aW9ucyBhYm91dCB0aGUgbG9ja2luZyBpbg0KPiBydHdfe3JlYWQsd3JpdGV9X3Jm
-IGZyb20gaGNpLmg6DQo+IDEpIEEgc3BpbmxvY2sgaXMgdXNlZCB0byBwcm90ZWN0IFJGIHJlZ2lz
-dGVyIGFjY2Vzcy4gVGhpcyBpcw0KPiBwcm9ibGVtYXRpYyBmb3IgU0RJTywgbW9yZSBpbmZvcm1h
-dGlvbiBiZWxvdy4gV291bGQgeW91IGFjY2VwdCBhIHBhdGNoDQo+IHRvIGNvbnZlcnQgdGhpcyBp
-bnRvIGEgbXV0ZXg/IEkgZG9uJ3QgaGF2ZSBhbnkgcnR3ODggUENJZSBjYXJkIGZvcg0KPiB0ZXN0
-aW5nIGFueSByZWdyZXNzaW9ucyB0aGVyZSBteXNlbGYuDQoNCkkgdGhpbmsgaXQncyBva2F5Lg0K
-DQo+IDIpIEkgd291bGQgbGlrZSB0byB1bmRlcnN0YW5kIHdoeSB0aGUgUkYgcmVnaXN0ZXIgYWNj
-ZXNzIG5lZWRzIHRvIGJlDQo+IHByb3RlY3RlZCBieSBhIGxvY2suIEZyb20gd2hhdCBJIGNhbiB0
-ZWxsIFJGIHJlZ2lzdGVyIGFjY2VzcyBkb2Vzbid0DQo+IHNlZW0gdG8gYmUgdXNlZCBmcm9tIElS
-USBoYW5kbGVycy4NCg0KVGhlIHVzZSBvZiBsb2NrIGlzbid0IGJlY2F1c2Ugd2Ugd2FudCB0byBh
-Y2Nlc3MgdGhlIFJGIHJlZ2lzdGVyIGluIElSUQ0KaGFuZGxlcnMuIFRoZSByZWFzb25zIGFyZQ0K
-MS4gVGhlIGllZWU4MDIxMSBpdGVyYXRpdmUgdmlmIGZ1bmN0aW9uIHdlIHVzZSBpcyBhdG9taWMg
-dHlwZSwgc28gd2UgY2FuJ3QNCiAgIHVzZSBtdXRleC4NCiAgIERvIHlvdSBjaGFuZ2UgdGhlIHR5
-cGUgb2YgaXRlcmF0aXZlIGZ1bmN0aW9uPw0KMi4gUkYgcmVnaXN0ZXIgYWNjZXNzIGlzbid0IGFu
-IGF0b21pYy4gSWYgbW9yZSB0aGFuIG9uZSB0aHJlYWRzIGFjY2VzcyB0aGUNCiAgIHJlZ2lzdGVy
-IGF0IHRoZSBzYW1lIHRpbWUsIHRoZSB2YWx1ZSB3aWxsIGJlIHdyb25nLg0KDQo+IA0KPiBTb21l
-IGJhY2tncm91bmQgb24gd2h5IFNESU8gYWNjZXNzIChmb3IgZXhhbXBsZTogc2Rpb193cml0ZWIp
-IGNhbm5vdA0KPiBiZSBkb25lIHdpdGggYSBzcGlubG9jayBoZWxkOg0KPiAtIHdoZW4gdXNpbmcg
-Zm9yIGV4YW1wbGUgc2Rpb193cml0ZWIgdGhlIE1NQyBzdWJzeXN0ZW0gaW4gTGludXgNCj4gcHJl
-cGFyZXMgYSBzby1jYWxsZWQgTU1DIHJlcXVlc3QNCj4gLSB0aGlzIHJlcXVlc3QgaXMgc3VibWl0
-dGVkIHRvIHRoZSBNTUMgaG9zdCBjb250cm9sbGVyIGhhcmR3YXJlDQo+IC0gdGhlIGhvc3QgY29u
-dHJvbGxlciBoYXJkd2FyZSBmb3J3YXJkcyB0aGUgTU1DIHJlcXVlc3QgdG8gdGhlIGNhcmQNCj4g
-LSB0aGUgY2FyZCBzaWduYWxzIHdoZW4gaXQncyBkb25lIHByb2Nlc3NpbmcgdGhlIHJlcXVlc3QN
-Cj4gLSB0aGUgTU1DIHN1YnN5c3RlbSBpbiBMaW51eCB3YWl0cyBmb3IgdGhlIGNhcmQgdG8gc2ln
-bmFsIHRoYXQgaXQncw0KPiBkb25lIHByb2Nlc3NpbmcgdGhlIHJlcXVlc3QgaW4gbW1jX3dhaXRf
-Zm9yX3JlcV9kb25lKCkgLT4gdGhpcyB1c2VzDQo+IHdhaXRfZm9yX2NvbXBsZXRpb24oKSBpbnRl
-cm5hbGx5LCB3aGljaCBtaWdodCBzbGVlcCAod2hpY2ggaXMgbm90DQo+IGFsbG93ZWQgd2hpbGUg
-YSBzcGlubG9jayBpcyBoZWxkKQ0KPiANCj4gSSBhbSBsb29raW5nIGZvcndhcmQgdG8geW91ciBh
-ZHZpY2Ugb24gdGhpcyBydHdfe3JlYWQsd3JpdGV9X3JmIGxvY2tpbmcgdG9waWMuDQo+IA0KPiBb
-MF0gaHR0cHM6Ly9naXRodWIuY29tL2plcm5lanNrL2xpbnV4LTEvY29tbWl0cy9ydHc4OC1zZGlv
-DQoNClBpbmctS2UNCg0K
+
+
+在 2021/7/14 7:17, Alexei Starovoitov 写道:
+> On Sun, Jul 11, 2021 at 7:17 PM He Fengqing <hefengqing@huawei.com> wrote:
+>>
+>>
+>>
+>> 在 2021/7/9 23:12, Alexei Starovoitov 写道:
+>>> On Fri, Jul 9, 2021 at 4:11 AM He Fengqing <hefengqing@huawei.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> 在 2021/7/8 11:09, Alexei Starovoitov 写道:
+>>>>> On Wed, Jul 7, 2021 at 8:00 PM He Fengqing <hefengqing@huawei.com> wrote:
+>>>>>>
+>>>>>> Ok, I will change this in next version.
+>>>>>
+>>>>> before you spam the list with the next version
+>>>>> please explain why any of these changes are needed?
+>>>>> I don't see an explanation in the patches and I don't see a bug in the code.
+>>>>> Did you check what is the prog clone ?
+>>>>> When is it constructed? Why verifier has anything to do with it?
+>>>>> .
+>>>>>
+>>>>
+>>>>
+>>>> I'm sorry, I didn't describe these errors clearly.
+>>>>
+>>>> bpf_check(bpf_verifier_env)
+>>>>        |
+>>>>        |->do_misc_fixups(env)
+>>>>        |    |
+>>>>        |    |->bpf_patch_insn_data(env)
+>>>>        |    |    |
+>>>>        |    |    |->bpf_patch_insn_single(env->prog)
+>>>>        |    |    |    |
+>>>>        |    |    |    |->bpf_prog_realloc(env->prog)
+>>>>        |    |    |    |    |
+>>>>        |    |    |    |    |->construct new_prog
+>>>>        |    |    |    |    |    free old_prog(env->prog)
+>>>>        |    |    |    |    |
+>>>>        |    |    |    |    |->return new_prog;
+>>>>        |    |    |    |
+>>>>        |    |    |    |->return new_prog;
+>>>>        |    |    |
+>>>>        |    |    |->adjust_insn_aux_data
+>>>>        |    |    |    |
+>>>>        |    |    |    |->return ENOMEM;
+>>>>        |    |    |
+>>>>        |    |    |->return NULL;
+>>>>        |    |
+>>>>        |    |->return ENOMEM;
+>>>>
+>>>> bpf_verifier_env->prog had been freed in bpf_prog_realloc function.
+>>>>
+>>>>
+>>>> There are two errors here, the first is memleak in the
+>>>> bpf_patch_insn_data function, and the second is use after free in the
+>>>> bpf_check function.
+>>>>
+>>>> memleak in bpf_patch_insn_data:
+>>>>
+>>>> Look at the call chain above, if adjust_insn_aux_data function return
+>>>> ENOMEM, bpf_patch_insn_data will return NULL, but we do not free the
+>>>> new_prog.
+>>>>
+>>>> So in the patch 2, before bpf_patch_insn_data return NULL, we free the
+>>>> new_prog.
+>>>>
+>>>> use after free in bpf_check:
+>>>>
+>>>> If bpf_patch_insn_data function return NULL, we will not assign new_prog
+>>>> to the bpf_verifier_env->prog, but bpf_verifier_env->prog has been freed
+>>>> in the bpf_prog_realloc function. Then in bpf_check function, we will
+>>>> use bpf_verifier_env->prog after do_misc_fixups function.
+>>>>
+>>>> In the patch 3, I added a free_old parameter to bpf_prog_realloc, in
+>>>> this scenario we don't free old_prog. Instead, we free it in the
+>>>> do_misc_fixups function when bpf_patch_insn_data return a valid new_prog.
+>>>
+>>> Thanks for explaining.
+>>> Why not to make adjust_insn_aux_data() in bpf_patch_insn_data() first then?
+>>> Just changing the order will resolve both issues, no?
+>>> .
+>>>
+>> adjust_insn_aux_data() need the new constructed new_prog as an input
+>> parameter, so we must call bpf_patch_insn_single() before
+>> adjust_insn_aux_data().
+> 
+> Right. I forgot about insn_has_def32() logic and
+> commit b325fbca4b13 ("bpf: verifier: mark patched-insn with
+> sub-register zext flag")
+> that added that extra parameter.
+> 
+>> But we can make adjust_insn_aux_data() never return ENOMEM. In
+>> bpf_patch_insn_data(), first we pre-malloc memory for new aux_data, then
+>> call bpf_patch_insn_single() to constructed the new_prog, at last call
+>> adjust_insn_aux_data() functin. In this way, adjust_insn_aux_data()
+>> never fails.
+>>
+>> bpf_patch_insn_data(env) {
+>>          struct bpf_insn_aux_data *new_data = vzalloc();
+>>          struct bpf_prog *new_prog;
+>>          if (new_data == NULL)
+>>                  return NULL;
+>>
+>>          new_prog = bpf_patch_insn_single(env->prog);
+>>          if (new_prog == NULL) {
+>>                  vfree(new_data);
+>>                  return NULL;
+>>          }
+>>
+>>          adjust_insn_aux_data(new_prog, new_data);
+>>          return new_prog;
+>> }
+>> What do you think about it?
+> 
+> That's a good idea. Let's do that. The new size for vzalloc is easy to compute.
+> What should be the commit in the Fixes tag?
+> commit 8041902dae52 ("bpf: adjust insn_aux_data when patching insns")
+> right?
+
+Ok, I will add this in the commit message.
+
+> 4 year old bug then.
+> I wonder why syzbot with malloc error injection didn't catch it sooner.
+> .
+> 
