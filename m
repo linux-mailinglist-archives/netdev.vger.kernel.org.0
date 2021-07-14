@@ -2,58 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B65F3C89B3
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 270A03C89BE
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbhGNR1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 13:27:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbhGNR1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 13:27:40 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA8DC06175F
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 10:24:48 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id o30-20020a05600c511eb029022e0571d1a0so1921810wms.5
-        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 10:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=E57tubdi4Kb+HoICFHf4HKGD0EgGpurJT1qek7rMtUQ=;
-        b=Yv3urqFXLnkwE0iIhXDRJaT+Ki/oAKeviPV4SUw8KXQpf6dMPMqb74TwWvj++e55sh
-         /ZXW5TeT/FBZphpWyf8Bb2Xj5hK23UWSOdQ/PPeXhDS4PXkYB1gX65smlIxGMLRCiOjG
-         UAJWa29T7mIAABwt8kNZwz5RlhYRfq1IH+ecd8CS8uk31Vh1gM8smIU9Iq1jXalF9h7Q
-         Y46cYbBC2X3D87SAyb0G2pmYfdhmjsrI4iOz6L+ReNUKmBfSHk0WymoUNcXKAasM6JZX
-         iOAlUKPwKzvCNSjmf0oRoktamZW/kVDANQio9vO8m5GizGhfB56lvn83S1Me4MEwE06U
-         4U3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=E57tubdi4Kb+HoICFHf4HKGD0EgGpurJT1qek7rMtUQ=;
-        b=fVAPhR1KRuN+yMNk+ndUrSQ+6s5GEhtCLxEYV/VMFMmsF5XUEy0XJCwLdkG/1fkXF9
-         U67f/pyiVA/BMw0czJW4SwxnqGPzBhV946JDBJWOU8V8gjoW0G2aMvS8ZnYZUq8Ob9Zp
-         GcTF/BGANmDDvq/gOy7KxDQM8YZXE1P8LSWpaa2m0/XN52hzYvNIgS5xOKHPb9X8Ibkt
-         hfad7h0ZCHz9oXIYz+EqrF+rrvcO/5hMhMM3yp2/ZD2XjVghvb2PXVqdKI9BJxmesNvX
-         pduwRPXNszQfpAEzJ+LP+xTaNyGFQIaGMkdj6XCz5NyL/9nhVb/jFNbh4HVU2JUszjLa
-         FsLA==
-X-Gm-Message-State: AOAM531I4o2W8jWphPT9K0Z7/OrPtokTBRpQTZsqE+ga06K520ruvv9M
-        zmFqi71EERX4bGbfm0ID6x9WTCGC8lypsmoctcg=
-X-Google-Smtp-Source: ABdhPJzYOWPn2T57hNe55UYMXRsomI+inR94N3wpYYbY2Z149w5yRKiRYMgvTdxTxvJDUWbJfhQ5VPDRqfEtOIoNtE4=
-X-Received: by 2002:a1c:1dd4:: with SMTP id d203mr5284774wmd.28.1626283487610;
- Wed, 14 Jul 2021 10:24:47 -0700 (PDT)
+        id S239748AbhGNR26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 13:28:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54976 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229559AbhGNR25 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Jul 2021 13:28:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=AlrjkHfgiupumNx/+6p/tkKKGBLAJCwsWpH5ndO4cYQ=; b=fEsf9QmUcUYrX3xSZYBzABCnCm
+        1B3S4wxmaZBVgRg1oV2+Q1v53JDbHCNlYKeSvDfmY4Zig+T6IL2VSdPnDgbaeDaObYpllAek3I5UD
+        ijKZ9QUMSO4gp6M1GQ7Bjf7wz0lkZCZxjS0o0RMB8AKjdaTLHJHIAZDgjokMpyxdgWJ4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m3ids-00DNbk-7K; Wed, 14 Jul 2021 19:25:52 +0200
+Date:   Wed, 14 Jul 2021 19:25:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH/RFC 2/2] ravb: Add GbEthernet driver support
+Message-ID: <YO8eILdf4orh0ISY@lunn.ch>
+References: <20210714145408.4382-1-biju.das.jz@bp.renesas.com>
+ <20210714145408.4382-3-biju.das.jz@bp.renesas.com>
+ <YO8KeCg8bQPjI/a5@lunn.ch>
+ <OS0PR01MB59225983D7FB35F82213911686139@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:adf:b30e:0:0:0:0:0 with HTTP; Wed, 14 Jul 2021 10:24:47
- -0700 (PDT)
-Reply-To: kaylamanthey022@gmail.com
-From:   Kayla Manthey <briannafalzone212@gmail.com>
-Date:   Wed, 14 Jul 2021 17:24:47 +0000
-Message-ID: <CAN77X=1NJDxqZB1wf7aZjKeuDGN+=bTwAw__pSTYWhVPijDuyA@mail.gmail.com>
-Subject: hi
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <OS0PR01MB59225983D7FB35F82213911686139@OS0PR01MB5922.jpnprd01.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings, My name is Kayla Manthey, please reply me back?
+On Wed, Jul 14, 2021 at 05:01:34PM +0000, Biju Das wrote:
+> Hi Andrew Lunn,
+> 
+> Thanks for the feedback.
+> 
+> > Subject: Re: [PATCH/RFC 2/2] ravb: Add GbEthernet driver support
+> > 
+> > > +	if (priv->phy_interface == PHY_INTERFACE_MODE_RGMII_ID) {
+> > > +		ravb_write(ndev, ravb_read(ndev, CXR31)
+> > > +			 | CXR31_SEL_LINK0, CXR31);
+> > > +	} else {
+> > > +		ravb_write(ndev, ravb_read(ndev, CXR31)
+> > > +			 & ~CXR31_SEL_LINK0, CXR31);
+> > > +	}
+> > 
+> > You need to be very careful here. What value is passed to the PHY?
+> 
+> PHY_INTERFACE_MODE_RGMII is the value passed to PHY.
+
+In all four cases? So if DT contains rgmii-txid, or rgmii-rxid, the
+requested delay will not happen in either the MAC or the PHY?
+
+In general in Linux, MAC drivers don't add any delays, and request the
+PHY to do it. There are some MAC drivers which do it differently, they
+add the delays, but that is uncommon. So unless you have a good reason
+not to, i would suggest you leave the PHY to do the delays.
+
+	  Andrew
+
