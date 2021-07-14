@@ -2,118 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 960BE3C7B46
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 04:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649683C7B8D
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 04:14:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237416AbhGNCFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Jul 2021 22:05:04 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:11299 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237371AbhGNCFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 22:05:03 -0400
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GPgck4H75z8sd4;
-        Wed, 14 Jul 2021 09:57:42 +0800 (CST)
-Received: from [10.174.178.171] (10.174.178.171) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 14 Jul 2021 10:02:10 +0800
-Subject: Re: Ask for help about bpf map
-From:   "luwei (O)" <luwei32@huawei.com>
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Ahern <dahern@digitalocean.com>
-References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
- <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
- <8735sidtwe.fsf@toke.dk> <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
-Message-ID: <26db412c-a8b7-6d37-844f-7909a0c5744b@huawei.com>
-Date:   Wed, 14 Jul 2021 10:02:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S237470AbhGNCRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Jul 2021 22:17:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25223 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237375AbhGNCRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Jul 2021 22:17:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626228887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lETjBLf02DlKWY99ILUZ8EMCaetURHel393ebRunFe0=;
+        b=IMo69A6JbOvse68mzq3ze4IuUVhG4LlFwJrXW+Xmqk8biq2ssYrfFASKSaQhJ78qLZD7CJ
+        3iBcYHhs8JVSqixD85sqsmZHz4f6+umwKlMtm6jlW9tnm4B4ts5s0vvCnV2YeC9heOJcgi
+        t6Md7M9SZZ2gevnrxmAODA0r+JAphog=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-328-J4Ar54cuNJqSv8WM5inQDA-1; Tue, 13 Jul 2021 22:14:46 -0400
+X-MC-Unique: J4Ar54cuNJqSv8WM5inQDA-1
+Received: by mail-pf1-f199.google.com with SMTP id o11-20020a62f90b0000b02902db3045f898so454868pfh.23
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 19:14:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=lETjBLf02DlKWY99ILUZ8EMCaetURHel393ebRunFe0=;
+        b=WqevJMfmrLQDGgahfYLVlIhwdBiJgRaKGgsb4A2TDjesKwHd1kqpL+sOYclsVrbVii
+         1Wv7gugSQZS3/d4QVY1JK4Mp6+RognVTOvyaKPXUKXFNUkoBOA6mBfD4OIFezJHKwe0G
+         mNW+MFenTHKKdb04DkSHg20M2MQoalF9roAiiqQCO23ojj9GYyob+dG/kn9ZcqKQDGPv
+         f7EPBa8WYeKSzk1Tx2bzYythu5hNblU7GrU9y51bNksq09BqRXC070fp54h11kFqDKrh
+         L7Vdk8cBGpQpe2GKuvCzsQU0b2Q0uDQVtNL22SLwoLJN1Q9V2LyD5VXgAWqekskcXMiN
+         ZMXA==
+X-Gm-Message-State: AOAM530cWG4NIV+DFwfMmJPW1vQ7BgydC4Ey+6R+WMPM0LOoKx5PbXek
+        lmu3Kp0cqPo/ML6YzBxxmCLtSkKPhpDSZpioSLXTdb5wAKCuCDK690QeUyn3yLG7ReyFlrkyQ7/
+        TXBc/cE4TNOFSoy/L
+X-Received: by 2002:a17:90a:5b10:: with SMTP id o16mr7219039pji.76.1626228885624;
+        Tue, 13 Jul 2021 19:14:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwOiPXFxUcdLZWrtqR5/IHD7VsylcBTQze23cRfzIoKwRQb/qtzHoUNsMb4X6hRI8thHVVbZQ==
+X-Received: by 2002:a17:90a:5b10:: with SMTP id o16mr7219014pji.76.1626228885330;
+        Tue, 13 Jul 2021 19:14:45 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id p40sm469474pfw.79.2021.07.13.19.14.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Jul 2021 19:14:44 -0700 (PDT)
+Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and
+ vhost_vdpa_pa_unmap()
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>
+Cc:     mst@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, hch@infradead.org,
+        christian.brauner@canonical.com, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+        joro@8bytes.org, gregkh@linuxfoundation.org, zhe.he@windriver.com,
+        xiaodong.liu@intel.com, songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-14-xieyongji@bytedance.com> <20210713113114.GL1954@kadam>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
+Date:   Wed, 14 Jul 2021 10:14:32 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20210713113114.GL1954@kadam>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.171]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
-X-CFilter-Loop: Reflected
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I tried 5.13 version in this page: 
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git , still 
-failed with the same error.
 
-在 2021/7/14 9:05 AM, luwei (O) 写道:
-> I have updated the iproute2 according this page: 
-> https://github.com/cilium/cilium/issues/7446
+�� 2021/7/13 ����7:31, Dan Carpenter д��:
+> On Tue, Jul 13, 2021 at 04:46:52PM +0800, Xie Yongji wrote:
+>> @@ -613,37 +618,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+>>   	}
+>>   }
+>>   
+>> -static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>> -					   struct vhost_iotlb_msg *msg)
+>> +static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+>> +			     u64 iova, u64 size, u64 uaddr, u32 perm)
+>>   {
+>>   	struct vhost_dev *dev = &v->vdev;
+>> -	struct vhost_iotlb *iotlb = dev->iotlb;
+>>   	struct page **page_list;
+>>   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+>>   	unsigned int gup_flags = FOLL_LONGTERM;
+>>   	unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+>>   	unsigned long lock_limit, sz2pin, nchunks, i;
+>> -	u64 iova = msg->iova;
+>> +	u64 start = iova;
+>>   	long pinned;
+>>   	int ret = 0;
+>>   
+>> -	if (msg->iova < v->range.first ||
+>> -	    msg->iova + msg->size - 1 > v->range.last)
+>> -		return -EINVAL;
+> This is not related to your patch, but can the "msg->iova + msg->size"
+> addition can have an integer overflow.  From looking at the callers it
+> seems like it can.  msg comes from:
+>    vhost_chr_write_iter()
+>    --> dev->msg_handler(dev, &msg);
+>        --> vhost_vdpa_process_iotlb_msg()
+>           --> vhost_vdpa_process_iotlb_update()
+
+
+Yes.
+
+
 >
-> Now I use this version of iproute2: 
-> https://github.com/shemminger/iproute2
+> If I'm thinking of the right thing then these are allowed to overflow to
+> 0 because of the " - 1" but not further than that.  I believe the check
+> needs to be something like:
 >
-> The version of iproute2 is 5.11, and the kernel version is 5.13(the 
-> latest version).
+> 	if (msg->iova < v->range.first ||
+> 	    msg->iova - 1 > U64_MAX - msg->size ||
+
+
+I guess we don't need - 1 here?
+
+Thanks
+
+
+> 	    msg->iova + msg->size - 1 > v->range.last)
 >
+> But writing integer overflow check correctly is notoriously difficult.
+> Do you think you could send a fix for that which is separate from the
+> patcheset?  We'd want to backport it to stable.
 >
-> 在 2021/7/14 1:07 AM, Toke Høiland-Jørgensen 写道:
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>
->>> On Mon, Jul 12, 2021 at 11:35 PM luwei (O) <luwei32@huawei.com> wrote:
->>>> Hi, List:
->>>>
->>>>         I am a beginner about bpf and working on XDP now. I meet a
->>>> problem and feel difficult to figure it out.
->>>>
->>>>         In my following codes, I use two ways to define my_map: in SEC
->>>> maps and SEC .maps respectively. When I load the xdp_kern.o file,
->>>>
->>>> It has different results. The way I load is: ip link set dev ens3 xdp
->>>> obj xdp1_kern.o sec xdp1.
->>>>
->>>>         when I define my_map using SEC maps, it loads successfully but
->>>> fails to load using SEC .maps, it reports:
->>>>
->>>> "
->>>>
->>>> [12] TYPEDEF __u32 type_id=13
->>>> [13] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
->>>> [14] FUNC_PROTO (anon) return=2 args=(10 ctx)
->>>> [15] FUNC xdp_prog1 type_id=14
->>>> [16] INT char size=1 bits_offset=0 nr_bits=8 encoding=SIGNED
->>>> [17] ARRAY (anon) type_id=16 index_type_id=4 nr_elems=4
->>>> [18] VAR _license type_id=17 linkage=1
->>>> [19] DATASEC .maps size=0 vlen=1 size == 0
->>>>
->>>>
->>>> Prog section 'xdp1' rejected: Permission denied (13)!
->>>>    - Type:         6
->>>>    - Instructions: 9 (0 over limit)
->>>>    - License:      GPL
->>>>
->>>> Verifier analysis:
->>>>
->>>> 0: (b7) r1 = 0
->>>> 1: (63) *(u32 *)(r10 -4) = r1
->>>> last_idx 1 first_idx 0
->>>> regs=2 stack=0 before 0: (b7) r1 = 0
->>>> 2: (bf) r2 = r10
->>>> 3: (07) r2 += -4
->>>> 4: (18) r1 = 0x0
->>> this shouldn't be 0x0.
->>>
->>> I suspect you have an old iproute2 which doesn't yet use libbpf to
->>> load BPF programs, so .maps definition is not yet supported. cc'ing
->>> netdev@vger, David and Toke
->> That would be my guess as well; what's the output of 'ip -V'?
->>
->> -Toke
->>
->> .
+> regards,
+> dan carpenter
 >
--- 
-Best Regards,
-Lu Wei
 
