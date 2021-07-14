@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 533263C94BD
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 02:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7093C94BF
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 02:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237742AbhGOAC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 20:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53238 "EHLO
+        id S237870AbhGOADE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 20:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbhGOAC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 20:02:57 -0400
+        with ESMTP id S229535AbhGOADC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 20:03:02 -0400
 Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEABC06175F;
-        Wed, 14 Jul 2021 17:00:05 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id k184so6020934ybf.12;
-        Wed, 14 Jul 2021 17:00:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1F6C06175F;
+        Wed, 14 Jul 2021 17:00:10 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id g19so6042201ybe.11;
+        Wed, 14 Jul 2021 17:00:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5B+woHff3gH1nbVQlGQQlOXxwWDup59Bz7W7LVwi/qw=;
-        b=E/lzAAXTVDU2qn5bPj3WZJ5Nw+1fVLU3iFblqqX0mQHmJ3IqQpznTq8in5ypmA14Y/
-         WbpPlH9EHvzfenK5u4bTItYJFeqroKMFqVL9YWpGlRquw0uIsC8NhT871z+lx4fFIukH
-         0TZGdQQ+QnExkjMPUrOmBq7wMuLQU2L/n2/XAyeyj2ehPVTcT+v9/VfZvOmYNTYus3Yc
-         JGfW/ogAB9it53pxWMPeqGZMp21A4C2F69TbXob1QWRBWrSG10DVaUEQ1dZlpi3vHItG
-         WVFT8A0ZaMaj4ErXsRva4WuQuRvI/FDdhobhsymtNOML5BFKqqnQ34WPfNTWsSHQrm/z
-         EsEw==
+         :cc:content-transfer-encoding;
+        bh=ghL2ejMczTD1do3SfLrIUCduz/hYZUyvvviL/RHelQM=;
+        b=h4jXIxN18C6m+lpF9LUsY0N0K6bgy0F8EK7hDEZf9NYpPaBnJQwmw9bh83LabSb1G9
+         V8J0iO3QJ/yueeEnYIJPExtYFYXBPEb2L9bvXRgDRDEf8EEsamNZOKTRC1RFbQBeSMNU
+         /SAlHtyN5Ja5roQAixW+hamlsHfTQqMkc5kQ4qsiDFoPlRXP9Qr/59D28Gxym9PtYrLQ
+         EFOSLqS7HdPN3+sQ5928VptD26LhFb3pRPCauXHb3CcWYNUsaiX3P5uv0FDqiZDYJJSf
+         rp7Ba+u0dF10NVmdWUXQohatq7Ta5wAhaVsSlr3QroQy694hmZcRsk0HqIOvKnlQq2Uh
+         Qmbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5B+woHff3gH1nbVQlGQQlOXxwWDup59Bz7W7LVwi/qw=;
-        b=pqizualXx5BToNflgFSMG5CF+SpBlVutggHE1QVkE/l2gJ1rG5tGatLjj24XhmgNCh
-         kf7/3oC/9bpjC4mFM+2dc3EibuxBRt9rUZvxoLdtCvtPbuNAvJRBJDWi8EmdURNFmFGs
-         gzpiKb2dxkX49bysBXurHyxZP7/zpbFYUpMaZBC34c60XXjW3yrX+L8WEs6f9stIvslN
-         RsR3DMNmXzcSSR3BPmtjrO3kTluRx0p0X7pQOWlo4AS48ssijmh8ohrSr5zOxCwO3+D7
-         HuaDO/8aFQgRLI4wqPxriMSw2LGZY1q3qZIzFC/hY7f0o5dF/KO1yqyv9Xmah6nGDxrP
-         3vFg==
-X-Gm-Message-State: AOAM532JvZRXuI+5cqS0j1AKDAa1/xMDajkoTL43PbDBMm+Cfhd8RLpf
-        k2dgD2D/NVBZPtRhE9+aUWL/keSo1Mq1fMLpChk=
-X-Google-Smtp-Source: ABdhPJzzpZTiV+NdEnxAaCxo8sRdhGmUNNOSSYD65zheyio/OkRAqrRY/2gqHWKxD05Fau4ynq2J0l2RG58xa+EPFXs=
-X-Received: by 2002:a25:b203:: with SMTP id i3mr783727ybj.260.1626307204941;
- Wed, 14 Jul 2021 17:00:04 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ghL2ejMczTD1do3SfLrIUCduz/hYZUyvvviL/RHelQM=;
+        b=rsSKqs6BllYxc/mPt83GCNP/VZKyRxqUbSwxmdXVGeF2H5PcoA4ijuGpPpUeKTbjZs
+         W3zzTdADY744F9sCxOvLnySufI4ouacLEnjwJz5noOKDXUJEOy2sZXOd7f79NpRade3V
+         vm6mQLI8V6gR059LbOlv6i3Pd1HHmEF1xX41jjuzET0f2HVrbguAcG0DMq4gPG/JsgbY
+         w0sb8qS8mvnEdrwR1LfRMIaYYcDmpXUSo94XYpyHUuNBD0zwXPEIg/Kyh4Ngr1B8bTpE
+         M18NOEBDWWXvKa2hO2qxslCczxlekND5nS4y53x15tRgbPOc5atd1x2XfZxl3T8csdDb
+         YJog==
+X-Gm-Message-State: AOAM532evB870vfTACa+/K6QKvuL9x2vdO2kVvmVXyCrv2TbWLklrW70
+        sTWOeMugc/RiQQkOafYGlodoQQIXvq0LE0GBRj8=
+X-Google-Smtp-Source: ABdhPJxm9nDRz9t1+cTCnX/sdncukhzrcoyIV8p1qmt6Rmkf2gSKqGM9rvYAv2rSEJPOL5VfcH58Omzlag6L5/CV9vI=
+X-Received: by 2002:a25:3787:: with SMTP id e129mr681810yba.459.1626307209953;
+ Wed, 14 Jul 2021 17:00:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210714010519.37922-1-alexei.starovoitov@gmail.com> <20210714010519.37922-4-alexei.starovoitov@gmail.com>
-In-Reply-To: <20210714010519.37922-4-alexei.starovoitov@gmail.com>
+References: <20210714010519.37922-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210714010519.37922-1-alexei.starovoitov@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 14 Jul 2021 16:59:53 -0700
-Message-ID: <CAEf4BzbJb3q0=LwHs_JXXB2a7wsY=rCF7E+nxsM2SgcC6KK8jA@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 03/11] bpf: Introduce bpf timers.
+Date:   Wed, 14 Jul 2021 16:59:58 -0700
+Message-ID: <CAEf4BzaSXZJV82dU0AZAry06-P6wfYXZM9H7ewPe9o++a1AvbQ@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 00/11] bpf: Introduce BPF timers.
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -57,6 +57,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -66,135 +67,225 @@ On Tue, Jul 13, 2021 at 6:05 PM Alexei Starovoitov
 >
 > From: Alexei Starovoitov <ast@kernel.org>
 >
-> Introduce 'struct bpf_timer { __u64 :64; __u64 :64; };' that can be embedded
-> in hash/array/lru maps as a regular field and helpers to operate on it:
+> The first request to support timers in bpf was made in 2013 before sys_bp=
+f syscall
+> was added. That use case was periodic sampling. It was address with attac=
+hing
+> bpf programs to perf_events. Then during XDP development the timers were =
+requested
+> to do garbage collection and health checks. They were worked around by im=
+plementing
+> timers in user space and triggering progs with BPF_PROG_RUN command.
+> The user space timers and perf_event+bpf timers are not armed by the bpf =
+program.
+> They're done asynchronously vs program execution. The XDP program cannot =
+send a
+> packet and arm the timer at the same time. The tracing prog cannot record=
+ an
+> event and arm the timer right away. This large class of use cases remaine=
+d
+> unaddressed. The jiffy based and hrtimer based timers are essential part =
+of the
+> kernel development and with this patch set the hrtimer based timers will =
+be
+> available to bpf programs.
 >
-> // Initialize the timer.
-> // First 4 bits of 'flags' specify clockid.
-> // Only CLOCK_MONOTONIC, CLOCK_REALTIME, CLOCK_BOOTTIME are allowed.
-> long bpf_timer_init(struct bpf_timer *timer, struct bpf_map *map, int flags);
+> TLDR: bpf timers is a wrapper of hrtimers with all the extra safety added
+> to make sure bpf progs cannot crash the kernel.
 >
-> // Configure the timer to call 'callback_fn' static function.
-> long bpf_timer_set_callback(struct bpf_timer *timer, void *callback_fn);
+> v5->v6:
+> - address code review feedback from Martin and add his Acks.
+> - add usercnt > 0 check to bpf_timer_init and remove timers_cancel_and_fr=
+ee
+> second loop in map_free callbacks.
+> - add cond_resched_rcu.
 >
-> // Arm the timer to expire 'nsec' nanoseconds from the current time.
-> long bpf_timer_start(struct bpf_timer *timer, u64 nsec, u64 flags);
+> v4->v5:
+> - Martin noticed the following issues:
+> . prog could be reallocated bpf_patch_insn_data().
+> Fixed by passing 'aux' into bpf_timer_set_callback, since 'aux' is stable
+> during insn patching.
+> . Added missing rcu_read_lock.
+> . Removed redundant record_map.
+> - Discovered few bugs with stress testing:
+> . One cpu does htab_free_prealloced_timers->bpf_timer_cancel_and_free->hr=
+timer_cancel
+> while another is trying to do something with the timer like bpf_timer_sta=
+rt/set_callback.
+> Those ops try to acquire bpf_spin_lock that is already taken by bpf_timer=
+_cancel_and_free,
+> so both cpus spin forever. The same problem existed in bpf_timer_cancel()=
+.
+> One bpf prog on one cpu might call bpf_timer_cancel and wait, while anoth=
+er cpu is in
+> the timer callback that tries to do bpf_timer_*() helper on the same time=
+r.
+> The fix is to do drop_prog_refcnt() and unlock. And only then hrtimer_can=
+cel.
+> Because of this had to add callback_fn !=3D NULL check to bpf_timer_cb().
+> Also removed redundant bpf_prog_inc/put from bpf_timer_cb() and replaced
+> with rcu_dereference_check similar to recent rcu_read_lock-removal from d=
+rivers.
+> bpf_timer_cb is in softirq.
+> . Managed to hit refcnt=3D=3D0 while doing bpf_prog_put from bpf_timer_ca=
+ncel_and_free().
+> That exposed the issue that bpf_prog_put wasn't ready to be called from i=
+rq context.
+> Fixed similar to bpf_map_put which is irq ready.
+> - Refactored BPF_CALL_1(bpf_spin_lock) into __bpf_spin_lock_irqsave() to
+> make the main logic more clear, since Martin and Yonghong brought up this=
+ concern.
 >
-> // Cancel the timer and wait for callback_fn to finish if it was running.
-> long bpf_timer_cancel(struct bpf_timer *timer);
+> v3->v4:
+> 1.
+> Split callback_fn from bpf_timer_start into bpf_timer_set_callback as
+> suggested by Martin. That makes bpf timer api match one to one to
+> kernel hrtimer api and provides greater flexibility.
+> 2.
+> Martin also discovered the following issue with uref approach:
+> bpftool prog load xdp_timer.o /sys/fs/bpf/xdp_timer type xdp
+> bpftool net attach xdpgeneric pinned /sys/fs/bpf/xdp_timer dev lo
+> rm /sys/fs/bpf/xdp_timer
+> nc -6 ::1 8888
+> bpftool net detach xdpgeneric dev lo
+> The timer callback stays active in the kernel though the prog was detache=
+d
+> and map usercnt =3D=3D 0.
+> It happened because 'bpftool prog load' pinned the prog only.
+> The map usercnt went to zero. Subsequent attach and runs didn't
+> affect map usercnt. The timer was able to start and bpf_prog_inc itself.
+> When the prog was detached the prog stayed active.
+> To address this issue added
+> if (!atomic64_read(&(t->map->usercnt))) return -EPERM;
+> to the first patch.
+> Which means that timers are allowed only in the maps that are held
+> by user space with open file descriptor or maps pinned in bpffs.
+> 3.
+> Discovered that timers in inner maps were broken.
+> The inner map pointers are dynamic. Therefore changed bpf_timer_init()
+> to accept explicit map pointer supplied by the program instead
+> of hidden map pointer supplied by the verifier.
+> To make sure that pointer to a timer actually belongs to that map
+> added the verifier check in patch 3.
+> 4.
+> Addressed Yonghong's feedback. Improved comments and added
+> dynamic in_nmi() check.
+> Added Acks.
 >
-> Here is how BPF program might look like:
-> struct map_elem {
->     int counter;
->     struct bpf_timer timer;
-> };
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> # for the fe=
+ature
 >
-> struct {
->     __uint(type, BPF_MAP_TYPE_HASH);
->     __uint(max_entries, 1000);
->     __type(key, int);
->     __type(value, struct map_elem);
-> } hmap SEC(".maps");
+> v2->v3:
+> The v2 approach attempted to bump bpf_prog refcnt when bpf_timer_start is
+> called to make sure callback code doesn't disappear when timer is active =
+and
+> drop refcnt when timer cb is done. That led to a ton of race conditions b=
+etween
+> callback running and concurrent bpf_timer_init/start/cancel on another cp=
+u,
+> and concurrent bpf_map_update/delete_elem, and map destroy.
 >
-> static int timer_cb(void *map, int *key, struct map_elem *val);
-> /* val points to particular map element that contains bpf_timer. */
+> Then v2.5 approach skipped prog refcnt altogether. Instead it remembered =
+all
+> timers that bpf prog armed in a link list and canceled them when prog ref=
+cnt
+> went to zero. The race conditions disappeared, but timers in map-in-map c=
+ould
+> not be supported cleanly, since timers in inner maps have inner map's lif=
+e time
+> and don't match prog's life time.
 >
-> SEC("fentry/bpf_fentry_test1")
-> int BPF_PROG(test1, int a)
-> {
->     struct map_elem *val;
->     int key = 0;
+> This v3 approach makes timers to be owned by maps. It allows timers in in=
+ner
+> maps to be supported from the start. This apporach relies on "user refcnt=
+"
+> scheme used in prog_array that stores bpf programs for bpf_tail_call. The
+> bpf_timer_start() increments prog refcnt, but unlike 1st approach the tim=
+er
+> callback does decrement the refcnt. The ops->map_release_uref is
+> responsible for cancelling the timers and dropping prog refcnt when user =
+space
+> reference to a map is dropped. That addressed all the races and simplifie=
+d
+> locking.
 >
->     val = bpf_map_lookup_elem(&hmap, &key);
->     if (val) {
->         bpf_timer_init(&val->timer, &hmap, CLOCK_REALTIME);
->         bpf_timer_set_callback(&val->timer, timer_cb);
->         bpf_timer_start(&val->timer, 1000 /* call timer_cb2 in 1 usec */, 0);
->     }
-> }
+> Andrii presented a use case where specifying callback_fn in bpf_timer_ini=
+t()
+> is inconvenient vs specifying in bpf_timer_start(). The bpf_timer_init()
+> typically is called outside for timer callback, while bpf_timer_start() m=
+ost
+> likely will be called from the callback.
+> timer_cb() { ... bpf_timer_start(timer_cb); ...} looks like recursion and=
+ as
+> infinite loop to the verifier. The verifier had to be made smarter to rec=
+ognize
+> such async callbacks. Patches 7,8,9 addressed that.
 >
-> This patch adds helper implementations that rely on hrtimers
-> to call bpf functions as timers expire.
-> The following patches add necessary safety checks.
+> Patch 1 and 2 refactoring.
+> Patch 3 implements bpf timer helpers and locking.
+> Patch 4 implements map side of bpf timer support.
+> Patch 5 prevent pointer mismatch in bpf_timer_init.
+> Patch 6 adds support for BTF in inner maps.
+> Patch 7 teaches check_cfg() pass to understand async callbacks.
+> Patch 8 teaches do_check() pass to understand async callbacks.
+> Patch 9 teaches check_max_stack_depth() pass to understand async callback=
+s.
+> Patches 10 and 11 are the tests.
 >
-> Only programs with CAP_BPF are allowed to use bpf_timer.
+> v1->v2:
+> - Addressed great feedback from Andrii and Toke.
+> - Fixed race between parallel bpf_timer_*() ops.
+> - Fixed deadlock between timer callback and LRU eviction or bpf_map_delet=
+e/update.
+> - Disallowed mmap and global timers.
+> - Allow spin_lock and bpf_timer in an element.
+> - Fixed memory leaks due to map destruction and LRU eviction.
+> - A ton more tests.
 >
-> The amount of timers used by the program is constrained by
-> the memcg recorded at map creation time.
+> Alexei Starovoitov (11):
+>   bpf: Prepare bpf_prog_put() to be called from irq context.
+>   bpf: Factor out bpf_spin_lock into helpers.
+>   bpf: Introduce bpf timers.
+>   bpf: Add map side support for bpf timers.
+>   bpf: Prevent pointer mismatch in bpf_timer_init.
+>   bpf: Remember BTF of inner maps.
+>   bpf: Relax verifier recursion check.
+>   bpf: Implement verifier support for validation of async callbacks.
+>   bpf: Teach stack depth check about async callbacks.
+>   selftests/bpf: Add bpf_timer test.
+>   selftests/bpf: Add a test with bpf_timer in inner map.
 >
-> The bpf_timer_init() helper needs explicit 'map' argument because inner maps
-> are dynamic and not known at load time. While the bpf_timer_set_callback() is
-> receiving hidden 'aux->prog' argument supplied by the verifier.
+>  include/linux/bpf.h                           |  47 ++-
+>  include/linux/bpf_verifier.h                  |  19 +-
+>  include/linux/btf.h                           |   1 +
+>  include/uapi/linux/bpf.h                      |  73 ++++
+>  kernel/bpf/arraymap.c                         |  21 ++
+>  kernel/bpf/btf.c                              |  77 +++-
+>  kernel/bpf/hashtab.c                          | 104 +++++-
+>  kernel/bpf/helpers.c                          | 341 +++++++++++++++++-
+>  kernel/bpf/local_storage.c                    |   4 +-
+>  kernel/bpf/map_in_map.c                       |   8 +
+>  kernel/bpf/syscall.c                          |  53 ++-
+>  kernel/bpf/verifier.c                         | 307 +++++++++++++++-
+>  kernel/trace/bpf_trace.c                      |   2 +-
+>  scripts/bpf_doc.py                            |   2 +
+>  tools/include/uapi/linux/bpf.h                |  73 ++++
+>  .../testing/selftests/bpf/prog_tests/timer.c  |  55 +++
+>  .../selftests/bpf/prog_tests/timer_mim.c      |  69 ++++
+>  tools/testing/selftests/bpf/progs/timer.c     | 297 +++++++++++++++
+>  tools/testing/selftests/bpf/progs/timer_mim.c |  88 +++++
+>  .../selftests/bpf/progs/timer_mim_reject.c    |  74 ++++
+>  20 files changed, 1651 insertions(+), 64 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/timer.c
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_mim.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/timer.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/timer_mim.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/timer_mim_reject.c
 >
-> The prog pointer is needed to do refcnting of bpf program to make sure that
-> program doesn't get freed while the timer is armed. This approach relies on
-> "user refcnt" scheme used in prog_array that stores bpf programs for
-> bpf_tail_call. The bpf_timer_set_callback() will increment the prog refcnt which is
-> paired with bpf_timer_cancel() that will drop the prog refcnt. The
-> ops->map_release_uref is responsible for cancelling the timers and dropping
-> prog refcnt when user space reference to a map reaches zero.
-> This uref approach is done to make sure that Ctrl-C of user space process will
-> not leave timers running forever unless the user space explicitly pinned a map
-> that contained timers in bpffs.
->
-> bpf_timer_init() and bpf_timer_set_callback() will return -EPERM if map doesn't
-> have user references (is not held by open file descriptor from user space and
-> not pinned in bpffs).
->
-> The bpf_map_delete_elem() and bpf_map_update_elem() operations cancel
-> and free the timer if given map element had it allocated.
-> "bpftool map update" command can be used to cancel timers.
->
-> The 'struct bpf_timer' is explicitly __attribute__((aligned(8))) because
-> '__u64 :64' has 1 byte alignment of 8 byte padding.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  include/linux/bpf.h            |   3 +
->  include/uapi/linux/bpf.h       |  73 ++++++++
->  kernel/bpf/helpers.c           | 325 +++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c          | 109 +++++++++++
->  kernel/trace/bpf_trace.c       |   2 +-
->  scripts/bpf_doc.py             |   2 +
->  tools/include/uapi/linux/bpf.h |  73 ++++++++
->  7 files changed, 586 insertions(+), 1 deletion(-)
+> --
+> 2.30.2
 >
 
-[...]
+It all looks good to me overall:
 
-> +       if (!atomic64_read(&(map->usercnt))) {
-> +               /* maps with timers must be either held by user space
-> +                * or pinned in bpffs.
-> +                */
-> +               ret = -EPERM;
-> +               goto out;
-> +       }
-> +       /* allocate hrtimer via map_kmalloc to use memcg accounting */
-> +       t = bpf_map_kmalloc_node(map, sizeof(*t), GFP_ATOMIC, NUMA_NO_NODE);
-
-I wonder if it would make sense to use map->numa_node here to keep map
-value and timer data in the same NUMA node?
-
-> +       if (!t) {
-> +               ret = -ENOMEM;
-> +               goto out;
-> +       }
-
-[...]
-
-> +
-> +/* This function is called by map_delete/update_elem for individual element.
-> + * By ops->map_release_uref when the user space reference to a map reaches zero
-> + * and by ops->map_free when the kernel reference reaches zero.
-
-is ops->map_free part still valid?
-
-> + */
-> +void bpf_timer_cancel_and_free(void *val)
-> +{
-> +       struct bpf_timer_kern *timer = val;
-> +       struct bpf_hrtimer *t;
-> +
-
-[...]
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
