@@ -2,109 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 173D23C7DD9
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 07:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D60D43C7DEB
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 07:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237892AbhGNFQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 01:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        id S237926AbhGNF1K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 01:27:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbhGNFQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 01:16:48 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3326EC0613DD
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:13:56 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id ay16so433900qvb.12
-        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:13:56 -0700 (PDT)
+        with ESMTP id S237802AbhGNF1G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 01:27:06 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F94C0613E9
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:24:14 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ga14so1274572ejc.6
+        for <netdev@vger.kernel.org>; Tue, 13 Jul 2021 22:24:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZdQWrmG6M3XUqNOIsR3BE6OkJLacu7dzCjviod9+YhI=;
-        b=QTziq5m0E1ucoN1dWIZxCPqk9/SFIezVPWo5QTcNJM6S+Nq4gu5ef+MV4g/xQMKGhx
-         INZ+XY2BMlgHlkc8CJRHX+cBHWAozMTVef+x/lQT4SeGXmAfE4s0XilBm60/tcMlL9b5
-         N6I13oiqPtD9EpjHljgW7Nky5y4KXjViYXG5iXtrEBirLXRQG0g208B3Tgx77SMCgoSo
-         qp4J5zMqbX4rpXk1ctGZRXQ9uSCO/GjJ/NeJggDx22XL+9TkHlKxUI/RuAHBU1UpiBn5
-         H0hAtrcf0ZPjanpKfYfU/EBSsY34sY3aPQBWF0pvGCCb11bU/mA2jOXGTosXSWUaMc08
-         sfuw==
+        bh=IR3H7P/Qqdz0+z7mAz+4BcJc0mjzsggsr8mNH8312vk=;
+        b=J2IDtTc5DxsvAMq/DAkPuYqj0Y7dNpRgm5w+Q5Mo3F1Au3zIy957DexG4xM3ot9TeB
+         gz7qUXOBffxs7ZJq8NwJJx3+F2yWdVty637g3WtUU13nzkMXjdWWulrIly/TOJxD+Hyy
+         /NqXLpxJ8/rX9zvF4onj7kuKA/hY855NC/q2nDjsHgyYw3/sSLkn4POQUtEcySzhEGrh
+         CDn9h5b45a/ov20IIHnvFDOFr1x5Vomj6Ve9ZjPNFGa6QG+3p9U0VzK3a00J7z6C/fWK
+         eWV/SVtA1pGWD7wh4Q6+tQY/Bv7Ble6R8AihTwasCDJOPdVPj+NAufXpshOEW+KCfFKO
+         W7Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZdQWrmG6M3XUqNOIsR3BE6OkJLacu7dzCjviod9+YhI=;
-        b=eFhe2g6ewQDlMGMQTRePtpYt82l6B15kAiK/2eH2Btdltb7Fe+xAcTN2MUjgZZ9OFO
-         H6tRnbemZWbeGCmFBNy3tYBCms75OED7G9mPKX2opf1eMcjgdbXR5at79x9ETa5qCVPZ
-         qqKUB3eouYPKUX5QcRBLoGq4e4QzQGv2afHkgBnx81vk5CkTlYayXjNTwOfbRyNQdxRa
-         GkZv01ZpF7iFxEdvlMDK2V2DVWJmvuFptZg1tfZSgXcM8XjAgWlN1BPliAv4/eTsg6+d
-         O2feg9K0XRS0eYiwb2CYIVb6ohuK9aeFakCar+AbaPa1wFS+PqryIrwi/7F0kwR0kYp9
-         rvRQ==
-X-Gm-Message-State: AOAM5336EPie1+aCZLDQnKVhaIvlsB9/Ri2CR96RKzkR4S4QQrYTBX/X
-        LPRo10Snd0ZbOY/fPfdNcY+1aNh3HOQ7qklC/Nw=
-X-Google-Smtp-Source: ABdhPJzSaGJea92VDK8uQSe2xM9Dl/cv2iQLcugmvZnlNdd3+GpOQitQ2CdDrrurV39j7EjgC3El6z1ppc+w8Nwo93s=
-X-Received: by 2002:a0c:e7c9:: with SMTP id c9mr8812238qvo.47.1626239635222;
- Tue, 13 Jul 2021 22:13:55 -0700 (PDT)
+        bh=IR3H7P/Qqdz0+z7mAz+4BcJc0mjzsggsr8mNH8312vk=;
+        b=Bmkj55cQwqIWb9AA8lyIx+lR/ZcC2/DFUdfoycKsgr+UxOZFIm6kQbnez4wV9UfDDs
+         fwlTzl15Co5oURPrLQJ5lnQJUDFdmftznjhZLhyyXoooO0m2hwo0/wa8F0NxxOHpwlT6
+         MF7VjCueTl7NJMpIcI29HhgfG+qZuO6bLodNjx/Xd3Kyn/RSxVafBCcrqhWyTjoLjEDI
+         RGwcgw97Jw+aVDkUlrFRMoEcKLyfv8xRmPGQRR/B62yAD7hGXApyTnhH6ZySnUm9PY9u
+         WFewCwABDn077zJ4wu6b+7ypTgAhkNwx1wdXqzlCCEv/cgKgDKZH0KPqv6JbwqJIZNbW
+         IqIg==
+X-Gm-Message-State: AOAM531I/T0Ur3hMNeZ0+bgqMwB+jET64SQGfVn/TRKZGLEIXvm99p9s
+        Ilo0KZqL9ujCR5nATqe7X1B8gkQ+a9+C4pwe2+FU
+X-Google-Smtp-Source: ABdhPJwiVScNvW759FNHFZbUm6bF1Hh8xD+5SHXF+XpeC6RBKLMlly39eCK/TlQciP+Rhit5f+SlsKPq8Beb+93M0R0=
+X-Received: by 2002:a17:906:4b46:: with SMTP id j6mr10270164ejv.247.1626240253024;
+ Tue, 13 Jul 2021 22:24:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210707051241.20565-1-vjsanjay@gmail.com> <202107130145.OLy5XU3h-lkp@intel.com>
-In-Reply-To: <202107130145.OLy5XU3h-lkp@intel.com>
-From:   Sanjay Kumar J <vjsanjay@gmail.com>
-Date:   Wed, 14 Jul 2021 10:44:08 +0530
-Message-ID: <CAN7cG1a1sSQLuotMie44-SHyCQu5E1QCWwJxhqvVWGASaLh1PA@mail.gmail.com>
-Subject: Re: [PATCH v2] tools/runqslower: use __state instead of state
-To:     kernel test robot <lkp@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, kbuild-all@lists.01.org,
-        Networking <netdev@vger.kernel.org>
+References: <20210713084656.232-1-xieyongji@bytedance.com> <20210713084656.232-14-xieyongji@bytedance.com>
+ <20210713113114.GL1954@kadam>
+In-Reply-To: <20210713113114.GL1954@kadam>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 14 Jul 2021 13:24:02 +0800
+Message-ID: <CACycT3uKwu5xzj2ynWH5njCKHaYyOPkDb8BVLTHE5NJ-qpD3xQ@mail.gmail.com>
+Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and vhost_vdpa_pa_unmap()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        joro@8bytes.org, Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 11:12 PM kernel test robot <lkp@intel.com> wrote:
+On Tue, Jul 13, 2021 at 7:31 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
 >
-> Hi SanjayKumar,
+> On Tue, Jul 13, 2021 at 04:46:52PM +0800, Xie Yongji wrote:
+> > @@ -613,37 +618,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+> >       }
+> >  }
+> >
+> > -static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+> > -                                        struct vhost_iotlb_msg *msg)
+> > +static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+> > +                          u64 iova, u64 size, u64 uaddr, u32 perm)
+> >  {
+> >       struct vhost_dev *dev = &v->vdev;
+> > -     struct vhost_iotlb *iotlb = dev->iotlb;
+> >       struct page **page_list;
+> >       unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> >       unsigned int gup_flags = FOLL_LONGTERM;
+> >       unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+> >       unsigned long lock_limit, sz2pin, nchunks, i;
+> > -     u64 iova = msg->iova;
+> > +     u64 start = iova;
+> >       long pinned;
+> >       int ret = 0;
+> >
+> > -     if (msg->iova < v->range.first ||
+> > -         msg->iova + msg->size - 1 > v->range.last)
+> > -             return -EINVAL;
 >
-> Thank you for the patch! Yet something to improve:
+> This is not related to your patch, but can the "msg->iova + msg->size"
+> addition can have an integer overflow.  From looking at the callers it
+> seems like it can.  msg comes from:
+>   vhost_chr_write_iter()
+>   --> dev->msg_handler(dev, &msg);
+>       --> vhost_vdpa_process_iotlb_msg()
+>          --> vhost_vdpa_process_iotlb_update()
 >
-> [auto build test ERROR on bpf-next/master]
-> [also build test ERROR on vhost/linux-next ipvs/master v5.14-rc1]
-> [cannot apply to bpf/master next-20210712]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-v4 version of the patch is already accepted in bpf tree
-commit-id:5616e895ecc56 and also in net tree ommit:5616e895ecc56
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
+> If I'm thinking of the right thing then these are allowed to overflow to
+> 0 because of the " - 1" but not further than that.  I believe the check
+> needs to be something like:
 >
-> url:    https://github.com/0day-ci/linux/commits/SanjayKumar-J/tools-runqslower-use-__state-instead-of-state/20210707-131703
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-> config: x86_64-rhel-8.3-kselftests (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-> reproduce (this is a W=1 build):
->         # https://github.com/0day-ci/linux/commit/0e86dc86c0f18512dc19ba3d0b001b3f06338a0d
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review SanjayKumar-J/tools-runqslower-use-__state-instead-of-state/20210707-131703
->         git checkout 0e86dc86c0f18512dc19ba3d0b001b3f06338a0d
->         # save the attached .config to linux build tree
->         mkdir build_dir
->         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash -C tools/testing/selftests/bpf install
+>         if (msg->iova < v->range.first ||
+>             msg->iova - 1 > U64_MAX - msg->size ||
+>             msg->iova + msg->size - 1 > v->range.last)
 >
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+
+Make sense.
+
+> But writing integer overflow check correctly is notoriously difficult.
+> Do you think you could send a fix for that which is separate from the
+> patcheset?  We'd want to backport it to stable.
 >
-> All errors (new ones prefixed by >>):
->
-> >> runqslower.bpf.c:77:12: error: no member named '__state' in 'struct task_struct'; did you mean 'state'?
->            if (prev->__state == TASK_RUNNING)
->                      ^~~~~~~
->                      state
->    /tools/vmlinux.h:1096:20: note: 'state' declared here
->            volatile long int state;
->                              ^
->    1 error generated.
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+OK, I will send a patch to fix it.
+
+Thanks,
+Yongji
