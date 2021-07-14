@@ -2,90 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4AC3C8A0A
-	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FF173C8A14
+	for <lists+netdev@lfdr.de>; Wed, 14 Jul 2021 19:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238965AbhGNRtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 13:49:15 -0400
-Received: from baldur.buserror.net ([165.227.176.147]:60168 "EHLO
-        baldur.buserror.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230217AbhGNRtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 13:49:14 -0400
-X-Greylist: delayed 1991 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Jul 2021 13:49:14 EDT
-Received: from [2601:449:8480:af0::97c7]
-        by baldur.buserror.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <oss@buserror.net>)
-        id 1m3iQJ-0004e6-4c; Wed, 14 Jul 2021 12:11:51 -0500
-Message-ID: <63a72f648297e96c140a1412c20bd3796398a932.camel@buserror.net>
-From:   Scott Wood <oss@buserror.net>
-To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "Camelia Alexandra Groza (OSS)" <camelia.groza@oss.nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Marek =?ISO-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 14 Jul 2021 12:11:49 -0500
-In-Reply-To: <20210704134325.24842-1-pali@kernel.org>
-References: <20210604233455.fwcu2chlsed2gwmu@pali>
-         <20210704134325.24842-1-pali@kernel.org>
-Organization: Red Hat
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        id S230170AbhGNRxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 13:53:51 -0400
+Received: from mail-il1-f181.google.com ([209.85.166.181]:41732 "EHLO
+        mail-il1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229685AbhGNRxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 13:53:50 -0400
+Received: by mail-il1-f181.google.com with SMTP id p3so2434583ilg.8;
+        Wed, 14 Jul 2021 10:50:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gX4LTTFLYmc/RxwQWs/nxWN49INTvr4EOLjiuJVqyt8=;
+        b=aBdtMzQ5jqqBXEQlrmkn+MV4NoXz30E8MwIuRGRrKYDY9uciNJDxfN8oQYGoXsyoxK
+         BviRrpO3WrOvh7mW3k2gpJsMPS4/4R5YfFARZO0zeuKsYAcyIkYiZhfGs1EECBPn6DIX
+         bWKz5TOsxcgwlZjDNf8pNM/OFZy/omU5Hu9ooKGHZwD8y5jWxHIqiOZkTQbRc6sDpN6y
+         IHZRvqcb2Tj6wYOv9dRQbPdyKsR0WxiDk3N2eaWrZG1pclUWLo4rVpXp39BTuvwz6FP8
+         nPCFMNsnWFVLN/s329d8T8s9Xb8rjKUa5RNZlKeCRfqDbYd/wGSaQy/dHEESt0I8/E02
+         tW9g==
+X-Gm-Message-State: AOAM532Dm09mTR8eVHUlHeduM7vgwrXjnAc/pi64pl57hwRCvXANhAxG
+        JHShLfj9CS4dcn0aIOkA0w==
+X-Google-Smtp-Source: ABdhPJwViJD9A1z/8IbnngeiMUtPqr1sjgkz40zNSHmxuSdivkQHvEVe1WGdVVVaigX7+ujE+pMXjA==
+X-Received: by 2002:a92:d848:: with SMTP id h8mr7598706ilq.282.1626285058401;
+        Wed, 14 Jul 2021 10:50:58 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id d8sm1514916ilq.88.2021.07.14.10.50.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jul 2021 10:50:57 -0700 (PDT)
+Received: (nullmailer pid 2831761 invoked by uid 1000);
+        Wed, 14 Jul 2021 17:50:54 -0000
+Date:   Wed, 14 Jul 2021 11:50:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: dsa: sja1105: Fix indentation warnings
+Message-ID: <20210714175054.GA2831699@robh.at.kernel.org>
+References: <20210622113327.3613595-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2601:449:8480:af0::97c7
-X-SA-Exim-Rcpt-To: pali@kernel.org, andrew@lunn.ch, linux@armlinux.org.uk, madalin.bucur@nxp.com, camelia.groza@oss.nxp.com, robh+dt@kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org, kabel@kernel.org, netdev@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: oss@buserror.net
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on baldur.localdomain
-X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        *  -15 BAYES_00 BODY: Bayes spam probability is 0 to 1%
-        *      [score: 0.0000]
-Subject: Re: [PATCH] powerpc/fsl/dts: Fix phy-connection-type for fm1mac3
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210622113327.3613595-1-thierry.reding@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-07-04 at 15:43 +0200, Pali Rohár wrote:
-> Property phy-connection-type contains invalid value "sgmii-2500" per scheme
-> defined in file ethernet-controller.yaml.
+On Tue, 22 Jun 2021 13:33:27 +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
 > 
-> Correct phy-connection-type value should be "2500base-x".
+> Some of the lines aren't properly indented, causing yamllint to warn
+> about them:
 > 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> Fixes: 84e0f1c13806 ("powerpc/mpc85xx: Add MDIO bus muxing support to the
-> board device tree(s)")
+>     .../nxp,sja1105.yaml:70:17: [warning] wrong indentation: expected 18 but found 16 (indentation)
+> 
+> Use the proper indentation to fix those warnings.
+> 
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
 > ---
->  arch/powerpc/boot/dts/fsl/t1023rdb.dts | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> index 5ba6fbfca274..f82f85c65964 100644
-> --- a/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> +++ b/arch/powerpc/boot/dts/fsl/t1023rdb.dts
-> @@ -154,7 +154,7 @@
->  
->                         fm1mac3: ethernet@e4000 {
->                                 phy-handle = <&sgmii_aqr_phy3>;
-> -                               phy-connection-type = "sgmii-2500";
-> +                               phy-connection-type = "2500base-x";
->                                 sleep = <&rcpm 0x20000000>;
->                         };
->  
 
-Acked-by: Scott Wood <oss@buserror.net>
-
--Scott
-
-
+Applied, thanks!
