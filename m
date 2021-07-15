@@ -2,480 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DF03C9ABF
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 10:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ADD03C9AEA
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 10:58:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240366AbhGOIjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 04:39:33 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:36368 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbhGOIjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 04:39:32 -0400
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E7DF31FDF9;
-        Thu, 15 Jul 2021 08:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1626338197; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        id S234288AbhGOJBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 05:01:20 -0400
+Received: from de-smtp-delivery-102.mimecast.com ([194.104.111.102]:54093 "EHLO
+        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229927AbhGOJBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 05:01:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
+        t=1626339506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2PWjr+0c7psZzyw1qFaM/XPj81wb2xNcBw94sKXKDHs=;
-        b=qrNDU29dDXzvPD1erWBKcRFYJo36GDE2FyTiUgXz1zL12YE+BbmgrUhmZLT0caFBr6YRfU
-        K8BgmhrRni2LYKEGw9TrxJVRDofdcBg+/mLdpuLl1uPjqWthfUbQ2wfVaIwKe1Rsu3YRh9
-        kbyfbqTZlEnM+NHutFqFeHFcCFw2LbY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1626338197;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2PWjr+0c7psZzyw1qFaM/XPj81wb2xNcBw94sKXKDHs=;
-        b=x3B01zgznpgM2ZmkjseydG7jP09ccXKdOIA12Lc4ru8QZ5AWFg6KZ8i6DqXk46LbHRzVRE
-        noZ2UjFTeWpBlnAQ==
-Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 3C3BE13AB1;
-        Thu, 15 Jul 2021 08:36:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap1.suse-dmz.suse.de with ESMTPSA
-        id TEODDJXz72BKcwAAGKfGzw
-        (envelope-from <ykaukab@suse.de>); Thu, 15 Jul 2021 08:36:37 +0000
-Date:   Thu, 15 Jul 2021 10:36:35 +0200
-From:   Mian Yousaf Kaukab <ykaukab@suse.de>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Peter H Anvin <hpa@zytor.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] tools/tdx: Add a sample attestation user app
-Message-ID: <20210715083635.GA112769@suse.de>
-References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20210707204249.3046665-7-sathyanarayanan.kuppuswamy@linux.intel.com>
-MIME-Version: 1.0
+        bh=hqcna9SWKCnaSj7E4AYJ5gRi+tzyFWaYJmCoWD4nQsM=;
+        b=XyXdtEI4wLdi/v2OvXWlBd9Vax9NhC+uquV5VcaHbKa13s3uDwn40uLu5Z89qX6O88t8uh
+        WeZ6KLYlyahHeacko0lGZa9SkovtXqzCWZhi0hL9LFwdQe0Xlv7gUaeo3pIWPr5UcVI7TO
+        eZZmUN/tUKHFzhZlFhvFZHVJbBVEVTk=
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+ (mail-am5eur03lp2058.outbound.protection.outlook.com [104.47.8.58]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ de-mta-12-tXVZ4WaKNC2_hfP8-HvVrA-1; Thu, 15 Jul 2021 10:58:25 +0200
+X-MC-Unique: tXVZ4WaKNC2_hfP8-HvVrA-1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QdjFV7FlYfK4v+JEVhSoBYia7NdtUMhDjo09orxU4u2qfKjtmTo1XNSFI2la8LWa4e4IOi/a6GWKbm8XglAOA25FdKchK37f24+fyZ1ax+Vk+SisG7unjEs7ZyySLODY4BI7ViGaNpza0ixN8y4toiv5jnaKJYD5rzmB5nyPqxKxg3qmZXZFltvpJc+cOqcC0U8UXApZrgXfxCt2ymMKSIyXS8W50cB5xKby9A6Y+nsvrVSpsyDfC9BcIvbTqZj4MpGmXPHoo0dYjSlANq9Tza0R3OxA/laWXZe7KyQMKxX7vZxewwim2xMQpnTeeM7KYPOyTlG3AG/mqHqQTjihpQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hqcna9SWKCnaSj7E4AYJ5gRi+tzyFWaYJmCoWD4nQsM=;
+ b=nzShSaCtILwtOhLREh8WOvBQ6Y6BifUikt5N0lkYL6uIVkRiH/2SQ+NJpCVyun7Rp91N8CYT4iz3Oea+AJePZ3PVQ9BAYC60e8K0anUGpn2LaS986SaAmCuaT+d/ncsX5auVs2EAnA3y8JVLPtGE1gS/d5Py7fa78fSti7tVThbiU7i95PiLjLeDiCf0jifWiJ21JiDM+s+Q0DaHgzyZivFntwP6BJ2H5CJt6TDoFlIU9yf6/qMCCZlqO5qSOgapsHRxy+pL1HV40iZsXg5hz6nsnd86LdQv+0RQMhBTPNwtKtYiXlK5eh0UK5Lt3CmSqFVV2eSFhrUKOkJVv3kiSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+Authentication-Results: lists.xenproject.org; dkim=none (message not signed)
+ header.d=none;lists.xenproject.org; dmarc=none action=none
+ header.from=suse.com;
+Received: from VI1PR04MB5600.eurprd04.prod.outlook.com (2603:10a6:803:e7::16)
+ by VI1PR0401MB2608.eurprd04.prod.outlook.com (2603:10a6:800:4f::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.21; Thu, 15 Jul
+ 2021 08:58:24 +0000
+Received: from VI1PR04MB5600.eurprd04.prod.outlook.com
+ ([fe80::99d3:99cd:8adf:3eea]) by VI1PR04MB5600.eurprd04.prod.outlook.com
+ ([fe80::99d3:99cd:8adf:3eea%5]) with mapi id 15.20.4331.021; Thu, 15 Jul 2021
+ 08:58:23 +0000
+Subject: Ping: [PATCH] xen-netback: correct success/error reporting for the
+ SKB-with-fraglist case
+From:   Jan Beulich <jbeulich@suse.com>
+To:     paul@xen.org, Wei Liu <wl@xen.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+References: <4dd5b8ec-a255-7ab1-6dbf-52705acd6d62@suse.com>
+ <67bc0728-761b-c3dd-bdd5-1a850ff79fbb@xen.org>
+ <76c94541-21a8-7ae5-c4c4-48552f16c3fd@suse.com>
+ <17e50fb5-31f7-60a5-1eec-10d18a40ad9a@xen.org>
+ <57580966-3880-9e59-5d82-e1de9006aa0c@suse.com>
+ <a26c1ecd-e303-3138-eb7e-96f0203ca888@xen.org>
+ <1a522244-4be8-5e33-77c7-4ea5cf130335@suse.com>
+Message-ID: <9d27a3eb-1d50-64bb-8785-81de1eef3102@suse.com>
+Date:   Thu, 15 Jul 2021 10:58:21 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <1a522244-4be8-5e33-77c7-4ea5cf130335@suse.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210707204249.3046665-7-sathyanarayanan.kuppuswamy@linux.intel.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PR3P191CA0023.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:102:54::28) To VI1PR04MB5600.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::16)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.156.60.236] (37.24.206.209) by PR3P191CA0023.EURP191.PROD.OUTLOOK.COM (2603:10a6:102:54::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21 via Frontend Transport; Thu, 15 Jul 2021 08:58:23 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8a57244f-81ac-4d80-ec9d-08d9476eb3b3
+X-MS-TrafficTypeDiagnostic: VI1PR0401MB2608:
+X-Microsoft-Antispam-PRVS: <VI1PR0401MB26081A2A024EEAC4C093BEC3B3129@VI1PR0401MB2608.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sfaXrq3B+9p1PwOuMJF0Z72ZSdXfxgxa72mHSrPEVzvNz5r7pFoDiF71VK57JRdBK6nja9yYPyW3Y1pRYMMrKKFWSG9jmJKY7xSgO6UFI6v+KV0H5fS3krwRkltJvT9eParDcDvL56bQQLtkOSOav9X8X8oWLnnvL8eZUjJdNyuoj3JQs70J4L+HeD0kdQhM39MLe4OenrqvTTVNilzXu9bGeFV7McBaVMLr+dK20Gcdy0CkxfXLN7Y3qeEbtMRnBQzV0lkGEwd4EFl2uuws8NYky4aY1o6VSDtQQ4UDWbCeqYVRuTNNAd6E951NGpNi0k4+WKXZkWDZdBM3L5fJfwb0NgUj9LXwO/FM6VM6G/Fao5YJIQ+oO7GMBZ4I0XtydH02R/ZN8tCz3L3b76v/wi3Vz+LC3fD6sQONQe29SfxqLeODntsKpVxws647ChSSKyu7OMktN0H2Iq3ISi82upX+6kdDk8+7Blct4Y3FcOJeI58KeVYers/MLsmH8sVpHLovyDghc4Hjm2gUHo4iwCShZGOTugLSta5oMgKLMqCBduHiCikt4ZldFUkTX0TeWl2pH+fz3JUWr0DNlBMbIIQWiBlE6e/jCrSu9/fN71gdBzIKJB4RE0VEJ/Sp4VMN+Zm1UcNEWS/R8t8vzgqYRL0f4v31GzXLGJbSH/Dn17c11tPzSzAjgReTSJkyW6CBAO03BHEWs5WJZw7LD+MCXNSEO2nw9L2Gop3ClEZCJyc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5600.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(316002)(8676002)(478600001)(31696002)(16576012)(8936002)(5660300002)(53546011)(110136005)(186003)(38100700002)(6486002)(31686004)(86362001)(26005)(36756003)(2906002)(66946007)(66476007)(66556008)(2616005)(956004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RHNyYUFVQVpQUjFaOEVTV0ttdTYxRGc5ZzAxUjRGRXhIanlZWWZKVXZWTjh5?=
+ =?utf-8?B?cU9Ba1JaWDFsMm5ZcVBLdnpoZGJsNzJQQ1A4RllJWlVXUDdkT1FWVFlCQ0Zr?=
+ =?utf-8?B?WkYvajB3d3ZRQmRHOXpmc0p2NWpKM1F6MFJaMURsRWFuem5qSS9lY0phZlJp?=
+ =?utf-8?B?TVNmYXhmU0xUWTYxUCtZMmV4TDc3UTkyTUFScmFGMU9JNjRGeUZGV0FRajZy?=
+ =?utf-8?B?eEdxR3AyZWN1aGl0WE1DZm90dGdHUUcyVUpXMkZqY2lGZXZISEhucms5bUlR?=
+ =?utf-8?B?TzNmOEJ2a3lmNjRiR0FPbW9uMUVaVnAvdTVxSjg3STNyVEZReHZIOENKTjky?=
+ =?utf-8?B?UHpTV2luUHJFaFVvc3lOajJMYXNIcUEyaGhTbXN6bm0xUXVVcTZzZTFMeDlJ?=
+ =?utf-8?B?Zjd1blNWdGFMd2c2RUtGYVNTZlVrM0VLRy8vZHdQVU1EVUF0WFFWSlNRUmJm?=
+ =?utf-8?B?OHhCS0RJcHhyZ0RYSTVFRzVQWnVBYnRCR1V5U0didFc3VHMwVTQvU082aDhp?=
+ =?utf-8?B?MGpBVThhSG5YZjBLb0VUWE4rZHJGSlhLYitUU2RnbmszYlJNS2FwSDJVVFpl?=
+ =?utf-8?B?Ym5DdXd3ZHF5WU9yaWVTQXFacWxINWlVbWZaaVMxdXJRN2xyRW1EcHY5aHZh?=
+ =?utf-8?B?ejFsa2E4TG9Ga0dDTkNCc1RkRmNSNWl2R254V2FudFV3SjM5RXg4emFXZmRy?=
+ =?utf-8?B?VG9QeVBVaUV4TlpoMkVxb3R3TkNxajFkQzZ5YjFPSlhPL2tnMlRpOVVrbVhJ?=
+ =?utf-8?B?L0ozcXpuV0NWc1NRcXdDOStXT1JnNDQvblFoYlJuVmhWdndKZHUrMThQQXV2?=
+ =?utf-8?B?ZEw1QzRTVVkveW1JSmFEQXI0SkRiampBd3k0ZktvUWNUY0oycm0rQ1VGdVo2?=
+ =?utf-8?B?UFJ2UEdtcDZ2clI3ODJoNWFVTXZhbkRMRXRaeCs1Y0QvK3htQUs5RjA0dVdC?=
+ =?utf-8?B?SWRMMlpLN0oxMjQwSnlqbS93SzRpbFVoeXZnNk56QzlhdWNOS0h5cU5XZEpo?=
+ =?utf-8?B?VUhBMW9iaEdMWjFORHA0S2tRZFREbEJySDRVK0RtK2V2c0JFM3pQVFVsbDNJ?=
+ =?utf-8?B?aVh4RDQzT3NmbW5YcFdOcHhZMWZlbzVrUkFLcnBaU0R0SUxaZWVab2xENWlh?=
+ =?utf-8?B?cUJKK3dWcnpqZkFHWWRxSEpYMXh3VXJlcTl2T01RUnZvR0t3SU5CZldyL3Fl?=
+ =?utf-8?B?QmJlYURDcUlhcGM1RlU0RTNDa2traGlaUEhUb2JlNDJpa0hhNTI5cUhGb0ZR?=
+ =?utf-8?B?U0trUXJpZFBGUkk0ZEtteG9yVzNHeVpWTmtZa3JoQ1h3MmdGUDNtSlZ4OCtM?=
+ =?utf-8?B?UFlTN1h2OHNCeGlQMWVTdVhJaXlWWm9XSWphalp3RjFibGZNOGl1RERUNVM4?=
+ =?utf-8?B?T2VuNVNDelBEZmo1YlpkQ2MwVEZXbXJobnQ4NWZlWDQ1NmY1ODFtajh4VW4w?=
+ =?utf-8?B?eXRBcVNnZVdWZzlldmxLcTdUcDdCYWNjMW05Z0dOL3QxM3RPb0FvSDVqdlly?=
+ =?utf-8?B?MDlIUkIvbnN3RC94K0dZeTBoRG8vM1cwdWUwUUpJSmZUWmRmaXphVDVkY21Q?=
+ =?utf-8?B?a2g3c2QxOEd4dm13WDhuQ1k5R2tmVStmQjBGMk5UaGEwNll2eERnRmpoOXgx?=
+ =?utf-8?B?a0hiaDM2UmQ2OVZCQ2RrcWYzRlp5UWZ3bHFNazNrYndpaFRkMEdUNmNGVS85?=
+ =?utf-8?B?TE1PRXRzcm1GTmF2bXpMSnl0bEZUdzBvWjZiWFhXTjZocE9zY3ZDbzN1dnRS?=
+ =?utf-8?Q?jnSBUn2wO7zBGnIA0UgJn5hKIWGYXfeHzcmG1qT?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a57244f-81ac-4d80-ec9d-08d9476eb3b3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5600.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2021 08:58:23.8412
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AB9GG8oRwou5ZfRlk+cBf8C7KxdBSWQDwvmnJ9akGMeC8F71BhG1A14ovuOWhDfUAs6PDdJho+mbfsnRN+F8fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2608
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 07, 2021 at 01:42:49PM -0700, Kuppuswamy Sathyanarayanan wrote:
-> This application uses the misc device /dev/tdx-attest to get TDREPORT
-> from the TDX Module or request quote from the VMM.
+On 20.05.2021 13:46, Jan Beulich wrote:
+> On 25.02.2021 17:23, Paul Durrant wrote:
+>> On 25/02/2021 14:00, Jan Beulich wrote:
+>>> On 25.02.2021 13:11, Paul Durrant wrote:
+>>>> On 25/02/2021 07:33, Jan Beulich wrote:
+>>>>> On 24.02.2021 17:39, Paul Durrant wrote:
+>>>>>> On 23/02/2021 16:29, Jan Beulich wrote:
+>>>>>>> When re-entering the main loop of xenvif_tx_check_gop() a 2nd time, the
+>>>>>>> special considerations for the head of the SKB no longer apply. Don't
+>>>>>>> mistakenly report ERROR to the frontend for the first entry in the list,
+>>>>>>> even if - from all I can tell - this shouldn't matter much as the overall
+>>>>>>> transmit will need to be considered failed anyway.
+>>>>>>>
+>>>>>>> Signed-off-by: Jan Beulich <jbeulich@suse.com>
+>>>>>>>
+>>>>>>> --- a/drivers/net/xen-netback/netback.c
+>>>>>>> +++ b/drivers/net/xen-netback/netback.c
+>>>>>>> @@ -499,7 +499,7 @@ check_frags:
+>>>>>>>     				 * the header's copy failed, and they are
+>>>>>>>     				 * sharing a slot, send an error
+>>>>>>>     				 */
+>>>>>>> -				if (i == 0 && sharedslot)
+>>>>>>> +				if (i == 0 && !first_shinfo && sharedslot)
+>>>>>>>     					xenvif_idx_release(queue, pending_idx,
+>>>>>>>     							   XEN_NETIF_RSP_ERROR);
+>>>>>>>     				else
+>>>>>>>
+>>>>>>
+>>>>>> I think this will DTRT, but to my mind it would make more sense to clear
+>>>>>> 'sharedslot' before the 'goto check_frags' at the bottom of the function.
+>>>>>
+>>>>> That was my initial idea as well, but
+>>>>> - I think it is for a reason that the variable is "const".
+>>>>> - There is another use of it which would then instead need further
+>>>>>     amending (and which I believe is at least part of the reason for
+>>>>>     the variable to be "const").
+>>>>>
+>>>>
+>>>> Oh, yes. But now that I look again, don't you want:
+>>>>
+>>>> if (i == 0 && first_shinfo && sharedslot)
+>>>>
+>>>> ? (i.e no '!')
+>>>>
+>>>> The comment states that the error should be indicated when the first
+>>>> frag contains the header in the case that the map succeeded but the
+>>>> prior copy from the same ref failed. This can only possibly be the case
+>>>> if this is the 'first_shinfo'
+>>>
+>>> I don't think so, no - there's a difference between "first frag"
+>>> (at which point first_shinfo is NULL) and first frag list entry
+>>> (at which point first_shinfo is non-NULL).
+>>
+>> Yes, I realise I got it backwards. Confusing name but the comment above 
+>> its declaration does explain.
+>>
+>>>
+>>>> (which is why I still think it is safe to unconst 'sharedslot' and
+>>>> clear it).
+>>>
+>>> And "no" here as well - this piece of code
+>>>
+>>> 		/* First error: if the header haven't shared a slot with the
+>>> 		 * first frag, release it as well.
+>>> 		 */
+>>> 		if (!sharedslot)
+>>> 			xenvif_idx_release(queue,
+>>> 					   XENVIF_TX_CB(skb)->pending_idx,
+>>> 					   XEN_NETIF_RSP_OKAY);
+>>>
+>>> specifically requires sharedslot to have the value that was
+>>> assigned to it at the start of the function (this property
+>>> doesn't go away when switching from fragments to frag list).
+>>> Note also how it uses XENVIF_TX_CB(skb)->pending_idx, i.e. the
+>>> value the local variable pending_idx was set from at the start
+>>> of the function.
+>>>
+>>
+>> True, we do have to deal with freeing up the header if the first map 
+>> error comes on the frag list.
+>>
+>> Reviewed-by: Paul Durrant <paul@xen.org>
 > 
-> It tests following attestation features:
-> 
->   - Get report using TDX_CMD_GET_TDREPORT IOCTL.
->   - Using report data request quote from VMM using TDX_CMD_GEN_QUOTE IOCTL.
->   - Get the quote size using TDX_CMD_GET_QUOTE_SIZE IOCTL.
-> 
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> ---
->  tools/Makefile                     |  13 +-
->  tools/tdx/Makefile                 |  19 +++
->  tools/tdx/attest/.gitignore        |   2 +
->  tools/tdx/attest/Makefile          |  24 +++
->  tools/tdx/attest/tdx-attest-test.c | 232 +++++++++++++++++++++++++++++
->  5 files changed, 284 insertions(+), 6 deletions(-)
->  create mode 100644 tools/tdx/Makefile
->  create mode 100644 tools/tdx/attest/.gitignore
->  create mode 100644 tools/tdx/attest/Makefile
->  create mode 100644 tools/tdx/attest/tdx-attest-test.c
-> 
-> diff --git a/tools/Makefile b/tools/Makefile
-> index 7e9d34ddd74c..5d68084511cb 100644
-> --- a/tools/Makefile
-> +++ b/tools/Makefile
-> @@ -30,6 +30,7 @@ help:
->  	@echo '  selftests              - various kernel selftests'
->  	@echo '  bootconfig             - boot config tool'
->  	@echo '  spi                    - spi tools'
-> +	@echo '  tdx                    - TDX related test tools'
->  	@echo '  tmon                   - thermal monitoring and tuning tool'
->  	@echo '  tracing                - misc tracing tools'
->  	@echo '  turbostat              - Intel CPU idle stats and freq reporting tool'
-> @@ -65,7 +66,7 @@ acpi: FORCE
->  cpupower: FORCE
->  	$(call descend,power/$@)
->  
-> -cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging tracing: FORCE
-> +cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging tracing tdx: FORCE
->  	$(call descend,$@)
->  
->  bpf/%: FORCE
-> @@ -104,7 +105,7 @@ all: acpi cgroup cpupower gpio hv firewire liblockdep \
->  		perf selftests bootconfig spi turbostat usb \
->  		virtio vm bpf x86_energy_perf_policy \
->  		tmon freefall iio objtool kvm_stat wmi \
-> -		pci debugging tracing
-> +		pci debugging tracing tdx
->  
->  acpi_install:
->  	$(call descend,power/$(@:_install=),install)
-> @@ -112,7 +113,7 @@ acpi_install:
->  cpupower_install:
->  	$(call descend,power/$(@:_install=),install)
->  
-> -cgroup_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install:
-> +cgroup_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install tdx_install:
->  	$(call descend,$(@:_install=),install)
->  
->  liblockdep_install:
-> @@ -139,7 +140,7 @@ install: acpi_install cgroup_install cpupower_install gpio_install \
->  		virtio_install vm_install bpf_install x86_energy_perf_policy_install \
->  		tmon_install freefall_install objtool_install kvm_stat_install \
->  		wmi_install pci_install debugging_install intel-speed-select_install \
-> -		tracing_install
-> +		tracing_install tdx_install
->  
->  acpi_clean:
->  	$(call descend,power/acpi,clean)
-> @@ -147,7 +148,7 @@ acpi_clean:
->  cpupower_clean:
->  	$(call descend,power/cpupower,clean)
->  
-> -cgroup_clean hv_clean firewire_clean bootconfig_clean spi_clean usb_clean virtio_clean vm_clean wmi_clean bpf_clean iio_clean gpio_clean objtool_clean leds_clean pci_clean firmware_clean debugging_clean tracing_clean:
-> +cgroup_clean hv_clean firewire_clean bootconfig_clean spi_clean usb_clean virtio_clean vm_clean wmi_clean bpf_clean iio_clean gpio_clean objtool_clean leds_clean pci_clean firmware_clean debugging_clean tracing_clean tdx_clean:
->  	$(call descend,$(@:_clean=),clean)
->  
->  liblockdep_clean:
-> @@ -186,6 +187,6 @@ clean: acpi_clean cgroup_clean cpupower_clean hv_clean firewire_clean \
->  		vm_clean bpf_clean iio_clean x86_energy_perf_policy_clean tmon_clean \
->  		freefall_clean build_clean libbpf_clean libsubcmd_clean liblockdep_clean \
->  		gpio_clean objtool_clean leds_clean wmi_clean pci_clean firmware_clean debugging_clean \
-> -		intel-speed-select_clean tracing_clean
-> +		intel-speed-select_clean tracing_clean tdx_clean
->  
->  .PHONY: FORCE
-> diff --git a/tools/tdx/Makefile b/tools/tdx/Makefile
-> new file mode 100644
-> index 000000000000..e2564557d463
-> --- /dev/null
-> +++ b/tools/tdx/Makefile
-> @@ -0,0 +1,19 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +include ../scripts/Makefile.include
-> +
-> +all: attest
-> +
-> +clean: attest_clean
-> +
-> +install: attest_install
-> +
-> +attest:
-> +	$(call descend,attest)
-> +
-> +attest_install:
-> +	$(call descend,attest,install)
-> +
-> +attest_clean:
-> +	$(call descend,attest,clean)
-> +
-> +.PHONY: all install clean attest latency_install latency_clean
-> diff --git a/tools/tdx/attest/.gitignore b/tools/tdx/attest/.gitignore
-> new file mode 100644
-> index 000000000000..5f819a8a6c49
-> --- /dev/null
-> +++ b/tools/tdx/attest/.gitignore
-> @@ -0,0 +1,2 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +tdx-attest-test
-> diff --git a/tools/tdx/attest/Makefile b/tools/tdx/attest/Makefile
-> new file mode 100644
-> index 000000000000..bf47ba718386
-> --- /dev/null
-> +++ b/tools/tdx/attest/Makefile
-> @@ -0,0 +1,24 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Makefile for vm tools
-> +#
-> +VAR_CFLAGS := $(shell pkg-config --cflags libtracefs 2>/dev/null)
-> +VAR_LDLIBS := $(shell pkg-config --libs libtracefs 2>/dev/null)
-> +
-> +TARGETS = tdx-attest-test
-> +CFLAGS = -static -Wall -Wextra -g -O2 $(VAR_CFLAGS)
-> +LDFLAGS = -lpthread $(VAR_LDLIBS)
-> +
-> +all: $(TARGETS)
-> +
-> +%: %.c
-> +	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
-> +
-> +clean:
-> +	$(RM) tdx-attest-test
-> +
-> +prefix ?= /usr/local
-> +sbindir ?= ${prefix}/sbin
-> +
-> +install: all
-> +	install -d $(DESTDIR)$(sbindir)
-> +	install -m 755 -p $(TARGETS) $(DESTDIR)$(sbindir)
-> diff --git a/tools/tdx/attest/tdx-attest-test.c b/tools/tdx/attest/tdx-attest-test.c
-> new file mode 100644
-> index 000000000000..7634ec6a084c
-> --- /dev/null
-> +++ b/tools/tdx/attest/tdx-attest-test.c
-> @@ -0,0 +1,232 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * tdx-attest-test.c - utility to test TDX attestation feature.
-> + *
-> + * Copyright (C) 2020 - 2021 Intel Corporation. All rights reserved.
-> + *
-> + * Author: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> + *
-> + */
-> +
-> +#include <linux/types.h>
-> +#include <linux/ioctl.h>
-> +#include <sys/ioctl.h>
-> +#include <sys/stat.h>
-> +#include <sys/types.h>
-> +#include <stdio.h>
-> +#include <ctype.h>
-> +#include <errno.h>
-> +#include <fcntl.h>
-> +#include <stdio.h>
-> +#include <stdlib.h>
-> +#include <unistd.h>
-> +#include <string.h>
-> +#include <limits.h>
-> +#include <stdbool.h>
-> +#include <getopt.h>
-> +#include <stdint.h> /* uintmax_t */
-> +#include <sys/mman.h>
-> +#include <unistd.h> /* sysconf */
-> +#include <time.h>
-> +
-> +#include "../../../include/uapi/misc/tdx.h"
-> +
-> +#define devname		"/dev/tdx-attest"
-> +
-> +#define HEX_DUMP_SIZE	16
-> +#define MAX_ROW_SIZE	70
-> +
-> +#define ATTESTATION_TEST_BIN_VERSION "0.1"
-> +
-> +struct tdx_attest_args {
-> +	bool is_dump_data;
-> +	bool is_get_tdreport;
-> +	bool is_get_quote_size;
-> +	bool is_gen_quote;
-> +	bool debug_mode;
-> +	char *out_file;
-> +};
-> +
-> +static void print_hex_dump(const char *title, const char *prefix_str,
-> +			   const void *buf, int len)
-> +{
-> +	const __u8 *ptr = buf;
-> +	int i, rowsize = HEX_DUMP_SIZE;
-> +
-> +	if (!len || !buf)
-> +		return;
-> +
-> +	printf("\t\t%s", title);
-> +
-> +	for (i = 0; i < len; i++) {
-> +		if (!(i % rowsize))
-> +			printf("\n%s%.8x:", prefix_str, i);
-> +		printf(" %.2x", ptr[i])
-> +	}
-> +
-> +	printf("\n");
-> +}
-> +
-> +static void gen_report_data(__u8 *report_data, bool dump_data)
-> +{
-> +	int i;
-> +
-> +	srand(time(NULL));
-> +
-> +	for (i = 0; i < TDX_REPORT_DATA_LEN; i++)
-> +		report_data[i] = rand();
-> +
-> +	if (dump_data)
-> +		print_hex_dump("\n\t\tTDX report data\n", " ",
-> +			       report_data, TDX_REPORT_DATA_LEN);
-> +}
-> +
-> +static int get_tdreport(int devfd, bool dump_data, __u8 *report_data)
-> +{
-> +	__u8 tdrdata[TDX_TDREPORT_LEN] = {0};
-> +	int ret;
-> +
-> +	if (!report_data)
-> +		report_data = tdrdata;
-> +
-> +	gen_report_data(report_data, dump_data);
-> +
-> +	ret = ioctl(devfd, TDX_CMD_GET_TDREPORT, report_data);
-> +	if (ret) {
-> +		printf("TDX_CMD_GET_TDREPORT ioctl() %d failed\n", ret);
-> +		return -EIO;
-> +	}
-> +
-> +	if (dump_data)
-> +		print_hex_dump("\n\t\tTDX tdreport data\n", " ", report_data,
-> +			       TDX_TDREPORT_LEN);
-> +
-> +	return 0;
-> +}
-> +
-> +static __u64 get_quote_size(int devfd)
-> +{
-> +	int ret;
-> +	__u64 quote_size;
-> +
-> +	ret = ioctl(devfd, TDX_CMD_GET_QUOTE_SIZE, &quote_size);
-> +	if (ret) {
-> +		printf("TDX_CMD_GET_QUOTE_SIZE ioctl() %d failed\n", ret);
-> +		return -EIO;
-> +	}
-> +
-> +	printf("Quote size: %lld\n", quote_size);
-> +
-> +	return quote_size;
-> +}
-> +
-> +static int gen_quote(int devfd, bool dump_data)
-> +{
-> +	__u8 *quote_data;
-> +	__u64 quote_size;
-> +	int ret;
-> +
-> +	quote_size = get_quote_size(devfd);
-> +
-> +	quote_data = malloc(sizeof(char) * quote_size);
-> +	if (!quote_data) {
-> +		printf("%s queue data alloc failed\n", devname);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	ret = get_tdreport(devfd, dump_data, quote_data);
-In tdg_attest_ioctl() TDX_CMD_GEN_QUOTE case is calling
-tdx_mcall_tdreport() same as TDX_CMD_GET_TDREPORT case. Then what is
-the point of calling get_tdreport() here? Do you mean to call
-gen_report_data()?
-> +	if (ret) {
-> +		printf("TDX_CMD_GET_TDREPORT ioctl() %d failed\n", ret);
-> +		goto done;
-> +	}
-> +
-> +	ret = ioctl(devfd, TDX_CMD_GEN_QUOTE, quote_data);
-> +	if (ret) {
-> +		printf("TDX_CMD_GEN_QUOTE ioctl() %d failed\n", ret);
-> +		goto done;
-> +	}
-> +
-> +	print_hex_dump("\n\t\tTDX Quote MMIO data\n", " ", quote_data,
-> +		       quote_size);
-> +
-> +done:
-> +	free(quote_data);
-> +
-> +	return ret;
-> +}
-> +
-> +static void usage(void)
-> +{
-> +	puts("\nUsage:\n");
-> +	puts("tdx_attest [options] \n");
-> +
-> +	puts("Attestation device test utility.");
-> +
-> +	puts("\nOptions:\n");
-> +	puts(" -d, --dump                Dump tdreport/tdquote data");
-> +	puts(" -r, --get-tdreport        Get TDREPORT data");
-> +	puts(" -g, --gen-quote           Generate TDQUOTE");
-> +	puts(" -s, --get-quote-size      Get TDQUOTE size");
-> +}
-> +
-> +int main(int argc, char **argv)
-> +{
-> +	int ret, devfd;
-> +	struct tdx_attest_args args = {0};
-> +
-> +	static const struct option longopts[] = {
-> +		{ "dump",           no_argument,       NULL, 'd' },
-> +		{ "get-tdreport",   required_argument, NULL, 'r' },
-> +		{ "gen-quote",      required_argument, NULL, 'g' },
-> +		{ "gen-quote-size", required_argument, NULL, 's' },
-> +		{ "version",        no_argument,       NULL, 'V' },
-> +		{ NULL,             0, NULL, 0 }
-> +	};
-> +
-> +	while ((ret = getopt_long(argc, argv, "hdrgsV", longopts,
-> +				  NULL)) != -1) {
-> +		switch (ret) {
-> +		case 'd':
-> +			args.is_dump_data = true;
-> +			break;
-> +		case 'r':
-> +			args.is_get_tdreport = true;
-> +			break;
-> +		case 'g':
-> +			args.is_gen_quote = true;
-> +			break;
-> +		case 's':
-> +			args.is_get_quote_size = true;
-> +			break;
-> +		case 'h':
-> +			usage();
-> +			return 0;
-> +		case 'V':
-> +			printf("Version: %s\n", ATTESTATION_TEST_BIN_VERSION);
-> +			return 0;
-> +		default:
-> +			printf("Invalid options\n");
-> +			usage();
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	devfd = open(devname, O_RDWR | O_SYNC);
-> +	if (devfd < 0) {
-> +		printf("%s open() failed\n", devname);
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (args.is_get_quote_size)
-> +		get_quote_size(devfd);
-> +
-> +	if (args.is_get_tdreport)
-> +		get_tdreport(devfd, args.is_dump_data, NULL);
-> +
-> +	if (args.is_gen_quote)
-> +		gen_quote(devfd, args.is_dump_data);
-> +
-> +	close(devfd);
-> +
-> +	return 0;
-> +}
-> -- 
-> 2.25.1
+> Since I've not seen this go into 5.13-rc, may I ask what the disposition
+> of this is?
 
-BR,
-Yousaf
+I can't seem to spot this in 5.14-rc either. I have to admit I'm
+increasingly puzzled ...
+
+Jan
+
