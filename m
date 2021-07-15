@@ -2,132 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553F73CA384
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 19:02:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6C43CA39F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 19:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbhGORFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 13:05:18 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32814 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229566AbhGORFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 13:05:16 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16FGXn0v012101;
-        Thu, 15 Jul 2021 13:02:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=8vgLQq9l+nNM/Hdk68v3quEVfm34OmIgKIW5AkzeIo0=;
- b=lbdEW+DJSX/RpScwDY/kkPxyeFxDfloY1VUBJQFTcvu7HoZJWqAWSH5Mdsx4ssAFmpWt
- hTsc0TOoZA8VcIYJoInJ557wOSgZxnh8R349aGL3yCM2Z5+/TDaL9TMwxBcxlisXgIKe
- wjR+gmalUceNAgZb7QLyHwZLechOEijlLUXuGX+1+mAiwJfAMybJDw54/2KWyugybGyq
- wOB28ZZo0N4BSLAcwpaHX06hSRhFi+0+rKm5FptuwmglI4yKoViPTlbjmGczsU0CzM0t
- 7WF2PI9Xf6OcotWeL6N486EP8jFNvCOrjVB9YuI2kjZ3MMeCLfNo29KAfLt3DRn9AvDo Bw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 39sc8md7ej-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Jul 2021 13:02:09 -0400
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 16FGY40q012618;
-        Thu, 15 Jul 2021 13:02:08 -0400
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 39sc8md7dj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Jul 2021 13:02:08 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16FGqeeu017674;
-        Thu, 15 Jul 2021 17:02:06 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 39q368ac4k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Jul 2021 17:02:06 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 16FGxqRA35717602
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Jul 2021 16:59:52 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 03A1CA405F;
-        Thu, 15 Jul 2021 17:02:03 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 47D55A4066;
-        Thu, 15 Jul 2021 17:02:02 +0000 (GMT)
-Received: from sig-9-145-173-31.de.ibm.com (unknown [9.145.173.31])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 15 Jul 2021 17:02:02 +0000 (GMT)
-Message-ID: <2fbdf14a9e87d240411a420550cf8f797eac3f8c.camel@linux.ibm.com>
-Subject: Re: [PATCH] s390/bpf: perform r1 range checking before accessing
- jit->seen_reg[r1]
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     Colin King <colin.king@canonical.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Michael Holzheu <holzheu@linux.vnet.ibm.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 15 Jul 2021 19:02:01 +0200
-In-Reply-To: <20210715125712.24690-1-colin.king@canonical.com>
-References: <20210715125712.24690-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S231865AbhGOROS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 13:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230368AbhGOROR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 13:14:17 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD38DC061762
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 10:11:22 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id y42so11161099lfa.3
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 10:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7bC7OSAi9agetXXpK35QVSGmKS8AgVugfnrXcpn3Dns=;
+        b=oV8bWJnOMcqDiyr0EEcrUCFtr4BMdFOqgv31ZoDSoO3gbciYC2/GnL9d3E8g3kFyoR
+         TuNYJwrY8HJTIT3oVRzFGI5hPlaBY8cEGhLJ1LnpN1rLT8iqJJY6F3Tr/mTCG+p4ja70
+         6dPMHVY6v+3XAdY7+6CHPbWFEA0+hsuvyLSQLImPXVhoV5i2sZ9Ey1Fl6QmGQgHWmLBR
+         wYE0wzjsd9Lxip18YoD2mr/S/TGsszZWQ8QBWI8oz24cP1EBHhPmaV4eT09MB2QUrCrN
+         Q+elf9KtHyTyifjirK5MT978iFGeTPvl9KPDAa94CLE52eDIMo4mw7ouMF7B5b+qelwv
+         UJqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7bC7OSAi9agetXXpK35QVSGmKS8AgVugfnrXcpn3Dns=;
+        b=plT27dxGdCTzTuCZTSBdbGxihWXqnDQRO87/Voe8SiKnYDeOijQhvqYJUAC1G82iBE
+         lIr5z4lywr0mmFqCiGG14VeRqCk+fNxdXjRvcR4avXoPJ/5ovFQ+FOQMNlcy2OO/cmyX
+         aXnlFgrn0dCVO55ilkAdAcLIQ2g+hx+pNS4O3T2c70e6rNtcBLPJVeij3D25H/vIu3J/
+         if80cb0rl6GFt3q3Je4uk7dWqZKX3W5bJqkplP2pPCEi4TMm/j//yP7gBOxKw8NhjrYF
+         LH4k8qVY2pTHSSLq4UYYniIMtBw0aMRklT+1HznUHV6e0Ep4UGL9UAHyvXo9iCYMrMli
+         XFmw==
+X-Gm-Message-State: AOAM530MXTEoajh06Scmyo/juC7BE8ccTNsXQzdpwy5nhRKQc43G2GgT
+        HeWASgXtaSJFl5VJNhI3KGDhTlc+y/tCzDTMJ2ElQg==
+X-Google-Smtp-Source: ABdhPJyzoWcYOMmd3YO5faRlMZsNYbj4t2PODdkzIp67+zsnvIoMjBy45Jf5vRVMeFqQ/CggTMJlP5KGNSgk62vVCtM=
+X-Received: by 2002:a19:ad4d:: with SMTP id s13mr4200989lfd.432.1626369080651;
+ Thu, 15 Jul 2021 10:11:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: JJweny5O6Rjnt0vVKAetuL-hKLZfWS58
-X-Proofpoint-ORIG-GUID: su5QzqVSbU4FlMflR-fe-ZtnMddkk1pE
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-15_10:2021-07-14,2021-07-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- adultscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
- mlxlogscore=999 spamscore=0 suspectscore=0 impostorscore=0 clxscore=1011
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107150113
+References: <8664122a-99d3-7199-869a-781b21b7e712@virtuozzo.com> <919bd022-075e-98a7-cefb-89b5dee80ae8@virtuozzo.com>
+In-Reply-To: <919bd022-075e-98a7-cefb-89b5dee80ae8@virtuozzo.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 15 Jul 2021 10:11:09 -0700
+Message-ID: <CALvZod5Kxrj3T99CEd8=OaoW8CwKtHOVhno58_nNOqjR2y=x6Q@mail.gmail.com>
+Subject: Re: [PATCH v4 00/16] memcg accounting from OpenVZ
+To:     Vasily Averin <vvs@virtuozzo.com>
+Cc:     Cgroups <cgroups@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <guro@fb.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Serge Hallyn <serge@hallyn.com>, Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-15 at 13:57 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> Currently array jit->seen_reg[r1] is being accessed before the range
-> checking of index r1. The range changing on r1 should be performed
-> first since it will avoid any potential out-of-range accesses on the
-> array seen_reg[] and also it is more optimal to perform checks on
-> r1 before fetching data from the array.  Fix this by swapping the
-> order of the checks before the array access.
-> 
-> Fixes: 054623105728 ("s390/bpf: Add s390x eBPF JIT compiler backend")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  arch/s390/net/bpf_jit_comp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/s390/net/bpf_jit_comp.c
-> b/arch/s390/net/bpf_jit_comp.c
-> index 63cae0476bb4..2ae419f5115a 100644
-> --- a/arch/s390/net/bpf_jit_comp.c
-> +++ b/arch/s390/net/bpf_jit_comp.c
-> @@ -112,7 +112,7 @@ static inline void reg_set_seen(struct bpf_jit
-> *jit, u32 b1)
->  {
->         u32 r1 = reg2hex[b1];
->  
-> -       if (!jit->seen_reg[r1] && r1 >= 6 && r1 <= 15)
-> +       if (r1 >= 6 && r1 <= 15 && !jit->seen_reg[r1])
->                 jit->seen_reg[r1] = 1;
->  }
->  
+On Tue, Apr 27, 2021 at 11:51 PM Vasily Averin <vvs@virtuozzo.com> wrote:
+>
+> OpenVZ uses memory accounting 20+ years since v2.2.x linux kernels.
+> Initially we used our own accounting subsystem, then partially committed
+> it to upstream, and a few years ago switched to cgroups v1.
+> Now we're rebasing again, revising our old patches and trying to push
+> them upstream.
+>
+> We try to protect the host system from any misuse of kernel memory
+> allocation triggered by untrusted users inside the containers.
+>
+> Patch-set is addressed mostly to cgroups maintainers and cgroups@ mailing
+> list, though I would be very grateful for any comments from maintainersi
+> of affected subsystems or other people added in cc:
+>
+> Compared to the upstream, we additionally account the following kernel objects:
+> - network devices and its Tx/Rx queues
+> - ipv4/v6 addresses and routing-related objects
+> - inet_bind_bucket cache objects
+> - VLAN group arrays
+> - ipv6/sit: ip_tunnel_prl
+> - scm_fp_list objects used by SCM_RIGHTS messages of Unix sockets
+> - nsproxy and namespace objects itself
+> - IPC objects: semaphores, message queues and share memory segments
+> - mounts
+> - pollfd and select bits arrays
+> - signals and posix timers
+> - file lock
+> - fasync_struct used by the file lease code and driver's fasync queues
+> - tty objects
+> - per-mm LDT
+>
+> We have an incorrect/incomplete/obsoleted accounting for few other kernel
+> objects: sk_filter, af_packets, netlink and xt_counters for iptables.
+> They require rework and probably will be dropped at all.
+>
+> Also we're going to add an accounting for nft, however it is not ready yet.
+>
+> We have not tested performance on upstream, however, our performance team
+> compares our current RHEL7-based production kernel and reports that
+> they are at least not worse as the according original RHEL7 kernel.
+>
 
-Looks good to me, thanks!
+Hi Vasily,
 
-Acked-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Tested-by: Ilya Leoshkevich <iii@linux.ibm.com>
+What's the status of this series? I see a couple patches did get
+acked/reviewed. Can you please re-send the series with updated ack
+tags?
 
+thanks,
+Shakeel
