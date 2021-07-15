@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B19F43C9E25
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 14:01:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6D83C9E2B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 14:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232076AbhGOME1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 08:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbhGOME0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 08:04:26 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCC9C06175F;
-        Thu, 15 Jul 2021 05:01:32 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id l7so7418329wrv.7;
-        Thu, 15 Jul 2021 05:01:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mRyUbi5VIG0vSzwP6HRl5JUNRctmMQF6hywTD8MaKnk=;
-        b=c6fyB3JHulWmVHAqhAC6vTlBPw63h7m6J2q1ExoWibiCxPd5nymMk0GA5WsqW7/lsE
-         JwmV8WmeycHG8OVg3fa7j9XbmzzzSWsv1uWfDvg+m8LZ9hKGH+ovCsRRnH4lIEIab9Fs
-         +vunMCgB/ZOFu2z1x5MEy16qjHBGys6tqfIFY2QzFc/jWkXDXJH7aKncZX772WvKaZZY
-         HXfdksESSXlCl9Nlsx8a+QNZknx/YRMHubkNqCWMvxIsgHBBOOLqv5C8hp7MHs/suMbN
-         Bua3WsbGQ1Ooi2teXKUuS+e4EwEE3Et2iJ8ppgcd+bf4GUyWz44sPd0yxR1NaXqsKIXG
-         tBhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mRyUbi5VIG0vSzwP6HRl5JUNRctmMQF6hywTD8MaKnk=;
-        b=ZM/pR+TNc15thTpCe9nEvDZTPmg3zcJ4B9Hpl/2pvuMCI7oAmYyM/dY35LHlmMaG4x
-         eSx9r1SrPz/zcSlFxAK0iDlDyj2lUunrhuKhQGlcGEHSazY7SsxWBwx/91LAvkrZninq
-         ttgQHXiyjYYewY/UOAgp/hQv5jDjFlmCMUUEhdX+7wDd7l102dDf7VreLhLqtR7IP9ta
-         wEPuhV9OB6kSKILk2tPa0DFyxykr+nU0lUTHjnEKZdW/HCYHA1GAp1nDYzWBE13FYinn
-         askrvwdAR8NfNU9oZkfZrdJV8JeQu77uXU4h5mO7xChmxQQiw4pzY+7IO+iwX1DTHh8K
-         6Tmg==
-X-Gm-Message-State: AOAM532Gph6+tPidqzCBAZzFUrizHW64OQCKr+WvfCoOZvjBFEUZdoB/
-        KUu+5i0L80A9AdmXFVukNWPGChMpIeU=
-X-Google-Smtp-Source: ABdhPJxqFT1UDc9OUVGfgmurEWV1hpJN8VbhQsnBgxhli0jKDqGiTp5mVQsnB7lS//DPr1QcNtFJLw==
-X-Received: by 2002:a5d:4c50:: with SMTP id n16mr5095363wrt.249.1626350491061;
-        Thu, 15 Jul 2021 05:01:31 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id l15sm6483617wrv.87.2021.07.15.05.01.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 05:01:30 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 15:01:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: mv88e6xxx: NET_DSA_MV88E6XXX_PTP should
- depend on NET_DSA_MV88E6XXX
-Message-ID: <20210715120129.comqj4lqiwcusj7q@skbuf>
-References: <0f880ee706a5478c7d8835a8f7aa15d3c0d916e3.1626256421.git.geert+renesas@glider.be>
+        id S232161AbhGOMFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 08:05:07 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:55998
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232003AbhGOMFG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 08:05:06 -0400
+Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 9CE604057E;
+        Thu, 15 Jul 2021 12:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626350530;
+        bh=eLZW1fDEYy3o3BzwoAbd7HnBiJwGnZCewM6cIAUrDkQ=;
+        h=To:Cc:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
+        b=LK/mkR/XWswD5xktMcKiF+M0Ts8qYjSryqqeSKK6Yebc4XU1RMG2ZaxWjsBLfdkfl
+         APLyrU007ZJQLRwj77d86a1cI1WjYAoOx/C15W166FFYNFcMu4bvdtNzpdDX/Tkvrv
+         QXhYHn85xjMCE9yDQ/at5n+DMWDMshreFF96Z8YOmv/a7SeEHFVfQ1MdTvUI2KmxqT
+         zfOFZrote6kf/nqf3n7t6QVafUe/Mj3UFHmXaxT/qLQrnorASC1ioIMLZP/5BOG2sX
+         vx+4mQawrYAZSQtbCQYSL+tTGu6pwsogA9bKhJ14ix1zF/UZi046DPjepIwYxKvj4T
+         88QdMaynRGVfA==
+To:     Michael Holzheu <holzheu@linux.vnet.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        linux-s390@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: Range checking on r1 in function reg_set_seen in
+ arch/s390/net/bpf_jit_comp.c
+Message-ID: <845025d4-11b9-b16d-1dd6-1e0bd66b0e20@canonical.com>
+Date:   Thu, 15 Jul 2021 13:02:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0f880ee706a5478c7d8835a8f7aa15d3c0d916e3.1626256421.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 11:58:12AM +0200, Geert Uytterhoeven wrote:
-> Making global2 support mandatory removed the Kconfig symbol
-> NET_DSA_MV88E6XXX_GLOBAL2.  This symbol also served as an intermediate
-> symbol to make NET_DSA_MV88E6XXX_PTP depend on NET_DSA_MV88E6XXX.  With
-> the symbol removed, the user is always asked about PTP support for
-> Marvell 88E6xxx switches, even if the latter support is not enabled.
-> 
-> Fix this by reinstating the dependency.
-> 
-> Fixes: 63368a7416df144b ("net: dsa: mv88e6xxx: Make global2 support mandatory")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+Hi
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Static analysis with cppcheck picked up an interesting issue with the
+following inline helper function in arch/s390/net/bpf_jit_comp.c :
+
+static inline void reg_set_seen(struct bpf_jit *jit, u32 b1)
+{
+        u32 r1 = reg2hex[b1];
+
+        if (!jit->seen_reg[r1] && r1 >= 6 && r1 <= 15)
+                jit->seen_reg[r1] = 1;
+}
+
+Although I believe r1 is always within range, the range check on r1 is
+being performed before the more cache/memory expensive lookup on
+jit->seen_reg[r1].  I can't see why the range change is being performed
+after the access of jit->seen_reg[r1]. The following seems more correct:
+
+	if (r1 >= 6 && r1 <= 15 && !jit->seen_reg[r1])
+                jit->seen_reg[r1] = 1;
+
+..since the check on r1 are less expensive than !jit->seen_reg[r1] and
+also the range check ensures the array access is not out of bounds. I
+was just wondering if I'm missing something deeper to why the order is
+the way it is.
+
+Colin
+
+
