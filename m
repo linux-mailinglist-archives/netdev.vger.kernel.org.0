@@ -2,166 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BEC3CA0EF
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 960EC3CA107
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:58:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237343AbhGOOw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 10:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
+        id S238169AbhGOPBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 11:01:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234745AbhGOOw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 10:52:26 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D993C06175F
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 07:49:32 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id b14-20020a1c1b0e0000b02901fc3a62af78so6222962wmb.3
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 07:49:32 -0700 (PDT)
+        with ESMTP id S236837AbhGOPBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 11:01:04 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D30C06175F;
+        Thu, 15 Jul 2021 07:58:09 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id dj21so8651065edb.0;
+        Thu, 15 Jul 2021 07:58:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VkHeawapFxvFE6350X6CQgGsPoo5+76V86NE1YTDZZY=;
-        b=UCw4fcFiE2bu30hwS5e53xnmFf+zg/e3F4GQSOf+CxTd+/UU2nPZ0Lv4BfuRyw22uc
-         CDod9C4FfBlOTDCB2ZUDsDPLR9UI29zIbwcxnnobpyQc2kXJiWaTdm/oSo3WFy2KTXol
-         1qL7NpIrmTG+IC8MwIR3dC8yu/CLxOhBcApyJ9aIRHY4pyTYzpRRACAkcAnIpi81LY8g
-         pmC74sEB878o/1vGjgLlk2EVOhfl54LAaFQNWEpUZuLTMtR92vHJb8i4ZSSXhnJaZZP/
-         X9vdSHQVr5SU0CDzgCGNlu3m9L4siq0kEpBAtnbOlIirLJldET+9pt6bDAt8+GPdGv4D
-         cddg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HS3cF/mabey16un9bdwF6dGa/tupZXRQDRhGTHFs9D8=;
+        b=J4Ngz4LQptEgO4mJ348hhHxLas+NpIKAdxj6Z1kLMyX7YXGWN65JfzxRnYgCmezAX0
+         Yg6O6FKnaxC0L03uveQyrA7CdGEy0aXZJPrLx9IMaMYuYsQKOaqabjjbrx2pSEEoeWE9
+         lww2DzFs2DJwLLcByKR4LK/Dj5X0Pkz0bSCvpp3ObIK27mVtrHVCCr22+9Vkn3mB88cc
+         8xum0PaWjELY59WrJ8uvYB9f6+8lXKAQHLh0Zqd2I74/lk0SjheyEZL6D/5dhgdNfYCX
+         NSedajshfKJRl17Gn6bbhuEcYnpEqz0pnKl8itx89OwVdcv21Oz3QM9OLhT2QK09xvLc
+         r/Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VkHeawapFxvFE6350X6CQgGsPoo5+76V86NE1YTDZZY=;
-        b=Lfz9+60JSjKhR1czrtcy40kvxyJueYrz2wqZOVMFDsMyZ6CLYt0XfNZM0vt/8e19T0
-         GqNEaR1ecwd+6NvthewaUQfoM7ZKCJLqr4ACn1+fxXrU9hyApQPqn82UmBxlLmDEjVme
-         lV0UtVChWgljw7C/rFPFt67MUiSmxqoylnkUCBfWg7hFQw6lhf84YvOP5edgyxK7LuJ+
-         s3xZLYdZTS7M9yjidUICUKnK1z58HGIQ4CzWVg/BCOLkYB35hx1m6CZp8cq7xC9TSSY8
-         VIqSnGJwGXvAMMm8GeTG3Wz//6aWycW3i2EPSzNaYbT76HpCstGytSVUsbVR2Coa7CWT
-         X6Tw==
-X-Gm-Message-State: AOAM533nc6hIYZ4Njg0tZuD4G1IXX+uM6/2ZUZ1eRBYLxeMfsKClVBUM
-        EpbRjZqz/vawmWzhYS8YT/k=
-X-Google-Smtp-Source: ABdhPJzIiQlCsY1cJjf6mEApH3G+KNcm4gc3JXaKMEnw1biTXn4fv73C/YDcYJ+yFsvtMviRpZLGbg==
-X-Received: by 2002:a05:600c:1c0d:: with SMTP id j13mr5097890wms.34.1626360571117;
-        Thu, 15 Jul 2021 07:49:31 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id q17sm249958wrv.47.2021.07.15.07.49.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 07:49:30 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 17:49:29 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [RFC PATCH v3 net-next 22/24] net: dsa: add support for bridge
- TX forwarding offload
-Message-ID: <20210715144929.oa3u44is3v6gewr5@skbuf>
-References: <20210712152142.800651-1-vladimir.oltean@nxp.com>
- <20210712152142.800651-23-vladimir.oltean@nxp.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HS3cF/mabey16un9bdwF6dGa/tupZXRQDRhGTHFs9D8=;
+        b=N0G8gZ5Q/KpFW02bppPSc2vK/ZBKpzUxRiM8xHkEtI9XeJlhPePQh/RgtvYGGYXOIo
+         lgfYtZp0FbM2bSCNkUMWv6bkL1qzbALrQIAwGPoTAHp0nX+Iy/CpgZk/w/iq99yHymv6
+         OMol4swnrZ0yTbrBj5qIXNQ4LpMdKZ3abBMuE6X+VCDvgZFJDxO7EHiGEBpZaKJ0hw/x
+         P2Ln0kIWrGlUWHp1k9zj8iNzwK2N9rVtZ3fCEwsBKww0Lhjsi8ptj21sS06+9z19+/Us
+         MKY9iKMUE/ek8q+JutuZvbMYsGUF9qcmUpLgYp0WEmExbN+eDorJ7rRa74omZ3ATJO63
+         /EYA==
+X-Gm-Message-State: AOAM533efuJeUXxa2Uwl9UVaZ2Z9p0Ls7wVMsqT7cw27HQSJcrhnYo/K
+        Aq26QSSh8eB8J7kSX8p5S4sz398w6yjOjga4+Zo=
+X-Google-Smtp-Source: ABdhPJws88n/G9mXfk1KS1BFCNmHiJHJHI+NA6KKpmq4Rt6uhFaGR89rMrVRmXm6snHbMIidO298uNjxrM+VM1sZHs4=
+X-Received: by 2002:a05:6402:40c4:: with SMTP id z4mr7656556edb.364.1626361088281;
+ Thu, 15 Jul 2021 07:58:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210712152142.800651-23-vladimir.oltean@nxp.com>
+References: <20210709062943.101532-1-ilias.apalodimas@linaro.org>
+ <bf326953-495f-db01-e554-42f4421d237a@huawei.com> <CAKgT0UemhFPHo9krmQfm=yNTSjwpBwVkoFtLEEQ-qLVh=-BeHg@mail.gmail.com>
+ <YPBKFXWdDytvPmoN@Iliass-MBP>
+In-Reply-To: <YPBKFXWdDytvPmoN@Iliass-MBP>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 15 Jul 2021 07:57:57 -0700
+Message-ID: <CAKgT0UfOr7U-8T+Hr9NVPL7EMYaTzbx7w1-hUthjD9bXUFsqMw@mail.gmail.com>
+Subject: Re: [PATCH 1/1 v2] skbuff: Fix a potential race while recycling
+ page_pool packets
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 06:21:40PM +0300, Vladimir Oltean wrote:
-> +static bool dsa_port_bridge_tx_fwd_prepare(struct dsa_port *dp,
-> +					   struct net_device *bridge_dev)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +	struct dsa_switch_tree *dst;
-> +	int bridge_num, err;
-> +
-> +	dst = ds->dst;
-> +
-> +	bridge_num = dsa_tree_find_bridge_num(dst, bridge_dev);
-> +	if (bridge_num < 0) {
-> +		/* First port that offloads TX forwarding for this bridge */
-> +		int bridge_num;
+On Thu, Jul 15, 2021 at 7:45 AM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+>
+> > > >           atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
+>
+> [...]
+>
+> > > >                             &shinfo->dataref))
+> > > > -             return;
+> > > > +             goto exit;
+> > >
+> > > Is it possible this patch may break the head frag page for the original skb,
+> > > supposing it's head frag page is from the page pool and below change clears
+> > > the pp_recycle for original skb, causing a page leaking for the page pool?
+> >
+> > I don't see how. The assumption here is that when atomic_sub_return
+> > gets down to 0 we will still have an skb with skb->pp_recycle set and
+> > it will flow down and encounter skb_free_head below. All we are doing
+> > is skipping those steps and clearing skb->pp_recycle for all but the
+> > last buffer and the last one to free it will trigger the recycling.
+>
+> I think the assumption here is that
+> 1. We clone an skb
+> 2. The original skb goes into pskb_expand_head()
+> 3. skb_release_data() will be called for the original skb
+>
+> But with the dataref bumped, we'll skip the recycling for it but we'll also
+> skip recycling or unmapping the current head (which is a page_pool mapped
+> buffer)
 
-Stupid bug: "bridge_num" is redeclared here as a different variable with
-a different scope, shadowing the one from dsa_port_bridge_tx_fwd_prepare().
+Right, but in that case it is the clone that is left holding the
+original head and the skb->pp_recycle flag is set on the clone as it
+was copied from the original when we cloned it. What we have
+essentially done is transferred the responsibility for freeing it from
+the original to the clone.
 
-> +
-> +		bridge_num = find_first_zero_bit(&dst->fwd_offloading_bridges,
-> +						 DSA_MAX_NUM_OFFLOADING_BRIDGES);
-> +		if (bridge_num >= ds->num_fwd_offloading_bridges)
-> +			return false;
-> +
-> +		set_bit(bridge_num, &dst->fwd_offloading_bridges);
-> +	}
-> +
-> +	dp->bridge_num = bridge_num;
-
-and then here, the scope from the "if" block is lost, so the bridge_num
-variable is still -1. So dp->bridge_num remains -1.
-
-Deleting the "int bridge_num" declaration from the "if" block fixes the
-issue. This got introduced between v2 and v3.
-
-> +
-> +	/* Notify the driver */
-> +	err = dsa_port_bridge_fwd_offload_add(dp, bridge_dev, bridge_num);
-> +	if (err) {
-> +		dsa_port_bridge_tx_fwd_unprepare(dp, bridge_dev);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
->  int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
->  			 struct netlink_ext_ack *extack)
->  {
-> @@ -241,6 +310,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
->  	};
->  	struct net_device *dev = dp->slave;
->  	struct net_device *brport_dev;
-> +	bool tx_fwd_offload;
->  	int err;
->  
->  	/* Here the interface is already bridged. Reflect the current
-> @@ -254,7 +324,10 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
->  	if (err)
->  		goto out_rollback;
->  
-> -	err = switchdev_bridge_port_offload(brport_dev, dev, dp, false, extack);
-> +	tx_fwd_offload = dsa_port_bridge_tx_fwd_prepare(dp, br);
-> +
-> +	err = switchdev_bridge_port_offload(brport_dev, dev, dp, tx_fwd_offload,
-> +					    extack);
->  	if (err)
->  		goto out_rollback_unbridge;
->  
-> @@ -279,6 +352,8 @@ int dsa_port_pre_bridge_leave(struct dsa_port *dp, struct net_device *br,
->  	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
->  	struct net_device *dev = dp->slave;
->  
-> +	dsa_port_bridge_tx_fwd_prepare(dp, br);
-
-We are in the pre_bridge_leave path, this should have been _unprepare.
-
-> +
->  	return switchdev_bridge_port_unoffload(brport_dev, dev, dp, extack);
->  }
-
-The patches should work otherwise, if somebody wants to test they should
-make these changes.
-
-There are also some more changes that need to be made to mlxsw to
-properly handle the unoffload of bridge ports that are LAG devices and
-VLAN devices. I have them in my tree now. When net-next reopens I will
-first send a series of 7 refactoring patches for dpaa2-switch, mlxsw and
-prestera, and then the TX data plane offload in DSA as a 15-patch series.
+If you think about it the result is the same as if step 2 was to go
+into kfree_skb. We would still be calling skb_release_data and the
+dataref would be decremented without the original freeing the page. We
+have to wait until all the clones are freed and dataref reaches 0
+before the head can be recycled.
