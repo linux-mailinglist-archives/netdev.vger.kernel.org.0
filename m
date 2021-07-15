@@ -2,88 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 196E63C9DFA
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 763DD3C9E03
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbhGOLwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 07:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44340 "EHLO
+        id S230141AbhGOLyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 07:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbhGOLwF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 07:52:05 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B08C06175F;
-        Thu, 15 Jul 2021 04:49:11 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id l8-20020a05600c1d08b02902333d79327aso2809579wms.3;
-        Thu, 15 Jul 2021 04:49:11 -0700 (PDT)
+        with ESMTP id S230106AbhGOLyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 07:54:36 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2752CC06175F;
+        Thu, 15 Jul 2021 04:51:43 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id c197so6194334oib.11;
+        Thu, 15 Jul 2021 04:51:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SPeDyGqSFTj9HX+TvNrLA2iuffSVaR/KQ4kPJuR8e/M=;
-        b=Qy/WO4VrpSuEySNBwwsfFYofOH+IjOzbTGpeTrOkiKNb4/6EczG0KPE+o2vY6wLLBE
-         uk+4/8dW+lgtRR2DrK0QRrBjuyHresMx4q/iF07XkrSInCbdDW6co1gor7SRmR+/vxIl
-         lPZ1TGGP2lINEnRrDiWF53s3jRz4EsSrQHwE7PEaJMRJManpe8l0UVzQk7fyuuQlFIK3
-         s4DAE3MdZ8SfyNAENfyEDdX77VoH+qyyZqhFs+ZpeXmGVgOqavGJbMJ+/kimF6Lhlyeo
-         7cxKoV7icjbliOzMjnmWJwQ2PSUREXgKpW+5CyQR03hIkg45y+8cGKsNagObqKcdYz/I
-         yfrg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TxXJgw71KmdSk4k4SH+Pctzu46vlSWe9kQ50HddNuBA=;
+        b=W+OqtshGeUZfjD2+yimgIobozHeI6SjfyupTahQITqEO7vZfhDcycBxTlqha6L+KM8
+         lpt5/kgqVVqTjiAtRwEhZKXLAKBYDJHTrW0gUt1BNALdfkQz3POxhgAZBxT1DULUR3/e
+         m2lOf9ntVL+HmePXbxTC7O8p5FT4y+26eI8IBRK9e1YHKpbzrr+5Ky68BTwGtdZfQjBA
+         NRdkWKgC7EeJ9hIuGZP5qDFIGDUjyune463m8KtdGY25Snc6DgzSWQbbBiEYxprewc1H
+         bEZXSjNfRWlJqk572Mea0hd53mpNoUi5/fsJeJIjpSiQU+jaDZC69EK6+4RbVzcFnh85
+         pHhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SPeDyGqSFTj9HX+TvNrLA2iuffSVaR/KQ4kPJuR8e/M=;
-        b=ozGf7kHyBabDYhaoreMvQXb6fLg+gmmCB+3zZbHbP3eifebkVKIzJAyHvjD7Qj58We
-         JdBnohjnm1gQkMs1+5z1dKtxKnvyZGLsHLYNdiSYviIw7OESl7/Nm8KJX0/Cjgm5CYIm
-         V6tpjKnKBWXcOQqabZK886TJS5LbeRK0AqzDedJ5qsy1x7xf0o7H2WZrRdCPQ1bzxeLf
-         y1ygwVxsMJVqXQ1pgj5S6k9RucrXforeEY891PX0yzAfvYQ97uwvxdRHnPRf4JmIdcne
-         q9BEOfBQ39dzF817YalSeV5J7UqR/SISnY0Z8/FRAV4TJ6iFtzjNwCvzg72R9PgvF00S
-         CyhQ==
-X-Gm-Message-State: AOAM531zq5twUYmZbT1Dn/nVTcOz85ZRqO9qnS+50gkm9CnTIrZFYdKZ
-        1/KQHdNmtzvi3N7JqBzuT+Y=
-X-Google-Smtp-Source: ABdhPJxl7aRVCwersA2utu/73GOu1JUMoD3qRN3k/qfhuWo8/Mc32tscT2CS07sOz1/1eJFHhqtynQ==
-X-Received: by 2002:a05:600c:5106:: with SMTP id o6mr9981855wms.18.1626349750216;
-        Thu, 15 Jul 2021 04:49:10 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id u12sm6383779wrt.50.2021.07.15.04.49.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 04:49:09 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 14:49:08 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware process the
- layer 4 checksum
-Message-ID: <20210715114908.ripblpevmdujkf2m@skbuf>
-References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
- <20210714191723.31294-3-LinoSanfilippo@gmx.de>
- <20210714194812.stay3oqyw3ogshhj@skbuf>
- <YO9F2LhTizvr1l11@lunn.ch>
- <20210715065455.7nu7zgle2haa6wku@skbuf>
- <trinity-84a570e8-7b5f-44f7-b10c-169d4307d653-1626347772540@3c-app-gmx-bap31>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TxXJgw71KmdSk4k4SH+Pctzu46vlSWe9kQ50HddNuBA=;
+        b=CjI3GaUg/BOIj4/nvn/tFN3eSENKlyZvPmqqwCLWnYFAfqqz77wVv6/+SLy/X7TpZH
+         b1iW4HfkkeWpkbo4+/Qc2QyBLLdFMiMNHRBZRiSiwUPEWiYRg4ohN05JWG4gVPBv2TFm
+         vAQOIyer9f7Lpb9dpJzdO7Yg2+AV5Qu/GzVcKZUf+uq1U/SZv5py4k0aiW/duWn86otM
+         4wsFPteC3gZvrds49ItdVeRgFu961PBFs3ZRDcLD1AiJgBcU6ogJU5tuiRy9WlN1mbhD
+         HVJNGK4p93CrdNe9vCBxM366GpuOItvlmNjkiH2oWUahFWgwOwnTXZdGOcSI4zhyTh2r
+         muiQ==
+X-Gm-Message-State: AOAM530mTIavhQ6hbZ91WcUF76HyHPv66P0flL1DaWQz+e9uAGOABPP6
+        fcGdqX1+pWi+GI13OBzZL/WsDxMtke56XNnGtSGoaMPWWkI=
+X-Google-Smtp-Source: ABdhPJx+XxaHOHMvL65rp/B5mM0H7gzKmsf+YNd0VEUT1Z0RCchD7AlI7juYcEKO6SXkYV5swQ1fs+C+p8xAakA2gIk=
+X-Received: by 2002:a05:6808:1153:: with SMTP id u19mr7741443oiu.20.1626349902535;
+ Thu, 15 Jul 2021 04:51:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <trinity-84a570e8-7b5f-44f7-b10c-169d4307d653-1626347772540@3c-app-gmx-bap31>
+References: <20210715082536.1882077-1-aisheng.dong@nxp.com>
+ <20210715082536.1882077-2-aisheng.dong@nxp.com> <20210715091207.gkd73vh3w67ccm4q@pengutronix.de>
+ <CAA+hA=QDJhf_LnBZCiKE-FbUNciX4bmgmrvft8Y-vkB9Lguj=w@mail.gmail.com>
+ <DB8PR04MB6795ACFCCB64354C8E810EE8E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ <20210715110706.ysktvpzzaqaiimpl@pengutronix.de> <CAA+hA=RBysrM5qXC=gve5n8-Rm7w_Nvsf+qurYJTkWQWPmGobw@mail.gmail.com>
+ <DB8PR04MB679513E50585817AF8E2C7E7E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB679513E50585817AF8E2C7E7E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Dong Aisheng <dongas86@gmail.com>
+Date:   Thu, 15 Jul 2021 19:49:42 +0800
+Message-ID: <CAA+hA=R8XsZn3FDkywHpww7=4mvXrYzzXgsoKNF_-1M2McVTwA@mail.gmail.com>
+Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbile
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Aisheng Dong <aisheng.dong@nxp.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 01:16:12PM +0200, Lino Sanfilippo wrote:
-> Sure, I will test this solution. But I think NETIF_F_FRAGLIST should also be
-> cleared in this case, right?
+On Thu, Jul 15, 2021 at 7:44 PM Joakim Zhang <qiangqing.zhang@nxp.com> wrot=
+e:
+>
+>
+> > -----Original Message-----
+> > From: Dong Aisheng <dongas86@gmail.com>
+> > Sent: 2021=E5=B9=B47=E6=9C=8815=E6=97=A5 19:36
+> > To: Marc Kleine-Budde <mkl@pengutronix.de>
+> > Cc: Joakim Zhang <qiangqing.zhang@nxp.com>; Aisheng Dong
+> > <aisheng.dong@nxp.com>; devicetree <devicetree@vger.kernel.org>;
+> > moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE
+> > <linux-arm-kernel@lists.infradead.org>; dl-linux-imx <linux-imx@nxp.com=
+>;
+> > Sascha Hauer <kernel@pengutronix.de>; Rob Herring <robh+dt@kernel.org>;
+> > Shawn Guo <shawnguo@kernel.org>; linux-can@vger.kernel.org;
+> > netdev@vger.kernel.org
+> > Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbi=
+le
+> >
+> > On Thu, Jul 15, 2021 at 7:07 PM Marc Kleine-Budde <mkl@pengutronix.de>
+> > wrote:
+> > >
+> > > On 15.07.2021 11:00:07, Joakim Zhang wrote:
+> > > > > I checked with Joakim that the flexcan on MX8MP is derived from
+> > > > > MX6Q with extra ECC added. Maybe we should still keep it from HW =
+point
+> > of view?
+> > > >
+> > > > Sorry, Aisheng, I double check the history, and get the below resul=
+ts:
+> > > >
+> > > > 8MP reuses 8QXP(8QM), except ECC_EN
+> > > > (ipv_flexcan3_syn_006/D_IP_FlexCAN3_SYN_057 which corresponds to
+> > > > version d_ip_flexcan3_syn.03.00.17.01)
+> > >
+> > > Also see commit message of:
+> > >
+> > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fl=
+ore
+> > > .kernel.org%2Flinux-can%2F20200929211557.14153-2-qiangqing.zhang%40n
+> > xp
+> > > .com%2F&amp;data=3D04%7C01%7Cqiangqing.zhang%40nxp.com%7Cf5cd871
+> > e13b34e9
+> > >
+> > 5817b08d9478504af%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C
+> > 6376194
+> > >
+> > 58893680146%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIj
+> > oiV2luMz
+> > >
+> > IiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DYwH3vD%2FtIol5
+> > OXPHPM
+> > > VbiVCLTC7gowOdIP3Ih1lBHh0%3D&amp;reserved=3D0
+> > >
+> > > > I prefer to change the dtsi as Mac suggested if possible, shall I
+> > > > send a fix patch?
+> > >
+> > > Make it so!
+> >
+> > Then should it be "fsl,imx8mp-flexcan", "fsl,imx8qxp-flexcan" rather th=
+an only
+> > drop "fsl,imx6q-flexcan"?
+>
+> No, I will only use " fsl,imx8mp-flexcan" to avoid ECC impact.
+>
 
-Hmm, interesting question. I think only hns3 makes meaningful use of
-NETIF_F_FRAGLIST, right? I'm looking at hns3_fill_skb_to_desc().
-Other drivers seem to set it for ridiculous reasons - looking at commit
-66aa0678efc2 ("ibmveth: Support to enable LSO/CSO for Trunk VEA.") -
-they set NETIF_F_FRAGLIST and then linearize the skb chain anyway. The
-claimed 4x throughput benefit probably has to do with less skbs
-traversing the stack? I don't know.
+Is ECC issue SW or HW compatibility issue?
+If SW, then we should keep the backward compatible string as DT is
+describing HW.
 
-Anyway, it is hard to imagine all the things that could go wrong with
-chains of IP fragments on a DSA interface, precisely because I have so
-few examples to look at. I would say, header taggers are probably fine,
-tail taggers not so much, so apply the same treatment as for NETIF_F_SG?
+Regards
+Aisheng
+
+> Best Regards,
+> Joakim Zhang
+> > Regards
+> > Aisheng
+> >
+> > >
+> > > regards,
+> > > Marc
+> > >
+> > > --
+> > > Pengutronix e.K.                 | Marc Kleine-Budde           |
+> > > Embedded Linux                   |
+> > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww=
+.p
+> > engutronix.de%2F&amp;data=3D04%7C01%7Cqiangqing.zhang%40nxp.com%7Cf
+> > 5cd871e13b34e95817b08d9478504af%7C686ea1d3bc2b4c6fa92cd99c5c30163
+> > 5%7C0%7C1%7C637619458893680146%7CUnknown%7CTWFpbGZsb3d8eyJWI
+> > joiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3
+> > 000&amp;sdata=3DsoLd53hGDcxtF42AjJ7u5k9TT%2FsZt6TG%2Bljw4rvtdy4%3D&
+> > amp;reserved=3D0  |
+> > > Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> > > Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
