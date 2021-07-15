@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 259B43CA142
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 17:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BEF3CA154
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 17:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238427AbhGOPSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 11:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35358 "EHLO
+        id S238830AbhGOPUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 11:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238418AbhGOPSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 11:18:49 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F5FC061760
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 08:15:55 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id k4so8241612wrc.8
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 08:15:55 -0700 (PDT)
+        with ESMTP id S238819AbhGOPUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 11:20:15 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0279CC061762
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 08:17:21 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id t9so6718534pgn.4
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 08:17:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FLtkmRZTrCSIaXOsSedsDZnpkDbHaVPJhqgNe0A6lcE=;
-        b=fCfE9KeYBevyWgI02tgk4nEfKYMad+ux1yUtpVSle12F9zSUt0oGM+5vSvmQ/50V4j
-         dHaZeAnUUDdLykGPfmXSgxqh4l3vLbW6cUxIXpo3ZI8sJhdAqqBMJRNtghYfBE7QF4DP
-         0p4mhvvQlFizMkdu3oI7wULZWk9GxdUEg/6OUl1zf+ImHzliSWGJQOhgOPi0yE7vjnsC
-         NI+UTzNB5YGyGPv1mzy/S7KWJRvbArLaz5h6lAgbHuf2If30TTt3fzSfCfZTSmyagx0d
-         TzuBdoiPKLaKRNo/0hHADuEAj+uddE8BUtUbkU0eBFY5SPuVtSZoPxbSOrpjPYub3SOC
-         VrmQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KxuL80J6nw9uZQmtHpLaHar4sqL4G7skG2GsMvgQTIo=;
+        b=MjW8UkWyF7CeDkG3CEKArz/i47sv3orsgko3d7r6+jEaxVd8wArI3D4w7Ij+L2notz
+         /SficrqdpNGlmRK12PcVY6TwI5ZQgyKsnzrL2uCxM+s02NY8omi4D5S+k0gS4e7IWQFO
+         IBv5CPwwEyxj/IAE9BaDszhPo/b0eDWP1XmShjYE3JoyxrApX5HNEZBrJCLc1ssKSJt/
+         KBkP2mJLWvCEgNaoxvCy9sS54TZ8i+rzw0NI2QyDvCUZCI0CUjwACQgI5yLbUdFqXKWs
+         oV1gCcCDslOtSzgdd+9mF5w2tCGjaeoIiqdea9NtcARn+oy44Pno5SFlXG6aaR0X5Rfc
+         CX2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=FLtkmRZTrCSIaXOsSedsDZnpkDbHaVPJhqgNe0A6lcE=;
-        b=qjeH6YTn6wZ9JH9F5O5AMMRRVXNO37f039L5uwM8lqeVf4wJ/bN5kvny8S6HdVJZbP
-         pSzxuVL+ZlZD2r90pf9go6qgRYh2UnW273G9jVQwNYOfLeKMF3NdyglDz9WOThR6P5Qv
-         VJwiAq33yLeFW8E8fib07tX7DsUxnF+Uh1IVMoI88OmEYpxspJ5GunjGMKfgktSFEYUs
-         DVc6qc3NQP3mGX+0/apWhszjcwO/SDf6uvwkvSafVS4Tcr7NxLVrcrUI+ZU5KDdbCLBI
-         3v+Q60kmktw5FVZ/IgJM1aQmfTI/JwuTIz0HO6IlYysgY1JuyUXV0XwzelEBRcmMjZr9
-         dt+Q==
-X-Gm-Message-State: AOAM530kj+1S1y74DdDOnTQ+SkcjGWTS+UOAib+YztiwJAkY45YC7aZu
-        FXz5zhtJf+Zx9h+lRBPNxCAiQW7Fn9e59g==
-X-Google-Smtp-Source: ABdhPJwvombve4/w8MtP8iQ8WcvcCgO7MY1aVQYHb8jk1GOV9Zb6OF2dWGqZ6R6I2v8uXRh8zW77jA==
-X-Received: by 2002:adf:f305:: with SMTP id i5mr6246037wro.122.1626362154383;
-        Thu, 15 Jul 2021 08:15:54 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:c510:a4d3:52d6:e2e? ([2a01:e0a:410:bb00:c510:a4d3:52d6:e2e])
-        by smtp.gmail.com with ESMTPSA id p8sm7369056wmc.24.2021.07.15.08.15.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Jul 2021 08:15:53 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] ipmonitor: Fix recvmsg with ancillary data
-To:     Lahav Schlesinger <lschlesinger@drivenets.com>, dsahern@gmail.com
-Cc:     netdev@vger.kernel.org
-References: <20210715143856.6062-1-lschlesinger@drivenets.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <9aff4da8-fc89-20c7-7240-780ebc890171@6wind.com>
-Date:   Thu, 15 Jul 2021 17:15:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KxuL80J6nw9uZQmtHpLaHar4sqL4G7skG2GsMvgQTIo=;
+        b=nyKLnGKIjSNDa83hbHM1Ej99I0DY5PnIJIcpaJx0zP2hQBudWIro993L722C6t6jpw
+         WH/OA0uLIjRBTdm8d/YB1n3ZsNeVP9XfTYKFrr66IGfehWE6ORCJT6r9ADNsI45a3Urj
+         Zfy1DnCj5nCtlTRG6N3G6Ihhb22ATGAbolkk7nMB3uJFfT9K3GU75vH3JwQnxNFHqZkY
+         KNIy5K6JT//+5h0PBoroOvWfiXnhwR2AKhMEMrqHjXlSSN/RQ+klTNLasMa0DvKpSTui
+         eXWsmbMfmXAwOevcVdORIsQmADwgN1jUX87f1NimiWF3HCD9XBwYTqK0zdnv/a9aZ4Cd
+         WdUA==
+X-Gm-Message-State: AOAM530l0GnmoJPUf94zeSYbI+qOYrNnObE6/ZxIr23SFxsorNZlsJ4h
+        6mCeqVvIBYpPoAVg1URlNBMS1slahgfzNccTDqo=
+X-Google-Smtp-Source: ABdhPJxJ95FxjTa35xakBDP4AaAvSvCvfaFXPKaq8GSQr0HVE1bPS9MF8wATVdTVi0LBZsg98IcFtM5Z19YbfI2UgPg=
+X-Received: by 2002:a62:ea1a:0:b029:329:a95a:fab with SMTP id
+ t26-20020a62ea1a0000b0290329a95a0fabmr5189115pfh.31.1626362241463; Thu, 15
+ Jul 2021 08:17:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210715143856.6062-1-lschlesinger@drivenets.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210715060021.43249-1-xiyou.wangcong@gmail.com> <536718b6-0735-cc03-6268-c6a130b55ba7@huawei.com>
+In-Reply-To: <536718b6-0735-cc03-6268-c6a130b55ba7@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 15 Jul 2021 08:17:11 -0700
+Message-ID: <CAM_iQpUCe=r9gwa91SFjueqYmoOg2TFsym22RNBJbjunOgrWVw@mail.gmail.com>
+Subject: Re: [Patch net-next resend v2] net_sched: use %px to print skb
+ address in trace_qdisc_dequeue()
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Qitao Xu <qitao.xu@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 15/07/2021 à 16:38, Lahav Schlesinger a écrit :
-> A successful call to recvmsg() causes msg.msg_controllen to contain the length
-> of the received ancillary data. However, the current code in the 'ip' utility
-> doesn't reset this value after each recvmsg().
-> 
-> This means that if a call to recvmsg() doesn't have ancillary data, then
-> 'msg.msg_controllen' will be set to 0, causing future recvmsg() which do
-> contain ancillary data to get MSG_CTRUNC set in msg.msg_flags.
-> 
-> This fixes 'ip monitor' running with the all-nsid option - With this option the
-> kernel passes the nsid as ancillary data. If while 'ip monitor' is running an
-> even on the current netns is received, then no ancillary data will be sent,
-> causing 'msg.msg_controllen' to be set to 0, which causes 'ip monitor' to
-> indefinitely print "[nsid current]" instead of the real nsid.
-> 
-> Fixes: 449b824ad196 ("ipmonitor: allows to monitor in several netns")
-> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+On Thu, Jul 15, 2021 at 4:26 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/7/15 14:00, Cong Wang wrote:
+> > From: Qitao Xu <qitao.xu@bytedance.com>
+> >
+> > Print format of skbaddr is changed to %px from %p, because we want
+> > to use skb address as a quick way to identify a packet.
+> >
+> > Note, trace ring buffer is only accessible to privileged users,
+> > it is safe to use a real kernel address here.
+>
+> Does it make more sense to use %pK?
+>
+> see: https://lwn.net/Articles/420403/
+
+I think you have the answer:
+
++ * %pK cannot be used in IRQ context because it tests
++ * CAP_SYSLOG.
+
+;) So, no.
+
+Thanks.
