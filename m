@@ -2,113 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B50593C9D7B
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501AB3C9D9D
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241771AbhGOLKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 07:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241765AbhGOLKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 07:10:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D06FC06175F
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 04:07:24 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m3zCu-0001Du-Op; Thu, 15 Jul 2021 13:07:08 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:968e:ea40:4726:28f1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 167AC64FE88;
-        Thu, 15 Jul 2021 11:07:07 +0000 (UTC)
-Date:   Thu, 15 Jul 2021 13:07:06 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Dong Aisheng <dongas86@gmail.com>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbile
-Message-ID: <20210715110706.ysktvpzzaqaiimpl@pengutronix.de>
-References: <20210715082536.1882077-1-aisheng.dong@nxp.com>
- <20210715082536.1882077-2-aisheng.dong@nxp.com>
- <20210715091207.gkd73vh3w67ccm4q@pengutronix.de>
- <CAA+hA=QDJhf_LnBZCiKE-FbUNciX4bmgmrvft8Y-vkB9Lguj=w@mail.gmail.com>
- <DB8PR04MB6795ACFCCB64354C8E810EE8E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        id S241864AbhGOLTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 07:19:17 -0400
+Received: from mout.gmx.net ([212.227.17.20]:36537 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241852AbhGOLTR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 07:19:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1626347772;
+        bh=TLXUsDdT2Ni6P1bd2RJdAeMmR/wZbLbHTRLAmPJxv9U=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=HBxW61sAJodPP7wxHBOZdiu36Jbz9H+AMbkbpijQprGXDaTmY7QuXjxCAhpxzsikX
+         Iz22GxP85dV0s5RnKDUPPj7ZKwxdstEPALAbBg5MCzfwMmHJLNqu5vvwDHbx7H2Z5i
+         5+4DaiJyCwJJDLid9wJU72zKRJVDrz1/czbUsDPE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
+ (3c-app-gmx-bap31.server.lan [172.19.172.101]) (via HTTP); Thu, 15 Jul 2021
+ 13:16:12 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vmvpctoj2hry3h5w"
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6795ACFCCB64354C8E810EE8E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Message-ID: <trinity-84a570e8-7b5f-44f7-b10c-169d4307d653-1626347772540@3c-app-gmx-bap31>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Aw: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware
+ process the layer 4 checksum
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 15 Jul 2021 13:16:12 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20210715065455.7nu7zgle2haa6wku@skbuf>
+References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
+ <20210714191723.31294-3-LinoSanfilippo@gmx.de>
+ <20210714194812.stay3oqyw3ogshhj@skbuf> <YO9F2LhTizvr1l11@lunn.ch>
+ <20210715065455.7nu7zgle2haa6wku@skbuf>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:CxxzBKXA9/qQJnsYgLSgPmS6MXvvV0h4Kj1Fl2Xg5dCkDIN0g9efjUiBvzt36HXv+xA71
+ N+F2XpU2MS7kk1PaxtzWsfM1ujMmwTGnIvVypWa+rT6BogXiXuuMnYaDCOO6xGRNXHhzzLA+SLUQ
+ TUWaCLO4wsAq9HmQr0kLPMxGTh8mflK+ATN3HHxkOw5Ghgn880EOViy5cu36EupiTcGBZxDt/jsF
+ WnEOYl8AXNCetaMGN09GT1Q41h5IyxQdxY35Wxp2v+pI/m/QcN6P3UBPDDnd2FMBdEZx2JQNWuZb
+ Cg=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:tFCbLYKOsxI=:hcAc+94wjwYA1qNadjyAij
+ PL8NfrQtYM5aC7v4qjlz7YdGgnglSoobRAWrEdqWWH9WS8R54gLaKaED+Jm/7WRnCqiuKtr3V
+ WC4JVQ3nyFcA9F4njhgwFG2JOXBjORL4K2iByBtzbeecwprA6hadRlRK3nYxl/H7CVbqPliAd
+ cuqqJT+llBhKpxZrVnvrOZqsSA9JW/cBchm0I1Q5aoS2yjoYmWDYTRLcLtYSLDFVMOosdIUzl
+ i23W+0yxIDqMX227rC8et2tuVKixVBA/JJiGTamSxjMbE6BfCA54sU7668wFRMLi0njTHMjNn
+ 0adz+KyNvpA3yKJslSK8yl5O7hYbEXInAyh7HtHuJ40rGYH48MqitNsK8p52HmeT9mH4uOQbQ
+ PRv0B8/2fwEoBplb33wqORf4CmRJcGWmUv3RV2pWAZ9BR5NWVMFinYno8GQY3nQVW14mM18c5
+ 91HVTAjl85WbKKasm1T69ii62szoq+gSBO17rDqgCZVCahknT3e+iYKLFmENayUdvBpmXKfPm
+ 8y+WL69RWGthcWJBLl4HWrTG/nO1AK6a67QqVLBxhRmE6JA610dOB9pGa+XgWvGuaJTt7nYjF
+ raD1109waV1BFEuYTj6n9MdAextpFmgtUM4bb2BCq0PtHbhXQYkIsktzBIGjAk1uBJZR8jdZT
+ H/X4U6rJaMhHp+M85WoBWHB6UT0C9Gk7DRLXD3vaarVRkHFpy2wgUpV2I2AOcvU2z9GVbpKLJ
+ 9hcMOWcvclLSqruz+i2HIG+GX0ZrPe5siIsEOSuP/1M9IJBVJRkbDAcWFkHSPaDFPXDlkabe0
+ J5AR9JhoDTV4deyi7u3zgN1jkOqGNZfsYSKYLM1ix1oxkACZ7o=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vladimir,
 
---vmvpctoj2hry3h5w
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Gesendet: Donnerstag, 15. Juli 2021 um 08:54 Uhr
+> Von: "Vladimir Oltean" <olteanv@gmail.com>
+> An: "Andrew Lunn" <andrew@lunn.ch>
+> Cc: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com=
+, UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com, f.fainelli@gmail=
+.com, davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org, linux-=
+kernel@vger.kernel.org
+> Betreff: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware proces=
+s the layer 4 checksum
+>
+> On Wed, Jul 14, 2021 at 10:15:20PM +0200, Andrew Lunn wrote:
+> > On Wed, Jul 14, 2021 at 10:48:12PM +0300, Vladimir Oltean wrote:
+> > > Hi Lino,
+> > >
+> > > On Wed, Jul 14, 2021 at 09:17:23PM +0200, Lino Sanfilippo wrote:
+> > > > If the checksum calculation is offloaded to the network device (e.=
+g due to
+> > > > NETIF_F_HW_CSUM inherited from the DSA master device), the calcula=
+ted
+> > > > layer 4 checksum is incorrect. This is since the DSA tag which is =
+placed
+> > > > after the layer 4 data is seen as a part of the data portion and t=
+hus
+> > > > errorneously included into the checksum calculation.
+> > > > To avoid this, always calculate the layer 4 checksum in software.
+> > > >
+> > > > Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> > > > ---
+> > >
+> > > This needs to be solved more generically for all tail taggers. Let m=
+e
+> > > try out a few things tomorrow and come with a proposal.
+> >
+> > Maybe the skb_linearize() is also a generic problem, since many of the
+> > tag drivers are using skb_put()? It looks like skb_linearize() is
+> > cheap because checking if the skb is already linear is cheap. So maybe
+> > we want to do it unconditionally?
+>
+> Yeah, but we should let the stack deal with both issues in validate_xmit=
+_skb().
+> There is a skb_needs_linearize() call which returns false because the
+> DSA interface inherits NETIF_F_SG from the master via dsa_slave_create()=
+:
+>
+> 	slave_dev->features =3D master->vlan_features | NETIF_F_HW_TC;
+>
+> Arguably that's the problem right there, we shouldn't inherit neither
+> NETIF_F_HW_CSUM nor NETIF_F_SG from the list of features inheritable by
+> 8021q uppers.
+>
+> - If we inherit NETIF_F_SG we obligate ourselves to call skb_linearize()
+>   for tail taggers on xmit. DSA probably doesn't break anything for
+>   header taggers though even if the xmit skb is paged, since the DSA
+>   header would always be part of the skb head, so this is a feature we
+>   could keep for them.
+> - If we inherit NETIF_F_HW_CSUM from the master for tail taggers, it is
+>   actively detrimential to keep this feature enabled, as proven my Lino.
+>   As for header taggers, I fail to see how this would be helpful, since
+>   the DSA master would always fail to see the real IP header (it has
+>   been pushed to the right by the DSA tag), and therefore, the DSA
+>   master offload would be effectively bypassed. So no point, really, in
+>   inheriting it in the first place in any situation.
+>
+> Lino, to fix these bugs by letting validate_xmit_skb() know what works
+> for DSA and what doesn't, could you please:
+>
+> (a) move the current slave_dev->features assignment to
+>     dsa_slave_setup_tagger()? We now support changing the tagging
+>     protocol at runtime, and everything that depends on what the tagging
+>     protocol is (in this case, tag_ops->needed_headroom vs
+>     tag_ops->needed_tailroom) should be put in that function.
+> (b) unconditionally clear NETIF_F_HW_CSUM from slave_dev->features,
+>     after inheriting the vlan_features from the master?
+> (c) clear NETIF_F_SG from slave_dev->features if we have a non-zero
+>     tag_ops->needed_tailroom?
+>
 
-On 15.07.2021 11:00:07, Joakim Zhang wrote:
-> > I checked with Joakim that the flexcan on MX8MP is derived from MX6Q wi=
-th
-> > extra ECC added. Maybe we should still keep it from HW point of view?
->=20
-> Sorry, Aisheng, I double check the history, and get the below results:
->=20
-> 8MP reuses 8QXP(8QM), except ECC_EN
-> (ipv_flexcan3_syn_006/D_IP_FlexCAN3_SYN_057 which corresponds to
-> version d_ip_flexcan3_syn.03.00.17.01)
+Sure, I will test this solution. But I think NETIF_F_FRAGLIST should also =
+be
+cleared in this case, right?
 
-Also see commit message of:
 
-https://lore.kernel.org/linux-can/20200929211557.14153-2-qiangqing.zhang@nx=
-p.com/
-
-> I prefer to change the dtsi as Mac suggested if possible, shall I send
-> a fix patch?
-
-Make it so!
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---vmvpctoj2hry3h5w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDwFtcACgkQqclaivrt
-76lQKggAj2Bmlhy4dp286A84lAbdUdEc6Orxejlc/BNFaJlqDmgTbKwrhcq4zoaw
-k1dGc3kP0fjKzFcRM7lLz6QwxhsToo2f70/NBGN5/O+7RZr7EokSlcWBLA6D+zzP
-qEfvMcRqmMoTupOnuBpYMyTfZVRqyE+U3tGPTgYWdAiNcteSKwPc18/hJQORtU2q
-S8VNbCfjBTwvyRpiVbpLhyYyUGFh/uOKMZjpJXiSVCsFYdTsAakK9REgRdO4f331
-OlAJQJrvxZQJ/IAUSIqrNfHbpNVGqYD4eWRitRurr6GqK7ZRyR5NZbhOka7NsbS/
-QaOulnJx58Ay5Ybhh6W0KqasmMkvIA==
-=bhZi
------END PGP SIGNATURE-----
-
---vmvpctoj2hry3h5w--
+Regards,
+Lino
