@@ -2,144 +2,480 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE01C3C9A94
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 10:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9DF03C9ABF
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 10:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240232AbhGOI3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 04:29:36 -0400
-Received: from mail-eopbgr10047.outbound.protection.outlook.com ([40.107.1.47]:42016
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239431AbhGOI3f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Jul 2021 04:29:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EesNOz7q9ulk73m3AdtyFbLQ5UMk+VVwyBQ25Cm+OtNv4pzKjjs+ICv8IAq5cvHJaZaztd4ndboB7oD4JdlxaM7ACiMO7/Ivd5TPh/rGazvUs3HLAin++ZhdMp/nDus4cTIBvA62Mg9hE8l7DF+sn2xXTQHq+7RSeNjNyvT6rJfk7VB3ykbDc+xUen3wmmTVG/ekir9ru3S+i7g+xIliJLs1N0dX8Cwy0OYHkH2H82408TjNDgKMVUF22hQ64pEcwB5g0cxwC1UAD0CQrG74y5dWq64uzItW64LmedHgsvtOmoL37YrIQ1xx/R2LuQ1Pd5bPzOjSarE6CThawxUpFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9EutayK4X8dve8o5EJDlLQSzlZefSo0iMdrGMoK1aHI=;
- b=MFKi3aQIuRcUmgjNPvWuqxEKjddMe1ZWnqEJcEfCc+jPmntZh+WQ3z4RLuJsNWQUombhzkjlvvgto+LXbj8/BAAaaMMXEAmxJhJplXSY9qrm1CnatGIwmjh2Va+G+I9fFgczv6P48nTe0fYvRj12vUWOJozuDFTukLGrz3IqY00AtE/23n9eqT5//h+1CIU0K+p8ZPSYq8kwVOdm/IMXUZryjx1pU9FW1xZf6t2OYtp7FInpAl2F9ppqNF7VW0PrRUvxY2FfIaTtTtFBPDbkJgEwALoXy2Vt0uvq/V4r4ysJf2zJis0GDT5BW/KEZIHQpN/mVn578dDI5y5ZEm2zwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9EutayK4X8dve8o5EJDlLQSzlZefSo0iMdrGMoK1aHI=;
- b=BuLc+MLn/aSl+FwSLhuyCJYrpefjaf5FJz1PFYoU574uk5UQ3umGP+6L+XxGi+40j5hWg2b3pVzR2coS8zWq4/1EIrrrSYb96DNAnU6spSs0cPWu4WuIGl7BXMCrcRWBjZMO/B/gD7YRaBb3dJGdHJYY1BZIOjlBlHcJ/QgfhyA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8477.eurprd04.prod.outlook.com (2603:10a6:10:2c3::11)
- by DU2PR04MB8680.eurprd04.prod.outlook.com (2603:10a6:10:2df::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23; Thu, 15 Jul
- 2021 08:26:40 +0000
-Received: from DB9PR04MB8477.eurprd04.prod.outlook.com
- ([fe80::9daa:ab21:f749:36d2]) by DB9PR04MB8477.eurprd04.prod.outlook.com
- ([fe80::9daa:ab21:f749:36d2%9]) with mapi id 15.20.4308.027; Thu, 15 Jul 2021
- 08:26:40 +0000
-From:   Dong Aisheng <aisheng.dong@nxp.com>
-To:     devicetree@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        kernel@pengutronix.de, aisheng.dong@nxp.com, dongas86@gmail.com,
-        robh+dt@kernel.org, shawnguo@kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 3/7] dt-bindings: net: dsa: sja1105: fix wrong indentation
-Date:   Thu, 15 Jul 2021 16:25:32 +0800
-Message-Id: <20210715082536.1882077-4-aisheng.dong@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210715082536.1882077-1-aisheng.dong@nxp.com>
-References: <20210715082536.1882077-1-aisheng.dong@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0083.apcprd02.prod.outlook.com
- (2603:1096:4:90::23) To DB9PR04MB8477.eurprd04.prod.outlook.com
- (2603:10a6:10:2c3::11)
+        id S240366AbhGOIjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 04:39:33 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:36368 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229620AbhGOIjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 04:39:32 -0400
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E7DF31FDF9;
+        Thu, 15 Jul 2021 08:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1626338197; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2PWjr+0c7psZzyw1qFaM/XPj81wb2xNcBw94sKXKDHs=;
+        b=qrNDU29dDXzvPD1erWBKcRFYJo36GDE2FyTiUgXz1zL12YE+BbmgrUhmZLT0caFBr6YRfU
+        K8BgmhrRni2LYKEGw9TrxJVRDofdcBg+/mLdpuLl1uPjqWthfUbQ2wfVaIwKe1Rsu3YRh9
+        kbyfbqTZlEnM+NHutFqFeHFcCFw2LbY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1626338197;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2PWjr+0c7psZzyw1qFaM/XPj81wb2xNcBw94sKXKDHs=;
+        b=x3B01zgznpgM2ZmkjseydG7jP09ccXKdOIA12Lc4ru8QZ5AWFg6KZ8i6DqXk46LbHRzVRE
+        noZ2UjFTeWpBlnAQ==
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 3C3BE13AB1;
+        Thu, 15 Jul 2021 08:36:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap1.suse-dmz.suse.de with ESMTPSA
+        id TEODDJXz72BKcwAAGKfGzw
+        (envelope-from <ykaukab@suse.de>); Thu, 15 Jul 2021 08:36:37 +0000
+Date:   Thu, 15 Jul 2021 10:36:35 +0200
+From:   Mian Yousaf Kaukab <ykaukab@suse.de>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Peter H Anvin <hpa@zytor.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] tools/tdx: Add a sample attestation user app
+Message-ID: <20210715083635.GA112769@suse.de>
+References: <20210707204249.3046665-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+ <20210707204249.3046665-7-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.66) by SG2PR02CA0083.apcprd02.prod.outlook.com (2603:1096:4:90::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.22 via Frontend Transport; Thu, 15 Jul 2021 08:26:36 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 702cae62-c93e-4266-3bb2-08d9476a4512
-X-MS-TrafficTypeDiagnostic: DU2PR04MB8680:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DU2PR04MB8680AD0A4EC62FFB5A6B8B5780129@DU2PR04MB8680.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1091;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AjXKpgC6Lo5wjTd0xs2E4kqo2lg9WKSzTPo4wXd4EA8sfAV8Zwp9BKFJJXAGKq03uYD9vPxEmdOV5q9EVjKqV9/Rhu2xjToMPKj1NaAU7LJ5WkNsziHyMBFwxLRb2irUP1cdFKEQQmD2GACEwP4hDfo0IlAEDl441yMG/uQd3RReUBJXHfpPzes5QDsK5OZZDe/uq4sEGHNF9MwRj5rDG96M2p8+lnN0kTvGDLiFJa1kUW5Zmjwen+/DlHrjYTMZJFsyx18JGXxLVa0Hdky3ftXjI6FKV1m9h7WK15xYws4rORpmBU0liDw59+NPAvWJu3Sr8aJOk7aqc820ZT+H/F4807y9gDx+mkaZgUra7QeQtmBRbHii2ZYk7H7bqVGbPwvMkFh5nx1MhEze5OoYPZ2C6JB2FqaDULM97uZ7jfAfRvzu4ouk5JjG8RWpNbfAOfut69b3FUczM2rz5MJe9AF2i+HyWSdm6bgTHjhyvHySTfOBT1g74kbqzL4ekw8M+T+1zo3soi5NBpOW1wdrC4WwRdiANWMBL5lrMiexpo73EHYoJ2CT1+20tv9R8VH5jJlLvLPa9xXpJUtyByAC/o4YXjpqn/7TUXzaAAk5dqqHjIokPYxGfQdE1r/SvDo/wDHPHvKzPfCcQFboKv90qhmfD0yDEHTI+ZTCXOjDQgJwCMDAEVDzMtClxMcPUBn+383+Y65UlDT/b/17RbkWDA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8477.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(39860400002)(376002)(366004)(396003)(6506007)(2906002)(7416002)(52116002)(186003)(5660300002)(6916009)(4326008)(6512007)(8936002)(1076003)(36756003)(8676002)(38350700002)(478600001)(2616005)(6666004)(6486002)(956004)(26005)(38100700002)(54906003)(316002)(66476007)(86362001)(83380400001)(66556008)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RRAiaeIYvFKdrB5ec8BR/yARDik64jdomN4Rc3u+IbOtmchNZwT6DEsI/zV6?=
- =?us-ascii?Q?ccurKiX6Dk8P41aQ9bJphZa9YnZTb0QYixj1dWUKaxhHF7W96L/MXcHhWb7o?=
- =?us-ascii?Q?Lgr3vIGMLw/qQrGgwMN+gSBUQEUb+02pAplaIwj2WWe387VRiL/DAvazle0+?=
- =?us-ascii?Q?g8+3/vJgpR6HIhfkm2TKiYznV1kIY+LBhKCDENFs5bYS9lMUyCw/aZV6p/z8?=
- =?us-ascii?Q?oZhcEkg3eVGEdXTq421UscryqK/dIJiXkEo7mNIg3ywPN9m7J/OmuRBcxWts?=
- =?us-ascii?Q?9NgdA3ao4/r8w8LhfQsAasieLmipPTgn0NJudOxCkUSzDXcyreO1Azv4XZHU?=
- =?us-ascii?Q?53ioJpD6Gg6FhxBZQW4OYdPraLLnwpQGKwCML/depMKjP0BB1hDrd8JOMYYL?=
- =?us-ascii?Q?L/kuQvI+zlKPoNyvs0TJ9ty51MTUAqnWv2izvUY6EnOC2UQBQ24ta5Ehr8Nc?=
- =?us-ascii?Q?Jq6oRfPggqDCXYQ/9jjGqsNKoNDflH3P0eNffwyfmai0yiNTRYbi22edoqEH?=
- =?us-ascii?Q?vSKwyvwxz9nlgF8l/+l4ebbxU1RBgValWmCiov6uhUM2yVjrhMu0xgWKG6ff?=
- =?us-ascii?Q?VsnintmzT7Jc5JZf2AYYqRx2X8NI7+a8Ck21mvmGQPSMX2rDt8ap0FPK7F4l?=
- =?us-ascii?Q?hXbVEXvwjh0dHg6/4Ips83eZ68DtUf+zrWsZlQ3mfrCzUoxTg4JI2Zr96Gcr?=
- =?us-ascii?Q?FjZ5paTK6ZfHpm8KEuMxwX20H3c1Ric8BuM72D+D/NjvYSn685Ky4sI1juki?=
- =?us-ascii?Q?cAGfU4jY1FbzIqYLuaimr5lCa+Lp2XOTtFmWjY3zNoRcWuGLXi/fdEvQ6sfA?=
- =?us-ascii?Q?BGIFGkTnguJ7Ui/pwPCpy4gIUHC2Phy0QOWbmkGCpIMIebylFUVev2/kt+lQ?=
- =?us-ascii?Q?6LQ0eUR5dcIYtd9JfxVP4SSnvW37H1lt5JPp0s1BDOSssjeZTD/oBKSJGC+g?=
- =?us-ascii?Q?T1xgh9WP8BEXb7P8bxYCKlex4ZK3KgqwJm/Z2puAbb4jLj4oTzSPwRa/p7qy?=
- =?us-ascii?Q?Q7XQgsjwdSVbIL5ywOTlncnlKueDrgkzLUPz8euxDIZ7JSxr8vSNV/2dQL2n?=
- =?us-ascii?Q?ng5RQ5IBozz0ybr+Q/ZWTfGdEnFdk+DvgilKdJvN+yf9It8gK9mo+Fo7BMee?=
- =?us-ascii?Q?czxIQeEtmdpeudM6v35zwNjS3nU2ojwKPRmbBwVU0B0T3GkLPIK9so30vgID?=
- =?us-ascii?Q?OPSylGEiohUfgfHzSE8+qxnhYTqLjXbOIgAwEN2Ia+7Mld4ewzuftx/bAjIT?=
- =?us-ascii?Q?CkbQ6dV3sL34NKLlwJN1QS94wi9wLINQ9BgpF29emRwiAEWRdnWneLGFKl8D?=
- =?us-ascii?Q?AaCl63dqDylBy2xnlrs/vNO+?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 702cae62-c93e-4266-3bb2-08d9476a4512
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8477.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2021 08:26:40.3521
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Hu5DybYFWIKDZqF1q3N4G/AQJ9kz3x0YPjZxpbCB72PW10rfmPCw0aQHwSw2Uq1CGzXoZ5wWnyf3K1EdKl7wxQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8680
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210707204249.3046665-7-sathyanarayanan.kuppuswamy@linux.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the following error:
-Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml:70:17: [warning] wrong indentation: expected 18 but found 16 (indentation)
+On Wed, Jul 07, 2021 at 01:42:49PM -0700, Kuppuswamy Sathyanarayanan wrote:
+> This application uses the misc device /dev/tdx-attest to get TDREPORT
+> from the TDX Module or request quote from the VMM.
+> 
+> It tests following attestation features:
+> 
+>   - Get report using TDX_CMD_GET_TDREPORT IOCTL.
+>   - Using report data request quote from VMM using TDX_CMD_GEN_QUOTE IOCTL.
+>   - Get the quote size using TDX_CMD_GET_QUOTE_SIZE IOCTL.
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> ---
+>  tools/Makefile                     |  13 +-
+>  tools/tdx/Makefile                 |  19 +++
+>  tools/tdx/attest/.gitignore        |   2 +
+>  tools/tdx/attest/Makefile          |  24 +++
+>  tools/tdx/attest/tdx-attest-test.c | 232 +++++++++++++++++++++++++++++
+>  5 files changed, 284 insertions(+), 6 deletions(-)
+>  create mode 100644 tools/tdx/Makefile
+>  create mode 100644 tools/tdx/attest/.gitignore
+>  create mode 100644 tools/tdx/attest/Makefile
+>  create mode 100644 tools/tdx/attest/tdx-attest-test.c
+> 
+> diff --git a/tools/Makefile b/tools/Makefile
+> index 7e9d34ddd74c..5d68084511cb 100644
+> --- a/tools/Makefile
+> +++ b/tools/Makefile
+> @@ -30,6 +30,7 @@ help:
+>  	@echo '  selftests              - various kernel selftests'
+>  	@echo '  bootconfig             - boot config tool'
+>  	@echo '  spi                    - spi tools'
+> +	@echo '  tdx                    - TDX related test tools'
+>  	@echo '  tmon                   - thermal monitoring and tuning tool'
+>  	@echo '  tracing                - misc tracing tools'
+>  	@echo '  turbostat              - Intel CPU idle stats and freq reporting tool'
+> @@ -65,7 +66,7 @@ acpi: FORCE
+>  cpupower: FORCE
+>  	$(call descend,power/$@)
+>  
+> -cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging tracing: FORCE
+> +cgroup firewire hv guest bootconfig spi usb virtio vm bpf iio gpio objtool leds wmi pci firmware debugging tracing tdx: FORCE
+>  	$(call descend,$@)
+>  
+>  bpf/%: FORCE
+> @@ -104,7 +105,7 @@ all: acpi cgroup cpupower gpio hv firewire liblockdep \
+>  		perf selftests bootconfig spi turbostat usb \
+>  		virtio vm bpf x86_energy_perf_policy \
+>  		tmon freefall iio objtool kvm_stat wmi \
+> -		pci debugging tracing
+> +		pci debugging tracing tdx
+>  
+>  acpi_install:
+>  	$(call descend,power/$(@:_install=),install)
+> @@ -112,7 +113,7 @@ acpi_install:
+>  cpupower_install:
+>  	$(call descend,power/$(@:_install=),install)
+>  
+> -cgroup_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install:
+> +cgroup_install firewire_install gpio_install hv_install iio_install perf_install bootconfig_install spi_install usb_install virtio_install vm_install bpf_install objtool_install wmi_install pci_install debugging_install tracing_install tdx_install:
+>  	$(call descend,$(@:_install=),install)
+>  
+>  liblockdep_install:
+> @@ -139,7 +140,7 @@ install: acpi_install cgroup_install cpupower_install gpio_install \
+>  		virtio_install vm_install bpf_install x86_energy_perf_policy_install \
+>  		tmon_install freefall_install objtool_install kvm_stat_install \
+>  		wmi_install pci_install debugging_install intel-speed-select_install \
+> -		tracing_install
+> +		tracing_install tdx_install
+>  
+>  acpi_clean:
+>  	$(call descend,power/acpi,clean)
+> @@ -147,7 +148,7 @@ acpi_clean:
+>  cpupower_clean:
+>  	$(call descend,power/cpupower,clean)
+>  
+> -cgroup_clean hv_clean firewire_clean bootconfig_clean spi_clean usb_clean virtio_clean vm_clean wmi_clean bpf_clean iio_clean gpio_clean objtool_clean leds_clean pci_clean firmware_clean debugging_clean tracing_clean:
+> +cgroup_clean hv_clean firewire_clean bootconfig_clean spi_clean usb_clean virtio_clean vm_clean wmi_clean bpf_clean iio_clean gpio_clean objtool_clean leds_clean pci_clean firmware_clean debugging_clean tracing_clean tdx_clean:
+>  	$(call descend,$(@:_clean=),clean)
+>  
+>  liblockdep_clean:
+> @@ -186,6 +187,6 @@ clean: acpi_clean cgroup_clean cpupower_clean hv_clean firewire_clean \
+>  		vm_clean bpf_clean iio_clean x86_energy_perf_policy_clean tmon_clean \
+>  		freefall_clean build_clean libbpf_clean libsubcmd_clean liblockdep_clean \
+>  		gpio_clean objtool_clean leds_clean wmi_clean pci_clean firmware_clean debugging_clean \
+> -		intel-speed-select_clean tracing_clean
+> +		intel-speed-select_clean tracing_clean tdx_clean
+>  
+>  .PHONY: FORCE
+> diff --git a/tools/tdx/Makefile b/tools/tdx/Makefile
+> new file mode 100644
+> index 000000000000..e2564557d463
+> --- /dev/null
+> +++ b/tools/tdx/Makefile
+> @@ -0,0 +1,19 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +include ../scripts/Makefile.include
+> +
+> +all: attest
+> +
+> +clean: attest_clean
+> +
+> +install: attest_install
+> +
+> +attest:
+> +	$(call descend,attest)
+> +
+> +attest_install:
+> +	$(call descend,attest,install)
+> +
+> +attest_clean:
+> +	$(call descend,attest,clean)
+> +
+> +.PHONY: all install clean attest latency_install latency_clean
+> diff --git a/tools/tdx/attest/.gitignore b/tools/tdx/attest/.gitignore
+> new file mode 100644
+> index 000000000000..5f819a8a6c49
+> --- /dev/null
+> +++ b/tools/tdx/attest/.gitignore
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +tdx-attest-test
+> diff --git a/tools/tdx/attest/Makefile b/tools/tdx/attest/Makefile
+> new file mode 100644
+> index 000000000000..bf47ba718386
+> --- /dev/null
+> +++ b/tools/tdx/attest/Makefile
+> @@ -0,0 +1,24 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +# Makefile for vm tools
+> +#
+> +VAR_CFLAGS := $(shell pkg-config --cflags libtracefs 2>/dev/null)
+> +VAR_LDLIBS := $(shell pkg-config --libs libtracefs 2>/dev/null)
+> +
+> +TARGETS = tdx-attest-test
+> +CFLAGS = -static -Wall -Wextra -g -O2 $(VAR_CFLAGS)
+> +LDFLAGS = -lpthread $(VAR_LDLIBS)
+> +
+> +all: $(TARGETS)
+> +
+> +%: %.c
+> +	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+> +
+> +clean:
+> +	$(RM) tdx-attest-test
+> +
+> +prefix ?= /usr/local
+> +sbindir ?= ${prefix}/sbin
+> +
+> +install: all
+> +	install -d $(DESTDIR)$(sbindir)
+> +	install -m 755 -p $(TARGETS) $(DESTDIR)$(sbindir)
+> diff --git a/tools/tdx/attest/tdx-attest-test.c b/tools/tdx/attest/tdx-attest-test.c
+> new file mode 100644
+> index 000000000000..7634ec6a084c
+> --- /dev/null
+> +++ b/tools/tdx/attest/tdx-attest-test.c
+> @@ -0,0 +1,232 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * tdx-attest-test.c - utility to test TDX attestation feature.
+> + *
+> + * Copyright (C) 2020 - 2021 Intel Corporation. All rights reserved.
+> + *
+> + * Author: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> + *
+> + */
+> +
+> +#include <linux/types.h>
+> +#include <linux/ioctl.h>
+> +#include <sys/ioctl.h>
+> +#include <sys/stat.h>
+> +#include <sys/types.h>
+> +#include <stdio.h>
+> +#include <ctype.h>
+> +#include <errno.h>
+> +#include <fcntl.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <unistd.h>
+> +#include <string.h>
+> +#include <limits.h>
+> +#include <stdbool.h>
+> +#include <getopt.h>
+> +#include <stdint.h> /* uintmax_t */
+> +#include <sys/mman.h>
+> +#include <unistd.h> /* sysconf */
+> +#include <time.h>
+> +
+> +#include "../../../include/uapi/misc/tdx.h"
+> +
+> +#define devname		"/dev/tdx-attest"
+> +
+> +#define HEX_DUMP_SIZE	16
+> +#define MAX_ROW_SIZE	70
+> +
+> +#define ATTESTATION_TEST_BIN_VERSION "0.1"
+> +
+> +struct tdx_attest_args {
+> +	bool is_dump_data;
+> +	bool is_get_tdreport;
+> +	bool is_get_quote_size;
+> +	bool is_gen_quote;
+> +	bool debug_mode;
+> +	char *out_file;
+> +};
+> +
+> +static void print_hex_dump(const char *title, const char *prefix_str,
+> +			   const void *buf, int len)
+> +{
+> +	const __u8 *ptr = buf;
+> +	int i, rowsize = HEX_DUMP_SIZE;
+> +
+> +	if (!len || !buf)
+> +		return;
+> +
+> +	printf("\t\t%s", title);
+> +
+> +	for (i = 0; i < len; i++) {
+> +		if (!(i % rowsize))
+> +			printf("\n%s%.8x:", prefix_str, i);
+> +		printf(" %.2x", ptr[i])
+> +	}
+> +
+> +	printf("\n");
+> +}
+> +
+> +static void gen_report_data(__u8 *report_data, bool dump_data)
+> +{
+> +	int i;
+> +
+> +	srand(time(NULL));
+> +
+> +	for (i = 0; i < TDX_REPORT_DATA_LEN; i++)
+> +		report_data[i] = rand();
+> +
+> +	if (dump_data)
+> +		print_hex_dump("\n\t\tTDX report data\n", " ",
+> +			       report_data, TDX_REPORT_DATA_LEN);
+> +}
+> +
+> +static int get_tdreport(int devfd, bool dump_data, __u8 *report_data)
+> +{
+> +	__u8 tdrdata[TDX_TDREPORT_LEN] = {0};
+> +	int ret;
+> +
+> +	if (!report_data)
+> +		report_data = tdrdata;
+> +
+> +	gen_report_data(report_data, dump_data);
+> +
+> +	ret = ioctl(devfd, TDX_CMD_GET_TDREPORT, report_data);
+> +	if (ret) {
+> +		printf("TDX_CMD_GET_TDREPORT ioctl() %d failed\n", ret);
+> +		return -EIO;
+> +	}
+> +
+> +	if (dump_data)
+> +		print_hex_dump("\n\t\tTDX tdreport data\n", " ", report_data,
+> +			       TDX_TDREPORT_LEN);
+> +
+> +	return 0;
+> +}
+> +
+> +static __u64 get_quote_size(int devfd)
+> +{
+> +	int ret;
+> +	__u64 quote_size;
+> +
+> +	ret = ioctl(devfd, TDX_CMD_GET_QUOTE_SIZE, &quote_size);
+> +	if (ret) {
+> +		printf("TDX_CMD_GET_QUOTE_SIZE ioctl() %d failed\n", ret);
+> +		return -EIO;
+> +	}
+> +
+> +	printf("Quote size: %lld\n", quote_size);
+> +
+> +	return quote_size;
+> +}
+> +
+> +static int gen_quote(int devfd, bool dump_data)
+> +{
+> +	__u8 *quote_data;
+> +	__u64 quote_size;
+> +	int ret;
+> +
+> +	quote_size = get_quote_size(devfd);
+> +
+> +	quote_data = malloc(sizeof(char) * quote_size);
+> +	if (!quote_data) {
+> +		printf("%s queue data alloc failed\n", devname);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	ret = get_tdreport(devfd, dump_data, quote_data);
+In tdg_attest_ioctl() TDX_CMD_GEN_QUOTE case is calling
+tdx_mcall_tdreport() same as TDX_CMD_GET_TDREPORT case. Then what is
+the point of calling get_tdreport() here? Do you mean to call
+gen_report_data()?
+> +	if (ret) {
+> +		printf("TDX_CMD_GET_TDREPORT ioctl() %d failed\n", ret);
+> +		goto done;
+> +	}
+> +
+> +	ret = ioctl(devfd, TDX_CMD_GEN_QUOTE, quote_data);
+> +	if (ret) {
+> +		printf("TDX_CMD_GEN_QUOTE ioctl() %d failed\n", ret);
+> +		goto done;
+> +	}
+> +
+> +	print_hex_dump("\n\t\tTDX Quote MMIO data\n", " ", quote_data,
+> +		       quote_size);
+> +
+> +done:
+> +	free(quote_data);
+> +
+> +	return ret;
+> +}
+> +
+> +static void usage(void)
+> +{
+> +	puts("\nUsage:\n");
+> +	puts("tdx_attest [options] \n");
+> +
+> +	puts("Attestation device test utility.");
+> +
+> +	puts("\nOptions:\n");
+> +	puts(" -d, --dump                Dump tdreport/tdquote data");
+> +	puts(" -r, --get-tdreport        Get TDREPORT data");
+> +	puts(" -g, --gen-quote           Generate TDQUOTE");
+> +	puts(" -s, --get-quote-size      Get TDQUOTE size");
+> +}
+> +
+> +int main(int argc, char **argv)
+> +{
+> +	int ret, devfd;
+> +	struct tdx_attest_args args = {0};
+> +
+> +	static const struct option longopts[] = {
+> +		{ "dump",           no_argument,       NULL, 'd' },
+> +		{ "get-tdreport",   required_argument, NULL, 'r' },
+> +		{ "gen-quote",      required_argument, NULL, 'g' },
+> +		{ "gen-quote-size", required_argument, NULL, 's' },
+> +		{ "version",        no_argument,       NULL, 'V' },
+> +		{ NULL,             0, NULL, 0 }
+> +	};
+> +
+> +	while ((ret = getopt_long(argc, argv, "hdrgsV", longopts,
+> +				  NULL)) != -1) {
+> +		switch (ret) {
+> +		case 'd':
+> +			args.is_dump_data = true;
+> +			break;
+> +		case 'r':
+> +			args.is_get_tdreport = true;
+> +			break;
+> +		case 'g':
+> +			args.is_gen_quote = true;
+> +			break;
+> +		case 's':
+> +			args.is_get_quote_size = true;
+> +			break;
+> +		case 'h':
+> +			usage();
+> +			return 0;
+> +		case 'V':
+> +			printf("Version: %s\n", ATTESTATION_TEST_BIN_VERSION);
+> +			return 0;
+> +		default:
+> +			printf("Invalid options\n");
+> +			usage();
+> +			return -EINVAL;
+> +		}
+> +	}
+> +
+> +	devfd = open(devname, O_RDWR | O_SYNC);
+> +	if (devfd < 0) {
+> +		printf("%s open() failed\n", devname);
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (args.is_get_quote_size)
+> +		get_quote_size(devfd);
+> +
+> +	if (args.is_get_tdreport)
+> +		get_tdreport(devfd, args.is_dump_data, NULL);
+> +
+> +	if (args.is_gen_quote)
+> +		gen_quote(devfd, args.is_dump_data);
+> +
+> +	close(devfd);
+> +
+> +	return 0;
+> +}
+> -- 
+> 2.25.1
 
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Vivien Didelot <vivien.didelot@gmail.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Vladimir Oltean <olteanv@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
----
- Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
-index 0b8a05dd52e6..f978f8719d8e 100644
---- a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
-@@ -67,8 +67,8 @@ properties:
-           reg:
-             oneOf:
-               - enum:
--                - 0
--                - 1
-+                  - 0
-+                  - 1
- 
-         required:
-           - compatible
--- 
-2.25.1
-
+BR,
+Yousaf
