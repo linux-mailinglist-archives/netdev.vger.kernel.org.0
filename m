@@ -2,222 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00DBE3C97E7
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 06:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDCA3C97F7
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 07:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235281AbhGOFAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 01:00:50 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:7010 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbhGOFAs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 01:00:48 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GQMRd44MDzXtG2;
-        Thu, 15 Jul 2021 12:52:13 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 15 Jul 2021 12:57:52 +0800
-Received: from [10.174.179.224] (10.174.179.224) by
- dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 15 Jul 2021 12:57:51 +0800
-Subject: Re: [PATCH] Bluetooth: fix use-after-free error in lock_sock_nested()
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-CC:     <cj.chengjian@huawei.com>, Wei Yongjun <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <huawei.libin@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-References: <20210714031733.1395549-1-bobo.shaobowang@huawei.com>
- <CABBYNZL37yLgj1LP7r=rbEcsPXCPy1y55ar816eZXka2W=7-Aw@mail.gmail.com>
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Message-ID: <a1c4ddcb-afbd-c0e4-2003-90590b10ea84@huawei.com>
-Date:   Thu, 15 Jul 2021 12:57:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S238917AbhGOFEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 01:04:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55182 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231549AbhGOFEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 01:04:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626325275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WtjoUKLcgmL3bnw/gxqCJv6EYfcYaY0E3bn8JDpe3PI=;
+        b=HGBLkOX+IZpd9PDeczkUWAdzxkUB6jF+BaMjpI7N1m38DiQuOUKRwW869N/rf4muIE+R7N
+        9KBfNt4KWhZWBDpNk6+kT1JzHD6SZAzlLmJfX1/HrHyGMdmNNnF5OIw4cQPu7VkM/IlxX6
+        ZxmEcM+pWRmcoghNunOq3wxIMhDCZpE=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-288-nlKKpxvzOc2E_18n5GaFag-1; Thu, 15 Jul 2021 01:01:13 -0400
+X-MC-Unique: nlKKpxvzOc2E_18n5GaFag-1
+Received: by mail-pf1-f199.google.com with SMTP id x130-20020a627c880000b0290332acd337a6so889451pfc.23
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 22:01:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=WtjoUKLcgmL3bnw/gxqCJv6EYfcYaY0E3bn8JDpe3PI=;
+        b=d+uNMo3UrHVRCq9ZqC5ZXMyq/8UvWj6u/DUibAuFleKlBRaZlBrrFItnqvDv7vojLM
+         bOwHAYD5ytic6SAwRsVD9PMbKzuDGF1n73lFiuQ3dejLIhr5KF+wKps29SpKInx7PXqA
+         8ZHz0AWUR6ruOQW4iXafrL/IudP7CvXT3tUdVLhP8kq6Ea9xSMHFpIUoZILxkeDd8Ekw
+         4duQjXxHOJ6t3H2JDIGN4Y2S2UHVnBITGptVB9mR88jKq/nhjhrpp/eXe+Ow0/E9MmkY
+         IrwxQ+zTFm/KXCZDn1ZgeL4DASvsmdojxBAAklXd7c+pbLeyhy4w2n92x/KCnmxKeOV7
+         LKeg==
+X-Gm-Message-State: AOAM533990tRMMFE/rHvwI0ijNwOQAGX7VG/6pSd5zV24p5O2CN3zFLM
+        0Sv722z+sRFjH8QtSwL3e1Lfu7DNAebRhxVHa5l0Pysy9FsTkfOp/VhFOiR25g9U0l+vAj2M8XF
+        NGRL1Wgq1mM9UBowF
+X-Received: by 2002:a63:1e5c:: with SMTP id p28mr2391190pgm.3.1626325272858;
+        Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwkpF4TSDI5DZm/B2bv9bWVuNXDKhmhRtseurS2rxggrCDnmBokVeS6bdawuICnE0MaFRu/xw==
+X-Received: by 2002:a63:1e5c:: with SMTP id p28mr2391148pgm.3.1626325272634;
+        Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o20sm5070990pgv.80.2021.07.14.22.01.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+Subject: Re: [PATCH v9 16/17] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christian Brauner <christian.brauner@canonical.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
+        Greg KH <gregkh@linuxfoundation.org>,
+        He Zhe <zhe.he@windriver.com>,
+        Liu Xiaodong <xiaodong.liu@intel.com>,
+        songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev@vger.kernel.org, kvm <kvm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-17-xieyongji@bytedance.com>
+ <26116714-f485-eeab-4939-71c4c10c30de@redhat.com>
+ <CACycT3uh+wUeDM1H7JiCJTMeCVCBngURGKeXD-h+meekNNwiQw@mail.gmail.com>
+ <ec3e2729-3490-851f-ed4b-6dee9c04831c@redhat.com>
+ <CACycT3vTyR=+6xOJyXCu_bGAKcz4Fx3bA25WfdBjhxJ6MOvLzw@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5d756360-b540-2faf-6e52-e7e6e863ca0b@redhat.com>
+Date:   Thu, 15 Jul 2021 13:00:56 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <CABBYNZL37yLgj1LP7r=rbEcsPXCPy1y55ar816eZXka2W=7-Aw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <CACycT3vTyR=+6xOJyXCu_bGAKcz4Fx3bA25WfdBjhxJ6MOvLzw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.224]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2021/7/15 5:50, Luiz Augusto von Dentz 写道:
-> Hi,
+在 2021/7/15 下午12:03, Yongji Xie 写道:
+>> Which ioctl can be used for this?
+>>
+> I mean we can introduce a new ioctl for that in the future.
+
+
+Ok, I see.
+
+
 >
-> On Tue, Jul 13, 2021 at 8:20 PM Wang ShaoBo <bobo.shaobowang@huawei.com> wrote:
->> use-after-free error in lock_sock_nested() is reported:
+>>>> I wonder if it's better to do something similar to ccw:
+>>>>
+>>>> 1) requires the userspace to update the status bit in the response
+>>>> 2) update the dev->status to the status in the response if no timeout
+>>>>
+>>>> Then userspace could then set NEEDS_RESET if necessary.
+>>>>
+>>> But NEEDS_RESET does not only happen in this case.
+>> Yes, so you need an ioctl for userspace to update the device status
+>> (NEEDS_RESET) probably.
 >>
->> [  179.140137][ T3731] =====================================================
->> [  179.142675][ T3731] BUG: KMSAN: use-after-free in lock_sock_nested+0x280/0x2c0
->> [  179.145494][ T3731] CPU: 4 PID: 3731 Comm: kworker/4:2 Not tainted 5.12.0-rc6+ #54
->> [  179.148432][ T3731] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
->> [  179.151806][ T3731] Workqueue: events l2cap_chan_timeout
->> [  179.152730][ T3731] Call Trace:
->> [  179.153301][ T3731]  dump_stack+0x24c/0x2e0
->> [  179.154063][ T3731]  kmsan_report+0xfb/0x1e0
->> [  179.154855][ T3731]  __msan_warning+0x5c/0xa0
->> [  179.155579][ T3731]  lock_sock_nested+0x280/0x2c0
->> [  179.156436][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.157257][ T3731]  l2cap_sock_teardown_cb+0xb8/0x890
->> [  179.158154][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
->> [  179.159141][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.159994][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
->> [  179.160959][ T3731]  ? l2cap_sock_recv_cb+0x420/0x420
->> [  179.161834][ T3731]  l2cap_chan_del+0x3e1/0x1d50
->> [  179.162608][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.163435][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
->> [  179.164406][ T3731]  l2cap_chan_close+0xeea/0x1050
->> [  179.165189][ T3731]  ? kmsan_internal_unpoison_shadow+0x42/0x70
->> [  179.166180][ T3731]  l2cap_chan_timeout+0x1da/0x590
->> [  179.167066][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
->> [  179.168023][ T3731]  ? l2cap_chan_create+0x560/0x560
->> [  179.168818][ T3731]  process_one_work+0x121d/0x1ff0
->> [  179.169598][ T3731]  worker_thread+0x121b/0x2370
->> [  179.170346][ T3731]  kthread+0x4ef/0x610
->> [  179.171010][ T3731]  ? process_one_work+0x1ff0/0x1ff0
->> [  179.171828][ T3731]  ? kthread_blkcg+0x110/0x110
->> [  179.172587][ T3731]  ret_from_fork+0x1f/0x30
->> [  179.173348][ T3731]
->> [  179.173752][ T3731] Uninit was created at:
->> [  179.174409][ T3731]  kmsan_internal_poison_shadow+0x5c/0xf0
->> [  179.175373][ T3731]  kmsan_slab_free+0x76/0xc0
->> [  179.176060][ T3731]  kfree+0x3a5/0x1180
->> [  179.176664][ T3731]  __sk_destruct+0x8af/0xb80
->> [  179.177375][ T3731]  __sk_free+0x812/0x8c0
->> [  179.178032][ T3731]  sk_free+0x97/0x130
->> [  179.178686][ T3731]  l2cap_sock_release+0x3d5/0x4d0
->> [  179.179457][ T3731]  sock_close+0x150/0x450
->> [  179.180117][ T3731]  __fput+0x6bd/0xf00
->> [  179.180787][ T3731]  ____fput+0x37/0x40
->> [  179.181481][ T3731]  task_work_run+0x140/0x280
->> [  179.182219][ T3731]  do_exit+0xe51/0x3e60
->> [  179.182930][ T3731]  do_group_exit+0x20e/0x450
->> [  179.183656][ T3731]  get_signal+0x2dfb/0x38f0
->> [  179.184344][ T3731]  arch_do_signal_or_restart+0xaa/0xe10
->> [  179.185266][ T3731]  exit_to_user_mode_prepare+0x2d2/0x560
->> [  179.186136][ T3731]  syscall_exit_to_user_mode+0x35/0x60
->> [  179.186984][ T3731]  do_syscall_64+0xc5/0x140
->> [  179.187681][ T3731]  entry_SYSCALL_64_after_hwframe+0x44/0xae
->> [  179.188604][ T3731] =====================================================
->>
->> In our case, there are two Thread A and B:
->>
->> Context: Thread A:              Context: Thread B:
->>
->> l2cap_chan_timeout()            __se_sys_shutdown()
->>    l2cap_chan_close()              l2cap_sock_shutdown()
->>      l2cap_chan_del()                l2cap_chan_close()
->>        l2cap_sock_teardown_cb()        l2cap_sock_teardown_cb()
->>
->> Once l2cap_sock_teardown_cb() excuted, this sock will be marked as SOCK_ZAPPED,
->> and can be treated as killable in l2cap_sock_kill() if sock_orphan() has
->> excuted, at this time we close sock through sock_close() which end to call
->> l2cap_sock_kill() like Thread C:
->>
->> Context: Thread C:
->>
->> sock_close()
->>    l2cap_sock_release()
->>      sock_orphan()
->>      l2cap_sock_kill()  #free sock if refcnt is 1
->>
->> If C completed, Once A or B reaches l2cap_sock_teardown_cb() again,
->> use-after-free happened.
->>
->> We should set chan->data to NULL if sock is freed, for telling teardown
->> operation is not allowed in l2cap_sock_teardown_cb(), and also we should
->> avoid killing an already killed socket in l2cap_sock_close_cb().
->>
->> Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
->> ---
->>   net/bluetooth/l2cap_sock.c | 14 ++++++++++++--
->>   1 file changed, 12 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
->> index c99d65ef13b1..ddc6a692b237 100644
->> --- a/net/bluetooth/l2cap_sock.c
->> +++ b/net/bluetooth/l2cap_sock.c
->> @@ -1215,14 +1215,18 @@ static int l2cap_sock_recvmsg(struct socket *sock, struct msghdr *msg,
->>    */
->>   static void l2cap_sock_kill(struct sock *sk)
->>   {
->> +       struct l2cap_chan *chan;
->> +
->>          if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
->>                  return;
->>
->>          BT_DBG("sk %p state %s", sk, state_to_string(sk->sk_state));
->>
->>          /* Kill poor orphan */
->> -
->> -       l2cap_chan_put(l2cap_pi(sk)->chan);
->> +       chan = l2cap_pi(sk)->chan;
->> +       l2cap_chan_put(chan);
+> Yes, but I'd like to do that after the initial version is merged since
+> NEEDS_RESET is not supported now.
 
-There is a problem here, the above sentence `l2cap_chan_put(chan)` 
-should put after
 
-following sentence.
+Right.
 
->> +       if (refcount_read(&sk->sk_refcnt) == 1)
->> +               chan->data = NULL;
-> Instead of checking if it is the last reference here, wouldn't it be
-> better to reset the chan->data to NULL on l2cap_sock_destruct?
+Thanks
 
-Hi,
 
-In my case it looks OK, this is the diff:
-
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index f1b1edd0b697..32ef3328ab49 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -1500,6 +1500,9 @@ static void l2cap_sock_close_cb(struct l2cap_chan 
-*chan)
-  {
-         struct sock *sk = chan->data;
-
-+       if (!sk)
-+               return;
-+
-         l2cap_sock_kill(sk);
-  }
-
-@@ -1508,6 +1511,9 @@ static void l2cap_sock_teardown_cb(struct 
-l2cap_chan *chan, int err)
-         struct sock *sk = chan->data;
-         struct sock *parent;
-
-+       if (!sk)
-+               return;
-+
-         BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
-
-         /* This callback can be called both for server (BT_LISTEN)
-@@ -1700,6 +1706,7 @@ static void l2cap_sock_destruct(struct sock *sk)
-         BT_DBG("sk %p", sk);
-
-         if (l2cap_pi(sk)->chan)
-+              l2cap_pi(sk)->chan->data = NULL;
-                  l2cap_chan_put(l2cap_pi(sk)->chan);
-
-But if it has potential risk if l2cap_sock_destruct() can not be excuted 
-in time ?
-
-sk_free():
-
-         if (refcount_dec_and_test(&sk->sk_wmem_alloc)) //is possible 
-this condition false ?
-
-               __sk_free(sk)   -> ... l2cap_sock_destruct()
+>
 
