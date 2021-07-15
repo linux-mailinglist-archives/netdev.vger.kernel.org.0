@@ -2,122 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C4D3C971E
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 06:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A7573C9727
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 06:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235602AbhGOEY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 00:24:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
+        id S235901AbhGOE1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 00:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbhGOEY4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 00:24:56 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9EFC06175F;
-        Wed, 14 Jul 2021 21:22:03 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 70so1335361pgh.2;
-        Wed, 14 Jul 2021 21:22:03 -0700 (PDT)
+        with ESMTP id S230076AbhGOE1W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 00:27:22 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851DAC06175F
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 21:24:30 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 62so4732090pgf.1
+        for <netdev@vger.kernel.org>; Wed, 14 Jul 2021 21:24:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dBTosmdSR7CNRm+mVOCFUNDe7m3yGam3kuEQEMXECBA=;
-        b=jpCB6haMNRn6FeOt67XPmN/G6rC9i3yRZ1ldqp++fUAhpf1FuNnkGqEhcXxDitTwSU
-         C5VLnl+A8+6T0QEZjtKhsrGnnd8AoQseaYdnty0hGm5y+Ewt1IPc0efpVq76baqlQ3MH
-         McWFGTYeo/zaVorZaakJ6MfbLGd8OruASzvzF98IpWe4xpYYM+hd1SKjsrzDAzEHqcv+
-         VPpqHvOLIKzZK93lIUrm6O1tjXsQ3HLmslzlaXdteKXXdRRk+iRVdcw2Bi5W5XRsT5vW
-         2dZTFXXxKStMKtU6syiQcxB5pLlbaecXiH099f4f9okVFGnw7AIiizFzeRLDpPk70UjF
-         2MCg==
+        bh=ffn7ehD3wO2JuWKBy0gpI3O+DP3o4Rpv0/eSQCMvr44=;
+        b=YJPYdrSQ6X5imofcJTplIPVfBu+KPHZQAVjtZssZomRtdDqSYS4TnMGZTNJgRNajLK
+         6k+homhGPIpBZ3tIwad+PhglnFHXbg3b2j53j7tgG30KzuQrUVWB5kJAdv+yNybA5iUw
+         vqe4BHxQyF3cxlMX5AglOAVoETtAlp99x4OZhVOQVwE/2DFqDRAZOSv+wWEaVC8mZ7PI
+         UTJxPSRHL6sTm7QcZgIZcC7O4P8kv/TsBfZEOhvKKuGHVwtllP0TBb2KgWF/2iiMexV9
+         U6LgqOfSyJ8B1yNzBfHp29oihAqX7jghz8fc1YbRS7F2Jrms8Tego79XW/Tja89uiS1r
+         u5pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dBTosmdSR7CNRm+mVOCFUNDe7m3yGam3kuEQEMXECBA=;
-        b=Qcfg+aEnYcCUZMToOuHO/mGWgOkFkjVBLoq4ow/aN+wx9D4QFXPsK3vROuE7W6ksR/
-         4k+yncc2cmsLS5EqXkLyE6HecwuT3ERdDs2s2ahRGn8jVQbpeZ0gzT62t6WwPaI4fDjB
-         vl2oY3A7iZ6SCwLjeXf8DtQjj5/pP4Kivqz3rPQZXooChTw6/Kr/61ckWvQuJVUHSnvb
-         roj6S+sZjhlOm0dKxUasCzNSjFN1atCgvsx/tJoz6rfm0K0FVaQqTCHhtcRq3q4NQ+y1
-         xo79ZYFnCgugZZTAJVez5bhf9SGrROJEB/ozPNG3FtrJSRK68YlmflGhxhhGeB7ZfXBN
-         G9Ww==
-X-Gm-Message-State: AOAM530H9s76UgbwFUar4YHy7rdE2qT5B2T84vW+nUxwIVQSBzjVeK15
-        F+hN9XgJQ9g4txeIJK39AN595/rOJ75a5LpsKDY=
-X-Google-Smtp-Source: ABdhPJxJW9zid6uRT39sNlQTtUjQqUhJDLC0/3g0cCCZO3+zpm2GXCmsZmkdlkUhBQ1BWuxxNDi8F9LRfXKTLUikCNo=
-X-Received: by 2002:a63:4302:: with SMTP id q2mr2141513pga.428.1626322923333;
- Wed, 14 Jul 2021 21:22:03 -0700 (PDT)
+        bh=ffn7ehD3wO2JuWKBy0gpI3O+DP3o4Rpv0/eSQCMvr44=;
+        b=dXdznE5JlOVXJD3f3hGNo3C6CAnuIZZcC4ogtNDZ8iQqWrP0czopot9VzFCPDKfh8p
+         4yapjjudSbG9/5Ns5KwwlOgkFf9JIhM96PiQjAa2ciAbGQNOedyBrilgsqCh8dgt0JLA
+         bPMI94inasSRe0i8O+KGa78e8bXkAVp6zcVubPK+hAuLPIhPpLEJz5e+HHdU4tN/aEhb
+         tglvUuoVyS3kM1b5s3IH1NddjBoDnhOEJtMqvl1OEkfwLIC+fD4hH8dcVC7N+mZudBhA
+         geMPik5KedQjUCugcXULCwjyTOQMbcIp1zGMzi84ROwtHR2ARXQAm4J6eK/sgQ116Ntq
+         hgtg==
+X-Gm-Message-State: AOAM530X+lQzc8fgdAnSwLYe94iEP6HKU704QWCYPBCQbP4W9VMwYG4P
+        1VyBM5XRaeXt7zVnKhmi/cK5JjL9zvagNRF3EBc=
+X-Google-Smtp-Source: ABdhPJxHJ7BMHKp8rpZINzCl1ieoEdqMR3yQ8jbUV5Nz2D9vVaQwcfAQxFqqlIqa1oRWTscocYmHEfRwwyBPRU5ky2g=
+X-Received: by 2002:a62:ea1a:0:b029:329:a95a:fab with SMTP id
+ t26-20020a62ea1a0000b0290329a95a0fabmr2109002pfh.31.1626323070118; Wed, 14
+ Jul 2021 21:24:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210713123654.31174-1-yajun.deng@linux.dev> <20210713123654.31174-2-yajun.deng@linux.dev>
-In-Reply-To: <20210713123654.31174-2-yajun.deng@linux.dev>
+References: <20210711050007.1200-1-xiangxia.m.yue@gmail.com>
+ <20210711050007.1200-2-xiangxia.m.yue@gmail.com> <CAM_iQpUtQGDx6yJtY5sxYVd3wNqBSDYAZ4uHZonkFQDrnLo8cQ@mail.gmail.com>
+ <CAMDZJNWfRQ_M=6E=jyOSKWMso73nNY1iKw4jyN8JU7NkSyDQcA@mail.gmail.com> <CAMDZJNVg0E3SevntjJVm99RdggSxD_oOX=3EXU1v-sQLgDGvNQ@mail.gmail.com>
+In-Reply-To: <CAMDZJNVg0E3SevntjJVm99RdggSxD_oOX=3EXU1v-sQLgDGvNQ@mail.gmail.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 14 Jul 2021 21:21:52 -0700
-Message-ID: <CAM_iQpUMxAOzMBJhxbYYYq2D2Fn_yYSxsWkxCDGVavGZhdKxHw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] rtnetlink: use nlmsg_{multicast, unicast} instead of netlink_{broadcast,unicast}
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Johannes Berg <johannes.berg@intel.com>,
-        ryazanov.s.a@gmail.com, Andrey Wagin <avagin@gmail.com>,
-        vladimir.oltean@nxp.com, Roopa Prabhu <roopa@cumulusnetworks.com>,
-        "zhudi (J)" <zhudi21@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>,
+Date:   Wed, 14 Jul 2021 21:24:18 -0700
+Message-ID: <CAM_iQpXM-xhy_kVNk73235nFvU13jtN=kj7aG+ZuwcbY2V+tHQ@mail.gmail.com>
+Subject: Re: [net-next 2/2] qdisc: add tracepoint qdisc:qdisc_requeue for
+ requeued SKBs
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 13, 2021 at 5:37 AM Yajun Deng <yajun.deng@linux.dev> wrote:
+On Mon, Jul 12, 2021 at 7:07 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 >
-> It has a 'NETLINK_CB(' statement in nlmsg_multicast() and has 'if (err'
-> in nlmsg_{multicast, unicast}, use nlmsg_{multicast, unicast} instead
-> of netlink_{broadcast,unicast}. so the caller would not deal with the
-> 'if (err >0 )' statement. Add the return value for nlmsg_multicast.
-> As also, rename rtnetlink_send() to rtnl_send(), this makes style
-> uniform.
+> On Mon, Jul 12, 2021 at 12:17 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > On Mon, Jul 12, 2021 at 11:51 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > On Sat, Jul 10, 2021 at 10:00 PM <xiangxia.m.yue@gmail.com> wrote:
+> > > >
+> > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > >
+> > > > The main purpose of this tracepoint is to monitor what,
+> > > > how many and why packets were requeued. The txq_state can
+> > > > be used for determining the reason for packets requeued.
+> > >
+> > > Hmm, how can I figure out the requeue is caused by
+> > > validate_xmit_skb_list() when it returns again==true?
+> Hi cong
+> Consider this patch again.
+> The main purpose of this tracepoint is to monitor what, how many and
+> why packets were requeued.
+> So should we figure out packets required by validate_xmit_skb_list or
+> dev_hard_start_xmit ?
+> because we may want to know what packets were requeued and how many.
 >
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-> ---
->  include/linux/rtnetlink.h |  2 +-
->  net/core/rtnetlink.c      | 13 +++++++------
->  2 files changed, 8 insertions(+), 7 deletions(-)
->
-> diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
-> index bb9cb84114c1..60bef82e42ab 100644
-> --- a/include/linux/rtnetlink.h
-> +++ b/include/linux/rtnetlink.h
-> @@ -9,7 +9,7 @@
->  #include <linux/refcount.h>
->  #include <uapi/linux/rtnetlink.h>
->
-> -extern int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, u32 group, int echo);
-> +extern int rtnl_send(struct sk_buff *skb, struct net *net, u32 pid, u32 group, int echo);
->  extern int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid);
->  extern void rtnl_notify(struct sk_buff *skb, struct net *net, u32 pid,
->                         u32 group, struct nlmsghdr *nlh, gfp_t flags);
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index f6af3e74fc44..c081d607bb69 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -707,17 +707,18 @@ static int rtnl_link_fill(struct sk_buff *skb, const struct net_device *dev)
->         return err;
->  }
->
-> -int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, unsigned int group, int echo)
-> +int rtnl_send(struct sk_buff *skb, struct net *net, u32 pid, unsigned int group, int echo)
->  {
->         struct sock *rtnl = net->rtnl;
->         int err = 0;
->
-> -       NETLINK_CB(skb).dst_group = group;
-> -       if (echo)
-> +       err = nlmsg_multicast(rtnl, skb, pid, group, GFP_KERNEL);
-> +
-> +       if (echo) {
->                 refcount_inc(&skb->users);
+> if we should figure out, we can add more arg for trace, right ?
 
-You also moved this refcount_inc() down after nlmsg_multicast().
-Are you sure it is safe?
-
-And the name rtnl_send() is bad given that rtnl_unicast() follows it...
+Figuring out which case is important to determine the cause,
+so you have to fix it to make it useful.
 
 Thanks.
