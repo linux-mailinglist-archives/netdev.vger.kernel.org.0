@@ -2,162 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296DE3CA060
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6600D3CA03B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236851AbhGOOTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 10:19:21 -0400
-Received: from mx0a-000c9b01.pphosted.com ([205.220.166.177]:61586 "EHLO
-        mx0a-000c9b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236344AbhGOOTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 10:19:19 -0400
-X-Greylist: delayed 1009 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Jul 2021 10:19:19 EDT
-Received: from pps.filterd (m0234721.ppops.net [127.0.0.1])
-        by mx0a-000c9b01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16FDwOax030721;
-        Thu, 15 Jul 2021 13:59:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fiu.edu; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=Nov2020; bh=8BZTrFzRP0+/k4puWAXM4GQYvUzo4hRTo4mWgSeM0Xc=;
- b=Od4sXlX2rXCmNZDTi+weYrEVS7Ki0jK6RJK0qvkzFJSxnspZLe9x0kHeK5y6DQlcc2Tf
- KVEZshNx51PewwrAWHJLEb3jiuL9ijQ7gyQDmkrCY4qs1NmR0nCaudcJ0yDRHHt9E2XI
- uWya0QKwmiwPDdy+NXKHkAgjnftGZcGbpEoScxapfJrmx6BErSIvrxeczOayqjQFEsdY
- MfbGJMsCWKoWw/cnOicomhxPOr69ZcqdsNFbpdvEtJrfCoHC88mIHsgCioIXnDvsT2Hl
- ffc/yCo0DzAQGZGZTcm4XjJkQs1A2YtmNlyVDxXdhN17nV/XxS7UEnxNTqOfKxAKe0Qy oQ== 
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2048.outbound.protection.outlook.com [104.47.56.48])
-        by mx0a-000c9b01.pphosted.com with ESMTP id 39sd0cu14u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 15 Jul 2021 13:59:34 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RRfDTOq0idLXPdhSNQuOeQ/nCUrGK6dHftTHNLJ4iFgct+VV9ROglEXuRgGIviVoz9Gi7xz8ixh34S1/zUZ1NMSJpmn40+UxL8PUsJ9hJ9q9vn2DMYdNmc863iD0NZZ+jAgPDtOg6lxaFSObSzOTjzEZKVQVEow9F8m/Uhq02qnv9By6yt59I/smCtGjgoHbDke+iNMDyDERTAtZ99XDc0h2sIZbbIBbuSq6B3T94dmv3MUsEavqjGO3C+GsBgE0oSPpFRzL7VKTcJPGCzF3dICo2XfZGL133Q4qHfqqZkJVpVy3wRTw8uEWVg8oI0F83FljhR6FPznmTM6pUxJ9jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8BZTrFzRP0+/k4puWAXM4GQYvUzo4hRTo4mWgSeM0Xc=;
- b=j1s0nxL+RYMybYzh0DvEcZRk7cXA6yQNpWpdkc5iWT8bTZcVf2utnKrmtL0179dHbSbb3fLqA2hFTVO9O2xU2RZFAhgJUOzbcvZHC+9wInvn6joadcqiwMu9uP80FHE7imuv2jCQUjQnL8jjykRuRF0Yu6tFImesFbzp+jJriFBefTG6k2X8EX+yCexti54sFWdtzBIXOAltfuWtVI0PhQeANt0/sgnPLYeFPtLz4XhKJeoSxn0OaCXj9gvM0jXyS9w9Xhxn91CCoYllCcEUXinw8NdA/+yjUIhIqSbrT8j3CEJZ0HX7gsyNavz6NaSngvxEeommrAgbt02oJKxsNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fiu.edu; dmarc=pass action=none header.from=fiu.edu; dkim=pass
- header.d=fiu.edu; arc=none
-Received: from BN7PR05MB5923.namprd05.prod.outlook.com (2603:10b6:408:9::28)
- by BN7PR05MB4195.namprd05.prod.outlook.com (2603:10b6:406:90::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.14; Thu, 15 Jul
- 2021 13:59:32 +0000
-Received: from BN7PR05MB5923.namprd05.prod.outlook.com
- ([fe80::e5c6:8134:83d0:8cc1]) by BN7PR05MB5923.namprd05.prod.outlook.com
- ([fe80::e5c6:8134:83d0:8cc1%6]) with mapi id 15.20.4352.011; Thu, 15 Jul 2021
- 13:59:32 +0000
-From:   David Ramirez <davramir@fiu.edu>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: XDP applications running in driver mode on mlx5_core can't access
- various helper functions
-Thread-Topic: XDP applications running in driver mode on mlx5_core can't
- access various helper functions
-Thread-Index: AQHXeYEANaj7XAKvZE2i1U9m15tDDA==
-Date:   Thu, 15 Jul 2021 13:59:32 +0000
-Message-ID: <BN7PR05MB592314B791EB8654A59E8841CC129@BN7PR05MB5923.namprd05.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=fiu.edu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 76e14970-49f0-4bf2-2b1f-08d94798c592
-x-ms-traffictypediagnostic: BN7PR05MB4195:
-x-microsoft-antispam-prvs: <BN7PR05MB4195D297422B363F24F2C648CC129@BN7PR05MB4195.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qAd2R5+HD7LBclOmBE9jgi2+WBeFoSgYsD8Uj5PucFW674KuvRjsyot3yfs0PYmem4r4CZzzOZmfxn27JJF6/+RyaQav6sNEHWxnJJb0J9bK+nJ6SkPVYwFDyK7sOjjpq1cezga1qMl6LZa7x5nNeAji3jb9nJ4PHdrdXO4APfgr2HmGN5JjA1IKbTvzieMFrL27uSrS7iIiTplApGj6HGT8bSV49/tYNxqQw19PA6/ca+HgPiH8tLXH7JyXDux8MEQ9A19T18GoNzeC7dO79h74hdWKfxTDiVrixrOTHzxPA7qbDWfLrJgxY9KPbuGCKcBqnyePwhN6OijQK/sv0XAHVZnRvxu29H1ImN1vRVn5lL4WyLdpcAiwMyXJ40PS/GDb/DdE9FZSCMt2SY6as9B+YmHG5B1IV8dJyrw+Fvq5LbnZbD/uDIloAdUVUs0hzElkvs9+HjDXiLzRYvyvOVgyMpwc2iIDGK4eXRcaVDcUsnDlg6xPxD52WEDaACVqEqXS+KvEoBgcgV+bSIPDC64N52RU16LiCTjZGs8qh9y5pP0G0sWGcCclG/Xfl/SKxokaHEsnVXQ+E8dJMs3LGk3Twc7pLVIfmLHqgkbMWtzJftgNIMv9TcYz4ypYAlx0HWT5QX72ovsLIE4uT/hNZtOBdu9qzvzhyG7NR9xEDQ/SeuDL5pKQbQZqd5PednaEG7CMYVQtdYt9JqFBHnJfzg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN7PR05MB5923.namprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(66946007)(66446008)(64756008)(66556008)(66476007)(2906002)(86362001)(76116006)(9686003)(122000001)(4326008)(478600001)(186003)(71200400001)(8936002)(52536014)(316002)(786003)(5660300002)(8676002)(110136005)(7696005)(75432002)(54906003)(33656002)(83380400001)(55016002)(38100700002)(38070700004);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?liIriXTFSGXSW4NTJVe0NjnTzaF+VD9Fr8Xq4qOIQ79GaICbfdJk5tFCQA?=
- =?iso-8859-1?Q?3X3p0V1eONwz/cANMvGpmt1au4V/8LF6pjcF8Bs68dpsDhKYR2tbsarVJX?=
- =?iso-8859-1?Q?TEFMZ0Vi8qRe10Ev9VvrDpfozQ8axZEDhbVaXGMfCZnmQYmJCKzbdTDlnv?=
- =?iso-8859-1?Q?FOFYr+4nqs4C00uo5lLbDn0+rVMNhrupkK+r5OlwQiQbow8p1ENlr8Po3s?=
- =?iso-8859-1?Q?oJnO1gw15qQqg9ILTbaGMqyGeJzxyZ0sweCs7FIfvoOHr235Wxh0TEJu49?=
- =?iso-8859-1?Q?G0FB5bmfpWmTsKPAXL4+duRWs3wJsc6t5LcW0YH90zX1We+7F696BsnivW?=
- =?iso-8859-1?Q?dsoWmBjtM8R7zTGCyjhOPjwuofXrNod7m3xM5qHo65cJDDs0a4LN86tdmd?=
- =?iso-8859-1?Q?mMdX31btFZlVIuMvXgZ0knkVGN21RTC/ZQ+BpykR3MmchVF9AovgyM9khL?=
- =?iso-8859-1?Q?214hP44GQJOATi60XpBgkEJX9+DYevaxnehYu3Vni+tJwck5mib5mva28N?=
- =?iso-8859-1?Q?LysRZUgdd9PF+g1x7OIhWOjpzunzFXRC1l3EGPB4MwrWvcS1Vp5/2uHQx6?=
- =?iso-8859-1?Q?VfWUKUrk5vUG1Z/o1tCkwNfolk4T6QkTkH3B1fZ9uFH7h4Ka+P+iAnofIF?=
- =?iso-8859-1?Q?rwN2NRKek/uJ1+z3CFz25YqvV18Q259A0527P5pvi+eG3lmTIGk2Es/W59?=
- =?iso-8859-1?Q?Z4o2IcZgY/bxU2nKiMzAH5Z3wqioqifKuIePEKel6tyOibRjCfbMwgS8au?=
- =?iso-8859-1?Q?96B4iU0qWvlkxVlOyONFK+5iTFFklP/pHxJAuCr7jq/C6zFrK8Nw7v2XVI?=
- =?iso-8859-1?Q?+n+osX5LxQa9JW9fU5Uaiaqr+D+8grZevCUHiUS9Tw1EIUHWkFrPUllk55?=
- =?iso-8859-1?Q?Mr7v51ZOX5Q1UN7X/qvIDLFIVxQJgCbnqUqLyR+lrv+FZuCgWbABTytkt4?=
- =?iso-8859-1?Q?cMG7DDiUfHlVJ+3HDiNDGgpWQG/M3Rjq9GJTwJoBatcxgWILCPrnm7LZfO?=
- =?iso-8859-1?Q?aGTh7+DIGzCvQN0+sRq7cXjPdmigzFsRaJ66BmPkW40Vb5BTCyiyUHBUPp?=
- =?iso-8859-1?Q?x5n3fqvX9PZT+wD3ZrT+cFJKKILLrk8UmNnAQ+hKtiDBC4QfQFTq7QuSsV?=
- =?iso-8859-1?Q?HCvahuC5giL0e+rcW4H9Ha7h3sweRdimwA/d3DB8VFGq8v5Z3zj8ORuFPJ?=
- =?iso-8859-1?Q?NmnN8n89nTKiCMSUgidBsPbaTfUp2cETeoDIBz+UDUGS9YSAJJqOWWqhPG?=
- =?iso-8859-1?Q?YaBdMUZkMdaMiVfM5XLfvwBBUnufgKxu98YPOLrIHAwIvVu448bH7W9X2D?=
- =?iso-8859-1?Q?WluDK8nl4a0lq8b7Q98pMnUjFsR0A/on95L5b5ndQfnB9ErSv+o8/AvRhV?=
- =?iso-8859-1?Q?DPN4tlP8mVllGC0uXCmH7/NUCFJdZPQpdrkiDL3lLRYdJUXhES6hg=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S238380AbhGOOK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 10:10:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231247AbhGOOK0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 10:10:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B5CC6127C;
+        Thu, 15 Jul 2021 14:07:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626358053;
+        bh=dFeB4e16g3rrlu2n8GN+oPiDsHQIeLZDFdt+eqm3v9M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=qx4pKYd7mS+/bUW4N+sAg8RWBXPJmFgK9lzKC44PszQn7czdtmpeDEGWpV+NQ90Bq
+         AYxFgfqVEjaSEHPnUndkHQlPI+Tws66iktJE1ZVFWbqBeqrOGZOKkCDSCm8cX3spfP
+         U7Kcy6vGFR7K5izS5DjlmOlvqYKul73PUEkvLlNRYhhhIfm+pEs4oYtJgerOgAoQ1t
+         54rcmuf4oomYRKqbp2HCbyEoemW+AET6ppcvfHfAxdZ8yLOskCg7rzFEhFr28wBEOR
+         B6fwEL0EWpW4Q33oxPcM6c5Ivmjeym8/9s67bcP1hpnAKDQqk4xqw2pK8+na8tM11c
+         33Io6jCn+PZhg==
+Date:   Thu, 15 Jul 2021 09:07:31 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, Guohan Lu <lguohan@gmail.com>,
+        Billie Alsup <balsup@cisco.com>,
+        Madhava Reddy Siddareddygari <msiddare@cisco.com>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Sergey Miroshnichenko <s.miroshnichenko@yadro.com>
+Subject: Re: [RFC][PATCH] PCI: Reserve address space for powered-off devices
+ behind PCIe bridges
+Message-ID: <20210715140731.GA1955912@bjorn-Precision-5520>
 MIME-Version: 1.0
-X-OriginatorOrg: fiu.edu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN7PR05MB5923.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76e14970-49f0-4bf2-2b1f-08d94798c592
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2021 13:59:32.2729
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: ac79e5a8-e0e4-434b-a292-2c89b5c28366
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KMSBO1OrOvdYvmMhWbvz3ec8Yd1Vzh2QavGm26Uob7LCJw3ZKWYlbSxci6bLSkp/VVU34c5gsGVnV0XVjZ6xag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR05MB4195
-X-Proofpoint-ORIG-GUID: i_0JeASGDwGTUk_bv1GcT8Gv-mpJ6E9M
-X-Proofpoint-GUID: i_0JeASGDwGTUk_bv1GcT8Gv-mpJ6E9M
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-15_07:2021-07-14,2021-07-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outboundspampolicy_notspam policy=outboundspampolicy score=0
- lowpriorityscore=0 spamscore=0 mlxscore=0 mlxlogscore=732 malwarescore=0
- adultscore=0 priorityscore=1501 impostorscore=0 phishscore=0 clxscore=1011
- suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107150100
-X-Proofpoint-FIU-O365: True
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <49cb0be4-d2ac-2fbd-9327-fa7341a014e2@molgen.mpg.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey all,=0A=
-=0A=
-I am having issues with calling some bpf helper functions=0A=
-when running my XDP program in driver on the mlx5_core driver.=0A=
-Several of the helpers I've tried to use for ringbuf and maps always return=
- 0.=0A=
-While this may seem to imply that for functions that merely return null ins=
-tead of=0A=
-a pointer in case of an error are working as intended,=0A=
-some functions which return negative on failure and 0 on success are are al=
-so affected,=0A=
-as while they return 0, they do not result in the desired effect.=0A=
-=0A=
-Observed examples:=0A=
- - bpf_ringbuf_output always returns 0, but no data is pushed to the ringbu=
-f=0A=
- - bpf_map_update_elem always returns 0, but the element is not updated=0A=
- - bpf_ringbuf_reserve always returns 0=0A=
- - bpf_map_lookup_elem always returns 0=0A=
- =0A=
-I'm uncertain if this is a driver specific issue or an ebpf issue.=0A=
-Testing with xdp in driver mode on veth devices works as expected,=0A=
-which suggests this is more likely a driver issue.=0A=
-=0A=
-Additional Details:=0A=
-=0A=
-Linux Distro: Ubuntu 21.04=0A=
-Linux Kernel version: 5.11.0-18-generic=0A=
-driver: mlx5_core=0A=
-version: 5.11.0-18-generic=0A=
-=0A=
-Thank you,=0A=
-David Ramirez=
+[+cc Sergey]
+
+On Thu, Jul 15, 2021 at 03:50:49PM +0200, Paul Menzel wrote:
+> [Add Billie’s correct address.]
+> 
+> Am 13.07.21 um 09:31 schrieb Paul Menzel:
+> > From: balsup <balsup@contoso.com>
+> 
+> Billie Alsup <balsup@cisco.com>
+> 
+> > Data path devices are powered off by default, they will not be visible at
+> > BIOS stage and memory for these devices is not reserved.
+> > 
+> > By default, no address space would be reserved on the bridges for these
+> > unpowered devices. When they were powered up, they could fail to initialize
+> > because there was no appropriately aligned window available for a given
+> > BAR.
+> > 
+> > This patch will reserve address space for data path devices that are behind
+> > PCIe bridge, so that when devices are available PCIe subsystem will be
+> > assign the address within the specified range.
+> > 
+> > Signed-off-by: Madhava Reddy Siddareddygari <msiddare@cisco.com>
+> > ---
+> > This patch was submitted to the SONiC project for a Cisco device [1].
+> > It’s better to have it reviewed and committed upstream though.
+> > 
+> >   drivers/pci/setup-bus.c | 159 ++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 159 insertions(+)
+> > 
+> > diff --git a/drivers/pci/setup-bus.c b/drivers/pci/setup-bus.c
+> > index 2ce636937c6e..266097984e19 100644
+> > --- a/drivers/pci/setup-bus.c
+> > +++ b/drivers/pci/setup-bus.c
+> > @@ -967,6 +967,148 @@ static inline resource_size_t calculate_mem_align(resource_size_t *aligns,
+> >   	return min_align;
+> >   }
+> > +#define PLX_RES_MAGIC_VALUE            0xABBA
+> > +#define PLX_RES_DS_PORT_REG0           0xC6C
+> > +#define PLX_RES_DS_PORT_REG1           0xC70
+> > +#define PLX_RES_MAGIC_OFFSET           0xC76
+> > +#define PLX_RES_NP_MASK                0x1
+> > +#define PLX_RES_P_MASK                 0x1F
+> > +
+> > +static struct pci_dev *
+> > +plx_find_nt_device(struct pci_bus *bus, unsigned short brg_dev_id)
+> > +{
+> > +	struct pci_dev *dev, *nt_virt_dev = NULL;
+> > +	struct pci_bus *child_bus;
+> > +	unsigned short vendor, devid, class;
+> > +
+> > +	if (!bus)
+> > +		return NULL;
+> > +
+> > +	list_for_each_entry(child_bus, &bus->children, node) {
+> > +		list_for_each_entry(dev, &child_bus->devices, bus_list) {
+> > +			vendor = dev->vendor;
+> > +			devid = dev->device;
+> > +			class = dev->class >> 8;
+> > +
+> > +			if ((vendor == PCI_VENDOR_ID_PLX) &&
+> > +					(brg_dev_id == devid) &&
+> > +					(class == PCI_CLASS_BRIDGE_OTHER)) {
+> > +				dev_dbg(&dev->dev, "Found NT device 0x%x\n",
+> > +						devid);
+> > +				nt_virt_dev = dev;
+> > +				break;
+> > +			}
+> > +		}
+> > +
+> > +		if (nt_virt_dev)
+> > +			break;
+> > +	}
+> > +	return nt_virt_dev;
+> > +}
+> > +
+> > +static resource_size_t
+> > +pci_get_plx_downstream_res_size(struct pci_bus *bus, unsigned long res_type)
+> > +{
+> > +	int depth = 0;
+> > +	resource_size_t size = 0;
+> > +	struct pci_dev *dev = bus->self;
+> > +	struct pci_bus *tmp_bus;
+> > +	struct pci_dev *nt_virt_dev;
+> > +	u16 res_magic = 0;
+> > +
+> > +	/*
+> > +	 * 32 bits to store the memory requirement for PLX ports.
+> > +	 * Following is the layout:
+> > +	 * np32_0:1;  --> non-prefetchable port 0
+> > +	 * p64_0:5;   --> prefetchable port 0
+> > +	 * np32_1:1;  --> non-prefetchable port 1
+> > +	 * p64_1:5;   --> prefetchable port 1
+> > +	 * np32_2:1;  --> non-prefetchable port 2
+> > +	 * p64_2:5;   --> prefetchable port 2
+> > +	 * np32_3:1;  --> non-prefetchable port 3
+> > +	 * p64_3:5;   --> prefetchable port 3
+> > +	 * np32_4:1;  --> non-prefetchable port 4
+> > +	 * p64_4:5;   --> prefetchable port 4
+> > +	 * reserved:2;
+> > +	 */
+> > +	unsigned int port_bitmap;
+> > +
+> > +	u32 mem_res_bitmap = 0;
+> > +	unsigned int ds_port_offset = 0;
+> > +	unsigned short multiplier = 0;
+> > +	unsigned short np_size = 0;
+> > +
+> > +	/*
+> > +	 * PLX8713 used on FC4 and FC8
+> > +	 * PLX8725 used on FC12 and FC18
+> > +	 */
+> > +	if (!dev || dev->vendor != PCI_VENDOR_ID_PLX ||
+> > +			((dev->device & 0xFF00) != 0x8700))
+> > +		return size;
+> > +
+> > +	tmp_bus = bus;
+> > +	while (tmp_bus->parent) {
+> > +		tmp_bus = tmp_bus->parent;
+> > +		depth++;
+> > +	}
+> > +
+> > +	/* Only for Second level bridges */
+> > +	if (depth != 5)
+> > +		return size;
+> > +
+> > +	nt_virt_dev = plx_find_nt_device(bus->parent, 0x87b0);
+> > +	if (nt_virt_dev) {
+> > +		pci_read_config_word(nt_virt_dev, PLX_RES_MAGIC_OFFSET,
+> > +				&res_magic);
+> > +		dev_dbg(&nt_virt_dev->dev,
+> > +				"Magic offset of 0x%x found in NT device\n", res_magic);
+> > +	}
+> > +
+> > +	if (res_magic == PLX_RES_MAGIC_VALUE) {
+> > +		/*
+> > +		 * The pacifics are connected on PLX ports:
+> > +		 *  FC4 and FC8: #3, #4
+> > +		 *  FC12       : #3, #4, #5
+> > +		 *  FC18       : #3, #4, #5, #11
+> > +		 */
+> > +
+> > +		/* Calculate resource based on EEPROM values */
+> > +		ds_port_offset = (bus->number - bus->parent->number) - 1;
+> > +		if (ds_port_offset < 5) {
+> > +			pci_read_config_dword(nt_virt_dev, PLX_RES_DS_PORT_REG0,
+> > +					&mem_res_bitmap);
+> > +		} else {
+> > +			ds_port_offset -= 5;
+> > +			pci_read_config_dword(nt_virt_dev, PLX_RES_DS_PORT_REG1,
+> > +					&mem_res_bitmap);
+> > +		}
+> > +		port_bitmap = mem_res_bitmap;
+> > +		dev_dbg(&bus->dev, "Port offset: 0x%x, res bitmap 0x%x\n",
+> > +				ds_port_offset, mem_res_bitmap);
+> > +
+> > +		if (ds_port_offset < 5) {
+> > +			u8 m[] = { 26, 20, 14, 8, 2 };
+> > +			u8 s[] = { 31, 25, 19, 13, 7 };
+> > +
+> > +			multiplier = (port_bitmap >> m[ds_port_offset]) & PLX_RES_P_MASK;
+> > +			np_size = (port_bitmap >> s[ds_port_offset]) & PLX_RES_NP_MASK;
+> > +
+> > +			dev_dbg(&bus->dev, "Multiplier: %d, np_size: %d\n",
+> > +					multiplier, np_size);
+> > +
+> > +			if (res_type & IORESOURCE_PREFETCH) {
+> > +				size = 0x100000 << (multiplier - 1);
+> > +				dev_dbg(&bus->dev, "Pref Multiplier %d, Size 0x%llx\n",
+> > +						multiplier, (long long) size);
+> > +			} else if (np_size) {
+> > +				size = 0x100000;
+> > +				dev_dbg(&bus->dev, "NP Size 0x%llx\n", (long long) size);
+> > +			}
+> > +		}
+> > +	}
+> > +	return size;
+> > +}
+> > +
+> >   /**
+> >    * pbus_size_mem() - Size the memory window of a given bus
+> >    *
+> > @@ -1001,6 +1143,7 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
+> >   	resource_size_t children_add_size = 0;
+> >   	resource_size_t children_add_align = 0;
+> >   	resource_size_t add_align = 0;
+> > +	unsigned int dev_count = 0;
+> >   	if (!b_res)
+> >   		return -ENOSPC;
+> > @@ -1016,6 +1159,7 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
+> >   	list_for_each_entry(dev, &bus->devices, bus_list) {
+> >   		int i;
+> > +		dev_count++;
+> >   		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+> >   			struct resource *r = &dev->resource[i];
+> >   			resource_size_t r_size;
+> > @@ -1071,6 +1215,21 @@ static int pbus_size_mem(struct pci_bus *bus, unsigned long mask,
+> >   		}
+> >   	}
+> > +	/* Static allocation for FC pacific */
+> > +	if (!size && !dev_count) {
+> > +		size = pci_get_plx_downstream_res_size(bus, type);
+> > +		if (size) {
+> > +			order = __ffs(size);
+> > +			dev_dbg(&bus->self->dev, "order for %llx is %u\n", (long long) size, order);
+> > +			if ((order >= 20) &&
+> > +					((order -= 20) < ARRAY_SIZE(aligns)) &&
+> > +					(order > max_order)) {
+> > +				max_order = order;
+> > +				dev_dbg(&bus->self->dev, "max_order reset to %d; size %zx\n", max_order, (size_t)size);
+> > +			}
+> > +		}
+> > +	}
+> > +
+> >   	min_align = calculate_mem_align(aligns, max_order);
+> >   	min_align = max(min_align, window_alignment(bus, b_res->flags));
+> >   	size0 = calculate_memsize(size, min_size, 0, 0, resource_size(b_res), min_align);
+> 
+> This is basically a request for comments, how to deal with such
+> hardware, which is going to run Linux based network operating
+> systems (NOS) like SONiC.
+
+I don't think this patch is practical for upstream as-is because it
+inserts so much device-specific stuff in generic code.  That won't
+scale when we try to extend it for other similar devices.
+
+I think the long-term solution is something like Sergey's work on
+movable BARs [1], but that needs testing and review and hasn't been
+merged yet.
+
+In the short term, you might be able to work around this with the
+"pci=resource_alignment=" or "pci=hpmmiosize=" kernel parameters.
+
+[1] https://lore.kernel.org/linux-pci/20191024171228.877974-1-s.miroshnichenko@yadro.com/
