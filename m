@@ -2,135 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E50BA3C9602
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 04:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E30B53C961F
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 05:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbhGOChM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 22:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230310AbhGOChL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 22:37:11 -0400
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE76C06175F;
-        Wed, 14 Jul 2021 19:34:19 -0700 (PDT)
-Received: by mail-ot1-x331.google.com with SMTP id o72-20020a9d224e0000b02904bb9756274cso4633350ota.6;
-        Wed, 14 Jul 2021 19:34:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q7hIjlSBVcaNYjNod+L81MaSkTH8TYHb/gTtAOF6jJo=;
-        b=ZBsljYwRuvhrbEDuxSsBZPJHvWQRDU790+yd9diu9bhjvcbrjCs11eAzPFwb8sAFc1
-         l3Tlzy6JZAHHvgx9yXMydp6838LmXocEvHEV+tVtZFTF10JLyqZcXT8GZa3ci0N1nGsA
-         VJjQQFP+wIHf+C0M0xRXWe3WlJrTqafl4+iXBvcnRaQRaLsE10asUcqe90hWO0RDmPp6
-         vahPIDk0H6y6LWPi9BBc/kciHPuLaDHfZvPzODOztVU+n8fAvl7yTSy+pXnhOEAbh0No
-         ki6O7XMSL/FcqL0XiU416e9EGI/CRLa33iqZdMGlY79zHHIDLFQHLd7Q5/fVyU20mpso
-         7bXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q7hIjlSBVcaNYjNod+L81MaSkTH8TYHb/gTtAOF6jJo=;
-        b=PSX4U6NofSb/Lw92g01Y4+Cemc3qhM0hVfyNjQ0lDakXMZec4rosAGmQc82OG0YCgi
-         LdST87KnSoL1GwpteWIijHMpUp9XXn+k0JQfWaolhtz9vCyU96MClwPbYXosEFxXmtNH
-         9vWGj18Mc31+cK/b+vGPrClpSRbCzK9JD3S4qsTCYzpm6Iq3Spp2Fcrn2bYAKywnyuuA
-         oj6k9Pr5RfCQwqeo63Kq+Xqqx/omNCaV4LgVFCrHlYpquKnupKtsGMsvc3VSlBXPM4lk
-         KYPvhjZf1p81QmPQ+f8hxvBqKQrC0KpoQj7ORJJJIokFEcuj1TlQej6GmSsZR6A5Fyyr
-         U0Cw==
-X-Gm-Message-State: AOAM530Wx3kUgEcPuF+21uAe8OiDrb+ew4NqqrVxvxtzmWFRlH+FEBq0
-        BVBnWCjvMA6izxZe8qikY5pGrrsvau20OQP9m44=
-X-Google-Smtp-Source: ABdhPJwQ4c8bBGOr9cTjRZ00J0YonoK1W5QubqFUgsmrA/tzA8zeo3mQv8ePNTcI9kGkhFWfkFkZXmAhnKuBTBaJMHQ=
-X-Received: by 2002:a9d:4c9a:: with SMTP id m26mr1217555otf.110.1626316458173;
- Wed, 14 Jul 2021 19:34:18 -0700 (PDT)
+        id S232564AbhGODG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 23:06:56 -0400
+Received: from spam.zju.edu.cn ([61.164.42.155]:45160 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230433AbhGODGz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Jul 2021 23:06:55 -0400
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 15 Jul 2021 11:03:53
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.162.82.120]
+Date:   Thu, 15 Jul 2021 11:03:53 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   LinMa <linma@zju.edu.cn>
+To:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
+Cc:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>,
+        "Marcel Holtmann" <marcel@holtmann.org>,
+        "Johan Hedberg" <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
+ section
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+In-Reply-To: <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+ <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-References: <20210707094133.24597-1-kerneljasonxing@gmail.com>
- <CAL+tcoCc+r96Bv8aDXTwY5h_OYTz8sHxdpPW7OuNfdDz+ssYYg@mail.gmail.com> <03b846e9906d27ef7a6e84196a0840fdd54ca13d.camel@intel.com>
-In-Reply-To: <03b846e9906d27ef7a6e84196a0840fdd54ca13d.camel@intel.com>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Thu, 15 Jul 2021 10:33:42 +0800
-Message-ID: <CAL+tcoAtFTmFtKR2QLY_UdQWkc9Avyw3ZtaA_cD_4cXAGXRBDQ@mail.gmail.com>
-Subject: Re: [PATCH net] i40e: introduce pseudo number of cpus for compatibility
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "kafai@fb.com" <kafai@fb.com>, "hawk@kernel.org" <hawk@kernel.org>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>, "yhs@fb.com" <yhs@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "xingwanli@kuaishou.com" <xingwanli@kuaishou.com>,
-        "lishujin@kuaishou.com" <lishujin@kuaishou.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: cS_KCgAXSXSZpe9gkNjsAA--.32411W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUHElNG3DfRWwABsm
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 4:52 AM Nguyen, Anthony L
-<anthony.l.nguyen@intel.com> wrote:
->
-> On Fri, 2021-07-09 at 15:13 +0800, Jason Xing wrote:
-> > Oh, one more thing I missed in the last email is that all the
-> > failures
-> > are happening on the combination of X722 10GbE and 1GbE. So the value
-> > of @num_tx_qp  the driver fetches is 384 while the value is 768
-> > without x722 1GbE.
-> >
-> > I get that information back here:
-> > $ lspci | grep -i ether
-> > 5a:00.0 Ethernet controller: Intel Corporation Ethernet Connection
-> > X722 for 10GbE SFP+ (rev 09)
-> > 5a:00.1 Ethernet controller: Intel Corporation Ethernet Connection
-> > X722 for 10GbE SFP+ (rev 09)
-> > 5a:00.2 Ethernet controller: Intel Corporation Ethernet Connection
-> > X722 for 1GbE (rev 09)
-> > 5a:00.3 Ethernet controller: Intel Corporation Ethernet Connection
-> > X722 for 1GbE (rev 09)
-> >
-> > I know it's really stupid to control the number of online cpus, but
-> > finding a good way only to limit the @alloc_queue_pairs is not easy
-> > to
-> > go. So could someone point out a better way to fix this issue and
-> > take
-> > care of some relatively old nics with the number of cpus increasing?
->
-> Hi Jason,
->
-> Sorry for the slow response; I was trying to talk to the i40e team
-> about this.
-
-Thanks for your kind help really. It indeed has a big impact on thousands
-of machines.
-
->
-> I agree, the limiting of number of online CPUs doesn't seem like a
-> solution we want to pursue. The team is working on a patch that deals
-
-As I said above, if the machine is equipped with only 10GbE nic, the maximum
-online cpus would be 256 and so on. For now, it depends on the num of cpus.
-
-> with the same, or similiar, issue; it is reworking the allocations of
-> the queue pile. I'll make sure that they add you on the patch when it
-
-It's not easy to cover all kinds of cases. But I still believe it's
-the only proper
-way to fix the issue. Looking forward to your patch :)
-
-> is sent so that you can try this and see if it resolves your issue.
->
-
-Yeah, sure, I will double-check and then see if it's really fixed.
-
-Thanks,
-Jason
-
-> Thanks,
-> Tony
->
+SGkgdGhlcmUsCgpJJ20ganVzdCBleGhpbGFyYXRlZCB0byBzZWUgdGhlcmUgaGF2ZSBiZWVuIHNv
+bWUgbmV3IGlkZWFzIHRvIGZpeCB0aGlzLgoKPiAKPiBIb3cgYWJvdXQgd2UgcmV2ZXJ0IGJhY2sg
+dG8gdXNlIGJoX2xvY2tfc29ja19uZXN0ZWQgYnV0IHVzZQo+IGxvY2FsX2JoX2Rpc2FibGUgbGlr
+ZSB0aGUgZm9sbG93aW5nIHBhdGNoOgo+IAo+IGh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcv
+cHJvamVjdC9ibHVldG9vdGgvcGF0Y2gvMjAyMTA3MTMxNjI4MzguNjkzMjY2LTEtZGVzbW9uZGNo
+ZW9uZ3p4QGdtYWlsLmNvbS8KPiAKCkkgaGF2ZSBjaGVja2VkIHRoYXQgcGF0Y2ggYW5kIGxlYXJu
+IGFib3V0IHNvbWUgYGxvY2FsX2JoX2Rpc2FibGUvZW5hYmxlYCB1c2FnZS4KVG8gdGhlIGJlc3Qg
+b2YgbXkga25vd2xlZGdlLCB0aGUgbG9jYWxfYmhfZGlzYWJsZSgpIGZ1bmN0aW9uIGNhbiBiZSB1
+c2VkIHRvIGRpc2FibGUgdGhlIHByb2Nlc3Npbmcgb2YgYm90dG9tIGhhbHZlcyAoc29mdGlycXMp
+LgpPciBpbiBhbm90aGVyIHdvcmQsIGlmIHByb2Nlc3MgY29udGV4dCBmdW5jdGlvbiwgaGNpX3Nv
+Y2tfc2VuZG1zZygpIGZvciBleGFtcGxlLCBjYW4gbWFzayB0aGUgQkggKGhjaV9kZXZfZG9fY2xv
+c2UoKT8pLiBJdCBkb2Vzbid0IG5lZWQgdG8gd29ycnkgYWJvdXQgdGhlIFVBRi4KCkhvd2V2ZXIs
+IGFmdGVyIGRvaW5nIHNvbWUgZXhwZXJpbWVudHMsIEkgZmFpbGVkIDooCkZvciBpbnN0YW5jZSwg
+SSB0cnkgdG8gZG8gZm9sbG93aW5nIHBhdGNoOgoKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29j
+ay5jCisrKyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwpAQCAtMTcyMCw2ICsxNzIwLDcgQEAg
+c3RhdGljIGludCBoY2lfc29ja19zZW5kbXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBt
+c2doZHIgKm1zZywKICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOwoKICAgICAgICBsb2Nr
+X3NvY2soc2spOworICAgICAgIGxvY2FsX2JoX2Rpc2FibGUoKTsKCiAgICAgICAgc3dpdGNoICho
+Y2lfcGkoc2spLT5jaGFubmVsKSB7CiAgICAgICAgY2FzZSBIQ0lfQ0hBTk5FTF9SQVc6CkBAIC0x
+ODMyLDcgKzE4MzMsOSBAQCBzdGF0aWMgaW50IGhjaV9zb2NrX3NlbmRtc2coc3RydWN0IHNvY2tl
+dCAqc29jaywgc3RydWN0IG1zZ2hkciAqbXNnLAogICAgICAgIGVyciA9IGxlbjsKCiBkb25lOgor
+ICAgICAgIGxvY2FsX2JoX2VuYWJsZSgpOwogICAgICAgIHJlbGVhc2Vfc29jayhzayk7CisKICAg
+ICAgICByZXR1cm4gZXJyOwoKQnV0IHRoZSBQT0MgY29kZSBzaG93cyBlcnJvciBtZXNzYWdlIGxp
+a2UgYmVsb3c6CgpbICAgMTguMTY5MTU1XSBCVUc6IHNsZWVwaW5nIGZ1bmN0aW9uIGNhbGxlZCBm
+cm9tIGludmFsaWQgY29udGV4dCBhdCBpbmNsdWRlL2xpbnV4L3NjaGVkL21tLmg6MTk3ClsgICAx
+OC4xNzAxODFdIGluX2F0b21pYygpOiAxLCBpcnFzX2Rpc2FibGVkKCk6IDAsIG5vbl9ibG9jazog
+MCwgcGlkOiAxMjAsIG5hbWU6IGV4cApbICAgMTguMTcwOTg3XSAxIGxvY2sgaGVsZCBieSBleHAv
+MTIwOgpbICAgMTguMTcxMzg0XSAgIzA6IGZmZmY4ODgwMTFkZDUxMjAgKHNrX2xvY2stQUZfQkxV
+RVRPT1RILUJUUFJPVE9fSENJKXsrLisufS17MDowfSwgYXQ6IGhjaV9zb2NrX3NlbmRtc2crMHgx
+MWUvMHgyNmMwClsgICAxOC4xNzIzMDBdIENQVTogMCBQSUQ6IDEyMCBDb21tOiBleHAgTm90IHRh
+aW50ZWQgNS4xMS4xMSsgIzQ0ClsgICAxOC4xNzI5MjFdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3Rh
+bmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTAuMi0xdWJ1bnR1MSAwNC8w
+MS8yMDE0Ci4uLgoKVGhlIHBhdGNoIHByb3ZpZGVkIGJ5IERlc21vbmQgYWRkcyB0aGUgbG9jYWxf
+YmhfZGlzYWJsZSgpIGJlZm9yZSB0aGUgYmhfbG9ja19zb2NrKCkgc28gSSBhbHNvIHRyeSB0aGF0
+IGluIAoKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCisrKyBiL25ldC9ibHVldG9vdGgv
+aGNpX3NvY2suYwpAQCAtNzYyLDYgKzc2Miw3IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0
+cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCiAgICAgICAgICAgICAgICAvKiBEZXRhY2gg
+c29ja2V0cyBmcm9tIGRldmljZSAqLwogICAgICAgICAgICAgICAgcmVhZF9sb2NrKCZoY2lfc2tf
+bGlzdC5sb2NrKTsKICAgICAgICAgICAgICAgIHNrX2Zvcl9lYWNoKHNrLCAmaGNpX3NrX2xpc3Qu
+aGVhZCkgeworICAgICAgICAgICAgICAgICAgICAgICBsb2NhbF9iaF9kaXNhYmxlKCk7CiAgICAg
+ICAgICAgICAgICAgICAgICAgIGJoX2xvY2tfc29ja19uZXN0ZWQoc2spOwogICAgICAgICAgICAg
+ICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+aGRldiA9PSBoZGV2KSB7CiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgaGNpX3BpKHNrKS0+aGRldiA9IE5VTEw7CkBAIC03NzIsNiArNzcz
+LDcgQEAgdm9pZCBoY2lfc29ja19kZXZfZXZlbnQoc3RydWN0IGhjaV9kZXYgKmhkZXYsIGludCBl
+dmVudCkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBoY2lfZGV2X3B1dChoZGV2KTsK
+ICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICBiaF91bmxv
+Y2tfc29jayhzayk7CisgICAgICAgICAgICAgICAgICAgICAgIGxvY2FsX2JoX2VuYWJsZSgpOwog
+ICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgcmVhZF91bmxvY2soJmhjaV9za19saXN0
+LmxvY2spOwogICAgICAgIH0KCkJ1dCB0aGlzIGlzIG5vdCB1c2VmdWwsIHRoZSBVQUYgc3RpbGwg
+b2NjdXJzCgpbICAgMTMuODYyMTE3XSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KWyAgIDEzLjg2MzA2NF0gQlVHOiBLQVNB
+TjogdXNlLWFmdGVyLWZyZWUgaW4gX19sb2NrX2FjcXVpcmUrMHhlNS8weDJjYTAKWyAgIDEzLjg2
+Mzg1Ml0gUmVhZCBvZiBzaXplIDggYXQgYWRkciBmZmZmODg4MDExZDlhZWIwIGJ5IHRhc2sgZXhw
+LzExOQpbICAgMTMuODY0NjIwXQpbICAgMTMuODY0ODE4XSBDUFU6IDAgUElEOiAxMTkgQ29tbTog
+ZXhwIE5vdCB0YWludGVkIDUuMTEuMTErICM0NQpbICAgMTMuODY1NTQzXSBIYXJkd2FyZSBuYW1l
+OiBRRU1VIFN0YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjEwLjItMXVi
+dW50dTEgMDQvMDEvMjAxNApbICAgMTMuODY2NjM0XSBDYWxsIFRyYWNlOgpbICAgMTMuODY2OTQ3
+XSAgZHVtcF9zdGFjaysweDE4My8weDIyZQpbICAgMTMuODY3Mzg5XSAgPyBzaG93X3JlZ3NfcHJp
+bnRfaW5mbysweDEyLzB4MTIKWyAgIDEzLjg2NzkyN10gID8gbG9nX2J1Zl92bWNvcmVpbmZvX3Nl
+dHVwKzB4NDVkLzB4NDVkClsgICAxMy44Njg1MDNdICA/IF9yYXdfc3Bpbl9sb2NrX2lycXNhdmUr
+MHhiZC8weDEwMApbICAgMTMuODY5MjQ0XSAgcHJpbnRfYWRkcmVzc19kZXNjcmlwdGlvbisweDdi
+LzB4M2EwClsgICAxMy44Njk4MjhdICBfX2thc2FuX3JlcG9ydCsweDE0ZS8weDIwMApbICAgMTMu
+ODcwMjg4XSAgPyBfX2xvY2tfYWNxdWlyZSsweGU1LzB4MmNhMApbICAgMTMuODcwNzY4XSAga2Fz
+YW5fcmVwb3J0KzB4NDcvMHg2MApbICAgMTMuODcxMTg5XSAgX19sb2NrX2FjcXVpcmUrMHhlNS8w
+eDJjYTAKWyAgIDEzLjg3MTY0N10gID8gbG9ja19hY3F1aXJlKzB4MTY4LzB4NmEwClsgICAxMy44
+NzIxMDddICA/IHRyYWNlX2xvY2tfcmVsZWFzZSsweDVjLzB4MTIwClsgICAxMy44NzI2MTVdICA/
+IGRvX3VzZXJfYWRkcl9mYXVsdCsweDljMi8weGRiMApbICAgMTMuODczMTM1XSAgPyB0cmFjZV9s
+b2NrX2FjcXVpcmUrMHgxNTAvMHgxNTAKWyAgIDEzLjg3MzY2MV0gID8gcmN1X3JlYWRfbG9ja19z
+Y2hlZF9oZWxkKzB4ODcvMHgxMTAKWyAgIDEzLjg3NDIzMl0gID8gcGVyZl90cmFjZV9yY3VfYmFy
+cmllcisweDM2MC8weDM2MApbICAgMTMuODc0NzkwXSAgPyBhdmNfaGFzX3Blcm1fbm9hdWRpdCsw
+eDQ0Mi8weDRjMApbICAgMTMuODc1MzMyXSAgbG9ja19hY3F1aXJlKzB4MTY4LzB4NmEwClsgICAx
+My44NzU3NzJdICA/IHNrYl9xdWV1ZV90YWlsKzB4MzIvMHgxMjAKWyAgIDEzLjg3NjI0MF0gID8g
+ZG9fa2Vybl9hZGRyX2ZhdWx0KzB4MjMwLzB4MjMwClsgICAxMy44NzY3NTZdICA/IHJlYWRfbG9j
+a19pc19yZWN1cnNpdmUrMHgxMC8weDEwClsgICAxMy44NzczMDBdICA/IGV4Y19wYWdlX2ZhdWx0
+KzB4ZjMvMHgxYjAKWyAgIDEzLjg3Nzc3MF0gID8gY3JlZF9oYXNfY2FwYWJpbGl0eSsweDE5MS8w
+eDNmMApbICAgMTMuODc4MjkwXSAgPyBjcmVkX2hhc19jYXBhYmlsaXR5KzB4MmExLzB4M2YwClsg
+ICAxMy44Nzg4MTZdICA/IHJjdV9sb2NrX3JlbGVhc2UrMHgyMC8weDIwClsgICAxMy44NzkyOTVd
+ICBfcmF3X3NwaW5fbG9ja19pcnFzYXZlKzB4YjEvMHgxMDAKWyAgIDEzLjg3OTgyMV0gID8gc2ti
+X3F1ZXVlX3RhaWwrMHgzMi8weDEyMApbICAgMTMuODgwMjg3XSAgPyBfcmF3X3NwaW5fbG9jaysw
+eDQwLzB4NDAKWyAgIDEzLjg4MDc0NV0gIHNrYl9xdWV1ZV90YWlsKzB4MzIvMHgxMjAKWyAgIDEz
+Ljg4MTE5NF0gIGhjaV9zb2NrX3NlbmRtc2crMHgxNTQ1LzB4MjZiMAoKRnJvbSBteSBwb2ludCBv
+ZiB2aWV3LCBhZGRpbmcgdGhlIGxvY2FsX2JoX2Rpc2FibGUoKSBjYW5ub3QgcHJldmVudCBjdXJy
+ZW50IGhjaV9zb2NrX2Rldl9ldmVudCgpIHRvIHNldCBhbmQgZGVjcmVhc2UgdGhlIHJlZi1jb3Vu
+dC4gSXQncyBub3QgcXVpdGUgc2ltaWxhciB3aXRoIHRoZSBjYXNlcyB0aGF0IERlc21vbmQgZGlz
+Y3Vzc2VkLgooT3IgbWF5YmUganVzdCBJIGRvbid0IGtub3cgaG93IHRvIHVzZSB0aGlzKS4KCkkg
+cmVjZW50bHkgdHJpZWQgdG8gZmluZCBzb21lIHNpbWlsYXIgY2FzZXMgKGFuZCBJIGRpZCwgcmVw
+b3J0ZWQgdG8gc2VjdXJpdHkgYWxyZWFkeSBidXQgZ2V0IG5vIHJlcGx5KSBhbmQgZmlndXJlIG91
+dCBob3cgb3RoZXJzIGFyZSBmaXhlZC4KU29tZSBndWlkZWxpbmUgdGVsbHMgbWUgdGhhdCAoaHR0
+cDovL2Jvb2tzLmdpZ2F0dXgubmwvbWlycm9yL2tlcm5lbGRldmVsb3BtZW50LzA2NzIzMjcyMDEv
+Y2gwN2xldjFzZWM2Lmh0bWwpCgoiSWYgcHJvY2VzcyBjb250ZXh0IGNvZGUgYW5kIGEgYm90dG9t
+IGhhbGYgc2hhcmUgZGF0YSwgeW91IG5lZWQgdG8gZGlzYWJsZSBib3R0b20taGFsZiBwcm9jZXNz
+aW5nIGFuZCBvYnRhaW4gYSBsb2NrIGJlZm9yZSBhY2Nlc3NpbmcgdGhlIGRhdGEuIERvaW5nIGJv
+dGggZW5zdXJlcyBsb2NhbCBhbmQgU01QIHByb3RlY3Rpb24gYW5kIHByZXZlbnRzIGEgZGVhZGxv
+Y2suIgoKQXNzdW1pbmcgaGNpX3NvY2tfc2VuZG1zZygpL2hjaV9zb2NrX2JvdW5kX2lvY3RsKCkg
+YXJlIHRoZSBwcm9jZXNzIGNvbnRleHRzIHdoaWxlIHRoZSBoY2lfc29ja19kZXZfZXZlbnQoKSwg
+bm90IHN1cmUsIGlzIHRoZSBCSCBjb250ZXh0LiBUaGUgZmFjdCBpcyB0aGF0IHRoZSBoY2lfc29j
+a19kZXZfZXZlbnQoKSBzaG91bGQgd2FpdCBmb3IgdGhlIHByb2Nlc3MgY29udGV4dHMuIEhlbmNl
+LCBJIHRoaW5rIFRldHN1byBpcyBvbiB0aGUgcmlnaHQgd2F5LgoKUmVnYXJkcwpMb2NrLU5vb2Ig
+TGluTWEKCgoK
