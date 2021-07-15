@@ -2,105 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296E53C99D3
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 09:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 716353C9A28
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 10:08:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237190AbhGOHrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 03:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbhGOHry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 03:47:54 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0ABEC06175F;
-        Thu, 15 Jul 2021 00:45:00 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id l11so3221093pji.5;
-        Thu, 15 Jul 2021 00:45:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3H3QucrgEfBfWLW7Yv3LB8AXp4eWdNO8XfGBK/bcpzE=;
-        b=CMNeH5VmJGRqAXS/AvAllS3PqwdjoJbxCRmngkrH41hiVpIManVkJBv7RzRIotc59k
-         UTiQk01o1Ic4WFKMZorhktNbKXCe/RgI5C7WDFV300wVa7yxbcedja4CPygOHIheCvM6
-         hVCPn2fo2hZCwLcbnVc871DLrvZy6yjyRE+TbgRbB8FlM0ObnDMKpr950yYASMuFv5+/
-         j0Lep5ydcdJ+C3PMJFs7z93zxrhFjBV1iGWmRWWwGxDfOnAQM0/qL21LfMqkIcwQicbr
-         Djwwz/9T8zAIJmkm4McKSDWH+sbPRxopa2mHXF0k1VsOqglInOPmVHFhW7Fto1pkFCcE
-         hlVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3H3QucrgEfBfWLW7Yv3LB8AXp4eWdNO8XfGBK/bcpzE=;
-        b=CxfMOZoV9b1THVqqM5pfPPDeG1MwGFvFYThgoKWKznyLDC4+TO+JbG4cpNYFdrPBKw
-         WFsLjV9KtfgaCUjS4/2pMFzo9b15okjKTZrSnBZchSyKfnd2E7fABCIRLl9KF0YcfSIj
-         zugYJIRTB9zdEWVClaeWPVbF9yYaWQC9l2sYlG7x9TtBvXovGjK35bkk5p/VaU4d2mV/
-         IZLYNuLc1GZtq69EAiqs5WmOYPqCy/pZkxDGQtl9/hpq+FViCRDDUH2pM/pfyVnqoI8g
-         BrF+YKFpg6VyMAlq/6Qvj2b528up2JODaXWwE7nMO/9Ed26N9TmaFJJ5IPke4WLZwxug
-         xZOw==
-X-Gm-Message-State: AOAM531I3kurpZkECdgODR7O9//B8ynF89XO8oYOCjCW9DRPcQtXl+Up
-        em0lv+OMU73tlUarVi4m3Yg0Sq25oNU=
-X-Google-Smtp-Source: ABdhPJxawBhQnz9L11JWFp/HWmMhtlszU/lv3a9P8s3WIDjJRh1wyfft9iOylxGvQ4wocpArZJC9KA==
-X-Received: by 2002:a17:90b:1244:: with SMTP id gx4mr3067652pjb.192.1626335100159;
-        Thu, 15 Jul 2021 00:45:00 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id t26sm5702039pgu.35.2021.07.15.00.44.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 00:44:59 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: zhang.yunkai@zte.com.cn
-To:     davem@davemloft.net
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Zhang Yunkai <zhang.yunkai@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] net:stmmac: Fix the unsigned expression compared with zero
-Date:   Thu, 15 Jul 2021 00:45:39 -0700
-Message-Id: <20210715074539.226600-1-zhang.yunkai@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S236414AbhGOIL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 04:11:29 -0400
+Received: from foss.arm.com ([217.140.110.172]:48562 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229810AbhGOIL2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 04:11:28 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5AB91D6E;
+        Thu, 15 Jul 2021 01:08:35 -0700 (PDT)
+Received: from entos-ampere-02.shanghai.arm.com (entos-ampere-02.shanghai.arm.com [10.169.214.103])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BD9163F774;
+        Thu, 15 Jul 2021 01:08:32 -0700 (PDT)
+From:   Jia He <justin.he@arm.com>
+To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org, nd@arm.com,
+        Jia He <justin.he@arm.com>
+Subject: [PATCH] qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
+Date:   Thu, 15 Jul 2021 16:08:21 +0800
+Message-Id: <20210715080822.14575-1-justin.he@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+Liajian reported a bug_on hit on a ThunderX2 arm64 server with FastLinQ
+QL41000 ethernet controller:
+ BUG: scheduling while atomic: kworker/0:4/531/0x00000200
+  [qed_probe:488()]hw prepare failed
+  kernel BUG at mm/vmalloc.c:2355!
+  Internal error: Oops - BUG: 0 [#1] SMP
+  CPU: 0 PID: 531 Comm: kworker/0:4 Tainted: G W 5.4.0-77-generic #86-Ubuntu
+  pstate: 00400009 (nzcv daif +PAN -UAO)
+ Call trace:
+  vunmap+0x4c/0x50
+  iounmap+0x48/0x58
+  qed_free_pci+0x60/0x80 [qed]
+  qed_probe+0x35c/0x688 [qed]
+  __qede_probe+0x88/0x5c8 [qede]
+  qede_probe+0x60/0xe0 [qede]
+  local_pci_probe+0x48/0xa0
+  work_for_cpu_fn+0x24/0x38
+  process_one_work+0x1d0/0x468
+  worker_thread+0x238/0x4e0
+  kthread+0xf0/0x118
+  ret_from_fork+0x10/0x18
 
-WARNING:  Unsigned expression "queue" compared with zero.
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Zhang Yunkai <zhang.yunkai@zte.com.cn>
+In this case, qed_hw_prepare() returns error due to hw/fw error, but in
+theory work queue should be in process context instead of interrupt.
+
+The root cause might be the unpaired spin_{un}lock_bh() in
+_qed_mcp_cmd_and_union(), which causes botton half is disabled incorrectly.
+
+Reported-by: Lijian Zhang <Lijian.Zhang@arm.com>
+Signed-off-by: Jia He <justin.he@arm.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 7b8404a21544..a4cf2c640531 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1699,7 +1699,7 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 	return 0;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index 4387292c37e2..79d879a5d663 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -474,14 +474,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
  
- err_init_rx_buffers:
--	while (queue >= 0) {
-+	do {
- 		struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
  
- 		if (rx_q->xsk_pool)
-@@ -1710,11 +1710,7 @@ static int init_dma_rx_desc_rings(struct net_device *dev, gfp_t flags)
- 		rx_q->buf_alloc_num = 0;
- 		rx_q->xsk_pool = NULL;
+-		if (!qed_mcp_has_pending_cmd(p_hwfn))
++		if (!qed_mcp_has_pending_cmd(p_hwfn)) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
  
--		if (queue == 0)
--			break;
--
--		queue--;
--	}
-+	} while (queue--);
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
  
- 	return ret;
- }
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 
+@@ -498,6 +502,8 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
+ 
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
++
+ 	/* Send the mailbox command */
+ 	qed_mcp_reread_offsets(p_hwfn, p_ptt);
+ 	seq_num = ++p_hwfn->mcp_info->drv_mb_seq;
+@@ -524,14 +530,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 
+-		if (p_cmd_elem->b_is_completed)
++		if (p_cmd_elem->b_is_completed) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
+ 
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
+ 
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	} while (++cnt < max_retries);
+@@ -554,6 +564,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
+ 
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	qed_mcp_cmd_del_elem(p_hwfn, p_cmd_elem);
+ 	spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 
 -- 
-2.25.1
+2.17.1
 
