@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D930C3C99E4
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 09:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB98B3C99EB
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 09:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231785AbhGOHvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 03:51:43 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:11416 "EHLO
+        id S240662AbhGOHvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 03:51:51 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:11420 "EHLO
         szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240495AbhGOHvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 03:51:35 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GQRHP4q2CzcdZP;
-        Thu, 15 Jul 2021 15:45:21 +0800 (CST)
+        with ESMTP id S237365AbhGOHvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 03:51:43 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GQRHZ3Zlqzcddc;
+        Thu, 15 Jul 2021 15:45:30 +0800 (CST)
 Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.2176.2; Thu, 15 Jul 2021 15:48:39 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <chenhao288@hisilicon.com>,
         <huangguangbin2@huawei.com>
-Subject: [PATCH V2 net-next 6/9] net: hns3: add devlink reload support for PF
-Date:   Thu, 15 Jul 2021 15:45:07 +0800
-Message-ID: <1626335110-50769-7-git-send-email-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 7/9] net: hns3: add devlink reload support for VF
+Date:   Thu, 15 Jul 2021 15:45:08 +0800
+Message-ID: <1626335110-50769-8-git-send-email-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1626335110-50769-1-git-send-email-huangguangbin2@huawei.com>
 References: <1626335110-50769-1-git-send-email-huangguangbin2@huawei.com>
@@ -45,34 +45,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hao Chen <chenhao288@hisilicon.com>
 
-Add devlink reload support for HNS3 ethernet PF driver.
+Add devlink reload support for HNS3 ethernet VF driver.
 
 Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c | 71 ++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
+ .../hisilicon/hns3/hns3vf/hclgevf_devlink.c        | 72 ++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-index 7de423d510c5..facb10aea4e6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.c
-@@ -34,8 +34,75 @@ static int hclge_devlink_info_get(struct devlink *devlink,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+index 49993c8be313..bce598913dc3 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
+@@ -34,8 +34,76 @@ static int hclgevf_devlink_info_get(struct devlink *devlink,
  						version_str);
  }
  
-+static int hclge_devlink_reload_down(struct devlink *devlink, bool netns_change,
-+				     enum devlink_reload_action action,
-+				     enum devlink_reload_limit limit,
-+				     struct netlink_ext_ack *extack)
++static int hclgevf_devlink_reload_down(struct devlink *devlink,
++				       bool netns_change,
++				       enum devlink_reload_action action,
++				       enum devlink_reload_limit limit,
++				       struct netlink_ext_ack *extack)
 +{
-+	struct hclge_devlink_priv *priv = devlink_priv(devlink);
-+	struct hclge_dev *hdev = priv->hdev;
-+	struct hnae3_handle *h = &hdev->vport->nic;
++	struct hclgevf_devlink_priv *priv = devlink_priv(devlink);
++	struct hclgevf_dev *hdev = priv->hdev;
++	struct hnae3_handle *h = &hdev->nic;
 +	struct pci_dev *pdev = hdev->pdev;
 +	int ret;
 +
-+	if (test_bit(HCLGE_STATE_RST_HANDLING, &hdev->state)) {
++	if (test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state)) {
 +		dev_err(&pdev->dev, "reset is handling\n");
 +		return -EBUSY;
 +	}
@@ -95,21 +96,21 @@ index 7de423d510c5..facb10aea4e6 100644
 +	}
 +}
 +
-+static int hclge_devlink_reload_up(struct devlink *devlink,
-+				   enum devlink_reload_action action,
-+				   enum devlink_reload_limit limit,
-+				   u32 *actions_performed,
-+				   struct netlink_ext_ack *extack)
++static int hclgevf_devlink_reload_up(struct devlink *devlink,
++				     enum devlink_reload_action action,
++				     enum devlink_reload_limit limit,
++				     u32 *actions_performed,
++				     struct netlink_ext_ack *extack)
 +{
-+	struct hclge_devlink_priv *priv = devlink_priv(devlink);
-+	struct hclge_dev *hdev = priv->hdev;
-+	struct hnae3_handle *h = &hdev->vport->nic;
++	struct hclgevf_devlink_priv *priv = devlink_priv(devlink);
++	struct hclgevf_dev *hdev = priv->hdev;
++	struct hnae3_handle *h = &hdev->nic;
 +	int ret;
 +
 +	*actions_performed = BIT(action);
 +	switch (action) {
 +	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-+		hclge_devlink_get_param_setting(devlink);
++		hclgevf_devlink_get_param_setting(devlink);
 +		rtnl_lock();
 +		ret = hdev->nic_client->ops->reset_notify(h, HNAE3_INIT_CLIENT);
 +		if (ret) {
@@ -125,15 +126,15 @@ index 7de423d510c5..facb10aea4e6 100644
 +	}
 +}
 +
- static const struct devlink_ops hclge_devlink_ops = {
- 	.info_get = hclge_devlink_info_get,
+ static const struct devlink_ops hclgevf_devlink_ops = {
+ 	.info_get = hclgevf_devlink_info_get,
 +	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-+	.reload_down = hclge_devlink_reload_down,
-+	.reload_up = hclge_devlink_reload_up,
++	.reload_down = hclgevf_devlink_reload_down,
++	.reload_up = hclgevf_devlink_reload_up,
  };
  
- int hclge_devlink_init(struct hclge_dev *hdev)
-@@ -62,6 +129,8 @@ int hclge_devlink_init(struct hclge_dev *hdev)
+ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
+@@ -62,6 +130,8 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
  
  	hdev->devlink = devlink;
  
@@ -142,7 +143,7 @@ index 7de423d510c5..facb10aea4e6 100644
  	return 0;
  
  out_reg_fail:
-@@ -76,6 +145,8 @@ void hclge_devlink_uninit(struct hclge_dev *hdev)
+@@ -76,6 +146,8 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
  	if (!devlink)
  		return;
  
