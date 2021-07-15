@@ -2,130 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D20EF3CA0C8
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 433183CA0CC
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 16:36:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236873AbhGOOjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 10:39:13 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:48867 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235838AbhGOOjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 10:39:12 -0400
-Received: by mail-io1-f70.google.com with SMTP id f2-20020a6b62020000b02905094eaa65fdso3788000iog.15
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 07:36:19 -0700 (PDT)
+        id S235204AbhGOOjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 10:39:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231210AbhGOOjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 10:39:46 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C932C06175F;
+        Thu, 15 Jul 2021 07:36:52 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id i94so8109104wri.4;
+        Thu, 15 Jul 2021 07:36:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5I8dvoJTHfibl8G4N48dj56/eRuc+F3xlgjM6R2cRNE=;
+        b=tSsEMo/VpnwDndL+zh6480+ZPKV9QP+OHVdelRqOo6YdPbbTf9aOl6A2YkIOfgWsw5
+         k9bmq/Tj04fbb76/RAavjDjt2u8/56bLc2D1W5aBK7fy5v+34WB8vOw5OA1XxqGeworP
+         T2cI5UDlu9KteHwUv3Eka0A9yo6xkGaB2CZMkys60sr5Gbh18ihf4You+l4cKrGPQH3w
+         iHiKnd1aQx3hXNVXJifb8+Q3eq0StN7BMnI57aoOZ4ag4VgLFWOThat1fChVD3rXU92a
+         X+AKfCwOS2AF5Qoe/45UslFpzt5+KQyyaaYuJWljXSs22tsKyk2m2gOCA6Ep0DQNhyIB
+         61Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=4HZUJQeBGZ+NVG0aXehK/sNcAjBRJ2CKQkm2snQI6AE=;
-        b=WHQWt/Tvc/bQZIDUoaMAmLy+t+gzdcckN4xaejYDGgg4MKeQwtOyLmuuXvqJN7STCR
-         ZmXkKflflPAfMGRJN8xCzf3jmqqJlGFDJMM1vF6BffLE8FZ9YU8C2rf5M+ZjikpcDgNX
-         a3wRa/Krty5eD7abuO6F+mTBLWfTsdvELKRRN/Wuiphl+cVW+p83JG02zQIrXL+hFi6k
-         RCI5iglOoE6Ww3q9xLIb3aja4wsXq/bRMD4XiXv1CiMSQFYMy9A6hHMqEaoM0cgrbeMX
-         yUIkcsGiv7Q8g0I6izcazedCenhmdDhdDpwzcZDcJ5pNNnSDTYTyMD5ppPhMg5/ZDgeb
-         P9DA==
-X-Gm-Message-State: AOAM533tMBFkefJq+j300mBz1/4f2QWZQYeU/Xd/iNoNL1AdzQXKSDem
-        eKoj46e4ZipGypcenWbSMu02+XCd2QiP8py1r6ZW9Xa0oYSa
-X-Google-Smtp-Source: ABdhPJzNaMhJ0NPfS3lxheTwOkZOIxBRPuxh7EcJseVxeVinrsnAt8ZUGrKnGk5En2w9syUWnFumGonuBwUmZaY6/f8Cnzpi0mRI
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5I8dvoJTHfibl8G4N48dj56/eRuc+F3xlgjM6R2cRNE=;
+        b=uMckZNxUMnAQkFzuTmtZDPb0fWMnAiLjmWEPEkGlIVPOAE8srbdelraJJKRuK9GkeV
+         QORWIsjtcZqJ7B0nHq9tBLQ4HULdQ7NdGTbbgOFYSnmx9nOHeVQcx2kqwJh0GwohQUop
+         U6E9FiIr6unyITjAxSPNUiYMhCH5jvAoVHywnqES764cRVOI7cboyWAzwdQz1tHiAdTF
+         x7u6d4TyZ+piqOa4ArCE//UweD8NXHT6ug5KsgNSZV0H8C7F8mtIMOfcMHappN2q4dmj
+         gygli/u3JGR4x6rgsg8OoFzZEv4Yce6YhcZwPfETr6tpnnFppwa46DRZA4GNIJJ7oqJQ
+         bAyw==
+X-Gm-Message-State: AOAM532Z9qLwE7kwKZsDL7B+dpnmA1qn2f7Js3OYmO0NLarr9ycy60hE
+        uUxi1yLcxoW/NG/tDrdZeY0=
+X-Google-Smtp-Source: ABdhPJwPiU7Hkvsh3nYh8wva4PpZwB+HzgSKWPvk6Ynkg1DyiWH0Cn3w9PI52PC/An0AbK7acRZimQ==
+X-Received: by 2002:a5d:66d1:: with SMTP id k17mr6096381wrw.110.1626359810274;
+        Thu, 15 Jul 2021 07:36:50 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id v11sm6536724wrs.4.2021.07.15.07.36.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jul 2021 07:36:49 -0700 (PDT)
+Date:   Thu, 15 Jul 2021 17:36:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware process the
+ layer 4 checksum
+Message-ID: <20210715143648.yutq6vceoblnhhfp@skbuf>
+References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
+ <20210714191723.31294-3-LinoSanfilippo@gmx.de>
+ <20210714194812.stay3oqyw3ogshhj@skbuf>
+ <YO9F2LhTizvr1l11@lunn.ch>
+ <20210715065455.7nu7zgle2haa6wku@skbuf>
+ <YPAzZXaC/En3s4ly@lunn.ch>
 MIME-Version: 1.0
-X-Received: by 2002:a92:b748:: with SMTP id c8mr2919947ilm.302.1626359779406;
- Thu, 15 Jul 2021 07:36:19 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 07:36:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000edbbe305c72a64d9@google.com>
-Subject: [syzbot] general protection fault in nf_tables_dump_flowtable
-From:   syzbot <syzbot+58a66a56fa9d7f98d19b@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YPAzZXaC/En3s4ly@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Jul 15, 2021 at 03:08:53PM +0200, Andrew Lunn wrote:
+> > - If we inherit NETIF_F_HW_CSUM from the master for tail taggers, it is
+> >   actively detrimential to keep this feature enabled, as proven my Lino.
+> >   As for header taggers, I fail to see how this would be helpful, since
+> >   the DSA master would always fail to see the real IP header (it has
+> >   been pushed to the right by the DSA tag), and therefore, the DSA
+> >   master offload would be effectively bypassed.
+>
+> The Marvell MACs know about DSA and should be able to perform hardware
+> checksumming. It is a long time since i looked at how this works, but
+> i think there is a field in the descriptor which gets set with the
+> offset to the IP header, so it work for DSA as well as EDSA.
+>
+> I _think_ Broadcom MACs also know about Broadcom tags and can do the
+> right thing.
+>
+> So we need to be a bit careful here to prevent performance regressions
+> for same vendor MAC+Switch combinations.
 
-syzbot found the following issue on:
+Tell me more (show me some code). Do Marvell Ethernet controllers which
+support TX checksumming with Marvell switches do different things
+depending on whether DSA or EDSA is used? Because we can currently
+toggle between DSA and EDSA at runtime.
 
-HEAD commit:    222722bc6ebf virtio_net: check virtqueue_add_sgs() return ..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=100acffc300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=51ea6c9df4ed04c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=58a66a56fa9d7f98d19b
+This new information means we can only accept Lino's patch 2/2 as-is for
+the "net" tree, otherwise we will introduce regressions one way or
+another. It will only be a partial fix for the particular case of KSZ
+switches which probably have no DSA master counterpart to support TX
+checksumming.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+58a66a56fa9d7f98d19b@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xfbd59c0000000054: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xdead0000000002a0-0xdead0000000002a7]
-CPU: 1 PID: 30836 Comm: syz-executor.2 Tainted: G        W         5.13.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:nf_tables_dump_flowtable+0x453/0xbc0 net/netfilter/nf_tables_api.c:7617
-Code: 5c 31 ff 89 de e8 ad 7a 16 fa 85 db 0f 85 67 ff ff ff e8 60 73 16 fa 48 8b 04 24 48 05 a0 01 00 00 48 89 44 24 10 48 c1 e8 03 <80> 3c 28 00 0f 85 bb 06 00 00 48 8b 04 24 48 8b 98 a0 01 00 00 48
-RSP: 0018:ffffc9000592f1e0 EFLAGS: 00010a02
-RAX: 1bd5a00000000054 RBX: 0000000000000000 RCX: ffffc9000dede000
-RDX: 0000000000040000 RSI: ffffffff875f0eb0 RDI: 0000000000000003
-RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffffff8d6aef17
-R10: ffffffff875f0ea3 R11: 000000000000003f R12: 0000000000000000
-R13: ffff8880722d6544 R14: 0000000000000000 R15: ffff8880722d6548
-FS:  00007fb776e0f700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000014a53ad CR3: 00000000715c8000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- netlink_dump+0x4b9/0xb70 net/netlink/af_netlink.c:2278
- __netlink_dump_start+0x642/0x900 net/netlink/af_netlink.c:2383
- netlink_dump_start include/linux/netlink.h:258 [inline]
- nft_netlink_dump_start_rcu+0x9c/0x1b0 net/netfilter/nf_tables_api.c:859
- nf_tables_getflowtable+0x582/0x6b0 net/netfilter/nf_tables_api.c:7707
- nfnetlink_rcv_msg+0x6c6/0x13a0 net/netfilter/nfnetlink.c:285
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- nfnetlink_rcv+0x1ac/0x420 net/netfilter/nfnetlink.c:654
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x85b/0xda0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:703 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:723
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2392
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2446
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2475
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665d9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fb776e0f188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665d9
-RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000004
-RBP: 00000000004bfcb9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
-R13: 00007ffd108f5eef R14: 00007fb776e0f300 R15: 0000000000022000
-Modules linked in:
----[ end trace 79a86b7be1217444 ]---
-RIP: 0010:nf_tables_dump_flowtable+0x453/0xbc0 net/netfilter/nf_tables_api.c:7617
-Code: 5c 31 ff 89 de e8 ad 7a 16 fa 85 db 0f 85 67 ff ff ff e8 60 73 16 fa 48 8b 04 24 48 05 a0 01 00 00 48 89 44 24 10 48 c1 e8 03 <80> 3c 28 00 0f 85 bb 06 00 00 48 8b 04 24 48 8b 98 a0 01 00 00 48
-RSP: 0018:ffffc9000592f1e0 EFLAGS: 00010a02
-RAX: 1bd5a00000000054 RBX: 0000000000000000 RCX: ffffc9000dede000
-RDX: 0000000000040000 RSI: ffffffff875f0eb0 RDI: 0000000000000003
-RBP: dffffc0000000000 R08: 0000000000000000 R09: ffffffff8d6aef17
-R10: ffffffff875f0ea3 R11: 000000000000003f R12: 0000000000000000
-R13: ffff8880722d6544 R14: 0000000000000000 R15: ffff8880722d6548
-FS:  00007fb776e0f700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000030eb708 CR3: 00000000715c8000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+I expect Marvell switches to be equally broken on the Broadcom genet
+controller? No one will provide the TX checksum in that case. And that
+is not even "fixable" without devising a system where custom code can be
+run per {tagger, DSA master} pair, and this includes the case where the
+tagging protocol changes at runtime.
