@@ -2,70 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 448A83CAD6A
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 21:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896E03CAE14
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 22:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245156AbhGOUBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 16:01:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47712 "EHLO mail.kernel.org"
+        id S237791AbhGOUnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 16:43:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60276 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343870AbhGOT7U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Jul 2021 15:59:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 79DA561380;
-        Thu, 15 Jul 2021 19:56:26 +0000 (UTC)
+        id S236182AbhGOUnB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 16:43:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id F2431613D4;
+        Thu, 15 Jul 2021 20:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626378986;
-        bh=T76yrCNjhnwaYdhbkQIAiI6f/v1YJoLSXj58lEgBURM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Fea5hgn9GZvU4/M0TAsL4hU3+6HZQnCO4RAhvV1z7ZEAnF6fSKS+rwU2rlWv0fJao
-         L9+QwaD85aBFp+YRi4AmT/4rOuCHwZr6oslSuA0Mh1Lu2BtOb8GiXGhDcnG7ijRjP3
-         l9dhLjo2/NcYl8DQyqvgNf9VXq31VTg7VoGzc//r2/gyl609q0fEmoiNAqyC5ZZcN+
-         a5XHAouOjKEigMSolXIDUHdEUgUAAyedSsGbRxBnPhgt0eAI0dGSeSEekssPy0uJyg
-         SOTavBglKXEcXUHmPMUP96eJ4tl0CQIHre5x/S1Cv57sv1wMpPqGm1U50sgx3IU7fl
-         651o2uVZtK2MQ==
-Date:   Thu, 15 Jul 2021 14:56:25 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Billie Alsup (balsup)" <balsup@cisco.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Guohan Lu <lguohan@gmail.com>,
-        "Madhava Reddy Siddareddygari (msiddare)" <msiddare@cisco.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Sergey Miroshnichenko <s.miroshnichenko@yadro.com>
-Subject: Re: [RFC][PATCH] PCI: Reserve address space for powered-off devices
- behind PCIe bridges
-Message-ID: <20210715195625.GA1992334@bjorn-Precision-5520>
+        s=k20201202; t=1626381608;
+        bh=MzasXOfHjzlMXG327ziDG8NyTnBNbxuqmgzDJKDUSZM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DFoZXqfXuZCr4LIv4GT2c0Yr6BfFwZyengDgWaVz9wZTlOPgqdZ5wxM41UamMgsp9
+         CaISHQwOn5FKVvlgF1/oyRix1eZw8M0HGSvXW9bM41NtDZzmuuDpaTr/eSgSDRL2r1
+         RSI24TjxvsL9kEp+GM+gm3r6chCjfkY9Pm3++zCJiD/7z5bDlftQ5WcU3O126INkyZ
+         XFPbwQfAORek5+89sUv6ZqDHbPG9+DWwqEOxpYPvQaF4T02h40QFMv/7q1EU5GPuFw
+         txNRJ8MikOKduSdrhLSgyoR1bksO1HP8pcg3vQTqsoKb1PKP51YvXj5kY3ZFBDLh8/
+         HmYBm9caFsbTA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E45A1609B8;
+        Thu, 15 Jul 2021 20:40:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0480940E-F7B9-4EE3-B666-5AD490788198@cisco.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v7 bpf-next 00/11] bpf: Introduce BPF timers.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162638160793.17206.8466927115509819243.git-patchwork-notify@kernel.org>
+Date:   Thu, 15 Jul 2021 20:40:07 +0000
+References: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 07:49:56PM +0000, Billie Alsup (balsup) wrote:
->     >On 7/15/21, 11:57 AM, "Bjorn Helgaas" <helgaas@kernel.org> wrote:
-> 
->     >Since you've gone to that much trouble already, also note
->     >http://vger.kernel.org/majordomo-info.html and
->     >https://people.kernel.org/tglx/notes-about-netiquette 
-> 
-> My apologies. I was just cc'd on a thread and blindly responded.  
-> I didn't realize my mistake until receiving bounce messages for the html formatted message.
-> 
->     >BTW, the attribution in the email you quoted below got corrupted in
->     >such a way that it appears that I wrote the whole thing, instead of 
->     >what actually happened, which is that I wrote a half dozen lines of
->     >response to your email.  Linux uses old skool email conventions ;)
-> 
-> I will pay closer attention next time.  Again, my apologies.
-> Outlook really is a bad client for these types of emails!
+Hello:
 
-Can't speak to Outlook, but so is Gmail :(  Thanks for starting the
-conversation!
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-Bjorn
+On Wed, 14 Jul 2021 17:54:06 -0700 you wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> The first request to support timers in bpf was made in 2013 before sys_bpf syscall
+> was added. That use case was periodic sampling. It was address with attaching
+> bpf programs to perf_events. Then during XDP development the timers were requested
+> to do garbage collection and health checks. They were worked around by implementing
+> timers in user space and triggering progs with BPF_PROG_RUN command.
+> The user space timers and perf_event+bpf timers are not armed by the bpf program.
+> They're done asynchronously vs program execution. The XDP program cannot send a
+> packet and arm the timer at the same time. The tracing prog cannot record an
+> event and arm the timer right away. This large class of use cases remained
+> unaddressed. The jiffy based and hrtimer based timers are essential part of the
+> kernel development and with this patch set the hrtimer based timers will be
+> available to bpf programs.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v7,bpf-next,01/11] bpf: Prepare bpf_prog_put() to be called from irq context.
+    https://git.kernel.org/bpf/bpf-next/c/d809e134be7a
+  - [v7,bpf-next,02/11] bpf: Factor out bpf_spin_lock into helpers.
+    https://git.kernel.org/bpf/bpf-next/c/c1b3fed319d3
+  - [v7,bpf-next,03/11] bpf: Introduce bpf timers.
+    https://git.kernel.org/bpf/bpf-next/c/b00628b1c7d5
+  - [v7,bpf-next,04/11] bpf: Add map side support for bpf timers.
+    https://git.kernel.org/bpf/bpf-next/c/68134668c17f
+  - [v7,bpf-next,05/11] bpf: Prevent pointer mismatch in bpf_timer_init.
+    https://git.kernel.org/bpf/bpf-next/c/3e8ce29850f1
+  - [v7,bpf-next,06/11] bpf: Remember BTF of inner maps.
+    https://git.kernel.org/bpf/bpf-next/c/40ec00abf1cc
+  - [v7,bpf-next,07/11] bpf: Relax verifier recursion check.
+    https://git.kernel.org/bpf/bpf-next/c/86fc6ee6e246
+  - [v7,bpf-next,08/11] bpf: Implement verifier support for validation of async callbacks.
+    https://git.kernel.org/bpf/bpf-next/c/bfc6bb74e4f1
+  - [v7,bpf-next,09/11] bpf: Teach stack depth check about async callbacks.
+    https://git.kernel.org/bpf/bpf-next/c/7ddc80a476c2
+  - [v7,bpf-next,10/11] selftests/bpf: Add bpf_timer test.
+    https://git.kernel.org/bpf/bpf-next/c/3540f7c6b96a
+  - [v7,bpf-next,11/11] selftests/bpf: Add a test with bpf_timer in inner map.
+    https://git.kernel.org/bpf/bpf-next/c/61f71e746c72
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
