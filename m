@@ -2,149 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E30B53C961F
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 05:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 547CC3C96A3
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 05:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232564AbhGODG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 23:06:56 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:45160 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230433AbhGODGz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Jul 2021 23:06:55 -0400
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 15 Jul 2021 11:03:53
- +0800 (GMT+08:00)
-X-Originating-IP: [10.162.82.120]
-Date:   Thu, 15 Jul 2021 11:03:53 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   LinMa <linma@zju.edu.cn>
-To:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>
-Cc:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>,
-        "Marcel Holtmann" <marcel@holtmann.org>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
- section
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
-References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
- <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
- <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        id S233525AbhGODvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 23:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230121AbhGODvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 23:51:43 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78407C06175F;
+        Wed, 14 Jul 2021 20:48:51 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id y4so3851187pfi.9;
+        Wed, 14 Jul 2021 20:48:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x7mKC/lKfardBNYxSwnq2vv33vPUAvQA2chA6+76XEQ=;
+        b=O4/OqJzy1bq370gDmTetx4n+OvioXMR3KvJdiHtDUh++/NN3p+IwDlyrIHNfG260K3
+         YRGxCx6qHEB/hCeh6UVi6n2dI/BzN6/T87QcG5l44QH0UHYkwkovt8UpFZl2lIKHf/fX
+         UcDws10V9EDZTHpa7psppoCjmPnsx7RxIMh8uM/0kq9wzgXDQ34oLIlc263x3ceuYAjL
+         SQnlbzTJ4EGeT/nqSfVIW25ZtQbT7zPShZpYsu7uTV2A4Tv3ECxlqdfDA/F+dCws1ilj
+         3IIjvJ4M5UkczqRANyvLp8M6H7Te6+NjupQ0jNr+Hyr5P4nCRHqsU5wlY9SAhYquFESh
+         J4DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x7mKC/lKfardBNYxSwnq2vv33vPUAvQA2chA6+76XEQ=;
+        b=bNGAj7yzVID7e+Ct9eAwM1U1nEJbb0rWE0JRbzZE7E6NiWoMflTSgL7pkA3SFJYYCq
+         ldwLFGPn4g1cvS9n8gFxSuCcMVdo6/s33XofY45H0HTwJxSVq5kjUz7dCCK2xp/AJH3O
+         BLblUImeugCTIauyvrjStrfYD8ia2r6GXNxhjWSoDR3YviBtuwip/lf6eYWltr9DTbjk
+         wGGICI7FMV/dmYrIZ80HyvCtcWbA81QAnIE+AzC7Zb7nyI0sVs4Nhl0fU1h0jY3/TRr9
+         Ha1vQaoj8P5tuV+o7HMS1ldq22PvvSg8LiGwXhDWUJnX01fglLhTqEND2NIoapsYcLO4
+         fpMg==
+X-Gm-Message-State: AOAM531TjujqmJAUwI9/INbEds/iVw8BYdmcR13z31c/WF956bfbHGCp
+        LNv2gHBkE8Cf4tKI5092DxJjM4FNibCBrGMHm8k=
+X-Google-Smtp-Source: ABdhPJwr03NG2N6gqvpdOCjDsSFo9+V/VZgdVCKT5j4B3U5o+aKk62eKtlYIgQnTSAG0sIKby3tCfTi4/ux4f0F6UJE=
+X-Received: by 2002:a05:6a00:26e5:b029:330:be3:cacd with SMTP id
+ p37-20020a056a0026e5b02903300be3cacdmr2027563pfw.78.1626320930947; Wed, 14
+ Jul 2021 20:48:50 -0700 (PDT)
 MIME-Version: 1.0
-Message-ID: <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: cS_KCgAXSXSZpe9gkNjsAA--.32411W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUHElNG3DfRWwABsm
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+References: <20210714154750.528206-1-jakub@cloudflare.com>
+In-Reply-To: <20210714154750.528206-1-jakub@cloudflare.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 14 Jul 2021 20:48:40 -0700
+Message-ID: <CAM_iQpWuFMyukcjkQ8aJ8mhCnCq45Kr9JC05dHD014QnFNxRTQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] bpf, sockmap, udp: sk_prot needs inuse_idx set for
+ proc stats
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgdGhlcmUsCgpJJ20ganVzdCBleGhpbGFyYXRlZCB0byBzZWUgdGhlcmUgaGF2ZSBiZWVuIHNv
-bWUgbmV3IGlkZWFzIHRvIGZpeCB0aGlzLgoKPiAKPiBIb3cgYWJvdXQgd2UgcmV2ZXJ0IGJhY2sg
-dG8gdXNlIGJoX2xvY2tfc29ja19uZXN0ZWQgYnV0IHVzZQo+IGxvY2FsX2JoX2Rpc2FibGUgbGlr
-ZSB0aGUgZm9sbG93aW5nIHBhdGNoOgo+IAo+IGh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcv
-cHJvamVjdC9ibHVldG9vdGgvcGF0Y2gvMjAyMTA3MTMxNjI4MzguNjkzMjY2LTEtZGVzbW9uZGNo
-ZW9uZ3p4QGdtYWlsLmNvbS8KPiAKCkkgaGF2ZSBjaGVja2VkIHRoYXQgcGF0Y2ggYW5kIGxlYXJu
-IGFib3V0IHNvbWUgYGxvY2FsX2JoX2Rpc2FibGUvZW5hYmxlYCB1c2FnZS4KVG8gdGhlIGJlc3Qg
-b2YgbXkga25vd2xlZGdlLCB0aGUgbG9jYWxfYmhfZGlzYWJsZSgpIGZ1bmN0aW9uIGNhbiBiZSB1
-c2VkIHRvIGRpc2FibGUgdGhlIHByb2Nlc3Npbmcgb2YgYm90dG9tIGhhbHZlcyAoc29mdGlycXMp
-LgpPciBpbiBhbm90aGVyIHdvcmQsIGlmIHByb2Nlc3MgY29udGV4dCBmdW5jdGlvbiwgaGNpX3Nv
-Y2tfc2VuZG1zZygpIGZvciBleGFtcGxlLCBjYW4gbWFzayB0aGUgQkggKGhjaV9kZXZfZG9fY2xv
-c2UoKT8pLiBJdCBkb2Vzbid0IG5lZWQgdG8gd29ycnkgYWJvdXQgdGhlIFVBRi4KCkhvd2V2ZXIs
-IGFmdGVyIGRvaW5nIHNvbWUgZXhwZXJpbWVudHMsIEkgZmFpbGVkIDooCkZvciBpbnN0YW5jZSwg
-SSB0cnkgdG8gZG8gZm9sbG93aW5nIHBhdGNoOgoKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29j
-ay5jCisrKyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwpAQCAtMTcyMCw2ICsxNzIwLDcgQEAg
-c3RhdGljIGludCBoY2lfc29ja19zZW5kbXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBt
-c2doZHIgKm1zZywKICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOwoKICAgICAgICBsb2Nr
-X3NvY2soc2spOworICAgICAgIGxvY2FsX2JoX2Rpc2FibGUoKTsKCiAgICAgICAgc3dpdGNoICho
-Y2lfcGkoc2spLT5jaGFubmVsKSB7CiAgICAgICAgY2FzZSBIQ0lfQ0hBTk5FTF9SQVc6CkBAIC0x
-ODMyLDcgKzE4MzMsOSBAQCBzdGF0aWMgaW50IGhjaV9zb2NrX3NlbmRtc2coc3RydWN0IHNvY2tl
-dCAqc29jaywgc3RydWN0IG1zZ2hkciAqbXNnLAogICAgICAgIGVyciA9IGxlbjsKCiBkb25lOgor
-ICAgICAgIGxvY2FsX2JoX2VuYWJsZSgpOwogICAgICAgIHJlbGVhc2Vfc29jayhzayk7CisKICAg
-ICAgICByZXR1cm4gZXJyOwoKQnV0IHRoZSBQT0MgY29kZSBzaG93cyBlcnJvciBtZXNzYWdlIGxp
-a2UgYmVsb3c6CgpbICAgMTguMTY5MTU1XSBCVUc6IHNsZWVwaW5nIGZ1bmN0aW9uIGNhbGxlZCBm
-cm9tIGludmFsaWQgY29udGV4dCBhdCBpbmNsdWRlL2xpbnV4L3NjaGVkL21tLmg6MTk3ClsgICAx
-OC4xNzAxODFdIGluX2F0b21pYygpOiAxLCBpcnFzX2Rpc2FibGVkKCk6IDAsIG5vbl9ibG9jazog
-MCwgcGlkOiAxMjAsIG5hbWU6IGV4cApbICAgMTguMTcwOTg3XSAxIGxvY2sgaGVsZCBieSBleHAv
-MTIwOgpbICAgMTguMTcxMzg0XSAgIzA6IGZmZmY4ODgwMTFkZDUxMjAgKHNrX2xvY2stQUZfQkxV
-RVRPT1RILUJUUFJPVE9fSENJKXsrLisufS17MDowfSwgYXQ6IGhjaV9zb2NrX3NlbmRtc2crMHgx
-MWUvMHgyNmMwClsgICAxOC4xNzIzMDBdIENQVTogMCBQSUQ6IDEyMCBDb21tOiBleHAgTm90IHRh
-aW50ZWQgNS4xMS4xMSsgIzQ0ClsgICAxOC4xNzI5MjFdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3Rh
-bmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYpLCBCSU9TIDEuMTAuMi0xdWJ1bnR1MSAwNC8w
-MS8yMDE0Ci4uLgoKVGhlIHBhdGNoIHByb3ZpZGVkIGJ5IERlc21vbmQgYWRkcyB0aGUgbG9jYWxf
-YmhfZGlzYWJsZSgpIGJlZm9yZSB0aGUgYmhfbG9ja19zb2NrKCkgc28gSSBhbHNvIHRyeSB0aGF0
-IGluIAoKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5jCisrKyBiL25ldC9ibHVldG9vdGgv
-aGNpX3NvY2suYwpAQCAtNzYyLDYgKzc2Miw3IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0
-cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCiAgICAgICAgICAgICAgICAvKiBEZXRhY2gg
-c29ja2V0cyBmcm9tIGRldmljZSAqLwogICAgICAgICAgICAgICAgcmVhZF9sb2NrKCZoY2lfc2tf
-bGlzdC5sb2NrKTsKICAgICAgICAgICAgICAgIHNrX2Zvcl9lYWNoKHNrLCAmaGNpX3NrX2xpc3Qu
-aGVhZCkgeworICAgICAgICAgICAgICAgICAgICAgICBsb2NhbF9iaF9kaXNhYmxlKCk7CiAgICAg
-ICAgICAgICAgICAgICAgICAgIGJoX2xvY2tfc29ja19uZXN0ZWQoc2spOwogICAgICAgICAgICAg
-ICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+aGRldiA9PSBoZGV2KSB7CiAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgaGNpX3BpKHNrKS0+aGRldiA9IE5VTEw7CkBAIC03NzIsNiArNzcz
-LDcgQEAgdm9pZCBoY2lfc29ja19kZXZfZXZlbnQoc3RydWN0IGhjaV9kZXYgKmhkZXYsIGludCBl
-dmVudCkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBoY2lfZGV2X3B1dChoZGV2KTsK
-ICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgICAgICBiaF91bmxv
-Y2tfc29jayhzayk7CisgICAgICAgICAgICAgICAgICAgICAgIGxvY2FsX2JoX2VuYWJsZSgpOwog
-ICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgcmVhZF91bmxvY2soJmhjaV9za19saXN0
-LmxvY2spOwogICAgICAgIH0KCkJ1dCB0aGlzIGlzIG5vdCB1c2VmdWwsIHRoZSBVQUYgc3RpbGwg
-b2NjdXJzCgpbICAgMTMuODYyMTE3XSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KWyAgIDEzLjg2MzA2NF0gQlVHOiBLQVNB
-TjogdXNlLWFmdGVyLWZyZWUgaW4gX19sb2NrX2FjcXVpcmUrMHhlNS8weDJjYTAKWyAgIDEzLjg2
-Mzg1Ml0gUmVhZCBvZiBzaXplIDggYXQgYWRkciBmZmZmODg4MDExZDlhZWIwIGJ5IHRhc2sgZXhw
-LzExOQpbICAgMTMuODY0NjIwXQpbICAgMTMuODY0ODE4XSBDUFU6IDAgUElEOiAxMTkgQ29tbTog
-ZXhwIE5vdCB0YWludGVkIDUuMTEuMTErICM0NQpbICAgMTMuODY1NTQzXSBIYXJkd2FyZSBuYW1l
-OiBRRU1VIFN0YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwgQklPUyAxLjEwLjItMXVi
-dW50dTEgMDQvMDEvMjAxNApbICAgMTMuODY2NjM0XSBDYWxsIFRyYWNlOgpbICAgMTMuODY2OTQ3
-XSAgZHVtcF9zdGFjaysweDE4My8weDIyZQpbICAgMTMuODY3Mzg5XSAgPyBzaG93X3JlZ3NfcHJp
-bnRfaW5mbysweDEyLzB4MTIKWyAgIDEzLjg2NzkyN10gID8gbG9nX2J1Zl92bWNvcmVpbmZvX3Nl
-dHVwKzB4NDVkLzB4NDVkClsgICAxMy44Njg1MDNdICA/IF9yYXdfc3Bpbl9sb2NrX2lycXNhdmUr
-MHhiZC8weDEwMApbICAgMTMuODY5MjQ0XSAgcHJpbnRfYWRkcmVzc19kZXNjcmlwdGlvbisweDdi
-LzB4M2EwClsgICAxMy44Njk4MjhdICBfX2thc2FuX3JlcG9ydCsweDE0ZS8weDIwMApbICAgMTMu
-ODcwMjg4XSAgPyBfX2xvY2tfYWNxdWlyZSsweGU1LzB4MmNhMApbICAgMTMuODcwNzY4XSAga2Fz
-YW5fcmVwb3J0KzB4NDcvMHg2MApbICAgMTMuODcxMTg5XSAgX19sb2NrX2FjcXVpcmUrMHhlNS8w
-eDJjYTAKWyAgIDEzLjg3MTY0N10gID8gbG9ja19hY3F1aXJlKzB4MTY4LzB4NmEwClsgICAxMy44
-NzIxMDddICA/IHRyYWNlX2xvY2tfcmVsZWFzZSsweDVjLzB4MTIwClsgICAxMy44NzI2MTVdICA/
-IGRvX3VzZXJfYWRkcl9mYXVsdCsweDljMi8weGRiMApbICAgMTMuODczMTM1XSAgPyB0cmFjZV9s
-b2NrX2FjcXVpcmUrMHgxNTAvMHgxNTAKWyAgIDEzLjg3MzY2MV0gID8gcmN1X3JlYWRfbG9ja19z
-Y2hlZF9oZWxkKzB4ODcvMHgxMTAKWyAgIDEzLjg3NDIzMl0gID8gcGVyZl90cmFjZV9yY3VfYmFy
-cmllcisweDM2MC8weDM2MApbICAgMTMuODc0NzkwXSAgPyBhdmNfaGFzX3Blcm1fbm9hdWRpdCsw
-eDQ0Mi8weDRjMApbICAgMTMuODc1MzMyXSAgbG9ja19hY3F1aXJlKzB4MTY4LzB4NmEwClsgICAx
-My44NzU3NzJdICA/IHNrYl9xdWV1ZV90YWlsKzB4MzIvMHgxMjAKWyAgIDEzLjg3NjI0MF0gID8g
-ZG9fa2Vybl9hZGRyX2ZhdWx0KzB4MjMwLzB4MjMwClsgICAxMy44NzY3NTZdICA/IHJlYWRfbG9j
-a19pc19yZWN1cnNpdmUrMHgxMC8weDEwClsgICAxMy44NzczMDBdICA/IGV4Y19wYWdlX2ZhdWx0
-KzB4ZjMvMHgxYjAKWyAgIDEzLjg3Nzc3MF0gID8gY3JlZF9oYXNfY2FwYWJpbGl0eSsweDE5MS8w
-eDNmMApbICAgMTMuODc4MjkwXSAgPyBjcmVkX2hhc19jYXBhYmlsaXR5KzB4MmExLzB4M2YwClsg
-ICAxMy44Nzg4MTZdICA/IHJjdV9sb2NrX3JlbGVhc2UrMHgyMC8weDIwClsgICAxMy44NzkyOTVd
-ICBfcmF3X3NwaW5fbG9ja19pcnFzYXZlKzB4YjEvMHgxMDAKWyAgIDEzLjg3OTgyMV0gID8gc2ti
-X3F1ZXVlX3RhaWwrMHgzMi8weDEyMApbICAgMTMuODgwMjg3XSAgPyBfcmF3X3NwaW5fbG9jaysw
-eDQwLzB4NDAKWyAgIDEzLjg4MDc0NV0gIHNrYl9xdWV1ZV90YWlsKzB4MzIvMHgxMjAKWyAgIDEz
-Ljg4MTE5NF0gIGhjaV9zb2NrX3NlbmRtc2crMHgxNTQ1LzB4MjZiMAoKRnJvbSBteSBwb2ludCBv
-ZiB2aWV3LCBhZGRpbmcgdGhlIGxvY2FsX2JoX2Rpc2FibGUoKSBjYW5ub3QgcHJldmVudCBjdXJy
-ZW50IGhjaV9zb2NrX2Rldl9ldmVudCgpIHRvIHNldCBhbmQgZGVjcmVhc2UgdGhlIHJlZi1jb3Vu
-dC4gSXQncyBub3QgcXVpdGUgc2ltaWxhciB3aXRoIHRoZSBjYXNlcyB0aGF0IERlc21vbmQgZGlz
-Y3Vzc2VkLgooT3IgbWF5YmUganVzdCBJIGRvbid0IGtub3cgaG93IHRvIHVzZSB0aGlzKS4KCkkg
-cmVjZW50bHkgdHJpZWQgdG8gZmluZCBzb21lIHNpbWlsYXIgY2FzZXMgKGFuZCBJIGRpZCwgcmVw
-b3J0ZWQgdG8gc2VjdXJpdHkgYWxyZWFkeSBidXQgZ2V0IG5vIHJlcGx5KSBhbmQgZmlndXJlIG91
-dCBob3cgb3RoZXJzIGFyZSBmaXhlZC4KU29tZSBndWlkZWxpbmUgdGVsbHMgbWUgdGhhdCAoaHR0
-cDovL2Jvb2tzLmdpZ2F0dXgubmwvbWlycm9yL2tlcm5lbGRldmVsb3BtZW50LzA2NzIzMjcyMDEv
-Y2gwN2xldjFzZWM2Lmh0bWwpCgoiSWYgcHJvY2VzcyBjb250ZXh0IGNvZGUgYW5kIGEgYm90dG9t
-IGhhbGYgc2hhcmUgZGF0YSwgeW91IG5lZWQgdG8gZGlzYWJsZSBib3R0b20taGFsZiBwcm9jZXNz
-aW5nIGFuZCBvYnRhaW4gYSBsb2NrIGJlZm9yZSBhY2Nlc3NpbmcgdGhlIGRhdGEuIERvaW5nIGJv
-dGggZW5zdXJlcyBsb2NhbCBhbmQgU01QIHByb3RlY3Rpb24gYW5kIHByZXZlbnRzIGEgZGVhZGxv
-Y2suIgoKQXNzdW1pbmcgaGNpX3NvY2tfc2VuZG1zZygpL2hjaV9zb2NrX2JvdW5kX2lvY3RsKCkg
-YXJlIHRoZSBwcm9jZXNzIGNvbnRleHRzIHdoaWxlIHRoZSBoY2lfc29ja19kZXZfZXZlbnQoKSwg
-bm90IHN1cmUsIGlzIHRoZSBCSCBjb250ZXh0LiBUaGUgZmFjdCBpcyB0aGF0IHRoZSBoY2lfc29j
-a19kZXZfZXZlbnQoKSBzaG91bGQgd2FpdCBmb3IgdGhlIHByb2Nlc3MgY29udGV4dHMuIEhlbmNl
-LCBJIHRoaW5rIFRldHN1byBpcyBvbiB0aGUgcmlnaHQgd2F5LgoKUmVnYXJkcwpMb2NrLU5vb2Ig
-TGluTWEKCgoK
+On Wed, Jul 14, 2021 at 8:47 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Proc socket stats use sk_prot->inuse_idx value to record inuse sock stats.
+> We currently do not set this correctly from sockmap side. The result is
+> reading sock stats '/proc/net/sockstat' gives incorrect values. The
+> socket counter is incremented correctly, but because we don't set the
+> counter correctly when we replace sk_prot we may omit the decrement.
+>
+> To get the correct inuse_idx value move the core_initcall that initializes
+> the udp proto handlers to late_initcall. This way it is initialized after
+> UDP has the chance to assign the inuse_idx value from the register protocol
+> handler.
+>
+> Fixes: edc6741cc660 ("bpf: Add sockmap hooks for UDP sockets")
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+
+Thanks for the update!
