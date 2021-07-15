@@ -2,65 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D113C9F23
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 15:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F6A3C9F2C
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 15:12:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236989AbhGONL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 09:11:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56942 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229624AbhGONL6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Jul 2021 09:11:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=crnV8WiEsXkYRDOXGKgUcdIiSuJkX3wBykL63bhych8=; b=PGteHXKTX7HAeE/TZ52+tsm07W
-        9QaWn3GT1Ew2am1IQgb/Zg5KPHd/9AGcLQqee+1eG+bxEDBAFTV7c/px87wrf5mwaGNIsIC3z7NCQ
-        NaGzfMgVGeRCL9F2tbD5hiTf4Ftph5Gc81Zxe1tEhfrj79pWa39uX3K1d0pMfX/t7tSQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m416j-00DUS1-Gx; Thu, 15 Jul 2021 15:08:53 +0200
-Date:   Thu, 15 Jul 2021 15:08:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com,
+        id S237394AbhGONPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 09:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229624AbhGONPt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 09:15:49 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6B9C06175F;
+        Thu, 15 Jul 2021 06:12:54 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id m11-20020a05600c3b0bb0290228f19cb433so6040278wms.0;
+        Thu, 15 Jul 2021 06:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=i5BqZo+UJii6eVoVtrvlFBm02AdZ6ngSZGRnTQ9knW0=;
+        b=Q5wPxqWuyRTCvaA4qSWrVpkXPVblBrXMdEmusZz0L4K4OoH3J00/VnCLF5UkLwFuxc
+         /ym+2Z5r+nFS4JaFkIPtdFcgKWyIr/KOwpQ983k87dwKrJlb7zzPOJWiiTcKVBmakMun
+         kr+7zEktxOIzyaEVcqbbKcNL2eDhNR4LPqEr0zyhU+IsMei34ydapf1pZGMSooKIHV7+
+         q+bkC7OZXWjU/cHx2Vzc9+Z7fFMrMPrjo/ZMcvZODt7yLQA7esgNm4zb+I2zxYQGr7wP
+         tokrmlPnTN//zTH/j+e/UPP1h41qvfk5cyrMO1A3GQ3liB7OW7IQAt9GG18rpJWUOuDD
+         /ogg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i5BqZo+UJii6eVoVtrvlFBm02AdZ6ngSZGRnTQ9knW0=;
+        b=pFJd1eo2x1bjcPBw1uuX+eK7R/2moqxhUxBeHaPBToHgqvgcVZb1dFVS9rO8H/Xxzi
+         hpZOKlAyRURL6cUqSEY9jq1YwHIJg/vj0ymTCW+zr/ihM93lISn0IjSpsLNgYwEheL9T
+         qMHR8EW9FDgIq/okFCMdeVKlQ6cowc9/FyaXSFlKiGUxnyVdhPEY0gYJerpbL1KflwZX
+         rZJUGzNLk8YyYLesLqHSbCGOFXrH4t8q08sK17WLYwJDDcIrzyfNQM5JtUKs5tJwgHuj
+         JoNGsm2BFNcI5HQUQlboEwKk37/wq1yTCkj4zKiW0Nb2T5dKrpoL2HDy9Orevt9xcZZG
+         zArA==
+X-Gm-Message-State: AOAM531NjGMmHJbpxHbGL7nKVmoHWx6DuEpDnPCrl/NvqM4oqsO8k0rx
+        5epYTSMfB3lWvPGRh4ZuYq4=
+X-Google-Smtp-Source: ABdhPJx5lVW/56Yyl02hf1vj7XesE1yFC5JK6ae9CjLhh3fUwpB+7mnQ7V50HwlHFjpCmKUWsfl/Dg==
+X-Received: by 2002:a05:600c:19d1:: with SMTP id u17mr10731754wmq.40.1626354773280;
+        Thu, 15 Jul 2021 06:12:53 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id v30sm7092964wrv.85.2021.07.15.06.12.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jul 2021 06:12:52 -0700 (PDT)
+Date:   Thu, 15 Jul 2021 16:12:51 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, woojung.huh@microchip.com,
         UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
         f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware process the
  layer 4 checksum
-Message-ID: <YPAzZXaC/En3s4ly@lunn.ch>
+Message-ID: <20210715131251.zhtcsjkat267yrtl@skbuf>
 References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
  <20210714191723.31294-3-LinoSanfilippo@gmx.de>
  <20210714194812.stay3oqyw3ogshhj@skbuf>
  <YO9F2LhTizvr1l11@lunn.ch>
  <20210715065455.7nu7zgle2haa6wku@skbuf>
+ <trinity-84a570e8-7b5f-44f7-b10c-169d4307d653-1626347772540@3c-app-gmx-bap31>
+ <20210715114908.ripblpevmdujkf2m@skbuf>
+ <trinity-0dbbc59b-1e7d-4f58-8611-adb281a82477-1626354270982@3c-app-gmx-bap31>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210715065455.7nu7zgle2haa6wku@skbuf>
+In-Reply-To: <trinity-0dbbc59b-1e7d-4f58-8611-adb281a82477-1626354270982@3c-app-gmx-bap31>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> - If we inherit NETIF_F_HW_CSUM from the master for tail taggers, it is
->   actively detrimential to keep this feature enabled, as proven my Lino.
->   As for header taggers, I fail to see how this would be helpful, since
->   the DSA master would always fail to see the real IP header (it has
->   been pushed to the right by the DSA tag), and therefore, the DSA
->   master offload would be effectively bypassed.
+On Thu, Jul 15, 2021 at 03:04:31PM +0200, Lino Sanfilippo wrote:
+> Please note that skb_put() asserts that the SKB is linearized. So I think we
+> should rather clear both NETIF_F_FRAGLIST and NETIF_F_SG unconditionally since also
+> header taggers use some form of skb_put() dont they?
 
-The Marvell MACs know about DSA and should be able to perform hardware
-checksumming. It is a long time since i looked at how this works, but
-i think there is a field in the descriptor which gets set with the
-offset to the IP header, so it work for DSA as well as EDSA.
+The tail taggers use skb_put() as part of the routine to make room for
+the tail tag.
 
-I _think_ Broadcom MACs also know about Broadcom tags and can do the
-right thing.
+Some of the header taggers use __skb_put_padto() when the packets are
+too small (under ETH_ZLEN). When they are so small they are definitely
+linear already.
 
-So we need to be a bit careful here to prevent performance regressions
-for same vendor MAC+Switch combinations.
-
-    Andrew
+We don't have a third form/use of skb_put().
