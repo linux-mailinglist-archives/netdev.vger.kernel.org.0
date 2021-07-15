@@ -2,166 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 419D03C9F70
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 15:25:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544253C9F8C
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 15:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237655AbhGON2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 09:28:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37261 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230080AbhGON2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 09:28:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626355550;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ah4MbGoLYz8PpeIyy6Wrw1o1Gg/0NPYNIWwDGG2q9MQ=;
-        b=Yjhgzq/9+T6TYDTj+dynlj69arM5UrkCmKAk20jjnNhSrYVT8URBEC8oqVsOkxcpTH8Lzm
-        NKiP1/RUzrLl++zGnllN90+vhBd6bGAsawFHgHDVW7zvmLWRYnatN+PGuJCNg7QfGUhESt
-        5FRyJX2omwilLAkjRexwCtZ0wBSrp2s=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-566-elQTy-XgM9iIywebhpi0bQ-1; Thu, 15 Jul 2021 09:25:49 -0400
-X-MC-Unique: elQTy-XgM9iIywebhpi0bQ-1
-Received: by mail-lj1-f198.google.com with SMTP id e15-20020a2ea54f0000b029018e0ca63855so3218505ljn.14
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 06:25:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ah4MbGoLYz8PpeIyy6Wrw1o1Gg/0NPYNIWwDGG2q9MQ=;
-        b=uQYbM9qeZdIL1x49K1bk/df1XsWEc8UTwytj1612wsWsdxUDZ8prBHmnKGM4JPXakc
-         ufnGLrTn8TrSjPwxKcrdM4c7Ru7rbpkKEwNTOR6+OfROAmGXG4vffyI4YIV/NEfsodwj
-         jNpoDoDaRqILxS/JHHbdNLRcSqwUHlEKn3h34bT8HPK+F08i0Gzql3R+GT8pE7fEUrLk
-         l8nZQ9+hGtlb7Ceub1Zx/CL+znArnA45y9XjOfJIKNboq80fR7F740dZJ/FvPlV3yo9o
-         w4F13No2b0GCeqVkB8VQCS1BCHGcd3ee3RbwzA6stbzqZmxypv1TXnqX29FYmggtZFdZ
-         EAjg==
-X-Gm-Message-State: AOAM532hVnNKlmcvxYJKzQJPkdAusGwew+bmyQjfYEhRnnGfIlMRLqWL
-        uARZJcA94UpJTPcpZDHj2iUGv/HkEU3eloeU4CL60RRJApQ8Nwgg1uUuihN3onZhBwMdorqwYpj
-        KmVxxksnAHqsWC9PVweHD1Axyq5v9C7jJ
-X-Received: by 2002:a05:6512:3a86:: with SMTP id q6mr3149861lfu.548.1626355548024;
-        Thu, 15 Jul 2021 06:25:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4dI6Pl2Y//20EnkEGgAcCVbyTORH0YWaTKsr2JdguYEYFI2ihDlt/NUiNtPNi9bYu/OMUSwAlGGsYWpUxV5M=
-X-Received: by 2002:a05:6512:3a86:: with SMTP id q6mr3149783lfu.548.1626355547649;
- Thu, 15 Jul 2021 06:25:47 -0700 (PDT)
+        id S237706AbhGONhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 09:37:21 -0400
+Received: from mout.gmx.net ([212.227.17.20]:59221 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233957AbhGONhS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 09:37:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1626356052;
+        bh=lK4DUo0w2gum2CKSES+snbMoAibhMnTmiJVymqGoScQ=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=GKSy4GYzcjMFL5meKVGQ+eq5bGWPqcR7NzLsCBo8F95UCPCYL6t5D0935+qNbUjGz
+         m0obY7Gg9GeXQ6RDkp7I7bFrXOJbd03OB8CXUk6xAWkWiI2CDmEUjk9ELrFn59+9G7
+         4ZIxKAy7qgvZjHZqQk9u/wdVdtQpOtum9FtKCx2Y=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
+ (3c-app-gmx-bap31.server.lan [172.19.172.101]) (via HTTP); Thu, 15 Jul 2021
+ 15:34:12 +0200
 MIME-Version: 1.0
-References: <20210713211502.464259-1-nitesh@redhat.com> <20210713211502.464259-7-nitesh@redhat.com>
- <YO7SiFE1dE0dFhkE@unreal> <CAFki+Lm-CpKZai1fV5aMJzEb-x+003m8wLQShSrYpyNh3XC50Q@mail.gmail.com>
- <YO7ggLW78FWE4z+1@unreal>
-In-Reply-To: <YO7ggLW78FWE4z+1@unreal>
-From:   Nitesh Lal <nilal@redhat.com>
-Date:   Thu, 15 Jul 2021 09:25:36 -0400
-Message-ID: <CAFki+L=KoVzAv-_tLjAJV91BR+fHTPffMsCs-AgSCNyE0d-0DQ@mail.gmail.com>
-Subject: Re: [PATCH v3 06/14] RDMA/irdma: Use irq_set_affinity_and_hint
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>, jbrandeb@kernel.org,
-        frederic@kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, rostedt@goodmis.org,
-        peterz@infradead.org, davem@davemloft.net,
-        akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, Marc Zyngier <maz@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>, pjwaskiewicz@gmail.com,
-        Stefan Assmann <sassmann@redhat.com>,
-        Tomas Henzl <thenzl@redhat.com>, kashyap.desai@broadcom.com,
-        Sumit Saxena <sumit.saxena@broadcom.com>,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
-        Dick Kennedy <dick.kennedy@broadcom.com>,
-        Ken Cox <jkc@redhat.com>, faisal.latif@intel.com,
-        shiraz.saleem@intel.com, tariqt@nvidia.com,
-        Alaa Hleihel <ahleihel@redhat.com>,
-        Kamal Heib <kheib@redhat.com>, borisp@nvidia.com,
-        saeedm@nvidia.com, benve@cisco.com, govind@gmx.com,
-        jassisinghbrar@gmail.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        "Nikolova, Tatyana E" <tatyana.e.nikolova@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        Al Stone <ahs3@redhat.com>,
-        Chandrakanth Patil <chandrakanth.patil@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-3bd0a864-e313-4403-8f8b-46fa344c80a4-1626356052833@3c-app-gmx-bap31>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Aw: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware
+ process the layer 4 checksum
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 15 Jul 2021 15:34:12 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20210715131251.zhtcsjkat267yrtl@skbuf>
+References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
+ <20210714191723.31294-3-LinoSanfilippo@gmx.de>
+ <20210714194812.stay3oqyw3ogshhj@skbuf> <YO9F2LhTizvr1l11@lunn.ch>
+ <20210715065455.7nu7zgle2haa6wku@skbuf>
+ <trinity-84a570e8-7b5f-44f7-b10c-169d4307d653-1626347772540@3c-app-gmx-bap31>
+ <20210715114908.ripblpevmdujkf2m@skbuf>
+ <trinity-0dbbc59b-1e7d-4f58-8611-adb281a82477-1626354270982@3c-app-gmx-bap31>
+ <20210715131251.zhtcsjkat267yrtl@skbuf>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:g7FXDoNMqgOsC29RS9YCrcMtlvKFiTy1SX3EMgu+4LqexdvM8l7O4BKO+X11BNi/2CDT2
+ t7+s2LwFRmN6Fqfi0z7cgs3Ijsc/Rxx5PuHl1wW6XqSyMg9hu22QOC8MR0OBtPUotYz8ebaNpCjm
+ IC5dOuz1gJQRMKfN1tiLwfuYezDkVWk7xrpqAye9qdnfet8ldBtl1TeQlVgTPPwNFedeXfeEYCJ9
+ ZeC14NpC5SrMh02eOwIPbD8oVPX+EpydtPUe/e3ymAW62xOfZBjeFnXXw35+6pfnTFPPHZ3pO/0a
+ pk=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Tg1U5EnkAn0=:C2aWLSCThHRCfqy/L/Vyaz
+ UkZZulhEcraxXYunTb9aaIg0wD0xQlSC2TqQ32Au3v6owqdPPZP1SGOmXkxXj/IbYrGVxFtjW
+ +B3x3Sk73ITP+0BwONuKl/nNX6u2bEju/JCsxJ4yqHn3Aot0xMpAxg4raIKedbICdmNrx8sty
+ +midmzmV7YJ+wAyOC79meaJ7RQuwXRPPiW90pd78jMAyfSOBMfSS7wBQn4nDeR54ZsU7UlL67
+ HonhpGlm24Q9CpcqYwNpme+a52G/gfE4pV//rs9OUmVjZcHXO50tj0RbMLhVp9Q2IBhXs1y6C
+ bIf+ENcSOpp3xYr46KJV1bO+EOAKQCVLiGYv9LBWWdCVpPbg+8g6Ygj7BLGq1q2B7ASvNccBH
+ OAgNj5C1OZACoeF32vwtzavPTfXnbI9immQcw7HQkhdw1b99QzmA6geW73xlS1lRmJVgkEHPs
+ ejDei+D91OutFcOTcX56O2tPQ5R8dKuTPQ1d/ntWQ8eoO+BdHm/CKfpiHQU9QdPUDM+Uc+A9I
+ yBvVqmpc/X6wRDY/hejmLdi2jJxyDZaa1hiyI7pdNGEPTsBxn9+68o6fhwUD8F40BGhToe+Ic
+ iGO2np7VqRwHAy6Tp18DH7E6pgm3dwaVEukpqQK0o7H9q2BxbRlRQrZYTGnEleVbnrW0Ob6iy
+ YQMR9GKwKfOpROB5nUWKikmd5Wyy6daD4NSGimgxGlZ7XeI0CIIwjOppF3OMf6Yyp/iPD5MPi
+ Qs9JKDB3TWRrwxN0InLtrdGd/+7ExzUNslPVEl4CarjopjMooxpByr4DxVNqG+YGFF9OzdN8Y
+ RyaOQqzk5UHDOfykhVLx2vfWbP8PUTB1x6XIjWpqiMMpa1C9+4=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 9:03 AM Leon Romanovsky <leonro@nvidia.com> wrote:
->
-> On Wed, Jul 14, 2021 at 08:56:41AM -0400, Nitesh Lal wrote:
-> > On Wed, Jul 14, 2021 at 8:03 AM Leon Romanovsky <leonro@nvidia.com> wrote:
-> > >
-> > > On Tue, Jul 13, 2021 at 05:14:54PM -0400, Nitesh Narayan Lal wrote:
-> > > > The driver uses irq_set_affinity_hint() to update the affinity_hint mask
-> > > > that is consumed by the userspace to distribute the interrupts and to apply
-> > > > the provided mask as the affinity for its interrupts. However,
-> > > > irq_set_affinity_hint() applying the provided cpumask as an affinity for
-> > > > the interrupt is an undocumented side effect.
-> > > >
-> > > > To remove this side effect irq_set_affinity_hint() has been marked
-> > > > as deprecated and new interfaces have been introduced. Hence, replace the
-> > > > irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
-> > > > where the provided mask needs to be applied as the affinity and
-> > > > affinity_hint pointer needs to be set and replace with
-> > > > irq_update_affinity_hint() where only affinity_hint needs to be updated.
-> > > >
-> > > > Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> > > > ---
-> > > >  drivers/infiniband/hw/irdma/hw.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
-> > > > index 7afb8a6a0526..7f13a051d4de 100644
-> > > > --- a/drivers/infiniband/hw/irdma/hw.c
-> > > > +++ b/drivers/infiniband/hw/irdma/hw.c
-> > > > @@ -537,7 +537,7 @@ static void irdma_destroy_irq(struct irdma_pci_f *rf,
-> > > >       struct irdma_sc_dev *dev = &rf->sc_dev;
-> > > >
-> > > >       dev->irq_ops->irdma_dis_irq(dev, msix_vec->idx);
-> > > > -     irq_set_affinity_hint(msix_vec->irq, NULL);
-> > > > +     irq_update_affinity_hint(msix_vec->irq, NULL);
-> > > >       free_irq(msix_vec->irq, dev_id);
-> > > >  }
-> > > >
-> > > > @@ -1087,7 +1087,7 @@ irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
-> > > >       }
-> > > >       cpumask_clear(&msix_vec->mask);
-> > > >       cpumask_set_cpu(msix_vec->cpu_affinity, &msix_vec->mask);
-> > > > -     irq_set_affinity_hint(msix_vec->irq, &msix_vec->mask);
-> > > > +     irq_set_affinity_and_hint(msix_vec->irq, &msix_vec->mask);
-> > >
-> > > I think that it needs to be irq_update_affinity_hint().
-> > >
-> >
-> > Ah! I got a little confused from our last conversation about mlx5.
-> >
-> > IIUC mlx5 sub-function use case uses irdma (?) and that's why I thought
-> > that perhaps we would also want to define the affinity here from the beginning.
->
-> mlx5 is connected to mlx5_ib/mlx5_vdpa e.t.c.
->
-> Not sure about that, but I think that only mlx5 implements SIOV model.
->
-> >
-> > In any case, I will make the change and re-post.
-> >
 
-Just FYI, I am hoping to collect more comments in the non-reviewed
-patches and address them in v4.
-Hence, I will wait for this week if I don't get anything I will just
-post another version by making the change in this driver.
+> Gesendet: Donnerstag, 15. Juli 2021 um 15:12 Uhr
+> Von: "Vladimir Oltean" <olteanv@gmail.com>
+> An: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>
+> Cc: "Andrew Lunn" <andrew@lunn.ch>, woojung.huh@microchip.com, UNGLinuxD=
+river@microchip.com, vivien.didelot@gmail.com, f.fainelli@gmail.com, davem=
+@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org, linux-kernel@vger=
+.kernel.org
+> Betreff: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware proces=
+s the layer 4 checksum
+>
+> On Thu, Jul 15, 2021 at 03:04:31PM +0200, Lino Sanfilippo wrote:
+> > Please note that skb_put() asserts that the SKB is linearized. So I th=
+ink we
+> > should rather clear both NETIF_F_FRAGLIST and NETIF_F_SG unconditional=
+ly since also
+> > header taggers use some form of skb_put() dont they?
+>
+> The tail taggers use skb_put() as part of the routine to make room for
+> the tail tag.
+>
+> Some of the header taggers use __skb_put_padto() when the packets are
+> too small (under ETH_ZLEN). When they are so small they are definitely
+> linear already.
+>
+> We don't have a third form/use of skb_put().
+>
 
--- 
-Thanks
-Nitesh
+Ah ok, I see. Then it should be fine do clear both flags only in case of
+tail taggers.
 
+Regards,
+Lino
