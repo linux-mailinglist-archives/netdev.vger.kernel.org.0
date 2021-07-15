@@ -2,169 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 763DD3C9E03
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287113C9E0B
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 13:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbhGOLyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 07:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbhGOLyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 07:54:36 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2752CC06175F;
-        Thu, 15 Jul 2021 04:51:43 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id c197so6194334oib.11;
-        Thu, 15 Jul 2021 04:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TxXJgw71KmdSk4k4SH+Pctzu46vlSWe9kQ50HddNuBA=;
-        b=W+OqtshGeUZfjD2+yimgIobozHeI6SjfyupTahQITqEO7vZfhDcycBxTlqha6L+KM8
-         lpt5/kgqVVqTjiAtRwEhZKXLAKBYDJHTrW0gUt1BNALdfkQz3POxhgAZBxT1DULUR3/e
-         m2lOf9ntVL+HmePXbxTC7O8p5FT4y+26eI8IBRK9e1YHKpbzrr+5Ky68BTwGtdZfQjBA
-         NRdkWKgC7EeJ9hIuGZP5qDFIGDUjyune463m8KtdGY25Snc6DgzSWQbbBiEYxprewc1H
-         bEZXSjNfRWlJqk572Mea0hd53mpNoUi5/fsJeJIjpSiQU+jaDZC69EK6+4RbVzcFnh85
-         pHhA==
+        id S230271AbhGOL6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 07:58:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58495 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229927AbhGOL6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 07:58:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626350160;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ATtvEJLSeypD9mxZO4KAPy28S/NQB9dMQaMSu4O94QU=;
+        b=Epqtwqz6K0mBmIJyagGYqc4KyXo71S6Q/JcOFtJjd0aHOTUXKPLzXQVwHl4hHjMuZKw/kl
+        CmpGNKdsN/u2CxS8+zJDGan+rOimlAcKfSiGqNQMA8l+0IGWNb7rdGSR6iFuJofy8vWx9M
+        sZgp09d6nD4Du4amnJPNQ2ySqRuXLiU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-374-obE06iVdNpKCkowIRxsEiw-1; Thu, 15 Jul 2021 07:55:59 -0400
+X-MC-Unique: obE06iVdNpKCkowIRxsEiw-1
+Received: by mail-wr1-f69.google.com with SMTP id a4-20020a0560001884b02901401e436a18so3202291wri.21
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 04:55:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TxXJgw71KmdSk4k4SH+Pctzu46vlSWe9kQ50HddNuBA=;
-        b=CjI3GaUg/BOIj4/nvn/tFN3eSENKlyZvPmqqwCLWnYFAfqqz77wVv6/+SLy/X7TpZH
-         b1iW4HfkkeWpkbo4+/Qc2QyBLLdFMiMNHRBZRiSiwUPEWiYRg4ohN05JWG4gVPBv2TFm
-         vAQOIyer9f7Lpb9dpJzdO7Yg2+AV5Qu/GzVcKZUf+uq1U/SZv5py4k0aiW/duWn86otM
-         4wsFPteC3gZvrds49ItdVeRgFu961PBFs3ZRDcLD1AiJgBcU6ogJU5tuiRy9WlN1mbhD
-         HVJNGK4p93CrdNe9vCBxM366GpuOItvlmNjkiH2oWUahFWgwOwnTXZdGOcSI4zhyTh2r
-         muiQ==
-X-Gm-Message-State: AOAM530mTIavhQ6hbZ91WcUF76HyHPv66P0flL1DaWQz+e9uAGOABPP6
-        fcGdqX1+pWi+GI13OBzZL/WsDxMtke56XNnGtSGoaMPWWkI=
-X-Google-Smtp-Source: ABdhPJx+XxaHOHMvL65rp/B5mM0H7gzKmsf+YNd0VEUT1Z0RCchD7AlI7juYcEKO6SXkYV5swQ1fs+C+p8xAakA2gIk=
-X-Received: by 2002:a05:6808:1153:: with SMTP id u19mr7741443oiu.20.1626349902535;
- Thu, 15 Jul 2021 04:51:42 -0700 (PDT)
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ATtvEJLSeypD9mxZO4KAPy28S/NQB9dMQaMSu4O94QU=;
+        b=opxwClQUl58bP0i/h/zFmF1Fy0zhnKHNXfs9JdIhGroguTE+bMx5B338eEWjUoNqjU
+         C5ol1QALgJydun/Kun/UG73ZvnI5NDl07bJ+EzS+R5YkD58BPn/Q4M8BZql2fy+mW3A7
+         Y69bbWeFSRm+4F9x54m7C0hRxHOlrGST6Wb4mgDAt2DHu77hwS7MTgs4L684OddvGils
+         a8sgV1HvgztXzSAEVNY1wWvGoJdY1ca5FfXXyMhHRkqI9eY1WzF+LV53uhvqiFVeHWT0
+         PxBxW1H8hOlvUGrrQQpVl0ntAsXeeyJ/uYeW0a1kaIDVYCwWxGJapIXKHoJMXtVMzHJG
+         iJtg==
+X-Gm-Message-State: AOAM5335mQS68XxY/2zRQGY3ApDbd/1MLPwFx2SHk519WS6uMKRcJ/jL
+        9qFHqkR2YYA0FFDEMNSii4+k3APwVb1XW/ewee1xrwQFf33XgYJGuED1qG99MIrsIZMrNGxtsqr
+        RY2Iooc222cDksroy
+X-Received: by 2002:a05:600c:214a:: with SMTP id v10mr9698100wml.17.1626350158049;
+        Thu, 15 Jul 2021 04:55:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyG/t3RDmdawxCIkbu9Fg6XRWngV0B9xDy1sGHz7tuzAfePU5r+hSy+u+v0zF+e5CjzmSkpRg==
+X-Received: by 2002:a05:600c:214a:: with SMTP id v10mr9698074wml.17.1626350157707;
+        Thu, 15 Jul 2021 04:55:57 -0700 (PDT)
+Received: from magray.users.ipa.redhat.com ([109.78.103.97])
+        by smtp.gmail.com with ESMTPSA id l39sm4935566wms.1.2021.07.15.04.55.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jul 2021 04:55:57 -0700 (PDT)
+Reply-To: Mark Gray <mark.d.gray@redhat.com>
+Subject: Re: [PATCH net-next] openvswitch: Introduce per-cpu upcall dispatch
+To:     Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Flavio Leitner <fbl@sysclose.org>, dan.carpenter@oracle.com
+References: <20210630095350.817785-1-mark.d.gray@redhat.com>
+ <CAOrHB_A0BcA0OOGmceYFyS2V72858tW-WWX_i9WSEhz63O7Scg@mail.gmail.com>
+From:   Mark Gray <mark.d.gray@redhat.com>
+Message-ID: <f14e1e3d-5908-dfc8-dcb1-3fe5903dbf19@redhat.com>
+Date:   Thu, 15 Jul 2021 12:55:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210715082536.1882077-1-aisheng.dong@nxp.com>
- <20210715082536.1882077-2-aisheng.dong@nxp.com> <20210715091207.gkd73vh3w67ccm4q@pengutronix.de>
- <CAA+hA=QDJhf_LnBZCiKE-FbUNciX4bmgmrvft8Y-vkB9Lguj=w@mail.gmail.com>
- <DB8PR04MB6795ACFCCB64354C8E810EE8E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
- <20210715110706.ysktvpzzaqaiimpl@pengutronix.de> <CAA+hA=RBysrM5qXC=gve5n8-Rm7w_Nvsf+qurYJTkWQWPmGobw@mail.gmail.com>
- <DB8PR04MB679513E50585817AF8E2C7E7E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB679513E50585817AF8E2C7E7E6129@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Dong Aisheng <dongas86@gmail.com>
-Date:   Thu, 15 Jul 2021 19:49:42 +0800
-Message-ID: <CAA+hA=R8XsZn3FDkywHpww7=4mvXrYzzXgsoKNF_-1M2McVTwA@mail.gmail.com>
-Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbile
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAOrHB_A0BcA0OOGmceYFyS2V72858tW-WWX_i9WSEhz63O7Scg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 7:44 PM Joakim Zhang <qiangqing.zhang@nxp.com> wrot=
-e:
+On 15/07/2021 05:45, Pravin Shelar wrote:
+> On Wed, Jun 30, 2021 at 2:53 AM Mark Gray <mark.d.gray@redhat.com> wrote:
+>>
+>> The Open vSwitch kernel module uses the upcall mechanism to send
+>> packets from kernel space to user space when it misses in the kernel
+>> space flow table. The upcall sends packets via a Netlink socket.
+>> Currently, a Netlink socket is created for every vport. In this way,
+>> there is a 1:1 mapping between a vport and a Netlink socket.
+>> When a packet is received by a vport, if it needs to be sent to
+>> user space, it is sent via the corresponding Netlink socket.
+>>
+>> This mechanism, with various iterations of the corresponding user
+>> space code, has seen some limitations and issues:
+>>
+>> * On systems with a large number of vports, there is a correspondingly
+>> large number of Netlink sockets which can limit scaling.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1526306)
+>> * Packet reordering on upcalls.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1844576)
+>> * A thundering herd issue.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1834444)
+>>
+>> This patch introduces an alternative, feature-negotiated, upcall
+>> mode using a per-cpu dispatch rather than a per-vport dispatch.
+>>
+>> In this mode, the Netlink socket to be used for the upcall is
+>> selected based on the CPU of the thread that is executing the upcall.
+>> In this way, it resolves the issues above as:
+>>
+>> a) The number of Netlink sockets scales with the number of CPUs
+>> rather than the number of vports.
+>> b) Ordering per-flow is maintained as packets are distributed to
+>> CPUs based on mechanisms such as RSS and flows are distributed
+>> to a single user space thread.
+>> c) Packets from a flow can only wake up one user space thread.
+>>
+>> The corresponding user space code can be found at:
+>> https://mail.openvswitch.org/pipermail/ovs-dev/2021-April/382618.html
+>>
+>> Bugzilla: https://bugzilla.redhat.com/1844576
+>> Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
+>> ---
+>>
+>> Notes:
+>>     v1 - Reworked based on Flavio's comments:
+>>          * Fixed handling of userspace action case
+>>          * Renamed 'struct dp_portids'
+>>          * Fixed handling of return from kmalloc()
+>>          * Removed check for dispatch type from ovs_dp_get_upcall_portid()
+>>        - Reworked based on Dan's comments:
+>>          * Fixed handling of return from kmalloc()
+>>        - Reworked based on Pravin's comments:
+>>          * Fixed handling of userspace action case
+>>        - Added kfree() in destroy_dp_rcu() to cleanup netlink port ids
+>>
+> Patch looks good to me. I have the following minor comments.
 >
->
-> > -----Original Message-----
-> > From: Dong Aisheng <dongas86@gmail.com>
-> > Sent: 2021=E5=B9=B47=E6=9C=8815=E6=97=A5 19:36
-> > To: Marc Kleine-Budde <mkl@pengutronix.de>
-> > Cc: Joakim Zhang <qiangqing.zhang@nxp.com>; Aisheng Dong
-> > <aisheng.dong@nxp.com>; devicetree <devicetree@vger.kernel.org>;
-> > moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE
-> > <linux-arm-kernel@lists.infradead.org>; dl-linux-imx <linux-imx@nxp.com=
->;
-> > Sascha Hauer <kernel@pengutronix.de>; Rob Herring <robh+dt@kernel.org>;
-> > Shawn Guo <shawnguo@kernel.org>; linux-can@vger.kernel.org;
-> > netdev@vger.kernel.org
-> > Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbi=
-le
-> >
-> > On Thu, Jul 15, 2021 at 7:07 PM Marc Kleine-Budde <mkl@pengutronix.de>
-> > wrote:
-> > >
-> > > On 15.07.2021 11:00:07, Joakim Zhang wrote:
-> > > > > I checked with Joakim that the flexcan on MX8MP is derived from
-> > > > > MX6Q with extra ECC added. Maybe we should still keep it from HW =
-point
-> > of view?
-> > > >
-> > > > Sorry, Aisheng, I double check the history, and get the below resul=
-ts:
-> > > >
-> > > > 8MP reuses 8QXP(8QM), except ECC_EN
-> > > > (ipv_flexcan3_syn_006/D_IP_FlexCAN3_SYN_057 which corresponds to
-> > > > version d_ip_flexcan3_syn.03.00.17.01)
-> > >
-> > > Also see commit message of:
-> > >
-> > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fl=
-ore
-> > > .kernel.org%2Flinux-can%2F20200929211557.14153-2-qiangqing.zhang%40n
-> > xp
-> > > .com%2F&amp;data=3D04%7C01%7Cqiangqing.zhang%40nxp.com%7Cf5cd871
-> > e13b34e9
-> > >
-> > 5817b08d9478504af%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C
-> > 6376194
-> > >
-> > 58893680146%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIj
-> > oiV2luMz
-> > >
-> > IiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DYwH3vD%2FtIol5
-> > OXPHPM
-> > > VbiVCLTC7gowOdIP3Ih1lBHh0%3D&amp;reserved=3D0
-> > >
-> > > > I prefer to change the dtsi as Mac suggested if possible, shall I
-> > > > send a fix patch?
-> > >
-> > > Make it so!
-> >
-> > Then should it be "fsl,imx8mp-flexcan", "fsl,imx8qxp-flexcan" rather th=
-an only
-> > drop "fsl,imx6q-flexcan"?
->
-> No, I will only use " fsl,imx8mp-flexcan" to avoid ECC impact.
->
+>>  include/uapi/linux/openvswitch.h |  8 ++++
+>>  net/openvswitch/actions.c        |  6 ++-
+>>  net/openvswitch/datapath.c       | 70 +++++++++++++++++++++++++++++++-
+>>  net/openvswitch/datapath.h       | 20 +++++++++
+>>  4 files changed, 101 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+>> index 8d16744edc31..6571b57b2268 100644
+>> --- a/include/uapi/linux/openvswitch.h
+>> +++ b/include/uapi/linux/openvswitch.h
+>> @@ -70,6 +70,8 @@ enum ovs_datapath_cmd {
+>>   * set on the datapath port (for OVS_ACTION_ATTR_MISS).  Only valid on
+>>   * %OVS_DP_CMD_NEW requests. A value of zero indicates that upcalls should
+>>   * not be sent.
+>> + * OVS_DP_ATTR_PER_CPU_PIDS: Per-cpu array of PIDs for upcalls when
+>> + * OVS_DP_F_DISPATCH_UPCALL_PER_CPU feature is set.
+>>   * @OVS_DP_ATTR_STATS: Statistics about packets that have passed through the
+>>   * datapath.  Always present in notifications.
+>>   * @OVS_DP_ATTR_MEGAFLOW_STATS: Statistics about mega flow masks usage for the
+>> @@ -87,6 +89,9 @@ enum ovs_datapath_attr {
+>>         OVS_DP_ATTR_USER_FEATURES,      /* OVS_DP_F_*  */
+>>         OVS_DP_ATTR_PAD,
+>>         OVS_DP_ATTR_MASKS_CACHE_SIZE,
+>> +       OVS_DP_ATTR_PER_CPU_PIDS,   /* Netlink PIDS to receive upcalls in per-cpu
+>> +                                    * dispatch mode
+>> +                                    */
+>>         __OVS_DP_ATTR_MAX
+>>  };
+>>
+>> @@ -127,6 +132,9 @@ struct ovs_vport_stats {
+>>  /* Allow tc offload recirc sharing */
+>>  #define OVS_DP_F_TC_RECIRC_SHARING     (1 << 2)
+>>
+>> +/* Allow per-cpu dispatch of upcalls */
+>> +#define OVS_DP_F_DISPATCH_UPCALL_PER_CPU       (1 << 3)
+>> +
+>>  /* Fixed logical ports. */
+>>  #define OVSP_LOCAL      ((__u32)0)
+>>
+>> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+>> index ef15d9eb4774..f79679746c62 100644
+>> --- a/net/openvswitch/actions.c
+>> +++ b/net/openvswitch/actions.c
+>> @@ -924,7 +924,11 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
+>>                         break;
+>>
+>>                 case OVS_USERSPACE_ATTR_PID:
+>> -                       upcall.portid = nla_get_u32(a);
+>> +                       if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU)
+>> +                               upcall.portid =
+>> +                                  ovs_dp_get_upcall_portid(dp, smp_processor_id());
+>> +                       else
+>> +                               upcall.portid = nla_get_u32(a);
+>>                         break;
+>>
+>>                 case OVS_USERSPACE_ATTR_EGRESS_TUN_PORT: {
+>> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+>> index bc164b35e67d..8d54fa323543 100644
+>> --- a/net/openvswitch/datapath.c
+>> +++ b/net/openvswitch/datapath.c
+>> @@ -166,6 +166,7 @@ static void destroy_dp_rcu(struct rcu_head *rcu)
+>>         free_percpu(dp->stats_percpu);
+>>         kfree(dp->ports);
+>>         ovs_meters_exit(dp);
+>> +       kfree(dp->upcall_portids);
+>>         kfree(dp);
+>>  }
+>>
+>> @@ -239,7 +240,12 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>>
+>>                 memset(&upcall, 0, sizeof(upcall));
+>>                 upcall.cmd = OVS_PACKET_CMD_MISS;
+>> -               upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+>> +
+>> +               if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU)
+>> +                       upcall.portid = ovs_dp_get_upcall_portid(dp, smp_processor_id());
+>> +               else
+>> +                       upcall.portid = ovs_vport_find_upcall_portid(p, skb);
+>> +
+>>                 upcall.mru = OVS_CB(skb)->mru;
+>>                 error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+>>                 if (unlikely(error))
+>> @@ -1594,16 +1600,67 @@ static void ovs_dp_reset_user_features(struct sk_buff *skb,
+>>
+>>  DEFINE_STATIC_KEY_FALSE(tc_recirc_sharing_support);
+>>
+>> +int ovs_dp_set_upcall_portids(struct datapath *dp,
+>> +                             const struct nlattr *ids)
+> this can be static function.
 
-Is ECC issue SW or HW compatibility issue?
-If SW, then we should keep the backward compatible string as DT is
-describing HW.
+Yes
 
-Regards
-Aisheng
+> 
+>> +{
+>> +       struct dp_nlsk_pids *old, *dp_nlsk_pids;
+>> +
+>> +       if (!nla_len(ids) || nla_len(ids) % sizeof(u32))
+>> +               return -EINVAL;
+>> +
+>> +       old = ovsl_dereference(dp->upcall_portids);
+>> +
+>> +       dp_nlsk_pids = kmalloc(sizeof(*dp_nlsk_pids) + nla_len(ids),
+>> +                              GFP_KERNEL);
+>> +       if (!dp_nlsk_pids)
+>> +               return -ENOMEM;
+>> +
+>> +       dp_nlsk_pids->n_pids = nla_len(ids) / sizeof(u32);
+>> +       nla_memcpy(dp_nlsk_pids->pids, ids, nla_len(ids));
+>> +
+>> +       rcu_assign_pointer(dp->upcall_portids, dp_nlsk_pids);
+>> +
+>> +       kfree_rcu(old, rcu);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +u32 ovs_dp_get_upcall_portid(const struct datapath *dp, uint32_t cpu_id)
+> same here, it can be static.
 
-> Best Regards,
-> Joakim Zhang
-> > Regards
-> > Aisheng
-> >
-> > >
-> > > regards,
-> > > Marc
-> > >
-> > > --
-> > > Pengutronix e.K.                 | Marc Kleine-Budde           |
-> > > Embedded Linux                   |
-> > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww=
-.p
-> > engutronix.de%2F&amp;data=3D04%7C01%7Cqiangqing.zhang%40nxp.com%7Cf
-> > 5cd871e13b34e95817b08d9478504af%7C686ea1d3bc2b4c6fa92cd99c5c30163
-> > 5%7C0%7C1%7C637619458893680146%7CUnknown%7CTWFpbGZsb3d8eyJWI
-> > joiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3
-> > 000&amp;sdata=3DsoLd53hGDcxtF42AjJ7u5k9TT%2FsZt6TG%2Bljw4rvtdy4%3D&
-> > amp;reserved=3D0  |
-> > > Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> > > Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+This cannot as it gets called in actions.c
+> 
+>> +{
+>> +       struct dp_nlsk_pids *dp_nlsk_pids;
+>> +
+>> +       dp_nlsk_pids = rcu_dereference_ovsl(dp->upcall_portids);
+> I dont think this function is only called under ovs-lock, so we can
+> change it to rcu_dereference().
+
+I had a quick look through the code and I think you are right so I will
+change it.
+
+> 
+>> +
+>> +       if (dp_nlsk_pids) {
+>> +               if (cpu_id < dp_nlsk_pids->n_pids) {
+>> +                       return dp_nlsk_pids->pids[cpu_id];
+>> +               } else if (dp_nlsk_pids->n_pids > 0 && cpu_id >= dp_nlsk_pids->n_pids) {
+>> +                       /* If the number of netlink PIDs is mismatched with the number of
+>> +                        * CPUs as seen by the kernel, log this and send the upcall to an
+>> +                        * arbitrary socket (0) in order to not drop packets
+>> +                        */
+>> +                       pr_info_ratelimited("cpu_id mismatch with handler threads");
+>> +                       return dp_nlsk_pids->pids[cpu_id % dp_nlsk_pids->n_pids];
+>> +               } else {
+>> +                       return 0;
+>> +               }
+>> +       } else {
+>> +               return 0;
+>> +       }
+>> +}
+>> +
+> 
+
