@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC523CA556
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 20:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310723CA560
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 20:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238100AbhGOSYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 14:24:32 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:61202 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232539AbhGOSYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 14:24:31 -0400
+        id S238127AbhGOSYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 14:24:39 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:41919 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S238122AbhGOSYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 14:24:36 -0400
 X-IronPort-AV: E=Sophos;i="5.84,243,1620658800"; 
-   d="scan'208";a="87775111"
+   d="scan'208";a="87715295"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 16 Jul 2021 03:21:36 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 16 Jul 2021 03:21:39 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 890D840C5552;
-        Fri, 16 Jul 2021 03:21:32 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 72A4940C58A3;
+        Fri, 16 Jul 2021 03:21:36 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         Rob Herring <robh+dt@kernel.org>,
@@ -34,49 +34,97 @@ Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 0/6] Renesas RZ/G2L CANFD support
-Date:   Thu, 15 Jul 2021 19:21:17 +0100
-Message-Id: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 1/6] dt-bindings: net: can: renesas,rcar-canfd: Document RZ/G2L SoC
+Date:   Thu, 15 Jul 2021 19:21:18 +0100
+Message-Id: <20210715182123.23372-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+Add CANFD binding documentation for Renesas RZ/G2L SoC.
 
-This patch series adds CANFD support to Renesas RZ/G2L family.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+---
+ .../bindings/net/can/renesas,rcar-canfd.yaml  | 45 ++++++++++++++++---
+ 1 file changed, 39 insertions(+), 6 deletions(-)
 
-CANFD block on RZ/G2L SoC is almost identical to one found on
-R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
-are split into individual sources.
-
-Patches are based on top of [1] (master branch) + patch [2].
-
-Cheers,
-Prabhakar
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-drivers.git/log/
-[2] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-20210712194422.12405-4-prabhakar.mahadev-lad.rj@bp.renesas.com/
-
-Lad Prabhakar (6):
-  dt-bindings: net: can: renesas,rcar-canfd: Document RZ/G2L SoC
-  can: rcar_canfd: Add support for RZ/G2L family
-  dt-bindings: clk: r9a07g044-cpg: Add entry for P0_DIV2 core clock
-  clk: renesas: r9a07g044-cpg: Add entry for fixed clock P0_DIV2
-  clk: renesas: r9a07g044-cpg: Add clock and reset entries for CANFD
-  arm64: dts: renesas: r9a07g044: Add CANFD node
-
- .../bindings/net/can/renesas,rcar-canfd.yaml  |  45 ++-
- arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  37 +++
- drivers/clk/renesas/r9a07g044-cpg.c           |   7 +-
- drivers/net/can/rcar/rcar_canfd.c             | 275 ++++++++++++++++--
- include/dt-bindings/clock/r9a07g044-cpg.h     |   2 +
- 5 files changed, 328 insertions(+), 38 deletions(-)
-
-
-base-commit: b37235d5fdf50e5f1c23f868ab70bbe640081b21
-prerequisite-patch-id: 7436c0d801737268ef470fcb50e620428286e085
+diff --git a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+index 0b33ba9ccb47..38243c261622 100644
+--- a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
++++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
+@@ -30,13 +30,15 @@ properties:
+               - renesas,r8a77995-canfd     # R-Car D3
+           - const: renesas,rcar-gen3-canfd # R-Car Gen3 and RZ/G2
+ 
++      - items:
++          - enum:
++              - renesas,r9a07g044-canfd    # RZ/G2{L,LC}
++          - const: renesas,rzg2l-canfd     # RZ/G2L family
++
+   reg:
+     maxItems: 1
+ 
+-  interrupts:
+-    items:
+-      - description: Channel interrupt
+-      - description: Global interrupt
++  interrupts: true
+ 
+   clocks:
+     maxItems: 3
+@@ -50,8 +52,7 @@ properties:
+   power-domains:
+     maxItems: 1
+ 
+-  resets:
+-    maxItems: 1
++  resets: true
+ 
+   renesas,no-can-fd:
+     $ref: /schemas/types.yaml#/definitions/flag
+@@ -78,6 +79,38 @@ patternProperties:
+       node.  Each child node supports the "status" property only, which
+       is used to enable/disable the respective channel.
+ 
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - renesas,rzg2l-canfd
++then:
++  properties:
++    interrupts:
++      items:
++        - description: CAN global error interrupt
++        - description: CAN receive FIFO interrupt
++        - description: CAN0 error interrupt
++        - description: CAN0 transmit interrupt
++        - description: CAN0 transmit/receive FIFO receive completion interrupt
++        - description: CAN1 error interrupt
++        - description: CAN1 transmit interrupt
++        - description: CAN1 transmit/receive FIFO receive completion interrupt
++
++    resets:
++      maxItems: 2
++
++else:
++  properties:
++    interrupts:
++      items:
++        - description: Channel interrupt
++        - description: Global interrupt
++
++    resets:
++      maxItems: 1
++
+ required:
+   - compatible
+   - reg
 -- 
 2.17.1
 
