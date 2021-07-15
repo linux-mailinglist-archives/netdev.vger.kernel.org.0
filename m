@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95FF53C9548
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 02:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88FDB3C954D
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 02:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbhGOA5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Jul 2021 20:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36940 "EHLO
+        id S231430AbhGOA5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Jul 2021 20:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231181AbhGOA5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 20:57:17 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D76C06175F;
-        Wed, 14 Jul 2021 17:54:23 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id m83so3591888pfd.0;
-        Wed, 14 Jul 2021 17:54:23 -0700 (PDT)
+        with ESMTP id S231196AbhGOA5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Jul 2021 20:57:18 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8734C06175F;
+        Wed, 14 Jul 2021 17:54:25 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id p14-20020a17090ad30eb02901731c776526so4986225pju.4;
+        Wed, 14 Jul 2021 17:54:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=hkl4bdi8reCzFQCanS6SYURb5jpTCJRZnvhxfg9Iea0=;
-        b=mglPbv85zeBn1S187xUNGeojCUdqz1PwDPZQ7EjtQcJHV6y/8Z9juB8ljoot1z2vEl
-         j6BQrNCy8rG78xNzCZLDtFuq/zPmf/+hrWepJ/Pub8HPScFoc3gpNSeq1SYxJYLQxHL9
-         +hZwhEF30x/w92t+qKbBOnFqrqlIWT8SmoSnyChJFWNzMK2Y3+Ue3JY5Bo1eIBAk1hwF
-         Wm9cJ1Hwwcj5wGqetDsDNBifC/szP1yU0ncdunQxYyFI2DzXeIhHGabUqueFZrJPTxhQ
-         /UjLuq5lsWQQ6oq92R47oCw+RyOXyQScU8PpKSNRYsvlnlV6rgDG4Z/pR5pKMqGOdyXD
-         0EHQ==
+        bh=yrnsqNBXx5G4B7kEH7sQS0AwgCfuvHTBIEke+GNH3SE=;
+        b=rm+PsDA5SeS8FIyoe4gIvPxQ1lWyZQFouS8TcotSjxVsmmrrny8euBP4mp6kWGwmA1
+         8B8MCOY+95hka6vRQSJfuHrvv8hMEPu62YL+0erBwXuYN+mCl1AFl5BBu9nLF62cAPpG
+         zg692vYflztzjKirnrdVtNJbxE786HCOjh9X39tOsX/JnvEvGBCW/X/bHMNZ86bnMuks
+         0cVRWFvmKXWAA8xiQbeSws7LYpmKWEqKg5xYSb+lwp33ECu5PBJDTfiEwb5SuRrDYAu3
+         dIWWaxeXF8ytUnIv6J9Q0YixBuAX3nNYPtvBCfa/rmQmb6kVXEjfS0WeMvrWJp4eNVyH
+         lQXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=hkl4bdi8reCzFQCanS6SYURb5jpTCJRZnvhxfg9Iea0=;
-        b=XEK4ltKb425sAkbBJlXP6KhTnLI1bn3ofPhME/DXl3cvRQliTsKvpQHpcQR+suA7eo
-         QRS7DlZc83OV+4+6H9rNMPQqYlU3rQj6v15zI/gsWoVoh+ec5dG9I9A8Ad3y8U9sGE4N
-         ODWKixoJV/nyNZ1yu7+7vYQdcfe3YKxAuMed0wu3h8xt3Vh7YhLuTND06Z13pelzsnZl
-         QvlOcJcWMRNfnhlCTKWiuIlCq8+1H8sToKG5vIdpqD2rk8aYi8YUR0gsIXPUU9s9OSDl
-         jTqamoGliwvGrcbDuBajOJBTxw+G6wSXyZptgoU1RhsAoyAfp0lryrDfTsAEyYw+Mz4o
-         Dv1g==
-X-Gm-Message-State: AOAM530bcGGlxhVIpuR8pIiCz+2k6T3KlLuAvpwPGeQV9zk++O0jl2nq
-        h9OvCIO1u33rA4Gj/cViwVI=
-X-Google-Smtp-Source: ABdhPJzHuouL6WbRQ65CidTj+SAmIzKBFrEnUj2n8g3DD7RA3pFUe0GPXggdDrEdEH49KMd2cWM6qg==
-X-Received: by 2002:aa7:8d56:0:b029:327:6dc:d254 with SMTP id s22-20020aa78d560000b029032706dcd254mr907362pfe.69.1626310463433;
-        Wed, 14 Jul 2021 17:54:23 -0700 (PDT)
+        bh=yrnsqNBXx5G4B7kEH7sQS0AwgCfuvHTBIEke+GNH3SE=;
+        b=q7dFmC8BV26x4dEzFrxXTHX+6P2jha397uz61xZu3KfiJ7vx0+9Qdx06mlWIziewW5
+         83jqc/EIhTHY3npDiLnGVtIN4mJ34fcHtUrI5IIrMODPmr3xgfJYftgKo9YYX4TodvSu
+         VEVOD37Lm2H4EqgUvHScvuYBtr9GFMry/CVo5C7hKJGEhHTg/CkZxlERp6Mmy5dksqgg
+         lIgDs3NA619NoA9x8eqfoqyBdzqBmNx8bSG1NU2F0VVZ5Q5PY+UheoaQOIMJxK/jQy/Y
+         6BPw2I9DrpjQT5JemPvqmFdf8YajWsfAp9g55A3NbV0ajhLpX0HRnm//kruJp4LPbAO6
+         hYiQ==
+X-Gm-Message-State: AOAM533lJirKVNUHLEb7/T3gJuGJsWw8VX810Cz+0yykSIV2/H4EFYsB
+        zAVz9rucxTGOJDNn2pjWPZ2nplNAuIk=
+X-Google-Smtp-Source: ABdhPJyDUlrBIARqlNc+A20p8DFYVnlg3iyv9sFG46yFsiE3/S4UATuc8nDV6Vrl+cc8XaeGrQCTHg==
+X-Received: by 2002:a17:90a:b284:: with SMTP id c4mr545075pjr.213.1626310465272;
+        Wed, 14 Jul 2021 17:54:25 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([2620:10d:c090:400::5:120c])
-        by smtp.gmail.com with ESMTPSA id nl2sm3439011pjb.10.2021.07.14.17.54.21
+        by smtp.gmail.com with ESMTPSA id nl2sm3439011pjb.10.2021.07.14.17.54.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Jul 2021 17:54:22 -0700 (PDT)
+        Wed, 14 Jul 2021 17:54:24 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v7 bpf-next 01/11] bpf: Prepare bpf_prog_put() to be called from irq context.
-Date:   Wed, 14 Jul 2021 17:54:07 -0700
-Message-Id: <20210715005417.78572-2-alexei.starovoitov@gmail.com>
+Subject: [PATCH v7 bpf-next 02/11] bpf: Factor out bpf_spin_lock into helpers.
+Date:   Wed, 14 Jul 2021 17:54:08 -0700
+Message-Id: <20210715005417.78572-3-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
 References: <20210715005417.78572-1-alexei.starovoitov@gmail.com>
@@ -62,91 +62,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-Currently bpf_prog_put() is called from the task context only.
-With addition of bpf timers the timer related helpers will start calling
-bpf_prog_put() from irq-saved region and in rare cases might drop
-the refcnt to zero.
-To address this case, first, convert bpf_prog_free_id() to be irq-save
-(this is similar to bpf_map_free_id), and, second, defer non irq
-appropriate calls into work queue.
-For example:
-bpf_audit_prog() is calling kmalloc and wake_up_interruptible,
-bpf_prog_kallsyms_del_all()->bpf_ksym_del()->spin_unlock_bh().
-They are not safe with irqs disabled.
+Move ____bpf_spin_lock/unlock into helpers to make it more clear
+that quadruple underscore bpf_spin_lock/unlock are irqsave/restore variants.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- kernel/bpf/syscall.c | 32 ++++++++++++++++++++++++++------
- 1 file changed, 26 insertions(+), 6 deletions(-)
+ kernel/bpf/helpers.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e343f158e556..5d1fee634be8 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1699,6 +1699,8 @@ static int bpf_prog_alloc_id(struct bpf_prog *prog)
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 62cf00383910..38be3cfc2f58 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -289,13 +289,18 @@ static inline void __bpf_spin_unlock(struct bpf_spin_lock *lock)
  
- void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock)
+ static DEFINE_PER_CPU(unsigned long, irqsave_flags);
+ 
+-notrace BPF_CALL_1(bpf_spin_lock, struct bpf_spin_lock *, lock)
++static inline void __bpf_spin_lock_irqsave(struct bpf_spin_lock *lock)
  {
-+	unsigned long flags;
-+
- 	/* cBPF to eBPF migrations are currently not in the idr store.
- 	 * Offloaded programs are removed from the store when their device
- 	 * disappears - even if someone grabs an fd to them they are unusable,
-@@ -1708,7 +1710,7 @@ void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock)
- 		return;
+ 	unsigned long flags;
  
- 	if (do_idr_lock)
--		spin_lock_bh(&prog_idr_lock);
-+		spin_lock_irqsave(&prog_idr_lock, flags);
- 	else
- 		__acquire(&prog_idr_lock);
- 
-@@ -1716,7 +1718,7 @@ void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock)
- 	prog->aux->id = 0;
- 
- 	if (do_idr_lock)
--		spin_unlock_bh(&prog_idr_lock);
-+		spin_unlock_irqrestore(&prog_idr_lock, flags);
- 	else
- 		__release(&prog_idr_lock);
- }
-@@ -1752,14 +1754,32 @@ static void __bpf_prog_put_noref(struct bpf_prog *prog, bool deferred)
- 	}
- }
- 
-+static void bpf_prog_put_deferred(struct work_struct *work)
-+{
-+	struct bpf_prog_aux *aux;
-+	struct bpf_prog *prog;
-+
-+	aux = container_of(work, struct bpf_prog_aux, work);
-+	prog = aux->prog;
-+	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
-+	bpf_audit_prog(prog, BPF_AUDIT_UNLOAD);
-+	__bpf_prog_put_noref(prog, true);
+ 	local_irq_save(flags);
+ 	__bpf_spin_lock(lock);
+ 	__this_cpu_write(irqsave_flags, flags);
 +}
 +
- static void __bpf_prog_put(struct bpf_prog *prog, bool do_idr_lock)
++notrace BPF_CALL_1(bpf_spin_lock, struct bpf_spin_lock *, lock)
++{
++	__bpf_spin_lock_irqsave(lock);
+ 	return 0;
+ }
+ 
+@@ -306,13 +311,18 @@ const struct bpf_func_proto bpf_spin_lock_proto = {
+ 	.arg1_type	= ARG_PTR_TO_SPIN_LOCK,
+ };
+ 
+-notrace BPF_CALL_1(bpf_spin_unlock, struct bpf_spin_lock *, lock)
++static inline void __bpf_spin_unlock_irqrestore(struct bpf_spin_lock *lock)
  {
--	if (atomic64_dec_and_test(&prog->aux->refcnt)) {
--		perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
--		bpf_audit_prog(prog, BPF_AUDIT_UNLOAD);
-+	struct bpf_prog_aux *aux = prog->aux;
+ 	unsigned long flags;
+ 
+ 	flags = __this_cpu_read(irqsave_flags);
+ 	__bpf_spin_unlock(lock);
+ 	local_irq_restore(flags);
++}
 +
-+	if (atomic64_dec_and_test(&aux->refcnt)) {
- 		/* bpf_prog_free_id() must be called first */
- 		bpf_prog_free_id(prog, do_idr_lock);
--		__bpf_prog_put_noref(prog, true);
-+
-+		if (in_irq() || irqs_disabled()) {
-+			INIT_WORK(&aux->work, bpf_prog_put_deferred);
-+			schedule_work(&aux->work);
-+		} else {
-+			bpf_prog_put_deferred(&aux->work);
-+		}
- 	}
++notrace BPF_CALL_1(bpf_spin_unlock, struct bpf_spin_lock *, lock)
++{
++	__bpf_spin_unlock_irqrestore(lock);
+ 	return 0;
+ }
+ 
+@@ -333,9 +343,9 @@ void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+ 	else
+ 		lock = dst + map->spin_lock_off;
+ 	preempt_disable();
+-	____bpf_spin_lock(lock);
++	__bpf_spin_lock_irqsave(lock);
+ 	copy_map_value(map, dst, src);
+-	____bpf_spin_unlock(lock);
++	__bpf_spin_unlock_irqrestore(lock);
+ 	preempt_enable();
  }
  
 -- 
