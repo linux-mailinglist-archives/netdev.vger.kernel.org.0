@@ -2,275 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB853CAFA7
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 01:27:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F983CAFBA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 01:43:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231995AbhGOXaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 19:30:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52166 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231849AbhGOXaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 19:30:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626391628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w9epcCncX7pIRpKtwldnqCbWmt/pqBMs8IQPo5QzMxo=;
-        b=V/ccfcrDf6GNcYcVdRsYXWYIWetw8+VRlQCDJWLumDhBsf7AOyAAXX5jAu1jhBG7tsxTyD
-        2RJ3/0YQoLpnF0pbloWJkUEEIMJmNSOQ4kDhXE6fAOJhpz6ryqXRNJF3jePhWdVecekEcE
-        gpRI+bIgXIJy4M0dxSokkNb6keMEd9w=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-564-BHYhZIpsNcWYxifZ40ZFiQ-1; Thu, 15 Jul 2021 19:27:07 -0400
-X-MC-Unique: BHYhZIpsNcWYxifZ40ZFiQ-1
-Received: by mail-ed1-f71.google.com with SMTP id p13-20020a05640210cdb029039560ff6f46so3922031edu.17
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 16:27:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w9epcCncX7pIRpKtwldnqCbWmt/pqBMs8IQPo5QzMxo=;
-        b=qnLYYqzp3szW1qhGwKBcSn87Ra3imidPLyfmGN4FYG8BYLhUrhz8NwlKTpxw+lIycy
-         u2B3GImNa3NhWN98GErQ2vwUzyNQMdlBfyXc/RB50lxPEYMs7H1GXk/QQGl/bAqN5s4N
-         tVMxoRopdoRJZBEfjZfIMf4N31qlOoYIBnQM+vUwr50WvakOvByqvT8y6TtaC2xuhZ75
-         x1QLD/1W8GfM/wCgaeBRAHzGgMccu3FTZ9xkYAtxVXN5uYKFPOuCHyd3SqvqlsFbmyZI
-         hm9v3fzvKOq4Yv74dOpopsIPafdR7X7GtU1Npi0G9LVmW+WFFyVkBomtvMl73dOPpp72
-         0DMw==
-X-Gm-Message-State: AOAM532V38/Lt+Qw9O1JWsjUYxFM2xPPSSdoCLK75Vrx3Q8fAnoVT+hs
-        lSVqBNzk6OJt9Qr48uqclT+WkoPojvpxtDPw+e8E+eB3NqnWZ3rRpFGcWX6SoX86pMns/qYE0XH
-        qN+mkERJt5NFDrenR
-X-Received: by 2002:a17:906:55cd:: with SMTP id z13mr7878567ejp.99.1626391626086;
-        Thu, 15 Jul 2021 16:27:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxo2D82Sxy6qGjmM6T4PXF6XSGLBWA0ZKMQWB8WdNW78ZtARAsQEs5j87nnXNnNM1lYewGtVg==
-X-Received: by 2002:a17:906:55cd:: with SMTP id z13mr7878538ejp.99.1626391625865;
-        Thu, 15 Jul 2021 16:27:05 -0700 (PDT)
-Received: from localhost (net-188-216-29-9.cust.vodafonedsl.it. [188.216.29.9])
-        by smtp.gmail.com with ESMTPSA id m12sm2311265ejd.21.2021.07.15.16.27.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 16:27:05 -0700 (PDT)
-Date:   Fri, 16 Jul 2021 01:27:01 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, alexander.duyck@gmail.com,
-        brouer@redhat.com, echaudro@redhat.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: Re: [PATCH bpf-next 2/2] net: xdp: add xdp_update_skb_shared_info
- utility routine
-Message-ID: <YPDERccoAaRRlydI@lore-desk>
-References: <cover.1625828537.git.lorenzo@kernel.org>
- <16f4244f5a506143f5becde501f1ecb120255b42.1625828537.git.lorenzo@kernel.org>
- <60ec8dfeb42aa_50e1d20857@john-XPS-13-9370.notmuch>
- <YOykin2acwjMjfRj@lore-desk>
- <60ef76e5d2379_5a0c12081c@john-XPS-13-9370.notmuch>
+        id S232123AbhGOXpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 19:45:25 -0400
+Received: from mail-eopbgr60074.outbound.protection.outlook.com ([40.107.6.74]:10415
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229783AbhGOXpY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 19:45:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/DUfBhe5kmccoCPuJsLRKkVLl/4zIZRANaoTszALgFU=;
+ b=gPbJQXUTOkNeZ1V6ZVEWe0cHUndKx4dpBxqR7Jq7d9ghLocQN2XwAxGdpGKe3hkhiUgCGthI9nDl9OSbmSRd5kTnhSSHRRQMyLvq+eFj1qPLBd4ia2f7L7mIiYoXQJYpbnvbIhChOEu0YE3N8+iJQl/DQ1NQ1jJZGGIPQvPWXxY=
+Received: from AS8PR04CA0005.eurprd04.prod.outlook.com (2603:10a6:20b:310::10)
+ by DBBPR08MB4378.eurprd08.prod.outlook.com (2603:10a6:10:c9::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.24; Thu, 15 Jul
+ 2021 23:42:28 +0000
+Received: from AM5EUR03FT052.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:310:cafe::a6) by AS8PR04CA0005.outlook.office365.com
+ (2603:10a6:20b:310::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend
+ Transport; Thu, 15 Jul 2021 23:42:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=pass action=none
+ header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ AM5EUR03FT052.mail.protection.outlook.com (10.152.17.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4331.21 via Frontend Transport; Thu, 15 Jul 2021 23:42:28 +0000
+Received: ("Tessian outbound 809237f40a36:v99"); Thu, 15 Jul 2021 23:42:28 +0000
+X-CR-MTA-TID: 64aa7808
+Received: from c41293bac246.1
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 62F9A022-8729-4B65-8230-9BA7B1A4CA1D.1;
+        Thu, 15 Jul 2021 23:42:21 +0000
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id c41293bac246.1
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Thu, 15 Jul 2021 23:42:21 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HYlZAAwtZzl/AIqyiLol0wVhCu0zzLIEWO5D5hC45LAlzD5trZofEE4k4sdwo4bpeo2hT5nMU1QIDWIJGtXl9IDrdgJrvWfOCNoI4SNeiD3jgcIJZiP4r0TTSkuhxihcnrqiiUVS/pa8AdfZ02gUyMZoWvlCKwnNluC3agbe7bvzV5oZkr1ict3zHrNKZZctE49eZJWTwnErL+5iINuspix12eiF3vlJDmU+NLOo/dI2l3/roHy96qZmpGDkcGxGyJSzK2tk0NRmp3RsXWWJfuXAgsm0yxqlOq14caFGoW01zbfQhqebPZlfk17/acsFi9cH/oiXT+INDFkYfyswgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/DUfBhe5kmccoCPuJsLRKkVLl/4zIZRANaoTszALgFU=;
+ b=KL16folH4Pv1yAInlVuXrPfQJwJ7XxVaTlLTc5qrlaDoS/bUuUoHufrAskX7t7HZnHAOjWgFX5wXJwrgx5j+lVsRjx9jfpkfs/K2gNF9WXldWsBxYacB9qJL4KGnggA3KNixe5Qk1qTBkQF/rdp4KpozoW3HGi6YiTat4bzFEp4Xw0X3reLc99eIcGJJ7syZGCTIRST7sZ8xbd4VOQ2osU+km9rIg/q/KtkyjySoXTAOagiakcl4RGlJ+gd3/PWlwXdMQrvC9lwVgUAaxVvYktj68YAQ0yKNdiX69CZ1DO1tqDU3KlLm18kIuhWqJ9mCmr549uljnYA0AGbJBsxT0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/DUfBhe5kmccoCPuJsLRKkVLl/4zIZRANaoTszALgFU=;
+ b=gPbJQXUTOkNeZ1V6ZVEWe0cHUndKx4dpBxqR7Jq7d9ghLocQN2XwAxGdpGKe3hkhiUgCGthI9nDl9OSbmSRd5kTnhSSHRRQMyLvq+eFj1qPLBd4ia2f7L7mIiYoXQJYpbnvbIhChOEu0YE3N8+iJQl/DQ1NQ1jJZGGIPQvPWXxY=
+Received: from AM6PR08MB4376.eurprd08.prod.outlook.com (2603:10a6:20b:bb::21)
+ by AM6PR08MB4881.eurprd08.prod.outlook.com (2603:10a6:20b:c8::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.26; Thu, 15 Jul
+ 2021 23:42:19 +0000
+Received: from AM6PR08MB4376.eurprd08.prod.outlook.com
+ ([fe80::3452:c711:d09a:d8a1]) by AM6PR08MB4376.eurprd08.prod.outlook.com
+ ([fe80::3452:c711:d09a:d8a1%5]) with mapi id 15.20.4308.027; Thu, 15 Jul 2021
+ 23:42:19 +0000
+From:   Justin He <Justin.He@arm.com>
+To:     "patchwork-bot+netdevbpf@kernel.org" 
+        <patchwork-bot+netdevbpf@kernel.org>
+CC:     "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        nd <nd@arm.com>
+Subject: RE: [PATCH] qed: fix possible unpaired spin_{un}lock_bh in
+ _qed_mcp_cmd_and_union()
+Thread-Topic: [PATCH] qed: fix possible unpaired spin_{un}lock_bh in
+ _qed_mcp_cmd_and_union()
+Thread-Index: AQHXeVClyEXp90xYxUyzsooHikRZAqtEcpkAgABAN8A=
+Date:   Thu, 15 Jul 2021 23:42:19 +0000
+Message-ID: <AM6PR08MB437697F8EFDD9C2BC33E9836F7129@AM6PR08MB4376.eurprd08.prod.outlook.com>
+References: <20210715080822.14575-1-justin.he@arm.com>
+ <162637860846.25047.7819900930468592075.git-patchwork-notify@kernel.org>
+In-Reply-To: <162637860846.25047.7819900930468592075.git-patchwork-notify@kernel.org>
+Accept-Language: en-US, zh-CN
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ts-tracking-id: C1DEAE53E15295499B254D77D6FEE6F9.0
+x-checkrecipientchecked: true
+Authentication-Results-Original: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-Correlation-Id: 9b4885f5-4ebd-4791-e0f3-08d947ea34ca
+x-ms-traffictypediagnostic: AM6PR08MB4881:|DBBPR08MB4378:
+X-Microsoft-Antispam-PRVS: <DBBPR08MB437847DDF886D7C5AF55C981F7129@DBBPR08MB4378.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+nodisclaimer: true
+x-ms-oob-tlc-oobclassifiers: OLM:8273;OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: gmCoMeYa1wX4rEgkwOxBHpsLNeZkLC+l6KXZDjEwnlK5cRGjezt+i6c27nX4l/Yw9b43MmAKFRlcMDlos+CYqIykWuvZZuhkPuBYZeJVI7kO0UhXJ1oE9SMMms+QVBSTLkOeyrOO/jGnMVgp4Zi94zCWeAN2smiDsO/gQxmrW3eIc70NY63QgfGjIz41IuEYWMZbi2dRLLuYc1gdMLBnpAaxqFKdZYBLGlc0pzXoMS83vgXIFOL/dn9AH7TFLl3oiMUr3UmrQltX9h64EMFBQkGl7iqX+Bfpiix+fS44LDi1EtR2HxA1EPwBlUuanek3whA+qyo+DTLGd3ItxviKA+CRw5zRuSBIu/AJfnXmZSZ9QxMzcdrTqy3a5LsPp80l8f1wGvccTt/Q1Txl5TcDVSHlssJhC90vTqy/Qkw6wpPmhlRqMmzzA+sTrB1xDLMoRIanOg9AA3NwiKsqz93LGw30Y70lTHR3RbdnMJh/ZBVXERT5s5kkJ7SiwxOuQhmN9rI/gsFhULtR8Q3mL3Xs6DcGmc+eZgcKAc7gIVE/lXPXpW983nDVpd7+ZfL48NTuKJMW5fpi/PfBzlINiqQFB9rhXDWaEZTjqn9Gke/db05c5TFLg2wb8q+zK7hNOQxt+iciXhGv7xQlTgl6kz4piV23rQqjvI/ig3avk2zwkrWuk3qpgZN1n1VG/I5aLBp7Qk5hHebQG3VKi+1YMI66ysLCkSzoAhqnfyAhCh2iXgdnzHmY2fj1gdhVYPzkOI3/0cCIJQFNuJtIRKnfuOFiOTpmp/d5rJda3wqwfpMatU8=
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4376.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39850400004)(136003)(396003)(346002)(376002)(33656002)(64756008)(5660300002)(76116006)(71200400001)(6506007)(8676002)(55016002)(52536014)(66446008)(122000001)(83380400001)(66476007)(316002)(66946007)(66556008)(53546011)(7696005)(9686003)(4326008)(8936002)(186003)(26005)(966005)(478600001)(54906003)(38100700002)(86362001)(2906002)(38070700004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NWVMYmllSHE4ZXkxUnhXUzdWMTFUVmRlOGhzV1BWa3ZCb0pJa2FYMlN3Nm93?=
+ =?utf-8?B?b1RiSG1Kd3FoZUY5ejNzaXhpYkZEL3o0TC9VSDdwZ1lERk1FQ2lwNWhzYTJX?=
+ =?utf-8?B?ZzJKT3VraTFuNkFOQXp1V3dGenBRdFBaODAvTGNFUVhkNGErcGlSeHlLMmxC?=
+ =?utf-8?B?VXRvc1daM2piMi9kbzRiajVpVlRqdFhBdTRZdlN0SXZaQTdIMHRLUG91ZGRL?=
+ =?utf-8?B?MU1iQWI5UFQ1bmpwbFZIaGoranRabGZ3YkJwSWN6V2xXdFZOcmc5ZkQ4bDZO?=
+ =?utf-8?B?TFhNbW5icUhiejNjdjBaKzhaQVYwZHhwdHBLQVVkRnRFRnJHbkVUYzYyZXhu?=
+ =?utf-8?B?dWpSWXR6OVdtVFNKL1lqZ2dJYlFaYTkrMFQzdWJjTTFhMjY1REVYa1o4Y0Ra?=
+ =?utf-8?B?OHFhTm1NNjVDVHQ2V1lnN3FKbDV6QWJET3BEMGlZMjFWRG9yOXdFY0NIWmZ1?=
+ =?utf-8?B?aVdjdVpFWWNvaHQyaHkvN2VvOFB2aTVKVGJFNUdZVllsT2ZYOGhxUGczNHds?=
+ =?utf-8?B?aXNteDE0d2NEMmY4U1VrdDlyRDBGVUg2WXpEeGptOVF6YVZTd0gwUFVvY0Ex?=
+ =?utf-8?B?NkxLZ3VBaDlKUFB3NERoSExNd3JkcVRmSy8wQlVHVHhIeFlKYkpZOU1IQUZO?=
+ =?utf-8?B?YVlrL05MSFBjU05TMVJJOWh1UzBkdTgyUE5XM014WVlFdktsMlNQK0xNQS9V?=
+ =?utf-8?B?d1phOG1mUkV1SnZ3Q0dQV2pSenpvZTNjM3pkWHErUWVqYy9KdTlmSHBMLzFq?=
+ =?utf-8?B?aUZSWUZ3am83OUFmVHppNW1acVNOWjd5ajgyT2ZPbkhMdVhEeEQvY2Uvd2t4?=
+ =?utf-8?B?cXZ4THF1clZtTGR6c2o1aUlpMXJ5Qk52VFZIdGxyQ09acytneml4WktUbDJy?=
+ =?utf-8?B?cDVHN1ZpcjJJNzZLSFB3M0hYSDJ6RmNlTmFwYXg0VzMySmJsY0IrTnJkd2hz?=
+ =?utf-8?B?bDc5S2ZDY2JhOFN1ZWRIVGJRdTFYSkZENVlYcnhyYlAvT3hBcDU1dHF3REZR?=
+ =?utf-8?B?djR2OVpSWjF6M0xaSXIvN2V2WUxOT3I3ZG9mT2Jva2J1d0w4ZTV2SU5OYjFF?=
+ =?utf-8?B?UTNoNkhjK3hTRnd3WTFTeE5BNmxBcDJVLzhHWm8xRHpqUXA5NUdxSHhHZlR1?=
+ =?utf-8?B?STRlQmo1cHk5YnJhZ09ZeHJnWEE2UU9pdjltemdGVmF5R2pXYlhmRHN5VmQy?=
+ =?utf-8?B?YXo2RGlJNkVxaks2WFV3Uzc5aW1PajRaeDM4My9KWENNYVpCcDdEWHNuUlJY?=
+ =?utf-8?B?Mm5pdGxNT2Q2cCt4eTdOd01FQUVaaU5HSFJZNm91UEZicStaOEN6NG13U21a?=
+ =?utf-8?B?UnU3Q0p4SlMrdUVUdkVCZTNTQ3B1R1JVSEF2Z3UrazR4NDRDY1UxbXVTSWVB?=
+ =?utf-8?B?VEsydlVYYWVoVXg2blVwQ0s3QjVZcHJLakNaNDVNQmYxcytSMk5yYjd5VUg5?=
+ =?utf-8?B?UDd2K2xLWUhncEZPYXd0TkdlRVVEKzMvUXE0RmpXbjBEY3pJcFF6ZjMrOVNM?=
+ =?utf-8?B?K3NiSXhNNDU5V2xrejVONjBDUkZ4d25namlmZFhxUDRSVWxuTVljeW5EZTZh?=
+ =?utf-8?B?Z0ZDZDFaN3RRODN1V0k0NUk5R0o0eU05YmNSVjFiZy9uUldYMHU2WlgxN2s1?=
+ =?utf-8?B?N2E1N21JMFpZYWVFWTRIVUVHazJaRDh6UjRSODY2VEpGMzR4TVBsZWJWWmVB?=
+ =?utf-8?B?aFFCN0RoNHlDZDhsbmRVU2dpcDQ2TE5XdjBjdk1OTmhFUGZGSFowM0pWdStD?=
+ =?utf-8?Q?e8erUfDQnd1OtYjaRhGVF8ibAqZhdMR5L4bJrXG?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="FAWGCPAtKe2MqBX0"
-Content-Disposition: inline
-In-Reply-To: <60ef76e5d2379_5a0c12081c@john-XPS-13-9370.notmuch>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR08MB4881
+Original-Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT052.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 55da23ab-5ffa-48c9-5845-08d947ea2fc1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: v77VywGnwNDwTydvigwhCpEyCkC1coqKENZgwfo605K0jJPoWRAj/h8CslP2w8Kx0tAq5CIGnlWe+3+/93D+lgXFCllStCZ76NOyhZxtRtM/e5kCLjz2k/3bpKG5a06EP605/zc3m+AriDgbzF6xG3vTTtPOOR11Cqajqg/LRRIq69x5MSCEJspvuWK9ASuuq6+hj0VXRAQbEeCAXSQVhWB1N8Ig2ocw3txBL3CW6qCtRA54PSZnFkskjRNSE7IUmpTOSlPA2dBbUVNYSzePzbG8AraAWe4ZRas9491ESim67dDWpB/0iPdrfeqgSUmWLC3TPl7JyukPKd+Z10BIsmPKxHDA5ZHCMNKRvRxwigu7QxgOMuuiYrc5FMVzVf4pEU3DT5+jtgCNTE65FGuRa+Rfo1XMDiRFYqli+53SoCTgzbD7a3eRtpBU2Zzykesy4RYCUQhfPq1gRUic5KK/Tfu1PObV0bgbxeSQjEwZ87O8nXAw/Vbhfoy9LsoeFD8BDKLBhvpF5k5LTcUmVoo7C4wDYIMQvAOxd3msAg/SLgdj4livSB6Vgtrs4w21VOtpgE8ylLAXc/+sR2iks1O9NQswbUPjqETR4hVl4GUoedKu2doJo50kRwAXZVV7Bap4GFI6Aob5P48kT/NN6MRxLzK8MO0pHokU0AkAmZVNx2Fg7eX7iEjAMPZIn1O2hkTa1VB11SmapeWdHydySQwPVrYfXuYYoG/uYnYEqPh53Xo0kIJvczVBsyGkPVfHYCZLPfSdtdmTQOyHM9N8CEaH08KvCDySAmBT3JGWig02qrA=
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(4636009)(136003)(346002)(39850400004)(396003)(376002)(36840700001)(46966006)(316002)(186003)(450100002)(82310400003)(53546011)(4326008)(8936002)(2906002)(86362001)(5660300002)(33656002)(9686003)(6862004)(70586007)(83380400001)(336012)(52536014)(55016002)(478600001)(356005)(7696005)(8676002)(26005)(36860700001)(966005)(6506007)(70206006)(47076005)(54906003)(81166007)(82740400003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2021 23:42:28.2326
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b4885f5-4ebd-4791-e0f3-08d947ea34ca
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: AM5EUR03FT052.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR08MB4378
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---FAWGCPAtKe2MqBX0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> Lorenzo Bianconi wrote:
-> > > Lorenzo Bianconi wrote:
-> > > > Introduce xdp_update_skb_shared_info routine to update frags array
-> > > > metadata from a given xdp_buffer/xdp_frame. We do not need to reset
-> > > > frags array since it is already initialized by the driver.
-> > > > Rely on xdp_update_skb_shared_info in mvneta driver.
-> > >=20
-> > > Some more context here would really help. I had to jump into the mvne=
-ta
-> > > driver to see what is happening.
-> >=20
-> > Hi John,
-> >=20
-> > ack, you are right. I will add more context next time. Sorry for the no=
-ise.
-> >=20
-> > >=20
-> > > So as I read this we have a loop processing the descriptor in
-> > > mvneta_rx_swbm()
-> > >=20
-> > >  mvneta_rx_swbm()
-> > >    while (rx_proc < budget && rx_proc < rx_todo) {
-> > >      if (rx_status & MVNETA_RXD_FIRST_DESC) ...
-> > >      else {
-> > >        mvneta_swbm_add_rx_fragment()
-> > >      }
-> > >      ..
-> > >      if (!rx_status & MVNETA_RXD_LAST_DESC)
-> > >          continue;
-> > >      ..
-> > >      if (xdp_prog)
-> > >        mvneta_run_xdp(...)
-> > >    }
-> > >=20
-> > > roughly looking like above. First question, do you ever hit
-> > > !MVNETA_RXD_LAST_DESC today? I assume this is avoided by hardware
-> > > setup when XDP is enabled, otherwise _run_xdp() would be
-> > > broken correct? Next question, given last descriptor bit
-> > > logic whats the condition to hit the code added in this patch?
-> > > wouldn't we need more than 1 descriptor and then we would
-> > > skip the xdp_run... sorry lost me and its probably easier
-> > > to let you give the flow vs spending an hour trying to
-> > > track it down.
-> >=20
-> > I will point it out in the new commit log, but this is a preliminary pa=
-tch for
-> > xdp multi-buff support. In the current codebase xdp_update_skb_shared_i=
-nfo()
-> > is run just when the NIC is not running in XDP mode (please note
-> > mvneta_swbm_add_rx_fragment() is run even if xdp_prog is NULL).
-> > When we add xdp multi-buff support, xdp_update_skb_shared_info() will r=
-un even
-> > in XDP mode since we will remove the MTU constraint.
-> >=20
-> > In the current codebsae the following condition can occur in non-XDP mo=
-de if
-> > the packet is split on 3 or more descriptors (e.g. MTU 9000):
-> >=20
-> > if (!(rx_status & MVNETA_RXD_LAST_DESC))
-> >    continue;
->=20
-> But, as is there is no caller of xdp_update_skb_shared_info() so
-> I think we should move the these two patches into the series with
-> the multibuf support.
-
-mvneta is currently using it building the skb in mvneta_swbm_build_skb()
-running in non-xdp mode but I am fine merging this series in the
-multi-buff one.
-
->=20
-> >=20
-> > >=20
-> > > But, in theory as you handle a hardware discriptor you can build
-> > > up a set of pages using them to create a single skb rather than a
-> > > skb per descriptor. But don't we know if pfmemalloc should be
-> > > done while we are building the frag list? Can't se just set it
-> > > vs this for loop in xdp_update_skb_shared_info(),
-> >=20
-> > I added pfmemalloc code in xdp_update_skb_shared_info() in order to reu=
-se it
-> > for the xdp_redirect use-case (e.g. whenever we redirect a xdp multi-bu=
-ff
-> > in a veth or in a cpumap). I have a pending patch where I am using
-> > xdp_update_skb_shared_info in __xdp_build_skb_from_frame().
->=20
-> OK, but it adds an extra for loop and the related overhead. Can
-> we avoid this overhead and just set it from where we first
-> know we have a compound page. Or carry some bit through and
-> do a simpler check,
->=20
->  if (pfmemalloc_needed) skb->pfmemalloc =3D true;
->=20
-> I guess in the case here its building the skb so performance is maybe
-> not as critical, but if it gets used in the redirect case then we
-> shouldn't be doing unnecessary for loops.
-
-doing so every driver will need to take care of it building the xdp_buff.
-Does it work to do it since probably multi-buff is not critical for
-performance?
-In order to support xdp_redirect we need to save this info in
-xdp_buff/xdp_frame, maybe in the flag field added in xdp multi-buff series.
-
->=20
-> >=20
-> > >=20
-> > > > +	for (i =3D 0; i < nr_frags; i++) {
-> > > > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
-> > > > +
-> > > > +		page =3D compound_head(page);
-> > > > +		if (page_is_pfmemalloc(page)) {
-> > > > +			skb->pfmemalloc =3D true;
-> > > > +			break;
-> > > > +		}
-> > > > +	}
-> > > > +}
-> > >=20
-> > > ...
-> > >=20
-> > > > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/et=
-hernet/marvell/mvneta.c
-> > > > index 361bc4fbe20b..abf2e50880e0 100644
-> > > > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > > > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > > > @@ -2294,18 +2294,29 @@ mvneta_swbm_add_rx_fragment(struct mvneta_p=
-ort *pp,
-> > > >  	rx_desc->buf_phys_addr =3D 0;
-> > > > =20
-> > > >  	if (data_len > 0 && xdp_sinfo->nr_frags < MAX_SKB_FRAGS) {
-> > > > -		skb_frag_t *frag =3D &xdp_sinfo->frags[xdp_sinfo->nr_frags++];
-> > > > +		skb_frag_t *frag =3D &xdp_sinfo->frags[xdp_sinfo->nr_frags];
-> > > > =20
-> > > >  		skb_frag_off_set(frag, pp->rx_offset_correction);
-> > > >  		skb_frag_size_set(frag, data_len);
-> > > >  		__skb_frag_set_page(frag, page);
-> > > > +		/* We don't need to reset pp_recycle here. It's already set, so
-> > > > +		 * just mark fragments for recycling.
-> > > > +		 */
-> > > > +		page_pool_store_mem_info(page, rxq->page_pool);
-> > > > +
-> > > > +		/* first fragment */
-> > > > +		if (!xdp_sinfo->nr_frags)
-> > > > +			xdp_sinfo->gso_type =3D *size;
-> > >=20
-> > > Would be nice to also change 'int size' -> 'unsigned int size' so the
-> > > types matched. Presumably you really can't have a negative size.
-> > >=20
-> >=20
-> > ack
-> >=20
-> > > Also how about giving gso_type a better name. xdp_sinfo->size maybe?
-> >=20
-> > I did it in this way in order to avoid adding a union in skb_shared_inf=
-o.
-> > What about adding an inline helper to set/get it? e.g.
->=20
-> What was wrong with the union?
-
-Alex requested to use gso_* fields already there (the union was in the prev=
-ious
-version I sent).
-
-Regards,
-Lorenzo
-
->=20
-> >=20
-> > static inline u32 xdp_get_data_len(struct skb_shared_info *sinfo)
-> > {
-> >     return sinfo->gso_type;
-> > }
-> >=20
-> > static inline void xdp_set_data_len(struct skb_shared_info *sinfo, u32 =
-datalen)
-> > {
-> >     sinfo->gso_type =3D datalen;
-> > }
-> >=20
-> > Regards,
-> > Lorenzo
->=20
-
---FAWGCPAtKe2MqBX0
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYPDEQwAKCRA6cBh0uS2t
-rDF/AQCYsZJhONbBM9aRXq4M6+nqcTk2AoqFKaghrzcowmwYwwEAzvQXsuVaDvYU
-BIixs2QgtsAsvA3fwHDAjjXfOFNEWQU=
-=Xa+N
------END PGP SIGNATURE-----
-
---FAWGCPAtKe2MqBX0--
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogcGF0Y2h3b3JrLWJvdCtu
+ZXRkZXZicGZAa2VybmVsLm9yZyA8cGF0Y2h3b3JrLQ0KPiBib3QrbmV0ZGV2YnBmQGtlcm5lbC5v
+cmc+DQo+IFNlbnQ6IEZyaWRheSwgSnVseSAxNiwgMjAyMSAzOjUwIEFNDQo+IFRvOiBKdXN0aW4g
+SGUgPEp1c3Rpbi5IZUBhcm0uY29tPg0KPiBDYzogYWVsaW9yQG1hcnZlbGwuY29tOyBHUi1ldmVy
+ZXN0LWxpbnV4LWwyQG1hcnZlbGwuY29tOw0KPiBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtl
+cm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5r
+ZXJuZWwub3JnOyBuZCA8bmRAYXJtLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gcWVkOiBm
+aXggcG9zc2libGUgdW5wYWlyZWQgc3Bpbl97dW59bG9ja19iaCBpbg0KPiBfcWVkX21jcF9jbWRf
+YW5kX3VuaW9uKCkNCj4gDQo+IEhlbGxvOg0KPiANCj4gVGhpcyBwYXRjaCB3YXMgYXBwbGllZCB0
+byBuZXRkZXYvbmV0LmdpdCAocmVmcy9oZWFkcy9tYXN0ZXIpOg0KPiANCj4gT24gVGh1LCAxNSBK
+dWwgMjAyMSAxNjowODoyMSArMDgwMCB5b3Ugd3JvdGU6DQo+ID4gTGlhamlhbiByZXBvcnRlZCBh
+IGJ1Z19vbiBoaXQgb24gYSBUaHVuZGVyWDIgYXJtNjQgc2VydmVyIHdpdGggRmFzdExpblENCj4g
+PiBRTDQxMDAwIGV0aGVybmV0IGNvbnRyb2xsZXI6DQo+ID4gIEJVRzogc2NoZWR1bGluZyB3aGls
+ZSBhdG9taWM6IGt3b3JrZXIvMDo0LzUzMS8weDAwMDAwMjAwDQo+ID4gICBbcWVkX3Byb2JlOjQ4
+OCgpXWh3IHByZXBhcmUgZmFpbGVkDQo+ID4gICBrZXJuZWwgQlVHIGF0IG1tL3ZtYWxsb2MuYzoy
+MzU1IQ0KPiA+ICAgSW50ZXJuYWwgZXJyb3I6IE9vcHMgLSBCVUc6IDAgWyMxXSBTTVANCj4gPiAg
+IENQVTogMCBQSUQ6IDUzMSBDb21tOiBrd29ya2VyLzA6NCBUYWludGVkOiBHIFcgNS40LjAtNzct
+Z2VuZXJpYyAjODYtDQo+IFVidW50dQ0KPiA+ICAgcHN0YXRlOiAwMDQwMDAwOSAobnpjdiBkYWlm
+ICtQQU4gLVVBTykNCj4gPiAgQ2FsbCB0cmFjZToNCj4gPiAgIHZ1bm1hcCsweDRjLzB4NTANCj4g
+PiAgIGlvdW5tYXArMHg0OC8weDU4DQo+ID4gICBxZWRfZnJlZV9wY2krMHg2MC8weDgwIFtxZWRd
+DQo+ID4gICBxZWRfcHJvYmUrMHgzNWMvMHg2ODggW3FlZF0NCj4gPiAgIF9fcWVkZV9wcm9iZSsw
+eDg4LzB4NWM4IFtxZWRlXQ0KPiA+ICAgcWVkZV9wcm9iZSsweDYwLzB4ZTAgW3FlZGVdDQo+ID4g
+ICBsb2NhbF9wY2lfcHJvYmUrMHg0OC8weGEwDQo+ID4gICB3b3JrX2Zvcl9jcHVfZm4rMHgyNC8w
+eDM4DQo+ID4gICBwcm9jZXNzX29uZV93b3JrKzB4MWQwLzB4NDY4DQo+ID4gICB3b3JrZXJfdGhy
+ZWFkKzB4MjM4LzB4NGUwDQo+ID4gICBrdGhyZWFkKzB4ZjAvMHgxMTgNCj4gPiAgIHJldF9mcm9t
+X2ZvcmsrMHgxMC8weDE4DQo+ID4NCj4gPiBbLi4uXQ0KPiANCj4gSGVyZSBpcyB0aGUgc3VtbWFy
+eSB3aXRoIGxpbmtzOg0KPiAgIC0gcWVkOiBmaXggcG9zc2libGUgdW5wYWlyZWQgc3Bpbl97dW59
+bG9ja19iaCBpbiBfcWVkX21jcF9jbWRfYW5kX3VuaW9uKCkNCj4gICAgIGh0dHBzOi8vZ2l0Lmtl
+cm5lbC5vcmcvbmV0ZGV2L25ldC9jLzYyMDZiNzk4MWEzNg0KPiANCj4gWW91IGFyZSBhd2Vzb21l
+LCB0aGFuayB5b3UhDQoNClRoYW5rcy4NCklmIHBvc3NpYmxlLCBwbGVhc2UgYWxzbyBDYzogc3Rh
+YmxlQGtlcm5lbC5vcmcgYmVjYXVzZSB0aGUgYnVnIHNlZW1lZCB0bw0KYmUgdGhlcmUgZm9yIGEg
+bG9uZyB0aW1lLg0KDQoNCi0tDQpDaGVlcnMsDQpKdXN0aW4gKEppYSBIZSkNCg0KDQo=
