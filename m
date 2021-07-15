@@ -2,145 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96CF33CAEA8
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 23:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA7C3CAEEE
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 00:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbhGOVjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 17:39:25 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:43466 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbhGOVjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 17:39:23 -0400
-Received: from netfilter.org (unknown [90.77.255.23])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 2584664228;
-        Thu, 15 Jul 2021 23:36:09 +0200 (CEST)
-Date:   Thu, 15 Jul 2021 23:36:26 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        ryder.lee@mediatek.com
-Subject: Re: [RFC 3/7] net: ethernet: mtk_eth_soc: implement flow offloading
- to WED devices
-Message-ID: <20210715213626.GA19271@salvia>
-References: <20210713160745.59707-1-nbd@nbd.name>
- <20210713160745.59707-4-nbd@nbd.name>
- <20210713185641.GB26070@salvia>
- <ceee6c30-adc1-3a79-31c3-983fe848699c@nbd.name>
+        id S231960AbhGOWJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 18:09:44 -0400
+Received: from mail-pj1-f51.google.com ([209.85.216.51]:39464 "EHLO
+        mail-pj1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229776AbhGOWJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 18:09:43 -0400
+Received: by mail-pj1-f51.google.com with SMTP id p14-20020a17090ad30eb02901731c776526so7495358pju.4;
+        Thu, 15 Jul 2021 15:06:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R6F+susvN5sjUJ3zQkT+ICC7UqFu5SaK3lj12wZr4/0=;
+        b=ZwCneMwbj0JO9x7iOUD9weXnHjdvJ1JryMnTL4rQoqSndLneFutoiK1/bRNQGEx8h8
+         MHT+CsQwt2oE9+VIHGG6MMQPGqDpTMQG2lP6BB+5WQxBcPujd9rzNYkfrEWdMYq3e9Xk
+         fTXec5hSRvV1Z5SRbgvhnT89NkN4Bb4g57PUtIpJYBzJYFPpnh28eZOe5AZv/GXSHwpz
+         i3AfoPkGWBGgDG6SdMoyGcFO/sRSg/Q2MbHu9y4PU7yOnUNtUixG8hkbAF8q169c+maP
+         Lp+inf+N+vH4SGpF7XcU7vtskdfuMpPse00gSccPOL9xpu8T2XZbV/yCTLzNhr4JdImp
+         MmlA==
+X-Gm-Message-State: AOAM531/fa5xDwNUsy8KpxUAx3Q/EtuVyIc1bOlr7e3dzhc3FfoIC2QK
+        eFrzN7YXVzrEivBfaUT3clg=
+X-Google-Smtp-Source: ABdhPJyAswla2aaWzBgfxN1RCTmTjsX0BIv5XRpXRfo5GXFJQkNYA0AgYLtvOnNpGa4lxcQIGAlRZQ==
+X-Received: by 2002:a17:90b:1294:: with SMTP id fw20mr12313031pjb.100.1626386808202;
+        Thu, 15 Jul 2021 15:06:48 -0700 (PDT)
+Received: from garbanzo ([191.96.120.37])
+        by smtp.gmail.com with ESMTPSA id y5sm7445783pfn.87.2021.07.15.15.06.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Jul 2021 15:06:46 -0700 (PDT)
+Date:   Thu, 15 Jul 2021 15:06:44 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-wireless@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] intersil: remove obsolete prism54 wireless driver
+Message-ID: <20210715220644.2d2xfututdoimszm@garbanzo>
+References: <20210713054025.32006-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ceee6c30-adc1-3a79-31c3-983fe848699c@nbd.name>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210713054025.32006-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 10:26:08AM +0200, Felix Fietkau wrote:
-> On 2021-07-13 20:56, Pablo Neira Ayuso wrote:
-[...]
-> >> --- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> >> +++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-> >> @@ -10,6 +10,7 @@
-> >>  #include <net/pkt_cls.h>
-> >>  #include <net/dsa.h>
-> >>  #include "mtk_eth_soc.h"
-> >> +#include "mtk_wed.h"
-> >>  
-> >>  struct mtk_flow_data {
-> >>  	struct ethhdr eth;
-> >> @@ -39,6 +40,7 @@ struct mtk_flow_entry {
-> >>  	struct rhash_head node;
-> >>  	unsigned long cookie;
-> >>  	u16 hash;
-> >> +	s8 wed_index;
-> >>  };
-> >>  
-> >>  static const struct rhashtable_params mtk_flow_ht_params = {
-> >> @@ -127,35 +129,38 @@ mtk_flow_mangle_ipv4(const struct flow_action_entry *act,
-> >>  }
-> >>  
-> >>  static int
-> >> -mtk_flow_get_dsa_port(struct net_device **dev)
-> >> +mtk_flow_set_output_device(struct mtk_eth *eth, struct mtk_foe_entry *foe,
-> >> +			   struct net_device *dev, const u8 *dest_mac,
-> >> +			   int *wed_index)
-> >>  {
-> >> -#if IS_ENABLED(CONFIG_NET_DSA)
-> >> -	struct dsa_port *dp;
-> >> -
-> >> -	dp = dsa_port_from_netdev(*dev);
-> >> -	if (IS_ERR(dp))
-> >> -		return -ENODEV;
-> >> -
-> >> -	if (dp->cpu_dp->tag_ops->proto != DSA_TAG_PROTO_MTK)
-> >> -		return -ENODEV;
-> >> +	struct net_device_path_ctx ctx = {
-> >> +		.dev    = dev,
-> >> +		.daddr  = dest_mac,
-> >> +	};
-> >> +	struct net_device_path path = {};
-> >> +	int pse_port;
-> >>  
-> >> -	*dev = dp->cpu_dp->master;
-> >> +	if (!dev->netdev_ops->ndo_fill_forward_path ||
-> >> +	    dev->netdev_ops->ndo_fill_forward_path(&ctx, &path) < 0)
-> >> +		path.type = DEV_PATH_ETHERNET;
-> > 
-> > Maybe expose this through flow offload API so there is no need to call
-> > ndo_fill_forward_path again from the driver?
->
-> Can you give me a pseudo-code example? I'm not sure how you want it to
-> be exposed through the flow offload API.
+On Tue, Jul 13, 2021 at 07:40:25AM +0200, Lukas Bulwahn wrote:
+> Commit 1d89cae1b47d ("MAINTAINERS: mark prism54 obsolete") indicated the
+> prism54 driver as obsolete in July 2010.
+> 
+> Now, after being exposed for ten years to refactoring, general tree-wide
+> changes and various janitor clean-up, it is really time to delete the
+> driver for good.
+> 
+> This was discovered as part of a checkpatch evaluation, investigating all
+> reports of checkpatch's WARNING:OBSOLETE check.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
 
-in a few steps:
+Acked-by: Luis Chamberlain <mcgrof@kernel.org>
 
-1) Extend nft_dev_path_info() to deal with DEV_PATH_WDMA, it will
-   just actually fetch a pointer to structure that is allocated
-   by the driver.
-
-- Update the net_device_path structure with this layout:
-
-        struct flow_action_wdma {
-                enum wdma_type type;    // MTK_WDMA goes here
-                union {
-                        struct {
-                                ...;
-                        } mtk;
-                };
-        } wdma;
-
-Add:
-        struct flow_action_wdma         *wdma;
-
-to net_device_path.
-
-2) Pass on this pointer to structure to the nf_flow_route
-   wheelbarrow.
-
-3) Store this information in the struct flow_offload_tuple,
-   in a new struct flow_offload_hw *field to store all hardware
-   offload specific information (not needed by software path). There
-   is already hw_outdev that can be placed there.
-
-4) Add a FLOW_ACTION_WDMA action to the flow offload API to
-   pass on the flow_action_wdma structure.
-
-It's a bit of work the first time to accomodate the requirements of
-new API, but then all drivers will benefit from this.
-
-It's also a bit of layering, but with more drivers in the tree, this
-API can be simplified incrementally.
-
-I can take a stab at it and send you a patch.
-
-> To me it seems easier and cleaner to just have a single
-> ndo_fill_forward_path call for the final output device to check the
-> device types that don't have any corresponding sw offload.
-
-It's simpler yes, but this results in two calls for
-ndo_fill_forward_path, one from the core and another from the driver.
-I think it's better there's a single point to call to
-ndo_fill_forward_path for consolidation.
-
-My proposal requires a bit more plumbing, but all drivers will
-get the information that represents the offload in the same way.
+  Luis
