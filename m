@@ -2,133 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E20763C9936
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 08:55:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 102C13C995A
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 09:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237147AbhGOG5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 02:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
+        id S237865AbhGOHKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 03:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235839AbhGOG5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 02:57:52 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1F2C061760;
-        Wed, 14 Jul 2021 23:54:59 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id d2so6363478wrn.0;
-        Wed, 14 Jul 2021 23:54:59 -0700 (PDT)
+        with ESMTP id S230310AbhGOHKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 03:10:02 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4ACC06175F
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 00:07:09 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id o30-20020a05600c511eb029022e0571d1a0so2907292wms.5
+        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 00:07:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=M5NwdGajzImtf+rA0R6crLR2Js+53H3IkmZEIs+p8zo=;
-        b=vQEk7dhVjFoCUsFK+Wi0ucD8cSPeN45ankMJXJtuVI2X8GYbrNRb4MhH5WmhH5R1RF
-         G6SVhJG38896HrJfvazIJZQIq9C2LPnB6GHG2dXQ1o87T2W2TxawyJaiGlxMSooegWV9
-         Jm16K/EG+awC8l9IGUxoY+tGOUCpuZCX37LrkW8ceGdLtWbLyshZF5OoQkJwE9dGRcIH
-         +Bezgby8u6uC70VblHKbvBYnat/HyRV9ES1wK2tSexQSEhmX2lKGXsqVIOQxn1mhlGCT
-         eltbKpYal5bGGOuq0K6a0iyCzh+UzZvh3T2gI4sfE/ZIjjEFU6AeAOxur4K8REeIRHYL
-         GC/g==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5TddEsx9AaNz5LCQXxnH154vyrz8GHXag1KBeTokSBM=;
+        b=MzFqItdCvx1k3dt4lnHINlpIQ9z9xpVraq4NvN5HkmS3LIYGfo98ov3caQSMMwxLor
+         KcMAkCb1xcMB+4Q0MSwmUv/rNo2xvYQjiTjBO+TTF7LMzmg+SExYl82Jvox0/OVq5jx7
+         hvsyDgV9W6tqe2HeRyke3EKXDgjdEkb0t9s9sfS401I0wiI6glFhqnnafNiRzr9aWSSM
+         NRJXKpeBAapsbYHEcytMOR04Zb918tNQxG2GJQdbedEY4992gV+7yW18Z3ilG8QgIO+a
+         6jTfW+R7lxGZQQj43qeIo4/REqkIp0p+SI5LGNQgE+j4+UX0xjkqYSAMdtClrKWcbzSw
+         PINw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M5NwdGajzImtf+rA0R6crLR2Js+53H3IkmZEIs+p8zo=;
-        b=UdHQz5i4fdYet2wS00+dlYaW2syxWzdBawPBgfWP3a4+WJdRX+bWNGpVdqfXpgI0CT
-         fv0Wi16l7GcG6fRocyIomh79z5pUVKfmmLJITvm1oAQxuonS5i8ILKFJphXJSpqOUK+Y
-         vvMYE8tEfG9d6cpwMriEeLsiVdIKjw0qN7HZPY8ar+cWRg5POt/pLCPts0eLgT4vZt3z
-         6nEu4wjvlqfX+oCOkj6vNEWMqKSNTCmheFQfVSHNKeiWNNytqbJZcsNwTpiKcg80GPPl
-         hQpAn4xrMcQ+hdppDDT8p7gGrRq1bX66zbfSVm/2nS+v7hfbwP5H71zC0v7kdpW9i/Io
-         qBkQ==
-X-Gm-Message-State: AOAM531Ue0mak63xYwTVJf9Jgkiv+ZAeLNz1fkfYGmMhU426Jd9eCrVH
-        kcfoplmSLn/0leDscmPodfM=
-X-Google-Smtp-Source: ABdhPJxQLW3ZwX2obsB/Y1J7wZN/NF/RYBsmwg3N+XhHqbFia9Ck++fZv9Zn/yoyVNEC1w6PUE4dnQ==
-X-Received: by 2002:a5d:5257:: with SMTP id k23mr3518536wrc.50.1626332097607;
-        Wed, 14 Jul 2021 23:54:57 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id d18sm3867386wmp.46.2021.07.14.23.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Jul 2021 23:54:57 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 09:54:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] net: dsa: tag_ksz: dont let the hardware process the
- layer 4 checksum
-Message-ID: <20210715065455.7nu7zgle2haa6wku@skbuf>
-References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
- <20210714191723.31294-3-LinoSanfilippo@gmx.de>
- <20210714194812.stay3oqyw3ogshhj@skbuf>
- <YO9F2LhTizvr1l11@lunn.ch>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=5TddEsx9AaNz5LCQXxnH154vyrz8GHXag1KBeTokSBM=;
+        b=tO3kH9cQAC8rZL5exVyq/iPY1pvSFqiFkyOnXhfPxPEkg6nUmnE9jO5+DRYv5nKAWL
+         VyDT4/h3LOtcYS5xjF6W4Y2w7/kjT8gukvhHqIVwuAR/x62Ew/ylJrN2K7/QW6MRqvWG
+         nflpaBp42Oiu4KdlTBJLeO/NCf5BgeHYn8/+bFRx9bR8Ls/lNFgMgAGakfK6fYWC10nt
+         udC7NgXtEnxmjTkvSPLUqf+FWfGY8dyLpL1kzgmf0tmUxzXUM7HPXtvNvDWFkhXdMV0y
+         F8058U76RXKylNpzVLG36QkmkqVEoJdBT9YvfuPS46VtP6qN2B8Gh6r7f3thG3S4rfOa
+         N4JA==
+X-Gm-Message-State: AOAM533q4WgGJvLJxmt+Lcx0Gxvm5oSjD48H1+JLDGk73ETUalx01ZSK
+        mZ8hTBeTUID6kcBLz1C2cpd7g1LDays0ow==
+X-Google-Smtp-Source: ABdhPJwys445lGZEJEpOz6auP5J82oUq+Rl6ejPC/JpaFrmJF7oXsXCFRbNUlhDyxiT6oiaq6fTikg==
+X-Received: by 2002:a1c:720f:: with SMTP id n15mr8574213wmc.172.1626332827935;
+        Thu, 15 Jul 2021 00:07:07 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:c510:a4d3:52d6:e2e? ([2a01:e0a:410:bb00:c510:a4d3:52d6:e2e])
+        by smtp.gmail.com with ESMTPSA id a8sm5265261wrt.61.2021.07.15.00.07.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Jul 2021 00:07:07 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: Patch to fix 'ip' utility recvmsg with ancillary data
+To:     Lahav Daniel Schlesinger <lschlesinger@drivenets.com>,
+        David Ahern <dsahern@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <0644F993-A061-4133-B3AD-E7BEB129EFDD@drivenets.com>
+ <8e3cbedf-0ac8-8599-f713-294733301680@gmail.com>
+ <D2E7CEEB-B195-4A02-8D09-6595D74A5812@drivenets.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <ed9a4beb-1984-42c2-5cca-3101d285baf7@6wind.com>
+Date:   Thu, 15 Jul 2021 09:07:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YO9F2LhTizvr1l11@lunn.ch>
+In-Reply-To: <D2E7CEEB-B195-4A02-8D09-6595D74A5812@drivenets.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 10:15:20PM +0200, Andrew Lunn wrote:
-> On Wed, Jul 14, 2021 at 10:48:12PM +0300, Vladimir Oltean wrote:
-> > Hi Lino,
-> > 
-> > On Wed, Jul 14, 2021 at 09:17:23PM +0200, Lino Sanfilippo wrote:
-> > > If the checksum calculation is offloaded to the network device (e.g due to
-> > > NETIF_F_HW_CSUM inherited from the DSA master device), the calculated
-> > > layer 4 checksum is incorrect. This is since the DSA tag which is placed
-> > > after the layer 4 data is seen as a part of the data portion and thus
-> > > errorneously included into the checksum calculation.
-> > > To avoid this, always calculate the layer 4 checksum in software.
-> > > 
-> > > Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-> > > ---
-> > 
-> > This needs to be solved more generically for all tail taggers. Let me
-> > try out a few things tomorrow and come with a proposal.
+Le 14/07/2021 à 10:48, Lahav Daniel Schlesinger a écrit :
+> Hi David, thanks for reviewing the patch!
+> Here is the updated patch, I hope it's okay now:
 > 
-> Maybe the skb_linearize() is also a generic problem, since many of the
-> tag drivers are using skb_put()? It looks like skb_linearize() is
-> cheap because checking if the skb is already linear is cheap. So maybe
-> we want to do it unconditionally?
+> ipmonitor: Fix recvmsg with ancillary data
+> 
+> A successful call to recvmsg() causes msg.msg_controllen to contain the length
+> of the received ancillary data. However, the current code in the 'ip' utility
+> doesn't reset this value after each recvmsg().
+> 
+> This means that if a call to recvmsg() doesn't have ancillary data, then
+> 'msg.msg_controllen' will be set to 0, causing future recvmsg() which do
+> contain ancillary data to get MSG_CTRUNC set in msg.msg_flags.
+> 
+> This fixes 'ip monitor' running with the all-nsid option - With this option the
+> kernel passes the nsid as ancillary data. If while 'ip monitor' is running an
+> even on the current netns is received, then no ancillary data will be sent,
+> causing 'msg.msg_controllen' to be set to 0, which causes 'ip monitor' to
+> indefinitely print "[nsid current]" instead of the real nsid.
+> 
+> Fixes: 449b824ad196 ("ipmonitor: allows to monitor in several netns")
+> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Signed-off-by: Lahav Schlesinger <lschlesinger@drivenets.com>
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-Yeah, but we should let the stack deal with both issues in validate_xmit_skb().
-There is a skb_needs_linearize() call which returns false because the
-DSA interface inherits NETIF_F_SG from the master via dsa_slave_create():
+[snip]
 
-	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
+>> patch looks right. Can you send it as a formal patch with a commit log
+>> message, Signed-off-by, etc. See  'git log' for expected format and
+>> Documentation/process/submitting-patches.rst in the kernel tree. Make
+The format is still unexpected. Please, consider using git send-email.
 
-Arguably that's the problem right there, we shouldn't inherit neither
-NETIF_F_HW_CSUM nor NETIF_F_SG from the list of features inheritable by
-8021q uppers.
 
-- If we inherit NETIF_F_SG we obligate ourselves to call skb_linearize()
-  for tail taggers on xmit. DSA probably doesn't break anything for
-  header taggers though even if the xmit skb is paged, since the DSA
-  header would always be part of the skb head, so this is a feature we
-  could keep for them.
-- If we inherit NETIF_F_HW_CSUM from the master for tail taggers, it is
-  actively detrimential to keep this feature enabled, as proven my Lino.
-  As for header taggers, I fail to see how this would be helpful, since
-  the DSA master would always fail to see the real IP header (it has
-  been pushed to the right by the DSA tag), and therefore, the DSA
-  master offload would be effectively bypassed. So no point, really, in
-  inheriting it in the first place in any situation.
-
-Lino, to fix these bugs by letting validate_xmit_skb() know what works
-for DSA and what doesn't, could you please:
-
-(a) move the current slave_dev->features assignment to
-    dsa_slave_setup_tagger()? We now support changing the tagging
-    protocol at runtime, and everything that depends on what the tagging
-    protocol is (in this case, tag_ops->needed_headroom vs
-    tag_ops->needed_tailroom) should be put in that function.
-(b) unconditionally clear NETIF_F_HW_CSUM from slave_dev->features,
-    after inheriting the vlan_features from the master?
-(c) clear NETIF_F_SG from slave_dev->features if we have a non-zero
-    tag_ops->needed_tailroom?
-
-Thanks.
-
-By the way I didn't get the chance to test anything, sorry if there is
-any mistake in my reasoning.
+Regards,
+Nicolas
