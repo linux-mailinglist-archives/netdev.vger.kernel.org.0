@@ -2,95 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3328D3C9D36
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 12:48:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48DAE3C9D37
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 12:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238274AbhGOKux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 06:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58694 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234463AbhGOKux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 06:50:53 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60186C06175F;
-        Thu, 15 Jul 2021 03:47:59 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id u11so6083410oiv.1;
-        Thu, 15 Jul 2021 03:47:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3NyXpXRKjtF+eoBi9AYOFh14nRSx/CxFB77Rn5t87IM=;
-        b=Jeo4Lj3HUoqZnyLNGyYN7IHXohg0b/Znf7iz5+lc/yxKRpDDiw0NJRgr134dnydbNu
-         RU2tPfr159eBw9c0Rv1wuG2gWHQM2691N/a6buiaK4OyK0nA+TO1aH4jwNwZUtYClMwS
-         UYTxvVc1tmHO909M99WmP0FVsuuzBTDjSSpZla+vzrho3jol/Wx6/FV/WxH8w7aAZXYf
-         ucW23/8nphTrnTIG7Mgtsuagj3k3MoKCY2vndueaeKBtiTqxUunk0cREDGw43+SQhBjc
-         eZxcoTfUW+xxhBN3vXXU/U+AiK4oNLosr598cRx6/WD8HjauLvmhLqmAG/CG34PHbZD9
-         KbPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3NyXpXRKjtF+eoBi9AYOFh14nRSx/CxFB77Rn5t87IM=;
-        b=qs46dxKcbAEg1bxj6110ce+aMinJKZ/WzNKTUvj8RAbAwUaZ+GDBihvhmmpi6g54Rq
-         xBXnAjqFlKwGTQNbd5VxBaVCrGGF8LPwca968shVsosQxlhCbUj3nbgD7a5eno9VuI6Z
-         4HPrjD0JdyCAprnj7WBSNAsY65f2iMORZ3SLoLaiHmChSZIEqMsqT/uFnQjABfdY0CiC
-         2tf544GjtOhh4S+8CsrYyd4CaRJdZZQnXbuiC5HQMg3eB2oa/fbQgQ9GxsJJaW508lxu
-         a4w3q8fedB9TkSmZAFfYESF0GAwrLaWRwgsbxow5JfGftcTfBpR/gIGmuC2azVfgVCtG
-         Ocgg==
-X-Gm-Message-State: AOAM532f00kjJOsZXybcRuYgF+M6ogH3+qlMHlPlWAkMuSAZZEQ1PbhX
-        RIrUxuyzThtmfxQ9kCww/1VyoVm0Ba/g10nKhds=
-X-Google-Smtp-Source: ABdhPJy0zOlJy5vogI53OX57ulbJPDYAGuNkdoSKKgNsC8tQwxV2MHPAJ5XvGbCy2tigjJW0KBqTP4pOQbXTD0SIww8=
-X-Received: by 2002:aca:f54e:: with SMTP id t75mr3129803oih.142.1626346078817;
- Thu, 15 Jul 2021 03:47:58 -0700 (PDT)
+        id S240188AbhGOKuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 06:50:55 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:11423 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232055AbhGOKuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 06:50:54 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GQWGJ3wr1zcdHc;
+        Thu, 15 Jul 2021 18:44:40 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Thu, 15 Jul 2021 18:47:55 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 15 Jul
+ 2021 18:47:55 +0800
+Subject: Re: [PATCH 1/1 v2] skbuff: Fix a potential race while recycling
+ page_pool packets
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+CC:     Networking <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        "Jonathan Lemon" <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        "Cong Wang" <cong.wang@bytedance.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20210709062943.101532-1-ilias.apalodimas@linaro.org>
+ <bf326953-495f-db01-e554-42f4421d237a@huawei.com>
+ <CAC_iWjLypqTGMxw_1ng1H8r5Yiv83G3yxUW8T1863XzFM-ShpA@mail.gmail.com>
+ <CAC_iWjLfsvr_Z2te=ABfEAecAOkQBiu22QZ8GhorA4MYnt4Uxg@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <401f10b2-3b92-a3f9-f01e-df2e190c8ff3@huawei.com>
+Date:   Thu, 15 Jul 2021 18:47:55 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20210715082536.1882077-1-aisheng.dong@nxp.com>
- <20210715082536.1882077-2-aisheng.dong@nxp.com> <20210715091207.gkd73vh3w67ccm4q@pengutronix.de>
-In-Reply-To: <20210715091207.gkd73vh3w67ccm4q@pengutronix.de>
-From:   Dong Aisheng <dongas86@gmail.com>
-Date:   Thu, 15 Jul 2021 18:45:58 +0800
-Message-ID: <CAA+hA=QDJhf_LnBZCiKE-FbUNciX4bmgmrvft8Y-vkB9Lguj=w@mail.gmail.com>
-Subject: Re: [PATCH 1/7] dt-bindings: can: flexcan: fix imx8mp compatbile
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAC_iWjLfsvr_Z2te=ABfEAecAOkQBiu22QZ8GhorA4MYnt4Uxg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On 2021/7/15 18:38, Ilias Apalodimas wrote:
+> On Thu, 15 Jul 2021 at 13:00, Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+>>
+>> On Thu, 15 Jul 2021 at 07:01, Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>
+>>> On 2021/7/9 14:29, Ilias Apalodimas wrote:
+>>>> As Alexander points out, when we are trying to recycle a cloned/expanded
+>>>> SKB we might trigger a race.  The recycling code relies on the
+>>>> pp_recycle bit to trigger,  which we carry over to cloned SKBs.
+>>>> If that cloned SKB gets expanded or if we get references to the frags,
+>>>> call skbb_release_data() and overwrite skb->head, we are creating separate
+>>>> instances accessing the same page frags.  Since the skb_release_data()
+>>>> will first try to recycle the frags,  there's a potential race between
+>>>> the original and cloned SKB, since both will have the pp_recycle bit set.
+>>>>
+>>>> Fix this by explicitly those SKBs not recyclable.
+>>>> The atomic_sub_return effectively limits us to a single release case,
+>>>> and when we are calling skb_release_data we are also releasing the
+>>>> option to perform the recycling, or releasing the pages from the page pool.
+>>>>
+>>>> Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
+>>>> Reported-by: Alexander Duyck <alexanderduyck@fb.com>
+>>>> Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
+>>>> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+>>>> ---
+>>>> Changes since v1:
+>>>> - Set the recycle bit to 0 during skb_release_data instead of the
+>>>>   individual fucntions triggering the issue, in order to catch all
+>>>>   cases
+>>>>  net/core/skbuff.c | 4 +++-
+>>>>  1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>>>> index 12aabcda6db2..f91f09a824be 100644
+>>>> --- a/net/core/skbuff.c
+>>>> +++ b/net/core/skbuff.c
+>>>> @@ -663,7 +663,7 @@ static void skb_release_data(struct sk_buff *skb)
+>>>>       if (skb->cloned &&
+>>>>           atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
+>>>>                             &shinfo->dataref))
+>>>> -             return;
+>>>> +             goto exit;
+>>>
+>>> Is it possible this patch may break the head frag page for the original skb,
+>>> supposing it's head frag page is from the page pool and below change clears
+>>> the pp_recycle for original skb, causing a page leaking for the page pool?
+>>>
+>>
+>> So this would leak eventually dma mapping if the skb is cloned (and
+>> the dataref is now +1) and we are freeing the original skb first?
+>>
+> 
+> Apologies for the noise, my description was not complete.
+> The case you are thinking is clone an SKB and then expand the original?
 
-On Thu, Jul 15, 2021 at 5:12 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 15.07.2021 16:25:30, Dong Aisheng wrote:
-> > This patch fixes the following errors during make dtbs_check:
-> > arch/arm64/boot/dts/freescale/imx8mp-evk.dt.yaml: can@308c0000: compatible: 'oneOf' conditional failed, one must be fixed:
-> >       ['fsl,imx8mp-flexcan', 'fsl,imx6q-flexcan'] is too long
->
-> IIRC the fsl,imx6q-flexcan binding doesn't work on the imx8mp. Maybe
-> better change the dtsi?
+Yes.
+It seems we might need different pp_recycle bit for head frag and data frag.
 
-I checked with Joakim that the flexcan on MX8MP is derived from MX6Q with extra
-ECC added. Maybe we should still keep it from HW point of view?
-
-Regards
-Aisheng
-
->
-> regards,
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+> 
+> thanks
+> /Ilias
+> 
+> 
+>>>>
+>>>>       skb_zcopy_clear(skb, true);
+>>>>
+>>>> @@ -674,6 +674,8 @@ static void skb_release_data(struct sk_buff *skb)
+>>>>               kfree_skb_list(shinfo->frag_list);
+>>>>
+>>>>       skb_free_head(skb);
+>>>> +exit:
+>>>> +     skb->pp_recycle = 0;
+>>>>  }
+>>>>
+>>>>  /*
+>>>>
+> .
+> 
