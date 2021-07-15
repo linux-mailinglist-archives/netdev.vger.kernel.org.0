@@ -2,76 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9E73CA44C
-	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 19:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3624C3CA462
+	for <lists+netdev@lfdr.de>; Thu, 15 Jul 2021 19:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235838AbhGOR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 13:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbhGOR2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 13:28:47 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E781AC0613DC
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 10:25:52 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id t143so7508194oie.8
-        for <netdev@vger.kernel.org>; Thu, 15 Jul 2021 10:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=Ibb5KNEw1DKqJEg9n4gJy5KnzVasBofn6QaWYsu9UCQ=;
-        b=A07qw47jpyx7/pJf1ZS9aQv4pD7PiHBZWlsl9UoiurRqqc+7ZndQI51YdaaD0nkecu
-         Qd4i+G02coH8O2I/r6ZupOF8oYSIAoIwVq4zkuCtuhDJYsbynWGQdegcG7aq+QxGg/bp
-         poyp2DbaibSeABlojQr/pIAqMWExNaHg4RIE+IQzBlXdCiQq16Yp/UqkBXwITYu4DgIP
-         XTs1gXkC7Br62pPmJXs/2nF+jRhXCAs3iAxTxuy51YthTghMWE/kONdSGZKCG8sWM+Ev
-         WU1ATEDaIH5W63c7UQCvZTdM21+mq9I9FOl7BCTb650pCRFEJMZ521zklByg85zlNwmj
-         7b/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=Ibb5KNEw1DKqJEg9n4gJy5KnzVasBofn6QaWYsu9UCQ=;
-        b=jndwHahXJ7LwUb6XGFX4/qIVTo6y8mGgbaOCUiEzA7SpabY55UZEAd7H/Ic2HExfph
-         5qESZQ9vQVr8/rWJKwMad46dfdUpZgKRT0+E9JTlBERKisfvzH0sXPotu23IsDFRSPbn
-         mKBSzjbtGrn5qCWJimQvGl/Z76rZUunsGOb1dk3EInSAUfHa7HqHppICqiTZfHx/Xv4+
-         0cgELGNy3ASHqK7jH0nbVD9skCJItBXhZyXvJPfe7J7UKHqhAg4XSImDnlxNsNxNkhY0
-         J34cmSKV8ho9BNIQxBEKXwfPK20fY+1w88/cmcXM2I87u0ns475/Cuiu0Coe/6kIo15f
-         NtDQ==
-X-Gm-Message-State: AOAM530O/JUdMadb/0DgGye9kNbMz1/DDJTvhv5FzLn/Z6toMCrBGvd8
-        qsqbCCAErphnb6EHTHniNkSJfX3KwqpDo51NvKoZSA08Ldo=
-X-Google-Smtp-Source: ABdhPJyZMrq1Z7I3pjjmyAtUHW3ABh0oEghTe77F5dAxRk/llsByjQhtZ30eIUOoh7sIooPsLTy5+nPJ1BCNgIavtsM=
-X-Received: by 2002:a17:90b:d8f:: with SMTP id bg15mr10963237pjb.152.1626369941880;
- Thu, 15 Jul 2021 10:25:41 -0700 (PDT)
+        id S229682AbhGORc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 13:32:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55852 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229506AbhGORc6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Jul 2021 13:32:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 20B3F613D7;
+        Thu, 15 Jul 2021 17:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626370205;
+        bh=Flw15wMFOWTWZ7Do+OUNzQu22+yegu+u/76/RBpVfhU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZguZuy3lQQkuS/6Fq0dHl9+jEgMhtzK+EGvgr4YT9CSs3WYP/OoMIdSSGHODf6p+t
+         HeBszqG2XAb8MEF3f0St0AYHrWQUBH4HzIf7/sh0ZWkSSbRE9ixEMPiQHacB+3amFX
+         UmaoIBTDzMFPiyclEYX7n9c6fAJnjFb/jfddlvnR1t9SRnxs2uPmaXXtwxbL8Pee6M
+         mnQe4+0ic4Rvcnyc7A9TX8OtdckjrhqPCb4WdfH+LFqKScKCXAI9Lh/cYSzV0O5rSN
+         ilxbEc3ID6nGETkQ2qnXO0H+HdyFqyrBGWkmEXmqkuDNlY76gCTFoyfFCE2yqbiSR9
+         XsgYylndwlybA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0AF73609CF;
+        Thu, 15 Jul 2021 17:30:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:fc85:0:0:0:0 with HTTP; Thu, 15 Jul 2021 10:25:41
- -0700 (PDT)
-Reply-To: faty.muhamad@gmail.com
-From:   Ms Fatima Muhammad <general.infofederalreserve@gmail.com>
-Date:   Thu, 15 Jul 2021 17:25:41 +0000
-Message-ID: <CAJzJz_Dwu6rUxmnqq1QV9qD4hugxutFJZuENGUwx7RamXm5txA@mail.gmail.com>
-Subject: Hello Dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] ipv6: remove unnecessary local variable
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162637020504.11955.9930812995357254562.git-patchwork-notify@kernel.org>
+Date:   Thu, 15 Jul 2021 17:30:05 +0000
+References: <20210715142643.2648-1-rocco.yue@mediatek.com>
+In-Reply-To: <20210715142643.2648-1-rocco.yue@mediatek.com>
+To:     Rocco Yue <rocco.yue@mediatek.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, wsd_upstream@mediatek.com,
+        rocco.yue@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear,
+Hello:
 
-My name is Ms.Fatima Muhammad., Please forgive me for stressing you
-with my predicaments and I sorry to approach you through this media
-because is serves the fastest means of  my communication right now,
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-I came across your Email from my personal search and I decided to
-contact you believing you will be honest to fulfill my business
-proposal which I believe that will be a very good opportunity for both
-of us. Please it is my pleasure to contact you today for a business
-partnership investments projects worth $4.6 million USD which I intend
-to establish in your country..
+On Thu, 15 Jul 2021 22:26:43 +0800 you wrote:
+> The local variable "struct net *net" in the two functions of
+> inet6_rtm_getaddr() and inet6_dump_addr() are actually useless,
+> so remove them.
+> 
+> Signed-off-by: Rocco Yue <rocco.yue@mediatek.com>
+> ---
+>  net/ipv6/addrconf.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 
-Pls If this business proposal offends your moral and ethic values do
-accept my apology. therefore kindly contact me immediately if you are
-interested for more details.
+Here is the summary with links:
+  - [net-next] ipv6: remove unnecessary local variable
+    https://git.kernel.org/netdev/net-next/c/87117baf4f92
 
-Thank you for your wiliness to help me
-Yours Sincerely Fatima Muhammad
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
