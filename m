@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 002893CB9CD
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35D113CB9E0
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:33:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240862AbhGPPaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:30:04 -0400
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:39417
-        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S233094AbhGPPaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:30:03 -0400
-Received: by ajax-webmail-mail-app3 (Coremail) ; Fri, 16 Jul 2021 23:26:47
- +0800 (GMT+08:00)
-X-Originating-IP: [183.159.168.36]
-Date:   Fri, 16 Jul 2021 23:26:47 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   LinMa <3160105373@zju.edu.cn>
-To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "Desmond Cheong Zhi Xi" <desmondcheongzx@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "Marcel Holtmann" <marcel@holtmann.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        id S240780AbhGPPfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:35:53 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58598 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240282AbhGPPfn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 11:35:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=CGZsktWNeZSP9brVnhmnumOVvSpPdBAXCv4lSMGQFv4=; b=KDq8NTcR/64IPQfgHMHGx8OrHD
+        PNyK6GiKo91ZMVNnntywFZG0QY/Lodr5w7nLMsFGrpQAnUZiyupr5iPpE183n16ThEiW298hbqzcC
+        AJjNi30BG7gEfdXUxvVZfmc1aa8+DJB033ckQYU3xAI2dz05S/s0FNuoiDZXpVAVuVXI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m4PpF-00DdAs-N5; Fri, 16 Jul 2021 17:32:29 +0200
+Date:   Fri, 16 Jul 2021 17:32:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     ericwouds@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
- section
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
-References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
- <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
- <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
- <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
- <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
- <2b0e515c-6381-bffe-7742-05148e1e2dcb@gmail.com>
- <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
- <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Eric Woudstra <37153012+ericwoud@users.noreply.github.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Message-ID: <YPGmjd1ODFQ+ZIE2@lunn.ch>
+References: <20210716152213.4213-1-ericwouds@gmail.com>
 MIME-Version: 1.0
-Message-ID: <4bd89382.4d087.17aafed62b1.Coremail.3160105373@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgCHODw4pfFgyyqBAQ--.45359W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUIElNG3Df-vAAAsh
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210716152213.4213-1-ericwouds@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8gZXZlcnlvbmUsCgpTb3JyeSwgaXQncyBteSBmYXVsdCB0byBjYXVzZSB0aGUgbWlzdW5k
-ZXJzdGFuZGluZy4KCkFzIEkga2VlcCBtZW50aW9uaW5nICJoY2lfc29ja19zZW5kbXNnKCkiIGlu
-c3RlYWQgb2YgImhjaV9zb2NrX2JvdW5kX2lvY3RsKCkiLiBJbiBmYWN0LCBib3RoIHRoZXNlIHR3
-byBmdW5jdGlvbnMgYXJlIGFibGUgdG8gY2F1c2UgdGhlIHJhY2UuCgo+ID4+Cj4gPiAKPiA+IE15
-IGJhZCwgd2FzIHRoaW5raW5nIG1vcmUgYWJvdXQgdGhlIHByb2JsZW0gYW5kIG5vdGljZWQgeW91
-ciBwb2Mgd2FzIGZvciBoY2lfc29ja19zZW5kbXNnLAo+ID4gbm90IGhjaV9zb2NrX2Rldl9ldmVu
-dC4KPiAKPiBJIGRpZG4ndCBjYXRjaCB0aGlzIHBhcnQuIEFyZSB5b3UgdGFsa2luZyBhYm91dCBh
-IGRpZmZlcmVudCBwb2M/Cj4gQXMgZmFyIGFzIEknbSBhd2FyZSwgZXhwLmMgaW4gUE9DLnppcCB3
-YXMgZm9yIGhjaV9zb2NrX2JvdW5kX2lvY3RsKEhDSVVOQkxPQ0tBRERSKS4KPiAKPiBoY2lfc29j
-a19ib3VuZF9pb2N0bChIQ0lVTkJMT0NLQUREUikgKHdoaWNoIGlzIGNhbGxlZCBiZXR3ZWVuIGxv
-Y2tfc29jaygpIGFuZCByZWxlYXNlX3NvY2soKSkKPiBjYWxscyBjb3B5X2Zyb21fdXNlcigpIHdo
-aWNoIG1pZ2h0IGNhdXNlIHBhZ2UgZmF1bHQsIGFuZCB1c2VyZmF1bHRmZCBtZWNoYW5pc20gYWxs
-b3dzIGFuIGF0dGFja2VyCj4gdG8gc2xvd2Rvd24gcGFnZSBmYXVsdCBoYW5kbGluZyBlbm91Z2gg
-dG8gaGNpX3NvY2tfZGV2X2V2ZW50KEhDSV9ERVZfVU5SRUcpIHRvIHJldHVybiB3aXRob3V0Cj4g
-d2FpdGluZyBmb3IgaGNpX3NvY2tfYm91bmRfaW9jdGwoSENJVU5CTE9DS0FERFIpIHRvIGNhbGwg
-cmVsZWFzZV9zb2NrKCkuIFRoaXMgcmFjZSB3aW5kb3cKPiByZXN1bHRzIGluIFVBRiAoZG9lc24n
-dCBpdCwgTGluTWE/KS4KPiAKCllvdXIgdW5kZXJzdGFuZGluZyBhYm92ZSBpcyBxdWl0ZSByaWdo
-dC4gSW4gYWRkaXRpb24sIGJlY2F1c2UgdGhlIGhjaV9zb2NrX3NlbmRtc2coKSBjYWxscyB0aGUg
-bWVtY3B5X2Zyb21fbXNnKC4uLiksIHdoaWNoIGFsc28gaW4gZmFjdCBmZXRjaCBkYXRhIGZyb20g
-dXNlcnNwYWNlIG1lbW9yeSwgdGhlIHVzZXJmYXVsdGZkIGNhbiB0YWtlIGVmZmVjdCBhcyB3ZWxs
-LgoKKFdoZW4gd3JpdGluZyB0aGUgZXhwbG9pdCBmb3IgdGhpcyBDVkUsIHRoZSBoY2lfc29ja19z
-ZW5kbXNnKCkgaXMgbXVjaCB1c2VmdWwuLi4gc28gSSByZWNlbnRseSBrZWVwIG1lbnRpb25pbmcg
-dGhpcyBmdW5jdGlvbikKClJlZ2FyZHMKTGluIE1h
+On Fri, Jul 16, 2021 at 05:22:11PM +0200, ericwouds@gmail.com wrote:
+> From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
+> 
+> According to reference guides mt7530 (mt7620) and mt7531:
+> 
+> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to 
+> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0] 
+> will be used to read/write the address table.
+> 
+> Since the function only fills in CVID and no FID, we need to set the
+> IVL bit. The existing code does not set it.
+> 
+> This is a fix for the issue I dropped here earlier:
+> 
+> http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
+> 
+> With this patch, it is now possible to delete the 'self' fdb entry
+> manually. However, wifi roaming still has the same issue, the entry
+> does not get deleted automatically. Wifi roaming also needs a fix
+> somewhere else to function correctly in combination with vlan.
+> 
+> Signed-off-by: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
+
+Hi Eric
+
+We need a real email address in the Signed-off-by, and the noreply bit
+makes me think this will not work.
+
+      Andrew
