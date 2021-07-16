@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91F013CB1A5
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 06:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 824E43CB1A8
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 06:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231961AbhGPEi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 00:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S232528AbhGPEp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 00:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbhGPEi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 00:38:57 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA485C06175F;
-        Thu, 15 Jul 2021 21:36:02 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id p22so12785224yba.7;
-        Thu, 15 Jul 2021 21:36:02 -0700 (PDT)
+        with ESMTP id S229822AbhGPEp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 00:45:56 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E6BC06175F;
+        Thu, 15 Jul 2021 21:43:01 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id y38so12842436ybi.1;
+        Thu, 15 Jul 2021 21:43:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VSbSop3izgeubGr72M1TZ17oEfxYdb+oPnDmq2ERdJE=;
-        b=QCldMWFcxmyZhgS/CMP9jxunTvvT1SXY3ORp5JYXBPUkvOeS9FG3IU/oAcObIxVE/u
-         cAniWR1rPffQ8imHplGiw6DoAzJlQTUCjqXYw1DwD8tKs5rFSXRq9jcKObWafhhtApif
-         0bodfTpRriAatb+kfsdmbouEW4nzbYn2E4SVK/TtYFK7vCaca2umQ3YRYgRSVx6VPR9k
-         aw1/tF8XEYu7oJe1zZy5VRXDUll8bgU2TCnoQkzPZIxLZV7szHmWB875n/aH66BazwsM
-         bkTD47nFGggfgzlwZFHnJyNoLz6c2rSr/orhrdcHQlVLro6AQyQKFre2lr7dFE+b+O5f
-         NcSQ==
+        bh=PIl1Fw5KR3VFhFZN5uMgR/f+HO3oLdMTMy69W8uQI1w=;
+        b=p9S203gnpka34CU5RHrMDahkLMagbCycT+2Z0ubYaclI8nDutRLoerCbiDfzXiWy21
+         R23PiGXE4OMpOXTkORuVNuk2osy8IbdIvDSTg3Twh7BmWCJf5wYdJ9GnjpwyaMH6wGbj
+         +5PD0h5ikqFjwmnk8UD74Tvhc2foWBwKn2QEGAUiSy0h85MhrJC37PZKJ6Npm7RnaF7Q
+         KL30dVm4eDrCVrL+8eZbm7eX1/QCvJcwD3XDNhYy2Rey93E0UMNt+9LXoqodoJnINlcd
+         eY7vtQxr7KpDID4i/RW6KFwfQu+XJ4d4TlI8YBqD2xbVabcS1XO0zwLdMpryX5oYSmHi
+         86Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VSbSop3izgeubGr72M1TZ17oEfxYdb+oPnDmq2ERdJE=;
-        b=Z6dkntw2sdOVxGA/lg3neh7b9QA+hNEeXt5OEhVaxxksgRxMeQ4Z1/gtU9V1NCCzix
-         l3BqYj6eM+2r9YZLFZhke4YH0Nd1HjzYTO3hdk6KkNvLJk7NtHoyAzUe+/p2S58zTRw1
-         0Lup4h+omuUMhqIPBzBH86dysp/N9F1vPR02gP49nTHNwO/OCpj8wlpCy9GAbWMVrHFg
-         a7ZBe0+VczEIY8s+VKBWHuMVRzGGhXqV+jFZosTqULREYV1WsD81YaKVq7dL8pU0fR9r
-         MguXgcBU7i2/DO0DvEdeEsB6g3nYBjchEWOmthdzY2YAP4Baca/oQCL6qOeibTwM7roH
-         Lcaw==
-X-Gm-Message-State: AOAM533XPO5qElO2WI1Jmi/mANJ6Y/llkoxZT1GTBI9L1X0atUJNdQZY
-        g/cj25rZUrkXJN1IurZGOb17hpw5516Ur6kAx6k=
-X-Google-Smtp-Source: ABdhPJyne69Xms4EY5IIVROcGtSdIQZQBMUFKKVrjg/M4Te3+wF3zKW+YLY0+W5UVQ3NtGdn0jbfBv9qr79IU21GyYQ=
-X-Received: by 2002:a25:1ec4:: with SMTP id e187mr9873506ybe.425.1626410162298;
- Thu, 15 Jul 2021 21:36:02 -0700 (PDT)
+        bh=PIl1Fw5KR3VFhFZN5uMgR/f+HO3oLdMTMy69W8uQI1w=;
+        b=b3GvhWSgbyQlZFAPi8jRzp25ULG4ycar0/8GGki3wIDVpKl5Aljee/nT8IRybmORNh
+         892xVtLMfDpgPkDrE8UuqTGpbukVUfSIVzgkkLafYdF4qnVhR1pyQG+isRCM9VV6/zSe
+         OYcbNmaPlICLqpljm+k8QA6cKcHE0HythBm2HvHWWJkbLRfOyRctC2aN1sNsppqDadEa
+         Ok+pSrY/kvcfvt05FO/qgjEktLSjqdQ4rglbrcgcbj4G77/RLu4YPw2Y6cHPlHEq2q78
+         Eh9ZWBJyJH2HIuS66O0BeBD8PwFtaudHZqqUQKPz5h+xci2S0dfq0krIGRpzB3gEQRCw
+         ss5g==
+X-Gm-Message-State: AOAM530eOdyzqYaTtd0k+p0pKCyD0o18oa0ukJmYsHGSqYLHxTBSvZKk
+        duIkwqEqBTNyB8y7tqKBR+peaSjSPZ2qM8csn5o=
+X-Google-Smtp-Source: ABdhPJzFfJXHDV0tSnZQGkH2WAegz/Pj/Wop5sb1pWe+n29n4Qs5rmjnfZr6BT9Ob2NgAep1i2mK6OU6gE9B00YSJGU=
+X-Received: by 2002:a25:b203:: with SMTP id i3mr10187994ybj.260.1626410580903;
+ Thu, 15 Jul 2021 21:43:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210714141532.28526-1-quentin@isovalent.com> <20210714141532.28526-3-quentin@isovalent.com>
-In-Reply-To: <20210714141532.28526-3-quentin@isovalent.com>
+References: <20210714141532.28526-1-quentin@isovalent.com> <20210714141532.28526-5-quentin@isovalent.com>
+In-Reply-To: <20210714141532.28526-5-quentin@isovalent.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 15 Jul 2021 21:35:51 -0700
-Message-ID: <CAEf4BzbgxKnTyjHuVmPOune=yxkE7WAqKn6KXjw8-pEyL1svog@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/6] libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
+Date:   Thu, 15 Jul 2021 21:42:50 -0700
+Message-ID: <CAEf4BzbXA5ZQCzLoY+r8XjSXNzBYtUiYh1aXo0O+TvO8JXvDQQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/6] libbpf: explicitly mark btf__load() and
+ btf__get_from_id() as deprecated
 To:     Quentin Monnet <quentin@isovalent.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -62,11 +63,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jul 14, 2021 at 7:15 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> Rename function btf__get_from_id() as btf__load_from_kernel_by_id() to
-> better indicate what the function does.
->
-> The other tools calling the deprecated btf__get_from_id() function will
-> be updated in a future commit.
+> Now that we have replacement functions for btf__load() and
+> btf__get_from_id(), with names that better reflect what the functions
+> do, and that we have updated the different tools in the repository
+> calling the legacy functions, let's explicitly mark those as deprecated.
 >
 > References:
 >
@@ -75,31 +75,42 @@ On Wed, Jul 14, 2021 at 7:15 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
 > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 > ---
->  tools/lib/bpf/btf.c      | 4 +++-
->  tools/lib/bpf/btf.h      | 1 +
->  tools/lib/bpf/libbpf.c   | 2 +-
->  tools/lib/bpf/libbpf.map | 1 +
->  4 files changed, 6 insertions(+), 2 deletions(-)
+>  tools/lib/bpf/btf.h | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 >
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index 7e0de560490e..05b63b63083a 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -1383,7 +1383,7 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
->         return btf;
->  }
+> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+> index 0bd9d3952d19..522277b16a88 100644
+> --- a/tools/lib/bpf/btf.h
+> +++ b/tools/lib/bpf/btf.h
+> @@ -45,7 +45,8 @@ LIBBPF_API struct btf *btf__parse_raw(const char *path);
+>  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
 >
-> -int btf__get_from_id(__u32 id, struct btf **btf)
-> +int btf__load_from_kernel_by_id(__u32 id, struct btf **btf)
+>  LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
+> -LIBBPF_API int btf__load(struct btf *btf);
+> +LIBBPF_API LIBBPF_DEPRECATED("the name was confusing and will be removed in the future libbpf versions, please use btf__load_into_kernel() instead")
+> +int btf__load(struct btf *btf);
 
-we can't change existing btf__get_from_id(), but for the new
-btf__load_from_kernel_by_id() let's keep them in line with other BTF
-"constructor" APIs (btf__new and btf__parse) and return resulting
-struct btf, instead of passing it in output argument. With the new
-libbpf error reporting strategy (NULL on error + errno for those who
-care about specific error code), it has a better usability and will
-just be more consistent.
+So I learned from my previous attempts to deprecate libbpf API to
+never do that in the same release that introduces a replacement API.
+So I'll postpone this change till the next libbpf release, otherwise
+it causes too much churn and frustration for existing users.
 
->  {
->         struct btf *res;
->         int err, btf_fd;
+And I'd probably keep the message short, like "use
+btf__load_into_kernel() instead".
+
+>  LIBBPF_API int btf__load_into_kernel(struct btf *btf);
+>  LIBBPF_API __s32 btf__find_by_name(const struct btf *btf,
+>                                    const char *type_name);
+> @@ -67,7 +68,8 @@ LIBBPF_API void btf__set_fd(struct btf *btf, int fd);
+>  LIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);
+>  LIBBPF_API const char *btf__name_by_offset(const struct btf *btf, __u32 offset);
+>  LIBBPF_API const char *btf__str_by_offset(const struct btf *btf, __u32 offset);
+> -LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
+> +LIBBPF_API LIBBPF_DEPRECATED("the name was confusing and will be removed in the future libbpf versions, please use btf__load_from_kernel_by_id() instead")
+> +int btf__get_from_id(__u32 id, struct btf **btf);
+>  LIBBPF_API int btf__load_from_kernel_by_id(__u32 id, struct btf **btf);
+>  LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
+>                                     __u32 expected_key_size,
+> --
+> 2.30.2
+>
