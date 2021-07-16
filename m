@@ -2,174 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F94C3CBEFD
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 00:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A023CBF4D
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 00:32:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237330AbhGPWIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 18:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230318AbhGPWIv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 18:08:51 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7507C06175F;
-        Fri, 16 Jul 2021 15:05:54 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id g19so17171070ybe.11;
-        Fri, 16 Jul 2021 15:05:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5LsAbpTyGpoMSPy6kuRB4pyfS/wxP9D1ajlZsdQwkJ8=;
-        b=qqxNjdpW1LCG1+QjMqzatt42SvMUj+/is8XU7Fmr8H1GvmhPKNgeLeht2ozSeVXx2Y
-         BB1Yd0mFrqNH6kY6dz4cSvmwE4g8a10n1h9b9hlJyPJnIV8ArwVKx0QWApfj3Q8b5KLG
-         v+8a22vJY2TBF0XMitibR0gY6+Ni+tXRCRLafoiXpHKz8C8qQlDSeJA3ZXmI9iCuuIoG
-         QR8xp5cE13WudGGYnzdnjEI9gGS582C0I375ui2Q4N2vFqwb4/S5iPJG+l8KIosPG8Xl
-         8PAgNJW5RgHcDfZxkxu+HGxci3ILC2huZWHJUAEpOMRzCqU5tahv/kTHY09kIUcGylAm
-         6SaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5LsAbpTyGpoMSPy6kuRB4pyfS/wxP9D1ajlZsdQwkJ8=;
-        b=h9VwPXckTESDTkv6pEZ1aVmzPqh82Hy6XeXsHbRrY/GUPbbfZGVlxDkU0Y7ACGHzvs
-         X6W/BjALQK08Mtu7aBUdwlc3PsUImVWk41QYI7EmLJiiYwbbyzedcAgnpCNYQpoPRa59
-         MKdQxsGl38ipvrjsmmjQHfvFn8caT0tzYtAjNg1752UY1TIeYueDUGQxMrz9W3+wUPHR
-         m8AHdhV2fqQ2Y4IdqKHdFYqgxDkSlv9+YiAZvqiCrz0iXb2UJkcKFWIgh6+hldcIbN3x
-         pa7pIYCUv0OylGvECOv6dmyt30EkNpNKLb98HnijGUoQTe+5S4nloz/01Ppmu6tG9pqk
-         KpaQ==
-X-Gm-Message-State: AOAM533uMJ4G6nJODgTZT/XPtcE2zNTgQTuv4eX0hSJ9Agq1FXfBE9+7
-        oB2kl2g/1K5H6ygQA9Hx6ixG25bxTAulhUwIkqo=
-X-Google-Smtp-Source: ABdhPJwhAOJXYVol/4VpHOTxMz4Yo+C1dwcXuHEXp2ODMP+aX7JvlnVRMZxUy65rHCvmQ96LCWAZSVAsDE5KZGq4r8k=
-X-Received: by 2002:a25:b203:: with SMTP id i3mr15658989ybj.260.1626473154041;
- Fri, 16 Jul 2021 15:05:54 -0700 (PDT)
+        id S235671AbhGPWf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 18:35:28 -0400
+Received: from novek.ru ([213.148.174.62]:49778 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229823AbhGPWf2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 18:35:28 -0400
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 9EFDD50030A;
+        Sat, 17 Jul 2021 01:30:10 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 9EFDD50030A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1626474612; bh=+lKlOlb1i50NJMpn/sracJ9R1LKoWXDaLxRnyfCVm2M=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Uj5fxuSFyJXX6LE+DpuVGBOBIlDRvx1bhMEfssKK+bvO2TKt6Bxhk4k7ew0k6L91h
+         Tj8I3bHErtnz0U6bu1fO36ui2QL6Lq5kD5bbgBvJqvmW3aXqRPDSzvzprLcrfYQWpZ
+         ydjEO2iTAAQazOszMX4tk62+Li4PZ+8JrzV1f0QM=
+Subject: Re: [PATCH net v2 1/2] udp: check encap socket in __udp_lib_err_encap
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        network dev <netdev@vger.kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+References: <20210716105417.7938-1-vfedorenko@novek.ru>
+ <20210716105417.7938-2-vfedorenko@novek.ru>
+ <CADvbK_eJEY_-4sJM-up_L2G47HqdV2q3XSkexYSm9vDmpmD9pA@mail.gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <bdb405e2-59e8-b75c-2b8a-864019477989@novek.ru>
+Date:   Fri, 16 Jul 2021 23:32:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <1626471813-17736-1-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1626471813-17736-1-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 16 Jul 2021 15:05:43 -0700
-Message-ID: <CAEf4BzZ_2arevAp_qwetCvdMk-gigvPo7tKsb7d0xF-xnezL_w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: clarify/fix unaligned data issues for
- btf typed dump
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Bill Wendling <morbo@google.com>,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CADvbK_eJEY_-4sJM-up_L2G47HqdV2q3XSkexYSm9vDmpmD9pA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 2:44 PM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> If data is packed, data structures can store it outside of usual
-> boundaries.  For example a 4-byte int can be stored on a unaligned
-> boundary in a case like this:
->
-> struct s {
->         char f1;
->         int f2;
-> } __attribute((packed));
->
-> ...the int is stored at an offset of one byte.  Some platforms have
-> problems dereferencing data that is not aligned with its size, and
-> code exists to handle most cases of this for BTF typed data display.
-> However pointer display was missed, and a simple macro to test if
-> "data_is_unaligned(data, data_sz)" would help clarify this code.
->
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->  tools/lib/bpf/btf_dump.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> index 929cf93..9dfe9c1 100644
-> --- a/tools/lib/bpf/btf_dump.c
-> +++ b/tools/lib/bpf/btf_dump.c
-> @@ -1654,6 +1654,8 @@ static int btf_dump_base_type_check_zero(struct btf_dump *d,
->         return 0;
->  }
->
-> +#define data_is_unaligned(data, data_sz)       (((uintptr_t)data) % data_sz)
+On 16.07.2021 19:46, Xin Long wrote:
+> On Fri, Jul 16, 2021 at 6:54 AM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>>
+>> Commit d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
+>> added checks for encapsulated sockets but it broke cases when there is
+>> no implementation of encap_err_lookup for encapsulation, i.e. ESP in
+>> UDP encapsulation. Fix it by calling encap_err_lookup only if socket
+>> implements this method otherwise treat it as legal socket.
+>>
+>> Fixes: d26796ae5894 ("udp: check udp sock encap_type in __udp_lib_err")
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+>> ---
+>>   net/ipv4/udp.c | 23 +++++++++++++++++------
+>>   net/ipv6/udp.c | 23 +++++++++++++++++------
+>>   2 files changed, 34 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+>> index 62cd4cd52e84..963275b94f00 100644
+>> --- a/net/ipv4/udp.c
+>> +++ b/net/ipv4/udp.c
+>> @@ -645,10 +645,12 @@ static struct sock *__udp4_lib_err_encap(struct net *net,
+>>                                           const struct iphdr *iph,
+>>                                           struct udphdr *uh,
+>>                                           struct udp_table *udptable,
+>> +                                        struct sock *sk,
+>>                                           struct sk_buff *skb, u32 info)
+>>   {
+>> +       int (*lookup)(struct sock *sk, struct sk_buff *skb);
+>>          int network_offset, transport_offset;
+>> -       struct sock *sk;
+>> +       struct udp_sock *up;
+>>
+>>          network_offset = skb_network_offset(skb);
+>>          transport_offset = skb_transport_offset(skb);
+>> @@ -659,12 +661,19 @@ static struct sock *__udp4_lib_err_encap(struct net *net,
+>>          /* Transport header needs to point to the UDP header */
+>>          skb_set_transport_header(skb, iph->ihl << 2);
+>>
+>> +       if (sk) {
+>> +               up = udp_sk(sk);
+>> +
+>> +               lookup = READ_ONCE(up->encap_err_lookup);
+>> +               if (!lookup || !lookup(sk, skb))
+>> +                       goto out;
+>> +       }
+>> +
+> Currently SCTP reuses lookup() to handle some of ICMP error packets by itself
+> in lookup(), for these packets it will return 1, in which case we should
+> set sk = NULL, and not let udp4_lib_err() handle these packets again.
+> 
+> Can you change this part to this below?
+> 
+> +       if (sk) {
+> +               up = udp_sk(sk);
 > +
-
-there is no need for macro, please use static function. And
-ptr_is_aligned() is probably a better form:
-
-if (!ptr_is_aligned(data, sz)) {
-    /* handle uncommon case */
-}
-
-ptr_is_aligned() can be probably reused more readily in some other places later.
-
->  static int btf_dump_int_data(struct btf_dump *d,
->                              const struct btf_type *t,
->                              __u32 type_id,
-> @@ -1672,7 +1674,7 @@ static int btf_dump_int_data(struct btf_dump *d,
->         /* handle packed int data - accesses of integers not aligned on
->          * int boundaries can cause problems on some platforms.
->          */
-> -       if (((uintptr_t)data) % sz)
-> +       if (data_is_unaligned(data, sz))
->                 return btf_dump_bitfield_data(d, t, data, 0, 0);
->
->         switch (sz) {
-> @@ -1739,7 +1741,7 @@ static int btf_dump_float_data(struct btf_dump *d,
->         int sz = t->size;
->
->         /* handle unaligned data; copy to local union */
-> -       if (((uintptr_t)data) % sz) {
-> +       if (data_is_unaligned(data, sz)) {
->                 memcpy(&fl, data, sz);
->                 flp = &fl;
->         }
-> @@ -1897,7 +1899,10 @@ static int btf_dump_ptr_data(struct btf_dump *d,
->                               __u32 id,
->                               const void *data)
->  {
-> -       btf_dump_type_values(d, "%p", *(void **)data);
-> +       void *ptrval;
-
-sizeof(void *) could be 4 on the host system and 8 in BTF. If you want
-to preserve the speed, I'd do something like:
-
-if (ptr_is_aligned(data, sizeof(void *)) && sizeof(void *) == d->ptr_sz) {
-    btf_dump_type_values(d, "%p", *(void **)data);
-} else {
-    /* fetch pointer value as unaligned integer */
-    if (d->ptr_sz == 4)
-        printf("0x%x")
-    else
-        printf("0x%llx")
-}
-
-Maybe there is some cleaner way. But that should work, no?
-
+> +               lookup = READ_ONCE(up->encap_err_lookup);
+> +               if (lookup && lookup(sk, skb))
+> +                       sk = NULL;
 > +
-> +       memcpy(&ptrval, data, d->ptr_sz);
-> +       btf_dump_type_values(d, "%p", ptrval);
->         return 0;
->  }
->
-> @@ -1910,7 +1915,7 @@ static int btf_dump_get_enum_value(struct btf_dump *d,
->         int sz = t->size;
->
->         /* handle unaligned enum value */
-> -       if (((uintptr_t)data) % sz) {
-> +       if (data_is_unaligned(data, sz)) {
->                 *value = (__s64)btf_dump_bitfield_get_data(d, t, data, 0, 0);
->                 return 0;
->         }
-> --
-> 1.8.3.1
->
+> +               goto out;
+> +       }
+> +
+> 
+> thanks.
+> 
+
+But we have vxlan and geneve with encap_err_lookup handler enabled and which do 
+not handle ICMP itself, just checks whether socket is correctly selected. Such 
+code could break their implementation
+
+>>          sk = __udp4_lib_lookup(net, iph->daddr, uh->source,
+>>                                 iph->saddr, uh->dest, skb->dev->ifindex, 0,
+>>                                 udptable, NULL);
+>>          if (sk) {
+>> -               int (*lookup)(struct sock *sk, struct sk_buff *skb);
+>> -               struct udp_sock *up = udp_sk(sk);
+>> +               up = udp_sk(sk);
+>>
+>>                  lookup = READ_ONCE(up->encap_err_lookup);
+>>                  if (!lookup || lookup(sk, skb))
+>> @@ -674,6 +683,7 @@ static struct sock *__udp4_lib_err_encap(struct net *net,
+>>          if (!sk)
+>>                  sk = ERR_PTR(__udp4_lib_err_encap_no_sk(skb, info));
+>>
+>> +out:
+>>          skb_set_transport_header(skb, transport_offset);
+>>          skb_set_network_header(skb, network_offset);
+>>
+>> @@ -707,15 +717,16 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
+>>          sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
+>>                                 iph->saddr, uh->source, skb->dev->ifindex,
+>>                                 inet_sdif(skb), udptable, NULL);
+>> +
+>>          if (!sk || udp_sk(sk)->encap_type) {
+>>                  /* No socket for error: try tunnels before discarding */
+>> -               sk = ERR_PTR(-ENOENT);
+>>                  if (static_branch_unlikely(&udp_encap_needed_key)) {
+>> -                       sk = __udp4_lib_err_encap(net, iph, uh, udptable, skb,
+>> +                       sk = __udp4_lib_err_encap(net, iph, uh, udptable, sk, skb,
+>>                                                    info);
+>>                          if (!sk)
+>>                                  return 0;
+>> -               }
+>> +               } else
+>> +                       sk = ERR_PTR(-ENOENT);
+>>
+>>                  if (IS_ERR(sk)) {
+>>                          __ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
+>> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+>> index 0cc7ba531b34..0210ec93d21d 100644
+>> --- a/net/ipv6/udp.c
+>> +++ b/net/ipv6/udp.c
+>> @@ -502,12 +502,14 @@ static struct sock *__udp6_lib_err_encap(struct net *net,
+>>                                           const struct ipv6hdr *hdr, int offset,
+>>                                           struct udphdr *uh,
+>>                                           struct udp_table *udptable,
+>> +                                        struct sock *sk,
+>>                                           struct sk_buff *skb,
+>>                                           struct inet6_skb_parm *opt,
+>>                                           u8 type, u8 code, __be32 info)
+>>   {
+>> +       int (*lookup)(struct sock *sk, struct sk_buff *skb);
+>>          int network_offset, transport_offset;
+>> -       struct sock *sk;
+>> +       struct udp_sock *up;
+>>
+>>          network_offset = skb_network_offset(skb);
+>>          transport_offset = skb_transport_offset(skb);
+>> @@ -518,12 +520,19 @@ static struct sock *__udp6_lib_err_encap(struct net *net,
+>>          /* Transport header needs to point to the UDP header */
+>>          skb_set_transport_header(skb, offset);
+>>
+>> +       if (sk) {
+>> +               up = udp_sk(sk);
+>> +
+>> +               lookup = READ_ONCE(up->encap_err_lookup);
+>> +               if (!lookup || !lookup(sk, skb))
+>> +                       goto out;
+>> +       }
+>> +
+>>          sk = __udp6_lib_lookup(net, &hdr->daddr, uh->source,
+>>                                 &hdr->saddr, uh->dest,
+>>                                 inet6_iif(skb), 0, udptable, skb);
+>>          if (sk) {
+>> -               int (*lookup)(struct sock *sk, struct sk_buff *skb);
+>> -               struct udp_sock *up = udp_sk(sk);
+>> +               up = udp_sk(sk);
+>>
+>>                  lookup = READ_ONCE(up->encap_err_lookup);
+>>                  if (!lookup || lookup(sk, skb))
+>> @@ -535,6 +544,7 @@ static struct sock *__udp6_lib_err_encap(struct net *net,
+>>                                                          offset, info));
+>>          }
+>>
+>> +out:
+>>          skb_set_transport_header(skb, transport_offset);
+>>          skb_set_network_header(skb, network_offset);
+>>
+>> @@ -558,16 +568,17 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+>>
+>>          sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
+>>                                 inet6_iif(skb), inet6_sdif(skb), udptable, NULL);
+>> +
+>>          if (!sk || udp_sk(sk)->encap_type) {
+>>                  /* No socket for error: try tunnels before discarding */
+>> -               sk = ERR_PTR(-ENOENT);
+>>                  if (static_branch_unlikely(&udpv6_encap_needed_key)) {
+>>                          sk = __udp6_lib_err_encap(net, hdr, offset, uh,
+>> -                                                 udptable, skb,
+>> +                                                 udptable, sk, skb,
+>>                                                    opt, type, code, info);
+>>                          if (!sk)
+>>                                  return 0;
+>> -               }
+>> +               } else
+>> +                       sk = ERR_PTR(-ENOENT);
+>>
+>>                  if (IS_ERR(sk)) {
+>>                          __ICMP6_INC_STATS(net, __in6_dev_get(skb->dev),
+>> --
+>> 2.18.4
+>>
+
