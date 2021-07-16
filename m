@@ -2,109 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A653CBDC9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B22CB3CBDD0
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232956AbhGPUcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 16:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbhGPUcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 16:32:06 -0400
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE31C06175F
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 13:29:10 -0700 (PDT)
-Received: by mail-oi1-x236.google.com with SMTP id y66so2925940oie.7
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 13:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RwzRqmMVs83P7rbI58217tVlUlaXFgFfHAAgk5vq3qY=;
-        b=lMO+Bsd1L8p4HYAfngtw3CO3dY1Oz9NAygqEDu7e/JPAF8ZZwR/gHP8PUbRSQZjD6g
-         4U5xrvaB7naAc4iJfNNl5Go3bjy1QhCfDT6y84cofGMtqD+EtIEsOMizofsHO34VgyLW
-         oUr3oukNtaUTc3uG0H0vHNByY1RcNVZbHxdr4UVgUXxjo7/epXdGYKAEy/Ykl4cQ2gq9
-         dTuQ4JFtIFURiAp2OO+7o8IBrO8kOOkBw0CvgcwamMxV9+CqH8+/lsqSqYFxFLtd0LHJ
-         THa+Y0c8cECuevM0VkBp2bU1jXMmh+rtuZdjesePpX5JVNKXlt6Jx8vJShJWT34FWGEj
-         lhoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=RwzRqmMVs83P7rbI58217tVlUlaXFgFfHAAgk5vq3qY=;
-        b=chFwDK9t3wZANflEpgD0Lqeh5HexI0ViTQ1Bh5dKpAGQk2NY/tli+CTOZGkJ/UxvQ5
-         y6jE0xzqpCsOUzWr5W0ZO2CgCNEeDndwPNe7q6STkwuiYURsh7t0A0Gd9eTMy8+KGJv1
-         u4LvArrgyq1umPYj1LCWxl2mAzMcsVcXB3I60X10jrVcPR14Vn7wUprsrW+FxDcedUQt
-         4raRpHr0h0/vuxkyN8rlny3eK22DPDdvYBPrX5/x+D9a4K5j1sjmEdY+BzuS+9WSuPEa
-         ENX3Nkhn5+TqQn/zp+MyHy2ATB1qceN7KRaIZnFCMdEezclXjXauScuro5xFe8iFn1dP
-         9Agg==
-X-Gm-Message-State: AOAM532taH4cwv4SzzOtsjqOgkgU8e7qEnFLLq/YLSdrT8WS8P0CjU39
-        jUzD+7zuUKBvhD1axYL0hrJWGNXHOg==
-X-Google-Smtp-Source: ABdhPJxa1RtpqFwsghir/20HluNoWZoMGoGQtjlj7mtaxRtDkKg238mSEkvxrQj8ztsu0DMZyvKl1A==
-X-Received: by 2002:aca:31ca:: with SMTP id x193mr9171457oix.84.1626467349579;
-        Fri, 16 Jul 2021 13:29:09 -0700 (PDT)
-Received: from serve.minyard.net ([47.184.156.158])
-        by smtp.gmail.com with ESMTPSA id w19sm2172664ooj.39.2021.07.16.13.29.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jul 2021 13:29:09 -0700 (PDT)
-Sender: Corey Minyard <tcminyard@gmail.com>
-Received: from t560.minyard.net (unknown [IPv6:2001:470:b8f6:1b:6dd4:8f1:f5bf:7fdf])
-        by serve.minyard.net (Postfix) with ESMTPA id F10E21800E8;
-        Fri, 16 Jul 2021 20:29:07 +0000 (UTC)
-From:   minyard@acm.org
-To:     netdev@vger.kernel.org
-Cc:     Corey Minyard <cminyard@mvista.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] ipsec: Remove unneeded extra variable in esp4 esp_ssg_unref()
-Date:   Fri, 16 Jul 2021 15:28:46 -0500
-Message-Id: <20210716202846.257656-1-minyard@acm.org>
-X-Mailer: git-send-email 2.25.1
+        id S230256AbhGPUdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 16:33:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45730 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229896AbhGPUdE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 16:33:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id EEC96613D0;
+        Fri, 16 Jul 2021 20:30:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626467405;
+        bh=5vz4OE2lxmunVEJ0iRMslkulT3lfhyspHouxFSewe24=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=EeJcC6N0Wmxlp5m10D6Uf4TErhuwrZDW3RedDr4KU5n0x7Xvi2R7KqDBBCUAiVWrD
+         lNKOTnBVSO5vGKuxYAQa/KNVHCLa5+08AziTcMJ/UkKZhlsDhSD+F2Q3VcjPTRSOpP
+         DJ0O3n0m0myDB9StUKWSjB/2429cNySdw0nOjlkAbPS2MUTh8cXjJC8B5GBF5A+JSt
+         35ZdTlMygWQerXD/1b+qC0aPzfLWUQp62GMlmVeDxQxO5DrhMhNK+kTLQpvp3jEADu
+         4cR3ZzTyhTtKVR/GMcAbD+8xv48lg8JnTY2FojeVQ3pQNRYSV/wNtTzmUrJ1cgo7l8
+         IiX86Zgz5T7ww==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E0A9E60A4E;
+        Fri, 16 Jul 2021 20:30:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162646740491.5067.9662963030907857977.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Jul 2021 20:30:04 +0000
+References: <20210716153641.4678-1-ericwouds@gmail.com>
+In-Reply-To: <20210716153641.4678-1-ericwouds@gmail.com>
+To:     Eric Woudstra <ericwouds@gmail.com>
+Cc:     sean.wang@mediatek.com, Landen.Chao@mediatek.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+Hello:
 
-It's assigned twice, but only used to calculate the size of the
-structure it points to.  Just remove it and take a sizeof the
-actual structure.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
----
- net/ipv4/esp4.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On Fri, 16 Jul 2021 17:36:39 +0200 you wrote:
+> From: Eric Woudstra <ericwouds@gmail.com>
+> 
+> According to reference guides mt7530 (mt7620) and mt7531:
+> 
+> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
+> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
+> will be used to read/write the address table.
+> 
+> [...]
 
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index a09e36c4a413..851f542928a3 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -97,7 +97,6 @@ static inline struct scatterlist *esp_req_sg(struct crypto_aead *aead,
- 
- static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- {
--	struct esp_output_extra *extra = esp_tmp_extra(tmp);
- 	struct crypto_aead *aead = x->data;
- 	int extralen = 0;
- 	u8 *iv;
-@@ -105,9 +104,8 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- 	struct scatterlist *sg;
- 
- 	if (x->props.flags & XFRM_STATE_ESN)
--		extralen += sizeof(*extra);
-+		extralen += sizeof(struct esp_output_extra);
- 
--	extra = esp_tmp_extra(tmp);
- 	iv = esp_tmp_iv(aead, tmp, extralen);
- 	req = esp_tmp_req(aead, iv);
- 
--- 
-2.25.1
+Here is the summary with links:
+  - mt7530 fix mt7530_fdb_write vid missing ivl bit
+    https://git.kernel.org/netdev/net/c/11d8d98cbeef
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
