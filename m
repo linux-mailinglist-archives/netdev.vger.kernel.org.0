@@ -2,63 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE98C3CB66A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 12:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E2A3CB66C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 12:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238646AbhGPKzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 06:55:24 -0400
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:45854 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232214AbhGPKzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 06:55:22 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UfyVi1S_1626432729;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UfyVi1S_1626432729)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 16 Jul 2021 18:52:26 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     saeedm@nvidia.com
-Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] net/mlx5: Fix missing error code in  mlx5_devlink_eswitch_inline_mode_set()
-Date:   Fri, 16 Jul 2021 18:52:08 +0800
-Message-Id: <1626432728-118051-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S232146AbhGPK5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 06:57:21 -0400
+Received: from novek.ru ([213.148.174.62]:42354 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231880AbhGPK5U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 06:57:20 -0400
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 1429050030A;
+        Fri, 16 Jul 2021 13:52:05 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 1429050030A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1626432726; bh=tm9yU/BljWD6hu9WtZ1TCgeB/JvGwt9BIEWMshOsThI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SgbpfFWLO5Wnk4iKe26XRjFf8i/LOwiM3gIL/1sqYzrG5WY3h5bTLix7iuSYMLG9S
+         9WXOg5SNRITbkfKF9subt4voSFKXDFU7Y154bbR4HdVpF17BU7eQgXOOOvq3z5nl7Q
+         f539S38NBze4btwNclvpN9bs0cUEIuVeamS+h6W4=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net v2 0/2] Fix PMTU for ESP-in-UDP encapsulation
+Date:   Fri, 16 Jul 2021 13:54:15 +0300
+Message-Id: <20210716105417.7938-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.18.4
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The error code is missing in this code scenario, add the error code
-'-EINVAL' to the return value 'err'.
+Bug 213669 uncovered regression in PMTU discovery for UDP-encapsulated
+routes and some incorrect usage in udp tunnel fields. This series fixes
+problems and also adds such case for selftests
 
-Eliminate the follow smatch warning:
+v2:
+ - remove refactor code that was in first patch
+ - move checking logic to __udp{4,6}_lib_err_encap
+ - add more tests, especially routed configuration
 
-vers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:3083
-mlx5_devlink_eswitch_inline_mode_set() warn: missing error code 'err'.
+Vadim Fedorenko (2):
+  udp: check encap socket in __udp_lib_err_encap
+  selftests: net: add ESP-in-UDP PMTU test
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv4/udp.c                        |  23 ++-
+ net/ipv6/udp.c                        |  23 ++-
+ tools/testing/selftests/net/nettest.c |  55 ++++++-
+ tools/testing/selftests/net/pmtu.sh   | 212 +++++++++++++++++++++++++-
+ 4 files changed, 294 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 7579f34..b38b6c1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -3079,8 +3079,10 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
- 
- 	switch (MLX5_CAP_ETH(dev, wqe_inline_mode)) {
- 	case MLX5_CAP_INLINE_MODE_NOT_REQUIRED:
--		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE)
-+		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE) {
-+			err = -EINVAL;
- 			goto out;
-+		}
- 		fallthrough;
- 	case MLX5_CAP_INLINE_MODE_L2:
- 		NL_SET_ERR_MSG_MOD(extack, "Inline mode can't be set");
 -- 
-1.8.3.1
+2.18.4
 
