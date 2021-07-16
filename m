@@ -2,154 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04D903CB795
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 14:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23CC53CB80D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 15:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239761AbhGPM6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 08:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239708AbhGPM6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 08:58:51 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3AAC06175F
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 05:55:55 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id g22so3934254lfu.0
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 05:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7YVe12K3kAf74Lw6w7FM9BISBfQ+xdkVlpPe2xtnZxw=;
-        b=S1/f9dxk1+qzNpT4FBDWITbM6Bgtq5eX45j8wxtciNfUAcIAlC1LzMee1hh0QkZ0HY
-         lg+mFnaoj2vPn6A8SZR+yhktxiJ770BndjMgvWPgp2bjQDPDLKG7wc5ZgxKBf6/OoOB8
-         MwrpPg4hSlzZp0AdZGujKVaYhlCIkkA23YJabdnHyafUisZIxmQhpcTlK7s4GqSN7vDu
-         v0ZIav43+PieP8CTwmsV1uh8ZK+Tw6wObkgvCEoxiR2Ko17xbGGEdqkwAh8OfvS/+QMM
-         QS/BlBO10sHKcfRLUWuvikVte6UouWZydyHvyLNMH4rjhNwyFsM/fw9GUf8aR2RX7lqs
-         MIkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7YVe12K3kAf74Lw6w7FM9BISBfQ+xdkVlpPe2xtnZxw=;
-        b=lxYsOAppFT3FgHTTlZoGzhPI7TKJ+ES90EBPtTl+a1DzMmH5/61RgvnzvlSSxifhqZ
-         TknqkjzcKeJRv1q8C7Ko3OmvR3yPgYVvN+MV39nd2Ok46/zwyKu7aTXfsDSp9IkTvicA
-         lQdCrZGB7WMD+FXI7PCqkeFb//OytVeYxSKweYpAgNwLCXYGol3/BH6sFRbSQhkQ7rbU
-         pPqiHA4yYxKabo7pDDa2Z7KBP6QeP9kb2d+ZMSQu4khKEtIQZIDcWiJuCX0UjzTzA466
-         aw5MT2wwIU6j0wQJq+TMRlTUz3oOlKeCDVKQTkD42uYVuTeYLUqUWk4UkKQSld6gWHxv
-         0rpA==
-X-Gm-Message-State: AOAM5334B7uA+ZsgqTZU/eCfRYpVLvm7uOf/d4QpECfSwRRy8tLPiS0/
-        EGeZFlmxhFjS/0bkysUMQsXaBNt227UzrYG+5DzRQQ==
-X-Google-Smtp-Source: ABdhPJx+HIGg3Y9xkRL86NYygrweddq6ORDe7x5BfHspoT3DPnWcPBwHfdoy5Z5CHNMssXXoldgyVbAxDgfFUDKaPxA=
-X-Received: by 2002:ac2:4d86:: with SMTP id g6mr7369704lfe.549.1626440153821;
- Fri, 16 Jul 2021 05:55:53 -0700 (PDT)
+        id S240066AbhGPNuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 09:50:18 -0400
+Received: from mga05.intel.com ([192.55.52.43]:31574 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232808AbhGPNuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 09:50:14 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10046"; a="296375333"
+X-IronPort-AV: E=Sophos;i="5.84,245,1620716400"; 
+   d="scan'208";a="296375333"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 06:47:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,245,1620716400"; 
+   d="scan'208";a="506899157"
+Received: from peileeli.png.intel.com ([172.30.240.12])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Jul 2021 06:47:16 -0700
+From:   Ling Pei Lee <pei.lee.ling@intel.com>
+To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Marek Behun <marek.behun@nic.cz>, weifeng.voon@intel.com,
+        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
+        pei.lee.ling@intel.com
+Subject: [net-next,resend,V3] net: phy: marvell10g: enable WoL for 88X3310 and 88E2110
+Date:   Fri, 16 Jul 2021 21:46:45 +0800
+Message-Id: <20210716134645.2249943-1-pei.lee.ling@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <8664122a-99d3-7199-869a-781b21b7e712@virtuozzo.com>
- <919bd022-075e-98a7-cefb-89b5dee80ae8@virtuozzo.com> <CALvZod5Kxrj3T99CEd8=OaoW8CwKtHOVhno58_nNOqjR2y=x6Q@mail.gmail.com>
- <3a60b936-b618-6cef-532a-97bbdb957fb1@virtuozzo.com>
-In-Reply-To: <3a60b936-b618-6cef-532a-97bbdb957fb1@virtuozzo.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Fri, 16 Jul 2021 05:55:42 -0700
-Message-ID: <CALvZod66KF-8xKB1dyY2twizDE=svE8iXT_nqvsrfWg1a92f4A@mail.gmail.com>
-Subject: Re: [PATCH v4 00/16] memcg accounting from OpenVZ
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     Tejun Heo <tj@kernel.org>, Cgroups <cgroups@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <guro@fb.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 9:11 PM Vasily Averin <vvs@virtuozzo.com> wrote:
->
-> On 7/15/21 8:11 PM, Shakeel Butt wrote:
-> > On Tue, Apr 27, 2021 at 11:51 PM Vasily Averin <vvs@virtuozzo.com> wrote:
-> >>
-> >> OpenVZ uses memory accounting 20+ years since v2.2.x linux kernels.
-> >> Initially we used our own accounting subsystem, then partially committed
-> >> it to upstream, and a few years ago switched to cgroups v1.
-> >> Now we're rebasing again, revising our old patches and trying to push
-> >> them upstream.
-> >>
-> >> We try to protect the host system from any misuse of kernel memory
-> >> allocation triggered by untrusted users inside the containers.
-> >>
-> >> Patch-set is addressed mostly to cgroups maintainers and cgroups@ mailing
-> >> list, though I would be very grateful for any comments from maintainersi
-> >> of affected subsystems or other people added in cc:
-> >>
-> >> Compared to the upstream, we additionally account the following kernel objects:
-> >> - network devices and its Tx/Rx queues
-> >> - ipv4/v6 addresses and routing-related objects
-> >> - inet_bind_bucket cache objects
-> >> - VLAN group arrays
-> >> - ipv6/sit: ip_tunnel_prl
-> >> - scm_fp_list objects used by SCM_RIGHTS messages of Unix sockets
-> >> - nsproxy and namespace objects itself
-> >> - IPC objects: semaphores, message queues and share memory segments
-> >> - mounts
-> >> - pollfd and select bits arrays
-> >> - signals and posix timers
-> >> - file lock
-> >> - fasync_struct used by the file lease code and driver's fasync queues
-> >> - tty objects
-> >> - per-mm LDT
-> >>
-> >> We have an incorrect/incomplete/obsoleted accounting for few other kernel
-> >> objects: sk_filter, af_packets, netlink and xt_counters for iptables.
-> >> They require rework and probably will be dropped at all.
-> >>
-> >> Also we're going to add an accounting for nft, however it is not ready yet.
-> >>
-> >> We have not tested performance on upstream, however, our performance team
-> >> compares our current RHEL7-based production kernel and reports that
-> >> they are at least not worse as the according original RHEL7 kernel.
-> >
-> > Hi Vasily,
-> >
-> > What's the status of this series? I see a couple patches did get
-> > acked/reviewed. Can you please re-send the series with updated ack
-> > tags?
->
-> Technically my patches does not have any NAKs. Practically they are still them merged.
-> I've expected Michal will push it, but he advised me to push subsystem maintainers.
-> I've asked Tejun to pick up the whole patch set and I'm waiting for his feedback right now.
->
-> I can resend patch set once again, with collected approval and with rebase to v5.14-rc1.
-> However I do not understand how it helps to push them if patches should be processed through
-> subsystem maintainers. As far as I understand I'll need to split this patch set into
-> per-subsystem pieces and sent them to corresponded maintainers.
->
+From: Voon Weifeng <weifeng.voon@intel.com>
 
-Usually these kinds of patches (adding memcg accounting) go through mm
-tree but if there are no dependencies between the patches and a
-consensus that each subsystem maintainer picks the corresponding patch
-then that is fine too.
+Implement Wake-on-LAN feature for 88X3310 and 88E2110.
+
+This is done by enabling WoL interrupt and WoL detection and
+configuring MAC address into WoL magic packet registers
+
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Ling Pei Lee <pei.lee.ling@intel.com>
+---
+Change Log:
+ V3: 
+ (1) Update the commit message which is suggested by Marek.
+ (2) Change patch title.
+ (3) Remove MV_V2_WOL_STS register definition where it is not used.
+ (4) Rename MV_V2_WOL_INTR_EN, MV_V2_WOL_CLEAR_STS and 
+     MV_V2_WOL_MAGIC_PKT_EN.
+ (5) Move change log to signedoff below.
+ (6) Fix indention problem in code.
+ (7) Reorganize newly added register definition in recommeded order.
+ (8) Change function name from mv2110{get|set}_wol to mv3110{get|set}_wol.
+ (9) Fix mv3110{get|set}_wol characters exceed 80.
+ V2:
+ (1) Reviewer Marek request to rorganize code to readable way.
+ (2) Reviewer Rusell request to put phy_clear_bits_mmd() outside of if(){}else{}
+     and modify return ret to return phy_clear_bits_mmd().
+ (3) Reviewer Rusell request to add return on phy_read_mmd() in set_wol().
+ (4) Reorganize register layout to be put before MV_V2_TEMP_CTRL.
+ (5) Add the .{get|set}_wol for 88E3110 too as per feedback from Russell.
+
+ drivers/net/phy/marvell10g.c | 89 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 53a433442803..0b7cae118ad7 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -28,6 +28,7 @@
+ #include <linux/marvell_phy.h>
+ #include <linux/phy.h>
+ #include <linux/sfp.h>
++#include <linux/netdevice.h>
+ 
+ #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
+ #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
+@@ -104,6 +105,16 @@ enum {
+ 	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_NO_SGMII_AN	= 0x5,
+ 	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH	= 0x6,
+ 	MV_V2_33X0_PORT_CTRL_MACTYPE_USXGMII			= 0x7,
++	MV_V2_PORT_INTR_STS     = 0xf040,
++	MV_V2_PORT_INTR_MASK    = 0xf043,
++	MV_V2_PORT_INTR_STS_WOL_EN      = BIT(8),
++	MV_V2_MAGIC_PKT_WORD0   = 0xf06b,
++	MV_V2_MAGIC_PKT_WORD1   = 0xf06c,
++	MV_V2_MAGIC_PKT_WORD2   = 0xf06d,
++	/* Wake on LAN registers */
++	MV_V2_WOL_CTRL          = 0xf06e,
++	MV_V2_WOL_CTRL_CLEAR_STS        = BIT(15),
++	MV_V2_WOL_CTRL_MAGIC_PKT_EN     = BIT(0),
+ 	/* Temperature control/read registers (88X3310 only) */
+ 	MV_V2_TEMP_CTRL		= 0xf08a,
+ 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
+@@ -1020,6 +1031,80 @@ static int mv2111_match_phy_device(struct phy_device *phydev)
+ 	return mv211x_match_phy_device(phydev, false);
+ }
+ 
++static void mv3110_get_wol(struct phy_device *phydev,
++			   struct ethtool_wolinfo *wol)
++{
++	int ret;
++
++	wol->supported = WAKE_MAGIC;
++	wol->wolopts = 0;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
++	if (ret < 0)
++		return;
++
++	if (ret & MV_V2_WOL_CTRL_MAGIC_PKT_EN)
++		wol->wolopts |= WAKE_MAGIC;
++}
++
++static int mv3110_set_wol(struct phy_device *phydev,
++			  struct ethtool_wolinfo *wol)
++{
++	int ret;
++
++	if (wol->wolopts & WAKE_MAGIC) {
++		/* Enable the WOL interrupt */
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       MV_V2_PORT_INTR_MASK,
++				       MV_V2_PORT_INTR_STS_WOL_EN);
++		if (ret < 0)
++			return ret;
++
++		/* Store the device address for the magic packet */
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD2,
++				    ((phydev->attached_dev->dev_addr[5] << 8) |
++				    phydev->attached_dev->dev_addr[4]));
++		if (ret < 0)
++			return ret;
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD1,
++				    ((phydev->attached_dev->dev_addr[3] << 8) |
++				    phydev->attached_dev->dev_addr[2]));
++		if (ret < 0)
++			return ret;
++
++		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
++				    MV_V2_MAGIC_PKT_WORD0,
++				    ((phydev->attached_dev->dev_addr[1] << 8) |
++				    phydev->attached_dev->dev_addr[0]));
++		if (ret < 0)
++			return ret;
++
++		/* Clear WOL status and enable magic packet matching */
++		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
++				       MV_V2_WOL_CTRL,
++				       MV_V2_WOL_CTRL_MAGIC_PKT_EN |
++				       MV_V2_WOL_CTRL_CLEAR_STS);
++		if (ret < 0)
++			return ret;
++	} else {
++		/* Disable magic packet matching & reset WOL status bit */
++		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
++				     MV_V2_WOL_CTRL,
++				     MV_V2_WOL_CTRL_MAGIC_PKT_EN,
++				     MV_V2_WOL_CTRL_CLEAR_STS);
++		if (ret < 0)
++			return ret;
++	}
++
++	/* Reset the clear WOL status bit as it does not self-clear */
++	return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
++				  MV_V2_WOL_CTRL,
++				  MV_V2_WOL_CTRL_CLEAR_STS);
++}
++
+ static struct phy_driver mv3310_drivers[] = {
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88X3310,
+@@ -1039,6 +1124,8 @@ static struct phy_driver mv3310_drivers[] = {
+ 		.set_tunable	= mv3310_set_tunable,
+ 		.remove		= mv3310_remove,
+ 		.set_loopback	= genphy_c45_loopback,
++		.get_wol	= mv3110_get_wol,
++		.set_wol	= mv3110_set_wol,
+ 	},
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88X3310,
+@@ -1076,6 +1163,8 @@ static struct phy_driver mv3310_drivers[] = {
+ 		.set_tunable	= mv3310_set_tunable,
+ 		.remove		= mv3310_remove,
+ 		.set_loopback	= genphy_c45_loopback,
++		.get_wol	= mv3110_get_wol,
++		.set_wol	= mv3110_set_wol,
+ 	},
+ 	{
+ 		.phy_id		= MARVELL_PHY_ID_88E2110,
+-- 
+2.25.1
+
