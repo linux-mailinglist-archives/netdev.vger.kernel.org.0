@@ -2,117 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED043CBA1D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0433CBA2A
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240696AbhGPPyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:54:33 -0400
-Received: from ale.deltatee.com ([204.191.154.188]:56566 "EHLO
-        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233725AbhGPPyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:54:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=CDFVzQSWuNRMGCf8MH35qzWG3e/KgXu0vrM/hkxVtvs=; b=mLkS+CIUjmZtZIofu2VtxU+2zv
-        ESag6YCC3FQVhKXtDCa1jV1netTgdUXUztVPPGChwTIcVS4TUveJ9HYi1gbYq6ySndWzDbxjYynN2
-        Q+0fhGAbK/oCC+7TAtGGoBVzxEL9mdK5/aGjYYSgqSRE9StHKg+z45evhQU3zEXNh9wgoBwDgt8mQ
-        mP5nB0+PJArEGN2QHzIzyD6UeLf8CSW1Vol3eQkbFSjH6HKtqQkH7fMe3Vxe9iw2oaQw+hEKZPfvC
-        yjJ4t1HF61CNTFOpopiux/NmmEIdno6P4nmXqd/lkJqgMKjpZs9iD8rOksQyuaLiTtn2Ll+/aeIbF
-        rgmEMIBw==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtp (Exim 4.92)
-        (envelope-from <logang@deltatee.com>)
-        id 1m4Q7f-0003BA-7d; Fri, 16 Jul 2021 09:51:32 -0600
-To:     Dongdong Liu <liudongdong3@huawei.com>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     hch@infradead.org, kw@linux.com, linux-pci@vger.kernel.org,
-        rajur@chelsio.com, hverkuil-cisco@xs4all.nl,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org
-References: <20210715172336.GA1972959@bjorn-Precision-5520>
- <db506d81-3cb9-4cdc-fb4a-f2d28587b9b2@huawei.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <dcad182a-fafc-39ad-b1f2-8ed86f3634d9@deltatee.com>
-Date:   Fri, 16 Jul 2021 09:51:28 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S241044AbhGPP5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:57:43 -0400
+Received: from mout.gmx.net ([212.227.17.21]:36113 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235486AbhGPP5m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 11:57:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1626450862;
+        bh=ksXNeWjE9mhpCKojHZGUGRXqHprFXeYao0Gn/NsBK8U=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=i9P02b+kqG0pOmEn2zEjkJQdcLNp67BynztKujypNcVILLZ3O6Crhk6ucIGnpUceP
+         6MWHCw7leFwTBh0eV7ndUEr9Dv2lLVKbYIDCAY8Id0T0tD7KHxjoN1hGrcNvjXlx61
+         jxw49BlW3t9wHw7ft6RIycbUr1m3eXnHuvxITeug=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([83.52.228.41]) by mail.gmx.net
+ (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
+ 1M7sDq-1m0aQ32sx0-005368; Fri, 16 Jul 2021 17:54:21 +0200
+From:   Len Baker <len.baker@gmx.com>
+To:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Len Baker <len.baker@gmx.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Pkshih <pkshih@realtek.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH v2] rtw88: Fix out-of-bounds write
+Date:   Fri, 16 Jul 2021 17:53:11 +0200
+Message-Id: <20210716155311.5570-1-len.baker@gmx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <db506d81-3cb9-4cdc-fb4a-f2d28587b9b2@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-media@vger.kernel.org, hverkuil-cisco@xs4all.nl, rajur@chelsio.com, linux-pci@vger.kernel.org, kw@linux.com, hch@infradead.org, helgaas@kernel.org, liudongdong3@huawei.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.2
-Subject: Re: [PATCH V5 4/6] PCI: Enable 10-Bit tag support for PCIe Endpoint
- devices
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:IjyohTEALGQ+L7Bvo6QDJsF/6QSuDrYezBtLbESGF0csYR5NTV1
+ NHKHPwx93NIqHuaFGJK6Xxmba5c+bblv656SSXc3jYDWfZFLcyab2HAzJWRCp7PJKTP9UkV
+ BoN9LXhGadp2OgHbRROuyjQWMzZ6FMCar3G+PvQy4AZiAoV2kPxoQaC8whYpst2wHD8zzME
+ gt0E/C9LBYM1vHXPh+LDg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JiOZJXCc/74=:eaIqEpLHflGIBNOan0ZdFj
+ KEiyJRXY+KkmJfWFBEho7QEAYeq0e+lL1VMPwfidouDM5RYQPirB1Rg8srgbdWCyJ+nFPKWJv
+ cVz871PMUU4NW4gTox5hKHvgJVqDMbORETcFOKeWRD7cTcbvEDxrAKnDqfChvQ5Z0+edjj1MG
+ M3RhzAOIpouLAuG92pK/TS4IJNxPa1ScE7SumPPNfQOJXwi910yZVJswAQrm+aB8ZHSOWh/X+
+ B+mJTy68igW99BfQmzCPYOzMqq6XUtWDT0mFDOCvA8xD31jU1lRaSTxut1R4zdaMLxAFc6CIu
+ 9prVs2ya8CBLgPdYvnW4xwBo8HZYERDZEk3QpwzWWNdrw4ClwuV5VF9dJvVzi88EKnnbEh1ZX
+ nXATaRUVMuoavJa7jLaYNyXCcWJij1nR7vfJBMo7otLqHsIW81bwksxoPyCHoHOjwJnWYMFKD
+ kLkOwEH/mokutu3fWlxqgXM4SG0BpSQdKGvBiIG4v2S6qV3Q+cFQmmj5xyq7oBHy2MsqH9lws
+ AAMbRNgfNUzEFPrpPc6Io82oZsRD+SRlCAtxADxBweMyjtlabSvmz8MtUgIN3xp2IjQB9dz9+
+ Cbml35Yqh4e8cPvjYm9GanlZD3wEGQln5YdDX8FOmzz11bxmvueXrNDTf8uvmvAD2LmPVsWuX
+ 5dEqwKeJebuNVRhB8voIvOJ/jQ7kWA/os+8U89J0o9rRe5c2AJWBOitNdWRBY67RQez57Bi0w
+ GPxpG/yP52e7TOJm99LnJEuBoyrhqNQ3x6zl4XLlLMdUXudjIWEUxpAO4SOvt0+BZByk2y+Ll
+ LdZjRA8U4tu4/bqQx0IkPVmPHWkmckeXbKaxwYBfajJYYI+yy6se621PuEx8lFi6iOE8sli0e
+ IEaZILITreJux6HiLlPIdrYB7ABg//82xa7y7jQ6lBKcvV41Wrb2TiabQOViP5d3tIsyxmnyR
+ Z8NwNu27xO5dTKIRfhVtWXIK9jxESuO09+EO8nKCYKz6aOUVwI+hj4pM9slW8aTxl80f1ysTK
+ V0TGNuuRoSE8wjNqZnd80hlE1fB8bLNTB7wPg9Wde8z/giYFzfTU5GeYLGj3HYQMUpamTbRAE
+ yd1SLkk3a3GDxYJJbnMtPCt+GEhdUHw4Ymp
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In the rtw_pci_init_rx_ring function the "if (len > TRX_BD_IDX_MASK)"
+statement guarantees that len is less than or equal to GENMASK(11, 0) or
+in other words that len is less than or equal to 4095. However the
+rx_ring->buf has a size of RTK_MAX_RX_DESC_NUM (defined as 512). This
+way it is possible an out-of-bounds write in the for statement due to
+the i variable can exceed the rx_ring->buff size.
 
+However, this overflow never happens due to the rtw_pci_init_rx_ring is
+only ever called with a fixed constant of RTK_MAX_RX_DESC_NUM. But it is
+better to be defensive in this case and add a new check to avoid
+overflows if this function is called in a future with a value greater
+than 512.
 
-On 2021-07-16 5:12 a.m., Dongdong Liu wrote:
-> Hi Bjorn
-> 
-> Many thanks for your review.
-> 
-> On 2021/7/16 1:23, Bjorn Helgaas wrote:
->> [+cc Logan]
->>
->> On Mon, Jun 21, 2021 at 06:27:20PM +0800, Dongdong Liu wrote:
->>> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
->>> field size from 8 bits to 10 bits.
->>>
->>> For platforms where the RC supports 10-Bit Tag Completer capability,
->>> it is highly recommended for platform firmware or operating software
->>
->> Recommended by whom?  If the spec recommends it, we should provide the
->> citation.
-> PCIe spec 5.0 r1.0 section 2.2.6.2 IMPLEMENTATION NOTE says that.
-> Will fix.
->>
->>> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
->>> bit automatically in Endpoints with 10-Bit Tag Requester capability. This
->>> enables the important class of 10-Bit Tag capable adapters that send
->>> Memory Read Requests only to host memory.
->>
->> What is the implication for P2PDMA?  What happens if we enable 10-bit
->> tags for device A, and A generates Mem Read Requests to device B,
->> which does not support 10-bit tags?
-> PCIe spec 5.0 r1.0 section 2.2.6.2 says
-> If an Endpoint supports sending Requests to other Endpoints (as opposed 
-> to host memory), the Endpoint must not send 10-Bit Tag Requests to 
-> another given Endpoint unless an implementation-specific mechanism 
-> determines that the Endpoint supports 10-Bit Tag Completer capability. 
-> Not sending 10-Bit Tag Requests to other Endpoints at all
-> may be acceptable for some implementations. More sophisticated 
-> mechanisms are outside the scope of this specification.
-> 
-> Not sending 10-Bit Tag Requests to other Endpoints at all seems simple.
-> Add kernel parameter pci=pcie_bus_peer2peer when boot kernel with 
-> P2PDMA, then do not config 10-BIT Tag.
-> 
-> if (pcie_bus_config != PCIE_BUS_PEER2PEER)
-> 	pci_configure_10bit_tags(dev);
-> 
-> Bjorn and Logan, any suggestion?
+Cc: stable@vger.kernel.org
+Addresses-Coverity-ID: 1461515 ("Out-of-bounds write")
+Fixes: e3037485c68ec ("rtw88: new Realtek 802.11ac driver")
+Signed-off-by: Len Baker <len.baker@gmx.com>
+=2D--
+Changelog v1 -> v2
+- Remove the macro ARRAY_SIZE from the for loop (Pkshih, Brian Norris).
+- Add a new check for the len variable (Pkshih, Brian Norris).
 
-I think we need a check in the P2PDMA code to ensure that a device with
-10bit tags doesn't interact with a device that has no 10bit tags. Before
-that happens, the kernel should emit a warning saying to enable a
-specific kernel parameter.
+ drivers/net/wireless/realtek/rtw88/pci.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Though a parameter with a bit more granularity might be appropriate. See
-what was done for disable_acs_redir where it affects only the devices
-specified in the list.
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wirele=
+ss/realtek/rtw88/pci.c
+index e7d17ab8f113..53dc90276693 100644
+=2D-- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -273,6 +273,11 @@ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwde=
+v,
+ 		return -EINVAL;
+ 	}
 
-Thanks,
++	if (len > ARRAY_SIZE(rx_ring->buf)) {
++		rtw_err(rtwdev, "len %d exceeds maximum RX ring buffer\n", len);
++		return -EINVAL;
++	}
++
+ 	head =3D dma_alloc_coherent(&pdev->dev, ring_sz, &dma, GFP_KERNEL);
+ 	if (!head) {
+ 		rtw_err(rtwdev, "failed to allocate rx ring\n");
+=2D-
+2.25.1
 
-Logan
