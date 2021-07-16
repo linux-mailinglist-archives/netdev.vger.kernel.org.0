@@ -2,177 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3CBB3CB698
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 13:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2189B3CB6CF
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 13:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbhGPLPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 07:15:15 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15027 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231918AbhGPLPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 07:15:14 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GR7ls5x07zZqfH;
-        Fri, 16 Jul 2021 19:08:57 +0800 (CST)
-Received: from [10.67.103.235] (10.67.103.235) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 16 Jul 2021 19:12:16 +0800
-Subject: Re: [PATCH V5 4/6] PCI: Enable 10-Bit tag support for PCIe Endpoint
- devices
-To:     Bjorn Helgaas <helgaas@kernel.org>
-References: <20210715172336.GA1972959@bjorn-Precision-5520>
-CC:     <hch@infradead.org>, <kw@linux.com>, <linux-pci@vger.kernel.org>,
-        <rajur@chelsio.com>, <hverkuil-cisco@xs4all.nl>,
-        <linux-media@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Logan Gunthorpe <logang@deltatee.com>
-From:   Dongdong Liu <liudongdong3@huawei.com>
-Message-ID: <db506d81-3cb9-4cdc-fb4a-f2d28587b9b2@huawei.com>
-Date:   Fri, 16 Jul 2021 19:12:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S232235AbhGPLnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 07:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231386AbhGPLnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 07:43:23 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E54BC06175F
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 04:40:28 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id l18-20020a1ced120000b029014c1adff1edso7998886wmh.4
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 04:40:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=Un2YqlVoj6fQtiAte0831DTtaN3ehu8sd+Iw2hK9L2Y=;
+        b=sC7rKm6/hCU7czZLf2l1HUGp1HRkjq528mCTn1XQoPEReXlgq5tAFMyLnQgGbEAC24
+         7RW9TvphI2yNTnk0aKp4+bNl19z+KLaJ8YmXTAkW71sCiKYyk/ax4RrtIVKLRTFdCI89
+         AqS1ubDAcMr9eQ4Ism6rkzsBf1u0okNYYOU3XRg4Za00hwfKJZDDHozTIsFTb9LaG1IR
+         QnvwCNVW/Sm6qZl9PSqGY7G63vZe+6nY68c92C5ARhATi9mZ+SBQrz2x+naeR43EbQJE
+         sGbQOTuxaGfL3cvhWCWNkTJIehVlHHPKGOnoEwfZ314x1FvTm0DgusdhFxxU7PSPLvmy
+         rlZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=Un2YqlVoj6fQtiAte0831DTtaN3ehu8sd+Iw2hK9L2Y=;
+        b=N9xxY2dHIJ/XdimwUCfH4Ewp1Q60VCds6UF9M9/hgmt5qFqwwfJxQNfFGyO4SYKAi8
+         ZR3XzaGwwqF6qqBL4QMyah7fVSBnRj9BUh62HsMyc2TrJT14JNecv6eez08XibjTso/i
+         YQZO5h5O32UdmfAlNY9cQaBa1i/uameBYiMeGWtxbzjecCL6n9ASs2xCA/SiyXhVaHmz
+         GAfVkGtFN19xlelg5aC+U/NCWFEA0kUGm9wI7dTAP+Rk/ZTG4Laoo7SdPh9Knpywt9yN
+         ItEldPW/kO0uo398RfaHsLxYQf0shga0GtwihdQaRNljZn0OUAaiqo5EJ91PY3DshRRj
+         GpMQ==
+X-Gm-Message-State: AOAM5330g/0pgmGzjsFObX15jOY3XKfyIf+IHhn51SmDs3/SLkv5SNMy
+        Slg6LYzE2dKMO6Bk2wOBOdd0sPoTd1ZQPxm68KQ=
+X-Google-Smtp-Source: ABdhPJxm/aWCHgpSi1qBvhbZ2VqswKh5QrHG681rvEUfWlCQN0nERZgH6i78484GesngbhlNsIjKY8v+RjLk0gZFZLE=
+X-Received: by 2002:a7b:c4d2:: with SMTP id g18mr10012187wmk.146.1626435626773;
+ Fri, 16 Jul 2021 04:40:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210715172336.GA1972959@bjorn-Precision-5520>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.235]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Received: by 2002:a5d:434f:0:0:0:0:0 with HTTP; Fri, 16 Jul 2021 04:40:26
+ -0700 (PDT)
+Reply-To: michaelrachid7@gmail.com
+From:   Michael Rachid <braydensean25@gmail.com>
+Date:   Fri, 16 Jul 2021 12:40:26 +0100
+Message-ID: <CAK8bkr-AJYtXCe6OFZ6UqjvyDCok1FucWVmC_3DGGOBdbL8+tA@mail.gmail.com>
+Subject: Proposition
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn
+Cher ami,
 
-Many thanks for your review.
+Je vous =C3=A9cris pour vous informer sur une entreprise
+proposition que j'ai que j'aimerais traiter avec vous. Cinquante cinq
+millions de dollars
+est impliqu=C3=A9. Soyez assur=C3=A9 que tout est l=C3=A9gal et sans risque=
+.
 
-On 2021/7/16 1:23, Bjorn Helgaas wrote:
-> [+cc Logan]
->
-> On Mon, Jun 21, 2021 at 06:27:20PM +0800, Dongdong Liu wrote:
->> 10-Bit Tag capability, introduced in PCIe-4.0 increases the total Tag
->> field size from 8 bits to 10 bits.
->>
->> For platforms where the RC supports 10-Bit Tag Completer capability,
->> it is highly recommended for platform firmware or operating software
->
-> Recommended by whom?  If the spec recommends it, we should provide the
-> citation.
-PCIe spec 5.0 r1.0 section 2.2.6.2 IMPLEMENTATION NOTE says that.
-Will fix.
->
->> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
->> bit automatically in Endpoints with 10-Bit Tag Requester capability. This
->> enables the important class of 10-Bit Tag capable adapters that send
->> Memory Read Requests only to host memory.
->
-> What is the implication for P2PDMA?  What happens if we enable 10-bit
-> tags for device A, and A generates Mem Read Requests to device B,
-> which does not support 10-bit tags?
-PCIe spec 5.0 r1.0 section 2.2.6.2 says
-If an Endpoint supports sending Requests to other Endpoints (as opposed 
-to host memory), the Endpoint must not send 10-Bit Tag Requests to 
-another given Endpoint unless an implementation-specific mechanism 
-determines that the Endpoint supports 10-Bit Tag Completer capability. 
-Not sending 10-Bit Tag Requests to other Endpoints at all
-may be acceptable for some implementations. More sophisticated 
-mechanisms are outside the scope of this specification.
-
-Not sending 10-Bit Tag Requests to other Endpoints at all seems simple.
-Add kernel parameter pci=pcie_bus_peer2peer when boot kernel with 
-P2PDMA, then do not config 10-BIT Tag.
-
-if (pcie_bus_config != PCIE_BUS_PEER2PEER)
-	pci_configure_10bit_tags(dev);
-
-Bjorn and Logan, any suggestion?
->
->> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> ---
->>  drivers/pci/probe.c | 33 +++++++++++++++++++++++++++++++++
->>  include/linux/pci.h |  2 ++
->>  2 files changed, 35 insertions(+)
->>
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index 0208865..33241fb 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -2048,6 +2048,38 @@ int pci_configure_extended_tags(struct pci_dev *dev, void *ign)
->>  	return 0;
->>  }
->>
->> +static void pci_configure_10bit_tags(struct pci_dev *dev)
->> +{
->> +	struct pci_dev *bridge;
->> +
->> +	if (!(dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_COMP))
->> +		return;
->> +
->> +	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT) {
->> +		dev->ext_10bit_tag = 1;
->> +		return;
->> +	}
->> +
->> +	bridge = pci_upstream_bridge(dev);
->> +	if (bridge && bridge->ext_10bit_tag)
->> +		dev->ext_10bit_tag = 1;
->> +
->> +	/*
->> +	 * 10-Bit Tag Requester Enable in Device Control 2 Register is RsvdP
->> +	 * for VF.
->> +	 */
->> +	if (dev->is_virtfn)
->> +		return;
->> +
->> +	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT &&
->> +	    dev->ext_10bit_tag == 1 &&
->> +	    (dev->pcie_devcap2 & PCI_EXP_DEVCAP2_10BIT_TAG_REQ)) {
->> +		pci_dbg(dev, "enabling 10-Bit Tag Requester\n");
->> +		pcie_capability_set_word(dev, PCI_EXP_DEVCTL2,
->> +					PCI_EXP_DEVCTL2_10BIT_TAG_REQ_EN);
->> +	}
->> +}
->> +
->>  /**
->>   * pcie_relaxed_ordering_enabled - Probe for PCIe relaxed ordering enable
->>   * @dev: PCI device to query
->> @@ -2184,6 +2216,7 @@ static void pci_configure_device(struct pci_dev *dev)
->>  {
->>  	pci_configure_mps(dev);
->>  	pci_configure_extended_tags(dev, NULL);
->> +	pci_configure_10bit_tags(dev);
->
-> I think 10-bit tag support should be integrated with extended (8-bit)
-> tag support instead of having two separate functions.
->
-> If we have "no_ext_tags" set because some device doesn't support 8-bit
-> tags correctly, we probably shouldn't try to enable 10-bit tags
-> either.
-Looks good, will fix.
-
-Thanks
-Dongdong
->
->>  	pci_configure_relaxed_ordering(dev);
->>  	pci_configure_ltr(dev);
->>  	pci_configure_eetlp_prefix(dev);
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index de1fc24..445d102 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -393,6 +393,8 @@ struct pci_dev {
->>  #endif
->>  	unsigned int	eetlp_prefix_path:1;	/* End-to-End TLP Prefix */
->>
->> +	unsigned int	ext_10bit_tag:1; /* 10-Bit Tag Completer Supported
->> +					    from root to here */
->>  	pci_channel_state_t error_state;	/* Current connectivity state */
->>  	struct device	dev;			/* Generic device interface */
->>
->> --
->> 2.7.4
->>
-> .
->
+Michel Rachid.
