@@ -2,108 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9348A3CB14D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 06:06:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3913CB154
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 06:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230163AbhGPEJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 00:09:36 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:11431 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbhGPEJf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 00:09:35 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GQyJl6s0ZzcdqY;
-        Fri, 16 Jul 2021 12:03:19 +0800 (CST)
-Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Fri, 16 Jul 2021 12:06:33 +0800
-Received: from huawei.com (10.175.101.6) by dggema772-chm.china.huawei.com
- (10.1.198.214) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 16
- Jul 2021 12:06:32 +0800
-From:   Liu Jian <liujian56@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>, <liujian56@huawei.com>
-Subject: [next] igmp: Add ip_mc_list lock in ip_check_mc_rcu
-Date:   Fri, 16 Jul 2021 12:06:17 +0800
-Message-ID: <20210716040617.160609-1-liujian56@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S229911AbhGPEOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 00:14:31 -0400
+Received: from relay.sw.ru ([185.231.240.75]:46390 "EHLO relay.sw.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229507AbhGPEOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 00:14:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
+        Subject; bh=4tMOph3Bxi9udxmJFQ6rB4I9o9MwgEFr9xoM3JkuMMM=; b=TclMo+FG6IiTHW3iI
+        y5XkPGcOAnwG+6vGIm6EGYu9ih1eM9I0n9G/1OsVuux+y8i10E3hFVuscHyTdep+EYezfPiZ+AzUM
+        7bsrhJgLX1ur3g64SlF6TGv2TMdJLGkf9fJcEkutEb9x90KQ5VOTUfrsbmErTen9awR2BAPACEzCc
+        =;
+Received: from [10.93.0.56]
+        by relay.sw.ru with esmtp (Exim 4.94.2)
+        (envelope-from <vvs@virtuozzo.com>)
+        id 1m4FC9-0049Gz-Gs; Fri, 16 Jul 2021 07:11:25 +0300
+Subject: Re: [PATCH v4 00/16] memcg accounting from OpenVZ
+To:     Shakeel Butt <shakeelb@google.com>, Tejun Heo <tj@kernel.org>
+Cc:     Cgroups <cgroups@vger.kernel.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Roman Gushchin <guro@fb.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Jeff Layton <jlayton@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kirill Tkhai <ktkhai@virtuozzo.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Serge Hallyn <serge@hallyn.com>, Tejun Heo <tj@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <8664122a-99d3-7199-869a-781b21b7e712@virtuozzo.com>
+ <919bd022-075e-98a7-cefb-89b5dee80ae8@virtuozzo.com>
+ <CALvZod5Kxrj3T99CEd8=OaoW8CwKtHOVhno58_nNOqjR2y=x6Q@mail.gmail.com>
+From:   Vasily Averin <vvs@virtuozzo.com>
+Message-ID: <3a60b936-b618-6cef-532a-97bbdb957fb1@virtuozzo.com>
+Date:   Fri, 16 Jul 2021 07:11:24 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggema772-chm.china.huawei.com (10.1.198.214)
-X-CFilter-Loop: Reflected
+In-Reply-To: <CALvZod5Kxrj3T99CEd8=OaoW8CwKtHOVhno58_nNOqjR2y=x6Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got below panic when doing fuzz test:
+On 7/15/21 8:11 PM, Shakeel Butt wrote:
+> On Tue, Apr 27, 2021 at 11:51 PM Vasily Averin <vvs@virtuozzo.com> wrote:
+>>
+>> OpenVZ uses memory accounting 20+ years since v2.2.x linux kernels.
+>> Initially we used our own accounting subsystem, then partially committed
+>> it to upstream, and a few years ago switched to cgroups v1.
+>> Now we're rebasing again, revising our old patches and trying to push
+>> them upstream.
+>>
+>> We try to protect the host system from any misuse of kernel memory
+>> allocation triggered by untrusted users inside the containers.
+>>
+>> Patch-set is addressed mostly to cgroups maintainers and cgroups@ mailing
+>> list, though I would be very grateful for any comments from maintainersi
+>> of affected subsystems or other people added in cc:
+>>
+>> Compared to the upstream, we additionally account the following kernel objects:
+>> - network devices and its Tx/Rx queues
+>> - ipv4/v6 addresses and routing-related objects
+>> - inet_bind_bucket cache objects
+>> - VLAN group arrays
+>> - ipv6/sit: ip_tunnel_prl
+>> - scm_fp_list objects used by SCM_RIGHTS messages of Unix sockets
+>> - nsproxy and namespace objects itself
+>> - IPC objects: semaphores, message queues and share memory segments
+>> - mounts
+>> - pollfd and select bits arrays
+>> - signals and posix timers
+>> - file lock
+>> - fasync_struct used by the file lease code and driver's fasync queues
+>> - tty objects
+>> - per-mm LDT
+>>
+>> We have an incorrect/incomplete/obsoleted accounting for few other kernel
+>> objects: sk_filter, af_packets, netlink and xt_counters for iptables.
+>> They require rework and probably will be dropped at all.
+>>
+>> Also we're going to add an accounting for nft, however it is not ready yet.
+>>
+>> We have not tested performance on upstream, however, our performance team
+>> compares our current RHEL7-based production kernel and reports that
+>> they are at least not worse as the according original RHEL7 kernel.
+> 
+> Hi Vasily,
+> 
+> What's the status of this series? I see a couple patches did get
+> acked/reviewed. Can you please re-send the series with updated ack
+> tags?
 
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 4056 Comm: syz-executor.3 Tainted: G    B             5.14.0-rc1-00195-gcff5c4254439-dirty #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-Call Trace:
-dump_stack_lvl+0x7a/0x9b
-panic+0x2cd/0x5af
-end_report.cold+0x5a/0x5a
-kasan_report+0xec/0x110
-ip_check_mc_rcu+0x556/0x5d0
-__mkroute_output+0x895/0x1740
-ip_route_output_key_hash_rcu+0x2d0/0x1050
-ip_route_output_key_hash+0x182/0x2e0
-ip_route_output_flow+0x28/0x130
-udp_sendmsg+0x165d/0x2280
-udpv6_sendmsg+0x121e/0x24f0
-inet6_sendmsg+0xf7/0x140
-sock_sendmsg+0xe9/0x180
-____sys_sendmsg+0x2b8/0x7a0
-___sys_sendmsg+0xf0/0x160
-__sys_sendmmsg+0x17e/0x3c0
-__x64_sys_sendmmsg+0x9e/0x100
-do_syscall_64+0x3b/0x90
-entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x462eb9
-Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8
- 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48>
- 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f3df5af1c58 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 000000000073bf00 RCX: 0000000000462eb9
-RDX: 0000000000000312 RSI: 0000000020001700 RDI: 0000000000000007
-RBP: 0000000000000004 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f3df5af26bc
-R13: 00000000004c372d R14: 0000000000700b10 R15: 00000000ffffffff
+Technically my patches does not have any NAKs. Practically they are still them merged.
+I've expected Michal will push it, but he advised me to push subsystem maintainers.
+I've asked Tejun to pick up the whole patch set and I'm waiting for his feedback right now.
 
-It is one use-after-free in ip_check_mc_rcu.
-In ip_mc_del_src, the ip_sf_list of pmc has been freed under pmc->lock protection.
-But access to ip_sf_list in ip_check_mc_rcu is not protected by the lock.
+I can resend patch set once again, with collected approval and with rebase to v5.14-rc1.
+However I do not understand how it helps to push them if patches should be processed through
+subsystem maintainers. As far as I understand I'll need to split this patch set into
+per-subsystem pieces and sent them to corresponded maintainers.
 
-Signed-off-by: Liu Jian <liujian56@huawei.com>
----
- net/ipv4/igmp.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 6b3c558a4f23..03589a04f9aa 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2713,6 +2713,7 @@ int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u
- 		rv = 1;
- 	} else if (im) {
- 		if (src_addr) {
-+			spin_lock_bh(&im->lock);
- 			for (psf = im->sources; psf; psf = psf->sf_next) {
- 				if (psf->sf_inaddr == src_addr)
- 					break;
-@@ -2723,6 +2724,7 @@ int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u
- 					im->sfcount[MCAST_EXCLUDE];
- 			else
- 				rv = im->sfcount[MCAST_EXCLUDE] != 0;
-+			spin_unlock_bh(&im->lock);
- 		} else
- 			rv = 1; /* unspecified source; tentatively allow */
- 	}
--- 
-2.17.1
-
+Thank you,
+	Vasily Averin.
