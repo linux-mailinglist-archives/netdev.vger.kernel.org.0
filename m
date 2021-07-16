@@ -2,124 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E53503CB9A9
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002893CB9CD
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240842AbhGPPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240251AbhGPPZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:25:19 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CABDC06175F;
-        Fri, 16 Jul 2021 08:22:24 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id t2so13049665edd.13;
-        Fri, 16 Jul 2021 08:22:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N8bkFF5p3b8ynQNRAkxev5NHQlLvryoP4qlYhGqFBjc=;
-        b=YYBLC0FKuFQE+AMrZG+egLBpSZ3nXAtpNpXYXUYdi8IpU528hZGQcV7zIn1nKWoh+3
-         ECyIhmFYi64mRz+5ITsg1Kq1G4JwxpP/2qxmSwtzbSPTD4WY1ofx6g823TNKblAgbtKD
-         Vm3Np+TXmneBi2ovKHlAs3v1iSr6ESk4Y2u3I2DtafYU1AXM+teTsF/yQ975MYxNs1bf
-         5eHl72YV5JLHoNuCDW7JQqGN/ZESv3loLUE3Ftd5FgAkf47WQis+YzCBoXzeF6TBbva8
-         dtnyDMq1L/yUKka8DECO/5KJ3qyjO/q7LnogwycDjmLkyMkQ0fwTmgdW7355cCVEu+PY
-         TB4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N8bkFF5p3b8ynQNRAkxev5NHQlLvryoP4qlYhGqFBjc=;
-        b=mdGdYAD0RPVltanxVI01vU2H3vXbsN0uMwO4xx5PJJSF08UR8QrhXubWIdL3gm9Mbz
-         gSOIuOTa5mdh6tmLsa45LebLdnbnUPhklQuE7/aS/mNwJ8wYqolG65d1DpFb7aLvxZKe
-         IIExsjraQEVFkH/alO3ZhKKbsW6r/LEUPG8CvRdt2s80HPZXpIX+XhXkckN0vkkCo1f9
-         3sK3IAKGUr04+sm07uiC8WBZAMOTKfgDxt9r2kPLdz2+2SXgmoxwwDb+F2/ihdpIb/Hm
-         G4w86i5BPoJg5vDiJKsz6t4Dq5ySQxalBrIN1Z2jPcdktPFyuxmJZ6jnKsbU1mmYXCyV
-         eI3Q==
-X-Gm-Message-State: AOAM53217LIrfE7GMs6yBvsvIg5+sEkN2SVWB148cYB6rfNOfegHJIsu
-        8zU0DP8F9ntd8yoFDLQoEq0=
-X-Google-Smtp-Source: ABdhPJxwoY9sX8skN/GsQiNXCI54N8UYo1l0znh40dUm/vmIQlVyUttGmaINiqSWefaAYlOdseJ/wA==
-X-Received: by 2002:a05:6402:b8f:: with SMTP id cf15mr15279163edb.286.1626448943269;
-        Fri, 16 Jul 2021 08:22:23 -0700 (PDT)
-Received: from BLUE.mydomain.example (83-87-52-217.cable.dynamic.v4.ziggo.nl. [83.87.52.217])
-        by smtp.googlemail.com with ESMTPSA id i11sm3876648edu.97.2021.07.16.08.22.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jul 2021 08:22:22 -0700 (PDT)
-From:   ericwouds@gmail.com
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S240862AbhGPPaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:30:04 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:39417
+        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S233094AbhGPPaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:30:03 -0400
+Received: by ajax-webmail-mail-app3 (Coremail) ; Fri, 16 Jul 2021 23:26:47
+ +0800 (GMT+08:00)
+X-Originating-IP: [183.159.168.36]
+Date:   Fri, 16 Jul 2021 23:26:47 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   LinMa <3160105373@zju.edu.cn>
+To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "Desmond Cheong Zhi Xi" <desmondcheongzx@gmail.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        "Johan Hedberg" <johan.hedberg@gmail.com>,
+        "Marcel Holtmann" <marcel@holtmann.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Eric Woudstra <37153012+ericwoud@users.noreply.github.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
-Date:   Fri, 16 Jul 2021 17:22:11 +0200
-Message-Id: <20210716152213.4213-1-ericwouds@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
+ section
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+In-Reply-To: <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+ <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+ <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
+ <2b0e515c-6381-bffe-7742-05148e1e2dcb@gmail.com>
+ <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
+ <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <4bd89382.4d087.17aafed62b1.Coremail.3160105373@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgCHODw4pfFgyyqBAQ--.45359W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUIElNG3Df-vAAAsh
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
-
-According to reference guides mt7530 (mt7620) and mt7531:
-
-NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to 
-read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0] 
-will be used to read/write the address table.
-
-Since the function only fills in CVID and no FID, we need to set the
-IVL bit. The existing code does not set it.
-
-This is a fix for the issue I dropped here earlier:
-
-http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
-
-With this patch, it is now possible to delete the 'self' fdb entry
-manually. However, wifi roaming still has the same issue, the entry
-does not get deleted automatically. Wifi roaming also needs a fix
-somewhere else to function correctly in combination with vlan.
-
-Signed-off-by: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
----
- drivers/net/dsa/mt7530.c | 1 +
- drivers/net/dsa/mt7530.h | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 93136f7e6..9e4df35f9 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -366,6 +366,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
- 	int i;
- 
- 	reg[1] |= vid & CVID_MASK;
-+	reg[1] |= ATA2_IVL;
- 	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
- 	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
- 	/* STATIC_ENT indicate that entry is static wouldn't
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 334d610a5..b19b389ff 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -79,6 +79,7 @@ enum mt753x_bpdu_port_fw {
- #define  STATIC_EMP			0
- #define  STATIC_ENT			3
- #define MT7530_ATA2			0x78
-+#define  ATA2_IVL			BIT(15)
- 
- /* Register for address table write data */
- #define MT7530_ATWD			0x7c
--- 
-2.25.1
-
+SGVsbG8gZXZlcnlvbmUsCgpTb3JyeSwgaXQncyBteSBmYXVsdCB0byBjYXVzZSB0aGUgbWlzdW5k
+ZXJzdGFuZGluZy4KCkFzIEkga2VlcCBtZW50aW9uaW5nICJoY2lfc29ja19zZW5kbXNnKCkiIGlu
+c3RlYWQgb2YgImhjaV9zb2NrX2JvdW5kX2lvY3RsKCkiLiBJbiBmYWN0LCBib3RoIHRoZXNlIHR3
+byBmdW5jdGlvbnMgYXJlIGFibGUgdG8gY2F1c2UgdGhlIHJhY2UuCgo+ID4+Cj4gPiAKPiA+IE15
+IGJhZCwgd2FzIHRoaW5raW5nIG1vcmUgYWJvdXQgdGhlIHByb2JsZW0gYW5kIG5vdGljZWQgeW91
+ciBwb2Mgd2FzIGZvciBoY2lfc29ja19zZW5kbXNnLAo+ID4gbm90IGhjaV9zb2NrX2Rldl9ldmVu
+dC4KPiAKPiBJIGRpZG4ndCBjYXRjaCB0aGlzIHBhcnQuIEFyZSB5b3UgdGFsa2luZyBhYm91dCBh
+IGRpZmZlcmVudCBwb2M/Cj4gQXMgZmFyIGFzIEknbSBhd2FyZSwgZXhwLmMgaW4gUE9DLnppcCB3
+YXMgZm9yIGhjaV9zb2NrX2JvdW5kX2lvY3RsKEhDSVVOQkxPQ0tBRERSKS4KPiAKPiBoY2lfc29j
+a19ib3VuZF9pb2N0bChIQ0lVTkJMT0NLQUREUikgKHdoaWNoIGlzIGNhbGxlZCBiZXR3ZWVuIGxv
+Y2tfc29jaygpIGFuZCByZWxlYXNlX3NvY2soKSkKPiBjYWxscyBjb3B5X2Zyb21fdXNlcigpIHdo
+aWNoIG1pZ2h0IGNhdXNlIHBhZ2UgZmF1bHQsIGFuZCB1c2VyZmF1bHRmZCBtZWNoYW5pc20gYWxs
+b3dzIGFuIGF0dGFja2VyCj4gdG8gc2xvd2Rvd24gcGFnZSBmYXVsdCBoYW5kbGluZyBlbm91Z2gg
+dG8gaGNpX3NvY2tfZGV2X2V2ZW50KEhDSV9ERVZfVU5SRUcpIHRvIHJldHVybiB3aXRob3V0Cj4g
+d2FpdGluZyBmb3IgaGNpX3NvY2tfYm91bmRfaW9jdGwoSENJVU5CTE9DS0FERFIpIHRvIGNhbGwg
+cmVsZWFzZV9zb2NrKCkuIFRoaXMgcmFjZSB3aW5kb3cKPiByZXN1bHRzIGluIFVBRiAoZG9lc24n
+dCBpdCwgTGluTWE/KS4KPiAKCllvdXIgdW5kZXJzdGFuZGluZyBhYm92ZSBpcyBxdWl0ZSByaWdo
+dC4gSW4gYWRkaXRpb24sIGJlY2F1c2UgdGhlIGhjaV9zb2NrX3NlbmRtc2coKSBjYWxscyB0aGUg
+bWVtY3B5X2Zyb21fbXNnKC4uLiksIHdoaWNoIGFsc28gaW4gZmFjdCBmZXRjaCBkYXRhIGZyb20g
+dXNlcnNwYWNlIG1lbW9yeSwgdGhlIHVzZXJmYXVsdGZkIGNhbiB0YWtlIGVmZmVjdCBhcyB3ZWxs
+LgoKKFdoZW4gd3JpdGluZyB0aGUgZXhwbG9pdCBmb3IgdGhpcyBDVkUsIHRoZSBoY2lfc29ja19z
+ZW5kbXNnKCkgaXMgbXVjaCB1c2VmdWwuLi4gc28gSSByZWNlbnRseSBrZWVwIG1lbnRpb25pbmcg
+dGhpcyBmdW5jdGlvbikKClJlZ2FyZHMKTGluIE1h
