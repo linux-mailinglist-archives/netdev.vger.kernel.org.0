@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A46C3CBD8F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FFC3CBD94
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:16:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbhGPUQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 16:16:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39720 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229896AbhGPUQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 16:16:05 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m4UCf-0006dK-96; Fri, 16 Jul 2021 22:12:57 +0200
-Received: from [85.5.47.65] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m4UCe-000QgN-RO; Fri, 16 Jul 2021 22:12:56 +0200
-Subject: Re: [PATCH v2 bpf-nxt] Documentation/bpf: Add heading and example for
- extensions in filter.rst
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     "Roy, UjjaL" <royujjal@gmail.com>, Song Liu <song@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, BPF <bpf@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
-References: <royujjal@gmail.com> <20210712173723.1597-1-royujjal@gmail.com>
- <60ee2dc76ac1c_196e22088d@john-XPS-13-9370.notmuch>
- <CAADnVQJ=DoRDcVkaXmY3EmNdLoO7gq1mkJOn5G=00wKH8qUtZQ@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <80579c8d-ecdb-4334-9912-c04f75f7a6d3@iogearbox.net>
-Date:   Fri, 16 Jul 2021 22:12:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S232896AbhGPUTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 16:19:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58962 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229896AbhGPUTa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 16:19:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=PyvzVP3Cux1vqLtXKfjwOB4L5eKxtn/scqVI7PAstz0=; b=GDkUQDbWBOx8sVFgFJRMSmTREw
+        GLiFdE9B9lGm78cxxMZfLt7S+/P+rcjy1Su8hYx4DbLa+zjjeXfL8mbXtQXiygrYtrGPbC2PxuekG
+        O6dbecl9RLTjMCR5gnYri98T22jIbHMKCRKVzf2HtbuaNfzae4epKpjq7mouG852Q4Kc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m4UG8-00Df8l-Dw; Fri, 16 Jul 2021 22:16:32 +0200
+Date:   Fri, 16 Jul 2021 22:16:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] net: phy: Add RGMII_ID/TXID/RXID handling to the DP83822
+ driver
+Message-ID: <YPHpILw+p2l6cKR9@lunn.ch>
+References: <20210716182328.218768-1-marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQJ=DoRDcVkaXmY3EmNdLoO7gq1mkJOn5G=00wKH8qUtZQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26234/Fri Jul 16 10:18:39 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210716182328.218768-1-marex@denx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/21 3:48 AM, Alexei Starovoitov wrote:
-> On Tue, Jul 13, 2021 at 5:20 PM John Fastabend <john.fastabend@gmail.com> wrote:
->>
->> Roy, UjjaL wrote:
->>> [1] https://www.kernel.org/doc/html/latest/bpf/
->>>
->>> Add new heading for extensions to make it more readable. Also, add one
->>> more example of filtering interface index for better understanding.
->>>
->>> Signed-off-by: Roy, UjjaL <royujjal@gmail.com>
->>> Acked-by: Song Liu <songliubraving@fb.com>
->>
->> Looks OK to me. I thought the original was readable without the header, but
->> if it helps someone seems easy enough to do.
->>
->> Acked-by: John Fastabend <john.fastabend@gmail.com>
+On Fri, Jul 16, 2021 at 08:23:28PM +0200, Marek Vasut wrote:
+> Add support for setting the internal clock shift of the PHY based on
+> the interface requirements. RX/TX/both is supported for RGMII.
 > 
-> I cannot figure out how to apply this patch, because I see:
-> Applying: Documentation/bpf: Add heading and example for extensions in
-> filter.rst
-> fatal: empty ident name (for <>) not allowed
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Dan Murphy <dmurphy@ti.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> ---
+>  drivers/net/phy/dp83822.c | 37 +++++++++++++++++++++++++++++++++----
+>  1 file changed, 33 insertions(+), 4 deletions(-)
 > 
-> Any idea?
+> diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+> index f7a2ec150e54..971c8d6b85d2 100644
+> --- a/drivers/net/phy/dp83822.c
+> +++ b/drivers/net/phy/dp83822.c
+> @@ -72,6 +72,10 @@
+>  #define DP83822_ANEG_ERR_INT_EN		BIT(6)
+>  #define DP83822_EEE_ERROR_CHANGE_INT_EN	BIT(7)
+>  
+> +/* RCSR bits */
+> +#define DP83822_RGMII_RX_CLOCK_SHIFT	BIT(12)
+> +#define DP83822_RGMII_TX_CLOCK_SHIFT	BIT(11)
+> +
+>  /* INT_STAT1 bits */
+>  #define DP83822_WOL_INT_EN	BIT(4)
+>  #define DP83822_WOL_INT_STAT	BIT(12)
+> @@ -326,11 +330,36 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
+>  
+>  static int dp8382x_disable_wol(struct phy_device *phydev)
+>  {
+> -	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
+> -		    DP83822_WOL_SECURE_ON;
+> +	u16 val = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN | DP83822_WOL_SECURE_ON;
+> +
+> +	ret = phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
+> +				 MII_DP83822_WOL_CFG, val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+  
+> -	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
+> -				  MII_DP83822_WOL_CFG, value);
+> +	return ret;
+>  }
 
-Same happened on my side. Maybe not sent via git-send-email(1)? Anyway, I've
-applied manually meanwhile.
+This change seems to have nothing to do with RGMII delays.  Please
+split it out, so it does not distract from reviewing the real change
+here.
+
+It also seems odd you are changing RGMII delays when disabling WOL?
+Rebase gone wrong?
+
+	Andrew
