@@ -2,354 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 695963CB5CA
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 12:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3214E3CB5DA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 12:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237960AbhGPKNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 06:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237848AbhGPKNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 06:13:18 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BDAC061760
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 03:10:23 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m4KnG-0000gC-OV; Fri, 16 Jul 2021 12:10:06 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:df95:c0e5:d620:3bac])
+        id S238380AbhGPKUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 06:20:42 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:33158
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236625AbhGPKUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 06:20:40 -0400
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A198765091A;
-        Fri, 16 Jul 2021 10:10:02 +0000 (UTC)
-Date:   Fri, 16 Jul 2021 12:10:01 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH 2/6] can: rcar_canfd: Add support for RZ/G2L family
-Message-ID: <20210716101001.m5sgit3l354mljai@pengutronix.de>
-References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210715182123.23372-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 50DA4408B0
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 10:17:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626430665;
+        bh=v3+RLYbM3UPfxivfaj+1siONUqDJMNX83wOE1RNePYc=;
+        h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=GlkSSPWzUNoyDrViplUKXCVDWTZfrBFmcJu50Yn3jEaMwqqq88EmCG0MbuBYLT0z5
+         4kmIVQcBfnm9xCXAPV4SnJMehdvh+f5/TGSOoeEhWfadvLifvoE9pIkVWnagulglp/
+         ly6G471H0Md8I5Kvo87eh9LtQIT/TnJoJa9q6k9dDnGmP4yzHHolnXzJFAK1qQGNwN
+         Ba4xYbHJEAtgJLtWQhWbiRXw4CDFz92e5kwDgFbyRilY7ROCK6q9+VhspD5svIRjQU
+         MQKOGjydWLjsMnJ1KBOLi3T3gLBD2Hz4RxPQdw7CaA1wWSg/QQvu4n4Iwh2AW1U1/Q
+         uC1AMK5CsjDTw==
+Received: by mail-ej1-f71.google.com with SMTP id n3-20020a1709061183b029053d0856c4cdso1060832eja.15
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 03:17:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=v3+RLYbM3UPfxivfaj+1siONUqDJMNX83wOE1RNePYc=;
+        b=prJXkvfWK6xit8ZKjYaRwXfKri/x+XLvLG0uSZS85CCL70vHHgiIuW9nfDdMO41ovZ
+         pUjWQKN5tlFjNM/5pECbA5XanRsPrIe8scYeuYjc6Z3k7CXK3C0h/SePd0KmMsde62Dt
+         jtKoeehIg9xjbpRRuU8DxBPiHVV2EXRQ/raOxh76bTG/cg6lMe/rpZH6eSateS1USXIF
+         mkvAFJ32F4ojOZWN9V2OFRWuBd/ubaTQkzPn1cwgy36G3pzCiFn5snQ0a+pbJoqI1i7y
+         IXTJmI0a3oypHjw2I43Vek2T8K4DJUUBYgzrNxTLP48WsIgb/tsyfHwZ5MQY5EAUPPt2
+         BOGA==
+X-Gm-Message-State: AOAM532SM9VuINNbpFoQ3eTkmZiTVgR5eK/tM82JlyuEXtKka3jPJy5m
+        zClSylN6lxhcZl2PF1yWawpOZpfKXQ7KTCLC95MfkU5ajYdltYLjjIqifUqbJlXCOZdqS7Y8ytZ
+        5WzMuma70tVGEPo1tsowyZ/NjwCb5MX/qJg==
+X-Received: by 2002:a17:907:7293:: with SMTP id dt19mr11100664ejc.122.1626430665070;
+        Fri, 16 Jul 2021 03:17:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxUeBBiF5voCxRBD7gMBibouSTs+WUBhrrxC8+v1gk5Qx3l74DaTZtODayVE04rID9L9uuxhQ==
+X-Received: by 2002:a17:907:7293:: with SMTP id dt19mr11100652ejc.122.1626430664870;
+        Fri, 16 Jul 2021 03:17:44 -0700 (PDT)
+Received: from [192.168.3.211] (xdsl-188-155-177-222.adslplus.ch. [188.155.177.222])
+        by smtp.gmail.com with ESMTPSA id w10sm2738433ejb.85.2021.07.16.03.17.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Jul 2021 03:17:44 -0700 (PDT)
+To:     Mark Greer <mgreer@animalcreek.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org
+References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
+ <961dc9c5-0eb0-586c-5e70-b21ca2f8e6f3@linaro.org>
+ <d498c949-3b1e-edaa-81ed-60573cfb6ee9@canonical.com>
+ <20210512164952.GA222094@animalcreek.com>
+ <df2ec154-79fa-af7b-d337-913ed4a0692e@canonical.com>
+ <20210715183413.GB525255@animalcreek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [linux-nfc] Re: [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof
+ Kozlowski as maintainer
+Message-ID: <d996605f-020c-95c9-6ab4-cfb101cb3802@canonical.com>
+Date:   Fri, 16 Jul 2021 12:17:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wuc7izo7bgfbohrr"
-Content-Disposition: inline
-In-Reply-To: <20210715182123.23372-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20210715183413.GB525255@animalcreek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 15/07/2021 20:34, Mark Greer wrote:
+> On Fri, Jul 09, 2021 at 11:24:41AM +0200, Krzysztof Kozlowski wrote:
+>> On 12/05/2021 18:49, Mark Greer wrote:
+>>> On Wed, May 12, 2021 at 11:43:13AM -0400, Krzysztof Kozlowski wrote:
+>>>> On 12/05/2021 11:11, Daniel Lezcano wrote:
+>>>>> On 12/05/2021 16:43, Krzysztof Kozlowski wrote:
+>>>>>> The NFC subsystem is orphaned.  I am happy to spend some cycles to
+>>>>>> review the patches, send pull requests and in general keep the NFC
+>>>>>> subsystem running.
+>>>>>>
+>>>>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>>>>>>
+>>>>>> ---
+>>>>>>
+>>>>>> I admit I don't have big experience in NFC part but this will be nice
+>>>>>> opportunity to learn something new. 
+>>>>>
+>>>>> NFC has been lost in the limbos since a while. Good to see someone
+>>>>> volunteering to take care of it.
+>>>>>
+>>>>> May I suggest to create a simple nfc reading program in the 'tools'
+>>>>> directory (could be a training exercise ;)
+>>>>>
+>>>>
+>>>> Noted, thanks. I also need to get a simple hardware dongle for this....
+>>>
+>>> Krzysztof, the NFC portion of the kernel has a counterpart in userspace
+>>> called neard.  I'm supposed to be maintaining it but I have next to no
+>>> time to do so.  If you have spare cycles, any help would be appreciated.
+>>>
+>>> Anyway, in neard, there are some simple test scripts (python2 - I/we need
+>>> to update to python3).  The current home of neard is:
+>>>
+>>> git://git.kernel.org/pub/scm/network/nfc/neard.git
+>>
+>> I guess none of us have problem of too much spare time :), so it took me
+>> a while before I looked at neard.
+>>
+>> With newer Gcc, neard did not even compile (which I am fixing now). I
+>> set up a fork:
+>> https://github.com/krzk/neard
+>> However I can give early disclaimer - playing with GLib userspace code
+>> is not something I am in long term interested. If this was written in
+>> Rust, would be different story. :)
+>>
+>> I also configured basic CI (or rather continuous building):
+>> https://github.com/krzk/neard/actions/runs/1014641944
+>>
+>> However I still do not have proper testing setup. No hardware. Would be
+>> nice if Samsung. ST, NXP or Intel could spare some development board
+>> with the NFC chip supported by kernel. Till then, I will try the NFC
+>> simulator and virtual NCI drivers.
+>>
+>> My next plan for neard is to extend the CI. There is no way I (or anyone
+>> else I believe) can keep good quality of releases without automated
+>> checks. I'll add some more distros, clang and later many some linters or
+>> cppcheck.
+> 
+> Hi Krzysztof, I see you've been busy.  Thanks for that.
+> 
+> FYI, I made a repo on github some time back but never announced it.  The
+> only reason I mention it is because the name/link looks more official:
+> 
+> 	https://github.com/linux-nfc/neard
+> 
+> Let see what happens with permssion on kernel.org and go from there.
 
---wuc7izo7bgfbohrr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For the kernel.org I think you need an account @kernel.org (which itself
+requires your key to be signed by someone), but I am not sure.
 
-On 15.07.2021 19:21:19, Lad Prabhakar wrote:
-> CANFD block on RZ/G2L SoC is almost identical to one found on
-> R-Car Gen3 SoC's.
->=20
-> On RZ/G2L SoC interrupt sources for each channel are split into
-> different sources, irq handlers for the same are added.
->=20
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+I am happy to move entire development to github and keep kernel.org only
+for releases till some distro packages notice the change. If Github,
+then your linux-nfc looks indeed nicer.
 
-Thanks for the patch! Some nitpicks inline, Geert already commented to
-use the same IRQ handler for all interrutps.
+> Re: hardware - I don't have much reader hardware either.  I almost
+> exclusively use BeagleBone[Black] + RF Cape + trf7970atb.  I also have
+> a USB dongle with a pn533, FWIW. I do have a decent collection of NFC tags,
+> though.  I'll contact you privately to arrange to send some to you.
 
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 275 ++++++++++++++++++++++++++----
->  1 file changed, 244 insertions(+), 31 deletions(-)
->=20
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rca=
-r_canfd.c
-> index 311e6ca3bdc4..5dfbc5fa2d81 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -37,9 +37,13 @@
->  #include <linux/bitmap.h>
->  #include <linux/bitops.h>
->  #include <linux/iopoll.h>
-> +#include <linux/reset.h>
-> =20
->  #define RCANFD_DRV_NAME			"rcar_canfd"
-> =20
-> +#define RENESAS_RCAR_GEN3	0
-> +#define RENESAS_RZG2L		1
-> +
+Thanks! I managed to do some testing with nfc-sim modules, although I am
+not sure how much is supported.
 
-Please make this an enum.
+> For peer-to-peer testing, your smartphone probably has an NFC reader but
+> you'll have to play around to find the sweet spot where they put the
+> antenna (older phones were notoriously bad for NFC antenna design; newer
+> ones are generally better).
+> 
+> I will review your patch sets but the earliest I will get to them will
+> be Sunday.
 
->  /* Global register bits */
-> =20
->  /* RSCFDnCFDGRMCFG */
-> @@ -513,6 +517,9 @@ struct rcar_canfd_global {
->  	enum rcar_canfd_fcanclk fcan;	/* CANFD or Ext clock */
->  	unsigned long channels_mask;	/* Enabled channels mask */
->  	bool fdmode;			/* CAN FD or Classical CAN only mode */
-> +	struct reset_control *rstc1;     /* Pointer to reset source1 */
-> +	struct reset_control *rstc2;     /* Pointer to reset source2 */
-> +	unsigned int chip_id;
+I just sent one more set :)
 
-enum here, too
 
->  };
-> =20
->  /* CAN FD mode nominal rate constants */
-> @@ -1070,6 +1077,56 @@ static void rcar_canfd_tx_done(struct net_device *=
-ndev)
->  	can_led_event(ndev, CAN_LED_EVENT_TX);
->  }
-> =20
-[...]
-
-> @@ -1635,8 +1784,11 @@ static int rcar_canfd_probe(struct platform_device=
- *pdev)
->  	struct rcar_canfd_global *gpriv;
->  	struct device_node *of_child;
->  	unsigned long channels_mask =3D 0;
-> -	int err, ch_irq, g_irq;
-> +	int err, ch_irq, g_irq, g_rx_irq;
->  	bool fdmode =3D true;			/* CAN FD only mode - default */
-> +	unsigned int chip_id;
-> +
-> +	chip_id =3D (uintptr_t)of_device_get_match_data(&pdev->dev);
-
-The cast looks wrong.
-
-> =20
->  	if (of_property_read_bool(pdev->dev.of_node, "renesas,no-can-fd"))
->  		fdmode =3D false;			/* Classical CAN only mode */
-> @@ -1649,27 +1801,56 @@ static int rcar_canfd_probe(struct platform_devic=
-e *pdev)
->  	if (of_child && of_device_is_available(of_child))
->  		channels_mask |=3D BIT(1);	/* Channel 1 */
-> =20
-> -	ch_irq =3D platform_get_irq(pdev, 0);
-> -	if (ch_irq < 0) {
-> -		err =3D ch_irq;
-> -		goto fail_dev;
-> -	}
-> +	if (chip_id =3D=3D RENESAS_RCAR_GEN3) {
-> +		ch_irq =3D platform_get_irq(pdev, 0);
-> +		if (ch_irq < 0)
-> +			return ch_irq;
-> =20
-> -	g_irq =3D platform_get_irq(pdev, 1);
-> -	if (g_irq < 0) {
-> -		err =3D g_irq;
-> -		goto fail_dev;
-> +		g_irq =3D platform_get_irq(pdev, 1);
-> +		if (g_irq < 0)
-> +			return g_irq;
-> +	} else {
-> +		g_irq =3D platform_get_irq(pdev, 0);
-> +		if (g_irq < 0)
-> +			return g_irq;
-> +
-> +		g_rx_irq =3D platform_get_irq(pdev, 1);
-> +		if (g_rx_irq < 0)
-> +			return g_rx_irq;
->  	}
-> =20
->  	/* Global controller context */
->  	gpriv =3D devm_kzalloc(&pdev->dev, sizeof(*gpriv), GFP_KERNEL);
-> -	if (!gpriv) {
-> -		err =3D -ENOMEM;
-> -		goto fail_dev;
-> -	}
-> +	if (!gpriv)
-> +		return -ENOMEM;
-> +
->  	gpriv->pdev =3D pdev;
->  	gpriv->channels_mask =3D channels_mask;
->  	gpriv->fdmode =3D fdmode;
-> +	gpriv->chip_id =3D chip_id;
-> +
-> +	if (gpriv->chip_id =3D=3D RENESAS_RZG2L) {
-> +		gpriv->rstc1 =3D devm_reset_control_get_exclusive_by_index(&pdev->dev,=
- 0);
-> +		if (IS_ERR(gpriv->rstc1)) {
-> +			dev_err(&pdev->dev, "failed to get reset index 0\n");
-> +			return PTR_ERR(gpriv->rstc1);
-> +		}
-> +
-> +		err =3D reset_control_reset(gpriv->rstc1);
-> +		if (err)
-> +			return err;
-> +
-> +		gpriv->rstc2 =3D devm_reset_control_get_exclusive_by_index(&pdev->dev,=
- 1);
-> +		if (IS_ERR(gpriv->rstc2)) {
-> +			dev_err(&pdev->dev, "failed to get reset index 1\n");
-> +			return PTR_ERR(gpriv->rstc2);
-> +		}
-> +		err =3D reset_control_reset(gpriv->rstc2);
-> +		if (err) {
-> +			reset_control_assert(gpriv->rstc1);
-> +			return err;
-> +		}
-> +	}
-> =20
->  	/* Peripheral clock */
->  	gpriv->clkp =3D devm_clk_get(&pdev->dev, "fck");
-> @@ -1699,7 +1880,7 @@ static int rcar_canfd_probe(struct platform_device =
-*pdev)
->  	}
->  	fcan_freq =3D clk_get_rate(gpriv->can_clk);
-> =20
-> -	if (gpriv->fcan =3D=3D RCANFD_CANFDCLK)
-> +	if (gpriv->fcan =3D=3D RCANFD_CANFDCLK && gpriv->chip_id =3D=3D RENESAS=
-_RCAR_GEN3)
->  		/* CANFD clock is further divided by (1/2) within the IP */
->  		fcan_freq /=3D 2;
-> =20
-> @@ -1711,21 +1892,43 @@ static int rcar_canfd_probe(struct platform_devic=
-e *pdev)
->  	gpriv->base =3D addr;
-> =20
->  	/* Request IRQ that's common for both channels */
-> -	err =3D devm_request_irq(&pdev->dev, ch_irq,
-> -			       rcar_canfd_channel_interrupt, 0,
-> -			       "canfd.chn", gpriv);
-> -	if (err) {
-> -		dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> -			ch_irq, err);
-> -		goto fail_dev;
-> -	}
-> -	err =3D devm_request_irq(&pdev->dev, g_irq,
-> -			       rcar_canfd_global_interrupt, 0,
-> -			       "canfd.gbl", gpriv);
-> -	if (err) {
-> -		dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> -			g_irq, err);
-> -		goto fail_dev;
-> +	if (gpriv->chip_id =3D=3D RENESAS_RCAR_GEN3) {
-> +		err =3D devm_request_irq(&pdev->dev, ch_irq,
-> +				       rcar_canfd_channel_interrupt, 0,
-> +				       "canfd.chn", gpriv);
-> +		if (err) {
-> +			dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> +				ch_irq, err);
-> +			goto fail_dev;
-> +		}
-> +
-> +		err =3D devm_request_irq(&pdev->dev, g_irq,
-> +				       rcar_canfd_global_interrupt, 0,
-> +				       "canfd.gbl", gpriv);
-> +		if (err) {
-> +			dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> +				g_irq, err);
-> +			goto fail_dev;
-> +		}
-> +	} else {
-> +		err =3D devm_request_irq(&pdev->dev, g_rx_irq,
-> +				       rcar_canfd_global_recieve_fifo_interrupt, 0,
-> +				       "canfd.gblrx", gpriv);
-> +
-> +		if (err) {
-> +			dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> +				g_rx_irq, err);
-> +			goto fail_dev;
-> +		}
-> +
-> +		err =3D devm_request_irq(&pdev->dev, g_irq,
-> +				       rcar_canfd_global_err_interrupt, 0,
-> +				       "canfd.gblerr", gpriv);
-> +		if (err) {
-> +			dev_err(&pdev->dev, "devm_request_irq(%d) failed, error %d\n",
-> +				g_irq, err);
-> +			goto fail_dev;
-> +		}
->  	}
-> =20
->  	/* Enable peripheral clock for register access */
-> @@ -1791,6 +1994,10 @@ static int rcar_canfd_probe(struct platform_device=
- *pdev)
->  fail_clk:
->  	clk_disable_unprepare(gpriv->clkp);
->  fail_dev:
-> +	if (gpriv->chip_id =3D=3D RENESAS_RZG2L) {
-> +		reset_control_assert(gpriv->rstc1);
-> +		reset_control_assert(gpriv->rstc2);
-
-reset_control_assert() can handle NULL pointers
-
-> +	}
->  	return err;
->  }
-> =20
-> @@ -1810,6 +2017,11 @@ static int rcar_canfd_remove(struct platform_devic=
-e *pdev)
->  	/* Enter global sleep mode */
->  	rcar_canfd_set_bit(gpriv->base, RCANFD_GCTR, RCANFD_GCTR_GSLPR);
->  	clk_disable_unprepare(gpriv->clkp);
-> +	if (gpriv->chip_id =3D=3D RENESAS_RZG2L) {
-> +		reset_control_assert(gpriv->rstc1);
-> +		reset_control_assert(gpriv->rstc2);
-> +	}
-
-same here
-
-> +
->  	return 0;
->  }
-> =20
-> @@ -1827,7 +2039,8 @@ static SIMPLE_DEV_PM_OPS(rcar_canfd_pm_ops, rcar_ca=
-nfd_suspend,
->  			 rcar_canfd_resume);
-> =20
->  static const struct of_device_id rcar_canfd_of_table[] =3D {
-> -	{ .compatible =3D "renesas,rcar-gen3-canfd" },
-> +	{ .compatible =3D "renesas,rcar-gen3-canfd", .data =3D (void *)RENESAS_=
-RCAR_GEN3 },
-> +	{ .compatible =3D "renesas,rzg2l-canfd", .data =3D (void *)RENESAS_RZG2=
-L },
->  	{ }
->  };
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---wuc7izo7bgfbohrr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmDxWvcACgkQqclaivrt
-76nzsAf/VLZM8WaYPkGkszH1Cmetc3SSNU9ISL9bHW7zuKnD5sJKuYzDlQFksPmD
-W4E6hTf1yDfTeVbPONWLkSYwwt/ervNH6vbb3bgMwKlcGGDjdWWgz5v+vwluFo12
-6p6QQWxlsGf59mMrr/UfXCVXBjHXkm+UXAycI33hvlWcvV1NvtfWiR7uDCXwkDj4
-kJhr1pSOzgwFQTT/CvJ4o3Xrtg/Fd+E4abSmwjJqL52Rs2aJlcR62aECxQfP83P0
-yAP7M4hMsoNvG0++nm+4JcMIYJtKt5EmWnrvpd3R0d/jbMf3A97g6d4vSMGocRLg
-ooPbMKvVMumA8xB2ye0K9MSKNW9qIw==
-=OGo6
------END PGP SIGNATURE-----
-
---wuc7izo7bgfbohrr--
+Best regards,
+Krzysztof
