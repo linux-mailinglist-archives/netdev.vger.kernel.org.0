@@ -2,132 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB7E3CBE21
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 23:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C22463CBE2C
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 23:09:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234792AbhGPVEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 17:04:00 -0400
-Received: from www62.your-server.de ([213.133.104.62]:33142 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232957AbhGPVD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 17:03:59 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m4Ux9-000Bh1-3i; Fri, 16 Jul 2021 23:00:59 +0200
-Received: from [85.5.47.65] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m4Ux8-000Hma-RA; Fri, 16 Jul 2021 23:00:58 +0200
-Subject: Re: [PATCH bpf] bpf: fix OOB read when printing XDP link fdinfo
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        id S234231AbhGPVJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 17:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230084AbhGPVJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 17:09:54 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D64C06175F;
+        Fri, 16 Jul 2021 14:06:58 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id k4so13498844wrc.8;
+        Fri, 16 Jul 2021 14:06:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4pKHQr/tbhIkbF86KWS5quyjtsLNIoQ9B8exVpj2LvE=;
+        b=imAamG32La2GeVnoJxdszWNMiUMaWujFLyvTENQHuWfTNRlb3SNnTdV2TWYAG1R2Iq
+         m9X19q9TnKhGwiwjEH98ZQhJwckwrBhte8sRCGV17eJZMnpW2fdtMFrGUfeeoNSaTayd
+         LNvkDS8mdvqtmEc5tJlf6wcLsvtMo1o4qYUjrh0PBKA5tzm6OrBhawxNiYgPW1gs0IPp
+         vj0V9sc6Zjwq1IuJt4g70TdNSfiurt7XfQniw376QSwYntbenJpbGWiNTYwMWZno0VHp
+         U6ArIOb7fhN+HtK0VjCI9PwBEWg2Hu987FF2a1GTl/wrOzQFCcEHcnvoCNdPYPcXTVIO
+         2RsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4pKHQr/tbhIkbF86KWS5quyjtsLNIoQ9B8exVpj2LvE=;
+        b=sEc0JAVv9k1BBbTGcd55Ydv9iFS3lq7jg8spQAR07IDjo1UhtPxVZ2Mz1BnF4tKREM
+         LJOc+CHa2ll7V9fMBiiSNW0/1NrLhWOo1qLdZXokhMCrQzNJ161sHX1uNcOPCB0kYOrK
+         1et14W8bTZxNqvtm6FvojmidtDmpesXpnPP5CgVb0kURsaR1pZDH57S/hwYoiyWL61nK
+         SvLE2ExwBJeCmVKK95t+Sb3DPEOfutH5cftcrFHQZ0KI9zCXgMhr/VPSn6fmHgXrRr9/
+         TA6ZnkRHMilanZgLFqO5ls/FKrtTUuy7D35tEdZS2hQKA71ZxctsH8EBcqnhn8dOtfiF
+         nKPQ==
+X-Gm-Message-State: AOAM530K4mDPjiY7f9rHRgPXDdnCBxxBQzAT/SzrnyjJlnpoBtrwV9Pt
+        6EOk4AZkPD9qhDp7nARzP8I=
+X-Google-Smtp-Source: ABdhPJzjA0OaqPdB0BisEA9NQVoLMSvfu5B0rWbk6wjlzGlw9RLplrT5VwiaLaYOwPhAHtcCdcseAQ==
+X-Received: by 2002:adf:a287:: with SMTP id s7mr14497864wra.120.1626469617176;
+        Fri, 16 Jul 2021 14:06:57 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id d8sm11514867wrv.20.2021.07.16.14.06.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jul 2021 14:06:56 -0700 (PDT)
+Date:   Sat, 17 Jul 2021 00:06:55 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     ericwouds@gmail.com
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20210716100452.113652-1-lmb@cloudflare.com>
- <CAEf4BzauzWhNag0z31krN_MTZTGLynAJvkh_7P3yLQCx5XLTAg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7854fbef-8ea5-5396-6369-99eef1dcccaa@iogearbox.net>
-Date:   Fri, 16 Jul 2021 23:00:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Message-ID: <20210716210655.i5hxcwau5tdq4zhb@skbuf>
+References: <20210716153641.4678-1-ericwouds@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzauzWhNag0z31krN_MTZTGLynAJvkh_7P3yLQCx5XLTAg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26234/Fri Jul 16 10:18:39 2021)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210716153641.4678-1-ericwouds@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/21 10:43 PM, Andrii Nakryiko wrote:
-> On Fri, Jul 16, 2021 at 3:05 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
->>
->> We got the following UBSAN report on one of our testing machines:
->>
->>      ================================================================================
->>      UBSAN: array-index-out-of-bounds in kernel/bpf/syscall.c:2389:24
->>      index 6 is out of range for type 'char *[6]'
->>      CPU: 43 PID: 930921 Comm: systemd-coredum Tainted: G           O      5.10.48-cloudflare-kasan-2021.7.0 #1
->>      Hardware name: <snip>
->>      Call Trace:
->>       dump_stack+0x7d/0xa3
->>       ubsan_epilogue+0x5/0x40
->>       __ubsan_handle_out_of_bounds.cold+0x43/0x48
->>       ? seq_printf+0x17d/0x250
->>       bpf_link_show_fdinfo+0x329/0x380
->>       ? bpf_map_value_size+0xe0/0xe0
->>       ? put_files_struct+0x20/0x2d0
->>       ? __kasan_kmalloc.constprop.0+0xc2/0xd0
->>       seq_show+0x3f7/0x540
->>       seq_read_iter+0x3f8/0x1040
->>       seq_read+0x329/0x500
->>       ? seq_read_iter+0x1040/0x1040
->>       ? __fsnotify_parent+0x80/0x820
->>       ? __fsnotify_update_child_dentry_flags+0x380/0x380
->>       vfs_read+0x123/0x460
->>       ksys_read+0xed/0x1c0
->>       ? __x64_sys_pwrite64+0x1f0/0x1f0
->>       do_syscall_64+0x33/0x40
->>       entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>      <snip>
->>      ================================================================================
->>      ================================================================================
->>      UBSAN: object-size-mismatch in kernel/bpf/syscall.c:2384:2
->>
->>  From the report, we can infer that some array access in bpf_link_show_fdinfo at index 6
->> is out of bounds. The obvious candidate is bpf_link_type_strs[BPF_LINK_TYPE_XDP] with
->> BPF_LINK_TYPE_XDP == 6. It turns out that BPF_LINK_TYPE_XDP is missing from bpf_types.h
->> and therefore doesn't have an entry in bpf_link_type_strs:
->>
->>      pos:        0
->>      flags:      02000000
->>      mnt_id:     13
->>      link_type:  (null)
->>      link_id:    4
->>      prog_tag:   bcf7977d3b93787c
->>      prog_id:    4
->>      ifindex:    1
->>
->> Fixes: aa8d3a716b59 ("bpf, xdp: Add bpf_link-based XDP attachment API")
->> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
->> ---
-> 
-> Well, oops. Thanks for the fix!
-> 
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> 
-> It would be great to have a compilation error for something like this.
-> I wonder if we can do something to detect this going forward?
-> 
->>   include/linux/bpf_types.h | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
->> index a9db1eae6796..be95f2722ad9 100644
->> --- a/include/linux/bpf_types.h
->> +++ b/include/linux/bpf_types.h
->> @@ -135,3 +135,4 @@ BPF_LINK_TYPE(BPF_LINK_TYPE_ITER, iter)
->>   #ifdef CONFIG_NET
->>   BPF_LINK_TYPE(BPF_LINK_TYPE_NETNS, netns)
->>   #endif
->> +BPF_LINK_TYPE(BPF_LINK_TYPE_XDP, xdp)
+On Fri, Jul 16, 2021 at 05:36:39PM +0200, ericwouds@gmail.com wrote:
+> From: Eric Woudstra <ericwouds@gmail.com>
+>
+> According to reference guides mt7530 (mt7620) and mt7531:
+>
+> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
+> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
+> will be used to read/write the address table.
+>
+> Since the function only fills in CVID and no FID, we need to set the
+> IVL bit. The existing code does not set it.
+>
+> This is a fix for the issue I dropped here earlier:
+>
+> http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
+>
+> With this patch, it is now possible to delete the 'self' fdb entry
+> manually. However, wifi roaming still has the same issue, the entry
+> does not get deleted automatically. Wifi roaming also needs a fix
+> somewhere else to function correctly in combination with vlan.
+>
+> Signed-off-by: Eric Woudstra <ericwouds@gmail.com>
+> ---
+>  drivers/net/dsa/mt7530.c | 1 +
+>  drivers/net/dsa/mt7530.h | 1 +
+>  2 files changed, 2 insertions(+)
+>
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 93136f7e6..9e4df35f9 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -366,6 +366,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
+>  	int i;
+>
+>  	reg[1] |= vid & CVID_MASK;
+> +	reg[1] |= ATA2_IVL;
+>  	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
+>  	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
+>  	/* STATIC_ENT indicate that entry is static wouldn't
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index 334d610a5..b19b389ff 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -79,6 +79,7 @@ enum mt753x_bpdu_port_fw {
+>  #define  STATIC_EMP			0
+>  #define  STATIC_ENT			3
+>  #define MT7530_ATA2			0x78
+> +#define  ATA2_IVL			BIT(15)
+>
+>  /* Register for address table write data */
+>  #define MT7530_ATWD			0x7c
+> --
+> 2.25.1
+>
 
-Lorenz, does this compile when you don't have CONFIG_NET configured? I would assume
-this needs to go right below the netns one depending on CONFIG_NET.. at least the
-bpf_xdp_link_lops are in net/core/dev.c which is only built under CONFIG_NET.
+Can VLAN-unaware FDB entries still be manipulated successfully after
+this patch, since it changes 'fid 0' to be interpreted as 'vid 0'?
 
-Thanks,
-Daniel
+What is your problem with roaming exactly? Have you tried to disable
+hardware address learning on the CPU port and set
+ds->assisted_learning_on_cpu_port = true for mt7530?
+
+Please note that since kernel v5.14, raw 'self' entries can no longer be
+managed directly using 'bridge fdb', you need to use 'master static' and
+go through the bridge:
+https://www.kernel.org/doc/html/latest/networking/dsa/configuration.html#forwarding-database-fdb-management
+You will need to update your 'bridgefdbd' program, if it proves to be at
+all necessary to achieve what you want.
