@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7226F3CBCA2
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 21:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333E83CBCCA
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 21:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbhGPTfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 15:35:17 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:55331 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231715AbhGPTfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 15:35:14 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id C2C163200909;
-        Fri, 16 Jul 2021 15:32:17 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 16 Jul 2021 15:32:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=animalcreek.com;
-         h=date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=OLLt4rGNVAu8jJhkBVYgJExcmT2
-        QBI1XXhNObcl8su8=; b=aa13BIQOss1hQCY4wLFOX9npRr8DztT8k7zUW8jnzJX
-        /nMGPwX/NC+hVgEfj3+oWpcqmtWnc4H5Rt9WVacErNJZDUVwiKoCuYX3MitUxwNp
-        vTPBOBN/w3RCYeWJEb9UF/O5RqXNZNIeHNuj/NU6PNY0uNIC7wxh+obYOj0eXJ5F
-        1IRZ9IfJhIyJCJIKvPUuDD1e0ar9qgtviO44wdLAhbTIaLpvHlZu66OAvp4T8+67
-        j/qr5PGO7t4QjmhssldkMjO+bHovwVCM+0/Nbc4ZhRGdlUl/off6dckMeiLBbkXX
-        X39HOx2e/3WuiP9ebig3KHtha6tnrD2crG2/v+C3cdg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=OLLt4r
-        GNVAu8jJhkBVYgJExcmT2QBI1XXhNObcl8su8=; b=KtCsouRi3ZCJ2vsx5ExiVt
-        n4+8AtWRFzE17vS8Azbz6ehAN8Xd+tefa236GnjNgB7X7zJErd4mHWupzAlt2spy
-        2srO0ov+IUyyzF6qmtw4m5qHSdyaBmVe32VruXxd+4tWXgKzGK61Uta4UW/YeRAQ
-        jVYS4S+yrku679q3gYDdKGSmashVaomJcYMcSyFJpOHqmW7pzZd4WdSv8OFaemiF
-        odv65p75tAqX6kz30+EaAbLvjocHtyNyEsTcow8glL4+HPgL2CY+iFWUjTXE3y/Q
-        8WvsCPe7xxY3cR5d+fJZdSN07BAPOHRAP7LZidHn/qQee5F9NCuM55XpDFNcv4Gg
-        ==
-X-ME-Sender: <xms:wN7xYIWqIVT9JRvodBdW2Cr21_eNYvgHyhiyaGsmCC0kvTDLzqdOFw>
-    <xme:wN7xYMk0G-J-x2Q_PuECiSEgfoRyNR1CX3YEJVdwsswUI0p3giACH-KhKYLFdorjy
-    6TCwBfHkvEWxRVINw>
-X-ME-Received: <xmr:wN7xYMZnrqVPFLz7SUyB63sfQYkESxK6VbVkP98cTa6OY1XfkMu8NeE2uRrCr-asAd8Ip2lRt0fsdA5qNNQHqjZZl-ftaFuyDSBc4s4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvdefgdduvddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjohesthdtredttddtvdenucfhrhhomhepofgrrhhk
-    ucfirhgvvghruceomhhgrhgvvghrsegrnhhimhgrlhgtrhgvvghkrdgtohhmqeenucggtf
-    frrghtthgvrhhnpedujeelgeejleegleevkeekvdevudfhteeuiedtleehtdduleelvdei
-    fffhvdehtdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhhgrhgvvghrsegrnhhimhgrlhgt
-    rhgvvghkrdgtohhm
-X-ME-Proxy: <xmx:wN7xYHV_6d87NS_7y4Mt2jrr4MLAmu4Vo3wlgKD5eUub5oAfqkuZvQ>
-    <xmx:wN7xYCknDlFPw0WWMsy5YFTRf9Jqn5MZBeWFeWj0K0flK7JWlwYxHw>
-    <xmx:wN7xYMce6GI0j_9yBxh3yNVO8XJyzIK-qNBg8euZZUiW0OEJE6ukeg>
-    <xmx:wd7xYJvmbwZ9tKdp_-FUWFwdv78ILaccBI93cYvQ59QFfxf56KPnig>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 16 Jul 2021 15:32:16 -0400 (EDT)
-Received: by blue.animalcreek.com (Postfix, from userid 1000)
-        id 4050B1360093; Fri, 16 Jul 2021 12:32:15 -0700 (MST)
-Date:   Fri, 16 Jul 2021 12:32:15 -0700
-From:   Mark Greer <mgreer@animalcreek.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Mark Greer <mgreer@animalcreek.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-nfc@lists.01.org
-Subject: Re: [linux-nfc] Re: [PATCH 1/2] MAINTAINERS: nfc: add Krzysztof
- Kozlowski as maintainer
-Message-ID: <20210716193215.GA597092@animalcreek.com>
-References: <20210512144319.30852-1-krzysztof.kozlowski@canonical.com>
- <961dc9c5-0eb0-586c-5e70-b21ca2f8e6f3@linaro.org>
- <d498c949-3b1e-edaa-81ed-60573cfb6ee9@canonical.com>
- <20210512164952.GA222094@animalcreek.com>
- <df2ec154-79fa-af7b-d337-913ed4a0692e@canonical.com>
- <20210715183413.GB525255@animalcreek.com>
- <d996605f-020c-95c9-6ab4-cfb101cb3802@canonical.com>
- <20210716171513.GB590407@animalcreek.com>
- <CA+Eumj7SPFXOMUGRxZqjG-0Jq_1EnWwh9Ny-a=+QsN8tfrrCwg@mail.gmail.com>
+        id S233008AbhGPTnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 15:43:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39820 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231266AbhGPTnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 15:43:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 835BA613EB;
+        Fri, 16 Jul 2021 19:40:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626464430;
+        bh=yy3lgzUv8c1hezgnRSueqAhnq8qdRsPvZZMExvBL9ds=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VsvM5esBWErc9ifFp1rySZVY0gQbEdYGS80SSJlbqxl1Eh8pdzz+jlaiXTYb4Ky/G
+         RakiafNe52KhwlxaqZCjHNAF7Cwnt4ZRGjTUOlhXpw+/sE8/r/8AaVS3TgSkxWWLGp
+         72elzNi15WIqqWjhBr5tXO6mwBn//0HnR2RHO6hpu+qNOoB4ErcxmTLmGq6/w7u18E
+         faQCa+Te7mrs/nrOUyF9pCgXYCi2Rtd7cUjZJK5gACyl5pIQmihork4t9KPYBVG/u+
+         FtgkFdaB1vQQpl5DszQG6UABKLJR8gAenDmQ6gE/FooDW25+R07/FjM3q129ruXGVV
+         xSCuSs15DRMPw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 77744609EF;
+        Fri, 16 Jul 2021 19:40:30 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+Eumj7SPFXOMUGRxZqjG-0Jq_1EnWwh9Ny-a=+QsN8tfrrCwg@mail.gmail.com>
-Organization: Animal Creek Technologies, Inc.
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V1 0/3] dt-bindings: net: fec: convert fsl,*fec bindings to
+ yaml
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162646443048.11536.12063272896536154628.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Jul 2021 19:40:30 +0000
+References: <20210716102911.23694-1-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210716102911.23694-1-qiangqing.zhang@nxp.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, bruno.thomsen@gmail.com, linux-imx@nxp.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 08:17:31PM +0200, Krzysztof Kozlowski wrote:
-> On Fri, 16 Jul 2021 at 19:15, Mark Greer <mgreer@animalcreek.com> wrote:
-> > > I am happy to move entire development to github and keep kernel.org only
-> > > for releases till some distro packages notice the change. If Github,
-> > > then your linux-nfc looks indeed nicer.
-> >
-> > Okay, lets do that.  I'm the owner so I can give permissions to whoever
-> > needs them (e.g., you :).
-> 
-> Then please assign some to the account "krzk" on Github. Thanks!
+Hello:
 
-Done.
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 16 Jul 2021 18:29:08 +0800 you wrote:
+> This patch set intends to convert fec binding into scheme, and fixes
+> when do dtbs_check on ARCH arm.
+> 
+> One notice is that there are below logs for some dts when do dtbs_check:
+> 	ethernet@2188000: More than one condition true in oneOf schema:
+> We found that fec node in these dts all have "interrupts-extended"
+> property, and schema default is:
+>          'oneOf': [{'required': ['interrupts']},
+>                    {'required': ['interrupts-extended']}],
+> so we don't know if it is a common issue or need be fixed in specific
+> bindings.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V1,1/3] dt-bindings: net: fec: convert fsl,*fec bindings to yaml
+    https://git.kernel.org/netdev/net-next/c/96e4781b3d93
+  - [V1,2/3] ARM: dts: imx35: correct node name for FEC
+    https://git.kernel.org/netdev/net-next/c/95740a9a3ad9
+  - [V1,3/3] ARM: dts: imx7-mba7: remove un-used "phy-reset-delay" property
+    https://git.kernel.org/netdev/net-next/c/86a176f485b5
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
