@@ -2,116 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C65F33CBBCD
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 20:23:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7058E3CBBEF
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 20:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231266AbhGPS02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 14:26:28 -0400
-Received: from phobos.denx.de ([85.214.62.61]:53494 "EHLO phobos.denx.de"
+        id S231969AbhGPSnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 14:43:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229462AbhGPS00 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 14:26:26 -0400
-Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id E0CF282BE8;
-        Fri, 16 Jul 2021 20:23:29 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1626459810;
-        bh=3r5fIQrYWK0hiHreSsehhPP7aroB2oCq1VtKIF/snPI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pPkTAnnZkiHCA/DbBlaNKTkXH27eYLEnotn3twms8um0xfZ9YQNgiewLRhjJirNGh
-         C0uHYI/IR3YVOUsdXbwGNsvDiiI8kllQ06CF7tqSS/4AidSewtWDMkEqRjtxpgdKg4
-         rXLUxECtzT/N3R7UYr09h0eXAPdVrO05u+vO4HrNXjOcmCJkp197cWYD/VPuHmSg+d
-         FY+kO29HSJ5Vm83ZoqLPkGbeVYtQ+/CclAW55EaE8kLuZfMSupJKdltEiotjd5Qun5
-         ifFa3NHt3HLErObanSlMpsjs+rN5JFvD0zZBs20Eq9zV11YYuz2+buglpMDpmrP2KI
-         RHV9nSlTGzysQ==
-From:   Marek Vasut <marex@denx.de>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH] net: phy: Add RGMII_ID/TXID/RXID handling to the DP83822 driver
-Date:   Fri, 16 Jul 2021 20:23:28 +0200
-Message-Id: <20210716182328.218768-1-marex@denx.de>
-X-Mailer: git-send-email 2.30.2
+        id S231266AbhGPSm7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 14:42:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7365D613F3;
+        Fri, 16 Jul 2021 18:40:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626460804;
+        bh=yxkP2+8maL2P5u+42r8Svn1uXNu5o9H/w9R8jCsekik=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jzV6+ebPZnZco9brJzopkwyWjVMnbw6OVKt0nglm4GcKVOWkhi/34e16uCj5JL1rH
+         1pa8ToUyeX0uEdd0/JrtyNl7yHRNYhAe+hZu/Xxig2CLwWw8o85K7MXcwyeHU55BxW
+         Ab4u+eBlV0eH7V8ru61Y8Gx0IwzavRCxb8OwdMQ+T7+OprGk6b5uKbjKeC4vzRP2Dd
+         99w1eWk1fuvQbf6qNmDF7nr0qnptuDHqsjMJIVauEPnoMaJq0sOuwSbmrOGS/owras
+         Aexcbl6N+U+ve8aD8uI/m0I2wGhdy7BFJgmciLhnweyE9E7hlrfCK6lAojVmJwamtF
+         XKXj+htbzC2zg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64960609CD;
+        Fri, 16 Jul 2021 18:40:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+Subject: Re: [PATCH net-next] netdevsim: Add multi-queue support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162646080440.26435.12261408359950246582.git-patchwork-notify@kernel.org>
+Date:   Fri, 16 Jul 2021 18:40:04 +0000
+References: <20210716015246.7729-1-yepeilin.cs@gmail.com>
+In-Reply-To: <20210716015246.7729-1-yepeilin.cs@gmail.com>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, cong.wang@bytedance.com,
+        peilin.ye@bytedance.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for setting the internal clock shift of the PHY based on
-the interface requirements. RX/TX/both is supported for RGMII.
+Hello:
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Dan Murphy <dmurphy@ti.com>
-Cc: David S. Miller <davem@davemloft.net>
----
- drivers/net/phy/dp83822.c | 37 +++++++++++++++++++++++++++++++++----
- 1 file changed, 33 insertions(+), 4 deletions(-)
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index f7a2ec150e54..971c8d6b85d2 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -72,6 +72,10 @@
- #define DP83822_ANEG_ERR_INT_EN		BIT(6)
- #define DP83822_EEE_ERROR_CHANGE_INT_EN	BIT(7)
- 
-+/* RCSR bits */
-+#define DP83822_RGMII_RX_CLOCK_SHIFT	BIT(12)
-+#define DP83822_RGMII_TX_CLOCK_SHIFT	BIT(11)
-+
- /* INT_STAT1 bits */
- #define DP83822_WOL_INT_EN	BIT(4)
- #define DP83822_WOL_INT_STAT	BIT(12)
-@@ -326,11 +330,36 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
- 
- static int dp8382x_disable_wol(struct phy_device *phydev)
- {
--	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
--		    DP83822_WOL_SECURE_ON;
-+	u16 val = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN | DP83822_WOL_SECURE_ON;
-+
-+	ret = phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
-+				 MII_DP83822_WOL_CFG, val);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
-+		ret = phy_modify_mmd(phydev, DP83822_DEVADDR, MII_DP83822_RCSR,
-+				     DP83822_RGMII_RX_CLOCK_SHIFT,
-+				     DP83822_RGMII_RX_CLOCK_SHIFT);
-+	} else {
-+		ret = phy_modify_mmd(phydev, DP83822_DEVADDR, MII_DP83822_RCSR,
-+				     DP83822_RGMII_RX_CLOCK_SHIFT, 0);
-+	}
-+	if (ret < 0)
-+		return ret;
-+
-+	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
-+		ret = phy_modify_mmd(phydev, DP83822_DEVADDR, MII_DP83822_RCSR,
-+				     DP83822_RGMII_TX_CLOCK_SHIFT,
-+				     DP83822_RGMII_TX_CLOCK_SHIFT);
-+	} else {
-+		ret = phy_modify_mmd(phydev, DP83822_DEVADDR, MII_DP83822_RCSR,
-+				     DP83822_RGMII_TX_CLOCK_SHIFT, 0);
-+	}
- 
--	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
--				  MII_DP83822_WOL_CFG, value);
-+	return ret;
- }
- 
- static int dp83822_read_status(struct phy_device *phydev)
--- 
-2.30.2
+On Thu, 15 Jul 2021 18:52:45 -0700 you wrote:
+> From: Peilin Ye <peilin.ye@bytedance.com>
+> 
+> Currently netdevsim only supports a single queue per port, which is
+> insufficient for testing multi-queue TC schedulers e.g. sch_mq.  Extend
+> the current sysfs interface so that users can create ports with multiple
+> queues:
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] netdevsim: Add multi-queue support
+    https://git.kernel.org/netdev/net-next/c/d4861fc6be58
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
