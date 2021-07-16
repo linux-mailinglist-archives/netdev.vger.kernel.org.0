@@ -2,193 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2683CB977
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1813CB98D
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:18:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240282AbhGPPNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
+        id S240580AbhGPPVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbhGPPNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:13:11 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99B1C06175F
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 08:10:15 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id v1so13377891edt.6
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 08:10:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=j+t8yjXII30Lt5iuh2lD0XOM6VDJ4rSKKotoaLtBVTE=;
-        b=NmDmnwcigBAfFv56us2Q+6YtSLjpj6UYibPqgeIuYjH5YsAKTzcVzxvxie//jW2fkB
-         ryMbNSUCQwRHd/ksYIiJz94shvaH1FeuSUa0FLIIGkzBUIfPhYgZqr1re2atI6fBBzBC
-         V89ZKqHWdAymaZN2LKw0/r7sjKEP/TytMbEOAgCO1yfglr+Nfr07+cqiwzoIgJnu72BS
-         vECDmf09mCDZJBKPynjI4WgQSVKPMDrlEaHafCXbyGD0w93D0A2Z5cLlXIT3IMHnmddn
-         KSNe18ShxszJF8jWNqDO8KgPPK5weeZqQOfSmzaxj+BOU0o6qhHaL/Vod6RgafzjUtfa
-         2soA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=j+t8yjXII30Lt5iuh2lD0XOM6VDJ4rSKKotoaLtBVTE=;
-        b=BCYVeybhR2nc37uBTZKLAOzfWuttm8fe2dniVshy3IMuDrVtrkomcvTTXDzetjRPYB
-         N09j2aqoL5tAKqhDvudArbzWWzJuCFnovawK94IdacvkXGpXsV1Sfe6ronK8YQcFhDB1
-         oGdGXwrTtbeyxU3iqGyhrpImpfSSGe1q+TZBRSSsyT3RhGgUCJkuucz2hmBxY3uWwhIc
-         SnE182de78p9ugQxo/82ETchAEdruB/nUwidh980DaRWZcV8Vop55BdHW2O5mhcOxJAt
-         ZL3waNrm5XYP1auvOJqjrbzDb6ByAo0d8wV2UYRRrCMeyXbSj4h3BQc++ufHvJWZIrr0
-         hMnw==
-X-Gm-Message-State: AOAM5301lD/L99XQxwcuCiYaoG1csnf/Q+BRg3MneXw8ofp7bHzXVN5F
-        RDUo7VfIfIugUl1cuuGCOlk03q2Xij/70Kz9W0e8VJkZ3cpQhQ==
-X-Google-Smtp-Source: ABdhPJzwEFlQSCfOnqZQjgnHRsC9jJMnrVMgMSWUk+GirmJVIRTIcdU3SZO7RuF8fdeH5O24DPKTPJwe5Da6qXPI1dE=
-X-Received: by 2002:aa7:d809:: with SMTP id v9mr15538411edq.146.1626448214193;
- Fri, 16 Jul 2021 08:10:14 -0700 (PDT)
+        with ESMTP id S233094AbhGPPVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:21:38 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E62C06175F;
+        Fri, 16 Jul 2021 08:18:42 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1m4Pbl-0004ys-49; Fri, 16 Jul 2021 17:18:33 +0200
+Date:   Fri, 16 Jul 2021 17:18:33 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+Subject: Re: [PATCH 2/3] net: netfilter: Add RFC-7597 Section 5.1 PSID support
+Message-ID: <20210716151833.GD9904@breakpoint.cc>
+References: <20210705103959.GG18022@breakpoint.cc>
+ <20210716002742.31078-1-Cole.Dishington@alliedtelesis.co.nz>
+ <20210716002742.31078-3-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
-From:   Ilya Dmitrichenko <errordeveloper@gmail.com>
-Date:   Fri, 16 Jul 2021 16:10:03 +0100
-Message-ID: <CAPhDKbFwGzpjR_f=jz4JAq6GUDMd+2oZPwGVy7ru1XrUJVtXQA@mail.gmail.com>
-Subject: [PATCH] ip/tunnel: always print all known attributes
-To:     netdev@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210716002742.31078-3-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Presently, if a Geneve or VXLAN interface was created with 'external',
-it's not possible for a user to determine e.g. the value of 'dstport'
-after creation. This change fixes that by avoiding early returns.
+Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
+> diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+> index 7de595ead06a..4a9448684504 100644
+> --- a/net/netfilter/nf_nat_core.c
+> +++ b/net/netfilter/nf_nat_core.c
+> @@ -195,13 +195,36 @@ static bool nf_nat_inet_in_range(const struct nf_conntrack_tuple *t,
+>  static bool l4proto_in_range(const struct nf_conntrack_tuple *tuple,
+>  			     enum nf_nat_manip_type maniptype,
+>  			     const union nf_conntrack_man_proto *min,
+> -			     const union nf_conntrack_man_proto *max)
+> +			     const union nf_conntrack_man_proto *max,
+> +			     const union nf_conntrack_man_proto *base,
+> +			     bool is_psid)
+>  {
+>  	__be16 port;
+> +	u16 psid, psid_mask, offset_mask;
+> +
+> +	/* In this case we are in PSID mode, avoid checking all ranges by computing bitmasks */
+> +	if (is_psid) {
+> +		u16 power_j = ntohs(max->all) - ntohs(min->all) + 1;
+> +		u32 offset = ntohs(base->all);
+> +		u16 power_a;
+> +
+> +		if (offset == 0)
+> +			offset = 1 << 16;
+> +
+> +		power_a = (1 << 16) / offset;
 
-This change partly reverts 00ff4b8e31af ("ip/tunnel: Be consistent when
-printing tunnel collect metadata").
+Since the dividie is only needed nat setup and not for each packet I
+think its ok.
 
-Signed-off-by: Ilya Dmitrichenko <errordeveloper@gmail.com>
----
- ip/iplink_geneve.c | 12 ++++--------
- ip/iplink_vxlan.c  | 12 ++++--------
- ip/link_gre.c      |  1 -
- ip/link_gre6.c     |  1 -
- ip/link_ip6tnl.c   |  1 -
- ip/link_iptnl.c    |  1 -
- 6 files changed, 8 insertions(+), 20 deletions(-)
+> +	if (range->flags & NF_NAT_RANGE_PSID) {
+> +		u16 base = ntohs(range->base_proto.all);
+> +		u16 min =  ntohs(range->min_proto.all);
+> +		u16 off = 0;
+> +
+> +		/* If offset=0, port range is in one contiguous block */
+> +		if (base)
+> +			off = prandom_u32() % (((1 << 16) / base) - 1);
 
-diff --git a/ip/iplink_geneve.c b/ip/iplink_geneve.c
-index 9299236c..7db7e62f 100644
---- a/ip/iplink_geneve.c
-+++ b/ip/iplink_geneve.c
-@@ -243,7 +243,6 @@ static int geneve_parse_opt(struct link_util *lu,
-int argc, char **argv,
+Bases 32769 > gives 0 for the modulo value, so perhaps compute that
+independently.
 
- static void geneve_print_opt(struct link_util *lu, FILE *f, struct
-rtattr *tb[])
- {
-- __u32 vni;
-  __u8 ttl = 0;
-  __u8 tos = 0;
+You could reject > 32769 in the iptables checkentry target.
 
-@@ -252,15 +251,12 @@ static void geneve_print_opt(struct link_util
-*lu, FILE *f, struct rtattr *tb[])
+Also, base of 21846 and above always give 0 result (% 1).
 
-  if (tb[IFLA_GENEVE_COLLECT_METADATA]) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
+I don't know psid well enough to give a recommendation here.
 
-- if (!tb[IFLA_GENEVE_ID] ||
--    RTA_PAYLOAD(tb[IFLA_GENEVE_ID]) < sizeof(__u32))
-- return;
--
-- vni = rta_getattr_u32(tb[IFLA_GENEVE_ID]);
-- print_uint(PRINT_ANY, "id", "id %u ", vni);
-+ if (tb[IFLA_GENEVE_ID] &&
-+    RTA_PAYLOAD(tb[IFLA_GENEVE_ID]) >= sizeof(__u32)) {
-+        print_uint(PRINT_ANY, "id", "id %u ",
-rta_getattr_u32(tb[IFLA_GENEVE_ID]));
-+        }
+If such inputs are nonsensical, just reject it when userspace asks for
+this and add a 
 
-  if (tb[IFLA_GENEVE_REMOTE]) {
-  __be32 addr = rta_getattr_u32(tb[IFLA_GENEVE_REMOTE]);
-diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
-index bae9d994..8578fc9d 100644
---- a/ip/iplink_vxlan.c
-+++ b/ip/iplink_vxlan.c
-@@ -408,7 +408,6 @@ static int vxlan_parse_opt(struct link_util *lu,
-int argc, char **argv,
+if (WARN_ON_ONCE(base > bogus))
+	return NF_DROP;
 
- static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- {
-- __u32 vni;
-  __u8 ttl = 0;
-  __u8 tos = 0;
-  __u32 maxaddr;
-@@ -419,15 +418,12 @@ static void vxlan_print_opt(struct link_util
-*lu, FILE *f, struct rtattr *tb[])
-  if (tb[IFLA_VXLAN_COLLECT_METADATA] &&
-     rta_getattr_u8(tb[IFLA_VXLAN_COLLECT_METADATA])) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
+with s small coment explaining that xtables is supposed to not provide
+such value.
 
-- if (!tb[IFLA_VXLAN_ID] ||
--    RTA_PAYLOAD(tb[IFLA_VXLAN_ID]) < sizeof(__u32))
-- return;
--
-- vni = rta_getattr_u32(tb[IFLA_VXLAN_ID]);
-- print_uint(PRINT_ANY, "id", "id %u ", vni);
-+ if (tb[IFLA_VXLAN_ID] &&
-+    RTA_PAYLOAD(tb[IFLA_VXLAN_ID]) >= sizeof(__u32)) {
-+ print_uint(PRINT_ANY, "id", "id %u ", rta_getattr_u32(tb[IFLA_VXLAN_ID]));
-+        }
+Other than this I think its ok.
 
-  if (tb[IFLA_VXLAN_GROUP]) {
-  __be32 addr = rta_getattr_u32(tb[IFLA_VXLAN_GROUP]);
-diff --git a/ip/link_gre.c b/ip/link_gre.c
-index 6d4a8be8..f462a227 100644
---- a/ip/link_gre.c
-+++ b/ip/link_gre.c
-@@ -442,7 +442,6 @@ static void gre_print_opt(struct link_util *lu,
-FILE *f, struct rtattr *tb[])
-
-  if (tb[IFLA_GRE_COLLECT_METADATA]) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
-
-  tnl_print_endpoint("remote", tb[IFLA_GRE_REMOTE], AF_INET);
-diff --git a/ip/link_gre6.c b/ip/link_gre6.c
-index f33598af..232d9bde 100644
---- a/ip/link_gre6.c
-+++ b/ip/link_gre6.c
-@@ -461,7 +461,6 @@ static void gre_print_opt(struct link_util *lu,
-FILE *f, struct rtattr *tb[])
-
-  if (tb[IFLA_GRE_COLLECT_METADATA]) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
-
-  if (tb[IFLA_GRE_FLAGS])
-diff --git a/ip/link_ip6tnl.c b/ip/link_ip6tnl.c
-index c7b49b02..2fcc13ef 100644
---- a/ip/link_ip6tnl.c
-+++ b/ip/link_ip6tnl.c
-@@ -344,7 +344,6 @@ static void ip6tunnel_print_opt(struct link_util
-*lu, FILE *f, struct rtattr *tb
-
-  if (tb[IFLA_IPTUN_COLLECT_METADATA]) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
-
-  if (tb[IFLA_IPTUN_FLAGS])
-diff --git a/ip/link_iptnl.c b/ip/link_iptnl.c
-index 636cdb2c..b25855ba 100644
---- a/ip/link_iptnl.c
-+++ b/ip/link_iptnl.c
-@@ -368,7 +368,6 @@ static void iptunnel_print_opt(struct link_util
-*lu, FILE *f, struct rtattr *tb[
-
-  if (tb[IFLA_IPTUN_COLLECT_METADATA]) {
-  print_bool(PRINT_ANY, "external", "external ", true);
-- return;
-  }
-
-  if (tb[IFLA_IPTUN_PROTO]) {
+I still dislike the 'bool is_psid' in the nat core, but I can't find
+a better solution.
