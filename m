@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBAFF3CB013
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 02:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FCB93CB018
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 02:37:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbhGPAbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 20:31:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232381AbhGPAbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 20:31:34 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C230AC06175F;
-        Thu, 15 Jul 2021 17:28:38 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id u13so13034957lfs.11;
-        Thu, 15 Jul 2021 17:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yD77dnn4651Xnc0nAi85W2uxy3EOP0ioN8sLJWpXNq0=;
-        b=a70Qpv8uQlHDs3GuHqIccJSx3dQeS4f4wJ/pnCaM+PVtxqT+WTSZJxA7vL6y6JdJ3s
-         HbwQ/WNWMO1mVJSzjvyP8XHeBBMhZfsIxSu4TvrOO/TyQ9ov0fG4sSSb1q3wJ7K+qVQT
-         EXYWsJp5ZoFgXGhOFtmO7GQ9zsZGoee7goiNu8jM+mntaS9frXG0sBIJCx7IifeQ+89c
-         URXb0Vuxnq2vUj4YQozDE70WmBYPT58eJMSGeWXEE1eKRHhjuao804AAiGyY1DfsPOdj
-         ryE6EEGIufy3afeG1oJD+i2o8cB+9AwbgfY22VGOgX1skEYnFy1Hy5BdGvEspIxH34cf
-         fVEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yD77dnn4651Xnc0nAi85W2uxy3EOP0ioN8sLJWpXNq0=;
-        b=bXAu/OkVPbCXxqCGcmKqg6wQbeJzPYjpWYVqel1fU4QqlwAEAEKjOHZsfmaLO9vlvV
-         AKIejI9WnfK9wVqAwHMIhdZyly1D3EY0AhmTMGKiSa5ek8d5qMPnlhhSDcRVyWPlJlLy
-         f8esz8FCeib7LbrHHc5eAgqf43Fz33T7sjN9W4f5+ErX/Mys4N6jfPuQm+19zuieNI+G
-         076eiua1jRTUPPBgm5fzBNazVVhwtTzHd1jiGos4h74mUJb4uBNgnhP7Ae6UQbScubA2
-         JeSQw10CxzylwLkUFeEtcsxlZR5GOjJAK0RW3W7LEKbIrMGbQG0Z5f4yuGJ4PGwvfug8
-         W2tg==
-X-Gm-Message-State: AOAM531H3d3ujFle8JMNX5RnlbrZBSMf4Aj4tBIgwmKDnjNsTGBnGaon
-        dhS0hY/TpEBdphT+/lnW75qYgkQPspQas4+02AQ=
-X-Google-Smtp-Source: ABdhPJyEfGr277L08TnzJByi1W+0tKNHjFnFQLHbNBLZw/jk/ppClB1ud+hVVGkcC4D4mBTRbRm3mUYrSo+pZgTJNHM=
-X-Received: by 2002:ac2:5ddb:: with SMTP id x27mr5440716lfq.539.1626395317195;
- Thu, 15 Jul 2021 17:28:37 -0700 (PDT)
+        id S232559AbhGPAkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 20:40:22 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:47147 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232095AbhGPAkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 20:40:21 -0400
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D3274806B5;
+        Fri, 16 Jul 2021 12:37:25 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1626395845;
+        bh=68gvUVrMgDWcYm5Vk9ECjsxj2GI5s4rQAgjRIsKQKvg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Nt1GmSPplfHMvM1UepuAgakcvZr+UHZsNvonK6BZWTxna1DMyaI3bKd/kbfVUbBPy
+         QPq1NpP4dDCPftUiRvjKoQIk+/niSv815vSCQMK746fFKchVgFMReeFuoe8u4xtbON
+         VxYIRL8QAT+LCUsv3bddifUNA62CWIS+s3nKHBlrlNurq4w0Jf7iHXn+WnV7MnBOK3
+         9rZpfxemEpfSc38DnctVMcgkKKO2eMHboExgf6sgQONJh3Hsx84CBPIinQ2UiomvVv
+         Zwg3wad9pteuF7Z8Ee8tMn6zPa4bLguKsprmFZkao/p8VPecvBZuXs7Yy224JokRqZ
+         iVPNU5CJFia3g==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B60f0d4c50000>; Fri, 16 Jul 2021 12:37:25 +1200
+Received: from coled-dl.ws.atlnz.lc (coled-dl.ws.atlnz.lc [10.33.25.26])
+        by pat.atlnz.lc (Postfix) with ESMTP id A711113EE58;
+        Fri, 16 Jul 2021 12:37:25 +1200 (NZST)
+Received: by coled-dl.ws.atlnz.lc (Postfix, from userid 1801)
+        id A1CD22428E7; Fri, 16 Jul 2021 12:37:25 +1200 (NZST)
+From:   Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+To:     pablo@netfilter.org
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Subject: [PATCH 0/3] Add RFC-7597 Section 5.1 PSID support
+Date:   Fri, 16 Jul 2021 12:27:39 +1200
+Message-Id: <20210716002742.31078-1-Cole.Dishington@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210705103959.GG18022@breakpoint.cc>
+References: <20210705103959.GG18022@breakpoint.cc>
 MIME-Version: 1.0
-References: <CABX6iNp=u+QNRGjHFMBFosTJ4a8xkDUnSD9G35EqKCW2JvFc_w@mail.gmail.com>
-In-Reply-To: <CABX6iNp=u+QNRGjHFMBFosTJ4a8xkDUnSD9G35EqKCW2JvFc_w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 15 Jul 2021 17:28:26 -0700
-Message-ID: <CAADnVQLu3HkAVgJRmjgU1XFbCS+GOhsyTJdGcDU2iJnzAOiwKw@mail.gmail.com>
-Subject: Re: Appending the INT meta data and header in end host
-To:     Sandesh Dhawaskar Sathyanarayana 
-        <Sandesh.DhawaskarSathyanarayana@colorado.edu>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        "Fingerhut, John Andy" <john.andy.fingerhut@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Petr Lapukhov <petr@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Sr3uF8G0 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=e_q4qTt1xDgA:10 a=UaPN0VJYGzK_QuBb5qYA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 15, 2021 at 5:27 PM Sandesh Dhawaskar Sathyanarayana
-<Sandesh.DhawaskarSathyanarayana@colorado.edu> wrote:
->
-> Hi Alexei,
->
-> Sorry I should have been more clear.
+Thanks for your time reviewing!
 
-please do NOT top post.
+Changes in v4:
+- Handle special case of no offset bits (a=3D0 / A=3D2^16).
+
+Cole Dishington (3):
+  net: netfilter: Add RFC-7597 Section 5.1 PSID support xtables API
+  net: netfilter: Add RFC-7597 Section 5.1 PSID support
+  selftests: netfilter: Add RFC-7597 Section 5.1 PSID selftests
+
+ include/uapi/linux/netfilter/nf_nat.h         |   3 +-
+ net/netfilter/nf_nat_core.c                   |  39 +++-
+ net/netfilter/nf_nat_masquerade.c             |  20 +-
+ net/netfilter/xt_MASQUERADE.c                 |  44 ++++-
+ .../netfilter/nat_masquerade_psid.sh          | 182 ++++++++++++++++++
+ 5 files changed, 276 insertions(+), 12 deletions(-)
+ create mode 100644 tools/testing/selftests/netfilter/nat_masquerade_psid=
+.sh
+
+--=20
+2.32.0
+
