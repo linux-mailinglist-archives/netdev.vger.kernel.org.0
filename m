@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FEE3CBACB
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 18:57:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FE43CBAD4
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 18:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229833AbhGPRAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 13:00:15 -0400
-Received: from smtp-33-i2.italiaonline.it ([213.209.12.33]:37885 "EHLO
+        id S231192AbhGPRA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 13:00:56 -0400
+Received: from smtp-33-i2.italiaonline.it ([213.209.12.33]:43699 "EHLO
         libero.it" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230208AbhGPQ76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 12:59:58 -0400
+        id S230191AbhGPRAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 13:00:54 -0400
 Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it ([79.54.92.92])
         by smtp-33.iol.local with ESMTPA
-        id 4R8tmKNNmS6GM4R90mO7bh; Fri, 16 Jul 2021 18:56:58 +0200
+        id 4R8tmKNNmS6GM4R91mO7bu; Fri, 16 Jul 2021 18:56:59 +0200
 x-libjamoibt: 1601
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
-        t=1626454618; bh=VGNCFLBzeyw84IVyEb6PZZrx3WMwI604pwR2tdhmc4g=;
+        t=1626454619; bh=KWD/wzdaPvT0fsYgJVYpslUqQQ4hDFaggJS+tSzFXM8=;
         h=From;
-        b=UBk+z1nm9wR4TYy2TKzrMrAwrjUSmOVulhehuJc3Jkfzq06N5YCLfBzFB+3vZv2Ia
-         co5t4rQViC16HA1IRTs2Bt4Yki1S7XO1GXC6vG7d6BLSMZeq2zl1fmbptSUjG6faYi
-         IIQPHMem+ZXDn2EB74RTCB2hSQkVavCsZFuCoWOD0A+wAHET2taVxZmUC2utDTeAwA
-         HV8C9KDiMBuFwVrxWvP+Fw9Xi6xFx2MVMmnyduqHtCdhZmL3g/jJCJIxWEMUV0+vHU
-         lpeYWfYnuJAy8dN8je6XiIcOkGgOBIhgaKnJb6S/ArJP5Q30GVXYUQzBOQuOtS6O5i
-         d3dmPaNgpkLrg==
-X-CNFS-Analysis: v=2.4 cv=AcF0o1bG c=1 sm=1 tr=0 ts=60f1ba5a cx=a_exe
- a=eKwsI+FXzXP/Nc4oRbpalQ==:117 a=eKwsI+FXzXP/Nc4oRbpalQ==:17 a=VwQbUJbxAAAA:8
- a=83yiEfbaggHBMMd4CMwA:9 a=TlxWwjO5pACKU3_K:21 a=9s_oUIA50SGwrPgz:21
- a=AjGcO6oz07-iQ99wixmX:22
+        b=M5p9z9KnI4apX914fitNQ6VTd5iC/2725NNtm0KExszlYW/EtJ/Jg/3bFgeBBGGTb
+         ROajGgDwxxtrR3NDGzTtroByIS/GkxkbRc1RB5+un0hyD/1Xgfy1rFxu9cCf9hUIro
+         URIcibzf96D9iFb5OlP7y015nwBKVAjlhhBVFPXvTHBCOLgsFqA29KWD8Z9KATBSfA
+         gj/Z14yuJT8/CVeAPKMFLl3M0c01We7eyQ0EM7w0UhoT9uOALFzU+S7H61KWd5SbXA
+         hKEiXjluPAu6CclG+1OVqfxXiHb7qW5oRgGCYWzeRHti/WE4uOh8WD4wrE6xJFSIAW
+         l9L0eZrSrg/IQ==
+X-CNFS-Analysis: v=2.4 cv=AcF0o1bG c=1 sm=1 tr=0 ts=60f1ba5b cx=a_exe
+ a=eKwsI+FXzXP/Nc4oRbpalQ==:117 a=eKwsI+FXzXP/Nc4oRbpalQ==:17
+ a=ci6mTl68RD0LDj9SGHYA:9 a=zPaA-w0dnRgsZjSy:21 a=aeJ6SaH8bT6bZ-aJ:21
 From:   Dario Binacchi <dariobin@libero.it>
 To:     linux-kernel@vger.kernel.org
 Cc:     Gianluca Falavigna <gianluca.falavigna@inwind.it>,
@@ -40,234 +39,165 @@ Cc:     Gianluca Falavigna <gianluca.falavigna@inwind.it>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 3/4] can: c_can: support tx ring algorithm
-Date:   Fri, 16 Jul 2021 18:56:22 +0200
-Message-Id: <20210716165623.19677-4-dariobin@libero.it>
+Subject: [PATCH 4/4] can: c_can: cache frames to operate as a true FIFO
+Date:   Fri, 16 Jul 2021 18:56:23 +0200
+Message-Id: <20210716165623.19677-5-dariobin@libero.it>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210716165623.19677-1-dariobin@libero.it>
 References: <20210716165623.19677-1-dariobin@libero.it>
-X-CMAE-Envelope: MS4xfLH9hcar4n2Z0lDfTRw6KsDOa/8RUbDd3uxDk+x6+jx+2/mqp6ypsPo8YZHLpIWU9dbXqEKenWUeixgw0FphysQXlC+rw8+nSjVW1UJdJgPNSwc6veNg
- 5sUZzzTTYd26HNcbs9fulOr5URgYfAQVDVmq1igHEyR94YHpY25DsrxOf5vR5PXH5BQvJu/QzohOnGEkrpcGdpiQ6jJZKF3N1yxyRTqRPvaGeuvcEPFDfLO5
- cH4bIfuvHiuKmwbCc1Rm+XoPULxlyqDJ4IjHgHDlybQjPw/OF24GEB/sGNN069IEfEFhUj8OgN1vmfHnhhe6XrKFoLWBuapp+c3tW9Wv5aZGrkycmc1WZXDP
- di/E+GPp5trVFsnRIe4YKtJd9/8LXPCkcHnFVj5ufgEiqjIcAK/icBFezkPFCGsUj0XU/b7909HOrNFO+WHpU1LDY2xlVXpo1tpbGeKmAeFtexSWLDf7D5LH
- 9pG7CfqmNEPaIPvjl+iWhr8EU+8PvzZB5zssx8eDo3UK0r6dym+TyR7CEVnq9DrRZRaOFlyBfZ5VOPbnxyVW9qSyPUXNbEceKeBLzVrzCzb+nOAlMk8ueiNl
- 9V0=
+X-CMAE-Envelope: MS4xfJwJslVA2cb60Nx41WhPUMCgwwFuMvrWlgOPnh7OBeEkiIb5GpdEvI4dVbdUaD3iUexMwIQ+3DDGlWch5+pFyKLUTcctcoU0N9eU6WYtl26gBxorS/6j
+ ZZhsuH8DU+qEQR37f9emL2YbBfAEplXbJsyWpFoe2VmTFM/6uOEIBxWv19SL67bBJ+dEiQTu3hCzbPv5Ycg8r7Qvy2W4F5/ITgsTrSLOSqQG/XvwzAMztK7I
+ 7NI+8ZjAP7QVdVOAt8MYUT6Tv1MDKp1s109ef9SCNAvTpX1RG0TabzqNdTHq9K9JmHu83XiQxfGbyQv40N24mQ4U4owIXntQOdmXtLoiKAYT9uqhO6QbwMQG
+ uMLdQCKk0EvI6HznNJYIyrMAhVCMKKuGQKYMOG1sDFU5jnQIjYP/4xgbPB4tM0FFKv9A2JTBBgPnn1eQH+G1bLmw9Bn9BQb5tRjB/V2SKjG0htVAuVF9A2YU
+ nm9Oepz55WPIHc19XR6mvXb+GqLvikWf03Hf6w7Chu4eYxPBK6ii0m8cVXBGAcUZMwPk3Snl1W5cJ+g1d4q34V2vj2zxCR31lF0myycRze1YsTsvG/S3Wpmj
+ ccw=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The algorithm is already used successfully by other CAN drivers
-(e.g. mcp251xfd). Its implementation was kindly suggested to me by
-Marc Kleine-Budde following a patch I had previously submitted. You can
-find every detail at https://lore.kernel.org/patchwork/patch/1422929/.
+As reported by a comment in the c_can_start_xmit() this was not a FIFO.
+C/D_CAN controller sends out the buffers prioritized so that the lowest
+buffer number wins.
 
-The idea is that after this patch, it will be easier to patch the driver
-to use the message object memory as a true FIFO.
+What did c_can_start_xmit() do if head was less tail in the tx ring ? It
+waited until all the frames queued in the FIFO was actually transmitted
+by the controller before accepting a new CAN frame to transmit, even if
+the FIFO was not full, to ensure that the messages were transmitted in
+the order in which they were loaded.
 
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+By storing the frames in the FIFO without requiring its transmission, we
+will be able to use the full size of the FIFO even in cases such as the
+one described above. The transmission interrupt will trigger their
+transmission only when all the messages previously loaded but stored in
+less priority positions of the buffers have been transmitted.
+
+Suggested-by: Gianluca Falavigna <gianluca.falavigna@inwind.it>
 Signed-off-by: Dario Binacchi <dariobin@libero.it>
+
 ---
 
- drivers/net/can/c_can/c_can.h      | 19 ++++++-
- drivers/net/can/c_can/c_can_main.c | 81 +++++++++++++++++++++++-------
- 2 files changed, 82 insertions(+), 18 deletions(-)
+ drivers/net/can/c_can/c_can.h      |  6 +++++
+ drivers/net/can/c_can/c_can_main.c | 42 +++++++++++++++++-------------
+ 2 files changed, 30 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/net/can/c_can/c_can.h b/drivers/net/can/c_can/c_can.h
-index 8f23e9c83c84..8fe7e2138620 100644
+index 8fe7e2138620..fc499a70b797 100644
 --- a/drivers/net/can/c_can/c_can.h
 +++ b/drivers/net/can/c_can/c_can.h
-@@ -176,6 +176,13 @@ struct c_can_raminit {
- 	bool needs_pulse;
- };
- 
-+/* c_can tx ring structure */
-+struct c_can_tx_ring {
-+	unsigned int head;
-+	unsigned int tail;
-+	unsigned int obj_num;
-+};
-+
- /* c_can private data structure */
- struct c_can_priv {
- 	struct can_priv can;	/* must be the first member */
-@@ -190,10 +197,10 @@ struct c_can_priv {
- 	unsigned int msg_obj_tx_first;
- 	unsigned int msg_obj_tx_last;
- 	u32 msg_obj_rx_mask;
--	atomic_t tx_active;
+@@ -200,6 +200,7 @@ struct c_can_priv {
  	atomic_t sie_pending;
  	unsigned long tx_dir;
  	int last_status;
-+	struct c_can_tx_ring tx;
++	spinlock_t tx_lock;
+ 	struct c_can_tx_ring tx;
  	u16 (*read_reg)(const struct c_can_priv *priv, enum reg index);
  	void (*write_reg)(const struct c_can_priv *priv, enum reg index, u16 val);
- 	u32 (*read_reg32)(const struct c_can_priv *priv, enum reg index);
-@@ -219,4 +226,14 @@ int c_can_power_down(struct net_device *dev);
+@@ -236,4 +237,9 @@ static inline u8 c_can_get_tx_tail(const struct c_can_tx_ring *ring)
+ 	return ring->tail & (ring->obj_num - 1);
+ }
  
- void c_can_set_ethtool_ops(struct net_device *dev);
- 
-+static inline u8 c_can_get_tx_head(const struct c_can_tx_ring *ring)
++static inline u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
 +{
-+	return ring->head & (ring->obj_num - 1);
-+}
-+
-+static inline u8 c_can_get_tx_tail(const struct c_can_tx_ring *ring)
-+{
-+	return ring->tail & (ring->obj_num - 1);
++	return ring->obj_num - (ring->head - ring->tail);
 +}
 +
  #endif /* C_CAN_H */
 diff --git a/drivers/net/can/c_can/c_can_main.c b/drivers/net/can/c_can/c_can_main.c
-index fec0e3416970..451ac9a9586a 100644
+index 451ac9a9586a..4c061fef002c 100644
 --- a/drivers/net/can/c_can/c_can_main.c
 +++ b/drivers/net/can/c_can/c_can_main.c
-@@ -427,24 +427,64 @@ static void c_can_setup_receive_object(struct net_device *dev, int iface,
+@@ -427,20 +427,6 @@ static void c_can_setup_receive_object(struct net_device *dev, int iface,
  	c_can_object_put(dev, iface, obj, IF_COMM_RCV_SETUP);
  }
  
-+static u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
-+{
-+	u8 head = c_can_get_tx_head(ring);
-+	u8 tail = c_can_get_tx_tail(ring);
-+
-+	/* This is not a FIFO. C/D_CAN sends out the buffers
-+	 * prioritized. The lowest buffer number wins.
-+	 */
-+	if (head < tail)
-+		return 0;
-+
-+	return ring->obj_num - head;
-+}
-+
-+static bool c_can_tx_busy(const struct c_can_priv *priv,
-+			  const struct c_can_tx_ring *tx_ring)
-+{
-+	if (c_can_get_tx_free(tx_ring) > 0)
-+		return false;
-+
-+	netif_stop_queue(priv->dev);
-+
-+	/* Memory barrier before checking tx_free (head and tail) */
-+	smp_mb();
-+
-+	if (c_can_get_tx_free(tx_ring) == 0) {
-+		netdev_dbg(priv->dev,
-+			   "Stopping tx-queue (tx_head=0x%08x, tx_tail=0x%08x, len=%d).\n",
-+			   tx_ring->head, tx_ring->tail,
-+			   tx_ring->head - tx_ring->tail);
-+		return true;
-+	}
-+
-+	netif_start_queue(priv->dev);
-+	return false;
-+}
-+
- static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
- 				    struct net_device *dev)
- {
- 	struct can_frame *frame = (struct can_frame *)skb->data;
- 	struct c_can_priv *priv = netdev_priv(dev);
-+	struct c_can_tx_ring *tx_ring = &priv->tx;
- 	u32 idx, obj;
- 
- 	if (can_dropped_invalid_skb(dev, skb))
- 		return NETDEV_TX_OK;
+-static u8 c_can_get_tx_free(const struct c_can_tx_ring *ring)
+-{
+-	u8 head = c_can_get_tx_head(ring);
+-	u8 tail = c_can_get_tx_tail(ring);
+-
 -	/* This is not a FIFO. C/D_CAN sends out the buffers
 -	 * prioritized. The lowest buffer number wins.
 -	 */
--	idx = fls(atomic_read(&priv->tx_active));
--	obj = idx + priv->msg_obj_tx_first;
+-	if (head < tail)
+-		return 0;
+-
+-	return ring->obj_num - head;
+-}
+-
+ static bool c_can_tx_busy(const struct c_can_priv *priv,
+ 			  const struct c_can_tx_ring *tx_ring)
+ {
+@@ -470,7 +456,7 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+ 	struct can_frame *frame = (struct can_frame *)skb->data;
+ 	struct c_can_priv *priv = netdev_priv(dev);
+ 	struct c_can_tx_ring *tx_ring = &priv->tx;
+-	u32 idx, obj;
++	u32 idx, obj, cmd = IF_COMM_TX;
  
--	/* If this is the last buffer, stop the xmit queue */
--	if (idx == priv->msg_obj_tx_num - 1)
-+	if (c_can_tx_busy(priv, tx_ring))
-+		return NETDEV_TX_BUSY;
-+
-+	idx = c_can_get_tx_head(tx_ring);
-+	tx_ring->head++;
-+	if (c_can_get_tx_free(tx_ring) == 0)
+ 	if (can_dropped_invalid_skb(dev, skb))
+ 		return NETDEV_TX_OK;
+@@ -483,7 +469,11 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+ 	if (c_can_get_tx_free(tx_ring) == 0)
  		netif_stop_queue(dev);
-+
-+	obj = idx + priv->msg_obj_tx_first;
-+
+ 
+-	obj = idx + priv->msg_obj_tx_first;
++	spin_lock_bh(&priv->tx_lock);
++	if (idx < c_can_get_tx_tail(tx_ring))
++		cmd &= ~IF_COMM_TXRQST; /* Cache the message */
++	else
++		spin_unlock_bh(&priv->tx_lock);
+ 
  	/* Store the message in the interface so we can call
  	 * can_put_echo_skb(). We must do this before we enable
- 	 * transmit as we might race against do_tx().
-@@ -453,8 +493,6 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+@@ -492,9 +482,11 @@ static netdev_tx_t c_can_start_xmit(struct sk_buff *skb,
+ 	c_can_setup_tx_object(dev, IF_TX, frame, idx);
  	priv->dlc[idx] = frame->len;
  	can_put_echo_skb(skb, dev, idx, 0);
++	obj = idx + priv->msg_obj_tx_first;
++	c_can_object_put(dev, IF_TX, obj, cmd);
  
--	/* Update the active bits */
--	atomic_add(BIT(idx), &priv->tx_active);
- 	/* Start transmission */
- 	c_can_object_put(dev, IF_TX, obj, IF_COMM_TX);
+-	/* Start transmission */
+-	c_can_object_put(dev, IF_TX, obj, IF_COMM_TX);
++	if (spin_is_locked(&priv->tx_lock))
++		spin_unlock_bh(&priv->tx_lock);
  
-@@ -567,6 +605,7 @@ static int c_can_software_reset(struct net_device *dev)
- static int c_can_chip_config(struct net_device *dev)
- {
- 	struct c_can_priv *priv = netdev_priv(dev);
-+	struct c_can_tx_ring *tx_ring = &priv->tx;
- 	int err;
- 
- 	err = c_can_software_reset(dev);
-@@ -598,7 +637,8 @@ static int c_can_chip_config(struct net_device *dev)
- 	priv->write_reg(priv, C_CAN_STS_REG, LEC_UNUSED);
- 
- 	/* Clear all internal status */
--	atomic_set(&priv->tx_active, 0);
-+	tx_ring->head = 0;
-+	tx_ring->tail = 0;
- 	priv->tx_dir = 0;
- 
- 	/* set bittiming params */
-@@ -696,14 +736,14 @@ static int c_can_get_berr_counter(const struct net_device *dev,
- static void c_can_do_tx(struct net_device *dev)
- {
- 	struct c_can_priv *priv = netdev_priv(dev);
-+	struct c_can_tx_ring *tx_ring = &priv->tx;
+ 	return NETDEV_TX_OK;
+ }
+@@ -739,6 +731,7 @@ static void c_can_do_tx(struct net_device *dev)
+ 	struct c_can_tx_ring *tx_ring = &priv->tx;
  	struct net_device_stats *stats = &dev->stats;
--	u32 idx, obj, pkts = 0, bytes = 0, pend, clr;
-+	u32 idx, obj, pkts = 0, bytes = 0, pend;
+ 	u32 idx, obj, pkts = 0, bytes = 0, pend;
++	u8 tail;
  
  	if (priv->msg_obj_tx_last > 32)
  		pend = priv->read_reg32(priv, C_CAN_INTPND3_REG);
- 	else
- 		pend = priv->read_reg(priv, C_CAN_INTPND2_REG);
--	clr = pend;
- 
- 	while ((idx = ffs(pend))) {
- 		idx--;
-@@ -723,11 +763,14 @@ static void c_can_do_tx(struct net_device *dev)
- 	if (!pkts)
- 		return;
- 
--	/* Clear the bits in the tx_active mask */
--	atomic_sub(clr, &priv->tx_active);
--
--	if (clr & BIT(priv->msg_obj_tx_num - 1))
--		netif_wake_queue(dev);
-+	tx_ring->tail += pkts;
-+	if (c_can_get_tx_free(tx_ring)) {
-+		/* Make sure that anybody stopping the queue after
-+		 * this sees the new tx_ring->tail.
-+		 */
-+		smp_mb();
-+		netif_wake_queue(priv->dev);
-+	}
- 
+@@ -775,6 +768,18 @@ static void c_can_do_tx(struct net_device *dev)
  	stats->tx_bytes += bytes;
  	stats->tx_packets += pkts;
-@@ -1206,6 +1249,10 @@ struct net_device *alloc_c_can_dev(int msg_obj_num)
- 	priv->msg_obj_tx_last =
- 		priv->msg_obj_tx_first + priv->msg_obj_tx_num - 1;
- 
-+	priv->tx.head = 0;
-+	priv->tx.tail = 0;
-+	priv->tx.obj_num = msg_obj_tx_num;
+ 	can_led_event(dev, CAN_LED_EVENT_TX);
 +
- 	netif_napi_add(dev, &priv->napi, c_can_poll, priv->msg_obj_rx_num);
++	tail = c_can_get_tx_tail(tx_ring);
++
++	if (tail == 0) {
++		u8 head = c_can_get_tx_head(tx_ring);
++
++		/* Start transmission for all cached messages */
++		for (idx = tail; idx < head; idx++) {
++			obj = idx + priv->msg_obj_tx_first;
++			c_can_object_put(dev, IF_TX, obj, IF_COMM_TXRQST);
++		}
++	}
+ }
  
- 	priv->dev = dev;
+ /* If we have a gap in the pending bits, that means we either
+@@ -1237,6 +1242,7 @@ struct net_device *alloc_c_can_dev(int msg_obj_num)
+ 		return NULL;
+ 
+ 	priv = netdev_priv(dev);
++	spin_lock_init(&priv->tx_lock);
+ 	priv->msg_obj_num = msg_obj_num;
+ 	priv->msg_obj_rx_num = msg_obj_num - msg_obj_tx_num;
+ 	priv->msg_obj_rx_first = 1;
 -- 
 2.17.1
 
