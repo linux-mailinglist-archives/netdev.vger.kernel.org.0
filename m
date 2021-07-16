@@ -2,94 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B04F73CBF9C
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 01:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7953CBFDD
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 01:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237776AbhGPXMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 19:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237660AbhGPXMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 19:12:48 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E59FC06175F
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 16:09:53 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id l11-20020a056902072bb029055ab4873f4cso14614347ybt.22
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 16:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=MtUgzD2/WYvbSaEharU0rB1o+hrog1m/ATn3TqgC1ws=;
-        b=AlC0VsCh+EpGFGPi9Tarv0CaBJyPbSXdGdyB1MiYbQIq+6cS5vXgd3PArOllCOoLdx
-         ZCatZgAGtBHYYWJFG+jurTDk6yK5LUtc8uX0vI+DjnbX1haNtXS2JJtu2bEL/pLrqC+2
-         rUm1haD0Kh+HufU0jO0cFyWSdrGAUY+ytqncxiWs6C/awGrouyYfDCutKQ3Gy/Cp73fZ
-         0oqGQtxCCr9EIV4cLB1b/rOVadWu3naMBGufZzAnA3Q7R4QAsrycg3jhMvtpLi/GAufv
-         MlM/47SrEkcv8C9g9qHtVGQQ1bqW7wZEUhP5iu72ByUcqZcKsZWlslwRqFpdqZCHsNx8
-         RYzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=MtUgzD2/WYvbSaEharU0rB1o+hrog1m/ATn3TqgC1ws=;
-        b=dphh3OBXhM4mNpRvQwHeQCRjkMZN6PTJEXKYNBtQMysCBG38+ABSJ80hweTlR3YwAF
-         zaMI2znMe7aP3MpDsDd1fiQCcGBIXTbo49sD5upYlu/BlhYBtEPQI4ZPeII8C+jQRMjw
-         o/h4iiCI6WzpvS60eIpi59N0HRI1SSidkKRyE7mb/BTWaghg2TFRHQH3Le6S0BPCNdc+
-         r5/MDnItJ3YbmFFYhdNRMNuMhnBjJ0HbXserWwS1CgwblWh8edoUHb8nYYTtJkOgOtGv
-         RoDHHa678iTzWnZicf6fCQUmmin9qBFdiGvTCV5zjLNobEzSEWiOpXwQA7rQ9ZfFcmWB
-         3S6g==
-X-Gm-Message-State: AOAM531026fNWovrgaXvbyVFOUR6SQLFBL5SNlOXUjdSae4f90bM03m+
-        BZJfnADCMqApPp25t/q7VHCHWtCgMLLdhtj60vUS8MoBY3R/u+WrAoMWfP0VXtLqOl636Op71eh
-        RQxfYWeOw1B+cF4OfTGr/PSC+jz9mtknOlLf5TUP1lVzjS7kxhkFeN3NXoS7zaIJe
-X-Google-Smtp-Source: ABdhPJzlva3SnO8WtpEbeoHp3RQx5ayzhV9BBXcPP3SQsGDGtv9/1MGpp2+INP+vwD0DtLenR8IErGW/NHNX
-X-Received: from coldfire2.svl.corp.google.com ([2620:15c:2c4:201:b8a5:3f7a:3a1d:f67b])
- (user=maheshb job=sendgmr) by 2002:a25:b3c9:: with SMTP id
- x9mr15825742ybf.514.1626476991924; Fri, 16 Jul 2021 16:09:51 -0700 (PDT)
-Date:   Fri, 16 Jul 2021 16:09:41 -0700
-Message-Id: <20210716230941.2502248-1-maheshb@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.32.0.402.g57bb445576-goog
-Subject: [PATCH next] bonding: fix build issue
-From:   Mahesh Bandewar <maheshb@google.com>
-To:     Netdev <netdev@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S231987AbhGPXvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 19:51:06 -0400
+Received: from angie.orcam.me.uk ([78.133.224.34]:60742 "EHLO
+        angie.orcam.me.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229984AbhGPXvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 19:51:05 -0400
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id F301E92009C; Sat, 17 Jul 2021 01:48:07 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id E464292009B;
+        Sat, 17 Jul 2021 01:48:07 +0200 (CEST)
+Date:   Sat, 17 Jul 2021 01:48:07 +0200 (CEST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Nikolai Zhubr <zhubr.2@gmail.com>
+cc:     Arnd Bergmann <arnd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: Realtek 8139 problem on 486.
+In-Reply-To: <60EFE489.40502@gmail.com>
+Message-ID: <alpine.DEB.2.21.2107170045440.9461@angie.orcam.me.uk>
+References: <60B24AC2.9050505@gmail.com> <CAK8P3a2PEQgC1GQTVHafKyxSbKNigiTDD6rzAC=6=FY1rqBJhw@mail.gmail.com> <60B611C6.2000801@gmail.com> <a1589139-82c7-0219-97ce-668837a9c7b1@gmail.com> <60B65BBB.2040507@gmail.com> <c2af3adf-ba28-4505-f2a3-58ce13ccea3e@gmail.com>
+ <alpine.DEB.2.21.2106032014320.2979@angie.orcam.me.uk> <CAK8P3a0oLiBD+zjmBxsrHxdMeYSeNhg6fhC+VPV8TAf9wbauSg@mail.gmail.com> <877dipgyrb.ffs@nanos.tec.linutronix.de> <alpine.DEB.2.21.2106200749300.61140@angie.orcam.me.uk> <CAK8P3a0Z56XvLHJHjvsX3F76ZF0n-VXwPoWbvfQdTgfEBfOneg@mail.gmail.com>
+ <60D1DAC1.9060200@gmail.com> <CAK8P3a1XaTUgxM3YBa=iHGrLX_Wn66NhTTEXtV=vaNre7K3GOA@mail.gmail.com> <60D22F1D.1000205@gmail.com> <CAK8P3a3Jk+zNnQ5r9gb60deqCmJT+S07VvL3SipKRYXdxM2kPQ@mail.gmail.com> <alpine.DEB.2.21.2106230244460.37803@angie.orcam.me.uk>
+ <60D4C75C.30701@gmail.com> <alpine.DEB.2.21.2106242013340.37803@angie.orcam.me.uk> <alpine.DEB.2.21.2107150042560.9461@angie.orcam.me.uk> <60EFE489.40502@gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 9a5605505d9c (" bonding: Add struct bond_ipesc to manage SA") is causing
-following build error when XFRM is not selected in kernel config.
+Hello Nikolai,
 
-lld: error: undefined symbol: xfrm_dev_state_flush
->>> referenced by bond_main.c:3453 (drivers/net/bonding/bond_main.c:3453)
->>>               net/bonding/bond_main.o:(bond_netdev_event) in archive drivers/built-in.a
+> >   I have actually tracked a datasheet down now, so I'll see what I can do.
+> > The southbridge has a separate edge/level trigger mode control register
+> > for PIRQ lines in addition to the usual ELCR register, so it will require
+> > extra handling and the wording is not as clear as with Intel documentation
+> > (understandably), so it may require further experimentation.
+> 
+> Thank you very much for investigating this! Tomorrow I'll likely be able 
+> to pull this motherboard out and arrange it for whatever testing might 
+> be necessary. However I'll be in a trip for a couple of weeks soon so 
+> please excuse some possible delay in my replies. I'm definitely willing 
+> to make all efforts to get it supported.
 
-Fixes: 9a5605505d9c (" bonding: Add struct bond_ipesc to manage SA")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-CC: Taehee Yoo <ap420073@gmail.com>
-CC: Jay Vosburgh <jay.vosburgh@canonical.com>
----
- drivers/net/bonding/bond_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ I have preliminary code ready for submission, so I only need to wrap it 
+up for posting.  However it requires some additional infrastructure shared 
+with other parts of the kernel, so it will be a small patch series again, 
+and due to code dependencies I'll include support for another PIRQ router 
+as well as some clean-ups, because they all need to be applied in order.  
+With that in place we should have complete coverage for Intel chipsets.
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index d22d78303311..31730efa7538 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3450,7 +3450,9 @@ static int bond_master_netdev_event(unsigned long event,
- 		return bond_event_changename(event_bond);
- 	case NETDEV_UNREGISTER:
- 		bond_remove_proc_entry(event_bond);
-+#ifdef CONFIG_XFRM_OFFLOAD
- 		xfrm_dev_state_flush(dev_net(bond_dev), bond_dev, true);
-+#endif /* CONFIG_XFRM_OFFLOAD */
- 		break;
- 	case NETDEV_REGISTER:
- 		bond_create_proc_entry(event_bond);
--- 
-2.32.0.402.g57bb445576-goog
+ Moreover based on the ALi M1533 datasheet I have also tracked down I have 
+noticed we have bugs in the handling for the other ALi chipsets, which I 
+seem unable to satisfactorily resolve without a copy of the ALi M1563 
+datasheet I don't have.  I've noticed Nvidia does continue having at least 
+some ALi-related stuff online, so chances are they have retained the ALi 
+legacy internally.  I have therefore requested a copy of the M1563 
+datasheet and will likely extend the patch series accordingly, whether I 
+do or do not receive the document.
 
+ Stay tuned.
+
+  Maciej
