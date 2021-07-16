@@ -2,204 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23CC53CB80D
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 15:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531713CB884
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 16:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240066AbhGPNuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 09:50:18 -0400
-Received: from mga05.intel.com ([192.55.52.43]:31574 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232808AbhGPNuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 09:50:14 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10046"; a="296375333"
-X-IronPort-AV: E=Sophos;i="5.84,245,1620716400"; 
-   d="scan'208";a="296375333"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 06:47:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,245,1620716400"; 
-   d="scan'208";a="506899157"
-Received: from peileeli.png.intel.com ([172.30.240.12])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Jul 2021 06:47:16 -0700
-From:   Ling Pei Lee <pei.lee.ling@intel.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, davem@davemloft.net,
+        id S240253AbhGPOOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 10:14:39 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:59598 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233040AbhGPOOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 10:14:39 -0400
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 823B322B46;
+        Fri, 16 Jul 2021 14:11:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1626444703; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=qZY0smo+O+Xk7iA7lzz8gDAiURl0BK1XyowcQM/UtiM=;
+        b=pQrhWDGDTiKDN16Qi3oehirpj9LgoFxfnXwRY7PRrj0cvkB0j4RZuTGc4B0nvWgxlmSycv
+        Q4ebQ9v7hlyQ6ITOEoqZ03ykRsa8ObzGJCIPcq0ZUi74yp3u+GjQ3Qp7pR/LVjS/o0VBA9
+        5xGKgK4884qqjIXAjAkte0KWilAKr6c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1626444703;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=qZY0smo+O+Xk7iA7lzz8gDAiURl0BK1XyowcQM/UtiM=;
+        b=+YIPDQXHu0MZ2KzJWvt8YxlCNRVlfw1WDOkQCBvPoXKzwmVPiEWfR6n43SDzdloLBBSRI8
+        YFNTP/JJuwHgcXDA==
+Received: from imap1.suse-dmz.suse.de (imap1.suse-dmz.suse.de [192.168.254.73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap1.suse-dmz.suse.de (Postfix) with ESMTPS id 2558C13AF6;
+        Fri, 16 Jul 2021 14:11:43 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap1.suse-dmz.suse.de with ESMTPSA
+        id 5GVRBp+T8WCMTwAAGKfGzw
+        (envelope-from <iivanov@suse.de>); Fri, 16 Jul 2021 14:11:43 +0000
+From:   "Ivan T. Ivanov" <iivanov@suse.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Marek Behun <marek.behun@nic.cz>, weifeng.voon@intel.com,
-        vee.khee.wong@linux.intel.com, vee.khee.wong@intel.com,
-        pei.lee.ling@intel.com
-Subject: [net-next,resend,V3] net: phy: marvell10g: enable WoL for 88X3310 and 88E2110
-Date:   Fri, 16 Jul 2021 21:46:45 +0800
-Message-Id: <20210716134645.2249943-1-pei.lee.ling@intel.com>
-X-Mailer: git-send-email 2.25.1
+Subject: [PATCH] net: phy: leds: Trigger leds only if PHY speed is known
+Date:   Fri, 16 Jul 2021 17:11:42 +0300
+Message-Id: <20210716141142.12710-1-iivanov@suse.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
+This prevents "No phy led trigger registered for speed(-1)"
+alert message which is coused by phy_led_trigger_chage_speed()
+being called during attaching phy to net_device where phy device
+speed could be still unknown.
 
-Implement Wake-on-LAN feature for 88X3310 and 88E2110.
-
-This is done by enabling WoL interrupt and WoL detection and
-configuring MAC address into WoL magic packet registers
-
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Ling Pei Lee <pei.lee.ling@intel.com>
+Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
 ---
-Change Log:
- V3: 
- (1) Update the commit message which is suggested by Marek.
- (2) Change patch title.
- (3) Remove MV_V2_WOL_STS register definition where it is not used.
- (4) Rename MV_V2_WOL_INTR_EN, MV_V2_WOL_CLEAR_STS and 
-     MV_V2_WOL_MAGIC_PKT_EN.
- (5) Move change log to signedoff below.
- (6) Fix indention problem in code.
- (7) Reorganize newly added register definition in recommeded order.
- (8) Change function name from mv2110{get|set}_wol to mv3110{get|set}_wol.
- (9) Fix mv3110{get|set}_wol characters exceed 80.
- V2:
- (1) Reviewer Marek request to rorganize code to readable way.
- (2) Reviewer Rusell request to put phy_clear_bits_mmd() outside of if(){}else{}
-     and modify return ret to return phy_clear_bits_mmd().
- (3) Reviewer Rusell request to add return on phy_read_mmd() in set_wol().
- (4) Reorganize register layout to be put before MV_V2_TEMP_CTRL.
- (5) Add the .{get|set}_wol for 88E3110 too as per feedback from Russell.
+ drivers/net/phy/phy_led_triggers.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/net/phy/marvell10g.c | 89 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 89 insertions(+)
-
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 53a433442803..0b7cae118ad7 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -28,6 +28,7 @@
- #include <linux/marvell_phy.h>
- #include <linux/phy.h>
- #include <linux/sfp.h>
-+#include <linux/netdevice.h>
+diff --git a/drivers/net/phy/phy_led_triggers.c b/drivers/net/phy/phy_led_triggers.c
+index f550576eb9da..4d6497c45ae4 100644
+--- a/drivers/net/phy/phy_led_triggers.c
++++ b/drivers/net/phy/phy_led_triggers.c
+@@ -33,7 +33,7 @@ void phy_led_trigger_change_speed(struct phy_device *phy)
+ 	if (!phy->link)
+ 		return phy_led_trigger_no_link(phy);
  
- #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
- #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
-@@ -104,6 +105,16 @@ enum {
- 	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_NO_SGMII_AN	= 0x5,
- 	MV_V2_33X0_PORT_CTRL_MACTYPE_10GBASER_RATE_MATCH	= 0x6,
- 	MV_V2_33X0_PORT_CTRL_MACTYPE_USXGMII			= 0x7,
-+	MV_V2_PORT_INTR_STS     = 0xf040,
-+	MV_V2_PORT_INTR_MASK    = 0xf043,
-+	MV_V2_PORT_INTR_STS_WOL_EN      = BIT(8),
-+	MV_V2_MAGIC_PKT_WORD0   = 0xf06b,
-+	MV_V2_MAGIC_PKT_WORD1   = 0xf06c,
-+	MV_V2_MAGIC_PKT_WORD2   = 0xf06d,
-+	/* Wake on LAN registers */
-+	MV_V2_WOL_CTRL          = 0xf06e,
-+	MV_V2_WOL_CTRL_CLEAR_STS        = BIT(15),
-+	MV_V2_WOL_CTRL_MAGIC_PKT_EN     = BIT(0),
- 	/* Temperature control/read registers (88X3310 only) */
- 	MV_V2_TEMP_CTRL		= 0xf08a,
- 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
-@@ -1020,6 +1031,80 @@ static int mv2111_match_phy_device(struct phy_device *phydev)
- 	return mv211x_match_phy_device(phydev, false);
- }
+-	if (phy->speed == 0)
++	if (phy->speed == 0 || phy->speed == SPEED_UNKNOWN)
+ 		return;
  
-+static void mv3110_get_wol(struct phy_device *phydev,
-+			   struct ethtool_wolinfo *wol)
-+{
-+	int ret;
-+
-+	wol->supported = WAKE_MAGIC;
-+	wol->wolopts = 0;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_WOL_CTRL);
-+	if (ret < 0)
-+		return;
-+
-+	if (ret & MV_V2_WOL_CTRL_MAGIC_PKT_EN)
-+		wol->wolopts |= WAKE_MAGIC;
-+}
-+
-+static int mv3110_set_wol(struct phy_device *phydev,
-+			  struct ethtool_wolinfo *wol)
-+{
-+	int ret;
-+
-+	if (wol->wolopts & WAKE_MAGIC) {
-+		/* Enable the WOL interrupt */
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+				       MV_V2_PORT_INTR_MASK,
-+				       MV_V2_PORT_INTR_STS_WOL_EN);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Store the device address for the magic packet */
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MV_V2_MAGIC_PKT_WORD2,
-+				    ((phydev->attached_dev->dev_addr[5] << 8) |
-+				    phydev->attached_dev->dev_addr[4]));
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MV_V2_MAGIC_PKT_WORD1,
-+				    ((phydev->attached_dev->dev_addr[3] << 8) |
-+				    phydev->attached_dev->dev_addr[2]));
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    MV_V2_MAGIC_PKT_WORD0,
-+				    ((phydev->attached_dev->dev_addr[1] << 8) |
-+				    phydev->attached_dev->dev_addr[0]));
-+		if (ret < 0)
-+			return ret;
-+
-+		/* Clear WOL status and enable magic packet matching */
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+				       MV_V2_WOL_CTRL,
-+				       MV_V2_WOL_CTRL_MAGIC_PKT_EN |
-+				       MV_V2_WOL_CTRL_CLEAR_STS);
-+		if (ret < 0)
-+			return ret;
-+	} else {
-+		/* Disable magic packet matching & reset WOL status bit */
-+		ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2,
-+				     MV_V2_WOL_CTRL,
-+				     MV_V2_WOL_CTRL_MAGIC_PKT_EN,
-+				     MV_V2_WOL_CTRL_CLEAR_STS);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	/* Reset the clear WOL status bit as it does not self-clear */
-+	return phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-+				  MV_V2_WOL_CTRL,
-+				  MV_V2_WOL_CTRL_CLEAR_STS);
-+}
-+
- static struct phy_driver mv3310_drivers[] = {
- 	{
- 		.phy_id		= MARVELL_PHY_ID_88X3310,
-@@ -1039,6 +1124,8 @@ static struct phy_driver mv3310_drivers[] = {
- 		.set_tunable	= mv3310_set_tunable,
- 		.remove		= mv3310_remove,
- 		.set_loopback	= genphy_c45_loopback,
-+		.get_wol	= mv3110_get_wol,
-+		.set_wol	= mv3110_set_wol,
- 	},
- 	{
- 		.phy_id		= MARVELL_PHY_ID_88X3310,
-@@ -1076,6 +1163,8 @@ static struct phy_driver mv3310_drivers[] = {
- 		.set_tunable	= mv3310_set_tunable,
- 		.remove		= mv3310_remove,
- 		.set_loopback	= genphy_c45_loopback,
-+		.get_wol	= mv3110_get_wol,
-+		.set_wol	= mv3110_set_wol,
- 	},
- 	{
- 		.phy_id		= MARVELL_PHY_ID_88E2110,
+ 	plt = phy_speed_to_led_trigger(phy, phy->speed);
 -- 
-2.25.1
+2.32.0
 
