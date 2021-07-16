@@ -2,142 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C22463CBE2C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 23:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CC5D3CBE5E
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 23:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbhGPVJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 17:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbhGPVJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 17:09:54 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D64C06175F;
-        Fri, 16 Jul 2021 14:06:58 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id k4so13498844wrc.8;
-        Fri, 16 Jul 2021 14:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4pKHQr/tbhIkbF86KWS5quyjtsLNIoQ9B8exVpj2LvE=;
-        b=imAamG32La2GeVnoJxdszWNMiUMaWujFLyvTENQHuWfTNRlb3SNnTdV2TWYAG1R2Iq
-         m9X19q9TnKhGwiwjEH98ZQhJwckwrBhte8sRCGV17eJZMnpW2fdtMFrGUfeeoNSaTayd
-         LNvkDS8mdvqtmEc5tJlf6wcLsvtMo1o4qYUjrh0PBKA5tzm6OrBhawxNiYgPW1gs0IPp
-         vj0V9sc6Zjwq1IuJt4g70TdNSfiurt7XfQniw376QSwYntbenJpbGWiNTYwMWZno0VHp
-         U6ArIOb7fhN+HtK0VjCI9PwBEWg2Hu987FF2a1GTl/wrOzQFCcEHcnvoCNdPYPcXTVIO
-         2RsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4pKHQr/tbhIkbF86KWS5quyjtsLNIoQ9B8exVpj2LvE=;
-        b=sEc0JAVv9k1BBbTGcd55Ydv9iFS3lq7jg8spQAR07IDjo1UhtPxVZ2Mz1BnF4tKREM
-         LJOc+CHa2ll7V9fMBiiSNW0/1NrLhWOo1qLdZXokhMCrQzNJ161sHX1uNcOPCB0kYOrK
-         1et14W8bTZxNqvtm6FvojmidtDmpesXpnPP5CgVb0kURsaR1pZDH57S/hwYoiyWL61nK
-         SvLE2ExwBJeCmVKK95t+Sb3DPEOfutH5cftcrFHQZ0KI9zCXgMhr/VPSn6fmHgXrRr9/
-         TA6ZnkRHMilanZgLFqO5ls/FKrtTUuy7D35tEdZS2hQKA71ZxctsH8EBcqnhn8dOtfiF
-         nKPQ==
-X-Gm-Message-State: AOAM530K4mDPjiY7f9rHRgPXDdnCBxxBQzAT/SzrnyjJlnpoBtrwV9Pt
-        6EOk4AZkPD9qhDp7nARzP8I=
-X-Google-Smtp-Source: ABdhPJzjA0OaqPdB0BisEA9NQVoLMSvfu5B0rWbk6wjlzGlw9RLplrT5VwiaLaYOwPhAHtcCdcseAQ==
-X-Received: by 2002:adf:a287:: with SMTP id s7mr14497864wra.120.1626469617176;
-        Fri, 16 Jul 2021 14:06:57 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id d8sm11514867wrv.20.2021.07.16.14.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jul 2021 14:06:56 -0700 (PDT)
-Date:   Sat, 17 Jul 2021 00:06:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     ericwouds@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
-Message-ID: <20210716210655.i5hxcwau5tdq4zhb@skbuf>
-References: <20210716153641.4678-1-ericwouds@gmail.com>
+        id S235304AbhGPVYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 17:24:20 -0400
+Received: from mga02.intel.com ([134.134.136.20]:9331 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229846AbhGPVYS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 17:24:18 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10047"; a="197980596"
+X-IronPort-AV: E=Sophos;i="5.84,246,1620716400"; 
+   d="scan'208";a="197980596"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 14:21:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,246,1620716400"; 
+   d="scan'208";a="574434555"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Jul 2021 14:21:22 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
+        vinicius.gomes@intel.com
+Subject: [PATCH net-next 0/5][pull request] 1GbE Intel Wired LAN Driver Updates 2021-07-16
+Date:   Fri, 16 Jul 2021 14:24:22 -0700
+Message-Id: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210716153641.4678-1-ericwouds@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 05:36:39PM +0200, ericwouds@gmail.com wrote:
-> From: Eric Woudstra <ericwouds@gmail.com>
->
-> According to reference guides mt7530 (mt7620) and mt7531:
->
-> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
-> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
-> will be used to read/write the address table.
->
-> Since the function only fills in CVID and no FID, we need to set the
-> IVL bit. The existing code does not set it.
->
-> This is a fix for the issue I dropped here earlier:
->
-> http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
->
-> With this patch, it is now possible to delete the 'self' fdb entry
-> manually. However, wifi roaming still has the same issue, the entry
-> does not get deleted automatically. Wifi roaming also needs a fix
-> somewhere else to function correctly in combination with vlan.
->
-> Signed-off-by: Eric Woudstra <ericwouds@gmail.com>
-> ---
->  drivers/net/dsa/mt7530.c | 1 +
->  drivers/net/dsa/mt7530.h | 1 +
->  2 files changed, 2 insertions(+)
->
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 93136f7e6..9e4df35f9 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -366,6 +366,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
->  	int i;
->
->  	reg[1] |= vid & CVID_MASK;
-> +	reg[1] |= ATA2_IVL;
->  	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
->  	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
->  	/* STATIC_ENT indicate that entry is static wouldn't
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index 334d610a5..b19b389ff 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -79,6 +79,7 @@ enum mt753x_bpdu_port_fw {
->  #define  STATIC_EMP			0
->  #define  STATIC_ENT			3
->  #define MT7530_ATA2			0x78
-> +#define  ATA2_IVL			BIT(15)
->
->  /* Register for address table write data */
->  #define MT7530_ATWD			0x7c
-> --
-> 2.25.1
->
+Vinicius Costa Gomes says:
 
-Can VLAN-unaware FDB entries still be manipulated successfully after
-this patch, since it changes 'fid 0' to be interpreted as 'vid 0'?
+Add support for steering traffic to specific RX queues using Flex Filters.
 
-What is your problem with roaming exactly? Have you tried to disable
-hardware address learning on the CPU port and set
-ds->assisted_learning_on_cpu_port = true for mt7530?
+As the name implies, Flex Filters are more flexible than using
+Layer-2, VLAN or MAC address filters, one of the reasons is that they
+allow "AND" operations more easily, e.g. when the user wants to steer
+some traffic based on the source MAC address and the packet ethertype.
 
-Please note that since kernel v5.14, raw 'self' entries can no longer be
-managed directly using 'bridge fdb', you need to use 'master static' and
-go through the bridge:
-https://www.kernel.org/doc/html/latest/networking/dsa/configuration.html#forwarding-database-fdb-management
-You will need to update your 'bridgefdbd' program, if it proves to be at
-all necessary to achieve what you want.
+Future work include adding support for offloading tc-u32 filters to
+the hardware.
+
+The series is divided as follows:
+
+Patch 1/5, add the low level primitives for configuring Flex filters.
+
+Patch 2/5 and 3/5, allow ethtool to manage Flex filters.
+
+Patch 4/5, when specifying filters that have multiple predicates, use
+Flex filters.
+
+Patch 5/5, Adds support for exposing the i225 LEDs using the LED subsystem.
+
+The following are changes since commit 919d527956daa3e7ad03a23ba661beb8a46cacf4:
+  bnx2x: remove unused variable 'cur_data_offset'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+
+Kurt Kanzenbach (4):
+  igc: Add possibility to add flex filter
+  igc: Integrate flex filter into ethtool ops
+  igc: Make flex filter more flexible
+  igc: Export LEDs
+
+Vinicius Costa Gomes (1):
+  igc: Allow for Flex Filters to be installed
+
+ drivers/net/ethernet/intel/Kconfig           |   1 +
+ drivers/net/ethernet/intel/igc/igc.h         |  48 +-
+ drivers/net/ethernet/intel/igc/igc_defines.h |  62 ++-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  41 +-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 448 ++++++++++++++++++-
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  19 +
+ 6 files changed, 595 insertions(+), 24 deletions(-)
+
+-- 
+2.26.2
+
