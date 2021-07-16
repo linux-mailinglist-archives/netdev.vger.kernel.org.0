@@ -2,71 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 313213CBDCE
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B2B3CBDEC
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 22:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbhGPUdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 16:33:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230256AbhGPUdE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 16:33:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 416B361403;
-        Fri, 16 Jul 2021 20:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626467405;
-        bh=MK1GsLhBEn/hgBoEV8Uu8Jfe2B9Z1OPb/MqUNRkaqSM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dg6Cv44+3LqYKWca5gpAAAIW2ln1trb8H2JUoRZVaDbR2d5dNUdH+2IRUXsXE8qZD
-         qb++vF+y1EZ/8bUiBDfsD1OHEv7+FUr/hU3vEkq4v10LNoOXxXnFsZJYvGrdtF4Npp
-         yonQJDn5bx8JIDxoXX0AxH3YLR1lbfttJEjQNrtcmuCpFcAl0g2pN/0F/EBNZzh88+
-         frjoSUspKzHzo1lnJDjzM9tAa0QfLBYmlA4jryrEF8BHj5Sq1wAlSwePA9i7N/PbiV
-         YOiZrLh0PbJATqqJ5kEYZk6Q6BbV9I2Td2HMT0xqK3EeqVs8477ep0tH98q1wtUpL1
-         mXnDVHCziWjAg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 37EAA60A4E;
-        Fri, 16 Jul 2021 20:30:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S233702AbhGPUrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 16:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230256AbhGPUrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 16:47:02 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF39C06175F;
+        Fri, 16 Jul 2021 13:44:06 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id g5so16866798ybu.10;
+        Fri, 16 Jul 2021 13:44:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q2gswAbNH1obxNTNlaEj+a8poBJQn9ocu7cMCkTxcXc=;
+        b=VcxqbuO13iNjgtwhVwNvkefz+rQVovI+bp61MiQyK5nLd9PTReE5ZtM4/4nbgkXg+V
+         EBaMpztGPenFBXKKe28j4WVe3qKwSVJgFySmnFs7JVBrIvVCnaciHSOKC86Mutw0L0QB
+         h7BNu2w1TJlGdah3mZCvWg/pFKdvp1WxEqX3gUjTkzKp9PSaoaMgZ4JuPM1nlPs9SzRA
+         KwAcvRFJcIEIcWXtE1PlSfpJy29XvaXQFU0VHR2PhvMuNS3gdC03H7acFzXpGlPkWOVN
+         HIwW5lxM6RcaEOo0Lx4gSdIxNEAI2uRq1GN12YbjskJDNz40P1pGguq6EP/JbSaZxBHx
+         zhXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q2gswAbNH1obxNTNlaEj+a8poBJQn9ocu7cMCkTxcXc=;
+        b=RoE4BsKzy76tZX/HxzdGwkgfbHrE9znlkmpR9jJHGNQcDPlt/sUTeMp5hqM0CaD6yy
+         TujV9Fw1B1SpGEkqupCbnOwYduPvUXXCPruO8c0rMxq+m3m0DKGlGCsc4+n5/WC/B8oK
+         7+g2tytw/bVZla5heiKsHoImQFnh/UT2YJ9HA1RLvVXE7TuLdy9FCH0osZl8kT/otKAc
+         M6Dic+o65GwkVnTR3i3AYVADfhOr3PwKKLYw5zS7mcsmchRgaZxTbzNTTPhvjn4cFUqV
+         Lpy/TAzVNH1l/4970HUNYAcJ7/DaZis7dYaUos8OnXQmNvGpXQOXOPb2x6/SK2p6vh6B
+         j33Q==
+X-Gm-Message-State: AOAM531Y5haCr/mb5gN/EZqVGlqEjVX8JB2wI9zJ1hpEpymXzUkxNPFM
+        hfxy0RG3DUcMd/uxVrxVHI80G4OLzgdcNl4GqtI=
+X-Google-Smtp-Source: ABdhPJzq/D0ABJ7rYDRGP6M1PpYDxPBU31zy86XSOPqyhA+HidsNy4qgnJpA+U/0CN3H5WWhDKM40k1OyQUp+AHnzt0=
+X-Received: by 2002:a25:b203:: with SMTP id i3mr15248038ybj.260.1626468246223;
+ Fri, 16 Jul 2021 13:44:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next,resend,V3] net: phy: marvell10g: enable WoL for 88X3310 and
- 88E2110
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162646740522.5067.15786137740552625337.git-patchwork-notify@kernel.org>
-Date:   Fri, 16 Jul 2021 20:30:05 +0000
-References: <20210716134645.2249943-1-pei.lee.ling@intel.com>
-In-Reply-To: <20210716134645.2249943-1-pei.lee.ling@intel.com>
-To:     Ling Pei Lee <pei.lee.ling@intel.com>
-Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marek.behun@nic.cz,
-        weifeng.voon@intel.com, vee.khee.wong@linux.intel.com,
-        vee.khee.wong@intel.com
+References: <20210716100452.113652-1-lmb@cloudflare.com>
+In-Reply-To: <20210716100452.113652-1-lmb@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 16 Jul 2021 13:43:55 -0700
+Message-ID: <CAEf4BzauzWhNag0z31krN_MTZTGLynAJvkh_7P3yLQCx5XLTAg@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix OOB read when printing XDP link fdinfo
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jul 16, 2021 at 3:05 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> We got the following UBSAN report on one of our testing machines:
+>
+>     ================================================================================
+>     UBSAN: array-index-out-of-bounds in kernel/bpf/syscall.c:2389:24
+>     index 6 is out of range for type 'char *[6]'
+>     CPU: 43 PID: 930921 Comm: systemd-coredum Tainted: G           O      5.10.48-cloudflare-kasan-2021.7.0 #1
+>     Hardware name: <snip>
+>     Call Trace:
+>      dump_stack+0x7d/0xa3
+>      ubsan_epilogue+0x5/0x40
+>      __ubsan_handle_out_of_bounds.cold+0x43/0x48
+>      ? seq_printf+0x17d/0x250
+>      bpf_link_show_fdinfo+0x329/0x380
+>      ? bpf_map_value_size+0xe0/0xe0
+>      ? put_files_struct+0x20/0x2d0
+>      ? __kasan_kmalloc.constprop.0+0xc2/0xd0
+>      seq_show+0x3f7/0x540
+>      seq_read_iter+0x3f8/0x1040
+>      seq_read+0x329/0x500
+>      ? seq_read_iter+0x1040/0x1040
+>      ? __fsnotify_parent+0x80/0x820
+>      ? __fsnotify_update_child_dentry_flags+0x380/0x380
+>      vfs_read+0x123/0x460
+>      ksys_read+0xed/0x1c0
+>      ? __x64_sys_pwrite64+0x1f0/0x1f0
+>      do_syscall_64+0x33/0x40
+>      entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>     <snip>
+>     ================================================================================
+>     ================================================================================
+>     UBSAN: object-size-mismatch in kernel/bpf/syscall.c:2384:2
+>
+> From the report, we can infer that some array access in bpf_link_show_fdinfo at index 6
+> is out of bounds. The obvious candidate is bpf_link_type_strs[BPF_LINK_TYPE_XDP] with
+> BPF_LINK_TYPE_XDP == 6. It turns out that BPF_LINK_TYPE_XDP is missing from bpf_types.h
+> and therefore doesn't have an entry in bpf_link_type_strs:
+>
+>     pos:        0
+>     flags:      02000000
+>     mnt_id:     13
+>     link_type:  (null)
+>     link_id:    4
+>     prog_tag:   bcf7977d3b93787c
+>     prog_id:    4
+>     ifindex:    1
+>
+> Fixes: aa8d3a716b59 ("bpf, xdp: Add bpf_link-based XDP attachment API")
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Well, oops. Thanks for the fix!
 
-On Fri, 16 Jul 2021 21:46:45 +0800 you wrote:
-> From: Voon Weifeng <weifeng.voon@intel.com>
-> 
-> Implement Wake-on-LAN feature for 88X3310 and 88E2110.
-> 
-> This is done by enabling WoL interrupt and WoL detection and
-> configuring MAC address into WoL magic packet registers
-> 
-> [...]
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Here is the summary with links:
-  - [net-next,resend,V3] net: phy: marvell10g: enable WoL for 88X3310 and 88E2110
-    https://git.kernel.org/netdev/net-next/c/08041a9af98c
+It would be great to have a compilation error for something like this.
+I wonder if we can do something to detect this going forward?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>  include/linux/bpf_types.h | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+> index a9db1eae6796..be95f2722ad9 100644
+> --- a/include/linux/bpf_types.h
+> +++ b/include/linux/bpf_types.h
+> @@ -135,3 +135,4 @@ BPF_LINK_TYPE(BPF_LINK_TYPE_ITER, iter)
+>  #ifdef CONFIG_NET
+>  BPF_LINK_TYPE(BPF_LINK_TYPE_NETNS, netns)
+>  #endif
+> +BPF_LINK_TYPE(BPF_LINK_TYPE_XDP, xdp)
+> --
+> 2.30.2
+>
