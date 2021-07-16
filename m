@@ -2,63 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7E13CB99C
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E53503CB9A9
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240863AbhGPPXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:23:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58566 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240845AbhGPPXF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 11:23:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=+OysL5c8lmZRG64sZoX1J1K8zinYFiO2rvQrX1ZbCWs=; b=A/NZT2E769dhviv4kHLez1dynx
-        +Pxl/K1I6GlidVUBIJOkobnassWbC/UfYlAs+ztAiUmTPkIdk9hS6l2qGxW9NUrYOGrhdB19qJ8q6
-        XI+629ipGG0ip+k+Ac33TKg1QG7ZLGEZeVp7hB1Q0/azAJJzWK0RZfrKF2h3VYnDbf64=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m4Pd8-00Dd6L-Dg; Fri, 16 Jul 2021 17:19:58 +0200
-Date:   Fri, 16 Jul 2021 17:19:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ivan T. Ivanov" <iivanov@suse.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: leds: Trigger leds only if PHY speed is known
-Message-ID: <YPGjnvB92ajEBKGJ@lunn.ch>
-References: <20210716141142.12710-1-iivanov@suse.de>
+        id S240842AbhGPPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240251AbhGPPZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:25:19 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CABDC06175F;
+        Fri, 16 Jul 2021 08:22:24 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id t2so13049665edd.13;
+        Fri, 16 Jul 2021 08:22:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N8bkFF5p3b8ynQNRAkxev5NHQlLvryoP4qlYhGqFBjc=;
+        b=YYBLC0FKuFQE+AMrZG+egLBpSZ3nXAtpNpXYXUYdi8IpU528hZGQcV7zIn1nKWoh+3
+         ECyIhmFYi64mRz+5ITsg1Kq1G4JwxpP/2qxmSwtzbSPTD4WY1ofx6g823TNKblAgbtKD
+         Vm3Np+TXmneBi2ovKHlAs3v1iSr6ESk4Y2u3I2DtafYU1AXM+teTsF/yQ975MYxNs1bf
+         5eHl72YV5JLHoNuCDW7JQqGN/ZESv3loLUE3Ftd5FgAkf47WQis+YzCBoXzeF6TBbva8
+         dtnyDMq1L/yUKka8DECO/5KJ3qyjO/q7LnogwycDjmLkyMkQ0fwTmgdW7355cCVEu+PY
+         TB4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N8bkFF5p3b8ynQNRAkxev5NHQlLvryoP4qlYhGqFBjc=;
+        b=mdGdYAD0RPVltanxVI01vU2H3vXbsN0uMwO4xx5PJJSF08UR8QrhXubWIdL3gm9Mbz
+         gSOIuOTa5mdh6tmLsa45LebLdnbnUPhklQuE7/aS/mNwJ8wYqolG65d1DpFb7aLvxZKe
+         IIExsjraQEVFkH/alO3ZhKKbsW6r/LEUPG8CvRdt2s80HPZXpIX+XhXkckN0vkkCo1f9
+         3sK3IAKGUr04+sm07uiC8WBZAMOTKfgDxt9r2kPLdz2+2SXgmoxwwDb+F2/ihdpIb/Hm
+         G4w86i5BPoJg5vDiJKsz6t4Dq5ySQxalBrIN1Z2jPcdktPFyuxmJZ6jnKsbU1mmYXCyV
+         eI3Q==
+X-Gm-Message-State: AOAM53217LIrfE7GMs6yBvsvIg5+sEkN2SVWB148cYB6rfNOfegHJIsu
+        8zU0DP8F9ntd8yoFDLQoEq0=
+X-Google-Smtp-Source: ABdhPJxwoY9sX8skN/GsQiNXCI54N8UYo1l0znh40dUm/vmIQlVyUttGmaINiqSWefaAYlOdseJ/wA==
+X-Received: by 2002:a05:6402:b8f:: with SMTP id cf15mr15279163edb.286.1626448943269;
+        Fri, 16 Jul 2021 08:22:23 -0700 (PDT)
+Received: from BLUE.mydomain.example (83-87-52-217.cable.dynamic.v4.ziggo.nl. [83.87.52.217])
+        by smtp.googlemail.com with ESMTPSA id i11sm3876648edu.97.2021.07.16.08.22.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jul 2021 08:22:22 -0700 (PDT)
+From:   ericwouds@gmail.com
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Eric Woudstra <37153012+ericwoud@users.noreply.github.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Date:   Fri, 16 Jul 2021 17:22:11 +0200
+Message-Id: <20210716152213.4213-1-ericwouds@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210716141142.12710-1-iivanov@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 05:11:42PM +0300, Ivan T. Ivanov wrote:
-> This prevents "No phy led trigger registered for speed(-1)"
-> alert message which is coused by phy_led_trigger_chage_speed()
-> being called during attaching phy to net_device where phy device
-> speed could be still unknown.
+From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
 
-Hi Ivan
+According to reference guides mt7530 (mt7620) and mt7531:
 
-It seems odd that when attaching the PHY we have link, but not the
-speed. What PHY is this?
+NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to 
+read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0] 
+will be used to read/write the address table.
 
-> -	if (phy->speed == 0)
-> +	if (phy->speed == 0 || phy->speed == SPEED_UNKNOWN)
->  		return;
+Since the function only fills in CVID and no FID, we need to set the
+IVL bit. The existing code does not set it.
 
-This change makes sense. But i'm wondering if the original logic is
-sound. We have link, but no speed information. So the LED trigger is
-left in an indeterminate state. Rather than a plain return, maybe
-phy_led_trigger_no_link(phy) should be called?
+This is a fix for the issue I dropped here earlier:
 
-     Andrew
+http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
+
+With this patch, it is now possible to delete the 'self' fdb entry
+manually. However, wifi roaming still has the same issue, the entry
+does not get deleted automatically. Wifi roaming also needs a fix
+somewhere else to function correctly in combination with vlan.
+
+Signed-off-by: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
+---
+ drivers/net/dsa/mt7530.c | 1 +
+ drivers/net/dsa/mt7530.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 93136f7e6..9e4df35f9 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -366,6 +366,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
+ 	int i;
+ 
+ 	reg[1] |= vid & CVID_MASK;
++	reg[1] |= ATA2_IVL;
+ 	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
+ 	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
+ 	/* STATIC_ENT indicate that entry is static wouldn't
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 334d610a5..b19b389ff 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -79,6 +79,7 @@ enum mt753x_bpdu_port_fw {
+ #define  STATIC_EMP			0
+ #define  STATIC_ENT			3
+ #define MT7530_ATA2			0x78
++#define  ATA2_IVL			BIT(15)
+ 
+ /* Register for address table write data */
+ #define MT7530_ATWD			0x7c
+-- 
+2.25.1
+
