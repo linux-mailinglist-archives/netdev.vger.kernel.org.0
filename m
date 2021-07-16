@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 564EF3CBE5F
+	by mail.lfdr.de (Postfix) with ESMTP id 9FCEF3CBE60
 	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 23:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235393AbhGPVYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 17:24:21 -0400
+        id S235474AbhGPVYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 17:24:24 -0400
 Received: from mga02.intel.com ([134.134.136.20]:9331 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231276AbhGPVYS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 17:24:18 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10047"; a="197980598"
+        id S235125AbhGPVYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 17:24:19 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10047"; a="197980599"
 X-IronPort-AV: E=Sophos;i="5.84,246,1620716400"; 
-   d="scan'208";a="197980598"
+   d="scan'208";a="197980599"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 14:21:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,246,1620716400"; 
-   d="scan'208";a="574434560"
+   d="scan'208";a="574434565"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 16 Jul 2021 14:21:22 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 16 Jul 2021 14:21:23 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Kurt Kanzenbach <kurt@linutronix.de>, netdev@vger.kernel.org,
@@ -28,9 +28,9 @@ Cc:     Kurt Kanzenbach <kurt@linutronix.de>, netdev@vger.kernel.org,
         vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: [PATCH net-next 1/5] igc: Add possibility to add flex filter
-Date:   Fri, 16 Jul 2021 14:24:23 -0700
-Message-Id: <20210716212427.821834-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 2/5] igc: Integrate flex filter into ethtool ops
+Date:   Fri, 16 Jul 2021 14:24:24 -0700
+Message-Id: <20210716212427.821834-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
 References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
@@ -42,310 +42,363 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kurt Kanzenbach <kurt@linutronix.de>
 
-The Intel i225 NIC has the possibility to add flex filters which can
-match up to the first 128 byte of a packet. These filters are useful
-for all kind of packet matching. One particular use case is Profinet,
-as the different traffic classes are distinguished by the frame id
-range which cannot be matched by any other means.
+Use the flex filter mechanism to extend the current ethtool filter
+operations by intercoperating the user data. This allows to match
+eight more bytes within a Ethernet frame in addition to macs, ether
+types and vlan.
 
-Add code to configure and enable flex filters.
+The matching pattern looks like this:
+
+ * dest_mac [6]
+ * src_mac [6]
+ * tpid [2]
+ * vlan tci [2]
+ * ether type [2]
+ * user data [8]
+
+This can be used to match Profinet traffic classes by FrameID range.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h         |  13 ++
- drivers/net/ethernet/intel/igc/igc_defines.h |  48 ++++++-
- drivers/net/ethernet/intel/igc/igc_main.c    | 134 +++++++++++++++++++
- drivers/net/ethernet/intel/igc/igc_regs.h    |  17 +++
- 4 files changed, 207 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/igc/igc.h         |  24 ++-
+ drivers/net/ethernet/intel/igc/igc_defines.h |   4 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  20 ++
+ drivers/net/ethernet/intel/igc/igc_main.c    | 190 ++++++++++++++++++-
+ 4 files changed, 228 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 5901ed9fb545..6016c132d981 100644
+index 6016c132d981..c21441c8908e 100644
 --- a/drivers/net/ethernet/intel/igc/igc.h
 +++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -33,6 +33,8 @@ void igc_ethtool_set_ops(struct net_device *);
- #define IGC_N_PEROUT	2
- #define IGC_N_SDP	4
+@@ -478,18 +478,28 @@ struct igc_q_vector {
+ };
  
-+#define MAX_FLEX_FILTER			32
-+
- enum igc_mac_filter_type {
- 	IGC_MAC_FILTER_TYPE_DST = 0,
- 	IGC_MAC_FILTER_TYPE_SRC
-@@ -502,6 +504,17 @@ struct igc_nfc_rule {
-  */
- #define IGC_MAX_RXNFC_RULES		32
+ enum igc_filter_match_flags {
+-	IGC_FILTER_FLAG_ETHER_TYPE =	0x1,
+-	IGC_FILTER_FLAG_VLAN_TCI   =	0x2,
+-	IGC_FILTER_FLAG_SRC_MAC_ADDR =	0x4,
+-	IGC_FILTER_FLAG_DST_MAC_ADDR =	0x8,
++	IGC_FILTER_FLAG_ETHER_TYPE =	BIT(0),
++	IGC_FILTER_FLAG_VLAN_TCI   =	BIT(1),
++	IGC_FILTER_FLAG_SRC_MAC_ADDR =	BIT(2),
++	IGC_FILTER_FLAG_DST_MAC_ADDR =	BIT(3),
++	IGC_FILTER_FLAG_USER_DATA =	BIT(4),
++	IGC_FILTER_FLAG_VLAN_ETYPE =	BIT(5),
+ };
  
-+struct igc_flex_filter {
-+	u8 index;
-+	u8 data[128];
-+	u8 mask[16];
-+	u8 length;
+ struct igc_nfc_filter {
+ 	u8 match_flags;
+ 	u16 etype;
++	__be16 vlan_etype;
+ 	u16 vlan_tci;
+ 	u8 src_addr[ETH_ALEN];
+ 	u8 dst_addr[ETH_ALEN];
++	u8 user_data[8];
++	u8 user_mask[8];
++	u8 flex_index;
 +	u8 rx_queue;
 +	u8 prio;
 +	u8 immediate_irq;
 +	u8 drop;
-+};
-+
- /* igc_desc_unused - calculate if we have unused descriptors */
- static inline u16 igc_desc_unused(const struct igc_ring *ring)
- {
+ };
+ 
+ struct igc_nfc_rule {
+@@ -499,10 +509,10 @@ struct igc_nfc_rule {
+ 	u16 action;
+ };
+ 
+-/* IGC supports a total of 32 NFC rules: 16 MAC address based,, 8 VLAN priority
+- * based, and 8 ethertype based.
++/* IGC supports a total of 32 NFC rules: 16 MAC address based, 8 VLAN priority
++ * based, 8 ethertype based and 32 Flex filter based rules.
+  */
+-#define IGC_MAX_RXNFC_RULES		32
++#define IGC_MAX_RXNFC_RULES		64
+ 
+ struct igc_flex_filter {
+ 	u8 index;
 diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index c3a5a5518790..6d6267d7bf4b 100644
+index 6d6267d7bf4b..c6315690e20f 100644
 --- a/drivers/net/ethernet/intel/igc/igc_defines.h
 +++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -17,11 +17,20 @@
- #define IGC_WUC_PME_EN	0x00000002 /* PME Enable */
+@@ -32,6 +32,8 @@
+ #define IGC_WUFC_FLX6		BIT(22)	   /* Flexible Filter 6 Enable */
+ #define IGC_WUFC_FLX7		BIT(23)	   /* Flexible Filter 7 Enable */
  
- /* Wake Up Filter Control */
--#define IGC_WUFC_LNKC	0x00000001 /* Link Status Change Wakeup Enable */
--#define IGC_WUFC_MAG	0x00000002 /* Magic Packet Wakeup Enable */
--#define IGC_WUFC_EX	0x00000004 /* Directed Exact Wakeup Enable */
--#define IGC_WUFC_MC	0x00000008 /* Directed Multicast Wakeup Enable */
--#define IGC_WUFC_BC	0x00000010 /* Broadcast Wakeup Enable */
-+#define IGC_WUFC_LNKC		0x00000001 /* Link Status Change Wakeup Enable */
-+#define IGC_WUFC_MAG		0x00000002 /* Magic Packet Wakeup Enable */
-+#define IGC_WUFC_EX		0x00000004 /* Directed Exact Wakeup Enable */
-+#define IGC_WUFC_MC		0x00000008 /* Directed Multicast Wakeup Enable */
-+#define IGC_WUFC_BC		0x00000010 /* Broadcast Wakeup Enable */
-+#define IGC_WUFC_FLEX_HQ	BIT(14)	   /* Flex Filters Host Queuing */
-+#define IGC_WUFC_FLX0		BIT(16)	   /* Flexible Filter 0 Enable */
-+#define IGC_WUFC_FLX1		BIT(17)	   /* Flexible Filter 1 Enable */
-+#define IGC_WUFC_FLX2		BIT(18)	   /* Flexible Filter 2 Enable */
-+#define IGC_WUFC_FLX3		BIT(19)	   /* Flexible Filter 3 Enable */
-+#define IGC_WUFC_FLX4		BIT(20)	   /* Flexible Filter 4 Enable */
-+#define IGC_WUFC_FLX5		BIT(21)	   /* Flexible Filter 5 Enable */
-+#define IGC_WUFC_FLX6		BIT(22)	   /* Flexible Filter 6 Enable */
-+#define IGC_WUFC_FLX7		BIT(23)	   /* Flexible Filter 7 Enable */
- 
++#define IGC_WUFC_FILTER_MASK GENMASK(23, 14)
++
  #define IGC_CTRL_ADVD3WUC	0x00100000  /* D3 WUC */
  
-@@ -46,6 +55,35 @@
- /* Wake Up Packet Memory stores the first 128 bytes of the wake up packet */
- #define IGC_WUPM_BYTES	128
+ /* Wake Up Status */
+@@ -81,6 +83,8 @@
+ #define IGC_WUFC_EXT_FLX30	BIT(30)	/* Flexible Filter 30 Enable */
+ #define IGC_WUFC_EXT_FLX31	BIT(31)	/* Flexible Filter 31 Enable */
  
-+/* Wakeup Filter Control Extended */
-+#define IGC_WUFC_EXT_FLX8	BIT(8)	/* Flexible Filter 8 Enable */
-+#define IGC_WUFC_EXT_FLX9	BIT(9)	/* Flexible Filter 9 Enable */
-+#define IGC_WUFC_EXT_FLX10	BIT(10)	/* Flexible Filter 10 Enable */
-+#define IGC_WUFC_EXT_FLX11	BIT(11)	/* Flexible Filter 11 Enable */
-+#define IGC_WUFC_EXT_FLX12	BIT(12)	/* Flexible Filter 12 Enable */
-+#define IGC_WUFC_EXT_FLX13	BIT(13)	/* Flexible Filter 13 Enable */
-+#define IGC_WUFC_EXT_FLX14	BIT(14)	/* Flexible Filter 14 Enable */
-+#define IGC_WUFC_EXT_FLX15	BIT(15)	/* Flexible Filter 15 Enable */
-+#define IGC_WUFC_EXT_FLX16	BIT(16)	/* Flexible Filter 16 Enable */
-+#define IGC_WUFC_EXT_FLX17	BIT(17)	/* Flexible Filter 17 Enable */
-+#define IGC_WUFC_EXT_FLX18	BIT(18)	/* Flexible Filter 18 Enable */
-+#define IGC_WUFC_EXT_FLX19	BIT(19)	/* Flexible Filter 19 Enable */
-+#define IGC_WUFC_EXT_FLX20	BIT(20)	/* Flexible Filter 20 Enable */
-+#define IGC_WUFC_EXT_FLX21	BIT(21)	/* Flexible Filter 21 Enable */
-+#define IGC_WUFC_EXT_FLX22	BIT(22)	/* Flexible Filter 22 Enable */
-+#define IGC_WUFC_EXT_FLX23	BIT(23)	/* Flexible Filter 23 Enable */
-+#define IGC_WUFC_EXT_FLX24	BIT(24)	/* Flexible Filter 24 Enable */
-+#define IGC_WUFC_EXT_FLX25	BIT(25)	/* Flexible Filter 25 Enable */
-+#define IGC_WUFC_EXT_FLX26	BIT(26)	/* Flexible Filter 26 Enable */
-+#define IGC_WUFC_EXT_FLX27	BIT(27)	/* Flexible Filter 27 Enable */
-+#define IGC_WUFC_EXT_FLX28	BIT(28)	/* Flexible Filter 28 Enable */
-+#define IGC_WUFC_EXT_FLX29	BIT(29)	/* Flexible Filter 29 Enable */
-+#define IGC_WUFC_EXT_FLX30	BIT(30)	/* Flexible Filter 30 Enable */
-+#define IGC_WUFC_EXT_FLX31	BIT(31)	/* Flexible Filter 31 Enable */
++#define IGC_WUFC_EXT_FILTER_MASK GENMASK(31, 8)
 +
-+/* Physical Func Reset Done Indication */
-+#define IGC_CTRL_EXT_LINK_MODE_MASK	0x00C00000
+ /* Physical Func Reset Done Indication */
+ #define IGC_CTRL_EXT_LINK_MODE_MASK	0x00C00000
+ 
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index fa4171860623..3d46eff87638 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -979,6 +979,12 @@ static int igc_ethtool_get_nfc_rule(struct igc_adapter *adapter,
+ 		eth_broadcast_addr(fsp->m_u.ether_spec.h_source);
+ 	}
+ 
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_USER_DATA) {
++		fsp->flow_type |= FLOW_EXT;
++		memcpy(fsp->h_ext.data, rule->filter.user_data, sizeof(fsp->h_ext.data));
++		memcpy(fsp->m_ext.data, rule->filter.user_mask, sizeof(fsp->m_ext.data));
++	}
 +
- /* Loop limit on how long we wait for auto-negotiation to complete */
- #define COPPER_LINK_UP_LIMIT		10
- #define PHY_AUTO_NEG_LIMIT		45
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index e29aadbc6744..0f8cd226fd2e 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -3075,6 +3075,140 @@ static void igc_del_etype_filter(struct igc_adapter *adapter, u16 etype)
- 		   etype);
+ 	mutex_unlock(&adapter->nfc_rule_lock);
+ 	return 0;
+ 
+@@ -1215,6 +1221,20 @@ static void igc_ethtool_init_nfc_rule(struct igc_nfc_rule *rule,
+ 		ether_addr_copy(rule->filter.dst_addr,
+ 				fsp->h_u.ether_spec.h_dest);
+ 	}
++
++	/* Check for user defined data */
++	if ((fsp->flow_type & FLOW_EXT) &&
++	    (fsp->h_ext.data[0] || fsp->h_ext.data[1])) {
++		rule->filter.match_flags |= IGC_FILTER_FLAG_USER_DATA;
++		memcpy(rule->filter.user_data, fsp->h_ext.data, sizeof(fsp->h_ext.data));
++		memcpy(rule->filter.user_mask, fsp->m_ext.data, sizeof(fsp->m_ext.data));
++
++		/* VLAN etype matching is only valid using flex filter */
++		if ((fsp->flow_type & FLOW_EXT) && fsp->h_ext.vlan_etype) {
++			rule->filter.vlan_etype = fsp->h_ext.vlan_etype;
++			rule->filter.match_flags |= IGC_FILTER_FLAG_VLAN_ETYPE;
++		}
++	}
  }
  
-+static int igc_flex_filter_select(struct igc_adapter *adapter,
-+				  struct igc_flex_filter *input,
-+				  u32 *fhft)
+ /**
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 0f8cd226fd2e..9999d8fc640b 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3116,8 +3116,8 @@ static int igc_flex_filter_select(struct igc_adapter *adapter,
+ 	return 0;
+ }
+ 
+-static int __maybe_unused igc_write_flex_filter_ll(struct igc_adapter *adapter,
+-						   struct igc_flex_filter *input)
++static int igc_write_flex_filter_ll(struct igc_adapter *adapter,
++				    struct igc_flex_filter *input)
+ {
+ 	struct device *dev = &adapter->pdev->dev;
+ 	struct igc_hw *hw = &adapter->hw;
+@@ -3209,11 +3209,192 @@ static int __maybe_unused igc_write_flex_filter_ll(struct igc_adapter *adapter,
+ 	return 0;
+ }
+ 
++static void igc_flex_filter_add_field(struct igc_flex_filter *flex,
++				      const void *src, unsigned int offset,
++				      size_t len, const void *mask)
 +{
-+	struct igc_hw *hw = &adapter->hw;
-+	u8 fhft_index;
-+	u32 fhftsl;
-+
-+	if (input->index >= MAX_FLEX_FILTER) {
-+		dev_err(&adapter->pdev->dev, "Wrong Flex Filter index selected!\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Indirect table select register */
-+	fhftsl = rd32(IGC_FHFTSL);
-+	fhftsl &= ~IGC_FHFTSL_FTSL_MASK;
-+	switch (input->index) {
-+	case 0 ... 7:
-+		fhftsl |= 0x00;
-+		break;
-+	case 8 ... 15:
-+		fhftsl |= 0x01;
-+		break;
-+	case 16 ... 23:
-+		fhftsl |= 0x02;
-+		break;
-+	case 24 ... 31:
-+		fhftsl |= 0x03;
-+		break;
-+	}
-+	wr32(IGC_FHFTSL, fhftsl);
-+
-+	/* Normalize index down to host table register */
-+	fhft_index = input->index % 8;
-+
-+	*fhft = (fhft_index < 4) ? IGC_FHFT(fhft_index) :
-+		IGC_FHFT_EXT(fhft_index - 4);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused igc_write_flex_filter_ll(struct igc_adapter *adapter,
-+						   struct igc_flex_filter *input)
-+{
-+	struct device *dev = &adapter->pdev->dev;
-+	struct igc_hw *hw = &adapter->hw;
-+	u8 *data = input->data;
-+	u8 *mask = input->mask;
-+	u32 queuing;
-+	u32 fhft;
-+	u32 wufc;
-+	int ret;
 +	int i;
 +
-+	/* Length has to be aligned to 8. Otherwise the filter will fail. Bail
-+	 * out early to avoid surprises later.
-+	 */
-+	if (input->length % 8 != 0) {
-+		dev_err(dev, "The length of a flex filter has to be 8 byte aligned!\n");
-+		return -EINVAL;
++	/* data */
++	memcpy(&flex->data[offset], src, len);
++
++	/* mask */
++	for (i = 0; i < len; ++i) {
++		const unsigned int idx = i + offset;
++		const u8 *ptr = mask;
++
++		if (mask) {
++			if (ptr[i] & 0xff)
++				flex->mask[idx / 8] |= BIT(idx % 8);
++
++			continue;
++		}
++
++		flex->mask[idx / 8] |= BIT(idx % 8);
++	}
++}
++
++static int igc_find_avail_flex_filter_slot(struct igc_adapter *adapter)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 wufc, wufc_ext;
++	int i;
++
++	wufc = rd32(IGC_WUFC);
++	wufc_ext = rd32(IGC_WUFC_EXT);
++
++	for (i = 0; i < MAX_FLEX_FILTER; i++) {
++		if (i < 8) {
++			if (!(wufc & (IGC_WUFC_FLX0 << i)))
++				return i;
++		} else {
++			if (!(wufc_ext & (IGC_WUFC_EXT_FLX8 << (i - 8))))
++				return i;
++		}
 +	}
 +
-+	/* Select corresponding flex filter register and get base for host table. */
-+	ret = igc_flex_filter_select(adapter, input, &fhft);
++	return -ENOSPC;
++}
++
++static bool igc_flex_filter_in_use(struct igc_adapter *adapter)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 wufc, wufc_ext;
++
++	wufc = rd32(IGC_WUFC);
++	wufc_ext = rd32(IGC_WUFC_EXT);
++
++	if (wufc & IGC_WUFC_FILTER_MASK)
++		return true;
++
++	if (wufc_ext & IGC_WUFC_EXT_FILTER_MASK)
++		return true;
++
++	return false;
++}
++
++static int igc_add_flex_filter(struct igc_adapter *adapter,
++			       struct igc_nfc_rule *rule)
++{
++	struct igc_flex_filter flex = { };
++	struct igc_nfc_filter *filter = &rule->filter;
++	unsigned int eth_offset, user_offset;
++	int ret, index;
++	bool vlan;
++
++	index = igc_find_avail_flex_filter_slot(adapter);
++	if (index < 0)
++		return -ENOSPC;
++
++	/* Construct the flex filter:
++	 *  -> dest_mac [6]
++	 *  -> src_mac [6]
++	 *  -> tpid [2]
++	 *  -> vlan tci [2]
++	 *  -> ether type [2]
++	 *  -> user data [8]
++	 *  -> = 26 bytes => 32 length
++	 */
++	flex.index    = index;
++	flex.length   = 32;
++	flex.rx_queue = rule->action;
++
++	vlan = rule->filter.vlan_tci || rule->filter.vlan_etype;
++	eth_offset = vlan ? 16 : 12;
++	user_offset = vlan ? 18 : 14;
++
++	/* Add destination MAC  */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_DST_MAC_ADDR)
++		igc_flex_filter_add_field(&flex, &filter->dst_addr, 0,
++					  ETH_ALEN, NULL);
++
++	/* Add source MAC */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_SRC_MAC_ADDR)
++		igc_flex_filter_add_field(&flex, &filter->src_addr, 6,
++					  ETH_ALEN, NULL);
++
++	/* Add VLAN etype */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_VLAN_ETYPE)
++		igc_flex_filter_add_field(&flex, &filter->vlan_etype, 12,
++					  sizeof(filter->vlan_etype),
++					  NULL);
++
++	/* Add VLAN TCI */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_VLAN_TCI)
++		igc_flex_filter_add_field(&flex, &filter->vlan_tci, 14,
++					  sizeof(filter->vlan_tci), NULL);
++
++	/* Add Ether type */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
++		__be16 etype = cpu_to_be16(filter->etype);
++
++		igc_flex_filter_add_field(&flex, &etype, eth_offset,
++					  sizeof(etype), NULL);
++	}
++
++	/* Add user data */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_USER_DATA)
++		igc_flex_filter_add_field(&flex, &filter->user_data,
++					  user_offset,
++					  sizeof(filter->user_data),
++					  filter->user_mask);
++
++	/* Add it down to the hardware and enable it. */
++	ret = igc_write_flex_filter_ll(adapter, &flex);
 +	if (ret)
 +		return ret;
 +
-+	/* When adding a filter globally disable flex filter feature. That is
-+	 * recommended within the datasheet.
-+	 */
-+	wufc = rd32(IGC_WUFC);
-+	wufc &= ~IGC_WUFC_FLEX_HQ;
-+	wr32(IGC_WUFC, wufc);
-+
-+	/* Configure filter */
-+	queuing = input->length & IGC_FHFT_LENGTH_MASK;
-+	queuing |= (input->rx_queue << IGC_FHFT_QUEUE_SHIFT) & IGC_FHFT_QUEUE_MASK;
-+	queuing |= (input->prio << IGC_FHFT_PRIO_SHIFT) & IGC_FHFT_PRIO_MASK;
-+
-+	if (input->immediate_irq)
-+		queuing |= IGC_FHFT_IMM_INT;
-+
-+	if (input->drop)
-+		queuing |= IGC_FHFT_DROP;
-+
-+	wr32(fhft + 0xFC, queuing);
-+
-+	/* Write data (128 byte) and mask (128 bit) */
-+	for (i = 0; i < 16; ++i) {
-+		const size_t data_idx = i * 8;
-+		const size_t row_idx = i * 16;
-+		u32 dw0 =
-+			(data[data_idx + 0] << 0) |
-+			(data[data_idx + 1] << 8) |
-+			(data[data_idx + 2] << 16) |
-+			(data[data_idx + 3] << 24);
-+		u32 dw1 =
-+			(data[data_idx + 4] << 0) |
-+			(data[data_idx + 5] << 8) |
-+			(data[data_idx + 6] << 16) |
-+			(data[data_idx + 7] << 24);
-+		u32 tmp;
-+
-+		/* Write row: dw0, dw1 and mask */
-+		wr32(fhft + row_idx, dw0);
-+		wr32(fhft + row_idx + 4, dw1);
-+
-+		/* mask is only valid for MASK(7, 0) */
-+		tmp = rd32(fhft + row_idx + 8);
-+		tmp &= ~GENMASK(7, 0);
-+		tmp |= mask[i];
-+		wr32(fhft + row_idx + 8, tmp);
-+	}
-+
-+	/* Enable filter. */
-+	wufc |= IGC_WUFC_FLEX_HQ;
-+	if (input->index > 8) {
-+		/* Filter 0-7 are enabled via WUFC. The other 24 filters are not. */
-+		u32 wufc_ext = rd32(IGC_WUFC_EXT);
-+
-+		wufc_ext |= (IGC_WUFC_EXT_FLX8 << (input->index - 8));
-+
-+		wr32(IGC_WUFC_EXT, wufc_ext);
-+	} else {
-+		wufc |= (IGC_WUFC_FLX0 << input->index);
-+	}
-+	wr32(IGC_WUFC, wufc);
-+
-+	dev_dbg(&adapter->pdev->dev, "Added flex filter %u to HW.\n",
-+		input->index);
++	filter->flex_index = index;
 +
 +	return 0;
 +}
 +
++static void igc_del_flex_filter(struct igc_adapter *adapter,
++				u16 reg_index)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 wufc;
++
++	/* Just disable the filter. The filter table itself is kept
++	 * intact. Another flex_filter_add() should override the "old" data
++	 * then.
++	 */
++	if (reg_index > 8) {
++		u32 wufc_ext = rd32(IGC_WUFC_EXT);
++
++		wufc_ext &= ~(IGC_WUFC_EXT_FLX8 << (reg_index - 8));
++		wr32(IGC_WUFC_EXT, wufc_ext);
++	} else {
++		wufc = rd32(IGC_WUFC);
++
++		wufc &= ~(IGC_WUFC_FLX0 << reg_index);
++		wr32(IGC_WUFC, wufc);
++	}
++
++	if (igc_flex_filter_in_use(adapter))
++		return;
++
++	/* No filters are in use, we may disable flex filters */
++	wufc = rd32(IGC_WUFC);
++	wufc &= ~IGC_WUFC_FLEX_HQ;
++	wr32(IGC_WUFC, wufc);
++}
++
  static int igc_enable_nfc_rule(struct igc_adapter *adapter,
- 			       const struct igc_nfc_rule *rule)
+-			       const struct igc_nfc_rule *rule)
++			       struct igc_nfc_rule *rule)
  {
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index 0f82990567d9..828c3501c448 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -67,6 +67,9 @@
+ 	int err;
  
- /* Filtering Registers */
- #define IGC_ETQF(_n)		(0x05CB0 + (4 * (_n))) /* EType Queue Fltr */
-+#define IGC_FHFT(_n)		(0x09000 + (256 * (_n))) /* Flexible Host Filter */
-+#define IGC_FHFT_EXT(_n)	(0x09A00 + (256 * (_n))) /* Flexible Host Filter Extended */
-+#define IGC_FHFTSL		0x05804 /* Flex Filter indirect table select */
- 
- /* ETQF register bit definitions */
- #define IGC_ETQF_FILTER_ENABLE	BIT(26)
-@@ -75,6 +78,19 @@
- #define IGC_ETQF_QUEUE_MASK	0x00070000
- #define IGC_ETQF_ETYPE_MASK	0x0000FFFF
- 
-+/* FHFT register bit definitions */
-+#define IGC_FHFT_LENGTH_MASK	GENMASK(7, 0)
-+#define IGC_FHFT_QUEUE_SHIFT	8
-+#define IGC_FHFT_QUEUE_MASK	GENMASK(10, 8)
-+#define IGC_FHFT_PRIO_SHIFT	16
-+#define IGC_FHFT_PRIO_MASK	GENMASK(18, 16)
-+#define IGC_FHFT_IMM_INT	BIT(24)
-+#define IGC_FHFT_DROP		BIT(25)
++	/* Check for user data first: When user data is set, the only option is
++	 * to use a flex filter. When more options are set (ethertype, vlan tci,
++	 * ...) construct a flex filter matching all of that.
++	 */
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_USER_DATA) {
++		err = igc_add_flex_filter(adapter, rule);
++		if (err)
++			return err;
++	}
 +
-+/* FHFTSL register bit definitions */
-+#define IGC_FHFTSL_FTSL_SHIFT	0
-+#define IGC_FHFTSL_FTSL_MASK	GENMASK(1, 0)
+ 	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE) {
+ 		err = igc_add_etype_filter(adapter, rule->filter.etype,
+ 					   rule->action);
+@@ -3250,6 +3431,9 @@ static int igc_enable_nfc_rule(struct igc_adapter *adapter,
+ static void igc_disable_nfc_rule(struct igc_adapter *adapter,
+ 				 const struct igc_nfc_rule *rule)
+ {
++	if (rule->filter.match_flags & IGC_FILTER_FLAG_USER_DATA)
++		igc_del_flex_filter(adapter, rule->filter.flex_index);
 +
- /* Redirection Table - RW Array */
- #define IGC_RETA(_i)		(0x05C00 + ((_i) * 4))
- /* RSS Random Key - RW Array */
-@@ -240,6 +256,7 @@
- #define IGC_WUFC	0x05808  /* Wakeup Filter Control - RW */
- #define IGC_WUS		0x05810  /* Wakeup Status - R/W1C */
- #define IGC_WUPL	0x05900  /* Wakeup Packet Length - RW */
-+#define IGC_WUFC_EXT	0x0580C  /* Wakeup Filter Control Register Extended - RW */
+ 	if (rule->filter.match_flags & IGC_FILTER_FLAG_ETHER_TYPE)
+ 		igc_del_etype_filter(adapter, rule->filter.etype);
  
- /* Wake Up packet memory */
- #define IGC_WUPM_REG(_i)	(0x05A00 + ((_i) * 4))
 -- 
 2.26.2
 
