@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 818303CB8C8
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 16:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F123CB90B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 16:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbhGPOjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 10:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233009AbhGPOjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 10:39:35 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA36AC06175F
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 07:36:40 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id i94so12359622wri.4
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 07:36:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lSrntPs33U9KYjlOA5x/UB/5uz8HBWUx1srTQBrRRDk=;
-        b=JQ6EpYV4sVXf0xU0xVttdVmimQ8XNbM7zu0d/NZv7SwDQyaYyHlqM52nbwYwAbZN1q
-         jhBeOyoqw8zz+mB3I114c/h/F4cMgsWy4TVJDF7g6P3Cx2iDBz9lJSJDnvlfQGKxPYXn
-         x3U5vbYVRVUqa5r0KlasfTR51vG281vqlszjwggVNd8Kv5IuwX5ydjaTPTtnvD4/3SDr
-         MzsNBRNITRD9G42pw7ZYBz4yuMlg9ff0HqC9Aru1i+U97XIeFN4kNp2LVnzGNzQYQxpd
-         UwCxnr9qGwn0iEpk0rfoqbMeW+qd2DpRNsykzmJrX0qjKR2YYNd3QIzczp3xgjujP3Q5
-         xfZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lSrntPs33U9KYjlOA5x/UB/5uz8HBWUx1srTQBrRRDk=;
-        b=SWxhrbU6Iw/IV/WauU5JMdgdhPmtTWLCd2zotz7gpVzDa29RjJODFSS1RgD5jujcq+
-         ZY7MLrh0omnlWAaRSAVDkyNPAuwKWwfhjLuFJnOjfiE8MlX282XltQ/M1nfkDpt1ypK4
-         2mlpH52XzFmbtIF50LXqlDGiU8jqwyoKSMln3PqQIFq3b1qGpVgZIGR5M46xOAzFxsRw
-         wZ0UYDkVsC1zPHXf1vfEUc0YVBk1crqwCt0R4F5zVgI0O2biNt6A2P4j7jU2WUImpkEj
-         Ni4a9xpMtLcXI22Ofqh3C2AioVGFKvNZ4n9sf8XbN84CgDNIQbWXYlXukFRBxi3HK4fX
-         05fw==
-X-Gm-Message-State: AOAM533fWZY1cF9ILwMXrNBtdm2Zb1kWRD/5o1lVET2dBjgaHWNfllOy
-        PCi+aGVpg8/bdCY+mvvkCcgcdg==
-X-Google-Smtp-Source: ABdhPJwEphdp6WbHNMv8MC2I1/d2SY2hsl0QXgkpJb4B22fS6giMmCxobUVPPqKMJlOUTSCnpmp6jw==
-X-Received: by 2002:a5d:4e43:: with SMTP id r3mr12802940wrt.132.1626446199282;
-        Fri, 16 Jul 2021 07:36:39 -0700 (PDT)
-Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id l39sm7283238wms.1.2021.07.16.07.36.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Jul 2021 07:36:38 -0700 (PDT)
-Subject: Re: [PATCH] xfrm/compat: Fix general protection fault in
- xfrm_user_rcv_msg_compat()
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        YueHaibing <yuehaibing@huawei.com>
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net, kuba@kernel.org,
-        0x7f454c46@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210712134002.34048-1-yuehaibing@huawei.com>
- <20210716080119.GC3684238@gauss3.secunet.de>
-From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <7d6604a1-02ee-d69d-0efe-d75d152f9b46@arista.com>
-Date:   Fri, 16 Jul 2021 15:36:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S240251AbhGPOv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 10:51:27 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:52033 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232988AbhGPOv0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 10:51:26 -0400
+Received: from fsav111.sakura.ne.jp (fsav111.sakura.ne.jp [27.133.134.238])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 16GEmHqL067176;
+        Fri, 16 Jul 2021 23:48:17 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav111.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp);
+ Fri, 16 Jul 2021 23:48:17 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav111.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 16GEmG17067172
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Fri, 16 Jul 2021 23:48:16 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
+ section
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        LinMa <linma@zju.edu.cn>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+ <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+ <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
+ <2b0e515c-6381-bffe-7742-05148e1e2dcb@gmail.com>
+ <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
+Date:   Fri, 16 Jul 2021 23:48:13 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210716080119.GC3684238@gauss3.secunet.de>
+In-Reply-To: <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,62 +57,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/21 9:01 AM, Steffen Klassert wrote:
-> On Mon, Jul 12, 2021 at 09:40:02PM +0800, YueHaibing wrote:
->> In xfrm_user_rcv_msg_compat() if maxtype is not zero and less than
->> XFRMA_MAX, nlmsg_parse_deprecated() do not initialize attrs array fully.
->> xfrm_xlate32() will access uninit 'attrs[i]' while iterating all attrs
->> array.
->>
->> KASAN: probably user-memory-access in range [0x0000000041b58ab0-0x0000000041b58ab7]
->> CPU: 0 PID: 15799 Comm: syz-executor.2 Tainted: G        W         5.14.0-rc1-syzkaller #0
->> RIP: 0010:nla_type include/net/netlink.h:1130 [inline]
->> RIP: 0010:xfrm_xlate32_attr net/xfrm/xfrm_compat.c:410 [inline]
->> RIP: 0010:xfrm_xlate32 net/xfrm/xfrm_compat.c:532 [inline]
->> RIP: 0010:xfrm_user_rcv_msg_compat+0x5e5/0x1070 net/xfrm/xfrm_compat.c:577
->> [...]
->> Call Trace:
->>  xfrm_user_rcv_msg+0x556/0x8b0 net/xfrm/xfrm_user.c:2774
->>  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
->>  xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2824
->>  netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
->>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
->>  netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
->>  sock_sendmsg_nosec net/socket.c:702 [inline]
->>
->> Fixes: 5106f4a8acff ("xfrm/compat: Add 32=>64-bit messages translator")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>  net/xfrm/xfrm_compat.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
->> index a20aec9d7393..4738660cadea 100644
->> --- a/net/xfrm/xfrm_compat.c
->> +++ b/net/xfrm/xfrm_compat.c
->> @@ -559,8 +559,8 @@ static struct nlmsghdr *xfrm_user_rcv_msg_compat(const struct nlmsghdr *h32,
->>  	    (h32->nlmsg_flags & NLM_F_DUMP))
->>  		return NULL;
->>  
->> -	err = nlmsg_parse_deprecated(h32, compat_msg_min[type], attrs,
->> -			maxtype ? : XFRMA_MAX, policy ? : compat_policy, extack);
->> +	err = nlmsg_parse_deprecated(h32, compat_msg_min[type], attrs, XFRMA_MAX,
->> +				     policy ? : compat_policy, extack);
-> 
-> This removes the only usage of maxtype in that function. If we don't
-> need it, we should remove maxtype from the function parameters.
-> 
-> But looking closer at this, it seems that xfrm_xlate32() should
-> only iterate up to maxtype if set. Dimitry, any opinion on that?
-> 
+On 2021/07/16 13:11, Desmond Cheong Zhi Xi wrote:
+> On 16/7/21 11:47 am, Desmond Cheong Zhi Xi wrote:
+>> Saw this and thought I'd offer my two cents.
+>> BUG: sleeping function called from invalid context
+>> This is the original problem that Tetsuo's patch was trying to fix.
 
-Thanks for Cc. Yeah, I agree, it should pass maxtype to xfrm_xlate32().
-More than that, it is XFRM_MSG_NEWSPDINFO, which have different possible
-attributes: XFRMA_SPD_MAX vs XFRMA_MAX, so attribute translator
-xfrm_xlate32_attr() should be corrected to translate these.
+Yes.
 
-Let me fix this, thanks for the report!
-I'll also add a selftest for this to xfrm selftest.
+>> Under the hood of lock_sock, we call lock_sock_nested which might sleep
+>> because of the mutex_acquire.
 
-Thanks,
-          Dmitry
+Both lock_sock() and lock_sock_nested() might sleep.
+
+>> But we shouldn't sleep while holding the rw spinlock.
+
+Right. In atomic context (e.g. inside interrupt handler, schedulable context
+with interrupts or preemption disabled, schedulable context inside RCU read
+critical section, schedulable context inside a spinlock section), we must not
+call functions (e.g. waiting for a mutex, waiting for a semaphore, waiting for
+a page fault) which are not atomic.
+
+>> So we either have to acquire a spinlock instead of a mutex as was done before,
+
+Regarding hci_sock_dev_event(HCI_DEV_UNREG) case, we can't use a spinlock.
+
+Like LinMa explained, lock_sock() has to be used in order to serialize functions
+(e.g. hci_sock_sendmsg()) which access hci_pi(sk)->hdev between lock_sock(sk) and
+release_sock(sk). And like I explained, we can't defer resetting hci_pi(sk)->hdev
+to NULL, for hci_sock_dev_event(HCI_DEV_UNREG) is responsible for resetting
+hci_pi(sk)->hdev to NULL because the caller of hci_sock_dev_event(HCI_DEV_UNREG)
+immediately destroys resources associated with this hdev.
+
+>> or we need to move lock_sock out of the rw spinlock critical section as Tetsuo proposes.
+
+Exactly. Since this is a regression introduced when fixing CVE-2021-3573, Linux
+distributors are waiting for this patch so that they can apply the fix for CVE-2021-3573.
+This patch should be sent to linux.git and stables as soon as possible. But due to little
+attention on this patch, I'm already testing this patch in linux-next.git via my tree.
+I'll drop when Bluetooth maintainers pick this patch up for linux-5.14-rcX. (Or should I
+directly send to Linus?)
+
+>>
+> 
+> My bad, was thinking more about the problem and noticed your poc was for hci_sock_sendmsg,
+> not hci_sock_dev_event.
+
+I didn't catch this part. Are you talking about a different poc?
+As far as I'm aware, exp.c in POC.zip was for hci_sock_bound_ioctl(HCIUNBLOCKADDR).
+
+hci_sock_bound_ioctl(HCIUNBLOCKADDR) (which is called between lock_sock() and release_sock())
+calls copy_from_user() which might cause page fault, and userfaultfd mechanism allows an attacker
+to slowdown page fault handling enough to hci_sock_dev_event(HCI_DEV_UNREG) to return without
+waiting for hci_sock_bound_ioctl(HCIUNBLOCKADDR) to call release_sock(). This race window
+results in UAF (doesn't it, LinMa?).
+
+> In this case, it's not clear to me why the atomic context is being violated.
+
+In atomic context (in hci_sock_dev_event(HCI_DEV_UNREG) case, between
+read_lock(&hci_sk_list.lock) and read_unlock(&hci_sk_list.lock)), we must not call
+lock_sock(sk) which might wait for hci_sock_bound_ioctl(HCIUNBLOCKADDR) to call release_sock().
+
+> 
+> Sorry for the noise.
+> 
+>>>
+>>> The patch provided by Desmond adds the local_bh_disable() before the bh_lock_sock() so I also try that in
+>>>
+>>> --- a/net/bluetooth/hci_sock.c
+>>> +++ b/net/bluetooth/hci_sock.c
+>>> @@ -762,6 +762,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>>>                  /* Detach sockets from device */
+>>>                  read_lock(&hci_sk_list.lock);
+>>>                  sk_for_each(sk, &hci_sk_list.head) {
+>>> +                       local_bh_disable();
+>>>                          bh_lock_sock_nested(sk);
+>>>                          if (hci_pi(sk)->hdev == hdev) {
+>>>                                  hci_pi(sk)->hdev = NULL;
+>>> @@ -772,6 +773,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>>>                                  hci_dev_put(hdev);
+>>>                          }
+>>>                          bh_unlock_sock(sk);
+>>> +                       local_bh_enable();
+>>>                  }
+>>>                  read_unlock(&hci_sk_list.lock);
+>>>          }
+>>>
+>>> But this is not useful, the UAF still occurs
+>>>
+>>
+>> I might be very mistaken on this, but I believe the UAF still happens because
+>> you can't really mix bh_lock_sock* and lock_sock* to protect the same things.
+
+Right. https://www.kernel.org/doc/html/v5.13/kernel-hacking/locking.html
+
+>> The former holds the spinlock &sk->sk_lock.slock and synchronizes between
+>> user contexts and bottom halves,
+
+serializes access to resources which might be accessed from atomic (i.e. non-schedulable) contexts
+
+>> while the latter holds a mutex on &sk->sk_lock.dep_map to synchronize between
+>> multiple users.
+
+serializes access to resources which are accessed from only schedulable (i.e. non-atomic) contexts
+
+>>
+>> One option I can think of would be to switch instances of lock_sock to bh_lock_sock_nested
+>> for users that might race (such as hci_sock_sendmsg, hci_sock_bound_ioctl, and others as
+>> needed). But I'm not sure if that's quite what we want, plus we would need to ensure that
+>> sleeping functions aren't called between the bh_lock/unlock.
+
+We can't do it for hci_sock_dev_event(HCI_DEV_UNREG).
+
