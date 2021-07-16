@@ -2,138 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC3D53CB2EA
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 09:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC693CB32B
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 09:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbhGPHFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 03:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234986AbhGPHFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 03:05:33 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD69C061760
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 00:02:37 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id w14so11590303edc.8
-        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 00:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ob+65EC7EGHk7ZpDwd2fjysmCAANNiwOFYwvnrx8W6A=;
-        b=WpUScbBh4ND6IRyPfMqPuzTj7+TZmXY/9OtflZD5oeF8YGH3wY0LBc1zTchljv7HGt
-         eC7oICPrBirfEObqC7S/yhLtt/3NhAParkUbv73w1a3xCeetjLS29n23WFgEmGEe7gWa
-         YHCPMQm5N9sCs3f5xRximY96BxorpuvQwxQIBlaIKiChPpNTFq9m8NOnrd0/epKliPKS
-         F3yiKzIwdNKJS46YvfwjJSJBFJaQftvIpOy6n5s+GZi3ySSVXMFnCcIQfjDNtvxKzvUp
-         SSUk/pcUKNtg3hnq/1b6TSbtc/N3nkoNuttw9RcRFhag8cbpFb/Hq1H6t02Tia2uLTG+
-         6vDA==
+        id S235567AbhGPHWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 03:22:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30789 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235173AbhGPHWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 03:22:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626419983;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LzRNYAtqYOTj/V0dAkfMc1jXJowVL1A+56TG4pOS/EU=;
+        b=fjctUJQgKcVhDQ7xkQG9Xbw63bisfMBX1WY2l20rp4PaKuLCxoq3yRV6a3SNMOajA2Eh3p
+        A9vDeQv9TTdyk4yn5dnxZS2e/FYvZ1yJZ8JLqDsmiiOH6O0tGug0hk0YHE5hSXrBxCWcJn
+        7AN/DpOE95sD294zBsjjkkWUjUb1w68=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-114-XDiZuYcKO_WGQUs7g9HE0Q-1; Fri, 16 Jul 2021 03:19:42 -0400
+X-MC-Unique: XDiZuYcKO_WGQUs7g9HE0Q-1
+Received: by mail-wm1-f69.google.com with SMTP id z127-20020a1c7e850000b02901e46e4d52c0so2078115wmc.6
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 00:19:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ob+65EC7EGHk7ZpDwd2fjysmCAANNiwOFYwvnrx8W6A=;
-        b=LeFy4txxrSibzK+RdR8hsPzb45pqFTUxsS4T/YuaiGN99JuaCf7CCPsMR2GfkY6fXC
-         vYtxN8dhp6J1kEPr56/cybV2Xj0A8yk5Fkotrlke3jfHP92xxLVRoHafnDwQPEdehHcg
-         SQlNfEb7JIqmy4czUBtBayYAhqjiaQfSEnXz9zX8jlMNZXTc664P6QKWAXaO6FIa1/sz
-         4Au/m1ipQSi8TC/9GC3EMewXVOcxVHDJ6H2fbZHIY3bqQjIr/cTSF9ZYbop70eiWWC+G
-         hjP3oDR1NNHGilKaIK21FjQEYFvqbpr7Fs5jbdTUe2AfBUkeYMv8+YvuFUw8bben4ieY
-         +/6w==
-X-Gm-Message-State: AOAM531OfCCLbs6pv+znsFlIaMaVy/XSN8KOAe7qfp72RyuNiRHkyIby
-        i94lcpzTF6nekv17sMqOrIkjtWtJyoYwqg==
-X-Google-Smtp-Source: ABdhPJyzW0B43oVFsiUQcTsX/rB6papLgwlPeuY72zWdC+yBJkwa9qN2rwwIZF+dgutQh7+CAJuLGA==
-X-Received: by 2002:a05:6402:d2:: with SMTP id i18mr12528374edu.17.1626418956198;
-        Fri, 16 Jul 2021 00:02:36 -0700 (PDT)
-Received: from localhost.localdomain (ppp-94-66-243-35.home.otenet.gr. [94.66.243.35])
-        by smtp.gmail.com with ESMTPSA id cq22sm3313698edb.77.2021.07.16.00.02.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Jul 2021 00:02:35 -0700 (PDT)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org
-Cc:     linyunsheng@huawei.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Matteo Croce <mcroce@microsoft.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1 v3] skbuff: Fix a potential race while recycling page_pool packets
-Date:   Fri, 16 Jul 2021 10:02:18 +0300
-Message-Id: <20210716070222.106422-1-ilias.apalodimas@linaro.org>
-X-Mailer: git-send-email 2.32.0.rc0
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=LzRNYAtqYOTj/V0dAkfMc1jXJowVL1A+56TG4pOS/EU=;
+        b=KREA8oUgSMnItuyfNpm6J0lWldIKIwlirxp2vULue0Vxsa6jHZuRFp3kc7Y599k4Bn
+         Wv+Js2A1iP3bas+NB3qUrHqX4Rd7PbtBhN1O/dYeizLWf3IxAfGVYqB6+DBmf41OedZ9
+         /gEOHzWju9PnbosVi1F1lsZBsRyCB3dZ7l2WkzHTnysrauPuHu8QxEvJvqxkIOhEVYH0
+         2SJTrOz2727w/K2Z8dWeCQJwKlFxHwJAKwB2hnhxEb1b4THGSYMgLehjtjEVqWR10Pxc
+         TejxzT3ZwAohWWOc/eFoY38o8SwrTF20sNZYie4Mkhu7XjA3GSF+FkVrvqNgTAQ0tOe7
+         0IlQ==
+X-Gm-Message-State: AOAM530wNVgQnwpJIEPjC07cdkPccBE4PfPct/VNilkSO6d4x5ZlABki
+        AfLX0nigf/gF1bLv2OyXST4hK6/R8nYVqEejefD9ziTCrvbDK0pTcVmJ9qv5GvN+a+srFfgCRW7
+        vTAYNrjRDsbTjaTPB
+X-Received: by 2002:a05:600c:19d1:: with SMTP id u17mr8807737wmq.177.1626419981127;
+        Fri, 16 Jul 2021 00:19:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzBHHyJaVFHknowy3RSublWo7cB7IE9fJELY3Kn03cppdcQEgsTyMLOmb1u0JpBeALFXXjOOQ==
+X-Received: by 2002:a05:600c:19d1:: with SMTP id u17mr8807721wmq.177.1626419980944;
+        Fri, 16 Jul 2021 00:19:40 -0700 (PDT)
+Received: from magray.users.ipa.redhat.com ([109.76.76.230])
+        by smtp.gmail.com with ESMTPSA id r67sm10454260wma.6.2021.07.16.00.19.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Jul 2021 00:19:40 -0700 (PDT)
+Reply-To: Mark Gray <mark.d.gray@redhat.com>
+Subject: Re: [PATCH net-next v2] openvswitch: Introduce per-cpu upcall
+ dispatch
+To:     Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, dan.carpenter@oracle.com,
+        Flavio Leitner <fbl@sysclose.org>
+References: <20210715122754.1240288-1-mark.d.gray@redhat.com>
+ <CAOrHB_CUyqp-hmamZzkyEea8nOZvGpk57DRQ2EReCKzbtJ4yww@mail.gmail.com>
+From:   Mark Gray <mark.d.gray@redhat.com>
+Message-ID: <e9a3ae67-a066-b221-bdc1-ab31f18cc6f4@redhat.com>
+Date:   Fri, 16 Jul 2021 08:19:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOrHB_CUyqp-hmamZzkyEea8nOZvGpk57DRQ2EReCKzbtJ4yww@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As Alexander points out, when we are trying to recycle a cloned/expanded
-SKB we might trigger a race.  The recycling code relies on the
-pp_recycle bit to trigger,  which we carry over to cloned SKBs.
-If that cloned SKB gets expanded or if we get references to the frags,
-call skb_release_data() and overwrite skb->head, we are creating separate
-instances accessing the same page frags.  Since the skb_release_data()
-will first try to recycle the frags,  there's a potential race between
-the original and cloned SKB, since both will have the pp_recycle bit set.
+On 15/07/2021 23:57, Pravin Shelar wrote:
+> On Thu, Jul 15, 2021 at 5:28 AM Mark Gray <mark.d.gray@redhat.com> wrote:
+>>
+>> The Open vSwitch kernel module uses the upcall mechanism to send
+>> packets from kernel space to user space when it misses in the kernel
+>> space flow table. The upcall sends packets via a Netlink socket.
+>> Currently, a Netlink socket is created for every vport. In this way,
+>> there is a 1:1 mapping between a vport and a Netlink socket.
+>> When a packet is received by a vport, if it needs to be sent to
+>> user space, it is sent via the corresponding Netlink socket.
+>>
+>> This mechanism, with various iterations of the corresponding user
+>> space code, has seen some limitations and issues:
+>>
+>> * On systems with a large number of vports, there is a correspondingly
+>> large number of Netlink sockets which can limit scaling.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1526306)
+>> * Packet reordering on upcalls.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1844576)
+>> * A thundering herd issue.
+>> (https://bugzilla.redhat.com/show_bug.cgi?id=1834444)
+>>
+>> This patch introduces an alternative, feature-negotiated, upcall
+>> mode using a per-cpu dispatch rather than a per-vport dispatch.
+>>
+>> In this mode, the Netlink socket to be used for the upcall is
+>> selected based on the CPU of the thread that is executing the upcall.
+>> In this way, it resolves the issues above as:
+>>
+>> a) The number of Netlink sockets scales with the number of CPUs
+>> rather than the number of vports.
+>> b) Ordering per-flow is maintained as packets are distributed to
+>> CPUs based on mechanisms such as RSS and flows are distributed
+>> to a single user space thread.
+>> c) Packets from a flow can only wake up one user space thread.
+>>
+>> The corresponding user space code can be found at:
+>> https://mail.openvswitch.org/pipermail/ovs-dev/2021-July/385139.html
+>>
+>> Bugzilla: https://bugzilla.redhat.com/1844576
+>> Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
+>> Acked-by: Flavio Leitner <fbl@sysclose.org>
+> 
+> Acked-by: Pravin B Shelar <pshelar@ovn.org>
+> 
+> Thanks,
+> 
 
-Fix this by explicitly those SKBs not recyclable.
-The atomic_sub_return effectively limits us to a single release case,
-and when we are calling skb_release_data we are also releasing the
-option to perform the recycling, or releasing the pages from the page pool.
-
-Fixes: 6a5bcd84e886 ("page_pool: Allow drivers to hint on SKB recycling")
-Reported-by: Alexander Duyck <alexanderduyck@fb.com>
-Suggested-by: Alexander Duyck <alexanderduyck@fb.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
-Changes since v1:
-- Set the recycle bit to 0 during skb_release_data instead of the
-  individual fucntions triggering the issue, in order to catch all
-  cases
-Changes since v2:
-- Add a comment explaining why we need to reset the recycling bit
- net/core/skbuff.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 12aabcda6db2..8ec5c1136692 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -663,7 +663,7 @@ static void skb_release_data(struct sk_buff *skb)
- 	if (skb->cloned &&
- 	    atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
- 			      &shinfo->dataref))
--		return;
-+		goto exit;
- 
- 	skb_zcopy_clear(skb, true);
- 
-@@ -674,6 +674,17 @@ static void skb_release_data(struct sk_buff *skb)
- 		kfree_skb_list(shinfo->frag_list);
- 
- 	skb_free_head(skb);
-+exit:
-+	/* When we clone an SKB we copy the reycling bit. The pp_recycle
-+	 * bit is only set on the head though, so in order to avoid races
-+	 * while trying to recycle fragments on __skb_frag_unref() we need
-+	 * to make one SKB responsible for triggering the recycle path.
-+	 * So disable the recycling bit if an SKB is cloned and we have
-+	 * additional references to to the fragmented part of the SKB.
-+	 * Eventually the last SKB will have the recycling bit set and it's
-+	 * dataref set to 0, which will trigger the recycling
-+	 */
-+	skb->pp_recycle = 0;
- }
- 
- /*
--- 
-2.32.0.rc0
+Thanks for the review Pravin.
 
