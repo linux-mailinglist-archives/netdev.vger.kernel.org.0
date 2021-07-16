@@ -2,300 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 115143CB51B
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 11:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8FF3CB5B0
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 12:05:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbhGPJSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 05:18:14 -0400
-Received: from mailout1.secunet.com ([62.96.220.44]:41914 "EHLO
-        mailout1.secunet.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbhGPJSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 05:18:09 -0400
-Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
-        by mailout1.secunet.com (Postfix) with ESMTP id 73505800055;
-        Fri, 16 Jul 2021 11:15:13 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Jul 2021 11:15:13 +0200
-Received: from moon.secunet.de (172.18.26.122) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 16 Jul
- 2021 11:15:12 +0200
-Date:   Fri, 16 Jul 2021 11:15:05 +0200
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-CC:     Christian Langrock <christian.langrock@secunet.com>,
-        Antony Antony <antony.antony@secunet.com>,
+        id S237131AbhGPKIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 06:08:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236561AbhGPKIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 06:08:44 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172E3C061762
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 03:05:50 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id i94so11423704wri.4
+        for <netdev@vger.kernel.org>; Fri, 16 Jul 2021 03:05:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MCp/pg+XuWbTvMrNcAeNDWuWAPF6IPK9geF9Qe+H510=;
+        b=hAZqa8UOO4TXGs/6z/CGk67n27e/Y/5EuFmH48DrwxhBe52aZGQuzi3R/wIjOY2SU+
+         15AHQtjhc/TcuXKCYZ20EDfDYOJhLSaJi6mO2nugyCs/A1tpCAGQlLCnhpN8A7/FyN7B
+         gfkTgsh4jmeg/Sg0x9XgFvjKJlNk0VZAUAoI0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MCp/pg+XuWbTvMrNcAeNDWuWAPF6IPK9geF9Qe+H510=;
+        b=p0ODjIwGV/5CeZOJ/LQKbpL7abzxPFueTe0Fo5c78Q4KiOk0GK9BYRXVdRc1rx7NgF
+         taQ0SjsSHMRjbFDaw5ormQIsFOdzjPZMVW8qR5Uf5VUAPtVj/DUXeQ/6HwafC/jKYG3n
+         rD03O88GQDp6dm+0L0AbRfldm4WkhNtsXgMBkx1igfq/Wz3FPwVqQT3Iy4a3ytlcxK/V
+         5aQHmZnEE18OvIZC5Doqytq+477Wo4SnJ/fdentUhkNSPDb/C7dxqJQ62IY8xzxZjrP+
+         MhHXoWW4gnX6EEjslmUKqq9h5tIb6kuY89hf67Y18KOlWyjmzkbj7Wb1vqbNturqlHbv
+         08XQ==
+X-Gm-Message-State: AOAM5333QbJWd6IE50OQvacq4nkvYUSHLaCaiWKS4sccaHqVRWyoAyBt
+        dBWYrffUuZyHIsGJ++PaxbkHTw==
+X-Google-Smtp-Source: ABdhPJxbdmshTMgk1hQGw8995IwNopd77Ta6sR0JguOOX0cnRDgL6pKDXV+sDGoXUamE+KXaABHP9w==
+X-Received: by 2002:a05:6000:180b:: with SMTP id m11mr11367626wrh.6.1626429948500;
+        Fri, 16 Jul 2021 03:05:48 -0700 (PDT)
+Received: from antares.. (c.b.2.6.f.3.0.0.d.9.9.9.a.0.6.5.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:560a:999d:3f:62bc])
+        by smtp.gmail.com with ESMTPSA id l14sm9130706wrs.22.2021.07.16.03.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Jul 2021 03:05:48 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH ipsec-next] xfrm: Add possibility to set the default to block
- if we have no policy
-Message-ID: <82704b3073447fd7968587e8c570d5f12bd23310.1626426615.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
-References: <20210331144843.GA25749@moon.secunet.de>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf: fix OOB read when printing XDP link fdinfo
+Date:   Fri, 16 Jul 2021 11:04:52 +0100
+Message-Id: <20210716100452.113652-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210331144843.GA25749@moon.secunet.de>
-Organization: secunet
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Klassert <steffen.klassert@secunet.com>
+We got the following UBSAN report on one of our testing machines:
 
-As the default we assume the traffic to pass, if we have no
-matching IPsec policy. With this patch, we have a possibility to
-change this default from allow to block. It can be configured
-via netlink. Each direction (input/output/forward) can be
-configured separately. With the default to block configuered,
-we need allow policies for all packet flows we accept.
-We do not use default policy lookup for the loopback device.
+    ================================================================================
+    UBSAN: array-index-out-of-bounds in kernel/bpf/syscall.c:2389:24
+    index 6 is out of range for type 'char *[6]'
+    CPU: 43 PID: 930921 Comm: systemd-coredum Tainted: G           O      5.10.48-cloudflare-kasan-2021.7.0 #1
+    Hardware name: <snip>
+    Call Trace:
+     dump_stack+0x7d/0xa3
+     ubsan_epilogue+0x5/0x40
+     __ubsan_handle_out_of_bounds.cold+0x43/0x48
+     ? seq_printf+0x17d/0x250
+     bpf_link_show_fdinfo+0x329/0x380
+     ? bpf_map_value_size+0xe0/0xe0
+     ? put_files_struct+0x20/0x2d0
+     ? __kasan_kmalloc.constprop.0+0xc2/0xd0
+     seq_show+0x3f7/0x540
+     seq_read_iter+0x3f8/0x1040
+     seq_read+0x329/0x500
+     ? seq_read_iter+0x1040/0x1040
+     ? __fsnotify_parent+0x80/0x820
+     ? __fsnotify_update_child_dentry_flags+0x380/0x380
+     vfs_read+0x123/0x460
+     ksys_read+0xed/0x1c0
+     ? __x64_sys_pwrite64+0x1f0/0x1f0
+     do_syscall_64+0x33/0x40
+     entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    <snip>
+    ================================================================================
+    ================================================================================
+    UBSAN: object-size-mismatch in kernel/bpf/syscall.c:2384:2
 
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Co-developed-by: Christian Langrock <christian.langrock@secunet.com>
-Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
-Co-developed-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
+From the report, we can infer that some array access in bpf_link_show_fdinfo at index 6
+is out of bounds. The obvious candidate is bpf_link_type_strs[BPF_LINK_TYPE_XDP] with
+BPF_LINK_TYPE_XDP == 6. It turns out that BPF_LINK_TYPE_XDP is missing from bpf_types.h
+and therefore doesn't have an entry in bpf_link_type_strs:
+
+    pos:	0
+    flags:	02000000
+    mnt_id:	13
+    link_type:	(null)
+    link_id:	4
+    prog_tag:	bcf7977d3b93787c
+    prog_id:	4
+    ifindex:	1
+
+Fixes: aa8d3a716b59 ("bpf, xdp: Add bpf_link-based XDP attachment API")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 ---
- include/net/netns/xfrm.h  |  7 ++++++
- include/net/xfrm.h        | 36 ++++++++++++++++++++++-----
- include/uapi/linux/xfrm.h | 10 ++++++++
- net/xfrm/xfrm_policy.c    | 16 ++++++++++++
- net/xfrm/xfrm_user.c      | 52 +++++++++++++++++++++++++++++++++++++++
- 5 files changed, 115 insertions(+), 6 deletions(-)
+ include/linux/bpf_types.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index e946366e8ba5..88c647302977 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -65,6 +65,13 @@ struct netns_xfrm {
- 	u32			sysctl_aevent_rseqth;
- 	int			sysctl_larval_drop;
- 	u32			sysctl_acq_expires;
-+
-+	u8			policy_default;
-+#define XFRM_POL_DEFAULT_IN	1
-+#define XFRM_POL_DEFAULT_OUT	2
-+#define XFRM_POL_DEFAULT_FWD	4
-+#define XFRM_POL_DEFAULT_MASK	7
-+
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*sysctl_hdr;
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index a9db1eae6796..be95f2722ad9 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -135,3 +135,4 @@ BPF_LINK_TYPE(BPF_LINK_TYPE_ITER, iter)
+ #ifdef CONFIG_NET
+ BPF_LINK_TYPE(BPF_LINK_TYPE_NETNS, netns)
  #endif
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index cbff7c2a9724..d9b470d47af1 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1074,6 +1074,22 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
- 	return !0;
- }
- 
-+static inline bool
-+xfrm_default_allow(struct net *net, int dir)
-+{
-+	u8 def = net->xfrm.policy_default;
-+
-+	switch (dir) {
-+	case XFRM_POLICY_IN:
-+		return def & XFRM_POL_DEFAULT_IN ? false : true;
-+	case XFRM_POLICY_OUT:
-+		return def & XFRM_POL_DEFAULT_OUT ? false : true;
-+	case XFRM_POLICY_FWD:
-+		return def & XFRM_POL_DEFAULT_FWD ? false : true;
-+	}
-+	return false;
-+}
-+
- #ifdef CONFIG_XFRM
- int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
- 			unsigned short family);
-@@ -1088,9 +1104,13 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
- 		return __xfrm_policy_check(sk, ndir, skb, family);
- 
--	return	(!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
--		(skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
--		__xfrm_policy_check(sk, ndir, skb, family);
-+	if (xfrm_default_allow(net, dir))
-+		return (!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
-+		       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-+		       __xfrm_policy_check(sk, ndir, skb, family);
-+	else
-+		return (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-+		       __xfrm_policy_check(sk, ndir, skb, family);
- }
- 
- static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb, unsigned short family)
-@@ -1142,9 +1162,13 @@ static inline int xfrm_route_forward(struct sk_buff *skb, unsigned short family)
- {
- 	struct net *net = dev_net(skb->dev);
- 
--	return	!net->xfrm.policy_count[XFRM_POLICY_OUT] ||
--		(skb_dst(skb)->flags & DST_NOXFRM) ||
--		__xfrm_route_forward(skb, family);
-+	if (xfrm_default_allow(net, XFRM_POLICY_FWD))
-+		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
-+			(skb_dst(skb)->flags & DST_NOXFRM) ||
-+			__xfrm_route_forward(skb, family);
-+	else
-+		return (skb_dst(skb)->flags & DST_NOXFRM) ||
-+			__xfrm_route_forward(skb, family);
- }
- 
- static inline int xfrm4_route_forward(struct sk_buff *skb)
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index ffc6a5391bb7..6e8095106192 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -213,6 +213,11 @@ enum {
- 	XFRM_MSG_GETSPDINFO,
- #define XFRM_MSG_GETSPDINFO XFRM_MSG_GETSPDINFO
- 
-+	XFRM_MSG_SETDEFAULT,
-+#define XFRM_MSG_SETDEFAULT XFRM_MSG_SETDEFAULT
-+	XFRM_MSG_GETDEFAULT,
-+#define XFRM_MSG_GETDEFAULT XFRM_MSG_GETDEFAULT
-+
- 	XFRM_MSG_MAPPING,
- #define XFRM_MSG_MAPPING XFRM_MSG_MAPPING
- 	__XFRM_MSG_MAX
-@@ -508,6 +513,11 @@ struct xfrm_user_offload {
- #define XFRM_OFFLOAD_IPV6	1
- #define XFRM_OFFLOAD_INBOUND	2
- 
-+struct xfrm_userpolicy_default {
-+	__u8				dirmask;
-+	__u8				action;
-+};
-+
- #ifndef __KERNEL__
- /* backwards compatibility for userspace */
- #define XFRMGRP_ACQUIRE		1
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 827d84255021..d5cb082e11fc 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3165,6 +3165,11 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
- 	return dst;
- 
- nopol:
-+	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
-+	    !xfrm_default_allow(net, dir)) {
-+		err = -EPERM;
-+		goto error;
-+	}
- 	if (!(flags & XFRM_LOOKUP_ICMP)) {
- 		dst = dst_orig;
- 		goto ok;
-@@ -3553,6 +3558,11 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 	}
- 
- 	if (!pol) {
-+		if (!xfrm_default_allow(net, dir)) {
-+			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
-+			return 0;
-+		}
-+
- 		if (sp && secpath_has_nontransport(sp, 0, &xerr_idx)) {
- 			xfrm_secpath_reject(xerr_idx, skb, &fl);
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
-@@ -3607,6 +3617,12 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 				tpp[ti++] = &pols[pi]->xfrm_vec[i];
- 		}
- 		xfrm_nr = ti;
-+
-+		if (!xfrm_default_allow(net, dir) && !xfrm_nr) {
-+			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
-+			goto reject;
-+		}
-+
- 		if (npols > 1) {
- 			xfrm_tmpl_sort(stp, tpp, xfrm_nr, family);
- 			tpp = stp;
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index b47d613409b7..4eafd1130c3e 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -1961,6 +1961,54 @@ static struct sk_buff *xfrm_policy_netlink(struct sk_buff *in_skb,
- 	return skb;
- }
- 
-+static int xfrm_set_default(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			    struct nlattr **attrs)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct xfrm_userpolicy_default *up = nlmsg_data(nlh);
-+	u8 dirmask = (1 << up->dirmask) & XFRM_POL_DEFAULT_MASK;
-+	u8 old_default = net->xfrm.policy_default;
-+
-+	net->xfrm.policy_default = (old_default & (0xff ^ dirmask))
-+				    | (up->action << up->dirmask);
-+
-+	rt_genid_bump_all(net);
-+
-+	return 0;
-+}
-+
-+static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
-+			    struct nlattr **attrs)
-+{
-+	struct sk_buff *r_skb;
-+	struct nlmsghdr *r_nlh;
-+	struct net *net = sock_net(skb->sk);
-+	struct xfrm_userpolicy_default *r_up, *up;
-+	int len = NLMSG_ALIGN(sizeof(struct xfrm_userpolicy_default));
-+	u32 portid = NETLINK_CB(skb).portid;
-+	u32 seq = nlh->nlmsg_seq;
-+
-+	up = nlmsg_data(nlh);
-+
-+	r_skb = nlmsg_new(len, GFP_ATOMIC);
-+	if (!r_skb)
-+		return -ENOMEM;
-+
-+	r_nlh = nlmsg_put(r_skb, portid, seq, XFRM_MSG_GETDEFAULT, sizeof(*r_up), 0);
-+	if (!r_nlh) {
-+		kfree_skb(r_skb);
-+		return -EMSGSIZE;
-+	}
-+
-+	r_up = nlmsg_data(r_nlh);
-+
-+	r_up->action = ((net->xfrm.policy_default & (1 << up->dirmask)) >> up->dirmask);
-+	r_up->dirmask = up->dirmask;
-+	nlmsg_end(r_skb, r_nlh);
-+
-+	return nlmsg_unicast(net->xfrm.nlsk, r_skb, portid);
-+}
-+
- static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		struct nlattr **attrs)
- {
-@@ -2664,6 +2712,8 @@ const int xfrm_msg_min[XFRM_NR_MSGTYPES] = {
- 	[XFRM_MSG_GETSADINFO  - XFRM_MSG_BASE] = sizeof(u32),
- 	[XFRM_MSG_NEWSPDINFO  - XFRM_MSG_BASE] = sizeof(u32),
- 	[XFRM_MSG_GETSPDINFO  - XFRM_MSG_BASE] = sizeof(u32),
-+	[XFRM_MSG_SETDEFAULT  - XFRM_MSG_BASE] = XMSGSIZE(xfrm_userpolicy_default),
-+	[XFRM_MSG_GETDEFAULT  - XFRM_MSG_BASE] = XMSGSIZE(xfrm_userpolicy_default),
- };
- EXPORT_SYMBOL_GPL(xfrm_msg_min);
- 
-@@ -2743,6 +2793,8 @@ static const struct xfrm_link {
- 						   .nla_pol = xfrma_spd_policy,
- 						   .nla_max = XFRMA_SPD_MAX },
- 	[XFRM_MSG_GETSPDINFO  - XFRM_MSG_BASE] = { .doit = xfrm_get_spdinfo   },
-+	[XFRM_MSG_SETDEFAULT  - XFRM_MSG_BASE] = { .doit = xfrm_set_default   },
-+	[XFRM_MSG_GETDEFAULT  - XFRM_MSG_BASE] = { .doit = xfrm_get_default   },
- };
- 
- static int xfrm_user_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
++BPF_LINK_TYPE(BPF_LINK_TYPE_XDP, xdp)
 -- 
-2.20.1
+2.30.2
 
