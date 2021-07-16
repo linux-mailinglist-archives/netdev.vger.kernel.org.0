@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 848F53CB455
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A3913CB45F
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbhGPIeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 04:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45012 "EHLO
+        id S237848AbhGPIgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 04:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237240AbhGPIeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 04:34:00 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADFF7C06175F;
-        Fri, 16 Jul 2021 01:31:05 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id g5so13558733ybu.10;
-        Fri, 16 Jul 2021 01:31:05 -0700 (PDT)
+        with ESMTP id S237055AbhGPIgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 04:36:09 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 287B6C06175F;
+        Fri, 16 Jul 2021 01:33:15 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id g5so13567143ybu.10;
+        Fri, 16 Jul 2021 01:33:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QjjQyZufxkvm/4FnY8ErggVvo5phblypQQ5y56lc8Bc=;
-        b=cuq0WO3alXyDsSlh+srE/yCTOOd9pcBEDQYDlbjHgwC1Zk8dPwyQUJHW8/fpSOYVHI
-         v2sEWgIKW5zwm9QhMYzzaWG6ogzooKcywroRAeceJuG+RVVFxOmQGuA61/yrblFOw0M9
-         /ujre2xc3WOQu2FdzbDrtkzHk9mVvcIfxAceBO3jJo8hU6trZWD4RuE2szX6Le3gYeOj
-         ug3UkegE9rmGkFGUdtnXL7dmsmCs7S6R56J9mfK6ECwhUb3D4NNtRa0bxtoEJ+gOMjFj
-         T0+uigcuZ2gMFAB+FVfN0ipfh4/TrUCa4JTONqXa3mNsmaRAwlTwMtVn58B5MGigcrsR
-         vp4g==
+        bh=/ff+YehTziKFzYJPNZTmNGwqrJDQ7taVpMo22hrLQTM=;
+        b=fJJE3al6ENVbGCPr84bxxK73tb+QFEtQBTr8WjAiGgx1soyasDZuavfSHFV8k2USZJ
+         oH15lp0HnclcufuUab76el9kobyVbC2vAWMZRxRyEScGPx27YPI78/9w8jz3gib6Ru7t
+         D2ZThF//EqvCRwtQTEFbNs6gvNEVUP/z/cXb+39U0f3RcrFeVa8iDfNAhbXzWT1BtPzM
+         GxGzimR3OLemsPfvI74ehnxPp4JxjNkDYzj155y/zgx9BG6SWy6+/xNURwJkFVlu99Xm
+         bj8y/iFt4HTjqAxQnDUb2SQBBIAI0R+LGb8CiXeNj064hLl6al/RuAZ3XFizFcbgZtD6
+         1C6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QjjQyZufxkvm/4FnY8ErggVvo5phblypQQ5y56lc8Bc=;
-        b=mkX03HP43xRexKgMtvBRUbqH5qATXe89nMTrJD+ve51FUttAFkMAwXEC831+qp4We5
-         1XsDkcgi6cxUb8bWSb3d6reOe7v29mYFkQKlBF5sw0qOHCL+YGVC4g6VQONTxVROOtke
-         Qs/5RnYtdEtT5onZsEj5G8fgcCrMW0ZgDXUxJsGTEu1u7T8VCqpa6ARM35ELhnBsTess
-         76Dk2LBGtGFRAbz+aEGDDnYBK7q1ooP/EC2aGBDw8byK7asR5n7qcQAEiKWEWlUl20or
-         JOfaWzjk7gjxlAIFh8cziHjYXQS2avQElsTd4YTW8hSCALekcUvgt+GOfZZRlwQ5FOGw
-         c8vQ==
-X-Gm-Message-State: AOAM5327Y5U48RjXJROEeWYHNH+ee2OeI/edP+tixmht06nP5iFL1u1q
-        5KycUvkInMuIKwHLCDQoYkitwyUrMcdH1qwxfuB+XakG6UVnkw==
-X-Google-Smtp-Source: ABdhPJxlQJksjPJyV51FNmVvfIOljU/i4uBmy//eqWN9Jxqs5lH3GejT/0DmpS9seYOkVZrG7fbQLHEqCT5UAGgTjKA=
-X-Received: by 2002:a5b:94d:: with SMTP id x13mr10472941ybq.47.1626424264964;
- Fri, 16 Jul 2021 01:31:04 -0700 (PDT)
+        bh=/ff+YehTziKFzYJPNZTmNGwqrJDQ7taVpMo22hrLQTM=;
+        b=DM1073jSbBaVN4ntKPXC7FdFNnAzNtnYOXPtZ+RPa5CpZvEavwbNoRc8z4cDM2R+xc
+         zzykUvnGAkrLZJnE8rhJgdLTP+sEw6coXiu4cNFRvibcy6btFhhQzYqtV4AJmSSzIFcr
+         AOO3HUDD4+f7OgtkGcoNF25eT+KGBwAAzj3Sv/yPWAan5/eZbjHozYaEHNrA6rQEI6TI
+         gFwrneg+uGYUx+K7I6uRADP9xMB6NU248e0bW1SYK+7aK/ykbXsivcajVHErl7uWCq7h
+         anPaZSlDskIm+RrhZm5CeaH3C9b6dftjxT3Kczke11+Fifb6XlqClwf1fKZTz9y5SF3K
+         rnCA==
+X-Gm-Message-State: AOAM532zxSTIm0xswoN/G7ufAElTH0q7tnC0cxqc8E0bbxBfiy0t6PS5
+        ZT/XU14OXsCj4MmXUOnC+Us4MiirmfHd/7Pa0Ok=
+X-Google-Smtp-Source: ABdhPJyrob7shQ8fsxArMpyWE8C80LM02fpQHs2T6NT87HRMygJqZOtA+ZFbLbJU/yq46BokUQ7v5NpX6VvESFTMtcE=
+X-Received: by 2002:a25:b9d0:: with SMTP id y16mr11360302ybj.62.1626424394240;
+ Fri, 16 Jul 2021 01:33:14 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210715182123.23372-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdU7zKFL_qio3vdTUgxPkQjxOW6K1TjPzDQja8ioYXYZNQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdU7zKFL_qio3vdTUgxPkQjxOW6K1TjPzDQja8ioYXYZNQ@mail.gmail.com>
+ <20210715182123.23372-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXB-kEU7QVuMH1SNrwg+VPbHeOVQS3rjhcgQRFwoMsgdA@mail.gmail.com>
+In-Reply-To: <CAMuHMdXB-kEU7QVuMH1SNrwg+VPbHeOVQS3rjhcgQRFwoMsgdA@mail.gmail.com>
 From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 16 Jul 2021 09:30:39 +0100
-Message-ID: <CA+V-a8sLM_rnYps1Wnb=sh5cOGxLz02p9ewmkceK7CQXO1Yk6w@mail.gmail.com>
-Subject: Re: [PATCH 1/6] dt-bindings: net: can: renesas,rcar-canfd: Document
- RZ/G2L SoC
+Date:   Fri, 16 Jul 2021 09:32:48 +0100
+Message-ID: <CA+V-a8tgF6nDKHnEG429cj=+YDNvP0jF0Wz+r2sO-FU_f7dJUg@mail.gmail.com>
+Subject: Re: [PATCH 2/6] can: rcar_canfd: Add support for RZ/G2L family
 To:     Geert Uytterhoeven <geert@linux-m68k.org>
 Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -76,81 +75,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Geert,
 
-Thank you for the review.
-
-On Fri, Jul 16, 2021 at 8:38 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+On Fri, Jul 16, 2021 at 8:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 >
 > Hi Prabhakar,
 >
 > On Thu, Jul 15, 2021 at 8:21 PM Lad Prabhakar
 > <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > Add CANFD binding documentation for Renesas RZ/G2L SoC.
+> > CANFD block on RZ/G2L SoC is almost identical to one found on
+> > R-Car Gen3 SoC's.
+> >
+> > On RZ/G2L SoC interrupt sources for each channel are split into
+> > different sources, irq handlers for the same are added.
 > >
 > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 >
 > Thanks for your patch!
 >
-> > --- a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
-> > +++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
->
-> > @@ -78,6 +79,38 @@ patternProperties:
-> >        node.  Each child node supports the "status" property only, which
-> >        is used to enable/disable the respective channel.
+> > --- a/drivers/net/can/rcar/rcar_canfd.c
+> > +++ b/drivers/net/can/rcar/rcar_canfd.c
+> > @@ -1070,6 +1077,56 @@ static void rcar_canfd_tx_done(struct net_device *ndev)
+> >         can_led_event(ndev, CAN_LED_EVENT_TX);
+> >  }
 > >
-> > +if:
-> > +  properties:
-> > +    compatible:
-> > +      contains:
-> > +        enum:
-> > +          - renesas,rzg2l-canfd
-> > +then:
-> > +  properties:
-> > +    interrupts:
-> > +      items:
-> > +        - description: CAN global error interrupt
-> > +        - description: CAN receive FIFO interrupt
-> > +        - description: CAN0 error interrupt
-> > +        - description: CAN0 transmit interrupt
-> > +        - description: CAN0 transmit/receive FIFO receive completion interrupt
-> > +        - description: CAN1 error interrupt
-> > +        - description: CAN1 transmit interrupt
-> > +        - description: CAN1 transmit/receive FIFO receive completion interrupt
+> > +static irqreturn_t rcar_canfd_global_err_interrupt(int irq, void *dev_id)
+> > +{
 >
-> Does it make sense to add interrupt-names?
+> > +static irqreturn_t rcar_canfd_global_recieve_fifo_interrupt(int irq, void *dev_id)
+> > +{
 >
-Agreed will drop this and add interrupt-names instead. Also I will
-update the driver to pick up the interrupts based on names.
-
-> > +
-> > +    resets:
-> > +      maxItems: 2
+> >  static irqreturn_t rcar_canfd_global_interrupt(int irq, void *dev_id)
+> >  {
+> >         struct rcar_canfd_global *gpriv = dev_id;
+> > @@ -1139,6 +1196,56 @@ static void rcar_canfd_state_change(struct net_device *ndev,
+> >         }
+> >  }
+> >
+> > +static irqreturn_t rcar_canfd_channel_tx_interrupt(int irq, void *dev_id)
+> > +{
 >
-> Same here, for reset-names?
-> Or a list of descriptions, so we know which reset serves what purpose.
+> > +static irqreturn_t rcar_canfd_channel_err_interrupt(int irq, void *dev_id)
+> > +{
 >
-OK I'll  add the reset-names.
+> It looks like the new split interrupt handlers duplicate code from
+> the existing unified interrupt handlers.  Perhaps the latter can be
+> made to call the former instead?
+>
+Agreed.
 
 Cheers,
 Prabhakar
 
-> > +
-> > +else:
-> > +  properties:
-> > +    interrupts:
-> > +      items:
-> > +        - description: Channel interrupt
-> > +        - description: Global interrupt
-> > +
-> > +    resets:
-> > +      maxItems: 1
-> > +
-> >  required:
-> >    - compatible
-> >    - reg
->
-> The rest looks good to me.
->
 > Gr{oetje,eeting}s,
 >
 >                         Geert
