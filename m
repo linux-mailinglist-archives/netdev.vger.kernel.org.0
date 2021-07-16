@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 025133CB3C7
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B80E3CB3D3
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237174AbhGPILC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 04:11:02 -0400
-Received: from mail-vs1-f46.google.com ([209.85.217.46]:46698 "EHLO
-        mail-vs1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236794AbhGPIK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 04:10:58 -0400
-Received: by mail-vs1-f46.google.com with SMTP id e9so4510395vsk.13;
-        Fri, 16 Jul 2021 01:08:02 -0700 (PDT)
+        id S237339AbhGPIMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 04:12:48 -0400
+Received: from mail-vs1-f52.google.com ([209.85.217.52]:37420 "EHLO
+        mail-vs1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231989AbhGPIMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 04:12:46 -0400
+Received: by mail-vs1-f52.google.com with SMTP id r18so4512162vsa.4;
+        Fri, 16 Jul 2021 01:09:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=giyrf2o1FzAiMPZMB+cuWH7FudholsSRDLHqp9OQQrc=;
-        b=memBF8z/xVZ2yaFzAYxf8aquIVqzDJib+ig6ALJlM650ZIoq+aiyM2EIU//uG8xoQq
-         flzIAmrggD6QF3AHPqE8kC/whBHtams6l+Zo20CGdcD+jMfE/2yctZ8KQU6cv6lEz7GF
-         HT68oq8oQAKX+z2TMg5L/EBh77jQEfnYtWdFzA92xme8ROp1oR9RwVRJ4bOt2DJM9NRo
-         zl9QcM0x3i9r0DUrk+d27n8/5w/na+p9Mi0qBC4Dqr+ZAzqtP3BFVqYaoznPSCeVv+vW
-         /m1V/vv0poOynSVB98zexsUtxAD6BROQMtETz8IN2sZVbCxaJYFY+AeGCPwh6h9zb/up
-         QANQ==
-X-Gm-Message-State: AOAM532jNCd5B3LJB54Q4w9ydMD5z831nmrG9IHWlfko4yk2q1aZbM+Q
-        TLtUgbHXPSezEWdHiwAivDMqOv7/oL2TA7WOsRM=
-X-Google-Smtp-Source: ABdhPJyY6lB02joEzt/sNsOSQ95M/LFaERQ9kl8xif6voyXa1qRk8okeVP7gZaEFemB5tiHfFh8Yu6uAyJ75Ov78aZU=
-X-Received: by 2002:a05:6102:321c:: with SMTP id r28mr11085935vsf.40.1626422882441;
- Fri, 16 Jul 2021 01:08:02 -0700 (PDT)
+        bh=c+QdXf1Dp8sOLBR9I8aSGTjMZ2mzO+pWnGPEVTmQPOM=;
+        b=l9gQd7eQslF5pLhvG02ql28xkiPO43wOdl9QQW94AkB7hzh2zzbepJDR5dXROXYDVz
+         cImK4Q8FPNT29SBgkqs5ZF5gcGs+t8bEtIrKjG4Df6NzwDdcYv1LeXXrVhljth/o8CgJ
+         W/v7gtRk4ddWf+pY4PAhxQvr2FihIG3jo4yTc3kryzzW/Zma7HRW+M7zHj51rQe7hSTV
+         pL47W2YLgZ2HoA8QtZb+HE5Vnk0hFiGEdgrY44yakpXNejKMnd6swznBflNK1iMWOMFh
+         QL8MfK69ZaAyPRIynmef1Isls5aN9ae81q9cLgxSN7eornBmJn4MhNrEzD+lKtwwEJXw
+         80gA==
+X-Gm-Message-State: AOAM532gFM6VNlaucDKb0dRZweGqAFw2R5RM9MQdMsMUZvTLNBgQK6po
+        RzL8pQZQecsM4KllNSVk2xVcTBuVaCXlT2BGFkA=
+X-Google-Smtp-Source: ABdhPJyNutZONAJmkBuZiUWHR0KYSKAlNfIaOgSO+u5sda16HFYbCuI1u9DY41ZG+s2pa8/+ScFg8p8Ml+HdzmSxgzE=
+X-Received: by 2002:a67:3c2:: with SMTP id 185mr11135205vsd.42.1626422991190;
+ Fri, 16 Jul 2021 01:09:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210715182123.23372-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20210715182123.23372-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210715182123.23372-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20210715182123.23372-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 16 Jul 2021 10:07:51 +0200
-Message-ID: <CAMuHMdV3JkV5D5_PsngoLiLPA_B1VBvRKsCz7j2tXKYVE_Bx9A@mail.gmail.com>
-Subject: Re: [PATCH 3/6] dt-bindings: clk: r9a07g044-cpg: Add entry for
- P0_DIV2 core clock
+Date:   Fri, 16 Jul 2021 10:09:40 +0200
+Message-ID: <CAMuHMdXYfAxvdRyn0FaqYSyD4qD2P=Et4-d3bPan9oy_YJ7tfg@mail.gmail.com>
+Subject: Re: [PATCH 4/6] clk: renesas: r9a07g044-cpg: Add entry for fixed
+ clock P0_DIV2
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Wolfgang Grandegger <wg@grandegger.com>,
@@ -61,52 +61,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Prabhakar,
 
-Thanks for your patch!
-
 On Thu, Jul 15, 2021 at 8:21 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add P0_DIV2 core clock required for CANFD module. CANFD core clock is
-> sourced from P0_DIV2 referenced from HW manual Rev.0.50.
-
-OK.
-
-> Also add R9A07G044_LAST_CORE_CLK entry to avoid changes in
-> r9a07g044-cpg.c file.
-
-I'm not so fond of adding this.  Unlike the other definitions, it is
-not really part of the bindings, but merely a convenience definition
-for the driver.  Furthermore it has to change when a new definition
-is ever added.
-
+> Add entry for fixed core clock P0_DIV2 and assign LAST_DT_CORE_CLK
+> to R9A07G044_LAST_CORE_CLK.
+>
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
->  include/dt-bindings/clock/r9a07g044-cpg.h | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/include/dt-bindings/clock/r9a07g044-cpg.h b/include/dt-bindings/clock/r9a07g044-cpg.h
-> index 0728ad07ff7a..2fd20db0b2f4 100644
-> --- a/include/dt-bindings/clock/r9a07g044-cpg.h
-> +++ b/include/dt-bindings/clock/r9a07g044-cpg.h
-> @@ -30,6 +30,8 @@
->  #define R9A07G044_CLK_P2               19
->  #define R9A07G044_CLK_AT               20
->  #define R9A07G044_OSCCLK               21
-> +#define R9A07G044_CLK_P0_DIV2          22
-> +#define R9A07G044_LAST_CORE_CLK                23
 
-Third issue: off-by-one error, it should be 22 ;-)
+Thanks for your patch!
+
+> --- a/drivers/clk/renesas/r9a07g044-cpg.c
+> +++ b/drivers/clk/renesas/r9a07g044-cpg.c
+> @@ -16,7 +16,7 @@
+>
+>  enum clk_ids {
+>         /* Core Clock Outputs exported to DT */
+> -       LAST_DT_CORE_CLK = R9A07G044_OSCCLK,
+> +       LAST_DT_CORE_CLK = R9A07G044_LAST_CORE_CLK,
+
+Please use R9A07G044_CLK_P0_DIV2 instead.
 
 >
->  /* R9A07G044 Module Clocks */
->  #define R9A07G044_CA55_SCLK            0
+>         /* External Input Clocks */
+>         CLK_EXTAL,
+> @@ -77,6 +77,7 @@ static const struct cpg_core_clk r9a07g044_core_clks[] __initconst = {
+>         DEF_FIXED("I", R9A07G044_CLK_I, CLK_PLL1, 1, 1),
+>         DEF_DIV("P0", R9A07G044_CLK_P0, CLK_PLL2_DIV16, DIVPL2A,
+>                 dtable_1_32, CLK_DIVIDER_HIWORD_MASK),
+> +       DEF_FIXED("P0_DIV2", R9A07G044_CLK_P0_DIV2, R9A07G044_CLK_P0, 1, 2),
+>         DEF_FIXED("TSU", R9A07G044_CLK_TSU, CLK_PLL2_DIV20, 1, 1),
+>         DEF_DIV("P1", R9A07G044_CLK_P1, CLK_PLL3_DIV2_4,
+>                 DIVPL3B, dtable_1_32, CLK_DIVIDER_HIWORD_MASK),
+
+The rest looks good to me.
 
 Gr{oetje,eeting}s,
 
                         Geert
 
-
---
+-- 
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
