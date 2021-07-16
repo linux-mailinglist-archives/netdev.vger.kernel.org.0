@@ -2,116 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 820BD3CB11F
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 05:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 197DB3CB128
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 05:37:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233702AbhGPDbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Jul 2021 23:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
+        id S233820AbhGPDkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Jul 2021 23:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbhGPDbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 23:31:10 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E682C06175F;
-        Thu, 15 Jul 2021 20:28:15 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id l5so9045181iok.7;
-        Thu, 15 Jul 2021 20:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=4Wm/WcfvChzY1n3xKdeSo/L+Jjb58D+mQ8SN2mRuWcI=;
-        b=F4blgolhuYvulz5Nk3jwBKcI8qg6ito7gHyeajxUACwyS2QfqU0zTvsabKlZwasChS
-         WNeyDIxLQMTKN/sGwy9ZwAPXhayJzeMpVbn+C72FBn+RVVFAan8dz1VZ29kpN9LQsHsV
-         D9qQmeIGLVeKzCLHsP4uw8p71gGOHacSsL6DfRATY6BtLQ/6ySE9wrS5q4u6ZXsIcsul
-         lLqA06TiU46zDetVjkopHPTdD9aD7P9z0kNQIwR5relz4cPyypB4Z2JqqrV5Ddsb+xQ4
-         VUeULoQ/UQ55dkup24cf9eWv349b3fkSGRz+JicV2Rq7j6Q0sh4cGb52YzzGy9mKVZww
-         7BNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=4Wm/WcfvChzY1n3xKdeSo/L+Jjb58D+mQ8SN2mRuWcI=;
-        b=Kr469vVP2KETWgepzE+alkOZyuTpDF1Kj9WZW6aPEMRk+gUFeIFuHAwU1vmjGq4l9F
-         xC5068kJUKueZCKZ6mPvdfq8wFjCeXCyYggv6O7vs+4iMQAunqMQWQKZ5wxNAeVVA5oS
-         4i7ttBOscBJACNYd8/LjNgUcCoa1w55mhf9JOa5gvCdwRNa1LqQNWgCFEQ96NT27VmfZ
-         7FH/2d8k6GMNB3Mx8owkbGGGfwoABEq4sbHgHw/7rERFhDUYMg6m5oNgw3hbEs0Le6ML
-         8+cRVfcaGoXTpRY8juKng8/xBH+LmipxdG4v9KB9RDWKj4oook9d7MXKVujobChTycPe
-         AThQ==
-X-Gm-Message-State: AOAM532WY2Q/exb5jPE6G6i9RKGKUxu62liW8eOGIGStmY3DXyi9bsTa
-        8T02SDfyuT2esRYAZEo8HzKNVFDp+WbIgA==
-X-Google-Smtp-Source: ABdhPJzTBPgxZW6QcvRqJh8mEm0iHCBVaEB74uti13bmyD1t89bhSRv3DkCiW1F5Ha0c8Af/wRSQcw==
-X-Received: by 2002:a5d:858b:: with SMTP id f11mr5736438ioj.156.1626406094817;
-        Thu, 15 Jul 2021 20:28:14 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id x16sm3957554ila.84.2021.07.15.20.28.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 20:28:14 -0700 (PDT)
-Date:   Thu, 15 Jul 2021 20:28:08 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Message-ID: <60f0fcc88e369_41062086b@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210714141532.28526-1-quentin@isovalent.com>
-References: <20210714141532.28526-1-quentin@isovalent.com>
-Subject: RE: [PATCH bpf-next 0/6] libbpf: rename btf__get_from_id() and
- btf__load() APIs, support split BTF
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S231230AbhGPDki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Jul 2021 23:40:38 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA87C06175F;
+        Thu, 15 Jul 2021 20:37:43 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GQxl72GCdz9sWq;
+        Fri, 16 Jul 2021 13:37:39 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1626406660;
+        bh=c/+0RngVoUmF3ZMyOrfkI3149vXfqWPL3fp4p18FB4Q=;
+        h=Date:From:To:Cc:Subject:From;
+        b=XKeRkGhOUnue6xIiT7k4E50bqBiIRxuAio39mHEAd5PGIPuuWSp40i83zoQLgpb1o
+         ViY5ObBXh/yKnkLQ0jWj/Y6lySON1rt7om/4CwjCrowxZ4sQ/nqBIbykXf1cL0iF9s
+         0Eqvh1IUL2b8azQUyUTunHrvhfKqacfu852ilXez+Z/kNsgrcxUyuyfEtlmVMkOqAn
+         Y1Jn3qEfniKq1KcJneiENbMeGLvnnk8V2VyXFUDF+zZmSUrP1W6qY7fYERvFoZTgJV
+         Zr2AkFTFk2D39cbYX6LiJNKqqqHzK50NyVVK5Wx//p9GyER4UaNTHz5kjtmCmCbaOG
+         DHzuXcHSbld1g==
+Date:   Fri, 16 Jul 2021 13:37:38 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Bhaumik Bhatt <bbhatt@codeaurora.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Richard Laing <richard.laing@alliedtelesis.co.nz>
+Subject: linux-next: manual merge of the mhi tree with the net-next tree
+Message-ID: <20210716133738.0d163701@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/L_qhwSo=RcXGM8bDaEoaq=F";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quentin Monnet wrote:
-> As part of the effort to move towards a v1.0 for libbpf [0], this set
-> improves some confusing function names related to BTF loading from and to
-> the kernel:
-> 
-> - btf__load() becomes btf__load_into_kernel().
-> - btf__get_from_id becomes btf__load_from_kernel_by_id().
-> - A new version btf__load_from_kernel_by_id_split() extends the former to
->   add support for split BTF.
-> 
-> The old functions are not removed yet, but marked as deprecated.
-> 
-> The last patch is a trivial change to bpftool to add support for dumping
-> split BTF objects by referencing them by their id (and not only by their
-> BTF path).
-> 
-> [0] https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
-> 
-> Quentin Monnet (6):
->   libbpf: rename btf__load() as btf__load_into_kernel()
->   libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
->   tools: replace btf__get_from_id() with btf__load_from_kernel_by_id()
->   libbpf: explicitly mark btf__load() and btf__get_from_id() as
->     deprecated
->   libbpf: add split BTF support for btf__load_from_kernel_by_id()
->   tools: bpftool: support dumping split BTF by id
-> 
->  tools/bpf/bpftool/btf.c                      |  2 +-
->  tools/bpf/bpftool/btf_dumper.c               |  2 +-
->  tools/bpf/bpftool/map.c                      |  4 ++--
->  tools/bpf/bpftool/prog.c                     |  6 +++---
->  tools/lib/bpf/btf.c                          | 15 ++++++++++++---
->  tools/lib/bpf/btf.h                          | 10 ++++++++--
->  tools/lib/bpf/libbpf.c                       |  4 ++--
->  tools/lib/bpf/libbpf.map                     |  7 +++++++
->  tools/perf/util/bpf-event.c                  |  4 ++--
->  tools/perf/util/bpf_counter.c                |  2 +-
->  tools/testing/selftests/bpf/prog_tests/btf.c |  2 +-
->  11 files changed, 40 insertions(+), 18 deletions(-)
-> 
-> -- 
-> 2.30.2
-> 
+--Sig_/L_qhwSo=RcXGM8bDaEoaq=F
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-For the series.
+Hi all,
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Today's linux-next merge of the mhi tree got a conflict in:
+
+  drivers/bus/mhi/pci_generic.c
+
+between commit:
+
+  5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
+
+from the net-next tree and commit:
+
+  156ffb7fb7eb ("bus: mhi: pci_generic: Apply no-op for wake using sideband=
+ wake boolean")
+
+from the mhi tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/bus/mhi/pci_generic.c
+index 19413daa0917,8bc6149249e3..000000000000
+--- a/drivers/bus/mhi/pci_generic.c
++++ b/drivers/bus/mhi/pci_generic.c
+@@@ -32,7 -32,8 +32,9 @@@
+   * @edl: emergency download mode firmware path (if any)
+   * @bar_num: PCI base address register to use for MHI MMIO register space
+   * @dma_data_width: DMA transfer word size (32 or 64 bits)
+ + * @mru_default: default MRU size for MBIM network packets
++  * @sideband_wake: Devices using dedicated sideband GPIO for wakeup inste=
+ad
++  *		   of inband wake support (such as sdx24)
+   */
+  struct mhi_pci_dev_info {
+  	const struct mhi_controller_config *config;
+@@@ -41,7 -42,7 +43,8 @@@
+  	const char *edl;
+  	unsigned int bar_num;
+  	unsigned int dma_data_width;
+ +	unsigned int mru_default;
++ 	bool sideband_wake;
+  };
+ =20
+  #define MHI_CHANNEL_CONFIG_UL(ch_num, ch_name, el_count, ev_ring) \
+@@@ -254,7 -256,7 +258,8 @@@ static const struct mhi_pci_dev_info mh
+  	.config =3D &modem_qcom_v1_mhiv_config,
+  	.bar_num =3D MHI_PCI_DEFAULT_BAR_NUM,
+  	.dma_data_width =3D 32,
+ +	.mru_default =3D 32768
++ 	.sideband_wake =3D false,
+  };
+ =20
+  static const struct mhi_pci_dev_info mhi_qcom_sdx24_info =3D {
+@@@ -643,11 -686,13 +689,14 @@@ static int mhi_pci_probe(struct pci_de
+  	mhi_cntrl->status_cb =3D mhi_pci_status_cb;
+  	mhi_cntrl->runtime_get =3D mhi_pci_runtime_get;
+  	mhi_cntrl->runtime_put =3D mhi_pci_runtime_put;
+- 	mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
+- 	mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
+- 	mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
+ +	mhi_cntrl->mru =3D info->mru_default;
+ =20
++ 	if (info->sideband_wake) {
++ 		mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
++ 		mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
++ 		mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
++ 	}
++=20
+  	err =3D mhi_pci_claim(mhi_cntrl, info->bar_num, DMA_BIT_MASK(info->dma_d=
+ata_width));
+  	if (err)
+  		return err;
+
+--Sig_/L_qhwSo=RcXGM8bDaEoaq=F
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmDw/wIACgkQAVBC80lX
+0GxvrwgAhHs+4N4xz7OCN/fwodR13D40FT3TthtaQmP9kl/G644J+8n/jjJ1kh3K
+59/z7+EwkIDIquM6sB3pk8mCLTLaRwqbGCJcceAQwmCEVuyBqDgQJjzW2vCcGSsK
+2jVj6dTpojPU4opGijTtB1qwQ8fz0HbpUvXfuUWGaM/USXmWHsORQJUVZG60zvMg
+yZC6uSMTuEIdQEPdzlfLH6Gd+jp9Cwrzt8zI8wFbdDcDfkew7yqbJxFSh3TMrEuQ
+jeLFGoOW9a01t0oAEPAxEBWdcc7ZLnFchAxeeAbjiVZq0RSwxJR9+VOL27h837L2
+gysI3uDmQS9rc2WtURw1FjEmWIzE1g==
+=wHNW
+-----END PGP SIGNATURE-----
+
+--Sig_/L_qhwSo=RcXGM8bDaEoaq=F--
