@@ -2,77 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D113CB9E0
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B32B3CB9EC
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240780AbhGPPfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:35:53 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58598 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240282AbhGPPfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 11:35:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CGZsktWNeZSP9brVnhmnumOVvSpPdBAXCv4lSMGQFv4=; b=KDq8NTcR/64IPQfgHMHGx8OrHD
-        PNyK6GiKo91ZMVNnntywFZG0QY/Lodr5w7nLMsFGrpQAnUZiyupr5iPpE183n16ThEiW298hbqzcC
-        AJjNi30BG7gEfdXUxvVZfmc1aa8+DJB033ckQYU3xAI2dz05S/s0FNuoiDZXpVAVuVXI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m4PpF-00DdAs-N5; Fri, 16 Jul 2021 17:32:29 +0200
-Date:   Fri, 16 Jul 2021 17:32:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     ericwouds@gmail.com
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S240993AbhGPPhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 11:37:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42638 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240551AbhGPPhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 11:37:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626449683;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NT0N4NS6nWZiPdwFZ3UGFeunemiYesVFaQZ2vu93N6U=;
+        b=hLaUdQliHL3Mf2nm6TpoESH9EQJGD/k2+CHA5ZE7UWHfdxaxpi3KmagB6u0K5uOANO0tBN
+        6MUW7LMyfiRW2t0ik42D/1IgvFaxt1YoQBTj2ZR5OFnDpDCMYqcqarMx//i7adKz/11wH5
+        khRQDuXmePcmbB9uzDXuNbbzdo+daF0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-43-fBCF4dc_MWihhJZWr-V7gA-1; Fri, 16 Jul 2021 11:34:41 -0400
+X-MC-Unique: fBCF4dc_MWihhJZWr-V7gA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7A5A91272;
+        Fri, 16 Jul 2021 15:34:40 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-113-207.ams2.redhat.com [10.36.113.207])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ACF055C1A3;
+        Fri, 16 Jul 2021 15:34:33 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Eric Woudstra <37153012+ericwoud@users.noreply.github.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
-Message-ID: <YPGmjd1ODFQ+ZIE2@lunn.ch>
-References: <20210716152213.4213-1-ericwouds@gmail.com>
+        Shuah Khan <shuah@kernel.org>, toke@redhat.com
+Subject: [PATCH RFC v2 0/5] veth: more flexible channels number configuration
+Date:   Fri, 16 Jul 2021 17:34:18 +0200
+Message-Id: <cover.1626449533.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210716152213.4213-1-ericwouds@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 05:22:11PM +0200, ericwouds@gmail.com wrote:
-> From: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
-> 
-> According to reference guides mt7530 (mt7620) and mt7531:
-> 
-> NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to 
-> read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0] 
-> will be used to read/write the address table.
-> 
-> Since the function only fills in CVID and no FID, we need to set the
-> IVL bit. The existing code does not set it.
-> 
-> This is a fix for the issue I dropped here earlier:
-> 
-> http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
-> 
-> With this patch, it is now possible to delete the 'self' fdb entry
-> manually. However, wifi roaming still has the same issue, the entry
-> does not get deleted automatically. Wifi roaming also needs a fix
-> somewhere else to function correctly in combination with vlan.
-> 
-> Signed-off-by: Eric Woudstra <37153012+ericwoud@users.noreply.github.com>
+XDP setups can benefit from multiple veth RX/TX queues. Currently
+veth allow setting such number only at creation time via the 
+'numrxqueues' and 'numtxqueues' parameters.
 
-Hi Eric
+This series introduces support for the ethtool set_channel operation
+and allows configuring the queue number via a new module parameter.
 
-We need a real email address in the Signed-off-by, and the noreply bit
-makes me think this will not work.
+The veth default configuration is not changed.
 
-      Andrew
+Finally self-tests are updated to check the new features, with both
+valid and invalid arguments.
+
+This iteration covers the feedback provided by Toke and Jakub.
+
+RFC v1 -> RFC v2:
+ - report more consistent 'combined' count
+ - make set_channel as resilient as possible to errors
+ - drop module parameter - but I would still consider it.
+ - more self-tests
+
+Paolo Abeni (5):
+  veth: always report zero combined channels
+  veth: factor out initialization helper
+  veth: implement support for set_channel ethtool op
+  veth: create by default nr_possible_cpus queues
+  selftests: net: veth: add tests for set_channel
+
+ drivers/net/veth.c                  | 305 +++++++++++++++++++++++-----
+ tools/testing/selftests/net/veth.sh | 183 ++++++++++++++++-
+ 2 files changed, 434 insertions(+), 54 deletions(-)
+
+-- 
+2.26.3
+
