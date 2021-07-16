@@ -2,112 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0433CBA2A
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 17:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F033CBAC8
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 18:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241044AbhGPP5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 11:57:43 -0400
-Received: from mout.gmx.net ([212.227.17.21]:36113 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235486AbhGPP5m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 11:57:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1626450862;
-        bh=ksXNeWjE9mhpCKojHZGUGRXqHprFXeYao0Gn/NsBK8U=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=i9P02b+kqG0pOmEn2zEjkJQdcLNp67BynztKujypNcVILLZ3O6Crhk6ucIGnpUceP
-         6MWHCw7leFwTBh0eV7ndUEr9Dv2lLVKbYIDCAY8Id0T0tD7KHxjoN1hGrcNvjXlx61
-         jxw49BlW3t9wHw7ft6RIycbUr1m3eXnHuvxITeug=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([83.52.228.41]) by mail.gmx.net
- (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 1M7sDq-1m0aQ32sx0-005368; Fri, 16 Jul 2021 17:54:21 +0200
-From:   Len Baker <len.baker@gmx.com>
-To:     Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        id S230388AbhGPRAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 13:00:02 -0400
+Received: from smtp-33.italiaonline.it ([213.209.10.33]:54933 "EHLO libero.it"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229751AbhGPQ7z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 12:59:55 -0400
+Received: from passgat-Modern-14-A10M.homenet.telecomitalia.it ([79.54.92.92])
+        by smtp-33.iol.local with ESMTPA
+        id 4R8tmKNNmS6GM4R8xmO7ae; Fri, 16 Jul 2021 18:56:57 +0200
+x-libjamoibt: 1601
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=libero.it; s=s2021;
+        t=1626454617; bh=ybTEgBqSGSk7CgeQhAXjaoIWf5L8GRxV3Eiz04dFePA=;
+        h=From;
+        b=L1hdgjdkCzi4AZ4tqpEYU/SIrwWUqcFGNcmrGfyG3i9PdNdRg5yfS107Y9DEV9o2r
+         x0PAUxVfKaBAymp74IWa/Odu6YU0scMVdnEIC0TUTJa/X7ehXERTnkJrzMxiz1WbWS
+         3qI+sSW6w++i1jMPPdx/Gi0H1U9E+Q8cHqAxF9vl4SGG3tVLCeu4l1GFe9TVUDRu+c
+         cA2Avkf3yrfF72+EgFDoE/iYMG4TKXLlcRZogu224vhiy/Wf2CcPLi92WP4KWMHvRT
+         lOmst9q5j5yiu+KXF3JGNT1dHWadKIeEtVQyEtJGAM4e3I4/4ezXTVOFrvby/1IOiy
+         kzaTXz23rY9tQ==
+X-CNFS-Analysis: v=2.4 cv=AcF0o1bG c=1 sm=1 tr=0 ts=60f1ba59 cx=a_exe
+ a=eKwsI+FXzXP/Nc4oRbpalQ==:117 a=eKwsI+FXzXP/Nc4oRbpalQ==:17
+ a=X8-5zgEFGoXRYfRO6I8A:9
+From:   Dario Binacchi <dariobin@libero.it>
+To:     linux-kernel@vger.kernel.org
+Cc:     Gianluca Falavigna <gianluca.falavigna@inwind.it>,
+        Dario Binacchi <dariobin@libero.it>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Len Baker <len.baker@gmx.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Pkshih <pkshih@realtek.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: [PATCH v2] rtw88: Fix out-of-bounds write
-Date:   Fri, 16 Jul 2021 17:53:11 +0200
-Message-Id: <20210716155311.5570-1-len.baker@gmx.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:IjyohTEALGQ+L7Bvo6QDJsF/6QSuDrYezBtLbESGF0csYR5NTV1
- NHKHPwx93NIqHuaFGJK6Xxmba5c+bblv656SSXc3jYDWfZFLcyab2HAzJWRCp7PJKTP9UkV
- BoN9LXhGadp2OgHbRROuyjQWMzZ6FMCar3G+PvQy4AZiAoV2kPxoQaC8whYpst2wHD8zzME
- gt0E/C9LBYM1vHXPh+LDg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JiOZJXCc/74=:eaIqEpLHflGIBNOan0ZdFj
- KEiyJRXY+KkmJfWFBEho7QEAYeq0e+lL1VMPwfidouDM5RYQPirB1Rg8srgbdWCyJ+nFPKWJv
- cVz871PMUU4NW4gTox5hKHvgJVqDMbORETcFOKeWRD7cTcbvEDxrAKnDqfChvQ5Z0+edjj1MG
- M3RhzAOIpouLAuG92pK/TS4IJNxPa1ScE7SumPPNfQOJXwi910yZVJswAQrm+aB8ZHSOWh/X+
- B+mJTy68igW99BfQmzCPYOzMqq6XUtWDT0mFDOCvA8xD31jU1lRaSTxut1R4zdaMLxAFc6CIu
- 9prVs2ya8CBLgPdYvnW4xwBo8HZYERDZEk3QpwzWWNdrw4ClwuV5VF9dJvVzi88EKnnbEh1ZX
- nXATaRUVMuoavJa7jLaYNyXCcWJij1nR7vfJBMo7otLqHsIW81bwksxoPyCHoHOjwJnWYMFKD
- kLkOwEH/mokutu3fWlxqgXM4SG0BpSQdKGvBiIG4v2S6qV3Q+cFQmmj5xyq7oBHy2MsqH9lws
- AAMbRNgfNUzEFPrpPc6Io82oZsRD+SRlCAtxADxBweMyjtlabSvmz8MtUgIN3xp2IjQB9dz9+
- Cbml35Yqh4e8cPvjYm9GanlZD3wEGQln5YdDX8FOmzz11bxmvueXrNDTf8uvmvAD2LmPVsWuX
- 5dEqwKeJebuNVRhB8voIvOJ/jQ7kWA/os+8U89J0o9rRe5c2AJWBOitNdWRBY67RQez57Bi0w
- GPxpG/yP52e7TOJm99LnJEuBoyrhqNQ3x6zl4XLlLMdUXudjIWEUxpAO4SOvt0+BZByk2y+Ll
- LdZjRA8U4tu4/bqQx0IkPVmPHWkmckeXbKaxwYBfajJYYI+yy6se621PuEx8lFi6iOE8sli0e
- IEaZILITreJux6HiLlPIdrYB7ABg//82xa7y7jQ6lBKcvV41Wrb2TiabQOViP5d3tIsyxmnyR
- Z8NwNu27xO5dTKIRfhVtWXIK9jxESuO09+EO8nKCYKz6aOUVwI+hj4pM9slW8aTxl80f1ysTK
- V0TGNuuRoSE8wjNqZnd80hlE1fB8bLNTB7wPg9Wde8z/giYFzfTU5GeYLGj3HYQMUpamTbRAE
- yd1SLkk3a3GDxYJJbnMtPCt+GEhdUHw4Ymp
+        Jakub Kicinski <kuba@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Tong Zhang <ztong0001@gmail.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 0/4] can: c_can: cache frames to operate as a true FIFO
+Date:   Fri, 16 Jul 2021 18:56:19 +0200
+Message-Id: <20210716165623.19677-1-dariobin@libero.it>
+X-Mailer: git-send-email 2.17.1
+X-CMAE-Envelope: MS4xfKoMV/+nZGBCPIXBiH3gvl6PDXsLIr3ajj3MP7Mrxti8SWfQlE/FXiPXzaPo3/kHl2XKpq4Gy1ZfkK7F1OP7Wfm9TETNnU1dtw+U56kgbTbcL3g2u1YN
+ ItnFnJG5lXNPyTBo5oQjLpt8tnjq6mhufAss2yoNaPmKrVAtfctBfjD9K8bcHaPuIbTno4uZ7yEMG5qM11K8HnS2uZ9Zznj24eiqdFGnrjossx9TLZHD8rXn
+ WqwBU0qj0Qgc/pYUEGXcwKC+7X4a7IFeLWFEDTKYsrRfxpu0J2ZXP2OLHUe0uoPzdjaEoEcLYVaK9++zzZ7uITaasq3TLg0Dx9A/+wKGPglXg0wgSTBx93Ip
+ TbJwP3CLOglfqqRKZX4SS1F9qv1dgXWRegMU9ushtN8ak25ZxowLyDyL1lw+1IZ7JTxFiKGNwVLltzThps8M4kcbRo/CE709AN47nfGG/uGck6aSvMs8YL5z
+ /iSdnjJBGmZfRSwzrpPrjuC6gFzuONJZ/GqaXDpR4bsh5Sq/vFh2cJrGFnV4d3AMISoIQPrXf9SyUEysN7vfuicBdQfxy9qEu189yzoHcFe7Hw5jAnCSTNBn
+ 2vWuR3PONPUzXxponzlS/cbfE/qLrLoi1GqjXsYXAYmsEg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the rtw_pci_init_rx_ring function the "if (len > TRX_BD_IDX_MASK)"
-statement guarantees that len is less than or equal to GENMASK(11, 0) or
-in other words that len is less than or equal to 4095. However the
-rx_ring->buf has a size of RTK_MAX_RX_DESC_NUM (defined as 512). This
-way it is possible an out-of-bounds write in the for statement due to
-the i variable can exceed the rx_ring->buff size.
 
-However, this overflow never happens due to the rtw_pci_init_rx_ring is
-only ever called with a fixed constant of RTK_MAX_RX_DESC_NUM. But it is
-better to be defensive in this case and add a new check to avoid
-overflows if this function is called in a future with a value greater
-than 512.
+Performance tests of the c_can driver led to the patch that gives the
+series its name. I also added two patches not really related to the topic
+of the series.
 
-Cc: stable@vger.kernel.org
-Addresses-Coverity-ID: 1461515 ("Out-of-bounds write")
-Fixes: e3037485c68ec ("rtw88: new Realtek 802.11ac driver")
-Signed-off-by: Len Baker <len.baker@gmx.com>
-=2D--
-Changelog v1 -> v2
-- Remove the macro ARRAY_SIZE from the for loop (Pkshih, Brian Norris).
-- Add a new check for the len variable (Pkshih, Brian Norris).
 
- drivers/net/wireless/realtek/rtw88/pci.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Dario Binacchi (4):
+  can: c_can: remove struct c_can_priv::priv field
+  can: c_can: exit c_can_do_tx() early if no frames have been sent
+  can: c_can: support tx ring algorithm
+  can: c_can: cache frames to operate as a true FIFO
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wirele=
-ss/realtek/rtw88/pci.c
-index e7d17ab8f113..53dc90276693 100644
-=2D-- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -273,6 +273,11 @@ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwde=
-v,
- 		return -EINVAL;
- 	}
+ drivers/net/can/c_can/c_can.h          |  26 ++++++-
+ drivers/net/can/c_can/c_can_main.c     | 100 +++++++++++++++++++------
+ drivers/net/can/c_can/c_can_platform.c |   1 -
+ 3 files changed, 101 insertions(+), 26 deletions(-)
 
-+	if (len > ARRAY_SIZE(rx_ring->buf)) {
-+		rtw_err(rtwdev, "len %d exceeds maximum RX ring buffer\n", len);
-+		return -EINVAL;
-+	}
-+
- 	head =3D dma_alloc_coherent(&pdev->dev, ring_sz, &dma, GFP_KERNEL);
- 	if (!head) {
- 		rtw_err(rtwdev, "failed to allocate rx ring\n");
-=2D-
-2.25.1
+-- 
+2.17.1
 
