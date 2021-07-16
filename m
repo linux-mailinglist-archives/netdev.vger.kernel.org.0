@@ -2,133 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 419D63CB4B0
-	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57F143CB4B7
+	for <lists+netdev@lfdr.de>; Fri, 16 Jul 2021 10:50:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238392AbhGPItq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 04:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbhGPItp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 04:49:45 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7009C06175F;
-        Fri, 16 Jul 2021 01:46:49 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id r132so13664595yba.5;
-        Fri, 16 Jul 2021 01:46:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mEkDurH6BuGEH4gDwLaFvBfzHto5jjTCNrq+0Yx2I5Y=;
-        b=AOQ1b2YZ2Y6qApxpfsoLFQ2Y5ZeVPOJyew2YyXjt3iz996WQIbZcXWFzgyqERYIUsv
-         6woAI+vav3GHatj0VDNQWZ6hppZmQu5o0j6gYhM4NOQChdbkkdh3zCYcc0EHJUtIrF2F
-         TbJ362K19pzeV/vyKWKw7g+LLKWS862GMK2s2g5y26lTBNhbnpBIQs9FbI2e19GkTyB5
-         uOQsfG6pubrCzurrJa+oRcU1LAjynQ8MLxempdVnsQqhBeJCnZXzNDNSN2NpPIaVTwlg
-         UDcT2L/H7loUkr1gSshSfu96TpXGrEEu8WzL6c41+dGsat0UE68fOJY9pPgq9+ia3sI+
-         j9Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mEkDurH6BuGEH4gDwLaFvBfzHto5jjTCNrq+0Yx2I5Y=;
-        b=hk+J9LcDzoSGYwX1HOnVBZEQ29AegjS53ziP4OOzAWuNSWvPYjEzVM7vdsBK/j/9+v
-         jBv8q9j29qj8WIEgdIIa4hvAAo4aJwKc35ar1zW3sAwaK7RW0CdhAU8l6B0Yof812KFj
-         rJiMDJb8jtbkoQm9FGngV1Ba9Cd8BDUpV6xv9MlsO2IjIoia1gsT5pYXzM97Gdsi0UAo
-         nTlWFev50V0agmXyjaFenEFhv8mvyb+tfUui4hXItAiHpfHywi7zh214WKYl1DOatcqw
-         2PMBak60AyToST0fia4TNkk5vTrp8vUJyiWntX0SUYQEfvK4eOkMyg245yUyZHvIwL4W
-         nm3w==
-X-Gm-Message-State: AOAM531lawMV06OSAa3T3Fd0hEvpwciwlKDnUDLhTZCAJtac7lVF7bIR
-        YjRvtvm4ThpYEpSZlVosf9Wt5tgF+qrVc4a8I/s=
-X-Google-Smtp-Source: ABdhPJwEwBc5l1454QguN3MLGOEdfBsfoKJW2Mu3HRNqW5pslfSVZKQ//QhrJvF0EX1e7HbxaYcojI0eYjHoip5G3uQ=
-X-Received: by 2002:a25:cc52:: with SMTP id l79mr11280859ybf.476.1626425209092;
- Fri, 16 Jul 2021 01:46:49 -0700 (PDT)
+        id S238414AbhGPIxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 04:53:20 -0400
+Received: from mout.gmx.net ([212.227.17.20]:42823 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238379AbhGPIxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 04:53:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1626425394;
+        bh=U0bBKpoVK6DUuOVG/9JH3MpVun7q+0cqcYQpS27Sw4M=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Htf+60TH6PiU/yOGYKLg6Gadpnp8eDbwEsFcD2UO3CkFpc4THYNAA+YAVMWMDNot3
+         sTqfyoW2riEB/sPnFxMrMl6AIdBp8Wu4/sB6exXNNC6GwwPw3SJDreeUSAbeLzMMwK
+         gNrw+rV+SpWf8+VMaOm3H9mSp/2HVq7gIEHpjbPc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.130.101.138] ([87.130.101.138]) by web-mail.gmx.net
+ (3c-app-gmx-bap63.server.lan [172.19.172.133]) (via HTTP); Fri, 16 Jul 2021
+ 10:49:54 +0200
 MIME-Version: 1.0
-References: <20210715182123.23372-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210715182123.23372-5-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXYfAxvdRyn0FaqYSyD4qD2P=Et4-d3bPan9oy_YJ7tfg@mail.gmail.com>
-In-Reply-To: <CAMuHMdXYfAxvdRyn0FaqYSyD4qD2P=Et4-d3bPan9oy_YJ7tfg@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Fri, 16 Jul 2021 09:46:23 +0100
-Message-ID: <CA+V-a8vdFLee5fLYvOkLfzNJojDBO31TN9bjHYnjFf5t63YyOA@mail.gmail.com>
-Subject: Re: [PATCH 4/6] clk: renesas: r9a07g044-cpg: Add entry for fixed
- clock P0_DIV2
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-c43ccfd0-a67d-4622-b202-66460c296c72-1626425394103@3c-app-gmx-bap63>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Aw: Re: [PATCH 0/2] Fixes for KSZ DSA switch
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 16 Jul 2021 10:49:54 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <d205b518-fb47-9065-1e82-de0f9286cb60@gmail.com>
+References: <20210714191723.31294-1-LinoSanfilippo@gmx.de>
+ <d205b518-fb47-9065-1e82-de0f9286cb60@gmail.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:DG6L1b4Bpbnvizv1xoT32Z0SfvWRlAGGgDhiuWkProoZ33CleI7jGC6COmP662CkPU0mk
+ /HcqBnaZtzpIr4zmHQmacmYQYYjTJcydCe4wI76d2jHgoLmL/YBy3hwBOXqi0zjszNxz4yaDQYp9
+ p+OYdo+D32nG2kE0TQLXW4Ch9UU/sP8et6PlMPRslzugJd4XWXzAu0nk3uYw0CkoMhlkaUJeE+R7
+ yyke1TvUfvbQ1UkWCid096JjyxRW856kwSMXo832GTqBe6XiqRhiEChcGLP0yR43BwhohsjNTL+F
+ /M=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XrjL3vnfxPk=:GhaLaiU3q4YoMeRLHCbMtC
+ 8BdonxI/g3bjYRV3E7oon2ChTm64ffk2mX1g/X0eq4pL25I4/LJYgRqjfkf+fH1PHufvTrqTE
+ j5nCBZlEdXOSzhSsRf7xBDeyQDUlgFRrJ8HgpHTTM8+xEDtQGuiJGuxK72ei7eZEhvzD3kmMW
+ x8OxgesakZjtawP2AxlkP63PDuSDQQyGuPRlmpUxBlf9hKlIgAsxPCfNFfabPFORp3slvAQiR
+ 2tnQLu7M7rnnBfQcglM60hWdQ2udSq+gLImQJMNOk21LJ/2LpEo3QieQ/0OwoHXcbhEi1c4SZ
+ ufO+yrNrIjKeK91JGU2T9lbXv9YSHZrdQUiaioTrk3lmZvjY73fZO7ZxLMpYPh0dTcBlGn8D0
+ hLPmEaKB6t4Xh0LvmSYO9LAq5QMlWoS8UeZB23oDLrZaaJWO7vOQK42mwTf/NwTv65pGqc/NQ
+ c8bfZ/7bON8oROKuSJc2OtSXTrdW5QXRWF9XOuCFKlWt3S9Kn+SWufGE8Nc/y4hsVZRTRTOX+
+ ltyjpxNzNBuYNmAh3goOzFfJvM4662jQ0MFeJEtSKFg4OnS3ATGGgGPltvRw3Jsl8L/JQuKb0
+ iBqHsx7ZRC0c1xFb+IApnlwKZCYAJaHnJ6D5A/Q3mAvx6dkyohjQU53m/BudaSRGU09IrG4pn
+ 7Ev+Kz/sqToUtUFugp7v7YzLZen5j/oQct52V5Tgl0v4TzvJAfc7fjlsqmq1IspNPZLVAEtp8
+ GKSLnJdf5k3uDHJeUq4indRVWDgOPa52sIA8r0qXqgr+PRWYiI/DLNlfl1ROxrHHI6ZHOPxpg
+ 0DZa8X1ZlIcNCppXE+dzkyEjkVrIE/m1TOKXCALLWU0kHP7fYM=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+Hi Florian,
 
-Thank you for the review.
-
-On Fri, Jul 16, 2021 at 9:09 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> Gesendet: Freitag, 16. Juli 2021 um 01:23 Uhr
+> Von: "Florian Fainelli" <f.fainelli@gmail.com>
+> An: "Lino Sanfilippo" <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com
+> Cc: UNGLinuxDriver@microchip.com, andrew@lunn.ch, vivien.didelot@gmail.c=
+om, olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org, netdev@vger.k=
+ernel.org, linux-kernel@vger.kernel.org
+> Betreff: Re: [PATCH 0/2] Fixes for KSZ DSA switch
 >
-> Hi Prabhakar,
->
-> On Thu, Jul 15, 2021 at 8:21 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > Add entry for fixed core clock P0_DIV2 and assign LAST_DT_CORE_CLK
-> > to R9A07G044_LAST_CORE_CLK.
+> On 7/14/21 12:17 PM, Lino Sanfilippo wrote:
+> > These patches fix issues I encountered while using a KSZ9897 as a DSA
+> > switch with a broadcom GENET network device as the DSA master device.
 > >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 >
-> Thanks for your patch!
+> Is this off the shelf hardware that can be interfaced to a Raspberry Pi
+> 4 or is this a custom design that only you have access to?
 >
-> > --- a/drivers/clk/renesas/r9a07g044-cpg.c
-> > +++ b/drivers/clk/renesas/r9a07g044-cpg.c
-> > @@ -16,7 +16,7 @@
-> >
-> >  enum clk_ids {
-> >         /* Core Clock Outputs exported to DT */
-> > -       LAST_DT_CORE_CLK = R9A07G044_OSCCLK,
-> > +       LAST_DT_CORE_CLK = R9A07G044_LAST_CORE_CLK,
->
-> Please use R9A07G044_CLK_P0_DIV2 instead.
->
-Ok, I will update it.
 
-Cheers,
-Prabhakar
+The setup I use is a Raspberry Pi 4 connected to an EVB KSZ9897 from Micro=
+chip:
 
-> >
-> >         /* External Input Clocks */
-> >         CLK_EXTAL,
-> > @@ -77,6 +77,7 @@ static const struct cpg_core_clk r9a07g044_core_clks[] __initconst = {
-> >         DEF_FIXED("I", R9A07G044_CLK_I, CLK_PLL1, 1, 1),
-> >         DEF_DIV("P0", R9A07G044_CLK_P0, CLK_PLL2_DIV16, DIVPL2A,
-> >                 dtable_1_32, CLK_DIVIDER_HIWORD_MASK),
-> > +       DEF_FIXED("P0_DIV2", R9A07G044_CLK_P0_DIV2, R9A07G044_CLK_P0, 1, 2),
-> >         DEF_FIXED("TSU", R9A07G044_CLK_TSU, CLK_PLL2_DIV20, 1, 1),
-> >         DEF_DIV("P1", R9A07G044_CLK_P1, CLK_PLL3_DIV2_4,
-> >                 DIVPL3B, dtable_1_32, CLK_DIVIDER_HIWORD_MASK),
->
-> The rest looks good to me.
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+https://www.microchip.com/DevelopmentTools/ProductDetails/PartNO/EVB-KSZ98=
+97-1
+
+Best regards,
+Lino
