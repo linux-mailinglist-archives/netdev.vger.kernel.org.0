@@ -2,97 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C573CC461
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 18:10:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 304A13CC477
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 18:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbhGQQNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 12:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbhGQQNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 12:13:19 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFF2C06175F;
-        Sat, 17 Jul 2021 09:10:22 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id a6so6128618pgw.3;
-        Sat, 17 Jul 2021 09:10:22 -0700 (PDT)
+        id S231630AbhGQQg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 12:36:26 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:38813
+        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S229581AbhGQQgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 12:36:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Xddb+N0v+hHcIs8maktgerWuQ0JfLKpmotpQrY+Dm6o=;
-        b=K3mWlWtGp3+sZiNKnyZo4q4zcJSrUR5+nVVmPc7EEIkqndxaK2XG0NxzboGgqTyI9k
-         ziUHif5h6yzGkfjh5Tv1/V32G8rT94a1NOHTqopO8SE3nO87QRCpewBwgo206Ot2Nx7R
-         rRKPI5A3FXsFw5d55LPFq6E8F47JFzf4ONaVIuw2Myy1+XaBf9BNkWkbykeP5NtRxN7k
-         i7rsh0THw5OPhfe+271i50THyl/bj7/8GDExFn5mlp/iiLn+QKQWz/46TnLTboHZyurG
-         v1+IRkBFdpx2sMM3xRn2NLj4iKODOamwtU2W158P+xus55bIwiQCQPMu0thHWAACaAoE
-         WjDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Xddb+N0v+hHcIs8maktgerWuQ0JfLKpmotpQrY+Dm6o=;
-        b=WhhYoXZJvbUsSSHkF/rnwC61r0nPc2RVzq478yl/zQQVvD4uM5FDOO/asK7h+nV58C
-         CCbgWEwqpNM75Wc+xXZqGvdv0IAPRfkb/AA8wUHOJP0ggAFh9gXYL3K6Eq+MnL80tj4w
-         vTNzAENiofn/k4c6nCtouL4bal51MaXdEe7R87Y6rlJHWwGt5TQqf+NxY74/TYS4lHVq
-         J/VuTs73VVbBFMY/vaQqKtFTvazaIC5GV9KPRD/CbU9/8CXShWNeIdQA7Hu93iNtGbhR
-         25Xh3v6L87MgNT+Ff98MHUrj3QoRE0qg6MRDqMZSZOhiPQMV3C8XujGYJG+BltuoWywa
-         NsRQ==
-X-Gm-Message-State: AOAM531MfyZ3dH+AH8Y1SNWW/pFrrDYRuKUJizOs5i3mxPCyp4o7Pa6G
-        oQ5z81Mt4Wiwure+poaWj1Q=
-X-Google-Smtp-Source: ABdhPJwcTd76xSeBEG+xnuCq2rCXkuZNbJtwb9EbT6snml/J+5qteEAFArnsBXdPZt5MrtYlzAFO8g==
-X-Received: by 2002:a63:171e:: with SMTP id x30mr16045233pgl.368.1626538222307;
-        Sat, 17 Jul 2021 09:10:22 -0700 (PDT)
-Received: from [10.230.31.46] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u16sm15735548pgh.53.2021.07.17.09.10.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 17 Jul 2021 09:10:21 -0700 (PDT)
-Subject: Re: [PATCH net, v2] net: Update MAINTAINERS for MediaTek switch
- driver
-To:     DENG Qingfang <dqfext@gmail.com>,
-        Landen Chao <landen.chao@mediatek.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, frank-w@public-files.de,
-        steven.liu@mediatek.com
-References: <20210601024508.iIbiNrsg-6lZjXwIt9-j76r37lcQSk3LsYBoZyl3fUM@z>
- <20210717154523.82890-1-dqfext@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d62aa80d-9ee2-23b8-f68f-449b488a3b0f@gmail.com>
-Date:   Sat, 17 Jul 2021 09:10:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <20210717154523.82890-1-dqfext@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        d=fudan.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID; bh=FKpHiS169x9azDRzGN9bbvMcEmln4K0mzgvH
+        HsRjbx4=; b=HIh/zbXcz9z9v7WoTLdCl50YpXzMXjU39W1jSiucLnf+xz0kDuVi
+        StIfKL0cxbfuffF0MCud8865tXrwj2d3Y6PIYo63qm/Qt5TCjQUYCaA2MdO4U8Ny
+        ndaefCap27761AynrgcwSJSn3fdX9IJL6rqxy/Js1/iCuzVW6ghS4jg=
+Received: by ajax-webmail-app2 (Coremail) ; Sun, 18 Jul 2021 00:32:31 +0800
+ (GMT+08:00)
+X-Originating-IP: [39.144.105.157]
+Date:   Sun, 18 Jul 2021 00:32:31 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   "Xiyu Yang" <xiyuyang19@fudan.edu.cn>
+To:     "Trond Myklebust" <trondmy@hammerspace.com>
+Cc:     "tanxin.ctf@gmail.com" <tanxin.ctf@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kolga@netapp.com" <kolga@netapp.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "yuanxzhang@fudan.edu.cn" <yuanxzhang@fudan.edu.cn>
+Subject: Re: Re: [PATCH] SUNRPC: Convert from atomic_t to refcount_t on
+ rpc_clnt->cl_count
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT3.0.8 dev build
+ 20200917(8294e55f) Copyright (c) 2002-2021 www.mailtech.cn fudan.edu.cn
+In-Reply-To: <1f12b3569565fa8590b45cc2fbe7c176ca7c5184.camel@hammerspace.com>
+References: <1626517112-42831-1-git-send-email-xiyuyang19@fudan.edu.cn>
+ <1f12b3569565fa8590b45cc2fbe7c176ca7c5184.camel@hammerspace.com>
+X-SendMailWithSms: false
 Content-Transfer-Encoding: 7bit
+X-CM-CTRLDATA: 28cyeGZvb3Rlcl90eHQ9MTU4OToxMA==
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <78709d5e.49a9.17ab54fead8.Coremail.xiyuyang19@fudan.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: XQUFCgBnbvYfBvNgEebaBA--.55915W
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/1tbiARAFAVKp4xMhKAAAsX
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Sorry, I'm not sure why you need to bump a zero refcount in a normal situation. But maybe we can use refcount_inc_not_zero() API in rpc_free_auth() instead?
 
-On 7/17/2021 8:45 AM, DENG Qingfang wrote:
-> On Tue, Jun 01, 2021 at 10:45:08AM +0800, Landen Chao wrote:
->> Update maintainers for MediaTek switch driver with Deng Qingfang who
->> contributes many useful patches (interrupt, VLAN, GPIO, and etc.) to
->> enhance MediaTek switch driver and will help maintenance.
->>
->> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
->> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> -----Original Messages-----
+> From: "Trond Myklebust" <trondmy@hammerspace.com>
+> Sent Time: 2021-07-17 22:43:26 (Saturday)
+> To: "tanxin.ctf@gmail.com" <tanxin.ctf@gmail.com>, "xiyuyang19@fudan.edu.cn" <xiyuyang19@fudan.edu.cn>, "davem@davemloft.net" <davem@davemloft.net>, "chuck.lever@oracle.com" <chuck.lever@oracle.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kolga@netapp.com" <kolga@netapp.com>, "kuba@kernel.org" <kuba@kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "bfields@fieldses.org" <bfields@fieldses.org>, "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>, "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
+> Cc: "yuanxzhang@fudan.edu.cn" <yuanxzhang@fudan.edu.cn>
+> Subject: Re: [PATCH] SUNRPC: Convert from atomic_t to refcount_t on rpc_clnt->cl_count
 > 
-> Ping?
+> On Sat, 2021-07-17 at 18:18 +0800, Xiyu Yang wrote:
+> > refcount_t type and corresponding API can protect refcounters from
+> > accidental underflow and overflow and further use-after-free
+> > situations.
+> > 
+> 
+> Have you tested this patch? As far as I remember, the reason why we
+> never converted is that refcount_inc() gets upset and WARNs when you
+> bump a zero refcount, like we do very much on purpose in
+> rpc_free_auth(). Is that no longer the case?
+> 
+> 
+> -- 
+> Trond Myklebust
+> Linux NFS client maintainer, Hammerspace
+> trond.myklebust@hammerspace.com
+> 
+> 
 
-You might have to resend, when you do:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+
+
+
+
