@@ -2,57 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 389773CC29C
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 12:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0B23CC2A0
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 12:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233940AbhGQKXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 06:23:10 -0400
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:55330
+        id S233327AbhGQKYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 06:24:24 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:60874
         "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S233431AbhGQKXI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 06:23:08 -0400
+        by vger.kernel.org with SMTP id S231317AbhGQKYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 06:24:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=2Q0bC1AplAGhv7FihkJDId3aCukUvv29yqxy6h3U4rA=; b=L
-        Qa19Tb7TKAK+iduqFVELO+yzqsriQlE1TlKw3thbpDCTRdvSdG3CMAvNntl3nvNV
-        Uqt83hIBgvPJXoVvAwPT5Q6L1GXI5ZqhtsiSFIdyt/Guk9waZFMKvigSFUqzedpU
-        Vaz90pdW7wxJRd+KQrKj+VzWOf3JoGLcO+oE1oFoTs=
+        Message-Id; bh=DFECFwsmhKmoaWh5jv26HPCrTfdgOfh2qVaPeoF0Ry4=; b=v
+        pnLoYXaCz7jBV024MUSE3jKELL5XFhMoHFx5NInTvwEVgb+mHWJ8VBHsZG+tNBlB
+        m/KjvIS+xk6jtdkxddQhL16kvwoUrhIa+bctqvf6geMzuJHMksQI/IEC5Frajf/E
+        jFpIh6cGyrwpvTFrF+Y0mqde8CZQEsTKJtHRtn7zvQ=
 Received: from localhost.localdomain (unknown [39.144.44.130])
-        by app2 (Coremail) with SMTP id XQUFCgC3L2mgrvJgjLzYBA--.38224S3;
-        Sat, 17 Jul 2021 18:19:13 +0800 (CST)
+        by app2 (Coremail) with SMTP id XQUFCgDn7AzxrvJgAL7YBA--.38476S3;
+        Sat, 17 Jul 2021 18:20:34 +0800 (CST)
 From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
-To:     "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>, linux-nfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn
-Subject: [PATCH] SUNRPC: Convert from atomic_t to refcount_t on rpc_clnt->cl_count
-Date:   Sat, 17 Jul 2021 18:18:08 +0800
-Message-Id: <1626517112-42831-1-git-send-email-xiyuyang19@fudan.edu.cn>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] vhost_net: Convert from atomic_t to refcount_t on vhost_net_ubuf_ref->refcount
+Date:   Sat, 17 Jul 2021 18:20:30 +0800
+Message-Id: <1626517230-42920-1-git-send-email-xiyuyang19@fudan.edu.cn>
 X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: XQUFCgC3L2mgrvJgjLzYBA--.38224S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3WF18uFyrGr4UZF1UWw1kGrg_yoW7Xr1Upr
-        ZrC34rJF9Ykrs7K34vya1UZw1fAF1xAa4rKFW0y34rAF9xKr1Yq3WIkryjyrs7ZrW8uF12
-        qF4jgF45CF4DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUB014x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+X-CM-TRANSID: XQUFCgDn7AzxrvJgAL7YBA--.38476S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxAFWkXrW3Wr1DWrWxtF43ZFb_yoW5Xw4fpF
+        WDtrykAa1fKF1xJwn7J340vw1rJw18Cr95GrWakasxCFyagwsrX3yvkFyYvry5AFZrCFyx
+        XF4qgr1Sk3y7XaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
         rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
         1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
         JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
         CE3s1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
         F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r
         4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I
-        648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI4
-        8JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xv
-        wVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjx
-        v20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k2
-        6cxKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I
-        0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUo8nYUUUUU
+        648v4I1lc2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfUo8nYUUUUU
 X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -64,135 +59,76 @@ accidental underflow and overflow and further use-after-free situations.
 Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
 Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 ---
- include/linux/sunrpc/clnt.h          |  3 ++-
- net/sunrpc/auth_gss/gss_rpc_upcall.c |  2 +-
- net/sunrpc/clnt.c                    | 14 +++++++-------
- net/sunrpc/debugfs.c                 |  2 +-
- net/sunrpc/rpc_pipe.c                |  2 +-
- 5 files changed, 12 insertions(+), 11 deletions(-)
+ drivers/vhost/net.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/sunrpc/clnt.h b/include/linux/sunrpc/clnt.h
-index 8b5d5c97553e..61f725b9f865 100644
---- a/include/linux/sunrpc/clnt.h
-+++ b/include/linux/sunrpc/clnt.h
-@@ -10,6 +10,7 @@
- #ifndef _LINUX_SUNRPC_CLNT_H
- #define _LINUX_SUNRPC_CLNT_H
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 6414bd5741b8..e23150ca7d4c 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -5,6 +5,7 @@
+  * virtio-net server in host kernel.
+  */
  
 +#include <linux/refcount.h>
- #include <linux/types.h>
- #include <linux/socket.h>
- #include <linux/in.h>
-@@ -35,7 +36,7 @@ struct rpc_sysfs_client;
-  * The high-level client handle
-  */
- struct rpc_clnt {
--	atomic_t		cl_count;	/* Number of references */
-+	refcount_t		cl_count;	/* Number of references */
- 	unsigned int		cl_clid;	/* client id */
- 	struct list_head	cl_clients;	/* Global list of clients */
- 	struct list_head	cl_tasks;	/* List of tasks */
-diff --git a/net/sunrpc/auth_gss/gss_rpc_upcall.c b/net/sunrpc/auth_gss/gss_rpc_upcall.c
-index d1c003a25b0f..61c276bddaf2 100644
---- a/net/sunrpc/auth_gss/gss_rpc_upcall.c
-+++ b/net/sunrpc/auth_gss/gss_rpc_upcall.c
-@@ -160,7 +160,7 @@ static struct rpc_clnt *get_gssp_clnt(struct sunrpc_net *sn)
- 	mutex_lock(&sn->gssp_lock);
- 	clnt = sn->gssp_clnt;
- 	if (clnt)
--		atomic_inc(&clnt->cl_count);
-+		refcount_inc(&clnt->cl_count);
- 	mutex_unlock(&sn->gssp_lock);
- 	return clnt;
- }
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 8b4de70e8ead..d6b64622bd04 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -167,7 +167,7 @@ static int rpc_clnt_skip_event(struct rpc_clnt *clnt, unsigned long event)
- 	case RPC_PIPEFS_MOUNT:
- 		if (clnt->cl_pipedir_objects.pdh_dentry != NULL)
- 			return 1;
--		if (atomic_read(&clnt->cl_count) == 0)
-+		if (refcount_read(&clnt->cl_count) == 0)
- 			return 1;
- 		break;
- 	case RPC_PIPEFS_UMOUNT:
-@@ -419,7 +419,7 @@ static struct rpc_clnt * rpc_new_client(const struct rpc_create_args *args,
- 	clnt->cl_rtt = &clnt->cl_rtt_default;
- 	rpc_init_rtt(&clnt->cl_rtt_default, clnt->cl_timeout->to_initval);
- 
--	atomic_set(&clnt->cl_count, 1);
-+	refcount_set(&clnt->cl_count, 1);
- 
- 	if (nodename == NULL)
- 		nodename = utsname()->nodename;
-@@ -431,7 +431,7 @@ static struct rpc_clnt * rpc_new_client(const struct rpc_create_args *args,
- 	if (err)
- 		goto out_no_path;
- 	if (parent)
--		atomic_inc(&parent->cl_count);
-+		refcount_inc(&parent->cl_count);
- 
- 	trace_rpc_clnt_new(clnt, xprt, program->name, args->servername);
- 	return clnt;
-@@ -926,10 +926,10 @@ rpc_free_auth(struct rpc_clnt *clnt)
- 	 *       release remaining GSS contexts. This mechanism ensures
- 	 *       that it can do so safely.
+ #include <linux/compat.h>
+ #include <linux/eventfd.h>
+ #include <linux/vhost.h>
+@@ -92,7 +93,7 @@ struct vhost_net_ubuf_ref {
+ 	 *  1: no outstanding ubufs
+ 	 * >1: outstanding ubufs
  	 */
--	atomic_inc(&clnt->cl_count);
-+	refcount_inc(&clnt->cl_count);
- 	rpcauth_release(clnt->cl_auth);
- 	clnt->cl_auth = NULL;
--	if (atomic_dec_and_test(&clnt->cl_count))
-+	if (refcount_dec_and_test(&clnt->cl_count))
- 		return rpc_free_client(clnt);
- 	return NULL;
- }
-@@ -943,7 +943,7 @@ rpc_release_client(struct rpc_clnt *clnt)
- 	do {
- 		if (list_empty(&clnt->cl_tasks))
- 			wake_up(&destroy_wait);
--		if (!atomic_dec_and_test(&clnt->cl_count))
-+		if (!refcount_dec_and_test(&clnt->cl_count))
- 			break;
- 		clnt = rpc_free_auth(clnt);
- 	} while (clnt != NULL);
-@@ -1082,7 +1082,7 @@ void rpc_task_set_client(struct rpc_task *task, struct rpc_clnt *clnt)
- 	if (clnt != NULL) {
- 		rpc_task_set_transport(task, clnt);
- 		task->tk_client = clnt;
--		atomic_inc(&clnt->cl_count);
-+		refcount_inc(&clnt->cl_count);
- 		if (clnt->cl_softrtry)
- 			task->tk_flags |= RPC_TASK_SOFT;
- 		if (clnt->cl_softerr)
-diff --git a/net/sunrpc/debugfs.c b/net/sunrpc/debugfs.c
-index 56029e3af6ff..79995eb95927 100644
---- a/net/sunrpc/debugfs.c
-+++ b/net/sunrpc/debugfs.c
-@@ -90,7 +90,7 @@ static int tasks_open(struct inode *inode, struct file *filp)
- 		struct seq_file *seq = filp->private_data;
- 		struct rpc_clnt *clnt = seq->private = inode->i_private;
+-	atomic_t refcount;
++	refcount_t refcount;
+ 	wait_queue_head_t wait;
+ 	struct vhost_virtqueue *vq;
+ };
+@@ -240,7 +241,7 @@ vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
+ 	ubufs = kmalloc(sizeof(*ubufs), GFP_KERNEL);
+ 	if (!ubufs)
+ 		return ERR_PTR(-ENOMEM);
+-	atomic_set(&ubufs->refcount, 1);
++	refcount_set(&ubufs->refcount, 1);
+ 	init_waitqueue_head(&ubufs->wait);
+ 	ubufs->vq = vq;
+ 	return ubufs;
+@@ -248,7 +249,8 @@ vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
  
--		if (!atomic_inc_not_zero(&clnt->cl_count)) {
-+		if (!refcount_inc_not_zero(&clnt->cl_count)) {
- 			seq_release(inode, filp);
- 			ret = -EINVAL;
- 		}
-diff --git a/net/sunrpc/rpc_pipe.c b/net/sunrpc/rpc_pipe.c
-index 09c000d490a1..ee5336d73fdd 100644
---- a/net/sunrpc/rpc_pipe.c
-+++ b/net/sunrpc/rpc_pipe.c
-@@ -423,7 +423,7 @@ rpc_info_open(struct inode *inode, struct file *file)
- 		spin_lock(&file->f_path.dentry->d_lock);
- 		if (!d_unhashed(file->f_path.dentry))
- 			clnt = RPC_I(inode)->private;
--		if (clnt != NULL && atomic_inc_not_zero(&clnt->cl_count)) {
-+		if (clnt != NULL && refcount_inc_not_zero(&clnt->cl_count)) {
- 			spin_unlock(&file->f_path.dentry->d_lock);
- 			m->private = clnt;
+ static int vhost_net_ubuf_put(struct vhost_net_ubuf_ref *ubufs)
+ {
+-	int r = atomic_sub_return(1, &ubufs->refcount);
++	refcount_dec(&ubufs->refcount);
++	int r = refcount_read(&ubufs->refcount);
+ 	if (unlikely(!r))
+ 		wake_up(&ubufs->wait);
+ 	return r;
+@@ -257,7 +259,7 @@ static int vhost_net_ubuf_put(struct vhost_net_ubuf_ref *ubufs)
+ static void vhost_net_ubuf_put_and_wait(struct vhost_net_ubuf_ref *ubufs)
+ {
+ 	vhost_net_ubuf_put(ubufs);
+-	wait_event(ubufs->wait, !atomic_read(&ubufs->refcount));
++	wait_event(ubufs->wait, !refcount_read(&ubufs->refcount));
+ }
+ 
+ static void vhost_net_ubuf_put_wait_and_free(struct vhost_net_ubuf_ref *ubufs)
+@@ -909,7 +911,7 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
+ 			ctl.ptr = ubuf;
+ 			msg.msg_controllen = sizeof(ctl);
+ 			ubufs = nvq->ubufs;
+-			atomic_inc(&ubufs->refcount);
++			refcount_inc(&ubufs->refcount);
+ 			nvq->upend_idx = (nvq->upend_idx + 1) % UIO_MAXIOV;
  		} else {
+ 			msg.msg_control = NULL;
+@@ -1384,7 +1386,7 @@ static void vhost_net_flush(struct vhost_net *n)
+ 		vhost_net_ubuf_put_and_wait(n->vqs[VHOST_NET_VQ_TX].ubufs);
+ 		mutex_lock(&n->vqs[VHOST_NET_VQ_TX].vq.mutex);
+ 		n->tx_flush = false;
+-		atomic_set(&n->vqs[VHOST_NET_VQ_TX].ubufs->refcount, 1);
++		refcount_set(&n->vqs[VHOST_NET_VQ_TX].ubufs->refcount, 1);
+ 		mutex_unlock(&n->vqs[VHOST_NET_VQ_TX].vq.mutex);
+ 	}
+ }
 -- 
 2.7.4
 
