@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE5E3CC023
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 02:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E753CC028
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 02:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232624AbhGQAfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 20:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37458 "EHLO
+        id S233022AbhGQAgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 20:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbhGQAfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 20:35:54 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F85BC06175F;
-        Fri, 16 Jul 2021 17:32:59 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id c16so10881064ybl.9;
-        Fri, 16 Jul 2021 17:32:59 -0700 (PDT)
+        with ESMTP id S232777AbhGQAf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 20:35:59 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11A2C06175F;
+        Fri, 16 Jul 2021 17:33:02 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id y38so17659160ybi.1;
+        Fri, 16 Jul 2021 17:33:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=vtojRO5UJ8UAUBsB6lQ6JUBMPaoQT8f0SvpKgkRdtgQ=;
-        b=J1ciRSyVQtuFajXvLrR03KkmF9sB2q/vA7YqnUi3UpBX6rppX/XFQoLHuFayJCpiD4
-         5U+Q+Ow4Fv8zOcPBp0HjBUAlTHIB5FY51KlOSaTf5WqOEg44iHtG9htBracH/GyG65rL
-         gKEGCMpk2NMctdw9lhwLE0puEoyFfM86+eRyJhxnIFuW55Qt/hRgH6VZym8YK5wL7ONI
-         I5PCSkZMvJw4YwmJExYUmG8Xm5qWDbpJ6ci7CMTDV6pqsYNTbYcbkYeXYRyxh2VMAX4I
-         UyOxlTxcbsferaO2sxq1wzQ9f/ljO+4oamLxKN1OaJJInWvyfKrJErJVkm4oiTNgvW/A
-         MtWg==
+        bh=trg43gr1lzJ0X/y3FwsvLfzh0F08pPa216DnEY22MBQ=;
+        b=VB8goqNVFOdQYJObt6Wf/wp+vKwaXJI63KPWacM51FfjJN+x0SWmkl6jD+dn5QUVo6
+         hBoTC7lFkAs84KDDQHXcBjYUZXmVYQFMqDbknH1QS4ZcF8zNAZ07BL82wzlMvAaifmtD
+         REM9qcAmH73VzZwamPEzmU4XoHt/1EXybJ3Np37sq2Yqjar3cMxGmqhfH/+zF1RgF6hx
+         QnbmecGT3L5djnYdV43iJJCkIjmfqk548ShoNN8zzi0BDgF4jglHo0wkti8MOBr/Jf25
+         c5JHW3+qOvF4W+DUAqfPeWL8nBA5bwEjXaU6D5eOQ2/i13KhShVh+JdJ3TVvWqiNolEX
+         KY3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=vtojRO5UJ8UAUBsB6lQ6JUBMPaoQT8f0SvpKgkRdtgQ=;
-        b=YTcel4GkbEuSOQjuncaPN2D6zxzyfVhKWTD14Ezm6YFL14+pt/BnBor7hZVl/PKyC7
-         4OgA5+YyGoLKE6r8BwV6erFgTmPu18bV+3V4o4NnqB9VtmEsKNg3uN18LEFn0Cp3qAAL
-         5ky+hh3NXJujDt71QC0hMV/o+zAF42VSiViArc845vv+YcHILo2xeu64AARAa5EjjH8o
-         Pgs08I4dW47fIb0G8zZctbEAph6EGKvfPAVnTpPkTkr3pKdlqnRGLGjEKVkoJ8Wpurrv
-         cyAwsnLkOwr8x4MZrir96wpw8q6xOfEOu34nXHLjfERVzDBXfe46sgRnUzSF2by+Lvf6
-         N0pA==
-X-Gm-Message-State: AOAM530WesV0K1eo7mGCvQ24Sx0Wx3nfHl20mFe5/jz/A8YwuTsSyUWg
-        fR99bJAraWMfujk4DyCnqFmLsJ129uM649UiYt4=
-X-Google-Smtp-Source: ABdhPJyaC5cCpRpQgYHAVh6ikYNKXPg+la+Y7VHYi50DTR2TPZXkCYDzwFoGQTcxio0pbGW/S8QV4nP//IFW1GgD+x0=
-X-Received: by 2002:a25:b203:: with SMTP id i3mr16325406ybj.260.1626481978333;
- Fri, 16 Jul 2021 17:32:58 -0700 (PDT)
+        bh=trg43gr1lzJ0X/y3FwsvLfzh0F08pPa216DnEY22MBQ=;
+        b=ZysBdUyKmmfvFtriwffaMYFVBZ18U8tacG+hjQdZSpOrPycBX6v/82M9soH43eWr14
+         oUh4mcGZu3CMBTXtoCxVzpw3pG5dhiG/qIfy8bqSiDuXvG16pyF8AkLzcT3HEaWLI6vg
+         JojN0EdSSaAXF/CsLO2PFbrcm94dPobwqnIibzPUK5zrx0mmBSv3kgPzu2YD4VPjT7hm
+         ox+/MWt+3bdvCKfXC7Czc+P87nlKfyVK5y5ikpEyWRVCrpIj91ypg9FHxpEWpvFsX45G
+         TUiQmPtI2ovqYnjXEgVsilnxPgClF2UOu4pxabWlhCvWW75rJ01HSrtswgPOkQlASetj
+         DqSA==
+X-Gm-Message-State: AOAM533NIuPIaaqYa4hG3gtHU3oawyPo82hQ0L66nDgORFyGhpxbB+7H
+        oJ+qOZHfvsoYn7nK+Lb39C+48JV5Lfi8qB3u/tg=
+X-Google-Smtp-Source: ABdhPJxhcRk7QZWmEG50BZRzJNegQN8FropSgiI3YJ9SQ/bXz+tQLHzUIcWh8CyhWiNpwbIWctRZ6224KUUbgldzATg=
+X-Received: by 2002:a25:3787:: with SMTP id e129mr15704664yba.459.1626481981987;
+ Fri, 16 Jul 2021 17:33:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <1626475617-25984-1-git-send-email-alan.maguire@oracle.com> <1626475617-25984-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1626475617-25984-2-git-send-email-alan.maguire@oracle.com>
+References: <1626475617-25984-1-git-send-email-alan.maguire@oracle.com> <1626475617-25984-3-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1626475617-25984-3-git-send-email-alan.maguire@oracle.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 16 Jul 2021 17:32:47 -0700
-Message-ID: <CAEf4BzbXNK0bb_7Wa6=y2BsQjmQ_ynYT1YNhO4eP0uT4nwJmpg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/3] libbpf: clarify/fix unaligned data issues
- for btf typed dump
+Date:   Fri, 16 Jul 2021 17:32:51 -0700
+Message-ID: <CAEf4BzavQqexc_5DM0vh89ocjp0dvSMrLU4P4hTfmwt9rTsv4Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: fix compilation errors on ppc64le
+ for btf dump typed data
 To:     Alan Maguire <alan.maguire@oracle.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -71,110 +71,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jul 16, 2021 at 3:47 PM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> If data is packed, data structures can store it outside of usual
-> boundaries.  For example a 4-byte int can be stored on a unaligned
-> boundary in a case like this:
+> Andrii reports:
 >
-> struct s {
->         char f1;
->         int f2;
-> } __attribute((packed));
+> "ppc64le arch doesn't like the %lld:
 >
-> ...the int is stored at an offset of one byte.  Some platforms have
-> problems dereferencing data that is not aligned with its size, and
-> code exists to handle most cases of this for BTF typed data display.
-> However pointer display was missed, and a simple function to test if
-> "ptr_is_aligned(data, data_sz)" would help clarify this code.
+>  In file included from btf_dump.c:22:
+> btf_dump.c: In function 'btf_dump_type_data_check_overflow':
+> libbpf_internal.h:111:22: error: format '%lld' expects argument of
+> type 'long long int', but argument 3 has type '__s64' {aka 'long int'}
+> [-Werror=format=]
+>   111 |  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
+>       |                      ^~~~~~~~~~
+> libbpf_internal.h:114:27: note: in expansion of macro '__pr'
+>   114 | #define pr_warn(fmt, ...) __pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
+>       |                           ^~~~
+> btf_dump.c:1992:3: note: in expansion of macro 'pr_warn'
+>  1992 |   pr_warn("unexpected size [%lld] for id [%u]\n",
+>       |   ^~~~~~~
+> btf_dump.c:1992:32: note: format string is defined here
+>  1992 |   pr_warn("unexpected size [%lld] for id [%u]\n",
+>       |                             ~~~^
+>       |                                |
+>       |                                long long int
+>       |                             %ld
 >
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Cast to size_t and use %zu."
+>
+
+Quoting me isn't a great commit message by itself, tbh. Reworded.
+
+
+
+> Reported-by: Andrii Nakryiko <andrii@kernel.org>
 > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 > ---
->  tools/lib/bpf/btf_dump.c | 30 ++++++++++++++++++++++++++----
->  1 file changed, 26 insertions(+), 4 deletions(-)
+>  tools/lib/bpf/btf_dump.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
 > diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> index 929cf93..814a538 100644
+> index 814a538..e5fbfb8 100644
 > --- a/tools/lib/bpf/btf_dump.c
 > +++ b/tools/lib/bpf/btf_dump.c
-> @@ -1654,6 +1654,11 @@ static int btf_dump_base_type_check_zero(struct btf_dump *d,
->         return 0;
->  }
+> @@ -2011,8 +2011,8 @@ static int btf_dump_type_data_check_overflow(struct btf_dump *d,
+>         __s64 size = btf__resolve_size(d->btf, id);
 >
-> +static bool ptr_is_aligned(const void *data, int data_sz)
-> +{
-> +       return ((uintptr_t)data) % data_sz == 0;
-> +}
-> +
->  static int btf_dump_int_data(struct btf_dump *d,
->                              const struct btf_type *t,
->                              __u32 type_id,
-> @@ -1672,7 +1677,7 @@ static int btf_dump_int_data(struct btf_dump *d,
->         /* handle packed int data - accesses of integers not aligned on
->          * int boundaries can cause problems on some platforms.
->          */
-> -       if (((uintptr_t)data) % sz)
-> +       if (!ptr_is_aligned(data, sz))
->                 return btf_dump_bitfield_data(d, t, data, 0, 0);
->
->         switch (sz) {
-> @@ -1739,7 +1744,7 @@ static int btf_dump_float_data(struct btf_dump *d,
->         int sz = t->size;
->
->         /* handle unaligned data; copy to local union */
-> -       if (((uintptr_t)data) % sz) {
-> +       if (!ptr_is_aligned(data, sz)) {
->                 memcpy(&fl, data, sz);
->                 flp = &fl;
+>         if (size < 0 || size >= INT_MAX) {
+> -               pr_warn("unexpected size [%lld] for id [%u]\n",
+> -                       size, id);
+> +               pr_warn("unexpected size [%zu] for id [%u]\n",
+> +                       (size_t)size, id);
+>                 return -EINVAL;
 >         }
-> @@ -1892,12 +1897,29 @@ static int btf_dump_struct_data(struct btf_dump *d,
->         return err;
->  }
 >
-> +union ptr_data {
-> +       unsigned int p;
-> +       unsigned long lp;
-
-long can be 32-bit on 4-byte architectures, plus %llx implies long
-long (or we'll get another annoying warning from the compiler)
-
-> +};
-> +
->  static int btf_dump_ptr_data(struct btf_dump *d,
->                               const struct btf_type *t,
->                               __u32 id,
->                               const void *data)
->  {
-> -       btf_dump_type_values(d, "%p", *(void **)data);
-> +       bool ptr_sz_matches = d->ptr_sz == sizeof(void *);
-
-used just once and clear what it does, I inlined this, no point in
-separate variable
-
-
-> +
-> +       if (ptr_sz_matches && ptr_is_aligned(data, d->ptr_sz)) {
-> +               btf_dump_type_values(d, "%p", *(void **)data);
-> +       } else {
-> +               union ptr_data pt;
-> +
-> +               memcpy(&pt, data, d->ptr_sz);
-> +               if (d->ptr_sz == 4)
-> +                       btf_dump_type_values(d, "0x%x", pt.p);
-> +               else
-> +                       btf_dump_type_values(d, "0x%llx", pt.lp);
-> +       }
->         return 0;
->  }
->
-> @@ -1910,7 +1932,7 @@ static int btf_dump_get_enum_value(struct btf_dump *d,
->         int sz = t->size;
->
->         /* handle unaligned enum value */
-> -       if (((uintptr_t)data) % sz) {
-> +       if (!ptr_is_aligned(data, sz)) {
->                 *value = (__s64)btf_dump_bitfield_get_data(d, t, data, 0, 0);
->                 return 0;
->         }
 > --
 > 1.8.3.1
 >
