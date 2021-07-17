@@ -2,72 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E11693CC01C
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 02:30:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372253CC01F
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 02:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231839AbhGQAdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 20:33:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231588AbhGQAdB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Jul 2021 20:33:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id EBF21613F3;
-        Sat, 17 Jul 2021 00:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626481806;
-        bh=coH/5I0XOC6QEqrNv+snKkc3OfItvztthnGBJdEh4bU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LAXNiitbBzbXL0jlRgP/CaePmyIYnjsBr6lfRdO+xU44J5f/KpogbtzMusWLld6Yk
-         36DSVbo26UCaTZRrFl1cQWEr6n5Tq3DtKdav1doKpaAXgn8xcKyoG0dR1TdxTfJ1s/
-         h6XKbBgF+4cC7xgdDA5xlnKkGkCtTfXqXHWlJo4WtrveI4PGuVUMO8khglanL7clef
-         CfK7lKrHILWY9Op1NeKRqhfITXBXzQU97WvCTMHmCV2UV2ClhsKQaoaec0nVJWm1Bi
-         2BNixSsTpwnYS3EXjhqO81kl+8+Bgg73M2z5fepQeyklqBEAuCQRdfacRxKH02Zjsj
-         XkdEWRjoon4pQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E09B360ACA;
-        Sat, 17 Jul 2021 00:30:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231501AbhGQAfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 20:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229566AbhGQAfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 20:35:47 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48810C06175F;
+        Fri, 16 Jul 2021 17:32:51 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id k184so17575284ybf.12;
+        Fri, 16 Jul 2021 17:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kpyLInZ23t1JdTv5YH8Lulxd0oqyy3IgpReraeEh2kY=;
+        b=NTtlhJOe+oL5dewMsuBCE+A+AJNOTNfqOu8V3/s2uNOL6Pt4a+NRpQswWlYGLa2CiX
+         5pBjDGoUu+mz5p3cWBN54RZAXbVM+Fy5zJZJY3PepDYYM7zOanR1tfueHnD88Twuv6Bg
+         ybyFy0j9uHT0I/IAJq+nFWOi8V9DZ7pBZVFU79+R102GpnifWJIfxhgMl12pH+H8A1CH
+         rAJLHLcUhv9JrZaVYVy8agrxi9ioXeAKbKUvMcMCZeCoEnWnFfkAMZztfVW/DaZaZVsx
+         0UE9JFPHZVvCpUgXo/tInaGorDkhk9mzG2RIcm3wsxMtn6D9FYwplYF1L/LUrCKVBgy4
+         0hyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kpyLInZ23t1JdTv5YH8Lulxd0oqyy3IgpReraeEh2kY=;
+        b=o0Pj4ETjJ3XQxotAgLnu6e7NyHYv7nRBvu1ACpRT6iT+e6OWheBNFZLXHCTnq+Iwtd
+         IAlMIEmSPjiOZQI6CVo0ecW9bhwiQBF1fZEHOJk9fWK2Kufy12NzrLTtQnsIf8NP4QlI
+         7vIr4mSXCTh9HdAsizniO292A6jMZPy+esYV9co5Oy6i0YMJbS+mbCCW2AqCNrz6EnBY
+         uiJxrMkVLLqSqcHuyrqOxeqxDbdSy2zlbOFFHI6Ln0D/4gKSdqYcW0aq+RUOPWp2Z+/4
+         LDVbLxckzGSWXQ4sCspOdCC/Tf8+oWTCb/JYfaNwmEZ8MrOvwtChiUmgvkRo2kXT1/1P
+         a1/Q==
+X-Gm-Message-State: AOAM530G0C7w1ggJh6G8Qq2EmXJmoD51ZqGo4pUoqtqm4Bgj+QsA1GaG
+        OAW3F/BJioZLkUOAgvelyLQVaRRRfytpj3R3fA0=
+X-Google-Smtp-Source: ABdhPJxe3mFqGu3F5HoBSLl+FlVHoWz/Qd4EKRmuOiH8k+dleyNeGfcYE46wGcVq720EBwmWmTKJZHtZ1cwGq8C7leE=
+X-Received: by 2002:a25:d349:: with SMTP id e70mr16315021ybf.510.1626481970369;
+ Fri, 16 Jul 2021 17:32:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] tipc: keep the skb in rcv queue until the whole data
- is read
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162648180591.17758.8670370662568415469.git-patchwork-notify@kernel.org>
-Date:   Sat, 17 Jul 2021 00:30:05 +0000
-References: <57cb295272cdeedec04ac2f920a1fd37446163c6.1626471847.git.lucien.xin@gmail.com>
-In-Reply-To: <57cb295272cdeedec04ac2f920a1fd37446163c6.1626471847.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jmaloy@redhat.com, tipc-discussion@lists.sourceforge.net,
-        erin.shepherd@e43.eu
+References: <1626475617-25984-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1626475617-25984-1-git-send-email-alan.maguire@oracle.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 16 Jul 2021 17:32:39 -0700
+Message-ID: <CAEf4BzbCYhJnvrEOvbYt3vbhr23BytbfDPkc=GUgkzneVJVJMQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/3] libbpf: BTF typed dump cleanups
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Bill Wendling <morbo@google.com>,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Jul 16, 2021 at 3:47 PM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> Fix issues with libbpf BTF typed dump code.  Patch 1 addresses handling
+> of unaligned data. Patch 2 fixes issues Andrii noticed when compiling
+> on ppc64le.  Patch 3 simplifies typed dump by getting rid of allocation
+> of dump data structure which tracks dump state etc.
+>
+> Changes since v1:
+>
+>  - Andrii suggested using a function instead of a macro for checking
+>    alignment of data, and pointed out that we need to consider dump
+>    ptr size versus native pointer size (patch 1)
+>
+> Alan Maguire (3):
+>   libbpf: clarify/fix unaligned data issues for btf typed dump
+>   libbpf: fix compilation errors on ppc64le for btf dump typed data
+>   libbpf: btf typed dump does not need to allocate dump data
+>
+>  tools/lib/bpf/btf_dump.c | 39 ++++++++++++++++++++++++++++++---------
+>  1 file changed, 30 insertions(+), 9 deletions(-)
+>
+> --
+> 1.8.3.1
+>
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+Thank you for the quick follow up. But see all the comments I left and
+the fix ups I had to do. Just because the changes are small doesn't
+mean you should get sloppy about making them. Please be a bit more
+thorough in future patches.
 
-On Fri, 16 Jul 2021 17:44:07 -0400 you wrote:
-> Currently, when userspace reads a datagram with a buffer that is
-> smaller than this datagram, the data will be truncated and only
-> part of it can be received by users. It doesn't seem right that
-> users don't know the datagram size and have to use a huge buffer
-> to read it to avoid the truncation.
-> 
-> This patch to fix it by keeping the skb in rcv queue until the
-> whole data is read by users. Only the last msg of the datagram
-> will be marked with MSG_EOR, just as TCP/SCTP does.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] tipc: keep the skb in rcv queue until the whole data is read
-    https://git.kernel.org/netdev/net-next/c/f4919ff59c28
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied to bpf-next.
