@@ -2,95 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 304A13CC477
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 18:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1BA63CC47F
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 18:39:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbhGQQg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 12:36:26 -0400
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net ([165.227.154.27]:38813
-        "HELO zg8tmty1ljiyny4xntqumjca.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S229581AbhGQQgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 12:36:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
-        MIME-Version:Message-ID; bh=FKpHiS169x9azDRzGN9bbvMcEmln4K0mzgvH
-        HsRjbx4=; b=HIh/zbXcz9z9v7WoTLdCl50YpXzMXjU39W1jSiucLnf+xz0kDuVi
-        StIfKL0cxbfuffF0MCud8865tXrwj2d3Y6PIYo63qm/Qt5TCjQUYCaA2MdO4U8Ny
-        ndaefCap27761AynrgcwSJSn3fdX9IJL6rqxy/Js1/iCuzVW6ghS4jg=
-Received: by ajax-webmail-app2 (Coremail) ; Sun, 18 Jul 2021 00:32:31 +0800
- (GMT+08:00)
-X-Originating-IP: [39.144.105.157]
-Date:   Sun, 18 Jul 2021 00:32:31 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Xiyu Yang" <xiyuyang19@fudan.edu.cn>
-To:     "Trond Myklebust" <trondmy@hammerspace.com>
-Cc:     "tanxin.ctf@gmail.com" <tanxin.ctf@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kolga@netapp.com" <kolga@netapp.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "yuanxzhang@fudan.edu.cn" <yuanxzhang@fudan.edu.cn>
-Subject: Re: Re: [PATCH] SUNRPC: Convert from atomic_t to refcount_t on
- rpc_clnt->cl_count
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT3.0.8 dev build
- 20200917(8294e55f) Copyright (c) 2002-2021 www.mailtech.cn fudan.edu.cn
-In-Reply-To: <1f12b3569565fa8590b45cc2fbe7c176ca7c5184.camel@hammerspace.com>
-References: <1626517112-42831-1-git-send-email-xiyuyang19@fudan.edu.cn>
- <1f12b3569565fa8590b45cc2fbe7c176ca7c5184.camel@hammerspace.com>
-X-SendMailWithSms: false
-Content-Transfer-Encoding: 7bit
-X-CM-CTRLDATA: 28cyeGZvb3Rlcl90eHQ9MTU4OToxMA==
-Content-Type: text/plain; charset=UTF-8
+        id S231899AbhGQQlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 12:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231346AbhGQQly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 12:41:54 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C708BC06175F;
+        Sat, 17 Jul 2021 09:38:57 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4GRv262cbLzQjxR;
+        Sat, 17 Jul 2021 18:38:54 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
+        t=1626539932;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=51iRsPRsaK8PFBVEti+F4/go88cBe72Pk1iRRqNdOUE=;
+        b=FctGs9pLtZFrmn9PP0JjHA9dUQ8K92CKywdDeLcx4GS1Ie31QUFRwMuYvgKLeFXSrEZx2j
+        ErSzKB0AquYGcZiMzC4gPj6HnxIAEVgH9BbnR4+/oLHv/5PKsuzCGmoQLIEm5uEESPPqhj
+        UzhKfSzgC8XqD84GBnEV1Wrrq7JLLDxD8Z9iBQIpRJuJ2brSjVxvBYjyitzX5sSYy+nqIC
+        KAP5hV9FgfSe82j3BEr17AYaYY2wEfkg+WjUK1dNQWn0k58X89imzssV5sT7upEGHV4x9c
+        6cRhrlceujLlRo8dFqkKMxi0kpvvX/gbJc51cETJcb5XXfriHW+YsGubK+7v8g==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id hrDd85UIi720; Sat, 17 Jul 2021 18:38:50 +0200 (CEST)
+Subject: Re: [PATCH net-next v3] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+To:     Andrew Lunn <andrew@lunn.ch>, Martin Schiller <ms@dev.tdt.de>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210709164216.18561-1-ms@dev.tdt.de>
+ <CAFBinCCw9+oCV==1DrNFU6Lu02h3OyZu9wM=78RKGMCZU6ObEA@mail.gmail.com>
+ <fcb3203ea82d1180a6e471f22e39e817@dev.tdt.de> <YO2P8J4Ln+RwxkfO@lunn.ch>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Message-ID: <9fa0ce38-d3b5-a60e-cfc4-7799b832065f@hauke-m.de>
+Date:   Sat, 17 Jul 2021 18:38:43 +0200
 MIME-Version: 1.0
-Message-ID: <78709d5e.49a9.17ab54fead8.Coremail.xiyuyang19@fudan.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: XQUFCgBnbvYfBvNgEebaBA--.55915W
-X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/1tbiARAFAVKp4xMhKAAAsX
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+In-Reply-To: <YO2P8J4Ln+RwxkfO@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: D9FAB18BE
+X-Rspamd-UID: 80aec0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Sorry, I'm not sure why you need to bump a zero refcount in a normal situation. But maybe we can use refcount_inc_not_zero() API in rpc_free_auth() instead?
-
-> -----Original Messages-----
-> From: "Trond Myklebust" <trondmy@hammerspace.com>
-> Sent Time: 2021-07-17 22:43:26 (Saturday)
-> To: "tanxin.ctf@gmail.com" <tanxin.ctf@gmail.com>, "xiyuyang19@fudan.edu.cn" <xiyuyang19@fudan.edu.cn>, "davem@davemloft.net" <davem@davemloft.net>, "chuck.lever@oracle.com" <chuck.lever@oracle.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kolga@netapp.com" <kolga@netapp.com>, "kuba@kernel.org" <kuba@kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "bfields@fieldses.org" <bfields@fieldses.org>, "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>, "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>
-> Cc: "yuanxzhang@fudan.edu.cn" <yuanxzhang@fudan.edu.cn>
-> Subject: Re: [PATCH] SUNRPC: Convert from atomic_t to refcount_t on rpc_clnt->cl_count
+On 7/13/21 3:06 PM, Andrew Lunn wrote:
+>>> [...]
+>>>> +#if IS_ENABLED(CONFIG_OF_MDIO)
+>>> is there any particular reason why we need to guard this with
+>>> CONFIG_OF_MDIO?
+>>> The dp83822 driver does not use this #if either (as far as I
+>>> understand at least)
+>>>
+>>
+>> It makes no sense to retrieve properties from the device tree if we are
+>> compiling for a target that does not support a device tree.
+>> At least that is my understanding of this condition.
 > 
-> On Sat, 2021-07-17 at 18:18 +0800, Xiyu Yang wrote:
-> > refcount_t type and corresponding API can protect refcounters from
-> > accidental underflow and overflow and further use-after-free
-> > situations.
-> > 
+> There should be stubs for all these functions, so if OF is not part of
+> the configured kernel, stub functions take their place. That has the
+> advantage of at least compiling the code, so checking parameter types
+> etc. We try to avoid #ifdef where possible, so we get better compiler
+> build test coverage. The more #ifef there are, the more different
+> configurations that need compiling in order to get build coverage.
 > 
-> Have you tested this patch? As far as I remember, the reason why we
-> never converted is that refcount_inc() gets upset and WARNs when you
-> bump a zero refcount, like we do very much on purpose in
-> rpc_free_auth(). Is that no longer the case?
-> 
-> 
-> -- 
-> Trond Myklebust
-> Linux NFS client maintainer, Hammerspace
-> trond.myklebust@hammerspace.com
-> 
+> 	       Andrew
 > 
 
+The phy_get_internal_delay() function does not have a stub function 
+directly, but it calls phy_get_int_delay_property() which has a stub, if 
+CONFIG_OF_MDIO is not set, see:
+https://elixir.bootlin.com/linux/v5.14-rc1/source/drivers/net/phy/phy_device.c#L2797
 
+The extra ifdef in the PHY driver only saves some code in the HY driver, 
+but it should still work as before on systems without CONFIG_OF_MDIO.
 
+I would also prefer to remove the ifdef from the intel-xway phy driver.
 
-
-
+Hauke
