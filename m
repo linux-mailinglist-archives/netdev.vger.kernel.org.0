@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A4F3CC2CF
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 13:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 977033CC33D
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 14:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233365AbhGQLck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 07:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbhGQLck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 07:32:40 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894DEC06175F;
-        Sat, 17 Jul 2021 04:29:43 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id go30so19385614ejc.8;
-        Sat, 17 Jul 2021 04:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wMQzc9hsJBjF5+GiV3deRlNe0BUFyhoXni4Q39sORR0=;
-        b=nVcQW8yZtK9YjZwCSga6v5Bl9AXracc8wNFeqh16bVoP2bH7S+lRI0rM3neRXqFiWe
-         Av1b3slBHxFrJ5nShWl/+WErIEk0mWSYZ6fNX7MQhm2Tmqw16tKcVzP0vFbsVCwRk3tv
-         uJyXm0C1VPMgF1HHIsb3glZau0xoZVKg94BghYgTre8EazPmvykfYZ2M6cCQK4sbss4s
-         vkJA+M/6lIrA1P75sBPGf+iMJzfGyXAwLKJ7QsARHaSvRB4A2RQ8Bb0BlBwKCSVP9Uih
-         ++vRT2YeKyoC59xGZEDcmo2Wg+oFzCsVI0R30yWDeHmmvPiF1nOSGjwIdfsN1P2ENs1f
-         JSxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wMQzc9hsJBjF5+GiV3deRlNe0BUFyhoXni4Q39sORR0=;
-        b=DgdUJ+dQjhJrYSfB/B4pRlER76r3pQ3BntqITeVYowe6GvqVs4ke72dFmrWftYcbxm
-         A1XAb5En6Bx+BcwKFEN/b9TuKd2fTR7uaG3CpUKSCACH8rpOG4e09ZpfXUx1XZyx6JaC
-         tbd8j9PQ+rPHQ4CBss2LE+qM4zgUirDHtUGt/Jqx0G935I7XdIX7uuFK9vpXFkGtPJco
-         zkIBMRcqe0WaF6oybfLAAJ7x8zIIU5ZLLaMROiBX4MMOcbz1pQej9ZQ8nrAzDkiZTyBu
-         yYCqtyIdo3D3b3R4iS3RVFaEbq3u8hWrx4PNslHaGN5GH8y1U47QVK7KIMALTD/DYpqg
-         ftgg==
-X-Gm-Message-State: AOAM532reMtoW+npY/IlNLtAX0QbOnkyKCERE4mx4M7XJS+vRGvxhS6J
-        PG1D19qN+0lMsmnhiVmQIHAJTKIy5QdsBFWK
-X-Google-Smtp-Source: ABdhPJynwZCuNTz1MOt+2HfnZf5Tn+qRujwbGWZkMySSKZi+WO82aUyw2Pd/gS6uipCLO/A9mtcpyQ==
-X-Received: by 2002:a17:906:9719:: with SMTP id k25mr17288756ejx.460.1626521381978;
-        Sat, 17 Jul 2021 04:29:41 -0700 (PDT)
-Received: from localhost.localdomain ([37.155.10.130])
-        by smtp.gmail.com with ESMTPSA id g3sm3782743ejp.2.2021.07.17.04.29.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Jul 2021 04:29:41 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com
-Subject: [PATCH] net: sched: fix memory leak in tcindex_partial_destroy_work
-Date:   Sat, 17 Jul 2021 14:29:33 +0300
-Message-Id: <20210717112933.12670-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        id S233378AbhGQMfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 08:35:53 -0400
+Received: from phobos.denx.de ([85.214.62.61]:54578 "EHLO phobos.denx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229471AbhGQMfw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Jul 2021 08:35:52 -0400
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 8AEEF81E47;
+        Sat, 17 Jul 2021 14:32:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1626525175;
+        bh=UskjqA6F+AQy9nhvBVhpfasWucpUXDwQofnPqvUZ1R8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XcqBP5TKakpwZZmC3AIKb8dki4M1UtJgZ+TSpW8g5aWeALbpo8FBUB1Mmx/9ItKbg
+         v17vqxtQW58cl0aJ6emSwP2jDs43BNxZ4QahSR+JT2+TaheHuc+yUHTdia27xivq4Z
+         4xR8B3ppbTSAI9Gkwli1pk2I6Q9otWDqpTy7emuLaWSjm+VUbEEkoWoHUg2GGRldVQ
+         InS9PVkr3qx0Ut3Q7h3jQ3kJXsqHXQdGEOyNhL0m+0AvZ4iH/zoOqskU/D0oL6unz7
+         HjfZSXyLdZBg+3Wv+k+ceamu3ALD8JM1QRnqHxmirBsRyaZJ85oOk6awOW/Yks4Nys
+         AoIfWGD9AbbgQ==
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH] net: phy: Fix data type in DP83822 dp8382x_disable_wol()
+Date:   Sat, 17 Jul 2021 14:32:49 +0200
+Message-Id: <20210717123249.56505-1-marex@denx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported memory leak in tcindex_set_parms(). The problem was in
-non-freed perfect hash in tcindex_partial_destroy_work().
+The last argument of phy_clear_bits_mmd(..., u16 val); is u16 and not
+int, just inline the value into the function call arguments.
 
-In tcindex_set_parms() new tcindex_data is allocated and some fields from
-old one are copied to new one, but not the perfect hash. Since
-tcindex_partial_destroy_work() is the destroy function for old
-tcindex_data, we need to free perfect hash to avoid memory leak.
+No functional change.
 
-Reported-and-tested-by: syzbot+f0bbb2287b8993d4fa74@syzkaller.appspotmail.com
-Fixes: 331b72922c5f ("net: sched: RCU cls_tcindex")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
 ---
- net/sched/cls_tcindex.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/phy/dp83822.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index c4007b9cd16d..7ffc7be1e05d 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -278,6 +278,8 @@ static int tcindex_filter_result_init(struct tcindex_filter_result *r,
- 			     TCA_TCINDEX_POLICE);
- }
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index f7a2ec150e54..211b5476a6f5 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -326,11 +326,9 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
  
-+static void tcindex_free_perfect_hash(struct tcindex_data *cp);
-+
- static void tcindex_partial_destroy_work(struct work_struct *work)
+ static int dp8382x_disable_wol(struct phy_device *phydev)
  {
- 	struct tcindex_data *p = container_of(to_rcu_work(work),
-@@ -285,7 +287,8 @@ static void tcindex_partial_destroy_work(struct work_struct *work)
- 					      rwork);
- 
- 	rtnl_lock();
--	kfree(p->perfect);
-+	if (p->perfect)
-+		tcindex_free_perfect_hash(p);
- 	kfree(p);
- 	rtnl_unlock();
+-	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
+-		    DP83822_WOL_SECURE_ON;
+-
+-	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
+-				  MII_DP83822_WOL_CFG, value);
++	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_CFG,
++				  DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
++				  DP83822_WOL_SECURE_ON);
  }
+ 
+ static int dp83822_read_status(struct phy_device *phydev)
 -- 
-2.32.0
+2.30.2
 
