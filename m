@@ -2,130 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4343CC08A
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 03:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1942D3CC08E
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 03:42:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232457AbhGQBm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Jul 2021 21:42:57 -0400
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:53472 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231772AbhGQBmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Jul 2021 21:42:55 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=chengshuyi@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0Ug.Dp-t_1626485996;
-Received: from B-39YZML7H-2200.local(mailfrom:chengshuyi@linux.alibaba.com fp:SMTPD_---0Ug.Dp-t_1626485996)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 17 Jul 2021 09:39:57 +0800
-Subject: Re: [PATCH bpf-next v4 3/3] selftests/bpf: Switches existing
- selftests to using open_opts for custom BTF
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-References: <1626180159-112996-1-git-send-email-chengshuyi@linux.alibaba.com>
- <1626180159-112996-4-git-send-email-chengshuyi@linux.alibaba.com>
- <CAEf4Bza3X410=1ryu4xZ+5ST2=69CB9BDusBrLMX=VSsXtnuDQ@mail.gmail.com>
-From:   Shuyi Cheng <chengshuyi@linux.alibaba.com>
-Message-ID: <7400a2b2-1e1e-0981-3966-43492305534c@linux.alibaba.com>
-Date:   Sat, 17 Jul 2021 09:39:56 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
+        id S238132AbhGQBnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Jul 2021 21:43:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56852 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233418AbhGQBnB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Jul 2021 21:43:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id E50C9613E7;
+        Sat, 17 Jul 2021 01:40:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626486005;
+        bh=VmPD4VCnTGcI/KQ6Ooa+3kL4WHvnMkvF5xAw57E7e+U=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=LPWRJ0JWXdLR2QxWH6N2VSPxNyLCsdNwNLSWaRsi97F5I+cCBBmDEyEpCcbG/378m
+         3589hdRV1CPoWSxQ+suhjwc+ucoQ2q8sIz4C6u/wEjpv0jQByytABxPEqDnOyc/IPr
+         pRb8jlKcUAdiQwP2kNFimMooUPTNorSV7XmiV5VfsMiCXI4Spdgz4t78rbQsDH8b63
+         PDzQvctjZH4LhBfE11+irbVUjvCisaiiTfE5p0kz7Bp3RLzdekyFMH79zOc6+jqk0G
+         EOWRnhI8FXYPtLwvQvp0eq9exMNNu0hQ3GsgL1tFOrhal6OZz9L3UkktiJYTMWBCtw
+         Rge2gwPdzapYQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D7BBB60A23;
+        Sat, 17 Jul 2021 01:40:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza3X410=1ryu4xZ+5ST2=69CB9BDusBrLMX=VSsXtnuDQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] vmxnet3: upgrade to version 6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162648600587.17582.8823440401089158287.git-patchwork-notify@kernel.org>
+Date:   Sat, 17 Jul 2021 01:40:05 +0000
+References: <20210716223626.18928-1-doshir@vmware.com>
+In-Reply-To: <20210716223626.18928-1-doshir@vmware.com>
+To:     Ronak Doshi <doshir@vmware.com>
+Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On 7/17/21 4:27 AM, Andrii Nakryiko wrote:
-> On Tue, Jul 13, 2021 at 5:43 AM Shuyi Cheng
-> <chengshuyi@linux.alibaba.com> wrote:
->>
->> This patch mainly replaces the bpf_object_load_attr of
->> the core_autosize.c and core_reloc.c files with bpf_object_open_opts.
->>
->> Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
->> ---
->>   .../selftests/bpf/prog_tests/core_autosize.c       | 22 ++++++++---------
->>   .../testing/selftests/bpf/prog_tests/core_reloc.c  | 28 ++++++++++------------
->>   2 files changed, 24 insertions(+), 26 deletions(-)
->>
+On Fri, 16 Jul 2021 15:36:19 -0700 you wrote:
+> vmxnet3 emulation has recently added several new features which includes
+> increase in queues supported, remove power of 2 limitation on queues,
+> add RSS for ESP IPv6, etc. This patch series extends the vmxnet3 driver
+> to leverage these new features.
 > 
-> So I applied this, but it's obvious you haven't bothered even
-> *building* selftests, because it had at least one compilation warning
-> and one compilation *error*, not building test_progs at all. I've
-> noted stuff I fixed (and still remember) below. I understand it might
-> be your first kernel contribution, but it's not acceptable to submit
-> patches that don't build. Next time please be more thorough.
-> 
-
-I'm very sorry, it was my fault. Although I learned a lot from libbpf, 
-there is still a lot to learn and improve. Thank you very much for your 
-advice and the very powerful libbpf.
-
-regards,
-Shuyi
-
-> [...]
-> 
->>
->> -       load_attr.obj = skel->obj;
->> -       load_attr.target_btf_path = btf_file;
->> -       err = bpf_object__load_xattr(&load_attr);
->> +       err = bpf_object__load(skel);
-> 
-> This didn't compile outright, because it should have been
-> test_core_autosize__load(skel).
-> 
->>          if (!ASSERT_ERR(err, "bad_prog_load"))
->>                  goto cleanup;
->>
->> diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
->> index d02e064..10eb2407 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
->> @@ -816,7 +816,7 @@ static size_t roundup_page(size_t sz)
->>   void test_core_reloc(void)
->>   {
->>          const size_t mmap_sz = roundup_page(sizeof(struct data));
->> -       struct bpf_object_load_attr load_attr = {};
->> +       struct bpf_object_open_opts open_opts = {};
->>          struct core_reloc_test_case *test_case;
->>          const char *tp_name, *probe_name;
->>          int err, i, equal;
->> @@ -846,9 +846,17 @@ void test_core_reloc(void)
->>                                  continue;
->>                  }
->>
->> -               obj = bpf_object__open_file(test_case->bpf_obj_file, NULL);
->> +               if (test_case->btf_src_file) {
->> +                       err = access(test_case->btf_src_file, R_OK);
->> +                       if (!ASSERT_OK(err, "btf_src_file"))
->> +                               goto cleanup;
->> +               }
->> +
->> +               open_opts.btf_custom_path = test_case->btf_src_file;
-> 
-> This was reporting a valid warning about dropping const modifier. For
-> good reason, becyase btf_custom_path in open_opts should have been
-> `const char *`, I fixed that.
-> 
->> +               open_opts.sz = sizeof(struct bpf_object_open_opts);
->> +               obj = bpf_object__open_file(test_case->bpf_obj_file, &open_opts);
->>                  if (!ASSERT_OK_PTR(obj, "obj_open"))
->> -                       continue;
->> +                       goto cleanup;
->>
->>                  probe_name = "raw_tracepoint/sys_enter";
->>                  tp_name = "sys_enter";
+> Compatibility is maintained using existing vmxnet3 versioning mechanism as
+> follows:
+> - new features added to vmxnet3 emulation are associated with new vmxnet3
+>    version viz. vmxnet3 version 6.
+> - emulation advertises all the versions it supports to the driver.
+> - during initialization, vmxnet3 driver picks the highest version number
+> supported by both the emulation and the driver and configures emulation
+> to run at that version.
 > 
 > [...]
-> 
+
+Here is the summary with links:
+  - [net-next,1/7] vmxnet3: prepare for version 6 changes
+    https://git.kernel.org/netdev/net-next/c/69dbef0d1c22
+  - [net-next,2/7] vmxnet3: add support for 32 Tx/Rx queues
+    https://git.kernel.org/netdev/net-next/c/39f9895a00f4
+  - [net-next,3/7] vmxnet3: remove power of 2 limitation on the queues
+    https://git.kernel.org/netdev/net-next/c/15ccf2f4b09c
+  - [net-next,4/7] vmxnet3: add support for ESP IPv6 RSS
+    https://git.kernel.org/netdev/net-next/c/79d124bb36c0
+  - [net-next,5/7] vmxnet3: set correct hash type based on rss information
+    https://git.kernel.org/netdev/net-next/c/b3973bb40041
+  - [net-next,6/7] vmxnet3: increase maximum configurable mtu to 9190
+    https://git.kernel.org/netdev/net-next/c/8c5663e461e6
+  - [net-next,7/7] vmxnet3: update to version 6
+    https://git.kernel.org/netdev/net-next/c/ce2639ad6921
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
