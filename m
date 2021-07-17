@@ -2,102 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C86683CC675
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 23:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25FF63CC6AB
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 00:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234161AbhGQVW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 17:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
+        id S230265AbhGQWjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 18:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231542AbhGQVWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 17:22:25 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFCDC061762;
-        Sat, 17 Jul 2021 14:19:27 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id y3so3054573plp.4;
-        Sat, 17 Jul 2021 14:19:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+jXk6zmzrnQw9ffNBdfJ4IIggoXjoJjxUf/3qpD11FM=;
-        b=lZ85RRvWdiHLyZk/FTQPaej51raHhcDmst4zXVGHvqnjVYQgc8vt7VIo690pECsRrU
-         dV9/vOZIQDw7N6jv+2rkihMIvw+IAQqAi0NNMgaHPceCQaeKf9pPjf9uF3FX6n0NM9Xt
-         8mGuOUkuwfj8u0pwa/fiVmj5y/P7xWMFscDDyIZY1IGVWPK8Fa1TnVCS2trozV3obFFq
-         Fa2m8o9sfsfUdrzpCqYk49qef8mEEBCpZj4uaSgyc+ToW3lJIaQQZ616fZxJ8a1Q1r02
-         C2RvuWdwZcY471QgYUI+Nc0+7ncAZQHocCnu820dHvdgC8jvT7CMp3s9l4/FWMbfV8Dy
-         s4jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+jXk6zmzrnQw9ffNBdfJ4IIggoXjoJjxUf/3qpD11FM=;
-        b=tIp6z7NI9sZLZ+q3tvomqTfCjyycr81lTjryI7A76/97fWMQrG4YJZOOcZJkmUn3rZ
-         SEKguDGvANpTbFqgc1QiGFSqin9BllBGQ1jUn3Nsf3oo8HudTg+om2cLBKu9QBvKGuc7
-         of3C8bp65CVaq4U5oI4QL7j1At8PxurKLcg5DEBvEQ9mz11N/HP5BBlCPaeB/aghOIoU
-         /QZDu32d1lY9p/C5p8c0kmAg0KHzpr8w6Axg2Xf8gpG8oX3UPNBYNbH2Gd0vN7N6ylpH
-         fGPX2X8/6pfXUSls1EX6Q1yymeIhR8ZmvxKPaLSEAbqux7lTpQTxJPz3Q9kRq2wQIfLJ
-         UcJA==
-X-Gm-Message-State: AOAM531qj54RYbx+fOMPbVRs2dTNccUSkPbLxBYdskaaoUJ7N2uTr36W
-        3Occ0Yi/koOA2wX3NdUs4UYwV6cqo4sEeg==
-X-Google-Smtp-Source: ABdhPJw2f+RKa6yzFAdWcS4kVb5/z5KVsmktXp51J66U015t3yUd2SCv4YaEC1tDb3CwQ6xkNo4qCg==
-X-Received: by 2002:a17:902:cec7:b029:12a:ece5:6abf with SMTP id d7-20020a170902cec7b029012aece56abfmr13150666plg.50.1626556766666;
-        Sat, 17 Jul 2021 14:19:26 -0700 (PDT)
-Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id w123sm14396460pfb.109.2021.07.17.14.19.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Jul 2021 14:19:26 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCH net] sctp: trim optlen when it's a huge value in sctp_setsockopt
-Date:   Sat, 17 Jul 2021 17:19:19 -0400
-Message-Id: <0871af1e816f5239aaf546fcbc24af31aeec780f.1626556759.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229634AbhGQWjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 18:39:41 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A39BC061762
+        for <netdev@vger.kernel.org>; Sat, 17 Jul 2021 15:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:Subject:From:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=jw5jegpVzEx6W0IuTDo8ewoGY57Mg8QE/qYuKyKZD9Q=; b=qWYhr5PpjrrtUpue4cdgCyppBy
+        q7XrI+YaB8tvOCE5sKh/b3xoRihID/lBJRw4tfMwh3YC6NJVTPDo8nsUxcIYzeney109qu5dXgWtN
+        RzX/Wjh63aPdu33oAsYnUDYCaBnVLyuGNi+Qe0TADvQN+gJPc375dqh3694+bNrLsJCW9Xv2yilVf
+        V0aAwWDXauxvJNhgX2TNFeNFM6CxPnVmE+bxnGiuvICl04n0OhSHDeY+ufwk3ZxqG8L1IzEE7w6Y1
+        eGwWbVp/DeTbTks2hUlklndb0zFvWJGSYCp0Y4caVteekwb8Zg8AWX06zJRPeDE0wTBg6jOO5yXlR
+        OX+nqMag==;
+Received: from [2602:306:c5a2:a380:20fe:9687:9f1f:1f76]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1m4sv9-000jV5-IN; Sat, 17 Jul 2021 22:36:31 +0000
+From:   Geoff Levand <geoff@infradead.org>
+Subject: Re: [PATCH v3 1/2] net/ps3_gelic: Add gelic_descr structures
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <cover.1625976141.git.geoff@infradead.org>
+ <e63dc0564b7c6e4f699c306bf36feb4bd9c30f26.1625976141.git.geoff@infradead.org>
+ <20210711160330.Horde.YmbaUrNaGLYM4ADZvVr_gA1@messagerie.c-s.fr>
+Message-ID: <c0a78c3f-0934-bc29-147d-0b3e14efb70b@infradead.org>
+Date:   Sat, 17 Jul 2021 15:36:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210711160330.Horde.YmbaUrNaGLYM4ADZvVr_gA1@messagerie.c-s.fr>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit ca84bd058dae ("sctp: copy the optval from user space in
-sctp_setsockopt"), it does memory allocation in sctp_setsockopt with
-the optlen, and it would fail the allocation and return error if the
-optlen from user space is a huge value.
+Hi Christophe,
 
-This breaks some sockopts, like SCTP_HMAC_IDENT, SCTP_RESET_STREAMS and
-SCTP_AUTH_KEY, as when processing these sockopts before, optlen would
-be trimmed to a biggest value it needs when optlen is a huge value,
-instead of failing the allocation and returning error.
+On 7/11/21 7:03 AM, Christophe Leroy wrote:
+> 
+> Your patch has a lot of cosmetic changes. Several of them are just wrong. The other ones belong to another patch. This patch should focus only on the changes it targets.
+> 
+> Your patch is way too big and addresses several different topics. Should be split in several patches.
+> 
+> I suggest you run checkpatch.pl --strict on your patch
+> 
 
-This patch is to fix the allocation failure when it's a huge optlen from
-user space by trimming it to the biggest size sctp sockopt may need when
-necessary, and this biggest size is from sctp_setsockopt_reset_streams()
-for SCTP_RESET_STREAMS, which is bigger than those for SCTP_HMAC_IDENT
-and SCTP_AUTH_KEY.
+Thanks for the review.  I'll create a follow up patch set with
+your comments in mind.
 
-Fixes: ca84bd058dae ("sctp: copy the optval from user space in sctp_setsockopt")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/sctp/socket.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index e64e01f61b11..6b937bfd4751 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -4577,6 +4577,10 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 	}
- 
- 	if (optlen > 0) {
-+		/* Trim it to the biggest size sctp sockopt may need if necessary */
-+		optlen = min_t(unsigned int, optlen,
-+			       PAGE_ALIGN(USHRT_MAX +
-+					  sizeof(__u16) * sizeof(struct sctp_reset_streams)));
- 		kopt = memdup_sockptr(optval, optlen);
- 		if (IS_ERR(kopt))
- 			return PTR_ERR(kopt);
--- 
-2.27.0
-
+-Geoff
