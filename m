@@ -2,109 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0C43CC341
-	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 14:34:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452E73CC388
+	for <lists+netdev@lfdr.de>; Sat, 17 Jul 2021 15:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbhGQMhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Jul 2021 08:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S233711AbhGQNEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Jul 2021 09:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbhGQMhu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 08:37:50 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61704C06175F
-        for <netdev@vger.kernel.org>; Sat, 17 Jul 2021 05:34:54 -0700 (PDT)
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 94AC781E47;
-        Sat, 17 Jul 2021 14:34:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1626525292;
-        bh=mbbABsfRX2M7m8snhL/DdKRn1l1CK0cUr2Wdi+U9OrY=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=fXXlDorZ9UF7KPo73jtGIi4kIbXe4bPzhbIUgunwDBBL1II3QpYMJOM+5vQ4CAUUB
-         fmzfFDXFbtXRahVhOPf2ei2NZekCCXKLMy5XZ/e/NyFJE2zVQk3aVqGiUz0YVwfkMh
-         kAe9PBcJ0n+s0ilzom/rZ/BLHyZO7LKkCq61kLr7U/kd3RN0DwW/DcZ9ndpubJ20E5
-         HpDk/tt9NGGZIjRrIfVQFk1ODOgpqnNCRuA1AV2614kunbD3bdqVG7TApw28JOM9MF
-         gyXvGYfySgkE2AEzMf0w5B2qQyEEHSXMMKhhHnqxNevN9L2+IydXeUYAruBaC1HiY5
-         9gbJnyxE+sCKg==
-Subject: Re: [PATCH] net: phy: Add RGMII_ID/TXID/RXID handling to the DP83822
- driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20210716182328.218768-1-marex@denx.de> <YPHpILw+p2l6cKR9@lunn.ch>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <17e8b1b8-8472-48e4-af02-8a1dc43e9601@denx.de>
-Date:   Sat, 17 Jul 2021 14:34:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        with ESMTP id S229746AbhGQNEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Jul 2021 09:04:46 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A54C06175F;
+        Sat, 17 Jul 2021 06:01:48 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id dj21so16729902edb.0;
+        Sat, 17 Jul 2021 06:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AE0vk+OWuD10Z0EqVPnQQ5x0ytDuchGXP77/oS4iF8w=;
+        b=Gg1y0YAKvo0Fc2m2o1vuYshTnVDoA7AEjImeWOohdIoi86RJZkQ9EGTCNygubW7UC0
+         iWF3gHPbv+OvaA6L/VxSeru3cY8xFDX3AQtEzr2W30cIN0JDF1Uo/IwO1AgZQ6unYQet
+         /v5mHaAhdST8LsAcNoSt42YKdWLMXQAad+TtwKNhXVcfyXqu5b2j61dWRNxGJt4WuEb6
+         /aRUj2nfjXLymb/CFQuNKmrCZ7jx45a/CvHxfyDCpHPpoV3diEvtmPCDIOc5J/sRnhhL
+         89gECpkCFWK78McK6kEm3b+FdUvprUsVT7BaoKBMHDxdwAHArqlB/wzFq5l4Nv0j3r8g
+         iRlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AE0vk+OWuD10Z0EqVPnQQ5x0ytDuchGXP77/oS4iF8w=;
+        b=DTln/tiwBfDlMKlBXpyWpRjLhVWNBAN6bTRXI57O6A4yxQsD4m/JRngQ7coK7SOx7q
+         89rxYZZImvc2jSYeJR2QgBGIzDaLVQny4359sHqbxvYsiaeNUc8lVW4rHRNP8+pLFNj4
+         rPZge08IJ2IvDZoF+yepUbPhAnw9pQExi61deEHpN0/KszA3eqYodJvEQ2lWjRuBPxIp
+         hxDjgip7t/KD/lnofQHopLBRk8/EEBGJYb61JudPHcAsGoBoBK9SxPtUN+xMG+yLqRbh
+         URBfpmodc9v4Ii3pbHfPn3BG66IWHRxE2RbfGV6ULhRDr4ayB41XgC2tAUx9X57bMr3e
+         8qMQ==
+X-Gm-Message-State: AOAM531tQs39uvnIT2ZFiPcktruMtL82Vd41zud7SduG9L2NqHsnfxBX
+        hL1xRUQB28p1iC6CdDdzAwI=
+X-Google-Smtp-Source: ABdhPJwwTfY3aDydN4vgqwZ+1IdTA9/4VbUMf3AZZ5O7FnIURRVd000FJGicxnOWF91vKjlOHvQaQA==
+X-Received: by 2002:aa7:cfcf:: with SMTP id r15mr21810760edy.161.1626526905205;
+        Sat, 17 Jul 2021 06:01:45 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id e24sm3857192ejx.100.2021.07.17.06.01.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Jul 2021 06:01:44 -0700 (PDT)
+Date:   Sat, 17 Jul 2021 16:01:42 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Eric Woudstra <ericwouds@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [PATCH] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Message-ID: <20210717130142.xm7ect5sc6i6hrii@skbuf>
+References: <20210716153641.4678-1-ericwouds@gmail.com>
+ <20210716210655.i5hxcwau5tdq4zhb@skbuf>
+ <eda300a2-4e36-4d0c-8ea8-eae5e6d62bea@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <YPHpILw+p2l6cKR9@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.2 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eda300a2-4e36-4d0c-8ea8-eae5e6d62bea@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/16/21 10:16 PM, Andrew Lunn wrote:
-> On Fri, Jul 16, 2021 at 08:23:28PM +0200, Marek Vasut wrote:
->> Add support for setting the internal clock shift of the PHY based on
->> the interface requirements. RX/TX/both is supported for RGMII.
->>
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> Cc: Florian Fainelli <f.fainelli@gmail.com>
->> Cc: Dan Murphy <dmurphy@ti.com>
->> Cc: David S. Miller <davem@davemloft.net>
->> ---
->>   drivers/net/phy/dp83822.c | 37 +++++++++++++++++++++++++++++++++----
->>   1 file changed, 33 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
->> index f7a2ec150e54..971c8d6b85d2 100644
->> --- a/drivers/net/phy/dp83822.c
->> +++ b/drivers/net/phy/dp83822.c
->> @@ -72,6 +72,10 @@
->>   #define DP83822_ANEG_ERR_INT_EN		BIT(6)
->>   #define DP83822_EEE_ERROR_CHANGE_INT_EN	BIT(7)
->>   
->> +/* RCSR bits */
->> +#define DP83822_RGMII_RX_CLOCK_SHIFT	BIT(12)
->> +#define DP83822_RGMII_TX_CLOCK_SHIFT	BIT(11)
->> +
->>   /* INT_STAT1 bits */
->>   #define DP83822_WOL_INT_EN	BIT(4)
->>   #define DP83822_WOL_INT_STAT	BIT(12)
->> @@ -326,11 +330,36 @@ static irqreturn_t dp83822_handle_interrupt(struct phy_device *phydev)
->>   
->>   static int dp8382x_disable_wol(struct phy_device *phydev)
->>   {
->> -	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
->> -		    DP83822_WOL_SECURE_ON;
->> +	u16 val = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN | DP83822_WOL_SECURE_ON;
->> +
->> +	ret = phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
->> +				 MII_DP83822_WOL_CFG, val);
->> +	if (ret < 0)
->> +		return ret;
->> +
->    
->> -	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
->> -				  MII_DP83822_WOL_CFG, value);
->> +	return ret;
->>   }
-> 
-> This change seems to have nothing to do with RGMII delays.  Please
-> split it out, so it does not distract from reviewing the real change
-> here.
-> 
-> It also seems odd you are changing RGMII delays when disabling WOL?
-> Rebase gone wrong?
+On Sat, Jul 17, 2021 at 10:09:53AM +0200, Eric Woudstra wrote:
+> You are right now there is a problem with vlan unaware bridge.
+>
+> We need to change the line to:
+>
+> if (vid > 1) reg[1] |= ATA2_IVL;
+>
+> I have just tested this with a vlan unaware bridge and also with vlan
+> bridge option disabled in the kernel. Only after applying the if
+> statement it works for vlan unaware bridges/kernel.
 
-Rebase gone wrong, please drop.
+Ok, make sure to read Documentation/process/submitting-patches.rst for
+how to add a Fixes: tag to your patch, Documentation/networking/netdev-FAQ.rst
+for how to set the subject-prefix to "PATCH net" in your git-send-email command,
+and send a fixup patch.
