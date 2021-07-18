@@ -2,99 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FAA33CCA6F
+	by mail.lfdr.de (Postfix) with ESMTP id DC28D3CCA70
 	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbhGRTjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
+        id S230486AbhGRTjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbhGRTjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:47 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B72BEC061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 62so16684157pgf.1
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
+        with ESMTP id S229907AbhGRTjs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:48 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC909C061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id b12so14384191pfv.6
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=zvFqJiheYZM0wYQAJxsIO1/nIQ8GNvR84HlGFD9wv+Q=;
-        b=A46L0NkkhLAi92T6waAKOgx5ltmu/SY7P46G0hQBK+C5tlQDP5kdWorhwjjtvSf/yL
-         DKHH8BnV6hl0cOt0WkzspIM0lmReNuMkR4NHCLOL3B2CfhmMC+v3paj6Fu4XACJn0yw0
-         Hy67urt4a3sRLi1qRFoHXs4Vch4Ze1iSI5KQY=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=tQCFT/SW7WEYLRMyjRSIWRnYjk78ITEOBogWTZ1e1hI=;
+        b=fYKATZdxqD/94YX5p08BOzOk7+CnX7h+NRd14xzNHS8SxrzKHEgAohf/IKt/AhZgO2
+         QfZioZGuDKLVWBLTk3iSgPhgB8Y7L8JbWYw+CBeF3l4Axnl9EGfZE7RtrK1+QQeRX7KI
+         ZQKR1cUwdIU8Okzv9ZvkAN6+AL2WOKTunMc40=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zvFqJiheYZM0wYQAJxsIO1/nIQ8GNvR84HlGFD9wv+Q=;
-        b=bbucfiPVb+MIAcYwvYCwH4AgKpzaIrDPONvPnB3paH1t0Fe8ankDsumcKQjkCks4N2
-         M4szxM74lpqwXCafd/YhvzdYQJoDyM1P4uDh3ouTFaGul2AUUUWTgEkJ1Ft9B1HF1s9j
-         LM7QUCGvT1bc7Y3q92JLjKcoEf4amnwPmATzTZIJkB9upGx8+lvXaxjhRqSxj5mTrn01
-         n/nczfF4kj/mWxnA8bzM/tYUUZu9p/NOBfg8xn+9ioQomISWkrkwoprrS1xT/IkV0MF8
-         m3BQXil21eytU4TpTEs0qMRbnVHV9KlMhnydFwSDGs3MoWzT/EDAbEPCj/Q4A/z+ylGG
-         y4LQ==
-X-Gm-Message-State: AOAM5304IreprIyCPyyvdgAv7kMf3LOz/reRxwrf1emWb4yKNIj0e9l1
-        BHNvY6w4iMiaCSHa4EAYgkJuOw==
-X-Google-Smtp-Source: ABdhPJxH034z8Lwuv/JpFcNWXB5okj70V9UciDzEpTX0vW7oqQMUmxtsIJOhqsrXMZnrvTGyn/EhoQ==
-X-Received: by 2002:a62:5285:0:b029:2e9:e0d5:67dc with SMTP id g127-20020a6252850000b02902e9e0d567dcmr22286951pfb.79.1626637007876;
-        Sun, 18 Jul 2021 12:36:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=tQCFT/SW7WEYLRMyjRSIWRnYjk78ITEOBogWTZ1e1hI=;
+        b=qNcWr5tx+QJ8/bRumiJDooypR/adQFYir/HBEB4jygY7cjI8mdH1jbAhmPEkFhT5dP
+         g06rZqqT1FHeJiqj971pcaGoMlp/vOx3Z0RVxC48oAHVQzgzX4fe/DcmlfN59HFcRXId
+         UyOWfQuBI496jyBgwHRIdJH5k3VZEZsIWKIRuECX81OHW4JcLmDy017BJcyP9+EFYXHX
+         ky8FhXRsQYwhETOudVYFwaOvFq0qee7ZmmOV+cAvYuv/tMsXIGv9cn0hX3UutPsGKwEc
+         pi/gYabRA+vPUxTU7vKrHo9Mt9cxL8CLcQsT7fqNXT8fXustvaIpYVmsaprmqhSgUGsy
+         yOFQ==
+X-Gm-Message-State: AOAM532vICe8cnH5VpYRS43kHXte2aF6HnCpfkr9uCo87tI2rejsscJ8
+        7Q7aohV7uS6kJ44IYTIBCiQe4A==
+X-Google-Smtp-Source: ABdhPJy0oZtEZKtnUwZ8PXtW5DCzwu6FsvfTzHaIGhJ0xqC70nCOPRQiOto7PhBXEwtwVRUjLbMGeQ==
+X-Received: by 2002:aa7:8b4b:0:b029:30c:1be6:b92a with SMTP id i11-20020aa78b4b0000b029030c1be6b92amr21845065pfd.56.1626637008741;
+        Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.46
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:47 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 0/9] bnxt_en: Bug fixes
-Date:   Sun, 18 Jul 2021 15:36:24 -0400
-Message-Id: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 1/9] bnxt_en: don't disable an already disabled PCI device
+Date:   Sun, 18 Jul 2021 15:36:25 -0400
+Message-Id: <1626636993-31926-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
+References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001146f605c76af163"
+        boundary="00000000000021104f05c76af1f8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001146f605c76af163
+--00000000000021104f05c76af1f8
 
-Most of the fixes in this series have to do with error recovery.  They
-include error path handling when the error recovery has to abort, and
-the rediscovery of capabilities (PTP and RoCE) after firmware reset
-that may result in capability changes.
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Two other fixes are to reject invalid ETS settings and to validate
-VLAN protocol in the RX path.
+If device is already disabled in reset path and PCI io error is
+detected before the device could be enabled, driver could
+call pci_disable_device() for already disabled device. Fix this
+problem by calling pci_disable_device() only if the device is already
+enabled.
 
-Edwin Peer (1):
-  bnxt_en: reject ETS settings that will starve a TC
+Fixes: 6316ea6db93d ("bnxt_en: Enable AER support.")
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Kalesh AP (1):
-  bnxt_en: don't disable an already disabled PCI device
-
-Michael Chan (5):
-  bnxt_en: Refresh RoCE capabilities in bnxt_ulp_probe()
-  bnxt_en: Add missing check for BNXT_STATE_ABORT_ERR in
-    bnxt_fw_rset_task()
-  bnxt_en: Validate vlan protocol ID on RX packets
-  bnxt_en: Move bnxt_ptp_init() to bnxt_open()
-  bnxt_en: Fix PTP capability discovery
-
-Somnath Kotur (2):
-  bnxt_en: fix error path of FW reset
-  bnxt_en: Check abort error state in bnxt_half_open_nic()
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 85 ++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c | 10 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 24 ++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  1 -
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |  9 +-
- 5 files changed, 83 insertions(+), 46 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index f56245eeef7b..fdfb75a1608d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -13436,7 +13436,8 @@ static pci_ers_result_t bnxt_io_error_detected(struct pci_dev *pdev,
+ 	if (netif_running(netdev))
+ 		bnxt_close(netdev);
+ 
+-	pci_disable_device(pdev);
++	if (pci_is_enabled(pdev))
++		pci_disable_device(pdev);
+ 	bnxt_free_ctx_mem(bp);
+ 	kfree(bp->ctx);
+ 	bp->ctx = NULL;
 -- 
 2.18.1
 
 
---0000000000001146f605c76af163
+--00000000000021104f05c76af1f8
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -165,13 +164,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIP4Pj9s5CETIkET5SIyppYUwkrneUr08
-+SXifcLTw/D2MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY0OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBZtCeIWeGcFuXBmZfAZYJjKLsv/Zrct
+DrdLOVg0EepcMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB4BnslXf/cpMaVOlD7QEuPFCuX0vfOqvt0ujWB2N/1zPoXciI4
-fkb5IYUZ8pEHpdF+qVEfSXtsdfNUUNREu9U5Ipq8vtJsIiMyPQ8rS5sfbraGLdfH0uL8dNhezTcA
-+egOQ1hBWEIrd5J2eOjaTpFFkkCTdYB4CuF8txBEBzLYP0Waja2K1L/Cl7hMhaNPT3y+RfyIMsN9
-3EuTPjxROpW8DxNULNiS0lLDucu0Q2S+5A1MKSMnpyMqFngl5qeBKhDWp5vrPEoSE0oTJyZTehQy
-1ZnCDzXi3HPdBfsXbzPMMJe2js5dCkwRQlYSGcMNSJh2SLdAbYN3HVM/Pe07x4Pg
---0000000000001146f605c76af163--
+ATANBgkqhkiG9w0BAQEFAASCAQBu6NO5KZ8sXa1z/i51TeESkY0AWiEL6MTAAUGBzdJ3jKCKO5Bw
+DF6mYk6Sq+YGjc6H/rwfuPsTWbaAOzarOmr9MUWh83aEv0wnK3hcbvpiM58y+ybLLMGcuLHJR95s
+xO9dew8t3gTY1KNEamkofnVwTSEkE+8u2W1brZbCCP5ibiFWtza7ILkBrZ3+Rm3Az9jE2s0z11H9
+XMKyo7P+RKGBdWkR0KKjHM65yDsBbhAbe3oZCJK/r5FgZgG9cqZ9Nlv4IeLTtxCauhehKrsHZU9m
+i4RHPYVD2fCd4VpZPo8BwvBlpnPzu3P9sb6z1Ym2mzt73zL6EAdJgXcSTA4Ox9Nv
+--00000000000021104f05c76af1f8--
