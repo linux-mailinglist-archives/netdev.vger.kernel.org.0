@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81DED3CC857
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 11:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D40DF3CC86F
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 12:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231555AbhGRJg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 05:36:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46874 "EHLO mail.kernel.org"
+        id S232358AbhGRKlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 06:41:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229578AbhGRJgz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 05:36:55 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EAFB0611AC;
-        Sun, 18 Jul 2021 09:33:56 +0000 (UTC)
+        id S230461AbhGRKlH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Jul 2021 06:41:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A106610D1;
+        Sun, 18 Jul 2021 10:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626600837;
-        bh=C9vs+jm4iqSIHTHVlZgj2Q7epuO0aeP6olaAwjSBvhI=;
+        s=k20201202; t=1626604689;
+        bh=H/blmi1bcoaBh+CBZ8vsfGLxUAhzjxY/70q/vEpigzk=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dJ1X5RBlw4eqiXH2P1aAqFLMWuHkwaj4M9MuyYMDs6vXzKp39r1zb7InpGrpOX0U1
-         Aa/fII51i417UZdBSf3cqgpWnkYJe1ZdtqtHQxwSJcSxpNYH5PwjzPmzpYmoIvTbWs
-         nS6jsTUqzvehurN2BJHF2UWSlUIrsAD/Xc2vVGcEhd8ApQkDyeuy0Xq6kSx2bE1N1w
-         CtbgZd/6Y4FnpcU8eWC7ubJu8xhoflPWAlQr9UYWk1U1fP1bKNuBRj25Hi3M7RCIuw
-         rgk1b3Xf9FwZ77IocmY9p2Vew4dynzKmgvp5IayMhprK3xK4pB+oa7xdKMdzrxBHZW
-         FAd5a+ePkKDPw==
-Date:   Sun, 18 Jul 2021 12:33:54 +0300
+        b=E0i403PskP7q7iy1j1Um8HM64r8W3WeJgW7zAUWeO49frfywx0eNRyWw63v1ct3yr
+         KttkixCQNpjDjEdWgFvyLdGRNUOW10UiJaJA/CL/POIyxJPLTWUZKDssYBs2iN3Xm+
+         7X+LKVgetMyVn1mpmOJJgyeNHinp+VQlqpWnnnn9qoa1R4wH1wUJ3Fksu1r63sTkif
+         6lhFnuNqKmcahpdyIM58VzZGH3lvkLXCQ06jvE9DQ+HYnbEK8znzN2j89SR4jxDjIU
+         4ensedpSQeWehuN8KDL+D+OvIzQySyUsbPgmTYQ4T3kKb4tME8wa67Z35TSrS/NGEr
+         5DvItXSlbVNuQ==
+Date:   Sun, 18 Jul 2021 13:38:05 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     saeedm@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/mlx5: Fix missing error code in
- mlx5_devlink_eswitch_inline_mode_set()
-Message-ID: <YPP1glxuO+qJKx9v@unreal>
-References: <1626432728-118051-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
+        Lior Nahmanson <liorna@nvidia.com>,
+        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH rdma-next v1 0/3] Add ConnectX DCS offload support
+Message-ID: <YPQEjUIbviO74e6X@unreal>
+References: <cover.1624258894.git.leonro@nvidia.com>
+ <20210716154208.GA758521@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1626432728-118051-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <20210716154208.GA758521@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 06:52:08PM +0800, Jiapeng Chong wrote:
-> The error code is missing in this code scenario, add the error code
-> '-EINVAL' to the return value 'err'.
+On Fri, Jul 16, 2021 at 12:42:08PM -0300, Jason Gunthorpe wrote:
+> On Mon, Jun 21, 2021 at 10:06:13AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Changelog:
+> > v1:
+> >  * Rephrase commit message of second patch
+> > v0: https://lore.kernel.org/linux-rdma/cover.1622723815.git.leonro@nvidia.com
+> > 
+> > 
+> > This patchset from Lior adds support of DCI stream channel (DCS) support.
+> > 
+> > DCS is an offload to SW load balancing of DC initiator work requests.
+> > 
+> > A single DC QP initiator (DCI) can be connected to only one target at the time
+> > and can't start new connection until the previous work request is completed.
+> > 
+> > This limitation causes to delays when the initiator process needs to
+> > transfer data to multiple targets at the same time.
+> > 
+> > Thanks
+> > 
+> > Lior Nahmanson (3):
+> >   net/mlx5: Add DCS caps & fields support
+> >   RDMA/mlx5: Separate DCI QP creation logic
+> >   RDMA/mlx5: Add DCS offload support
 > 
-> Eliminate the follow smatch warning:
-> 
-> vers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:3083
-> mlx5_devlink_eswitch_inline_mode_set() warn: missing error code 'err'.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> index 7579f34..b38b6c1 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-> @@ -3079,8 +3079,10 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
->  
->  	switch (MLX5_CAP_ETH(dev, wqe_inline_mode)) {
->  	case MLX5_CAP_INLINE_MODE_NOT_REQUIRED:
-> -		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE)
-> +		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE) {
-> +			err = -EINVAL;
+> Okay, can you update the shared branch?
 
-This change is wrong, it should be err = 0;
-and please add Fixes line.
-Fixes: 8e0aa4bc959c ("net/mlx5: E-switch, Protect eswitch mode changes")
+Pushed, 96cd2dd65bb0 ("net/mlx5: Add DCS caps & fields support")
 
->  			goto out;
-> +		}
->  		fallthrough;
->  	case MLX5_CAP_INLINE_MODE_L2:
->  		NL_SET_ERR_MSG_MOD(extack, "Inline mode can't be set");
-> -- 
-> 1.8.3.1
+Thanks
+
 > 
+> Thanks,
+> Jason
