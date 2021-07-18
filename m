@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D173CCB1D
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 23:47:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD453CCB1F
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 23:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbhGRVtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 17:49:21 -0400
-Received: from mail-eopbgr140071.outbound.protection.outlook.com ([40.107.14.71]:24552
+        id S233528AbhGRVtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 17:49:24 -0400
+Received: from mail-eopbgr140043.outbound.protection.outlook.com ([40.107.14.43]:15454
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232582AbhGRVtO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 17:49:14 -0400
+        id S233265AbhGRVtU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Jul 2021 17:49:20 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TOdHdQfMYEzudGzLDZEsihfv92yVgve3gemMQi2kJ8K6Cdb2yx8WqKonuemyltU9H/JJiVnJZ+SwW/wzTofmt2AXoMfxZa88cMHKxc1/Cux/IwZsgussgaMJtZWuOp+u59+sl2RxB2U53PBjj/cTOntQ03ugb2NA6NwFgDCNOtBkoSXnyO1xkHgA3m4aUXGcokYpWdFHzVPZE+YkLn3Gej/uhw7hBFFJZGq35xXK+g2hU5iGqxk0YBco9XwgBrf8MEh5IYkGOpNaUJ27MGz91HmMnUshHwXnevsd0YeFB9g/ke+IaYFlfgtnh8zx3PFljdiznbekZRUx2/2giCe5oA==
+ b=VMAaUJcU5QfxqVsIfA62YKEnoZKdfhuDQN9kqQyiA6l9UCFDbPjLaFT9n2MqcbWIyVyWu4hb/zuFA3ut34etmMUpRPZqEF656lIn466KCMI2NHlP2QGsZ3sstnaKcEeL3LDhjVXGzjt51FxI2tKIuv3R/eOI7dlFGQ886EPySUo+iE25HSzDQeO6SOh3/NwQinLgGm91STavSPvLkZm+tJ1J8B6SPuTmlhgz9WrWO5CUIF53CjHkTunWbSF1+LteXoh3eTKZeJuWvRH7c8zRSyqRDOlJnqi0kf7kGJ+XOVQESIcOrGTeTORa+s2gHr5VUIcJOQayz5ZMYSsOUl5lnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O7kipnqE2/cIM210xLYQxhZcLux8caCuodjFgWG/qc8=;
- b=SPsfM85KqI7f63dQdTdby2N6UisJi8Qh960DSGiq8Gouej21Hl7Uc2EPRPQ02KxtBiknvnoem635uYO2DhuVU+8o5S/UulEcYLtlQ3RmwjyDmU6ZgWbmX4D47Hr8kYXElntNcp8zYWOYNegkX/VKCN/XLBG1+HPAdQ0yik/BqMs2P9VGV/wUIH7XSuQR3tKHI27XVy7Rf8XHLRJyIkX+1y9tRrcYvDDlqSYJ6McULoSRiERBq76+GV+yMhYL0KcIVqGwHI8n8+kzwHY0ZWU/wMR4huBaIiMrIkXU8Pn4EbXqHNeNgtjaktr1LTLVvTRHiz1EJLRK6YGPGeMis1ONXg==
+ bh=bvbeIVZl88ToICjHAmeKYYP1j/OuFxc9fvRDjVuotjE=;
+ b=Vy73m0cNetEFBrQbWS/piXB3+566JMIyy/y9sQNN1Si/Wy9bhETipz3loAuGrkdahcuNqKfSERoCIZj+iFWafskLmjOFbzR5YzI1ZOEmxsm2ntvg+1zFvV7ZUJ4Bkk/vOsGPEGg+lV5mi86Rd9oL2zN3LHVHMaLTzGDdXTAjCwGMfG2hJWphIhl4l7RxlR8vMuhAnGiUcJqaGSnu5yXCSulODQncDmR3dqtYpWijkCggkBWzerm+2O5G1y2zW3m75YuY6U06uUZZxumoySv6/VH8yrCYSO2hrYEWaNueVJJFr66P8aJFe6dyTeuQhFEWCkYQNPSOa214j0n/1duuPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O7kipnqE2/cIM210xLYQxhZcLux8caCuodjFgWG/qc8=;
- b=FnIM+/eH3ACF8z8N4INRwFu1dS3HuMtjhx/IE6UIFtgjxRczoKHM2DPKMUR9A7SI+WCFokTi5WyyblOy7iPyVh5MWqKJAXwYd7Dj32N7sHkBo2weghLrVujTb7Ic8EfOev0bvvMpEAbJ/7D82CHR817yTDlLl++zmRUDXwzdlGU=
+ bh=bvbeIVZl88ToICjHAmeKYYP1j/OuFxc9fvRDjVuotjE=;
+ b=Sd4aeuSai407f7UpA0h3P78QAd+Ues01MzTqCmBudZ9q0/3vu0BjXabrYXHI1j/nl1TThmRvrpXJgdawJzntOFrMf5h/JMD3SW9WIRNhdTWomspOlGqwUx7FHwaoddO+tLNp3C+IDJldtHyKQ3cAbojqJdegLXNADDrTNhXDH6M=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB7325.eurprd04.prod.outlook.com (2603:10a6:800:1af::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Sun, 18 Jul
- 2021 21:46:12 +0000
+ 2021 21:46:13 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.032; Sun, 18 Jul 2021
- 21:46:12 +0000
+ 21:46:13 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -53,9 +53,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH v4 net-next 03/15] mlxsw: spectrum: refactor prechangeupper sanity checks
-Date:   Mon, 19 Jul 2021 00:44:22 +0300
-Message-Id: <20210718214434.3938850-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v4 net-next 04/15] mlxsw: spectrum: refactor leaving an 8021q upper that is a bridge port
+Date:   Mon, 19 Jul 2021 00:44:23 +0300
+Message-Id: <20210718214434.3938850-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
 References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
@@ -66,379 +66,111 @@ X-ClientProxiedBy: VI1PR0602CA0014.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by VI1PR0602CA0014.eurprd06.prod.outlook.com (2603:10a6:800:bc::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Sun, 18 Jul 2021 21:46:11 +0000
+Received: from localhost.localdomain (82.76.66.29) by VI1PR0602CA0014.eurprd06.prod.outlook.com (2603:10a6:800:bc::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Sun, 18 Jul 2021 21:46:12 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 21d0e14f-739a-42ab-629a-08d94a3575fe
+X-MS-Office365-Filtering-Correlation-Id: dfe0f57b-867a-4837-b7cd-08d94a35768f
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7325:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7325570266DEC8DDA31B0EEEE0E09@VE1PR04MB7325.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB7325101513C4D78E7B05CD90E0E09@VE1PR04MB7325.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:626;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D0Rqr0t4W8pSC0otOkg01efVvKvQr5ozC9r635vmjcFdPNOJMLsoalmoqBAH+c2tIUbnXwVzq1vf3NjfgaW+WVzPI3E6XThSh1FyV2PeBCsTW158fxf+U6qicPk0CVIp35x6JQqjPka0nh0RhRMJbzO/k0UgA9mj+JwiHNPuESt18k/n32WEkVpXh85zIy44T5HXWWb6jblNQ8RDY2gqlthEnLTIzIF9ZWZEwzT4r6WEvfOhloOlLsLoRBZ6ggDhVNEiy2PzigQu52PvmehiT77OvXKt0ACfT8GXh3b9SSstEhxRdJbWGc0ZxGoaZFiJH0ugIVP4hFamUE55UBG7XwQbFB+MAuw17bf5OVik4VH1pV3Tk18FzTXl1CV//SyvmY3qOEHA2MuzIlRgJVRfv8g/ycp0DGqtZYXRCnACCdMXs1WLdEgAT/RO1AY3GRSRiSeAnlgoFZbDrsTap7eorwHbqpqygin4fdSglU253U0C6OOAw445R1MbtTkxmJbaNF+r0aLdTqMopm/G3hEp6MwgBgpmUlYFxdIwDvlv768cGfEkyjiwui+GxpAxv3oi77QYRC/iEgfucLXyvglloA14fzBfLKXMpNOW4t/9oef9G7udYJp1fKNo85/j9rGo0VELT95ODZyys8tVD6BLbkr3Q2EOZ6EXfXScmOvzkQKYr5NgpYFxgf9eraHvPv3SSQvIUMhzpZehBzpAdqsWug==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(366004)(39850400004)(346002)(6666004)(110136005)(8936002)(6506007)(8676002)(86362001)(54906003)(186003)(26005)(66946007)(66556008)(66574015)(83380400001)(66476007)(52116002)(2906002)(1076003)(316002)(7416002)(5660300002)(478600001)(36756003)(6512007)(30864003)(6486002)(44832011)(4326008)(956004)(38350700002)(2616005)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xR4wrCrENvkbY8fg9xyy0MSs/9bAtyQh53W/aNeWP3/+u3TVjwwcfc1j/dXlx0Vmpc2bpYhna/QJsgMMYPISmv9DgzCVh06f3HWJTRgT0JNhGOcoHqpYADZHiR9CSdFlhl+RwhLJXcTlr1yZIsDYCca0lWrE58clI/Kvuv6ZANf/nCYRJOM1ZYIOoGReQbPZkeqPiLvijyUNbsVWHb8M4vb40kkaqcHi5+cH8rPW2lDRAD9prFVRPsPgWYDtWXwqGMtOKRCGT3KOR3QG1Nxd8KzZhlbunUZKH9o+l0EIX3Zk0tlIjagva5d617cYVlTs6T3YncL2I5/QjXTiZHAIPXevWa2f8DWS59QqKQ0IgH/Wlo+XN2O3CG7nTMyf33JiOXb4ntQygfLhUhavaeONPMIslUAzu40Nbso6rdYSunDFMW9/MVtbVOA8kgOVASkCjIqgx8wXZkKIkdXwlr7tPI3g94QkBW+37sILadbxJtpJJQ0iRnn7RL7hSidKhxgpnn1QRxPoKrfj1kyKumrNK0MPLmdk5VGSyw3W9tASXuzwml25UK6jInOTB/N4RMFutv+y4cWKfxifpAOT3JlIJLhloe9NLyd81f7ERtD0Jg96c/CviFR7MEUT9h8sN4P0IXMM/Fe3pkMf2AA2L1U3SQHavo6vwfnSmLN/3REadfbtkbaQopBe8g2uJMJfuG/w
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(366004)(39850400004)(346002)(6666004)(110136005)(8936002)(6506007)(8676002)(86362001)(54906003)(186003)(26005)(66946007)(66556008)(83380400001)(66476007)(52116002)(2906002)(1076003)(316002)(7416002)(5660300002)(478600001)(36756003)(6512007)(6486002)(44832011)(4326008)(956004)(38350700002)(2616005)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4eokcaTfCgQDB404amB9B5EiES+EAY5PBuzmqcOAyImSeXl0PWfKANU0mf99?=
- =?us-ascii?Q?vzXcabVmJUED71kOaCIRO+KfY63k/b74wgqa0vvKku7bWFq7zSca4YHEqHwl?=
- =?us-ascii?Q?IG5mebGzUj9iBidpmKH/ckfC46mj9cdM+NMIZDROM3GQu5SicYD8sTWQHVFG?=
- =?us-ascii?Q?0AA1QFQ2fcsHS58Btz2vDqKuDVAr65Ht9NttOd5zZFn651U4mXEJwK6w7qqr?=
- =?us-ascii?Q?ky7szwz2AWL05kBNaypcq7girOHaoGPlPM918yzSHO4aurfUply9gzbNn5Hv?=
- =?us-ascii?Q?xRhjEuanWKhEFolQ0dCgSLPw26Wv39bJJcJ9UYapQYKv74qCEcpWZdijO7Pu?=
- =?us-ascii?Q?jc7bAPA/XEwuJogV49IYLdxGGbh7l+x5tJ9R3tiXb2UV5B90Pq6qxdronCrK?=
- =?us-ascii?Q?Eo06ofBCQqOT6MS2neW+S0zU04IJ2A7x1aEizWYNpZ/xHKCRY5euD5WNrwAr?=
- =?us-ascii?Q?Ky3bvf4KG7eG0BWo6mhimdS1uIamddZqwSCODC8KZfxUhHjGbARWpnoKJM0K?=
- =?us-ascii?Q?r39Hrtrb4YSZ1K1XmS09+xYuCRamuIm/p4IjjMAN54bpWpSWW/xYS9ZrkcDS?=
- =?us-ascii?Q?hNquca+pjE0USoITV/EJbusHu1KvIG2jqSCKGAms7tQkP6CTz8WQUE3Vhn9b?=
- =?us-ascii?Q?VGoHB7UPqPXheAZqj5DvfSbFB8jWIgI+6iaAwu16o6ffBMN+fdaJPHlt1Eq8?=
- =?us-ascii?Q?X170TcTTLLr2s5XbxBgYUUWCFeufqXhJrPQ70TOyq6CoAyS6gB8IMj8Bvmmc?=
- =?us-ascii?Q?y6L426WQxJVz8tECj0RbkEOEeg/E3s/1rj2xqrHDe5bncuvNxziOHGOoFPfp?=
- =?us-ascii?Q?dRCT+399+GDZnf2gcOMC+JqD2hIJ1qHiwL+xhNH4loz/VwwVPs0gjawRNKYH?=
- =?us-ascii?Q?VMeFnp2Uqjqg15RTVZYVYoVCiM/LtYLK27UKwaDBIkjneAOp2mF8RNA3WYU4?=
- =?us-ascii?Q?ImgEPIRodyBab4X6j17Ss87ITtMvH9odNowGJMUcwxo8f9lWQsOghA070F6u?=
- =?us-ascii?Q?LpmVErA0oWVJk5Tkke6UyJ01fZpH1Makhqb2YtqlLvuYs5Zk/V1F7WXDk3wo?=
- =?us-ascii?Q?fdBRsk8ql6q0yhTS9XDYUdp+YkcBeXRQ/EbLfzi7qwLba7rVcbcSGbhrtEWh?=
- =?us-ascii?Q?+Y6j6NWk6A5gytbBHJuNnIT3IsFkZ5paNYnVOrM/rNoOaL9LRIbegYMcsFEw?=
- =?us-ascii?Q?9c7FPkpzmtUxlIidTv3pbRRaqKRJuJcjx5CUw3ppldFDdmLW+HG6JVuQXq87?=
- =?us-ascii?Q?n3tUkbgs9Q1xCSMN+oinbzNCwON27nqSj2QmBLm0cCiFVY1sbL6BGAKN5lr6?=
- =?us-ascii?Q?s7uN8wZENcU1GC7ob55EdETp?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EpHC6oL+UgxyRxuMqlXiJDjKrct2T+nxvW/xctGyOjCdiC4BpYy5lATeIXqK?=
+ =?us-ascii?Q?ZoUcqqiS4hI+M19e89CQiO9WNRHkHsQLmLwDbCZxoDavM4sLKMh41RQAfcX6?=
+ =?us-ascii?Q?+1FWsGjpjvkdsU6keJqv2/BZprz38wzUKkgttcY9zaA4wKsfd7N6e9JhgE+b?=
+ =?us-ascii?Q?mMlW5q/WIBm15YX0fQLwAFIMCt9oc16Jq+qVSePWAlHIwE918kmSuoZKKU5w?=
+ =?us-ascii?Q?nc0VRLwgEPZOOqlgcvH/+R3TxzC9hhHxPu66Oc5vLn/WGVXg5sK0lSMEgWgx?=
+ =?us-ascii?Q?+uny4pRB4DkTbo9i5I2EwwpFhV0vJWVKM2aa0GiBYQdH7aHhSqTJRUF60zHC?=
+ =?us-ascii?Q?lGd68fv0HZrXAcoh6YrymPz0ukUdODiqaKIbRVDgzbifRLe9at3vvC65EGCO?=
+ =?us-ascii?Q?795MM8QfdR0FtadfAnyoyrCGfMJr0gFts9apYO43A8c5nwUE3GU+zf7BnprU?=
+ =?us-ascii?Q?Nxc04Ni7tGONUuWU29WylUDz/kXn/VfjguMdiK3dq2K4xyQlc4tnp1NjNUtk?=
+ =?us-ascii?Q?lcm8M6i50XPoY1PYvOlINm/njNvq4x693dQ+RQp/nLZqOydmMLleeq1JsXBs?=
+ =?us-ascii?Q?4ndVHRzHVEb5Samw7DgVcDkvR3sx/lQc+O9xXeMGG+NRieOg0hnzC2SFeNu1?=
+ =?us-ascii?Q?C4uoKRRnBxyv+91n+UJUcrLAoBmxO5Iqx0nMRjSgQARy6gI1CIEl9v796P2h?=
+ =?us-ascii?Q?NdB3LQNwAzj3fS/gYWc2kuADoWznh38mCH+zICqLq3hNjgAP4OhtqTKGAEgd?=
+ =?us-ascii?Q?/ZOQ9R6v6zZGdivPDyibs3UdNOZqlj5bApPZ38mu325Xmr0qXYVi43HM9T16?=
+ =?us-ascii?Q?05p9IOSO0lQ0/XBBJxyXiS4D0tb7tgT+8qNb1apRGWCUsTZw0alGv+5ThBHh?=
+ =?us-ascii?Q?CK/iqqdiprH/vts4faT106FMcqsEArmlStOmzMC0NQW8cebSSYWzZyA2EqP6?=
+ =?us-ascii?Q?qVCY6tg4gamzGJrY/0upYIVUHlCiRZz08r1zYFdrN54DfzkggRQGH1yzqlmF?=
+ =?us-ascii?Q?YE+7sZ0Mp4OcyAGzk5hjI6uncZg8ScBmfI9vfN1hxoHMGza87cmcgld5XaF9?=
+ =?us-ascii?Q?38B/YQZBGpWLissWP34qqfDAXBcjHi/e1wve40IxEHddxXp7Fgl2lzewzpR6?=
+ =?us-ascii?Q?2gUduFsddLvElMUxmKIJS28rNxsFMpM8G4bFBGABZ/o1muM0nrBNv7fvFP7f?=
+ =?us-ascii?Q?7IclkMVgoqrFWOG6YPh+Jp4LPzVKihFy/jmA9x4X9pqeFPkSAqSpU5zG3Q8g?=
+ =?us-ascii?Q?9e283uwo5Z2ply19oLPSroRl5GFeZr/NKQ5foRIQmjNis4WkSG1Yqtg0h3JS?=
+ =?us-ascii?Q?kaBmUP4+cYXNKHf9IWpzeq1o?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21d0e14f-739a-42ab-629a-08d94a3575fe
+X-MS-Exchange-CrossTenant-Network-Message-Id: dfe0f57b-867a-4837-b7cd-08d94a35768f
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2021 21:46:12.4682
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2021 21:46:13.4187
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EUG9iI5tqTCDiWXnI3+kTmZu7heblKrIJ8QO/imO4SLAGJlvJKohsYp15h5+E+CVu0b/DTMjOgYiGZ8i7TB1Hg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: OGYaGuaao8SiyChqWaQ98pPzXsO//9niPn+Y4P8O5V1ypSFSH7W+WP8shVuzpHgf69eg035z9RY5XKfo4rtClA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7325
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make more room for extra code in the NETDEV_PRECHANGEUPPER handlers from
-mlxsw by moving the existing sanity checks to 2 new dedicated functions.
+For symmetry with mlxsw_sp_port_lag_leave(), introduce a small function
+called mlxsw_sp_port_vlan_leave() which checks whether the 8021q upper
+we're leaving is a bridge port, and if it is, stop offloading that
+bridge too.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v2->v3: patch is new
-v3->v4: none
+v3->v4: patch is new
 
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 272 +++++++++++-------
- 1 file changed, 169 insertions(+), 103 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 25 +++++++++++--------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 88699e678544..c1b78878e5cf 100644
+index c1b78878e5cf..b3d1fdc2d094 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4055,6 +4055,118 @@ static bool mlxsw_sp_bridge_vxlan_is_valid(struct net_device *br_dev,
- 	return true;
+@@ -3994,6 +3994,19 @@ static void mlxsw_sp_port_ovs_leave(struct mlxsw_sp_port *mlxsw_sp_port)
+ 	mlxsw_sp_port_vp_mode_set(mlxsw_sp_port, false);
  }
  
-+static int
-+mlxsw_sp_prechangeupper_sanity_checks(struct mlxsw_sp *mlxsw_sp,
-+				      struct net_device *dev,
-+				      struct net_device *lower_dev,
-+				      struct net_device *upper_dev,
-+				      struct netdev_notifier_changeupper_info *info,
-+				      struct netlink_ext_ack *extack)
++static void mlxsw_sp_port_vlan_leave(struct mlxsw_sp_port *mlxsw_sp_port,
++				     struct net_device *vlan_dev)
 +{
-+	u16 proto;
++	struct net_device *br_dev;
 +
-+	if (!is_vlan_dev(upper_dev) &&
-+	    !netif_is_lag_master(upper_dev) &&
-+	    !netif_is_bridge_master(upper_dev) &&
-+	    !netif_is_ovs_master(upper_dev) &&
-+	    !netif_is_macvlan(upper_dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unknown upper device type");
-+		return -EINVAL;
-+	}
++	if (!netif_is_bridge_port(vlan_dev))
++		return;
 +
-+	if (!info->linking)
-+		return 0;
++	br_dev = netdev_master_upper_dev_get(vlan_dev);
 +
-+	if (netif_is_bridge_master(upper_dev) &&
-+	    !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp, upper_dev) &&
-+	    mlxsw_sp_bridge_has_vxlan(upper_dev) &&
-+	    !mlxsw_sp_bridge_vxlan_is_valid(upper_dev, extack))
-+		return -EOPNOTSUPP;
-+
-+	if (netdev_has_any_upper_dev(upper_dev) &&
-+	    (!netif_is_bridge_master(upper_dev) ||
-+	     !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp,
-+						  upper_dev))) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Enslaving a port to a device that already has an upper device is not supported");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_lag_master(upper_dev) &&
-+	    !mlxsw_sp_master_lag_check(mlxsw_sp, upper_dev,
-+				       info->upper_info, extack))
-+		return -EINVAL;
-+
-+	if (netif_is_lag_master(upper_dev) && vlan_uses_dev(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Master device is a LAG master and this device has a VLAN");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_lag_port(dev) && is_vlan_dev(upper_dev) &&
-+	    !netif_is_lag_master(vlan_dev_real_dev(upper_dev))) {
-+		NL_SET_ERR_MSG_MOD(extack, "Can not put a VLAN on a LAG port");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_macvlan(upper_dev) &&
-+	    !mlxsw_sp_rif_exists(mlxsw_sp, lower_dev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "macvlan is only supported on top of router interfaces");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (netif_is_ovs_master(upper_dev) && vlan_uses_dev(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Master device is an OVS master and this device has a VLAN");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_ovs_port(dev) && is_vlan_dev(upper_dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Can not put a VLAN on an OVS port");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_bridge_master(upper_dev)) {
-+		br_vlan_get_proto(upper_dev, &proto);
-+		if (br_vlan_enabled(upper_dev) &&
-+		    proto != ETH_P_8021Q && proto != ETH_P_8021AD) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Enslaving a port to a bridge with unknown VLAN protocol is not supported");
-+			return -EOPNOTSUPP;
-+		}
-+		if (vlan_uses_dev(lower_dev) &&
-+		    br_vlan_enabled(upper_dev) &&
-+		    proto == ETH_P_8021AD) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Enslaving a port that already has a VLAN upper to an 802.1ad bridge is not supported");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	if (netif_is_bridge_port(lower_dev) && is_vlan_dev(upper_dev)) {
-+		struct net_device *br_dev = netdev_master_upper_dev_get(lower_dev);
-+
-+		if (br_vlan_enabled(br_dev)) {
-+			br_vlan_get_proto(br_dev, &proto);
-+			if (proto == ETH_P_8021AD) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "VLAN uppers are not supported on a port enslaved to an 802.1ad bridge");
-+				return -EOPNOTSUPP;
-+			}
-+		}
-+	}
-+
-+	if (is_vlan_dev(upper_dev) &&
-+	    ntohs(vlan_dev_vlan_proto(upper_dev)) != ETH_P_8021Q) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "VLAN uppers are only supported with 802.1q VLAN protocol");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
++	mlxsw_sp_port_bridge_leave(mlxsw_sp_port, vlan_dev, br_dev);
 +}
 +
- static int mlxsw_sp_netdevice_port_upper_event(struct net_device *lower_dev,
- 					       struct net_device *dev,
- 					       unsigned long event, void *ptr)
-@@ -4065,7 +4177,6 @@ static int mlxsw_sp_netdevice_port_upper_event(struct net_device *lower_dev,
- 	struct net_device *upper_dev;
- 	struct mlxsw_sp *mlxsw_sp;
- 	int err = 0;
--	u16 proto;
- 
- 	mlxsw_sp_port = netdev_priv(dev);
- 	mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-@@ -4075,84 +4186,15 @@ static int mlxsw_sp_netdevice_port_upper_event(struct net_device *lower_dev,
- 	switch (event) {
- 	case NETDEV_PRECHANGEUPPER:
- 		upper_dev = info->upper_dev;
--		if (!is_vlan_dev(upper_dev) &&
--		    !netif_is_lag_master(upper_dev) &&
--		    !netif_is_bridge_master(upper_dev) &&
--		    !netif_is_ovs_master(upper_dev) &&
--		    !netif_is_macvlan(upper_dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "Unknown upper device type");
--			return -EINVAL;
--		}
--		if (!info->linking)
--			break;
--		if (netif_is_bridge_master(upper_dev) &&
--		    !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp, upper_dev) &&
--		    mlxsw_sp_bridge_has_vxlan(upper_dev) &&
--		    !mlxsw_sp_bridge_vxlan_is_valid(upper_dev, extack))
--			return -EOPNOTSUPP;
--		if (netdev_has_any_upper_dev(upper_dev) &&
--		    (!netif_is_bridge_master(upper_dev) ||
--		     !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp,
--							  upper_dev))) {
--			NL_SET_ERR_MSG_MOD(extack, "Enslaving a port to a device that already has an upper device is not supported");
--			return -EINVAL;
--		}
--		if (netif_is_lag_master(upper_dev) &&
--		    !mlxsw_sp_master_lag_check(mlxsw_sp, upper_dev,
--					       info->upper_info, extack))
--			return -EINVAL;
--		if (netif_is_lag_master(upper_dev) && vlan_uses_dev(dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "Master device is a LAG master and this device has a VLAN");
--			return -EINVAL;
--		}
--		if (netif_is_lag_port(dev) && is_vlan_dev(upper_dev) &&
--		    !netif_is_lag_master(vlan_dev_real_dev(upper_dev))) {
--			NL_SET_ERR_MSG_MOD(extack, "Can not put a VLAN on a LAG port");
--			return -EINVAL;
--		}
--		if (netif_is_macvlan(upper_dev) &&
--		    !mlxsw_sp_rif_exists(mlxsw_sp, lower_dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "macvlan is only supported on top of router interfaces");
--			return -EOPNOTSUPP;
--		}
--		if (netif_is_ovs_master(upper_dev) && vlan_uses_dev(dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "Master device is an OVS master and this device has a VLAN");
--			return -EINVAL;
--		}
--		if (netif_is_ovs_port(dev) && is_vlan_dev(upper_dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "Can not put a VLAN on an OVS port");
--			return -EINVAL;
--		}
--		if (netif_is_bridge_master(upper_dev)) {
--			br_vlan_get_proto(upper_dev, &proto);
--			if (br_vlan_enabled(upper_dev) &&
--			    proto != ETH_P_8021Q && proto != ETH_P_8021AD) {
--				NL_SET_ERR_MSG_MOD(extack, "Enslaving a port to a bridge with unknown VLAN protocol is not supported");
--				return -EOPNOTSUPP;
--			}
--			if (vlan_uses_dev(lower_dev) &&
--			    br_vlan_enabled(upper_dev) &&
--			    proto == ETH_P_8021AD) {
--				NL_SET_ERR_MSG_MOD(extack, "Enslaving a port that already has a VLAN upper to an 802.1ad bridge is not supported");
--				return -EOPNOTSUPP;
--			}
--		}
--		if (netif_is_bridge_port(lower_dev) && is_vlan_dev(upper_dev)) {
--			struct net_device *br_dev = netdev_master_upper_dev_get(lower_dev);
+ static bool mlxsw_sp_bridge_has_multiple_vxlans(struct net_device *br_dev)
+ {
+ 	unsigned int num_vxlans = 0;
+@@ -4225,16 +4238,8 @@ static int mlxsw_sp_netdevice_port_upper_event(struct net_device *lower_dev,
+ 		} else if (netif_is_macvlan(upper_dev)) {
+ 			if (!info->linking)
+ 				mlxsw_sp_rif_macvlan_del(mlxsw_sp, upper_dev);
+-		} else if (is_vlan_dev(upper_dev)) {
+-			struct net_device *br_dev;
 -
--			if (br_vlan_enabled(br_dev)) {
--				br_vlan_get_proto(br_dev, &proto);
--				if (proto == ETH_P_8021AD) {
--					NL_SET_ERR_MSG_MOD(extack, "VLAN uppers are not supported on a port enslaved to an 802.1ad bridge");
--					return -EOPNOTSUPP;
--				}
--			}
--		}
--		if (is_vlan_dev(upper_dev) &&
--		    ntohs(vlan_dev_vlan_proto(upper_dev)) != ETH_P_8021Q) {
--			NL_SET_ERR_MSG_MOD(extack, "VLAN uppers are only supported with 802.1q VLAN protocol");
--			return -EOPNOTSUPP;
--		}
-+
-+		err = mlxsw_sp_prechangeupper_sanity_checks(mlxsw_sp,
-+							    dev, lower_dev,
-+							    upper_dev,
-+							    info,
-+							    extack);
-+		if (err)
-+			return err;
-+
+-			if (!netif_is_bridge_port(upper_dev))
+-				break;
+-			if (info->linking)
+-				break;
+-			br_dev = netdev_master_upper_dev_get(upper_dev);
+-			mlxsw_sp_port_bridge_leave(mlxsw_sp_port, upper_dev,
+-						   br_dev);
++		} else if (is_vlan_dev(upper_dev) && !info->linking) {
++			mlxsw_sp_port_vlan_leave(mlxsw_sp_port, upper_dev);
+ 		}
  		break;
- 	case NETDEV_CHANGEUPPER:
- 		upper_dev = info->upper_dev;
-@@ -4260,6 +4302,46 @@ static int mlxsw_sp_netdevice_lag_event(struct net_device *lag_dev,
- 	return 0;
- }
- 
-+static int
-+mlxsw_sp_vlan_prechangeupper_sanity_checks(struct mlxsw_sp *mlxsw_sp,
-+					   struct net_device *vlan_dev,
-+					   struct net_device *upper_dev,
-+					   struct netdev_notifier_changeupper_info *info,
-+					   struct netlink_ext_ack *extack)
-+{
-+	if (!netif_is_bridge_master(upper_dev) &&
-+	    !netif_is_macvlan(upper_dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unknown upper device type");
-+		return -EINVAL;
-+	}
-+
-+	if (!info->linking)
-+		return 0;
-+
-+	if (netif_is_bridge_master(upper_dev) &&
-+	    !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp, upper_dev) &&
-+	    mlxsw_sp_bridge_has_vxlan(upper_dev) &&
-+	    !mlxsw_sp_bridge_vxlan_is_valid(upper_dev, extack))
-+		return -EOPNOTSUPP;
-+
-+	if (netdev_has_any_upper_dev(upper_dev) &&
-+	    (!netif_is_bridge_master(upper_dev) ||
-+	     !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp,
-+						  upper_dev))) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Enslaving a port to a device that already has an upper device is not supported");
-+		return -EINVAL;
-+	}
-+
-+	if (netif_is_macvlan(upper_dev) &&
-+	    !mlxsw_sp_rif_exists(mlxsw_sp, vlan_dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "macvlan is only supported on top of router interfaces");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
- static int mlxsw_sp_netdevice_port_vlan_event(struct net_device *vlan_dev,
- 					      struct net_device *dev,
- 					      unsigned long event, void *ptr,
-@@ -4277,30 +4359,14 @@ static int mlxsw_sp_netdevice_port_vlan_event(struct net_device *vlan_dev,
- 	switch (event) {
- 	case NETDEV_PRECHANGEUPPER:
- 		upper_dev = info->upper_dev;
--		if (!netif_is_bridge_master(upper_dev) &&
--		    !netif_is_macvlan(upper_dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "Unknown upper device type");
--			return -EINVAL;
--		}
--		if (!info->linking)
--			break;
--		if (netif_is_bridge_master(upper_dev) &&
--		    !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp, upper_dev) &&
--		    mlxsw_sp_bridge_has_vxlan(upper_dev) &&
--		    !mlxsw_sp_bridge_vxlan_is_valid(upper_dev, extack))
--			return -EOPNOTSUPP;
--		if (netdev_has_any_upper_dev(upper_dev) &&
--		    (!netif_is_bridge_master(upper_dev) ||
--		     !mlxsw_sp_bridge_device_is_offloaded(mlxsw_sp,
--							  upper_dev))) {
--			NL_SET_ERR_MSG_MOD(extack, "Enslaving a port to a device that already has an upper device is not supported");
--			return -EINVAL;
--		}
--		if (netif_is_macvlan(upper_dev) &&
--		    !mlxsw_sp_rif_exists(mlxsw_sp, vlan_dev)) {
--			NL_SET_ERR_MSG_MOD(extack, "macvlan is only supported on top of router interfaces");
--			return -EOPNOTSUPP;
--		}
-+
-+		err = mlxsw_sp_vlan_prechangeupper_sanity_checks(mlxsw_sp,
-+								 vlan_dev,
-+								 upper_dev,
-+								 info, extack);
-+		if (err)
-+			return err;
-+
- 		break;
- 	case NETDEV_CHANGEUPPER:
- 		upper_dev = info->upper_dev;
+ 	}
 -- 
 2.25.1
 
