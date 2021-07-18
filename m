@@ -2,228 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E28E13CCB29
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 23:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 929A53CCB2E
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 23:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbhGRVtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 17:49:50 -0400
-Received: from mail-db8eur05on2056.outbound.protection.outlook.com ([40.107.20.56]:53472
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233672AbhGRVtd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 17:49:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i7JmL0qtv5NNJawwZGONteJq4yt2O+ibFDLsWjn8iCXxlPXD4m3JL93QgpvFTzQn4qzD4OCg3V073mXtYK54kBUR38YC2m77fM7pvvIw4PQj5PatUFZXQPMVAo14ST8yPEHQ7g3uZtce424rd/WWeLMwoRb+lc/PwzFm0fFwyuLLHUSAX7Xx2yJ601g6iEIw3EnWjDUKgKMWqLlA3NV914DjXGdfwZN7qYxzgBSSKRKGm5j9L53+Ii+DPxjqIagYknCl4d/dPF1JELDvRxs8HowxCJD5YutDosAgw3oJgmKSqCJRBlxs897X3RuCaXc7XEYwqG0PDK3loNNYlgTfgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E1X+LahK04LAJLXGx+tRE/udaDcCmdHQWHgguzH/tLY=;
- b=bgmWqgAAua6cGs2tz3ceeDDV/FkOvPZvGG8uewiww92WFOBnvDGNGMdZDynsxhTXsMNy/QT41WiY33uJ0u2YMz8XBhrR9rdM9CJ6SxXwyWmIkLWPt0Amxwm8ZA2Tu+8CTz5UW8kiNplG8U1WsRjpO3Jb82HcWqMJjHTAVo+IMiGSuAYh7FxqlQiuHT7wDo5ogDnPmx/LMYvqc4c0FriK8V7HNFmaxdlkF9uhcfMPkKAsuQzNqhg8c66AzHCCharTbrVrA7hGg6/uckE+lNkOia8v3eHgDti/PfNBeBfqdmG1hsYZljKFuNavWz52J3w/u6gsPnd5sSM8nLpll761Nw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E1X+LahK04LAJLXGx+tRE/udaDcCmdHQWHgguzH/tLY=;
- b=W43z8yH8bCqN412NTsgt55BWbOq6r5/A8rU77jKHiB3ElqIcBCa+dd+igRgG/y+uiaRMIfJySY7mWF9opjx8CcyvdRA7KpcnQoWCWg9eNd40PEMW2wYpAME1ar30zG6ZfDgv8OohVUmRqs8bL/ZCP6MgcVZNP0tHcfpMVg2wSe8=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5502.eurprd04.prod.outlook.com (2603:10a6:803:c9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Sun, 18 Jul
- 2021 21:46:22 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.032; Sun, 18 Jul 2021
- 21:46:22 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH v4 net-next 15/15] net: dsa: tag_dsa: offload the bridge forwarding process
-Date:   Mon, 19 Jul 2021 00:44:34 +0300
-Message-Id: <20210718214434.3938850-16-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
-References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0602CA0014.eurprd06.prod.outlook.com
- (2603:10a6:800:bc::24) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        id S233122AbhGRV5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 17:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229585AbhGRV5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 17:57:40 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5BEC061762;
+        Sun, 18 Jul 2021 14:54:41 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id r135so24677190ybc.0;
+        Sun, 18 Jul 2021 14:54:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9j1NWnlbjiSB+YS5FOue9N8gotu/EDm4p2Vpx7w+TB0=;
+        b=JdBncGJcVy1N7d6pyHtdLvzJFtv/elzIMW9Ke0j/aQQbVu4ob/Rk+4/oZOKI8I95mX
+         GUkkTJNDEm5+njVW9GQBOnN/Lx5d/cqYM8zILEj0ZGeDvQdRxez2Hl2TkToP++M2jOkV
+         ZQ5NdKJNoJ1eStj49EI3coroBtFXjNlKYOfjAV7iPeJwCnirxjMY+1x8i8YRbaKyJ3p8
+         GuV1cDPRbEJpBILS9Uez9X+htfGKzG5xfRPVuJdl+flhTyc0ytMYna6CJoCmaG4SFolM
+         5u/Lrk4tN/pVJliV4Xxhf9MJG/trbQgwmI7L3R8sqaPLsW7c8pAjr94Wi3gITHdsViZu
+         cuIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9j1NWnlbjiSB+YS5FOue9N8gotu/EDm4p2Vpx7w+TB0=;
+        b=iipsfF0SBdLR8jau3R7YfIdxCSCpUKMB1LLVXOVJ0VQF+jMWaigPIMDAIvsT2v0IOb
+         2xBVLVhb4MWACujUFUENbYbnbUtagmulydJyqsfAWgJrzUNT9mJ/3bgowC2rYpOkjJMO
+         izpWWiCMAuOqSvX4z2rc0Mmm+fMpeU/tpVnKqeeYHw/Stz6vKiJo0lI+QZ17WHiny3xn
+         XtPSf+Dsq2t+mlC9+BZzuIlmcF+dWSoiHKQMq2F3ZSHYePkcsxkkZ/2QW2ANqg2vHju9
+         oSCTTWPWnYDJJhFftVfk7F/9tL/+doUBniepG8a3D/38USLMbW1Xy4i2D6FaaaK8ZKm0
+         KhTQ==
+X-Gm-Message-State: AOAM530C23Oh+VMrXDqgXS+i7id+lCi5YipU0tClPBCBL6l4ktNCGqSg
+        kJbsadQhhNUcibtdXfHVUC6iaw/DeqEVbbIrBSc=
+X-Google-Smtp-Source: ABdhPJxi9hEYY1Rma5JOio9CxD2CjVJXBqV9KgzBDkgfXMP6dHpl4SMScCNq367PiaagDX0X3Xso89Tdw96kXOCK7TQ=
+X-Received: by 2002:a25:bd09:: with SMTP id f9mr27126985ybk.27.1626645280871;
+ Sun, 18 Jul 2021 14:54:40 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by VI1PR0602CA0014.eurprd06.prod.outlook.com (2603:10a6:800:bc::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Sun, 18 Jul 2021 21:46:21 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 217d1dfc-980d-4b43-f238-08d94a357bbc
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5502:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5502872583D8C9DA0ABD170BE0E09@VI1PR04MB5502.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gv5i1seNleXuXzS6kxJNw83qL9Q9Qq/2lS/4+d4PCcSYfWlEJrY35oaVNlrBX01+wkX7EFZ4co2E6k0n5qFNRI0cldkltUbcnFOcOVDTC7JY75Czk+fNfBeu8zR+Gow+/DFaR6nAbrQ0JRSUCNjQzFoYMTm41b4td7CVAffMnfbKlv03iYKopHvM4/tYJJ7uSOxgpg2t9ZhMhsq3bd7Izju/XxMFBR4xe6Yv2QUmSis1aCik2+SMU8Jf9aD3AP3KwKTu5Td9qyfYS+kGWbsM1ArmX2le/yurLieSLfcNadC8aHbBVui2kT40PoxDpQ/Ri2OMsaYS+O6/8IrqDuYQ8IV3rGI31tljm8M5I2njbQQE09iqcCTilQy3g2ctQ8naZwvLzV2HpgovomoUKqz6jw0QEu4cctjb50JHe3g+ItADYGGcn4S0xYkVqU1q0UjD8WRHDFaKZzCPEgCoLUebnBNtBOhlXEyE9ZFoECjpm4RX0fVgzAu+U4yNzMYUOlCgE/ibq+Uh9nMcX9BvgtcZ6h54BvMtEHTmFqJbxzoPUr9+JippB0JrjHezPO/NyUfSeYekgpmZnjBn5lgwFS6tQxW6RiHFsvjXg+ygu3lAal1IKPXed44yK6+W2avpkhfW0MROFnyk3SElo7y04fuAov6oQfEZOzN3gdS3Nog92Ch85oYB25HeGBHoACEbpwmqV/vxLk7bVrqLBpGclj98Eg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8676002)(38100700002)(44832011)(52116002)(38350700002)(6486002)(956004)(508600001)(36756003)(2616005)(6512007)(1076003)(66476007)(66556008)(316002)(66946007)(26005)(6506007)(54906003)(186003)(2906002)(86362001)(110136005)(7416002)(4326008)(83380400001)(6666004)(8936002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nsJ8q+8dU28oCVwseqxgV3hsfYH4oN9o9nMZuMebiihs/Bwm6o/pPIe549ZH?=
- =?us-ascii?Q?eq2PhcD5oYAqsIVPgWADLSPIPdAg9R3kfFxQ7a52yuWFwh+PA7EBF0yb5mYZ?=
- =?us-ascii?Q?1vfjx5/srLnO4W59keqrtXhhORN+i39Qr+9jfFU7xdED6UwXfgx/fgcK11XD?=
- =?us-ascii?Q?yRMUtizW08NOz03v08s9bGkk1y8xrx20e9KhsCvHE6od+HXt9oDvPnDfwCXx?=
- =?us-ascii?Q?19bDyxJ93LcQ+2KuVlx1+VLgSjMTh9LKitTG8+zNTMe6HhISVJibJ5qHso6v?=
- =?us-ascii?Q?NUOMp/H0QshV+VqIADqklDkGLYvVZYQLOVwHHHZU2OMGJRWga/6GbtKeLMuc?=
- =?us-ascii?Q?aqKIHbBbowzzyf1xkf8pPPC5jGVfMGrmNYphe5VESxPFPFQAoEjEE+kmZOQQ?=
- =?us-ascii?Q?9YFYvvyurSXtS8uaWLr6wv1gAQ7G86GibB6panK3j2C/2epvxbrTXU9GkWPC?=
- =?us-ascii?Q?b1UwXAOoQwt+UncchWeyi+7UMTuyifMbTVY3Z1ij8BBSHzmZDo6ZmIVTrHSj?=
- =?us-ascii?Q?AofATb7qYbN/nfMS0mJfcZvZdxGrr3Evnzz0oB6EJlfXzAGXb4K3K19tyw2t?=
- =?us-ascii?Q?pUMe85UOgRuvQNnqTm9cS7oO1oK515GqtypvuH6nddezt1TS09zuinJI68Lw?=
- =?us-ascii?Q?os2H7WB5U0iAWamXpwv1OYbeQnhWXMxZIGHcjdP5LfZc/d4V+uCgcocpMx3B?=
- =?us-ascii?Q?F8Mv9mtfxsfSnWaXszhLkEVRRp++I8X7NgtlSUzxGpItPHUm6xJSzbB0sCVy?=
- =?us-ascii?Q?XS54tXtfoHSV1YtmvAD0yr6g/ypmvsza1uoHs90KKYV/rFLLxPvPvAcYT4Z/?=
- =?us-ascii?Q?Yec2h5XCBlqNc7S22XDCoQYD3gXq4jjYDVD+Xmp4YFHR8I2saJxcnB1E0vio?=
- =?us-ascii?Q?0RSA+/cThFZqW6L5Ci67SiudeKO3LBs63YbFdy56DCx90NLfZMGcLnIg5KXW?=
- =?us-ascii?Q?JtqxPcKNrwzquAsqdWDgA28c4WnHudRFSmfo1xruvmuRJo7/gUxEZP1gpkra?=
- =?us-ascii?Q?nlAg2BsHsOQtEsxMUcqWPVhR+nenLM81b8y8G++sZ/3WYyYRG+9M5R4u3v56?=
- =?us-ascii?Q?3DkJJ1lVVJJb6QUia1oVyOHr+huZZyyJfDX1melGwatovV0Y/+Hv7DaFztpy?=
- =?us-ascii?Q?Sukm/r8QOXcoTaSHt9915II7+rqdPOh8Gznbl8lV+YF/zYDkpBB3ngo3e+9B?=
- =?us-ascii?Q?AHhtkFkBgMipRJwmhSQMVDj9+lmVFCbgiIn7/1caUWRq+an6nJDx9tR2uwWL?=
- =?us-ascii?Q?61E+mx19DMsw5lhCQFlIyF9+XJdy2h1ov+9Ka2iNIoOsV58XDzfMLzHIlqyk?=
- =?us-ascii?Q?0p2C5t9OZdpJjQpfHyLhRCZT?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 217d1dfc-980d-4b43-f238-08d94a357bbc
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2021 21:46:22.1017
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Na4cL+nsR389OkJtIuyXtK8udp0v6POH07FX4km5hsh4d86uvZnuUa+FxwG5NqLnO6nGYjPNUGLdN/2gMrlAIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5502
+References: <20210718065039.15627-1-msuchanek@suse.de> <c621c6c6-ad2d-5ce0-3f8c-014daf7cad64@iogearbox.net>
+ <20210718193655.GP24916@kitsune.suse.cz>
+In-Reply-To: <20210718193655.GP24916@kitsune.suse.cz>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sun, 18 Jul 2021 14:54:29 -0700
+Message-ID: <CAEf4Bza4Fd4vnJLHYKN_VE3=hcLSnxUN-YMN4iv=B5h+y+wCdg@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Remove from kernel tree.
+To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-riscv@lists.infradead.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+On Sun, Jul 18, 2021 at 12:36 PM Michal Such=C3=A1nek <msuchanek@suse.de> w=
+rote:
+>
+> On Sun, Jul 18, 2021 at 09:04:16PM +0200, Daniel Borkmann wrote:
+> > On 7/18/21 8:50 AM, Michal Suchanek wrote:
+> > > libbpf shipped by the kernel is outdated and has problems. Remove it.
+> > >
+> > > Current version of libbpf is available at
+> > >
+> > > https://github.com/libbpf/libbpf
 
-Allow the DSA tagger to generate FORWARD frames for offloaded skbs
-sent from a bridge that we offload, allowing the switch to handle any
-frame replication that may be required. This also means that source
-address learning takes place on packets sent from the CPU, meaning
-that return traffic no longer needs to be flooded as unknown unicast.
+This patch made me day :) libbpf sources in the kernel tree is *the
+source* of libbpf. Quoting Details section ([0]) of libbpf README:
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-v1->v2:
-- use the VLAN from the packet when the bridge is VLAN-aware, and the
-  PVID of the bridge when VLAN-unaware, instead of the PVID of the
-  egress port as the code was originally written
-- retrieve the sb_dev based on the TX queue mapping of the skb instead
-  of based on the DSA_SKB_CB() populated in the ndo_select_queue()
-  method, because DSA does not have ownership of the skb there yet
-v2->v3:
-- use skb->offload_fwd_mark instead of dsa_slave_get_sb_dev() and TX
-  queue mappings
-- drop the "bool bridge_fwd_offload"
-v3->v4:
-- none
+  Details
 
- net/dsa/tag_dsa.c | 52 +++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 44 insertions(+), 8 deletions(-)
+  This is a mirror of bpf-next Linux source tree's tools/lib/bpf
+directory plus its supporting header files.
 
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index a822355afc90..0f258218c8cf 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -126,7 +126,42 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 				   u8 extra)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	u8 tag_dev, tag_port;
-+	enum dsa_cmd cmd;
- 	u8 *dsa_header;
-+	u16 pvid = 0;
-+	int err;
-+
-+	if (skb->offload_fwd_mark) {
-+		struct dsa_switch_tree *dst = dp->ds->dst;
-+		struct net_device *br = dp->bridge_dev;
-+
-+		cmd = DSA_CMD_FORWARD;
-+
-+		/* When offloading forwarding for a bridge, inject FORWARD
-+		 * packets on behalf of a virtual switch device with an index
-+		 * past the physical switches.
-+		 */
-+		tag_dev = dst->last_switch + 1 + dp->bridge_num;
-+		tag_port = 0;
-+
-+		/* If we are offloading forwarding for a VLAN-unaware bridge,
-+		 * inject packets to hardware using the bridge's pvid, since
-+		 * that's where the packets ingressed from.
-+		 */
-+		if (!br_vlan_enabled(br)) {
-+			/* Safe because __dev_queue_xmit() runs under
-+			 * rcu_read_lock_bh()
-+			 */
-+			err = br_vlan_get_pvid_rcu(br, &pvid);
-+			if (err)
-+				return NULL;
-+		}
-+	} else {
-+		cmd = DSA_CMD_FROM_CPU;
-+		tag_dev = dp->ds->index;
-+		tag_port = dp->index;
-+	}
- 
- 	if (skb->protocol == htons(ETH_P_8021Q)) {
- 		if (extra) {
-@@ -134,10 +169,10 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 			memmove(skb->data, skb->data + extra, 2 * ETH_ALEN);
- 		}
- 
--		/* Construct tagged FROM_CPU DSA tag from 802.1Q tag. */
-+		/* Construct tagged DSA tag from 802.1Q tag. */
- 		dsa_header = skb->data + 2 * ETH_ALEN + extra;
--		dsa_header[0] = (DSA_CMD_FROM_CPU << 6) | 0x20 | dp->ds->index;
--		dsa_header[1] = dp->index << 3;
-+		dsa_header[0] = (cmd << 6) | 0x20 | tag_dev;
-+		dsa_header[1] = tag_port << 3;
- 
- 		/* Move CFI field from byte 2 to byte 1. */
- 		if (dsa_header[2] & 0x10) {
-@@ -148,12 +183,13 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- 		skb_push(skb, DSA_HLEN + extra);
- 		memmove(skb->data, skb->data + DSA_HLEN + extra, 2 * ETH_ALEN);
- 
--		/* Construct untagged FROM_CPU DSA tag. */
-+		/* Construct untagged DSA tag. */
- 		dsa_header = skb->data + 2 * ETH_ALEN + extra;
--		dsa_header[0] = (DSA_CMD_FROM_CPU << 6) | dp->ds->index;
--		dsa_header[1] = dp->index << 3;
--		dsa_header[2] = 0x00;
--		dsa_header[3] = 0x00;
-+
-+		dsa_header[0] = (cmd << 6) | tag_dev;
-+		dsa_header[1] = tag_port << 3;
-+		dsa_header[2] = pvid >> 8;
-+		dsa_header[3] = pvid & 0xff;
- 	}
- 
- 	return skb;
--- 
-2.25.1
+  All the gory details of syncing can be found in scripts/sync-kernel.sh sc=
+ript.
 
+  Some header files in this repo (include/linux/*.h) are reduced
+versions of their counterpart files at bpf-next's
+tools/include/linux/*.h to make compilation successful.
+
+> > >
+> > > Link: https://lore.kernel.org/bpf/b07015ebd7bbadb06a95a5105d9f6b4ed58=
+17b2f.camel@debian.org/
+> > > Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> >
+> > NAK, I'm not applying any of this. If there are issues, then fix them. =
+If
+>
+> They are fixed in the github version.
+>
+> > you would have checked tools/lib/bpf/ git history, you would have found
+> > that libbpf is under active development in the upstream kernel tree and
+>
+> So is the github version.
+
+See above, Github is a projection of the kernel sources. Yes, Makefile
+here and on Github are different, but that's by necessity. We do ask
+all distros to package libbpf from the Github version, but there are
+kernel projects (bpftool, perf, selftests) using libbpf from the
+kernel sources themselves.
+
+>
+> > you could have spared yourself this patch.
+>
+> You could have spared me a lot of problems if there was only one source
+> for libbpf.
+>
+> Can't you BPF people agree on one place to develop the library?
+
+We can. We did. We even wrote that down. And we do develop libbpf in
+one place, here. Github repo only accepts PRs for Github Makefile and
+various parts of CI process which is Github-specific.
+
+>
+> Thanks
+>
+> Michal
