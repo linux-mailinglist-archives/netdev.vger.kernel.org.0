@@ -2,124 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222CA3CCA77
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84D3D3CCA75
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232929AbhGRTkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        id S232634AbhGRTj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232416AbhGRTjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:53 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52ECC061765
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:54 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id h6-20020a17090a6486b029017613554465so816463pjj.4
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:54 -0700 (PDT)
+        with ESMTP id S232685AbhGRTjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:54 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13900C0613DC
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:56 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id jx7-20020a17090b46c7b02901757deaf2c8so10640855pjb.0
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vkuPQlfLc8x6m8zemIE7YniMiEv3qfl1KwaOIkRSJac=;
-        b=MsaS+phnrIUh27uFuqlS4O97N2q1gIZ1/csDCAtWDV1mXR8dMDfmxprmiTfGDND/gc
-         Uh8/2TBB4ghMhNcworHlSmJMOhbsvECJJjdAS+ZsdxnWEItbwajfWd4lGzZnnHrpXwUn
-         br4vNR56Wlxq1MO/2/JMflgq8ygtwJwTc6d8g=
+        bh=PGtu9gXsE9eKcTfKhMF9/4Fku9aurqwITVl4XRUTWwU=;
+        b=TvTWiNBR2TloQauGQJTjBkDS0G4PhAyzEfWqHMF8ZZIA/Y9BESzdUlRA9USf6oX8RF
+         sVfLtzlViBNsbJzUHj+aMUMBgmvyOB0FW+aF1cshiadgPHhMYm4qHLrdeC11pHHD9NlH
+         B1HtfHWCjiZGewbB0/86i5hi2njeqsYhWCUBE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vkuPQlfLc8x6m8zemIE7YniMiEv3qfl1KwaOIkRSJac=;
-        b=llte6x3PC8vf2XCJXAHD+J4ayUAmxBfaecmarihEwp2jH9gEY12UMj4hfRN3ZZCwzZ
-         eQsa5AvbbrAOXbfplpOAwV4m/jBjIVNM+I/4+kZ9JYWv1VLMxgmxS1+PXWgLRSkZ/Jt9
-         yPZ5pZfKr7ChILCWCwbO3ZTQsbIiFhTuBVjolj8ZfhzUgdY0qj8zsKrROwQ3ireZrdRZ
-         sJQFwSD1X3fzvOgaUQ9tXxR0tt6CNEKCU8+eC9QzmUZt7bVlW3wmh5t9OvQNQuT/kbHa
-         8lS4p7bE2N7VZkrI4GtgDK+VDY529lGKYiJ6VxuoSVujYlM8k1qbOJog1ghgi+0kv3mM
-         Y9cA==
-X-Gm-Message-State: AOAM533Yu9FgAfCAwgywzohd9H/m8jPxDZW544laH2EuL26tYhqlyhAi
-        2zHYfHxjZ2etTElnqhzmldo4xmmrnc/pAods
-X-Google-Smtp-Source: ABdhPJz4gqzETibe1Dk2xFZzIRs4TzMZAjuwW5gq+bVdYAETNQUjNirrteD4fOvkL9XIKtM3IF35cA==
-X-Received: by 2002:a17:902:c402:b029:12b:5175:1ddd with SMTP id k2-20020a170902c402b029012b51751dddmr16566268plk.67.1626637014108;
-        Sun, 18 Jul 2021 12:36:54 -0700 (PDT)
+        bh=PGtu9gXsE9eKcTfKhMF9/4Fku9aurqwITVl4XRUTWwU=;
+        b=UwtY8HHocXhNu8/j3l/oS5DlrMY9iztkZkNTDwBbjpg0owk/RnQoseaQ+5kFQIrfR2
+         uo6fH1VSDYZYx8cmTUnYKI7wiNNJXNpUQW/8S+hvArs/HjSWgv1+TAxOXs80LppOwEex
+         YJFL74hiFv/u7Qajr2oT+XiAK+6voBA5n13tyZP8f7Qut4z/yKF3fYdkPxRDc6Xf6BJ4
+         oP6qY2ih/auqBW7EqGvGcxqGsAI455nT+sPqgbCVniY0dguG9ud3eYXu/Qq713eOsG8i
+         AsgEZdZoVmDIQp9RG4IwEOnSsOf4X+Ur9xXqx6IBsmxcErbws9VDLsviiWEG9QN0O/dM
+         pIOg==
+X-Gm-Message-State: AOAM5305v9PX2gzP+At6VGgf4aXz1CzbrGCkAXuBLYx31FikhcUEZSnt
+        OonDLLByA2MH/kakyP0OtQBmUw==
+X-Google-Smtp-Source: ABdhPJzrnmLfG46JR+66b/ilMOm/2PqKXPJrKRCeUPJT4Ea898Ne8n2Wq69x992ypy2xhCxsXNvZDw==
+X-Received: by 2002:a17:902:a503:b029:12b:2429:385e with SMTP id s3-20020a170902a503b029012b2429385emr16566968plq.64.1626637015346;
+        Sun, 18 Jul 2021 12:36:55 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.53
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.54
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:53 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:54 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 6/9] bnxt_en: Validate vlan protocol ID on RX packets
-Date:   Sun, 18 Jul 2021 15:36:30 -0400
-Message-Id: <1626636993-31926-7-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 7/9] bnxt_en: Check abort error state in bnxt_half_open_nic()
+Date:   Sun, 18 Jul 2021 15:36:31 -0400
+Message-Id: <1626636993-31926-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006f172c05c76af138"
+        boundary="00000000000082215605c76af1f9"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006f172c05c76af138
+--00000000000082215605c76af1f9
 
-Only pass supported VLAN protocol IDs for stripped VLAN tags to the
-stack.  The stack will hit WARN() if the protocol ID is unsupported.
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-Existing firmware sets up the chip to strip 0x8100, 0x88a8, 0x9100.
-Only the 1st two protocols are supported by the kernel.
+bnxt_half_open_nic() is called during during ethtool self test and is
+protected by rtnl_lock.  Firmware reset can be happening at the same
+time.  Only critical portions of the entire firmware reset sequence
+are protected by the rtnl_lock.  It is possible that bnxt_half_open_nic()
+can be called when the firmware reset sequence is aborting.  In that
+case, bnxt_half_open_nic() needs to check if the ABORT_ERR flag is set
+and abort if it is.  The ethtool self test will fail but the NIC will be
+brought to a consistent IF_DOWN state.
 
-Fixes: a196e96bb68f ("bnxt_en: clean up VLAN feature bit handling")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Without this patch, if bnxt_half_open_nic() were to continue in this
+error state, it may crash like this:
+
+  bnxt_en 0000:82:00.1 enp130s0f1np1: FW reset in progress during close, FW reset will be aborted
+  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+  ...
+  Process ethtool (pid: 333327, stack limit = 0x0000000046476577)
+  Call trace:
+  bnxt_alloc_mem+0x444/0xef0 [bnxt_en]
+  bnxt_half_open_nic+0x24/0xb8 [bnxt_en]
+  bnxt_self_test+0x2dc/0x390 [bnxt_en]
+  ethtool_self_test+0xe0/0x1f8
+  dev_ethtool+0x1744/0x22d0
+  dev_ioctl+0x190/0x3e0
+  sock_ioctl+0x238/0x480
+  do_vfs_ioctl+0xc4/0x758
+  ksys_ioctl+0x84/0xb8
+  __arm64_sys_ioctl+0x28/0x38
+  el0_svc_handler+0xb0/0x180
+  el0_svc+0x8/0xc
+
+Fixes: a1301f08c5ac ("bnxt_en: Check abort error state in bnxt_open_nic().")
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f2f1136fd492..169f093e01de 100644
+index 169f093e01de..31eb3c00851a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1671,11 +1671,16 @@ static inline struct sk_buff *bnxt_tpa_end(struct bnxt *bp,
+@@ -10208,6 +10208,12 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ {
+ 	int rc = 0;
  
- 	if ((tpa_info->flags2 & RX_CMP_FLAGS2_META_FORMAT_VLAN) &&
- 	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
--		u16 vlan_proto = tpa_info->metadata >>
--			RX_CMP_FLAGS2_METADATA_TPID_SFT;
-+		__be16 vlan_proto = htons(tpa_info->metadata >>
-+					  RX_CMP_FLAGS2_METADATA_TPID_SFT);
- 		u16 vtag = tpa_info->metadata & RX_CMP_FLAGS2_METADATA_TCI_MASK;
- 
--		__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vtag);
-+		if (eth_type_vlan(vlan_proto)) {
-+			__vlan_hwaccel_put_tag(skb, vlan_proto, vtag);
-+		} else {
-+			dev_kfree_skb(skb);
-+			return NULL;
-+		}
- 	}
- 
- 	skb_checksum_none_assert(skb);
-@@ -1897,9 +1902,15 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
- 	    (skb->dev->features & BNXT_HW_FEATURE_VLAN_ALL_RX)) {
- 		u32 meta_data = le32_to_cpu(rxcmp1->rx_cmp_meta_data);
- 		u16 vtag = meta_data & RX_CMP_FLAGS2_METADATA_TCI_MASK;
--		u16 vlan_proto = meta_data >> RX_CMP_FLAGS2_METADATA_TPID_SFT;
-+		__be16 vlan_proto = htons(meta_data >>
-+					  RX_CMP_FLAGS2_METADATA_TPID_SFT);
- 
--		__vlan_hwaccel_put_tag(skb, htons(vlan_proto), vtag);
-+		if (eth_type_vlan(vlan_proto)) {
-+			__vlan_hwaccel_put_tag(skb, vlan_proto, vtag);
-+		} else {
-+			dev_kfree_skb(skb);
-+			goto next_rx;
-+		}
- 	}
- 
- 	skb_checksum_none_assert(skb);
++	if (test_bit(BNXT_STATE_ABORT_ERR, &bp->state)) {
++		netdev_err(bp->dev, "A previous firmware reset has not completed, aborting half open\n");
++		rc = -ENODEV;
++		goto half_open_err;
++	}
++
+ 	rc = bnxt_alloc_mem(bp, false);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "bnxt_alloc_mem err: %x\n", rc);
 -- 
 2.18.1
 
 
---0000000000006f172c05c76af138
+--00000000000082215605c76af1f9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -190,13 +191,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAUAduprNYEo1zlFS0R+dAGI1KH0Vd56
-QcM5pce5SJAmMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY1NFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMRHzyOqoEKbcAFi2jhugTRJabJ5OUOj
+ponBWLUEipqNMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1NVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQC1HUiIxrNNMq8VpTuBGmZXkDMlmygqoeNw0dXju0n69VGbE0cx
-Tdvj4oPLDvz4QFmIa1QGNQsCb3/rBt6aaAd3Mez8IkvxsL8UWc6ahDddnvSr30LEB/iGuaO8Oecv
-1joAPg3N4c8UEKpSFbQiWurVmrF426N7Zr1zpjh14iG65dDiEc/z8Tzgjyz1X/WfdeHtKVfUQgd3
-EPTaa2sCssXrOIAuA2YwGsDYf8PqlYt19fvysJeQswxLzMc3ERCJNwH3J2Tas9WGc9w0wS+DthdD
-a4+CSwYFGdlWpKpWoHp6HOCs7B8lUgEllpkqEeC2DKC1wQGrGfvv/g9zhLGcpbYV
---0000000000006f172c05c76af138--
+ATANBgkqhkiG9w0BAQEFAASCAQCl98gdEyZty0vc5Jqf7jAvO9uMF5Gr9oFwyXum+A4OeZw1hYm+
+TArp9CMRy56DazhGhWUC3B8bTmmgzqFWAT2HKtUPJbYW+z9aSwLEGoNiJUMONDItSYcHMU7vgLMe
+HSDUg0r8nABXJv5UbsLUSuOiorjLQ1F1oHqvr+YXR95tgE+0dgtZ2c5g1G1TEHtCFgcY7R0CQBiN
+ZKcLyhH+zmgRwS00kgdM3qVU/DqFNm8/S3BXW9KSdukjXSsCt/qIYkThB/yPjFI3vt3VsoANK8Gd
+488fvhp3xiJaRrNMcKWWy1mpTroBnPA8gNzNGvINtX9L8MYuGMcTtFvU2MAvji+4
+--00000000000082215605c76af1f9--
