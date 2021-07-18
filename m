@@ -2,37 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A96CF3CCB6F
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 00:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D923CCB52
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 00:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233396AbhGRWpe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 18 Jul 2021 18:45:34 -0400
-Received: from hera.pmlf.ba.gov.br ([201.65.244.136]:39266 "EHLO
-        hera.pmlf.ba.gov.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbhGRWpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 18:45:33 -0400
-X-Greylist: delayed 12284 seconds by postgrey-1.27 at vger.kernel.org; Sun, 18 Jul 2021 18:45:33 EDT
-Received: by hera.pmlf.ba.gov.br (Postfix, from userid 1114)
-        id 7E8C07BCA0; Sun, 18 Jul 2021 15:49:30 -0300 (BRT)
-X-Spam-Checker-Version: SpamAssassin 3.1.9 (2007-02-13) on PERSEU
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.2 required=2.0 tests=BAYES_00,MSGID_FROM_MTA_ID,
-        NO_REAL_NAME autolearn=no version=3.1.9
-Received: from [23.175.48.210] (unknown [23.175.48.210])
-        by hera.pmlf.ba.gov.br (Postfix) with ESMTP id 391637581B;
-        Sun, 18 Jul 2021 12:48:34 -0300 (BRT)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S232724AbhGRWgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 18:36:54 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:32934 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229585AbhGRWgv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Jul 2021 18:36:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ayhWRsSlF7QKCWEVGjS1pgeLkcfIT3hF0BxjwsBDYXg=; b=r+3K+R1Sh4bofVnfvDbNvpYGuW
+        S640NDtmdDe/c6Mev6Mh5j9x0dZSMz1T4jrkLAKT+Rku0pUmD6mGF91i01erqoQxfY0/DRbJWN++A
+        zs7V9ksOU3F6RY1kfzBCkoR+irrt7goKn1XZjjWgMqz1U9xqiKwXeXnxM4VgAXecOwVE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m5FM0-00DpcA-L2; Mon, 19 Jul 2021 00:33:44 +0200
+Date:   Mon, 19 Jul 2021 00:33:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <YPSsSL32QNBnx0xc@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <YPIAnq6r3KgQ5ivI@lunn.ch>
+ <f42099b8-5ba3-3514-e5fa-8d1be37192b5@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Dear Beloved        
-To:     Recipients <controladoria@gov.br>
-From:   "Jose" <controladoria@gov.br>
-Date:   Sun, 18 Jul 2021 06:58:48 -0700
-Reply-To: jossewailims@gmail.com
-Message-Id: <20210718154834.391637581B@hera.pmlf.ba.gov.br>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f42099b8-5ba3-3514-e5fa-8d1be37192b5@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I would like to work with you to carry out a promise I made to God by willing all that have the charity. God Bless You, God Bless You
+On Mon, Jul 19, 2021 at 12:10:52AM +0200, Heiner Kallweit wrote:
+> On 16.07.2021 23:56, Andrew Lunn wrote:
+> > On Fri, Jul 16, 2021 at 02:24:27PM -0700, Tony Nguyen wrote:
+> >> From: Kurt Kanzenbach <kurt@linutronix.de>
+> >>
+> >> Each i225 has three LEDs. Export them via the LED class framework.
+> >>
+> >> Each LED is controllable via sysfs. Example:
+> >>
+> >> $ cd /sys/class/leds/igc_led0
+> >> $ cat brightness      # Current Mode
+> >> $ cat max_brightness  # 15
+> >> $ echo 0 > brightness # Mode 0
+> >> $ echo 1 > brightness # Mode 1
+> >>
+> >> The brightness field here reflects the different LED modes ranging
+> >> from 0 to 15.
+> > 
+> > What do you mean by mode? Do you mean blink mode? Like On means 1G
+> > link, and it blinks for packet TX?
+> > 
+> Supposedly mode refers to a 4-bit bitfield in a LED control register
+> where each value 0 .. 15 stands for a different blink mode.
+> So you would need the datasheet to know which value to set.
+
+If the brightness is being abused to represent the blink mode, this
+patch is going to get my NACK. Unfortunately, i cannot find a
+datasheet for this chip to know what the LED control register actually
+does. So i'm waiting for a reply to my question.
+
+There is a broad agreement between the LED maintainers and the PHYLIB
+maintainers how Ethernet LEDs should be described with the hardware
+blinking the LED for different reasons. The LED trigger mechanisms
+should be used, one trigger per mode, and the trigger is then
+offloaded to the hardware.
+
+	  Andrew
