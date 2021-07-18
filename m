@@ -2,79 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4D03CC84D
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 11:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DED3CC857
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 11:34:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbhGRJaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 05:30:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44496 "EHLO mail.kernel.org"
+        id S231555AbhGRJg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 05:36:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229578AbhGRJaQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 05:30:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AC10A60C3F;
-        Sun, 18 Jul 2021 09:27:17 +0000 (UTC)
+        id S229578AbhGRJgz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Jul 2021 05:36:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EAFB0611AC;
+        Sun, 18 Jul 2021 09:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626600438;
-        bh=BUPAsZFr72/ZfDtgeCNzvRJEjiac1TFASEE8igMSwSk=;
+        s=k20201202; t=1626600837;
+        bh=C9vs+jm4iqSIHTHVlZgj2Q7epuO0aeP6olaAwjSBvhI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rrT8fDr/c4AP8C94pJ4zgcND1dZUX6KT60Ye7DApAdDNST00MnnB7TXCVSKEv+uC5
-         XpZctqiUJHJ++xEm9yCP7fJ6UXF/nasuxuDRlNoAIRNgHvKXQu/ryY+qJc+PND2v/3
-         AVNVY+xzK8V1UmTaVbTj2mDFXB1HnIwtyNYvFxcjH/MYkH4Y8t0kV834chhioMPnnv
-         KaUPviC7LMpUUju8ZMOuz9obijr9FNpU008XG8r+3oQVDJK+tqikNy1zeSmfxzrARY
-         qFDPAOICTSgL6C1OfkcoTGucXRB9abZ2Et6bzU6TQQK0nh0hDlQxg1zEfhWrMTyL8J
-         tlIu8DB4w3VDw==
-Date:   Sun, 18 Jul 2021 12:27:14 +0300
+        b=dJ1X5RBlw4eqiXH2P1aAqFLMWuHkwaj4M9MuyYMDs6vXzKp39r1zb7InpGrpOX0U1
+         Aa/fII51i417UZdBSf3cqgpWnkYJe1ZdtqtHQxwSJcSxpNYH5PwjzPmzpYmoIvTbWs
+         nS6jsTUqzvehurN2BJHF2UWSlUIrsAD/Xc2vVGcEhd8ApQkDyeuy0Xq6kSx2bE1N1w
+         CtbgZd/6Y4FnpcU8eWC7ubJu8xhoflPWAlQr9UYWk1U1fP1bKNuBRj25Hi3M7RCIuw
+         rgk1b3Xf9FwZ77IocmY9p2Vew4dynzKmgvp5IayMhprK3xK4pB+oa7xdKMdzrxBHZW
+         FAd5a+ePkKDPw==
+Date:   Sun, 18 Jul 2021 12:33:54 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Zhu Yanjun <zyjzyj2000@gmail.com>
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>,
-        Zhu Yanjun <yanjun.zhu@intel.com>, mustafa.ismail@intel.com,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        yanjun.zhu@linux.dev, Jakub Kicinski <kuba@kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 1/3] RDMA/irdma: change the returned type of
- irdma_sc_repost_aeq_entries to void
-Message-ID: <YPPz8klLCiIbEsCp@unreal>
-References: <20210714031130.1511109-1-yanjun.zhu@linux.dev>
- <20210714031130.1511109-2-yanjun.zhu@linux.dev>
- <YO6rEkoHgsYh+w37@unreal>
- <CAD=hENfFQD3XnSekpeapr1-vb+xuaJh+qXYGHa2MLAhqWwdcKg@mail.gmail.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     saeedm@nvidia.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/mlx5: Fix missing error code in
+ mlx5_devlink_eswitch_inline_mode_set()
+Message-ID: <YPP1glxuO+qJKx9v@unreal>
+References: <1626432728-118051-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAD=hENfFQD3XnSekpeapr1-vb+xuaJh+qXYGHa2MLAhqWwdcKg@mail.gmail.com>
+In-Reply-To: <1626432728-118051-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 05:23:33PM +0800, Zhu Yanjun wrote:
-> On Wed, Jul 14, 2021 at 5:15 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Tue, Jul 13, 2021 at 11:11:28PM -0400, yanjun.zhu@linux.dev wrote:
-> > > From: Zhu Yanjun <yanjun.zhu@linux.dev>
-> > >
-> > > The function irdma_sc_repost_aeq_entries always returns zero. So
-> > > the returned type is changed to void.
-> > >
-> > > Signed-off-by: Zhu Yanjun <yanjun.zhu@linux.dev>
-> > > ---
-> > >  drivers/infiniband/hw/irdma/ctrl.c | 4 +---
-> > >  drivers/infiniband/hw/irdma/type.h | 3 +--
-> > >  2 files changed, 2 insertions(+), 5 deletions(-)
-> >
-> > <...>
-> >
-> > > -enum irdma_status_code irdma_sc_repost_aeq_entries(struct irdma_sc_dev *dev,
-> > > -                                                u32 count);
-> >
-> > I clearly remember that Jakub asked for more than once to remo remove
-> > custom ice/irdma error codes. Did it happen? Can we get rid from them
-> > in RDMA too?
+On Fri, Jul 16, 2021 at 06:52:08PM +0800, Jiapeng Chong wrote:
+> The error code is missing in this code scenario, add the error code
+> '-EINVAL' to the return value 'err'.
 > 
-> No. This is not related with custom ice/irdma error codes.
+> Eliminate the follow smatch warning:
+> 
+> vers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c:3083
+> mlx5_devlink_eswitch_inline_mode_set() warn: missing error code 'err'.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+> index 7579f34..b38b6c1 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+> @@ -3079,8 +3079,10 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+>  
+>  	switch (MLX5_CAP_ETH(dev, wqe_inline_mode)) {
+>  	case MLX5_CAP_INLINE_MODE_NOT_REQUIRED:
+> -		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE)
+> +		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE) {
+> +			err = -EINVAL;
 
-I'm not talking about your specific change, but pointed to the fact that
-custom error codes are not cleaned despite multiple requests.
+This change is wrong, it should be err = 0;
+and please add Fixes line.
+Fixes: 8e0aa4bc959c ("net/mlx5: E-switch, Protect eswitch mode changes")
 
-Thanks
+>  			goto out;
+> +		}
+>  		fallthrough;
+>  	case MLX5_CAP_INLINE_MODE_L2:
+>  		NL_SET_ERR_MSG_MOD(extack, "Inline mode can't be set");
+> -- 
+> 1.8.3.1
+> 
