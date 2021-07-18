@@ -2,94 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35A93CCA73
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F533CCA74
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232312AbhGRTjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
+        id S232700AbhGRTjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbhGRTjv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:51 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EA3C061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id h6-20020a17090a6486b029017613554465so816350pjj.4
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
+        with ESMTP id S232040AbhGRTjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:52 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCE6C061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:53 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id a127so14349834pfa.10
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Hh9rG2EbBgTHz6YteXKWobEw4rt1UICIoqpTaWRs3ns=;
-        b=dj+B7O91nae6WwouqIHgjH2lYJtlItrWatucqi87RZGqaJzJXemHLgh70Yo1d4NzwV
-         ++mn+V0woY8jmnGqwAdz/KKLpECTXt6oU3ppUdCM5uXBQXbOqiyWS0h6nngoP9GsnjGz
-         TKFywnNThl7bf7th/pchxYErtUeBcXi4g+2VU=
+        bh=dERt6o2UteVPOsj5iZQehtuP4vuXB7YNcVjFqprJn+c=;
+        b=RzxroMmoyCsavmP1Km+RPtKZ3Q0LH7pea3O4IcVe4xlBsneH8zynqhOrrheOfJLgw4
+         PqkSxoyN7Wub6Ygzi/ryg2vW65ALEDiHShmR9CF1EKSLFZ3D4/QIancsfZKCSdbfXzyb
+         +vBxdLKW9QsQ1Dsagv6zl+HbeLQtJ0VqsP6Ac=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Hh9rG2EbBgTHz6YteXKWobEw4rt1UICIoqpTaWRs3ns=;
-        b=J8IFVGO37bauBYw2zdVztF60CkQ5D6s9HpPMqn3NitI5RoNduk4PdEpxIXrzj4w6Cl
-         4A7OBly3Eo4sHDdCtpgQxxHJr0ZJpju9Ue6Aow0duh9ICoOo1SbEszL9LqheLlmoaaxL
-         3FCQRDmLtzN9tauOloVeLnvzN7U0eVOPHu5n3b/8ZLp4X2ExFBm96KlJuW58HI3TlrUm
-         hdRR8Dc21kQMBhCGWAteLhRf6x1LtsVT/FirtU2TDYdFWj4Fkj0MuuAIRsxMAriejXil
-         5Z880y1JNgDV6nl3pwisXk6OAsNuTWza3DFsgSHogKFc5J/BD8FAR71OrQa9dHcxuJwB
-         1D7A==
-X-Gm-Message-State: AOAM531RjtVEfWQTKIH9rvc6ypyc+ZX83FqVn9kYbfU1no0j9KsdWCEy
-        qREvx/XACoNDd03SLuBjNhnGIQ==
-X-Google-Smtp-Source: ABdhPJyk/8LKfC44kGVBPgqXsq3fzZ40QZ2R6sjCn+OTfsXz2C/HkEgo9DLLmpG36Gi2TgORtHw+Ow==
-X-Received: by 2002:a17:90a:bd04:: with SMTP id y4mr27129067pjr.127.1626637011919;
-        Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
+        bh=dERt6o2UteVPOsj5iZQehtuP4vuXB7YNcVjFqprJn+c=;
+        b=J99CSUxURXxYw0Q/5eoK4rkNc4q6mbvYq3hpDU6PtzqVxmUF+Z4e4Dsxme+GsIg7Pm
+         9NNfyNljn3owcmQzd4BfKZrtgzBLfXGpYRn9+7S1ZQ81sJ3cYagsoAXqcd8umLTgh+8k
+         0qx+pWSWcXXAcKViJNlrAcn2R/eidfdT1VYjLHqtFgqO67+kFfujbjQzSuMIoavkdpNp
+         z4yVc8MY0Ej0/S8TgVaEfJc3Pn2EyUXd0Yh1lNMiHhC7I/GDEbTmZ8UdyaTYxszl7bIS
+         B0RSaTgfRd5jIMurOWL+Q/iwjKLRrIEfBXFzDij2fVjYKAg+4FqCiTpvnukf05+4gP1q
+         rq5w==
+X-Gm-Message-State: AOAM531mDKPHnzsui4ZCqjJKqAFyHyiqxp7pvA7ZVo9Jz/X+AkSWHkey
+        gy1JT3Kcn5CimHOx/a/bfa8GEicljyJ8cXaw
+X-Google-Smtp-Source: ABdhPJyC1WOWo/aIE/qSy9+4zDtL4CUvm1ROFIdnTtvmLtCJgVXZac+djByCdt4q4CkDySSjmUQ2Kg==
+X-Received: by 2002:a65:6a0b:: with SMTP id m11mr21525359pgu.380.1626637012956;
+        Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.50
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 4/9] bnxt_en: Add missing check for BNXT_STATE_ABORT_ERR in bnxt_fw_rset_task()
-Date:   Sun, 18 Jul 2021 15:36:28 -0400
-Message-Id: <1626636993-31926-5-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 5/9] bnxt_en: fix error path of FW reset
+Date:   Sun, 18 Jul 2021 15:36:29 -0400
+Message-Id: <1626636993-31926-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000050e33905c76af1fe"
+        boundary="0000000000005d1c9405c76af162"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000050e33905c76af1fe
+--0000000000005d1c9405c76af162
 
-In the BNXT_FW_RESET_STATE_POLL_VF state in bnxt_fw_reset_task() after all
-VFs have unregistered, we need to check for BNXT_STATE_ABORT_ERR after
-we acquire the rtnl_lock.  If the flag is set, we need to abort.
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-Fixes: 230d1f0de754 ("bnxt_en: Handle firmware reset.")
+When bnxt_open() fails in the firmware reset path, the driver needs to
+gracefully abort, but it is executing code that should be invoked only
+in the success path.  Define a function to abort FW reset and
+consolidate all error paths to call this new function.
+
+Fixes: dab62e7c2de7 ("bnxt_en: Implement faster recovery for firmware fatal error.")
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 31 +++++++++++++++--------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fdfb75a1608d..39908a3d9460 100644
+index 39908a3d9460..f2f1136fd492 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11992,6 +11992,10 @@ static void bnxt_fw_reset_task(struct work_struct *work)
- 		}
+@@ -11959,10 +11959,21 @@ static bool bnxt_fw_reset_timeout(struct bnxt *bp)
+ 			  (bp->fw_reset_max_dsecs * HZ / 10));
+ }
+ 
++static void bnxt_fw_reset_abort(struct bnxt *bp, int rc)
++{
++	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
++	if (bp->fw_reset_state != BNXT_FW_RESET_STATE_POLL_VF) {
++		bnxt_ulp_start(bp, rc);
++		bnxt_dl_health_status_update(bp, false);
++	}
++	bp->fw_reset_state = 0;
++	dev_close(bp->dev);
++}
++
+ static void bnxt_fw_reset_task(struct work_struct *work)
+ {
+ 	struct bnxt *bp = container_of(work, struct bnxt, fw_reset_task.work);
+-	int rc;
++	int rc = 0;
+ 
+ 	if (!test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
+ 		netdev_err(bp->dev, "bnxt_fw_reset_task() called when not in fw reset mode!\n");
+@@ -11993,8 +12004,9 @@ static void bnxt_fw_reset_task(struct work_struct *work)
  		bp->fw_reset_timestamp = jiffies;
  		rtnl_lock();
-+		if (test_bit(BNXT_STATE_ABORT_ERR, &bp->state)) {
-+			rtnl_unlock();
-+			goto fw_reset_abort;
-+		}
+ 		if (test_bit(BNXT_STATE_ABORT_ERR, &bp->state)) {
++			bnxt_fw_reset_abort(bp, rc);
+ 			rtnl_unlock();
+-			goto fw_reset_abort;
++			return;
+ 		}
  		bnxt_fw_reset_close(bp);
  		if (bp->fw_cap & BNXT_FW_CAP_ERR_RECOVER_RELOAD) {
- 			bp->fw_reset_state = BNXT_FW_RESET_STATE_POLL_FW_DOWN;
+@@ -12043,6 +12055,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 			if (val == 0xffff) {
+ 				if (bnxt_fw_reset_timeout(bp)) {
+ 					netdev_err(bp->dev, "Firmware reset aborted, PCI config space invalid\n");
++					rc = -ETIMEDOUT;
+ 					goto fw_reset_abort;
+ 				}
+ 				bnxt_queue_fw_reset_work(bp, HZ / 1000);
+@@ -12052,6 +12065,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 		clear_bit(BNXT_STATE_FW_FATAL_COND, &bp->state);
+ 		if (pci_enable_device(bp->pdev)) {
+ 			netdev_err(bp->dev, "Cannot re-enable PCI device\n");
++			rc = -ENODEV;
+ 			goto fw_reset_abort;
+ 		}
+ 		pci_set_master(bp->pdev);
+@@ -12078,9 +12092,10 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 		}
+ 		rc = bnxt_open(bp->dev);
+ 		if (rc) {
+-			netdev_err(bp->dev, "bnxt_open_nic() failed\n");
+-			clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+-			dev_close(bp->dev);
++			netdev_err(bp->dev, "bnxt_open() failed during FW reset\n");
++			bnxt_fw_reset_abort(bp, rc);
++			rtnl_unlock();
++			return;
+ 		}
+ 
+ 		bp->fw_reset_state = 0;
+@@ -12107,12 +12122,8 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 		netdev_err(bp->dev, "fw_health_status 0x%x\n", sts);
+ 	}
+ fw_reset_abort:
+-	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+-	if (bp->fw_reset_state != BNXT_FW_RESET_STATE_POLL_VF)
+-		bnxt_dl_health_status_update(bp, false);
+-	bp->fw_reset_state = 0;
+ 	rtnl_lock();
+-	dev_close(bp->dev);
++	bnxt_fw_reset_abort(bp, rc);
+ 	rtnl_unlock();
+ }
+ 
 -- 
 2.18.1
 
 
---00000000000050e33905c76af1fe
+--0000000000005d1c9405c76af162
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,13 +231,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDF03TpMmcYSQeqPab4PtxAvR0lPG30p
-fx2XtXgb8NFoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIu3Sh1X+NJ3+/ochq850MfCa7w4+rZH
+Z/NjpkY11DsVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBS1UDe23WKG4FWJIUiy2XQYY8liGbHzSMUc1gUOhJbM8eHE/QC
-HJQ7DVvmDijn5Tx5EUIkGmnO5Qz5wWScttQIRB2aKZSm475MZ+qfO7QuT97SNm2bYY9Vo5++h4Wu
-fLU3xNICQDU41RTrAigR+0FsZ1WsMByTp93hEcitCzUEhhunlGbtXduNxH1qVJv5sm9IDCDcOu0I
-8t2bWafBWkfh8RZs773M9KYhWVmU75YfpaPBq4Ox0CDz0FZUvpqzrsJA0uGxwvYtL2Iuy2/S8RKr
-CYnFSl1K1/moAs4CG5Hqp87XFPZNwxNc3cCslRZH+CI34YeZV3I69+DNSbaTUT5c
---00000000000050e33905c76af1fe--
+ATANBgkqhkiG9w0BAQEFAASCAQBeTex0MpqEseqmt7dnypKWCjRXCX2gJSbKtsFtt5qqo2V8zgVy
+wQMNIwHQvi0051IS5FtE0XInhLKwgAYngm1aBcFiTw/1AhdC5f7xWgnzAPS3+UlVDQwE7dT9Roy2
+i7rD9HVPWUk+5GI37VVw2fpqkK27qBNiealpeW6KIuPOTIauLo1BuZoHO4MmtzicwAzvpyhl/jpQ
+bkbb9vx/2SLPoMTCLfRqo/Y6uYwiZe07UplUm5QfTOvlvU1erRST1zxKuFzt6prRwFBQrTLKzwLE
+BmxfjDw0osGvyRDQK0/iZk30Rpf6LvfJHoDhXbLaUVSbagJ/wyc0myxOWK+XtvrQ
+--0000000000005d1c9405c76af162--
