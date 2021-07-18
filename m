@@ -2,76 +2,31491 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A520B3CC7EC
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 08:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DA33CC804
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 08:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbhGRGRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 02:17:30 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:45566 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229471AbhGRGR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 02:17:29 -0400
-X-UUID: a0765524b17f4f30bd823e108f2b26fc-20210718
-X-UUID: a0765524b17f4f30bd823e108f2b26fc-20210718
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 260700905; Sun, 18 Jul 2021 14:14:29 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sun, 18 Jul 2021 14:14:28 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 18 Jul 2021 14:14:22 +0800
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S230396AbhGRG4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 02:56:02 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:35942 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229480AbhGRG4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 02:56:01 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 196361FF87;
+        Sun, 18 Jul 2021 06:53:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1626591181; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=VJJI9ypcdIyeBkzIM4qfVur4VuIlZWhO/Dbjibf9rRM=;
+        b=f6l3MEmOg0qBqQSToAKO04qr9irBorVuIBjCYIbO3/L+s88scoyEA7ppcgie7CWGzleu7E
+        tdt2O86FoV8H/zs2VoMraGO8hBgpIyTq3tgDNRcqqEOMlvMU8p9l/fj9pQnYh8cfJQrxre
+        g9QdTdijYhKeibJnxY621X6i9cKR4qY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1626591181;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=VJJI9ypcdIyeBkzIM4qfVur4VuIlZWhO/Dbjibf9rRM=;
+        b=K8y6sbAsR7OTkyyrlRZyk5tO+E9RnIebF3NbJPUTn866vO5/00VcjrFg72TrWhFgjJQ5D+
+        uKtngkvdVMnru+Bw==
+Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
+        by relay2.suse.de (Postfix) with ESMTP id D747CA3B81;
+        Sun, 18 Jul 2021 06:52:59 +0000 (UTC)
+From:   Michal Suchanek <msuchanek@suse.de>
+To:     bpf@vger.kernel.org
+Cc:     Michal Suchanek <msuchanek@suse.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>, <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <frank-w@public-files.de>,
-        <steven.liu@mediatek.com>, Landen Chao <landen.chao@mediatek.com>
-Subject: [PATCH net, v2, RESEND] net: Update MAINTAINERS for MediaTek switch driver
-Date:   Sun, 18 Jul 2021 14:14:20 +0800
-Message-ID: <49e67daeadace13a9fa3f4553f1ec14c6a93bdc8.1622445132.git.landen.chao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-riscv@lists.infradead.org, clang-built-linux@googlegroups.com
+Subject: [PATCH] libbpf: Remove from kernel tree.
+Date:   Sun, 18 Jul 2021 08:50:39 +0200
+Message-Id: <20210718065039.15627-1-msuchanek@suse.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update maintainers for MediaTek switch driver with Deng Qingfang who
-contributes many useful patches (interrupt, VLAN, GPIO, and etc.) to
-enhance MediaTek switch driver and will help maintenance.
+libbpf shipped by the kernel is outdated and has problems. Remove it.
 
-Signed-off-by: Landen Chao <landen.chao@mediatek.com>
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Current version of libbpf is available at
+
+https://github.com/libbpf/libbpf
+
+Link: https://lore.kernel.org/bpf/b07015ebd7bbadb06a95a5105d9f6b4ed5817b2f.camel@debian.org/
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
 ---
-v1 -> v2: Remove Change-Id.
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ MAINTAINERS                      |     1 -
+ tools/lib/bpf/.gitignore         |     8 -
+ tools/lib/bpf/Build              |     3 -
+ tools/lib/bpf/Makefile           |   264 -
+ tools/lib/bpf/bpf.c              |  1054 ---
+ tools/lib/bpf/bpf.h              |   287 -
+ tools/lib/bpf/bpf_core_read.h    |   444 --
+ tools/lib/bpf/bpf_endian.h       |    99 -
+ tools/lib/bpf/bpf_gen_internal.h |    41 -
+ tools/lib/bpf/bpf_helpers.h      |   227 -
+ tools/lib/bpf/bpf_prog_linfo.c   |   246 -
+ tools/lib/bpf/bpf_tracing.h      |   460 --
+ tools/lib/bpf/btf.c              |  4638 -----------
+ tools/lib/bpf/btf.h              |   378 -
+ tools/lib/bpf/btf_dump.c         |  1444 ----
+ tools/lib/bpf/gen_loader.c       |   729 --
+ tools/lib/bpf/hashmap.c          |   241 -
+ tools/lib/bpf/hashmap.h          |   195 -
+ tools/lib/bpf/libbpf.c           | 11831 -----------------------------
+ tools/lib/bpf/libbpf.h           |   848 ---
+ tools/lib/bpf/libbpf.map         |   377 -
+ tools/lib/bpf/libbpf.pc.template |    12 -
+ tools/lib/bpf/libbpf_common.h    |    42 -
+ tools/lib/bpf/libbpf_errno.c     |    67 -
+ tools/lib/bpf/libbpf_internal.h  |   497 --
+ tools/lib/bpf/libbpf_legacy.h    |    59 -
+ tools/lib/bpf/libbpf_probes.c    |   358 -
+ tools/lib/bpf/linker.c           |  2892 -------
+ tools/lib/bpf/netlink.c          |   758 --
+ tools/lib/bpf/nlattr.c           |   195 -
+ tools/lib/bpf/nlattr.h           |   164 -
+ tools/lib/bpf/ringbuf.c          |   302 -
+ tools/lib/bpf/skel_internal.h    |   123 -
+ tools/lib/bpf/str_error.c        |    21 -
+ tools/lib/bpf/str_error.h        |     6 -
+ tools/lib/bpf/strset.c           |   176 -
+ tools/lib/bpf/strset.h           |    21 -
+ tools/lib/bpf/xsk.c              |  1266 ---
+ tools/lib/bpf/xsk.h              |   322 -
+ 39 files changed, 31096 deletions(-)
+ delete mode 100644 tools/lib/bpf/.gitignore
+ delete mode 100644 tools/lib/bpf/Build
+ delete mode 100644 tools/lib/bpf/Makefile
+ delete mode 100644 tools/lib/bpf/bpf.c
+ delete mode 100644 tools/lib/bpf/bpf.h
+ delete mode 100644 tools/lib/bpf/bpf_core_read.h
+ delete mode 100644 tools/lib/bpf/bpf_endian.h
+ delete mode 100644 tools/lib/bpf/bpf_gen_internal.h
+ delete mode 100644 tools/lib/bpf/bpf_helpers.h
+ delete mode 100644 tools/lib/bpf/bpf_prog_linfo.c
+ delete mode 100644 tools/lib/bpf/bpf_tracing.h
+ delete mode 100644 tools/lib/bpf/btf.c
+ delete mode 100644 tools/lib/bpf/btf.h
+ delete mode 100644 tools/lib/bpf/btf_dump.c
+ delete mode 100644 tools/lib/bpf/gen_loader.c
+ delete mode 100644 tools/lib/bpf/hashmap.c
+ delete mode 100644 tools/lib/bpf/hashmap.h
+ delete mode 100644 tools/lib/bpf/libbpf.c
+ delete mode 100644 tools/lib/bpf/libbpf.h
+ delete mode 100644 tools/lib/bpf/libbpf.map
+ delete mode 100644 tools/lib/bpf/libbpf.pc.template
+ delete mode 100644 tools/lib/bpf/libbpf_common.h
+ delete mode 100644 tools/lib/bpf/libbpf_errno.c
+ delete mode 100644 tools/lib/bpf/libbpf_internal.h
+ delete mode 100644 tools/lib/bpf/libbpf_legacy.h
+ delete mode 100644 tools/lib/bpf/libbpf_probes.c
+ delete mode 100644 tools/lib/bpf/linker.c
+ delete mode 100644 tools/lib/bpf/netlink.c
+ delete mode 100644 tools/lib/bpf/nlattr.c
+ delete mode 100644 tools/lib/bpf/nlattr.h
+ delete mode 100644 tools/lib/bpf/ringbuf.c
+ delete mode 100644 tools/lib/bpf/skel_internal.h
+ delete mode 100644 tools/lib/bpf/str_error.c
+ delete mode 100644 tools/lib/bpf/str_error.h
+ delete mode 100644 tools/lib/bpf/strset.c
+ delete mode 100644 tools/lib/bpf/strset.h
+ delete mode 100644 tools/lib/bpf/xsk.c
+ delete mode 100644 tools/lib/bpf/xsk.h
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index bd7aff0c120f..3315627ebb6b 100644
+index 6c8be735cc91..428871265b8e 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -11588,6 +11588,7 @@ F:	drivers/char/hw_random/mtk-rng.c
- MEDIATEK SWITCH DRIVER
- M:	Sean Wang <sean.wang@mediatek.com>
- M:	Landen Chao <landen.chao@mediatek.com>
-+M:	DENG Qingfang <dqfext@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/dsa/mt7530.*
+@@ -3372,7 +3372,6 @@ F:	net/sched/cls_bpf.c
+ F:	samples/bpf/
+ F:	scripts/bpf_doc.py
+ F:	tools/bpf/
+-F:	tools/lib/bpf/
+ F:	tools/testing/selftests/bpf/
+ N:	bpf
+ K:	bpf
+diff --git a/tools/lib/bpf/.gitignore b/tools/lib/bpf/.gitignore
+deleted file mode 100644
+index 5d4cfac671d5..000000000000
+--- a/tools/lib/bpf/.gitignore
++++ /dev/null
+@@ -1,8 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-libbpf_version.h
+-libbpf.pc
+-libbpf.so.*
+-TAGS
+-tags
+-cscope.*
+-/bpf_helper_defs.h
+diff --git a/tools/lib/bpf/Build b/tools/lib/bpf/Build
+deleted file mode 100644
+index 430f6874fa41..000000000000
+--- a/tools/lib/bpf/Build
++++ /dev/null
+@@ -1,3 +0,0 @@
+-libbpf-y := libbpf.o bpf.o nlattr.o btf.o libbpf_errno.o str_error.o \
+-	    netlink.o bpf_prog_linfo.o libbpf_probes.o xsk.o hashmap.o \
+-	    btf_dump.o ringbuf.o strset.o linker.o gen_loader.o
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+deleted file mode 100644
+index ec14aa725bb0..000000000000
+--- a/tools/lib/bpf/Makefile
++++ /dev/null
+@@ -1,264 +0,0 @@
+-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-# Most of this file is copied from tools/lib/traceevent/Makefile
+-
+-RM ?= rm
+-srctree = $(abs_srctree)
+-
+-LIBBPF_VERSION := $(shell \
+-	grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
+-	sort -rV | head -n1 | cut -d'_' -f2)
+-LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
+-
+-MAKEFLAGS += --no-print-directory
+-
+-# This will work when bpf is built in tools env. where srctree
+-# isn't set and when invoked from selftests build, where srctree
+-# is a ".". building_out_of_srctree is undefined for in srctree
+-# builds
+-ifndef building_out_of_srctree
+-srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+-srctree := $(patsubst %/,%,$(dir $(srctree)))
+-srctree := $(patsubst %/,%,$(dir $(srctree)))
+-#$(info Determined 'srctree' to be $(srctree))
+-endif
+-
+-INSTALL = install
+-
+-# Use DESTDIR for installing into a different root directory.
+-# This is useful for building a package. The program will be
+-# installed in this directory as if it was the root directory.
+-# Then the build tool can move it later.
+-DESTDIR ?=
+-DESTDIR_SQ = '$(subst ','\'',$(DESTDIR))'
+-
+-include $(srctree)/tools/scripts/Makefile.arch
+-
+-ifeq ($(LP64), 1)
+-  libdir_relative = lib64
+-else
+-  libdir_relative = lib
+-endif
+-
+-prefix ?= /usr/local
+-libdir = $(prefix)/$(libdir_relative)
+-man_dir = $(prefix)/share/man
+-man_dir_SQ = '$(subst ','\'',$(man_dir))'
+-
+-export man_dir man_dir_SQ INSTALL
+-export DESTDIR DESTDIR_SQ
+-
+-include $(srctree)/tools/scripts/Makefile.include
+-
+-# copy a bit from Linux kbuild
+-
+-ifeq ("$(origin V)", "command line")
+-  VERBOSE = $(V)
+-endif
+-ifndef VERBOSE
+-  VERBOSE = 0
+-endif
+-
+-INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
+-
+-export prefix libdir src obj
+-
+-# Shell quotes
+-libdir_SQ = $(subst ','\'',$(libdir))
+-libdir_relative_SQ = $(subst ','\'',$(libdir_relative))
+-
+-OBJ		= $@
+-N		=
+-
+-LIB_TARGET	= libbpf.a libbpf.so.$(LIBBPF_VERSION)
+-LIB_FILE	= libbpf.a libbpf.so*
+-PC_FILE		= libbpf.pc
+-
+-# Set compile option CFLAGS
+-ifdef EXTRA_CFLAGS
+-  CFLAGS := $(EXTRA_CFLAGS)
+-else
+-  CFLAGS := -g -O2
+-endif
+-
+-# Append required CFLAGS
+-override CFLAGS += $(EXTRA_WARNINGS) -Wno-switch-enum
+-override CFLAGS += -Werror -Wall
+-override CFLAGS += $(INCLUDES)
+-override CFLAGS += -fvisibility=hidden
+-override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+-
+-# flags specific for shared library
+-SHLIB_FLAGS := -DSHARED -fPIC
+-
+-ifeq ($(VERBOSE),1)
+-  Q =
+-else
+-  Q = @
+-endif
+-
+-# Disable command line variables (CFLAGS) override from top
+-# level Makefile (perf), otherwise build Makefile will get
+-# the same command line setup.
+-MAKEOVERRIDES=
+-
+-all:
+-
+-export srctree OUTPUT CC LD CFLAGS V
+-include $(srctree)/tools/build/Makefile.include
+-
+-SHARED_OBJDIR	:= $(OUTPUT)sharedobjs/
+-STATIC_OBJDIR	:= $(OUTPUT)staticobjs/
+-BPF_IN_SHARED	:= $(SHARED_OBJDIR)libbpf-in.o
+-BPF_IN_STATIC	:= $(STATIC_OBJDIR)libbpf-in.o
+-VERSION_SCRIPT	:= libbpf.map
+-BPF_HELPER_DEFS	:= $(OUTPUT)bpf_helper_defs.h
+-
+-LIB_TARGET	:= $(addprefix $(OUTPUT),$(LIB_TARGET))
+-LIB_FILE	:= $(addprefix $(OUTPUT),$(LIB_FILE))
+-PC_FILE		:= $(addprefix $(OUTPUT),$(PC_FILE))
+-
+-TAGS_PROG := $(if $(shell which etags 2>/dev/null),etags,ctags)
+-
+-GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
+-			   cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' | \
+-			   sed 's/\[.*\]//' | \
+-			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
+-			   sort -u | wc -l)
+-VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
+-			      sed 's/\[.*\]//' | \
+-			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
+-			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+-
+-CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
+-
+-all: fixdep
+-	$(Q)$(MAKE) all_cmd
+-
+-all_cmd: $(CMD_TARGETS) check
+-
+-$(BPF_IN_SHARED): force $(BPF_HELPER_DEFS)
+-	@(test -f ../../include/uapi/linux/bpf.h -a -f ../../../include/uapi/linux/bpf.h && ( \
+-	(diff -B ../../include/uapi/linux/bpf.h ../../../include/uapi/linux/bpf.h >/dev/null) || \
+-	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/bpf.h' differs from latest version at 'include/uapi/linux/bpf.h'" >&2 )) || true
+-	@(test -f ../../include/uapi/linux/bpf_common.h -a -f ../../../include/uapi/linux/bpf_common.h && ( \
+-	(diff -B ../../include/uapi/linux/bpf_common.h ../../../include/uapi/linux/bpf_common.h >/dev/null) || \
+-	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/bpf_common.h' differs from latest version at 'include/uapi/linux/bpf_common.h'" >&2 )) || true
+-	@(test -f ../../include/uapi/linux/netlink.h -a -f ../../../include/uapi/linux/netlink.h && ( \
+-	(diff -B ../../include/uapi/linux/netlink.h ../../../include/uapi/linux/netlink.h >/dev/null) || \
+-	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/netlink.h' differs from latest version at 'include/uapi/linux/netlink.h'" >&2 )) || true
+-	@(test -f ../../include/uapi/linux/if_link.h -a -f ../../../include/uapi/linux/if_link.h && ( \
+-	(diff -B ../../include/uapi/linux/if_link.h ../../../include/uapi/linux/if_link.h >/dev/null) || \
+-	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_link.h' differs from latest version at 'include/uapi/linux/if_link.h'" >&2 )) || true
+-	@(test -f ../../include/uapi/linux/if_xdp.h -a -f ../../../include/uapi/linux/if_xdp.h && ( \
+-	(diff -B ../../include/uapi/linux/if_xdp.h ../../../include/uapi/linux/if_xdp.h >/dev/null) || \
+-	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
+-	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
+-
+-$(BPF_IN_STATIC): force $(BPF_HELPER_DEFS)
+-	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(STATIC_OBJDIR)
+-
+-$(BPF_HELPER_DEFS): $(srctree)/tools/include/uapi/linux/bpf.h
+-	$(QUIET_GEN)$(srctree)/scripts/bpf_doc.py --header \
+-		--file $(srctree)/tools/include/uapi/linux/bpf.h > $(BPF_HELPER_DEFS)
+-
+-$(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
+-
+-$(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN_SHARED)
+-	$(QUIET_LINK)$(CC) $(LDFLAGS) \
+-		--shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
+-		-Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -lz -o $@
+-	@ln -sf $(@F) $(OUTPUT)libbpf.so
+-	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
+-
+-$(OUTPUT)libbpf.a: $(BPF_IN_STATIC)
+-	$(QUIET_LINK)$(RM) -f $@; $(AR) rcs $@ $^
+-
+-$(OUTPUT)libbpf.pc:
+-	$(QUIET_GEN)sed -e "s|@PREFIX@|$(prefix)|" \
+-		-e "s|@LIBDIR@|$(libdir_SQ)|" \
+-		-e "s|@VERSION@|$(LIBBPF_VERSION)|" \
+-		< libbpf.pc.template > $@
+-
+-check: check_abi
+-
+-check_abi: $(OUTPUT)libbpf.so
+-	@if [ "$(GLOBAL_SYM_COUNT)" != "$(VERSIONED_SYM_COUNT)" ]; then	 \
+-		echo "Warning: Num of global symbols in $(BPF_IN_SHARED)"	 \
+-		     "($(GLOBAL_SYM_COUNT)) does NOT match with num of"	 \
+-		     "versioned symbols in $^ ($(VERSIONED_SYM_COUNT))." \
+-		     "Please make sure all LIBBPF_API symbols are"	 \
+-		     "versioned in $(VERSION_SCRIPT)." >&2;		 \
+-		readelf -s --wide $(BPF_IN_SHARED) |			 \
+-		    cut -d "@" -f1 | sed 's/_v[0-9]_[0-9]_[0-9].*//' |	 \
+-		    sed 's/\[.*\]//' |					 \
+-		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
+-		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+-		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
+-		    sed 's/\[.*\]//' |					 \
+-		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
+-		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
+-		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
+-		diff -u $(OUTPUT)libbpf_global_syms.tmp			 \
+-		     $(OUTPUT)libbpf_versioned_syms.tmp;		 \
+-		rm $(OUTPUT)libbpf_global_syms.tmp			 \
+-		   $(OUTPUT)libbpf_versioned_syms.tmp;			 \
+-		exit 1;							 \
+-	fi
+-
+-define do_install_mkdir
+-	if [ ! -d '$(DESTDIR_SQ)$1' ]; then		\
+-		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$1';	\
+-	fi
+-endef
+-
+-define do_install
+-	if [ ! -d '$(DESTDIR_SQ)$2' ]; then		\
+-		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$2';	\
+-	fi;						\
+-	$(INSTALL) $(if $3,-m $3,) $1 '$(DESTDIR_SQ)$2'
+-endef
+-
+-install_lib: all_cmd
+-	$(call QUIET_INSTALL, $(LIB_TARGET)) \
+-		$(call do_install_mkdir,$(libdir_SQ)); \
+-		cp -fpR $(LIB_FILE) $(DESTDIR)$(libdir_SQ)
+-
+-INSTALL_HEADERS = bpf.h libbpf.h btf.h libbpf_common.h libbpf_legacy.h xsk.h \
+-		  bpf_helpers.h $(BPF_HELPER_DEFS) bpf_tracing.h	     \
+-		  bpf_endian.h bpf_core_read.h skel_internal.h
+-
+-install_headers: $(BPF_HELPER_DEFS)
+-	$(call QUIET_INSTALL, headers)					     \
+-		$(foreach hdr,$(INSTALL_HEADERS),			     \
+-			$(call do_install,$(hdr),$(prefix)/include/bpf,644);)
+-
+-install_pkgconfig: $(PC_FILE)
+-	$(call QUIET_INSTALL, $(PC_FILE)) \
+-		$(call do_install,$(PC_FILE),$(libdir_SQ)/pkgconfig,644)
+-
+-install: install_lib install_pkgconfig install_headers
+-
+-clean:
+-	$(call QUIET_CLEAN, libbpf) $(RM) -rf $(CMD_TARGETS)		     \
+-		*~ .*.d .*.cmd LIBBPF-CFLAGS $(BPF_HELPER_DEFS)		     \
+-		$(SHARED_OBJDIR) $(STATIC_OBJDIR)			     \
+-		$(addprefix $(OUTPUT),					     \
+-			    *.o *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) *.pc)
+-
+-PHONY += force cscope tags
+-force:
+-
+-cscope:
+-	ls *.c *.h > cscope.files
+-	cscope -b -q -I $(srctree)/include -f cscope.out
+-
+-tags:
+-	$(RM) -f TAGS tags
+-	ls *.c *.h | xargs $(TAGS_PROG) -a
+-
+-# Declare the contents of the .PHONY variable as phony.  We keep that
+-# information in a variable so we can use it in if_changed and friends.
+-.PHONY: $(PHONY)
+-
+-# Delete partially updated (corrupted) files on error
+-.DELETE_ON_ERROR:
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+deleted file mode 100644
+index 86dcac44f32f..000000000000
+--- a/tools/lib/bpf/bpf.c
++++ /dev/null
+@@ -1,1054 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * common eBPF ELF operations.
+- *
+- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
+- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
+- * Copyright (C) 2015 Huawei Inc.
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation;
+- * version 2.1 of the License (not later!)
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this program; if not,  see <http://www.gnu.org/licenses>
+- */
+-
+-#include <stdlib.h>
+-#include <string.h>
+-#include <memory.h>
+-#include <unistd.h>
+-#include <asm/unistd.h>
+-#include <errno.h>
+-#include <linux/bpf.h>
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-
+-/*
+- * When building perf, unistd.h is overridden. __NR_bpf is
+- * required to be defined explicitly.
+- */
+-#ifndef __NR_bpf
+-# if defined(__i386__)
+-#  define __NR_bpf 357
+-# elif defined(__x86_64__)
+-#  define __NR_bpf 321
+-# elif defined(__aarch64__)
+-#  define __NR_bpf 280
+-# elif defined(__sparc__)
+-#  define __NR_bpf 349
+-# elif defined(__s390__)
+-#  define __NR_bpf 351
+-# elif defined(__arc__)
+-#  define __NR_bpf 280
+-# else
+-#  error __NR_bpf not defined. libbpf does not support your arch.
+-# endif
+-#endif
+-
+-static inline __u64 ptr_to_u64(const void *ptr)
+-{
+-	return (__u64) (unsigned long) ptr;
+-}
+-
+-static inline int sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
+-			  unsigned int size)
+-{
+-	return syscall(__NR_bpf, cmd, attr, size);
+-}
+-
+-static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size)
+-{
+-	int retries = 5;
+-	int fd;
+-
+-	do {
+-		fd = sys_bpf(BPF_PROG_LOAD, attr, size);
+-	} while (fd < 0 && errno == EAGAIN && retries-- > 0);
+-
+-	return fd;
+-}
+-
+-int bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, '\0', sizeof(attr));
+-
+-	attr.map_type = create_attr->map_type;
+-	attr.key_size = create_attr->key_size;
+-	attr.value_size = create_attr->value_size;
+-	attr.max_entries = create_attr->max_entries;
+-	attr.map_flags = create_attr->map_flags;
+-	if (create_attr->name)
+-		memcpy(attr.map_name, create_attr->name,
+-		       min(strlen(create_attr->name), BPF_OBJ_NAME_LEN - 1));
+-	attr.numa_node = create_attr->numa_node;
+-	attr.btf_fd = create_attr->btf_fd;
+-	attr.btf_key_type_id = create_attr->btf_key_type_id;
+-	attr.btf_value_type_id = create_attr->btf_value_type_id;
+-	attr.map_ifindex = create_attr->map_ifindex;
+-	if (attr.map_type == BPF_MAP_TYPE_STRUCT_OPS)
+-		attr.btf_vmlinux_value_type_id =
+-			create_attr->btf_vmlinux_value_type_id;
+-	else
+-		attr.inner_map_fd = create_attr->inner_map_fd;
+-
+-	fd = sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_create_map_node(enum bpf_map_type map_type, const char *name,
+-			int key_size, int value_size, int max_entries,
+-			__u32 map_flags, int node)
+-{
+-	struct bpf_create_map_attr map_attr = {};
+-
+-	map_attr.name = name;
+-	map_attr.map_type = map_type;
+-	map_attr.map_flags = map_flags;
+-	map_attr.key_size = key_size;
+-	map_attr.value_size = value_size;
+-	map_attr.max_entries = max_entries;
+-	if (node >= 0) {
+-		map_attr.numa_node = node;
+-		map_attr.map_flags |= BPF_F_NUMA_NODE;
+-	}
+-
+-	return bpf_create_map_xattr(&map_attr);
+-}
+-
+-int bpf_create_map(enum bpf_map_type map_type, int key_size,
+-		   int value_size, int max_entries, __u32 map_flags)
+-{
+-	struct bpf_create_map_attr map_attr = {};
+-
+-	map_attr.map_type = map_type;
+-	map_attr.map_flags = map_flags;
+-	map_attr.key_size = key_size;
+-	map_attr.value_size = value_size;
+-	map_attr.max_entries = max_entries;
+-
+-	return bpf_create_map_xattr(&map_attr);
+-}
+-
+-int bpf_create_map_name(enum bpf_map_type map_type, const char *name,
+-			int key_size, int value_size, int max_entries,
+-			__u32 map_flags)
+-{
+-	struct bpf_create_map_attr map_attr = {};
+-
+-	map_attr.name = name;
+-	map_attr.map_type = map_type;
+-	map_attr.map_flags = map_flags;
+-	map_attr.key_size = key_size;
+-	map_attr.value_size = value_size;
+-	map_attr.max_entries = max_entries;
+-
+-	return bpf_create_map_xattr(&map_attr);
+-}
+-
+-int bpf_create_map_in_map_node(enum bpf_map_type map_type, const char *name,
+-			       int key_size, int inner_map_fd, int max_entries,
+-			       __u32 map_flags, int node)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, '\0', sizeof(attr));
+-
+-	attr.map_type = map_type;
+-	attr.key_size = key_size;
+-	attr.value_size = 4;
+-	attr.inner_map_fd = inner_map_fd;
+-	attr.max_entries = max_entries;
+-	attr.map_flags = map_flags;
+-	if (name)
+-		memcpy(attr.map_name, name,
+-		       min(strlen(name), BPF_OBJ_NAME_LEN - 1));
+-
+-	if (node >= 0) {
+-		attr.map_flags |= BPF_F_NUMA_NODE;
+-		attr.numa_node = node;
+-	}
+-
+-	fd = sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_create_map_in_map(enum bpf_map_type map_type, const char *name,
+-			  int key_size, int inner_map_fd, int max_entries,
+-			  __u32 map_flags)
+-{
+-	return bpf_create_map_in_map_node(map_type, name, key_size,
+-					  inner_map_fd, max_entries, map_flags,
+-					  -1);
+-}
+-
+-static void *
+-alloc_zero_tailing_info(const void *orecord, __u32 cnt,
+-			__u32 actual_rec_size, __u32 expected_rec_size)
+-{
+-	__u64 info_len = (__u64)actual_rec_size * cnt;
+-	void *info, *nrecord;
+-	int i;
+-
+-	info = malloc(info_len);
+-	if (!info)
+-		return NULL;
+-
+-	/* zero out bytes kernel does not understand */
+-	nrecord = info;
+-	for (i = 0; i < cnt; i++) {
+-		memcpy(nrecord, orecord, expected_rec_size);
+-		memset(nrecord + expected_rec_size, 0,
+-		       actual_rec_size - expected_rec_size);
+-		orecord += actual_rec_size;
+-		nrecord += actual_rec_size;
+-	}
+-
+-	return info;
+-}
+-
+-int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr)
+-{
+-	void *finfo = NULL, *linfo = NULL;
+-	union bpf_attr attr;
+-	int fd;
+-
+-	if (!load_attr->log_buf != !load_attr->log_buf_sz)
+-		return libbpf_err(-EINVAL);
+-
+-	if (load_attr->log_level > (4 | 2 | 1) || (load_attr->log_level && !load_attr->log_buf))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = load_attr->prog_type;
+-	attr.expected_attach_type = load_attr->expected_attach_type;
+-
+-	if (load_attr->attach_prog_fd)
+-		attr.attach_prog_fd = load_attr->attach_prog_fd;
+-	else
+-		attr.attach_btf_obj_fd = load_attr->attach_btf_obj_fd;
+-	attr.attach_btf_id = load_attr->attach_btf_id;
+-
+-	attr.prog_ifindex = load_attr->prog_ifindex;
+-	attr.kern_version = load_attr->kern_version;
+-
+-	attr.insn_cnt = (__u32)load_attr->insn_cnt;
+-	attr.insns = ptr_to_u64(load_attr->insns);
+-	attr.license = ptr_to_u64(load_attr->license);
+-
+-	attr.log_level = load_attr->log_level;
+-	if (attr.log_level) {
+-		attr.log_buf = ptr_to_u64(load_attr->log_buf);
+-		attr.log_size = load_attr->log_buf_sz;
+-	}
+-
+-	attr.prog_btf_fd = load_attr->prog_btf_fd;
+-	attr.prog_flags = load_attr->prog_flags;
+-
+-	attr.func_info_rec_size = load_attr->func_info_rec_size;
+-	attr.func_info_cnt = load_attr->func_info_cnt;
+-	attr.func_info = ptr_to_u64(load_attr->func_info);
+-
+-	attr.line_info_rec_size = load_attr->line_info_rec_size;
+-	attr.line_info_cnt = load_attr->line_info_cnt;
+-	attr.line_info = ptr_to_u64(load_attr->line_info);
+-
+-	if (load_attr->name)
+-		memcpy(attr.prog_name, load_attr->name,
+-		       min(strlen(load_attr->name), (size_t)BPF_OBJ_NAME_LEN - 1));
+-
+-	fd = sys_bpf_prog_load(&attr, sizeof(attr));
+-	if (fd >= 0)
+-		return fd;
+-
+-	/* After bpf_prog_load, the kernel may modify certain attributes
+-	 * to give user space a hint how to deal with loading failure.
+-	 * Check to see whether we can make some changes and load again.
+-	 */
+-	while (errno == E2BIG && (!finfo || !linfo)) {
+-		if (!finfo && attr.func_info_cnt &&
+-		    attr.func_info_rec_size < load_attr->func_info_rec_size) {
+-			/* try with corrected func info records */
+-			finfo = alloc_zero_tailing_info(load_attr->func_info,
+-							load_attr->func_info_cnt,
+-							load_attr->func_info_rec_size,
+-							attr.func_info_rec_size);
+-			if (!finfo) {
+-				errno = E2BIG;
+-				goto done;
+-			}
+-
+-			attr.func_info = ptr_to_u64(finfo);
+-			attr.func_info_rec_size = load_attr->func_info_rec_size;
+-		} else if (!linfo && attr.line_info_cnt &&
+-			   attr.line_info_rec_size <
+-			   load_attr->line_info_rec_size) {
+-			linfo = alloc_zero_tailing_info(load_attr->line_info,
+-							load_attr->line_info_cnt,
+-							load_attr->line_info_rec_size,
+-							attr.line_info_rec_size);
+-			if (!linfo) {
+-				errno = E2BIG;
+-				goto done;
+-			}
+-
+-			attr.line_info = ptr_to_u64(linfo);
+-			attr.line_info_rec_size = load_attr->line_info_rec_size;
+-		} else {
+-			break;
+-		}
+-
+-		fd = sys_bpf_prog_load(&attr, sizeof(attr));
+-		if (fd >= 0)
+-			goto done;
+-	}
+-
+-	if (load_attr->log_level || !load_attr->log_buf)
+-		goto done;
+-
+-	/* Try again with log */
+-	attr.log_buf = ptr_to_u64(load_attr->log_buf);
+-	attr.log_size = load_attr->log_buf_sz;
+-	attr.log_level = 1;
+-	load_attr->log_buf[0] = 0;
+-
+-	fd = sys_bpf_prog_load(&attr, sizeof(attr));
+-done:
+-	/* free() doesn't affect errno, so we don't need to restore it */
+-	free(finfo);
+-	free(linfo);
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_load_program_xattr(const struct bpf_load_program_attr *load_attr,
+-			   char *log_buf, size_t log_buf_sz)
+-{
+-	struct bpf_prog_load_params p = {};
+-
+-	if (!load_attr || !log_buf != !log_buf_sz)
+-		return libbpf_err(-EINVAL);
+-
+-	p.prog_type = load_attr->prog_type;
+-	p.expected_attach_type = load_attr->expected_attach_type;
+-	switch (p.prog_type) {
+-	case BPF_PROG_TYPE_STRUCT_OPS:
+-	case BPF_PROG_TYPE_LSM:
+-		p.attach_btf_id = load_attr->attach_btf_id;
+-		break;
+-	case BPF_PROG_TYPE_TRACING:
+-	case BPF_PROG_TYPE_EXT:
+-		p.attach_btf_id = load_attr->attach_btf_id;
+-		p.attach_prog_fd = load_attr->attach_prog_fd;
+-		break;
+-	default:
+-		p.prog_ifindex = load_attr->prog_ifindex;
+-		p.kern_version = load_attr->kern_version;
+-	}
+-	p.insn_cnt = load_attr->insns_cnt;
+-	p.insns = load_attr->insns;
+-	p.license = load_attr->license;
+-	p.log_level = load_attr->log_level;
+-	p.log_buf = log_buf;
+-	p.log_buf_sz = log_buf_sz;
+-	p.prog_btf_fd = load_attr->prog_btf_fd;
+-	p.func_info_rec_size = load_attr->func_info_rec_size;
+-	p.func_info_cnt = load_attr->func_info_cnt;
+-	p.func_info = load_attr->func_info;
+-	p.line_info_rec_size = load_attr->line_info_rec_size;
+-	p.line_info_cnt = load_attr->line_info_cnt;
+-	p.line_info = load_attr->line_info;
+-	p.name = load_attr->name;
+-	p.prog_flags = load_attr->prog_flags;
+-
+-	return libbpf__bpf_prog_load(&p);
+-}
+-
+-int bpf_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,
+-		     size_t insns_cnt, const char *license,
+-		     __u32 kern_version, char *log_buf,
+-		     size_t log_buf_sz)
+-{
+-	struct bpf_load_program_attr load_attr;
+-
+-	memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
+-	load_attr.prog_type = type;
+-	load_attr.expected_attach_type = 0;
+-	load_attr.name = NULL;
+-	load_attr.insns = insns;
+-	load_attr.insns_cnt = insns_cnt;
+-	load_attr.license = license;
+-	load_attr.kern_version = kern_version;
+-
+-	return bpf_load_program_xattr(&load_attr, log_buf, log_buf_sz);
+-}
+-
+-int bpf_verify_program(enum bpf_prog_type type, const struct bpf_insn *insns,
+-		       size_t insns_cnt, __u32 prog_flags, const char *license,
+-		       __u32 kern_version, char *log_buf, size_t log_buf_sz,
+-		       int log_level)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = type;
+-	attr.insn_cnt = (__u32)insns_cnt;
+-	attr.insns = ptr_to_u64(insns);
+-	attr.license = ptr_to_u64(license);
+-	attr.log_buf = ptr_to_u64(log_buf);
+-	attr.log_size = log_buf_sz;
+-	attr.log_level = log_level;
+-	log_buf[0] = 0;
+-	attr.kern_version = kern_version;
+-	attr.prog_flags = prog_flags;
+-
+-	fd = sys_bpf_prog_load(&attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_map_update_elem(int fd, const void *key, const void *value,
+-			__u64 flags)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.value = ptr_to_u64(value);
+-	attr.flags = flags;
+-
+-	ret = sys_bpf(BPF_MAP_UPDATE_ELEM, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_lookup_elem(int fd, const void *key, void *value)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.value = ptr_to_u64(value);
+-
+-	ret = sys_bpf(BPF_MAP_LOOKUP_ELEM, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_lookup_elem_flags(int fd, const void *key, void *value, __u64 flags)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.value = ptr_to_u64(value);
+-	attr.flags = flags;
+-
+-	ret = sys_bpf(BPF_MAP_LOOKUP_ELEM, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_lookup_and_delete_elem(int fd, const void *key, void *value)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.value = ptr_to_u64(value);
+-
+-	ret = sys_bpf(BPF_MAP_LOOKUP_AND_DELETE_ELEM, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_lookup_and_delete_elem_flags(int fd, const void *key, void *value, __u64 flags)
+-{
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.value = ptr_to_u64(value);
+-	attr.flags = flags;
+-
+-	return sys_bpf(BPF_MAP_LOOKUP_AND_DELETE_ELEM, &attr, sizeof(attr));
+-}
+-
+-int bpf_map_delete_elem(int fd, const void *key)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-
+-	ret = sys_bpf(BPF_MAP_DELETE_ELEM, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_get_next_key(int fd, const void *key, void *next_key)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-	attr.key = ptr_to_u64(key);
+-	attr.next_key = ptr_to_u64(next_key);
+-
+-	ret = sys_bpf(BPF_MAP_GET_NEXT_KEY, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_freeze(int fd)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_fd = fd;
+-
+-	ret = sys_bpf(BPF_MAP_FREEZE, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-static int bpf_map_batch_common(int cmd, int fd, void  *in_batch,
+-				void *out_batch, void *keys, void *values,
+-				__u32 *count,
+-				const struct bpf_map_batch_opts *opts)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!OPTS_VALID(opts, bpf_map_batch_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.batch.map_fd = fd;
+-	attr.batch.in_batch = ptr_to_u64(in_batch);
+-	attr.batch.out_batch = ptr_to_u64(out_batch);
+-	attr.batch.keys = ptr_to_u64(keys);
+-	attr.batch.values = ptr_to_u64(values);
+-	attr.batch.count = *count;
+-	attr.batch.elem_flags  = OPTS_GET(opts, elem_flags, 0);
+-	attr.batch.flags = OPTS_GET(opts, flags, 0);
+-
+-	ret = sys_bpf(cmd, &attr, sizeof(attr));
+-	*count = attr.batch.count;
+-
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_map_delete_batch(int fd, void *keys, __u32 *count,
+-			 const struct bpf_map_batch_opts *opts)
+-{
+-	return bpf_map_batch_common(BPF_MAP_DELETE_BATCH, fd, NULL,
+-				    NULL, keys, NULL, count, opts);
+-}
+-
+-int bpf_map_lookup_batch(int fd, void *in_batch, void *out_batch, void *keys,
+-			 void *values, __u32 *count,
+-			 const struct bpf_map_batch_opts *opts)
+-{
+-	return bpf_map_batch_common(BPF_MAP_LOOKUP_BATCH, fd, in_batch,
+-				    out_batch, keys, values, count, opts);
+-}
+-
+-int bpf_map_lookup_and_delete_batch(int fd, void *in_batch, void *out_batch,
+-				    void *keys, void *values, __u32 *count,
+-				    const struct bpf_map_batch_opts *opts)
+-{
+-	return bpf_map_batch_common(BPF_MAP_LOOKUP_AND_DELETE_BATCH,
+-				    fd, in_batch, out_batch, keys, values,
+-				    count, opts);
+-}
+-
+-int bpf_map_update_batch(int fd, void *keys, void *values, __u32 *count,
+-			 const struct bpf_map_batch_opts *opts)
+-{
+-	return bpf_map_batch_common(BPF_MAP_UPDATE_BATCH, fd, NULL, NULL,
+-				    keys, values, count, opts);
+-}
+-
+-int bpf_obj_pin(int fd, const char *pathname)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.pathname = ptr_to_u64((void *)pathname);
+-	attr.bpf_fd = fd;
+-
+-	ret = sys_bpf(BPF_OBJ_PIN, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_obj_get(const char *pathname)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.pathname = ptr_to_u64((void *)pathname);
+-
+-	fd = sys_bpf(BPF_OBJ_GET, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_prog_attach(int prog_fd, int target_fd, enum bpf_attach_type type,
+-		    unsigned int flags)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_prog_attach_opts, opts,
+-		.flags = flags,
+-	);
+-
+-	return bpf_prog_attach_xattr(prog_fd, target_fd, type, &opts);
+-}
+-
+-int bpf_prog_attach_xattr(int prog_fd, int target_fd,
+-			  enum bpf_attach_type type,
+-			  const struct bpf_prog_attach_opts *opts)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!OPTS_VALID(opts, bpf_prog_attach_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.target_fd	   = target_fd;
+-	attr.attach_bpf_fd = prog_fd;
+-	attr.attach_type   = type;
+-	attr.attach_flags  = OPTS_GET(opts, flags, 0);
+-	attr.replace_bpf_fd = OPTS_GET(opts, replace_prog_fd, 0);
+-
+-	ret = sys_bpf(BPF_PROG_ATTACH, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_prog_detach(int target_fd, enum bpf_attach_type type)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.target_fd	 = target_fd;
+-	attr.attach_type = type;
+-
+-	ret = sys_bpf(BPF_PROG_DETACH, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_prog_detach2(int prog_fd, int target_fd, enum bpf_attach_type type)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.target_fd	 = target_fd;
+-	attr.attach_bpf_fd = prog_fd;
+-	attr.attach_type = type;
+-
+-	ret = sys_bpf(BPF_PROG_DETACH, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_link_create(int prog_fd, int target_fd,
+-		    enum bpf_attach_type attach_type,
+-		    const struct bpf_link_create_opts *opts)
+-{
+-	__u32 target_btf_id, iter_info_len;
+-	union bpf_attr attr;
+-	int fd;
+-
+-	if (!OPTS_VALID(opts, bpf_link_create_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	iter_info_len = OPTS_GET(opts, iter_info_len, 0);
+-	target_btf_id = OPTS_GET(opts, target_btf_id, 0);
+-
+-	if (iter_info_len && target_btf_id)
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.link_create.prog_fd = prog_fd;
+-	attr.link_create.target_fd = target_fd;
+-	attr.link_create.attach_type = attach_type;
+-	attr.link_create.flags = OPTS_GET(opts, flags, 0);
+-
+-	if (iter_info_len) {
+-		attr.link_create.iter_info =
+-			ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
+-		attr.link_create.iter_info_len = iter_info_len;
+-	} else if (target_btf_id) {
+-		attr.link_create.target_btf_id = target_btf_id;
+-	}
+-
+-	fd = sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_link_detach(int link_fd)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.link_detach.link_fd = link_fd;
+-
+-	ret = sys_bpf(BPF_LINK_DETACH, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_link_update(int link_fd, int new_prog_fd,
+-		    const struct bpf_link_update_opts *opts)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!OPTS_VALID(opts, bpf_link_update_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.link_update.link_fd = link_fd;
+-	attr.link_update.new_prog_fd = new_prog_fd;
+-	attr.link_update.flags = OPTS_GET(opts, flags, 0);
+-	attr.link_update.old_prog_fd = OPTS_GET(opts, old_prog_fd, 0);
+-
+-	ret = sys_bpf(BPF_LINK_UPDATE, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_iter_create(int link_fd)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.iter_create.link_fd = link_fd;
+-
+-	fd = sys_bpf(BPF_ITER_CREATE, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_prog_query(int target_fd, enum bpf_attach_type type, __u32 query_flags,
+-		   __u32 *attach_flags, __u32 *prog_ids, __u32 *prog_cnt)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.query.target_fd	= target_fd;
+-	attr.query.attach_type	= type;
+-	attr.query.query_flags	= query_flags;
+-	attr.query.prog_cnt	= *prog_cnt;
+-	attr.query.prog_ids	= ptr_to_u64(prog_ids);
+-
+-	ret = sys_bpf(BPF_PROG_QUERY, &attr, sizeof(attr));
+-
+-	if (attach_flags)
+-		*attach_flags = attr.query.attach_flags;
+-	*prog_cnt = attr.query.prog_cnt;
+-
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_prog_test_run(int prog_fd, int repeat, void *data, __u32 size,
+-		      void *data_out, __u32 *size_out, __u32 *retval,
+-		      __u32 *duration)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.test.prog_fd = prog_fd;
+-	attr.test.data_in = ptr_to_u64(data);
+-	attr.test.data_out = ptr_to_u64(data_out);
+-	attr.test.data_size_in = size;
+-	attr.test.repeat = repeat;
+-
+-	ret = sys_bpf(BPF_PROG_TEST_RUN, &attr, sizeof(attr));
+-
+-	if (size_out)
+-		*size_out = attr.test.data_size_out;
+-	if (retval)
+-		*retval = attr.test.retval;
+-	if (duration)
+-		*duration = attr.test.duration;
+-
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!test_attr->data_out && test_attr->data_size_out > 0)
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.test.prog_fd = test_attr->prog_fd;
+-	attr.test.data_in = ptr_to_u64(test_attr->data_in);
+-	attr.test.data_out = ptr_to_u64(test_attr->data_out);
+-	attr.test.data_size_in = test_attr->data_size_in;
+-	attr.test.data_size_out = test_attr->data_size_out;
+-	attr.test.ctx_in = ptr_to_u64(test_attr->ctx_in);
+-	attr.test.ctx_out = ptr_to_u64(test_attr->ctx_out);
+-	attr.test.ctx_size_in = test_attr->ctx_size_in;
+-	attr.test.ctx_size_out = test_attr->ctx_size_out;
+-	attr.test.repeat = test_attr->repeat;
+-
+-	ret = sys_bpf(BPF_PROG_TEST_RUN, &attr, sizeof(attr));
+-
+-	test_attr->data_size_out = attr.test.data_size_out;
+-	test_attr->ctx_size_out = attr.test.ctx_size_out;
+-	test_attr->retval = attr.test.retval;
+-	test_attr->duration = attr.test.duration;
+-
+-	return libbpf_err_errno(ret);
+-}
+-
+-int bpf_prog_test_run_opts(int prog_fd, struct bpf_test_run_opts *opts)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!OPTS_VALID(opts, bpf_test_run_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.test.prog_fd = prog_fd;
+-	attr.test.cpu = OPTS_GET(opts, cpu, 0);
+-	attr.test.flags = OPTS_GET(opts, flags, 0);
+-	attr.test.repeat = OPTS_GET(opts, repeat, 0);
+-	attr.test.duration = OPTS_GET(opts, duration, 0);
+-	attr.test.ctx_size_in = OPTS_GET(opts, ctx_size_in, 0);
+-	attr.test.ctx_size_out = OPTS_GET(opts, ctx_size_out, 0);
+-	attr.test.data_size_in = OPTS_GET(opts, data_size_in, 0);
+-	attr.test.data_size_out = OPTS_GET(opts, data_size_out, 0);
+-	attr.test.ctx_in = ptr_to_u64(OPTS_GET(opts, ctx_in, NULL));
+-	attr.test.ctx_out = ptr_to_u64(OPTS_GET(opts, ctx_out, NULL));
+-	attr.test.data_in = ptr_to_u64(OPTS_GET(opts, data_in, NULL));
+-	attr.test.data_out = ptr_to_u64(OPTS_GET(opts, data_out, NULL));
+-
+-	ret = sys_bpf(BPF_PROG_TEST_RUN, &attr, sizeof(attr));
+-
+-	OPTS_SET(opts, data_size_out, attr.test.data_size_out);
+-	OPTS_SET(opts, ctx_size_out, attr.test.ctx_size_out);
+-	OPTS_SET(opts, duration, attr.test.duration);
+-	OPTS_SET(opts, retval, attr.test.retval);
+-
+-	return libbpf_err_errno(ret);
+-}
+-
+-static int bpf_obj_get_next_id(__u32 start_id, __u32 *next_id, int cmd)
+-{
+-	union bpf_attr attr;
+-	int err;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.start_id = start_id;
+-
+-	err = sys_bpf(cmd, &attr, sizeof(attr));
+-	if (!err)
+-		*next_id = attr.next_id;
+-
+-	return libbpf_err_errno(err);
+-}
+-
+-int bpf_prog_get_next_id(__u32 start_id, __u32 *next_id)
+-{
+-	return bpf_obj_get_next_id(start_id, next_id, BPF_PROG_GET_NEXT_ID);
+-}
+-
+-int bpf_map_get_next_id(__u32 start_id, __u32 *next_id)
+-{
+-	return bpf_obj_get_next_id(start_id, next_id, BPF_MAP_GET_NEXT_ID);
+-}
+-
+-int bpf_btf_get_next_id(__u32 start_id, __u32 *next_id)
+-{
+-	return bpf_obj_get_next_id(start_id, next_id, BPF_BTF_GET_NEXT_ID);
+-}
+-
+-int bpf_link_get_next_id(__u32 start_id, __u32 *next_id)
+-{
+-	return bpf_obj_get_next_id(start_id, next_id, BPF_LINK_GET_NEXT_ID);
+-}
+-
+-int bpf_prog_get_fd_by_id(__u32 id)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_id = id;
+-
+-	fd = sys_bpf(BPF_PROG_GET_FD_BY_ID, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_map_get_fd_by_id(__u32 id)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.map_id = id;
+-
+-	fd = sys_bpf(BPF_MAP_GET_FD_BY_ID, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_btf_get_fd_by_id(__u32 id)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.btf_id = id;
+-
+-	fd = sys_bpf(BPF_BTF_GET_FD_BY_ID, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_link_get_fd_by_id(__u32 id)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.link_id = id;
+-
+-	fd = sys_bpf(BPF_LINK_GET_FD_BY_ID, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_obj_get_info_by_fd(int bpf_fd, void *info, __u32 *info_len)
+-{
+-	union bpf_attr attr;
+-	int err;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.info.bpf_fd = bpf_fd;
+-	attr.info.info_len = *info_len;
+-	attr.info.info = ptr_to_u64(info);
+-
+-	err = sys_bpf(BPF_OBJ_GET_INFO_BY_FD, &attr, sizeof(attr));
+-
+-	if (!err)
+-		*info_len = attr.info.info_len;
+-
+-	return libbpf_err_errno(err);
+-}
+-
+-int bpf_raw_tracepoint_open(const char *name, int prog_fd)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.raw_tracepoint.name = ptr_to_u64(name);
+-	attr.raw_tracepoint.prog_fd = prog_fd;
+-
+-	fd = sys_bpf(BPF_RAW_TRACEPOINT_OPEN, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_load_btf(const void *btf, __u32 btf_size, char *log_buf, __u32 log_buf_size,
+-		 bool do_log)
+-{
+-	union bpf_attr attr = {};
+-	int fd;
+-
+-	attr.btf = ptr_to_u64(btf);
+-	attr.btf_size = btf_size;
+-
+-retry:
+-	if (do_log && log_buf && log_buf_size) {
+-		attr.btf_log_level = 1;
+-		attr.btf_log_size = log_buf_size;
+-		attr.btf_log_buf = ptr_to_u64(log_buf);
+-	}
+-
+-	fd = sys_bpf(BPF_BTF_LOAD, &attr, sizeof(attr));
+-
+-	if (fd < 0 && !do_log && log_buf && log_buf_size) {
+-		do_log = true;
+-		goto retry;
+-	}
+-
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf, __u32 *buf_len,
+-		      __u32 *prog_id, __u32 *fd_type, __u64 *probe_offset,
+-		      __u64 *probe_addr)
+-{
+-	union bpf_attr attr = {};
+-	int err;
+-
+-	attr.task_fd_query.pid = pid;
+-	attr.task_fd_query.fd = fd;
+-	attr.task_fd_query.flags = flags;
+-	attr.task_fd_query.buf = ptr_to_u64(buf);
+-	attr.task_fd_query.buf_len = *buf_len;
+-
+-	err = sys_bpf(BPF_TASK_FD_QUERY, &attr, sizeof(attr));
+-
+-	*buf_len = attr.task_fd_query.buf_len;
+-	*prog_id = attr.task_fd_query.prog_id;
+-	*fd_type = attr.task_fd_query.fd_type;
+-	*probe_offset = attr.task_fd_query.probe_offset;
+-	*probe_addr = attr.task_fd_query.probe_addr;
+-
+-	return libbpf_err_errno(err);
+-}
+-
+-int bpf_enable_stats(enum bpf_stats_type type)
+-{
+-	union bpf_attr attr;
+-	int fd;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.enable_stats.type = type;
+-
+-	fd = sys_bpf(BPF_ENABLE_STATS, &attr, sizeof(attr));
+-	return libbpf_err_errno(fd);
+-}
+-
+-int bpf_prog_bind_map(int prog_fd, int map_fd,
+-		      const struct bpf_prog_bind_opts *opts)
+-{
+-	union bpf_attr attr;
+-	int ret;
+-
+-	if (!OPTS_VALID(opts, bpf_prog_bind_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_bind_map.prog_fd = prog_fd;
+-	attr.prog_bind_map.map_fd = map_fd;
+-	attr.prog_bind_map.flags = OPTS_GET(opts, flags, 0);
+-
+-	ret = sys_bpf(BPF_PROG_BIND_MAP, &attr, sizeof(attr));
+-	return libbpf_err_errno(ret);
+-}
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+deleted file mode 100644
+index 4f758f8f50cd..000000000000
+--- a/tools/lib/bpf/bpf.h
++++ /dev/null
+@@ -1,287 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * common eBPF ELF operations.
+- *
+- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
+- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
+- * Copyright (C) 2015 Huawei Inc.
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation;
+- * version 2.1 of the License (not later!)
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU Lesser General Public License for more details.
+- *
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this program; if not,  see <http://www.gnu.org/licenses>
+- */
+-#ifndef __LIBBPF_BPF_H
+-#define __LIBBPF_BPF_H
+-
+-#include <linux/bpf.h>
+-#include <stdbool.h>
+-#include <stddef.h>
+-#include <stdint.h>
+-
+-#include "libbpf_common.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-struct bpf_create_map_attr {
+-	const char *name;
+-	enum bpf_map_type map_type;
+-	__u32 map_flags;
+-	__u32 key_size;
+-	__u32 value_size;
+-	__u32 max_entries;
+-	__u32 numa_node;
+-	__u32 btf_fd;
+-	__u32 btf_key_type_id;
+-	__u32 btf_value_type_id;
+-	__u32 map_ifindex;
+-	union {
+-		__u32 inner_map_fd;
+-		__u32 btf_vmlinux_value_type_id;
+-	};
+-};
+-
+-LIBBPF_API int
+-bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr);
+-LIBBPF_API int bpf_create_map_node(enum bpf_map_type map_type, const char *name,
+-				   int key_size, int value_size,
+-				   int max_entries, __u32 map_flags, int node);
+-LIBBPF_API int bpf_create_map_name(enum bpf_map_type map_type, const char *name,
+-				   int key_size, int value_size,
+-				   int max_entries, __u32 map_flags);
+-LIBBPF_API int bpf_create_map(enum bpf_map_type map_type, int key_size,
+-			      int value_size, int max_entries, __u32 map_flags);
+-LIBBPF_API int bpf_create_map_in_map_node(enum bpf_map_type map_type,
+-					  const char *name, int key_size,
+-					  int inner_map_fd, int max_entries,
+-					  __u32 map_flags, int node);
+-LIBBPF_API int bpf_create_map_in_map(enum bpf_map_type map_type,
+-				     const char *name, int key_size,
+-				     int inner_map_fd, int max_entries,
+-				     __u32 map_flags);
+-
+-struct bpf_load_program_attr {
+-	enum bpf_prog_type prog_type;
+-	enum bpf_attach_type expected_attach_type;
+-	const char *name;
+-	const struct bpf_insn *insns;
+-	size_t insns_cnt;
+-	const char *license;
+-	union {
+-		__u32 kern_version;
+-		__u32 attach_prog_fd;
+-	};
+-	union {
+-		__u32 prog_ifindex;
+-		__u32 attach_btf_id;
+-	};
+-	__u32 prog_btf_fd;
+-	__u32 func_info_rec_size;
+-	const void *func_info;
+-	__u32 func_info_cnt;
+-	__u32 line_info_rec_size;
+-	const void *line_info;
+-	__u32 line_info_cnt;
+-	__u32 log_level;
+-	__u32 prog_flags;
+-};
+-
+-/* Flags to direct loading requirements */
+-#define MAPS_RELAX_COMPAT	0x01
+-
+-/* Recommend log buffer size */
+-#define BPF_LOG_BUF_SIZE (UINT32_MAX >> 8) /* verifier maximum in kernels <= 5.1 */
+-LIBBPF_API int
+-bpf_load_program_xattr(const struct bpf_load_program_attr *load_attr,
+-		       char *log_buf, size_t log_buf_sz);
+-LIBBPF_API int bpf_load_program(enum bpf_prog_type type,
+-				const struct bpf_insn *insns, size_t insns_cnt,
+-				const char *license, __u32 kern_version,
+-				char *log_buf, size_t log_buf_sz);
+-LIBBPF_API int bpf_verify_program(enum bpf_prog_type type,
+-				  const struct bpf_insn *insns,
+-				  size_t insns_cnt, __u32 prog_flags,
+-				  const char *license, __u32 kern_version,
+-				  char *log_buf, size_t log_buf_sz,
+-				  int log_level);
+-
+-LIBBPF_API int bpf_map_update_elem(int fd, const void *key, const void *value,
+-				   __u64 flags);
+-
+-LIBBPF_API int bpf_map_lookup_elem(int fd, const void *key, void *value);
+-LIBBPF_API int bpf_map_lookup_elem_flags(int fd, const void *key, void *value,
+-					 __u64 flags);
+-LIBBPF_API int bpf_map_lookup_and_delete_elem(int fd, const void *key,
+-					      void *value);
+-LIBBPF_API int bpf_map_lookup_and_delete_elem_flags(int fd, const void *key,
+-						    void *value, __u64 flags);
+-LIBBPF_API int bpf_map_delete_elem(int fd, const void *key);
+-LIBBPF_API int bpf_map_get_next_key(int fd, const void *key, void *next_key);
+-LIBBPF_API int bpf_map_freeze(int fd);
+-
+-struct bpf_map_batch_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	__u64 elem_flags;
+-	__u64 flags;
+-};
+-#define bpf_map_batch_opts__last_field flags
+-
+-LIBBPF_API int bpf_map_delete_batch(int fd, void *keys,
+-				    __u32 *count,
+-				    const struct bpf_map_batch_opts *opts);
+-LIBBPF_API int bpf_map_lookup_batch(int fd, void *in_batch, void *out_batch,
+-				    void *keys, void *values, __u32 *count,
+-				    const struct bpf_map_batch_opts *opts);
+-LIBBPF_API int bpf_map_lookup_and_delete_batch(int fd, void *in_batch,
+-					void *out_batch, void *keys,
+-					void *values, __u32 *count,
+-					const struct bpf_map_batch_opts *opts);
+-LIBBPF_API int bpf_map_update_batch(int fd, void *keys, void *values,
+-				    __u32 *count,
+-				    const struct bpf_map_batch_opts *opts);
+-
+-LIBBPF_API int bpf_obj_pin(int fd, const char *pathname);
+-LIBBPF_API int bpf_obj_get(const char *pathname);
+-
+-struct bpf_prog_attach_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	unsigned int flags;
+-	int replace_prog_fd;
+-};
+-#define bpf_prog_attach_opts__last_field replace_prog_fd
+-
+-LIBBPF_API int bpf_prog_attach(int prog_fd, int attachable_fd,
+-			       enum bpf_attach_type type, unsigned int flags);
+-LIBBPF_API int bpf_prog_attach_xattr(int prog_fd, int attachable_fd,
+-				     enum bpf_attach_type type,
+-				     const struct bpf_prog_attach_opts *opts);
+-LIBBPF_API int bpf_prog_detach(int attachable_fd, enum bpf_attach_type type);
+-LIBBPF_API int bpf_prog_detach2(int prog_fd, int attachable_fd,
+-				enum bpf_attach_type type);
+-
+-union bpf_iter_link_info; /* defined in up-to-date linux/bpf.h */
+-struct bpf_link_create_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	__u32 flags;
+-	union bpf_iter_link_info *iter_info;
+-	__u32 iter_info_len;
+-	__u32 target_btf_id;
+-};
+-#define bpf_link_create_opts__last_field target_btf_id
+-
+-LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
+-			       enum bpf_attach_type attach_type,
+-			       const struct bpf_link_create_opts *opts);
+-
+-LIBBPF_API int bpf_link_detach(int link_fd);
+-
+-struct bpf_link_update_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	__u32 flags;	   /* extra flags */
+-	__u32 old_prog_fd; /* expected old program FD */
+-};
+-#define bpf_link_update_opts__last_field old_prog_fd
+-
+-LIBBPF_API int bpf_link_update(int link_fd, int new_prog_fd,
+-			       const struct bpf_link_update_opts *opts);
+-
+-LIBBPF_API int bpf_iter_create(int link_fd);
+-
+-struct bpf_prog_test_run_attr {
+-	int prog_fd;
+-	int repeat;
+-	const void *data_in;
+-	__u32 data_size_in;
+-	void *data_out;      /* optional */
+-	__u32 data_size_out; /* in: max length of data_out
+-			      * out: length of data_out */
+-	__u32 retval;        /* out: return code of the BPF program */
+-	__u32 duration;      /* out: average per repetition in ns */
+-	const void *ctx_in; /* optional */
+-	__u32 ctx_size_in;
+-	void *ctx_out;      /* optional */
+-	__u32 ctx_size_out; /* in: max length of ctx_out
+-			     * out: length of cxt_out */
+-};
+-
+-LIBBPF_API int bpf_prog_test_run_xattr(struct bpf_prog_test_run_attr *test_attr);
+-
+-/*
+- * bpf_prog_test_run does not check that data_out is large enough. Consider
+- * using bpf_prog_test_run_xattr instead.
+- */
+-LIBBPF_API int bpf_prog_test_run(int prog_fd, int repeat, void *data,
+-				 __u32 size, void *data_out, __u32 *size_out,
+-				 __u32 *retval, __u32 *duration);
+-LIBBPF_API int bpf_prog_get_next_id(__u32 start_id, __u32 *next_id);
+-LIBBPF_API int bpf_map_get_next_id(__u32 start_id, __u32 *next_id);
+-LIBBPF_API int bpf_btf_get_next_id(__u32 start_id, __u32 *next_id);
+-LIBBPF_API int bpf_link_get_next_id(__u32 start_id, __u32 *next_id);
+-LIBBPF_API int bpf_prog_get_fd_by_id(__u32 id);
+-LIBBPF_API int bpf_map_get_fd_by_id(__u32 id);
+-LIBBPF_API int bpf_btf_get_fd_by_id(__u32 id);
+-LIBBPF_API int bpf_link_get_fd_by_id(__u32 id);
+-LIBBPF_API int bpf_obj_get_info_by_fd(int bpf_fd, void *info, __u32 *info_len);
+-LIBBPF_API int bpf_prog_query(int target_fd, enum bpf_attach_type type,
+-			      __u32 query_flags, __u32 *attach_flags,
+-			      __u32 *prog_ids, __u32 *prog_cnt);
+-LIBBPF_API int bpf_raw_tracepoint_open(const char *name, int prog_fd);
+-LIBBPF_API int bpf_load_btf(const void *btf, __u32 btf_size, char *log_buf,
+-			    __u32 log_buf_size, bool do_log);
+-LIBBPF_API int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf,
+-				 __u32 *buf_len, __u32 *prog_id, __u32 *fd_type,
+-				 __u64 *probe_offset, __u64 *probe_addr);
+-
+-enum bpf_stats_type; /* defined in up-to-date linux/bpf.h */
+-LIBBPF_API int bpf_enable_stats(enum bpf_stats_type type);
+-
+-struct bpf_prog_bind_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	__u32 flags;
+-};
+-#define bpf_prog_bind_opts__last_field flags
+-
+-LIBBPF_API int bpf_prog_bind_map(int prog_fd, int map_fd,
+-				 const struct bpf_prog_bind_opts *opts);
+-
+-struct bpf_test_run_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	const void *data_in; /* optional */
+-	void *data_out;      /* optional */
+-	__u32 data_size_in;
+-	__u32 data_size_out; /* in: max length of data_out
+-			      * out: length of data_out
+-			      */
+-	const void *ctx_in; /* optional */
+-	void *ctx_out;      /* optional */
+-	__u32 ctx_size_in;
+-	__u32 ctx_size_out; /* in: max length of ctx_out
+-			     * out: length of cxt_out
+-			     */
+-	__u32 retval;        /* out: return code of the BPF program */
+-	int repeat;
+-	__u32 duration;      /* out: average per repetition in ns */
+-	__u32 flags;
+-	__u32 cpu;
+-};
+-#define bpf_test_run_opts__last_field cpu
+-
+-LIBBPF_API int bpf_prog_test_run_opts(int prog_fd,
+-				      struct bpf_test_run_opts *opts);
+-
+-#ifdef __cplusplus
+-} /* extern "C" */
+-#endif
+-
+-#endif /* __LIBBPF_BPF_H */
+diff --git a/tools/lib/bpf/bpf_core_read.h b/tools/lib/bpf/bpf_core_read.h
+deleted file mode 100644
+index 09ebe3db5f2f..000000000000
+--- a/tools/lib/bpf/bpf_core_read.h
++++ /dev/null
+@@ -1,444 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-#ifndef __BPF_CORE_READ_H__
+-#define __BPF_CORE_READ_H__
+-
+-/*
+- * enum bpf_field_info_kind is passed as a second argument into
+- * __builtin_preserve_field_info() built-in to get a specific aspect of
+- * a field, captured as a first argument. __builtin_preserve_field_info(field,
+- * info_kind) returns __u32 integer and produces BTF field relocation, which
+- * is understood and processed by libbpf during BPF object loading. See
+- * selftests/bpf for examples.
+- */
+-enum bpf_field_info_kind {
+-	BPF_FIELD_BYTE_OFFSET = 0,	/* field byte offset */
+-	BPF_FIELD_BYTE_SIZE = 1,
+-	BPF_FIELD_EXISTS = 2,		/* field existence in target kernel */
+-	BPF_FIELD_SIGNED = 3,
+-	BPF_FIELD_LSHIFT_U64 = 4,
+-	BPF_FIELD_RSHIFT_U64 = 5,
+-};
+-
+-/* second argument to __builtin_btf_type_id() built-in */
+-enum bpf_type_id_kind {
+-	BPF_TYPE_ID_LOCAL = 0,		/* BTF type ID in local program */
+-	BPF_TYPE_ID_TARGET = 1,		/* BTF type ID in target kernel */
+-};
+-
+-/* second argument to __builtin_preserve_type_info() built-in */
+-enum bpf_type_info_kind {
+-	BPF_TYPE_EXISTS = 0,		/* type existence in target kernel */
+-	BPF_TYPE_SIZE = 1,		/* type size in target kernel */
+-};
+-
+-/* second argument to __builtin_preserve_enum_value() built-in */
+-enum bpf_enum_value_kind {
+-	BPF_ENUMVAL_EXISTS = 0,		/* enum value existence in kernel */
+-	BPF_ENUMVAL_VALUE = 1,		/* enum value value relocation */
+-};
+-
+-#define __CORE_RELO(src, field, info)					      \
+-	__builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
+-
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-#define __CORE_BITFIELD_PROBE_READ(dst, src, fld)			      \
+-	bpf_probe_read_kernel(						      \
+-			(void *)dst,				      \
+-			__CORE_RELO(src, fld, BYTE_SIZE),		      \
+-			(const void *)src + __CORE_RELO(src, fld, BYTE_OFFSET))
+-#else
+-/* semantics of LSHIFT_64 assumes loading values into low-ordered bytes, so
+- * for big-endian we need to adjust destination pointer accordingly, based on
+- * field byte size
+- */
+-#define __CORE_BITFIELD_PROBE_READ(dst, src, fld)			      \
+-	bpf_probe_read_kernel(						      \
+-			(void *)dst + (8 - __CORE_RELO(src, fld, BYTE_SIZE)), \
+-			__CORE_RELO(src, fld, BYTE_SIZE),		      \
+-			(const void *)src + __CORE_RELO(src, fld, BYTE_OFFSET))
+-#endif
+-
+-/*
+- * Extract bitfield, identified by s->field, and return its value as u64.
+- * All this is done in relocatable manner, so bitfield changes such as
+- * signedness, bit size, offset changes, this will be handled automatically.
+- * This version of macro is using bpf_probe_read_kernel() to read underlying
+- * integer storage. Macro functions as an expression and its return type is
+- * bpf_probe_read_kernel()'s return value: 0, on success, <0 on error.
+- */
+-#define BPF_CORE_READ_BITFIELD_PROBED(s, field) ({			      \
+-	unsigned long long val = 0;					      \
+-									      \
+-	__CORE_BITFIELD_PROBE_READ(&val, s, field);			      \
+-	val <<= __CORE_RELO(s, field, LSHIFT_U64);			      \
+-	if (__CORE_RELO(s, field, SIGNED))				      \
+-		val = ((long long)val) >> __CORE_RELO(s, field, RSHIFT_U64);  \
+-	else								      \
+-		val = val >> __CORE_RELO(s, field, RSHIFT_U64);		      \
+-	val;								      \
+-})
+-
+-/*
+- * Extract bitfield, identified by s->field, and return its value as u64.
+- * This version of macro is using direct memory reads and should be used from
+- * BPF program types that support such functionality (e.g., typed raw
+- * tracepoints).
+- */
+-#define BPF_CORE_READ_BITFIELD(s, field) ({				      \
+-	const void *p = (const void *)s + __CORE_RELO(s, field, BYTE_OFFSET); \
+-	unsigned long long val;						      \
+-									      \
+-	/* This is a so-called barrier_var() operation that makes specified   \
+-	 * variable "a black box" for optimizing compiler.		      \
+-	 * It forces compiler to perform BYTE_OFFSET relocation on p and use  \
+-	 * its calculated value in the switch below, instead of applying      \
+-	 * the same relocation 4 times for each individual memory load.       \
+-	 */								      \
+-	asm volatile("" : "=r"(p) : "0"(p));				      \
+-									      \
+-	switch (__CORE_RELO(s, field, BYTE_SIZE)) {			      \
+-	case 1: val = *(const unsigned char *)p; break;			      \
+-	case 2: val = *(const unsigned short *)p; break;		      \
+-	case 4: val = *(const unsigned int *)p; break;			      \
+-	case 8: val = *(const unsigned long long *)p; break;		      \
+-	}								      \
+-	val <<= __CORE_RELO(s, field, LSHIFT_U64);			      \
+-	if (__CORE_RELO(s, field, SIGNED))				      \
+-		val = ((long long)val) >> __CORE_RELO(s, field, RSHIFT_U64);  \
+-	else								      \
+-		val = val >> __CORE_RELO(s, field, RSHIFT_U64);		      \
+-	val;								      \
+-})
+-
+-/*
+- * Convenience macro to check that field actually exists in target kernel's.
+- * Returns:
+- *    1, if matching field is present in target kernel;
+- *    0, if no matching field found.
+- */
+-#define bpf_core_field_exists(field)					    \
+-	__builtin_preserve_field_info(field, BPF_FIELD_EXISTS)
+-
+-/*
+- * Convenience macro to get the byte size of a field. Works for integers,
+- * struct/unions, pointers, arrays, and enums.
+- */
+-#define bpf_core_field_size(field)					    \
+-	__builtin_preserve_field_info(field, BPF_FIELD_BYTE_SIZE)
+-
+-/*
+- * Convenience macro to get BTF type ID of a specified type, using a local BTF
+- * information. Return 32-bit unsigned integer with type ID from program's own
+- * BTF. Always succeeds.
+- */
+-#define bpf_core_type_id_local(type)					    \
+-	__builtin_btf_type_id(*(typeof(type) *)0, BPF_TYPE_ID_LOCAL)
+-
+-/*
+- * Convenience macro to get BTF type ID of a target kernel's type that matches
+- * specified local type.
+- * Returns:
+- *    - valid 32-bit unsigned type ID in kernel BTF;
+- *    - 0, if no matching type was found in a target kernel BTF.
+- */
+-#define bpf_core_type_id_kernel(type)					    \
+-	__builtin_btf_type_id(*(typeof(type) *)0, BPF_TYPE_ID_TARGET)
+-
+-/*
+- * Convenience macro to check that provided named type
+- * (struct/union/enum/typedef) exists in a target kernel.
+- * Returns:
+- *    1, if such type is present in target kernel's BTF;
+- *    0, if no matching type is found.
+- */
+-#define bpf_core_type_exists(type)					    \
+-	__builtin_preserve_type_info(*(typeof(type) *)0, BPF_TYPE_EXISTS)
+-
+-/*
+- * Convenience macro to get the byte size of a provided named type
+- * (struct/union/enum/typedef) in a target kernel.
+- * Returns:
+- *    >= 0 size (in bytes), if type is present in target kernel's BTF;
+- *    0, if no matching type is found.
+- */
+-#define bpf_core_type_size(type)					    \
+-	__builtin_preserve_type_info(*(typeof(type) *)0, BPF_TYPE_SIZE)
+-
+-/*
+- * Convenience macro to check that provided enumerator value is defined in
+- * a target kernel.
+- * Returns:
+- *    1, if specified enum type and its enumerator value are present in target
+- *    kernel's BTF;
+- *    0, if no matching enum and/or enum value within that enum is found.
+- */
+-#define bpf_core_enum_value_exists(enum_type, enum_value)		    \
+-	__builtin_preserve_enum_value(*(typeof(enum_type) *)enum_value, BPF_ENUMVAL_EXISTS)
+-
+-/*
+- * Convenience macro to get the integer value of an enumerator value in
+- * a target kernel.
+- * Returns:
+- *    64-bit value, if specified enum type and its enumerator value are
+- *    present in target kernel's BTF;
+- *    0, if no matching enum and/or enum value within that enum is found.
+- */
+-#define bpf_core_enum_value(enum_type, enum_value)			    \
+-	__builtin_preserve_enum_value(*(typeof(enum_type) *)enum_value, BPF_ENUMVAL_VALUE)
+-
+-/*
+- * bpf_core_read() abstracts away bpf_probe_read_kernel() call and captures
+- * offset relocation for source address using __builtin_preserve_access_index()
+- * built-in, provided by Clang.
+- *
+- * __builtin_preserve_access_index() takes as an argument an expression of
+- * taking an address of a field within struct/union. It makes compiler emit
+- * a relocation, which records BTF type ID describing root struct/union and an
+- * accessor string which describes exact embedded field that was used to take
+- * an address. See detailed description of this relocation format and
+- * semantics in comments to struct bpf_field_reloc in libbpf_internal.h.
+- *
+- * This relocation allows libbpf to adjust BPF instruction to use correct
+- * actual field offset, based on target kernel BTF type that matches original
+- * (local) BTF, used to record relocation.
+- */
+-#define bpf_core_read(dst, sz, src)					    \
+-	bpf_probe_read_kernel(dst, sz, (const void *)__builtin_preserve_access_index(src))
+-
+-/* NOTE: see comments for BPF_CORE_READ_USER() about the proper types use. */
+-#define bpf_core_read_user(dst, sz, src)				    \
+-	bpf_probe_read_user(dst, sz, (const void *)__builtin_preserve_access_index(src))
+-/*
+- * bpf_core_read_str() is a thin wrapper around bpf_probe_read_str()
+- * additionally emitting BPF CO-RE field relocation for specified source
+- * argument.
+- */
+-#define bpf_core_read_str(dst, sz, src)					    \
+-	bpf_probe_read_kernel_str(dst, sz, (const void *)__builtin_preserve_access_index(src))
+-
+-/* NOTE: see comments for BPF_CORE_READ_USER() about the proper types use. */
+-#define bpf_core_read_user_str(dst, sz, src)				    \
+-	bpf_probe_read_user_str(dst, sz, (const void *)__builtin_preserve_access_index(src))
+-
+-#define ___concat(a, b) a ## b
+-#define ___apply(fn, n) ___concat(fn, n)
+-#define ___nth(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, __11, N, ...) N
+-
+-/*
+- * return number of provided arguments; used for switch-based variadic macro
+- * definitions (see ___last, ___arrow, etc below)
+- */
+-#define ___narg(...) ___nth(_, ##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+-/*
+- * return 0 if no arguments are passed, N - otherwise; used for
+- * recursively-defined macros to specify termination (0) case, and generic
+- * (N) case (e.g., ___read_ptrs, ___core_read)
+- */
+-#define ___empty(...) ___nth(_, ##__VA_ARGS__, N, N, N, N, N, N, N, N, N, N, 0)
+-
+-#define ___last1(x) x
+-#define ___last2(a, x) x
+-#define ___last3(a, b, x) x
+-#define ___last4(a, b, c, x) x
+-#define ___last5(a, b, c, d, x) x
+-#define ___last6(a, b, c, d, e, x) x
+-#define ___last7(a, b, c, d, e, f, x) x
+-#define ___last8(a, b, c, d, e, f, g, x) x
+-#define ___last9(a, b, c, d, e, f, g, h, x) x
+-#define ___last10(a, b, c, d, e, f, g, h, i, x) x
+-#define ___last(...) ___apply(___last, ___narg(__VA_ARGS__))(__VA_ARGS__)
+-
+-#define ___nolast2(a, _) a
+-#define ___nolast3(a, b, _) a, b
+-#define ___nolast4(a, b, c, _) a, b, c
+-#define ___nolast5(a, b, c, d, _) a, b, c, d
+-#define ___nolast6(a, b, c, d, e, _) a, b, c, d, e
+-#define ___nolast7(a, b, c, d, e, f, _) a, b, c, d, e, f
+-#define ___nolast8(a, b, c, d, e, f, g, _) a, b, c, d, e, f, g
+-#define ___nolast9(a, b, c, d, e, f, g, h, _) a, b, c, d, e, f, g, h
+-#define ___nolast10(a, b, c, d, e, f, g, h, i, _) a, b, c, d, e, f, g, h, i
+-#define ___nolast(...) ___apply(___nolast, ___narg(__VA_ARGS__))(__VA_ARGS__)
+-
+-#define ___arrow1(a) a
+-#define ___arrow2(a, b) a->b
+-#define ___arrow3(a, b, c) a->b->c
+-#define ___arrow4(a, b, c, d) a->b->c->d
+-#define ___arrow5(a, b, c, d, e) a->b->c->d->e
+-#define ___arrow6(a, b, c, d, e, f) a->b->c->d->e->f
+-#define ___arrow7(a, b, c, d, e, f, g) a->b->c->d->e->f->g
+-#define ___arrow8(a, b, c, d, e, f, g, h) a->b->c->d->e->f->g->h
+-#define ___arrow9(a, b, c, d, e, f, g, h, i) a->b->c->d->e->f->g->h->i
+-#define ___arrow10(a, b, c, d, e, f, g, h, i, j) a->b->c->d->e->f->g->h->i->j
+-#define ___arrow(...) ___apply(___arrow, ___narg(__VA_ARGS__))(__VA_ARGS__)
+-
+-#define ___type(...) typeof(___arrow(__VA_ARGS__))
+-
+-#define ___read(read_fn, dst, src_type, src, accessor)			    \
+-	read_fn((void *)(dst), sizeof(*(dst)), &((src_type)(src))->accessor)
+-
+-/* "recursively" read a sequence of inner pointers using local __t var */
+-#define ___rd_first(fn, src, a) ___read(fn, &__t, ___type(src), src, a);
+-#define ___rd_last(fn, ...)						    \
+-	___read(fn, &__t, ___type(___nolast(__VA_ARGS__)), __t, ___last(__VA_ARGS__));
+-#define ___rd_p1(fn, ...) const void *__t; ___rd_first(fn, __VA_ARGS__)
+-#define ___rd_p2(fn, ...) ___rd_p1(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p3(fn, ...) ___rd_p2(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p4(fn, ...) ___rd_p3(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p5(fn, ...) ___rd_p4(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p6(fn, ...) ___rd_p5(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p7(fn, ...) ___rd_p6(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p8(fn, ...) ___rd_p7(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___rd_p9(fn, ...) ___rd_p8(fn, ___nolast(__VA_ARGS__)) ___rd_last(fn, __VA_ARGS__)
+-#define ___read_ptrs(fn, src, ...)					    \
+-	___apply(___rd_p, ___narg(__VA_ARGS__))(fn, src, __VA_ARGS__)
+-
+-#define ___core_read0(fn, fn_ptr, dst, src, a)				    \
+-	___read(fn, dst, ___type(src), src, a);
+-#define ___core_readN(fn, fn_ptr, dst, src, ...)			    \
+-	___read_ptrs(fn_ptr, src, ___nolast(__VA_ARGS__))		    \
+-	___read(fn, dst, ___type(src, ___nolast(__VA_ARGS__)), __t,	    \
+-		___last(__VA_ARGS__));
+-#define ___core_read(fn, fn_ptr, dst, src, a, ...)			    \
+-	___apply(___core_read, ___empty(__VA_ARGS__))(fn, fn_ptr, dst,	    \
+-						      src, a, ##__VA_ARGS__)
+-
+-/*
+- * BPF_CORE_READ_INTO() is a more performance-conscious variant of
+- * BPF_CORE_READ(), in which final field is read into user-provided storage.
+- * See BPF_CORE_READ() below for more details on general usage.
+- */
+-#define BPF_CORE_READ_INTO(dst, src, a, ...) ({				    \
+-	___core_read(bpf_core_read, bpf_core_read,			    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/*
+- * Variant of BPF_CORE_READ_INTO() for reading from user-space memory.
+- *
+- * NOTE: see comments for BPF_CORE_READ_USER() about the proper types use.
+- */
+-#define BPF_CORE_READ_USER_INTO(dst, src, a, ...) ({			    \
+-	___core_read(bpf_core_read_user, bpf_core_read_user,		    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/* Non-CO-RE variant of BPF_CORE_READ_INTO() */
+-#define BPF_PROBE_READ_INTO(dst, src, a, ...) ({			    \
+-	___core_read(bpf_probe_read, bpf_probe_read,			    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/* Non-CO-RE variant of BPF_CORE_READ_USER_INTO().
+- *
+- * As no CO-RE relocations are emitted, source types can be arbitrary and are
+- * not restricted to kernel types only.
+- */
+-#define BPF_PROBE_READ_USER_INTO(dst, src, a, ...) ({			    \
+-	___core_read(bpf_probe_read_user, bpf_probe_read_user,		    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/*
+- * BPF_CORE_READ_STR_INTO() does same "pointer chasing" as
+- * BPF_CORE_READ() for intermediate pointers, but then executes (and returns
+- * corresponding error code) bpf_core_read_str() for final string read.
+- */
+-#define BPF_CORE_READ_STR_INTO(dst, src, a, ...) ({			    \
+-	___core_read(bpf_core_read_str, bpf_core_read,			    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/*
+- * Variant of BPF_CORE_READ_STR_INTO() for reading from user-space memory.
+- *
+- * NOTE: see comments for BPF_CORE_READ_USER() about the proper types use.
+- */
+-#define BPF_CORE_READ_USER_STR_INTO(dst, src, a, ...) ({		    \
+-	___core_read(bpf_core_read_user_str, bpf_core_read_user,	    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/* Non-CO-RE variant of BPF_CORE_READ_STR_INTO() */
+-#define BPF_PROBE_READ_STR_INTO(dst, src, a, ...) ({			    \
+-	___core_read(bpf_probe_read_str, bpf_probe_read,		    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/*
+- * Non-CO-RE variant of BPF_CORE_READ_USER_STR_INTO().
+- *
+- * As no CO-RE relocations are emitted, source types can be arbitrary and are
+- * not restricted to kernel types only.
+- */
+-#define BPF_PROBE_READ_USER_STR_INTO(dst, src, a, ...) ({		    \
+-	___core_read(bpf_probe_read_user_str, bpf_probe_read_user,	    \
+-		     dst, (src), a, ##__VA_ARGS__)			    \
+-})
+-
+-/*
+- * BPF_CORE_READ() is used to simplify BPF CO-RE relocatable read, especially
+- * when there are few pointer chasing steps.
+- * E.g., what in non-BPF world (or in BPF w/ BCC) would be something like:
+- *	int x = s->a.b.c->d.e->f->g;
+- * can be succinctly achieved using BPF_CORE_READ as:
+- *	int x = BPF_CORE_READ(s, a.b.c, d.e, f, g);
+- *
+- * BPF_CORE_READ will decompose above statement into 4 bpf_core_read (BPF
+- * CO-RE relocatable bpf_probe_read_kernel() wrapper) calls, logically
+- * equivalent to:
+- * 1. const void *__t = s->a.b.c;
+- * 2. __t = __t->d.e;
+- * 3. __t = __t->f;
+- * 4. return __t->g;
+- *
+- * Equivalence is logical, because there is a heavy type casting/preservation
+- * involved, as well as all the reads are happening through
+- * bpf_probe_read_kernel() calls using __builtin_preserve_access_index() to
+- * emit CO-RE relocations.
+- *
+- * N.B. Only up to 9 "field accessors" are supported, which should be more
+- * than enough for any practical purpose.
+- */
+-#define BPF_CORE_READ(src, a, ...) ({					    \
+-	___type((src), a, ##__VA_ARGS__) __r;				    \
+-	BPF_CORE_READ_INTO(&__r, (src), a, ##__VA_ARGS__);		    \
+-	__r;								    \
+-})
+-
+-/*
+- * Variant of BPF_CORE_READ() for reading from user-space memory.
+- *
+- * NOTE: all the source types involved are still *kernel types* and need to
+- * exist in kernel (or kernel module) BTF, otherwise CO-RE relocation will
+- * fail. Custom user types are not relocatable with CO-RE.
+- * The typical situation in which BPF_CORE_READ_USER() might be used is to
+- * read kernel UAPI types from the user-space memory passed in as a syscall
+- * input argument.
+- */
+-#define BPF_CORE_READ_USER(src, a, ...) ({				    \
+-	___type((src), a, ##__VA_ARGS__) __r;				    \
+-	BPF_CORE_READ_USER_INTO(&__r, (src), a, ##__VA_ARGS__);		    \
+-	__r;								    \
+-})
+-
+-/* Non-CO-RE variant of BPF_CORE_READ() */
+-#define BPF_PROBE_READ(src, a, ...) ({					    \
+-	___type((src), a, ##__VA_ARGS__) __r;				    \
+-	BPF_PROBE_READ_INTO(&__r, (src), a, ##__VA_ARGS__);		    \
+-	__r;								    \
+-})
+-
+-/*
+- * Non-CO-RE variant of BPF_CORE_READ_USER().
+- *
+- * As no CO-RE relocations are emitted, source types can be arbitrary and are
+- * not restricted to kernel types only.
+- */
+-#define BPF_PROBE_READ_USER(src, a, ...) ({				    \
+-	___type((src), a, ##__VA_ARGS__) __r;				    \
+-	BPF_PROBE_READ_USER_INTO(&__r, (src), a, ##__VA_ARGS__);	    \
+-	__r;								    \
+-})
+-
+-#endif
+-
+diff --git a/tools/lib/bpf/bpf_endian.h b/tools/lib/bpf/bpf_endian.h
+deleted file mode 100644
+index ec9db4feca9f..000000000000
+--- a/tools/lib/bpf/bpf_endian.h
++++ /dev/null
+@@ -1,99 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-#ifndef __BPF_ENDIAN__
+-#define __BPF_ENDIAN__
+-
+-/*
+- * Isolate byte #n and put it into byte #m, for __u##b type.
+- * E.g., moving byte #6 (nnnnnnnn) into byte #1 (mmmmmmmm) for __u64:
+- * 1) xxxxxxxx nnnnnnnn xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx mmmmmmmm xxxxxxxx
+- * 2) nnnnnnnn xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx mmmmmmmm xxxxxxxx 00000000
+- * 3) 00000000 00000000 00000000 00000000 00000000 00000000 00000000 nnnnnnnn
+- * 4) 00000000 00000000 00000000 00000000 00000000 00000000 nnnnnnnn 00000000
+- */
+-#define ___bpf_mvb(x, b, n, m) ((__u##b)(x) << (b-(n+1)*8) >> (b-8) << (m*8))
+-
+-#define ___bpf_swab16(x) ((__u16)(			\
+-			  ___bpf_mvb(x, 16, 0, 1) |	\
+-			  ___bpf_mvb(x, 16, 1, 0)))
+-
+-#define ___bpf_swab32(x) ((__u32)(			\
+-			  ___bpf_mvb(x, 32, 0, 3) |	\
+-			  ___bpf_mvb(x, 32, 1, 2) |	\
+-			  ___bpf_mvb(x, 32, 2, 1) |	\
+-			  ___bpf_mvb(x, 32, 3, 0)))
+-
+-#define ___bpf_swab64(x) ((__u64)(			\
+-			  ___bpf_mvb(x, 64, 0, 7) |	\
+-			  ___bpf_mvb(x, 64, 1, 6) |	\
+-			  ___bpf_mvb(x, 64, 2, 5) |	\
+-			  ___bpf_mvb(x, 64, 3, 4) |	\
+-			  ___bpf_mvb(x, 64, 4, 3) |	\
+-			  ___bpf_mvb(x, 64, 5, 2) |	\
+-			  ___bpf_mvb(x, 64, 6, 1) |	\
+-			  ___bpf_mvb(x, 64, 7, 0)))
+-
+-/* LLVM's BPF target selects the endianness of the CPU
+- * it compiles on, or the user specifies (bpfel/bpfeb),
+- * respectively. The used __BYTE_ORDER__ is defined by
+- * the compiler, we cannot rely on __BYTE_ORDER from
+- * libc headers, since it doesn't reflect the actual
+- * requested byte order.
+- *
+- * Note, LLVM's BPF target has different __builtin_bswapX()
+- * semantics. It does map to BPF_ALU | BPF_END | BPF_TO_BE
+- * in bpfel and bpfeb case, which means below, that we map
+- * to cpu_to_be16(). We could use it unconditionally in BPF
+- * case, but better not rely on it, so that this header here
+- * can be used from application and BPF program side, which
+- * use different targets.
+- */
+-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+-# define __bpf_ntohs(x)			__builtin_bswap16(x)
+-# define __bpf_htons(x)			__builtin_bswap16(x)
+-# define __bpf_constant_ntohs(x)	___bpf_swab16(x)
+-# define __bpf_constant_htons(x)	___bpf_swab16(x)
+-# define __bpf_ntohl(x)			__builtin_bswap32(x)
+-# define __bpf_htonl(x)			__builtin_bswap32(x)
+-# define __bpf_constant_ntohl(x)	___bpf_swab32(x)
+-# define __bpf_constant_htonl(x)	___bpf_swab32(x)
+-# define __bpf_be64_to_cpu(x)		__builtin_bswap64(x)
+-# define __bpf_cpu_to_be64(x)		__builtin_bswap64(x)
+-# define __bpf_constant_be64_to_cpu(x)	___bpf_swab64(x)
+-# define __bpf_constant_cpu_to_be64(x)	___bpf_swab64(x)
+-#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+-# define __bpf_ntohs(x)			(x)
+-# define __bpf_htons(x)			(x)
+-# define __bpf_constant_ntohs(x)	(x)
+-# define __bpf_constant_htons(x)	(x)
+-# define __bpf_ntohl(x)			(x)
+-# define __bpf_htonl(x)			(x)
+-# define __bpf_constant_ntohl(x)	(x)
+-# define __bpf_constant_htonl(x)	(x)
+-# define __bpf_be64_to_cpu(x)		(x)
+-# define __bpf_cpu_to_be64(x)		(x)
+-# define __bpf_constant_be64_to_cpu(x)  (x)
+-# define __bpf_constant_cpu_to_be64(x)  (x)
+-#else
+-# error "Fix your compiler's __BYTE_ORDER__?!"
+-#endif
+-
+-#define bpf_htons(x)				\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_htons(x) : __bpf_htons(x))
+-#define bpf_ntohs(x)				\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_ntohs(x) : __bpf_ntohs(x))
+-#define bpf_htonl(x)				\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_htonl(x) : __bpf_htonl(x))
+-#define bpf_ntohl(x)				\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_ntohl(x) : __bpf_ntohl(x))
+-#define bpf_cpu_to_be64(x)			\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_cpu_to_be64(x) : __bpf_cpu_to_be64(x))
+-#define bpf_be64_to_cpu(x)			\
+-	(__builtin_constant_p(x) ?		\
+-	 __bpf_constant_be64_to_cpu(x) : __bpf_be64_to_cpu(x))
+-
+-#endif /* __BPF_ENDIAN__ */
+diff --git a/tools/lib/bpf/bpf_gen_internal.h b/tools/lib/bpf/bpf_gen_internal.h
+deleted file mode 100644
+index 615400391e57..000000000000
+--- a/tools/lib/bpf/bpf_gen_internal.h
++++ /dev/null
+@@ -1,41 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-/* Copyright (c) 2021 Facebook */
+-#ifndef __BPF_GEN_INTERNAL_H
+-#define __BPF_GEN_INTERNAL_H
+-
+-struct ksym_relo_desc {
+-	const char *name;
+-	int kind;
+-	int insn_idx;
+-};
+-
+-struct bpf_gen {
+-	struct gen_loader_opts *opts;
+-	void *data_start;
+-	void *data_cur;
+-	void *insn_start;
+-	void *insn_cur;
+-	ssize_t cleanup_label;
+-	__u32 nr_progs;
+-	__u32 nr_maps;
+-	int log_level;
+-	int error;
+-	struct ksym_relo_desc *relos;
+-	int relo_cnt;
+-	char attach_target[128];
+-	int attach_kind;
+-};
+-
+-void bpf_gen__init(struct bpf_gen *gen, int log_level);
+-int bpf_gen__finish(struct bpf_gen *gen);
+-void bpf_gen__free(struct bpf_gen *gen);
+-void bpf_gen__load_btf(struct bpf_gen *gen, const void *raw_data, __u32 raw_size);
+-void bpf_gen__map_create(struct bpf_gen *gen, struct bpf_create_map_attr *map_attr, int map_idx);
+-struct bpf_prog_load_params;
+-void bpf_gen__prog_load(struct bpf_gen *gen, struct bpf_prog_load_params *load_attr, int prog_idx);
+-void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *value, __u32 value_size);
+-void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx);
+-void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *name, enum bpf_attach_type type);
+-void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind, int insn_idx);
+-
+-#endif
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+deleted file mode 100644
+index b9987c3efa3c..000000000000
+--- a/tools/lib/bpf/bpf_helpers.h
++++ /dev/null
+@@ -1,227 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-#ifndef __BPF_HELPERS__
+-#define __BPF_HELPERS__
+-
+-/*
+- * Note that bpf programs need to include either
+- * vmlinux.h (auto-generated from BTF) or linux/types.h
+- * in advance since bpf_helper_defs.h uses such types
+- * as __u64.
+- */
+-#include "bpf_helper_defs.h"
+-
+-#define __uint(name, val) int (*name)[val]
+-#define __type(name, val) typeof(val) *name
+-#define __array(name, val) typeof(val) *name[]
+-
+-/* Helper macro to print out debug messages */
+-#define bpf_printk(fmt, ...)				\
+-({							\
+-	char ____fmt[] = fmt;				\
+-	bpf_trace_printk(____fmt, sizeof(____fmt),	\
+-			 ##__VA_ARGS__);		\
+-})
+-
+-/*
+- * Helper macro to place programs, maps, license in
+- * different sections in elf_bpf file. Section names
+- * are interpreted by libbpf depending on the context (BPF programs, BPF maps,
+- * extern variables, etc).
+- * To allow use of SEC() with externs (e.g., for extern .maps declarations),
+- * make sure __attribute__((unused)) doesn't trigger compilation warning.
+- */
+-#define SEC(name) \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")	    \
+-	__attribute__((section(name), used))				    \
+-	_Pragma("GCC diagnostic pop")					    \
+-
+-/* Avoid 'linux/stddef.h' definition of '__always_inline'. */
+-#undef __always_inline
+-#define __always_inline inline __attribute__((always_inline))
+-
+-#ifndef __noinline
+-#define __noinline __attribute__((noinline))
+-#endif
+-#ifndef __weak
+-#define __weak __attribute__((weak))
+-#endif
+-
+-/*
+- * Use __hidden attribute to mark a non-static BPF subprogram effectively
+- * static for BPF verifier's verification algorithm purposes, allowing more
+- * extensive and permissive BPF verification process, taking into account
+- * subprogram's caller context.
+- */
+-#define __hidden __attribute__((visibility("hidden")))
+-
+-/* When utilizing vmlinux.h with BPF CO-RE, user BPF programs can't include
+- * any system-level headers (such as stddef.h, linux/version.h, etc), and
+- * commonly-used macros like NULL and KERNEL_VERSION aren't available through
+- * vmlinux.h. This just adds unnecessary hurdles and forces users to re-define
+- * them on their own. So as a convenience, provide such definitions here.
+- */
+-#ifndef NULL
+-#define NULL ((void *)0)
+-#endif
+-
+-#ifndef KERNEL_VERSION
+-#define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))
+-#endif
+-
+-/*
+- * Helper macros to manipulate data structures
+- */
+-#ifndef offsetof
+-#define offsetof(TYPE, MEMBER)	((unsigned long)&((TYPE *)0)->MEMBER)
+-#endif
+-#ifndef container_of
+-#define container_of(ptr, type, member)				\
+-	({							\
+-		void *__mptr = (void *)(ptr);			\
+-		((type *)(__mptr - offsetof(type, member)));	\
+-	})
+-#endif
+-
+-/*
+- * Helper macro to throw a compilation error if __bpf_unreachable() gets
+- * built into the resulting code. This works given BPF back end does not
+- * implement __builtin_trap(). This is useful to assert that certain paths
+- * of the program code are never used and hence eliminated by the compiler.
+- *
+- * For example, consider a switch statement that covers known cases used by
+- * the program. __bpf_unreachable() can then reside in the default case. If
+- * the program gets extended such that a case is not covered in the switch
+- * statement, then it will throw a build error due to the default case not
+- * being compiled out.
+- */
+-#ifndef __bpf_unreachable
+-# define __bpf_unreachable()	__builtin_trap()
+-#endif
+-
+-/*
+- * Helper function to perform a tail call with a constant/immediate map slot.
+- */
+-#if __clang_major__ >= 8 && defined(__bpf__)
+-static __always_inline void
+-bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+-{
+-	if (!__builtin_constant_p(slot))
+-		__bpf_unreachable();
+-
+-	/*
+-	 * Provide a hard guarantee that LLVM won't optimize setting r2 (map
+-	 * pointer) and r3 (constant map index) from _different paths_ ending
+-	 * up at the _same_ call insn as otherwise we won't be able to use the
+-	 * jmpq/nopl retpoline-free patching by the x86-64 JIT in the kernel
+-	 * given they mismatch. See also d2e4c1e6c294 ("bpf: Constant map key
+-	 * tracking for prog array pokes") for details on verifier tracking.
+-	 *
+-	 * Note on clobber list: we need to stay in-line with BPF calling
+-	 * convention, so even if we don't end up using r0, r4, r5, we need
+-	 * to mark them as clobber so that LLVM doesn't end up using them
+-	 * before / after the call.
+-	 */
+-	asm volatile("r1 = %[ctx]\n\t"
+-		     "r2 = %[map]\n\t"
+-		     "r3 = %[slot]\n\t"
+-		     "call 12"
+-		     :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
+-		     : "r0", "r1", "r2", "r3", "r4", "r5");
+-}
+-#endif
+-
+-/*
+- * Helper structure used by eBPF C program
+- * to describe BPF map attributes to libbpf loader
+- */
+-struct bpf_map_def {
+-	unsigned int type;
+-	unsigned int key_size;
+-	unsigned int value_size;
+-	unsigned int max_entries;
+-	unsigned int map_flags;
+-};
+-
+-enum libbpf_pin_type {
+-	LIBBPF_PIN_NONE,
+-	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+-	LIBBPF_PIN_BY_NAME,
+-};
+-
+-enum libbpf_tristate {
+-	TRI_NO = 0,
+-	TRI_YES = 1,
+-	TRI_MODULE = 2,
+-};
+-
+-#define __kconfig __attribute__((section(".kconfig")))
+-#define __ksym __attribute__((section(".ksyms")))
+-
+-#ifndef ___bpf_concat
+-#define ___bpf_concat(a, b) a ## b
+-#endif
+-#ifndef ___bpf_apply
+-#define ___bpf_apply(fn, n) ___bpf_concat(fn, n)
+-#endif
+-#ifndef ___bpf_nth
+-#define ___bpf_nth(_, _1, _2, _3, _4, _5, _6, _7, _8, _9, _a, _b, _c, N, ...) N
+-#endif
+-#ifndef ___bpf_narg
+-#define ___bpf_narg(...) \
+-	___bpf_nth(_, ##__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+-#endif
+-
+-#define ___bpf_fill0(arr, p, x) do {} while (0)
+-#define ___bpf_fill1(arr, p, x) arr[p] = x
+-#define ___bpf_fill2(arr, p, x, args...) arr[p] = x; ___bpf_fill1(arr, p + 1, args)
+-#define ___bpf_fill3(arr, p, x, args...) arr[p] = x; ___bpf_fill2(arr, p + 1, args)
+-#define ___bpf_fill4(arr, p, x, args...) arr[p] = x; ___bpf_fill3(arr, p + 1, args)
+-#define ___bpf_fill5(arr, p, x, args...) arr[p] = x; ___bpf_fill4(arr, p + 1, args)
+-#define ___bpf_fill6(arr, p, x, args...) arr[p] = x; ___bpf_fill5(arr, p + 1, args)
+-#define ___bpf_fill7(arr, p, x, args...) arr[p] = x; ___bpf_fill6(arr, p + 1, args)
+-#define ___bpf_fill8(arr, p, x, args...) arr[p] = x; ___bpf_fill7(arr, p + 1, args)
+-#define ___bpf_fill9(arr, p, x, args...) arr[p] = x; ___bpf_fill8(arr, p + 1, args)
+-#define ___bpf_fill10(arr, p, x, args...) arr[p] = x; ___bpf_fill9(arr, p + 1, args)
+-#define ___bpf_fill11(arr, p, x, args...) arr[p] = x; ___bpf_fill10(arr, p + 1, args)
+-#define ___bpf_fill12(arr, p, x, args...) arr[p] = x; ___bpf_fill11(arr, p + 1, args)
+-#define ___bpf_fill(arr, args...) \
+-	___bpf_apply(___bpf_fill, ___bpf_narg(args))(arr, 0, args)
+-
+-/*
+- * BPF_SEQ_PRINTF to wrap bpf_seq_printf to-be-printed values
+- * in a structure.
+- */
+-#define BPF_SEQ_PRINTF(seq, fmt, args...)			\
+-({								\
+-	static const char ___fmt[] = fmt;			\
+-	unsigned long long ___param[___bpf_narg(args)];		\
+-								\
+-	_Pragma("GCC diagnostic push")				\
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
+-	___bpf_fill(___param, args);				\
+-	_Pragma("GCC diagnostic pop")				\
+-								\
+-	bpf_seq_printf(seq, ___fmt, sizeof(___fmt),		\
+-		       ___param, sizeof(___param));		\
+-})
+-
+-/*
+- * BPF_SNPRINTF wraps the bpf_snprintf helper with variadic arguments instead of
+- * an array of u64.
+- */
+-#define BPF_SNPRINTF(out, out_size, fmt, args...)		\
+-({								\
+-	static const char ___fmt[] = fmt;			\
+-	unsigned long long ___param[___bpf_narg(args)];		\
+-								\
+-	_Pragma("GCC diagnostic push")				\
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
+-	___bpf_fill(___param, args);				\
+-	_Pragma("GCC diagnostic pop")				\
+-								\
+-	bpf_snprintf(out, out_size, ___fmt,			\
+-		     ___param, sizeof(___param));		\
+-})
+-
+-#endif
+diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
+deleted file mode 100644
+index 5c503096ef43..000000000000
+--- a/tools/lib/bpf/bpf_prog_linfo.c
++++ /dev/null
+@@ -1,246 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2018 Facebook */
+-
+-#include <string.h>
+-#include <stdlib.h>
+-#include <linux/err.h>
+-#include <linux/bpf.h>
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-
+-struct bpf_prog_linfo {
+-	void *raw_linfo;
+-	void *raw_jited_linfo;
+-	__u32 *nr_jited_linfo_per_func;
+-	__u32 *jited_linfo_func_idx;
+-	__u32 nr_linfo;
+-	__u32 nr_jited_func;
+-	__u32 rec_size;
+-	__u32 jited_rec_size;
+-};
+-
+-static int dissect_jited_func(struct bpf_prog_linfo *prog_linfo,
+-			      const __u64 *ksym_func, const __u32 *ksym_len)
+-{
+-	__u32 nr_jited_func, nr_linfo;
+-	const void *raw_jited_linfo;
+-	const __u64 *jited_linfo;
+-	__u64 last_jited_linfo;
+-	/*
+-	 * Index to raw_jited_linfo:
+-	 *      i: Index for searching the next ksym_func
+-	 * prev_i: Index to the last found ksym_func
+-	 */
+-	__u32 i, prev_i;
+-	__u32 f; /* Index to ksym_func */
+-
+-	raw_jited_linfo = prog_linfo->raw_jited_linfo;
+-	jited_linfo = raw_jited_linfo;
+-	if (ksym_func[0] != *jited_linfo)
+-		goto errout;
+-
+-	prog_linfo->jited_linfo_func_idx[0] = 0;
+-	nr_jited_func = prog_linfo->nr_jited_func;
+-	nr_linfo = prog_linfo->nr_linfo;
+-
+-	for (prev_i = 0, i = 1, f = 1;
+-	     i < nr_linfo && f < nr_jited_func;
+-	     i++) {
+-		raw_jited_linfo += prog_linfo->jited_rec_size;
+-		last_jited_linfo = *jited_linfo;
+-		jited_linfo = raw_jited_linfo;
+-
+-		if (ksym_func[f] == *jited_linfo) {
+-			prog_linfo->jited_linfo_func_idx[f] = i;
+-
+-			/* Sanity check */
+-			if (last_jited_linfo - ksym_func[f - 1] + 1 >
+-			    ksym_len[f - 1])
+-				goto errout;
+-
+-			prog_linfo->nr_jited_linfo_per_func[f - 1] =
+-				i - prev_i;
+-			prev_i = i;
+-
+-			/*
+-			 * The ksym_func[f] is found in jited_linfo.
+-			 * Look for the next one.
+-			 */
+-			f++;
+-		} else if (*jited_linfo <= last_jited_linfo) {
+-			/* Ensure the addr is increasing _within_ a func */
+-			goto errout;
+-		}
+-	}
+-
+-	if (f != nr_jited_func)
+-		goto errout;
+-
+-	prog_linfo->nr_jited_linfo_per_func[nr_jited_func - 1] =
+-		nr_linfo - prev_i;
+-
+-	return 0;
+-
+-errout:
+-	return -EINVAL;
+-}
+-
+-void bpf_prog_linfo__free(struct bpf_prog_linfo *prog_linfo)
+-{
+-	if (!prog_linfo)
+-		return;
+-
+-	free(prog_linfo->raw_linfo);
+-	free(prog_linfo->raw_jited_linfo);
+-	free(prog_linfo->nr_jited_linfo_per_func);
+-	free(prog_linfo->jited_linfo_func_idx);
+-	free(prog_linfo);
+-}
+-
+-struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
+-{
+-	struct bpf_prog_linfo *prog_linfo;
+-	__u32 nr_linfo, nr_jited_func;
+-	__u64 data_sz;
+-
+-	nr_linfo = info->nr_line_info;
+-
+-	if (!nr_linfo)
+-		return errno = EINVAL, NULL;
+-
+-	/*
+-	 * The min size that bpf_prog_linfo has to access for
+-	 * searching purpose.
+-	 */
+-	if (info->line_info_rec_size <
+-	    offsetof(struct bpf_line_info, file_name_off))
+-		return errno = EINVAL, NULL;
+-
+-	prog_linfo = calloc(1, sizeof(*prog_linfo));
+-	if (!prog_linfo)
+-		return errno = ENOMEM, NULL;
+-
+-	/* Copy xlated line_info */
+-	prog_linfo->nr_linfo = nr_linfo;
+-	prog_linfo->rec_size = info->line_info_rec_size;
+-	data_sz = (__u64)nr_linfo * prog_linfo->rec_size;
+-	prog_linfo->raw_linfo = malloc(data_sz);
+-	if (!prog_linfo->raw_linfo)
+-		goto err_free;
+-	memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
+-
+-	nr_jited_func = info->nr_jited_ksyms;
+-	if (!nr_jited_func ||
+-	    !info->jited_line_info ||
+-	    info->nr_jited_line_info != nr_linfo ||
+-	    info->jited_line_info_rec_size < sizeof(__u64) ||
+-	    info->nr_jited_func_lens != nr_jited_func ||
+-	    !info->jited_ksyms ||
+-	    !info->jited_func_lens)
+-		/* Not enough info to provide jited_line_info */
+-		return prog_linfo;
+-
+-	/* Copy jited_line_info */
+-	prog_linfo->nr_jited_func = nr_jited_func;
+-	prog_linfo->jited_rec_size = info->jited_line_info_rec_size;
+-	data_sz = (__u64)nr_linfo * prog_linfo->jited_rec_size;
+-	prog_linfo->raw_jited_linfo = malloc(data_sz);
+-	if (!prog_linfo->raw_jited_linfo)
+-		goto err_free;
+-	memcpy(prog_linfo->raw_jited_linfo,
+-	       (void *)(long)info->jited_line_info, data_sz);
+-
+-	/* Number of jited_line_info per jited func */
+-	prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
+-						     sizeof(__u32));
+-	if (!prog_linfo->nr_jited_linfo_per_func)
+-		goto err_free;
+-
+-	/*
+-	 * For each jited func,
+-	 * the start idx to the "linfo" and "jited_linfo" array,
+-	 */
+-	prog_linfo->jited_linfo_func_idx = malloc(nr_jited_func *
+-						  sizeof(__u32));
+-	if (!prog_linfo->jited_linfo_func_idx)
+-		goto err_free;
+-
+-	if (dissect_jited_func(prog_linfo,
+-			       (__u64 *)(long)info->jited_ksyms,
+-			       (__u32 *)(long)info->jited_func_lens))
+-		goto err_free;
+-
+-	return prog_linfo;
+-
+-err_free:
+-	bpf_prog_linfo__free(prog_linfo);
+-	return errno = EINVAL, NULL;
+-}
+-
+-const struct bpf_line_info *
+-bpf_prog_linfo__lfind_addr_func(const struct bpf_prog_linfo *prog_linfo,
+-				__u64 addr, __u32 func_idx, __u32 nr_skip)
+-{
+-	__u32 jited_rec_size, rec_size, nr_linfo, start, i;
+-	const void *raw_jited_linfo, *raw_linfo;
+-	const __u64 *jited_linfo;
+-
+-	if (func_idx >= prog_linfo->nr_jited_func)
+-		return errno = ENOENT, NULL;
+-
+-	nr_linfo = prog_linfo->nr_jited_linfo_per_func[func_idx];
+-	if (nr_skip >= nr_linfo)
+-		return errno = ENOENT, NULL;
+-
+-	start = prog_linfo->jited_linfo_func_idx[func_idx] + nr_skip;
+-	jited_rec_size = prog_linfo->jited_rec_size;
+-	raw_jited_linfo = prog_linfo->raw_jited_linfo +
+-		(start * jited_rec_size);
+-	jited_linfo = raw_jited_linfo;
+-	if (addr < *jited_linfo)
+-		return errno = ENOENT, NULL;
+-
+-	nr_linfo -= nr_skip;
+-	rec_size = prog_linfo->rec_size;
+-	raw_linfo = prog_linfo->raw_linfo + (start * rec_size);
+-	for (i = 0; i < nr_linfo; i++) {
+-		if (addr < *jited_linfo)
+-			break;
+-
+-		raw_linfo += rec_size;
+-		raw_jited_linfo += jited_rec_size;
+-		jited_linfo = raw_jited_linfo;
+-	}
+-
+-	return raw_linfo - rec_size;
+-}
+-
+-const struct bpf_line_info *
+-bpf_prog_linfo__lfind(const struct bpf_prog_linfo *prog_linfo,
+-		      __u32 insn_off, __u32 nr_skip)
+-{
+-	const struct bpf_line_info *linfo;
+-	__u32 rec_size, nr_linfo, i;
+-	const void *raw_linfo;
+-
+-	nr_linfo = prog_linfo->nr_linfo;
+-	if (nr_skip >= nr_linfo)
+-		return errno = ENOENT, NULL;
+-
+-	rec_size = prog_linfo->rec_size;
+-	raw_linfo = prog_linfo->raw_linfo + (nr_skip * rec_size);
+-	linfo = raw_linfo;
+-	if (insn_off < linfo->insn_off)
+-		return errno = ENOENT, NULL;
+-
+-	nr_linfo -= nr_skip;
+-	for (i = 0; i < nr_linfo; i++) {
+-		if (insn_off < linfo->insn_off)
+-			break;
+-
+-		raw_linfo += rec_size;
+-		linfo = raw_linfo;
+-	}
+-
+-	return raw_linfo - rec_size;
+-}
+diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+deleted file mode 100644
+index d6bfbe009296..000000000000
+--- a/tools/lib/bpf/bpf_tracing.h
++++ /dev/null
+@@ -1,460 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-#ifndef __BPF_TRACING_H__
+-#define __BPF_TRACING_H__
+-
+-/* Scan the ARCH passed in from ARCH env variable (see Makefile) */
+-#if defined(__TARGET_ARCH_x86)
+-	#define bpf_target_x86
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_s390)
+-	#define bpf_target_s390
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_arm)
+-	#define bpf_target_arm
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_arm64)
+-	#define bpf_target_arm64
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_mips)
+-	#define bpf_target_mips
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_powerpc)
+-	#define bpf_target_powerpc
+-	#define bpf_target_defined
+-#elif defined(__TARGET_ARCH_sparc)
+-	#define bpf_target_sparc
+-	#define bpf_target_defined
+-#else
+-
+-/* Fall back to what the compiler says */
+-#if defined(__x86_64__)
+-	#define bpf_target_x86
+-	#define bpf_target_defined
+-#elif defined(__s390__)
+-	#define bpf_target_s390
+-	#define bpf_target_defined
+-#elif defined(__arm__)
+-	#define bpf_target_arm
+-	#define bpf_target_defined
+-#elif defined(__aarch64__)
+-	#define bpf_target_arm64
+-	#define bpf_target_defined
+-#elif defined(__mips__)
+-	#define bpf_target_mips
+-	#define bpf_target_defined
+-#elif defined(__powerpc__)
+-	#define bpf_target_powerpc
+-	#define bpf_target_defined
+-#elif defined(__sparc__)
+-	#define bpf_target_sparc
+-	#define bpf_target_defined
+-#endif /* no compiler target */
+-
+-#endif
+-
+-#ifndef __BPF_TARGET_MISSING
+-#define __BPF_TARGET_MISSING "GCC error \"Must specify a BPF target arch via __TARGET_ARCH_xxx\""
+-#endif
+-
+-#if defined(bpf_target_x86)
+-
+-#if defined(__KERNEL__) || defined(__VMLINUX_H__)
+-
+-#define PT_REGS_PARM1(x) ((x)->di)
+-#define PT_REGS_PARM2(x) ((x)->si)
+-#define PT_REGS_PARM3(x) ((x)->dx)
+-#define PT_REGS_PARM4(x) ((x)->cx)
+-#define PT_REGS_PARM5(x) ((x)->r8)
+-#define PT_REGS_RET(x) ((x)->sp)
+-#define PT_REGS_FP(x) ((x)->bp)
+-#define PT_REGS_RC(x) ((x)->ax)
+-#define PT_REGS_SP(x) ((x)->sp)
+-#define PT_REGS_IP(x) ((x)->ip)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), di)
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), si)
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), dx)
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), cx)
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), r8)
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), sp)
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((x), bp)
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), ax)
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), sp)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), ip)
+-
+-#else
+-
+-#ifdef __i386__
+-/* i386 kernel is built with -mregparm=3 */
+-#define PT_REGS_PARM1(x) ((x)->eax)
+-#define PT_REGS_PARM2(x) ((x)->edx)
+-#define PT_REGS_PARM3(x) ((x)->ecx)
+-#define PT_REGS_PARM4(x) 0
+-#define PT_REGS_PARM5(x) 0
+-#define PT_REGS_RET(x) ((x)->esp)
+-#define PT_REGS_FP(x) ((x)->ebp)
+-#define PT_REGS_RC(x) ((x)->eax)
+-#define PT_REGS_SP(x) ((x)->esp)
+-#define PT_REGS_IP(x) ((x)->eip)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), eax)
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), edx)
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), ecx)
+-#define PT_REGS_PARM4_CORE(x) 0
+-#define PT_REGS_PARM5_CORE(x) 0
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), esp)
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((x), ebp)
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), eax)
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), esp)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), eip)
+-
+-#else
+-
+-#define PT_REGS_PARM1(x) ((x)->rdi)
+-#define PT_REGS_PARM2(x) ((x)->rsi)
+-#define PT_REGS_PARM3(x) ((x)->rdx)
+-#define PT_REGS_PARM4(x) ((x)->rcx)
+-#define PT_REGS_PARM5(x) ((x)->r8)
+-#define PT_REGS_RET(x) ((x)->rsp)
+-#define PT_REGS_FP(x) ((x)->rbp)
+-#define PT_REGS_RC(x) ((x)->rax)
+-#define PT_REGS_SP(x) ((x)->rsp)
+-#define PT_REGS_IP(x) ((x)->rip)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), rdi)
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), rsi)
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), rdx)
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), rcx)
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), r8)
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), rsp)
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((x), rbp)
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), rax)
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), rsp)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), rip)
+-
+-#endif
+-#endif
+-
+-#elif defined(bpf_target_s390)
+-
+-/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
+-struct pt_regs;
+-#define PT_REGS_S390 const volatile user_pt_regs
+-#define PT_REGS_PARM1(x) (((PT_REGS_S390 *)(x))->gprs[2])
+-#define PT_REGS_PARM2(x) (((PT_REGS_S390 *)(x))->gprs[3])
+-#define PT_REGS_PARM3(x) (((PT_REGS_S390 *)(x))->gprs[4])
+-#define PT_REGS_PARM4(x) (((PT_REGS_S390 *)(x))->gprs[5])
+-#define PT_REGS_PARM5(x) (((PT_REGS_S390 *)(x))->gprs[6])
+-#define PT_REGS_RET(x) (((PT_REGS_S390 *)(x))->gprs[14])
+-/* Works only with CONFIG_FRAME_POINTER */
+-#define PT_REGS_FP(x) (((PT_REGS_S390 *)(x))->gprs[11])
+-#define PT_REGS_RC(x) (((PT_REGS_S390 *)(x))->gprs[2])
+-#define PT_REGS_SP(x) (((PT_REGS_S390 *)(x))->gprs[15])
+-#define PT_REGS_IP(x) (((PT_REGS_S390 *)(x))->psw.addr)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[2])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[3])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[4])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[5])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[6])
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[14])
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[11])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[2])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), gprs[15])
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((PT_REGS_S390 *)(x), psw.addr)
+-
+-#elif defined(bpf_target_arm)
+-
+-#define PT_REGS_PARM1(x) ((x)->uregs[0])
+-#define PT_REGS_PARM2(x) ((x)->uregs[1])
+-#define PT_REGS_PARM3(x) ((x)->uregs[2])
+-#define PT_REGS_PARM4(x) ((x)->uregs[3])
+-#define PT_REGS_PARM5(x) ((x)->uregs[4])
+-#define PT_REGS_RET(x) ((x)->uregs[14])
+-#define PT_REGS_FP(x) ((x)->uregs[11]) /* Works only with CONFIG_FRAME_POINTER */
+-#define PT_REGS_RC(x) ((x)->uregs[0])
+-#define PT_REGS_SP(x) ((x)->uregs[13])
+-#define PT_REGS_IP(x) ((x)->uregs[12])
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), uregs[0])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), uregs[1])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), uregs[2])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), uregs[3])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), uregs[4])
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), uregs[14])
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((x), uregs[11])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), uregs[0])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), uregs[13])
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), uregs[12])
+-
+-#elif defined(bpf_target_arm64)
+-
+-/* arm64 provides struct user_pt_regs instead of struct pt_regs to userspace */
+-struct pt_regs;
+-#define PT_REGS_ARM64 const volatile struct user_pt_regs
+-#define PT_REGS_PARM1(x) (((PT_REGS_ARM64 *)(x))->regs[0])
+-#define PT_REGS_PARM2(x) (((PT_REGS_ARM64 *)(x))->regs[1])
+-#define PT_REGS_PARM3(x) (((PT_REGS_ARM64 *)(x))->regs[2])
+-#define PT_REGS_PARM4(x) (((PT_REGS_ARM64 *)(x))->regs[3])
+-#define PT_REGS_PARM5(x) (((PT_REGS_ARM64 *)(x))->regs[4])
+-#define PT_REGS_RET(x) (((PT_REGS_ARM64 *)(x))->regs[30])
+-/* Works only with CONFIG_FRAME_POINTER */
+-#define PT_REGS_FP(x) (((PT_REGS_ARM64 *)(x))->regs[29])
+-#define PT_REGS_RC(x) (((PT_REGS_ARM64 *)(x))->regs[0])
+-#define PT_REGS_SP(x) (((PT_REGS_ARM64 *)(x))->sp)
+-#define PT_REGS_IP(x) (((PT_REGS_ARM64 *)(x))->pc)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[0])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[1])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[2])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[3])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[4])
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[30])
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[29])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), regs[0])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), sp)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((PT_REGS_ARM64 *)(x), pc)
+-
+-#elif defined(bpf_target_mips)
+-
+-#define PT_REGS_PARM1(x) ((x)->regs[4])
+-#define PT_REGS_PARM2(x) ((x)->regs[5])
+-#define PT_REGS_PARM3(x) ((x)->regs[6])
+-#define PT_REGS_PARM4(x) ((x)->regs[7])
+-#define PT_REGS_PARM5(x) ((x)->regs[8])
+-#define PT_REGS_RET(x) ((x)->regs[31])
+-#define PT_REGS_FP(x) ((x)->regs[30]) /* Works only with CONFIG_FRAME_POINTER */
+-#define PT_REGS_RC(x) ((x)->regs[2])
+-#define PT_REGS_SP(x) ((x)->regs[29])
+-#define PT_REGS_IP(x) ((x)->cp0_epc)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), regs[4])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), regs[5])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), regs[6])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), regs[7])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), regs[8])
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), regs[31])
+-#define PT_REGS_FP_CORE(x) BPF_CORE_READ((x), regs[30])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), regs[2])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), regs[29])
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), cp0_epc)
+-
+-#elif defined(bpf_target_powerpc)
+-
+-#define PT_REGS_PARM1(x) ((x)->gpr[3])
+-#define PT_REGS_PARM2(x) ((x)->gpr[4])
+-#define PT_REGS_PARM3(x) ((x)->gpr[5])
+-#define PT_REGS_PARM4(x) ((x)->gpr[6])
+-#define PT_REGS_PARM5(x) ((x)->gpr[7])
+-#define PT_REGS_RC(x) ((x)->gpr[3])
+-#define PT_REGS_SP(x) ((x)->sp)
+-#define PT_REGS_IP(x) ((x)->nip)
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), gpr[3])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), gpr[4])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), gpr[5])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), gpr[6])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), gpr[7])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), gpr[3])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), sp)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), nip)
+-
+-#elif defined(bpf_target_sparc)
+-
+-#define PT_REGS_PARM1(x) ((x)->u_regs[UREG_I0])
+-#define PT_REGS_PARM2(x) ((x)->u_regs[UREG_I1])
+-#define PT_REGS_PARM3(x) ((x)->u_regs[UREG_I2])
+-#define PT_REGS_PARM4(x) ((x)->u_regs[UREG_I3])
+-#define PT_REGS_PARM5(x) ((x)->u_regs[UREG_I4])
+-#define PT_REGS_RET(x) ((x)->u_regs[UREG_I7])
+-#define PT_REGS_RC(x) ((x)->u_regs[UREG_I0])
+-#define PT_REGS_SP(x) ((x)->u_regs[UREG_FP])
+-
+-#define PT_REGS_PARM1_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I0])
+-#define PT_REGS_PARM2_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I1])
+-#define PT_REGS_PARM3_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I2])
+-#define PT_REGS_PARM4_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I3])
+-#define PT_REGS_PARM5_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I4])
+-#define PT_REGS_RET_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I7])
+-#define PT_REGS_RC_CORE(x) BPF_CORE_READ((x), u_regs[UREG_I0])
+-#define PT_REGS_SP_CORE(x) BPF_CORE_READ((x), u_regs[UREG_FP])
+-
+-/* Should this also be a bpf_target check for the sparc case? */
+-#if defined(__arch64__)
+-#define PT_REGS_IP(x) ((x)->tpc)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), tpc)
+-#else
+-#define PT_REGS_IP(x) ((x)->pc)
+-#define PT_REGS_IP_CORE(x) BPF_CORE_READ((x), pc)
+-#endif
+-
+-#endif
+-
+-#if defined(bpf_target_powerpc)
+-#define BPF_KPROBE_READ_RET_IP(ip, ctx)		({ (ip) = (ctx)->link; })
+-#define BPF_KRETPROBE_READ_RET_IP		BPF_KPROBE_READ_RET_IP
+-#elif defined(bpf_target_sparc)
+-#define BPF_KPROBE_READ_RET_IP(ip, ctx)		({ (ip) = PT_REGS_RET(ctx); })
+-#define BPF_KRETPROBE_READ_RET_IP		BPF_KPROBE_READ_RET_IP
+-#elif defined(bpf_target_defined)
+-#define BPF_KPROBE_READ_RET_IP(ip, ctx)					    \
+-	({ bpf_probe_read_kernel(&(ip), sizeof(ip), (void *)PT_REGS_RET(ctx)); })
+-#define BPF_KRETPROBE_READ_RET_IP(ip, ctx)				    \
+-	({ bpf_probe_read_kernel(&(ip), sizeof(ip),			    \
+-			  (void *)(PT_REGS_FP(ctx) + sizeof(ip))); })
+-#endif
+-
+-#if !defined(bpf_target_defined)
+-
+-#define PT_REGS_PARM1(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM2(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM3(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM4(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM5(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_RET(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_FP(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_RC(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_SP(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_IP(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-
+-#define PT_REGS_PARM1_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM2_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM3_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM4_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_PARM5_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_RET_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_FP_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_RC_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_SP_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define PT_REGS_IP_CORE(x) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-
+-#define BPF_KPROBE_READ_RET_IP(ip, ctx) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-#define BPF_KRETPROBE_READ_RET_IP(ip, ctx) ({ _Pragma(__BPF_TARGET_MISSING); 0l; })
+-
+-#endif /* !defined(bpf_target_defined) */
+-
+-#ifndef ___bpf_concat
+-#define ___bpf_concat(a, b) a ## b
+-#endif
+-#ifndef ___bpf_apply
+-#define ___bpf_apply(fn, n) ___bpf_concat(fn, n)
+-#endif
+-#ifndef ___bpf_nth
+-#define ___bpf_nth(_, _1, _2, _3, _4, _5, _6, _7, _8, _9, _a, _b, _c, N, ...) N
+-#endif
+-#ifndef ___bpf_narg
+-#define ___bpf_narg(...) \
+-	___bpf_nth(_, ##__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+-#endif
+-
+-#define ___bpf_ctx_cast0() ctx
+-#define ___bpf_ctx_cast1(x) ___bpf_ctx_cast0(), (void *)ctx[0]
+-#define ___bpf_ctx_cast2(x, args...) ___bpf_ctx_cast1(args), (void *)ctx[1]
+-#define ___bpf_ctx_cast3(x, args...) ___bpf_ctx_cast2(args), (void *)ctx[2]
+-#define ___bpf_ctx_cast4(x, args...) ___bpf_ctx_cast3(args), (void *)ctx[3]
+-#define ___bpf_ctx_cast5(x, args...) ___bpf_ctx_cast4(args), (void *)ctx[4]
+-#define ___bpf_ctx_cast6(x, args...) ___bpf_ctx_cast5(args), (void *)ctx[5]
+-#define ___bpf_ctx_cast7(x, args...) ___bpf_ctx_cast6(args), (void *)ctx[6]
+-#define ___bpf_ctx_cast8(x, args...) ___bpf_ctx_cast7(args), (void *)ctx[7]
+-#define ___bpf_ctx_cast9(x, args...) ___bpf_ctx_cast8(args), (void *)ctx[8]
+-#define ___bpf_ctx_cast10(x, args...) ___bpf_ctx_cast9(args), (void *)ctx[9]
+-#define ___bpf_ctx_cast11(x, args...) ___bpf_ctx_cast10(args), (void *)ctx[10]
+-#define ___bpf_ctx_cast12(x, args...) ___bpf_ctx_cast11(args), (void *)ctx[11]
+-#define ___bpf_ctx_cast(args...) \
+-	___bpf_apply(___bpf_ctx_cast, ___bpf_narg(args))(args)
+-
+-/*
+- * BPF_PROG is a convenience wrapper for generic tp_btf/fentry/fexit and
+- * similar kinds of BPF programs, that accept input arguments as a single
+- * pointer to untyped u64 array, where each u64 can actually be a typed
+- * pointer or integer of different size. Instead of requring user to write
+- * manual casts and work with array elements by index, BPF_PROG macro
+- * allows user to declare a list of named and typed input arguments in the
+- * same syntax as for normal C function. All the casting is hidden and
+- * performed transparently, while user code can just assume working with
+- * function arguments of specified type and name.
+- *
+- * Original raw context argument is preserved as well as 'ctx' argument.
+- * This is useful when using BPF helpers that expect original context
+- * as one of the parameters (e.g., for bpf_perf_event_output()).
+- */
+-#define BPF_PROG(name, args...)						    \
+-name(unsigned long long *ctx);						    \
+-static __attribute__((always_inline)) typeof(name(0))			    \
+-____##name(unsigned long long *ctx, ##args);				    \
+-typeof(name(0)) name(unsigned long long *ctx)				    \
+-{									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
+-	return ____##name(___bpf_ctx_cast(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
+-}									    \
+-static __attribute__((always_inline)) typeof(name(0))			    \
+-____##name(unsigned long long *ctx, ##args)
+-
+-struct pt_regs;
+-
+-#define ___bpf_kprobe_args0() ctx
+-#define ___bpf_kprobe_args1(x) \
+-	___bpf_kprobe_args0(), (void *)PT_REGS_PARM1(ctx)
+-#define ___bpf_kprobe_args2(x, args...) \
+-	___bpf_kprobe_args1(args), (void *)PT_REGS_PARM2(ctx)
+-#define ___bpf_kprobe_args3(x, args...) \
+-	___bpf_kprobe_args2(args), (void *)PT_REGS_PARM3(ctx)
+-#define ___bpf_kprobe_args4(x, args...) \
+-	___bpf_kprobe_args3(args), (void *)PT_REGS_PARM4(ctx)
+-#define ___bpf_kprobe_args5(x, args...) \
+-	___bpf_kprobe_args4(args), (void *)PT_REGS_PARM5(ctx)
+-#define ___bpf_kprobe_args(args...) \
+-	___bpf_apply(___bpf_kprobe_args, ___bpf_narg(args))(args)
+-
+-/*
+- * BPF_KPROBE serves the same purpose for kprobes as BPF_PROG for
+- * tp_btf/fentry/fexit BPF programs. It hides the underlying platform-specific
+- * low-level way of getting kprobe input arguments from struct pt_regs, and
+- * provides a familiar typed and named function arguments syntax and
+- * semantics of accessing kprobe input paremeters.
+- *
+- * Original struct pt_regs* context is preserved as 'ctx' argument. This might
+- * be necessary when using BPF helpers like bpf_perf_event_output().
+- */
+-#define BPF_KPROBE(name, args...)					    \
+-name(struct pt_regs *ctx);						    \
+-static __attribute__((always_inline)) typeof(name(0))			    \
+-____##name(struct pt_regs *ctx, ##args);				    \
+-typeof(name(0)) name(struct pt_regs *ctx)				    \
+-{									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
+-	return ____##name(___bpf_kprobe_args(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
+-}									    \
+-static __attribute__((always_inline)) typeof(name(0))			    \
+-____##name(struct pt_regs *ctx, ##args)
+-
+-#define ___bpf_kretprobe_args0() ctx
+-#define ___bpf_kretprobe_args1(x) \
+-	___bpf_kretprobe_args0(), (void *)PT_REGS_RC(ctx)
+-#define ___bpf_kretprobe_args(args...) \
+-	___bpf_apply(___bpf_kretprobe_args, ___bpf_narg(args))(args)
+-
+-/*
+- * BPF_KRETPROBE is similar to BPF_KPROBE, except, it only provides optional
+- * return value (in addition to `struct pt_regs *ctx`), but no input
+- * arguments, because they will be clobbered by the time probed function
+- * returns.
+- */
+-#define BPF_KRETPROBE(name, args...)					    \
+-name(struct pt_regs *ctx);						    \
+-static __attribute__((always_inline)) typeof(name(0))			    \
+-____##name(struct pt_regs *ctx, ##args);				    \
+-typeof(name(0)) name(struct pt_regs *ctx)				    \
+-{									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
+-	return ____##name(___bpf_kretprobe_args(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
+-}									    \
+-static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
+-
+-#endif
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+deleted file mode 100644
+index b46760b93bb4..000000000000
+--- a/tools/lib/bpf/btf.c
++++ /dev/null
+@@ -1,4638 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2018 Facebook */
+-
+-#include <byteswap.h>
+-#include <endian.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <fcntl.h>
+-#include <unistd.h>
+-#include <errno.h>
+-#include <sys/utsname.h>
+-#include <sys/param.h>
+-#include <sys/stat.h>
+-#include <linux/kernel.h>
+-#include <linux/err.h>
+-#include <linux/btf.h>
+-#include <gelf.h>
+-#include "btf.h"
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-#include "hashmap.h"
+-#include "strset.h"
+-
+-#define BTF_MAX_NR_TYPES 0x7fffffffU
+-#define BTF_MAX_STR_OFFSET 0x7fffffffU
+-
+-static struct btf_type btf_void;
+-
+-struct btf {
+-	/* raw BTF data in native endianness */
+-	void *raw_data;
+-	/* raw BTF data in non-native endianness */
+-	void *raw_data_swapped;
+-	__u32 raw_size;
+-	/* whether target endianness differs from the native one */
+-	bool swapped_endian;
+-
+-	/*
+-	 * When BTF is loaded from an ELF or raw memory it is stored
+-	 * in a contiguous memory block. The hdr, type_data, and, strs_data
+-	 * point inside that memory region to their respective parts of BTF
+-	 * representation:
+-	 *
+-	 * +--------------------------------+
+-	 * |  Header  |  Types  |  Strings  |
+-	 * +--------------------------------+
+-	 * ^          ^         ^
+-	 * |          |         |
+-	 * hdr        |         |
+-	 * types_data-+         |
+-	 * strs_data------------+
+-	 *
+-	 * If BTF data is later modified, e.g., due to types added or
+-	 * removed, BTF deduplication performed, etc, this contiguous
+-	 * representation is broken up into three independently allocated
+-	 * memory regions to be able to modify them independently.
+-	 * raw_data is nulled out at that point, but can be later allocated
+-	 * and cached again if user calls btf__get_raw_data(), at which point
+-	 * raw_data will contain a contiguous copy of header, types, and
+-	 * strings:
+-	 *
+-	 * +----------+  +---------+  +-----------+
+-	 * |  Header  |  |  Types  |  |  Strings  |
+-	 * +----------+  +---------+  +-----------+
+-	 * ^             ^            ^
+-	 * |             |            |
+-	 * hdr           |            |
+-	 * types_data----+            |
+-	 * strset__data(strs_set)-----+
+-	 *
+-	 *               +----------+---------+-----------+
+-	 *               |  Header  |  Types  |  Strings  |
+-	 * raw_data----->+----------+---------+-----------+
+-	 */
+-	struct btf_header *hdr;
+-
+-	void *types_data;
+-	size_t types_data_cap; /* used size stored in hdr->type_len */
+-
+-	/* type ID to `struct btf_type *` lookup index
+-	 * type_offs[0] corresponds to the first non-VOID type:
+-	 *   - for base BTF it's type [1];
+-	 *   - for split BTF it's the first non-base BTF type.
+-	 */
+-	__u32 *type_offs;
+-	size_t type_offs_cap;
+-	/* number of types in this BTF instance:
+-	 *   - doesn't include special [0] void type;
+-	 *   - for split BTF counts number of types added on top of base BTF.
+-	 */
+-	__u32 nr_types;
+-	/* if not NULL, points to the base BTF on top of which the current
+-	 * split BTF is based
+-	 */
+-	struct btf *base_btf;
+-	/* BTF type ID of the first type in this BTF instance:
+-	 *   - for base BTF it's equal to 1;
+-	 *   - for split BTF it's equal to biggest type ID of base BTF plus 1.
+-	 */
+-	int start_id;
+-	/* logical string offset of this BTF instance:
+-	 *   - for base BTF it's equal to 0;
+-	 *   - for split BTF it's equal to total size of base BTF's string section size.
+-	 */
+-	int start_str_off;
+-
+-	/* only one of strs_data or strs_set can be non-NULL, depending on
+-	 * whether BTF is in a modifiable state (strs_set is used) or not
+-	 * (strs_data points inside raw_data)
+-	 */
+-	void *strs_data;
+-	/* a set of unique strings */
+-	struct strset *strs_set;
+-	/* whether strings are already deduplicated */
+-	bool strs_deduped;
+-
+-	/* BTF object FD, if loaded into kernel */
+-	int fd;
+-
+-	/* Pointer size (in bytes) for a target architecture of this BTF */
+-	int ptr_sz;
+-};
+-
+-static inline __u64 ptr_to_u64(const void *ptr)
+-{
+-	return (__u64) (unsigned long) ptr;
+-}
+-
+-/* Ensure given dynamically allocated memory region pointed to by *data* with
+- * capacity of *cap_cnt* elements each taking *elem_sz* bytes has enough
+- * memory to accomodate *add_cnt* new elements, assuming *cur_cnt* elements
+- * are already used. At most *max_cnt* elements can be ever allocated.
+- * If necessary, memory is reallocated and all existing data is copied over,
+- * new pointer to the memory region is stored at *data, new memory region
+- * capacity (in number of elements) is stored in *cap.
+- * On success, memory pointer to the beginning of unused memory is returned.
+- * On error, NULL is returned.
+- */
+-void *libbpf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
+-		     size_t cur_cnt, size_t max_cnt, size_t add_cnt)
+-{
+-	size_t new_cnt;
+-	void *new_data;
+-
+-	if (cur_cnt + add_cnt <= *cap_cnt)
+-		return *data + cur_cnt * elem_sz;
+-
+-	/* requested more than the set limit */
+-	if (cur_cnt + add_cnt > max_cnt)
+-		return NULL;
+-
+-	new_cnt = *cap_cnt;
+-	new_cnt += new_cnt / 4;		  /* expand by 25% */
+-	if (new_cnt < 16)		  /* but at least 16 elements */
+-		new_cnt = 16;
+-	if (new_cnt > max_cnt)		  /* but not exceeding a set limit */
+-		new_cnt = max_cnt;
+-	if (new_cnt < cur_cnt + add_cnt)  /* also ensure we have enough memory */
+-		new_cnt = cur_cnt + add_cnt;
+-
+-	new_data = libbpf_reallocarray(*data, new_cnt, elem_sz);
+-	if (!new_data)
+-		return NULL;
+-
+-	/* zero out newly allocated portion of memory */
+-	memset(new_data + (*cap_cnt) * elem_sz, 0, (new_cnt - *cap_cnt) * elem_sz);
+-
+-	*data = new_data;
+-	*cap_cnt = new_cnt;
+-	return new_data + cur_cnt * elem_sz;
+-}
+-
+-/* Ensure given dynamically allocated memory region has enough allocated space
+- * to accommodate *need_cnt* elements of size *elem_sz* bytes each
+- */
+-int libbpf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt)
+-{
+-	void *p;
+-
+-	if (need_cnt <= *cap_cnt)
+-		return 0;
+-
+-	p = libbpf_add_mem(data, cap_cnt, elem_sz, *cap_cnt, SIZE_MAX, need_cnt - *cap_cnt);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+-static int btf_add_type_idx_entry(struct btf *btf, __u32 type_off)
+-{
+-	__u32 *p;
+-
+-	p = libbpf_add_mem((void **)&btf->type_offs, &btf->type_offs_cap, sizeof(__u32),
+-			   btf->nr_types, BTF_MAX_NR_TYPES, 1);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	*p = type_off;
+-	return 0;
+-}
+-
+-static void btf_bswap_hdr(struct btf_header *h)
+-{
+-	h->magic = bswap_16(h->magic);
+-	h->hdr_len = bswap_32(h->hdr_len);
+-	h->type_off = bswap_32(h->type_off);
+-	h->type_len = bswap_32(h->type_len);
+-	h->str_off = bswap_32(h->str_off);
+-	h->str_len = bswap_32(h->str_len);
+-}
+-
+-static int btf_parse_hdr(struct btf *btf)
+-{
+-	struct btf_header *hdr = btf->hdr;
+-	__u32 meta_left;
+-
+-	if (btf->raw_size < sizeof(struct btf_header)) {
+-		pr_debug("BTF header not found\n");
+-		return -EINVAL;
+-	}
+-
+-	if (hdr->magic == bswap_16(BTF_MAGIC)) {
+-		btf->swapped_endian = true;
+-		if (bswap_32(hdr->hdr_len) != sizeof(struct btf_header)) {
+-			pr_warn("Can't load BTF with non-native endianness due to unsupported header length %u\n",
+-				bswap_32(hdr->hdr_len));
+-			return -ENOTSUP;
+-		}
+-		btf_bswap_hdr(hdr);
+-	} else if (hdr->magic != BTF_MAGIC) {
+-		pr_debug("Invalid BTF magic:%x\n", hdr->magic);
+-		return -EINVAL;
+-	}
+-
+-	meta_left = btf->raw_size - sizeof(*hdr);
+-	if (meta_left < hdr->str_off + hdr->str_len) {
+-		pr_debug("Invalid BTF total size:%u\n", btf->raw_size);
+-		return -EINVAL;
+-	}
+-
+-	if (hdr->type_off + hdr->type_len > hdr->str_off) {
+-		pr_debug("Invalid BTF data sections layout: type data at %u + %u, strings data at %u + %u\n",
+-			 hdr->type_off, hdr->type_len, hdr->str_off, hdr->str_len);
+-		return -EINVAL;
+-	}
+-
+-	if (hdr->type_off % 4) {
+-		pr_debug("BTF type section is not aligned to 4 bytes\n");
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int btf_parse_str_sec(struct btf *btf)
+-{
+-	const struct btf_header *hdr = btf->hdr;
+-	const char *start = btf->strs_data;
+-	const char *end = start + btf->hdr->str_len;
+-
+-	if (btf->base_btf && hdr->str_len == 0)
+-		return 0;
+-	if (!hdr->str_len || hdr->str_len - 1 > BTF_MAX_STR_OFFSET || end[-1]) {
+-		pr_debug("Invalid BTF string section\n");
+-		return -EINVAL;
+-	}
+-	if (!btf->base_btf && start[0]) {
+-		pr_debug("Invalid BTF string section\n");
+-		return -EINVAL;
+-	}
+-	return 0;
+-}
+-
+-static int btf_type_size(const struct btf_type *t)
+-{
+-	const int base_size = sizeof(struct btf_type);
+-	__u16 vlen = btf_vlen(t);
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_FLOAT:
+-		return base_size;
+-	case BTF_KIND_INT:
+-		return base_size + sizeof(__u32);
+-	case BTF_KIND_ENUM:
+-		return base_size + vlen * sizeof(struct btf_enum);
+-	case BTF_KIND_ARRAY:
+-		return base_size + sizeof(struct btf_array);
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-		return base_size + vlen * sizeof(struct btf_member);
+-	case BTF_KIND_FUNC_PROTO:
+-		return base_size + vlen * sizeof(struct btf_param);
+-	case BTF_KIND_VAR:
+-		return base_size + sizeof(struct btf_var);
+-	case BTF_KIND_DATASEC:
+-		return base_size + vlen * sizeof(struct btf_var_secinfo);
+-	default:
+-		pr_debug("Unsupported BTF_KIND:%u\n", btf_kind(t));
+-		return -EINVAL;
+-	}
+-}
+-
+-static void btf_bswap_type_base(struct btf_type *t)
+-{
+-	t->name_off = bswap_32(t->name_off);
+-	t->info = bswap_32(t->info);
+-	t->type = bswap_32(t->type);
+-}
+-
+-static int btf_bswap_type_rest(struct btf_type *t)
+-{
+-	struct btf_var_secinfo *v;
+-	struct btf_member *m;
+-	struct btf_array *a;
+-	struct btf_param *p;
+-	struct btf_enum *e;
+-	__u16 vlen = btf_vlen(t);
+-	int i;
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_FLOAT:
+-		return 0;
+-	case BTF_KIND_INT:
+-		*(__u32 *)(t + 1) = bswap_32(*(__u32 *)(t + 1));
+-		return 0;
+-	case BTF_KIND_ENUM:
+-		for (i = 0, e = btf_enum(t); i < vlen; i++, e++) {
+-			e->name_off = bswap_32(e->name_off);
+-			e->val = bswap_32(e->val);
+-		}
+-		return 0;
+-	case BTF_KIND_ARRAY:
+-		a = btf_array(t);
+-		a->type = bswap_32(a->type);
+-		a->index_type = bswap_32(a->index_type);
+-		a->nelems = bswap_32(a->nelems);
+-		return 0;
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-		for (i = 0, m = btf_members(t); i < vlen; i++, m++) {
+-			m->name_off = bswap_32(m->name_off);
+-			m->type = bswap_32(m->type);
+-			m->offset = bswap_32(m->offset);
+-		}
+-		return 0;
+-	case BTF_KIND_FUNC_PROTO:
+-		for (i = 0, p = btf_params(t); i < vlen; i++, p++) {
+-			p->name_off = bswap_32(p->name_off);
+-			p->type = bswap_32(p->type);
+-		}
+-		return 0;
+-	case BTF_KIND_VAR:
+-		btf_var(t)->linkage = bswap_32(btf_var(t)->linkage);
+-		return 0;
+-	case BTF_KIND_DATASEC:
+-		for (i = 0, v = btf_var_secinfos(t); i < vlen; i++, v++) {
+-			v->type = bswap_32(v->type);
+-			v->offset = bswap_32(v->offset);
+-			v->size = bswap_32(v->size);
+-		}
+-		return 0;
+-	default:
+-		pr_debug("Unsupported BTF_KIND:%u\n", btf_kind(t));
+-		return -EINVAL;
+-	}
+-}
+-
+-static int btf_parse_type_sec(struct btf *btf)
+-{
+-	struct btf_header *hdr = btf->hdr;
+-	void *next_type = btf->types_data;
+-	void *end_type = next_type + hdr->type_len;
+-	int err, type_size;
+-
+-	while (next_type + sizeof(struct btf_type) <= end_type) {
+-		if (btf->swapped_endian)
+-			btf_bswap_type_base(next_type);
+-
+-		type_size = btf_type_size(next_type);
+-		if (type_size < 0)
+-			return type_size;
+-		if (next_type + type_size > end_type) {
+-			pr_warn("BTF type [%d] is malformed\n", btf->start_id + btf->nr_types);
+-			return -EINVAL;
+-		}
+-
+-		if (btf->swapped_endian && btf_bswap_type_rest(next_type))
+-			return -EINVAL;
+-
+-		err = btf_add_type_idx_entry(btf, next_type - btf->types_data);
+-		if (err)
+-			return err;
+-
+-		next_type += type_size;
+-		btf->nr_types++;
+-	}
+-
+-	if (next_type != end_type) {
+-		pr_warn("BTF types data is malformed\n");
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-__u32 btf__get_nr_types(const struct btf *btf)
+-{
+-	return btf->start_id + btf->nr_types - 1;
+-}
+-
+-const struct btf *btf__base_btf(const struct btf *btf)
+-{
+-	return btf->base_btf;
+-}
+-
+-/* internal helper returning non-const pointer to a type */
+-struct btf_type *btf_type_by_id(struct btf *btf, __u32 type_id)
+-{
+-	if (type_id == 0)
+-		return &btf_void;
+-	if (type_id < btf->start_id)
+-		return btf_type_by_id(btf->base_btf, type_id);
+-	return btf->types_data + btf->type_offs[type_id - btf->start_id];
+-}
+-
+-const struct btf_type *btf__type_by_id(const struct btf *btf, __u32 type_id)
+-{
+-	if (type_id >= btf->start_id + btf->nr_types)
+-		return errno = EINVAL, NULL;
+-	return btf_type_by_id((struct btf *)btf, type_id);
+-}
+-
+-static int determine_ptr_size(const struct btf *btf)
+-{
+-	const struct btf_type *t;
+-	const char *name;
+-	int i, n;
+-
+-	if (btf->base_btf && btf->base_btf->ptr_sz > 0)
+-		return btf->base_btf->ptr_sz;
+-
+-	n = btf__get_nr_types(btf);
+-	for (i = 1; i <= n; i++) {
+-		t = btf__type_by_id(btf, i);
+-		if (!btf_is_int(t))
+-			continue;
+-
+-		name = btf__name_by_offset(btf, t->name_off);
+-		if (!name)
+-			continue;
+-
+-		if (strcmp(name, "long int") == 0 ||
+-		    strcmp(name, "long unsigned int") == 0) {
+-			if (t->size != 4 && t->size != 8)
+-				continue;
+-			return t->size;
+-		}
+-	}
+-
+-	return -1;
+-}
+-
+-static size_t btf_ptr_sz(const struct btf *btf)
+-{
+-	if (!btf->ptr_sz)
+-		((struct btf *)btf)->ptr_sz = determine_ptr_size(btf);
+-	return btf->ptr_sz < 0 ? sizeof(void *) : btf->ptr_sz;
+-}
+-
+-/* Return pointer size this BTF instance assumes. The size is heuristically
+- * determined by looking for 'long' or 'unsigned long' integer type and
+- * recording its size in bytes. If BTF type information doesn't have any such
+- * type, this function returns 0. In the latter case, native architecture's
+- * pointer size is assumed, so will be either 4 or 8, depending on
+- * architecture that libbpf was compiled for. It's possible to override
+- * guessed value by using btf__set_pointer_size() API.
+- */
+-size_t btf__pointer_size(const struct btf *btf)
+-{
+-	if (!btf->ptr_sz)
+-		((struct btf *)btf)->ptr_sz = determine_ptr_size(btf);
+-
+-	if (btf->ptr_sz < 0)
+-		/* not enough BTF type info to guess */
+-		return 0;
+-
+-	return btf->ptr_sz;
+-}
+-
+-/* Override or set pointer size in bytes. Only values of 4 and 8 are
+- * supported.
+- */
+-int btf__set_pointer_size(struct btf *btf, size_t ptr_sz)
+-{
+-	if (ptr_sz != 4 && ptr_sz != 8)
+-		return libbpf_err(-EINVAL);
+-	btf->ptr_sz = ptr_sz;
+-	return 0;
+-}
+-
+-static bool is_host_big_endian(void)
+-{
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-	return false;
+-#elif __BYTE_ORDER == __BIG_ENDIAN
+-	return true;
+-#else
+-# error "Unrecognized __BYTE_ORDER__"
+-#endif
+-}
+-
+-enum btf_endianness btf__endianness(const struct btf *btf)
+-{
+-	if (is_host_big_endian())
+-		return btf->swapped_endian ? BTF_LITTLE_ENDIAN : BTF_BIG_ENDIAN;
+-	else
+-		return btf->swapped_endian ? BTF_BIG_ENDIAN : BTF_LITTLE_ENDIAN;
+-}
+-
+-int btf__set_endianness(struct btf *btf, enum btf_endianness endian)
+-{
+-	if (endian != BTF_LITTLE_ENDIAN && endian != BTF_BIG_ENDIAN)
+-		return libbpf_err(-EINVAL);
+-
+-	btf->swapped_endian = is_host_big_endian() != (endian == BTF_BIG_ENDIAN);
+-	if (!btf->swapped_endian) {
+-		free(btf->raw_data_swapped);
+-		btf->raw_data_swapped = NULL;
+-	}
+-	return 0;
+-}
+-
+-static bool btf_type_is_void(const struct btf_type *t)
+-{
+-	return t == &btf_void || btf_is_fwd(t);
+-}
+-
+-static bool btf_type_is_void_or_null(const struct btf_type *t)
+-{
+-	return !t || btf_type_is_void(t);
+-}
+-
+-#define MAX_RESOLVE_DEPTH 32
+-
+-__s64 btf__resolve_size(const struct btf *btf, __u32 type_id)
+-{
+-	const struct btf_array *array;
+-	const struct btf_type *t;
+-	__u32 nelems = 1;
+-	__s64 size = -1;
+-	int i;
+-
+-	t = btf__type_by_id(btf, type_id);
+-	for (i = 0; i < MAX_RESOLVE_DEPTH && !btf_type_is_void_or_null(t); i++) {
+-		switch (btf_kind(t)) {
+-		case BTF_KIND_INT:
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION:
+-		case BTF_KIND_ENUM:
+-		case BTF_KIND_DATASEC:
+-		case BTF_KIND_FLOAT:
+-			size = t->size;
+-			goto done;
+-		case BTF_KIND_PTR:
+-			size = btf_ptr_sz(btf);
+-			goto done;
+-		case BTF_KIND_TYPEDEF:
+-		case BTF_KIND_VOLATILE:
+-		case BTF_KIND_CONST:
+-		case BTF_KIND_RESTRICT:
+-		case BTF_KIND_VAR:
+-			type_id = t->type;
+-			break;
+-		case BTF_KIND_ARRAY:
+-			array = btf_array(t);
+-			if (nelems && array->nelems > UINT32_MAX / nelems)
+-				return libbpf_err(-E2BIG);
+-			nelems *= array->nelems;
+-			type_id = array->type;
+-			break;
+-		default:
+-			return libbpf_err(-EINVAL);
+-		}
+-
+-		t = btf__type_by_id(btf, type_id);
+-	}
+-
+-done:
+-	if (size < 0)
+-		return libbpf_err(-EINVAL);
+-	if (nelems && size > UINT32_MAX / nelems)
+-		return libbpf_err(-E2BIG);
+-
+-	return nelems * size;
+-}
+-
+-int btf__align_of(const struct btf *btf, __u32 id)
+-{
+-	const struct btf_type *t = btf__type_by_id(btf, id);
+-	__u16 kind = btf_kind(t);
+-
+-	switch (kind) {
+-	case BTF_KIND_INT:
+-	case BTF_KIND_ENUM:
+-	case BTF_KIND_FLOAT:
+-		return min(btf_ptr_sz(btf), (size_t)t->size);
+-	case BTF_KIND_PTR:
+-		return btf_ptr_sz(btf);
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_RESTRICT:
+-		return btf__align_of(btf, t->type);
+-	case BTF_KIND_ARRAY:
+-		return btf__align_of(btf, btf_array(t)->type);
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		const struct btf_member *m = btf_members(t);
+-		__u16 vlen = btf_vlen(t);
+-		int i, max_align = 1, align;
+-
+-		for (i = 0; i < vlen; i++, m++) {
+-			align = btf__align_of(btf, m->type);
+-			if (align <= 0)
+-				return libbpf_err(align);
+-			max_align = max(max_align, align);
+-		}
+-
+-		return max_align;
+-	}
+-	default:
+-		pr_warn("unsupported BTF_KIND:%u\n", btf_kind(t));
+-		return errno = EINVAL, 0;
+-	}
+-}
+-
+-int btf__resolve_type(const struct btf *btf, __u32 type_id)
+-{
+-	const struct btf_type *t;
+-	int depth = 0;
+-
+-	t = btf__type_by_id(btf, type_id);
+-	while (depth < MAX_RESOLVE_DEPTH &&
+-	       !btf_type_is_void_or_null(t) &&
+-	       (btf_is_mod(t) || btf_is_typedef(t) || btf_is_var(t))) {
+-		type_id = t->type;
+-		t = btf__type_by_id(btf, type_id);
+-		depth++;
+-	}
+-
+-	if (depth == MAX_RESOLVE_DEPTH || btf_type_is_void_or_null(t))
+-		return libbpf_err(-EINVAL);
+-
+-	return type_id;
+-}
+-
+-__s32 btf__find_by_name(const struct btf *btf, const char *type_name)
+-{
+-	__u32 i, nr_types = btf__get_nr_types(btf);
+-
+-	if (!strcmp(type_name, "void"))
+-		return 0;
+-
+-	for (i = 1; i <= nr_types; i++) {
+-		const struct btf_type *t = btf__type_by_id(btf, i);
+-		const char *name = btf__name_by_offset(btf, t->name_off);
+-
+-		if (name && !strcmp(type_name, name))
+-			return i;
+-	}
+-
+-	return libbpf_err(-ENOENT);
+-}
+-
+-__s32 btf__find_by_name_kind(const struct btf *btf, const char *type_name,
+-			     __u32 kind)
+-{
+-	__u32 i, nr_types = btf__get_nr_types(btf);
+-
+-	if (kind == BTF_KIND_UNKN || !strcmp(type_name, "void"))
+-		return 0;
+-
+-	for (i = 1; i <= nr_types; i++) {
+-		const struct btf_type *t = btf__type_by_id(btf, i);
+-		const char *name;
+-
+-		if (btf_kind(t) != kind)
+-			continue;
+-		name = btf__name_by_offset(btf, t->name_off);
+-		if (name && !strcmp(type_name, name))
+-			return i;
+-	}
+-
+-	return libbpf_err(-ENOENT);
+-}
+-
+-static bool btf_is_modifiable(const struct btf *btf)
+-{
+-	return (void *)btf->hdr != btf->raw_data;
+-}
+-
+-void btf__free(struct btf *btf)
+-{
+-	if (IS_ERR_OR_NULL(btf))
+-		return;
+-
+-	if (btf->fd >= 0)
+-		close(btf->fd);
+-
+-	if (btf_is_modifiable(btf)) {
+-		/* if BTF was modified after loading, it will have a split
+-		 * in-memory representation for header, types, and strings
+-		 * sections, so we need to free all of them individually. It
+-		 * might still have a cached contiguous raw data present,
+-		 * which will be unconditionally freed below.
+-		 */
+-		free(btf->hdr);
+-		free(btf->types_data);
+-		strset__free(btf->strs_set);
+-	}
+-	free(btf->raw_data);
+-	free(btf->raw_data_swapped);
+-	free(btf->type_offs);
+-	free(btf);
+-}
+-
+-static struct btf *btf_new_empty(struct btf *base_btf)
+-{
+-	struct btf *btf;
+-
+-	btf = calloc(1, sizeof(*btf));
+-	if (!btf)
+-		return ERR_PTR(-ENOMEM);
+-
+-	btf->nr_types = 0;
+-	btf->start_id = 1;
+-	btf->start_str_off = 0;
+-	btf->fd = -1;
+-	btf->ptr_sz = sizeof(void *);
+-	btf->swapped_endian = false;
+-
+-	if (base_btf) {
+-		btf->base_btf = base_btf;
+-		btf->start_id = btf__get_nr_types(base_btf) + 1;
+-		btf->start_str_off = base_btf->hdr->str_len;
+-	}
+-
+-	/* +1 for empty string at offset 0 */
+-	btf->raw_size = sizeof(struct btf_header) + (base_btf ? 0 : 1);
+-	btf->raw_data = calloc(1, btf->raw_size);
+-	if (!btf->raw_data) {
+-		free(btf);
+-		return ERR_PTR(-ENOMEM);
+-	}
+-
+-	btf->hdr = btf->raw_data;
+-	btf->hdr->hdr_len = sizeof(struct btf_header);
+-	btf->hdr->magic = BTF_MAGIC;
+-	btf->hdr->version = BTF_VERSION;
+-
+-	btf->types_data = btf->raw_data + btf->hdr->hdr_len;
+-	btf->strs_data = btf->raw_data + btf->hdr->hdr_len;
+-	btf->hdr->str_len = base_btf ? 0 : 1; /* empty string at offset 0 */
+-
+-	return btf;
+-}
+-
+-struct btf *btf__new_empty(void)
+-{
+-	return libbpf_ptr(btf_new_empty(NULL));
+-}
+-
+-struct btf *btf__new_empty_split(struct btf *base_btf)
+-{
+-	return libbpf_ptr(btf_new_empty(base_btf));
+-}
+-
+-static struct btf *btf_new(const void *data, __u32 size, struct btf *base_btf)
+-{
+-	struct btf *btf;
+-	int err;
+-
+-	btf = calloc(1, sizeof(struct btf));
+-	if (!btf)
+-		return ERR_PTR(-ENOMEM);
+-
+-	btf->nr_types = 0;
+-	btf->start_id = 1;
+-	btf->start_str_off = 0;
+-
+-	if (base_btf) {
+-		btf->base_btf = base_btf;
+-		btf->start_id = btf__get_nr_types(base_btf) + 1;
+-		btf->start_str_off = base_btf->hdr->str_len;
+-	}
+-
+-	btf->raw_data = malloc(size);
+-	if (!btf->raw_data) {
+-		err = -ENOMEM;
+-		goto done;
+-	}
+-	memcpy(btf->raw_data, data, size);
+-	btf->raw_size = size;
+-
+-	btf->hdr = btf->raw_data;
+-	err = btf_parse_hdr(btf);
+-	if (err)
+-		goto done;
+-
+-	btf->strs_data = btf->raw_data + btf->hdr->hdr_len + btf->hdr->str_off;
+-	btf->types_data = btf->raw_data + btf->hdr->hdr_len + btf->hdr->type_off;
+-
+-	err = btf_parse_str_sec(btf);
+-	err = err ?: btf_parse_type_sec(btf);
+-	if (err)
+-		goto done;
+-
+-	btf->fd = -1;
+-
+-done:
+-	if (err) {
+-		btf__free(btf);
+-		return ERR_PTR(err);
+-	}
+-
+-	return btf;
+-}
+-
+-struct btf *btf__new(const void *data, __u32 size)
+-{
+-	return libbpf_ptr(btf_new(data, size, NULL));
+-}
+-
+-static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
+-				 struct btf_ext **btf_ext)
+-{
+-	Elf_Data *btf_data = NULL, *btf_ext_data = NULL;
+-	int err = 0, fd = -1, idx = 0;
+-	struct btf *btf = NULL;
+-	Elf_Scn *scn = NULL;
+-	Elf *elf = NULL;
+-	GElf_Ehdr ehdr;
+-	size_t shstrndx;
+-
+-	if (elf_version(EV_CURRENT) == EV_NONE) {
+-		pr_warn("failed to init libelf for %s\n", path);
+-		return ERR_PTR(-LIBBPF_ERRNO__LIBELF);
+-	}
+-
+-	fd = open(path, O_RDONLY);
+-	if (fd < 0) {
+-		err = -errno;
+-		pr_warn("failed to open %s: %s\n", path, strerror(errno));
+-		return ERR_PTR(err);
+-	}
+-
+-	err = -LIBBPF_ERRNO__FORMAT;
+-
+-	elf = elf_begin(fd, ELF_C_READ, NULL);
+-	if (!elf) {
+-		pr_warn("failed to open %s as ELF file\n", path);
+-		goto done;
+-	}
+-	if (!gelf_getehdr(elf, &ehdr)) {
+-		pr_warn("failed to get EHDR from %s\n", path);
+-		goto done;
+-	}
+-
+-	if (elf_getshdrstrndx(elf, &shstrndx)) {
+-		pr_warn("failed to get section names section index for %s\n",
+-			path);
+-		goto done;
+-	}
+-
+-	if (!elf_rawdata(elf_getscn(elf, shstrndx), NULL)) {
+-		pr_warn("failed to get e_shstrndx from %s\n", path);
+-		goto done;
+-	}
+-
+-	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+-		GElf_Shdr sh;
+-		char *name;
+-
+-		idx++;
+-		if (gelf_getshdr(scn, &sh) != &sh) {
+-			pr_warn("failed to get section(%d) header from %s\n",
+-				idx, path);
+-			goto done;
+-		}
+-		name = elf_strptr(elf, shstrndx, sh.sh_name);
+-		if (!name) {
+-			pr_warn("failed to get section(%d) name from %s\n",
+-				idx, path);
+-			goto done;
+-		}
+-		if (strcmp(name, BTF_ELF_SEC) == 0) {
+-			btf_data = elf_getdata(scn, 0);
+-			if (!btf_data) {
+-				pr_warn("failed to get section(%d, %s) data from %s\n",
+-					idx, name, path);
+-				goto done;
+-			}
+-			continue;
+-		} else if (btf_ext && strcmp(name, BTF_EXT_ELF_SEC) == 0) {
+-			btf_ext_data = elf_getdata(scn, 0);
+-			if (!btf_ext_data) {
+-				pr_warn("failed to get section(%d, %s) data from %s\n",
+-					idx, name, path);
+-				goto done;
+-			}
+-			continue;
+-		}
+-	}
+-
+-	err = 0;
+-
+-	if (!btf_data) {
+-		err = -ENOENT;
+-		goto done;
+-	}
+-	btf = btf_new(btf_data->d_buf, btf_data->d_size, base_btf);
+-	err = libbpf_get_error(btf);
+-	if (err)
+-		goto done;
+-
+-	switch (gelf_getclass(elf)) {
+-	case ELFCLASS32:
+-		btf__set_pointer_size(btf, 4);
+-		break;
+-	case ELFCLASS64:
+-		btf__set_pointer_size(btf, 8);
+-		break;
+-	default:
+-		pr_warn("failed to get ELF class (bitness) for %s\n", path);
+-		break;
+-	}
+-
+-	if (btf_ext && btf_ext_data) {
+-		*btf_ext = btf_ext__new(btf_ext_data->d_buf, btf_ext_data->d_size);
+-		err = libbpf_get_error(*btf_ext);
+-		if (err)
+-			goto done;
+-	} else if (btf_ext) {
+-		*btf_ext = NULL;
+-	}
+-done:
+-	if (elf)
+-		elf_end(elf);
+-	close(fd);
+-
+-	if (!err)
+-		return btf;
+-
+-	if (btf_ext)
+-		btf_ext__free(*btf_ext);
+-	btf__free(btf);
+-
+-	return ERR_PTR(err);
+-}
+-
+-struct btf *btf__parse_elf(const char *path, struct btf_ext **btf_ext)
+-{
+-	return libbpf_ptr(btf_parse_elf(path, NULL, btf_ext));
+-}
+-
+-struct btf *btf__parse_elf_split(const char *path, struct btf *base_btf)
+-{
+-	return libbpf_ptr(btf_parse_elf(path, base_btf, NULL));
+-}
+-
+-static struct btf *btf_parse_raw(const char *path, struct btf *base_btf)
+-{
+-	struct btf *btf = NULL;
+-	void *data = NULL;
+-	FILE *f = NULL;
+-	__u16 magic;
+-	int err = 0;
+-	long sz;
+-
+-	f = fopen(path, "rb");
+-	if (!f) {
+-		err = -errno;
+-		goto err_out;
+-	}
+-
+-	/* check BTF magic */
+-	if (fread(&magic, 1, sizeof(magic), f) < sizeof(magic)) {
+-		err = -EIO;
+-		goto err_out;
+-	}
+-	if (magic != BTF_MAGIC && magic != bswap_16(BTF_MAGIC)) {
+-		/* definitely not a raw BTF */
+-		err = -EPROTO;
+-		goto err_out;
+-	}
+-
+-	/* get file size */
+-	if (fseek(f, 0, SEEK_END)) {
+-		err = -errno;
+-		goto err_out;
+-	}
+-	sz = ftell(f);
+-	if (sz < 0) {
+-		err = -errno;
+-		goto err_out;
+-	}
+-	/* rewind to the start */
+-	if (fseek(f, 0, SEEK_SET)) {
+-		err = -errno;
+-		goto err_out;
+-	}
+-
+-	/* pre-alloc memory and read all of BTF data */
+-	data = malloc(sz);
+-	if (!data) {
+-		err = -ENOMEM;
+-		goto err_out;
+-	}
+-	if (fread(data, 1, sz, f) < sz) {
+-		err = -EIO;
+-		goto err_out;
+-	}
+-
+-	/* finally parse BTF data */
+-	btf = btf_new(data, sz, base_btf);
+-
+-err_out:
+-	free(data);
+-	if (f)
+-		fclose(f);
+-	return err ? ERR_PTR(err) : btf;
+-}
+-
+-struct btf *btf__parse_raw(const char *path)
+-{
+-	return libbpf_ptr(btf_parse_raw(path, NULL));
+-}
+-
+-struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf)
+-{
+-	return libbpf_ptr(btf_parse_raw(path, base_btf));
+-}
+-
+-static struct btf *btf_parse(const char *path, struct btf *base_btf, struct btf_ext **btf_ext)
+-{
+-	struct btf *btf;
+-	int err;
+-
+-	if (btf_ext)
+-		*btf_ext = NULL;
+-
+-	btf = btf_parse_raw(path, base_btf);
+-	err = libbpf_get_error(btf);
+-	if (!err)
+-		return btf;
+-	if (err != -EPROTO)
+-		return ERR_PTR(err);
+-	return btf_parse_elf(path, base_btf, btf_ext);
+-}
+-
+-struct btf *btf__parse(const char *path, struct btf_ext **btf_ext)
+-{
+-	return libbpf_ptr(btf_parse(path, NULL, btf_ext));
+-}
+-
+-struct btf *btf__parse_split(const char *path, struct btf *base_btf)
+-{
+-	return libbpf_ptr(btf_parse(path, base_btf, NULL));
+-}
+-
+-static int compare_vsi_off(const void *_a, const void *_b)
+-{
+-	const struct btf_var_secinfo *a = _a;
+-	const struct btf_var_secinfo *b = _b;
+-
+-	return a->offset - b->offset;
+-}
+-
+-static int btf_fixup_datasec(struct bpf_object *obj, struct btf *btf,
+-			     struct btf_type *t)
+-{
+-	__u32 size = 0, off = 0, i, vars = btf_vlen(t);
+-	const char *name = btf__name_by_offset(btf, t->name_off);
+-	const struct btf_type *t_var;
+-	struct btf_var_secinfo *vsi;
+-	const struct btf_var *var;
+-	int ret;
+-
+-	if (!name) {
+-		pr_debug("No name found in string section for DATASEC kind.\n");
+-		return -ENOENT;
+-	}
+-
+-	/* .extern datasec size and var offsets were set correctly during
+-	 * extern collection step, so just skip straight to sorting variables
+-	 */
+-	if (t->size)
+-		goto sort_vars;
+-
+-	ret = bpf_object__section_size(obj, name, &size);
+-	if (ret || !size || (t->size && t->size != size)) {
+-		pr_debug("Invalid size for section %s: %u bytes\n", name, size);
+-		return -ENOENT;
+-	}
+-
+-	t->size = size;
+-
+-	for (i = 0, vsi = btf_var_secinfos(t); i < vars; i++, vsi++) {
+-		t_var = btf__type_by_id(btf, vsi->type);
+-		var = btf_var(t_var);
+-
+-		if (!btf_is_var(t_var)) {
+-			pr_debug("Non-VAR type seen in section %s\n", name);
+-			return -EINVAL;
+-		}
+-
+-		if (var->linkage == BTF_VAR_STATIC)
+-			continue;
+-
+-		name = btf__name_by_offset(btf, t_var->name_off);
+-		if (!name) {
+-			pr_debug("No name found in string section for VAR kind\n");
+-			return -ENOENT;
+-		}
+-
+-		ret = bpf_object__variable_offset(obj, name, &off);
+-		if (ret) {
+-			pr_debug("No offset found in symbol table for VAR %s\n",
+-				 name);
+-			return -ENOENT;
+-		}
+-
+-		vsi->offset = off;
+-	}
+-
+-sort_vars:
+-	qsort(btf_var_secinfos(t), vars, sizeof(*vsi), compare_vsi_off);
+-	return 0;
+-}
+-
+-int btf__finalize_data(struct bpf_object *obj, struct btf *btf)
+-{
+-	int err = 0;
+-	__u32 i;
+-
+-	for (i = 1; i <= btf->nr_types; i++) {
+-		struct btf_type *t = btf_type_by_id(btf, i);
+-
+-		/* Loader needs to fix up some of the things compiler
+-		 * couldn't get its hands on while emitting BTF. This
+-		 * is section size and global variable offset. We use
+-		 * the info from the ELF itself for this purpose.
+-		 */
+-		if (btf_is_datasec(t)) {
+-			err = btf_fixup_datasec(obj, btf, t);
+-			if (err)
+-				break;
+-		}
+-	}
+-
+-	return libbpf_err(err);
+-}
+-
+-static void *btf_get_raw_data(const struct btf *btf, __u32 *size, bool swap_endian);
+-
+-int btf__load(struct btf *btf)
+-{
+-	__u32 log_buf_size = 0, raw_size;
+-	char *log_buf = NULL;
+-	void *raw_data;
+-	int err = 0;
+-
+-	if (btf->fd >= 0)
+-		return libbpf_err(-EEXIST);
+-
+-retry_load:
+-	if (log_buf_size) {
+-		log_buf = malloc(log_buf_size);
+-		if (!log_buf)
+-			return libbpf_err(-ENOMEM);
+-
+-		*log_buf = 0;
+-	}
+-
+-	raw_data = btf_get_raw_data(btf, &raw_size, false);
+-	if (!raw_data) {
+-		err = -ENOMEM;
+-		goto done;
+-	}
+-	/* cache native raw data representation */
+-	btf->raw_size = raw_size;
+-	btf->raw_data = raw_data;
+-
+-	btf->fd = bpf_load_btf(raw_data, raw_size, log_buf, log_buf_size, false);
+-	if (btf->fd < 0) {
+-		if (!log_buf || errno == ENOSPC) {
+-			log_buf_size = max((__u32)BPF_LOG_BUF_SIZE,
+-					   log_buf_size << 1);
+-			free(log_buf);
+-			goto retry_load;
+-		}
+-
+-		err = -errno;
+-		pr_warn("Error loading BTF: %s(%d)\n", strerror(errno), errno);
+-		if (*log_buf)
+-			pr_warn("%s\n", log_buf);
+-		goto done;
+-	}
+-
+-done:
+-	free(log_buf);
+-	return libbpf_err(err);
+-}
+-
+-int btf__fd(const struct btf *btf)
+-{
+-	return btf->fd;
+-}
+-
+-void btf__set_fd(struct btf *btf, int fd)
+-{
+-	btf->fd = fd;
+-}
+-
+-static const void *btf_strs_data(const struct btf *btf)
+-{
+-	return btf->strs_data ? btf->strs_data : strset__data(btf->strs_set);
+-}
+-
+-static void *btf_get_raw_data(const struct btf *btf, __u32 *size, bool swap_endian)
+-{
+-	struct btf_header *hdr = btf->hdr;
+-	struct btf_type *t;
+-	void *data, *p;
+-	__u32 data_sz;
+-	int i;
+-
+-	data = swap_endian ? btf->raw_data_swapped : btf->raw_data;
+-	if (data) {
+-		*size = btf->raw_size;
+-		return data;
+-	}
+-
+-	data_sz = hdr->hdr_len + hdr->type_len + hdr->str_len;
+-	data = calloc(1, data_sz);
+-	if (!data)
+-		return NULL;
+-	p = data;
+-
+-	memcpy(p, hdr, hdr->hdr_len);
+-	if (swap_endian)
+-		btf_bswap_hdr(p);
+-	p += hdr->hdr_len;
+-
+-	memcpy(p, btf->types_data, hdr->type_len);
+-	if (swap_endian) {
+-		for (i = 0; i < btf->nr_types; i++) {
+-			t = p + btf->type_offs[i];
+-			/* btf_bswap_type_rest() relies on native t->info, so
+-			 * we swap base type info after we swapped all the
+-			 * additional information
+-			 */
+-			if (btf_bswap_type_rest(t))
+-				goto err_out;
+-			btf_bswap_type_base(t);
+-		}
+-	}
+-	p += hdr->type_len;
+-
+-	memcpy(p, btf_strs_data(btf), hdr->str_len);
+-	p += hdr->str_len;
+-
+-	*size = data_sz;
+-	return data;
+-err_out:
+-	free(data);
+-	return NULL;
+-}
+-
+-const void *btf__get_raw_data(const struct btf *btf_ro, __u32 *size)
+-{
+-	struct btf *btf = (struct btf *)btf_ro;
+-	__u32 data_sz;
+-	void *data;
+-
+-	data = btf_get_raw_data(btf, &data_sz, btf->swapped_endian);
+-	if (!data)
+-		return errno = -ENOMEM, NULL;
+-
+-	btf->raw_size = data_sz;
+-	if (btf->swapped_endian)
+-		btf->raw_data_swapped = data;
+-	else
+-		btf->raw_data = data;
+-	*size = data_sz;
+-	return data;
+-}
+-
+-const char *btf__str_by_offset(const struct btf *btf, __u32 offset)
+-{
+-	if (offset < btf->start_str_off)
+-		return btf__str_by_offset(btf->base_btf, offset);
+-	else if (offset - btf->start_str_off < btf->hdr->str_len)
+-		return btf_strs_data(btf) + (offset - btf->start_str_off);
+-	else
+-		return errno = EINVAL, NULL;
+-}
+-
+-const char *btf__name_by_offset(const struct btf *btf, __u32 offset)
+-{
+-	return btf__str_by_offset(btf, offset);
+-}
+-
+-struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
+-{
+-	struct bpf_btf_info btf_info;
+-	__u32 len = sizeof(btf_info);
+-	__u32 last_size;
+-	struct btf *btf;
+-	void *ptr;
+-	int err;
+-
+-	/* we won't know btf_size until we call bpf_obj_get_info_by_fd(). so
+-	 * let's start with a sane default - 4KiB here - and resize it only if
+-	 * bpf_obj_get_info_by_fd() needs a bigger buffer.
+-	 */
+-	last_size = 4096;
+-	ptr = malloc(last_size);
+-	if (!ptr)
+-		return ERR_PTR(-ENOMEM);
+-
+-	memset(&btf_info, 0, sizeof(btf_info));
+-	btf_info.btf = ptr_to_u64(ptr);
+-	btf_info.btf_size = last_size;
+-	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
+-
+-	if (!err && btf_info.btf_size > last_size) {
+-		void *temp_ptr;
+-
+-		last_size = btf_info.btf_size;
+-		temp_ptr = realloc(ptr, last_size);
+-		if (!temp_ptr) {
+-			btf = ERR_PTR(-ENOMEM);
+-			goto exit_free;
+-		}
+-		ptr = temp_ptr;
+-
+-		len = sizeof(btf_info);
+-		memset(&btf_info, 0, sizeof(btf_info));
+-		btf_info.btf = ptr_to_u64(ptr);
+-		btf_info.btf_size = last_size;
+-
+-		err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
+-	}
+-
+-	if (err || btf_info.btf_size > last_size) {
+-		btf = err ? ERR_PTR(-errno) : ERR_PTR(-E2BIG);
+-		goto exit_free;
+-	}
+-
+-	btf = btf_new(ptr, btf_info.btf_size, base_btf);
+-
+-exit_free:
+-	free(ptr);
+-	return btf;
+-}
+-
+-int btf__get_from_id(__u32 id, struct btf **btf)
+-{
+-	struct btf *res;
+-	int err, btf_fd;
+-
+-	*btf = NULL;
+-	btf_fd = bpf_btf_get_fd_by_id(id);
+-	if (btf_fd < 0)
+-		return libbpf_err(-errno);
+-
+-	res = btf_get_from_fd(btf_fd, NULL);
+-	err = libbpf_get_error(res);
+-
+-	close(btf_fd);
+-
+-	if (err)
+-		return libbpf_err(err);
+-
+-	*btf = res;
+-	return 0;
+-}
+-
+-int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
+-			 __u32 expected_key_size, __u32 expected_value_size,
+-			 __u32 *key_type_id, __u32 *value_type_id)
+-{
+-	const struct btf_type *container_type;
+-	const struct btf_member *key, *value;
+-	const size_t max_name = 256;
+-	char container_name[max_name];
+-	__s64 key_size, value_size;
+-	__s32 container_id;
+-
+-	if (snprintf(container_name, max_name, "____btf_map_%s", map_name) == max_name) {
+-		pr_warn("map:%s length of '____btf_map_%s' is too long\n",
+-			map_name, map_name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	container_id = btf__find_by_name(btf, container_name);
+-	if (container_id < 0) {
+-		pr_debug("map:%s container_name:%s cannot be found in BTF. Missing BPF_ANNOTATE_KV_PAIR?\n",
+-			 map_name, container_name);
+-		return libbpf_err(container_id);
+-	}
+-
+-	container_type = btf__type_by_id(btf, container_id);
+-	if (!container_type) {
+-		pr_warn("map:%s cannot find BTF type for container_id:%u\n",
+-			map_name, container_id);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (!btf_is_struct(container_type) || btf_vlen(container_type) < 2) {
+-		pr_warn("map:%s container_name:%s is an invalid container struct\n",
+-			map_name, container_name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	key = btf_members(container_type);
+-	value = key + 1;
+-
+-	key_size = btf__resolve_size(btf, key->type);
+-	if (key_size < 0) {
+-		pr_warn("map:%s invalid BTF key_type_size\n", map_name);
+-		return libbpf_err(key_size);
+-	}
+-
+-	if (expected_key_size != key_size) {
+-		pr_warn("map:%s btf_key_type_size:%u != map_def_key_size:%u\n",
+-			map_name, (__u32)key_size, expected_key_size);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	value_size = btf__resolve_size(btf, value->type);
+-	if (value_size < 0) {
+-		pr_warn("map:%s invalid BTF value_type_size\n", map_name);
+-		return libbpf_err(value_size);
+-	}
+-
+-	if (expected_value_size != value_size) {
+-		pr_warn("map:%s btf_value_type_size:%u != map_def_value_size:%u\n",
+-			map_name, (__u32)value_size, expected_value_size);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	*key_type_id = key->type;
+-	*value_type_id = value->type;
+-
+-	return 0;
+-}
+-
+-static void btf_invalidate_raw_data(struct btf *btf)
+-{
+-	if (btf->raw_data) {
+-		free(btf->raw_data);
+-		btf->raw_data = NULL;
+-	}
+-	if (btf->raw_data_swapped) {
+-		free(btf->raw_data_swapped);
+-		btf->raw_data_swapped = NULL;
+-	}
+-}
+-
+-/* Ensure BTF is ready to be modified (by splitting into a three memory
+- * regions for header, types, and strings). Also invalidate cached
+- * raw_data, if any.
+- */
+-static int btf_ensure_modifiable(struct btf *btf)
+-{
+-	void *hdr, *types;
+-	struct strset *set = NULL;
+-	int err = -ENOMEM;
+-
+-	if (btf_is_modifiable(btf)) {
+-		/* any BTF modification invalidates raw_data */
+-		btf_invalidate_raw_data(btf);
+-		return 0;
+-	}
+-
+-	/* split raw data into three memory regions */
+-	hdr = malloc(btf->hdr->hdr_len);
+-	types = malloc(btf->hdr->type_len);
+-	if (!hdr || !types)
+-		goto err_out;
+-
+-	memcpy(hdr, btf->hdr, btf->hdr->hdr_len);
+-	memcpy(types, btf->types_data, btf->hdr->type_len);
+-
+-	/* build lookup index for all strings */
+-	set = strset__new(BTF_MAX_STR_OFFSET, btf->strs_data, btf->hdr->str_len);
+-	if (IS_ERR(set)) {
+-		err = PTR_ERR(set);
+-		goto err_out;
+-	}
+-
+-	/* only when everything was successful, update internal state */
+-	btf->hdr = hdr;
+-	btf->types_data = types;
+-	btf->types_data_cap = btf->hdr->type_len;
+-	btf->strs_data = NULL;
+-	btf->strs_set = set;
+-	/* if BTF was created from scratch, all strings are guaranteed to be
+-	 * unique and deduplicated
+-	 */
+-	if (btf->hdr->str_len == 0)
+-		btf->strs_deduped = true;
+-	if (!btf->base_btf && btf->hdr->str_len == 1)
+-		btf->strs_deduped = true;
+-
+-	/* invalidate raw_data representation */
+-	btf_invalidate_raw_data(btf);
+-
+-	return 0;
+-
+-err_out:
+-	strset__free(set);
+-	free(hdr);
+-	free(types);
+-	return err;
+-}
+-
+-/* Find an offset in BTF string section that corresponds to a given string *s*.
+- * Returns:
+- *   - >0 offset into string section, if string is found;
+- *   - -ENOENT, if string is not in the string section;
+- *   - <0, on any other error.
+- */
+-int btf__find_str(struct btf *btf, const char *s)
+-{
+-	int off;
+-
+-	if (btf->base_btf) {
+-		off = btf__find_str(btf->base_btf, s);
+-		if (off != -ENOENT)
+-			return off;
+-	}
+-
+-	/* BTF needs to be in a modifiable state to build string lookup index */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	off = strset__find_str(btf->strs_set, s);
+-	if (off < 0)
+-		return libbpf_err(off);
+-
+-	return btf->start_str_off + off;
+-}
+-
+-/* Add a string s to the BTF string section.
+- * Returns:
+- *   - > 0 offset into string section, on success;
+- *   - < 0, on error.
+- */
+-int btf__add_str(struct btf *btf, const char *s)
+-{
+-	int off;
+-
+-	if (btf->base_btf) {
+-		off = btf__find_str(btf->base_btf, s);
+-		if (off != -ENOENT)
+-			return off;
+-	}
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	off = strset__add_str(btf->strs_set, s);
+-	if (off < 0)
+-		return libbpf_err(off);
+-
+-	btf->hdr->str_len = strset__data_size(btf->strs_set);
+-
+-	return btf->start_str_off + off;
+-}
+-
+-static void *btf_add_type_mem(struct btf *btf, size_t add_sz)
+-{
+-	return libbpf_add_mem(&btf->types_data, &btf->types_data_cap, 1,
+-			      btf->hdr->type_len, UINT_MAX, add_sz);
+-}
+-
+-static void btf_type_inc_vlen(struct btf_type *t)
+-{
+-	t->info = btf_type_info(btf_kind(t), btf_vlen(t) + 1, btf_kflag(t));
+-}
+-
+-static int btf_commit_type(struct btf *btf, int data_sz)
+-{
+-	int err;
+-
+-	err = btf_add_type_idx_entry(btf, btf->hdr->type_len);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	btf->hdr->type_len += data_sz;
+-	btf->hdr->str_off += data_sz;
+-	btf->nr_types++;
+-	return btf->start_id + btf->nr_types - 1;
+-}
+-
+-struct btf_pipe {
+-	const struct btf *src;
+-	struct btf *dst;
+-};
+-
+-static int btf_rewrite_str(__u32 *str_off, void *ctx)
+-{
+-	struct btf_pipe *p = ctx;
+-	int off;
+-
+-	if (!*str_off) /* nothing to do for empty strings */
+-		return 0;
+-
+-	off = btf__add_str(p->dst, btf__str_by_offset(p->src, *str_off));
+-	if (off < 0)
+-		return off;
+-
+-	*str_off = off;
+-	return 0;
+-}
+-
+-int btf__add_type(struct btf *btf, const struct btf *src_btf, const struct btf_type *src_type)
+-{
+-	struct btf_pipe p = { .src = src_btf, .dst = btf };
+-	struct btf_type *t;
+-	int sz, err;
+-
+-	sz = btf_type_size(src_type);
+-	if (sz < 0)
+-		return libbpf_err(sz);
+-
+-	/* deconstruct BTF, if necessary, and invalidate raw_data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	memcpy(t, src_type, sz);
+-
+-	err = btf_type_visit_str_offs(t, btf_rewrite_str, &p);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_INT type with:
+- *   - *name* - non-empty, non-NULL type name;
+- *   - *sz* - power-of-2 (1, 2, 4, ..) size of the type, in bytes;
+- *   - encoding is a combination of BTF_INT_SIGNED, BTF_INT_CHAR, BTF_INT_BOOL.
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_int(struct btf *btf, const char *name, size_t byte_sz, int encoding)
+-{
+-	struct btf_type *t;
+-	int sz, name_off;
+-
+-	/* non-empty name */
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-	/* byte_sz must be power of 2 */
+-	if (!byte_sz || (byte_sz & (byte_sz - 1)) || byte_sz > 16)
+-		return libbpf_err(-EINVAL);
+-	if (encoding & ~(BTF_INT_SIGNED | BTF_INT_CHAR | BTF_INT_BOOL))
+-		return libbpf_err(-EINVAL);
+-
+-	/* deconstruct BTF, if necessary, and invalidate raw_data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type) + sizeof(int);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	/* if something goes wrong later, we might end up with an extra string,
+-	 * but that shouldn't be a problem, because BTF can't be constructed
+-	 * completely anyway and will most probably be just discarded
+-	 */
+-	name_off = btf__add_str(btf, name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	t->name_off = name_off;
+-	t->info = btf_type_info(BTF_KIND_INT, 0, 0);
+-	t->size = byte_sz;
+-	/* set INT info, we don't allow setting legacy bit offset/size */
+-	*(__u32 *)(t + 1) = (encoding << 24) | (byte_sz * 8);
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_FLOAT type with:
+- *   - *name* - non-empty, non-NULL type name;
+- *   - *sz* - size of the type, in bytes;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_float(struct btf *btf, const char *name, size_t byte_sz)
+-{
+-	struct btf_type *t;
+-	int sz, name_off;
+-
+-	/* non-empty name */
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-
+-	/* byte_sz must be one of the explicitly allowed values */
+-	if (byte_sz != 2 && byte_sz != 4 && byte_sz != 8 && byte_sz != 12 &&
+-	    byte_sz != 16)
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	name_off = btf__add_str(btf, name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	t->name_off = name_off;
+-	t->info = btf_type_info(BTF_KIND_FLOAT, 0, 0);
+-	t->size = byte_sz;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/* it's completely legal to append BTF types with type IDs pointing forward to
+- * types that haven't been appended yet, so we only make sure that id looks
+- * sane, we can't guarantee that ID will always be valid
+- */
+-static int validate_type_id(int id)
+-{
+-	if (id < 0 || id > BTF_MAX_NR_TYPES)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+-/* generic append function for PTR, TYPEDEF, CONST/VOLATILE/RESTRICT */
+-static int btf_add_ref_kind(struct btf *btf, int kind, const char *name, int ref_type_id)
+-{
+-	struct btf_type *t;
+-	int sz, name_off = 0;
+-
+-	if (validate_type_id(ref_type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
+-		if (name_off < 0)
+-			return name_off;
+-	}
+-
+-	t->name_off = name_off;
+-	t->info = btf_type_info(kind, 0, 0);
+-	t->type = ref_type_id;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_PTR type with:
+- *   - *ref_type_id* - referenced type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_ptr(struct btf *btf, int ref_type_id)
+-{
+-	return btf_add_ref_kind(btf, BTF_KIND_PTR, NULL, ref_type_id);
+-}
+-
+-/*
+- * Append new BTF_KIND_ARRAY type with:
+- *   - *index_type_id* - type ID of the type describing array index;
+- *   - *elem_type_id* - type ID of the type describing array element;
+- *   - *nr_elems* - the size of the array;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_array(struct btf *btf, int index_type_id, int elem_type_id, __u32 nr_elems)
+-{
+-	struct btf_type *t;
+-	struct btf_array *a;
+-	int sz;
+-
+-	if (validate_type_id(index_type_id) || validate_type_id(elem_type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type) + sizeof(struct btf_array);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	t->name_off = 0;
+-	t->info = btf_type_info(BTF_KIND_ARRAY, 0, 0);
+-	t->size = 0;
+-
+-	a = btf_array(t);
+-	a->type = elem_type_id;
+-	a->index_type = index_type_id;
+-	a->nelems = nr_elems;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/* generic STRUCT/UNION append function */
+-static int btf_add_composite(struct btf *btf, int kind, const char *name, __u32 bytes_sz)
+-{
+-	struct btf_type *t;
+-	int sz, name_off = 0;
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
+-		if (name_off < 0)
+-			return name_off;
+-	}
+-
+-	/* start out with vlen=0 and no kflag; this will be adjusted when
+-	 * adding each member
+-	 */
+-	t->name_off = name_off;
+-	t->info = btf_type_info(kind, 0, 0);
+-	t->size = bytes_sz;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_STRUCT type with:
+- *   - *name* - name of the struct, can be NULL or empty for anonymous structs;
+- *   - *byte_sz* - size of the struct, in bytes;
+- *
+- * Struct initially has no fields in it. Fields can be added by
+- * btf__add_field() right after btf__add_struct() succeeds.
+- *
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_struct(struct btf *btf, const char *name, __u32 byte_sz)
+-{
+-	return btf_add_composite(btf, BTF_KIND_STRUCT, name, byte_sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_UNION type with:
+- *   - *name* - name of the union, can be NULL or empty for anonymous union;
+- *   - *byte_sz* - size of the union, in bytes;
+- *
+- * Union initially has no fields in it. Fields can be added by
+- * btf__add_field() right after btf__add_union() succeeds. All fields
+- * should have *bit_offset* of 0.
+- *
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_union(struct btf *btf, const char *name, __u32 byte_sz)
+-{
+-	return btf_add_composite(btf, BTF_KIND_UNION, name, byte_sz);
+-}
+-
+-static struct btf_type *btf_last_type(struct btf *btf)
+-{
+-	return btf_type_by_id(btf, btf__get_nr_types(btf));
+-}
+-
+-/*
+- * Append new field for the current STRUCT/UNION type with:
+- *   - *name* - name of the field, can be NULL or empty for anonymous field;
+- *   - *type_id* - type ID for the type describing field type;
+- *   - *bit_offset* - bit offset of the start of the field within struct/union;
+- *   - *bit_size* - bit size of a bitfield, 0 for non-bitfield fields;
+- * Returns:
+- *   -  0, on success;
+- *   - <0, on error.
+- */
+-int btf__add_field(struct btf *btf, const char *name, int type_id,
+-		   __u32 bit_offset, __u32 bit_size)
+-{
+-	struct btf_type *t;
+-	struct btf_member *m;
+-	bool is_bitfield;
+-	int sz, name_off = 0;
+-
+-	/* last type should be union/struct */
+-	if (btf->nr_types == 0)
+-		return libbpf_err(-EINVAL);
+-	t = btf_last_type(btf);
+-	if (!btf_is_composite(t))
+-		return libbpf_err(-EINVAL);
+-
+-	if (validate_type_id(type_id))
+-		return libbpf_err(-EINVAL);
+-	/* best-effort bit field offset/size enforcement */
+-	is_bitfield = bit_size || (bit_offset % 8 != 0);
+-	if (is_bitfield && (bit_size == 0 || bit_size > 255 || bit_offset > 0xffffff))
+-		return libbpf_err(-EINVAL);
+-
+-	/* only offset 0 is allowed for unions */
+-	if (btf_is_union(t) && bit_offset)
+-		return libbpf_err(-EINVAL);
+-
+-	/* decompose and invalidate raw data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_member);
+-	m = btf_add_type_mem(btf, sz);
+-	if (!m)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
+-		if (name_off < 0)
+-			return name_off;
+-	}
+-
+-	m->name_off = name_off;
+-	m->type = type_id;
+-	m->offset = bit_offset | (bit_size << 24);
+-
+-	/* btf_add_type_mem can invalidate t pointer */
+-	t = btf_last_type(btf);
+-	/* update parent type's vlen and kflag */
+-	t->info = btf_type_info(btf_kind(t), btf_vlen(t) + 1, is_bitfield || btf_kflag(t));
+-
+-	btf->hdr->type_len += sz;
+-	btf->hdr->str_off += sz;
+-	return 0;
+-}
+-
+-/*
+- * Append new BTF_KIND_ENUM type with:
+- *   - *name* - name of the enum, can be NULL or empty for anonymous enums;
+- *   - *byte_sz* - size of the enum, in bytes.
+- *
+- * Enum initially has no enum values in it (and corresponds to enum forward
+- * declaration). Enumerator values can be added by btf__add_enum_value()
+- * immediately after btf__add_enum() succeeds.
+- *
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_enum(struct btf *btf, const char *name, __u32 byte_sz)
+-{
+-	struct btf_type *t;
+-	int sz, name_off = 0;
+-
+-	/* byte_sz must be power of 2 */
+-	if (!byte_sz || (byte_sz & (byte_sz - 1)) || byte_sz > 8)
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
+-		if (name_off < 0)
+-			return name_off;
+-	}
+-
+-	/* start out with vlen=0; it will be adjusted when adding enum values */
+-	t->name_off = name_off;
+-	t->info = btf_type_info(BTF_KIND_ENUM, 0, 0);
+-	t->size = byte_sz;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new enum value for the current ENUM type with:
+- *   - *name* - name of the enumerator value, can't be NULL or empty;
+- *   - *value* - integer value corresponding to enum value *name*;
+- * Returns:
+- *   -  0, on success;
+- *   - <0, on error.
+- */
+-int btf__add_enum_value(struct btf *btf, const char *name, __s64 value)
+-{
+-	struct btf_type *t;
+-	struct btf_enum *v;
+-	int sz, name_off;
+-
+-	/* last type should be BTF_KIND_ENUM */
+-	if (btf->nr_types == 0)
+-		return libbpf_err(-EINVAL);
+-	t = btf_last_type(btf);
+-	if (!btf_is_enum(t))
+-		return libbpf_err(-EINVAL);
+-
+-	/* non-empty name */
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-	if (value < INT_MIN || value > UINT_MAX)
+-		return libbpf_err(-E2BIG);
+-
+-	/* decompose and invalidate raw data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_enum);
+-	v = btf_add_type_mem(btf, sz);
+-	if (!v)
+-		return libbpf_err(-ENOMEM);
+-
+-	name_off = btf__add_str(btf, name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	v->name_off = name_off;
+-	v->val = value;
+-
+-	/* update parent type's vlen */
+-	t = btf_last_type(btf);
+-	btf_type_inc_vlen(t);
+-
+-	btf->hdr->type_len += sz;
+-	btf->hdr->str_off += sz;
+-	return 0;
+-}
+-
+-/*
+- * Append new BTF_KIND_FWD type with:
+- *   - *name*, non-empty/non-NULL name;
+- *   - *fwd_kind*, kind of forward declaration, one of BTF_FWD_STRUCT,
+- *     BTF_FWD_UNION, or BTF_FWD_ENUM;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_fwd(struct btf *btf, const char *name, enum btf_fwd_kind fwd_kind)
+-{
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-
+-	switch (fwd_kind) {
+-	case BTF_FWD_STRUCT:
+-	case BTF_FWD_UNION: {
+-		struct btf_type *t;
+-		int id;
+-
+-		id = btf_add_ref_kind(btf, BTF_KIND_FWD, name, 0);
+-		if (id <= 0)
+-			return id;
+-		t = btf_type_by_id(btf, id);
+-		t->info = btf_type_info(BTF_KIND_FWD, 0, fwd_kind == BTF_FWD_UNION);
+-		return id;
+-	}
+-	case BTF_FWD_ENUM:
+-		/* enum forward in BTF currently is just an enum with no enum
+-		 * values; we also assume a standard 4-byte size for it
+-		 */
+-		return btf__add_enum(btf, name, sizeof(int));
+-	default:
+-		return libbpf_err(-EINVAL);
+-	}
+-}
+-
+-/*
+- * Append new BTF_KING_TYPEDEF type with:
+- *   - *name*, non-empty/non-NULL name;
+- *   - *ref_type_id* - referenced type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_typedef(struct btf *btf, const char *name, int ref_type_id)
+-{
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-
+-	return btf_add_ref_kind(btf, BTF_KIND_TYPEDEF, name, ref_type_id);
+-}
+-
+-/*
+- * Append new BTF_KIND_VOLATILE type with:
+- *   - *ref_type_id* - referenced type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_volatile(struct btf *btf, int ref_type_id)
+-{
+-	return btf_add_ref_kind(btf, BTF_KIND_VOLATILE, NULL, ref_type_id);
+-}
+-
+-/*
+- * Append new BTF_KIND_CONST type with:
+- *   - *ref_type_id* - referenced type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_const(struct btf *btf, int ref_type_id)
+-{
+-	return btf_add_ref_kind(btf, BTF_KIND_CONST, NULL, ref_type_id);
+-}
+-
+-/*
+- * Append new BTF_KIND_RESTRICT type with:
+- *   - *ref_type_id* - referenced type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_restrict(struct btf *btf, int ref_type_id)
+-{
+-	return btf_add_ref_kind(btf, BTF_KIND_RESTRICT, NULL, ref_type_id);
+-}
+-
+-/*
+- * Append new BTF_KIND_FUNC type with:
+- *   - *name*, non-empty/non-NULL name;
+- *   - *proto_type_id* - FUNC_PROTO's type ID, it might not exist yet;
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_func(struct btf *btf, const char *name,
+-		  enum btf_func_linkage linkage, int proto_type_id)
+-{
+-	int id;
+-
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-	if (linkage != BTF_FUNC_STATIC && linkage != BTF_FUNC_GLOBAL &&
+-	    linkage != BTF_FUNC_EXTERN)
+-		return libbpf_err(-EINVAL);
+-
+-	id = btf_add_ref_kind(btf, BTF_KIND_FUNC, name, proto_type_id);
+-	if (id > 0) {
+-		struct btf_type *t = btf_type_by_id(btf, id);
+-
+-		t->info = btf_type_info(BTF_KIND_FUNC, linkage, 0);
+-	}
+-	return libbpf_err(id);
+-}
+-
+-/*
+- * Append new BTF_KIND_FUNC_PROTO with:
+- *   - *ret_type_id* - type ID for return result of a function.
+- *
+- * Function prototype initially has no arguments, but they can be added by
+- * btf__add_func_param() one by one, immediately after
+- * btf__add_func_proto() succeeded.
+- *
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_func_proto(struct btf *btf, int ret_type_id)
+-{
+-	struct btf_type *t;
+-	int sz;
+-
+-	if (validate_type_id(ret_type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	/* start out with vlen=0; this will be adjusted when adding enum
+-	 * values, if necessary
+-	 */
+-	t->name_off = 0;
+-	t->info = btf_type_info(BTF_KIND_FUNC_PROTO, 0, 0);
+-	t->type = ret_type_id;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new function parameter for current FUNC_PROTO type with:
+- *   - *name* - parameter name, can be NULL or empty;
+- *   - *type_id* - type ID describing the type of the parameter.
+- * Returns:
+- *   -  0, on success;
+- *   - <0, on error.
+- */
+-int btf__add_func_param(struct btf *btf, const char *name, int type_id)
+-{
+-	struct btf_type *t;
+-	struct btf_param *p;
+-	int sz, name_off = 0;
+-
+-	if (validate_type_id(type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	/* last type should be BTF_KIND_FUNC_PROTO */
+-	if (btf->nr_types == 0)
+-		return libbpf_err(-EINVAL);
+-	t = btf_last_type(btf);
+-	if (!btf_is_func_proto(t))
+-		return libbpf_err(-EINVAL);
+-
+-	/* decompose and invalidate raw data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_param);
+-	p = btf_add_type_mem(btf, sz);
+-	if (!p)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (name && name[0]) {
+-		name_off = btf__add_str(btf, name);
+-		if (name_off < 0)
+-			return name_off;
+-	}
+-
+-	p->name_off = name_off;
+-	p->type = type_id;
+-
+-	/* update parent type's vlen */
+-	t = btf_last_type(btf);
+-	btf_type_inc_vlen(t);
+-
+-	btf->hdr->type_len += sz;
+-	btf->hdr->str_off += sz;
+-	return 0;
+-}
+-
+-/*
+- * Append new BTF_KIND_VAR type with:
+- *   - *name* - non-empty/non-NULL name;
+- *   - *linkage* - variable linkage, one of BTF_VAR_STATIC,
+- *     BTF_VAR_GLOBAL_ALLOCATED, or BTF_VAR_GLOBAL_EXTERN;
+- *   - *type_id* - type ID of the type describing the type of the variable.
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_var(struct btf *btf, const char *name, int linkage, int type_id)
+-{
+-	struct btf_type *t;
+-	struct btf_var *v;
+-	int sz, name_off;
+-
+-	/* non-empty name */
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-	if (linkage != BTF_VAR_STATIC && linkage != BTF_VAR_GLOBAL_ALLOCATED &&
+-	    linkage != BTF_VAR_GLOBAL_EXTERN)
+-		return libbpf_err(-EINVAL);
+-	if (validate_type_id(type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	/* deconstruct BTF, if necessary, and invalidate raw_data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type) + sizeof(struct btf_var);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	name_off = btf__add_str(btf, name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	t->name_off = name_off;
+-	t->info = btf_type_info(BTF_KIND_VAR, 0, 0);
+-	t->type = type_id;
+-
+-	v = btf_var(t);
+-	v->linkage = linkage;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new BTF_KIND_DATASEC type with:
+- *   - *name* - non-empty/non-NULL name;
+- *   - *byte_sz* - data section size, in bytes.
+- *
+- * Data section is initially empty. Variables info can be added with
+- * btf__add_datasec_var_info() calls, after btf__add_datasec() succeeds.
+- *
+- * Returns:
+- *   - >0, type ID of newly added BTF type;
+- *   - <0, on error.
+- */
+-int btf__add_datasec(struct btf *btf, const char *name, __u32 byte_sz)
+-{
+-	struct btf_type *t;
+-	int sz, name_off;
+-
+-	/* non-empty name */
+-	if (!name || !name[0])
+-		return libbpf_err(-EINVAL);
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_type);
+-	t = btf_add_type_mem(btf, sz);
+-	if (!t)
+-		return libbpf_err(-ENOMEM);
+-
+-	name_off = btf__add_str(btf, name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	/* start with vlen=0, which will be update as var_secinfos are added */
+-	t->name_off = name_off;
+-	t->info = btf_type_info(BTF_KIND_DATASEC, 0, 0);
+-	t->size = byte_sz;
+-
+-	return btf_commit_type(btf, sz);
+-}
+-
+-/*
+- * Append new data section variable information entry for current DATASEC type:
+- *   - *var_type_id* - type ID, describing type of the variable;
+- *   - *offset* - variable offset within data section, in bytes;
+- *   - *byte_sz* - variable size, in bytes.
+- *
+- * Returns:
+- *   -  0, on success;
+- *   - <0, on error.
+- */
+-int btf__add_datasec_var_info(struct btf *btf, int var_type_id, __u32 offset, __u32 byte_sz)
+-{
+-	struct btf_type *t;
+-	struct btf_var_secinfo *v;
+-	int sz;
+-
+-	/* last type should be BTF_KIND_DATASEC */
+-	if (btf->nr_types == 0)
+-		return libbpf_err(-EINVAL);
+-	t = btf_last_type(btf);
+-	if (!btf_is_datasec(t))
+-		return libbpf_err(-EINVAL);
+-
+-	if (validate_type_id(var_type_id))
+-		return libbpf_err(-EINVAL);
+-
+-	/* decompose and invalidate raw data */
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	sz = sizeof(struct btf_var_secinfo);
+-	v = btf_add_type_mem(btf, sz);
+-	if (!v)
+-		return libbpf_err(-ENOMEM);
+-
+-	v->type = var_type_id;
+-	v->offset = offset;
+-	v->size = byte_sz;
+-
+-	/* update parent type's vlen */
+-	t = btf_last_type(btf);
+-	btf_type_inc_vlen(t);
+-
+-	btf->hdr->type_len += sz;
+-	btf->hdr->str_off += sz;
+-	return 0;
+-}
+-
+-struct btf_ext_sec_setup_param {
+-	__u32 off;
+-	__u32 len;
+-	__u32 min_rec_size;
+-	struct btf_ext_info *ext_info;
+-	const char *desc;
+-};
+-
+-static int btf_ext_setup_info(struct btf_ext *btf_ext,
+-			      struct btf_ext_sec_setup_param *ext_sec)
+-{
+-	const struct btf_ext_info_sec *sinfo;
+-	struct btf_ext_info *ext_info;
+-	__u32 info_left, record_size;
+-	/* The start of the info sec (including the __u32 record_size). */
+-	void *info;
+-
+-	if (ext_sec->len == 0)
+-		return 0;
+-
+-	if (ext_sec->off & 0x03) {
+-		pr_debug(".BTF.ext %s section is not aligned to 4 bytes\n",
+-		     ext_sec->desc);
+-		return -EINVAL;
+-	}
+-
+-	info = btf_ext->data + btf_ext->hdr->hdr_len + ext_sec->off;
+-	info_left = ext_sec->len;
+-
+-	if (btf_ext->data + btf_ext->data_size < info + ext_sec->len) {
+-		pr_debug("%s section (off:%u len:%u) is beyond the end of the ELF section .BTF.ext\n",
+-			 ext_sec->desc, ext_sec->off, ext_sec->len);
+-		return -EINVAL;
+-	}
+-
+-	/* At least a record size */
+-	if (info_left < sizeof(__u32)) {
+-		pr_debug(".BTF.ext %s record size not found\n", ext_sec->desc);
+-		return -EINVAL;
+-	}
+-
+-	/* The record size needs to meet the minimum standard */
+-	record_size = *(__u32 *)info;
+-	if (record_size < ext_sec->min_rec_size ||
+-	    record_size & 0x03) {
+-		pr_debug("%s section in .BTF.ext has invalid record size %u\n",
+-			 ext_sec->desc, record_size);
+-		return -EINVAL;
+-	}
+-
+-	sinfo = info + sizeof(__u32);
+-	info_left -= sizeof(__u32);
+-
+-	/* If no records, return failure now so .BTF.ext won't be used. */
+-	if (!info_left) {
+-		pr_debug("%s section in .BTF.ext has no records", ext_sec->desc);
+-		return -EINVAL;
+-	}
+-
+-	while (info_left) {
+-		unsigned int sec_hdrlen = sizeof(struct btf_ext_info_sec);
+-		__u64 total_record_size;
+-		__u32 num_records;
+-
+-		if (info_left < sec_hdrlen) {
+-			pr_debug("%s section header is not found in .BTF.ext\n",
+-			     ext_sec->desc);
+-			return -EINVAL;
+-		}
+-
+-		num_records = sinfo->num_info;
+-		if (num_records == 0) {
+-			pr_debug("%s section has incorrect num_records in .BTF.ext\n",
+-			     ext_sec->desc);
+-			return -EINVAL;
+-		}
+-
+-		total_record_size = sec_hdrlen +
+-				    (__u64)num_records * record_size;
+-		if (info_left < total_record_size) {
+-			pr_debug("%s section has incorrect num_records in .BTF.ext\n",
+-			     ext_sec->desc);
+-			return -EINVAL;
+-		}
+-
+-		info_left -= total_record_size;
+-		sinfo = (void *)sinfo + total_record_size;
+-	}
+-
+-	ext_info = ext_sec->ext_info;
+-	ext_info->len = ext_sec->len - sizeof(__u32);
+-	ext_info->rec_size = record_size;
+-	ext_info->info = info + sizeof(__u32);
+-
+-	return 0;
+-}
+-
+-static int btf_ext_setup_func_info(struct btf_ext *btf_ext)
+-{
+-	struct btf_ext_sec_setup_param param = {
+-		.off = btf_ext->hdr->func_info_off,
+-		.len = btf_ext->hdr->func_info_len,
+-		.min_rec_size = sizeof(struct bpf_func_info_min),
+-		.ext_info = &btf_ext->func_info,
+-		.desc = "func_info"
+-	};
+-
+-	return btf_ext_setup_info(btf_ext, &param);
+-}
+-
+-static int btf_ext_setup_line_info(struct btf_ext *btf_ext)
+-{
+-	struct btf_ext_sec_setup_param param = {
+-		.off = btf_ext->hdr->line_info_off,
+-		.len = btf_ext->hdr->line_info_len,
+-		.min_rec_size = sizeof(struct bpf_line_info_min),
+-		.ext_info = &btf_ext->line_info,
+-		.desc = "line_info",
+-	};
+-
+-	return btf_ext_setup_info(btf_ext, &param);
+-}
+-
+-static int btf_ext_setup_core_relos(struct btf_ext *btf_ext)
+-{
+-	struct btf_ext_sec_setup_param param = {
+-		.off = btf_ext->hdr->core_relo_off,
+-		.len = btf_ext->hdr->core_relo_len,
+-		.min_rec_size = sizeof(struct bpf_core_relo),
+-		.ext_info = &btf_ext->core_relo_info,
+-		.desc = "core_relo",
+-	};
+-
+-	return btf_ext_setup_info(btf_ext, &param);
+-}
+-
+-static int btf_ext_parse_hdr(__u8 *data, __u32 data_size)
+-{
+-	const struct btf_ext_header *hdr = (struct btf_ext_header *)data;
+-
+-	if (data_size < offsetofend(struct btf_ext_header, hdr_len) ||
+-	    data_size < hdr->hdr_len) {
+-		pr_debug("BTF.ext header not found");
+-		return -EINVAL;
+-	}
+-
+-	if (hdr->magic == bswap_16(BTF_MAGIC)) {
+-		pr_warn("BTF.ext in non-native endianness is not supported\n");
+-		return -ENOTSUP;
+-	} else if (hdr->magic != BTF_MAGIC) {
+-		pr_debug("Invalid BTF.ext magic:%x\n", hdr->magic);
+-		return -EINVAL;
+-	}
+-
+-	if (hdr->version != BTF_VERSION) {
+-		pr_debug("Unsupported BTF.ext version:%u\n", hdr->version);
+-		return -ENOTSUP;
+-	}
+-
+-	if (hdr->flags) {
+-		pr_debug("Unsupported BTF.ext flags:%x\n", hdr->flags);
+-		return -ENOTSUP;
+-	}
+-
+-	if (data_size == hdr->hdr_len) {
+-		pr_debug("BTF.ext has no data\n");
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-void btf_ext__free(struct btf_ext *btf_ext)
+-{
+-	if (IS_ERR_OR_NULL(btf_ext))
+-		return;
+-	free(btf_ext->data);
+-	free(btf_ext);
+-}
+-
+-struct btf_ext *btf_ext__new(__u8 *data, __u32 size)
+-{
+-	struct btf_ext *btf_ext;
+-	int err;
+-
+-	err = btf_ext_parse_hdr(data, size);
+-	if (err)
+-		return libbpf_err_ptr(err);
+-
+-	btf_ext = calloc(1, sizeof(struct btf_ext));
+-	if (!btf_ext)
+-		return libbpf_err_ptr(-ENOMEM);
+-
+-	btf_ext->data_size = size;
+-	btf_ext->data = malloc(size);
+-	if (!btf_ext->data) {
+-		err = -ENOMEM;
+-		goto done;
+-	}
+-	memcpy(btf_ext->data, data, size);
+-
+-	if (btf_ext->hdr->hdr_len < offsetofend(struct btf_ext_header, line_info_len)) {
+-		err = -EINVAL;
+-		goto done;
+-	}
+-
+-	err = btf_ext_setup_func_info(btf_ext);
+-	if (err)
+-		goto done;
+-
+-	err = btf_ext_setup_line_info(btf_ext);
+-	if (err)
+-		goto done;
+-
+-	if (btf_ext->hdr->hdr_len < offsetofend(struct btf_ext_header, core_relo_len)) {
+-		err = -EINVAL;
+-		goto done;
+-	}
+-
+-	err = btf_ext_setup_core_relos(btf_ext);
+-	if (err)
+-		goto done;
+-
+-done:
+-	if (err) {
+-		btf_ext__free(btf_ext);
+-		return libbpf_err_ptr(err);
+-	}
+-
+-	return btf_ext;
+-}
+-
+-const void *btf_ext__get_raw_data(const struct btf_ext *btf_ext, __u32 *size)
+-{
+-	*size = btf_ext->data_size;
+-	return btf_ext->data;
+-}
+-
+-static int btf_ext_reloc_info(const struct btf *btf,
+-			      const struct btf_ext_info *ext_info,
+-			      const char *sec_name, __u32 insns_cnt,
+-			      void **info, __u32 *cnt)
+-{
+-	__u32 sec_hdrlen = sizeof(struct btf_ext_info_sec);
+-	__u32 i, record_size, existing_len, records_len;
+-	struct btf_ext_info_sec *sinfo;
+-	const char *info_sec_name;
+-	__u64 remain_len;
+-	void *data;
+-
+-	record_size = ext_info->rec_size;
+-	sinfo = ext_info->info;
+-	remain_len = ext_info->len;
+-	while (remain_len > 0) {
+-		records_len = sinfo->num_info * record_size;
+-		info_sec_name = btf__name_by_offset(btf, sinfo->sec_name_off);
+-		if (strcmp(info_sec_name, sec_name)) {
+-			remain_len -= sec_hdrlen + records_len;
+-			sinfo = (void *)sinfo + sec_hdrlen + records_len;
+-			continue;
+-		}
+-
+-		existing_len = (*cnt) * record_size;
+-		data = realloc(*info, existing_len + records_len);
+-		if (!data)
+-			return libbpf_err(-ENOMEM);
+-
+-		memcpy(data + existing_len, sinfo->data, records_len);
+-		/* adjust insn_off only, the rest data will be passed
+-		 * to the kernel.
+-		 */
+-		for (i = 0; i < sinfo->num_info; i++) {
+-			__u32 *insn_off;
+-
+-			insn_off = data + existing_len + (i * record_size);
+-			*insn_off = *insn_off / sizeof(struct bpf_insn) + insns_cnt;
+-		}
+-		*info = data;
+-		*cnt += sinfo->num_info;
+-		return 0;
+-	}
+-
+-	return libbpf_err(-ENOENT);
+-}
+-
+-int btf_ext__reloc_func_info(const struct btf *btf,
+-			     const struct btf_ext *btf_ext,
+-			     const char *sec_name, __u32 insns_cnt,
+-			     void **func_info, __u32 *cnt)
+-{
+-	return btf_ext_reloc_info(btf, &btf_ext->func_info, sec_name,
+-				  insns_cnt, func_info, cnt);
+-}
+-
+-int btf_ext__reloc_line_info(const struct btf *btf,
+-			     const struct btf_ext *btf_ext,
+-			     const char *sec_name, __u32 insns_cnt,
+-			     void **line_info, __u32 *cnt)
+-{
+-	return btf_ext_reloc_info(btf, &btf_ext->line_info, sec_name,
+-				  insns_cnt, line_info, cnt);
+-}
+-
+-__u32 btf_ext__func_info_rec_size(const struct btf_ext *btf_ext)
+-{
+-	return btf_ext->func_info.rec_size;
+-}
+-
+-__u32 btf_ext__line_info_rec_size(const struct btf_ext *btf_ext)
+-{
+-	return btf_ext->line_info.rec_size;
+-}
+-
+-struct btf_dedup;
+-
+-static struct btf_dedup *btf_dedup_new(struct btf *btf, struct btf_ext *btf_ext,
+-				       const struct btf_dedup_opts *opts);
+-static void btf_dedup_free(struct btf_dedup *d);
+-static int btf_dedup_prep(struct btf_dedup *d);
+-static int btf_dedup_strings(struct btf_dedup *d);
+-static int btf_dedup_prim_types(struct btf_dedup *d);
+-static int btf_dedup_struct_types(struct btf_dedup *d);
+-static int btf_dedup_ref_types(struct btf_dedup *d);
+-static int btf_dedup_compact_types(struct btf_dedup *d);
+-static int btf_dedup_remap_types(struct btf_dedup *d);
+-
+-/*
+- * Deduplicate BTF types and strings.
+- *
+- * BTF dedup algorithm takes as an input `struct btf` representing `.BTF` ELF
+- * section with all BTF type descriptors and string data. It overwrites that
+- * memory in-place with deduplicated types and strings without any loss of
+- * information. If optional `struct btf_ext` representing '.BTF.ext' ELF section
+- * is provided, all the strings referenced from .BTF.ext section are honored
+- * and updated to point to the right offsets after deduplication.
+- *
+- * If function returns with error, type/string data might be garbled and should
+- * be discarded.
+- *
+- * More verbose and detailed description of both problem btf_dedup is solving,
+- * as well as solution could be found at:
+- * https://facebookmicrosites.github.io/bpf/blog/2018/11/14/btf-enhancement.html
+- *
+- * Problem description and justification
+- * =====================================
+- *
+- * BTF type information is typically emitted either as a result of conversion
+- * from DWARF to BTF or directly by compiler. In both cases, each compilation
+- * unit contains information about a subset of all the types that are used
+- * in an application. These subsets are frequently overlapping and contain a lot
+- * of duplicated information when later concatenated together into a single
+- * binary. This algorithm ensures that each unique type is represented by single
+- * BTF type descriptor, greatly reducing resulting size of BTF data.
+- *
+- * Compilation unit isolation and subsequent duplication of data is not the only
+- * problem. The same type hierarchy (e.g., struct and all the type that struct
+- * references) in different compilation units can be represented in BTF to
+- * various degrees of completeness (or, rather, incompleteness) due to
+- * struct/union forward declarations.
+- *
+- * Let's take a look at an example, that we'll use to better understand the
+- * problem (and solution). Suppose we have two compilation units, each using
+- * same `struct S`, but each of them having incomplete type information about
+- * struct's fields:
+- *
+- * // CU #1:
+- * struct S;
+- * struct A {
+- *	int a;
+- *	struct A* self;
+- *	struct S* parent;
+- * };
+- * struct B;
+- * struct S {
+- *	struct A* a_ptr;
+- *	struct B* b_ptr;
+- * };
+- *
+- * // CU #2:
+- * struct S;
+- * struct A;
+- * struct B {
+- *	int b;
+- *	struct B* self;
+- *	struct S* parent;
+- * };
+- * struct S {
+- *	struct A* a_ptr;
+- *	struct B* b_ptr;
+- * };
+- *
+- * In case of CU #1, BTF data will know only that `struct B` exist (but no
+- * more), but will know the complete type information about `struct A`. While
+- * for CU #2, it will know full type information about `struct B`, but will
+- * only know about forward declaration of `struct A` (in BTF terms, it will
+- * have `BTF_KIND_FWD` type descriptor with name `B`).
+- *
+- * This compilation unit isolation means that it's possible that there is no
+- * single CU with complete type information describing structs `S`, `A`, and
+- * `B`. Also, we might get tons of duplicated and redundant type information.
+- *
+- * Additional complication we need to keep in mind comes from the fact that
+- * types, in general, can form graphs containing cycles, not just DAGs.
+- *
+- * While algorithm does deduplication, it also merges and resolves type
+- * information (unless disabled throught `struct btf_opts`), whenever possible.
+- * E.g., in the example above with two compilation units having partial type
+- * information for structs `A` and `B`, the output of algorithm will emit
+- * a single copy of each BTF type that describes structs `A`, `B`, and `S`
+- * (as well as type information for `int` and pointers), as if they were defined
+- * in a single compilation unit as:
+- *
+- * struct A {
+- *	int a;
+- *	struct A* self;
+- *	struct S* parent;
+- * };
+- * struct B {
+- *	int b;
+- *	struct B* self;
+- *	struct S* parent;
+- * };
+- * struct S {
+- *	struct A* a_ptr;
+- *	struct B* b_ptr;
+- * };
+- *
+- * Algorithm summary
+- * =================
+- *
+- * Algorithm completes its work in 6 separate passes:
+- *
+- * 1. Strings deduplication.
+- * 2. Primitive types deduplication (int, enum, fwd).
+- * 3. Struct/union types deduplication.
+- * 4. Reference types deduplication (pointers, typedefs, arrays, funcs, func
+- *    protos, and const/volatile/restrict modifiers).
+- * 5. Types compaction.
+- * 6. Types remapping.
+- *
+- * Algorithm determines canonical type descriptor, which is a single
+- * representative type for each truly unique type. This canonical type is the
+- * one that will go into final deduplicated BTF type information. For
+- * struct/unions, it is also the type that algorithm will merge additional type
+- * information into (while resolving FWDs), as it discovers it from data in
+- * other CUs. Each input BTF type eventually gets either mapped to itself, if
+- * that type is canonical, or to some other type, if that type is equivalent
+- * and was chosen as canonical representative. This mapping is stored in
+- * `btf_dedup->map` array. This map is also used to record STRUCT/UNION that
+- * FWD type got resolved to.
+- *
+- * To facilitate fast discovery of canonical types, we also maintain canonical
+- * index (`btf_dedup->dedup_table`), which maps type descriptor's signature hash
+- * (i.e., hashed kind, name, size, fields, etc) into a list of canonical types
+- * that match that signature. With sufficiently good choice of type signature
+- * hashing function, we can limit number of canonical types for each unique type
+- * signature to a very small number, allowing to find canonical type for any
+- * duplicated type very quickly.
+- *
+- * Struct/union deduplication is the most critical part and algorithm for
+- * deduplicating structs/unions is described in greater details in comments for
+- * `btf_dedup_is_equiv` function.
+- */
+-int btf__dedup(struct btf *btf, struct btf_ext *btf_ext,
+-	       const struct btf_dedup_opts *opts)
+-{
+-	struct btf_dedup *d = btf_dedup_new(btf, btf_ext, opts);
+-	int err;
+-
+-	if (IS_ERR(d)) {
+-		pr_debug("btf_dedup_new failed: %ld", PTR_ERR(d));
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (btf_ensure_modifiable(btf))
+-		return libbpf_err(-ENOMEM);
+-
+-	err = btf_dedup_prep(d);
+-	if (err) {
+-		pr_debug("btf_dedup_prep failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_strings(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_strings failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_prim_types(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_prim_types failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_struct_types(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_struct_types failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_ref_types(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_ref_types failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_compact_types(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_compact_types failed:%d\n", err);
+-		goto done;
+-	}
+-	err = btf_dedup_remap_types(d);
+-	if (err < 0) {
+-		pr_debug("btf_dedup_remap_types failed:%d\n", err);
+-		goto done;
+-	}
+-
+-done:
+-	btf_dedup_free(d);
+-	return libbpf_err(err);
+-}
+-
+-#define BTF_UNPROCESSED_ID ((__u32)-1)
+-#define BTF_IN_PROGRESS_ID ((__u32)-2)
+-
+-struct btf_dedup {
+-	/* .BTF section to be deduped in-place */
+-	struct btf *btf;
+-	/*
+-	 * Optional .BTF.ext section. When provided, any strings referenced
+-	 * from it will be taken into account when deduping strings
+-	 */
+-	struct btf_ext *btf_ext;
+-	/*
+-	 * This is a map from any type's signature hash to a list of possible
+-	 * canonical representative type candidates. Hash collisions are
+-	 * ignored, so even types of various kinds can share same list of
+-	 * candidates, which is fine because we rely on subsequent
+-	 * btf_xxx_equal() checks to authoritatively verify type equality.
+-	 */
+-	struct hashmap *dedup_table;
+-	/* Canonical types map */
+-	__u32 *map;
+-	/* Hypothetical mapping, used during type graph equivalence checks */
+-	__u32 *hypot_map;
+-	__u32 *hypot_list;
+-	size_t hypot_cnt;
+-	size_t hypot_cap;
+-	/* Whether hypothetical mapping, if successful, would need to adjust
+-	 * already canonicalized types (due to a new forward declaration to
+-	 * concrete type resolution). In such case, during split BTF dedup
+-	 * candidate type would still be considered as different, because base
+-	 * BTF is considered to be immutable.
+-	 */
+-	bool hypot_adjust_canon;
+-	/* Various option modifying behavior of algorithm */
+-	struct btf_dedup_opts opts;
+-	/* temporary strings deduplication state */
+-	struct strset *strs_set;
+-};
+-
+-static long hash_combine(long h, long value)
+-{
+-	return h * 31 + value;
+-}
+-
+-#define for_each_dedup_cand(d, node, hash) \
+-	hashmap__for_each_key_entry(d->dedup_table, node, (void *)hash)
+-
+-static int btf_dedup_table_add(struct btf_dedup *d, long hash, __u32 type_id)
+-{
+-	return hashmap__append(d->dedup_table,
+-			       (void *)hash, (void *)(long)type_id);
+-}
+-
+-static int btf_dedup_hypot_map_add(struct btf_dedup *d,
+-				   __u32 from_id, __u32 to_id)
+-{
+-	if (d->hypot_cnt == d->hypot_cap) {
+-		__u32 *new_list;
+-
+-		d->hypot_cap += max((size_t)16, d->hypot_cap / 2);
+-		new_list = libbpf_reallocarray(d->hypot_list, d->hypot_cap, sizeof(__u32));
+-		if (!new_list)
+-			return -ENOMEM;
+-		d->hypot_list = new_list;
+-	}
+-	d->hypot_list[d->hypot_cnt++] = from_id;
+-	d->hypot_map[from_id] = to_id;
+-	return 0;
+-}
+-
+-static void btf_dedup_clear_hypot_map(struct btf_dedup *d)
+-{
+-	int i;
+-
+-	for (i = 0; i < d->hypot_cnt; i++)
+-		d->hypot_map[d->hypot_list[i]] = BTF_UNPROCESSED_ID;
+-	d->hypot_cnt = 0;
+-	d->hypot_adjust_canon = false;
+-}
+-
+-static void btf_dedup_free(struct btf_dedup *d)
+-{
+-	hashmap__free(d->dedup_table);
+-	d->dedup_table = NULL;
+-
+-	free(d->map);
+-	d->map = NULL;
+-
+-	free(d->hypot_map);
+-	d->hypot_map = NULL;
+-
+-	free(d->hypot_list);
+-	d->hypot_list = NULL;
+-
+-	free(d);
+-}
+-
+-static size_t btf_dedup_identity_hash_fn(const void *key, void *ctx)
+-{
+-	return (size_t)key;
+-}
+-
+-static size_t btf_dedup_collision_hash_fn(const void *key, void *ctx)
+-{
+-	return 0;
+-}
+-
+-static bool btf_dedup_equal_fn(const void *k1, const void *k2, void *ctx)
+-{
+-	return k1 == k2;
+-}
+-
+-static struct btf_dedup *btf_dedup_new(struct btf *btf, struct btf_ext *btf_ext,
+-				       const struct btf_dedup_opts *opts)
+-{
+-	struct btf_dedup *d = calloc(1, sizeof(struct btf_dedup));
+-	hashmap_hash_fn hash_fn = btf_dedup_identity_hash_fn;
+-	int i, err = 0, type_cnt;
+-
+-	if (!d)
+-		return ERR_PTR(-ENOMEM);
+-
+-	d->opts.dont_resolve_fwds = opts && opts->dont_resolve_fwds;
+-	/* dedup_table_size is now used only to force collisions in tests */
+-	if (opts && opts->dedup_table_size == 1)
+-		hash_fn = btf_dedup_collision_hash_fn;
+-
+-	d->btf = btf;
+-	d->btf_ext = btf_ext;
+-
+-	d->dedup_table = hashmap__new(hash_fn, btf_dedup_equal_fn, NULL);
+-	if (IS_ERR(d->dedup_table)) {
+-		err = PTR_ERR(d->dedup_table);
+-		d->dedup_table = NULL;
+-		goto done;
+-	}
+-
+-	type_cnt = btf__get_nr_types(btf) + 1;
+-	d->map = malloc(sizeof(__u32) * type_cnt);
+-	if (!d->map) {
+-		err = -ENOMEM;
+-		goto done;
+-	}
+-	/* special BTF "void" type is made canonical immediately */
+-	d->map[0] = 0;
+-	for (i = 1; i < type_cnt; i++) {
+-		struct btf_type *t = btf_type_by_id(d->btf, i);
+-
+-		/* VAR and DATASEC are never deduped and are self-canonical */
+-		if (btf_is_var(t) || btf_is_datasec(t))
+-			d->map[i] = i;
+-		else
+-			d->map[i] = BTF_UNPROCESSED_ID;
+-	}
+-
+-	d->hypot_map = malloc(sizeof(__u32) * type_cnt);
+-	if (!d->hypot_map) {
+-		err = -ENOMEM;
+-		goto done;
+-	}
+-	for (i = 0; i < type_cnt; i++)
+-		d->hypot_map[i] = BTF_UNPROCESSED_ID;
+-
+-done:
+-	if (err) {
+-		btf_dedup_free(d);
+-		return ERR_PTR(err);
+-	}
+-
+-	return d;
+-}
+-
+-/*
+- * Iterate over all possible places in .BTF and .BTF.ext that can reference
+- * string and pass pointer to it to a provided callback `fn`.
+- */
+-static int btf_for_each_str_off(struct btf_dedup *d, str_off_visit_fn fn, void *ctx)
+-{
+-	int i, r;
+-
+-	for (i = 0; i < d->btf->nr_types; i++) {
+-		struct btf_type *t = btf_type_by_id(d->btf, d->btf->start_id + i);
+-
+-		r = btf_type_visit_str_offs(t, fn, ctx);
+-		if (r)
+-			return r;
+-	}
+-
+-	if (!d->btf_ext)
+-		return 0;
+-
+-	r = btf_ext_visit_str_offs(d->btf_ext, fn, ctx);
+-	if (r)
+-		return r;
+-
+-	return 0;
+-}
+-
+-static int strs_dedup_remap_str_off(__u32 *str_off_ptr, void *ctx)
+-{
+-	struct btf_dedup *d = ctx;
+-	__u32 str_off = *str_off_ptr;
+-	const char *s;
+-	int off, err;
+-
+-	/* don't touch empty string or string in main BTF */
+-	if (str_off == 0 || str_off < d->btf->start_str_off)
+-		return 0;
+-
+-	s = btf__str_by_offset(d->btf, str_off);
+-	if (d->btf->base_btf) {
+-		err = btf__find_str(d->btf->base_btf, s);
+-		if (err >= 0) {
+-			*str_off_ptr = err;
+-			return 0;
+-		}
+-		if (err != -ENOENT)
+-			return err;
+-	}
+-
+-	off = strset__add_str(d->strs_set, s);
+-	if (off < 0)
+-		return off;
+-
+-	*str_off_ptr = d->btf->start_str_off + off;
+-	return 0;
+-}
+-
+-/*
+- * Dedup string and filter out those that are not referenced from either .BTF
+- * or .BTF.ext (if provided) sections.
+- *
+- * This is done by building index of all strings in BTF's string section,
+- * then iterating over all entities that can reference strings (e.g., type
+- * names, struct field names, .BTF.ext line info, etc) and marking corresponding
+- * strings as used. After that all used strings are deduped and compacted into
+- * sequential blob of memory and new offsets are calculated. Then all the string
+- * references are iterated again and rewritten using new offsets.
+- */
+-static int btf_dedup_strings(struct btf_dedup *d)
+-{
+-	int err;
+-
+-	if (d->btf->strs_deduped)
+-		return 0;
+-
+-	d->strs_set = strset__new(BTF_MAX_STR_OFFSET, NULL, 0);
+-	if (IS_ERR(d->strs_set)) {
+-		err = PTR_ERR(d->strs_set);
+-		goto err_out;
+-	}
+-
+-	if (!d->btf->base_btf) {
+-		/* insert empty string; we won't be looking it up during strings
+-		 * dedup, but it's good to have it for generic BTF string lookups
+-		 */
+-		err = strset__add_str(d->strs_set, "");
+-		if (err < 0)
+-			goto err_out;
+-	}
+-
+-	/* remap string offsets */
+-	err = btf_for_each_str_off(d, strs_dedup_remap_str_off, d);
+-	if (err)
+-		goto err_out;
+-
+-	/* replace BTF string data and hash with deduped ones */
+-	strset__free(d->btf->strs_set);
+-	d->btf->hdr->str_len = strset__data_size(d->strs_set);
+-	d->btf->strs_set = d->strs_set;
+-	d->strs_set = NULL;
+-	d->btf->strs_deduped = true;
+-	return 0;
+-
+-err_out:
+-	strset__free(d->strs_set);
+-	d->strs_set = NULL;
+-
+-	return err;
+-}
+-
+-static long btf_hash_common(struct btf_type *t)
+-{
+-	long h;
+-
+-	h = hash_combine(0, t->name_off);
+-	h = hash_combine(h, t->info);
+-	h = hash_combine(h, t->size);
+-	return h;
+-}
+-
+-static bool btf_equal_common(struct btf_type *t1, struct btf_type *t2)
+-{
+-	return t1->name_off == t2->name_off &&
+-	       t1->info == t2->info &&
+-	       t1->size == t2->size;
+-}
+-
+-/* Calculate type signature hash of INT. */
+-static long btf_hash_int(struct btf_type *t)
+-{
+-	__u32 info = *(__u32 *)(t + 1);
+-	long h;
+-
+-	h = btf_hash_common(t);
+-	h = hash_combine(h, info);
+-	return h;
+-}
+-
+-/* Check structural equality of two INTs. */
+-static bool btf_equal_int(struct btf_type *t1, struct btf_type *t2)
+-{
+-	__u32 info1, info2;
+-
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-	info1 = *(__u32 *)(t1 + 1);
+-	info2 = *(__u32 *)(t2 + 1);
+-	return info1 == info2;
+-}
+-
+-/* Calculate type signature hash of ENUM. */
+-static long btf_hash_enum(struct btf_type *t)
+-{
+-	long h;
+-
+-	/* don't hash vlen and enum members to support enum fwd resolving */
+-	h = hash_combine(0, t->name_off);
+-	h = hash_combine(h, t->info & ~0xffff);
+-	h = hash_combine(h, t->size);
+-	return h;
+-}
+-
+-/* Check structural equality of two ENUMs. */
+-static bool btf_equal_enum(struct btf_type *t1, struct btf_type *t2)
+-{
+-	const struct btf_enum *m1, *m2;
+-	__u16 vlen;
+-	int i;
+-
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-
+-	vlen = btf_vlen(t1);
+-	m1 = btf_enum(t1);
+-	m2 = btf_enum(t2);
+-	for (i = 0; i < vlen; i++) {
+-		if (m1->name_off != m2->name_off || m1->val != m2->val)
+-			return false;
+-		m1++;
+-		m2++;
+-	}
+-	return true;
+-}
+-
+-static inline bool btf_is_enum_fwd(struct btf_type *t)
+-{
+-	return btf_is_enum(t) && btf_vlen(t) == 0;
+-}
+-
+-static bool btf_compat_enum(struct btf_type *t1, struct btf_type *t2)
+-{
+-	if (!btf_is_enum_fwd(t1) && !btf_is_enum_fwd(t2))
+-		return btf_equal_enum(t1, t2);
+-	/* ignore vlen when comparing */
+-	return t1->name_off == t2->name_off &&
+-	       (t1->info & ~0xffff) == (t2->info & ~0xffff) &&
+-	       t1->size == t2->size;
+-}
+-
+-/*
+- * Calculate type signature hash of STRUCT/UNION, ignoring referenced type IDs,
+- * as referenced type IDs equivalence is established separately during type
+- * graph equivalence check algorithm.
+- */
+-static long btf_hash_struct(struct btf_type *t)
+-{
+-	const struct btf_member *member = btf_members(t);
+-	__u32 vlen = btf_vlen(t);
+-	long h = btf_hash_common(t);
+-	int i;
+-
+-	for (i = 0; i < vlen; i++) {
+-		h = hash_combine(h, member->name_off);
+-		h = hash_combine(h, member->offset);
+-		/* no hashing of referenced type ID, it can be unresolved yet */
+-		member++;
+-	}
+-	return h;
+-}
+-
+-/*
+- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
+- * referenced types equivalence is checked separately.
+- */
+-static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
+-{
+-	const struct btf_member *m1, *m2;
+-	__u16 vlen;
+-	int i;
+-
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-
+-	vlen = btf_vlen(t1);
+-	m1 = btf_members(t1);
+-	m2 = btf_members(t2);
+-	for (i = 0; i < vlen; i++) {
+-		if (m1->name_off != m2->name_off || m1->offset != m2->offset)
+-			return false;
+-		m1++;
+-		m2++;
+-	}
+-	return true;
+-}
+-
+-/*
+- * Calculate type signature hash of ARRAY, including referenced type IDs,
+- * under assumption that they were already resolved to canonical type IDs and
+- * are not going to change.
+- */
+-static long btf_hash_array(struct btf_type *t)
+-{
+-	const struct btf_array *info = btf_array(t);
+-	long h = btf_hash_common(t);
+-
+-	h = hash_combine(h, info->type);
+-	h = hash_combine(h, info->index_type);
+-	h = hash_combine(h, info->nelems);
+-	return h;
+-}
+-
+-/*
+- * Check exact equality of two ARRAYs, taking into account referenced
+- * type IDs, under assumption that they were already resolved to canonical
+- * type IDs and are not going to change.
+- * This function is called during reference types deduplication to compare
+- * ARRAY to potential canonical representative.
+- */
+-static bool btf_equal_array(struct btf_type *t1, struct btf_type *t2)
+-{
+-	const struct btf_array *info1, *info2;
+-
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-
+-	info1 = btf_array(t1);
+-	info2 = btf_array(t2);
+-	return info1->type == info2->type &&
+-	       info1->index_type == info2->index_type &&
+-	       info1->nelems == info2->nelems;
+-}
+-
+-/*
+- * Check structural compatibility of two ARRAYs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
+- * referenced types equivalence is checked separately.
+- */
+-static bool btf_compat_array(struct btf_type *t1, struct btf_type *t2)
+-{
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-
+-	return btf_array(t1)->nelems == btf_array(t2)->nelems;
+-}
+-
+-/*
+- * Calculate type signature hash of FUNC_PROTO, including referenced type IDs,
+- * under assumption that they were already resolved to canonical type IDs and
+- * are not going to change.
+- */
+-static long btf_hash_fnproto(struct btf_type *t)
+-{
+-	const struct btf_param *member = btf_params(t);
+-	__u16 vlen = btf_vlen(t);
+-	long h = btf_hash_common(t);
+-	int i;
+-
+-	for (i = 0; i < vlen; i++) {
+-		h = hash_combine(h, member->name_off);
+-		h = hash_combine(h, member->type);
+-		member++;
+-	}
+-	return h;
+-}
+-
+-/*
+- * Check exact equality of two FUNC_PROTOs, taking into account referenced
+- * type IDs, under assumption that they were already resolved to canonical
+- * type IDs and are not going to change.
+- * This function is called during reference types deduplication to compare
+- * FUNC_PROTO to potential canonical representative.
+- */
+-static bool btf_equal_fnproto(struct btf_type *t1, struct btf_type *t2)
+-{
+-	const struct btf_param *m1, *m2;
+-	__u16 vlen;
+-	int i;
+-
+-	if (!btf_equal_common(t1, t2))
+-		return false;
+-
+-	vlen = btf_vlen(t1);
+-	m1 = btf_params(t1);
+-	m2 = btf_params(t2);
+-	for (i = 0; i < vlen; i++) {
+-		if (m1->name_off != m2->name_off || m1->type != m2->type)
+-			return false;
+-		m1++;
+-		m2++;
+-	}
+-	return true;
+-}
+-
+-/*
+- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
+- * referenced types equivalence is checked separately.
+- */
+-static bool btf_compat_fnproto(struct btf_type *t1, struct btf_type *t2)
+-{
+-	const struct btf_param *m1, *m2;
+-	__u16 vlen;
+-	int i;
+-
+-	/* skip return type ID */
+-	if (t1->name_off != t2->name_off || t1->info != t2->info)
+-		return false;
+-
+-	vlen = btf_vlen(t1);
+-	m1 = btf_params(t1);
+-	m2 = btf_params(t2);
+-	for (i = 0; i < vlen; i++) {
+-		if (m1->name_off != m2->name_off)
+-			return false;
+-		m1++;
+-		m2++;
+-	}
+-	return true;
+-}
+-
+-/* Prepare split BTF for deduplication by calculating hashes of base BTF's
+- * types and initializing the rest of the state (canonical type mapping) for
+- * the fixed base BTF part.
+- */
+-static int btf_dedup_prep(struct btf_dedup *d)
+-{
+-	struct btf_type *t;
+-	int type_id;
+-	long h;
+-
+-	if (!d->btf->base_btf)
+-		return 0;
+-
+-	for (type_id = 1; type_id < d->btf->start_id; type_id++) {
+-		t = btf_type_by_id(d->btf, type_id);
+-
+-		/* all base BTF types are self-canonical by definition */
+-		d->map[type_id] = type_id;
+-
+-		switch (btf_kind(t)) {
+-		case BTF_KIND_VAR:
+-		case BTF_KIND_DATASEC:
+-			/* VAR and DATASEC are never hash/deduplicated */
+-			continue;
+-		case BTF_KIND_CONST:
+-		case BTF_KIND_VOLATILE:
+-		case BTF_KIND_RESTRICT:
+-		case BTF_KIND_PTR:
+-		case BTF_KIND_FWD:
+-		case BTF_KIND_TYPEDEF:
+-		case BTF_KIND_FUNC:
+-		case BTF_KIND_FLOAT:
+-			h = btf_hash_common(t);
+-			break;
+-		case BTF_KIND_INT:
+-			h = btf_hash_int(t);
+-			break;
+-		case BTF_KIND_ENUM:
+-			h = btf_hash_enum(t);
+-			break;
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION:
+-			h = btf_hash_struct(t);
+-			break;
+-		case BTF_KIND_ARRAY:
+-			h = btf_hash_array(t);
+-			break;
+-		case BTF_KIND_FUNC_PROTO:
+-			h = btf_hash_fnproto(t);
+-			break;
+-		default:
+-			pr_debug("unknown kind %d for type [%d]\n", btf_kind(t), type_id);
+-			return -EINVAL;
+-		}
+-		if (btf_dedup_table_add(d, h, type_id))
+-			return -ENOMEM;
+-	}
+-
+-	return 0;
+-}
+-
+-/*
+- * Deduplicate primitive types, that can't reference other types, by calculating
+- * their type signature hash and comparing them with any possible canonical
+- * candidate. If no canonical candidate matches, type itself is marked as
+- * canonical and is added into `btf_dedup->dedup_table` as another candidate.
+- */
+-static int btf_dedup_prim_type(struct btf_dedup *d, __u32 type_id)
+-{
+-	struct btf_type *t = btf_type_by_id(d->btf, type_id);
+-	struct hashmap_entry *hash_entry;
+-	struct btf_type *cand;
+-	/* if we don't find equivalent type, then we are canonical */
+-	__u32 new_id = type_id;
+-	__u32 cand_id;
+-	long h;
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_ARRAY:
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_FUNC_PROTO:
+-	case BTF_KIND_VAR:
+-	case BTF_KIND_DATASEC:
+-		return 0;
+-
+-	case BTF_KIND_INT:
+-		h = btf_hash_int(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_int(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-		}
+-		break;
+-
+-	case BTF_KIND_ENUM:
+-		h = btf_hash_enum(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_enum(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-			if (d->opts.dont_resolve_fwds)
+-				continue;
+-			if (btf_compat_enum(t, cand)) {
+-				if (btf_is_enum_fwd(t)) {
+-					/* resolve fwd to full enum */
+-					new_id = cand_id;
+-					break;
+-				}
+-				/* resolve canonical enum fwd to full enum */
+-				d->map[cand_id] = type_id;
+-			}
+-		}
+-		break;
+-
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_FLOAT:
+-		h = btf_hash_common(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_common(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-		}
+-		break;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	d->map[type_id] = new_id;
+-	if (type_id == new_id && btf_dedup_table_add(d, h, type_id))
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+-static int btf_dedup_prim_types(struct btf_dedup *d)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < d->btf->nr_types; i++) {
+-		err = btf_dedup_prim_type(d, d->btf->start_id + i);
+-		if (err)
+-			return err;
+-	}
+-	return 0;
+-}
+-
+-/*
+- * Check whether type is already mapped into canonical one (could be to itself).
+- */
+-static inline bool is_type_mapped(struct btf_dedup *d, uint32_t type_id)
+-{
+-	return d->map[type_id] <= BTF_MAX_NR_TYPES;
+-}
+-
+-/*
+- * Resolve type ID into its canonical type ID, if any; otherwise return original
+- * type ID. If type is FWD and is resolved into STRUCT/UNION already, follow
+- * STRUCT/UNION link and resolve it into canonical type ID as well.
+- */
+-static inline __u32 resolve_type_id(struct btf_dedup *d, __u32 type_id)
+-{
+-	while (is_type_mapped(d, type_id) && d->map[type_id] != type_id)
+-		type_id = d->map[type_id];
+-	return type_id;
+-}
+-
+-/*
+- * Resolve FWD to underlying STRUCT/UNION, if any; otherwise return original
+- * type ID.
+- */
+-static uint32_t resolve_fwd_id(struct btf_dedup *d, uint32_t type_id)
+-{
+-	__u32 orig_type_id = type_id;
+-
+-	if (!btf_is_fwd(btf__type_by_id(d->btf, type_id)))
+-		return type_id;
+-
+-	while (is_type_mapped(d, type_id) && d->map[type_id] != type_id)
+-		type_id = d->map[type_id];
+-
+-	if (!btf_is_fwd(btf__type_by_id(d->btf, type_id)))
+-		return type_id;
+-
+-	return orig_type_id;
+-}
+-
+-
+-static inline __u16 btf_fwd_kind(struct btf_type *t)
+-{
+-	return btf_kflag(t) ? BTF_KIND_UNION : BTF_KIND_STRUCT;
+-}
+-
+-/* Check if given two types are identical ARRAY definitions */
+-static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
+-{
+-	struct btf_type *t1, *t2;
+-
+-	t1 = btf_type_by_id(d->btf, id1);
+-	t2 = btf_type_by_id(d->btf, id2);
+-	if (!btf_is_array(t1) || !btf_is_array(t2))
+-		return 0;
+-
+-	return btf_equal_array(t1, t2);
+-}
+-
+-/*
+- * Check equivalence of BTF type graph formed by candidate struct/union (we'll
+- * call it "candidate graph" in this description for brevity) to a type graph
+- * formed by (potential) canonical struct/union ("canonical graph" for brevity
+- * here, though keep in mind that not all types in canonical graph are
+- * necessarily canonical representatives themselves, some of them might be
+- * duplicates or its uniqueness might not have been established yet).
+- * Returns:
+- *  - >0, if type graphs are equivalent;
+- *  -  0, if not equivalent;
+- *  - <0, on error.
+- *
+- * Algorithm performs side-by-side DFS traversal of both type graphs and checks
+- * equivalence of BTF types at each step. If at any point BTF types in candidate
+- * and canonical graphs are not compatible structurally, whole graphs are
+- * incompatible. If types are structurally equivalent (i.e., all information
+- * except referenced type IDs is exactly the same), a mapping from `canon_id` to
+- * a `cand_id` is recored in hypothetical mapping (`btf_dedup->hypot_map`).
+- * If a type references other types, then those referenced types are checked
+- * for equivalence recursively.
+- *
+- * During DFS traversal, if we find that for current `canon_id` type we
+- * already have some mapping in hypothetical map, we check for two possible
+- * situations:
+- *   - `canon_id` is mapped to exactly the same type as `cand_id`. This will
+- *     happen when type graphs have cycles. In this case we assume those two
+- *     types are equivalent.
+- *   - `canon_id` is mapped to different type. This is contradiction in our
+- *     hypothetical mapping, because same graph in canonical graph corresponds
+- *     to two different types in candidate graph, which for equivalent type
+- *     graphs shouldn't happen. This condition terminates equivalence check
+- *     with negative result.
+- *
+- * If type graphs traversal exhausts types to check and find no contradiction,
+- * then type graphs are equivalent.
+- *
+- * When checking types for equivalence, there is one special case: FWD types.
+- * If FWD type resolution is allowed and one of the types (either from canonical
+- * or candidate graph) is FWD and other is STRUCT/UNION (depending on FWD's kind
+- * flag) and their names match, hypothetical mapping is updated to point from
+- * FWD to STRUCT/UNION. If graphs will be determined as equivalent successfully,
+- * this mapping will be used to record FWD -> STRUCT/UNION mapping permanently.
+- *
+- * Technically, this could lead to incorrect FWD to STRUCT/UNION resolution,
+- * if there are two exactly named (or anonymous) structs/unions that are
+- * compatible structurally, one of which has FWD field, while other is concrete
+- * STRUCT/UNION, but according to C sources they are different structs/unions
+- * that are referencing different types with the same name. This is extremely
+- * unlikely to happen, but btf_dedup API allows to disable FWD resolution if
+- * this logic is causing problems.
+- *
+- * Doing FWD resolution means that both candidate and/or canonical graphs can
+- * consists of portions of the graph that come from multiple compilation units.
+- * This is due to the fact that types within single compilation unit are always
+- * deduplicated and FWDs are already resolved, if referenced struct/union
+- * definiton is available. So, if we had unresolved FWD and found corresponding
+- * STRUCT/UNION, they will be from different compilation units. This
+- * consequently means that when we "link" FWD to corresponding STRUCT/UNION,
+- * type graph will likely have at least two different BTF types that describe
+- * same type (e.g., most probably there will be two different BTF types for the
+- * same 'int' primitive type) and could even have "overlapping" parts of type
+- * graph that describe same subset of types.
+- *
+- * This in turn means that our assumption that each type in canonical graph
+- * must correspond to exactly one type in candidate graph might not hold
+- * anymore and will make it harder to detect contradictions using hypothetical
+- * map. To handle this problem, we allow to follow FWD -> STRUCT/UNION
+- * resolution only in canonical graph. FWDs in candidate graphs are never
+- * resolved. To see why it's OK, let's check all possible situations w.r.t. FWDs
+- * that can occur:
+- *   - Both types in canonical and candidate graphs are FWDs. If they are
+- *     structurally equivalent, then they can either be both resolved to the
+- *     same STRUCT/UNION or not resolved at all. In both cases they are
+- *     equivalent and there is no need to resolve FWD on candidate side.
+- *   - Both types in canonical and candidate graphs are concrete STRUCT/UNION,
+- *     so nothing to resolve as well, algorithm will check equivalence anyway.
+- *   - Type in canonical graph is FWD, while type in candidate is concrete
+- *     STRUCT/UNION. In this case candidate graph comes from single compilation
+- *     unit, so there is exactly one BTF type for each unique C type. After
+- *     resolving FWD into STRUCT/UNION, there might be more than one BTF type
+- *     in canonical graph mapping to single BTF type in candidate graph, but
+- *     because hypothetical mapping maps from canonical to candidate types, it's
+- *     alright, and we still maintain the property of having single `canon_id`
+- *     mapping to single `cand_id` (there could be two different `canon_id`
+- *     mapped to the same `cand_id`, but it's not contradictory).
+- *   - Type in canonical graph is concrete STRUCT/UNION, while type in candidate
+- *     graph is FWD. In this case we are just going to check compatibility of
+- *     STRUCT/UNION and corresponding FWD, and if they are compatible, we'll
+- *     assume that whatever STRUCT/UNION FWD resolves to must be equivalent to
+- *     a concrete STRUCT/UNION from canonical graph. If the rest of type graphs
+- *     turn out equivalent, we'll re-resolve FWD to concrete STRUCT/UNION from
+- *     canonical graph.
+- */
+-static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+-			      __u32 canon_id)
+-{
+-	struct btf_type *cand_type;
+-	struct btf_type *canon_type;
+-	__u32 hypot_type_id;
+-	__u16 cand_kind;
+-	__u16 canon_kind;
+-	int i, eq;
+-
+-	/* if both resolve to the same canonical, they must be equivalent */
+-	if (resolve_type_id(d, cand_id) == resolve_type_id(d, canon_id))
+-		return 1;
+-
+-	canon_id = resolve_fwd_id(d, canon_id);
+-
+-	hypot_type_id = d->hypot_map[canon_id];
+-	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
+-		/* In some cases compiler will generate different DWARF types
+-		 * for *identical* array type definitions and use them for
+-		 * different fields within the *same* struct. This breaks type
+-		 * equivalence check, which makes an assumption that candidate
+-		 * types sub-graph has a consistent and deduped-by-compiler
+-		 * types within a single CU. So work around that by explicitly
+-		 * allowing identical array types here.
+-		 */
+-		return hypot_type_id == cand_id ||
+-		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
+-	}
+-
+-	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
+-		return -ENOMEM;
+-
+-	cand_type = btf_type_by_id(d->btf, cand_id);
+-	canon_type = btf_type_by_id(d->btf, canon_id);
+-	cand_kind = btf_kind(cand_type);
+-	canon_kind = btf_kind(canon_type);
+-
+-	if (cand_type->name_off != canon_type->name_off)
+-		return 0;
+-
+-	/* FWD <--> STRUCT/UNION equivalence check, if enabled */
+-	if (!d->opts.dont_resolve_fwds
+-	    && (cand_kind == BTF_KIND_FWD || canon_kind == BTF_KIND_FWD)
+-	    && cand_kind != canon_kind) {
+-		__u16 real_kind;
+-		__u16 fwd_kind;
+-
+-		if (cand_kind == BTF_KIND_FWD) {
+-			real_kind = canon_kind;
+-			fwd_kind = btf_fwd_kind(cand_type);
+-		} else {
+-			real_kind = cand_kind;
+-			fwd_kind = btf_fwd_kind(canon_type);
+-			/* we'd need to resolve base FWD to STRUCT/UNION */
+-			if (fwd_kind == real_kind && canon_id < d->btf->start_id)
+-				d->hypot_adjust_canon = true;
+-		}
+-		return fwd_kind == real_kind;
+-	}
+-
+-	if (cand_kind != canon_kind)
+-		return 0;
+-
+-	switch (cand_kind) {
+-	case BTF_KIND_INT:
+-		return btf_equal_int(cand_type, canon_type);
+-
+-	case BTF_KIND_ENUM:
+-		if (d->opts.dont_resolve_fwds)
+-			return btf_equal_enum(cand_type, canon_type);
+-		else
+-			return btf_compat_enum(cand_type, canon_type);
+-
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_FLOAT:
+-		return btf_equal_common(cand_type, canon_type);
+-
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_FUNC:
+-		if (cand_type->info != canon_type->info)
+-			return 0;
+-		return btf_dedup_is_equiv(d, cand_type->type, canon_type->type);
+-
+-	case BTF_KIND_ARRAY: {
+-		const struct btf_array *cand_arr, *canon_arr;
+-
+-		if (!btf_compat_array(cand_type, canon_type))
+-			return 0;
+-		cand_arr = btf_array(cand_type);
+-		canon_arr = btf_array(canon_type);
+-		eq = btf_dedup_is_equiv(d, cand_arr->index_type, canon_arr->index_type);
+-		if (eq <= 0)
+-			return eq;
+-		return btf_dedup_is_equiv(d, cand_arr->type, canon_arr->type);
+-	}
+-
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		const struct btf_member *cand_m, *canon_m;
+-		__u16 vlen;
+-
+-		if (!btf_shallow_equal_struct(cand_type, canon_type))
+-			return 0;
+-		vlen = btf_vlen(cand_type);
+-		cand_m = btf_members(cand_type);
+-		canon_m = btf_members(canon_type);
+-		for (i = 0; i < vlen; i++) {
+-			eq = btf_dedup_is_equiv(d, cand_m->type, canon_m->type);
+-			if (eq <= 0)
+-				return eq;
+-			cand_m++;
+-			canon_m++;
+-		}
+-
+-		return 1;
+-	}
+-
+-	case BTF_KIND_FUNC_PROTO: {
+-		const struct btf_param *cand_p, *canon_p;
+-		__u16 vlen;
+-
+-		if (!btf_compat_fnproto(cand_type, canon_type))
+-			return 0;
+-		eq = btf_dedup_is_equiv(d, cand_type->type, canon_type->type);
+-		if (eq <= 0)
+-			return eq;
+-		vlen = btf_vlen(cand_type);
+-		cand_p = btf_params(cand_type);
+-		canon_p = btf_params(canon_type);
+-		for (i = 0; i < vlen; i++) {
+-			eq = btf_dedup_is_equiv(d, cand_p->type, canon_p->type);
+-			if (eq <= 0)
+-				return eq;
+-			cand_p++;
+-			canon_p++;
+-		}
+-		return 1;
+-	}
+-
+-	default:
+-		return -EINVAL;
+-	}
+-	return 0;
+-}
+-
+-/*
+- * Use hypothetical mapping, produced by successful type graph equivalence
+- * check, to augment existing struct/union canonical mapping, where possible.
+- *
+- * If BTF_KIND_FWD resolution is allowed, this mapping is also used to record
+- * FWD -> STRUCT/UNION correspondence as well. FWD resolution is bidirectional:
+- * it doesn't matter if FWD type was part of canonical graph or candidate one,
+- * we are recording the mapping anyway. As opposed to carefulness required
+- * for struct/union correspondence mapping (described below), for FWD resolution
+- * it's not important, as by the time that FWD type (reference type) will be
+- * deduplicated all structs/unions will be deduped already anyway.
+- *
+- * Recording STRUCT/UNION mapping is purely a performance optimization and is
+- * not required for correctness. It needs to be done carefully to ensure that
+- * struct/union from candidate's type graph is not mapped into corresponding
+- * struct/union from canonical type graph that itself hasn't been resolved into
+- * canonical representative. The only guarantee we have is that canonical
+- * struct/union was determined as canonical and that won't change. But any
+- * types referenced through that struct/union fields could have been not yet
+- * resolved, so in case like that it's too early to establish any kind of
+- * correspondence between structs/unions.
+- *
+- * No canonical correspondence is derived for primitive types (they are already
+- * deduplicated completely already anyway) or reference types (they rely on
+- * stability of struct/union canonical relationship for equivalence checks).
+- */
+-static void btf_dedup_merge_hypot_map(struct btf_dedup *d)
+-{
+-	__u32 canon_type_id, targ_type_id;
+-	__u16 t_kind, c_kind;
+-	__u32 t_id, c_id;
+-	int i;
+-
+-	for (i = 0; i < d->hypot_cnt; i++) {
+-		canon_type_id = d->hypot_list[i];
+-		targ_type_id = d->hypot_map[canon_type_id];
+-		t_id = resolve_type_id(d, targ_type_id);
+-		c_id = resolve_type_id(d, canon_type_id);
+-		t_kind = btf_kind(btf__type_by_id(d->btf, t_id));
+-		c_kind = btf_kind(btf__type_by_id(d->btf, c_id));
+-		/*
+-		 * Resolve FWD into STRUCT/UNION.
+-		 * It's ok to resolve FWD into STRUCT/UNION that's not yet
+-		 * mapped to canonical representative (as opposed to
+-		 * STRUCT/UNION <--> STRUCT/UNION mapping logic below), because
+-		 * eventually that struct is going to be mapped and all resolved
+-		 * FWDs will automatically resolve to correct canonical
+-		 * representative. This will happen before ref type deduping,
+-		 * which critically depends on stability of these mapping. This
+-		 * stability is not a requirement for STRUCT/UNION equivalence
+-		 * checks, though.
+-		 */
+-
+-		/* if it's the split BTF case, we still need to point base FWD
+-		 * to STRUCT/UNION in a split BTF, because FWDs from split BTF
+-		 * will be resolved against base FWD. If we don't point base
+-		 * canonical FWD to the resolved STRUCT/UNION, then all the
+-		 * FWDs in split BTF won't be correctly resolved to a proper
+-		 * STRUCT/UNION.
+-		 */
+-		if (t_kind != BTF_KIND_FWD && c_kind == BTF_KIND_FWD)
+-			d->map[c_id] = t_id;
+-
+-		/* if graph equivalence determined that we'd need to adjust
+-		 * base canonical types, then we need to only point base FWDs
+-		 * to STRUCTs/UNIONs and do no more modifications. For all
+-		 * other purposes the type graphs were not equivalent.
+-		 */
+-		if (d->hypot_adjust_canon)
+-			continue;
+-		
+-		if (t_kind == BTF_KIND_FWD && c_kind != BTF_KIND_FWD)
+-			d->map[t_id] = c_id;
+-
+-		if ((t_kind == BTF_KIND_STRUCT || t_kind == BTF_KIND_UNION) &&
+-		    c_kind != BTF_KIND_FWD &&
+-		    is_type_mapped(d, c_id) &&
+-		    !is_type_mapped(d, t_id)) {
+-			/*
+-			 * as a perf optimization, we can map struct/union
+-			 * that's part of type graph we just verified for
+-			 * equivalence. We can do that for struct/union that has
+-			 * canonical representative only, though.
+-			 */
+-			d->map[t_id] = c_id;
+-		}
+-	}
+-}
+-
+-/*
+- * Deduplicate struct/union types.
+- *
+- * For each struct/union type its type signature hash is calculated, taking
+- * into account type's name, size, number, order and names of fields, but
+- * ignoring type ID's referenced from fields, because they might not be deduped
+- * completely until after reference types deduplication phase. This type hash
+- * is used to iterate over all potential canonical types, sharing same hash.
+- * For each canonical candidate we check whether type graphs that they form
+- * (through referenced types in fields and so on) are equivalent using algorithm
+- * implemented in `btf_dedup_is_equiv`. If such equivalence is found and
+- * BTF_KIND_FWD resolution is allowed, then hypothetical mapping
+- * (btf_dedup->hypot_map) produced by aforementioned type graph equivalence
+- * algorithm is used to record FWD -> STRUCT/UNION mapping. It's also used to
+- * potentially map other structs/unions to their canonical representatives,
+- * if such relationship hasn't yet been established. This speeds up algorithm
+- * by eliminating some of the duplicate work.
+- *
+- * If no matching canonical representative was found, struct/union is marked
+- * as canonical for itself and is added into btf_dedup->dedup_table hash map
+- * for further look ups.
+- */
+-static int btf_dedup_struct_type(struct btf_dedup *d, __u32 type_id)
+-{
+-	struct btf_type *cand_type, *t;
+-	struct hashmap_entry *hash_entry;
+-	/* if we don't find equivalent type, then we are canonical */
+-	__u32 new_id = type_id;
+-	__u16 kind;
+-	long h;
+-
+-	/* already deduped or is in process of deduping (loop detected) */
+-	if (d->map[type_id] <= BTF_MAX_NR_TYPES)
+-		return 0;
+-
+-	t = btf_type_by_id(d->btf, type_id);
+-	kind = btf_kind(t);
+-
+-	if (kind != BTF_KIND_STRUCT && kind != BTF_KIND_UNION)
+-		return 0;
+-
+-	h = btf_hash_struct(t);
+-	for_each_dedup_cand(d, hash_entry, h) {
+-		__u32 cand_id = (__u32)(long)hash_entry->value;
+-		int eq;
+-
+-		/*
+-		 * Even though btf_dedup_is_equiv() checks for
+-		 * btf_shallow_equal_struct() internally when checking two
+-		 * structs (unions) for equivalence, we need to guard here
+-		 * from picking matching FWD type as a dedup candidate.
+-		 * This can happen due to hash collision. In such case just
+-		 * relying on btf_dedup_is_equiv() would lead to potentially
+-		 * creating a loop (FWD -> STRUCT and STRUCT -> FWD), because
+-		 * FWD and compatible STRUCT/UNION are considered equivalent.
+-		 */
+-		cand_type = btf_type_by_id(d->btf, cand_id);
+-		if (!btf_shallow_equal_struct(t, cand_type))
+-			continue;
+-
+-		btf_dedup_clear_hypot_map(d);
+-		eq = btf_dedup_is_equiv(d, type_id, cand_id);
+-		if (eq < 0)
+-			return eq;
+-		if (!eq)
+-			continue;
+-		btf_dedup_merge_hypot_map(d);
+-		if (d->hypot_adjust_canon) /* not really equivalent */
+-			continue;
+-		new_id = cand_id;
+-		break;
+-	}
+-
+-	d->map[type_id] = new_id;
+-	if (type_id == new_id && btf_dedup_table_add(d, h, type_id))
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+-static int btf_dedup_struct_types(struct btf_dedup *d)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < d->btf->nr_types; i++) {
+-		err = btf_dedup_struct_type(d, d->btf->start_id + i);
+-		if (err)
+-			return err;
+-	}
+-	return 0;
+-}
+-
+-/*
+- * Deduplicate reference type.
+- *
+- * Once all primitive and struct/union types got deduplicated, we can easily
+- * deduplicate all other (reference) BTF types. This is done in two steps:
+- *
+- * 1. Resolve all referenced type IDs into their canonical type IDs. This
+- * resolution can be done either immediately for primitive or struct/union types
+- * (because they were deduped in previous two phases) or recursively for
+- * reference types. Recursion will always terminate at either primitive or
+- * struct/union type, at which point we can "unwind" chain of reference types
+- * one by one. There is no danger of encountering cycles because in C type
+- * system the only way to form type cycle is through struct/union, so any chain
+- * of reference types, even those taking part in a type cycle, will inevitably
+- * reach struct/union at some point.
+- *
+- * 2. Once all referenced type IDs are resolved into canonical ones, BTF type
+- * becomes "stable", in the sense that no further deduplication will cause
+- * any changes to it. With that, it's now possible to calculate type's signature
+- * hash (this time taking into account referenced type IDs) and loop over all
+- * potential canonical representatives. If no match was found, current type
+- * will become canonical representative of itself and will be added into
+- * btf_dedup->dedup_table as another possible canonical representative.
+- */
+-static int btf_dedup_ref_type(struct btf_dedup *d, __u32 type_id)
+-{
+-	struct hashmap_entry *hash_entry;
+-	__u32 new_id = type_id, cand_id;
+-	struct btf_type *t, *cand;
+-	/* if we don't find equivalent type, then we are representative type */
+-	int ref_type_id;
+-	long h;
+-
+-	if (d->map[type_id] == BTF_IN_PROGRESS_ID)
+-		return -ELOOP;
+-	if (d->map[type_id] <= BTF_MAX_NR_TYPES)
+-		return resolve_type_id(d, type_id);
+-
+-	t = btf_type_by_id(d->btf, type_id);
+-	d->map[type_id] = BTF_IN_PROGRESS_ID;
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_FUNC:
+-		ref_type_id = btf_dedup_ref_type(d, t->type);
+-		if (ref_type_id < 0)
+-			return ref_type_id;
+-		t->type = ref_type_id;
+-
+-		h = btf_hash_common(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_common(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-		}
+-		break;
+-
+-	case BTF_KIND_ARRAY: {
+-		struct btf_array *info = btf_array(t);
+-
+-		ref_type_id = btf_dedup_ref_type(d, info->type);
+-		if (ref_type_id < 0)
+-			return ref_type_id;
+-		info->type = ref_type_id;
+-
+-		ref_type_id = btf_dedup_ref_type(d, info->index_type);
+-		if (ref_type_id < 0)
+-			return ref_type_id;
+-		info->index_type = ref_type_id;
+-
+-		h = btf_hash_array(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_array(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-		}
+-		break;
+-	}
+-
+-	case BTF_KIND_FUNC_PROTO: {
+-		struct btf_param *param;
+-		__u16 vlen;
+-		int i;
+-
+-		ref_type_id = btf_dedup_ref_type(d, t->type);
+-		if (ref_type_id < 0)
+-			return ref_type_id;
+-		t->type = ref_type_id;
+-
+-		vlen = btf_vlen(t);
+-		param = btf_params(t);
+-		for (i = 0; i < vlen; i++) {
+-			ref_type_id = btf_dedup_ref_type(d, param->type);
+-			if (ref_type_id < 0)
+-				return ref_type_id;
+-			param->type = ref_type_id;
+-			param++;
+-		}
+-
+-		h = btf_hash_fnproto(t);
+-		for_each_dedup_cand(d, hash_entry, h) {
+-			cand_id = (__u32)(long)hash_entry->value;
+-			cand = btf_type_by_id(d->btf, cand_id);
+-			if (btf_equal_fnproto(t, cand)) {
+-				new_id = cand_id;
+-				break;
+-			}
+-		}
+-		break;
+-	}
+-
+-	default:
+-		return -EINVAL;
+-	}
+-
+-	d->map[type_id] = new_id;
+-	if (type_id == new_id && btf_dedup_table_add(d, h, type_id))
+-		return -ENOMEM;
+-
+-	return new_id;
+-}
+-
+-static int btf_dedup_ref_types(struct btf_dedup *d)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < d->btf->nr_types; i++) {
+-		err = btf_dedup_ref_type(d, d->btf->start_id + i);
+-		if (err < 0)
+-			return err;
+-	}
+-	/* we won't need d->dedup_table anymore */
+-	hashmap__free(d->dedup_table);
+-	d->dedup_table = NULL;
+-	return 0;
+-}
+-
+-/*
+- * Compact types.
+- *
+- * After we established for each type its corresponding canonical representative
+- * type, we now can eliminate types that are not canonical and leave only
+- * canonical ones layed out sequentially in memory by copying them over
+- * duplicates. During compaction btf_dedup->hypot_map array is reused to store
+- * a map from original type ID to a new compacted type ID, which will be used
+- * during next phase to "fix up" type IDs, referenced from struct/union and
+- * reference types.
+- */
+-static int btf_dedup_compact_types(struct btf_dedup *d)
+-{
+-	__u32 *new_offs;
+-	__u32 next_type_id = d->btf->start_id;
+-	const struct btf_type *t;
+-	void *p;
+-	int i, id, len;
+-
+-	/* we are going to reuse hypot_map to store compaction remapping */
+-	d->hypot_map[0] = 0;
+-	/* base BTF types are not renumbered */
+-	for (id = 1; id < d->btf->start_id; id++)
+-		d->hypot_map[id] = id;
+-	for (i = 0, id = d->btf->start_id; i < d->btf->nr_types; i++, id++)
+-		d->hypot_map[id] = BTF_UNPROCESSED_ID;
+-
+-	p = d->btf->types_data;
+-
+-	for (i = 0, id = d->btf->start_id; i < d->btf->nr_types; i++, id++) {
+-		if (d->map[id] != id)
+-			continue;
+-
+-		t = btf__type_by_id(d->btf, id);
+-		len = btf_type_size(t);
+-		if (len < 0)
+-			return len;
+-
+-		memmove(p, t, len);
+-		d->hypot_map[id] = next_type_id;
+-		d->btf->type_offs[next_type_id - d->btf->start_id] = p - d->btf->types_data;
+-		p += len;
+-		next_type_id++;
+-	}
+-
+-	/* shrink struct btf's internal types index and update btf_header */
+-	d->btf->nr_types = next_type_id - d->btf->start_id;
+-	d->btf->type_offs_cap = d->btf->nr_types;
+-	d->btf->hdr->type_len = p - d->btf->types_data;
+-	new_offs = libbpf_reallocarray(d->btf->type_offs, d->btf->type_offs_cap,
+-				       sizeof(*new_offs));
+-	if (d->btf->type_offs_cap && !new_offs)
+-		return -ENOMEM;
+-	d->btf->type_offs = new_offs;
+-	d->btf->hdr->str_off = d->btf->hdr->type_len;
+-	d->btf->raw_size = d->btf->hdr->hdr_len + d->btf->hdr->type_len + d->btf->hdr->str_len;
+-	return 0;
+-}
+-
+-/*
+- * Figure out final (deduplicated and compacted) type ID for provided original
+- * `type_id` by first resolving it into corresponding canonical type ID and
+- * then mapping it to a deduplicated type ID, stored in btf_dedup->hypot_map,
+- * which is populated during compaction phase.
+- */
+-static int btf_dedup_remap_type_id(__u32 *type_id, void *ctx)
+-{
+-	struct btf_dedup *d = ctx;
+-	__u32 resolved_type_id, new_type_id;
+-
+-	resolved_type_id = resolve_type_id(d, *type_id);
+-	new_type_id = d->hypot_map[resolved_type_id];
+-	if (new_type_id > BTF_MAX_NR_TYPES)
+-		return -EINVAL;
+-
+-	*type_id = new_type_id;
+-	return 0;
+-}
+-
+-/*
+- * Remap referenced type IDs into deduped type IDs.
+- *
+- * After BTF types are deduplicated and compacted, their final type IDs may
+- * differ from original ones. The map from original to a corresponding
+- * deduped type ID is stored in btf_dedup->hypot_map and is populated during
+- * compaction phase. During remapping phase we are rewriting all type IDs
+- * referenced from any BTF type (e.g., struct fields, func proto args, etc) to
+- * their final deduped type IDs.
+- */
+-static int btf_dedup_remap_types(struct btf_dedup *d)
+-{
+-	int i, r;
+-
+-	for (i = 0; i < d->btf->nr_types; i++) {
+-		struct btf_type *t = btf_type_by_id(d->btf, d->btf->start_id + i);
+-
+-		r = btf_type_visit_type_ids(t, btf_dedup_remap_type_id, d);
+-		if (r)
+-			return r;
+-	}
+-
+-	if (!d->btf_ext)
+-		return 0;
+-
+-	r = btf_ext_visit_type_ids(d->btf_ext, btf_dedup_remap_type_id, d);
+-	if (r)
+-		return r;
+-
+-	return 0;
+-}
+-
+-/*
+- * Probe few well-known locations for vmlinux kernel image and try to load BTF
+- * data out of it to use for target BTF.
+- */
+-struct btf *libbpf_find_kernel_btf(void)
+-{
+-	struct {
+-		const char *path_fmt;
+-		bool raw_btf;
+-	} locations[] = {
+-		/* try canonical vmlinux BTF through sysfs first */
+-		{ "/sys/kernel/btf/vmlinux", true /* raw BTF */ },
+-		/* fall back to trying to find vmlinux ELF on disk otherwise */
+-		{ "/boot/vmlinux-%1$s" },
+-		{ "/lib/modules/%1$s/vmlinux-%1$s" },
+-		{ "/lib/modules/%1$s/build/vmlinux" },
+-		{ "/usr/lib/modules/%1$s/kernel/vmlinux" },
+-		{ "/usr/lib/debug/boot/vmlinux-%1$s" },
+-		{ "/usr/lib/debug/boot/vmlinux-%1$s.debug" },
+-		{ "/usr/lib/debug/lib/modules/%1$s/vmlinux" },
+-	};
+-	char path[PATH_MAX + 1];
+-	struct utsname buf;
+-	struct btf *btf;
+-	int i, err;
+-
+-	uname(&buf);
+-
+-	for (i = 0; i < ARRAY_SIZE(locations); i++) {
+-		snprintf(path, PATH_MAX, locations[i].path_fmt, buf.release);
+-
+-		if (access(path, R_OK))
+-			continue;
+-
+-		if (locations[i].raw_btf)
+-			btf = btf__parse_raw(path);
+-		else
+-			btf = btf__parse_elf(path, NULL);
+-		err = libbpf_get_error(btf);
+-		pr_debug("loading kernel BTF '%s': %d\n", path, err);
+-		if (err)
+-			continue;
+-
+-		return btf;
+-	}
+-
+-	pr_warn("failed to find valid kernel BTF\n");
+-	return libbpf_err_ptr(-ESRCH);
+-}
+-
+-int btf_type_visit_type_ids(struct btf_type *t, type_id_visit_fn visit, void *ctx)
+-{
+-	int i, n, err;
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_INT:
+-	case BTF_KIND_FLOAT:
+-	case BTF_KIND_ENUM:
+-		return 0;
+-
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_RESTRICT:
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_VAR:
+-		return visit(&t->type, ctx);
+-
+-	case BTF_KIND_ARRAY: {
+-		struct btf_array *a = btf_array(t);
+-
+-		err = visit(&a->type, ctx);
+-		err = err ?: visit(&a->index_type, ctx);
+-		return err;
+-	}
+-
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		struct btf_member *m = btf_members(t);
+-
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->type, ctx);
+-			if (err)
+-				return err;
+-		}
+-		return 0;
+-	}
+-
+-	case BTF_KIND_FUNC_PROTO: {
+-		struct btf_param *m = btf_params(t);
+-
+-		err = visit(&t->type, ctx);
+-		if (err)
+-			return err;
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->type, ctx);
+-			if (err)
+-				return err;
+-		}
+-		return 0;
+-	}
+-
+-	case BTF_KIND_DATASEC: {
+-		struct btf_var_secinfo *m = btf_var_secinfos(t);
+-
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->type, ctx);
+-			if (err)
+-				return err;
+-		}
+-		return 0;
+-	}
+-
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+-int btf_type_visit_str_offs(struct btf_type *t, str_off_visit_fn visit, void *ctx)
+-{
+-	int i, n, err;
+-
+-	err = visit(&t->name_off, ctx);
+-	if (err)
+-		return err;
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		struct btf_member *m = btf_members(t);
+-
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->name_off, ctx);
+-			if (err)
+-				return err;
+-		}
+-		break;
+-	}
+-	case BTF_KIND_ENUM: {
+-		struct btf_enum *m = btf_enum(t);
+-
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->name_off, ctx);
+-			if (err)
+-				return err;
+-		}
+-		break;
+-	}
+-	case BTF_KIND_FUNC_PROTO: {
+-		struct btf_param *m = btf_params(t);
+-
+-		for (i = 0, n = btf_vlen(t); i < n; i++, m++) {
+-			err = visit(&m->name_off, ctx);
+-			if (err)
+-				return err;
+-		}
+-		break;
+-	}
+-	default:
+-		break;
+-	}
+-
+-	return 0;
+-}
+-
+-int btf_ext_visit_type_ids(struct btf_ext *btf_ext, type_id_visit_fn visit, void *ctx)
+-{
+-	const struct btf_ext_info *seg;
+-	struct btf_ext_info_sec *sec;
+-	int i, err;
+-
+-	seg = &btf_ext->func_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		struct bpf_func_info_min *rec;
+-
+-		for_each_btf_ext_rec(seg, sec, i, rec) {
+-			err = visit(&rec->type_id, ctx);
+-			if (err < 0)
+-				return err;
+-		}
+-	}
+-
+-	seg = &btf_ext->core_relo_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		struct bpf_core_relo *rec;
+-
+-		for_each_btf_ext_rec(seg, sec, i, rec) {
+-			err = visit(&rec->type_id, ctx);
+-			if (err < 0)
+-				return err;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-int btf_ext_visit_str_offs(struct btf_ext *btf_ext, str_off_visit_fn visit, void *ctx)
+-{
+-	const struct btf_ext_info *seg;
+-	struct btf_ext_info_sec *sec;
+-	int i, err;
+-
+-	seg = &btf_ext->func_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		err = visit(&sec->sec_name_off, ctx);
+-		if (err)
+-			return err;
+-	}
+-
+-	seg = &btf_ext->line_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		struct bpf_line_info_min *rec;
+-
+-		err = visit(&sec->sec_name_off, ctx);
+-		if (err)
+-			return err;
+-
+-		for_each_btf_ext_rec(seg, sec, i, rec) {
+-			err = visit(&rec->file_name_off, ctx);
+-			if (err)
+-				return err;
+-			err = visit(&rec->line_off, ctx);
+-			if (err)
+-				return err;
+-		}
+-	}
+-
+-	seg = &btf_ext->core_relo_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		struct bpf_core_relo *rec;
+-
+-		err = visit(&sec->sec_name_off, ctx);
+-		if (err)
+-			return err;
+-
+-		for_each_btf_ext_rec(seg, sec, i, rec) {
+-			err = visit(&rec->access_str_off, ctx);
+-			if (err)
+-				return err;
+-		}
+-	}
+-
+-	return 0;
+-}
+diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+deleted file mode 100644
+index b54f1c3ebd57..000000000000
+--- a/tools/lib/bpf/btf.h
++++ /dev/null
+@@ -1,378 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-/* Copyright (c) 2018 Facebook */
+-
+-#ifndef __LIBBPF_BTF_H
+-#define __LIBBPF_BTF_H
+-
+-#include <stdarg.h>
+-#include <stdbool.h>
+-#include <linux/btf.h>
+-#include <linux/types.h>
+-
+-#include "libbpf_common.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-#define BTF_ELF_SEC ".BTF"
+-#define BTF_EXT_ELF_SEC ".BTF.ext"
+-#define MAPS_ELF_SEC ".maps"
+-
+-struct btf;
+-struct btf_ext;
+-struct btf_type;
+-
+-struct bpf_object;
+-
+-enum btf_endianness {
+-	BTF_LITTLE_ENDIAN = 0,
+-	BTF_BIG_ENDIAN = 1,
+-};
+-
+-LIBBPF_API void btf__free(struct btf *btf);
+-
+-LIBBPF_API struct btf *btf__new(const void *data, __u32 size);
+-LIBBPF_API struct btf *btf__new_split(const void *data, __u32 size, struct btf *base_btf);
+-LIBBPF_API struct btf *btf__new_empty(void);
+-LIBBPF_API struct btf *btf__new_empty_split(struct btf *base_btf);
+-
+-LIBBPF_API struct btf *btf__parse(const char *path, struct btf_ext **btf_ext);
+-LIBBPF_API struct btf *btf__parse_split(const char *path, struct btf *base_btf);
+-LIBBPF_API struct btf *btf__parse_elf(const char *path, struct btf_ext **btf_ext);
+-LIBBPF_API struct btf *btf__parse_elf_split(const char *path, struct btf *base_btf);
+-LIBBPF_API struct btf *btf__parse_raw(const char *path);
+-LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
+-
+-LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
+-LIBBPF_API int btf__load(struct btf *btf);
+-LIBBPF_API __s32 btf__find_by_name(const struct btf *btf,
+-				   const char *type_name);
+-LIBBPF_API __s32 btf__find_by_name_kind(const struct btf *btf,
+-					const char *type_name, __u32 kind);
+-LIBBPF_API __u32 btf__get_nr_types(const struct btf *btf);
+-LIBBPF_API const struct btf *btf__base_btf(const struct btf *btf);
+-LIBBPF_API const struct btf_type *btf__type_by_id(const struct btf *btf,
+-						  __u32 id);
+-LIBBPF_API size_t btf__pointer_size(const struct btf *btf);
+-LIBBPF_API int btf__set_pointer_size(struct btf *btf, size_t ptr_sz);
+-LIBBPF_API enum btf_endianness btf__endianness(const struct btf *btf);
+-LIBBPF_API int btf__set_endianness(struct btf *btf, enum btf_endianness endian);
+-LIBBPF_API __s64 btf__resolve_size(const struct btf *btf, __u32 type_id);
+-LIBBPF_API int btf__resolve_type(const struct btf *btf, __u32 type_id);
+-LIBBPF_API int btf__align_of(const struct btf *btf, __u32 id);
+-LIBBPF_API int btf__fd(const struct btf *btf);
+-LIBBPF_API void btf__set_fd(struct btf *btf, int fd);
+-LIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);
+-LIBBPF_API const char *btf__name_by_offset(const struct btf *btf, __u32 offset);
+-LIBBPF_API const char *btf__str_by_offset(const struct btf *btf, __u32 offset);
+-LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
+-LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
+-				    __u32 expected_key_size,
+-				    __u32 expected_value_size,
+-				    __u32 *key_type_id, __u32 *value_type_id);
+-
+-LIBBPF_API struct btf_ext *btf_ext__new(__u8 *data, __u32 size);
+-LIBBPF_API void btf_ext__free(struct btf_ext *btf_ext);
+-LIBBPF_API const void *btf_ext__get_raw_data(const struct btf_ext *btf_ext,
+-					     __u32 *size);
+-LIBBPF_API LIBBPF_DEPRECATED("btf_ext__reloc_func_info was never meant as a public API and has wrong assumptions embedded in it; it will be removed in the future libbpf versions")
+-int btf_ext__reloc_func_info(const struct btf *btf,
+-			     const struct btf_ext *btf_ext,
+-			     const char *sec_name, __u32 insns_cnt,
+-			     void **func_info, __u32 *cnt);
+-LIBBPF_API LIBBPF_DEPRECATED("btf_ext__reloc_line_info was never meant as a public API and has wrong assumptions embedded in it; it will be removed in the future libbpf versions")
+-int btf_ext__reloc_line_info(const struct btf *btf,
+-			     const struct btf_ext *btf_ext,
+-			     const char *sec_name, __u32 insns_cnt,
+-			     void **line_info, __u32 *cnt);
+-LIBBPF_API __u32 btf_ext__func_info_rec_size(const struct btf_ext *btf_ext);
+-LIBBPF_API __u32 btf_ext__line_info_rec_size(const struct btf_ext *btf_ext);
+-
+-LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
+-
+-LIBBPF_API int btf__find_str(struct btf *btf, const char *s);
+-LIBBPF_API int btf__add_str(struct btf *btf, const char *s);
+-LIBBPF_API int btf__add_type(struct btf *btf, const struct btf *src_btf,
+-			     const struct btf_type *src_type);
+-
+-LIBBPF_API int btf__add_int(struct btf *btf, const char *name, size_t byte_sz, int encoding);
+-LIBBPF_API int btf__add_float(struct btf *btf, const char *name, size_t byte_sz);
+-LIBBPF_API int btf__add_ptr(struct btf *btf, int ref_type_id);
+-LIBBPF_API int btf__add_array(struct btf *btf,
+-			      int index_type_id, int elem_type_id, __u32 nr_elems);
+-/* struct/union construction APIs */
+-LIBBPF_API int btf__add_struct(struct btf *btf, const char *name, __u32 sz);
+-LIBBPF_API int btf__add_union(struct btf *btf, const char *name, __u32 sz);
+-LIBBPF_API int btf__add_field(struct btf *btf, const char *name, int field_type_id,
+-			      __u32 bit_offset, __u32 bit_size);
+-
+-/* enum construction APIs */
+-LIBBPF_API int btf__add_enum(struct btf *btf, const char *name, __u32 bytes_sz);
+-LIBBPF_API int btf__add_enum_value(struct btf *btf, const char *name, __s64 value);
+-
+-enum btf_fwd_kind {
+-	BTF_FWD_STRUCT = 0,
+-	BTF_FWD_UNION = 1,
+-	BTF_FWD_ENUM = 2,
+-};
+-
+-LIBBPF_API int btf__add_fwd(struct btf *btf, const char *name, enum btf_fwd_kind fwd_kind);
+-LIBBPF_API int btf__add_typedef(struct btf *btf, const char *name, int ref_type_id);
+-LIBBPF_API int btf__add_volatile(struct btf *btf, int ref_type_id);
+-LIBBPF_API int btf__add_const(struct btf *btf, int ref_type_id);
+-LIBBPF_API int btf__add_restrict(struct btf *btf, int ref_type_id);
+-
+-/* func and func_proto construction APIs */
+-LIBBPF_API int btf__add_func(struct btf *btf, const char *name,
+-			     enum btf_func_linkage linkage, int proto_type_id);
+-LIBBPF_API int btf__add_func_proto(struct btf *btf, int ret_type_id);
+-LIBBPF_API int btf__add_func_param(struct btf *btf, const char *name, int type_id);
+-
+-/* var & datasec construction APIs */
+-LIBBPF_API int btf__add_var(struct btf *btf, const char *name, int linkage, int type_id);
+-LIBBPF_API int btf__add_datasec(struct btf *btf, const char *name, __u32 byte_sz);
+-LIBBPF_API int btf__add_datasec_var_info(struct btf *btf, int var_type_id,
+-					 __u32 offset, __u32 byte_sz);
+-
+-struct btf_dedup_opts {
+-	unsigned int dedup_table_size;
+-	bool dont_resolve_fwds;
+-};
+-
+-LIBBPF_API int btf__dedup(struct btf *btf, struct btf_ext *btf_ext,
+-			  const struct btf_dedup_opts *opts);
+-
+-struct btf_dump;
+-
+-struct btf_dump_opts {
+-	void *ctx;
+-};
+-
+-typedef void (*btf_dump_printf_fn_t)(void *ctx, const char *fmt, va_list args);
+-
+-LIBBPF_API struct btf_dump *btf_dump__new(const struct btf *btf,
+-					  const struct btf_ext *btf_ext,
+-					  const struct btf_dump_opts *opts,
+-					  btf_dump_printf_fn_t printf_fn);
+-LIBBPF_API void btf_dump__free(struct btf_dump *d);
+-
+-LIBBPF_API int btf_dump__dump_type(struct btf_dump *d, __u32 id);
+-
+-struct btf_dump_emit_type_decl_opts {
+-	/* size of this struct, for forward/backward compatiblity */
+-	size_t sz;
+-	/* optional field name for type declaration, e.g.:
+-	 * - struct my_struct <FNAME>
+-	 * - void (*<FNAME>)(int)
+-	 * - char (*<FNAME>)[123]
+-	 */
+-	const char *field_name;
+-	/* extra indentation level (in number of tabs) to emit for multi-line
+-	 * type declarations (e.g., anonymous struct); applies for lines
+-	 * starting from the second one (first line is assumed to have
+-	 * necessary indentation already
+-	 */
+-	int indent_level;
+-	/* strip all the const/volatile/restrict mods */
+-	bool strip_mods;
+-	size_t :0;
+-};
+-#define btf_dump_emit_type_decl_opts__last_field strip_mods
+-
+-LIBBPF_API int
+-btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
+-			 const struct btf_dump_emit_type_decl_opts *opts);
+-
+-/*
+- * A set of helpers for easier BTF types handling
+- */
+-static inline __u16 btf_kind(const struct btf_type *t)
+-{
+-	return BTF_INFO_KIND(t->info);
+-}
+-
+-static inline __u16 btf_vlen(const struct btf_type *t)
+-{
+-	return BTF_INFO_VLEN(t->info);
+-}
+-
+-static inline bool btf_kflag(const struct btf_type *t)
+-{
+-	return BTF_INFO_KFLAG(t->info);
+-}
+-
+-static inline bool btf_is_void(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_UNKN;
+-}
+-
+-static inline bool btf_is_int(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_INT;
+-}
+-
+-static inline bool btf_is_ptr(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_PTR;
+-}
+-
+-static inline bool btf_is_array(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_ARRAY;
+-}
+-
+-static inline bool btf_is_struct(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_STRUCT;
+-}
+-
+-static inline bool btf_is_union(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_UNION;
+-}
+-
+-static inline bool btf_is_composite(const struct btf_type *t)
+-{
+-	__u16 kind = btf_kind(t);
+-
+-	return kind == BTF_KIND_STRUCT || kind == BTF_KIND_UNION;
+-}
+-
+-static inline bool btf_is_enum(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_ENUM;
+-}
+-
+-static inline bool btf_is_fwd(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_FWD;
+-}
+-
+-static inline bool btf_is_typedef(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_TYPEDEF;
+-}
+-
+-static inline bool btf_is_volatile(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_VOLATILE;
+-}
+-
+-static inline bool btf_is_const(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_CONST;
+-}
+-
+-static inline bool btf_is_restrict(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_RESTRICT;
+-}
+-
+-static inline bool btf_is_mod(const struct btf_type *t)
+-{
+-	__u16 kind = btf_kind(t);
+-
+-	return kind == BTF_KIND_VOLATILE ||
+-	       kind == BTF_KIND_CONST ||
+-	       kind == BTF_KIND_RESTRICT;
+-}
+-
+-static inline bool btf_is_func(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_FUNC;
+-}
+-
+-static inline bool btf_is_func_proto(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_FUNC_PROTO;
+-}
+-
+-static inline bool btf_is_var(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_VAR;
+-}
+-
+-static inline bool btf_is_datasec(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_DATASEC;
+-}
+-
+-static inline bool btf_is_float(const struct btf_type *t)
+-{
+-	return btf_kind(t) == BTF_KIND_FLOAT;
+-}
+-
+-static inline __u8 btf_int_encoding(const struct btf_type *t)
+-{
+-	return BTF_INT_ENCODING(*(__u32 *)(t + 1));
+-}
+-
+-static inline __u8 btf_int_offset(const struct btf_type *t)
+-{
+-	return BTF_INT_OFFSET(*(__u32 *)(t + 1));
+-}
+-
+-static inline __u8 btf_int_bits(const struct btf_type *t)
+-{
+-	return BTF_INT_BITS(*(__u32 *)(t + 1));
+-}
+-
+-static inline struct btf_array *btf_array(const struct btf_type *t)
+-{
+-	return (struct btf_array *)(t + 1);
+-}
+-
+-static inline struct btf_enum *btf_enum(const struct btf_type *t)
+-{
+-	return (struct btf_enum *)(t + 1);
+-}
+-
+-static inline struct btf_member *btf_members(const struct btf_type *t)
+-{
+-	return (struct btf_member *)(t + 1);
+-}
+-
+-/* Get bit offset of a member with specified index. */
+-static inline __u32 btf_member_bit_offset(const struct btf_type *t,
+-					  __u32 member_idx)
+-{
+-	const struct btf_member *m = btf_members(t) + member_idx;
+-	bool kflag = btf_kflag(t);
+-
+-	return kflag ? BTF_MEMBER_BIT_OFFSET(m->offset) : m->offset;
+-}
+-/*
+- * Get bitfield size of a member, assuming t is BTF_KIND_STRUCT or
+- * BTF_KIND_UNION. If member is not a bitfield, zero is returned.
+- */
+-static inline __u32 btf_member_bitfield_size(const struct btf_type *t,
+-					     __u32 member_idx)
+-{
+-	const struct btf_member *m = btf_members(t) + member_idx;
+-	bool kflag = btf_kflag(t);
+-
+-	return kflag ? BTF_MEMBER_BITFIELD_SIZE(m->offset) : 0;
+-}
+-
+-static inline struct btf_param *btf_params(const struct btf_type *t)
+-{
+-	return (struct btf_param *)(t + 1);
+-}
+-
+-static inline struct btf_var *btf_var(const struct btf_type *t)
+-{
+-	return (struct btf_var *)(t + 1);
+-}
+-
+-static inline struct btf_var_secinfo *
+-btf_var_secinfos(const struct btf_type *t)
+-{
+-	return (struct btf_var_secinfo *)(t + 1);
+-}
+-
+-#ifdef __cplusplus
+-} /* extern "C" */
+-#endif
+-
+-#endif /* __LIBBPF_BTF_H */
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+deleted file mode 100644
+index 5dc6b5172bb3..000000000000
+--- a/tools/lib/bpf/btf_dump.c
++++ /dev/null
+@@ -1,1444 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * BTF-to-C type converter.
+- *
+- * Copyright (c) 2019 Facebook
+- */
+-
+-#include <stdbool.h>
+-#include <stddef.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <errno.h>
+-#include <linux/err.h>
+-#include <linux/btf.h>
+-#include <linux/kernel.h>
+-#include "btf.h"
+-#include "hashmap.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-
+-static const char PREFIXES[] = "\t\t\t\t\t\t\t\t\t\t\t\t\t";
+-static const size_t PREFIX_CNT = sizeof(PREFIXES) - 1;
+-
+-static const char *pfx(int lvl)
+-{
+-	return lvl >= PREFIX_CNT ? PREFIXES : &PREFIXES[PREFIX_CNT - lvl];
+-}
+-
+-enum btf_dump_type_order_state {
+-	NOT_ORDERED,
+-	ORDERING,
+-	ORDERED,
+-};
+-
+-enum btf_dump_type_emit_state {
+-	NOT_EMITTED,
+-	EMITTING,
+-	EMITTED,
+-};
+-
+-/* per-type auxiliary state */
+-struct btf_dump_type_aux_state {
+-	/* topological sorting state */
+-	enum btf_dump_type_order_state order_state: 2;
+-	/* emitting state used to determine the need for forward declaration */
+-	enum btf_dump_type_emit_state emit_state: 2;
+-	/* whether forward declaration was already emitted */
+-	__u8 fwd_emitted: 1;
+-	/* whether unique non-duplicate name was already assigned */
+-	__u8 name_resolved: 1;
+-	/* whether type is referenced from any other type */
+-	__u8 referenced: 1;
+-};
+-
+-struct btf_dump {
+-	const struct btf *btf;
+-	const struct btf_ext *btf_ext;
+-	btf_dump_printf_fn_t printf_fn;
+-	struct btf_dump_opts opts;
+-	int ptr_sz;
+-	bool strip_mods;
+-	int last_id;
+-
+-	/* per-type auxiliary state */
+-	struct btf_dump_type_aux_state *type_states;
+-	size_t type_states_cap;
+-	/* per-type optional cached unique name, must be freed, if present */
+-	const char **cached_names;
+-	size_t cached_names_cap;
+-
+-	/* topo-sorted list of dependent type definitions */
+-	__u32 *emit_queue;
+-	int emit_queue_cap;
+-	int emit_queue_cnt;
+-
+-	/*
+-	 * stack of type declarations (e.g., chain of modifiers, arrays,
+-	 * funcs, etc)
+-	 */
+-	__u32 *decl_stack;
+-	int decl_stack_cap;
+-	int decl_stack_cnt;
+-
+-	/* maps struct/union/enum name to a number of name occurrences */
+-	struct hashmap *type_names;
+-	/*
+-	 * maps typedef identifiers and enum value names to a number of such
+-	 * name occurrences
+-	 */
+-	struct hashmap *ident_names;
+-};
+-
+-static size_t str_hash_fn(const void *key, void *ctx)
+-{
+-	return str_hash(key);
+-}
+-
+-static bool str_equal_fn(const void *a, const void *b, void *ctx)
+-{
+-	return strcmp(a, b) == 0;
+-}
+-
+-static const char *btf_name_of(const struct btf_dump *d, __u32 name_off)
+-{
+-	return btf__name_by_offset(d->btf, name_off);
+-}
+-
+-static void btf_dump_printf(const struct btf_dump *d, const char *fmt, ...)
+-{
+-	va_list args;
+-
+-	va_start(args, fmt);
+-	d->printf_fn(d->opts.ctx, fmt, args);
+-	va_end(args);
+-}
+-
+-static int btf_dump_mark_referenced(struct btf_dump *d);
+-static int btf_dump_resize(struct btf_dump *d);
+-
+-struct btf_dump *btf_dump__new(const struct btf *btf,
+-			       const struct btf_ext *btf_ext,
+-			       const struct btf_dump_opts *opts,
+-			       btf_dump_printf_fn_t printf_fn)
+-{
+-	struct btf_dump *d;
+-	int err;
+-
+-	d = calloc(1, sizeof(struct btf_dump));
+-	if (!d)
+-		return libbpf_err_ptr(-ENOMEM);
+-
+-	d->btf = btf;
+-	d->btf_ext = btf_ext;
+-	d->printf_fn = printf_fn;
+-	d->opts.ctx = opts ? opts->ctx : NULL;
+-	d->ptr_sz = btf__pointer_size(btf) ? : sizeof(void *);
+-
+-	d->type_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
+-	if (IS_ERR(d->type_names)) {
+-		err = PTR_ERR(d->type_names);
+-		d->type_names = NULL;
+-		goto err;
+-	}
+-	d->ident_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
+-	if (IS_ERR(d->ident_names)) {
+-		err = PTR_ERR(d->ident_names);
+-		d->ident_names = NULL;
+-		goto err;
+-	}
+-
+-	err = btf_dump_resize(d);
+-	if (err)
+-		goto err;
+-
+-	return d;
+-err:
+-	btf_dump__free(d);
+-	return libbpf_err_ptr(err);
+-}
+-
+-static int btf_dump_resize(struct btf_dump *d)
+-{
+-	int err, last_id = btf__get_nr_types(d->btf);
+-
+-	if (last_id <= d->last_id)
+-		return 0;
+-
+-	if (libbpf_ensure_mem((void **)&d->type_states, &d->type_states_cap,
+-			      sizeof(*d->type_states), last_id + 1))
+-		return -ENOMEM;
+-	if (libbpf_ensure_mem((void **)&d->cached_names, &d->cached_names_cap,
+-			      sizeof(*d->cached_names), last_id + 1))
+-		return -ENOMEM;
+-
+-	if (d->last_id == 0) {
+-		/* VOID is special */
+-		d->type_states[0].order_state = ORDERED;
+-		d->type_states[0].emit_state = EMITTED;
+-	}
+-
+-	/* eagerly determine referenced types for anon enums */
+-	err = btf_dump_mark_referenced(d);
+-	if (err)
+-		return err;
+-
+-	d->last_id = last_id;
+-	return 0;
+-}
+-
+-void btf_dump__free(struct btf_dump *d)
+-{
+-	int i;
+-
+-	if (IS_ERR_OR_NULL(d))
+-		return;
+-
+-	free(d->type_states);
+-	if (d->cached_names) {
+-		/* any set cached name is owned by us and should be freed */
+-		for (i = 0; i <= d->last_id; i++) {
+-			if (d->cached_names[i])
+-				free((void *)d->cached_names[i]);
+-		}
+-	}
+-	free(d->cached_names);
+-	free(d->emit_queue);
+-	free(d->decl_stack);
+-	hashmap__free(d->type_names);
+-	hashmap__free(d->ident_names);
+-
+-	free(d);
+-}
+-
+-static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr);
+-static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id);
+-
+-/*
+- * Dump BTF type in a compilable C syntax, including all the necessary
+- * dependent types, necessary for compilation. If some of the dependent types
+- * were already emitted as part of previous btf_dump__dump_type() invocation
+- * for another type, they won't be emitted again. This API allows callers to
+- * filter out BTF types according to user-defined criterias and emitted only
+- * minimal subset of types, necessary to compile everything. Full struct/union
+- * definitions will still be emitted, even if the only usage is through
+- * pointer and could be satisfied with just a forward declaration.
+- *
+- * Dumping is done in two high-level passes:
+- *   1. Topologically sort type definitions to satisfy C rules of compilation.
+- *   2. Emit type definitions in C syntax.
+- *
+- * Returns 0 on success; <0, otherwise.
+- */
+-int btf_dump__dump_type(struct btf_dump *d, __u32 id)
+-{
+-	int err, i;
+-
+-	if (id > btf__get_nr_types(d->btf))
+-		return libbpf_err(-EINVAL);
+-
+-	err = btf_dump_resize(d);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	d->emit_queue_cnt = 0;
+-	err = btf_dump_order_type(d, id, false);
+-	if (err < 0)
+-		return libbpf_err(err);
+-
+-	for (i = 0; i < d->emit_queue_cnt; i++)
+-		btf_dump_emit_type(d, d->emit_queue[i], 0 /*top-level*/);
+-
+-	return 0;
+-}
+-
+-/*
+- * Mark all types that are referenced from any other type. This is used to
+- * determine top-level anonymous enums that need to be emitted as an
+- * independent type declarations.
+- * Anonymous enums come in two flavors: either embedded in a struct's field
+- * definition, in which case they have to be declared inline as part of field
+- * type declaration; or as a top-level anonymous enum, typically used for
+- * declaring global constants. It's impossible to distinguish between two
+- * without knowning whether given enum type was referenced from other type:
+- * top-level anonymous enum won't be referenced by anything, while embedded
+- * one will.
+- */
+-static int btf_dump_mark_referenced(struct btf_dump *d)
+-{
+-	int i, j, n = btf__get_nr_types(d->btf);
+-	const struct btf_type *t;
+-	__u16 vlen;
+-
+-	for (i = d->last_id + 1; i <= n; i++) {
+-		t = btf__type_by_id(d->btf, i);
+-		vlen = btf_vlen(t);
+-
+-		switch (btf_kind(t)) {
+-		case BTF_KIND_INT:
+-		case BTF_KIND_ENUM:
+-		case BTF_KIND_FWD:
+-		case BTF_KIND_FLOAT:
+-			break;
+-
+-		case BTF_KIND_VOLATILE:
+-		case BTF_KIND_CONST:
+-		case BTF_KIND_RESTRICT:
+-		case BTF_KIND_PTR:
+-		case BTF_KIND_TYPEDEF:
+-		case BTF_KIND_FUNC:
+-		case BTF_KIND_VAR:
+-			d->type_states[t->type].referenced = 1;
+-			break;
+-
+-		case BTF_KIND_ARRAY: {
+-			const struct btf_array *a = btf_array(t);
+-
+-			d->type_states[a->index_type].referenced = 1;
+-			d->type_states[a->type].referenced = 1;
+-			break;
+-		}
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION: {
+-			const struct btf_member *m = btf_members(t);
+-
+-			for (j = 0; j < vlen; j++, m++)
+-				d->type_states[m->type].referenced = 1;
+-			break;
+-		}
+-		case BTF_KIND_FUNC_PROTO: {
+-			const struct btf_param *p = btf_params(t);
+-
+-			for (j = 0; j < vlen; j++, p++)
+-				d->type_states[p->type].referenced = 1;
+-			break;
+-		}
+-		case BTF_KIND_DATASEC: {
+-			const struct btf_var_secinfo *v = btf_var_secinfos(t);
+-
+-			for (j = 0; j < vlen; j++, v++)
+-				d->type_states[v->type].referenced = 1;
+-			break;
+-		}
+-		default:
+-			return -EINVAL;
+-		}
+-	}
+-	return 0;
+-}
+-
+-static int btf_dump_add_emit_queue_id(struct btf_dump *d, __u32 id)
+-{
+-	__u32 *new_queue;
+-	size_t new_cap;
+-
+-	if (d->emit_queue_cnt >= d->emit_queue_cap) {
+-		new_cap = max(16, d->emit_queue_cap * 3 / 2);
+-		new_queue = libbpf_reallocarray(d->emit_queue, new_cap, sizeof(new_queue[0]));
+-		if (!new_queue)
+-			return -ENOMEM;
+-		d->emit_queue = new_queue;
+-		d->emit_queue_cap = new_cap;
+-	}
+-
+-	d->emit_queue[d->emit_queue_cnt++] = id;
+-	return 0;
+-}
+-
+-/*
+- * Determine order of emitting dependent types and specified type to satisfy
+- * C compilation rules.  This is done through topological sorting with an
+- * additional complication which comes from C rules. The main idea for C is
+- * that if some type is "embedded" into a struct/union, it's size needs to be
+- * known at the time of definition of containing type. E.g., for:
+- *
+- *	struct A {};
+- *	struct B { struct A x; }
+- *
+- * struct A *HAS* to be defined before struct B, because it's "embedded",
+- * i.e., it is part of struct B layout. But in the following case:
+- *
+- *	struct A;
+- *	struct B { struct A *x; }
+- *	struct A {};
+- *
+- * it's enough to just have a forward declaration of struct A at the time of
+- * struct B definition, as struct B has a pointer to struct A, so the size of
+- * field x is known without knowing struct A size: it's sizeof(void *).
+- *
+- * Unfortunately, there are some trickier cases we need to handle, e.g.:
+- *
+- *	struct A {}; // if this was forward-declaration: compilation error
+- *	struct B {
+- *		struct { // anonymous struct
+- *			struct A y;
+- *		} *x;
+- *	};
+- *
+- * In this case, struct B's field x is a pointer, so it's size is known
+- * regardless of the size of (anonymous) struct it points to. But because this
+- * struct is anonymous and thus defined inline inside struct B, *and* it
+- * embeds struct A, compiler requires full definition of struct A to be known
+- * before struct B can be defined. This creates a transitive dependency
+- * between struct A and struct B. If struct A was forward-declared before
+- * struct B definition and fully defined after struct B definition, that would
+- * trigger compilation error.
+- *
+- * All this means that while we are doing topological sorting on BTF type
+- * graph, we need to determine relationships between different types (graph
+- * nodes):
+- *   - weak link (relationship) between X and Y, if Y *CAN* be
+- *   forward-declared at the point of X definition;
+- *   - strong link, if Y *HAS* to be fully-defined before X can be defined.
+- *
+- * The rule is as follows. Given a chain of BTF types from X to Y, if there is
+- * BTF_KIND_PTR type in the chain and at least one non-anonymous type
+- * Z (excluding X, including Y), then link is weak. Otherwise, it's strong.
+- * Weak/strong relationship is determined recursively during DFS traversal and
+- * is returned as a result from btf_dump_order_type().
+- *
+- * btf_dump_order_type() is trying to avoid unnecessary forward declarations,
+- * but it is not guaranteeing that no extraneous forward declarations will be
+- * emitted.
+- *
+- * To avoid extra work, algorithm marks some of BTF types as ORDERED, when
+- * it's done with them, but not for all (e.g., VOLATILE, CONST, RESTRICT,
+- * ARRAY, FUNC_PROTO), as weak/strong semantics for those depends on the
+- * entire graph path, so depending where from one came to that BTF type, it
+- * might cause weak or strong ordering. For types like STRUCT/UNION/INT/ENUM,
+- * once they are processed, there is no need to do it again, so they are
+- * marked as ORDERED. We can mark PTR as ORDERED as well, as it semi-forces
+- * weak link, unless subsequent referenced STRUCT/UNION/ENUM is anonymous. But
+- * in any case, once those are processed, no need to do it again, as the
+- * result won't change.
+- *
+- * Returns:
+- *   - 1, if type is part of strong link (so there is strong topological
+- *   ordering requirements);
+- *   - 0, if type is part of weak link (so can be satisfied through forward
+- *   declaration);
+- *   - <0, on error (e.g., unsatisfiable type loop detected).
+- */
+-static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr)
+-{
+-	/*
+-	 * Order state is used to detect strong link cycles, but only for BTF
+-	 * kinds that are or could be an independent definition (i.e.,
+-	 * stand-alone fwd decl, enum, typedef, struct, union). Ptrs, arrays,
+-	 * func_protos, modifiers are just means to get to these definitions.
+-	 * Int/void don't need definitions, they are assumed to be always
+-	 * properly defined.  We also ignore datasec, var, and funcs for now.
+-	 * So for all non-defining kinds, we never even set ordering state,
+-	 * for defining kinds we set ORDERING and subsequently ORDERED if it
+-	 * forms a strong link.
+-	 */
+-	struct btf_dump_type_aux_state *tstate = &d->type_states[id];
+-	const struct btf_type *t;
+-	__u16 vlen;
+-	int err, i;
+-
+-	/* return true, letting typedefs know that it's ok to be emitted */
+-	if (tstate->order_state == ORDERED)
+-		return 1;
+-
+-	t = btf__type_by_id(d->btf, id);
+-
+-	if (tstate->order_state == ORDERING) {
+-		/* type loop, but resolvable through fwd declaration */
+-		if (btf_is_composite(t) && through_ptr && t->name_off != 0)
+-			return 0;
+-		pr_warn("unsatisfiable type cycle, id:[%u]\n", id);
+-		return -ELOOP;
+-	}
+-
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_INT:
+-	case BTF_KIND_FLOAT:
+-		tstate->order_state = ORDERED;
+-		return 0;
+-
+-	case BTF_KIND_PTR:
+-		err = btf_dump_order_type(d, t->type, true);
+-		tstate->order_state = ORDERED;
+-		return err;
+-
+-	case BTF_KIND_ARRAY:
+-		return btf_dump_order_type(d, btf_array(t)->type, false);
+-
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		const struct btf_member *m = btf_members(t);
+-		/*
+-		 * struct/union is part of strong link, only if it's embedded
+-		 * (so no ptr in a path) or it's anonymous (so has to be
+-		 * defined inline, even if declared through ptr)
+-		 */
+-		if (through_ptr && t->name_off != 0)
+-			return 0;
+-
+-		tstate->order_state = ORDERING;
+-
+-		vlen = btf_vlen(t);
+-		for (i = 0; i < vlen; i++, m++) {
+-			err = btf_dump_order_type(d, m->type, false);
+-			if (err < 0)
+-				return err;
+-		}
+-
+-		if (t->name_off != 0) {
+-			err = btf_dump_add_emit_queue_id(d, id);
+-			if (err < 0)
+-				return err;
+-		}
+-
+-		tstate->order_state = ORDERED;
+-		return 1;
+-	}
+-	case BTF_KIND_ENUM:
+-	case BTF_KIND_FWD:
+-		/*
+-		 * non-anonymous or non-referenced enums are top-level
+-		 * declarations and should be emitted. Same logic can be
+-		 * applied to FWDs, it won't hurt anyways.
+-		 */
+-		if (t->name_off != 0 || !tstate->referenced) {
+-			err = btf_dump_add_emit_queue_id(d, id);
+-			if (err)
+-				return err;
+-		}
+-		tstate->order_state = ORDERED;
+-		return 1;
+-
+-	case BTF_KIND_TYPEDEF: {
+-		int is_strong;
+-
+-		is_strong = btf_dump_order_type(d, t->type, through_ptr);
+-		if (is_strong < 0)
+-			return is_strong;
+-
+-		/* typedef is similar to struct/union w.r.t. fwd-decls */
+-		if (through_ptr && !is_strong)
+-			return 0;
+-
+-		/* typedef is always a named definition */
+-		err = btf_dump_add_emit_queue_id(d, id);
+-		if (err)
+-			return err;
+-
+-		d->type_states[id].order_state = ORDERED;
+-		return 1;
+-	}
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_RESTRICT:
+-		return btf_dump_order_type(d, t->type, through_ptr);
+-
+-	case BTF_KIND_FUNC_PROTO: {
+-		const struct btf_param *p = btf_params(t);
+-		bool is_strong;
+-
+-		err = btf_dump_order_type(d, t->type, through_ptr);
+-		if (err < 0)
+-			return err;
+-		is_strong = err > 0;
+-
+-		vlen = btf_vlen(t);
+-		for (i = 0; i < vlen; i++, p++) {
+-			err = btf_dump_order_type(d, p->type, through_ptr);
+-			if (err < 0)
+-				return err;
+-			if (err > 0)
+-				is_strong = true;
+-		}
+-		return is_strong;
+-	}
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_VAR:
+-	case BTF_KIND_DATASEC:
+-		d->type_states[id].order_state = ORDERED;
+-		return 0;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+-static void btf_dump_emit_missing_aliases(struct btf_dump *d, __u32 id,
+-					  const struct btf_type *t);
+-
+-static void btf_dump_emit_struct_fwd(struct btf_dump *d, __u32 id,
+-				     const struct btf_type *t);
+-static void btf_dump_emit_struct_def(struct btf_dump *d, __u32 id,
+-				     const struct btf_type *t, int lvl);
+-
+-static void btf_dump_emit_enum_fwd(struct btf_dump *d, __u32 id,
+-				   const struct btf_type *t);
+-static void btf_dump_emit_enum_def(struct btf_dump *d, __u32 id,
+-				   const struct btf_type *t, int lvl);
+-
+-static void btf_dump_emit_fwd_def(struct btf_dump *d, __u32 id,
+-				  const struct btf_type *t);
+-
+-static void btf_dump_emit_typedef_def(struct btf_dump *d, __u32 id,
+-				      const struct btf_type *t, int lvl);
+-
+-/* a local view into a shared stack */
+-struct id_stack {
+-	const __u32 *ids;
+-	int cnt;
+-};
+-
+-static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
+-				    const char *fname, int lvl);
+-static void btf_dump_emit_type_chain(struct btf_dump *d,
+-				     struct id_stack *decl_stack,
+-				     const char *fname, int lvl);
+-
+-static const char *btf_dump_type_name(struct btf_dump *d, __u32 id);
+-static const char *btf_dump_ident_name(struct btf_dump *d, __u32 id);
+-static size_t btf_dump_name_dups(struct btf_dump *d, struct hashmap *name_map,
+-				 const char *orig_name);
+-
+-static bool btf_dump_is_blacklisted(struct btf_dump *d, __u32 id)
+-{
+-	const struct btf_type *t = btf__type_by_id(d->btf, id);
+-
+-	/* __builtin_va_list is a compiler built-in, which causes compilation
+-	 * errors, when compiling w/ different compiler, then used to compile
+-	 * original code (e.g., GCC to compile kernel, Clang to use generated
+-	 * C header from BTF). As it is built-in, it should be already defined
+-	 * properly internally in compiler.
+-	 */
+-	if (t->name_off == 0)
+-		return false;
+-	return strcmp(btf_name_of(d, t->name_off), "__builtin_va_list") == 0;
+-}
+-
+-/*
+- * Emit C-syntax definitions of types from chains of BTF types.
+- *
+- * High-level handling of determining necessary forward declarations are handled
+- * by btf_dump_emit_type() itself, but all nitty-gritty details of emitting type
+- * declarations/definitions in C syntax  are handled by a combo of
+- * btf_dump_emit_type_decl()/btf_dump_emit_type_chain() w/ delegation to
+- * corresponding btf_dump_emit_*_{def,fwd}() functions.
+- *
+- * We also keep track of "containing struct/union type ID" to determine when
+- * we reference it from inside and thus can avoid emitting unnecessary forward
+- * declaration.
+- *
+- * This algorithm is designed in such a way, that even if some error occurs
+- * (either technical, e.g., out of memory, or logical, i.e., malformed BTF
+- * that doesn't comply to C rules completely), algorithm will try to proceed
+- * and produce as much meaningful output as possible.
+- */
+-static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id)
+-{
+-	struct btf_dump_type_aux_state *tstate = &d->type_states[id];
+-	bool top_level_def = cont_id == 0;
+-	const struct btf_type *t;
+-	__u16 kind;
+-
+-	if (tstate->emit_state == EMITTED)
+-		return;
+-
+-	t = btf__type_by_id(d->btf, id);
+-	kind = btf_kind(t);
+-
+-	if (tstate->emit_state == EMITTING) {
+-		if (tstate->fwd_emitted)
+-			return;
+-
+-		switch (kind) {
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION:
+-			/*
+-			 * if we are referencing a struct/union that we are
+-			 * part of - then no need for fwd declaration
+-			 */
+-			if (id == cont_id)
+-				return;
+-			if (t->name_off == 0) {
+-				pr_warn("anonymous struct/union loop, id:[%u]\n",
+-					id);
+-				return;
+-			}
+-			btf_dump_emit_struct_fwd(d, id, t);
+-			btf_dump_printf(d, ";\n\n");
+-			tstate->fwd_emitted = 1;
+-			break;
+-		case BTF_KIND_TYPEDEF:
+-			/*
+-			 * for typedef fwd_emitted means typedef definition
+-			 * was emitted, but it can be used only for "weak"
+-			 * references through pointer only, not for embedding
+-			 */
+-			if (!btf_dump_is_blacklisted(d, id)) {
+-				btf_dump_emit_typedef_def(d, id, t, 0);
+-				btf_dump_printf(d, ";\n\n");
+-			}
+-			tstate->fwd_emitted = 1;
+-			break;
+-		default:
+-			break;
+-		}
+-
+-		return;
+-	}
+-
+-	switch (kind) {
+-	case BTF_KIND_INT:
+-		/* Emit type alias definitions if necessary */
+-		btf_dump_emit_missing_aliases(d, id, t);
+-
+-		tstate->emit_state = EMITTED;
+-		break;
+-	case BTF_KIND_ENUM:
+-		if (top_level_def) {
+-			btf_dump_emit_enum_def(d, id, t, 0);
+-			btf_dump_printf(d, ";\n\n");
+-		}
+-		tstate->emit_state = EMITTED;
+-		break;
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_RESTRICT:
+-		btf_dump_emit_type(d, t->type, cont_id);
+-		break;
+-	case BTF_KIND_ARRAY:
+-		btf_dump_emit_type(d, btf_array(t)->type, cont_id);
+-		break;
+-	case BTF_KIND_FWD:
+-		btf_dump_emit_fwd_def(d, id, t);
+-		btf_dump_printf(d, ";\n\n");
+-		tstate->emit_state = EMITTED;
+-		break;
+-	case BTF_KIND_TYPEDEF:
+-		tstate->emit_state = EMITTING;
+-		btf_dump_emit_type(d, t->type, id);
+-		/*
+-		 * typedef can server as both definition and forward
+-		 * declaration; at this stage someone depends on
+-		 * typedef as a forward declaration (refers to it
+-		 * through pointer), so unless we already did it,
+-		 * emit typedef as a forward declaration
+-		 */
+-		if (!tstate->fwd_emitted && !btf_dump_is_blacklisted(d, id)) {
+-			btf_dump_emit_typedef_def(d, id, t, 0);
+-			btf_dump_printf(d, ";\n\n");
+-		}
+-		tstate->emit_state = EMITTED;
+-		break;
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-		tstate->emit_state = EMITTING;
+-		/* if it's a top-level struct/union definition or struct/union
+-		 * is anonymous, then in C we'll be emitting all fields and
+-		 * their types (as opposed to just `struct X`), so we need to
+-		 * make sure that all types, referenced from struct/union
+-		 * members have necessary forward-declarations, where
+-		 * applicable
+-		 */
+-		if (top_level_def || t->name_off == 0) {
+-			const struct btf_member *m = btf_members(t);
+-			__u16 vlen = btf_vlen(t);
+-			int i, new_cont_id;
+-
+-			new_cont_id = t->name_off == 0 ? cont_id : id;
+-			for (i = 0; i < vlen; i++, m++)
+-				btf_dump_emit_type(d, m->type, new_cont_id);
+-		} else if (!tstate->fwd_emitted && id != cont_id) {
+-			btf_dump_emit_struct_fwd(d, id, t);
+-			btf_dump_printf(d, ";\n\n");
+-			tstate->fwd_emitted = 1;
+-		}
+-
+-		if (top_level_def) {
+-			btf_dump_emit_struct_def(d, id, t, 0);
+-			btf_dump_printf(d, ";\n\n");
+-			tstate->emit_state = EMITTED;
+-		} else {
+-			tstate->emit_state = NOT_EMITTED;
+-		}
+-		break;
+-	case BTF_KIND_FUNC_PROTO: {
+-		const struct btf_param *p = btf_params(t);
+-		__u16 vlen = btf_vlen(t);
+-		int i;
+-
+-		btf_dump_emit_type(d, t->type, cont_id);
+-		for (i = 0; i < vlen; i++, p++)
+-			btf_dump_emit_type(d, p->type, cont_id);
+-
+-		break;
+-	}
+-	default:
+-		break;
+-	}
+-}
+-
+-static bool btf_is_struct_packed(const struct btf *btf, __u32 id,
+-				 const struct btf_type *t)
+-{
+-	const struct btf_member *m;
+-	int align, i, bit_sz;
+-	__u16 vlen;
+-
+-	align = btf__align_of(btf, id);
+-	/* size of a non-packed struct has to be a multiple of its alignment*/
+-	if (align && t->size % align)
+-		return true;
+-
+-	m = btf_members(t);
+-	vlen = btf_vlen(t);
+-	/* all non-bitfield fields have to be naturally aligned */
+-	for (i = 0; i < vlen; i++, m++) {
+-		align = btf__align_of(btf, m->type);
+-		bit_sz = btf_member_bitfield_size(t, i);
+-		if (align && bit_sz == 0 && m->offset % (8 * align) != 0)
+-			return true;
+-	}
+-
+-	/*
+-	 * if original struct was marked as packed, but its layout is
+-	 * naturally aligned, we'll detect that it's not packed
+-	 */
+-	return false;
+-}
+-
+-static int chip_away_bits(int total, int at_most)
+-{
+-	return total % at_most ? : at_most;
+-}
+-
+-static void btf_dump_emit_bit_padding(const struct btf_dump *d,
+-				      int cur_off, int m_off, int m_bit_sz,
+-				      int align, int lvl)
+-{
+-	int off_diff = m_off - cur_off;
+-	int ptr_bits = d->ptr_sz * 8;
+-
+-	if (off_diff <= 0)
+-		/* no gap */
+-		return;
+-	if (m_bit_sz == 0 && off_diff < align * 8)
+-		/* natural padding will take care of a gap */
+-		return;
+-
+-	while (off_diff > 0) {
+-		const char *pad_type;
+-		int pad_bits;
+-
+-		if (ptr_bits > 32 && off_diff > 32) {
+-			pad_type = "long";
+-			pad_bits = chip_away_bits(off_diff, ptr_bits);
+-		} else if (off_diff > 16) {
+-			pad_type = "int";
+-			pad_bits = chip_away_bits(off_diff, 32);
+-		} else if (off_diff > 8) {
+-			pad_type = "short";
+-			pad_bits = chip_away_bits(off_diff, 16);
+-		} else {
+-			pad_type = "char";
+-			pad_bits = chip_away_bits(off_diff, 8);
+-		}
+-		btf_dump_printf(d, "\n%s%s: %d;", pfx(lvl), pad_type, pad_bits);
+-		off_diff -= pad_bits;
+-	}
+-}
+-
+-static void btf_dump_emit_struct_fwd(struct btf_dump *d, __u32 id,
+-				     const struct btf_type *t)
+-{
+-	btf_dump_printf(d, "%s %s",
+-			btf_is_struct(t) ? "struct" : "union",
+-			btf_dump_type_name(d, id));
+-}
+-
+-static void btf_dump_emit_struct_def(struct btf_dump *d,
+-				     __u32 id,
+-				     const struct btf_type *t,
+-				     int lvl)
+-{
+-	const struct btf_member *m = btf_members(t);
+-	bool is_struct = btf_is_struct(t);
+-	int align, i, packed, off = 0;
+-	__u16 vlen = btf_vlen(t);
+-
+-	packed = is_struct ? btf_is_struct_packed(d->btf, id, t) : 0;
+-
+-	btf_dump_printf(d, "%s%s%s {",
+-			is_struct ? "struct" : "union",
+-			t->name_off ? " " : "",
+-			btf_dump_type_name(d, id));
+-
+-	for (i = 0; i < vlen; i++, m++) {
+-		const char *fname;
+-		int m_off, m_sz;
+-
+-		fname = btf_name_of(d, m->name_off);
+-		m_sz = btf_member_bitfield_size(t, i);
+-		m_off = btf_member_bit_offset(t, i);
+-		align = packed ? 1 : btf__align_of(d->btf, m->type);
+-
+-		btf_dump_emit_bit_padding(d, off, m_off, m_sz, align, lvl + 1);
+-		btf_dump_printf(d, "\n%s", pfx(lvl + 1));
+-		btf_dump_emit_type_decl(d, m->type, fname, lvl + 1);
+-
+-		if (m_sz) {
+-			btf_dump_printf(d, ": %d", m_sz);
+-			off = m_off + m_sz;
+-		} else {
+-			m_sz = max((__s64)0, btf__resolve_size(d->btf, m->type));
+-			off = m_off + m_sz * 8;
+-		}
+-		btf_dump_printf(d, ";");
+-	}
+-
+-	/* pad at the end, if necessary */
+-	if (is_struct) {
+-		align = packed ? 1 : btf__align_of(d->btf, id);
+-		btf_dump_emit_bit_padding(d, off, t->size * 8, 0, align,
+-					  lvl + 1);
+-	}
+-
+-	if (vlen)
+-		btf_dump_printf(d, "\n");
+-	btf_dump_printf(d, "%s}", pfx(lvl));
+-	if (packed)
+-		btf_dump_printf(d, " __attribute__((packed))");
+-}
+-
+-static const char *missing_base_types[][2] = {
+-	/*
+-	 * GCC emits typedefs to its internal __PolyX_t types when compiling Arm
+-	 * SIMD intrinsics. Alias them to standard base types.
+-	 */
+-	{ "__Poly8_t",		"unsigned char" },
+-	{ "__Poly16_t",		"unsigned short" },
+-	{ "__Poly64_t",		"unsigned long long" },
+-	{ "__Poly128_t",	"unsigned __int128" },
+-};
+-
+-static void btf_dump_emit_missing_aliases(struct btf_dump *d, __u32 id,
+-					  const struct btf_type *t)
+-{
+-	const char *name = btf_dump_type_name(d, id);
+-	int i;
+-
+-	for (i = 0; i < ARRAY_SIZE(missing_base_types); i++) {
+-		if (strcmp(name, missing_base_types[i][0]) == 0) {
+-			btf_dump_printf(d, "typedef %s %s;\n\n",
+-					missing_base_types[i][1], name);
+-			break;
+-		}
+-	}
+-}
+-
+-static void btf_dump_emit_enum_fwd(struct btf_dump *d, __u32 id,
+-				   const struct btf_type *t)
+-{
+-	btf_dump_printf(d, "enum %s", btf_dump_type_name(d, id));
+-}
+-
+-static void btf_dump_emit_enum_def(struct btf_dump *d, __u32 id,
+-				   const struct btf_type *t,
+-				   int lvl)
+-{
+-	const struct btf_enum *v = btf_enum(t);
+-	__u16 vlen = btf_vlen(t);
+-	const char *name;
+-	size_t dup_cnt;
+-	int i;
+-
+-	btf_dump_printf(d, "enum%s%s",
+-			t->name_off ? " " : "",
+-			btf_dump_type_name(d, id));
+-
+-	if (vlen) {
+-		btf_dump_printf(d, " {");
+-		for (i = 0; i < vlen; i++, v++) {
+-			name = btf_name_of(d, v->name_off);
+-			/* enumerators share namespace with typedef idents */
+-			dup_cnt = btf_dump_name_dups(d, d->ident_names, name);
+-			if (dup_cnt > 1) {
+-				btf_dump_printf(d, "\n%s%s___%zu = %u,",
+-						pfx(lvl + 1), name, dup_cnt,
+-						(__u32)v->val);
+-			} else {
+-				btf_dump_printf(d, "\n%s%s = %u,",
+-						pfx(lvl + 1), name,
+-						(__u32)v->val);
+-			}
+-		}
+-		btf_dump_printf(d, "\n%s}", pfx(lvl));
+-	}
+-}
+-
+-static void btf_dump_emit_fwd_def(struct btf_dump *d, __u32 id,
+-				  const struct btf_type *t)
+-{
+-	const char *name = btf_dump_type_name(d, id);
+-
+-	if (btf_kflag(t))
+-		btf_dump_printf(d, "union %s", name);
+-	else
+-		btf_dump_printf(d, "struct %s", name);
+-}
+-
+-static void btf_dump_emit_typedef_def(struct btf_dump *d, __u32 id,
+-				     const struct btf_type *t, int lvl)
+-{
+-	const char *name = btf_dump_ident_name(d, id);
+-
+-	/*
+-	 * Old GCC versions are emitting invalid typedef for __gnuc_va_list
+-	 * pointing to VOID. This generates warnings from btf_dump() and
+-	 * results in uncompilable header file, so we are fixing it up here
+-	 * with valid typedef into __builtin_va_list.
+-	 */
+-	if (t->type == 0 && strcmp(name, "__gnuc_va_list") == 0) {
+-		btf_dump_printf(d, "typedef __builtin_va_list __gnuc_va_list");
+-		return;
+-	}
+-
+-	btf_dump_printf(d, "typedef ");
+-	btf_dump_emit_type_decl(d, t->type, name, lvl);
+-}
+-
+-static int btf_dump_push_decl_stack_id(struct btf_dump *d, __u32 id)
+-{
+-	__u32 *new_stack;
+-	size_t new_cap;
+-
+-	if (d->decl_stack_cnt >= d->decl_stack_cap) {
+-		new_cap = max(16, d->decl_stack_cap * 3 / 2);
+-		new_stack = libbpf_reallocarray(d->decl_stack, new_cap, sizeof(new_stack[0]));
+-		if (!new_stack)
+-			return -ENOMEM;
+-		d->decl_stack = new_stack;
+-		d->decl_stack_cap = new_cap;
+-	}
+-
+-	d->decl_stack[d->decl_stack_cnt++] = id;
+-
+-	return 0;
+-}
+-
+-/*
+- * Emit type declaration (e.g., field type declaration in a struct or argument
+- * declaration in function prototype) in correct C syntax.
+- *
+- * For most types it's trivial, but there are few quirky type declaration
+- * cases worth mentioning:
+- *   - function prototypes (especially nesting of function prototypes);
+- *   - arrays;
+- *   - const/volatile/restrict for pointers vs other types.
+- *
+- * For a good discussion of *PARSING* C syntax (as a human), see
+- * Peter van der Linden's "Expert C Programming: Deep C Secrets",
+- * Ch.3 "Unscrambling Declarations in C".
+- *
+- * It won't help with BTF to C conversion much, though, as it's an opposite
+- * problem. So we came up with this algorithm in reverse to van der Linden's
+- * parsing algorithm. It goes from structured BTF representation of type
+- * declaration to a valid compilable C syntax.
+- *
+- * For instance, consider this C typedef:
+- *	typedef const int * const * arr[10] arr_t;
+- * It will be represented in BTF with this chain of BTF types:
+- *	[typedef] -> [array] -> [ptr] -> [const] -> [ptr] -> [const] -> [int]
+- *
+- * Notice how [const] modifier always goes before type it modifies in BTF type
+- * graph, but in C syntax, const/volatile/restrict modifiers are written to
+- * the right of pointers, but to the left of other types. There are also other
+- * quirks, like function pointers, arrays of them, functions returning other
+- * functions, etc.
+- *
+- * We handle that by pushing all the types to a stack, until we hit "terminal"
+- * type (int/enum/struct/union/fwd). Then depending on the kind of a type on
+- * top of a stack, modifiers are handled differently. Array/function pointers
+- * have also wildly different syntax and how nesting of them are done. See
+- * code for authoritative definition.
+- *
+- * To avoid allocating new stack for each independent chain of BTF types, we
+- * share one bigger stack, with each chain working only on its own local view
+- * of a stack frame. Some care is required to "pop" stack frames after
+- * processing type declaration chain.
+- */
+-int btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
+-			     const struct btf_dump_emit_type_decl_opts *opts)
+-{
+-	const char *fname;
+-	int lvl, err;
+-
+-	if (!OPTS_VALID(opts, btf_dump_emit_type_decl_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	err = btf_dump_resize(d);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	fname = OPTS_GET(opts, field_name, "");
+-	lvl = OPTS_GET(opts, indent_level, 0);
+-	d->strip_mods = OPTS_GET(opts, strip_mods, false);
+-	btf_dump_emit_type_decl(d, id, fname, lvl);
+-	d->strip_mods = false;
+-	return 0;
+-}
+-
+-static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
+-				    const char *fname, int lvl)
+-{
+-	struct id_stack decl_stack;
+-	const struct btf_type *t;
+-	int err, stack_start;
+-
+-	stack_start = d->decl_stack_cnt;
+-	for (;;) {
+-		t = btf__type_by_id(d->btf, id);
+-		if (d->strip_mods && btf_is_mod(t))
+-			goto skip_mod;
+-
+-		err = btf_dump_push_decl_stack_id(d, id);
+-		if (err < 0) {
+-			/*
+-			 * if we don't have enough memory for entire type decl
+-			 * chain, restore stack, emit warning, and try to
+-			 * proceed nevertheless
+-			 */
+-			pr_warn("not enough memory for decl stack:%d", err);
+-			d->decl_stack_cnt = stack_start;
+-			return;
+-		}
+-skip_mod:
+-		/* VOID */
+-		if (id == 0)
+-			break;
+-
+-		switch (btf_kind(t)) {
+-		case BTF_KIND_PTR:
+-		case BTF_KIND_VOLATILE:
+-		case BTF_KIND_CONST:
+-		case BTF_KIND_RESTRICT:
+-		case BTF_KIND_FUNC_PROTO:
+-			id = t->type;
+-			break;
+-		case BTF_KIND_ARRAY:
+-			id = btf_array(t)->type;
+-			break;
+-		case BTF_KIND_INT:
+-		case BTF_KIND_ENUM:
+-		case BTF_KIND_FWD:
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION:
+-		case BTF_KIND_TYPEDEF:
+-		case BTF_KIND_FLOAT:
+-			goto done;
+-		default:
+-			pr_warn("unexpected type in decl chain, kind:%u, id:[%u]\n",
+-				btf_kind(t), id);
+-			goto done;
+-		}
+-	}
+-done:
+-	/*
+-	 * We might be inside a chain of declarations (e.g., array of function
+-	 * pointers returning anonymous (so inlined) structs, having another
+-	 * array field). Each of those needs its own "stack frame" to handle
+-	 * emitting of declarations. Those stack frames are non-overlapping
+-	 * portions of shared btf_dump->decl_stack. To make it a bit nicer to
+-	 * handle this set of nested stacks, we create a view corresponding to
+-	 * our own "stack frame" and work with it as an independent stack.
+-	 * We'll need to clean up after emit_type_chain() returns, though.
+-	 */
+-	decl_stack.ids = d->decl_stack + stack_start;
+-	decl_stack.cnt = d->decl_stack_cnt - stack_start;
+-	btf_dump_emit_type_chain(d, &decl_stack, fname, lvl);
+-	/*
+-	 * emit_type_chain() guarantees that it will pop its entire decl_stack
+-	 * frame before returning. But it works with a read-only view into
+-	 * decl_stack, so it doesn't actually pop anything from the
+-	 * perspective of shared btf_dump->decl_stack, per se. We need to
+-	 * reset decl_stack state to how it was before us to avoid it growing
+-	 * all the time.
+-	 */
+-	d->decl_stack_cnt = stack_start;
+-}
+-
+-static void btf_dump_emit_mods(struct btf_dump *d, struct id_stack *decl_stack)
+-{
+-	const struct btf_type *t;
+-	__u32 id;
+-
+-	while (decl_stack->cnt) {
+-		id = decl_stack->ids[decl_stack->cnt - 1];
+-		t = btf__type_by_id(d->btf, id);
+-
+-		switch (btf_kind(t)) {
+-		case BTF_KIND_VOLATILE:
+-			btf_dump_printf(d, "volatile ");
+-			break;
+-		case BTF_KIND_CONST:
+-			btf_dump_printf(d, "const ");
+-			break;
+-		case BTF_KIND_RESTRICT:
+-			btf_dump_printf(d, "restrict ");
+-			break;
+-		default:
+-			return;
+-		}
+-		decl_stack->cnt--;
+-	}
+-}
+-
+-static void btf_dump_drop_mods(struct btf_dump *d, struct id_stack *decl_stack)
+-{
+-	const struct btf_type *t;
+-	__u32 id;
+-
+-	while (decl_stack->cnt) {
+-		id = decl_stack->ids[decl_stack->cnt - 1];
+-		t = btf__type_by_id(d->btf, id);
+-		if (!btf_is_mod(t))
+-			return;
+-		decl_stack->cnt--;
+-	}
+-}
+-
+-static void btf_dump_emit_name(const struct btf_dump *d,
+-			       const char *name, bool last_was_ptr)
+-{
+-	bool separate = name[0] && !last_was_ptr;
+-
+-	btf_dump_printf(d, "%s%s", separate ? " " : "", name);
+-}
+-
+-static void btf_dump_emit_type_chain(struct btf_dump *d,
+-				     struct id_stack *decls,
+-				     const char *fname, int lvl)
+-{
+-	/*
+-	 * last_was_ptr is used to determine if we need to separate pointer
+-	 * asterisk (*) from previous part of type signature with space, so
+-	 * that we get `int ***`, instead of `int * * *`. We default to true
+-	 * for cases where we have single pointer in a chain. E.g., in ptr ->
+-	 * func_proto case. func_proto will start a new emit_type_chain call
+-	 * with just ptr, which should be emitted as (*) or (*<fname>), so we
+-	 * don't want to prepend space for that last pointer.
+-	 */
+-	bool last_was_ptr = true;
+-	const struct btf_type *t;
+-	const char *name;
+-	__u16 kind;
+-	__u32 id;
+-
+-	while (decls->cnt) {
+-		id = decls->ids[--decls->cnt];
+-		if (id == 0) {
+-			/* VOID is a special snowflake */
+-			btf_dump_emit_mods(d, decls);
+-			btf_dump_printf(d, "void");
+-			last_was_ptr = false;
+-			continue;
+-		}
+-
+-		t = btf__type_by_id(d->btf, id);
+-		kind = btf_kind(t);
+-
+-		switch (kind) {
+-		case BTF_KIND_INT:
+-		case BTF_KIND_FLOAT:
+-			btf_dump_emit_mods(d, decls);
+-			name = btf_name_of(d, t->name_off);
+-			btf_dump_printf(d, "%s", name);
+-			break;
+-		case BTF_KIND_STRUCT:
+-		case BTF_KIND_UNION:
+-			btf_dump_emit_mods(d, decls);
+-			/* inline anonymous struct/union */
+-			if (t->name_off == 0)
+-				btf_dump_emit_struct_def(d, id, t, lvl);
+-			else
+-				btf_dump_emit_struct_fwd(d, id, t);
+-			break;
+-		case BTF_KIND_ENUM:
+-			btf_dump_emit_mods(d, decls);
+-			/* inline anonymous enum */
+-			if (t->name_off == 0)
+-				btf_dump_emit_enum_def(d, id, t, lvl);
+-			else
+-				btf_dump_emit_enum_fwd(d, id, t);
+-			break;
+-		case BTF_KIND_FWD:
+-			btf_dump_emit_mods(d, decls);
+-			btf_dump_emit_fwd_def(d, id, t);
+-			break;
+-		case BTF_KIND_TYPEDEF:
+-			btf_dump_emit_mods(d, decls);
+-			btf_dump_printf(d, "%s", btf_dump_ident_name(d, id));
+-			break;
+-		case BTF_KIND_PTR:
+-			btf_dump_printf(d, "%s", last_was_ptr ? "*" : " *");
+-			break;
+-		case BTF_KIND_VOLATILE:
+-			btf_dump_printf(d, " volatile");
+-			break;
+-		case BTF_KIND_CONST:
+-			btf_dump_printf(d, " const");
+-			break;
+-		case BTF_KIND_RESTRICT:
+-			btf_dump_printf(d, " restrict");
+-			break;
+-		case BTF_KIND_ARRAY: {
+-			const struct btf_array *a = btf_array(t);
+-			const struct btf_type *next_t;
+-			__u32 next_id;
+-			bool multidim;
+-			/*
+-			 * GCC has a bug
+-			 * (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=8354)
+-			 * which causes it to emit extra const/volatile
+-			 * modifiers for an array, if array's element type has
+-			 * const/volatile modifiers. Clang doesn't do that.
+-			 * In general, it doesn't seem very meaningful to have
+-			 * a const/volatile modifier for array, so we are
+-			 * going to silently skip them here.
+-			 */
+-			btf_dump_drop_mods(d, decls);
+-
+-			if (decls->cnt == 0) {
+-				btf_dump_emit_name(d, fname, last_was_ptr);
+-				btf_dump_printf(d, "[%u]", a->nelems);
+-				return;
+-			}
+-
+-			next_id = decls->ids[decls->cnt - 1];
+-			next_t = btf__type_by_id(d->btf, next_id);
+-			multidim = btf_is_array(next_t);
+-			/* we need space if we have named non-pointer */
+-			if (fname[0] && !last_was_ptr)
+-				btf_dump_printf(d, " ");
+-			/* no parentheses for multi-dimensional array */
+-			if (!multidim)
+-				btf_dump_printf(d, "(");
+-			btf_dump_emit_type_chain(d, decls, fname, lvl);
+-			if (!multidim)
+-				btf_dump_printf(d, ")");
+-			btf_dump_printf(d, "[%u]", a->nelems);
+-			return;
+-		}
+-		case BTF_KIND_FUNC_PROTO: {
+-			const struct btf_param *p = btf_params(t);
+-			__u16 vlen = btf_vlen(t);
+-			int i;
+-
+-			/*
+-			 * GCC emits extra volatile qualifier for
+-			 * __attribute__((noreturn)) function pointers. Clang
+-			 * doesn't do it. It's a GCC quirk for backwards
+-			 * compatibility with code written for GCC <2.5. So,
+-			 * similarly to extra qualifiers for array, just drop
+-			 * them, instead of handling them.
+-			 */
+-			btf_dump_drop_mods(d, decls);
+-			if (decls->cnt) {
+-				btf_dump_printf(d, " (");
+-				btf_dump_emit_type_chain(d, decls, fname, lvl);
+-				btf_dump_printf(d, ")");
+-			} else {
+-				btf_dump_emit_name(d, fname, last_was_ptr);
+-			}
+-			btf_dump_printf(d, "(");
+-			/*
+-			 * Clang for BPF target generates func_proto with no
+-			 * args as a func_proto with a single void arg (e.g.,
+-			 * `int (*f)(void)` vs just `int (*f)()`). We are
+-			 * going to pretend there are no args for such case.
+-			 */
+-			if (vlen == 1 && p->type == 0) {
+-				btf_dump_printf(d, ")");
+-				return;
+-			}
+-
+-			for (i = 0; i < vlen; i++, p++) {
+-				if (i > 0)
+-					btf_dump_printf(d, ", ");
+-
+-				/* last arg of type void is vararg */
+-				if (i == vlen - 1 && p->type == 0) {
+-					btf_dump_printf(d, "...");
+-					break;
+-				}
+-
+-				name = btf_name_of(d, p->name_off);
+-				btf_dump_emit_type_decl(d, p->type, name, lvl);
+-			}
+-
+-			btf_dump_printf(d, ")");
+-			return;
+-		}
+-		default:
+-			pr_warn("unexpected type in decl chain, kind:%u, id:[%u]\n",
+-				kind, id);
+-			return;
+-		}
+-
+-		last_was_ptr = kind == BTF_KIND_PTR;
+-	}
+-
+-	btf_dump_emit_name(d, fname, last_was_ptr);
+-}
+-
+-/* return number of duplicates (occurrences) of a given name */
+-static size_t btf_dump_name_dups(struct btf_dump *d, struct hashmap *name_map,
+-				 const char *orig_name)
+-{
+-	size_t dup_cnt = 0;
+-
+-	hashmap__find(name_map, orig_name, (void **)&dup_cnt);
+-	dup_cnt++;
+-	hashmap__set(name_map, orig_name, (void *)dup_cnt, NULL, NULL);
+-
+-	return dup_cnt;
+-}
+-
+-static const char *btf_dump_resolve_name(struct btf_dump *d, __u32 id,
+-					 struct hashmap *name_map)
+-{
+-	struct btf_dump_type_aux_state *s = &d->type_states[id];
+-	const struct btf_type *t = btf__type_by_id(d->btf, id);
+-	const char *orig_name = btf_name_of(d, t->name_off);
+-	const char **cached_name = &d->cached_names[id];
+-	size_t dup_cnt;
+-
+-	if (t->name_off == 0)
+-		return "";
+-
+-	if (s->name_resolved)
+-		return *cached_name ? *cached_name : orig_name;
+-
+-	dup_cnt = btf_dump_name_dups(d, name_map, orig_name);
+-	if (dup_cnt > 1) {
+-		const size_t max_len = 256;
+-		char new_name[max_len];
+-
+-		snprintf(new_name, max_len, "%s___%zu", orig_name, dup_cnt);
+-		*cached_name = strdup(new_name);
+-	}
+-
+-	s->name_resolved = 1;
+-	return *cached_name ? *cached_name : orig_name;
+-}
+-
+-static const char *btf_dump_type_name(struct btf_dump *d, __u32 id)
+-{
+-	return btf_dump_resolve_name(d, id, d->type_names);
+-}
+-
+-static const char *btf_dump_ident_name(struct btf_dump *d, __u32 id)
+-{
+-	return btf_dump_resolve_name(d, id, d->ident_names);
+-}
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+deleted file mode 100644
+index 8df718a6b142..000000000000
+--- a/tools/lib/bpf/gen_loader.c
++++ /dev/null
+@@ -1,729 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2021 Facebook */
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <errno.h>
+-#include <linux/filter.h>
+-#include "btf.h"
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-#include "hashmap.h"
+-#include "bpf_gen_internal.h"
+-#include "skel_internal.h"
+-
+-#define MAX_USED_MAPS 64
+-#define MAX_USED_PROGS 32
+-
+-/* The following structure describes the stack layout of the loader program.
+- * In addition R6 contains the pointer to context.
+- * R7 contains the result of the last sys_bpf command (typically error or FD).
+- * R9 contains the result of the last sys_close command.
+- *
+- * Naming convention:
+- * ctx - bpf program context
+- * stack - bpf program stack
+- * blob - bpf_attr-s, strings, insns, map data.
+- *        All the bytes that loader prog will use for read/write.
+- */
+-struct loader_stack {
+-	__u32 btf_fd;
+-	__u32 map_fd[MAX_USED_MAPS];
+-	__u32 prog_fd[MAX_USED_PROGS];
+-	__u32 inner_map_fd;
+-};
+-
+-#define stack_off(field) \
+-	(__s16)(-sizeof(struct loader_stack) + offsetof(struct loader_stack, field))
+-
+-#define attr_field(attr, field) (attr + offsetof(union bpf_attr, field))
+-
+-static int realloc_insn_buf(struct bpf_gen *gen, __u32 size)
+-{
+-	size_t off = gen->insn_cur - gen->insn_start;
+-	void *insn_start;
+-
+-	if (gen->error)
+-		return gen->error;
+-	if (size > INT32_MAX || off + size > INT32_MAX) {
+-		gen->error = -ERANGE;
+-		return -ERANGE;
+-	}
+-	insn_start = realloc(gen->insn_start, off + size);
+-	if (!insn_start) {
+-		gen->error = -ENOMEM;
+-		free(gen->insn_start);
+-		gen->insn_start = NULL;
+-		return -ENOMEM;
+-	}
+-	gen->insn_start = insn_start;
+-	gen->insn_cur = insn_start + off;
+-	return 0;
+-}
+-
+-static int realloc_data_buf(struct bpf_gen *gen, __u32 size)
+-{
+-	size_t off = gen->data_cur - gen->data_start;
+-	void *data_start;
+-
+-	if (gen->error)
+-		return gen->error;
+-	if (size > INT32_MAX || off + size > INT32_MAX) {
+-		gen->error = -ERANGE;
+-		return -ERANGE;
+-	}
+-	data_start = realloc(gen->data_start, off + size);
+-	if (!data_start) {
+-		gen->error = -ENOMEM;
+-		free(gen->data_start);
+-		gen->data_start = NULL;
+-		return -ENOMEM;
+-	}
+-	gen->data_start = data_start;
+-	gen->data_cur = data_start + off;
+-	return 0;
+-}
+-
+-static void emit(struct bpf_gen *gen, struct bpf_insn insn)
+-{
+-	if (realloc_insn_buf(gen, sizeof(insn)))
+-		return;
+-	memcpy(gen->insn_cur, &insn, sizeof(insn));
+-	gen->insn_cur += sizeof(insn);
+-}
+-
+-static void emit2(struct bpf_gen *gen, struct bpf_insn insn1, struct bpf_insn insn2)
+-{
+-	emit(gen, insn1);
+-	emit(gen, insn2);
+-}
+-
+-void bpf_gen__init(struct bpf_gen *gen, int log_level)
+-{
+-	size_t stack_sz = sizeof(struct loader_stack);
+-	int i;
+-
+-	gen->log_level = log_level;
+-	/* save ctx pointer into R6 */
+-	emit(gen, BPF_MOV64_REG(BPF_REG_6, BPF_REG_1));
+-
+-	/* bzero stack */
+-	emit(gen, BPF_MOV64_REG(BPF_REG_1, BPF_REG_10));
+-	emit(gen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -stack_sz));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_2, stack_sz));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_3, 0));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_probe_read_kernel));
+-
+-	/* jump over cleanup code */
+-	emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0,
+-			      /* size of cleanup code below */
+-			      (stack_sz / 4) * 3 + 2));
+-
+-	/* remember the label where all error branches will jump to */
+-	gen->cleanup_label = gen->insn_cur - gen->insn_start;
+-	/* emit cleanup code: close all temp FDs */
+-	for (i = 0; i < stack_sz; i += 4) {
+-		emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_10, -stack_sz + i));
+-		emit(gen, BPF_JMP_IMM(BPF_JSLE, BPF_REG_1, 0, 1));
+-		emit(gen, BPF_EMIT_CALL(BPF_FUNC_sys_close));
+-	}
+-	/* R7 contains the error code from sys_bpf. Copy it into R0 and exit. */
+-	emit(gen, BPF_MOV64_REG(BPF_REG_0, BPF_REG_7));
+-	emit(gen, BPF_EXIT_INSN());
+-}
+-
+-static int add_data(struct bpf_gen *gen, const void *data, __u32 size)
+-{
+-	void *prev;
+-
+-	if (realloc_data_buf(gen, size))
+-		return 0;
+-	prev = gen->data_cur;
+-	memcpy(gen->data_cur, data, size);
+-	gen->data_cur += size;
+-	return prev - gen->data_start;
+-}
+-
+-static int insn_bytes_to_bpf_size(__u32 sz)
+-{
+-	switch (sz) {
+-	case 8: return BPF_DW;
+-	case 4: return BPF_W;
+-	case 2: return BPF_H;
+-	case 1: return BPF_B;
+-	default: return -1;
+-	}
+-}
+-
+-/* *(u64 *)(blob + off) = (u64)(void *)(blob + data) */
+-static void emit_rel_store(struct bpf_gen *gen, int off, int data)
+-{
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, data));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, off));
+-	emit(gen, BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 0));
+-}
+-
+-/* *(u64 *)(blob + off) = (u64)(void *)(%sp + stack_off) */
+-static void emit_rel_store_sp(struct bpf_gen *gen, int off, int stack_off)
+-{
+-	emit(gen, BPF_MOV64_REG(BPF_REG_0, BPF_REG_10));
+-	emit(gen, BPF_ALU64_IMM(BPF_ADD, BPF_REG_0, stack_off));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, off));
+-	emit(gen, BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 0));
+-}
+-
+-static void move_ctx2blob(struct bpf_gen *gen, int off, int size, int ctx_off,
+-				   bool check_non_zero)
+-{
+-	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_6, ctx_off));
+-	if (check_non_zero)
+-		/* If value in ctx is zero don't update the blob.
+-		 * For example: when ctx->map.max_entries == 0, keep default max_entries from bpf.c
+-		 */
+-		emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 3));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, off));
+-	emit(gen, BPF_STX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_1, BPF_REG_0, 0));
+-}
+-
+-static void move_stack2blob(struct bpf_gen *gen, int off, int size, int stack_off)
+-{
+-	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_10, stack_off));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, off));
+-	emit(gen, BPF_STX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_1, BPF_REG_0, 0));
+-}
+-
+-static void move_stack2ctx(struct bpf_gen *gen, int ctx_off, int size, int stack_off)
+-{
+-	emit(gen, BPF_LDX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_0, BPF_REG_10, stack_off));
+-	emit(gen, BPF_STX_MEM(insn_bytes_to_bpf_size(size), BPF_REG_6, BPF_REG_0, ctx_off));
+-}
+-
+-static void emit_sys_bpf(struct bpf_gen *gen, int cmd, int attr, int attr_size)
+-{
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_1, cmd));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_2, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, attr));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_3, attr_size));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_sys_bpf));
+-	/* remember the result in R7 */
+-	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
+-}
+-
+-static bool is_simm16(__s64 value)
+-{
+-	return value == (__s64)(__s16)value;
+-}
+-
+-static void emit_check_err(struct bpf_gen *gen)
+-{
+-	__s64 off = -(gen->insn_cur - gen->insn_start - gen->cleanup_label) / 8 - 1;
+-
+-	/* R7 contains result of last sys_bpf command.
+-	 * if (R7 < 0) goto cleanup;
+-	 */
+-	if (is_simm16(off)) {
+-		emit(gen, BPF_JMP_IMM(BPF_JSLT, BPF_REG_7, 0, off));
+-	} else {
+-		gen->error = -ERANGE;
+-		emit(gen, BPF_JMP_IMM(BPF_JA, 0, 0, -1));
+-	}
+-}
+-
+-/* reg1 and reg2 should not be R1 - R5. They can be R0, R6 - R10 */
+-static void emit_debug(struct bpf_gen *gen, int reg1, int reg2,
+-		       const char *fmt, va_list args)
+-{
+-	char buf[1024];
+-	int addr, len, ret;
+-
+-	if (!gen->log_level)
+-		return;
+-	ret = vsnprintf(buf, sizeof(buf), fmt, args);
+-	if (ret < 1024 - 7 && reg1 >= 0 && reg2 < 0)
+-		/* The special case to accommodate common debug_ret():
+-		 * to avoid specifying BPF_REG_7 and adding " r=%%d" to
+-		 * prints explicitly.
+-		 */
+-		strcat(buf, " r=%d");
+-	len = strlen(buf) + 1;
+-	addr = add_data(gen, buf, len);
+-
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, addr));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_2, len));
+-	if (reg1 >= 0)
+-		emit(gen, BPF_MOV64_REG(BPF_REG_3, reg1));
+-	if (reg2 >= 0)
+-		emit(gen, BPF_MOV64_REG(BPF_REG_4, reg2));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_trace_printk));
+-}
+-
+-static void debug_regs(struct bpf_gen *gen, int reg1, int reg2, const char *fmt, ...)
+-{
+-	va_list args;
+-
+-	va_start(args, fmt);
+-	emit_debug(gen, reg1, reg2, fmt, args);
+-	va_end(args);
+-}
+-
+-static void debug_ret(struct bpf_gen *gen, const char *fmt, ...)
+-{
+-	va_list args;
+-
+-	va_start(args, fmt);
+-	emit_debug(gen, BPF_REG_7, -1, fmt, args);
+-	va_end(args);
+-}
+-
+-static void __emit_sys_close(struct bpf_gen *gen)
+-{
+-	emit(gen, BPF_JMP_IMM(BPF_JSLE, BPF_REG_1, 0,
+-			      /* 2 is the number of the following insns
+-			       * * 6 is additional insns in debug_regs
+-			       */
+-			      2 + (gen->log_level ? 6 : 0)));
+-	emit(gen, BPF_MOV64_REG(BPF_REG_9, BPF_REG_1));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_sys_close));
+-	debug_regs(gen, BPF_REG_9, BPF_REG_0, "close(%%d) = %%d");
+-}
+-
+-static void emit_sys_close_stack(struct bpf_gen *gen, int stack_off)
+-{
+-	emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_10, stack_off));
+-	__emit_sys_close(gen);
+-}
+-
+-static void emit_sys_close_blob(struct bpf_gen *gen, int blob_off)
+-{
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, blob_off));
+-	emit(gen, BPF_LDX_MEM(BPF_W, BPF_REG_1, BPF_REG_0, 0));
+-	__emit_sys_close(gen);
+-}
+-
+-int bpf_gen__finish(struct bpf_gen *gen)
+-{
+-	int i;
+-
+-	emit_sys_close_stack(gen, stack_off(btf_fd));
+-	for (i = 0; i < gen->nr_progs; i++)
+-		move_stack2ctx(gen,
+-			       sizeof(struct bpf_loader_ctx) +
+-			       sizeof(struct bpf_map_desc) * gen->nr_maps +
+-			       sizeof(struct bpf_prog_desc) * i +
+-			       offsetof(struct bpf_prog_desc, prog_fd), 4,
+-			       stack_off(prog_fd[i]));
+-	for (i = 0; i < gen->nr_maps; i++)
+-		move_stack2ctx(gen,
+-			       sizeof(struct bpf_loader_ctx) +
+-			       sizeof(struct bpf_map_desc) * i +
+-			       offsetof(struct bpf_map_desc, map_fd), 4,
+-			       stack_off(map_fd[i]));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_0, 0));
+-	emit(gen, BPF_EXIT_INSN());
+-	pr_debug("gen: finish %d\n", gen->error);
+-	if (!gen->error) {
+-		struct gen_loader_opts *opts = gen->opts;
+-
+-		opts->insns = gen->insn_start;
+-		opts->insns_sz = gen->insn_cur - gen->insn_start;
+-		opts->data = gen->data_start;
+-		opts->data_sz = gen->data_cur - gen->data_start;
+-	}
+-	return gen->error;
+-}
+-
+-void bpf_gen__free(struct bpf_gen *gen)
+-{
+-	if (!gen)
+-		return;
+-	free(gen->data_start);
+-	free(gen->insn_start);
+-	free(gen);
+-}
+-
+-void bpf_gen__load_btf(struct bpf_gen *gen, const void *btf_raw_data,
+-		       __u32 btf_raw_size)
+-{
+-	int attr_size = offsetofend(union bpf_attr, btf_log_level);
+-	int btf_data, btf_load_attr;
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, attr_size);
+-	pr_debug("gen: load_btf: size %d\n", btf_raw_size);
+-	btf_data = add_data(gen, btf_raw_data, btf_raw_size);
+-
+-	attr.btf_size = btf_raw_size;
+-	btf_load_attr = add_data(gen, &attr, attr_size);
+-
+-	/* populate union bpf_attr with user provided log details */
+-	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_level), 4,
+-		      offsetof(struct bpf_loader_ctx, log_level), false);
+-	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_size), 4,
+-		      offsetof(struct bpf_loader_ctx, log_size), false);
+-	move_ctx2blob(gen, attr_field(btf_load_attr, btf_log_buf), 8,
+-		      offsetof(struct bpf_loader_ctx, log_buf), false);
+-	/* populate union bpf_attr with a pointer to the BTF data */
+-	emit_rel_store(gen, attr_field(btf_load_attr, btf), btf_data);
+-	/* emit BTF_LOAD command */
+-	emit_sys_bpf(gen, BPF_BTF_LOAD, btf_load_attr, attr_size);
+-	debug_ret(gen, "btf_load size %d", btf_raw_size);
+-	emit_check_err(gen);
+-	/* remember btf_fd in the stack, if successful */
+-	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7, stack_off(btf_fd)));
+-}
+-
+-void bpf_gen__map_create(struct bpf_gen *gen,
+-			 struct bpf_create_map_attr *map_attr, int map_idx)
+-{
+-	int attr_size = offsetofend(union bpf_attr, btf_vmlinux_value_type_id);
+-	bool close_inner_map_fd = false;
+-	int map_create_attr;
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, attr_size);
+-	attr.map_type = map_attr->map_type;
+-	attr.key_size = map_attr->key_size;
+-	attr.value_size = map_attr->value_size;
+-	attr.map_flags = map_attr->map_flags;
+-	memcpy(attr.map_name, map_attr->name,
+-	       min((unsigned)strlen(map_attr->name), BPF_OBJ_NAME_LEN - 1));
+-	attr.numa_node = map_attr->numa_node;
+-	attr.map_ifindex = map_attr->map_ifindex;
+-	attr.max_entries = map_attr->max_entries;
+-	switch (attr.map_type) {
+-	case BPF_MAP_TYPE_PERF_EVENT_ARRAY:
+-	case BPF_MAP_TYPE_CGROUP_ARRAY:
+-	case BPF_MAP_TYPE_STACK_TRACE:
+-	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+-	case BPF_MAP_TYPE_HASH_OF_MAPS:
+-	case BPF_MAP_TYPE_DEVMAP:
+-	case BPF_MAP_TYPE_DEVMAP_HASH:
+-	case BPF_MAP_TYPE_CPUMAP:
+-	case BPF_MAP_TYPE_XSKMAP:
+-	case BPF_MAP_TYPE_SOCKMAP:
+-	case BPF_MAP_TYPE_SOCKHASH:
+-	case BPF_MAP_TYPE_QUEUE:
+-	case BPF_MAP_TYPE_STACK:
+-	case BPF_MAP_TYPE_RINGBUF:
+-		break;
+-	default:
+-		attr.btf_key_type_id = map_attr->btf_key_type_id;
+-		attr.btf_value_type_id = map_attr->btf_value_type_id;
+-	}
+-
+-	pr_debug("gen: map_create: %s idx %d type %d value_type_id %d\n",
+-		 attr.map_name, map_idx, map_attr->map_type, attr.btf_value_type_id);
+-
+-	map_create_attr = add_data(gen, &attr, attr_size);
+-	if (attr.btf_value_type_id)
+-		/* populate union bpf_attr with btf_fd saved in the stack earlier */
+-		move_stack2blob(gen, attr_field(map_create_attr, btf_fd), 4,
+-				stack_off(btf_fd));
+-	switch (attr.map_type) {
+-	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+-	case BPF_MAP_TYPE_HASH_OF_MAPS:
+-		move_stack2blob(gen, attr_field(map_create_attr, inner_map_fd), 4,
+-				stack_off(inner_map_fd));
+-		close_inner_map_fd = true;
+-		break;
+-	default:
+-		break;
+-	}
+-	/* conditionally update max_entries */
+-	if (map_idx >= 0)
+-		move_ctx2blob(gen, attr_field(map_create_attr, max_entries), 4,
+-			      sizeof(struct bpf_loader_ctx) +
+-			      sizeof(struct bpf_map_desc) * map_idx +
+-			      offsetof(struct bpf_map_desc, max_entries),
+-			      true /* check that max_entries != 0 */);
+-	/* emit MAP_CREATE command */
+-	emit_sys_bpf(gen, BPF_MAP_CREATE, map_create_attr, attr_size);
+-	debug_ret(gen, "map_create %s idx %d type %d value_size %d value_btf_id %d",
+-		  attr.map_name, map_idx, map_attr->map_type, attr.value_size,
+-		  attr.btf_value_type_id);
+-	emit_check_err(gen);
+-	/* remember map_fd in the stack, if successful */
+-	if (map_idx < 0) {
+-		/* This bpf_gen__map_create() function is called with map_idx >= 0
+-		 * for all maps that libbpf loading logic tracks.
+-		 * It's called with -1 to create an inner map.
+-		 */
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
+-				      stack_off(inner_map_fd)));
+-	} else if (map_idx != gen->nr_maps) {
+-		gen->error = -EDOM; /* internal bug */
+-		return;
+-	} else {
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
+-				      stack_off(map_fd[map_idx])));
+-		gen->nr_maps++;
+-	}
+-	if (close_inner_map_fd)
+-		emit_sys_close_stack(gen, stack_off(inner_map_fd));
+-}
+-
+-void bpf_gen__record_attach_target(struct bpf_gen *gen, const char *attach_name,
+-				   enum bpf_attach_type type)
+-{
+-	const char *prefix;
+-	int kind, ret;
+-
+-	btf_get_kernel_prefix_kind(type, &prefix, &kind);
+-	gen->attach_kind = kind;
+-	ret = snprintf(gen->attach_target, sizeof(gen->attach_target), "%s%s",
+-		       prefix, attach_name);
+-	if (ret == sizeof(gen->attach_target))
+-		gen->error = -ENOSPC;
+-}
+-
+-static void emit_find_attach_target(struct bpf_gen *gen)
+-{
+-	int name, len = strlen(gen->attach_target) + 1;
+-
+-	pr_debug("gen: find_attach_tgt %s %d\n", gen->attach_target, gen->attach_kind);
+-	name = add_data(gen, gen->attach_target, len);
+-
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, name));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_2, len));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_3, gen->attach_kind));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_4, 0));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_btf_find_by_name_kind));
+-	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
+-	debug_ret(gen, "find_by_name_kind(%s,%d)",
+-		  gen->attach_target, gen->attach_kind);
+-	emit_check_err(gen);
+-	/* if successful, btf_id is in lower 32-bit of R7 and
+-	 * btf_obj_fd is in upper 32-bit
+-	 */
+-}
+-
+-void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, int kind,
+-			    int insn_idx)
+-{
+-	struct ksym_relo_desc *relo;
+-
+-	relo = libbpf_reallocarray(gen->relos, gen->relo_cnt + 1, sizeof(*relo));
+-	if (!relo) {
+-		gen->error = -ENOMEM;
+-		return;
+-	}
+-	gen->relos = relo;
+-	relo += gen->relo_cnt;
+-	relo->name = name;
+-	relo->kind = kind;
+-	relo->insn_idx = insn_idx;
+-	gen->relo_cnt++;
+-}
+-
+-static void emit_relo(struct bpf_gen *gen, struct ksym_relo_desc *relo, int insns)
+-{
+-	int name, insn, len = strlen(relo->name) + 1;
+-
+-	pr_debug("gen: emit_relo: %s at %d\n", relo->name, relo->insn_idx);
+-	name = add_data(gen, relo->name, len);
+-
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, name));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_2, len));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_3, relo->kind));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_4, 0));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_btf_find_by_name_kind));
+-	emit(gen, BPF_MOV64_REG(BPF_REG_7, BPF_REG_0));
+-	debug_ret(gen, "find_by_name_kind(%s,%d)", relo->name, relo->kind);
+-	emit_check_err(gen);
+-	/* store btf_id into insn[insn_idx].imm */
+-	insn = insns + sizeof(struct bpf_insn) * relo->insn_idx +
+-		offsetof(struct bpf_insn, imm);
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, insn));
+-	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7, 0));
+-	if (relo->kind == BTF_KIND_VAR) {
+-		/* store btf_obj_fd into insn[insn_idx + 1].imm */
+-		emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
+-				      sizeof(struct bpf_insn)));
+-	}
+-}
+-
+-static void emit_relos(struct bpf_gen *gen, int insns)
+-{
+-	int i;
+-
+-	for (i = 0; i < gen->relo_cnt; i++)
+-		emit_relo(gen, gen->relos + i, insns);
+-}
+-
+-static void cleanup_relos(struct bpf_gen *gen, int insns)
+-{
+-	int i, insn;
+-
+-	for (i = 0; i < gen->relo_cnt; i++) {
+-		if (gen->relos[i].kind != BTF_KIND_VAR)
+-			continue;
+-		/* close fd recorded in insn[insn_idx + 1].imm */
+-		insn = insns +
+-			sizeof(struct bpf_insn) * (gen->relos[i].insn_idx + 1) +
+-			offsetof(struct bpf_insn, imm);
+-		emit_sys_close_blob(gen, insn);
+-	}
+-	if (gen->relo_cnt) {
+-		free(gen->relos);
+-		gen->relo_cnt = 0;
+-		gen->relos = NULL;
+-	}
+-}
+-
+-void bpf_gen__prog_load(struct bpf_gen *gen,
+-			struct bpf_prog_load_params *load_attr, int prog_idx)
+-{
+-	int attr_size = offsetofend(union bpf_attr, fd_array);
+-	int prog_load_attr, license, insns, func_info, line_info;
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, attr_size);
+-	pr_debug("gen: prog_load: type %d insns_cnt %zd\n",
+-		 load_attr->prog_type, load_attr->insn_cnt);
+-	/* add license string to blob of bytes */
+-	license = add_data(gen, load_attr->license, strlen(load_attr->license) + 1);
+-	/* add insns to blob of bytes */
+-	insns = add_data(gen, load_attr->insns,
+-			 load_attr->insn_cnt * sizeof(struct bpf_insn));
+-
+-	attr.prog_type = load_attr->prog_type;
+-	attr.expected_attach_type = load_attr->expected_attach_type;
+-	attr.attach_btf_id = load_attr->attach_btf_id;
+-	attr.prog_ifindex = load_attr->prog_ifindex;
+-	attr.kern_version = 0;
+-	attr.insn_cnt = (__u32)load_attr->insn_cnt;
+-	attr.prog_flags = load_attr->prog_flags;
+-
+-	attr.func_info_rec_size = load_attr->func_info_rec_size;
+-	attr.func_info_cnt = load_attr->func_info_cnt;
+-	func_info = add_data(gen, load_attr->func_info,
+-			     attr.func_info_cnt * attr.func_info_rec_size);
+-
+-	attr.line_info_rec_size = load_attr->line_info_rec_size;
+-	attr.line_info_cnt = load_attr->line_info_cnt;
+-	line_info = add_data(gen, load_attr->line_info,
+-			     attr.line_info_cnt * attr.line_info_rec_size);
+-
+-	memcpy(attr.prog_name, load_attr->name,
+-	       min((unsigned)strlen(load_attr->name), BPF_OBJ_NAME_LEN - 1));
+-	prog_load_attr = add_data(gen, &attr, attr_size);
+-
+-	/* populate union bpf_attr with a pointer to license */
+-	emit_rel_store(gen, attr_field(prog_load_attr, license), license);
+-
+-	/* populate union bpf_attr with a pointer to instructions */
+-	emit_rel_store(gen, attr_field(prog_load_attr, insns), insns);
+-
+-	/* populate union bpf_attr with a pointer to func_info */
+-	emit_rel_store(gen, attr_field(prog_load_attr, func_info), func_info);
+-
+-	/* populate union bpf_attr with a pointer to line_info */
+-	emit_rel_store(gen, attr_field(prog_load_attr, line_info), line_info);
+-
+-	/* populate union bpf_attr fd_array with a pointer to stack where map_fds are saved */
+-	emit_rel_store_sp(gen, attr_field(prog_load_attr, fd_array),
+-			  stack_off(map_fd[0]));
+-
+-	/* populate union bpf_attr with user provided log details */
+-	move_ctx2blob(gen, attr_field(prog_load_attr, log_level), 4,
+-		      offsetof(struct bpf_loader_ctx, log_level), false);
+-	move_ctx2blob(gen, attr_field(prog_load_attr, log_size), 4,
+-		      offsetof(struct bpf_loader_ctx, log_size), false);
+-	move_ctx2blob(gen, attr_field(prog_load_attr, log_buf), 8,
+-		      offsetof(struct bpf_loader_ctx, log_buf), false);
+-	/* populate union bpf_attr with btf_fd saved in the stack earlier */
+-	move_stack2blob(gen, attr_field(prog_load_attr, prog_btf_fd), 4,
+-			stack_off(btf_fd));
+-	if (gen->attach_kind) {
+-		emit_find_attach_target(gen);
+-		/* populate union bpf_attr with btf_id and btf_obj_fd found by helper */
+-		emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_0, BPF_PSEUDO_MAP_IDX_VALUE,
+-						 0, 0, 0, prog_load_attr));
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
+-				      offsetof(union bpf_attr, attach_btf_id)));
+-		emit(gen, BPF_ALU64_IMM(BPF_RSH, BPF_REG_7, 32));
+-		emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_0, BPF_REG_7,
+-				      offsetof(union bpf_attr, attach_btf_obj_fd)));
+-	}
+-	emit_relos(gen, insns);
+-	/* emit PROG_LOAD command */
+-	emit_sys_bpf(gen, BPF_PROG_LOAD, prog_load_attr, attr_size);
+-	debug_ret(gen, "prog_load %s insn_cnt %d", attr.prog_name, attr.insn_cnt);
+-	/* successful or not, close btf module FDs used in extern ksyms and attach_btf_obj_fd */
+-	cleanup_relos(gen, insns);
+-	if (gen->attach_kind)
+-		emit_sys_close_blob(gen,
+-				    attr_field(prog_load_attr, attach_btf_obj_fd));
+-	emit_check_err(gen);
+-	/* remember prog_fd in the stack, if successful */
+-	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
+-			      stack_off(prog_fd[gen->nr_progs])));
+-	gen->nr_progs++;
+-}
+-
+-void bpf_gen__map_update_elem(struct bpf_gen *gen, int map_idx, void *pvalue,
+-			      __u32 value_size)
+-{
+-	int attr_size = offsetofend(union bpf_attr, flags);
+-	int map_update_attr, value, key;
+-	union bpf_attr attr;
+-	int zero = 0;
+-
+-	memset(&attr, 0, attr_size);
+-	pr_debug("gen: map_update_elem: idx %d\n", map_idx);
+-
+-	value = add_data(gen, pvalue, value_size);
+-	key = add_data(gen, &zero, sizeof(zero));
+-
+-	/* if (map_desc[map_idx].initial_value)
+-	 *    copy_from_user(value, initial_value, value_size);
+-	 */
+-	emit(gen, BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_6,
+-			      sizeof(struct bpf_loader_ctx) +
+-			      sizeof(struct bpf_map_desc) * map_idx +
+-			      offsetof(struct bpf_map_desc, initial_value)));
+-	emit(gen, BPF_JMP_IMM(BPF_JEQ, BPF_REG_3, 0, 4));
+-	emit2(gen, BPF_LD_IMM64_RAW_FULL(BPF_REG_1, BPF_PSEUDO_MAP_IDX_VALUE,
+-					 0, 0, 0, value));
+-	emit(gen, BPF_MOV64_IMM(BPF_REG_2, value_size));
+-	emit(gen, BPF_EMIT_CALL(BPF_FUNC_copy_from_user));
+-
+-	map_update_attr = add_data(gen, &attr, attr_size);
+-	move_stack2blob(gen, attr_field(map_update_attr, map_fd), 4,
+-			stack_off(map_fd[map_idx]));
+-	emit_rel_store(gen, attr_field(map_update_attr, key), key);
+-	emit_rel_store(gen, attr_field(map_update_attr, value), value);
+-	/* emit MAP_UPDATE_ELEM command */
+-	emit_sys_bpf(gen, BPF_MAP_UPDATE_ELEM, map_update_attr, attr_size);
+-	debug_ret(gen, "update_elem idx %d value_size %d", map_idx, value_size);
+-	emit_check_err(gen);
+-}
+-
+-void bpf_gen__map_freeze(struct bpf_gen *gen, int map_idx)
+-{
+-	int attr_size = offsetofend(union bpf_attr, map_fd);
+-	int map_freeze_attr;
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, attr_size);
+-	pr_debug("gen: map_freeze: idx %d\n", map_idx);
+-	map_freeze_attr = add_data(gen, &attr, attr_size);
+-	move_stack2blob(gen, attr_field(map_freeze_attr, map_fd), 4,
+-			stack_off(map_fd[map_idx]));
+-	/* emit MAP_FREEZE command */
+-	emit_sys_bpf(gen, BPF_MAP_FREEZE, map_freeze_attr, attr_size);
+-	debug_ret(gen, "map_freeze");
+-	emit_check_err(gen);
+-}
+diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
+deleted file mode 100644
+index 3c20b126d60d..000000000000
+--- a/tools/lib/bpf/hashmap.c
++++ /dev/null
+@@ -1,241 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * Generic non-thread safe hash map implementation.
+- *
+- * Copyright (c) 2019 Facebook
+- */
+-#include <stdint.h>
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <errno.h>
+-#include <linux/err.h>
+-#include "hashmap.h"
+-
+-/* make sure libbpf doesn't use kernel-only integer typedefs */
+-#pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
+-
+-/* prevent accidental re-addition of reallocarray() */
+-#pragma GCC poison reallocarray
+-
+-/* start with 4 buckets */
+-#define HASHMAP_MIN_CAP_BITS 2
+-
+-static void hashmap_add_entry(struct hashmap_entry **pprev,
+-			      struct hashmap_entry *entry)
+-{
+-	entry->next = *pprev;
+-	*pprev = entry;
+-}
+-
+-static void hashmap_del_entry(struct hashmap_entry **pprev,
+-			      struct hashmap_entry *entry)
+-{
+-	*pprev = entry->next;
+-	entry->next = NULL;
+-}
+-
+-void hashmap__init(struct hashmap *map, hashmap_hash_fn hash_fn,
+-		   hashmap_equal_fn equal_fn, void *ctx)
+-{
+-	map->hash_fn = hash_fn;
+-	map->equal_fn = equal_fn;
+-	map->ctx = ctx;
+-
+-	map->buckets = NULL;
+-	map->cap = 0;
+-	map->cap_bits = 0;
+-	map->sz = 0;
+-}
+-
+-struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
+-			     hashmap_equal_fn equal_fn,
+-			     void *ctx)
+-{
+-	struct hashmap *map = malloc(sizeof(struct hashmap));
+-
+-	if (!map)
+-		return ERR_PTR(-ENOMEM);
+-	hashmap__init(map, hash_fn, equal_fn, ctx);
+-	return map;
+-}
+-
+-void hashmap__clear(struct hashmap *map)
+-{
+-	struct hashmap_entry *cur, *tmp;
+-	size_t bkt;
+-
+-	hashmap__for_each_entry_safe(map, cur, tmp, bkt) {
+-		free(cur);
+-	}
+-	free(map->buckets);
+-	map->buckets = NULL;
+-	map->cap = map->cap_bits = map->sz = 0;
+-}
+-
+-void hashmap__free(struct hashmap *map)
+-{
+-	if (!map)
+-		return;
+-
+-	hashmap__clear(map);
+-	free(map);
+-}
+-
+-size_t hashmap__size(const struct hashmap *map)
+-{
+-	return map->sz;
+-}
+-
+-size_t hashmap__capacity(const struct hashmap *map)
+-{
+-	return map->cap;
+-}
+-
+-static bool hashmap_needs_to_grow(struct hashmap *map)
+-{
+-	/* grow if empty or more than 75% filled */
+-	return (map->cap == 0) || ((map->sz + 1) * 4 / 3 > map->cap);
+-}
+-
+-static int hashmap_grow(struct hashmap *map)
+-{
+-	struct hashmap_entry **new_buckets;
+-	struct hashmap_entry *cur, *tmp;
+-	size_t new_cap_bits, new_cap;
+-	size_t h, bkt;
+-
+-	new_cap_bits = map->cap_bits + 1;
+-	if (new_cap_bits < HASHMAP_MIN_CAP_BITS)
+-		new_cap_bits = HASHMAP_MIN_CAP_BITS;
+-
+-	new_cap = 1UL << new_cap_bits;
+-	new_buckets = calloc(new_cap, sizeof(new_buckets[0]));
+-	if (!new_buckets)
+-		return -ENOMEM;
+-
+-	hashmap__for_each_entry_safe(map, cur, tmp, bkt) {
+-		h = hash_bits(map->hash_fn(cur->key, map->ctx), new_cap_bits);
+-		hashmap_add_entry(&new_buckets[h], cur);
+-	}
+-
+-	map->cap = new_cap;
+-	map->cap_bits = new_cap_bits;
+-	free(map->buckets);
+-	map->buckets = new_buckets;
+-
+-	return 0;
+-}
+-
+-static bool hashmap_find_entry(const struct hashmap *map,
+-			       const void *key, size_t hash,
+-			       struct hashmap_entry ***pprev,
+-			       struct hashmap_entry **entry)
+-{
+-	struct hashmap_entry *cur, **prev_ptr;
+-
+-	if (!map->buckets)
+-		return false;
+-
+-	for (prev_ptr = &map->buckets[hash], cur = *prev_ptr;
+-	     cur;
+-	     prev_ptr = &cur->next, cur = cur->next) {
+-		if (map->equal_fn(cur->key, key, map->ctx)) {
+-			if (pprev)
+-				*pprev = prev_ptr;
+-			*entry = cur;
+-			return true;
+-		}
+-	}
+-
+-	return false;
+-}
+-
+-int hashmap__insert(struct hashmap *map, const void *key, void *value,
+-		    enum hashmap_insert_strategy strategy,
+-		    const void **old_key, void **old_value)
+-{
+-	struct hashmap_entry *entry;
+-	size_t h;
+-	int err;
+-
+-	if (old_key)
+-		*old_key = NULL;
+-	if (old_value)
+-		*old_value = NULL;
+-
+-	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
+-	if (strategy != HASHMAP_APPEND &&
+-	    hashmap_find_entry(map, key, h, NULL, &entry)) {
+-		if (old_key)
+-			*old_key = entry->key;
+-		if (old_value)
+-			*old_value = entry->value;
+-
+-		if (strategy == HASHMAP_SET || strategy == HASHMAP_UPDATE) {
+-			entry->key = key;
+-			entry->value = value;
+-			return 0;
+-		} else if (strategy == HASHMAP_ADD) {
+-			return -EEXIST;
+-		}
+-	}
+-
+-	if (strategy == HASHMAP_UPDATE)
+-		return -ENOENT;
+-
+-	if (hashmap_needs_to_grow(map)) {
+-		err = hashmap_grow(map);
+-		if (err)
+-			return err;
+-		h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
+-	}
+-
+-	entry = malloc(sizeof(struct hashmap_entry));
+-	if (!entry)
+-		return -ENOMEM;
+-
+-	entry->key = key;
+-	entry->value = value;
+-	hashmap_add_entry(&map->buckets[h], entry);
+-	map->sz++;
+-
+-	return 0;
+-}
+-
+-bool hashmap__find(const struct hashmap *map, const void *key, void **value)
+-{
+-	struct hashmap_entry *entry;
+-	size_t h;
+-
+-	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
+-	if (!hashmap_find_entry(map, key, h, NULL, &entry))
+-		return false;
+-
+-	if (value)
+-		*value = entry->value;
+-	return true;
+-}
+-
+-bool hashmap__delete(struct hashmap *map, const void *key,
+-		     const void **old_key, void **old_value)
+-{
+-	struct hashmap_entry **pprev, *entry;
+-	size_t h;
+-
+-	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
+-	if (!hashmap_find_entry(map, key, h, &pprev, &entry))
+-		return false;
+-
+-	if (old_key)
+-		*old_key = entry->key;
+-	if (old_value)
+-		*old_value = entry->value;
+-
+-	hashmap_del_entry(pprev, entry);
+-	free(entry);
+-	map->sz--;
+-
+-	return true;
+-}
+-
+diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
+deleted file mode 100644
+index 10a4c4cd13cf..000000000000
+--- a/tools/lib/bpf/hashmap.h
++++ /dev/null
+@@ -1,195 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * Generic non-thread safe hash map implementation.
+- *
+- * Copyright (c) 2019 Facebook
+- */
+-#ifndef __LIBBPF_HASHMAP_H
+-#define __LIBBPF_HASHMAP_H
+-
+-#include <stdbool.h>
+-#include <stddef.h>
+-#include <limits.h>
+-
+-static inline size_t hash_bits(size_t h, int bits)
+-{
+-	/* shuffle bits and return requested number of upper bits */
+-	if (bits == 0)
+-		return 0;
+-
+-#if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
+-	/* LP64 case */
+-	return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
+-#elif (__SIZEOF_SIZE_T__ <= __SIZEOF_LONG__)
+-	return (h * 2654435769lu) >> (__SIZEOF_LONG__ * 8 - bits);
+-#else
+-#	error "Unsupported size_t size"
+-#endif
+-}
+-
+-/* generic C-string hashing function */
+-static inline size_t str_hash(const char *s)
+-{
+-	size_t h = 0;
+-
+-	while (*s) {
+-		h = h * 31 + *s;
+-		s++;
+-	}
+-	return h;
+-}
+-
+-typedef size_t (*hashmap_hash_fn)(const void *key, void *ctx);
+-typedef bool (*hashmap_equal_fn)(const void *key1, const void *key2, void *ctx);
+-
+-struct hashmap_entry {
+-	const void *key;
+-	void *value;
+-	struct hashmap_entry *next;
+-};
+-
+-struct hashmap {
+-	hashmap_hash_fn hash_fn;
+-	hashmap_equal_fn equal_fn;
+-	void *ctx;
+-
+-	struct hashmap_entry **buckets;
+-	size_t cap;
+-	size_t cap_bits;
+-	size_t sz;
+-};
+-
+-#define HASHMAP_INIT(hash_fn, equal_fn, ctx) {	\
+-	.hash_fn = (hash_fn),			\
+-	.equal_fn = (equal_fn),			\
+-	.ctx = (ctx),				\
+-	.buckets = NULL,			\
+-	.cap = 0,				\
+-	.cap_bits = 0,				\
+-	.sz = 0,				\
+-}
+-
+-void hashmap__init(struct hashmap *map, hashmap_hash_fn hash_fn,
+-		   hashmap_equal_fn equal_fn, void *ctx);
+-struct hashmap *hashmap__new(hashmap_hash_fn hash_fn,
+-			     hashmap_equal_fn equal_fn,
+-			     void *ctx);
+-void hashmap__clear(struct hashmap *map);
+-void hashmap__free(struct hashmap *map);
+-
+-size_t hashmap__size(const struct hashmap *map);
+-size_t hashmap__capacity(const struct hashmap *map);
+-
+-/*
+- * Hashmap insertion strategy:
+- * - HASHMAP_ADD - only add key/value if key doesn't exist yet;
+- * - HASHMAP_SET - add key/value pair if key doesn't exist yet; otherwise,
+- *   update value;
+- * - HASHMAP_UPDATE - update value, if key already exists; otherwise, do
+- *   nothing and return -ENOENT;
+- * - HASHMAP_APPEND - always add key/value pair, even if key already exists.
+- *   This turns hashmap into a multimap by allowing multiple values to be
+- *   associated with the same key. Most useful read API for such hashmap is
+- *   hashmap__for_each_key_entry() iteration. If hashmap__find() is still
+- *   used, it will return last inserted key/value entry (first in a bucket
+- *   chain).
+- */
+-enum hashmap_insert_strategy {
+-	HASHMAP_ADD,
+-	HASHMAP_SET,
+-	HASHMAP_UPDATE,
+-	HASHMAP_APPEND,
+-};
+-
+-/*
+- * hashmap__insert() adds key/value entry w/ various semantics, depending on
+- * provided strategy value. If a given key/value pair replaced already
+- * existing key/value pair, both old key and old value will be returned
+- * through old_key and old_value to allow calling code do proper memory
+- * management.
+- */
+-int hashmap__insert(struct hashmap *map, const void *key, void *value,
+-		    enum hashmap_insert_strategy strategy,
+-		    const void **old_key, void **old_value);
+-
+-static inline int hashmap__add(struct hashmap *map,
+-			       const void *key, void *value)
+-{
+-	return hashmap__insert(map, key, value, HASHMAP_ADD, NULL, NULL);
+-}
+-
+-static inline int hashmap__set(struct hashmap *map,
+-			       const void *key, void *value,
+-			       const void **old_key, void **old_value)
+-{
+-	return hashmap__insert(map, key, value, HASHMAP_SET,
+-			       old_key, old_value);
+-}
+-
+-static inline int hashmap__update(struct hashmap *map,
+-				  const void *key, void *value,
+-				  const void **old_key, void **old_value)
+-{
+-	return hashmap__insert(map, key, value, HASHMAP_UPDATE,
+-			       old_key, old_value);
+-}
+-
+-static inline int hashmap__append(struct hashmap *map,
+-				  const void *key, void *value)
+-{
+-	return hashmap__insert(map, key, value, HASHMAP_APPEND, NULL, NULL);
+-}
+-
+-bool hashmap__delete(struct hashmap *map, const void *key,
+-		     const void **old_key, void **old_value);
+-
+-bool hashmap__find(const struct hashmap *map, const void *key, void **value);
+-
+-/*
+- * hashmap__for_each_entry - iterate over all entries in hashmap
+- * @map: hashmap to iterate
+- * @cur: struct hashmap_entry * used as a loop cursor
+- * @bkt: integer used as a bucket loop cursor
+- */
+-#define hashmap__for_each_entry(map, cur, bkt)				    \
+-	for (bkt = 0; bkt < map->cap; bkt++)				    \
+-		for (cur = map->buckets[bkt]; cur; cur = cur->next)
+-
+-/*
+- * hashmap__for_each_entry_safe - iterate over all entries in hashmap, safe
+- * against removals
+- * @map: hashmap to iterate
+- * @cur: struct hashmap_entry * used as a loop cursor
+- * @tmp: struct hashmap_entry * used as a temporary next cursor storage
+- * @bkt: integer used as a bucket loop cursor
+- */
+-#define hashmap__for_each_entry_safe(map, cur, tmp, bkt)		    \
+-	for (bkt = 0; bkt < map->cap; bkt++)				    \
+-		for (cur = map->buckets[bkt];				    \
+-		     cur && ({tmp = cur->next; true; });		    \
+-		     cur = tmp)
+-
+-/*
+- * hashmap__for_each_key_entry - iterate over entries associated with given key
+- * @map: hashmap to iterate
+- * @cur: struct hashmap_entry * used as a loop cursor
+- * @key: key to iterate entries for
+- */
+-#define hashmap__for_each_key_entry(map, cur, _key)			    \
+-	for (cur = map->buckets						    \
+-		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
+-		     : NULL;						    \
+-	     cur;							    \
+-	     cur = cur->next)						    \
+-		if (map->equal_fn(cur->key, (_key), map->ctx))
+-
+-#define hashmap__for_each_key_entry_safe(map, cur, tmp, _key)		    \
+-	for (cur = map->buckets						    \
+-		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
+-		     : NULL;						    \
+-	     cur && ({ tmp = cur->next; true; });			    \
+-	     cur = tmp)							    \
+-		if (map->equal_fn(cur->key, (_key), map->ctx))
+-
+-#endif /* __LIBBPF_HASHMAP_H */
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+deleted file mode 100644
+index 6f5e2757bb3c..000000000000
+--- a/tools/lib/bpf/libbpf.c
++++ /dev/null
+@@ -1,11831 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * Common eBPF ELF object loading operations.
+- *
+- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
+- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
+- * Copyright (C) 2015 Huawei Inc.
+- * Copyright (C) 2017 Nicira, Inc.
+- * Copyright (C) 2019 Isovalent, Inc.
+- */
+-
+-#ifndef _GNU_SOURCE
+-#define _GNU_SOURCE
+-#endif
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <stdarg.h>
+-#include <libgen.h>
+-#include <inttypes.h>
+-#include <limits.h>
+-#include <string.h>
+-#include <unistd.h>
+-#include <endian.h>
+-#include <fcntl.h>
+-#include <errno.h>
+-#include <ctype.h>
+-#include <asm/unistd.h>
+-#include <linux/err.h>
+-#include <linux/kernel.h>
+-#include <linux/bpf.h>
+-#include <linux/btf.h>
+-#include <linux/filter.h>
+-#include <linux/list.h>
+-#include <linux/limits.h>
+-#include <linux/perf_event.h>
+-#include <linux/ring_buffer.h>
+-#include <linux/version.h>
+-#include <sys/epoll.h>
+-#include <sys/ioctl.h>
+-#include <sys/mman.h>
+-#include <sys/stat.h>
+-#include <sys/types.h>
+-#include <sys/vfs.h>
+-#include <sys/utsname.h>
+-#include <sys/resource.h>
+-#include <libelf.h>
+-#include <gelf.h>
+-#include <zlib.h>
+-
+-#include "libbpf.h"
+-#include "bpf.h"
+-#include "btf.h"
+-#include "str_error.h"
+-#include "libbpf_internal.h"
+-#include "hashmap.h"
+-#include "bpf_gen_internal.h"
+-
+-#ifndef BPF_FS_MAGIC
+-#define BPF_FS_MAGIC		0xcafe4a11
+-#endif
+-
+-#define BPF_INSN_SZ (sizeof(struct bpf_insn))
+-
+-/* vsprintf() in __base_pr() uses nonliteral format string. It may break
+- * compilation if user enables corresponding warning. Disable it explicitly.
+- */
+-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+-
+-#define __printf(a, b)	__attribute__((format(printf, a, b)))
+-
+-static struct bpf_map *bpf_object__add_map(struct bpf_object *obj);
+-static bool prog_is_subprog(const struct bpf_object *obj, const struct bpf_program *prog);
+-
+-static int __base_pr(enum libbpf_print_level level, const char *format,
+-		     va_list args)
+-{
+-	if (level == LIBBPF_DEBUG)
+-		return 0;
+-
+-	return vfprintf(stderr, format, args);
+-}
+-
+-static libbpf_print_fn_t __libbpf_pr = __base_pr;
+-
+-libbpf_print_fn_t libbpf_set_print(libbpf_print_fn_t fn)
+-{
+-	libbpf_print_fn_t old_print_fn = __libbpf_pr;
+-
+-	__libbpf_pr = fn;
+-	return old_print_fn;
+-}
+-
+-__printf(2, 3)
+-void libbpf_print(enum libbpf_print_level level, const char *format, ...)
+-{
+-	va_list args;
+-
+-	if (!__libbpf_pr)
+-		return;
+-
+-	va_start(args, format);
+-	__libbpf_pr(level, format, args);
+-	va_end(args);
+-}
+-
+-static void pr_perm_msg(int err)
+-{
+-	struct rlimit limit;
+-	char buf[100];
+-
+-	if (err != -EPERM || geteuid() != 0)
+-		return;
+-
+-	err = getrlimit(RLIMIT_MEMLOCK, &limit);
+-	if (err)
+-		return;
+-
+-	if (limit.rlim_cur == RLIM_INFINITY)
+-		return;
+-
+-	if (limit.rlim_cur < 1024)
+-		snprintf(buf, sizeof(buf), "%zu bytes", (size_t)limit.rlim_cur);
+-	else if (limit.rlim_cur < 1024*1024)
+-		snprintf(buf, sizeof(buf), "%.1f KiB", (double)limit.rlim_cur / 1024);
+-	else
+-		snprintf(buf, sizeof(buf), "%.1f MiB", (double)limit.rlim_cur / (1024*1024));
+-
+-	pr_warn("permission error while running as root; try raising 'ulimit -l'? current value: %s\n",
+-		buf);
+-}
+-
+-#define STRERR_BUFSIZE  128
+-
+-/* Copied from tools/perf/util/util.h */
+-#ifndef zfree
+-# define zfree(ptr) ({ free(*ptr); *ptr = NULL; })
+-#endif
+-
+-#ifndef zclose
+-# define zclose(fd) ({			\
+-	int ___err = 0;			\
+-	if ((fd) >= 0)			\
+-		___err = close((fd));	\
+-	fd = -1;			\
+-	___err; })
+-#endif
+-
+-static inline __u64 ptr_to_u64(const void *ptr)
+-{
+-	return (__u64) (unsigned long) ptr;
+-}
+-
+-/* this goes away in libbpf 1.0 */
+-enum libbpf_strict_mode libbpf_mode = LIBBPF_STRICT_NONE;
+-
+-int libbpf_set_strict_mode(enum libbpf_strict_mode mode)
+-{
+-	/* __LIBBPF_STRICT_LAST is the last power-of-2 value used + 1, so to
+-	 * get all possible values we compensate last +1, and then (2*x - 1)
+-	 * to get the bit mask
+-	 */
+-	if (mode != LIBBPF_STRICT_ALL
+-	    && (mode & ~((__LIBBPF_STRICT_LAST - 1) * 2 - 1)))
+-		return errno = EINVAL, -EINVAL;
+-
+-	libbpf_mode = mode;
+-	return 0;
+-}
+-
+-enum kern_feature_id {
+-	/* v4.14: kernel support for program & map names. */
+-	FEAT_PROG_NAME,
+-	/* v5.2: kernel support for global data sections. */
+-	FEAT_GLOBAL_DATA,
+-	/* BTF support */
+-	FEAT_BTF,
+-	/* BTF_KIND_FUNC and BTF_KIND_FUNC_PROTO support */
+-	FEAT_BTF_FUNC,
+-	/* BTF_KIND_VAR and BTF_KIND_DATASEC support */
+-	FEAT_BTF_DATASEC,
+-	/* BTF_FUNC_GLOBAL is supported */
+-	FEAT_BTF_GLOBAL_FUNC,
+-	/* BPF_F_MMAPABLE is supported for arrays */
+-	FEAT_ARRAY_MMAP,
+-	/* kernel support for expected_attach_type in BPF_PROG_LOAD */
+-	FEAT_EXP_ATTACH_TYPE,
+-	/* bpf_probe_read_{kernel,user}[_str] helpers */
+-	FEAT_PROBE_READ_KERN,
+-	/* BPF_PROG_BIND_MAP is supported */
+-	FEAT_PROG_BIND_MAP,
+-	/* Kernel support for module BTFs */
+-	FEAT_MODULE_BTF,
+-	/* BTF_KIND_FLOAT support */
+-	FEAT_BTF_FLOAT,
+-	__FEAT_CNT,
+-};
+-
+-static bool kernel_supports(const struct bpf_object *obj, enum kern_feature_id feat_id);
+-
+-enum reloc_type {
+-	RELO_LD64,
+-	RELO_CALL,
+-	RELO_DATA,
+-	RELO_EXTERN_VAR,
+-	RELO_EXTERN_FUNC,
+-	RELO_SUBPROG_ADDR,
+-};
+-
+-struct reloc_desc {
+-	enum reloc_type type;
+-	int insn_idx;
+-	int map_idx;
+-	int sym_off;
+-};
+-
+-struct bpf_sec_def;
+-
+-typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
+-					struct bpf_program *prog);
+-
+-struct bpf_sec_def {
+-	const char *sec;
+-	size_t len;
+-	enum bpf_prog_type prog_type;
+-	enum bpf_attach_type expected_attach_type;
+-	bool is_exp_attach_type_optional;
+-	bool is_attachable;
+-	bool is_attach_btf;
+-	bool is_sleepable;
+-	attach_fn_t attach_fn;
+-};
+-
+-/*
+- * bpf_prog should be a better name but it has been used in
+- * linux/filter.h.
+- */
+-struct bpf_program {
+-	const struct bpf_sec_def *sec_def;
+-	char *sec_name;
+-	size_t sec_idx;
+-	/* this program's instruction offset (in number of instructions)
+-	 * within its containing ELF section
+-	 */
+-	size_t sec_insn_off;
+-	/* number of original instructions in ELF section belonging to this
+-	 * program, not taking into account subprogram instructions possible
+-	 * appended later during relocation
+-	 */
+-	size_t sec_insn_cnt;
+-	/* Offset (in number of instructions) of the start of instruction
+-	 * belonging to this BPF program  within its containing main BPF
+-	 * program. For the entry-point (main) BPF program, this is always
+-	 * zero. For a sub-program, this gets reset before each of main BPF
+-	 * programs are processed and relocated and is used to determined
+-	 * whether sub-program was already appended to the main program, and
+-	 * if yes, at which instruction offset.
+-	 */
+-	size_t sub_insn_off;
+-
+-	char *name;
+-	/* sec_name with / replaced by _; makes recursive pinning
+-	 * in bpf_object__pin_programs easier
+-	 */
+-	char *pin_name;
+-
+-	/* instructions that belong to BPF program; insns[0] is located at
+-	 * sec_insn_off instruction within its ELF section in ELF file, so
+-	 * when mapping ELF file instruction index to the local instruction,
+-	 * one needs to subtract sec_insn_off; and vice versa.
+-	 */
+-	struct bpf_insn *insns;
+-	/* actual number of instruction in this BPF program's image; for
+-	 * entry-point BPF programs this includes the size of main program
+-	 * itself plus all the used sub-programs, appended at the end
+-	 */
+-	size_t insns_cnt;
+-
+-	struct reloc_desc *reloc_desc;
+-	int nr_reloc;
+-	int log_level;
+-
+-	struct {
+-		int nr;
+-		int *fds;
+-	} instances;
+-	bpf_program_prep_t preprocessor;
+-
+-	struct bpf_object *obj;
+-	void *priv;
+-	bpf_program_clear_priv_t clear_priv;
+-
+-	bool load;
+-	bool mark_btf_static;
+-	enum bpf_prog_type type;
+-	enum bpf_attach_type expected_attach_type;
+-	int prog_ifindex;
+-	__u32 attach_btf_obj_fd;
+-	__u32 attach_btf_id;
+-	__u32 attach_prog_fd;
+-	void *func_info;
+-	__u32 func_info_rec_size;
+-	__u32 func_info_cnt;
+-
+-	void *line_info;
+-	__u32 line_info_rec_size;
+-	__u32 line_info_cnt;
+-	__u32 prog_flags;
+-};
+-
+-struct bpf_struct_ops {
+-	const char *tname;
+-	const struct btf_type *type;
+-	struct bpf_program **progs;
+-	__u32 *kern_func_off;
+-	/* e.g. struct tcp_congestion_ops in bpf_prog's btf format */
+-	void *data;
+-	/* e.g. struct bpf_struct_ops_tcp_congestion_ops in
+-	 *      btf_vmlinux's format.
+-	 * struct bpf_struct_ops_tcp_congestion_ops {
+-	 *	[... some other kernel fields ...]
+-	 *	struct tcp_congestion_ops data;
+-	 * }
+-	 * kern_vdata-size == sizeof(struct bpf_struct_ops_tcp_congestion_ops)
+-	 * bpf_map__init_kern_struct_ops() will populate the "kern_vdata"
+-	 * from "data".
+-	 */
+-	void *kern_vdata;
+-	__u32 type_id;
+-};
+-
+-#define DATA_SEC ".data"
+-#define BSS_SEC ".bss"
+-#define RODATA_SEC ".rodata"
+-#define KCONFIG_SEC ".kconfig"
+-#define KSYMS_SEC ".ksyms"
+-#define STRUCT_OPS_SEC ".struct_ops"
+-
+-enum libbpf_map_type {
+-	LIBBPF_MAP_UNSPEC,
+-	LIBBPF_MAP_DATA,
+-	LIBBPF_MAP_BSS,
+-	LIBBPF_MAP_RODATA,
+-	LIBBPF_MAP_KCONFIG,
+-};
+-
+-static const char * const libbpf_type_to_btf_name[] = {
+-	[LIBBPF_MAP_DATA]	= DATA_SEC,
+-	[LIBBPF_MAP_BSS]	= BSS_SEC,
+-	[LIBBPF_MAP_RODATA]	= RODATA_SEC,
+-	[LIBBPF_MAP_KCONFIG]	= KCONFIG_SEC,
+-};
+-
+-struct bpf_map {
+-	char *name;
+-	int fd;
+-	int sec_idx;
+-	size_t sec_offset;
+-	int map_ifindex;
+-	int inner_map_fd;
+-	struct bpf_map_def def;
+-	__u32 numa_node;
+-	__u32 btf_var_idx;
+-	__u32 btf_key_type_id;
+-	__u32 btf_value_type_id;
+-	__u32 btf_vmlinux_value_type_id;
+-	void *priv;
+-	bpf_map_clear_priv_t clear_priv;
+-	enum libbpf_map_type libbpf_type;
+-	void *mmaped;
+-	struct bpf_struct_ops *st_ops;
+-	struct bpf_map *inner_map;
+-	void **init_slots;
+-	int init_slots_sz;
+-	char *pin_path;
+-	bool pinned;
+-	bool reused;
+-};
+-
+-enum extern_type {
+-	EXT_UNKNOWN,
+-	EXT_KCFG,
+-	EXT_KSYM,
+-};
+-
+-enum kcfg_type {
+-	KCFG_UNKNOWN,
+-	KCFG_CHAR,
+-	KCFG_BOOL,
+-	KCFG_INT,
+-	KCFG_TRISTATE,
+-	KCFG_CHAR_ARR,
+-};
+-
+-struct extern_desc {
+-	enum extern_type type;
+-	int sym_idx;
+-	int btf_id;
+-	int sec_btf_id;
+-	const char *name;
+-	bool is_set;
+-	bool is_weak;
+-	union {
+-		struct {
+-			enum kcfg_type type;
+-			int sz;
+-			int align;
+-			int data_off;
+-			bool is_signed;
+-		} kcfg;
+-		struct {
+-			unsigned long long addr;
+-
+-			/* target btf_id of the corresponding kernel var. */
+-			int kernel_btf_obj_fd;
+-			int kernel_btf_id;
+-
+-			/* local btf_id of the ksym extern's type. */
+-			__u32 type_id;
+-		} ksym;
+-	};
+-};
+-
+-static LIST_HEAD(bpf_objects_list);
+-
+-struct module_btf {
+-	struct btf *btf;
+-	char *name;
+-	__u32 id;
+-	int fd;
+-};
+-
+-struct bpf_object {
+-	char name[BPF_OBJ_NAME_LEN];
+-	char license[64];
+-	__u32 kern_version;
+-
+-	struct bpf_program *programs;
+-	size_t nr_programs;
+-	struct bpf_map *maps;
+-	size_t nr_maps;
+-	size_t maps_cap;
+-
+-	char *kconfig;
+-	struct extern_desc *externs;
+-	int nr_extern;
+-	int kconfig_map_idx;
+-	int rodata_map_idx;
+-
+-	bool loaded;
+-	bool has_subcalls;
+-
+-	struct bpf_gen *gen_loader;
+-
+-	/*
+-	 * Information when doing elf related work. Only valid if fd
+-	 * is valid.
+-	 */
+-	struct {
+-		int fd;
+-		const void *obj_buf;
+-		size_t obj_buf_sz;
+-		Elf *elf;
+-		GElf_Ehdr ehdr;
+-		Elf_Data *symbols;
+-		Elf_Data *data;
+-		Elf_Data *rodata;
+-		Elf_Data *bss;
+-		Elf_Data *st_ops_data;
+-		size_t shstrndx; /* section index for section name strings */
+-		size_t strtabidx;
+-		struct {
+-			GElf_Shdr shdr;
+-			Elf_Data *data;
+-		} *reloc_sects;
+-		int nr_reloc_sects;
+-		int maps_shndx;
+-		int btf_maps_shndx;
+-		__u32 btf_maps_sec_btf_id;
+-		int text_shndx;
+-		int symbols_shndx;
+-		int data_shndx;
+-		int rodata_shndx;
+-		int bss_shndx;
+-		int st_ops_shndx;
+-	} efile;
+-	/*
+-	 * All loaded bpf_object is linked in a list, which is
+-	 * hidden to caller. bpf_objects__<func> handlers deal with
+-	 * all objects.
+-	 */
+-	struct list_head list;
+-
+-	struct btf *btf;
+-	struct btf_ext *btf_ext;
+-
+-	/* Parse and load BTF vmlinux if any of the programs in the object need
+-	 * it at load time.
+-	 */
+-	struct btf *btf_vmlinux;
+-	/* vmlinux BTF override for CO-RE relocations */
+-	struct btf *btf_vmlinux_override;
+-	/* Lazily initialized kernel module BTFs */
+-	struct module_btf *btf_modules;
+-	bool btf_modules_loaded;
+-	size_t btf_module_cnt;
+-	size_t btf_module_cap;
+-
+-	void *priv;
+-	bpf_object_clear_priv_t clear_priv;
+-
+-	char path[];
+-};
+-#define obj_elf_valid(o)	((o)->efile.elf)
+-
+-static const char *elf_sym_str(const struct bpf_object *obj, size_t off);
+-static const char *elf_sec_str(const struct bpf_object *obj, size_t off);
+-static Elf_Scn *elf_sec_by_idx(const struct bpf_object *obj, size_t idx);
+-static Elf_Scn *elf_sec_by_name(const struct bpf_object *obj, const char *name);
+-static int elf_sec_hdr(const struct bpf_object *obj, Elf_Scn *scn, GElf_Shdr *hdr);
+-static const char *elf_sec_name(const struct bpf_object *obj, Elf_Scn *scn);
+-static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn);
+-
+-void bpf_program__unload(struct bpf_program *prog)
+-{
+-	int i;
+-
+-	if (!prog)
+-		return;
+-
+-	/*
+-	 * If the object is opened but the program was never loaded,
+-	 * it is possible that prog->instances.nr == -1.
+-	 */
+-	if (prog->instances.nr > 0) {
+-		for (i = 0; i < prog->instances.nr; i++)
+-			zclose(prog->instances.fds[i]);
+-	} else if (prog->instances.nr != -1) {
+-		pr_warn("Internal error: instances.nr is %d\n",
+-			prog->instances.nr);
+-	}
+-
+-	prog->instances.nr = -1;
+-	zfree(&prog->instances.fds);
+-
+-	zfree(&prog->func_info);
+-	zfree(&prog->line_info);
+-}
+-
+-static void bpf_program__exit(struct bpf_program *prog)
+-{
+-	if (!prog)
+-		return;
+-
+-	if (prog->clear_priv)
+-		prog->clear_priv(prog, prog->priv);
+-
+-	prog->priv = NULL;
+-	prog->clear_priv = NULL;
+-
+-	bpf_program__unload(prog);
+-	zfree(&prog->name);
+-	zfree(&prog->sec_name);
+-	zfree(&prog->pin_name);
+-	zfree(&prog->insns);
+-	zfree(&prog->reloc_desc);
+-
+-	prog->nr_reloc = 0;
+-	prog->insns_cnt = 0;
+-	prog->sec_idx = -1;
+-}
+-
+-static char *__bpf_program__pin_name(struct bpf_program *prog)
+-{
+-	char *name, *p;
+-
+-	name = p = strdup(prog->sec_name);
+-	while ((p = strchr(p, '/')))
+-		*p = '_';
+-
+-	return name;
+-}
+-
+-static bool insn_is_subprog_call(const struct bpf_insn *insn)
+-{
+-	return BPF_CLASS(insn->code) == BPF_JMP &&
+-	       BPF_OP(insn->code) == BPF_CALL &&
+-	       BPF_SRC(insn->code) == BPF_K &&
+-	       insn->src_reg == BPF_PSEUDO_CALL &&
+-	       insn->dst_reg == 0 &&
+-	       insn->off == 0;
+-}
+-
+-static bool is_ldimm64_insn(struct bpf_insn *insn)
+-{
+-	return insn->code == (BPF_LD | BPF_IMM | BPF_DW);
+-}
+-
+-static bool is_call_insn(const struct bpf_insn *insn)
+-{
+-	return insn->code == (BPF_JMP | BPF_CALL);
+-}
+-
+-static bool insn_is_pseudo_func(struct bpf_insn *insn)
+-{
+-	return is_ldimm64_insn(insn) && insn->src_reg == BPF_PSEUDO_FUNC;
+-}
+-
+-static int
+-bpf_object__init_prog(struct bpf_object *obj, struct bpf_program *prog,
+-		      const char *name, size_t sec_idx, const char *sec_name,
+-		      size_t sec_off, void *insn_data, size_t insn_data_sz)
+-{
+-	if (insn_data_sz == 0 || insn_data_sz % BPF_INSN_SZ || sec_off % BPF_INSN_SZ) {
+-		pr_warn("sec '%s': corrupted program '%s', offset %zu, size %zu\n",
+-			sec_name, name, sec_off, insn_data_sz);
+-		return -EINVAL;
+-	}
+-
+-	memset(prog, 0, sizeof(*prog));
+-	prog->obj = obj;
+-
+-	prog->sec_idx = sec_idx;
+-	prog->sec_insn_off = sec_off / BPF_INSN_SZ;
+-	prog->sec_insn_cnt = insn_data_sz / BPF_INSN_SZ;
+-	/* insns_cnt can later be increased by appending used subprograms */
+-	prog->insns_cnt = prog->sec_insn_cnt;
+-
+-	prog->type = BPF_PROG_TYPE_UNSPEC;
+-	prog->load = true;
+-
+-	prog->instances.fds = NULL;
+-	prog->instances.nr = -1;
+-
+-	prog->sec_name = strdup(sec_name);
+-	if (!prog->sec_name)
+-		goto errout;
+-
+-	prog->name = strdup(name);
+-	if (!prog->name)
+-		goto errout;
+-
+-	prog->pin_name = __bpf_program__pin_name(prog);
+-	if (!prog->pin_name)
+-		goto errout;
+-
+-	prog->insns = malloc(insn_data_sz);
+-	if (!prog->insns)
+-		goto errout;
+-	memcpy(prog->insns, insn_data, insn_data_sz);
+-
+-	return 0;
+-errout:
+-	pr_warn("sec '%s': failed to allocate memory for prog '%s'\n", sec_name, name);
+-	bpf_program__exit(prog);
+-	return -ENOMEM;
+-}
+-
+-static int
+-bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
+-			 const char *sec_name, int sec_idx)
+-{
+-	Elf_Data *symbols = obj->efile.symbols;
+-	struct bpf_program *prog, *progs;
+-	void *data = sec_data->d_buf;
+-	size_t sec_sz = sec_data->d_size, sec_off, prog_sz, nr_syms;
+-	int nr_progs, err, i;
+-	const char *name;
+-	GElf_Sym sym;
+-
+-	progs = obj->programs;
+-	nr_progs = obj->nr_programs;
+-	nr_syms = symbols->d_size / sizeof(GElf_Sym);
+-	sec_off = 0;
+-
+-	for (i = 0; i < nr_syms; i++) {
+-		if (!gelf_getsym(symbols, i, &sym))
+-			continue;
+-		if (sym.st_shndx != sec_idx)
+-			continue;
+-		if (GELF_ST_TYPE(sym.st_info) != STT_FUNC)
+-			continue;
+-
+-		prog_sz = sym.st_size;
+-		sec_off = sym.st_value;
+-
+-		name = elf_sym_str(obj, sym.st_name);
+-		if (!name) {
+-			pr_warn("sec '%s': failed to get symbol name for offset %zu\n",
+-				sec_name, sec_off);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		if (sec_off + prog_sz > sec_sz) {
+-			pr_warn("sec '%s': program at offset %zu crosses section boundary\n",
+-				sec_name, sec_off);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		if (sec_idx != obj->efile.text_shndx && GELF_ST_BIND(sym.st_info) == STB_LOCAL) {
+-			pr_warn("sec '%s': program '%s' is static and not supported\n", sec_name, name);
+-			return -ENOTSUP;
+-		}
+-
+-		pr_debug("sec '%s': found program '%s' at insn offset %zu (%zu bytes), code size %zu insns (%zu bytes)\n",
+-			 sec_name, name, sec_off / BPF_INSN_SZ, sec_off, prog_sz / BPF_INSN_SZ, prog_sz);
+-
+-		progs = libbpf_reallocarray(progs, nr_progs + 1, sizeof(*progs));
+-		if (!progs) {
+-			/*
+-			 * In this case the original obj->programs
+-			 * is still valid, so don't need special treat for
+-			 * bpf_close_object().
+-			 */
+-			pr_warn("sec '%s': failed to alloc memory for new program '%s'\n",
+-				sec_name, name);
+-			return -ENOMEM;
+-		}
+-		obj->programs = progs;
+-
+-		prog = &progs[nr_progs];
+-
+-		err = bpf_object__init_prog(obj, prog, name, sec_idx, sec_name,
+-					    sec_off, data + sec_off, prog_sz);
+-		if (err)
+-			return err;
+-
+-		/* if function is a global/weak symbol, but has restricted
+-		 * (STV_HIDDEN or STV_INTERNAL) visibility, mark its BTF FUNC
+-		 * as static to enable more permissive BPF verification mode
+-		 * with more outside context available to BPF verifier
+-		 */
+-		if (GELF_ST_BIND(sym.st_info) != STB_LOCAL
+-		    && (GELF_ST_VISIBILITY(sym.st_other) == STV_HIDDEN
+-			|| GELF_ST_VISIBILITY(sym.st_other) == STV_INTERNAL))
+-			prog->mark_btf_static = true;
+-
+-		nr_progs++;
+-		obj->nr_programs = nr_progs;
+-	}
+-
+-	return 0;
+-}
+-
+-static __u32 get_kernel_version(void)
+-{
+-	__u32 major, minor, patch;
+-	struct utsname info;
+-
+-	uname(&info);
+-	if (sscanf(info.release, "%u.%u.%u", &major, &minor, &patch) != 3)
+-		return 0;
+-	return KERNEL_VERSION(major, minor, patch);
+-}
+-
+-static const struct btf_member *
+-find_member_by_offset(const struct btf_type *t, __u32 bit_offset)
+-{
+-	struct btf_member *m;
+-	int i;
+-
+-	for (i = 0, m = btf_members(t); i < btf_vlen(t); i++, m++) {
+-		if (btf_member_bit_offset(t, i) == bit_offset)
+-			return m;
+-	}
+-
+-	return NULL;
+-}
+-
+-static const struct btf_member *
+-find_member_by_name(const struct btf *btf, const struct btf_type *t,
+-		    const char *name)
+-{
+-	struct btf_member *m;
+-	int i;
+-
+-	for (i = 0, m = btf_members(t); i < btf_vlen(t); i++, m++) {
+-		if (!strcmp(btf__name_by_offset(btf, m->name_off), name))
+-			return m;
+-	}
+-
+-	return NULL;
+-}
+-
+-#define STRUCT_OPS_VALUE_PREFIX "bpf_struct_ops_"
+-static int find_btf_by_prefix_kind(const struct btf *btf, const char *prefix,
+-				   const char *name, __u32 kind);
+-
+-static int
+-find_struct_ops_kern_types(const struct btf *btf, const char *tname,
+-			   const struct btf_type **type, __u32 *type_id,
+-			   const struct btf_type **vtype, __u32 *vtype_id,
+-			   const struct btf_member **data_member)
+-{
+-	const struct btf_type *kern_type, *kern_vtype;
+-	const struct btf_member *kern_data_member;
+-	__s32 kern_vtype_id, kern_type_id;
+-	__u32 i;
+-
+-	kern_type_id = btf__find_by_name_kind(btf, tname, BTF_KIND_STRUCT);
+-	if (kern_type_id < 0) {
+-		pr_warn("struct_ops init_kern: struct %s is not found in kernel BTF\n",
+-			tname);
+-		return kern_type_id;
+-	}
+-	kern_type = btf__type_by_id(btf, kern_type_id);
+-
+-	/* Find the corresponding "map_value" type that will be used
+-	 * in map_update(BPF_MAP_TYPE_STRUCT_OPS).  For example,
+-	 * find "struct bpf_struct_ops_tcp_congestion_ops" from the
+-	 * btf_vmlinux.
+-	 */
+-	kern_vtype_id = find_btf_by_prefix_kind(btf, STRUCT_OPS_VALUE_PREFIX,
+-						tname, BTF_KIND_STRUCT);
+-	if (kern_vtype_id < 0) {
+-		pr_warn("struct_ops init_kern: struct %s%s is not found in kernel BTF\n",
+-			STRUCT_OPS_VALUE_PREFIX, tname);
+-		return kern_vtype_id;
+-	}
+-	kern_vtype = btf__type_by_id(btf, kern_vtype_id);
+-
+-	/* Find "struct tcp_congestion_ops" from
+-	 * struct bpf_struct_ops_tcp_congestion_ops {
+-	 *	[ ... ]
+-	 *	struct tcp_congestion_ops data;
+-	 * }
+-	 */
+-	kern_data_member = btf_members(kern_vtype);
+-	for (i = 0; i < btf_vlen(kern_vtype); i++, kern_data_member++) {
+-		if (kern_data_member->type == kern_type_id)
+-			break;
+-	}
+-	if (i == btf_vlen(kern_vtype)) {
+-		pr_warn("struct_ops init_kern: struct %s data is not found in struct %s%s\n",
+-			tname, STRUCT_OPS_VALUE_PREFIX, tname);
+-		return -EINVAL;
+-	}
+-
+-	*type = kern_type;
+-	*type_id = kern_type_id;
+-	*vtype = kern_vtype;
+-	*vtype_id = kern_vtype_id;
+-	*data_member = kern_data_member;
+-
+-	return 0;
+-}
+-
+-static bool bpf_map__is_struct_ops(const struct bpf_map *map)
+-{
+-	return map->def.type == BPF_MAP_TYPE_STRUCT_OPS;
+-}
+-
+-/* Init the map's fields that depend on kern_btf */
+-static int bpf_map__init_kern_struct_ops(struct bpf_map *map,
+-					 const struct btf *btf,
+-					 const struct btf *kern_btf)
+-{
+-	const struct btf_member *member, *kern_member, *kern_data_member;
+-	const struct btf_type *type, *kern_type, *kern_vtype;
+-	__u32 i, kern_type_id, kern_vtype_id, kern_data_off;
+-	struct bpf_struct_ops *st_ops;
+-	void *data, *kern_data;
+-	const char *tname;
+-	int err;
+-
+-	st_ops = map->st_ops;
+-	type = st_ops->type;
+-	tname = st_ops->tname;
+-	err = find_struct_ops_kern_types(kern_btf, tname,
+-					 &kern_type, &kern_type_id,
+-					 &kern_vtype, &kern_vtype_id,
+-					 &kern_data_member);
+-	if (err)
+-		return err;
+-
+-	pr_debug("struct_ops init_kern %s: type_id:%u kern_type_id:%u kern_vtype_id:%u\n",
+-		 map->name, st_ops->type_id, kern_type_id, kern_vtype_id);
+-
+-	map->def.value_size = kern_vtype->size;
+-	map->btf_vmlinux_value_type_id = kern_vtype_id;
+-
+-	st_ops->kern_vdata = calloc(1, kern_vtype->size);
+-	if (!st_ops->kern_vdata)
+-		return -ENOMEM;
+-
+-	data = st_ops->data;
+-	kern_data_off = kern_data_member->offset / 8;
+-	kern_data = st_ops->kern_vdata + kern_data_off;
+-
+-	member = btf_members(type);
+-	for (i = 0; i < btf_vlen(type); i++, member++) {
+-		const struct btf_type *mtype, *kern_mtype;
+-		__u32 mtype_id, kern_mtype_id;
+-		void *mdata, *kern_mdata;
+-		__s64 msize, kern_msize;
+-		__u32 moff, kern_moff;
+-		__u32 kern_member_idx;
+-		const char *mname;
+-
+-		mname = btf__name_by_offset(btf, member->name_off);
+-		kern_member = find_member_by_name(kern_btf, kern_type, mname);
+-		if (!kern_member) {
+-			pr_warn("struct_ops init_kern %s: Cannot find member %s in kernel BTF\n",
+-				map->name, mname);
+-			return -ENOTSUP;
+-		}
+-
+-		kern_member_idx = kern_member - btf_members(kern_type);
+-		if (btf_member_bitfield_size(type, i) ||
+-		    btf_member_bitfield_size(kern_type, kern_member_idx)) {
+-			pr_warn("struct_ops init_kern %s: bitfield %s is not supported\n",
+-				map->name, mname);
+-			return -ENOTSUP;
+-		}
+-
+-		moff = member->offset / 8;
+-		kern_moff = kern_member->offset / 8;
+-
+-		mdata = data + moff;
+-		kern_mdata = kern_data + kern_moff;
+-
+-		mtype = skip_mods_and_typedefs(btf, member->type, &mtype_id);
+-		kern_mtype = skip_mods_and_typedefs(kern_btf, kern_member->type,
+-						    &kern_mtype_id);
+-		if (BTF_INFO_KIND(mtype->info) !=
+-		    BTF_INFO_KIND(kern_mtype->info)) {
+-			pr_warn("struct_ops init_kern %s: Unmatched member type %s %u != %u(kernel)\n",
+-				map->name, mname, BTF_INFO_KIND(mtype->info),
+-				BTF_INFO_KIND(kern_mtype->info));
+-			return -ENOTSUP;
+-		}
+-
+-		if (btf_is_ptr(mtype)) {
+-			struct bpf_program *prog;
+-
+-			prog = st_ops->progs[i];
+-			if (!prog)
+-				continue;
+-
+-			kern_mtype = skip_mods_and_typedefs(kern_btf,
+-							    kern_mtype->type,
+-							    &kern_mtype_id);
+-
+-			/* mtype->type must be a func_proto which was
+-			 * guaranteed in bpf_object__collect_st_ops_relos(),
+-			 * so only check kern_mtype for func_proto here.
+-			 */
+-			if (!btf_is_func_proto(kern_mtype)) {
+-				pr_warn("struct_ops init_kern %s: kernel member %s is not a func ptr\n",
+-					map->name, mname);
+-				return -ENOTSUP;
+-			}
+-
+-			prog->attach_btf_id = kern_type_id;
+-			prog->expected_attach_type = kern_member_idx;
+-
+-			st_ops->kern_func_off[i] = kern_data_off + kern_moff;
+-
+-			pr_debug("struct_ops init_kern %s: func ptr %s is set to prog %s from data(+%u) to kern_data(+%u)\n",
+-				 map->name, mname, prog->name, moff,
+-				 kern_moff);
+-
+-			continue;
+-		}
+-
+-		msize = btf__resolve_size(btf, mtype_id);
+-		kern_msize = btf__resolve_size(kern_btf, kern_mtype_id);
+-		if (msize < 0 || kern_msize < 0 || msize != kern_msize) {
+-			pr_warn("struct_ops init_kern %s: Error in size of member %s: %zd != %zd(kernel)\n",
+-				map->name, mname, (ssize_t)msize,
+-				(ssize_t)kern_msize);
+-			return -ENOTSUP;
+-		}
+-
+-		pr_debug("struct_ops init_kern %s: copy %s %u bytes from data(+%u) to kern_data(+%u)\n",
+-			 map->name, mname, (unsigned int)msize,
+-			 moff, kern_moff);
+-		memcpy(kern_mdata, mdata, msize);
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_object__init_kern_struct_ops_maps(struct bpf_object *obj)
+-{
+-	struct bpf_map *map;
+-	size_t i;
+-	int err;
+-
+-	for (i = 0; i < obj->nr_maps; i++) {
+-		map = &obj->maps[i];
+-
+-		if (!bpf_map__is_struct_ops(map))
+-			continue;
+-
+-		err = bpf_map__init_kern_struct_ops(map, obj->btf,
+-						    obj->btf_vmlinux);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_object__init_struct_ops_maps(struct bpf_object *obj)
+-{
+-	const struct btf_type *type, *datasec;
+-	const struct btf_var_secinfo *vsi;
+-	struct bpf_struct_ops *st_ops;
+-	const char *tname, *var_name;
+-	__s32 type_id, datasec_id;
+-	const struct btf *btf;
+-	struct bpf_map *map;
+-	__u32 i;
+-
+-	if (obj->efile.st_ops_shndx == -1)
+-		return 0;
+-
+-	btf = obj->btf;
+-	datasec_id = btf__find_by_name_kind(btf, STRUCT_OPS_SEC,
+-					    BTF_KIND_DATASEC);
+-	if (datasec_id < 0) {
+-		pr_warn("struct_ops init: DATASEC %s not found\n",
+-			STRUCT_OPS_SEC);
+-		return -EINVAL;
+-	}
+-
+-	datasec = btf__type_by_id(btf, datasec_id);
+-	vsi = btf_var_secinfos(datasec);
+-	for (i = 0; i < btf_vlen(datasec); i++, vsi++) {
+-		type = btf__type_by_id(obj->btf, vsi->type);
+-		var_name = btf__name_by_offset(obj->btf, type->name_off);
+-
+-		type_id = btf__resolve_type(obj->btf, vsi->type);
+-		if (type_id < 0) {
+-			pr_warn("struct_ops init: Cannot resolve var type_id %u in DATASEC %s\n",
+-				vsi->type, STRUCT_OPS_SEC);
+-			return -EINVAL;
+-		}
+-
+-		type = btf__type_by_id(obj->btf, type_id);
+-		tname = btf__name_by_offset(obj->btf, type->name_off);
+-		if (!tname[0]) {
+-			pr_warn("struct_ops init: anonymous type is not supported\n");
+-			return -ENOTSUP;
+-		}
+-		if (!btf_is_struct(type)) {
+-			pr_warn("struct_ops init: %s is not a struct\n", tname);
+-			return -EINVAL;
+-		}
+-
+-		map = bpf_object__add_map(obj);
+-		if (IS_ERR(map))
+-			return PTR_ERR(map);
+-
+-		map->sec_idx = obj->efile.st_ops_shndx;
+-		map->sec_offset = vsi->offset;
+-		map->name = strdup(var_name);
+-		if (!map->name)
+-			return -ENOMEM;
+-
+-		map->def.type = BPF_MAP_TYPE_STRUCT_OPS;
+-		map->def.key_size = sizeof(int);
+-		map->def.value_size = type->size;
+-		map->def.max_entries = 1;
+-
+-		map->st_ops = calloc(1, sizeof(*map->st_ops));
+-		if (!map->st_ops)
+-			return -ENOMEM;
+-		st_ops = map->st_ops;
+-		st_ops->data = malloc(type->size);
+-		st_ops->progs = calloc(btf_vlen(type), sizeof(*st_ops->progs));
+-		st_ops->kern_func_off = malloc(btf_vlen(type) *
+-					       sizeof(*st_ops->kern_func_off));
+-		if (!st_ops->data || !st_ops->progs || !st_ops->kern_func_off)
+-			return -ENOMEM;
+-
+-		if (vsi->offset + type->size > obj->efile.st_ops_data->d_size) {
+-			pr_warn("struct_ops init: var %s is beyond the end of DATASEC %s\n",
+-				var_name, STRUCT_OPS_SEC);
+-			return -EINVAL;
+-		}
+-
+-		memcpy(st_ops->data,
+-		       obj->efile.st_ops_data->d_buf + vsi->offset,
+-		       type->size);
+-		st_ops->tname = tname;
+-		st_ops->type = type;
+-		st_ops->type_id = type_id;
+-
+-		pr_debug("struct_ops init: struct %s(type_id=%u) %s found at offset %u\n",
+-			 tname, type_id, var_name, vsi->offset);
+-	}
+-
+-	return 0;
+-}
+-
+-static struct bpf_object *bpf_object__new(const char *path,
+-					  const void *obj_buf,
+-					  size_t obj_buf_sz,
+-					  const char *obj_name)
+-{
+-	struct bpf_object *obj;
+-	char *end;
+-
+-	obj = calloc(1, sizeof(struct bpf_object) + strlen(path) + 1);
+-	if (!obj) {
+-		pr_warn("alloc memory failed for %s\n", path);
+-		return ERR_PTR(-ENOMEM);
+-	}
+-
+-	strcpy(obj->path, path);
+-	if (obj_name) {
+-		strncpy(obj->name, obj_name, sizeof(obj->name) - 1);
+-		obj->name[sizeof(obj->name) - 1] = 0;
+-	} else {
+-		/* Using basename() GNU version which doesn't modify arg. */
+-		strncpy(obj->name, basename((void *)path),
+-			sizeof(obj->name) - 1);
+-		end = strchr(obj->name, '.');
+-		if (end)
+-			*end = 0;
+-	}
+-
+-	obj->efile.fd = -1;
+-	/*
+-	 * Caller of this function should also call
+-	 * bpf_object__elf_finish() after data collection to return
+-	 * obj_buf to user. If not, we should duplicate the buffer to
+-	 * avoid user freeing them before elf finish.
+-	 */
+-	obj->efile.obj_buf = obj_buf;
+-	obj->efile.obj_buf_sz = obj_buf_sz;
+-	obj->efile.maps_shndx = -1;
+-	obj->efile.btf_maps_shndx = -1;
+-	obj->efile.data_shndx = -1;
+-	obj->efile.rodata_shndx = -1;
+-	obj->efile.bss_shndx = -1;
+-	obj->efile.st_ops_shndx = -1;
+-	obj->kconfig_map_idx = -1;
+-	obj->rodata_map_idx = -1;
+-
+-	obj->kern_version = get_kernel_version();
+-	obj->loaded = false;
+-
+-	INIT_LIST_HEAD(&obj->list);
+-	list_add(&obj->list, &bpf_objects_list);
+-	return obj;
+-}
+-
+-static void bpf_object__elf_finish(struct bpf_object *obj)
+-{
+-	if (!obj_elf_valid(obj))
+-		return;
+-
+-	if (obj->efile.elf) {
+-		elf_end(obj->efile.elf);
+-		obj->efile.elf = NULL;
+-	}
+-	obj->efile.symbols = NULL;
+-	obj->efile.data = NULL;
+-	obj->efile.rodata = NULL;
+-	obj->efile.bss = NULL;
+-	obj->efile.st_ops_data = NULL;
+-
+-	zfree(&obj->efile.reloc_sects);
+-	obj->efile.nr_reloc_sects = 0;
+-	zclose(obj->efile.fd);
+-	obj->efile.obj_buf = NULL;
+-	obj->efile.obj_buf_sz = 0;
+-}
+-
+-static int bpf_object__elf_init(struct bpf_object *obj)
+-{
+-	int err = 0;
+-	GElf_Ehdr *ep;
+-
+-	if (obj_elf_valid(obj)) {
+-		pr_warn("elf: init internal error\n");
+-		return -LIBBPF_ERRNO__LIBELF;
+-	}
+-
+-	if (obj->efile.obj_buf_sz > 0) {
+-		/*
+-		 * obj_buf should have been validated by
+-		 * bpf_object__open_buffer().
+-		 */
+-		obj->efile.elf = elf_memory((char *)obj->efile.obj_buf,
+-					    obj->efile.obj_buf_sz);
+-	} else {
+-		obj->efile.fd = open(obj->path, O_RDONLY);
+-		if (obj->efile.fd < 0) {
+-			char errmsg[STRERR_BUFSIZE], *cp;
+-
+-			err = -errno;
+-			cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-			pr_warn("elf: failed to open %s: %s\n", obj->path, cp);
+-			return err;
+-		}
+-
+-		obj->efile.elf = elf_begin(obj->efile.fd, ELF_C_READ_MMAP, NULL);
+-	}
+-
+-	if (!obj->efile.elf) {
+-		pr_warn("elf: failed to open %s as ELF file: %s\n", obj->path, elf_errmsg(-1));
+-		err = -LIBBPF_ERRNO__LIBELF;
+-		goto errout;
+-	}
+-
+-	if (!gelf_getehdr(obj->efile.elf, &obj->efile.ehdr)) {
+-		pr_warn("elf: failed to get ELF header from %s: %s\n", obj->path, elf_errmsg(-1));
+-		err = -LIBBPF_ERRNO__FORMAT;
+-		goto errout;
+-	}
+-	ep = &obj->efile.ehdr;
+-
+-	if (elf_getshdrstrndx(obj->efile.elf, &obj->efile.shstrndx)) {
+-		pr_warn("elf: failed to get section names section index for %s: %s\n",
+-			obj->path, elf_errmsg(-1));
+-		err = -LIBBPF_ERRNO__FORMAT;
+-		goto errout;
+-	}
+-
+-	/* Elf is corrupted/truncated, avoid calling elf_strptr. */
+-	if (!elf_rawdata(elf_getscn(obj->efile.elf, obj->efile.shstrndx), NULL)) {
+-		pr_warn("elf: failed to get section names strings from %s: %s\n",
+-			obj->path, elf_errmsg(-1));
+-		err = -LIBBPF_ERRNO__FORMAT;
+-		goto errout;
+-	}
+-
+-	/* Old LLVM set e_machine to EM_NONE */
+-	if (ep->e_type != ET_REL ||
+-	    (ep->e_machine && ep->e_machine != EM_BPF)) {
+-		pr_warn("elf: %s is not a valid eBPF object file\n", obj->path);
+-		err = -LIBBPF_ERRNO__FORMAT;
+-		goto errout;
+-	}
+-
+-	return 0;
+-errout:
+-	bpf_object__elf_finish(obj);
+-	return err;
+-}
+-
+-static int bpf_object__check_endianness(struct bpf_object *obj)
+-{
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-	if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
+-		return 0;
+-#elif __BYTE_ORDER == __BIG_ENDIAN
+-	if (obj->efile.ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
+-		return 0;
+-#else
+-# error "Unrecognized __BYTE_ORDER__"
+-#endif
+-	pr_warn("elf: endianness mismatch in %s.\n", obj->path);
+-	return -LIBBPF_ERRNO__ENDIAN;
+-}
+-
+-static int
+-bpf_object__init_license(struct bpf_object *obj, void *data, size_t size)
+-{
+-	memcpy(obj->license, data, min(size, sizeof(obj->license) - 1));
+-	pr_debug("license of %s is %s\n", obj->path, obj->license);
+-	return 0;
+-}
+-
+-static int
+-bpf_object__init_kversion(struct bpf_object *obj, void *data, size_t size)
+-{
+-	__u32 kver;
+-
+-	if (size != sizeof(kver)) {
+-		pr_warn("invalid kver section in %s\n", obj->path);
+-		return -LIBBPF_ERRNO__FORMAT;
+-	}
+-	memcpy(&kver, data, sizeof(kver));
+-	obj->kern_version = kver;
+-	pr_debug("kernel version of %s is %x\n", obj->path, obj->kern_version);
+-	return 0;
+-}
+-
+-static bool bpf_map_type__is_map_in_map(enum bpf_map_type type)
+-{
+-	if (type == BPF_MAP_TYPE_ARRAY_OF_MAPS ||
+-	    type == BPF_MAP_TYPE_HASH_OF_MAPS)
+-		return true;
+-	return false;
+-}
+-
+-int bpf_object__section_size(const struct bpf_object *obj, const char *name,
+-			     __u32 *size)
+-{
+-	int ret = -ENOENT;
+-
+-	*size = 0;
+-	if (!name) {
+-		return -EINVAL;
+-	} else if (!strcmp(name, DATA_SEC)) {
+-		if (obj->efile.data)
+-			*size = obj->efile.data->d_size;
+-	} else if (!strcmp(name, BSS_SEC)) {
+-		if (obj->efile.bss)
+-			*size = obj->efile.bss->d_size;
+-	} else if (!strcmp(name, RODATA_SEC)) {
+-		if (obj->efile.rodata)
+-			*size = obj->efile.rodata->d_size;
+-	} else if (!strcmp(name, STRUCT_OPS_SEC)) {
+-		if (obj->efile.st_ops_data)
+-			*size = obj->efile.st_ops_data->d_size;
+-	} else {
+-		Elf_Scn *scn = elf_sec_by_name(obj, name);
+-		Elf_Data *data = elf_sec_data(obj, scn);
+-
+-		if (data) {
+-			ret = 0; /* found it */
+-			*size = data->d_size;
+-		}
+-	}
+-
+-	return *size ? 0 : ret;
+-}
+-
+-int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+-				__u32 *off)
+-{
+-	Elf_Data *symbols = obj->efile.symbols;
+-	const char *sname;
+-	size_t si;
+-
+-	if (!name || !off)
+-		return -EINVAL;
+-
+-	for (si = 0; si < symbols->d_size / sizeof(GElf_Sym); si++) {
+-		GElf_Sym sym;
+-
+-		if (!gelf_getsym(symbols, si, &sym))
+-			continue;
+-		if (GELF_ST_BIND(sym.st_info) != STB_GLOBAL ||
+-		    GELF_ST_TYPE(sym.st_info) != STT_OBJECT)
+-			continue;
+-
+-		sname = elf_sym_str(obj, sym.st_name);
+-		if (!sname) {
+-			pr_warn("failed to get sym name string for var %s\n",
+-				name);
+-			return -EIO;
+-		}
+-		if (strcmp(name, sname) == 0) {
+-			*off = sym.st_value;
+-			return 0;
+-		}
+-	}
+-
+-	return -ENOENT;
+-}
+-
+-static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+-{
+-	struct bpf_map *new_maps;
+-	size_t new_cap;
+-	int i;
+-
+-	if (obj->nr_maps < obj->maps_cap)
+-		return &obj->maps[obj->nr_maps++];
+-
+-	new_cap = max((size_t)4, obj->maps_cap * 3 / 2);
+-	new_maps = libbpf_reallocarray(obj->maps, new_cap, sizeof(*obj->maps));
+-	if (!new_maps) {
+-		pr_warn("alloc maps for object failed\n");
+-		return ERR_PTR(-ENOMEM);
+-	}
+-
+-	obj->maps_cap = new_cap;
+-	obj->maps = new_maps;
+-
+-	/* zero out new maps */
+-	memset(obj->maps + obj->nr_maps, 0,
+-	       (obj->maps_cap - obj->nr_maps) * sizeof(*obj->maps));
+-	/*
+-	 * fill all fd with -1 so won't close incorrect fd (fd=0 is stdin)
+-	 * when failure (zclose won't close negative fd)).
+-	 */
+-	for (i = obj->nr_maps; i < obj->maps_cap; i++) {
+-		obj->maps[i].fd = -1;
+-		obj->maps[i].inner_map_fd = -1;
+-	}
+-
+-	return &obj->maps[obj->nr_maps++];
+-}
+-
+-static size_t bpf_map_mmap_sz(const struct bpf_map *map)
+-{
+-	long page_sz = sysconf(_SC_PAGE_SIZE);
+-	size_t map_sz;
+-
+-	map_sz = (size_t)roundup(map->def.value_size, 8) * map->def.max_entries;
+-	map_sz = roundup(map_sz, page_sz);
+-	return map_sz;
+-}
+-
+-static char *internal_map_name(struct bpf_object *obj,
+-			       enum libbpf_map_type type)
+-{
+-	char map_name[BPF_OBJ_NAME_LEN], *p;
+-	const char *sfx = libbpf_type_to_btf_name[type];
+-	int sfx_len = max((size_t)7, strlen(sfx));
+-	int pfx_len = min((size_t)BPF_OBJ_NAME_LEN - sfx_len - 1,
+-			  strlen(obj->name));
+-
+-	snprintf(map_name, sizeof(map_name), "%.*s%.*s", pfx_len, obj->name,
+-		 sfx_len, libbpf_type_to_btf_name[type]);
+-
+-	/* sanitise map name to characters allowed by kernel */
+-	for (p = map_name; *p && p < map_name + sizeof(map_name); p++)
+-		if (!isalnum(*p) && *p != '_' && *p != '.')
+-			*p = '_';
+-
+-	return strdup(map_name);
+-}
+-
+-static int
+-bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
+-			      int sec_idx, void *data, size_t data_sz)
+-{
+-	struct bpf_map_def *def;
+-	struct bpf_map *map;
+-	int err;
+-
+-	map = bpf_object__add_map(obj);
+-	if (IS_ERR(map))
+-		return PTR_ERR(map);
+-
+-	map->libbpf_type = type;
+-	map->sec_idx = sec_idx;
+-	map->sec_offset = 0;
+-	map->name = internal_map_name(obj, type);
+-	if (!map->name) {
+-		pr_warn("failed to alloc map name\n");
+-		return -ENOMEM;
+-	}
+-
+-	def = &map->def;
+-	def->type = BPF_MAP_TYPE_ARRAY;
+-	def->key_size = sizeof(int);
+-	def->value_size = data_sz;
+-	def->max_entries = 1;
+-	def->map_flags = type == LIBBPF_MAP_RODATA || type == LIBBPF_MAP_KCONFIG
+-			 ? BPF_F_RDONLY_PROG : 0;
+-	def->map_flags |= BPF_F_MMAPABLE;
+-
+-	pr_debug("map '%s' (global data): at sec_idx %d, offset %zu, flags %x.\n",
+-		 map->name, map->sec_idx, map->sec_offset, def->map_flags);
+-
+-	map->mmaped = mmap(NULL, bpf_map_mmap_sz(map), PROT_READ | PROT_WRITE,
+-			   MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+-	if (map->mmaped == MAP_FAILED) {
+-		err = -errno;
+-		map->mmaped = NULL;
+-		pr_warn("failed to alloc map '%s' content buffer: %d\n",
+-			map->name, err);
+-		zfree(&map->name);
+-		return err;
+-	}
+-
+-	if (data)
+-		memcpy(map->mmaped, data, data_sz);
+-
+-	pr_debug("map %td is \"%s\"\n", map - obj->maps, map->name);
+-	return 0;
+-}
+-
+-static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+-{
+-	int err;
+-
+-	/*
+-	 * Populate obj->maps with libbpf internal maps.
+-	 */
+-	if (obj->efile.data_shndx >= 0) {
+-		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_DATA,
+-						    obj->efile.data_shndx,
+-						    obj->efile.data->d_buf,
+-						    obj->efile.data->d_size);
+-		if (err)
+-			return err;
+-	}
+-	if (obj->efile.rodata_shndx >= 0) {
+-		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_RODATA,
+-						    obj->efile.rodata_shndx,
+-						    obj->efile.rodata->d_buf,
+-						    obj->efile.rodata->d_size);
+-		if (err)
+-			return err;
+-
+-		obj->rodata_map_idx = obj->nr_maps - 1;
+-	}
+-	if (obj->efile.bss_shndx >= 0) {
+-		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_BSS,
+-						    obj->efile.bss_shndx,
+-						    NULL,
+-						    obj->efile.bss->d_size);
+-		if (err)
+-			return err;
+-	}
+-	return 0;
+-}
+-
+-
+-static struct extern_desc *find_extern_by_name(const struct bpf_object *obj,
+-					       const void *name)
+-{
+-	int i;
+-
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		if (strcmp(obj->externs[i].name, name) == 0)
+-			return &obj->externs[i];
+-	}
+-	return NULL;
+-}
+-
+-static int set_kcfg_value_tri(struct extern_desc *ext, void *ext_val,
+-			      char value)
+-{
+-	switch (ext->kcfg.type) {
+-	case KCFG_BOOL:
+-		if (value == 'm') {
+-			pr_warn("extern (kcfg) %s=%c should be tristate or char\n",
+-				ext->name, value);
+-			return -EINVAL;
+-		}
+-		*(bool *)ext_val = value == 'y' ? true : false;
+-		break;
+-	case KCFG_TRISTATE:
+-		if (value == 'y')
+-			*(enum libbpf_tristate *)ext_val = TRI_YES;
+-		else if (value == 'm')
+-			*(enum libbpf_tristate *)ext_val = TRI_MODULE;
+-		else /* value == 'n' */
+-			*(enum libbpf_tristate *)ext_val = TRI_NO;
+-		break;
+-	case KCFG_CHAR:
+-		*(char *)ext_val = value;
+-		break;
+-	case KCFG_UNKNOWN:
+-	case KCFG_INT:
+-	case KCFG_CHAR_ARR:
+-	default:
+-		pr_warn("extern (kcfg) %s=%c should be bool, tristate, or char\n",
+-			ext->name, value);
+-		return -EINVAL;
+-	}
+-	ext->is_set = true;
+-	return 0;
+-}
+-
+-static int set_kcfg_value_str(struct extern_desc *ext, char *ext_val,
+-			      const char *value)
+-{
+-	size_t len;
+-
+-	if (ext->kcfg.type != KCFG_CHAR_ARR) {
+-		pr_warn("extern (kcfg) %s=%s should be char array\n", ext->name, value);
+-		return -EINVAL;
+-	}
+-
+-	len = strlen(value);
+-	if (value[len - 1] != '"') {
+-		pr_warn("extern (kcfg) '%s': invalid string config '%s'\n",
+-			ext->name, value);
+-		return -EINVAL;
+-	}
+-
+-	/* strip quotes */
+-	len -= 2;
+-	if (len >= ext->kcfg.sz) {
+-		pr_warn("extern (kcfg) '%s': long string config %s of (%zu bytes) truncated to %d bytes\n",
+-			ext->name, value, len, ext->kcfg.sz - 1);
+-		len = ext->kcfg.sz - 1;
+-	}
+-	memcpy(ext_val, value + 1, len);
+-	ext_val[len] = '\0';
+-	ext->is_set = true;
+-	return 0;
+-}
+-
+-static int parse_u64(const char *value, __u64 *res)
+-{
+-	char *value_end;
+-	int err;
+-
+-	errno = 0;
+-	*res = strtoull(value, &value_end, 0);
+-	if (errno) {
+-		err = -errno;
+-		pr_warn("failed to parse '%s' as integer: %d\n", value, err);
+-		return err;
+-	}
+-	if (*value_end) {
+-		pr_warn("failed to parse '%s' as integer completely\n", value);
+-		return -EINVAL;
+-	}
+-	return 0;
+-}
+-
+-static bool is_kcfg_value_in_range(const struct extern_desc *ext, __u64 v)
+-{
+-	int bit_sz = ext->kcfg.sz * 8;
+-
+-	if (ext->kcfg.sz == 8)
+-		return true;
+-
+-	/* Validate that value stored in u64 fits in integer of `ext->sz`
+-	 * bytes size without any loss of information. If the target integer
+-	 * is signed, we rely on the following limits of integer type of
+-	 * Y bits and subsequent transformation:
+-	 *
+-	 *     -2^(Y-1) <= X           <= 2^(Y-1) - 1
+-	 *            0 <= X + 2^(Y-1) <= 2^Y - 1
+-	 *            0 <= X + 2^(Y-1) <  2^Y
+-	 *
+-	 *  For unsigned target integer, check that all the (64 - Y) bits are
+-	 *  zero.
+-	 */
+-	if (ext->kcfg.is_signed)
+-		return v + (1ULL << (bit_sz - 1)) < (1ULL << bit_sz);
+-	else
+-		return (v >> bit_sz) == 0;
+-}
+-
+-static int set_kcfg_value_num(struct extern_desc *ext, void *ext_val,
+-			      __u64 value)
+-{
+-	if (ext->kcfg.type != KCFG_INT && ext->kcfg.type != KCFG_CHAR) {
+-		pr_warn("extern (kcfg) %s=%llu should be integer\n",
+-			ext->name, (unsigned long long)value);
+-		return -EINVAL;
+-	}
+-	if (!is_kcfg_value_in_range(ext, value)) {
+-		pr_warn("extern (kcfg) %s=%llu value doesn't fit in %d bytes\n",
+-			ext->name, (unsigned long long)value, ext->kcfg.sz);
+-		return -ERANGE;
+-	}
+-	switch (ext->kcfg.sz) {
+-		case 1: *(__u8 *)ext_val = value; break;
+-		case 2: *(__u16 *)ext_val = value; break;
+-		case 4: *(__u32 *)ext_val = value; break;
+-		case 8: *(__u64 *)ext_val = value; break;
+-		default:
+-			return -EINVAL;
+-	}
+-	ext->is_set = true;
+-	return 0;
+-}
+-
+-static int bpf_object__process_kconfig_line(struct bpf_object *obj,
+-					    char *buf, void *data)
+-{
+-	struct extern_desc *ext;
+-	char *sep, *value;
+-	int len, err = 0;
+-	void *ext_val;
+-	__u64 num;
+-
+-	if (strncmp(buf, "CONFIG_", 7))
+-		return 0;
+-
+-	sep = strchr(buf, '=');
+-	if (!sep) {
+-		pr_warn("failed to parse '%s': no separator\n", buf);
+-		return -EINVAL;
+-	}
+-
+-	/* Trim ending '\n' */
+-	len = strlen(buf);
+-	if (buf[len - 1] == '\n')
+-		buf[len - 1] = '\0';
+-	/* Split on '=' and ensure that a value is present. */
+-	*sep = '\0';
+-	if (!sep[1]) {
+-		*sep = '=';
+-		pr_warn("failed to parse '%s': no value\n", buf);
+-		return -EINVAL;
+-	}
+-
+-	ext = find_extern_by_name(obj, buf);
+-	if (!ext || ext->is_set)
+-		return 0;
+-
+-	ext_val = data + ext->kcfg.data_off;
+-	value = sep + 1;
+-
+-	switch (*value) {
+-	case 'y': case 'n': case 'm':
+-		err = set_kcfg_value_tri(ext, ext_val, *value);
+-		break;
+-	case '"':
+-		err = set_kcfg_value_str(ext, ext_val, value);
+-		break;
+-	default:
+-		/* assume integer */
+-		err = parse_u64(value, &num);
+-		if (err) {
+-			pr_warn("extern (kcfg) %s=%s should be integer\n",
+-				ext->name, value);
+-			return err;
+-		}
+-		err = set_kcfg_value_num(ext, ext_val, num);
+-		break;
+-	}
+-	if (err)
+-		return err;
+-	pr_debug("extern (kcfg) %s=%s\n", ext->name, value);
+-	return 0;
+-}
+-
+-static int bpf_object__read_kconfig_file(struct bpf_object *obj, void *data)
+-{
+-	char buf[PATH_MAX];
+-	struct utsname uts;
+-	int len, err = 0;
+-	gzFile file;
+-
+-	uname(&uts);
+-	len = snprintf(buf, PATH_MAX, "/boot/config-%s", uts.release);
+-	if (len < 0)
+-		return -EINVAL;
+-	else if (len >= PATH_MAX)
+-		return -ENAMETOOLONG;
+-
+-	/* gzopen also accepts uncompressed files. */
+-	file = gzopen(buf, "r");
+-	if (!file)
+-		file = gzopen("/proc/config.gz", "r");
+-
+-	if (!file) {
+-		pr_warn("failed to open system Kconfig\n");
+-		return -ENOENT;
+-	}
+-
+-	while (gzgets(file, buf, sizeof(buf))) {
+-		err = bpf_object__process_kconfig_line(obj, buf, data);
+-		if (err) {
+-			pr_warn("error parsing system Kconfig line '%s': %d\n",
+-				buf, err);
+-			goto out;
+-		}
+-	}
+-
+-out:
+-	gzclose(file);
+-	return err;
+-}
+-
+-static int bpf_object__read_kconfig_mem(struct bpf_object *obj,
+-					const char *config, void *data)
+-{
+-	char buf[PATH_MAX];
+-	int err = 0;
+-	FILE *file;
+-
+-	file = fmemopen((void *)config, strlen(config), "r");
+-	if (!file) {
+-		err = -errno;
+-		pr_warn("failed to open in-memory Kconfig: %d\n", err);
+-		return err;
+-	}
+-
+-	while (fgets(buf, sizeof(buf), file)) {
+-		err = bpf_object__process_kconfig_line(obj, buf, data);
+-		if (err) {
+-			pr_warn("error parsing in-memory Kconfig line '%s': %d\n",
+-				buf, err);
+-			break;
+-		}
+-	}
+-
+-	fclose(file);
+-	return err;
+-}
+-
+-static int bpf_object__init_kconfig_map(struct bpf_object *obj)
+-{
+-	struct extern_desc *last_ext = NULL, *ext;
+-	size_t map_sz;
+-	int i, err;
+-
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		ext = &obj->externs[i];
+-		if (ext->type == EXT_KCFG)
+-			last_ext = ext;
+-	}
+-
+-	if (!last_ext)
+-		return 0;
+-
+-	map_sz = last_ext->kcfg.data_off + last_ext->kcfg.sz;
+-	err = bpf_object__init_internal_map(obj, LIBBPF_MAP_KCONFIG,
+-					    obj->efile.symbols_shndx,
+-					    NULL, map_sz);
+-	if (err)
+-		return err;
+-
+-	obj->kconfig_map_idx = obj->nr_maps - 1;
+-
+-	return 0;
+-}
+-
+-static int bpf_object__init_user_maps(struct bpf_object *obj, bool strict)
+-{
+-	Elf_Data *symbols = obj->efile.symbols;
+-	int i, map_def_sz = 0, nr_maps = 0, nr_syms;
+-	Elf_Data *data = NULL;
+-	Elf_Scn *scn;
+-
+-	if (obj->efile.maps_shndx < 0)
+-		return 0;
+-
+-	if (!symbols)
+-		return -EINVAL;
+-
+-	scn = elf_sec_by_idx(obj, obj->efile.maps_shndx);
+-	data = elf_sec_data(obj, scn);
+-	if (!scn || !data) {
+-		pr_warn("elf: failed to get legacy map definitions for %s\n",
+-			obj->path);
+-		return -EINVAL;
+-	}
+-
+-	/*
+-	 * Count number of maps. Each map has a name.
+-	 * Array of maps is not supported: only the first element is
+-	 * considered.
+-	 *
+-	 * TODO: Detect array of map and report error.
+-	 */
+-	nr_syms = symbols->d_size / sizeof(GElf_Sym);
+-	for (i = 0; i < nr_syms; i++) {
+-		GElf_Sym sym;
+-
+-		if (!gelf_getsym(symbols, i, &sym))
+-			continue;
+-		if (sym.st_shndx != obj->efile.maps_shndx)
+-			continue;
+-		nr_maps++;
+-	}
+-	/* Assume equally sized map definitions */
+-	pr_debug("elf: found %d legacy map definitions (%zd bytes) in %s\n",
+-		 nr_maps, data->d_size, obj->path);
+-
+-	if (!data->d_size || nr_maps == 0 || (data->d_size % nr_maps) != 0) {
+-		pr_warn("elf: unable to determine legacy map definition size in %s\n",
+-			obj->path);
+-		return -EINVAL;
+-	}
+-	map_def_sz = data->d_size / nr_maps;
+-
+-	/* Fill obj->maps using data in "maps" section.  */
+-	for (i = 0; i < nr_syms; i++) {
+-		GElf_Sym sym;
+-		const char *map_name;
+-		struct bpf_map_def *def;
+-		struct bpf_map *map;
+-
+-		if (!gelf_getsym(symbols, i, &sym))
+-			continue;
+-		if (sym.st_shndx != obj->efile.maps_shndx)
+-			continue;
+-
+-		map = bpf_object__add_map(obj);
+-		if (IS_ERR(map))
+-			return PTR_ERR(map);
+-
+-		map_name = elf_sym_str(obj, sym.st_name);
+-		if (!map_name) {
+-			pr_warn("failed to get map #%d name sym string for obj %s\n",
+-				i, obj->path);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		if (GELF_ST_TYPE(sym.st_info) == STT_SECTION
+-		    || GELF_ST_BIND(sym.st_info) == STB_LOCAL) {
+-			pr_warn("map '%s' (legacy): static maps are not supported\n", map_name);
+-			return -ENOTSUP;
+-		}
+-
+-		map->libbpf_type = LIBBPF_MAP_UNSPEC;
+-		map->sec_idx = sym.st_shndx;
+-		map->sec_offset = sym.st_value;
+-		pr_debug("map '%s' (legacy): at sec_idx %d, offset %zu.\n",
+-			 map_name, map->sec_idx, map->sec_offset);
+-		if (sym.st_value + map_def_sz > data->d_size) {
+-			pr_warn("corrupted maps section in %s: last map \"%s\" too small\n",
+-				obj->path, map_name);
+-			return -EINVAL;
+-		}
+-
+-		map->name = strdup(map_name);
+-		if (!map->name) {
+-			pr_warn("failed to alloc map name\n");
+-			return -ENOMEM;
+-		}
+-		pr_debug("map %d is \"%s\"\n", i, map->name);
+-		def = (struct bpf_map_def *)(data->d_buf + sym.st_value);
+-		/*
+-		 * If the definition of the map in the object file fits in
+-		 * bpf_map_def, copy it.  Any extra fields in our version
+-		 * of bpf_map_def will default to zero as a result of the
+-		 * calloc above.
+-		 */
+-		if (map_def_sz <= sizeof(struct bpf_map_def)) {
+-			memcpy(&map->def, def, map_def_sz);
+-		} else {
+-			/*
+-			 * Here the map structure being read is bigger than what
+-			 * we expect, truncate if the excess bits are all zero.
+-			 * If they are not zero, reject this map as
+-			 * incompatible.
+-			 */
+-			char *b;
+-
+-			for (b = ((char *)def) + sizeof(struct bpf_map_def);
+-			     b < ((char *)def) + map_def_sz; b++) {
+-				if (*b != 0) {
+-					pr_warn("maps section in %s: \"%s\" has unrecognized, non-zero options\n",
+-						obj->path, map_name);
+-					if (strict)
+-						return -EINVAL;
+-				}
+-			}
+-			memcpy(&map->def, def, sizeof(struct bpf_map_def));
+-		}
+-	}
+-	return 0;
+-}
+-
+-const struct btf_type *
+-skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
+-{
+-	const struct btf_type *t = btf__type_by_id(btf, id);
+-
+-	if (res_id)
+-		*res_id = id;
+-
+-	while (btf_is_mod(t) || btf_is_typedef(t)) {
+-		if (res_id)
+-			*res_id = t->type;
+-		t = btf__type_by_id(btf, t->type);
+-	}
+-
+-	return t;
+-}
+-
+-static const struct btf_type *
+-resolve_func_ptr(const struct btf *btf, __u32 id, __u32 *res_id)
+-{
+-	const struct btf_type *t;
+-
+-	t = skip_mods_and_typedefs(btf, id, NULL);
+-	if (!btf_is_ptr(t))
+-		return NULL;
+-
+-	t = skip_mods_and_typedefs(btf, t->type, res_id);
+-
+-	return btf_is_func_proto(t) ? t : NULL;
+-}
+-
+-static const char *__btf_kind_str(__u16 kind)
+-{
+-	switch (kind) {
+-	case BTF_KIND_UNKN: return "void";
+-	case BTF_KIND_INT: return "int";
+-	case BTF_KIND_PTR: return "ptr";
+-	case BTF_KIND_ARRAY: return "array";
+-	case BTF_KIND_STRUCT: return "struct";
+-	case BTF_KIND_UNION: return "union";
+-	case BTF_KIND_ENUM: return "enum";
+-	case BTF_KIND_FWD: return "fwd";
+-	case BTF_KIND_TYPEDEF: return "typedef";
+-	case BTF_KIND_VOLATILE: return "volatile";
+-	case BTF_KIND_CONST: return "const";
+-	case BTF_KIND_RESTRICT: return "restrict";
+-	case BTF_KIND_FUNC: return "func";
+-	case BTF_KIND_FUNC_PROTO: return "func_proto";
+-	case BTF_KIND_VAR: return "var";
+-	case BTF_KIND_DATASEC: return "datasec";
+-	case BTF_KIND_FLOAT: return "float";
+-	default: return "unknown";
+-	}
+-}
+-
+-const char *btf_kind_str(const struct btf_type *t)
+-{
+-	return __btf_kind_str(btf_kind(t));
+-}
+-
+-/*
+- * Fetch integer attribute of BTF map definition. Such attributes are
+- * represented using a pointer to an array, in which dimensionality of array
+- * encodes specified integer value. E.g., int (*type)[BPF_MAP_TYPE_ARRAY];
+- * encodes `type => BPF_MAP_TYPE_ARRAY` key/value pair completely using BTF
+- * type definition, while using only sizeof(void *) space in ELF data section.
+- */
+-static bool get_map_field_int(const char *map_name, const struct btf *btf,
+-			      const struct btf_member *m, __u32 *res)
+-{
+-	const struct btf_type *t = skip_mods_and_typedefs(btf, m->type, NULL);
+-	const char *name = btf__name_by_offset(btf, m->name_off);
+-	const struct btf_array *arr_info;
+-	const struct btf_type *arr_t;
+-
+-	if (!btf_is_ptr(t)) {
+-		pr_warn("map '%s': attr '%s': expected PTR, got %s.\n",
+-			map_name, name, btf_kind_str(t));
+-		return false;
+-	}
+-
+-	arr_t = btf__type_by_id(btf, t->type);
+-	if (!arr_t) {
+-		pr_warn("map '%s': attr '%s': type [%u] not found.\n",
+-			map_name, name, t->type);
+-		return false;
+-	}
+-	if (!btf_is_array(arr_t)) {
+-		pr_warn("map '%s': attr '%s': expected ARRAY, got %s.\n",
+-			map_name, name, btf_kind_str(arr_t));
+-		return false;
+-	}
+-	arr_info = btf_array(arr_t);
+-	*res = arr_info->nelems;
+-	return true;
+-}
+-
+-static int build_map_pin_path(struct bpf_map *map, const char *path)
+-{
+-	char buf[PATH_MAX];
+-	int len;
+-
+-	if (!path)
+-		path = "/sys/fs/bpf";
+-
+-	len = snprintf(buf, PATH_MAX, "%s/%s", path, bpf_map__name(map));
+-	if (len < 0)
+-		return -EINVAL;
+-	else if (len >= PATH_MAX)
+-		return -ENAMETOOLONG;
+-
+-	return bpf_map__set_pin_path(map, buf);
+-}
+-
+-int parse_btf_map_def(const char *map_name, struct btf *btf,
+-		      const struct btf_type *def_t, bool strict,
+-		      struct btf_map_def *map_def, struct btf_map_def *inner_def)
+-{
+-	const struct btf_type *t;
+-	const struct btf_member *m;
+-	bool is_inner = inner_def == NULL;
+-	int vlen, i;
+-
+-	vlen = btf_vlen(def_t);
+-	m = btf_members(def_t);
+-	for (i = 0; i < vlen; i++, m++) {
+-		const char *name = btf__name_by_offset(btf, m->name_off);
+-
+-		if (!name) {
+-			pr_warn("map '%s': invalid field #%d.\n", map_name, i);
+-			return -EINVAL;
+-		}
+-		if (strcmp(name, "type") == 0) {
+-			if (!get_map_field_int(map_name, btf, m, &map_def->map_type))
+-				return -EINVAL;
+-			map_def->parts |= MAP_DEF_MAP_TYPE;
+-		} else if (strcmp(name, "max_entries") == 0) {
+-			if (!get_map_field_int(map_name, btf, m, &map_def->max_entries))
+-				return -EINVAL;
+-			map_def->parts |= MAP_DEF_MAX_ENTRIES;
+-		} else if (strcmp(name, "map_flags") == 0) {
+-			if (!get_map_field_int(map_name, btf, m, &map_def->map_flags))
+-				return -EINVAL;
+-			map_def->parts |= MAP_DEF_MAP_FLAGS;
+-		} else if (strcmp(name, "numa_node") == 0) {
+-			if (!get_map_field_int(map_name, btf, m, &map_def->numa_node))
+-				return -EINVAL;
+-			map_def->parts |= MAP_DEF_NUMA_NODE;
+-		} else if (strcmp(name, "key_size") == 0) {
+-			__u32 sz;
+-
+-			if (!get_map_field_int(map_name, btf, m, &sz))
+-				return -EINVAL;
+-			if (map_def->key_size && map_def->key_size != sz) {
+-				pr_warn("map '%s': conflicting key size %u != %u.\n",
+-					map_name, map_def->key_size, sz);
+-				return -EINVAL;
+-			}
+-			map_def->key_size = sz;
+-			map_def->parts |= MAP_DEF_KEY_SIZE;
+-		} else if (strcmp(name, "key") == 0) {
+-			__s64 sz;
+-
+-			t = btf__type_by_id(btf, m->type);
+-			if (!t) {
+-				pr_warn("map '%s': key type [%d] not found.\n",
+-					map_name, m->type);
+-				return -EINVAL;
+-			}
+-			if (!btf_is_ptr(t)) {
+-				pr_warn("map '%s': key spec is not PTR: %s.\n",
+-					map_name, btf_kind_str(t));
+-				return -EINVAL;
+-			}
+-			sz = btf__resolve_size(btf, t->type);
+-			if (sz < 0) {
+-				pr_warn("map '%s': can't determine key size for type [%u]: %zd.\n",
+-					map_name, t->type, (ssize_t)sz);
+-				return sz;
+-			}
+-			if (map_def->key_size && map_def->key_size != sz) {
+-				pr_warn("map '%s': conflicting key size %u != %zd.\n",
+-					map_name, map_def->key_size, (ssize_t)sz);
+-				return -EINVAL;
+-			}
+-			map_def->key_size = sz;
+-			map_def->key_type_id = t->type;
+-			map_def->parts |= MAP_DEF_KEY_SIZE | MAP_DEF_KEY_TYPE;
+-		} else if (strcmp(name, "value_size") == 0) {
+-			__u32 sz;
+-
+-			if (!get_map_field_int(map_name, btf, m, &sz))
+-				return -EINVAL;
+-			if (map_def->value_size && map_def->value_size != sz) {
+-				pr_warn("map '%s': conflicting value size %u != %u.\n",
+-					map_name, map_def->value_size, sz);
+-				return -EINVAL;
+-			}
+-			map_def->value_size = sz;
+-			map_def->parts |= MAP_DEF_VALUE_SIZE;
+-		} else if (strcmp(name, "value") == 0) {
+-			__s64 sz;
+-
+-			t = btf__type_by_id(btf, m->type);
+-			if (!t) {
+-				pr_warn("map '%s': value type [%d] not found.\n",
+-					map_name, m->type);
+-				return -EINVAL;
+-			}
+-			if (!btf_is_ptr(t)) {
+-				pr_warn("map '%s': value spec is not PTR: %s.\n",
+-					map_name, btf_kind_str(t));
+-				return -EINVAL;
+-			}
+-			sz = btf__resolve_size(btf, t->type);
+-			if (sz < 0) {
+-				pr_warn("map '%s': can't determine value size for type [%u]: %zd.\n",
+-					map_name, t->type, (ssize_t)sz);
+-				return sz;
+-			}
+-			if (map_def->value_size && map_def->value_size != sz) {
+-				pr_warn("map '%s': conflicting value size %u != %zd.\n",
+-					map_name, map_def->value_size, (ssize_t)sz);
+-				return -EINVAL;
+-			}
+-			map_def->value_size = sz;
+-			map_def->value_type_id = t->type;
+-			map_def->parts |= MAP_DEF_VALUE_SIZE | MAP_DEF_VALUE_TYPE;
+-		}
+-		else if (strcmp(name, "values") == 0) {
+-			char inner_map_name[128];
+-			int err;
+-
+-			if (is_inner) {
+-				pr_warn("map '%s': multi-level inner maps not supported.\n",
+-					map_name);
+-				return -ENOTSUP;
+-			}
+-			if (i != vlen - 1) {
+-				pr_warn("map '%s': '%s' member should be last.\n",
+-					map_name, name);
+-				return -EINVAL;
+-			}
+-			if (!bpf_map_type__is_map_in_map(map_def->map_type)) {
+-				pr_warn("map '%s': should be map-in-map.\n",
+-					map_name);
+-				return -ENOTSUP;
+-			}
+-			if (map_def->value_size && map_def->value_size != 4) {
+-				pr_warn("map '%s': conflicting value size %u != 4.\n",
+-					map_name, map_def->value_size);
+-				return -EINVAL;
+-			}
+-			map_def->value_size = 4;
+-			t = btf__type_by_id(btf, m->type);
+-			if (!t) {
+-				pr_warn("map '%s': map-in-map inner type [%d] not found.\n",
+-					map_name, m->type);
+-				return -EINVAL;
+-			}
+-			if (!btf_is_array(t) || btf_array(t)->nelems) {
+-				pr_warn("map '%s': map-in-map inner spec is not a zero-sized array.\n",
+-					map_name);
+-				return -EINVAL;
+-			}
+-			t = skip_mods_and_typedefs(btf, btf_array(t)->type, NULL);
+-			if (!btf_is_ptr(t)) {
+-				pr_warn("map '%s': map-in-map inner def is of unexpected kind %s.\n",
+-					map_name, btf_kind_str(t));
+-				return -EINVAL;
+-			}
+-			t = skip_mods_and_typedefs(btf, t->type, NULL);
+-			if (!btf_is_struct(t)) {
+-				pr_warn("map '%s': map-in-map inner def is of unexpected kind %s.\n",
+-					map_name, btf_kind_str(t));
+-				return -EINVAL;
+-			}
+-
+-			snprintf(inner_map_name, sizeof(inner_map_name), "%s.inner", map_name);
+-			err = parse_btf_map_def(inner_map_name, btf, t, strict, inner_def, NULL);
+-			if (err)
+-				return err;
+-
+-			map_def->parts |= MAP_DEF_INNER_MAP;
+-		} else if (strcmp(name, "pinning") == 0) {
+-			__u32 val;
+-
+-			if (is_inner) {
+-				pr_warn("map '%s': inner def can't be pinned.\n", map_name);
+-				return -EINVAL;
+-			}
+-			if (!get_map_field_int(map_name, btf, m, &val))
+-				return -EINVAL;
+-			if (val != LIBBPF_PIN_NONE && val != LIBBPF_PIN_BY_NAME) {
+-				pr_warn("map '%s': invalid pinning value %u.\n",
+-					map_name, val);
+-				return -EINVAL;
+-			}
+-			map_def->pinning = val;
+-			map_def->parts |= MAP_DEF_PINNING;
+-		} else {
+-			if (strict) {
+-				pr_warn("map '%s': unknown field '%s'.\n", map_name, name);
+-				return -ENOTSUP;
+-			}
+-			pr_debug("map '%s': ignoring unknown field '%s'.\n", map_name, name);
+-		}
+-	}
+-
+-	if (map_def->map_type == BPF_MAP_TYPE_UNSPEC) {
+-		pr_warn("map '%s': map type isn't specified.\n", map_name);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static void fill_map_from_def(struct bpf_map *map, const struct btf_map_def *def)
+-{
+-	map->def.type = def->map_type;
+-	map->def.key_size = def->key_size;
+-	map->def.value_size = def->value_size;
+-	map->def.max_entries = def->max_entries;
+-	map->def.map_flags = def->map_flags;
+-
+-	map->numa_node = def->numa_node;
+-	map->btf_key_type_id = def->key_type_id;
+-	map->btf_value_type_id = def->value_type_id;
+-
+-	if (def->parts & MAP_DEF_MAP_TYPE)
+-		pr_debug("map '%s': found type = %u.\n", map->name, def->map_type);
+-
+-	if (def->parts & MAP_DEF_KEY_TYPE)
+-		pr_debug("map '%s': found key [%u], sz = %u.\n",
+-			 map->name, def->key_type_id, def->key_size);
+-	else if (def->parts & MAP_DEF_KEY_SIZE)
+-		pr_debug("map '%s': found key_size = %u.\n", map->name, def->key_size);
+-
+-	if (def->parts & MAP_DEF_VALUE_TYPE)
+-		pr_debug("map '%s': found value [%u], sz = %u.\n",
+-			 map->name, def->value_type_id, def->value_size);
+-	else if (def->parts & MAP_DEF_VALUE_SIZE)
+-		pr_debug("map '%s': found value_size = %u.\n", map->name, def->value_size);
+-
+-	if (def->parts & MAP_DEF_MAX_ENTRIES)
+-		pr_debug("map '%s': found max_entries = %u.\n", map->name, def->max_entries);
+-	if (def->parts & MAP_DEF_MAP_FLAGS)
+-		pr_debug("map '%s': found map_flags = %u.\n", map->name, def->map_flags);
+-	if (def->parts & MAP_DEF_PINNING)
+-		pr_debug("map '%s': found pinning = %u.\n", map->name, def->pinning);
+-	if (def->parts & MAP_DEF_NUMA_NODE)
+-		pr_debug("map '%s': found numa_node = %u.\n", map->name, def->numa_node);
+-
+-	if (def->parts & MAP_DEF_INNER_MAP)
+-		pr_debug("map '%s': found inner map definition.\n", map->name);
+-}
+-
+-static const char *btf_var_linkage_str(__u32 linkage)
+-{
+-	switch (linkage) {
+-	case BTF_VAR_STATIC: return "static";
+-	case BTF_VAR_GLOBAL_ALLOCATED: return "global";
+-	case BTF_VAR_GLOBAL_EXTERN: return "extern";
+-	default: return "unknown";
+-	}
+-}
+-
+-static int bpf_object__init_user_btf_map(struct bpf_object *obj,
+-					 const struct btf_type *sec,
+-					 int var_idx, int sec_idx,
+-					 const Elf_Data *data, bool strict,
+-					 const char *pin_root_path)
+-{
+-	struct btf_map_def map_def = {}, inner_def = {};
+-	const struct btf_type *var, *def;
+-	const struct btf_var_secinfo *vi;
+-	const struct btf_var *var_extra;
+-	const char *map_name;
+-	struct bpf_map *map;
+-	int err;
+-
+-	vi = btf_var_secinfos(sec) + var_idx;
+-	var = btf__type_by_id(obj->btf, vi->type);
+-	var_extra = btf_var(var);
+-	map_name = btf__name_by_offset(obj->btf, var->name_off);
+-
+-	if (map_name == NULL || map_name[0] == '\0') {
+-		pr_warn("map #%d: empty name.\n", var_idx);
+-		return -EINVAL;
+-	}
+-	if ((__u64)vi->offset + vi->size > data->d_size) {
+-		pr_warn("map '%s' BTF data is corrupted.\n", map_name);
+-		return -EINVAL;
+-	}
+-	if (!btf_is_var(var)) {
+-		pr_warn("map '%s': unexpected var kind %s.\n",
+-			map_name, btf_kind_str(var));
+-		return -EINVAL;
+-	}
+-	if (var_extra->linkage != BTF_VAR_GLOBAL_ALLOCATED) {
+-		pr_warn("map '%s': unsupported map linkage %s.\n",
+-			map_name, btf_var_linkage_str(var_extra->linkage));
+-		return -EOPNOTSUPP;
+-	}
+-
+-	def = skip_mods_and_typedefs(obj->btf, var->type, NULL);
+-	if (!btf_is_struct(def)) {
+-		pr_warn("map '%s': unexpected def kind %s.\n",
+-			map_name, btf_kind_str(var));
+-		return -EINVAL;
+-	}
+-	if (def->size > vi->size) {
+-		pr_warn("map '%s': invalid def size.\n", map_name);
+-		return -EINVAL;
+-	}
+-
+-	map = bpf_object__add_map(obj);
+-	if (IS_ERR(map))
+-		return PTR_ERR(map);
+-	map->name = strdup(map_name);
+-	if (!map->name) {
+-		pr_warn("map '%s': failed to alloc map name.\n", map_name);
+-		return -ENOMEM;
+-	}
+-	map->libbpf_type = LIBBPF_MAP_UNSPEC;
+-	map->def.type = BPF_MAP_TYPE_UNSPEC;
+-	map->sec_idx = sec_idx;
+-	map->sec_offset = vi->offset;
+-	map->btf_var_idx = var_idx;
+-	pr_debug("map '%s': at sec_idx %d, offset %zu.\n",
+-		 map_name, map->sec_idx, map->sec_offset);
+-
+-	err = parse_btf_map_def(map->name, obj->btf, def, strict, &map_def, &inner_def);
+-	if (err)
+-		return err;
+-
+-	fill_map_from_def(map, &map_def);
+-
+-	if (map_def.pinning == LIBBPF_PIN_BY_NAME) {
+-		err = build_map_pin_path(map, pin_root_path);
+-		if (err) {
+-			pr_warn("map '%s': couldn't build pin path.\n", map->name);
+-			return err;
+-		}
+-	}
+-
+-	if (map_def.parts & MAP_DEF_INNER_MAP) {
+-		map->inner_map = calloc(1, sizeof(*map->inner_map));
+-		if (!map->inner_map)
+-			return -ENOMEM;
+-		map->inner_map->fd = -1;
+-		map->inner_map->sec_idx = sec_idx;
+-		map->inner_map->name = malloc(strlen(map_name) + sizeof(".inner") + 1);
+-		if (!map->inner_map->name)
+-			return -ENOMEM;
+-		sprintf(map->inner_map->name, "%s.inner", map_name);
+-
+-		fill_map_from_def(map->inner_map, &inner_def);
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_object__init_user_btf_maps(struct bpf_object *obj, bool strict,
+-					  const char *pin_root_path)
+-{
+-	const struct btf_type *sec = NULL;
+-	int nr_types, i, vlen, err;
+-	const struct btf_type *t;
+-	const char *name;
+-	Elf_Data *data;
+-	Elf_Scn *scn;
+-
+-	if (obj->efile.btf_maps_shndx < 0)
+-		return 0;
+-
+-	scn = elf_sec_by_idx(obj, obj->efile.btf_maps_shndx);
+-	data = elf_sec_data(obj, scn);
+-	if (!scn || !data) {
+-		pr_warn("elf: failed to get %s map definitions for %s\n",
+-			MAPS_ELF_SEC, obj->path);
+-		return -EINVAL;
+-	}
+-
+-	nr_types = btf__get_nr_types(obj->btf);
+-	for (i = 1; i <= nr_types; i++) {
+-		t = btf__type_by_id(obj->btf, i);
+-		if (!btf_is_datasec(t))
+-			continue;
+-		name = btf__name_by_offset(obj->btf, t->name_off);
+-		if (strcmp(name, MAPS_ELF_SEC) == 0) {
+-			sec = t;
+-			obj->efile.btf_maps_sec_btf_id = i;
+-			break;
+-		}
+-	}
+-
+-	if (!sec) {
+-		pr_warn("DATASEC '%s' not found.\n", MAPS_ELF_SEC);
+-		return -ENOENT;
+-	}
+-
+-	vlen = btf_vlen(sec);
+-	for (i = 0; i < vlen; i++) {
+-		err = bpf_object__init_user_btf_map(obj, sec, i,
+-						    obj->efile.btf_maps_shndx,
+-						    data, strict,
+-						    pin_root_path);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_object__init_maps(struct bpf_object *obj,
+-				 const struct bpf_object_open_opts *opts)
+-{
+-	const char *pin_root_path;
+-	bool strict;
+-	int err;
+-
+-	strict = !OPTS_GET(opts, relaxed_maps, false);
+-	pin_root_path = OPTS_GET(opts, pin_root_path, NULL);
+-
+-	err = bpf_object__init_user_maps(obj, strict);
+-	err = err ?: bpf_object__init_user_btf_maps(obj, strict, pin_root_path);
+-	err = err ?: bpf_object__init_global_data_maps(obj);
+-	err = err ?: bpf_object__init_kconfig_map(obj);
+-	err = err ?: bpf_object__init_struct_ops_maps(obj);
+-
+-	return err;
+-}
+-
+-static bool section_have_execinstr(struct bpf_object *obj, int idx)
+-{
+-	GElf_Shdr sh;
+-
+-	if (elf_sec_hdr(obj, elf_sec_by_idx(obj, idx), &sh))
+-		return false;
+-
+-	return sh.sh_flags & SHF_EXECINSTR;
+-}
+-
+-static bool btf_needs_sanitization(struct bpf_object *obj)
+-{
+-	bool has_func_global = kernel_supports(obj, FEAT_BTF_GLOBAL_FUNC);
+-	bool has_datasec = kernel_supports(obj, FEAT_BTF_DATASEC);
+-	bool has_float = kernel_supports(obj, FEAT_BTF_FLOAT);
+-	bool has_func = kernel_supports(obj, FEAT_BTF_FUNC);
+-
+-	return !has_func || !has_datasec || !has_func_global || !has_float;
+-}
+-
+-static void bpf_object__sanitize_btf(struct bpf_object *obj, struct btf *btf)
+-{
+-	bool has_func_global = kernel_supports(obj, FEAT_BTF_GLOBAL_FUNC);
+-	bool has_datasec = kernel_supports(obj, FEAT_BTF_DATASEC);
+-	bool has_float = kernel_supports(obj, FEAT_BTF_FLOAT);
+-	bool has_func = kernel_supports(obj, FEAT_BTF_FUNC);
+-	struct btf_type *t;
+-	int i, j, vlen;
+-
+-	for (i = 1; i <= btf__get_nr_types(btf); i++) {
+-		t = (struct btf_type *)btf__type_by_id(btf, i);
+-
+-		if (!has_datasec && btf_is_var(t)) {
+-			/* replace VAR with INT */
+-			t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
+-			/*
+-			 * using size = 1 is the safest choice, 4 will be too
+-			 * big and cause kernel BTF validation failure if
+-			 * original variable took less than 4 bytes
+-			 */
+-			t->size = 1;
+-			*(int *)(t + 1) = BTF_INT_ENC(0, 0, 8);
+-		} else if (!has_datasec && btf_is_datasec(t)) {
+-			/* replace DATASEC with STRUCT */
+-			const struct btf_var_secinfo *v = btf_var_secinfos(t);
+-			struct btf_member *m = btf_members(t);
+-			struct btf_type *vt;
+-			char *name;
+-
+-			name = (char *)btf__name_by_offset(btf, t->name_off);
+-			while (*name) {
+-				if (*name == '.')
+-					*name = '_';
+-				name++;
+-			}
+-
+-			vlen = btf_vlen(t);
+-			t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, vlen);
+-			for (j = 0; j < vlen; j++, v++, m++) {
+-				/* order of field assignments is important */
+-				m->offset = v->offset * 8;
+-				m->type = v->type;
+-				/* preserve variable name as member name */
+-				vt = (void *)btf__type_by_id(btf, v->type);
+-				m->name_off = vt->name_off;
+-			}
+-		} else if (!has_func && btf_is_func_proto(t)) {
+-			/* replace FUNC_PROTO with ENUM */
+-			vlen = btf_vlen(t);
+-			t->info = BTF_INFO_ENC(BTF_KIND_ENUM, 0, vlen);
+-			t->size = sizeof(__u32); /* kernel enforced */
+-		} else if (!has_func && btf_is_func(t)) {
+-			/* replace FUNC with TYPEDEF */
+-			t->info = BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0);
+-		} else if (!has_func_global && btf_is_func(t)) {
+-			/* replace BTF_FUNC_GLOBAL with BTF_FUNC_STATIC */
+-			t->info = BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0);
+-		} else if (!has_float && btf_is_float(t)) {
+-			/* replace FLOAT with an equally-sized empty STRUCT;
+-			 * since C compilers do not accept e.g. "float" as a
+-			 * valid struct name, make it anonymous
+-			 */
+-			t->name_off = 0;
+-			t->info = BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 0);
+-		}
+-	}
+-}
+-
+-static bool libbpf_needs_btf(const struct bpf_object *obj)
+-{
+-	return obj->efile.btf_maps_shndx >= 0 ||
+-	       obj->efile.st_ops_shndx >= 0 ||
+-	       obj->nr_extern > 0;
+-}
+-
+-static bool kernel_needs_btf(const struct bpf_object *obj)
+-{
+-	return obj->efile.st_ops_shndx >= 0;
+-}
+-
+-static int bpf_object__init_btf(struct bpf_object *obj,
+-				Elf_Data *btf_data,
+-				Elf_Data *btf_ext_data)
+-{
+-	int err = -ENOENT;
+-
+-	if (btf_data) {
+-		obj->btf = btf__new(btf_data->d_buf, btf_data->d_size);
+-		err = libbpf_get_error(obj->btf);
+-		if (err) {
+-			obj->btf = NULL;
+-			pr_warn("Error loading ELF section %s: %d.\n", BTF_ELF_SEC, err);
+-			goto out;
+-		}
+-		/* enforce 8-byte pointers for BPF-targeted BTFs */
+-		btf__set_pointer_size(obj->btf, 8);
+-	}
+-	if (btf_ext_data) {
+-		if (!obj->btf) {
+-			pr_debug("Ignore ELF section %s because its depending ELF section %s is not found.\n",
+-				 BTF_EXT_ELF_SEC, BTF_ELF_SEC);
+-			goto out;
+-		}
+-		obj->btf_ext = btf_ext__new(btf_ext_data->d_buf, btf_ext_data->d_size);
+-		err = libbpf_get_error(obj->btf_ext);
+-		if (err) {
+-			pr_warn("Error loading ELF section %s: %d. Ignored and continue.\n",
+-				BTF_EXT_ELF_SEC, err);
+-			obj->btf_ext = NULL;
+-			goto out;
+-		}
+-	}
+-out:
+-	if (err && libbpf_needs_btf(obj)) {
+-		pr_warn("BTF is required, but is missing or corrupted.\n");
+-		return err;
+-	}
+-	return 0;
+-}
+-
+-static int bpf_object__finalize_btf(struct bpf_object *obj)
+-{
+-	int err;
+-
+-	if (!obj->btf)
+-		return 0;
+-
+-	err = btf__finalize_data(obj, obj->btf);
+-	if (err) {
+-		pr_warn("Error finalizing %s: %d.\n", BTF_ELF_SEC, err);
+-		return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static bool prog_needs_vmlinux_btf(struct bpf_program *prog)
+-{
+-	if (prog->type == BPF_PROG_TYPE_STRUCT_OPS ||
+-	    prog->type == BPF_PROG_TYPE_LSM)
+-		return true;
+-
+-	/* BPF_PROG_TYPE_TRACING programs which do not attach to other programs
+-	 * also need vmlinux BTF
+-	 */
+-	if (prog->type == BPF_PROG_TYPE_TRACING && !prog->attach_prog_fd)
+-		return true;
+-
+-	return false;
+-}
+-
+-static bool obj_needs_vmlinux_btf(const struct bpf_object *obj)
+-{
+-	struct bpf_program *prog;
+-	int i;
+-
+-	/* CO-RE relocations need kernel BTF */
+-	if (obj->btf_ext && obj->btf_ext->core_relo_info.len)
+-		return true;
+-
+-	/* Support for typed ksyms needs kernel BTF */
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		const struct extern_desc *ext;
+-
+-		ext = &obj->externs[i];
+-		if (ext->type == EXT_KSYM && ext->ksym.type_id)
+-			return true;
+-	}
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		if (!prog->load)
+-			continue;
+-		if (prog_needs_vmlinux_btf(prog))
+-			return true;
+-	}
+-
+-	return false;
+-}
+-
+-static int bpf_object__load_vmlinux_btf(struct bpf_object *obj, bool force)
+-{
+-	int err;
+-
+-	/* btf_vmlinux could be loaded earlier */
+-	if (obj->btf_vmlinux || obj->gen_loader)
+-		return 0;
+-
+-	if (!force && !obj_needs_vmlinux_btf(obj))
+-		return 0;
+-
+-	obj->btf_vmlinux = libbpf_find_kernel_btf();
+-	err = libbpf_get_error(obj->btf_vmlinux);
+-	if (err) {
+-		pr_warn("Error loading vmlinux BTF: %d\n", err);
+-		obj->btf_vmlinux = NULL;
+-		return err;
+-	}
+-	return 0;
+-}
+-
+-static int bpf_object__sanitize_and_load_btf(struct bpf_object *obj)
+-{
+-	struct btf *kern_btf = obj->btf;
+-	bool btf_mandatory, sanitize;
+-	int i, err = 0;
+-
+-	if (!obj->btf)
+-		return 0;
+-
+-	if (!kernel_supports(obj, FEAT_BTF)) {
+-		if (kernel_needs_btf(obj)) {
+-			err = -EOPNOTSUPP;
+-			goto report;
+-		}
+-		pr_debug("Kernel doesn't support BTF, skipping uploading it.\n");
+-		return 0;
+-	}
+-
+-	/* Even though some subprogs are global/weak, user might prefer more
+-	 * permissive BPF verification process that BPF verifier performs for
+-	 * static functions, taking into account more context from the caller
+-	 * functions. In such case, they need to mark such subprogs with
+-	 * __attribute__((visibility("hidden"))) and libbpf will adjust
+-	 * corresponding FUNC BTF type to be marked as static and trigger more
+-	 * involved BPF verification process.
+-	 */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		struct bpf_program *prog = &obj->programs[i];
+-		struct btf_type *t;
+-		const char *name;
+-		int j, n;
+-
+-		if (!prog->mark_btf_static || !prog_is_subprog(obj, prog))
+-			continue;
+-
+-		n = btf__get_nr_types(obj->btf);
+-		for (j = 1; j <= n; j++) {
+-			t = btf_type_by_id(obj->btf, j);
+-			if (!btf_is_func(t) || btf_func_linkage(t) != BTF_FUNC_GLOBAL)
+-				continue;
+-
+-			name = btf__str_by_offset(obj->btf, t->name_off);
+-			if (strcmp(name, prog->name) != 0)
+-				continue;
+-
+-			t->info = btf_type_info(BTF_KIND_FUNC, BTF_FUNC_STATIC, 0);
+-			break;
+-		}
+-	}
+-
+-	sanitize = btf_needs_sanitization(obj);
+-	if (sanitize) {
+-		const void *raw_data;
+-		__u32 sz;
+-
+-		/* clone BTF to sanitize a copy and leave the original intact */
+-		raw_data = btf__get_raw_data(obj->btf, &sz);
+-		kern_btf = btf__new(raw_data, sz);
+-		err = libbpf_get_error(kern_btf);
+-		if (err)
+-			return err;
+-
+-		/* enforce 8-byte pointers for BPF-targeted BTFs */
+-		btf__set_pointer_size(obj->btf, 8);
+-		bpf_object__sanitize_btf(obj, kern_btf);
+-	}
+-
+-	if (obj->gen_loader) {
+-		__u32 raw_size = 0;
+-		const void *raw_data = btf__get_raw_data(kern_btf, &raw_size);
+-
+-		if (!raw_data)
+-			return -ENOMEM;
+-		bpf_gen__load_btf(obj->gen_loader, raw_data, raw_size);
+-		/* Pretend to have valid FD to pass various fd >= 0 checks.
+-		 * This fd == 0 will not be used with any syscall and will be reset to -1 eventually.
+-		 */
+-		btf__set_fd(kern_btf, 0);
+-	} else {
+-		err = btf__load(kern_btf);
+-	}
+-	if (sanitize) {
+-		if (!err) {
+-			/* move fd to libbpf's BTF */
+-			btf__set_fd(obj->btf, btf__fd(kern_btf));
+-			btf__set_fd(kern_btf, -1);
+-		}
+-		btf__free(kern_btf);
+-	}
+-report:
+-	if (err) {
+-		btf_mandatory = kernel_needs_btf(obj);
+-		pr_warn("Error loading .BTF into kernel: %d. %s\n", err,
+-			btf_mandatory ? "BTF is mandatory, can't proceed."
+-				      : "BTF is optional, ignoring.");
+-		if (!btf_mandatory)
+-			err = 0;
+-	}
+-	return err;
+-}
+-
+-static const char *elf_sym_str(const struct bpf_object *obj, size_t off)
+-{
+-	const char *name;
+-
+-	name = elf_strptr(obj->efile.elf, obj->efile.strtabidx, off);
+-	if (!name) {
+-		pr_warn("elf: failed to get section name string at offset %zu from %s: %s\n",
+-			off, obj->path, elf_errmsg(-1));
+-		return NULL;
+-	}
+-
+-	return name;
+-}
+-
+-static const char *elf_sec_str(const struct bpf_object *obj, size_t off)
+-{
+-	const char *name;
+-
+-	name = elf_strptr(obj->efile.elf, obj->efile.shstrndx, off);
+-	if (!name) {
+-		pr_warn("elf: failed to get section name string at offset %zu from %s: %s\n",
+-			off, obj->path, elf_errmsg(-1));
+-		return NULL;
+-	}
+-
+-	return name;
+-}
+-
+-static Elf_Scn *elf_sec_by_idx(const struct bpf_object *obj, size_t idx)
+-{
+-	Elf_Scn *scn;
+-
+-	scn = elf_getscn(obj->efile.elf, idx);
+-	if (!scn) {
+-		pr_warn("elf: failed to get section(%zu) from %s: %s\n",
+-			idx, obj->path, elf_errmsg(-1));
+-		return NULL;
+-	}
+-	return scn;
+-}
+-
+-static Elf_Scn *elf_sec_by_name(const struct bpf_object *obj, const char *name)
+-{
+-	Elf_Scn *scn = NULL;
+-	Elf *elf = obj->efile.elf;
+-	const char *sec_name;
+-
+-	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+-		sec_name = elf_sec_name(obj, scn);
+-		if (!sec_name)
+-			return NULL;
+-
+-		if (strcmp(sec_name, name) != 0)
+-			continue;
+-
+-		return scn;
+-	}
+-	return NULL;
+-}
+-
+-static int elf_sec_hdr(const struct bpf_object *obj, Elf_Scn *scn, GElf_Shdr *hdr)
+-{
+-	if (!scn)
+-		return -EINVAL;
+-
+-	if (gelf_getshdr(scn, hdr) != hdr) {
+-		pr_warn("elf: failed to get section(%zu) header from %s: %s\n",
+-			elf_ndxscn(scn), obj->path, elf_errmsg(-1));
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static const char *elf_sec_name(const struct bpf_object *obj, Elf_Scn *scn)
+-{
+-	const char *name;
+-	GElf_Shdr sh;
+-
+-	if (!scn)
+-		return NULL;
+-
+-	if (elf_sec_hdr(obj, scn, &sh))
+-		return NULL;
+-
+-	name = elf_sec_str(obj, sh.sh_name);
+-	if (!name) {
+-		pr_warn("elf: failed to get section(%zu) name from %s: %s\n",
+-			elf_ndxscn(scn), obj->path, elf_errmsg(-1));
+-		return NULL;
+-	}
+-
+-	return name;
+-}
+-
+-static Elf_Data *elf_sec_data(const struct bpf_object *obj, Elf_Scn *scn)
+-{
+-	Elf_Data *data;
+-
+-	if (!scn)
+-		return NULL;
+-
+-	data = elf_getdata(scn, 0);
+-	if (!data) {
+-		pr_warn("elf: failed to get section(%zu) %s data from %s: %s\n",
+-			elf_ndxscn(scn), elf_sec_name(obj, scn) ?: "<?>",
+-			obj->path, elf_errmsg(-1));
+-		return NULL;
+-	}
+-
+-	return data;
+-}
+-
+-static bool is_sec_name_dwarf(const char *name)
+-{
+-	/* approximation, but the actual list is too long */
+-	return strncmp(name, ".debug_", sizeof(".debug_") - 1) == 0;
+-}
+-
+-static bool ignore_elf_section(GElf_Shdr *hdr, const char *name)
+-{
+-	/* no special handling of .strtab */
+-	if (hdr->sh_type == SHT_STRTAB)
+-		return true;
+-
+-	/* ignore .llvm_addrsig section as well */
+-	if (hdr->sh_type == SHT_LLVM_ADDRSIG)
+-		return true;
+-
+-	/* no subprograms will lead to an empty .text section, ignore it */
+-	if (hdr->sh_type == SHT_PROGBITS && hdr->sh_size == 0 &&
+-	    strcmp(name, ".text") == 0)
+-		return true;
+-
+-	/* DWARF sections */
+-	if (is_sec_name_dwarf(name))
+-		return true;
+-
+-	if (strncmp(name, ".rel", sizeof(".rel") - 1) == 0) {
+-		name += sizeof(".rel") - 1;
+-		/* DWARF section relocations */
+-		if (is_sec_name_dwarf(name))
+-			return true;
+-
+-		/* .BTF and .BTF.ext don't need relocations */
+-		if (strcmp(name, BTF_ELF_SEC) == 0 ||
+-		    strcmp(name, BTF_EXT_ELF_SEC) == 0)
+-			return true;
+-	}
+-
+-	return false;
+-}
+-
+-static int cmp_progs(const void *_a, const void *_b)
+-{
+-	const struct bpf_program *a = _a;
+-	const struct bpf_program *b = _b;
+-
+-	if (a->sec_idx != b->sec_idx)
+-		return a->sec_idx < b->sec_idx ? -1 : 1;
+-
+-	/* sec_insn_off can't be the same within the section */
+-	return a->sec_insn_off < b->sec_insn_off ? -1 : 1;
+-}
+-
+-static int bpf_object__elf_collect(struct bpf_object *obj)
+-{
+-	Elf *elf = obj->efile.elf;
+-	Elf_Data *btf_ext_data = NULL;
+-	Elf_Data *btf_data = NULL;
+-	int idx = 0, err = 0;
+-	const char *name;
+-	Elf_Data *data;
+-	Elf_Scn *scn;
+-	GElf_Shdr sh;
+-
+-	/* a bunch of ELF parsing functionality depends on processing symbols,
+-	 * so do the first pass and find the symbol table
+-	 */
+-	scn = NULL;
+-	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+-		if (elf_sec_hdr(obj, scn, &sh))
+-			return -LIBBPF_ERRNO__FORMAT;
+-
+-		if (sh.sh_type == SHT_SYMTAB) {
+-			if (obj->efile.symbols) {
+-				pr_warn("elf: multiple symbol tables in %s\n", obj->path);
+-				return -LIBBPF_ERRNO__FORMAT;
+-			}
+-
+-			data = elf_sec_data(obj, scn);
+-			if (!data)
+-				return -LIBBPF_ERRNO__FORMAT;
+-
+-			obj->efile.symbols = data;
+-			obj->efile.symbols_shndx = elf_ndxscn(scn);
+-			obj->efile.strtabidx = sh.sh_link;
+-		}
+-	}
+-
+-	scn = NULL;
+-	while ((scn = elf_nextscn(elf, scn)) != NULL) {
+-		idx++;
+-
+-		if (elf_sec_hdr(obj, scn, &sh))
+-			return -LIBBPF_ERRNO__FORMAT;
+-
+-		name = elf_sec_str(obj, sh.sh_name);
+-		if (!name)
+-			return -LIBBPF_ERRNO__FORMAT;
+-
+-		if (ignore_elf_section(&sh, name))
+-			continue;
+-
+-		data = elf_sec_data(obj, scn);
+-		if (!data)
+-			return -LIBBPF_ERRNO__FORMAT;
+-
+-		pr_debug("elf: section(%d) %s, size %ld, link %d, flags %lx, type=%d\n",
+-			 idx, name, (unsigned long)data->d_size,
+-			 (int)sh.sh_link, (unsigned long)sh.sh_flags,
+-			 (int)sh.sh_type);
+-
+-		if (strcmp(name, "license") == 0) {
+-			err = bpf_object__init_license(obj, data->d_buf, data->d_size);
+-			if (err)
+-				return err;
+-		} else if (strcmp(name, "version") == 0) {
+-			err = bpf_object__init_kversion(obj, data->d_buf, data->d_size);
+-			if (err)
+-				return err;
+-		} else if (strcmp(name, "maps") == 0) {
+-			obj->efile.maps_shndx = idx;
+-		} else if (strcmp(name, MAPS_ELF_SEC) == 0) {
+-			obj->efile.btf_maps_shndx = idx;
+-		} else if (strcmp(name, BTF_ELF_SEC) == 0) {
+-			btf_data = data;
+-		} else if (strcmp(name, BTF_EXT_ELF_SEC) == 0) {
+-			btf_ext_data = data;
+-		} else if (sh.sh_type == SHT_SYMTAB) {
+-			/* already processed during the first pass above */
+-		} else if (sh.sh_type == SHT_PROGBITS && data->d_size > 0) {
+-			if (sh.sh_flags & SHF_EXECINSTR) {
+-				if (strcmp(name, ".text") == 0)
+-					obj->efile.text_shndx = idx;
+-				err = bpf_object__add_programs(obj, data, name, idx);
+-				if (err)
+-					return err;
+-			} else if (strcmp(name, DATA_SEC) == 0) {
+-				obj->efile.data = data;
+-				obj->efile.data_shndx = idx;
+-			} else if (strcmp(name, RODATA_SEC) == 0) {
+-				obj->efile.rodata = data;
+-				obj->efile.rodata_shndx = idx;
+-			} else if (strcmp(name, STRUCT_OPS_SEC) == 0) {
+-				obj->efile.st_ops_data = data;
+-				obj->efile.st_ops_shndx = idx;
+-			} else {
+-				pr_info("elf: skipping unrecognized data section(%d) %s\n",
+-					idx, name);
+-			}
+-		} else if (sh.sh_type == SHT_REL) {
+-			int nr_sects = obj->efile.nr_reloc_sects;
+-			void *sects = obj->efile.reloc_sects;
+-			int sec = sh.sh_info; /* points to other section */
+-
+-			/* Only do relo for section with exec instructions */
+-			if (!section_have_execinstr(obj, sec) &&
+-			    strcmp(name, ".rel" STRUCT_OPS_SEC) &&
+-			    strcmp(name, ".rel" MAPS_ELF_SEC)) {
+-				pr_info("elf: skipping relo section(%d) %s for section(%d) %s\n",
+-					idx, name, sec,
+-					elf_sec_name(obj, elf_sec_by_idx(obj, sec)) ?: "<?>");
+-				continue;
+-			}
+-
+-			sects = libbpf_reallocarray(sects, nr_sects + 1,
+-						    sizeof(*obj->efile.reloc_sects));
+-			if (!sects)
+-				return -ENOMEM;
+-
+-			obj->efile.reloc_sects = sects;
+-			obj->efile.nr_reloc_sects++;
+-
+-			obj->efile.reloc_sects[nr_sects].shdr = sh;
+-			obj->efile.reloc_sects[nr_sects].data = data;
+-		} else if (sh.sh_type == SHT_NOBITS && strcmp(name, BSS_SEC) == 0) {
+-			obj->efile.bss = data;
+-			obj->efile.bss_shndx = idx;
+-		} else {
+-			pr_info("elf: skipping section(%d) %s (size %zu)\n", idx, name,
+-				(size_t)sh.sh_size);
+-		}
+-	}
+-
+-	if (!obj->efile.strtabidx || obj->efile.strtabidx > idx) {
+-		pr_warn("elf: symbol strings section missing or invalid in %s\n", obj->path);
+-		return -LIBBPF_ERRNO__FORMAT;
+-	}
+-
+-	/* sort BPF programs by section name and in-section instruction offset
+-	 * for faster search */
+-	qsort(obj->programs, obj->nr_programs, sizeof(*obj->programs), cmp_progs);
+-
+-	return bpf_object__init_btf(obj, btf_data, btf_ext_data);
+-}
+-
+-static bool sym_is_extern(const GElf_Sym *sym)
+-{
+-	int bind = GELF_ST_BIND(sym->st_info);
+-	/* externs are symbols w/ type=NOTYPE, bind=GLOBAL|WEAK, section=UND */
+-	return sym->st_shndx == SHN_UNDEF &&
+-	       (bind == STB_GLOBAL || bind == STB_WEAK) &&
+-	       GELF_ST_TYPE(sym->st_info) == STT_NOTYPE;
+-}
+-
+-static bool sym_is_subprog(const GElf_Sym *sym, int text_shndx)
+-{
+-	int bind = GELF_ST_BIND(sym->st_info);
+-	int type = GELF_ST_TYPE(sym->st_info);
+-
+-	/* in .text section */
+-	if (sym->st_shndx != text_shndx)
+-		return false;
+-
+-	/* local function */
+-	if (bind == STB_LOCAL && type == STT_SECTION)
+-		return true;
+-
+-	/* global function */
+-	return bind == STB_GLOBAL && type == STT_FUNC;
+-}
+-
+-static int find_extern_btf_id(const struct btf *btf, const char *ext_name)
+-{
+-	const struct btf_type *t;
+-	const char *tname;
+-	int i, n;
+-
+-	if (!btf)
+-		return -ESRCH;
+-
+-	n = btf__get_nr_types(btf);
+-	for (i = 1; i <= n; i++) {
+-		t = btf__type_by_id(btf, i);
+-
+-		if (!btf_is_var(t) && !btf_is_func(t))
+-			continue;
+-
+-		tname = btf__name_by_offset(btf, t->name_off);
+-		if (strcmp(tname, ext_name))
+-			continue;
+-
+-		if (btf_is_var(t) &&
+-		    btf_var(t)->linkage != BTF_VAR_GLOBAL_EXTERN)
+-			return -EINVAL;
+-
+-		if (btf_is_func(t) && btf_func_linkage(t) != BTF_FUNC_EXTERN)
+-			return -EINVAL;
+-
+-		return i;
+-	}
+-
+-	return -ENOENT;
+-}
+-
+-static int find_extern_sec_btf_id(struct btf *btf, int ext_btf_id) {
+-	const struct btf_var_secinfo *vs;
+-	const struct btf_type *t;
+-	int i, j, n;
+-
+-	if (!btf)
+-		return -ESRCH;
+-
+-	n = btf__get_nr_types(btf);
+-	for (i = 1; i <= n; i++) {
+-		t = btf__type_by_id(btf, i);
+-
+-		if (!btf_is_datasec(t))
+-			continue;
+-
+-		vs = btf_var_secinfos(t);
+-		for (j = 0; j < btf_vlen(t); j++, vs++) {
+-			if (vs->type == ext_btf_id)
+-				return i;
+-		}
+-	}
+-
+-	return -ENOENT;
+-}
+-
+-static enum kcfg_type find_kcfg_type(const struct btf *btf, int id,
+-				     bool *is_signed)
+-{
+-	const struct btf_type *t;
+-	const char *name;
+-
+-	t = skip_mods_and_typedefs(btf, id, NULL);
+-	name = btf__name_by_offset(btf, t->name_off);
+-
+-	if (is_signed)
+-		*is_signed = false;
+-	switch (btf_kind(t)) {
+-	case BTF_KIND_INT: {
+-		int enc = btf_int_encoding(t);
+-
+-		if (enc & BTF_INT_BOOL)
+-			return t->size == 1 ? KCFG_BOOL : KCFG_UNKNOWN;
+-		if (is_signed)
+-			*is_signed = enc & BTF_INT_SIGNED;
+-		if (t->size == 1)
+-			return KCFG_CHAR;
+-		if (t->size < 1 || t->size > 8 || (t->size & (t->size - 1)))
+-			return KCFG_UNKNOWN;
+-		return KCFG_INT;
+-	}
+-	case BTF_KIND_ENUM:
+-		if (t->size != 4)
+-			return KCFG_UNKNOWN;
+-		if (strcmp(name, "libbpf_tristate"))
+-			return KCFG_UNKNOWN;
+-		return KCFG_TRISTATE;
+-	case BTF_KIND_ARRAY:
+-		if (btf_array(t)->nelems == 0)
+-			return KCFG_UNKNOWN;
+-		if (find_kcfg_type(btf, btf_array(t)->type, NULL) != KCFG_CHAR)
+-			return KCFG_UNKNOWN;
+-		return KCFG_CHAR_ARR;
+-	default:
+-		return KCFG_UNKNOWN;
+-	}
+-}
+-
+-static int cmp_externs(const void *_a, const void *_b)
+-{
+-	const struct extern_desc *a = _a;
+-	const struct extern_desc *b = _b;
+-
+-	if (a->type != b->type)
+-		return a->type < b->type ? -1 : 1;
+-
+-	if (a->type == EXT_KCFG) {
+-		/* descending order by alignment requirements */
+-		if (a->kcfg.align != b->kcfg.align)
+-			return a->kcfg.align > b->kcfg.align ? -1 : 1;
+-		/* ascending order by size, within same alignment class */
+-		if (a->kcfg.sz != b->kcfg.sz)
+-			return a->kcfg.sz < b->kcfg.sz ? -1 : 1;
+-	}
+-
+-	/* resolve ties by name */
+-	return strcmp(a->name, b->name);
+-}
+-
+-static int find_int_btf_id(const struct btf *btf)
+-{
+-	const struct btf_type *t;
+-	int i, n;
+-
+-	n = btf__get_nr_types(btf);
+-	for (i = 1; i <= n; i++) {
+-		t = btf__type_by_id(btf, i);
+-
+-		if (btf_is_int(t) && btf_int_bits(t) == 32)
+-			return i;
+-	}
+-
+-	return 0;
+-}
+-
+-static int add_dummy_ksym_var(struct btf *btf)
+-{
+-	int i, int_btf_id, sec_btf_id, dummy_var_btf_id;
+-	const struct btf_var_secinfo *vs;
+-	const struct btf_type *sec;
+-
+-	if (!btf)
+-		return 0;
+-
+-	sec_btf_id = btf__find_by_name_kind(btf, KSYMS_SEC,
+-					    BTF_KIND_DATASEC);
+-	if (sec_btf_id < 0)
+-		return 0;
+-
+-	sec = btf__type_by_id(btf, sec_btf_id);
+-	vs = btf_var_secinfos(sec);
+-	for (i = 0; i < btf_vlen(sec); i++, vs++) {
+-		const struct btf_type *vt;
+-
+-		vt = btf__type_by_id(btf, vs->type);
+-		if (btf_is_func(vt))
+-			break;
+-	}
+-
+-	/* No func in ksyms sec.  No need to add dummy var. */
+-	if (i == btf_vlen(sec))
+-		return 0;
+-
+-	int_btf_id = find_int_btf_id(btf);
+-	dummy_var_btf_id = btf__add_var(btf,
+-					"dummy_ksym",
+-					BTF_VAR_GLOBAL_ALLOCATED,
+-					int_btf_id);
+-	if (dummy_var_btf_id < 0)
+-		pr_warn("cannot create a dummy_ksym var\n");
+-
+-	return dummy_var_btf_id;
+-}
+-
+-static int bpf_object__collect_externs(struct bpf_object *obj)
+-{
+-	struct btf_type *sec, *kcfg_sec = NULL, *ksym_sec = NULL;
+-	const struct btf_type *t;
+-	struct extern_desc *ext;
+-	int i, n, off, dummy_var_btf_id;
+-	const char *ext_name, *sec_name;
+-	Elf_Scn *scn;
+-	GElf_Shdr sh;
+-
+-	if (!obj->efile.symbols)
+-		return 0;
+-
+-	scn = elf_sec_by_idx(obj, obj->efile.symbols_shndx);
+-	if (elf_sec_hdr(obj, scn, &sh))
+-		return -LIBBPF_ERRNO__FORMAT;
+-
+-	dummy_var_btf_id = add_dummy_ksym_var(obj->btf);
+-	if (dummy_var_btf_id < 0)
+-		return dummy_var_btf_id;
+-
+-	n = sh.sh_size / sh.sh_entsize;
+-	pr_debug("looking for externs among %d symbols...\n", n);
+-
+-	for (i = 0; i < n; i++) {
+-		GElf_Sym sym;
+-
+-		if (!gelf_getsym(obj->efile.symbols, i, &sym))
+-			return -LIBBPF_ERRNO__FORMAT;
+-		if (!sym_is_extern(&sym))
+-			continue;
+-		ext_name = elf_sym_str(obj, sym.st_name);
+-		if (!ext_name || !ext_name[0])
+-			continue;
+-
+-		ext = obj->externs;
+-		ext = libbpf_reallocarray(ext, obj->nr_extern + 1, sizeof(*ext));
+-		if (!ext)
+-			return -ENOMEM;
+-		obj->externs = ext;
+-		ext = &ext[obj->nr_extern];
+-		memset(ext, 0, sizeof(*ext));
+-		obj->nr_extern++;
+-
+-		ext->btf_id = find_extern_btf_id(obj->btf, ext_name);
+-		if (ext->btf_id <= 0) {
+-			pr_warn("failed to find BTF for extern '%s': %d\n",
+-				ext_name, ext->btf_id);
+-			return ext->btf_id;
+-		}
+-		t = btf__type_by_id(obj->btf, ext->btf_id);
+-		ext->name = btf__name_by_offset(obj->btf, t->name_off);
+-		ext->sym_idx = i;
+-		ext->is_weak = GELF_ST_BIND(sym.st_info) == STB_WEAK;
+-
+-		ext->sec_btf_id = find_extern_sec_btf_id(obj->btf, ext->btf_id);
+-		if (ext->sec_btf_id <= 0) {
+-			pr_warn("failed to find BTF for extern '%s' [%d] section: %d\n",
+-				ext_name, ext->btf_id, ext->sec_btf_id);
+-			return ext->sec_btf_id;
+-		}
+-		sec = (void *)btf__type_by_id(obj->btf, ext->sec_btf_id);
+-		sec_name = btf__name_by_offset(obj->btf, sec->name_off);
+-
+-		if (strcmp(sec_name, KCONFIG_SEC) == 0) {
+-			if (btf_is_func(t)) {
+-				pr_warn("extern function %s is unsupported under %s section\n",
+-					ext->name, KCONFIG_SEC);
+-				return -ENOTSUP;
+-			}
+-			kcfg_sec = sec;
+-			ext->type = EXT_KCFG;
+-			ext->kcfg.sz = btf__resolve_size(obj->btf, t->type);
+-			if (ext->kcfg.sz <= 0) {
+-				pr_warn("failed to resolve size of extern (kcfg) '%s': %d\n",
+-					ext_name, ext->kcfg.sz);
+-				return ext->kcfg.sz;
+-			}
+-			ext->kcfg.align = btf__align_of(obj->btf, t->type);
+-			if (ext->kcfg.align <= 0) {
+-				pr_warn("failed to determine alignment of extern (kcfg) '%s': %d\n",
+-					ext_name, ext->kcfg.align);
+-				return -EINVAL;
+-			}
+-			ext->kcfg.type = find_kcfg_type(obj->btf, t->type,
+-						        &ext->kcfg.is_signed);
+-			if (ext->kcfg.type == KCFG_UNKNOWN) {
+-				pr_warn("extern (kcfg) '%s' type is unsupported\n", ext_name);
+-				return -ENOTSUP;
+-			}
+-		} else if (strcmp(sec_name, KSYMS_SEC) == 0) {
+-			if (btf_is_func(t) && ext->is_weak) {
+-				pr_warn("extern weak function %s is unsupported\n",
+-					ext->name);
+-				return -ENOTSUP;
+-			}
+-			ksym_sec = sec;
+-			ext->type = EXT_KSYM;
+-			skip_mods_and_typedefs(obj->btf, t->type,
+-					       &ext->ksym.type_id);
+-		} else {
+-			pr_warn("unrecognized extern section '%s'\n", sec_name);
+-			return -ENOTSUP;
+-		}
+-	}
+-	pr_debug("collected %d externs total\n", obj->nr_extern);
+-
+-	if (!obj->nr_extern)
+-		return 0;
+-
+-	/* sort externs by type, for kcfg ones also by (align, size, name) */
+-	qsort(obj->externs, obj->nr_extern, sizeof(*ext), cmp_externs);
+-
+-	/* for .ksyms section, we need to turn all externs into allocated
+-	 * variables in BTF to pass kernel verification; we do this by
+-	 * pretending that each extern is a 8-byte variable
+-	 */
+-	if (ksym_sec) {
+-		/* find existing 4-byte integer type in BTF to use for fake
+-		 * extern variables in DATASEC
+-		 */
+-		int int_btf_id = find_int_btf_id(obj->btf);
+-		/* For extern function, a dummy_var added earlier
+-		 * will be used to replace the vs->type and
+-		 * its name string will be used to refill
+-		 * the missing param's name.
+-		 */
+-		const struct btf_type *dummy_var;
+-
+-		dummy_var = btf__type_by_id(obj->btf, dummy_var_btf_id);
+-		for (i = 0; i < obj->nr_extern; i++) {
+-			ext = &obj->externs[i];
+-			if (ext->type != EXT_KSYM)
+-				continue;
+-			pr_debug("extern (ksym) #%d: symbol %d, name %s\n",
+-				 i, ext->sym_idx, ext->name);
+-		}
+-
+-		sec = ksym_sec;
+-		n = btf_vlen(sec);
+-		for (i = 0, off = 0; i < n; i++, off += sizeof(int)) {
+-			struct btf_var_secinfo *vs = btf_var_secinfos(sec) + i;
+-			struct btf_type *vt;
+-
+-			vt = (void *)btf__type_by_id(obj->btf, vs->type);
+-			ext_name = btf__name_by_offset(obj->btf, vt->name_off);
+-			ext = find_extern_by_name(obj, ext_name);
+-			if (!ext) {
+-				pr_warn("failed to find extern definition for BTF %s '%s'\n",
+-					btf_kind_str(vt), ext_name);
+-				return -ESRCH;
+-			}
+-			if (btf_is_func(vt)) {
+-				const struct btf_type *func_proto;
+-				struct btf_param *param;
+-				int j;
+-
+-				func_proto = btf__type_by_id(obj->btf,
+-							     vt->type);
+-				param = btf_params(func_proto);
+-				/* Reuse the dummy_var string if the
+-				 * func proto does not have param name.
+-				 */
+-				for (j = 0; j < btf_vlen(func_proto); j++)
+-					if (param[j].type && !param[j].name_off)
+-						param[j].name_off =
+-							dummy_var->name_off;
+-				vs->type = dummy_var_btf_id;
+-				vt->info &= ~0xffff;
+-				vt->info |= BTF_FUNC_GLOBAL;
+-			} else {
+-				btf_var(vt)->linkage = BTF_VAR_GLOBAL_ALLOCATED;
+-				vt->type = int_btf_id;
+-			}
+-			vs->offset = off;
+-			vs->size = sizeof(int);
+-		}
+-		sec->size = off;
+-	}
+-
+-	if (kcfg_sec) {
+-		sec = kcfg_sec;
+-		/* for kcfg externs calculate their offsets within a .kconfig map */
+-		off = 0;
+-		for (i = 0; i < obj->nr_extern; i++) {
+-			ext = &obj->externs[i];
+-			if (ext->type != EXT_KCFG)
+-				continue;
+-
+-			ext->kcfg.data_off = roundup(off, ext->kcfg.align);
+-			off = ext->kcfg.data_off + ext->kcfg.sz;
+-			pr_debug("extern (kcfg) #%d: symbol %d, off %u, name %s\n",
+-				 i, ext->sym_idx, ext->kcfg.data_off, ext->name);
+-		}
+-		sec->size = off;
+-		n = btf_vlen(sec);
+-		for (i = 0; i < n; i++) {
+-			struct btf_var_secinfo *vs = btf_var_secinfos(sec) + i;
+-
+-			t = btf__type_by_id(obj->btf, vs->type);
+-			ext_name = btf__name_by_offset(obj->btf, t->name_off);
+-			ext = find_extern_by_name(obj, ext_name);
+-			if (!ext) {
+-				pr_warn("failed to find extern definition for BTF var '%s'\n",
+-					ext_name);
+-				return -ESRCH;
+-			}
+-			btf_var(t)->linkage = BTF_VAR_GLOBAL_ALLOCATED;
+-			vs->offset = ext->kcfg.data_off;
+-		}
+-	}
+-	return 0;
+-}
+-
+-struct bpf_program *
+-bpf_object__find_program_by_title(const struct bpf_object *obj,
+-				  const char *title)
+-{
+-	struct bpf_program *pos;
+-
+-	bpf_object__for_each_program(pos, obj) {
+-		if (pos->sec_name && !strcmp(pos->sec_name, title))
+-			return pos;
+-	}
+-	return errno = ENOENT, NULL;
+-}
+-
+-static bool prog_is_subprog(const struct bpf_object *obj,
+-			    const struct bpf_program *prog)
+-{
+-	/* For legacy reasons, libbpf supports an entry-point BPF programs
+-	 * without SEC() attribute, i.e., those in the .text section. But if
+-	 * there are 2 or more such programs in the .text section, they all
+-	 * must be subprograms called from entry-point BPF programs in
+-	 * designated SEC()'tions, otherwise there is no way to distinguish
+-	 * which of those programs should be loaded vs which are a subprogram.
+-	 * Similarly, if there is a function/program in .text and at least one
+-	 * other BPF program with custom SEC() attribute, then we just assume
+-	 * .text programs are subprograms (even if they are not called from
+-	 * other programs), because libbpf never explicitly supported mixing
+-	 * SEC()-designated BPF programs and .text entry-point BPF programs.
+-	 */
+-	return prog->sec_idx == obj->efile.text_shndx && obj->nr_programs > 1;
+-}
+-
+-struct bpf_program *
+-bpf_object__find_program_by_name(const struct bpf_object *obj,
+-				 const char *name)
+-{
+-	struct bpf_program *prog;
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		if (prog_is_subprog(obj, prog))
+-			continue;
+-		if (!strcmp(prog->name, name))
+-			return prog;
+-	}
+-	return errno = ENOENT, NULL;
+-}
+-
+-static bool bpf_object__shndx_is_data(const struct bpf_object *obj,
+-				      int shndx)
+-{
+-	return shndx == obj->efile.data_shndx ||
+-	       shndx == obj->efile.bss_shndx ||
+-	       shndx == obj->efile.rodata_shndx;
+-}
+-
+-static bool bpf_object__shndx_is_maps(const struct bpf_object *obj,
+-				      int shndx)
+-{
+-	return shndx == obj->efile.maps_shndx ||
+-	       shndx == obj->efile.btf_maps_shndx;
+-}
+-
+-static enum libbpf_map_type
+-bpf_object__section_to_libbpf_map_type(const struct bpf_object *obj, int shndx)
+-{
+-	if (shndx == obj->efile.data_shndx)
+-		return LIBBPF_MAP_DATA;
+-	else if (shndx == obj->efile.bss_shndx)
+-		return LIBBPF_MAP_BSS;
+-	else if (shndx == obj->efile.rodata_shndx)
+-		return LIBBPF_MAP_RODATA;
+-	else if (shndx == obj->efile.symbols_shndx)
+-		return LIBBPF_MAP_KCONFIG;
+-	else
+-		return LIBBPF_MAP_UNSPEC;
+-}
+-
+-static int bpf_program__record_reloc(struct bpf_program *prog,
+-				     struct reloc_desc *reloc_desc,
+-				     __u32 insn_idx, const char *sym_name,
+-				     const GElf_Sym *sym, const GElf_Rel *rel)
+-{
+-	struct bpf_insn *insn = &prog->insns[insn_idx];
+-	size_t map_idx, nr_maps = prog->obj->nr_maps;
+-	struct bpf_object *obj = prog->obj;
+-	__u32 shdr_idx = sym->st_shndx;
+-	enum libbpf_map_type type;
+-	const char *sym_sec_name;
+-	struct bpf_map *map;
+-
+-	if (!is_call_insn(insn) && !is_ldimm64_insn(insn)) {
+-		pr_warn("prog '%s': invalid relo against '%s' for insns[%d].code 0x%x\n",
+-			prog->name, sym_name, insn_idx, insn->code);
+-		return -LIBBPF_ERRNO__RELOC;
+-	}
+-
+-	if (sym_is_extern(sym)) {
+-		int sym_idx = GELF_R_SYM(rel->r_info);
+-		int i, n = obj->nr_extern;
+-		struct extern_desc *ext;
+-
+-		for (i = 0; i < n; i++) {
+-			ext = &obj->externs[i];
+-			if (ext->sym_idx == sym_idx)
+-				break;
+-		}
+-		if (i >= n) {
+-			pr_warn("prog '%s': extern relo failed to find extern for '%s' (%d)\n",
+-				prog->name, sym_name, sym_idx);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		pr_debug("prog '%s': found extern #%d '%s' (sym %d) for insn #%u\n",
+-			 prog->name, i, ext->name, ext->sym_idx, insn_idx);
+-		if (insn->code == (BPF_JMP | BPF_CALL))
+-			reloc_desc->type = RELO_EXTERN_FUNC;
+-		else
+-			reloc_desc->type = RELO_EXTERN_VAR;
+-		reloc_desc->insn_idx = insn_idx;
+-		reloc_desc->sym_off = i; /* sym_off stores extern index */
+-		return 0;
+-	}
+-
+-	/* sub-program call relocation */
+-	if (is_call_insn(insn)) {
+-		if (insn->src_reg != BPF_PSEUDO_CALL) {
+-			pr_warn("prog '%s': incorrect bpf_call opcode\n", prog->name);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		/* text_shndx can be 0, if no default "main" program exists */
+-		if (!shdr_idx || shdr_idx != obj->efile.text_shndx) {
+-			sym_sec_name = elf_sec_name(obj, elf_sec_by_idx(obj, shdr_idx));
+-			pr_warn("prog '%s': bad call relo against '%s' in section '%s'\n",
+-				prog->name, sym_name, sym_sec_name);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		if (sym->st_value % BPF_INSN_SZ) {
+-			pr_warn("prog '%s': bad call relo against '%s' at offset %zu\n",
+-				prog->name, sym_name, (size_t)sym->st_value);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		reloc_desc->type = RELO_CALL;
+-		reloc_desc->insn_idx = insn_idx;
+-		reloc_desc->sym_off = sym->st_value;
+-		return 0;
+-	}
+-
+-	if (!shdr_idx || shdr_idx >= SHN_LORESERVE) {
+-		pr_warn("prog '%s': invalid relo against '%s' in special section 0x%x; forgot to initialize global var?..\n",
+-			prog->name, sym_name, shdr_idx);
+-		return -LIBBPF_ERRNO__RELOC;
+-	}
+-
+-	/* loading subprog addresses */
+-	if (sym_is_subprog(sym, obj->efile.text_shndx)) {
+-		/* global_func: sym->st_value = offset in the section, insn->imm = 0.
+-		 * local_func: sym->st_value = 0, insn->imm = offset in the section.
+-		 */
+-		if ((sym->st_value % BPF_INSN_SZ) || (insn->imm % BPF_INSN_SZ)) {
+-			pr_warn("prog '%s': bad subprog addr relo against '%s' at offset %zu+%d\n",
+-				prog->name, sym_name, (size_t)sym->st_value, insn->imm);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-
+-		reloc_desc->type = RELO_SUBPROG_ADDR;
+-		reloc_desc->insn_idx = insn_idx;
+-		reloc_desc->sym_off = sym->st_value;
+-		return 0;
+-	}
+-
+-	type = bpf_object__section_to_libbpf_map_type(obj, shdr_idx);
+-	sym_sec_name = elf_sec_name(obj, elf_sec_by_idx(obj, shdr_idx));
+-
+-	/* generic map reference relocation */
+-	if (type == LIBBPF_MAP_UNSPEC) {
+-		if (!bpf_object__shndx_is_maps(obj, shdr_idx)) {
+-			pr_warn("prog '%s': bad map relo against '%s' in section '%s'\n",
+-				prog->name, sym_name, sym_sec_name);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		for (map_idx = 0; map_idx < nr_maps; map_idx++) {
+-			map = &obj->maps[map_idx];
+-			if (map->libbpf_type != type ||
+-			    map->sec_idx != sym->st_shndx ||
+-			    map->sec_offset != sym->st_value)
+-				continue;
+-			pr_debug("prog '%s': found map %zd (%s, sec %d, off %zu) for insn #%u\n",
+-				 prog->name, map_idx, map->name, map->sec_idx,
+-				 map->sec_offset, insn_idx);
+-			break;
+-		}
+-		if (map_idx >= nr_maps) {
+-			pr_warn("prog '%s': map relo failed to find map for section '%s', off %zu\n",
+-				prog->name, sym_sec_name, (size_t)sym->st_value);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		reloc_desc->type = RELO_LD64;
+-		reloc_desc->insn_idx = insn_idx;
+-		reloc_desc->map_idx = map_idx;
+-		reloc_desc->sym_off = 0; /* sym->st_value determines map_idx */
+-		return 0;
+-	}
+-
+-	/* global data map relocation */
+-	if (!bpf_object__shndx_is_data(obj, shdr_idx)) {
+-		pr_warn("prog '%s': bad data relo against section '%s'\n",
+-			prog->name, sym_sec_name);
+-		return -LIBBPF_ERRNO__RELOC;
+-	}
+-	for (map_idx = 0; map_idx < nr_maps; map_idx++) {
+-		map = &obj->maps[map_idx];
+-		if (map->libbpf_type != type)
+-			continue;
+-		pr_debug("prog '%s': found data map %zd (%s, sec %d, off %zu) for insn %u\n",
+-			 prog->name, map_idx, map->name, map->sec_idx,
+-			 map->sec_offset, insn_idx);
+-		break;
+-	}
+-	if (map_idx >= nr_maps) {
+-		pr_warn("prog '%s': data relo failed to find map for section '%s'\n",
+-			prog->name, sym_sec_name);
+-		return -LIBBPF_ERRNO__RELOC;
+-	}
+-
+-	reloc_desc->type = RELO_DATA;
+-	reloc_desc->insn_idx = insn_idx;
+-	reloc_desc->map_idx = map_idx;
+-	reloc_desc->sym_off = sym->st_value;
+-	return 0;
+-}
+-
+-static bool prog_contains_insn(const struct bpf_program *prog, size_t insn_idx)
+-{
+-	return insn_idx >= prog->sec_insn_off &&
+-	       insn_idx < prog->sec_insn_off + prog->sec_insn_cnt;
+-}
+-
+-static struct bpf_program *find_prog_by_sec_insn(const struct bpf_object *obj,
+-						 size_t sec_idx, size_t insn_idx)
+-{
+-	int l = 0, r = obj->nr_programs - 1, m;
+-	struct bpf_program *prog;
+-
+-	while (l < r) {
+-		m = l + (r - l + 1) / 2;
+-		prog = &obj->programs[m];
+-
+-		if (prog->sec_idx < sec_idx ||
+-		    (prog->sec_idx == sec_idx && prog->sec_insn_off <= insn_idx))
+-			l = m;
+-		else
+-			r = m - 1;
+-	}
+-	/* matching program could be at index l, but it still might be the
+-	 * wrong one, so we need to double check conditions for the last time
+-	 */
+-	prog = &obj->programs[l];
+-	if (prog->sec_idx == sec_idx && prog_contains_insn(prog, insn_idx))
+-		return prog;
+-	return NULL;
+-}
+-
+-static int
+-bpf_object__collect_prog_relos(struct bpf_object *obj, GElf_Shdr *shdr, Elf_Data *data)
+-{
+-	Elf_Data *symbols = obj->efile.symbols;
+-	const char *relo_sec_name, *sec_name;
+-	size_t sec_idx = shdr->sh_info;
+-	struct bpf_program *prog;
+-	struct reloc_desc *relos;
+-	int err, i, nrels;
+-	const char *sym_name;
+-	__u32 insn_idx;
+-	Elf_Scn *scn;
+-	Elf_Data *scn_data;
+-	GElf_Sym sym;
+-	GElf_Rel rel;
+-
+-	scn = elf_sec_by_idx(obj, sec_idx);
+-	scn_data = elf_sec_data(obj, scn);
+-
+-	relo_sec_name = elf_sec_str(obj, shdr->sh_name);
+-	sec_name = elf_sec_name(obj, scn);
+-	if (!relo_sec_name || !sec_name)
+-		return -EINVAL;
+-
+-	pr_debug("sec '%s': collecting relocation for section(%zu) '%s'\n",
+-		 relo_sec_name, sec_idx, sec_name);
+-	nrels = shdr->sh_size / shdr->sh_entsize;
+-
+-	for (i = 0; i < nrels; i++) {
+-		if (!gelf_getrel(data, i, &rel)) {
+-			pr_warn("sec '%s': failed to get relo #%d\n", relo_sec_name, i);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-		if (!gelf_getsym(symbols, GELF_R_SYM(rel.r_info), &sym)) {
+-			pr_warn("sec '%s': symbol 0x%zx not found for relo #%d\n",
+-				relo_sec_name, (size_t)GELF_R_SYM(rel.r_info), i);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		if (rel.r_offset % BPF_INSN_SZ || rel.r_offset >= scn_data->d_size) {
+-			pr_warn("sec '%s': invalid offset 0x%zx for relo #%d\n",
+-				relo_sec_name, (size_t)GELF_R_SYM(rel.r_info), i);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		insn_idx = rel.r_offset / BPF_INSN_SZ;
+-		/* relocations against static functions are recorded as
+-		 * relocations against the section that contains a function;
+-		 * in such case, symbol will be STT_SECTION and sym.st_name
+-		 * will point to empty string (0), so fetch section name
+-		 * instead
+-		 */
+-		if (GELF_ST_TYPE(sym.st_info) == STT_SECTION && sym.st_name == 0)
+-			sym_name = elf_sec_name(obj, elf_sec_by_idx(obj, sym.st_shndx));
+-		else
+-			sym_name = elf_sym_str(obj, sym.st_name);
+-		sym_name = sym_name ?: "<?";
+-
+-		pr_debug("sec '%s': relo #%d: insn #%u against '%s'\n",
+-			 relo_sec_name, i, insn_idx, sym_name);
+-
+-		prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
+-		if (!prog) {
+-			pr_debug("sec '%s': relo #%d: couldn't find program in section '%s' for insn #%u, probably overridden weak function, skipping...\n",
+-				relo_sec_name, i, sec_name, insn_idx);
+-			continue;
+-		}
+-
+-		relos = libbpf_reallocarray(prog->reloc_desc,
+-					    prog->nr_reloc + 1, sizeof(*relos));
+-		if (!relos)
+-			return -ENOMEM;
+-		prog->reloc_desc = relos;
+-
+-		/* adjust insn_idx to local BPF program frame of reference */
+-		insn_idx -= prog->sec_insn_off;
+-		err = bpf_program__record_reloc(prog, &relos[prog->nr_reloc],
+-						insn_idx, sym_name, &sym, &rel);
+-		if (err)
+-			return err;
+-
+-		prog->nr_reloc++;
+-	}
+-	return 0;
+-}
+-
+-static int bpf_map_find_btf_info(struct bpf_object *obj, struct bpf_map *map)
+-{
+-	struct bpf_map_def *def = &map->def;
+-	__u32 key_type_id = 0, value_type_id = 0;
+-	int ret;
+-
+-	/* if it's BTF-defined map, we don't need to search for type IDs.
+-	 * For struct_ops map, it does not need btf_key_type_id and
+-	 * btf_value_type_id.
+-	 */
+-	if (map->sec_idx == obj->efile.btf_maps_shndx ||
+-	    bpf_map__is_struct_ops(map))
+-		return 0;
+-
+-	if (!bpf_map__is_internal(map)) {
+-		ret = btf__get_map_kv_tids(obj->btf, map->name, def->key_size,
+-					   def->value_size, &key_type_id,
+-					   &value_type_id);
+-	} else {
+-		/*
+-		 * LLVM annotates global data differently in BTF, that is,
+-		 * only as '.data', '.bss' or '.rodata'.
+-		 */
+-		ret = btf__find_by_name(obj->btf,
+-				libbpf_type_to_btf_name[map->libbpf_type]);
+-	}
+-	if (ret < 0)
+-		return ret;
+-
+-	map->btf_key_type_id = key_type_id;
+-	map->btf_value_type_id = bpf_map__is_internal(map) ?
+-				 ret : value_type_id;
+-	return 0;
+-}
+-
+-int bpf_map__reuse_fd(struct bpf_map *map, int fd)
+-{
+-	struct bpf_map_info info = {};
+-	__u32 len = sizeof(info);
+-	int new_fd, err;
+-	char *new_name;
+-
+-	err = bpf_obj_get_info_by_fd(fd, &info, &len);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	new_name = strdup(info.name);
+-	if (!new_name)
+-		return libbpf_err(-errno);
+-
+-	new_fd = open("/", O_RDONLY | O_CLOEXEC);
+-	if (new_fd < 0) {
+-		err = -errno;
+-		goto err_free_new_name;
+-	}
+-
+-	new_fd = dup3(fd, new_fd, O_CLOEXEC);
+-	if (new_fd < 0) {
+-		err = -errno;
+-		goto err_close_new_fd;
+-	}
+-
+-	err = zclose(map->fd);
+-	if (err) {
+-		err = -errno;
+-		goto err_close_new_fd;
+-	}
+-	free(map->name);
+-
+-	map->fd = new_fd;
+-	map->name = new_name;
+-	map->def.type = info.type;
+-	map->def.key_size = info.key_size;
+-	map->def.value_size = info.value_size;
+-	map->def.max_entries = info.max_entries;
+-	map->def.map_flags = info.map_flags;
+-	map->btf_key_type_id = info.btf_key_type_id;
+-	map->btf_value_type_id = info.btf_value_type_id;
+-	map->reused = true;
+-
+-	return 0;
+-
+-err_close_new_fd:
+-	close(new_fd);
+-err_free_new_name:
+-	free(new_name);
+-	return libbpf_err(err);
+-}
+-
+-__u32 bpf_map__max_entries(const struct bpf_map *map)
+-{
+-	return map->def.max_entries;
+-}
+-
+-struct bpf_map *bpf_map__inner_map(struct bpf_map *map)
+-{
+-	if (!bpf_map_type__is_map_in_map(map->def.type))
+-		return errno = EINVAL, NULL;
+-
+-	return map->inner_map;
+-}
+-
+-int bpf_map__set_max_entries(struct bpf_map *map, __u32 max_entries)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->def.max_entries = max_entries;
+-	return 0;
+-}
+-
+-int bpf_map__resize(struct bpf_map *map, __u32 max_entries)
+-{
+-	if (!map || !max_entries)
+-		return libbpf_err(-EINVAL);
+-
+-	return bpf_map__set_max_entries(map, max_entries);
+-}
+-
+-static int
+-bpf_object__probe_loading(struct bpf_object *obj)
+-{
+-	struct bpf_load_program_attr attr;
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	struct bpf_insn insns[] = {
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN(),
+-	};
+-	int ret;
+-
+-	if (obj->gen_loader)
+-		return 0;
+-
+-	/* make sure basic loading works */
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+-	attr.insns = insns;
+-	attr.insns_cnt = ARRAY_SIZE(insns);
+-	attr.license = "GPL";
+-
+-	ret = bpf_load_program_xattr(&attr, NULL, 0);
+-	if (ret < 0) {
+-		attr.prog_type = BPF_PROG_TYPE_TRACEPOINT;
+-		ret = bpf_load_program_xattr(&attr, NULL, 0);
+-	}
+-	if (ret < 0) {
+-		ret = errno;
+-		cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
+-		pr_warn("Error in %s():%s(%d). Couldn't load trivial BPF "
+-			"program. Make sure your kernel supports BPF "
+-			"(CONFIG_BPF_SYSCALL=y) and/or that RLIMIT_MEMLOCK is "
+-			"set to big enough value.\n", __func__, cp, ret);
+-		return -ret;
+-	}
+-	close(ret);
+-
+-	return 0;
+-}
+-
+-static int probe_fd(int fd)
+-{
+-	if (fd >= 0)
+-		close(fd);
+-	return fd >= 0;
+-}
+-
+-static int probe_kern_prog_name(void)
+-{
+-	struct bpf_load_program_attr attr;
+-	struct bpf_insn insns[] = {
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN(),
+-	};
+-	int ret;
+-
+-	/* make sure loading with name works */
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+-	attr.insns = insns;
+-	attr.insns_cnt = ARRAY_SIZE(insns);
+-	attr.license = "GPL";
+-	attr.name = "test";
+-	ret = bpf_load_program_xattr(&attr, NULL, 0);
+-	return probe_fd(ret);
+-}
+-
+-static int probe_kern_global_data(void)
+-{
+-	struct bpf_load_program_attr prg_attr;
+-	struct bpf_create_map_attr map_attr;
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	struct bpf_insn insns[] = {
+-		BPF_LD_MAP_VALUE(BPF_REG_1, 0, 16),
+-		BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 42),
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN(),
+-	};
+-	int ret, map;
+-
+-	memset(&map_attr, 0, sizeof(map_attr));
+-	map_attr.map_type = BPF_MAP_TYPE_ARRAY;
+-	map_attr.key_size = sizeof(int);
+-	map_attr.value_size = 32;
+-	map_attr.max_entries = 1;
+-
+-	map = bpf_create_map_xattr(&map_attr);
+-	if (map < 0) {
+-		ret = -errno;
+-		cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
+-		pr_warn("Error in %s():%s(%d). Couldn't create simple array map.\n",
+-			__func__, cp, -ret);
+-		return ret;
+-	}
+-
+-	insns[0].imm = map;
+-
+-	memset(&prg_attr, 0, sizeof(prg_attr));
+-	prg_attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+-	prg_attr.insns = insns;
+-	prg_attr.insns_cnt = ARRAY_SIZE(insns);
+-	prg_attr.license = "GPL";
+-
+-	ret = bpf_load_program_xattr(&prg_attr, NULL, 0);
+-	close(map);
+-	return probe_fd(ret);
+-}
+-
+-static int probe_kern_btf(void)
+-{
+-	static const char strs[] = "\0int";
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),
+-	};
+-
+-	return probe_fd(libbpf__load_raw_btf((char *)types, sizeof(types),
+-					     strs, sizeof(strs)));
+-}
+-
+-static int probe_kern_btf_func(void)
+-{
+-	static const char strs[] = "\0int\0x\0a";
+-	/* void x(int a) {} */
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+-		/* FUNC_PROTO */                                /* [2] */
+-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
+-		BTF_PARAM_ENC(7, 1),
+-		/* FUNC x */                                    /* [3] */
+-		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 0), 2),
+-	};
+-
+-	return probe_fd(libbpf__load_raw_btf((char *)types, sizeof(types),
+-					     strs, sizeof(strs)));
+-}
+-
+-static int probe_kern_btf_func_global(void)
+-{
+-	static const char strs[] = "\0int\0x\0a";
+-	/* static void x(int a) {} */
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+-		/* FUNC_PROTO */                                /* [2] */
+-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 1), 0),
+-		BTF_PARAM_ENC(7, 1),
+-		/* FUNC x BTF_FUNC_GLOBAL */                    /* [3] */
+-		BTF_TYPE_ENC(5, BTF_INFO_ENC(BTF_KIND_FUNC, 0, BTF_FUNC_GLOBAL), 2),
+-	};
+-
+-	return probe_fd(libbpf__load_raw_btf((char *)types, sizeof(types),
+-					     strs, sizeof(strs)));
+-}
+-
+-static int probe_kern_btf_datasec(void)
+-{
+-	static const char strs[] = "\0x\0.data";
+-	/* static int a; */
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+-		/* VAR x */                                     /* [2] */
+-		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_VAR, 0, 0), 1),
+-		BTF_VAR_STATIC,
+-		/* DATASEC val */                               /* [3] */
+-		BTF_TYPE_ENC(3, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
+-		BTF_VAR_SECINFO_ENC(2, 0, 4),
+-	};
+-
+-	return probe_fd(libbpf__load_raw_btf((char *)types, sizeof(types),
+-					     strs, sizeof(strs)));
+-}
+-
+-static int probe_kern_btf_float(void)
+-{
+-	static const char strs[] = "\0float";
+-	__u32 types[] = {
+-		/* float */
+-		BTF_TYPE_FLOAT_ENC(1, 4),
+-	};
+-
+-	return probe_fd(libbpf__load_raw_btf((char *)types, sizeof(types),
+-					     strs, sizeof(strs)));
+-}
+-
+-static int probe_kern_array_mmap(void)
+-{
+-	struct bpf_create_map_attr attr = {
+-		.map_type = BPF_MAP_TYPE_ARRAY,
+-		.map_flags = BPF_F_MMAPABLE,
+-		.key_size = sizeof(int),
+-		.value_size = sizeof(int),
+-		.max_entries = 1,
+-	};
+-
+-	return probe_fd(bpf_create_map_xattr(&attr));
+-}
+-
+-static int probe_kern_exp_attach_type(void)
+-{
+-	struct bpf_load_program_attr attr;
+-	struct bpf_insn insns[] = {
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN(),
+-	};
+-
+-	memset(&attr, 0, sizeof(attr));
+-	/* use any valid combination of program type and (optional)
+-	 * non-zero expected attach type (i.e., not a BPF_CGROUP_INET_INGRESS)
+-	 * to see if kernel supports expected_attach_type field for
+-	 * BPF_PROG_LOAD command
+-	 */
+-	attr.prog_type = BPF_PROG_TYPE_CGROUP_SOCK;
+-	attr.expected_attach_type = BPF_CGROUP_INET_SOCK_CREATE;
+-	attr.insns = insns;
+-	attr.insns_cnt = ARRAY_SIZE(insns);
+-	attr.license = "GPL";
+-
+-	return probe_fd(bpf_load_program_xattr(&attr, NULL, 0));
+-}
+-
+-static int probe_kern_probe_read_kernel(void)
+-{
+-	struct bpf_load_program_attr attr;
+-	struct bpf_insn insns[] = {
+-		BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),	/* r1 = r10 (fp) */
+-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),	/* r1 += -8 */
+-		BPF_MOV64_IMM(BPF_REG_2, 8),		/* r2 = 8 */
+-		BPF_MOV64_IMM(BPF_REG_3, 0),		/* r3 = 0 */
+-		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_probe_read_kernel),
+-		BPF_EXIT_INSN(),
+-	};
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = BPF_PROG_TYPE_KPROBE;
+-	attr.insns = insns;
+-	attr.insns_cnt = ARRAY_SIZE(insns);
+-	attr.license = "GPL";
+-
+-	return probe_fd(bpf_load_program_xattr(&attr, NULL, 0));
+-}
+-
+-static int probe_prog_bind_map(void)
+-{
+-	struct bpf_load_program_attr prg_attr;
+-	struct bpf_create_map_attr map_attr;
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	struct bpf_insn insns[] = {
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN(),
+-	};
+-	int ret, map, prog;
+-
+-	memset(&map_attr, 0, sizeof(map_attr));
+-	map_attr.map_type = BPF_MAP_TYPE_ARRAY;
+-	map_attr.key_size = sizeof(int);
+-	map_attr.value_size = 32;
+-	map_attr.max_entries = 1;
+-
+-	map = bpf_create_map_xattr(&map_attr);
+-	if (map < 0) {
+-		ret = -errno;
+-		cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
+-		pr_warn("Error in %s():%s(%d). Couldn't create simple array map.\n",
+-			__func__, cp, -ret);
+-		return ret;
+-	}
+-
+-	memset(&prg_attr, 0, sizeof(prg_attr));
+-	prg_attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+-	prg_attr.insns = insns;
+-	prg_attr.insns_cnt = ARRAY_SIZE(insns);
+-	prg_attr.license = "GPL";
+-
+-	prog = bpf_load_program_xattr(&prg_attr, NULL, 0);
+-	if (prog < 0) {
+-		close(map);
+-		return 0;
+-	}
+-
+-	ret = bpf_prog_bind_map(prog, map, NULL);
+-
+-	close(map);
+-	close(prog);
+-
+-	return ret >= 0;
+-}
+-
+-static int probe_module_btf(void)
+-{
+-	static const char strs[] = "\0int";
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),
+-	};
+-	struct bpf_btf_info info;
+-	__u32 len = sizeof(info);
+-	char name[16];
+-	int fd, err;
+-
+-	fd = libbpf__load_raw_btf((char *)types, sizeof(types), strs, sizeof(strs));
+-	if (fd < 0)
+-		return 0; /* BTF not supported at all */
+-
+-	memset(&info, 0, sizeof(info));
+-	info.name = ptr_to_u64(name);
+-	info.name_len = sizeof(name);
+-
+-	/* check that BPF_OBJ_GET_INFO_BY_FD supports specifying name pointer;
+-	 * kernel's module BTF support coincides with support for
+-	 * name/name_len fields in struct bpf_btf_info.
+-	 */
+-	err = bpf_obj_get_info_by_fd(fd, &info, &len);
+-	close(fd);
+-	return !err;
+-}
+-
+-enum kern_feature_result {
+-	FEAT_UNKNOWN = 0,
+-	FEAT_SUPPORTED = 1,
+-	FEAT_MISSING = 2,
+-};
+-
+-typedef int (*feature_probe_fn)(void);
+-
+-static struct kern_feature_desc {
+-	const char *desc;
+-	feature_probe_fn probe;
+-	enum kern_feature_result res;
+-} feature_probes[__FEAT_CNT] = {
+-	[FEAT_PROG_NAME] = {
+-		"BPF program name", probe_kern_prog_name,
+-	},
+-	[FEAT_GLOBAL_DATA] = {
+-		"global variables", probe_kern_global_data,
+-	},
+-	[FEAT_BTF] = {
+-		"minimal BTF", probe_kern_btf,
+-	},
+-	[FEAT_BTF_FUNC] = {
+-		"BTF functions", probe_kern_btf_func,
+-	},
+-	[FEAT_BTF_GLOBAL_FUNC] = {
+-		"BTF global function", probe_kern_btf_func_global,
+-	},
+-	[FEAT_BTF_DATASEC] = {
+-		"BTF data section and variable", probe_kern_btf_datasec,
+-	},
+-	[FEAT_ARRAY_MMAP] = {
+-		"ARRAY map mmap()", probe_kern_array_mmap,
+-	},
+-	[FEAT_EXP_ATTACH_TYPE] = {
+-		"BPF_PROG_LOAD expected_attach_type attribute",
+-		probe_kern_exp_attach_type,
+-	},
+-	[FEAT_PROBE_READ_KERN] = {
+-		"bpf_probe_read_kernel() helper", probe_kern_probe_read_kernel,
+-	},
+-	[FEAT_PROG_BIND_MAP] = {
+-		"BPF_PROG_BIND_MAP support", probe_prog_bind_map,
+-	},
+-	[FEAT_MODULE_BTF] = {
+-		"module BTF support", probe_module_btf,
+-	},
+-	[FEAT_BTF_FLOAT] = {
+-		"BTF_KIND_FLOAT support", probe_kern_btf_float,
+-	},
+-};
+-
+-static bool kernel_supports(const struct bpf_object *obj, enum kern_feature_id feat_id)
+-{
+-	struct kern_feature_desc *feat = &feature_probes[feat_id];
+-	int ret;
+-
+-	if (obj->gen_loader)
+-		/* To generate loader program assume the latest kernel
+-		 * to avoid doing extra prog_load, map_create syscalls.
+-		 */
+-		return true;
+-
+-	if (READ_ONCE(feat->res) == FEAT_UNKNOWN) {
+-		ret = feat->probe();
+-		if (ret > 0) {
+-			WRITE_ONCE(feat->res, FEAT_SUPPORTED);
+-		} else if (ret == 0) {
+-			WRITE_ONCE(feat->res, FEAT_MISSING);
+-		} else {
+-			pr_warn("Detection of kernel %s support failed: %d\n", feat->desc, ret);
+-			WRITE_ONCE(feat->res, FEAT_MISSING);
+-		}
+-	}
+-
+-	return READ_ONCE(feat->res) == FEAT_SUPPORTED;
+-}
+-
+-static bool map_is_reuse_compat(const struct bpf_map *map, int map_fd)
+-{
+-	struct bpf_map_info map_info = {};
+-	char msg[STRERR_BUFSIZE];
+-	__u32 map_info_len;
+-
+-	map_info_len = sizeof(map_info);
+-
+-	if (bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len)) {
+-		pr_warn("failed to get map info for map FD %d: %s\n",
+-			map_fd, libbpf_strerror_r(errno, msg, sizeof(msg)));
+-		return false;
+-	}
+-
+-	return (map_info.type == map->def.type &&
+-		map_info.key_size == map->def.key_size &&
+-		map_info.value_size == map->def.value_size &&
+-		map_info.max_entries == map->def.max_entries &&
+-		map_info.map_flags == map->def.map_flags);
+-}
+-
+-static int
+-bpf_object__reuse_map(struct bpf_map *map)
+-{
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	int err, pin_fd;
+-
+-	pin_fd = bpf_obj_get(map->pin_path);
+-	if (pin_fd < 0) {
+-		err = -errno;
+-		if (err == -ENOENT) {
+-			pr_debug("found no pinned map to reuse at '%s'\n",
+-				 map->pin_path);
+-			return 0;
+-		}
+-
+-		cp = libbpf_strerror_r(-err, errmsg, sizeof(errmsg));
+-		pr_warn("couldn't retrieve pinned map '%s': %s\n",
+-			map->pin_path, cp);
+-		return err;
+-	}
+-
+-	if (!map_is_reuse_compat(map, pin_fd)) {
+-		pr_warn("couldn't reuse pinned map at '%s': parameter mismatch\n",
+-			map->pin_path);
+-		close(pin_fd);
+-		return -EINVAL;
+-	}
+-
+-	err = bpf_map__reuse_fd(map, pin_fd);
+-	if (err) {
+-		close(pin_fd);
+-		return err;
+-	}
+-	map->pinned = true;
+-	pr_debug("reused pinned map at '%s'\n", map->pin_path);
+-
+-	return 0;
+-}
+-
+-static int
+-bpf_object__populate_internal_map(struct bpf_object *obj, struct bpf_map *map)
+-{
+-	enum libbpf_map_type map_type = map->libbpf_type;
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	int err, zero = 0;
+-
+-	if (obj->gen_loader) {
+-		bpf_gen__map_update_elem(obj->gen_loader, map - obj->maps,
+-					 map->mmaped, map->def.value_size);
+-		if (map_type == LIBBPF_MAP_RODATA || map_type == LIBBPF_MAP_KCONFIG)
+-			bpf_gen__map_freeze(obj->gen_loader, map - obj->maps);
+-		return 0;
+-	}
+-	err = bpf_map_update_elem(map->fd, &zero, map->mmaped, 0);
+-	if (err) {
+-		err = -errno;
+-		cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-		pr_warn("Error setting initial map(%s) contents: %s\n",
+-			map->name, cp);
+-		return err;
+-	}
+-
+-	/* Freeze .rodata and .kconfig map as read-only from syscall side. */
+-	if (map_type == LIBBPF_MAP_RODATA || map_type == LIBBPF_MAP_KCONFIG) {
+-		err = bpf_map_freeze(map->fd);
+-		if (err) {
+-			err = -errno;
+-			cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-			pr_warn("Error freezing map(%s) as read-only: %s\n",
+-				map->name, cp);
+-			return err;
+-		}
+-	}
+-	return 0;
+-}
+-
+-static void bpf_map__destroy(struct bpf_map *map);
+-
+-static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, bool is_inner)
+-{
+-	struct bpf_create_map_attr create_attr;
+-	struct bpf_map_def *def = &map->def;
+-
+-	memset(&create_attr, 0, sizeof(create_attr));
+-
+-	if (kernel_supports(obj, FEAT_PROG_NAME))
+-		create_attr.name = map->name;
+-	create_attr.map_ifindex = map->map_ifindex;
+-	create_attr.map_type = def->type;
+-	create_attr.map_flags = def->map_flags;
+-	create_attr.key_size = def->key_size;
+-	create_attr.value_size = def->value_size;
+-	create_attr.numa_node = map->numa_node;
+-
+-	if (def->type == BPF_MAP_TYPE_PERF_EVENT_ARRAY && !def->max_entries) {
+-		int nr_cpus;
+-
+-		nr_cpus = libbpf_num_possible_cpus();
+-		if (nr_cpus < 0) {
+-			pr_warn("map '%s': failed to determine number of system CPUs: %d\n",
+-				map->name, nr_cpus);
+-			return nr_cpus;
+-		}
+-		pr_debug("map '%s': setting size to %d\n", map->name, nr_cpus);
+-		create_attr.max_entries = nr_cpus;
+-	} else {
+-		create_attr.max_entries = def->max_entries;
+-	}
+-
+-	if (bpf_map__is_struct_ops(map))
+-		create_attr.btf_vmlinux_value_type_id =
+-			map->btf_vmlinux_value_type_id;
+-
+-	create_attr.btf_fd = 0;
+-	create_attr.btf_key_type_id = 0;
+-	create_attr.btf_value_type_id = 0;
+-	if (obj->btf && btf__fd(obj->btf) >= 0 && !bpf_map_find_btf_info(obj, map)) {
+-		create_attr.btf_fd = btf__fd(obj->btf);
+-		create_attr.btf_key_type_id = map->btf_key_type_id;
+-		create_attr.btf_value_type_id = map->btf_value_type_id;
+-	}
+-
+-	if (bpf_map_type__is_map_in_map(def->type)) {
+-		if (map->inner_map) {
+-			int err;
+-
+-			err = bpf_object__create_map(obj, map->inner_map, true);
+-			if (err) {
+-				pr_warn("map '%s': failed to create inner map: %d\n",
+-					map->name, err);
+-				return err;
+-			}
+-			map->inner_map_fd = bpf_map__fd(map->inner_map);
+-		}
+-		if (map->inner_map_fd >= 0)
+-			create_attr.inner_map_fd = map->inner_map_fd;
+-	}
+-
+-	if (obj->gen_loader) {
+-		bpf_gen__map_create(obj->gen_loader, &create_attr, is_inner ? -1 : map - obj->maps);
+-		/* Pretend to have valid FD to pass various fd >= 0 checks.
+-		 * This fd == 0 will not be used with any syscall and will be reset to -1 eventually.
+-		 */
+-		map->fd = 0;
+-	} else {
+-		map->fd = bpf_create_map_xattr(&create_attr);
+-	}
+-	if (map->fd < 0 && (create_attr.btf_key_type_id ||
+-			    create_attr.btf_value_type_id)) {
+-		char *cp, errmsg[STRERR_BUFSIZE];
+-		int err = -errno;
+-
+-		cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-		pr_warn("Error in bpf_create_map_xattr(%s):%s(%d). Retrying without BTF.\n",
+-			map->name, cp, err);
+-		create_attr.btf_fd = 0;
+-		create_attr.btf_key_type_id = 0;
+-		create_attr.btf_value_type_id = 0;
+-		map->btf_key_type_id = 0;
+-		map->btf_value_type_id = 0;
+-		map->fd = bpf_create_map_xattr(&create_attr);
+-	}
+-
+-	if (map->fd < 0)
+-		return -errno;
+-
+-	if (bpf_map_type__is_map_in_map(def->type) && map->inner_map) {
+-		if (obj->gen_loader)
+-			map->inner_map->fd = -1;
+-		bpf_map__destroy(map->inner_map);
+-		zfree(&map->inner_map);
+-	}
+-
+-	return 0;
+-}
+-
+-static int init_map_slots(struct bpf_object *obj, struct bpf_map *map)
+-{
+-	const struct bpf_map *targ_map;
+-	unsigned int i;
+-	int fd, err = 0;
+-
+-	for (i = 0; i < map->init_slots_sz; i++) {
+-		if (!map->init_slots[i])
+-			continue;
+-
+-		targ_map = map->init_slots[i];
+-		fd = bpf_map__fd(targ_map);
+-		if (obj->gen_loader) {
+-			pr_warn("// TODO map_update_elem: idx %td key %d value==map_idx %td\n",
+-				map - obj->maps, i, targ_map - obj->maps);
+-			return -ENOTSUP;
+-		} else {
+-			err = bpf_map_update_elem(map->fd, &i, &fd, 0);
+-		}
+-		if (err) {
+-			err = -errno;
+-			pr_warn("map '%s': failed to initialize slot [%d] to map '%s' fd=%d: %d\n",
+-				map->name, i, targ_map->name,
+-				fd, err);
+-			return err;
+-		}
+-		pr_debug("map '%s': slot [%d] set to map '%s' fd=%d\n",
+-			 map->name, i, targ_map->name, fd);
+-	}
+-
+-	zfree(&map->init_slots);
+-	map->init_slots_sz = 0;
+-
+-	return 0;
+-}
+-
+-static int
+-bpf_object__create_maps(struct bpf_object *obj)
+-{
+-	struct bpf_map *map;
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	unsigned int i, j;
+-	int err;
+-
+-	for (i = 0; i < obj->nr_maps; i++) {
+-		map = &obj->maps[i];
+-
+-		if (map->pin_path) {
+-			err = bpf_object__reuse_map(map);
+-			if (err) {
+-				pr_warn("map '%s': error reusing pinned map\n",
+-					map->name);
+-				goto err_out;
+-			}
+-		}
+-
+-		if (map->fd >= 0) {
+-			pr_debug("map '%s': skipping creation (preset fd=%d)\n",
+-				 map->name, map->fd);
+-		} else {
+-			err = bpf_object__create_map(obj, map, false);
+-			if (err)
+-				goto err_out;
+-
+-			pr_debug("map '%s': created successfully, fd=%d\n",
+-				 map->name, map->fd);
+-
+-			if (bpf_map__is_internal(map)) {
+-				err = bpf_object__populate_internal_map(obj, map);
+-				if (err < 0) {
+-					zclose(map->fd);
+-					goto err_out;
+-				}
+-			}
+-
+-			if (map->init_slots_sz) {
+-				err = init_map_slots(obj, map);
+-				if (err < 0) {
+-					zclose(map->fd);
+-					goto err_out;
+-				}
+-			}
+-		}
+-
+-		if (map->pin_path && !map->pinned) {
+-			err = bpf_map__pin(map, NULL);
+-			if (err) {
+-				pr_warn("map '%s': failed to auto-pin at '%s': %d\n",
+-					map->name, map->pin_path, err);
+-				zclose(map->fd);
+-				goto err_out;
+-			}
+-		}
+-	}
+-
+-	return 0;
+-
+-err_out:
+-	cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-	pr_warn("map '%s': failed to create: %s(%d)\n", map->name, cp, err);
+-	pr_perm_msg(err);
+-	for (j = 0; j < i; j++)
+-		zclose(obj->maps[j].fd);
+-	return err;
+-}
+-
+-#define BPF_CORE_SPEC_MAX_LEN 64
+-
+-/* represents BPF CO-RE field or array element accessor */
+-struct bpf_core_accessor {
+-	__u32 type_id;		/* struct/union type or array element type */
+-	__u32 idx;		/* field index or array index */
+-	const char *name;	/* field name or NULL for array accessor */
+-};
+-
+-struct bpf_core_spec {
+-	const struct btf *btf;
+-	/* high-level spec: named fields and array indices only */
+-	struct bpf_core_accessor spec[BPF_CORE_SPEC_MAX_LEN];
+-	/* original unresolved (no skip_mods_or_typedefs) root type ID */
+-	__u32 root_type_id;
+-	/* CO-RE relocation kind */
+-	enum bpf_core_relo_kind relo_kind;
+-	/* high-level spec length */
+-	int len;
+-	/* raw, low-level spec: 1-to-1 with accessor spec string */
+-	int raw_spec[BPF_CORE_SPEC_MAX_LEN];
+-	/* raw spec length */
+-	int raw_len;
+-	/* field bit offset represented by spec */
+-	__u32 bit_offset;
+-};
+-
+-static bool str_is_empty(const char *s)
+-{
+-	return !s || !s[0];
+-}
+-
+-static bool is_flex_arr(const struct btf *btf,
+-			const struct bpf_core_accessor *acc,
+-			const struct btf_array *arr)
+-{
+-	const struct btf_type *t;
+-
+-	/* not a flexible array, if not inside a struct or has non-zero size */
+-	if (!acc->name || arr->nelems > 0)
+-		return false;
+-
+-	/* has to be the last member of enclosing struct */
+-	t = btf__type_by_id(btf, acc->type_id);
+-	return acc->idx == btf_vlen(t) - 1;
+-}
+-
+-static const char *core_relo_kind_str(enum bpf_core_relo_kind kind)
+-{
+-	switch (kind) {
+-	case BPF_FIELD_BYTE_OFFSET: return "byte_off";
+-	case BPF_FIELD_BYTE_SIZE: return "byte_sz";
+-	case BPF_FIELD_EXISTS: return "field_exists";
+-	case BPF_FIELD_SIGNED: return "signed";
+-	case BPF_FIELD_LSHIFT_U64: return "lshift_u64";
+-	case BPF_FIELD_RSHIFT_U64: return "rshift_u64";
+-	case BPF_TYPE_ID_LOCAL: return "local_type_id";
+-	case BPF_TYPE_ID_TARGET: return "target_type_id";
+-	case BPF_TYPE_EXISTS: return "type_exists";
+-	case BPF_TYPE_SIZE: return "type_size";
+-	case BPF_ENUMVAL_EXISTS: return "enumval_exists";
+-	case BPF_ENUMVAL_VALUE: return "enumval_value";
+-	default: return "unknown";
+-	}
+-}
+-
+-static bool core_relo_is_field_based(enum bpf_core_relo_kind kind)
+-{
+-	switch (kind) {
+-	case BPF_FIELD_BYTE_OFFSET:
+-	case BPF_FIELD_BYTE_SIZE:
+-	case BPF_FIELD_EXISTS:
+-	case BPF_FIELD_SIGNED:
+-	case BPF_FIELD_LSHIFT_U64:
+-	case BPF_FIELD_RSHIFT_U64:
+-		return true;
+-	default:
+-		return false;
+-	}
+-}
+-
+-static bool core_relo_is_type_based(enum bpf_core_relo_kind kind)
+-{
+-	switch (kind) {
+-	case BPF_TYPE_ID_LOCAL:
+-	case BPF_TYPE_ID_TARGET:
+-	case BPF_TYPE_EXISTS:
+-	case BPF_TYPE_SIZE:
+-		return true;
+-	default:
+-		return false;
+-	}
+-}
+-
+-static bool core_relo_is_enumval_based(enum bpf_core_relo_kind kind)
+-{
+-	switch (kind) {
+-	case BPF_ENUMVAL_EXISTS:
+-	case BPF_ENUMVAL_VALUE:
+-		return true;
+-	default:
+-		return false;
+-	}
+-}
+-
+-/*
+- * Turn bpf_core_relo into a low- and high-level spec representation,
+- * validating correctness along the way, as well as calculating resulting
+- * field bit offset, specified by accessor string. Low-level spec captures
+- * every single level of nestedness, including traversing anonymous
+- * struct/union members. High-level one only captures semantically meaningful
+- * "turning points": named fields and array indicies.
+- * E.g., for this case:
+- *
+- *   struct sample {
+- *       int __unimportant;
+- *       struct {
+- *           int __1;
+- *           int __2;
+- *           int a[7];
+- *       };
+- *   };
+- *
+- *   struct sample *s = ...;
+- *
+- *   int x = &s->a[3]; // access string = '0:1:2:3'
+- *
+- * Low-level spec has 1:1 mapping with each element of access string (it's
+- * just a parsed access string representation): [0, 1, 2, 3].
+- *
+- * High-level spec will capture only 3 points:
+- *   - intial zero-index access by pointer (&s->... is the same as &s[0]...);
+- *   - field 'a' access (corresponds to '2' in low-level spec);
+- *   - array element #3 access (corresponds to '3' in low-level spec).
+- *
+- * Type-based relocations (TYPE_EXISTS/TYPE_SIZE,
+- * TYPE_ID_LOCAL/TYPE_ID_TARGET) don't capture any field information. Their
+- * spec and raw_spec are kept empty.
+- *
+- * Enum value-based relocations (ENUMVAL_EXISTS/ENUMVAL_VALUE) use access
+- * string to specify enumerator's value index that need to be relocated.
+- */
+-static int bpf_core_parse_spec(const struct btf *btf,
+-			       __u32 type_id,
+-			       const char *spec_str,
+-			       enum bpf_core_relo_kind relo_kind,
+-			       struct bpf_core_spec *spec)
+-{
+-	int access_idx, parsed_len, i;
+-	struct bpf_core_accessor *acc;
+-	const struct btf_type *t;
+-	const char *name;
+-	__u32 id;
+-	__s64 sz;
+-
+-	if (str_is_empty(spec_str) || *spec_str == ':')
+-		return -EINVAL;
+-
+-	memset(spec, 0, sizeof(*spec));
+-	spec->btf = btf;
+-	spec->root_type_id = type_id;
+-	spec->relo_kind = relo_kind;
+-
+-	/* type-based relocations don't have a field access string */
+-	if (core_relo_is_type_based(relo_kind)) {
+-		if (strcmp(spec_str, "0"))
+-			return -EINVAL;
+-		return 0;
+-	}
+-
+-	/* parse spec_str="0:1:2:3:4" into array raw_spec=[0, 1, 2, 3, 4] */
+-	while (*spec_str) {
+-		if (*spec_str == ':')
+-			++spec_str;
+-		if (sscanf(spec_str, "%d%n", &access_idx, &parsed_len) != 1)
+-			return -EINVAL;
+-		if (spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
+-			return -E2BIG;
+-		spec_str += parsed_len;
+-		spec->raw_spec[spec->raw_len++] = access_idx;
+-	}
+-
+-	if (spec->raw_len == 0)
+-		return -EINVAL;
+-
+-	t = skip_mods_and_typedefs(btf, type_id, &id);
+-	if (!t)
+-		return -EINVAL;
+-
+-	access_idx = spec->raw_spec[0];
+-	acc = &spec->spec[0];
+-	acc->type_id = id;
+-	acc->idx = access_idx;
+-	spec->len++;
+-
+-	if (core_relo_is_enumval_based(relo_kind)) {
+-		if (!btf_is_enum(t) || spec->raw_len > 1 || access_idx >= btf_vlen(t))
+-			return -EINVAL;
+-
+-		/* record enumerator name in a first accessor */
+-		acc->name = btf__name_by_offset(btf, btf_enum(t)[access_idx].name_off);
+-		return 0;
+-	}
+-
+-	if (!core_relo_is_field_based(relo_kind))
+-		return -EINVAL;
+-
+-	sz = btf__resolve_size(btf, id);
+-	if (sz < 0)
+-		return sz;
+-	spec->bit_offset = access_idx * sz * 8;
+-
+-	for (i = 1; i < spec->raw_len; i++) {
+-		t = skip_mods_and_typedefs(btf, id, &id);
+-		if (!t)
+-			return -EINVAL;
+-
+-		access_idx = spec->raw_spec[i];
+-		acc = &spec->spec[spec->len];
+-
+-		if (btf_is_composite(t)) {
+-			const struct btf_member *m;
+-			__u32 bit_offset;
+-
+-			if (access_idx >= btf_vlen(t))
+-				return -EINVAL;
+-
+-			bit_offset = btf_member_bit_offset(t, access_idx);
+-			spec->bit_offset += bit_offset;
+-
+-			m = btf_members(t) + access_idx;
+-			if (m->name_off) {
+-				name = btf__name_by_offset(btf, m->name_off);
+-				if (str_is_empty(name))
+-					return -EINVAL;
+-
+-				acc->type_id = id;
+-				acc->idx = access_idx;
+-				acc->name = name;
+-				spec->len++;
+-			}
+-
+-			id = m->type;
+-		} else if (btf_is_array(t)) {
+-			const struct btf_array *a = btf_array(t);
+-			bool flex;
+-
+-			t = skip_mods_and_typedefs(btf, a->type, &id);
+-			if (!t)
+-				return -EINVAL;
+-
+-			flex = is_flex_arr(btf, acc - 1, a);
+-			if (!flex && access_idx >= a->nelems)
+-				return -EINVAL;
+-
+-			spec->spec[spec->len].type_id = id;
+-			spec->spec[spec->len].idx = access_idx;
+-			spec->len++;
+-
+-			sz = btf__resolve_size(btf, id);
+-			if (sz < 0)
+-				return sz;
+-			spec->bit_offset += access_idx * sz * 8;
+-		} else {
+-			pr_warn("relo for [%u] %s (at idx %d) captures type [%d] of unexpected kind %s\n",
+-				type_id, spec_str, i, id, btf_kind_str(t));
+-			return -EINVAL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static bool bpf_core_is_flavor_sep(const char *s)
+-{
+-	/* check X___Y name pattern, where X and Y are not underscores */
+-	return s[0] != '_' &&				      /* X */
+-	       s[1] == '_' && s[2] == '_' && s[3] == '_' &&   /* ___ */
+-	       s[4] != '_';				      /* Y */
+-}
+-
+-/* Given 'some_struct_name___with_flavor' return the length of a name prefix
+- * before last triple underscore. Struct name part after last triple
+- * underscore is ignored by BPF CO-RE relocation during relocation matching.
+- */
+-static size_t bpf_core_essential_name_len(const char *name)
+-{
+-	size_t n = strlen(name);
+-	int i;
+-
+-	for (i = n - 5; i >= 0; i--) {
+-		if (bpf_core_is_flavor_sep(name + i))
+-			return i + 1;
+-	}
+-	return n;
+-}
+-
+-struct core_cand
+-{
+-	const struct btf *btf;
+-	const struct btf_type *t;
+-	const char *name;
+-	__u32 id;
+-};
+-
+-/* dynamically sized list of type IDs and its associated struct btf */
+-struct core_cand_list {
+-	struct core_cand *cands;
+-	int len;
+-};
+-
+-static void bpf_core_free_cands(struct core_cand_list *cands)
+-{
+-	free(cands->cands);
+-	free(cands);
+-}
+-
+-static int bpf_core_add_cands(struct core_cand *local_cand,
+-			      size_t local_essent_len,
+-			      const struct btf *targ_btf,
+-			      const char *targ_btf_name,
+-			      int targ_start_id,
+-			      struct core_cand_list *cands)
+-{
+-	struct core_cand *new_cands, *cand;
+-	const struct btf_type *t;
+-	const char *targ_name;
+-	size_t targ_essent_len;
+-	int n, i;
+-
+-	n = btf__get_nr_types(targ_btf);
+-	for (i = targ_start_id; i <= n; i++) {
+-		t = btf__type_by_id(targ_btf, i);
+-		if (btf_kind(t) != btf_kind(local_cand->t))
+-			continue;
+-
+-		targ_name = btf__name_by_offset(targ_btf, t->name_off);
+-		if (str_is_empty(targ_name))
+-			continue;
+-
+-		targ_essent_len = bpf_core_essential_name_len(targ_name);
+-		if (targ_essent_len != local_essent_len)
+-			continue;
+-
+-		if (strncmp(local_cand->name, targ_name, local_essent_len) != 0)
+-			continue;
+-
+-		pr_debug("CO-RE relocating [%d] %s %s: found target candidate [%d] %s %s in [%s]\n",
+-			 local_cand->id, btf_kind_str(local_cand->t),
+-			 local_cand->name, i, btf_kind_str(t), targ_name,
+-			 targ_btf_name);
+-		new_cands = libbpf_reallocarray(cands->cands, cands->len + 1,
+-					      sizeof(*cands->cands));
+-		if (!new_cands)
+-			return -ENOMEM;
+-
+-		cand = &new_cands[cands->len];
+-		cand->btf = targ_btf;
+-		cand->t = t;
+-		cand->name = targ_name;
+-		cand->id = i;
+-
+-		cands->cands = new_cands;
+-		cands->len++;
+-	}
+-	return 0;
+-}
+-
+-static int load_module_btfs(struct bpf_object *obj)
+-{
+-	struct bpf_btf_info info;
+-	struct module_btf *mod_btf;
+-	struct btf *btf;
+-	char name[64];
+-	__u32 id = 0, len;
+-	int err, fd;
+-
+-	if (obj->btf_modules_loaded)
+-		return 0;
+-
+-	if (obj->gen_loader)
+-		return 0;
+-
+-	/* don't do this again, even if we find no module BTFs */
+-	obj->btf_modules_loaded = true;
+-
+-	/* kernel too old to support module BTFs */
+-	if (!kernel_supports(obj, FEAT_MODULE_BTF))
+-		return 0;
+-
+-	while (true) {
+-		err = bpf_btf_get_next_id(id, &id);
+-		if (err && errno == ENOENT)
+-			return 0;
+-		if (err) {
+-			err = -errno;
+-			pr_warn("failed to iterate BTF objects: %d\n", err);
+-			return err;
+-		}
+-
+-		fd = bpf_btf_get_fd_by_id(id);
+-		if (fd < 0) {
+-			if (errno == ENOENT)
+-				continue; /* expected race: BTF was unloaded */
+-			err = -errno;
+-			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
+-			return err;
+-		}
+-
+-		len = sizeof(info);
+-		memset(&info, 0, sizeof(info));
+-		info.name = ptr_to_u64(name);
+-		info.name_len = sizeof(name);
+-
+-		err = bpf_obj_get_info_by_fd(fd, &info, &len);
+-		if (err) {
+-			err = -errno;
+-			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
+-			goto err_out;
+-		}
+-
+-		/* ignore non-module BTFs */
+-		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
+-			close(fd);
+-			continue;
+-		}
+-
+-		btf = btf_get_from_fd(fd, obj->btf_vmlinux);
+-		err = libbpf_get_error(btf);
+-		if (err) {
+-			pr_warn("failed to load module [%s]'s BTF object #%d: %d\n",
+-				name, id, err);
+-			goto err_out;
+-		}
+-
+-		err = libbpf_ensure_mem((void **)&obj->btf_modules, &obj->btf_module_cap,
+-				        sizeof(*obj->btf_modules), obj->btf_module_cnt + 1);
+-		if (err)
+-			goto err_out;
+-
+-		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
+-
+-		mod_btf->btf = btf;
+-		mod_btf->id = id;
+-		mod_btf->fd = fd;
+-		mod_btf->name = strdup(name);
+-		if (!mod_btf->name) {
+-			err = -ENOMEM;
+-			goto err_out;
+-		}
+-		continue;
+-
+-err_out:
+-		close(fd);
+-		return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static struct core_cand_list *
+-bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 local_type_id)
+-{
+-	struct core_cand local_cand = {};
+-	struct core_cand_list *cands;
+-	const struct btf *main_btf;
+-	size_t local_essent_len;
+-	int err, i;
+-
+-	local_cand.btf = local_btf;
+-	local_cand.t = btf__type_by_id(local_btf, local_type_id);
+-	if (!local_cand.t)
+-		return ERR_PTR(-EINVAL);
+-
+-	local_cand.name = btf__name_by_offset(local_btf, local_cand.t->name_off);
+-	if (str_is_empty(local_cand.name))
+-		return ERR_PTR(-EINVAL);
+-	local_essent_len = bpf_core_essential_name_len(local_cand.name);
+-
+-	cands = calloc(1, sizeof(*cands));
+-	if (!cands)
+-		return ERR_PTR(-ENOMEM);
+-
+-	/* Attempt to find target candidates in vmlinux BTF first */
+-	main_btf = obj->btf_vmlinux_override ?: obj->btf_vmlinux;
+-	err = bpf_core_add_cands(&local_cand, local_essent_len, main_btf, "vmlinux", 1, cands);
+-	if (err)
+-		goto err_out;
+-
+-	/* if vmlinux BTF has any candidate, don't got for module BTFs */
+-	if (cands->len)
+-		return cands;
+-
+-	/* if vmlinux BTF was overridden, don't attempt to load module BTFs */
+-	if (obj->btf_vmlinux_override)
+-		return cands;
+-
+-	/* now look through module BTFs, trying to still find candidates */
+-	err = load_module_btfs(obj);
+-	if (err)
+-		goto err_out;
+-
+-	for (i = 0; i < obj->btf_module_cnt; i++) {
+-		err = bpf_core_add_cands(&local_cand, local_essent_len,
+-					 obj->btf_modules[i].btf,
+-					 obj->btf_modules[i].name,
+-					 btf__get_nr_types(obj->btf_vmlinux) + 1,
+-					 cands);
+-		if (err)
+-			goto err_out;
+-	}
+-
+-	return cands;
+-err_out:
+-	bpf_core_free_cands(cands);
+-	return ERR_PTR(err);
+-}
+-
+-/* Check two types for compatibility for the purpose of field access
+- * relocation. const/volatile/restrict and typedefs are skipped to ensure we
+- * are relocating semantically compatible entities:
+- *   - any two STRUCTs/UNIONs are compatible and can be mixed;
+- *   - any two FWDs are compatible, if their names match (modulo flavor suffix);
+- *   - any two PTRs are always compatible;
+- *   - for ENUMs, names should be the same (ignoring flavor suffix) or at
+- *     least one of enums should be anonymous;
+- *   - for ENUMs, check sizes, names are ignored;
+- *   - for INT, size and signedness are ignored;
+- *   - any two FLOATs are always compatible;
+- *   - for ARRAY, dimensionality is ignored, element types are checked for
+- *     compatibility recursively;
+- *   - everything else shouldn't be ever a target of relocation.
+- * These rules are not set in stone and probably will be adjusted as we get
+- * more experience with using BPF CO-RE relocations.
+- */
+-static int bpf_core_fields_are_compat(const struct btf *local_btf,
+-				      __u32 local_id,
+-				      const struct btf *targ_btf,
+-				      __u32 targ_id)
+-{
+-	const struct btf_type *local_type, *targ_type;
+-
+-recur:
+-	local_type = skip_mods_and_typedefs(local_btf, local_id, &local_id);
+-	targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
+-	if (!local_type || !targ_type)
+-		return -EINVAL;
+-
+-	if (btf_is_composite(local_type) && btf_is_composite(targ_type))
+-		return 1;
+-	if (btf_kind(local_type) != btf_kind(targ_type))
+-		return 0;
+-
+-	switch (btf_kind(local_type)) {
+-	case BTF_KIND_PTR:
+-	case BTF_KIND_FLOAT:
+-		return 1;
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_ENUM: {
+-		const char *local_name, *targ_name;
+-		size_t local_len, targ_len;
+-
+-		local_name = btf__name_by_offset(local_btf,
+-						 local_type->name_off);
+-		targ_name = btf__name_by_offset(targ_btf, targ_type->name_off);
+-		local_len = bpf_core_essential_name_len(local_name);
+-		targ_len = bpf_core_essential_name_len(targ_name);
+-		/* one of them is anonymous or both w/ same flavor-less names */
+-		return local_len == 0 || targ_len == 0 ||
+-		       (local_len == targ_len &&
+-			strncmp(local_name, targ_name, local_len) == 0);
+-	}
+-	case BTF_KIND_INT:
+-		/* just reject deprecated bitfield-like integers; all other
+-		 * integers are by default compatible between each other
+-		 */
+-		return btf_int_offset(local_type) == 0 &&
+-		       btf_int_offset(targ_type) == 0;
+-	case BTF_KIND_ARRAY:
+-		local_id = btf_array(local_type)->type;
+-		targ_id = btf_array(targ_type)->type;
+-		goto recur;
+-	default:
+-		pr_warn("unexpected kind %d relocated, local [%d], target [%d]\n",
+-			btf_kind(local_type), local_id, targ_id);
+-		return 0;
+-	}
+-}
+-
+-/*
+- * Given single high-level named field accessor in local type, find
+- * corresponding high-level accessor for a target type. Along the way,
+- * maintain low-level spec for target as well. Also keep updating target
+- * bit offset.
+- *
+- * Searching is performed through recursive exhaustive enumeration of all
+- * fields of a struct/union. If there are any anonymous (embedded)
+- * structs/unions, they are recursively searched as well. If field with
+- * desired name is found, check compatibility between local and target types,
+- * before returning result.
+- *
+- * 1 is returned, if field is found.
+- * 0 is returned if no compatible field is found.
+- * <0 is returned on error.
+- */
+-static int bpf_core_match_member(const struct btf *local_btf,
+-				 const struct bpf_core_accessor *local_acc,
+-				 const struct btf *targ_btf,
+-				 __u32 targ_id,
+-				 struct bpf_core_spec *spec,
+-				 __u32 *next_targ_id)
+-{
+-	const struct btf_type *local_type, *targ_type;
+-	const struct btf_member *local_member, *m;
+-	const char *local_name, *targ_name;
+-	__u32 local_id;
+-	int i, n, found;
+-
+-	targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
+-	if (!targ_type)
+-		return -EINVAL;
+-	if (!btf_is_composite(targ_type))
+-		return 0;
+-
+-	local_id = local_acc->type_id;
+-	local_type = btf__type_by_id(local_btf, local_id);
+-	local_member = btf_members(local_type) + local_acc->idx;
+-	local_name = btf__name_by_offset(local_btf, local_member->name_off);
+-
+-	n = btf_vlen(targ_type);
+-	m = btf_members(targ_type);
+-	for (i = 0; i < n; i++, m++) {
+-		__u32 bit_offset;
+-
+-		bit_offset = btf_member_bit_offset(targ_type, i);
+-
+-		/* too deep struct/union/array nesting */
+-		if (spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
+-			return -E2BIG;
+-
+-		/* speculate this member will be the good one */
+-		spec->bit_offset += bit_offset;
+-		spec->raw_spec[spec->raw_len++] = i;
+-
+-		targ_name = btf__name_by_offset(targ_btf, m->name_off);
+-		if (str_is_empty(targ_name)) {
+-			/* embedded struct/union, we need to go deeper */
+-			found = bpf_core_match_member(local_btf, local_acc,
+-						      targ_btf, m->type,
+-						      spec, next_targ_id);
+-			if (found) /* either found or error */
+-				return found;
+-		} else if (strcmp(local_name, targ_name) == 0) {
+-			/* matching named field */
+-			struct bpf_core_accessor *targ_acc;
+-
+-			targ_acc = &spec->spec[spec->len++];
+-			targ_acc->type_id = targ_id;
+-			targ_acc->idx = i;
+-			targ_acc->name = targ_name;
+-
+-			*next_targ_id = m->type;
+-			found = bpf_core_fields_are_compat(local_btf,
+-							   local_member->type,
+-							   targ_btf, m->type);
+-			if (!found)
+-				spec->len--; /* pop accessor */
+-			return found;
+-		}
+-		/* member turned out not to be what we looked for */
+-		spec->bit_offset -= bit_offset;
+-		spec->raw_len--;
+-	}
+-
+-	return 0;
+-}
+-
+-/* Check local and target types for compatibility. This check is used for
+- * type-based CO-RE relocations and follow slightly different rules than
+- * field-based relocations. This function assumes that root types were already
+- * checked for name match. Beyond that initial root-level name check, names
+- * are completely ignored. Compatibility rules are as follows:
+- *   - any two STRUCTs/UNIONs/FWDs/ENUMs/INTs are considered compatible, but
+- *     kind should match for local and target types (i.e., STRUCT is not
+- *     compatible with UNION);
+- *   - for ENUMs, the size is ignored;
+- *   - for INT, size and signedness are ignored;
+- *   - for ARRAY, dimensionality is ignored, element types are checked for
+- *     compatibility recursively;
+- *   - CONST/VOLATILE/RESTRICT modifiers are ignored;
+- *   - TYPEDEFs/PTRs are compatible if types they pointing to are compatible;
+- *   - FUNC_PROTOs are compatible if they have compatible signature: same
+- *     number of input args and compatible return and argument types.
+- * These rules are not set in stone and probably will be adjusted as we get
+- * more experience with using BPF CO-RE relocations.
+- */
+-static int bpf_core_types_are_compat(const struct btf *local_btf, __u32 local_id,
+-				     const struct btf *targ_btf, __u32 targ_id)
+-{
+-	const struct btf_type *local_type, *targ_type;
+-	int depth = 32; /* max recursion depth */
+-
+-	/* caller made sure that names match (ignoring flavor suffix) */
+-	local_type = btf__type_by_id(local_btf, local_id);
+-	targ_type = btf__type_by_id(targ_btf, targ_id);
+-	if (btf_kind(local_type) != btf_kind(targ_type))
+-		return 0;
+-
+-recur:
+-	depth--;
+-	if (depth < 0)
+-		return -EINVAL;
+-
+-	local_type = skip_mods_and_typedefs(local_btf, local_id, &local_id);
+-	targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
+-	if (!local_type || !targ_type)
+-		return -EINVAL;
+-
+-	if (btf_kind(local_type) != btf_kind(targ_type))
+-		return 0;
+-
+-	switch (btf_kind(local_type)) {
+-	case BTF_KIND_UNKN:
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-	case BTF_KIND_ENUM:
+-	case BTF_KIND_FWD:
+-		return 1;
+-	case BTF_KIND_INT:
+-		/* just reject deprecated bitfield-like integers; all other
+-		 * integers are by default compatible between each other
+-		 */
+-		return btf_int_offset(local_type) == 0 && btf_int_offset(targ_type) == 0;
+-	case BTF_KIND_PTR:
+-		local_id = local_type->type;
+-		targ_id = targ_type->type;
+-		goto recur;
+-	case BTF_KIND_ARRAY:
+-		local_id = btf_array(local_type)->type;
+-		targ_id = btf_array(targ_type)->type;
+-		goto recur;
+-	case BTF_KIND_FUNC_PROTO: {
+-		struct btf_param *local_p = btf_params(local_type);
+-		struct btf_param *targ_p = btf_params(targ_type);
+-		__u16 local_vlen = btf_vlen(local_type);
+-		__u16 targ_vlen = btf_vlen(targ_type);
+-		int i, err;
+-
+-		if (local_vlen != targ_vlen)
+-			return 0;
+-
+-		for (i = 0; i < local_vlen; i++, local_p++, targ_p++) {
+-			skip_mods_and_typedefs(local_btf, local_p->type, &local_id);
+-			skip_mods_and_typedefs(targ_btf, targ_p->type, &targ_id);
+-			err = bpf_core_types_are_compat(local_btf, local_id, targ_btf, targ_id);
+-			if (err <= 0)
+-				return err;
+-		}
+-
+-		/* tail recurse for return type check */
+-		skip_mods_and_typedefs(local_btf, local_type->type, &local_id);
+-		skip_mods_and_typedefs(targ_btf, targ_type->type, &targ_id);
+-		goto recur;
+-	}
+-	default:
+-		pr_warn("unexpected kind %s relocated, local [%d], target [%d]\n",
+-			btf_kind_str(local_type), local_id, targ_id);
+-		return 0;
+-	}
+-}
+-
+-/*
+- * Try to match local spec to a target type and, if successful, produce full
+- * target spec (high-level, low-level + bit offset).
+- */
+-static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
+-			       const struct btf *targ_btf, __u32 targ_id,
+-			       struct bpf_core_spec *targ_spec)
+-{
+-	const struct btf_type *targ_type;
+-	const struct bpf_core_accessor *local_acc;
+-	struct bpf_core_accessor *targ_acc;
+-	int i, sz, matched;
+-
+-	memset(targ_spec, 0, sizeof(*targ_spec));
+-	targ_spec->btf = targ_btf;
+-	targ_spec->root_type_id = targ_id;
+-	targ_spec->relo_kind = local_spec->relo_kind;
+-
+-	if (core_relo_is_type_based(local_spec->relo_kind)) {
+-		return bpf_core_types_are_compat(local_spec->btf,
+-						 local_spec->root_type_id,
+-						 targ_btf, targ_id);
+-	}
+-
+-	local_acc = &local_spec->spec[0];
+-	targ_acc = &targ_spec->spec[0];
+-
+-	if (core_relo_is_enumval_based(local_spec->relo_kind)) {
+-		size_t local_essent_len, targ_essent_len;
+-		const struct btf_enum *e;
+-		const char *targ_name;
+-
+-		/* has to resolve to an enum */
+-		targ_type = skip_mods_and_typedefs(targ_spec->btf, targ_id, &targ_id);
+-		if (!btf_is_enum(targ_type))
+-			return 0;
+-
+-		local_essent_len = bpf_core_essential_name_len(local_acc->name);
+-
+-		for (i = 0, e = btf_enum(targ_type); i < btf_vlen(targ_type); i++, e++) {
+-			targ_name = btf__name_by_offset(targ_spec->btf, e->name_off);
+-			targ_essent_len = bpf_core_essential_name_len(targ_name);
+-			if (targ_essent_len != local_essent_len)
+-				continue;
+-			if (strncmp(local_acc->name, targ_name, local_essent_len) == 0) {
+-				targ_acc->type_id = targ_id;
+-				targ_acc->idx = i;
+-				targ_acc->name = targ_name;
+-				targ_spec->len++;
+-				targ_spec->raw_spec[targ_spec->raw_len] = targ_acc->idx;
+-				targ_spec->raw_len++;
+-				return 1;
+-			}
+-		}
+-		return 0;
+-	}
+-
+-	if (!core_relo_is_field_based(local_spec->relo_kind))
+-		return -EINVAL;
+-
+-	for (i = 0; i < local_spec->len; i++, local_acc++, targ_acc++) {
+-		targ_type = skip_mods_and_typedefs(targ_spec->btf, targ_id,
+-						   &targ_id);
+-		if (!targ_type)
+-			return -EINVAL;
+-
+-		if (local_acc->name) {
+-			matched = bpf_core_match_member(local_spec->btf,
+-							local_acc,
+-							targ_btf, targ_id,
+-							targ_spec, &targ_id);
+-			if (matched <= 0)
+-				return matched;
+-		} else {
+-			/* for i=0, targ_id is already treated as array element
+-			 * type (because it's the original struct), for others
+-			 * we should find array element type first
+-			 */
+-			if (i > 0) {
+-				const struct btf_array *a;
+-				bool flex;
+-
+-				if (!btf_is_array(targ_type))
+-					return 0;
+-
+-				a = btf_array(targ_type);
+-				flex = is_flex_arr(targ_btf, targ_acc - 1, a);
+-				if (!flex && local_acc->idx >= a->nelems)
+-					return 0;
+-				if (!skip_mods_and_typedefs(targ_btf, a->type,
+-							    &targ_id))
+-					return -EINVAL;
+-			}
+-
+-			/* too deep struct/union/array nesting */
+-			if (targ_spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
+-				return -E2BIG;
+-
+-			targ_acc->type_id = targ_id;
+-			targ_acc->idx = local_acc->idx;
+-			targ_acc->name = NULL;
+-			targ_spec->len++;
+-			targ_spec->raw_spec[targ_spec->raw_len] = targ_acc->idx;
+-			targ_spec->raw_len++;
+-
+-			sz = btf__resolve_size(targ_btf, targ_id);
+-			if (sz < 0)
+-				return sz;
+-			targ_spec->bit_offset += local_acc->idx * sz * 8;
+-		}
+-	}
+-
+-	return 1;
+-}
+-
+-static int bpf_core_calc_field_relo(const struct bpf_program *prog,
+-				    const struct bpf_core_relo *relo,
+-				    const struct bpf_core_spec *spec,
+-				    __u32 *val, __u32 *field_sz, __u32 *type_id,
+-				    bool *validate)
+-{
+-	const struct bpf_core_accessor *acc;
+-	const struct btf_type *t;
+-	__u32 byte_off, byte_sz, bit_off, bit_sz, field_type_id;
+-	const struct btf_member *m;
+-	const struct btf_type *mt;
+-	bool bitfield;
+-	__s64 sz;
+-
+-	*field_sz = 0;
+-
+-	if (relo->kind == BPF_FIELD_EXISTS) {
+-		*val = spec ? 1 : 0;
+-		return 0;
+-	}
+-
+-	if (!spec)
+-		return -EUCLEAN; /* request instruction poisoning */
+-
+-	acc = &spec->spec[spec->len - 1];
+-	t = btf__type_by_id(spec->btf, acc->type_id);
+-
+-	/* a[n] accessor needs special handling */
+-	if (!acc->name) {
+-		if (relo->kind == BPF_FIELD_BYTE_OFFSET) {
+-			*val = spec->bit_offset / 8;
+-			/* remember field size for load/store mem size */
+-			sz = btf__resolve_size(spec->btf, acc->type_id);
+-			if (sz < 0)
+-				return -EINVAL;
+-			*field_sz = sz;
+-			*type_id = acc->type_id;
+-		} else if (relo->kind == BPF_FIELD_BYTE_SIZE) {
+-			sz = btf__resolve_size(spec->btf, acc->type_id);
+-			if (sz < 0)
+-				return -EINVAL;
+-			*val = sz;
+-		} else {
+-			pr_warn("prog '%s': relo %d at insn #%d can't be applied to array access\n",
+-				prog->name, relo->kind, relo->insn_off / 8);
+-			return -EINVAL;
+-		}
+-		if (validate)
+-			*validate = true;
+-		return 0;
+-	}
+-
+-	m = btf_members(t) + acc->idx;
+-	mt = skip_mods_and_typedefs(spec->btf, m->type, &field_type_id);
+-	bit_off = spec->bit_offset;
+-	bit_sz = btf_member_bitfield_size(t, acc->idx);
+-
+-	bitfield = bit_sz > 0;
+-	if (bitfield) {
+-		byte_sz = mt->size;
+-		byte_off = bit_off / 8 / byte_sz * byte_sz;
+-		/* figure out smallest int size necessary for bitfield load */
+-		while (bit_off + bit_sz - byte_off * 8 > byte_sz * 8) {
+-			if (byte_sz >= 8) {
+-				/* bitfield can't be read with 64-bit read */
+-				pr_warn("prog '%s': relo %d at insn #%d can't be satisfied for bitfield\n",
+-					prog->name, relo->kind, relo->insn_off / 8);
+-				return -E2BIG;
+-			}
+-			byte_sz *= 2;
+-			byte_off = bit_off / 8 / byte_sz * byte_sz;
+-		}
+-	} else {
+-		sz = btf__resolve_size(spec->btf, field_type_id);
+-		if (sz < 0)
+-			return -EINVAL;
+-		byte_sz = sz;
+-		byte_off = spec->bit_offset / 8;
+-		bit_sz = byte_sz * 8;
+-	}
+-
+-	/* for bitfields, all the relocatable aspects are ambiguous and we
+-	 * might disagree with compiler, so turn off validation of expected
+-	 * value, except for signedness
+-	 */
+-	if (validate)
+-		*validate = !bitfield;
+-
+-	switch (relo->kind) {
+-	case BPF_FIELD_BYTE_OFFSET:
+-		*val = byte_off;
+-		if (!bitfield) {
+-			*field_sz = byte_sz;
+-			*type_id = field_type_id;
+-		}
+-		break;
+-	case BPF_FIELD_BYTE_SIZE:
+-		*val = byte_sz;
+-		break;
+-	case BPF_FIELD_SIGNED:
+-		/* enums will be assumed unsigned */
+-		*val = btf_is_enum(mt) ||
+-		       (btf_int_encoding(mt) & BTF_INT_SIGNED);
+-		if (validate)
+-			*validate = true; /* signedness is never ambiguous */
+-		break;
+-	case BPF_FIELD_LSHIFT_U64:
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-		*val = 64 - (bit_off + bit_sz - byte_off  * 8);
+-#else
+-		*val = (8 - byte_sz) * 8 + (bit_off - byte_off * 8);
+-#endif
+-		break;
+-	case BPF_FIELD_RSHIFT_U64:
+-		*val = 64 - bit_sz;
+-		if (validate)
+-			*validate = true; /* right shift is never ambiguous */
+-		break;
+-	case BPF_FIELD_EXISTS:
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_core_calc_type_relo(const struct bpf_core_relo *relo,
+-				   const struct bpf_core_spec *spec,
+-				   __u32 *val)
+-{
+-	__s64 sz;
+-
+-	/* type-based relos return zero when target type is not found */
+-	if (!spec) {
+-		*val = 0;
+-		return 0;
+-	}
+-
+-	switch (relo->kind) {
+-	case BPF_TYPE_ID_TARGET:
+-		*val = spec->root_type_id;
+-		break;
+-	case BPF_TYPE_EXISTS:
+-		*val = 1;
+-		break;
+-	case BPF_TYPE_SIZE:
+-		sz = btf__resolve_size(spec->btf, spec->root_type_id);
+-		if (sz < 0)
+-			return -EINVAL;
+-		*val = sz;
+-		break;
+-	case BPF_TYPE_ID_LOCAL:
+-	/* BPF_TYPE_ID_LOCAL is handled specially and shouldn't get here */
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_core_calc_enumval_relo(const struct bpf_core_relo *relo,
+-				      const struct bpf_core_spec *spec,
+-				      __u32 *val)
+-{
+-	const struct btf_type *t;
+-	const struct btf_enum *e;
+-
+-	switch (relo->kind) {
+-	case BPF_ENUMVAL_EXISTS:
+-		*val = spec ? 1 : 0;
+-		break;
+-	case BPF_ENUMVAL_VALUE:
+-		if (!spec)
+-			return -EUCLEAN; /* request instruction poisoning */
+-		t = btf__type_by_id(spec->btf, spec->spec[0].type_id);
+-		e = btf_enum(t) + spec->spec[0].idx;
+-		*val = e->val;
+-		break;
+-	default:
+-		return -EOPNOTSUPP;
+-	}
+-
+-	return 0;
+-}
+-
+-struct bpf_core_relo_res
+-{
+-	/* expected value in the instruction, unless validate == false */
+-	__u32 orig_val;
+-	/* new value that needs to be patched up to */
+-	__u32 new_val;
+-	/* relocation unsuccessful, poison instruction, but don't fail load */
+-	bool poison;
+-	/* some relocations can't be validated against orig_val */
+-	bool validate;
+-	/* for field byte offset relocations or the forms:
+-	 *     *(T *)(rX + <off>) = rY
+-	 *     rX = *(T *)(rY + <off>),
+-	 * we remember original and resolved field size to adjust direct
+-	 * memory loads of pointers and integers; this is necessary for 32-bit
+-	 * host kernel architectures, but also allows to automatically
+-	 * relocate fields that were resized from, e.g., u32 to u64, etc.
+-	 */
+-	bool fail_memsz_adjust;
+-	__u32 orig_sz;
+-	__u32 orig_type_id;
+-	__u32 new_sz;
+-	__u32 new_type_id;
+-};
+-
+-/* Calculate original and target relocation values, given local and target
+- * specs and relocation kind. These values are calculated for each candidate.
+- * If there are multiple candidates, resulting values should all be consistent
+- * with each other. Otherwise, libbpf will refuse to proceed due to ambiguity.
+- * If instruction has to be poisoned, *poison will be set to true.
+- */
+-static int bpf_core_calc_relo(const struct bpf_program *prog,
+-			      const struct bpf_core_relo *relo,
+-			      int relo_idx,
+-			      const struct bpf_core_spec *local_spec,
+-			      const struct bpf_core_spec *targ_spec,
+-			      struct bpf_core_relo_res *res)
+-{
+-	int err = -EOPNOTSUPP;
+-
+-	res->orig_val = 0;
+-	res->new_val = 0;
+-	res->poison = false;
+-	res->validate = true;
+-	res->fail_memsz_adjust = false;
+-	res->orig_sz = res->new_sz = 0;
+-	res->orig_type_id = res->new_type_id = 0;
+-
+-	if (core_relo_is_field_based(relo->kind)) {
+-		err = bpf_core_calc_field_relo(prog, relo, local_spec,
+-					       &res->orig_val, &res->orig_sz,
+-					       &res->orig_type_id, &res->validate);
+-		err = err ?: bpf_core_calc_field_relo(prog, relo, targ_spec,
+-						      &res->new_val, &res->new_sz,
+-						      &res->new_type_id, NULL);
+-		if (err)
+-			goto done;
+-		/* Validate if it's safe to adjust load/store memory size.
+-		 * Adjustments are performed only if original and new memory
+-		 * sizes differ.
+-		 */
+-		res->fail_memsz_adjust = false;
+-		if (res->orig_sz != res->new_sz) {
+-			const struct btf_type *orig_t, *new_t;
+-
+-			orig_t = btf__type_by_id(local_spec->btf, res->orig_type_id);
+-			new_t = btf__type_by_id(targ_spec->btf, res->new_type_id);
+-
+-			/* There are two use cases in which it's safe to
+-			 * adjust load/store's mem size:
+-			 *   - reading a 32-bit kernel pointer, while on BPF
+-			 *   size pointers are always 64-bit; in this case
+-			 *   it's safe to "downsize" instruction size due to
+-			 *   pointer being treated as unsigned integer with
+-			 *   zero-extended upper 32-bits;
+-			 *   - reading unsigned integers, again due to
+-			 *   zero-extension is preserving the value correctly.
+-			 *
+-			 * In all other cases it's incorrect to attempt to
+-			 * load/store field because read value will be
+-			 * incorrect, so we poison relocated instruction.
+-			 */
+-			if (btf_is_ptr(orig_t) && btf_is_ptr(new_t))
+-				goto done;
+-			if (btf_is_int(orig_t) && btf_is_int(new_t) &&
+-			    btf_int_encoding(orig_t) != BTF_INT_SIGNED &&
+-			    btf_int_encoding(new_t) != BTF_INT_SIGNED)
+-				goto done;
+-
+-			/* mark as invalid mem size adjustment, but this will
+-			 * only be checked for LDX/STX/ST insns
+-			 */
+-			res->fail_memsz_adjust = true;
+-		}
+-	} else if (core_relo_is_type_based(relo->kind)) {
+-		err = bpf_core_calc_type_relo(relo, local_spec, &res->orig_val);
+-		err = err ?: bpf_core_calc_type_relo(relo, targ_spec, &res->new_val);
+-	} else if (core_relo_is_enumval_based(relo->kind)) {
+-		err = bpf_core_calc_enumval_relo(relo, local_spec, &res->orig_val);
+-		err = err ?: bpf_core_calc_enumval_relo(relo, targ_spec, &res->new_val);
+-	}
+-
+-done:
+-	if (err == -EUCLEAN) {
+-		/* EUCLEAN is used to signal instruction poisoning request */
+-		res->poison = true;
+-		err = 0;
+-	} else if (err == -EOPNOTSUPP) {
+-		/* EOPNOTSUPP means unknown/unsupported relocation */
+-		pr_warn("prog '%s': relo #%d: unrecognized CO-RE relocation %s (%d) at insn #%d\n",
+-			prog->name, relo_idx, core_relo_kind_str(relo->kind),
+-			relo->kind, relo->insn_off / 8);
+-	}
+-
+-	return err;
+-}
+-
+-/*
+- * Turn instruction for which CO_RE relocation failed into invalid one with
+- * distinct signature.
+- */
+-static void bpf_core_poison_insn(struct bpf_program *prog, int relo_idx,
+-				 int insn_idx, struct bpf_insn *insn)
+-{
+-	pr_debug("prog '%s': relo #%d: substituting insn #%d w/ invalid insn\n",
+-		 prog->name, relo_idx, insn_idx);
+-	insn->code = BPF_JMP | BPF_CALL;
+-	insn->dst_reg = 0;
+-	insn->src_reg = 0;
+-	insn->off = 0;
+-	/* if this instruction is reachable (not a dead code),
+-	 * verifier will complain with the following message:
+-	 * invalid func unknown#195896080
+-	 */
+-	insn->imm = 195896080; /* => 0xbad2310 => "bad relo" */
+-}
+-
+-static int insn_bpf_size_to_bytes(struct bpf_insn *insn)
+-{
+-	switch (BPF_SIZE(insn->code)) {
+-	case BPF_DW: return 8;
+-	case BPF_W: return 4;
+-	case BPF_H: return 2;
+-	case BPF_B: return 1;
+-	default: return -1;
+-	}
+-}
+-
+-static int insn_bytes_to_bpf_size(__u32 sz)
+-{
+-	switch (sz) {
+-	case 8: return BPF_DW;
+-	case 4: return BPF_W;
+-	case 2: return BPF_H;
+-	case 1: return BPF_B;
+-	default: return -1;
+-	}
+-}
+-
+-/*
+- * Patch relocatable BPF instruction.
+- *
+- * Patched value is determined by relocation kind and target specification.
+- * For existence relocations target spec will be NULL if field/type is not found.
+- * Expected insn->imm value is determined using relocation kind and local
+- * spec, and is checked before patching instruction. If actual insn->imm value
+- * is wrong, bail out with error.
+- *
+- * Currently supported classes of BPF instruction are:
+- * 1. rX = <imm> (assignment with immediate operand);
+- * 2. rX += <imm> (arithmetic operations with immediate operand);
+- * 3. rX = <imm64> (load with 64-bit immediate value);
+- * 4. rX = *(T *)(rY + <off>), where T is one of {u8, u16, u32, u64};
+- * 5. *(T *)(rX + <off>) = rY, where T is one of {u8, u16, u32, u64};
+- * 6. *(T *)(rX + <off>) = <imm>, where T is one of {u8, u16, u32, u64}.
+- */
+-static int bpf_core_patch_insn(struct bpf_program *prog,
+-			       const struct bpf_core_relo *relo,
+-			       int relo_idx,
+-			       const struct bpf_core_relo_res *res)
+-{
+-	__u32 orig_val, new_val;
+-	struct bpf_insn *insn;
+-	int insn_idx;
+-	__u8 class;
+-
+-	if (relo->insn_off % BPF_INSN_SZ)
+-		return -EINVAL;
+-	insn_idx = relo->insn_off / BPF_INSN_SZ;
+-	/* adjust insn_idx from section frame of reference to the local
+-	 * program's frame of reference; (sub-)program code is not yet
+-	 * relocated, so it's enough to just subtract in-section offset
+-	 */
+-	insn_idx = insn_idx - prog->sec_insn_off;
+-	insn = &prog->insns[insn_idx];
+-	class = BPF_CLASS(insn->code);
+-
+-	if (res->poison) {
+-poison:
+-		/* poison second part of ldimm64 to avoid confusing error from
+-		 * verifier about "unknown opcode 00"
+-		 */
+-		if (is_ldimm64_insn(insn))
+-			bpf_core_poison_insn(prog, relo_idx, insn_idx + 1, insn + 1);
+-		bpf_core_poison_insn(prog, relo_idx, insn_idx, insn);
+-		return 0;
+-	}
+-
+-	orig_val = res->orig_val;
+-	new_val = res->new_val;
+-
+-	switch (class) {
+-	case BPF_ALU:
+-	case BPF_ALU64:
+-		if (BPF_SRC(insn->code) != BPF_K)
+-			return -EINVAL;
+-		if (res->validate && insn->imm != orig_val) {
+-			pr_warn("prog '%s': relo #%d: unexpected insn #%d (ALU/ALU64) value: got %u, exp %u -> %u\n",
+-				prog->name, relo_idx,
+-				insn_idx, insn->imm, orig_val, new_val);
+-			return -EINVAL;
+-		}
+-		orig_val = insn->imm;
+-		insn->imm = new_val;
+-		pr_debug("prog '%s': relo #%d: patched insn #%d (ALU/ALU64) imm %u -> %u\n",
+-			 prog->name, relo_idx, insn_idx,
+-			 orig_val, new_val);
+-		break;
+-	case BPF_LDX:
+-	case BPF_ST:
+-	case BPF_STX:
+-		if (res->validate && insn->off != orig_val) {
+-			pr_warn("prog '%s': relo #%d: unexpected insn #%d (LDX/ST/STX) value: got %u, exp %u -> %u\n",
+-				prog->name, relo_idx, insn_idx, insn->off, orig_val, new_val);
+-			return -EINVAL;
+-		}
+-		if (new_val > SHRT_MAX) {
+-			pr_warn("prog '%s': relo #%d: insn #%d (LDX/ST/STX) value too big: %u\n",
+-				prog->name, relo_idx, insn_idx, new_val);
+-			return -ERANGE;
+-		}
+-		if (res->fail_memsz_adjust) {
+-			pr_warn("prog '%s': relo #%d: insn #%d (LDX/ST/STX) accesses field incorrectly. "
+-				"Make sure you are accessing pointers, unsigned integers, or fields of matching type and size.\n",
+-				prog->name, relo_idx, insn_idx);
+-			goto poison;
+-		}
+-
+-		orig_val = insn->off;
+-		insn->off = new_val;
+-		pr_debug("prog '%s': relo #%d: patched insn #%d (LDX/ST/STX) off %u -> %u\n",
+-			 prog->name, relo_idx, insn_idx, orig_val, new_val);
+-
+-		if (res->new_sz != res->orig_sz) {
+-			int insn_bytes_sz, insn_bpf_sz;
+-
+-			insn_bytes_sz = insn_bpf_size_to_bytes(insn);
+-			if (insn_bytes_sz != res->orig_sz) {
+-				pr_warn("prog '%s': relo #%d: insn #%d (LDX/ST/STX) unexpected mem size: got %d, exp %u\n",
+-					prog->name, relo_idx, insn_idx, insn_bytes_sz, res->orig_sz);
+-				return -EINVAL;
+-			}
+-
+-			insn_bpf_sz = insn_bytes_to_bpf_size(res->new_sz);
+-			if (insn_bpf_sz < 0) {
+-				pr_warn("prog '%s': relo #%d: insn #%d (LDX/ST/STX) invalid new mem size: %u\n",
+-					prog->name, relo_idx, insn_idx, res->new_sz);
+-				return -EINVAL;
+-			}
+-
+-			insn->code = BPF_MODE(insn->code) | insn_bpf_sz | BPF_CLASS(insn->code);
+-			pr_debug("prog '%s': relo #%d: patched insn #%d (LDX/ST/STX) mem_sz %u -> %u\n",
+-				 prog->name, relo_idx, insn_idx, res->orig_sz, res->new_sz);
+-		}
+-		break;
+-	case BPF_LD: {
+-		__u64 imm;
+-
+-		if (!is_ldimm64_insn(insn) ||
+-		    insn[0].src_reg != 0 || insn[0].off != 0 ||
+-		    insn_idx + 1 >= prog->insns_cnt ||
+-		    insn[1].code != 0 || insn[1].dst_reg != 0 ||
+-		    insn[1].src_reg != 0 || insn[1].off != 0) {
+-			pr_warn("prog '%s': relo #%d: insn #%d (LDIMM64) has unexpected form\n",
+-				prog->name, relo_idx, insn_idx);
+-			return -EINVAL;
+-		}
+-
+-		imm = insn[0].imm + ((__u64)insn[1].imm << 32);
+-		if (res->validate && imm != orig_val) {
+-			pr_warn("prog '%s': relo #%d: unexpected insn #%d (LDIMM64) value: got %llu, exp %u -> %u\n",
+-				prog->name, relo_idx,
+-				insn_idx, (unsigned long long)imm,
+-				orig_val, new_val);
+-			return -EINVAL;
+-		}
+-
+-		insn[0].imm = new_val;
+-		insn[1].imm = 0; /* currently only 32-bit values are supported */
+-		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -> %u\n",
+-			 prog->name, relo_idx, insn_idx,
+-			 (unsigned long long)imm, new_val);
+-		break;
+-	}
+-	default:
+-		pr_warn("prog '%s': relo #%d: trying to relocate unrecognized insn #%d, code:0x%x, src:0x%x, dst:0x%x, off:0x%x, imm:0x%x\n",
+-			prog->name, relo_idx, insn_idx, insn->code,
+-			insn->src_reg, insn->dst_reg, insn->off, insn->imm);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-/* Output spec definition in the format:
+- * [<type-id>] (<type-name>) + <raw-spec> => <offset>@<spec>,
+- * where <spec> is a C-syntax view of recorded field access, e.g.: x.a[3].b
+- */
+-static void bpf_core_dump_spec(int level, const struct bpf_core_spec *spec)
+-{
+-	const struct btf_type *t;
+-	const struct btf_enum *e;
+-	const char *s;
+-	__u32 type_id;
+-	int i;
+-
+-	type_id = spec->root_type_id;
+-	t = btf__type_by_id(spec->btf, type_id);
+-	s = btf__name_by_offset(spec->btf, t->name_off);
+-
+-	libbpf_print(level, "[%u] %s %s", type_id, btf_kind_str(t), str_is_empty(s) ? "<anon>" : s);
+-
+-	if (core_relo_is_type_based(spec->relo_kind))
+-		return;
+-
+-	if (core_relo_is_enumval_based(spec->relo_kind)) {
+-		t = skip_mods_and_typedefs(spec->btf, type_id, NULL);
+-		e = btf_enum(t) + spec->raw_spec[0];
+-		s = btf__name_by_offset(spec->btf, e->name_off);
+-
+-		libbpf_print(level, "::%s = %u", s, e->val);
+-		return;
+-	}
+-
+-	if (core_relo_is_field_based(spec->relo_kind)) {
+-		for (i = 0; i < spec->len; i++) {
+-			if (spec->spec[i].name)
+-				libbpf_print(level, ".%s", spec->spec[i].name);
+-			else if (i > 0 || spec->spec[i].idx > 0)
+-				libbpf_print(level, "[%u]", spec->spec[i].idx);
+-		}
+-
+-		libbpf_print(level, " (");
+-		for (i = 0; i < spec->raw_len; i++)
+-			libbpf_print(level, "%s%d", i == 0 ? "" : ":", spec->raw_spec[i]);
+-
+-		if (spec->bit_offset % 8)
+-			libbpf_print(level, " @ offset %u.%u)",
+-				     spec->bit_offset / 8, spec->bit_offset % 8);
+-		else
+-			libbpf_print(level, " @ offset %u)", spec->bit_offset / 8);
+-		return;
+-	}
+-}
+-
+-static size_t bpf_core_hash_fn(const void *key, void *ctx)
+-{
+-	return (size_t)key;
+-}
+-
+-static bool bpf_core_equal_fn(const void *k1, const void *k2, void *ctx)
+-{
+-	return k1 == k2;
+-}
+-
+-static void *u32_as_hash_key(__u32 x)
+-{
+-	return (void *)(uintptr_t)x;
+-}
+-
+-/*
+- * CO-RE relocate single instruction.
+- *
+- * The outline and important points of the algorithm:
+- * 1. For given local type, find corresponding candidate target types.
+- *    Candidate type is a type with the same "essential" name, ignoring
+- *    everything after last triple underscore (___). E.g., `sample`,
+- *    `sample___flavor_one`, `sample___flavor_another_one`, are all candidates
+- *    for each other. Names with triple underscore are referred to as
+- *    "flavors" and are useful, among other things, to allow to
+- *    specify/support incompatible variations of the same kernel struct, which
+- *    might differ between different kernel versions and/or build
+- *    configurations.
+- *
+- *    N.B. Struct "flavors" could be generated by bpftool's BTF-to-C
+- *    converter, when deduplicated BTF of a kernel still contains more than
+- *    one different types with the same name. In that case, ___2, ___3, etc
+- *    are appended starting from second name conflict. But start flavors are
+- *    also useful to be defined "locally", in BPF program, to extract same
+- *    data from incompatible changes between different kernel
+- *    versions/configurations. For instance, to handle field renames between
+- *    kernel versions, one can use two flavors of the struct name with the
+- *    same common name and use conditional relocations to extract that field,
+- *    depending on target kernel version.
+- * 2. For each candidate type, try to match local specification to this
+- *    candidate target type. Matching involves finding corresponding
+- *    high-level spec accessors, meaning that all named fields should match,
+- *    as well as all array accesses should be within the actual bounds. Also,
+- *    types should be compatible (see bpf_core_fields_are_compat for details).
+- * 3. It is supported and expected that there might be multiple flavors
+- *    matching the spec. As long as all the specs resolve to the same set of
+- *    offsets across all candidates, there is no error. If there is any
+- *    ambiguity, CO-RE relocation will fail. This is necessary to accomodate
+- *    imprefection of BTF deduplication, which can cause slight duplication of
+- *    the same BTF type, if some directly or indirectly referenced (by
+- *    pointer) type gets resolved to different actual types in different
+- *    object files. If such situation occurs, deduplicated BTF will end up
+- *    with two (or more) structurally identical types, which differ only in
+- *    types they refer to through pointer. This should be OK in most cases and
+- *    is not an error.
+- * 4. Candidate types search is performed by linearly scanning through all
+- *    types in target BTF. It is anticipated that this is overall more
+- *    efficient memory-wise and not significantly worse (if not better)
+- *    CPU-wise compared to prebuilding a map from all local type names to
+- *    a list of candidate type names. It's also sped up by caching resolved
+- *    list of matching candidates per each local "root" type ID, that has at
+- *    least one bpf_core_relo associated with it. This list is shared
+- *    between multiple relocations for the same type ID and is updated as some
+- *    of the candidates are pruned due to structural incompatibility.
+- */
+-static int bpf_core_apply_relo(struct bpf_program *prog,
+-			       const struct bpf_core_relo *relo,
+-			       int relo_idx,
+-			       const struct btf *local_btf,
+-			       struct hashmap *cand_cache)
+-{
+-	struct bpf_core_spec local_spec, cand_spec, targ_spec = {};
+-	const void *type_key = u32_as_hash_key(relo->type_id);
+-	struct bpf_core_relo_res cand_res, targ_res;
+-	const struct btf_type *local_type;
+-	const char *local_name;
+-	struct core_cand_list *cands = NULL;
+-	__u32 local_id;
+-	const char *spec_str;
+-	int i, j, err;
+-
+-	local_id = relo->type_id;
+-	local_type = btf__type_by_id(local_btf, local_id);
+-	if (!local_type)
+-		return -EINVAL;
+-
+-	local_name = btf__name_by_offset(local_btf, local_type->name_off);
+-	if (!local_name)
+-		return -EINVAL;
+-
+-	spec_str = btf__name_by_offset(local_btf, relo->access_str_off);
+-	if (str_is_empty(spec_str))
+-		return -EINVAL;
+-
+-	if (prog->obj->gen_loader) {
+-		pr_warn("// TODO core_relo: prog %td insn[%d] %s %s kind %d\n",
+-			prog - prog->obj->programs, relo->insn_off / 8,
+-			local_name, spec_str, relo->kind);
+-		return -ENOTSUP;
+-	}
+-	err = bpf_core_parse_spec(local_btf, local_id, spec_str, relo->kind, &local_spec);
+-	if (err) {
+-		pr_warn("prog '%s': relo #%d: parsing [%d] %s %s + %s failed: %d\n",
+-			prog->name, relo_idx, local_id, btf_kind_str(local_type),
+-			str_is_empty(local_name) ? "<anon>" : local_name,
+-			spec_str, err);
+-		return -EINVAL;
+-	}
+-
+-	pr_debug("prog '%s': relo #%d: kind <%s> (%d), spec is ", prog->name,
+-		 relo_idx, core_relo_kind_str(relo->kind), relo->kind);
+-	bpf_core_dump_spec(LIBBPF_DEBUG, &local_spec);
+-	libbpf_print(LIBBPF_DEBUG, "\n");
+-
+-	/* TYPE_ID_LOCAL relo is special and doesn't need candidate search */
+-	if (relo->kind == BPF_TYPE_ID_LOCAL) {
+-		targ_res.validate = true;
+-		targ_res.poison = false;
+-		targ_res.orig_val = local_spec.root_type_id;
+-		targ_res.new_val = local_spec.root_type_id;
+-		goto patch_insn;
+-	}
+-
+-	/* libbpf doesn't support candidate search for anonymous types */
+-	if (str_is_empty(spec_str)) {
+-		pr_warn("prog '%s': relo #%d: <%s> (%d) relocation doesn't support anonymous types\n",
+-			prog->name, relo_idx, core_relo_kind_str(relo->kind), relo->kind);
+-		return -EOPNOTSUPP;
+-	}
+-
+-	if (!hashmap__find(cand_cache, type_key, (void **)&cands)) {
+-		cands = bpf_core_find_cands(prog->obj, local_btf, local_id);
+-		if (IS_ERR(cands)) {
+-			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld\n",
+-				prog->name, relo_idx, local_id, btf_kind_str(local_type),
+-				local_name, PTR_ERR(cands));
+-			return PTR_ERR(cands);
+-		}
+-		err = hashmap__set(cand_cache, type_key, cands, NULL, NULL);
+-		if (err) {
+-			bpf_core_free_cands(cands);
+-			return err;
+-		}
+-	}
+-
+-	for (i = 0, j = 0; i < cands->len; i++) {
+-		err = bpf_core_spec_match(&local_spec, cands->cands[i].btf,
+-					  cands->cands[i].id, &cand_spec);
+-		if (err < 0) {
+-			pr_warn("prog '%s': relo #%d: error matching candidate #%d ",
+-				prog->name, relo_idx, i);
+-			bpf_core_dump_spec(LIBBPF_WARN, &cand_spec);
+-			libbpf_print(LIBBPF_WARN, ": %d\n", err);
+-			return err;
+-		}
+-
+-		pr_debug("prog '%s': relo #%d: %s candidate #%d ", prog->name,
+-			 relo_idx, err == 0 ? "non-matching" : "matching", i);
+-		bpf_core_dump_spec(LIBBPF_DEBUG, &cand_spec);
+-		libbpf_print(LIBBPF_DEBUG, "\n");
+-
+-		if (err == 0)
+-			continue;
+-
+-		err = bpf_core_calc_relo(prog, relo, relo_idx, &local_spec, &cand_spec, &cand_res);
+-		if (err)
+-			return err;
+-
+-		if (j == 0) {
+-			targ_res = cand_res;
+-			targ_spec = cand_spec;
+-		} else if (cand_spec.bit_offset != targ_spec.bit_offset) {
+-			/* if there are many field relo candidates, they
+-			 * should all resolve to the same bit offset
+-			 */
+-			pr_warn("prog '%s': relo #%d: field offset ambiguity: %u != %u\n",
+-				prog->name, relo_idx, cand_spec.bit_offset,
+-				targ_spec.bit_offset);
+-			return -EINVAL;
+-		} else if (cand_res.poison != targ_res.poison || cand_res.new_val != targ_res.new_val) {
+-			/* all candidates should result in the same relocation
+-			 * decision and value, otherwise it's dangerous to
+-			 * proceed due to ambiguity
+-			 */
+-			pr_warn("prog '%s': relo #%d: relocation decision ambiguity: %s %u != %s %u\n",
+-				prog->name, relo_idx,
+-				cand_res.poison ? "failure" : "success", cand_res.new_val,
+-				targ_res.poison ? "failure" : "success", targ_res.new_val);
+-			return -EINVAL;
+-		}
+-
+-		cands->cands[j++] = cands->cands[i];
+-	}
+-
+-	/*
+-	 * For BPF_FIELD_EXISTS relo or when used BPF program has field
+-	 * existence checks or kernel version/config checks, it's expected
+-	 * that we might not find any candidates. In this case, if field
+-	 * wasn't found in any candidate, the list of candidates shouldn't
+-	 * change at all, we'll just handle relocating appropriately,
+-	 * depending on relo's kind.
+-	 */
+-	if (j > 0)
+-		cands->len = j;
+-
+-	/*
+-	 * If no candidates were found, it might be both a programmer error,
+-	 * as well as expected case, depending whether instruction w/
+-	 * relocation is guarded in some way that makes it unreachable (dead
+-	 * code) if relocation can't be resolved. This is handled in
+-	 * bpf_core_patch_insn() uniformly by replacing that instruction with
+-	 * BPF helper call insn (using invalid helper ID). If that instruction
+-	 * is indeed unreachable, then it will be ignored and eliminated by
+-	 * verifier. If it was an error, then verifier will complain and point
+-	 * to a specific instruction number in its log.
+-	 */
+-	if (j == 0) {
+-		pr_debug("prog '%s': relo #%d: no matching targets found\n",
+-			 prog->name, relo_idx);
+-
+-		/* calculate single target relo result explicitly */
+-		err = bpf_core_calc_relo(prog, relo, relo_idx, &local_spec, NULL, &targ_res);
+-		if (err)
+-			return err;
+-	}
+-
+-patch_insn:
+-	/* bpf_core_patch_insn() should know how to handle missing targ_spec */
+-	err = bpf_core_patch_insn(prog, relo, relo_idx, &targ_res);
+-	if (err) {
+-		pr_warn("prog '%s': relo #%d: failed to patch insn #%zu: %d\n",
+-			prog->name, relo_idx, relo->insn_off / BPF_INSN_SZ, err);
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+-static int
+-bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
+-{
+-	const struct btf_ext_info_sec *sec;
+-	const struct bpf_core_relo *rec;
+-	const struct btf_ext_info *seg;
+-	struct hashmap_entry *entry;
+-	struct hashmap *cand_cache = NULL;
+-	struct bpf_program *prog;
+-	const char *sec_name;
+-	int i, err = 0, insn_idx, sec_idx;
+-
+-	if (obj->btf_ext->core_relo_info.len == 0)
+-		return 0;
+-
+-	if (targ_btf_path) {
+-		obj->btf_vmlinux_override = btf__parse(targ_btf_path, NULL);
+-		err = libbpf_get_error(obj->btf_vmlinux_override);
+-		if (err) {
+-			pr_warn("failed to parse target BTF: %d\n", err);
+-			return err;
+-		}
+-	}
+-
+-	cand_cache = hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, NULL);
+-	if (IS_ERR(cand_cache)) {
+-		err = PTR_ERR(cand_cache);
+-		goto out;
+-	}
+-
+-	seg = &obj->btf_ext->core_relo_info;
+-	for_each_btf_ext_sec(seg, sec) {
+-		sec_name = btf__name_by_offset(obj->btf, sec->sec_name_off);
+-		if (str_is_empty(sec_name)) {
+-			err = -EINVAL;
+-			goto out;
+-		}
+-		/* bpf_object's ELF is gone by now so it's not easy to find
+-		 * section index by section name, but we can find *any*
+-		 * bpf_program within desired section name and use it's
+-		 * prog->sec_idx to do a proper search by section index and
+-		 * instruction offset
+-		 */
+-		prog = NULL;
+-		for (i = 0; i < obj->nr_programs; i++) {
+-			prog = &obj->programs[i];
+-			if (strcmp(prog->sec_name, sec_name) == 0)
+-				break;
+-		}
+-		if (!prog) {
+-			pr_warn("sec '%s': failed to find a BPF program\n", sec_name);
+-			return -ENOENT;
+-		}
+-		sec_idx = prog->sec_idx;
+-
+-		pr_debug("sec '%s': found %d CO-RE relocations\n",
+-			 sec_name, sec->num_info);
+-
+-		for_each_btf_ext_rec(seg, sec, i, rec) {
+-			insn_idx = rec->insn_off / BPF_INSN_SZ;
+-			prog = find_prog_by_sec_insn(obj, sec_idx, insn_idx);
+-			if (!prog) {
+-				pr_warn("sec '%s': failed to find program at insn #%d for CO-RE offset relocation #%d\n",
+-					sec_name, insn_idx, i);
+-				err = -EINVAL;
+-				goto out;
+-			}
+-			/* no need to apply CO-RE relocation if the program is
+-			 * not going to be loaded
+-			 */
+-			if (!prog->load)
+-				continue;
+-
+-			err = bpf_core_apply_relo(prog, rec, i, obj->btf, cand_cache);
+-			if (err) {
+-				pr_warn("prog '%s': relo #%d: failed to relocate: %d\n",
+-					prog->name, i, err);
+-				goto out;
+-			}
+-		}
+-	}
+-
+-out:
+-	/* obj->btf_vmlinux and module BTFs are freed after object load */
+-	btf__free(obj->btf_vmlinux_override);
+-	obj->btf_vmlinux_override = NULL;
+-
+-	if (!IS_ERR_OR_NULL(cand_cache)) {
+-		hashmap__for_each_entry(cand_cache, entry, i) {
+-			bpf_core_free_cands(entry->value);
+-		}
+-		hashmap__free(cand_cache);
+-	}
+-	return err;
+-}
+-
+-/* Relocate data references within program code:
+- *  - map references;
+- *  - global variable references;
+- *  - extern references.
+- */
+-static int
+-bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
+-{
+-	int i;
+-
+-	for (i = 0; i < prog->nr_reloc; i++) {
+-		struct reloc_desc *relo = &prog->reloc_desc[i];
+-		struct bpf_insn *insn = &prog->insns[relo->insn_idx];
+-		struct extern_desc *ext;
+-
+-		switch (relo->type) {
+-		case RELO_LD64:
+-			if (obj->gen_loader) {
+-				insn[0].src_reg = BPF_PSEUDO_MAP_IDX;
+-				insn[0].imm = relo->map_idx;
+-			} else {
+-				insn[0].src_reg = BPF_PSEUDO_MAP_FD;
+-				insn[0].imm = obj->maps[relo->map_idx].fd;
+-			}
+-			break;
+-		case RELO_DATA:
+-			insn[1].imm = insn[0].imm + relo->sym_off;
+-			if (obj->gen_loader) {
+-				insn[0].src_reg = BPF_PSEUDO_MAP_IDX_VALUE;
+-				insn[0].imm = relo->map_idx;
+-			} else {
+-				insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
+-				insn[0].imm = obj->maps[relo->map_idx].fd;
+-			}
+-			break;
+-		case RELO_EXTERN_VAR:
+-			ext = &obj->externs[relo->sym_off];
+-			if (ext->type == EXT_KCFG) {
+-				if (obj->gen_loader) {
+-					insn[0].src_reg = BPF_PSEUDO_MAP_IDX_VALUE;
+-					insn[0].imm = obj->kconfig_map_idx;
+-				} else {
+-					insn[0].src_reg = BPF_PSEUDO_MAP_VALUE;
+-					insn[0].imm = obj->maps[obj->kconfig_map_idx].fd;
+-				}
+-				insn[1].imm = ext->kcfg.data_off;
+-			} else /* EXT_KSYM */ {
+-				if (ext->ksym.type_id) { /* typed ksyms */
+-					insn[0].src_reg = BPF_PSEUDO_BTF_ID;
+-					insn[0].imm = ext->ksym.kernel_btf_id;
+-					insn[1].imm = ext->ksym.kernel_btf_obj_fd;
+-				} else { /* typeless ksyms */
+-					insn[0].imm = (__u32)ext->ksym.addr;
+-					insn[1].imm = ext->ksym.addr >> 32;
+-				}
+-			}
+-			break;
+-		case RELO_EXTERN_FUNC:
+-			ext = &obj->externs[relo->sym_off];
+-			insn[0].src_reg = BPF_PSEUDO_KFUNC_CALL;
+-			insn[0].imm = ext->ksym.kernel_btf_id;
+-			break;
+-		case RELO_SUBPROG_ADDR:
+-			if (insn[0].src_reg != BPF_PSEUDO_FUNC) {
+-				pr_warn("prog '%s': relo #%d: bad insn\n",
+-					prog->name, i);
+-				return -EINVAL;
+-			}
+-			/* handled already */
+-			break;
+-		case RELO_CALL:
+-			/* handled already */
+-			break;
+-		default:
+-			pr_warn("prog '%s': relo #%d: bad relo type %d\n",
+-				prog->name, i, relo->type);
+-			return -EINVAL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int adjust_prog_btf_ext_info(const struct bpf_object *obj,
+-				    const struct bpf_program *prog,
+-				    const struct btf_ext_info *ext_info,
+-				    void **prog_info, __u32 *prog_rec_cnt,
+-				    __u32 *prog_rec_sz)
+-{
+-	void *copy_start = NULL, *copy_end = NULL;
+-	void *rec, *rec_end, *new_prog_info;
+-	const struct btf_ext_info_sec *sec;
+-	size_t old_sz, new_sz;
+-	const char *sec_name;
+-	int i, off_adj;
+-
+-	for_each_btf_ext_sec(ext_info, sec) {
+-		sec_name = btf__name_by_offset(obj->btf, sec->sec_name_off);
+-		if (!sec_name)
+-			return -EINVAL;
+-		if (strcmp(sec_name, prog->sec_name) != 0)
+-			continue;
+-
+-		for_each_btf_ext_rec(ext_info, sec, i, rec) {
+-			__u32 insn_off = *(__u32 *)rec / BPF_INSN_SZ;
+-
+-			if (insn_off < prog->sec_insn_off)
+-				continue;
+-			if (insn_off >= prog->sec_insn_off + prog->sec_insn_cnt)
+-				break;
+-
+-			if (!copy_start)
+-				copy_start = rec;
+-			copy_end = rec + ext_info->rec_size;
+-		}
+-
+-		if (!copy_start)
+-			return -ENOENT;
+-
+-		/* append func/line info of a given (sub-)program to the main
+-		 * program func/line info
+-		 */
+-		old_sz = (size_t)(*prog_rec_cnt) * ext_info->rec_size;
+-		new_sz = old_sz + (copy_end - copy_start);
+-		new_prog_info = realloc(*prog_info, new_sz);
+-		if (!new_prog_info)
+-			return -ENOMEM;
+-		*prog_info = new_prog_info;
+-		*prog_rec_cnt = new_sz / ext_info->rec_size;
+-		memcpy(new_prog_info + old_sz, copy_start, copy_end - copy_start);
+-
+-		/* Kernel instruction offsets are in units of 8-byte
+-		 * instructions, while .BTF.ext instruction offsets generated
+-		 * by Clang are in units of bytes. So convert Clang offsets
+-		 * into kernel offsets and adjust offset according to program
+-		 * relocated position.
+-		 */
+-		off_adj = prog->sub_insn_off - prog->sec_insn_off;
+-		rec = new_prog_info + old_sz;
+-		rec_end = new_prog_info + new_sz;
+-		for (; rec < rec_end; rec += ext_info->rec_size) {
+-			__u32 *insn_off = rec;
+-
+-			*insn_off = *insn_off / BPF_INSN_SZ + off_adj;
+-		}
+-		*prog_rec_sz = ext_info->rec_size;
+-		return 0;
+-	}
+-
+-	return -ENOENT;
+-}
+-
+-static int
+-reloc_prog_func_and_line_info(const struct bpf_object *obj,
+-			      struct bpf_program *main_prog,
+-			      const struct bpf_program *prog)
+-{
+-	int err;
+-
+-	/* no .BTF.ext relocation if .BTF.ext is missing or kernel doesn't
+-	 * supprot func/line info
+-	 */
+-	if (!obj->btf_ext || !kernel_supports(obj, FEAT_BTF_FUNC))
+-		return 0;
+-
+-	/* only attempt func info relocation if main program's func_info
+-	 * relocation was successful
+-	 */
+-	if (main_prog != prog && !main_prog->func_info)
+-		goto line_info;
+-
+-	err = adjust_prog_btf_ext_info(obj, prog, &obj->btf_ext->func_info,
+-				       &main_prog->func_info,
+-				       &main_prog->func_info_cnt,
+-				       &main_prog->func_info_rec_size);
+-	if (err) {
+-		if (err != -ENOENT) {
+-			pr_warn("prog '%s': error relocating .BTF.ext function info: %d\n",
+-				prog->name, err);
+-			return err;
+-		}
+-		if (main_prog->func_info) {
+-			/*
+-			 * Some info has already been found but has problem
+-			 * in the last btf_ext reloc. Must have to error out.
+-			 */
+-			pr_warn("prog '%s': missing .BTF.ext function info.\n", prog->name);
+-			return err;
+-		}
+-		/* Have problem loading the very first info. Ignore the rest. */
+-		pr_warn("prog '%s': missing .BTF.ext function info for the main program, skipping all of .BTF.ext func info.\n",
+-			prog->name);
+-	}
+-
+-line_info:
+-	/* don't relocate line info if main program's relocation failed */
+-	if (main_prog != prog && !main_prog->line_info)
+-		return 0;
+-
+-	err = adjust_prog_btf_ext_info(obj, prog, &obj->btf_ext->line_info,
+-				       &main_prog->line_info,
+-				       &main_prog->line_info_cnt,
+-				       &main_prog->line_info_rec_size);
+-	if (err) {
+-		if (err != -ENOENT) {
+-			pr_warn("prog '%s': error relocating .BTF.ext line info: %d\n",
+-				prog->name, err);
+-			return err;
+-		}
+-		if (main_prog->line_info) {
+-			/*
+-			 * Some info has already been found but has problem
+-			 * in the last btf_ext reloc. Must have to error out.
+-			 */
+-			pr_warn("prog '%s': missing .BTF.ext line info.\n", prog->name);
+-			return err;
+-		}
+-		/* Have problem loading the very first info. Ignore the rest. */
+-		pr_warn("prog '%s': missing .BTF.ext line info for the main program, skipping all of .BTF.ext line info.\n",
+-			prog->name);
+-	}
+-	return 0;
+-}
+-
+-static int cmp_relo_by_insn_idx(const void *key, const void *elem)
+-{
+-	size_t insn_idx = *(const size_t *)key;
+-	const struct reloc_desc *relo = elem;
+-
+-	if (insn_idx == relo->insn_idx)
+-		return 0;
+-	return insn_idx < relo->insn_idx ? -1 : 1;
+-}
+-
+-static struct reloc_desc *find_prog_insn_relo(const struct bpf_program *prog, size_t insn_idx)
+-{
+-	return bsearch(&insn_idx, prog->reloc_desc, prog->nr_reloc,
+-		       sizeof(*prog->reloc_desc), cmp_relo_by_insn_idx);
+-}
+-
+-static int append_subprog_relos(struct bpf_program *main_prog, struct bpf_program *subprog)
+-{
+-	int new_cnt = main_prog->nr_reloc + subprog->nr_reloc;
+-	struct reloc_desc *relos;
+-	int i;
+-
+-	if (main_prog == subprog)
+-		return 0;
+-	relos = libbpf_reallocarray(main_prog->reloc_desc, new_cnt, sizeof(*relos));
+-	if (!relos)
+-		return -ENOMEM;
+-	memcpy(relos + main_prog->nr_reloc, subprog->reloc_desc,
+-	       sizeof(*relos) * subprog->nr_reloc);
+-
+-	for (i = main_prog->nr_reloc; i < new_cnt; i++)
+-		relos[i].insn_idx += subprog->sub_insn_off;
+-	/* After insn_idx adjustment the 'relos' array is still sorted
+-	 * by insn_idx and doesn't break bsearch.
+-	 */
+-	main_prog->reloc_desc = relos;
+-	main_prog->nr_reloc = new_cnt;
+-	return 0;
+-}
+-
+-static int
+-bpf_object__reloc_code(struct bpf_object *obj, struct bpf_program *main_prog,
+-		       struct bpf_program *prog)
+-{
+-	size_t sub_insn_idx, insn_idx, new_cnt;
+-	struct bpf_program *subprog;
+-	struct bpf_insn *insns, *insn;
+-	struct reloc_desc *relo;
+-	int err;
+-
+-	err = reloc_prog_func_and_line_info(obj, main_prog, prog);
+-	if (err)
+-		return err;
+-
+-	for (insn_idx = 0; insn_idx < prog->sec_insn_cnt; insn_idx++) {
+-		insn = &main_prog->insns[prog->sub_insn_off + insn_idx];
+-		if (!insn_is_subprog_call(insn) && !insn_is_pseudo_func(insn))
+-			continue;
+-
+-		relo = find_prog_insn_relo(prog, insn_idx);
+-		if (relo && relo->type == RELO_EXTERN_FUNC)
+-			/* kfunc relocations will be handled later
+-			 * in bpf_object__relocate_data()
+-			 */
+-			continue;
+-		if (relo && relo->type != RELO_CALL && relo->type != RELO_SUBPROG_ADDR) {
+-			pr_warn("prog '%s': unexpected relo for insn #%zu, type %d\n",
+-				prog->name, insn_idx, relo->type);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		if (relo) {
+-			/* sub-program instruction index is a combination of
+-			 * an offset of a symbol pointed to by relocation and
+-			 * call instruction's imm field; for global functions,
+-			 * call always has imm = -1, but for static functions
+-			 * relocation is against STT_SECTION and insn->imm
+-			 * points to a start of a static function
+-			 *
+-			 * for subprog addr relocation, the relo->sym_off + insn->imm is
+-			 * the byte offset in the corresponding section.
+-			 */
+-			if (relo->type == RELO_CALL)
+-				sub_insn_idx = relo->sym_off / BPF_INSN_SZ + insn->imm + 1;
+-			else
+-				sub_insn_idx = (relo->sym_off + insn->imm) / BPF_INSN_SZ;
+-		} else if (insn_is_pseudo_func(insn)) {
+-			/*
+-			 * RELO_SUBPROG_ADDR relo is always emitted even if both
+-			 * functions are in the same section, so it shouldn't reach here.
+-			 */
+-			pr_warn("prog '%s': missing subprog addr relo for insn #%zu\n",
+-				prog->name, insn_idx);
+-			return -LIBBPF_ERRNO__RELOC;
+-		} else {
+-			/* if subprogram call is to a static function within
+-			 * the same ELF section, there won't be any relocation
+-			 * emitted, but it also means there is no additional
+-			 * offset necessary, insns->imm is relative to
+-			 * instruction's original position within the section
+-			 */
+-			sub_insn_idx = prog->sec_insn_off + insn_idx + insn->imm + 1;
+-		}
+-
+-		/* we enforce that sub-programs should be in .text section */
+-		subprog = find_prog_by_sec_insn(obj, obj->efile.text_shndx, sub_insn_idx);
+-		if (!subprog) {
+-			pr_warn("prog '%s': no .text section found yet sub-program call exists\n",
+-				prog->name);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-
+-		/* if it's the first call instruction calling into this
+-		 * subprogram (meaning this subprog hasn't been processed
+-		 * yet) within the context of current main program:
+-		 *   - append it at the end of main program's instructions blog;
+-		 *   - process is recursively, while current program is put on hold;
+-		 *   - if that subprogram calls some other not yet processes
+-		 *   subprogram, same thing will happen recursively until
+-		 *   there are no more unprocesses subprograms left to append
+-		 *   and relocate.
+-		 */
+-		if (subprog->sub_insn_off == 0) {
+-			subprog->sub_insn_off = main_prog->insns_cnt;
+-
+-			new_cnt = main_prog->insns_cnt + subprog->insns_cnt;
+-			insns = libbpf_reallocarray(main_prog->insns, new_cnt, sizeof(*insns));
+-			if (!insns) {
+-				pr_warn("prog '%s': failed to realloc prog code\n", main_prog->name);
+-				return -ENOMEM;
+-			}
+-			main_prog->insns = insns;
+-			main_prog->insns_cnt = new_cnt;
+-
+-			memcpy(main_prog->insns + subprog->sub_insn_off, subprog->insns,
+-			       subprog->insns_cnt * sizeof(*insns));
+-
+-			pr_debug("prog '%s': added %zu insns from sub-prog '%s'\n",
+-				 main_prog->name, subprog->insns_cnt, subprog->name);
+-
+-			/* The subprog insns are now appended. Append its relos too. */
+-			err = append_subprog_relos(main_prog, subprog);
+-			if (err)
+-				return err;
+-			err = bpf_object__reloc_code(obj, main_prog, subprog);
+-			if (err)
+-				return err;
+-		}
+-
+-		/* main_prog->insns memory could have been re-allocated, so
+-		 * calculate pointer again
+-		 */
+-		insn = &main_prog->insns[prog->sub_insn_off + insn_idx];
+-		/* calculate correct instruction position within current main
+-		 * prog; each main prog can have a different set of
+-		 * subprograms appended (potentially in different order as
+-		 * well), so position of any subprog can be different for
+-		 * different main programs */
+-		insn->imm = subprog->sub_insn_off - (prog->sub_insn_off + insn_idx) - 1;
+-
+-		pr_debug("prog '%s': insn #%zu relocated, imm %d points to subprog '%s' (now at %zu offset)\n",
+-			 prog->name, insn_idx, insn->imm, subprog->name, subprog->sub_insn_off);
+-	}
+-
+-	return 0;
+-}
+-
+-/*
+- * Relocate sub-program calls.
+- *
+- * Algorithm operates as follows. Each entry-point BPF program (referred to as
+- * main prog) is processed separately. For each subprog (non-entry functions,
+- * that can be called from either entry progs or other subprogs) gets their
+- * sub_insn_off reset to zero. This serves as indicator that this subprogram
+- * hasn't been yet appended and relocated within current main prog. Once its
+- * relocated, sub_insn_off will point at the position within current main prog
+- * where given subprog was appended. This will further be used to relocate all
+- * the call instructions jumping into this subprog.
+- *
+- * We start with main program and process all call instructions. If the call
+- * is into a subprog that hasn't been processed (i.e., subprog->sub_insn_off
+- * is zero), subprog instructions are appended at the end of main program's
+- * instruction array. Then main program is "put on hold" while we recursively
+- * process newly appended subprogram. If that subprogram calls into another
+- * subprogram that hasn't been appended, new subprogram is appended again to
+- * the *main* prog's instructions (subprog's instructions are always left
+- * untouched, as they need to be in unmodified state for subsequent main progs
+- * and subprog instructions are always sent only as part of a main prog) and
+- * the process continues recursively. Once all the subprogs called from a main
+- * prog or any of its subprogs are appended (and relocated), all their
+- * positions within finalized instructions array are known, so it's easy to
+- * rewrite call instructions with correct relative offsets, corresponding to
+- * desired target subprog.
+- *
+- * Its important to realize that some subprogs might not be called from some
+- * main prog and any of its called/used subprogs. Those will keep their
+- * subprog->sub_insn_off as zero at all times and won't be appended to current
+- * main prog and won't be relocated within the context of current main prog.
+- * They might still be used from other main progs later.
+- *
+- * Visually this process can be shown as below. Suppose we have two main
+- * programs mainA and mainB and BPF object contains three subprogs: subA,
+- * subB, and subC. mainA calls only subA, mainB calls only subC, but subA and
+- * subC both call subB:
+- *
+- *        +--------+ +-------+
+- *        |        v v       |
+- *     +--+---+ +--+-+-+ +---+--+
+- *     | subA | | subB | | subC |
+- *     +--+---+ +------+ +---+--+
+- *        ^                  ^
+- *        |                  |
+- *    +---+-------+   +------+----+
+- *    |   mainA   |   |   mainB   |
+- *    +-----------+   +-----------+
+- *
+- * We'll start relocating mainA, will find subA, append it and start
+- * processing sub A recursively:
+- *
+- *    +-----------+------+
+- *    |   mainA   | subA |
+- *    +-----------+------+
+- *
+- * At this point we notice that subB is used from subA, so we append it and
+- * relocate (there are no further subcalls from subB):
+- *
+- *    +-----------+------+------+
+- *    |   mainA   | subA | subB |
+- *    +-----------+------+------+
+- *
+- * At this point, we relocate subA calls, then go one level up and finish with
+- * relocatin mainA calls. mainA is done.
+- *
+- * For mainB process is similar but results in different order. We start with
+- * mainB and skip subA and subB, as mainB never calls them (at least
+- * directly), but we see subC is needed, so we append and start processing it:
+- *
+- *    +-----------+------+
+- *    |   mainB   | subC |
+- *    +-----------+------+
+- * Now we see subC needs subB, so we go back to it, append and relocate it:
+- *
+- *    +-----------+------+------+
+- *    |   mainB   | subC | subB |
+- *    +-----------+------+------+
+- *
+- * At this point we unwind recursion, relocate calls in subC, then in mainB.
+- */
+-static int
+-bpf_object__relocate_calls(struct bpf_object *obj, struct bpf_program *prog)
+-{
+-	struct bpf_program *subprog;
+-	int i, err;
+-
+-	/* mark all subprogs as not relocated (yet) within the context of
+-	 * current main program
+-	 */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		subprog = &obj->programs[i];
+-		if (!prog_is_subprog(obj, subprog))
+-			continue;
+-
+-		subprog->sub_insn_off = 0;
+-	}
+-
+-	err = bpf_object__reloc_code(obj, prog, prog);
+-	if (err)
+-		return err;
+-
+-
+-	return 0;
+-}
+-
+-static void
+-bpf_object__free_relocs(struct bpf_object *obj)
+-{
+-	struct bpf_program *prog;
+-	int i;
+-
+-	/* free up relocation descriptors */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		zfree(&prog->reloc_desc);
+-		prog->nr_reloc = 0;
+-	}
+-}
+-
+-static int
+-bpf_object__relocate(struct bpf_object *obj, const char *targ_btf_path)
+-{
+-	struct bpf_program *prog;
+-	size_t i, j;
+-	int err;
+-
+-	if (obj->btf_ext) {
+-		err = bpf_object__relocate_core(obj, targ_btf_path);
+-		if (err) {
+-			pr_warn("failed to perform CO-RE relocations: %d\n",
+-				err);
+-			return err;
+-		}
+-	}
+-
+-	/* Before relocating calls pre-process relocations and mark
+-	 * few ld_imm64 instructions that points to subprogs.
+-	 * Otherwise bpf_object__reloc_code() later would have to consider
+-	 * all ld_imm64 insns as relocation candidates. That would
+-	 * reduce relocation speed, since amount of find_prog_insn_relo()
+-	 * would increase and most of them will fail to find a relo.
+-	 */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		for (j = 0; j < prog->nr_reloc; j++) {
+-			struct reloc_desc *relo = &prog->reloc_desc[j];
+-			struct bpf_insn *insn = &prog->insns[relo->insn_idx];
+-
+-			/* mark the insn, so it's recognized by insn_is_pseudo_func() */
+-			if (relo->type == RELO_SUBPROG_ADDR)
+-				insn[0].src_reg = BPF_PSEUDO_FUNC;
+-		}
+-	}
+-
+-	/* relocate subprogram calls and append used subprograms to main
+-	 * programs; each copy of subprogram code needs to be relocated
+-	 * differently for each main program, because its code location might
+-	 * have changed.
+-	 * Append subprog relos to main programs to allow data relos to be
+-	 * processed after text is completely relocated.
+-	 */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		/* sub-program's sub-calls are relocated within the context of
+-		 * its main program only
+-		 */
+-		if (prog_is_subprog(obj, prog))
+-			continue;
+-
+-		err = bpf_object__relocate_calls(obj, prog);
+-		if (err) {
+-			pr_warn("prog '%s': failed to relocate calls: %d\n",
+-				prog->name, err);
+-			return err;
+-		}
+-	}
+-	/* Process data relos for main programs */
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		if (prog_is_subprog(obj, prog))
+-			continue;
+-		err = bpf_object__relocate_data(obj, prog);
+-		if (err) {
+-			pr_warn("prog '%s': failed to relocate data references: %d\n",
+-				prog->name, err);
+-			return err;
+-		}
+-	}
+-	if (!obj->gen_loader)
+-		bpf_object__free_relocs(obj);
+-	return 0;
+-}
+-
+-static int bpf_object__collect_st_ops_relos(struct bpf_object *obj,
+-					    GElf_Shdr *shdr, Elf_Data *data);
+-
+-static int bpf_object__collect_map_relos(struct bpf_object *obj,
+-					 GElf_Shdr *shdr, Elf_Data *data)
+-{
+-	const int bpf_ptr_sz = 8, host_ptr_sz = sizeof(void *);
+-	int i, j, nrels, new_sz;
+-	const struct btf_var_secinfo *vi = NULL;
+-	const struct btf_type *sec, *var, *def;
+-	struct bpf_map *map = NULL, *targ_map;
+-	const struct btf_member *member;
+-	const char *name, *mname;
+-	Elf_Data *symbols;
+-	unsigned int moff;
+-	GElf_Sym sym;
+-	GElf_Rel rel;
+-	void *tmp;
+-
+-	if (!obj->efile.btf_maps_sec_btf_id || !obj->btf)
+-		return -EINVAL;
+-	sec = btf__type_by_id(obj->btf, obj->efile.btf_maps_sec_btf_id);
+-	if (!sec)
+-		return -EINVAL;
+-
+-	symbols = obj->efile.symbols;
+-	nrels = shdr->sh_size / shdr->sh_entsize;
+-	for (i = 0; i < nrels; i++) {
+-		if (!gelf_getrel(data, i, &rel)) {
+-			pr_warn(".maps relo #%d: failed to get ELF relo\n", i);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-		if (!gelf_getsym(symbols, GELF_R_SYM(rel.r_info), &sym)) {
+-			pr_warn(".maps relo #%d: symbol %zx not found\n",
+-				i, (size_t)GELF_R_SYM(rel.r_info));
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-		name = elf_sym_str(obj, sym.st_name) ?: "<?>";
+-		if (sym.st_shndx != obj->efile.btf_maps_shndx) {
+-			pr_warn(".maps relo #%d: '%s' isn't a BTF-defined map\n",
+-				i, name);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-
+-		pr_debug(".maps relo #%d: for %zd value %zd rel.r_offset %zu name %d ('%s')\n",
+-			 i, (ssize_t)(rel.r_info >> 32), (size_t)sym.st_value,
+-			 (size_t)rel.r_offset, sym.st_name, name);
+-
+-		for (j = 0; j < obj->nr_maps; j++) {
+-			map = &obj->maps[j];
+-			if (map->sec_idx != obj->efile.btf_maps_shndx)
+-				continue;
+-
+-			vi = btf_var_secinfos(sec) + map->btf_var_idx;
+-			if (vi->offset <= rel.r_offset &&
+-			    rel.r_offset + bpf_ptr_sz <= vi->offset + vi->size)
+-				break;
+-		}
+-		if (j == obj->nr_maps) {
+-			pr_warn(".maps relo #%d: cannot find map '%s' at rel.r_offset %zu\n",
+-				i, name, (size_t)rel.r_offset);
+-			return -EINVAL;
+-		}
+-
+-		if (!bpf_map_type__is_map_in_map(map->def.type))
+-			return -EINVAL;
+-		if (map->def.type == BPF_MAP_TYPE_HASH_OF_MAPS &&
+-		    map->def.key_size != sizeof(int)) {
+-			pr_warn(".maps relo #%d: hash-of-maps '%s' should have key size %zu.\n",
+-				i, map->name, sizeof(int));
+-			return -EINVAL;
+-		}
+-
+-		targ_map = bpf_object__find_map_by_name(obj, name);
+-		if (!targ_map)
+-			return -ESRCH;
+-
+-		var = btf__type_by_id(obj->btf, vi->type);
+-		def = skip_mods_and_typedefs(obj->btf, var->type, NULL);
+-		if (btf_vlen(def) == 0)
+-			return -EINVAL;
+-		member = btf_members(def) + btf_vlen(def) - 1;
+-		mname = btf__name_by_offset(obj->btf, member->name_off);
+-		if (strcmp(mname, "values"))
+-			return -EINVAL;
+-
+-		moff = btf_member_bit_offset(def, btf_vlen(def) - 1) / 8;
+-		if (rel.r_offset - vi->offset < moff)
+-			return -EINVAL;
+-
+-		moff = rel.r_offset - vi->offset - moff;
+-		/* here we use BPF pointer size, which is always 64 bit, as we
+-		 * are parsing ELF that was built for BPF target
+-		 */
+-		if (moff % bpf_ptr_sz)
+-			return -EINVAL;
+-		moff /= bpf_ptr_sz;
+-		if (moff >= map->init_slots_sz) {
+-			new_sz = moff + 1;
+-			tmp = libbpf_reallocarray(map->init_slots, new_sz, host_ptr_sz);
+-			if (!tmp)
+-				return -ENOMEM;
+-			map->init_slots = tmp;
+-			memset(map->init_slots + map->init_slots_sz, 0,
+-			       (new_sz - map->init_slots_sz) * host_ptr_sz);
+-			map->init_slots_sz = new_sz;
+-		}
+-		map->init_slots[moff] = targ_map;
+-
+-		pr_debug(".maps relo #%d: map '%s' slot [%d] points to map '%s'\n",
+-			 i, map->name, moff, name);
+-	}
+-
+-	return 0;
+-}
+-
+-static int cmp_relocs(const void *_a, const void *_b)
+-{
+-	const struct reloc_desc *a = _a;
+-	const struct reloc_desc *b = _b;
+-
+-	if (a->insn_idx != b->insn_idx)
+-		return a->insn_idx < b->insn_idx ? -1 : 1;
+-
+-	/* no two relocations should have the same insn_idx, but ... */
+-	if (a->type != b->type)
+-		return a->type < b->type ? -1 : 1;
+-
+-	return 0;
+-}
+-
+-static int bpf_object__collect_relos(struct bpf_object *obj)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < obj->efile.nr_reloc_sects; i++) {
+-		GElf_Shdr *shdr = &obj->efile.reloc_sects[i].shdr;
+-		Elf_Data *data = obj->efile.reloc_sects[i].data;
+-		int idx = shdr->sh_info;
+-
+-		if (shdr->sh_type != SHT_REL) {
+-			pr_warn("internal error at %d\n", __LINE__);
+-			return -LIBBPF_ERRNO__INTERNAL;
+-		}
+-
+-		if (idx == obj->efile.st_ops_shndx)
+-			err = bpf_object__collect_st_ops_relos(obj, shdr, data);
+-		else if (idx == obj->efile.btf_maps_shndx)
+-			err = bpf_object__collect_map_relos(obj, shdr, data);
+-		else
+-			err = bpf_object__collect_prog_relos(obj, shdr, data);
+-		if (err)
+-			return err;
+-	}
+-
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		struct bpf_program *p = &obj->programs[i];
+-		
+-		if (!p->nr_reloc)
+-			continue;
+-
+-		qsort(p->reloc_desc, p->nr_reloc, sizeof(*p->reloc_desc), cmp_relocs);
+-	}
+-	return 0;
+-}
+-
+-static bool insn_is_helper_call(struct bpf_insn *insn, enum bpf_func_id *func_id)
+-{
+-	if (BPF_CLASS(insn->code) == BPF_JMP &&
+-	    BPF_OP(insn->code) == BPF_CALL &&
+-	    BPF_SRC(insn->code) == BPF_K &&
+-	    insn->src_reg == 0 &&
+-	    insn->dst_reg == 0) {
+-		    *func_id = insn->imm;
+-		    return true;
+-	}
+-	return false;
+-}
+-
+-static int bpf_object__sanitize_prog(struct bpf_object *obj, struct bpf_program *prog)
+-{
+-	struct bpf_insn *insn = prog->insns;
+-	enum bpf_func_id func_id;
+-	int i;
+-
+-	if (obj->gen_loader)
+-		return 0;
+-
+-	for (i = 0; i < prog->insns_cnt; i++, insn++) {
+-		if (!insn_is_helper_call(insn, &func_id))
+-			continue;
+-
+-		/* on kernels that don't yet support
+-		 * bpf_probe_read_{kernel,user}[_str] helpers, fall back
+-		 * to bpf_probe_read() which works well for old kernels
+-		 */
+-		switch (func_id) {
+-		case BPF_FUNC_probe_read_kernel:
+-		case BPF_FUNC_probe_read_user:
+-			if (!kernel_supports(obj, FEAT_PROBE_READ_KERN))
+-				insn->imm = BPF_FUNC_probe_read;
+-			break;
+-		case BPF_FUNC_probe_read_kernel_str:
+-		case BPF_FUNC_probe_read_user_str:
+-			if (!kernel_supports(obj, FEAT_PROBE_READ_KERN))
+-				insn->imm = BPF_FUNC_probe_read_str;
+-			break;
+-		default:
+-			break;
+-		}
+-	}
+-	return 0;
+-}
+-
+-static int
+-load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+-	     char *license, __u32 kern_version, int *pfd)
+-{
+-	struct bpf_prog_load_params load_attr = {};
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	size_t log_buf_size = 0;
+-	char *log_buf = NULL;
+-	int btf_fd, ret;
+-
+-	if (prog->type == BPF_PROG_TYPE_UNSPEC) {
+-		/*
+-		 * The program type must be set.  Most likely we couldn't find a proper
+-		 * section definition at load time, and thus we didn't infer the type.
+-		 */
+-		pr_warn("prog '%s': missing BPF prog type, check ELF section name '%s'\n",
+-			prog->name, prog->sec_name);
+-		return -EINVAL;
+-	}
+-
+-	if (!insns || !insns_cnt)
+-		return -EINVAL;
+-
+-	load_attr.prog_type = prog->type;
+-	/* old kernels might not support specifying expected_attach_type */
+-	if (!kernel_supports(prog->obj, FEAT_EXP_ATTACH_TYPE) && prog->sec_def &&
+-	    prog->sec_def->is_exp_attach_type_optional)
+-		load_attr.expected_attach_type = 0;
+-	else
+-		load_attr.expected_attach_type = prog->expected_attach_type;
+-	if (kernel_supports(prog->obj, FEAT_PROG_NAME))
+-		load_attr.name = prog->name;
+-	load_attr.insns = insns;
+-	load_attr.insn_cnt = insns_cnt;
+-	load_attr.license = license;
+-	load_attr.attach_btf_id = prog->attach_btf_id;
+-	if (prog->attach_prog_fd)
+-		load_attr.attach_prog_fd = prog->attach_prog_fd;
+-	else
+-		load_attr.attach_btf_obj_fd = prog->attach_btf_obj_fd;
+-	load_attr.attach_btf_id = prog->attach_btf_id;
+-	load_attr.kern_version = kern_version;
+-	load_attr.prog_ifindex = prog->prog_ifindex;
+-
+-	/* specify func_info/line_info only if kernel supports them */
+-	btf_fd = bpf_object__btf_fd(prog->obj);
+-	if (btf_fd >= 0 && kernel_supports(prog->obj, FEAT_BTF_FUNC)) {
+-		load_attr.prog_btf_fd = btf_fd;
+-		load_attr.func_info = prog->func_info;
+-		load_attr.func_info_rec_size = prog->func_info_rec_size;
+-		load_attr.func_info_cnt = prog->func_info_cnt;
+-		load_attr.line_info = prog->line_info;
+-		load_attr.line_info_rec_size = prog->line_info_rec_size;
+-		load_attr.line_info_cnt = prog->line_info_cnt;
+-	}
+-	load_attr.log_level = prog->log_level;
+-	load_attr.prog_flags = prog->prog_flags;
+-
+-	if (prog->obj->gen_loader) {
+-		bpf_gen__prog_load(prog->obj->gen_loader, &load_attr,
+-				   prog - prog->obj->programs);
+-		*pfd = -1;
+-		return 0;
+-	}
+-retry_load:
+-	if (log_buf_size) {
+-		log_buf = malloc(log_buf_size);
+-		if (!log_buf)
+-			return -ENOMEM;
+-
+-		*log_buf = 0;
+-	}
+-
+-	load_attr.log_buf = log_buf;
+-	load_attr.log_buf_sz = log_buf_size;
+-	ret = libbpf__bpf_prog_load(&load_attr);
+-
+-	if (ret >= 0) {
+-		if (log_buf && load_attr.log_level)
+-			pr_debug("verifier log:\n%s", log_buf);
+-
+-		if (prog->obj->rodata_map_idx >= 0 &&
+-		    kernel_supports(prog->obj, FEAT_PROG_BIND_MAP)) {
+-			struct bpf_map *rodata_map =
+-				&prog->obj->maps[prog->obj->rodata_map_idx];
+-
+-			if (bpf_prog_bind_map(ret, bpf_map__fd(rodata_map), NULL)) {
+-				cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+-				pr_warn("prog '%s': failed to bind .rodata map: %s\n",
+-					prog->name, cp);
+-				/* Don't fail hard if can't bind rodata. */
+-			}
+-		}
+-
+-		*pfd = ret;
+-		ret = 0;
+-		goto out;
+-	}
+-
+-	if (!log_buf || errno == ENOSPC) {
+-		log_buf_size = max((size_t)BPF_LOG_BUF_SIZE,
+-				   log_buf_size << 1);
+-
+-		free(log_buf);
+-		goto retry_load;
+-	}
+-	ret = errno ? -errno : -LIBBPF_ERRNO__LOAD;
+-	cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+-	pr_warn("load bpf program failed: %s\n", cp);
+-	pr_perm_msg(ret);
+-
+-	if (log_buf && log_buf[0] != '\0') {
+-		ret = -LIBBPF_ERRNO__VERIFY;
+-		pr_warn("-- BEGIN DUMP LOG ---\n");
+-		pr_warn("\n%s\n", log_buf);
+-		pr_warn("-- END LOG --\n");
+-	} else if (load_attr.insn_cnt >= BPF_MAXINSNS) {
+-		pr_warn("Program too large (%zu insns), at most %d insns\n",
+-			load_attr.insn_cnt, BPF_MAXINSNS);
+-		ret = -LIBBPF_ERRNO__PROG2BIG;
+-	} else if (load_attr.prog_type != BPF_PROG_TYPE_KPROBE) {
+-		/* Wrong program type? */
+-		int fd;
+-
+-		load_attr.prog_type = BPF_PROG_TYPE_KPROBE;
+-		load_attr.expected_attach_type = 0;
+-		load_attr.log_buf = NULL;
+-		load_attr.log_buf_sz = 0;
+-		fd = libbpf__bpf_prog_load(&load_attr);
+-		if (fd >= 0) {
+-			close(fd);
+-			ret = -LIBBPF_ERRNO__PROGTYPE;
+-			goto out;
+-		}
+-	}
+-
+-out:
+-	free(log_buf);
+-	return ret;
+-}
+-
+-static int bpf_program__record_externs(struct bpf_program *prog)
+-{
+-	struct bpf_object *obj = prog->obj;
+-	int i;
+-
+-	for (i = 0; i < prog->nr_reloc; i++) {
+-		struct reloc_desc *relo = &prog->reloc_desc[i];
+-		struct extern_desc *ext = &obj->externs[relo->sym_off];
+-
+-		switch (relo->type) {
+-		case RELO_EXTERN_VAR:
+-			if (ext->type != EXT_KSYM)
+-				continue;
+-			if (!ext->ksym.type_id) {
+-				pr_warn("typeless ksym %s is not supported yet\n",
+-					ext->name);
+-				return -ENOTSUP;
+-			}
+-			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_VAR,
+-					       relo->insn_idx);
+-			break;
+-		case RELO_EXTERN_FUNC:
+-			bpf_gen__record_extern(obj->gen_loader, ext->name, BTF_KIND_FUNC,
+-					       relo->insn_idx);
+-			break;
+-		default:
+-			continue;
+-		}
+-	}
+-	return 0;
+-}
+-
+-static int libbpf_find_attach_btf_id(struct bpf_program *prog, int *btf_obj_fd, int *btf_type_id);
+-
+-int bpf_program__load(struct bpf_program *prog, char *license, __u32 kern_ver)
+-{
+-	int err = 0, fd, i;
+-
+-	if (prog->obj->loaded) {
+-		pr_warn("prog '%s': can't load after object was loaded\n", prog->name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if ((prog->type == BPF_PROG_TYPE_TRACING ||
+-	     prog->type == BPF_PROG_TYPE_LSM ||
+-	     prog->type == BPF_PROG_TYPE_EXT) && !prog->attach_btf_id) {
+-		int btf_obj_fd = 0, btf_type_id = 0;
+-
+-		err = libbpf_find_attach_btf_id(prog, &btf_obj_fd, &btf_type_id);
+-		if (err)
+-			return libbpf_err(err);
+-
+-		prog->attach_btf_obj_fd = btf_obj_fd;
+-		prog->attach_btf_id = btf_type_id;
+-	}
+-
+-	if (prog->instances.nr < 0 || !prog->instances.fds) {
+-		if (prog->preprocessor) {
+-			pr_warn("Internal error: can't load program '%s'\n",
+-				prog->name);
+-			return libbpf_err(-LIBBPF_ERRNO__INTERNAL);
+-		}
+-
+-		prog->instances.fds = malloc(sizeof(int));
+-		if (!prog->instances.fds) {
+-			pr_warn("Not enough memory for BPF fds\n");
+-			return libbpf_err(-ENOMEM);
+-		}
+-		prog->instances.nr = 1;
+-		prog->instances.fds[0] = -1;
+-	}
+-
+-	if (!prog->preprocessor) {
+-		if (prog->instances.nr != 1) {
+-			pr_warn("prog '%s': inconsistent nr(%d) != 1\n",
+-				prog->name, prog->instances.nr);
+-		}
+-		if (prog->obj->gen_loader)
+-			bpf_program__record_externs(prog);
+-		err = load_program(prog, prog->insns, prog->insns_cnt,
+-				   license, kern_ver, &fd);
+-		if (!err)
+-			prog->instances.fds[0] = fd;
+-		goto out;
+-	}
+-
+-	for (i = 0; i < prog->instances.nr; i++) {
+-		struct bpf_prog_prep_result result;
+-		bpf_program_prep_t preprocessor = prog->preprocessor;
+-
+-		memset(&result, 0, sizeof(result));
+-		err = preprocessor(prog, i, prog->insns,
+-				   prog->insns_cnt, &result);
+-		if (err) {
+-			pr_warn("Preprocessing the %dth instance of program '%s' failed\n",
+-				i, prog->name);
+-			goto out;
+-		}
+-
+-		if (!result.new_insn_ptr || !result.new_insn_cnt) {
+-			pr_debug("Skip loading the %dth instance of program '%s'\n",
+-				 i, prog->name);
+-			prog->instances.fds[i] = -1;
+-			if (result.pfd)
+-				*result.pfd = -1;
+-			continue;
+-		}
+-
+-		err = load_program(prog, result.new_insn_ptr,
+-				   result.new_insn_cnt, license, kern_ver, &fd);
+-		if (err) {
+-			pr_warn("Loading the %dth instance of program '%s' failed\n",
+-				i, prog->name);
+-			goto out;
+-		}
+-
+-		if (result.pfd)
+-			*result.pfd = fd;
+-		prog->instances.fds[i] = fd;
+-	}
+-out:
+-	if (err)
+-		pr_warn("failed to load program '%s'\n", prog->name);
+-	zfree(&prog->insns);
+-	prog->insns_cnt = 0;
+-	return libbpf_err(err);
+-}
+-
+-static int
+-bpf_object__load_progs(struct bpf_object *obj, int log_level)
+-{
+-	struct bpf_program *prog;
+-	size_t i;
+-	int err;
+-
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		err = bpf_object__sanitize_prog(obj, prog);
+-		if (err)
+-			return err;
+-	}
+-
+-	for (i = 0; i < obj->nr_programs; i++) {
+-		prog = &obj->programs[i];
+-		if (prog_is_subprog(obj, prog))
+-			continue;
+-		if (!prog->load) {
+-			pr_debug("prog '%s': skipped loading\n", prog->name);
+-			continue;
+-		}
+-		prog->log_level |= log_level;
+-		err = bpf_program__load(prog, obj->license, obj->kern_version);
+-		if (err)
+-			return err;
+-	}
+-	if (obj->gen_loader)
+-		bpf_object__free_relocs(obj);
+-	return 0;
+-}
+-
+-static const struct bpf_sec_def *find_sec_def(const char *sec_name);
+-
+-static struct bpf_object *
+-__bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+-		   const struct bpf_object_open_opts *opts)
+-{
+-	const char *obj_name, *kconfig;
+-	struct bpf_program *prog;
+-	struct bpf_object *obj;
+-	char tmp_name[64];
+-	int err;
+-
+-	if (elf_version(EV_CURRENT) == EV_NONE) {
+-		pr_warn("failed to init libelf for %s\n",
+-			path ? : "(mem buf)");
+-		return ERR_PTR(-LIBBPF_ERRNO__LIBELF);
+-	}
+-
+-	if (!OPTS_VALID(opts, bpf_object_open_opts))
+-		return ERR_PTR(-EINVAL);
+-
+-	obj_name = OPTS_GET(opts, object_name, NULL);
+-	if (obj_buf) {
+-		if (!obj_name) {
+-			snprintf(tmp_name, sizeof(tmp_name), "%lx-%lx",
+-				 (unsigned long)obj_buf,
+-				 (unsigned long)obj_buf_sz);
+-			obj_name = tmp_name;
+-		}
+-		path = obj_name;
+-		pr_debug("loading object '%s' from buffer\n", obj_name);
+-	}
+-
+-	obj = bpf_object__new(path, obj_buf, obj_buf_sz, obj_name);
+-	if (IS_ERR(obj))
+-		return obj;
+-
+-	kconfig = OPTS_GET(opts, kconfig, NULL);
+-	if (kconfig) {
+-		obj->kconfig = strdup(kconfig);
+-		if (!obj->kconfig)
+-			return ERR_PTR(-ENOMEM);
+-	}
+-
+-	err = bpf_object__elf_init(obj);
+-	err = err ? : bpf_object__check_endianness(obj);
+-	err = err ? : bpf_object__elf_collect(obj);
+-	err = err ? : bpf_object__collect_externs(obj);
+-	err = err ? : bpf_object__finalize_btf(obj);
+-	err = err ? : bpf_object__init_maps(obj, opts);
+-	err = err ? : bpf_object__collect_relos(obj);
+-	if (err)
+-		goto out;
+-	bpf_object__elf_finish(obj);
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		prog->sec_def = find_sec_def(prog->sec_name);
+-		if (!prog->sec_def) {
+-			/* couldn't guess, but user might manually specify */
+-			pr_debug("prog '%s': unrecognized ELF section name '%s'\n",
+-				prog->name, prog->sec_name);
+-			continue;
+-		}
+-
+-		if (prog->sec_def->is_sleepable)
+-			prog->prog_flags |= BPF_F_SLEEPABLE;
+-		bpf_program__set_type(prog, prog->sec_def->prog_type);
+-		bpf_program__set_expected_attach_type(prog,
+-				prog->sec_def->expected_attach_type);
+-
+-		if (prog->sec_def->prog_type == BPF_PROG_TYPE_TRACING ||
+-		    prog->sec_def->prog_type == BPF_PROG_TYPE_EXT)
+-			prog->attach_prog_fd = OPTS_GET(opts, attach_prog_fd, 0);
+-	}
+-
+-	return obj;
+-out:
+-	bpf_object__close(obj);
+-	return ERR_PTR(err);
+-}
+-
+-static struct bpf_object *
+-__bpf_object__open_xattr(struct bpf_object_open_attr *attr, int flags)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
+-		.relaxed_maps = flags & MAPS_RELAX_COMPAT,
+-	);
+-
+-	/* param validation */
+-	if (!attr->file)
+-		return NULL;
+-
+-	pr_debug("loading %s\n", attr->file);
+-	return __bpf_object__open(attr->file, NULL, 0, &opts);
+-}
+-
+-struct bpf_object *bpf_object__open_xattr(struct bpf_object_open_attr *attr)
+-{
+-	return libbpf_ptr(__bpf_object__open_xattr(attr, 0));
+-}
+-
+-struct bpf_object *bpf_object__open(const char *path)
+-{
+-	struct bpf_object_open_attr attr = {
+-		.file		= path,
+-		.prog_type	= BPF_PROG_TYPE_UNSPEC,
+-	};
+-
+-	return libbpf_ptr(__bpf_object__open_xattr(&attr, 0));
+-}
+-
+-struct bpf_object *
+-bpf_object__open_file(const char *path, const struct bpf_object_open_opts *opts)
+-{
+-	if (!path)
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	pr_debug("loading %s\n", path);
+-
+-	return libbpf_ptr(__bpf_object__open(path, NULL, 0, opts));
+-}
+-
+-struct bpf_object *
+-bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+-		     const struct bpf_object_open_opts *opts)
+-{
+-	if (!obj_buf || obj_buf_sz == 0)
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	return libbpf_ptr(__bpf_object__open(NULL, obj_buf, obj_buf_sz, opts));
+-}
+-
+-struct bpf_object *
+-bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
+-			const char *name)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
+-		.object_name = name,
+-		/* wrong default, but backwards-compatible */
+-		.relaxed_maps = true,
+-	);
+-
+-	/* returning NULL is wrong, but backwards-compatible */
+-	if (!obj_buf || obj_buf_sz == 0)
+-		return errno = EINVAL, NULL;
+-
+-	return libbpf_ptr(__bpf_object__open(NULL, obj_buf, obj_buf_sz, &opts));
+-}
+-
+-int bpf_object__unload(struct bpf_object *obj)
+-{
+-	size_t i;
+-
+-	if (!obj)
+-		return libbpf_err(-EINVAL);
+-
+-	for (i = 0; i < obj->nr_maps; i++) {
+-		zclose(obj->maps[i].fd);
+-		if (obj->maps[i].st_ops)
+-			zfree(&obj->maps[i].st_ops->kern_vdata);
+-	}
+-
+-	for (i = 0; i < obj->nr_programs; i++)
+-		bpf_program__unload(&obj->programs[i]);
+-
+-	return 0;
+-}
+-
+-static int bpf_object__sanitize_maps(struct bpf_object *obj)
+-{
+-	struct bpf_map *m;
+-
+-	bpf_object__for_each_map(m, obj) {
+-		if (!bpf_map__is_internal(m))
+-			continue;
+-		if (!kernel_supports(obj, FEAT_GLOBAL_DATA)) {
+-			pr_warn("kernel doesn't support global data\n");
+-			return -ENOTSUP;
+-		}
+-		if (!kernel_supports(obj, FEAT_ARRAY_MMAP))
+-			m->def.map_flags ^= BPF_F_MMAPABLE;
+-	}
+-
+-	return 0;
+-}
+-
+-static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
+-{
+-	char sym_type, sym_name[500];
+-	unsigned long long sym_addr;
+-	const struct btf_type *t;
+-	struct extern_desc *ext;
+-	int ret, err = 0;
+-	FILE *f;
+-
+-	f = fopen("/proc/kallsyms", "r");
+-	if (!f) {
+-		err = -errno;
+-		pr_warn("failed to open /proc/kallsyms: %d\n", err);
+-		return err;
+-	}
+-
+-	while (true) {
+-		ret = fscanf(f, "%llx %c %499s%*[^\n]\n",
+-			     &sym_addr, &sym_type, sym_name);
+-		if (ret == EOF && feof(f))
+-			break;
+-		if (ret != 3) {
+-			pr_warn("failed to read kallsyms entry: %d\n", ret);
+-			err = -EINVAL;
+-			goto out;
+-		}
+-
+-		ext = find_extern_by_name(obj, sym_name);
+-		if (!ext || ext->type != EXT_KSYM)
+-			continue;
+-
+-		t = btf__type_by_id(obj->btf, ext->btf_id);
+-		if (!btf_is_var(t))
+-			continue;
+-
+-		if (ext->is_set && ext->ksym.addr != sym_addr) {
+-			pr_warn("extern (ksym) '%s' resolution is ambiguous: 0x%llx or 0x%llx\n",
+-				sym_name, ext->ksym.addr, sym_addr);
+-			err = -EINVAL;
+-			goto out;
+-		}
+-		if (!ext->is_set) {
+-			ext->is_set = true;
+-			ext->ksym.addr = sym_addr;
+-			pr_debug("extern (ksym) %s=0x%llx\n", sym_name, sym_addr);
+-		}
+-	}
+-
+-out:
+-	fclose(f);
+-	return err;
+-}
+-
+-static int find_ksym_btf_id(struct bpf_object *obj, const char *ksym_name,
+-			    __u16 kind, struct btf **res_btf,
+-			    int *res_btf_fd)
+-{
+-	int i, id, btf_fd, err;
+-	struct btf *btf;
+-
+-	btf = obj->btf_vmlinux;
+-	btf_fd = 0;
+-	id = btf__find_by_name_kind(btf, ksym_name, kind);
+-
+-	if (id == -ENOENT) {
+-		err = load_module_btfs(obj);
+-		if (err)
+-			return err;
+-
+-		for (i = 0; i < obj->btf_module_cnt; i++) {
+-			btf = obj->btf_modules[i].btf;
+-			/* we assume module BTF FD is always >0 */
+-			btf_fd = obj->btf_modules[i].fd;
+-			id = btf__find_by_name_kind(btf, ksym_name, kind);
+-			if (id != -ENOENT)
+-				break;
+-		}
+-	}
+-	if (id <= 0) {
+-		pr_warn("extern (%s ksym) '%s': failed to find BTF ID in kernel BTF(s).\n",
+-			__btf_kind_str(kind), ksym_name);
+-		return -ESRCH;
+-	}
+-
+-	*res_btf = btf;
+-	*res_btf_fd = btf_fd;
+-	return id;
+-}
+-
+-static int bpf_object__resolve_ksym_var_btf_id(struct bpf_object *obj,
+-					       struct extern_desc *ext)
+-{
+-	const struct btf_type *targ_var, *targ_type;
+-	__u32 targ_type_id, local_type_id;
+-	const char *targ_var_name;
+-	int id, btf_fd = 0, err;
+-	struct btf *btf = NULL;
+-
+-	id = find_ksym_btf_id(obj, ext->name, BTF_KIND_VAR, &btf, &btf_fd);
+-	if (id < 0)
+-		return id;
+-
+-	/* find local type_id */
+-	local_type_id = ext->ksym.type_id;
+-
+-	/* find target type_id */
+-	targ_var = btf__type_by_id(btf, id);
+-	targ_var_name = btf__name_by_offset(btf, targ_var->name_off);
+-	targ_type = skip_mods_and_typedefs(btf, targ_var->type, &targ_type_id);
+-
+-	err = bpf_core_types_are_compat(obj->btf, local_type_id,
+-					btf, targ_type_id);
+-	if (err <= 0) {
+-		const struct btf_type *local_type;
+-		const char *targ_name, *local_name;
+-
+-		local_type = btf__type_by_id(obj->btf, local_type_id);
+-		local_name = btf__name_by_offset(obj->btf, local_type->name_off);
+-		targ_name = btf__name_by_offset(btf, targ_type->name_off);
+-
+-		pr_warn("extern (var ksym) '%s': incompatible types, expected [%d] %s %s, but kernel has [%d] %s %s\n",
+-			ext->name, local_type_id,
+-			btf_kind_str(local_type), local_name, targ_type_id,
+-			btf_kind_str(targ_type), targ_name);
+-		return -EINVAL;
+-	}
+-
+-	ext->is_set = true;
+-	ext->ksym.kernel_btf_obj_fd = btf_fd;
+-	ext->ksym.kernel_btf_id = id;
+-	pr_debug("extern (var ksym) '%s': resolved to [%d] %s %s\n",
+-		 ext->name, id, btf_kind_str(targ_var), targ_var_name);
+-
+-	return 0;
+-}
+-
+-static int bpf_object__resolve_ksym_func_btf_id(struct bpf_object *obj,
+-						struct extern_desc *ext)
+-{
+-	int local_func_proto_id, kfunc_proto_id, kfunc_id;
+-	const struct btf_type *kern_func;
+-	struct btf *kern_btf = NULL;
+-	int ret, kern_btf_fd = 0;
+-
+-	local_func_proto_id = ext->ksym.type_id;
+-
+-	kfunc_id = find_ksym_btf_id(obj, ext->name, BTF_KIND_FUNC,
+-				    &kern_btf, &kern_btf_fd);
+-	if (kfunc_id < 0) {
+-		pr_warn("extern (func ksym) '%s': not found in kernel BTF\n",
+-			ext->name);
+-		return kfunc_id;
+-	}
+-
+-	if (kern_btf != obj->btf_vmlinux) {
+-		pr_warn("extern (func ksym) '%s': function in kernel module is not supported\n",
+-			ext->name);
+-		return -ENOTSUP;
+-	}
+-
+-	kern_func = btf__type_by_id(kern_btf, kfunc_id);
+-	kfunc_proto_id = kern_func->type;
+-
+-	ret = bpf_core_types_are_compat(obj->btf, local_func_proto_id,
+-					kern_btf, kfunc_proto_id);
+-	if (ret <= 0) {
+-		pr_warn("extern (func ksym) '%s': func_proto [%d] incompatible with kernel [%d]\n",
+-			ext->name, local_func_proto_id, kfunc_proto_id);
+-		return -EINVAL;
+-	}
+-
+-	ext->is_set = true;
+-	ext->ksym.kernel_btf_obj_fd = kern_btf_fd;
+-	ext->ksym.kernel_btf_id = kfunc_id;
+-	pr_debug("extern (func ksym) '%s': resolved to kernel [%d]\n",
+-		 ext->name, kfunc_id);
+-
+-	return 0;
+-}
+-
+-static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
+-{
+-	const struct btf_type *t;
+-	struct extern_desc *ext;
+-	int i, err;
+-
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		ext = &obj->externs[i];
+-		if (ext->type != EXT_KSYM || !ext->ksym.type_id)
+-			continue;
+-
+-		if (obj->gen_loader) {
+-			ext->is_set = true;
+-			ext->ksym.kernel_btf_obj_fd = 0;
+-			ext->ksym.kernel_btf_id = 0;
+-			continue;
+-		}
+-		t = btf__type_by_id(obj->btf, ext->btf_id);
+-		if (btf_is_var(t))
+-			err = bpf_object__resolve_ksym_var_btf_id(obj, ext);
+-		else
+-			err = bpf_object__resolve_ksym_func_btf_id(obj, ext);
+-		if (err)
+-			return err;
+-	}
+-	return 0;
+-}
+-
+-static int bpf_object__resolve_externs(struct bpf_object *obj,
+-				       const char *extra_kconfig)
+-{
+-	bool need_config = false, need_kallsyms = false;
+-	bool need_vmlinux_btf = false;
+-	struct extern_desc *ext;
+-	void *kcfg_data = NULL;
+-	int err, i;
+-
+-	if (obj->nr_extern == 0)
+-		return 0;
+-
+-	if (obj->kconfig_map_idx >= 0)
+-		kcfg_data = obj->maps[obj->kconfig_map_idx].mmaped;
+-
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		ext = &obj->externs[i];
+-
+-		if (ext->type == EXT_KCFG &&
+-		    strcmp(ext->name, "LINUX_KERNEL_VERSION") == 0) {
+-			void *ext_val = kcfg_data + ext->kcfg.data_off;
+-			__u32 kver = get_kernel_version();
+-
+-			if (!kver) {
+-				pr_warn("failed to get kernel version\n");
+-				return -EINVAL;
+-			}
+-			err = set_kcfg_value_num(ext, ext_val, kver);
+-			if (err)
+-				return err;
+-			pr_debug("extern (kcfg) %s=0x%x\n", ext->name, kver);
+-		} else if (ext->type == EXT_KCFG &&
+-			   strncmp(ext->name, "CONFIG_", 7) == 0) {
+-			need_config = true;
+-		} else if (ext->type == EXT_KSYM) {
+-			if (ext->ksym.type_id)
+-				need_vmlinux_btf = true;
+-			else
+-				need_kallsyms = true;
+-		} else {
+-			pr_warn("unrecognized extern '%s'\n", ext->name);
+-			return -EINVAL;
+-		}
+-	}
+-	if (need_config && extra_kconfig) {
+-		err = bpf_object__read_kconfig_mem(obj, extra_kconfig, kcfg_data);
+-		if (err)
+-			return -EINVAL;
+-		need_config = false;
+-		for (i = 0; i < obj->nr_extern; i++) {
+-			ext = &obj->externs[i];
+-			if (ext->type == EXT_KCFG && !ext->is_set) {
+-				need_config = true;
+-				break;
+-			}
+-		}
+-	}
+-	if (need_config) {
+-		err = bpf_object__read_kconfig_file(obj, kcfg_data);
+-		if (err)
+-			return -EINVAL;
+-	}
+-	if (need_kallsyms) {
+-		err = bpf_object__read_kallsyms_file(obj);
+-		if (err)
+-			return -EINVAL;
+-	}
+-	if (need_vmlinux_btf) {
+-		err = bpf_object__resolve_ksyms_btf_id(obj);
+-		if (err)
+-			return -EINVAL;
+-	}
+-	for (i = 0; i < obj->nr_extern; i++) {
+-		ext = &obj->externs[i];
+-
+-		if (!ext->is_set && !ext->is_weak) {
+-			pr_warn("extern %s (strong) not resolved\n", ext->name);
+-			return -ESRCH;
+-		} else if (!ext->is_set) {
+-			pr_debug("extern %s (weak) not resolved, defaulting to zero\n",
+-				 ext->name);
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
+-{
+-	struct bpf_object *obj;
+-	int err, i;
+-
+-	if (!attr)
+-		return libbpf_err(-EINVAL);
+-	obj = attr->obj;
+-	if (!obj)
+-		return libbpf_err(-EINVAL);
+-
+-	if (obj->loaded) {
+-		pr_warn("object '%s': load can't be attempted twice\n", obj->name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (obj->gen_loader)
+-		bpf_gen__init(obj->gen_loader, attr->log_level);
+-
+-	err = bpf_object__probe_loading(obj);
+-	err = err ? : bpf_object__load_vmlinux_btf(obj, false);
+-	err = err ? : bpf_object__resolve_externs(obj, obj->kconfig);
+-	err = err ? : bpf_object__sanitize_and_load_btf(obj);
+-	err = err ? : bpf_object__sanitize_maps(obj);
+-	err = err ? : bpf_object__init_kern_struct_ops_maps(obj);
+-	err = err ? : bpf_object__create_maps(obj);
+-	err = err ? : bpf_object__relocate(obj, attr->target_btf_path);
+-	err = err ? : bpf_object__load_progs(obj, attr->log_level);
+-
+-	if (obj->gen_loader) {
+-		/* reset FDs */
+-		btf__set_fd(obj->btf, -1);
+-		for (i = 0; i < obj->nr_maps; i++)
+-			obj->maps[i].fd = -1;
+-		if (!err)
+-			err = bpf_gen__finish(obj->gen_loader);
+-	}
+-
+-	/* clean up module BTFs */
+-	for (i = 0; i < obj->btf_module_cnt; i++) {
+-		close(obj->btf_modules[i].fd);
+-		btf__free(obj->btf_modules[i].btf);
+-		free(obj->btf_modules[i].name);
+-	}
+-	free(obj->btf_modules);
+-
+-	/* clean up vmlinux BTF */
+-	btf__free(obj->btf_vmlinux);
+-	obj->btf_vmlinux = NULL;
+-
+-	obj->loaded = true; /* doesn't matter if successfully or not */
+-
+-	if (err)
+-		goto out;
+-
+-	return 0;
+-out:
+-	/* unpin any maps that were auto-pinned during load */
+-	for (i = 0; i < obj->nr_maps; i++)
+-		if (obj->maps[i].pinned && !obj->maps[i].reused)
+-			bpf_map__unpin(&obj->maps[i], NULL);
+-
+-	bpf_object__unload(obj);
+-	pr_warn("failed to load object '%s'\n", obj->path);
+-	return libbpf_err(err);
+-}
+-
+-int bpf_object__load(struct bpf_object *obj)
+-{
+-	struct bpf_object_load_attr attr = {
+-		.obj = obj,
+-	};
+-
+-	return bpf_object__load_xattr(&attr);
+-}
+-
+-static int make_parent_dir(const char *path)
+-{
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	char *dname, *dir;
+-	int err = 0;
+-
+-	dname = strdup(path);
+-	if (dname == NULL)
+-		return -ENOMEM;
+-
+-	dir = dirname(dname);
+-	if (mkdir(dir, 0700) && errno != EEXIST)
+-		err = -errno;
+-
+-	free(dname);
+-	if (err) {
+-		cp = libbpf_strerror_r(-err, errmsg, sizeof(errmsg));
+-		pr_warn("failed to mkdir %s: %s\n", path, cp);
+-	}
+-	return err;
+-}
+-
+-static int check_path(const char *path)
+-{
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	struct statfs st_fs;
+-	char *dname, *dir;
+-	int err = 0;
+-
+-	if (path == NULL)
+-		return -EINVAL;
+-
+-	dname = strdup(path);
+-	if (dname == NULL)
+-		return -ENOMEM;
+-
+-	dir = dirname(dname);
+-	if (statfs(dir, &st_fs)) {
+-		cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+-		pr_warn("failed to statfs %s: %s\n", dir, cp);
+-		err = -errno;
+-	}
+-	free(dname);
+-
+-	if (!err && st_fs.f_type != BPF_FS_MAGIC) {
+-		pr_warn("specified path %s is not on BPF FS\n", path);
+-		err = -EINVAL;
+-	}
+-
+-	return err;
+-}
+-
+-int bpf_program__pin_instance(struct bpf_program *prog, const char *path,
+-			      int instance)
+-{
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	int err;
+-
+-	err = make_parent_dir(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	if (prog == NULL) {
+-		pr_warn("invalid program pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (instance < 0 || instance >= prog->instances.nr) {
+-		pr_warn("invalid prog instance %d of prog %s (max %d)\n",
+-			instance, prog->name, prog->instances.nr);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (bpf_obj_pin(prog->instances.fds[instance], path)) {
+-		err = -errno;
+-		cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+-		pr_warn("failed to pin program: %s\n", cp);
+-		return libbpf_err(err);
+-	}
+-	pr_debug("pinned program '%s'\n", path);
+-
+-	return 0;
+-}
+-
+-int bpf_program__unpin_instance(struct bpf_program *prog, const char *path,
+-				int instance)
+-{
+-	int err;
+-
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	if (prog == NULL) {
+-		pr_warn("invalid program pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (instance < 0 || instance >= prog->instances.nr) {
+-		pr_warn("invalid prog instance %d of prog %s (max %d)\n",
+-			instance, prog->name, prog->instances.nr);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	err = unlink(path);
+-	if (err != 0)
+-		return libbpf_err(-errno);
+-
+-	pr_debug("unpinned program '%s'\n", path);
+-
+-	return 0;
+-}
+-
+-int bpf_program__pin(struct bpf_program *prog, const char *path)
+-{
+-	int i, err;
+-
+-	err = make_parent_dir(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	if (prog == NULL) {
+-		pr_warn("invalid program pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (prog->instances.nr <= 0) {
+-		pr_warn("no instances of prog %s to pin\n", prog->name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (prog->instances.nr == 1) {
+-		/* don't create subdirs when pinning single instance */
+-		return bpf_program__pin_instance(prog, path, 0);
+-	}
+-
+-	for (i = 0; i < prog->instances.nr; i++) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%d", path, i);
+-		if (len < 0) {
+-			err = -EINVAL;
+-			goto err_unpin;
+-		} else if (len >= PATH_MAX) {
+-			err = -ENAMETOOLONG;
+-			goto err_unpin;
+-		}
+-
+-		err = bpf_program__pin_instance(prog, buf, i);
+-		if (err)
+-			goto err_unpin;
+-	}
+-
+-	return 0;
+-
+-err_unpin:
+-	for (i = i - 1; i >= 0; i--) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%d", path, i);
+-		if (len < 0)
+-			continue;
+-		else if (len >= PATH_MAX)
+-			continue;
+-
+-		bpf_program__unpin_instance(prog, buf, i);
+-	}
+-
+-	rmdir(path);
+-
+-	return libbpf_err(err);
+-}
+-
+-int bpf_program__unpin(struct bpf_program *prog, const char *path)
+-{
+-	int i, err;
+-
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	if (prog == NULL) {
+-		pr_warn("invalid program pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (prog->instances.nr <= 0) {
+-		pr_warn("no instances of prog %s to pin\n", prog->name);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (prog->instances.nr == 1) {
+-		/* don't create subdirs when pinning single instance */
+-		return bpf_program__unpin_instance(prog, path, 0);
+-	}
+-
+-	for (i = 0; i < prog->instances.nr; i++) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%d", path, i);
+-		if (len < 0)
+-			return libbpf_err(-EINVAL);
+-		else if (len >= PATH_MAX)
+-			return libbpf_err(-ENAMETOOLONG);
+-
+-		err = bpf_program__unpin_instance(prog, buf, i);
+-		if (err)
+-			return err;
+-	}
+-
+-	err = rmdir(path);
+-	if (err)
+-		return libbpf_err(-errno);
+-
+-	return 0;
+-}
+-
+-int bpf_map__pin(struct bpf_map *map, const char *path)
+-{
+-	char *cp, errmsg[STRERR_BUFSIZE];
+-	int err;
+-
+-	if (map == NULL) {
+-		pr_warn("invalid map pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (map->pin_path) {
+-		if (path && strcmp(path, map->pin_path)) {
+-			pr_warn("map '%s' already has pin path '%s' different from '%s'\n",
+-				bpf_map__name(map), map->pin_path, path);
+-			return libbpf_err(-EINVAL);
+-		} else if (map->pinned) {
+-			pr_debug("map '%s' already pinned at '%s'; not re-pinning\n",
+-				 bpf_map__name(map), map->pin_path);
+-			return 0;
+-		}
+-	} else {
+-		if (!path) {
+-			pr_warn("missing a path to pin map '%s' at\n",
+-				bpf_map__name(map));
+-			return libbpf_err(-EINVAL);
+-		} else if (map->pinned) {
+-			pr_warn("map '%s' already pinned\n", bpf_map__name(map));
+-			return libbpf_err(-EEXIST);
+-		}
+-
+-		map->pin_path = strdup(path);
+-		if (!map->pin_path) {
+-			err = -errno;
+-			goto out_err;
+-		}
+-	}
+-
+-	err = make_parent_dir(map->pin_path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	err = check_path(map->pin_path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	if (bpf_obj_pin(map->fd, map->pin_path)) {
+-		err = -errno;
+-		goto out_err;
+-	}
+-
+-	map->pinned = true;
+-	pr_debug("pinned map '%s'\n", map->pin_path);
+-
+-	return 0;
+-
+-out_err:
+-	cp = libbpf_strerror_r(-err, errmsg, sizeof(errmsg));
+-	pr_warn("failed to pin map: %s\n", cp);
+-	return libbpf_err(err);
+-}
+-
+-int bpf_map__unpin(struct bpf_map *map, const char *path)
+-{
+-	int err;
+-
+-	if (map == NULL) {
+-		pr_warn("invalid map pointer\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	if (map->pin_path) {
+-		if (path && strcmp(path, map->pin_path)) {
+-			pr_warn("map '%s' already has pin path '%s' different from '%s'\n",
+-				bpf_map__name(map), map->pin_path, path);
+-			return libbpf_err(-EINVAL);
+-		}
+-		path = map->pin_path;
+-	} else if (!path) {
+-		pr_warn("no path to unpin map '%s' from\n",
+-			bpf_map__name(map));
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	err = unlink(path);
+-	if (err != 0)
+-		return libbpf_err(-errno);
+-
+-	map->pinned = false;
+-	pr_debug("unpinned map '%s' from '%s'\n", bpf_map__name(map), path);
+-
+-	return 0;
+-}
+-
+-int bpf_map__set_pin_path(struct bpf_map *map, const char *path)
+-{
+-	char *new = NULL;
+-
+-	if (path) {
+-		new = strdup(path);
+-		if (!new)
+-			return libbpf_err(-errno);
+-	}
+-
+-	free(map->pin_path);
+-	map->pin_path = new;
+-	return 0;
+-}
+-
+-const char *bpf_map__get_pin_path(const struct bpf_map *map)
+-{
+-	return map->pin_path;
+-}
+-
+-bool bpf_map__is_pinned(const struct bpf_map *map)
+-{
+-	return map->pinned;
+-}
+-
+-static void sanitize_pin_path(char *s)
+-{
+-	/* bpffs disallows periods in path names */
+-	while (*s) {
+-		if (*s == '.')
+-			*s = '_';
+-		s++;
+-	}
+-}
+-
+-int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
+-{
+-	struct bpf_map *map;
+-	int err;
+-
+-	if (!obj)
+-		return libbpf_err(-ENOENT);
+-
+-	if (!obj->loaded) {
+-		pr_warn("object not yet loaded; load it first\n");
+-		return libbpf_err(-ENOENT);
+-	}
+-
+-	bpf_object__for_each_map(map, obj) {
+-		char *pin_path = NULL;
+-		char buf[PATH_MAX];
+-
+-		if (path) {
+-			int len;
+-
+-			len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-				       bpf_map__name(map));
+-			if (len < 0) {
+-				err = -EINVAL;
+-				goto err_unpin_maps;
+-			} else if (len >= PATH_MAX) {
+-				err = -ENAMETOOLONG;
+-				goto err_unpin_maps;
+-			}
+-			sanitize_pin_path(buf);
+-			pin_path = buf;
+-		} else if (!map->pin_path) {
+-			continue;
+-		}
+-
+-		err = bpf_map__pin(map, pin_path);
+-		if (err)
+-			goto err_unpin_maps;
+-	}
+-
+-	return 0;
+-
+-err_unpin_maps:
+-	while ((map = bpf_map__prev(map, obj))) {
+-		if (!map->pin_path)
+-			continue;
+-
+-		bpf_map__unpin(map, NULL);
+-	}
+-
+-	return libbpf_err(err);
+-}
+-
+-int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+-{
+-	struct bpf_map *map;
+-	int err;
+-
+-	if (!obj)
+-		return libbpf_err(-ENOENT);
+-
+-	bpf_object__for_each_map(map, obj) {
+-		char *pin_path = NULL;
+-		char buf[PATH_MAX];
+-
+-		if (path) {
+-			int len;
+-
+-			len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-				       bpf_map__name(map));
+-			if (len < 0)
+-				return libbpf_err(-EINVAL);
+-			else if (len >= PATH_MAX)
+-				return libbpf_err(-ENAMETOOLONG);
+-			sanitize_pin_path(buf);
+-			pin_path = buf;
+-		} else if (!map->pin_path) {
+-			continue;
+-		}
+-
+-		err = bpf_map__unpin(map, pin_path);
+-		if (err)
+-			return libbpf_err(err);
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_object__pin_programs(struct bpf_object *obj, const char *path)
+-{
+-	struct bpf_program *prog;
+-	int err;
+-
+-	if (!obj)
+-		return libbpf_err(-ENOENT);
+-
+-	if (!obj->loaded) {
+-		pr_warn("object not yet loaded; load it first\n");
+-		return libbpf_err(-ENOENT);
+-	}
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-			       prog->pin_name);
+-		if (len < 0) {
+-			err = -EINVAL;
+-			goto err_unpin_programs;
+-		} else if (len >= PATH_MAX) {
+-			err = -ENAMETOOLONG;
+-			goto err_unpin_programs;
+-		}
+-
+-		err = bpf_program__pin(prog, buf);
+-		if (err)
+-			goto err_unpin_programs;
+-	}
+-
+-	return 0;
+-
+-err_unpin_programs:
+-	while ((prog = bpf_program__prev(prog, obj))) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-			       prog->pin_name);
+-		if (len < 0)
+-			continue;
+-		else if (len >= PATH_MAX)
+-			continue;
+-
+-		bpf_program__unpin(prog, buf);
+-	}
+-
+-	return libbpf_err(err);
+-}
+-
+-int bpf_object__unpin_programs(struct bpf_object *obj, const char *path)
+-{
+-	struct bpf_program *prog;
+-	int err;
+-
+-	if (!obj)
+-		return libbpf_err(-ENOENT);
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		char buf[PATH_MAX];
+-		int len;
+-
+-		len = snprintf(buf, PATH_MAX, "%s/%s", path,
+-			       prog->pin_name);
+-		if (len < 0)
+-			return libbpf_err(-EINVAL);
+-		else if (len >= PATH_MAX)
+-			return libbpf_err(-ENAMETOOLONG);
+-
+-		err = bpf_program__unpin(prog, buf);
+-		if (err)
+-			return libbpf_err(err);
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_object__pin(struct bpf_object *obj, const char *path)
+-{
+-	int err;
+-
+-	err = bpf_object__pin_maps(obj, path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	err = bpf_object__pin_programs(obj, path);
+-	if (err) {
+-		bpf_object__unpin_maps(obj, path);
+-		return libbpf_err(err);
+-	}
+-
+-	return 0;
+-}
+-
+-static void bpf_map__destroy(struct bpf_map *map)
+-{
+-	if (map->clear_priv)
+-		map->clear_priv(map, map->priv);
+-	map->priv = NULL;
+-	map->clear_priv = NULL;
+-
+-	if (map->inner_map) {
+-		bpf_map__destroy(map->inner_map);
+-		zfree(&map->inner_map);
+-	}
+-
+-	zfree(&map->init_slots);
+-	map->init_slots_sz = 0;
+-
+-	if (map->mmaped) {
+-		munmap(map->mmaped, bpf_map_mmap_sz(map));
+-		map->mmaped = NULL;
+-	}
+-
+-	if (map->st_ops) {
+-		zfree(&map->st_ops->data);
+-		zfree(&map->st_ops->progs);
+-		zfree(&map->st_ops->kern_func_off);
+-		zfree(&map->st_ops);
+-	}
+-
+-	zfree(&map->name);
+-	zfree(&map->pin_path);
+-
+-	if (map->fd >= 0)
+-		zclose(map->fd);
+-}
+-
+-void bpf_object__close(struct bpf_object *obj)
+-{
+-	size_t i;
+-
+-	if (IS_ERR_OR_NULL(obj))
+-		return;
+-
+-	if (obj->clear_priv)
+-		obj->clear_priv(obj, obj->priv);
+-
+-	bpf_gen__free(obj->gen_loader);
+-	bpf_object__elf_finish(obj);
+-	bpf_object__unload(obj);
+-	btf__free(obj->btf);
+-	btf_ext__free(obj->btf_ext);
+-
+-	for (i = 0; i < obj->nr_maps; i++)
+-		bpf_map__destroy(&obj->maps[i]);
+-
+-	zfree(&obj->kconfig);
+-	zfree(&obj->externs);
+-	obj->nr_extern = 0;
+-
+-	zfree(&obj->maps);
+-	obj->nr_maps = 0;
+-
+-	if (obj->programs && obj->nr_programs) {
+-		for (i = 0; i < obj->nr_programs; i++)
+-			bpf_program__exit(&obj->programs[i]);
+-	}
+-	zfree(&obj->programs);
+-
+-	list_del(&obj->list);
+-	free(obj);
+-}
+-
+-struct bpf_object *
+-bpf_object__next(struct bpf_object *prev)
+-{
+-	struct bpf_object *next;
+-
+-	if (!prev)
+-		next = list_first_entry(&bpf_objects_list,
+-					struct bpf_object,
+-					list);
+-	else
+-		next = list_next_entry(prev, list);
+-
+-	/* Empty list is noticed here so don't need checking on entry. */
+-	if (&next->list == &bpf_objects_list)
+-		return NULL;
+-
+-	return next;
+-}
+-
+-const char *bpf_object__name(const struct bpf_object *obj)
+-{
+-	return obj ? obj->name : libbpf_err_ptr(-EINVAL);
+-}
+-
+-unsigned int bpf_object__kversion(const struct bpf_object *obj)
+-{
+-	return obj ? obj->kern_version : 0;
+-}
+-
+-struct btf *bpf_object__btf(const struct bpf_object *obj)
+-{
+-	return obj ? obj->btf : NULL;
+-}
+-
+-int bpf_object__btf_fd(const struct bpf_object *obj)
+-{
+-	return obj->btf ? btf__fd(obj->btf) : -1;
+-}
+-
+-int bpf_object__set_kversion(struct bpf_object *obj, __u32 kern_version)
+-{
+-	if (obj->loaded)
+-		return libbpf_err(-EINVAL);
+-
+-	obj->kern_version = kern_version;
+-
+-	return 0;
+-}
+-
+-int bpf_object__set_priv(struct bpf_object *obj, void *priv,
+-			 bpf_object_clear_priv_t clear_priv)
+-{
+-	if (obj->priv && obj->clear_priv)
+-		obj->clear_priv(obj, obj->priv);
+-
+-	obj->priv = priv;
+-	obj->clear_priv = clear_priv;
+-	return 0;
+-}
+-
+-void *bpf_object__priv(const struct bpf_object *obj)
+-{
+-	return obj ? obj->priv : libbpf_err_ptr(-EINVAL);
+-}
+-
+-int bpf_object__gen_loader(struct bpf_object *obj, struct gen_loader_opts *opts)
+-{
+-	struct bpf_gen *gen;
+-
+-	if (!opts)
+-		return -EFAULT;
+-	if (!OPTS_VALID(opts, gen_loader_opts))
+-		return -EINVAL;
+-	gen = calloc(sizeof(*gen), 1);
+-	if (!gen)
+-		return -ENOMEM;
+-	gen->opts = opts;
+-	obj->gen_loader = gen;
+-	return 0;
+-}
+-
+-static struct bpf_program *
+-__bpf_program__iter(const struct bpf_program *p, const struct bpf_object *obj,
+-		    bool forward)
+-{
+-	size_t nr_programs = obj->nr_programs;
+-	ssize_t idx;
+-
+-	if (!nr_programs)
+-		return NULL;
+-
+-	if (!p)
+-		/* Iter from the beginning */
+-		return forward ? &obj->programs[0] :
+-			&obj->programs[nr_programs - 1];
+-
+-	if (p->obj != obj) {
+-		pr_warn("error: program handler doesn't match object\n");
+-		return errno = EINVAL, NULL;
+-	}
+-
+-	idx = (p - obj->programs) + (forward ? 1 : -1);
+-	if (idx >= obj->nr_programs || idx < 0)
+-		return NULL;
+-	return &obj->programs[idx];
+-}
+-
+-struct bpf_program *
+-bpf_program__next(struct bpf_program *prev, const struct bpf_object *obj)
+-{
+-	struct bpf_program *prog = prev;
+-
+-	do {
+-		prog = __bpf_program__iter(prog, obj, true);
+-	} while (prog && prog_is_subprog(obj, prog));
+-
+-	return prog;
+-}
+-
+-struct bpf_program *
+-bpf_program__prev(struct bpf_program *next, const struct bpf_object *obj)
+-{
+-	struct bpf_program *prog = next;
+-
+-	do {
+-		prog = __bpf_program__iter(prog, obj, false);
+-	} while (prog && prog_is_subprog(obj, prog));
+-
+-	return prog;
+-}
+-
+-int bpf_program__set_priv(struct bpf_program *prog, void *priv,
+-			  bpf_program_clear_priv_t clear_priv)
+-{
+-	if (prog->priv && prog->clear_priv)
+-		prog->clear_priv(prog, prog->priv);
+-
+-	prog->priv = priv;
+-	prog->clear_priv = clear_priv;
+-	return 0;
+-}
+-
+-void *bpf_program__priv(const struct bpf_program *prog)
+-{
+-	return prog ? prog->priv : libbpf_err_ptr(-EINVAL);
+-}
+-
+-void bpf_program__set_ifindex(struct bpf_program *prog, __u32 ifindex)
+-{
+-	prog->prog_ifindex = ifindex;
+-}
+-
+-const char *bpf_program__name(const struct bpf_program *prog)
+-{
+-	return prog->name;
+-}
+-
+-const char *bpf_program__section_name(const struct bpf_program *prog)
+-{
+-	return prog->sec_name;
+-}
+-
+-const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy)
+-{
+-	const char *title;
+-
+-	title = prog->sec_name;
+-	if (needs_copy) {
+-		title = strdup(title);
+-		if (!title) {
+-			pr_warn("failed to strdup program title\n");
+-			return libbpf_err_ptr(-ENOMEM);
+-		}
+-	}
+-
+-	return title;
+-}
+-
+-bool bpf_program__autoload(const struct bpf_program *prog)
+-{
+-	return prog->load;
+-}
+-
+-int bpf_program__set_autoload(struct bpf_program *prog, bool autoload)
+-{
+-	if (prog->obj->loaded)
+-		return libbpf_err(-EINVAL);
+-
+-	prog->load = autoload;
+-	return 0;
+-}
+-
+-int bpf_program__fd(const struct bpf_program *prog)
+-{
+-	return bpf_program__nth_fd(prog, 0);
+-}
+-
+-size_t bpf_program__size(const struct bpf_program *prog)
+-{
+-	return prog->insns_cnt * BPF_INSN_SZ;
+-}
+-
+-int bpf_program__set_prep(struct bpf_program *prog, int nr_instances,
+-			  bpf_program_prep_t prep)
+-{
+-	int *instances_fds;
+-
+-	if (nr_instances <= 0 || !prep)
+-		return libbpf_err(-EINVAL);
+-
+-	if (prog->instances.nr > 0 || prog->instances.fds) {
+-		pr_warn("Can't set pre-processor after loading\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	instances_fds = malloc(sizeof(int) * nr_instances);
+-	if (!instances_fds) {
+-		pr_warn("alloc memory failed for fds\n");
+-		return libbpf_err(-ENOMEM);
+-	}
+-
+-	/* fill all fd with -1 */
+-	memset(instances_fds, -1, sizeof(int) * nr_instances);
+-
+-	prog->instances.nr = nr_instances;
+-	prog->instances.fds = instances_fds;
+-	prog->preprocessor = prep;
+-	return 0;
+-}
+-
+-int bpf_program__nth_fd(const struct bpf_program *prog, int n)
+-{
+-	int fd;
+-
+-	if (!prog)
+-		return libbpf_err(-EINVAL);
+-
+-	if (n >= prog->instances.nr || n < 0) {
+-		pr_warn("Can't get the %dth fd from program %s: only %d instances\n",
+-			n, prog->name, prog->instances.nr);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	fd = prog->instances.fds[n];
+-	if (fd < 0) {
+-		pr_warn("%dth instance of program '%s' is invalid\n",
+-			n, prog->name);
+-		return libbpf_err(-ENOENT);
+-	}
+-
+-	return fd;
+-}
+-
+-enum bpf_prog_type bpf_program__get_type(const struct bpf_program *prog)
+-{
+-	return prog->type;
+-}
+-
+-void bpf_program__set_type(struct bpf_program *prog, enum bpf_prog_type type)
+-{
+-	prog->type = type;
+-}
+-
+-static bool bpf_program__is_type(const struct bpf_program *prog,
+-				 enum bpf_prog_type type)
+-{
+-	return prog ? (prog->type == type) : false;
+-}
+-
+-#define BPF_PROG_TYPE_FNS(NAME, TYPE)				\
+-int bpf_program__set_##NAME(struct bpf_program *prog)		\
+-{								\
+-	if (!prog)						\
+-		return libbpf_err(-EINVAL);			\
+-	bpf_program__set_type(prog, TYPE);			\
+-	return 0;						\
+-}								\
+-								\
+-bool bpf_program__is_##NAME(const struct bpf_program *prog)	\
+-{								\
+-	return bpf_program__is_type(prog, TYPE);		\
+-}								\
+-
+-BPF_PROG_TYPE_FNS(socket_filter, BPF_PROG_TYPE_SOCKET_FILTER);
+-BPF_PROG_TYPE_FNS(lsm, BPF_PROG_TYPE_LSM);
+-BPF_PROG_TYPE_FNS(kprobe, BPF_PROG_TYPE_KPROBE);
+-BPF_PROG_TYPE_FNS(sched_cls, BPF_PROG_TYPE_SCHED_CLS);
+-BPF_PROG_TYPE_FNS(sched_act, BPF_PROG_TYPE_SCHED_ACT);
+-BPF_PROG_TYPE_FNS(tracepoint, BPF_PROG_TYPE_TRACEPOINT);
+-BPF_PROG_TYPE_FNS(raw_tracepoint, BPF_PROG_TYPE_RAW_TRACEPOINT);
+-BPF_PROG_TYPE_FNS(xdp, BPF_PROG_TYPE_XDP);
+-BPF_PROG_TYPE_FNS(perf_event, BPF_PROG_TYPE_PERF_EVENT);
+-BPF_PROG_TYPE_FNS(tracing, BPF_PROG_TYPE_TRACING);
+-BPF_PROG_TYPE_FNS(struct_ops, BPF_PROG_TYPE_STRUCT_OPS);
+-BPF_PROG_TYPE_FNS(extension, BPF_PROG_TYPE_EXT);
+-BPF_PROG_TYPE_FNS(sk_lookup, BPF_PROG_TYPE_SK_LOOKUP);
+-
+-enum bpf_attach_type
+-bpf_program__get_expected_attach_type(const struct bpf_program *prog)
+-{
+-	return prog->expected_attach_type;
+-}
+-
+-void bpf_program__set_expected_attach_type(struct bpf_program *prog,
+-					   enum bpf_attach_type type)
+-{
+-	prog->expected_attach_type = type;
+-}
+-
+-#define BPF_PROG_SEC_IMPL(string, ptype, eatype, eatype_optional,	    \
+-			  attachable, attach_btf)			    \
+-	{								    \
+-		.sec = string,						    \
+-		.len = sizeof(string) - 1,				    \
+-		.prog_type = ptype,					    \
+-		.expected_attach_type = eatype,				    \
+-		.is_exp_attach_type_optional = eatype_optional,		    \
+-		.is_attachable = attachable,				    \
+-		.is_attach_btf = attach_btf,				    \
+-	}
+-
+-/* Programs that can NOT be attached. */
+-#define BPF_PROG_SEC(string, ptype) BPF_PROG_SEC_IMPL(string, ptype, 0, 0, 0, 0)
+-
+-/* Programs that can be attached. */
+-#define BPF_APROG_SEC(string, ptype, atype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, atype, true, 1, 0)
+-
+-/* Programs that must specify expected attach type at load time. */
+-#define BPF_EAPROG_SEC(string, ptype, eatype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 1, 0)
+-
+-/* Programs that use BTF to identify attach point */
+-#define BPF_PROG_BTF(string, ptype, eatype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 0, 1)
+-
+-/* Programs that can be attached but attach type can't be identified by section
+- * name. Kept for backward compatibility.
+- */
+-#define BPF_APROG_COMPAT(string, ptype) BPF_PROG_SEC(string, ptype)
+-
+-#define SEC_DEF(sec_pfx, ptype, ...) {					    \
+-	.sec = sec_pfx,							    \
+-	.len = sizeof(sec_pfx) - 1,					    \
+-	.prog_type = BPF_PROG_TYPE_##ptype,				    \
+-	__VA_ARGS__							    \
+-}
+-
+-static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
+-				      struct bpf_program *prog);
+-static struct bpf_link *attach_tp(const struct bpf_sec_def *sec,
+-				  struct bpf_program *prog);
+-static struct bpf_link *attach_raw_tp(const struct bpf_sec_def *sec,
+-				      struct bpf_program *prog);
+-static struct bpf_link *attach_trace(const struct bpf_sec_def *sec,
+-				     struct bpf_program *prog);
+-static struct bpf_link *attach_lsm(const struct bpf_sec_def *sec,
+-				   struct bpf_program *prog);
+-static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
+-				    struct bpf_program *prog);
+-
+-static const struct bpf_sec_def section_defs[] = {
+-	BPF_PROG_SEC("socket",			BPF_PROG_TYPE_SOCKET_FILTER),
+-	BPF_EAPROG_SEC("sk_reuseport/migrate",	BPF_PROG_TYPE_SK_REUSEPORT,
+-						BPF_SK_REUSEPORT_SELECT_OR_MIGRATE),
+-	BPF_EAPROG_SEC("sk_reuseport",		BPF_PROG_TYPE_SK_REUSEPORT,
+-						BPF_SK_REUSEPORT_SELECT),
+-	SEC_DEF("kprobe/", KPROBE,
+-		.attach_fn = attach_kprobe),
+-	BPF_PROG_SEC("uprobe/",			BPF_PROG_TYPE_KPROBE),
+-	SEC_DEF("kretprobe/", KPROBE,
+-		.attach_fn = attach_kprobe),
+-	BPF_PROG_SEC("uretprobe/",		BPF_PROG_TYPE_KPROBE),
+-	BPF_PROG_SEC("classifier",		BPF_PROG_TYPE_SCHED_CLS),
+-	BPF_PROG_SEC("action",			BPF_PROG_TYPE_SCHED_ACT),
+-	SEC_DEF("tracepoint/", TRACEPOINT,
+-		.attach_fn = attach_tp),
+-	SEC_DEF("tp/", TRACEPOINT,
+-		.attach_fn = attach_tp),
+-	SEC_DEF("raw_tracepoint/", RAW_TRACEPOINT,
+-		.attach_fn = attach_raw_tp),
+-	SEC_DEF("raw_tp/", RAW_TRACEPOINT,
+-		.attach_fn = attach_raw_tp),
+-	SEC_DEF("tp_btf/", TRACING,
+-		.expected_attach_type = BPF_TRACE_RAW_TP,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fentry/", TRACING,
+-		.expected_attach_type = BPF_TRACE_FENTRY,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fmod_ret/", TRACING,
+-		.expected_attach_type = BPF_MODIFY_RETURN,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fexit/", TRACING,
+-		.expected_attach_type = BPF_TRACE_FEXIT,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fentry.s/", TRACING,
+-		.expected_attach_type = BPF_TRACE_FENTRY,
+-		.is_attach_btf = true,
+-		.is_sleepable = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fmod_ret.s/", TRACING,
+-		.expected_attach_type = BPF_MODIFY_RETURN,
+-		.is_attach_btf = true,
+-		.is_sleepable = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("fexit.s/", TRACING,
+-		.expected_attach_type = BPF_TRACE_FEXIT,
+-		.is_attach_btf = true,
+-		.is_sleepable = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("freplace/", EXT,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_trace),
+-	SEC_DEF("lsm/", LSM,
+-		.is_attach_btf = true,
+-		.expected_attach_type = BPF_LSM_MAC,
+-		.attach_fn = attach_lsm),
+-	SEC_DEF("lsm.s/", LSM,
+-		.is_attach_btf = true,
+-		.is_sleepable = true,
+-		.expected_attach_type = BPF_LSM_MAC,
+-		.attach_fn = attach_lsm),
+-	SEC_DEF("iter/", TRACING,
+-		.expected_attach_type = BPF_TRACE_ITER,
+-		.is_attach_btf = true,
+-		.attach_fn = attach_iter),
+-	SEC_DEF("syscall", SYSCALL,
+-		.is_sleepable = true),
+-	BPF_EAPROG_SEC("xdp_devmap/",		BPF_PROG_TYPE_XDP,
+-						BPF_XDP_DEVMAP),
+-	BPF_EAPROG_SEC("xdp_cpumap/",		BPF_PROG_TYPE_XDP,
+-						BPF_XDP_CPUMAP),
+-	BPF_APROG_SEC("xdp",			BPF_PROG_TYPE_XDP,
+-						BPF_XDP),
+-	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
+-	BPF_PROG_SEC("lwt_in",			BPF_PROG_TYPE_LWT_IN),
+-	BPF_PROG_SEC("lwt_out",			BPF_PROG_TYPE_LWT_OUT),
+-	BPF_PROG_SEC("lwt_xmit",		BPF_PROG_TYPE_LWT_XMIT),
+-	BPF_PROG_SEC("lwt_seg6local",		BPF_PROG_TYPE_LWT_SEG6LOCAL),
+-	BPF_APROG_SEC("cgroup_skb/ingress",	BPF_PROG_TYPE_CGROUP_SKB,
+-						BPF_CGROUP_INET_INGRESS),
+-	BPF_APROG_SEC("cgroup_skb/egress",	BPF_PROG_TYPE_CGROUP_SKB,
+-						BPF_CGROUP_INET_EGRESS),
+-	BPF_APROG_COMPAT("cgroup/skb",		BPF_PROG_TYPE_CGROUP_SKB),
+-	BPF_EAPROG_SEC("cgroup/sock_create",	BPF_PROG_TYPE_CGROUP_SOCK,
+-						BPF_CGROUP_INET_SOCK_CREATE),
+-	BPF_EAPROG_SEC("cgroup/sock_release",	BPF_PROG_TYPE_CGROUP_SOCK,
+-						BPF_CGROUP_INET_SOCK_RELEASE),
+-	BPF_APROG_SEC("cgroup/sock",		BPF_PROG_TYPE_CGROUP_SOCK,
+-						BPF_CGROUP_INET_SOCK_CREATE),
+-	BPF_EAPROG_SEC("cgroup/post_bind4",	BPF_PROG_TYPE_CGROUP_SOCK,
+-						BPF_CGROUP_INET4_POST_BIND),
+-	BPF_EAPROG_SEC("cgroup/post_bind6",	BPF_PROG_TYPE_CGROUP_SOCK,
+-						BPF_CGROUP_INET6_POST_BIND),
+-	BPF_APROG_SEC("cgroup/dev",		BPF_PROG_TYPE_CGROUP_DEVICE,
+-						BPF_CGROUP_DEVICE),
+-	BPF_APROG_SEC("sockops",		BPF_PROG_TYPE_SOCK_OPS,
+-						BPF_CGROUP_SOCK_OPS),
+-	BPF_APROG_SEC("sk_skb/stream_parser",	BPF_PROG_TYPE_SK_SKB,
+-						BPF_SK_SKB_STREAM_PARSER),
+-	BPF_APROG_SEC("sk_skb/stream_verdict",	BPF_PROG_TYPE_SK_SKB,
+-						BPF_SK_SKB_STREAM_VERDICT),
+-	BPF_APROG_COMPAT("sk_skb",		BPF_PROG_TYPE_SK_SKB),
+-	BPF_APROG_SEC("sk_msg",			BPF_PROG_TYPE_SK_MSG,
+-						BPF_SK_MSG_VERDICT),
+-	BPF_APROG_SEC("lirc_mode2",		BPF_PROG_TYPE_LIRC_MODE2,
+-						BPF_LIRC_MODE2),
+-	BPF_APROG_SEC("flow_dissector",		BPF_PROG_TYPE_FLOW_DISSECTOR,
+-						BPF_FLOW_DISSECTOR),
+-	BPF_EAPROG_SEC("cgroup/bind4",		BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET4_BIND),
+-	BPF_EAPROG_SEC("cgroup/bind6",		BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET6_BIND),
+-	BPF_EAPROG_SEC("cgroup/connect4",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET4_CONNECT),
+-	BPF_EAPROG_SEC("cgroup/connect6",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET6_CONNECT),
+-	BPF_EAPROG_SEC("cgroup/sendmsg4",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_UDP4_SENDMSG),
+-	BPF_EAPROG_SEC("cgroup/sendmsg6",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_UDP6_SENDMSG),
+-	BPF_EAPROG_SEC("cgroup/recvmsg4",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_UDP4_RECVMSG),
+-	BPF_EAPROG_SEC("cgroup/recvmsg6",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_UDP6_RECVMSG),
+-	BPF_EAPROG_SEC("cgroup/getpeername4",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET4_GETPEERNAME),
+-	BPF_EAPROG_SEC("cgroup/getpeername6",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET6_GETPEERNAME),
+-	BPF_EAPROG_SEC("cgroup/getsockname4",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET4_GETSOCKNAME),
+-	BPF_EAPROG_SEC("cgroup/getsockname6",	BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
+-						BPF_CGROUP_INET6_GETSOCKNAME),
+-	BPF_EAPROG_SEC("cgroup/sysctl",		BPF_PROG_TYPE_CGROUP_SYSCTL,
+-						BPF_CGROUP_SYSCTL),
+-	BPF_EAPROG_SEC("cgroup/getsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
+-						BPF_CGROUP_GETSOCKOPT),
+-	BPF_EAPROG_SEC("cgroup/setsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
+-						BPF_CGROUP_SETSOCKOPT),
+-	BPF_PROG_SEC("struct_ops",		BPF_PROG_TYPE_STRUCT_OPS),
+-	BPF_EAPROG_SEC("sk_lookup/",		BPF_PROG_TYPE_SK_LOOKUP,
+-						BPF_SK_LOOKUP),
+-};
+-
+-#undef BPF_PROG_SEC_IMPL
+-#undef BPF_PROG_SEC
+-#undef BPF_APROG_SEC
+-#undef BPF_EAPROG_SEC
+-#undef BPF_APROG_COMPAT
+-#undef SEC_DEF
+-
+-#define MAX_TYPE_NAME_SIZE 32
+-
+-static const struct bpf_sec_def *find_sec_def(const char *sec_name)
+-{
+-	int i, n = ARRAY_SIZE(section_defs);
+-
+-	for (i = 0; i < n; i++) {
+-		if (strncmp(sec_name,
+-			    section_defs[i].sec, section_defs[i].len))
+-			continue;
+-		return &section_defs[i];
+-	}
+-	return NULL;
+-}
+-
+-static char *libbpf_get_type_names(bool attach_type)
+-{
+-	int i, len = ARRAY_SIZE(section_defs) * MAX_TYPE_NAME_SIZE;
+-	char *buf;
+-
+-	buf = malloc(len);
+-	if (!buf)
+-		return NULL;
+-
+-	buf[0] = '\0';
+-	/* Forge string buf with all available names */
+-	for (i = 0; i < ARRAY_SIZE(section_defs); i++) {
+-		if (attach_type && !section_defs[i].is_attachable)
+-			continue;
+-
+-		if (strlen(buf) + strlen(section_defs[i].sec) + 2 > len) {
+-			free(buf);
+-			return NULL;
+-		}
+-		strcat(buf, " ");
+-		strcat(buf, section_defs[i].sec);
+-	}
+-
+-	return buf;
+-}
+-
+-int libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
+-			     enum bpf_attach_type *expected_attach_type)
+-{
+-	const struct bpf_sec_def *sec_def;
+-	char *type_names;
+-
+-	if (!name)
+-		return libbpf_err(-EINVAL);
+-
+-	sec_def = find_sec_def(name);
+-	if (sec_def) {
+-		*prog_type = sec_def->prog_type;
+-		*expected_attach_type = sec_def->expected_attach_type;
+-		return 0;
+-	}
+-
+-	pr_debug("failed to guess program type from ELF section '%s'\n", name);
+-	type_names = libbpf_get_type_names(false);
+-	if (type_names != NULL) {
+-		pr_debug("supported section(type) names are:%s\n", type_names);
+-		free(type_names);
+-	}
+-
+-	return libbpf_err(-ESRCH);
+-}
+-
+-static struct bpf_map *find_struct_ops_map_by_offset(struct bpf_object *obj,
+-						     size_t offset)
+-{
+-	struct bpf_map *map;
+-	size_t i;
+-
+-	for (i = 0; i < obj->nr_maps; i++) {
+-		map = &obj->maps[i];
+-		if (!bpf_map__is_struct_ops(map))
+-			continue;
+-		if (map->sec_offset <= offset &&
+-		    offset - map->sec_offset < map->def.value_size)
+-			return map;
+-	}
+-
+-	return NULL;
+-}
+-
+-/* Collect the reloc from ELF and populate the st_ops->progs[] */
+-static int bpf_object__collect_st_ops_relos(struct bpf_object *obj,
+-					    GElf_Shdr *shdr, Elf_Data *data)
+-{
+-	const struct btf_member *member;
+-	struct bpf_struct_ops *st_ops;
+-	struct bpf_program *prog;
+-	unsigned int shdr_idx;
+-	const struct btf *btf;
+-	struct bpf_map *map;
+-	Elf_Data *symbols;
+-	unsigned int moff, insn_idx;
+-	const char *name;
+-	__u32 member_idx;
+-	GElf_Sym sym;
+-	GElf_Rel rel;
+-	int i, nrels;
+-
+-	symbols = obj->efile.symbols;
+-	btf = obj->btf;
+-	nrels = shdr->sh_size / shdr->sh_entsize;
+-	for (i = 0; i < nrels; i++) {
+-		if (!gelf_getrel(data, i, &rel)) {
+-			pr_warn("struct_ops reloc: failed to get %d reloc\n", i);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		if (!gelf_getsym(symbols, GELF_R_SYM(rel.r_info), &sym)) {
+-			pr_warn("struct_ops reloc: symbol %zx not found\n",
+-				(size_t)GELF_R_SYM(rel.r_info));
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-
+-		name = elf_sym_str(obj, sym.st_name) ?: "<?>";
+-		map = find_struct_ops_map_by_offset(obj, rel.r_offset);
+-		if (!map) {
+-			pr_warn("struct_ops reloc: cannot find map at rel.r_offset %zu\n",
+-				(size_t)rel.r_offset);
+-			return -EINVAL;
+-		}
+-
+-		moff = rel.r_offset - map->sec_offset;
+-		shdr_idx = sym.st_shndx;
+-		st_ops = map->st_ops;
+-		pr_debug("struct_ops reloc %s: for %lld value %lld shdr_idx %u rel.r_offset %zu map->sec_offset %zu name %d (\'%s\')\n",
+-			 map->name,
+-			 (long long)(rel.r_info >> 32),
+-			 (long long)sym.st_value,
+-			 shdr_idx, (size_t)rel.r_offset,
+-			 map->sec_offset, sym.st_name, name);
+-
+-		if (shdr_idx >= SHN_LORESERVE) {
+-			pr_warn("struct_ops reloc %s: rel.r_offset %zu shdr_idx %u unsupported non-static function\n",
+-				map->name, (size_t)rel.r_offset, shdr_idx);
+-			return -LIBBPF_ERRNO__RELOC;
+-		}
+-		if (sym.st_value % BPF_INSN_SZ) {
+-			pr_warn("struct_ops reloc %s: invalid target program offset %llu\n",
+-				map->name, (unsigned long long)sym.st_value);
+-			return -LIBBPF_ERRNO__FORMAT;
+-		}
+-		insn_idx = sym.st_value / BPF_INSN_SZ;
+-
+-		member = find_member_by_offset(st_ops->type, moff * 8);
+-		if (!member) {
+-			pr_warn("struct_ops reloc %s: cannot find member at moff %u\n",
+-				map->name, moff);
+-			return -EINVAL;
+-		}
+-		member_idx = member - btf_members(st_ops->type);
+-		name = btf__name_by_offset(btf, member->name_off);
+-
+-		if (!resolve_func_ptr(btf, member->type, NULL)) {
+-			pr_warn("struct_ops reloc %s: cannot relocate non func ptr %s\n",
+-				map->name, name);
+-			return -EINVAL;
+-		}
+-
+-		prog = find_prog_by_sec_insn(obj, shdr_idx, insn_idx);
+-		if (!prog) {
+-			pr_warn("struct_ops reloc %s: cannot find prog at shdr_idx %u to relocate func ptr %s\n",
+-				map->name, shdr_idx, name);
+-			return -EINVAL;
+-		}
+-
+-		if (prog->type == BPF_PROG_TYPE_UNSPEC) {
+-			const struct bpf_sec_def *sec_def;
+-
+-			sec_def = find_sec_def(prog->sec_name);
+-			if (sec_def &&
+-			    sec_def->prog_type != BPF_PROG_TYPE_STRUCT_OPS) {
+-				/* for pr_warn */
+-				prog->type = sec_def->prog_type;
+-				goto invalid_prog;
+-			}
+-
+-			prog->type = BPF_PROG_TYPE_STRUCT_OPS;
+-			prog->attach_btf_id = st_ops->type_id;
+-			prog->expected_attach_type = member_idx;
+-		} else if (prog->type != BPF_PROG_TYPE_STRUCT_OPS ||
+-			   prog->attach_btf_id != st_ops->type_id ||
+-			   prog->expected_attach_type != member_idx) {
+-			goto invalid_prog;
+-		}
+-		st_ops->progs[member_idx] = prog;
+-	}
+-
+-	return 0;
+-
+-invalid_prog:
+-	pr_warn("struct_ops reloc %s: cannot use prog %s in sec %s with type %u attach_btf_id %u expected_attach_type %u for func ptr %s\n",
+-		map->name, prog->name, prog->sec_name, prog->type,
+-		prog->attach_btf_id, prog->expected_attach_type, name);
+-	return -EINVAL;
+-}
+-
+-#define BTF_TRACE_PREFIX "btf_trace_"
+-#define BTF_LSM_PREFIX "bpf_lsm_"
+-#define BTF_ITER_PREFIX "bpf_iter_"
+-#define BTF_MAX_NAME_SIZE 128
+-
+-void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+-				const char **prefix, int *kind)
+-{
+-	switch (attach_type) {
+-	case BPF_TRACE_RAW_TP:
+-		*prefix = BTF_TRACE_PREFIX;
+-		*kind = BTF_KIND_TYPEDEF;
+-		break;
+-	case BPF_LSM_MAC:
+-		*prefix = BTF_LSM_PREFIX;
+-		*kind = BTF_KIND_FUNC;
+-		break;
+-	case BPF_TRACE_ITER:
+-		*prefix = BTF_ITER_PREFIX;
+-		*kind = BTF_KIND_FUNC;
+-		break;
+-	default:
+-		*prefix = "";
+-		*kind = BTF_KIND_FUNC;
+-	}
+-}
+-
+-static int find_btf_by_prefix_kind(const struct btf *btf, const char *prefix,
+-				   const char *name, __u32 kind)
+-{
+-	char btf_type_name[BTF_MAX_NAME_SIZE];
+-	int ret;
+-
+-	ret = snprintf(btf_type_name, sizeof(btf_type_name),
+-		       "%s%s", prefix, name);
+-	/* snprintf returns the number of characters written excluding the
+-	 * the terminating null. So, if >= BTF_MAX_NAME_SIZE are written, it
+-	 * indicates truncation.
+-	 */
+-	if (ret < 0 || ret >= sizeof(btf_type_name))
+-		return -ENAMETOOLONG;
+-	return btf__find_by_name_kind(btf, btf_type_name, kind);
+-}
+-
+-static inline int find_attach_btf_id(struct btf *btf, const char *name,
+-				     enum bpf_attach_type attach_type)
+-{
+-	const char *prefix;
+-	int kind;
+-
+-	btf_get_kernel_prefix_kind(attach_type, &prefix, &kind);
+-	return find_btf_by_prefix_kind(btf, prefix, name, kind);
+-}
+-
+-int libbpf_find_vmlinux_btf_id(const char *name,
+-			       enum bpf_attach_type attach_type)
+-{
+-	struct btf *btf;
+-	int err;
+-
+-	btf = libbpf_find_kernel_btf();
+-	err = libbpf_get_error(btf);
+-	if (err) {
+-		pr_warn("vmlinux BTF is not found\n");
+-		return libbpf_err(err);
+-	}
+-
+-	err = find_attach_btf_id(btf, name, attach_type);
+-	if (err <= 0)
+-		pr_warn("%s is not found in vmlinux BTF\n", name);
+-
+-	btf__free(btf);
+-	return libbpf_err(err);
+-}
+-
+-static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_fd)
+-{
+-	struct bpf_prog_info_linear *info_linear;
+-	struct bpf_prog_info *info;
+-	struct btf *btf = NULL;
+-	int err = -EINVAL;
+-
+-	info_linear = bpf_program__get_prog_info_linear(attach_prog_fd, 0);
+-	err = libbpf_get_error(info_linear);
+-	if (err) {
+-		pr_warn("failed get_prog_info_linear for FD %d\n",
+-			attach_prog_fd);
+-		return err;
+-	}
+-	info = &info_linear->info;
+-	if (!info->btf_id) {
+-		pr_warn("The target program doesn't have BTF\n");
+-		goto out;
+-	}
+-	if (btf__get_from_id(info->btf_id, &btf)) {
+-		pr_warn("Failed to get BTF of the program\n");
+-		goto out;
+-	}
+-	err = btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
+-	btf__free(btf);
+-	if (err <= 0) {
+-		pr_warn("%s is not found in prog's BTF\n", name);
+-		goto out;
+-	}
+-out:
+-	free(info_linear);
+-	return err;
+-}
+-
+-static int find_kernel_btf_id(struct bpf_object *obj, const char *attach_name,
+-			      enum bpf_attach_type attach_type,
+-			      int *btf_obj_fd, int *btf_type_id)
+-{
+-	int ret, i;
+-
+-	ret = find_attach_btf_id(obj->btf_vmlinux, attach_name, attach_type);
+-	if (ret > 0) {
+-		*btf_obj_fd = 0; /* vmlinux BTF */
+-		*btf_type_id = ret;
+-		return 0;
+-	}
+-	if (ret != -ENOENT)
+-		return ret;
+-
+-	ret = load_module_btfs(obj);
+-	if (ret)
+-		return ret;
+-
+-	for (i = 0; i < obj->btf_module_cnt; i++) {
+-		const struct module_btf *mod = &obj->btf_modules[i];
+-
+-		ret = find_attach_btf_id(mod->btf, attach_name, attach_type);
+-		if (ret > 0) {
+-			*btf_obj_fd = mod->fd;
+-			*btf_type_id = ret;
+-			return 0;
+-		}
+-		if (ret == -ENOENT)
+-			continue;
+-
+-		return ret;
+-	}
+-
+-	return -ESRCH;
+-}
+-
+-static int libbpf_find_attach_btf_id(struct bpf_program *prog, int *btf_obj_fd, int *btf_type_id)
+-{
+-	enum bpf_attach_type attach_type = prog->expected_attach_type;
+-	__u32 attach_prog_fd = prog->attach_prog_fd;
+-	const char *name = prog->sec_name, *attach_name;
+-	const struct bpf_sec_def *sec = NULL;
+-	int i, err = 0;
+-
+-	if (!name)
+-		return -EINVAL;
+-
+-	for (i = 0; i < ARRAY_SIZE(section_defs); i++) {
+-		if (!section_defs[i].is_attach_btf)
+-			continue;
+-		if (strncmp(name, section_defs[i].sec, section_defs[i].len))
+-			continue;
+-
+-		sec = &section_defs[i];
+-		break;
+-	}
+-
+-	if (!sec) {
+-		pr_warn("failed to identify BTF ID based on ELF section name '%s'\n", name);
+-		return -ESRCH;
+-	}
+-	attach_name = name + sec->len;
+-
+-	/* BPF program's BTF ID */
+-	if (attach_prog_fd) {
+-		err = libbpf_find_prog_btf_id(attach_name, attach_prog_fd);
+-		if (err < 0) {
+-			pr_warn("failed to find BPF program (FD %d) BTF ID for '%s': %d\n",
+-				 attach_prog_fd, attach_name, err);
+-			return err;
+-		}
+-		*btf_obj_fd = 0;
+-		*btf_type_id = err;
+-		return 0;
+-	}
+-
+-	/* kernel/module BTF ID */
+-	if (prog->obj->gen_loader) {
+-		bpf_gen__record_attach_target(prog->obj->gen_loader, attach_name, attach_type);
+-		*btf_obj_fd = 0;
+-		*btf_type_id = 1;
+-	} else {
+-		err = find_kernel_btf_id(prog->obj, attach_name, attach_type, btf_obj_fd, btf_type_id);
+-	}
+-	if (err) {
+-		pr_warn("failed to find kernel BTF type ID of '%s': %d\n", attach_name, err);
+-		return err;
+-	}
+-	return 0;
+-}
+-
+-int libbpf_attach_type_by_name(const char *name,
+-			       enum bpf_attach_type *attach_type)
+-{
+-	char *type_names;
+-	int i;
+-
+-	if (!name)
+-		return libbpf_err(-EINVAL);
+-
+-	for (i = 0; i < ARRAY_SIZE(section_defs); i++) {
+-		if (strncmp(name, section_defs[i].sec, section_defs[i].len))
+-			continue;
+-		if (!section_defs[i].is_attachable)
+-			return libbpf_err(-EINVAL);
+-		*attach_type = section_defs[i].expected_attach_type;
+-		return 0;
+-	}
+-	pr_debug("failed to guess attach type based on ELF section name '%s'\n", name);
+-	type_names = libbpf_get_type_names(true);
+-	if (type_names != NULL) {
+-		pr_debug("attachable section(type) names are:%s\n", type_names);
+-		free(type_names);
+-	}
+-
+-	return libbpf_err(-EINVAL);
+-}
+-
+-int bpf_map__fd(const struct bpf_map *map)
+-{
+-	return map ? map->fd : libbpf_err(-EINVAL);
+-}
+-
+-const struct bpf_map_def *bpf_map__def(const struct bpf_map *map)
+-{
+-	return map ? &map->def : libbpf_err_ptr(-EINVAL);
+-}
+-
+-const char *bpf_map__name(const struct bpf_map *map)
+-{
+-	return map ? map->name : NULL;
+-}
+-
+-enum bpf_map_type bpf_map__type(const struct bpf_map *map)
+-{
+-	return map->def.type;
+-}
+-
+-int bpf_map__set_type(struct bpf_map *map, enum bpf_map_type type)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->def.type = type;
+-	return 0;
+-}
+-
+-__u32 bpf_map__map_flags(const struct bpf_map *map)
+-{
+-	return map->def.map_flags;
+-}
+-
+-int bpf_map__set_map_flags(struct bpf_map *map, __u32 flags)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->def.map_flags = flags;
+-	return 0;
+-}
+-
+-__u32 bpf_map__numa_node(const struct bpf_map *map)
+-{
+-	return map->numa_node;
+-}
+-
+-int bpf_map__set_numa_node(struct bpf_map *map, __u32 numa_node)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->numa_node = numa_node;
+-	return 0;
+-}
+-
+-__u32 bpf_map__key_size(const struct bpf_map *map)
+-{
+-	return map->def.key_size;
+-}
+-
+-int bpf_map__set_key_size(struct bpf_map *map, __u32 size)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->def.key_size = size;
+-	return 0;
+-}
+-
+-__u32 bpf_map__value_size(const struct bpf_map *map)
+-{
+-	return map->def.value_size;
+-}
+-
+-int bpf_map__set_value_size(struct bpf_map *map, __u32 size)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->def.value_size = size;
+-	return 0;
+-}
+-
+-__u32 bpf_map__btf_key_type_id(const struct bpf_map *map)
+-{
+-	return map ? map->btf_key_type_id : 0;
+-}
+-
+-__u32 bpf_map__btf_value_type_id(const struct bpf_map *map)
+-{
+-	return map ? map->btf_value_type_id : 0;
+-}
+-
+-int bpf_map__set_priv(struct bpf_map *map, void *priv,
+-		     bpf_map_clear_priv_t clear_priv)
+-{
+-	if (!map)
+-		return libbpf_err(-EINVAL);
+-
+-	if (map->priv) {
+-		if (map->clear_priv)
+-			map->clear_priv(map, map->priv);
+-	}
+-
+-	map->priv = priv;
+-	map->clear_priv = clear_priv;
+-	return 0;
+-}
+-
+-void *bpf_map__priv(const struct bpf_map *map)
+-{
+-	return map ? map->priv : libbpf_err_ptr(-EINVAL);
+-}
+-
+-int bpf_map__set_initial_value(struct bpf_map *map,
+-			       const void *data, size_t size)
+-{
+-	if (!map->mmaped || map->libbpf_type == LIBBPF_MAP_KCONFIG ||
+-	    size != map->def.value_size || map->fd >= 0)
+-		return libbpf_err(-EINVAL);
+-
+-	memcpy(map->mmaped, data, size);
+-	return 0;
+-}
+-
+-const void *bpf_map__initial_value(struct bpf_map *map, size_t *psize)
+-{
+-	if (!map->mmaped)
+-		return NULL;
+-	*psize = map->def.value_size;
+-	return map->mmaped;
+-}
+-
+-bool bpf_map__is_offload_neutral(const struct bpf_map *map)
+-{
+-	return map->def.type == BPF_MAP_TYPE_PERF_EVENT_ARRAY;
+-}
+-
+-bool bpf_map__is_internal(const struct bpf_map *map)
+-{
+-	return map->libbpf_type != LIBBPF_MAP_UNSPEC;
+-}
+-
+-__u32 bpf_map__ifindex(const struct bpf_map *map)
+-{
+-	return map->map_ifindex;
+-}
+-
+-int bpf_map__set_ifindex(struct bpf_map *map, __u32 ifindex)
+-{
+-	if (map->fd >= 0)
+-		return libbpf_err(-EBUSY);
+-	map->map_ifindex = ifindex;
+-	return 0;
+-}
+-
+-int bpf_map__set_inner_map_fd(struct bpf_map *map, int fd)
+-{
+-	if (!bpf_map_type__is_map_in_map(map->def.type)) {
+-		pr_warn("error: unsupported map type\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-	if (map->inner_map_fd != -1) {
+-		pr_warn("error: inner_map_fd already specified\n");
+-		return libbpf_err(-EINVAL);
+-	}
+-	zfree(&map->inner_map);
+-	map->inner_map_fd = fd;
+-	return 0;
+-}
+-
+-static struct bpf_map *
+-__bpf_map__iter(const struct bpf_map *m, const struct bpf_object *obj, int i)
+-{
+-	ssize_t idx;
+-	struct bpf_map *s, *e;
+-
+-	if (!obj || !obj->maps)
+-		return errno = EINVAL, NULL;
+-
+-	s = obj->maps;
+-	e = obj->maps + obj->nr_maps;
+-
+-	if ((m < s) || (m >= e)) {
+-		pr_warn("error in %s: map handler doesn't belong to object\n",
+-			 __func__);
+-		return errno = EINVAL, NULL;
+-	}
+-
+-	idx = (m - obj->maps) + i;
+-	if (idx >= obj->nr_maps || idx < 0)
+-		return NULL;
+-	return &obj->maps[idx];
+-}
+-
+-struct bpf_map *
+-bpf_map__next(const struct bpf_map *prev, const struct bpf_object *obj)
+-{
+-	if (prev == NULL)
+-		return obj->maps;
+-
+-	return __bpf_map__iter(prev, obj, 1);
+-}
+-
+-struct bpf_map *
+-bpf_map__prev(const struct bpf_map *next, const struct bpf_object *obj)
+-{
+-	if (next == NULL) {
+-		if (!obj->nr_maps)
+-			return NULL;
+-		return obj->maps + obj->nr_maps - 1;
+-	}
+-
+-	return __bpf_map__iter(next, obj, -1);
+-}
+-
+-struct bpf_map *
+-bpf_object__find_map_by_name(const struct bpf_object *obj, const char *name)
+-{
+-	struct bpf_map *pos;
+-
+-	bpf_object__for_each_map(pos, obj) {
+-		if (pos->name && !strcmp(pos->name, name))
+-			return pos;
+-	}
+-	return errno = ENOENT, NULL;
+-}
+-
+-int
+-bpf_object__find_map_fd_by_name(const struct bpf_object *obj, const char *name)
+-{
+-	return bpf_map__fd(bpf_object__find_map_by_name(obj, name));
+-}
+-
+-struct bpf_map *
+-bpf_object__find_map_by_offset(struct bpf_object *obj, size_t offset)
+-{
+-	return libbpf_err_ptr(-ENOTSUP);
+-}
+-
+-long libbpf_get_error(const void *ptr)
+-{
+-	if (!IS_ERR_OR_NULL(ptr))
+-		return 0;
+-
+-	if (IS_ERR(ptr))
+-		errno = -PTR_ERR(ptr);
+-
+-	/* If ptr == NULL, then errno should be already set by the failing
+-	 * API, because libbpf never returns NULL on success and it now always
+-	 * sets errno on error. So no extra errno handling for ptr == NULL
+-	 * case.
+-	 */
+-	return -errno;
+-}
+-
+-int bpf_prog_load(const char *file, enum bpf_prog_type type,
+-		  struct bpf_object **pobj, int *prog_fd)
+-{
+-	struct bpf_prog_load_attr attr;
+-
+-	memset(&attr, 0, sizeof(struct bpf_prog_load_attr));
+-	attr.file = file;
+-	attr.prog_type = type;
+-	attr.expected_attach_type = 0;
+-
+-	return bpf_prog_load_xattr(&attr, pobj, prog_fd);
+-}
+-
+-int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+-			struct bpf_object **pobj, int *prog_fd)
+-{
+-	struct bpf_object_open_attr open_attr = {};
+-	struct bpf_program *prog, *first_prog = NULL;
+-	struct bpf_object *obj;
+-	struct bpf_map *map;
+-	int err;
+-
+-	if (!attr)
+-		return libbpf_err(-EINVAL);
+-	if (!attr->file)
+-		return libbpf_err(-EINVAL);
+-
+-	open_attr.file = attr->file;
+-	open_attr.prog_type = attr->prog_type;
+-
+-	obj = bpf_object__open_xattr(&open_attr);
+-	err = libbpf_get_error(obj);
+-	if (err)
+-		return libbpf_err(-ENOENT);
+-
+-	bpf_object__for_each_program(prog, obj) {
+-		enum bpf_attach_type attach_type = attr->expected_attach_type;
+-		/*
+-		 * to preserve backwards compatibility, bpf_prog_load treats
+-		 * attr->prog_type, if specified, as an override to whatever
+-		 * bpf_object__open guessed
+-		 */
+-		if (attr->prog_type != BPF_PROG_TYPE_UNSPEC) {
+-			bpf_program__set_type(prog, attr->prog_type);
+-			bpf_program__set_expected_attach_type(prog,
+-							      attach_type);
+-		}
+-		if (bpf_program__get_type(prog) == BPF_PROG_TYPE_UNSPEC) {
+-			/*
+-			 * we haven't guessed from section name and user
+-			 * didn't provide a fallback type, too bad...
+-			 */
+-			bpf_object__close(obj);
+-			return libbpf_err(-EINVAL);
+-		}
+-
+-		prog->prog_ifindex = attr->ifindex;
+-		prog->log_level = attr->log_level;
+-		prog->prog_flags |= attr->prog_flags;
+-		if (!first_prog)
+-			first_prog = prog;
+-	}
+-
+-	bpf_object__for_each_map(map, obj) {
+-		if (!bpf_map__is_offload_neutral(map))
+-			map->map_ifindex = attr->ifindex;
+-	}
+-
+-	if (!first_prog) {
+-		pr_warn("object file doesn't contain bpf program\n");
+-		bpf_object__close(obj);
+-		return libbpf_err(-ENOENT);
+-	}
+-
+-	err = bpf_object__load(obj);
+-	if (err) {
+-		bpf_object__close(obj);
+-		return libbpf_err(err);
+-	}
+-
+-	*pobj = obj;
+-	*prog_fd = bpf_program__fd(first_prog);
+-	return 0;
+-}
+-
+-struct bpf_link {
+-	int (*detach)(struct bpf_link *link);
+-	int (*destroy)(struct bpf_link *link);
+-	char *pin_path;		/* NULL, if not pinned */
+-	int fd;			/* hook FD, -1 if not applicable */
+-	bool disconnected;
+-};
+-
+-/* Replace link's underlying BPF program with the new one */
+-int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
+-{
+-	int ret;
+-	
+-	ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
+-	return libbpf_err_errno(ret);
+-}
+-
+-/* Release "ownership" of underlying BPF resource (typically, BPF program
+- * attached to some BPF hook, e.g., tracepoint, kprobe, etc). Disconnected
+- * link, when destructed through bpf_link__destroy() call won't attempt to
+- * detach/unregisted that BPF resource. This is useful in situations where,
+- * say, attached BPF program has to outlive userspace program that attached it
+- * in the system. Depending on type of BPF program, though, there might be
+- * additional steps (like pinning BPF program in BPF FS) necessary to ensure
+- * exit of userspace program doesn't trigger automatic detachment and clean up
+- * inside the kernel.
+- */
+-void bpf_link__disconnect(struct bpf_link *link)
+-{
+-	link->disconnected = true;
+-}
+-
+-int bpf_link__destroy(struct bpf_link *link)
+-{
+-	int err = 0;
+-
+-	if (IS_ERR_OR_NULL(link))
+-		return 0;
+-
+-	if (!link->disconnected && link->detach)
+-		err = link->detach(link);
+-	if (link->destroy)
+-		link->destroy(link);
+-	if (link->pin_path)
+-		free(link->pin_path);
+-	free(link);
+-
+-	return libbpf_err(err);
+-}
+-
+-int bpf_link__fd(const struct bpf_link *link)
+-{
+-	return link->fd;
+-}
+-
+-const char *bpf_link__pin_path(const struct bpf_link *link)
+-{
+-	return link->pin_path;
+-}
+-
+-static int bpf_link__detach_fd(struct bpf_link *link)
+-{
+-	return libbpf_err_errno(close(link->fd));
+-}
+-
+-struct bpf_link *bpf_link__open(const char *path)
+-{
+-	struct bpf_link *link;
+-	int fd;
+-
+-	fd = bpf_obj_get(path);
+-	if (fd < 0) {
+-		fd = -errno;
+-		pr_warn("failed to open link at %s: %d\n", path, fd);
+-		return libbpf_err_ptr(fd);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link) {
+-		close(fd);
+-		return libbpf_err_ptr(-ENOMEM);
+-	}
+-	link->detach = &bpf_link__detach_fd;
+-	link->fd = fd;
+-
+-	link->pin_path = strdup(path);
+-	if (!link->pin_path) {
+-		bpf_link__destroy(link);
+-		return libbpf_err_ptr(-ENOMEM);
+-	}
+-
+-	return link;
+-}
+-
+-int bpf_link__detach(struct bpf_link *link)
+-{
+-	return bpf_link_detach(link->fd) ? -errno : 0;
+-}
+-
+-int bpf_link__pin(struct bpf_link *link, const char *path)
+-{
+-	int err;
+-
+-	if (link->pin_path)
+-		return libbpf_err(-EBUSY);
+-	err = make_parent_dir(path);
+-	if (err)
+-		return libbpf_err(err);
+-	err = check_path(path);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	link->pin_path = strdup(path);
+-	if (!link->pin_path)
+-		return libbpf_err(-ENOMEM);
+-
+-	if (bpf_obj_pin(link->fd, link->pin_path)) {
+-		err = -errno;
+-		zfree(&link->pin_path);
+-		return libbpf_err(err);
+-	}
+-
+-	pr_debug("link fd=%d: pinned at %s\n", link->fd, link->pin_path);
+-	return 0;
+-}
+-
+-int bpf_link__unpin(struct bpf_link *link)
+-{
+-	int err;
+-
+-	if (!link->pin_path)
+-		return libbpf_err(-EINVAL);
+-
+-	err = unlink(link->pin_path);
+-	if (err != 0)
+-		return -errno;
+-
+-	pr_debug("link fd=%d: unpinned from %s\n", link->fd, link->pin_path);
+-	zfree(&link->pin_path);
+-	return 0;
+-}
+-
+-static int bpf_link__detach_perf_event(struct bpf_link *link)
+-{
+-	int err;
+-
+-	err = ioctl(link->fd, PERF_EVENT_IOC_DISABLE, 0);
+-	if (err)
+-		err = -errno;
+-
+-	close(link->fd);
+-	return libbpf_err(err);
+-}
+-
+-struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog, int pfd)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int prog_fd, err;
+-
+-	if (pfd < 0) {
+-		pr_warn("prog '%s': invalid perf event FD %d\n",
+-			prog->name, pfd);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-	prog_fd = bpf_program__fd(prog);
+-	if (prog_fd < 0) {
+-		pr_warn("prog '%s': can't attach BPF program w/o FD (did you load it?)\n",
+-			prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-ENOMEM);
+-	link->detach = &bpf_link__detach_perf_event;
+-	link->fd = pfd;
+-
+-	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, prog_fd) < 0) {
+-		err = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to attach to pfd %d: %s\n",
+-			prog->name, pfd, libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		if (err == -EPROTO)
+-			pr_warn("prog '%s': try add PERF_SAMPLE_CALLCHAIN to or remove exclude_callchain_[kernel|user] from pfd %d\n",
+-				prog->name, pfd);
+-		return libbpf_err_ptr(err);
+-	}
+-	if (ioctl(pfd, PERF_EVENT_IOC_ENABLE, 0) < 0) {
+-		err = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to enable pfd %d: %s\n",
+-			prog->name, pfd, libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(err);
+-	}
+-	return link;
+-}
+-
+-/*
+- * this function is expected to parse integer in the range of [0, 2^31-1] from
+- * given file using scanf format string fmt. If actual parsed value is
+- * negative, the result might be indistinguishable from error
+- */
+-static int parse_uint_from_file(const char *file, const char *fmt)
+-{
+-	char buf[STRERR_BUFSIZE];
+-	int err, ret;
+-	FILE *f;
+-
+-	f = fopen(file, "r");
+-	if (!f) {
+-		err = -errno;
+-		pr_debug("failed to open '%s': %s\n", file,
+-			 libbpf_strerror_r(err, buf, sizeof(buf)));
+-		return err;
+-	}
+-	err = fscanf(f, fmt, &ret);
+-	if (err != 1) {
+-		err = err == EOF ? -EIO : -errno;
+-		pr_debug("failed to parse '%s': %s\n", file,
+-			libbpf_strerror_r(err, buf, sizeof(buf)));
+-		fclose(f);
+-		return err;
+-	}
+-	fclose(f);
+-	return ret;
+-}
+-
+-static int determine_kprobe_perf_type(void)
+-{
+-	const char *file = "/sys/bus/event_source/devices/kprobe/type";
+-
+-	return parse_uint_from_file(file, "%d\n");
+-}
+-
+-static int determine_uprobe_perf_type(void)
+-{
+-	const char *file = "/sys/bus/event_source/devices/uprobe/type";
+-
+-	return parse_uint_from_file(file, "%d\n");
+-}
+-
+-static int determine_kprobe_retprobe_bit(void)
+-{
+-	const char *file = "/sys/bus/event_source/devices/kprobe/format/retprobe";
+-
+-	return parse_uint_from_file(file, "config:%d\n");
+-}
+-
+-static int determine_uprobe_retprobe_bit(void)
+-{
+-	const char *file = "/sys/bus/event_source/devices/uprobe/format/retprobe";
+-
+-	return parse_uint_from_file(file, "config:%d\n");
+-}
+-
+-static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+-				 uint64_t offset, int pid)
+-{
+-	struct perf_event_attr attr = {};
+-	char errmsg[STRERR_BUFSIZE];
+-	int type, pfd, err;
+-
+-	type = uprobe ? determine_uprobe_perf_type()
+-		      : determine_kprobe_perf_type();
+-	if (type < 0) {
+-		pr_warn("failed to determine %s perf type: %s\n",
+-			uprobe ? "uprobe" : "kprobe",
+-			libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
+-		return type;
+-	}
+-	if (retprobe) {
+-		int bit = uprobe ? determine_uprobe_retprobe_bit()
+-				 : determine_kprobe_retprobe_bit();
+-
+-		if (bit < 0) {
+-			pr_warn("failed to determine %s retprobe bit: %s\n",
+-				uprobe ? "uprobe" : "kprobe",
+-				libbpf_strerror_r(bit, errmsg, sizeof(errmsg)));
+-			return bit;
+-		}
+-		attr.config |= 1 << bit;
+-	}
+-	attr.size = sizeof(attr);
+-	attr.type = type;
+-	attr.config1 = ptr_to_u64(name); /* kprobe_func or uprobe_path */
+-	attr.config2 = offset;		 /* kprobe_addr or probe_offset */
+-
+-	/* pid filter is meaningful only for uprobes */
+-	pfd = syscall(__NR_perf_event_open, &attr,
+-		      pid < 0 ? -1 : pid /* pid */,
+-		      pid == -1 ? 0 : -1 /* cpu */,
+-		      -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
+-	if (pfd < 0) {
+-		err = -errno;
+-		pr_warn("%s perf_event_open() failed: %s\n",
+-			uprobe ? "uprobe" : "kprobe",
+-			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return err;
+-	}
+-	return pfd;
+-}
+-
+-struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
+-					    bool retprobe,
+-					    const char *func_name)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int pfd, err;
+-
+-	pfd = perf_event_open_probe(false /* uprobe */, retprobe, func_name,
+-				    0 /* offset */, -1 /* pid */);
+-	if (pfd < 0) {
+-		pr_warn("prog '%s': failed to create %s '%s' perf event: %s\n",
+-			prog->name, retprobe ? "kretprobe" : "kprobe", func_name,
+-			libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(pfd);
+-	}
+-	link = bpf_program__attach_perf_event(prog, pfd);
+-	err = libbpf_get_error(link);
+-	if (err) {
+-		close(pfd);
+-		pr_warn("prog '%s': failed to attach to %s '%s': %s\n",
+-			prog->name, retprobe ? "kretprobe" : "kprobe", func_name,
+-			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(err);
+-	}
+-	return link;
+-}
+-
+-static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
+-				      struct bpf_program *prog)
+-{
+-	const char *func_name;
+-	bool retprobe;
+-
+-	func_name = prog->sec_name + sec->len;
+-	retprobe = strcmp(sec->sec, "kretprobe/") == 0;
+-
+-	return bpf_program__attach_kprobe(prog, retprobe, func_name);
+-}
+-
+-struct bpf_link *bpf_program__attach_uprobe(struct bpf_program *prog,
+-					    bool retprobe, pid_t pid,
+-					    const char *binary_path,
+-					    size_t func_offset)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int pfd, err;
+-
+-	pfd = perf_event_open_probe(true /* uprobe */, retprobe,
+-				    binary_path, func_offset, pid);
+-	if (pfd < 0) {
+-		pr_warn("prog '%s': failed to create %s '%s:0x%zx' perf event: %s\n",
+-			prog->name, retprobe ? "uretprobe" : "uprobe",
+-			binary_path, func_offset,
+-			libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(pfd);
+-	}
+-	link = bpf_program__attach_perf_event(prog, pfd);
+-	err = libbpf_get_error(link);
+-	if (err) {
+-		close(pfd);
+-		pr_warn("prog '%s': failed to attach to %s '%s:0x%zx': %s\n",
+-			prog->name, retprobe ? "uretprobe" : "uprobe",
+-			binary_path, func_offset,
+-			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(err);
+-	}
+-	return link;
+-}
+-
+-static int determine_tracepoint_id(const char *tp_category,
+-				   const char *tp_name)
+-{
+-	char file[PATH_MAX];
+-	int ret;
+-
+-	ret = snprintf(file, sizeof(file),
+-		       "/sys/kernel/debug/tracing/events/%s/%s/id",
+-		       tp_category, tp_name);
+-	if (ret < 0)
+-		return -errno;
+-	if (ret >= sizeof(file)) {
+-		pr_debug("tracepoint %s/%s path is too long\n",
+-			 tp_category, tp_name);
+-		return -E2BIG;
+-	}
+-	return parse_uint_from_file(file, "%d\n");
+-}
+-
+-static int perf_event_open_tracepoint(const char *tp_category,
+-				      const char *tp_name)
+-{
+-	struct perf_event_attr attr = {};
+-	char errmsg[STRERR_BUFSIZE];
+-	int tp_id, pfd, err;
+-
+-	tp_id = determine_tracepoint_id(tp_category, tp_name);
+-	if (tp_id < 0) {
+-		pr_warn("failed to determine tracepoint '%s/%s' perf event ID: %s\n",
+-			tp_category, tp_name,
+-			libbpf_strerror_r(tp_id, errmsg, sizeof(errmsg)));
+-		return tp_id;
+-	}
+-
+-	attr.type = PERF_TYPE_TRACEPOINT;
+-	attr.size = sizeof(attr);
+-	attr.config = tp_id;
+-
+-	pfd = syscall(__NR_perf_event_open, &attr, -1 /* pid */, 0 /* cpu */,
+-		      -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
+-	if (pfd < 0) {
+-		err = -errno;
+-		pr_warn("tracepoint '%s/%s' perf_event_open() failed: %s\n",
+-			tp_category, tp_name,
+-			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return err;
+-	}
+-	return pfd;
+-}
+-
+-struct bpf_link *bpf_program__attach_tracepoint(struct bpf_program *prog,
+-						const char *tp_category,
+-						const char *tp_name)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int pfd, err;
+-
+-	pfd = perf_event_open_tracepoint(tp_category, tp_name);
+-	if (pfd < 0) {
+-		pr_warn("prog '%s': failed to create tracepoint '%s/%s' perf event: %s\n",
+-			prog->name, tp_category, tp_name,
+-			libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(pfd);
+-	}
+-	link = bpf_program__attach_perf_event(prog, pfd);
+-	err = libbpf_get_error(link);
+-	if (err) {
+-		close(pfd);
+-		pr_warn("prog '%s': failed to attach to tracepoint '%s/%s': %s\n",
+-			prog->name, tp_category, tp_name,
+-			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(err);
+-	}
+-	return link;
+-}
+-
+-static struct bpf_link *attach_tp(const struct bpf_sec_def *sec,
+-				  struct bpf_program *prog)
+-{
+-	char *sec_name, *tp_cat, *tp_name;
+-	struct bpf_link *link;
+-
+-	sec_name = strdup(prog->sec_name);
+-	if (!sec_name)
+-		return libbpf_err_ptr(-ENOMEM);
+-
+-	/* extract "tp/<category>/<name>" */
+-	tp_cat = sec_name + sec->len;
+-	tp_name = strchr(tp_cat, '/');
+-	if (!tp_name) {
+-		free(sec_name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-	*tp_name = '\0';
+-	tp_name++;
+-
+-	link = bpf_program__attach_tracepoint(prog, tp_cat, tp_name);
+-	free(sec_name);
+-	return link;
+-}
+-
+-struct bpf_link *bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
+-						    const char *tp_name)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int prog_fd, pfd;
+-
+-	prog_fd = bpf_program__fd(prog);
+-	if (prog_fd < 0) {
+-		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-ENOMEM);
+-	link->detach = &bpf_link__detach_fd;
+-
+-	pfd = bpf_raw_tracepoint_open(tp_name, prog_fd);
+-	if (pfd < 0) {
+-		pfd = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to attach to raw tracepoint '%s': %s\n",
+-			prog->name, tp_name, libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(pfd);
+-	}
+-	link->fd = pfd;
+-	return link;
+-}
+-
+-static struct bpf_link *attach_raw_tp(const struct bpf_sec_def *sec,
+-				      struct bpf_program *prog)
+-{
+-	const char *tp_name = prog->sec_name + sec->len;
+-
+-	return bpf_program__attach_raw_tracepoint(prog, tp_name);
+-}
+-
+-/* Common logic for all BPF program types that attach to a btf_id */
+-static struct bpf_link *bpf_program__attach_btf_id(struct bpf_program *prog)
+-{
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int prog_fd, pfd;
+-
+-	prog_fd = bpf_program__fd(prog);
+-	if (prog_fd < 0) {
+-		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-ENOMEM);
+-	link->detach = &bpf_link__detach_fd;
+-
+-	pfd = bpf_raw_tracepoint_open(NULL, prog_fd);
+-	if (pfd < 0) {
+-		pfd = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to attach: %s\n",
+-			prog->name, libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(pfd);
+-	}
+-	link->fd = pfd;
+-	return (struct bpf_link *)link;
+-}
+-
+-struct bpf_link *bpf_program__attach_trace(struct bpf_program *prog)
+-{
+-	return bpf_program__attach_btf_id(prog);
+-}
+-
+-struct bpf_link *bpf_program__attach_lsm(struct bpf_program *prog)
+-{
+-	return bpf_program__attach_btf_id(prog);
+-}
+-
+-static struct bpf_link *attach_trace(const struct bpf_sec_def *sec,
+-				     struct bpf_program *prog)
+-{
+-	return bpf_program__attach_trace(prog);
+-}
+-
+-static struct bpf_link *attach_lsm(const struct bpf_sec_def *sec,
+-				   struct bpf_program *prog)
+-{
+-	return bpf_program__attach_lsm(prog);
+-}
+-
+-static struct bpf_link *
+-bpf_program__attach_fd(struct bpf_program *prog, int target_fd, int btf_id,
+-		       const char *target_name)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
+-			    .target_btf_id = btf_id);
+-	enum bpf_attach_type attach_type;
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int prog_fd, link_fd;
+-
+-	prog_fd = bpf_program__fd(prog);
+-	if (prog_fd < 0) {
+-		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-ENOMEM);
+-	link->detach = &bpf_link__detach_fd;
+-
+-	attach_type = bpf_program__get_expected_attach_type(prog);
+-	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, &opts);
+-	if (link_fd < 0) {
+-		link_fd = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to attach to %s: %s\n",
+-			prog->name, target_name,
+-			libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(link_fd);
+-	}
+-	link->fd = link_fd;
+-	return link;
+-}
+-
+-struct bpf_link *
+-bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+-{
+-	return bpf_program__attach_fd(prog, cgroup_fd, 0, "cgroup");
+-}
+-
+-struct bpf_link *
+-bpf_program__attach_netns(struct bpf_program *prog, int netns_fd)
+-{
+-	return bpf_program__attach_fd(prog, netns_fd, 0, "netns");
+-}
+-
+-struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, int ifindex)
+-{
+-	/* target_fd/target_ifindex use the same field in LINK_CREATE */
+-	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
+-}
+-
+-struct bpf_link *bpf_program__attach_freplace(struct bpf_program *prog,
+-					      int target_fd,
+-					      const char *attach_func_name)
+-{
+-	int btf_id;
+-
+-	if (!!target_fd != !!attach_func_name) {
+-		pr_warn("prog '%s': supply none or both of target_fd and attach_func_name\n",
+-			prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	if (prog->type != BPF_PROG_TYPE_EXT) {
+-		pr_warn("prog '%s': only BPF_PROG_TYPE_EXT can attach as freplace",
+-			prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	if (target_fd) {
+-		btf_id = libbpf_find_prog_btf_id(attach_func_name, target_fd);
+-		if (btf_id < 0)
+-			return libbpf_err_ptr(btf_id);
+-
+-		return bpf_program__attach_fd(prog, target_fd, btf_id, "freplace");
+-	} else {
+-		/* no target, so use raw_tracepoint_open for compatibility
+-		 * with old kernels
+-		 */
+-		return bpf_program__attach_trace(prog);
+-	}
+-}
+-
+-struct bpf_link *
+-bpf_program__attach_iter(struct bpf_program *prog,
+-			 const struct bpf_iter_attach_opts *opts)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, link_create_opts);
+-	char errmsg[STRERR_BUFSIZE];
+-	struct bpf_link *link;
+-	int prog_fd, link_fd;
+-	__u32 target_fd = 0;
+-
+-	if (!OPTS_VALID(opts, bpf_iter_attach_opts))
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	link_create_opts.iter_info = OPTS_GET(opts, link_info, (void *)0);
+-	link_create_opts.iter_info_len = OPTS_GET(opts, link_info_len, 0);
+-
+-	prog_fd = bpf_program__fd(prog);
+-	if (prog_fd < 0) {
+-		pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+-		return libbpf_err_ptr(-EINVAL);
+-	}
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-ENOMEM);
+-	link->detach = &bpf_link__detach_fd;
+-
+-	link_fd = bpf_link_create(prog_fd, target_fd, BPF_TRACE_ITER,
+-				  &link_create_opts);
+-	if (link_fd < 0) {
+-		link_fd = -errno;
+-		free(link);
+-		pr_warn("prog '%s': failed to attach to iterator: %s\n",
+-			prog->name, libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
+-		return libbpf_err_ptr(link_fd);
+-	}
+-	link->fd = link_fd;
+-	return link;
+-}
+-
+-static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
+-				    struct bpf_program *prog)
+-{
+-	return bpf_program__attach_iter(prog, NULL);
+-}
+-
+-struct bpf_link *bpf_program__attach(struct bpf_program *prog)
+-{
+-	const struct bpf_sec_def *sec_def;
+-
+-	sec_def = find_sec_def(prog->sec_name);
+-	if (!sec_def || !sec_def->attach_fn)
+-		return libbpf_err_ptr(-ESRCH);
+-
+-	return sec_def->attach_fn(sec_def, prog);
+-}
+-
+-static int bpf_link__detach_struct_ops(struct bpf_link *link)
+-{
+-	__u32 zero = 0;
+-
+-	if (bpf_map_delete_elem(link->fd, &zero))
+-		return -errno;
+-
+-	return 0;
+-}
+-
+-struct bpf_link *bpf_map__attach_struct_ops(struct bpf_map *map)
+-{
+-	struct bpf_struct_ops *st_ops;
+-	struct bpf_link *link;
+-	__u32 i, zero = 0;
+-	int err;
+-
+-	if (!bpf_map__is_struct_ops(map) || map->fd == -1)
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	link = calloc(1, sizeof(*link));
+-	if (!link)
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	st_ops = map->st_ops;
+-	for (i = 0; i < btf_vlen(st_ops->type); i++) {
+-		struct bpf_program *prog = st_ops->progs[i];
+-		void *kern_data;
+-		int prog_fd;
+-
+-		if (!prog)
+-			continue;
+-
+-		prog_fd = bpf_program__fd(prog);
+-		kern_data = st_ops->kern_vdata + st_ops->kern_func_off[i];
+-		*(unsigned long *)kern_data = prog_fd;
+-	}
+-
+-	err = bpf_map_update_elem(map->fd, &zero, st_ops->kern_vdata, 0);
+-	if (err) {
+-		err = -errno;
+-		free(link);
+-		return libbpf_err_ptr(err);
+-	}
+-
+-	link->detach = bpf_link__detach_struct_ops;
+-	link->fd = map->fd;
+-
+-	return link;
+-}
+-
+-enum bpf_perf_event_ret
+-bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+-			   void **copy_mem, size_t *copy_size,
+-			   bpf_perf_event_print_t fn, void *private_data)
+-{
+-	struct perf_event_mmap_page *header = mmap_mem;
+-	__u64 data_head = ring_buffer_read_head(header);
+-	__u64 data_tail = header->data_tail;
+-	void *base = ((__u8 *)header) + page_size;
+-	int ret = LIBBPF_PERF_EVENT_CONT;
+-	struct perf_event_header *ehdr;
+-	size_t ehdr_size;
+-
+-	while (data_head != data_tail) {
+-		ehdr = base + (data_tail & (mmap_size - 1));
+-		ehdr_size = ehdr->size;
+-
+-		if (((void *)ehdr) + ehdr_size > base + mmap_size) {
+-			void *copy_start = ehdr;
+-			size_t len_first = base + mmap_size - copy_start;
+-			size_t len_secnd = ehdr_size - len_first;
+-
+-			if (*copy_size < ehdr_size) {
+-				free(*copy_mem);
+-				*copy_mem = malloc(ehdr_size);
+-				if (!*copy_mem) {
+-					*copy_size = 0;
+-					ret = LIBBPF_PERF_EVENT_ERROR;
+-					break;
+-				}
+-				*copy_size = ehdr_size;
+-			}
+-
+-			memcpy(*copy_mem, copy_start, len_first);
+-			memcpy(*copy_mem + len_first, base, len_secnd);
+-			ehdr = *copy_mem;
+-		}
+-
+-		ret = fn(ehdr, private_data);
+-		data_tail += ehdr_size;
+-		if (ret != LIBBPF_PERF_EVENT_CONT)
+-			break;
+-	}
+-
+-	ring_buffer_write_tail(header, data_tail);
+-	return libbpf_err(ret);
+-}
+-
+-struct perf_buffer;
+-
+-struct perf_buffer_params {
+-	struct perf_event_attr *attr;
+-	/* if event_cb is specified, it takes precendence */
+-	perf_buffer_event_fn event_cb;
+-	/* sample_cb and lost_cb are higher-level common-case callbacks */
+-	perf_buffer_sample_fn sample_cb;
+-	perf_buffer_lost_fn lost_cb;
+-	void *ctx;
+-	int cpu_cnt;
+-	int *cpus;
+-	int *map_keys;
+-};
+-
+-struct perf_cpu_buf {
+-	struct perf_buffer *pb;
+-	void *base; /* mmap()'ed memory */
+-	void *buf; /* for reconstructing segmented data */
+-	size_t buf_size;
+-	int fd;
+-	int cpu;
+-	int map_key;
+-};
+-
+-struct perf_buffer {
+-	perf_buffer_event_fn event_cb;
+-	perf_buffer_sample_fn sample_cb;
+-	perf_buffer_lost_fn lost_cb;
+-	void *ctx; /* passed into callbacks */
+-
+-	size_t page_size;
+-	size_t mmap_size;
+-	struct perf_cpu_buf **cpu_bufs;
+-	struct epoll_event *events;
+-	int cpu_cnt; /* number of allocated CPU buffers */
+-	int epoll_fd; /* perf event FD */
+-	int map_fd; /* BPF_MAP_TYPE_PERF_EVENT_ARRAY BPF map FD */
+-};
+-
+-static void perf_buffer__free_cpu_buf(struct perf_buffer *pb,
+-				      struct perf_cpu_buf *cpu_buf)
+-{
+-	if (!cpu_buf)
+-		return;
+-	if (cpu_buf->base &&
+-	    munmap(cpu_buf->base, pb->mmap_size + pb->page_size))
+-		pr_warn("failed to munmap cpu_buf #%d\n", cpu_buf->cpu);
+-	if (cpu_buf->fd >= 0) {
+-		ioctl(cpu_buf->fd, PERF_EVENT_IOC_DISABLE, 0);
+-		close(cpu_buf->fd);
+-	}
+-	free(cpu_buf->buf);
+-	free(cpu_buf);
+-}
+-
+-void perf_buffer__free(struct perf_buffer *pb)
+-{
+-	int i;
+-
+-	if (IS_ERR_OR_NULL(pb))
+-		return;
+-	if (pb->cpu_bufs) {
+-		for (i = 0; i < pb->cpu_cnt; i++) {
+-			struct perf_cpu_buf *cpu_buf = pb->cpu_bufs[i];
+-
+-			if (!cpu_buf)
+-				continue;
+-
+-			bpf_map_delete_elem(pb->map_fd, &cpu_buf->map_key);
+-			perf_buffer__free_cpu_buf(pb, cpu_buf);
+-		}
+-		free(pb->cpu_bufs);
+-	}
+-	if (pb->epoll_fd >= 0)
+-		close(pb->epoll_fd);
+-	free(pb->events);
+-	free(pb);
+-}
+-
+-static struct perf_cpu_buf *
+-perf_buffer__open_cpu_buf(struct perf_buffer *pb, struct perf_event_attr *attr,
+-			  int cpu, int map_key)
+-{
+-	struct perf_cpu_buf *cpu_buf;
+-	char msg[STRERR_BUFSIZE];
+-	int err;
+-
+-	cpu_buf = calloc(1, sizeof(*cpu_buf));
+-	if (!cpu_buf)
+-		return ERR_PTR(-ENOMEM);
+-
+-	cpu_buf->pb = pb;
+-	cpu_buf->cpu = cpu;
+-	cpu_buf->map_key = map_key;
+-
+-	cpu_buf->fd = syscall(__NR_perf_event_open, attr, -1 /* pid */, cpu,
+-			      -1, PERF_FLAG_FD_CLOEXEC);
+-	if (cpu_buf->fd < 0) {
+-		err = -errno;
+-		pr_warn("failed to open perf buffer event on cpu #%d: %s\n",
+-			cpu, libbpf_strerror_r(err, msg, sizeof(msg)));
+-		goto error;
+-	}
+-
+-	cpu_buf->base = mmap(NULL, pb->mmap_size + pb->page_size,
+-			     PROT_READ | PROT_WRITE, MAP_SHARED,
+-			     cpu_buf->fd, 0);
+-	if (cpu_buf->base == MAP_FAILED) {
+-		cpu_buf->base = NULL;
+-		err = -errno;
+-		pr_warn("failed to mmap perf buffer on cpu #%d: %s\n",
+-			cpu, libbpf_strerror_r(err, msg, sizeof(msg)));
+-		goto error;
+-	}
+-
+-	if (ioctl(cpu_buf->fd, PERF_EVENT_IOC_ENABLE, 0) < 0) {
+-		err = -errno;
+-		pr_warn("failed to enable perf buffer event on cpu #%d: %s\n",
+-			cpu, libbpf_strerror_r(err, msg, sizeof(msg)));
+-		goto error;
+-	}
+-
+-	return cpu_buf;
+-
+-error:
+-	perf_buffer__free_cpu_buf(pb, cpu_buf);
+-	return (struct perf_cpu_buf *)ERR_PTR(err);
+-}
+-
+-static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+-					      struct perf_buffer_params *p);
+-
+-struct perf_buffer *perf_buffer__new(int map_fd, size_t page_cnt,
+-				     const struct perf_buffer_opts *opts)
+-{
+-	struct perf_buffer_params p = {};
+-	struct perf_event_attr attr = { 0, };
+-
+-	attr.config = PERF_COUNT_SW_BPF_OUTPUT;
+-	attr.type = PERF_TYPE_SOFTWARE;
+-	attr.sample_type = PERF_SAMPLE_RAW;
+-	attr.sample_period = 1;
+-	attr.wakeup_events = 1;
+-
+-	p.attr = &attr;
+-	p.sample_cb = opts ? opts->sample_cb : NULL;
+-	p.lost_cb = opts ? opts->lost_cb : NULL;
+-	p.ctx = opts ? opts->ctx : NULL;
+-
+-	return libbpf_ptr(__perf_buffer__new(map_fd, page_cnt, &p));
+-}
+-
+-struct perf_buffer *
+-perf_buffer__new_raw(int map_fd, size_t page_cnt,
+-		     const struct perf_buffer_raw_opts *opts)
+-{
+-	struct perf_buffer_params p = {};
+-
+-	p.attr = opts->attr;
+-	p.event_cb = opts->event_cb;
+-	p.ctx = opts->ctx;
+-	p.cpu_cnt = opts->cpu_cnt;
+-	p.cpus = opts->cpus;
+-	p.map_keys = opts->map_keys;
+-
+-	return libbpf_ptr(__perf_buffer__new(map_fd, page_cnt, &p));
+-}
+-
+-static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+-					      struct perf_buffer_params *p)
+-{
+-	const char *online_cpus_file = "/sys/devices/system/cpu/online";
+-	struct bpf_map_info map;
+-	char msg[STRERR_BUFSIZE];
+-	struct perf_buffer *pb;
+-	bool *online = NULL;
+-	__u32 map_info_len;
+-	int err, i, j, n;
+-
+-	if (page_cnt & (page_cnt - 1)) {
+-		pr_warn("page count should be power of two, but is %zu\n",
+-			page_cnt);
+-		return ERR_PTR(-EINVAL);
+-	}
+-
+-	/* best-effort sanity checks */
+-	memset(&map, 0, sizeof(map));
+-	map_info_len = sizeof(map);
+-	err = bpf_obj_get_info_by_fd(map_fd, &map, &map_info_len);
+-	if (err) {
+-		err = -errno;
+-		/* if BPF_OBJ_GET_INFO_BY_FD is supported, will return
+-		 * -EBADFD, -EFAULT, or -E2BIG on real error
+-		 */
+-		if (err != -EINVAL) {
+-			pr_warn("failed to get map info for map FD %d: %s\n",
+-				map_fd, libbpf_strerror_r(err, msg, sizeof(msg)));
+-			return ERR_PTR(err);
+-		}
+-		pr_debug("failed to get map info for FD %d; API not supported? Ignoring...\n",
+-			 map_fd);
+-	} else {
+-		if (map.type != BPF_MAP_TYPE_PERF_EVENT_ARRAY) {
+-			pr_warn("map '%s' should be BPF_MAP_TYPE_PERF_EVENT_ARRAY\n",
+-				map.name);
+-			return ERR_PTR(-EINVAL);
+-		}
+-	}
+-
+-	pb = calloc(1, sizeof(*pb));
+-	if (!pb)
+-		return ERR_PTR(-ENOMEM);
+-
+-	pb->event_cb = p->event_cb;
+-	pb->sample_cb = p->sample_cb;
+-	pb->lost_cb = p->lost_cb;
+-	pb->ctx = p->ctx;
+-
+-	pb->page_size = getpagesize();
+-	pb->mmap_size = pb->page_size * page_cnt;
+-	pb->map_fd = map_fd;
+-
+-	pb->epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+-	if (pb->epoll_fd < 0) {
+-		err = -errno;
+-		pr_warn("failed to create epoll instance: %s\n",
+-			libbpf_strerror_r(err, msg, sizeof(msg)));
+-		goto error;
+-	}
+-
+-	if (p->cpu_cnt > 0) {
+-		pb->cpu_cnt = p->cpu_cnt;
+-	} else {
+-		pb->cpu_cnt = libbpf_num_possible_cpus();
+-		if (pb->cpu_cnt < 0) {
+-			err = pb->cpu_cnt;
+-			goto error;
+-		}
+-		if (map.max_entries && map.max_entries < pb->cpu_cnt)
+-			pb->cpu_cnt = map.max_entries;
+-	}
+-
+-	pb->events = calloc(pb->cpu_cnt, sizeof(*pb->events));
+-	if (!pb->events) {
+-		err = -ENOMEM;
+-		pr_warn("failed to allocate events: out of memory\n");
+-		goto error;
+-	}
+-	pb->cpu_bufs = calloc(pb->cpu_cnt, sizeof(*pb->cpu_bufs));
+-	if (!pb->cpu_bufs) {
+-		err = -ENOMEM;
+-		pr_warn("failed to allocate buffers: out of memory\n");
+-		goto error;
+-	}
+-
+-	err = parse_cpu_mask_file(online_cpus_file, &online, &n);
+-	if (err) {
+-		pr_warn("failed to get online CPU mask: %d\n", err);
+-		goto error;
+-	}
+-
+-	for (i = 0, j = 0; i < pb->cpu_cnt; i++) {
+-		struct perf_cpu_buf *cpu_buf;
+-		int cpu, map_key;
+-
+-		cpu = p->cpu_cnt > 0 ? p->cpus[i] : i;
+-		map_key = p->cpu_cnt > 0 ? p->map_keys[i] : i;
+-
+-		/* in case user didn't explicitly requested particular CPUs to
+-		 * be attached to, skip offline/not present CPUs
+-		 */
+-		if (p->cpu_cnt <= 0 && (cpu >= n || !online[cpu]))
+-			continue;
+-
+-		cpu_buf = perf_buffer__open_cpu_buf(pb, p->attr, cpu, map_key);
+-		if (IS_ERR(cpu_buf)) {
+-			err = PTR_ERR(cpu_buf);
+-			goto error;
+-		}
+-
+-		pb->cpu_bufs[j] = cpu_buf;
+-
+-		err = bpf_map_update_elem(pb->map_fd, &map_key,
+-					  &cpu_buf->fd, 0);
+-		if (err) {
+-			err = -errno;
+-			pr_warn("failed to set cpu #%d, key %d -> perf FD %d: %s\n",
+-				cpu, map_key, cpu_buf->fd,
+-				libbpf_strerror_r(err, msg, sizeof(msg)));
+-			goto error;
+-		}
+-
+-		pb->events[j].events = EPOLLIN;
+-		pb->events[j].data.ptr = cpu_buf;
+-		if (epoll_ctl(pb->epoll_fd, EPOLL_CTL_ADD, cpu_buf->fd,
+-			      &pb->events[j]) < 0) {
+-			err = -errno;
+-			pr_warn("failed to epoll_ctl cpu #%d perf FD %d: %s\n",
+-				cpu, cpu_buf->fd,
+-				libbpf_strerror_r(err, msg, sizeof(msg)));
+-			goto error;
+-		}
+-		j++;
+-	}
+-	pb->cpu_cnt = j;
+-	free(online);
+-
+-	return pb;
+-
+-error:
+-	free(online);
+-	if (pb)
+-		perf_buffer__free(pb);
+-	return ERR_PTR(err);
+-}
+-
+-struct perf_sample_raw {
+-	struct perf_event_header header;
+-	uint32_t size;
+-	char data[];
+-};
+-
+-struct perf_sample_lost {
+-	struct perf_event_header header;
+-	uint64_t id;
+-	uint64_t lost;
+-	uint64_t sample_id;
+-};
+-
+-static enum bpf_perf_event_ret
+-perf_buffer__process_record(struct perf_event_header *e, void *ctx)
+-{
+-	struct perf_cpu_buf *cpu_buf = ctx;
+-	struct perf_buffer *pb = cpu_buf->pb;
+-	void *data = e;
+-
+-	/* user wants full control over parsing perf event */
+-	if (pb->event_cb)
+-		return pb->event_cb(pb->ctx, cpu_buf->cpu, e);
+-
+-	switch (e->type) {
+-	case PERF_RECORD_SAMPLE: {
+-		struct perf_sample_raw *s = data;
+-
+-		if (pb->sample_cb)
+-			pb->sample_cb(pb->ctx, cpu_buf->cpu, s->data, s->size);
+-		break;
+-	}
+-	case PERF_RECORD_LOST: {
+-		struct perf_sample_lost *s = data;
+-
+-		if (pb->lost_cb)
+-			pb->lost_cb(pb->ctx, cpu_buf->cpu, s->lost);
+-		break;
+-	}
+-	default:
+-		pr_warn("unknown perf sample type %d\n", e->type);
+-		return LIBBPF_PERF_EVENT_ERROR;
+-	}
+-	return LIBBPF_PERF_EVENT_CONT;
+-}
+-
+-static int perf_buffer__process_records(struct perf_buffer *pb,
+-					struct perf_cpu_buf *cpu_buf)
+-{
+-	enum bpf_perf_event_ret ret;
+-
+-	ret = bpf_perf_event_read_simple(cpu_buf->base, pb->mmap_size,
+-					 pb->page_size, &cpu_buf->buf,
+-					 &cpu_buf->buf_size,
+-					 perf_buffer__process_record, cpu_buf);
+-	if (ret != LIBBPF_PERF_EVENT_CONT)
+-		return ret;
+-	return 0;
+-}
+-
+-int perf_buffer__epoll_fd(const struct perf_buffer *pb)
+-{
+-	return pb->epoll_fd;
+-}
+-
+-int perf_buffer__poll(struct perf_buffer *pb, int timeout_ms)
+-{
+-	int i, cnt, err;
+-
+-	cnt = epoll_wait(pb->epoll_fd, pb->events, pb->cpu_cnt, timeout_ms);
+-	if (cnt < 0)
+-		return -errno;
+-
+-	for (i = 0; i < cnt; i++) {
+-		struct perf_cpu_buf *cpu_buf = pb->events[i].data.ptr;
+-
+-		err = perf_buffer__process_records(pb, cpu_buf);
+-		if (err) {
+-			pr_warn("error while processing records: %d\n", err);
+-			return libbpf_err(err);
+-		}
+-	}
+-	return cnt;
+-}
+-
+-/* Return number of PERF_EVENT_ARRAY map slots set up by this perf_buffer
+- * manager.
+- */
+-size_t perf_buffer__buffer_cnt(const struct perf_buffer *pb)
+-{
+-	return pb->cpu_cnt;
+-}
+-
+-/*
+- * Return perf_event FD of a ring buffer in *buf_idx* slot of
+- * PERF_EVENT_ARRAY BPF map. This FD can be polled for new data using
+- * select()/poll()/epoll() Linux syscalls.
+- */
+-int perf_buffer__buffer_fd(const struct perf_buffer *pb, size_t buf_idx)
+-{
+-	struct perf_cpu_buf *cpu_buf;
+-
+-	if (buf_idx >= pb->cpu_cnt)
+-		return libbpf_err(-EINVAL);
+-
+-	cpu_buf = pb->cpu_bufs[buf_idx];
+-	if (!cpu_buf)
+-		return libbpf_err(-ENOENT);
+-
+-	return cpu_buf->fd;
+-}
+-
+-/*
+- * Consume data from perf ring buffer corresponding to slot *buf_idx* in
+- * PERF_EVENT_ARRAY BPF map without waiting/polling. If there is no data to
+- * consume, do nothing and return success.
+- * Returns:
+- *   - 0 on success;
+- *   - <0 on failure.
+- */
+-int perf_buffer__consume_buffer(struct perf_buffer *pb, size_t buf_idx)
+-{
+-	struct perf_cpu_buf *cpu_buf;
+-
+-	if (buf_idx >= pb->cpu_cnt)
+-		return libbpf_err(-EINVAL);
+-
+-	cpu_buf = pb->cpu_bufs[buf_idx];
+-	if (!cpu_buf)
+-		return libbpf_err(-ENOENT);
+-
+-	return perf_buffer__process_records(pb, cpu_buf);
+-}
+-
+-int perf_buffer__consume(struct perf_buffer *pb)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < pb->cpu_cnt; i++) {
+-		struct perf_cpu_buf *cpu_buf = pb->cpu_bufs[i];
+-
+-		if (!cpu_buf)
+-			continue;
+-
+-		err = perf_buffer__process_records(pb, cpu_buf);
+-		if (err) {
+-			pr_warn("perf_buffer: failed to process records in buffer #%d: %d\n", i, err);
+-			return libbpf_err(err);
+-		}
+-	}
+-	return 0;
+-}
+-
+-struct bpf_prog_info_array_desc {
+-	int	array_offset;	/* e.g. offset of jited_prog_insns */
+-	int	count_offset;	/* e.g. offset of jited_prog_len */
+-	int	size_offset;	/* > 0: offset of rec size,
+-				 * < 0: fix size of -size_offset
+-				 */
+-};
+-
+-static struct bpf_prog_info_array_desc bpf_prog_info_array_desc[] = {
+-	[BPF_PROG_INFO_JITED_INSNS] = {
+-		offsetof(struct bpf_prog_info, jited_prog_insns),
+-		offsetof(struct bpf_prog_info, jited_prog_len),
+-		-1,
+-	},
+-	[BPF_PROG_INFO_XLATED_INSNS] = {
+-		offsetof(struct bpf_prog_info, xlated_prog_insns),
+-		offsetof(struct bpf_prog_info, xlated_prog_len),
+-		-1,
+-	},
+-	[BPF_PROG_INFO_MAP_IDS] = {
+-		offsetof(struct bpf_prog_info, map_ids),
+-		offsetof(struct bpf_prog_info, nr_map_ids),
+-		-(int)sizeof(__u32),
+-	},
+-	[BPF_PROG_INFO_JITED_KSYMS] = {
+-		offsetof(struct bpf_prog_info, jited_ksyms),
+-		offsetof(struct bpf_prog_info, nr_jited_ksyms),
+-		-(int)sizeof(__u64),
+-	},
+-	[BPF_PROG_INFO_JITED_FUNC_LENS] = {
+-		offsetof(struct bpf_prog_info, jited_func_lens),
+-		offsetof(struct bpf_prog_info, nr_jited_func_lens),
+-		-(int)sizeof(__u32),
+-	},
+-	[BPF_PROG_INFO_FUNC_INFO] = {
+-		offsetof(struct bpf_prog_info, func_info),
+-		offsetof(struct bpf_prog_info, nr_func_info),
+-		offsetof(struct bpf_prog_info, func_info_rec_size),
+-	},
+-	[BPF_PROG_INFO_LINE_INFO] = {
+-		offsetof(struct bpf_prog_info, line_info),
+-		offsetof(struct bpf_prog_info, nr_line_info),
+-		offsetof(struct bpf_prog_info, line_info_rec_size),
+-	},
+-	[BPF_PROG_INFO_JITED_LINE_INFO] = {
+-		offsetof(struct bpf_prog_info, jited_line_info),
+-		offsetof(struct bpf_prog_info, nr_jited_line_info),
+-		offsetof(struct bpf_prog_info, jited_line_info_rec_size),
+-	},
+-	[BPF_PROG_INFO_PROG_TAGS] = {
+-		offsetof(struct bpf_prog_info, prog_tags),
+-		offsetof(struct bpf_prog_info, nr_prog_tags),
+-		-(int)sizeof(__u8) * BPF_TAG_SIZE,
+-	},
+-
+-};
+-
+-static __u32 bpf_prog_info_read_offset_u32(struct bpf_prog_info *info,
+-					   int offset)
+-{
+-	__u32 *array = (__u32 *)info;
+-
+-	if (offset >= 0)
+-		return array[offset / sizeof(__u32)];
+-	return -(int)offset;
+-}
+-
+-static __u64 bpf_prog_info_read_offset_u64(struct bpf_prog_info *info,
+-					   int offset)
+-{
+-	__u64 *array = (__u64 *)info;
+-
+-	if (offset >= 0)
+-		return array[offset / sizeof(__u64)];
+-	return -(int)offset;
+-}
+-
+-static void bpf_prog_info_set_offset_u32(struct bpf_prog_info *info, int offset,
+-					 __u32 val)
+-{
+-	__u32 *array = (__u32 *)info;
+-
+-	if (offset >= 0)
+-		array[offset / sizeof(__u32)] = val;
+-}
+-
+-static void bpf_prog_info_set_offset_u64(struct bpf_prog_info *info, int offset,
+-					 __u64 val)
+-{
+-	__u64 *array = (__u64 *)info;
+-
+-	if (offset >= 0)
+-		array[offset / sizeof(__u64)] = val;
+-}
+-
+-struct bpf_prog_info_linear *
+-bpf_program__get_prog_info_linear(int fd, __u64 arrays)
+-{
+-	struct bpf_prog_info_linear *info_linear;
+-	struct bpf_prog_info info = {};
+-	__u32 info_len = sizeof(info);
+-	__u32 data_len = 0;
+-	int i, err;
+-	void *ptr;
+-
+-	if (arrays >> BPF_PROG_INFO_LAST_ARRAY)
+-		return libbpf_err_ptr(-EINVAL);
+-
+-	/* step 1: get array dimensions */
+-	err = bpf_obj_get_info_by_fd(fd, &info, &info_len);
+-	if (err) {
+-		pr_debug("can't get prog info: %s", strerror(errno));
+-		return libbpf_err_ptr(-EFAULT);
+-	}
+-
+-	/* step 2: calculate total size of all arrays */
+-	for (i = BPF_PROG_INFO_FIRST_ARRAY; i < BPF_PROG_INFO_LAST_ARRAY; ++i) {
+-		bool include_array = (arrays & (1UL << i)) > 0;
+-		struct bpf_prog_info_array_desc *desc;
+-		__u32 count, size;
+-
+-		desc = bpf_prog_info_array_desc + i;
+-
+-		/* kernel is too old to support this field */
+-		if (info_len < desc->array_offset + sizeof(__u32) ||
+-		    info_len < desc->count_offset + sizeof(__u32) ||
+-		    (desc->size_offset > 0 && info_len < desc->size_offset))
+-			include_array = false;
+-
+-		if (!include_array) {
+-			arrays &= ~(1UL << i);	/* clear the bit */
+-			continue;
+-		}
+-
+-		count = bpf_prog_info_read_offset_u32(&info, desc->count_offset);
+-		size  = bpf_prog_info_read_offset_u32(&info, desc->size_offset);
+-
+-		data_len += count * size;
+-	}
+-
+-	/* step 3: allocate continuous memory */
+-	data_len = roundup(data_len, sizeof(__u64));
+-	info_linear = malloc(sizeof(struct bpf_prog_info_linear) + data_len);
+-	if (!info_linear)
+-		return libbpf_err_ptr(-ENOMEM);
+-
+-	/* step 4: fill data to info_linear->info */
+-	info_linear->arrays = arrays;
+-	memset(&info_linear->info, 0, sizeof(info));
+-	ptr = info_linear->data;
+-
+-	for (i = BPF_PROG_INFO_FIRST_ARRAY; i < BPF_PROG_INFO_LAST_ARRAY; ++i) {
+-		struct bpf_prog_info_array_desc *desc;
+-		__u32 count, size;
+-
+-		if ((arrays & (1UL << i)) == 0)
+-			continue;
+-
+-		desc  = bpf_prog_info_array_desc + i;
+-		count = bpf_prog_info_read_offset_u32(&info, desc->count_offset);
+-		size  = bpf_prog_info_read_offset_u32(&info, desc->size_offset);
+-		bpf_prog_info_set_offset_u32(&info_linear->info,
+-					     desc->count_offset, count);
+-		bpf_prog_info_set_offset_u32(&info_linear->info,
+-					     desc->size_offset, size);
+-		bpf_prog_info_set_offset_u64(&info_linear->info,
+-					     desc->array_offset,
+-					     ptr_to_u64(ptr));
+-		ptr += count * size;
+-	}
+-
+-	/* step 5: call syscall again to get required arrays */
+-	err = bpf_obj_get_info_by_fd(fd, &info_linear->info, &info_len);
+-	if (err) {
+-		pr_debug("can't get prog info: %s", strerror(errno));
+-		free(info_linear);
+-		return libbpf_err_ptr(-EFAULT);
+-	}
+-
+-	/* step 6: verify the data */
+-	for (i = BPF_PROG_INFO_FIRST_ARRAY; i < BPF_PROG_INFO_LAST_ARRAY; ++i) {
+-		struct bpf_prog_info_array_desc *desc;
+-		__u32 v1, v2;
+-
+-		if ((arrays & (1UL << i)) == 0)
+-			continue;
+-
+-		desc = bpf_prog_info_array_desc + i;
+-		v1 = bpf_prog_info_read_offset_u32(&info, desc->count_offset);
+-		v2 = bpf_prog_info_read_offset_u32(&info_linear->info,
+-						   desc->count_offset);
+-		if (v1 != v2)
+-			pr_warn("%s: mismatch in element count\n", __func__);
+-
+-		v1 = bpf_prog_info_read_offset_u32(&info, desc->size_offset);
+-		v2 = bpf_prog_info_read_offset_u32(&info_linear->info,
+-						   desc->size_offset);
+-		if (v1 != v2)
+-			pr_warn("%s: mismatch in rec size\n", __func__);
+-	}
+-
+-	/* step 7: update info_len and data_len */
+-	info_linear->info_len = sizeof(struct bpf_prog_info);
+-	info_linear->data_len = data_len;
+-
+-	return info_linear;
+-}
+-
+-void bpf_program__bpil_addr_to_offs(struct bpf_prog_info_linear *info_linear)
+-{
+-	int i;
+-
+-	for (i = BPF_PROG_INFO_FIRST_ARRAY; i < BPF_PROG_INFO_LAST_ARRAY; ++i) {
+-		struct bpf_prog_info_array_desc *desc;
+-		__u64 addr, offs;
+-
+-		if ((info_linear->arrays & (1UL << i)) == 0)
+-			continue;
+-
+-		desc = bpf_prog_info_array_desc + i;
+-		addr = bpf_prog_info_read_offset_u64(&info_linear->info,
+-						     desc->array_offset);
+-		offs = addr - ptr_to_u64(info_linear->data);
+-		bpf_prog_info_set_offset_u64(&info_linear->info,
+-					     desc->array_offset, offs);
+-	}
+-}
+-
+-void bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear)
+-{
+-	int i;
+-
+-	for (i = BPF_PROG_INFO_FIRST_ARRAY; i < BPF_PROG_INFO_LAST_ARRAY; ++i) {
+-		struct bpf_prog_info_array_desc *desc;
+-		__u64 addr, offs;
+-
+-		if ((info_linear->arrays & (1UL << i)) == 0)
+-			continue;
+-
+-		desc = bpf_prog_info_array_desc + i;
+-		offs = bpf_prog_info_read_offset_u64(&info_linear->info,
+-						     desc->array_offset);
+-		addr = offs + ptr_to_u64(info_linear->data);
+-		bpf_prog_info_set_offset_u64(&info_linear->info,
+-					     desc->array_offset, addr);
+-	}
+-}
+-
+-int bpf_program__set_attach_target(struct bpf_program *prog,
+-				   int attach_prog_fd,
+-				   const char *attach_func_name)
+-{
+-	int btf_obj_fd = 0, btf_id = 0, err;
+-
+-	if (!prog || attach_prog_fd < 0 || !attach_func_name)
+-		return libbpf_err(-EINVAL);
+-
+-	if (prog->obj->loaded)
+-		return libbpf_err(-EINVAL);
+-
+-	if (attach_prog_fd) {
+-		btf_id = libbpf_find_prog_btf_id(attach_func_name,
+-						 attach_prog_fd);
+-		if (btf_id < 0)
+-			return libbpf_err(btf_id);
+-	} else {
+-		/* load btf_vmlinux, if not yet */
+-		err = bpf_object__load_vmlinux_btf(prog->obj, true);
+-		if (err)
+-			return libbpf_err(err);
+-		err = find_kernel_btf_id(prog->obj, attach_func_name,
+-					 prog->expected_attach_type,
+-					 &btf_obj_fd, &btf_id);
+-		if (err)
+-			return libbpf_err(err);
+-	}
+-
+-	prog->attach_btf_id = btf_id;
+-	prog->attach_btf_obj_fd = btf_obj_fd;
+-	prog->attach_prog_fd = attach_prog_fd;
+-	return 0;
+-}
+-
+-int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz)
+-{
+-	int err = 0, n, len, start, end = -1;
+-	bool *tmp;
+-
+-	*mask = NULL;
+-	*mask_sz = 0;
+-
+-	/* Each sub string separated by ',' has format \d+-\d+ or \d+ */
+-	while (*s) {
+-		if (*s == ',' || *s == '\n') {
+-			s++;
+-			continue;
+-		}
+-		n = sscanf(s, "%d%n-%d%n", &start, &len, &end, &len);
+-		if (n <= 0 || n > 2) {
+-			pr_warn("Failed to get CPU range %s: %d\n", s, n);
+-			err = -EINVAL;
+-			goto cleanup;
+-		} else if (n == 1) {
+-			end = start;
+-		}
+-		if (start < 0 || start > end) {
+-			pr_warn("Invalid CPU range [%d,%d] in %s\n",
+-				start, end, s);
+-			err = -EINVAL;
+-			goto cleanup;
+-		}
+-		tmp = realloc(*mask, end + 1);
+-		if (!tmp) {
+-			err = -ENOMEM;
+-			goto cleanup;
+-		}
+-		*mask = tmp;
+-		memset(tmp + *mask_sz, 0, start - *mask_sz);
+-		memset(tmp + start, 1, end - start + 1);
+-		*mask_sz = end + 1;
+-		s += len;
+-	}
+-	if (!*mask_sz) {
+-		pr_warn("Empty CPU range\n");
+-		return -EINVAL;
+-	}
+-	return 0;
+-cleanup:
+-	free(*mask);
+-	*mask = NULL;
+-	return err;
+-}
+-
+-int parse_cpu_mask_file(const char *fcpu, bool **mask, int *mask_sz)
+-{
+-	int fd, err = 0, len;
+-	char buf[128];
+-
+-	fd = open(fcpu, O_RDONLY);
+-	if (fd < 0) {
+-		err = -errno;
+-		pr_warn("Failed to open cpu mask file %s: %d\n", fcpu, err);
+-		return err;
+-	}
+-	len = read(fd, buf, sizeof(buf));
+-	close(fd);
+-	if (len <= 0) {
+-		err = len ? -errno : -EINVAL;
+-		pr_warn("Failed to read cpu mask from %s: %d\n", fcpu, err);
+-		return err;
+-	}
+-	if (len >= sizeof(buf)) {
+-		pr_warn("CPU mask is too big in file %s\n", fcpu);
+-		return -E2BIG;
+-	}
+-	buf[len] = '\0';
+-
+-	return parse_cpu_mask_str(buf, mask, mask_sz);
+-}
+-
+-int libbpf_num_possible_cpus(void)
+-{
+-	static const char *fcpu = "/sys/devices/system/cpu/possible";
+-	static int cpus;
+-	int err, n, i, tmp_cpus;
+-	bool *mask;
+-
+-	tmp_cpus = READ_ONCE(cpus);
+-	if (tmp_cpus > 0)
+-		return tmp_cpus;
+-
+-	err = parse_cpu_mask_file(fcpu, &mask, &n);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	tmp_cpus = 0;
+-	for (i = 0; i < n; i++) {
+-		if (mask[i])
+-			tmp_cpus++;
+-	}
+-	free(mask);
+-
+-	WRITE_ONCE(cpus, tmp_cpus);
+-	return tmp_cpus;
+-}
+-
+-int bpf_object__open_skeleton(struct bpf_object_skeleton *s,
+-			      const struct bpf_object_open_opts *opts)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, skel_opts,
+-		.object_name = s->name,
+-	);
+-	struct bpf_object *obj;
+-	int i, err;
+-
+-	/* Attempt to preserve opts->object_name, unless overriden by user
+-	 * explicitly. Overwriting object name for skeletons is discouraged,
+-	 * as it breaks global data maps, because they contain object name
+-	 * prefix as their own map name prefix. When skeleton is generated,
+-	 * bpftool is making an assumption that this name will stay the same.
+-	 */
+-	if (opts) {
+-		memcpy(&skel_opts, opts, sizeof(*opts));
+-		if (!opts->object_name)
+-			skel_opts.object_name = s->name;
+-	}
+-
+-	obj = bpf_object__open_mem(s->data, s->data_sz, &skel_opts);
+-	err = libbpf_get_error(obj);
+-	if (err) {
+-		pr_warn("failed to initialize skeleton BPF object '%s': %d\n",
+-			s->name, err);
+-		return libbpf_err(err);
+-	}
+-
+-	*s->obj = obj;
+-
+-	for (i = 0; i < s->map_cnt; i++) {
+-		struct bpf_map **map = s->maps[i].map;
+-		const char *name = s->maps[i].name;
+-		void **mmaped = s->maps[i].mmaped;
+-
+-		*map = bpf_object__find_map_by_name(obj, name);
+-		if (!*map) {
+-			pr_warn("failed to find skeleton map '%s'\n", name);
+-			return libbpf_err(-ESRCH);
+-		}
+-
+-		/* externs shouldn't be pre-setup from user code */
+-		if (mmaped && (*map)->libbpf_type != LIBBPF_MAP_KCONFIG)
+-			*mmaped = (*map)->mmaped;
+-	}
+-
+-	for (i = 0; i < s->prog_cnt; i++) {
+-		struct bpf_program **prog = s->progs[i].prog;
+-		const char *name = s->progs[i].name;
+-
+-		*prog = bpf_object__find_program_by_name(obj, name);
+-		if (!*prog) {
+-			pr_warn("failed to find skeleton program '%s'\n", name);
+-			return libbpf_err(-ESRCH);
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_object__load_skeleton(struct bpf_object_skeleton *s)
+-{
+-	int i, err;
+-
+-	err = bpf_object__load(*s->obj);
+-	if (err) {
+-		pr_warn("failed to load BPF skeleton '%s': %d\n", s->name, err);
+-		return libbpf_err(err);
+-	}
+-
+-	for (i = 0; i < s->map_cnt; i++) {
+-		struct bpf_map *map = *s->maps[i].map;
+-		size_t mmap_sz = bpf_map_mmap_sz(map);
+-		int prot, map_fd = bpf_map__fd(map);
+-		void **mmaped = s->maps[i].mmaped;
+-
+-		if (!mmaped)
+-			continue;
+-
+-		if (!(map->def.map_flags & BPF_F_MMAPABLE)) {
+-			*mmaped = NULL;
+-			continue;
+-		}
+-
+-		if (map->def.map_flags & BPF_F_RDONLY_PROG)
+-			prot = PROT_READ;
+-		else
+-			prot = PROT_READ | PROT_WRITE;
+-
+-		/* Remap anonymous mmap()-ed "map initialization image" as
+-		 * a BPF map-backed mmap()-ed memory, but preserving the same
+-		 * memory address. This will cause kernel to change process'
+-		 * page table to point to a different piece of kernel memory,
+-		 * but from userspace point of view memory address (and its
+-		 * contents, being identical at this point) will stay the
+-		 * same. This mapping will be released by bpf_object__close()
+-		 * as per normal clean up procedure, so we don't need to worry
+-		 * about it from skeleton's clean up perspective.
+-		 */
+-		*mmaped = mmap(map->mmaped, mmap_sz, prot,
+-				MAP_SHARED | MAP_FIXED, map_fd, 0);
+-		if (*mmaped == MAP_FAILED) {
+-			err = -errno;
+-			*mmaped = NULL;
+-			pr_warn("failed to re-mmap() map '%s': %d\n",
+-				 bpf_map__name(map), err);
+-			return libbpf_err(err);
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
+-{
+-	int i, err;
+-
+-	for (i = 0; i < s->prog_cnt; i++) {
+-		struct bpf_program *prog = *s->progs[i].prog;
+-		struct bpf_link **link = s->progs[i].link;
+-		const struct bpf_sec_def *sec_def;
+-
+-		if (!prog->load)
+-			continue;
+-
+-		sec_def = find_sec_def(prog->sec_name);
+-		if (!sec_def || !sec_def->attach_fn)
+-			continue;
+-
+-		*link = sec_def->attach_fn(sec_def, prog);
+-		err = libbpf_get_error(*link);
+-		if (err) {
+-			pr_warn("failed to auto-attach program '%s': %d\n",
+-				bpf_program__name(prog), err);
+-			return libbpf_err(err);
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
+-{
+-	int i;
+-
+-	for (i = 0; i < s->prog_cnt; i++) {
+-		struct bpf_link **link = s->progs[i].link;
+-
+-		bpf_link__destroy(*link);
+-		*link = NULL;
+-	}
+-}
+-
+-void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s)
+-{
+-	if (s->progs)
+-		bpf_object__detach_skeleton(s);
+-	if (s->obj)
+-		bpf_object__close(*s->obj);
+-	free(s->maps);
+-	free(s->progs);
+-	free(s);
+-}
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+deleted file mode 100644
+index 6e61342ba56c..000000000000
+--- a/tools/lib/bpf/libbpf.h
++++ /dev/null
+@@ -1,848 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * Common eBPF ELF object loading operations.
+- *
+- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
+- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
+- * Copyright (C) 2015 Huawei Inc.
+- */
+-#ifndef __LIBBPF_LIBBPF_H
+-#define __LIBBPF_LIBBPF_H
+-
+-#include <stdarg.h>
+-#include <stdio.h>
+-#include <stdint.h>
+-#include <stdbool.h>
+-#include <sys/types.h>  // for size_t
+-#include <linux/bpf.h>
+-
+-#include "libbpf_common.h"
+-#include "libbpf_legacy.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-enum libbpf_errno {
+-	__LIBBPF_ERRNO__START = 4000,
+-
+-	/* Something wrong in libelf */
+-	LIBBPF_ERRNO__LIBELF = __LIBBPF_ERRNO__START,
+-	LIBBPF_ERRNO__FORMAT,	/* BPF object format invalid */
+-	LIBBPF_ERRNO__KVERSION,	/* Incorrect or no 'version' section */
+-	LIBBPF_ERRNO__ENDIAN,	/* Endian mismatch */
+-	LIBBPF_ERRNO__INTERNAL,	/* Internal error in libbpf */
+-	LIBBPF_ERRNO__RELOC,	/* Relocation failed */
+-	LIBBPF_ERRNO__LOAD,	/* Load program failure for unknown reason */
+-	LIBBPF_ERRNO__VERIFY,	/* Kernel verifier blocks program loading */
+-	LIBBPF_ERRNO__PROG2BIG,	/* Program too big */
+-	LIBBPF_ERRNO__KVER,	/* Incorrect kernel version */
+-	LIBBPF_ERRNO__PROGTYPE,	/* Kernel doesn't support this program type */
+-	LIBBPF_ERRNO__WRNGPID,	/* Wrong pid in netlink message */
+-	LIBBPF_ERRNO__INVSEQ,	/* Invalid netlink sequence */
+-	LIBBPF_ERRNO__NLPARSE,	/* netlink parsing error */
+-	__LIBBPF_ERRNO__END,
+-};
+-
+-LIBBPF_API int libbpf_strerror(int err, char *buf, size_t size);
+-
+-enum libbpf_print_level {
+-        LIBBPF_WARN,
+-        LIBBPF_INFO,
+-        LIBBPF_DEBUG,
+-};
+-
+-typedef int (*libbpf_print_fn_t)(enum libbpf_print_level level,
+-				 const char *, va_list ap);
+-
+-LIBBPF_API libbpf_print_fn_t libbpf_set_print(libbpf_print_fn_t fn);
+-
+-/* Hide internal to user */
+-struct bpf_object;
+-
+-struct bpf_object_open_attr {
+-	const char *file;
+-	enum bpf_prog_type prog_type;
+-};
+-
+-struct bpf_object_open_opts {
+-	/* size of this struct, for forward/backward compatiblity */
+-	size_t sz;
+-	/* object name override, if provided:
+-	 * - for object open from file, this will override setting object
+-	 *   name from file path's base name;
+-	 * - for object open from memory buffer, this will specify an object
+-	 *   name and will override default "<addr>-<buf-size>" name;
+-	 */
+-	const char *object_name;
+-	/* parse map definitions non-strictly, allowing extra attributes/data */
+-	bool relaxed_maps;
+-	/* DEPRECATED: handle CO-RE relocations non-strictly, allowing failures.
+-	 * Value is ignored. Relocations always are processed non-strictly.
+-	 * Non-relocatable instructions are replaced with invalid ones to
+-	 * prevent accidental errors.
+-	 * */
+-	bool relaxed_core_relocs;
+-	/* maps that set the 'pinning' attribute in their definition will have
+-	 * their pin_path attribute set to a file in this directory, and be
+-	 * auto-pinned to that path on load; defaults to "/sys/fs/bpf".
+-	 */
+-	const char *pin_root_path;
+-	__u32 attach_prog_fd;
+-	/* Additional kernel config content that augments and overrides
+-	 * system Kconfig for CONFIG_xxx externs.
+-	 */
+-	const char *kconfig;
+-};
+-#define bpf_object_open_opts__last_field kconfig
+-
+-LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+-LIBBPF_API struct bpf_object *
+-bpf_object__open_file(const char *path, const struct bpf_object_open_opts *opts);
+-LIBBPF_API struct bpf_object *
+-bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+-		     const struct bpf_object_open_opts *opts);
+-
+-/* deprecated bpf_object__open variants */
+-LIBBPF_API struct bpf_object *
+-bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
+-			const char *name);
+-LIBBPF_API struct bpf_object *
+-bpf_object__open_xattr(struct bpf_object_open_attr *attr);
+-
+-enum libbpf_pin_type {
+-	LIBBPF_PIN_NONE,
+-	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+-	LIBBPF_PIN_BY_NAME,
+-};
+-
+-/* pin_maps and unpin_maps can both be called with a NULL path, in which case
+- * they will use the pin_path attribute of each map (and ignore all maps that
+- * don't have a pin_path set).
+- */
+-LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *path);
+-LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
+-				      const char *path);
+-LIBBPF_API int bpf_object__pin_programs(struct bpf_object *obj,
+-					const char *path);
+-LIBBPF_API int bpf_object__unpin_programs(struct bpf_object *obj,
+-					  const char *path);
+-LIBBPF_API int bpf_object__pin(struct bpf_object *object, const char *path);
+-LIBBPF_API void bpf_object__close(struct bpf_object *object);
+-
+-struct bpf_object_load_attr {
+-	struct bpf_object *obj;
+-	int log_level;
+-	const char *target_btf_path;
+-};
+-
+-/* Load/unload object into/from kernel */
+-LIBBPF_API int bpf_object__load(struct bpf_object *obj);
+-LIBBPF_API int bpf_object__load_xattr(struct bpf_object_load_attr *attr);
+-LIBBPF_API int bpf_object__unload(struct bpf_object *obj);
+-
+-LIBBPF_API const char *bpf_object__name(const struct bpf_object *obj);
+-LIBBPF_API unsigned int bpf_object__kversion(const struct bpf_object *obj);
+-LIBBPF_API int bpf_object__set_kversion(struct bpf_object *obj, __u32 kern_version);
+-
+-struct btf;
+-LIBBPF_API struct btf *bpf_object__btf(const struct bpf_object *obj);
+-LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
+-
+-LIBBPF_API struct bpf_program *
+-bpf_object__find_program_by_title(const struct bpf_object *obj,
+-				  const char *title);
+-LIBBPF_API struct bpf_program *
+-bpf_object__find_program_by_name(const struct bpf_object *obj,
+-				 const char *name);
+-
+-LIBBPF_API struct bpf_object *bpf_object__next(struct bpf_object *prev);
+-#define bpf_object__for_each_safe(pos, tmp)			\
+-	for ((pos) = bpf_object__next(NULL),		\
+-		(tmp) = bpf_object__next(pos);		\
+-	     (pos) != NULL;				\
+-	     (pos) = (tmp), (tmp) = bpf_object__next(tmp))
+-
+-typedef void (*bpf_object_clear_priv_t)(struct bpf_object *, void *);
+-LIBBPF_API int bpf_object__set_priv(struct bpf_object *obj, void *priv,
+-				    bpf_object_clear_priv_t clear_priv);
+-LIBBPF_API void *bpf_object__priv(const struct bpf_object *prog);
+-
+-LIBBPF_API int
+-libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
+-			 enum bpf_attach_type *expected_attach_type);
+-LIBBPF_API int libbpf_attach_type_by_name(const char *name,
+-					  enum bpf_attach_type *attach_type);
+-LIBBPF_API int libbpf_find_vmlinux_btf_id(const char *name,
+-					  enum bpf_attach_type attach_type);
+-
+-/* Accessors of bpf_program */
+-struct bpf_program;
+-LIBBPF_API struct bpf_program *bpf_program__next(struct bpf_program *prog,
+-						 const struct bpf_object *obj);
+-
+-#define bpf_object__for_each_program(pos, obj)		\
+-	for ((pos) = bpf_program__next(NULL, (obj));	\
+-	     (pos) != NULL;				\
+-	     (pos) = bpf_program__next((pos), (obj)))
+-
+-LIBBPF_API struct bpf_program *bpf_program__prev(struct bpf_program *prog,
+-						 const struct bpf_object *obj);
+-
+-typedef void (*bpf_program_clear_priv_t)(struct bpf_program *, void *);
+-
+-LIBBPF_API int bpf_program__set_priv(struct bpf_program *prog, void *priv,
+-				     bpf_program_clear_priv_t clear_priv);
+-
+-LIBBPF_API void *bpf_program__priv(const struct bpf_program *prog);
+-LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
+-					 __u32 ifindex);
+-
+-LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
+-LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
+-LIBBPF_API LIBBPF_DEPRECATED("BPF program title is confusing term; please use bpf_program__section_name() instead")
+-const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy);
+-LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
+-
+-/* returns program size in bytes */
+-LIBBPF_API size_t bpf_program__size(const struct bpf_program *prog);
+-
+-LIBBPF_API int bpf_program__load(struct bpf_program *prog, char *license,
+-				 __u32 kern_version);
+-LIBBPF_API int bpf_program__fd(const struct bpf_program *prog);
+-LIBBPF_API int bpf_program__pin_instance(struct bpf_program *prog,
+-					 const char *path,
+-					 int instance);
+-LIBBPF_API int bpf_program__unpin_instance(struct bpf_program *prog,
+-					   const char *path,
+-					   int instance);
+-LIBBPF_API int bpf_program__pin(struct bpf_program *prog, const char *path);
+-LIBBPF_API int bpf_program__unpin(struct bpf_program *prog, const char *path);
+-LIBBPF_API void bpf_program__unload(struct bpf_program *prog);
+-
+-struct bpf_link;
+-
+-LIBBPF_API struct bpf_link *bpf_link__open(const char *path);
+-LIBBPF_API int bpf_link__fd(const struct bpf_link *link);
+-LIBBPF_API const char *bpf_link__pin_path(const struct bpf_link *link);
+-LIBBPF_API int bpf_link__pin(struct bpf_link *link, const char *path);
+-LIBBPF_API int bpf_link__unpin(struct bpf_link *link);
+-LIBBPF_API int bpf_link__update_program(struct bpf_link *link,
+-					struct bpf_program *prog);
+-LIBBPF_API void bpf_link__disconnect(struct bpf_link *link);
+-LIBBPF_API int bpf_link__detach(struct bpf_link *link);
+-LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
+-
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach(struct bpf_program *prog);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_perf_event(struct bpf_program *prog, int pfd);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_kprobe(struct bpf_program *prog, bool retprobe,
+-			   const char *func_name);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
+-			   pid_t pid, const char *binary_path,
+-			   size_t func_offset);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_tracepoint(struct bpf_program *prog,
+-			       const char *tp_category,
+-			       const char *tp_name);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
+-				   const char *tp_name);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_trace(struct bpf_program *prog);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_lsm(struct bpf_program *prog);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_netns(struct bpf_program *prog, int netns_fd);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_xdp(struct bpf_program *prog, int ifindex);
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_freplace(struct bpf_program *prog,
+-			     int target_fd, const char *attach_func_name);
+-
+-struct bpf_map;
+-
+-LIBBPF_API struct bpf_link *bpf_map__attach_struct_ops(struct bpf_map *map);
+-
+-struct bpf_iter_attach_opts {
+-	size_t sz; /* size of this struct for forward/backward compatibility */
+-	union bpf_iter_link_info *link_info;
+-	__u32 link_info_len;
+-};
+-#define bpf_iter_attach_opts__last_field link_info_len
+-
+-LIBBPF_API struct bpf_link *
+-bpf_program__attach_iter(struct bpf_program *prog,
+-			 const struct bpf_iter_attach_opts *opts);
+-
+-struct bpf_insn;
+-
+-/*
+- * Libbpf allows callers to adjust BPF programs before being loaded
+- * into kernel. One program in an object file can be transformed into
+- * multiple variants to be attached to different hooks.
+- *
+- * bpf_program_prep_t, bpf_program__set_prep and bpf_program__nth_fd
+- * form an API for this purpose.
+- *
+- * - bpf_program_prep_t:
+- *   Defines a 'preprocessor', which is a caller defined function
+- *   passed to libbpf through bpf_program__set_prep(), and will be
+- *   called before program is loaded. The processor should adjust
+- *   the program one time for each instance according to the instance id
+- *   passed to it.
+- *
+- * - bpf_program__set_prep:
+- *   Attaches a preprocessor to a BPF program. The number of instances
+- *   that should be created is also passed through this function.
+- *
+- * - bpf_program__nth_fd:
+- *   After the program is loaded, get resulting FD of a given instance
+- *   of the BPF program.
+- *
+- * If bpf_program__set_prep() is not used, the program would be loaded
+- * without adjustment during bpf_object__load(). The program has only
+- * one instance. In this case bpf_program__fd(prog) is equal to
+- * bpf_program__nth_fd(prog, 0).
+- */
+-
+-struct bpf_prog_prep_result {
+-	/*
+-	 * If not NULL, load new instruction array.
+-	 * If set to NULL, don't load this instance.
+-	 */
+-	struct bpf_insn *new_insn_ptr;
+-	int new_insn_cnt;
+-
+-	/* If not NULL, result FD is written to it. */
+-	int *pfd;
+-};
+-
+-/*
+- * Parameters of bpf_program_prep_t:
+- *  - prog:	The bpf_program being loaded.
+- *  - n:	Index of instance being generated.
+- *  - insns:	BPF instructions array.
+- *  - insns_cnt:Number of instructions in insns.
+- *  - res:	Output parameter, result of transformation.
+- *
+- * Return value:
+- *  - Zero:	pre-processing success.
+- *  - Non-zero:	pre-processing error, stop loading.
+- */
+-typedef int (*bpf_program_prep_t)(struct bpf_program *prog, int n,
+-				  struct bpf_insn *insns, int insns_cnt,
+-				  struct bpf_prog_prep_result *res);
+-
+-LIBBPF_API int bpf_program__set_prep(struct bpf_program *prog, int nr_instance,
+-				     bpf_program_prep_t prep);
+-
+-LIBBPF_API int bpf_program__nth_fd(const struct bpf_program *prog, int n);
+-
+-/*
+- * Adjust type of BPF program. Default is kprobe.
+- */
+-LIBBPF_API int bpf_program__set_socket_filter(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_tracepoint(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_raw_tracepoint(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_kprobe(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_lsm(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_sched_cls(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_sched_act(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_xdp(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_tracing(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_struct_ops(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_extension(struct bpf_program *prog);
+-LIBBPF_API int bpf_program__set_sk_lookup(struct bpf_program *prog);
+-
+-LIBBPF_API enum bpf_prog_type bpf_program__get_type(const struct bpf_program *prog);
+-LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
+-				      enum bpf_prog_type type);
+-
+-LIBBPF_API enum bpf_attach_type
+-bpf_program__get_expected_attach_type(const struct bpf_program *prog);
+-LIBBPF_API void
+-bpf_program__set_expected_attach_type(struct bpf_program *prog,
+-				      enum bpf_attach_type type);
+-
+-LIBBPF_API int
+-bpf_program__set_attach_target(struct bpf_program *prog, int attach_prog_fd,
+-			       const char *attach_func_name);
+-
+-LIBBPF_API bool bpf_program__is_socket_filter(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_tracepoint(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_raw_tracepoint(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_kprobe(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_lsm(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_sched_cls(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_sched_act(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_xdp(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_perf_event(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_tracing(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_struct_ops(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_extension(const struct bpf_program *prog);
+-LIBBPF_API bool bpf_program__is_sk_lookup(const struct bpf_program *prog);
+-
+-/*
+- * No need for __attribute__((packed)), all members of 'bpf_map_def'
+- * are all aligned.  In addition, using __attribute__((packed))
+- * would trigger a -Wpacked warning message, and lead to an error
+- * if -Werror is set.
+- */
+-struct bpf_map_def {
+-	unsigned int type;
+-	unsigned int key_size;
+-	unsigned int value_size;
+-	unsigned int max_entries;
+-	unsigned int map_flags;
+-};
+-
+-/*
+- * The 'struct bpf_map' in include/linux/bpf.h is internal to the kernel,
+- * so no need to worry about a name clash.
+- */
+-LIBBPF_API struct bpf_map *
+-bpf_object__find_map_by_name(const struct bpf_object *obj, const char *name);
+-
+-LIBBPF_API int
+-bpf_object__find_map_fd_by_name(const struct bpf_object *obj, const char *name);
+-
+-/*
+- * Get bpf_map through the offset of corresponding struct bpf_map_def
+- * in the BPF object file.
+- */
+-LIBBPF_API struct bpf_map *
+-bpf_object__find_map_by_offset(struct bpf_object *obj, size_t offset);
+-
+-LIBBPF_API struct bpf_map *
+-bpf_map__next(const struct bpf_map *map, const struct bpf_object *obj);
+-#define bpf_object__for_each_map(pos, obj)		\
+-	for ((pos) = bpf_map__next(NULL, (obj));	\
+-	     (pos) != NULL;				\
+-	     (pos) = bpf_map__next((pos), (obj)))
+-#define bpf_map__for_each bpf_object__for_each_map
+-
+-LIBBPF_API struct bpf_map *
+-bpf_map__prev(const struct bpf_map *map, const struct bpf_object *obj);
+-
+-/* get/set map FD */
+-LIBBPF_API int bpf_map__fd(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__reuse_fd(struct bpf_map *map, int fd);
+-/* get map definition */
+-LIBBPF_API const struct bpf_map_def *bpf_map__def(const struct bpf_map *map);
+-/* get map name */
+-LIBBPF_API const char *bpf_map__name(const struct bpf_map *map);
+-/* get/set map type */
+-LIBBPF_API enum bpf_map_type bpf_map__type(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_type(struct bpf_map *map, enum bpf_map_type type);
+-/* get/set map size (max_entries) */
+-LIBBPF_API __u32 bpf_map__max_entries(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_max_entries(struct bpf_map *map, __u32 max_entries);
+-LIBBPF_API int bpf_map__resize(struct bpf_map *map, __u32 max_entries);
+-/* get/set map flags */
+-LIBBPF_API __u32 bpf_map__map_flags(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_map_flags(struct bpf_map *map, __u32 flags);
+-/* get/set map NUMA node */
+-LIBBPF_API __u32 bpf_map__numa_node(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_numa_node(struct bpf_map *map, __u32 numa_node);
+-/* get/set map key size */
+-LIBBPF_API __u32 bpf_map__key_size(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_key_size(struct bpf_map *map, __u32 size);
+-/* get/set map value size */
+-LIBBPF_API __u32 bpf_map__value_size(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_value_size(struct bpf_map *map, __u32 size);
+-/* get map key/value BTF type IDs */
+-LIBBPF_API __u32 bpf_map__btf_key_type_id(const struct bpf_map *map);
+-LIBBPF_API __u32 bpf_map__btf_value_type_id(const struct bpf_map *map);
+-/* get/set map if_index */
+-LIBBPF_API __u32 bpf_map__ifindex(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_ifindex(struct bpf_map *map, __u32 ifindex);
+-
+-typedef void (*bpf_map_clear_priv_t)(struct bpf_map *, void *);
+-LIBBPF_API int bpf_map__set_priv(struct bpf_map *map, void *priv,
+-				 bpf_map_clear_priv_t clear_priv);
+-LIBBPF_API void *bpf_map__priv(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_initial_value(struct bpf_map *map,
+-					  const void *data, size_t size);
+-LIBBPF_API const void *bpf_map__initial_value(struct bpf_map *map, size_t *psize);
+-LIBBPF_API bool bpf_map__is_offload_neutral(const struct bpf_map *map);
+-LIBBPF_API bool bpf_map__is_internal(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__set_pin_path(struct bpf_map *map, const char *path);
+-LIBBPF_API const char *bpf_map__get_pin_path(const struct bpf_map *map);
+-LIBBPF_API bool bpf_map__is_pinned(const struct bpf_map *map);
+-LIBBPF_API int bpf_map__pin(struct bpf_map *map, const char *path);
+-LIBBPF_API int bpf_map__unpin(struct bpf_map *map, const char *path);
+-
+-LIBBPF_API int bpf_map__set_inner_map_fd(struct bpf_map *map, int fd);
+-LIBBPF_API struct bpf_map *bpf_map__inner_map(struct bpf_map *map);
+-
+-LIBBPF_API long libbpf_get_error(const void *ptr);
+-
+-struct bpf_prog_load_attr {
+-	const char *file;
+-	enum bpf_prog_type prog_type;
+-	enum bpf_attach_type expected_attach_type;
+-	int ifindex;
+-	int log_level;
+-	int prog_flags;
+-};
+-
+-LIBBPF_API int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+-				   struct bpf_object **pobj, int *prog_fd);
+-LIBBPF_API int bpf_prog_load(const char *file, enum bpf_prog_type type,
+-			     struct bpf_object **pobj, int *prog_fd);
+-
+-/* XDP related API */
+-struct xdp_link_info {
+-	__u32 prog_id;
+-	__u32 drv_prog_id;
+-	__u32 hw_prog_id;
+-	__u32 skb_prog_id;
+-	__u8 attach_mode;
+-};
+-
+-struct bpf_xdp_set_link_opts {
+-	size_t sz;
+-	int old_fd;
+-	size_t :0;
+-};
+-#define bpf_xdp_set_link_opts__last_field old_fd
+-
+-LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
+-LIBBPF_API int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
+-					const struct bpf_xdp_set_link_opts *opts);
+-LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags);
+-LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+-				     size_t info_size, __u32 flags);
+-
+-/* TC related API */
+-enum bpf_tc_attach_point {
+-	BPF_TC_INGRESS = 1 << 0,
+-	BPF_TC_EGRESS  = 1 << 1,
+-	BPF_TC_CUSTOM  = 1 << 2,
+-};
+-
+-#define BPF_TC_PARENT(a, b) 	\
+-	((((a) << 16) & 0xFFFF0000U) | ((b) & 0x0000FFFFU))
+-
+-enum bpf_tc_flags {
+-	BPF_TC_F_REPLACE = 1 << 0,
+-};
+-
+-struct bpf_tc_hook {
+-	size_t sz;
+-	int ifindex;
+-	enum bpf_tc_attach_point attach_point;
+-	__u32 parent;
+-	size_t :0;
+-};
+-#define bpf_tc_hook__last_field parent
+-
+-struct bpf_tc_opts {
+-	size_t sz;
+-	int prog_fd;
+-	__u32 flags;
+-	__u32 prog_id;
+-	__u32 handle;
+-	__u32 priority;
+-	size_t :0;
+-};
+-#define bpf_tc_opts__last_field priority
+-
+-LIBBPF_API int bpf_tc_hook_create(struct bpf_tc_hook *hook);
+-LIBBPF_API int bpf_tc_hook_destroy(struct bpf_tc_hook *hook);
+-LIBBPF_API int bpf_tc_attach(const struct bpf_tc_hook *hook,
+-			     struct bpf_tc_opts *opts);
+-LIBBPF_API int bpf_tc_detach(const struct bpf_tc_hook *hook,
+-			     const struct bpf_tc_opts *opts);
+-LIBBPF_API int bpf_tc_query(const struct bpf_tc_hook *hook,
+-			    struct bpf_tc_opts *opts);
+-
+-/* Ring buffer APIs */
+-struct ring_buffer;
+-
+-typedef int (*ring_buffer_sample_fn)(void *ctx, void *data, size_t size);
+-
+-struct ring_buffer_opts {
+-	size_t sz; /* size of this struct, for forward/backward compatiblity */
+-};
+-
+-#define ring_buffer_opts__last_field sz
+-
+-LIBBPF_API struct ring_buffer *
+-ring_buffer__new(int map_fd, ring_buffer_sample_fn sample_cb, void *ctx,
+-		 const struct ring_buffer_opts *opts);
+-LIBBPF_API void ring_buffer__free(struct ring_buffer *rb);
+-LIBBPF_API int ring_buffer__add(struct ring_buffer *rb, int map_fd,
+-				ring_buffer_sample_fn sample_cb, void *ctx);
+-LIBBPF_API int ring_buffer__poll(struct ring_buffer *rb, int timeout_ms);
+-LIBBPF_API int ring_buffer__consume(struct ring_buffer *rb);
+-LIBBPF_API int ring_buffer__epoll_fd(const struct ring_buffer *rb);
+-
+-/* Perf buffer APIs */
+-struct perf_buffer;
+-
+-typedef void (*perf_buffer_sample_fn)(void *ctx, int cpu,
+-				      void *data, __u32 size);
+-typedef void (*perf_buffer_lost_fn)(void *ctx, int cpu, __u64 cnt);
+-
+-/* common use perf buffer options */
+-struct perf_buffer_opts {
+-	/* if specified, sample_cb is called for each sample */
+-	perf_buffer_sample_fn sample_cb;
+-	/* if specified, lost_cb is called for each batch of lost samples */
+-	perf_buffer_lost_fn lost_cb;
+-	/* ctx is provided to sample_cb and lost_cb */
+-	void *ctx;
+-};
+-
+-LIBBPF_API struct perf_buffer *
+-perf_buffer__new(int map_fd, size_t page_cnt,
+-		 const struct perf_buffer_opts *opts);
+-
+-enum bpf_perf_event_ret {
+-	LIBBPF_PERF_EVENT_DONE	= 0,
+-	LIBBPF_PERF_EVENT_ERROR	= -1,
+-	LIBBPF_PERF_EVENT_CONT	= -2,
+-};
+-
+-struct perf_event_header;
+-
+-typedef enum bpf_perf_event_ret
+-(*perf_buffer_event_fn)(void *ctx, int cpu, struct perf_event_header *event);
+-
+-/* raw perf buffer options, giving most power and control */
+-struct perf_buffer_raw_opts {
+-	/* perf event attrs passed directly into perf_event_open() */
+-	struct perf_event_attr *attr;
+-	/* raw event callback */
+-	perf_buffer_event_fn event_cb;
+-	/* ctx is provided to event_cb */
+-	void *ctx;
+-	/* if cpu_cnt == 0, open all on all possible CPUs (up to the number of
+-	 * max_entries of given PERF_EVENT_ARRAY map)
+-	 */
+-	int cpu_cnt;
+-	/* if cpu_cnt > 0, cpus is an array of CPUs to open ring buffers on */
+-	int *cpus;
+-	/* if cpu_cnt > 0, map_keys specify map keys to set per-CPU FDs for */
+-	int *map_keys;
+-};
+-
+-LIBBPF_API struct perf_buffer *
+-perf_buffer__new_raw(int map_fd, size_t page_cnt,
+-		     const struct perf_buffer_raw_opts *opts);
+-
+-LIBBPF_API void perf_buffer__free(struct perf_buffer *pb);
+-LIBBPF_API int perf_buffer__epoll_fd(const struct perf_buffer *pb);
+-LIBBPF_API int perf_buffer__poll(struct perf_buffer *pb, int timeout_ms);
+-LIBBPF_API int perf_buffer__consume(struct perf_buffer *pb);
+-LIBBPF_API int perf_buffer__consume_buffer(struct perf_buffer *pb, size_t buf_idx);
+-LIBBPF_API size_t perf_buffer__buffer_cnt(const struct perf_buffer *pb);
+-LIBBPF_API int perf_buffer__buffer_fd(const struct perf_buffer *pb, size_t buf_idx);
+-
+-typedef enum bpf_perf_event_ret
+-	(*bpf_perf_event_print_t)(struct perf_event_header *hdr,
+-				  void *private_data);
+-LIBBPF_API enum bpf_perf_event_ret
+-bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+-			   void **copy_mem, size_t *copy_size,
+-			   bpf_perf_event_print_t fn, void *private_data);
+-
+-struct bpf_prog_linfo;
+-struct bpf_prog_info;
+-
+-LIBBPF_API void bpf_prog_linfo__free(struct bpf_prog_linfo *prog_linfo);
+-LIBBPF_API struct bpf_prog_linfo *
+-bpf_prog_linfo__new(const struct bpf_prog_info *info);
+-LIBBPF_API const struct bpf_line_info *
+-bpf_prog_linfo__lfind_addr_func(const struct bpf_prog_linfo *prog_linfo,
+-				__u64 addr, __u32 func_idx, __u32 nr_skip);
+-LIBBPF_API const struct bpf_line_info *
+-bpf_prog_linfo__lfind(const struct bpf_prog_linfo *prog_linfo,
+-		      __u32 insn_off, __u32 nr_skip);
+-
+-/*
+- * Probe for supported system features
+- *
+- * Note that running many of these probes in a short amount of time can cause
+- * the kernel to reach the maximal size of lockable memory allowed for the
+- * user, causing subsequent probes to fail. In this case, the caller may want
+- * to adjust that limit with setrlimit().
+- */
+-LIBBPF_API bool bpf_probe_prog_type(enum bpf_prog_type prog_type,
+-				    __u32 ifindex);
+-LIBBPF_API bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex);
+-LIBBPF_API bool bpf_probe_helper(enum bpf_func_id id,
+-				 enum bpf_prog_type prog_type, __u32 ifindex);
+-LIBBPF_API bool bpf_probe_large_insn_limit(__u32 ifindex);
+-
+-/*
+- * Get bpf_prog_info in continuous memory
+- *
+- * struct bpf_prog_info has multiple arrays. The user has option to choose
+- * arrays to fetch from kernel. The following APIs provide an uniform way to
+- * fetch these data. All arrays in bpf_prog_info are stored in a single
+- * continuous memory region. This makes it easy to store the info in a
+- * file.
+- *
+- * Before writing bpf_prog_info_linear to files, it is necessary to
+- * translate pointers in bpf_prog_info to offsets. Helper functions
+- * bpf_program__bpil_addr_to_offs() and bpf_program__bpil_offs_to_addr()
+- * are introduced to switch between pointers and offsets.
+- *
+- * Examples:
+- *   # To fetch map_ids and prog_tags:
+- *   __u64 arrays = (1UL << BPF_PROG_INFO_MAP_IDS) |
+- *           (1UL << BPF_PROG_INFO_PROG_TAGS);
+- *   struct bpf_prog_info_linear *info_linear =
+- *           bpf_program__get_prog_info_linear(fd, arrays);
+- *
+- *   # To save data in file
+- *   bpf_program__bpil_addr_to_offs(info_linear);
+- *   write(f, info_linear, sizeof(*info_linear) + info_linear->data_len);
+- *
+- *   # To read data from file
+- *   read(f, info_linear, <proper_size>);
+- *   bpf_program__bpil_offs_to_addr(info_linear);
+- */
+-enum bpf_prog_info_array {
+-	BPF_PROG_INFO_FIRST_ARRAY = 0,
+-	BPF_PROG_INFO_JITED_INSNS = 0,
+-	BPF_PROG_INFO_XLATED_INSNS,
+-	BPF_PROG_INFO_MAP_IDS,
+-	BPF_PROG_INFO_JITED_KSYMS,
+-	BPF_PROG_INFO_JITED_FUNC_LENS,
+-	BPF_PROG_INFO_FUNC_INFO,
+-	BPF_PROG_INFO_LINE_INFO,
+-	BPF_PROG_INFO_JITED_LINE_INFO,
+-	BPF_PROG_INFO_PROG_TAGS,
+-	BPF_PROG_INFO_LAST_ARRAY,
+-};
+-
+-struct bpf_prog_info_linear {
+-	/* size of struct bpf_prog_info, when the tool is compiled */
+-	__u32			info_len;
+-	/* total bytes allocated for data, round up to 8 bytes */
+-	__u32			data_len;
+-	/* which arrays are included in data */
+-	__u64			arrays;
+-	struct bpf_prog_info	info;
+-	__u8			data[];
+-};
+-
+-LIBBPF_API struct bpf_prog_info_linear *
+-bpf_program__get_prog_info_linear(int fd, __u64 arrays);
+-
+-LIBBPF_API void
+-bpf_program__bpil_addr_to_offs(struct bpf_prog_info_linear *info_linear);
+-
+-LIBBPF_API void
+-bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear);
+-
+-/*
+- * A helper function to get the number of possible CPUs before looking up
+- * per-CPU maps. Negative errno is returned on failure.
+- *
+- * Example usage:
+- *
+- *     int ncpus = libbpf_num_possible_cpus();
+- *     if (ncpus < 0) {
+- *          // error handling
+- *     }
+- *     long values[ncpus];
+- *     bpf_map_lookup_elem(per_cpu_map_fd, key, values);
+- *
+- */
+-LIBBPF_API int libbpf_num_possible_cpus(void);
+-
+-struct bpf_map_skeleton {
+-	const char *name;
+-	struct bpf_map **map;
+-	void **mmaped;
+-};
+-
+-struct bpf_prog_skeleton {
+-	const char *name;
+-	struct bpf_program **prog;
+-	struct bpf_link **link;
+-};
+-
+-struct bpf_object_skeleton {
+-	size_t sz; /* size of this struct, for forward/backward compatibility */
+-
+-	const char *name;
+-	void *data;
+-	size_t data_sz;
+-
+-	struct bpf_object **obj;
+-
+-	int map_cnt;
+-	int map_skel_sz; /* sizeof(struct bpf_skeleton_map) */
+-	struct bpf_map_skeleton *maps;
+-
+-	int prog_cnt;
+-	int prog_skel_sz; /* sizeof(struct bpf_skeleton_prog) */
+-	struct bpf_prog_skeleton *progs;
+-};
+-
+-LIBBPF_API int
+-bpf_object__open_skeleton(struct bpf_object_skeleton *s,
+-			  const struct bpf_object_open_opts *opts);
+-LIBBPF_API int bpf_object__load_skeleton(struct bpf_object_skeleton *s);
+-LIBBPF_API int bpf_object__attach_skeleton(struct bpf_object_skeleton *s);
+-LIBBPF_API void bpf_object__detach_skeleton(struct bpf_object_skeleton *s);
+-LIBBPF_API void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s);
+-
+-struct gen_loader_opts {
+-	size_t sz; /* size of this struct, for forward/backward compatiblity */
+-	const char *data;
+-	const char *insns;
+-	__u32 data_sz;
+-	__u32 insns_sz;
+-};
+-
+-#define gen_loader_opts__last_field insns_sz
+-LIBBPF_API int bpf_object__gen_loader(struct bpf_object *obj,
+-				      struct gen_loader_opts *opts);
+-
+-enum libbpf_tristate {
+-	TRI_NO = 0,
+-	TRI_YES = 1,
+-	TRI_MODULE = 2,
+-};
+-
+-struct bpf_linker_opts {
+-	/* size of this struct, for forward/backward compatiblity */
+-	size_t sz;
+-};
+-#define bpf_linker_opts__last_field sz
+-
+-struct bpf_linker_file_opts {
+-	/* size of this struct, for forward/backward compatiblity */
+-	size_t sz;
+-};
+-#define bpf_linker_file_opts__last_field sz
+-
+-struct bpf_linker;
+-
+-LIBBPF_API struct bpf_linker *bpf_linker__new(const char *filename, struct bpf_linker_opts *opts);
+-LIBBPF_API int bpf_linker__add_file(struct bpf_linker *linker,
+-				    const char *filename,
+-				    const struct bpf_linker_file_opts *opts);
+-LIBBPF_API int bpf_linker__finalize(struct bpf_linker *linker);
+-LIBBPF_API void bpf_linker__free(struct bpf_linker *linker);
+-
+-#ifdef __cplusplus
+-} /* extern "C" */
+-#endif
+-
+-#endif /* __LIBBPF_LIBBPF_H */
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+deleted file mode 100644
+index 944c99d1ded3..000000000000
+--- a/tools/lib/bpf/libbpf.map
++++ /dev/null
+@@ -1,377 +0,0 @@
+-LIBBPF_0.0.1 {
+-	global:
+-		bpf_btf_get_fd_by_id;
+-		bpf_create_map;
+-		bpf_create_map_in_map;
+-		bpf_create_map_in_map_node;
+-		bpf_create_map_name;
+-		bpf_create_map_node;
+-		bpf_create_map_xattr;
+-		bpf_load_btf;
+-		bpf_load_program;
+-		bpf_load_program_xattr;
+-		bpf_map__btf_key_type_id;
+-		bpf_map__btf_value_type_id;
+-		bpf_map__def;
+-		bpf_map__fd;
+-		bpf_map__is_offload_neutral;
+-		bpf_map__name;
+-		bpf_map__next;
+-		bpf_map__pin;
+-		bpf_map__prev;
+-		bpf_map__priv;
+-		bpf_map__reuse_fd;
+-		bpf_map__set_ifindex;
+-		bpf_map__set_inner_map_fd;
+-		bpf_map__set_priv;
+-		bpf_map__unpin;
+-		bpf_map_delete_elem;
+-		bpf_map_get_fd_by_id;
+-		bpf_map_get_next_id;
+-		bpf_map_get_next_key;
+-		bpf_map_lookup_and_delete_elem;
+-		bpf_map_lookup_elem;
+-		bpf_map_update_elem;
+-		bpf_obj_get;
+-		bpf_obj_get_info_by_fd;
+-		bpf_obj_pin;
+-		bpf_object__btf_fd;
+-		bpf_object__close;
+-		bpf_object__find_map_by_name;
+-		bpf_object__find_map_by_offset;
+-		bpf_object__find_program_by_title;
+-		bpf_object__kversion;
+-		bpf_object__load;
+-		bpf_object__name;
+-		bpf_object__next;
+-		bpf_object__open;
+-		bpf_object__open_buffer;
+-		bpf_object__open_xattr;
+-		bpf_object__pin;
+-		bpf_object__pin_maps;
+-		bpf_object__pin_programs;
+-		bpf_object__priv;
+-		bpf_object__set_priv;
+-		bpf_object__unload;
+-		bpf_object__unpin_maps;
+-		bpf_object__unpin_programs;
+-		bpf_perf_event_read_simple;
+-		bpf_prog_attach;
+-		bpf_prog_detach;
+-		bpf_prog_detach2;
+-		bpf_prog_get_fd_by_id;
+-		bpf_prog_get_next_id;
+-		bpf_prog_load;
+-		bpf_prog_load_xattr;
+-		bpf_prog_query;
+-		bpf_prog_test_run;
+-		bpf_prog_test_run_xattr;
+-		bpf_program__fd;
+-		bpf_program__is_kprobe;
+-		bpf_program__is_perf_event;
+-		bpf_program__is_raw_tracepoint;
+-		bpf_program__is_sched_act;
+-		bpf_program__is_sched_cls;
+-		bpf_program__is_socket_filter;
+-		bpf_program__is_tracepoint;
+-		bpf_program__is_xdp;
+-		bpf_program__load;
+-		bpf_program__next;
+-		bpf_program__nth_fd;
+-		bpf_program__pin;
+-		bpf_program__pin_instance;
+-		bpf_program__prev;
+-		bpf_program__priv;
+-		bpf_program__set_expected_attach_type;
+-		bpf_program__set_ifindex;
+-		bpf_program__set_kprobe;
+-		bpf_program__set_perf_event;
+-		bpf_program__set_prep;
+-		bpf_program__set_priv;
+-		bpf_program__set_raw_tracepoint;
+-		bpf_program__set_sched_act;
+-		bpf_program__set_sched_cls;
+-		bpf_program__set_socket_filter;
+-		bpf_program__set_tracepoint;
+-		bpf_program__set_type;
+-		bpf_program__set_xdp;
+-		bpf_program__title;
+-		bpf_program__unload;
+-		bpf_program__unpin;
+-		bpf_program__unpin_instance;
+-		bpf_prog_linfo__free;
+-		bpf_prog_linfo__new;
+-		bpf_prog_linfo__lfind_addr_func;
+-		bpf_prog_linfo__lfind;
+-		bpf_raw_tracepoint_open;
+-		bpf_set_link_xdp_fd;
+-		bpf_task_fd_query;
+-		bpf_verify_program;
+-		btf__fd;
+-		btf__find_by_name;
+-		btf__free;
+-		btf__get_from_id;
+-		btf__name_by_offset;
+-		btf__new;
+-		btf__resolve_size;
+-		btf__resolve_type;
+-		btf__type_by_id;
+-		libbpf_attach_type_by_name;
+-		libbpf_get_error;
+-		libbpf_prog_type_by_name;
+-		libbpf_set_print;
+-		libbpf_strerror;
+-	local:
+-		*;
+-};
+-
+-LIBBPF_0.0.2 {
+-	global:
+-		bpf_probe_helper;
+-		bpf_probe_map_type;
+-		bpf_probe_prog_type;
+-		bpf_map__resize;
+-		bpf_map_lookup_elem_flags;
+-		bpf_object__btf;
+-		bpf_object__find_map_fd_by_name;
+-		bpf_get_link_xdp_id;
+-		btf__dedup;
+-		btf__get_map_kv_tids;
+-		btf__get_nr_types;
+-		btf__get_raw_data;
+-		btf__load;
+-		btf_ext__free;
+-		btf_ext__func_info_rec_size;
+-		btf_ext__get_raw_data;
+-		btf_ext__line_info_rec_size;
+-		btf_ext__new;
+-		btf_ext__reloc_func_info;
+-		btf_ext__reloc_line_info;
+-		xsk_umem__create;
+-		xsk_socket__create;
+-		xsk_umem__delete;
+-		xsk_socket__delete;
+-		xsk_umem__fd;
+-		xsk_socket__fd;
+-		bpf_program__get_prog_info_linear;
+-		bpf_program__bpil_addr_to_offs;
+-		bpf_program__bpil_offs_to_addr;
+-} LIBBPF_0.0.1;
+-
+-LIBBPF_0.0.3 {
+-	global:
+-		bpf_map__is_internal;
+-		bpf_map_freeze;
+-		btf__finalize_data;
+-} LIBBPF_0.0.2;
+-
+-LIBBPF_0.0.4 {
+-	global:
+-		bpf_link__destroy;
+-		bpf_object__load_xattr;
+-		bpf_program__attach_kprobe;
+-		bpf_program__attach_perf_event;
+-		bpf_program__attach_raw_tracepoint;
+-		bpf_program__attach_tracepoint;
+-		bpf_program__attach_uprobe;
+-		btf_dump__dump_type;
+-		btf_dump__free;
+-		btf_dump__new;
+-		btf__parse_elf;
+-		libbpf_num_possible_cpus;
+-		perf_buffer__free;
+-		perf_buffer__new;
+-		perf_buffer__new_raw;
+-		perf_buffer__poll;
+-		xsk_umem__create;
+-} LIBBPF_0.0.3;
+-
+-LIBBPF_0.0.5 {
+-	global:
+-		bpf_btf_get_next_id;
+-} LIBBPF_0.0.4;
+-
+-LIBBPF_0.0.6 {
+-	global:
+-		bpf_get_link_xdp_info;
+-		bpf_map__get_pin_path;
+-		bpf_map__is_pinned;
+-		bpf_map__set_pin_path;
+-		bpf_object__open_file;
+-		bpf_object__open_mem;
+-		bpf_program__attach_trace;
+-		bpf_program__get_expected_attach_type;
+-		bpf_program__get_type;
+-		bpf_program__is_tracing;
+-		bpf_program__set_tracing;
+-		bpf_program__size;
+-		btf__find_by_name_kind;
+-		libbpf_find_vmlinux_btf_id;
+-} LIBBPF_0.0.5;
+-
+-LIBBPF_0.0.7 {
+-	global:
+-		btf_dump__emit_type_decl;
+-		bpf_link__disconnect;
+-		bpf_map__attach_struct_ops;
+-		bpf_map_delete_batch;
+-		bpf_map_lookup_and_delete_batch;
+-		bpf_map_lookup_batch;
+-		bpf_map_update_batch;
+-		bpf_object__find_program_by_name;
+-		bpf_object__attach_skeleton;
+-		bpf_object__destroy_skeleton;
+-		bpf_object__detach_skeleton;
+-		bpf_object__load_skeleton;
+-		bpf_object__open_skeleton;
+-		bpf_probe_large_insn_limit;
+-		bpf_prog_attach_xattr;
+-		bpf_program__attach;
+-		bpf_program__name;
+-		bpf_program__is_extension;
+-		bpf_program__is_struct_ops;
+-		bpf_program__set_extension;
+-		bpf_program__set_struct_ops;
+-		btf__align_of;
+-		libbpf_find_kernel_btf;
+-} LIBBPF_0.0.6;
+-
+-LIBBPF_0.0.8 {
+-	global:
+-		bpf_link__fd;
+-		bpf_link__open;
+-		bpf_link__pin;
+-		bpf_link__pin_path;
+-		bpf_link__unpin;
+-		bpf_link__update_program;
+-		bpf_link_create;
+-		bpf_link_update;
+-		bpf_map__set_initial_value;
+-		bpf_program__attach_cgroup;
+-		bpf_program__attach_lsm;
+-		bpf_program__is_lsm;
+-		bpf_program__set_attach_target;
+-		bpf_program__set_lsm;
+-		bpf_set_link_xdp_fd_opts;
+-} LIBBPF_0.0.7;
+-
+-LIBBPF_0.0.9 {
+-	global:
+-		bpf_enable_stats;
+-		bpf_iter_create;
+-		bpf_link_get_fd_by_id;
+-		bpf_link_get_next_id;
+-		bpf_program__attach_iter;
+-		bpf_program__attach_netns;
+-		perf_buffer__consume;
+-		ring_buffer__add;
+-		ring_buffer__consume;
+-		ring_buffer__free;
+-		ring_buffer__new;
+-		ring_buffer__poll;
+-} LIBBPF_0.0.8;
+-
+-LIBBPF_0.1.0 {
+-	global:
+-		bpf_link__detach;
+-		bpf_link_detach;
+-		bpf_map__ifindex;
+-		bpf_map__key_size;
+-		bpf_map__map_flags;
+-		bpf_map__max_entries;
+-		bpf_map__numa_node;
+-		bpf_map__set_key_size;
+-		bpf_map__set_map_flags;
+-		bpf_map__set_max_entries;
+-		bpf_map__set_numa_node;
+-		bpf_map__set_type;
+-		bpf_map__set_value_size;
+-		bpf_map__type;
+-		bpf_map__value_size;
+-		bpf_program__attach_xdp;
+-		bpf_program__autoload;
+-		bpf_program__is_sk_lookup;
+-		bpf_program__set_autoload;
+-		bpf_program__set_sk_lookup;
+-		btf__parse;
+-		btf__parse_raw;
+-		btf__pointer_size;
+-		btf__set_fd;
+-		btf__set_pointer_size;
+-} LIBBPF_0.0.9;
+-
+-LIBBPF_0.2.0 {
+-	global:
+-		bpf_prog_bind_map;
+-		bpf_prog_test_run_opts;
+-		bpf_program__attach_freplace;
+-		bpf_program__section_name;
+-		btf__add_array;
+-		btf__add_const;
+-		btf__add_enum;
+-		btf__add_enum_value;
+-		btf__add_datasec;
+-		btf__add_datasec_var_info;
+-		btf__add_field;
+-		btf__add_func;
+-		btf__add_func_param;
+-		btf__add_func_proto;
+-		btf__add_fwd;
+-		btf__add_int;
+-		btf__add_ptr;
+-		btf__add_restrict;
+-		btf__add_str;
+-		btf__add_struct;
+-		btf__add_typedef;
+-		btf__add_union;
+-		btf__add_var;
+-		btf__add_volatile;
+-		btf__endianness;
+-		btf__find_str;
+-		btf__new_empty;
+-		btf__set_endianness;
+-		btf__str_by_offset;
+-		perf_buffer__buffer_cnt;
+-		perf_buffer__buffer_fd;
+-		perf_buffer__epoll_fd;
+-		perf_buffer__consume_buffer;
+-		xsk_socket__create_shared;
+-} LIBBPF_0.1.0;
+-
+-LIBBPF_0.3.0 {
+-	global:
+-		btf__base_btf;
+-		btf__parse_elf_split;
+-		btf__parse_raw_split;
+-		btf__parse_split;
+-		btf__new_empty_split;
+-		btf__new_split;
+-		ring_buffer__epoll_fd;
+-		xsk_setup_xdp_prog;
+-		xsk_socket__update_xskmap;
+-} LIBBPF_0.2.0;
+-
+-LIBBPF_0.4.0 {
+-	global:
+-		btf__add_float;
+-		btf__add_type;
+-		bpf_linker__add_file;
+-		bpf_linker__finalize;
+-		bpf_linker__free;
+-		bpf_linker__new;
+-		bpf_map__inner_map;
+-		bpf_object__set_kversion;
+-		bpf_tc_attach;
+-		bpf_tc_detach;
+-		bpf_tc_hook_create;
+-		bpf_tc_hook_destroy;
+-		bpf_tc_query;
+-} LIBBPF_0.3.0;
+-
+-LIBBPF_0.5.0 {
+-	global:
+-		bpf_map__initial_value;
+-		bpf_map_lookup_and_delete_elem_flags;
+-		bpf_object__gen_loader;
+-		libbpf_set_strict_mode;
+-} LIBBPF_0.4.0;
+diff --git a/tools/lib/bpf/libbpf.pc.template b/tools/lib/bpf/libbpf.pc.template
+deleted file mode 100644
+index b45ed534bdfb..000000000000
+--- a/tools/lib/bpf/libbpf.pc.template
++++ /dev/null
+@@ -1,12 +0,0 @@
+-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-prefix=@PREFIX@
+-libdir=@LIBDIR@
+-includedir=${prefix}/include
+-
+-Name: libbpf
+-Description: BPF library
+-Version: @VERSION@
+-Libs: -L${libdir} -lbpf
+-Requires.private: libelf zlib
+-Cflags: -I${includedir}
+diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
+deleted file mode 100644
+index 947d8bd8a7bb..000000000000
+--- a/tools/lib/bpf/libbpf_common.h
++++ /dev/null
+@@ -1,42 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * Common user-facing libbpf helpers.
+- *
+- * Copyright (c) 2019 Facebook
+- */
+-
+-#ifndef __LIBBPF_LIBBPF_COMMON_H
+-#define __LIBBPF_LIBBPF_COMMON_H
+-
+-#include <string.h>
+-
+-#ifndef LIBBPF_API
+-#define LIBBPF_API __attribute__((visibility("default")))
+-#endif
+-
+-#define LIBBPF_DEPRECATED(msg) __attribute__((deprecated(msg)))
+-
+-/* Helper macro to declare and initialize libbpf options struct
+- *
+- * This dance with uninitialized declaration, followed by memset to zero,
+- * followed by assignment using compound literal syntax is done to preserve
+- * ability to use a nice struct field initialization syntax and **hopefully**
+- * have all the padding bytes initialized to zero. It's not guaranteed though,
+- * when copying literal, that compiler won't copy garbage in literal's padding
+- * bytes, but that's the best way I've found and it seems to work in practice.
+- *
+- * Macro declares opts struct of given type and name, zero-initializes,
+- * including any extra padding, it with memset() and then assigns initial
+- * values provided by users in struct initializer-syntax as varargs.
+- */
+-#define DECLARE_LIBBPF_OPTS(TYPE, NAME, ...)				    \
+-	struct TYPE NAME = ({ 						    \
+-		memset(&NAME, 0, sizeof(struct TYPE));			    \
+-		(struct TYPE) {						    \
+-			.sz = sizeof(struct TYPE),			    \
+-			__VA_ARGS__					    \
+-		};							    \
+-	})
+-
+-#endif /* __LIBBPF_LIBBPF_COMMON_H */
+diff --git a/tools/lib/bpf/libbpf_errno.c b/tools/lib/bpf/libbpf_errno.c
+deleted file mode 100644
+index 96f67a772a1b..000000000000
+--- a/tools/lib/bpf/libbpf_errno.c
++++ /dev/null
+@@ -1,67 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * Copyright (C) 2013-2015 Alexei Starovoitov <ast@kernel.org>
+- * Copyright (C) 2015 Wang Nan <wangnan0@huawei.com>
+- * Copyright (C) 2015 Huawei Inc.
+- * Copyright (C) 2017 Nicira, Inc.
+- */
+-
+-#undef _GNU_SOURCE
+-#include <stdio.h>
+-#include <string.h>
+-
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-
+-/* make sure libbpf doesn't use kernel-only integer typedefs */
+-#pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
+-
+-#define ERRNO_OFFSET(e)		((e) - __LIBBPF_ERRNO__START)
+-#define ERRCODE_OFFSET(c)	ERRNO_OFFSET(LIBBPF_ERRNO__##c)
+-#define NR_ERRNO	(__LIBBPF_ERRNO__END - __LIBBPF_ERRNO__START)
+-
+-static const char *libbpf_strerror_table[NR_ERRNO] = {
+-	[ERRCODE_OFFSET(LIBELF)]	= "Something wrong in libelf",
+-	[ERRCODE_OFFSET(FORMAT)]	= "BPF object format invalid",
+-	[ERRCODE_OFFSET(KVERSION)]	= "'version' section incorrect or lost",
+-	[ERRCODE_OFFSET(ENDIAN)]	= "Endian mismatch",
+-	[ERRCODE_OFFSET(INTERNAL)]	= "Internal error in libbpf",
+-	[ERRCODE_OFFSET(RELOC)]		= "Relocation failed",
+-	[ERRCODE_OFFSET(VERIFY)]	= "Kernel verifier blocks program loading",
+-	[ERRCODE_OFFSET(PROG2BIG)]	= "Program too big",
+-	[ERRCODE_OFFSET(KVER)]		= "Incorrect kernel version",
+-	[ERRCODE_OFFSET(PROGTYPE)]	= "Kernel doesn't support this program type",
+-	[ERRCODE_OFFSET(WRNGPID)]	= "Wrong pid in netlink message",
+-	[ERRCODE_OFFSET(INVSEQ)]	= "Invalid netlink sequence",
+-	[ERRCODE_OFFSET(NLPARSE)]	= "Incorrect netlink message parsing",
+-};
+-
+-int libbpf_strerror(int err, char *buf, size_t size)
+-{
+-	if (!buf || !size)
+-		return libbpf_err(-EINVAL);
+-
+-	err = err > 0 ? err : -err;
+-
+-	if (err < __LIBBPF_ERRNO__START) {
+-		int ret;
+-
+-		ret = strerror_r(err, buf, size);
+-		buf[size - 1] = '\0';
+-		return libbpf_err_errno(ret);
+-	}
+-
+-	if (err < __LIBBPF_ERRNO__END) {
+-		const char *msg;
+-
+-		msg = libbpf_strerror_table[ERRNO_OFFSET(err)];
+-		snprintf(buf, size, "%s", msg);
+-		buf[size - 1] = '\0';
+-		return 0;
+-	}
+-
+-	snprintf(buf, size, "Unknown libbpf error %d", err);
+-	buf[size - 1] = '\0';
+-	return libbpf_err(-ENOENT);
+-}
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+deleted file mode 100644
+index 016ca7cb4f8a..000000000000
+--- a/tools/lib/bpf/libbpf_internal.h
++++ /dev/null
+@@ -1,497 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * Internal libbpf helpers.
+- *
+- * Copyright (c) 2019 Facebook
+- */
+-
+-#ifndef __LIBBPF_LIBBPF_INTERNAL_H
+-#define __LIBBPF_LIBBPF_INTERNAL_H
+-
+-#include <stdlib.h>
+-#include <limits.h>
+-#include <errno.h>
+-#include <linux/err.h>
+-#include "libbpf_legacy.h"
+-
+-/* make sure libbpf doesn't use kernel-only integer typedefs */
+-#pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
+-
+-/* prevent accidental re-addition of reallocarray() */
+-#pragma GCC poison reallocarray
+-
+-#include "libbpf.h"
+-#include "btf.h"
+-
+-#ifndef EM_BPF
+-#define EM_BPF 247
+-#endif
+-
+-#ifndef R_BPF_64_64
+-#define R_BPF_64_64 1
+-#endif
+-#ifndef R_BPF_64_ABS64
+-#define R_BPF_64_ABS64 2
+-#endif
+-#ifndef R_BPF_64_ABS32
+-#define R_BPF_64_ABS32 3
+-#endif
+-#ifndef R_BPF_64_32
+-#define R_BPF_64_32 10
+-#endif
+-
+-#ifndef SHT_LLVM_ADDRSIG
+-#define SHT_LLVM_ADDRSIG 0x6FFF4C03
+-#endif
+-
+-/* if libelf is old and doesn't support mmap(), fall back to read() */
+-#ifndef ELF_C_READ_MMAP
+-#define ELF_C_READ_MMAP ELF_C_READ
+-#endif
+-
+-/* Older libelf all end up in this expression, for both 32 and 64 bit */
+-#ifndef GELF_ST_VISIBILITY
+-#define GELF_ST_VISIBILITY(o) ((o) & 0x03)
+-#endif
+-
+-#define BTF_INFO_ENC(kind, kind_flag, vlen) \
+-	((!!(kind_flag) << 31) | ((kind) << 24) | ((vlen) & BTF_MAX_VLEN))
+-#define BTF_TYPE_ENC(name, info, size_or_type) (name), (info), (size_or_type)
+-#define BTF_INT_ENC(encoding, bits_offset, nr_bits) \
+-	((encoding) << 24 | (bits_offset) << 16 | (nr_bits))
+-#define BTF_TYPE_INT_ENC(name, encoding, bits_offset, bits, sz) \
+-	BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_INT, 0, 0), sz), \
+-	BTF_INT_ENC(encoding, bits_offset, bits)
+-#define BTF_MEMBER_ENC(name, type, bits_offset) (name), (type), (bits_offset)
+-#define BTF_PARAM_ENC(name, type) (name), (type)
+-#define BTF_VAR_SECINFO_ENC(type, offset, size) (type), (offset), (size)
+-#define BTF_TYPE_FLOAT_ENC(name, sz) \
+-	BTF_TYPE_ENC(name, BTF_INFO_ENC(BTF_KIND_FLOAT, 0, 0), sz)
+-
+-#ifndef likely
+-#define likely(x) __builtin_expect(!!(x), 1)
+-#endif
+-#ifndef unlikely
+-#define unlikely(x) __builtin_expect(!!(x), 0)
+-#endif
+-#ifndef min
+-# define min(x, y) ((x) < (y) ? (x) : (y))
+-#endif
+-#ifndef max
+-# define max(x, y) ((x) < (y) ? (y) : (x))
+-#endif
+-#ifndef offsetofend
+-# define offsetofend(TYPE, FIELD) \
+-	(offsetof(TYPE, FIELD) + sizeof(((TYPE *)0)->FIELD))
+-#endif
+-
+-/* Symbol versioning is different between static and shared library.
+- * Properly versioned symbols are needed for shared library, but
+- * only the symbol of the new version is needed for static library.
+- */
+-#ifdef SHARED
+-# define COMPAT_VERSION(internal_name, api_name, version) \
+-	asm(".symver " #internal_name "," #api_name "@" #version);
+-# define DEFAULT_VERSION(internal_name, api_name, version) \
+-	asm(".symver " #internal_name "," #api_name "@@" #version);
+-#else
+-# define COMPAT_VERSION(internal_name, api_name, version)
+-# define DEFAULT_VERSION(internal_name, api_name, version) \
+-	extern typeof(internal_name) api_name \
+-	__attribute__((alias(#internal_name)));
+-#endif
+-
+-extern void libbpf_print(enum libbpf_print_level level,
+-			 const char *format, ...)
+-	__attribute__((format(printf, 2, 3)));
+-
+-#define __pr(level, fmt, ...)	\
+-do {				\
+-	libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);	\
+-} while (0)
+-
+-#define pr_warn(fmt, ...)	__pr(LIBBPF_WARN, fmt, ##__VA_ARGS__)
+-#define pr_info(fmt, ...)	__pr(LIBBPF_INFO, fmt, ##__VA_ARGS__)
+-#define pr_debug(fmt, ...)	__pr(LIBBPF_DEBUG, fmt, ##__VA_ARGS__)
+-
+-#ifndef __has_builtin
+-#define __has_builtin(x) 0
+-#endif
+-/*
+- * Re-implement glibc's reallocarray() for libbpf internal-only use.
+- * reallocarray(), unfortunately, is not available in all versions of glibc,
+- * so requires extra feature detection and using reallocarray() stub from
+- * <tools/libc_compat.h> and COMPAT_NEED_REALLOCARRAY. All this complicates
+- * build of libbpf unnecessarily and is just a maintenance burden. Instead,
+- * it's trivial to implement libbpf-specific internal version and use it
+- * throughout libbpf.
+- */
+-static inline void *libbpf_reallocarray(void *ptr, size_t nmemb, size_t size)
+-{
+-	size_t total;
+-
+-#if __has_builtin(__builtin_mul_overflow)
+-	if (unlikely(__builtin_mul_overflow(nmemb, size, &total)))
+-		return NULL;
+-#else
+-	if (size == 0 || nmemb > ULONG_MAX / size)
+-		return NULL;
+-	total = nmemb * size;
+-#endif
+-	return realloc(ptr, total);
+-}
+-
+-struct btf;
+-struct btf_type;
+-
+-struct btf_type *btf_type_by_id(struct btf *btf, __u32 type_id);
+-const char *btf_kind_str(const struct btf_type *t);
+-const struct btf_type *skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id);
+-
+-static inline enum btf_func_linkage btf_func_linkage(const struct btf_type *t)
+-{
+-	return (enum btf_func_linkage)(int)btf_vlen(t);
+-}
+-
+-static inline __u32 btf_type_info(int kind, int vlen, int kflag)
+-{
+-	return (kflag << 31) | (kind << 24) | vlen;
+-}
+-
+-enum map_def_parts {
+-	MAP_DEF_MAP_TYPE	= 0x001,
+-	MAP_DEF_KEY_TYPE	= 0x002,
+-	MAP_DEF_KEY_SIZE	= 0x004,
+-	MAP_DEF_VALUE_TYPE	= 0x008,
+-	MAP_DEF_VALUE_SIZE	= 0x010,
+-	MAP_DEF_MAX_ENTRIES	= 0x020,
+-	MAP_DEF_MAP_FLAGS	= 0x040,
+-	MAP_DEF_NUMA_NODE	= 0x080,
+-	MAP_DEF_PINNING		= 0x100,
+-	MAP_DEF_INNER_MAP	= 0x200,
+-
+-	MAP_DEF_ALL		= 0x3ff, /* combination of all above */
+-};
+-
+-struct btf_map_def {
+-	enum map_def_parts parts;
+-	__u32 map_type;
+-	__u32 key_type_id;
+-	__u32 key_size;
+-	__u32 value_type_id;
+-	__u32 value_size;
+-	__u32 max_entries;
+-	__u32 map_flags;
+-	__u32 numa_node;
+-	__u32 pinning;
+-};
+-
+-int parse_btf_map_def(const char *map_name, struct btf *btf,
+-		      const struct btf_type *def_t, bool strict,
+-		      struct btf_map_def *map_def, struct btf_map_def *inner_def);
+-
+-void *libbpf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
+-		     size_t cur_cnt, size_t max_cnt, size_t add_cnt);
+-int libbpf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt);
+-
+-static inline bool libbpf_validate_opts(const char *opts,
+-					size_t opts_sz, size_t user_sz,
+-					const char *type_name)
+-{
+-	if (user_sz < sizeof(size_t)) {
+-		pr_warn("%s size (%zu) is too small\n", type_name, user_sz);
+-		return false;
+-	}
+-	if (user_sz > opts_sz) {
+-		size_t i;
+-
+-		for (i = opts_sz; i < user_sz; i++) {
+-			if (opts[i]) {
+-				pr_warn("%s has non-zero extra bytes\n",
+-					type_name);
+-				return false;
+-			}
+-		}
+-	}
+-	return true;
+-}
+-
+-#define OPTS_VALID(opts, type)						      \
+-	(!(opts) || libbpf_validate_opts((const char *)opts,		      \
+-					 offsetofend(struct type,	      \
+-						     type##__last_field),     \
+-					 (opts)->sz, #type))
+-#define OPTS_HAS(opts, field) \
+-	((opts) && opts->sz >= offsetofend(typeof(*(opts)), field))
+-#define OPTS_GET(opts, field, fallback_value) \
+-	(OPTS_HAS(opts, field) ? (opts)->field : fallback_value)
+-#define OPTS_SET(opts, field, value)		\
+-	do {					\
+-		if (OPTS_HAS(opts, field))	\
+-			(opts)->field = value;	\
+-	} while (0)
+-
+-int parse_cpu_mask_str(const char *s, bool **mask, int *mask_sz);
+-int parse_cpu_mask_file(const char *fcpu, bool **mask, int *mask_sz);
+-int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
+-			 const char *str_sec, size_t str_len);
+-
+-struct bpf_prog_load_params {
+-	enum bpf_prog_type prog_type;
+-	enum bpf_attach_type expected_attach_type;
+-	const char *name;
+-	const struct bpf_insn *insns;
+-	size_t insn_cnt;
+-	const char *license;
+-	__u32 kern_version;
+-	__u32 attach_prog_fd;
+-	__u32 attach_btf_obj_fd;
+-	__u32 attach_btf_id;
+-	__u32 prog_ifindex;
+-	__u32 prog_btf_fd;
+-	__u32 prog_flags;
+-
+-	__u32 func_info_rec_size;
+-	const void *func_info;
+-	__u32 func_info_cnt;
+-
+-	__u32 line_info_rec_size;
+-	const void *line_info;
+-	__u32 line_info_cnt;
+-
+-	__u32 log_level;
+-	char *log_buf;
+-	size_t log_buf_sz;
+-};
+-
+-int libbpf__bpf_prog_load(const struct bpf_prog_load_params *load_attr);
+-
+-int bpf_object__section_size(const struct bpf_object *obj, const char *name,
+-			     __u32 *size);
+-int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+-				__u32 *off);
+-struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf);
+-void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+-				const char **prefix, int *kind);
+-
+-struct btf_ext_info {
+-	/*
+-	 * info points to the individual info section (e.g. func_info and
+-	 * line_info) from the .BTF.ext. It does not include the __u32 rec_size.
+-	 */
+-	void *info;
+-	__u32 rec_size;
+-	__u32 len;
+-};
+-
+-#define for_each_btf_ext_sec(seg, sec)					\
+-	for (sec = (seg)->info;						\
+-	     (void *)sec < (seg)->info + (seg)->len;			\
+-	     sec = (void *)sec + sizeof(struct btf_ext_info_sec) +	\
+-		   (seg)->rec_size * sec->num_info)
+-
+-#define for_each_btf_ext_rec(seg, sec, i, rec)				\
+-	for (i = 0, rec = (void *)&(sec)->data;				\
+-	     i < (sec)->num_info;					\
+-	     i++, rec = (void *)rec + (seg)->rec_size)
+-
+-/*
+- * The .BTF.ext ELF section layout defined as
+- *   struct btf_ext_header
+- *   func_info subsection
+- *
+- * The func_info subsection layout:
+- *   record size for struct bpf_func_info in the func_info subsection
+- *   struct btf_sec_func_info for section #1
+- *   a list of bpf_func_info records for section #1
+- *     where struct bpf_func_info mimics one in include/uapi/linux/bpf.h
+- *     but may not be identical
+- *   struct btf_sec_func_info for section #2
+- *   a list of bpf_func_info records for section #2
+- *   ......
+- *
+- * Note that the bpf_func_info record size in .BTF.ext may not
+- * be the same as the one defined in include/uapi/linux/bpf.h.
+- * The loader should ensure that record_size meets minimum
+- * requirement and pass the record as is to the kernel. The
+- * kernel will handle the func_info properly based on its contents.
+- */
+-struct btf_ext_header {
+-	__u16	magic;
+-	__u8	version;
+-	__u8	flags;
+-	__u32	hdr_len;
+-
+-	/* All offsets are in bytes relative to the end of this header */
+-	__u32	func_info_off;
+-	__u32	func_info_len;
+-	__u32	line_info_off;
+-	__u32	line_info_len;
+-
+-	/* optional part of .BTF.ext header */
+-	__u32	core_relo_off;
+-	__u32	core_relo_len;
+-};
+-
+-struct btf_ext {
+-	union {
+-		struct btf_ext_header *hdr;
+-		void *data;
+-	};
+-	struct btf_ext_info func_info;
+-	struct btf_ext_info line_info;
+-	struct btf_ext_info core_relo_info;
+-	__u32 data_size;
+-};
+-
+-struct btf_ext_info_sec {
+-	__u32	sec_name_off;
+-	__u32	num_info;
+-	/* Followed by num_info * record_size number of bytes */
+-	__u8	data[];
+-};
+-
+-/* The minimum bpf_func_info checked by the loader */
+-struct bpf_func_info_min {
+-	__u32   insn_off;
+-	__u32   type_id;
+-};
+-
+-/* The minimum bpf_line_info checked by the loader */
+-struct bpf_line_info_min {
+-	__u32	insn_off;
+-	__u32	file_name_off;
+-	__u32	line_off;
+-	__u32	line_col;
+-};
+-
+-/* bpf_core_relo_kind encodes which aspect of captured field/type/enum value
+- * has to be adjusted by relocations.
+- */
+-enum bpf_core_relo_kind {
+-	BPF_FIELD_BYTE_OFFSET = 0,	/* field byte offset */
+-	BPF_FIELD_BYTE_SIZE = 1,	/* field size in bytes */
+-	BPF_FIELD_EXISTS = 2,		/* field existence in target kernel */
+-	BPF_FIELD_SIGNED = 3,		/* field signedness (0 - unsigned, 1 - signed) */
+-	BPF_FIELD_LSHIFT_U64 = 4,	/* bitfield-specific left bitshift */
+-	BPF_FIELD_RSHIFT_U64 = 5,	/* bitfield-specific right bitshift */
+-	BPF_TYPE_ID_LOCAL = 6,		/* type ID in local BPF object */
+-	BPF_TYPE_ID_TARGET = 7,		/* type ID in target kernel */
+-	BPF_TYPE_EXISTS = 8,		/* type existence in target kernel */
+-	BPF_TYPE_SIZE = 9,		/* type size in bytes */
+-	BPF_ENUMVAL_EXISTS = 10,	/* enum value existence in target kernel */
+-	BPF_ENUMVAL_VALUE = 11,		/* enum value integer value */
+-};
+-
+-/* The minimum bpf_core_relo checked by the loader
+- *
+- * CO-RE relocation captures the following data:
+- * - insn_off - instruction offset (in bytes) within a BPF program that needs
+- *   its insn->imm field to be relocated with actual field info;
+- * - type_id - BTF type ID of the "root" (containing) entity of a relocatable
+- *   type or field;
+- * - access_str_off - offset into corresponding .BTF string section. String
+- *   interpretation depends on specific relocation kind:
+- *     - for field-based relocations, string encodes an accessed field using
+- *     a sequence of field and array indices, separated by colon (:). It's
+- *     conceptually very close to LLVM's getelementptr ([0]) instruction's
+- *     arguments for identifying offset to a field.
+- *     - for type-based relocations, strings is expected to be just "0";
+- *     - for enum value-based relocations, string contains an index of enum
+- *     value within its enum type;
+- *
+- * Example to provide a better feel.
+- *
+- *   struct sample {
+- *       int a;
+- *       struct {
+- *           int b[10];
+- *       };
+- *   };
+- *
+- *   struct sample *s = ...;
+- *   int x = &s->a;     // encoded as "0:0" (a is field #0)
+- *   int y = &s->b[5];  // encoded as "0:1:0:5" (anon struct is field #1, 
+- *                      // b is field #0 inside anon struct, accessing elem #5)
+- *   int z = &s[10]->b; // encoded as "10:1" (ptr is used as an array)
+- *
+- * type_id for all relocs in this example  will capture BTF type id of
+- * `struct sample`.
+- *
+- * Such relocation is emitted when using __builtin_preserve_access_index()
+- * Clang built-in, passing expression that captures field address, e.g.:
+- *
+- * bpf_probe_read(&dst, sizeof(dst),
+- *		  __builtin_preserve_access_index(&src->a.b.c));
+- *
+- * In this case Clang will emit field relocation recording necessary data to
+- * be able to find offset of embedded `a.b.c` field within `src` struct.
+- *
+- *   [0] https://llvm.org/docs/LangRef.html#getelementptr-instruction
+- */
+-struct bpf_core_relo {
+-	__u32   insn_off;
+-	__u32   type_id;
+-	__u32   access_str_off;
+-	enum bpf_core_relo_kind kind;
+-};
+-
+-typedef int (*type_id_visit_fn)(__u32 *type_id, void *ctx);
+-typedef int (*str_off_visit_fn)(__u32 *str_off, void *ctx);
+-int btf_type_visit_type_ids(struct btf_type *t, type_id_visit_fn visit, void *ctx);
+-int btf_type_visit_str_offs(struct btf_type *t, str_off_visit_fn visit, void *ctx);
+-int btf_ext_visit_type_ids(struct btf_ext *btf_ext, type_id_visit_fn visit, void *ctx);
+-int btf_ext_visit_str_offs(struct btf_ext *btf_ext, str_off_visit_fn visit, void *ctx);
+-
+-extern enum libbpf_strict_mode libbpf_mode;
+-
+-/* handle direct returned errors */
+-static inline int libbpf_err(int ret)
+-{
+-	if (ret < 0)
+-		errno = -ret;
+-	return ret;
+-}
+-
+-/* handle errno-based (e.g., syscall or libc) errors according to libbpf's
+- * strict mode settings
+- */
+-static inline int libbpf_err_errno(int ret)
+-{
+-	if (libbpf_mode & LIBBPF_STRICT_DIRECT_ERRS)
+-		/* errno is already assumed to be set on error */
+-		return ret < 0 ? -errno : ret;
+-
+-	/* legacy: on error return -1 directly and don't touch errno */
+-	return ret;
+-}
+-
+-/* handle error for pointer-returning APIs, err is assumed to be < 0 always */
+-static inline void *libbpf_err_ptr(int err)
+-{
+-	/* set errno on error, this doesn't break anything */
+-	errno = -err;
+-
+-	if (libbpf_mode & LIBBPF_STRICT_CLEAN_PTRS)
+-		return NULL;
+-
+-	/* legacy: encode err as ptr */
+-	return ERR_PTR(err);
+-}
+-
+-/* handle pointer-returning APIs' error handling */
+-static inline void *libbpf_ptr(void *ret)
+-{
+-	/* set errno on error, this doesn't break anything */
+-	if (IS_ERR(ret))
+-		errno = -PTR_ERR(ret);
+-
+-	if (libbpf_mode & LIBBPF_STRICT_CLEAN_PTRS)
+-		return IS_ERR(ret) ? NULL : ret;
+-
+-	/* legacy: pass-through original pointer */
+-	return ret;
+-}
+-
+-#endif /* __LIBBPF_LIBBPF_INTERNAL_H */
+diff --git a/tools/lib/bpf/libbpf_legacy.h b/tools/lib/bpf/libbpf_legacy.h
+deleted file mode 100644
+index df0d03dcffab..000000000000
+--- a/tools/lib/bpf/libbpf_legacy.h
++++ /dev/null
+@@ -1,59 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * Libbpf legacy APIs (either discouraged or deprecated, as mentioned in [0])
+- *
+- *   [0] https://docs.google.com/document/d/1UyjTZuPFWiPFyKk1tV5an11_iaRuec6U-ZESZ54nNTY
+- *
+- * Copyright (C) 2021 Facebook
+- */
+-#ifndef __LIBBPF_LEGACY_BPF_H
+-#define __LIBBPF_LEGACY_BPF_H
+-
+-#include <linux/bpf.h>
+-#include <stdbool.h>
+-#include <stddef.h>
+-#include <stdint.h>
+-#include "libbpf_common.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-enum libbpf_strict_mode {
+-	/* Turn on all supported strict features of libbpf to simulate libbpf
+-	 * v1.0 behavior.
+-	 * This will be the default behavior in libbpf v1.0.
+-	 */
+-	LIBBPF_STRICT_ALL = 0xffffffff,
+-
+-	/*
+-	 * Disable any libbpf 1.0 behaviors. This is the default before libbpf
+-	 * v1.0. It won't be supported anymore in v1.0, please update your
+-	 * code so that it handles LIBBPF_STRICT_ALL mode before libbpf v1.0.
+-	 */
+-	LIBBPF_STRICT_NONE = 0x00,
+-	/*
+-	 * Return NULL pointers on error, not ERR_PTR(err).
+-	 * Additionally, libbpf also always sets errno to corresponding Exx
+-	 * (positive) error code.
+-	 */
+-	LIBBPF_STRICT_CLEAN_PTRS = 0x01,
+-	/*
+-	 * Return actual error codes from low-level APIs directly, not just -1.
+-	 * Additionally, libbpf also always sets errno to corresponding Exx
+-	 * (positive) error code.
+-	 */
+-	LIBBPF_STRICT_DIRECT_ERRS = 0x02,
+-
+-	__LIBBPF_STRICT_LAST,
+-};
+-
+-LIBBPF_API int libbpf_set_strict_mode(enum libbpf_strict_mode mode);
+-
+-
+-#ifdef __cplusplus
+-} /* extern "C" */
+-#endif
+-
+-#endif /* __LIBBPF_LEGACY_BPF_H */
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+deleted file mode 100644
+index ecaae2927ab8..000000000000
+--- a/tools/lib/bpf/libbpf_probes.c
++++ /dev/null
+@@ -1,358 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2019 Netronome Systems, Inc. */
+-
+-#include <errno.h>
+-#include <fcntl.h>
+-#include <string.h>
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <net/if.h>
+-#include <sys/utsname.h>
+-
+-#include <linux/btf.h>
+-#include <linux/filter.h>
+-#include <linux/kernel.h>
+-
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-
+-static bool grep(const char *buffer, const char *pattern)
+-{
+-	return !!strstr(buffer, pattern);
+-}
+-
+-static int get_vendor_id(int ifindex)
+-{
+-	char ifname[IF_NAMESIZE], path[64], buf[8];
+-	ssize_t len;
+-	int fd;
+-
+-	if (!if_indextoname(ifindex, ifname))
+-		return -1;
+-
+-	snprintf(path, sizeof(path), "/sys/class/net/%s/device/vendor", ifname);
+-
+-	fd = open(path, O_RDONLY);
+-	if (fd < 0)
+-		return -1;
+-
+-	len = read(fd, buf, sizeof(buf));
+-	close(fd);
+-	if (len < 0)
+-		return -1;
+-	if (len >= (ssize_t)sizeof(buf))
+-		return -1;
+-	buf[len] = '\0';
+-
+-	return strtol(buf, NULL, 0);
+-}
+-
+-static int get_kernel_version(void)
+-{
+-	int version, subversion, patchlevel;
+-	struct utsname utsn;
+-
+-	/* Return 0 on failure, and attempt to probe with empty kversion */
+-	if (uname(&utsn))
+-		return 0;
+-
+-	if (sscanf(utsn.release, "%d.%d.%d",
+-		   &version, &subversion, &patchlevel) != 3)
+-		return 0;
+-
+-	return (version << 16) + (subversion << 8) + patchlevel;
+-}
+-
+-static void
+-probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
+-	   size_t insns_cnt, char *buf, size_t buf_len, __u32 ifindex)
+-{
+-	struct bpf_load_program_attr xattr = {};
+-	int fd;
+-
+-	switch (prog_type) {
+-	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
+-		xattr.expected_attach_type = BPF_CGROUP_INET4_CONNECT;
+-		break;
+-	case BPF_PROG_TYPE_SK_LOOKUP:
+-		xattr.expected_attach_type = BPF_SK_LOOKUP;
+-		break;
+-	case BPF_PROG_TYPE_KPROBE:
+-		xattr.kern_version = get_kernel_version();
+-		break;
+-	case BPF_PROG_TYPE_UNSPEC:
+-	case BPF_PROG_TYPE_SOCKET_FILTER:
+-	case BPF_PROG_TYPE_SCHED_CLS:
+-	case BPF_PROG_TYPE_SCHED_ACT:
+-	case BPF_PROG_TYPE_TRACEPOINT:
+-	case BPF_PROG_TYPE_XDP:
+-	case BPF_PROG_TYPE_PERF_EVENT:
+-	case BPF_PROG_TYPE_CGROUP_SKB:
+-	case BPF_PROG_TYPE_CGROUP_SOCK:
+-	case BPF_PROG_TYPE_LWT_IN:
+-	case BPF_PROG_TYPE_LWT_OUT:
+-	case BPF_PROG_TYPE_LWT_XMIT:
+-	case BPF_PROG_TYPE_SOCK_OPS:
+-	case BPF_PROG_TYPE_SK_SKB:
+-	case BPF_PROG_TYPE_CGROUP_DEVICE:
+-	case BPF_PROG_TYPE_SK_MSG:
+-	case BPF_PROG_TYPE_RAW_TRACEPOINT:
+-	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
+-	case BPF_PROG_TYPE_LWT_SEG6LOCAL:
+-	case BPF_PROG_TYPE_LIRC_MODE2:
+-	case BPF_PROG_TYPE_SK_REUSEPORT:
+-	case BPF_PROG_TYPE_FLOW_DISSECTOR:
+-	case BPF_PROG_TYPE_CGROUP_SYSCTL:
+-	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
+-	case BPF_PROG_TYPE_TRACING:
+-	case BPF_PROG_TYPE_STRUCT_OPS:
+-	case BPF_PROG_TYPE_EXT:
+-	case BPF_PROG_TYPE_LSM:
+-	default:
+-		break;
+-	}
+-
+-	xattr.prog_type = prog_type;
+-	xattr.insns = insns;
+-	xattr.insns_cnt = insns_cnt;
+-	xattr.license = "GPL";
+-	xattr.prog_ifindex = ifindex;
+-
+-	fd = bpf_load_program_xattr(&xattr, buf, buf_len);
+-	if (fd >= 0)
+-		close(fd);
+-}
+-
+-bool bpf_probe_prog_type(enum bpf_prog_type prog_type, __u32 ifindex)
+-{
+-	struct bpf_insn insns[2] = {
+-		BPF_MOV64_IMM(BPF_REG_0, 0),
+-		BPF_EXIT_INSN()
+-	};
+-
+-	if (ifindex && prog_type == BPF_PROG_TYPE_SCHED_CLS)
+-		/* nfp returns -EINVAL on exit(0) with TC offload */
+-		insns[0].imm = 2;
+-
+-	errno = 0;
+-	probe_load(prog_type, insns, ARRAY_SIZE(insns), NULL, 0, ifindex);
+-
+-	return errno != EINVAL && errno != EOPNOTSUPP;
+-}
+-
+-int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
+-			 const char *str_sec, size_t str_len)
+-{
+-	struct btf_header hdr = {
+-		.magic = BTF_MAGIC,
+-		.version = BTF_VERSION,
+-		.hdr_len = sizeof(struct btf_header),
+-		.type_len = types_len,
+-		.str_off = types_len,
+-		.str_len = str_len,
+-	};
+-	int btf_fd, btf_len;
+-	__u8 *raw_btf;
+-
+-	btf_len = hdr.hdr_len + hdr.type_len + hdr.str_len;
+-	raw_btf = malloc(btf_len);
+-	if (!raw_btf)
+-		return -ENOMEM;
+-
+-	memcpy(raw_btf, &hdr, sizeof(hdr));
+-	memcpy(raw_btf + hdr.hdr_len, raw_types, hdr.type_len);
+-	memcpy(raw_btf + hdr.hdr_len + hdr.type_len, str_sec, hdr.str_len);
+-
+-	btf_fd = bpf_load_btf(raw_btf, btf_len, NULL, 0, false);
+-
+-	free(raw_btf);
+-	return btf_fd;
+-}
+-
+-static int load_local_storage_btf(void)
+-{
+-	const char strs[] = "\0bpf_spin_lock\0val\0cnt\0l";
+-	/* struct bpf_spin_lock {
+-	 *   int val;
+-	 * };
+-	 * struct val {
+-	 *   int cnt;
+-	 *   struct bpf_spin_lock l;
+-	 * };
+-	 */
+-	__u32 types[] = {
+-		/* int */
+-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [1] */
+-		/* struct bpf_spin_lock */                      /* [2] */
+-		BTF_TYPE_ENC(1, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),
+-		BTF_MEMBER_ENC(15, 1, 0), /* int val; */
+-		/* struct val */                                /* [3] */
+-		BTF_TYPE_ENC(15, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
+-		BTF_MEMBER_ENC(19, 1, 0), /* int cnt; */
+-		BTF_MEMBER_ENC(23, 2, 32),/* struct bpf_spin_lock l; */
+-	};
+-
+-	return libbpf__load_raw_btf((char *)types, sizeof(types),
+-				     strs, sizeof(strs));
+-}
+-
+-bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
+-{
+-	int key_size, value_size, max_entries, map_flags;
+-	__u32 btf_key_type_id = 0, btf_value_type_id = 0;
+-	struct bpf_create_map_attr attr = {};
+-	int fd = -1, btf_fd = -1, fd_inner;
+-
+-	key_size	= sizeof(__u32);
+-	value_size	= sizeof(__u32);
+-	max_entries	= 1;
+-	map_flags	= 0;
+-
+-	switch (map_type) {
+-	case BPF_MAP_TYPE_STACK_TRACE:
+-		value_size	= sizeof(__u64);
+-		break;
+-	case BPF_MAP_TYPE_LPM_TRIE:
+-		key_size	= sizeof(__u64);
+-		value_size	= sizeof(__u64);
+-		map_flags	= BPF_F_NO_PREALLOC;
+-		break;
+-	case BPF_MAP_TYPE_CGROUP_STORAGE:
+-	case BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE:
+-		key_size	= sizeof(struct bpf_cgroup_storage_key);
+-		value_size	= sizeof(__u64);
+-		max_entries	= 0;
+-		break;
+-	case BPF_MAP_TYPE_QUEUE:
+-	case BPF_MAP_TYPE_STACK:
+-		key_size	= 0;
+-		break;
+-	case BPF_MAP_TYPE_SK_STORAGE:
+-	case BPF_MAP_TYPE_INODE_STORAGE:
+-	case BPF_MAP_TYPE_TASK_STORAGE:
+-		btf_key_type_id = 1;
+-		btf_value_type_id = 3;
+-		value_size = 8;
+-		max_entries = 0;
+-		map_flags = BPF_F_NO_PREALLOC;
+-		btf_fd = load_local_storage_btf();
+-		if (btf_fd < 0)
+-			return false;
+-		break;
+-	case BPF_MAP_TYPE_RINGBUF:
+-		key_size = 0;
+-		value_size = 0;
+-		max_entries = 4096;
+-		break;
+-	case BPF_MAP_TYPE_UNSPEC:
+-	case BPF_MAP_TYPE_HASH:
+-	case BPF_MAP_TYPE_ARRAY:
+-	case BPF_MAP_TYPE_PROG_ARRAY:
+-	case BPF_MAP_TYPE_PERF_EVENT_ARRAY:
+-	case BPF_MAP_TYPE_PERCPU_HASH:
+-	case BPF_MAP_TYPE_PERCPU_ARRAY:
+-	case BPF_MAP_TYPE_CGROUP_ARRAY:
+-	case BPF_MAP_TYPE_LRU_HASH:
+-	case BPF_MAP_TYPE_LRU_PERCPU_HASH:
+-	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+-	case BPF_MAP_TYPE_HASH_OF_MAPS:
+-	case BPF_MAP_TYPE_DEVMAP:
+-	case BPF_MAP_TYPE_DEVMAP_HASH:
+-	case BPF_MAP_TYPE_SOCKMAP:
+-	case BPF_MAP_TYPE_CPUMAP:
+-	case BPF_MAP_TYPE_XSKMAP:
+-	case BPF_MAP_TYPE_SOCKHASH:
+-	case BPF_MAP_TYPE_REUSEPORT_SOCKARRAY:
+-	case BPF_MAP_TYPE_STRUCT_OPS:
+-	default:
+-		break;
+-	}
+-
+-	if (map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS ||
+-	    map_type == BPF_MAP_TYPE_HASH_OF_MAPS) {
+-		/* TODO: probe for device, once libbpf has a function to create
+-		 * map-in-map for offload
+-		 */
+-		if (ifindex)
+-			return false;
+-
+-		fd_inner = bpf_create_map(BPF_MAP_TYPE_HASH,
+-					  sizeof(__u32), sizeof(__u32), 1, 0);
+-		if (fd_inner < 0)
+-			return false;
+-		fd = bpf_create_map_in_map(map_type, NULL, sizeof(__u32),
+-					   fd_inner, 1, 0);
+-		close(fd_inner);
+-	} else {
+-		/* Note: No other restriction on map type probes for offload */
+-		attr.map_type = map_type;
+-		attr.key_size = key_size;
+-		attr.value_size = value_size;
+-		attr.max_entries = max_entries;
+-		attr.map_flags = map_flags;
+-		attr.map_ifindex = ifindex;
+-		if (btf_fd >= 0) {
+-			attr.btf_fd = btf_fd;
+-			attr.btf_key_type_id = btf_key_type_id;
+-			attr.btf_value_type_id = btf_value_type_id;
+-		}
+-
+-		fd = bpf_create_map_xattr(&attr);
+-	}
+-	if (fd >= 0)
+-		close(fd);
+-	if (btf_fd >= 0)
+-		close(btf_fd);
+-
+-	return fd >= 0;
+-}
+-
+-bool bpf_probe_helper(enum bpf_func_id id, enum bpf_prog_type prog_type,
+-		      __u32 ifindex)
+-{
+-	struct bpf_insn insns[2] = {
+-		BPF_EMIT_CALL(id),
+-		BPF_EXIT_INSN()
+-	};
+-	char buf[4096] = {};
+-	bool res;
+-
+-	probe_load(prog_type, insns, ARRAY_SIZE(insns), buf, sizeof(buf),
+-		   ifindex);
+-	res = !grep(buf, "invalid func ") && !grep(buf, "unknown func ");
+-
+-	if (ifindex) {
+-		switch (get_vendor_id(ifindex)) {
+-		case 0x19ee: /* Netronome specific */
+-			res = res && !grep(buf, "not supported by FW") &&
+-				!grep(buf, "unsupported function id");
+-			break;
+-		default:
+-			break;
+-		}
+-	}
+-
+-	return res;
+-}
+-
+-/*
+- * Probe for availability of kernel commit (5.3):
+- *
+- * c04c0d2b968a ("bpf: increase complexity limit and maximum program size")
+- */
+-bool bpf_probe_large_insn_limit(__u32 ifindex)
+-{
+-	struct bpf_insn insns[BPF_MAXINSNS + 1];
+-	int i;
+-
+-	for (i = 0; i < BPF_MAXINSNS; i++)
+-		insns[i] = BPF_MOV64_IMM(BPF_REG_0, 1);
+-	insns[BPF_MAXINSNS] = BPF_EXIT_INSN();
+-
+-	errno = 0;
+-	probe_load(BPF_PROG_TYPE_SCHED_CLS, insns, ARRAY_SIZE(insns), NULL, 0,
+-		   ifindex);
+-
+-	return errno != E2BIG && errno != EINVAL;
+-}
+diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
+deleted file mode 100644
+index 10911a8cad0f..000000000000
+--- a/tools/lib/bpf/linker.c
++++ /dev/null
+@@ -1,2892 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/*
+- * BPF static linker
+- *
+- * Copyright (c) 2021 Facebook
+- */
+-#include <stdbool.h>
+-#include <stddef.h>
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <unistd.h>
+-#include <errno.h>
+-#include <linux/err.h>
+-#include <linux/btf.h>
+-#include <elf.h>
+-#include <libelf.h>
+-#include <gelf.h>
+-#include <fcntl.h>
+-#include "libbpf.h"
+-#include "btf.h"
+-#include "libbpf_internal.h"
+-#include "strset.h"
+-
+-#define BTF_EXTERN_SEC ".extern"
+-
+-struct src_sec {
+-	const char *sec_name;
+-	/* positional (not necessarily ELF) index in an array of sections */
+-	int id;
+-	/* positional (not necessarily ELF) index of a matching section in a final object file */
+-	int dst_id;
+-	/* section data offset in a matching output section */
+-	int dst_off;
+-	/* whether section is omitted from the final ELF file */
+-	bool skipped;
+-	/* whether section is an ephemeral section, not mapped to an ELF section */
+-	bool ephemeral;
+-
+-	/* ELF info */
+-	size_t sec_idx;
+-	Elf_Scn *scn;
+-	Elf64_Shdr *shdr;
+-	Elf_Data *data;
+-
+-	/* corresponding BTF DATASEC type ID */
+-	int sec_type_id;
+-};
+-
+-struct src_obj {
+-	const char *filename;
+-	int fd;
+-	Elf *elf;
+-	/* Section header strings section index */
+-	size_t shstrs_sec_idx;
+-	/* SYMTAB section index */
+-	size_t symtab_sec_idx;
+-
+-	struct btf *btf;
+-	struct btf_ext *btf_ext;
+-
+-	/* List of sections (including ephemeral). Slot zero is unused. */
+-	struct src_sec *secs;
+-	int sec_cnt;
+-
+-	/* mapping of symbol indices from src to dst ELF */
+-	int *sym_map;
+-	/* mapping from the src BTF type IDs to dst ones */
+-	int *btf_type_map;
+-};
+-
+-/* single .BTF.ext data section */
+-struct btf_ext_sec_data {
+-	size_t rec_cnt;
+-	__u32 rec_sz;
+-	void *recs;
+-};
+-
+-struct glob_sym {
+-	/* ELF symbol index */
+-	int sym_idx;
+-	/* associated section id for .ksyms, .kconfig, etc, but not .extern */
+-	int sec_id;
+-	/* extern name offset in STRTAB */
+-	int name_off;
+-	/* optional associated BTF type ID */
+-	int btf_id;
+-	/* BTF type ID to which VAR/FUNC type is pointing to; used for
+-	 * rewriting types when extern VAR/FUNC is resolved to a concrete
+-	 * definition
+-	 */
+-	int underlying_btf_id;
+-	/* sec_var index in the corresponding dst_sec, if exists */
+-	int var_idx;
+-
+-	/* extern or resolved/global symbol */
+-	bool is_extern;
+-	/* weak or strong symbol, never goes back from strong to weak */
+-	bool is_weak;
+-};
+-
+-struct dst_sec {
+-	char *sec_name;
+-	/* positional (not necessarily ELF) index in an array of sections */
+-	int id;
+-
+-	bool ephemeral;
+-
+-	/* ELF info */
+-	size_t sec_idx;
+-	Elf_Scn *scn;
+-	Elf64_Shdr *shdr;
+-	Elf_Data *data;
+-
+-	/* final output section size */
+-	int sec_sz;
+-	/* final output contents of the section */
+-	void *raw_data;
+-
+-	/* corresponding STT_SECTION symbol index in SYMTAB */
+-	int sec_sym_idx;
+-
+-	/* section's DATASEC variable info, emitted on BTF finalization */
+-	bool has_btf;
+-	int sec_var_cnt;
+-	struct btf_var_secinfo *sec_vars;
+-
+-	/* section's .BTF.ext data */
+-	struct btf_ext_sec_data func_info;
+-	struct btf_ext_sec_data line_info;
+-	struct btf_ext_sec_data core_relo_info;
+-};
+-
+-struct bpf_linker {
+-	char *filename;
+-	int fd;
+-	Elf *elf;
+-	Elf64_Ehdr *elf_hdr;
+-
+-	/* Output sections metadata */
+-	struct dst_sec *secs;
+-	int sec_cnt;
+-
+-	struct strset *strtab_strs; /* STRTAB unique strings */
+-	size_t strtab_sec_idx; /* STRTAB section index */
+-	size_t symtab_sec_idx; /* SYMTAB section index */
+-
+-	struct btf *btf;
+-	struct btf_ext *btf_ext;
+-
+-	/* global (including extern) ELF symbols */
+-	int glob_sym_cnt;
+-	struct glob_sym *glob_syms;
+-};
+-
+-#define pr_warn_elf(fmt, ...)									\
+-	libbpf_print(LIBBPF_WARN, "libbpf: " fmt ": %s\n", ##__VA_ARGS__, elf_errmsg(-1))
+-
+-static int init_output_elf(struct bpf_linker *linker, const char *file);
+-
+-static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
+-				const struct bpf_linker_file_opts *opts,
+-				struct src_obj *obj);
+-static int linker_sanity_check_elf(struct src_obj *obj);
+-static int linker_sanity_check_elf_symtab(struct src_obj *obj, struct src_sec *sec);
+-static int linker_sanity_check_elf_relos(struct src_obj *obj, struct src_sec *sec);
+-static int linker_sanity_check_btf(struct src_obj *obj);
+-static int linker_sanity_check_btf_ext(struct src_obj *obj);
+-static int linker_fixup_btf(struct src_obj *obj);
+-static int linker_append_sec_data(struct bpf_linker *linker, struct src_obj *obj);
+-static int linker_append_elf_syms(struct bpf_linker *linker, struct src_obj *obj);
+-static int linker_append_elf_sym(struct bpf_linker *linker, struct src_obj *obj,
+-				 Elf64_Sym *sym, const char *sym_name, int src_sym_idx);
+-static int linker_append_elf_relos(struct bpf_linker *linker, struct src_obj *obj);
+-static int linker_append_btf(struct bpf_linker *linker, struct src_obj *obj);
+-static int linker_append_btf_ext(struct bpf_linker *linker, struct src_obj *obj);
+-
+-static int finalize_btf(struct bpf_linker *linker);
+-static int finalize_btf_ext(struct bpf_linker *linker);
+-
+-void bpf_linker__free(struct bpf_linker *linker)
+-{
+-	int i;
+-
+-	if (!linker)
+-		return;
+-
+-	free(linker->filename);
+-
+-	if (linker->elf)
+-		elf_end(linker->elf);
+-
+-	if (linker->fd >= 0)
+-		close(linker->fd);
+-
+-	strset__free(linker->strtab_strs);
+-
+-	btf__free(linker->btf);
+-	btf_ext__free(linker->btf_ext);
+-
+-	for (i = 1; i < linker->sec_cnt; i++) {
+-		struct dst_sec *sec = &linker->secs[i];
+-
+-		free(sec->sec_name);
+-		free(sec->raw_data);
+-		free(sec->sec_vars);
+-
+-		free(sec->func_info.recs);
+-		free(sec->line_info.recs);
+-		free(sec->core_relo_info.recs);
+-	}
+-	free(linker->secs);
+-
+-	free(linker);
+-}
+-
+-struct bpf_linker *bpf_linker__new(const char *filename, struct bpf_linker_opts *opts)
+-{
+-	struct bpf_linker *linker;
+-	int err;
+-
+-	if (!OPTS_VALID(opts, bpf_linker_opts))
+-		return errno = EINVAL, NULL;
+-
+-	if (elf_version(EV_CURRENT) == EV_NONE) {
+-		pr_warn_elf("libelf initialization failed");
+-		return errno = EINVAL, NULL;
+-	}
+-
+-	linker = calloc(1, sizeof(*linker));
+-	if (!linker)
+-		return errno = ENOMEM, NULL;
+-
+-	linker->fd = -1;
+-
+-	err = init_output_elf(linker, filename);
+-	if (err)
+-		goto err_out;
+-
+-	return linker;
+-
+-err_out:
+-	bpf_linker__free(linker);
+-	return errno = -err, NULL;
+-}
+-
+-static struct dst_sec *add_dst_sec(struct bpf_linker *linker, const char *sec_name)
+-{
+-	struct dst_sec *secs = linker->secs, *sec;
+-	size_t new_cnt = linker->sec_cnt ? linker->sec_cnt + 1 : 2;
+-
+-	secs = libbpf_reallocarray(secs, new_cnt, sizeof(*secs));
+-	if (!secs)
+-		return NULL;
+-
+-	/* zero out newly allocated memory */
+-	memset(secs + linker->sec_cnt, 0, (new_cnt - linker->sec_cnt) * sizeof(*secs));
+-
+-	linker->secs = secs;
+-	linker->sec_cnt = new_cnt;
+-
+-	sec = &linker->secs[new_cnt - 1];
+-	sec->id = new_cnt - 1;
+-	sec->sec_name = strdup(sec_name);
+-	if (!sec->sec_name)
+-		return NULL;
+-
+-	return sec;
+-}
+-
+-static Elf64_Sym *add_new_sym(struct bpf_linker *linker, size_t *sym_idx)
+-{
+-	struct dst_sec *symtab = &linker->secs[linker->symtab_sec_idx];
+-	Elf64_Sym *syms, *sym;
+-	size_t sym_cnt = symtab->sec_sz / sizeof(*sym);
+-
+-	syms = libbpf_reallocarray(symtab->raw_data, sym_cnt + 1, sizeof(*sym));
+-	if (!syms)
+-		return NULL;
+-
+-	sym = &syms[sym_cnt];
+-	memset(sym, 0, sizeof(*sym));
+-
+-	symtab->raw_data = syms;
+-	symtab->sec_sz += sizeof(*sym);
+-	symtab->shdr->sh_size += sizeof(*sym);
+-	symtab->data->d_size += sizeof(*sym);
+-
+-	if (sym_idx)
+-		*sym_idx = sym_cnt;
+-
+-	return sym;
+-}
+-
+-static int init_output_elf(struct bpf_linker *linker, const char *file)
+-{
+-	int err, str_off;
+-	Elf64_Sym *init_sym;
+-	struct dst_sec *sec;
+-
+-	linker->filename = strdup(file);
+-	if (!linker->filename)
+-		return -ENOMEM;
+-
+-	linker->fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+-	if (linker->fd < 0) {
+-		err = -errno;
+-		pr_warn("failed to create '%s': %d\n", file, err);
+-		return err;
+-	}
+-
+-	linker->elf = elf_begin(linker->fd, ELF_C_WRITE, NULL);
+-	if (!linker->elf) {
+-		pr_warn_elf("failed to create ELF object");
+-		return -EINVAL;
+-	}
+-
+-	/* ELF header */
+-	linker->elf_hdr = elf64_newehdr(linker->elf);
+-	if (!linker->elf_hdr) {
+-		pr_warn_elf("failed to create ELF header");
+-		return -EINVAL;
+-	}
+-
+-	linker->elf_hdr->e_machine = EM_BPF;
+-	linker->elf_hdr->e_type = ET_REL;
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-	linker->elf_hdr->e_ident[EI_DATA] = ELFDATA2LSB;
+-#elif __BYTE_ORDER == __BIG_ENDIAN
+-	linker->elf_hdr->e_ident[EI_DATA] = ELFDATA2MSB;
+-#else
+-#error "Unknown __BYTE_ORDER"
+-#endif
+-
+-	/* STRTAB */
+-	/* initialize strset with an empty string to conform to ELF */
+-	linker->strtab_strs = strset__new(INT_MAX, "", sizeof(""));
+-	if (libbpf_get_error(linker->strtab_strs))
+-		return libbpf_get_error(linker->strtab_strs);
+-
+-	sec = add_dst_sec(linker, ".strtab");
+-	if (!sec)
+-		return -ENOMEM;
+-
+-	sec->scn = elf_newscn(linker->elf);
+-	if (!sec->scn) {
+-		pr_warn_elf("failed to create STRTAB section");
+-		return -EINVAL;
+-	}
+-
+-	sec->shdr = elf64_getshdr(sec->scn);
+-	if (!sec->shdr)
+-		return -EINVAL;
+-
+-	sec->data = elf_newdata(sec->scn);
+-	if (!sec->data) {
+-		pr_warn_elf("failed to create STRTAB data");
+-		return -EINVAL;
+-	}
+-
+-	str_off = strset__add_str(linker->strtab_strs, sec->sec_name);
+-	if (str_off < 0)
+-		return str_off;
+-
+-	sec->sec_idx = elf_ndxscn(sec->scn);
+-	linker->elf_hdr->e_shstrndx = sec->sec_idx;
+-	linker->strtab_sec_idx = sec->sec_idx;
+-
+-	sec->shdr->sh_name = str_off;
+-	sec->shdr->sh_type = SHT_STRTAB;
+-	sec->shdr->sh_flags = SHF_STRINGS;
+-	sec->shdr->sh_offset = 0;
+-	sec->shdr->sh_link = 0;
+-	sec->shdr->sh_info = 0;
+-	sec->shdr->sh_addralign = 1;
+-	sec->shdr->sh_size = sec->sec_sz = 0;
+-	sec->shdr->sh_entsize = 0;
+-
+-	/* SYMTAB */
+-	sec = add_dst_sec(linker, ".symtab");
+-	if (!sec)
+-		return -ENOMEM;
+-
+-	sec->scn = elf_newscn(linker->elf);
+-	if (!sec->scn) {
+-		pr_warn_elf("failed to create SYMTAB section");
+-		return -EINVAL;
+-	}
+-
+-	sec->shdr = elf64_getshdr(sec->scn);
+-	if (!sec->shdr)
+-		return -EINVAL;
+-
+-	sec->data = elf_newdata(sec->scn);
+-	if (!sec->data) {
+-		pr_warn_elf("failed to create SYMTAB data");
+-		return -EINVAL;
+-	}
+-
+-	str_off = strset__add_str(linker->strtab_strs, sec->sec_name);
+-	if (str_off < 0)
+-		return str_off;
+-
+-	sec->sec_idx = elf_ndxscn(sec->scn);
+-	linker->symtab_sec_idx = sec->sec_idx;
+-
+-	sec->shdr->sh_name = str_off;
+-	sec->shdr->sh_type = SHT_SYMTAB;
+-	sec->shdr->sh_flags = 0;
+-	sec->shdr->sh_offset = 0;
+-	sec->shdr->sh_link = linker->strtab_sec_idx;
+-	/* sh_info should be one greater than the index of the last local
+-	 * symbol (i.e., binding is STB_LOCAL). But why and who cares?
+-	 */
+-	sec->shdr->sh_info = 0;
+-	sec->shdr->sh_addralign = 8;
+-	sec->shdr->sh_entsize = sizeof(Elf64_Sym);
+-
+-	/* .BTF */
+-	linker->btf = btf__new_empty();
+-	err = libbpf_get_error(linker->btf);
+-	if (err)
+-		return err;
+-
+-	/* add the special all-zero symbol */
+-	init_sym = add_new_sym(linker, NULL);
+-	if (!init_sym)
+-		return -EINVAL;
+-
+-	init_sym->st_name = 0;
+-	init_sym->st_info = 0;
+-	init_sym->st_other = 0;
+-	init_sym->st_shndx = SHN_UNDEF;
+-	init_sym->st_value = 0;
+-	init_sym->st_size = 0;
+-
+-	return 0;
+-}
+-
+-int bpf_linker__add_file(struct bpf_linker *linker, const char *filename,
+-			 const struct bpf_linker_file_opts *opts)
+-{
+-	struct src_obj obj = {};
+-	int err = 0;
+-
+-	if (!OPTS_VALID(opts, bpf_linker_file_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	if (!linker->elf)
+-		return libbpf_err(-EINVAL);
+-
+-	err = err ?: linker_load_obj_file(linker, filename, opts, &obj);
+-	err = err ?: linker_append_sec_data(linker, &obj);
+-	err = err ?: linker_append_elf_syms(linker, &obj);
+-	err = err ?: linker_append_elf_relos(linker, &obj);
+-	err = err ?: linker_append_btf(linker, &obj);
+-	err = err ?: linker_append_btf_ext(linker, &obj);
+-
+-	/* free up src_obj resources */
+-	free(obj.btf_type_map);
+-	btf__free(obj.btf);
+-	btf_ext__free(obj.btf_ext);
+-	free(obj.secs);
+-	free(obj.sym_map);
+-	if (obj.elf)
+-		elf_end(obj.elf);
+-	if (obj.fd >= 0)
+-		close(obj.fd);
+-
+-	return libbpf_err(err);
+-}
+-
+-static bool is_dwarf_sec_name(const char *name)
+-{
+-	/* approximation, but the actual list is too long */
+-	return strncmp(name, ".debug_", sizeof(".debug_") - 1) == 0;
+-}
+-
+-static bool is_ignored_sec(struct src_sec *sec)
+-{
+-	Elf64_Shdr *shdr = sec->shdr;
+-	const char *name = sec->sec_name;
+-
+-	/* no special handling of .strtab */
+-	if (shdr->sh_type == SHT_STRTAB)
+-		return true;
+-
+-	/* ignore .llvm_addrsig section as well */
+-	if (shdr->sh_type == SHT_LLVM_ADDRSIG)
+-		return true;
+-
+-	/* no subprograms will lead to an empty .text section, ignore it */
+-	if (shdr->sh_type == SHT_PROGBITS && shdr->sh_size == 0 &&
+-	    strcmp(sec->sec_name, ".text") == 0)
+-		return true;
+-
+-	/* DWARF sections */
+-	if (is_dwarf_sec_name(sec->sec_name))
+-		return true;
+-
+-	if (strncmp(name, ".rel", sizeof(".rel") - 1) == 0) {
+-		name += sizeof(".rel") - 1;
+-		/* DWARF section relocations */
+-		if (is_dwarf_sec_name(name))
+-			return true;
+-
+-		/* .BTF and .BTF.ext don't need relocations */
+-		if (strcmp(name, BTF_ELF_SEC) == 0 ||
+-		    strcmp(name, BTF_EXT_ELF_SEC) == 0)
+-			return true;
+-	}
+-
+-	return false;
+-}
+-
+-static struct src_sec *add_src_sec(struct src_obj *obj, const char *sec_name)
+-{
+-	struct src_sec *secs = obj->secs, *sec;
+-	size_t new_cnt = obj->sec_cnt ? obj->sec_cnt + 1 : 2;
+-
+-	secs = libbpf_reallocarray(secs, new_cnt, sizeof(*secs));
+-	if (!secs)
+-		return NULL;
+-
+-	/* zero out newly allocated memory */
+-	memset(secs + obj->sec_cnt, 0, (new_cnt - obj->sec_cnt) * sizeof(*secs));
+-
+-	obj->secs = secs;
+-	obj->sec_cnt = new_cnt;
+-
+-	sec = &obj->secs[new_cnt - 1];
+-	sec->id = new_cnt - 1;
+-	sec->sec_name = sec_name;
+-
+-	return sec;
+-}
+-
+-static int linker_load_obj_file(struct bpf_linker *linker, const char *filename,
+-				const struct bpf_linker_file_opts *opts,
+-				struct src_obj *obj)
+-{
+-#if __BYTE_ORDER == __LITTLE_ENDIAN
+-	const int host_endianness = ELFDATA2LSB;
+-#elif __BYTE_ORDER == __BIG_ENDIAN
+-	const int host_endianness = ELFDATA2MSB;
+-#else
+-#error "Unknown __BYTE_ORDER"
+-#endif
+-	int err = 0;
+-	Elf_Scn *scn;
+-	Elf_Data *data;
+-	Elf64_Ehdr *ehdr;
+-	Elf64_Shdr *shdr;
+-	struct src_sec *sec;
+-
+-	pr_debug("linker: adding object file '%s'...\n", filename);
+-
+-	obj->filename = filename;
+-
+-	obj->fd = open(filename, O_RDONLY);
+-	if (obj->fd < 0) {
+-		err = -errno;
+-		pr_warn("failed to open file '%s': %d\n", filename, err);
+-		return err;
+-	}
+-	obj->elf = elf_begin(obj->fd, ELF_C_READ_MMAP, NULL);
+-	if (!obj->elf) {
+-		err = -errno;
+-		pr_warn_elf("failed to parse ELF file '%s'", filename);
+-		return err;
+-	}
+-
+-	/* Sanity check ELF file high-level properties */
+-	ehdr = elf64_getehdr(obj->elf);
+-	if (!ehdr) {
+-		err = -errno;
+-		pr_warn_elf("failed to get ELF header for %s", filename);
+-		return err;
+-	}
+-	if (ehdr->e_ident[EI_DATA] != host_endianness) {
+-		err = -EOPNOTSUPP;
+-		pr_warn_elf("unsupported byte order of ELF file %s", filename);
+-		return err;
+-	}
+-	if (ehdr->e_type != ET_REL
+-	    || ehdr->e_machine != EM_BPF
+-	    || ehdr->e_ident[EI_CLASS] != ELFCLASS64) {
+-		err = -EOPNOTSUPP;
+-		pr_warn_elf("unsupported kind of ELF file %s", filename);
+-		return err;
+-	}
+-
+-	if (elf_getshdrstrndx(obj->elf, &obj->shstrs_sec_idx)) {
+-		err = -errno;
+-		pr_warn_elf("failed to get SHSTRTAB section index for %s", filename);
+-		return err;
+-	}
+-
+-	scn = NULL;
+-	while ((scn = elf_nextscn(obj->elf, scn)) != NULL) {
+-		size_t sec_idx = elf_ndxscn(scn);
+-		const char *sec_name;
+-
+-		shdr = elf64_getshdr(scn);
+-		if (!shdr) {
+-			err = -errno;
+-			pr_warn_elf("failed to get section #%zu header for %s",
+-				    sec_idx, filename);
+-			return err;
+-		}
+-
+-		sec_name = elf_strptr(obj->elf, obj->shstrs_sec_idx, shdr->sh_name);
+-		if (!sec_name) {
+-			err = -errno;
+-			pr_warn_elf("failed to get section #%zu name for %s",
+-				    sec_idx, filename);
+-			return err;
+-		}
+-
+-		data = elf_getdata(scn, 0);
+-		if (!data) {
+-			err = -errno;
+-			pr_warn_elf("failed to get section #%zu (%s) data from %s",
+-				    sec_idx, sec_name, filename);
+-			return err;
+-		}
+-
+-		sec = add_src_sec(obj, sec_name);
+-		if (!sec)
+-			return -ENOMEM;
+-
+-		sec->scn = scn;
+-		sec->shdr = shdr;
+-		sec->data = data;
+-		sec->sec_idx = elf_ndxscn(scn);
+-
+-		if (is_ignored_sec(sec)) {
+-			sec->skipped = true;
+-			continue;
+-		}
+-
+-		switch (shdr->sh_type) {
+-		case SHT_SYMTAB:
+-			if (obj->symtab_sec_idx) {
+-				err = -EOPNOTSUPP;
+-				pr_warn("multiple SYMTAB sections found, not supported\n");
+-				return err;
+-			}
+-			obj->symtab_sec_idx = sec_idx;
+-			break;
+-		case SHT_STRTAB:
+-			/* we'll construct our own string table */
+-			break;
+-		case SHT_PROGBITS:
+-			if (strcmp(sec_name, BTF_ELF_SEC) == 0) {
+-				obj->btf = btf__new(data->d_buf, shdr->sh_size);
+-				err = libbpf_get_error(obj->btf);
+-				if (err) {
+-					pr_warn("failed to parse .BTF from %s: %d\n", filename, err);
+-					return err;
+-				}
+-				sec->skipped = true;
+-				continue;
+-			}
+-			if (strcmp(sec_name, BTF_EXT_ELF_SEC) == 0) {
+-				obj->btf_ext = btf_ext__new(data->d_buf, shdr->sh_size);
+-				err = libbpf_get_error(obj->btf_ext);
+-				if (err) {
+-					pr_warn("failed to parse .BTF.ext from '%s': %d\n", filename, err);
+-					return err;
+-				}
+-				sec->skipped = true;
+-				continue;
+-			}
+-
+-			/* data & code */
+-			break;
+-		case SHT_NOBITS:
+-			/* BSS */
+-			break;
+-		case SHT_REL:
+-			/* relocations */
+-			break;
+-		default:
+-			pr_warn("unrecognized section #%zu (%s) in %s\n",
+-				sec_idx, sec_name, filename);
+-			err = -EINVAL;
+-			return err;
+-		}
+-	}
+-
+-	err = err ?: linker_sanity_check_elf(obj);
+-	err = err ?: linker_sanity_check_btf(obj);
+-	err = err ?: linker_sanity_check_btf_ext(obj);
+-	err = err ?: linker_fixup_btf(obj);
+-
+-	return err;
+-}
+-
+-static bool is_pow_of_2(size_t x)
+-{
+-	return x && (x & (x - 1)) == 0;
+-}
+-
+-static int linker_sanity_check_elf(struct src_obj *obj)
+-{
+-	struct src_sec *sec;
+-	int i, err;
+-
+-	if (!obj->symtab_sec_idx) {
+-		pr_warn("ELF is missing SYMTAB section in %s\n", obj->filename);
+-		return -EINVAL;
+-	}
+-	if (!obj->shstrs_sec_idx) {
+-		pr_warn("ELF is missing section headers STRTAB section in %s\n", obj->filename);
+-		return -EINVAL;
+-	}
+-
+-	for (i = 1; i < obj->sec_cnt; i++) {
+-		sec = &obj->secs[i];
+-
+-		if (sec->sec_name[0] == '\0') {
+-			pr_warn("ELF section #%zu has empty name in %s\n", sec->sec_idx, obj->filename);
+-			return -EINVAL;
+-		}
+-
+-		if (sec->shdr->sh_addralign && !is_pow_of_2(sec->shdr->sh_addralign))
+-			return -EINVAL;
+-		if (sec->shdr->sh_addralign != sec->data->d_align)
+-			return -EINVAL;
+-
+-		if (sec->shdr->sh_size != sec->data->d_size)
+-			return -EINVAL;
+-
+-		switch (sec->shdr->sh_type) {
+-		case SHT_SYMTAB:
+-			err = linker_sanity_check_elf_symtab(obj, sec);
+-			if (err)
+-				return err;
+-			break;
+-		case SHT_STRTAB:
+-			break;
+-		case SHT_PROGBITS:
+-			if (sec->shdr->sh_flags & SHF_EXECINSTR) {
+-				if (sec->shdr->sh_size % sizeof(struct bpf_insn) != 0)
+-					return -EINVAL;
+-			}
+-			break;
+-		case SHT_NOBITS:
+-			break;
+-		case SHT_REL:
+-			err = linker_sanity_check_elf_relos(obj, sec);
+-			if (err)
+-				return err;
+-			break;
+-		case SHT_LLVM_ADDRSIG:
+-			break;
+-		default:
+-			pr_warn("ELF section #%zu (%s) has unrecognized type %zu in %s\n",
+-				sec->sec_idx, sec->sec_name, (size_t)sec->shdr->sh_type, obj->filename);
+-			return -EINVAL;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int linker_sanity_check_elf_symtab(struct src_obj *obj, struct src_sec *sec)
+-{
+-	struct src_sec *link_sec;
+-	Elf64_Sym *sym;
+-	int i, n;
+-
+-	if (sec->shdr->sh_entsize != sizeof(Elf64_Sym))
+-		return -EINVAL;
+-	if (sec->shdr->sh_size % sec->shdr->sh_entsize != 0)
+-		return -EINVAL;
+-
+-	if (!sec->shdr->sh_link || sec->shdr->sh_link >= obj->sec_cnt) {
+-		pr_warn("ELF SYMTAB section #%zu points to missing STRTAB section #%zu in %s\n",
+-			sec->sec_idx, (size_t)sec->shdr->sh_link, obj->filename);
+-		return -EINVAL;
+-	}
+-	link_sec = &obj->secs[sec->shdr->sh_link];
+-	if (link_sec->shdr->sh_type != SHT_STRTAB) {
+-		pr_warn("ELF SYMTAB section #%zu points to invalid STRTAB section #%zu in %s\n",
+-			sec->sec_idx, (size_t)sec->shdr->sh_link, obj->filename);
+-		return -EINVAL;
+-	}
+-
+-	n = sec->shdr->sh_size / sec->shdr->sh_entsize;
+-	sym = sec->data->d_buf;
+-	for (i = 0; i < n; i++, sym++) {
+-		int sym_type = ELF64_ST_TYPE(sym->st_info);
+-		int sym_bind = ELF64_ST_BIND(sym->st_info);
+-		int sym_vis = ELF64_ST_VISIBILITY(sym->st_other);
+-
+-		if (i == 0) {
+-			if (sym->st_name != 0 || sym->st_info != 0
+-			    || sym->st_other != 0 || sym->st_shndx != 0
+-			    || sym->st_value != 0 || sym->st_size != 0) {
+-				pr_warn("ELF sym #0 is invalid in %s\n", obj->filename);
+-				return -EINVAL;
+-			}
+-			continue;
+-		}
+-		if (sym_bind != STB_LOCAL && sym_bind != STB_GLOBAL && sym_bind != STB_WEAK) {
+-			pr_warn("ELF sym #%d in section #%zu has unsupported symbol binding %d\n",
+-				i, sec->sec_idx, sym_bind);
+-			return -EINVAL;
+-		}
+-		if (sym_vis != STV_DEFAULT && sym_vis != STV_HIDDEN) {
+-			pr_warn("ELF sym #%d in section #%zu has unsupported symbol visibility %d\n",
+-				i, sec->sec_idx, sym_vis);
+-			return -EINVAL;
+-		}
+-		if (sym->st_shndx == 0) {
+-			if (sym_type != STT_NOTYPE || sym_bind == STB_LOCAL
+-			    || sym->st_value != 0 || sym->st_size != 0) {
+-				pr_warn("ELF sym #%d is invalid extern symbol in %s\n",
+-					i, obj->filename);
+-
+-				return -EINVAL;
+-			}
+-			continue;
+-		}
+-		if (sym->st_shndx < SHN_LORESERVE && sym->st_shndx >= obj->sec_cnt) {
+-			pr_warn("ELF sym #%d in section #%zu points to missing section #%zu in %s\n",
+-				i, sec->sec_idx, (size_t)sym->st_shndx, obj->filename);
+-			return -EINVAL;
+-		}
+-		if (sym_type == STT_SECTION) {
+-			if (sym->st_value != 0)
+-				return -EINVAL;
+-			continue;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int linker_sanity_check_elf_relos(struct src_obj *obj, struct src_sec *sec)
+-{
+-	struct src_sec *link_sec, *sym_sec;
+-	Elf64_Rel *relo;
+-	int i, n;
+-
+-	if (sec->shdr->sh_entsize != sizeof(Elf64_Rel))
+-		return -EINVAL;
+-	if (sec->shdr->sh_size % sec->shdr->sh_entsize != 0)
+-		return -EINVAL;
+-
+-	/* SHT_REL's sh_link should point to SYMTAB */
+-	if (sec->shdr->sh_link != obj->symtab_sec_idx) {
+-		pr_warn("ELF relo section #%zu points to invalid SYMTAB section #%zu in %s\n",
+-			sec->sec_idx, (size_t)sec->shdr->sh_link, obj->filename);
+-		return -EINVAL;
+-	}
+-
+-	/* SHT_REL's sh_info points to relocated section */
+-	if (!sec->shdr->sh_info || sec->shdr->sh_info >= obj->sec_cnt) {
+-		pr_warn("ELF relo section #%zu points to missing section #%zu in %s\n",
+-			sec->sec_idx, (size_t)sec->shdr->sh_info, obj->filename);
+-		return -EINVAL;
+-	}
+-	link_sec = &obj->secs[sec->shdr->sh_info];
+-
+-	/* .rel<secname> -> <secname> pattern is followed */
+-	if (strncmp(sec->sec_name, ".rel", sizeof(".rel") - 1) != 0
+-	    || strcmp(sec->sec_name + sizeof(".rel") - 1, link_sec->sec_name) != 0) {
+-		pr_warn("ELF relo section #%zu name has invalid name in %s\n",
+-			sec->sec_idx, obj->filename);
+-		return -EINVAL;
+-	}
+-
+-	/* don't further validate relocations for ignored sections */
+-	if (link_sec->skipped)
+-		return 0;
+-
+-	/* relocatable section is data or instructions */
+-	if (link_sec->shdr->sh_type != SHT_PROGBITS && link_sec->shdr->sh_type != SHT_NOBITS) {
+-		pr_warn("ELF relo section #%zu points to invalid section #%zu in %s\n",
+-			sec->sec_idx, (size_t)sec->shdr->sh_info, obj->filename);
+-		return -EINVAL;
+-	}
+-
+-	/* check sanity of each relocation */
+-	n = sec->shdr->sh_size / sec->shdr->sh_entsize;
+-	relo = sec->data->d_buf;
+-	sym_sec = &obj->secs[obj->symtab_sec_idx];
+-	for (i = 0; i < n; i++, relo++) {
+-		size_t sym_idx = ELF64_R_SYM(relo->r_info);
+-		size_t sym_type = ELF64_R_TYPE(relo->r_info);
+-
+-		if (sym_type != R_BPF_64_64 && sym_type != R_BPF_64_32 &&
+-		    sym_type != R_BPF_64_ABS64 && sym_type != R_BPF_64_ABS32) {
+-			pr_warn("ELF relo #%d in section #%zu has unexpected type %zu in %s\n",
+-				i, sec->sec_idx, sym_type, obj->filename);
+-			return -EINVAL;
+-		}
+-
+-		if (!sym_idx || sym_idx * sizeof(Elf64_Sym) >= sym_sec->shdr->sh_size) {
+-			pr_warn("ELF relo #%d in section #%zu points to invalid symbol #%zu in %s\n",
+-				i, sec->sec_idx, sym_idx, obj->filename);
+-			return -EINVAL;
+-		}
+-
+-		if (link_sec->shdr->sh_flags & SHF_EXECINSTR) {
+-			if (relo->r_offset % sizeof(struct bpf_insn) != 0) {
+-				pr_warn("ELF relo #%d in section #%zu points to missing symbol #%zu in %s\n",
+-					i, sec->sec_idx, sym_idx, obj->filename);
+-				return -EINVAL;
+-			}
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int check_btf_type_id(__u32 *type_id, void *ctx)
+-{
+-	struct btf *btf = ctx;
+-
+-	if (*type_id > btf__get_nr_types(btf))
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+-static int check_btf_str_off(__u32 *str_off, void *ctx)
+-{
+-	struct btf *btf = ctx;
+-	const char *s;
+-
+-	s = btf__str_by_offset(btf, *str_off);
+-
+-	if (!s)
+-		return -EINVAL;
+-
+-	return 0;
+-}
+-
+-static int linker_sanity_check_btf(struct src_obj *obj)
+-{
+-	struct btf_type *t;
+-	int i, n, err = 0;
+-
+-	if (!obj->btf)
+-		return 0;
+-
+-	n = btf__get_nr_types(obj->btf);
+-	for (i = 1; i <= n; i++) {
+-		t = btf_type_by_id(obj->btf, i);
+-
+-		err = err ?: btf_type_visit_type_ids(t, check_btf_type_id, obj->btf);
+-		err = err ?: btf_type_visit_str_offs(t, check_btf_str_off, obj->btf);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static int linker_sanity_check_btf_ext(struct src_obj *obj)
+-{
+-	int err = 0;
+-
+-	if (!obj->btf_ext)
+-		return 0;
+-
+-	/* can't use .BTF.ext without .BTF */
+-	if (!obj->btf)
+-		return -EINVAL;
+-
+-	err = err ?: btf_ext_visit_type_ids(obj->btf_ext, check_btf_type_id, obj->btf);
+-	err = err ?: btf_ext_visit_str_offs(obj->btf_ext, check_btf_str_off, obj->btf);
+-	if (err)
+-		return err;
+-
+-	return 0;
+-}
+-
+-static int init_sec(struct bpf_linker *linker, struct dst_sec *dst_sec, struct src_sec *src_sec)
+-{
+-	Elf_Scn *scn;
+-	Elf_Data *data;
+-	Elf64_Shdr *shdr;
+-	int name_off;
+-
+-	dst_sec->sec_sz = 0;
+-	dst_sec->sec_idx = 0;
+-	dst_sec->ephemeral = src_sec->ephemeral;
+-
+-	/* ephemeral sections are just thin section shells lacking most parts */
+-	if (src_sec->ephemeral)
+-		return 0;
+-
+-	scn = elf_newscn(linker->elf);
+-	if (!scn)
+-		return -ENOMEM;
+-	data = elf_newdata(scn);
+-	if (!data)
+-		return -ENOMEM;
+-	shdr = elf64_getshdr(scn);
+-	if (!shdr)
+-		return -ENOMEM;
+-
+-	dst_sec->scn = scn;
+-	dst_sec->shdr = shdr;
+-	dst_sec->data = data;
+-	dst_sec->sec_idx = elf_ndxscn(scn);
+-
+-	name_off = strset__add_str(linker->strtab_strs, src_sec->sec_name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	shdr->sh_name = name_off;
+-	shdr->sh_type = src_sec->shdr->sh_type;
+-	shdr->sh_flags = src_sec->shdr->sh_flags;
+-	shdr->sh_size = 0;
+-	/* sh_link and sh_info have different meaning for different types of
+-	 * sections, so we leave it up to the caller code to fill them in, if
+-	 * necessary
+-	 */
+-	shdr->sh_link = 0;
+-	shdr->sh_info = 0;
+-	shdr->sh_addralign = src_sec->shdr->sh_addralign;
+-	shdr->sh_entsize = src_sec->shdr->sh_entsize;
+-
+-	data->d_type = src_sec->data->d_type;
+-	data->d_size = 0;
+-	data->d_buf = NULL;
+-	data->d_align = src_sec->data->d_align;
+-	data->d_off = 0;
+-
+-	return 0;
+-}
+-
+-static struct dst_sec *find_dst_sec_by_name(struct bpf_linker *linker, const char *sec_name)
+-{
+-	struct dst_sec *sec;
+-	int i;
+-
+-	for (i = 1; i < linker->sec_cnt; i++) {
+-		sec = &linker->secs[i];
+-
+-		if (strcmp(sec->sec_name, sec_name) == 0)
+-			return sec;
+-	}
+-
+-	return NULL;
+-}
+-
+-static bool secs_match(struct dst_sec *dst, struct src_sec *src)
+-{
+-	if (dst->ephemeral || src->ephemeral)
+-		return true;
+-
+-	if (dst->shdr->sh_type != src->shdr->sh_type) {
+-		pr_warn("sec %s types mismatch\n", dst->sec_name);
+-		return false;
+-	}
+-	if (dst->shdr->sh_flags != src->shdr->sh_flags) {
+-		pr_warn("sec %s flags mismatch\n", dst->sec_name);
+-		return false;
+-	}
+-	if (dst->shdr->sh_entsize != src->shdr->sh_entsize) {
+-		pr_warn("sec %s entsize mismatch\n", dst->sec_name);
+-		return false;
+-	}
+-
+-	return true;
+-}
+-
+-static bool sec_content_is_same(struct dst_sec *dst_sec, struct src_sec *src_sec)
+-{
+-	if (dst_sec->sec_sz != src_sec->shdr->sh_size)
+-		return false;
+-	if (memcmp(dst_sec->raw_data, src_sec->data->d_buf, dst_sec->sec_sz) != 0)
+-		return false;
+-	return true;
+-}
+-
+-static int extend_sec(struct bpf_linker *linker, struct dst_sec *dst, struct src_sec *src)
+-{
+-	void *tmp;
+-	size_t dst_align, src_align;
+-	size_t dst_align_sz, dst_final_sz;
+-	int err;
+-
+-	/* Ephemeral source section doesn't contribute anything to ELF
+-	 * section data.
+-	 */
+-	if (src->ephemeral)
+-		return 0;
+-
+-	/* Some sections (like .maps) can contain both externs (and thus be
+-	 * ephemeral) and non-externs (map definitions). So it's possible that
+-	 * it has to be "upgraded" from ephemeral to non-ephemeral when the
+-	 * first non-ephemeral entity appears. In such case, we add ELF
+-	 * section, data, etc.
+-	 */
+-	if (dst->ephemeral) {
+-		err = init_sec(linker, dst, src);
+-		if (err)
+-			return err;
+-	}
+-
+-	dst_align = dst->shdr->sh_addralign;
+-	src_align = src->shdr->sh_addralign;
+-	if (dst_align == 0)
+-		dst_align = 1;
+-	if (dst_align < src_align)
+-		dst_align = src_align;
+-
+-	dst_align_sz = (dst->sec_sz + dst_align - 1) / dst_align * dst_align;
+-
+-	/* no need to re-align final size */
+-	dst_final_sz = dst_align_sz + src->shdr->sh_size;
+-
+-	if (src->shdr->sh_type != SHT_NOBITS) {
+-		tmp = realloc(dst->raw_data, dst_final_sz);
+-		if (!tmp)
+-			return -ENOMEM;
+-		dst->raw_data = tmp;
+-
+-		/* pad dst section, if it's alignment forced size increase */
+-		memset(dst->raw_data + dst->sec_sz, 0, dst_align_sz - dst->sec_sz);
+-		/* now copy src data at a properly aligned offset */
+-		memcpy(dst->raw_data + dst_align_sz, src->data->d_buf, src->shdr->sh_size);
+-	}
+-
+-	dst->sec_sz = dst_final_sz;
+-	dst->shdr->sh_size = dst_final_sz;
+-	dst->data->d_size = dst_final_sz;
+-
+-	dst->shdr->sh_addralign = dst_align;
+-	dst->data->d_align = dst_align;
+-
+-	src->dst_off = dst_align_sz;
+-
+-	return 0;
+-}
+-
+-static bool is_data_sec(struct src_sec *sec)
+-{
+-	if (!sec || sec->skipped)
+-		return false;
+-	/* ephemeral sections are data sections, e.g., .kconfig, .ksyms */
+-	if (sec->ephemeral)
+-		return true;
+-	return sec->shdr->sh_type == SHT_PROGBITS || sec->shdr->sh_type == SHT_NOBITS;
+-}
+-
+-static bool is_relo_sec(struct src_sec *sec)
+-{
+-	if (!sec || sec->skipped || sec->ephemeral)
+-		return false;
+-	return sec->shdr->sh_type == SHT_REL;
+-}
+-
+-static int linker_append_sec_data(struct bpf_linker *linker, struct src_obj *obj)
+-{
+-	int i, err;
+-
+-	for (i = 1; i < obj->sec_cnt; i++) {
+-		struct src_sec *src_sec;
+-		struct dst_sec *dst_sec;
+-
+-		src_sec = &obj->secs[i];
+-		if (!is_data_sec(src_sec))
+-			continue;
+-
+-		dst_sec = find_dst_sec_by_name(linker, src_sec->sec_name);
+-		if (!dst_sec) {
+-			dst_sec = add_dst_sec(linker, src_sec->sec_name);
+-			if (!dst_sec)
+-				return -ENOMEM;
+-			err = init_sec(linker, dst_sec, src_sec);
+-			if (err) {
+-				pr_warn("failed to init section '%s'\n", src_sec->sec_name);
+-				return err;
+-			}
+-		} else {
+-			if (!secs_match(dst_sec, src_sec)) {
+-				pr_warn("ELF sections %s are incompatible\n", src_sec->sec_name);
+-				return -1;
+-			}
+-
+-			/* "license" and "version" sections are deduped */
+-			if (strcmp(src_sec->sec_name, "license") == 0
+-			    || strcmp(src_sec->sec_name, "version") == 0) {
+-				if (!sec_content_is_same(dst_sec, src_sec)) {
+-					pr_warn("non-identical contents of section '%s' are not supported\n", src_sec->sec_name);
+-					return -EINVAL;
+-				}
+-				src_sec->skipped = true;
+-				src_sec->dst_id = dst_sec->id;
+-				continue;
+-			}
+-		}
+-
+-		/* record mapped section index */
+-		src_sec->dst_id = dst_sec->id;
+-
+-		err = extend_sec(linker, dst_sec, src_sec);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static int linker_append_elf_syms(struct bpf_linker *linker, struct src_obj *obj)
+-{
+-	struct src_sec *symtab = &obj->secs[obj->symtab_sec_idx];
+-	Elf64_Sym *sym = symtab->data->d_buf;
+-	int i, n = symtab->shdr->sh_size / symtab->shdr->sh_entsize, err;
+-	int str_sec_idx = symtab->shdr->sh_link;
+-	const char *sym_name;
+-
+-	obj->sym_map = calloc(n + 1, sizeof(*obj->sym_map));
+-	if (!obj->sym_map)
+-		return -ENOMEM;
+-
+-	for (i = 0; i < n; i++, sym++) {
+-		/* We already validated all-zero symbol #0 and we already
+-		 * appended it preventively to the final SYMTAB, so skip it.
+-		 */
+-		if (i == 0)
+-			continue;
+-
+-		sym_name = elf_strptr(obj->elf, str_sec_idx, sym->st_name);
+-		if (!sym_name) {
+-			pr_warn("can't fetch symbol name for symbol #%d in '%s'\n", i, obj->filename);
+-			return -EINVAL;
+-		}
+-
+-		err = linker_append_elf_sym(linker, obj, sym, sym_name, i);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static Elf64_Sym *get_sym_by_idx(struct bpf_linker *linker, size_t sym_idx)
+-{
+-	struct dst_sec *symtab = &linker->secs[linker->symtab_sec_idx];
+-	Elf64_Sym *syms = symtab->raw_data;
+-
+-	return &syms[sym_idx];
+-}
+-
+-static struct glob_sym *find_glob_sym(struct bpf_linker *linker, const char *sym_name)
+-{
+-	struct glob_sym *glob_sym;
+-	const char *name;
+-	int i;
+-
+-	for (i = 0; i < linker->glob_sym_cnt; i++) {
+-		glob_sym = &linker->glob_syms[i];
+-		name = strset__data(linker->strtab_strs) + glob_sym->name_off;
+-
+-		if (strcmp(name, sym_name) == 0)
+-			return glob_sym;
+-	}
+-
+-	return NULL;
+-}
+-
+-static struct glob_sym *add_glob_sym(struct bpf_linker *linker)
+-{
+-	struct glob_sym *syms, *sym;
+-
+-	syms = libbpf_reallocarray(linker->glob_syms, linker->glob_sym_cnt + 1,
+-				   sizeof(*linker->glob_syms));
+-	if (!syms)
+-		return NULL;
+-
+-	sym = &syms[linker->glob_sym_cnt];
+-	memset(sym, 0, sizeof(*sym));
+-	sym->var_idx = -1;
+-
+-	linker->glob_syms = syms;
+-	linker->glob_sym_cnt++;
+-
+-	return sym;
+-}
+-
+-static bool glob_sym_btf_matches(const char *sym_name, bool exact,
+-				 const struct btf *btf1, __u32 id1,
+-				 const struct btf *btf2, __u32 id2)
+-{
+-	const struct btf_type *t1, *t2;
+-	bool is_static1, is_static2;
+-	const char *n1, *n2;
+-	int i, n;
+-
+-recur:
+-	n1 = n2 = NULL;
+-	t1 = skip_mods_and_typedefs(btf1, id1, &id1);
+-	t2 = skip_mods_and_typedefs(btf2, id2, &id2);
+-
+-	/* check if only one side is FWD, otherwise handle with common logic */
+-	if (!exact && btf_is_fwd(t1) != btf_is_fwd(t2)) {
+-		n1 = btf__str_by_offset(btf1, t1->name_off);
+-		n2 = btf__str_by_offset(btf2, t2->name_off);
+-		if (strcmp(n1, n2) != 0) {
+-			pr_warn("global '%s': incompatible forward declaration names '%s' and '%s'\n",
+-				sym_name, n1, n2);
+-			return false;
+-		}
+-		/* validate if FWD kind matches concrete kind */
+-		if (btf_is_fwd(t1)) {
+-			if (btf_kflag(t1) && btf_is_union(t2))
+-				return true;
+-			if (!btf_kflag(t1) && btf_is_struct(t2))
+-				return true;
+-			pr_warn("global '%s': incompatible %s forward declaration and concrete kind %s\n",
+-				sym_name, btf_kflag(t1) ? "union" : "struct", btf_kind_str(t2));
+-		} else {
+-			if (btf_kflag(t2) && btf_is_union(t1))
+-				return true;
+-			if (!btf_kflag(t2) && btf_is_struct(t1))
+-				return true;
+-			pr_warn("global '%s': incompatible %s forward declaration and concrete kind %s\n",
+-				sym_name, btf_kflag(t2) ? "union" : "struct", btf_kind_str(t1));
+-		}
+-		return false;
+-	}
+-
+-	if (btf_kind(t1) != btf_kind(t2)) {
+-		pr_warn("global '%s': incompatible BTF kinds %s and %s\n",
+-			sym_name, btf_kind_str(t1), btf_kind_str(t2));
+-		return false;
+-	}
+-
+-	switch (btf_kind(t1)) {
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION:
+-	case BTF_KIND_ENUM:
+-	case BTF_KIND_FWD:
+-	case BTF_KIND_FUNC:
+-	case BTF_KIND_VAR:
+-		n1 = btf__str_by_offset(btf1, t1->name_off);
+-		n2 = btf__str_by_offset(btf2, t2->name_off);
+-		if (strcmp(n1, n2) != 0) {
+-			pr_warn("global '%s': incompatible %s names '%s' and '%s'\n",
+-				sym_name, btf_kind_str(t1), n1, n2);
+-			return false;
+-		}
+-		break;
+-	default:
+-		break;
+-	}
+-
+-	switch (btf_kind(t1)) {
+-	case BTF_KIND_UNKN: /* void */
+-	case BTF_KIND_FWD:
+-		return true;
+-	case BTF_KIND_INT:
+-	case BTF_KIND_FLOAT:
+-	case BTF_KIND_ENUM:
+-		/* ignore encoding for int and enum values for enum */
+-		if (t1->size != t2->size) {
+-			pr_warn("global '%s': incompatible %s '%s' size %u and %u\n",
+-				sym_name, btf_kind_str(t1), n1, t1->size, t2->size);
+-			return false;
+-		}
+-		return true;
+-	case BTF_KIND_PTR:
+-		/* just validate overall shape of the referenced type, so no
+-		 * contents comparison for struct/union, and allowd fwd vs
+-		 * struct/union
+-		 */
+-		exact = false;
+-		id1 = t1->type;
+-		id2 = t2->type;
+-		goto recur;
+-	case BTF_KIND_ARRAY:
+-		/* ignore index type and array size */
+-		id1 = btf_array(t1)->type;
+-		id2 = btf_array(t2)->type;
+-		goto recur;
+-	case BTF_KIND_FUNC:
+-		/* extern and global linkages are compatible */
+-		is_static1 = btf_func_linkage(t1) == BTF_FUNC_STATIC;
+-		is_static2 = btf_func_linkage(t2) == BTF_FUNC_STATIC;
+-		if (is_static1 != is_static2) {
+-			pr_warn("global '%s': incompatible func '%s' linkage\n", sym_name, n1);
+-			return false;
+-		}
+-
+-		id1 = t1->type;
+-		id2 = t2->type;
+-		goto recur;
+-	case BTF_KIND_VAR:
+-		/* extern and global linkages are compatible */
+-		is_static1 = btf_var(t1)->linkage == BTF_VAR_STATIC;
+-		is_static2 = btf_var(t2)->linkage == BTF_VAR_STATIC;
+-		if (is_static1 != is_static2) {
+-			pr_warn("global '%s': incompatible var '%s' linkage\n", sym_name, n1);
+-			return false;
+-		}
+-
+-		id1 = t1->type;
+-		id2 = t2->type;
+-		goto recur;
+-	case BTF_KIND_STRUCT:
+-	case BTF_KIND_UNION: {
+-		const struct btf_member *m1, *m2;
+-
+-		if (!exact)
+-			return true;
+-
+-		if (btf_vlen(t1) != btf_vlen(t2)) {
+-			pr_warn("global '%s': incompatible number of %s fields %u and %u\n",
+-				sym_name, btf_kind_str(t1), btf_vlen(t1), btf_vlen(t2));
+-			return false;
+-		}
+-
+-		n = btf_vlen(t1);
+-		m1 = btf_members(t1);
+-		m2 = btf_members(t2);
+-		for (i = 0; i < n; i++, m1++, m2++) {
+-			n1 = btf__str_by_offset(btf1, m1->name_off);
+-			n2 = btf__str_by_offset(btf2, m2->name_off);
+-			if (strcmp(n1, n2) != 0) {
+-				pr_warn("global '%s': incompatible field #%d names '%s' and '%s'\n",
+-					sym_name, i, n1, n2);
+-				return false;
+-			}
+-			if (m1->offset != m2->offset) {
+-				pr_warn("global '%s': incompatible field #%d ('%s') offsets\n",
+-					sym_name, i, n1);
+-				return false;
+-			}
+-			if (!glob_sym_btf_matches(sym_name, exact, btf1, m1->type, btf2, m2->type))
+-				return false;
+-		}
+-
+-		return true;
+-	}
+-	case BTF_KIND_FUNC_PROTO: {
+-		const struct btf_param *m1, *m2;
+-
+-		if (btf_vlen(t1) != btf_vlen(t2)) {
+-			pr_warn("global '%s': incompatible number of %s params %u and %u\n",
+-				sym_name, btf_kind_str(t1), btf_vlen(t1), btf_vlen(t2));
+-			return false;
+-		}
+-
+-		n = btf_vlen(t1);
+-		m1 = btf_params(t1);
+-		m2 = btf_params(t2);
+-		for (i = 0; i < n; i++, m1++, m2++) {
+-			/* ignore func arg names */
+-			if (!glob_sym_btf_matches(sym_name, exact, btf1, m1->type, btf2, m2->type))
+-				return false;
+-		}
+-
+-		/* now check return type as well */
+-		id1 = t1->type;
+-		id2 = t2->type;
+-		goto recur;
+-	}
+-
+-	/* skip_mods_and_typedefs() make this impossible */
+-	case BTF_KIND_TYPEDEF:
+-	case BTF_KIND_VOLATILE:
+-	case BTF_KIND_CONST:
+-	case BTF_KIND_RESTRICT:
+-	/* DATASECs are never compared with each other */
+-	case BTF_KIND_DATASEC:
+-	default:
+-		pr_warn("global '%s': unsupported BTF kind %s\n",
+-			sym_name, btf_kind_str(t1));
+-		return false;
+-	}
+-}
+-
+-static bool map_defs_match(const char *sym_name,
+-			   const struct btf *main_btf,
+-			   const struct btf_map_def *main_def,
+-			   const struct btf_map_def *main_inner_def,
+-			   const struct btf *extra_btf,
+-			   const struct btf_map_def *extra_def,
+-			   const struct btf_map_def *extra_inner_def)
+-{
+-	const char *reason;
+-
+-	if (main_def->map_type != extra_def->map_type) {
+-		reason = "type";
+-		goto mismatch;
+-	}
+-
+-	/* check key type/size match */
+-	if (main_def->key_size != extra_def->key_size) {
+-		reason = "key_size";
+-		goto mismatch;
+-	}
+-	if (!!main_def->key_type_id != !!extra_def->key_type_id) {
+-		reason = "key type";
+-		goto mismatch;
+-	}
+-	if ((main_def->parts & MAP_DEF_KEY_TYPE)
+-	     && !glob_sym_btf_matches(sym_name, true /*exact*/,
+-				      main_btf, main_def->key_type_id,
+-				      extra_btf, extra_def->key_type_id)) {
+-		reason = "key type";
+-		goto mismatch;
+-	}
+-
+-	/* validate value type/size match */
+-	if (main_def->value_size != extra_def->value_size) {
+-		reason = "value_size";
+-		goto mismatch;
+-	}
+-	if (!!main_def->value_type_id != !!extra_def->value_type_id) {
+-		reason = "value type";
+-		goto mismatch;
+-	}
+-	if ((main_def->parts & MAP_DEF_VALUE_TYPE)
+-	     && !glob_sym_btf_matches(sym_name, true /*exact*/,
+-				      main_btf, main_def->value_type_id,
+-				      extra_btf, extra_def->value_type_id)) {
+-		reason = "key type";
+-		goto mismatch;
+-	}
+-
+-	if (main_def->max_entries != extra_def->max_entries) {
+-		reason = "max_entries";
+-		goto mismatch;
+-	}
+-	if (main_def->map_flags != extra_def->map_flags) {
+-		reason = "map_flags";
+-		goto mismatch;
+-	}
+-	if (main_def->numa_node != extra_def->numa_node) {
+-		reason = "numa_node";
+-		goto mismatch;
+-	}
+-	if (main_def->pinning != extra_def->pinning) {
+-		reason = "pinning";
+-		goto mismatch;
+-	}
+-
+-	if ((main_def->parts & MAP_DEF_INNER_MAP) != (extra_def->parts & MAP_DEF_INNER_MAP)) {
+-		reason = "inner map";
+-		goto mismatch;
+-	}
+-
+-	if (main_def->parts & MAP_DEF_INNER_MAP) {
+-		char inner_map_name[128];
+-
+-		snprintf(inner_map_name, sizeof(inner_map_name), "%s.inner", sym_name);
+-
+-		return map_defs_match(inner_map_name,
+-				      main_btf, main_inner_def, NULL,
+-				      extra_btf, extra_inner_def, NULL);
+-	}
+-
+-	return true;
+-
+-mismatch:
+-	pr_warn("global '%s': map %s mismatch\n", sym_name, reason);
+-	return false;
+-}
+-
+-static bool glob_map_defs_match(const char *sym_name,
+-				struct bpf_linker *linker, struct glob_sym *glob_sym,
+-				struct src_obj *obj, Elf64_Sym *sym, int btf_id)
+-{
+-	struct btf_map_def dst_def = {}, dst_inner_def = {};
+-	struct btf_map_def src_def = {}, src_inner_def = {};
+-	const struct btf_type *t;
+-	int err;
+-
+-	t = btf__type_by_id(obj->btf, btf_id);
+-	if (!btf_is_var(t)) {
+-		pr_warn("global '%s': invalid map definition type [%d]\n", sym_name, btf_id);
+-		return false;
+-	}
+-	t = skip_mods_and_typedefs(obj->btf, t->type, NULL);
+-
+-	err = parse_btf_map_def(sym_name, obj->btf, t, true /*strict*/, &src_def, &src_inner_def);
+-	if (err) {
+-		pr_warn("global '%s': invalid map definition\n", sym_name);
+-		return false;
+-	}
+-
+-	/* re-parse existing map definition */
+-	t = btf__type_by_id(linker->btf, glob_sym->btf_id);
+-	t = skip_mods_and_typedefs(linker->btf, t->type, NULL);
+-	err = parse_btf_map_def(sym_name, linker->btf, t, true /*strict*/, &dst_def, &dst_inner_def);
+-	if (err) {
+-		/* this should not happen, because we already validated it */
+-		pr_warn("global '%s': invalid dst map definition\n", sym_name);
+-		return false;
+-	}
+-
+-	/* Currently extern map definition has to be complete and match
+-	 * concrete map definition exactly. This restriction might be lifted
+-	 * in the future.
+-	 */
+-	return map_defs_match(sym_name, linker->btf, &dst_def, &dst_inner_def,
+-			      obj->btf, &src_def, &src_inner_def);
+-}
+-
+-static bool glob_syms_match(const char *sym_name,
+-			    struct bpf_linker *linker, struct glob_sym *glob_sym,
+-			    struct src_obj *obj, Elf64_Sym *sym, size_t sym_idx, int btf_id)
+-{
+-	const struct btf_type *src_t;
+-
+-	/* if we are dealing with externs, BTF types describing both global
+-	 * and extern VARs/FUNCs should be completely present in all files
+-	 */
+-	if (!glob_sym->btf_id || !btf_id) {
+-		pr_warn("BTF info is missing for global symbol '%s'\n", sym_name);
+-		return false;
+-	}
+-
+-	src_t = btf__type_by_id(obj->btf, btf_id);
+-	if (!btf_is_var(src_t) && !btf_is_func(src_t)) {
+-		pr_warn("only extern variables and functions are supported, but got '%s' for '%s'\n",
+-			btf_kind_str(src_t), sym_name);
+-		return false;
+-	}
+-
+-	/* deal with .maps definitions specially */
+-	if (glob_sym->sec_id && strcmp(linker->secs[glob_sym->sec_id].sec_name, MAPS_ELF_SEC) == 0)
+-		return glob_map_defs_match(sym_name, linker, glob_sym, obj, sym, btf_id);
+-
+-	if (!glob_sym_btf_matches(sym_name, true /*exact*/,
+-				  linker->btf, glob_sym->btf_id, obj->btf, btf_id))
+-		return false;
+-
+-	return true;
+-}
+-
+-static bool btf_is_non_static(const struct btf_type *t)
+-{
+-	return (btf_is_var(t) && btf_var(t)->linkage != BTF_VAR_STATIC)
+-	       || (btf_is_func(t) && btf_func_linkage(t) != BTF_FUNC_STATIC);
+-}
+-
+-static int find_glob_sym_btf(struct src_obj *obj, Elf64_Sym *sym, const char *sym_name,
+-			     int *out_btf_sec_id, int *out_btf_id)
+-{
+-	int i, j, n = btf__get_nr_types(obj->btf), m, btf_id = 0;
+-	const struct btf_type *t;
+-	const struct btf_var_secinfo *vi;
+-	const char *name;
+-
+-	for (i = 1; i <= n; i++) {
+-		t = btf__type_by_id(obj->btf, i);
+-
+-		/* some global and extern FUNCs and VARs might not be associated with any
+-		 * DATASEC, so try to detect them in the same pass
+-		 */
+-		if (btf_is_non_static(t)) {
+-			name = btf__str_by_offset(obj->btf, t->name_off);
+-			if (strcmp(name, sym_name) != 0)
+-				continue;
+-
+-			/* remember and still try to find DATASEC */
+-			btf_id = i;
+-			continue;
+-		}
+-
+-		if (!btf_is_datasec(t))
+-			continue;
+-
+-		vi = btf_var_secinfos(t);
+-		for (j = 0, m = btf_vlen(t); j < m; j++, vi++) {
+-			t = btf__type_by_id(obj->btf, vi->type);
+-			name = btf__str_by_offset(obj->btf, t->name_off);
+-
+-			if (strcmp(name, sym_name) != 0)
+-				continue;
+-			if (btf_is_var(t) && btf_var(t)->linkage == BTF_VAR_STATIC)
+-				continue;
+-			if (btf_is_func(t) && btf_func_linkage(t) == BTF_FUNC_STATIC)
+-				continue;
+-
+-			if (btf_id && btf_id != vi->type) {
+-				pr_warn("global/extern '%s' BTF is ambiguous: both types #%d and #%u match\n",
+-					sym_name, btf_id, vi->type);
+-				return -EINVAL;
+-			}
+-
+-			*out_btf_sec_id = i;
+-			*out_btf_id = vi->type;
+-
+-			return 0;
+-		}
+-	}
+-
+-	/* free-floating extern or global FUNC */
+-	if (btf_id) {
+-		*out_btf_sec_id = 0;
+-		*out_btf_id = btf_id;
+-		return 0;
+-	}
+-
+-	pr_warn("failed to find BTF info for global/extern symbol '%s'\n", sym_name);
+-	return -ENOENT;
+-}
+-
+-static struct src_sec *find_src_sec_by_name(struct src_obj *obj, const char *sec_name)
+-{
+-	struct src_sec *sec;
+-	int i;
+-
+-	for (i = 1; i < obj->sec_cnt; i++) {
+-		sec = &obj->secs[i];
+-
+-		if (strcmp(sec->sec_name, sec_name) == 0)
+-			return sec;
+-	}
+-
+-	return NULL;
+-}
+-
+-static int complete_extern_btf_info(struct btf *dst_btf, int dst_id,
+-				    struct btf *src_btf, int src_id)
+-{
+-	struct btf_type *dst_t = btf_type_by_id(dst_btf, dst_id);
+-	struct btf_type *src_t = btf_type_by_id(src_btf, src_id);
+-	struct btf_param *src_p, *dst_p;
+-	const char *s;
+-	int i, n, off;
+-
+-	/* We already made sure that source and destination types (FUNC or
+-	 * VAR) match in terms of types and argument names.
+-	 */
+-	if (btf_is_var(dst_t)) {
+-		btf_var(dst_t)->linkage = BTF_VAR_GLOBAL_ALLOCATED;
+-		return 0;
+-	}
+-
+-	dst_t->info = btf_type_info(BTF_KIND_FUNC, BTF_FUNC_GLOBAL, 0);
+-
+-	/* now onto FUNC_PROTO types */
+-	src_t = btf_type_by_id(src_btf, src_t->type);
+-	dst_t = btf_type_by_id(dst_btf, dst_t->type);
+-
+-	/* Fill in all the argument names, which for extern FUNCs are missing.
+-	 * We'll end up with two copies of FUNCs/VARs for externs, but that
+-	 * will be taken care of by BTF dedup at the very end.
+-	 * It might be that BTF types for extern in one file has less/more BTF
+-	 * information (e.g., FWD instead of full STRUCT/UNION information),
+-	 * but that should be (in most cases, subject to BTF dedup rules)
+-	 * handled and resolved by BTF dedup algorithm as well, so we won't
+-	 * worry about it. Our only job is to make sure that argument names
+-	 * are populated on both sides, otherwise BTF dedup will pedantically
+-	 * consider them different.
+-	 */
+-	src_p = btf_params(src_t);
+-	dst_p = btf_params(dst_t);
+-	for (i = 0, n = btf_vlen(dst_t); i < n; i++, src_p++, dst_p++) {
+-		if (!src_p->name_off)
+-			continue;
+-
+-		/* src_btf has more complete info, so add name to dst_btf */
+-		s = btf__str_by_offset(src_btf, src_p->name_off);
+-		off = btf__add_str(dst_btf, s);
+-		if (off < 0)
+-			return off;
+-		dst_p->name_off = off;
+-	}
+-	return 0;
+-}
+-
+-static void sym_update_bind(Elf64_Sym *sym, int sym_bind)
+-{
+-	sym->st_info = ELF64_ST_INFO(sym_bind, ELF64_ST_TYPE(sym->st_info));
+-}
+-
+-static void sym_update_type(Elf64_Sym *sym, int sym_type)
+-{
+-	sym->st_info = ELF64_ST_INFO(ELF64_ST_BIND(sym->st_info), sym_type);
+-}
+-
+-static void sym_update_visibility(Elf64_Sym *sym, int sym_vis)
+-{
+-	/* libelf doesn't provide setters for ST_VISIBILITY,
+-	 * but it is stored in the lower 2 bits of st_other
+-	 */
+-	sym->st_other &= ~0x03;
+-	sym->st_other |= sym_vis;
+-}
+-
+-static int linker_append_elf_sym(struct bpf_linker *linker, struct src_obj *obj,
+-				 Elf64_Sym *sym, const char *sym_name, int src_sym_idx)
+-{
+-	struct src_sec *src_sec = NULL;
+-	struct dst_sec *dst_sec = NULL;
+-	struct glob_sym *glob_sym = NULL;
+-	int name_off, sym_type, sym_bind, sym_vis, err;
+-	int btf_sec_id = 0, btf_id = 0;
+-	size_t dst_sym_idx;
+-	Elf64_Sym *dst_sym;
+-	bool sym_is_extern;
+-
+-	sym_type = ELF64_ST_TYPE(sym->st_info);
+-	sym_bind = ELF64_ST_BIND(sym->st_info);
+-	sym_vis = ELF64_ST_VISIBILITY(sym->st_other);
+-	sym_is_extern = sym->st_shndx == SHN_UNDEF;
+-
+-	if (sym_is_extern) {
+-		if (!obj->btf) {
+-			pr_warn("externs without BTF info are not supported\n");
+-			return -ENOTSUP;
+-		}
+-	} else if (sym->st_shndx < SHN_LORESERVE) {
+-		src_sec = &obj->secs[sym->st_shndx];
+-		if (src_sec->skipped)
+-			return 0;
+-		dst_sec = &linker->secs[src_sec->dst_id];
+-
+-		/* allow only one STT_SECTION symbol per section */
+-		if (sym_type == STT_SECTION && dst_sec->sec_sym_idx) {
+-			obj->sym_map[src_sym_idx] = dst_sec->sec_sym_idx;
+-			return 0;
+-		}
+-	}
+-
+-	if (sym_bind == STB_LOCAL)
+-		goto add_sym;
+-
+-	/* find matching BTF info */
+-	err = find_glob_sym_btf(obj, sym, sym_name, &btf_sec_id, &btf_id);
+-	if (err)
+-		return err;
+-
+-	if (sym_is_extern && btf_sec_id) {
+-		const char *sec_name = NULL;
+-		const struct btf_type *t;
+-
+-		t = btf__type_by_id(obj->btf, btf_sec_id);
+-		sec_name = btf__str_by_offset(obj->btf, t->name_off);
+-
+-		/* Clang puts unannotated extern vars into
+-		 * '.extern' BTF DATASEC. Treat them the same
+-		 * as unannotated extern funcs (which are
+-		 * currently not put into any DATASECs).
+-		 * Those don't have associated src_sec/dst_sec.
+-		 */
+-		if (strcmp(sec_name, BTF_EXTERN_SEC) != 0) {
+-			src_sec = find_src_sec_by_name(obj, sec_name);
+-			if (!src_sec) {
+-				pr_warn("failed to find matching ELF sec '%s'\n", sec_name);
+-				return -ENOENT;
+-			}
+-			dst_sec = &linker->secs[src_sec->dst_id];
+-		}
+-	}
+-
+-	glob_sym = find_glob_sym(linker, sym_name);
+-	if (glob_sym) {
+-		/* Preventively resolve to existing symbol. This is
+-		 * needed for further relocation symbol remapping in
+-		 * the next step of linking.
+-		 */
+-		obj->sym_map[src_sym_idx] = glob_sym->sym_idx;
+-
+-		/* If both symbols are non-externs, at least one of
+-		 * them has to be STB_WEAK, otherwise they are in
+-		 * a conflict with each other.
+-		 */
+-		if (!sym_is_extern && !glob_sym->is_extern
+-		    && !glob_sym->is_weak && sym_bind != STB_WEAK) {
+-			pr_warn("conflicting non-weak symbol #%d (%s) definition in '%s'\n",
+-				src_sym_idx, sym_name, obj->filename);
+-			return -EINVAL;
+-		}
+-
+-		if (!glob_syms_match(sym_name, linker, glob_sym, obj, sym, src_sym_idx, btf_id))
+-			return -EINVAL;
+-
+-		dst_sym = get_sym_by_idx(linker, glob_sym->sym_idx);
+-
+-		/* If new symbol is strong, then force dst_sym to be strong as
+-		 * well; this way a mix of weak and non-weak extern
+-		 * definitions will end up being strong.
+-		 */
+-		if (sym_bind == STB_GLOBAL) {
+-			/* We still need to preserve type (NOTYPE or
+-			 * OBJECT/FUNC, depending on whether the symbol is
+-			 * extern or not)
+-			 */
+-			sym_update_bind(dst_sym, STB_GLOBAL);
+-			glob_sym->is_weak = false;
+-		}
+-
+-		/* Non-default visibility is "contaminating", with stricter
+-		 * visibility overwriting more permissive ones, even if more
+-		 * permissive visibility comes from just an extern definition.
+-		 * Currently only STV_DEFAULT and STV_HIDDEN are allowed and
+-		 * ensured by ELF symbol sanity checks above.
+-		 */
+-		if (sym_vis > ELF64_ST_VISIBILITY(dst_sym->st_other))
+-			sym_update_visibility(dst_sym, sym_vis);
+-
+-		/* If the new symbol is extern, then regardless if
+-		 * existing symbol is extern or resolved global, just
+-		 * keep the existing one untouched.
+-		 */
+-		if (sym_is_extern)
+-			return 0;
+-
+-		/* If existing symbol is a strong resolved symbol, bail out,
+-		 * because we lost resolution battle have nothing to
+-		 * contribute. We already checked abover that there is no
+-		 * strong-strong conflict. We also already tightened binding
+-		 * and visibility, so nothing else to contribute at that point.
+-		 */
+-		if (!glob_sym->is_extern && sym_bind == STB_WEAK)
+-			return 0;
+-
+-		/* At this point, new symbol is strong non-extern,
+-		 * so overwrite glob_sym with new symbol information.
+-		 * Preserve binding and visibility.
+-		 */
+-		sym_update_type(dst_sym, sym_type);
+-		dst_sym->st_shndx = dst_sec->sec_idx;
+-		dst_sym->st_value = src_sec->dst_off + sym->st_value;
+-		dst_sym->st_size = sym->st_size;
+-
+-		/* see comment below about dst_sec->id vs dst_sec->sec_idx */
+-		glob_sym->sec_id = dst_sec->id;
+-		glob_sym->is_extern = false;
+-
+-		if (complete_extern_btf_info(linker->btf, glob_sym->btf_id,
+-					     obj->btf, btf_id))
+-			return -EINVAL;
+-
+-		/* request updating VAR's/FUNC's underlying BTF type when appending BTF type */
+-		glob_sym->underlying_btf_id = 0;
+-
+-		obj->sym_map[src_sym_idx] = glob_sym->sym_idx;
+-		return 0;
+-	}
+-
+-add_sym:
+-	name_off = strset__add_str(linker->strtab_strs, sym_name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	dst_sym = add_new_sym(linker, &dst_sym_idx);
+-	if (!dst_sym)
+-		return -ENOMEM;
+-
+-	dst_sym->st_name = name_off;
+-	dst_sym->st_info = sym->st_info;
+-	dst_sym->st_other = sym->st_other;
+-	dst_sym->st_shndx = dst_sec ? dst_sec->sec_idx : sym->st_shndx;
+-	dst_sym->st_value = (src_sec ? src_sec->dst_off : 0) + sym->st_value;
+-	dst_sym->st_size = sym->st_size;
+-
+-	obj->sym_map[src_sym_idx] = dst_sym_idx;
+-
+-	if (sym_type == STT_SECTION && dst_sym) {
+-		dst_sec->sec_sym_idx = dst_sym_idx;
+-		dst_sym->st_value = 0;
+-	}
+-
+-	if (sym_bind != STB_LOCAL) {
+-		glob_sym = add_glob_sym(linker);
+-		if (!glob_sym)
+-			return -ENOMEM;
+-
+-		glob_sym->sym_idx = dst_sym_idx;
+-		/* we use dst_sec->id (and not dst_sec->sec_idx), because
+-		 * ephemeral sections (.kconfig, .ksyms, etc) don't have
+-		 * sec_idx (as they don't have corresponding ELF section), but
+-		 * still have id. .extern doesn't have even ephemeral section
+-		 * associated with it, so dst_sec->id == dst_sec->sec_idx == 0.
+-		 */
+-		glob_sym->sec_id = dst_sec ? dst_sec->id : 0;
+-		glob_sym->name_off = name_off;
+-		/* we will fill btf_id in during BTF merging step */
+-		glob_sym->btf_id = 0;
+-		glob_sym->is_extern = sym_is_extern;
+-		glob_sym->is_weak = sym_bind == STB_WEAK;
+-	}
+-
+-	return 0;
+-}
+-
+-static int linker_append_elf_relos(struct bpf_linker *linker, struct src_obj *obj)
+-{
+-	struct src_sec *src_symtab = &obj->secs[obj->symtab_sec_idx];
+-	struct dst_sec *dst_symtab = &linker->secs[linker->symtab_sec_idx];
+-	int i, err;
+-
+-	for (i = 1; i < obj->sec_cnt; i++) {
+-		struct src_sec *src_sec, *src_linked_sec;
+-		struct dst_sec *dst_sec, *dst_linked_sec;
+-		Elf64_Rel *src_rel, *dst_rel;
+-		int j, n;
+-
+-		src_sec = &obj->secs[i];
+-		if (!is_relo_sec(src_sec))
+-			continue;
+-
+-		/* shdr->sh_info points to relocatable section */
+-		src_linked_sec = &obj->secs[src_sec->shdr->sh_info];
+-		if (src_linked_sec->skipped)
+-			continue;
+-
+-		dst_sec = find_dst_sec_by_name(linker, src_sec->sec_name);
+-		if (!dst_sec) {
+-			dst_sec = add_dst_sec(linker, src_sec->sec_name);
+-			if (!dst_sec)
+-				return -ENOMEM;
+-			err = init_sec(linker, dst_sec, src_sec);
+-			if (err) {
+-				pr_warn("failed to init section '%s'\n", src_sec->sec_name);
+-				return err;
+-			}
+-		} else if (!secs_match(dst_sec, src_sec)) {
+-			pr_warn("sections %s are not compatible\n", src_sec->sec_name);
+-			return -1;
+-		}
+-
+-		/* shdr->sh_link points to SYMTAB */
+-		dst_sec->shdr->sh_link = linker->symtab_sec_idx;
+-
+-		/* shdr->sh_info points to relocated section */
+-		dst_linked_sec = &linker->secs[src_linked_sec->dst_id];
+-		dst_sec->shdr->sh_info = dst_linked_sec->sec_idx;
+-
+-		src_sec->dst_id = dst_sec->id;
+-		err = extend_sec(linker, dst_sec, src_sec);
+-		if (err)
+-			return err;
+-
+-		src_rel = src_sec->data->d_buf;
+-		dst_rel = dst_sec->raw_data + src_sec->dst_off;
+-		n = src_sec->shdr->sh_size / src_sec->shdr->sh_entsize;
+-		for (j = 0; j < n; j++, src_rel++, dst_rel++) {
+-			size_t src_sym_idx = ELF64_R_SYM(src_rel->r_info);
+-			size_t sym_type = ELF64_R_TYPE(src_rel->r_info);
+-			Elf64_Sym *src_sym, *dst_sym;
+-			size_t dst_sym_idx;
+-
+-			src_sym_idx = ELF64_R_SYM(src_rel->r_info);
+-			src_sym = src_symtab->data->d_buf + sizeof(*src_sym) * src_sym_idx;
+-
+-			dst_sym_idx = obj->sym_map[src_sym_idx];
+-			dst_sym = dst_symtab->raw_data + sizeof(*dst_sym) * dst_sym_idx;
+-			dst_rel->r_offset += src_linked_sec->dst_off;
+-			sym_type = ELF64_R_TYPE(src_rel->r_info);
+-			dst_rel->r_info = ELF64_R_INFO(dst_sym_idx, sym_type);
+-
+-			if (ELF64_ST_TYPE(src_sym->st_info) == STT_SECTION) {
+-				struct src_sec *sec = &obj->secs[src_sym->st_shndx];
+-				struct bpf_insn *insn;
+-
+-				if (src_linked_sec->shdr->sh_flags & SHF_EXECINSTR) {
+-					/* calls to the very first static function inside
+-					 * .text section at offset 0 will
+-					 * reference section symbol, not the
+-					 * function symbol. Fix that up,
+-					 * otherwise it won't be possible to
+-					 * relocate calls to two different
+-					 * static functions with the same name
+-					 * (rom two different object files)
+-					 */
+-					insn = dst_linked_sec->raw_data + dst_rel->r_offset;
+-					if (insn->code == (BPF_JMP | BPF_CALL))
+-						insn->imm += sec->dst_off / sizeof(struct bpf_insn);
+-					else
+-						insn->imm += sec->dst_off;
+-				} else {
+-					pr_warn("relocation against STT_SECTION in non-exec section is not supported!\n");
+-					return -EINVAL;
+-				}
+-			}
+-
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static Elf64_Sym *find_sym_by_name(struct src_obj *obj, size_t sec_idx,
+-				   int sym_type, const char *sym_name)
+-{
+-	struct src_sec *symtab = &obj->secs[obj->symtab_sec_idx];
+-	Elf64_Sym *sym = symtab->data->d_buf;
+-	int i, n = symtab->shdr->sh_size / symtab->shdr->sh_entsize;
+-	int str_sec_idx = symtab->shdr->sh_link;
+-	const char *name;
+-
+-	for (i = 0; i < n; i++, sym++) {
+-		if (sym->st_shndx != sec_idx)
+-			continue;
+-		if (ELF64_ST_TYPE(sym->st_info) != sym_type)
+-			continue;
+-
+-		name = elf_strptr(obj->elf, str_sec_idx, sym->st_name);
+-		if (!name)
+-			return NULL;
+-
+-		if (strcmp(sym_name, name) != 0)
+-			continue;
+-
+-		return sym;
+-	}
+-
+-	return NULL;
+-}
+-
+-static int linker_fixup_btf(struct src_obj *obj)
+-{
+-	const char *sec_name;
+-	struct src_sec *sec;
+-	int i, j, n, m;
+-
+-	if (!obj->btf)
+-		return 0;
+-
+-	n = btf__get_nr_types(obj->btf);
+-	for (i = 1; i <= n; i++) {
+-		struct btf_var_secinfo *vi;
+-		struct btf_type *t;
+-
+-		t = btf_type_by_id(obj->btf, i);
+-		if (btf_kind(t) != BTF_KIND_DATASEC)
+-			continue;
+-
+-		sec_name = btf__str_by_offset(obj->btf, t->name_off);
+-		sec = find_src_sec_by_name(obj, sec_name);
+-		if (sec) {
+-			/* record actual section size, unless ephemeral */
+-			if (sec->shdr)
+-				t->size = sec->shdr->sh_size;
+-		} else {
+-			/* BTF can have some sections that are not represented
+-			 * in ELF, e.g., .kconfig, .ksyms, .extern, which are used
+-			 * for special extern variables.
+-			 *
+-			 * For all but one such special (ephemeral)
+-			 * sections, we pre-create "section shells" to be able
+-			 * to keep track of extra per-section metadata later
+-			 * (e.g., those BTF extern variables).
+-			 *
+-			 * .extern is even more special, though, because it
+-			 * contains extern variables that need to be resolved
+-			 * by static linker, not libbpf and kernel. When such
+-			 * externs are resolved, we are going to remove them
+-			 * from .extern BTF section and might end up not
+-			 * needing it at all. Each resolved extern should have
+-			 * matching non-extern VAR/FUNC in other sections.
+-			 *
+-			 * We do support leaving some of the externs
+-			 * unresolved, though, to support cases of building
+-			 * libraries, which will later be linked against final
+-			 * BPF applications. So if at finalization we still
+-			 * see unresolved externs, we'll create .extern
+-			 * section on our own.
+-			 */
+-			if (strcmp(sec_name, BTF_EXTERN_SEC) == 0)
+-				continue;
+-
+-			sec = add_src_sec(obj, sec_name);
+-			if (!sec)
+-				return -ENOMEM;
+-
+-			sec->ephemeral = true;
+-			sec->sec_idx = 0; /* will match UNDEF shndx in ELF */
+-		}
+-
+-		/* remember ELF section and its BTF type ID match */
+-		sec->sec_type_id = i;
+-
+-		/* fix up variable offsets */
+-		vi = btf_var_secinfos(t);
+-		for (j = 0, m = btf_vlen(t); j < m; j++, vi++) {
+-			const struct btf_type *vt = btf__type_by_id(obj->btf, vi->type);
+-			const char *var_name = btf__str_by_offset(obj->btf, vt->name_off);
+-			int var_linkage = btf_var(vt)->linkage;
+-			Elf64_Sym *sym;
+-
+-			/* no need to patch up static or extern vars */
+-			if (var_linkage != BTF_VAR_GLOBAL_ALLOCATED)
+-				continue;
+-
+-			sym = find_sym_by_name(obj, sec->sec_idx, STT_OBJECT, var_name);
+-			if (!sym) {
+-				pr_warn("failed to find symbol for variable '%s' in section '%s'\n", var_name, sec_name);
+-				return -ENOENT;
+-			}
+-
+-			vi->offset = sym->st_value;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int remap_type_id(__u32 *type_id, void *ctx)
+-{
+-	int *id_map = ctx;
+-	int new_id = id_map[*type_id];
+-
+-	/* Error out if the type wasn't remapped. Ignore VOID which stays VOID. */
+-	if (new_id == 0 && *type_id != 0) {
+-		pr_warn("failed to find new ID mapping for original BTF type ID %u\n", *type_id);
+-		return -EINVAL;
+-	}
+-
+-	*type_id = id_map[*type_id];
+-
+-	return 0;
+-}
+-
+-static int linker_append_btf(struct bpf_linker *linker, struct src_obj *obj)
+-{
+-	const struct btf_type *t;
+-	int i, j, n, start_id, id;
+-	const char *name;
+-
+-	if (!obj->btf)
+-		return 0;
+-
+-	start_id = btf__get_nr_types(linker->btf) + 1;
+-	n = btf__get_nr_types(obj->btf);
+-
+-	obj->btf_type_map = calloc(n + 1, sizeof(int));
+-	if (!obj->btf_type_map)
+-		return -ENOMEM;
+-
+-	for (i = 1; i <= n; i++) {
+-		struct glob_sym *glob_sym = NULL;
+-
+-		t = btf__type_by_id(obj->btf, i);
+-
+-		/* DATASECs are handled specially below */
+-		if (btf_kind(t) == BTF_KIND_DATASEC)
+-			continue;
+-
+-		if (btf_is_non_static(t)) {
+-			/* there should be glob_sym already */
+-			name = btf__str_by_offset(obj->btf, t->name_off);
+-			glob_sym = find_glob_sym(linker, name);
+-
+-			/* VARs without corresponding glob_sym are those that
+-			 * belong to skipped/deduplicated sections (i.e.,
+-			 * license and version), so just skip them
+-			 */
+-			if (!glob_sym)
+-				continue;
+-
+-			/* linker_append_elf_sym() might have requested
+-			 * updating underlying type ID, if extern was resolved
+-			 * to strong symbol or weak got upgraded to non-weak
+-			 */
+-			if (glob_sym->underlying_btf_id == 0)
+-				glob_sym->underlying_btf_id = -t->type;
+-
+-			/* globals from previous object files that match our
+-			 * VAR/FUNC already have a corresponding associated
+-			 * BTF type, so just make sure to use it
+-			 */
+-			if (glob_sym->btf_id) {
+-				/* reuse existing BTF type for global var/func */
+-				obj->btf_type_map[i] = glob_sym->btf_id;
+-				continue;
+-			}
+-		}
+-
+-		id = btf__add_type(linker->btf, obj->btf, t);
+-		if (id < 0) {
+-			pr_warn("failed to append BTF type #%d from file '%s'\n", i, obj->filename);
+-			return id;
+-		}
+-
+-		obj->btf_type_map[i] = id;
+-
+-		/* record just appended BTF type for var/func */
+-		if (glob_sym) {
+-			glob_sym->btf_id = id;
+-			glob_sym->underlying_btf_id = -t->type;
+-		}
+-	}
+-
+-	/* remap all the types except DATASECs */
+-	n = btf__get_nr_types(linker->btf);
+-	for (i = start_id; i <= n; i++) {
+-		struct btf_type *dst_t = btf_type_by_id(linker->btf, i);
+-
+-		if (btf_type_visit_type_ids(dst_t, remap_type_id, obj->btf_type_map))
+-			return -EINVAL;
+-	}
+-
+-	/* Rewrite VAR/FUNC underlying types (i.e., FUNC's FUNC_PROTO and VAR's
+-	 * actual type), if necessary
+-	 */
+-	for (i = 0; i < linker->glob_sym_cnt; i++) {
+-		struct glob_sym *glob_sym = &linker->glob_syms[i];
+-		struct btf_type *glob_t;
+-
+-		if (glob_sym->underlying_btf_id >= 0)
+-			continue;
+-
+-		glob_sym->underlying_btf_id = obj->btf_type_map[-glob_sym->underlying_btf_id];
+-
+-		glob_t = btf_type_by_id(linker->btf, glob_sym->btf_id);
+-		glob_t->type = glob_sym->underlying_btf_id;
+-	}
+-
+-	/* append DATASEC info */
+-	for (i = 1; i < obj->sec_cnt; i++) {
+-		struct src_sec *src_sec;
+-		struct dst_sec *dst_sec;
+-		const struct btf_var_secinfo *src_var;
+-		struct btf_var_secinfo *dst_var;
+-
+-		src_sec = &obj->secs[i];
+-		if (!src_sec->sec_type_id || src_sec->skipped)
+-			continue;
+-		dst_sec = &linker->secs[src_sec->dst_id];
+-
+-		/* Mark section as having BTF regardless of the presence of
+-		 * variables. In some cases compiler might generate empty BTF
+-		 * with no variables information. E.g., when promoting local
+-		 * array/structure variable initial values and BPF object
+-		 * file otherwise has no read-only static variables in
+-		 * .rodata. We need to preserve such empty BTF and just set
+-		 * correct section size.
+-		 */
+-		dst_sec->has_btf = true;
+-
+-		t = btf__type_by_id(obj->btf, src_sec->sec_type_id);
+-		src_var = btf_var_secinfos(t);
+-		n = btf_vlen(t);
+-		for (j = 0; j < n; j++, src_var++) {
+-			void *sec_vars = dst_sec->sec_vars;
+-			int new_id = obj->btf_type_map[src_var->type];
+-			struct glob_sym *glob_sym = NULL;
+-
+-			t = btf_type_by_id(linker->btf, new_id);
+-			if (btf_is_non_static(t)) {
+-				name = btf__str_by_offset(linker->btf, t->name_off);
+-				glob_sym = find_glob_sym(linker, name);
+-				if (glob_sym->sec_id != dst_sec->id) {
+-					pr_warn("global '%s': section mismatch %d vs %d\n",
+-						name, glob_sym->sec_id, dst_sec->id);
+-					return -EINVAL;
+-				}
+-			}
+-
+-			/* If there is already a member (VAR or FUNC) mapped
+-			 * to the same type, don't add a duplicate entry.
+-			 * This will happen when multiple object files define
+-			 * the same extern VARs/FUNCs.
+-			 */
+-			if (glob_sym && glob_sym->var_idx >= 0) {
+-				__s64 sz;
+-
+-				dst_var = &dst_sec->sec_vars[glob_sym->var_idx];
+-				/* Because underlying BTF type might have
+-				 * changed, so might its size have changed, so
+-				 * re-calculate and update it in sec_var.
+-				 */
+-				sz = btf__resolve_size(linker->btf, glob_sym->underlying_btf_id);
+-				if (sz < 0) {
+-					pr_warn("global '%s': failed to resolve size of underlying type: %d\n",
+-						name, (int)sz);
+-					return -EINVAL;
+-				}
+-				dst_var->size = sz;
+-				continue;
+-			}
+-
+-			sec_vars = libbpf_reallocarray(sec_vars,
+-						       dst_sec->sec_var_cnt + 1,
+-						       sizeof(*dst_sec->sec_vars));
+-			if (!sec_vars)
+-				return -ENOMEM;
+-
+-			dst_sec->sec_vars = sec_vars;
+-			dst_sec->sec_var_cnt++;
+-
+-			dst_var = &dst_sec->sec_vars[dst_sec->sec_var_cnt - 1];
+-			dst_var->type = obj->btf_type_map[src_var->type];
+-			dst_var->size = src_var->size;
+-			dst_var->offset = src_sec->dst_off + src_var->offset;
+-
+-			if (glob_sym)
+-				glob_sym->var_idx = dst_sec->sec_var_cnt - 1;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static void *add_btf_ext_rec(struct btf_ext_sec_data *ext_data, const void *src_rec)
+-{
+-	void *tmp;
+-
+-	tmp = libbpf_reallocarray(ext_data->recs, ext_data->rec_cnt + 1, ext_data->rec_sz);
+-	if (!tmp)
+-		return NULL;
+-	ext_data->recs = tmp;
+-
+-	tmp += ext_data->rec_cnt * ext_data->rec_sz;
+-	memcpy(tmp, src_rec, ext_data->rec_sz);
+-
+-	ext_data->rec_cnt++;
+-
+-	return tmp;
+-}
+-
+-static int linker_append_btf_ext(struct bpf_linker *linker, struct src_obj *obj)
+-{
+-	const struct btf_ext_info_sec *ext_sec;
+-	const char *sec_name, *s;
+-	struct src_sec *src_sec;
+-	struct dst_sec *dst_sec;
+-	int rec_sz, str_off, i;
+-
+-	if (!obj->btf_ext)
+-		return 0;
+-
+-	rec_sz = obj->btf_ext->func_info.rec_size;
+-	for_each_btf_ext_sec(&obj->btf_ext->func_info, ext_sec) {
+-		struct bpf_func_info_min *src_rec, *dst_rec;
+-
+-		sec_name = btf__name_by_offset(obj->btf, ext_sec->sec_name_off);
+-		src_sec = find_src_sec_by_name(obj, sec_name);
+-		if (!src_sec) {
+-			pr_warn("can't find section '%s' referenced from .BTF.ext\n", sec_name);
+-			return -EINVAL;
+-		}
+-		dst_sec = &linker->secs[src_sec->dst_id];
+-
+-		if (dst_sec->func_info.rec_sz == 0)
+-			dst_sec->func_info.rec_sz = rec_sz;
+-		if (dst_sec->func_info.rec_sz != rec_sz) {
+-			pr_warn("incompatible .BTF.ext record sizes for section '%s'\n", sec_name);
+-			return -EINVAL;
+-		}
+-
+-		for_each_btf_ext_rec(&obj->btf_ext->func_info, ext_sec, i, src_rec) {
+-			dst_rec = add_btf_ext_rec(&dst_sec->func_info, src_rec);
+-			if (!dst_rec)
+-				return -ENOMEM;
+-
+-			dst_rec->insn_off += src_sec->dst_off;
+-			dst_rec->type_id = obj->btf_type_map[dst_rec->type_id];
+-		}
+-	}
+-
+-	rec_sz = obj->btf_ext->line_info.rec_size;
+-	for_each_btf_ext_sec(&obj->btf_ext->line_info, ext_sec) {
+-		struct bpf_line_info_min *src_rec, *dst_rec;
+-
+-		sec_name = btf__name_by_offset(obj->btf, ext_sec->sec_name_off);
+-		src_sec = find_src_sec_by_name(obj, sec_name);
+-		if (!src_sec) {
+-			pr_warn("can't find section '%s' referenced from .BTF.ext\n", sec_name);
+-			return -EINVAL;
+-		}
+-		dst_sec = &linker->secs[src_sec->dst_id];
+-
+-		if (dst_sec->line_info.rec_sz == 0)
+-			dst_sec->line_info.rec_sz = rec_sz;
+-		if (dst_sec->line_info.rec_sz != rec_sz) {
+-			pr_warn("incompatible .BTF.ext record sizes for section '%s'\n", sec_name);
+-			return -EINVAL;
+-		}
+-
+-		for_each_btf_ext_rec(&obj->btf_ext->line_info, ext_sec, i, src_rec) {
+-			dst_rec = add_btf_ext_rec(&dst_sec->line_info, src_rec);
+-			if (!dst_rec)
+-				return -ENOMEM;
+-
+-			dst_rec->insn_off += src_sec->dst_off;
+-
+-			s = btf__str_by_offset(obj->btf, src_rec->file_name_off);
+-			str_off = btf__add_str(linker->btf, s);
+-			if (str_off < 0)
+-				return -ENOMEM;
+-			dst_rec->file_name_off = str_off;
+-
+-			s = btf__str_by_offset(obj->btf, src_rec->line_off);
+-			str_off = btf__add_str(linker->btf, s);
+-			if (str_off < 0)
+-				return -ENOMEM;
+-			dst_rec->line_off = str_off;
+-
+-			/* dst_rec->line_col is fine */
+-		}
+-	}
+-
+-	rec_sz = obj->btf_ext->core_relo_info.rec_size;
+-	for_each_btf_ext_sec(&obj->btf_ext->core_relo_info, ext_sec) {
+-		struct bpf_core_relo *src_rec, *dst_rec;
+-
+-		sec_name = btf__name_by_offset(obj->btf, ext_sec->sec_name_off);
+-		src_sec = find_src_sec_by_name(obj, sec_name);
+-		if (!src_sec) {
+-			pr_warn("can't find section '%s' referenced from .BTF.ext\n", sec_name);
+-			return -EINVAL;
+-		}
+-		dst_sec = &linker->secs[src_sec->dst_id];
+-
+-		if (dst_sec->core_relo_info.rec_sz == 0)
+-			dst_sec->core_relo_info.rec_sz = rec_sz;
+-		if (dst_sec->core_relo_info.rec_sz != rec_sz) {
+-			pr_warn("incompatible .BTF.ext record sizes for section '%s'\n", sec_name);
+-			return -EINVAL;
+-		}
+-
+-		for_each_btf_ext_rec(&obj->btf_ext->core_relo_info, ext_sec, i, src_rec) {
+-			dst_rec = add_btf_ext_rec(&dst_sec->core_relo_info, src_rec);
+-			if (!dst_rec)
+-				return -ENOMEM;
+-
+-			dst_rec->insn_off += src_sec->dst_off;
+-			dst_rec->type_id = obj->btf_type_map[dst_rec->type_id];
+-
+-			s = btf__str_by_offset(obj->btf, src_rec->access_str_off);
+-			str_off = btf__add_str(linker->btf, s);
+-			if (str_off < 0)
+-				return -ENOMEM;
+-			dst_rec->access_str_off = str_off;
+-
+-			/* dst_rec->kind is fine */
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-int bpf_linker__finalize(struct bpf_linker *linker)
+-{
+-	struct dst_sec *sec;
+-	size_t strs_sz;
+-	const void *strs;
+-	int err, i;
+-
+-	if (!linker->elf)
+-		return libbpf_err(-EINVAL);
+-
+-	err = finalize_btf(linker);
+-	if (err)
+-		return libbpf_err(err);
+-
+-	/* Finalize strings */
+-	strs_sz = strset__data_size(linker->strtab_strs);
+-	strs = strset__data(linker->strtab_strs);
+-
+-	sec = &linker->secs[linker->strtab_sec_idx];
+-	sec->data->d_align = 1;
+-	sec->data->d_off = 0LL;
+-	sec->data->d_buf = (void *)strs;
+-	sec->data->d_type = ELF_T_BYTE;
+-	sec->data->d_size = strs_sz;
+-	sec->shdr->sh_size = strs_sz;
+-
+-	for (i = 1; i < linker->sec_cnt; i++) {
+-		sec = &linker->secs[i];
+-
+-		/* STRTAB is handled specially above */
+-		if (sec->sec_idx == linker->strtab_sec_idx)
+-			continue;
+-
+-		/* special ephemeral sections (.ksyms, .kconfig, etc) */
+-		if (!sec->scn)
+-			continue;
+-
+-		sec->data->d_buf = sec->raw_data;
+-	}
+-
+-	/* Finalize ELF layout */
+-	if (elf_update(linker->elf, ELF_C_NULL) < 0) {
+-		err = -errno;
+-		pr_warn_elf("failed to finalize ELF layout");
+-		return libbpf_err(err);
+-	}
+-
+-	/* Write out final ELF contents */
+-	if (elf_update(linker->elf, ELF_C_WRITE) < 0) {
+-		err = -errno;
+-		pr_warn_elf("failed to write ELF contents");
+-		return libbpf_err(err);
+-	}
+-
+-	elf_end(linker->elf);
+-	close(linker->fd);
+-
+-	linker->elf = NULL;
+-	linker->fd = -1;
+-
+-	return 0;
+-}
+-
+-static int emit_elf_data_sec(struct bpf_linker *linker, const char *sec_name,
+-			     size_t align, const void *raw_data, size_t raw_sz)
+-{
+-	Elf_Scn *scn;
+-	Elf_Data *data;
+-	Elf64_Shdr *shdr;
+-	int name_off;
+-
+-	name_off = strset__add_str(linker->strtab_strs, sec_name);
+-	if (name_off < 0)
+-		return name_off;
+-
+-	scn = elf_newscn(linker->elf);
+-	if (!scn)
+-		return -ENOMEM;
+-	data = elf_newdata(scn);
+-	if (!data)
+-		return -ENOMEM;
+-	shdr = elf64_getshdr(scn);
+-	if (!shdr)
+-		return -EINVAL;
+-
+-	shdr->sh_name = name_off;
+-	shdr->sh_type = SHT_PROGBITS;
+-	shdr->sh_flags = 0;
+-	shdr->sh_size = raw_sz;
+-	shdr->sh_link = 0;
+-	shdr->sh_info = 0;
+-	shdr->sh_addralign = align;
+-	shdr->sh_entsize = 0;
+-
+-	data->d_type = ELF_T_BYTE;
+-	data->d_size = raw_sz;
+-	data->d_buf = (void *)raw_data;
+-	data->d_align = align;
+-	data->d_off = 0;
+-
+-	return 0;
+-}
+-
+-static int finalize_btf(struct bpf_linker *linker)
+-{
+-	struct btf *btf = linker->btf;
+-	const void *raw_data;
+-	int i, j, id, err;
+-	__u32 raw_sz;
+-
+-	/* bail out if no BTF data was produced */
+-	if (btf__get_nr_types(linker->btf) == 0)
+-		return 0;
+-
+-	for (i = 1; i < linker->sec_cnt; i++) {
+-		struct dst_sec *sec = &linker->secs[i];
+-
+-		if (!sec->has_btf)
+-			continue;
+-
+-		id = btf__add_datasec(btf, sec->sec_name, sec->sec_sz);
+-		if (id < 0) {
+-			pr_warn("failed to add consolidated BTF type for datasec '%s': %d\n",
+-				sec->sec_name, id);
+-			return id;
+-		}
+-
+-		for (j = 0; j < sec->sec_var_cnt; j++) {
+-			struct btf_var_secinfo *vi = &sec->sec_vars[j];
+-
+-			if (btf__add_datasec_var_info(btf, vi->type, vi->offset, vi->size))
+-				return -EINVAL;
+-		}
+-	}
+-
+-	err = finalize_btf_ext(linker);
+-	if (err) {
+-		pr_warn(".BTF.ext generation failed: %d\n", err);
+-		return err;
+-	}
+-
+-	err = btf__dedup(linker->btf, linker->btf_ext, NULL);
+-	if (err) {
+-		pr_warn("BTF dedup failed: %d\n", err);
+-		return err;
+-	}
+-
+-	/* Emit .BTF section */
+-	raw_data = btf__get_raw_data(linker->btf, &raw_sz);
+-	if (!raw_data)
+-		return -ENOMEM;
+-
+-	err = emit_elf_data_sec(linker, BTF_ELF_SEC, 8, raw_data, raw_sz);
+-	if (err) {
+-		pr_warn("failed to write out .BTF ELF section: %d\n", err);
+-		return err;
+-	}
+-
+-	/* Emit .BTF.ext section */
+-	if (linker->btf_ext) {
+-		raw_data = btf_ext__get_raw_data(linker->btf_ext, &raw_sz);
+-		if (!raw_data)
+-			return -ENOMEM;
+-
+-		err = emit_elf_data_sec(linker, BTF_EXT_ELF_SEC, 8, raw_data, raw_sz);
+-		if (err) {
+-			pr_warn("failed to write out .BTF.ext ELF section: %d\n", err);
+-			return err;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-static int emit_btf_ext_data(struct bpf_linker *linker, void *output,
+-			     const char *sec_name, struct btf_ext_sec_data *sec_data)
+-{
+-	struct btf_ext_info_sec *sec_info;
+-	void *cur = output;
+-	int str_off;
+-	size_t sz;
+-
+-	if (!sec_data->rec_cnt)
+-		return 0;
+-
+-	str_off = btf__add_str(linker->btf, sec_name);
+-	if (str_off < 0)
+-		return -ENOMEM;
+-
+-	sec_info = cur;
+-	sec_info->sec_name_off = str_off;
+-	sec_info->num_info = sec_data->rec_cnt;
+-	cur += sizeof(struct btf_ext_info_sec);
+-
+-	sz = sec_data->rec_cnt * sec_data->rec_sz;
+-	memcpy(cur, sec_data->recs, sz);
+-	cur += sz;
+-
+-	return cur - output;
+-}
+-
+-static int finalize_btf_ext(struct bpf_linker *linker)
+-{
+-	size_t funcs_sz = 0, lines_sz = 0, core_relos_sz = 0, total_sz = 0;
+-	size_t func_rec_sz = 0, line_rec_sz = 0, core_relo_rec_sz = 0;
+-	struct btf_ext_header *hdr;
+-	void *data, *cur;
+-	int i, err, sz;
+-
+-	/* validate that all sections have the same .BTF.ext record sizes
+-	 * and calculate total data size for each type of data (func info,
+-	 * line info, core relos)
+-	 */
+-	for (i = 1; i < linker->sec_cnt; i++) {
+-		struct dst_sec *sec = &linker->secs[i];
+-
+-		if (sec->func_info.rec_cnt) {
+-			if (func_rec_sz == 0)
+-				func_rec_sz = sec->func_info.rec_sz;
+-			if (func_rec_sz != sec->func_info.rec_sz) {
+-				pr_warn("mismatch in func_info record size %zu != %u\n",
+-					func_rec_sz, sec->func_info.rec_sz);
+-				return -EINVAL;
+-			}
+-
+-			funcs_sz += sizeof(struct btf_ext_info_sec) + func_rec_sz * sec->func_info.rec_cnt;
+-		}
+-		if (sec->line_info.rec_cnt) {
+-			if (line_rec_sz == 0)
+-				line_rec_sz = sec->line_info.rec_sz;
+-			if (line_rec_sz != sec->line_info.rec_sz) {
+-				pr_warn("mismatch in line_info record size %zu != %u\n",
+-					line_rec_sz, sec->line_info.rec_sz);
+-				return -EINVAL;
+-			}
+-
+-			lines_sz += sizeof(struct btf_ext_info_sec) + line_rec_sz * sec->line_info.rec_cnt;
+-		}
+-		if (sec->core_relo_info.rec_cnt) {
+-			if (core_relo_rec_sz == 0)
+-				core_relo_rec_sz = sec->core_relo_info.rec_sz;
+-			if (core_relo_rec_sz != sec->core_relo_info.rec_sz) {
+-				pr_warn("mismatch in core_relo_info record size %zu != %u\n",
+-					core_relo_rec_sz, sec->core_relo_info.rec_sz);
+-				return -EINVAL;
+-			}
+-
+-			core_relos_sz += sizeof(struct btf_ext_info_sec) + core_relo_rec_sz * sec->core_relo_info.rec_cnt;
+-		}
+-	}
+-
+-	if (!funcs_sz && !lines_sz && !core_relos_sz)
+-		return 0;
+-
+-	total_sz += sizeof(struct btf_ext_header);
+-	if (funcs_sz) {
+-		funcs_sz += sizeof(__u32); /* record size prefix */
+-		total_sz += funcs_sz;
+-	}
+-	if (lines_sz) {
+-		lines_sz += sizeof(__u32); /* record size prefix */
+-		total_sz += lines_sz;
+-	}
+-	if (core_relos_sz) {
+-		core_relos_sz += sizeof(__u32); /* record size prefix */
+-		total_sz += core_relos_sz;
+-	}
+-
+-	cur = data = calloc(1, total_sz);
+-	if (!data)
+-		return -ENOMEM;
+-
+-	hdr = cur;
+-	hdr->magic = BTF_MAGIC;
+-	hdr->version = BTF_VERSION;
+-	hdr->flags = 0;
+-	hdr->hdr_len = sizeof(struct btf_ext_header);
+-	cur += sizeof(struct btf_ext_header);
+-
+-	/* All offsets are in bytes relative to the end of this header */
+-	hdr->func_info_off = 0;
+-	hdr->func_info_len = funcs_sz;
+-	hdr->line_info_off = funcs_sz;
+-	hdr->line_info_len = lines_sz;
+-	hdr->core_relo_off = funcs_sz + lines_sz;
+-	hdr->core_relo_len = core_relos_sz;
+-
+-	if (funcs_sz) {
+-		*(__u32 *)cur = func_rec_sz;
+-		cur += sizeof(__u32);
+-
+-		for (i = 1; i < linker->sec_cnt; i++) {
+-			struct dst_sec *sec = &linker->secs[i];
+-
+-			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->func_info);
+-			if (sz < 0) {
+-				err = sz;
+-				goto out;
+-			}
+-
+-			cur += sz;
+-		}
+-	}
+-
+-	if (lines_sz) {
+-		*(__u32 *)cur = line_rec_sz;
+-		cur += sizeof(__u32);
+-
+-		for (i = 1; i < linker->sec_cnt; i++) {
+-			struct dst_sec *sec = &linker->secs[i];
+-
+-			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->line_info);
+-			if (sz < 0) {
+-				err = sz;
+-				goto out;
+-			}
+-
+-			cur += sz;
+-		}
+-	}
+-
+-	if (core_relos_sz) {
+-		*(__u32 *)cur = core_relo_rec_sz;
+-		cur += sizeof(__u32);
+-
+-		for (i = 1; i < linker->sec_cnt; i++) {
+-			struct dst_sec *sec = &linker->secs[i];
+-
+-			sz = emit_btf_ext_data(linker, cur, sec->sec_name, &sec->core_relo_info);
+-			if (sz < 0) {
+-				err = sz;
+-				goto out;
+-			}
+-
+-			cur += sz;
+-		}
+-	}
+-
+-	linker->btf_ext = btf_ext__new(data, total_sz);
+-	err = libbpf_get_error(linker->btf_ext);
+-	if (err) {
+-		linker->btf_ext = NULL;
+-		pr_warn("failed to parse final .BTF.ext data: %d\n", err);
+-		goto out;
+-	}
+-
+-out:
+-	free(data);
+-	return err;
+-}
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+deleted file mode 100644
+index 39f25e09b51e..000000000000
+--- a/tools/lib/bpf/netlink.c
++++ /dev/null
+@@ -1,758 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2018 Facebook */
+-
+-#include <stdlib.h>
+-#include <memory.h>
+-#include <unistd.h>
+-#include <arpa/inet.h>
+-#include <linux/bpf.h>
+-#include <linux/if_ether.h>
+-#include <linux/pkt_cls.h>
+-#include <linux/rtnetlink.h>
+-#include <sys/socket.h>
+-#include <errno.h>
+-#include <time.h>
+-
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-#include "nlattr.h"
+-
+-#ifndef SOL_NETLINK
+-#define SOL_NETLINK 270
+-#endif
+-
+-typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb);
+-
+-typedef int (*__dump_nlmsg_t)(struct nlmsghdr *nlmsg, libbpf_dump_nlmsg_t,
+-			      void *cookie);
+-
+-struct xdp_id_md {
+-	int ifindex;
+-	__u32 flags;
+-	struct xdp_link_info info;
+-};
+-
+-static int libbpf_netlink_open(__u32 *nl_pid)
+-{
+-	struct sockaddr_nl sa;
+-	socklen_t addrlen;
+-	int one = 1, ret;
+-	int sock;
+-
+-	memset(&sa, 0, sizeof(sa));
+-	sa.nl_family = AF_NETLINK;
+-
+-	sock = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC, NETLINK_ROUTE);
+-	if (sock < 0)
+-		return -errno;
+-
+-	if (setsockopt(sock, SOL_NETLINK, NETLINK_EXT_ACK,
+-		       &one, sizeof(one)) < 0) {
+-		pr_warn("Netlink error reporting not supported\n");
+-	}
+-
+-	if (bind(sock, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
+-		ret = -errno;
+-		goto cleanup;
+-	}
+-
+-	addrlen = sizeof(sa);
+-	if (getsockname(sock, (struct sockaddr *)&sa, &addrlen) < 0) {
+-		ret = -errno;
+-		goto cleanup;
+-	}
+-
+-	if (addrlen != sizeof(sa)) {
+-		ret = -LIBBPF_ERRNO__INTERNAL;
+-		goto cleanup;
+-	}
+-
+-	*nl_pid = sa.nl_pid;
+-	return sock;
+-
+-cleanup:
+-	close(sock);
+-	return ret;
+-}
+-
+-static void libbpf_netlink_close(int sock)
+-{
+-	close(sock);
+-}
+-
+-enum {
+-	NL_CONT,
+-	NL_NEXT,
+-	NL_DONE,
+-};
+-
+-static int libbpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+-			       __dump_nlmsg_t _fn, libbpf_dump_nlmsg_t fn,
+-			       void *cookie)
+-{
+-	bool multipart = true;
+-	struct nlmsgerr *err;
+-	struct nlmsghdr *nh;
+-	char buf[4096];
+-	int len, ret;
+-
+-	while (multipart) {
+-start:
+-		multipart = false;
+-		len = recv(sock, buf, sizeof(buf), 0);
+-		if (len < 0) {
+-			ret = -errno;
+-			goto done;
+-		}
+-
+-		if (len == 0)
+-			break;
+-
+-		for (nh = (struct nlmsghdr *)buf; NLMSG_OK(nh, len);
+-		     nh = NLMSG_NEXT(nh, len)) {
+-			if (nh->nlmsg_pid != nl_pid) {
+-				ret = -LIBBPF_ERRNO__WRNGPID;
+-				goto done;
+-			}
+-			if (nh->nlmsg_seq != seq) {
+-				ret = -LIBBPF_ERRNO__INVSEQ;
+-				goto done;
+-			}
+-			if (nh->nlmsg_flags & NLM_F_MULTI)
+-				multipart = true;
+-			switch (nh->nlmsg_type) {
+-			case NLMSG_ERROR:
+-				err = (struct nlmsgerr *)NLMSG_DATA(nh);
+-				if (!err->error)
+-					continue;
+-				ret = err->error;
+-				libbpf_nla_dump_errormsg(nh);
+-				goto done;
+-			case NLMSG_DONE:
+-				return 0;
+-			default:
+-				break;
+-			}
+-			if (_fn) {
+-				ret = _fn(nh, fn, cookie);
+-				switch (ret) {
+-				case NL_CONT:
+-					break;
+-				case NL_NEXT:
+-					goto start;
+-				case NL_DONE:
+-					return 0;
+-				default:
+-					return ret;
+-				}
+-			}
+-		}
+-	}
+-	ret = 0;
+-done:
+-	return ret;
+-}
+-
+-static int libbpf_netlink_send_recv(struct libbpf_nla_req *req,
+-				    __dump_nlmsg_t parse_msg,
+-				    libbpf_dump_nlmsg_t parse_attr,
+-				    void *cookie)
+-{
+-	__u32 nl_pid = 0;
+-	int sock, ret;
+-
+-	sock = libbpf_netlink_open(&nl_pid);
+-	if (sock < 0)
+-		return sock;
+-
+-	req->nh.nlmsg_pid = 0;
+-	req->nh.nlmsg_seq = time(NULL);
+-
+-	if (send(sock, req, req->nh.nlmsg_len, 0) < 0) {
+-		ret = -errno;
+-		goto out;
+-	}
+-
+-	ret = libbpf_netlink_recv(sock, nl_pid, req->nh.nlmsg_seq,
+-				  parse_msg, parse_attr, cookie);
+-out:
+-	libbpf_netlink_close(sock);
+-	return ret;
+-}
+-
+-static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
+-					 __u32 flags)
+-{
+-	struct nlattr *nla;
+-	int ret;
+-	struct libbpf_nla_req req;
+-
+-	memset(&req, 0, sizeof(req));
+-	req.nh.nlmsg_len      = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+-	req.nh.nlmsg_flags    = NLM_F_REQUEST | NLM_F_ACK;
+-	req.nh.nlmsg_type     = RTM_SETLINK;
+-	req.ifinfo.ifi_family = AF_UNSPEC;
+-	req.ifinfo.ifi_index  = ifindex;
+-
+-	nla = nlattr_begin_nested(&req, IFLA_XDP);
+-	if (!nla)
+-		return -EMSGSIZE;
+-	ret = nlattr_add(&req, IFLA_XDP_FD, &fd, sizeof(fd));
+-	if (ret < 0)
+-		return ret;
+-	if (flags) {
+-		ret = nlattr_add(&req, IFLA_XDP_FLAGS, &flags, sizeof(flags));
+-		if (ret < 0)
+-			return ret;
+-	}
+-	if (flags & XDP_FLAGS_REPLACE) {
+-		ret = nlattr_add(&req, IFLA_XDP_EXPECTED_FD, &old_fd,
+-				 sizeof(old_fd));
+-		if (ret < 0)
+-			return ret;
+-	}
+-	nlattr_end_nested(&req, nla);
+-
+-	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+-}
+-
+-int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
+-			     const struct bpf_xdp_set_link_opts *opts)
+-{
+-	int old_fd = -1, ret;
+-
+-	if (!OPTS_VALID(opts, bpf_xdp_set_link_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	if (OPTS_HAS(opts, old_fd)) {
+-		old_fd = OPTS_GET(opts, old_fd, -1);
+-		flags |= XDP_FLAGS_REPLACE;
+-	}
+-
+-	ret = __bpf_set_link_xdp_fd_replace(ifindex, fd, old_fd, flags);
+-	return libbpf_err(ret);
+-}
+-
+-int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
+-{
+-	int ret;
+-
+-	ret = __bpf_set_link_xdp_fd_replace(ifindex, fd, 0, flags);
+-	return libbpf_err(ret);
+-}
+-
+-static int __dump_link_nlmsg(struct nlmsghdr *nlh,
+-			     libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
+-{
+-	struct nlattr *tb[IFLA_MAX + 1], *attr;
+-	struct ifinfomsg *ifi = NLMSG_DATA(nlh);
+-	int len;
+-
+-	len = nlh->nlmsg_len - NLMSG_LENGTH(sizeof(*ifi));
+-	attr = (struct nlattr *) ((void *) ifi + NLMSG_ALIGN(sizeof(*ifi)));
+-
+-	if (libbpf_nla_parse(tb, IFLA_MAX, attr, len, NULL) != 0)
+-		return -LIBBPF_ERRNO__NLPARSE;
+-
+-	return dump_link_nlmsg(cookie, ifi, tb);
+-}
+-
+-static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
+-{
+-	struct nlattr *xdp_tb[IFLA_XDP_MAX + 1];
+-	struct xdp_id_md *xdp_id = cookie;
+-	struct ifinfomsg *ifinfo = msg;
+-	int ret;
+-
+-	if (xdp_id->ifindex && xdp_id->ifindex != ifinfo->ifi_index)
+-		return 0;
+-
+-	if (!tb[IFLA_XDP])
+-		return 0;
+-
+-	ret = libbpf_nla_parse_nested(xdp_tb, IFLA_XDP_MAX, tb[IFLA_XDP], NULL);
+-	if (ret)
+-		return ret;
+-
+-	if (!xdp_tb[IFLA_XDP_ATTACHED])
+-		return 0;
+-
+-	xdp_id->info.attach_mode = libbpf_nla_getattr_u8(
+-		xdp_tb[IFLA_XDP_ATTACHED]);
+-
+-	if (xdp_id->info.attach_mode == XDP_ATTACHED_NONE)
+-		return 0;
+-
+-	if (xdp_tb[IFLA_XDP_PROG_ID])
+-		xdp_id->info.prog_id = libbpf_nla_getattr_u32(
+-			xdp_tb[IFLA_XDP_PROG_ID]);
+-
+-	if (xdp_tb[IFLA_XDP_SKB_PROG_ID])
+-		xdp_id->info.skb_prog_id = libbpf_nla_getattr_u32(
+-			xdp_tb[IFLA_XDP_SKB_PROG_ID]);
+-
+-	if (xdp_tb[IFLA_XDP_DRV_PROG_ID])
+-		xdp_id->info.drv_prog_id = libbpf_nla_getattr_u32(
+-			xdp_tb[IFLA_XDP_DRV_PROG_ID]);
+-
+-	if (xdp_tb[IFLA_XDP_HW_PROG_ID])
+-		xdp_id->info.hw_prog_id = libbpf_nla_getattr_u32(
+-			xdp_tb[IFLA_XDP_HW_PROG_ID]);
+-
+-	return 0;
+-}
+-
+-int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+-			  size_t info_size, __u32 flags)
+-{
+-	struct xdp_id_md xdp_id = {};
+-	__u32 mask;
+-	int ret;
+-	struct libbpf_nla_req req = {
+-		.nh.nlmsg_len      = NLMSG_LENGTH(sizeof(struct ifinfomsg)),
+-		.nh.nlmsg_type     = RTM_GETLINK,
+-		.nh.nlmsg_flags    = NLM_F_DUMP | NLM_F_REQUEST,
+-		.ifinfo.ifi_family = AF_PACKET,
+-	};
+-
+-	if (flags & ~XDP_FLAGS_MASK || !info_size)
+-		return libbpf_err(-EINVAL);
+-
+-	/* Check whether the single {HW,DRV,SKB} mode is set */
+-	flags &= (XDP_FLAGS_SKB_MODE | XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE);
+-	mask = flags - 1;
+-	if (flags && flags & mask)
+-		return libbpf_err(-EINVAL);
+-
+-	xdp_id.ifindex = ifindex;
+-	xdp_id.flags = flags;
+-
+-	ret = libbpf_netlink_send_recv(&req, __dump_link_nlmsg,
+-				       get_xdp_info, &xdp_id);
+-	if (!ret) {
+-		size_t sz = min(info_size, sizeof(xdp_id.info));
+-
+-		memcpy(info, &xdp_id.info, sz);
+-		memset((void *) info + sz, 0, info_size - sz);
+-	}
+-
+-	return libbpf_err(ret);
+-}
+-
+-static __u32 get_xdp_id(struct xdp_link_info *info, __u32 flags)
+-{
+-	flags &= XDP_FLAGS_MODES;
+-
+-	if (info->attach_mode != XDP_ATTACHED_MULTI && !flags)
+-		return info->prog_id;
+-	if (flags & XDP_FLAGS_DRV_MODE)
+-		return info->drv_prog_id;
+-	if (flags & XDP_FLAGS_HW_MODE)
+-		return info->hw_prog_id;
+-	if (flags & XDP_FLAGS_SKB_MODE)
+-		return info->skb_prog_id;
+-
+-	return 0;
+-}
+-
+-int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
+-{
+-	struct xdp_link_info info;
+-	int ret;
+-
+-	ret = bpf_get_link_xdp_info(ifindex, &info, sizeof(info), flags);
+-	if (!ret)
+-		*prog_id = get_xdp_id(&info, flags);
+-
+-	return libbpf_err(ret);
+-}
+-
+-typedef int (*qdisc_config_t)(struct libbpf_nla_req *req);
+-
+-static int clsact_config(struct libbpf_nla_req *req)
+-{
+-	req->tc.tcm_parent = TC_H_CLSACT;
+-	req->tc.tcm_handle = TC_H_MAKE(TC_H_CLSACT, 0);
+-
+-	return nlattr_add(req, TCA_KIND, "clsact", sizeof("clsact"));
+-}
+-
+-static int attach_point_to_config(struct bpf_tc_hook *hook,
+-				  qdisc_config_t *config)
+-{
+-	switch (OPTS_GET(hook, attach_point, 0)) {
+-	case BPF_TC_INGRESS:
+-	case BPF_TC_EGRESS:
+-	case BPF_TC_INGRESS | BPF_TC_EGRESS:
+-		if (OPTS_GET(hook, parent, 0))
+-			return -EINVAL;
+-		*config = &clsact_config;
+-		return 0;
+-	case BPF_TC_CUSTOM:
+-		return -EOPNOTSUPP;
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+-static int tc_get_tcm_parent(enum bpf_tc_attach_point attach_point,
+-			     __u32 *parent)
+-{
+-	switch (attach_point) {
+-	case BPF_TC_INGRESS:
+-	case BPF_TC_EGRESS:
+-		if (*parent)
+-			return -EINVAL;
+-		*parent = TC_H_MAKE(TC_H_CLSACT,
+-				    attach_point == BPF_TC_INGRESS ?
+-				    TC_H_MIN_INGRESS : TC_H_MIN_EGRESS);
+-		break;
+-	case BPF_TC_CUSTOM:
+-		if (!*parent)
+-			return -EINVAL;
+-		break;
+-	default:
+-		return -EINVAL;
+-	}
+-	return 0;
+-}
+-
+-static int tc_qdisc_modify(struct bpf_tc_hook *hook, int cmd, int flags)
+-{
+-	qdisc_config_t config;
+-	int ret;
+-	struct libbpf_nla_req req;
+-
+-	ret = attach_point_to_config(hook, &config);
+-	if (ret < 0)
+-		return ret;
+-
+-	memset(&req, 0, sizeof(req));
+-	req.nh.nlmsg_len   = NLMSG_LENGTH(sizeof(struct tcmsg));
+-	req.nh.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | flags;
+-	req.nh.nlmsg_type  = cmd;
+-	req.tc.tcm_family  = AF_UNSPEC;
+-	req.tc.tcm_ifindex = OPTS_GET(hook, ifindex, 0);
+-
+-	ret = config(&req);
+-	if (ret < 0)
+-		return ret;
+-
+-	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+-}
+-
+-static int tc_qdisc_create_excl(struct bpf_tc_hook *hook)
+-{
+-	return tc_qdisc_modify(hook, RTM_NEWQDISC, NLM_F_CREATE | NLM_F_EXCL);
+-}
+-
+-static int tc_qdisc_delete(struct bpf_tc_hook *hook)
+-{
+-	return tc_qdisc_modify(hook, RTM_DELQDISC, 0);
+-}
+-
+-int bpf_tc_hook_create(struct bpf_tc_hook *hook)
+-{
+-	int ret;
+-
+-	if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
+-	    OPTS_GET(hook, ifindex, 0) <= 0)
+-		return libbpf_err(-EINVAL);
+-
+-	ret = tc_qdisc_create_excl(hook);
+-	return libbpf_err(ret);
+-}
+-
+-static int __bpf_tc_detach(const struct bpf_tc_hook *hook,
+-			   const struct bpf_tc_opts *opts,
+-			   const bool flush);
+-
+-int bpf_tc_hook_destroy(struct bpf_tc_hook *hook)
+-{
+-	if (!hook || !OPTS_VALID(hook, bpf_tc_hook) ||
+-	    OPTS_GET(hook, ifindex, 0) <= 0)
+-		return libbpf_err(-EINVAL);
+-
+-	switch (OPTS_GET(hook, attach_point, 0)) {
+-	case BPF_TC_INGRESS:
+-	case BPF_TC_EGRESS:
+-		return libbpf_err(__bpf_tc_detach(hook, NULL, true));
+-	case BPF_TC_INGRESS | BPF_TC_EGRESS:
+-		return libbpf_err(tc_qdisc_delete(hook));
+-	case BPF_TC_CUSTOM:
+-		return libbpf_err(-EOPNOTSUPP);
+-	default:
+-		return libbpf_err(-EINVAL);
+-	}
+-}
+-
+-struct bpf_cb_ctx {
+-	struct bpf_tc_opts *opts;
+-	bool processed;
+-};
+-
+-static int __get_tc_info(void *cookie, struct tcmsg *tc, struct nlattr **tb,
+-			 bool unicast)
+-{
+-	struct nlattr *tbb[TCA_BPF_MAX + 1];
+-	struct bpf_cb_ctx *info = cookie;
+-
+-	if (!info || !info->opts)
+-		return -EINVAL;
+-	if (unicast && info->processed)
+-		return -EINVAL;
+-	if (!tb[TCA_OPTIONS])
+-		return NL_CONT;
+-
+-	libbpf_nla_parse_nested(tbb, TCA_BPF_MAX, tb[TCA_OPTIONS], NULL);
+-	if (!tbb[TCA_BPF_ID])
+-		return -EINVAL;
+-
+-	OPTS_SET(info->opts, prog_id, libbpf_nla_getattr_u32(tbb[TCA_BPF_ID]));
+-	OPTS_SET(info->opts, handle, tc->tcm_handle);
+-	OPTS_SET(info->opts, priority, TC_H_MAJ(tc->tcm_info) >> 16);
+-
+-	info->processed = true;
+-	return unicast ? NL_NEXT : NL_DONE;
+-}
+-
+-static int get_tc_info(struct nlmsghdr *nh, libbpf_dump_nlmsg_t fn,
+-		       void *cookie)
+-{
+-	struct tcmsg *tc = NLMSG_DATA(nh);
+-	struct nlattr *tb[TCA_MAX + 1];
+-
+-	libbpf_nla_parse(tb, TCA_MAX,
+-			 (struct nlattr *)((void *)tc + NLMSG_ALIGN(sizeof(*tc))),
+-			 NLMSG_PAYLOAD(nh, sizeof(*tc)), NULL);
+-	if (!tb[TCA_KIND])
+-		return NL_CONT;
+-	return __get_tc_info(cookie, tc, tb, nh->nlmsg_flags & NLM_F_ECHO);
+-}
+-
+-static int tc_add_fd_and_name(struct libbpf_nla_req *req, int fd)
+-{
+-	struct bpf_prog_info info = {};
+-	__u32 info_len = sizeof(info);
+-	char name[256];
+-	int len, ret;
+-
+-	ret = bpf_obj_get_info_by_fd(fd, &info, &info_len);
+-	if (ret < 0)
+-		return ret;
+-
+-	ret = nlattr_add(req, TCA_BPF_FD, &fd, sizeof(fd));
+-	if (ret < 0)
+-		return ret;
+-	len = snprintf(name, sizeof(name), "%s:[%u]", info.name, info.id);
+-	if (len < 0)
+-		return -errno;
+-	if (len >= sizeof(name))
+-		return -ENAMETOOLONG;
+-	return nlattr_add(req, TCA_BPF_NAME, name, len + 1);
+-}
+-
+-int bpf_tc_attach(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+-{
+-	__u32 protocol, bpf_flags, handle, priority, parent, prog_id, flags;
+-	int ret, ifindex, attach_point, prog_fd;
+-	struct bpf_cb_ctx info = {};
+-	struct libbpf_nla_req req;
+-	struct nlattr *nla;
+-
+-	if (!hook || !opts ||
+-	    !OPTS_VALID(hook, bpf_tc_hook) ||
+-	    !OPTS_VALID(opts, bpf_tc_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	ifindex      = OPTS_GET(hook, ifindex, 0);
+-	parent       = OPTS_GET(hook, parent, 0);
+-	attach_point = OPTS_GET(hook, attach_point, 0);
+-
+-	handle       = OPTS_GET(opts, handle, 0);
+-	priority     = OPTS_GET(opts, priority, 0);
+-	prog_fd      = OPTS_GET(opts, prog_fd, 0);
+-	prog_id      = OPTS_GET(opts, prog_id, 0);
+-	flags        = OPTS_GET(opts, flags, 0);
+-
+-	if (ifindex <= 0 || !prog_fd || prog_id)
+-		return libbpf_err(-EINVAL);
+-	if (priority > UINT16_MAX)
+-		return libbpf_err(-EINVAL);
+-	if (flags & ~BPF_TC_F_REPLACE)
+-		return libbpf_err(-EINVAL);
+-
+-	flags = (flags & BPF_TC_F_REPLACE) ? NLM_F_REPLACE : NLM_F_EXCL;
+-	protocol = ETH_P_ALL;
+-
+-	memset(&req, 0, sizeof(req));
+-	req.nh.nlmsg_len   = NLMSG_LENGTH(sizeof(struct tcmsg));
+-	req.nh.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_CREATE |
+-			     NLM_F_ECHO | flags;
+-	req.nh.nlmsg_type  = RTM_NEWTFILTER;
+-	req.tc.tcm_family  = AF_UNSPEC;
+-	req.tc.tcm_ifindex = ifindex;
+-	req.tc.tcm_handle  = handle;
+-	req.tc.tcm_info    = TC_H_MAKE(priority << 16, htons(protocol));
+-
+-	ret = tc_get_tcm_parent(attach_point, &parent);
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	req.tc.tcm_parent = parent;
+-
+-	ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	nla = nlattr_begin_nested(&req, TCA_OPTIONS);
+-	if (!nla)
+-		return libbpf_err(-EMSGSIZE);
+-	ret = tc_add_fd_and_name(&req, prog_fd);
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	bpf_flags = TCA_BPF_FLAG_ACT_DIRECT;
+-	ret = nlattr_add(&req, TCA_BPF_FLAGS, &bpf_flags, sizeof(bpf_flags));
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	nlattr_end_nested(&req, nla);
+-
+-	info.opts = opts;
+-
+-	ret = libbpf_netlink_send_recv(&req, get_tc_info, NULL, &info);
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	if (!info.processed)
+-		return libbpf_err(-ENOENT);
+-	return ret;
+-}
+-
+-static int __bpf_tc_detach(const struct bpf_tc_hook *hook,
+-			   const struct bpf_tc_opts *opts,
+-			   const bool flush)
+-{
+-	__u32 protocol = 0, handle, priority, parent, prog_id, flags;
+-	int ret, ifindex, attach_point, prog_fd;
+-	struct libbpf_nla_req req;
+-
+-	if (!hook ||
+-	    !OPTS_VALID(hook, bpf_tc_hook) ||
+-	    !OPTS_VALID(opts, bpf_tc_opts))
+-		return -EINVAL;
+-
+-	ifindex      = OPTS_GET(hook, ifindex, 0);
+-	parent       = OPTS_GET(hook, parent, 0);
+-	attach_point = OPTS_GET(hook, attach_point, 0);
+-
+-	handle       = OPTS_GET(opts, handle, 0);
+-	priority     = OPTS_GET(opts, priority, 0);
+-	prog_fd      = OPTS_GET(opts, prog_fd, 0);
+-	prog_id      = OPTS_GET(opts, prog_id, 0);
+-	flags        = OPTS_GET(opts, flags, 0);
+-
+-	if (ifindex <= 0 || flags || prog_fd || prog_id)
+-		return -EINVAL;
+-	if (priority > UINT16_MAX)
+-		return -EINVAL;
+-	if (!flush) {
+-		if (!handle || !priority)
+-			return -EINVAL;
+-		protocol = ETH_P_ALL;
+-	} else {
+-		if (handle || priority)
+-			return -EINVAL;
+-	}
+-
+-	memset(&req, 0, sizeof(req));
+-	req.nh.nlmsg_len   = NLMSG_LENGTH(sizeof(struct tcmsg));
+-	req.nh.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
+-	req.nh.nlmsg_type  = RTM_DELTFILTER;
+-	req.tc.tcm_family  = AF_UNSPEC;
+-	req.tc.tcm_ifindex = ifindex;
+-	if (!flush) {
+-		req.tc.tcm_handle = handle;
+-		req.tc.tcm_info   = TC_H_MAKE(priority << 16, htons(protocol));
+-	}
+-
+-	ret = tc_get_tcm_parent(attach_point, &parent);
+-	if (ret < 0)
+-		return ret;
+-	req.tc.tcm_parent = parent;
+-
+-	if (!flush) {
+-		ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+-	return libbpf_netlink_send_recv(&req, NULL, NULL, NULL);
+-}
+-
+-int bpf_tc_detach(const struct bpf_tc_hook *hook,
+-		  const struct bpf_tc_opts *opts)
+-{
+-	int ret;
+-
+-	if (!opts)
+-		return libbpf_err(-EINVAL);
+-
+-	ret = __bpf_tc_detach(hook, opts, false);
+-	return libbpf_err(ret);
+-}
+-
+-int bpf_tc_query(const struct bpf_tc_hook *hook, struct bpf_tc_opts *opts)
+-{
+-	__u32 protocol, handle, priority, parent, prog_id, flags;
+-	int ret, ifindex, attach_point, prog_fd;
+-	struct bpf_cb_ctx info = {};
+-	struct libbpf_nla_req req;
+-
+-	if (!hook || !opts ||
+-	    !OPTS_VALID(hook, bpf_tc_hook) ||
+-	    !OPTS_VALID(opts, bpf_tc_opts))
+-		return libbpf_err(-EINVAL);
+-
+-	ifindex      = OPTS_GET(hook, ifindex, 0);
+-	parent       = OPTS_GET(hook, parent, 0);
+-	attach_point = OPTS_GET(hook, attach_point, 0);
+-
+-	handle       = OPTS_GET(opts, handle, 0);
+-	priority     = OPTS_GET(opts, priority, 0);
+-	prog_fd      = OPTS_GET(opts, prog_fd, 0);
+-	prog_id      = OPTS_GET(opts, prog_id, 0);
+-	flags        = OPTS_GET(opts, flags, 0);
+-
+-	if (ifindex <= 0 || flags || prog_fd || prog_id ||
+-	    !handle || !priority)
+-		return libbpf_err(-EINVAL);
+-	if (priority > UINT16_MAX)
+-		return libbpf_err(-EINVAL);
+-
+-	protocol = ETH_P_ALL;
+-
+-	memset(&req, 0, sizeof(req));
+-	req.nh.nlmsg_len   = NLMSG_LENGTH(sizeof(struct tcmsg));
+-	req.nh.nlmsg_flags = NLM_F_REQUEST;
+-	req.nh.nlmsg_type  = RTM_GETTFILTER;
+-	req.tc.tcm_family  = AF_UNSPEC;
+-	req.tc.tcm_ifindex = ifindex;
+-	req.tc.tcm_handle  = handle;
+-	req.tc.tcm_info    = TC_H_MAKE(priority << 16, htons(protocol));
+-
+-	ret = tc_get_tcm_parent(attach_point, &parent);
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	req.tc.tcm_parent = parent;
+-
+-	ret = nlattr_add(&req, TCA_KIND, "bpf", sizeof("bpf"));
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-
+-	info.opts = opts;
+-
+-	ret = libbpf_netlink_send_recv(&req, get_tc_info, NULL, &info);
+-	if (ret < 0)
+-		return libbpf_err(ret);
+-	if (!info.processed)
+-		return libbpf_err(-ENOENT);
+-	return ret;
+-}
+diff --git a/tools/lib/bpf/nlattr.c b/tools/lib/bpf/nlattr.c
+deleted file mode 100644
+index f57e77a6e40f..000000000000
+--- a/tools/lib/bpf/nlattr.c
++++ /dev/null
+@@ -1,195 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * NETLINK      Netlink attributes
+- *
+- * Copyright (c) 2003-2013 Thomas Graf <tgraf@suug.ch>
+- */
+-
+-#include <errno.h>
+-#include <string.h>
+-#include <stdio.h>
+-#include <linux/rtnetlink.h>
+-#include "nlattr.h"
+-#include "libbpf_internal.h"
+-
+-static uint16_t nla_attr_minlen[LIBBPF_NLA_TYPE_MAX+1] = {
+-	[LIBBPF_NLA_U8]		= sizeof(uint8_t),
+-	[LIBBPF_NLA_U16]	= sizeof(uint16_t),
+-	[LIBBPF_NLA_U32]	= sizeof(uint32_t),
+-	[LIBBPF_NLA_U64]	= sizeof(uint64_t),
+-	[LIBBPF_NLA_STRING]	= 1,
+-	[LIBBPF_NLA_FLAG]	= 0,
+-};
+-
+-static struct nlattr *nla_next(const struct nlattr *nla, int *remaining)
+-{
+-	int totlen = NLA_ALIGN(nla->nla_len);
+-
+-	*remaining -= totlen;
+-	return (struct nlattr *)((void *)nla + totlen);
+-}
+-
+-static int nla_ok(const struct nlattr *nla, int remaining)
+-{
+-	return remaining >= sizeof(*nla) &&
+-	       nla->nla_len >= sizeof(*nla) &&
+-	       nla->nla_len <= remaining;
+-}
+-
+-static int nla_type(const struct nlattr *nla)
+-{
+-	return nla->nla_type & NLA_TYPE_MASK;
+-}
+-
+-static int validate_nla(struct nlattr *nla, int maxtype,
+-			struct libbpf_nla_policy *policy)
+-{
+-	struct libbpf_nla_policy *pt;
+-	unsigned int minlen = 0;
+-	int type = nla_type(nla);
+-
+-	if (type < 0 || type > maxtype)
+-		return 0;
+-
+-	pt = &policy[type];
+-
+-	if (pt->type > LIBBPF_NLA_TYPE_MAX)
+-		return 0;
+-
+-	if (pt->minlen)
+-		minlen = pt->minlen;
+-	else if (pt->type != LIBBPF_NLA_UNSPEC)
+-		minlen = nla_attr_minlen[pt->type];
+-
+-	if (libbpf_nla_len(nla) < minlen)
+-		return -1;
+-
+-	if (pt->maxlen && libbpf_nla_len(nla) > pt->maxlen)
+-		return -1;
+-
+-	if (pt->type == LIBBPF_NLA_STRING) {
+-		char *data = libbpf_nla_data(nla);
+-
+-		if (data[libbpf_nla_len(nla) - 1] != '\0')
+-			return -1;
+-	}
+-
+-	return 0;
+-}
+-
+-static inline int nlmsg_len(const struct nlmsghdr *nlh)
+-{
+-	return nlh->nlmsg_len - NLMSG_HDRLEN;
+-}
+-
+-/**
+- * Create attribute index based on a stream of attributes.
+- * @arg tb		Index array to be filled (maxtype+1 elements).
+- * @arg maxtype		Maximum attribute type expected and accepted.
+- * @arg head		Head of attribute stream.
+- * @arg len		Length of attribute stream.
+- * @arg policy		Attribute validation policy.
+- *
+- * Iterates over the stream of attributes and stores a pointer to each
+- * attribute in the index array using the attribute type as index to
+- * the array. Attribute with a type greater than the maximum type
+- * specified will be silently ignored in order to maintain backwards
+- * compatibility. If \a policy is not NULL, the attribute will be
+- * validated using the specified policy.
+- *
+- * @see nla_validate
+- * @return 0 on success or a negative error code.
+- */
+-int libbpf_nla_parse(struct nlattr *tb[], int maxtype, struct nlattr *head,
+-		     int len, struct libbpf_nla_policy *policy)
+-{
+-	struct nlattr *nla;
+-	int rem, err;
+-
+-	memset(tb, 0, sizeof(struct nlattr *) * (maxtype + 1));
+-
+-	libbpf_nla_for_each_attr(nla, head, len, rem) {
+-		int type = nla_type(nla);
+-
+-		if (type > maxtype)
+-			continue;
+-
+-		if (policy) {
+-			err = validate_nla(nla, maxtype, policy);
+-			if (err < 0)
+-				goto errout;
+-		}
+-
+-		if (tb[type])
+-			pr_warn("Attribute of type %#x found multiple times in message, "
+-				"previous attribute is being ignored.\n", type);
+-
+-		tb[type] = nla;
+-	}
+-
+-	err = 0;
+-errout:
+-	return err;
+-}
+-
+-/**
+- * Create attribute index based on nested attribute
+- * @arg tb              Index array to be filled (maxtype+1 elements).
+- * @arg maxtype         Maximum attribute type expected and accepted.
+- * @arg nla             Nested Attribute.
+- * @arg policy          Attribute validation policy.
+- *
+- * Feeds the stream of attributes nested into the specified attribute
+- * to libbpf_nla_parse().
+- *
+- * @see libbpf_nla_parse
+- * @return 0 on success or a negative error code.
+- */
+-int libbpf_nla_parse_nested(struct nlattr *tb[], int maxtype,
+-			    struct nlattr *nla,
+-			    struct libbpf_nla_policy *policy)
+-{
+-	return libbpf_nla_parse(tb, maxtype, libbpf_nla_data(nla),
+-				libbpf_nla_len(nla), policy);
+-}
+-
+-/* dump netlink extended ack error message */
+-int libbpf_nla_dump_errormsg(struct nlmsghdr *nlh)
+-{
+-	struct libbpf_nla_policy extack_policy[NLMSGERR_ATTR_MAX + 1] = {
+-		[NLMSGERR_ATTR_MSG]	= { .type = LIBBPF_NLA_STRING },
+-		[NLMSGERR_ATTR_OFFS]	= { .type = LIBBPF_NLA_U32 },
+-	};
+-	struct nlattr *tb[NLMSGERR_ATTR_MAX + 1], *attr;
+-	struct nlmsgerr *err;
+-	char *errmsg = NULL;
+-	int hlen, alen;
+-
+-	/* no TLVs, nothing to do here */
+-	if (!(nlh->nlmsg_flags & NLM_F_ACK_TLVS))
+-		return 0;
+-
+-	err = (struct nlmsgerr *)NLMSG_DATA(nlh);
+-	hlen = sizeof(*err);
+-
+-	/* if NLM_F_CAPPED is set then the inner err msg was capped */
+-	if (!(nlh->nlmsg_flags & NLM_F_CAPPED))
+-		hlen += nlmsg_len(&err->msg);
+-
+-	attr = (struct nlattr *) ((void *) err + hlen);
+-	alen = nlh->nlmsg_len - hlen;
+-
+-	if (libbpf_nla_parse(tb, NLMSGERR_ATTR_MAX, attr, alen,
+-			     extack_policy) != 0) {
+-		pr_warn("Failed to parse extended error attributes\n");
+-		return 0;
+-	}
+-
+-	if (tb[NLMSGERR_ATTR_MSG])
+-		errmsg = (char *) libbpf_nla_data(tb[NLMSGERR_ATTR_MSG]);
+-
+-	pr_warn("Kernel error message: %s\n", errmsg);
+-
+-	return 0;
+-}
+diff --git a/tools/lib/bpf/nlattr.h b/tools/lib/bpf/nlattr.h
+deleted file mode 100644
+index 4d15ae2ff812..000000000000
+--- a/tools/lib/bpf/nlattr.h
++++ /dev/null
+@@ -1,164 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * NETLINK      Netlink attributes
+- *
+- * Copyright (c) 2003-2013 Thomas Graf <tgraf@suug.ch>
+- */
+-
+-#ifndef __LIBBPF_NLATTR_H
+-#define __LIBBPF_NLATTR_H
+-
+-#include <stdint.h>
+-#include <string.h>
+-#include <errno.h>
+-#include <linux/netlink.h>
+-#include <linux/rtnetlink.h>
+-
+-/* avoid multiple definition of netlink features */
+-#define __LINUX_NETLINK_H
+-
+-/**
+- * Standard attribute types to specify validation policy
+- */
+-enum {
+-	LIBBPF_NLA_UNSPEC,	/**< Unspecified type, binary data chunk */
+-	LIBBPF_NLA_U8,		/**< 8 bit integer */
+-	LIBBPF_NLA_U16,		/**< 16 bit integer */
+-	LIBBPF_NLA_U32,		/**< 32 bit integer */
+-	LIBBPF_NLA_U64,		/**< 64 bit integer */
+-	LIBBPF_NLA_STRING,	/**< NUL terminated character string */
+-	LIBBPF_NLA_FLAG,	/**< Flag */
+-	LIBBPF_NLA_MSECS,	/**< Micro seconds (64bit) */
+-	LIBBPF_NLA_NESTED,	/**< Nested attributes */
+-	__LIBBPF_NLA_TYPE_MAX,
+-};
+-
+-#define LIBBPF_NLA_TYPE_MAX (__LIBBPF_NLA_TYPE_MAX - 1)
+-
+-/**
+- * @ingroup attr
+- * Attribute validation policy.
+- *
+- * See section @core_doc{core_attr_parse,Attribute Parsing} for more details.
+- */
+-struct libbpf_nla_policy {
+-	/** Type of attribute or LIBBPF_NLA_UNSPEC */
+-	uint16_t	type;
+-
+-	/** Minimal length of payload required */
+-	uint16_t	minlen;
+-
+-	/** Maximal length of payload allowed */
+-	uint16_t	maxlen;
+-};
+-
+-struct libbpf_nla_req {
+-	struct nlmsghdr nh;
+-	union {
+-		struct ifinfomsg ifinfo;
+-		struct tcmsg tc;
+-	};
+-	char buf[128];
+-};
+-
+-/**
+- * @ingroup attr
+- * Iterate over a stream of attributes
+- * @arg pos	loop counter, set to current attribute
+- * @arg head	head of attribute stream
+- * @arg len	length of attribute stream
+- * @arg rem	initialized to len, holds bytes currently remaining in stream
+- */
+-#define libbpf_nla_for_each_attr(pos, head, len, rem) \
+-	for (pos = head, rem = len; \
+-	     nla_ok(pos, rem); \
+-	     pos = nla_next(pos, &(rem)))
+-
+-/**
+- * libbpf_nla_data - head of payload
+- * @nla: netlink attribute
+- */
+-static inline void *libbpf_nla_data(const struct nlattr *nla)
+-{
+-	return (void *)nla + NLA_HDRLEN;
+-}
+-
+-static inline uint8_t libbpf_nla_getattr_u8(const struct nlattr *nla)
+-{
+-	return *(uint8_t *)libbpf_nla_data(nla);
+-}
+-
+-static inline uint32_t libbpf_nla_getattr_u32(const struct nlattr *nla)
+-{
+-	return *(uint32_t *)libbpf_nla_data(nla);
+-}
+-
+-static inline const char *libbpf_nla_getattr_str(const struct nlattr *nla)
+-{
+-	return (const char *)libbpf_nla_data(nla);
+-}
+-
+-/**
+- * libbpf_nla_len - length of payload
+- * @nla: netlink attribute
+- */
+-static inline int libbpf_nla_len(const struct nlattr *nla)
+-{
+-	return nla->nla_len - NLA_HDRLEN;
+-}
+-
+-int libbpf_nla_parse(struct nlattr *tb[], int maxtype, struct nlattr *head,
+-		     int len, struct libbpf_nla_policy *policy);
+-int libbpf_nla_parse_nested(struct nlattr *tb[], int maxtype,
+-			    struct nlattr *nla,
+-			    struct libbpf_nla_policy *policy);
+-
+-int libbpf_nla_dump_errormsg(struct nlmsghdr *nlh);
+-
+-static inline struct nlattr *nla_data(struct nlattr *nla)
+-{
+-	return (struct nlattr *)((void *)nla + NLA_HDRLEN);
+-}
+-
+-static inline struct nlattr *req_tail(struct libbpf_nla_req *req)
+-{
+-	return (struct nlattr *)((void *)req + NLMSG_ALIGN(req->nh.nlmsg_len));
+-}
+-
+-static inline int nlattr_add(struct libbpf_nla_req *req, int type,
+-			     const void *data, int len)
+-{
+-	struct nlattr *nla;
+-
+-	if (NLMSG_ALIGN(req->nh.nlmsg_len) + NLA_ALIGN(NLA_HDRLEN + len) > sizeof(*req))
+-		return -EMSGSIZE;
+-	if (!!data != !!len)
+-		return -EINVAL;
+-
+-	nla = req_tail(req);
+-	nla->nla_type = type;
+-	nla->nla_len = NLA_HDRLEN + len;
+-	if (data)
+-		memcpy(nla_data(nla), data, len);
+-	req->nh.nlmsg_len = NLMSG_ALIGN(req->nh.nlmsg_len) + NLA_ALIGN(nla->nla_len);
+-	return 0;
+-}
+-
+-static inline struct nlattr *nlattr_begin_nested(struct libbpf_nla_req *req, int type)
+-{
+-	struct nlattr *tail;
+-
+-	tail = req_tail(req);
+-	if (nlattr_add(req, type | NLA_F_NESTED, NULL, 0))
+-		return NULL;
+-	return tail;
+-}
+-
+-static inline void nlattr_end_nested(struct libbpf_nla_req *req,
+-				     struct nlattr *tail)
+-{
+-	tail->nla_len = (void *)req_tail(req) - (void *)tail;
+-}
+-
+-#endif /* __LIBBPF_NLATTR_H */
+diff --git a/tools/lib/bpf/ringbuf.c b/tools/lib/bpf/ringbuf.c
+deleted file mode 100644
+index 8bc117bcc7bc..000000000000
+--- a/tools/lib/bpf/ringbuf.c
++++ /dev/null
+@@ -1,302 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/*
+- * Ring buffer operations.
+- *
+- * Copyright (C) 2020 Facebook, Inc.
+- */
+-#ifndef _GNU_SOURCE
+-#define _GNU_SOURCE
+-#endif
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <errno.h>
+-#include <unistd.h>
+-#include <linux/err.h>
+-#include <linux/bpf.h>
+-#include <asm/barrier.h>
+-#include <sys/mman.h>
+-#include <sys/epoll.h>
+-
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-#include "bpf.h"
+-
+-struct ring {
+-	ring_buffer_sample_fn sample_cb;
+-	void *ctx;
+-	void *data;
+-	unsigned long *consumer_pos;
+-	unsigned long *producer_pos;
+-	unsigned long mask;
+-	int map_fd;
+-};
+-
+-struct ring_buffer {
+-	struct epoll_event *events;
+-	struct ring *rings;
+-	size_t page_size;
+-	int epoll_fd;
+-	int ring_cnt;
+-};
+-
+-static void ringbuf_unmap_ring(struct ring_buffer *rb, struct ring *r)
+-{
+-	if (r->consumer_pos) {
+-		munmap(r->consumer_pos, rb->page_size);
+-		r->consumer_pos = NULL;
+-	}
+-	if (r->producer_pos) {
+-		munmap(r->producer_pos, rb->page_size + 2 * (r->mask + 1));
+-		r->producer_pos = NULL;
+-	}
+-}
+-
+-/* Add extra RINGBUF maps to this ring buffer manager */
+-int ring_buffer__add(struct ring_buffer *rb, int map_fd,
+-		     ring_buffer_sample_fn sample_cb, void *ctx)
+-{
+-	struct bpf_map_info info;
+-	__u32 len = sizeof(info);
+-	struct epoll_event *e;
+-	struct ring *r;
+-	void *tmp;
+-	int err;
+-
+-	memset(&info, 0, sizeof(info));
+-
+-	err = bpf_obj_get_info_by_fd(map_fd, &info, &len);
+-	if (err) {
+-		err = -errno;
+-		pr_warn("ringbuf: failed to get map info for fd=%d: %d\n",
+-			map_fd, err);
+-		return libbpf_err(err);
+-	}
+-
+-	if (info.type != BPF_MAP_TYPE_RINGBUF) {
+-		pr_warn("ringbuf: map fd=%d is not BPF_MAP_TYPE_RINGBUF\n",
+-			map_fd);
+-		return libbpf_err(-EINVAL);
+-	}
+-
+-	tmp = libbpf_reallocarray(rb->rings, rb->ring_cnt + 1, sizeof(*rb->rings));
+-	if (!tmp)
+-		return libbpf_err(-ENOMEM);
+-	rb->rings = tmp;
+-
+-	tmp = libbpf_reallocarray(rb->events, rb->ring_cnt + 1, sizeof(*rb->events));
+-	if (!tmp)
+-		return libbpf_err(-ENOMEM);
+-	rb->events = tmp;
+-
+-	r = &rb->rings[rb->ring_cnt];
+-	memset(r, 0, sizeof(*r));
+-
+-	r->map_fd = map_fd;
+-	r->sample_cb = sample_cb;
+-	r->ctx = ctx;
+-	r->mask = info.max_entries - 1;
+-
+-	/* Map writable consumer page */
+-	tmp = mmap(NULL, rb->page_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+-		   map_fd, 0);
+-	if (tmp == MAP_FAILED) {
+-		err = -errno;
+-		pr_warn("ringbuf: failed to mmap consumer page for map fd=%d: %d\n",
+-			map_fd, err);
+-		return libbpf_err(err);
+-	}
+-	r->consumer_pos = tmp;
+-
+-	/* Map read-only producer page and data pages. We map twice as big
+-	 * data size to allow simple reading of samples that wrap around the
+-	 * end of a ring buffer. See kernel implementation for details.
+-	 * */
+-	tmp = mmap(NULL, rb->page_size + 2 * info.max_entries, PROT_READ,
+-		   MAP_SHARED, map_fd, rb->page_size);
+-	if (tmp == MAP_FAILED) {
+-		err = -errno;
+-		ringbuf_unmap_ring(rb, r);
+-		pr_warn("ringbuf: failed to mmap data pages for map fd=%d: %d\n",
+-			map_fd, err);
+-		return libbpf_err(err);
+-	}
+-	r->producer_pos = tmp;
+-	r->data = tmp + rb->page_size;
+-
+-	e = &rb->events[rb->ring_cnt];
+-	memset(e, 0, sizeof(*e));
+-
+-	e->events = EPOLLIN;
+-	e->data.fd = rb->ring_cnt;
+-	if (epoll_ctl(rb->epoll_fd, EPOLL_CTL_ADD, map_fd, e) < 0) {
+-		err = -errno;
+-		ringbuf_unmap_ring(rb, r);
+-		pr_warn("ringbuf: failed to epoll add map fd=%d: %d\n",
+-			map_fd, err);
+-		return libbpf_err(err);
+-	}
+-
+-	rb->ring_cnt++;
+-	return 0;
+-}
+-
+-void ring_buffer__free(struct ring_buffer *rb)
+-{
+-	int i;
+-
+-	if (!rb)
+-		return;
+-
+-	for (i = 0; i < rb->ring_cnt; ++i)
+-		ringbuf_unmap_ring(rb, &rb->rings[i]);
+-	if (rb->epoll_fd >= 0)
+-		close(rb->epoll_fd);
+-
+-	free(rb->events);
+-	free(rb->rings);
+-	free(rb);
+-}
+-
+-struct ring_buffer *
+-ring_buffer__new(int map_fd, ring_buffer_sample_fn sample_cb, void *ctx,
+-		 const struct ring_buffer_opts *opts)
+-{
+-	struct ring_buffer *rb;
+-	int err;
+-
+-	if (!OPTS_VALID(opts, ring_buffer_opts))
+-		return errno = EINVAL, NULL;
+-
+-	rb = calloc(1, sizeof(*rb));
+-	if (!rb)
+-		return errno = ENOMEM, NULL;
+-
+-	rb->page_size = getpagesize();
+-
+-	rb->epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+-	if (rb->epoll_fd < 0) {
+-		err = -errno;
+-		pr_warn("ringbuf: failed to create epoll instance: %d\n", err);
+-		goto err_out;
+-	}
+-
+-	err = ring_buffer__add(rb, map_fd, sample_cb, ctx);
+-	if (err)
+-		goto err_out;
+-
+-	return rb;
+-
+-err_out:
+-	ring_buffer__free(rb);
+-	return errno = -err, NULL;
+-}
+-
+-static inline int roundup_len(__u32 len)
+-{
+-	/* clear out top 2 bits (discard and busy, if set) */
+-	len <<= 2;
+-	len >>= 2;
+-	/* add length prefix */
+-	len += BPF_RINGBUF_HDR_SZ;
+-	/* round up to 8 byte alignment */
+-	return (len + 7) / 8 * 8;
+-}
+-
+-static int64_t ringbuf_process_ring(struct ring* r)
+-{
+-	int *len_ptr, len, err;
+-	/* 64-bit to avoid overflow in case of extreme application behavior */
+-	int64_t cnt = 0;
+-	unsigned long cons_pos, prod_pos;
+-	bool got_new_data;
+-	void *sample;
+-
+-	cons_pos = smp_load_acquire(r->consumer_pos);
+-	do {
+-		got_new_data = false;
+-		prod_pos = smp_load_acquire(r->producer_pos);
+-		while (cons_pos < prod_pos) {
+-			len_ptr = r->data + (cons_pos & r->mask);
+-			len = smp_load_acquire(len_ptr);
+-
+-			/* sample not committed yet, bail out for now */
+-			if (len & BPF_RINGBUF_BUSY_BIT)
+-				goto done;
+-
+-			got_new_data = true;
+-			cons_pos += roundup_len(len);
+-
+-			if ((len & BPF_RINGBUF_DISCARD_BIT) == 0) {
+-				sample = (void *)len_ptr + BPF_RINGBUF_HDR_SZ;
+-				err = r->sample_cb(r->ctx, sample, len);
+-				if (err < 0) {
+-					/* update consumer pos and bail out */
+-					smp_store_release(r->consumer_pos,
+-							  cons_pos);
+-					return err;
+-				}
+-				cnt++;
+-			}
+-
+-			smp_store_release(r->consumer_pos, cons_pos);
+-		}
+-	} while (got_new_data);
+-done:
+-	return cnt;
+-}
+-
+-/* Consume available ring buffer(s) data without event polling.
+- * Returns number of records consumed across all registered ring buffers (or
+- * INT_MAX, whichever is less), or negative number if any of the callbacks
+- * return error.
+- */
+-int ring_buffer__consume(struct ring_buffer *rb)
+-{
+-	int64_t err, res = 0;
+-	int i;
+-
+-	for (i = 0; i < rb->ring_cnt; i++) {
+-		struct ring *ring = &rb->rings[i];
+-
+-		err = ringbuf_process_ring(ring);
+-		if (err < 0)
+-			return libbpf_err(err);
+-		res += err;
+-	}
+-	if (res > INT_MAX)
+-		return INT_MAX;
+-	return res;
+-}
+-
+-/* Poll for available data and consume records, if any are available.
+- * Returns number of records consumed (or INT_MAX, whichever is less), or
+- * negative number, if any of the registered callbacks returned error.
+- */
+-int ring_buffer__poll(struct ring_buffer *rb, int timeout_ms)
+-{
+-	int i, cnt;
+-	int64_t err, res = 0;
+-
+-	cnt = epoll_wait(rb->epoll_fd, rb->events, rb->ring_cnt, timeout_ms);
+-	if (cnt < 0)
+-		return libbpf_err(-errno);
+-
+-	for (i = 0; i < cnt; i++) {
+-		__u32 ring_id = rb->events[i].data.fd;
+-		struct ring *ring = &rb->rings[ring_id];
+-
+-		err = ringbuf_process_ring(ring);
+-		if (err < 0)
+-			return libbpf_err(err);
+-		res += err;
+-	}
+-	if (res > INT_MAX)
+-		return INT_MAX;
+-	return res;
+-}
+-
+-/* Get an fd that can be used to sleep until data is available in the ring(s) */
+-int ring_buffer__epoll_fd(const struct ring_buffer *rb)
+-{
+-	return rb->epoll_fd;
+-}
+diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.h
+deleted file mode 100644
+index b22b50c1b173..000000000000
+--- a/tools/lib/bpf/skel_internal.h
++++ /dev/null
+@@ -1,123 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-/* Copyright (c) 2021 Facebook */
+-#ifndef __SKEL_INTERNAL_H
+-#define __SKEL_INTERNAL_H
+-
+-#include <unistd.h>
+-#include <sys/syscall.h>
+-#include <sys/mman.h>
+-
+-/* This file is a base header for auto-generated *.lskel.h files.
+- * Its contents will change and may become part of auto-generation in the future.
+- *
+- * The layout of bpf_[map|prog]_desc and bpf_loader_ctx is feature dependent
+- * and will change from one version of libbpf to another and features
+- * requested during loader program generation.
+- */
+-struct bpf_map_desc {
+-	union {
+-		/* input for the loader prog */
+-		struct {
+-			__aligned_u64 initial_value;
+-			__u32 max_entries;
+-		};
+-		/* output of the loader prog */
+-		struct {
+-			int map_fd;
+-		};
+-	};
+-};
+-struct bpf_prog_desc {
+-	int prog_fd;
+-};
+-
+-struct bpf_loader_ctx {
+-	size_t sz;
+-	__u32 log_level;
+-	__u32 log_size;
+-	__u64 log_buf;
+-};
+-
+-struct bpf_load_and_run_opts {
+-	struct bpf_loader_ctx *ctx;
+-	const void *data;
+-	const void *insns;
+-	__u32 data_sz;
+-	__u32 insns_sz;
+-	const char *errstr;
+-};
+-
+-static inline int skel_sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
+-			  unsigned int size)
+-{
+-	return syscall(__NR_bpf, cmd, attr, size);
+-}
+-
+-static inline int skel_closenz(int fd)
+-{
+-	if (fd > 0)
+-		return close(fd);
+-	return -EINVAL;
+-}
+-
+-static inline int bpf_load_and_run(struct bpf_load_and_run_opts *opts)
+-{
+-	int map_fd = -1, prog_fd = -1, key = 0, err;
+-	union bpf_attr attr;
+-
+-	map_fd = bpf_create_map_name(BPF_MAP_TYPE_ARRAY, "__loader.map", 4,
+-				     opts->data_sz, 1, 0);
+-	if (map_fd < 0) {
+-		opts->errstr = "failed to create loader map";
+-		err = -errno;
+-		goto out;
+-	}
+-
+-	err = bpf_map_update_elem(map_fd, &key, opts->data, 0);
+-	if (err < 0) {
+-		opts->errstr = "failed to update loader map";
+-		err = -errno;
+-		goto out;
+-	}
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.prog_type = BPF_PROG_TYPE_SYSCALL;
+-	attr.insns = (long) opts->insns;
+-	attr.insn_cnt = opts->insns_sz / sizeof(struct bpf_insn);
+-	attr.license = (long) "Dual BSD/GPL";
+-	memcpy(attr.prog_name, "__loader.prog", sizeof("__loader.prog"));
+-	attr.fd_array = (long) &map_fd;
+-	attr.log_level = opts->ctx->log_level;
+-	attr.log_size = opts->ctx->log_size;
+-	attr.log_buf = opts->ctx->log_buf;
+-	attr.prog_flags = BPF_F_SLEEPABLE;
+-	prog_fd = skel_sys_bpf(BPF_PROG_LOAD, &attr, sizeof(attr));
+-	if (prog_fd < 0) {
+-		opts->errstr = "failed to load loader prog";
+-		err = -errno;
+-		goto out;
+-	}
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.test.prog_fd = prog_fd;
+-	attr.test.ctx_in = (long) opts->ctx;
+-	attr.test.ctx_size_in = opts->ctx->sz;
+-	err = skel_sys_bpf(BPF_PROG_RUN, &attr, sizeof(attr));
+-	if (err < 0 || (int)attr.test.retval < 0) {
+-		opts->errstr = "failed to execute loader prog";
+-		if (err < 0)
+-			err = -errno;
+-		else
+-			err = (int)attr.test.retval;
+-		goto out;
+-	}
+-	err = 0;
+-out:
+-	if (map_fd >= 0)
+-		close(map_fd);
+-	if (prog_fd >= 0)
+-		close(prog_fd);
+-	return err;
+-}
+-
+-#endif
+diff --git a/tools/lib/bpf/str_error.c b/tools/lib/bpf/str_error.c
+deleted file mode 100644
+index 146da01979c7..000000000000
+--- a/tools/lib/bpf/str_error.c
++++ /dev/null
+@@ -1,21 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-#undef _GNU_SOURCE
+-#include <string.h>
+-#include <stdio.h>
+-#include "str_error.h"
+-
+-/* make sure libbpf doesn't use kernel-only integer typedefs */
+-#pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64
+-
+-/*
+- * Wrapper to allow for building in non-GNU systems such as Alpine Linux's musl
+- * libc, while checking strerror_r() return to avoid having to check this in
+- * all places calling it.
+- */
+-char *libbpf_strerror_r(int err, char *dst, int len)
+-{
+-	int ret = strerror_r(err < 0 ? -err : err, dst, len);
+-	if (ret)
+-		snprintf(dst, len, "ERROR: strerror_r(%d)=%d", err, ret);
+-	return dst;
+-}
+diff --git a/tools/lib/bpf/str_error.h b/tools/lib/bpf/str_error.h
+deleted file mode 100644
+index a139334d57b6..000000000000
+--- a/tools/lib/bpf/str_error.h
++++ /dev/null
+@@ -1,6 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-#ifndef __LIBBPF_STR_ERROR_H
+-#define __LIBBPF_STR_ERROR_H
+-
+-char *libbpf_strerror_r(int err, char *dst, int len);
+-#endif /* __LIBBPF_STR_ERROR_H */
+diff --git a/tools/lib/bpf/strset.c b/tools/lib/bpf/strset.c
+deleted file mode 100644
+index 1fb8b49de1d6..000000000000
+--- a/tools/lib/bpf/strset.c
++++ /dev/null
+@@ -1,176 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-/* Copyright (c) 2021 Facebook */
+-#include <stdint.h>
+-#include <stdlib.h>
+-#include <stdio.h>
+-#include <errno.h>
+-#include <linux/err.h>
+-#include "hashmap.h"
+-#include "libbpf_internal.h"
+-#include "strset.h"
+-
+-struct strset {
+-	void *strs_data;
+-	size_t strs_data_len;
+-	size_t strs_data_cap;
+-	size_t strs_data_max_len;
+-
+-	/* lookup index for each unique string in strings set */
+-	struct hashmap *strs_hash;
+-};
+-
+-static size_t strset_hash_fn(const void *key, void *ctx)
+-{
+-	const struct strset *s = ctx;
+-	const char *str = s->strs_data + (long)key;
+-
+-	return str_hash(str);
+-}
+-
+-static bool strset_equal_fn(const void *key1, const void *key2, void *ctx)
+-{
+-	const struct strset *s = ctx;
+-	const char *str1 = s->strs_data + (long)key1;
+-	const char *str2 = s->strs_data + (long)key2;
+-
+-	return strcmp(str1, str2) == 0;
+-}
+-
+-struct strset *strset__new(size_t max_data_sz, const char *init_data, size_t init_data_sz)
+-{
+-	struct strset *set = calloc(1, sizeof(*set));
+-	struct hashmap *hash;
+-	int err = -ENOMEM;
+-
+-	if (!set)
+-		return ERR_PTR(-ENOMEM);
+-
+-	hash = hashmap__new(strset_hash_fn, strset_equal_fn, set);
+-	if (IS_ERR(hash))
+-		goto err_out;
+-
+-	set->strs_data_max_len = max_data_sz;
+-	set->strs_hash = hash;
+-
+-	if (init_data) {
+-		long off;
+-
+-		set->strs_data = malloc(init_data_sz);
+-		if (!set->strs_data)
+-			goto err_out;
+-
+-		memcpy(set->strs_data, init_data, init_data_sz);
+-		set->strs_data_len = init_data_sz;
+-		set->strs_data_cap = init_data_sz;
+-
+-		for (off = 0; off < set->strs_data_len; off += strlen(set->strs_data + off) + 1) {
+-			/* hashmap__add() returns EEXIST if string with the same
+-			 * content already is in the hash map
+-			 */
+-			err = hashmap__add(hash, (void *)off, (void *)off);
+-			if (err == -EEXIST)
+-				continue; /* duplicate */
+-			if (err)
+-				goto err_out;
+-		}
+-	}
+-
+-	return set;
+-err_out:
+-	strset__free(set);
+-	return ERR_PTR(err);
+-}
+-
+-void strset__free(struct strset *set)
+-{
+-	if (IS_ERR_OR_NULL(set))
+-		return;
+-
+-	hashmap__free(set->strs_hash);
+-	free(set->strs_data);
+-}
+-
+-size_t strset__data_size(const struct strset *set)
+-{
+-	return set->strs_data_len;
+-}
+-
+-const char *strset__data(const struct strset *set)
+-{
+-	return set->strs_data;
+-}
+-
+-static void *strset_add_str_mem(struct strset *set, size_t add_sz)
+-{
+-	return libbpf_add_mem(&set->strs_data, &set->strs_data_cap, 1,
+-			      set->strs_data_len, set->strs_data_max_len, add_sz);
+-}
+-
+-/* Find string offset that corresponds to a given string *s*.
+- * Returns:
+- *   - >0 offset into string data, if string is found;
+- *   - -ENOENT, if string is not in the string data;
+- *   - <0, on any other error.
+- */
+-int strset__find_str(struct strset *set, const char *s)
+-{
+-	long old_off, new_off, len;
+-	void *p;
+-
+-	/* see strset__add_str() for why we do this */
+-	len = strlen(s) + 1;
+-	p = strset_add_str_mem(set, len);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	new_off = set->strs_data_len;
+-	memcpy(p, s, len);
+-
+-	if (hashmap__find(set->strs_hash, (void *)new_off, (void **)&old_off))
+-		return old_off;
+-
+-	return -ENOENT;
+-}
+-
+-/* Add a string s to the string data. If the string already exists, return its
+- * offset within string data.
+- * Returns:
+- *   - > 0 offset into string data, on success;
+- *   - < 0, on error.
+- */
+-int strset__add_str(struct strset *set, const char *s)
+-{
+-	long old_off, new_off, len;
+-	void *p;
+-	int err;
+-
+-	/* Hashmap keys are always offsets within set->strs_data, so to even
+-	 * look up some string from the "outside", we need to first append it
+-	 * at the end, so that it can be addressed with an offset. Luckily,
+-	 * until set->strs_data_len is incremented, that string is just a piece
+-	 * of garbage for the rest of the code, so no harm, no foul. On the
+-	 * other hand, if the string is unique, it's already appended and
+-	 * ready to be used, only a simple set->strs_data_len increment away.
+-	 */
+-	len = strlen(s) + 1;
+-	p = strset_add_str_mem(set, len);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	new_off = set->strs_data_len;
+-	memcpy(p, s, len);
+-
+-	/* Now attempt to add the string, but only if the string with the same
+-	 * contents doesn't exist already (HASHMAP_ADD strategy). If such
+-	 * string exists, we'll get its offset in old_off (that's old_key).
+-	 */
+-	err = hashmap__insert(set->strs_hash, (void *)new_off, (void *)new_off,
+-			      HASHMAP_ADD, (const void **)&old_off, NULL);
+-	if (err == -EEXIST)
+-		return old_off; /* duplicated string, return existing offset */
+-	if (err)
+-		return err;
+-
+-	set->strs_data_len += len; /* new unique string, adjust data length */
+-	return new_off;
+-}
+diff --git a/tools/lib/bpf/strset.h b/tools/lib/bpf/strset.h
+deleted file mode 100644
+index b6ddf77a83c2..000000000000
+--- a/tools/lib/bpf/strset.h
++++ /dev/null
+@@ -1,21 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/* Copyright (c) 2021 Facebook */
+-#ifndef __LIBBPF_STRSET_H
+-#define __LIBBPF_STRSET_H
+-
+-#include <stdbool.h>
+-#include <stddef.h>
+-
+-struct strset;
+-
+-struct strset *strset__new(size_t max_data_sz, const char *init_data, size_t init_data_sz);
+-void strset__free(struct strset *set);
+-
+-const char *strset__data(const struct strset *set);
+-size_t strset__data_size(const struct strset *set);
+-
+-int strset__find_str(struct strset *set, const char *s);
+-int strset__add_str(struct strset *set, const char *s);
+-
+-#endif /* __LIBBPF_STRSET_H */
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+deleted file mode 100644
+index e9b619aa0cdf..000000000000
+--- a/tools/lib/bpf/xsk.c
++++ /dev/null
+@@ -1,1266 +0,0 @@
+-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+-
+-/*
+- * AF_XDP user-space access library.
+- *
+- * Copyright(c) 2018 - 2019 Intel Corporation.
+- *
+- * Author(s): Magnus Karlsson <magnus.karlsson@intel.com>
+- */
+-
+-#include <errno.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <unistd.h>
+-#include <arpa/inet.h>
+-#include <asm/barrier.h>
+-#include <linux/compiler.h>
+-#include <linux/ethtool.h>
+-#include <linux/filter.h>
+-#include <linux/if_ether.h>
+-#include <linux/if_packet.h>
+-#include <linux/if_xdp.h>
+-#include <linux/kernel.h>
+-#include <linux/list.h>
+-#include <linux/sockios.h>
+-#include <net/if.h>
+-#include <sys/ioctl.h>
+-#include <sys/mman.h>
+-#include <sys/socket.h>
+-#include <sys/types.h>
+-#include <linux/if_link.h>
+-
+-#include "bpf.h"
+-#include "libbpf.h"
+-#include "libbpf_internal.h"
+-#include "xsk.h"
+-
+-#ifndef SOL_XDP
+- #define SOL_XDP 283
+-#endif
+-
+-#ifndef AF_XDP
+- #define AF_XDP 44
+-#endif
+-
+-#ifndef PF_XDP
+- #define PF_XDP AF_XDP
+-#endif
+-
+-enum xsk_prog {
+-	XSK_PROG_FALLBACK,
+-	XSK_PROG_REDIRECT_FLAGS,
+-};
+-
+-struct xsk_umem {
+-	struct xsk_ring_prod *fill_save;
+-	struct xsk_ring_cons *comp_save;
+-	char *umem_area;
+-	struct xsk_umem_config config;
+-	int fd;
+-	int refcount;
+-	struct list_head ctx_list;
+-	bool rx_ring_setup_done;
+-	bool tx_ring_setup_done;
+-};
+-
+-struct xsk_ctx {
+-	struct xsk_ring_prod *fill;
+-	struct xsk_ring_cons *comp;
+-	__u32 queue_id;
+-	struct xsk_umem *umem;
+-	int refcount;
+-	int ifindex;
+-	struct list_head list;
+-	int prog_fd;
+-	int link_fd;
+-	int xsks_map_fd;
+-	char ifname[IFNAMSIZ];
+-	bool has_bpf_link;
+-};
+-
+-struct xsk_socket {
+-	struct xsk_ring_cons *rx;
+-	struct xsk_ring_prod *tx;
+-	__u64 outstanding_tx;
+-	struct xsk_ctx *ctx;
+-	struct xsk_socket_config config;
+-	int fd;
+-};
+-
+-struct xsk_nl_info {
+-	bool xdp_prog_attached;
+-	int ifindex;
+-	int fd;
+-};
+-
+-/* Up until and including Linux 5.3 */
+-struct xdp_ring_offset_v1 {
+-	__u64 producer;
+-	__u64 consumer;
+-	__u64 desc;
+-};
+-
+-/* Up until and including Linux 5.3 */
+-struct xdp_mmap_offsets_v1 {
+-	struct xdp_ring_offset_v1 rx;
+-	struct xdp_ring_offset_v1 tx;
+-	struct xdp_ring_offset_v1 fr;
+-	struct xdp_ring_offset_v1 cr;
+-};
+-
+-int xsk_umem__fd(const struct xsk_umem *umem)
+-{
+-	return umem ? umem->fd : -EINVAL;
+-}
+-
+-int xsk_socket__fd(const struct xsk_socket *xsk)
+-{
+-	return xsk ? xsk->fd : -EINVAL;
+-}
+-
+-static bool xsk_page_aligned(void *buffer)
+-{
+-	unsigned long addr = (unsigned long)buffer;
+-
+-	return !(addr & (getpagesize() - 1));
+-}
+-
+-static void xsk_set_umem_config(struct xsk_umem_config *cfg,
+-				const struct xsk_umem_config *usr_cfg)
+-{
+-	if (!usr_cfg) {
+-		cfg->fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+-		cfg->comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+-		cfg->frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
+-		cfg->frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
+-		cfg->flags = XSK_UMEM__DEFAULT_FLAGS;
+-		return;
+-	}
+-
+-	cfg->fill_size = usr_cfg->fill_size;
+-	cfg->comp_size = usr_cfg->comp_size;
+-	cfg->frame_size = usr_cfg->frame_size;
+-	cfg->frame_headroom = usr_cfg->frame_headroom;
+-	cfg->flags = usr_cfg->flags;
+-}
+-
+-static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
+-				     const struct xsk_socket_config *usr_cfg)
+-{
+-	if (!usr_cfg) {
+-		cfg->rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+-		cfg->tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+-		cfg->libbpf_flags = 0;
+-		cfg->xdp_flags = 0;
+-		cfg->bind_flags = 0;
+-		return 0;
+-	}
+-
+-	if (usr_cfg->libbpf_flags & ~XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)
+-		return -EINVAL;
+-
+-	cfg->rx_size = usr_cfg->rx_size;
+-	cfg->tx_size = usr_cfg->tx_size;
+-	cfg->libbpf_flags = usr_cfg->libbpf_flags;
+-	cfg->xdp_flags = usr_cfg->xdp_flags;
+-	cfg->bind_flags = usr_cfg->bind_flags;
+-
+-	return 0;
+-}
+-
+-static void xsk_mmap_offsets_v1(struct xdp_mmap_offsets *off)
+-{
+-	struct xdp_mmap_offsets_v1 off_v1;
+-
+-	/* getsockopt on a kernel <= 5.3 has no flags fields.
+-	 * Copy over the offsets to the correct places in the >=5.4 format
+-	 * and put the flags where they would have been on that kernel.
+-	 */
+-	memcpy(&off_v1, off, sizeof(off_v1));
+-
+-	off->rx.producer = off_v1.rx.producer;
+-	off->rx.consumer = off_v1.rx.consumer;
+-	off->rx.desc = off_v1.rx.desc;
+-	off->rx.flags = off_v1.rx.consumer + sizeof(__u32);
+-
+-	off->tx.producer = off_v1.tx.producer;
+-	off->tx.consumer = off_v1.tx.consumer;
+-	off->tx.desc = off_v1.tx.desc;
+-	off->tx.flags = off_v1.tx.consumer + sizeof(__u32);
+-
+-	off->fr.producer = off_v1.fr.producer;
+-	off->fr.consumer = off_v1.fr.consumer;
+-	off->fr.desc = off_v1.fr.desc;
+-	off->fr.flags = off_v1.fr.consumer + sizeof(__u32);
+-
+-	off->cr.producer = off_v1.cr.producer;
+-	off->cr.consumer = off_v1.cr.consumer;
+-	off->cr.desc = off_v1.cr.desc;
+-	off->cr.flags = off_v1.cr.consumer + sizeof(__u32);
+-}
+-
+-static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
+-{
+-	socklen_t optlen;
+-	int err;
+-
+-	optlen = sizeof(*off);
+-	err = getsockopt(fd, SOL_XDP, XDP_MMAP_OFFSETS, off, &optlen);
+-	if (err)
+-		return err;
+-
+-	if (optlen == sizeof(*off))
+-		return 0;
+-
+-	if (optlen == sizeof(struct xdp_mmap_offsets_v1)) {
+-		xsk_mmap_offsets_v1(off);
+-		return 0;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+-static int xsk_create_umem_rings(struct xsk_umem *umem, int fd,
+-				 struct xsk_ring_prod *fill,
+-				 struct xsk_ring_cons *comp)
+-{
+-	struct xdp_mmap_offsets off;
+-	void *map;
+-	int err;
+-
+-	err = setsockopt(fd, SOL_XDP, XDP_UMEM_FILL_RING,
+-			 &umem->config.fill_size,
+-			 sizeof(umem->config.fill_size));
+-	if (err)
+-		return -errno;
+-
+-	err = setsockopt(fd, SOL_XDP, XDP_UMEM_COMPLETION_RING,
+-			 &umem->config.comp_size,
+-			 sizeof(umem->config.comp_size));
+-	if (err)
+-		return -errno;
+-
+-	err = xsk_get_mmap_offsets(fd, &off);
+-	if (err)
+-		return -errno;
+-
+-	map = mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(__u64),
+-		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, fd,
+-		   XDP_UMEM_PGOFF_FILL_RING);
+-	if (map == MAP_FAILED)
+-		return -errno;
+-
+-	fill->mask = umem->config.fill_size - 1;
+-	fill->size = umem->config.fill_size;
+-	fill->producer = map + off.fr.producer;
+-	fill->consumer = map + off.fr.consumer;
+-	fill->flags = map + off.fr.flags;
+-	fill->ring = map + off.fr.desc;
+-	fill->cached_cons = umem->config.fill_size;
+-
+-	map = mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(__u64),
+-		   PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, fd,
+-		   XDP_UMEM_PGOFF_COMPLETION_RING);
+-	if (map == MAP_FAILED) {
+-		err = -errno;
+-		goto out_mmap;
+-	}
+-
+-	comp->mask = umem->config.comp_size - 1;
+-	comp->size = umem->config.comp_size;
+-	comp->producer = map + off.cr.producer;
+-	comp->consumer = map + off.cr.consumer;
+-	comp->flags = map + off.cr.flags;
+-	comp->ring = map + off.cr.desc;
+-
+-	return 0;
+-
+-out_mmap:
+-	munmap(map, off.fr.desc + umem->config.fill_size * sizeof(__u64));
+-	return err;
+-}
+-
+-int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void *umem_area,
+-			    __u64 size, struct xsk_ring_prod *fill,
+-			    struct xsk_ring_cons *comp,
+-			    const struct xsk_umem_config *usr_config)
+-{
+-	struct xdp_umem_reg mr;
+-	struct xsk_umem *umem;
+-	int err;
+-
+-	if (!umem_area || !umem_ptr || !fill || !comp)
+-		return -EFAULT;
+-	if (!size && !xsk_page_aligned(umem_area))
+-		return -EINVAL;
+-
+-	umem = calloc(1, sizeof(*umem));
+-	if (!umem)
+-		return -ENOMEM;
+-
+-	umem->fd = socket(AF_XDP, SOCK_RAW, 0);
+-	if (umem->fd < 0) {
+-		err = -errno;
+-		goto out_umem_alloc;
+-	}
+-
+-	umem->umem_area = umem_area;
+-	INIT_LIST_HEAD(&umem->ctx_list);
+-	xsk_set_umem_config(&umem->config, usr_config);
+-
+-	memset(&mr, 0, sizeof(mr));
+-	mr.addr = (uintptr_t)umem_area;
+-	mr.len = size;
+-	mr.chunk_size = umem->config.frame_size;
+-	mr.headroom = umem->config.frame_headroom;
+-	mr.flags = umem->config.flags;
+-
+-	err = setsockopt(umem->fd, SOL_XDP, XDP_UMEM_REG, &mr, sizeof(mr));
+-	if (err) {
+-		err = -errno;
+-		goto out_socket;
+-	}
+-
+-	err = xsk_create_umem_rings(umem, umem->fd, fill, comp);
+-	if (err)
+-		goto out_socket;
+-
+-	umem->fill_save = fill;
+-	umem->comp_save = comp;
+-	*umem_ptr = umem;
+-	return 0;
+-
+-out_socket:
+-	close(umem->fd);
+-out_umem_alloc:
+-	free(umem);
+-	return err;
+-}
+-
+-struct xsk_umem_config_v1 {
+-	__u32 fill_size;
+-	__u32 comp_size;
+-	__u32 frame_size;
+-	__u32 frame_headroom;
+-};
+-
+-int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
+-			    __u64 size, struct xsk_ring_prod *fill,
+-			    struct xsk_ring_cons *comp,
+-			    const struct xsk_umem_config *usr_config)
+-{
+-	struct xsk_umem_config config;
+-
+-	memcpy(&config, usr_config, sizeof(struct xsk_umem_config_v1));
+-	config.flags = 0;
+-
+-	return xsk_umem__create_v0_0_4(umem_ptr, umem_area, size, fill, comp,
+-					&config);
+-}
+-COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
+-DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
+-
+-static enum xsk_prog get_xsk_prog(void)
+-{
+-	enum xsk_prog detected = XSK_PROG_FALLBACK;
+-	struct bpf_load_program_attr prog_attr;
+-	struct bpf_create_map_attr map_attr;
+-	__u32 size_out, retval, duration;
+-	char data_in = 0, data_out;
+-	struct bpf_insn insns[] = {
+-		BPF_LD_MAP_FD(BPF_REG_1, 0),
+-		BPF_MOV64_IMM(BPF_REG_2, 0),
+-		BPF_MOV64_IMM(BPF_REG_3, XDP_PASS),
+-		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+-		BPF_EXIT_INSN(),
+-	};
+-	int prog_fd, map_fd, ret;
+-
+-	memset(&map_attr, 0, sizeof(map_attr));
+-	map_attr.map_type = BPF_MAP_TYPE_XSKMAP;
+-	map_attr.key_size = sizeof(int);
+-	map_attr.value_size = sizeof(int);
+-	map_attr.max_entries = 1;
+-
+-	map_fd = bpf_create_map_xattr(&map_attr);
+-	if (map_fd < 0)
+-		return detected;
+-
+-	insns[0].imm = map_fd;
+-
+-	memset(&prog_attr, 0, sizeof(prog_attr));
+-	prog_attr.prog_type = BPF_PROG_TYPE_XDP;
+-	prog_attr.insns = insns;
+-	prog_attr.insns_cnt = ARRAY_SIZE(insns);
+-	prog_attr.license = "GPL";
+-
+-	prog_fd = bpf_load_program_xattr(&prog_attr, NULL, 0);
+-	if (prog_fd < 0) {
+-		close(map_fd);
+-		return detected;
+-	}
+-
+-	ret = bpf_prog_test_run(prog_fd, 0, &data_in, 1, &data_out, &size_out, &retval, &duration);
+-	if (!ret && retval == XDP_PASS)
+-		detected = XSK_PROG_REDIRECT_FLAGS;
+-	close(prog_fd);
+-	close(map_fd);
+-	return detected;
+-}
+-
+-static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+-{
+-	static const int log_buf_size = 16 * 1024;
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	char log_buf[log_buf_size];
+-	int prog_fd;
+-
+-	/* This is the fallback C-program:
+-	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+-	 * {
+-	 *     int ret, index = ctx->rx_queue_index;
+-	 *
+-	 *     // A set entry here means that the correspnding queue_id
+-	 *     // has an active AF_XDP socket bound to it.
+-	 *     ret = bpf_redirect_map(&xsks_map, index, XDP_PASS);
+-	 *     if (ret > 0)
+-	 *         return ret;
+-	 *
+-	 *     // Fallback for pre-5.3 kernels, not supporting default
+-	 *     // action in the flags parameter.
+-	 *     if (bpf_map_lookup_elem(&xsks_map, &index))
+-	 *         return bpf_redirect_map(&xsks_map, index, 0);
+-	 *     return XDP_PASS;
+-	 * }
+-	 */
+-	struct bpf_insn prog[] = {
+-		/* r2 = *(u32 *)(r1 + 16) */
+-		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 16),
+-		/* *(u32 *)(r10 - 4) = r2 */
+-		BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_2, -4),
+-		/* r1 = xskmap[] */
+-		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
+-		/* r3 = XDP_PASS */
+-		BPF_MOV64_IMM(BPF_REG_3, 2),
+-		/* call bpf_redirect_map */
+-		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+-		/* if w0 != 0 goto pc+13 */
+-		BPF_JMP32_IMM(BPF_JSGT, BPF_REG_0, 0, 13),
+-		/* r2 = r10 */
+-		BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
+-		/* r2 += -4 */
+-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -4),
+-		/* r1 = xskmap[] */
+-		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
+-		/* call bpf_map_lookup_elem */
+-		BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+-		/* r1 = r0 */
+-		BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
+-		/* r0 = XDP_PASS */
+-		BPF_MOV64_IMM(BPF_REG_0, 2),
+-		/* if r1 == 0 goto pc+5 */
+-		BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 5),
+-		/* r2 = *(u32 *)(r10 - 4) */
+-		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_10, -4),
+-		/* r1 = xskmap[] */
+-		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
+-		/* r3 = 0 */
+-		BPF_MOV64_IMM(BPF_REG_3, 0),
+-		/* call bpf_redirect_map */
+-		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+-		/* The jumps are to this instruction */
+-		BPF_EXIT_INSN(),
+-	};
+-
+-	/* This is the post-5.3 kernel C-program:
+-	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+-	 * {
+-	 *     return bpf_redirect_map(&xsks_map, ctx->rx_queue_index, XDP_PASS);
+-	 * }
+-	 */
+-	struct bpf_insn prog_redirect_flags[] = {
+-		/* r2 = *(u32 *)(r1 + 16) */
+-		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 16),
+-		/* r1 = xskmap[] */
+-		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
+-		/* r3 = XDP_PASS */
+-		BPF_MOV64_IMM(BPF_REG_3, 2),
+-		/* call bpf_redirect_map */
+-		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+-		BPF_EXIT_INSN(),
+-	};
+-	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
+-			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
+-	};
+-	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
+-	enum xsk_prog option = get_xsk_prog();
+-
+-	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, progs[option], insns_cnt[option],
+-				   "LGPL-2.1 or BSD-2-Clause", 0, log_buf,
+-				   log_buf_size);
+-	if (prog_fd < 0) {
+-		pr_warn("BPF log buffer:\n%s", log_buf);
+-		return prog_fd;
+-	}
+-
+-	ctx->prog_fd = prog_fd;
+-	return 0;
+-}
+-
+-static int xsk_create_bpf_link(struct xsk_socket *xsk)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	__u32 prog_id = 0;
+-	int link_fd;
+-	int err;
+-
+-	err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id, xsk->config.xdp_flags);
+-	if (err) {
+-		pr_warn("getting XDP prog id failed\n");
+-		return err;
+-	}
+-
+-	/* if there's a netlink-based XDP prog loaded on interface, bail out
+-	 * and ask user to do the removal by himself
+-	 */
+-	if (prog_id) {
+-		pr_warn("Netlink-based XDP prog detected, please unload it in order to launch AF_XDP prog\n");
+-		return -EINVAL;
+-	}
+-
+-	opts.flags = xsk->config.xdp_flags & ~(XDP_FLAGS_UPDATE_IF_NOEXIST | XDP_FLAGS_REPLACE);
+-
+-	link_fd = bpf_link_create(ctx->prog_fd, ctx->ifindex, BPF_XDP, &opts);
+-	if (link_fd < 0) {
+-		pr_warn("bpf_link_create failed: %s\n", strerror(errno));
+-		return link_fd;
+-	}
+-
+-	ctx->link_fd = link_fd;
+-	return 0;
+-}
+-
+-static int xsk_get_max_queues(struct xsk_socket *xsk)
+-{
+-	struct ethtool_channels channels = { .cmd = ETHTOOL_GCHANNELS };
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	struct ifreq ifr = {};
+-	int fd, err, ret;
+-
+-	fd = socket(AF_LOCAL, SOCK_DGRAM, 0);
+-	if (fd < 0)
+-		return -errno;
+-
+-	ifr.ifr_data = (void *)&channels;
+-	memcpy(ifr.ifr_name, ctx->ifname, IFNAMSIZ - 1);
+-	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+-	err = ioctl(fd, SIOCETHTOOL, &ifr);
+-	if (err && errno != EOPNOTSUPP) {
+-		ret = -errno;
+-		goto out;
+-	}
+-
+-	if (err) {
+-		/* If the device says it has no channels, then all traffic
+-		 * is sent to a single stream, so max queues = 1.
+-		 */
+-		ret = 1;
+-	} else {
+-		/* Take the max of rx, tx, combined. Drivers return
+-		 * the number of channels in different ways.
+-		 */
+-		ret = max(channels.max_rx, channels.max_tx);
+-		ret = max(ret, (int)channels.max_combined);
+-	}
+-
+-out:
+-	close(fd);
+-	return ret;
+-}
+-
+-static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+-{
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	int max_queues;
+-	int fd;
+-
+-	max_queues = xsk_get_max_queues(xsk);
+-	if (max_queues < 0)
+-		return max_queues;
+-
+-	fd = bpf_create_map_name(BPF_MAP_TYPE_XSKMAP, "xsks_map",
+-				 sizeof(int), sizeof(int), max_queues, 0);
+-	if (fd < 0)
+-		return fd;
+-
+-	ctx->xsks_map_fd = fd;
+-
+-	return 0;
+-}
+-
+-static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
+-{
+-	struct xsk_ctx *ctx = xsk->ctx;
+-
+-	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
+-	close(ctx->xsks_map_fd);
+-}
+-
+-static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+-{
+-	__u32 i, *map_ids, num_maps, prog_len = sizeof(struct bpf_prog_info);
+-	__u32 map_len = sizeof(struct bpf_map_info);
+-	struct bpf_prog_info prog_info = {};
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	struct bpf_map_info map_info;
+-	int fd, err;
+-
+-	err = bpf_obj_get_info_by_fd(ctx->prog_fd, &prog_info, &prog_len);
+-	if (err)
+-		return err;
+-
+-	num_maps = prog_info.nr_map_ids;
+-
+-	map_ids = calloc(prog_info.nr_map_ids, sizeof(*map_ids));
+-	if (!map_ids)
+-		return -ENOMEM;
+-
+-	memset(&prog_info, 0, prog_len);
+-	prog_info.nr_map_ids = num_maps;
+-	prog_info.map_ids = (__u64)(unsigned long)map_ids;
+-
+-	err = bpf_obj_get_info_by_fd(ctx->prog_fd, &prog_info, &prog_len);
+-	if (err)
+-		goto out_map_ids;
+-
+-	ctx->xsks_map_fd = -1;
+-
+-	for (i = 0; i < prog_info.nr_map_ids; i++) {
+-		fd = bpf_map_get_fd_by_id(map_ids[i]);
+-		if (fd < 0)
+-			continue;
+-
+-		memset(&map_info, 0, map_len);
+-		err = bpf_obj_get_info_by_fd(fd, &map_info, &map_len);
+-		if (err) {
+-			close(fd);
+-			continue;
+-		}
+-
+-		if (!strncmp(map_info.name, "xsks_map", sizeof(map_info.name))) {
+-			ctx->xsks_map_fd = fd;
+-			break;
+-		}
+-
+-		close(fd);
+-	}
+-
+-	if (ctx->xsks_map_fd == -1)
+-		err = -ENOENT;
+-
+-out_map_ids:
+-	free(map_ids);
+-	return err;
+-}
+-
+-static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+-{
+-	struct xsk_ctx *ctx = xsk->ctx;
+-
+-	return bpf_map_update_elem(ctx->xsks_map_fd, &ctx->queue_id,
+-				   &xsk->fd, 0);
+-}
+-
+-static int xsk_link_lookup(int ifindex, __u32 *prog_id, int *link_fd)
+-{
+-	struct bpf_link_info link_info;
+-	__u32 link_len;
+-	__u32 id = 0;
+-	int err;
+-	int fd;
+-
+-	while (true) {
+-		err = bpf_link_get_next_id(id, &id);
+-		if (err) {
+-			if (errno == ENOENT) {
+-				err = 0;
+-				break;
+-			}
+-			pr_warn("can't get next link: %s\n", strerror(errno));
+-			break;
+-		}
+-
+-		fd = bpf_link_get_fd_by_id(id);
+-		if (fd < 0) {
+-			if (errno == ENOENT)
+-				continue;
+-			pr_warn("can't get link by id (%u): %s\n", id, strerror(errno));
+-			err = -errno;
+-			break;
+-		}
+-
+-		link_len = sizeof(struct bpf_link_info);
+-		memset(&link_info, 0, link_len);
+-		err = bpf_obj_get_info_by_fd(fd, &link_info, &link_len);
+-		if (err) {
+-			pr_warn("can't get link info: %s\n", strerror(errno));
+-			close(fd);
+-			break;
+-		}
+-		if (link_info.type == BPF_LINK_TYPE_XDP) {
+-			if (link_info.xdp.ifindex == ifindex) {
+-				*link_fd = fd;
+-				if (prog_id)
+-					*prog_id = link_info.prog_id;
+-				break;
+-			}
+-		}
+-		close(fd);
+-	}
+-
+-	return err;
+-}
+-
+-static bool xsk_probe_bpf_link(void)
+-{
+-	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
+-			    .flags = XDP_FLAGS_SKB_MODE);
+-	struct bpf_load_program_attr prog_attr;
+-	struct bpf_insn insns[2] = {
+-		BPF_MOV64_IMM(BPF_REG_0, XDP_PASS),
+-		BPF_EXIT_INSN()
+-	};
+-	int prog_fd, link_fd = -1;
+-	int ifindex_lo = 1;
+-	bool ret = false;
+-	int err;
+-
+-	err = xsk_link_lookup(ifindex_lo, NULL, &link_fd);
+-	if (err)
+-		return ret;
+-
+-	if (link_fd >= 0)
+-		return true;
+-
+-	memset(&prog_attr, 0, sizeof(prog_attr));
+-	prog_attr.prog_type = BPF_PROG_TYPE_XDP;
+-	prog_attr.insns = insns;
+-	prog_attr.insns_cnt = ARRAY_SIZE(insns);
+-	prog_attr.license = "GPL";
+-
+-	prog_fd = bpf_load_program_xattr(&prog_attr, NULL, 0);
+-	if (prog_fd < 0)
+-		return ret;
+-
+-	link_fd = bpf_link_create(prog_fd, ifindex_lo, BPF_XDP, &opts);
+-	close(prog_fd);
+-
+-	if (link_fd >= 0) {
+-		ret = true;
+-		close(link_fd);
+-	}
+-
+-	return ret;
+-}
+-
+-static int xsk_create_xsk_struct(int ifindex, struct xsk_socket *xsk)
+-{
+-	char ifname[IFNAMSIZ];
+-	struct xsk_ctx *ctx;
+-	char *interface;
+-
+-	ctx = calloc(1, sizeof(*ctx));
+-	if (!ctx)
+-		return -ENOMEM;
+-
+-	interface = if_indextoname(ifindex, &ifname[0]);
+-	if (!interface) {
+-		free(ctx);
+-		return -errno;
+-	}
+-
+-	ctx->ifindex = ifindex;
+-	memcpy(ctx->ifname, ifname, IFNAMSIZ -1);
+-	ctx->ifname[IFNAMSIZ - 1] = 0;
+-
+-	xsk->ctx = ctx;
+-	xsk->ctx->has_bpf_link = xsk_probe_bpf_link();
+-
+-	return 0;
+-}
+-
+-static int xsk_init_xdp_res(struct xsk_socket *xsk,
+-			    int *xsks_map_fd)
+-{
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	int err;
+-
+-	err = xsk_create_bpf_maps(xsk);
+-	if (err)
+-		return err;
+-
+-	err = xsk_load_xdp_prog(xsk);
+-	if (err)
+-		goto err_load_xdp_prog;
+-
+-	if (ctx->has_bpf_link)
+-		err = xsk_create_bpf_link(xsk);
+-	else
+-		err = bpf_set_link_xdp_fd(xsk->ctx->ifindex, ctx->prog_fd,
+-					  xsk->config.xdp_flags);
+-
+-	if (err)
+-		goto err_attach_xdp_prog;
+-
+-	if (!xsk->rx)
+-		return err;
+-
+-	err = xsk_set_bpf_maps(xsk);
+-	if (err)
+-		goto err_set_bpf_maps;
+-
+-	return err;
+-
+-err_set_bpf_maps:
+-	if (ctx->has_bpf_link)
+-		close(ctx->link_fd);
+-	else
+-		bpf_set_link_xdp_fd(ctx->ifindex, -1, 0);
+-err_attach_xdp_prog:
+-	close(ctx->prog_fd);
+-err_load_xdp_prog:
+-	xsk_delete_bpf_maps(xsk);
+-	return err;
+-}
+-
+-static int xsk_lookup_xdp_res(struct xsk_socket *xsk, int *xsks_map_fd, int prog_id)
+-{
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	int err;
+-
+-	ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
+-	if (ctx->prog_fd < 0) {
+-		err = -errno;
+-		goto err_prog_fd;
+-	}
+-	err = xsk_lookup_bpf_maps(xsk);
+-	if (err)
+-		goto err_lookup_maps;
+-
+-	if (!xsk->rx)
+-		return err;
+-
+-	err = xsk_set_bpf_maps(xsk);
+-	if (err)
+-		goto err_set_maps;
+-
+-	return err;
+-
+-err_set_maps:
+-	close(ctx->xsks_map_fd);
+-err_lookup_maps:
+-	close(ctx->prog_fd);
+-err_prog_fd:
+-	if (ctx->has_bpf_link)
+-		close(ctx->link_fd);
+-	return err;
+-}
+-
+-static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp, int *xsks_map_fd)
+-{
+-	struct xsk_socket *xsk = _xdp;
+-	struct xsk_ctx *ctx = xsk->ctx;
+-	__u32 prog_id = 0;
+-	int err;
+-
+-	if (ctx->has_bpf_link)
+-		err = xsk_link_lookup(ctx->ifindex, &prog_id, &ctx->link_fd);
+-	else
+-		err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id, xsk->config.xdp_flags);
+-
+-	if (err)
+-		return err;
+-
+-	err = !prog_id ? xsk_init_xdp_res(xsk, xsks_map_fd) :
+-			 xsk_lookup_xdp_res(xsk, xsks_map_fd, prog_id);
+-
+-	if (!err && xsks_map_fd)
+-		*xsks_map_fd = ctx->xsks_map_fd;
+-
+-	return err;
+-}
+-
+-static struct xsk_ctx *xsk_get_ctx(struct xsk_umem *umem, int ifindex,
+-				   __u32 queue_id)
+-{
+-	struct xsk_ctx *ctx;
+-
+-	if (list_empty(&umem->ctx_list))
+-		return NULL;
+-
+-	list_for_each_entry(ctx, &umem->ctx_list, list) {
+-		if (ctx->ifindex == ifindex && ctx->queue_id == queue_id) {
+-			ctx->refcount++;
+-			return ctx;
+-		}
+-	}
+-
+-	return NULL;
+-}
+-
+-static void xsk_put_ctx(struct xsk_ctx *ctx, bool unmap)
+-{
+-	struct xsk_umem *umem = ctx->umem;
+-	struct xdp_mmap_offsets off;
+-	int err;
+-
+-	if (--ctx->refcount)
+-		return;
+-
+-	if (!unmap)
+-		goto out_free;
+-
+-	err = xsk_get_mmap_offsets(umem->fd, &off);
+-	if (err)
+-		goto out_free;
+-
+-	munmap(ctx->fill->ring - off.fr.desc, off.fr.desc + umem->config.fill_size *
+-	       sizeof(__u64));
+-	munmap(ctx->comp->ring - off.cr.desc, off.cr.desc + umem->config.comp_size *
+-	       sizeof(__u64));
+-
+-out_free:
+-	list_del(&ctx->list);
+-	free(ctx);
+-}
+-
+-static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
+-				      struct xsk_umem *umem, int ifindex,
+-				      const char *ifname, __u32 queue_id,
+-				      struct xsk_ring_prod *fill,
+-				      struct xsk_ring_cons *comp)
+-{
+-	struct xsk_ctx *ctx;
+-	int err;
+-
+-	ctx = calloc(1, sizeof(*ctx));
+-	if (!ctx)
+-		return NULL;
+-
+-	if (!umem->fill_save) {
+-		err = xsk_create_umem_rings(umem, xsk->fd, fill, comp);
+-		if (err) {
+-			free(ctx);
+-			return NULL;
+-		}
+-	} else if (umem->fill_save != fill || umem->comp_save != comp) {
+-		/* Copy over rings to new structs. */
+-		memcpy(fill, umem->fill_save, sizeof(*fill));
+-		memcpy(comp, umem->comp_save, sizeof(*comp));
+-	}
+-
+-	ctx->ifindex = ifindex;
+-	ctx->refcount = 1;
+-	ctx->umem = umem;
+-	ctx->queue_id = queue_id;
+-	memcpy(ctx->ifname, ifname, IFNAMSIZ - 1);
+-	ctx->ifname[IFNAMSIZ - 1] = '\0';
+-
+-	ctx->fill = fill;
+-	ctx->comp = comp;
+-	list_add(&ctx->list, &umem->ctx_list);
+-	return ctx;
+-}
+-
+-static void xsk_destroy_xsk_struct(struct xsk_socket *xsk)
+-{
+-	free(xsk->ctx);
+-	free(xsk);
+-}
+-
+-int xsk_socket__update_xskmap(struct xsk_socket *xsk, int fd)
+-{
+-	xsk->ctx->xsks_map_fd = fd;
+-	return xsk_set_bpf_maps(xsk);
+-}
+-
+-int xsk_setup_xdp_prog(int ifindex, int *xsks_map_fd)
+-{
+-	struct xsk_socket *xsk;
+-	int res;
+-
+-	xsk = calloc(1, sizeof(*xsk));
+-	if (!xsk)
+-		return -ENOMEM;
+-
+-	res = xsk_create_xsk_struct(ifindex, xsk);
+-	if (res) {
+-		free(xsk);
+-		return -EINVAL;
+-	}
+-
+-	res = __xsk_setup_xdp_prog(xsk, xsks_map_fd);
+-
+-	xsk_destroy_xsk_struct(xsk);
+-
+-	return res;
+-}
+-
+-int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+-			      const char *ifname,
+-			      __u32 queue_id, struct xsk_umem *umem,
+-			      struct xsk_ring_cons *rx,
+-			      struct xsk_ring_prod *tx,
+-			      struct xsk_ring_prod *fill,
+-			      struct xsk_ring_cons *comp,
+-			      const struct xsk_socket_config *usr_config)
+-{
+-	bool unmap, rx_setup_done = false, tx_setup_done = false;
+-	void *rx_map = NULL, *tx_map = NULL;
+-	struct sockaddr_xdp sxdp = {};
+-	struct xdp_mmap_offsets off;
+-	struct xsk_socket *xsk;
+-	struct xsk_ctx *ctx;
+-	int err, ifindex;
+-
+-	if (!umem || !xsk_ptr || !(rx || tx))
+-		return -EFAULT;
+-
+-	unmap = umem->fill_save != fill;
+-
+-	xsk = calloc(1, sizeof(*xsk));
+-	if (!xsk)
+-		return -ENOMEM;
+-
+-	err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
+-	if (err)
+-		goto out_xsk_alloc;
+-
+-	xsk->outstanding_tx = 0;
+-	ifindex = if_nametoindex(ifname);
+-	if (!ifindex) {
+-		err = -errno;
+-		goto out_xsk_alloc;
+-	}
+-
+-	if (umem->refcount++ > 0) {
+-		xsk->fd = socket(AF_XDP, SOCK_RAW, 0);
+-		if (xsk->fd < 0) {
+-			err = -errno;
+-			goto out_xsk_alloc;
+-		}
+-	} else {
+-		xsk->fd = umem->fd;
+-		rx_setup_done = umem->rx_ring_setup_done;
+-		tx_setup_done = umem->tx_ring_setup_done;
+-	}
+-
+-	ctx = xsk_get_ctx(umem, ifindex, queue_id);
+-	if (!ctx) {
+-		if (!fill || !comp) {
+-			err = -EFAULT;
+-			goto out_socket;
+-		}
+-
+-		ctx = xsk_create_ctx(xsk, umem, ifindex, ifname, queue_id,
+-				     fill, comp);
+-		if (!ctx) {
+-			err = -ENOMEM;
+-			goto out_socket;
+-		}
+-	}
+-	xsk->ctx = ctx;
+-	xsk->ctx->has_bpf_link = xsk_probe_bpf_link();
+-
+-	if (rx && !rx_setup_done) {
+-		err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
+-				 &xsk->config.rx_size,
+-				 sizeof(xsk->config.rx_size));
+-		if (err) {
+-			err = -errno;
+-			goto out_put_ctx;
+-		}
+-		if (xsk->fd == umem->fd)
+-			umem->rx_ring_setup_done = true;
+-	}
+-	if (tx && !tx_setup_done) {
+-		err = setsockopt(xsk->fd, SOL_XDP, XDP_TX_RING,
+-				 &xsk->config.tx_size,
+-				 sizeof(xsk->config.tx_size));
+-		if (err) {
+-			err = -errno;
+-			goto out_put_ctx;
+-		}
+-		if (xsk->fd == umem->fd)
+-			umem->tx_ring_setup_done = true;
+-	}
+-
+-	err = xsk_get_mmap_offsets(xsk->fd, &off);
+-	if (err) {
+-		err = -errno;
+-		goto out_put_ctx;
+-	}
+-
+-	if (rx) {
+-		rx_map = mmap(NULL, off.rx.desc +
+-			      xsk->config.rx_size * sizeof(struct xdp_desc),
+-			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+-			      xsk->fd, XDP_PGOFF_RX_RING);
+-		if (rx_map == MAP_FAILED) {
+-			err = -errno;
+-			goto out_put_ctx;
+-		}
+-
+-		rx->mask = xsk->config.rx_size - 1;
+-		rx->size = xsk->config.rx_size;
+-		rx->producer = rx_map + off.rx.producer;
+-		rx->consumer = rx_map + off.rx.consumer;
+-		rx->flags = rx_map + off.rx.flags;
+-		rx->ring = rx_map + off.rx.desc;
+-		rx->cached_prod = *rx->producer;
+-		rx->cached_cons = *rx->consumer;
+-	}
+-	xsk->rx = rx;
+-
+-	if (tx) {
+-		tx_map = mmap(NULL, off.tx.desc +
+-			      xsk->config.tx_size * sizeof(struct xdp_desc),
+-			      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+-			      xsk->fd, XDP_PGOFF_TX_RING);
+-		if (tx_map == MAP_FAILED) {
+-			err = -errno;
+-			goto out_mmap_rx;
+-		}
+-
+-		tx->mask = xsk->config.tx_size - 1;
+-		tx->size = xsk->config.tx_size;
+-		tx->producer = tx_map + off.tx.producer;
+-		tx->consumer = tx_map + off.tx.consumer;
+-		tx->flags = tx_map + off.tx.flags;
+-		tx->ring = tx_map + off.tx.desc;
+-		tx->cached_prod = *tx->producer;
+-		/* cached_cons is r->size bigger than the real consumer pointer
+-		 * See xsk_prod_nb_free
+-		 */
+-		tx->cached_cons = *tx->consumer + xsk->config.tx_size;
+-	}
+-	xsk->tx = tx;
+-
+-	sxdp.sxdp_family = PF_XDP;
+-	sxdp.sxdp_ifindex = ctx->ifindex;
+-	sxdp.sxdp_queue_id = ctx->queue_id;
+-	if (umem->refcount > 1) {
+-		sxdp.sxdp_flags |= XDP_SHARED_UMEM;
+-		sxdp.sxdp_shared_umem_fd = umem->fd;
+-	} else {
+-		sxdp.sxdp_flags = xsk->config.bind_flags;
+-	}
+-
+-	err = bind(xsk->fd, (struct sockaddr *)&sxdp, sizeof(sxdp));
+-	if (err) {
+-		err = -errno;
+-		goto out_mmap_tx;
+-	}
+-
+-	ctx->prog_fd = -1;
+-
+-	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+-		err = __xsk_setup_xdp_prog(xsk, NULL);
+-		if (err)
+-			goto out_mmap_tx;
+-	}
+-
+-	*xsk_ptr = xsk;
+-	umem->fill_save = NULL;
+-	umem->comp_save = NULL;
+-	return 0;
+-
+-out_mmap_tx:
+-	if (tx)
+-		munmap(tx_map, off.tx.desc +
+-		       xsk->config.tx_size * sizeof(struct xdp_desc));
+-out_mmap_rx:
+-	if (rx)
+-		munmap(rx_map, off.rx.desc +
+-		       xsk->config.rx_size * sizeof(struct xdp_desc));
+-out_put_ctx:
+-	xsk_put_ctx(ctx, unmap);
+-out_socket:
+-	if (--umem->refcount)
+-		close(xsk->fd);
+-out_xsk_alloc:
+-	free(xsk);
+-	return err;
+-}
+-
+-int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+-		       __u32 queue_id, struct xsk_umem *umem,
+-		       struct xsk_ring_cons *rx, struct xsk_ring_prod *tx,
+-		       const struct xsk_socket_config *usr_config)
+-{
+-	if (!umem)
+-		return -EFAULT;
+-
+-	return xsk_socket__create_shared(xsk_ptr, ifname, queue_id, umem,
+-					 rx, tx, umem->fill_save,
+-					 umem->comp_save, usr_config);
+-}
+-
+-int xsk_umem__delete(struct xsk_umem *umem)
+-{
+-	if (!umem)
+-		return 0;
+-
+-	if (umem->refcount)
+-		return -EBUSY;
+-
+-	close(umem->fd);
+-	free(umem);
+-
+-	return 0;
+-}
+-
+-void xsk_socket__delete(struct xsk_socket *xsk)
+-{
+-	size_t desc_sz = sizeof(struct xdp_desc);
+-	struct xdp_mmap_offsets off;
+-	struct xsk_umem *umem;
+-	struct xsk_ctx *ctx;
+-	int err;
+-
+-	if (!xsk)
+-		return;
+-
+-	ctx = xsk->ctx;
+-	umem = ctx->umem;
+-	if (ctx->prog_fd != -1) {
+-		xsk_delete_bpf_maps(xsk);
+-		close(ctx->prog_fd);
+-		if (ctx->has_bpf_link)
+-			close(ctx->link_fd);
+-	}
+-
+-	err = xsk_get_mmap_offsets(xsk->fd, &off);
+-	if (!err) {
+-		if (xsk->rx) {
+-			munmap(xsk->rx->ring - off.rx.desc,
+-			       off.rx.desc + xsk->config.rx_size * desc_sz);
+-		}
+-		if (xsk->tx) {
+-			munmap(xsk->tx->ring - off.tx.desc,
+-			       off.tx.desc + xsk->config.tx_size * desc_sz);
+-		}
+-	}
+-
+-	xsk_put_ctx(ctx, true);
+-
+-	umem->refcount--;
+-	/* Do not close an fd that also has an associated umem connected
+-	 * to it.
+-	 */
+-	if (xsk->fd != umem->fd)
+-		close(xsk->fd);
+-	free(xsk);
+-}
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+deleted file mode 100644
+index 01c12dca9c10..000000000000
+--- a/tools/lib/bpf/xsk.h
++++ /dev/null
+@@ -1,322 +0,0 @@
+-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+-
+-/*
+- * AF_XDP user-space access library.
+- *
+- * Copyright (c) 2018 - 2019 Intel Corporation.
+- * Copyright (c) 2019 Facebook
+- *
+- * Author(s): Magnus Karlsson <magnus.karlsson@intel.com>
+- */
+-
+-#ifndef __LIBBPF_XSK_H
+-#define __LIBBPF_XSK_H
+-
+-#include <stdio.h>
+-#include <stdint.h>
+-#include <stdbool.h>
+-#include <linux/if_xdp.h>
+-
+-#include "libbpf.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/* Load-Acquire Store-Release barriers used by the XDP socket
+- * library. The following macros should *NOT* be considered part of
+- * the xsk.h API, and is subject to change anytime.
+- *
+- * LIBRARY INTERNAL
+- */
+-
+-#define __XSK_READ_ONCE(x) (*(volatile typeof(x) *)&x)
+-#define __XSK_WRITE_ONCE(x, v) (*(volatile typeof(x) *)&x) = (v)
+-
+-#if defined(__i386__) || defined(__x86_64__)
+-# define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		asm volatile("" : : : "memory");			\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		asm volatile("" : : : "memory");			\
+-		___p1;							\
+-	})
+-#elif defined(__aarch64__)
+-# define libbpf_smp_store_release(p, v)					\
+-		asm volatile ("stlr %w1, %0" : "=Q" (*p) : "r" (v) : "memory")
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1;					\
+-		asm volatile ("ldar %w0, %1"				\
+-			      : "=r" (___p1) : "Q" (*p) : "memory");	\
+-		___p1;							\
+-	})
+-#elif defined(__riscv)
+-# define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		asm volatile ("fence rw,w" : : : "memory");		\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-# define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		asm volatile ("fence r,rw" : : : "memory");		\
+-		___p1;							\
+-	})
+-#endif
+-
+-#ifndef libbpf_smp_store_release
+-#define libbpf_smp_store_release(p, v)					\
+-	do {								\
+-		__sync_synchronize();					\
+-		__XSK_WRITE_ONCE(*p, v);				\
+-	} while (0)
+-#endif
+-
+-#ifndef libbpf_smp_load_acquire
+-#define libbpf_smp_load_acquire(p)					\
+-	({								\
+-		typeof(*p) ___p1 = __XSK_READ_ONCE(*p);			\
+-		__sync_synchronize();					\
+-		___p1;							\
+-	})
+-#endif
+-
+-/* LIBRARY INTERNAL -- END */
+-
+-/* Do not access these members directly. Use the functions below. */
+-#define DEFINE_XSK_RING(name) \
+-struct name { \
+-	__u32 cached_prod; \
+-	__u32 cached_cons; \
+-	__u32 mask; \
+-	__u32 size; \
+-	__u32 *producer; \
+-	__u32 *consumer; \
+-	void *ring; \
+-	__u32 *flags; \
+-}
+-
+-DEFINE_XSK_RING(xsk_ring_prod);
+-DEFINE_XSK_RING(xsk_ring_cons);
+-
+-/* For a detailed explanation on the memory barriers associated with the
+- * ring, please take a look at net/xdp/xsk_queue.h.
+- */
+-
+-struct xsk_umem;
+-struct xsk_socket;
+-
+-static inline __u64 *xsk_ring_prod__fill_addr(struct xsk_ring_prod *fill,
+-					      __u32 idx)
+-{
+-	__u64 *addrs = (__u64 *)fill->ring;
+-
+-	return &addrs[idx & fill->mask];
+-}
+-
+-static inline const __u64 *
+-xsk_ring_cons__comp_addr(const struct xsk_ring_cons *comp, __u32 idx)
+-{
+-	const __u64 *addrs = (const __u64 *)comp->ring;
+-
+-	return &addrs[idx & comp->mask];
+-}
+-
+-static inline struct xdp_desc *xsk_ring_prod__tx_desc(struct xsk_ring_prod *tx,
+-						      __u32 idx)
+-{
+-	struct xdp_desc *descs = (struct xdp_desc *)tx->ring;
+-
+-	return &descs[idx & tx->mask];
+-}
+-
+-static inline const struct xdp_desc *
+-xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
+-{
+-	const struct xdp_desc *descs = (const struct xdp_desc *)rx->ring;
+-
+-	return &descs[idx & rx->mask];
+-}
+-
+-static inline int xsk_ring_prod__needs_wakeup(const struct xsk_ring_prod *r)
+-{
+-	return *r->flags & XDP_RING_NEED_WAKEUP;
+-}
+-
+-static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+-{
+-	__u32 free_entries = r->cached_cons - r->cached_prod;
+-
+-	if (free_entries >= nb)
+-		return free_entries;
+-
+-	/* Refresh the local tail pointer.
+-	 * cached_cons is r->size bigger than the real consumer pointer so
+-	 * that this addition can be avoided in the more frequently
+-	 * executed code that computs free_entries in the beginning of
+-	 * this function. Without this optimization it whould have been
+-	 * free_entries = r->cached_prod - r->cached_cons + r->size.
+-	 */
+-	r->cached_cons = libbpf_smp_load_acquire(r->consumer);
+-	r->cached_cons += r->size;
+-
+-	return r->cached_cons - r->cached_prod;
+-}
+-
+-static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+-{
+-	__u32 entries = r->cached_prod - r->cached_cons;
+-
+-	if (entries == 0) {
+-		r->cached_prod = libbpf_smp_load_acquire(r->producer);
+-		entries = r->cached_prod - r->cached_cons;
+-	}
+-
+-	return (entries > nb) ? nb : entries;
+-}
+-
+-static inline __u32 xsk_ring_prod__reserve(struct xsk_ring_prod *prod, __u32 nb, __u32 *idx)
+-{
+-	if (xsk_prod_nb_free(prod, nb) < nb)
+-		return 0;
+-
+-	*idx = prod->cached_prod;
+-	prod->cached_prod += nb;
+-
+-	return nb;
+-}
+-
+-static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, __u32 nb)
+-{
+-	/* Make sure everything has been written to the ring before indicating
+-	 * this to the kernel by writing the producer pointer.
+-	 */
+-	libbpf_smp_store_release(prod->producer, *prod->producer + nb);
+-}
+-
+-static inline __u32 xsk_ring_cons__peek(struct xsk_ring_cons *cons, __u32 nb, __u32 *idx)
+-{
+-	__u32 entries = xsk_cons_nb_avail(cons, nb);
+-
+-	if (entries > 0) {
+-		*idx = cons->cached_cons;
+-		cons->cached_cons += entries;
+-	}
+-
+-	return entries;
+-}
+-
+-static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons, __u32 nb)
+-{
+-	cons->cached_cons -= nb;
+-}
+-
+-static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, __u32 nb)
+-{
+-	/* Make sure data has been read before indicating we are done
+-	 * with the entries by updating the consumer pointer.
+-	 */
+-	libbpf_smp_store_release(cons->consumer, *cons->consumer + nb);
+-
+-}
+-
+-static inline void *xsk_umem__get_data(void *umem_area, __u64 addr)
+-{
+-	return &((char *)umem_area)[addr];
+-}
+-
+-static inline __u64 xsk_umem__extract_addr(__u64 addr)
+-{
+-	return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
+-}
+-
+-static inline __u64 xsk_umem__extract_offset(__u64 addr)
+-{
+-	return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+-}
+-
+-static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
+-{
+-	return xsk_umem__extract_addr(addr) + xsk_umem__extract_offset(addr);
+-}
+-
+-LIBBPF_API int xsk_umem__fd(const struct xsk_umem *umem);
+-LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
+-
+-#define XSK_RING_CONS__DEFAULT_NUM_DESCS      2048
+-#define XSK_RING_PROD__DEFAULT_NUM_DESCS      2048
+-#define XSK_UMEM__DEFAULT_FRAME_SHIFT    12 /* 4096 bytes */
+-#define XSK_UMEM__DEFAULT_FRAME_SIZE     (1 << XSK_UMEM__DEFAULT_FRAME_SHIFT)
+-#define XSK_UMEM__DEFAULT_FRAME_HEADROOM 0
+-#define XSK_UMEM__DEFAULT_FLAGS 0
+-
+-struct xsk_umem_config {
+-	__u32 fill_size;
+-	__u32 comp_size;
+-	__u32 frame_size;
+-	__u32 frame_headroom;
+-	__u32 flags;
+-};
+-
+-LIBBPF_API int xsk_setup_xdp_prog(int ifindex,
+-				  int *xsks_map_fd);
+-LIBBPF_API int xsk_socket__update_xskmap(struct xsk_socket *xsk,
+-					 int xsks_map_fd);
+-
+-/* Flags for the libbpf_flags field. */
+-#define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
+-
+-struct xsk_socket_config {
+-	__u32 rx_size;
+-	__u32 tx_size;
+-	__u32 libbpf_flags;
+-	__u32 xdp_flags;
+-	__u16 bind_flags;
+-};
+-
+-/* Set config to NULL to get the default configuration. */
+-LIBBPF_API int xsk_umem__create(struct xsk_umem **umem,
+-				void *umem_area, __u64 size,
+-				struct xsk_ring_prod *fill,
+-				struct xsk_ring_cons *comp,
+-				const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_umem__create_v0_0_2(struct xsk_umem **umem,
+-				       void *umem_area, __u64 size,
+-				       struct xsk_ring_prod *fill,
+-				       struct xsk_ring_cons *comp,
+-				       const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_umem__create_v0_0_4(struct xsk_umem **umem,
+-				       void *umem_area, __u64 size,
+-				       struct xsk_ring_prod *fill,
+-				       struct xsk_ring_cons *comp,
+-				       const struct xsk_umem_config *config);
+-LIBBPF_API int xsk_socket__create(struct xsk_socket **xsk,
+-				  const char *ifname, __u32 queue_id,
+-				  struct xsk_umem *umem,
+-				  struct xsk_ring_cons *rx,
+-				  struct xsk_ring_prod *tx,
+-				  const struct xsk_socket_config *config);
+-LIBBPF_API int
+-xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+-			  const char *ifname,
+-			  __u32 queue_id, struct xsk_umem *umem,
+-			  struct xsk_ring_cons *rx,
+-			  struct xsk_ring_prod *tx,
+-			  struct xsk_ring_prod *fill,
+-			  struct xsk_ring_cons *comp,
+-			  const struct xsk_socket_config *config);
+-
+-/* Returns 0 for success and -EBUSY if the umem is still in use. */
+-LIBBPF_API int xsk_umem__delete(struct xsk_umem *umem);
+-LIBBPF_API void xsk_socket__delete(struct xsk_socket *xsk);
+-
+-#ifdef __cplusplus
+-} /* extern "C" */
+-#endif
+-
+-#endif /* __LIBBPF_XSK_H */
 -- 
-2.29.2
+2.26.2
 
