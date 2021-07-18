@@ -2,210 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8883CCA76
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4043CCA7A
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbhGRTj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
+        id S233122AbhGRTkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbhGRTj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:56 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD41C061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:57 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id b12so8373264plh.10
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:57 -0700 (PDT)
+        with ESMTP id S230502AbhGRTj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:57 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ACEC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:58 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id w15so16625733pgk.13
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jYwmHsW35NQS3Aohxxgr18T541gZRV2ob9hEfPoaBYw=;
-        b=AGYa4vbntUiDl8XZDwrRSDFEGNGEHNONi4W8h5RfYWRkId04/VmFBlciQS7Yp/1349
-         zDaFBipwDyOPOhiXYDVIhfZZwKQyxxEsRKVZPNZUG+oLSAZH70CX9c13mVC//cAbadxI
-         UgcjBs3EnchTNTrfgQn4mH9WdZWud8ruo6A1A=
+        bh=9T7FgujEBx8O+M1214H2X9sSix5P14rHz+/H29xSICw=;
+        b=hvxTykG2tjuyaqXU4XXf9a3fIBqC6ZLGy/v6BNP6UpTyO4SXWhtX2AacxHZZMIoOoV
+         WAU3PcuofSD23b6qJ6PXG8J0DyLe2sfmqCb/1vNPPt/9qtqq/8AEbyN36JZiMehT/2jB
+         lGZ/brm0qbl/bABYNMInLdp67DufAiWA9zkMI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=jYwmHsW35NQS3Aohxxgr18T541gZRV2ob9hEfPoaBYw=;
-        b=MWQvQAVCmlkSRRHuZHD1HrjdtuieA5tlDZ4gLTAjisBxhxUYoUkgPAmY94sjuQEIdk
-         P/PeddA7n1o/1DDAziOMuF8xxmicLg4rXCq+BtYlBM4Dk39ubmO2ynV6rsWJ9sMEIPZF
-         wiNbPyknzm0tfGx1Zc8bzt+3HYAsZ+VksiMlJ/Pk23sgwwLWeJ/m2ZeLjo9JLbApdb+g
-         gYXaN3SdN3qLI56FBN8A+8SxA9vTdkcaMT9CUGibMmoWkQLasq9jph0YOxcmPHT6KUu4
-         Z3gOwQ9vchAmoWE2lRfKOmhDs7pjBSmHscpR8HJUmBmCUeyfodhLgIjUoZdzaIDJWplC
-         1ikw==
-X-Gm-Message-State: AOAM531XxwOoVTuFiezMQP+LaM03xWM/h2m3AR+JdspzoRmag3AjXimU
-        9r8fkvaoSMwtg8bsbbC0PhpqWw==
-X-Google-Smtp-Source: ABdhPJwMfKmOIqm80bmFzjmOYjuSVLByXi7CKr4KhK8M0mrHwIAqyJaZc6MzWomuJYdD7A5Q4UneVQ==
-X-Received: by 2002:a17:903:2284:b029:12b:329:651e with SMTP id b4-20020a1709032284b029012b0329651emr16593857plh.44.1626637016488;
-        Sun, 18 Jul 2021 12:36:56 -0700 (PDT)
+        bh=9T7FgujEBx8O+M1214H2X9sSix5P14rHz+/H29xSICw=;
+        b=Oaeoup8EHgMet7s3XLIHqimlxX1QZB7UL9R3b4FHfnyxWvtgySrzQ7Cil8vOx9QYoU
+         ZT0oIdy96YBEaUifXBE/v45v74JLDOI5+K+lPqLZU28gSY4bGQQlG3qZE/LL5dycw0gO
+         WKgUNGm+vf/hDQYeVpUimuHUQ5Q/F/L52urIBpBaNw1Mgueb4+1YronPSwBB8YKX/b1T
+         qbmePiA/ints9NCHtRZvsdT9jSqu2r3Vwraa1wo+JqEQPuBVXEmV2jLows2yB2mXCahq
+         pB7lBB7Yjs8GONoWACFJ8Q89u02ljmCSWdRtZ19K9DFs8KiO2bQk2J3XqELV7+CQ/hep
+         F7+A==
+X-Gm-Message-State: AOAM533PUuMeZkH0dYOcA8sRz6D/zR8vVTbsXPr9xkPQYcuCQooUBYpH
+        7CUgRX7Nprr2DLALZfHN1PAncQ==
+X-Google-Smtp-Source: ABdhPJzIOV9sAqinw4HndaGPbvv1CwWcVRVSYMqA3fVdOPSGUorXXWf2ZgD7LuG4UGqgczjtPJHMcg==
+X-Received: by 2002:a05:6a00:114f:b029:340:aa57:f69 with SMTP id b15-20020a056a00114fb0290340aa570f69mr6946356pfm.28.1626637017421;
+        Sun, 18 Jul 2021 12:36:57 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.55
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:55 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:56 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net 8/9] bnxt_en: Move bnxt_ptp_init() to bnxt_open()
-Date:   Sun, 18 Jul 2021 15:36:32 -0400
-Message-Id: <1626636993-31926-9-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 9/9] bnxt_en: Fix PTP capability discovery
+Date:   Sun, 18 Jul 2021 15:36:33 -0400
+Message-Id: <1626636993-31926-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009924d705c76af13a"
+        boundary="000000000000a8a79405c76af138"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000009924d705c76af13a
+--000000000000a8a79405c76af138
 
-The device needs to be in ifup state for PTP to function, so move
-bnxt_ptp_init() to bnxt_open().  This means that the PHC will be
-registered during bnxt_open().
-
-This also makes firmware reset work correctly.  PTP configurations
-may change after firmware upgrade or downgrade.  bnxt_open() will
-be called after firmware reset, so it will work properly.
-
-bnxt_ptp_start() is now incorporated into bnxt_ptp_init().  We now
-also need to call bnxt_ptp_clear() in bnxt_close().
+The current PTP initialization logic does not account for firmware
+reset that may cause PTP capability to change.  The valid pointer
+bp->ptp_cfg is used to indicate that the device is capable of PTP
+and that it has been initialized.  So we must clean up bp->ptp_cfg
+and free it if the firmware after reset does not support PTP.
 
 Fixes: 93cb62d98e9c ("bnxt_en: Enable hardware PTP support")
 Cc: Richard Cochran <richardcochran@gmail.com>
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 16 +++++++------
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 24 ++++++-------------
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  1 -
- 3 files changed, 16 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 31eb3c00851a..b8b73c210995 100644
+index b8b73c210995..4db162cee911 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10134,7 +10134,6 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
- 		}
- 	}
- 
--	bnxt_ptp_start(bp);
- 	rc = bnxt_init_nic(bp, irq_re_init);
- 	if (rc) {
- 		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
-@@ -10273,9 +10272,16 @@ static int bnxt_open(struct net_device *dev)
- 	rc = bnxt_hwrm_if_change(bp, true);
- 	if (rc)
- 		return rc;
-+
-+	if (bnxt_ptp_init(bp)) {
-+		netdev_warn(dev, "PTP initialization failed.\n");
-+		kfree(bp->ptp_cfg);
-+		bp->ptp_cfg = NULL;
-+	}
- 	rc = __bnxt_open_nic(bp, true, true);
- 	if (rc) {
- 		bnxt_hwrm_if_change(bp, false);
-+		bnxt_ptp_clear(bp);
+@@ -7574,8 +7574,12 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 		bp->flags &= ~BNXT_FLAG_WOL_CAP;
+ 		if (flags & FUNC_QCAPS_RESP_FLAGS_WOL_MAGICPKT_SUPPORTED)
+ 			bp->flags |= BNXT_FLAG_WOL_CAP;
+-		if (flags & FUNC_QCAPS_RESP_FLAGS_PTP_SUPPORTED)
++		if (flags & FUNC_QCAPS_RESP_FLAGS_PTP_SUPPORTED) {
+ 			__bnxt_hwrm_ptp_qcfg(bp);
++		} else {
++			kfree(bp->ptp_cfg);
++			bp->ptp_cfg = NULL;
++		}
  	} else {
- 		if (test_and_clear_bit(BNXT_STATE_FW_RESET_DET, &bp->state)) {
- 			if (!test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
-@@ -10366,6 +10372,7 @@ static int bnxt_close(struct net_device *dev)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 
-+	bnxt_ptp_clear(bp);
- 	bnxt_hwmon_close(bp);
- 	bnxt_close_nic(bp, true, true);
- 	bnxt_hwrm_shutdown_link(bp);
-@@ -11352,6 +11359,7 @@ static void bnxt_fw_reset_close(struct bnxt *bp)
- 		bnxt_clear_int_mode(bp);
- 		pci_disable_device(bp->pdev);
- 	}
-+	bnxt_ptp_clear(bp);
- 	__bnxt_close_nic(bp, true, false);
- 	bnxt_vf_reps_free(bp);
- 	bnxt_clear_int_mode(bp);
-@@ -12694,7 +12702,6 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	if (BNXT_PF(bp))
- 		devlink_port_type_clear(&bp->dl_port);
- 
--	bnxt_ptp_clear(bp);
- 	pci_disable_pcie_error_reporting(pdev);
- 	unregister_netdev(dev);
- 	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
-@@ -13278,11 +13285,6 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 				   rc);
- 	}
- 
--	if (bnxt_ptp_init(bp)) {
--		netdev_warn(dev, "PTP initialization failed.\n");
--		kfree(bp->ptp_cfg);
--		bp->ptp_cfg = NULL;
--	}
- 	bnxt_inv_fw_health_reg(bp);
- 	bnxt_dl_register(bp);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index f698b6bd4ff8..9089e7f3fbd4 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -385,22 +385,6 @@ int bnxt_get_rx_ts_p5(struct bnxt *bp, u64 *ts, u32 pkt_ts)
- 	return 0;
- }
- 
--void bnxt_ptp_start(struct bnxt *bp)
--{
--	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
--
--	if (!ptp)
--		return;
--
--	if (bp->flags & BNXT_FLAG_CHIP_P5) {
--		spin_lock_bh(&ptp->ptp_lock);
--		ptp->current_time = bnxt_refclk_read(bp, NULL);
--		WRITE_ONCE(ptp->old_time, ptp->current_time);
--		spin_unlock_bh(&ptp->ptp_lock);
--		ptp_schedule_worker(ptp->ptp_clock, 0);
--	}
--}
--
- static const struct ptp_clock_info bnxt_ptp_caps = {
- 	.owner		= THIS_MODULE,
- 	.name		= "bnxt clock",
-@@ -450,7 +434,13 @@ int bnxt_ptp_init(struct bnxt *bp)
- 		bnxt_unmap_ptp_regs(bp);
- 		return err;
- 	}
--
-+	if (bp->flags & BNXT_FLAG_CHIP_P5) {
-+		spin_lock_bh(&ptp->ptp_lock);
-+		ptp->current_time = bnxt_refclk_read(bp, NULL);
-+		WRITE_ONCE(ptp->old_time, ptp->current_time);
-+		spin_unlock_bh(&ptp->ptp_lock);
-+		ptp_schedule_worker(ptp->ptp_clock, 0);
-+	}
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 6b6245750e20..4135ea3ec788 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -75,7 +75,6 @@ int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
- int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
- int bnxt_get_tx_ts_p5(struct bnxt *bp, struct sk_buff *skb);
- int bnxt_get_rx_ts_p5(struct bnxt *bp, u64 *ts, u32 pkt_ts);
--void bnxt_ptp_start(struct bnxt *bp);
- int bnxt_ptp_init(struct bnxt *bp);
- void bnxt_ptp_clear(struct bnxt *bp);
- #endif
+ #ifdef CONFIG_BNXT_SRIOV
+ 		struct bnxt_vf_info *vf = &bp->vf;
 -- 
 2.18.1
 
 
---0000000000009924d705c76af13a
+--000000000000a8a79405c76af138
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -276,13 +168,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIK4RlvTkJcZK6ST5fQT6WTKnJzxqEohY
-p96StGMV3AR9MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY1N1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOC4KpkaiARaVxAyqAo8tw50ua/D0685
+CxQ1wiuxtlMxMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1OFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAqhU7Y91H+InMJvFi/3vkE1X86oIJax8KngGDKNxf9dv+azet2
-zsHpngyJRDJO3Rh6QRpxoAotRJkWQirMzOHyDTvOTi6xQ3RL3XIFDhGbdTs49immHF5rA38iHLWi
-GjA+vVVM+IISt+WwNlzHtux4Dn+TtW0HVPDk3TsXwtxCKFzWdHfhInNmlxPKgMoExNky/d4cF0sb
-h6yOnnRHbe0+CiKjpWXRwHy8RHMcbW+sKWG8lOwOQh7DGts7GtdvghWIgPtquhaYWGLItqYIwC3w
-9ha105sU26VqY0bvkKVYFxiI6bHgPXO8qpIfIEjl6ZztjFEu2EA0aYhulfoEo9dZ
---0000000000009924d705c76af13a--
+ATANBgkqhkiG9w0BAQEFAASCAQBT9ELfbaxjqqJ6XwFrfDohiT91TV+ZyH6hoEKH3DDhaqXZG9Yy
+u3q9j7sTVcs1NjJ3aoMYvO0H6KnacgkAmsdoUju8AHO6PkFm4Ngr2LmXW0cKckDp8oBCOHz0dxdD
+idPLoeYztMs2QAZ5PjicLsZcTQNuz3mmuYNhW5wgt3dkddto/WhJPlvyZ2Cj+UZLAbO5kmI4IMKV
++UPuz7QcDq4t4awZ1rdQKXP9bWotGKOD/tGbGpN4PhbQVpwlXetgi9F8sW39I2kjqDQZOCdN6cdz
+2O5koglF4Gr3qUQm0i6t7omrCdODDN3I4i9+/+Di2l4DuSGm5SeOBt70zeLZshvi
+--000000000000a8a79405c76af138--
