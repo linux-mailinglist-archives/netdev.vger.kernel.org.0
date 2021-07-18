@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D40DF3CC86F
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 12:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF22C3CC870
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 12:43:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232358AbhGRKlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 06:41:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58394 "EHLO mail.kernel.org"
+        id S232557AbhGRKpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 06:45:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230461AbhGRKlH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 06:41:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A106610D1;
-        Sun, 18 Jul 2021 10:38:08 +0000 (UTC)
+        id S230461AbhGRKpz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Jul 2021 06:45:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7CCB96113D;
+        Sun, 18 Jul 2021 10:42:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626604689;
-        bh=H/blmi1bcoaBh+CBZ8vsfGLxUAhzjxY/70q/vEpigzk=;
+        s=k20201202; t=1626604977;
+        bh=XHYiGCB7BFoBQaLsMUEaVYK3yF6fmDUK9zms1YeaP1E=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E0i403PskP7q7iy1j1Um8HM64r8W3WeJgW7zAUWeO49frfywx0eNRyWw63v1ct3yr
-         KttkixCQNpjDjEdWgFvyLdGRNUOW10UiJaJA/CL/POIyxJPLTWUZKDssYBs2iN3Xm+
-         7X+LKVgetMyVn1mpmOJJgyeNHinp+VQlqpWnnnn9qoa1R4wH1wUJ3Fksu1r63sTkif
-         6lhFnuNqKmcahpdyIM58VzZGH3lvkLXCQ06jvE9DQ+HYnbEK8znzN2j89SR4jxDjIU
-         4ensedpSQeWehuN8KDL+D+OvIzQySyUsbPgmTYQ4T3kKb4tME8wa67Z35TSrS/NGEr
-         5DvItXSlbVNuQ==
-Date:   Sun, 18 Jul 2021 13:38:05 +0300
+        b=b4KB43F8+DVXSCb+y+cuxXnAE/ZvLCHi7u05iaNnXxO2O8segAdTOmjjGDO7H+Qxg
+         dWd4OuJ4/SYKV8jQuBJJQGaocUE+2a4vHx81YhapryQBNZTzBOWeOcF0dKVOLvT2nq
+         kyPk8xLbhA51hVsulPyzGjBE+btl8gZH0UsHYbPt5EWNKxVbYUsb0tdB6ijeqOykaJ
+         tcucoIAYt1BpeICUV1ZeKOWcuHlkeuHOpAxkgUAJypQ6rC2dzsnu9ZxVey6zQUh/9Y
+         wN0dczatn6FdoD53LkHFDlFVgvaN6HhoI8nx5VeGWapG+T0thB5NHE+xvbImGyyhrh
+         yigZyZRtxdN6g==
+Date:   Sun, 18 Jul 2021 13:42:53 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
-        Lior Nahmanson <liorna@nvidia.com>,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH rdma-next v1 0/3] Add ConnectX DCS offload support
-Message-ID: <YPQEjUIbviO74e6X@unreal>
-References: <cover.1624258894.git.leonro@nvidia.com>
- <20210716154208.GA758521@nvidia.com>
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc:     Raju Rangoju <rajur@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yuanxzhang@fudan.edu.cn,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: Re: [PATCH] cxgb3: Convert from atomic_t to refcount_t on
+ l2t_entry->refcnt
+Message-ID: <YPQFrf7/VYhW47mF@unreal>
+References: <1626516975-42566-1-git-send-email-xiyuyang19@fudan.edu.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210716154208.GA758521@nvidia.com>
+In-Reply-To: <1626516975-42566-1-git-send-email-xiyuyang19@fudan.edu.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 16, 2021 at 12:42:08PM -0300, Jason Gunthorpe wrote:
-> On Mon, Jun 21, 2021 at 10:06:13AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Changelog:
-> > v1:
-> >  * Rephrase commit message of second patch
-> > v0: https://lore.kernel.org/linux-rdma/cover.1622723815.git.leonro@nvidia.com
-> > 
-> > 
-> > This patchset from Lior adds support of DCI stream channel (DCS) support.
-> > 
-> > DCS is an offload to SW load balancing of DC initiator work requests.
-> > 
-> > A single DC QP initiator (DCI) can be connected to only one target at the time
-> > and can't start new connection until the previous work request is completed.
-> > 
-> > This limitation causes to delays when the initiator process needs to
-> > transfer data to multiple targets at the same time.
-> > 
-> > Thanks
-> > 
-> > Lior Nahmanson (3):
-> >   net/mlx5: Add DCS caps & fields support
-> >   RDMA/mlx5: Separate DCI QP creation logic
-> >   RDMA/mlx5: Add DCS offload support
+On Sat, Jul 17, 2021 at 06:16:15PM +0800, Xiyu Yang wrote:
+> refcount_t type and corresponding API can protect refcounters from
+> accidental underflow and overflow and further use-after-free situations.
 > 
-> Okay, can you update the shared branch?
+> Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb3/l2t.c | 15 ++++++++-------
+>  drivers/net/ethernet/chelsio/cxgb3/l2t.h | 10 +++++++---
+>  2 files changed, 15 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/cxgb3/l2t.c b/drivers/net/ethernet/chelsio/cxgb3/l2t.c
+> index 9749d1239f58..0f2a47bc20d8 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb3/l2t.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb3/l2t.c
+> @@ -225,10 +225,11 @@ static struct l2t_entry *alloc_l2e(struct l2t_data *d)
+>  
+>  	/* there's definitely a free entry */
+>  	for (e = d->rover, end = &d->l2tab[d->nentries]; e != end; ++e)
+> -		if (atomic_read(&e->refcnt) == 0)
+> +		if (refcount_read(&e->refcnt) == 0)
 
-Pushed, 96cd2dd65bb0 ("net/mlx5: Add DCS caps & fields support")
+All those atomic_t to refcount_t patches can't be right, refcount_t can't be 0.
 
 Thanks
-
-> 
-> Thanks,
-> Jason
