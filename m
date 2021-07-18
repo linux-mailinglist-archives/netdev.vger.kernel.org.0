@@ -2,173 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A94F3CC99E
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 16:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B15003CC9BE
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 17:22:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbhGROnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 10:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
+        id S234087AbhGRPZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 11:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbhGROnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 10:43:31 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF895C061762;
-        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id cu14so9725821pjb.0;
-        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
+        with ESMTP id S232895AbhGRPZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 11:25:32 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935B7C061762;
+        Sun, 18 Jul 2021 08:22:34 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id e11so14620912oii.9;
+        Sun, 18 Jul 2021 08:22:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5h/ouo57VgfmtTZNOxTlKh2p8kwjX4qlWDpeGeXNCSw=;
-        b=I9+3sBMGCL2qvqLsDeceKsdItH6nNFMc79nKsZ0pwFBLBwJD/DD3RL+oL1Ce9El/+s
-         qvU32SB4myxSHRnKqD6bafj8buTU5ezQtRy2Fyp+PeCsmguSpZCQLIrN/8qd99dnJ2K7
-         AOaYe2aWcd7wPsIAA5epz1Bh41TxllTtZJoz6aWYJlBqyz/Fx8mSdejrlGg0b4HoEhBT
-         MbJOEudVjEwZMNAjZ7l/6mjqP3GRnzriOdqLvbLR1+h/x4PpH79DtUtozA+S9sTJfhG1
-         0ojhriragwCFkMaa1nEsOsOC/cH8JIb4tuYoNDsXe9ojYVcVeGZTGVtqnawVWVPC98kj
-         sNaw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=o57yGjRTaWAqfZDrSBIZV03JfvmeovTUKB74MRJQo7I=;
+        b=aD/PXWd4ypap/fpxUpC1rd8Db++f1jJkZ7KLxTrSacfphOfX//0htFXUg8z6nGHSwi
+         +uej3OyLGojjfNy9wcZIpH0W+eKw/oGvRCnUlVoZ7GxgLn6Zx/QdaXXKz+hRQNXn7Hbb
+         E22AtiXA+36pBQ2vQqkS5t5QvcBfdqT0a003yx8sGaaYkltvcaVMBaESlRt0aUL9HAOM
+         QajEqpBSEcPCwWrn1fVC6gRReO3nofFbXLGxtO5YC2lBifSvaasA3+Ez4mYqNX2eeQZk
+         +DeHvCqwylBzGGldXZyG5lrHY7fZ9q9pHZob7zfl2uODgehTczjD8z5vIaLDNAukiQL9
+         tW7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=5h/ouo57VgfmtTZNOxTlKh2p8kwjX4qlWDpeGeXNCSw=;
-        b=FNcC6Op1Dq0Jts2tx8aRYURS9aWjt5Qt+FPaXyg/vvPQCLvAd+0+iySMpJ3uSkAjld
-         aYvq5u/RO7PNbeN5DXDwcjVHf1pTFo59Ay4KylGFeW1q2dcedmIfUwm0DLx6j+yzNwRo
-         gg+hwAihPxEeqELsUAlWkU6wIQFxDf69NCjiZvEQAgUHp8Zf3WGq8jSy9ZqpKagKTllz
-         2xHmESgLUy3TDBc73pB+lB4KccNb4EOywDNhDTJ/TlVE+n9C5nHW7gMCiTaltLKZIvTL
-         3CJGGd0ruQcQZKnoemuSXQLJRi8TuSdjOwii7MClyolBKwVTohQePvDAHQxAIqOLfFi9
-         6I7g==
-X-Gm-Message-State: AOAM530Y3Pzq1p0Nf5CaLpdSYEpRv8kYVp70SjNdi+h88FaWeawqggIJ
-        xqrJ9l2BTJu0fr2GpH0thTQ=
-X-Google-Smtp-Source: ABdhPJxAC6fn/DP+PNyKXtUIZlqSaYt9k7413pykYoIs1F02KyvnCjQEDOYB4qFjkob/vbIs+8QZyg==
-X-Received: by 2002:a17:90b:3652:: with SMTP id nh18mr20777647pjb.127.1626619231296;
-        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
-Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
-        by smtp.gmail.com with ESMTPSA id 144sm18740439pgg.4.2021.07.18.07.40.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Jul 2021 07:40:30 -0700 (PDT)
-From:   Nguyen Dinh Phi <phind.uet@gmail.com>
-To:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org,
-        xiyou.wangcong@gmail.com
-Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+10f1194569953b72f1ae@syzkaller.appspotmail.com
-Subject: [PATCH] netrom: Decrease sock refcount when sock timers expire
-Date:   Sun, 18 Jul 2021 22:40:13 +0800
-Message-Id: <20210718144013.753774-1-phind.uet@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=o57yGjRTaWAqfZDrSBIZV03JfvmeovTUKB74MRJQo7I=;
+        b=XyfhIMJezfap3iuNhFky62RgK7simuNGC0ePAA5CEpYIlSM+V7BPwqlQo2TkBRZtxc
+         ZOVGzricKtmPwwhgsdmZUWD7qszxQLW98XJBbUOXy4bi2hBXfQr6r14UvrN9i6/wCd9+
+         0zyoqdyC3ZuAFr5sVvypA/s+WdpixSAOJRpHaAPqX2q173yka9e5VYwsKFFuYlIiQ299
+         Kue1yUnLMbGG5wVssIgX2dkpvwMVQ/QvrNNArK7MastFdSLPCR/p+i523gWOZXu/zqcP
+         Ht21WXu7NNcnkgQzR7H0NJai6LobYJ7ewad3MzMhxtmZz0eYr6l1ereg57569NRaikeU
+         GSVQ==
+X-Gm-Message-State: AOAM530KIFKwfQ3ZhFSk5cDe6bjBXAhhQBZe9X/+BHQssGkhxCHMvvYQ
+        dfcwkJ0RwqsMjQI4FOa/WzI=
+X-Google-Smtp-Source: ABdhPJzhVJmtPkRtvs+XzqfN5EEIqgaZQfPEG9XLzalSTVmCFYfscFcPsxkSalwJ7yN1lS0oBMS0BQ==
+X-Received: by 2002:aca:ac15:: with SMTP id v21mr18638255oie.5.1626621753935;
+        Sun, 18 Jul 2021 08:22:33 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id j30sm3135190otc.43.2021.07.18.08.22.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Jul 2021 08:22:33 -0700 (PDT)
+Subject: Re: [PATCH NET v4 1/1] ipv6: allocate enough headroom in
+ ip6_finish_output2()
+To:     Vasily Averin <vvs@virtuozzo.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <e44bfeb9-5a5a-9f44-12bd-ec3d61eb3a14@virtuozzo.com>
+ <cover.1626177047.git.vvs@virtuozzo.com>
+ <dc51dab2-8434-9f88-d6cd-4e6754383413@virtuozzo.com>
+ <922a110c-4d20-a1e9-8560-8836d4ddbba1@virtuozzo.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <628b7b2b-494a-07f5-5d74-1867ec351b7b@gmail.com>
+Date:   Sun, 18 Jul 2021 09:22:31 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <922a110c-4d20-a1e9-8560-8836d4ddbba1@virtuozzo.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 63346650c1a9 ("netrom: switch to sock timer API") switched to use
-sock timer API. It replaces mod_timer() by sk_reset_timer(), and
-del_timer() by sk_stop_timer().
+On 7/18/21 4:44 AM, Vasily Averin wrote:
+> I've found that you have added v3 version of this patch into netdev-net git.
+> This version had one mistake: skb_set_owner_w() should set sk not to old skb byt to new nskb.
+> I've fixed it in v4 version.
+> 
+> Could you please drop bad v3 version and pick up fixed one ?
+> Should I perhaps submit separate fixup instead?
 
-Function sk_reset_timer() will increase the refcount of sock if it is
-called on an inactive timer, hence, in case the timer expires, we need to
-decrease the refcount ourselves in the handler, otherwise, the sock
-refcount will be unbalanced and the sock will never be freed.
-
-Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-Reported-by: syzbot+10f1194569953b72f1ae@syzkaller.appspotmail.com
-Fixes: 63346650c1a9 ("netrom: switch to sock timer API")
----
- net/netrom/nr_timer.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
-
-diff --git a/net/netrom/nr_timer.c b/net/netrom/nr_timer.c
-index 9115f8a7dd45..a8da88db7893 100644
---- a/net/netrom/nr_timer.c
-+++ b/net/netrom/nr_timer.c
-@@ -121,11 +121,9 @@ static void nr_heartbeat_expiry(struct timer_list *t)
- 		   is accepted() it isn't 'dead' so doesn't get removed. */
- 		if (sock_flag(sk, SOCK_DESTROY) ||
- 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
--			sock_hold(sk);
- 			bh_unlock_sock(sk);
- 			nr_destroy_socket(sk);
--			sock_put(sk);
--			return;
-+			goto out;
- 		}
- 		break;
-
-@@ -146,6 +144,8 @@ static void nr_heartbeat_expiry(struct timer_list *t)
-
- 	nr_start_heartbeat(sk);
- 	bh_unlock_sock(sk);
-+out:
-+	sock_put(sk);
- }
-
- static void nr_t2timer_expiry(struct timer_list *t)
-@@ -159,6 +159,7 @@ static void nr_t2timer_expiry(struct timer_list *t)
- 		nr_enquiry_response(sk);
- 	}
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
-
- static void nr_t4timer_expiry(struct timer_list *t)
-@@ -169,6 +170,7 @@ static void nr_t4timer_expiry(struct timer_list *t)
- 	bh_lock_sock(sk);
- 	nr_sk(sk)->condition &= ~NR_COND_PEER_RX_BUSY;
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
-
- static void nr_idletimer_expiry(struct timer_list *t)
-@@ -197,6 +199,7 @@ static void nr_idletimer_expiry(struct timer_list *t)
- 		sock_set_flag(sk, SOCK_DEAD);
- 	}
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
-
- static void nr_t1timer_expiry(struct timer_list *t)
-@@ -209,8 +212,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
- 	case NR_STATE_1:
- 		if (nr->n2count == nr->n2) {
- 			nr_disconnect(sk, ETIMEDOUT);
--			bh_unlock_sock(sk);
--			return;
-+			goto out;
- 		} else {
- 			nr->n2count++;
- 			nr_write_internal(sk, NR_CONNREQ);
-@@ -220,8 +222,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
- 	case NR_STATE_2:
- 		if (nr->n2count == nr->n2) {
- 			nr_disconnect(sk, ETIMEDOUT);
--			bh_unlock_sock(sk);
--			return;
-+			goto out;
- 		} else {
- 			nr->n2count++;
- 			nr_write_internal(sk, NR_DISCREQ);
-@@ -231,8 +232,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
- 	case NR_STATE_3:
- 		if (nr->n2count == nr->n2) {
- 			nr_disconnect(sk, ETIMEDOUT);
--			bh_unlock_sock(sk);
--			return;
-+			goto out;
- 		} else {
- 			nr->n2count++;
- 			nr_requeue_frames(sk);
-@@ -241,5 +241,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
- 	}
-
- 	nr_start_t1timer(sk);
-+out:
- 	bh_unlock_sock(sk);
-+	sock_put(sk);
- }
---
-2.25.1
-
+Patches are not dropped once pushed; send the diff between v3 and v4
+with a Fixes tag.
