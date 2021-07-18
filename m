@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC28D3CCA70
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315593CCA71
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbhGRTjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
+        id S231799AbhGRTju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbhGRTjs (ORCPT
+        with ESMTP id S229585AbhGRTjs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:48 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC909C061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id b12so14384191pfv.6
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7F4C061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id b2so3820697plx.1
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tQCFT/SW7WEYLRMyjRSIWRnYjk78ITEOBogWTZ1e1hI=;
-        b=fYKATZdxqD/94YX5p08BOzOk7+CnX7h+NRd14xzNHS8SxrzKHEgAohf/IKt/AhZgO2
-         QfZioZGuDKLVWBLTk3iSgPhgB8Y7L8JbWYw+CBeF3l4Axnl9EGfZE7RtrK1+QQeRX7KI
-         ZQKR1cUwdIU8Okzv9ZvkAN6+AL2WOKTunMc40=
+        bh=siqVdRJT8bhOSVR5T1FftAUSbOX5LO960bTwfqwwGTE=;
+        b=Y21iGyPNsm8dejqU4z++onVbxHRKXgHuFrB8+IcIEbhOmutwaT1YUPYB6fjtsZV86R
+         wAahszK/f/1QnSCFF6Twiq2SJJ7DuOJ+P7d1tmEoJqDIJrwXu2ejppRkGW8X3RXs5Tlg
+         /Q0+zvZ2K+NMHaEyFZaeCuzVOUYo4Bsy04DmY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=tQCFT/SW7WEYLRMyjRSIWRnYjk78ITEOBogWTZ1e1hI=;
-        b=qNcWr5tx+QJ8/bRumiJDooypR/adQFYir/HBEB4jygY7cjI8mdH1jbAhmPEkFhT5dP
-         g06rZqqT1FHeJiqj971pcaGoMlp/vOx3Z0RVxC48oAHVQzgzX4fe/DcmlfN59HFcRXId
-         UyOWfQuBI496jyBgwHRIdJH5k3VZEZsIWKIRuECX81OHW4JcLmDy017BJcyP9+EFYXHX
-         ky8FhXRsQYwhETOudVYFwaOvFq0qee7ZmmOV+cAvYuv/tMsXIGv9cn0hX3UutPsGKwEc
-         pi/gYabRA+vPUxTU7vKrHo9Mt9cxL8CLcQsT7fqNXT8fXustvaIpYVmsaprmqhSgUGsy
-         yOFQ==
-X-Gm-Message-State: AOAM532vICe8cnH5VpYRS43kHXte2aF6HnCpfkr9uCo87tI2rejsscJ8
-        7Q7aohV7uS6kJ44IYTIBCiQe4A==
-X-Google-Smtp-Source: ABdhPJy0oZtEZKtnUwZ8PXtW5DCzwu6FsvfTzHaIGhJ0xqC70nCOPRQiOto7PhBXEwtwVRUjLbMGeQ==
-X-Received: by 2002:aa7:8b4b:0:b029:30c:1be6:b92a with SMTP id i11-20020aa78b4b0000b029030c1be6b92amr21845065pfd.56.1626637008741;
-        Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
+        bh=siqVdRJT8bhOSVR5T1FftAUSbOX5LO960bTwfqwwGTE=;
+        b=mhaDAkD2oCNOQfMYL2O2Bi5uo6mMGI79izE1+kLhz4syuYNeTHPsclKILVs8rQ1W1O
+         xn3UFL/3weOMGjvs5dy5dQJaZFz+zJIOPiD6yhEJaMBamfVmIm/cmS0J9sqrBGhGiz8b
+         c8yyJqwVZNCjBeg5Ry5YzGk3BfJnp+HzrBc6oH8y/z/3gDF0zBrC1WnKnW6b+cL/8DpA
+         KeLoOBMXSr+TUde8SjKBVO/5chpGO00z/cOokMvF6GfC87z2OdH4eUNa2PMSx9+JKfoS
+         XsyuKxV7ADzxcnLOiizCEEReXwF6j/ZeC5Rl9/WYE+vB9Gd1juuLD5qtq/g1pWkf83n5
+         htfg==
+X-Gm-Message-State: AOAM533CHtMMiMDLT7/nndCIUtAQ9rSPCJOpBBbm2Jp/bGDTXv/pFt2q
+        nnVzzCxFodHPZ6PHPUJ+kkX2Qw==
+X-Google-Smtp-Source: ABdhPJzbokO+XCZ32TY9U0eYcBJs1AGePiiTQUocZQYPB/fYfk3j2aU/x79DtGFxk+dpjms8UOVX7g==
+X-Received: by 2002:a17:902:e00e:b029:ef:5f1c:18a8 with SMTP id o14-20020a170902e00eb02900ef5f1c18a8mr16751156plo.38.1626637009637;
+        Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
         by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.48
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:48 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 1/9] bnxt_en: don't disable an already disabled PCI device
-Date:   Sun, 18 Jul 2021 15:36:25 -0400
-Message-Id: <1626636993-31926-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 2/9] bnxt_en: reject ETS settings that will starve a TC
+Date:   Sun, 18 Jul 2021 15:36:26 -0400
+Message-Id: <1626636993-31926-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000021104f05c76af1f8"
+        boundary="0000000000002a034905c76af18a"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000021104f05c76af1f8
+--0000000000002a034905c76af18a
 
-From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-If device is already disabled in reset path and PCI io error is
-detected before the device could be enabled, driver could
-call pci_disable_device() for already disabled device. Fix this
-problem by calling pci_disable_device() only if the device is already
-enabled.
+ETS proportions are presented to HWRM_QUEUE_COS2BW_CFG as minimum
+bandwidth constraints. Thus, zero is a legal value for a given TC.
+However, if all the other TCs sum up to 100%, then at least one
+hardware queue will starve, resulting in guaranteed TX timeouts.
+Reject such nonsensical configurations.
 
-Fixes: 6316ea6db93d ("bnxt_en: Enable AER support.")
-Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f56245eeef7b..fdfb75a1608d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -13436,7 +13436,8 @@ static pci_ers_result_t bnxt_io_error_detected(struct pci_dev *pdev,
- 	if (netif_running(netdev))
- 		bnxt_close(netdev);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 8e90224c43a2..8a68df4d9e59 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -433,6 +433,7 @@ static int bnxt_hwrm_queue_dscp2pri_cfg(struct bnxt *bp, struct dcb_app *app,
+ static int bnxt_ets_validate(struct bnxt *bp, struct ieee_ets *ets, u8 *tc)
+ {
+ 	int total_ets_bw = 0;
++	bool zero = false;
+ 	u8 max_tc = 0;
+ 	int i;
  
--	pci_disable_device(pdev);
-+	if (pci_is_enabled(pdev))
-+		pci_disable_device(pdev);
- 	bnxt_free_ctx_mem(bp);
- 	kfree(bp->ctx);
- 	bp->ctx = NULL;
+@@ -453,13 +454,20 @@ static int bnxt_ets_validate(struct bnxt *bp, struct ieee_ets *ets, u8 *tc)
+ 			break;
+ 		case IEEE_8021QAZ_TSA_ETS:
+ 			total_ets_bw += ets->tc_tx_bw[i];
++			zero = zero || !ets->tc_tx_bw[i];
+ 			break;
+ 		default:
+ 			return -ENOTSUPP;
+ 		}
+ 	}
+-	if (total_ets_bw > 100)
++	if (total_ets_bw > 100) {
++		netdev_warn(bp->dev, "rejecting ETS config exceeding available bandwidth\n");
+ 		return -EINVAL;
++	}
++	if (zero && total_ets_bw == 100) {
++		netdev_warn(bp->dev, "rejecting ETS config starving a TC\n");
++		return -EINVAL;
++	}
+ 
+ 	if (max_tc >= bp->max_tc)
+ 		*tc = bp->max_tc;
 -- 
 2.18.1
 
 
---00000000000021104f05c76af1f8
+--0000000000002a034905c76af18a
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -164,13 +184,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBZtCeIWeGcFuXBmZfAZYJjKLsv/Zrct
-DrdLOVg0EepcMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY0OVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILAX2/mBljdQrFlpmGUHg3MwlBpYQ/9f
+aP9Cu3EAc8SnMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBu6NO5KZ8sXa1z/i51TeESkY0AWiEL6MTAAUGBzdJ3jKCKO5Bw
-DF6mYk6Sq+YGjc6H/rwfuPsTWbaAOzarOmr9MUWh83aEv0wnK3hcbvpiM58y+ybLLMGcuLHJR95s
-xO9dew8t3gTY1KNEamkofnVwTSEkE+8u2W1brZbCCP5ibiFWtza7ILkBrZ3+Rm3Az9jE2s0z11H9
-XMKyo7P+RKGBdWkR0KKjHM65yDsBbhAbe3oZCJK/r5FgZgG9cqZ9Nlv4IeLTtxCauhehKrsHZU9m
-i4RHPYVD2fCd4VpZPo8BwvBlpnPzu3P9sb6z1Ym2mzt73zL6EAdJgXcSTA4Ox9Nv
---00000000000021104f05c76af1f8--
+ATANBgkqhkiG9w0BAQEFAASCAQBA1hwMCIKGS//AyEq/MWJVE5RT6aOgaL0R6nm38u2hMqzi+bDB
+keP4S2JNIfrQ8vbSlNlfQ0/oLI9q/W0zmNL6ZkBGHhRhrq/nEiQ1vW7y3sZ5ydMD5JrGyU+QZCI5
+sB8vgD6TApEaj29mN0yIt5s7plOUzXHx2UACyT/ZNCpVGUoBMzapgixu8Ud9WjbOVNddid6zSkY2
+voWkasIKt6IUkvA9/zuic4pUJOenJUawzhIgqD/tJq5fW/t2GTpUWT9Acyas5w/GvskgCvjFyYFk
+mUaAHNvf/amRmcioH38TFUfU0OtjWShEDGaS/3rKUjJfSi0O78XRefm3P/h0prxO
+--0000000000002a034905c76af18a--
