@@ -2,232 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950323CC96F
-	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 15:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A94F3CC99E
+	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 16:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233673AbhGROBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 10:01:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60453 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230461AbhGROBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 10:01:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626616703;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=19v5D8bRVm+lStdjgUon0q9aeP8opTApQap714gjX7U=;
-        b=bbH3KmwZ4E3/yyqFAD7Ifp12Kpvzwf3onioPvhaKzVKYHnlyrwZtz1fXuCN9UPnAs8MM5+
-        BSMi/7nHtcWyKukdHSt5uVDJ9ZnWqG3mOMspnJUa+5XYNfalI6EGPEkJWSQW3c2+4UCs72
-        u41LzJ68QhMxdL7+S8tCm8SR6oyaeAE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-mg_t3WbBPnSAYU-k5niKbA-1; Sun, 18 Jul 2021 09:58:22 -0400
-X-MC-Unique: mg_t3WbBPnSAYU-k5niKbA-1
-Received: by mail-wm1-f69.google.com with SMTP id i7-20020a05600c3547b0290229a389ceb2so3285761wmq.0
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 06:58:21 -0700 (PDT)
+        id S233953AbhGROnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 10:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230307AbhGROnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 10:43:31 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF895C061762;
+        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id cu14so9725821pjb.0;
+        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5h/ouo57VgfmtTZNOxTlKh2p8kwjX4qlWDpeGeXNCSw=;
+        b=I9+3sBMGCL2qvqLsDeceKsdItH6nNFMc79nKsZ0pwFBLBwJD/DD3RL+oL1Ce9El/+s
+         qvU32SB4myxSHRnKqD6bafj8buTU5ezQtRy2Fyp+PeCsmguSpZCQLIrN/8qd99dnJ2K7
+         AOaYe2aWcd7wPsIAA5epz1Bh41TxllTtZJoz6aWYJlBqyz/Fx8mSdejrlGg0b4HoEhBT
+         MbJOEudVjEwZMNAjZ7l/6mjqP3GRnzriOdqLvbLR1+h/x4PpH79DtUtozA+S9sTJfhG1
+         0ojhriragwCFkMaa1nEsOsOC/cH8JIb4tuYoNDsXe9ojYVcVeGZTGVtqnawVWVPC98kj
+         sNaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=19v5D8bRVm+lStdjgUon0q9aeP8opTApQap714gjX7U=;
-        b=AugO7ZoBbyvE7URlDz+QBU5YVaBYx94Dn5cPD+HAr2FNC1pSQsAw2Tc45ytgSN6tkj
-         KAHUO3K5kOlEGAd+y4aq+yNuJDQpTIybsgJ6NNDJ8zUDy7vkkR5J2kQrskcycTNetGJ5
-         JjWNlTE93H7nBIjx9G3WhhZ55W4pqdjReJcICLDqTFPeYg38rk6ypWwRBAB3ISiS0GG3
-         5zt7GZxVo+pe4edcCuODdqxOXvh0muJA8kzG3bUX3KTtKBoyzB3Pt4w+58QMqBjgYC9s
-         z6MvybFZoVJiiGJq1wl7bwv86Dqk4DhgSym5JDhp9odTtjNa6tlA6Vt7u9+FA9SDEleC
-         xwXQ==
-X-Gm-Message-State: AOAM5327C5YaQVt1GSeteQDZed2vlEJFdp9N+zY/jQcfPwpo+uEJw8sA
-        tA92C2f4ShBNP2hQv3BAFnJiOKzdWNasnW1NzPXl0PdsYIfG6zz7t5jxOTTQ8a6TODu/9SdW0WL
-        ehtepEiFZPy83qZT8
-X-Received: by 2002:a5d:6889:: with SMTP id h9mr5083522wru.80.1626616701139;
-        Sun, 18 Jul 2021 06:58:21 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwF7QfXkH4VrgcY96cSNBnRG8DR0SNMZ2/Sbv43p7XU/OxiIQSeCAAcCG8kp14LFV47h3tTuA==
-X-Received: by 2002:a5d:6889:: with SMTP id h9mr5083506wru.80.1626616700970;
-        Sun, 18 Jul 2021 06:58:20 -0700 (PDT)
-Received: from redhat.com ([2.55.29.175])
-        by smtp.gmail.com with ESMTPSA id o18sm16881198wrx.21.2021.07.18.06.58.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5h/ouo57VgfmtTZNOxTlKh2p8kwjX4qlWDpeGeXNCSw=;
+        b=FNcC6Op1Dq0Jts2tx8aRYURS9aWjt5Qt+FPaXyg/vvPQCLvAd+0+iySMpJ3uSkAjld
+         aYvq5u/RO7PNbeN5DXDwcjVHf1pTFo59Ay4KylGFeW1q2dcedmIfUwm0DLx6j+yzNwRo
+         gg+hwAihPxEeqELsUAlWkU6wIQFxDf69NCjiZvEQAgUHp8Zf3WGq8jSy9ZqpKagKTllz
+         2xHmESgLUy3TDBc73pB+lB4KccNb4EOywDNhDTJ/TlVE+n9C5nHW7gMCiTaltLKZIvTL
+         3CJGGd0ruQcQZKnoemuSXQLJRi8TuSdjOwii7MClyolBKwVTohQePvDAHQxAIqOLfFi9
+         6I7g==
+X-Gm-Message-State: AOAM530Y3Pzq1p0Nf5CaLpdSYEpRv8kYVp70SjNdi+h88FaWeawqggIJ
+        xqrJ9l2BTJu0fr2GpH0thTQ=
+X-Google-Smtp-Source: ABdhPJxAC6fn/DP+PNyKXtUIZlqSaYt9k7413pykYoIs1F02KyvnCjQEDOYB4qFjkob/vbIs+8QZyg==
+X-Received: by 2002:a17:90b:3652:: with SMTP id nh18mr20777647pjb.127.1626619231296;
+        Sun, 18 Jul 2021 07:40:31 -0700 (PDT)
+Received: from localhost.localdomain (bb42-60-144-185.singnet.com.sg. [42.60.144.185])
+        by smtp.gmail.com with ESMTPSA id 144sm18740439pgg.4.2021.07.18.07.40.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Jul 2021 06:58:20 -0700 (PDT)
-Date:   Sun, 18 Jul 2021 09:58:15 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Tal Gilboa <talgi@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH mlx5-next] IB/mlx5: Rename is_apu_thread_cq function to
- is_apu_cq
-Message-ID: <20210718095805-mutt-send-email-mst@kernel.org>
-References: <0e3364dab7e0e4eea5423878b01aa42470be8d36.1626609184.git.leonro@nvidia.com>
+        Sun, 18 Jul 2021 07:40:30 -0700 (PDT)
+From:   Nguyen Dinh Phi <phind.uet@gmail.com>
+To:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org,
+        xiyou.wangcong@gmail.com
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>, linux-hams@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+10f1194569953b72f1ae@syzkaller.appspotmail.com
+Subject: [PATCH] netrom: Decrease sock refcount when sock timers expire
+Date:   Sun, 18 Jul 2021 22:40:13 +0800
+Message-Id: <20210718144013.753774-1-phind.uet@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e3364dab7e0e4eea5423878b01aa42470be8d36.1626609184.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 18, 2021 at 02:54:13PM +0300, Leon Romanovsky wrote:
-> From: Tal Gilboa <talgi@nvidia.com>
-> 
-> is_apu_thread_cq() used to detect CQs which are attached to APU
-> threads. This was extended to support other elements as well,
-> so the function was renamed to is_apu_cq().
-> 
-> c_eqn_or_apu_element was extended from 8 bits to 32 bits, which wan't
-> reflected when the APU support was first introduced.
-> 
-> Signed-off-by: Tal Gilboa <talgi@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Commit 63346650c1a9 ("netrom: switch to sock timer API") switched to use
+sock timer API. It replaces mod_timer() by sk_reset_timer(), and
+del_timer() by sk_stop_timer().
 
-vdpa bits
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Function sk_reset_timer() will increase the refcount of sock if it is
+called on an inactive timer, hence, in case the timer expires, we need to
+decrease the refcount ourselves in the handler, otherwise, the sock
+refcount will be unbalanced and the sock will never be freed.
 
-> ---
->  drivers/infiniband/hw/mlx5/cq.c                            | 2 +-
->  drivers/infiniband/hw/mlx5/devx.c                          | 7 +++----
->  drivers/net/ethernet/mellanox/mlx5/core/cq.c               | 3 ++-
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c          | 2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c        | 2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c | 2 +-
->  drivers/vdpa/mlx5/net/mlx5_vnet.c                          | 2 +-
->  include/linux/mlx5/mlx5_ifc.h                              | 5 ++---
->  8 files changed, 12 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-> index aef87a7c01ff..464e6a1ecdb0 100644
-> --- a/drivers/infiniband/hw/mlx5/cq.c
-> +++ b/drivers/infiniband/hw/mlx5/cq.c
-> @@ -997,7 +997,7 @@ int mlx5_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
->  				  MLX5_IB_CQ_PR_FLAGS_CQE_128_PAD));
->  	MLX5_SET(cqc, cqc, log_cq_size, ilog2(entries));
->  	MLX5_SET(cqc, cqc, uar_page, index);
-> -	MLX5_SET(cqc, cqc, c_eqn, eqn);
-> +	MLX5_SET(cqc, cqc, c_eqn_or_apu_element, eqn);
->  	MLX5_SET64(cqc, cqc, dbr_addr, cq->db.dma);
->  	if (cq->create_flags & IB_UVERBS_CQ_FLAGS_IGNORE_OVERRUN)
->  		MLX5_SET(cqc, cqc, oi, 1);
-> diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-> index edcac8b3f384..31f5f4c73d25 100644
-> --- a/drivers/infiniband/hw/mlx5/devx.c
-> +++ b/drivers/infiniband/hw/mlx5/devx.c
-> @@ -1437,11 +1437,10 @@ static void devx_cq_comp(struct mlx5_core_cq *mcq, struct mlx5_eqe *eqe)
->  	rcu_read_unlock();
->  }
->  
-> -static bool is_apu_thread_cq(struct mlx5_ib_dev *dev, const void *in)
-> +static bool is_apu_cq(struct mlx5_ib_dev *dev, const void *in)
->  {
->  	if (!MLX5_CAP_GEN(dev->mdev, apu) ||
-> -	    !MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context),
-> -		      apu_thread_cq))
-> +	    !MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context), apu_cq))
->  		return false;
->  
->  	return true;
-> @@ -1501,7 +1500,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
->  		err = mlx5_core_create_dct(dev, &obj->core_dct, cmd_in,
->  					   cmd_in_len, cmd_out, cmd_out_len);
->  	} else if (opcode == MLX5_CMD_OP_CREATE_CQ &&
-> -		   !is_apu_thread_cq(dev, cmd_in)) {
-> +		   !is_apu_cq(dev, cmd_in)) {
->  		obj->flags |= DEVX_OBJ_FLAGS_CQ;
->  		obj->core_cq.comp = devx_cq_comp;
->  		err = mlx5_core_create_cq(dev->mdev, &obj->core_cq,
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-> index df3e4938ecdd..99ec278d0370 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-> @@ -89,7 +89,8 @@ static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq,
->  int mlx5_core_create_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
->  			u32 *in, int inlen, u32 *out, int outlen)
->  {
-> -	int eqn = MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context), c_eqn);
-> +	int eqn = MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context),
-> +			   c_eqn_or_apu_element);
->  	u32 din[MLX5_ST_SZ_DW(destroy_cq_in)] = {};
->  	struct mlx5_eq_comp *eq;
->  	int err;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index c47603a952f3..308ccace48d0 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -1626,7 +1626,7 @@ static int mlx5e_create_cq(struct mlx5e_cq *cq, struct mlx5e_cq_param *param)
->  				  (__be64 *)MLX5_ADDR_OF(create_cq_in, in, pas));
->  
->  	MLX5_SET(cqc,   cqc, cq_period_mode, param->cq_period_mode);
-> -	MLX5_SET(cqc,   cqc, c_eqn,         eqn);
-> +	MLX5_SET(cqc,   cqc, c_eqn_or_apu_element, eqn);
->  	MLX5_SET(cqc,   cqc, uar_page,      mdev->priv.uar->index);
->  	MLX5_SET(cqc,   cqc, log_page_size, cq->wq_ctrl.buf.page_shift -
->  					    MLX5_ADAPTER_PAGE_SHIFT);
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-> index 6f78716ff321..9bb4944820df 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-> @@ -454,7 +454,7 @@ static int mlx5_fpga_conn_create_cq(struct mlx5_fpga_conn *conn, int cq_size)
->  
->  	cqc = MLX5_ADDR_OF(create_cq_in, in, cq_context);
->  	MLX5_SET(cqc, cqc, log_cq_size, ilog2(cq_size));
-> -	MLX5_SET(cqc, cqc, c_eqn, eqn);
-> +	MLX5_SET(cqc, cqc, c_eqn_or_apu_element, eqn);
->  	MLX5_SET(cqc, cqc, uar_page, fdev->conn_res.uar->index);
->  	MLX5_SET(cqc, cqc, log_page_size, conn->cq.wq_ctrl.buf.page_shift -
->  			   MLX5_ADAPTER_PAGE_SHIFT);
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> index d1300b16d054..a4a3ee87a903 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
-> @@ -790,7 +790,7 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
->  
->  	cqc = MLX5_ADDR_OF(create_cq_in, in, cq_context);
->  	MLX5_SET(cqc, cqc, log_cq_size, ilog2(ncqe));
-> -	MLX5_SET(cqc, cqc, c_eqn, eqn);
-> +	MLX5_SET(cqc, cqc, c_eqn_or_apu_element, eqn);
->  	MLX5_SET(cqc, cqc, uar_page, uar->index);
->  	MLX5_SET(cqc, cqc, log_page_size, cq->wq_ctrl.buf.page_shift -
->  		 MLX5_ADAPTER_PAGE_SHIFT);
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 0121c7c49396..83fa3c26cbd2 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -573,7 +573,7 @@ static int cq_create(struct mlx5_vdpa_net *ndev, u16 idx, u32 num_ent)
->  	cqc = MLX5_ADDR_OF(create_cq_in, in, cq_context);
->  	MLX5_SET(cqc, cqc, log_cq_size, ilog2(num_ent));
->  	MLX5_SET(cqc, cqc, uar_page, ndev->mvdev.res.uar->index);
-> -	MLX5_SET(cqc, cqc, c_eqn, eqn);
-> +	MLX5_SET(cqc, cqc, c_eqn_or_apu_element, eqn);
->  	MLX5_SET64(cqc, cqc, dbr_addr, vcq->db.dma);
->  
->  	err = mlx5_core_create_cq(mdev, &vcq->mcq, in, inlen, out, sizeof(out));
-> diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-> index c980eab89867..e93f16b87312 100644
-> --- a/include/linux/mlx5/mlx5_ifc.h
-> +++ b/include/linux/mlx5/mlx5_ifc.h
-> @@ -3923,7 +3923,7 @@ struct mlx5_ifc_cqc_bits {
->  	u8         status[0x4];
->  	u8         reserved_at_4[0x2];
->  	u8         dbr_umem_valid[0x1];
-> -	u8         apu_thread_cq[0x1];
-> +	u8         apu_cq[0x1];
->  	u8         cqe_sz[0x3];
->  	u8         cc[0x1];
->  	u8         reserved_at_c[0x1];
-> @@ -3949,8 +3949,7 @@ struct mlx5_ifc_cqc_bits {
->  	u8         cq_period[0xc];
->  	u8         cq_max_count[0x10];
->  
-> -	u8         reserved_at_a0[0x18];
-> -	u8         c_eqn[0x8];
-> +	u8         c_eqn_or_apu_element[0x20];
->  
->  	u8         reserved_at_c0[0x3];
->  	u8         log_page_size[0x5];
-> -- 
-> 2.31.1
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+Reported-by: syzbot+10f1194569953b72f1ae@syzkaller.appspotmail.com
+Fixes: 63346650c1a9 ("netrom: switch to sock timer API")
+---
+ net/netrom/nr_timer.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/net/netrom/nr_timer.c b/net/netrom/nr_timer.c
+index 9115f8a7dd45..a8da88db7893 100644
+--- a/net/netrom/nr_timer.c
++++ b/net/netrom/nr_timer.c
+@@ -121,11 +121,9 @@ static void nr_heartbeat_expiry(struct timer_list *t)
+ 		   is accepted() it isn't 'dead' so doesn't get removed. */
+ 		if (sock_flag(sk, SOCK_DESTROY) ||
+ 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
+-			sock_hold(sk);
+ 			bh_unlock_sock(sk);
+ 			nr_destroy_socket(sk);
+-			sock_put(sk);
+-			return;
++			goto out;
+ 		}
+ 		break;
+
+@@ -146,6 +144,8 @@ static void nr_heartbeat_expiry(struct timer_list *t)
+
+ 	nr_start_heartbeat(sk);
+ 	bh_unlock_sock(sk);
++out:
++	sock_put(sk);
+ }
+
+ static void nr_t2timer_expiry(struct timer_list *t)
+@@ -159,6 +159,7 @@ static void nr_t2timer_expiry(struct timer_list *t)
+ 		nr_enquiry_response(sk);
+ 	}
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+
+ static void nr_t4timer_expiry(struct timer_list *t)
+@@ -169,6 +170,7 @@ static void nr_t4timer_expiry(struct timer_list *t)
+ 	bh_lock_sock(sk);
+ 	nr_sk(sk)->condition &= ~NR_COND_PEER_RX_BUSY;
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+
+ static void nr_idletimer_expiry(struct timer_list *t)
+@@ -197,6 +199,7 @@ static void nr_idletimer_expiry(struct timer_list *t)
+ 		sock_set_flag(sk, SOCK_DEAD);
+ 	}
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+
+ static void nr_t1timer_expiry(struct timer_list *t)
+@@ -209,8 +212,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
+ 	case NR_STATE_1:
+ 		if (nr->n2count == nr->n2) {
+ 			nr_disconnect(sk, ETIMEDOUT);
+-			bh_unlock_sock(sk);
+-			return;
++			goto out;
+ 		} else {
+ 			nr->n2count++;
+ 			nr_write_internal(sk, NR_CONNREQ);
+@@ -220,8 +222,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
+ 	case NR_STATE_2:
+ 		if (nr->n2count == nr->n2) {
+ 			nr_disconnect(sk, ETIMEDOUT);
+-			bh_unlock_sock(sk);
+-			return;
++			goto out;
+ 		} else {
+ 			nr->n2count++;
+ 			nr_write_internal(sk, NR_DISCREQ);
+@@ -231,8 +232,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
+ 	case NR_STATE_3:
+ 		if (nr->n2count == nr->n2) {
+ 			nr_disconnect(sk, ETIMEDOUT);
+-			bh_unlock_sock(sk);
+-			return;
++			goto out;
+ 		} else {
+ 			nr->n2count++;
+ 			nr_requeue_frames(sk);
+@@ -241,5 +241,7 @@ static void nr_t1timer_expiry(struct timer_list *t)
+ 	}
+
+ 	nr_start_t1timer(sk);
++out:
+ 	bh_unlock_sock(sk);
++	sock_put(sk);
+ }
+--
+2.25.1
 
