@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A34D3CCA72
+	by mail.lfdr.de (Postfix) with ESMTP id C35A93CCA73
 	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbhGRTjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
+        id S232312AbhGRTjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbhGRTjt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:49 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE5EC061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id u3so8378620plf.5
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
+        with ESMTP id S229585AbhGRTjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:51 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EA3C061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id h6-20020a17090a6486b029017613554465so816350pjj.4
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=547B+jCYZEss9p8PP/5v8fLXb0gL473ByLMnWmZdfrA=;
-        b=Ow1kP8wNPG5AgfQuIHnvCC+6Dsw9aQNJ5V3+c//svnlcIa5l88RsWvCDSUO/UI4/mt
-         fgLU53LD6pL2+wAwb4fqDp+9e+nylsi4hwRcK6Ciboe8a0VxMPEihtZe9tis6/CvexeM
-         2NzbJpNCqpAgGRF/K+EtNvACd076xj9q5UbD0=
+        bh=Hh9rG2EbBgTHz6YteXKWobEw4rt1UICIoqpTaWRs3ns=;
+        b=dj+B7O91nae6WwouqIHgjH2lYJtlItrWatucqi87RZGqaJzJXemHLgh70Yo1d4NzwV
+         ++mn+V0woY8jmnGqwAdz/KKLpECTXt6oU3ppUdCM5uXBQXbOqiyWS0h6nngoP9GsnjGz
+         TKFywnNThl7bf7th/pchxYErtUeBcXi4g+2VU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=547B+jCYZEss9p8PP/5v8fLXb0gL473ByLMnWmZdfrA=;
-        b=fasaOr7DEPdztjFU61kbaTgerOXYfWdGjRjWbxAHn3e8EifcRuoyW1ucCZYLw2NTqg
-         JPjEP+aFICvZLG7pI1nW81zTqT3aSztI39/RwevRMALeZJ5iMGnoAzzUpGPo7KZZWlFD
-         m+Zp5h9dl2zc9QjCAAmpu724hneMd23E/vi9ozYukYwfW9ShBemN5q/t25LxqUt9ZNmt
-         9olyDT9HZPAvHwGIOvCE7zYhrWbUatyLtWEqY9TmdXkBAmT8oaHB2jyLjYys2TQPQmiJ
-         aYLVkgQ1yZsDbrp0NWKXlUh6aVpuUAWzu13rmJ6tTkgry94zBk6cvgHl2Q/7wu4q//Fl
-         P9jg==
-X-Gm-Message-State: AOAM533Kq8LCxonGGpxTKswQKU0jdQqoDu2LX+xTpShizsAD5ICLIeB0
-        7nQ+F8ACtc8OR9ZfltU9IZbQ+g==
-X-Google-Smtp-Source: ABdhPJww1YmTOHgI0lUmpCHQD3THyP0ICnKcpndpxYohYKgmmsg8KSzZ69CFVQaq8ZHGRm5Q9SxahQ==
-X-Received: by 2002:a17:90a:c78f:: with SMTP id gn15mr26641442pjb.90.1626637010731;
-        Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
+        bh=Hh9rG2EbBgTHz6YteXKWobEw4rt1UICIoqpTaWRs3ns=;
+        b=J8IFVGO37bauBYw2zdVztF60CkQ5D6s9HpPMqn3NitI5RoNduk4PdEpxIXrzj4w6Cl
+         4A7OBly3Eo4sHDdCtpgQxxHJr0ZJpju9Ue6Aow0duh9ICoOo1SbEszL9LqheLlmoaaxL
+         3FCQRDmLtzN9tauOloVeLnvzN7U0eVOPHu5n3b/8ZLp4X2ExFBm96KlJuW58HI3TlrUm
+         hdRR8Dc21kQMBhCGWAteLhRf6x1LtsVT/FirtU2TDYdFWj4Fkj0MuuAIRsxMAriejXil
+         5Z880y1JNgDV6nl3pwisXk6OAsNuTWza3DFsgSHogKFc5J/BD8FAR71OrQa9dHcxuJwB
+         1D7A==
+X-Gm-Message-State: AOAM531RjtVEfWQTKIH9rvc6ypyc+ZX83FqVn9kYbfU1no0j9KsdWCEy
+        qREvx/XACoNDd03SLuBjNhnGIQ==
+X-Google-Smtp-Source: ABdhPJyk/8LKfC44kGVBPgqXsq3fzZ40QZ2R6sjCn+OTfsXz2C/HkEgo9DLLmpG36Gi2TgORtHw+Ow==
+X-Received: by 2002:a17:90a:bd04:: with SMTP id y4mr27129067pjr.127.1626637011919;
+        Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.49
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.50
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 3/9] bnxt_en: Refresh RoCE capabilities in bnxt_ulp_probe()
-Date:   Sun, 18 Jul 2021 15:36:27 -0400
-Message-Id: <1626636993-31926-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 4/9] bnxt_en: Add missing check for BNXT_STATE_ABORT_ERR in bnxt_fw_rset_task()
+Date:   Sun, 18 Jul 2021 15:36:28 -0400
+Message-Id: <1626636993-31926-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003b50d105c76af1a9"
+        boundary="00000000000050e33905c76af1fe"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000003b50d105c76af1a9
+--00000000000050e33905c76af1fe
 
-The capabilities can change after firmware upgrade/downgrade, so we
-should get the up-to-date RoCE capabilities everytime bnxt_ulp_probe()
-is called.
+In the BNXT_FW_RESET_STATE_POLL_VF state in bnxt_fw_reset_task() after all
+VFs have unregistered, we need to check for BNXT_STATE_ABORT_ERR after
+we acquire the rtnl_lock.  If the flag is set, we need to abort.
 
-Fixes: 2151fe0830fd ("bnxt_en: Handle RESET_NOTIFY async event from firmware.")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Fixes: 230d1f0de754 ("bnxt_en: Handle firmware reset.")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-index a918e374f3c5..187ff643ad2a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-@@ -479,16 +479,17 @@ struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
- 		if (!edev)
- 			return ERR_PTR(-ENOMEM);
- 		edev->en_ops = &bnxt_en_ops_tbl;
--		if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
--			edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
--		if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
--			edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
- 		edev->net = dev;
- 		edev->pdev = bp->pdev;
- 		edev->l2_db_size = bp->db_size;
- 		edev->l2_db_size_nc = bp->db_size;
- 		bp->edev = edev;
- 	}
-+	edev->flags &= ~BNXT_EN_FLAG_ROCE_CAP;
-+	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
-+		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
-+	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
-+		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
- 	return bp->edev;
- }
- EXPORT_SYMBOL(bnxt_ulp_probe);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index fdfb75a1608d..39908a3d9460 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -11992,6 +11992,10 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 		}
+ 		bp->fw_reset_timestamp = jiffies;
+ 		rtnl_lock();
++		if (test_bit(BNXT_STATE_ABORT_ERR, &bp->state)) {
++			rtnl_unlock();
++			goto fw_reset_abort;
++		}
+ 		bnxt_fw_reset_close(bp);
+ 		if (bp->fw_cap & BNXT_FW_CAP_ERR_RECOVER_RELOAD) {
+ 			bp->fw_reset_state = BNXT_FW_RESET_STATE_POLL_FW_DOWN;
 -- 
 2.18.1
 
 
---0000000000003b50d105c76af1a9
+--00000000000050e33905c76af1fe
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -173,13 +160,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL2P8nTnRTflJCIS21MJrPhuwt3wedRS
-2LgAbrkfk/iKMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIDF03TpMmcYSQeqPab4PtxAvR0lPG30p
+fx2XtXgb8NFoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBy1gBFt49hF7U831UiuTT5VDrWmFI5jj59ZAYTG1hYXKnfYAI2
-NMQF7NY5R0+hLwO/Ak99tjqMJgIDJQEd+It2n+XLix8H7Se4fPcVtv/Bxc1NjDgQY/6rZtcJRen1
-nYKE3uszV70IO+RN9APXaTZWukEy9vsqBJkUP1oSylB0vUeodT72gnMofu0HlqWbH5JXj3VfWcnz
-suEOf7zzBnlV8SgjCTrtK6R8m4i5mK7FCDyZyOFwu6lGPTxzVjQVeRj9Ai91zAJiLf+Tly8fQwQU
-Gn8nL3Na9jF9OPvK89JJOkLdEaitLOhKb2HbSb52CXvsBlEmwux+7/GX7wKnepzQ
---0000000000003b50d105c76af1a9--
+ATANBgkqhkiG9w0BAQEFAASCAQBS1UDe23WKG4FWJIUiy2XQYY8liGbHzSMUc1gUOhJbM8eHE/QC
+HJQ7DVvmDijn5Tx5EUIkGmnO5Qz5wWScttQIRB2aKZSm475MZ+qfO7QuT97SNm2bYY9Vo5++h4Wu
+fLU3xNICQDU41RTrAigR+0FsZ1WsMByTp93hEcitCzUEhhunlGbtXduNxH1qVJv5sm9IDCDcOu0I
+8t2bWafBWkfh8RZs773M9KYhWVmU75YfpaPBq4Ox0CDz0FZUvpqzrsJA0uGxwvYtL2Iuy2/S8RKr
+CYnFSl1K1/moAs4CG5Hqp87XFPZNwxNc3cCslRZH+CI34YeZV3I69+DNSbaTUT5c
+--00000000000050e33905c76af1fe--
