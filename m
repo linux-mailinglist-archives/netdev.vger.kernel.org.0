@@ -2,118 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315593CCA71
+	by mail.lfdr.de (Postfix) with ESMTP id 7A34D3CCA72
 	for <lists+netdev@lfdr.de>; Sun, 18 Jul 2021 21:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbhGRTju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 15:39:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
+        id S231998AbhGRTjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 15:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbhGRTjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:48 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7F4C061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id b2so3820697plx.1
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
+        with ESMTP id S230502AbhGRTjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 15:39:49 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE5EC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id u3so8378620plf.5
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 12:36:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=siqVdRJT8bhOSVR5T1FftAUSbOX5LO960bTwfqwwGTE=;
-        b=Y21iGyPNsm8dejqU4z++onVbxHRKXgHuFrB8+IcIEbhOmutwaT1YUPYB6fjtsZV86R
-         wAahszK/f/1QnSCFF6Twiq2SJJ7DuOJ+P7d1tmEoJqDIJrwXu2ejppRkGW8X3RXs5Tlg
-         /Q0+zvZ2K+NMHaEyFZaeCuzVOUYo4Bsy04DmY=
+        bh=547B+jCYZEss9p8PP/5v8fLXb0gL473ByLMnWmZdfrA=;
+        b=Ow1kP8wNPG5AgfQuIHnvCC+6Dsw9aQNJ5V3+c//svnlcIa5l88RsWvCDSUO/UI4/mt
+         fgLU53LD6pL2+wAwb4fqDp+9e+nylsi4hwRcK6Ciboe8a0VxMPEihtZe9tis6/CvexeM
+         2NzbJpNCqpAgGRF/K+EtNvACd076xj9q5UbD0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=siqVdRJT8bhOSVR5T1FftAUSbOX5LO960bTwfqwwGTE=;
-        b=mhaDAkD2oCNOQfMYL2O2Bi5uo6mMGI79izE1+kLhz4syuYNeTHPsclKILVs8rQ1W1O
-         xn3UFL/3weOMGjvs5dy5dQJaZFz+zJIOPiD6yhEJaMBamfVmIm/cmS0J9sqrBGhGiz8b
-         c8yyJqwVZNCjBeg5Ry5YzGk3BfJnp+HzrBc6oH8y/z/3gDF0zBrC1WnKnW6b+cL/8DpA
-         KeLoOBMXSr+TUde8SjKBVO/5chpGO00z/cOokMvF6GfC87z2OdH4eUNa2PMSx9+JKfoS
-         XsyuKxV7ADzxcnLOiizCEEReXwF6j/ZeC5Rl9/WYE+vB9Gd1juuLD5qtq/g1pWkf83n5
-         htfg==
-X-Gm-Message-State: AOAM533CHtMMiMDLT7/nndCIUtAQ9rSPCJOpBBbm2Jp/bGDTXv/pFt2q
-        nnVzzCxFodHPZ6PHPUJ+kkX2Qw==
-X-Google-Smtp-Source: ABdhPJzbokO+XCZ32TY9U0eYcBJs1AGePiiTQUocZQYPB/fYfk3j2aU/x79DtGFxk+dpjms8UOVX7g==
-X-Received: by 2002:a17:902:e00e:b029:ef:5f1c:18a8 with SMTP id o14-20020a170902e00eb02900ef5f1c18a8mr16751156plo.38.1626637009637;
-        Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
+        bh=547B+jCYZEss9p8PP/5v8fLXb0gL473ByLMnWmZdfrA=;
+        b=fasaOr7DEPdztjFU61kbaTgerOXYfWdGjRjWbxAHn3e8EifcRuoyW1ucCZYLw2NTqg
+         JPjEP+aFICvZLG7pI1nW81zTqT3aSztI39/RwevRMALeZJ5iMGnoAzzUpGPo7KZZWlFD
+         m+Zp5h9dl2zc9QjCAAmpu724hneMd23E/vi9ozYukYwfW9ShBemN5q/t25LxqUt9ZNmt
+         9olyDT9HZPAvHwGIOvCE7zYhrWbUatyLtWEqY9TmdXkBAmT8oaHB2jyLjYys2TQPQmiJ
+         aYLVkgQ1yZsDbrp0NWKXlUh6aVpuUAWzu13rmJ6tTkgry94zBk6cvgHl2Q/7wu4q//Fl
+         P9jg==
+X-Gm-Message-State: AOAM533Kq8LCxonGGpxTKswQKU0jdQqoDu2LX+xTpShizsAD5ICLIeB0
+        7nQ+F8ACtc8OR9ZfltU9IZbQ+g==
+X-Google-Smtp-Source: ABdhPJww1YmTOHgI0lUmpCHQD3THyP0ICnKcpndpxYohYKgmmsg8KSzZ69CFVQaq8ZHGRm5Q9SxahQ==
+X-Received: by 2002:a17:90a:c78f:: with SMTP id gn15mr26641442pjb.90.1626637010731;
+        Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.48
+        by smtp.gmail.com with ESMTPSA id 22sm16743648pfo.80.2021.07.18.12.36.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 18 Jul 2021 12:36:49 -0700 (PDT)
+        Sun, 18 Jul 2021 12:36:50 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net 2/9] bnxt_en: reject ETS settings that will starve a TC
-Date:   Sun, 18 Jul 2021 15:36:26 -0400
-Message-Id: <1626636993-31926-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/9] bnxt_en: Refresh RoCE capabilities in bnxt_ulp_probe()
+Date:   Sun, 18 Jul 2021 15:36:27 -0400
+Message-Id: <1626636993-31926-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 References: <1626636993-31926-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000002a034905c76af18a"
+        boundary="0000000000003b50d105c76af1a9"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000002a034905c76af18a
+--0000000000003b50d105c76af1a9
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+The capabilities can change after firmware upgrade/downgrade, so we
+should get the up-to-date RoCE capabilities everytime bnxt_ulp_probe()
+is called.
 
-ETS proportions are presented to HWRM_QUEUE_COS2BW_CFG as minimum
-bandwidth constraints. Thus, zero is a legal value for a given TC.
-However, if all the other TCs sum up to 100%, then at least one
-hardware queue will starve, resulting in guaranteed TX timeouts.
-Reject such nonsensical configurations.
-
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Fixes: 2151fe0830fd ("bnxt_en: Handle RESET_NOTIFY async event from firmware.")
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-index 8e90224c43a2..8a68df4d9e59 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-@@ -433,6 +433,7 @@ static int bnxt_hwrm_queue_dscp2pri_cfg(struct bnxt *bp, struct dcb_app *app,
- static int bnxt_ets_validate(struct bnxt *bp, struct ieee_ets *ets, u8 *tc)
- {
- 	int total_ets_bw = 0;
-+	bool zero = false;
- 	u8 max_tc = 0;
- 	int i;
- 
-@@ -453,13 +454,20 @@ static int bnxt_ets_validate(struct bnxt *bp, struct ieee_ets *ets, u8 *tc)
- 			break;
- 		case IEEE_8021QAZ_TSA_ETS:
- 			total_ets_bw += ets->tc_tx_bw[i];
-+			zero = zero || !ets->tc_tx_bw[i];
- 			break;
- 		default:
- 			return -ENOTSUPP;
- 		}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index a918e374f3c5..187ff643ad2a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -479,16 +479,17 @@ struct bnxt_en_dev *bnxt_ulp_probe(struct net_device *dev)
+ 		if (!edev)
+ 			return ERR_PTR(-ENOMEM);
+ 		edev->en_ops = &bnxt_en_ops_tbl;
+-		if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
+-			edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
+-		if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
+-			edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
+ 		edev->net = dev;
+ 		edev->pdev = bp->pdev;
+ 		edev->l2_db_size = bp->db_size;
+ 		edev->l2_db_size_nc = bp->db_size;
+ 		bp->edev = edev;
  	}
--	if (total_ets_bw > 100)
-+	if (total_ets_bw > 100) {
-+		netdev_warn(bp->dev, "rejecting ETS config exceeding available bandwidth\n");
- 		return -EINVAL;
-+	}
-+	if (zero && total_ets_bw == 100) {
-+		netdev_warn(bp->dev, "rejecting ETS config starving a TC\n");
-+		return -EINVAL;
-+	}
- 
- 	if (max_tc >= bp->max_tc)
- 		*tc = bp->max_tc;
++	edev->flags &= ~BNXT_EN_FLAG_ROCE_CAP;
++	if (bp->flags & BNXT_FLAG_ROCEV1_CAP)
++		edev->flags |= BNXT_EN_FLAG_ROCEV1_CAP;
++	if (bp->flags & BNXT_FLAG_ROCEV2_CAP)
++		edev->flags |= BNXT_EN_FLAG_ROCEV2_CAP;
+ 	return bp->edev;
+ }
+ EXPORT_SYMBOL(bnxt_ulp_probe);
 -- 
 2.18.1
 
 
---0000000000002a034905c76af18a
+--0000000000003b50d105c76af1a9
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -184,13 +173,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEILAX2/mBljdQrFlpmGUHg3MwlBpYQ/9f
-aP9Cu3EAc8SnMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
-ODE5MzY1MFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIL2P8nTnRTflJCIS21MJrPhuwt3wedRS
+2LgAbrkfk/iKMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcx
+ODE5MzY1MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBA1hwMCIKGS//AyEq/MWJVE5RT6aOgaL0R6nm38u2hMqzi+bDB
-keP4S2JNIfrQ8vbSlNlfQ0/oLI9q/W0zmNL6ZkBGHhRhrq/nEiQ1vW7y3sZ5ydMD5JrGyU+QZCI5
-sB8vgD6TApEaj29mN0yIt5s7plOUzXHx2UACyT/ZNCpVGUoBMzapgixu8Ud9WjbOVNddid6zSkY2
-voWkasIKt6IUkvA9/zuic4pUJOenJUawzhIgqD/tJq5fW/t2GTpUWT9Acyas5w/GvskgCvjFyYFk
-mUaAHNvf/amRmcioH38TFUfU0OtjWShEDGaS/3rKUjJfSi0O78XRefm3P/h0prxO
---0000000000002a034905c76af18a--
+ATANBgkqhkiG9w0BAQEFAASCAQBy1gBFt49hF7U831UiuTT5VDrWmFI5jj59ZAYTG1hYXKnfYAI2
+NMQF7NY5R0+hLwO/Ak99tjqMJgIDJQEd+It2n+XLix8H7Se4fPcVtv/Bxc1NjDgQY/6rZtcJRen1
+nYKE3uszV70IO+RN9APXaTZWukEy9vsqBJkUP1oSylB0vUeodT72gnMofu0HlqWbH5JXj3VfWcnz
+suEOf7zzBnlV8SgjCTrtK6R8m4i5mK7FCDyZyOFwu6lGPTxzVjQVeRj9Ai91zAJiLf+Tly8fQwQU
+Gn8nL3Na9jF9OPvK89JJOkLdEaitLOhKb2HbSb52CXvsBlEmwux+7/GX7wKnepzQ
+--0000000000003b50d105c76af1a9--
