@@ -2,69 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB013CCEF2
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 09:55:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B41C23CCFBC
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbhGSH6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 03:58:22 -0400
-Received: from relay.sw.ru ([185.231.240.75]:52586 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234899AbhGSH6W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 03:58:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=Qs4XlbPUE6apDQAFm0j0TfDJpKNeesqn0NIlAUMQvZg=; b=TDrzIglAE7CTyNlJXQX
-        XRRcDWM4LgStXDf45HnxX6I2gojsVOjcgc1RwN7UXvnpSnof5AYlMpj2cAMKLi5d6nodnbEa6PuZT
-        kIB66iAS0gjNXuGdGguH7eNH90EdKqdM6KVVvfd7GuPnwDIQQ3YHK3WVt6frgk5lifB/2jKjvrw=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m5O7P-004Ps3-1b; Mon, 19 Jul 2021 10:55:15 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH NET] ipv6: ip6_finish_output2: set sk into newly allocated
- nskb
-References: <20210718.100457.250657299500744178.davem@davemloft.net>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Message-ID: <70c0744f-89ae-1869-7e3e-4fa292158f4b@virtuozzo.com>
-Date:   Mon, 19 Jul 2021 10:55:14 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S235886AbhGSITn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 04:19:43 -0400
+Received: from lucky1.263xmail.com ([211.157.147.130]:33920 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235804AbhGSITf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 04:19:35 -0400
+Received: from localhost (unknown [192.168.167.224])
+        by lucky1.263xmail.com (Postfix) with ESMTP id D2BB2D5926;
+        Mon, 19 Jul 2021 16:40:53 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-SKE-CHECKED: 1
+X-ANTISPAM-LEVEL: 2
+Received: from localhost.localdomain (unknown [113.57.152.160])
+        by smtp.263.net (postfix) whith ESMTP id P4529T140205463938816S1626684052757344_;
+        Mon, 19 Jul 2021 16:40:53 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <8446a6821242da1262802ade580ea9f9>
+X-RL-SENDER: chenhaoa@uniontech.com
+X-SENDER: chenhaoa@uniontech.com
+X-LOGIN-NAME: chenhaoa@uniontech.com
+X-FST-TO: peppe.cavallaro@st.com
+X-RCPT-COUNT: 11
+X-SENDER-IP: 113.57.152.160
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   Hao Chen <chenhaoa@uniontech.com>
+To:     peppe.cavallaro@st.com
+Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org, Hao Chen <chenhaoa@uniontech.com>
+Subject: [PATCH v3] net: stmmac: fix 'ethtool -P' return -EBUSY
+Date:   Mon, 19 Jul 2021 16:40:51 +0800
+Message-Id: <20210719084051.102578-1-chenhaoa@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20210718.100457.250657299500744178.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb_set_owner_w() should set sk not to old skb but to new nskb.
+The permanent mac address should be available for query when the device
+is not up.
+NetworkManager, the system network daemon, uses 'ethtool -P' to obtain
+the permanent address after the kernel start. When the network device
+is not up, it will return the device busy error with 'ethtool -P'. At
+that time, it is unable to access the Internet through the permanent
+address by NetworkManager.
+I think that the '.begin' is not used to check if the device is up.
 
-Fixes: 5796015fa968("ipv6: allocate enough headroom in ip6_finish_output2()")
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
 ---
- net/ipv6/ip6_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 01bea76..e1b9f7a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -74,7 +74,7 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index d0ce608b81c3..8fbb58c95507 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -15,6 +15,7 @@
+ #include <linux/phylink.h>
+ #include <linux/net_tstamp.h>
+ #include <asm/io.h>
++#include <linux/pm_runtime.h>
  
- 			if (likely(nskb)) {
- 				if (skb->sk)
--					skb_set_owner_w(skb, skb->sk);
-+					skb_set_owner_w(nskb, skb->sk);
- 				consume_skb(skb);
- 			} else {
- 				kfree_skb(skb);
+ #include "stmmac.h"
+ #include "dwmac_dma.h"
+@@ -412,8 +413,10 @@ static void stmmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
+ 
+ static int stmmac_check_if_running(struct net_device *dev)
+ {
+-	if (!netif_running(dev))
+-		return -EBUSY;
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	pm_runtime_get_sync(priv->device);
++
+ 	return 0;
+ }
+ 
 -- 
-1.8.3.1
+2.20.1
+
+
 
