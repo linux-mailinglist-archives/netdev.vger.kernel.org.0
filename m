@@ -2,107 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3B0D3CCDA9
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 07:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 559693CCDC6
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 08:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234187AbhGSFzO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 19 Jul 2021 01:55:14 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:56574 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbhGSFzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 01:55:13 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16J5q2Hv9029644, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16J5q2Hv9029644
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 19 Jul 2021 13:52:02 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 19 Jul 2021 13:52:01 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 19 Jul 2021 13:52:01 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
- RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
- 15.01.2106.013; Mon, 19 Jul 2021 13:52:01 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: RE: [PATCH RFC v1 0/7] rtw88: prepare locking for SDIO support
-Thread-Topic: [PATCH RFC v1 0/7] rtw88: prepare locking for SDIO support
-Thread-Index: AQHXe0wk6jb0WXKpqUOtgfYNe/k5BatJzIYQ
-Date:   Mon, 19 Jul 2021 05:52:01 +0000
-Message-ID: <11f077c7612a4f33bbcd4fbd6a2e9ac3@realtek.com>
-References: <20210717204057.67495-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20210717204057.67495-1-martin.blumenstingl@googlemail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.146]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/7/19_=3F=3F_01:06:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S234314AbhGSGJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 02:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229916AbhGSGJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 02:09:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D421BC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 23:06:45 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1626674803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MLQDFL0KNAO3kYYGQ9UA8yi3zKUWx05Eoi0ZWgh89ZY=;
+        b=x4TFJsNYREefc+9Gre7LSzxFSYBwKetZb5LgijNr2Y8GGNFuYZ1nT8KxGb4eRpTGA/wVIc
+        PBDf8FQ5HunZPLm38w9mG+4HQLsy8MGMytpn2A0KlDawuH7Llm5s2uQtyHoBu3JPR0yHsQ
+        Ko/vrlJbd6giBtMfOUcyeOGLhwm/HH+corZwySvvgUMaqa87OQGlP/alBm24LXGBYaVuMP
+        +f+Y8HNBthQWmSMSMU9nSdapHRa/Rgg01FGDclkAGw/2yI3S4V5NUpWAXP5nBViHTzg5QY
+        3JAo0s7d9V+DUYBtLLJ0D3YaJWJ4Y1PVRIg22drQF/t6gO5XFgVGNWPiPEpdJA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1626674803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MLQDFL0KNAO3kYYGQ9UA8yi3zKUWx05Eoi0ZWgh89ZY=;
+        b=m125o68nO6mlTWw0EOs+NpW4D1LWVf0ueipogrB+I9hyP/oWsklz9JmFOEf/Tl3adiFEgK
+        vIkJF/4JUxIDl5AQ==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com,
+        vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+In-Reply-To: <YPIAnq6r3KgQ5ivI@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <YPIAnq6r3KgQ5ivI@lunn.ch>
+Date:   Mon, 19 Jul 2021 08:06:41 +0200
+Message-ID: <87y2a2hm6m.fsf@kurt>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/19/2021 05:41:27
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165067 [Jul 18 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: pkshih@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 448 448 71fb1b37213ce9a885768d4012c46ac449c77b17
-X-KSE-AntiSpam-Info: {Tracking_from_exist}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 07/19/2021 05:43:00
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Martin Blumenstingl [mailto:martin.blumenstingl@googlemail.com]
-> Sent: Sunday, July 18, 2021 4:41 AM
-> To: linux-wireless@vger.kernel.org
-> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.net; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Neo Jou; Jernej Skrabec; Martin Blumenstingl
-> Subject: [PATCH RFC v1 0/7] rtw88: prepare locking for SDIO support
-> 
+Hi Andrew,
 
-[...]
+On Fri Jul 16 2021, Andrew Lunn wrote:
+> On Fri, Jul 16, 2021 at 02:24:27PM -0700, Tony Nguyen wrote:
+>> From: Kurt Kanzenbach <kurt@linutronix.de>
+>>=20
+>> Each i225 has three LEDs. Export them via the LED class framework.
+>>=20
+>> Each LED is controllable via sysfs. Example:
+>>=20
+>> $ cd /sys/class/leds/igc_led0
+>> $ cat brightness      # Current Mode
+>> $ cat max_brightness  # 15
+>> $ echo 0 > brightness # Mode 0
+>> $ echo 1 > brightness # Mode 1
+>>=20
+>> The brightness field here reflects the different LED modes ranging
+>> from 0 to 15.
+>
+> What do you mean by mode? Do you mean blink mode? Like On means 1G
+> link, and it blinks for packet TX?
 
-I have reviewed patchset v1. But, please wait a moment before sending v2 to see
-if other experts have better suggestions. 
+There are different modes such as ON, OFF, LINK established, LINK
+activity, PAUSED ... Blinking is controlled by a different register.
 
---
-Ping-Ke
+Are there better ways to export this?
 
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmD1FnETHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwptDCD/4pk9eRSv6XP5aTdXxn3qlEILP0BHIG
+/n3j6QvkfpvnCwemzTManh7bhFyh2MDWyaA5KnY+vbtIih6wwP15C6tNyKLVcKHN
+NfJxi4AD8Bv/DyDy2emRFMqmHFDyxw9iBsVYOtE6JkVhTK+dJyGsGGburQf2H+Yg
+nj94ZtD2ZKWT3HpthlRtjqH9J+iu3QOhm1JrNGgfovZd/vCKQ5pfrYJs9zPN2UgN
+eHFZmADM6MY6ZAogGRN8wTlcSvjMDgXacmG+MpW8zh+B/liVGLLhRcLFlvjMkI4Q
+m7Euh+Ge0Htm8/JO2dHKjfa8r52UKYz7zCypgeR5jpWkyghUSq2xJcxuqYjHFPp2
+/CXWjXvkg0tcjovPiugsJwjgUjZJVrkhD+SbHMgeX39FJZoVcfBa3k2FJdd3MUPP
+V0HMfmv4bB098VJDDLvHUt/rOtK925IWCyhGG25GQFE7HFD7qsElEInufNszY32N
+c5vKnW8EjZIOrtGasND6rgVcqNrIkpTfL7VEAYaF87K0sLAoer2EgGjjHVz7FM4V
+Y9V5nbE3xAHJsT5ap2wrYH/mkmkyqI8jiJOnqzpjTzWHkUSXMei0os17JZ1YueFg
+PSsYUfnA71Evzdsj8cx8Lf82vs6sbvpaIiKtzoqQUgccJgtWjdGjTRKVrnq9s+Fn
+J3wdUx5VdvD9Kw==
+=CfuQ
+-----END PGP SIGNATURE-----
+--=-=-=--
