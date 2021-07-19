@@ -2,134 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 246BE3CCBDC
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 02:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794163CCBED
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 03:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233877AbhGSAyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 20:54:44 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:52091 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233530AbhGSAym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Jul 2021 20:54:42 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GSjwD2stzz9sRf;
-        Mon, 19 Jul 2021 10:51:39 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1626655902;
-        bh=SmOQ1yrThLkTVeJ5jlo9RWwKgnEmPbixTf/sBetw5EA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=sSIm38iQ5mDjFfpTn+S0Or0UMrOOfG9blitMhdkzDRIsiDjfT50Ul9gFfiVJG7UVu
-         R/RKa+yMADKc+MLHpktkjYbPBOWMFvXT4MdaWV7/kOqUd8BKQAkoEtVXdxP9kU0pyU
-         mSFAuvG3flOsDB1Eo9m+Pv2lqXEmcCi8fgLFwV/6UHYUZKfkcnXPQpAgCK1soAzoCX
-         YmGWg/6+TC1X+I5OrGYkUXWKE+F8JpD/AxrqggSWKvlliuoY25BHyOZosz0ceYfpvL
-         j+WHASIpdKjrIMrweDDkJlmkJYs1JXwBiAXJqPlwUT4j0ewvg9HHhahfWLKq+XKHrW
-         QeeburEQdu+0A==
-Date:   Mon, 19 Jul 2021 10:51:38 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Cody Haas <chaas@riotgames.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Lisa Watanabe <lwatanabe@riotgames.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Zvi Effron <zeffron@riotgames.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210719105138.2426741b@canb.auug.org.au>
+        id S233894AbhGSBYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 21:24:38 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:15037 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232895AbhGSBYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 21:24:37 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GSkVv3jxxzZqmj;
+        Mon, 19 Jul 2021 09:18:15 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Mon, 19 Jul 2021 09:21:29 +0800
+Received: from [10.67.102.67] (10.67.102.67) by dggemi759-chm.china.huawei.com
+ (10.1.198.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 19
+ Jul 2021 09:21:29 +0800
+Subject: Re: [PATCH V2 net-next 1/9] devlink: add documentation for hns3
+ driver
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <jiri@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
+        <chenhao288@hisilicon.com>
+References: <1626335110-50769-1-git-send-email-huangguangbin2@huawei.com>
+ <1626335110-50769-2-git-send-email-huangguangbin2@huawei.com>
+ <20210716080013.652969bf@cakuba>
+From:   "huangguangbin (A)" <huangguangbin2@huawei.com>
+Message-ID: <01c7a657-8454-4b2d-ded9-9212875e5e82@huawei.com>
+Date:   Mon, 19 Jul 2021 09:21:28 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tbaoWTj/FgoKmq9_RejeweE";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210716080013.652969bf@cakuba>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.67]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/tbaoWTj/FgoKmq9_RejeweE
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
 
-Today's linux-next merge of the net-next tree got a conflict in:
+On 2021/7/16 14:00, Jakub Kicinski wrote:
+> On Thu, 15 Jul 2021 15:45:02 +0800, Guangbin Huang wrote:
+>> From: Hao Chen <chenhao288@hisilicon.com>
+>>
+>> Add a file to document devlink support for hns3 driver.
+>>
+>> Now support devlink param and devlink info.
+>>
+>> Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+>> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> 
+>> +This document describes the devlink features implemented by the ``hns3``
+>> +device driver.
+>> +
+>> +Parameters
+>> +==========
+>> +
+>> +The ``hns3`` driver implements the following driver-specific
+>> +parameters.
+>> +
+>> +.. list-table:: Driver-specific parameters implemented
+>> +   :widths: 10 10 10 70
+>> +
+>> +   * - Name
+>> +     - Type
+>> +     - Mode
+>> +     - Description
+>> +   * - ``rx_buf_len``
+>> +     - U32
+>> +     - driverinit
+>> +     - Set rx BD buffer size, now only support setting 2048 and 4096.
+>> +
+>> +       * The feature is used to change the buffer size of each BD of Rx ring
+>> +         between 2KB and 4KB, then do devlink reload operation to take effect.
+> 
+> Does the reload required here differ from the reload performed when the
+> ring size is changed? You can extend the ethtool API, devlink params
+> should be used for very vendor specific configuration. Which page
+> fragment size very much is not.
+>Ok, we will try to extend the ethtool API to implement this feature.
+Thanks.
 
-  net/bpf/test_run.c
-
-between commit:
-
-  5e21bb4e8125 ("bpf, test: fix NULL pointer dereference on invalid expecte=
-d_attach_type")
-
-from the net tree and commit:
-
-  47316f4a3053 ("bpf: Support input xdp_md context in BPF_PROG_TEST_RUN")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/bpf/test_run.c
-index 1cc75c811e24,cda8375bbbaf..000000000000
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@@ -697,15 -756,24 +756,27 @@@ int bpf_prog_test_run_xdp(struct bpf_pr
-  	struct netdev_rx_queue *rxqueue;
-  	struct xdp_buff xdp =3D {};
-  	u32 retval, duration;
-+ 	struct xdp_md *ctx;
-  	u32 max_data_sz;
-  	void *data;
-- 	int ret;
-+ 	int ret =3D -EINVAL;
- =20
- +	if (prog->expected_attach_type =3D=3D BPF_XDP_DEVMAP ||
- +	    prog->expected_attach_type =3D=3D BPF_XDP_CPUMAP)
- +		return -EINVAL;
-- 	if (kattr->test.ctx_in || kattr->test.ctx_out)
-- 		return -EINVAL;
-+ 	ctx =3D bpf_ctx_init(kattr, sizeof(struct xdp_md));
-+ 	if (IS_ERR(ctx))
-+ 		return PTR_ERR(ctx);
-+=20
-+ 	if (ctx) {
-+ 		/* There can't be user provided data before the meta data */
-+ 		if (ctx->data_meta || ctx->data_end !=3D size ||
-+ 		    ctx->data > ctx->data_end ||
-+ 		    unlikely(xdp_metalen_invalid(ctx->data)))
-+ 			goto free_ctx;
-+ 		/* Meta data is allocated from the headroom */
-+ 		headroom -=3D ctx->data;
-+ 	}
- =20
-  	/* XDP have extra tailroom as (most) drivers use full page */
-  	max_data_sz =3D 4096 - headroom - tailroom;
-
---Sig_/tbaoWTj/FgoKmq9_RejeweE
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD0zJoACgkQAVBC80lX
-0GwqOQgAhhIjnZxsNIulTAgCbUTi7bmTRXkBcabxW2Pyxv1XSyXC9TTgJAqFJvVR
-zpvfmOVJAbVuEeur08Xn+yeafXkxS8qA9XPCeuCYf71bw/Drzqu//wOWLurFcizT
-7j4HbxaaigoyNG+XbIwA2bCjB2fsi6PU4vYK5eh1WxTydQDS48mx+F7CbyJP3SYs
-tb3JdY5UGDVN7Oqh/HoShgP9dJXxARALccqXXrLztEX90wlAYf7BVe19PVxnpB1B
-/oqRdliy7GF7ZE3rlheHmTakwKuUA2oqj95BI5Fhp/Nn547Okrq8VbFcKe2cI5Im
-dBTK1tV54BQGdW4kn6y6InZ4s3HewQ==
-=mnov
------END PGP SIGNATURE-----
-
---Sig_/tbaoWTj/FgoKmq9_RejeweE--
+>> +   * - ``tx_buf_size``
+>> +     - U32
+>> +     - driverinit
+>> +     - Set tx bounce buf size.
+>> +
+>> +       * The size is setted for tx bounce feature. Tx bounce buffer feature is
+>> +         used for small size packet or frag. It adds a queue based tx shared
+>> +         bounce buffer to memcpy the small packet when the len of xmitted skb is
+>> +         below tx_copybreak(value to distinguish small size and normal size),
+>> +         and reduce the overhead of dma map and unmap when IOMMU is on.
+> 
+> IMHO setting the tx_copybreak should be configured thru the same API as
+> the size of the buffer it uses. Hence, again, ethtool.
+> .
+> 
+Ok.
