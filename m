@@ -2,73 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C633CD4A3
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3763CD4AF
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:24:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236664AbhGSLle (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 07:41:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S236938AbhGSLns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 07:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236427AbhGSLld (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:41:33 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23813C061574
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 04:38:00 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id b26so29864804lfo.4
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:22:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=/Lr4bHKOUY9u5zZ0KopUgP5BWr01yWcUC6XsKm78Wf0=;
-        b=RhfSBCMgmnurUPlehfuYlkq+nhGGQy9RnOPdfXFUdExKFplbtvb5meAMOeqRb8KzlR
-         CXYTuzndP44H6GYM6o7brlGQcZWTRbTaX9fhQbCilagqi3QZsZM+0/nB219/wGaM0dtb
-         hH7LT4IQdwfME8q0pIYvYCu7GZpg/AKpB1HbFAMf1ok/gZosj9wJSfpvSqi5kiC6YguJ
-         lLG/8D2PdftbM1OcynGhp1GlXddWfkrMhGnfbd4LpLLrSdHsrckl/aqV39n6TZhqdAik
-         4NopQN1f7KcVTZi6/VayHMt6XN0HMoyrsqzQ2N/+sYqfwtC48kTzKBImHSJlyFsSIQE5
-         9HOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=/Lr4bHKOUY9u5zZ0KopUgP5BWr01yWcUC6XsKm78Wf0=;
-        b=HiVg9ufRNd+v4drIehB9knOqlsDuovZpmfwuEYWQkHfQSBFNya8Cu+nEDr/W9yv2AL
-         CdVrYilf1ph35L7Crvw5tjPRJN53E1SwurouDsBKbifHYjyMPnBDZaRM6cfGVQw0vxWm
-         hvnBJb2ixK8vSJyWRRAIK36VynngFv7hZ/ei8JYmCxH7SY5kOWI4qvT8ny3h3PxzIdZa
-         LiSSoZ0oaipJc2c5rkckk2xIpJfH7FKQHYpf0u7iLKfXeYSc1klFud8PMo+Fzdtjb1Xt
-         Opw8DjMx2Swo+9unyCaWxPhYfouebmuzf/zgdONj62VrAQ5oq8Inm71T8dfK7gsPenDv
-         uDow==
-X-Gm-Message-State: AOAM5304VA77hJNiaTGlLGjbEhpIWXTx7ujI2eROQvuyGKh02qVqsBHq
-        o2T/f4kQ2DhfJmSyCMwmfMQWOSxsPvxBl17T87x6eMF8U2KF+U1z
-X-Google-Smtp-Source: ABdhPJxgbJRvYFIcIdez/08IHxQbxnY+CVoC5vWsGdeT9dDOKXKUic/i+wU6tSKOySt3ikOWZ7t0D+5itWp87qVRKMs=
-X-Received: by 2002:a05:6512:3148:: with SMTP id s8mr17635889lfi.513.1626697331465;
- Mon, 19 Jul 2021 05:22:11 -0700 (PDT)
+        with ESMTP id S231290AbhGSLnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:43:47 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07C0C061574;
+        Mon, 19 Jul 2021 04:40:24 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626697464;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ymvuQOiwKUSpANGmy6VygBcyGlRswj0psccsffBvtok=;
+        b=eCPFUxyKaT0PGkj4bo4HFm2GuN3gDoTjjJKSyHJhsYzoyZFPEPq711H5pPQzxTWsOPKU3X
+        QawghvgEyqNzGvG2a53H/OBXKDyISHLeWj7WlVrBSu7jjXtRA3Ukv5ph/2XqKBgxtJw4sM
+        AmOhe6ASBKgJaPVRTPC71GL7zxZe5ls=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        nikolay@nvidia.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        courmisch@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH 1/4] rtnetlink: remove rtnetlink_send() in rtnetlink
+Date:   Mon, 19 Jul 2021 20:24:07 +0800
+Message-Id: <20210719122407.5253-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Mon, 19 Jul 2021 20:22:01 +0800
-Message-ID: <CALW65jZoaYYycAApviuQjiOTNuG9sfSpGZ1izRgJhj4M-gfDyQ@mail.gmail.com>
-Subject: DSA .port_{f,m}db_{add,del} with offloaded LAG interface on mv88e6xxx
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+rtnetlink_send() is similar to rtnl_notify(), so remove rtnetlink_send().
+Modify the fifth parameter from 'struct nlmsghdr *nlh' to 'int report'
+in rtnl_notify(). This will do well for the caller havn't nlh variable.
+And modify the return value to integer, Some caller may be need the
+return value.
 
-What happens if a FDB entry is added manually to an offloaded LAG
-interface? Does DSA core simply call .port_fdb_add with the member
-ports in the LAG?
+Rename pid to portid to avoid confusion in rtnl_{unicast, notify}.
 
-I'm asking because there is a trunk field in struct
-mv88e6xxx_atu_entry, when it is true, the portvec is actually the
-trunk ID.
-As the current implementation (mv88e6xxx_port_db_load_purge) does not
-use this field, it probably won't work.
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ include/linux/rtnetlink.h |  7 +++----
+ net/core/rtnetlink.c      | 21 +++++----------------
+ 2 files changed, 8 insertions(+), 20 deletions(-)
 
-Regards,
-Qingfang
+diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
+index bb9cb84114c1..409c334746a6 100644
+--- a/include/linux/rtnetlink.h
++++ b/include/linux/rtnetlink.h
+@@ -9,10 +9,9 @@
+ #include <linux/refcount.h>
+ #include <uapi/linux/rtnetlink.h>
+ 
+-extern int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, u32 group, int echo);
+-extern int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid);
+-extern void rtnl_notify(struct sk_buff *skb, struct net *net, u32 pid,
+-			u32 group, struct nlmsghdr *nlh, gfp_t flags);
++extern int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 portid);
++extern int rtnl_notify(struct sk_buff *skb, struct net *net, u32 portid,
++		       u32 group, int report, gfp_t flags);
+ extern void rtnl_set_sk_err(struct net *net, u32 group, int error);
+ extern int rtnetlink_put_metrics(struct sk_buff *skb, u32 *metrics);
+ extern int rtnl_put_cacheinfo(struct sk_buff *skb, struct dst_entry *dst,
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 670d74ab91ae..48bb9dc6f06f 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -707,31 +707,20 @@ static int rtnl_link_fill(struct sk_buff *skb, const struct net_device *dev)
+ 	return err;
+ }
+ 
+-int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, unsigned int group, int echo)
++int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 portid)
+ {
+ 	struct sock *rtnl = net->rtnl;
+ 
+-	return nlmsg_notify(rtnl, skb, pid, group, echo, GFP_KERNEL);
+-}
+-
+-int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid)
+-{
+-	struct sock *rtnl = net->rtnl;
+-
+-	return nlmsg_unicast(rtnl, skb, pid);
++	return nlmsg_unicast(rtnl, skb, portid);
+ }
+ EXPORT_SYMBOL(rtnl_unicast);
+ 
+-void rtnl_notify(struct sk_buff *skb, struct net *net, u32 pid, u32 group,
+-		 struct nlmsghdr *nlh, gfp_t flags)
++int rtnl_notify(struct sk_buff *skb, struct net *net, u32 portid,
++		u32 group, int report, gfp_t flags)
+ {
+ 	struct sock *rtnl = net->rtnl;
+-	int report = 0;
+-
+-	if (nlh)
+-		report = nlmsg_report(nlh);
+ 
+-	nlmsg_notify(rtnl, skb, pid, group, report, flags);
++	return nlmsg_notify(rtnl, skb, portid, group, report, flags);
+ }
+ EXPORT_SYMBOL(rtnl_notify);
+ 
+-- 
+2.32.0
+
