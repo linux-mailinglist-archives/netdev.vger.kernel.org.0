@@ -2,174 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C4503CD518
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B103CD58C
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 15:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237107AbhGSMHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 08:07:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237057AbhGSMHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 08:07:19 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB387C061574;
-        Mon, 19 Jul 2021 05:05:54 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1626698877;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=2tHvku8/g1vkYpeP7udTvdw5L1jmMz/OXu2RwKUP18o=;
-        b=WjML7vTV2lCITQaTXT1VELh5eJuS93yUQPdbWmV4RjF5O9u+X4/JTIcxoATJxFQ8/f8UFs
-        1KsAc4LtIKvASLeVuS0p/U2qJVmPavIbB5iLxcBtKI0RDRgS9NMRmmkajtNUjQC+WS547z
-        E9C+j/PL6XeorD7aBOSmgUCfzFiGbLM=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net
-Cc:     Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH 4/4] net/sched: use rtnl_notify() instead of rtnetlink_send()
-Date:   Mon, 19 Jul 2021 20:47:43 +0800
-Message-Id: <20210719124743.9076-1-yajun.deng@linux.dev>
+        id S237176AbhGSM2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 08:28:55 -0400
+Received: from lucky1.263xmail.com ([211.157.147.135]:35778 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236855AbhGSM2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 08:28:54 -0400
+Received: from localhost (unknown [192.168.167.70])
+        by lucky1.263xmail.com (Postfix) with ESMTP id EDB8EB1936;
+        Mon, 19 Jul 2021 21:09:25 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-SKE-CHECKED: 1
+X-ANTISPAM-LEVEL: 2
+Received: from localhost.localdomain (unknown [113.57.152.160])
+        by smtp.263.net (postfix) whith ESMTP id P13644T140562088032000S1626700165290287_;
+        Mon, 19 Jul 2021 21:09:26 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <d0e9c68a6780ff19d835a3a8d28dbae0>
+X-RL-SENDER: chenhaoa@uniontech.com
+X-SENDER: chenhaoa@uniontech.com
+X-LOGIN-NAME: chenhaoa@uniontech.com
+X-FST-TO: peppe.cavallaro@st.com
+X-RCPT-COUNT: 11
+X-SENDER-IP: 113.57.152.160
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   Hao Chen <chenhaoa@uniontech.com>
+To:     peppe.cavallaro@st.com
+Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org, Hao Chen <chenhaoa@uniontech.com>
+Subject: [PATCH v5] net: stmmac: fix 'ethtool -P' return -EBUSY
+Date:   Mon, 19 Jul 2021 21:08:45 +0800
+Message-Id: <20210719130845.2102-1-chenhaoa@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rtnetlink_send() is already removed. use rtnl_notify() instead.
+The permanent mac address should be available for query when the device
+is not up.
+NetworkManager, the system network daemon, uses 'ethtool -P' to obtain
+the permanent address after the kernel start. When the network device
+is not up, it will return the device busy error with 'ethtool -P'. At
+that time, it is unable to access the Internet through the permanent
+address by NetworkManager.
+I think that the '.begin' is not used to check if the device is up, it's
+just a pre hook for ethtool. We shouldn't check if the device is up
+there.
 
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
 ---
- net/sched/act_api.c | 13 ++++++-------
- net/sched/cls_api.c | 14 +++++++-------
- net/sched/sch_api.c | 13 ++++++-------
- 3 files changed, 19 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 998a2374f7ae..d25678b1ebec 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -1349,8 +1349,8 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
- 	nlh->nlmsg_len = skb_tail_pointer(skb) - b;
- 	nlh->nlmsg_flags |= NLM_F_ROOT;
- 	module_put(ops->owner);
--	err = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--			     n->nlmsg_flags & NLM_F_ECHO);
-+	err = rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+			  nlmsg_report(n), GFP_KERNEL);
- 	if (err < 0)
- 		NL_SET_ERR_MSG(extack, "Failed to send TC action flush notification");
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index d0ce608b81c3..8901dc9f758e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -410,13 +410,6 @@ static void stmmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
  
-@@ -1419,9 +1419,8 @@ tcf_del_notify(struct net *net, struct nlmsghdr *n, struct tc_action *actions[],
- 		return ret;
- 	}
- 
--	ret = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--			     n->nlmsg_flags & NLM_F_ECHO);
--	return ret;
-+	return rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+			   nlmsg_report(n), GFP_KERNEL);
  }
  
- static int
-@@ -1490,8 +1489,8 @@ tcf_add_notify(struct net *net, struct nlmsghdr *n, struct tc_action *actions[],
- 		return -EINVAL;
- 	}
- 
--	return rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--			      n->nlmsg_flags & NLM_F_ECHO);
-+	return rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+			   nlmsg_report(n), GFP_KERNEL);
- }
- 
- static int tcf_action_add(struct net *net, struct nlattr *nla,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index c8cb59a11098..63ca7afc472d 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1872,8 +1872,8 @@ static int tfilter_notify(struct net *net, struct sk_buff *oskb,
- 	if (unicast)
- 		err = rtnl_unicast(skb, net, portid);
- 	else
--		err = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--				     n->nlmsg_flags & NLM_F_ECHO);
-+		err = rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+				  nlmsg_report(n), GFP_KERNEL);
- 	return err;
- }
- 
-@@ -1908,8 +1908,8 @@ static int tfilter_del_notify(struct net *net, struct sk_buff *oskb,
- 	if (unicast)
- 		err = rtnl_unicast(skb, net, portid);
- 	else
--		err = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--				     n->nlmsg_flags & NLM_F_ECHO);
-+		err = rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+				  nlmsg_report(n), GFP_KERNEL);
- 	if (err < 0)
- 		NL_SET_ERR_MSG(extack, "Failed to send filter delete notification");
- 
-@@ -2708,8 +2708,8 @@ static int tc_chain_notify(struct tcf_chain *chain, struct sk_buff *oskb,
- 	if (unicast)
- 		err = rtnl_unicast(skb, net, portid);
- 	else
--		err = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--				     flags & NLM_F_ECHO);
-+		err = rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+				  flags & NLM_F_ECHO, GFP_KERNEL);
- 
- 	return err;
- }
-@@ -2736,7 +2736,7 @@ static int tc_chain_notify_delete(const struct tcf_proto_ops *tmplt_ops,
- 	if (unicast)
- 		return rtnl_unicast(skb, net, portid);
- 
--	return rtnetlink_send(skb, net, portid, RTNLGRP_TC, flags & NLM_F_ECHO);
-+	return rtnl_notify(skb, net, portid, RTNLGRP_TC, flags & NLM_F_ECHO, GFP_KERNEL);
- }
- 
- static int tc_chain_tmplt_add(struct tcf_chain *chain, struct net *net,
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 5e90e9b160e3..01858fd08b2a 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -987,8 +987,8 @@ static int qdisc_notify(struct net *net, struct sk_buff *oskb,
- 	}
- 
- 	if (skb->len)
--		return rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--				      n->nlmsg_flags & NLM_F_ECHO);
-+		return rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+				   nlmsg_report(n), GFP_KERNEL);
- 
- err_out:
- 	kfree_skb(skb);
-@@ -1855,8 +1855,8 @@ static int tclass_notify(struct net *net, struct sk_buff *oskb,
- 		return -EINVAL;
- 	}
- 
--	return rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--			      n->nlmsg_flags & NLM_F_ECHO);
-+	return rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+			   nlmsg_report(n), GFP_KERNEL);
- }
- 
- static int tclass_del_notify(struct net *net,
-@@ -1888,9 +1888,8 @@ static int tclass_del_notify(struct net *net,
- 		return err;
- 	}
- 
--	err = rtnetlink_send(skb, net, portid, RTNLGRP_TC,
--			     n->nlmsg_flags & NLM_F_ECHO);
--	return err;
-+	return rtnl_notify(skb, net, portid, RTNLGRP_TC,
-+			   nlmsg_report(n), GFP_KERNEL);
- }
- 
- #ifdef CONFIG_NET_CLS
+-static int stmmac_check_if_running(struct net_device *dev)
+-{
+-	if (!netif_running(dev))
+-		return -EBUSY;
+-	return 0;
+-}
+-
+ static int stmmac_ethtool_get_regs_len(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+@@ -1073,7 +1066,6 @@ static int stmmac_set_tunable(struct net_device *dev,
+ static const struct ethtool_ops stmmac_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_MAX_FRAMES,
+-	.begin = stmmac_check_if_running,
+ 	.get_drvinfo = stmmac_ethtool_getdrvinfo,
+ 	.get_msglevel = stmmac_ethtool_getmsglevel,
+ 	.set_msglevel = stmmac_ethtool_setmsglevel,
 -- 
-2.32.0
+2.20.1
+
+
 
