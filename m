@@ -2,54 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C45923CD699
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 16:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FE433CD6D2
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 16:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbhGSNsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 09:48:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33870 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231618AbhGSNsJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 09:48:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Xte//GgrLPWmYfZguSht4iKWCHZCn7j35lUKR3v9z4A=; b=BmlyxX675rfYX3sfAczkHfECKM
-        v29sxxEvCKllI/njJPFsXrmH8wzCoOJlS5lWGSSHYX/dwPnni+U6fwzKjpgVzf+hmEDoJG0+lWwiz
-        6/gV4zOAvTzdXHEzRi230TKVEjxrF/BBYttyO0VdKLmcckiww1MvamvW9WNKwoA7n+c0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m5UGD-00DuKP-B5; Mon, 19 Jul 2021 16:28:45 +0200
-Date:   Mon, 19 Jul 2021 16:28:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ruud Bos <ruud.bos@hbkworld.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next 0/4 resend] igb: support PEROUT and EXTTS PTP
- pin functions on 82580/i354/i350
-Message-ID: <YPWMHagXlVCgpYqN@lunn.ch>
-References: <AM0PR09MB42765A3A3BCB3852A26E6F0EF0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR09MB42765A3A3BCB3852A26E6F0EF0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
+        id S241157AbhGSN7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 09:59:07 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:4499 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232395AbhGSN7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 09:59:05 -0400
+X-IronPort-AV: E=Sophos;i="5.84,252,1620658800"; 
+   d="scan'208";a="88086566"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 19 Jul 2021 23:39:43 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0C4694003EC3;
+        Mon, 19 Jul 2021 23:39:39 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 0/5] Renesas RZ/G2L CANFD support
+Date:   Mon, 19 Jul 2021 15:38:06 +0100
+Message-Id: <20210719143811.2135-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 11:33:11AM +0000, Ruud Bos wrote:
-> The igb driver provides support for PEROUT and EXTTS pin functions that
-> allow adapter external use of timing signals. At Hottinger Bruel & Kjaer we
-> are using the PEROUT function to feed a PTP corrected 1pps signal into an
-> FPGA as cross system synchronized time source.
+Hi All,
 
-Please always Cc: The PTP maintainer for PTP patches.
-Richard Cochran <richardcochran@gmail.com>
+This patch series adds CANFD support to Renesas RZ/G2L family.
 
-       Andrew
+CANFD block on RZ/G2L SoC is almost identical to one found on
+R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
+are split into individual sources.
+
+Cheers,
+Prabhakar
+
+Changes for v2:
+* Added interrupt-names property and marked it as required for 
+  RZ/G2L family
+* Added descriptions for reset property
+* Re-used irq handlers on RZ/G2L SoC
+* Added new enum for chip_id
+* Dropped R9A07G044_LAST_CORE_CLK
+* Dropped patch (clk: renesas: r9a07g044-cpg: Add clock and reset
+  entries for CANFD) as its been merged into renesas tree
+
+Lad Prabhakar (5):
+  dt-bindings: net: can: renesas,rcar-canfd: Document RZ/G2L SoC
+  can: rcar_canfd: Add support for RZ/G2L family
+  dt-bindings: clk: r9a07g044-cpg: Add entry for P0_DIV2 core clock
+  clk: renesas: r9a07g044-cpg: Add entry for fixed clock P0_DIV2
+  arm64: dts: renesas: r9a07g044: Add CANFD node
+
+ .../bindings/net/can/renesas,rcar-canfd.yaml  |  66 ++++++-
+ arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  42 +++++
+ drivers/clk/renesas/r9a07g044-cpg.c           |   3 +-
+ drivers/net/can/rcar/rcar_canfd.c             | 178 +++++++++++++++---
+ include/dt-bindings/clock/r9a07g044-cpg.h     |   1 +
+ 5 files changed, 252 insertions(+), 38 deletions(-)
+
+
+base-commit: 2734d6c1b1a089fb593ef6a23d4b70903526fe0c
+-- 
+2.17.1
+
