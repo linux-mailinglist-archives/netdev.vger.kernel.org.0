@@ -2,122 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 178B63CE3D7
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 18:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD3A3CE643
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 18:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237050AbhGSPko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 11:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49952 "EHLO
+        id S236844AbhGSQDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 12:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348945AbhGSPfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 11:35:36 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11C6C0A88D1
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 08:24:50 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id i16so1855315pgi.9
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 08:51:37 -0700 (PDT)
+        with ESMTP id S1352235AbhGSQB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 12:01:27 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A15C05338C
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 08:50:51 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id w22so12451805ioc.6
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 09:15:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MkKhttHk1f1NxvEjszFkNPRaTR2uQK8NNQrR3I9+ckM=;
-        b=lMJZcOx6oA7r1fitEX6eCxK880OIlVRr2rH/LT49CPkL3ITNjZ/NPY6N6YmEwBHwT3
-         FvHe3PgnV5SmlS1oG+8cBvE4+Ow59gFX5xochDQ0tRZVdhxPkXYAGcvV+V2yUQ9RJ0mn
-         rYE0k/MGE6B7F8wRUS0zf/CmcLnsn058kUgZ9piS6aoX9r9HqLAdmLXb+CJFcpkHJbB+
-         92gVu13ylQzRpowsNN5al1KOXpfCMNxK01aZYtS/LArebMSTZuAuxu4kgMY2mbJsQ3oG
-         2nw2HqhJ3AOly/2NQwRte8o2k+GcV3HlcpyrAZpCRq+GS5E5VtevVrYO6A+Y6Y9FVGPf
-         B2yQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=vj/1/nm4+rySI0Vn72EDrmTXuAcJpA6fQckoPC06paM=;
+        b=D/alEqOuZ8cZBvz0gcM6gk4PmN+4+znb8amMGNzYyCRhunVAIDFjt20/JDmEtEqh9Z
+         BGXzHcIrbWnA29z9yotSQTOXk6tvGbVvy42QHTZe4fuT1QqWi1ykoiFu4fT8elbfkc4C
+         83xd3DqnDXjLHCUg8GnfP/EOZKhsP1UwUJSfCJXu6XKtbyU7b2N66VhUnwWSb76h7ZvK
+         vEulHqRunqhPe47CRC+W3BtVXmDNHDB0bkMbrjh3wf31plKTuIhYlmkZCNqjrrM9eAx8
+         8WD27dKjq76UkYUmd7Z9GF84MDxHbWHClQIfKXWRUdAq/oZbgruBdpweQlzUeRj0TPP3
+         Icdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MkKhttHk1f1NxvEjszFkNPRaTR2uQK8NNQrR3I9+ckM=;
-        b=EZIpbgE3BFw21LPFobdRn9KKCmx+EWbc1wLq0b6fVPwuUwLVgj/lBsliPzj9V8N3bl
-         sHJTBJh0oOQ7xLx3lR4L1wgpD4tpUry1lpwUJf9t4Ryft2kgxuTnTLgXw9CCeNiZaoUQ
-         6UD/SZQi8lWcS1viJ9qhZaN4AadRE22lQnBVCZeVPVc2+kahICRPOuS73ytBWbtrTaPT
-         5iAuSDhjYVTbOCtC6uNeWb8GD3z2QoY5eav760F8tioNv63GvAOzQWPUg/CTHfoI/DLw
-         Lcd/RkufuIiu3+b8mwCQP1XdRGC/xLhY+yl/mASwGVb1uXWJAWGV7gEt1/QiSevMJQRv
-         lLoQ==
-X-Gm-Message-State: AOAM530mX+cDuk5gKtHFqLZCN3IjoHodwp0C7hhK3fGT232ybtN3ANk5
-        sUYRGWLDJkkbPtsuOP4WgpPj4K5NSTWfYm8a7ArLyA==
-X-Google-Smtp-Source: ABdhPJwbPHFgosVLoCqok1vM0WItXj22KFp9TT5+FAelCfh+WtA7xCqRRbbFZHLQm+9yVwk+v+LDH1QIUgp0c6MCGLs=
-X-Received: by 2002:a63:3107:: with SMTP id x7mr17715236pgx.303.1626709896370;
- Mon, 19 Jul 2021 08:51:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=vj/1/nm4+rySI0Vn72EDrmTXuAcJpA6fQckoPC06paM=;
+        b=eJY+981H1kJjUt8xVpM2CKGJcuocd00tttHYcUY9f+Rj8MHgZRDO9n7o9DzPMUQ92H
+         i8IwNYLQftE4eXtWOW/fRlt6T2eF+iAWJ0bPiCRMqK0UjA5Zp/zr1E/qoy5G5jCnI40k
+         oKG2CMDAZ0Fn3GU2jjcRNun/Yr81vxGwe2hpHoWYTFwpgyDpIJb6J/xWJ942IFSHXBnn
+         ruZ15lHJ0PLf1WEPvUFMnWApL4AuPAKInDz3KmXINyHuPt/Xn2AWMOi/CPhkq3eUaREz
+         lyYuHqrQrwOC1J3tYrqfjCTOugGwst+quyJWJYpqIQN6qScl92TpTtmw1AsdbQ+WZO5/
+         YBQQ==
+X-Gm-Message-State: AOAM533XtQkwnZUfOp5xKHCzbhuOizrZ0jKj6eLl4tRpFBMe+90MvNS6
+        pwgYzbytUP5SJ87OZqdUjXLP3S99gfR0PH54ug==
+X-Google-Smtp-Source: ABdhPJx0/qpKrKvMVRK5kDn22/szfO5FVRAcI2KRBof4hnUsSU8+MvZiPH8BYsBwc+F/QoX1CR8aKN0Lst5Wqym9Fy4=
+X-Received: by 2002:a02:cab9:: with SMTP id e25mr14336427jap.25.1626711336738;
+ Mon, 19 Jul 2021 09:15:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210719145317.79692-1-stephan@gerhold.net> <20210719145317.79692-5-stephan@gerhold.net>
-In-Reply-To: <20210719145317.79692-5-stephan@gerhold.net>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 19 Jul 2021 18:01:33 +0200
-Message-ID: <CAMZdPi8oxRMo0erfd0wrUPzD2UsbexoR=86u2N75Fd9RpXHoKg@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 4/4] net: wwan: Add Qualcomm BAM-DMUX WWAN
- network driver
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Received: by 2002:a02:5b84:0:0:0:0:0 with HTTP; Mon, 19 Jul 2021 09:15:36
+ -0700 (PDT)
+Reply-To: th509232@gmail.com
+From:   Mr Tom Hassan <johnsonbobolo8@gmail.com>
+Date:   Mon, 19 Jul 2021 09:15:36 -0700
+Message-ID: <CAGeDCtFY+OFHxvaMxC+bSe7jaPQUnm19YZdaMju0vA2M9c_t5g@mail.gmail.com>
+Subject: Dear Friend,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephan,
+-- 
+Dear Friend,
+
+I Am Mr. Tom Hassan. From West Africa i have a business deal to share with
+you in the sum of10.2M USD dollars that is been held in our here in
+(B.O.A) bank of Africa the fund mentioned rightful belong to one of
+our late client who deposited the money in our bank here ever since he
+Died nobody have been able to apply to claim the fund so i wish that
+you will come and Assume as his foreign business partner also note
+this business is risk
+Free not to be sacred or doubt is real please my dearest one also noted.
+
+This once we succeed in transferring this fund to your wish provided
+Account in your country it will share among us in agreement of 60% 40
+I believe that after this
+Deal joy and happiness will be on or face's and family's please reply
+to me with your details so we can move on with this great plan ok.
 
 
-On Mon, 19 Jul 2021 at 17:01, Stephan Gerhold <stephan@gerhold.net> wrote:
->
-> I'm not sure how to integrate the driver with the WWAN subsystem yet.
-> At the moment the driver creates network interfaces for all channels
-> announced by the modem, it does not make use of the WWAN link management
-> yet. Unfortunately, this is a bit complicated:
->
-> Both QMAP and the built-in multiplexing layer might be needed at some point.
-> There are firmware versions that do not support QMAP and the other way around
-> (the built-in multiplexing was disabled on very recent firmware versions).
-> Only userspace can check if QMAP is supported in the firmware (via QMI).
->
-> I could ignore QMAP completely for now but I think someone will show up
-> who will need this eventually. And if there is going to be common code for
-> QMAP/rmnet link management it would be nice if BAM-DMUX could also make
-> use of it.
+REPLY TO-- ( th509232@gmail.com )
 
-I have this on my TODO list for mhi-net QMAP.
 
-> But the question is, how could this look like? How do we know if we should
-> create a link for QMAP or a BAM-DMUX channel? Does it even make sense
-> to manage the 1-8 channels via the WWAN link management?
+Your Full Name.......
 
-Couldn't it be specified via dts (property or different compatible
-string)? would it make sense to have two drivers (with common core) to
-manage either the multi-bam channel or newer QMAP based single
-bam-channel modems.
+Your Age&Sex........
 
->
-> Another problem is that the WWAN subsystem currently creates all network
-> interfaces below the common WWAN device. This means that userspace like
-> ModemManager has no way to check which driver provides them. This is
-> necessary though to decide how to set it up via QMI (ModemManager uses it).
+Your Marital Status......
 
-Well, I have quite a similar concern since I'm currently porting
-mhi-net mbim to wwan framework, and I was thinking about not making
-wwan device parent of the network link/netdev (in the same way as
-wlan0 is not child of ieee80211 device), but not sure if it's a good
-idea or not since we can not really consider driver name part of the
-uapi.
+Your Country Name.......
 
-The way links are created is normally abstracted, so if you know which
-bam variant you have from wwan network driver side (e.g. via dts), you
-should have nothing to check on the user side, except the session id.
+Your Phone Number......
 
-Regards,
-Loic
+Your Occupation.....
+
+Your Bank Name......
+
+Your Account Number......
+
+Thanks Yours Brotherly
+
+Mr. Tom Hassan.
