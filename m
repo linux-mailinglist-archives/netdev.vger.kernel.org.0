@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E75D3CEDCE
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 22:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AD63CEFF1
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 01:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353034AbhGSTrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 15:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387027AbhGSTpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 15:45:24 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491EDC0613E8
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 13:19:35 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id u7so21436683ion.3
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 13:23:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MTo4LBHxr6WcVmPmqqb31U3oy5mXIOOOFkovyYtikHI=;
-        b=Z20dqVx+5d90dMhiE/vjpGdOXMC1EvHJXuai9onFKR9y5dKdqhCv2b2/gxpC1QdMad
-         G87t0rQXarGllXKi43YQNITaKnuiD6mzmMXvEwAi4lLmNZbP4kDEMlCZfuC2Ksu2KjLQ
-         qb2w1OqHx7hVwVQ6TlnoMKc/sjz5VX6som42BeYp7BNsMsjC/8DEztAzR/swltXWUHr7
-         wuJAnNjJoxvQrGO97pZeLKNN4MIUTYzmO6ARnfp79nvbOMOzm+1QP8uAWfj22/6SywJO
-         nsCjvdla2p1FHxAPP+VM0dS2Z5zZBtjqQjqPJ/Uiq9cWnZw+xtWr9WleMzIgSPBggp7M
-         kjcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MTo4LBHxr6WcVmPmqqb31U3oy5mXIOOOFkovyYtikHI=;
-        b=lklTmSdTM9FYDeA74rTAOqMQKsNgIMzVJGGQJIUk92daLzMftwjpbm4m05qm/TbPE9
-         ooXwo+l9/rrANcpVS0QoBQCekRSCmbS2y7/j2yqhb13FPHNSv6A7Nl3F/XQWAZodjaRc
-         ClUdcWSJxg6RMzCAxHI0C5jmy7ZGJUKhkLHPDTPHZ8/XG2R1GtRuteRpQaAVFDWnTVD8
-         aHgwKv+19aWW387iT2mAPyivUFDewamunY/t0YCuV6b/t5JOZEf9mCqIcT7AqZSfqHiO
-         RrWHAr42bnbKrVwB8Dx63c4hr2OeL3N8AVngZ+XfdrZRRle8dka9NtE+Cd7C6vcPCdmK
-         L9EQ==
-X-Gm-Message-State: AOAM530FQJaaDOpBaHGoPOpDOyecHULG8/Fwfi0a6cRzn5v8Nrg5ShVw
-        feZdHSyhM8IvNi3MsFgRFmP87w==
-X-Google-Smtp-Source: ABdhPJyE7UgDop/g8zbvqQ4eMEP3B+0g67LVNr62XYPmnF9zFUkmiXlumKMdcyXKMiYYGHC9EjBRYg==
-X-Received: by 2002:a6b:e90b:: with SMTP id u11mr12746940iof.134.1626726220561;
-        Mon, 19 Jul 2021 13:23:40 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id m184sm11123652ioa.17.2021.07.19.13.23.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 13:23:39 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: ipa: fix IPA v4.11 interconnect data
-Date:   Mon, 19 Jul 2021 15:23:33 -0500
-Message-Id: <20210719202333.3067361-1-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
+        id S1352902AbhGSWtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 18:49:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1358523AbhGSTsW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 15:48:22 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C5276109E;
+        Mon, 19 Jul 2021 20:29:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626726541;
+        bh=kBXee+brflaLe0t6ZlxZrXD08ISe59xEAGNE60i3ghk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=sOcSiK7uc0c3GX6bPRdC1rGXEPKCwwblC54f8qdXL57BbhXE0cydqTww8HjszL2au
+         kaTeB5koH12qQdshfOKdg2Aob3dpQgQIjSg7tOR0i9kBndxPY+FkXpN+1h4Sh5aet/
+         VPcyn0vf5ZTjix8z6LXJV1fbFVFRw7FirlhnvMEQ6fLgit9q72qpAdwmq+ktsw0RSi
+         31hv4fktuqmN/Jmd1/UQyXNvymfWGPJxirnf0jW3Amz0u/1833TRkcj8D0OcR6XUjL
+         f6kiXrh4WI/yto1vrYE03nP63u58ZrvKKTE2mfswEa4xg+kuT0HN3AqV7pCHn/tgTz
+         h2pL79xjRHpag==
+Message-ID: <24f5387bc2bec23627ea9cfaec4ed4e416c60510.camel@kernel.org>
+Subject: Re: XDP applications running in driver mode on mlx5_core can't
+ access various helper functions
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     David Ramirez <davramir@fiu.edu>,
+        Leon Romanovsky <leonro@nvidia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Date:   Mon, 19 Jul 2021 13:29:00 -0700
+In-Reply-To: <BN7PR05MB592314B791EB8654A59E8841CC129@BN7PR05MB5923.namprd05.prod.outlook.com>
+References: <BN7PR05MB592314B791EB8654A59E8841CC129@BN7PR05MB5923.namprd05.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.3 (3.40.3-1.fc34) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently three interconnects are defined for the Qualcomm SC7280
-SoC, but this was based on a misunderstanding.  There should only be
-two interconnects defined:  one between the IPA and system memory;
-and another between the AP and IPA config space.  The bandwidths
-defined for the memory and config interconnects do not match what I
-understand to be proper values, so update these.
+On Thu, 2021-07-15 at 13:59 +0000, David Ramirez wrote:
+> Hey all,
+> 
+> I am having issues with calling some bpf helper functions
+> when running my XDP program in driver on the mlx5_core driver.
+> Several of the helpers I've tried to use for ringbuf and maps always
+> return 0.
+> While this may seem to imply that for functions that merely return
+> null instead of
+> a pointer in case of an error are working as intended,
+> some functions which return negative on failure and 0 on success are
+> are also affected,
+> as while they return 0, they do not result in the desired effect.
+> 
+> Observed examples:
+>  - bpf_ringbuf_output always returns 0, but no data is pushed to the
+> ringbuf
+>  - bpf_map_update_elem always returns 0, but the element is not
+> updated
+>  - bpf_ringbuf_reserve always returns 0
+>  - bpf_map_lookup_elem always returns 0
+>  
+> I'm uncertain if this is a driver specific issue or an ebpf issue.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_data-v4.11.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+this is purely ebpf issue or user prog issue.
+1. the ebpf program/helpers are agnostic to run mode, driver/native
+v.s. skb/generic modes.
+2. the above helpers are pure bpf callbacks, the driver is not
+involved.
 
-diff --git a/drivers/net/ipa/ipa_data-v4.11.c b/drivers/net/ipa/ipa_data-v4.11.c
-index 9353efbd504fb..598b410cd7ab4 100644
---- a/drivers/net/ipa/ipa_data-v4.11.c
-+++ b/drivers/net/ipa/ipa_data-v4.11.c
-@@ -368,18 +368,13 @@ static const struct ipa_mem_data ipa_mem_data = {
- static const struct ipa_interconnect_data ipa_interconnect_data[] = {
- 	{
- 		.name			= "memory",
--		.peak_bandwidth		= 465000,	/* 465 MBps */
--		.average_bandwidth	= 80000,	/* 80 MBps */
--	},
--	/* Average rate is unused for the next two interconnects */
--	{
--		.name			= "imem",
--		.peak_bandwidth		= 68570,	/* 68.57 MBps */
--		.average_bandwidth	= 80000,	/* 80 MBps (unused?) */
-+		.peak_bandwidth		= 600000,	/* 600 MBps */
-+		.average_bandwidth	= 150000,	/* 150 MBps */
- 	},
-+	/* Average rate is unused for the next interconnect */
- 	{
- 		.name			= "config",
--		.peak_bandwidth		= 30000,	/* 30 MBps */
-+		.peak_bandwidth		= 74000,	/* 74 MBps */
- 		.average_bandwidth	= 0,		/* unused */
- 	},
- };
--- 
-2.27.0
+> Testing with xdp in driver mode on veth devices works as expected,
+> which suggests this is more likely a driver issue.
+> 
+
+The driver or its implementation are not involved with the above
+helpers, so further debug is required in the user prog or the helpers
+logic themselves.
+
+> Additional Details:
+> 
+> Linux Distro: Ubuntu 21.04
+> Linux Kernel version: 5.11.0-18-generic
+> driver: mlx5_core
+> version: 5.11.0-18-generic
+> 
+> Thank you,
+> David Ramirez
+
 
