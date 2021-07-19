@@ -2,67 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C11273CD016
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB65A3CD033
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235504AbhGSI1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 04:27:37 -0400
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:33785 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235129AbhGSI1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 04:27:36 -0400
-Received: by mail-pl1-f171.google.com with SMTP id d1so9270195plg.0;
-        Mon, 19 Jul 2021 02:08:15 -0700 (PDT)
+        id S235709AbhGSIa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 04:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235459AbhGSIaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 04:30:22 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B9AC061766
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 01:12:04 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id a13so21071952wrf.10
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 02:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u5FkYygAP5aYXKhiToJncjQ4pnqt1axbUfxSA6M106E=;
+        b=RUoz3S+OzJer2hQ2zynaEh0ahbOByD6Ye2U9E+aySsu09fb59vHB8xqBnMBTNjooXK
+         J48srP6gvu9447896+hKmxhF7Yn3jmLZiyQCnSf7eqMm4aPtsMJWS8efN62jjFn9mbAr
+         AQL95z7CfrzZnBYbnITt4xTYVjHmXWcnLWPNA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CtvuLee3pr4EwzHtgTx9NE8EP/OqeelZmZ/9rdm/KUo=;
-        b=G5g2y/aqzTSEw1KYR7prHpWz5+yOyX2nYC5lX5JJORhGP4KyNK8ht1fdypSlkCiBmN
-         PsDXaXhhknJoOmLuT3A045U9YkmGVoiQXHtpi1yjKzjWx80QhkaUqr38iehXufS9XG3W
-         a89MNyzIDkAF1F2yGFirVkcMmQfkZK+n62YWJhDKf830uSefCAezg/lSgV9MiTpWbLP8
-         CKniBItZKVjIOOHPfTzxJBxfOxDds+9XKn4WtbfrS/vRuWv1sL9CoVAnZY8tsT7o1zuA
-         SV9SqRKEKrAlmk7sRhZ9tgtZ8eaxmQ3a2aqqassAII33p6vLbnnmYPVXb5JnQFfNLwUm
-         ZmHA==
-X-Gm-Message-State: AOAM530FtSLHmFvG78HTLu5VDlijdQSM5jJLpqkyWfe1U/To60NyZKtZ
-        njo8fYIJyNhWUDCxI0FpgPJSg9Gkkq7pHb3xUHHovc1a+1g=
-X-Google-Smtp-Source: ABdhPJzphCu+/PQBb5pagPyZjUg/VmixCHDUZXyBafPCy7evyecNXWUaZFOmx7ljzxro/peUr4+prkEAgHfbir3Wpzo=
-X-Received: by 2002:a05:6102:321c:: with SMTP id r28mr23284874vsf.40.1626683939415;
- Mon, 19 Jul 2021 01:38:59 -0700 (PDT)
+        bh=u5FkYygAP5aYXKhiToJncjQ4pnqt1axbUfxSA6M106E=;
+        b=DRadIpQak0j2bsPyTNr5kKmp9gEQ8imynSOjRV++Lndmy7yK1Zb8vumo2paf+KUiJj
+         lT+FyaTqy+QPR9dL4h5cy5kv4iHmMX8tq+Xpmmo+1rsnyb4Dniwy7h0rhezUXsAv7e3n
+         QwffhF3o1wwOaMSeSSWFGXjjaZICm20NIbAGRw0/gJ3aV9/9cvZvsxaybMBU6zXxMO/M
+         OogUBSrmSZyTZCDx8nU9keqVlzpKSzWOgSZP/gSgPAeqpUjcUsSlOs7+o74Eib5Gildv
+         g7Jgww7juQKyX9JePqaDcqjdSrjHIvCPDwz8oOd4mWqKJIjZji2YHQktQRYkO6JKtu5L
+         zaLA==
+X-Gm-Message-State: AOAM531wgX1N6baPnIwZ+vKdBqUli+j2WOe45FMY+GR6O1QPxrmyd45L
+        Y2zAqhsvxyOciQPO32PSrKN42ZflEpBMet6vHzHNGXmiMhc=
+X-Google-Smtp-Source: ABdhPJzlxqfFGaZrZ/5HCQxqAtoUQFd+tAAHV7lDvF2Cb/wf0Cnc0joQvV4k+SOZgE1RrpeWhEROVb9+ifjTZjQ6mgs=
+X-Received: by 2002:ac2:43d4:: with SMTP id u20mr17544633lfl.451.1626684328396;
+ Mon, 19 Jul 2021 01:45:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210719073633.1041901-1-geert@linux-m68k.org>
-In-Reply-To: <20210719073633.1041901-1-geert@linux-m68k.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 19 Jul 2021 10:38:48 +0200
-Message-ID: <CAMuHMdXb6zJFc5ArGwHq2Bfm3RvKFutz2UjXFzgDLhGeDezL9g@mail.gmail.com>
-Subject: Re: Build regressions/improvements in v5.14-rc2
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>
+References: <20210716100452.113652-1-lmb@cloudflare.com> <CAEf4BzauzWhNag0z31krN_MTZTGLynAJvkh_7P3yLQCx5XLTAg@mail.gmail.com>
+In-Reply-To: <CAEf4BzauzWhNag0z31krN_MTZTGLynAJvkh_7P3yLQCx5XLTAg@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 19 Jul 2021 09:45:16 +0100
+Message-ID: <CACAyw98RaF8SgA9nkduXo-wBdsRN86cP=seX9d83i0Qhi0gbeQ@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix OOB read when printing XDP link fdinfo
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 9:40 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> JFYI, when comparing v5.14-rc2[1] to v5.14-rc1[3], the summaries are:
->   - build errors: +1/-3
+On Fri, 16 Jul 2021 at 21:44, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> Well, oops. Thanks for the fix!
+>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+>
+> It would be great to have a compilation error for something like this.
+> I wonder if we can do something to detect this going forward?
 
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/2734d6c1b1a089fb593ef6a23d4b70903526fe0c/ (186 out of 189 configs)
-> [3] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/e73f0f0ee7541171d89f2e2491130c7771ba58d3/ (all 189 configs)
+I had a second patch that introduced MAX_BPF_LINK_TYPE, etc. and then
+added explicit array initializers:
 
-  + error: modpost: "xfrm_dev_state_flush"
-[drivers/net/bonding/bonding.ko] undefined!:  => N/A
+     [MAX_BPF_LINK_TYPE] = NULL,
 
-powerpc-gcc5/44x/fsp2_defconfig
-(fixed by https://lore.kernel.org/netdev/20210716230941.2502248-1-maheshb@google.com/)
+That turns the OOB read into a NULL read. But it has to be done for
+every inclusion of bpf_types.h so it's
+a bit cumbersome. Maybe add MAX_BPF_LINK_TYPE and then add an entry in
+bpf_types.h for it as well?
 
-Gr{oetje,eeting}s,
+--
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+www.cloudflare.com
