@@ -2,259 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A193CCFEA
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1323CD008
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:06:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235476AbhGSIXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 04:23:23 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:11445 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235528AbhGSIXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 04:23:22 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GSwmQ4RRgzcg1t;
-        Mon, 19 Jul 2021 17:00:38 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Jul 2021 17:03:54 +0800
-Received: from [10.174.179.224] (10.174.179.224) by
- dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Jul 2021 17:03:54 +0800
-Subject: Re: [PATCH v2] Bluetooth: fix use-after-free error in
- lock_sock_nested()
-To:     Hillf Danton <hdanton@sina.com>
-CC:     <cj.chengjian@huawei.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <huawei.libin@huawei.com>,
-        <marcel@holtmann.org>, <luiz.dentz@gmail.com>,
-        <johan.hedberg@gmail.com>, <linux-bluetooth@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        syzbot <syzbot+664818c59309176d03ee@syzkaller.appspotmail.com>,
-        syzbot <syzbot+9a0875bc1b2ca466b484@syzkaller.appspotmail.com>
-References: <20210719024937.9542-1-bobo.shaobowang@huawei.com>
- <20210719074829.2554-1-hdanton@sina.com>
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Message-ID: <97b64908-45d3-f074-bd9c-0bb04624bad1@huawei.com>
-Date:   Mon, 19 Jul 2021 17:03:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S235703AbhGSIZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 04:25:18 -0400
+Received: from mail-am6eur05on2054.outbound.protection.outlook.com ([40.107.22.54]:34816
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235842AbhGSIZR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 04:25:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VgtpufrcOk8nOvgYUg0GstKIVJ1Wdyitd6m8tlq0GK1+fnOGZ0KsWUPvVRtP8bnobyoBzXcrdm1wSOvYJHyH2QIgVNUDCSkzqfL7iH91NYwVQ/arAnh263owujP+1d3530dYtogYu7SbxIz+ebbLa/+Vdd7mX7ULA44CP+jdzwJI+c5SQ2+mFsVGAdmzCKQkBmLjtZtLjQ8t0bhixKLmFPyfJQI0N7hC4ahFP49f9ryU9WcO3y5DDCGiAEd2tYluKAHcZ0FwTlDJ1B3yMeWZrNQlUrrT9tuDBnrVDykQnDpuCzyH4in7jI8P16a9YvcTiIRtXamFMFlzt5b3o1u1AA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5OEspEZPBvn2tKR63eN8tyQ7CcmFp4MhzTDM5ACxsSU=;
+ b=TUB9MJgo0K4IdXEVStftMHrhPB8m+T6N7rfIsg37imd1Cbbdh5ABR/LZPYPCacgMLGZU0axEZ8y/7vlFtJa0Zbd2T3k35I6PMRMcE0Sqqn72QFygs6n5W/mhDJmC2e0boCFay5KDKWSf5u2xvip9gtj5CH3GRriiGaoPS0z/2M88UVgTdiWfnlq3aTcGcxL0H7ReKFscVT0cOae7tFfJQmhVa+szrTKcwSQcxyRCaovzvbsDYIS0fsBfaWmaFVpS8O84Tg2DyqaRLAsmepnLj73rQsDZCR5GfX9v9RLGxGiU2Mr3xFmYMfwKsz2T0r1lPU9APca+ZQQjvewhTML9lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5OEspEZPBvn2tKR63eN8tyQ7CcmFp4MhzTDM5ACxsSU=;
+ b=F+ykGmc0sJGVoF7+e0oKvhk8WYhNW2RoQlqYAUr0vEKEM9MVLrrBonW0rQ0GhIIVA5XzA/7HhDWqeXkYVcRkaMtSX8wxcarV694Aclv+KdPFaW3Hpo4dVjfmuLwys/z1VfwqZXlOkps0IAwLqmlxqVP2FoR5Rnopi9ib0Gx0j/w=
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ (2603:10a6:200:4f::13) by AM0PR04MB5395.eurprd04.prod.outlook.com
+ (2603:10a6:208:115::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Mon, 19 Jul
+ 2021 09:05:55 +0000
+Received: from AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::99d8:bc8c:537a:2601]) by AM4PR0401MB2308.eurprd04.prod.outlook.com
+ ([fe80::99d8:bc8c:537a:2601%3]) with mapi id 15.20.4308.027; Mon, 19 Jul 2021
+ 09:05:55 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [RFC PATCH net-next] net: dpaa2-mac: add support for more ethtool
+ 10G link modes
+Thread-Topic: [RFC PATCH net-next] net: dpaa2-mac: add support for more
+ ethtool 10G link modes
+Thread-Index: AQHXdzUwPaLGzQ7e8U+FjyOoZK6EJqtKDCQA
+Date:   Mon, 19 Jul 2021 09:05:55 +0000
+Message-ID: <20210719090554.rtdztiegvrvbbybo@skbuf>
+References: <E1m2y9G-0005vm-Vm@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1m2y9G-0005vm-Vm@rmk-PC.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7625ec50-1da4-4c6d-eb7e-08d94a946aef
+x-ms-traffictypediagnostic: AM0PR04MB5395:
+x-microsoft-antispam-prvs: <AM0PR04MB539548E97922FB40F24C8FE0E0E19@AM0PR04MB5395.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: e/7GjeG4efbGwCZAYXCF+VrHfDwN2OvX8kXU4dBl1eMujeRnW3R0z0R9g6OBa5O1WvT90xrEvS57DgBzhanN9x7Mi82a2n/hbsRm30pXUw1mGNR8N9pE+oVpzPKNfNRvpeZgr2yJMxcbAEOgC/+YagyO6F7Ly2BZVFT+jb0BYwjKEfp6pZ8Qk7LNIPCJjWRKt4m4V0+FzMpmeMXm5mXaYWg/tvhuhBlNr7a94eq8ueIAZtS9rC3W31D7hTOp2gYjOwg/nD+1zO1WXWR4O57Xk9N8SuvHziQtrIFUbDfKrTClOT4GfMggkrVjxSWr8vbbo0AcTyp1XjMpqFoKgs9LCtVyY3BNhoD621JqnIIeRMMY06apeqCDXiSJEodQwhGnMqkGqVI9sDFXwDV98fd1mnYINqnHXzz+oEgCmL2rcVAVmQLC+ITcg/vsc4+A7+K42Az3rsRVIxdA2UlMuNve6MAsb5l3wBtN2dwC3J4vb6dJmZofbWIiWEb3zaZOZ5iYWrG01Dt2hHMBdBm6JWqWL+r40YEcPnWKegV+HfATrCZYyzmK1qVTQzrU/JVSpsjEp/zZT4ZD7Y6fdimDB++JsBPCZgIIPQjvxzYAm0UyTLol69FOG67Qqco7Tq1zRgMcb9RbXmunJ35wrCgfqh0kdgDfMcsCK6kpDQu33p9HirnpLT3MG3iF3FVrMjbpAeZx
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM4PR0401MB2308.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(136003)(346002)(396003)(376002)(366004)(54906003)(8936002)(478600001)(76116006)(316002)(64756008)(66476007)(6512007)(9686003)(66556008)(26005)(66946007)(1076003)(3716004)(66446008)(44832011)(8676002)(2906002)(122000001)(4326008)(83380400001)(6506007)(33716001)(186003)(5660300002)(6486002)(86362001)(38100700002)(71200400001)(38070700004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?tUDKuxBAfI6HVMvqAmmz9TGrVafiGGIb5C8YQQ3KBD5hYGgEPsDpUVCeMo+n?=
+ =?us-ascii?Q?QcFBqdzSltJtk+Yd3XtAER/zoarIcVIICLoEC+aYliglWOmBm783TQ3NRVPW?=
+ =?us-ascii?Q?65UFKJe2u7+j/gphTZ9WU0RWciRzPjMhL+5Gxmg6M2kyqe0mci5gAWCRhP/p?=
+ =?us-ascii?Q?pzYrAqGdz0XVQh7kXOFnMcf/PJVr+w0ZH6KkmHwWV5OSYwD0r9cXLsZGh///?=
+ =?us-ascii?Q?weqPXqpP7vJ+OXOBUoYfUHzzGGrdMwIdMnjQVyjYSu9KRpykeYKxd7N5CzOa?=
+ =?us-ascii?Q?jlLxX8YIrGLoRqxxDY0pLNVk50hDhx4C14zUg1YTy0YMVdM+/wQAj61SIUPP?=
+ =?us-ascii?Q?ZZjDRb/UpPNgIMGUyu5zMJ6GJp/fH39Lyv/TWM2Gi4j/j4i4PtkCmbJtCAoK?=
+ =?us-ascii?Q?6Wc3oUB2wntCDtULNBMSYRGhwxThpsz5jWpz0EQS5yvb6+TpPX1HX3AFw/38?=
+ =?us-ascii?Q?jIumPHaLAppgKJRUmriLw0G4b6ax3Kjve7fAONNSJkFZv4MWFesgKQaGZLfn?=
+ =?us-ascii?Q?XoDv0ICtcjruMQYWMS0g4e3hHrBVgyTrXBQsEZU6uh/huCJqXLwI87EIogwO?=
+ =?us-ascii?Q?8698XvaOFVczaIpJ4tdfG5rV+aVkNT7bUQm/qTmGZ7Y4nPw9e6zqisB7RNr0?=
+ =?us-ascii?Q?jixjOyb447jGiZn0VIjhyCYlLucw2le9Fu6OzKX+RPkJ+e2MlpSOW2em0f38?=
+ =?us-ascii?Q?3/tMlALCtgSiK4npQGyt6Uyq85jFl6jNKx6TpGVMlKLYjjYjBjLxm9FFsNz6?=
+ =?us-ascii?Q?ClMOcukbt1ooGYUWBSTMENUduJvVe22pjJ9fhG1ceD5g+cYodpcZ/6m8223U?=
+ =?us-ascii?Q?7Hp7qOGj8PKYXN8aEHiqLGfzP+ezCjRJcZK7fH9ZDbvRWEY/IT1MNpxDdeLG?=
+ =?us-ascii?Q?tSHu7ni5APuDBc7c9dSUR4IaasgM9mWJIUb1S0/acHBbkkZxGV+gGaegnzgx?=
+ =?us-ascii?Q?MC+Neww6+0iEgzPmAkouBhuUBVOCqu4ADJNbsn7jTURtM5GO46WRRNFV42Fq?=
+ =?us-ascii?Q?8j3azTIj6Qsu87eX7yz5lhdPgJ/RCFGIDMLW5u0E/KX0AsBbiMVtFMXd8FRo?=
+ =?us-ascii?Q?XJgujOK0DjCNDrYK5shDxAUK0V/CZzja5DmIgp5my5rnVREUt1tjU8TRekdj?=
+ =?us-ascii?Q?/xdyf7Hc/fiA4rCJjQ4jeYH/ql7qwjmkXmPehQ+iibIjOwS9mXlt+ZJNJ/mp?=
+ =?us-ascii?Q?Z7MweTGCIXwvjihuw68kx7amLh2975MCc2lgiMC/3FSl0GzQa3K1kLoffLPQ?=
+ =?us-ascii?Q?BEN8KjS+FaNE2UkbYqVdbC2nATV+J5lTbShLWsC21pHldOli80wrF5r/RhyL?=
+ =?us-ascii?Q?+LC99QlYJNZlrAFpp5Z/TMjn?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <89354E06560B1F4F8871A85F08D7FD50@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20210719074829.2554-1-hdanton@sina.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.224]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM4PR0401MB2308.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7625ec50-1da4-4c6d-eb7e-08d94a946aef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2021 09:05:55.8029
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vTXoMlk5nokTMEryTGteBZtQyJdjqbbsbtbkfICHp6GWhIZpBI2yMQFtgMJapkH8vLdQrnuVnae5iLeXCIl77w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5395
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 12, 2021 at 04:47:10PM +0100, Russell King wrote:
+> Phylink documentation says:
+>  * Note that the PHY may be able to transform from one connection
+>  * technology to another, so, eg, don't clear 1000BaseX just
+>  * because the MAC is unable to BaseX mode. This is more about
+>  * clearing unsupported speeds and duplex settings. The port modes
+>  * should not be cleared; phylink_set_port_modes() will help with this.
+>=20
+> So add the missing 10G modes.
+>=20
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-在 2021/7/19 15:48, Hillf Danton 写道:
-> On Mon, 19 Jul 2021 10:49:37 +0800 Wang ShaoBo wrote:
->> use-after-free error in lock_sock_nested is reported:
-> There are similar reports from syzbot.
->
-> [1] https://lore.kernel.org/netdev/000000000000f335f205b5649c70@google.com/
-> [2] https://lore.kernel.org/netdev/000000000000c4fd0405b6cc8e53@google.com/
->
->> [  179.140137][ T3731] =====================================================
->> [  179.142675][ T3731] BUG: KMSAN: use-after-free in lock_sock_nested+0x280/0x2c0
->> [  179.145494][ T3731] CPU: 4 PID: 3731 Comm: kworker/4:2 Not tainted 5.12.0-rc6+ #54
->> [  179.148432][ T3731] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
->> [  179.151806][ T3731] Workqueue: events l2cap_chan_timeout
->> [  179.152730][ T3731] Call Trace:
->> [  179.153301][ T3731]  dump_stack+0x24c/0x2e0
->> [  179.154063][ T3731]  kmsan_report+0xfb/0x1e0
->> [  179.154855][ T3731]  __msan_warning+0x5c/0xa0
->> [  179.155579][ T3731]  lock_sock_nested+0x280/0x2c0
->> [  179.156436][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.157257][ T3731]  l2cap_sock_teardown_cb+0xb8/0x890
->> [  179.158154][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
->> [  179.159141][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.159994][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
->> [  179.160959][ T3731]  ? l2cap_sock_recv_cb+0x420/0x420
->> [  179.161834][ T3731]  l2cap_chan_del+0x3e1/0x1d50
->> [  179.162608][ T3731]  ? kmsan_get_metadata+0x116/0x180
->> [  179.163435][ T3731]  ? kmsan_get_shadow_origin_ptr+0x84/0xb0
->> [  179.164406][ T3731]  l2cap_chan_close+0xeea/0x1050
->> [  179.165189][ T3731]  ? kmsan_internal_unpoison_shadow+0x42/0x70
->> [  179.166180][ T3731]  l2cap_chan_timeout+0x1da/0x590
->> [  179.167066][ T3731]  ? __msan_metadata_ptr_for_load_8+0x10/0x20
->> [  179.168023][ T3731]  ? l2cap_chan_create+0x560/0x560
->> [  179.168818][ T3731]  process_one_work+0x121d/0x1ff0
->> [  179.169598][ T3731]  worker_thread+0x121b/0x2370
->> [  179.170346][ T3731]  kthread+0x4ef/0x610
->> [  179.171010][ T3731]  ? process_one_work+0x1ff0/0x1ff0
->> [  179.171828][ T3731]  ? kthread_blkcg+0x110/0x110
->> [  179.172587][ T3731]  ret_from_fork+0x1f/0x30
->> [  179.173348][ T3731]
->> [  179.173752][ T3731] Uninit was created at:
->> [  179.174409][ T3731]  kmsan_internal_poison_shadow+0x5c/0xf0
->> [  179.175373][ T3731]  kmsan_slab_free+0x76/0xc0
->> [  179.176060][ T3731]  kfree+0x3a5/0x1180
->> [  179.176664][ T3731]  __sk_destruct+0x8af/0xb80
->> [  179.177375][ T3731]  __sk_free+0x812/0x8c0
->> [  179.178032][ T3731]  sk_free+0x97/0x130
->> [  179.178686][ T3731]  l2cap_sock_release+0x3d5/0x4d0
->> [  179.179457][ T3731]  sock_close+0x150/0x450
->> [  179.180117][ T3731]  __fput+0x6bd/0xf00
->> [  179.180787][ T3731]  ____fput+0x37/0x40
->> [  179.181481][ T3731]  task_work_run+0x140/0x280
->> [  179.182219][ T3731]  do_exit+0xe51/0x3e60
->> [  179.182930][ T3731]  do_group_exit+0x20e/0x450
->> [  179.183656][ T3731]  get_signal+0x2dfb/0x38f0
->> [  179.184344][ T3731]  arch_do_signal_or_restart+0xaa/0xe10
->> [  179.185266][ T3731]  exit_to_user_mode_prepare+0x2d2/0x560
->> [  179.186136][ T3731]  syscall_exit_to_user_mode+0x35/0x60
->> [  179.186984][ T3731]  do_syscall_64+0xc5/0x140
->> [  179.187681][ T3731]  entry_SYSCALL_64_after_hwframe+0x44/0xae
->> [  179.188604][ T3731] =====================================================
->>
->> In our case, there are two Thread A and B:
->>
->> Context: Thread A:              Context: Thread B:
->>
->> l2cap_chan_timeout()            __se_sys_shutdown()
->>   l2cap_chan_close()              l2cap_sock_shutdown()
->>     l2cap_chan_del()                l2cap_chan_close()
->>       l2cap_sock_teardown_cb()        l2cap_sock_teardown_cb()
->>
->> Once l2cap_sock_teardown_cb() excuted, this sock will be marked as SOCK_ZAPPED,
->> and can be treated as killable in l2cap_sock_kill() if sock_orphan() has
->> excuted, at this time we close sock through sock_close() which end to call
->> l2cap_sock_kill() like Thread C:
->>
->> Context: Thread C:
->>
->> sock_close()
->>   l2cap_sock_release()
->>     sock_orphan()
->>     l2cap_sock_kill()  #free sock if refcnt is 1
->>
->> If C completed, Once A or B reaches l2cap_sock_teardown_cb() again,
->> use-after-free happened.
->>
->> We should set chan->data to NULL if sock is destructed, for telling teardown
->> operation is not allowed in l2cap_sock_teardown_cb(), and also we should
-> Alternatively ensure it is safe to invoke the teardown cb by holding extra
-> grab to sock, see diff below,
->
->> avoid killing an already killed socket in l2cap_sock_close_cb().
-> with an eye on double kill.
->
->> Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
->> ---
->> v2:
->>   put chan->data = NULL in l2cap_socl_destruct(), this refers to
->>   Luiz Augusto von Dentz <luiz.dentz@gmail.com>'s proposal.
->> ---
->> net/bluetooth/l2cap_sock.c | 10 +++++++++-
->> 1 file changed, 9 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
->> index c99d65ef13b1..160c016a5dfb 100644
->> --- a/net/bluetooth/l2cap_sock.c
->> +++ b/net/bluetooth/l2cap_sock.c
->> @@ -1508,6 +1508,9 @@ static void l2cap_sock_close_cb(struct l2cap_chan *chan)
->> {
->> 	struct sock *sk = chan->data;
->>
->> +	if (!sk)
->> +		return;
->> +
->> 	l2cap_sock_kill(sk);
->> }
->>
->> @@ -1516,6 +1519,9 @@ static void l2cap_sock_teardown_cb(struct l2cap_chan *chan, int err)
->> 	struct sock *sk = chan->data;
->> 	struct sock *parent;
->>
->> +	if (!sk)
->> +		return;
->> +
->> 	BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
->>
->> 	/* This callback can be called both for server (BT_LISTEN)
->> @@ -1707,8 +1713,10 @@ static void l2cap_sock_destruct(struct sock *sk)
->> {
->> 	BT_DBG("sk %p", sk);
->>
->> -	if (l2cap_pi(sk)->chan)
->> +	if (l2cap_pi(sk)->chan) {
->> +		l2cap_pi(sk)->chan->data = NULL;
->> 		l2cap_chan_put(l2cap_pi(sk)->chan);
->> +	}
->>
->> 	if (l2cap_pi(sk)->rx_busy_skb) {
->> 		kfree_skb(l2cap_pi(sk)->rx_busy_skb);
->> -- 
->> 2.27.0
->
-> Hold sock until it is killed to make l2cap callbacks safe.
-> Now only for thoughts.
->
-> +++ x/net/bluetooth/l2cap_sock.c
-> @@ -1509,6 +1509,8 @@ static void l2cap_sock_close_cb(struct l
->   	struct sock *sk = chan->data;
->   
->   	l2cap_sock_kill(sk);
-> +	/* put the extra hold in l2cap_sock_init() */
-> +	sock_put(sk);
->   }
->   
->   static void l2cap_sock_teardown_cb(struct l2cap_chan *chan, int err)
-> @@ -1794,6 +1796,8 @@ static void l2cap_sock_init(struct sock
->   	/* Default config options */
->   	chan->flush_to = L2CAP_DEFAULT_FLUSH_TO;
->   
-> +	/* will be put in l2cap_sock_close_cb() */
-> +	sock_hold(sk);
->   	chan->data = sk;
->   	chan->ops = &l2cap_chan_ops;
->   }
-> .
+Acked-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Dear Danton，
-
-I have tried this before, this will trigger error "underflow of refcount 
-of chan" as following:
-
-[  118.708179][ T3086] ------------[ cut here ]------------
-[  118.710172][ T3086] refcount_t: underflow; use-after-free.
-[  118.713391][ T3086] WARNING: CPU: 4 PID: 3086 at lib/refcount.c:28 
-refcount_warn_saturate+0x30a/0x3c0
-[  118.716774][ T3086] Modules linked in:
-[  118.718279][ T3086] CPU: 4 PID: 3086 Comm: kworker/4:2 Not tainted 
-5.12.0-rc6+ #84
-[  118.721005][ T3086] Hardware name: QEMU Standard PC (i440FX + PIIX, 
-1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
-[  118.722846][ T3086] Workqueue: events l2cap_chan_timeout
-[  118.723786][ T3086] RIP: 0010:refcount_warn_saturate+0x30a/0x3c0
-...
-[  118.737912][ T3086] CR2: 0000000020000040 CR3: 0000000011029000 CR4: 
-00000000000006e0
-[  118.739187][ T3086] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-0000000000000000
-[  118.740451][ T3086] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-0000000000000400
-[  118.741720][ T3086] Call Trace:
-[  118.742262][ T3086]  l2cap_sock_close_cb+0x165/0x170
-[  118.743124][ T3086]  ? l2cap_sock_teardown_cb+0x560/0x560
-
-Actually, if adding sock_hold(sk) in l2cap_sock_init(), 
-l2cap_sock_kill() will continue to excute untill it found
-
-now chan's refcount is 0, this is because sock was not freed in last 
-round execution of l2cap_sock_kill().
-
-
-this method also makes l2cap_sock_init()'s logic more difficult to 
-understand,   we have set refcount
-
-of sock to 1 when allocating it, why do we need hold it again ?
-
--- Wang ShaoBo
-
+> ---
+> net-next is currently closed, but I'd like to collect acks for this
+> patch. Thanks.
+>=20
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/n=
+et/ethernet/freescale/dpaa2/dpaa2-mac.c
+> index ae6d382d8735..543c1f202420 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+> @@ -140,6 +140,11 @@ static void dpaa2_mac_validate(struct phylink_config=
+ *config,
+>  	case PHY_INTERFACE_MODE_10GBASER:
+>  	case PHY_INTERFACE_MODE_USXGMII:
+>  		phylink_set(mask, 10000baseT_Full);
+> +		phylink_set(mask, 10000baseCR_Full);
+> +		phylink_set(mask, 10000baseSR_Full);
+> +		phylink_set(mask, 10000baseLR_Full);
+> +		phylink_set(mask, 10000baseLRM_Full);
+> +		phylink_set(mask, 10000baseER_Full);
+>  		if (state->interface =3D=3D PHY_INTERFACE_MODE_10GBASER)
+>  			break;
+>  		phylink_set(mask, 5000baseT_Full);
+> --=20
+> 2.20.1
+> =
