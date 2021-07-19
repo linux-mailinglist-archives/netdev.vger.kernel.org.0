@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F333CD4DD
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD4B3CD505
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236742AbhGSL57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 07:57:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58355 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231388AbhGSL56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:57:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626698318;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9xnPevyU/vinvxm9fpLnz13ttiz6/qE1ToIVXogNE+c=;
-        b=VW52XsGHspD7Ve7HsS06gP2L8giQ3TxY+Lz61oZ3kynuBr4TDdTGj4x/J+Fzdc2wzznZVw
-        9aYc7ALau2nEFk/bJ9MCDYW4p5IAmkfxbd0HQgKxoiff6wYEyil6QR+2KaMp4RB+GABhKD
-        WKtJwjyeiv315pQ0rND4x9BogsCgC4I=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-558-kfRVjhe_PMuSIeo8Xv6daA-1; Mon, 19 Jul 2021 08:38:35 -0400
-X-MC-Unique: kfRVjhe_PMuSIeo8Xv6daA-1
-Received: by mail-ed1-f70.google.com with SMTP id e3-20020a0564020883b029039ef9536577so9201161edy.5
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:38:34 -0700 (PDT)
+        id S237054AbhGSMEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 08:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236571AbhGSMEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 08:04:38 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C8AC061574
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:02:59 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id go30so28457502ejc.8
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:45:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DyBB7WKv/K4wAbBcC4er6gncsPDeokBD/U0TCgAc0/M=;
+        b=ZQCMwATjg0uBSGJQYZwjnEfbHNe5W9MfOsVVYU7cO/H60X1OCHOtZN7YvE7Hge+mzs
+         rmLFhNqejdGjX03131Z74xC+/NQAVahEUO6lzlm9oASyO0CC6Vu0ii9WBu24kX9xGjan
+         /+PLWmdiuiK03Qvzcf6NFn2YraaGWqG8qkGJbAqaf0uqkTpb95cvT01368slz1V3owzO
+         LueavCJD2Yv4XkUKg7BzJvx31oDZYoEViNCI5OVXjHnO1Vsm7i7VARAdHzz4nzjfA/SB
+         /iK1BfWd8hsi25KTwCyu7ZVk3ay6MLDXn9yHmcNxZPUHew0lDz9Wr6Zno/sSl8Q4wIjY
+         lAGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=9xnPevyU/vinvxm9fpLnz13ttiz6/qE1ToIVXogNE+c=;
-        b=HY75voa5PpJzrz99WxUOcR8iGwwuv1Q8vAOLh6jDcpeBVaLBVEGpHFEOHu0sdoVUP3
-         SYELsiS7RmGvkP2OR2Ctd/ZyMmDya4tc3MfTKQoWo+87EjJ4U+sgrdm1fgqr3d1oSelf
-         36YMX7Mc1DCddL51NpwIx/eIBg6ZDByhYgfGacyf7ut89tVAPhtmT1C9YlDk6kXoz21Z
-         51Ksx/7n8MeAlMnY5FaGZVO0cQFENGOeHuRXicrqDGUSW3T8gs3prTQGVE+aCyDV4VfG
-         8aDMKpzk7fx90HVi6xrmZMX8NrHxuZIAQR46HVFpKdsLtWTjg7SzKumZEUGmg6+COutX
-         OCdw==
-X-Gm-Message-State: AOAM5335cpIm/QCpxDlhhW525tmZigRX7NAT8yp382KJ1x5dqyMkC74y
-        CVuwLeUd9K1QCjb6853W1V/TyAdFFlxfYSK3qEEdE/WunNYCoIfI7jKCu429wjVOyYCGxgmGLRm
-        oMuCjtqQkT1KAx6B0
-X-Received: by 2002:a05:6402:692:: with SMTP id f18mr34700412edy.327.1626698313963;
-        Mon, 19 Jul 2021 05:38:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnczeyvEpOgLXM/x4GwI3PK+KqvUJeavIe9mVLcwzRkXbCNtd51hBnv/Dbxxr24TjaxK5HTQ==
-X-Received: by 2002:a05:6402:692:: with SMTP id f18mr34700397edy.327.1626698313850;
-        Mon, 19 Jul 2021 05:38:33 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id d18sm5856039ejr.50.2021.07.19.05.38.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DyBB7WKv/K4wAbBcC4er6gncsPDeokBD/U0TCgAc0/M=;
+        b=JBKUAu9IqwLHvb08R2zTceRHYM88oi4ypPc6jm5ak7kUNQ7QMKSk9e073x7e4TJ1wZ
+         GczCFveztZ6Acllm1cp0UxlBz4HANUA+x7P5zpOLLlcHYaf9Wlkk5ogWr9ci6jJSmVGK
+         ocezJ2vvdioTpsjpl4DN3mmuWyGjkrEAHiLpHGf7IE+L2XfudiF7zJkvK/9x6GTpbVh/
+         a/7wnV/+9sW1txF1uvISRUQ/PpjDNP1i1v5xHYqizXl9jk5eg2z4CNo5CfFxyvsj51Uk
+         Avjo4EyYA2+W12uswu13qsoK1qNvkXHVzNcUSkPX5LJ6A/1GbKdZgPLdw2W2FzMLJH+J
+         f/Qw==
+X-Gm-Message-State: AOAM533Rxs1TLLptykuXZ3sWCVbxSsIC0JDNk8FC7Th/BzjnoNtO4v29
+        uJlf64vvfh88OAJ6b5Jluqw=
+X-Google-Smtp-Source: ABdhPJzLQs7iXjgqahKnWCeJgsZWSIOf534Ka8XG0to2mF6aEnM50LLlwacwrxycq2GLWOtuFVtMRg==
+X-Received: by 2002:a17:906:919:: with SMTP id i25mr26478829ejd.171.1626698715758;
+        Mon, 19 Jul 2021 05:45:15 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id y9sm5947649ejd.52.2021.07.19.05.45.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 05:38:33 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 506F7180065; Mon, 19 Jul 2021 14:38:32 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "luwei (O)" <luwei32@huawei.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: Ask for help about bpf map
-In-Reply-To: <6b659192-5133-981e-0c43-7ca1120edd9c@huawei.com>
-References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
- <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
- <8735sidtwe.fsf@toke.dk> <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
- <26db412c-a8b7-6d37-844f-7909a0c5744b@huawei.com>
- <189e4437-bb2c-2573-be96-0d6776feb5dd@huawei.com>
- <CAADnVQJYhtpEcvvYfozxiPdUJqcZiJxbmT2KuOC6uQdC1VWZVw@mail.gmail.com>
- <6b659192-5133-981e-0c43-7ca1120edd9c@huawei.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 19 Jul 2021 14:38:32 +0200
-Message-ID: <87wnpmtr5j.fsf@toke.dk>
+        Mon, 19 Jul 2021 05:45:15 -0700 (PDT)
+Date:   Mon, 19 Jul 2021 15:45:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: DSA .port_{f,m}db_{add,del} with offloaded LAG interface on
+ mv88e6xxx
+Message-ID: <20210719124513.f6rshjaressm5jhz@skbuf>
+References: <CALW65jZoaYYycAApviuQjiOTNuG9sfSpGZ1izRgJhj4M-gfDyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALW65jZoaYYycAApviuQjiOTNuG9sfSpGZ1izRgJhj4M-gfDyQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"luwei (O)" <luwei32@huawei.com> writes:
+Hi Qingfang,
 
-> Andrii and Toke inspired me. You are right, the libbpf version should be included in -V output
-> , but not mine. I searched google and found this page: https://www.spinics.net/lists/netdev/msg700482.html
-> , according which I re-compiled iproute2 and it works.
+On Mon, Jul 19, 2021 at 08:22:01PM +0800, DENG Qingfang wrote:
+> Hi,
+> 
+> What happens if a FDB entry is added manually to an offloaded LAG
+> interface? Does DSA core simply call .port_fdb_add with the member
+> ports in the LAG?
+> 
+> I'm asking because there is a trunk field in struct
+> mv88e6xxx_atu_entry, when it is true, the portvec is actually the
+> trunk ID.
+> As the current implementation (mv88e6xxx_port_db_load_purge) does not
+> use this field, it probably won't work.
+> 
+> Regards,
+> Qingfang
 
-Did the libbpf version appear in the output of 'ip -V' after you
-recompiled and enabled it? It does in mine:
-
-$ ./ip/ip -V
-ip utility, iproute2-5.13.0, libbpf 0.4.0
-
--Toke
-
+This is not supported at the moment.
+Coincidentally or not, I am currently working on refactoring the DSA
+handler for SWITCHDEV_FDB_ADD_TO_DEVICE to remove some of the technical
+debt (in particular, local FDB entries pointing towards the bridge do
+not work in all situations when combined with FDB replays). One of the
+extra features of the new implementation will be a new .lag_fdb_add()
+method in struct dsa_switch_ops.
