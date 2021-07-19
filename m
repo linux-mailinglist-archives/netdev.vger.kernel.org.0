@@ -2,126 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298273CCC20
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4200F3CCC28
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234185AbhGSCMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 22:12:44 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:12225 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233988AbhGSCMo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:12:44 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GSlWg2skQz1CLM2;
-        Mon, 19 Jul 2021 10:03:59 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Jul 2021 10:09:43 +0800
-Received: from [10.174.179.224] (10.174.179.224) by
- dggpemm500015.china.huawei.com (7.185.36.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Jul 2021 10:09:42 +0800
-Subject: Re: [PATCH] Bluetooth: fix use-after-free error in lock_sock_nested()
-To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-CC:     <cj.chengjian@huawei.com>, Wei Yongjun <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <huawei.libin@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-References: <20210714031733.1395549-1-bobo.shaobowang@huawei.com>
- <CABBYNZL37yLgj1LP7r=rbEcsPXCPy1y55ar816eZXka2W=7-Aw@mail.gmail.com>
- <a1c4ddcb-afbd-c0e4-2003-90590b10ea84@huawei.com>
- <32ffeb61-f8e8-2a62-e1a7-d5df9672267c@huawei.com>
- <CABBYNZKy28hfo811zMB6Z=TEXrUn_JCkpehE7n_a7Cx10qBa8g@mail.gmail.com>
-From:   "Wangshaobo (bobo)" <bobo.shaobowang@huawei.com>
-Message-ID: <50a139c2-6252-1881-c253-cc548bca1947@huawei.com>
-Date:   Mon, 19 Jul 2021 10:09:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S234166AbhGSCUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 22:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234097AbhGSCT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:19:59 -0400
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7DCC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:16:59 -0700 (PDT)
+Received: by mail-ot1-x32a.google.com with SMTP id b18-20020a0568303112b02904cf73f54f4bso3153593ots.2
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:16:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=w7nShgb27jDKQVYMgG8IWKFdPwetpVboImcgOULQ/YY=;
+        b=qR9Hpg7hczMNvHldptKxCfeB8bnltYjFNGAOrpLxJ0fjxgsH0TEcXKePOdb0+4zHhx
+         i+CbS7QUfObSIbiml7hczxclRzY0HSE1+3QEDRu17782crlKU5YHbbRMy3vimhwu7APq
+         eSh0AvLSGFINfmH/bt9Xw+HZgWKFII+zKS8wSJxw63AzKMi8CcnpY5iDwUqWKAFBpRXw
+         4MxbuC+h8CsW2voXsxUCTtzZj78VTwScpq36K4/bckp5+LqbfEetWhMdY+29w48N9BcK
+         k3nmrYVGECTm4vHQB9c5tHTlVz6TWXsb+5eScLxNFBWGkIfU050wQZY36WcQnvvrj8ZR
+         oPTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=w7nShgb27jDKQVYMgG8IWKFdPwetpVboImcgOULQ/YY=;
+        b=GBxmq9NG/3Rh/jvw6ngNtJu21t+CwRNU++99J1gBStD7Vtat7pSjpo1+k6054R9M8v
+         IxVl1PYbQ6tZYlpgY7JtI3sMy3qWDR511mHuCOGaBgmt9WB23xXsxTw6z6/Yw/t6CN3/
+         toZLwlHVpTe3nRJ9BDC7UxUQVUqhUXN5FuFtOmtl1XM9OhThsSxgS1b54G5NxiR7CMGD
+         PBYzeJX2vzlTweA8XSmxTZWyqWrYhNnTwXYdVdwZ+1mFqnVuneUk+Q9jqZrFWNGY0vVr
+         QbaDHRKRNlM1D2/F9+INaTVEXzXpOd9tuYZRxkdLg4AwyGvaLYjEkYZUYQcfiJk0/fJn
+         np2g==
+X-Gm-Message-State: AOAM530nFt7wIwhbzqyqGjmz3dWsL/5/vFuaCEZrgBSBOJDTXKOMI0V9
+        k/BAlc3UENZUpfuuVbm/DfA=
+X-Google-Smtp-Source: ABdhPJw3Z0O9xpMZ/9kBd85A56qzTvgp3b9GEbiY8M7MHmazE8vsqz12+pQmXSH8lkgoTbtDMYWxZQ==
+X-Received: by 2002:a9d:6ad4:: with SMTP id m20mr17288876otq.338.1626661019135;
+        Sun, 18 Jul 2021 19:16:59 -0700 (PDT)
+Received: from ?IPv6:2600:1700:dfe0:49f0:49e1:751f:b992:b4f3? ([2600:1700:dfe0:49f0:49e1:751f:b992:b4f3])
+        by smtp.gmail.com with ESMTPSA id t10sm3381730otd.73.2021.07.18.19.16.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Jul 2021 19:16:58 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 04/15] mlxsw: spectrum: refactor leaving an
+ 8021q upper that is a bridge port
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        bridge@lists.linux-foundation.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>
+References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
+ <20210718214434.3938850-5-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <64fc7812-3c86-14ad-8245-ed84fc488b95@gmail.com>
+Date:   Sun, 18 Jul 2021 19:16:56 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <CABBYNZKy28hfo811zMB6Z=TEXrUn_JCkpehE7n_a7Cx10qBa8g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.224]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210718214434.3938850-5-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
->>> Hi,
->>>
->>> In my case it looks OK, this is the diff:
->>>
->>> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
->>> index f1b1edd0b697..32ef3328ab49 100644
->>> --- a/net/bluetooth/l2cap_sock.c
->>> +++ b/net/bluetooth/l2cap_sock.c
->>> @@ -1500,6 +1500,9 @@ static void l2cap_sock_close_cb(struct
->>> l2cap_chan *chan)
->>>   {
->>>          struct sock *sk = chan->data;
->>>
->>> +       if (!sk)
->>> +               return;
->>> +
->>>          l2cap_sock_kill(sk);
->>>   }
->>>
->>> @@ -1508,6 +1511,9 @@ static void l2cap_sock_teardown_cb(struct
->>> l2cap_chan *chan, int err)
->>>          struct sock *sk = chan->data;
->>>          struct sock *parent;
->>>
->>> +       if (!sk)
->>> +               return;
->>> +
->>>          BT_DBG("chan %p state %s", chan, state_to_string(chan->state));
->>>
->>>          /* This callback can be called both for server (BT_LISTEN)
->>> @@ -1700,6 +1706,7 @@ static void l2cap_sock_destruct(struct sock *sk)
->>>          BT_DBG("sk %p", sk);
->>>
->>>          if (l2cap_pi(sk)->chan)
->>> +              l2cap_pi(sk)->chan->data = NULL;
->>>                   l2cap_chan_put(l2cap_pi(sk)->chan);
->>>
->>> But if it has potential risk if l2cap_sock_destruct() can not be
->>> excuted in time ?
->>>
->>> sk_free():
->>>
->>>          if (refcount_dec_and_test(&sk->sk_wmem_alloc)) //is possible
->>> this condition false ?
->>>
->>>                __sk_free(sk)   -> ... l2cap_sock_destruct()
->>>
->> Dear Luiz,
->>
->> Not only that, if l2cap_sock_kill() has put 'l2cap_pi(sk)->chan', how
->> does we avoid re-puting 'l2cap_pi(sk)->chan' if l2cap_sock_destruct()
->> work postponed? this will cause underflow of chan->refcount; this PATCH
->> 4e1a720d0312 ("Bluetooth: avoid killing an already killed socket") also
->> may not work in any case because only sock_orphan() has excuted can this
->> sock be killed, but if sco_sock_release() excute first, for this sock
->> has been marked as SOCK_DEAD, this sock can never be killed. So should
->> we think put chan->data = NULL in xx_sock_kill() is a better choice ?
-> Not sure what do you mean by postponed? Interrupted perhaps? Even in
-> that case what are trying to prevent is use after free so if the
-> callback has not run yet that means the sk has not been freed. Anyway
-> I think we could do it inconditionally in l2cap_sock_kill since we
-> will be releasing the reference owned by l2cap_pi(sk)->chan->data that
-> should be reset to NULL immediatelly.
 
-Dear  Luiz,
+On 7/18/2021 2:44 PM, Vladimir Oltean wrote:
+> For symmetry with mlxsw_sp_port_lag_leave(), introduce a small function
+> called mlxsw_sp_port_vlan_leave() which checks whether the 8021q upper
+> we're leaving is a bridge port, and if it is, stop offloading that
+> bridge too.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-yes, that's right, if sk can be accessed, it also means that chan has 
-not been destroyed, thanks very much.
-
--- Wang ShaoBo
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
