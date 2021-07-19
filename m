@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0EE3CD4A6
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C633CD4A3
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:22:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236889AbhGSLlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 07:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        id S236664AbhGSLle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 07:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236747AbhGSLll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:41:41 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F290C061574;
-        Mon, 19 Jul 2021 04:38:08 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1626697338;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vu7b9z6fy5eQBUVOgQ3fNILEElmkneJNf7Gu+XNQsCQ=;
-        b=LQ5iMGMce0BId8ZMN7GgvooaWIunoMl/2GnrFI1IIUAAoHPMpbmv9VNM5KaK1BYEVGRAjZ
-        avv9n3OxxFGZcet/s319LB5suQIH7knhvA/ZwBCSvYBhGeeWpHRg+EuBLRghNiZ4TNsOaX
-        /QFW3BVPxKWugNiVVwBwGbhNM0fqSK0=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        nikolay@nvidia.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        courmisch@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, johannes@sipsolutions.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wireless@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH 0/4] Remove rtnetlink_send() in rtnetlink
-Date:   Mon, 19 Jul 2021 20:21:54 +0800
-Message-Id: <20210719122158.5037-1-yajun.deng@linux.dev>
+        with ESMTP id S236427AbhGSLld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:41:33 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23813C061574
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 04:38:00 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id b26so29864804lfo.4
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=/Lr4bHKOUY9u5zZ0KopUgP5BWr01yWcUC6XsKm78Wf0=;
+        b=RhfSBCMgmnurUPlehfuYlkq+nhGGQy9RnOPdfXFUdExKFplbtvb5meAMOeqRb8KzlR
+         CXYTuzndP44H6GYM6o7brlGQcZWTRbTaX9fhQbCilagqi3QZsZM+0/nB219/wGaM0dtb
+         hH7LT4IQdwfME8q0pIYvYCu7GZpg/AKpB1HbFAMf1ok/gZosj9wJSfpvSqi5kiC6YguJ
+         lLG/8D2PdftbM1OcynGhp1GlXddWfkrMhGnfbd4LpLLrSdHsrckl/aqV39n6TZhqdAik
+         4NopQN1f7KcVTZi6/VayHMt6XN0HMoyrsqzQ2N/+sYqfwtC48kTzKBImHSJlyFsSIQE5
+         9HOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=/Lr4bHKOUY9u5zZ0KopUgP5BWr01yWcUC6XsKm78Wf0=;
+        b=HiVg9ufRNd+v4drIehB9knOqlsDuovZpmfwuEYWQkHfQSBFNya8Cu+nEDr/W9yv2AL
+         CdVrYilf1ph35L7Crvw5tjPRJN53E1SwurouDsBKbifHYjyMPnBDZaRM6cfGVQw0vxWm
+         hvnBJb2ixK8vSJyWRRAIK36VynngFv7hZ/ei8JYmCxH7SY5kOWI4qvT8ny3h3PxzIdZa
+         LiSSoZ0oaipJc2c5rkckk2xIpJfH7FKQHYpf0u7iLKfXeYSc1klFud8PMo+Fzdtjb1Xt
+         Opw8DjMx2Swo+9unyCaWxPhYfouebmuzf/zgdONj62VrAQ5oq8Inm71T8dfK7gsPenDv
+         uDow==
+X-Gm-Message-State: AOAM5304VA77hJNiaTGlLGjbEhpIWXTx7ujI2eROQvuyGKh02qVqsBHq
+        o2T/f4kQ2DhfJmSyCMwmfMQWOSxsPvxBl17T87x6eMF8U2KF+U1z
+X-Google-Smtp-Source: ABdhPJxgbJRvYFIcIdez/08IHxQbxnY+CVoC5vWsGdeT9dDOKXKUic/i+wU6tSKOySt3ikOWZ7t0D+5itWp87qVRKMs=
+X-Received: by 2002:a05:6512:3148:: with SMTP id s8mr17635889lfi.513.1626697331465;
+ Mon, 19 Jul 2021 05:22:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Mon, 19 Jul 2021 20:22:01 +0800
+Message-ID: <CALW65jZoaYYycAApviuQjiOTNuG9sfSpGZ1izRgJhj4M-gfDyQ@mail.gmail.com>
+Subject: DSA .port_{f,m}db_{add,del} with offloaded LAG interface on mv88e6xxx
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtnetlink_send() is similar to rtnl_notify(), there is no need for two 
-functions to do the same thing. we can remove rtnetlink_send() and 
-modify rtnl_notify() to adapt more case.
+Hi,
 
-Patch1: remove rtnetlink_send() modify rtnl_notify() to adapt 
-more case in rtnetlink.
-Path2,Patch3: Adjustment parameters in rtnl_notify().
-Path4: rtnetlink_send() already removed, use rtnl_notify() instead 
-of rtnetlink_send().
+What happens if a FDB entry is added manually to an offloaded LAG
+interface? Does DSA core simply call .port_fdb_add with the member
+ports in the LAG?
 
-Yajun Deng (4):
-  rtnetlink: remove rtnetlink_send() in rtnetlink
-  net: Adjustment parameters in rtnl_notify()
-  vxlan: Adjustment parameters in rtnl_notify()
-  net/sched: use rtnl_notify() instead of rtnetlink_send()
+I'm asking because there is a trunk field in struct
+mv88e6xxx_atu_entry, when it is true, the portvec is actually the
+trunk ID.
+As the current implementation (mv88e6xxx_port_db_load_purge) does not
+use this field, it probably won't work.
 
- drivers/net/vxlan.c       |  2 +-
- include/linux/rtnetlink.h |  7 +++----
- include/net/netlink.h     |  5 ++---
- net/bridge/br_fdb.c       |  2 +-
- net/bridge/br_mdb.c       |  4 ++--
- net/bridge/br_netlink.c   |  2 +-
- net/bridge/br_vlan.c      |  2 +-
- net/core/fib_rules.c      |  2 +-
- net/core/neighbour.c      |  2 +-
- net/core/net_namespace.c  |  2 +-
- net/core/rtnetlink.c      | 27 ++++++++-------------------
- net/dcb/dcbnl.c           |  2 +-
- net/decnet/dn_dev.c       |  2 +-
- net/decnet/dn_table.c     |  2 +-
- net/ipv4/devinet.c        |  4 ++--
- net/ipv4/fib_semantics.c  |  2 +-
- net/ipv4/fib_trie.c       |  2 +-
- net/ipv4/ipmr.c           |  4 ++--
- net/ipv4/nexthop.c        |  4 ++--
- net/ipv6/addrconf.c       |  8 ++++----
- net/ipv6/ip6mr.c          |  4 ++--
- net/ipv6/ndisc.c          |  2 +-
- net/ipv6/route.c          |  9 +++++----
- net/mpls/af_mpls.c        |  4 ++--
- net/phonet/pn_netlink.c   |  4 ++--
- net/sched/act_api.c       | 13 ++++++-------
- net/sched/cls_api.c       | 14 +++++++-------
- net/sched/sch_api.c       | 13 ++++++-------
- net/wireless/wext-core.c  |  2 +-
- 29 files changed, 69 insertions(+), 83 deletions(-)
-
--- 
-2.32.0
-
+Regards,
+Qingfang
