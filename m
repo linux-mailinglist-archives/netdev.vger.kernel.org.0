@@ -2,97 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDB73CDA6E
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6873CD838
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:02:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243774AbhGSOfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 10:35:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243911AbhGSOfO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 10:35:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BFF06121E;
-        Mon, 19 Jul 2021 15:15:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1626707750;
-        bh=jAcUURy3vlGKbMaRjRMSNvOOqByrm1U781jF29tIouQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wuGACwnuJ3DCzFY/52+lSWm5sz/DVoWcQe0OBdqUn9WjgvEqQOik9xnsl4ERcEP3n
-         eWMoeuXSuA0Gf2NIi4/3qgDP0E9TOvGsGh//5h+58doFG6ayGkw6wBpsANj1sq/uh+
-         Vld4w292kDyvj8Wwfh4KPVE4LKKLxz9VFuzlhqtY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 4.14 034/315] rsi: Assign beacon rate settings to the correct rate_info descriptor field
-Date:   Mon, 19 Jul 2021 16:48:43 +0200
-Message-Id: <20210719144943.999363992@linuxfoundation.org>
+        id S242859AbhGSOVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 10:21:13 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:11923 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242638AbhGSOUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 10:20:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626706842;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=5asqN0lZNo3xHl1CBAymxXSuEQ1yqbDJbz4DcdRrSLk=;
+    b=J9E+jk/CxpvlIzVoB/gE8iHadnpWEZV9qry2QxLZXyEkGS7q4EgvuV9EjmJIRSVpem
+    KeFT3hGVQ6Tj9uCV5zEIE4TqdyV1AFUiM1Hry1Fof7HFo6pNjNOKae5EmecnZ5+DHFRR
+    ayD0gafOmrrg9Tl82I/2xmSaciITVipVQU0LdlBaii+/6w2b6rTJhsuWVkp0VzmKK7rG
+    dTJed3H6EXEJof3peozzJWgjGwHDCJzXg4ijsslOKUowXCcsU+33yb0ApAwQvyh3ituP
+    mZAduTazt+061IzKtbWUOfzTOpzboSLhVsM4fQ9uDmPy2jSNB0JIeCcoNojLHFrxacBP
+    Fy9g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB4m6O43/v"
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.28.1 DYNA|AUTH)
+    with ESMTPSA id g02a44x6JF0c42H
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 19 Jul 2021 17:00:38 +0200 (CEST)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [RFC PATCH net-next 0/4] net: wwan: Add Qualcomm BAM-DMUX WWAN network driver
+Date:   Mon, 19 Jul 2021 16:53:13 +0200
+Message-Id: <20210719145317.79692-1-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210719144942.861561397@linuxfoundation.org>
-References: <20210719144942.861561397@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+The BAM Data Multiplexer provides access to the network data channels
+of modems integrated into many older Qualcomm SoCs, e.g. Qualcomm MSM8916
+or MSM8974. This series adds a driver that allows using it.
 
-commit b1c3a24897bd528f2f4fda9fea7da08a84ae25b6 upstream.
+For more information about BAM-DMUX, see PATCH 4/4.
 
-The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
-field. The rest of the driver does it correctly, except this one place,
-so fix it. This is also aligned with the RSI downstream vendor driver.
-Without this patch, an AP operating at 5 GHz does not transmit any
-beacons at all, this patch fixes that.
+Shortly said, BAM-DMUX is built using a simple protocol layer on top of
+a DMA engine (Qualcomm BAM DMA). For BAM-DMUX, the BAM DMA engine runs in
+a quite strange mode that I call "remote power collapse", where the
+modem/remote side is responsible for powering on the BAM when needed but we
+are responsible to initialize it. The BAM is power-collapsed when unneeded
+by coordinating power control via bidirectional interrupts from the
+BAM-DMUX driver.
 
-Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210507213105.140138-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The series first adds one possible solution for handling this "remote power
+collapse" mode in the bam_dma driver, then it adds the BAM-DMUX driver to
+the WWAN subsystem. Note that the BAM-DMUX driver does not actually make
+use of the WWAN subsystem yet, since I'm not sure how to fit it in there
+yet (see PATCH 4/4).
 
----
- drivers/net/wireless/rsi/rsi_91x_hal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Please note that all of the changes in this patch series are based on
+a fairly complicated driver from Qualcomm [1].
+I do not have access to any documentation about "BAM-DMUX". :(
 
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -386,9 +386,9 @@ int rsi_prepare_beacon(struct rsi_common
- 	}
- 
- 	if (common->band == NL80211_BAND_2GHZ)
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
- 	else
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
- 
- 	if (mac_bcn->data[tim_offset + 2] == 0)
- 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
+The driver has been used in postmarketOS [2] on various smartphones/tablets
+based on Qualcomm MSM8916 and MSM8974 for a year now with no reported
+problems.
 
+At runtime (but not compile-time), the following two patches are needed
+additionally for full functionality:
+  - https://lore.kernel.org/linux-arm-msm/20210712135703.324748-1-stephan@gerhold.net/
+  - https://lore.kernel.org/linux-arm-msm/20210712135703.324748-2-stephan@gerhold.net/
+
+[1]: https://source.codeaurora.org/quic/la/kernel/msm-3.10/tree/drivers/soc/qcom/bam_dmux.c?h=LA.BR.1.2.9.1-02310-8x16.0
+[2]: https://postmarketos.org/
+
+Stephan Gerhold (4):
+  dt-bindings: dmaengine: bam_dma: Add remote power collapse mode
+  dmaengine: qcom: bam_dma: Add remote power collapse mode
+  dt-bindings: net: Add schema for Qualcomm BAM-DMUX
+  net: wwan: Add Qualcomm BAM-DMUX WWAN network driver
+
+ .../devicetree/bindings/dma/qcom_bam_dma.txt  |   2 +
+ .../bindings/net/qcom,bam-dmux.yaml           |  87 ++
+ MAINTAINERS                                   |   8 +
+ drivers/dma/qcom/bam_dma.c                    |  88 +-
+ drivers/net/wwan/Kconfig                      |  13 +
+ drivers/net/wwan/Makefile                     |   1 +
+ drivers/net/wwan/qcom_bam_dmux.c              | 907 ++++++++++++++++++
+ 7 files changed, 1074 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,bam-dmux.yaml
+ create mode 100644 drivers/net/wwan/qcom_bam_dmux.c
+
+-- 
+2.32.0
 
