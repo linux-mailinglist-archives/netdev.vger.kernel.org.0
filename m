@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 836C33CE84A
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 19:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 683863CE852
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 19:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355803AbhGSQj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 12:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
+        id S1355870AbhGSQkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 12:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345368AbhGSQgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 12:36:36 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386CBC07880E
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 09:49:55 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id k27so24974889edk.9
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 10:10:08 -0700 (PDT)
+        with ESMTP id S1347835AbhGSQgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 12:36:37 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E469C0613AF
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 09:49:56 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id hr1so29953509ejc.1
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 10:10:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XWAMcGQgcWJL3j09SfjKb/XvvQ805bCMahly93jAMwg=;
-        b=fslx44Dp1STX8Hakf2R6egp847gLkkW65fDlNgVYZ6QpnpYvhpUwGZ6Fu13ibGgRJp
-         Z2HFHwjOpYfGTFVx+GN84UNVFbVFEOFRuAeUJcJuTBbZCcebyb9GkJw/Vy41OLCueBr1
-         ky/+e9L73QNnYTNcvWW60TxhF3UWJk5s+E0lFZ9R2m9NNkyI2N/t/d6qgIgzMRkdKqSO
-         HI9/2mTzlQtAMosvDTtBeSsfdGmUFALSJMM3nzrIEtOGDUsZvxBn4nBzEDrTRNGvBPBB
-         5jrAx/6Br/r/sQJSV4DGLsbXg7nAyYabfYV+195pRP02k5AasTigKSD8Y2rbvm86WHIo
-         dPKQ==
+        bh=29TqZv5oN4lRjIuLVLlHSdl22CZNOehTdPTwu5IVoLg=;
+        b=UgKnCiitiLfGRIgT44411Dx5uiabkLnWL/K6/F6ItGI+xdJa+ctfbwl6hogSiD6Qhs
+         OamGHqEACBiOsrfqae9Xd0hd4qHrbOSMDUs9iCgqDXol3LxZ4s406aUFW+MS8mYS3+uV
+         befDHIrIZNIzmkRRH/GDkwT18p+0nP2YYw0yN388X5vJkxVbR2Dz2PuldE5uTDgts5lm
+         Vy85Tev8e/kBHccEc55MVi4sPDXrD4zwopr4HKuVad76uTF66vu6kDCqhS+HqYRQOLXL
+         cV0+Myv10OjpvL1km+yTu3vyb8cVIUyBReWTIHANrG1O4GGlaijBpuJL8nEELHdH741y
+         QAyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XWAMcGQgcWJL3j09SfjKb/XvvQ805bCMahly93jAMwg=;
-        b=d6guwLmZVGN5quiqXtBB4fnpuK8m4Hl62R4v5QIugpdzOGZeBvGUUSCQPBu73o+prW
-         6Y1c96ZtU/b1FTh93iP6K+B3fHRsjH5G8yLZUMdlAtpAO+aaulzjFCI15/El9o8fq0Za
-         d1J594tO09GI2ryAF2dJbnKaFCU3RUHACA66hhJ1HJ8DXRLFzNEICZ5nhWc9R8eSeKjX
-         7aE2z2xEsmqqe9GZo72tOweneXmtVDpriwvovMvAtrnbFAIsDE3i+0fG01RZ5hFvmJ0t
-         OvmsdyMkmi3YGQb7vZdAXVojOalI02kmfOk69WgV6f56nheYM+6PBa96lIGkOoMWH0q5
-         yFww==
-X-Gm-Message-State: AOAM530+rh8Y2KgsYvy67HOstQItK+n4Vll5Vak/3LQd3behl0nl88tW
-        0UkQozg2rIPuoSHEGV/uI1hpbql4ViWN3sLWJfU=
-X-Google-Smtp-Source: ABdhPJyG8JZKjVP1WNSfUjUl7sk4Ty6qx1bvItnBDMJHthFTCgXGUNTtBh9eMNoyUKigAyGD+YBfcA==
-X-Received: by 2002:aa7:ca44:: with SMTP id j4mr35001283edt.203.1626714607133;
-        Mon, 19 Jul 2021 10:10:07 -0700 (PDT)
+        bh=29TqZv5oN4lRjIuLVLlHSdl22CZNOehTdPTwu5IVoLg=;
+        b=sCWc2kFNA+o6tSdjC9BCN0lrlJAnhdVP0TtYH3fTSb3GySRPn/6p8fwN2ndoqCWVgL
+         80W0siRxkyL5ADCN9YXDeU5W+ndhDhZERWkEGSDlHGP0OTQVvm3GXN9lv/0DnLws9QrQ
+         1RLFUPCa4vPeQdNMv5lmR/YVL6VE14dlLUtu4mcaD12Uy/3eu1S5W3ZdxbxGfFN/w60y
+         I0eLOtx+dDJynoi9AvRAmTmkTYdsa8pCk5VP+kG9rgvu6HERO7sxB+k0g6h5VY/AYRTw
+         TnvRBqCKs1nkMfDhuAbdiWDI51p24WSliNxJzYpW5AYv4BPzS9jZQanM+ObbIgeZReGD
+         ZnfQ==
+X-Gm-Message-State: AOAM532J5m9gei9v7jpHnKdu6yS6/tH9QUaTkgu8tC8b5Ic0GDlyQ6x1
+        7ZR2BM8c5vu9961Ei86A8vUn6IJosCCfVCCDxkU=
+X-Google-Smtp-Source: ABdhPJxYxJjv1X81gq8ReaRbBW1NnkwEMPa46l5HvYHHzi/S1jUnT0sViircGsm38aNkPlVYEawnfA==
+X-Received: by 2002:a17:907:62a5:: with SMTP id nd37mr27649202ejc.148.1626714608131;
+        Mon, 19 Jul 2021 10:10:08 -0700 (PDT)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id nc29sm6073896ejc.10.2021.07.19.10.10.06
+        by smtp.gmail.com with ESMTPSA id nc29sm6073896ejc.10.2021.07.19.10.10.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 10:10:06 -0700 (PDT)
+        Mon, 19 Jul 2021 10:10:07 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 11/15] net: bridge: multicast: include router port vlan id in notifications
-Date:   Mon, 19 Jul 2021 20:06:33 +0300
-Message-Id: <20210719170637.435541-12-razor@blackwall.org>
+Subject: [PATCH net-next 12/15] net: bridge: vlan: add support for global options
+Date:   Mon, 19 Jul 2021 20:06:34 +0300
+Message-Id: <20210719170637.435541-13-razor@blackwall.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210719170637.435541-1-razor@blackwall.org>
 References: <20210719170637.435541-1-razor@blackwall.org>
@@ -65,136 +65,200 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Use the port multicast context to check if the router port is a vlan and
-in case it is include its vlan id in the notification.
+We can have two types of vlan options depending on context:
+ - per-device vlan options (split in per-bridge and per-port)
+ - global vlan options
+
+The second type wasn't supported in the bridge until now, but we need
+them for per-vlan multicast support, per-vlan STP support and other
+options which require global vlan context. They are contained in the global
+bridge vlan context even if the vlan is not configured on the bridge device
+itself. This patch adds initial netlink attributes and support for setting
+these global vlan options, they can only be set (RTM_NEWVLAN) and the
+operation must use the bridge device. Since there are no such options yet
+it shouldn't have any functional effect.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- include/uapi/linux/if_bridge.h |  1 +
- net/bridge/br_mdb.c            | 29 ++++++++++++++++++++++-------
- net/bridge/br_multicast.c      |  4 ++--
- net/bridge/br_private.h        |  2 +-
- 4 files changed, 26 insertions(+), 10 deletions(-)
+ include/uapi/linux/if_bridge.h | 13 ++++++
+ net/bridge/br_private.h        |  4 ++
+ net/bridge/br_vlan.c           | 16 +++++--
+ net/bridge/br_vlan_options.c   | 85 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 115 insertions(+), 3 deletions(-)
 
 diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 57a63a1572e0..1f7513300cfe 100644
+index 1f7513300cfe..760b264bd03d 100644
 --- a/include/uapi/linux/if_bridge.h
 +++ b/include/uapi/linux/if_bridge.h
-@@ -629,6 +629,7 @@ enum {
- 	MDBA_ROUTER_PATTR_TYPE,
- 	MDBA_ROUTER_PATTR_INET_TIMER,
- 	MDBA_ROUTER_PATTR_INET6_TIMER,
-+	MDBA_ROUTER_PATTR_VID,
- 	__MDBA_ROUTER_PATTR_MAX
+@@ -485,10 +485,15 @@ enum {
+  *     [BRIDGE_VLANDB_ENTRY_INFO]
+  *     ...
+  * }
++ * [BRIDGE_VLANDB_GLOBAL_OPTIONS] = {
++ *     [BRIDGE_VLANDB_GOPTS_ID]
++ *     ...
++ * }
+  */
+ enum {
+ 	BRIDGE_VLANDB_UNSPEC,
+ 	BRIDGE_VLANDB_ENTRY,
++	BRIDGE_VLANDB_GLOBAL_OPTIONS,
+ 	__BRIDGE_VLANDB_MAX,
  };
- #define MDBA_ROUTER_PATTR_MAX (__MDBA_ROUTER_PATTR_MAX - 1)
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 5319587198eb..d3383a47a2f2 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -781,12 +781,12 @@ void br_mdb_notify(struct net_device *dev,
+ #define BRIDGE_VLANDB_MAX (__BRIDGE_VLANDB_MAX - 1)
+@@ -538,6 +543,14 @@ enum {
+ };
+ #define BRIDGE_VLANDB_STATS_MAX (__BRIDGE_VLANDB_STATS_MAX - 1)
  
- static int nlmsg_populate_rtr_fill(struct sk_buff *skb,
- 				   struct net_device *dev,
--				   int ifindex, u32 pid,
-+				   int ifindex, u16 vid, u32 pid,
- 				   u32 seq, int type, unsigned int flags)
- {
-+	struct nlattr *nest, *port_nest;
- 	struct br_port_msg *bpm;
- 	struct nlmsghdr *nlh;
--	struct nlattr *nest;
- 
- 	nlh = nlmsg_put(skb, pid, seq, type, sizeof(*bpm), 0);
- 	if (!nlh)
-@@ -800,8 +800,18 @@ static int nlmsg_populate_rtr_fill(struct sk_buff *skb,
- 	if (!nest)
- 		goto cancel;
- 
--	if (nla_put_u32(skb, MDBA_ROUTER_PORT, ifindex))
-+	port_nest = nla_nest_start_noflag(skb, MDBA_ROUTER_PORT);
-+	if (!port_nest)
-+		goto end;
-+	if (nla_put_nohdr(skb, sizeof(u32), &ifindex)) {
-+		nla_nest_cancel(skb, port_nest);
- 		goto end;
-+	}
-+	if (vid && nla_put_u16(skb, MDBA_ROUTER_PATTR_VID, vid)) {
-+		nla_nest_cancel(skb, port_nest);
-+		goto end;
-+	}
-+	nla_nest_end(skb, port_nest);
- 
- 	nla_nest_end(skb, nest);
- 	nlmsg_end(skb, nlh);
-@@ -817,23 +827,28 @@ static int nlmsg_populate_rtr_fill(struct sk_buff *skb,
- static inline size_t rtnl_rtr_nlmsg_size(void)
- {
- 	return NLMSG_ALIGN(sizeof(struct br_port_msg))
--		+ nla_total_size(sizeof(__u32));
-+		+ nla_total_size(sizeof(__u32))
-+		+ nla_total_size(sizeof(u16));
- }
- 
--void br_rtr_notify(struct net_device *dev, struct net_bridge_port *port,
-+void br_rtr_notify(struct net_device *dev, struct net_bridge_mcast_port *pmctx,
- 		   int type)
- {
- 	struct net *net = dev_net(dev);
- 	struct sk_buff *skb;
- 	int err = -ENOBUFS;
- 	int ifindex;
-+	u16 vid;
- 
--	ifindex = port ? port->dev->ifindex : 0;
-+	ifindex = pmctx ? pmctx->port->dev->ifindex : 0;
-+	vid = pmctx && br_multicast_port_ctx_is_vlan(pmctx) ? pmctx->vlan->vid :
-+							      0;
- 	skb = nlmsg_new(rtnl_rtr_nlmsg_size(), GFP_ATOMIC);
- 	if (!skb)
- 		goto errout;
- 
--	err = nlmsg_populate_rtr_fill(skb, dev, ifindex, 0, 0, type, NTF_SELF);
-+	err = nlmsg_populate_rtr_fill(skb, dev, ifindex, vid, 0, 0, type,
-+				      NTF_SELF);
- 	if (err < 0) {
- 		kfree_skb(skb);
- 		goto errout;
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 9d4a18a711e4..fb5e5df571fd 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -2979,7 +2979,7 @@ static void br_multicast_add_router(struct net_bridge_mcast *brmctx,
- 	 * IPv4 or IPv6 multicast router.
- 	 */
- 	if (br_multicast_no_router_otherpf(pmctx, rlist)) {
--		br_rtr_notify(pmctx->port->br->dev, pmctx->port, RTM_NEWMDB);
-+		br_rtr_notify(pmctx->port->br->dev, pmctx, RTM_NEWMDB);
- 		br_port_mc_router_state_change(pmctx->port, true);
- 	}
- }
-@@ -4078,7 +4078,7 @@ br_multicast_rport_del_notify(struct net_bridge_mcast_port *pmctx, bool deleted)
- 		return;
- #endif
- 
--	br_rtr_notify(pmctx->port->br->dev, pmctx->port, RTM_DELMDB);
-+	br_rtr_notify(pmctx->port->br->dev, pmctx, RTM_DELMDB);
- 	br_port_mc_router_state_change(pmctx->port, false);
- 
- 	/* don't allow timer refresh */
++enum {
++	BRIDGE_VLANDB_GOPTS_UNSPEC,
++	BRIDGE_VLANDB_GOPTS_ID,
++	BRIDGE_VLANDB_GOPTS_RANGE,
++	__BRIDGE_VLANDB_GOPTS_MAX
++};
++#define BRIDGE_VLANDB_GOPTS_MAX (__BRIDGE_VLANDB_GOPTS_MAX - 1)
++
+ /* Bridge multicast database attributes
+  * [MDBA_MDB] = {
+  *     [MDBA_MDB_ENTRY] = {
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 00b93fcc7870..5515b6c37322 100644
+index 5515b6c37322..bc920bc1ff44 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -885,7 +885,7 @@ int br_mdb_hash_init(struct net_bridge *br);
- void br_mdb_hash_fini(struct net_bridge *br);
- void br_mdb_notify(struct net_device *dev, struct net_bridge_mdb_entry *mp,
- 		   struct net_bridge_port_group *pg, int type);
--void br_rtr_notify(struct net_device *dev, struct net_bridge_port *port,
-+void br_rtr_notify(struct net_device *dev, struct net_bridge_mcast_port *pmctx,
- 		   int type);
- void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
- 			 struct net_bridge_port_group *pg,
+@@ -1605,6 +1605,10 @@ int br_vlan_process_options(const struct net_bridge *br,
+ 			    struct net_bridge_vlan *range_end,
+ 			    struct nlattr **tb,
+ 			    struct netlink_ext_ack *extack);
++int br_vlan_rtm_process_global_options(struct net_device *dev,
++				       const struct nlattr *attr,
++				       int cmd,
++				       struct netlink_ext_ack *extack);
+ 
+ /* vlan state manipulation helpers using *_ONCE to annotate lock-free access */
+ static inline u8 br_vlan_get_state(const struct net_bridge_vlan *v)
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index ab4969a4a380..dcb5acf783d2 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -2203,12 +2203,22 @@ static int br_vlan_rtm_process(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	}
+ 
+ 	nlmsg_for_each_attr(attr, nlh, sizeof(*bvm), rem) {
+-		if (nla_type(attr) != BRIDGE_VLANDB_ENTRY)
++		switch (nla_type(attr)) {
++		case BRIDGE_VLANDB_ENTRY:
++			err = br_vlan_rtm_process_one(dev, attr,
++						      nlh->nlmsg_type,
++						      extack);
++			break;
++		case BRIDGE_VLANDB_GLOBAL_OPTIONS:
++			err = br_vlan_rtm_process_global_options(dev, attr,
++								 nlh->nlmsg_type,
++								 extack);
++			break;
++		default:
+ 			continue;
++		}
+ 
+ 		vlans++;
+-		err = br_vlan_rtm_process_one(dev, attr, nlh->nlmsg_type,
+-					      extack);
+ 		if (err)
+ 			break;
+ 	}
+diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
+index b4add9ea8964..a7d5a2334207 100644
+--- a/net/bridge/br_vlan_options.c
++++ b/net/bridge/br_vlan_options.c
+@@ -258,3 +258,88 @@ int br_vlan_process_options(const struct net_bridge *br,
+ 
+ 	return err;
+ }
++
++static int br_vlan_process_global_one_opts(const struct net_bridge *br,
++					   struct net_bridge_vlan_group *vg,
++					   struct net_bridge_vlan *v,
++					   struct nlattr **tb,
++					   bool *changed,
++					   struct netlink_ext_ack *extack)
++{
++	*changed = false;
++	return 0;
++}
++
++static const struct nla_policy br_vlan_db_gpol[BRIDGE_VLANDB_GOPTS_MAX + 1] = {
++	[BRIDGE_VLANDB_GOPTS_ID]	= { .type = NLA_U16 },
++	[BRIDGE_VLANDB_GOPTS_RANGE]	= { .type = NLA_U16 },
++};
++
++int br_vlan_rtm_process_global_options(struct net_device *dev,
++				       const struct nlattr *attr,
++				       int cmd,
++				       struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[BRIDGE_VLANDB_GOPTS_MAX + 1];
++	struct net_bridge_vlan_group *vg;
++	struct net_bridge_vlan *v;
++	u16 vid, vid_range = 0;
++	struct net_bridge *br;
++	int err = 0;
++
++	if (cmd != RTM_NEWVLAN) {
++		NL_SET_ERR_MSG_MOD(extack, "Global vlan options support only set operation");
++		return -EINVAL;
++	}
++	if (!netif_is_bridge_master(dev)) {
++		NL_SET_ERR_MSG_MOD(extack, "Global vlan options can only be set on bridge device");
++		return -EINVAL;
++	}
++	br = netdev_priv(dev);
++	vg = br_vlan_group(br);
++	if (WARN_ON(!vg))
++		return -ENODEV;
++
++	err = nla_parse_nested(tb, BRIDGE_VLANDB_GOPTS_MAX, attr,
++			       br_vlan_db_gpol, extack);
++	if (err)
++		return err;
++
++	if (!tb[BRIDGE_VLANDB_GOPTS_ID]) {
++		NL_SET_ERR_MSG_MOD(extack, "Missing vlan entry id");
++		return -EINVAL;
++	}
++	vid = nla_get_u16(tb[BRIDGE_VLANDB_GOPTS_ID]);
++	if (!br_vlan_valid_id(vid, extack))
++		return -EINVAL;
++
++	if (tb[BRIDGE_VLANDB_GOPTS_RANGE]) {
++		vid_range = nla_get_u16(tb[BRIDGE_VLANDB_GOPTS_RANGE]);
++		if (!br_vlan_valid_id(vid_range, extack))
++			return -EINVAL;
++		if (vid >= vid_range) {
++			NL_SET_ERR_MSG_MOD(extack, "End vlan id is less than or equal to start vlan id");
++			return -EINVAL;
++		}
++	} else {
++		vid_range = vid;
++	}
++
++	for (; vid <= vid_range; vid++) {
++		bool changed = false;
++
++		v = br_vlan_find(vg, vid);
++		if (!v) {
++			NL_SET_ERR_MSG_MOD(extack, "Vlan in range doesn't exist, can't process global options");
++			err = -ENOENT;
++			break;
++		}
++
++		err = br_vlan_process_global_one_opts(br, vg, v, tb, &changed,
++						      extack);
++		if (err)
++			break;
++	}
++
++	return err;
++}
 -- 
 2.31.1
 
