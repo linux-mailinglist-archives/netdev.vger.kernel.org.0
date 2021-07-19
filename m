@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8383CF038
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAF73CF036
 	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 01:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354306AbhGSXFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 19:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45850 "EHLO
+        id S1443685AbhGSXE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 19:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243175AbhGSVTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 17:19:22 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAB3C0613E2;
-        Mon, 19 Jul 2021 14:49:07 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id j5so17400807ilk.3;
-        Mon, 19 Jul 2021 14:49:07 -0700 (PDT)
+        with ESMTP id S243039AbhGSVTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 17:19:21 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B69C0613E3;
+        Mon, 19 Jul 2021 14:49:15 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id z9so21704706iob.8;
+        Mon, 19 Jul 2021 14:49:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LXPndX0o3ekwDsTSLHmnMAMrSrJXKZH8DTVMa7eHyM8=;
-        b=clzAPbOLjQmgCh51T5K+2mqxPAyLHUtRMSfaniKKuk5kKwhraC8zgoMruk58cHTFnR
-         DDGjboMVWWK3Fvz/2yeQxjy0aoUVBuOFm1nlKiJp/LYGj8IakbKJ6fkPCySmdEGBsxs5
-         uP5VxcpNf9nv9y7MxLJvzcJlAFzGmswi1zNdN6XTHP3y/BoyoSiYexZiSlzOtfUl0NOP
-         /hl9SZIKPKRGk49BSU7Kk9azQ/oLEsnvNa4pQnx3nhQu4jHwr+nhqYGtn1pZzu84Rc5t
-         QJlzHmfkfgTQDn8ZSBZl+tjeASfJwOYBvZERrLGQdC/swr4Il3lXXSgDs77deVz+pSg/
-         Ja4g==
+        bh=Oe1SKP5YIMosFqeN5ivgaQq1fUhcitjsPyLRfiW25uM=;
+        b=aAc7KRItp6RQv4Tk/+D4sxiZR55bYF24kfN2s/eixizGz3jj31OrzGBcAzBMX2uZto
+         +/8xO3G6O69EH30T28uaHLe8kk3LeMw0BeArWa1hcihWuP6mi9A7ik/jw60J4C3cjYiu
+         at6fnRgFrxqkxfA/TOk8JSRJxGRIBwSyp9QYNjf5xk+FKqzBe3ArbDXJJdNB2r/fbz/3
+         Q5vTtGCf9BdgHHGM9Hg+rReiNPjTj6VPu7EQRn71q8IHT1Nii3L2LQY+5BAM++7jpXz5
+         77py+gCTEMRxBZRFHvmK23FBB6qIEqSpNuREcBmx/069tTU21iwZdo8lYeb/vO4RyOlC
+         sZCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LXPndX0o3ekwDsTSLHmnMAMrSrJXKZH8DTVMa7eHyM8=;
-        b=mYoi3Cr2wcIZRLNcDLydAHRBj2RqhOFCuk0OYsRw7zNv66IzhIVGnOeE60pre24PdJ
-         c18FIqHqyh/QPXwE6rTkPdqQESh2CgqoTNI3zQ8J9JEcrohcgJvP7zvjbBdqBrrSPNWP
-         m49UUZ35LMuWh6Y79+TXp+Q7ORpU4KnVPfF3IZb36m5o49XXjvtcIXkpOsjyWohoqiA7
-         wUILSHffmtyFj4s2JqPXvowDFvbgbIYOxdMk0pMr2ADhJZOzHMLVEYNtGU10l3RvvJhr
-         zptN42WMtLBNi+ySUM8On6CxJRhCoI+G7at51dr5KGz23vbAUJvKN8Yvfkrm95n4cm0y
-         bipw==
-X-Gm-Message-State: AOAM530hdsvNpGbCVMUuiIxhP+TXymvanOpogskhwoc33uUGLoU3w9KV
-        ahBqXAaKuFzFSs157jD1fnI=
-X-Google-Smtp-Source: ABdhPJymLBNlYfio1s5nZTGIlMPPihfQ78yqVRtiblmI7M6iaasBTnw6Lz2erzkv2uyHNFCIVFxppw==
-X-Received: by 2002:a92:cc85:: with SMTP id x5mr16784050ilo.266.1626731347162;
-        Mon, 19 Jul 2021 14:49:07 -0700 (PDT)
+        bh=Oe1SKP5YIMosFqeN5ivgaQq1fUhcitjsPyLRfiW25uM=;
+        b=EQWlisGA12r/B+aVWc2oXQr01xdCgc+3O1y7YDcwLMlOoR7IoJeB734VhxadZhF0ge
+         +xOPcxyfSKhb3aSIspYfa7jdSnp9nTCYFGXspMqhOepKha1SS8WpG0blri0uHTyoWC0p
+         8cVYFMOP33QCAortlQ/eB7fFPqFbuwOIkgUBKGjqAaex0TV71NW7kOdAHMKyUuPiSBIE
+         aMOhEmtVa+R89cYjqYV8B6qam+/dxOAeZayrpdT8MXbf8oqC3y/GtacRng7MuX8vpLGc
+         cjX16Hp+WC0DdXK7rCG5xZ0792gSpnTLDnCIueMlkDqLiOZJti97HhKZUO01rZyzXXzt
+         RcbQ==
+X-Gm-Message-State: AOAM531AKUpqo4rH+urMyw2Th2syNmX+dk8FLRz7uqPzFu28JnXfE9U6
+        qZ7trUP9xbtknn15nXIqqdU=
+X-Google-Smtp-Source: ABdhPJxN1SSqIuzUGiMMZL7aBZF1LP8up5CTa2MaVakgn2LWSGWPKUqQhnWxhrSHw2GCIV2wHpXMxw==
+X-Received: by 2002:a5e:9306:: with SMTP id k6mr21206715iom.157.1626731355460;
+        Mon, 19 Jul 2021 14:49:15 -0700 (PDT)
 Received: from john-XPS-13-9370.lan ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id d14sm10124758iln.48.2021.07.19.14.48.59
+        by smtp.gmail.com with ESMTPSA id d14sm10124758iln.48.2021.07.19.14.49.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 14:49:06 -0700 (PDT)
+        Mon, 19 Jul 2021 14:49:15 -0700 (PDT)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     jakub@cloudflare.com, daniel@iogearbox.net,
         xiyou.wangcong@gmail.com, alexei.starovoitov@gmail.com
 Cc:     john.fastabend@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH bpf 2/3] bpf, sockmap: on cleanup we additionally need to remove cached skb
-Date:   Mon, 19 Jul 2021 14:48:33 -0700
-Message-Id: <20210719214834.125484-3-john.fastabend@gmail.com>
+Subject: [PATCH bpf 3/3] bpf, sockmap: fix memleak on ingress msg enqueue
+Date:   Mon, 19 Jul 2021 14:48:34 -0700
+Message-Id: <20210719214834.125484-4-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210719214834.125484-1-john.fastabend@gmail.com>
 References: <20210719214834.125484-1-john.fastabend@gmail.com>
@@ -64,138 +64,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Its possible if a socket is closed and the receive thread is under memory
-pressure it may have cached a skb. We need to ensure these skbs are
-free'd along with the normal ingress_skb queue.
+If backlog handler is running during a tear down operation we may enqueue
+data on the ingress msg queue while tear down is trying to free it.
 
-Before 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()") tear
-down and backlog processing both had sock_lock for the common case of
-socket close or unhash. So it was not possible to have both running in
-parrallel so all we would need is the kfree in those kernels.
+ sk_psock_backlog()
+   sk_psock_handle_skb()
+     skb_psock_skb_ingress()
+       sk_psock_skb_ingress_enqueue()
+         sk_psock_queue_msg(psock,msg)
+                                           spin_lock(ingress_lock)
+                                            sk_psock_zap_ingress()
+                                             _sk_psock_purge_ingerss_msg()
+                                              _sk_psock_purge_ingress_msg()
+                                            -- free ingress_msg list --
+                                           spin_unlock(ingress_lock)
+           spin_lock(ingress_lock)
+           list_add_tail(msg,ingress_msg) <- entry on list with no on
+                                             left to free it.
+           spin_unlock(ingress_lock)
 
-But, latest kernels include the commit 799aa7f98d5e and this requires a
-bit more work. Without the ingress_lock guarding reading/writing the
-state->skb case its possible the tear down could run before the state
-update causing it to leak memory or worse when the backlog reads the state
-it could potentially run interleaved with the tear down and we might end up
-free'ing the state->skb from tear down side but already have the reference
-from backlog side. To resolve such races we wrap accesses in ingress_lock
-on both sides serializing tear down and backlog case. In both cases this
-only happens after an EAGAIN error case so having an extra lock in place
-is likely fine. The normal path will skip the locks.
+To fix we only enqueue from backlog if the ENABLED bit is set. The tear
+down logic clears the bit with ingress_lock set so we wont enqueue the
+msg in the last step.
 
-Note, we check state->skb before grabbing lock. This works because
-we can only enqueue with the mutex we hold already. Avoiding a race
-on adding state->skb after the check. And if tear down path is running
-that is also fine if the tear down path then removes state->skb we
-will simply set skb=NULL and the subsequent goto is skipped. This
-slight complication avoids locking in normal case.
-
-With this fix we no longer see this warning splat from tcp side on
-socket close when we hit the above case with redirect to ingress self.
-
-[224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
-[224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
-[224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
-[224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
-[224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
-[224913.935923] Code: 8b 83 20 02 00 00 85 c0 75 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 89 df e8 2b 11 fe ff eb c3 0f 0b e9 7c ff ff ff 0f 0b eb ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 90 0f 1f 44 00 00 41 57 41
-[224913.935932] RSP: 0018:ffff88816271fd38 EFLAGS: 00010206
-[224913.935941] RAX: 0000000000000ae8 RBX: ffff88815acd5240 RCX: dffffc0000000000
-[224913.935948] RDX: 0000000000000003 RSI: 0000000000000ae8 RDI: ffff88815acd5460
-[224913.935954] RBP: ffff88815acd5460 R08: ffffffff955c0ae8 R09: fffffbfff2e6f543
-[224913.935961] R10: ffffffff9737aa17 R11: fffffbfff2e6f542 R12: ffff88815acd5390
-[224913.935967] R13: ffff88815acd5480 R14: ffffffff98d0c080 R15: ffffffff96267500
-[224913.935974] FS:  00007f86e6bd1700(0000) GS:ffff888451cc0000(0000) knlGS:0000000000000000
-[224913.935981] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[224913.935988] CR2: 000000c0008eb000 CR3: 00000001020e0005 CR4: 00000000003706e0
-[224913.935994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[224913.936000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[224913.936007] Call Trace:
-[224913.936016]  inet_csk_destroy_sock+0xba/0x1f0
-[224913.936033]  __tcp_close+0x620/0x790
-[224913.936047]  tcp_close+0x20/0x80
-[224913.936056]  inet_release+0x8f/0xf0
-[224913.936070]  __sock_release+0x72/0x120
-[224913.936083]  sock_close+0x14/0x20
-
-Reported-by: Jussi Maki <joamaki@gmail.com>
-Fixes: a136678c0bdbb ("bpf: sk_msg, zap ingress queue on psock down")
+Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c | 33 ++++++++++++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 5 deletions(-)
+ include/linux/skmsg.h | 54 ++++++++++++++++++++++++++++---------------
+ net/core/skmsg.c      |  6 -----
+ 2 files changed, 35 insertions(+), 25 deletions(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 28115ef742e8..5d956e91d05a 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -590,6 +590,22 @@ static void sock_drop(struct sock *sk, struct sk_buff *skb)
- 	kfree_skb(skb);
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 96f319099744..883638888f93 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -285,11 +285,45 @@ static inline struct sk_psock *sk_psock(const struct sock *sk)
+ 	return rcu_dereference_sk_user_data(sk);
  }
  
-+static void sk_psock_skb_state(struct sk_psock *psock,
-+			       struct sk_psock_work_state *state,
-+			       struct sk_buff *skb,
-+			       int len, int off)
++static inline void sk_psock_set_state(struct sk_psock *psock,
++				      enum sk_psock_state_bits bit)
 +{
-+	spin_lock_bh(&psock->ingress_lock);
-+	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
-+		state->skb = skb;
-+		state->len = len;
-+		state->off = off;
-+	} else {
-+		sock_drop(psock->sk, skb);
-+	}
-+	spin_unlock_bh(&psock->ingress_lock);
++	set_bit(bit, &psock->state);
 +}
 +
- static void sk_psock_backlog(struct work_struct *work)
++static inline void sk_psock_clear_state(struct sk_psock *psock,
++					enum sk_psock_state_bits bit)
++{
++	clear_bit(bit, &psock->state);
++}
++
++static inline bool sk_psock_test_state(const struct sk_psock *psock,
++				       enum sk_psock_state_bits bit)
++{
++	return test_bit(bit, &psock->state);
++}
++
++static void sock_drop(struct sock *sk, struct sk_buff *skb)
++{
++	sk_drops_add(sk, skb);
++	kfree_skb(skb);
++}
++
++static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
++{
++	if (msg->skb)
++		sock_drop(psock->sk, msg->skb);
++	kfree(msg);
++}
++
+ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+ 				      struct sk_msg *msg)
  {
- 	struct sk_psock *psock = container_of(work, struct sk_psock, work);
-@@ -600,13 +616,16 @@ static void sk_psock_backlog(struct work_struct *work)
- 	int ret;
- 
- 	mutex_lock(&psock->work_mutex);
--	if (state->skb) {
-+	if (unlikely(state->skb)) {
-+		spin_lock_bh(&psock->ingress_lock);
- 		skb = state->skb;
- 		len = state->len;
- 		off = state->off;
- 		state->skb = NULL;
--		goto start;
-+		spin_unlock_bh(&psock->ingress_lock);
- 	}
-+	if (skb)
-+		goto start;
- 
- 	while ((skb = skb_dequeue(&psock->ingress_skb))) {
- 		len = skb->len;
-@@ -621,9 +640,8 @@ static void sk_psock_backlog(struct work_struct *work)
- 							  len, ingress);
- 			if (ret <= 0) {
- 				if (ret == -EAGAIN) {
--					state->skb = skb;
--					state->len = len;
--					state->off = off;
-+					sk_psock_skb_state(psock, state, skb,
-+							   len, off);
- 					goto end;
- 				}
- 				/* Hard errors break pipe and stop xmit. */
-@@ -722,6 +740,11 @@ static void __sk_psock_zap_ingress(struct sk_psock *psock)
- 		skb_bpf_redirect_clear(skb);
- 		sock_drop(psock->sk, skb);
- 	}
-+	kfree_skb(psock->work_state.skb);
-+	/* We null the skb here to ensure that calls to sk_psock_backlog
-+	 * do not pick up the free'd skb.
-+	 */
-+	psock->work_state.skb = NULL;
- 	__sk_psock_purge_ingress_msg(psock);
+ 	spin_lock_bh(&psock->ingress_lock);
+-	list_add_tail(&msg->list, &psock->ingress_msg);
++        if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
++		list_add_tail(&msg->list, &psock->ingress_msg);
++	else
++		drop_sk_msg(psock, msg);
+ 	spin_unlock_bh(&psock->ingress_lock);
  }
  
+@@ -406,24 +440,6 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+ 		psock->psock_update_sk_prot(sk, psock, true);
+ }
+ 
+-static inline void sk_psock_set_state(struct sk_psock *psock,
+-				      enum sk_psock_state_bits bit)
+-{
+-	set_bit(bit, &psock->state);
+-}
+-
+-static inline void sk_psock_clear_state(struct sk_psock *psock,
+-					enum sk_psock_state_bits bit)
+-{
+-	clear_bit(bit, &psock->state);
+-}
+-
+-static inline bool sk_psock_test_state(const struct sk_psock *psock,
+-				       enum sk_psock_state_bits bit)
+-{
+-	return test_bit(bit, &psock->state);
+-}
+-
+ static inline struct sk_psock *sk_psock_get(struct sock *sk)
+ {
+ 	struct sk_psock *psock;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 5d956e91d05a..3ee407bed768 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -584,12 +584,6 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+ 	return sk_psock_skb_ingress(psock, skb);
+ }
+ 
+-static void sock_drop(struct sock *sk, struct sk_buff *skb)
+-{
+-	sk_drops_add(sk, skb);
+-	kfree_skb(skb);
+-}
+-
+ static void sk_psock_skb_state(struct sk_psock *psock,
+ 			       struct sk_psock_work_state *state,
+ 			       struct sk_buff *skb,
 -- 
 2.25.1
 
