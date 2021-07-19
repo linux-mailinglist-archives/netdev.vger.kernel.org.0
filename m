@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D2793CCC58
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A92D3CCC61
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234248AbhGSCqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 22:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
+        id S233898AbhGSCuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 22:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbhGSCqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:46:25 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694BBC061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:43:25 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id i12-20020a05683033ecb02903346fa0f74dso16717978otu.10
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:43:25 -0700 (PDT)
+        with ESMTP id S233720AbhGSCuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:50:24 -0400
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5376EC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:47:24 -0700 (PDT)
+Received: by mail-ot1-x32b.google.com with SMTP id 42-20020a9d012d0000b02904b98d90c82cso16761889otu.5
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:47:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jibvRJ8x4gDFYeeL7+2QzukIzWDDAy7tWepHyOMPSYk=;
-        b=WmzljnzfdyCKejRVwaGUTWf32CFVrEe05Hp/D3gKkNwRLzGfz5I2l3tw6eQbc4NgTr
-         +B7WFDq93w/dbGeQWaoLroU4EwWddE/Scvdk09ShsO3fS1+SCSOHiYBvm92eRG/vjwy6
-         HgfGFB8GGLrzwzuUfLOdXC1B3fux4Vc5ljWM/CDnUStO+0cLMjz/eJbRyh8s1Z/QcQSr
-         IQx858KvB/hHrsYxFGFwC46i/pppFrZDHH4bE+2OoczE7ZRTlTQxlHx9i96g3XfQ7p9m
-         7ErdnFXVMDI1F66a8bvOZreteFp/MOVfknYym74WMcQJm7RicSF0FkVWmgZoh5wura9B
-         5zKg==
+        bh=jNyhd+T/9d9anCSoGKOeiOQZUa2KbCVT/Y/R829odA0=;
+        b=kd/pME7pXs/YdCnqRxrbKWW2Gqhh4kDLHBsOyRE8A6RrQ4YCNnLEY8zQpEReVUMEL6
+         32d7JKq2Ik57CpKb5yj4J4ir46O6OlRuw9a6txjY/gXQebtX/JQ2Z/eK/AbTzyixQH46
+         9QD+WkAvH6nzjE6vnvHWZly7cMi1PYLIL5Cg7ulFOQ/R1DmyQ7nljIXBOP7c9nz+YJNT
+         jtgmuguBRRu1PVkqPcaxNOUFMxrYm2T1yTZfFxQhsCvdrgoriH6lC2XZSuB3mHqSmAu1
+         QnzJHTH5fYBIaafDUTK60wUDyyHCWKcE94NDgNHr7mCrA7D3dMTAhbbDIrFeKX+W1AAO
+         jLNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jibvRJ8x4gDFYeeL7+2QzukIzWDDAy7tWepHyOMPSYk=;
-        b=MYKZpt9ahbY+ucy5EzzCE7aiBRzcG4mx8hkVfQlmPSPMFC3aLEuvxTlocYV3JF0ZMA
-         X3YDalqNvQh0W831Lq5Wz3Dm40bFSA+kZYodLMIKm+tbi8b8QPGlNh2g8WO5glQppX2z
-         KayugS/whydyJzfiqCj70ydiYSXqeNGzDIFOVBwy7Jd0hGuUOfMFHPn0bQP3MRH3Ljrz
-         GHl9fNB/R2ZDFUoem9cfV+gWKebjfmhcaodOhMh6k6ftSofmZKnVF/Ef7asYjlVvb/uY
-         O03ewie7c9igWVA1Rt3VSZlxcdQzwwVeSxo0vnBsO+Aek8fxbNj4eAXT422jrWrO3hmb
-         3a1w==
-X-Gm-Message-State: AOAM532lx8SuMd8VUB9/ISrxikJO1JfnpPlhSiWEs2+eqXk5ldsLxEaZ
-        RtUxQJvhX233ypoy3aZBo3Y=
-X-Google-Smtp-Source: ABdhPJz9mwIVizqcEYhpcU+r73xr823GQCEsHeE/sNkp+C7nCZ6fwD3mXmBa69bm5UfMtPvXdl9sjQ==
-X-Received: by 2002:a05:6830:1f3b:: with SMTP id e27mr17111375oth.311.1626662604688;
-        Sun, 18 Jul 2021 19:43:24 -0700 (PDT)
+        bh=jNyhd+T/9d9anCSoGKOeiOQZUa2KbCVT/Y/R829odA0=;
+        b=KQqKCNuf5aNswbLfpaAdTcFFiBtSHocW6BTQKBJMkwNc6KmT4ld4nVwJsvB1b21u/Z
+         06SnwQoU/DgVRA0ZgmuXtMoI66eUPuFMtjnG0luVuI+0aAf/TjADQ5BDhcF+yY3Xfwi5
+         R4ur2Y1LYZHom2hLS7zmCh7aJKf5AYMbVg38v07B4oqbR8dLrw6Y2NfmDSFo2SIYXS9t
+         CdeSkL2tIDwKDTo0AOghZT6GLidlC9CILx2z51IX6J5ERH/zB6BG2PdK8fj73j4DFKpr
+         dSrpIEMxKNjXfXULET6ndh77wkxIj0Pkvp5lhZh2Zueg9C5s6eW2nZEjLQV15soMbOQV
+         oW4w==
+X-Gm-Message-State: AOAM533oi+cr4gG5CYL7LhW4CMalNwPF0f9MwnDFd5qlcA5/8GFFlNbJ
+        w4Gf63ouD9HiIpAL1FxvGcY=
+X-Google-Smtp-Source: ABdhPJxZjIgSUOEIBImnKslPHGflgNXmVhhyARyOtRSwH9zyUg9eUuJLvfGeybKJI8uvKkCf+X5PvA==
+X-Received: by 2002:a9d:7e3:: with SMTP id 90mr16597425oto.40.1626662843696;
+        Sun, 18 Jul 2021 19:47:23 -0700 (PDT)
 Received: from ?IPv6:2600:1700:dfe0:49f0:49e1:751f:b992:b4f3? ([2600:1700:dfe0:49f0:49e1:751f:b992:b4f3])
-        by smtp.gmail.com with ESMTPSA id o26sm3404180otk.77.2021.07.18.19.43.22
+        by smtp.gmail.com with ESMTPSA id l11sm892411otf.1.2021.07.18.19.47.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jul 2021 19:43:24 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 11/15] net: bridge: switchdev: allow the TX
- data plane forwarding to be offloaded
+        Sun, 18 Jul 2021 19:47:23 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 15/15] net: dsa: tag_dsa: offload the bridge
+ forwarding process
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -66,14 +66,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>
 References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
- <20210718214434.3938850-12-vladimir.oltean@nxp.com>
+ <20210718214434.3938850-16-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d81cf0d4-3680-8f87-63ba-d2d843394d5b@gmail.com>
-Date:   Sun, 18 Jul 2021 19:43:23 -0700
+Message-ID: <7c2b81e8-db72-4665-fe81-7254cba1e797@gmail.com>
+Date:   Sun, 18 Jul 2021 19:47:22 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210718214434.3938850-12-vladimir.oltean@nxp.com>
+In-Reply-To: <20210718214434.3938850-16-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -86,49 +86,17 @@ X-Mailing-List: netdev@vger.kernel.org
 On 7/18/2021 2:44 PM, Vladimir Oltean wrote:
 > From: Tobias Waldekranz <tobias@waldekranz.com>
 > 
-> Allow switchdevs to forward frames from the CPU in accordance with the
-> bridge configuration in the same way as is done between bridge
-> ports. This means that the bridge will only send a single skb towards
-> one of the ports under the switchdev's control, and expects the driver
-> to deliver the packet to all eligible ports in its domain.
-> 
-> Primarily this improves the performance of multicast flows with
-> multiple subscribers, as it allows the hardware to perform the frame
-> replication.
-> 
-> The basic flow between the driver and the bridge is as follows:
-> 
-> - When joining a bridge port, the switchdev driver calls
->    switchdev_bridge_port_offload() with tx_fwd_offload = true.
-> 
-> - The bridge sends offloadable skbs to one of the ports under the
->    switchdev's control using skb->offload_fwd_mark = true.
-> 
-> - The switchdev driver checks the skb->offload_fwd_mark field and lets
->    its FDB lookup select the destination port mask for this packet.
-> 
-> v1->v2:
-> - convert br_input_skb_cb::fwd_hwdoms to a plain unsigned long
-> - introduce a static key "br_switchdev_fwd_offload_used" to minimize the
->    impact of the newly introduced feature on all the setups which don't
->    have hardware that can make use of it
-> - introduce a check for nbp->flags & BR_FWD_OFFLOAD to optimize cache
->    line access
-> - reorder nbp_switchdev_frame_mark_accel() and br_handle_vlan() in
->    __br_forward()
-> - do not strip VLAN on egress if forwarding offload on VLAN-aware bridge
->    is being used
-> - propagate errors from .ndo_dfwd_add_station() if not EOPNOTSUPP
-> 
-> v2->v3:
-> - replace the solution based on .ndo_dfwd_add_station with a solution
->    based on switchdev_bridge_port_offload
-> - rename BR_FWD_OFFLOAD to BR_TX_FWD_OFFLOAD
-> v3->v4: rebase
+> Allow the DSA tagger to generate FORWARD frames for offloaded skbs
+> sent from a bridge that we offload, allowing the switch to handle any
+> frame replication that may be required. This also means that source
+> address learning takes place on packets sent from the CPU, meaning
+> that return traffic no longer needs to be flooded as unknown unicast.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This looks pretty complicated to but if this is how it has to work, it 
+has to. For tag_brcm.c we can simply indicate that the frame to be 
+transmitted should have a specific bitmask of egress ports.
 -- 
 Florian
