@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB803CDC67
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A369E3CDEEA
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237844AbhGSOwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 10:52:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43988 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238888AbhGSOuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 10:50:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F055E61006;
-        Mon, 19 Jul 2021 15:30:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1626708652;
-        bh=16zERpik7U+FYuLQb6QZHm1Z4+++zOpHh+KcY4upJYA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K8wvOrndyEt7a1oKaVssqAM+rcYfqdOEgosejjYjGHxiog1XiP7EKi/k6Ck+cLz02
-         z0/ZTBzHPCee5xVMR7xYyCvUdLn5adsgxHMGMcG955BEJv8Lzr7uVfHIa0P65GmS1u
-         g3alrwN9iNJKI5kHhKGwArBMxSXX4NT5KFsx8Z7o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
-        Angus Ainslie <angus@akkea.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Karun Eagalapati <karun256@gmail.com>,
-        Martin Kepplinger <martink@posteo.de>,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
-        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH 4.19 042/421] rsi: Assign beacon rate settings to the correct rate_info descriptor field
-Date:   Mon, 19 Jul 2021 16:47:33 +0200
-Message-Id: <20210719144947.686865331@linuxfoundation.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210719144946.310399455@linuxfoundation.org>
-References: <20210719144946.310399455@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S1344795AbhGSPGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 11:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345883AbhGSPFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 11:05:05 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF79C0613E9;
+        Mon, 19 Jul 2021 08:01:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=5EyuyxdB0VvwZpwllRkhj4XH997vuxgnqyXnXfI5mIM=; b=d9QCOPubEyU4uUIQOX2S/b+lN
+        cyYYjwmQtBxiI0sEBU3hGOo60r1lMy0G98AYbImwpqG18SoRY91gtSm8CltgX0yzYObjohiQStrun
+        8u/eSdErIbntp+XTmYQ7iq6s+ggWPLqR7vEuX32AW3qrjXuoncc4n59H7Vha+N3v7lAqXaBncJZzu
+        RYa5mQsSrTDYCIX35dWHudxbVLJqmeuFufTxwnPHow1cBNv0f62Ydyi9QdfDnabBeYUV3WJtjqww3
+        vsd4ExjpzHr8xgYXoFjA3fhG3G+MC+MZEIffC9CheUjzIkqzHuSAOr16cz7XAOqrN0szdb13nTTkl
+        R70Db1mew==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46328)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1m5VDE-00052Y-8K; Mon, 19 Jul 2021 16:29:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1m5VDC-00064u-OO; Mon, 19 Jul 2021 16:29:42 +0100
+Date:   Mon, 19 Jul 2021 16:29:42 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     "Ivan T. Ivanov" <iivanov@suse.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: leds: Trigger leds only if PHY speed is known
+Message-ID: <20210719152942.GQ22278@shell.armlinux.org.uk>
+References: <20210716141142.12710-1-iivanov@suse.de>
+ <YPGjnvB92ajEBKGJ@lunn.ch>
+ <162646032060.16633.4902744414139431224@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <162646032060.16633.4902744414139431224@localhost>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+On Fri, Jul 16, 2021 at 09:32:00PM +0300, Ivan T. Ivanov wrote:
+> Hi,
+> 
+> Quoting Andrew Lunn (2021-07-16 18:19:58)
+> > On Fri, Jul 16, 2021 at 05:11:42PM +0300, Ivan T. Ivanov wrote:
+> > > This prevents "No phy led trigger registered for speed(-1)"
+> > > alert message which is coused by phy_led_trigger_chage_speed()
+> > > being called during attaching phy to net_device where phy device
+> > > speed could be still unknown.
+> > 
+> > Hi Ivan
+> > 
+> > It seems odd that when attaching the PHY we have link, but not the
+> > speed. What PHY is this?
+> 
+> This is lan78xx on RPi3B+
+> 
+> > 
+> > > -     if (phy->speed == 0)
+> > > +     if (phy->speed == 0 || phy->speed == SPEED_UNKNOWN)
+> > >               return;
+> > 
+> > This change makes sense. But i'm wondering if the original logic is
+> > sound. We have link, but no speed information.
+> 
+> Well, probably my interpretation was not correct. The most probable
+> call to phy_led_trigger_change_speed() which couses this alert is
+> phy_attach_direct() -> phy_led_triggers_register(), I think. I am
+> not sure that we have link at this stage or not.
 
-commit b1c3a24897bd528f2f4fda9fea7da08a84ae25b6 upstream.
+This does sound weird.
 
-The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
-field. The rest of the driver does it correctly, except this one place,
-so fix it. This is also aligned with the RSI downstream vendor driver.
-Without this patch, an AP operating at 5 GHz does not transmit any
-beacons at all, this patch fixes that.
+When a phy_device is allocated, it's explicitly initialised with:
 
-Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
-Cc: Angus Ainslie <angus@akkea.ca>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: Karun Eagalapati <karun256@gmail.com>
-Cc: Martin Kepplinger <martink@posteo.de>
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
-Cc: Siva Rebbagondla <siva8118@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: stable@vger.kernel.org
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20210507213105.140138-1-marex@denx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+	dev->speed = SPEED_UNKNOWN;
+	dev->duplex = DUPLEX_UNKNOWN;
+	dev->link = 0;
+	dev->state = PHY_DOWN;
 
----
- drivers/net/wireless/rsi/rsi_91x_hal.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+so, unless something is causing state to be read before we've attached
+the phy to a network device, this is how this state should remain. I
+wonder why you are seeing dev->link be non-zero.
 
---- a/drivers/net/wireless/rsi/rsi_91x_hal.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
-@@ -464,9 +464,9 @@ int rsi_prepare_beacon(struct rsi_common
- 	}
- 
- 	if (common->band == NL80211_BAND_2GHZ)
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
- 	else
--		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
-+		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
- 
- 	if (mac_bcn->data[tim_offset + 2] == 0)
- 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
