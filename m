@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 781763CD85A
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FB803CDC67
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242070AbhGSOVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 10:21:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33932 "EHLO vps0.lunn.ch"
+        id S237844AbhGSOwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 10:52:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242706AbhGSOUf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 10:20:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kAaOYJ4WkAH+VU3g6V5deZBG0j2OSTdbwTHDQarLo/0=; b=qCNYPgSt4w9NG/eazm3PjtEnHn
-        1VCeMWdqK/F4cAF/xCRs+yIf5Y7KBU5RqGXoFVmJJgDvReOaEVqPvEUcdfD4jPXOFEtG5Y8mmjXwP
-        SIwpkFZh8U2BHys+owukwcAaOVa4IxTproR9MCma4E6z87EFHzPKQQQfQVCbchZgT4hE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m5Ulb-00DuVB-HO; Mon, 19 Jul 2021 17:01:11 +0200
-Date:   Mon, 19 Jul 2021 17:01:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ruud Bos <ruud.bos@hbkworld.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next 0/4 resend] igb: support PEROUT and EXTTS PTP
- pin functions on 82580/i354/i350
-Message-ID: <YPWTt8h1HFfMbMuh@lunn.ch>
-References: <AM0PR09MB42765A3A3BCB3852A26E6F0EF0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
- <YPWMHagXlVCgpYqN@lunn.ch>
- <AM0PR09MB42766646ADEF80E5C54D7EA8F0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
+        id S238888AbhGSOuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 10:50:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F055E61006;
+        Mon, 19 Jul 2021 15:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1626708652;
+        bh=16zERpik7U+FYuLQb6QZHm1Z4+++zOpHh+KcY4upJYA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K8wvOrndyEt7a1oKaVssqAM+rcYfqdOEgosejjYjGHxiog1XiP7EKi/k6Ck+cLz02
+         z0/ZTBzHPCee5xVMR7xYyCvUdLn5adsgxHMGMcG955BEJv8Lzr7uVfHIa0P65GmS1u
+         g3alrwN9iNJKI5kHhKGwArBMxSXX4NT5KFsx8Z7o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH 4.19 042/421] rsi: Assign beacon rate settings to the correct rate_info descriptor field
+Date:   Mon, 19 Jul 2021 16:47:33 +0200
+Message-Id: <20210719144947.686865331@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210719144946.310399455@linuxfoundation.org>
+References: <20210719144946.310399455@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR09MB42766646ADEF80E5C54D7EA8F0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 02:45:06PM +0000, Ruud Bos wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Monday, July 19, 2021 16:29
-> > To: Ruud Bos <ruud.bos@hbkworld.com>
-> > Cc: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org;
-> > jesse.brandeburg@intel.com; anthony.l.nguyen@intel.com; Richard Cochran
-> > <richardcochran@gmail.com>
-> > Subject: Re: [PATCH net-next 0/4 resend] igb: support PEROUT and EXTTS
-> > PTP pin functions on 82580/i354/i350
-> >
-> > On Mon, Jul 19, 2021 at 11:33:11AM +0000, Ruud Bos wrote:
-> > > The igb driver provides support for PEROUT and EXTTS pin functions that
-> > > allow adapter external use of timing signals. At Hottinger Bruel & Kjaer we
-> > > are using the PEROUT function to feed a PTP corrected 1pps signal into an
-> > > FPGA as cross system synchronized time source.
-> >
-> > Please always Cc: The PTP maintainer for PTP patches.
-> > Richard Cochran <richardcochran@gmail.com>
-> 
-> Thanks, will do that!
-> Do I need to resend again?
+From: Marek Vasut <marex@denx.de>
 
-It is probably a good idea to resend. It will make it easier for
-Richard if the patches are in his mailbox.
+commit b1c3a24897bd528f2f4fda9fea7da08a84ae25b6 upstream.
 
-> This is my first ever contribution, so it's all kinda new to me,
-> sorry :-)
+The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
+field. The rest of the driver does it correctly, except this one place,
+so fix it. This is also aligned with the RSI downstream vendor driver.
+Without this patch, an AP operating at 5 GHz does not transmit any
+beacons at all, this patch fixes that.
 
-Cc: Richard is not so obvious as it should be, since
-./scripts/get_maintainers.pl would not of suggested it, since you are
-not modify the PTP core. It takes a bit of experience to know this.
+Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Karun Eagalapati <karun256@gmail.com>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210507213105.140138-1-marex@denx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-This is the second time something like this has happened recently for
-Intel Ethernet drivers. The other case was making use of the LED
-subsystem from within an Ethernet driver, and the LED subsystem
-maintainers were not Cc:. It would be good if the Intel Maintainers
-actually took notice of this, they have the experience to know better.
+---
+ drivers/net/wireless/rsi/rsi_91x_hal.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I noticed your patches are not threaded. Did you use git send-email?
-It normally does thread a patchset. The threading keeps the patchset
-together, which can be important for some of the bots which scoop up
-patches in emails and run tests on them. Please see if you can fix
-that in the resend.
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -464,9 +464,9 @@ int rsi_prepare_beacon(struct rsi_common
+ 	}
+ 
+ 	if (common->band == NL80211_BAND_2GHZ)
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
+ 	else
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
+ 
+ 	if (mac_bcn->data[tim_offset + 2] == 0)
+ 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
 
-     Andrew
+
