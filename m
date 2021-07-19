@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5EF3CCE64
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 09:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDEA3CCE67
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 09:21:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234890AbhGSHVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 03:21:47 -0400
-Received: from mail-eopbgr80073.outbound.protection.outlook.com ([40.107.8.73]:26246
+        id S234926AbhGSHV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 03:21:57 -0400
+Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:53216
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234863AbhGSHVq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 03:21:46 -0400
+        id S234913AbhGSHVu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 03:21:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DQBd27A8SPARkTelmxevxsO+bJMFksD4lgEG3mJiPj53JmTcZpnzw7dR6WEEKyOkbrZGfskmepjMPFEgxhkW0j4KE9IynvycNbZAvLBim6AAShfA1NsGCnVBckjn328cnUgpLfEjt8xvB5nMeY991FTAWPMyH8RpU2+W7d5lqUgR0qAVJPDJzq9e3FBrYFw1h/ZvGCW8ZRi0Eb3h6DDrhhif3JDzMrtB0Bbz8ErcRWx+RN9rZlREAW9/oe+8OXvIDlmn8NXaphmEnFdQZ5ws+vTRdRdLncvIswCB/0Cep7l6DB4Zl79i4wjhxJiV+y37+Op46RL/8nKByP6cyfe+EA==
+ b=kz7nDZEaUln11iOAhdmx5jDgUFdvKA9ptI2cZghQdScwWx3grS+vHR7RGnUap22VvR1n56ZzQAld/VfVqQ8wC6b+of837ascQqkBKRRpJgn8W7dnL+a0Zim6XvfmJU8KzKv8Kk2RLoMkiWcuQBNRd5zE0xCF5HSm3HIAIiwlGO/lSCVpoxgKXTOtj4DJPmMPxfYFVh7QRhZ4Harca3kFK4+MZVrRGi6z1yZ//xQgYF/VPuu/DnbvxU8bx9o8eTBegoJgjAUuoLaxmy72bAkj63i6Geq4om7pnC7a7PNBkl4C+eGVaD8kfxPVuBm6n2+vsrPD0e3g7OInm7JLtzdkfA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kDGZsKYY41VaFxHIidxc79mUrhrkJJ2Y8OH6oRHHYl8=;
- b=POEhtXab351F6oW02F3i31v7F4KNsY0E93o+rs+4OXhwHw29SVS7JGPPUKFz3f0Fk7pfTrciyEimkf3Qjvl3L0ol+rzHd/0+bwWbAR0D3EUuunv1XnF9Eqsxu65nWV+VZw7AJYwzJOkS/3qYQ24bL+fGis9LgezaeCgGN6I8MKTE3FB3m5k3QJackBtbqDe59xbZtGlk7hHD9U4tpx5cuTDP19i3tERG5nhUJVrVNLU7TRdySIL+yRKhxEMtvjisSLBABlBeNq1TDQ9E0JwmIt2/fKi4T6ZYOBAojBrrGvpW6LzRHZNw8oYqC5dIqzdzQ7rXA0VAft79H3f+sYDJhA==
+ bh=19rkpx+g7My9PF8wiXbOZ1KWbt5dYUhAthYEDjArJ7A=;
+ b=LsxDApgXiPSXCdYO7KpgWFkKHZuuK4gxTNWM+DmkfPbyLZjYsX15mdU/Yj4fg9Rvqg1j1HCmy0YrdiE41RiV67A6TlIbBLEjPBf1y2JMSmvf4dlstAxZUoSSNoXDYyD2hhxKMGE30OTXCOqj0grvwAGoGvBYEUgL+iKa7YF2kQ8FFWTE2P8SbI0Mz9bgemmIOt+sfwSMa6ndr7jTyDlWGNKfReZ+QmCvJGo/SX/xkUbReEYoNXEoMF/HZNT6wblCYiw5Eh4sZ+kz2oIeYt2/LA7PpnDW+7AjdcT6C6iX8xRyXNa6CHenhWnus+M6m6soLyq/uQT5waV6KQQYj/9ypQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kDGZsKYY41VaFxHIidxc79mUrhrkJJ2Y8OH6oRHHYl8=;
- b=srJBqtqB1ZyxksvzUN/QjsOk+zzm2LlzanWEHMGlo6HBZlVO6mrd1xHh3Pglu4jEu5c7Awzp3+csMwOb8Zag0iizcpqM3t0GhZJ8JoHzG5x1SpG6NTNr63TCSLUMJeGP2Nid2vod99U0DOwklTcxwjrKGErPJG0v3apjPN+GWSU=
+ bh=19rkpx+g7My9PF8wiXbOZ1KWbt5dYUhAthYEDjArJ7A=;
+ b=kDzIl580sN8FkW1tUjvQ13eXfWZFMjwp5vkHssViIjhLz/0w0grFBN3HaFCdXC4ssIootQdrpLnS7dUCG/1oqtSgr7fx2Wtw18iCKlLhO4eIikgiX3F+vShwWQmaA/EDkBa/aajDzRS5vmrmSc9WLPGxlADD3Y+FwQANdFYvGLk=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DB8PR04MB7100.eurprd04.prod.outlook.com (2603:10a6:10:127::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Mon, 19 Jul
- 2021 07:18:43 +0000
+ 2021 07:18:48 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9c70:fd2f:f676:4802]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9c70:fd2f:f676:4802%9]) with mapi id 15.20.4331.032; Mon, 19 Jul 2021
- 07:18:43 +0000
+ 07:18:48 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com
@@ -44,9 +44,9 @@ Cc:     kernel@pengutronix.de, linux-imx@nxp.com, peppe.cavallaro@st.com,
         joabreu@synopsys.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next V1 2/3] dt-bindings: net: imx-dwmac: convert imx-dwmac bindings to yaml
-Date:   Mon, 19 Jul 2021 15:18:20 +0800
-Message-Id: <20210719071821.31583-3-qiangqing.zhang@nxp.com>
+Subject: [PATCH net-next V1 3/3] arm64: dts: imx8mp: change interrupt order per dt-binding
+Date:   Mon, 19 Jul 2021 15:18:21 +0800
+Message-Id: <20210719071821.31583-4-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210719071821.31583-1-qiangqing.zhang@nxp.com>
 References: <20210719071821.31583-1-qiangqing.zhang@nxp.com>
@@ -56,232 +56,88 @@ X-ClientProxiedBy: SG2PR02CA0067.apcprd02.prod.outlook.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0067.apcprd02.prod.outlook.com (2603:1096:4:54::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.22 via Frontend Transport; Mon, 19 Jul 2021 07:18:39 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0067.apcprd02.prod.outlook.com (2603:1096:4:54::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.22 via Frontend Transport; Mon, 19 Jul 2021 07:18:43 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0b4aec4c-8bc8-421d-2f59-08d94a8570d5
+X-MS-Office365-Filtering-Correlation-Id: 6cef6dea-82c8-4662-67b8-08d94a857377
 X-MS-TrafficTypeDiagnostic: DB8PR04MB7100:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR04MB71006990E7EC004731C283F7E6E19@DB8PR04MB7100.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <DB8PR04MB71002F6D66B2DCB2B003EDBDE6E19@DB8PR04MB7100.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: F5m6JTsNg19vpfWa3Wc6FBgb4o8AYv3q3qw0bpWQQizofc620b+5fDs0sJ64Q71dbJ1VxUSyLuWnQ2yMkwi3/OznUwSprdN/r/6ZsZZkaAhSQOD9drP5SIw1uKjs9bWOCuzTI9l2J2l4nwwJU4kfcpTITm9QoDVSLwnz0mznz8EEnfrS6pgjlMADzsjjPfNM+rHj2Nkuf497040a86xegh3//xT2Rhc/fRFho2EVkwYVxyArJEjPg4E7Q10Tv8YG7O3PspzZf4onINx656tshZn1d7cD2lXzVTk2oHsuV63TKcSNX8zYGYyfIq/ZuhYv/xnGmeEAU+jCMwCSBN/ESkY/+8llsNbNFZaH70W/7Pz0irWrOJsHuC7eu+Yw6g2unraiHW76ALfB77L+o6iAoTyamkylK15Vc3PSqKwP6toTZPmhci+/WChD3gk7XLTh+D78PkAdqCS+bjH7c1MxWsj+JFYeXy1D47gwly+Q9v1jhtqnwGs0PFJrGVmyAPiUhRCLZPikegqfYUAr/B9WO1XXq5zG0Z/KkzEbEcTd4O4Fth6U+ZZ7/rL1hQIaHE66NvU1grpbVCeLDWsPLkAErqVaF7zdyjD0oST/e0PWHhdLT+/5q5skDYOJWI5NkE5qwGh7ULWMvY3GHH8sBg5HKDzSswdIaWHVMrJ+4BatdgiFyen+BloLlpCJtUjpPpSXQaXJdoJVs6oj9cu0xEhQ64LHLJS1a6WrKFekRDpxlytycx0iD2am+mHXmGbhyhHdW48QfoQacYA6hPhDdXnstY3NnEdhbFiCn29z1xZ45JbiKgFW8XMXOJhcf+cwLHdJ0ByBNOQPGbXBZpBVWMgqVg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(52116002)(1076003)(5660300002)(956004)(2616005)(6512007)(4326008)(7416002)(66476007)(38350700002)(38100700002)(6666004)(26005)(966005)(8676002)(66556008)(8936002)(36756003)(6486002)(66946007)(83380400001)(508600001)(186003)(2906002)(86362001)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Jyqcb7LEOh+SNmLXJ8onoQ1Fwyw2V4bIV3zZlikighhWDea4H7JwyfvUGoHf+Cm+DnfLp6YfvFyp78zetB/8Tk7JVTxiJMGc82EK5JN36z20ARfhKI7OVrozkiv3kA0PA0ZUCyt6Kqj2TOtkzZ2jRw4zX1WbebhLDCbFXSo94EB97TbfTCYM/DBZLmXe609hlBhVoTRi2ebQ+2wSQLxySl6N699v4w9oYbq5/YqpZ3RcIfC4GCwCuxXKMWmStAfXOTsN32epSkevYz3O17cvccGdpM0lEKJOR7WWtBO1HWka3wTHXgiKfqZN6ZGqAzqXFVwQiV42JSR60cQztMsOaKnUIF95/amwhjqdUITCg3DYv1KFHU937HxVwMfxlsUUPzkFkP4x0Uj2IRrj0xUC2u5ugUnPagQGhaq33hnLHYMNKf+urJSGhmlYkkjEQ0eWoEgpHyD7y+xv7kR8pstmK9FauQ/7q7WiJ62TmexpZsGrDv7x1FFyk19K5smWlh/rWargNHjPMMcQStTBnKvzx73xECp/XVnVBkUN/2ni6ce6OITmNHjDkocQovhLXmLPWowmCblQSldsCFoNU803pXIHWp1ZyNcaCcHCu3AlxkGYQz/EEoXspTu4VQ5uMBNKBvEroAeHfvyjygLVN6Aq83jkmL3I8+9xS0fNBNF+rTtlvz2WgXIVQYnlQPmhUXZEg2J7GKI8Tedeh2bqKyji25nZpR3Ojz+IC1XjWNGrxcw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(52116002)(1076003)(5660300002)(956004)(2616005)(6512007)(4326008)(7416002)(66476007)(38350700002)(38100700002)(6666004)(26005)(8676002)(66556008)(8936002)(36756003)(6486002)(66946007)(83380400001)(508600001)(186003)(2906002)(86362001)(6506007)(32563001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NFuvlpJL9H+shnfvi79ya/HelZGBAq1TDjTbK/rmK7MwQdpAUtZ+3sfHfBm6?=
- =?us-ascii?Q?8dhj22itbHM97tmuRO7IC16u+wsVBpL3fyYiXd1AvPg3OzxyQWtapFTWzf+r?=
- =?us-ascii?Q?sEwfhVeEAmPtZgVFeR1WAZQS30xW6g88eS63ndx+k8xyTv8qgDtK0hUx99gP?=
- =?us-ascii?Q?8JzCYsIPVHIb4CnSRmeJ2iEE/GD8WL2LRKO80pJqka1lzKBnc/r57/PcKG01?=
- =?us-ascii?Q?HwGzj/6frSJoaHCfrDQYTuIkZZbTLGJcwhJWgF+bbIr9rBaAKO1/4WwHdN6a?=
- =?us-ascii?Q?C9UCvpsfcUkpwYMNx1haAOrxqlKc9GyajPg5byr68X3c8lcsAp4qEbhwTdTG?=
- =?us-ascii?Q?C0WGc3KE3DNHnPpocyV1B4HKyCtCqdTIv73gNEgPea05mxwjyWHMWnuW2IqV?=
- =?us-ascii?Q?WXpjH9B527+ZBbSmU1VfuPIH/fzP9X6dbTj9DFoVISp29kP0VSfjhxHo0YU1?=
- =?us-ascii?Q?J343a4RJLaQqu0blikFno5JoEwCVSdqBAwdvYmltPesXLLUMXuszZDIap6Er?=
- =?us-ascii?Q?p+/QzvRuSfh+EgjCMglF0wob572tkY2qLq9WL0Y6amkg7VVFHzajpRywFrwi?=
- =?us-ascii?Q?a3L76yfZbCMlvUikBEU3MDS0HhAi6/vgnqTa9u9W/TLUCmUkZPyO/TcAsBxo?=
- =?us-ascii?Q?+wdjVOkYqfjtScTjPpUeR//AKKG9reREUoy9F7iLAs6msVzaScqYdaBECSIR?=
- =?us-ascii?Q?/1cuw/og07dNaBtdrRIDWGTzf1Ax5vKFo0AgwS6gBgt7jK84Q8se/pS4z7kN?=
- =?us-ascii?Q?zXaZi7yFAD5lAq6Vg+kqncspMSSbkBJKYRsab/+easy3DsdxbGkIRP95kWbv?=
- =?us-ascii?Q?UHF+rdoVa0QeJVX/ASF4BQ+kn40zlsDlopw2CFRQqqqnFmTDVkG1jMd9e0z+?=
- =?us-ascii?Q?cHneSRuhR3y7ktVqi3eerzWrWXTqamdjBZpFGNTjTRF4jMyyuflZ/6S5rPzs?=
- =?us-ascii?Q?etC+1V+hvh9/Go9BAyjd9FquBOUeLeLVr4mT62gy2D+apdbt1iwoMOTstDTY?=
- =?us-ascii?Q?3hLQYn7BycFhCby1Ymf0DA3ayTwU0Qcv8xYfwoPpcJdo9uieBzMGfigCtP3n?=
- =?us-ascii?Q?6HylsKIAtsQpENSiCMsrhSlFIgIj+nY/OhK8D4IdOaX0ZZG+adfIKbyHR61D?=
- =?us-ascii?Q?C41rSPpNgm3s9hrp230ISDkoU/5gflcomMDmw8JIhySRbmfc/f7usESoUpyx?=
- =?us-ascii?Q?ljzXNYdfNRG+QEaMualrvHZTib02TIKr7QbyNSPuL1DtMgyDIC4yS8+ojkWa?=
- =?us-ascii?Q?X0fcI6JLpkaZ3DzLlWrpIwMW9ARLhnQpAe5danEIHnMY1zcfO5DOXZOv62zP?=
- =?us-ascii?Q?qIRwKyrZdUKcHO5SOoIh1Nrt?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ke2BLXXN5Q/B4+d0jnIcgH0KvRYIi5jMlYDUguG56DH2nQ95iuJcPCwI47AK?=
+ =?us-ascii?Q?WAFRinrG8YXf8PnZw3df8sWgjgVnwfTUbsOnadA4kXn0ZgxzXVITCzvLx9V9?=
+ =?us-ascii?Q?YfxhSjbFfZZtmiJ1JHZY4qPrt+fqeifbYEhyNden20MDce8kQyGmPVOB5BCU?=
+ =?us-ascii?Q?/lXtwqF9A14xckORRXkWhSgWCuCM+XKzJxLHbf4HdX+ZaZxusXpXODp5L6mh?=
+ =?us-ascii?Q?jPvbE5A14E/Cs0zcKBuoftLoTyKRUIQlW/0DtSZBEqQRhepSMCVa4nxnu/x1?=
+ =?us-ascii?Q?VwU3bsL94XmZ1o/ypUwu2kEWdISF94yjSartKp7+GShzB5C6qwlW04u0q7uO?=
+ =?us-ascii?Q?unEL7Jf500YLgYf8h0EOj9qMmMH+6t1Um7atkDLOzd321TZO30xISeytgDuY?=
+ =?us-ascii?Q?qgYlrRuoxbuUwPJ+5xESF/wo0CishmSWfBnHmwDF2aOGTiPP+qA7lOZXoIYv?=
+ =?us-ascii?Q?a3WA9INPOWVTMY2NzcQzZIOZ0XCs0+f7LKFFQe7foscELTqhyK4blKBIWWzk?=
+ =?us-ascii?Q?Q/5b6GUpE+P31dxDyyduvQXn0g0xV9raZjZkQYIXhiEY5AjXUBR2lMPoxytb?=
+ =?us-ascii?Q?nzTTtul08wopWJoqhqkhJFKc7bBDu9NRq14Iz37NPZukJO5RG+hsBpwuJlb3?=
+ =?us-ascii?Q?Pr0p3zIDveg+hZBlGHrMBoyz+fvdy1JlYg6e7LWdEsSibTfA8kC24Yf1aLfv?=
+ =?us-ascii?Q?8Kz0azFcEYciovfXxKaWjNDoEeOb5nalhM1wvLc0Mf27A0VmMk29AAYxO5WV?=
+ =?us-ascii?Q?h8mgXCjuKQflITlgZojwnWwePZ68i5Z7HGYNl0Xf/WIrx+IQoLOrFQnDAo5m?=
+ =?us-ascii?Q?rHyJnZIWkIejgzS3CpN81rOGMNcesYUi4qWFOEN7CIEnHcilFhwyuRxQGG52?=
+ =?us-ascii?Q?VDl6JQKl0cx1+q1Pph97xOTBMJ68g0y2xaGMP39i96clIYYdPqY4V5q/nbGZ?=
+ =?us-ascii?Q?i4AQhDvBR6ZzTagOOFH1lqbcjIRhZfMOdnScX3O0NMQVisOekRJ4mZV1Bmyy?=
+ =?us-ascii?Q?VRnARBJUkvj4I6Zk7zR8SXYHLKXdo/ZuMdq/a2MtXoAJEGAoWnVFQmpt6cNa?=
+ =?us-ascii?Q?Lv87+CMZcHWhOeGnJdpJTXVfmtgd3SayGWKCfx4tazIb1Xv3Bxhwd0qmKnwe?=
+ =?us-ascii?Q?BKMhSHS+IBcqwolcQifdyMLjUZktn17h5i/kJ0UqX7yZzt11FCEeqJDcXhi8?=
+ =?us-ascii?Q?ogw0LUfSjR9Us5eTBIkbrw3DdfnutZ9UCbaLCaG4uj1cHpLfPiCXeGKoUvYx?=
+ =?us-ascii?Q?w5znkCQYKN4pTEjBNOdtJVHRHljRqY9Bbi3hk5SNxa1iko3EV8BwzdcgIvDH?=
+ =?us-ascii?Q?JMwRVfDOYIcMmF5RJwWcJT1x?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b4aec4c-8bc8-421d-2f59-08d94a8570d5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6cef6dea-82c8-4662-67b8-08d94a857377
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2021 07:18:43.5762
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jul 2021 07:18:47.9569
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0uIWhThKf4dwbMFS3qnFkSyEn3r93g9kOU1gbLIM+IQ2meXzo9/biReSvsQ2ismEaT7XHOGS94cM9omwX3JhNA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: gb8evlCxOG4yGMxAQnZUwB9tI+hVx7DVB3QpbegatSboe7FEUdw5QFYskCENkzcmWJTyZH/4tJq6/uQ0L1oTDg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to automate the verification of DT nodes covert imx-dwmac to
-nxp,dwmac-imx.yaml, and pass below checking.
+This patch changs interrupt order which found by dtbs_check.
 
-$ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
 $ make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+arch/arm64/boot/dts/freescale/imx8mp-evk.dt.yaml: ethernet@30bf0000: interrupt-names:0: 'macirq' was expected
+arch/arm64/boot/dts/freescale/imx8mp-evk.dt.yaml: ethernet@30bf0000: interrupt-names:1: 'eth_wake_irq' was expected
+
+According to Documentation/devicetree/bindings/net/snps,dwmac.yaml, we
+should list interrupt in it's order.
 
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- .../devicetree/bindings/net/imx-dwmac.txt     | 56 -----------
- .../bindings/net/nxp,dwmac-imx.yaml           | 93 +++++++++++++++++++
- 2 files changed, 93 insertions(+), 56 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/imx-dwmac.txt
- create mode 100644 Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/imx-dwmac.txt b/Documentation/devicetree/bindings/net/imx-dwmac.txt
-deleted file mode 100644
-index 921d522fe8d7..000000000000
---- a/Documentation/devicetree/bindings/net/imx-dwmac.txt
-+++ /dev/null
-@@ -1,56 +0,0 @@
--IMX8 glue layer controller, NXP imx8 families support Synopsys MAC 5.10a IP.
--
--This file documents platform glue layer for IMX.
--Please see stmmac.txt for the other unchanged properties.
--
--The device node has following properties.
--
--Required properties:
--- compatible:  Should be "nxp,imx8mp-dwmac-eqos" to select glue layer
--	       and "snps,dwmac-5.10a" to select IP version.
--- clocks: Must contain a phandle for each entry in clock-names.
--- clock-names: Should be "stmmaceth" for the host clock.
--	       Should be "pclk" for the MAC apb clock.
--	       Should be "ptp_ref" for the MAC timer clock.
--	       Should be "tx" for the MAC RGMII TX clock:
--	       Should be "mem" for EQOS MEM clock.
--		- "mem" clock is required for imx8dxl platform.
--		- "mem" clock is not required for imx8mp platform.
--- interrupt-names: Should contain a list of interrupt names corresponding to
--		   the interrupts in the interrupts property, if available.
--		   Should be "macirq" for the main MAC IRQ
--		   Should be "eth_wake_irq" for the IT which wake up system
--- intf_mode: Should be phandle/offset pair. The phandle to the syscon node which
--	     encompases the GPR register, and the offset of the GPR register.
--		- required for imx8mp platform.
--		- is optional for imx8dxl platform.
--
--Optional properties:
--- intf_mode: is optional for imx8dxl platform.
--- snps,rmii_refclk_ext: to select RMII reference clock from external.
--
--Example:
--	eqos: ethernet@30bf0000 {
--		compatible = "nxp,imx8mp-dwmac-eqos", "snps,dwmac-5.10a";
--		reg = <0x30bf0000 0x10000>;
--		interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
--			     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "eth_wake_irq", "macirq";
--		clocks = <&clk IMX8MP_CLK_ENET_QOS_ROOT>,
--			 <&clk IMX8MP_CLK_QOS_ENET_ROOT>,
--			 <&clk IMX8MP_CLK_ENET_QOS_TIMER>,
--			 <&clk IMX8MP_CLK_ENET_QOS>;
--		clock-names = "stmmaceth", "pclk", "ptp_ref", "tx";
--		assigned-clocks = <&clk IMX8MP_CLK_ENET_AXI>,
--				  <&clk IMX8MP_CLK_ENET_QOS_TIMER>,
--				  <&clk IMX8MP_CLK_ENET_QOS>;
--		assigned-clock-parents = <&clk IMX8MP_SYS_PLL1_266M>,
--					 <&clk IMX8MP_SYS_PLL2_100M>,
--					 <&clk IMX8MP_SYS_PLL2_125M>;
--		assigned-clock-rates = <0>, <100000000>, <125000000>;
--		nvmem-cells = <&eth_mac0>;
--		nvmem-cell-names = "mac-address";
--		nvmem_macaddr_swap;
--		intf_mode = <&gpr 0x4>;
--		status = "disabled";
--	};
-diff --git a/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
-new file mode 100644
-index 000000000000..5629b2e4ccf8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
-@@ -0,0 +1,93 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/nxp,dwmac-imx.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP i.MX8 DWMAC glue layer Device Tree Bindings
-+
-+maintainers:
-+  - Joakim Zhang <qiangqing.zhang@nxp.com>
-+
-+# We need a select here so we don't match all nodes with 'snps,dwmac'
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - nxp,imx8mp-dwmac-eqos
-+          - nxp,imx8dxl-dwmac-eqos
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - nxp,imx8mp-dwmac-eqos
-+              - nxp,imx8dxl-dwmac-eqos
-+          - const: snps,dwmac-5.10a
-+
-+  clocks:
-+    minItems: 3
-+    maxItems: 5
-+    items:
-+      - description: MAC host clock
-+      - description: MAC apb clock
-+      - description: MAC timer clock
-+      - description: MAC RGMII TX clock
-+      - description: EQOS MEM clock
-+
-+  clock-names:
-+    minItems: 3
-+    maxItems: 5
-+    contains:
-+      enum:
-+        - stmmaceth
-+        - pclk
-+        - ptp_ref
-+        - tx
-+        - mem
-+
-+  intf_mode:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description:
-+      Should be phandle/offset pair. The phandle to the syscon node which
-+      encompases the GPR register, and the offset of the GPR register.
-+
-+  snps,rmii_refclk_ext:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      To select RMII reference clock from external.
-+
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/clock/imx8mp-clock.h>
-+
-+    eqos: ethernet@30bf0000 {
-+            compatible = "nxp,imx8mp-dwmac-eqos","snps,dwmac-5.10a";
-+            reg = <0x30bf0000 0x10000>;
-+            interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
-+                         <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-names = "macirq", "eth_wake_irq";
-+            clocks = <&clk IMX8MP_CLK_ENET_QOS_ROOT>,
-+                     <&clk IMX8MP_CLK_QOS_ENET_ROOT>,
-+                     <&clk IMX8MP_CLK_ENET_QOS_TIMER>,
-+                     <&clk IMX8MP_CLK_ENET_QOS>;
-+            clock-names = "stmmaceth", "pclk", "ptp_ref", "tx";
-+            phy-mode = "rgmii";
-+            status = "disabled";
-+    };
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+index 9f7c7f587d38..ca38d0d6c3c4 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+@@ -821,9 +821,9 @@
+ 			eqos: ethernet@30bf0000 {
+ 				compatible = "nxp,imx8mp-dwmac-eqos", "snps,dwmac-5.10a";
+ 				reg = <0x30bf0000 0x10000>;
+-				interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
+-				interrupt-names = "eth_wake_irq", "macirq";
++				interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
++				interrupt-names = "macirq", "eth_wake_irq";
+ 				clocks = <&clk IMX8MP_CLK_ENET_QOS_ROOT>,
+ 					 <&clk IMX8MP_CLK_QOS_ENET_ROOT>,
+ 					 <&clk IMX8MP_CLK_ENET_QOS_TIMER>,
 -- 
 2.17.1
 
