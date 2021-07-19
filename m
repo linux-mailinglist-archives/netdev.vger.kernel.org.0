@@ -2,220 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3479F3CD46E
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0EE3CD4A6
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236871AbhGSLb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 07:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S236889AbhGSLlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 07:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236864AbhGSLb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:31:27 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9A0C061574
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 04:27:03 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id ee25so23591009edb.5
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:12:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/UU/c96xB2XnsKcImXrMAG0NX8G+S47OMuRsfPPQPuI=;
-        b=CK1gkwphNUpnV7qz0pEiNQPARKls7lgV4k0YhHtRviZNNNf9pduPYAm6rasO2Z4JYq
-         yCfq8C7eKnhN+sLicDffhTPpp6ANXP4DqCoi59AQthWxFpsbTPcmXNQxiSf4zkbTW0pW
-         K3aY/qy6QxN6TUQ+ylVmRuiz2j60u5w0PKO//4WhJzkw8/BP/YMkgXaltIlAxAr5v94A
-         fKQ0wT14If3pjD//EisFpRLYUCGqpzt6ZOREOCfMTFpNyAAbyVqgTwrKeuMjTSC4anJJ
-         Vb2nRPBLSF9PjEe+M0s5mDp+DlyqqAgbMhs3l4NUalgsijVHBhCBnMXqQ6NfFE39Zzyf
-         K6dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/UU/c96xB2XnsKcImXrMAG0NX8G+S47OMuRsfPPQPuI=;
-        b=peqm1ZIc3+ZyguJCa8ioHosacTa6lxu7LEFF4CFLwvRXKmpRkDzYRdYzs1eBCOASfi
-         XhmKP3P6fHsLpHup15R85aa7TI44m4M3v+B7oQS3yu6WyzqzMWG9z59GY+k2IIpEosT8
-         sfuOTbXVIcrBu6xEG44BWGVzvWBgsRjNgz1eiR+FolnFTks8/n/p0L63i/ar7TAFySVo
-         FaocG0FiPA0n+bmo2Sk0/J7NnE6WOcVykIv8MswIuPdk1D3cn71rFt4UkpE36vV6Z/8/
-         IUc1ZEAFBXc150f/gInoFEAeeB7B0C9Pp/A1m/+LLwG+pQJPhDYDUxIb4XtLdZKKbMOQ
-         AVKw==
-X-Gm-Message-State: AOAM530VAnuEle0PlIWEDaV7nZWJIhqQus4wdD4Rhla7s01627o2BxU/
-        9AYJmCLcgBPc3olEN7ucFEjHUbmfMAv7GB9VnDC5Mw==
-X-Google-Smtp-Source: ABdhPJxzmls3MdY2v2rmmBRiXXunC11WlDfin6gHks3OmV5v5L2L+bdoxTg7/Z6IALIyVbWP7RXCTZMIZTIgJWrEzIY=
-X-Received: by 2002:a05:6402:152:: with SMTP id s18mr33808453edu.221.1626696725478;
- Mon, 19 Jul 2021 05:12:05 -0700 (PDT)
+        with ESMTP id S236747AbhGSLll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:41:41 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F290C061574;
+        Mon, 19 Jul 2021 04:38:08 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626697338;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vu7b9z6fy5eQBUVOgQ3fNILEElmkneJNf7Gu+XNQsCQ=;
+        b=LQ5iMGMce0BId8ZMN7GgvooaWIunoMl/2GnrFI1IIUAAoHPMpbmv9VNM5KaK1BYEVGRAjZ
+        avv9n3OxxFGZcet/s319LB5suQIH7knhvA/ZwBCSvYBhGeeWpHRg+EuBLRghNiZ4TNsOaX
+        /QFW3BVPxKWugNiVVwBwGbhNM0fqSK0=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        nikolay@nvidia.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        courmisch@gmail.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, johannes@sipsolutions.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-wireless@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH 0/4] Remove rtnetlink_send() in rtnetlink
+Date:   Mon, 19 Jul 2021 20:21:54 +0800
+Message-Id: <20210719122158.5037-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-References: <1626362126-27775-1-git-send-email-alan.maguire@oracle.com> <1626362126-27775-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1626362126-27775-2-git-send-email-alan.maguire@oracle.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 19 Jul 2021 17:41:53 +0530
-Message-ID: <CA+G9fYtqga+zMop8Ae3+fa1ENP2T8fwfFfwWmvfRWZSYB7cPDw@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 1/3] libbpf: BTF dumper support for typed data
-To:     Alan Maguire <alan.maguire@oracle.com>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john.fastabend@gmail.com, kpsingh@kernel.org, morbo@google.com,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Jul 2021 at 20:46, Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> Add a BTF dumper for typed data, so that the user can dump a typed
-> version of the data provided.
->
-> The API is
->
-> int btf_dump__dump_type_data(struct btf_dump *d, __u32 id,
->                              void *data, size_t data_sz,
->                              const struct btf_dump_type_data_opts *opts);
->
-> ...where the id is the BTF id of the data pointed to by the "void *"
-> argument; for example the BTF id of "struct sk_buff" for a
-> "struct skb *" data pointer.  Options supported are
->
->  - a starting indent level (indent_lvl)
->  - a user-specified indent string which will be printed once per
->    indent level; if NULL, tab is chosen but any string <= 32 chars
->    can be provided.
->  - a set of boolean options to control dump display, similar to those
->    used for BPF helper bpf_snprintf_btf().  Options are
->         - compact : omit newlines and other indentation
->         - skip_names: omit member names
->         - emit_zeroes: show zero-value members
->
-> Default output format is identical to that dumped by bpf_snprintf_btf(),
-> for example a "struct sk_buff" representation would look like this:
->
-> struct sk_buff){
->         (union){
->                 (struct){
->                         .next = (struct sk_buff *)0xffffffffffffffff,
->                         .prev = (struct sk_buff *)0xffffffffffffffff,
->                 (union){
->                         .dev = (struct net_device *)0xffffffffffffffff,
->                         .dev_scratch = (long unsigned int)18446744073709551615,
->                 },
->         },
-> ...
->
-> If the data structure is larger than the *data_sz*
-> number of bytes that are available in *data*, as much
-> of the data as possible will be dumped and -E2BIG will
-> be returned.  This is useful as tracers will sometimes
-> not be able to capture all of the data associated with
-> a type; for example a "struct task_struct" is ~16k.
-> Being able to specify that only a subset is available is
-> important for such cases.  On success, the amount of data
-> dumped is returned.
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->  tools/lib/bpf/btf.h      |  19 ++
->  tools/lib/bpf/btf_dump.c | 819 ++++++++++++++++++++++++++++++++++++++++++++++-
->  tools/lib/bpf/libbpf.map |   1 +
->  3 files changed, 834 insertions(+), 5 deletions(-)
+rtnetlink_send() is similar to rtnl_notify(), there is no need for two 
+functions to do the same thing. we can remove rtnetlink_send() and 
+modify rtnl_notify() to adapt more case.
 
-<trim>
+Patch1: remove rtnetlink_send() modify rtnl_notify() to adapt 
+more case in rtnetlink.
+Path2,Patch3: Adjustment parameters in rtnl_notify().
+Path4: rtnetlink_send() already removed, use rtnl_notify() instead 
+of rtnetlink_send().
 
-> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-> index 5dc6b517..929cf93 100644
-> --- a/tools/lib/bpf/btf_dump.c
-> +++ b/tools/lib/bpf/btf_dump.c
+Yajun Deng (4):
+  rtnetlink: remove rtnetlink_send() in rtnetlink
+  net: Adjustment parameters in rtnl_notify()
+  vxlan: Adjustment parameters in rtnl_notify()
+  net/sched: use rtnl_notify() instead of rtnetlink_send()
 
+ drivers/net/vxlan.c       |  2 +-
+ include/linux/rtnetlink.h |  7 +++----
+ include/net/netlink.h     |  5 ++---
+ net/bridge/br_fdb.c       |  2 +-
+ net/bridge/br_mdb.c       |  4 ++--
+ net/bridge/br_netlink.c   |  2 +-
+ net/bridge/br_vlan.c      |  2 +-
+ net/core/fib_rules.c      |  2 +-
+ net/core/neighbour.c      |  2 +-
+ net/core/net_namespace.c  |  2 +-
+ net/core/rtnetlink.c      | 27 ++++++++-------------------
+ net/dcb/dcbnl.c           |  2 +-
+ net/decnet/dn_dev.c       |  2 +-
+ net/decnet/dn_table.c     |  2 +-
+ net/ipv4/devinet.c        |  4 ++--
+ net/ipv4/fib_semantics.c  |  2 +-
+ net/ipv4/fib_trie.c       |  2 +-
+ net/ipv4/ipmr.c           |  4 ++--
+ net/ipv4/nexthop.c        |  4 ++--
+ net/ipv6/addrconf.c       |  8 ++++----
+ net/ipv6/ip6mr.c          |  4 ++--
+ net/ipv6/ndisc.c          |  2 +-
+ net/ipv6/route.c          |  9 +++++----
+ net/mpls/af_mpls.c        |  4 ++--
+ net/phonet/pn_netlink.c   |  4 ++--
+ net/sched/act_api.c       | 13 ++++++-------
+ net/sched/cls_api.c       | 14 +++++++-------
+ net/sched/sch_api.c       | 13 ++++++-------
+ net/wireless/wext-core.c  |  2 +-
+ 29 files changed, 69 insertions(+), 83 deletions(-)
 
-Following perf build errors noticed on i386 and arm 32-bit architectures on
-linux next 20210719 tag with gcc-11.
+-- 
+2.32.0
 
-metadata:
---------------
-   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-   git_short_log: 08076eab6fef ( Add linux-next specific files for 20210719 )
-   toolchain: gcc-11
-   target_arch: arm and i386
-
-
-> +static void btf_dump_int128(struct btf_dump *d,
-> +                           const struct btf_type *t,
-> +                           const void *data)
-> +{
-> +       __int128 num = *(__int128 *)data;
-
-
-btf_dump.c: In function 'btf_dump_int128':
-btf_dump.c:1559:9: error: expected expression before '__int128'
- 1559 |         __int128 num = *(__int128 *)data;
-      |         ^~~~~~~~
-btf_dump.c:1561:14: error: 'num' undeclared (first use in this function)
- 1561 |         if ((num >> 64) == 0)
-      |              ^~~
-btf_dump.c:1561:14: note: each undeclared identifier is reported only
-once for each function it appears in
-btf_dump.c: At top level:
-btf_dump.c:1568:17: error: '__int128' is not supported on this target
- 1568 | static unsigned __int128 btf_dump_bitfield_get_data(struct btf_dump *d,
-      |                 ^~~~~~~~
-btf_dump.c: In function 'btf_dump_bitfield_get_data':
-btf_dump.c:1576:18: error: '__int128' is not supported on this target
- 1576 |         unsigned __int128 num = 0, ret;
-      |                  ^~~~~~~~
-btf_dump.c: In function 'btf_dump_bitfield_check_zero':
-btf_dump.c:1608:9: error: expected expression before '__int128'
- 1608 |         __int128 check_num;
-      |         ^~~~~~~~
-btf_dump.c:1610:9: error: 'check_num' undeclared (first use in this function)
- 1610 |         check_num = btf_dump_bitfield_get_data(d, t, data,
-bits_offset, bit_sz);
-      |         ^~~~~~~~~
-btf_dump.c: In function 'btf_dump_bitfield_data':
-btf_dump.c:1622:18: error: '__int128' is not supported on this target
- 1622 |         unsigned __int128 print_num;
-      |                  ^~~~~~~~
-btf_dump.c: In function 'btf_dump_dump_type_data':
-btf_dump.c:2212:34: error: '__int128' is not supported on this target
- 2212 |                         unsigned __int128 print_num;
-      |                                  ^~~~~~~~
-
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-reference build link,
-build: https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/
-config: https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/config
-
-
-steps to reproduce:
----------------------
-# TuxMake is a command line tool and Python library that provides
-# portable and repeatable Linux kernel builds across a variety of
-# architectures, toolchains, kernel configurations, and make targets.
-#
-# TuxMake supports the concept of runtimes.
-# See https://docs.tuxmake.org/runtimes/, for that to work it requires
-# that you install podman or docker on your system.
-#
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-#
-# See https://docs.tuxmake.org/ for complete documentation.
-
-
-tuxmake --runtime podman --target-arch arm --toolchain gcc-11
---kconfig defconfig --kconfig-add
-https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/config
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
