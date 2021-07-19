@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8702F3CD898
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 781763CD85A
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243113AbhGSOXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 10:23:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241566AbhGSOWI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 10:22:08 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B22C05BD1A
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 07:28:41 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id h9so8523592qvs.0
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 07:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=+9GFum/mFOitwscfjXz8xXiXJXMzkYnexsQBf4EY0Ro=;
-        b=qSVZdGppIvc99jW5VH+y8V6Se96a89ztZSNsabEdY2Wh1DDqRlVKTrKzUzIXhT+BvM
-         coPvOsOFuFR6A4I1ltdPtdQ8hk/ZAGfDoKZz255ocFBAFNot8nsiwB/AZ2qX5ayQozGt
-         iiK4AXgaetv3QVTlDIHlyktStUqBsrkrSLTIdhnSNMusKd4St3R+ZGTCpQcohbY0/JHd
-         BMr6wihNgVlqEWNdZV6GcIIeJZJ6uBaVdVjpUZZ2NZCMwe5bTvKW6z8t/qFqTLvwU1zc
-         rC3C2ePxJsefQsWAHZav2GGOdPk6n2eNOcWX7LjtAOcRQj/INOxFuAPbXNSWm3vM+Dly
-         JAHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=+9GFum/mFOitwscfjXz8xXiXJXMzkYnexsQBf4EY0Ro=;
-        b=QTo9zIrpCv4Nk8kFE4uJi6B+6pdmwgxXn9U92wQnapPTnipAhyA9UjojRUXKHBJEkH
-         zoDac030OuUahGWlICacAMhczzbUhR9mVlt8Ghy/m9Nib5n3iHyTInt/bx9To7I7e5jU
-         Ivewlrom0a+++iFHdW8YHCAb8WuvWWz06GqwmX9AsELupptS0FlvEsKny52+r7JU31Tx
-         dq2Swp3/YeHPPfee0NGNbXiXXDqhpJg1Leu6w/PA+m90gU7vkLFfI6bRGxmJHc51+eIU
-         gVzvtc5jPCvaYbzE/IcHAkiHuitJqDkgGajHNfcilID6A+YJ9BO5233LOz8A2GpREyOu
-         M/gQ==
-X-Gm-Message-State: AOAM531XKylYQ4IUuGtMjJEPOvAgLRrtqnSAO51qG1xBewXW30/5RuXe
-        HTdQvc8C5zriY81NIx6jpMP81DfPjCYBpopS0NA=
-X-Google-Smtp-Source: ABdhPJz8SqQhoEHJUiy9CQ04MJTRVkMghp33oPyngm9n1TcNmi+MTLlA9d3YugYlKOawHWf3d/M7ARsHJqWchP6nLAY=
-X-Received: by 2002:a05:6214:ac1:: with SMTP id g1mr25800977qvi.51.1626706785910;
- Mon, 19 Jul 2021 07:59:45 -0700 (PDT)
+        id S242070AbhGSOVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 10:21:51 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33932 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242706AbhGSOUf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 10:20:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kAaOYJ4WkAH+VU3g6V5deZBG0j2OSTdbwTHDQarLo/0=; b=qCNYPgSt4w9NG/eazm3PjtEnHn
+        1VCeMWdqK/F4cAF/xCRs+yIf5Y7KBU5RqGXoFVmJJgDvReOaEVqPvEUcdfD4jPXOFEtG5Y8mmjXwP
+        SIwpkFZh8U2BHys+owukwcAaOVa4IxTproR9MCma4E6z87EFHzPKQQQfQVCbchZgT4hE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m5Ulb-00DuVB-HO; Mon, 19 Jul 2021 17:01:11 +0200
+Date:   Mon, 19 Jul 2021 17:01:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ruud Bos <ruud.bos@hbkworld.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next 0/4 resend] igb: support PEROUT and EXTTS PTP
+ pin functions on 82580/i354/i350
+Message-ID: <YPWTt8h1HFfMbMuh@lunn.ch>
+References: <AM0PR09MB42765A3A3BCB3852A26E6F0EF0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
+ <YPWMHagXlVCgpYqN@lunn.ch>
+ <AM0PR09MB42766646ADEF80E5C54D7EA8F0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:ac8:5c42:0:0:0:0:0 with HTTP; Mon, 19 Jul 2021 07:59:45
- -0700 (PDT)
-Reply-To: rose.william.rw1442@gmail.com
-From:   Leo Smith <comeonessotina@gmail.com>
-Date:   Mon, 19 Jul 2021 02:59:45 -1200
-Message-ID: <CAN1DmZEm32nEo=4oyk4pvS5iwrOJjFXcXzS1n4N5iowrA4rOgA@mail.gmail.com>
-Subject: ATM CARD
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM0PR09MB42766646ADEF80E5C54D7EA8F0E19@AM0PR09MB4276.eurprd09.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Estimado amigo,
-Buen d=C3=ADa mi querido amigo, =C2=BFc=C3=B3mo est=C3=A1s?
-El tiempo mas largo. Me complace informarle sobre mi =C3=A9xito en la
-transferencia de esos fondos de herencia con la cooperaci=C3=B3n de un nuev=
-o
-socio de Argentina. Actualmente estoy en INDIA para proyectos de
-inversi=C3=B3n con mi propia parte de la suma total. Mientras tanto, no
-olvid=C3=A9 sus esfuerzos e  intentos anteriores de ayudarme a transferir
-esos fondos de herencia a pesar de que de alguna manera nos fallaron.
-Ahora comun=C3=ADquese con mi secretaria en LOME Togo, =C3=81frica occident=
-al,
-su nombre es MRS ROSE WILLIAM  en su direcci=C3=B3n de correo electr=C3=B3n=
-ico
-(rose.william.rw1442@gmail.com)  p=C3=ADdale que le env=C3=ADe el total de
-($500,000), quinientos mil d=C3=B3lares estadounidenses que Me qued=C3=A9 p=
-ara
-su compensaci=C3=B3n por todos los esfuerzos e intentos anteriores de
-ayudarme en la transacci=C3=B3n. Apreci=C3=A9 mucho sus esfuerzos en ese
-momento. As=C3=AD que si=C3=A9ntase libre de contactar a mi secretaria MRS =
-ROSE
-WILLIAM e indicarle d=C3=B3nde enviarle la TARJETA ATM de la  suma total
-($500,000.00). Por favor, av=C3=ADseme de inmediato que lo recibe  para que
-podamos compartir la alegr=C3=ADa despu=C3=A9s de todo el sufrimiento en es=
-e
-momento. En este momento, estoy muy ocupado aqu=C3=AD debido a los
-proyectos de inversi=C3=B3n que estoy teniendo con mi nuevo socio en la
-mano, finalmente recuerde que le envi=C3=A9 instrucciones a mi secretaria
-en su nombre para recibir esa TARJETA ATM de ($ 500,000.00) as=C3=AD que
-sienta libre de ponerse en contacto con MRS ROSE WILLIAM, ella le
-enviar=C3=A1 el monto sin demora.
+On Mon, Jul 19, 2021 at 02:45:06PM +0000, Ruud Bos wrote:
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Sent: Monday, July 19, 2021 16:29
+> > To: Ruud Bos <ruud.bos@hbkworld.com>
+> > Cc: netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org;
+> > jesse.brandeburg@intel.com; anthony.l.nguyen@intel.com; Richard Cochran
+> > <richardcochran@gmail.com>
+> > Subject: Re: [PATCH net-next 0/4 resend] igb: support PEROUT and EXTTS
+> > PTP pin functions on 82580/i354/i350
+> >
+> > On Mon, Jul 19, 2021 at 11:33:11AM +0000, Ruud Bos wrote:
+> > > The igb driver provides support for PEROUT and EXTTS pin functions that
+> > > allow adapter external use of timing signals. At Hottinger Bruel & Kjaer we
+> > > are using the PEROUT function to feed a PTP corrected 1pps signal into an
+> > > FPGA as cross system synchronized time source.
+> >
+> > Please always Cc: The PTP maintainer for PTP patches.
+> > Richard Cochran <richardcochran@gmail.com>
+> 
+> Thanks, will do that!
+> Do I need to resend again?
 
+It is probably a good idea to resend. It will make it easier for
+Richard if the patches are in his mailbox.
 
+> This is my first ever contribution, so it's all kinda new to me,
+> sorry :-)
 
-Atentamente,
+Cc: Richard is not so obvious as it should be, since
+./scripts/get_maintainers.pl would not of suggested it, since you are
+not modify the PTP core. It takes a bit of experience to know this.
 
-Sr. Leo Smith.
+This is the second time something like this has happened recently for
+Intel Ethernet drivers. The other case was making use of the LED
+subsystem from within an Ethernet driver, and the LED subsystem
+maintainers were not Cc:. It would be good if the Intel Maintainers
+actually took notice of this, they have the experience to know better.
+
+I noticed your patches are not threaded. Did you use git send-email?
+It normally does thread a patchset. The threading keeps the patchset
+together, which can be important for some of the bots which scoop up
+patches in emails and run tests on them. Please see if you can fix
+that in the resend.
+
+     Andrew
