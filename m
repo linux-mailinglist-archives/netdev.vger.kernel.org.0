@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B303CCC66
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E60D33CCC68
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:52:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233988AbhGSCyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 22:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
+        id S234171AbhGSCzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Jul 2021 22:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbhGSCyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:54:10 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D24DC061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:51:10 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id a132so8299707oib.6
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:51:10 -0700 (PDT)
+        with ESMTP id S233807AbhGSCzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:55:40 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5666CC061762
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:52:40 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id h9so19144793oih.4
+        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:52:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=v2eXKPHVpTGWQBn4atDle/vMS0emj77aI3df3rtNZnA=;
-        b=fb9/VEayTTjcPHY/YFefn3hXmbwkIW7AbJUab6yCFZL1ELWRkBfvzk1rHQAWNiMMRH
-         rDMV2vEkTSEjRy14RE75QHsO0PV6f6S0S/FMeJeK/qxXk7uExR85nRLGqUYVNY2W8frk
-         RdAiFtPjHlFWxfloLKHKf2RjXweu5vZoJ+yJ15XpIFw1nt5WqwVMjHVoDVz4HB5gqe2J
-         O5ygDDW0AdSbVqwSxRyESQRVuYRn173FLlZdL1D9y7eQ3xwoMTMmtpOPd/BOzBgilkMz
-         RUc4q0Y0Og4xC1z2e8dxRnIAubc80858XFsNHN9aYTn0PuJhrVdnTL/HUS1ZHsaFBr3e
-         +HSQ==
+        bh=WxKnE9VVIhW03+cH+9p6iQL7PxKsWgSsEqoZEEkW4H4=;
+        b=FyBb6p+QwCom/Q45S/ycAcWLSxcczSHOGV3NQ1SizOB/wz6L44mjjsBfgTe1NIDILv
+         Qs1wH0vYjb1g3PRufdBmip9lE9noEHSg95/B5nxgb4jdkH5N4+mudsjGP+SAXvQF6de1
+         1RyBWkB5a+Mi/n3xN3Ag+v3xFMtVXyTFyQVgw29UfZNdv44uRtXA3aTRzBRwOnJ/Bb2j
+         nd/hyOrKvVfb0iK997TxuLglVS1/Nf1PXLFrZZvvtkrDW9qSwNUxM6IECsipDleqsaOl
+         ZLh7k9Nlov1kvpO2yyf1tOeicqrNkF9FD4cdlH/Cz49w/UXmjnwuZGzsnfbYkZxwh5SW
+         CD2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=v2eXKPHVpTGWQBn4atDle/vMS0emj77aI3df3rtNZnA=;
-        b=ffE9qylZtWJCGkJ6zFwMaTdbrCyMTkWxdDNvwjbhP8434uYI1d1Ox8g85BZQ5pIV0Y
-         KluU8rogUuZiG2GrexfhbgqvP5Jb43MvCVnx3/B+j2E28+ODVrexKiJYOu1KzXb0ADzn
-         hEn34zhwc96iCn/mrzb4Q2gy5EcSSSWlsibhdsjWKpRsxTlOKHsju9Nb92vdd9LvCyrn
-         35vg500IVoWS13CqZV2LC6U7qmk1PThQNwHL7g/NopT82rEm7lJsP1ePQq9n+hIC9Q+K
-         Sbqd3IzfXd9kUWznFSg98fmlV0ZQBPeDKgCLLMOBOW7B+kvesPDnN5owrQymzgYasvE1
-         24Xg==
-X-Gm-Message-State: AOAM532LN+X+IaBSBPnThNxo/Cm0xog86pQWW9fbZZgwKE7nESExJgYY
-        WCHZb57sU4xHspl6gOd3KG8=
-X-Google-Smtp-Source: ABdhPJzbVGILTYmD50dPpViVa5gdKnY8iO74vYhfJT6Xq8hJuKne+ZniqLCFuI5CkL1eIikVp7ZW3w==
-X-Received: by 2002:aca:f58e:: with SMTP id t136mr20382103oih.33.1626663069822;
-        Sun, 18 Jul 2021 19:51:09 -0700 (PDT)
+        bh=WxKnE9VVIhW03+cH+9p6iQL7PxKsWgSsEqoZEEkW4H4=;
+        b=bkmSFfSqb9KWU8Il/f6GUBGjGIV3c0XBZNwovpZ/Lu/ivenN5xd4i6IfD6wMmS7F8l
+         H/BokGkHI/yKVreonFMNDk0Mucmo+uHL2b5gYdm/Ay58cV170TdlTybk6MfvsoQG30uK
+         vOP4Uh+PjBgtN9nr19N5NQIXfsz8nECG87r1dxgq5pUNksu+vRw/+R3jHgPliE8bFSYz
+         zy6oJ9FAkr32Qg4iR3r3HkgT6pT0PqBZAzgnzAVgWTbGk6TNty2RI3f85zj5BorAPSna
+         Kpg5yx+y9iJFogXW7Y6DOofGBzjvXl9Rr6GdY2SdoBDRO0X5vg/ih05bc+wU4qOPQ9rz
+         +vHA==
+X-Gm-Message-State: AOAM532QBpOv+3LcbJGzNkMnqvEMnNerQMgIfW/L6WLRjnCPdWCHqGLG
+        FJ4ztsZaXfbl0Bs2GkAP+ZE=
+X-Google-Smtp-Source: ABdhPJx7n4EoVKcq+Sr9OjRUaJ8kvnBup9qs52qthhp3/k9g8n/JUv6MZQj1ukIFMDFqW+Pa7De7gA==
+X-Received: by 2002:a05:6808:1494:: with SMTP id e20mr4291116oiw.111.1626663159708;
+        Sun, 18 Jul 2021 19:52:39 -0700 (PDT)
 Received: from ?IPv6:2600:1700:dfe0:49f0:49e1:751f:b992:b4f3? ([2600:1700:dfe0:49f0:49e1:751f:b992:b4f3])
-        by smtp.gmail.com with ESMTPSA id i16sm3379124otp.7.2021.07.18.19.51.07
+        by smtp.gmail.com with ESMTPSA id o101sm3383766ota.61.2021.07.18.19.52.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jul 2021 19:51:09 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 13/15] net: dsa: add support for bridge TX
- forwarding offload
+        Sun, 18 Jul 2021 19:52:39 -0700 (PDT)
+Subject: Re: [PATCH v4 net-next 14/15] net: dsa: mv88e6xxx: map virtual
+ bridges with forwarding offload in the PVT
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -66,14 +66,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>
 References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
- <20210718214434.3938850-14-vladimir.oltean@nxp.com>
+ <20210718214434.3938850-15-vladimir.oltean@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <f6918f62-0482-f89a-61c6-c4d8071192a8@gmail.com>
-Date:   Sun, 18 Jul 2021 19:51:08 -0700
+Message-ID: <5915e957-8a22-54d4-fb56-aa080f21fce9@gmail.com>
+Date:   Sun, 18 Jul 2021 19:52:38 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210718214434.3938850-14-vladimir.oltean@nxp.com>
+In-Reply-To: <20210718214434.3938850-15-vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -84,47 +84,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 7/18/2021 2:44 PM, Vladimir Oltean wrote:
-> For a DSA switch, to offload the forwarding process of a bridge device
-> means to send the packets coming from the software bridge as data plane
-> packets. This is contrary to everything that DSA has done so far,
-> because the current taggers only know to send control packets (ones that
-> target a specific destination port), whereas data plane packets are
-> supposed to be forwarded according to the FDB lookup, much like packets
-> ingressing on any regular ingress port. If the FDB lookup process
-> returns multiple destination ports (flooding, multicast), then
-> replication is also handled by the switch hardware - the bridge only
-> sends a single packet and avoids the skb_clone().
+> The mv88e6xxx switches have the ability to receive FORWARD (data plane)
+> frames from the CPU port and route them according to the FDB. We can use
+> this to offload the forwarding process of packets sent by the software
+> bridge.
 > 
-> DSA plays a substantial role in backing the forwarding offload, and
-> leaves relatively few things up to the switch driver. In particular, DSA
-> keeps for each bridge port a zero-based index (the number of the
-> bridge). Multiple ports enslaved to the same bridge have a pointer to
-> the same accel_priv structure.
+> Because DSA supports bridge domain isolation between user ports, just
+> sending FORWARD frames is not enough, as they might leak the intended
+> broadcast domain of the bridge on behalf of which the packets are sent.
 > 
-> The tagger can check if the packet that is being transmitted on has
-> skb->offload_fwd_mark = true or not. If it does, it can be sure that the
-> packet belongs to the data plane of a bridge, further information about
-> which can be obtained based on dp->bridge_dev and dp->bridge_num.
-> It can then compose a DSA tag for injecting a data plane packet into
-> that bridge number.
+> It should be noted that FORWARD frames are also (and typically) used to
+> forward data plane packets on DSA links in cross-chip topologies. The
+> FORWARD frame header contains the source port and switch ID, and
+> switches receiving this frame header forward the packet according to
+> their cross-chip port-based VLAN table (PVT).
 > 
-> For the switch driver side, we offer two new dsa_switch_ops methods,
-> called .port_bridge_fwd_offload_{add,del}, which are modeled after
-> .port_bridge_{join,leave}.
-> These methods are provided in case the driver needs to configure the
-> hardware to treat packets coming from that bridge software interface as
-> data plane packets. The switchdev <-> bridge interaction happens during
-> the netdev_master_upper_dev_link() call, so to switch drivers, the
-> effect is that the .port_bridge_fwd_offload_add() method is called
-> immediately after .port_bridge_join().
+> To address the bridging domain isolation in the context of offloading
+> the forwarding on TX, the idea is that we can reuse the parts of the PVT
+> that don't have any physical switch mapped to them, one entry for each
+> software bridge. The switches will therefore think that behind their
+> upstream port lie many switches, all in fact backed up by software
+> bridges through tag_dsa.c, which constructs FORWARD packets with the
+> right switch ID corresponding to each bridge.
 > 
-> If the bridge number exceeds the number of bridges for which the switch
-> driver can offload the TX data plane (and this includes the case where
-> the driver can offload none), DSA falls back to simply returning
-> tx_fwd_offload = false in the switchdev_bridge_port_offload() call.
+> The mapping we use is absolutely trivial: DSA gives us a unique bridge
+> number, and we add the number of the physical switches in the DSA switch
+> tree to that, to obtain a unique virtual bridge device number to use in
+> the PVT.
 > 
+> Co-developed-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
