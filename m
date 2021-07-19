@@ -2,116 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6717B3CD0D1
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F593CD00D
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 11:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235789AbhGSIsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 04:48:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53358 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234868AbhGSIso (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 04:48:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D24D60240;
-        Mon, 19 Jul 2021 08:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626682422;
-        bh=0TE5z1JwXY+ttzhYw+dqHxv31KAXFHmt/AZXZQRPKEk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oWbFMB5aDV3OXGYjtcSxVa7L7v6T+xq91Sy/9s0bYFGq0eORYxBMSV/Kqkx7AbvFO
-         lrxlaP6M3LHNnmc+J1FFxh8jrqdEtrRcywtw0sOgZk6fwjW3tdYjhwZ+V4dipbXtbe
-         nUZoSI6rI3WKqQLtNIMZqbfrPAbuwAkjEp4jZpMLn+b1nOggU4zCWAblcaFs6+d6+k
-         p9Nk7EgpoCfveNsBAgEFO+GWHe5u9vMcHimhKwhzIqINvHluzEKV7S62kpPA4lQPrs
-         xNqEB/4kM/owBHg8WHnJOFtzEjjJ6xg/f2rWaz0ogQ8aycQm2Aw4yOH5m8LBp3RHOK
-         VC6hh9Ebms8Fw==
-Received: by pali.im (Postfix)
-        id E64CEADB; Mon, 19 Jul 2021 10:13:39 +0200 (CEST)
-Date:   Mon, 19 Jul 2021 10:13:39 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Oliver O'Halloran <oohall@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        Aaron Ma <aaron.ma@canonical.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
-Message-ID: <20210719081339.52inudhug3rgpbed@pali>
-References: <CAOSf1CGVpogQGAatuY_N0db6OL2BFegGtj6VTLA9KFz0TqYBQg@mail.gmail.com>
- <20210708154550.GA1019947@bjorn-Precision-5520>
- <CAOSf1CHtHLyEHC58jwemZS6j=jAU2OrrYitkUYmdisJtuFu4dw@mail.gmail.com>
- <20210718225059.hd3od4k4on3aopcu@pali>
- <CAOSf1CHOrUBfibO0t6Zr2=SZ7GjLTiAzfoKBeZL8RXdcC+Ou3A@mail.gmail.com>
+        id S235807AbhGSI0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 04:26:25 -0400
+Received: from mxout70.expurgate.net ([194.37.255.70]:33291 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234992AbhGSI0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 04:26:24 -0400
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m5OPm-0006CO-Ap; Mon, 19 Jul 2021 10:14:14 +0200
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1m5OPj-0001dO-Ty; Mon, 19 Jul 2021 10:14:11 +0200
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 35A24240041;
+        Mon, 19 Jul 2021 10:14:11 +0200 (CEST)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 873DA240040;
+        Mon, 19 Jul 2021 10:14:10 +0200 (CEST)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id D566F20176;
+        Mon, 19 Jul 2021 10:14:09 +0200 (CEST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOSf1CHOrUBfibO0t6Zr2=SZ7GjLTiAzfoKBeZL8RXdcC+Ou3A@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 19 Jul 2021 10:14:09 +0200
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Hauke Mehrtens <hauke@hauke-m.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+Organization: TDT AG
+In-Reply-To: <9fa0ce38-d3b5-a60e-cfc4-7799b832065f@hauke-m.de>
+References: <20210709164216.18561-1-ms@dev.tdt.de>
+ <CAFBinCCw9+oCV==1DrNFU6Lu02h3OyZu9wM=78RKGMCZU6ObEA@mail.gmail.com>
+ <fcb3203ea82d1180a6e471f22e39e817@dev.tdt.de> <YO2P8J4Ln+RwxkfO@lunn.ch>
+ <9fa0ce38-d3b5-a60e-cfc4-7799b832065f@hauke-m.de>
+Message-ID: <42d639692238c4c89fdbca1e0b2b27cd@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-ID: 151534::1626682452-000007D5-24CB71FF/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday 19 July 2021 12:49:18 Oliver O'Halloran wrote:
-> On Mon, Jul 19, 2021 at 8:51 AM Pali Rohár <pali@kernel.org> wrote:
-> >
-> > And do we have some solution for this kind of issue? There are more PCIe
-> > controllers / platforms which do not like MMIO read/write operation when
-> > card / link is not connected.
+On 2021-07-17 18:38, Hauke Mehrtens wrote:
+> On 7/13/21 3:06 PM, Andrew Lunn wrote:
+>>>> [...]
+>>>>> +#if IS_ENABLED(CONFIG_OF_MDIO)
+>>>> is there any particular reason why we need to guard this with
+>>>> CONFIG_OF_MDIO?
+>>>> The dp83822 driver does not use this #if either (as far as I
+>>>> understand at least)
+>>>> 
+>>> 
+>>> It makes no sense to retrieve properties from the device tree if we 
+>>> are
+>>> compiling for a target that does not support a device tree.
+>>> At least that is my understanding of this condition.
+>> 
+>> There should be stubs for all these functions, so if OF is not part of
+>> the configured kernel, stub functions take their place. That has the
+>> advantage of at least compiling the code, so checking parameter types
+>> etc. We try to avoid #ifdef where possible, so we get better compiler
+>> build test coverage. The more #ifef there are, the more different
+>> configurations that need compiling in order to get build coverage.
+>> 
+>> 	       Andrew
+>> 
 > 
-> Do you have some actual examples? The few times I've seen those
-> crashes were due to broken firmware-first error handling. The AER
-> notifications would be escalated into some kind of ACPI error which
-> the kernel didn't have a good way of dealing with so it panicked
-> instead.
-
-I have experience and examples with pci aardvark controller. When card
-is disconnected it sends synchronous abort to CPU when doing MMIO read
-operation. One example is in this linux-usb thread:
-
-https://lore.kernel.org/linux-usb/20210505120117.4wpmo6fhvzznf3wv@pali/t/#u
-
-I can trigger this issue at least for xhci, nvme and ath drivers.
-
-> Assuming it is a real problem then as Bjorn pointed out this sort of
-> hack doesn't really fix the issue because hotplug and AER
-> notifications are fundamentally asynchronous.
-
-In case of pci aardvark it is not AER notification. And for MMIO read it
-is synchronous abort.
-
-Anyway, hotplug events are really asynchronous, but there is main issue
-that this hotplug disconnect event instruct device driver to "unbind"
-and e.g. these ethernet or usb controllers try to do MMIO operations in
-their cleanup / remove / unbind phase, even when card is already
-"disconnected" in PCI subsystem.
-
-> If the driver is
-> actively using the device when the error / removal happens then the
-> pci_dev_is_disconnected() check will pass and the MMIO will go
-> through. If the MMIO is poisonous because of dumb hardware then this
-> sort of hack will only paper over the issue.
+> The phy_get_internal_delay() function does not have a stub function
+> directly, but it calls phy_get_int_delay_property() which has a stub,
+> if CONFIG_OF_MDIO is not set, see:
+> https://elixir.bootlin.com/linux/v5.14-rc1/source/drivers/net/phy/phy_device.c#L2797
 > 
-> > If we do not provide a way how to solve these problems then we can
-> > expect that people would just hack ethernet / wifi / ... device drivers
-> > which are currently crashing by patches like in this thread.
-> >
-> > Maybe PCI subsystem could provide wrapper function which implements
-> > above pattern and which can be used by device drivers?
+> The extra ifdef in the PHY driver only saves some code in the HY
+> driver, but it should still work as before on systems without
+> CONFIG_OF_MDIO.
 > 
-> We could do that and I think there was a proposal to add some
-> pci_readl(pdev, <addr>) style wrappers at one point. On powerpc
-> there's hooks in the arch provided MMIO functions to detect error
-> responses and kick off the error handling machinery when a problem is
-> detected. Those hooks are mainly there to help the platform detect
-> errors though and they don't make life much easier for drivers. Due to
-> locking concerns the driver's .error_detected() callback cannot be
-> called in the MMIO hook so even when the platform detects errors
-> synchronously the driver notifications must happen asynchronously. In
-> the meanwhile the driver still needs to handle the 0xFFs response
-> safely and there's not much we can do from the platform side to help
-> there.
+> I would also prefer to remove the ifdef from the intel-xway phy driver.
 > 
-> Oliver
+> Hauke
+
+OK, so I'll remove the ifdef from the driver.
+
