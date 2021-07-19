@@ -2,113 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D87E73CEDBD
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 22:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44EF93CEDCD
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 22:31:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386803AbhGSTjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 15:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S1386893AbhGSTmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 15:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383393AbhGSRyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 13:54:09 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965EDC0610D3
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 11:17:19 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4GT9QG39sGzQjq4;
-        Mon, 19 Jul 2021 20:30:46 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
-        t=1626719444;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sqMZx5PQPg6jhJwxacmvzn6kPQtSbFJHzI0JlT2/niY=;
-        b=HylS2G7pXLPuKzt1p9mSQ4KcsTkkLEpjUUW02o2tp4mR0NUD/n+kS4qzacefR+HZeiBv9E
-        OLsgNPXaJ9nCaZsnQoBdcdDCUyMKZ3ai66Bst/AhS1CmLl3I2J6j6HW4Rv55Rj3VjytMkI
-        TVNPoTfZ7W7bXqJZiZ2+Yfw0fs7U8XIcpdawZzE5wF8ChRSUR9e56/VWnP76prLmGzK2VZ
-        iLGAUYln1GNHXZjDRMvxYPnBJ+ad0eWVENB/ZnxBlYjUlcl4FY5Pq51Jvt68RNJj8n82Vr
-        fwok+xF+Fv/LAUppaXjQAOXlUOpP1agzFwuD2mkH8j9rINKt7GDcOjxhI9tRfw==
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id dVaRocw7w0L1; Mon, 19 Jul 2021 20:30:43 +0200 (CEST)
-Subject: Re: [PATCH v6 1/2] net: phy: add API to read 802.3-c45 IDs
-To:     Xu Liang <lxu@maxlinear.com>, andrew@lunn.ch, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        vee.khee.wong@linux.intel.com
-Cc:     linux@armlinux.org.uk, hmehrtens@maxlinear.com,
-        tmohren@maxlinear.com, mohammad.athari.ismail@intel.com
-References: <20210719053212.11244-1-lxu@maxlinear.com>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Message-ID: <560828fa-928a-7253-d875-7a137257445c@hauke-m.de>
-Date:   Mon, 19 Jul 2021 20:30:41 +0200
+        with ESMTP id S1384296AbhGSS10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 14:27:26 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE8AC0613DB;
+        Mon, 19 Jul 2021 11:57:41 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id p14-20020a17090ad30eb02901731c776526so142826pju.4;
+        Mon, 19 Jul 2021 12:08:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YtTiAwHF5vIY0ChH0MGNNiiSvFI3fYT0+jWxvH0yTvw=;
+        b=Z2K3wl6UcSwBX5kgUs9MOGevKI7SmlEzt+VNI0P4R3v6pwL936ujLnJN6p4E7SZzIm
+         rvHEjenJWcRVGbKoV6ERxH42EYHl7q3Lf57Py7CSFXfqlOi4T1Lk4O00a6jeBUbV5NSw
+         YfqgDa08u3PzarHVpPI1BlY2LJVDMv9AzNInkbibrK62xsM8Pf523ReMRImAb8hWmcX7
+         N46eRsjDJP3d0g0Zn155zyTCK/WIH7kh8xStYWKntiXxNkIkosDiFHpBgB3QXY0eUpN7
+         Ias99RO5RSaHN+tRRcxnTEeW1CwNYwNrHOr32cntR0bNP45IDA5woPzDGjuUSJkPz+Ov
+         AI0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YtTiAwHF5vIY0ChH0MGNNiiSvFI3fYT0+jWxvH0yTvw=;
+        b=bZF2sIzCgXDMgXtuAplbcwgrcA0YgAOvaeiCPvLgyO0/JeOSraEBmRHsNVXbaXj69y
+         7Cn3LBj4hkrBqh5UGFGw3udlvqXzVtLDxsc2EXLSwIDCxnhrrV8aVYnKsw6fq5/KABST
+         aGOvkVDOcSA2PTY8nQlk9O8+ZjxBrseM2aIj3TJza4e1Utah2wKUdkaeqXnZVI+q39W4
+         w/6mNUkl1LHnhtVImRp1Y44VNZAFvaIF3MnUM8gz92n2RocCspNqbhQsSFxsTkK8g1lo
+         zgUEIVlpUu3SVhJC0cfnz4ufpW4Hp9NvhdIyZk0doDOvu110uUUXr6Xm1XhYskDUPf3R
+         4TnQ==
+X-Gm-Message-State: AOAM533gBWqYLIe+pgeVjQxiKDB/hDk74LS5TuGqIgrMXLlFFP6hqpKH
+        V2z8mfadfaOq3ZSBuIz4OyIHQ649Yo49Ag==
+X-Google-Smtp-Source: ABdhPJwXwngD/gR/VFbyDXrcCqOXfrfxj5Z7UlprUQ8BagN95RsWB3j5W0DO9dYNxH/QZUXlQlNtyg==
+X-Received: by 2002:a17:90b:338d:: with SMTP id ke13mr31762321pjb.151.1626721684950;
+        Mon, 19 Jul 2021 12:08:04 -0700 (PDT)
+Received: from [10.67.49.104] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id n5sm20878290pfv.29.2021.07.19.12.08.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Jul 2021 12:08:04 -0700 (PDT)
+Subject: Re: [PATCH net] mt7530 mt7530_fdb_write only set ivl bit vid larger
+ than 1
+To:     ericwouds@gmail.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20210719182359.5262-1-ericwouds@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <685001c0-2dfb-686a-126e-d6b2854d372d@gmail.com>
+Date:   Mon, 19 Jul 2021 12:08:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210719053212.11244-1-lxu@maxlinear.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <20210719182359.5262-1-ericwouds@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 8743018B6
-X-Rspamd-UID: 631439
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/19/21 7:32 AM, Xu Liang wrote:
-> Add API to read 802.3-c45 IDs so that C22/C45 mixed device can use
-> C45 APIs without failing ID checks.
+On 7/19/21 11:23 AM, ericwouds@gmail.com wrote:
+> From: Eric Woudstra <ericwouds@gmail.com>
 > 
-> Signed-off-by: Xu Liang <lxu@maxlinear.com>
+> Fixes my earlier patch which broke vlan unaware bridges.
+> 
+> The IVL bit now only gets set for vid's larger than 1.
+> 
+> Fixes: 11d8d98cbeef ("mt7530 fix mt7530_fdb_write vid missing ivl bit")
+> Signed-off-by: Eric Woudstra <ericwouds@gmail.com>
 
-Acked-by: Hauke Mehrtens <hmehrtens@maxlinear.com>
-
-> ---
-> v5 changes:
->   Fix incorrect prototype name in comment.
-> 
->   drivers/net/phy/phy_device.c | 14 ++++++++++++++
->   include/linux/phy.h          |  1 +
->   2 files changed, 15 insertions(+)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 5d5f9a9ee768..107aa6d7bc6b 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -968,6 +968,20 @@ void phy_device_remove(struct phy_device *phydev)
->   }
->   EXPORT_SYMBOL(phy_device_remove);
->   
-> +/**
-> + * phy_get_c45_ids - Read 802.3-c45 IDs for phy device.
-> + * @phydev: phy_device structure to read 802.3-c45 IDs
-> + *
-> + * Returns zero on success, %-EIO on bus access error, or %-ENODEV if
-> + * the "devices in package" is invalid.
-> + */
-> +int phy_get_c45_ids(struct phy_device *phydev)
-> +{
-> +	return get_phy_c45_ids(phydev->mdio.bus, phydev->mdio.addr,
-> +			       &phydev->c45_ids);
-> +}
-> +EXPORT_SYMBOL(phy_get_c45_ids);
-> +
->   /**
->    * phy_find_first - finds the first PHY device on the bus
->    * @bus: the target MII bus
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 3b80dc3ed68b..736e1d1a47c4 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -1431,6 +1431,7 @@ static inline int phy_device_register(struct phy_device *phy)
->   static inline void phy_device_free(struct phy_device *phydev) { }
->   #endif /* CONFIG_PHYLIB */
->   void phy_device_remove(struct phy_device *phydev);
-> +int phy_get_c45_ids(struct phy_device *phydev);
->   int phy_init_hw(struct phy_device *phydev);
->   int phy_suspend(struct phy_device *phydev);
->   int phy_resume(struct phy_device *phydev);
-> 
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
