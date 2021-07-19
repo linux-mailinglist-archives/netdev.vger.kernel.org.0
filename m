@@ -2,85 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EC013CD286
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 12:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B015A3CD2BD
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 12:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236578AbhGSKEV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 06:04:21 -0400
-Received: from relay.sw.ru ([185.231.240.75]:44630 "EHLO relay.sw.ru"
+        id S236673AbhGSKIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 06:08:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236507AbhGSKES (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 06:04:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=UZrH4BVKP7hsH0Ef9AbThzsAu5M7Nu3PE7kKwMt/YWY=; b=XHVkIpI92bVaY20EHc5
-        GtWFwWzv6wl4oufrCaN5OCs1l6PwTbHZydRscCdAV8vZ9BpzdZnbzPstQYpTOMnvEtgB+zqcMpbO7
-        mopc2HiC1RqmEa2odgR7qj8iBG0JI03+3LIvcSyIkwfDCJlZuB5Xl+2BZMDK4aNvZOzfYPf4gOA=;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m5Qld-004ReZ-88; Mon, 19 Jul 2021 13:44:57 +0300
-From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v5 06/16] memcg: enable accounting for scm_fp_list objects
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     cgroups@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <guro@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <CALvZod66KF-8xKB1dyY2twizDE=svE8iXT_nqvsrfWg1a92f4A@mail.gmail.com>
- <cover.1626688654.git.vvs@virtuozzo.com>
-Message-ID: <4fe78621-16a8-ebd9-d7f5-f13c52eb36ff@virtuozzo.com>
-Date:   Mon, 19 Jul 2021 13:44:56 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S236588AbhGSKH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 06:07:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D3BD460FF4;
+        Mon, 19 Jul 2021 10:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626691719;
+        bh=x3sZ6QziQFQPBoDXFlrxzz/Xw1YdKNKJ1dEfsJ5U9Ks=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ofS4LFKVQCiq4PmWj9sATGQpAMPLVg8AXo/1S0/5N5ZLUYlqzT9WdpgY5uM6XmeXg
+         tlG1LVugELHTm8WvKL+fiv6X6TWrwY+AqzOBQ8hHuMlwFPkm4zBzSbX0Z02tDqJv0r
+         OR0pdXsFD5YoQhNgFIhTZnd9z4iatdW41KnENeyxh+QqmIifxzjzJtoXGsxStxekpa
+         PWG+TLb7zco+Ms33rdkBWuuXauBFwFwC1vTb9LPZqkqepjwY9D4QNV3D+tHhkHn78i
+         nYXPXbQZ0x01203vLQeBzZFUKvVgWDiGUjWMgER+5UvuDeXgV4mRg/u3yQ8hAubx76
+         TcxxH7iiwdkiw==
+Date:   Mon, 19 Jul 2021 12:48:29 +0200
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, frank-w@public-files.de,
+        steven.liu@mediatek.com
+Subject: Re: [PATCH net, v2] net: Update MAINTAINERS for MediaTek switch
+ driver
+Message-ID: <20210719124829.3a5ca4da@cakuba>
+In-Reply-To: <d62aa80d-9ee2-23b8-f68f-449b488a3b0f@gmail.com>
+References: <20210601024508.iIbiNrsg-6lZjXwIt9-j76r37lcQSk3LsYBoZyl3fUM@z>
+        <20210717154523.82890-1-dqfext@gmail.com>
+        <d62aa80d-9ee2-23b8-f68f-449b488a3b0f@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cover.1626688654.git.vvs@virtuozzo.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-unix sockets allows to send file descriptors via SCM_RIGHTS type messages.
-Each such send call forces kernel to allocate up to 2Kb memory for
-struct scm_fp_list.
+On Sat, 17 Jul 2021 09:10:19 -0700, Florian Fainelli wrote:
+> On 7/17/2021 8:45 AM, DENG Qingfang wrote:
+> > On Tue, Jun 01, 2021 at 10:45:08AM +0800, Landen Chao wrote:  
+> >> Update maintainers for MediaTek switch driver with Deng Qingfang who
+> >> contributes many useful patches (interrupt, VLAN, GPIO, and etc.) to
+> >> enhance MediaTek switch driver and will help maintenance.
+> >>
+> >> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
+> >> Signed-off-by: DENG Qingfang <dqfext@gmail.com>  
+> > 
+> > Ping?  
+> 
+> You might have to resend
 
-It makes sense to account for them to restrict the host's memory
-consumption from inside the memcg-limited container.
-
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
----
- net/core/scm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/scm.c b/net/core/scm.c
-index ae3085d..5c356f0 100644
---- a/net/core/scm.c
-+++ b/net/core/scm.c
-@@ -79,7 +79,7 @@ static int scm_fp_copy(struct cmsghdr *cmsg, struct scm_fp_list **fplp)
- 
- 	if (!fpl)
- 	{
--		fpl = kmalloc(sizeof(struct scm_fp_list), GFP_KERNEL);
-+		fpl = kmalloc(sizeof(struct scm_fp_list), GFP_KERNEL_ACCOUNT);
- 		if (!fpl)
- 			return -ENOMEM;
- 		*fplp = fpl;
-@@ -355,7 +355,7 @@ struct scm_fp_list *scm_fp_dup(struct scm_fp_list *fpl)
- 		return NULL;
- 
- 	new_fpl = kmemdup(fpl, offsetof(struct scm_fp_list, fp[fpl->count]),
--			  GFP_KERNEL);
-+			  GFP_KERNEL_ACCOUNT);
- 	if (new_fpl) {
- 		for (i = 0; i < fpl->count; i++)
- 			get_file(fpl->fp[i]);
--- 
-1.8.3.1
-
+Yes, please resend, there may have been something funny with v2 because
+patchwork didn't pick it up. It also broke threading in my MUA. Please
+make sure v3 will have a different message ID header than v2.
