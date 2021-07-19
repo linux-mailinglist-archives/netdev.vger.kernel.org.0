@@ -2,161 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2A63CD72E
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 16:52:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDB73CDA6E
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 17:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241230AbhGSOLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 10:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241406AbhGSOLA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 10:11:00 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF96C061574;
-        Mon, 19 Jul 2021 07:19:45 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id f17so22403476wrt.6;
-        Mon, 19 Jul 2021 07:51:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2TMqggDy1d4GjwkeBWFENMCiF9IVcT7UERyMIqhwYKo=;
-        b=cePslZ91T589YXi+3HkXUOwh7qnmfP0xhw4Qm8qke5RPoUaOTCXMBbnt5FwRU+446L
-         g1LcU7pZVTxoYFwIBxr1awlaMkj7dGrYj2KAEQaKVPaGuEpo8n+cE4glttLHzbyfBpEr
-         bKmSTOc8mNjgqtXOj3NHPxRf/tdPK3EaZernnrC0PNKrqkmrG0R9aCzuvbtChw1Ws0/c
-         BmICbm/pkEemp7ThE+EXCfvvMN+fzqAZ1AAznQF6ZMLGYzbQIU+Tx+vMJG+Ior1sGkGb
-         fKRQK3OyUDgijP6LmQVPc0nxJ63hYLdRshhkLZcpY415xApz2M+tXXe28pDTjMYcF3vy
-         cbKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2TMqggDy1d4GjwkeBWFENMCiF9IVcT7UERyMIqhwYKo=;
-        b=dn7ln2jmwM4DINGKp6fUCrGDPYiwe9JDPmmjpLhX381B4mMlvb8MhBViGDjQPYy4NA
-         cq8qY1AJQu9Vl6Ua2qOaRsxcU4zdTvoK7rfm8Uk9FkLGzGqn7y4fze3Kmw86xpZxA0kj
-         3hfHQno9duXNCKVhNWue9E27FKtCn/CPFLGkQQ15VehXXFLlRSP+F5do2uagT+g5mPjG
-         vnEhTjDqZPhJtuiCpKCmnzdGKEzOso8MVm93iYLuZSrqKNCkmunL0QSvt4aESw3fyDSc
-         hhI2rRKOxNrgQqQe2uGK/VIlczFqsluurrLVsHZ029qF8/8KC7bjxAb39g7FPdq1DwSt
-         r3NQ==
-X-Gm-Message-State: AOAM531HXFBXn0tMblnU1zFm3SVSMM7Ah7JyUp5G1KQnvu6GPdXmuuky
-        GfjbSzOwLjZLlEncXdvGxYLDsXeDD5lTP0nkymg=
-X-Google-Smtp-Source: ABdhPJwNz0auJQIu/oQY1Paggbn4qOK+Whd3rECDa6KNwvbLE3jYddobF9KeV80+E0G/5YgUvnGlUM5EYJUHDVnCYfE=
-X-Received: by 2002:adf:ed46:: with SMTP id u6mr30387204wro.252.1626706291240;
- Mon, 19 Jul 2021 07:51:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210715080822.14575-1-justin.he@arm.com> <CAJ2QiJLWgxw0X8rkMhKgAGgiFS5xhrhMF5Dct_J791Kt-ys7QQ@mail.gmail.com>
- <AM6PR08MB4376894A46B47B024F50FBB3F7E19@AM6PR08MB4376.eurprd08.prod.outlook.com>
-In-Reply-To: <AM6PR08MB4376894A46B47B024F50FBB3F7E19@AM6PR08MB4376.eurprd08.prod.outlook.com>
-From:   Prabhakar Kushwaha <prabhakar.pkin@gmail.com>
-Date:   Mon, 19 Jul 2021 20:20:54 +0530
-Message-ID: <CAJ2QiJJ8=jkbRVscnXM2m_n2RX2pNdJG4iA3tYiNGDYefb-hjA@mail.gmail.com>
-Subject: Re: [PATCH] qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
-To:     Justin He <Justin.He@arm.com>
-Cc:     Ariel Elior <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        id S243774AbhGSOfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 10:35:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243911AbhGSOfO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 10:35:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BFF06121E;
+        Mon, 19 Jul 2021 15:15:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1626707750;
+        bh=jAcUURy3vlGKbMaRjRMSNvOOqByrm1U781jF29tIouQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wuGACwnuJ3DCzFY/52+lSWm5sz/DVoWcQe0OBdqUn9WjgvEqQOik9xnsl4ERcEP3n
+         eWMoeuXSuA0Gf2NIi4/3qgDP0E9TOvGsGh//5h+58doFG6ayGkw6wBpsANj1sq/uh+
+         Vld4w292kDyvj8Wwfh4KPVE4LKKLxz9VFuzlhqtY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Angus Ainslie <angus@akkea.ca>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        nd <nd@arm.com>, Shai Malin <malin1024@gmail.com>,
-        Shai Malin <smalin@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+        Kalle Valo <kvalo@codeaurora.org>,
+        Karun Eagalapati <karun256@gmail.com>,
+        Martin Kepplinger <martink@posteo.de>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH 4.14 034/315] rsi: Assign beacon rate settings to the correct rate_info descriptor field
+Date:   Mon, 19 Jul 2021 16:48:43 +0200
+Message-Id: <20210719144943.999363992@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210719144942.861561397@linuxfoundation.org>
+References: <20210719144942.861561397@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Justin,
+From: Marek Vasut <marex@denx.de>
 
-On Mon, Jul 19, 2021 at 6:47 PM Justin He <Justin.He@arm.com> wrote:
->
-> Hi Prabhakar
->
-> > -----Original Message-----
-> > From: Prabhakar Kushwaha <prabhakar.pkin@gmail.com>
-> > Sent: Monday, July 19, 2021 6:36 PM
-> > To: Justin He <Justin.He@arm.com>
-> > Cc: Ariel Elior <aelior@marvell.com>; GR-everest-linux-l2@marvell.com;
-> > David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
-> > netdev@vger.kernel.org; Linux Kernel Mailing List <linux-
-> > kernel@vger.kernel.org>; nd <nd@arm.com>; Shai Malin <malin1024@gmail.com>;
-> > Shai Malin <smalin@marvell.com>; Prabhakar Kushwaha <pkushwaha@marvell.com>
-> > Subject: Re: [PATCH] qed: fix possible unpaired spin_{un}lock_bh in
-> > _qed_mcp_cmd_and_union()
-> >
-> > Hi Jia,
-> >
-> > On Thu, Jul 15, 2021 at 2:28 PM Jia He <justin.he@arm.com> wrote:
-> > >
-> > > Liajian reported a bug_on hit on a ThunderX2 arm64 server with FastLinQ
-> > > QL41000 ethernet controller:
-> > >  BUG: scheduling while atomic: kworker/0:4/531/0x00000200
-> > >   [qed_probe:488()]hw prepare failed
-> > >   kernel BUG at mm/vmalloc.c:2355!
-> > >   Internal error: Oops - BUG: 0 [#1] SMP
-> > >   CPU: 0 PID: 531 Comm: kworker/0:4 Tainted: G W 5.4.0-77-generic #86-
-> > Ubuntu
-> > >   pstate: 00400009 (nzcv daif +PAN -UAO)
-> > >  Call trace:
-> > >   vunmap+0x4c/0x50
-> > >   iounmap+0x48/0x58
-> > >   qed_free_pci+0x60/0x80 [qed]
-> > >   qed_probe+0x35c/0x688 [qed]
-> > >   __qede_probe+0x88/0x5c8 [qede]
-> > >   qede_probe+0x60/0xe0 [qede]
-> > >   local_pci_probe+0x48/0xa0
-> > >   work_for_cpu_fn+0x24/0x38
-> > >   process_one_work+0x1d0/0x468
-> > >   worker_thread+0x238/0x4e0
-> > >   kthread+0xf0/0x118
-> > >   ret_from_fork+0x10/0x18
-> > >
-> > > In this case, qed_hw_prepare() returns error due to hw/fw error, but in
-> > > theory work queue should be in process context instead of interrupt.
-> > >
-> > > The root cause might be the unpaired spin_{un}lock_bh() in
-> > > _qed_mcp_cmd_and_union(), which causes botton half is disabled
-> > incorrectly.
-> > >
-> > > Reported-by: Lijian Zhang <Lijian.Zhang@arm.com>
-> > > Signed-off-by: Jia He <justin.he@arm.com>
-> > > ---
-> >
-> > This patch is adding additional spin_{un}lock_bh().
-> > Can you please enlighten about the exact flow causing this unpaired
-> > spin_{un}lock_bh.
-> >
-> For instance:
-> _qed_mcp_cmd_and_union()
->   In while loop
->     spin_lock_bh()
->     qed_mcp_has_pending_cmd() (assume false), will break the loop
+commit b1c3a24897bd528f2f4fda9fea7da08a84ae25b6 upstream.
 
-I agree till here.
+The RSI_RATE_x bits must be assigned to struct rsi_data_desc rate_info
+field. The rest of the driver does it correctly, except this one place,
+so fix it. This is also aligned with the RSI downstream vendor driver.
+Without this patch, an AP operating at 5 GHz does not transmit any
+beacons at all, this patch fixes that.
 
->   if (cnt >= max_retries) {
-> ...
->     return -EAGAIN; <-- here returns -EAGAIN without invoking bh unlock
->   }
->
+Fixes: d26a9559403c ("rsi: add beacon changes for AP mode")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Karun Eagalapati <karun256@gmail.com>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210507213105.140138-1-marex@denx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Because of break, cnt has not been increased.
-   - cnt is still less than max_retries.
-  - if (cnt >= max_retries) will not be *true*, leading to spin_unlock_bh().
-Hence pairing completed.
+---
+ drivers/net/wireless/rsi/rsi_91x_hal.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I am not seeing any issue here.
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -386,9 +386,9 @@ int rsi_prepare_beacon(struct rsi_common
+ 	}
+ 
+ 	if (common->band == NL80211_BAND_2GHZ)
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_1);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_1);
+ 	else
+-		bcn_frm->bbp_info |= cpu_to_le16(RSI_RATE_6);
++		bcn_frm->rate_info |= cpu_to_le16(RSI_RATE_6);
+ 
+ 	if (mac_bcn->data[tim_offset + 2] == 0)
+ 		bcn_frm->frame_info |= cpu_to_le16(RSI_DATA_DESC_DTIM_BEACON);
 
-> > Also,
-> > as per description, looks like you are not sure actual the root-cause.
-> > does this patch really solved the problem?
->
-> I don't have that ThunderX2 to verify the patch.
-> But I searched all the spin_lock/unlock_bh and spin_lock_irqsave/irqrestore
-> under driver/.../qlogic, this is the only problematic point I could figure
-> out. And this might be possible code path of qed_probe().
->
 
-Without testing and proper root-cause,  it is tough to accept the suggested fix.
-
---pk
