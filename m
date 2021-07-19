@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 535953CCC6D
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 04:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11F33CCD48
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 07:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234097AbhGSC5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Jul 2021 22:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        id S233077AbhGSFVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 01:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233720AbhGSC5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Jul 2021 22:57:13 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E9DC061762
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:54:13 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id t46-20020a4a96f10000b02902618ad2ea55so4100501ooi.4
-        for <netdev@vger.kernel.org>; Sun, 18 Jul 2021 19:54:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aoEErOZcjbmHWVyzLSCzQUjB6elXDaTEJvEABHsrA1M=;
-        b=bzvxh2eiwKELuviYlOC1eGgVdhFqWCsqPbiUXmpkLc0D1ZacxIwLvPrxY8Fp7R5m5N
-         ttgFG+u4izjrVKW92j7JDSkyzhUS88RHmNMS5mSCDWaiDcIaZMlrgNaO90mxBxBWEe58
-         YjI56tfnQwEjPpweuWe1b1228SZXkGJPkCEqX1VD3P1H7b0Dtxy4rSNq6qdyEVfVuM9I
-         bqlyGVb+S/8bVlXftiLUAbT1agg7toIjPSz70zEZFndGxumwEDS4gceMXXdiDWGY6MXD
-         MX3fDo+LcPHlh+Q0Tt3tkJVIsq80h+umUkUg/If5lGkQM+e1iStBT8DTQMS564KoW5+6
-         3v2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aoEErOZcjbmHWVyzLSCzQUjB6elXDaTEJvEABHsrA1M=;
-        b=rl0KzOOMxp6sMdFPDi9fd333akdV6SHho5Hqqhaf7DjQU2U/ir2Kvx6lxindboh6rP
-         uDXNYxHQFg7b2onJCUdFN2se5gH+Rx7z6wXYPtv737lTpM/0Vp5fEsFG0At77nobVQpk
-         UHIpWfautxJuhOYV3WBkOVl6yWfUrrXbpT7ACxp41+W3AEU7rePEYZj4alrJpNA8btqT
-         5VoOnwuODsNdim9NKbMzFuy51Ttv+LVEyOTz54PdEK1wqnaq5mt1545hdQbWAhWSo5ol
-         hN4mIX6FHHQzVvwSWaZksbogCt2hoSijGVgjmRk58A020KFWNM10pt+1+NndUQDuetCG
-         6oNA==
-X-Gm-Message-State: AOAM5310A+MClRkCfLgqE/xTu2+atsJtoJiVYRxcGvgVxzJgZ3jSfJlQ
-        xn4+8LNtRjQhjo2xwoBfyoY=
-X-Google-Smtp-Source: ABdhPJwgvui7h/jXyqlyejb8ID/mJ4ZU1zrO0ee9y2jIjkyueouM+NIB6UK+0y9vdrV/QSKEWIQfRQ==
-X-Received: by 2002:a4a:5dc6:: with SMTP id w189mr16122485ooa.1.1626663252697;
-        Sun, 18 Jul 2021 19:54:12 -0700 (PDT)
-Received: from ?IPv6:2600:1700:dfe0:49f0:49e1:751f:b992:b4f3? ([2600:1700:dfe0:49f0:49e1:751f:b992:b4f3])
-        by smtp.gmail.com with ESMTPSA id c64sm3650155oif.30.2021.07.18.19.54.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Jul 2021 19:54:12 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 12/15] net: dsa: track the number of switches
- in a tree
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
- <20210718214434.3938850-13-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <42519a8c-65e8-34c6-6513-21e115b08005@gmail.com>
-Date:   Sun, 18 Jul 2021 19:54:11 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        with ESMTP id S229512AbhGSFVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 01:21:37 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A5FC061762;
+        Sun, 18 Jul 2021 22:18:37 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626671914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vthMeTbzAZtY0okruVW6qC1LJnjv61WTI0OJ6N5pgbk=;
+        b=NHm5vOJUd5siLlRil2h9aOuBAL4XvZlMre29vn0hltC3cGW4gbeaxnuYcoQ78mVolWyZhF
+        Q+wYsCLfYNqoN9rivnEay63oiwxH+lX2qCksvlIB/Bjd2TVyQp4U3NKKxkuJl2lC7u2GmO
+        zv5W5ZL4kf48hQ+kekbam2ppCFiyFf4=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH] netlink: Deal with ESRCH error in nlmsg_notify()
+Date:   Mon, 19 Jul 2021 13:18:16 +0800
+Message-Id: <20210719051816.11762-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20210718214434.3938850-13-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Yonghong Song report:
+The bpf selftest tc_bpf failed with latest bpf-next. 
+The following is the command to run and the result:
+$ ./test_progs -n 132
+[   40.947571] bpf_testmod: loading out-of-tree module taints kernel.
+test_tc_bpf:PASS:test_tc_bpf__open_and_load 0 nsec
+test_tc_bpf:PASS:bpf_tc_hook_create(BPF_TC_INGRESS) 0 nsec
+test_tc_bpf:PASS:bpf_tc_hook_create invalid hook.attach_point 0 nsec
+test_tc_bpf_basic:PASS:bpf_obj_get_info_by_fd 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_attach 0 nsec
+test_tc_bpf_basic:PASS:handle set 0 nsec
+test_tc_bpf_basic:PASS:priority set 0 nsec
+test_tc_bpf_basic:PASS:prog_id set 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_attach replace mode 0 nsec
+test_tc_bpf_basic:PASS:bpf_tc_query 0 nsec
+test_tc_bpf_basic:PASS:handle set 0 nsec
+test_tc_bpf_basic:PASS:priority set 0 nsec
+test_tc_bpf_basic:PASS:prog_id set 0 nsec
+libbpf: Kernel error message: Failed to send filter delete notification
+test_tc_bpf_basic:FAIL:bpf_tc_detach unexpected error: -3 (errno 3)
+test_tc_bpf:FAIL:test_tc_internal ingress unexpected error: -3 (errno 3)
 
+The failure seems due to the commit
+    cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")
 
-On 7/18/2021 2:44 PM, Vladimir Oltean wrote:
-> In preparation of supporting data plane forwarding on behalf of a
-> software bridge, some drivers might need to view bridges as virtual
-> switches behind the CPU port in a cross-chip topology.
-> 
-> Give them some help and let them know how many physical switches there
-> are in the tree, so that they can count the virtual switches starting
-> from that number on.
-> 
-> Note that the first dsa_switch_ops method where this information is
-> reliably available is .setup(). This is because of how DSA works:
-> in a tree with 3 switches, each calling dsa_register_switch(), the first
-> 2 will advance until dsa_tree_setup() -> dsa_tree_setup_routing_table()
-> and exit with error code 0 because the topology is not complete. Since
-> probing is parallel at this point, one switch does not know about the
-> existence of the other. Then the third switch comes, and for it,
-> dsa_tree_setup_routing_table() returns complete = true. This switch goes
-> ahead and calls dsa_tree_setup_switches() for everybody else, calling
-> their .setup() methods too. This acts as the synchronization point.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Deal with ESRCH error in nlmsg_notify() even the report variable is zero.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reported-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/netlink/af_netlink.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 380f95aacdec..24b7cf447bc5 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2545,13 +2545,15 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
+ 		/* errors reported via destination sk->sk_err, but propagate
+ 		 * delivery errors if NETLINK_BROADCAST_ERROR flag is set */
+ 		err = nlmsg_multicast(sk, skb, exclude_portid, group, flags);
++		if (err == -ESRCH)
++			err = 0;
+ 	}
+ 
+ 	if (report) {
+ 		int err2;
+ 
+ 		err2 = nlmsg_unicast(sk, skb, portid);
+-		if (!err || err == -ESRCH)
++		if (!err)
+ 			err = err2;
+ 	}
+ 
 -- 
-Florian
+2.32.0
+
