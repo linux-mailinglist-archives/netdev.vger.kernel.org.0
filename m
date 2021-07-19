@@ -2,97 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B103CD58C
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 15:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63D683CD594
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 15:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237176AbhGSM2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 08:28:55 -0400
-Received: from lucky1.263xmail.com ([211.157.147.135]:35778 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236855AbhGSM2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 08:28:54 -0400
-Received: from localhost (unknown [192.168.167.70])
-        by lucky1.263xmail.com (Postfix) with ESMTP id EDB8EB1936;
-        Mon, 19 Jul 2021 21:09:25 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-SKE-CHECKED: 1
-X-ANTISPAM-LEVEL: 2
-Received: from localhost.localdomain (unknown [113.57.152.160])
-        by smtp.263.net (postfix) whith ESMTP id P13644T140562088032000S1626700165290287_;
-        Mon, 19 Jul 2021 21:09:26 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <d0e9c68a6780ff19d835a3a8d28dbae0>
-X-RL-SENDER: chenhaoa@uniontech.com
-X-SENDER: chenhaoa@uniontech.com
-X-LOGIN-NAME: chenhaoa@uniontech.com
-X-FST-TO: peppe.cavallaro@st.com
-X-RCPT-COUNT: 11
-X-SENDER-IP: 113.57.152.160
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-From:   Hao Chen <chenhaoa@uniontech.com>
-To:     peppe.cavallaro@st.com
-Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org, Hao Chen <chenhaoa@uniontech.com>
-Subject: [PATCH v5] net: stmmac: fix 'ethtool -P' return -EBUSY
-Date:   Mon, 19 Jul 2021 21:08:45 +0800
-Message-Id: <20210719130845.2102-1-chenhaoa@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        id S237143AbhGSMfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 08:35:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33770 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236855AbhGSMfD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 08:35:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=ZxFr9/ao0Li9H3Be14QUDxm2dKJ1ZcwVygP6Pez+tR0=; b=Ij
+        Zcz8rRYoUFAsBoFWEB7EyZ+jvzOMASbGxcoriKpNTx3IBw7TFbAfSCOh+JRpd72lFz/R2y7hgAtCv
+        7PBkCJU8ZzhH/MV7OgeD0ICd//cLFiD3GLmxAl8EZpD9JJ/ov2GPD+R19KpdSdweR+2iW/TywLj8P
+        TrLOg9Kj5t88YMw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m5T7Q-00Dtwm-Pp; Mon, 19 Jul 2021 15:15:36 +0200
+Date:   Mon, 19 Jul 2021 15:15:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <YPV6+PQq1fvH8aSy@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <YPIAnq6r3KgQ5ivI@lunn.ch>
+ <87y2a2hm6m.fsf@kurt>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <87y2a2hm6m.fsf@kurt>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The permanent mac address should be available for query when the device
-is not up.
-NetworkManager, the system network daemon, uses 'ethtool -P' to obtain
-the permanent address after the kernel start. When the network device
-is not up, it will return the device busy error with 'ethtool -P'. At
-that time, it is unable to access the Internet through the permanent
-address by NetworkManager.
-I think that the '.begin' is not used to check if the device is up, it's
-just a pre hook for ethtool. We shouldn't check if the device is up
-there.
+On Mon, Jul 19, 2021 at 08:06:41AM +0200, Kurt Kanzenbach wrote:
+> Hi Andrew,
+> 
+> On Fri Jul 16 2021, Andrew Lunn wrote:
+> > On Fri, Jul 16, 2021 at 02:24:27PM -0700, Tony Nguyen wrote:
+> >> From: Kurt Kanzenbach <kurt@linutronix.de>
+> >> 
+> >> Each i225 has three LEDs. Export them via the LED class framework.
+> >> 
+> >> Each LED is controllable via sysfs. Example:
+> >> 
+> >> $ cd /sys/class/leds/igc_led0
+> >> $ cat brightness      # Current Mode
+> >> $ cat max_brightness  # 15
+> >> $ echo 0 > brightness # Mode 0
+> >> $ echo 1 > brightness # Mode 1
+> >> 
+> >> The brightness field here reflects the different LED modes ranging
+> >> from 0 to 15.
+> >
+> > What do you mean by mode? Do you mean blink mode? Like On means 1G
+> > link, and it blinks for packet TX?
+> 
+> There are different modes such as ON, OFF, LINK established, LINK
+> activity, PAUSED ... Blinking is controlled by a different register.
+> 
+> Are there better ways to export this?
 
-Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 --------
- 1 file changed, 8 deletions(-)
+As i said in another email, using LED triggers. For simple link speed
+indication, take a look at CONFIG_LED_TRIGGER_PHY. This is purely
+software, and probably not what you want. The more complex offload of
+to LED control to hardware in the PHY subsystem it still going around
+and around. The basic idea is agreed, just not the implementation.
+However, most of the implementation is of no help to you, since Intel
+drivers ignore the kernel PHY drivers and do their own. But the basic
+idea and style of user space API should be kept the same. So take a
+look at the work Marek Behún has been doing, e.g.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index d0ce608b81c3..8901dc9f758e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -410,13 +410,6 @@ static void stmmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
- 
- }
- 
--static int stmmac_check_if_running(struct net_device *dev)
--{
--	if (!netif_running(dev))
--		return -EBUSY;
--	return 0;
--}
--
- static int stmmac_ethtool_get_regs_len(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-@@ -1073,7 +1066,6 @@ static int stmmac_set_tunable(struct net_device *dev,
- static const struct ethtool_ops stmmac_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
--	.begin = stmmac_check_if_running,
- 	.get_drvinfo = stmmac_ethtool_getdrvinfo,
- 	.get_msglevel = stmmac_ethtool_getmsglevel,
- 	.set_msglevel = stmmac_ethtool_setmsglevel,
--- 
-2.20.1
+https://lwn.net/Articles/830947/
 
+and a more recent version
 
+https://lore.kernel.org/netdev/20210602144439.4d20b295@dellmb/T/#m4e97c9016597fb40849c104c7c0e3bc10d5c1ff5
 
+Looking at the basic idea of using LED triggers and offloading
+them. Please also try to make us of generic names for these triggers,
+so the PHY subsystem might also use the same or similar names when it
+eventually gets something merged.
+
+Please also Cc: The LED maintainers and LED list. Doing that from the
+start would of avoided this revert, since you would of get earlier
+feedback about this.
+
+	 Andrew
