@@ -2,92 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C083CF23C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29ED23CF27E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 05:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239017AbhGTCLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 22:11:38 -0400
-Received: from out1.migadu.com ([91.121.223.63]:45829 "EHLO out1.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345227AbhGTCGf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Jul 2021 22:06:35 -0400
-X-Greylist: delayed 74690 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Jul 2021 22:06:32 EDT
-MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1626749223;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KUM79Rs6eGHbKmAlgI2lLlSUWIN0mpmmWXHIcNcS7zI=;
-        b=gTaqIAJI0CbVfMDJeqMpW+lRczileGp8zONPxdkcXQCkBxLzVJmckriwwoT8BeHNPgDjFb
-        17oHP5NdPccpo2mrJvDF2Mxf958uaBqpqPM/AgPHtXxCBa689BgBZae9H6c7aqODLC26jT
-        q1Z85nKY797W42mc9N6VcB2Py4NxbjI=
-Date:   Tue, 20 Jul 2021 02:47:01 +0000
+        id S241731AbhGTCmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 22:42:10 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:50829 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348153AbhGSVEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 17:04:53 -0400
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 019E8806B6;
+        Tue, 20 Jul 2021 09:44:35 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1626731075;
+        bh=arTStlnRLucuQiOyAqdPWMy1jWTooNhp27kK8HT5aGo=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=TAPBWMPS5JPCaf7MP02z8Rju9CZ/crjx53q48Fm1Ieb3uHX+glDvQNsKQtNEZujLN
+         JEaDMq7PDWn0a5IAzfCGLHhnKgnLshv7Gi2EAsYGP1LZv1R+vnpsmdqKqWycgtw/9S
+         XEVCsGHInUqazNbYCUOxqXc5ohd5VzlmFPZTL8HC33ymybEOdoJCrm2IwmEopXA1RY
+         ncssO5U96/fSRyC3rbZHIUoXAhmIlzJwn7PU1LDC20awT7sZVaas7wNzIVtex2XCEz
+         /o1zlmTSVTIZPpKdj0//i/s7gngCQHhXHzQyZ/0oq5oYYJlvuSPkjiHfDtl2a9Sme9
+         TInGV1fYKWs9Q==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B60f5f2420001>; Tue, 20 Jul 2021 09:44:34 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.23; Tue, 20 Jul 2021 09:44:34 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.023; Tue, 20 Jul 2021 09:44:34 +1200
+From:   Richard Laing <Richard.Laing@alliedtelesis.co.nz>
+To:     Loic Poulain <loic.poulain@linaro.org>
+CC:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bus: mhi: pci-generic: configurable network interface MRU
+Thread-Topic: [PATCH] bus: mhi: pci-generic: configurable network interface
+ MRU
+Thread-Index: AQHXePXNQwvlV1kNe0CXQRxG8ENZtqtJUccAgADBqIA=
+Date:   Mon, 19 Jul 2021 21:44:33 +0000
+Message-ID: <5165a859-1b00-e50e-985e-25044cf0e9ec@alliedtelesis.co.nz>
+References: <20210714211805.22350-1-richard.laing@alliedtelesis.co.nz>
+ <CAMZdPi-1E5pieVwt_XFF-+PML-cX05nM=PdD0pApD_ym5k_uMQ@mail.gmail.com>
+In-Reply-To: <CAMZdPi-1E5pieVwt_XFF-+PML-cX05nM=PdD0pApD_ym5k_uMQ@mail.gmail.com>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.16.78]
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   yajun.deng@linux.dev
-Message-ID: <d56d920c4e55383f9ee34147b58a1f9b@linux.dev>
-Subject: Re: [PATCH] netlink: Deal with ESRCH error in nlmsg_notify()
-To:     "Yonghong Song" <yhs@fb.com>, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <0ada4233-6c9d-82f5-f33f-55805bfbe37d@fb.com>
-References: <0ada4233-6c9d-82f5-f33f-55805bfbe37d@fb.com>
- <20210719051816.11762-1-yajun.deng@linux.dev>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-ID: <C3218BD5D940284481E061C0BF8A5B60@atlnz.lc>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=dvql9Go4 c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=8KpF8ikWtqQA:10 a=IkcTkHD0fZMA:10 a=e_q4qTt1xDgA:10 a=893OgPLA04CPpLZ5ZCUA:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-July 19, 2021 10:47 PM, "Yonghong Song" <yhs@fb.com> wrote:=0A=0A> On 7/1=
-8/21 10:18 PM, Yajun Deng wrote:=0A> =0A>> Yonghong Song report:=0A>> The=
- bpf selftest tc_bpf failed with latest bpf-next.=0A>> The following is t=
-he command to run and the result:=0A>> $ ./test_progs -n 132=0A>> [ 40.94=
-7571] bpf_testmod: loading out-of-tree module taints kernel.=0A>> test_tc=
-_bpf:PASS:test_tc_bpf__open_and_load 0 nsec=0A>> test_tc_bpf:PASS:bpf_tc_=
-hook_create(BPF_TC_INGRESS) 0 nsec=0A>> test_tc_bpf:PASS:bpf_tc_hook_crea=
-te invalid hook.attach_point 0 nsec=0A>> test_tc_bpf_basic:PASS:bpf_obj_g=
-et_info_by_fd 0 nsec=0A>> test_tc_bpf_basic:PASS:bpf_tc_attach 0 nsec=0A>=
-> test_tc_bpf_basic:PASS:handle set 0 nsec=0A>> test_tc_bpf_basic:PASS:pr=
-iority set 0 nsec=0A>> test_tc_bpf_basic:PASS:prog_id set 0 nsec=0A>> tes=
-t_tc_bpf_basic:PASS:bpf_tc_attach replace mode 0 nsec=0A>> test_tc_bpf_ba=
-sic:PASS:bpf_tc_query 0 nsec=0A>> test_tc_bpf_basic:PASS:handle set 0 nse=
-c=0A>> test_tc_bpf_basic:PASS:priority set 0 nsec=0A>> test_tc_bpf_basic:=
-PASS:prog_id set 0 nsec=0A>> libbpf: Kernel error message: Failed to send=
- filter delete notification=0A>> test_tc_bpf_basic:FAIL:bpf_tc_detach une=
-xpected error: -3 (errno 3)=0A>> test_tc_bpf:FAIL:test_tc_internal ingres=
-s unexpected error: -3 (errno 3)=0A>> The failure seems due to the commit=
-=0A>> cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")=
-=0A>> Deal with ESRCH error in nlmsg_notify() even the report variable is=
- zero.=0A>> Reported-by: Yonghong Song <yhs@fb.com>=0A>> Signed-off-by: Y=
-ajun Deng <yajun.deng@linux.dev>=0A> =0A> Thanks for quick fix. This does=
- fix the bpf selftest issu.=0A> But does this change have negative impact=
-s on other=0A> nlmsg_notify() callers, below 1-3 items?=0A> =0A> 0 net/co=
-re/rtnetlink.c rtnetlink_send 714 return nlmsg_notify(rtnl, skb, pid, gro=
-up, echo,=0A> GFP_KERNEL);=0A=0AThis is exactly what we need.=0A> =0A> 1 =
-net/core/rtnetlink.c rtnl_notify 734 nlmsg_notify(rtnl, skb, pid, group, =
-report, flags);=0A> =0AIt doesn't matter because there is no return value=
-.=0A =0A> 2 net/netfilter/nfnetlink.c nfnetlink_send 176 return nlmsg_not=
-ify(nfnlnet->nfnl, skb, portid,=0A> group, echo, flags);=0A> =0AIt only c=
-tnetlink_conntrack_event() use the return value when call nfnetlink_send(=
-) in=0Anet/netfilter/nf_conntrack_netlink.c, but it doesn't matter when t=
-he return value is ESRCH or zero.=0A=0A> 3 net/netlink/genetlink.c genl_n=
-otify 1506 nlmsg_notify(sk, skb, info->snd_portid, group, report,=0A> fla=
-gs);=0A> =0AIt doesn't matter because there is no return value.=0A=0AI th=
-ink the caller for nlmsg_notify() doesn't need deal with the ESRCH. It al=
-so deal with ESRCH=0Awhen report variable is not zero.=0A=0A>> ---=0A>> n=
-et/netlink/af_netlink.c | 4 +++-=0A>> 1 file changed, 3 insertions(+), 1 =
-deletion(-)=0A>> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_n=
-etlink.c=0A>> index 380f95aacdec..24b7cf447bc5 100644=0A>> --- a/net/netl=
-ink/af_netlink.c=0A>> +++ b/net/netlink/af_netlink.c=0A>> @@ -2545,13 +25=
-45,15 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 porti=
-d,=0A>> /* errors reported via destination sk->sk_err, but propagate=0A>>=
- * delivery errors if NETLINK_BROADCAST_ERROR flag is set */=0A>> err =3D=
- nlmsg_multicast(sk, skb, exclude_portid, group, flags);=0A>> + if (err =
-=3D=3D -ESRCH)=0A>> + err =3D 0;=0A>> }=0A>>> if (report) {=0A>> int err2=
-;=0A>>> err2 =3D nlmsg_unicast(sk, skb, portid);=0A>> - if (!err || err =
-=3D=3D -ESRCH)=0A>> + if (!err)=0A>> err =3D err2;=0A>> }=0A>>>
+SGkgTG9pYywNCg0KT24gNy8xOS8yMSAxMDoxMSBQTSwgTG9pYyBQb3VsYWluIHdyb3RlOg0KPiBG
+b3IgbXkgaW50ZXJlc3QgZG8geW91IGhhdmUgc29tZSBudW1iZXJzIGhlcmUgaGlnaGxpZ2h0aW5n
+IGltcHJvdmVtZW50Pw0KVGhlc2UgYXJlIHNvbWUgb2YgdGhlIG51bWJlcnMgd2UgZm91bmQgZnJv
+bSBpbml0aWFsIHRlc3RpbmcgdXNpbmcgYW4gDQpleHRlcm5hbCBwYWNrZXQgZ2VuZXJhdG9yOg0K
+DQpwYWNrZXQgc2l6ZcKgwqDCoCBwYWNrZXRzIHNlbnTCoCB0aHJvdWdocHV0ICglcHBzKQ0KNjTC
+oMKgwqAgwqDCoMKgwqDCoMKgwqDCoCAxMDAwMDAwwqDCoMKgIMKgwqDCoCA2LjIxJQ0KMTI4wqDC
+oMKgIMKgwqAgwqAgwqDCoCAxMDAwMDAwwqDCoMKgIMKgwqDCoCA3LjQyJQ0KMjU2wqDCoMKgIMKg
+wqDCoMKgwqDCoMKgIDEwMDAwMDDCoMKgwqAgwqDCoMKgIDEwLjc5JQ0KNTEywqDCoMKgIMKgIMKg
+IMKgIMKgIDEwMDAwMDDCoMKgwqAgwqDCoMKgIDE2LjQwJQ0KMTAyNMKgwqDCoCDCoMKgwqDCoMKg
+wqAgMTAwMDAwMMKgwqDCoCDCoMKgwqAgMzQuMzQlDQoxMjYywqDCoMKgIMKgwqAgwqAgwqAgMTAw
+MDAwMMKgwqDCoCDCoMKgwqAgNDMuODIlDQoxMjYzwqDCoMKgIMKgwqAgwqAgwqAgMTAwMDAwMMKg
+wqDCoCDCoMKgwqAgMjIuNDUlwqDCoMKgIDwtLQ0KMTI4MMKgwqDCoCDCoMKgIMKgIMKgIDEwMDAw
+MDDCoMKgwqAgwqDCoMKgIDIzLjE1JQ0KMTUwMMKgwqDCoCDCoMKgIMKgIMKgIDEwMDAwMDDCoMKg
+wqAgwqDCoMKgIDQ2LjMyJQ0KMTUxOMKgwqDCoCDCoMKgIMKgIMKgIDEwMDAwMDDCoMKgwqAgwqDC
+oMKgIDQ2Ljg0JQ0KDQpZb3UgY2FuIHNlZSB0aGUgc3VkZGVuIGRyb3Agb2YgYWxtb3N0IDUwJSBi
+ZXR3ZWVuIDEyNjIgYW5kIDEyNjMgYnl0ZSANCnBhY2tldHMuIFRoaXMgaXMgd2hhdCBjYXVzZWQg
+dXMgdG8gaW52ZXN0aWdhdGUgZnVydGhlci4gRm9sbG93aW5nIHRoZSANCmNoYW5nZSB0byAzMktC
+IGJ1ZmZlcnMgdGhlIGRyb3AgaW4gdGhyb3VnaHB1dCBpcyBubyBsb25nZXIgc2Vlbi4NCg0KcGFj
+a2V0IHNpemXCoMKgwqAgcGFja2V0cyBzZW50wqAgdGhyb3VnaHB1dCAoJXBwcykNCjY0wqDCoMKg
+IMKgwqDCoMKgwqDCoMKgwqAgMTAwMDAwMMKgwqDCoCDCoMKgIDQuNDElDQoxMjjCoMKgwqAgwqAg
+wqAgwqAgwqAgMTAwMDAwMMKgwqDCoCDCoMKgIDcuNzAlDQoyNTbCoMKgwqAgwqDCoCDCoCDCoMKg
+IDEwMDAwMDDCoMKgwqAgwqDCoCAxNC4yNiUNCjUxMsKgwqDCoCDCoMKgIMKgIMKgwqAgMTAwMDAw
+MMKgwqDCoCDCoMKgIDI3LjA2JQ0KMTAyNMKgwqDCoCDCoCDCoCDCoMKgIDEwMDAwMDDCoMKgwqAg
+wqDCoCA0OS4zOSUNCjEyODDCoMKgwqAgwqDCoCDCoCDCoCAxMDAwMDAwwqDCoMKgIMKgwqAgNTgu
+ODIlDQoxNDI4wqDCoMKgIMKgwqAgwqAgwqAgMTAwMDAwMMKgwqDCoCDCoMKgIDYyLjYzJQ0KDQpJ
+biBhbGwgY2FzZXMgd2Ugd2VyZSB0ZXN0aW5nIHdpdGggdGhlIG1vZGVtIGl0c2VsZiBpbiBpbnRl
+cm5hbCBsb29wYmFjayANCm1vZGUuDQoNCldlIGhhdmUgbm90ZWQgdGhhdCBvdXIgbW9kZW0gZGVm
+YXVsdHMgdG8gMzJLQiBidWZmZXJzIChhbmQgYSBtYXhpbXVtIG9mIA0KMzIgcGFja2V0cyBwZXIg
+YnVmZmVyKSBhbmQgYWxzbyB0aGF0IHRoZXNlIHZhbHVlcyBjYW4gYmUgY2hhbmdlZC4gV2UgYXJl
+IA0KY29uc2lkZXJpbmcgYWRkaW5nIHRoZSBhYmlsaXR5IHRvIHR1bmUgdGhlIGJ1ZmZlciBzaXpl
+LCBwZXJoYXBzIGFkZGluZyBhIA0Kc3lzZnMgZW50cnkgb3IgbmV0bGluayBtZXNzYWdlIHRvIGNo
+YW5nZSB0aGUgYnVmZmVyIHNpemUgaW5zdGVhZCBvZiB0aGUgDQpoYXJkIGNvZGVkIHZhbHVlLiBB
+bnkgY29tbWVudHMgd291bGQgYmUgYXBwcmVjaWF0ZWQuDQoNClJlZ2FyZHMsDQpSaWNoYXJkDQoN
+Cg0KDQo=
