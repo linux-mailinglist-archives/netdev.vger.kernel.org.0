@@ -2,194 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 253D83CD439
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 13:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3479F3CD46E
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 14:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236576AbhGSLRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 07:17:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58254 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232138AbhGSLR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:17:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626695889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pjiBFtBbN3Tpa6+FO6osoKkB4QfSBpg6c+lRQJCM5pw=;
-        b=IlrnW24Tfocx6kwP0vYWcarSpzIrFbT02t7HHGAPx6bm4SOHYKJwzm6014tBKf/hOgyK4G
-        teWf8PppFYGiLXjhRXKTzQv/Jry3KJKckALN+0cA7uPDqSgynDYplKAi3/q+QwxCPsMaYX
-        l0ZpzPvAzoCasyrrg3/z6NX7JtO1PoI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-501-gcWArlDWPVWqSyfUFO2WGQ-1; Mon, 19 Jul 2021 07:58:08 -0400
-X-MC-Unique: gcWArlDWPVWqSyfUFO2WGQ-1
-Received: by mail-wr1-f72.google.com with SMTP id i12-20020adffc0c0000b0290140ab4d8389so8722134wrr.10
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 04:58:07 -0700 (PDT)
+        id S236871AbhGSLb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 07:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236864AbhGSLb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 07:31:27 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9A0C061574
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 04:27:03 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id ee25so23591009edb.5
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 05:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/UU/c96xB2XnsKcImXrMAG0NX8G+S47OMuRsfPPQPuI=;
+        b=CK1gkwphNUpnV7qz0pEiNQPARKls7lgV4k0YhHtRviZNNNf9pduPYAm6rasO2Z4JYq
+         yCfq8C7eKnhN+sLicDffhTPpp6ANXP4DqCoi59AQthWxFpsbTPcmXNQxiSf4zkbTW0pW
+         K3aY/qy6QxN6TUQ+ylVmRuiz2j60u5w0PKO//4WhJzkw8/BP/YMkgXaltIlAxAr5v94A
+         fKQ0wT14If3pjD//EisFpRLYUCGqpzt6ZOREOCfMTFpNyAAbyVqgTwrKeuMjTSC4anJJ
+         Vb2nRPBLSF9PjEe+M0s5mDp+DlyqqAgbMhs3l4NUalgsijVHBhCBnMXqQ6NfFE39Zzyf
+         K6dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pjiBFtBbN3Tpa6+FO6osoKkB4QfSBpg6c+lRQJCM5pw=;
-        b=NwcCsfm972Zi1eWaQ03qGNbNPj58RO+H0tBR7J3aPN5DaFZZGvNnyg7bFVZ4GqGsQA
-         q4HiSuePhoy1axLZTOf/WtWlfRFRQGDZS5vnljDmZPJZtLlc0DzcJq+jaO8phkIATsSu
-         5xZggeGqB6S6m/GP3TiK+Vhfx+97tJy8femaoD6R9HUHXjXCTHSKZDT1iJDjHHxP6Xao
-         AXBpjBOT2rhxa0csGHBjEL01GVl7rOXq5VyFzZ/FCyNCvFe9jZLmvzGSLcKNPX5vEjsH
-         T6SeFGNgD6YHNjYeTLQ0Wn3uJpW/3hiVSlx/09FH1qNkrjvwgb0AP0z6ach1i0Aer+iU
-         O8Tw==
-X-Gm-Message-State: AOAM532xu5vbPlnx/V3wKk0r5jp+Q7pP0/jp5vC5PdZkYazf6yLksRRY
-        v4LZ4EmQBoPnsP8qUOvKSxX13KaTD1vRvAoDjRu0uAa/NtLtrVUvSFpj5ZUS+KJe9HQ0AJqV/fX
-        YS+WL0oDaN5lYso4I
-X-Received: by 2002:a5d:6ac4:: with SMTP id u4mr29212483wrw.166.1626695887137;
-        Mon, 19 Jul 2021 04:58:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx+OAIWZXBnOoLEaejahoNmZdXq7HnXiPt48QZY8Inz4B2bfDo9yCBx/7ow9p4m2kL0QelGZg==
-X-Received: by 2002:a5d:6ac4:: with SMTP id u4mr29212465wrw.166.1626695887015;
-        Mon, 19 Jul 2021 04:58:07 -0700 (PDT)
-Received: from redhat.com ([2.55.11.37])
-        by smtp.gmail.com with ESMTPSA id 129sm16885866wmz.26.2021.07.19.04.58.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 04:58:05 -0700 (PDT)
-Date:   Mon, 19 Jul 2021 07:58:00 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jasowang@redhat.com,
-        nickhu@andestech.com, green.hu@gmail.com, deanbo422@gmail.com,
-        akpm@linux-foundation.org, yury.norov@gmail.com,
-        andriy.shevchenko@linux.intel.com, ojeda@kernel.org,
-        ndesaulniers@gooogle.com, joe@perches.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Subject: Re: [PATCH net-next 1/2] tools: add missing infrastructure for
- building ptr_ring.h
-Message-ID: <20210719075748-mutt-send-email-mst@kernel.org>
-References: <1625457455-4667-1-git-send-email-linyunsheng@huawei.com>
- <1625457455-4667-2-git-send-email-linyunsheng@huawei.com>
- <20210705143144-mutt-send-email-mst@kernel.org>
- <cbc4053e-7eda-4c46-5b98-558c741e45b6@huawei.com>
- <20210717220239-mutt-send-email-mst@kernel.org>
- <5d320b37-18f3-e853-ceb7-21af7ca12763@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/UU/c96xB2XnsKcImXrMAG0NX8G+S47OMuRsfPPQPuI=;
+        b=peqm1ZIc3+ZyguJCa8ioHosacTa6lxu7LEFF4CFLwvRXKmpRkDzYRdYzs1eBCOASfi
+         XhmKP3P6fHsLpHup15R85aa7TI44m4M3v+B7oQS3yu6WyzqzMWG9z59GY+k2IIpEosT8
+         sfuOTbXVIcrBu6xEG44BWGVzvWBgsRjNgz1eiR+FolnFTks8/n/p0L63i/ar7TAFySVo
+         FaocG0FiPA0n+bmo2Sk0/J7NnE6WOcVykIv8MswIuPdk1D3cn71rFt4UkpE36vV6Z/8/
+         IUc1ZEAFBXc150f/gInoFEAeeB7B0C9Pp/A1m/+LLwG+pQJPhDYDUxIb4XtLdZKKbMOQ
+         AVKw==
+X-Gm-Message-State: AOAM530VAnuEle0PlIWEDaV7nZWJIhqQus4wdD4Rhla7s01627o2BxU/
+        9AYJmCLcgBPc3olEN7ucFEjHUbmfMAv7GB9VnDC5Mw==
+X-Google-Smtp-Source: ABdhPJxzmls3MdY2v2rmmBRiXXunC11WlDfin6gHks3OmV5v5L2L+bdoxTg7/Z6IALIyVbWP7RXCTZMIZTIgJWrEzIY=
+X-Received: by 2002:a05:6402:152:: with SMTP id s18mr33808453edu.221.1626696725478;
+ Mon, 19 Jul 2021 05:12:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d320b37-18f3-e853-ceb7-21af7ca12763@huawei.com>
+References: <1626362126-27775-1-git-send-email-alan.maguire@oracle.com> <1626362126-27775-2-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1626362126-27775-2-git-send-email-alan.maguire@oracle.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 19 Jul 2021 17:41:53 +0530
+Message-ID: <CA+G9fYtqga+zMop8Ae3+fa1ENP2T8fwfFfwWmvfRWZSYB7cPDw@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 1/3] libbpf: BTF dumper support for typed data
+To:     Alan Maguire <alan.maguire@oracle.com>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john.fastabend@gmail.com, kpsingh@kernel.org, morbo@google.com,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        lkft-triage@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 09:40:39AM +0800, Yunsheng Lin wrote:
-> On 2021/7/18 10:09, Michael S. Tsirkin wrote:
-> > On Tue, Jul 06, 2021 at 10:04:02AM +0800, Yunsheng Lin wrote:
-> >> On 2021/7/6 2:39, Michael S. Tsirkin wrote:
-> >>> On Mon, Jul 05, 2021 at 11:57:34AM +0800, Yunsheng Lin wrote:
-> 
-> [..]
-> 
-> >>>> diff --git a/tools/include/asm/processor.h b/tools/include/asm/processor.h
-> >>>> new file mode 100644
-> >>>> index 0000000..3198ad6
-> >>>> --- /dev/null
-> >>>> +++ b/tools/include/asm/processor.h
-> >>>> @@ -0,0 +1,36 @@
-> >>>> +/* SPDX-License-Identifier: GPL-2.0 */
-> >>>> +
-> >>>> +#ifndef __TOOLS_LINUX_ASM_PROCESSOR_H
-> >>>> +#define __TOOLS_LINUX_ASM_PROCESSOR_H
-> >>>> +
-> >>>> +#include <pthread.h>
-> >>>> +
-> >>>> +#if defined(__i386__) || defined(__x86_64__)
-> >>>> +#include "../../arch/x86/include/asm/vdso/processor.h"
-> >>>> +#elif defined(__arm__)
-> >>>> +#include "../../arch/arm/include/asm/vdso/processor.h"
-> >>>> +#elif defined(__aarch64__)
-> >>>> +#include "../../arch/arm64/include/asm/vdso/processor.h"
-> >>>> +#elif defined(__powerpc__)
-> >>>> +#include "../../arch/powerpc/include/vdso/processor.h"
-> >>>> +#elif defined(__s390__)
-> >>>> +#include "../../arch/s390/include/vdso/processor.h"
-> >>>> +#elif defined(__sh__)
-> >>>> +#include "../../arch/sh/include/asm/processor.h"
-> >>>> +#elif defined(__sparc__)
-> >>>> +#include "../../arch/sparc/include/asm/processor.h"
-> >>>> +#elif defined(__alpha__)
-> >>>> +#include "../../arch/alpha/include/asm/processor.h"
-> >>>> +#elif defined(__mips__)
-> >>>> +#include "../../arch/mips/include/asm/vdso/processor.h"
-> >>>> +#elif defined(__ia64__)
-> >>>> +#include "../../arch/ia64/include/asm/processor.h"
-> >>>> +#elif defined(__xtensa__)
-> >>>> +#include "../../arch/xtensa/include/asm/processor.h"
-> >>>> +#elif defined(__nds32__)
-> >>>> +#include "../../arch/nds32/include/asm/processor.h"
-> >>>> +#else
-> >>>> +#define cpu_relax()	sched_yield()
-> >>>
-> >>> Does this have a chance to work outside of kernel?
-> >>
-> >> I am not sure I understand what you meant here.
-> >> sched_yield() is a pthread API, so it should work in the
-> >> user space.
-> >> And it allow the rigntest to compile when it is built on
-> >> the arch which is not handled as above.
-> > 
-> > It might compile but is likely too heavy to behave
-> > reasonably.
-> > 
-> > Also, given you did not actually test it I don't
-> > think you should add such arch code.
-> > Note you broke at least s390 here:
-> > ../../arch/s390/include/vdso/processor.h
-> > does not actually exist. Where these headers
-> > do exit they tend to include lots of code which won't
-> > build out of kernel.
-> 
-> You are right, it should be in:
-> ../../arch/s390/include/asm/vdso/processor.h
-> 
-> > 
-> > All this is just for cpu_relax - open coding that seems way easier.
-> 
-> Sure.
-> 
-> As Eugenio has posted a patchset to fix the compilation, which does
-> not seems to be merged yet and may have some merging conflicts with
-> this patchset, so either wait for the Eugenio' patchset to be merged
-> before proceeding with this patchset, or explicitly note the dependency
-> of Eugenio' patchset when sending the new version of patchset. I am not
-> familiar with the merging flow of virtio to say which way is better, any
-> suggestion how to proceed with this patchset?
-> 
-> 1. https://lkml.org/lkml/2021/7/6/1132
-> 
-> > 
-> > 
-> >>>
-> >>>> +#endif
-> >>>
-> >>> did you actually test or even test build all these arches?
-> >>> Not sure we need to bother with hacks like these.
-> >>
-> >> Only x86_64 and arm64 arches have been built and tested.
-> > 
-> > In that case I think you should not add code that you
-> > have not even built let alone tested.
-> 
-> Ok.
-> 
-> > 
-> > 
-> >> This is added referring the tools/include/asm/barrier.h.
-> >>
-> >>>
-> >>>
-> >>>> +
-> > 
-> > .
+On Thu, 15 Jul 2021 at 20:46, Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> Add a BTF dumper for typed data, so that the user can dump a typed
+> version of the data provided.
+>
+> The API is
+>
+> int btf_dump__dump_type_data(struct btf_dump *d, __u32 id,
+>                              void *data, size_t data_sz,
+>                              const struct btf_dump_type_data_opts *opts);
+>
+> ...where the id is the BTF id of the data pointed to by the "void *"
+> argument; for example the BTF id of "struct sk_buff" for a
+> "struct skb *" data pointer.  Options supported are
+>
+>  - a starting indent level (indent_lvl)
+>  - a user-specified indent string which will be printed once per
+>    indent level; if NULL, tab is chosen but any string <= 32 chars
+>    can be provided.
+>  - a set of boolean options to control dump display, similar to those
+>    used for BPF helper bpf_snprintf_btf().  Options are
+>         - compact : omit newlines and other indentation
+>         - skip_names: omit member names
+>         - emit_zeroes: show zero-value members
+>
+> Default output format is identical to that dumped by bpf_snprintf_btf(),
+> for example a "struct sk_buff" representation would look like this:
+>
+> struct sk_buff){
+>         (union){
+>                 (struct){
+>                         .next = (struct sk_buff *)0xffffffffffffffff,
+>                         .prev = (struct sk_buff *)0xffffffffffffffff,
+>                 (union){
+>                         .dev = (struct net_device *)0xffffffffffffffff,
+>                         .dev_scratch = (long unsigned int)18446744073709551615,
+>                 },
+>         },
+> ...
+>
+> If the data structure is larger than the *data_sz*
+> number of bytes that are available in *data*, as much
+> of the data as possible will be dumped and -E2BIG will
+> be returned.  This is useful as tracers will sometimes
+> not be able to capture all of the data associated with
+> a type; for example a "struct task_struct" is ~16k.
+> Being able to specify that only a subset is available is
+> important for such cases.  On success, the amount of data
+> dumped is returned.
+>
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
+>  tools/lib/bpf/btf.h      |  19 ++
+>  tools/lib/bpf/btf_dump.c | 819 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  tools/lib/bpf/libbpf.map |   1 +
+>  3 files changed, 834 insertions(+), 5 deletions(-)
+
+<trim>
+
+> diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+> index 5dc6b517..929cf93 100644
+> --- a/tools/lib/bpf/btf_dump.c
+> +++ b/tools/lib/bpf/btf_dump.c
 
 
-I will merge Eugenio's patchset soon.
+Following perf build errors noticed on i386 and arm 32-bit architectures on
+linux next 20210719 tag with gcc-11.
 
--- 
-MST
+metadata:
+--------------
+   git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+   git_short_log: 08076eab6fef ( Add linux-next specific files for 20210719 )
+   toolchain: gcc-11
+   target_arch: arm and i386
 
+
+> +static void btf_dump_int128(struct btf_dump *d,
+> +                           const struct btf_type *t,
+> +                           const void *data)
+> +{
+> +       __int128 num = *(__int128 *)data;
+
+
+btf_dump.c: In function 'btf_dump_int128':
+btf_dump.c:1559:9: error: expected expression before '__int128'
+ 1559 |         __int128 num = *(__int128 *)data;
+      |         ^~~~~~~~
+btf_dump.c:1561:14: error: 'num' undeclared (first use in this function)
+ 1561 |         if ((num >> 64) == 0)
+      |              ^~~
+btf_dump.c:1561:14: note: each undeclared identifier is reported only
+once for each function it appears in
+btf_dump.c: At top level:
+btf_dump.c:1568:17: error: '__int128' is not supported on this target
+ 1568 | static unsigned __int128 btf_dump_bitfield_get_data(struct btf_dump *d,
+      |                 ^~~~~~~~
+btf_dump.c: In function 'btf_dump_bitfield_get_data':
+btf_dump.c:1576:18: error: '__int128' is not supported on this target
+ 1576 |         unsigned __int128 num = 0, ret;
+      |                  ^~~~~~~~
+btf_dump.c: In function 'btf_dump_bitfield_check_zero':
+btf_dump.c:1608:9: error: expected expression before '__int128'
+ 1608 |         __int128 check_num;
+      |         ^~~~~~~~
+btf_dump.c:1610:9: error: 'check_num' undeclared (first use in this function)
+ 1610 |         check_num = btf_dump_bitfield_get_data(d, t, data,
+bits_offset, bit_sz);
+      |         ^~~~~~~~~
+btf_dump.c: In function 'btf_dump_bitfield_data':
+btf_dump.c:1622:18: error: '__int128' is not supported on this target
+ 1622 |         unsigned __int128 print_num;
+      |                  ^~~~~~~~
+btf_dump.c: In function 'btf_dump_dump_type_data':
+btf_dump.c:2212:34: error: '__int128' is not supported on this target
+ 2212 |                         unsigned __int128 print_num;
+      |                                  ^~~~~~~~
+
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+reference build link,
+build: https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/
+config: https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/config
+
+
+steps to reproduce:
+---------------------
+# TuxMake is a command line tool and Python library that provides
+# portable and repeatable Linux kernel builds across a variety of
+# architectures, toolchains, kernel configurations, and make targets.
+#
+# TuxMake supports the concept of runtimes.
+# See https://docs.tuxmake.org/runtimes/, for that to work it requires
+# that you install podman or docker on your system.
+#
+# To install tuxmake on your system globally:
+# sudo pip3 install -U tuxmake
+#
+# See https://docs.tuxmake.org/ for complete documentation.
+
+
+tuxmake --runtime podman --target-arch arm --toolchain gcc-11
+--kconfig defconfig --kconfig-add
+https://builds.tuxbuild.com/1vWeCpIox9EoV35c80bwOvU9nbb/config
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
