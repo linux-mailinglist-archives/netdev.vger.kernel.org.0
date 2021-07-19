@@ -2,119 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 144193CCE72
-	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 09:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3225E3CCEB2
+	for <lists+netdev@lfdr.de>; Mon, 19 Jul 2021 09:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234823AbhGSHZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 03:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234559AbhGSHZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 03:25:55 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64062C061762
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 00:22:55 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id gb6so26998666ejc.5
-        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 00:22:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wM1rb/gmdPeOZ6FJpFaplJnOYR4K1cm0jlU1hEXr38s=;
-        b=KATtogEFo9OqXImI3C/eS7sxD8mDnUTjCyBuXvJf6hjAcSw+ClT4A2jfaGzJExvEPp
-         SzsnIyRLX58g9zPXkg5SRLHfmX0az2cusXDoadf4JjBO93QCysHE2fFHzUg90FYYH80S
-         j3arLrmaGV9xPRfxLXrRGFYicOQK6CB4urRCjocPJtIxPg4BfteRRJUn7B4pWxKZHE4/
-         w6+I7NY3l+7BbbNv0Xx7gvKXp5GWgjhP1xVShzFsHkrJnum3z7Ral5ARsnCTByYXFhni
-         hSl0dPxMls/gKvT1cTeTOAtDEdFMdk008bEQNBDnvtLhfn9mS5VCuOX49Xh4t02Jkzdk
-         l52g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wM1rb/gmdPeOZ6FJpFaplJnOYR4K1cm0jlU1hEXr38s=;
-        b=foH00svpXWF/JYGb8ss+FvfabaTCClU+QPv696k7eHmubFEV1IMEF96RcYc+YhFLMD
-         Ba47g5/ZI+YppGO11P2X6sRKOelUXBFnjhrg1j6K4ut3vMMMAlG9pv59SBamwsn5knay
-         jIEXvP38z8Wn607hXFZexLMJfFJaK9Ohg35k+AtIyR683q2bqXPH5+snc2J76s07JbKX
-         2lO9rver9PqLGxzoDvUCE8qTleg1fBCOBMuIFJUMXTAbUDoCdQEbCvwIQmF8LtuEL2mn
-         J1tA2KrwzcfI+T5IaDZxz/jAG2P96ScdH8qyBkLSJkRJHI1jknk3VOMFE2KZMMrpBWfW
-         v1XA==
-X-Gm-Message-State: AOAM531FSr1z/VHzy91oGzIceZoaoD179U/INHz++E8CCgXvOYssePnh
-        U+RreiRefQDWB4+J47YFS3E=
-X-Google-Smtp-Source: ABdhPJyHFNGEZFhOZWQGSJ22fAWK9rbRlAVa4z4iG4bDHvWmi6C+yoYMmZNi5qvyAMwS3H180+PeGQ==
-X-Received: by 2002:a17:906:998c:: with SMTP id af12mr25612647ejc.240.1626679374002;
-        Mon, 19 Jul 2021 00:22:54 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id l3sm5561208ejs.78.2021.07.19.00.22.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 00:22:53 -0700 (PDT)
-Date:   Mon, 19 Jul 2021 10:22:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH v4 net-next 11/15] net: bridge: switchdev: allow the TX
- data plane forwarding to be offloaded
-Message-ID: <20210719072251.encyen5fbln6z6je@skbuf>
-References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
- <20210718214434.3938850-12-vladimir.oltean@nxp.com>
+        id S234904AbhGSHo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 03:44:59 -0400
+Received: from lucky1.263xmail.com ([211.157.147.135]:46116 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234861AbhGSHo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 03:44:58 -0400
+Received: from localhost (unknown [192.168.167.224])
+        by lucky1.263xmail.com (Postfix) with ESMTP id A154EB1E2B;
+        Mon, 19 Jul 2021 15:41:47 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-SKE-CHECKED: 1
+X-ANTISPAM-LEVEL: 2
+Received: from localhost.localdomain (unknown [113.57.152.160])
+        by smtp.263.net (postfix) whith ESMTP id P4529T140205484918528S1626680507152669_;
+        Mon, 19 Jul 2021 15:41:47 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <64e0872b634c955f01fe8d3d28d83891>
+X-RL-SENDER: chenhaoa@uniontech.com
+X-SENDER: chenhaoa@uniontech.com
+X-LOGIN-NAME: chenhaoa@uniontech.com
+X-FST-TO: peppe.cavallaro@st.com
+X-RCPT-COUNT: 11
+X-SENDER-IP: 113.57.152.160
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   Hao Chen <chenhaoa@uniontech.com>
+To:     peppe.cavallaro@st.com
+Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org, Hao Chen <chenhaoa@uniontech.com>
+Subject: [PATCH] net: stmmac: fix 'ethtool -P' return -EBUSY
+Date:   Mon, 19 Jul 2021 15:41:06 +0800
+Message-Id: <20210719074106.4251-1-chenhaoa@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210718214434.3938850-12-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 12:44:30AM +0300, Vladimir Oltean wrote:
->  static int nbp_switchdev_add(struct net_bridge_port *p,
->  			     struct netdev_phys_item_id ppid,
-> +			     bool tx_fwd_offload,
->  			     struct netlink_ext_ack *extack)
->  {
-> +	int err;
-> +
->  	if (p->offload_count) {
->  		/* Prevent unsupported configurations such as a bridge port
->  		 * which is a bonding interface, and the member ports are from
-> @@ -189,7 +228,16 @@ static int nbp_switchdev_add(struct net_bridge_port *p,
->  	p->ppid = ppid;
->  	p->offload_count = 1;
->  
-> -	return nbp_switchdev_hwdom_set(p);
-> +	err = nbp_switchdev_hwdom_set(p);
-> +	if (err)
-> +		return err;
-> +
-> +	if (tx_fwd_offload) {
-> +		p->flags |= BR_TX_FWD_OFFLOAD;
-> +		static_branch_inc(&br_switchdev_fwd_offload_used);
-> +	}
-> +
-> +	return 0;
->  }
->  
->  static void nbp_switchdev_del(struct net_bridge_port *p,
-> @@ -210,6 +258,8 @@ static void nbp_switchdev_del(struct net_bridge_port *p,
->  
->  	if (p->hwdom)
->  		nbp_switchdev_hwdom_put(p);
-> +
-> +	p->flags &= ~BR_TX_FWD_OFFLOAD;
->  }
+The permanent mac address should be available for query when the device
+is not up.
+NetworkManager, the system network daemon, uses 'ethtool -P' to obtain
+the permanent address after the kernel start. When the network device
+is not up, it will return the device busy error with 'ethtool -P'. At
+that time, it is unable to access the Internet through the permanent
+address by NetworkManager.
+I think that the '.begin' is not used to check if the device is up.
 
-Not the end of the world, but the static_branch_dec(&br_switchdev_fwd_offload_used)
-was lost here in a rebase. Not a functional issue per se, but it is on
-my list of things I would like to fix when I resend.
+Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index d0ce608b81c3..ef99b9533612 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -412,8 +412,10 @@ static void stmmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
+ 
+ static int stmmac_check_if_running(struct net_device *dev)
+ {
+-	if (!netif_running(dev))
+-		return -EBUSY;
++	struct stmmac_priv *priv = netdev_priv(ndev);
++
++	pm_runtime_get_sync(priv->device);
++
+ 	return 0;
+ }
+ 
+-- 
+2.20.1
+
+
+
