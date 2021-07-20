@@ -2,125 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7753D0216
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:17:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE203D0222
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbhGTShA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 14:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S229719AbhGTSll (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 14:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbhGTSgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:36:51 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9B1C061574;
-        Tue, 20 Jul 2021 12:17:29 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id d2so27225936wrn.0;
-        Tue, 20 Jul 2021 12:17:29 -0700 (PDT)
+        with ESMTP id S229592AbhGTSlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:41:37 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B78C061574
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 12:22:13 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id s193so21115188qke.4
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 12:22:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LFqGuQYbSYic2u5N8WrZCaPn7mbJmQEzqnlwsrqQMX4=;
-        b=UhK9ywLNoes0a0OAkeYCZgRAXjCKBRXKoqqwZe5IaOXAm5fwY4H3y7qiXpRXVhHNig
-         9BKM7ANBxU2aXhwGWaoX0kRPS/MoamyuMTZpV/s2Yd4xHAEMNy/HJtlCtIfXEdK1f9Hc
-         DE0uTtzN9cMussovlXPzY80ZF+4QCOlJsqEQPM1r8qkO/nEkHXIS14e1qvIPkJE80Rwm
-         T2QPpI9vUuLW6AjAbxgIw7i2Kb0M/p2L2K4mBzdUw4n4DDnxYK6QNC6b4rBEax9vJDuv
-         Emfz/knQrYlpklj+kVm3kfABMadEXMP9cVcVLtgc7nHI70Y1fUR+TVCCyQ316PxBYmJr
-         MOpA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lJ75WYeeE402syI2eR3iksgV3fgVsDh6b/H1A0UUJFA=;
+        b=FXEK1TEQHS8xCRU6HT2Lq6rrIHNFiQDBw534d2OBGUmS8+gGUZ6ViH4u8zzufdmjFG
+         QBI9c5V856mBL4G5TIiWJKO/cLXSs9A+x42eyVuLJxiXEcABjkYywRrUCPfsAygNabJ/
+         yVxlbfn3fmpWdQnv3k3lhAeRvzeh1X+3ciQB8+Qm8omQ5hB9JtSfq5xIbB/ePpyhYtGZ
+         t5VDri2rZih4iMa+hI+AFked/9++UQtCH7R0gCSAPXrnWFjvuQnz4WwbtJ/nqoWq9/c2
+         2w0fnqi0seXoeDNggTPsD4yDUxBKWTC/RnM2eu+GO2b6dmn8EaKVRp5IhsUeTeEqruob
+         TrXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LFqGuQYbSYic2u5N8WrZCaPn7mbJmQEzqnlwsrqQMX4=;
-        b=irSSauyH9bFl9+1G+VubOyM2Awp6ViSQyW2wTuzJ1TWDeEppfc/lZi9CGMOpi8Nuwf
-         1vF1b36Yis6nzerueUoQfUjXmSFXnTChh1CFi8Z4BkWR0y3JickfGx+pJRIx6Do7+9rF
-         +gv6OsmYtpY9XPeQLGgWaTnSuiBzosm1fQp3JSXpDXRBnTWzrJWZs1YGEASsDpvyekEs
-         0lfDvxvrhFeBmQMeyM0TqKsIrpDd+vjSnmyA7vhN5tcpCsCktWsJWxo98ypgd3Uwm9jB
-         cEHOedlReAWaqkmBy77LYian3Yq6hg7shgWhxFyo/VCARLK3dePE7FmH42rQjZATnxJn
-         AWDg==
-X-Gm-Message-State: AOAM5316PPWJ2jXqhCkPU20R+3fvbneXSxg6gsMcdw6IQLMAbFjJSbsT
-        75+mmyZWSAa11dOBJZh9Xqg=
-X-Google-Smtp-Source: ABdhPJy+a+ZHYGK5P/t19qY9NtQHoOFb+K8U1RYR6/UCMmH3X3LIwo9CcBgUGVPM/p6ec/8dYYIEww==
-X-Received: by 2002:adf:e7c8:: with SMTP id e8mr36982105wrn.303.1626808648022;
-        Tue, 20 Jul 2021 12:17:28 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f3f:3d00:5da4:4158:494a:5076? (p200300ea8f3f3d005da44158494a5076.dip0.t-ipconnect.de. [2003:ea:8f3f:3d00:5da4:4158:494a:5076])
-        by smtp.googlemail.com with ESMTPSA id w18sm26524024wrg.68.2021.07.20.12.17.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Jul 2021 12:17:27 -0700 (PDT)
-Subject: Re: [PATCH net v3] r8169: Avoid duplicate sysfs entry creation error
-To:     Andre Przywara <andre.przywara@arm.com>, nic_swsd@realtek.com
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sayanta Pattanayak <sayanta.pattanayak@arm.com>
-References: <20210720161740.5214-1-andre.przywara@arm.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c5e8d932-b9f6-f05c-91ab-10d9cd6878fc@gmail.com>
-Date:   Tue, 20 Jul 2021 21:17:20 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lJ75WYeeE402syI2eR3iksgV3fgVsDh6b/H1A0UUJFA=;
+        b=pe5rmqz6/0zj/lJn87s6BELsja6LS4ZtnGIKEgiD3iUfQL0JJwpGDhi+8Vssfnf5uV
+         Q8u/vEsV0pmL4Hu4WLS3eIZjBoLBZxSkz+Mry93zWkZyYzp1ShSsKHolzMbh0bQp1yvV
+         ntlfbxlXmpbuf3dLFmctBRYOxdFc4JeVuUsFyl69cthSOdECjqF/gF6yRdOQnhjrg/97
+         7MvDwBemQSxFi4cN4AAFARziIHPCazkDyFBcfP4f8bCq3nuaylMiAnowCLDuh2cVofpr
+         WTKvcEK4j7zze3k9kH7GZxCHEtWkxxGvaBXd06m1Lk/mAkbN3P7isGYQeLQ9DbSyvD1I
+         KP8w==
+X-Gm-Message-State: AOAM531M1yXlljmCDl06TiOVeD9ol4w+8oWK1lKLsxD1aaE9qJaPdFX+
+        MRSPAqdEeFU8ZXvR0ogLe4VDfAq+jQ==
+X-Google-Smtp-Source: ABdhPJws7/1lwJd444bcGZFSy7g8L/2hlWkhTKEw6ZkttmyKw7CDyNJGjj0ygXucgK1mUpydZiYIAw==
+X-Received: by 2002:a05:620a:2224:: with SMTP id n4mr9275988qkh.424.1626808932226;
+        Tue, 20 Jul 2021 12:22:12 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
+        by smtp.gmail.com with ESMTPSA id q206sm10174147qka.19.2021.07.20.12.22.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 12:22:11 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH iproute2 v2] tc/skbmod: Remove misinformation about the swap action
+Date:   Tue, 20 Jul 2021 12:21:45 -0700
+Message-Id: <20210720192145.20166-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210720180416.19897-1-yepeilin.cs@gmail.com>
+References: <20210720180416.19897-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210720161740.5214-1-andre.przywara@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.07.2021 18:17, Andre Przywara wrote:
-> From: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
-> 
-> When registering the MDIO bus for a r8169 device, we use the PCI
-> bus/device specifier as a (seemingly) unique device identifier.
-> However the very same BDF number can be used on another PCI segment,
-> which makes the driver fail probing:
-> 
-> [ 27.544136] r8169 0002:07:00.0: enabling device (0000 -> 0003)
-> [ 27.559734] sysfs: cannot create duplicate filename '/class/mdio_bus/r8169-700'
-> ....
-> [ 27.684858] libphy: mii_bus r8169-700 failed to register
-> [ 27.695602] r8169: probe of 0002:07:00.0 failed with error -22
-> 
-> Add the segment number to the device name to make it more unique.
-> 
-> This fixes operation on ARM N1SDP boards, with two boards connected
-> together to form an SMP system, and all on-board devices showing up
-> twice, just on different PCI segments. A similar issue would occur on
-> large systems with many PCI slots and multiple RTL8169 NICs.
-> 
-> Fixes: f1e911d5d0dfd ("r8169: add basic phylib support")
-> Signed-off-by: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
-> [Andre: expand commit message, use pci_domain_nr()]
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> ---
-> Compile-tested on ARM, arm64, ppc64, sparc64, mips64, hppa, x86-64,
-> i386. Tested on an AMD system with an on-board RTL8111 chip.
-> 
-> Changes v2 ... v3:
-> - Resent with Fixes tag and proper net: annotation
-> 
-> Changes v1 ... v2:
-> - use pci_domain_nr() wrapper to fix compilation on various arches
-> 
->  drivers/net/ethernet/realtek/r8169_main.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index f744557c33a3..c7af5bc3b8af 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -5084,7 +5084,8 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  	new_bus->priv = tp;
->  	new_bus->parent = &pdev->dev;
->  	new_bus->irq[0] = PHY_MAC_INTERRUPT;
-> -	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x", pci_dev_id(pdev));
-> +	snprintf(new_bus->id, MII_BUS_ID_SIZE, "r8169-%x-%x",
-> +		 pci_domain_nr(pdev->bus), pci_dev_id(pdev));
->  
->  	new_bus->read = r8169_mdio_read_reg;
->  	new_bus->write = r8169_mdio_write_reg;
-> 
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
+Currently man 8 tc-skbmod says that "...the swap action will occur after
+any smac/dmac substitutions are executed, if they are present."
+
+This is false.  In fact, trying to "set" and "swap" in a single skbmod
+command causes the "set" part to be completely ignored.  As an example:
+
+	$ tc filter add dev eth0 parent 1: protocol ip prio 10 \
+		matchall action skbmod \
+        	set dmac AA:AA:AA:AA:AA:AA smac BB:BB:BB:BB:BB:BB \
+        	swap mac
+
+The above command simply does a "swap", without setting DMAC or SMAC to
+AA's or BB's.  The root cause of this is in the kernel, see
+net/sched/act_skbmod.c:tcf_skbmod_init():
+
+	parm = nla_data(tb[TCA_SKBMOD_PARMS]);
+	index = parm->index;
+	if (parm->flags & SKBMOD_F_SWAPMAC)
+		lflags = SKBMOD_F_SWAPMAC;
+		^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Doing a "=" instead of "|=" clears all other "set" flags when doing a
+"swap".  Discourage using "set" and "swap" in the same command by
+documenting it as undefined behavior, and update the "SYNOPSIS" section
+as well as tc -help text accordingly.
+
+If one really needs to e.g. "set" DMAC to all AA's then "swap" DMAC and
+SMAC, one should do two separate commands and "pipe" them together.
+
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+Changes in v2:
+	- Update tc -help text as well
+	- Update commit message accordingly
+	- Fix typo in commit message
+	- Change title from "man: tc-skbmod.8:" to "tc/skbmod:"
+
+ man/man8/tc-skbmod.8 | 24 +++++++++++++-----------
+ tc/m_skbmod.c        |  5 ++---
+ 2 files changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/man/man8/tc-skbmod.8 b/man/man8/tc-skbmod.8
+index eb3c38fa6bf3..76512311b17d 100644
+--- a/man/man8/tc-skbmod.8
++++ b/man/man8/tc-skbmod.8
+@@ -5,12 +5,12 @@ skbmod - user-friendly packet editor action
+ .SH SYNOPSIS
+ .in +8
+ .ti -8
+-.BR tc " ... " "action skbmod " "{ [ " "set "
+-.IR SETTABLE " ] [ "
++.BR tc " ... " "action skbmod " "{ " "set "
++.IR SETTABLE " | "
+ .BI swap " SWAPPABLE"
+-.RI " ] [ " CONTROL " ] [ "
++.RI " } [ " CONTROL " ] [ "
+ .BI index " INDEX "
+-] }
++]
+ 
+ .ti -8
+ .IR SETTABLE " := "
+@@ -25,6 +25,7 @@ skbmod - user-friendly packet editor action
+ .IR SWAPPABLE " := "
+ .B mac
+ .ti -8
++
+ .IR CONTROL " := {"
+ .BR reclassify " | " pipe " | " drop " | " shot " | " continue " | " pass " }"
+ .SH DESCRIPTION
+@@ -48,10 +49,7 @@ Change the source mac to the specified address.
+ Change the ethertype to the specified value.
+ .TP
+ .BI mac
+-Used to swap mac addresses. The
+-.B swap mac
+-directive is performed
+-after any outstanding D/SMAC changes.
++Used to swap mac addresses.
+ .TP
+ .I CONTROL
+ The following keywords allow to control how the tree of qdisc, classes,
+@@ -128,9 +126,13 @@ tc filter add dev eth3 parent 1: protocol ip prio 10 \\
+ .EE
+ .RE
+ 
+-As mentioned above, the swap action will occur after any
+-.B " smac/dmac "
+-substitutions are executed, if they are present.
++However, trying to
++.B set
++and
++.B swap
++in a single
++.B skbmod
++command will cause undefined behavior.
+ 
+ .SH SEE ALSO
+ .BR tc (8),
+diff --git a/tc/m_skbmod.c b/tc/m_skbmod.c
+index e13d3f16bfcb..3fe30651a7d8 100644
+--- a/tc/m_skbmod.c
++++ b/tc/m_skbmod.c
+@@ -28,10 +28,9 @@
+ static void skbmod_explain(void)
+ {
+ 	fprintf(stderr,
+-		"Usage:... skbmod {[set <SETTABLE>] [swap <SWAPABLE>]} [CONTROL] [index INDEX]\n"
++		"Usage:... skbmod { set <SETTABLE> | swap <SWAPPABLE> } [CONTROL] [index INDEX]\n"
+ 		"where SETTABLE is: [dmac DMAC] [smac SMAC] [etype ETYPE]\n"
+-		"where SWAPABLE is: \"mac\" to swap mac addresses\n"
+-		"note: \"swap mac\" is done after any outstanding D/SMAC change\n"
++		"where SWAPPABLE is: \"mac\" to swap mac addresses\n"
+ 		"\tDMAC := 6 byte Destination MAC address\n"
+ 		"\tSMAC := optional 6 byte Source MAC address\n"
+ 		"\tETYPE := optional 16 bit ethertype\n"
+-- 
+2.20.1
+
