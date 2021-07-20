@@ -2,80 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5CD3CF351
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 06:30:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C883CF3B5
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 06:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240855AbhGTDtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 23:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231795AbhGTDtZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 23:49:25 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAF1C061574;
-        Mon, 19 Jul 2021 21:30:03 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id t9so21390950pgn.4;
-        Mon, 19 Jul 2021 21:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BzuDwtFqPo4qqrRvCl7MJ3PnC9VhI0oxy96YAAdNcKM=;
-        b=ceLJfZuTfRY/Mn7cPwed8gBs+/+yyBD1PqVOW0Gc6mVjxUdHEpTGsCXwoe4YWELZpW
-         3Sq2M9k8NRI7Of1AJEzlwhDr15YhH4Ssvmhxm8KUUFPGcBsR5qxVaVkC/dEsgfqcWPEQ
-         BPjEATi0kcgW2M0IsTsVQ2zbUzGaIeTlnzkpkwk2g21Re/sYPQRLBxy5FYQyxcZJdf6x
-         r/zlarBJ1mN7x1jJWJKNz96mWcxL6dI7yNfbZ7in75cxKtL4YYWZvglJ9s+bNExlbQI4
-         jCQ1lZ5pNFKgG2dqyaml3fL1n5lFGjzbJnjLZ2/BzUG0hmr3oeZPGv5HgDvq3AxVdUsg
-         XNlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BzuDwtFqPo4qqrRvCl7MJ3PnC9VhI0oxy96YAAdNcKM=;
-        b=aGx8KLLgmxzSl+DWb9lEBJNsYEFurAmBc1Hoh+L37Fi5gHqgd2LeLb9/zqrujdsrtx
-         HRaIi57XCB4ZMyd+eYe3GtJpzio2OlCzZlO83J55FxV9HiiaJl+ldNqZeFmKMqo8pjl8
-         JbTHo1ZCVFOXhLdNy6jMM/WUiBBjv9yI6quuYPM3J6rXzHMycgFnB/6UxdYbHozSvOYj
-         QyG8RpAJD720Q5/nqOTmk7EHUtW7LpdYjkKASFY6flb5NF2QGVFsze+SUYQuIdkQ5QNN
-         3Udp4jNdSyg2B0duKhHpvdw2/KBd7NY25TgaqkeXVVPZTryBH/Kj4q8FE8nrub44GYxn
-         473g==
-X-Gm-Message-State: AOAM5328UYfd/I8fMCjsJuisJ438ZeSPcxAXdjIxMa00bo4xxRFM206Z
-        RRSYEBpU3rXjsSFGaISezEWtanGb4A4QLafH+GY=
-X-Google-Smtp-Source: ABdhPJwGAZ9pw6/Nfnhc5hLXNtEg5yNwKeNeSbOw+AZLvl+tfUHhCBayNrYsQxUnt637bXLneJYy0l0K/WoLrHGLNU0=
-X-Received: by 2002:a62:ea1a:0:b029:329:a95a:fab with SMTP id
- t26-20020a62ea1a0000b0290329a95a0fabmr29822885pfh.31.1626755402840; Mon, 19
- Jul 2021 21:30:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210719051816.11762-1-yajun.deng@linux.dev>
-In-Reply-To: <20210719051816.11762-1-yajun.deng@linux.dev>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 19 Jul 2021 21:29:51 -0700
-Message-ID: <CAM_iQpV56fJjHotOuOsk=FavTqt9goDbfv4tv5J0nuoU-LKkWw@mail.gmail.com>
-Subject: Re: [PATCH] netlink: Deal with ESRCH error in nlmsg_notify()
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S240119AbhGTEPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 00:15:19 -0400
+Received: from mga14.intel.com ([192.55.52.115]:51770 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235192AbhGTEPP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 00:15:15 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10050"; a="210897301"
+X-IronPort-AV: E=Sophos;i="5.84,254,1620716400"; 
+   d="scan'208";a="210897301"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2021 21:55:54 -0700
+X-IronPort-AV: E=Sophos;i="5.84,254,1620716400"; 
+   d="scan'208";a="431923322"
+Received: from ywei11-mobl1.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.251.138.31])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2021 21:55:53 -0700
+From:   Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <mgross@linux.intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Peter H Anvin <hpa@zytor.com>, Dave Hansen <dave.hansen@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 0/6] Add TDX Guest Support (Attestation support)
+Date:   Mon, 19 Jul 2021 21:55:46 -0700
+Message-Id: <20210720045552.2124688-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 18, 2021 at 10:19 PM Yajun Deng <yajun.deng@linux.dev> wrote:
-> The failure seems due to the commit
->     cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")
->
-> Deal with ESRCH error in nlmsg_notify() even the report variable is zero.
+Hi All,
 
-Looks like the tc-testing failure I saw is also due to this...
+Intel's Trust Domain Extensions (TDX) protect guest VMs from malicious
+hosts and some physical attacks. VM guest with TDX support is called
+as TD Guest.
 
-Why not just revert the above commit which does not have
-much value? It at most saves some instructions.
+In TD Guest, the attestation process is used to verify the 
+trustworthiness of TD guest to the 3rd party servers. Such attestation
+process is required by 3rd party servers before sending sensitive
+information to TD guests. One usage example is to get encryption keys
+from the key server for mounting the encrypted rootfs or secondary drive.
+    
+Following patches adds the attestation support to TDX guest which
+includes attestation user interface driver, user agent example, and
+related hypercall support.
 
-Thanks.
+In this series, only following patches are in arch/x86 and are
+intended for x86 maintainers review.
+
+* x86/tdx: Add TDREPORT TDX Module call support
+* x86/tdx: Add GetQuote TDX hypercall support
+* x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+
+Patch titled "platform/x86: intel_tdx_attest: Add TDX Guest attestation
+interface driver" adds the attestation driver support. This is supposed
+to be reviewed by platform-x86 maintainers.
+
+Also, patch titled "tools/tdx: Add a sample attestation user app" adds
+a testing app for attestation feature which needs review from
+bpf@vger.kernel.org.
+
+This series is the continuation of the following TDX patch series which
+added basic TDX guest support.
+
+[set 1] - https://lore.kernel.org/patchwork/project/lkml/list/?series=508773
+[set 2] - https://lore.kernel.org/patchwork/project/lkml/list/?series=508792
+[set 3] - https://lore.kernel.org/patchwork/project/lkml/list/?series=508794
+[set 4] - https://lore.kernel.org/patchwork/project/lkml/list/?series=508795
+[set 5] - https://lore.kernel.org/patchwork/project/lkml/list/?series=508798
+
+Also please note that this series alone is not necessarily fully
+functional.
+
+You can find TDX related documents in the following link.
+
+https://software.intel.com/content/www/br/pt/develop/articles/intel-trust-domain-extensions.html
+
+Changes since v2:
+ * Rebased on top of v5.14-rc1.
+ * Rest of the history is included in individual patches.
+
+Changes since v1:
+ * Included platform-x86 and test tool maintainers in recipient list.
+ * Fixed commit log and comments in attestation driver as per Han's comments.
+
+
+Kuppuswamy Sathyanarayanan (6):
+  x86/tdx: Add TDREPORT TDX Module call support
+  x86/tdx: Add GetQuote TDX hypercall support
+  x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+  x86/tdx: Add TDX Guest event notify interrupt vector support
+  platform/x86: intel_tdx_attest: Add TDX Guest attestation interface
+    driver
+  tools/tdx: Add a sample attestation user app
+
+ arch/x86/include/asm/hardirq.h          |   1 +
+ arch/x86/include/asm/idtentry.h         |   4 +
+ arch/x86/include/asm/irq_vectors.h      |   7 +-
+ arch/x86/include/asm/tdx.h              |   6 +
+ arch/x86/kernel/irq.c                   |   7 +
+ arch/x86/kernel/tdx.c                   | 137 ++++++++++++++
+ drivers/platform/x86/Kconfig            |   9 +
+ drivers/platform/x86/Makefile           |   1 +
+ drivers/platform/x86/intel_tdx_attest.c | 208 +++++++++++++++++++++
+ include/uapi/misc/tdx.h                 |  37 ++++
+ tools/Makefile                          |  13 +-
+ tools/tdx/Makefile                      |  19 ++
+ tools/tdx/attest/.gitignore             |   2 +
+ tools/tdx/attest/Makefile               |  24 +++
+ tools/tdx/attest/tdx-attest-test.c      | 232 ++++++++++++++++++++++++
+ 15 files changed, 700 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/platform/x86/intel_tdx_attest.c
+ create mode 100644 include/uapi/misc/tdx.h
+ create mode 100644 tools/tdx/Makefile
+ create mode 100644 tools/tdx/attest/.gitignore
+ create mode 100644 tools/tdx/attest/Makefile
+ create mode 100644 tools/tdx/attest/tdx-attest-test.c
+
+-- 
+2.25.1
+
