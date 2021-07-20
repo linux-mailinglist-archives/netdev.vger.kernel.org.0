@@ -2,128 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 279C33D0355
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 22:49:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6AB33D035A
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 22:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236383AbhGTUIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 16:08:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        id S236686AbhGTUJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 16:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237114AbhGTTqv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 15:46:51 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F4FC061574
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 13:27:24 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id x192so259586ybe.6
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 13:27:24 -0700 (PDT)
+        with ESMTP id S233788AbhGTTsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 15:48:54 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413DDC061574;
+        Tue, 20 Jul 2021 13:29:32 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id l17-20020a05600c1d11b029021f84fcaf75so2214944wms.1;
+        Tue, 20 Jul 2021 13:29:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f12s54+eyWIf+eHB0ztyAYYgttS0GCpkKbq47ruBZx0=;
-        b=YHvtXB3bHNEHeNMHj3+gvMabWRvBS9WoGFP9+Gf6AbEOK/x3S08MKxL5ahMcyRiwh4
-         c2scMP9Y1F3l9CyhGrlc0q+bZq/FojRp6UAwQRhedcpHgitDyZeze+KpOUu5ScKlbJ2X
-         k0osy9wMF0G8orgjt2kf/9mOSSwtmntHlSBPgHGIO/cIvqweHJCfkrULIySaCedbwyku
-         FsqAFLnIoC+ORbSJlkJ9uEP+oBxADh4kZuLKUNZZzWC1J6lj5dEiqbiA+1nQuhiaSlhv
-         f3TzQ0ZqHbDoJMXaVGm4MQXGfshn+nLq7tZNj0zEeaJJ28/riW5KYBMG/KXEDHnXzIei
-         a5sA==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=spHWMCWbLPdVVzt/OhadKjOndhFAjh0EyUZxrZ8+tk4=;
+        b=J/s3gZLWHQ3mDwvqzIXrn7/G6UBtRgMd+I/Q5wWpwg0CuLK+3aMi87D9SLXQgvRSKG
+         2P1pAoPY1zFqIsze7J+tOM8CKtC8EBvD6YP0w1c4A1dtRcdY0vfRwnMGMw6qbb/9k3iF
+         jeBfnHI1C1Y9y/o9a6kQtZGhzkUS7NXgCSyrqpZokKbTwCeeomSTIf1LjO50CMf3f/iT
+         +KVNN4fkE3wjHXbNf9RQqF+feakK2BHj4iWoy4HjFp/ZUBJidEV0vkRcv0f1+WUqppA8
+         Dg5ckNxTmxEzDylGtfvZX4CKU/BahIUJOWJUqSBlftLJ1F4oGMBrxZwySYMEc0S/g/us
+         SJRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f12s54+eyWIf+eHB0ztyAYYgttS0GCpkKbq47ruBZx0=;
-        b=O11zxXluVMo2UVd9u9Se0fkjFV91ZQIDQklEvsSEUaMNNsavpjqRdnZh7tJ8DnIEo5
-         8K2O5La6Ff599SUv5CTm8JCkzKZftrfxN4tCkZul2gB0gmqUEKcgSDSkM3WYR7oEKSEz
-         jEOCC5PeLfoeMt2ZL0i+9PkjKt/86QKmf0VO7GFa/aZerS5Jk9N7dH1ubWYZyZ3PuVjV
-         oy+CnY9lEXux3HZ6UVah9YvtSTKuJtf+H1ObOTTIArdjJuXkB4T2KAyvo6PENDY6mAR7
-         bfBu6wC3RXbKep1BOh2g5mMjxGIBy41RgjR0jxs+6Lnj8slKaQkm4XZkgPIW2E7gg3nA
-         O0ZQ==
-X-Gm-Message-State: AOAM531aQrztTi5e4PYdayl/YNLlBRP6swKQ25DiGdIP7gxAadRdXO4x
-        QQ8iLMbxt93Zr3znb7NdQ87Tqryfg1GUxAQJnEM=
-X-Google-Smtp-Source: ABdhPJwm9X6OWGd7VvFEgW+Uxa3wRr/NRZpJSGd+avbtNclbgcwzQBiPHTxNg30KvpQTjyplutymNVZ5CguMc+eh8Rk=
-X-Received: by 2002:a25:9942:: with SMTP id n2mr41593997ybo.230.1626812843322;
- Tue, 20 Jul 2021 13:27:23 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=spHWMCWbLPdVVzt/OhadKjOndhFAjh0EyUZxrZ8+tk4=;
+        b=awsEu0vYWwAEufXyCqoCMBkrMHRUbBczddd/sWnItGRY9QQIKBvVlljt1hSpjxhJ/N
+         4j2iod2op+gDb6ViTNbWb7MkHf2CtnS4FwUXrGG9bZ/Bd06AR/t0Z/rSHks/V6XQPUZz
+         YBkz/Sfa5nt0sbVNQL66avSZ4ZhkeluDAQ85sUTkF6PcpWahdbdOnyFm4c6smlS9MuIy
+         rIA2Kjlpizx/nVhJ/mWeGdF1wKTKqt5xLk6wbGHrnG2aYmFzgWHifTBhzLpnsSAt0U3U
+         QyS26GXfoHahvyukNp/6Gy33Q414qnlAvy7xocD455URzu4ufxzk8XLbaW2fvI75+ruS
+         o2ZQ==
+X-Gm-Message-State: AOAM532H/C3g47qKW0hfqMHO/wO6jtwJoRh3ukcu7iJ+gyEa/PK+vjuw
+        WzgneWEfdu3mtOH3tgIeyGaXThx0MfR6dg==
+X-Google-Smtp-Source: ABdhPJx9G8NnvhuQsujtp1RHaA7bEIedOgoEhkAIROwiSYVSHt4CzJ8R9BjMfmi007+tD8OQsnC0bA==
+X-Received: by 2002:a05:600c:4304:: with SMTP id p4mr28984202wme.93.1626812970500;
+        Tue, 20 Jul 2021 13:29:30 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f3f:3d00:5da4:4158:494a:5076? (p200300ea8f3f3d005da44158494a5076.dip0.t-ipconnect.de. [2003:ea:8f3f:3d00:5da4:4158:494a:5076])
+        by smtp.googlemail.com with ESMTPSA id d67sm3878215wmd.9.2021.07.20.13.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Jul 2021 13:29:29 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com> <YPTKB0HGEtsydf9/@lunn.ch>
+ <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com> <YPbu8xOFDRZWMTBe@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
+Date:   Tue, 20 Jul 2021 22:29:21 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210705124307.201303-1-m@lambda.lt>
-In-Reply-To: <20210705124307.201303-1-m@lambda.lt>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 20 Jul 2021 13:27:12 -0700
-Message-ID: <CAEf4Bzb_FAOMK+8J+wyvbR2etYFDU1ae=P3pwW3fzfcWctZ1Xw@mail.gmail.com>
-Subject: Re: [PATCH iproute2] libbpf: fix attach of prog with multiple sections
-To:     Martynas Pumputis <m@lambda.lt>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YPbu8xOFDRZWMTBe@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 5, 2021 at 5:44 AM Martynas Pumputis <m@lambda.lt> wrote:
->
-> When BPF programs which consists of multiple executable sections via
-> iproute2+libbpf (configured with LIBBPF_FORCE=on), we noticed that a
-> wrong section can be attached to a device. E.g.:
->
->     # tc qdisc replace dev lxc_health clsact
->     # tc filter replace dev lxc_health ingress prio 1 \
->         handle 1 bpf da obj bpf_lxc.o sec from-container
->     # tc filter show dev lxc_health ingress filter protocol all
->         pref 1 bpf chain 0 filter protocol all pref 1 bpf chain 0
->         handle 0x1 bpf_lxc.o:[__send_drop_notify] <-- WRONG SECTION
->         direct-action not_in_hw id 38 tag 7d891814eda6809e jited
->
-> After taking a closer look into load_bpf_object() in lib/bpf_libbpf.c,
-> we noticed that the filter used in the program iterator does not check
-> whether a program section name matches a requested section name
-> (cfg->section). This can lead to a wrong prog FD being used to attach
-> the program.
->
-> Fixes: 6d61a2b55799 ("lib: add libbpf support")
-> Signed-off-by: Martynas Pumputis <m@lambda.lt>
-> ---
->  lib/bpf_libbpf.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/lib/bpf_libbpf.c b/lib/bpf_libbpf.c
-> index d05737a4..f76b90d2 100644
-> --- a/lib/bpf_libbpf.c
-> +++ b/lib/bpf_libbpf.c
-> @@ -267,10 +267,12 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
->         }
->
->         bpf_object__for_each_program(p, obj) {
-> +               bool prog_to_attach = !prog && cfg->section &&
-> +                       !strcmp(get_bpf_program__section_name(p), cfg->section);
+On 20.07.2021 17:42, Andrew Lunn wrote:
+>> I checked the LED subsystem and didn't find a way to place the LED
+>> sysfs files in a place other than /sys/class/leds. Maybe Pavel can
+>> comment on whether I just missed something.
+> 
+> https://lwn.net/ml/linux-kernel/20200908000300.6982-1-marek.behun@nic.cz/
+> 
+> It comments the sys files appear under
+> /sys/class/net/<ifname>/phydev/leds/. phydev is a symbolic link to the
+> phy devices, provided by the phydev subsystem. So they are actually
+> attached to the PHY device. And this appears to be due to:
+> 
+> 	ret = devm_led_classdev_register_ext(&phydev->mdio.dev, &led->cdev, &init_data);
+> 
+> The LEDs are parented to the phy device. This has the nice side affect
+> that PHYs are not part of the network name space. You can rename the
+> interface, /sys/class/net/<ifname> changes, but the symbolic link
+> still points to the phy device.
+> 
+> When not using phydev, it probably gets trickier. You probably want
+> the LEDs parented to the PCI device, and you need to follow a
+> different symbolic link out of /sys/class/net/<ifname>/ to find the
+> LED.
+> 
+> There was talk of adding an ledtool, which knows about these
+> links. But i pushed for it to be added to ethtool. Until we get an
+> implementation actually merged, that is academic.
+> 
+>> For r8169 I'm facing a similar challenge like Kurt. Most family
+>> members support three LED's:
+>> - Per LED a mode 0 .. 15 can be set that defines which link speed(s)
+>>   and/or activity is indicated.
+>> - Period and duty cycle for blinking can be controlled, but this
+>>   setting applies to all three LED's.
+> 
+> Cross LED settings is a problem. The Marvell PHYs have a number of
+> independent modes. Plus they have some shared modes which cross LEDs.
+> At the moment, there is no good model for these shared modes.
+> 
+> We have to look at the trade offs here. At the moment we have at least
+> 3 different ways of setting PHY LEDs via DT. Because each driver does
+> it its own way, it probably allows full access to all features. But it
+> is very unfriendly. Adopting Linux LEDs allows us to have a single
+> uniform API for all these PHY LEDs, and probably all MAC drivers which
+> don't use PHY drivers. But at the expense of probably not supporting
+> all features of the hardware. My opinion is, we should ignore some of
+> the hardware features in order to get a simple to use uniform
+> interface for all LEDs, which probably covers the features most people
+> are interested in anyway.
+> 
 
-This is still problematic, because one section can have multiple BPF
-programs. I.e., it's possible two define two or more XDP BPF programs
-all with SEC("xdp") and libbpf works just fine with that. I suggest
-moving users to specify the program name (i.e., C function name
-representing the BPF program). All the xdp_mycustom_suffix namings are
-a hack and will be rejected by libbpf 1.0, so it would be great to get
-a head start on fixing this early on.
+Thanks for the hint, Andrew. If I make &netdev->dev the parent,
+then I get:
 
-> +
->                 /* Only load the programs that will either be subsequently
->                  * attached or inserted into a tail call map */
-> -               if (find_legacy_tail_calls(p, obj) < 0 && cfg->section &&
-> -                   strcmp(get_bpf_program__section_name(p), cfg->section)) {
-> +               if (find_legacy_tail_calls(p, obj) < 0 && !prog_to_attach) {
->                         ret = bpf_program__set_autoload(p, false);
->                         if (ret)
->                                 return -EINVAL;
-> @@ -279,7 +281,8 @@ static int load_bpf_object(struct bpf_cfg_in *cfg)
->
->                 bpf_program__set_type(p, cfg->type);
->                 bpf_program__set_ifindex(p, cfg->ifindex);
-> -               if (!prog)
-> +
-> +               if (prog_to_attach)
->                         prog = p;
->         }
->
-> --
-> 2.32.0
->
+ll /sys/class/leds/
+total 0
+lrwxrwxrwx 1 root root 0 Jul 20 21:37 led0 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led0
+lrwxrwxrwx 1 root root 0 Jul 20 21:37 led1 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led1
+lrwxrwxrwx 1 root root 0 Jul 20 21:37 led2 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led2
+
+Now the (linked) LED devices are under /sys/class/net/<ifname>, but still
+the primary LED devices are under /sys/class/leds and their names have
+to be unique therefore. The LED subsystem takes care of unique names,
+but in case of a second network interface the LED device name suddenly
+would be led0_1 (IIRC). So the names wouldn't be predictable, and I think
+that's not what we want.
+We could use something like led0_<pci_id>, but then userspace would have
+to do echo foo > /sys/class/net/<ifname>/led0*/bar, and that's also not
+nice.
+
+> 	Andrew
+> 
+Heiner
