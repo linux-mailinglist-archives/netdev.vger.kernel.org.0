@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01E783D0512
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 01:14:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D78713D052B
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 01:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233417AbhGTWbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 18:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbhGTWau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 18:30:50 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6813CC0613E6
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 16:11:18 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id v1so52730edt.6
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 16:11:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=05UtSVUfKwNTMLK78kxEDJTAm/yjx7xPuTWlYyH+t/c=;
-        b=UlNCyepq3YNi/Kw+KK8GYcy3l5nsx1v3ozrHuSxjnXErTlZDtwCoaV/FgPdcgBmzia
-         VIEkZ6gQK9eK2RMEDCeyxb0b2PFJX1KBaEN7dMdOZXtrVEeTv6Lf0y1YwzFMiXxgbAKj
-         dQbTjzOf9qzz6tZ3R6FfQt+Mm6vAA2cW8zHfcZs3Eaz/ONm5ARUDf45QLEMUyNcALwrm
-         nH9pHMy8QNzlk3+JuBHq8uAyj+28P7OZmaAvnEl1Gy7MnA1/7ZxJ8Asyd+0SfrcTJQ2j
-         o+SUSR8gbXfB/srzXk7mlGZYd7sHZ19daXBZQG3NFtSCkP1Lne96rYm/SphysqF0fm6u
-         URQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=05UtSVUfKwNTMLK78kxEDJTAm/yjx7xPuTWlYyH+t/c=;
-        b=li3NM7441bFlPp3kV6UUo6zvYkERPyvhWqiTUU579SbnnalYIhtxGliHYD+LcYLDme
-         boMVZ0roO3BoTmex+ll2b3byOX+MPUkMXyD6Jn6f/+G0d7MB87mIMfGDrlOv2Lw1gBiv
-         i5o1fdSaAjq9xHgIL2BrV3kIZ04Ya5PrsWtaEyhNjIbISGAQHRV2qNStdnzTnPhTW+I9
-         rjNK4357jZr+em3enmhojzeTWac+YMt/K0d3BODZE/lLwolmzwx+3K0pPEHN8RxRkh+o
-         vPPH456JeNKOJptkHJPpTPyTKTe48qtQOjdUJvD4oBWvIVPFUIiXH8rh/9zLvM11Jh7d
-         hv2g==
-X-Gm-Message-State: AOAM532aKUlVYjvZAIR+1wY6kv4SntkxRBHRocWmd1LSxXTeXS+KkjJX
-        v9Hmk2+9lj0oMn3NWtbUmDxzkw==
-X-Google-Smtp-Source: ABdhPJxY7YQG1OXTKCtnfRO9H7Hx79q5mTZtQLmCTGEfR5d0b1KFC1KJhs/O37hkZUTpcTxJUAhKiw==
-X-Received: by 2002:aa7:dd8d:: with SMTP id g13mr44261821edv.336.1626822676896;
-        Tue, 20 Jul 2021 16:11:16 -0700 (PDT)
-Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id d10sm9778303edh.62.2021.07.20.16.11.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jul 2021 16:11:16 -0700 (PDT)
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-To:     Tony.Ambardar@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, tsbogend@alpha.franken.de, paulburton@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-mips@vger.kernel.org, ddaney@caviumnetworks.com,
-        luke.r.nels@gmail.com, fancer.lancer@gmail.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [RFC PATCH 2/2] mips: bpf: enable 32-bit eBPF JIT
-Date:   Wed, 21 Jul 2021 01:10:36 +0200
-Message-Id: <20210720231036.3740924-3-johan.almbladh@anyfinetworks.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210720231036.3740924-1-johan.almbladh@anyfinetworks.com>
-References: <20210720231036.3740924-1-johan.almbladh@anyfinetworks.com>
+        id S232334AbhGTWh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 18:37:26 -0400
+Received: from mga09.intel.com ([134.134.136.24]:50224 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229726AbhGTWhU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 18:37:20 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10051"; a="211341470"
+X-IronPort-AV: E=Sophos;i="5.84,256,1620716400"; 
+   d="scan'208";a="211341470"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2021 16:17:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,256,1620716400"; 
+   d="scan'208";a="415407121"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga003.jf.intel.com with ESMTP; 20 Jul 2021 16:17:53 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sasha.neftin@intel.com, vitaly.lifshits@intel.com
+Subject: [PATCH net-next 00/12][pull request] 1GbE Intel Wired LAN Driver Updates 2021-07-20
+Date:   Tue, 20 Jul 2021 16:20:49 -0700
+Message-Id: <20210720232101.3087589-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch enables the new 32-bit eBPF JIT for MIPS. It also disables
-the old cBPF JIT to so cBPF programs are converted to use the new JIT.
+This series contains updates to e1000e and igc drivers.
 
-Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
----
- arch/mips/Kconfig | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Sasha adds initial S0ix support for devices with CSME and adds polling
+for exiting of DPG. He sets the PHY to low power idle when in S0ix. He
+also adds support for new device IDs for and adds a space to debug
+messaging to help with readability for e1000e.
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index cee6087cd686..b87184bf18df 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -55,7 +55,6 @@ config MIPS
- 	select HAVE_ARCH_TRACEHOOK
- 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if CPU_SUPPORTS_HUGEPAGES
- 	select HAVE_ASM_MODVERSIONS
--	select HAVE_CBPF_JIT if !64BIT && !CPU_MICROMIPS
- 	select HAVE_CONTEXT_TRACKING
- 	select HAVE_TIF_NOHZ
- 	select HAVE_C_RECORDMCOUNT
-@@ -63,7 +62,9 @@ config MIPS
- 	select HAVE_DEBUG_STACKOVERFLOW
- 	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_DYNAMIC_FTRACE
--	select HAVE_EBPF_JIT if 64BIT && !CPU_MICROMIPS && TARGET_ISA_REV >= 2
-+	select HAVE_EBPF_JIT if ((32BIT && TARGET_ISA_REV <= 5) || \
-+	                         (64BIT && TARGET_ISA_REV >= 2)) && \
-+	                        !CPU_MICROMIPS
- 	select HAVE_EXIT_THREAD
- 	select HAVE_FAST_GUP
- 	select HAVE_FTRACE_MCOUNT_RECORD
+For igc, he ensures that q_vector array is not accessed beyond its
+bounds and removes unneeded PHY related checks.
+
+Tree Davies corrects a spelling mistake in e1000e.
+
+Muhammad corrects the value written when there is no TSN offloading
+and adjusts timeout value to avoid possible Tx hang for igc.
+
+The following are changes since commit 8887ca5474bd9ddb56cabc88856bb035774e0041:
+  net: phy: at803x: simplify custom phy id matching
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+
+Muhammad Husaini Zulkifli (2):
+  igc: Set QBVCYCLET_S to 0 for TSN Basic Scheduling
+  igc: Increase timeout value for Speed 100/1000/2500
+
+Sasha Neftin (9):
+  e1000e: Add handshake with the CSME to support S0ix
+  e1000e: Add polling mechanism to indicate CSME DPG exit
+  e1000e: Additional PHY power saving in S0ix
+  e1000e: Add support for Lunar Lake
+  e1000e: Add support for the next LOM generation
+  e1000e: Add space to the debug print
+  igc: Check if num of q_vectors is smaller than max before array access
+  igc: Remove _I_PHY_ID checking
+  igc: Remove phy->type checking
+
+Tree Davies (1):
+  net/e1000e: Fix spelling mistake "The" -> "This"
+
+ drivers/net/ethernet/intel/e1000e/ethtool.c |   2 +
+ drivers/net/ethernet/intel/e1000e/hw.h      |   9 +
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |  13 +-
+ drivers/net/ethernet/intel/e1000e/ich8lan.h |   3 +
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 370 ++++++++++++--------
+ drivers/net/ethernet/intel/e1000e/ptp.c     |   1 +
+ drivers/net/ethernet/intel/e1000e/regs.h    |   1 +
+ drivers/net/ethernet/intel/igc/igc_base.c   |  10 +-
+ drivers/net/ethernet/intel/igc/igc_main.c   |  31 +-
+ drivers/net/ethernet/intel/igc/igc_phy.c    |   6 +-
+ drivers/net/ethernet/intel/igc/igc_tsn.c    |   2 +-
+ 11 files changed, 262 insertions(+), 186 deletions(-)
+
 -- 
-2.25.1
+2.26.2
 
