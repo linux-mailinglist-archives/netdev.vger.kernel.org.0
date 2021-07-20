@@ -2,77 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E7CC3CFC06
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460DD3CFC0B
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239419AbhGTNoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:44:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41642 "EHLO mail.kernel.org"
+        id S239426AbhGTNpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:45:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43902 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239976AbhGTNj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:39:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 450AD611F2;
-        Tue, 20 Jul 2021 14:20:05 +0000 (UTC)
+        id S239219AbhGTNoC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:44:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ED0CF61186;
+        Tue, 20 Jul 2021 14:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626790805;
-        bh=p+br29W5ktmzN2KC833uxKVEE2/+qI9VEz23Jm+x70Q=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EtaGiMmrLJqeBbbKF2gWpWBFVYX7Rra+LOrgyhoqmyXi+tHuxQBEy7DJmabvMgdR6
-         iy1nmQdpla8x4eJdd+utDxNZPYWrivFPo0FwUxsUN4ZZpa5zMqcLleqzv2ZraCfD9E
-         IGmDu91WjqaimoAygxsfUs6buZ4lrfbgkjOhjxSS2BMm09qer9G4pXrFOFTKNSHxr/
-         y7O2n9oQSxmuzIX6qTRbGed9Az3nRc+IjxRT11g2hZxOUPwyfVcHNAdJqLuTOeCcAx
-         PV2a5PTM9I2dLNIUHJFCIxkt+EDaLcBJyCZfwETa7rJWnLd3osw+zEev4cPQHcCvOX
-         ejPeCFQIG1TmA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3DF4560CCF;
-        Tue, 20 Jul 2021 14:20:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1626791080;
+        bh=33FmweyIjGpVwxzS1gA3HQJS3T8GqGsOi0jCBxqYN30=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YK4PZQq/OzfDxHeNyj17714LT48vsbniEwjfJNGXPs92nfuczOGbz/n+ah08bZbfG
+         MpOGGYM1vqv5JXWRt359XrF8JfvHQ1GBUgsLW4b3uyZbtqV96stVh5pG9+CBTgNW6e
+         vkX9zE/tEsMbqv40HhdMZc1hkM+9pLVld8RXoLMIFzeOMrw/U9ZYjakNdIpGLLGDH5
+         rmumfStwrIiWu37FSJmkl8ZeVWgw/G1dv6gLxsp2A5u7x+ePLSiKZUiPt/nlQd/mRE
+         JV9ps9ufZ2DG7CIYNvn8EM/Yd4M4aI4OpTiCAlv2g9Al+YbZnNO2xx7S32yLtufp8a
+         2rftw4HYYmC8w==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH net-next v5 0/4] remove compat_alloc_user_space()
+Date:   Tue, 20 Jul 2021 16:24:32 +0200
+Message-Id: <20210720142436.2096733-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] arm64: dts: qcom: DTS updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162679080524.18101.16626774349145809936.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Jul 2021 14:20:05 +0000
-References: <20210719212456.3176086-1-elder@linaro.org>
-In-Reply-To: <20210719212456.3176086-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, robh+dt@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Arnd Bergmann <arnd@arndb.de>
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This is the fifth version of my series, now spanning four patches
+instead of two, with a new approach for handling struct ifreq
+compatibility after I realized that my earlier approach introduces
+additional problems.
 
-On Mon, 19 Jul 2021 16:24:53 -0500 you wrote:
-> This series updates some IPA-related DT nodes.
-> 
-> Newer versions of IPA do not require an interconnect between IPA
-> and SoC internal memory.  The first patch updates the DT binding
-> to reflect this.
-> 
-> The second patch adds IPA information to "sc7280.dtsi", using only
-> two interconnects.  It includes the definition of the reserved
-> memory area used to hold IPA firmware.
-> 
-> [...]
+The idea here is to always push down the compat conversion
+deeper into the call stack: rather than pretending to be
+native mode with a modified copy of the original data on
+the user space stack, have the code that actually works on
+the data understand the difference between native and compat
+versions.
 
-Here is the summary with links:
-  - [net-next,1/3] dt-bindings: net: qcom,ipa: make imem interconnect optional
-    https://git.kernel.org/netdev/net-next/c/6a0eb6c9d934
-  - [net-next,2/3] arm64: dts: qcom: sc7280: add IPA information
-    https://git.kernel.org/netdev/net-next/c/f8bd3c82bf7d
-  - [net-next,3/3] arm64: dts: qcom: sc7180: define ipa_fw_mem node
-    https://git.kernel.org/netdev/net-next/c/fd0f72c34bd9
+I have spent a long time looking at all drivers that implement
+an ndo_do_ioctl callback to verify that my assumptions are
+correct. This has led to a series of 29 additional patches
+that I am not including here but will post separately, fixing
+a number of bugs in SIOCDEVPRIVATE ioctls, removing dead
+code, and splitting ndo_do_ioctl into two new ndo callbacks
+for private and ethernet specific commands.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The patches are largely identical to v4 that I sent last
+November, with small fixes for issues pointed out by Jakub
+and my own randconfig build bot.
 
+      Arnd
+
+Link: https://lore.kernel.org/netdev/20201124151828.169152-1-arnd@kernel.org/
+
+Changes in v5:
+ - Rebase to v5.14-rc2
+ - Fix a few build issues
+
+Changes in v4:
+ - build fix without CONFIG_INET
+ - build fix without CONFIG_COMPAT
+ - style fixes pointed out by hch
+
+Changes in v3:
+ - complete rewrite of the series
+
+Arnd Bergmann (4):
+  ethtool: improve compat ioctl handling
+  net: socket: rework SIOC?IFMAP ioctls
+  net: socket: simplify dev_ifconf handling
+  net: socket: rework compat_ifreq_ioctl()
+
+ include/linux/compat.h     |  82 +++++------
+ include/linux/ethtool.h    |   4 -
+ include/linux/inetdevice.h |   9 ++
+ include/linux/netdevice.h  |  12 +-
+ net/appletalk/ddp.c        |   4 +-
+ net/core/dev_ioctl.c       | 152 ++++++++++---------
+ net/ethtool/ioctl.c        | 136 +++++++++++++++--
+ net/ieee802154/socket.c    |   4 +-
+ net/ipv4/af_inet.c         |   6 +-
+ net/ipv4/devinet.c         |   4 +-
+ net/qrtr/qrtr.c            |   4 +-
+ net/socket.c               | 292 +++++++++----------------------------
+ 12 files changed, 333 insertions(+), 376 deletions(-)
+
+-- 
+2.29.2
 
