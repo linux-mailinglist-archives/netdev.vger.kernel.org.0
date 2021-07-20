@@ -2,106 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667613D0066
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB9DB3D006E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:42:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbhGTQ7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 12:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S230463AbhGTRBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbhGTQ7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 12:59:05 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B0BC061767
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 10:39:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=glvbjE+OZ04203JSFuFumaFA1GmsdXekzju+Ko0NqaA=; b=TO08lEsgcz2PBOSPLNORa7CaY
-        iPo5GEYPZdYHbyi52o8Q087Ga9zg8R9CFEPSdiQLFrEvyFeZDR5kMvblsJt7o/BI+/uR5phSnLVd9
-        C9yk3TtbDBzLnr1ISSHlyGza+eycSf9oFqNXydJKYigyPUeAjxB8iriBcbFbBKe0s4IyykO5Z8uRi
-        QQfPwNJqaiCH+K3gpvlE6AAEZYhFKLX5SigWeY5gT4KwZQlKJEcMXx/6PZY0LmktU5Tr5QyMDbTVw
-        2ZxNtF3SO4yIdAOWHQQec0oUBMjlGCJM2emt4kS5d7E2hTFKyEdd70QJ4dGvxSyZcwNfp4hkOXI3e
-        LpG6gNntA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46380)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1m5tiX-0006hz-Td; Tue, 20 Jul 2021 18:39:41 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1m5tiX-00076X-MO; Tue, 20 Jul 2021 18:39:41 +0100
-Date:   Tue, 20 Jul 2021 18:39:41 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift tunable
- support
-Message-ID: <20210720173941.GX22278@shell.armlinux.org.uk>
-References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
- <20210720170424.07cba755@dellmb>
- <20210720171401.GV22278@shell.armlinux.org.uk>
- <20210720193223.194cb79e@dellmb>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210720193223.194cb79e@dellmb>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+        with ESMTP id S231910AbhGTRBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:01:00 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674A1C061574;
+        Tue, 20 Jul 2021 10:41:38 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id r16so19833521ilt.11;
+        Tue, 20 Jul 2021 10:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=VzEhlXuPIig3XvgXhLsDpAhNny6hVe14Hrn4Hr2l/EY=;
+        b=mMbsK+2UWIOEYn5GvvcJwd6Eglp3ceJFrCu68N4aKGGoejhU1YaG8m2i7wI0SeWCQc
+         BaCN2c0gNrH7MrJ6WFay7a+TUBMyoLqhpze6dRH/4+N1s55IKeslxdFeDcwI6OKtpzty
+         IuFGf+6GB+SWOh8wkHGU7to+lGgiQYXJ+vx9srucsjj/HSbsrVFdy7nau5can7aoCULU
+         wjm1LNv3PVboDMjpDUUsFM0MCiWDxqtwh+pgsBzijqGGt1H8423hbvNOsJNFBX/h0Rku
+         gNTdT52o59tRRdkc/4tyPY1tOyUEDIeve6zMyC+NzvOFJfj+EavfV8FxZ3DlydnYgcNx
+         jTWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=VzEhlXuPIig3XvgXhLsDpAhNny6hVe14Hrn4Hr2l/EY=;
+        b=Vi+gFKFkDVbhp2mKfZaTO1RUlTD+IR1P5sHvSwwkb4Jz28WSm+MK/OO5AZF/H53FZb
+         E+oS9l2p+pM3ss9unJdPIbzb7KQYfM5JsFEfM8RBd4mS6DedS744NQLzsj4DNcyYNUTD
+         oy+6VI6sm31QvCW5LKMxKZ/M+pEUc6APZgXM2HYhaMLlBdJvnhMyl8AqgoNOY/v5wLf1
+         UXeHdBslFjuel+iUnxyZbuIChro1ApJk7daowErIk9WGNLEctHw6hQiG+GKOp3w29mkb
+         zarmSz/f5aOSGjSm1Nj8OFm6NVSrXk3Es1GStWgox7e/RmsbdLrxtGgN9jtQPysR2w3F
+         7x9A==
+X-Gm-Message-State: AOAM533QrmsGRSERhRY9ld5onpH63dDj3faCVvg0eZlaapJ6GzPYKQCO
+        QP3NqQTHKVAiwxh6AulsoRc=
+X-Google-Smtp-Source: ABdhPJzvt1dvtkXKrKgZ2OwasppJxCTQeIUriAz81e940OR3X1Mil5q6QAgXTTbLh4WmfFJ5jMrd5w==
+X-Received: by 2002:a92:dc8e:: with SMTP id c14mr21973371iln.91.1626802897763;
+        Tue, 20 Jul 2021 10:41:37 -0700 (PDT)
+Received: from localhost ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id v18sm11872639iln.49.2021.07.20.10.41.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 10:41:37 -0700 (PDT)
+Date:   Tue, 20 Jul 2021 10:41:27 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
+        alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Message-ID: <60f70ac727c2d_6600820855@john-XPS-13-9370.notmuch>
+In-Reply-To: <87v955qnzp.fsf@cloudflare.com>
+References: <20210719214834.125484-1-john.fastabend@gmail.com>
+ <20210719214834.125484-2-john.fastabend@gmail.com>
+ <87v955qnzp.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf 1/3] bpf, sockmap: zap ingress queues after stopping
+ strparser
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 07:32:23PM +0200, Marek Behún wrote:
-> On Tue, 20 Jul 2021 18:14:01 +0100
-> "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Jakub Sitnicki wrote:
+> On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
+> > We don't want strparser to run and pass skbs into skmsg handlers when
+> > the psock is null. We just sk_drop them in this case. When removing
+> > a live socket from map it means extra drops that we do not need to
+> > incur. Move the zap below strparser close to avoid this condition.
+> >
+> > This way we stop the stream parser first stopping it from processing
+> > packets and then delete the psock.
+> >
+> > Fixes: a136678c0bdbb ("bpf: sk_msg, zap ingress queue on psock down")
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
 > 
-> > On Tue, Jul 20, 2021 at 05:04:24PM +0200, Marek Behún wrote:
-> > > Hi Russell,
-> > > 
-> > > On Tue, 20 Jul 2021 14:38:20 +0100
-> > > Russell King <rmk+kernel@armlinux.org.uk> wrote:
-> > >   
-> > > > Add support for the downshift tunable for the Marvell 88x3310 PHY.
-> > > > Downshift is only usable with firmware 0.3.5.0 and later.  
-> > > 
-> > > mv3310_{g,s}et_features are also used for 88E211x, but there is no
-> > > such register in the documentation for these PHYs. (Also firmware
-> > > versions on those are different, the newest is 8.3.0.0, but thats
-> > > not important.) My solution would be to rename the current methods
-> > > prefix to mv211x_ and and add new mv3310_{g,s}et_tunable methods.  
-> > 
-> > There's more than just the tunables themselves - there's also
-> > config_init().
-> > 
-> > We already need to reject downshift when old firmware is running,
-> > as that fails to work correctly. So, we can just do that for
-> > 88E211x as well, adding a flag to struct mv3310_chip to indicate
-> > whether downshift is present. Sound sensible?
-> 
-> Hmm, maybe add the flag to struct mv3310_priv, instead of struct
-> mv3310_chip, since the latter is static. And fill in the flag in
-> mv3310_probe() function, depending on firmware version?
+> To confirm my understanding - the extra drops can happen because
+> currently we are racing to clear SK_PSOCK_TX_ENABLED flag in
+> sk_psock_drop with sk_psock_verdict_apply, which checks the flag before
+> pushing skb onto psock->ingress_skb queue (or possibly straight into
+> psock->ingress_msg queue on no redirect).
 
-I was intending to leave the firmware version check where it was and
-just add a flag to say "this has downshift". The older firmwares on
-3310 are basically buggy - they do downshift but only from 1G to 100M,
-they fail to go to 10M.
 
-> BTW would you agree with a patch renaming the mv3310_ prefixes to
-> mv10g_ for all functions that are generic to both mv3310_ and mv2110_?
-> I was thinking about such a thing because it has become rather
-> confusing.
-
-I've been thinking the same thing actually.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Correct. If strparser hands a skb to the sk_psock_* handlers then before
+they enqueue the packet the flag is checked and the packet will be
+dropped in this case. I noticed this while testing. So rather than
+letting packets get into sk_psock_* handlers this patch just stops the
+strparser.
