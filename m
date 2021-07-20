@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8EE3CFA0E
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78E7E3CFA18
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238119AbhGTMXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:23:20 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:53142
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231526AbhGTMWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:22:47 -0400
-Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 5CD2940624;
-        Tue, 20 Jul 2021 13:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626786197;
-        bh=PQfJRURFWXwxKi9tGQBBw5EhD752Jp+9489PeReXm7s=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=DIklFQHYUL8u1LIL9v/eIds5ob53wIJfgg2kcQbHdHUWwq54qjHQcrHU0LORih4lB
-         F1v0X2UBbN5kkMhH0K4IPFhdI8YGtVInuN4KlpwOopyo/OnhDOLYER//RxFMCfSOCp
-         fyL2h5NqIdCPvm6N2OJFgP89tcNJebLWEDCFYkDguK2q89LiRVyItPduyBwVkmSFlk
-         vxQPzuU0qqBc6sfTJzhr0anr7Iy5sO4yO8U53xIgO1LlKxLlF9wW5XwBgJCUmKrXme
-         uiHN9jd3FgHWdv8TKmj6wCEMcO59hMBxDNqbEdm5ITEuIq1Q8xPNkoZECECSr0Ctus
-         lGpXwZAW2o1pQ==
-From:   Colin King <colin.king@canonical.com>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: marvell: clean up trigraph warning on ??! string
-Date:   Tue, 20 Jul 2021 14:03:11 +0100
-Message-Id: <20210720130311.59805-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.31.1
+        id S235451AbhGTM0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:26:12 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:11458 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238412AbhGTMZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:25:17 -0400
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GTf4n4qbszcgM4;
+        Tue, 20 Jul 2021 21:02:17 +0800 (CST)
+Received: from [10.174.178.171] (10.174.178.171) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 20 Jul 2021 21:05:39 +0800
+Subject: Re: Ask for help about bpf map
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        David Ahern <dahern@digitalocean.com>
+References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
+ <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
+ <8735sidtwe.fsf@toke.dk> <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
+ <26db412c-a8b7-6d37-844f-7909a0c5744b@huawei.com>
+ <189e4437-bb2c-2573-be96-0d6776feb5dd@huawei.com>
+ <CAADnVQJYhtpEcvvYfozxiPdUJqcZiJxbmT2KuOC6uQdC1VWZVw@mail.gmail.com>
+ <6b659192-5133-981e-0c43-7ca1120edd9c@huawei.com> <87wnpmtr5j.fsf@toke.dk>
+From:   "luwei (O)" <luwei32@huawei.com>
+Message-ID: <beb37418-4518-100a-5b1b-e036be6f71b6@huawei.com>
+Date:   Tue, 20 Jul 2021 21:05:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <87wnpmtr5j.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.171]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+It's very strange, in my virtual host, it is:
 
-The character sequence ??! is a trigraph and causes the following
-clang warning:
+$ ip -V
 
-drivers/net/ethernet/marvell/mvneta.c:2604:39: warning: trigraph ignored [-Wtrigraphs]
+ip utility, iproute2-5.11.0
 
-Clean this by replacing it with single ?.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/marvell/mvneta.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+but in my physical host:
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 76a7777c746d..fc4dbcc58f5f 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2666,7 +2666,7 @@ static int mvneta_tx_tso(struct sk_buff *skb, struct net_device *dev,
- 		return 0;
- 
- 	if (skb_headlen(skb) < (skb_transport_offset(skb) + tcp_hdrlen(skb))) {
--		pr_info("*** Is this even  possible???!?!?\n");
-+		pr_info("*** Is this even possible?\n");
- 		return 0;
- 	}
- 
+$ ip -V
+ip utility, iproute2-5.11.0, libbpf 0.5.0
+
+
+I compiled iproute2 in the same way as I mentioned previously, and the 
+kernel versions are both 5.13 (in fact the same code) .
+
+
+在 2021/7/19 8:38 PM, Toke Høiland-Jørgensen 写道:
+> "luwei (O)" <luwei32@huawei.com> writes:
+>
+>> Andrii and Toke inspired me. You are right, the libbpf version should be included in -V output
+>> , but not mine. I searched google and found this page: https://www.spinics.net/lists/netdev/msg700482.html
+>> , according which I re-compiled iproute2 and it works.
+> Did the libbpf version appear in the output of 'ip -V' after you
+> recompiled and enabled it? It does in mine:
+>
+> $ ./ip/ip -V
+> ip utility, iproute2-5.13.0, libbpf 0.4.0
+>
+> -Toke
+>
+> .
+
 -- 
-2.31.1
+Best Regards,
+Lu Wei
 
