@@ -2,108 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B87A3D013E
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BD53D016C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbhGTR1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        id S230441AbhGTRfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbhGTRYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:24:45 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5E5C061762;
-        Tue, 20 Jul 2021 11:05:18 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id v6so37129993lfp.6;
-        Tue, 20 Jul 2021 11:05:17 -0700 (PDT)
+        with ESMTP id S230173AbhGTRe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:34:57 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6590C061768;
+        Tue, 20 Jul 2021 11:15:29 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id r11so26972587wro.9;
+        Tue, 20 Jul 2021 11:15:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HjauFs/iZ+qHLTLckTAOC7vNzTkUwg8FGq/1wJ2o7ck=;
-        b=Loerg9D3VEk4Vj8yWc1z5bfQ/D9FE+Plzs5pjHqmclBRLKxRT7DzcNxnQe2iSOrN2J
-         NLGBYeUovhc8PpuKqDrmFteR/7ZkvUiK0UjZiMXqSYg8ODdIt4OB0syO5xRPCprXRPb6
-         D0YDeROU9chkvx5VWdDn5Y2JQ2c+ok5gy0DQSmVyFdpo9MpiDUFN76u2pukI2c21qJRv
-         l+K3VVp/kiDlqHktgE8xTZUSqyrWjfygQj24t/IMIGsS1dJx+0jwcBHI1VoiF5KfM4uV
-         OvwIQSwu4n0h2X3ixioSKvrslL5dQbAbHxbMcteMbd8znmJJbft2mPVzWKI5yK05tH48
-         Zgrg==
+        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
+         :from:to:references:in-reply-to;
+        bh=hhS705SlOjkRoqTojYTgrsq95q0IEJuqc4XsQcf1hRc=;
+        b=cd8j7p6hzpYM2CDZBWvTlYy7pGIlXLU17lyrTUFOhXD6yrR6ygv7WL6ti1WU+HeSO/
+         fnTsqAbq4LOPoAFw2Vo8qqNWxzXvtRmEL1euDBs9j8O6TbubOCrVEbY59/V1TW8nYQmD
+         zDSQbMpCepP7JRbrfQYhpF8rLB2A8Egvbc6LRQvIWVnZgDT1BRfP7Ni7TlVdCqbxg+U0
+         DoC50iEEhHDDlYmqz0uJXqr9uCetgb1pcKaJPv2dCGXpuLHbyUeUr/259exCLwL+7Som
+         1ZBRsYw26DtMQaPdGBwQEgpU5PWcfASQ1TKQUWAX49VgxZB4zo4xoqM/Qt9RHS53AxiM
+         CDDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HjauFs/iZ+qHLTLckTAOC7vNzTkUwg8FGq/1wJ2o7ck=;
-        b=gcmBjYc9ueeAt279ddZxfr29KuE845ypcVBjL22sIXSl7PHTnmTy0dJkTAY0KfCeBt
-         vG9nGYkkmHEn0az/RO+E921QevRw0KlLFNjGYVxVgBIIVQK94HkhdYTj+YJ1FgL6A8lD
-         PY3MNjefKzmX4VYRvvgHxI+aKnpPsGEUZ4v6UAKzmp1zWQ3oZ6Vm2OM4y59/gzeiO9Ek
-         Pf00+6tc2hQOYQev64DShM7d6UQhcNx6+3/4kyuvgh0QdPIkM41a31BPnMuWr4KbdF6E
-         hmAHDqbpWi12VPVw2pD3n4B2CHO2hQt5RTtYCSdUxyHUDAQyPDsRJQlM2JJoERKwQnt6
-         Jirg==
-X-Gm-Message-State: AOAM5323DwBncst2qvv9by2s2HveuH36gMlrYpsE3AZoC7TfeANv4NbR
-        I4CeSh3v3Dw5WRWoOMR7WKwNGqcKfP5C7eTijmo=
-X-Google-Smtp-Source: ABdhPJwZs7FuCuBUtuqon1UNNvTjjYV47tar46irqKZJao+bwHkkoZwZwyA08h0fvHVW+p+FkF3ndYJiHX4SrrMAUqw=
-X-Received: by 2002:ac2:5fe5:: with SMTP id s5mr10526338lfg.540.1626804313719;
- Tue, 20 Jul 2021 11:05:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210701200535.1033513-1-kafai@fb.com> <CAADnVQ+Y4YFoctqKjFMgx1OXknAttup10npCEc1d1kjrQVp40w@mail.gmail.com>
-In-Reply-To: <CAADnVQ+Y4YFoctqKjFMgx1OXknAttup10npCEc1d1kjrQVp40w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 20 Jul 2021 11:05:02 -0700
-Message-ID: <CAADnVQ+RYgHYO=aJwoh7C_=CeX+nwYopb+pk=Pp709Z-WwQnPw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 0/8] bpf: Allow bpf tcp iter to do bpf_(get|set)sockopt
-To:     Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:mime-version:content-transfer-encoding:date
+         :message-id:cc:subject:from:to:references:in-reply-to;
+        bh=hhS705SlOjkRoqTojYTgrsq95q0IEJuqc4XsQcf1hRc=;
+        b=nASbgy1oPsEHH0QuZIpaVCSYneU0/RnKBwlpqjKgpSgOningtzSJFtBP3F2+1U/Rbs
+         iD89CDjmtLvb3hUCs2pQfefoWP6nwz889/3dHHpOvDDZKHtu+YrsuzQTEJQNiSM0q0YG
+         SrGRDwGAcMNshGuBOfZlDIu8t9bhDqcmqq1TbtZCbaO1Oku/LyCQY2knLK5RMDVTr48P
+         a3nlcLZpcuT68Pq5/aCICey43nVofC07+UAtfLfBmbG5DFRfhdbflObrD3W9bvNDtWUT
+         m8QYxl314ObJGRJuOULKbVmxEIjP1orygE9yTAv/9gdrLS8R5mdD36Tg0ZHf3T5uSgGw
+         en7A==
+X-Gm-Message-State: AOAM532HHi0/q396wRUszo8VeolMr4cEtfZd7SWGPq6p8Ql1wALgRPGu
+        3H6Mtm4118aekeBA9hwvUNg=
+X-Google-Smtp-Source: ABdhPJxLKTXitFRX4kR6CpMpKBy2kBjAfXucf7wNYwW+mqaI3etVNE0PqF25MsCMX6/0mP7aRWmRYA==
+X-Received: by 2002:a05:6000:1281:: with SMTP id f1mr38817689wrx.114.1626804928215;
+        Tue, 20 Jul 2021 11:15:28 -0700 (PDT)
+Received: from localhost (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
+        by smtp.gmail.com with ESMTPSA id p5sm19571717wme.2.2021.07.20.11.15.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 11:15:27 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 20 Jul 2021 19:15:27 +0100
+Message-Id: <CCY67UA29K2Q.2DEZ5GOF4HPTR@arch-thunder>
+Cc:     <linux-kernel@vger.kernel.org>,
+        "Maxime Ripard" <mripard@kernel.org>,
+        "Chen-Yu Tsai" <wens@csie.org>,
+        "Thierry Reding" <thierry.reding@gmail.com>,
+        "Sam Ravnborg" <sam@ravnborg.org>,
+        "Laurent Pinchart" <laurent.pinchart@ideasonboard.com>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Mark Brown" <broonie@kernel.org>,
+        "Robert Marko" <robert.marko@sartura.hr>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        "Alessandro Zummo" <a.zummo@towertech.it>,
+        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+        "Ramesh Shanmugasundaram" <rashanmu@gmail.com>,
+        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
+        "Linus Walleij" <linus.walleij@linaro.org>,
+        "Oleksij Rempel" <o.rempel@pengutronix.de>,
+        "ChiYuan Huang" <cy_huang@richtek.com>,
+        "Wei Xu" <xuwei5@hisilicon.com>,
+        "Dilip Kota" <eswara.kota@linux.intel.com>,
+        "Karol Gugala" <kgugala@antmicro.com>,
+        "Mateusz Holenko" <mholenko@antmicro.com>,
+        "Olivier Moysan" <olivier.moysan@st.com>,
+        "Peter Ujfalusi" <peter.ujfalusi@ti.com>,
+        <dri-devel@lists.freedesktop.org>, <linux-media@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>
+Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
+From:   "Rui Miguel Silva" <rmfrfs@gmail.com>
+To:     "Rob Herring" <robh@kernel.org>, <devicetree@vger.kernel.org>
+References: <20210720172025.363238-1-robh@kernel.org>
+In-Reply-To: <20210720172025.363238-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 6:29 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Jul 1, 2021 at 1:05 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > This set is to allow bpf tcp iter to call bpf_(get|set)sockopt.
-> >
-> > With bpf-tcp-cc, new algo rollout happens more often.  Instead of
-> > restarting the applications to pick up the new tcp-cc, this set
-> > allows the bpf tcp iter to call bpf_(get|set)sockopt(TCP_CONGESTION).
-> > It is not limited to TCP_CONGESTION, the bpf tcp iter can call
-> > bpf_(get|set)sockopt() with other options.  The bpf tcp iter can read
-> > into all the fields of a tcp_sock, so there is a lot of flexibility
-> > to select the desired sk to do setsockopt(), e.g. it can test for
-> > TCP_LISTEN only and leave the established connections untouched,
-> > or check the addr/port, or check the current tcp-cc name, ...etc.
-> >
-> > Patch 1-4 are some cleanup and prep work in the tcp and bpf seq_file.
-> >
-> > Patch 5 is to have the tcp seq_file iterate on the
-> > port+addr lhash2 instead of the port only listening_hash.
-> ...
-> >  include/linux/bpf.h                           |   8 +
-> >  include/net/inet_hashtables.h                 |   6 +
-> >  include/net/tcp.h                             |   1 -
-> >  kernel/bpf/bpf_iter.c                         |  22 +
-> >  kernel/trace/bpf_trace.c                      |   7 +-
-> >  net/core/filter.c                             |  34 ++
-> >  net/ipv4/tcp_ipv4.c                           | 410 ++++++++++++++----
->
-> Eric,
->
-> Could you please review this set where it touches inet bits?
-> I've looked a few times and it all looks fine to me, but I'm no expert
-> in those parts.
+On Tue Jul 20, 2021 at 6:20 PM WEST, Rob Herring wrote:
 
-Eric,
+> There's no reason to have "status" properties in examples. "okay" is the
+> default, and "disabled" turns off some schema checks ('required'
+> specifically).
+>
+> Enabling qca,ar71xx causes a warning, so let's fix the node names:
+>
+> Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: phy@3: =
+'#phy-cells' is a required property
+>         From schema: schemas/phy/phy-provider.yaml
+>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Chen-Yu Tsai <wens@csie.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Rui Miguel Silva <rmfrfs@gmail.com>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Robert Marko <robert.marko@sartura.hr>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Ramesh Shanmugasundaram <rashanmu@gmail.com>
+> Cc: "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+> Cc: ChiYuan Huang <cy_huang@richtek.com>
+> Cc: Wei Xu <xuwei5@hisilicon.com>
+> Cc: Dilip Kota <eswara.kota@linux.intel.com>
+> Cc: Karol Gugala <kgugala@antmicro.com>
+> Cc: Mateusz Holenko <mholenko@antmicro.com>
+> Cc: Olivier Moysan <olivier.moysan@st.com>
+> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-rtc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml |  2 --
+>  .../display/panel/boe,tv101wum-nl6.yaml       |  1 -
+>  .../bindings/media/nxp,imx7-mipi-csi2.yaml    |  2 --
 
-ping!
-If you're on vacation or something I'm inclined to land the patches
-and let Martin address your review feedback in follow up patches.
+Reviewed-by: Rui Miguel Silva <rmfrfs@gmail.com>
 
-Thanks
+Cheers,
+   Rui
