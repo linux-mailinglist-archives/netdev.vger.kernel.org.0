@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBFAE3CF65C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 10:53:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE22C3CF657
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 10:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbhGTIMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 04:12:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26509 "EHLO
+        id S234972AbhGTIMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 04:12:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51969 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233414AbhGTIFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:05:24 -0400
+        by vger.kernel.org with ESMTP id S233890AbhGTIFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:05:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1626770703;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bUp4vxsQgTQRrk0Qssrw44tpCd0hG0HCzOI7bhOnxOE=;
-        b=GJtiLuPNnMx7CjWGZsbCUQOUg1DD3EpQjiE2PT315Tr+0Rkl8RhpV9foEhfn8JbrAjAW6d
-        GXtQCNoBKECLH3VmCR/dtgquPYOrZAGt4FfLscLzCPQjvHptX63osLr431tbDmotSy0Cfl
-        FkU5P+CRavEX6W/ACPVsIU4+BcLFJjE=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=425wuTtOcHExhMXwIaZzvoSqg6Zv0oRhz0fN9NinKFs=;
+        b=hrPP6Lp3lVNRnumNaiHeXFZ0RAJsE0ZKBzPI0yfJrSXrIQqzSoVchEbXNJ/66r9VYhbzi2
+        8RYIla65aN4KtyNIIjSjPHjF50nW5yH8Z8EhJYi0K7FUiE3ZkAs8mY+KSY+D/VsE68XG0Q
+        aYVLs8JMVOR7sA2c9MiiyY6rGO5Ll2M=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-436-vNVxE0KnMXip13QFYdS7Dw-1; Tue, 20 Jul 2021 04:44:59 -0400
-X-MC-Unique: vNVxE0KnMXip13QFYdS7Dw-1
+ us-mta-146-XBDzKip6NIqcDN95h0fNKw-1; Tue, 20 Jul 2021 04:45:01 -0400
+X-MC-Unique: XBDzKip6NIqcDN95h0fNKw-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF49C1019982;
-        Tue, 20 Jul 2021 08:44:58 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97F3E1940920;
+        Tue, 20 Jul 2021 08:45:00 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-114-77.ams2.redhat.com [10.36.114.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 726D760BD8;
-        Tue, 20 Jul 2021 08:44:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 209A760BD8;
+        Tue, 20 Jul 2021 08:44:58 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Shuah Khan <shuah@kernel.org>, toke@redhat.com
-Subject: [PATCH net-next 0/5] veth: more flexible channels number configuration
-Date:   Tue, 20 Jul 2021 10:41:47 +0200
-Message-Id: <cover.1626768072.git.pabeni@redhat.com>
+Subject: [PATCH net-next 1/5] veth: always report zero combined channels
+Date:   Tue, 20 Jul 2021 10:41:48 +0200
+Message-Id: <bcd1b935c04c220c0c7135a0a489e1bd34b8ad7e.1626768072.git.pabeni@redhat.com>
+In-Reply-To: <cover.1626768072.git.pabeni@redhat.com>
+References: <cover.1626768072.git.pabeni@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
@@ -47,39 +50,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP setups can benefit from multiple veth RX/TX queues. Currently
-veth allow setting such number only at creation time via the 
-'numrxqueues' and 'numtxqueues' parameters.
+veth get_channel currently reports for channels being both RX/TX and
+combined. As Jakub noted:
 
-This series introduces support for the ethtool set_channel operation
-and allows configuring the queue number via a new module parameter.
+"""
+ethtool man page is relatively clear, unfortunately the kernel code
+is not and few read the man page. A channel is approximately an IRQ,
+not a queue, and IRQ can't be dedicated and combined simultaneously
+"""
 
-The veth default configuration is not changed.
+This patch changes the information exposed by veth_get_channels,
+setting max_combined to zero, being more consistent with the above
+statement. The ethtool_channels is always cleared by the caller, we just
+need to avoid setting the 'combined' fields.
 
-Finally self-tests are updated to check the new features, with both
-valid and invalid arguments.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/veth.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-This iteration is a rebase of the most recent RFC, it does not provide
-a module parameter to configure the default number of queues, but I
-think could be worthy
-
-RFC v1 -> RFC v2:
- - report more consistent 'combined' count
- - make set_channel as resilient as possible to errors
- - drop module parameter - but I would still consider it.
- - more self-tests
-
-Paolo Abeni (5):
-  veth: always report zero combined channels
-  veth: factor out initialization helper
-  veth: implement support for set_channel ethtool op
-  veth: create by default nr_possible_cpus queues
-  selftests: net: veth: add tests for set_channel
-
- drivers/net/veth.c                  | 305 +++++++++++++++++++++++-----
- tools/testing/selftests/net/veth.sh | 183 ++++++++++++++++-
- 2 files changed, 434 insertions(+), 54 deletions(-)
-
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index bdb7ce3cb054..4b3e2617fdb5 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -226,8 +226,6 @@ static void veth_get_channels(struct net_device *dev,
+ 	channels->rx_count = dev->real_num_rx_queues;
+ 	channels->max_tx = dev->real_num_tx_queues;
+ 	channels->max_rx = dev->real_num_rx_queues;
+-	channels->combined_count = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+-	channels->max_combined = min(dev->real_num_rx_queues, dev->real_num_tx_queues);
+ }
+ 
+ static const struct ethtool_ops veth_ethtool_ops = {
 -- 
 2.26.3
 
