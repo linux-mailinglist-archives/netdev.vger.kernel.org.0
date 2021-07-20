@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAE3C3CFD43
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:17:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFF23CFD3A
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240000AbhGTOez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 10:34:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55722 "EHLO mail.kernel.org"
+        id S239498AbhGTOeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:34:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55416 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237368AbhGTORU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 10:17:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB73B61222;
-        Tue, 20 Jul 2021 14:46:58 +0000 (UTC)
+        id S238651AbhGTONr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 10:13:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 48FE361244;
+        Tue, 20 Jul 2021 14:47:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626792419;
-        bh=3U5cHZKM8awP+zSxZS1EIJAve4S7wCshkfB/0fjPCio=;
+        s=k20201202; t=1626792423;
+        bh=ae1hfH8QF/RCzo7dEv8MK0I6559MFhj95aqCe+aAmz0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CU3FxOTTjkiYuPjrfEcw2Y4nW6o++8SBX/VbNf/F0YM4jTEd73zGuANVEzsc0bmBT
-         N/QQGELQXhF9oPKSF+LgdupZi/obfubPGr4HjLGjV6Y9rE3NZq44bgl2f61r6SN4lD
-         XxjoHXmUs9R/RLYI+J3wH9FqBLnLQCH+9X4GJPTMl3ByN0gU32V8+zI3SkAvzf1nQX
-         6poTT9RN0zjtiI6gc2K12Bwodx563Q+jRclKJOOmh++2BqUZs775+YTBgB8d2G0uj1
-         QwNUynCF1flCZrNir0LW2oMrxNngTp+v1IxAAnkrtg/eHNnFypOXUuiZ/bPhQrYumS
-         REg72AmybTuxQ==
+        b=nDu06lJB8KNGIbyWt04e9g3YRNVrhASSjLgSgsyX+sesUAvB+ddVrjQwcfcdK72/f
+         VBdMDWrfDmWmMerXb0+sAUxc90NFDcdvi3TIN/MhQ7iFVUOAyamjCLCh2/jgM6vqWI
+         pD9HQbZBn3a0L41BFKcXh4mjVgxFW73ZjNC3iiltlr7N/SM0/B4RQ/qTh8An7lLyRy
+         kDUHqw80/MKvIqyGEBy46AM93hIfZkFyfNLzrlcYB3nK0AtSgGkqF0uUQz9rMtv4LP
+         9CX2az37NFsu0V3lixvNSlyb2aWGWI3NUjLNvhBubXjn+oBOSXXPjilTjPFWE+VGB+
+         rVBOwjUTpswxw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH net-next v2 06/31] phonet: use siocdevprivate
-Date:   Tue, 20 Jul 2021 16:46:13 +0200
-Message-Id: <20210720144638.2859828-7-arnd@kernel.org>
+Subject: [PATCH net-next v2 09/31] appletalk: use ndo_siocdevprivate
+Date:   Tue, 20 Jul 2021 16:46:16 +0200
+Message-Id: <20210720144638.2859828-10-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210720144638.2859828-1-arnd@kernel.org>
 References: <20210720144638.2859828-1-arnd@kernel.org>
@@ -40,61 +40,69 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-phonet has a single private ioctl that is broken in compat
-mode on big-endian machines today because the data returned
-from it is never copied back to user space.
+appletalk has three SIOCDEVPRIVATE ioctl commands that are
+broken in compat mode because the passed structure contains
+a pointer.
 
-Move it over to the ndo_siocdevprivate callback, which also
-fixes the compat issue.
+Change it over to ndo_siocdevprivate for consistency and
+make it return an error when called in compat mode. This
+could be fixed if there are still users.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/usb/cdc-phonet.c | 5 +++--
- net/phonet/pn_dev.c          | 6 +++---
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/appletalk/ipddp.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/usb/cdc-phonet.c b/drivers/net/usb/cdc-phonet.c
-index 8d1f69dad603..e1da9102a540 100644
---- a/drivers/net/usb/cdc-phonet.c
-+++ b/drivers/net/usb/cdc-phonet.c
-@@ -253,7 +253,8 @@ static int usbpn_close(struct net_device *dev)
- 	return usb_set_interface(pnd->usb, num, !pnd->active_setting);
+diff --git a/drivers/net/appletalk/ipddp.c b/drivers/net/appletalk/ipddp.c
+index 51cf5eca9c7f..5566daefbff4 100644
+--- a/drivers/net/appletalk/ipddp.c
++++ b/drivers/net/appletalk/ipddp.c
+@@ -54,11 +54,12 @@ static netdev_tx_t ipddp_xmit(struct sk_buff *skb,
+ static int ipddp_create(struct ipddp_route *new_rt);
+ static int ipddp_delete(struct ipddp_route *rt);
+ static struct ipddp_route* __ipddp_find_route(struct ipddp_route *rt);
+-static int ipddp_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
++static int ipddp_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++				void __user *data, int cmd);
+ 
+ static const struct net_device_ops ipddp_netdev_ops = {
+ 	.ndo_start_xmit		= ipddp_xmit,
+-	.ndo_do_ioctl   	= ipddp_ioctl,
++	.ndo_siocdevprivate	= ipddp_siocdevprivate,
+ 	.ndo_set_mac_address 	= eth_mac_addr,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+@@ -268,15 +269,18 @@ static struct ipddp_route* __ipddp_find_route(struct ipddp_route *rt)
+         return NULL;
  }
  
--static int usbpn_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+static int usbpn_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+-static int ipddp_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int ipddp_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 +				void __user *data, int cmd)
  {
- 	struct if_phonet_req *req = (struct if_phonet_req *)ifr;
+-        struct ipddp_route __user *rt = ifr->ifr_data;
+         struct ipddp_route rcp, rcp2, *rp;
  
-@@ -269,7 +270,7 @@ static const struct net_device_ops usbpn_ops = {
- 	.ndo_open	= usbpn_open,
- 	.ndo_stop	= usbpn_close,
- 	.ndo_start_xmit = usbpn_xmit,
--	.ndo_do_ioctl	= usbpn_ioctl,
-+	.ndo_siocdevprivate = usbpn_siocdevprivate,
- };
++	if (in_compat_syscall())
++		return -EOPNOTSUPP;
++
+         if(!capable(CAP_NET_ADMIN))
+                 return -EPERM;
  
- static void usbpn_setup(struct net_device *dev)
-diff --git a/net/phonet/pn_dev.c b/net/phonet/pn_dev.c
-index ac0fae06cc15..876d0ae5f9fd 100644
---- a/net/phonet/pn_dev.c
-+++ b/net/phonet/pn_dev.c
-@@ -233,11 +233,11 @@ static int phonet_device_autoconf(struct net_device *dev)
- 	struct if_phonet_req req;
- 	int ret;
+-	if(copy_from_user(&rcp, rt, sizeof(rcp)))
++	if (copy_from_user(&rcp, data, sizeof(rcp)))
+ 		return -EFAULT;
  
--	if (!dev->netdev_ops->ndo_do_ioctl)
-+	if (!dev->netdev_ops->ndo_siocdevprivate)
- 		return -EOPNOTSUPP;
+         switch(cmd)
+@@ -296,7 +300,7 @@ static int ipddp_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 			spin_unlock_bh(&ipddp_route_lock);
  
--	ret = dev->netdev_ops->ndo_do_ioctl(dev, (struct ifreq *)&req,
--						SIOCPNGAUTOCONF);
-+	ret = dev->netdev_ops->ndo_siocdevprivate(dev, (struct ifreq *)&req,
-+						  NULL, SIOCPNGAUTOCONF);
- 	if (ret < 0)
- 		return ret;
- 
+ 			if (rp) {
+-				if (copy_to_user(rt, &rcp2,
++				if (copy_to_user(data, &rcp2,
+ 						 sizeof(struct ipddp_route)))
+ 					return -EFAULT;
+ 				return 0;
 -- 
 2.29.2
 
