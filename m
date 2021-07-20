@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DC93CF11D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 03:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3F2D3CF11C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 03:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238657AbhGTA2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 20:28:23 -0400
-Received: from mga05.intel.com ([192.55.52.43]:28472 "EHLO mga05.intel.com"
+        id S1356481AbhGTA1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 20:27:42 -0400
+Received: from mga03.intel.com ([134.134.136.65]:13551 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352473AbhGTAYK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1353714AbhGTAYK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 19 Jul 2021 20:24:10 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10050"; a="296718813"
+X-IronPort-AV: E=McAfee;i="6200,9189,10050"; a="211215845"
 X-IronPort-AV: E=Sophos;i="5.84,253,1620716400"; 
-   d="scan'208";a="296718813"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2021 17:58:41 -0700
+   d="scan'208";a="211215845"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jul 2021 18:03:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.84,253,1620716400"; 
-   d="scan'208";a="415023091"
+   d="scan'208";a="461801768"
 Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 19 Jul 2021 17:58:40 -0700
+  by orsmga008.jf.intel.com with ESMTP; 19 Jul 2021 18:03:27 -0700
 Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id 83CAA58041D;
-        Mon, 19 Jul 2021 17:58:38 -0700 (PDT)
-Date:   Tue, 20 Jul 2021 08:58:35 +0800
+        by linux.intel.com (Postfix) with ESMTPS id 00F33580895;
+        Mon, 19 Jul 2021 18:03:24 -0700 (PDT)
+Date:   Tue, 20 Jul 2021 09:03:22 +0800
 From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
 To:     Xu Liang <lxu@maxlinear.com>
 Cc:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
@@ -34,7 +34,7 @@ Cc:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
         hmehrtens@maxlinear.com, tmohren@maxlinear.com,
         mohammad.athari.ismail@intel.com
 Subject: Re: [PATCH v6 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <20210720005835.GA22758@linux.intel.com>
+Message-ID: <20210720010322.GA22828@linux.intel.com>
 References: <20210719053212.11244-1-lxu@maxlinear.com>
  <20210719053212.11244-2-lxu@maxlinear.com>
 MIME-Version: 1.0
