@@ -2,108 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E62B3D0120
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:00:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114843D013D
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233337AbhGTRTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:19:00 -0400
-Received: from mga18.intel.com ([134.134.136.126]:49181 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234058AbhGTRSg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 13:18:36 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10051"; a="198570202"
-X-IronPort-AV: E=Sophos;i="5.84,255,1620716400"; 
-   d="scan'208";a="198570202"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2021 10:59:06 -0700
-X-IronPort-AV: E=Sophos;i="5.84,255,1620716400"; 
-   d="scan'208";a="469851169"
-Received: from kvadariv-mobl1.amr.corp.intel.com (HELO [10.212.155.118]) ([10.212.155.118])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2021 10:59:04 -0700
-Subject: Re: [PATCH v3 5/6] platform/x86: intel_tdx_attest: Add TDX Guest
- attestation interface driver
-To:     "Kuppuswamy, Sathyanarayanan" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Peter H Anvin <hpa@zytor.com>, Tony Luck <tony.luck@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kirill Shutemov <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20210720045552.2124688-1-sathyanarayanan.kuppuswamy@linux.intel.com>
- <20210720045552.2124688-6-sathyanarayanan.kuppuswamy@linux.intel.com>
- <eddc318e-e9c9-546d-6cff-b3c40062aecd@intel.com>
- <4c43dfe4-e44b-9d6d-b012-63790bb47b19@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <52caa0e2-d3da-eef0-da5f-e83cc54c133c@intel.com>
-Date:   Tue, 20 Jul 2021 10:59:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S231707AbhGTR0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231919AbhGTRYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:24:17 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84221C0613DB
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 11:04:44 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id q15so7278174qkm.8
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 11:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tTspJFBreioQm4l0ODj9BEx6x6J2wjJ5rEOrdp1b4Ww=;
+        b=GbgxzMem92Q0A2o5+zBC76s8X7qrpvN8Ht3Abkd7aq8/u+q6WJInvVhuTxoz1B6TwB
+         2bxA+lChwH93VdpeIe1di4xjQpnBitLeeBQQqkRkk1RCZMpn+PuhMXK7h1blF8lYUBnZ
+         ixz44Hc4YR0+QzFTMhKqWyFw/oFAbdXXO4tYZ/KMmHv7Cf4MH5p7/vTMg11e0t9rEuJS
+         y4+5ta5JEEtoCp4SVJSyIiSO4Wb+q1lQmGuofIkWgWDJteS2r/PmS4AzNRcsY/dNga8G
+         1lWlg0slb4vGnQd0oO5siVpq/njrN7+2gC0pqtiJtQwyPQqNNsTYzHuo3kfMaCa4k6fo
+         O7hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tTspJFBreioQm4l0ODj9BEx6x6J2wjJ5rEOrdp1b4Ww=;
+        b=ZedLySidFrbRYjoOo4XRmo+u7vb0Nfkw1nf3f1CS7GUyUuVquMRRTPVJfkq6nmUtAC
+         QIopr9mrtLzmphoCLGvvufeBjUNf4WrCcNGF9etGOanlNZeq0Al431ULmTJj6lS5dB/K
+         G9atfkGzyf7nigk6ih3KLexcEcB/be5dYTtQ+z/bnd0fetdiktSHf5Ut905ocQHlPBwV
+         x9qcvmz0eC5B82qINWsLXhx8iWXqy6dsXNfY7L9TvvJMBMaReJDIj+FRzLVJ/S+Waj2i
+         iteXB3+yqVPg/Oqr1raxv0BlU0LJwM6+t4bOGrnNveL0bUXJe4389+QMHohjyMVAS6yE
+         +AVw==
+X-Gm-Message-State: AOAM533Ths5/OaolyYivPubGWRnLubEVGT2BbLZt1dDEO4AjxW73f04F
+        UMQte4svl2UIjlhf6DdEur+cLn22Iw==
+X-Google-Smtp-Source: ABdhPJy1uVLYw3ItID8Q4Y9i1OFpUuDMRzza/ikHWwRZQlGtKoXVOWgWqr+9+vjcDxTpfhnFhj0Eig==
+X-Received: by 2002:a05:620a:14b8:: with SMTP id x24mr11779776qkj.475.1626804283339;
+        Tue, 20 Jul 2021 11:04:43 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
+        by smtp.gmail.com with ESMTPSA id k125sm10130159qkf.16.2021.07.20.11.04.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 11:04:42 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH iproute2] man: tc-skbmod.8: Remove misinformation about the swap action
+Date:   Tue, 20 Jul 2021 11:04:16 -0700
+Message-Id: <20210720180416.19897-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <4c43dfe4-e44b-9d6d-b012-63790bb47b19@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/21 10:52 AM, Kuppuswamy, Sathyanarayanan wrote:
->> Why does this need to use the page allocator directly? 
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-^^ You didn't address this question.
+Currently man 8 tc-skbmod says that "...the swap action will occur after
+any smac/dmac substitutions are executed, if they are present."
+
+This is false.  In fact, trying to "set" and "swap" in a single skbmod
+command causes the "set" part to be completely ignored.  As an example:
+
+	$ tc filter add dev eth0 parent 1: protocol ip prio 10 \
+		matchall action skbmod \
+        	set dmac AA:AA:AA:AA:AA:AA smac BB:BB:BB:BB:BB:BB \
+        	swap mac
+
+The above command simply does a "swap", without setting DMAC or SMAC to
+AA's or BB's.  The root cause of this is in the kernel, see
+net/sched/act_skbmod.c:tcf_skbmod_init():
+
+	parm = nla_data(tb[TCA_SKBMOD_PARMS]);
+	index = parm->index;
+	if (parm->flags & SKBMOD_F_SWAPMAC)
+		lflags = SKBMOD_F_SWAPMAC;
+		^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Doing a "=" instead of "|=" clears all other "set" flags when doing a
+"swap".  Discourage using "set" and "swap" in the same command by
+documenting it as undefined behavior, and update the "SYNOPSIS" section
+accordingly.
+
+If one really needs to e.g. "set" DMAC to all AA"s then "swap" DMAC and
+SMAC, one should do two separate commands and "pipe" them together.
+
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+---
+ man/man8/tc-skbmod.8 | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+diff --git a/man/man8/tc-skbmod.8 b/man/man8/tc-skbmod.8
+index eb3c38fa6bf3..76512311b17d 100644
+--- a/man/man8/tc-skbmod.8
++++ b/man/man8/tc-skbmod.8
+@@ -5,12 +5,12 @@ skbmod - user-friendly packet editor action
+ .SH SYNOPSIS
+ .in +8
+ .ti -8
+-.BR tc " ... " "action skbmod " "{ [ " "set "
+-.IR SETTABLE " ] [ "
++.BR tc " ... " "action skbmod " "{ " "set "
++.IR SETTABLE " | "
+ .BI swap " SWAPPABLE"
+-.RI " ] [ " CONTROL " ] [ "
++.RI " } [ " CONTROL " ] [ "
+ .BI index " INDEX "
+-] }
++]
+ 
+ .ti -8
+ .IR SETTABLE " := "
+@@ -25,6 +25,7 @@ skbmod - user-friendly packet editor action
+ .IR SWAPPABLE " := "
+ .B mac
+ .ti -8
++
+ .IR CONTROL " := {"
+ .BR reclassify " | " pipe " | " drop " | " shot " | " continue " | " pass " }"
+ .SH DESCRIPTION
+@@ -48,10 +49,7 @@ Change the source mac to the specified address.
+ Change the ethertype to the specified value.
+ .TP
+ .BI mac
+-Used to swap mac addresses. The
+-.B swap mac
+-directive is performed
+-after any outstanding D/SMAC changes.
++Used to swap mac addresses.
+ .TP
+ .I CONTROL
+ The following keywords allow to control how the tree of qdisc, classes,
+@@ -128,9 +126,13 @@ tc filter add dev eth3 parent 1: protocol ip prio 10 \\
+ .EE
+ .RE
+ 
+-As mentioned above, the swap action will occur after any
+-.B " smac/dmac "
+-substitutions are executed, if they are present.
++However, trying to
++.B set
++and
++.B swap
++in a single
++.B skbmod
++command will cause undefined behavior.
+ 
+ .SH SEE ALSO
+ .BR tc (8),
+-- 
+2.20.1
+
