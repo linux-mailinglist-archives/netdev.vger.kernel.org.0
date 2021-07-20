@@ -2,135 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F993CFA40
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BCA33CFA83
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:28:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236833AbhGTMcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:32:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35147 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235863AbhGTMcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:32:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626786776;
+        id S238766AbhGTMos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:44:48 -0400
+Received: from us-smtp-delivery-115.mimecast.com ([170.10.133.115]:34954 "EHLO
+        us-smtp-delivery-115.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238658AbhGTMjo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:39:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maxlinear.com;
+        s=selector; t=1626787213;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=9nf1v6P0JlGIoFjMRuRD5r+S7g6x4hJlGGenaSoSM68=;
-        b=gfCoVMZNPnebUpRP/dSqQBz8IDAxy9zH/c1pvHvEPfy5lcUqTFuPmkR6NTIyunp84vKkm3
-        QwtS6QJiFg3ScFSJOeWWOzNTn5szAPKVxWpKrFCkgt15TKtufI5IaVMFUoypQMMuMu8b4I
-        jApv4mXk1ETzrt/68bE4jLp3MNFd0DQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-24-fR5MrqLFMlC5Xp2S6MrlEw-1; Tue, 20 Jul 2021 09:12:52 -0400
-X-MC-Unique: fR5MrqLFMlC5Xp2S6MrlEw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A6F0100C660;
-        Tue, 20 Jul 2021 13:12:51 +0000 (UTC)
-Received: from localhost (ovpn-114-103.ams2.redhat.com [10.36.114.103])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 011C560C82;
-        Tue, 20 Jul 2021 13:12:50 +0000 (UTC)
-Date:   Tue, 20 Jul 2021 14:12:49 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     sgarzare@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        jasowang@redhat.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] vsock/virtio: set vsock frontend ready in
- virtio_vsock_probe()
-Message-ID: <YPbL0QIgbAh/PBuC@stefanha-x1.localdomain>
-References: <20210720071337.1995-1-xianting.tian@linux.alibaba.com>
- <YPakBTVDbgVcTGQX@stefanha-x1.localdomain>
- <b48bd02d-9514-ec0c-3779-fd5ddc5c2d3d@linux.alibaba.com>
+        bh=h9WDZJfN4xUnogNfA4wzKgD74HJPzq8HZ5HNV0tlAZ8=;
+        b=vA6FiPNU+BpjyOY+FPYD3p3NfI5iXC5fbQ+nNZjh33QoKFzMDkAdNXsYcVcz6GanmF8QxF
+        hiACuXwC7MZayaPkvZTbUvgKMh67W8/GWF/PlQHiMJ14EtWAH3C43BLxvZ8qRzH1FANAB5
+        R9VjJhrRFheyzf+arKtjcoQ1eAOYWiQ=
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08lp2172.outbound.protection.outlook.com [104.47.73.172])
+ (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-266-Ow-aITzAPkWTpGR-3LIFSg-1; Tue, 20 Jul 2021 09:18:07 -0400
+X-MC-Unique: Ow-aITzAPkWTpGR-3LIFSg-1
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com (2603:10b6:301:67::32)
+ by CO1PR19MB5015.namprd19.prod.outlook.com (2603:10b6:303:f0::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Tue, 20 Jul
+ 2021 13:18:02 +0000
+Received: from MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87]) by MWHPR19MB0077.namprd19.prod.outlook.com
+ ([fe80::b931:30a4:ce59:dc87%4]) with mapi id 15.20.4331.034; Tue, 20 Jul 2021
+ 13:18:02 +0000
+From:   Liang Xu <lxu@maxlinear.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        Hauke Mehrtens <hmehrtens@maxlinear.com>,
+        Thomas Mohren <tmohren@maxlinear.com>,
+        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>
+Subject: Re: [PATCH v6 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Topic: [PATCH v6 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
+Thread-Index: AQHXfF93E9dlj6gxN0ii5bTKpxVpI6tKxfkAgABxygCAAJ50gIAABF6A
+Date:   Tue, 20 Jul 2021 13:18:02 +0000
+Message-ID: <15f9a29b-d34f-e55c-033f-48076eb1cb0f@maxlinear.com>
+References: <20210719053212.11244-1-lxu@maxlinear.com>
+ <20210719053212.11244-2-lxu@maxlinear.com> <YPXlAFZCU3T+ua93@lunn.ch>
+ <c21ac03c-28dc-1bb1-642a-ba309e39c08b@maxlinear.com>
+ <YPbJX34DG5gYFkEq@lunn.ch>
+In-Reply-To: <YPbJX34DG5gYFkEq@lunn.ch>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 36bac248-96f1-42f3-6688-08d94b80cd56
+x-ms-traffictypediagnostic: CO1PR19MB5015:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CO1PR19MB50157DE718B7948BBC2159E2BDE29@CO1PR19MB5015.namprd19.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0
+x-microsoft-antispam-message-info: ibhDJIFh5BYc05VHkwv69ZGe02gf3/FoDkLNIqlDK3S1FkCx+CpIuDvl2W5ikqQ1hWnQa51SVdK/1DeUsLv4lybSMCnqFSBacaK9jSScR/bvbnxE45ahl1L8SArS7zh/n4IKmBt8bxrr2hyOPX230VEH+sCU1t/kfRaFmOY5QQ0caelJZt8bsXTrCHdW7Q1YRUf5Af1efl881MnhTX5y2Le8VTBNHdVkj0Aar8nPyuY5Jt2WgXwbiDPuSRv/4yerPKDXAZ8D8RPFSWFUXpVdPZpcTsV++kf6z1dOcGiFzaooX+DuAflPcCIbChiGnQvqINOg/vEcnDTaTASogyJ4cJGR+0QrCdUBYwJIvrOsr6xJmYBHYycvMtZs9O3xHtQaVefDtqW9CRjRRsYXu/6TcIi4aW8u8pKHRhVEnoq/usR+kpZsNUrTkUj3utq2k5+2IlMgFNZkSE4rt32lA1GyAQI1nvy6adt6smaBCiwDv9jPSbh6qRH3CG/GICJd1tCoKzCLYbQVS6TtVj9yur6SaXr/BAKlqJl2ePfuQI4KvmHfQmLMVmITNqFTy5GZLDX1Cv9ESmfaWI5WAtFvDIovhMrcLrnREGTUF+BLXH+h/j2kGy2GA6Y0VNNswgwW4dtYNhK0F4Ipo8Z+cijR17blyi+3gt+CCJ/ofukuE/+L4ekHPolV/pFFt3cywGEX6CPqWswOqd3bHL6L+o3B5mjPJHTTnuoSVzhqSf++F1IftBXbPtZVyB1iuriqnmse4gLERc+aNopl6uGuhkXJdMWLJw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR19MB0077.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(136003)(376002)(366004)(346002)(54906003)(122000001)(2616005)(38100700002)(71200400001)(8676002)(6486002)(86362001)(31686004)(6506007)(2906002)(31696002)(8936002)(5660300002)(186003)(478600001)(4744005)(316002)(6916009)(36756003)(6512007)(66446008)(66946007)(53546011)(4326008)(66556008)(66476007)(64756008)(76116006)(91956017)(26005)(38070700004)(45980500001)(43740500002);DIR:OUT;SFP:1102
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WlJFM1RiK0JvNEtyTnVYcVZwRWViV1FFWnJ1Zzc3MlllQkZvUEY2dThQZkhF?=
+ =?utf-8?B?c0dGUjFNSDE5bWpoMnFTVGxIbE44blRseTY3Tzl5Z0JWNTFkU1JWWWpBVzdK?=
+ =?utf-8?B?NlpPV3pmS3g3dFJxVUJWbzg2RWJoNWNkdThCVFN5RkxtM0pFc3FaL285Y25v?=
+ =?utf-8?B?R2h4Mmhqd1FGWGhJUnNnTE9GMjNMaHI5cUpmdEgydUI0VXJHeGxiZGRJTmZJ?=
+ =?utf-8?B?OWUxL3gxdFgveHM1NE5yWVE0WDlkVXB5c0pZNWZEajBQTGpLSUNlcXpXL3BX?=
+ =?utf-8?B?SEwxWmtVMXVISUY2UnpyNGpTM1EvMnB5ZmEwbWxWdGRSWlBLRDVoc2QrRmlB?=
+ =?utf-8?B?TWlQa0R3SGJIdkpRV1FSMHhJRmtuc0FScHJQZURmV3FJRWo4TVhRMy9SSUEw?=
+ =?utf-8?B?TnN2eXcwb3B2bnpMWmVDNFhtZjZWcGZocCsxRnZqM0xmL3VYVkw2WnZBbzlS?=
+ =?utf-8?B?K0tRRzhjNHhFd050YlRhY2NscjNabEhnN0Rvai8vYUZhU1lBU3crVU5Hd0ZB?=
+ =?utf-8?B?OFJ2TmpHakNFejNBQitkU2V5bkduQ1ZDWjNBOHZ0eFYyaFhwMkgyOGNxeCs3?=
+ =?utf-8?B?cjcwczFobFJsVVBzb2dYTm45TWkxQytIaFB1S2I3SDNEVmdVSTA4NmhMaDJr?=
+ =?utf-8?B?TU4yL0tJb25TWmUxektSWXQ2d09NT3NMMHFIZWVEcVJBekxOWVNlY2M4bU55?=
+ =?utf-8?B?Q0FmR1JaU0NrMVRHdFJMNGYzVnBXSmRGV0xwNTc2U29POGEwWFZGc0wwdmJV?=
+ =?utf-8?B?R0NzVTEyZU1ZV1ZGV1JJd2hQL0NLYko2UzU5ZTJhQ1VEZG03ZG4zejFjTkQv?=
+ =?utf-8?B?WmYyNGtoUlNxbjhoRDJkdWp6eUFkL1RDbTZVUGtwZm1Gb1lhU1B3dkk5bUpE?=
+ =?utf-8?B?azl1eTRWOEhKZWRDcC9weUgyTUszbUlEV2R0dU5vMVNnWmgyRVRWdnFhYmNm?=
+ =?utf-8?B?dml2Y21uelFybk5BMTZ1Y2YyNmxLQVNxb0cyZGRLRHBGdDdyaW8zT09Kd3k2?=
+ =?utf-8?B?YVFxcHRNaXBtaU1BWlR1eThnc1VkNXduWFh0ZkVvVGJPbnBWV0MrUm9DVWsy?=
+ =?utf-8?B?Nk84WDkvUkZST2VmbXFLaW45UTBCZmZhckoxZElvTytyRjk1YlNwUjZpQkc5?=
+ =?utf-8?B?TG5xTE1TUVhDbElLaDA0RHlOUjg1bnZES1g1K0k2Tnk2NTFKWXVQcmF2bXVZ?=
+ =?utf-8?B?SVlzdVV6Znl2RWs5YjR4b1dndzMveGZwbENkMG4xNHlZUVJ4M3JkZmx5OGVa?=
+ =?utf-8?B?cER4c1AxVy9ORDl5S0JPTkNucjFXZWFWcDY5eXJTMWZMYUgyQUV5OWpycXFU?=
+ =?utf-8?B?RWFNU00wRkIvb1BRWER1eURTRlJMbStkZXNTbGxjTC9KOVB6TWZzNVVZU09O?=
+ =?utf-8?B?eVBkeHQ0S0k1ejBxQUFtbnZ0ekZ0TXBIdjdrbkNBT3FGazBGckVyOHAyTytR?=
+ =?utf-8?B?NXQ5SWlRNXlhQSswN3JsZEw0L09hWVJZSEJPYTFSSUxoODU1U1hLVnZpd0hX?=
+ =?utf-8?B?S1RYTHphSjVNZkVSeUYvNDEyb2NBWi9iWTQyYXUyeHAxZjZMZEhCUy9jbEVv?=
+ =?utf-8?B?enRMZitreVFNZFIwTlBjQVp5TElyL0E3UTVubDJoRVJEbEs5eTNaVSs2UU1N?=
+ =?utf-8?B?ZnhPMWlrV1NYQ291aGhkR052S3pvb1JsalczZFRaUCtBdHUwM1F0Y01kbDJp?=
+ =?utf-8?B?V1p4RkREMFBkYzBmdkxVRFM5M2VOMEVBdllEY1FNRXVLbm9NVXFNYWhNL0lR?=
+ =?utf-8?Q?XSK+Yeu6uBdBfL8QbU=3D?=
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ECpNC9XLSuXAI6rm"
-Content-Disposition: inline
-In-Reply-To: <b48bd02d-9514-ec0c-3779-fd5ddc5c2d3d@linux.alibaba.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-OriginatorOrg: maxlinear.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR19MB0077.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36bac248-96f1-42f3-6688-08d94b80cd56
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2021 13:18:02.1275
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: dac28005-13e0-41b8-8280-7663835f2b1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rQBvoyaxtqj1NHapT+H5ohiRw1kEwzhbG6TVJ7ltD1E89ISjeJroNGO8mqi4SJwOwLsTIfOU675nPL/JbYpjjg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR19MB5015
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA115A51 smtp.mailfrom=lxu@maxlinear.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: maxlinear.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-ID: <FA045FDF02963045B65C1435ADAB6DE6@namprd19.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---ECpNC9XLSuXAI6rm
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Jul 20, 2021 at 07:05:39PM +0800, Xianting Tian wrote:
->=20
-> =E5=9C=A8 2021/7/20 =E4=B8=8B=E5=8D=886:23, Stefan Hajnoczi =E5=86=99=E9=
-=81=93:
-> > On Tue, Jul 20, 2021 at 03:13:37PM +0800, Xianting Tian wrote:
-> > > Add the missed virtio_device_ready() to set vsock frontend ready.
-> > >=20
-> > > Signed-off-by: Xianting Tian<xianting.tian@linux.alibaba.com>
-> > > ---
-> > >   net/vmw_vsock/virtio_transport.c | 2 ++
-> > >   1 file changed, 2 insertions(+)
-> > Please include a changelog when you send v2, v3, etc patches.
-> OK, thanks.
-> > > diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_=
-transport.c
-> > > index e0c2c992a..dc834b8fd 100644
-> > > --- a/net/vmw_vsock/virtio_transport.c
-> > > +++ b/net/vmw_vsock/virtio_transport.c
-> > > @@ -639,6 +639,8 @@ static int virtio_vsock_probe(struct virtio_devic=
-e *vdev)
-> > >   	mutex_unlock(&the_virtio_vsock_mutex);
-> > > +	virtio_device_ready(vdev);
-> > Why is this patch necessary?
->=20
-> Sorry, I didn't notice the check in virtio_dev_probe(),
->=20
-> As Jason comment,=C2=A0 I alsoe think we need to be consistent: switch to=
- use
-> virtio_device_ready() for all the drivers. What's opinion about this?
-
-According to the documentation the virtio_device_read() API is optional:
-
-  /**
-   * virtio_device_ready - enable vq use in probe function
-   * @vdev: the device
-   *
-   * Driver must call this to use vqs in the probe function.
-     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   *
-   * Note: vqs are enabled automatically after probe returns.
-     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   */
-
-Many drivers do not use vqs during the ->probe() function. They don't
-need to call virtio_device_ready(). That's why the virtio_vsock driver
-doesn't call it.
-
-But if a ->probe() function needs to send virtqueue buffers, e.g. to
-query the device or activate some device feature, then the driver will
-need to call it explicitly.
-
-The documentation is clear and this design is less error-prone than
-relying on all drivers to call it manually. I suggest leaving things
-unchanged.
-
-Stefan
-
---ECpNC9XLSuXAI6rm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmD2y9EACgkQnKSrs4Gr
-c8jrqgf/S6HrkKdnFqfK+QSbiUl+UXuX9y6rWg6umKeM+V6GAOPrPw/+WZd1dM9Q
-AdhHLvjaR4MNNIQj7Vm8gG7aBs4s0FO2QTH4atfH6E3bEOXBWn1sB+lduzEk87Bf
-5Y/tUog1kjgiU0eTkwLAYgXs9D8dA7SkJunRPjM+prsdvYDdWo5ulpEiLsexjPSy
-ye84Yg5CMWDTPCmk9yvcXBxAQaHu3jaZQChJsT72GgO4s11DgjLFqgWAMc/vs6X1
-bYfP0oDKHQiJ7ag81nYxdyyNcUcf2xaX1tvfg54WwdM+oMP6vk6FqFOYuksvA8PP
-Lj+uqiNg4gqv2n6SDm0v+mYH9g2QpA==
-=I41d
------END PGP SIGNATURE-----
-
---ECpNC9XLSuXAI6rm--
+T24gMjAvNy8yMDIxIDk6MDIgcG0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPiBUaGlzIGVtYWlsIHdh
+cyBzZW50IGZyb20gb3V0c2lkZSBvZiBNYXhMaW5lYXIuDQo+DQo+DQo+IE9uIFR1ZSwgSnVsIDIw
+LCAyMDIxIGF0IDAzOjM1OjE3QU0gKzAwMDAsIExpYW5nIFh1IHdyb3RlOg0KPj4gT24gMjAvNy8y
+MDIxIDQ6NDggYW0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPj4+IFRoaXMgZW1haWwgd2FzIHNlbnQg
+ZnJvbSBvdXRzaWRlIG9mIE1heExpbmVhci4NCj4+Pg0KPj4+DQo+Pj4+ICsvKiBQSFkgSUQgKi8N
+Cj4+Pj4gKyNkZWZpbmUgUEhZX0lEX0dQWXgxNUJfTUFTSyAgMHhGRkZGRkZGQw0KPj4+PiArI2Rl
+ZmluZSBQSFlfSURfR1BZMjF4Ql9NQVNLICAweEZGRkZGRkY5DQo+Pj4gVGhhdCBpcyBhbiBvZGQg
+bWFzay4gSXMgdGhhdCByZWFsbHkgY29ycmVjdD8NCj4+Pg0KPj4+ICAgICAgICBBbmRyZXcNCj4+
+Pg0KPj4gSGkgQW5kcmV3LA0KPj4NCj4+DQo+PiBZZXMsIHRoaXMgaXMgY29ycmVjdCBhbmQgaGFz
+IGJlZW4gdGVzdGVkLg0KPj4NCj4+IEl0J3Mgc3BlY2lhbCBiZWNhdXNlIG9mIGEgUEhZIElEIHNj
+aGVtZSBjaGFuZ2UgZHVyaW5nIG1hbnVmYWN0dXJpbmcuDQo+IE8uSy4gSXQgaXMganVzdCBhIHJl
+YWxseSBvZGQgbWFzay4gQW5kIHB1dHRpbmcgdGhlIHJldmlzaW9uIGluIHRoZQ0KPiBtaWRkbGUs
+IG5vdCBhdCB0aGUgZW5kPyBBbmQgbm9uZSBvZiB0aGUgSURzIGhhdmUgYml0IDAgc2V0LiBJdCBq
+dXN0DQo+IGFsbCBhZGRzIHVwIHRvIGl0IGxvb2tpbmcgd3JvbmcuIFNvIGkgaGFkIHRvIGFzay4N
+Cj4NCj4gICAgICBBbmRyZXcNCj4NClVuZGVyc3Rvb2QuIEhlcmUgYXJlIHRoZSByZXZpc2lvbnMg
+YWxyZWFkeSBpbiB0aGUgbWFya2V0IChzaGlwcGVkKToNCg0KMS4gR1BZMjExQiAtIDY3QzlERTA4
+LCA2N0M5REUwQQ0KDQoyLiBHUFkyMTJCIC0gNjdDOURFMDksIDY3QzlERTBCDQoNCg0K
 
