@@ -2,83 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 861B43CF9D8
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 14:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB353CF9DE
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 14:48:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhGTMGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:06:32 -0400
-Received: from pop31.abv.bg ([194.153.145.221]:52826 "EHLO pop31.abv.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238265AbhGTMGS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 08:06:18 -0400
-Received: from smtp.abv.bg (localhost [127.0.0.1])
-        by pop31.abv.bg (Postfix) with ESMTP id 63D6A1805D3D;
-        Tue, 20 Jul 2021 15:46:33 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
-        t=1626785193; bh=3n+oId2CcuiY7DARlUQCYAgosiVIv3DRNqh5ePKuPW0=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=VtfzwQisc+8A4Ov4xUN8PZpgmEG4NFE8oXQss9vBcGS3w5OOVAeD9ijRIUbrpcyTJ
-         dsYqs/CCU3Hu4RvY282vwL+DdPUVKxeOOtuI3v2ywSNVs0movGQO1cvUC56uefkqTY
-         xfmNlKD6D1JPjPFrCiVPNbPxHLMzE0gQTVBPNdR4=
-X-HELO: smtpclient.apple
-Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
-Received: from 212-39-89-148.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.148)
- by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Tue, 20 Jul 2021 15:46:33 +0300
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
-Subject: Re: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
-From:   Georgi Valkov <gvalkov@abv.bg>
-In-Reply-To: <YPa4ZelG2k8Z826E@kroah.com>
-Date:   Tue, 20 Jul 2021 15:46:11 +0300
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        mhabets@solarflare.com, luc.vanoostenryck@gmail.com,
-        snelson@pensando.io, mst@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        corsac@corsac.net, matti.vuorela@bitfactor.fi,
-        stable@vger.kernel.org,
-        =?utf-8?B?0JPQtdC+0YDQs9C4INCT0LXQvtGA0LPQuNC10LIg0JLRitC70LrQvtCy?= 
-        <gvalkov@abv.bg>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C6AA954F-8382-461D-835F-E5CA03363D84@abv.bg>
-References: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
- <20210720122215.54abaf53@cakuba>
- <5D0CFF83-439B-4A10-A276-D2D17B037704@abv.bg> <YPa4ZelG2k8Z826E@kroah.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
+        id S238372AbhGTMHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:07:44 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:37622
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238360AbhGTMHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:07:38 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 665A4418F8;
+        Tue, 20 Jul 2021 12:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626785295;
+        bh=0ItI7io0GTWcShfB9OXndSkWcyxA3F74Ps+6kGgGN+g=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=Wr7zJECXlIJa89fP1PUCdovg3nBJTNJJHJmTEzVJ/ds/vH+WmeGEOfTiwF2C9QSuH
+         YDV3O+7+jpKKTVRxio39/vf0GQwXiyCjxXkQElA2myNiYpebcyvONf+1ug8MyKaKOB
+         BNy5GejUy8gzYUJSwOwNA+Ap96VdNa/2us8cSlDMzTBn9xed4p4uwv9qT76SB9bZ8H
+         kHE/QBgD/AQNcr9ZLHJHv9cHeOy5X3K29ufZ9v404NGPuIxXSTJA3uvMi3hCMlugr9
+         2DzjWYliXm96SqiBZM4mnl8RhknXoX810ziFLKZ+7soNViKh2RX2fLfFlNoz93LDtl
+         OdwHxza0lIdKw==
+From:   Colin King <colin.king@canonical.com>
+To:     Chas Williams <3chas3@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] atm: idt77252: clean up trigraph warning on ??) string
+Date:   Tue, 20 Jul 2021 13:48:13 +0100
+Message-Id: <20210720124813.59331-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yes, I read it, and before my previous e-mail that I also read the link =
-from Jakub,
-which essentially provides the same information.
+From: Colin Ian King <colin.king@canonical.com>
 
-There is only one patch =
-0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
-The command I used from the example also generated a 0000-cover-letter, =
-so
-I included it as well.
+The character sequence ??) is a trigraph and causes the following
+clang warning:
 
-I still have no clue what exactly I should do. Can you please help me?
+drivers/atm/idt77252.c:3544:35: warning: trigraph ignored [-Wtrigraphs]
 
-Georgi Valkov
+Clean this by replacing it with single ?.
 
-> On 2021-07-20, at 2:49 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
->=20
-> On Tue, Jul 20, 2021 at 02:39:49PM +0300, Georgi Valkov wrote:
->> I am doing this for the first time, so any help would be appreciated!
->=20
-> Have you read Documentation/process/submitting-patches.rst yet?  If =
-not,
-> please do so.
->=20
-> And look at examples on this list, you have to send individual =
-patches,
-> not everything all crammed into one email.
->=20
-> thanks,
->=20
-> greg k-h
->=20
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/atm/idt77252.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
+index 9e4bd751db79..81ce81a75fc6 100644
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -3536,7 +3536,7 @@ static int idt77252_preset(struct idt77252_dev *card)
+ 		return -1;
+ 	}
+ 	if (!(pci_command & PCI_COMMAND_IO)) {
+-		printk("%s: PCI_COMMAND: %04x (???)\n",
++		printk("%s: PCI_COMMAND: %04x (?)\n",
+ 		       card->name, pci_command);
+ 		deinit_card(card);
+ 		return (-1);
+-- 
+2.31.1
 
