@@ -2,103 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D73213D00E0
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43E5F3D00EC
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231310AbhGTRHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231201AbhGTRHX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:07:23 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8060C061766;
-        Tue, 20 Jul 2021 10:47:59 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id b29so11046973ljf.11;
-        Tue, 20 Jul 2021 10:47:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vUmdle0okeye9wG/MQSJUYKK/oNkAcQU0zrJ8K6htdI=;
-        b=bGURyZRhWmst/CyxrE441Wy0VrDxP/9N0HUp8BLrY/7Bo4VgY+M5kThochgSE7OV7R
-         v46ztMO6rt+/OI9yyC1iyBbLrP8KxsKIhnmUg4NwD05S5iPniXaEs0IIrVryP27jyg8d
-         Ryq/Vm/EnscOs3ZqgWouzi+DNt6rhGDQ9nNOwl8xcQkVF3YzvSRiW+66WQJU2hMc2/iU
-         8MPJysddUeExnZupHl4YW4Q6B040CVRleHdG5z0uyIaQSMEbHKkD11PAE4JXsRiAm5Ka
-         64L8F+PauoiUd56ltr+B6k8AjBI8RcAxD7xM8qjpziLWxkaMI1xl0pdNExId2TmpLBE6
-         H09A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vUmdle0okeye9wG/MQSJUYKK/oNkAcQU0zrJ8K6htdI=;
-        b=EeKfziqVHxFr2haVbSLGPzGtE+6jrq8oEnuWAHPH5lSVioykaV/FYaO2P2RbI3GN27
-         Fp+Ur9LPl449KIhU66tlxci60YxMDk6MMDpwbOWudmqmZvDPGJLGANLE8RtfuiRr0zBp
-         Nxw/6egfl7mj5gZg51JWuc57G5SbFkeKxkyfQeZEIHYWZyPf+Ir58V6nfq6Ttk4RrzdY
-         V8UxybYYt/DMBD0e+DvEf27KE0XLGxtSoSB3dPjqIYdf/abQhh7KGxkTsR+4dPUvimYs
-         sxnm2Jw+2mslDqLYzx07UD7kTl8brxETvE85NQeAC12Y6md6wKKMwENkIqG3uditp+s/
-         /fOQ==
-X-Gm-Message-State: AOAM532N9bQ2GoQPzuIHwrdQLY3kyeec8GcFoWtp5zHw0X+J5aLG3W3F
-        Uy/a0+X/mdMM8KZ03OH54hntllFE7uMPVdCMPSk=
-X-Google-Smtp-Source: ABdhPJzbmeNAF0zBbShQOnE3KRREeAQLMAorAb2p3hcXaGq5CM5Vt1aSfKRcfRhigveNTRfu1XrHKW/w7ivq6N6PnKk=
-X-Received: by 2002:a05:651c:32e:: with SMTP id b14mr2282131ljp.258.1626803278013;
- Tue, 20 Jul 2021 10:47:58 -0700 (PDT)
+        id S232373AbhGTRKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:10:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229536AbhGTRIt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 13:08:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E6C8361004;
+        Tue, 20 Jul 2021 17:49:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626803367;
+        bh=rr5DyOF74U0H7iKb0m9zjXCsuqsP8q1pI+d5NX2axk8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VEsgFDZvIXjcoaGpPEoA0Lu9YRxM0Dj90aWqsnbErQ2UUMNfFjiL3KKy2ihSuQKA8
+         DpJfkpmYcVJtchYg4JZ0xVl4g2Mg2o7fCdXq98nn/PAwMTFoWJ250/salXXOhJJg55
+         abW/iC3f5GUZpAEMSlUl/XMmPNxf0dbMFp9c17FIFUFh6aPXTQv17aO0FFf2m4m8ho
+         FzpeQH9QYcsgshAwYqEOKnzQKiefkbesH4vObWgtP6wKthPFfdBb/jqahxbI+okmue
+         fOLCT92FxMSaj5N+ZOIj1PAxbFu2Oagsxe6Rc6uhcjBjL97r/vUbkyUju8PW712k3f
+         K0QVogmSx6JEw==
+Date:   Tue, 20 Jul 2021 19:49:17 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ramesh Shanmugasundaram <rashanmu@gmail.com>,
+        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Dilip Kota <eswara.kota@linux.intel.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
+Message-ID: <20210720194917.576b7d70@coco.lan>
+In-Reply-To: <20210720172025.363238-1-robh@kernel.org>
+References: <20210720172025.363238-1-robh@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <cover.1625970383.git.Tony.Ambardar@gmail.com> <CAM1=_QR-siQtH_qE1uj4J_xw-jWwcRZrLL2hxK462HOwDV1f8A@mail.gmail.com>
-In-Reply-To: <CAM1=_QR-siQtH_qE1uj4J_xw-jWwcRZrLL2hxK462HOwDV1f8A@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 20 Jul 2021 10:47:46 -0700
-Message-ID: <CAADnVQJ1uvLm6JC-qUp_owQy-A9N-SyVp1Yim3QHaREo4JArgQ@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next v1 00/14] MIPS: eBPF: refactor code, add
- MIPS32 JIT
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     Tony Ambardar <tony.ambardar@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Paul Burton <paulburton@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-mips@vger.kernel.org,
-        Hassan Naveed <hnaveed@wavecomp.com>,
-        David Daney <ddaney@caviumnetworks.com>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 6:25 PM Johan Almbladh
-<johan.almbladh@anyfinetworks.com> wrote:
->
-> I have been focusing on the code the last couple of weeks so I didn't
-> see your email until now. I am sure that this comes as much of a
-> surprise to you as it did to me. Anyway, can send a patch with my JIT
-> implementation tomorrow.
+Em Tue, 20 Jul 2021 11:20:25 -0600
+Rob Herring <robh@kernel.org> escreveu:
 
-It is surprising to have not one but two mips32 JITs :)
-I really hope you folks can figure out the common path forward.
-It sounds to me that the register mapping choices in both
-implementations are the same (which would be the most debated
-part to agree on).
-Not seeing Johan's patches it's hard to make any comparison.
-So far I like Tony's patches. The refactoring and code sharing is great.
+> There's no reason to have "status" properties in examples. "okay" is the
+> default, and "disabled" turns off some schema checks ('required'
+> specifically).
+> 
+> Enabling qca,ar71xx causes a warning, so let's fix the node names:
+> 
+> Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: phy@3: '#phy-cells' is a required property
+>         From schema: schemas/phy/phy-provider.yaml
+> 
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Chen-Yu Tsai <wens@csie.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Rui Miguel Silva <rmfrfs@gmail.com>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Robert Marko <robert.marko@sartura.hr>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Ramesh Shanmugasundaram <rashanmu@gmail.com>
+> Cc: "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+> Cc: ChiYuan Huang <cy_huang@richtek.com>
+> Cc: Wei Xu <xuwei5@hisilicon.com>
+> Cc: Dilip Kota <eswara.kota@linux.intel.com>
+> Cc: Karol Gugala <kgugala@antmicro.com>
+> Cc: Mateusz Holenko <mholenko@antmicro.com>
+> Cc: Olivier Moysan <olivier.moysan@st.com>
+> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-rtc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml |  2 --
+>  .../display/panel/boe,tv101wum-nl6.yaml       |  1 -
 
-Tony,
-what 'static analysis' by the JIT you're referring to?
-re: bpf_jit_needs_zext issue between JIT and the verifier.
-It's a difficult one.
-opt_subreg_zext_lo32_rnd_hi32() shouldn't depend on JIT
-(other than bpf_jit_needs_zext).
-But you're setting that callback the same way as x86-32 JIT.
-So the same bug should be seen there too.
-Could you double check if it's the case?
-It's either a regression (if both x86-32 and mips32 JITs fail
-this test_verifier test) or endianness related (if it's mip32 JIT only).
+>  .../bindings/media/nxp,imx7-mipi-csi2.yaml    |  2 --
+>  .../bindings/media/renesas,drif.yaml          |  1 -
 
-Thank you both for the exciting work!
+Reviewed-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org> # For media
+
+
+Thanks,
+Mauro
