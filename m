@@ -2,132 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 019493CF67A
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 10:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3AA3CF6A4
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 11:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235008AbhGTIRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 04:17:11 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:39340 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235244AbhGTIOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:14:49 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1626771266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3U1eLxN82r4wxpbS8BeoAr7P8TGvhUuY+6aJL7cWBY4=;
-        b=kNymBcmJIYRArPZlo+G6CeCC4BBji48XYaVmNer8cjer5jnrjsT7/K0KZwVTFhQP0pYBrA
-        G8GCcaPmDf4vF4ZjP0mW19bwJ3Uv85xezJZjpLqheaLs/fE1tNWE13tOmfav5qK8PkOdYm
-        7W1xWEUGz5M9lYiwj5rgBAZZ5wRA8Rtc0NgzkXSA5hWLonfl9a64lMXyhikT9ReUyvYsHT
-        hvPIZHUSNWLXkADZSw2o3Ztl6mXRt1xfQ5A/t/l5UmyXqn1dd6LP9g0//QZ8dxBk1XQym6
-        ZzmHGKVJYbQGB+rqPsgyDSuh2Q8dXGdTwTKplH/XpwaYOM2l2n6e7tgUoEkMIA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1626771266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3U1eLxN82r4wxpbS8BeoAr7P8TGvhUuY+6aJL7cWBY4=;
-        b=9hmDKwnRrDz5FR11Fpi4fex2R404ETTzmC65Mey3yLAbJuJ0On/HCKffdAFYHTrulwdztG
-        hdsqdCzSHamAHmBg==
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-In-Reply-To: <YPV6+PQq1fvH8aSy@lunn.ch>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
- <20210716212427.821834-6-anthony.l.nguyen@intel.com>
- <YPIAnq6r3KgQ5ivI@lunn.ch> <87y2a2hm6m.fsf@kurt>
- <YPV6+PQq1fvH8aSy@lunn.ch>
-Date:   Tue, 20 Jul 2021 10:54:24 +0200
-Message-ID: <87y2a19xhb.fsf@kurt>
+        id S235056AbhGTI3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 04:29:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235499AbhGTI2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:28:39 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907D6C061766
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 01:45:24 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id k27so27506300edk.9
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 01:45:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1pTMpOorH4LXisVDsXChy+V+9uhVQ+gNlcIaEeOCwgw=;
+        b=PN0n7YiIgzdEzWTu+Hn+Zg1BVFbf8oa8DRCmTAwLnsS/hNSCj7BW9S5xB97H2O0AMc
+         cZv2dH7j3sdKeolAH9wQUkAtIthofsXJVmyKUQer3a4tRlxQ7Mv06d1DRsNWX4PlOT5j
+         gj6elyDDBkh0ongrV/OMYJFxmY/riLEenq1ukRLXN36IUCt6Edbuvu02k3Wz1zDII8kJ
+         ROiEBPoddxtJ+LTak9vMOz5fJAFwgPalbrUZ1hRk2eEE7VA+aFOVWWyE9lkH8SjcmZp5
+         depv9ZvyeSQYnkFCZZX7ugVebi5PQBlIfLwhFgpJLdiJaQNgW9sesCGtjE5Tc/zZhrJH
+         hHNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1pTMpOorH4LXisVDsXChy+V+9uhVQ+gNlcIaEeOCwgw=;
+        b=uHr2pJOtMgO7L769AHTyhE8ec82rc10GrhopZ9I4jp82T5wosF0E9wL2qsQjeA7qDg
+         kXrp7IASNrKavleM/HBjA2dedZ/sJpYInOjSZzI7tIVhZhJWg1h/PkCyfsQfNcI27+Iq
+         5XSME9UWAQCPTJYgCH3TtIw+p2Ad2Gbf+fU5jrK9eIcnZDwMSfTk+bY7kmj033DADlJz
+         dLhWZSvpNsm89ShOd3x7uhm6E/AnuODubc2zJO4u5+0v4mBbWGOmHQb5/VmhUAHF6iM6
+         PrPdZvHIat3AwVOGGCzTGlRMevjMhE9Odr7cUPeLBs5JRXav1YRyu+xGLXw1jbRzJ+ZJ
+         ebww==
+X-Gm-Message-State: AOAM532Mz+GFdSv6to8YfJHlt7Ri852BOJ7XAFfeIDiK2cdVSO0gnhZK
+        TZf90A6Mq2Ic7s3edvFmTbM=
+X-Google-Smtp-Source: ABdhPJxDzUmnDBr3FnJxsrTGzmISxnDFYJY0nVkE1Yu2DpPmwDKycq0Um4vr7UGXd0sHFR5RYYV2gQ==
+X-Received: by 2002:aa7:c4c9:: with SMTP id p9mr20618792edr.385.1626770723103;
+        Tue, 20 Jul 2021 01:45:23 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id j11sm6881855ejy.40.2021.07.20.01.45.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 01:45:22 -0700 (PDT)
+Date:   Tue, 20 Jul 2021 11:45:20 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        bridge@lists.linux-foundation.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v4 net-next 09/15] net: bridge: switchdev: let drivers
+ inform which bridge ports are offloaded
+Message-ID: <20210720084520.4t7sfshyzeuw4ba3@skbuf>
+References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
+ <20210718214434.3938850-10-vladimir.oltean@nxp.com>
+ <20210720075354.u57sju7bvn5o3ses@soft-dev3-1.localhost>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210720075354.u57sju7bvn5o3ses@soft-dev3-1.localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Hi Horatiu,
 
-Hi Andrew,
+On Tue, Jul 20, 2021 at 09:53:54AM +0200, Horatiu Vultur wrote:
+> Tested-by: Horatiu Vultur <horatiu.vultur@microchip.com> # ocelot-switch
 
-On Mon Jul 19 2021, Andrew Lunn wrote:
-> On Mon, Jul 19, 2021 at 08:06:41AM +0200, Kurt Kanzenbach wrote:
->> There are different modes such as ON, OFF, LINK established, LINK
->> activity, PAUSED ... Blinking is controlled by a different register.
->>=20
->> Are there better ways to export this?
->
-> As i said in another email, using LED triggers. For simple link speed
-> indication, take a look at CONFIG_LED_TRIGGER_PHY. This is purely
-> software, and probably not what you want.
-
-Here's my use case/reasoning behind this patch: Upon reception of a
-certain Ethernet frame, the LEDs should blink for a certain period of
-time. Afterwards the default behavior should be restored. The blinking
-can be done in hardware, but only for a fixed period. I needed a
-different period.
-
-Therefore, I've exported these as regular LEDs to toggle the brightness
-from user space directly.
-
-> The more complex offload of to LED control to hardware in the PHY
-> subsystem it still going around and around. The basic idea is agreed,
-> just not the implementation.  However, most of the implementation is
-> of no help to you, since Intel drivers ignore the kernel PHY drivers
-> and do their own. But the basic idea and style of user space API
-> should be kept the same. So take a look at the work Marek Beh=C3=BAn has
-> been doing, e.g.
->
-> https://lwn.net/Articles/830947/
->
-> and a more recent version
->
-> https://lore.kernel.org/netdev/20210602144439.4d20b295@dellmb/T/#m4e97c90=
-16597fb40849c104c7c0e3bc10d5c1ff5
-
-Thanks for the pointer.
-
->
-> Looking at the basic idea of using LED triggers and offloading
-> them. Please also try to make us of generic names for these triggers,
-> so the PHY subsystem might also use the same or similar names when it
-> eventually gets something merged.
->
-> Please also Cc: The LED maintainers and LED list. Doing that from the
-> start would of avoided this revert, since you would of get earlier
-> feedback about this.
-
-Yeah, noted.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmD2j0ATHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwpvDgEACeghal5Gp5UGxP+5zpUsbV8/zkCQfJ
-Ctf73R+Lc4XgbmbmSR4Xu/A/gYSsNhpX0rkkFcedaQw2nxubDle0VaD/9WOI4vyS
-z+YCP/cZfe66lKcTnXJWri2xhTTpp+wid7DKqkjjwt0jnpm3qC+mZAJDLch5JW1X
-Z1Z/dmLTX7FJdFdwv2s68h5Aaj78Qa8mmY6sKzMVFXVRjOFyI1bD9oa0Gkk+hMRG
-k5Lk9FsMkI27/BTjqXbh/GQDwLfKS2NTJGn8OanIDtfD5E505QMvozozu/9G+lQZ
-6lctKHn9nMmgb3q2fkhqfH4i/eWamFoKbW4UnPLpBRlC/zKXjsA9+PpPZb1qF2O0
-AQk1CCyHmP+938Dj7vHsWdP1BuA/a54gVIsgiUMJFHcCeDaPpNxi/3mxX1G2r8w/
-0b813NF54CKiA6P/zxb5JTKIK44fhd8wOqsQGvVazpG0NECcB/w/TqpG3yzeZVXR
-ZwX1VioJxxtd10hiHmIh0NNIY62l7HddtuXBT9VG07OU+xCmYtXpDLFFOTcG0bU1
-vBQIrRiwWVwQf3FQ/PpRDCcELP+Y6ZsQgqJOQUxQ3Jjxmqobiw4n9IcjVo3Yxbv9
-PUjWdxoC0Z1YGddbVI6F0DPmEwYcaa3eeTJEDdlmVP0bfI3F4uDrxi8yUTJmi3pl
-dCBrtSapNQmrrA==
-=SMq/
------END PGP SIGNATURE-----
---=-=-=--
+Thanks for testing.
+Next time could you please trim the quoted portion to maybe just the
+commit message? I spent around 30 seconds scrolling down, half expecting
+there to be an inline comment on a line of code or something.
