@@ -2,58 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7873CFBE3
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A21453CFBFD
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239337AbhGTNhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:37:43 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36334 "EHLO vps0.lunn.ch"
+        id S235267AbhGTNnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:43:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239462AbhGTNfj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:35:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=v4MPC0DvtNC+wtUXaDxtf8nxqjh/xOxbZW7lBIsCrBs=; b=rjbOl2SAsBaTFIUESi/wVGbF44
-        F6cipStmD1r0h+KtHP3o6hH2hcsqsDF/AyP9Z4Lr7tifzOEhvnmKgsI8Hr0wUDuB+x6BnRCLvYulk
-        qIOPRmnKyy/5+646R71uRmC1dd9VNXQJ1rP2C8TS9cPOHJvDsG68l3qsrCKIvVhxMmEA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m5qXf-00E40U-QX; Tue, 20 Jul 2021 16:16:15 +0200
-Date:   Tue, 20 Jul 2021 16:16:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: phy: at803x: simplify custom phy id
- matching
-Message-ID: <YPbar746WVjp9emp@lunn.ch>
-References: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
+        id S239968AbhGTNj0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:39:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4E2EE61186;
+        Tue, 20 Jul 2021 14:20:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626790804;
+        bh=Hz4FNLak5VJYRl+KXz/n6BUtZZ/PWKMQPeyrBu6FRw8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=t0HmVUSzdOXs2NTWhrROspItwTWWcmjsV2OTBARly3x4TEtaC6ioytqNSYJkl9hgf
+         GAD+d2te4H0kkGMjIKCM0WF7pvXc5osC26Mq1Lo68usmBkCxLJ5y15VZrS++9Dpoca
+         MVnQnswtFZTscYlz06j1qeosziuatv8DZM1eO4Eep5WNcDZZsoZeYZ6UDrJywktVYs
+         hcS9hSXlGU5xPTi1h8MFWwGR/Dr/7fFP/IgRIjk7flpsCTMm6MB7HFVTaXqew7TNdM
+         xHBPzKGihKLuyMs8SxVDZ3myAL2rERWzdlzNKxXnXDTjCFwGasEtP+Xb7+wAKCku5t
+         z9Poz2Ra76tqQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 42E3360CD3;
+        Tue, 20 Jul 2021 14:20:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] fsl/fman: Add fibre support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162679080426.18101.13696128057221560266.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Jul 2021 14:20:04 +0000
+References: <20210720050838.7635-1-fido_max@inbox.ru>
+In-Reply-To: <20210720050838.7635-1-fido_max@inbox.ru>
+To:     Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     netdev@vger.kernel.org, madalin.bucur@nxp.com, davem@davemloft.net,
+        kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 02:33:49PM +0100, Russell King wrote:
-> The at803x driver contains a function, at803x_match_phy_id(), which
-> tests whether the PHY ID matches the value passed, comparing phy_id
-> with phydev->phy_id and testing all bits that in the driver's mask.
-> 
-> This is the same test that is used to match the driver, with phy_id
-> replaced with the driver specified ID, phydev->drv->phy_id.
-> 
-> Hence, we already know the value of the bits being tested if we look
-> at phydev->drv->phy_id directly, and we do not require a complicated
-> test to check them. Test directly against phydev->drv->phy_id instead.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patch was applied to netdev/net.git (refs/heads/master):
 
-    Andrew
+On Tue, 20 Jul 2021 08:08:38 +0300 you wrote:
+> Set SUPPORTED_FIBRE to mac_dev->if_support. It allows proper usage of
+> PHYs with optical/fiber support.
+> 
+> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+> ---
+>  drivers/net/ethernet/freescale/fman/mac.c | 1 +
+>  1 file changed, 1 insertion(+)
+
+Here is the summary with links:
+  - fsl/fman: Add fibre support
+    https://git.kernel.org/netdev/net/c/75d5641497a6
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
