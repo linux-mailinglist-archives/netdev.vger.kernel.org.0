@@ -2,128 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE603CFB4C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AAD73CFB9F
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbhGTNNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:13:00 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:34694 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239232AbhGTNKp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:10:45 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 531AE49E49;
-        Tue, 20 Jul 2021 13:50:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-transfer-encoding:mime-version:user-agent:content-type
-        :content-type:organization:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received:received; s=
-        mta-01; t=1626789048; x=1628603449; bh=qqKIsxqdrcNF/IKpkTk+z2h38
-        NvJz05bthgnU5UbwnE=; b=BuOt/l22UsVmsW/7GpB9fRgKo+wW8/1+ywe/WYk+4
-        5LJmV4/mcYJtxlQpe2YMJxYoxg16z5TWttpbDz35xbkGKLlN/Cgwxk0MddcNgKU8
-        ddsi44BlLVWTra3H+6aT9Za3bTt59PumRx8L9VNqpM22AUtGYEdF0XB+vUi8QcZz
-        nU=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id n03l0el1CeA3; Tue, 20 Jul 2021 16:50:48 +0300 (MSK)
-Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 34FBB49E6C;
-        Tue, 20 Jul 2021 16:50:48 +0300 (MSK)
-Received: from [10.199.0.81] (10.199.0.81) by T-EXCH-04.corp.yadro.com
- (172.17.100.104) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Tue, 20
- Jul 2021 16:50:47 +0300
-Message-ID: <10902992a9dfb5b1b4f1d7a9e17ff0e7b121b50b.camel@yadro.com>
-Subject: Re: [PATCH v2 0/3] net/ncsi: Add NCSI Intel OEM command to keep PHY
- link up
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     Paul Fertser <fercerpav@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "Joel Stanley" <joel@jms.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>
-Date:   Tue, 20 Jul 2021 17:00:40 +0300
-In-Reply-To: <20210720095320.GB4789@home.paul.comp>
-References: <20210708122754.555846-1-i.mikhaylov@yadro.com>
-         <20210720095320.GB4789@home.paul.comp>
-Organization: YADRO
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        id S238009AbhGTNXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:23:20 -0400
+Received: from verein.lst.de ([213.95.11.211]:55312 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239348AbhGTNOG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:14:06 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C76616736F; Tue, 20 Jul 2021 15:54:37 +0200 (CEST)
+Date:   Tue, 20 Jul 2021 15:54:37 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
+        rppt@kernel.org, Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
+        ardb@kernel.org, robh@kernel.org, nramas@linux.microsoft.com,
+        pgonda@google.com, martin.b.radev@gmail.com, david@redhat.com,
+        krish.sadhukhan@oracle.com, saravanand@fb.com,
+        xen-devel@lists.xenproject.org, keescook@chromium.org,
+        rientjes@google.com, hannes@cmpxchg.org,
+        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
+        anparri@microsoft.com
+Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
+ buffer remap function for HV IVM
+Message-ID: <20210720135437.GA13554@lst.de>
+References: <20210707154629.3977369-1-ltykernel@gmail.com> <20210707154629.3977369-10-ltykernel@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.199.0.81]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-04.corp.yadro.com (172.17.100.104)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210707154629.3977369-10-ltykernel@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-07-20 at 12:53 +0300, Paul Fertser wrote:
-> Hello,
-> 
-> On Thu, Jul 08, 2021 at 03:27:51PM +0300, Ivan Mikhaylov wrote:
-> > Add NCSI Intel OEM command to keep PHY link up and prevents any channel
-> > resets during the host load on i210.
-> 
-> There're multiple things to consider here and I have hesitations about
-> the way you propose to solve the issue.
-> 
-> While the host is booted up and fully functional it assumes it has
-> full proper control of network cards, and sometimes it really needs to
-> reset them to e.g. recover from crashed firmware. The PHY resets might
-> also make sense in certain cases, and so in general having this "link
-> up" bit set all the time might be breaking assumptions.
 
-Paul, what kind of assumption it would break? You know that you set that option
-in your kernel, anyways you can look at /proc/config.gz if you have hesitations.
-In other ways, if you're saying about possible runtime control, there is ncsi-
-netlink control and solution from phosphor-networkd which is on review stage.
-Joel proposed it as DTS option which may help at runtime. Some of those commands
-should be applied after channel probe as I think including phy reset control.
+Please split the swiotlb changes into a separate patch from the
+consumer.
 
-> As far as I can tell the Intel developers assumed you would enable
-> this bit just prior to powering on the host and turn off after all the
-> POST codes are transferred and we can assume the host system is done
-> with the UEFI stage and the real OS took over.
-> 
-> OpenBMC seems to have all the necessary hooks to do it that way, and
-> you have a netlink command to send whatever you need for that from the
-> userspace, e.g. with the "C version" ncsi-netlink command to set this
-> bit just run:
-> 
-> ncsi-netlink -l 3 -c 0 -p 0 -o 0x50 0x00 0x00 0x01 0x57 0x20 0x00 0x01
-> 
-> https://gerrit.openbmc-project.xyz/c/openbmc/phosphor-networkd/+/36592
-> would provide an OpenBMC-specific way too.
+>  }
+> +
+> +/*
+> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
+> + */
+> +unsigned long hv_map_memory(unsigned long addr, unsigned long size)
+> +{
+> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
+> +				      sizeof(unsigned long),
+> +		       GFP_KERNEL);
+> +	unsigned long vaddr;
+> +	int i;
+> +
+> +	if (!pfns)
+> +		return (unsigned long)NULL;
+> +
+> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
+> +		pfns[i] = virt_to_hvpfn((void *)addr + i * HV_HYP_PAGE_SIZE) +
+> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
+> +
+> +	vaddr = (unsigned long)vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,
+> +					PAGE_KERNEL_IO);
+> +	kfree(pfns);
+> +
+> +	return vaddr;
 
-I know about it, Eddie posted that link before.
+This seems to miss a 'select VMAP_PFN'.  But more importantly I don't
+think this actually works.  Various DMA APIs do expect a struct page
+backing, so how is this going to work with say dma_mmap_attrs or
+dma_get_sgtable_attrs?
 
-> There's another related thing to consider here: by default I210 has
-> power-saving modes enabled and so when BMC is booting the link is
-> established only in 100BASE-T mode. With this configuration and this
-> bit always set you'd be always stuck to that, never getting Gigabit
-> speeds.
-> 
-> For server motherboards I propose to configure I210 with this:
-> ./eeupdate64e /all /ww 0x13 0x0081 # disable Low Power Link Up
-> ./eeupdate64e /all /ww 0x20 0x2004 # enable 1000 in non-D0a
-> (it's a one-time operation that's best to be performed along with the
-> initial I210 flashing)
+> +static unsigned long __map_memory(unsigned long addr, unsigned long size)
+> +{
+> +	if (hv_is_isolation_supported())
+> +		return hv_map_memory(addr, size);
+> +
+> +	return addr;
+> +}
+> +
+> +static void __unmap_memory(unsigned long addr)
+> +{
+> +	if (hv_is_isolation_supported())
+> +		hv_unmap_memory(addr);
+> +}
+> +
+> +unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size)
+> +{
+> +	if (__set_memory_enc_dec(addr, size / PAGE_SIZE, false))
+> +		return (unsigned long)NULL;
+> +
+> +	return __map_memory(addr, size);
+> +}
+> +
+> +int set_memory_encrypted_unmap(unsigned long addr, unsigned long size)
+> +{
+> +	__unmap_memory(addr);
+> +	return __set_memory_enc_dec(addr, size / PAGE_SIZE, true);
+> +}
 
-Good to know, thanks.
+Why this obsfucation into all kinds of strange helpers?  Also I think
+we want an ops vectors (or alternative calls) instead of the random
+if checks here.
 
-> Ivan, so far I have an impression that the user-space solution would
-> be much easier, flexible and manageable and that there's no need for
-> this command to be in Linux at all.
+> + * @vstart:	The virtual start address of the swiotlb memory pool. The swiotlb
+> + *		memory pool may be remapped in the memory encrypted case and store
 
-You may not have such things on your image with suitable env which you can rely
-on. There is smaf for mellanox which is done in the same way for example.
+Normall we'd call this vaddr or cpu_addr.
 
-Thanks.
+> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+> -	memset(vaddr, 0, bytes);
+> +	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
 
+Please always pass kernel virtual addresses as pointers.
+
+And I think these APIs might need better names, e.g.
+
+arch_dma_map_decrypted and arch_dma_unmap_decrypted.
+
+Also these will need fallback versions for non-x86 architectures that
+currently use memory encryption.
