@@ -2,128 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B005E3CF20F
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1883CF211
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233560AbhGTBxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 21:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443887AbhGSXFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 19:05:21 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477A8C061767;
-        Mon, 19 Jul 2021 16:41:35 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id gh6so9276408qvb.3;
-        Mon, 19 Jul 2021 16:41:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tG3VNaXw5GOzMIsu0CiI5SvtjI+jDKkdFfqR2rMpbXQ=;
-        b=ukHLi4nkEFU5WxlAaCJhPm4GSHtNNmHN+xODDOgQkICkx9CLlFvbvBhNIBonKE0fJg
-         Ggl0q7FrCfw5psKcZbOcA1Awg1OodHbECGTMvBJ7ILivSLjEWJvHqh6YJxhmstdJEhyJ
-         B4ks3IjMvc5pGWlvmIEkZMk/OKQdj4yc1TYIau+JiZAe9CTXepZkAipq5jd9aaKaBbmw
-         EPg5FeoAzgE8ZJlfbZ5EiU8ZFn+f0cy/hUf7volywoSX8XeHfWFNcxo9Kd7/ApocefMa
-         BG2l0zy0o5Qm3AeaxilP2Qw8mesVRimXoojBWYpoYids/odf3d+QBQYpPqA3o5PuLXiD
-         yS1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tG3VNaXw5GOzMIsu0CiI5SvtjI+jDKkdFfqR2rMpbXQ=;
-        b=YX0JcxbUNLxbtfIYXs/0H8uwTVoLvniVrj+MA5ILhL5lhGX16pLcNqkSlVuN2pdHBa
-         QTiqWF+aaMADsk3caC811tCFjm5I1NXPjcr/rOcK9HABc7kI2uUpPlExR6UIAWCxM95h
-         tuUA0lGL71UpEJ3U65uB+7cvTiPfb4qaAht9Q43A9xWmmozyW6X3xINf6UaH2G28PluH
-         rOb0mcPk7PVen/CoqXuLZw8ZasAhX42PJKeGBBUOvjbYeY/TpkH9wyvle2Au0zXzPTY2
-         z4ZEBs/NTVaGByJn0Cd6Lvmwik421iRScCHoaJXIXdHD+f7o7G3rtq6xLCahakDS+XXE
-         f3pA==
-X-Gm-Message-State: AOAM533XkjxPHidiI3UMvVcX4Qjdk86khjie3bBzH9G4oGonLRCPO05v
-        kccTtxXXr4ext2VIfxm+2w==
-X-Google-Smtp-Source: ABdhPJyw8paABx4qYfJX/57pB1bFva0Goisp+bJsoBNRvSMQ1zD/qE054Th1ZxDlCQ55ru0Oyztmhg==
-X-Received: by 2002:a05:6214:1882:: with SMTP id cx2mr27485724qvb.2.1626738094460;
-        Mon, 19 Jul 2021 16:41:34 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
-        by smtp.gmail.com with ESMTPSA id l12sm124689qtx.45.2021.07.19.16.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Jul 2021 16:41:33 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net] net/sched: act_skbmod: Skip non-Ethernet packets
-Date:   Mon, 19 Jul 2021 16:41:24 -0700
-Message-Id: <20210719234124.18383-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1344982AbhGTBx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 21:53:58 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7394 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344639AbhGTBmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 21:42:00 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GTMpR6p73z7w3x;
+        Tue, 20 Jul 2021 10:18:55 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 20 Jul 2021 10:22:33 +0800
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
+        <jasowang@redhat.com>
+CC:     <nickhu@andestech.com>, <green.hu@gmail.com>,
+        <deanbo422@gmail.com>, <akpm@linux-foundation.org>,
+        <yury.norov@gmail.com>, <andriy.shevchenko@linux.intel.com>,
+        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
+Subject: [PATCH v2 0/4] refactor the ringtest testing for ptr_ring
+Date:   Tue, 20 Jul 2021 10:21:45 +0800
+Message-ID: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+tools/include/* has a lot of abstract layer for building
+kernel code from userspace, so reuse or add the abstract
+layer in tools/include/ to build the ptr_ring for ringtest
+testing.
 
-Currently tcf_skbmod_act() assumes that packets use Ethernet as their L2
-protocol, which is not always the case.  As an example, for CAN devices:
+The same abstract layer can be used to build the ptr_ring
+for ptr_ring benchmark app too, see [1].
 
-	$ ip link add dev vcan0 type vcan
-	$ ip link set up vcan0
-	$ tc qdisc add dev vcan0 root handle 1: htb
-	$ tc filter add dev vcan0 parent 1: protocol ip prio 10 \
-		matchall action skbmod swap mac
+1. https://lkml.org/lkml/2021/7/1/275
 
-Doing the above silently corrupts all the packets.  Do not perform skbmod
-actions for non-Ethernet packets.
+V2:
+1. rebased on the Eugenio's patchset and split patch 1 to
+   more reviewable ones.
+2. only add the interface used by ringtest, so that the
+   added code can be built and tested.
+3. cpu_relax() only support x86 and arm64 now.
+4. use 64 bytes as the default SMP_CACHE_BYTES.
 
-Fixes: 86da71b57383 ("net_sched: Introduce skbmod action")
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/sched/act_skbmod.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Yunsheng Lin (4):
+  tools headers UAPI: add cache aligning related macro
+  tools headers UAPI: add kmalloc/vmalloc related interface
+  tools headers UAPI: add cpu_relax() implementation for x86 and arm64
+  tools/virtio: use common infrastructure to build ptr_ring.h
 
-diff --git a/net/sched/act_skbmod.c b/net/sched/act_skbmod.c
-index 81a1c67335be..8d17a543cc9f 100644
---- a/net/sched/act_skbmod.c
-+++ b/net/sched/act_skbmod.c
-@@ -6,6 +6,7 @@
- */
- 
- #include <linux/module.h>
-+#include <linux/if_arp.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
-@@ -33,6 +34,13 @@ static int tcf_skbmod_act(struct sk_buff *skb, const struct tc_action *a,
- 	tcf_lastuse_update(&d->tcf_tm);
- 	bstats_cpu_update(this_cpu_ptr(d->common.cpu_bstats), skb);
- 
-+	action = READ_ONCE(d->tcf_action);
-+	if (unlikely(action == TC_ACT_SHOT))
-+		goto drop;
-+
-+	if (!skb->dev || skb->dev->type != ARPHRD_ETHER)
-+		return action;
-+
- 	/* XXX: if you are going to edit more fields beyond ethernet header
- 	 * (example when you add IP header replacement or vlan swap)
- 	 * then MAX_EDIT_LEN needs to change appropriately
-@@ -41,10 +49,6 @@ static int tcf_skbmod_act(struct sk_buff *skb, const struct tc_action *a,
- 	if (unlikely(err)) /* best policy is to drop on the floor */
- 		goto drop;
- 
--	action = READ_ONCE(d->tcf_action);
--	if (unlikely(action == TC_ACT_SHOT))
--		goto drop;
--
- 	p = rcu_dereference_bh(d->skbmod_p);
- 	flags = p->flags;
- 	if (flags & SKBMOD_F_DMAC)
+ tools/include/asm/processor.h    |  26 ++++++++++
+ tools/include/linux/cache.h      |  25 ++++++++++
+ tools/include/linux/gfp.h        |   2 +
+ tools/include/linux/slab.h       |  46 ++++++++++++++++++
+ tools/virtio/ringtest/Makefile   |   2 +-
+ tools/virtio/ringtest/main.h     |  99 +++-----------------------------------
+ tools/virtio/ringtest/ptr_ring.c | 101 ++-------------------------------------
+ 7 files changed, 109 insertions(+), 192 deletions(-)
+ create mode 100644 tools/include/asm/processor.h
+ create mode 100644 tools/include/linux/cache.h
+ create mode 100644 tools/include/linux/slab.h
+
 -- 
-2.20.1
+2.7.4
 
