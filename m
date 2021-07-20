@@ -2,67 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 170523CF8DE
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE923CF8F8
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233143AbhGTKvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:51:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44682 "EHLO mail.kernel.org"
+        id S236940AbhGTK7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:59:40 -0400
+Received: from pop31.abv.bg ([194.153.145.221]:39728 "EHLO pop31.abv.bg"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231707AbhGTKvV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 06:51:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F07F61009;
-        Tue, 20 Jul 2021 11:31:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626780719;
-        bh=g5h9qwV+O0jeP4o7dg28ixbAOs+6DWETy2RB79PqrNs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=prpOYeBtr8bEBFx8EMkIGbqmr8EoFOhOZgrBtbInEugnl5GwlHwq88H6uECHSjfhp
-         7hktVHu4NMkSQk4iCQtIB+32UArVawN66gEzPUnaXJk6LrpDMC0jlY9tyFgrmM29db
-         UdhitvfNIyjOiY+kY/bDuLdMHOA/3WamM7EHaEqZOqT+84lDmwL4bcG5XOvNPNBSxZ
-         PYlbwowM0QhNjH0xt7kjeXCiK955ZBJ72ZLJIIGTsHpo8zHYjUHopOQpE4Fw6bl6od
-         ZagP5jxGutEPYwDafB/EU5ZbKcu5oQC54rxZuk59S/d+Bbog+fL+/1LtxtzkfStt1Y
-         vsJfCMVXeTvQw==
-Date:   Tue, 20 Jul 2021 13:31:53 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Stefan Assmann <sassmann@kpanic.de>,
-        netdev@vger.kernel.org,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: Re: [PATCH net-next 3/3] iavf: fix locking of critical sections
-Message-ID: <20210720133153.0f13c92a@cakuba>
-In-Reply-To: <20210719163154.986679-4-anthony.l.nguyen@intel.com>
-References: <20210719163154.986679-1-anthony.l.nguyen@intel.com>
-        <20210719163154.986679-4-anthony.l.nguyen@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S233914AbhGTK7X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 06:59:23 -0400
+Received: from smtp.abv.bg (localhost [127.0.0.1])
+        by pop31.abv.bg (Postfix) with ESMTP id 76F091805D3B;
+        Tue, 20 Jul 2021 14:39:58 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
+        t=1626781198; bh=dD4UUjFyJU+H/nb01M25DvrioANn5x42FGEb+GYWFec=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=YpDAr2e9D4CHrBEEh8SvLFnRo/6hoaj61G3Zd5Fy330sn60N1DnTqgq/67pmkceLz
+         tFX562mWxO9Kx1Hqj9C+K73CzCqHevqyvaWo7Np48reZiFHTcQldLl6VPWldDAElmc
+         6jQisT3nxYJQNSgFUhkbTWFTaT83C9jZBmQwawok=
+X-HELO: smtpclient.apple
+Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
+Received: from 212-39-89-148.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.148)
+ by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Tue, 20 Jul 2021 14:39:58 +0300
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+From:   Georgi Valkov <gvalkov@abv.bg>
+In-Reply-To: <20210720122215.54abaf53@cakuba>
+Date:   Tue, 20 Jul 2021 14:39:49 +0300
+Cc:     davem@davemloft.net, mhabets@solarflare.com,
+        luc.vanoostenryck@gmail.com, snelson@pensando.io, mst@redhat.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, corsac@corsac.net,
+        matti.vuorela@bitfactor.fi, stable@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5D0CFF83-439B-4A10-A276-D2D17B037704@abv.bg>
+References: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
+ <20210720122215.54abaf53@cakuba>
+To:     Jakub Kicinski <kuba@kernel.org>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Jul 2021 09:31:54 -0700, Tony Nguyen wrote:
-> To avoid races between iavf_init_task(), iavf_reset_task(),
-> iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
-> remove functions more locking is required.
-> The current protection by __IAVF_IN_CRITICAL_TASK is needed in
-> additional places.
-> 
-> - The reset task performs state transitions, therefore needs locking.
-> - The adminq task acts on replies from the PF in
->   iavf_virtchnl_completion() which may alter the states.
-> - The init task is not only run during probe but also if a VF gets stuck
->   to reinitialize it.
-> - The shutdown function performs a state transition.
-> - The remove function performs a state transition and also free's
->   resources.
-> 
-> iavf_lock_timeout() is introduced to avoid waiting infinitely
-> and cause a deadlock. Rather unlock and print a warning.
+I am doing this for the first time, so any help would be appreciated!
+What is to rebase on the netdev/net tree? The patch from my previous =
+e-mail was
+generated by `git format-patch -1`. I can=E2=80=99t notice any =
+difference when compared to
+to the newly generated patch, which I rebased on the latest master.
 
-I have a vague recollection of complaining about something like this
-previously. Why not use a normal lock? Please at the very least include
-an explanation in the commit message.
+According to the description from the link below, I ran the following =
+commands:
+=
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#pro=
+viding-base-tree-information
 
-If you use bit locks you should use the _lock and _unlock flavours of
-the bitops.
+git clone =
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+cd linux
+git checkout -t -b ipheth-fix-RX-EOVERFLOW master
+git am --signoff < =
+0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
+git format-patch --base=3Dauto --cover-letter -o drivers/net/ master
+
+
+drivers/net/0000-cover-letter.patch
+
+=46rom cd18496373e28af570dc382f618edd442d705252 Mon Sep 17 00:00:00 2001
+From: Georgi Valkov <gvalkov@abv.bg>
+Date: Tue, 20 Jul 2021 14:15:58 +0300
+Subject: [PATCH 0/1] *** SUBJECT HERE ***
+
+*** BLURB HERE ***
+
+Georgi Valkov (1):
+  ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+
+ drivers/net/usb/ipheth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+
+base-commit: 2734d6c1b1a089fb593ef6a23d4b70903526fe0c
+--=20
+2.32.0
+
+
+drivers/net/0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
+
+=46rom cd18496373e28af570dc382f618edd442d705252 Mon Sep 17 00:00:00 2001
+From: Georgi Valkov <gvalkov@abv.bg>
+Date: Fri, 16 Apr 2021 20:44:36 +0300
+Subject: [PATCH 1/1] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+
+When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
+which reduces the usable size by 2 bytes. Otherwise we have 1512
+bytes usable instead of 1514, and if we receive more than 1512
+bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
+after which the driver malfunctiones and all communication stops.
+
+Fixes: ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
+
+Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
+---
+ drivers/net/usb/ipheth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index 207e59e74935..06d9f19ca142 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -121,7 +121,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+ 	if (tx_buf =3D=3D NULL)
+ 		goto free_rx_urb;
+=20
+-	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
++	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 				    GFP_KERNEL, &rx_urb->transfer_dma);
+ 	if (rx_buf =3D=3D NULL)
+ 		goto free_tx_buf;
+@@ -146,7 +146,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+=20
+ static void ipheth_free_urbs(struct ipheth_device *iphone)
+ {
+-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
++	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN, iphone->rx_buf,
+ 			  iphone->rx_urb->transfer_dma);
+ 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
+ 			  iphone->tx_urb->transfer_dma);
+@@ -317,7 +317,7 @@ static int ipheth_rx_submit(struct ipheth_device =
+*dev, gfp_t mem_flags)
+=20
+ 	usb_fill_bulk_urb(dev->rx_urb, udev,
+ 			  usb_rcvbulkpipe(udev, dev->bulk_in),
+-			  dev->rx_buf, IPHETH_BUF_SIZE,
++			  dev->rx_buf, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 			  ipheth_rcvbulk_callback,
+ 			  dev);
+ 	dev->rx_urb->transfer_flags |=3D URB_NO_TRANSFER_DMA_MAP;
+--=20
+2.32.0
+
+
+
+My patch corrects the following commit, which changes IPHETH_BUF_SIZE =
+from 1516 to 1514:
+=
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/=
+drivers/net/usb/ipheth.c?id=3Df33d9e2b48a34e1558b67a473a1fc1d6e793f93c
+
+
+
+> On 2021-07-20, at 1:22 PM, Jakub Kicinski <kuba@kernel.org> wrote:
+>=20
+> On Tue, 20 Jul 2021 12:37:43 +0300, Georgi Valkov wrote:
+>> ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+>> https://github.com/openwrt/openwrt/pull/4084
+>>=20
+>>=20
+>> =46rom dd109ded2b526636fff438d33433ab64ffd21583 Mon Sep 17 00:00:00 =
+2001
+>> From: Georgi Valkov <gvalkov@abv.bg>
+>> Date: Fri, 16 Apr 2021 20:44:36 +0300
+>> Subject: [PATCH] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+>=20
+> This is all unnecessary, IIUC you're submitting this patch for =
+upstream
+> inclusion, please rebase it on the netdev/net tree, and try git
+> send-email on a file generated by git format-patch. Before that please
+> correct the fixes tag to the common format (you'll find it in docs or
+> follow what others do).
+>=20
+
