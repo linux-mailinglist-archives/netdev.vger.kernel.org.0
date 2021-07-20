@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D783CFC74
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A29E3CFC89
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238772AbhGTN6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:58:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46994 "EHLO mail.kernel.org"
+        id S240140AbhGTOAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:00:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239410AbhGTNt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:49:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 899E061208;
-        Tue, 20 Jul 2021 14:30:04 +0000 (UTC)
+        id S239997AbhGTNup (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:50:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48421611F2;
+        Tue, 20 Jul 2021 14:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626791404;
-        bh=OPHmHnyJ0nP1961Kc9LAota8nk5vdGTzoapkgpL+TpI=;
+        s=k20201202; t=1626791406;
+        bh=4p+QxNNh4r8BADOiHK2ZvGF6/S1vfZZMsEZthRmkVrk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p9E1s3S6Pz88gNjQKQ+/bL92wuqKts9qGjhvfeNFPYPgY37AH2DnCN2SNJ1HgLJqt
-         bBcE8yDHpjrtPie+bUSkhKEDdv/M0SjJQwvqowYYcqY/fpjkMpTbR/b6EZ0lttZezo
-         EArXMlNE558lM3oBXoi217B5vEJx/qdbgMfLD5m7AgDR7vDNIo/+t1z8noas521vZ5
-         Q82UqtoxzU9d7QHiw1j+3cEnSy+plQMgbuWl57KY97X3FpmUifLA5v0AoP5EGQ3+q8
-         X2ohPatFCnjiw+Avk64OHEv5qJEoIXeI2W8YiCI+EKgxVhXAbrjY4SGrfz+GW1gAzi
-         4dM0quZDkyjEg==
+        b=WUPtR5Tvhg/R/WUCQ7zvOJTBFgBo2A6/s57ZNDCQGkbqK4jpHXxDrZwFlzn9WV9Ax
+         Vnb1WFWPYg27B42D6LLb6p7kV6D3G0Jgu1sMhD48soaOe3m+To7L91uiWvlt7Zo+iI
+         sT6ci92i6kDqw5V+5TbtMv4xAxJjg/P48WQt6ttehCy08W852H83Mk/59AoDGR4HI2
+         VYPMyiZteZA65AEvT74sD53+P8WHtGE/DFAeK4MaFLoQldWGkPWNSRrgVulsjLd4+f
+         95D26krf0vvpQE+sYJtq2RNkWIkgVkbseVTuqBySQDfntObdNfNj0OH02X9qOxT5i3
+         +1sjAOsP2nPMw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7823B60CD3;
-        Tue, 20 Jul 2021 14:30:04 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3DBFD60A0B;
+        Tue, 20 Jul 2021 14:30:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] Revert "qed: fix possible unpaired spin_{un}lock_bh in
- _qed_mcp_cmd_and_union()"
+Subject: Re: [PATCH net-next] net: phy: at803x: simplify custom phy id matching
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162679140448.23944.13061540500790783692.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Jul 2021 14:30:04 +0000
-References: <20210720132655.4704-1-justin.he@arm.com>
-In-Reply-To: <20210720132655.4704-1-justin.he@arm.com>
-To:     Jia He <justin.he@arm.com>
-Cc:     aelior@marvell.com, GR-everest-linux-l2@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, nd@arm.com, pkushwaha@marvell.com
+Message-Id: <162679140624.23944.7109103583528687805.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Jul 2021 14:30:06 +0000
+References: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 20 Jul 2021 21:26:55 +0800 you wrote:
-> This reverts commit 6206b7981a36476f4695d661ae139f7db36a802d.
+On Tue, 20 Jul 2021 14:33:49 +0100 you wrote:
+> The at803x driver contains a function, at803x_match_phy_id(), which
+> tests whether the PHY ID matches the value passed, comparing phy_id
+> with phydev->phy_id and testing all bits that in the driver's mask.
 > 
-> That patch added additional spin_{un}lock_bh(), which was harmless
-> but pointless. The orginal code path has guaranteed the pair of
-> spin_{un}lock_bh().
-> 
-> We'd better revert it before we find the exact root cause of the
-> bug_on mentioned in that patch.
+> This is the same test that is used to match the driver, with phy_id
+> replaced with the driver specified ID, phydev->drv->phy_id.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v2] Revert "qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()"
-    https://git.kernel.org/netdev/net/c/91bed5565bba
+  - [net-next] net: phy: at803x: simplify custom phy id matching
+    https://git.kernel.org/netdev/net-next/c/8887ca5474bd
 
 You are awesome, thank you!
 --
