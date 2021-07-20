@@ -2,96 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9DB3D006E
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D73213D00E0
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:49:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbhGTRBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S231310AbhGTRHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231910AbhGTRBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:01:00 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674A1C061574;
-        Tue, 20 Jul 2021 10:41:38 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id r16so19833521ilt.11;
-        Tue, 20 Jul 2021 10:41:38 -0700 (PDT)
+        with ESMTP id S231201AbhGTRHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 13:07:23 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8060C061766;
+        Tue, 20 Jul 2021 10:47:59 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id b29so11046973ljf.11;
+        Tue, 20 Jul 2021 10:47:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=VzEhlXuPIig3XvgXhLsDpAhNny6hVe14Hrn4Hr2l/EY=;
-        b=mMbsK+2UWIOEYn5GvvcJwd6Eglp3ceJFrCu68N4aKGGoejhU1YaG8m2i7wI0SeWCQc
-         BaCN2c0gNrH7MrJ6WFay7a+TUBMyoLqhpze6dRH/4+N1s55IKeslxdFeDcwI6OKtpzty
-         IuFGf+6GB+SWOh8wkHGU7to+lGgiQYXJ+vx9srucsjj/HSbsrVFdy7nau5can7aoCULU
-         wjm1LNv3PVboDMjpDUUsFM0MCiWDxqtwh+pgsBzijqGGt1H8423hbvNOsJNFBX/h0Rku
-         gNTdT52o59tRRdkc/4tyPY1tOyUEDIeve6zMyC+NzvOFJfj+EavfV8FxZ3DlydnYgcNx
-         jTWg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vUmdle0okeye9wG/MQSJUYKK/oNkAcQU0zrJ8K6htdI=;
+        b=bGURyZRhWmst/CyxrE441Wy0VrDxP/9N0HUp8BLrY/7Bo4VgY+M5kThochgSE7OV7R
+         v46ztMO6rt+/OI9yyC1iyBbLrP8KxsKIhnmUg4NwD05S5iPniXaEs0IIrVryP27jyg8d
+         Ryq/Vm/EnscOs3ZqgWouzi+DNt6rhGDQ9nNOwl8xcQkVF3YzvSRiW+66WQJU2hMc2/iU
+         8MPJysddUeExnZupHl4YW4Q6B040CVRleHdG5z0uyIaQSMEbHKkD11PAE4JXsRiAm5Ka
+         64L8F+PauoiUd56ltr+B6k8AjBI8RcAxD7xM8qjpziLWxkaMI1xl0pdNExId2TmpLBE6
+         H09A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=VzEhlXuPIig3XvgXhLsDpAhNny6hVe14Hrn4Hr2l/EY=;
-        b=Vi+gFKFkDVbhp2mKfZaTO1RUlTD+IR1P5sHvSwwkb4Jz28WSm+MK/OO5AZF/H53FZb
-         E+oS9l2p+pM3ss9unJdPIbzb7KQYfM5JsFEfM8RBd4mS6DedS744NQLzsj4DNcyYNUTD
-         oy+6VI6sm31QvCW5LKMxKZ/M+pEUc6APZgXM2HYhaMLlBdJvnhMyl8AqgoNOY/v5wLf1
-         UXeHdBslFjuel+iUnxyZbuIChro1ApJk7daowErIk9WGNLEctHw6hQiG+GKOp3w29mkb
-         zarmSz/f5aOSGjSm1Nj8OFm6NVSrXk3Es1GStWgox7e/RmsbdLrxtGgN9jtQPysR2w3F
-         7x9A==
-X-Gm-Message-State: AOAM533QrmsGRSERhRY9ld5onpH63dDj3faCVvg0eZlaapJ6GzPYKQCO
-        QP3NqQTHKVAiwxh6AulsoRc=
-X-Google-Smtp-Source: ABdhPJzvt1dvtkXKrKgZ2OwasppJxCTQeIUriAz81e940OR3X1Mil5q6QAgXTTbLh4WmfFJ5jMrd5w==
-X-Received: by 2002:a92:dc8e:: with SMTP id c14mr21973371iln.91.1626802897763;
-        Tue, 20 Jul 2021 10:41:37 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id v18sm11872639iln.49.2021.07.20.10.41.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jul 2021 10:41:37 -0700 (PDT)
-Date:   Tue, 20 Jul 2021 10:41:27 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
-        alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Message-ID: <60f70ac727c2d_6600820855@john-XPS-13-9370.notmuch>
-In-Reply-To: <87v955qnzp.fsf@cloudflare.com>
-References: <20210719214834.125484-1-john.fastabend@gmail.com>
- <20210719214834.125484-2-john.fastabend@gmail.com>
- <87v955qnzp.fsf@cloudflare.com>
-Subject: Re: [PATCH bpf 1/3] bpf, sockmap: zap ingress queues after stopping
- strparser
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vUmdle0okeye9wG/MQSJUYKK/oNkAcQU0zrJ8K6htdI=;
+        b=EeKfziqVHxFr2haVbSLGPzGtE+6jrq8oEnuWAHPH5lSVioykaV/FYaO2P2RbI3GN27
+         Fp+Ur9LPl449KIhU66tlxci60YxMDk6MMDpwbOWudmqmZvDPGJLGANLE8RtfuiRr0zBp
+         Nxw/6egfl7mj5gZg51JWuc57G5SbFkeKxkyfQeZEIHYWZyPf+Ir58V6nfq6Ttk4RrzdY
+         V8UxybYYt/DMBD0e+DvEf27KE0XLGxtSoSB3dPjqIYdf/abQhh7KGxkTsR+4dPUvimYs
+         sxnm2Jw+2mslDqLYzx07UD7kTl8brxETvE85NQeAC12Y6md6wKKMwENkIqG3uditp+s/
+         /fOQ==
+X-Gm-Message-State: AOAM532N9bQ2GoQPzuIHwrdQLY3kyeec8GcFoWtp5zHw0X+J5aLG3W3F
+        Uy/a0+X/mdMM8KZ03OH54hntllFE7uMPVdCMPSk=
+X-Google-Smtp-Source: ABdhPJzbmeNAF0zBbShQOnE3KRREeAQLMAorAb2p3hcXaGq5CM5Vt1aSfKRcfRhigveNTRfu1XrHKW/w7ivq6N6PnKk=
+X-Received: by 2002:a05:651c:32e:: with SMTP id b14mr2282131ljp.258.1626803278013;
+ Tue, 20 Jul 2021 10:47:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1625970383.git.Tony.Ambardar@gmail.com> <CAM1=_QR-siQtH_qE1uj4J_xw-jWwcRZrLL2hxK462HOwDV1f8A@mail.gmail.com>
+In-Reply-To: <CAM1=_QR-siQtH_qE1uj4J_xw-jWwcRZrLL2hxK462HOwDV1f8A@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 20 Jul 2021 10:47:46 -0700
+Message-ID: <CAADnVQJ1uvLm6JC-qUp_owQy-A9N-SyVp1Yim3QHaREo4JArgQ@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next v1 00/14] MIPS: eBPF: refactor code, add
+ MIPS32 JIT
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     Tony Ambardar <tony.ambardar@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Paul Burton <paulburton@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-mips@vger.kernel.org,
+        Hassan Naveed <hnaveed@wavecomp.com>,
+        David Daney <ddaney@caviumnetworks.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
-> > We don't want strparser to run and pass skbs into skmsg handlers when
-> > the psock is null. We just sk_drop them in this case. When removing
-> > a live socket from map it means extra drops that we do not need to
-> > incur. Move the zap below strparser close to avoid this condition.
-> >
-> > This way we stop the stream parser first stopping it from processing
-> > packets and then delete the psock.
-> >
-> > Fixes: a136678c0bdbb ("bpf: sk_msg, zap ingress queue on psock down")
-> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> > ---
-> 
-> To confirm my understanding - the extra drops can happen because
-> currently we are racing to clear SK_PSOCK_TX_ENABLED flag in
-> sk_psock_drop with sk_psock_verdict_apply, which checks the flag before
-> pushing skb onto psock->ingress_skb queue (or possibly straight into
-> psock->ingress_msg queue on no redirect).
+On Mon, Jul 19, 2021 at 6:25 PM Johan Almbladh
+<johan.almbladh@anyfinetworks.com> wrote:
+>
+> I have been focusing on the code the last couple of weeks so I didn't
+> see your email until now. I am sure that this comes as much of a
+> surprise to you as it did to me. Anyway, can send a patch with my JIT
+> implementation tomorrow.
 
+It is surprising to have not one but two mips32 JITs :)
+I really hope you folks can figure out the common path forward.
+It sounds to me that the register mapping choices in both
+implementations are the same (which would be the most debated
+part to agree on).
+Not seeing Johan's patches it's hard to make any comparison.
+So far I like Tony's patches. The refactoring and code sharing is great.
 
-Correct. If strparser hands a skb to the sk_psock_* handlers then before
-they enqueue the packet the flag is checked and the packet will be
-dropped in this case. I noticed this while testing. So rather than
-letting packets get into sk_psock_* handlers this patch just stops the
-strparser.
+Tony,
+what 'static analysis' by the JIT you're referring to?
+re: bpf_jit_needs_zext issue between JIT and the verifier.
+It's a difficult one.
+opt_subreg_zext_lo32_rnd_hi32() shouldn't depend on JIT
+(other than bpf_jit_needs_zext).
+But you're setting that callback the same way as x86-32 JIT.
+So the same bug should be seen there too.
+Could you double check if it's the case?
+It's either a regression (if both x86-32 and mips32 JITs fail
+this test_verifier test) or endianness related (if it's mip32 JIT only).
+
+Thank you both for the exciting work!
