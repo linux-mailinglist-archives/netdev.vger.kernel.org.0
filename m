@@ -2,82 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A50923CFA23
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDFD63CFA3B
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232292AbhGTM2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:28:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37096 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229631AbhGTM2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:28:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626786538;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SOA99KkdJ05lNqKqr3EAdXmaadG46SeVLoD9l5GHUiM=;
-        b=MBDBIqQKGkCGK9zFD+yx8cpisn5aUwXru97MWFzqaLR0x8MRZrCFpoQMnkuJSfs6y0vx/o
-        krUuDbFlx1Bd2KppImmFMP2YMomF/sZCkvf6CtyyhCN7VZx1wJ7GCiQTLoQXq8zANqrYJX
-        zNdkidP6C8EVx37yFof7hv+8LNVMkqg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-478-6QhTvBi1PIqNDzlNfjoxEQ-1; Tue, 20 Jul 2021 09:08:57 -0400
-X-MC-Unique: 6QhTvBi1PIqNDzlNfjoxEQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C29BA800050;
-        Tue, 20 Jul 2021 13:08:55 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-114-77.ams2.redhat.com [10.36.114.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 58AB560CA1;
-        Tue, 20 Jul 2021 13:08:54 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Coco Li <lixiaoyan@google.com>
-Subject: [PATCH net] ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
-Date:   Tue, 20 Jul 2021 15:08:40 +0200
-Message-Id: <6f48619a725daf4bfaea7dad94504f722ab1b4f6.1626786511.git.pabeni@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+        id S238381AbhGTMcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:32:18 -0400
+Received: from pop31.abv.bg ([194.153.145.221]:56286 "EHLO pop31.abv.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235536AbhGTMb6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 08:31:58 -0400
+Received: from smtp.abv.bg (localhost [127.0.0.1])
+        by pop31.abv.bg (Postfix) with ESMTP id 83F2B1805D3C;
+        Tue, 20 Jul 2021 16:12:20 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
+        t=1626786740; bh=OT9jddZ9IbYhmTj9W47jx8pGykD1QbU01xlL+GH6IY8=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=Zl8rqIHN8lVTpewuQsOlMos1iBHzyWpCq+LDlUaMP1bh+T9kkBOYDVDfYnKMatArm
+         VD4vp0IRZgaVXqLFTq3RvyRRZdy+xwccwd5U+Rrp1D11uZE+tB+MXJ+zV85puHAMLg
+         d74L/C+wKOWqazhzGCS8ejDQ3Lyznt8OFTDQtjlw=
+X-HELO: smtpclient.apple
+Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
+Received: from 212-39-89-148.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.148)
+ by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Tue, 20 Jul 2021 16:12:20 +0300
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+From:   Georgi Valkov <gvalkov@abv.bg>
+In-Reply-To: <YPbHoScEo8ZJyox6@kroah.com>
+Date:   Tue, 20 Jul 2021 16:12:06 +0300
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        mhabets@solarflare.com, luc.vanoostenryck@gmail.com,
+        snelson@pensando.io, mst@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        corsac@corsac.net, matti.vuorela@bitfactor.fi,
+        stable@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AEC79E3B-FA7F-4A36-95CE-B6D0F3063DF8@abv.bg>
+References: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
+ <20210720122215.54abaf53@cakuba>
+ <5D0CFF83-439B-4A10-A276-D2D17B037704@abv.bg> <YPa4ZelG2k8Z826E@kroah.com>
+ <C6AA954F-8382-461D-835F-E5CA03363D84@abv.bg> <YPbHoScEo8ZJyox6@kroah.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running the self-tests on a KASAN enabled kernel, I observed a
-slab-out-of-bounds splat very similar to the one reported in
-commit 821bbf79fe46 ("ipv6: Fix KASAN: slab-out-of-bounds Read in
- fib6_nh_flush_exceptions").
+Thank you, Greg!
 
-We additionally need to take care of fib6_metrics initialization
-failure when the caller provides an nh.
+git send-email =
+drivers/net/0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
+...
+Result: OK
 
-The fix is similar, explicitly free the route instead of calling
-fib6_info_release on a half-initialized object.
+I hope I got right. I added most of the e-mail addresses, and also tried =
+adding Message-Id.
+I have not received the e-mail yet, so I cannot confirm if it worked or =
+not.
 
-Fixes: f88d8ea67fbdb ("ipv6: Plumb support for nexthop object in a fib6_info")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/ipv6/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Georgi Valkov
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 7b756a7dc036..b6ddf23d3833 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3769,7 +3769,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
- 		err = PTR_ERR(rt->fib6_metrics);
- 		/* Do not leave garbage there. */
- 		rt->fib6_metrics = (struct dst_metrics *)&dst_default_metrics;
--		goto out;
-+		goto out_free;
- 	}
- 
- 	if (cfg->fc_flags & RTF_ADDRCONF)
--- 
-2.26.3
+
+> On 2021-07-20, at 3:54 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>=20
+> On Tue, Jul 20, 2021 at 03:46:11PM +0300, Georgi Valkov wrote:
+>> Yes, I read it, and before my previous e-mail that I also read the =
+link from Jakub,
+>> which essentially provides the same information.
+>>=20
+>> There is only one patch =
+0001-ipheth-fix-EOVERFLOW-in-ipheth_rcvbulk_callback.patch
+>=20
+> Great, send that using 'git send-email' and all is good.
+>=20
+>> The command I used from the example also generated a =
+0000-cover-letter, so
+>> I included it as well.
+>=20
+> Why do you need a cover letter for 1 patch?
+>=20
+> thanks,
+>=20
+> greg k-h
+>=20
 
