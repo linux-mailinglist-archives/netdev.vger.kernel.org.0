@@ -2,76 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 974383CFAAE
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1F43CFAB2
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:35:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239137AbhGTMyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:54:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54974 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239092AbhGTMtl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 08:49:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6DBD9610FB;
-        Tue, 20 Jul 2021 13:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626787810;
-        bh=da5/7mu0jpr4XWnRL2cnq+Aw0+srLlOZtZDnWqCmv54=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kxkM8P9ESMb+ksNJGC47G5swO/xI6kkdtO3207PWDEWZxP8OlIXgVf2J5SRog+1TR
-         OPYvGRkNkd0405Duthba3FGT+Ic1EXEz2Ac7nIqBpxv5hfByDXigOgxVI0IFVkWsdh
-         uzoBYSyLEMkoOtcOhHSqEEpFNadTMjRUBPQBSoHnj5izGv4H2VXlXGSKm1qoOhk8B7
-         eHWCQIuEV809WhGvoL309oFneNIxhVo95n45XIiVvX69TF/bAR1reOdonqHxWEqlmA
-         qWBcsD0DwjRFa3qAd/NnBWfDgkE06m8hvBC6X2mUN6RfzWISOmUbiTrP6PpbJZzqdX
-         L19/2HBehHunw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6381760CD3;
-        Tue, 20 Jul 2021 13:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239194AbhGTMyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237431AbhGTMvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:51:05 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B496C0613DC
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 06:31:31 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1626787888;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gnf4wt/fRNLh29Psx6SbOcCwSnqeK7/okOlgwebj71g=;
+        b=tJtwJ4MpnnaIsDRDa+RMzsn/MhU6gWGLo1dlICBXfqvWORcpx0B2+8TDfbfFbQp0Qanedk
+        GOkWcaLTdQD8bUaGx61ywP0KtdJBIOlwxJxj3eVnLp4WLRjXsImEarxLDgHeKetR0+pA5m
+        MmbAu3nMGxB6907A4g3SPkbe0dD1A7G/81JL/dO+1ap1gBpqDglnhGxSnzA9SnsvIWwJmP
+        VZMLYVS/6U0riWM9mbuyiy4zLltGfhu+mo/BQOxZfWOyGT3YGKd3THvgKDD+3pJNzwldfd
+        zOc3dFwy7bbfu4m+wMRgQ8PFEWM2IXv6BM0e5jsJlIdplah7HUy6UfRbUPde6w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1626787888;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=gnf4wt/fRNLh29Psx6SbOcCwSnqeK7/okOlgwebj71g=;
+        b=b1fAtq7O/N/8sEND4H78ykDJ41kRfEYAmmrSnYSVM8eNT/N8q654yA8pk6RGLrBEwq3grK
+        ZarQOvo2fkY00rCw==
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+In-Reply-To: <80801305-c0fa-8b6f-a30e-083608149a4c@intel.com>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <80801305-c0fa-8b6f-a30e-083608149a4c@intel.com>
+Date:   Tue, 20 Jul 2021 15:31:27 +0200
+Message-ID: <87pmvd9knk.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] veth: more flexible channels number
- configuration
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162678781040.19709.7119682364052971115.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Jul 2021 13:30:10 +0000
-References: <cover.1626768072.git.pabeni@redhat.com>
-In-Reply-To: <cover.1626768072.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        shuah@kernel.org, toke@redhat.com
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+On Mon Jul 19 2021, Jesse Brandeburg wrote:
+> On 7/16/2021 2:24 PM, Tony Nguyen wrote:
+>> From: Kurt Kanzenbach <kurt@linutronix.de>
+>>
+>> Each i225 has three LEDs. Export them via the LED class framework.
+>>
+>> Each LED is controllable via sysfs. Example:
+>>
+>> $ cd /sys/class/leds/igc_led0
+>> $ cat brightness      # Current Mode
+>> $ cat max_brightness  # 15
+>> $ echo 0 > brightness # Mode 0
+>> $ echo 1 > brightness # Mode 1
+>>
+>> The brightness field here reflects the different LED modes ranging
+>> from 0 to 15.
+>>
+>> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+>> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>> Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+>> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+>
+> Just a few hours ago, Kurt sent a revert for this patch, we should just=20
+> drop it from this series.
 
-On Tue, 20 Jul 2021 10:41:47 +0200 you wrote:
-> XDP setups can benefit from multiple veth RX/TX queues. Currently
-> veth allow setting such number only at creation time via the
-> 'numrxqueues' and 'numtxqueues' parameters.
-> 
-> This series introduces support for the ethtool set_channel operation
-> and allows configuring the queue number via a new module parameter.
-> 
-> [...]
+Yes, I'll revisit this patch with the feedback received. Drop it for now.
 
-Here is the summary with links:
-  - [net-next,1/5] veth: always report zero combined channels
-    https://git.kernel.org/netdev/net-next/c/f7918b79019f
-  - [net-next,2/5] veth: factor out initialization helper
-    https://git.kernel.org/netdev/net-next/c/dedd53c5e075
-  - [net-next,3/5] veth: implement support for set_channel ethtool op
-    https://git.kernel.org/netdev/net-next/c/4752eeb3d891
-  - [net-next,4/5] veth: create by default nr_possible_cpus queues
-    https://git.kernel.org/netdev/net-next/c/9d3684c24a52
-  - [net-next,5/5] selftests: net: veth: add tests for set_channel
-    https://git.kernel.org/netdev/net-next/c/1ec2230fc721
+Thanks,
+Kurt
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmD20C8THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpgEsD/428/TRquFQA88VetfTH0dLaEKItjd9
+eC+FGPXDYtUKinzbtodN7SBCqAQWXYHC11tiIGZKd+kB47HJ+ibbprz/iCHCMufe
+7+U4ELBO8Nw5DdyRx+ZiUWTrWfBJ5VqdQwgMM6c+HM+9or/Llb3QZMWccKVRipkS
+9j55dIvwKtZ1qh94xYs0MdS8amvb5veKJ1GoAp4OwWsRJWtBS88dsmiTWxmWDNFY
+KKi5/YqVyF0EkO0kqvmTtmyNFCHyF0lp93JP2rVBLCB9beFZCBIFQM/JWX5EV0Cm
+UaU45QaQGSj86aCNid28mnanRXjhRgJAb5JloJKdVJ+LdxHkb5uPg2sZi1qJ09fg
+f0pG8j0FsdI12oS2Yg3NGW5W4yUkzZ4HNXjLQTVD7whOPo4CY5oFkuMn7PYUhLM9
+VPJU0BehNg7Xdu07GOMeYqIWxYXKuf8c4o0Yzo5R92rCij3+juWQ1RKYtrJAMvVu
+2qq+YG6RObqsLllVF8BZaievHxtMAggX4ELWeuy+1yWyjAwz067X33UnDeOjhkpR
+SrvZEtjJb2qMeNbSn/oziYPs9/xQ0x6mfuv7v1Tn5NUL6ibHgb9JbBx/ubIN1ip1
+nFiIMPjhVVFAB/pmoESwi+plbzj20SrrsKuhRFyt20RMLEgDNG5D/DjUHPiJ07AR
+T9LhOExEnWftgw==
+=rNes
+-----END PGP SIGNATURE-----
+--=-=-=--
