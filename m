@@ -2,97 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A707C3D035B
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 22:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D6F3D035C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 22:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236865AbhGTUJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 16:09:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35804 "EHLO mail.kernel.org"
+        id S236904AbhGTUJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 16:09:12 -0400
+Received: from novek.ru ([213.148.174.62]:46616 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237642AbhGTTwi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 15:52:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CA00A60FF2;
-        Tue, 20 Jul 2021 20:33:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626813196;
-        bh=eAL8QwelZEjqkrY6xpSxtA3PODMbnmYsssC4KoVZiOc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JJpAfKhnABUmpxOg9U/fYhIdK676lUC7zxdZO4Ov+XkzsTN1uNQpBFvYrirDfIakZ
-         byh9JWGpUaePwdP9P8a5i5BEvhoOUPFLDQF/TDfF6Dt16A3BeRLHI/9/G2uzjph8jw
-         MevIZGtIuySKTu1ntOZrkKNQFaWrdWeYOaJyeJpxUnq3KG8ahCOJyb+BlK+zntCxgx
-         Ed4I0eXobO8J3Ubp6zPV5nmDpkVivVrUweH+mzg1CoHXf/MLoxDBrQyTc2c5HwIyLh
-         QY1nFaI0Gwrfw7HTmsQ+TalbuwunzUd9K0sOoGUuoML7Km3jvcukKSLHc3yF+IDiUt
-         vtHRTxUbK9qGQ==
-Date:   Tue, 20 Jul 2021 21:33:12 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ramesh Shanmugasundaram <rashanmu@gmail.com>,
-        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Dilip Kota <eswara.kota@linux.intel.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
-Message-ID: <20210720203312.GG5042@sirena.org.uk>
-References: <20210720172025.363238-1-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kadn00tgSopKmJ1H"
-Content-Disposition: inline
-In-Reply-To: <20210720172025.363238-1-robh@kernel.org>
-X-Cookie: Revenge is a meal best served cold.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S237722AbhGTTzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 15:55:03 -0400
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 1912350348D;
+        Tue, 20 Jul 2021 23:33:14 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 1912350348D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1626813196; bh=eVQ3jRrHM5EkL75xx6ilsGGHrZUs8yLWYzo9rRQOEj0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hCYRoL4fcXBHQochGlbwJQF3DaNBnGnput2ZeLHSS8W8JEn1mKQnOw+1jKQxjmhd2
+         W9KzkVqgoyhSKqaIPwm85Ugv3JJwmdFAx8NwcmnUqX/k/gxa1k4mec8WO1pRJdaQGN
+         mg17KOmK2WlV3OO4gyy+1cu27p5qbb4Dpc3k9ZFs=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     David Ahern <dsahern@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vadim Fedorenko <vfedorenko@novek.ru>
+Subject: [PATCH net v3 0/2] Fix PMTU for ESP-in-UDP encapsulation
+Date:   Tue, 20 Jul 2021 23:35:27 +0300
+Message-Id: <20210720203529.21601-1-vfedorenko@novek.ru>
+X-Mailer: git-send-email 2.18.4
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Bug 213669 uncovered regression in PMTU discovery for UDP-encapsulated
+routes and some incorrect usage in udp tunnel fields. This series fixes
+problems and also adds such case for selftests
 
---kadn00tgSopKmJ1H
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+v3:
+ - update checking logic to account SCTP use case
+v2:
+ - remove refactor code that was in first patch
+ - move checking logic to __udp{4,6}_lib_err_encap
+ - add more tests, especially routed configuration
 
-On Tue, Jul 20, 2021 at 11:20:25AM -0600, Rob Herring wrote:
-> There's no reason to have "status" properties in examples. "okay" is the
-> default, and "disabled" turns off some schema checks ('required'
-> specifically).
+Vadim Fedorenko (2):
+  udp: check encap socket in __udp_lib_err
+  selftests: net: add ESP-in-UDP PMTU test
 
-Acked-by: Mark Brown <broonie@kernel.org>
+ net/ipv4/udp.c                        |  25 ++-
+ net/ipv6/udp.c                        |  25 ++-
+ tools/testing/selftests/net/nettest.c |  55 ++++++-
+ tools/testing/selftests/net/pmtu.sh   | 212 +++++++++++++++++++++++++-
+ 4 files changed, 298 insertions(+), 19 deletions(-)
 
---kadn00tgSopKmJ1H
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.18.4
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmD3MwcACgkQJNaLcl1U
-h9Bjsgf8DIiqqQ26ZTa4jvNqa3wI4t/EHPC0PLaGmxZWA2e7eTEGVrmipVIkUz2m
-dX2Rrsl6xOoU39mzMuCNQwVu9iqiJUoxt6xQsFG13raVCQhBTxxgkkVV2qU6BWh0
-TEuDrDM4Uh5EIU/PxpwbywfyPELaMCBkFvkd9D8O/0ek7OPcVuw5Au7es/ZG+NS/
-nQBA4oFRFdrIVSQmZ+Tn3/VjiivJhZ4H8MZ3oSKcFrMpQjG6ppG31dZGHpKtJNwE
-bUqasYXWrqKz1seky+xKbpbMnSjok627Byj0cGtNir3l8MpB2bV+Ae2OE/tc3nyZ
-aRZ/bNwgS/oYZ+vrKSOeJcgAasfyYw==
-=3Ukn
------END PGP SIGNATURE-----
-
---kadn00tgSopKmJ1H--
