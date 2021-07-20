@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A453E3D05AE
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 01:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 249683D05A9
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 01:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbhGTWww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 18:52:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33406 "EHLO
+        id S236666AbhGTWwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 18:52:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55799 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235576AbhGTWqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 18:46:31 -0400
+        by vger.kernel.org with ESMTP id S235623AbhGTWqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 18:46:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626823628;
+        s=mimecast20190719; t=1626823633;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=tDrUtUc2aE0pRbBZzR884Ce25w6F59XVVpHlm8q8sCM=;
-        b=W4Eo7aXQK21Uhrpr8vYokYpT0Bp13QJl72YDJpdDp1PqRSUbJZCnJqnUZ8xC4UET0m51oz
-        ZjBOh9jTHlxU87MZRPwoxSQ4PreI+76Q/3Xb0AOziBb1VV6W+TI8GbYZkfiQLih9An8LQZ
-        InSx+EPpl1N/mHvkQJ9wV2pvgFck1/8=
+        bh=zuZd/erhcH5JqKd76Lbo99r5gRHYSZoylCGlNGoCcSY=;
+        b=FJIT0wQKWZrl5UPZho/U0SKV7P5ZqmcywYHQ9h8l0sAdlssUDycf3D1gaQ9W0xeppLSmyG
+        AR6y/WW235pqb6E39/0qU2w1LOjqSjUhJegs26nnYslaMxB4zAnCKOrbuLCYPbWiv47k0n
+        z4Wl84xP2ot9MN3p6mpabzRKvorO9Es=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-525-YfMip2mCMymWdeyYHBSEYA-1; Tue, 20 Jul 2021 19:27:07 -0400
-X-MC-Unique: YfMip2mCMymWdeyYHBSEYA-1
+ us-mta-307-6zAPg_1qOTCDfODJHYRTeQ-1; Tue, 20 Jul 2021 19:27:12 -0400
+X-MC-Unique: 6zAPg_1qOTCDfODJHYRTeQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96350100C610;
-        Tue, 20 Jul 2021 23:27:05 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6166E1084F4B;
+        Tue, 20 Jul 2021 23:27:10 +0000 (UTC)
 Received: from virtlab719.virt.lab.eng.bos.redhat.com (virtlab719.virt.lab.eng.bos.redhat.com [10.19.153.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0E78F69FAD;
-        Tue, 20 Jul 2021 23:27:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AED9669CB4;
+        Tue, 20 Jul 2021 23:27:05 +0000 (UTC)
 From:   Nitesh Narayan Lal <nitesh@redhat.com>
 To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
@@ -64,9 +64,9 @@ To:     linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
         emilne@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
         _govind@gmx.com, kabel@kernel.org, viresh.kumar@linaro.org,
         Tushar.Khandelwal@arm.com, kuba@kernel.org
-Subject: [PATCH v5 05/14] scsi: mpt3sas: Use irq_set_affinity_and_hint
-Date:   Tue, 20 Jul 2021 19:26:15 -0400
-Message-Id: <20210720232624.1493424-6-nitesh@redhat.com>
+Subject: [PATCH v5 06/14] RDMA/irdma: Use irq_update_affinity_hint
+Date:   Tue, 20 Jul 2021 19:26:16 -0400
+Message-Id: <20210720232624.1493424-7-nitesh@redhat.com>
 In-Reply-To: <20210720232624.1493424-1-nitesh@redhat.com>
 References: <20210720232624.1493424-1-nitesh@redhat.com>
 MIME-Version: 1.0
@@ -76,91 +76,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver uses irq_set_affinity_hint() specifically for the high IOPS
-queue interrupts for two purposes:
-
-- To set the affinity_hint which is consumed by the userspace for
-  distributing the interrupts
-
-- To apply an affinity that it provides
-
-The driver enforces its own affinity to bind the high IOPS queue interrupts
-to the local NUMA node. However, irq_set_affinity_hint() applying the
-provided cpumask as an affinity (if not NULL) for the interrupt is an
+The driver uses irq_set_affinity_hint() to update the affinity_hint mask
+that is consumed by the userspace to distribute the interrupts. However,
+under the hood irq_set_affinity_hint() also applies the provided cpumask
+(if not NULL) as the affinity for the given interrupt which is an
 undocumented side effect.
 
 To remove this side effect irq_set_affinity_hint() has been marked
 as deprecated and new interfaces have been introduced. Hence, replace the
-irq_set_affinity_hint() with the new interface irq_set_affinity_and_hint()
-where the provided mask needs to be applied as the affinity and
-affinity_hint pointer needs to be set and replace with
-irq_update_affinity_hint() where only affinity_hint needs to be updated.
+irq_set_affinity_hint() with the new interface irq_update_affinity_hint()
+that only updates the affinity_hint pointer.
 
 Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ drivers/infiniband/hw/irdma/hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index c39955239d1c..c1a11962f227 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -2991,6 +2991,7 @@ _base_check_enable_msix(struct MPT3SAS_ADAPTER *ioc)
- static void
- _base_free_irq(struct MPT3SAS_ADAPTER *ioc)
- {
-+	unsigned int irq;
- 	struct adapter_reply_queue *reply_q, *next;
+diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
+index 7afb8a6a0526..ec8de708a4df 100644
+--- a/drivers/infiniband/hw/irdma/hw.c
++++ b/drivers/infiniband/hw/irdma/hw.c
+@@ -537,7 +537,7 @@ static void irdma_destroy_irq(struct irdma_pci_f *rf,
+ 	struct irdma_sc_dev *dev = &rf->sc_dev;
  
- 	if (list_empty(&ioc->reply_queue_list))
-@@ -2998,9 +2999,10 @@ _base_free_irq(struct MPT3SAS_ADAPTER *ioc)
+ 	dev->irq_ops->irdma_dis_irq(dev, msix_vec->idx);
+-	irq_set_affinity_hint(msix_vec->irq, NULL);
++	irq_update_affinity_hint(msix_vec->irq, NULL);
+ 	free_irq(msix_vec->irq, dev_id);
+ }
  
- 	list_for_each_entry_safe(reply_q, next, &ioc->reply_queue_list, list) {
- 		list_del(&reply_q->list);
--		if (ioc->smp_affinity_enable)
--			irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--			    reply_q->msix_index), NULL);
-+		if (ioc->smp_affinity_enable) {
-+			irq = pci_irq_vector(ioc->pdev, reply_q->msix_index);
-+			irq_update_affinity_hint(irq, NULL);
-+		}
- 		free_irq(pci_irq_vector(ioc->pdev, reply_q->msix_index),
- 			 reply_q);
- 		kfree(reply_q);
-@@ -3056,16 +3058,13 @@ _base_request_irq(struct MPT3SAS_ADAPTER *ioc, u8 index)
-  * @ioc: per adapter object
-  *
-  * The enduser would need to set the affinity via /proc/irq/#/smp_affinity
-- *
-- * It would nice if we could call irq_set_affinity, however it is not
-- * an exported symbol
-  */
- static void
- _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- {
--	unsigned int cpu, nr_cpus, nr_msix, index = 0;
-+	unsigned int cpu, nr_cpus, nr_msix, index = 0, irq;
- 	struct adapter_reply_queue *reply_q;
--	int local_numa_node;
-+	const struct cpumask *mask;
- 
- 	if (!_base_is_controller_msix_enabled(ioc))
- 		return;
-@@ -3088,11 +3087,11 @@ _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- 		 * corresponding to high iops queues.
- 		 */
- 		if (ioc->high_iops_queues) {
--			local_numa_node = dev_to_node(&ioc->pdev->dev);
-+			mask = cpumask_of_node(dev_to_node(&ioc->pdev->dev));
- 			for (index = 0; index < ioc->high_iops_queues;
- 			    index++) {
--				irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--				    index), cpumask_of_node(local_numa_node));
-+				irq = pci_irq_vector(ioc->pdev, index);
-+				irq_set_affinity_and_hint(irq, mask);
- 			}
- 		}
- 
+@@ -1087,7 +1087,7 @@ irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct irdma_ceq *iwceq,
+ 	}
+ 	cpumask_clear(&msix_vec->mask);
+ 	cpumask_set_cpu(msix_vec->cpu_affinity, &msix_vec->mask);
+-	irq_set_affinity_hint(msix_vec->irq, &msix_vec->mask);
++	irq_update_affinity_hint(msix_vec->irq, &msix_vec->mask);
+ 	if (status) {
+ 		ibdev_dbg(&rf->iwdev->ibdev, "ERR: ceq irq config fail\n");
+ 		return IRDMA_ERR_CFG;
 -- 
 2.27.0
 
