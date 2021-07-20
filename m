@@ -2,60 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1203CF86D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 12:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B77A83CF87E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 12:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238033AbhGTKOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:14:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237989AbhGTKKI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 06:10:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 87F866108B;
-        Tue, 20 Jul 2021 10:50:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626778242;
-        bh=jAUMwGq/k28WICBve6hHau+/pQMtwrpjEuoUr6MINC0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cfWj2qBFCeFqrhQWh0V2CSRCACi9sMydlXETz+4z3mHjF3WP+xQAAma5+yYOxoEk8
-         5Pk8erEdsuJ0qBFxnhZIsIJjcS+mah7aiFE2vwj+sgatVXjUpHcB3C8S+eZAlCz87v
-         biePOld91NPWEJ9qrqpk3vucLzv4p4ozS6eKnv3Oc/KaSk00VK8GimU+P+kgpuYrO2
-         HwX7v5TqzpcMmgh5BsLLAVbx+TYWvw7Vym/f2atATTPZuS2EH954cMlyidxOdATDOs
-         IFpZlIE05CepRw3r09RO3falzHLuUWKpn6spGqTe9j5eL26aNXuDd7POkxY3uqQyqP
-         5ns4ETKVBQCbQ==
-Date:   Tue, 20 Jul 2021 12:50:36 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        timo.voelker@fh-muenster.de
-Subject: Re: [PATCH net 2/2] sctp: send pmtu probe only if packet loss in
- Search Complete state
-Message-ID: <20210720125036.29ed23ba@cakuba>
-In-Reply-To: <b27420c3db63969d3faf00a2e866126dae3b870c.1626713549.git.lucien.xin@gmail.com>
-References: <cover.1626713549.git.lucien.xin@gmail.com>
-        <b27420c3db63969d3faf00a2e866126dae3b870c.1626713549.git.lucien.xin@gmail.com>
+        id S237495AbhGTKSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:18:13 -0400
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:41474 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237512AbhGTKQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 06:16:25 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UgQE3Hb_1626778618;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0UgQE3Hb_1626778618)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 20 Jul 2021 18:56:58 +0800
+Subject: Re: [PATCH v2] vsock/virtio: set vsock frontend ready in
+ virtio_vsock_probe()
+To:     Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     sgarzare@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        jasowang@redhat.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210720071337.1995-1-xianting.tian@linux.alibaba.com>
+ <YPakBTVDbgVcTGQX@stefanha-x1.localdomain>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <d6101597-975c-8606-2dc0-eae51cbbe42f@linux.alibaba.com>
+Date:   Tue, 20 Jul 2021 18:56:58 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <YPakBTVDbgVcTGQX@stefanha-x1.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Jul 2021 12:53:23 -0400, Xin Long wrote:
-> This patch is to introduce last_rtx_chunks into sctp_transport to detect
-> if there's any packet retransmission/loss happened by checking against
-> asoc's rtx_data_chunks in sctp_transport_pl_send().
-> 
-> If there is, namely, transport->last_rtx_chunks != asoc->rtx_data_chunks,
-> the pmtu probe will be sent out. Otherwise, increment the pl.raise_count
-> and return when it's in Search Complete state.
-> 
-> With this patch, if in Search Complete state, which is a long period, it
-> doesn't need to keep probing the current pmtu unless there's data packet
-> loss. This will save quite some traffic.
-> 
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+OK,
 
-Can we get a Fixes tag, please?
+thanks
+
+在 2021/7/20 下午6:23, Stefan Hajnoczi 写道:
+> On Tue, Jul 20, 2021 at 03:13:37PM +0800, Xianting Tian wrote:
+>> Add the missed virtio_device_ready() to set vsock frontend ready.
+>>
+>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+>> ---
+>>   net/vmw_vsock/virtio_transport.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+> Please include a changelog when you send v2, v3, etc patches.
+>
+>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>> index e0c2c992a..dc834b8fd 100644
+>> --- a/net/vmw_vsock/virtio_transport.c
+>> +++ b/net/vmw_vsock/virtio_transport.c
+>> @@ -639,6 +639,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+>>   
+>>   	mutex_unlock(&the_virtio_vsock_mutex);
+>>   
+>> +	virtio_device_ready(vdev);
+> Why is this patch necessary?
+>
+> The core virtio_dev_probe() code already calls virtio_device_ready for
+> us:
+>
+>    static int virtio_dev_probe(struct device *_d)
+>    {
+>        ...
+>        err = drv->probe(dev);
+>        if (err)
+>            goto err;
+>    
+>        /* If probe didn't do it, mark device DRIVER_OK ourselves. */
+>        if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
+>            virtio_device_ready(dev);
