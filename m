@@ -2,284 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E933CFA38
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:12:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C6B93CFA8C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237186AbhGTMcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:32:09 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:59554 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234665AbhGTMbz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 08:31:55 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 9A1F049E66;
-        Tue, 20 Jul 2021 13:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-transfer-encoding:mime-version:user-agent:content-type
-        :content-type:organization:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received:received; s=
-        mta-01; t=1626786733; x=1628601134; bh=LuLCNzNGfwt8kUnjnEU2g04t0
-        RI3nJrdJh13nMXTK8A=; b=ksN3YhX+Fg/zsZANJD6UiHWdKmjSTDlGAtQ1dP0L7
-        XIdazaxIRVXB9IZscT2IzpjYCmzlkzRi7z1JEgo6pWS3ukKCkII9+TWs/lvGN8+h
-        Slo1iNCgYOP6BnV/6P3vfynPyoCnZ7AmR3An2VabO5s2iqqmx6ElXWBglVmM95+V
-        UY=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id DrbFyumWL7I5; Tue, 20 Jul 2021 16:12:13 +0300 (MSK)
-Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id D81FA49E35;
-        Tue, 20 Jul 2021 16:12:09 +0300 (MSK)
-Received: from [10.199.0.81] (10.199.0.81) by T-EXCH-04.corp.yadro.com
- (172.17.100.104) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Tue, 20
- Jul 2021 16:12:09 +0300
-Message-ID: <b1da28a76c249637d6f094b046d851c7622e71d4.camel@yadro.com>
-Subject: Re: [PATCH v2 3/3] net/ncsi: add dummy response handler for Intel
- boards
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     Paul Fertser <fercerpav@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        id S237220AbhGTMse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238778AbhGTMjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:39:52 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079CEC061574
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 06:20:30 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w14so28378272edc.8
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 06:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WWdVTBpkXpCkzjS8MZKauwExseyl+0vHSz3Ttw3XI78=;
+        b=HYqB/RtMKvhnSct/pRiblvvLVjNZundUrBFnyuEgaqprWGrqqEoaAyCUhIu6gT6DFN
+         g066L/ReLq/bpE1Sp+/+vJyKGz9k6Ey4aBsIqtrXgr2n/Y5gYPFfpQ/3DuLKNsU/5Q8O
+         woN9aYsDvZ7p/3AlA0QL3FYYDgZZPxQgiVFpe1n9w+edX2hxAu7JXKRP5eDatqVca/18
+         hQSlUSBJ/ZOAn3KvZziH+TSaUKyO7ob7BIYL0ye1lcaZiG0Tj2d+I3Nqg6zaBNz5LM8S
+         YIuqpY/x9bBG9o8q80PfQs3pDnwVJ0Q79L6rrDj3gKHaTxoEeWJYfdre66l+IH4My6/X
+         dQbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WWdVTBpkXpCkzjS8MZKauwExseyl+0vHSz3Ttw3XI78=;
+        b=lhq8BtOjlYR0j0Fz2H0Yizij+qVnF+ZhTTFXi2theCUGFeCVgicC7afPNGzSFz4BwT
+         lFIn6l+cLcl7uwSJmQN8NWQueWHs++uufPnUOTnurA/WW6hBYw14AWLUTPMaGtn1O8lV
+         Dx8evWlBr24fLAu1Ork8KqcAhGFX9HrHuVXmIEZjyCn1viQ+SxlFHy69+Drme8kVk3md
+         PL/m2gpNZLS3t9vh4Yscbc78hC2hjB0WWUal9F4J9G3GNSzFhEm6T0XQf5j+9cvh9Dlc
+         M7svC+g+iIh61FXqY3WI80a9YiAIa0S+pfpuQmRcoVju7ysT19ZcqsiT7Nkg0Mx+6ftu
+         XSug==
+X-Gm-Message-State: AOAM533MyEGm0RzQNd1RhNZARbnLUG+ZS9w60K4BhwUvoKomwHoNBLeq
+        Dnqhsgd3Z41AaKL8UawGLdY=
+X-Google-Smtp-Source: ABdhPJy+XOIjH8dtsdCwlCAmwzymls1jFP54AZlkacuUWgCeVdswHRm5d79Rv2foaExkTBmz0jKyag==
+X-Received: by 2002:a50:d982:: with SMTP id w2mr16990375edj.338.1626787228538;
+        Tue, 20 Jul 2021 06:20:28 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id d13sm9269602edt.31.2021.07.20.06.20.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 06:20:28 -0700 (PDT)
+Date:   Tue, 20 Jul 2021 16:20:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "Joel Stanley" <joel@jms.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>
-Date:   Tue, 20 Jul 2021 16:21:31 +0300
-In-Reply-To: <20210720094113.GA4789@home.paul.comp>
-References: <20210708122754.555846-1-i.mikhaylov@yadro.com>
-         <20210708122754.555846-4-i.mikhaylov@yadro.com>
-         <20210720094113.GA4789@home.paul.comp>
-Organization: YADRO
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        bridge@lists.linux-foundation.org,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v4 net-next 00/15] Allow forwarding for the software
+ bridge data path to be offloaded to capable devices
+Message-ID: <20210720132026.mpk3iq3z6vmmzxyd@skbuf>
+References: <20210718214434.3938850-1-vladimir.oltean@nxp.com>
+ <YPaybQZE8l6mRE2l@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.199.0.81]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-04.corp.yadro.com (172.17.100.104)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YPaybQZE8l6mRE2l@shredder>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-07-20 at 12:41 +0300, Paul Fertser wrote:
-> Hello,
-> 
-> On Thu, Jul 08, 2021 at 03:27:54PM +0300, Ivan Mikhaylov wrote:
-> > Add the dummy response handler for Intel boards to prevent incorrect
-> > handling of OEM commands.
-> 
-> It would be much nicer if it wasn't dummy but provide means of
-> obtaining the MAC properly, in a similar way to the other supported
-> network cards.
-> 
-> I have a patch I can share but not ready to send for proper mainlining
-> due to time constraints. Feel free to take it over and send as part of
-> your patch series.
-> 
-> From 6c717bbb75442c83bd11b37b7644f9ce187ee7e9 Mon Sep 17 00:00:00 2001
-> From: Brad Ho <Brad_Ho@phoenix.com>
-> Date: Thu, 25 Feb 2021 00:53:03 -0800
-> Subject: [PATCH] Add get MAC address through NCSI command to get INTEL i210
->  MAC address
-> 
-> Signed-off-by: Brad Ho <Brad_Ho@phoenix.com>
-> Signed-off-by: Paul Fertser <fercerpav@gmail.com>
-> ---
->  net/ncsi/internal.h    |  5 ++++
->  net/ncsi/ncsi-manage.c | 25 ++++++++++++++++-
->  net/ncsi/ncsi-pkt.h    |  6 ++++
->  net/ncsi/ncsi-rsp.c    | 62 +++++++++++++++++++++++++++++++++++++++++-
->  4 files changed, 96 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ncsi/internal.h b/net/ncsi/internal.h
-> index e37102546be6..8a6a8127156b 100644
-> --- a/net/ncsi/internal.h
-> +++ b/net/ncsi/internal.h
-> @@ -78,6 +78,7 @@ enum {
->  /* OEM Vendor Manufacture ID */
->  #define NCSI_OEM_MFR_MLX_ID             0x8119
->  #define NCSI_OEM_MFR_BCM_ID             0x113d
-> +#define NCSI_OEM_MFR_INTEL_ID           0x0157
->  /* Broadcom specific OEM Command */
->  #define NCSI_OEM_BCM_CMD_GMA            0x01   /* CMD ID for Get MAC */
->  /* Mellanox specific OEM Command */
-> @@ -85,16 +86,20 @@ enum {
->  #define NCSI_OEM_MLX_CMD_GMA_PARAM      0x1b   /* Parameter for GMA  */
->  #define NCSI_OEM_MLX_CMD_SMAF           0x01   /* CMD ID for Set MC Affinity
-> */
->  #define NCSI_OEM_MLX_CMD_SMAF_PARAM     0x07   /* Parameter for SMAF        
-> */
-> +/* Intel specific OEM Command */
-> +#define NCSI_OEM_INTEL_CMD_GMA          0x06   /* CMD ID for Get MAC */
->  /* OEM Command payload lengths*/
->  #define NCSI_OEM_BCM_CMD_GMA_LEN        12
->  #define NCSI_OEM_MLX_CMD_GMA_LEN        8
->  #define NCSI_OEM_MLX_CMD_SMAF_LEN        60
-> +#define NCSI_OEM_INTEL_CMD_GMA_LEN      5
->  /* Offset in OEM request */
->  #define MLX_SMAF_MAC_ADDR_OFFSET         8     /* Offset for MAC in SMAF   
-> */
->  #define MLX_SMAF_MED_SUPPORT_OFFSET      14    /* Offset for medium in SMAF
-> */
->  /* Mac address offset in OEM response */
->  #define BCM_MAC_ADDR_OFFSET             28
->  #define MLX_MAC_ADDR_OFFSET             8
-> +#define INTEL_MAC_ADDR_OFFSET           1
->  
->  
->  struct ncsi_channel_version {
-> diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-> index 1f387be7827b..fb25ae22ea3d 100644
-> --- a/net/ncsi/ncsi-manage.c
-> +++ b/net/ncsi/ncsi-manage.c
-> @@ -760,13 +760,36 @@ static int ncsi_oem_smaf_mlx(struct ncsi_cmd_arg *nca)
->         return ret;
->  }
->  
-> +static int ncsi_oem_gma_handler_intel(struct ncsi_cmd_arg *nca)
-> +{
-> +       unsigned char data[NCSI_OEM_INTEL_CMD_GMA_LEN];
-> +       int ret = 0;
-> +
-> +       nca->payload = NCSI_OEM_INTEL_CMD_GMA_LEN;
-> +
-> +       memset(data, 0, NCSI_OEM_INTEL_CMD_GMA_LEN);
-> +       *(unsigned int *)data = ntohl(NCSI_OEM_MFR_INTEL_ID);
-> +       data[4] = NCSI_OEM_INTEL_CMD_GMA;
-> +
-> +       nca->data = data;
-> +
-> +       ret = ncsi_xmit_cmd(nca);
-> +       if (ret)
-> +               netdev_err(nca->ndp->ndev.dev,
-> +                          "NCSI: Failed to transmit cmd 0x%x during
-> configure\n",
-> +                          nca->type);
-> +
-> +       return ret;
-> +}
-> +
->  /* OEM Command handlers initialization */
->  static struct ncsi_oem_gma_handler {
->         unsigned int    mfr_id;
->         int             (*handler)(struct ncsi_cmd_arg *nca);
->  } ncsi_oem_gma_handlers[] = {
->         { NCSI_OEM_MFR_BCM_ID, ncsi_oem_gma_handler_bcm },
-> -       { NCSI_OEM_MFR_MLX_ID, ncsi_oem_gma_handler_mlx }
-> +       { NCSI_OEM_MFR_MLX_ID, ncsi_oem_gma_handler_mlx },
-> +       { NCSI_OEM_MFR_INTEL_ID, ncsi_oem_gma_handler_intel }
->  };
->  
->  static int ncsi_gma_handler(struct ncsi_cmd_arg *nca, unsigned int mf_id)
-> diff --git a/net/ncsi/ncsi-pkt.h b/net/ncsi/ncsi-pkt.h
-> index 80938b338fee..ba66c7dc3a21 100644
-> --- a/net/ncsi/ncsi-pkt.h
-> +++ b/net/ncsi/ncsi-pkt.h
-> @@ -178,6 +178,12 @@ struct ncsi_rsp_oem_bcm_pkt {
->         unsigned char           data[];      /* Cmd specific Data */
->  };
->  
-> +/* Intel Response Data */
-> +struct ncsi_rsp_oem_intel_pkt {
-> +       unsigned char           cmd;         /* OEM Command ID    */
-> +       unsigned char           data[];      /* Cmd specific Data */
-> +};
-> +
->  /* Get Link Status */
->  struct ncsi_rsp_gls_pkt {
->         struct ncsi_rsp_pkt_hdr rsp;        /* Response header   */
-> diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
-> index a94bb59793f0..b36c22ec4c3f 100644
-> --- a/net/ncsi/ncsi-rsp.c
-> +++ b/net/ncsi/ncsi-rsp.c
-> @@ -699,12 +699,72 @@ static int ncsi_rsp_handler_oem_bcm(struct ncsi_request
-> *nr)
->         return 0;
->  }
->  
-> +/* Response handler for Intel command Get Mac Address */
-> +static int ncsi_rsp_handler_oem_intel_gma(struct ncsi_request *nr)
-> +{
-> +       struct ncsi_dev_priv *ndp = nr->ndp;
-> +       struct net_device *ndev = ndp->ndev.dev;
-> +       const struct net_device_ops *ops = ndev->netdev_ops;
-> +       struct ncsi_rsp_oem_pkt *rsp;
-> +       struct sockaddr saddr;
-> +       int ret = 0;
-> +
-> +       /* Get the response header */
-> +       rsp = (struct ncsi_rsp_oem_pkt *)skb_network_header(nr->rsp);
-> +
-> +       saddr.sa_family = ndev->type;
-> +       ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
-> +       memcpy(saddr.sa_data, &rsp->data[INTEL_MAC_ADDR_OFFSET], ETH_ALEN);
-> +       /* Increase mac address by 1 for BMC's address */
-> +       eth_addr_inc((u8 *)saddr.sa_data);
-> +       if (!is_valid_ether_addr((const u8 *)saddr.sa_data))
-> +               return -ENXIO;
-> +
-> +       /* Set the flag for GMA command which should only be called once */
-> +       ndp->gma_flag = 1;
-> +
-> +       ret = ops->ndo_set_mac_address(ndev, &saddr);
-> +       if (ret < 0)
-> +               netdev_warn(ndev, "NCSI: 'Writing mac address to device
-> failed\n");
-> +
-> +       return ret;
-> +}
-> +
-> +/* Response handler for Intel card */
-> +static int ncsi_rsp_handler_oem_intel(struct ncsi_request *nr)
-> +{
-> +       struct ncsi_rsp_oem_intel_pkt *intel;
-> +       struct ncsi_rsp_oem_pkt *rsp;
-> +
-> +       /* Get the response header */
-> +       rsp = (struct ncsi_rsp_oem_pkt *)skb_network_header(nr->rsp);
-> +       intel = (struct ncsi_rsp_oem_intel_pkt *)(rsp->data);
-> +
-> +#if 0 //For debug use
-> +    #define NCSI_INTEL_GMA_LEN 6
-> +    int i = 0;
-> +
-> +    printk("[Error] %s, %d, intel->cmd = %x\n", __func__, __LINE__, intel-
-> >cmd);
-> +    for(i ; i < NCSI_INTEL_GMA_LEN; i++)
-> +    {
-> +        printk("[Error] %s, %d, rsp->data[%d] = %x\n", __func__, __LINE__, i,
-> rsp->data[i]);
-> +        printk("[Error] %s, %d, intel_rsp->data[%d] = %x\n", __func__,
-> __LINE__, i, intel->data[i]);
-> +    }
-> +#endif
-> +    
-> +       if (intel->cmd == NCSI_OEM_INTEL_CMD_GMA)
-> +               return ncsi_rsp_handler_oem_intel_gma(nr);
-> +
-> +       return 0;
-> +}
-> +
->  static struct ncsi_rsp_oem_handler {
->         unsigned int    mfr_id;
->         int             (*handler)(struct ncsi_request *nr);
->  } ncsi_rsp_oem_handlers[] = {
->         { NCSI_OEM_MFR_MLX_ID, ncsi_rsp_handler_oem_mlx },
-> -       { NCSI_OEM_MFR_BCM_ID, ncsi_rsp_handler_oem_bcm }
-> +       { NCSI_OEM_MFR_BCM_ID, ncsi_rsp_handler_oem_bcm },
-> +       { NCSI_OEM_MFR_INTEL_ID, ncsi_rsp_handler_oem_intel }
->  };
->  
->  /* Response handler for OEM command */
-> 
+On Tue, Jul 20, 2021 at 02:24:29PM +0300, Ido Schimmel wrote:
+> Too many things are squashed into this one patchset. It needs to be
+> split.
+>
+> The TX forwarding offload in mv88e6xxx is not related to the replay
+> stuff and should be added in a separate patchset. This can be done by
+> first adding the switchdev_bridge_port_offload() /
+> switchdev_bridge_port_unoffload() APIs that only take care of setting /
+> unsetting the hardware domain for the bridge port. Then, in a different
+> patchset, these APIs can be augmented with a parameter for the replay
+> stuff. It should be easier to review that way and require less
+> unnecessary surgeries in drivers that do not require the added
+> functionality.
 
-Paul, I know about 'get mac address' and it was in my todo list. You can put it
-before or after this patch series whenever you want, it doesn't interfere with
-this one. Anyways, thanks for sharing it.
+Fair point. I will submit patches 1-10 and 11-15 separately.
 
-Thanks.
+> According to the title, the patchset is focused on improving
+> performance, but there are no performance numbers that I could see and
+> most of the patches deal with the replay stuff instead.
 
+Maybe, but the truth is that it is not really the performance
+improvement that I care about. The performance quote is from Tobias'
+original cover letter, which I took as-is. I can build a synthetic test
+for multicasting on 10 mv88e6xxx ports or something like that, or maybe
+Tobias can provide a more relevant example out of Westermo's use cases.
+But it would be silly if this patchset's acceptance would depend on the
+numbers. This is one of those cases where completely different interests
+led me and Tobias to the the same solution.
+
+I don't want to bore you to death with details, but for some switches
+(DSA or otherwise), being able to send bridge packets as they are (data
+plane packets) instead of what they aren't (control plane packets) is a
+matter of functionality and not performance. Such switches only use
+control plane packets for link-local packet traps, and sending/receiving
+a control packet is expensive.
+
+For this class of switches (some may call them "dumb", but whatever),
+this patch series makes the difference between supporting and not
+supporting local IP termination through a VLAN-aware bridge, bridging
+with a foreign interface, bridging with software upper interfaces like
+LAG, etc.
