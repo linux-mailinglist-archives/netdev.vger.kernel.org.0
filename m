@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16EB13D0259
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:54:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FB793D025F
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbhGTTNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 15:13:22 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:37761 "EHLO
+        id S230414AbhGTTOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 15:14:17 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:37798 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232241AbhGTTNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 15:13:10 -0400
-X-Greylist: delayed 611 seconds by postgrey-1.27 at vger.kernel.org; Tue, 20 Jul 2021 15:13:06 EDT
+        with ESMTP id S232651AbhGTTNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 15:13:14 -0400
 Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 533A6200F83E;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 92549200F83F;
         Tue, 20 Jul 2021 21:43:26 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 533A6200F83E
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 92549200F83F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
         s=ulg20190529; t=1626810206;
-        bh=zRl/iPpmyaZ6NpRT8v7SCyzjlN7UTTBxU5o2k3fuQIg=;
+        bh=seULo67uuSBmuWhydlXYFoQ4evDPldyDF40xVe4GXZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2hd4wEiNF8puzS11x5GFo5Y8bnUzvH98lkOEjw+3qINbJXeU0tcgXs/TOC2Dkq5Ex
-         NSbupTYBRvUOz1l25f6+2FJCqPX1/0/OJ9C1UzXz/0ndaA1qsTZo/msXxG5NakDxZ8
-         DH6igNRFzrof93s3wj9R1kXLj6jdumPjY3V6k0yCQX0LAK3QnuhPQVzw/BaYMpFNpg
-         5MfCEAzPFbK4MdqLskOyK9uVmkbs7gv81Wy35G4WeOR+trVxEkvSo192hVYODBkoYQ
-         xKP0jU6H/nYvEKZrJeeDoyx8seUzNB3nuxuK2/HKFyV/1mnno3AFGWp4hASWYCQf7V
-         m445cV3z3NvPQ==
+        b=ToJ02kkIMS2iIHMJ/PO7+rNOFD2uZNKZ44ga1Wp+EPeuQmw83QdO/MOp4+ECiNejB
+         bTitrKfsJ00CahUFB/Q3LaVSnvkIppErFHm5t8kwrpZ3iBvgRwR8DoEvrFyir3IqvS
+         lQgJh9wc30PuzRZHZSj5RZ48AFI00cEAvCfOWnA6R6ip8Kn+FtWIfX/AQ/NZFRanBC
+         275CVJk4R8MOFdRqlpxsHEGj5+XHJD9SYdITp5RFYfRJE4Ztg7Rnurix0T9u5vHzP7
+         8ydwR75MLznY+bxJrxFSFeee0uDvJPO4eGxHXSAD5SvmJ4MiLT+RphSf8U+KM1OOaa
+         myJGuT3qiYHRg==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
         dsahern@kernel.org, tom@herbertland.com, justin.iurman@uliege.be
-Subject: [PATCH net-next v5 3/6] ipv6: ioam: IOAM Generic Netlink API
-Date:   Tue, 20 Jul 2021 21:42:58 +0200
-Message-Id: <20210720194301.23243-4-justin.iurman@uliege.be>
+Subject: [PATCH net-next v5 4/6] ipv6: ioam: Support for IOAM injection with lwtunnels
+Date:   Tue, 20 Jul 2021 21:42:59 +0200
+Message-Id: <20210720194301.23243-5-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210720194301.23243-1-justin.iurman@uliege.be>
 References: <20210720194301.23243-1-justin.iurman@uliege.be>
@@ -44,702 +43,539 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Generic Netlink commands to allow userspace to configure IOAM
-namespaces and schemas. The target is iproute2 and the patch is ready.
-It will be posted as soon as this patchset is merged. Here is an overview:
+Add support for the IOAM inline insertion (only for the host-to-host use case)
+which is per-route configured with lightweight tunnels. The target is iproute2
+and the patch is ready. It will be posted as soon as this patchset is merged.
+Here is an overview:
 
-$ ip ioam
-Usage:	ip ioam { COMMAND | help }
-	ip ioam namespace show
-	ip ioam namespace add ID [ data DATA32 ] [ wide DATA64 ]
-	ip ioam namespace del ID
-	ip ioam schema show
-	ip ioam schema add ID DATA
-	ip ioam schema del ID
-	ip ioam namespace set ID schema { ID | none }
+$ ip -6 ro ad fc00::1/128 encap ioam6 trace type 0x800000 ns 1 size 12 dev eth0
+
+This example configures an IOAM Pre-allocated Trace option attached to the
+fc00::1/128 prefix. The IOAM namespace (ns) is 1, the size of the pre-allocated
+trace data block is 12 octets (size) and only the first IOAM data (bit 0:
+hop_limit + node id) is included in the trace (type) represented as a bitfield.
+
+The reason why the in-transit (IPv6-in-IPv6 encapsulation) use case is not
+implemented is explained on the patchset cover.
 
 Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
 ---
- include/linux/ioam6_genl.h      |  13 +
- include/uapi/linux/ioam6_genl.h |  52 +++
- net/ipv6/ioam6.c                | 561 +++++++++++++++++++++++++++++++-
- 3 files changed, 624 insertions(+), 2 deletions(-)
- create mode 100644 include/linux/ioam6_genl.h
- create mode 100644 include/uapi/linux/ioam6_genl.h
+ include/linux/ioam6_iptunnel.h      |  13 ++
+ include/net/ioam6.h                 |   3 +
+ include/uapi/linux/ioam6.h          |   1 +
+ include/uapi/linux/ioam6_iptunnel.h |  20 ++
+ include/uapi/linux/lwtunnel.h       |   1 +
+ net/core/lwtunnel.c                 |   2 +
+ net/ipv6/Kconfig                    |  11 ++
+ net/ipv6/Makefile                   |   1 +
+ net/ipv6/ioam6.c                    |  44 +++--
+ net/ipv6/ioam6_iptunnel.c           | 274 ++++++++++++++++++++++++++++
+ 10 files changed, 358 insertions(+), 12 deletions(-)
+ create mode 100644 include/linux/ioam6_iptunnel.h
+ create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ create mode 100644 net/ipv6/ioam6_iptunnel.c
 
-diff --git a/include/linux/ioam6_genl.h b/include/linux/ioam6_genl.h
+diff --git a/include/linux/ioam6_iptunnel.h b/include/linux/ioam6_iptunnel.h
 new file mode 100644
-index 000000000000..176e67919de3
+index 000000000000..07d9dfedd29d
 --- /dev/null
-+++ b/include/linux/ioam6_genl.h
++++ b/include/linux/ioam6_iptunnel.h
 @@ -0,0 +1,13 @@
 +/* SPDX-License-Identifier: GPL-2.0+ */
 +/*
-+ *  IPv6 IOAM Generic Netlink API
++ *  IPv6 IOAM Lightweight Tunnel API
 + *
 + *  Author:
 + *  Justin Iurman <justin.iurman@uliege.be>
 + */
-+#ifndef _LINUX_IOAM6_GENL_H
-+#define _LINUX_IOAM6_GENL_H
++#ifndef _LINUX_IOAM6_IPTUNNEL_H
++#define _LINUX_IOAM6_IPTUNNEL_H
 +
-+#include <uapi/linux/ioam6_genl.h>
++#include <uapi/linux/ioam6_iptunnel.h>
 +
-+#endif /* _LINUX_IOAM6_GENL_H */
-diff --git a/include/uapi/linux/ioam6_genl.h b/include/uapi/linux/ioam6_genl.h
++#endif /* _LINUX_IOAM6_IPTUNNEL_H */
+diff --git a/include/net/ioam6.h b/include/net/ioam6.h
+index 772b91ee2e87..3c2993bc48c8 100644
+--- a/include/net/ioam6.h
++++ b/include/net/ioam6.h
+@@ -61,4 +61,7 @@ void ioam6_fill_trace_data(struct sk_buff *skb,
+ int ioam6_init(void);
+ void ioam6_exit(void);
+ 
++int ioam6_iptunnel_init(void);
++void ioam6_iptunnel_exit(void);
++
+ #endif /* _NET_IOAM6_H */
+diff --git a/include/uapi/linux/ioam6.h b/include/uapi/linux/ioam6.h
+index 23ba6e85582f..ac4de376f0ce 100644
+--- a/include/uapi/linux/ioam6.h
++++ b/include/uapi/linux/ioam6.h
+@@ -126,6 +126,7 @@ struct ioam6_trace_hdr {
+ #error "Please fix <asm/byteorder.h>"
+ #endif
+ 
++#define IOAM6_TRACE_DATA_SIZE_MAX 244
+ 	__u8	data[0];
+ } __attribute__((packed));
+ 
+diff --git a/include/uapi/linux/ioam6_iptunnel.h b/include/uapi/linux/ioam6_iptunnel.h
 new file mode 100644
-index 000000000000..ca4b22833754
+index 000000000000..bae14636a8c8
 --- /dev/null
-+++ b/include/uapi/linux/ioam6_genl.h
-@@ -0,0 +1,52 @@
++++ b/include/uapi/linux/ioam6_iptunnel.h
+@@ -0,0 +1,20 @@
 +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
 +/*
-+ *  IPv6 IOAM Generic Netlink API
++ *  IPv6 IOAM Lightweight Tunnel API
 + *
 + *  Author:
 + *  Justin Iurman <justin.iurman@uliege.be>
 + */
 +
-+#ifndef _UAPI_LINUX_IOAM6_GENL_H
-+#define _UAPI_LINUX_IOAM6_GENL_H
-+
-+#define IOAM6_GENL_NAME "IOAM6"
-+#define IOAM6_GENL_VERSION 0x1
++#ifndef _UAPI_LINUX_IOAM6_IPTUNNEL_H
++#define _UAPI_LINUX_IOAM6_IPTUNNEL_H
 +
 +enum {
-+	IOAM6_ATTR_UNSPEC,
-+
-+	IOAM6_ATTR_NS_ID,	/* u16 */
-+	IOAM6_ATTR_NS_DATA,	/* u32 */
-+	IOAM6_ATTR_NS_DATA_WIDE,/* u64 */
-+
-+#define IOAM6_MAX_SCHEMA_DATA_LEN (255 * 4)
-+	IOAM6_ATTR_SC_ID,	/* u32 */
-+	IOAM6_ATTR_SC_DATA,	/* Binary */
-+	IOAM6_ATTR_SC_NONE,	/* Flag */
-+
-+	IOAM6_ATTR_PAD,
-+
-+	__IOAM6_ATTR_MAX,
++	IOAM6_IPTUNNEL_UNSPEC,
++	IOAM6_IPTUNNEL_TRACE,		/* struct ioam6_trace_hdr */
++	__IOAM6_IPTUNNEL_MAX,
 +};
 +
-+#define IOAM6_ATTR_MAX (__IOAM6_ATTR_MAX - 1)
++#define IOAM6_IPTUNNEL_MAX (__IOAM6_IPTUNNEL_MAX - 1)
 +
-+enum {
-+	IOAM6_CMD_UNSPEC,
-+
-+	IOAM6_CMD_ADD_NAMESPACE,
-+	IOAM6_CMD_DEL_NAMESPACE,
-+	IOAM6_CMD_DUMP_NAMESPACES,
-+
-+	IOAM6_CMD_ADD_SCHEMA,
-+	IOAM6_CMD_DEL_SCHEMA,
-+	IOAM6_CMD_DUMP_SCHEMAS,
-+
-+	IOAM6_CMD_NS_SET_SCHEMA,
-+
-+	__IOAM6_CMD_MAX,
-+};
-+
-+#define IOAM6_CMD_MAX (__IOAM6_CMD_MAX - 1)
-+
-+#endif /* _UAPI_LINUX_IOAM6_GENL_H */
-diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
-index ba629e1b9408..ba59671f32b8 100644
---- a/net/ipv6/ioam6.c
-+++ b/net/ipv6/ioam6.c
-@@ -11,9 +11,11 @@
- #include <linux/kernel.h>
- #include <linux/net.h>
- #include <linux/ioam6.h>
-+#include <linux/ioam6_genl.h>
- #include <linux/rhashtable.h>
- 
- #include <net/addrconf.h>
-+#include <net/genetlink.h>
- #include <net/ioam6.h>
- 
- static void ioam6_ns_release(struct ioam6_namespace *ns)
-@@ -72,6 +74,552 @@ static const struct rhashtable_params rht_sc_params = {
- 	.obj_cmpfn		= ioam6_sc_cmpfn,
++#endif /* _UAPI_LINUX_IOAM6_IPTUNNEL_H */
+diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
+index 568a4303ccce..2e206919125c 100644
+--- a/include/uapi/linux/lwtunnel.h
++++ b/include/uapi/linux/lwtunnel.h
+@@ -14,6 +14,7 @@ enum lwtunnel_encap_types {
+ 	LWTUNNEL_ENCAP_BPF,
+ 	LWTUNNEL_ENCAP_SEG6_LOCAL,
+ 	LWTUNNEL_ENCAP_RPL,
++	LWTUNNEL_ENCAP_IOAM6,
+ 	__LWTUNNEL_ENCAP_MAX,
  };
  
-+static struct genl_family ioam6_genl_family;
-+
-+static const struct nla_policy ioam6_genl_policy_addns[] = {
-+	[IOAM6_ATTR_NS_ID]	= { .type = NLA_U16 },
-+	[IOAM6_ATTR_NS_DATA]	= { .type = NLA_U32 },
-+	[IOAM6_ATTR_NS_DATA_WIDE] = { .type = NLA_U64 },
-+};
-+
-+static const struct nla_policy ioam6_genl_policy_delns[] = {
-+	[IOAM6_ATTR_NS_ID]	= { .type = NLA_U16 },
-+};
-+
-+static const struct nla_policy ioam6_genl_policy_addsc[] = {
-+	[IOAM6_ATTR_SC_ID]	= { .type = NLA_U32 },
-+	[IOAM6_ATTR_SC_DATA]	= { .type = NLA_BINARY,
-+				    .len = IOAM6_MAX_SCHEMA_DATA_LEN },
-+};
-+
-+static const struct nla_policy ioam6_genl_policy_delsc[] = {
-+	[IOAM6_ATTR_SC_ID]	= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy ioam6_genl_policy_ns_sc[] = {
-+	[IOAM6_ATTR_NS_ID]	= { .type = NLA_U16 },
-+	[IOAM6_ATTR_SC_ID]	= { .type = NLA_U32 },
-+	[IOAM6_ATTR_SC_NONE]	= { .type = NLA_FLAG },
-+};
-+
-+static int ioam6_genl_addns(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ioam6_pernet_data *nsdata;
-+	struct ioam6_namespace *ns;
-+	u64 data64;
-+	u32 data32;
-+	__be16 id;
-+	int err;
-+
-+	if (!info->attrs[IOAM6_ATTR_NS_ID])
-+		return -EINVAL;
-+
-+	id = cpu_to_be16(nla_get_u16(info->attrs[IOAM6_ATTR_NS_ID]));
-+	nsdata = ioam6_pernet(genl_info_net(info));
-+
-+	mutex_lock(&nsdata->lock);
-+
-+	ns = rhashtable_lookup_fast(&nsdata->namespaces, &id, rht_ns_params);
-+	if (ns) {
-+		err = -EEXIST;
-+		goto out_unlock;
-+	}
-+
-+	ns = kzalloc(sizeof(*ns), GFP_KERNEL);
-+	if (!ns) {
-+		err = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	ns->id = id;
-+
-+	if (!info->attrs[IOAM6_ATTR_NS_DATA])
-+		data32 = IOAM6_U32_UNAVAILABLE;
-+	else
-+		data32 = nla_get_u32(info->attrs[IOAM6_ATTR_NS_DATA]);
-+
-+	if (!info->attrs[IOAM6_ATTR_NS_DATA_WIDE])
-+		data64 = IOAM6_U64_UNAVAILABLE;
-+	else
-+		data64 = nla_get_u64(info->attrs[IOAM6_ATTR_NS_DATA_WIDE]);
-+
-+	ns->data = cpu_to_be32(data32);
-+	ns->data_wide = cpu_to_be64(data64);
-+
-+	err = rhashtable_lookup_insert_fast(&nsdata->namespaces, &ns->head,
-+					    rht_ns_params);
-+	if (err)
-+		kfree(ns);
-+
-+out_unlock:
-+	mutex_unlock(&nsdata->lock);
-+	return err;
-+}
-+
-+static int ioam6_genl_delns(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ioam6_pernet_data *nsdata;
-+	struct ioam6_namespace *ns;
-+	struct ioam6_schema *sc;
-+	__be16 id;
-+	int err;
-+
-+	if (!info->attrs[IOAM6_ATTR_NS_ID])
-+		return -EINVAL;
-+
-+	id = cpu_to_be16(nla_get_u16(info->attrs[IOAM6_ATTR_NS_ID]));
-+	nsdata = ioam6_pernet(genl_info_net(info));
-+
-+	mutex_lock(&nsdata->lock);
-+
-+	ns = rhashtable_lookup_fast(&nsdata->namespaces, &id, rht_ns_params);
-+	if (!ns) {
-+		err = -ENOENT;
-+		goto out_unlock;
-+	}
-+
-+	sc = rcu_dereference_protected(ns->schema,
-+				       lockdep_is_held(&nsdata->lock));
-+
-+	err = rhashtable_remove_fast(&nsdata->namespaces, &ns->head,
-+				     rht_ns_params);
-+	if (err)
-+		goto out_unlock;
-+
-+	if (sc)
-+		rcu_assign_pointer(sc->ns, NULL);
-+
-+	ioam6_ns_release(ns);
-+
-+out_unlock:
-+	mutex_unlock(&nsdata->lock);
-+	return err;
-+}
-+
-+static int __ioam6_genl_dumpns_element(struct ioam6_namespace *ns,
-+				       u32 portid,
-+				       u32 seq,
-+				       u32 flags,
-+				       struct sk_buff *skb,
-+				       u8 cmd)
-+{
-+	struct ioam6_schema *sc;
-+	u64 data64;
-+	u32 data32;
-+	void *hdr;
-+
-+	hdr = genlmsg_put(skb, portid, seq, &ioam6_genl_family, flags, cmd);
-+	if (!hdr)
-+		return -ENOMEM;
-+
-+	data32 = be32_to_cpu(ns->data);
-+	data64 = be64_to_cpu(ns->data_wide);
-+
-+	if (nla_put_u16(skb, IOAM6_ATTR_NS_ID, be16_to_cpu(ns->id)) ||
-+	    (data32 != IOAM6_U32_UNAVAILABLE &&
-+	     nla_put_u32(skb, IOAM6_ATTR_NS_DATA, data32)) ||
-+	    (data64 != IOAM6_U64_UNAVAILABLE &&
-+	     nla_put_u64_64bit(skb, IOAM6_ATTR_NS_DATA_WIDE,
-+			       data64, IOAM6_ATTR_PAD)))
-+		goto nla_put_failure;
-+
-+	rcu_read_lock();
-+
-+	sc = rcu_dereference(ns->schema);
-+	if (sc && nla_put_u32(skb, IOAM6_ATTR_SC_ID, sc->id)) {
-+		rcu_read_unlock();
-+		goto nla_put_failure;
-+	}
-+
-+	rcu_read_unlock();
-+
-+	genlmsg_end(skb, hdr);
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(skb, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static int ioam6_genl_dumpns_start(struct netlink_callback *cb)
-+{
-+	struct ioam6_pernet_data *nsdata = ioam6_pernet(sock_net(cb->skb->sk));
-+	struct rhashtable_iter *iter = (struct rhashtable_iter *)cb->args[0];
-+
-+	if (!iter) {
-+		iter = kmalloc(sizeof(*iter), GFP_KERNEL);
-+		if (!iter)
-+			return -ENOMEM;
-+
-+		cb->args[0] = (long)iter;
-+	}
-+
-+	rhashtable_walk_enter(&nsdata->namespaces, iter);
-+
-+	return 0;
-+}
-+
-+static int ioam6_genl_dumpns_done(struct netlink_callback *cb)
-+{
-+	struct rhashtable_iter *iter = (struct rhashtable_iter *)cb->args[0];
-+
-+	rhashtable_walk_exit(iter);
-+	kfree(iter);
-+
-+	return 0;
-+}
-+
-+static int ioam6_genl_dumpns(struct sk_buff *skb, struct netlink_callback *cb)
-+{
-+	struct rhashtable_iter *iter;
-+	struct ioam6_namespace *ns;
-+	int err;
-+
-+	iter = (struct rhashtable_iter *)cb->args[0];
-+	rhashtable_walk_start(iter);
-+
-+	for (;;) {
-+		ns = rhashtable_walk_next(iter);
-+
-+		if (IS_ERR(ns)) {
-+			if (PTR_ERR(ns) == -EAGAIN)
-+				continue;
-+			err = PTR_ERR(ns);
-+			goto done;
-+		} else if (!ns) {
-+			break;
-+		}
-+
-+		err = __ioam6_genl_dumpns_element(ns,
-+						  NETLINK_CB(cb->skb).portid,
-+						  cb->nlh->nlmsg_seq,
-+						  NLM_F_MULTI,
-+						  skb,
-+						  IOAM6_CMD_DUMP_NAMESPACES);
-+		if (err)
-+			goto done;
-+	}
-+
-+	err = skb->len;
-+
-+done:
-+	rhashtable_walk_stop(iter);
-+	return err;
-+}
-+
-+static int ioam6_genl_addsc(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ioam6_pernet_data *nsdata;
-+	int len, len_aligned, err;
-+	struct ioam6_schema *sc;
-+	u32 id;
-+
-+	if (!info->attrs[IOAM6_ATTR_SC_ID] || !info->attrs[IOAM6_ATTR_SC_DATA])
-+		return -EINVAL;
-+
-+	id = nla_get_u32(info->attrs[IOAM6_ATTR_SC_ID]);
-+	nsdata = ioam6_pernet(genl_info_net(info));
-+
-+	mutex_lock(&nsdata->lock);
-+
-+	sc = rhashtable_lookup_fast(&nsdata->schemas, &id, rht_sc_params);
-+	if (sc) {
-+		err = -EEXIST;
-+		goto out_unlock;
-+	}
-+
-+	len = nla_len(info->attrs[IOAM6_ATTR_SC_DATA]);
-+	len_aligned = ALIGN(len, 4);
-+
-+	sc = kzalloc(sizeof(*sc) + len_aligned, GFP_KERNEL);
-+	if (!sc) {
-+		err = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	sc->id = id;
-+	sc->len = len_aligned;
-+	sc->hdr = cpu_to_be32(sc->id | ((u8)(sc->len / 4) << 24));
-+	nla_memcpy(sc->data, info->attrs[IOAM6_ATTR_SC_DATA], len);
-+
-+	err = rhashtable_lookup_insert_fast(&nsdata->schemas, &sc->head,
-+					    rht_sc_params);
-+	if (err)
-+		goto free_sc;
-+
-+out_unlock:
-+	mutex_unlock(&nsdata->lock);
-+	return err;
-+free_sc:
-+	kfree(sc);
-+	goto out_unlock;
-+}
-+
-+static int ioam6_genl_delsc(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ioam6_pernet_data *nsdata;
-+	struct ioam6_namespace *ns;
-+	struct ioam6_schema *sc;
-+	int err;
-+	u32 id;
-+
-+	if (!info->attrs[IOAM6_ATTR_SC_ID])
-+		return -EINVAL;
-+
-+	id = nla_get_u32(info->attrs[IOAM6_ATTR_SC_ID]);
-+	nsdata = ioam6_pernet(genl_info_net(info));
-+
-+	mutex_lock(&nsdata->lock);
-+
-+	sc = rhashtable_lookup_fast(&nsdata->schemas, &id, rht_sc_params);
-+	if (!sc) {
-+		err = -ENOENT;
-+		goto out_unlock;
-+	}
-+
-+	ns = rcu_dereference_protected(sc->ns, lockdep_is_held(&nsdata->lock));
-+
-+	err = rhashtable_remove_fast(&nsdata->schemas, &sc->head,
-+				     rht_sc_params);
-+	if (err)
-+		goto out_unlock;
-+
-+	if (ns)
-+		rcu_assign_pointer(ns->schema, NULL);
-+
-+	ioam6_sc_release(sc);
-+
-+out_unlock:
-+	mutex_unlock(&nsdata->lock);
-+	return err;
-+}
-+
-+static int __ioam6_genl_dumpsc_element(struct ioam6_schema *sc,
-+				       u32 portid, u32 seq, u32 flags,
-+				       struct sk_buff *skb, u8 cmd)
-+{
-+	struct ioam6_namespace *ns;
-+	void *hdr;
-+
-+	hdr = genlmsg_put(skb, portid, seq, &ioam6_genl_family, flags, cmd);
-+	if (!hdr)
-+		return -ENOMEM;
-+
-+	if (nla_put_u32(skb, IOAM6_ATTR_SC_ID, sc->id) ||
-+	    nla_put(skb, IOAM6_ATTR_SC_DATA, sc->len, sc->data))
-+		goto nla_put_failure;
-+
-+	rcu_read_lock();
-+
-+	ns = rcu_dereference(sc->ns);
-+	if (ns && nla_put_u16(skb, IOAM6_ATTR_NS_ID, be16_to_cpu(ns->id))) {
-+		rcu_read_unlock();
-+		goto nla_put_failure;
-+	}
-+
-+	rcu_read_unlock();
-+
-+	genlmsg_end(skb, hdr);
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(skb, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static int ioam6_genl_dumpsc_start(struct netlink_callback *cb)
-+{
-+	struct ioam6_pernet_data *nsdata = ioam6_pernet(sock_net(cb->skb->sk));
-+	struct rhashtable_iter *iter = (struct rhashtable_iter *)cb->args[0];
-+
-+	if (!iter) {
-+		iter = kmalloc(sizeof(*iter), GFP_KERNEL);
-+		if (!iter)
-+			return -ENOMEM;
-+
-+		cb->args[0] = (long)iter;
-+	}
-+
-+	rhashtable_walk_enter(&nsdata->schemas, iter);
-+
-+	return 0;
-+}
-+
-+static int ioam6_genl_dumpsc_done(struct netlink_callback *cb)
-+{
-+	struct rhashtable_iter *iter = (struct rhashtable_iter *)cb->args[0];
-+
-+	rhashtable_walk_exit(iter);
-+	kfree(iter);
-+
-+	return 0;
-+}
-+
-+static int ioam6_genl_dumpsc(struct sk_buff *skb, struct netlink_callback *cb)
-+{
-+	struct rhashtable_iter *iter;
-+	struct ioam6_schema *sc;
-+	int err;
-+
-+	iter = (struct rhashtable_iter *)cb->args[0];
-+	rhashtable_walk_start(iter);
-+
-+	for (;;) {
-+		sc = rhashtable_walk_next(iter);
-+
-+		if (IS_ERR(sc)) {
-+			if (PTR_ERR(sc) == -EAGAIN)
-+				continue;
-+			err = PTR_ERR(sc);
-+			goto done;
-+		} else if (!sc) {
-+			break;
-+		}
-+
-+		err = __ioam6_genl_dumpsc_element(sc,
-+						  NETLINK_CB(cb->skb).portid,
-+						  cb->nlh->nlmsg_seq,
-+						  NLM_F_MULTI,
-+						  skb,
-+						  IOAM6_CMD_DUMP_SCHEMAS);
-+		if (err)
-+			goto done;
-+	}
-+
-+	err = skb->len;
-+
-+done:
-+	rhashtable_walk_stop(iter);
-+	return err;
-+}
-+
-+static int ioam6_genl_ns_set_schema(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct ioam6_namespace *ns, *ns_ref;
-+	struct ioam6_schema *sc, *sc_ref;
-+	struct ioam6_pernet_data *nsdata;
-+	__be16 ns_id;
-+	u32 sc_id;
-+	int err;
-+
-+	if (!info->attrs[IOAM6_ATTR_NS_ID] ||
-+	    (!info->attrs[IOAM6_ATTR_SC_ID] &&
-+	     !info->attrs[IOAM6_ATTR_SC_NONE]))
-+		return -EINVAL;
-+
-+	ns_id = cpu_to_be16(nla_get_u16(info->attrs[IOAM6_ATTR_NS_ID]));
-+	nsdata = ioam6_pernet(genl_info_net(info));
-+
-+	mutex_lock(&nsdata->lock);
-+
-+	ns = rhashtable_lookup_fast(&nsdata->namespaces, &ns_id, rht_ns_params);
-+	if (!ns) {
-+		err = -ENOENT;
-+		goto out_unlock;
-+	}
-+
-+	if (info->attrs[IOAM6_ATTR_SC_NONE]) {
-+		sc = NULL;
-+	} else {
-+		sc_id = nla_get_u32(info->attrs[IOAM6_ATTR_SC_ID]);
-+		sc = rhashtable_lookup_fast(&nsdata->schemas, &sc_id,
-+					    rht_sc_params);
-+		if (!sc) {
-+			err = -ENOENT;
-+			goto out_unlock;
-+		}
-+	}
-+
-+	sc_ref = rcu_dereference_protected(ns->schema,
-+					   lockdep_is_held(&nsdata->lock));
-+	if (sc_ref)
-+		rcu_assign_pointer(sc_ref->ns, NULL);
-+	rcu_assign_pointer(ns->schema, sc);
-+
-+	if (sc) {
-+		ns_ref = rcu_dereference_protected(sc->ns,
-+						   lockdep_is_held(&nsdata->lock));
-+		if (ns_ref)
-+			rcu_assign_pointer(ns_ref->schema, NULL);
-+		rcu_assign_pointer(sc->ns, ns);
-+	}
-+
-+	err = 0;
-+
-+out_unlock:
-+	mutex_unlock(&nsdata->lock);
-+	return err;
-+}
-+
-+static const struct genl_ops ioam6_genl_ops[] = {
-+	{
-+		.cmd	= IOAM6_CMD_ADD_NAMESPACE,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= ioam6_genl_addns,
-+		.flags	= GENL_ADMIN_PERM,
-+		.policy	= ioam6_genl_policy_addns,
-+		.maxattr = ARRAY_SIZE(ioam6_genl_policy_addns) - 1,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_DEL_NAMESPACE,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= ioam6_genl_delns,
-+		.flags	= GENL_ADMIN_PERM,
-+		.policy	= ioam6_genl_policy_delns,
-+		.maxattr = ARRAY_SIZE(ioam6_genl_policy_delns) - 1,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_DUMP_NAMESPACES,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.start	= ioam6_genl_dumpns_start,
-+		.dumpit	= ioam6_genl_dumpns,
-+		.done	= ioam6_genl_dumpns_done,
-+		.flags	= GENL_ADMIN_PERM,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_ADD_SCHEMA,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= ioam6_genl_addsc,
-+		.flags	= GENL_ADMIN_PERM,
-+		.policy	= ioam6_genl_policy_addsc,
-+		.maxattr = ARRAY_SIZE(ioam6_genl_policy_addsc) - 1,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_DEL_SCHEMA,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= ioam6_genl_delsc,
-+		.flags	= GENL_ADMIN_PERM,
-+		.policy	= ioam6_genl_policy_delsc,
-+		.maxattr = ARRAY_SIZE(ioam6_genl_policy_delsc) - 1,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_DUMP_SCHEMAS,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.start	= ioam6_genl_dumpsc_start,
-+		.dumpit	= ioam6_genl_dumpsc,
-+		.done	= ioam6_genl_dumpsc_done,
-+		.flags	= GENL_ADMIN_PERM,
-+	},
-+	{
-+		.cmd	= IOAM6_CMD_NS_SET_SCHEMA,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= ioam6_genl_ns_set_schema,
-+		.flags	= GENL_ADMIN_PERM,
-+		.policy	= ioam6_genl_policy_ns_sc,
-+		.maxattr = ARRAY_SIZE(ioam6_genl_policy_ns_sc) - 1,
-+	},
-+};
-+
-+static struct genl_family ioam6_genl_family __ro_after_init = {
-+	.name		= IOAM6_GENL_NAME,
-+	.version	= IOAM6_GENL_VERSION,
-+	.netnsok	= true,
-+	.parallel_ops	= true,
-+	.ops		= ioam6_genl_ops,
-+	.n_ops		= ARRAY_SIZE(ioam6_genl_ops),
-+	.module		= THIS_MODULE,
-+};
-+
- struct ioam6_namespace *ioam6_namespace(struct net *net, __be16 id)
- {
- 	struct ioam6_pernet_data *nsdata = ioam6_pernet(net);
-@@ -319,15 +867,24 @@ static struct pernet_operations ioam6_net_ops = {
- int __init ioam6_init(void)
- {
- 	int err = register_pernet_subsys(&ioam6_net_ops);
-+	if (err)
-+		goto out;
+diff --git a/net/core/lwtunnel.c b/net/core/lwtunnel.c
+index 8ec7d13d2860..d0ae987d2de9 100644
+--- a/net/core/lwtunnel.c
++++ b/net/core/lwtunnel.c
+@@ -43,6 +43,8 @@ static const char *lwtunnel_encap_str(enum lwtunnel_encap_types encap_type)
+ 		return "SEG6LOCAL";
+ 	case LWTUNNEL_ENCAP_RPL:
+ 		return "RPL";
++	case LWTUNNEL_ENCAP_IOAM6:
++		return "IOAM6";
+ 	case LWTUNNEL_ENCAP_IP6:
+ 	case LWTUNNEL_ENCAP_IP:
+ 	case LWTUNNEL_ENCAP_NONE:
+diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+index 747f56e0c636..e504204bca92 100644
+--- a/net/ipv6/Kconfig
++++ b/net/ipv6/Kconfig
+@@ -328,4 +328,15 @@ config IPV6_RPL_LWTUNNEL
  
-+	err = genl_register_family(&ioam6_genl_family);
+ 	  If unsure, say N.
+ 
++config IPV6_IOAM6_LWTUNNEL
++	bool "IPv6: IOAM Pre-allocated Trace insertion support"
++	depends on IPV6
++	select LWTUNNEL
++	help
++	  Support for the inline insertion of IOAM Pre-allocated
++	  Trace Header (only on locally generated packets), using
++	  the lightweight tunnels mechanism.
++
++	  If unsure, say N.
++
+ endif # IPV6
+diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
+index b7ef10d417d6..1bc7e143217b 100644
+--- a/net/ipv6/Makefile
++++ b/net/ipv6/Makefile
+@@ -27,6 +27,7 @@ ipv6-$(CONFIG_NETLABEL) += calipso.o
+ ipv6-$(CONFIG_IPV6_SEG6_LWTUNNEL) += seg6_iptunnel.o seg6_local.o
+ ipv6-$(CONFIG_IPV6_SEG6_HMAC) += seg6_hmac.o
+ ipv6-$(CONFIG_IPV6_RPL_LWTUNNEL) += rpl_iptunnel.o
++ipv6-$(CONFIG_IPV6_IOAM6_LWTUNNEL) += ioam6_iptunnel.o
+ 
+ ipv6-objs += $(ipv6-y)
+ 
+diff --git a/net/ipv6/ioam6.c b/net/ipv6/ioam6.c
+index ba59671f32b8..5e8961004832 100644
+--- a/net/ipv6/ioam6.c
++++ b/net/ipv6/ioam6.c
+@@ -648,7 +648,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 		if (skb->dev)
+ 			byte--;
+ 
+-		raw32 = dev_net(skb->dev)->ipv6.sysctl.ioam6_id;
++		raw32 = dev_net(skb_dst(skb)->dev)->ipv6.sysctl.ioam6_id;
+ 
+ 		*(__be32 *)data = cpu_to_be32((byte << 24) | raw32);
+ 		data += sizeof(__be32);
+@@ -675,24 +675,31 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 
+ 	/* timestamp seconds */
+ 	if (trace->type.bit2) {
+-		if (!skb->tstamp)
+-			__net_timestamp(skb);
+-
+-		skb_get_new_timestamp(skb, &ts);
++		if (!skb->dev) {
++			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		} else {
++			if (!skb->tstamp)
++				__net_timestamp(skb);
+ 
+-		*(__be32 *)data = cpu_to_be32((u32)ts.tv_sec);
++			skb_get_new_timestamp(skb, &ts);
++			*(__be32 *)data = cpu_to_be32((u32)ts.tv_sec);
++		}
+ 		data += sizeof(__be32);
+ 	}
+ 
+ 	/* timestamp subseconds */
+ 	if (trace->type.bit3) {
+-		if (!skb->tstamp)
+-			__net_timestamp(skb);
++		if (!skb->dev) {
++			*(__be32 *)data = cpu_to_be32(IOAM6_U32_UNAVAILABLE);
++		} else {
++			if (!skb->tstamp)
++				__net_timestamp(skb);
+ 
+-		if (!trace->type.bit2)
+-			skb_get_new_timestamp(skb, &ts);
++			if (!trace->type.bit2)
++				skb_get_new_timestamp(skb, &ts);
+ 
+-		*(__be32 *)data = cpu_to_be32((u32)ts.tv_usec);
++			*(__be32 *)data = cpu_to_be32((u32)ts.tv_usec);
++		}
+ 		data += sizeof(__be32);
+ 	}
+ 
+@@ -726,7 +733,7 @@ static void __ioam6_fill_trace_data(struct sk_buff *skb,
+ 		if (skb->dev)
+ 			byte--;
+ 
+-		raw64 = dev_net(skb->dev)->ipv6.sysctl.ioam6_id_wide;
++		raw64 = dev_net(skb_dst(skb)->dev)->ipv6.sysctl.ioam6_id_wide;
+ 
+ 		*(__be64 *)data = cpu_to_be64(((u64)byte << 56) | raw64);
+ 		data += sizeof(__be64);
+@@ -874,10 +881,20 @@ int __init ioam6_init(void)
  	if (err)
--		return err;
-+		goto out_unregister_pernet_subsys;
+ 		goto out_unregister_pernet_subsys;
  
- 	pr_info("In-situ OAM (IOAM) with IPv6\n");
--	return 0;
++#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
++	err = ioam6_iptunnel_init();
++	if (err)
++		goto out_unregister_genl;
++#endif
 +
-+out:
-+	return err;
-+out_unregister_pernet_subsys:
-+	unregister_pernet_subsys(&ioam6_net_ops);
-+	goto out;
- }
+ 	pr_info("In-situ OAM (IOAM) with IPv6\n");
+ 
+ out:
+ 	return err;
++#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
++out_unregister_genl:
++	genl_unregister_family(&ioam6_genl_family);
++#endif
+ out_unregister_pernet_subsys:
+ 	unregister_pernet_subsys(&ioam6_net_ops);
+ 	goto out;
+@@ -885,6 +902,9 @@ int __init ioam6_init(void)
  
  void ioam6_exit(void)
  {
-+	genl_unregister_family(&ioam6_genl_family);
++#ifdef CONFIG_IPV6_IOAM6_LWTUNNEL
++	ioam6_iptunnel_exit();
++#endif
+ 	genl_unregister_family(&ioam6_genl_family);
  	unregister_pernet_subsys(&ioam6_net_ops);
  }
+diff --git a/net/ipv6/ioam6_iptunnel.c b/net/ipv6/ioam6_iptunnel.c
+new file mode 100644
+index 000000000000..f9ee04541c17
+--- /dev/null
++++ b/net/ipv6/ioam6_iptunnel.c
+@@ -0,0 +1,274 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ *  IPv6 IOAM Lightweight Tunnel implementation
++ *
++ *  Author:
++ *  Justin Iurman <justin.iurman@uliege.be>
++ */
++
++#include <linux/kernel.h>
++#include <linux/skbuff.h>
++#include <linux/net.h>
++#include <linux/netlink.h>
++#include <linux/in6.h>
++#include <linux/ioam6.h>
++#include <linux/ioam6_iptunnel.h>
++#include <net/dst.h>
++#include <net/sock.h>
++#include <net/lwtunnel.h>
++#include <net/ioam6.h>
++
++#define IOAM6_MASK_SHORT_FIELDS 0xff100000
++#define IOAM6_MASK_WIDE_FIELDS 0xe00000
++
++struct ioam6_lwt_encap {
++	struct ipv6_hopopt_hdr	eh;
++	u8			pad[2];	/* 2-octet padding for 4n-alignment */
++	struct ioam6_hdr	ioamh;
++	struct ioam6_trace_hdr	traceh;
++} __packed;
++
++struct ioam6_lwt {
++	struct ioam6_lwt_encap	tuninfo;
++};
++
++static struct ioam6_lwt *ioam6_lwt_state(struct lwtunnel_state *lwt)
++{
++	return (struct ioam6_lwt *)lwt->data;
++}
++
++static struct ioam6_lwt_encap *ioam6_lwt_info(struct lwtunnel_state *lwt)
++{
++	return &ioam6_lwt_state(lwt)->tuninfo;
++}
++
++static struct ioam6_trace_hdr *ioam6_trace(struct lwtunnel_state *lwt)
++{
++	return &(ioam6_lwt_state(lwt)->tuninfo.traceh);
++}
++
++static const struct nla_policy ioam6_iptunnel_policy[IOAM6_IPTUNNEL_MAX + 1] = {
++	[IOAM6_IPTUNNEL_TRACE]	= NLA_POLICY_EXACT_LEN(sizeof(struct ioam6_trace_hdr)),
++};
++
++static int nla_put_ioam6_trace(struct sk_buff *skb, int attrtype,
++			       struct ioam6_trace_hdr *trace)
++{
++	struct ioam6_trace_hdr *data;
++	struct nlattr *nla;
++	int len;
++
++	len = sizeof(*trace);
++
++	nla = nla_reserve(skb, attrtype, len);
++	if (!nla)
++		return -EMSGSIZE;
++
++	data = nla_data(nla);
++	memcpy(data, trace, len);
++
++	return 0;
++}
++
++static bool ioam6_validate_trace_hdr(struct ioam6_trace_hdr *trace)
++{
++	u32 fields;
++
++	if (!trace->type_be32 || !trace->remlen ||
++	    trace->remlen > IOAM6_TRACE_DATA_SIZE_MAX / 4)
++		return false;
++
++	trace->nodelen = 0;
++	fields = be32_to_cpu(trace->type_be32);
++
++	trace->nodelen += hweight32(fields & IOAM6_MASK_SHORT_FIELDS)
++				* (sizeof(__be32) / 4);
++	trace->nodelen += hweight32(fields & IOAM6_MASK_WIDE_FIELDS)
++				* (sizeof(__be64) / 4);
++
++	return true;
++}
++
++static int ioam6_build_state(struct net *net, struct nlattr *nla,
++			     unsigned int family, const void *cfg,
++			     struct lwtunnel_state **ts,
++			     struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[IOAM6_IPTUNNEL_MAX + 1];
++	struct ioam6_lwt_encap *tuninfo;
++	struct ioam6_trace_hdr *trace;
++	struct lwtunnel_state *s;
++	int len_aligned;
++	int len, err;
++
++	if (family != AF_INET6)
++		return -EINVAL;
++
++	err = nla_parse_nested(tb, IOAM6_IPTUNNEL_MAX, nla,
++			       ioam6_iptunnel_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!tb[IOAM6_IPTUNNEL_TRACE]) {
++		NL_SET_ERR_MSG(extack, "missing trace");
++		return -EINVAL;
++	}
++
++	trace = nla_data(tb[IOAM6_IPTUNNEL_TRACE]);
++	if (!ioam6_validate_trace_hdr(trace)) {
++		NL_SET_ERR_MSG_ATTR(extack, tb[IOAM6_IPTUNNEL_TRACE],
++				    "invalid trace validation");
++		return -EINVAL;
++	}
++
++	len = sizeof(*tuninfo) + trace->remlen * 4;
++	len_aligned = ALIGN(len, 8);
++
++	s = lwtunnel_state_alloc(len_aligned);
++	if (!s)
++		return -ENOMEM;
++
++	tuninfo = ioam6_lwt_info(s);
++	tuninfo->eh.hdrlen = (len_aligned >> 3) - 1;
++	tuninfo->pad[0] = IPV6_TLV_PADN;
++	tuninfo->ioamh.type = IOAM6_TYPE_PREALLOC;
++	tuninfo->ioamh.opt_type = IPV6_TLV_IOAM;
++	tuninfo->ioamh.opt_len = sizeof(tuninfo->ioamh) - 2 + sizeof(*trace)
++					+ trace->remlen * 4;
++
++	memcpy(&tuninfo->traceh, trace, sizeof(*trace));
++
++	len = len_aligned - len;
++	if (len == 1) {
++		tuninfo->traceh.data[trace->remlen * 4] = IPV6_TLV_PAD1;
++	} else if (len > 0) {
++		tuninfo->traceh.data[trace->remlen * 4] = IPV6_TLV_PADN;
++		tuninfo->traceh.data[trace->remlen * 4 + 1] = len - 2;
++	}
++
++	s->type = LWTUNNEL_ENCAP_IOAM6;
++	s->flags |= LWTUNNEL_STATE_OUTPUT_REDIRECT;
++
++	*ts = s;
++
++	return 0;
++}
++
++static int ioam6_do_inline(struct sk_buff *skb, struct ioam6_lwt_encap *tuninfo)
++{
++	struct ioam6_trace_hdr *trace;
++	struct ipv6hdr *oldhdr, *hdr;
++	struct ioam6_namespace *ns;
++	int hdrlen, err;
++
++	hdrlen = (tuninfo->eh.hdrlen + 1) << 3;
++
++	err = skb_cow_head(skb, hdrlen + skb->mac_len);
++	if (unlikely(err))
++		return err;
++
++	oldhdr = ipv6_hdr(skb);
++	skb_pull(skb, sizeof(*oldhdr));
++	skb_postpull_rcsum(skb, skb_network_header(skb), sizeof(*oldhdr));
++
++	skb_push(skb, sizeof(*oldhdr) + hdrlen);
++	skb_reset_network_header(skb);
++	skb_mac_header_rebuild(skb);
++
++	hdr = ipv6_hdr(skb);
++	memmove(hdr, oldhdr, sizeof(*oldhdr));
++	tuninfo->eh.nexthdr = hdr->nexthdr;
++
++	skb_set_transport_header(skb, sizeof(*hdr));
++	skb_postpush_rcsum(skb, hdr, sizeof(*hdr) + hdrlen);
++
++	memcpy(skb_transport_header(skb), (u8 *)tuninfo, hdrlen);
++
++	hdr->nexthdr = NEXTHDR_HOP;
++	hdr->payload_len = cpu_to_be16(skb->len - sizeof(*hdr));
++
++	trace = (struct ioam6_trace_hdr *)(skb_transport_header(skb)
++					   + sizeof(struct ipv6_hopopt_hdr) + 2
++					   + sizeof(struct ioam6_hdr));
++
++	ns = ioam6_namespace(dev_net(skb_dst(skb)->dev), trace->namespace_id);
++	if (ns)
++		ioam6_fill_trace_data(skb, ns, trace);
++
++	return 0;
++}
++
++static int ioam6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
++{
++	struct lwtunnel_state *lwt = skb_dst(skb)->lwtstate;
++	int err = -EINVAL;
++
++	if (skb->protocol != htons(ETH_P_IPV6))
++		goto drop;
++
++	/* Only for packets we send and
++	 * that do not contain a Hop-by-Hop yet
++	 */
++	if (skb->dev || ipv6_hdr(skb)->nexthdr == NEXTHDR_HOP)
++		goto out;
++
++	err = ioam6_do_inline(skb, ioam6_lwt_info(lwt));
++	if (unlikely(err))
++		goto drop;
++
++	err = skb_cow_head(skb, LL_RESERVED_SPACE(skb_dst(skb)->dev));
++	if (unlikely(err))
++		goto drop;
++
++out:
++	return lwt->orig_output(net, sk, skb);
++
++drop:
++	kfree_skb(skb);
++	return err;
++}
++
++static int ioam6_fill_encap_info(struct sk_buff *skb,
++				 struct lwtunnel_state *lwtstate)
++{
++	struct ioam6_trace_hdr *trace = ioam6_trace(lwtstate);
++
++	if (nla_put_ioam6_trace(skb, IOAM6_IPTUNNEL_TRACE, trace))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++static int ioam6_encap_nlsize(struct lwtunnel_state *lwtstate)
++{
++	struct ioam6_trace_hdr *trace = ioam6_trace(lwtstate);
++
++	return nla_total_size(sizeof(*trace));
++}
++
++static int ioam6_encap_cmp(struct lwtunnel_state *a, struct lwtunnel_state *b)
++{
++	struct ioam6_trace_hdr *a_hdr = ioam6_trace(a);
++	struct ioam6_trace_hdr *b_hdr = ioam6_trace(b);
++
++	return (a_hdr->namespace_id != b_hdr->namespace_id);
++}
++
++static const struct lwtunnel_encap_ops ioam6_iptun_ops = {
++	.build_state	= ioam6_build_state,
++	.output		= ioam6_output,
++	.fill_encap	= ioam6_fill_encap_info,
++	.get_encap_size	= ioam6_encap_nlsize,
++	.cmp_encap	= ioam6_encap_cmp,
++	.owner		= THIS_MODULE,
++};
++
++int __init ioam6_iptunnel_init(void)
++{
++	return lwtunnel_encap_add_ops(&ioam6_iptun_ops, LWTUNNEL_ENCAP_IOAM6);
++}
++
++void ioam6_iptunnel_exit(void)
++{
++	lwtunnel_encap_del_ops(&ioam6_iptun_ops, LWTUNNEL_ENCAP_IOAM6);
++}
 -- 
 2.25.1
 
