@@ -2,84 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAAC63CFBF4
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7873CFBE3
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbhGTNmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239313AbhGTNhf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 09:37:35 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CC78C0613DF;
-        Tue, 20 Jul 2021 07:16:24 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id o30-20020a05600c511eb029022e0571d1a0so2140897wms.5;
-        Tue, 20 Jul 2021 07:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=12XFI440hpt8MIfmH67VSP8xou9BVaMyvzziyP5iKtY=;
-        b=n+swtzvdVgNM/UhMcNX2EYqYMOshNjxKjXOoVCN8xalEvWC6SJ6wFWNszkC5oGXqUL
-         Sw4P565WqhNKoqlprMaV+bQb8gAmqis3M1L6CPHkBkY3VnOAPz7qzFzP0r8yff2xfI/L
-         l3Z40IPbBSxzp8zjti7BViMeAso+aD1/bMLDMc43Cmj2ay2l0AuPEunNq70QMOlzi89R
-         FqywX2zC/m7lJXSRdYiHhFho6FXB6FuoobMOaoTmdTUrdZYBQvnFn08a9Xx9xbUeJDwF
-         5Z0AhQ5yoW5glTxhUpqXsdMV/9b/ba+unwcScVd+rmnwiJOAv5fynwZCVef1Ay+ybW25
-         OUFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=12XFI440hpt8MIfmH67VSP8xou9BVaMyvzziyP5iKtY=;
-        b=oeZjuTEVhZNuAk6qdECnIhSQmMwloqxbMptveSEUjEShFXS0nZlG+KDCeecdW/D8FW
-         gBYaGB94ynu9YSrOSsQ4xNS6dCLNfGO6Y3otPlY7IwX64QstVULNcfjIWBa5pdL7M4vp
-         OGq/j6XbAHMReF6xrydP/dGlCG0qDjf6mWzrzvbIAdwlUYgSH6yqC7xCtEatNy6ny1Qh
-         hJmDYyC2mZTBFpEb/Asq0UQCkKKGA9+pFSezmDVdE5dsfqVl87q/dCSN5TIDEhnF3KVt
-         Z/8CSe4jXUlM6Wo0Wxcly+MiDxV1uBuSc6vSrOaFwyuM+mpwlfT/nH70f1M3ug3/e3pQ
-         da5Q==
-X-Gm-Message-State: AOAM532Z/fPcZw3BkGUMTHppTZq5njwAkZ5yGU5FdrsJYn4uM44lC6gm
-        FN5mtfJXc6jmOIKHXmnK/L22kxWZIjv2stlN0H8=
-X-Google-Smtp-Source: ABdhPJzvqjirACpItrU9wPRUgtWi6Jg6/CfxxG9UOoyUQfQ/TWpmWeIQnFY3Noqqns+a1+F6DUcszMSUIqka76YqCxU=
-X-Received: by 2002:a1c:6354:: with SMTP id x81mr13474780wmb.12.1626790583280;
- Tue, 20 Jul 2021 07:16:23 -0700 (PDT)
+        id S239337AbhGTNhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:37:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36334 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239462AbhGTNfj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:35:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=v4MPC0DvtNC+wtUXaDxtf8nxqjh/xOxbZW7lBIsCrBs=; b=rjbOl2SAsBaTFIUESi/wVGbF44
+        F6cipStmD1r0h+KtHP3o6hH2hcsqsDF/AyP9Z4Lr7tifzOEhvnmKgsI8Hr0wUDuB+x6BnRCLvYulk
+        qIOPRmnKyy/5+646R71uRmC1dd9VNXQJ1rP2C8TS9cPOHJvDsG68l3qsrCKIvVhxMmEA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m5qXf-00E40U-QX; Tue, 20 Jul 2021 16:16:15 +0200
+Date:   Tue, 20 Jul 2021 16:16:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: at803x: simplify custom phy id
+ matching
+Message-ID: <YPbar746WVjp9emp@lunn.ch>
+References: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-References: <cover.1626713549.git.lucien.xin@gmail.com> <b27420c3db63969d3faf00a2e866126dae3b870c.1626713549.git.lucien.xin@gmail.com>
- <20210720125036.29ed23ba@cakuba>
-In-Reply-To: <20210720125036.29ed23ba@cakuba>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 20 Jul 2021 10:16:12 -0400
-Message-ID: <CADvbK_fhN-kSbntKjmhD-_WJweAduUtHmucuFwLj_ZYYXbb6cA@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] sctp: send pmtu probe only if packet loss in
- Search Complete state
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        =?UTF-8?B?VGltbyBWw7Zsa2Vy?= <timo.voelker@fh-muenster.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1m5psb-0003qh-VP@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 6:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 19 Jul 2021 12:53:23 -0400, Xin Long wrote:
-> > This patch is to introduce last_rtx_chunks into sctp_transport to detect
-> > if there's any packet retransmission/loss happened by checking against
-> > asoc's rtx_data_chunks in sctp_transport_pl_send().
-> >
-> > If there is, namely, transport->last_rtx_chunks != asoc->rtx_data_chunks,
-> > the pmtu probe will be sent out. Otherwise, increment the pl.raise_count
-> > and return when it's in Search Complete state.
-> >
-> > With this patch, if in Search Complete state, which is a long period, it
-> > doesn't need to keep probing the current pmtu unless there's data packet
-> > loss. This will save quite some traffic.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
->
-> Can we get a Fixes tag, please?
-Fixes: 0dac127c0557 ("sctp: do black hole detection in search complete state")
+On Tue, Jul 20, 2021 at 02:33:49PM +0100, Russell King wrote:
+> The at803x driver contains a function, at803x_match_phy_id(), which
+> tests whether the PHY ID matches the value passed, comparing phy_id
+> with phydev->phy_id and testing all bits that in the driver's mask.
+> 
+> This is the same test that is used to match the driver, with phy_id
+> replaced with the driver specified ID, phydev->drv->phy_id.
+> 
+> Hence, we already know the value of the bits being tested if we look
+> at phydev->drv->phy_id directly, and we do not require a complicated
+> test to check them. Test directly against phydev->drv->phy_id instead.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Should I repost?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
