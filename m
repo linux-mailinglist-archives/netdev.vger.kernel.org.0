@@ -2,309 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7D383CF214
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14C083CF23C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345053AbhGTBzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 21:55:06 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:11346 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344643AbhGTBmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 21:42:02 -0400
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GTMnN14dyz7vY8;
-        Tue, 20 Jul 2021 10:18:00 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>
-CC:     <nickhu@andestech.com>, <green.hu@gmail.com>,
-        <deanbo422@gmail.com>, <akpm@linux-foundation.org>,
-        <yury.norov@gmail.com>, <andriy.shevchenko@linux.intel.com>,
-        <ojeda@kernel.org>, <ndesaulniers@gooogle.com>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [PATCH v2 4/4] tools/virtio: use common infrastructure to build ptr_ring.h
-Date:   Tue, 20 Jul 2021 10:21:49 +0800
-Message-ID: <1626747709-34013-5-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
-References: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
+        id S239017AbhGTCLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 22:11:38 -0400
+Received: from out1.migadu.com ([91.121.223.63]:45829 "EHLO out1.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345227AbhGTCGf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 22:06:35 -0400
+X-Greylist: delayed 74690 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Jul 2021 22:06:32 EDT
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626749223;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KUM79Rs6eGHbKmAlgI2lLlSUWIN0mpmmWXHIcNcS7zI=;
+        b=gTaqIAJI0CbVfMDJeqMpW+lRczileGp8zONPxdkcXQCkBxLzVJmckriwwoT8BeHNPgDjFb
+        17oHP5NdPccpo2mrJvDF2Mxf958uaBqpqPM/AgPHtXxCBa689BgBZae9H6c7aqODLC26jT
+        q1Z85nKY797W42mc9N6VcB2Py4NxbjI=
+Date:   Tue, 20 Jul 2021 02:47:01 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   yajun.deng@linux.dev
+Message-ID: <d56d920c4e55383f9ee34147b58a1f9b@linux.dev>
+Subject: Re: [PATCH] netlink: Deal with ESRCH error in nlmsg_notify()
+To:     "Yonghong Song" <yhs@fb.com>, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <0ada4233-6c9d-82f5-f33f-55805bfbe37d@fb.com>
+References: <0ada4233-6c9d-82f5-f33f-55805bfbe37d@fb.com>
+ <20210719051816.11762-1-yajun.deng@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the common infrastructure in tools/include to build
-ptr_ring.h in user space.
-
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- tools/virtio/ringtest/Makefile   |   2 +-
- tools/virtio/ringtest/main.h     |  99 +++-----------------------------------
- tools/virtio/ringtest/ptr_ring.c | 101 ++-------------------------------------
- 3 files changed, 10 insertions(+), 192 deletions(-)
-
-diff --git a/tools/virtio/ringtest/Makefile b/tools/virtio/ringtest/Makefile
-index 85c98c2..89fc024 100644
---- a/tools/virtio/ringtest/Makefile
-+++ b/tools/virtio/ringtest/Makefile
-@@ -3,7 +3,7 @@ all:
- 
- all: ring virtio_ring_0_9 virtio_ring_poll virtio_ring_inorder ptr_ring noring
- 
--CFLAGS += -Wall
-+CFLAGS += -Wall -I../../include
- CFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
- LDFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
- 
-diff --git a/tools/virtio/ringtest/main.h b/tools/virtio/ringtest/main.h
-index 6d1fccd..26a8659 100644
---- a/tools/virtio/ringtest/main.h
-+++ b/tools/virtio/ringtest/main.h
-@@ -10,6 +10,12 @@
- 
- #include <stdbool.h>
- 
-+#include <asm/barrier.h>
-+#include <asm/processor.h>
-+
-+#define smp_acquire	smp_rmb
-+#define smp_release	smp_wmb
-+
- extern int param;
- 
- extern bool do_exit;
-@@ -87,18 +93,6 @@ void wait_for_call(void);
- 
- extern unsigned ring_size;
- 
--/* Compiler barrier - similar to what Linux uses */
--#define barrier() asm volatile("" ::: "memory")
--
--/* Is there a portable way to do this? */
--#if defined(__x86_64__) || defined(__i386__)
--#define cpu_relax() asm ("rep; nop" ::: "memory")
--#elif defined(__s390x__)
--#define cpu_relax() barrier()
--#else
--#define cpu_relax() assert(0)
--#endif
--
- extern bool do_relax;
- 
- static inline void busy_wait(void)
-@@ -110,85 +104,4 @@ static inline void busy_wait(void)
- 		barrier();
- } 
- 
--#if defined(__x86_64__) || defined(__i386__)
--#define smp_mb()     asm volatile("lock; addl $0,-132(%%rsp)" ::: "memory", "cc")
--#else
--/*
-- * Not using __ATOMIC_SEQ_CST since gcc docs say they are only synchronized
-- * with other __ATOMIC_SEQ_CST calls.
-- */
--#define smp_mb() __sync_synchronize()
--#endif
--
--/*
-- * This abuses the atomic builtins for thread fences, and
-- * adds a compiler barrier.
-- */
--#define smp_release() do { \
--    barrier(); \
--    __atomic_thread_fence(__ATOMIC_RELEASE); \
--} while (0)
--
--#define smp_acquire() do { \
--    __atomic_thread_fence(__ATOMIC_ACQUIRE); \
--    barrier(); \
--} while (0)
--
--#if defined(__i386__) || defined(__x86_64__) || defined(__s390x__)
--#define smp_wmb() barrier()
--#else
--#define smp_wmb() smp_release()
--#endif
--
--#ifdef __alpha__
--#define smp_read_barrier_depends() smp_acquire()
--#else
--#define smp_read_barrier_depends() do {} while(0)
--#endif
--
--static __always_inline
--void __read_once_size(const volatile void *p, void *res, int size)
--{
--        switch (size) {                                                 \
--        case 1: *(unsigned char *)res = *(volatile unsigned char *)p; break;              \
--        case 2: *(unsigned short *)res = *(volatile unsigned short *)p; break;            \
--        case 4: *(unsigned int *)res = *(volatile unsigned int *)p; break;            \
--        case 8: *(unsigned long long *)res = *(volatile unsigned long long *)p; break;            \
--        default:                                                        \
--                barrier();                                              \
--                __builtin_memcpy((void *)res, (const void *)p, size);   \
--                barrier();                                              \
--        }                                                               \
--}
--
--static __always_inline void __write_once_size(volatile void *p, void *res, int size)
--{
--	switch (size) {
--	case 1: *(volatile unsigned char *)p = *(unsigned char *)res; break;
--	case 2: *(volatile unsigned short *)p = *(unsigned short *)res; break;
--	case 4: *(volatile unsigned int *)p = *(unsigned int *)res; break;
--	case 8: *(volatile unsigned long long *)p = *(unsigned long long *)res; break;
--	default:
--		barrier();
--		__builtin_memcpy((void *)p, (const void *)res, size);
--		barrier();
--	}
--}
--
--#define READ_ONCE(x) \
--({									\
--	union { typeof(x) __val; char __c[1]; } __u;			\
--	__read_once_size(&(x), __u.__c, sizeof(x));		\
--	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
--	__u.__val;							\
--})
--
--#define WRITE_ONCE(x, val) \
--({							\
--	union { typeof(x) __val; char __c[1]; } __u =	\
--		{ .__val = (typeof(x)) (val) }; \
--	__write_once_size(&(x), __u.__c, sizeof(x));	\
--	__u.__val;					\
--})
--
- #endif
-diff --git a/tools/virtio/ringtest/ptr_ring.c b/tools/virtio/ringtest/ptr_ring.c
-index c9b2633..e9849a3 100644
---- a/tools/virtio/ringtest/ptr_ring.c
-+++ b/tools/virtio/ringtest/ptr_ring.c
-@@ -10,104 +10,9 @@
- #include <errno.h>
- #include <limits.h>
- 
--#define SMP_CACHE_BYTES 64
--#define cache_line_size() SMP_CACHE_BYTES
--#define ____cacheline_aligned_in_smp __attribute__ ((aligned (SMP_CACHE_BYTES)))
--#define unlikely(x)    (__builtin_expect(!!(x), 0))
--#define likely(x)    (__builtin_expect(!!(x), 1))
--#define ALIGN(x, a) (((x) + (a) - 1) / (a) * (a))
--#define SIZE_MAX        (~(size_t)0)
--#define KMALLOC_MAX_SIZE SIZE_MAX
--
--typedef pthread_spinlock_t  spinlock_t;
--
--typedef int gfp_t;
--#define __GFP_ZERO 0x1
--
--static void *kmalloc(unsigned size, gfp_t gfp)
--{
--	void *p = memalign(64, size);
--	if (!p)
--		return p;
--
--	if (gfp & __GFP_ZERO)
--		memset(p, 0, size);
--	return p;
--}
--
--static inline void *kzalloc(unsigned size, gfp_t flags)
--{
--	return kmalloc(size, flags | __GFP_ZERO);
--}
--
--static inline void *kmalloc_array(size_t n, size_t size, gfp_t flags)
--{
--	if (size != 0 && n > SIZE_MAX / size)
--		return NULL;
--	return kmalloc(n * size, flags);
--}
--
--static inline void *kcalloc(size_t n, size_t size, gfp_t flags)
--{
--	return kmalloc_array(n, size, flags | __GFP_ZERO);
--}
--
--static void kfree(void *p)
--{
--	if (p)
--		free(p);
--}
--
--#define kvmalloc_array kmalloc_array
--#define kvfree kfree
--
--static void spin_lock_init(spinlock_t *lock)
--{
--	int r = pthread_spin_init(lock, 0);
--	assert(!r);
--}
--
--static void spin_lock(spinlock_t *lock)
--{
--	int ret = pthread_spin_lock(lock);
--	assert(!ret);
--}
--
--static void spin_unlock(spinlock_t *lock)
--{
--	int ret = pthread_spin_unlock(lock);
--	assert(!ret);
--}
--
--static void spin_lock_bh(spinlock_t *lock)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_bh(spinlock_t *lock)
--{
--	spin_unlock(lock);
--}
--
--static void spin_lock_irq(spinlock_t *lock)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_irq(spinlock_t *lock)
--{
--	spin_unlock(lock);
--}
--
--static void spin_lock_irqsave(spinlock_t *lock, unsigned long f)
--{
--	spin_lock(lock);
--}
--
--static void spin_unlock_irqrestore(spinlock_t *lock, unsigned long f)
--{
--	spin_unlock(lock);
--}
-+#include <linux/cache.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
- 
- #include "../../../include/linux/ptr_ring.h"
- 
--- 
-2.7.4
-
+July 19, 2021 10:47 PM, "Yonghong Song" <yhs@fb.com> wrote:=0A=0A> On 7/1=
+8/21 10:18 PM, Yajun Deng wrote:=0A> =0A>> Yonghong Song report:=0A>> The=
+ bpf selftest tc_bpf failed with latest bpf-next.=0A>> The following is t=
+he command to run and the result:=0A>> $ ./test_progs -n 132=0A>> [ 40.94=
+7571] bpf_testmod: loading out-of-tree module taints kernel.=0A>> test_tc=
+_bpf:PASS:test_tc_bpf__open_and_load 0 nsec=0A>> test_tc_bpf:PASS:bpf_tc_=
+hook_create(BPF_TC_INGRESS) 0 nsec=0A>> test_tc_bpf:PASS:bpf_tc_hook_crea=
+te invalid hook.attach_point 0 nsec=0A>> test_tc_bpf_basic:PASS:bpf_obj_g=
+et_info_by_fd 0 nsec=0A>> test_tc_bpf_basic:PASS:bpf_tc_attach 0 nsec=0A>=
+> test_tc_bpf_basic:PASS:handle set 0 nsec=0A>> test_tc_bpf_basic:PASS:pr=
+iority set 0 nsec=0A>> test_tc_bpf_basic:PASS:prog_id set 0 nsec=0A>> tes=
+t_tc_bpf_basic:PASS:bpf_tc_attach replace mode 0 nsec=0A>> test_tc_bpf_ba=
+sic:PASS:bpf_tc_query 0 nsec=0A>> test_tc_bpf_basic:PASS:handle set 0 nse=
+c=0A>> test_tc_bpf_basic:PASS:priority set 0 nsec=0A>> test_tc_bpf_basic:=
+PASS:prog_id set 0 nsec=0A>> libbpf: Kernel error message: Failed to send=
+ filter delete notification=0A>> test_tc_bpf_basic:FAIL:bpf_tc_detach une=
+xpected error: -3 (errno 3)=0A>> test_tc_bpf:FAIL:test_tc_internal ingres=
+s unexpected error: -3 (errno 3)=0A>> The failure seems due to the commit=
+=0A>> cfdf0d9ae75b ("rtnetlink: use nlmsg_notify() in rtnetlink_send()")=
+=0A>> Deal with ESRCH error in nlmsg_notify() even the report variable is=
+ zero.=0A>> Reported-by: Yonghong Song <yhs@fb.com>=0A>> Signed-off-by: Y=
+ajun Deng <yajun.deng@linux.dev>=0A> =0A> Thanks for quick fix. This does=
+ fix the bpf selftest issu.=0A> But does this change have negative impact=
+s on other=0A> nlmsg_notify() callers, below 1-3 items?=0A> =0A> 0 net/co=
+re/rtnetlink.c rtnetlink_send 714 return nlmsg_notify(rtnl, skb, pid, gro=
+up, echo,=0A> GFP_KERNEL);=0A=0AThis is exactly what we need.=0A> =0A> 1 =
+net/core/rtnetlink.c rtnl_notify 734 nlmsg_notify(rtnl, skb, pid, group, =
+report, flags);=0A> =0AIt doesn't matter because there is no return value=
+.=0A =0A> 2 net/netfilter/nfnetlink.c nfnetlink_send 176 return nlmsg_not=
+ify(nfnlnet->nfnl, skb, portid,=0A> group, echo, flags);=0A> =0AIt only c=
+tnetlink_conntrack_event() use the return value when call nfnetlink_send(=
+) in=0Anet/netfilter/nf_conntrack_netlink.c, but it doesn't matter when t=
+he return value is ESRCH or zero.=0A=0A> 3 net/netlink/genetlink.c genl_n=
+otify 1506 nlmsg_notify(sk, skb, info->snd_portid, group, report,=0A> fla=
+gs);=0A> =0AIt doesn't matter because there is no return value.=0A=0AI th=
+ink the caller for nlmsg_notify() doesn't need deal with the ESRCH. It al=
+so deal with ESRCH=0Awhen report variable is not zero.=0A=0A>> ---=0A>> n=
+et/netlink/af_netlink.c | 4 +++-=0A>> 1 file changed, 3 insertions(+), 1 =
+deletion(-)=0A>> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_n=
+etlink.c=0A>> index 380f95aacdec..24b7cf447bc5 100644=0A>> --- a/net/netl=
+ink/af_netlink.c=0A>> +++ b/net/netlink/af_netlink.c=0A>> @@ -2545,13 +25=
+45,15 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 porti=
+d,=0A>> /* errors reported via destination sk->sk_err, but propagate=0A>>=
+ * delivery errors if NETLINK_BROADCAST_ERROR flag is set */=0A>> err =3D=
+ nlmsg_multicast(sk, skb, exclude_portid, group, flags);=0A>> + if (err =
+=3D=3D -ESRCH)=0A>> + err =3D 0;=0A>> }=0A>>> if (report) {=0A>> int err2=
+;=0A>>> err2 =3D nlmsg_unicast(sk, skb, portid);=0A>> - if (!err || err =
+=3D=3D -ESRCH)=0A>> + if (!err)=0A>> err =3D err2;=0A>> }=0A>>>
