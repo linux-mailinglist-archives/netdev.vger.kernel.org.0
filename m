@@ -2,103 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E203CFC68
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B2C3CFC6B
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239237AbhGTN4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:56:13 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:47961 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239381AbhGTNol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 09:44:41 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 17D085817C0;
-        Tue, 20 Jul 2021 10:25:14 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 20 Jul 2021 10:25:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=oKT1WX
-        Jb/HN94UGHcLFzU5g6VlqwSc1m1B9YQun33OY=; b=GQgHzO7TrAUYpGsJLVp0o0
-        CwKqVARMvtwiYdLx/oHzRSuyVo0WBe9zpDc1mKSRBHRT+G+z3HBa+t5jeLwOsQMJ
-        YjJ5hiiBy2TOKgmDqEUeVabaYOY5lyG4E7i73Us41m8/I3m/M1WTkC8hAd3udrUg
-        gHhCKIWPcwcJZsPuZtn4nspNqhIbmvbhQrXX+V33QkvTg77zHrPg8csEGp40LrFX
-        YOXLWIwllIJ9LCSO6u+zQUNWEfxaTh5CMBV1JQBmpTG+gpQj6KrvzYkz2QPnK0PW
-        p5Vu4M1G9+W9Ixm63q7VwDCgL+HZHnq1va/kIpCrP29aueVJqJgSrpdIBefuiXzQ
-        ==
-X-ME-Sender: <xms:x9z2YPdS219NtScv6Fu-R1q-_UqJxNpRwcuORoRXewlJbGbq-gToeg>
-    <xme:x9z2YFNZltK7SPaWEaUJaih6jR406Kn8SpEL9H83Ql8DIOeOJGDogYQyYyTJN8hIp
-    6n-6xXLAPyPXvM>
-X-ME-Received: <xmr:x9z2YIjyKAgDzCgp2nja4ObYh9Vy1xS6JTifhqvHFpwNl09f6V9xH1PyrSajck_dJmo7MVRYMdHKEzNJfR0XngSCMQwKWw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrfedvgdejgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtrodttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhepgfejvefhvdegiedukeetudevgeeujeefffeffeetkeekueeuheejudeltdejuedu
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:x9z2YA_gmA1DMWTO6HiWKFyTy3UCIhBfUB3UR9kzV0K5A5dcx2uNLg>
-    <xmx:x9z2YLukfO8USii_u6H4ySoTdQWsUo1mqMkPzmUebSy5aIWdzvhpSw>
-    <xmx:x9z2YPHBXHuASDPZKpC0O3R1Y7i3dkvME1k4bdkbbmsYMujzs7xFgQ>
-    <xmx:ytz2YEMvVonEKcl9dS70ERWIERKiB0jfaUbXBvYXG6vCSAoinbqTTg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 20 Jul 2021 10:25:11 -0400 (EDT)
-Date:   Tue, 20 Jul 2021 17:25:08 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH v5 net-next 00/10] Let switchdev drivers offload and
- unoffload bridge ports at their own convenience
-Message-ID: <YPbcxPKjbDxChnlK@shredder>
-References: <20210720134655.892334-1-vladimir.oltean@nxp.com>
- <YPbXTKj4teQZ1QRi@shredder>
- <20210720141200.xgk3mlipp2mzerjl@skbuf>
+        id S239852AbhGTN5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:57:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36394 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239631AbhGTNrg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:47:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=mNxdUD/o8/ICtj1ZRvzkUEYCwryGQsn6hD53RwzQcA8=; b=IGgdZsJlsJRSqUL6GE00vXElJe
+        AKdEIGforYAKa51m/3JwpBKDB9PPHwKgU7wNSnWBGHbDfj/QmNCGQv9rzRB/r2AGMfOkbSQI7b0Sg
+        10sQtxYknv5rK9JyOhPIerRikvngEuqFd8wbe7H3tnkH1JxA3d6Elav/orqYwdYj+4wU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m5qjE-00E46z-NG; Tue, 20 Jul 2021 16:28:12 +0200
+Date:   Tue, 20 Jul 2021 16:28:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Beh__n <kabel@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift tunable
+ support
+Message-ID: <YPbdfBqjgHzM+6+Z@lunn.ch>
+References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210720141200.xgk3mlipp2mzerjl@skbuf>
+In-Reply-To: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 02:12:01PM +0000, Vladimir Oltean wrote:
-> On Tue, Jul 20, 2021 at 05:01:48PM +0300, Ido Schimmel wrote:
-> > > The patches were split from a larger series for easier review:
-> > 
-> > This is not what I meant. I specifically suggested to get the TX
-> > forwarding offload first and then extending the API with an argument to
-> > opt-in for the replay / cleanup:
-> 
-> Yeah, ok, I did not get that and I had already reposted by the time you
-> clarified, sorry.
-> 
-> Anyway, is it so bad that we cannot look at the patches in the order
-> that they are in right now (even if this means that maybe a few more
-> days would pass)? To me it makes a bit more sense anyway to first
-> consolidate the code that is already in the tree right now, before
-> adding new logic. And I don't really want to rebase the patches again to
-> change the ordering and risk a build breakage without a good reason.
+> +static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
+> +{
+> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+> +	u16 val;
+> +	int err;
+> +
+> +	/* Fails to downshift with v0.3.5.0 and earlier */
+> +	if (priv->firmware_ver < MV_VERSION(0,3,5,0))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ds == DOWNSHIFT_DEV_DISABLE)
+> +		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
+> +					  MV_PCS_DSC1_ENABLE);
+> +
+> +	/* FIXME: The default is disabled, so should we disable? */
+> +	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
+> +		ds = 2;
 
-If you don't want to change the order, then at least make the
-replay/cleanup optional and set it to 'false' for mlxsw. This should
-mean that the only change in mlxsw should be adding calls to
-switchdev_bridge_port_offload() / switchdev_bridge_port_unoffload() in
-mlxsw_sp_bridge_port_create() / mlxsw_sp_bridge_port_destroy(),
-respectively.
+Interesting question.
+
+It is a useful feature, so i would enable it by default.
+
+Is it possible to read the actual speed via some vendor register?  The
+phy-core might then give a warning, but it is 50/50 since the link
+peer might perform the downshift.
+
+   Andrew
