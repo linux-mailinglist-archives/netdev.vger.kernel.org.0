@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 499BF3CFA09
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8EE3CFA0E
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237824AbhGTMV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:21:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35928 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237684AbhGTMVv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 08:21:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Xq6tVPylKNXKeoHt/pzC2ChIqzDtqVkAQQyGKozNL2Y=; b=3b+SMCZM/Hy/y+sk4ApE0INHZ4
-        RoM1DsVEQDi3X5axNSgN9PeMTwkhLlzhhCzI6JDE63LOkgeGRWM5TSCFlUYf3gQeexjfDCx9jx7bS
-        ltLBDFlGusWLrgMD+mo2Fd+IOYbYDP9fzRQKryHvwJQJwqLjfGdl6yzsK0R9cubNCat8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m5pOB-00E3Jw-MF; Tue, 20 Jul 2021 15:02:23 +0200
-Date:   Tue, 20 Jul 2021 15:02:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Liang Xu <lxu@maxlinear.com>
-Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "vee.khee.wong@linux.intel.com" <vee.khee.wong@linux.intel.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        Hauke Mehrtens <hmehrtens@maxlinear.com>,
-        Thomas Mohren <tmohren@maxlinear.com>,
-        "mohammad.athari.ismail@intel.com" <mohammad.athari.ismail@intel.com>
-Subject: Re: [PATCH v6 2/2] net: phy: add Maxlinear GPY115/21x/24x driver
-Message-ID: <YPbJX34DG5gYFkEq@lunn.ch>
-References: <20210719053212.11244-1-lxu@maxlinear.com>
- <20210719053212.11244-2-lxu@maxlinear.com>
- <YPXlAFZCU3T+ua93@lunn.ch>
- <c21ac03c-28dc-1bb1-642a-ba309e39c08b@maxlinear.com>
+        id S238119AbhGTMXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:23:20 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:53142
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231526AbhGTMWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:22:47 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 5CD2940624;
+        Tue, 20 Jul 2021 13:03:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1626786197;
+        bh=PQfJRURFWXwxKi9tGQBBw5EhD752Jp+9489PeReXm7s=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=DIklFQHYUL8u1LIL9v/eIds5ob53wIJfgg2kcQbHdHUWwq54qjHQcrHU0LORih4lB
+         F1v0X2UBbN5kkMhH0K4IPFhdI8YGtVInuN4KlpwOopyo/OnhDOLYER//RxFMCfSOCp
+         fyL2h5NqIdCPvm6N2OJFgP89tcNJebLWEDCFYkDguK2q89LiRVyItPduyBwVkmSFlk
+         vxQPzuU0qqBc6sfTJzhr0anr7Iy5sO4yO8U53xIgO1LlKxLlF9wW5XwBgJCUmKrXme
+         uiHN9jd3FgHWdv8TKmj6wCEMcO59hMBxDNqbEdm5ITEuIq1Q8xPNkoZECECSr0Ctus
+         lGpXwZAW2o1pQ==
+From:   Colin King <colin.king@canonical.com>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: marvell: clean up trigraph warning on ??! string
+Date:   Tue, 20 Jul 2021 14:03:11 +0100
+Message-Id: <20210720130311.59805-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c21ac03c-28dc-1bb1-642a-ba309e39c08b@maxlinear.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 03:35:17AM +0000, Liang Xu wrote:
-> On 20/7/2021 4:48 am, Andrew Lunn wrote:
-> > This email was sent from outside of MaxLinear.
-> >
-> >
-> >> +/* PHY ID */
-> >> +#define PHY_ID_GPYx15B_MASK  0xFFFFFFFC
-> >> +#define PHY_ID_GPY21xB_MASK  0xFFFFFFF9
-> > That is an odd mask. Is that really correct?
-> >
-> >       Andrew
-> >
-> Hi Andrew,
-> 
-> 
-> Yes, this is correct and has been tested.
-> 
-> It's special because of a PHY ID scheme change during manufacturing.
+From: Colin Ian King <colin.king@canonical.com>
 
-O.K. It is just a really odd mask. And putting the revision in the
-middle, not at the end? And none of the IDs have bit 0 set. It just
-all adds up to it looking wrong. So i had to ask.
+The character sequence ??! is a trigraph and causes the following
+clang warning:
 
-    Andrew
+drivers/net/ethernet/marvell/mvneta.c:2604:39: warning: trigraph ignored [-Wtrigraphs]
+
+Clean this by replacing it with single ?.
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/marvell/mvneta.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 76a7777c746d..fc4dbcc58f5f 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -2666,7 +2666,7 @@ static int mvneta_tx_tso(struct sk_buff *skb, struct net_device *dev,
+ 		return 0;
+ 
+ 	if (skb_headlen(skb) < (skb_transport_offset(skb) + tcp_hdrlen(skb))) {
+-		pr_info("*** Is this even  possible???!?!?\n");
++		pr_info("*** Is this even possible?\n");
+ 		return 0;
+ 	}
+ 
+-- 
+2.31.1
+
