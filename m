@@ -2,103 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6313CFD26
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF62A3CFD66
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:23:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236435AbhGTOci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 10:32:38 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:47309 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238477AbhGTOLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 10:11:25 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B59175816B8;
-        Tue, 20 Jul 2021 10:51:29 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Tue, 20 Jul 2021 10:51:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=rr7CeS
-        p57r9ki00p083nmHdZkD08g6VJi3ri00zZGDg=; b=TJMJ1jHafr/rpl5PIceP9q
-        syX1rFXmkISdPiVMX9dqujREkYRULEbmsqU90X3Bbq7qxLzzn4f1qDUJE140/4fe
-        MK76iEmixKYC8bFbdT1tXWA+Z9np2r9A3KBdivaCe4cRNjx7347E+6JDn7jiira5
-        jrNAEImAAyM+5YY/Il14GIOhSthVusUg4TP/6nfUDSsBwxvkSzX9i1W6/C925LUe
-        H796xg1O0+s0TM7bulf5cafrAuKHwopqbiK8AXSEJ56tJs3ohc03akO3ODRqa6c8
-        0hbs03IdDwF325+Qwvrc7v8XxDRA5Ey+UxBC9ugdyy/9odCvHGPGcMkdBmgzeY4A
-        ==
-X-ME-Sender: <xms:7-L2YDl4W3vv1MGiedWJbQlKi3J0E78-lhPWwBJ_4ooF800RLwolOw>
-    <xme:7-L2YG2Cdz5N51jyHy00mv_HPICd8FdhB7e12jlZzb312752BSC4pyXOQ5SOet9DM
-    bHwRpDfu_g3kb8>
-X-ME-Received: <xmr:7-L2YJrO7LGvTHgxU1Dau-gcwZxQ69l5R1ukdQifXrNhYYVUZI6jSOWFJk7tTHvaeqlnF9Y1h1BcK_cCyzScvObY4DVlLg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrfedvgdektdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:7-L2YLm_Tcrk2cw2GIJ5CGY9OQ6jnJPIoLMMNUc73GFrv5qOyywx-Q>
-    <xmx:7-L2YB2cKmbLQeHD-Y5yYDs-iCfnBehmxsp59Bsde7LFrY3ndwUsEw>
-    <xmx:7-L2YKsiCVpGYtiDD4XVgiKy48xF9-CzbHSyYTV4xTmdsgi9ZZw0rw>
-    <xmx:8eL2YA3GtU0KYYBW5n5G3g8MvrkfxVjCeVNQi6ddXd1MMNQrCueo3A>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 20 Jul 2021 10:51:26 -0400 (EDT)
-Date:   Tue, 20 Jul 2021 17:51:24 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-Subject: Re: [PATCH v5 net-next 00/10] Let switchdev drivers offload and
- unoffload bridge ports at their own convenience
-Message-ID: <YPbi7NSsdDEdvmcA@shredder>
-References: <20210720134655.892334-1-vladimir.oltean@nxp.com>
- <YPbXTKj4teQZ1QRi@shredder>
- <20210720141200.xgk3mlipp2mzerjl@skbuf>
- <YPbcxPKjbDxChnlK@shredder>
- <20210720144617.ptqt5mqlw5stidep@skbuf>
+        id S241106AbhGTOkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239758AbhGTOUf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 10:20:35 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC79C06178C;
+        Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id a16so33089252ybt.8;
+        Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XEVu3hZadiQ0WDLAIZgrzrDxA6oJ53H3vgdnVOEPrQ8=;
+        b=n9M8ng2msIt5IVVUGfaXSWpXav+TDZEIagymTXBbK6NB9K94HWizCRAthlQJvmliKm
+         Gzdtvxx/uufYsp8+M6u4ZBSTDOeIsPPbGz30DYhJykCGoWAT1cTP7ZrU2W7P35Y6Cfj8
+         hxp1Zx51G1hOifLvPpPbEB9TAjFdusIJPxObM1q498JKWUxjpWIM5janJxbg2623gxdU
+         0HpzCE5gefwU3sua2Eq/86zqj4o6ZzkkdaEbZf62d3LyE5JZ44DGjW1qdPXRb7e8UtNx
+         IsCPErg8XaT3cxTj2mGv/WuW4TKVZvg+CfR5crFWdKhY8STF2RhBpJAg1b7aPj8Jv9k1
+         Om+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XEVu3hZadiQ0WDLAIZgrzrDxA6oJ53H3vgdnVOEPrQ8=;
+        b=OTJSGm4m3Dld+aruncoMhti/8ApBprSz7u8Rm8tv8wLieXmqxyYXbQQux7+NcCwggW
+         AWz2nqv6bz4Mu++NZ+61n/i7H5MOTlwJDr6n/1mF9rKIhWIjbVpCY2FgrACfCg5DYUBU
+         JApBWhEnYXAFjTOYttZ+nsE8voibLavsn9Gn5Ty4j+hQiFkruRb9I1hpU/78QmuizKkT
+         pdEKGBlEjWm8QMVnh5snJLVMrStyqx1s2PSJPJr16bTxh8XxrqMJ6yOuqw/EfAMVNOWv
+         zupNbCJCatqmg5bCF83HQiAXyQxLXJkcJ6kef1kkcThEdV9ihndM1lGCjjGzO2R6bG+G
+         l+nw==
+X-Gm-Message-State: AOAM533CUD9nJfXqE+ltwZToYQtHIh6IG6wTnpQGJKYiwtq6e7aFr0e7
+        0+RPXUVo4ZyfY4J9H7u5CKh3ZBthZ6YVhK6/+eA=
+X-Google-Smtp-Source: ABdhPJxZZZwLPoyYOzEhes1wmyLaTcvkDSmkoB9Xggix4AffH0qsiSVQQQq6OFTNnq4iakaROVUT1p49GBa/uUhSbxo=
+X-Received: by 2002:a25:e404:: with SMTP id b4mr40451306ybh.426.1626793087054;
+ Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210720144617.ptqt5mqlw5stidep@skbuf>
+References: <20210719143811.2135-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210719143811.2135-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <c8ec5fe0c8eb86898416edb7c68dcf0eeeaccf54.camel@pengutronix.de>
+In-Reply-To: <c8ec5fe0c8eb86898416edb7c68dcf0eeeaccf54.camel@pengutronix.de>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 20 Jul 2021 15:57:40 +0100
+Message-ID: <CA+V-a8vgQ1-tUOw2o3E39reZmnLGFVN_HEvZeH-x5cj01x-Pzg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for RZ/G2L family
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-can@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 02:46:18PM +0000, Vladimir Oltean wrote:
-> On Tue, Jul 20, 2021 at 05:25:08PM +0300, Ido Schimmel wrote:
-> > If you don't want to change the order, then at least make the
-> > replay/cleanup optional and set it to 'false' for mlxsw. This should
-> > mean that the only change in mlxsw should be adding calls to
-> > switchdev_bridge_port_offload() / switchdev_bridge_port_unoffload() in
-> > mlxsw_sp_bridge_port_create() / mlxsw_sp_bridge_port_destroy(),
-> > respectively.
-> 
-> I mean, I could guard br_{vlan,mdb,fdb}_replay() against NULL notifier
-> block pointers, and then make mlxsw pass NULL for both the atomic_nb and
-> blocking_nb.
-> 
-> But why? How do you deal with a host-joined mdb that was auto-installed
-> while there was no port under the bridge?
+Hi Philipp,
 
-mlxsw does not currently support such entries. It's on my TODO list.
-When we add support for that, we will also take care of the replay.
+Thank you for the review.
 
-> How does anyone deal with that? What's optional about it? Why would
-> driver X opt out of it but Y not (apart for the case where driver X
-> does not offload MDBs at all, that I can understand).
+On Tue, Jul 20, 2021 at 11:23 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+>
+> On Mon, 2021-07-19 at 15:38 +0100, Lad Prabhakar wrote:
+> > CANFD block on RZ/G2L SoC is almost identical to one found on
+> > R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
+> > are split into different sources and the IP doesn't divide (1/2)
+> > CANFD clock within the IP.
+> >
+> > This patch adds compatible string for RZ/G2L family and registers
+> > the irq handlers required for CANFD operation. IRQ numbers are now
+> > fetched based on names instead of indices. For backward compatibility
+> > on non RZ/G2L SoC's we fallback reading based on indices.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > ---
+> >  drivers/net/can/rcar/rcar_canfd.c | 178 ++++++++++++++++++++++++------
+> >  1 file changed, 147 insertions(+), 31 deletions(-)
+> >
+> > diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+> > index 311e6ca3bdc4..d4affc002fb3 100644
+> > --- a/drivers/net/can/rcar/rcar_canfd.c
+> > +++ b/drivers/net/can/rcar/rcar_canfd.c
+> > @@ -37,9 +37,15 @@
+> [...]
+> > +     if (gpriv->chip_id == RENESAS_RZG2L) {
+> > +             gpriv->rstc1 = devm_reset_control_get_exclusive_by_index(&pdev->dev, 0);
+> > +             if (IS_ERR(gpriv->rstc1)) {
+> > +                     dev_err(&pdev->dev, "failed to get reset index 0\n");
+>
+> Please consider requesting the reset controls by name instead of by
+> index. See also my reply to the binding patch.
+>
+Will do.
+
+> > +                     return PTR_ERR(gpriv->rstc1);
+> > +             }
+> > +
+> > +             err = reset_control_reset(gpriv->rstc1);
+> > +             if (err)
+> > +                     return err;
+>
+> I suggest to wait until after all resource requests have succeeded
+> before triggering the resets, i.e. first get all reset controls and
+> clocks, etc., and only then trigger resets, enable clocks, and so on.
+>
+> That way there will be no spurious resets in case of probe deferrals.
+>
+Agreed, will update the code.
+
+Cheers,
+Prabhakar
+
+> regards
+> Philipp
