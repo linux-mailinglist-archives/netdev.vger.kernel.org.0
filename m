@@ -2,140 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D6A3CFE91
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 18:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D83593CFE95
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 18:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238101AbhGTPWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 11:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34158 "EHLO
+        id S238426AbhGTPX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 11:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239812AbhGTPSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 11:18:16 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46784C06127E;
-        Tue, 20 Jul 2021 08:56:56 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id c16so26655779ybl.9;
-        Tue, 20 Jul 2021 08:56:56 -0700 (PDT)
+        with ESMTP id S240152AbhGTPSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 11:18:51 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBFBC061767
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 08:59:28 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id y66so15578878oie.7
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 08:59:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WnvkgdxtoAemKPJLVMVY6hqBu9goS/fqMgfnJCN6o5Y=;
-        b=DfZdlfpB9mN4dbZ8DAGVh9rGPukd8Qb2dOC6nAI/GMp64aBSKlOxqoJqUkklal8mmi
-         Wxq0TdLtRv4zS9DMnK6gDuYxs9sSf/vJhRtvYvpO0Nfl1+aE0a6RGhxu3LvtSMttQoN3
-         iFguBYIF+scSIPVSo3OISIVSSb4yVuoVuWkvcbNsh6Uim+kPsJQC5e80kAjxIuIId/Ir
-         B53P/vRmrpKXB/RhM6KoO4WtmpEfA1lxOeafoCGY7vnC3622TEtWRaSfBHI3BKOtu9xx
-         3fOyeQTnCvtdz8N/2lfeLVhj49ecYt8XEEuIeo6Qzyw9oE0f5GTxOb8LYHTgKFCb138F
-         AoCA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3bYYSvolabqesH6HHzk8H0SMsuQoJjQhMgS236zxUEQ=;
+        b=AvTz0BF73p7p7q+iRZ6q+1CbYpehl5FXWoRXcFlyd2NXzKLW8WWVq38f6M8n+E1bDW
+         npnGidT02q0MPXKnbEfQgPd0dlOW3iuMFfVmYUuytTXxgKPaAIRvM48UkySf8ktoCTmS
+         3B1AW8idb6ilSO3l1Vo1nAqKknvqmzWvyKBIR7HWr2xPL2QiIG+sJPwimq3GWj231k2f
+         L7HdeSuE3uVdqTMCJtPCFLnL9TFUzVwlsAZhbcu+9tFV3tgt8TiZbC2gO9wUZuWh1xEu
+         RFe/4UyJFpFnjcsJ/5ZdBdY2qjiZ2hDO2M/xFXKKYdVvE4uFwt3eHJ7cc4LheszoeMwh
+         l5GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WnvkgdxtoAemKPJLVMVY6hqBu9goS/fqMgfnJCN6o5Y=;
-        b=g7Ivv75DOMtRyzRgbpTH85+KFfr5s/vxwpBd3Sgd6ve375bKs2HUTjYG6bUQGjDgCY
-         5BtWudR62qNBByk/Mdc+lH7bSREFn6NrFrhlJ7nOewQr5ldDuUbcfZqlMXaH/qD6zI8a
-         Q5O4yKeXXSuH/tFcZ2Z1XUQI6WxTQvQjGi0c0vXwTg2ZXcG586N8eU1/f9BzP7r+YoYF
-         2lfiCj4Y815uMoNm5lvmTtDj7USx5PZd1WiarP9HX5DbQ/AC+MBxgeHITir5ff/T4jx7
-         Z8wCwZvyDF6Sn+/b6YHyM1ekUSBx6/W21AV6IveGJE3/9oqRLE3VDJA3G9dr36vfUaPO
-         Oq9A==
-X-Gm-Message-State: AOAM5315RY58ssYhQkAl7sPoOw7V9f8bJl7jjKXPAxczjZM2m2YsfKs2
-        OVyz22RQewtR0VukljKHTSdEOEAAMepibegowH8=
-X-Google-Smtp-Source: ABdhPJwcLYTBQc1sWKW28kOeuJp5aYajJPTD3dd6Ctg+5bv2Sh4Mp1muP9ZdFeVJhMt1/OIu3K5lHGtHOJPD1wu06dA=
-X-Received: by 2002:a25:cc52:: with SMTP id l79mr39052227ybf.476.1626796615519;
- Tue, 20 Jul 2021 08:56:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3bYYSvolabqesH6HHzk8H0SMsuQoJjQhMgS236zxUEQ=;
+        b=l/0om1bdtYbBwAJl2RDJUW+DwDSnMUD77CUI8d7vVKFNKT64X/2tmRc3Neu7nWG9fe
+         sDBeOcfx16tpR3Au0ZsYAPz1QpeVhAHYgYZ2RYymVItPl9WNLh2KwwVJRFYjEVwjIHmO
+         /8ckmkfNlTN0k+4OyYqrHhGJebNyAWykOVzczLAmztd/8l6DLfGuw39Ulb4Q+QO4HVG/
+         IVucXurJQSgmYXKxumNuND42n/YTSm7Pz+P7QivGUbcs56uJqVw/cf9c4L5NfOTxAurf
+         AZ3lvLYKCjBDEvovKxFYApH5ri/GJp14dyXxlVG3rnsrxjcxqYVKyl0jzREgEYBBTWtE
+         MShw==
+X-Gm-Message-State: AOAM531Iz7Onli2g7cYFThIQ4A///aIQdV/YGFKnVTKdmhYVY5+Vm5bC
+        ZgwGFcBg736+4gK4m0NUF8GMUk4E7khvpQ==
+X-Google-Smtp-Source: ABdhPJxDvfL0NyoM90fcGCn8H+ACZoTlz62ASCTNkVWnQ5pADpi8QHChB5kbAY5iOVJ8knWxzsbjYw==
+X-Received: by 2002:aca:fdc1:: with SMTP id b184mr21581758oii.101.1626796767607;
+        Tue, 20 Jul 2021 08:59:27 -0700 (PDT)
+Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id o26sm4252216otk.77.2021.07.20.08.59.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 08:59:27 -0700 (PDT)
+Date:   Tue, 20 Jul 2021 10:59:25 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Alex Elder <elder@linaro.org>, agross@kernel.org,
+        robh+dt@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] arm64: dts: qcom: DTS updates
+Message-ID: <YPby3eJmDmNlESC8@yoga>
+References: <20210719212456.3176086-1-elder@linaro.org>
+ <162679080524.18101.16626774349145809936.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-References: <20210719143811.2135-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210719143811.2135-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <dc2de27b087c7030ea7e76dd31bb3d8bce18d97f.camel@pengutronix.de>
- <CA+V-a8v-54QXtcT-gPy5vj9drqZ6Ntr0-3j=42Dedi-kojNtXQ@mail.gmail.com> <CAMuHMdVFarkF49=Vvcv-6NLhxbLUE33PXnqhAiPxpaCNN7u4Bw@mail.gmail.com>
-In-Reply-To: <CAMuHMdVFarkF49=Vvcv-6NLhxbLUE33PXnqhAiPxpaCNN7u4Bw@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 20 Jul 2021 16:56:29 +0100
-Message-ID: <CA+V-a8sKDGyBCYJnxH=_cJrbYFL1Ev4ETsjYEXx7fQsW-NYiYA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] dt-bindings: net: can: renesas,rcar-canfd:
- Document RZ/G2L SoC
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-can@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <162679080524.18101.16626774349145809936.git-patchwork-notify@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+On Tue 20 Jul 09:20 CDT 2021, patchwork-bot+netdevbpf@kernel.org wrote:
 
-On Tue, Jul 20, 2021 at 4:11 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Tue, Jul 20, 2021 at 4:31 PM Lad, Prabhakar
-> <prabhakar.csengg@gmail.com> wrote:
-> > On Tue, Jul 20, 2021 at 11:22 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
-> > > On Mon, 2021-07-19 at 15:38 +0100, Lad Prabhakar wrote:
-> > > > Add CANFD binding documentation for Renesas RZ/G2L SoC.
-> > > >
-> > > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
->
-> > > > --- a/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
-> > > > +++ b/Documentation/devicetree/bindings/net/can/renesas,rcar-canfd.yaml
->
-> > > > +    resets:
-> > > > +      items:
-> > > > +        - description: CANFD_RSTP_N
-> > > > +        - description: CANFD_RSTC_N
-> > >
-> > > Do you know what the "P" and "C" stands for? It would be nice if the
-> > > description could tell us what the reset lines are used for.
-> > >
-> > unfortunately the HW manual does not mention  anything about "P" and "C" :(
-> >
-> > > I would prefer if you used these names (or shortened versions, for
-> > > example "rstp_n", "rstc_n") as "reset-names" and let the driver
-> > > reference the resets by name instead of by index.
-> > >
-> > OK will do that and maxItems:2 for resets.
-> >
-> > @Geert, for R-Car Gen3 does "canfd_rst" (as it's a module reset)
-> > sounds good for reset-names? Or do you have any other suggestions?
->
-> I wouldn't bother with reset-names on R-Car, as there is only a
-> single reset.
->
-OK will keep "description: CANFD reset" for R-Car as done in the
-current patch and just add reset-names only for RZ/G2L SoC.
+> Hello:
+> 
+> This series was applied to netdev/net-next.git (refs/heads/master):
+> 
 
-> BTW, does there exist a generally-accepted reset-equivalent of "fck"
-> ("Functional ClocK")?
->
-None that I am aware of (Couple of binding docs have "rst"), but maybe
-Philipp could have some suggestions.
+David, Jakub, can you please revert/drop the two "arm64: dts" patches
+from the net-next tree?
 
-Cheers,
-Prabhakar
+DTS patches are generally merged through the qcom and ultimately soc
+tree and I have a number of patches queued up in both sc7180 and sc7280
+that will cause merge conflicts down the road, so I would prefer to pick
+these up as well.
 
-> Gr{oetje,eeting}s,
->
->                         Geert
->
+Regards,
+Bjorn
+
+> On Mon, 19 Jul 2021 16:24:53 -0500 you wrote:
+> > This series updates some IPA-related DT nodes.
+> > 
+> > Newer versions of IPA do not require an interconnect between IPA
+> > and SoC internal memory.  The first patch updates the DT binding
+> > to reflect this.
+> > 
+> > The second patch adds IPA information to "sc7280.dtsi", using only
+> > two interconnects.  It includes the definition of the reserved
+> > memory area used to hold IPA firmware.
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [net-next,1/3] dt-bindings: net: qcom,ipa: make imem interconnect optional
+>     https://git.kernel.org/netdev/net-next/c/6a0eb6c9d934
+>   - [net-next,2/3] arm64: dts: qcom: sc7280: add IPA information
+>     https://git.kernel.org/netdev/net-next/c/f8bd3c82bf7d
+>   - [net-next,3/3] arm64: dts: qcom: sc7180: define ipa_fw_mem node
+>     https://git.kernel.org/netdev/net-next/c/fd0f72c34bd9
+> 
+> You are awesome, thank you!
 > --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> 
