@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B2C3CFC6B
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D08173CFC6C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 16:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239852AbhGTN5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:57:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36394 "EHLO vps0.lunn.ch"
+        id S239464AbhGTN6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:58:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239631AbhGTNrg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:47:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mNxdUD/o8/ICtj1ZRvzkUEYCwryGQsn6hD53RwzQcA8=; b=IGgdZsJlsJRSqUL6GE00vXElJe
-        AKdEIGforYAKa51m/3JwpBKDB9PPHwKgU7wNSnWBGHbDfj/QmNCGQv9rzRB/r2AGMfOkbSQI7b0Sg
-        10sQtxYknv5rK9JyOhPIerRikvngEuqFd8wbe7H3tnkH1JxA3d6Elav/orqYwdYj+4wU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m5qjE-00E46z-NG; Tue, 20 Jul 2021 16:28:12 +0200
-Date:   Tue, 20 Jul 2021 16:28:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marek Beh__n <kabel@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift tunable
- support
-Message-ID: <YPbdfBqjgHzM+6+Z@lunn.ch>
-References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
+        id S239346AbhGTNt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:49:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7B6C361164;
+        Tue, 20 Jul 2021 14:30:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626791404;
+        bh=78XjQsCzhlaT3mBhK/Ro8B8ZJf2cQCvL0CHQthkVkGE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GsLjpYBNbJboVGAOH57xtuYn94qhGqgQpjaZb/NWKLcHg8OD1mQeYRXfKaDnYTuMd
+         8IBfcHb1GJDfXcgQXts7BK8nXsO60hEaX/w0KTnUuIvQ/6VKgtFZ7fmPv7q3JZ4zWe
+         O95+uxwXsKSiADq+mVjiFChFjUAXKFJnWQTPcRwqN7VfDhueCTzBLM+NVocML9aJcN
+         KQGmBYUDYs9X0zQGI2fCggNiH5d1+jkiSOVDP6arEVVslDHslTqw0YjC8jPvHbTU5g
+         sWDzK62OXZHW9d+Ee+ZLoCpPZlrz6LqTMbGPxg4CZPtArCyAPBUvBylCJKSCMe7Eki
+         bRR9FbUtW+lBg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6DEAC60A0B;
+        Tue, 20 Jul 2021 14:30:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ipv6: fix another slab-out-of-bounds in
+ fib6_nh_flush_exceptions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162679140444.23944.9629868012437771549.git-patchwork-notify@kernel.org>
+Date:   Tue, 20 Jul 2021 14:30:04 +0000
+References: <6f48619a725daf4bfaea7dad94504f722ab1b4f6.1626786511.git.pabeni@redhat.com>
+In-Reply-To: <6f48619a725daf4bfaea7dad94504f722ab1b4f6.1626786511.git.pabeni@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@kernel.org,
+        kuba@kernel.org, lixiaoyan@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int mv3310_set_downshift(struct phy_device *phydev, u8 ds)
-> +{
-> +	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-> +	u16 val;
-> +	int err;
-> +
-> +	/* Fails to downshift with v0.3.5.0 and earlier */
-> +	if (priv->firmware_ver < MV_VERSION(0,3,5,0))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (ds == DOWNSHIFT_DEV_DISABLE)
-> +		return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_PCS_DSC1,
-> +					  MV_PCS_DSC1_ENABLE);
-> +
-> +	/* FIXME: The default is disabled, so should we disable? */
-> +	if (ds == DOWNSHIFT_DEV_DEFAULT_COUNT)
-> +		ds = 2;
+Hello:
 
-Interesting question.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-It is a useful feature, so i would enable it by default.
+On Tue, 20 Jul 2021 15:08:40 +0200 you wrote:
+> While running the self-tests on a KASAN enabled kernel, I observed a
+> slab-out-of-bounds splat very similar to the one reported in
+> commit 821bbf79fe46 ("ipv6: Fix KASAN: slab-out-of-bounds Read in
+>  fib6_nh_flush_exceptions").
+> 
+> We additionally need to take care of fib6_metrics initialization
+> failure when the caller provides an nh.
+> 
+> [...]
 
-Is it possible to read the actual speed via some vendor register?  The
-phy-core might then give a warning, but it is 50/50 since the link
-peer might perform the downshift.
+Here is the summary with links:
+  - [net] ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
+    https://git.kernel.org/netdev/net/c/8fb4792f091e
 
-   Andrew
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
