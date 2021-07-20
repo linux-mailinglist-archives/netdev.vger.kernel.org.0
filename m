@@ -2,79 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE723CF456
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 08:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7923CF477
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 08:26:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239483AbhGTFdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 01:33:36 -0400
-Received: from fallback22.m.smailru.net ([94.100.176.132]:44544 "EHLO
-        fallback22.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239210AbhGTFdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 01:33:08 -0400
-X-Greylist: delayed 4010 seconds by postgrey-1.27 at vger.kernel.org; Tue, 20 Jul 2021 01:33:08 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=0rZWPPWHNJH+2QbLWZOE4pgGXGdlj796mYGgPUCoQCI=;
-        t=1626761627;x=1627367027; 
-        b=XBlzcOTRdhGMa+3PXtLymO1JDfewcQtcr8X3jG930c9EoAwiMPLl1gegPcVPHAUgHgxhaDd4uNnJT8Y7VMZtKSHMt/ZgBjULaxIqvuqRXfqLqzYitXbfkApULQk/x7tQZzZ9mLflrUry1pY0bJWmpeSTGajmk0dNiNp6uAKq3fg=;
-Received: from [10.161.64.61] (port=52976 helo=smtp53.i.mail.ru)
-        by fallback22.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1m5hxu-0007gU-B8; Tue, 20 Jul 2021 08:06:46 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=0rZWPPWHNJH+2QbLWZOE4pgGXGdlj796mYGgPUCoQCI=;
-        t=1626757606;x=1627363006; 
-        b=FrQCBuE9HvtEZDF6OP68jj+viWqpwwnBZxQUkBkv7rjefT/kwZNtN8q7nrCceKI8PBzoeAicKAZYhQ+qcDOXDBKIS4VI9hxPoK6wn2HXXm1+QY7OpZ6zMbWRdK6cTPQ9aWMtXcudnLv7HdDRL5uh+QQcxtVY8CKQcww5Gk/ZYOg=;
-Received: by smtp53.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1m5hxo-00072q-JP; Tue, 20 Jul 2021 08:06:40 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH] fsl/fman: Add fibre support
-Date:   Tue, 20 Jul 2021 08:08:38 +0300
-Message-Id: <20210720050838.7635-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.31.1
+        id S235152AbhGTFpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 01:45:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51438 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233384AbhGTFo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 01:44:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626762337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+pFjrkcG2ZRzROzSDXE/qK9WLlZjt36K6e23WeKajZ8=;
+        b=cfEzMyi4dscivap6mZVQ4CYHeSuu/QvSwU+v+ncbOTvPfbMyG7o4VNOXdzVToTHF2Krw4h
+        nR2WIewAC3V380eEeWMjma+PgViEwVPofS6XSIxTInaYIbg3eKARlcyGvggWqO60GdVBxH
+        a5zpDokfKyC0bdFWcZvCq/Jgy/tLvo4=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-299-KRI8qeYrMZuUu6fMklb34A-1; Tue, 20 Jul 2021 02:25:35 -0400
+X-MC-Unique: KRI8qeYrMZuUu6fMklb34A-1
+Received: by mail-pf1-f199.google.com with SMTP id h6-20020a62b4060000b02903131bc4a1acso15410339pfn.4
+        for <netdev@vger.kernel.org>; Mon, 19 Jul 2021 23:25:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=+pFjrkcG2ZRzROzSDXE/qK9WLlZjt36K6e23WeKajZ8=;
+        b=twHo0L0CiVMAVVmTsBEd6ziYAah9acSm2GBmVLw4dS+9EpE80y5N8HvJ8POO4B93Vp
+         3OvUYCKTONnfOvtnVaP9P3v1sfr3JqGjncx1yJbC8Kx1Gvn2aL+9QwRH6dgRAyGjT9/S
+         A4/sx+eTPvsbozSovHg6iPPdYb0BWpAeJumIis+NzgTydN9L+1K2nAN4f852VY4ycca6
+         BoQ34Akm7G4pxqn8xN1fdgd4IN+Om9W7vWEgzd7KYvEIE5TqFbdYePIOQ0Xlk5L6WUjg
+         oa/Jfqm6MyO/HKhSVzgNK/bsCCoKzr0CylkQ8y8gAg9I9ix7b/Wp5D7Y/nPbLrvK+CAv
+         aMxg==
+X-Gm-Message-State: AOAM5313QDMyiCcjsBgC00IqpaUFetHYwROwgJddMi0UHX9M8Mm/Xvy2
+        8jdFNM7nhWhR4LW0tzDk3kP5oPYxsbb7IuKbH4XpZ6IkuG9TJ/mMb9lvU9AoE7iPyfbICQd1nae
+        UZV++9DankS39kyRC
+X-Received: by 2002:a63:2041:: with SMTP id r1mr14924109pgm.59.1626762334871;
+        Mon, 19 Jul 2021 23:25:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzJFTlgkaKXwIn+1kT2a5RmA050X86XDvyy0tTwV3OcM/kDFkzn7QDPYu1L0FUL3OWMF00cPA==
+X-Received: by 2002:a63:2041:: with SMTP id r1mr14924097pgm.59.1626762334630;
+        Mon, 19 Jul 2021 23:25:34 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d13sm21831104pfn.136.2021.07.19.23.25.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Jul 2021 23:25:34 -0700 (PDT)
+Subject: Re: [PATCH] vsock/virtio: set vsock frontend ready in
+ virtio_vsock_probe()
+To:     Xianting Tian <tianxianting.txt@linux.alibaba.com>,
+        stefanha@redhat.com, sgarzare@redhat.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kvm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210720034039.1351-1-tianxianting.txt@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <9a790a52-8f14-1a9a-51e0-9c35a03d33dd@redhat.com>
+Date:   Tue, 20 Jul 2021 14:25:29 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
+In-Reply-To: <20210720034039.1351-1-tianxianting.txt@linux.alibaba.com>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD941C43E597735A9C320FB367CC9CBEE800EEBD3117ABA9A5B182A05F538085040947C0DA991336AD699D8D8A227961808A6E6AC6C23A75F804A552CDE3F986103
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE79CCD1D12379CC213EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637CF20B9B7F5DD35A68638F802B75D45FF36EB9D2243A4F8B5A6FCA7DBDB1FC311F39EFFDF887939037866D6147AF826D8229952B42FDEFF0516E8FA0F747A484F6F9789CCF6C18C3F8528715B7D10C86859CC434672EE6371117882F4460429724CE54428C33FAD305F5C1EE8F4F765FCE96A3A8AAADC8934A471835C12D1D9774AD6D5ED66289B52BA9C0B312567BB23117882F4460429728776938767073520140C956E756FBB7AE5D25F19253116ADD2E47CDBA5A96583BA9C0B312567BB2376E601842F6C81A19E625A9149C048EED58E677C372A3F473D5BA627BF9F2FCFD8FC6C240DEA7642DBF02ECDB25306B2B78CF848AE20165D0A6AB1C7CE11FEE3DA532D2019E286A7040F9FF01DFDA4A8C4224003CC836476EA7A3FFF5B025636E2021AF6380DFAD1A18204E546F3947CB11811A4A51E3B096D1867E19FE1407959CC434672EE6371089D37D7C0E48F6C8AA50765F790063747074E5DE1517656EFF80C71ABB335746BA297DBC24807EABDAD6C7F3747799A
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CBC3D6B4D9834ECA76A0CE80C6CC1B8969B628DC631F27E729C2B6934AE262D3EE7EAB7254005DCEDCF20510D834BC2AB1E0A4E2319210D9B64D260DF9561598F01A9E91200F654B057E988E9157162368E8E86DC7131B365E7726E8460B7C23C
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D343C45ADCD169245FA04A39B37CE1D92C554B460C51D1062EB5BFF1B055C6D45527F539BC15C5067201D7E09C32AA3244C38FE30566DD024FE9328553C2C683F7751E887DA02A9F7BF83B48618A63566E0
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojL49Xu4qyFBlicNdbqBadlw==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB2445E1E9937040A48D6A19A8DD1EA0C9F104350204A74E1B54EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 78E4E2B564C1792B
-X-77F55803: 6242723A09DB00B4DE24245422D83CE6F6EF26CB7A2DAAF249FB401A954796FC049FFFDB7839CE9E74D7C836B7A62AF3BFD6B308691DA3D73CF1238BA37083DF7273B54D37DD1755
-X-7FA49CB5: 0D63561A33F958A5E0A2873E0D5BC1ADE99035351E34702A426A2F7AA07898C3CACD7DF95DA8FC8BD5E8D9A59859A8B64071617579528AACCC7F00164DA146DAFE8445B8C89999728AA50765F79006371CE0A079F1B3D4BD389733CBF5DBD5E9C8A9BA7A39EFB766F5D81C698A659EA7CC7F00164DA146DA9985D098DBDEAEC8D2B897A0B7B208E1F6B57BC7E6449061A352F6E88A58FB86F5D81C698A659EA73AA81AA40904B5D9A18204E546F3947C4B6F6234D9065C97302FCEF25BFAB3454AD6D5ED66289B52698AB9A7B718F8C442539A7722CA490CD5E8D9A59859A8B65B4C35AC65A386B3089D37D7C0E48F6C5571747095F342E88FB05168BE4CE3AF
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CBC3D6B4D9834ECA7ABFDFD3ACF8ADA85487B51BC146EE5099C2B6934AE262D3EE7EAB7254005DCEDCF20510D834BC2AB699F904B3F4130E343918A1A30D5E7FCCB5012B2E24CD356
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojL49Xu4qyFBm1fKXPphzxsA==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005756D98BBC07C3822CB95AEC8EA560BF8679B184C60CCB30AE1934491450442A6C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set SUPPORTED_FIBRE to mac_dev->if_support. It allows proper usage of
-PHYs with optical/fiber support.
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
----
- drivers/net/ethernet/freescale/fman/mac.c | 1 +
- 1 file changed, 1 insertion(+)
+ÔÚ 2021/7/20 ÉÏÎç11:40, Xianting Tian Ð´µÀ:
+> Add the missed virtio_device_ready() to set vsock frontend ready.
+>
+> Signed-off-by: Xianting Tian <tianxianting.txt@linux.alibaba.com>
+> ---
+>   net/vmw_vsock/virtio_transport.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+> index e0c2c992a..eb4c607c4 100644
+> --- a/net/vmw_vsock/virtio_transport.c
+> +++ b/net/vmw_vsock/virtio_transport.c
+> @@ -637,6 +637,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+>   	vdev->priv = vsock;
+>   	rcu_assign_pointer(the_virtio_vsock, vsock);
+>   
+> +	virtio_device_ready(vdev);
+> +
+>   	mutex_unlock(&the_virtio_vsock_mutex);
 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 46ecb42f2ef8..d9fc5c456bf3 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -524,6 +524,7 @@ static void setup_memac(struct mac_device *mac_dev)
- 	| SUPPORTED_Autoneg \
- 	| SUPPORTED_Pause \
- 	| SUPPORTED_Asym_Pause \
-+	| SUPPORTED_FIBRE \
- 	| SUPPORTED_MII)
- 
- static DEFINE_MUTEX(eth_lock);
--- 
-2.31.1
+
+It's better to do this after the mutex.
+
+Thanks
+
+
+>   
+>   	return 0;
 
