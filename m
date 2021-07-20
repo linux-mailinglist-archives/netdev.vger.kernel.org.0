@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E7E3CFA18
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A50923CFA23
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235451AbhGTM0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 08:26:12 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:11458 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238412AbhGTMZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:25:17 -0400
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GTf4n4qbszcgM4;
-        Tue, 20 Jul 2021 21:02:17 +0800 (CST)
-Received: from [10.174.178.171] (10.174.178.171) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 20 Jul 2021 21:05:39 +0800
-Subject: Re: Ask for help about bpf map
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        David Ahern <dahern@digitalocean.com>
-References: <5aebe6f4-ca0d-4f64-8ee6-b68c58675271@huawei.com>
- <CAEf4BzZpSo8Kqz8mgPdbWTTVLqJ1AgE429_KHTiXgEVpbT97Yw@mail.gmail.com>
- <8735sidtwe.fsf@toke.dk> <d1f47a24-6328-5121-3a1f-5a102444e50c@huawei.com>
- <26db412c-a8b7-6d37-844f-7909a0c5744b@huawei.com>
- <189e4437-bb2c-2573-be96-0d6776feb5dd@huawei.com>
- <CAADnVQJYhtpEcvvYfozxiPdUJqcZiJxbmT2KuOC6uQdC1VWZVw@mail.gmail.com>
- <6b659192-5133-981e-0c43-7ca1120edd9c@huawei.com> <87wnpmtr5j.fsf@toke.dk>
-From:   "luwei (O)" <luwei32@huawei.com>
-Message-ID: <beb37418-4518-100a-5b1b-e036be6f71b6@huawei.com>
-Date:   Tue, 20 Jul 2021 21:05:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232292AbhGTM2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 08:28:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37096 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229631AbhGTM2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 08:28:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626786538;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=SOA99KkdJ05lNqKqr3EAdXmaadG46SeVLoD9l5GHUiM=;
+        b=MBDBIqQKGkCGK9zFD+yx8cpisn5aUwXru97MWFzqaLR0x8MRZrCFpoQMnkuJSfs6y0vx/o
+        krUuDbFlx1Bd2KppImmFMP2YMomF/sZCkvf6CtyyhCN7VZx1wJ7GCiQTLoQXq8zANqrYJX
+        zNdkidP6C8EVx37yFof7hv+8LNVMkqg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-478-6QhTvBi1PIqNDzlNfjoxEQ-1; Tue, 20 Jul 2021 09:08:57 -0400
+X-MC-Unique: 6QhTvBi1PIqNDzlNfjoxEQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C29BA800050;
+        Tue, 20 Jul 2021 13:08:55 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-114-77.ams2.redhat.com [10.36.114.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 58AB560CA1;
+        Tue, 20 Jul 2021 13:08:54 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Coco Li <lixiaoyan@google.com>
+Subject: [PATCH net] ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
+Date:   Tue, 20 Jul 2021 15:08:40 +0200
+Message-Id: <6f48619a725daf4bfaea7dad94504f722ab1b4f6.1626786511.git.pabeni@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <87wnpmtr5j.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.171]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's very strange, in my virtual host, it is:
+While running the self-tests on a KASAN enabled kernel, I observed a
+slab-out-of-bounds splat very similar to the one reported in
+commit 821bbf79fe46 ("ipv6: Fix KASAN: slab-out-of-bounds Read in
+ fib6_nh_flush_exceptions").
 
-$ ip -V
+We additionally need to take care of fib6_metrics initialization
+failure when the caller provides an nh.
 
-ip utility, iproute2-5.11.0
+The fix is similar, explicitly free the route instead of calling
+fib6_info_release on a half-initialized object.
 
+Fixes: f88d8ea67fbdb ("ipv6: Plumb support for nexthop object in a fib6_info")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv6/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-but in my physical host:
-
-$ ip -V
-ip utility, iproute2-5.11.0, libbpf 0.5.0
-
-
-I compiled iproute2 in the same way as I mentioned previously, and the 
-kernel versions are both 5.13 (in fact the same code) .
-
-
-在 2021/7/19 8:38 PM, Toke Høiland-Jørgensen 写道:
-> "luwei (O)" <luwei32@huawei.com> writes:
->
->> Andrii and Toke inspired me. You are right, the libbpf version should be included in -V output
->> , but not mine. I searched google and found this page: https://www.spinics.net/lists/netdev/msg700482.html
->> , according which I re-compiled iproute2 and it works.
-> Did the libbpf version appear in the output of 'ip -V' after you
-> recompiled and enabled it? It does in mine:
->
-> $ ./ip/ip -V
-> ip utility, iproute2-5.13.0, libbpf 0.4.0
->
-> -Toke
->
-> .
-
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 7b756a7dc036..b6ddf23d3833 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3769,7 +3769,7 @@ static struct fib6_info *ip6_route_info_create(struct fib6_config *cfg,
+ 		err = PTR_ERR(rt->fib6_metrics);
+ 		/* Do not leave garbage there. */
+ 		rt->fib6_metrics = (struct dst_metrics *)&dst_default_metrics;
+-		goto out;
++		goto out_free;
+ 	}
+ 
+ 	if (cfg->fc_flags & RTF_ADDRCONF)
 -- 
-Best Regards,
-Lu Wei
+2.26.3
 
