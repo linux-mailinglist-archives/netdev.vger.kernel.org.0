@@ -2,84 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD24F3CF0DC
+	by mail.lfdr.de (Postfix) with ESMTP id AC6E93CF0DB
 	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 02:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353017AbhGSX6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 19:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377633AbhGSXfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 19:35:25 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87073C0A888D;
-        Mon, 19 Jul 2021 17:03:26 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id d9so6911769pfv.4;
-        Mon, 19 Jul 2021 17:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z9vRT77jnRA5OE8rXggCLsHCYvsQrPIeeIhxOF+kEYI=;
-        b=AlzID3X9UY2KjBVSZvvWnO9F3XqW14T9NgvDdgb8r9PdfG8qfQyeYqNw1hY1OHi2xK
-         vf80kL8sugN7ExTkXXpx4yKKI0PP243tBbEgcSnHfgjcP/jESQO/vw5Aesk5+YOZ6Tcf
-         Ls8XOQPaVyGtCn0KGR6LX71n3OD6yB/zUeGnBoP16HDem/BHHVqGa4cQ1ltCBGxCsptu
-         s1A5FTU9wfuCmDaWbWwIrKfAZ8W5onjsApHZ/Zbu051ZqqLT51CaB46xRZGjyhPFYa62
-         sfJP9ioCyqJS8OKWudazJMkN+1dBirpkFkKzSVm/Vj86BU0eF2UkRudt+maPlLeZJ16v
-         7PZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z9vRT77jnRA5OE8rXggCLsHCYvsQrPIeeIhxOF+kEYI=;
-        b=NDCzy/MqvIdcm1Ze8ikwpNR+EMl4qr5SaQ/NHq3DLSpAjbjOfek/VbFJSjHf507wVR
-         /HsfqIeulCsj6yBnLSzB8cHmfsyUfh9aY2cDikJf8atvrxbzqRNxC+nz8VOT7WftODun
-         y8RuUFC8v4CJk/ztoSHpTQuBchUQCgDVxQrXKvyaYwlaIWLCn95Za+QBVEJ+hA1563bl
-         s3Hd7/FmP94e9QGsJ48t2wzTZu49EKYCH9FVzB5NRDwutqW0q2Uhs7QVBXRKEdtmKSV0
-         52MGTWxddcUVwpnsfScRsAAmX/wT++Cvh3ftkJZVpZaJZmdJi26VcHMnJFOY53DUfeK9
-         ruPQ==
-X-Gm-Message-State: AOAM530Ci6VSOZmt/MVc+e4KcgAZ7jN/unjcA4kf5TAnGRgZMcO6Vzlq
-        Urr8TWZSfUpGIO3E5T56Fevey/1gQymuqOeglYE=
-X-Google-Smtp-Source: ABdhPJztEskvrX8x3Cyzu2r+a21mvdUdPyySzPZMU/SjXgEqqisXodDoIqpABeRpUSfWKE31mAOzC2hqPmo4LKKmSds=
-X-Received: by 2002:a63:4302:: with SMTP id q2mr27616186pga.428.1626739406113;
- Mon, 19 Jul 2021 17:03:26 -0700 (PDT)
+        id S237337AbhGTAAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 20:00:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60262 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1378032AbhGSXgg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Jul 2021 19:36:36 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13FC960E0B;
+        Tue, 20 Jul 2021 00:17:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626740235;
+        bh=ThAzBxkXRInNWnuCLj/2tYEXJI4QZ0qGGXACtEnXypk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=N9vo0oCzvSPqM5AAbzt5aELIl+pvnm98LRqL9Gad2lSDy0L6vK2L/NVDw3HYhII3c
+         CXtQSwzp1DLHTvwCOMmkDoXfu/dZCz4R9FXk5NuFA90a2qZof63QI4JmbcbT6mEi9B
+         h1ih9S0n4P1PSZGM1IGJAjGGqicUb56mAv6uZdoPqzZvwSi6t1jsfDRw9R/pS20SYx
+         JswE5eXjXXtR7S5xbJPQM6i0WvBpj/HorP1PL2mSc676T0y3Qxp0al7VtRYGis8t8V
+         42DdW8w9kH0FgHB+9iCvnSvwMooTK5jkLBbvKR+so53U3CmPzckto2d+PmMO7DEYAY
+         cvq9pJtbajRZA==
+Date:   Mon, 19 Jul 2021 19:17:13 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Oliver O'Halloran <oohall@gmail.com>
+Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Aaron Ma <aaron.ma@canonical.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-pci <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH 1/2] igc: don't rd/wr iomem when PCI is removed
+Message-ID: <20210720001713.GA38755@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <20210704190252.11866-1-xiyou.wangcong@gmail.com>
- <20210704190252.11866-8-xiyou.wangcong@gmail.com> <a76f89b3-0911-e1f1-d1c1-707b9bc5478a@gmail.com>
-In-Reply-To: <a76f89b3-0911-e1f1-d1c1-707b9bc5478a@gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 19 Jul 2021 17:03:15 -0700
-Message-ID: <CAM_iQpVEHF2h58YJA7xdWifSG0dtErhkoe4rjceTR7w_1SMspA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 07/11] af_unix: implement unix_dgram_bpf_recvmsg()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOSf1CHOrUBfibO0t6Zr2=SZ7GjLTiAzfoKBeZL8RXdcC+Ou3A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 18, 2021 at 10:49 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 7/4/21 9:02 PM, Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> > +     mutex_lock(&u->iolock);
->
-> u->iolock mutex is owned here.
->
-> > +     if (!skb_queue_empty(&sk->sk_receive_queue) &&
-> > +         sk_psock_queue_empty(psock)) {
-> > +             ret = __unix_dgram_recvmsg(sk, msg, len, flags);
->
-> But __unix_dgram_recvmsg() will also try to grab this mutex ?
+On Mon, Jul 19, 2021 at 12:49:18PM +1000, Oliver O'Halloran wrote:
+> On Mon, Jul 19, 2021 at 8:51 AM Pali Rohár <pali@kernel.org> wrote:
+> >
+> > And do we have some solution for this kind of issue? There are more PCIe
+> > controllers / platforms which do not like MMIO read/write operation when
+> > card / link is not connected.
+> 
+> Do you have some actual examples? The few times I've seen those
+> crashes were due to broken firmware-first error handling. The AER
+> notifications would be escalated into some kind of ACPI error which
+> the kernel didn't have a good way of dealing with so it panicked
+> instead.
+> 
+> Assuming it is a real problem then as Bjorn pointed out this sort of
+> hack doesn't really fix the issue because hotplug and AER
+> notifications are fundamentally asynchronous. If the driver is
+> actively using the device when the error / removal happens then the
+> pci_dev_is_disconnected() check will pass and the MMIO will go
+> through. If the MMIO is poisonous because of dumb hardware then this
+> sort of hack will only paper over the issue.
+> 
+> > If we do not provide a way how to solve these problems then we can
+> > expect that people would just hack ethernet / wifi / ... device drivers
+> > which are currently crashing by patches like in this thread.
+> >
+> > Maybe PCI subsystem could provide wrapper function which implements
+> > above pattern and which can be used by device drivers?
+> 
+> We could do that and I think there was a proposal to add some
+> pci_readl(pdev, <addr>) style wrappers at one point.
 
-Good catch. I should release the lock before calling it. I will send
-a patch.
+Obviously this wouldn't help user-space mmaps, but in the kernel,
+Documentation/driver-api/device-io.rst [1] does say that drivers are
+supposed to use readl() et al even though on most arches it "works"
+to just dereference the result of ioremap(), so maybe we could make
+a useful wrapper.
 
-Thanks.
+Seems like we should do *something*, even if it's just a generic
+#define and some examples.  I took a stab at this [2] a couple years
+ago, but it was only for the PCI core, and it didn't go anywhere.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/driver-api/device-io.rst?id=v5.13#n160
+[2] https://lore.kernel.org/linux-pci/20190822200551.129039-1-helgaas@kernel.org/
+
+> On powerpc
+> there's hooks in the arch provided MMIO functions to detect error
+> responses and kick off the error handling machinery when a problem is
+> detected. Those hooks are mainly there to help the platform detect
+> errors though and they don't make life much easier for drivers. Due to
+> locking concerns the driver's .error_detected() callback cannot be
+> called in the MMIO hook so even when the platform detects errors
+> synchronously the driver notifications must happen asynchronously. In
+> the meanwhile the driver still needs to handle the 0xFFs response
+> safely and there's not much we can do from the platform side to help
+> there.
+> 
+> Oliver
