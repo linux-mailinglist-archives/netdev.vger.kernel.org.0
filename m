@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18ABA3CF212
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D383CF214
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:35:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345005AbhGTByK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 21:54:10 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:12229 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344641AbhGTBmB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 21:42:01 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GTMm14W4yz1CLM4;
-        Tue, 20 Jul 2021 10:16:49 +0800 (CST)
+        id S1345053AbhGTBzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 21:55:06 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:11346 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344643AbhGTBmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 21:42:02 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GTMnN14dyz7vY8;
+        Tue, 20 Jul 2021 10:18:00 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
 Received: from localhost.localdomain (10.69.192.56) by
@@ -32,9 +32,9 @@ CC:     <nickhu@andestech.com>, <green.hu@gmail.com>,
         <linux-kernel@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [PATCH v2 3/4] tools headers UAPI: add cpu_relax() implementation for x86 and arm64
-Date:   Tue, 20 Jul 2021 10:21:48 +0800
-Message-ID: <1626747709-34013-4-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v2 4/4] tools/virtio: use common infrastructure to build ptr_ring.h
+Date:   Tue, 20 Jul 2021 10:21:49 +0800
+Message-ID: <1626747709-34013-5-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
 References: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
@@ -48,49 +48,263 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As x86 and arm64 is the two available systems that I can build
-and test the cpu_relax() implementation, so only add cpu_relax()
-implementation for x86 and arm64, other arches can be added easily
-when needed.
+Use the common infrastructure in tools/include to build
+ptr_ring.h in user space.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- tools/include/asm/processor.h | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 tools/include/asm/processor.h
+ tools/virtio/ringtest/Makefile   |   2 +-
+ tools/virtio/ringtest/main.h     |  99 +++-----------------------------------
+ tools/virtio/ringtest/ptr_ring.c | 101 ++-------------------------------------
+ 3 files changed, 10 insertions(+), 192 deletions(-)
 
-diff --git a/tools/include/asm/processor.h b/tools/include/asm/processor.h
-new file mode 100644
-index 0000000..f9b3902
---- /dev/null
-+++ b/tools/include/asm/processor.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
+diff --git a/tools/virtio/ringtest/Makefile b/tools/virtio/ringtest/Makefile
+index 85c98c2..89fc024 100644
+--- a/tools/virtio/ringtest/Makefile
++++ b/tools/virtio/ringtest/Makefile
+@@ -3,7 +3,7 @@ all:
+ 
+ all: ring virtio_ring_0_9 virtio_ring_poll virtio_ring_inorder ptr_ring noring
+ 
+-CFLAGS += -Wall
++CFLAGS += -Wall -I../../include
+ CFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
+ LDFLAGS += -pthread -O2 -ggdb -flto -fwhole-program
+ 
+diff --git a/tools/virtio/ringtest/main.h b/tools/virtio/ringtest/main.h
+index 6d1fccd..26a8659 100644
+--- a/tools/virtio/ringtest/main.h
++++ b/tools/virtio/ringtest/main.h
+@@ -10,6 +10,12 @@
+ 
+ #include <stdbool.h>
+ 
++#include <asm/barrier.h>
++#include <asm/processor.h>
 +
-+#ifndef __TOOLS_LINUX_ASM_PROCESSOR_H
-+#define __TOOLS_LINUX_ASM_PROCESSOR_H
++#define smp_acquire	smp_rmb
++#define smp_release	smp_wmb
 +
-+#if defined(__i386__) || defined(__x86_64__)
-+/* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
-+static __always_inline void rep_nop(void)
-+{
-+	asm volatile("rep; nop" ::: "memory");
-+}
-+
-+static __always_inline void cpu_relax(void)
-+{
-+	rep_nop();
-+}
-+#elif defined(__aarch64__)
-+static inline void cpu_relax(void)
-+{
-+	asm volatile("yield" ::: "memory");
-+}
-+#else
-+#error "Architecture not supported"
-+#endif
-+
-+#endif
+ extern int param;
+ 
+ extern bool do_exit;
+@@ -87,18 +93,6 @@ void wait_for_call(void);
+ 
+ extern unsigned ring_size;
+ 
+-/* Compiler barrier - similar to what Linux uses */
+-#define barrier() asm volatile("" ::: "memory")
+-
+-/* Is there a portable way to do this? */
+-#if defined(__x86_64__) || defined(__i386__)
+-#define cpu_relax() asm ("rep; nop" ::: "memory")
+-#elif defined(__s390x__)
+-#define cpu_relax() barrier()
+-#else
+-#define cpu_relax() assert(0)
+-#endif
+-
+ extern bool do_relax;
+ 
+ static inline void busy_wait(void)
+@@ -110,85 +104,4 @@ static inline void busy_wait(void)
+ 		barrier();
+ } 
+ 
+-#if defined(__x86_64__) || defined(__i386__)
+-#define smp_mb()     asm volatile("lock; addl $0,-132(%%rsp)" ::: "memory", "cc")
+-#else
+-/*
+- * Not using __ATOMIC_SEQ_CST since gcc docs say they are only synchronized
+- * with other __ATOMIC_SEQ_CST calls.
+- */
+-#define smp_mb() __sync_synchronize()
+-#endif
+-
+-/*
+- * This abuses the atomic builtins for thread fences, and
+- * adds a compiler barrier.
+- */
+-#define smp_release() do { \
+-    barrier(); \
+-    __atomic_thread_fence(__ATOMIC_RELEASE); \
+-} while (0)
+-
+-#define smp_acquire() do { \
+-    __atomic_thread_fence(__ATOMIC_ACQUIRE); \
+-    barrier(); \
+-} while (0)
+-
+-#if defined(__i386__) || defined(__x86_64__) || defined(__s390x__)
+-#define smp_wmb() barrier()
+-#else
+-#define smp_wmb() smp_release()
+-#endif
+-
+-#ifdef __alpha__
+-#define smp_read_barrier_depends() smp_acquire()
+-#else
+-#define smp_read_barrier_depends() do {} while(0)
+-#endif
+-
+-static __always_inline
+-void __read_once_size(const volatile void *p, void *res, int size)
+-{
+-        switch (size) {                                                 \
+-        case 1: *(unsigned char *)res = *(volatile unsigned char *)p; break;              \
+-        case 2: *(unsigned short *)res = *(volatile unsigned short *)p; break;            \
+-        case 4: *(unsigned int *)res = *(volatile unsigned int *)p; break;            \
+-        case 8: *(unsigned long long *)res = *(volatile unsigned long long *)p; break;            \
+-        default:                                                        \
+-                barrier();                                              \
+-                __builtin_memcpy((void *)res, (const void *)p, size);   \
+-                barrier();                                              \
+-        }                                                               \
+-}
+-
+-static __always_inline void __write_once_size(volatile void *p, void *res, int size)
+-{
+-	switch (size) {
+-	case 1: *(volatile unsigned char *)p = *(unsigned char *)res; break;
+-	case 2: *(volatile unsigned short *)p = *(unsigned short *)res; break;
+-	case 4: *(volatile unsigned int *)p = *(unsigned int *)res; break;
+-	case 8: *(volatile unsigned long long *)p = *(unsigned long long *)res; break;
+-	default:
+-		barrier();
+-		__builtin_memcpy((void *)p, (const void *)res, size);
+-		barrier();
+-	}
+-}
+-
+-#define READ_ONCE(x) \
+-({									\
+-	union { typeof(x) __val; char __c[1]; } __u;			\
+-	__read_once_size(&(x), __u.__c, sizeof(x));		\
+-	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
+-	__u.__val;							\
+-})
+-
+-#define WRITE_ONCE(x, val) \
+-({							\
+-	union { typeof(x) __val; char __c[1]; } __u =	\
+-		{ .__val = (typeof(x)) (val) }; \
+-	__write_once_size(&(x), __u.__c, sizeof(x));	\
+-	__u.__val;					\
+-})
+-
+ #endif
+diff --git a/tools/virtio/ringtest/ptr_ring.c b/tools/virtio/ringtest/ptr_ring.c
+index c9b2633..e9849a3 100644
+--- a/tools/virtio/ringtest/ptr_ring.c
++++ b/tools/virtio/ringtest/ptr_ring.c
+@@ -10,104 +10,9 @@
+ #include <errno.h>
+ #include <limits.h>
+ 
+-#define SMP_CACHE_BYTES 64
+-#define cache_line_size() SMP_CACHE_BYTES
+-#define ____cacheline_aligned_in_smp __attribute__ ((aligned (SMP_CACHE_BYTES)))
+-#define unlikely(x)    (__builtin_expect(!!(x), 0))
+-#define likely(x)    (__builtin_expect(!!(x), 1))
+-#define ALIGN(x, a) (((x) + (a) - 1) / (a) * (a))
+-#define SIZE_MAX        (~(size_t)0)
+-#define KMALLOC_MAX_SIZE SIZE_MAX
+-
+-typedef pthread_spinlock_t  spinlock_t;
+-
+-typedef int gfp_t;
+-#define __GFP_ZERO 0x1
+-
+-static void *kmalloc(unsigned size, gfp_t gfp)
+-{
+-	void *p = memalign(64, size);
+-	if (!p)
+-		return p;
+-
+-	if (gfp & __GFP_ZERO)
+-		memset(p, 0, size);
+-	return p;
+-}
+-
+-static inline void *kzalloc(unsigned size, gfp_t flags)
+-{
+-	return kmalloc(size, flags | __GFP_ZERO);
+-}
+-
+-static inline void *kmalloc_array(size_t n, size_t size, gfp_t flags)
+-{
+-	if (size != 0 && n > SIZE_MAX / size)
+-		return NULL;
+-	return kmalloc(n * size, flags);
+-}
+-
+-static inline void *kcalloc(size_t n, size_t size, gfp_t flags)
+-{
+-	return kmalloc_array(n, size, flags | __GFP_ZERO);
+-}
+-
+-static void kfree(void *p)
+-{
+-	if (p)
+-		free(p);
+-}
+-
+-#define kvmalloc_array kmalloc_array
+-#define kvfree kfree
+-
+-static void spin_lock_init(spinlock_t *lock)
+-{
+-	int r = pthread_spin_init(lock, 0);
+-	assert(!r);
+-}
+-
+-static void spin_lock(spinlock_t *lock)
+-{
+-	int ret = pthread_spin_lock(lock);
+-	assert(!ret);
+-}
+-
+-static void spin_unlock(spinlock_t *lock)
+-{
+-	int ret = pthread_spin_unlock(lock);
+-	assert(!ret);
+-}
+-
+-static void spin_lock_bh(spinlock_t *lock)
+-{
+-	spin_lock(lock);
+-}
+-
+-static void spin_unlock_bh(spinlock_t *lock)
+-{
+-	spin_unlock(lock);
+-}
+-
+-static void spin_lock_irq(spinlock_t *lock)
+-{
+-	spin_lock(lock);
+-}
+-
+-static void spin_unlock_irq(spinlock_t *lock)
+-{
+-	spin_unlock(lock);
+-}
+-
+-static void spin_lock_irqsave(spinlock_t *lock, unsigned long f)
+-{
+-	spin_lock(lock);
+-}
+-
+-static void spin_unlock_irqrestore(spinlock_t *lock, unsigned long f)
+-{
+-	spin_unlock(lock);
+-}
++#include <linux/cache.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
+ 
+ #include "../../../include/linux/ptr_ring.h"
+ 
 -- 
 2.7.4
 
