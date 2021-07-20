@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1883CF211
+	by mail.lfdr.de (Postfix) with ESMTP id 040E13CF210
 	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 04:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344982AbhGTBx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Jul 2021 21:53:58 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:7394 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344639AbhGTBmA (ORCPT
+        id S1343810AbhGTBxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Jul 2021 21:53:54 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7037 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234950AbhGTBmA (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 19 Jul 2021 21:42:00 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GTMpR6p73z7w3x;
-        Tue, 20 Jul 2021 10:18:55 +0800 (CST)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GTMm100YfzYdDc;
+        Tue, 20 Jul 2021 10:16:48 +0800 (CST)
 Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 20 Jul 2021 10:22:33 +0800
+ 15.1.2176.2; Tue, 20 Jul 2021 10:22:34 +0800
 From:   Yunsheng Lin <linyunsheng@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
         <jasowang@redhat.com>
@@ -32,10 +32,12 @@ CC:     <nickhu@andestech.com>, <green.hu@gmail.com>,
         <linux-kernel@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linuxarm@openeuler.org>
-Subject: [PATCH v2 0/4] refactor the ringtest testing for ptr_ring
-Date:   Tue, 20 Jul 2021 10:21:45 +0800
-Message-ID: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH v2 1/4] tools headers UAPI: add cache aligning related macro
+Date:   Tue, 20 Jul 2021 10:21:46 +0800
+Message-ID: <1626747709-34013-2-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
+References: <1626747709-34013-1-git-send-email-linyunsheng@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.56]
@@ -46,42 +48,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tools/include/* has a lot of abstract layer for building
-kernel code from userspace, so reuse or add the abstract
-layer in tools/include/ to build the ptr_ring for ringtest
-testing.
+____cacheline_aligned_in_smp macro is needed to avoid
+cache bouncing in SMP system, which is used in ptr_ring
+lib.
 
-The same abstract layer can be used to build the ptr_ring
-for ptr_ring benchmark app too, see [1].
+So add the related macro in order to bulid ptr_ring from
+user space.
 
-1. https://lkml.org/lkml/2021/7/1/275
+As SMP_CACHE_BYTES is 64 bytes for arm64 and most of x86
+system, so use 64 bytes as the default SMP_CACHE_BYTES if
+SMP_CACHE_BYTES is not defined.
 
-V2:
-1. rebased on the Eugenio's patchset and split patch 1 to
-   more reviewable ones.
-2. only add the interface used by ringtest, so that the
-   added code can be built and tested.
-3. cpu_relax() only support x86 and arm64 now.
-4. use 64 bytes as the default SMP_CACHE_BYTES.
-
-Yunsheng Lin (4):
-  tools headers UAPI: add cache aligning related macro
-  tools headers UAPI: add kmalloc/vmalloc related interface
-  tools headers UAPI: add cpu_relax() implementation for x86 and arm64
-  tools/virtio: use common infrastructure to build ptr_ring.h
-
- tools/include/asm/processor.h    |  26 ++++++++++
- tools/include/linux/cache.h      |  25 ++++++++++
- tools/include/linux/gfp.h        |   2 +
- tools/include/linux/slab.h       |  46 ++++++++++++++++++
- tools/virtio/ringtest/Makefile   |   2 +-
- tools/virtio/ringtest/main.h     |  99 +++-----------------------------------
- tools/virtio/ringtest/ptr_ring.c | 101 ++-------------------------------------
- 7 files changed, 109 insertions(+), 192 deletions(-)
- create mode 100644 tools/include/asm/processor.h
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+---
+ tools/include/linux/cache.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
  create mode 100644 tools/include/linux/cache.h
- create mode 100644 tools/include/linux/slab.h
 
+diff --git a/tools/include/linux/cache.h b/tools/include/linux/cache.h
+new file mode 100644
+index 0000000..df04307
+--- /dev/null
++++ b/tools/include/linux/cache.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __TOOLS_LINUX__CACHE_H
++#define __TOOLS_LINUX__CACHE_H
++
++#ifndef CONFIG_SMP
++#define CONFIG_SMP	1
++#endif
++
++#ifndef SMP_CACHE_BYTES
++#define SMP_CACHE_BYTES	64
++#endif
++
++#ifndef ____cacheline_aligned
++#define ____cacheline_aligned __attribute__((__aligned__(SMP_CACHE_BYTES)))
++#endif
++
++#ifndef ____cacheline_aligned_in_smp
++#ifdef CONFIG_SMP
++#define ____cacheline_aligned_in_smp ____cacheline_aligned
++#else
++#define ____cacheline_aligned_in_smp
++#endif /* CONFIG_SMP */
++#endif
++
++#endif /* __LINUX_CACHE_H */
 -- 
 2.7.4
 
