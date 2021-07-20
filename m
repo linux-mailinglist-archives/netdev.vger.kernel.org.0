@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 309343CF849
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 12:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1203CF86D
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 12:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237799AbhGTKGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:06:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34986 "EHLO mail.kernel.org"
+        id S238033AbhGTKOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:14:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237614AbhGTKEP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 06:04:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4748B6120F;
-        Tue, 20 Jul 2021 10:44:30 +0000 (UTC)
+        id S237989AbhGTKKI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 06:10:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 87F866108B;
+        Tue, 20 Jul 2021 10:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626777876;
-        bh=J4am9/bVVh/y4DpPyboBO49mcaLQLuHHpQ8U9G74tLM=;
+        s=k20201202; t=1626778242;
+        bh=jAUMwGq/k28WICBve6hHau+/pQMtwrpjEuoUr6MINC0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GLafNpJFthhFofmm7KYcXWxJZ8kEW8iN5MLI/SE2NA6r0HtLmmoBpV3HURGhRWnbB
-         h6r+J2co8OCnH11uB16ZdOSHJOGqPmb5HH5LSSWzXzyqihDtvF96i1U7AgVwiygyb4
-         JatBw+Zkksw1rKKxRhKSpcpca4soppvBHGoEEnRIY8AiTa9+YiQuhwO77EWeLYNAKc
-         dBewllbngb1F4G1CR/PUXrUfKoGCUh1DGhTkRHgAQ+TDf7+cVJ3tvm42aME8I2PpbU
-         lNdTCWUx6ZppCbkV8I7jExAG+jM7w/jQZ8q0Evspkip4O+uwDChCr3rl1Wks0ViBu6
-         5G8TV2uXPUOUg==
-Date:   Tue, 20 Jul 2021 12:44:27 +0200
+        b=cfWj2qBFCeFqrhQWh0V2CSRCACi9sMydlXETz+4z3mHjF3WP+xQAAma5+yYOxoEk8
+         5Pk8erEdsuJ0qBFxnhZIsIJjcS+mah7aiFE2vwj+sgatVXjUpHcB3C8S+eZAlCz87v
+         biePOld91NPWEJ9qrqpk3vucLzv4p4ozS6eKnv3Oc/KaSk00VK8GimU+P+kgpuYrO2
+         HwX7v5TqzpcMmgh5BsLLAVbx+TYWvw7Vym/f2atATTPZuS2EH954cMlyidxOdATDOs
+         IFpZlIE05CepRw3r09RO3falzHLuUWKpn6spGqTe9j5eL26aNXuDd7POkxY3uqQyqP
+         5ns4ETKVBQCbQ==
+Date:   Tue, 20 Jul 2021 12:50:36 +0200
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     davem@davemloft.net, roopa@nvidia.com, nikolay@nvidia.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, courmisch@gmail.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH 0/4] Remove rtnetlink_send() in rtnetlink
-Message-ID: <20210720124427.6b4e05a8@cakuba>
-In-Reply-To: <20210719122158.5037-1-yajun.deng@linux.dev>
-References: <20210719122158.5037-1-yajun.deng@linux.dev>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        timo.voelker@fh-muenster.de
+Subject: Re: [PATCH net 2/2] sctp: send pmtu probe only if packet loss in
+ Search Complete state
+Message-ID: <20210720125036.29ed23ba@cakuba>
+In-Reply-To: <b27420c3db63969d3faf00a2e866126dae3b870c.1626713549.git.lucien.xin@gmail.com>
+References: <cover.1626713549.git.lucien.xin@gmail.com>
+        <b27420c3db63969d3faf00a2e866126dae3b870c.1626713549.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,21 +43,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Jul 2021 20:21:54 +0800, Yajun Deng wrote:
-> rtnetlink_send() is similar to rtnl_notify(), there is no need for two 
-> functions to do the same thing. we can remove rtnetlink_send() and 
-> modify rtnl_notify() to adapt more case.
->
-> Patch1: remove rtnetlink_send() modify rtnl_notify() to adapt 
-> more case in rtnetlink.
-> Path2,Patch3: Adjustment parameters in rtnl_notify().
-> Path4: rtnetlink_send() already removed, use rtnl_notify() instead 
-> of rtnetlink_send().
+On Mon, 19 Jul 2021 12:53:23 -0400, Xin Long wrote:
+> This patch is to introduce last_rtx_chunks into sctp_transport to detect
+> if there's any packet retransmission/loss happened by checking against
+> asoc's rtx_data_chunks in sctp_transport_pl_send().
+> 
+> If there is, namely, transport->last_rtx_chunks != asoc->rtx_data_chunks,
+> the pmtu probe will be sent out. Otherwise, increment the pl.raise_count
+> and return when it's in Search Complete state.
+> 
+> With this patch, if in Search Complete state, which is a long period, it
+> doesn't need to keep probing the current pmtu unless there's data packet
+> loss. This will save quite some traffic.
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-You can't break compilation in between patches. Each step of the series
-(each patch) must be self-contained, build, and work correctly.
-Otherwise bisection becomes a nightmare.
-
-Please also post series as a thread (patches in reply to the cover
-letter), it seems that patchwork did not group the patches correctly
-here.
+Can we get a Fixes tag, please?
