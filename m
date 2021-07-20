@@ -2,134 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF62A3CFD66
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91F63CFDA7
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241106AbhGTOkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 10:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239758AbhGTOUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 10:20:35 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC79C06178C;
-        Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id a16so33089252ybt.8;
-        Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XEVu3hZadiQ0WDLAIZgrzrDxA6oJ53H3vgdnVOEPrQ8=;
-        b=n9M8ng2msIt5IVVUGfaXSWpXav+TDZEIagymTXBbK6NB9K94HWizCRAthlQJvmliKm
-         Gzdtvxx/uufYsp8+M6u4ZBSTDOeIsPPbGz30DYhJykCGoWAT1cTP7ZrU2W7P35Y6Cfj8
-         hxp1Zx51G1hOifLvPpPbEB9TAjFdusIJPxObM1q498JKWUxjpWIM5janJxbg2623gxdU
-         0HpzCE5gefwU3sua2Eq/86zqj4o6ZzkkdaEbZf62d3LyE5JZ44DGjW1qdPXRb7e8UtNx
-         IsCPErg8XaT3cxTj2mGv/WuW4TKVZvg+CfR5crFWdKhY8STF2RhBpJAg1b7aPj8Jv9k1
-         Om+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XEVu3hZadiQ0WDLAIZgrzrDxA6oJ53H3vgdnVOEPrQ8=;
-        b=OTJSGm4m3Dld+aruncoMhti/8ApBprSz7u8Rm8tv8wLieXmqxyYXbQQux7+NcCwggW
-         AWz2nqv6bz4Mu++NZ+61n/i7H5MOTlwJDr6n/1mF9rKIhWIjbVpCY2FgrACfCg5DYUBU
-         JApBWhEnYXAFjTOYttZ+nsE8voibLavsn9Gn5Ty4j+hQiFkruRb9I1hpU/78QmuizKkT
-         pdEKGBlEjWm8QMVnh5snJLVMrStyqx1s2PSJPJr16bTxh8XxrqMJ6yOuqw/EfAMVNOWv
-         zupNbCJCatqmg5bCF83HQiAXyQxLXJkcJ6kef1kkcThEdV9ihndM1lGCjjGzO2R6bG+G
-         l+nw==
-X-Gm-Message-State: AOAM533CUD9nJfXqE+ltwZToYQtHIh6IG6wTnpQGJKYiwtq6e7aFr0e7
-        0+RPXUVo4ZyfY4J9H7u5CKh3ZBthZ6YVhK6/+eA=
-X-Google-Smtp-Source: ABdhPJxZZZwLPoyYOzEhes1wmyLaTcvkDSmkoB9Xggix4AffH0qsiSVQQQq6OFTNnq4iakaROVUT1p49GBa/uUhSbxo=
-X-Received: by 2002:a25:e404:: with SMTP id b4mr40451306ybh.426.1626793087054;
- Tue, 20 Jul 2021 07:58:07 -0700 (PDT)
+        id S241769AbhGTOxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:53:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239778AbhGTO2q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 10:28:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 06686611CE;
+        Tue, 20 Jul 2021 14:46:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626792413;
+        bh=0xGD3/0Zic0jjPeC/gHVRi/xMKxPymQtNrC/i4voqrw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ra1sWxY+emH66IQfPc3sO8x0BftpDs/L+BEzlotpsa5tWd5Q+gafMr9Y24FEBLiX3
+         u+MNKMVJ/TH+v9jY0JAnzaqfdDfKUNX8VQi9J0BONc76TQHs3K9dMq9NpRM/kFgQ3i
+         eoQBik/kfORyZUj2cn7FfVtd6/z9tgfuLVULCW0I288x1J/ofZHJCPPDvkOVj44ZaQ
+         3mbip7basT+jgifH7GZRBuV5cUJRoBHdCBWSHgqGjJszTkLZonbNj15sLNr1R7I0pb
+         Ry1I3fTstaGnSg+HcEHkjpbQkDePaRRZor1jvdSrPA2QlOeBDGoV2f57UFHeSmN2Kj
+         WC+He1IKHj2DQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH net-next v2 01/31] net: split out SIOCDEVPRIVATE handling from dev_ioctl
+Date:   Tue, 20 Jul 2021 16:46:08 +0200
+Message-Id: <20210720144638.2859828-2-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210720144638.2859828-1-arnd@kernel.org>
+References: <20210720144638.2859828-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <20210719143811.2135-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210719143811.2135-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <c8ec5fe0c8eb86898416edb7c68dcf0eeeaccf54.camel@pengutronix.de>
-In-Reply-To: <c8ec5fe0c8eb86898416edb7c68dcf0eeeaccf54.camel@pengutronix.de>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 20 Jul 2021 15:57:40 +0100
-Message-ID: <CA+V-a8vgQ1-tUOw2o3E39reZmnLGFVN_HEvZeH-x5cj01x-Pzg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for RZ/G2L family
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-can@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Philipp,
+From: Arnd Bergmann <arnd@arndb.de>
 
-Thank you for the review.
+SIOCDEVPRIVATE ioctl commands are mainly used in really old
+drivers, and they have a number of problems:
 
-On Tue, Jul 20, 2021 at 11:23 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
->
-> On Mon, 2021-07-19 at 15:38 +0100, Lad Prabhakar wrote:
-> > CANFD block on RZ/G2L SoC is almost identical to one found on
-> > R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
-> > are split into different sources and the IP doesn't divide (1/2)
-> > CANFD clock within the IP.
-> >
-> > This patch adds compatible string for RZ/G2L family and registers
-> > the irq handlers required for CANFD operation. IRQ numbers are now
-> > fetched based on names instead of indices. For backward compatibility
-> > on non RZ/G2L SoC's we fallback reading based on indices.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > ---
-> >  drivers/net/can/rcar/rcar_canfd.c | 178 ++++++++++++++++++++++++------
-> >  1 file changed, 147 insertions(+), 31 deletions(-)
-> >
-> > diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-> > index 311e6ca3bdc4..d4affc002fb3 100644
-> > --- a/drivers/net/can/rcar/rcar_canfd.c
-> > +++ b/drivers/net/can/rcar/rcar_canfd.c
-> > @@ -37,9 +37,15 @@
-> [...]
-> > +     if (gpriv->chip_id == RENESAS_RZG2L) {
-> > +             gpriv->rstc1 = devm_reset_control_get_exclusive_by_index(&pdev->dev, 0);
-> > +             if (IS_ERR(gpriv->rstc1)) {
-> > +                     dev_err(&pdev->dev, "failed to get reset index 0\n");
->
-> Please consider requesting the reset controls by name instead of by
-> index. See also my reply to the binding patch.
->
-Will do.
+- They hide behind the normal .ndo_do_ioctl function that
+  is also used for other things in modern drivers, so it's
+  hard to spot a driver that actually uses one of these
 
-> > +                     return PTR_ERR(gpriv->rstc1);
-> > +             }
-> > +
-> > +             err = reset_control_reset(gpriv->rstc1);
-> > +             if (err)
-> > +                     return err;
->
-> I suggest to wait until after all resource requests have succeeded
-> before triggering the resets, i.e. first get all reset controls and
-> clocks, etc., and only then trigger resets, enable clocks, and so on.
->
-> That way there will be no spurious resets in case of probe deferrals.
->
-Agreed, will update the code.
+- Since drivers use a number different calling conventions,
+  it is impossible to support compat mode for them in
+  a generic way.
 
-Cheers,
-Prabhakar
+- With all drivers using the same 16 commands codes, there
+  is no way to introspect the data being passed through
+  things like strace.
 
-> regards
-> Philipp
+Add a new net_device_ops callback pointer, to address the
+first two of these. Separating them from .ndo_do_ioctl
+makes it easy to grep for drivers with a .ndo_siocdevprivate
+callback, and the unwieldy name hopefully makes it easier
+to spot in code review.
+
+By passing the ifreq structure and the ifr_data pointer
+separately, it is no longer necessary to overload these,
+and the driver can use either one for a given command.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ Documentation/networking/netdevices.rst |  7 +++++++
+ include/linux/netdevice.h               |  3 +++
+ net/core/dev_ioctl.c                    | 25 ++++++++++++++++++++++---
+ 3 files changed, 32 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/networking/netdevices.rst b/Documentation/networking/netdevices.rst
+index 17bdcb746dcf..02f1faac839a 100644
+--- a/Documentation/networking/netdevices.rst
++++ b/Documentation/networking/netdevices.rst
+@@ -222,6 +222,13 @@ ndo_do_ioctl:
+ 	Synchronization: rtnl_lock() semaphore.
+ 	Context: process
+ 
++ndo_siocdevprivate:
++	Synchronization: rtnl_lock() semaphore.
++	Context: process
++
++	This is used to implement SIOCDEVPRIVATE ioctl helpers.
++	These should not be added to new drivers, so don't use.
++
+ ndo_get_stats:
+ 	Synchronization: rtnl_lock() semaphore, dev_base_lock rwlock, or RCU.
+ 	Context: atomic (can't sleep under rwlock or RCU)
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 5c39129101c0..05d70143715b 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1361,6 +1361,9 @@ struct net_device_ops {
+ 	int			(*ndo_validate_addr)(struct net_device *dev);
+ 	int			(*ndo_do_ioctl)(struct net_device *dev,
+ 					        struct ifreq *ifr, int cmd);
++	int			(*ndo_siocdevprivate)(struct net_device *dev,
++						      struct ifreq *ifr,
++						      void __user *data, int cmd);
+ 	int			(*ndo_set_config)(struct net_device *dev,
+ 					          struct ifmap *map);
+ 	int			(*ndo_change_mtu)(struct net_device *dev,
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 0af7b9f09970..a54414590c81 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -258,6 +258,23 @@ static int dev_do_ioctl(struct net_device *dev,
+ 	return err;
+ }
+ 
++static int dev_siocdevprivate(struct net_device *dev,
++			      struct ifreq *ifr, unsigned int cmd)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	void __user *data = ifr->ifr_data;
++
++	if (ops->ndo_siocdevprivate) {
++		if (netif_device_present(dev))
++			return ops->ndo_siocdevprivate(dev, ifr, data, cmd);
++		else
++			return -ENODEV;
++	}
++
++	/* fall back to do_ioctl for drivers not yet converted */
++	return dev_do_ioctl(dev, ifr, cmd);
++}
++
+ /*
+  *	Perform the SIOCxIFxxx calls, inside rtnl_lock()
+  */
+@@ -335,9 +352,11 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, unsigned int cmd)
+ 	 *	Unknown or private ioctl
+ 	 */
+ 	default:
+-		if ((cmd >= SIOCDEVPRIVATE &&
+-		    cmd <= SIOCDEVPRIVATE + 15) ||
+-		    cmd == SIOCBONDENSLAVE ||
++		if (cmd >= SIOCDEVPRIVATE &&
++		    cmd <= SIOCDEVPRIVATE + 15)
++			return dev_siocdevprivate(dev, ifr, cmd);
++
++		if (cmd == SIOCBONDENSLAVE ||
+ 		    cmd == SIOCBONDRELEASE ||
+ 		    cmd == SIOCBONDSETHWADDR ||
+ 		    cmd == SIOCBONDSLAVEINFOQUERY ||
+-- 
+2.29.2
+
