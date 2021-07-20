@@ -2,134 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7DD3D0229
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:27:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DEC3D0266
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 21:58:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbhGTSqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 14:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbhGTSqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:46:30 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359C1C0613DB
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 12:27:02 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id c23so3576517ljr.8
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 12:27:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EI2a6CePBuQR5Qmt/hIAg9BsSGRZLvCH1L7dvlW0uiw=;
-        b=C/IMoejLQ3TpAwWYMjgZegIoM3Ljsd0fchCpMbLPN0uYHEs1jmSCEBv6KPLLzExal4
-         0LbYsqLNPRLzA3+wLI5TdzUtmrYg6vZAes3ebz8vsJgXKaIBilRm2/xQWyTTGjN5PzDK
-         cMPnwUPZDMkvN5llO6UyNuK/a5D5WQectAgzehBqPkcz/Ac4EsX30+MR84+gFOaI1gzR
-         4J2I88iq7Y2E2mq4ewAltFyL+qCLUXcBCmbCKDitSeGnYei1G843MWztVnuwFXYr6gX2
-         2woprX0y3Iar4L4M24OgoI/JiMLIH+m199zJtJF6zCHRfxY5ijhU1s3YEHwnYB7coF6M
-         Hxwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EI2a6CePBuQR5Qmt/hIAg9BsSGRZLvCH1L7dvlW0uiw=;
-        b=nN2cGlTX5/YJoyBK7lPqYbZNUnVb4UohHBHRur3YFTvY347EiWbrPtHeMpBDsKVSC5
-         k8+dOLEwc7z/EQt0cSucMRjFH8ODForG4a7R+xi2GCF9w6GgfAlH9wJrucLn68NQJm68
-         MckLZQhL2b54pRPGevxG+HJMfxVBgOq49w0O1bK+Oz/JIj8BM4t1wDFcl7V2qzG6sgnO
-         jWsBdh9s7nGbGpPA77cYoKYdvy8imwrJz5DSAvvhgS88A+XVflgU8T3jRZTSLZAqIkRm
-         ukXqDCGaJsiYqkVw51EUZdWDkD0m6JnbDC+8h9jEJjGlYtK2CP+7WbVVp0P48rrxCkJp
-         o9pg==
-X-Gm-Message-State: AOAM530zJGPyTprXZFZNzDfpg5qR0dYo5xxoRbhSl42YwaEbefE7dIFM
-        Ka72UTlzX9Z2l+eOlj3En89WMVS8DozQ79EvvXKQEg==
-X-Google-Smtp-Source: ABdhPJxSeCQrtKMGm2Qo3jOi9yp1Cpkh4gfKZo13daPxhKFclCpddl5nYSSjG2kXt4QMPJSwPWOccgx8xgttFS5DF8I=
-X-Received: by 2002:a05:651c:1213:: with SMTP id i19mr22636901lja.81.1626809220205;
- Tue, 20 Jul 2021 12:27:00 -0700 (PDT)
+        id S232241AbhGTTPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 15:15:02 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:37824 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232986AbhGTTNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 15:13:20 -0400
+Received: from localhost.localdomain (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 8C20A200F4B1;
+        Tue, 20 Jul 2021 21:43:25 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 8C20A200F4B1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1626810205;
+        bh=I6IgflmmRTaQWt4yU6RSHdm1rnzyseL8lEZWb8d5ZUc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CSq2/39cLYVRj0hgX21cLjZI14z/HHGiskUvtPaolC7cigKtwUALe1vy94Do1HhE0
+         3tH9rrHaDEr4zb7MxW9s4oZoPolZQl1uYjf7U8l0qNRQICztMOt4Ts24j637LUF0tO
+         1bGywixNXLonbarmXRoWIlr18fQ0cpi3adKxDEEAzw2Ki24wKQuAbslf1a8WkUtGNh
+         qgKYW++Z/mNynOND59VHqLE1FVplhIc/kVCcKq/DKMSkCBxeH8yxXre0s1drQQpCy3
+         fnLzrPS1r8H+/2uIkoCSdhtjVtRJbgUQiZ5R6WBD2g+WTYcX3Tj6UmYlt0Ep0hdEhd
+         dHEP0LuGtIUpQ==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, tom@herbertland.com, justin.iurman@uliege.be
+Subject: [PATCH net-next v5 0/6] Support for the IOAM Pre-allocated Trace with IPv6
+Date:   Tue, 20 Jul 2021 21:42:55 +0200
+Message-Id: <20210720194301.23243-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CALvZod66KF-8xKB1dyY2twizDE=svE8iXT_nqvsrfWg1a92f4A@mail.gmail.com>
- <cover.1626688654.git.vvs@virtuozzo.com> <9123bca3-23bb-1361-c48f-e468c81ad4f6@virtuozzo.com>
-In-Reply-To: <9123bca3-23bb-1361-c48f-e468c81ad4f6@virtuozzo.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 20 Jul 2021 12:26:48 -0700
-Message-ID: <CALvZod4HCRHpPJtGE=8tU1Yj=WsWHpocP0q0JU3r4F2fMmAw5w@mail.gmail.com>
-Subject: Re: [PATCH v5 02/16] memcg: enable accounting for IP address and
- routing-related objects
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <guro@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 3:44 AM Vasily Averin <vvs@virtuozzo.com> wrote:
->
-> An netadmin inside container can use 'ip a a' and 'ip r a'
-> to assign a large number of ipv4/ipv6 addresses and routing entries
-> and force kernel to allocate megabytes of unaccounted memory
-> for long-lived per-netdevice related kernel objects:
-> 'struct in_ifaddr', 'struct inet6_ifaddr', 'struct fib6_node',
-> 'struct rt6_info', 'struct fib_rules' and ip_fib caches.
->
-> These objects can be manually removed, though usually they lives
-> in memory till destroy of its net namespace.
->
-> It makes sense to account for them to restrict the host's memory
-> consumption from inside the memcg-limited container.
->
-> One of such objects is the 'struct fib6_node' mostly allocated in
-> net/ipv6/route.c::__ip6_ins_rt() inside the lock_bh()/unlock_bh() section:
->
->  write_lock_bh(&table->tb6_lock);
->  err = fib6_add(&table->tb6_root, rt, info, mxc);
->  write_unlock_bh(&table->tb6_lock);
->
-> In this case it is not enough to simply add SLAB_ACCOUNT to corresponding
-> kmem cache. The proper memory cgroup still cannot be found due to the
-> incorrect 'in_interrupt()' check used in memcg_kmem_bypass().
->
-> Obsoleted in_interrupt() does not describe real execution context properly.
-> From include/linux/preempt.h:
->
->  The following macros are deprecated and should not be used in new code:
->  in_interrupt() - We're in NMI,IRQ,SoftIRQ context or have BH disabled
->
-> To verify the current execution context new macro should be used instead:
->  in_task()      - We're in task context
->
-> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-> ---
->  mm/memcontrol.c      | 2 +-
->  net/core/fib_rules.c | 4 ++--
->  net/ipv4/devinet.c   | 2 +-
->  net/ipv4/fib_trie.c  | 4 ++--
->  net/ipv6/addrconf.c  | 2 +-
->  net/ipv6/ip6_fib.c   | 4 ++--
->  net/ipv6/route.c     | 2 +-
->  7 files changed, 10 insertions(+), 10 deletions(-)
->
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index ae1f5d0..1bbf239 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -968,7 +968,7 @@ static __always_inline bool memcg_kmem_bypass(void)
->                 return false;
->
->         /* Memcg to charge can't be determined. */
-> -       if (in_interrupt() || !current->mm || (current->flags & PF_KTHREAD))
-> +       if (!in_task() || !current->mm || (current->flags & PF_KTHREAD))
->                 return true;
->
->         return false;
+v5:
+ - Refine types, min/max and default values for new sysctls
+ - Introduce a "_wide" sysctl for each "ioam6_id" sysctl
+ - Add more validation on headers before processing data
+ - RCU for sc <> ns pointers + appropriate accessors
+ - Generic Netlink policies are now per op, not per family anymore
+ - Address other comments/remarks from Jakub (thanks again)
+ - Revert "__packed" to "__attribute__((packed))" for uapi headers
+ - Add tests to cover the functionality added, as requested by David Ahern
 
-Can you please also change in_interrupt() in active_memcg() as well?
-There are other unrelated in_interrupt() in that file but the one in
-active_memcg() should be coupled with this change.
+v4:
+ - Address warnings from checkpatch (ignore errors related to unnamed bitfields
+   in the first patch)
+ - Use of hweight32 (thanks Jakub)
+ - Remove inline keyword from static functions in C files and let the compiler
+   decide what to do (thanks Jakub)
+
+v3:
+ - Fix warning "unused label 'out_unregister_genl'" by adding conditional macro
+ - Fix lwtunnel output redirect bug: dst cache useless in this case, use
+   orig_output instead
+
+v2:
+ - Fix warning with static for __ioam6_fill_trace_data
+ - Fix sparse warning with __force when casting __be64 to __be32
+ - Fix unchecked dereference when removing IOAM namespaces or schemas
+ - exthdrs.c: Don't drop by default (now: ignore) to match the act bits "00"
+ - Add control plane support for the inline insertion (lwtunnel)
+ - Provide uapi structures
+ - Use __net_timestamp if skb->tstamp is empty
+ - Add note about the temporary IANA allocation
+ - Remove support for "removable" TLVs
+ - Remove support for virtual/anonymous tunnel decapsulation
+
+In-situ Operations, Administration, and Maintenance (IOAM) records
+operational and telemetry information in a packet while it traverses
+a path between two points in an IOAM domain. It is defined in
+draft-ietf-ippm-ioam-data [1]. IOAM data fields can be encapsulated
+into a variety of protocols. The IPv6 encapsulation is defined in
+draft-ietf-ippm-ioam-ipv6-options [2], via extension headers. IOAM
+can be used to complement OAM mechanisms based on e.g. ICMP or other
+types of probe packets.
+
+This patchset implements support for the Pre-allocated Trace, carried
+by a Hop-by-Hop. Therefore, a new IPv6 Hop-by-Hop TLV option is
+introduced, see IANA [3]. The three other IOAM options are not included
+in this patchset (Incremental Trace, Proof-of-Transit and Edge-to-Edge).
+The main idea behind the IOAM Pre-allocated Trace is that a node
+pre-allocates some room in packets for IOAM data. Then, each IOAM node
+on the path will insert its data. There exist several interesting use-
+cases, e.g. Fast failure detection/isolation or Smart service selection.
+Another killer use-case is what we have called Cross-Layer Telemetry,
+see the demo video on its repository [4], that aims to make the entire
+stack (L2/L3 -> L7) visible for distributed tracing tools (e.g. Jaeger),
+instead of the current L5 -> L7 limited view. So, basically, this is a
+nice feature for the Linux Kernel.
+
+This patchset also provides support for the control plane part, but only for the
+inline insertion (host-to-host use case), through lightweight tunnels. Indeed,
+for in-transit traffic, the solution is to have an IPv6-in-IPv6 encapsulation,
+which brings some difficulties and still requires a little bit of work and
+discussion (ie anonymous tunnel decapsulation and multi egress resolution).
+
+- Patch 1: IPv6 IOAM headers definition
+- Patch 2: Data plane support for Pre-allocated Trace
+- Patch 3: IOAM Generic Netlink API
+- Patch 4: Support for IOAM injection with lwtunnels
+- Patch 5: Documentation for new IOAM sysctls
+- Patch 6: Test for the IOAM insertion with IPv6
+
+  [1] https://tools.ietf.org/html/draft-ietf-ippm-ioam-data
+  [2] https://tools.ietf.org/html/draft-ietf-ippm-ioam-ipv6-options
+  [3] https://www.iana.org/assignments/ipv6-parameters/ipv6-parameters.xhtml#ipv6-parameters-2
+  [4] https://github.com/iurmanj/cross-layer-telemetry
+
+Justin Iurman (6):
+  uapi: IPv6 IOAM headers definition
+  ipv6: ioam: Data plane support for Pre-allocated Trace
+  ipv6: ioam: IOAM Generic Netlink API
+  ipv6: ioam: Support for IOAM injection with lwtunnels
+  ipv6: ioam: Documentation for new IOAM sysctls
+  selftests: net: Test for the IOAM insertion with IPv6
+
+ Documentation/networking/ioam6-sysctl.rst  |  26 +
+ Documentation/networking/ip-sysctl.rst     |  17 +
+ include/linux/ioam6.h                      |  13 +
+ include/linux/ioam6_genl.h                 |  13 +
+ include/linux/ioam6_iptunnel.h             |  13 +
+ include/linux/ipv6.h                       |   3 +
+ include/net/ioam6.h                        |  67 ++
+ include/net/netns/ipv6.h                   |   3 +
+ include/uapi/linux/in6.h                   |   1 +
+ include/uapi/linux/ioam6.h                 | 133 +++
+ include/uapi/linux/ioam6_genl.h            |  52 ++
+ include/uapi/linux/ioam6_iptunnel.h        |  20 +
+ include/uapi/linux/ipv6.h                  |   3 +
+ include/uapi/linux/lwtunnel.h              |   1 +
+ net/core/lwtunnel.c                        |   2 +
+ net/ipv6/Kconfig                           |  11 +
+ net/ipv6/Makefile                          |   3 +-
+ net/ipv6/addrconf.c                        |  37 +
+ net/ipv6/af_inet6.c                        |  10 +
+ net/ipv6/exthdrs.c                         |  61 ++
+ net/ipv6/ioam6.c                           | 910 +++++++++++++++++++++
+ net/ipv6/ioam6_iptunnel.c                  | 274 +++++++
+ net/ipv6/sysctl_net_ipv6.c                 |  19 +
+ tools/testing/selftests/net/Makefile       |   2 +
+ tools/testing/selftests/net/config         |   1 +
+ tools/testing/selftests/net/ioam6.sh       | 298 +++++++
+ tools/testing/selftests/net/ioam6_parser.c | 403 +++++++++
+ 27 files changed, 2395 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/ioam6-sysctl.rst
+ create mode 100644 include/linux/ioam6.h
+ create mode 100644 include/linux/ioam6_genl.h
+ create mode 100644 include/linux/ioam6_iptunnel.h
+ create mode 100644 include/net/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6_genl.h
+ create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ create mode 100644 net/ipv6/ioam6.c
+ create mode 100644 net/ipv6/ioam6_iptunnel.c
+ create mode 100644 tools/testing/selftests/net/ioam6.sh
+ create mode 100644 tools/testing/selftests/net/ioam6_parser.c
+
+-- 
+2.25.1
+
