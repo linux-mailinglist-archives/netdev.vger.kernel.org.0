@@ -2,305 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F02B3CF65D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 10:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74D263CF665
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 10:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235101AbhGTIMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 04:12:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36834 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234545AbhGTIHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:07:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626770832;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DH5o6Gy07+ISJ8mJy7cF3/v/pLE4+r8Hp1B8hJOsk18=;
-        b=RuQEROMQ2EJaCK6oyPQOdJLPL3YCbnilL7Orwh5t+MXToQhNLCvK7e2DvncueB/1fIY/j2
-        5liqBv3CDbvygKVH7rBYpkZoAo+7QMd9MUjtSzU1xAQoVwvW/Ztqb7TaiwR7L9wvOvTd5t
-        kuE7G2dypikEkzbxVFMW3LtNhXFOhGo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-523-BYQ-NnVOPtOyydQ4NIHELQ-1; Tue, 20 Jul 2021 04:45:08 -0400
-X-MC-Unique: BYQ-NnVOPtOyydQ4NIHELQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D916804309;
-        Tue, 20 Jul 2021 08:45:07 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-114-77.ams2.redhat.com [10.36.114.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 00F3F60BD8;
-        Tue, 20 Jul 2021 08:45:05 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>, toke@redhat.com
-Subject: [PATCH net-next 5/5] selftests: net: veth: add tests for set_channel
-Date:   Tue, 20 Jul 2021 10:41:52 +0200
-Message-Id: <e583288e0cba8d4e888779f499639ba0e5299e89.1626768072.git.pabeni@redhat.com>
-In-Reply-To: <cover.1626768072.git.pabeni@redhat.com>
-References: <cover.1626768072.git.pabeni@redhat.com>
+        id S234366AbhGTINF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 04:13:05 -0400
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:7128 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234692AbhGTIJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:09:51 -0400
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16K8gSW8024346;
+        Tue, 20 Jul 2021 08:50:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2021-07-09; bh=hzC+dJeM+zmIjh49M1hPhxJ7xspnEfeZ6hyQqrHoyXg=;
+ b=ZrKL2SEtFIKyS4AhqlN0n3k6B31hKDoVbcgcwXIze1mNOf89GAeq41rMxTJV9dde0yYS
+ qBs+SdWykW34Nw4k9QbdWaaHEFuAS8l+NUhFyj8szAuzbYSN86jg0ZE8Q7uiphjxK401
+ fTKfV6OEmLIWCpVcf/nxltS6UxdkqGjOk2HjbvGMHc6LZr2Ai/ho/o87lqO6gWghm1B5
+ 3PFAWog8XFsLY8vd1cD6RLGGSFaTuB8J9pt2yhL8B50nYFC0Ou5mFqXvevM6o9g910eM
+ 5YOcejMkn07oEAOngBTBc9A60zYsvXjY4vEXjxZonaAtpL+2cntRtTsijRJirqIma1DM lQ== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2020-01-29; bh=hzC+dJeM+zmIjh49M1hPhxJ7xspnEfeZ6hyQqrHoyXg=;
+ b=hTmOgAb29ChzUhaegBZlfyETpnXwmA0nB7wRhtdNhACJBg9QPax1zOF23rRx4mhkc9fT
+ PKcpmKZCG0FqmtrhAu3FN2+Vvd038BgIHKcqyOokOQzFToGqgw2CWRq+BGKC8qZY+akb
+ 76w1iVCFaM1q3B5w/bFc5eQVshC7RczT9RYhyE42S1eMgprWiohclrfsXim5PJpiS4gT
+ X/RTlUemKSgQUnVtRjA2xQgZRUKXjQ8Ar1IIMPtuQ3jR/GJivDHSY9nCOeGwz4RYQRAh
+ KWNvsjgwv6QfO9+GRbWPRHLJWonWScUkeDif12PUiJzSHeZN0ecyQP2G/LN9oWRV/hHm eA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 39vqm9bbt3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Jul 2021 08:50:10 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16K8f5T0175319;
+        Tue, 20 Jul 2021 08:50:09 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
+        by aserp3020.oracle.com with ESMTP id 39uq16f59u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Jul 2021 08:50:08 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hl/3mcb1C9DOWpz6jxA48CDVqfHWIBlCFZuiNvMz4WzUgcQGpPxIiOtk1xBDVNBlzHlbn4fFng1dmkgFOK0kJ8z51ExhKGZhKjz8vEeAuPibzlteD5/3lFQxEMPMV2xV32ChEimIa6EyCHleIGRvXySjNzY4lOyKG8DMys0WcxHTipdXfPLlQV2m6r1bW7nUAYJxiXqREGdenN/gxpzdpZ6tljTIf6E/4gTttQ+kv0R6kgWXDYm/vFH/yCqmlFtO52RH+Pdwic3+L31og3EllxdWGR/qBLtsd9rzaiNZT7RulWbyf3Wy9xqyFo1l4NF43CNAKJ0RhWQcKj3+gk5OWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hzC+dJeM+zmIjh49M1hPhxJ7xspnEfeZ6hyQqrHoyXg=;
+ b=ffzoB1hwGzK/Be6YNs8g53B5SJl+IWBNf9DBJd9uhCZZ9zBK3jKlKSUJfW09d7/Xy9bf/fi8ELwbs2m7K1V+f0sgNvmWUBhNbbMJ170pKqSqAVqCnNzV641IN3KZNJrSHlE+fOiuHqFnrZuFXB07sj+iwTy2lKyxqNt8c9BDg9HBLeJY8CPtKacJYfCv8PlhwO5DqYlUeVREObolMWsV7wr7ee+mGL1TIZxbDKi+o5NgRYTSprmEXE0KTotXNeUYpHeZDqezYY7SsriRUf+3k03fxLD67KVC9P87A7sBun/J1S0O+/N7+mHHQqLBF3LFBsAWk6GExfBQ6YOSFrlW4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hzC+dJeM+zmIjh49M1hPhxJ7xspnEfeZ6hyQqrHoyXg=;
+ b=qNMkfmqbLlmKhu/ZrAxHUskHemEs1FOzcxumMDhqrofY3F7WBoXE+JyjH0R98QDc14immDjmfNpMTA7YZKTaXpWRq+otjpLb7TM21oUopZKNYdSMq6+Sye17O3j/gGlrNHSwSuOBQCTr0Ui7T3cEFfcvoBJaOZDIKivX6l5Rxb8=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=oracle.com;
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
+ by MN2PR10MB3246.namprd10.prod.outlook.com (2603:10b6:208:122::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Tue, 20 Jul
+ 2021 08:50:06 +0000
+Received: from BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::39e8:94ec:fc2d:5a56]) by BLAPR10MB5267.namprd10.prod.outlook.com
+ ([fe80::39e8:94ec:fc2d:5a56%9]) with mapi id 15.20.4331.034; Tue, 20 Jul 2021
+ 08:50:06 +0000
+From:   Alan Maguire <alan.maguire@oracle.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, morbo@google.com,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next 0/3] libbpf: btf typed data dumping fixes (__int128 usage, error propagation)
+Date:   Tue, 20 Jul 2021 09:49:50 +0100
+Message-Id: <1626770993-11073-1-git-send-email-alan.maguire@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: DB6PR07CA0158.eurprd07.prod.outlook.com
+ (2603:10a6:6:43::12) To BLAPR10MB5267.namprd10.prod.outlook.com
+ (2603:10b6:208:30e::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (95.45.14.174) by DB6PR07CA0158.eurprd07.prod.outlook.com (2603:10a6:6:43::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.9 via Frontend Transport; Tue, 20 Jul 2021 08:50:05 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fa60c34f-106b-410f-475c-08d94b5b5f48
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3246:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR10MB32465B544F9D46FB86996C49EFE29@MN2PR10MB3246.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PViJ+jjV7BYMIHNyfqhOItOAxKR/idikhZPrYLUjNwpz/n9bxb79SEeQyimpV8CfWuATpJmhscksHSopiUD0vwr4N3R6URbkTNy1uUPsgkgid3K6XOOnLEjDhDobk4B1BWftUAIlvXBJhwtmBFZHZAxL05P92OqOI7xe74B2O9D76jeEMqRc+IfWmdgjrhMGPGSOUQSMmR9UxA6u3MjYwt3jAied5YmraoGR9LeE840P/qfLL3TLyyBaPv2ktZTDYtrXVx42vZzBueYpsNQft8PZZfzxgyws1uTWNN039BnKWUB7UzfGiMC5KhR4v7MZyhFJoeoVgFhXNTAqaQlVt7NyEAxK6z2yETp9E4TxFTR5dxoLxKIAFWrG+pnu7aFPab1cs8pAPDLoFaCgc/75XGeDXobdjGFbZ0VOeM9cnQrwUf6TtxMXYJwotWQHkoykTBVflnsdHRISFk7JJu+vactDJW9o0ldJdtNjjreOzSIa7TYqPKh8dsfwxArM1W8UU2hG4vfVwBS5/74Ami4HbMnbmDf6hdcYXWU65TAK6Olg5Q/IIj0CrzGVZ/s7Kby5d0GlfQdaW3/iznum/egdMbg6exP8BSgfdKt5h0n+QpOJAzT0bCGl1JrELSVMnDwYDM9axflIPQkRd4A02+eP9nL89l+2bNXGPWPm6DRhredS2JqZt+e3RVnIIgcMN9sa+APWHfpXhkP3PQyazl/aXfVgr4INx2mKaxYyIszweumE9ZjZL8zFN5RYGqoN7Oa5yMPgheDwhEboFDRbvzEL4GD5cj8iU0ospM9Flqs1I48=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(52116002)(6486002)(26005)(8676002)(6512007)(6506007)(38100700002)(38350700002)(508600001)(186003)(36756003)(6666004)(316002)(2616005)(66556008)(66476007)(44832011)(66946007)(8936002)(107886003)(83380400001)(7416002)(2906002)(956004)(5660300002)(966005)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?o0eMUIZzbI2b4al1vdAQ0AI+1IGnDy3Qj29A31Ljjl54evLfV8KFbS/JzCrY?=
+ =?us-ascii?Q?j+pp4DQEIpOAHbglwvpxd3F7szNnu9o/buFcLmLfsW3O3hCHpKdsj/A6Xb8B?=
+ =?us-ascii?Q?G6IcrYcI+r48ESeu0Fna02ZRARwEecpWvAEjmMZr3kEb8yn61XnmaENpGsEH?=
+ =?us-ascii?Q?3Tb9nDrHYd6KU7avu2KLw1yW1tfhq71liQH+TM1CB+t2/QM05/N+Kjhy2ZU3?=
+ =?us-ascii?Q?xlXMlk2Byf+1ftCjp8UgZq50sUCaoeDxOS7jBzusQcFBUGqtnApM8FeLTrCN?=
+ =?us-ascii?Q?oAtIjWPjauz3gIUS1ehIdJnguI/wZg2rAvXrnKMlbYtV4m9orseqXD4on3Pj?=
+ =?us-ascii?Q?195ozHWGsTShDuxsyJaJIAYCpLXMTcDJNRGiKnhGFjO80PkmmhoNTGhN2Mz7?=
+ =?us-ascii?Q?n03eG2qWyiUxOm98iJVgFMj5wCO0+mFxO0DYq52QfiiSsNSTFCmM/V3hgnIj?=
+ =?us-ascii?Q?ERhljFL4dOvsiXNxfClF8tgc5aB+ykl4mQSju0EYFMEQ1/fbkppVkopLKtlm?=
+ =?us-ascii?Q?cOS8m53LrVXgMqw2p+DBPHw6gd4g2rwqnGx9RtjRLs4KBTUX4KktiIhjFYY8?=
+ =?us-ascii?Q?X2EtQXznkKnhbvWUDdashb9iPhMAQEIvL8d/GQfgjfsByewoGXbcQBFa6PuL?=
+ =?us-ascii?Q?+JaDJZGs7GGPOMQC9M70wsJkhXqt5KENRrmd8WJ9g8/GeWgT59z9X6cnVohm?=
+ =?us-ascii?Q?FY784XOCfh6V5FrOeuCO7A4uxXv1HZb+BAu0S+rKNiGXLH76hb7tTlHotsXq?=
+ =?us-ascii?Q?sg/CtQbl2IImQdRBdZdxgU7iDxGYcI0dJ2ZrdxwSWpGx+VlniAukqJqyXEpk?=
+ =?us-ascii?Q?IaEoGhIWR8Z4T2Tnq/23Y/Aw9DgCE8CspeEjx7rFwnFOKSph1quAAVdTtx8v?=
+ =?us-ascii?Q?bWiDVGIjz1WF949wu3F7vxylgFXB6tm3RxOI2iN2hgA8lPz277d8gFwOciJ8?=
+ =?us-ascii?Q?T/MKl3GT+17Xs4qgpLU8ShflHsju+XbkQ6+RMXkTBRraqwubfyZePlXSvYlv?=
+ =?us-ascii?Q?aexpFLvM2cce8G5n37/zTqNlOyt01w5gD2oQjChwIg6IG4djtbpZDsqf2XV/?=
+ =?us-ascii?Q?J5xGA7w9EDNzhKx2f41xksl1CBb/e6EjQa5p6aUYIIrP7K4cJt1qplCF3ZfH?=
+ =?us-ascii?Q?e4/iHppHklnVLIyBooR1cAdPJotZbh0bCpUM/7egAqiAE3ulHnnT7xFu9zKO?=
+ =?us-ascii?Q?YHBJgDB2vW2h90bxtCZ+sTMvy43wvKg2FZ3E9a4BdAl0KXxt3kkL71sHZxad?=
+ =?us-ascii?Q?VFYJiLkj6DRs52ewiKD1giOv64pr3vnnY45Bl/7XJk7u84yWtMSd77VCrgdD?=
+ =?us-ascii?Q?1k/jbANhXekN9CBbipPzSeca?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa60c34f-106b-410f-475c-08d94b5b5f48
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2021 08:50:06.4346
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XOjA0L65inLJmEJ3hGpRQcA4pDQeXWd22Dr14DoYD9hp8YEKZv1woBeEPCe6anL8mbZtAnwBG/HQRm36dk6YPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3246
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10050 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ mlxlogscore=999 suspectscore=0 bulkscore=0 spamscore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107200052
+X-Proofpoint-GUID: L4nQCP633gBXo5bvGA0pd7yn-aMLqIYd
+X-Proofpoint-ORIG-GUID: L4nQCP633gBXo5bvGA0pd7yn-aMLqIYd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simple functional test for the newly exposed features.
+This series aims to resolve further issues with the BTF typed data
+dumping interfaces in libbpf.
 
-Also add an optional stress test for the channel number
-update under flood.
+Compilation failures with use of __int128 on 32-bit platforms were
+reported [1].  As a result, the use of __int128 in libbpf typed data
+dumping is replaced with __u64 usage for bitfield manipulations.
+In the case of 128-bit integer values, they are simply split into
+two 64-bit hex values for display (patch 1).
 
-RFC v1 -> RFC v2:
- - add the stress test
+Tests are added for __int128 display in patch 2, using conditional
+compilation to avoid problems with a lack of __int128 support.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- tools/testing/selftests/net/veth.sh | 183 +++++++++++++++++++++++++++-
- 1 file changed, 182 insertions(+), 1 deletion(-)
+Patch 3 resolves an issue Andrii noted about error propagation
+when handling enum data display.
 
-diff --git a/tools/testing/selftests/net/veth.sh b/tools/testing/selftests/net/veth.sh
-index 11d7cdb898c0..19eac3e44c06 100755
---- a/tools/testing/selftests/net/veth.sh
-+++ b/tools/testing/selftests/net/veth.sh
-@@ -13,7 +13,7 @@ readonly NS_DST=$BASE$DST
- readonly BM_NET_V4=192.168.1.
- readonly BM_NET_V6=2001:db8::
- 
--readonly NPROCS=`nproc`
-+readonly CPUS=`nproc`
- ret=0
- 
- cleanup() {
-@@ -75,6 +75,29 @@ chk_tso_flag() {
- 	__chk_flag "$1" $2 $3 tcp-segmentation-offload
- }
- 
-+chk_channels() {
-+	local msg="$1"
-+	local target=$2
-+	local rx=$3
-+	local tx=$4
-+
-+	local dev=veth$target
-+
-+	local cur_rx=`ip netns exec $BASE$target ethtool -l $dev |\
-+		grep RX: | tail -n 1 | awk '{print $2}' `
-+		local cur_tx=`ip netns exec $BASE$target ethtool -l $dev |\
-+		grep TX: | tail -n 1 | awk '{print $2}'`
-+	local cur_combined=`ip netns exec $BASE$target ethtool -l $dev |\
-+		grep Combined: | tail -n 1 | awk '{print $2}'`
-+
-+	printf "%-60s" "$msg"
-+	if [ "$cur_rx" = "$rx" -a "$cur_tx" = "$tx" -a "$cur_combined" = "n/a" ]; then
-+		echo " ok "
-+	else
-+		echo " fail rx:$rx:$cur_rx tx:$tx:$cur_tx combined:n/a:$cur_combined"
-+	fi
-+}
-+
- chk_gro() {
- 	local msg="$1"
- 	local expected=$2
-@@ -107,11 +130,100 @@ chk_gro() {
- 	fi
- }
- 
-+__change_channels()
-+{
-+	local cur_cpu
-+	local end=$1
-+	local cur
-+	local i
-+
-+	while true; do
-+		printf -v cur '%(%s)T'
-+		[ $cur -le $end ] || break
-+
-+		for i in `seq 1 $CPUS`; do
-+			ip netns exec $NS_SRC ethtool -L veth$SRC rx $i tx $i
-+			ip netns exec $NS_DST ethtool -L veth$DST rx $i tx $i
-+		done
-+
-+		for i in `seq 1 $((CPUS - 1))`; do
-+			cur_cpu=$((CPUS - $i))
-+			ip netns exec $NS_SRC ethtool -L veth$SRC rx $cur_cpu tx $cur_cpu
-+			ip netns exec $NS_DST ethtool -L veth$DST rx $cur_cpu tx $cur_cpu
-+		done
-+	done
-+}
-+
-+__send_data() {
-+	local end=$1
-+
-+	while true; do
-+		printf -v cur '%(%s)T'
-+		[ $cur -le $end ] || break
-+
-+		ip netns exec $NS_SRC ./udpgso_bench_tx -4 -s 1000 -M 300 -D $BM_NET_V4$DST
-+	done
-+}
-+
-+do_stress() {
-+	local end
-+	printf -v end '%(%s)T'
-+	end=$((end + $STRESS))
-+
-+	ip netns exec $NS_SRC ethtool -L veth$SRC rx 3 tx 3
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 3 tx 3
-+
-+	ip netns exec $NS_DST ./udpgso_bench_rx &
-+	local rx_pid=$!
-+
-+	echo "Running stress test for $STRESS seconds..."
-+	__change_channels $end &
-+	local ch_pid=$!
-+	__send_data $end &
-+	local data_pid_1=$!
-+	__send_data $end &
-+	local data_pid_2=$!
-+	__send_data $end &
-+	local data_pid_3=$!
-+	__send_data $end &
-+	local data_pid_4=$!
-+
-+	wait $ch_pid $data_pid_1 $data_pid_2 $data_pid_3 $data_pid_4
-+	kill -9 $rx_pid
-+	echo "done"
-+
-+	# restore previous setting
-+	ip netns exec $NS_SRC ethtool -L veth$SRC rx 2 tx 2
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 2 tx 1
-+}
-+
-+usage() {
-+	echo "Usage: $0 [-h] [-s <seconds>]"
-+	echo -e "\t-h: show this help"
-+	echo -e "\t-s: run optional stress tests for the given amount of seconds"
-+}
-+
-+STRESS=0
-+while getopts "hs:" option; do
-+	case "$option" in
-+	"h")
-+		usage $0
-+		exit 0
-+		;;
-+	"s")
-+		STRESS=$OPTARG
-+		;;
-+	esac
-+done
-+
- if [ ! -f ../bpf/xdp_dummy.o ]; then
- 	echo "Missing xdp_dummy helper. Build bpf selftest first"
- 	exit 1
- fi
- 
-+[ $CPUS -lt 2 ] && echo "Only one CPU available, some tests will be skipped"
-+[ $STRESS -gt 0 -a $CPUS -lt 3 ] && echo " stress test will be skipped, too"
-+
- create_ns
- chk_gro_flag "default - gro flag" $SRC off
- chk_gro_flag "        - peer gro flag" $DST off
-@@ -134,6 +246,8 @@ chk_gro "        - aggregation with TSO off" 1
- cleanup
- 
- create_ns
-+chk_channels "default channels" $DST 1 1
-+
- ip -n $NS_DST link set dev veth$DST down
- ip netns exec $NS_DST ethtool -K veth$DST gro on
- chk_gro_flag "with gro enabled on link down - gro flag" $DST on
-@@ -147,6 +261,56 @@ chk_gro "        - aggregation with TSO off" 1
- cleanup
- 
- create_ns
-+
-+CUR_TX=1
-+CUR_RX=1
-+if [ $CPUS -gt 1 ]; then
-+	ip netns exec $NS_DST ethtool -L veth$DST tx 2
-+	chk_channels "setting tx channels" $DST 1 2
-+	CUR_TX=2
-+fi
-+
-+if [ $CPUS -gt 2 ]; then
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 3 tx 3
-+	chk_channels "setting both rx and tx channels" $DST 3 3
-+	CUR_RX=3
-+	CUR_TX=3
-+fi
-+
-+ip netns exec $NS_DST ethtool -L veth$DST combined 2 2>/dev/null
-+chk_channels "bad setting: combined channels" $DST $CUR_RX $CUR_TX
-+
-+ip netns exec $NS_DST ethtool -L veth$DST tx $((CPUS + 1)) 2>/dev/null
-+chk_channels "setting invalid channels nr" $DST $CUR_RX $CUR_TX
-+
-+if [ $CPUS -gt 1 ]; then
-+	# this also tests queues nr reduction
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 1 tx 2 2>/dev/null
-+	ip netns exec $NS_SRC ethtool -L veth$SRC rx 1 tx 2 2>/dev/null
-+	printf "%-60s" "bad setting: XDP with RX nr less than TX"
-+	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-+		section xdp_dummy 2>/dev/null &&\
-+		echo "fail - set operation successful ?!?" || echo " ok "
-+
-+	# the following tests will run with multiple channels active
-+	ip netns exec $NS_SRC ethtool -L veth$SRC rx 2
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 2
-+	ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o \
-+		section xdp_dummy 2>/dev/null
-+	printf "%-60s" "bad setting: reducing RX nr below peer TX with XDP set"
-+	ip netns exec $NS_DST ethtool -L veth$DST rx 1 2>/dev/null &&\
-+		echo "fail - set operation successful ?!?" || echo " ok "
-+	CUR_RX=2
-+	CUR_TX=2
-+fi
-+
-+if [ $CPUS -gt 2 ]; then
-+	printf "%-60s" "bad setting: increasing peer TX nr above RX with XDP set"
-+	ip netns exec $NS_SRC ethtool -L veth$SRC tx 3 2>/dev/null &&\
-+		echo "fail - set operation successful ?!?" || echo " ok "
-+	chk_channels "setting invalid channels nr" $DST 2 2
-+fi
-+
- ip -n $NS_DST link set dev veth$DST xdp object ../bpf/xdp_dummy.o section xdp_dummy 2>/dev/null
- chk_gro_flag "with xdp attached - gro flag" $DST on
- chk_gro_flag "        - peer gro flag" $SRC off
-@@ -167,10 +331,27 @@ chk_gro_flag "        - after gro on xdp off, gro flag" $DST on
- chk_gro_flag "        - peer gro flag" $SRC off
- chk_tso_flag "        - tso flag" $SRC on
- chk_tso_flag "        - peer tso flag" $DST on
-+
-+if [ $CPUS -gt 1 ]; then
-+	ip netns exec $NS_DST ethtool -L veth$DST tx 1
-+	chk_channels "decreasing tx channels with device down" $DST 2 1
-+fi
-+
- ip -n $NS_DST link set dev veth$DST up
- ip -n $NS_SRC link set dev veth$SRC up
- chk_gro "        - aggregation" 1
- 
-+if [ $CPUS -gt 1 ]; then
-+	[ $STRESS -gt 0 -a $CPUS -gt 2 ] && do_stress
-+
-+	ip -n $NS_DST link set dev veth$DST down
-+	ip -n $NS_SRC link set dev veth$SRC down
-+	ip netns exec $NS_DST ethtool -L veth$DST tx 2
-+	chk_channels "increasing tx channels with device down" $DST 2 2
-+	ip -n $NS_DST link set dev veth$DST up
-+	ip -n $NS_SRC link set dev veth$SRC up
-+fi
-+
- ip netns exec $NS_DST ethtool -K veth$DST gro off
- ip netns exec $NS_SRC ethtool -K veth$SRC tx-udp-segmentation off
- chk_gro "aggregation again with default and TSO off" 10
+More followup work is required to ensure multi-dimensional char array
+display works correctly.
+
+[1] https://lore.kernel.org/bpf/1626362126-27775-1-git-send-email-alan.maguire@oracle.com/T/#mc2cb023acfd6c3cd0b661e385787b76bb757430d
+
+Changes since v1:
+
+ - added error handling for bitfield size > 64 bits by changing function
+   signature for bitfield retrieval to return an int error value and to set
+   bitfield value via a __u64 * argument (Andrii)
+
+Alan Maguire (3):
+  libbpf: avoid use of __int128 in typed dump display
+  selftests/bpf: add __int128-specific tests for typed data dump
+  libbpf: propagate errors when retrieving enum value for typed data
+    display
+
+ tools/lib/bpf/btf_dump.c                          | 103 ++++++++++++++--------
+ tools/testing/selftests/bpf/prog_tests/btf_dump.c |  17 ++++
+ 2 files changed, 85 insertions(+), 35 deletions(-)
+
 -- 
-2.26.3
+1.8.3.1
 
