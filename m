@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C323CFD9F
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD943CFDAC
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239640AbhGTOwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 10:52:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35612 "EHLO mail.kernel.org"
+        id S241790AbhGTOyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:54:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240121AbhGTO2q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S240186AbhGTO2q (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 20 Jul 2021 10:28:46 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2407F61242;
-        Tue, 20 Jul 2021 14:47:00 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E15461245;
+        Tue, 20 Jul 2021 14:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626792421;
-        bh=FBU3mvl8B6oQHJIQ3dAba22U8Nn4CQoEYZ8YPr3rE4M=;
+        s=k20201202; t=1626792424;
+        bh=dfFtRwhmshTCcPVwDZ2Z2pUhPD3m5IvZY+PMD6+ey7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nAnPKf4D4GagaB0YPToMdtpbgV3khWraUnYRq3LdU767eqem3voAgNUTfFncXLvB/
-         tTWZp2iqu2kmm1muz/eU8VRBjzDZesjEiDxqjefp3BmuagL/4Bajj7dh3JmiD8MBWn
-         LnEIic4Cf8VLuGc9SBHG2xjJPjJx1X3VZYtwFmRh9L8Hs3RKBZPrIGvLo6aIdoE4YN
-         EWvEfw9lLD8+bXaJI1z7XyXXR9LZGhpYEcuxKR4xe1jOkNeDZ0vwC8fdSeR9eGZoz5
-         EGO+aRw9XU/6J6ERKb/tx0tnVL9UaypGS5HNB74eTp2q/UNoFaWGmwOWKazLugMdZj
-         eyAg7NCBxzjvw==
+        b=PuBgcfVxu+X6e//veH6ckrH/ppp4PoHcltaziQyS4Rs1u6wI8oPAIoXC66AucarmE
+         2PCxWBA0YS1xM4OgfIp8fR9Zv7rHLq4gFm+nrjRAEvGObcEsp/fiogbaTeZUktb2H/
+         jm4tVxT7/ECTwBNDcuvUTRhWvf5GpklR8tKY7STPPGfZjh1dzhDybQGqpdttwSydRP
+         8po8gDsfMzEDJaFvBAq+PM1A4ZZPpUthNbWQIYWOPFwMLiooXiH+bsIyxTLZBU/9eP
+         PCx1s+o+Pn2I1QIWEEFUNbDLbA8MDh6kSlTx9IjUYoSV6mm7Cjzn0rH5M/dl5ouqa4
+         3C3OsTJWJp2Kw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH net-next v2 08/31] bonding: use siocdevprivate
-Date:   Tue, 20 Jul 2021 16:46:15 +0200
-Message-Id: <20210720144638.2859828-9-arnd@kernel.org>
+Subject: [PATCH net-next v2 10/31] hamachi: use ndo_siocdevprivate
+Date:   Tue, 20 Jul 2021 16:46:17 +0200
+Message-Id: <20210720144638.2859828-11-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210720144638.2859828-1-arnd@kernel.org>
 References: <20210720144638.2859828-1-arnd@kernel.org>
@@ -40,100 +40,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The bonding driver supports two command codes for each operation: one
-in the SIOCDEVPRIVATE range and another one with the same definition
-but a unique command code.
-
-Only the second set currently works in compat mode, as the ifr_data
-expansion overwrites part of the ifr_slave field.
-
-Move the private ones into ndo_siocdevprivate and change the
-implementation to call the other function.  This makes both version
-work correctly.
+hamachi has one command that overloads the ifreq argument
+and requires a conversion to ndo_siocdevprivate in order to
+make compat mode work, so split it from ndo_ioctl.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/bonding/bond_main.c | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/packetengines/hamachi.c | 63 ++++++++++++--------
+ 1 file changed, 38 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index d22d78303311..94f8d6a9adfb 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3998,7 +3998,6 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
- 		}
+diff --git a/drivers/net/ethernet/packetengines/hamachi.c b/drivers/net/ethernet/packetengines/hamachi.c
+index d058a63602a9..94823c5f7dff 100644
+--- a/drivers/net/ethernet/packetengines/hamachi.c
++++ b/drivers/net/ethernet/packetengines/hamachi.c
+@@ -546,7 +546,9 @@ static int read_eeprom(void __iomem *ioaddr, int location);
+ static int mdio_read(struct net_device *dev, int phy_id, int location);
+ static void mdio_write(struct net_device *dev, int phy_id, int location, int value);
+ static int hamachi_open(struct net_device *dev);
+-static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
++static int hamachi_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
++static int hamachi_siocdevprivate(struct net_device *dev, struct ifreq *rq,
++				  void __user *data, int cmd);
+ static void hamachi_timer(struct timer_list *t);
+ static void hamachi_tx_timeout(struct net_device *dev, unsigned int txqueue);
+ static void hamachi_init_ring(struct net_device *dev);
+@@ -571,7 +573,8 @@ static const struct net_device_ops hamachi_netdev_ops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_set_mac_address 	= eth_mac_addr,
+ 	.ndo_tx_timeout		= hamachi_tx_timeout,
+-	.ndo_do_ioctl		= netdev_ioctl,
++	.ndo_do_ioctl		= hamachi_ioctl,
++	.ndo_siocdevprivate	= hamachi_siocdevprivate,
+ };
  
- 		return 0;
--	case BOND_INFO_QUERY_OLD:
- 	case SIOCBONDINFOQUERY:
- 		u_binfo = (struct ifbond __user *)ifr->ifr_data;
  
-@@ -4010,7 +4009,6 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
- 			return -EFAULT;
+@@ -1867,7 +1870,36 @@ static const struct ethtool_ops ethtool_ops_no_mii = {
+ 	.get_drvinfo = hamachi_get_drvinfo,
+ };
  
- 		return 0;
--	case BOND_SLAVE_INFO_QUERY_OLD:
- 	case SIOCBONDSLAVEINFOQUERY:
- 		u_sinfo = (struct ifslave __user *)ifr->ifr_data;
- 
-@@ -4040,19 +4038,15 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
- 		return -ENODEV;
- 
- 	switch (cmd) {
--	case BOND_ENSLAVE_OLD:
- 	case SIOCBONDENSLAVE:
- 		res = bond_enslave(bond_dev, slave_dev, NULL);
- 		break;
--	case BOND_RELEASE_OLD:
- 	case SIOCBONDRELEASE:
- 		res = bond_release(bond_dev, slave_dev);
- 		break;
--	case BOND_SETHWADDR_OLD:
- 	case SIOCBONDSETHWADDR:
- 		res = bond_set_dev_addr(bond_dev, slave_dev);
- 		break;
--	case BOND_CHANGE_ACTIVE_OLD:
- 	case SIOCBONDCHANGEACTIVE:
- 		bond_opt_initstr(&newval, slave_dev->name);
- 		res = __bond_opt_set_notify(bond, BOND_OPT_ACTIVE_SLAVE,
-@@ -4065,6 +4059,29 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
- 	return res;
- }
- 
-+static int bond_siocdevprivate(struct net_device *bond_dev, struct ifreq *ifr,
-+			       void __user *data, int cmd)
+-static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
++/* private ioctl: set rx,tx intr params */
++static int hamachi_siocdevprivate(struct net_device *dev, struct ifreq *rq,
++				  void __user *data, int cmd)
 +{
-+	struct ifreq ifrdata = { .ifr_data = data };
++	struct hamachi_private *np = netdev_priv(dev);
++	u32 *d = (u32 *)&rq->ifr_ifru;
 +
-+	switch (cmd) {
-+	case BOND_INFO_QUERY_OLD:
-+		return bond_do_ioctl(bond_dev, &ifrdata, SIOCBONDINFOQUERY);
-+	case BOND_SLAVE_INFO_QUERY_OLD:
-+		return bond_do_ioctl(bond_dev, &ifrdata, SIOCBONDSLAVEINFOQUERY);
-+	case BOND_ENSLAVE_OLD:
-+		return bond_do_ioctl(bond_dev, ifr, SIOCBONDENSLAVE);
-+	case BOND_RELEASE_OLD:
-+		return bond_do_ioctl(bond_dev, ifr, SIOCBONDRELEASE);
-+	case BOND_SETHWADDR_OLD:
-+		return bond_do_ioctl(bond_dev, ifr, SIOCBONDSETHWADDR);
-+	case BOND_CHANGE_ACTIVE_OLD:
-+		return bond_do_ioctl(bond_dev, ifr, SIOCBONDCHANGEACTIVE);
-+	}
++	if (!netif_running(dev))
++		return -EINVAL;
 +
-+	return -EOPNOTSUPP;
++	if (cmd != SIOCDEVPRIVATE + 3)
++		return -EOPNOTSUPP;
++
++	/* Should add this check here or an ordinary user can do nasty
++	 * things. -KDU
++	 *
++	 * TODO: Shut down the Rx and Tx engines while doing this.
++	 */
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++	writel(d[0], np->base + TxIntrCtrl);
++	writel(d[1], np->base + RxIntrCtrl);
++	printk(KERN_NOTICE "%s: tx %08x, rx %08x intr\n", dev->name,
++	       (u32)readl(np->base + TxIntrCtrl),
++	       (u32)readl(np->base + RxIntrCtrl));
++
++	return 0;
 +}
 +
- static void bond_change_rx_flags(struct net_device *bond_dev, int change)
++static int hamachi_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
  {
- 	struct bonding *bond = netdev_priv(bond_dev);
-@@ -4954,6 +4971,7 @@ static const struct net_device_ops bond_netdev_ops = {
- 	.ndo_select_queue	= bond_select_queue,
- 	.ndo_get_stats64	= bond_get_stats,
- 	.ndo_do_ioctl		= bond_do_ioctl,
-+	.ndo_siocdevprivate	= bond_siocdevprivate,
- 	.ndo_change_rx_flags	= bond_change_rx_flags,
- 	.ndo_set_rx_mode	= bond_set_rx_mode,
- 	.ndo_change_mtu		= bond_change_mtu,
+ 	struct hamachi_private *np = netdev_priv(dev);
+ 	struct mii_ioctl_data *data = if_mii(rq);
+@@ -1876,28 +1908,9 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	if (!netif_running(dev))
+ 		return -EINVAL;
+ 
+-	if (cmd == (SIOCDEVPRIVATE+3)) { /* set rx,tx intr params */
+-		u32 *d = (u32 *)&rq->ifr_ifru;
+-		/* Should add this check here or an ordinary user can do nasty
+-		 * things. -KDU
+-		 *
+-		 * TODO: Shut down the Rx and Tx engines while doing this.
+-		 */
+-		if (!capable(CAP_NET_ADMIN))
+-			return -EPERM;
+-		writel(d[0], np->base + TxIntrCtrl);
+-		writel(d[1], np->base + RxIntrCtrl);
+-		printk(KERN_NOTICE "%s: tx %08x, rx %08x intr\n", dev->name,
+-		  (u32) readl(np->base + TxIntrCtrl),
+-		  (u32) readl(np->base + RxIntrCtrl));
+-		rc = 0;
+-	}
+-
+-	else {
+-		spin_lock_irq(&np->lock);
+-		rc = generic_mii_ioctl(&np->mii_if, data, cmd, NULL);
+-		spin_unlock_irq(&np->lock);
+-	}
++	spin_lock_irq(&np->lock);
++	rc = generic_mii_ioctl(&np->mii_if, data, cmd, NULL);
++	spin_unlock_irq(&np->lock);
+ 
+ 	return rc;
+ }
 -- 
 2.29.2
 
