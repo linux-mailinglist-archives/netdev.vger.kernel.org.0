@@ -2,84 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC89D3CFFFC
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2953D0006
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:18:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbhGTQec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 12:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbhGTQeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 12:34:08 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35342C0613DB
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 10:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=7cHKqEQDiiTmHYi14BY/DjXD7FItWf37FKIzXMObQwE=; b=pD6uKZFG0wGGeBQuntL97yaAf
-        aRXA/tX+nCZDrShjc++ksMJHp04ss7XK9PdcFeEhoRdaNsX0lUgh9jY9xWs1pKcCP4FPc22OOYRXK
-        wqCVx29dKVYC8/U4aBhg84h3Rpa1extCLl3QUrJgGT3NJUPurJIiK27qN/X/SI5Qy/oE6/Zw0dP7l
-        /jj+PH7Kg3JfCuj11DpZQm4EveRkmhryhlhgunHpJrQ1OwFBSgIH1oyBiHU9dyBbkCThjQ98VqCWu
-        qloYU4EoXpK1nsQBXr8SNaqzikxEqKG/Oq5thaJSYB+uzr1ju2sEG2AjkTnk8uDxoPMoLSTiq31jU
-        1bnFgsRKw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46376)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1m5tJj-0006g7-CV; Tue, 20 Jul 2021 18:14:04 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1m5tJh-000753-O5; Tue, 20 Jul 2021 18:14:01 +0100
-Date:   Tue, 20 Jul 2021 18:14:01 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift tunable
- support
-Message-ID: <20210720171401.GV22278@shell.armlinux.org.uk>
-References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
- <20210720170424.07cba755@dellmb>
+        id S231310AbhGTQiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 12:38:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56852 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229790AbhGTQhQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 12:37:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E3387610D2;
+        Tue, 20 Jul 2021 17:17:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626801467;
+        bh=MgbhYLSjcMKKNs8xjxBsytwleBUXjDkbtocX0dAcJrM=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=VzQLszJyQAmQTrFwb/w+CXuenh/YNiHdaV7SmqZgVbCa3YcbhxOlydPrRth4aTdHJ
+         3eM7r4jw0pHffWKyFgFCBQ+lZ/BK7Zxfizj1ArUKsavjer/GsCCQgqaspjW2kZ3y/Q
+         /cNt/roMxdRdIWspMYANXqmSlqMf2TZKIJO1I8hOX08UQ9BgFhXcRdu54IaHgyvf71
+         HZroGnAnh7C5BmlVfDMacpzYYfj1h61uIxeO9tLXzumrYpO6Q+8dHBxlIU71vQoZP8
+         3nd48RkyuqceEpxJwiORRdbh8920r7ZGGt1S2qQhf3LX4yQS4HR8K8gCthO+8QppAf
+         dCi5qYLems+vA==
+Subject: Re: [PATCH] atm: idt77252: clean up trigraph warning on ??) string
+To:     Colin King <colin.king@canonical.com>,
+        Chas Williams <3chas3@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210720124813.59331-1-colin.king@canonical.com>
+From:   Nathan Chancellor <nathan@kernel.org>
+Message-ID: <fd4f465b-86bd-129d-c6d9-e802b7c4815e@kernel.org>
+Date:   Tue, 20 Jul 2021 10:17:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210720170424.07cba755@dellmb>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <20210720124813.59331-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 20, 2021 at 05:04:24PM +0200, Marek Behún wrote:
-> Hi Russell,
+On 7/20/2021 5:48 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> On Tue, 20 Jul 2021 14:38:20 +0100
-> Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> The character sequence ??) is a trigraph and causes the following
+> clang warning:
 > 
-> > Add support for the downshift tunable for the Marvell 88x3310 PHY.
-> > Downshift is only usable with firmware 0.3.5.0 and later.
+> drivers/atm/idt77252.c:3544:35: warning: trigraph ignored [-Wtrigraphs]
 > 
-> mv3310_{g,s}et_features are also used for 88E211x, but there is no such
-> register in the documentation for these PHYs. (Also firmware versions on
-> those are different, the newest is 8.3.0.0, but thats not important.)
-> My solution would be to rename the current methods prefix to mv211x_ and
-> and add new mv3310_{g,s}et_tunable methods.
+> Clean this by replacing it with single ?.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-There's more than just the tunables themselves - there's also
-config_init().
+This looks good to me but I am curious how you say this warning in the 
+first place since the main Makefile disables this unconditionally. Did 
+you just pass -Wtrigraphs via KCFLAGS or something similar?
 
-We already need to reject downshift when old firmware is running,
-as that fails to work correctly. So, we can just do that for
-88E211x as well, adding a flag to struct mv3310_chip to indicate
-whether downshift is present. Sound sensible?
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> ---
+>   drivers/atm/idt77252.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
+> index 9e4bd751db79..81ce81a75fc6 100644
+> --- a/drivers/atm/idt77252.c
+> +++ b/drivers/atm/idt77252.c
+> @@ -3536,7 +3536,7 @@ static int idt77252_preset(struct idt77252_dev *card)
+>   		return -1;
+>   	}
+>   	if (!(pci_command & PCI_COMMAND_IO)) {
+> -		printk("%s: PCI_COMMAND: %04x (???)\n",
+> +		printk("%s: PCI_COMMAND: %04x (?)\n",
+>   		       card->name, pci_command);
+>   		deinit_card(card);
+>   		return (-1);
+> 
