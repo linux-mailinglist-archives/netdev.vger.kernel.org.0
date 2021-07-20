@@ -2,63 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E5F3D00EC
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7079F3D00FD
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232373AbhGTRKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:10:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36658 "EHLO mail.kernel.org"
+        id S230497AbhGTRKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 13:10:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36836 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229536AbhGTRIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 13:08:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6C8361004;
-        Tue, 20 Jul 2021 17:49:20 +0000 (UTC)
+        id S232324AbhGTRJr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 13:09:47 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B18D60FF1;
+        Tue, 20 Jul 2021 17:50:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626803367;
-        bh=rr5DyOF74U0H7iKb0m9zjXCsuqsP8q1pI+d5NX2axk8=;
+        s=k20201202; t=1626803425;
+        bh=qUc0a5K2dRY0y17AD5Qvrg3Ms/P3hq9j5h7rfyTVtrw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VEsgFDZvIXjcoaGpPEoA0Lu9YRxM0Dj90aWqsnbErQ2UUMNfFjiL3KKy2ihSuQKA8
-         DpJfkpmYcVJtchYg4JZ0xVl4g2Mg2o7fCdXq98nn/PAwMTFoWJ250/salXXOhJJg55
-         abW/iC3f5GUZpAEMSlUl/XMmPNxf0dbMFp9c17FIFUFh6aPXTQv17aO0FFf2m4m8ho
-         FzpeQH9QYcsgshAwYqEOKnzQKiefkbesH4vObWgtP6wKthPFfdBb/jqahxbI+okmue
-         fOLCT92FxMSaj5N+ZOIj1PAxbFu2Oagsxe6Rc6uhcjBjL97r/vUbkyUju8PW712k3f
-         K0QVogmSx6JEw==
-Date:   Tue, 20 Jul 2021 19:49:17 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ramesh Shanmugasundaram <rashanmu@gmail.com>,
-        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Dilip Kota <eswara.kota@linux.intel.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
-Message-ID: <20210720194917.576b7d70@coco.lan>
-In-Reply-To: <20210720172025.363238-1-robh@kernel.org>
-References: <20210720172025.363238-1-robh@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        b=fDbCWXpU7/8Y5oEO4entCLR4EKvsOwdOnKVGtDFE1qV1DWGOqeFPy1YpOxT6X7LB+
+         IEpED7nSBih4co+DJPowhTA+A9a3SxCBGSoZWzyfDhvGHMv+TXR97XWJKoHGbrcao4
+         hv9srI9PgrmzF2s9L6Qfb+HqgTGMyv1OJDi7Hd8U2sISc/Ai2sTcQY7uINT0/w/1lV
+         V4Uc1mKKZx2ZCUycAl4BZcVJxd4ySHVaTK674VqVGV1/gJV1MnTbBhL0SH73UAUyYv
+         Q2p/A/U4BZQXfYVDgv+0A628mXU7hByXmibjo6crVqdCytKo9Mqb8+oxLm9L6ON+OG
+         GYQTn8Z1LrM+Q==
+Date:   Tue, 20 Jul 2021 19:50:21 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift
+ tunable support
+Message-ID: <20210720195021.62feacb4@dellmb>
+In-Reply-To: <20210720173941.GX22278@shell.armlinux.org.uk>
+References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
+        <20210720170424.07cba755@dellmb>
+        <20210720171401.GV22278@shell.armlinux.org.uk>
+        <20210720193223.194cb79e@dellmb>
+        <20210720173941.GX22278@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,58 +47,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, 20 Jul 2021 11:20:25 -0600
-Rob Herring <robh@kernel.org> escreveu:
+On Tue, 20 Jul 2021 18:39:41 +0100
+"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 
-> There's no reason to have "status" properties in examples. "okay" is the
-> default, and "disabled" turns off some schema checks ('required'
-> specifically).
+> I was intending to leave the firmware version check where it was and
+> just add a flag to say "this has downshift". The older firmwares on
+> 3310 are basically buggy - they do downshift but only from 1G to 100M,
+> they fail to go to 10M.
+
+So we have two options
+
+* do the firmware version comparison at the position where the given
+  feature is being configured
+
+* do the firmware version comparison in probe method and set specific
+  flags for all features
+
+The second option is better if different PHYs have differnet system of
+versioning, but this can potentially lead to many different flags.
+
+I'll leave this decision to you.
+
+> > BTW would you agree with a patch renaming the mv3310_ prefixes to
+> > mv10g_ for all functions that are generic to both mv3310_ and
+> > mv2110_?
+> > I was thinking about such a thing because it has become rather
+> > confusing.  
 > 
-> Enabling qca,ar71xx causes a warning, so let's fix the node names:
-> 
-> Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: phy@3: '#phy-cells' is a required property
->         From schema: schemas/phy/phy-provider.yaml
-> 
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: Rui Miguel Silva <rmfrfs@gmail.com>
-> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Robert Marko <robert.marko@sartura.hr>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Ramesh Shanmugasundaram <rashanmu@gmail.com>
-> Cc: "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-> Cc: ChiYuan Huang <cy_huang@richtek.com>
-> Cc: Wei Xu <xuwei5@hisilicon.com>
-> Cc: Dilip Kota <eswara.kota@linux.intel.com>
-> Cc: Karol Gugala <kgugala@antmicro.com>
-> Cc: Mateusz Holenko <mholenko@antmicro.com>
-> Cc: Olivier Moysan <olivier.moysan@st.com>
-> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-media@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-rtc@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml |  2 --
->  .../display/panel/boe,tv101wum-nl6.yaml       |  1 -
+> I've been thinking the same thing actually.
 
->  .../bindings/media/nxp,imx7-mipi-csi2.yaml    |  2 --
->  .../bindings/media/renesas,drif.yaml          |  1 -
+OK I will send a patch then once your downshift patch is applied.
 
-Reviewed-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org> # For media
-
-
-Thanks,
-Mauro
+Marek
