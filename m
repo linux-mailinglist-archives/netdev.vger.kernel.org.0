@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A673CF8DB
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 170523CF8DE
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236024AbhGTKuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:50:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44444 "EHLO mail.kernel.org"
+        id S233143AbhGTKvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:51:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44682 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237897AbhGTKt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 06:49:26 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0646D60FF2;
-        Tue, 20 Jul 2021 11:30:05 +0000 (UTC)
+        id S231707AbhGTKvV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 06:51:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F07F61009;
+        Tue, 20 Jul 2021 11:31:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626780605;
-        bh=JyufMXr5dAtrmUI+bavrkHjAoD6luLCTAALyAqRLbkc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TIJoM9vEFPmsmrJ5PF8afDLc64vdKDNENTom7c0G7nPc38+palhNoVVEUrQo2c0oT
-         5S5lLnl+Kr6NjUCwYFNRploVjLheRtdUB+355HNFz2gAhaVK7wd2h3GVmR38+t1/ah
-         JFd0HNvHQnnz4vSzO7miSTqu2l/beJVPNAgkLPp+JJV77JZL2p8+6aoVYUUIrym02v
-         nqN7lUCpv9/mS1vZ1bkzvOdWAzolFYInCI44xe4yFaNrhP/PoOyq6quQFITlxCq94l
-         1mougjy3Ft9EgfFcBuFB6PuCjPxHg3z7YqhTg/IQagvMhOLmXl4/AH5mPzxKLVJPx9
-         zgtsKrGcp7OJw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id ECC3C60A4E;
-        Tue, 20 Jul 2021 11:30:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1626780719;
+        bh=g5h9qwV+O0jeP4o7dg28ixbAOs+6DWETy2RB79PqrNs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=prpOYeBtr8bEBFx8EMkIGbqmr8EoFOhOZgrBtbInEugnl5GwlHwq88H6uECHSjfhp
+         7hktVHu4NMkSQk4iCQtIB+32UArVawN66gEzPUnaXJk6LrpDMC0jlY9tyFgrmM29db
+         UdhitvfNIyjOiY+kY/bDuLdMHOA/3WamM7EHaEqZOqT+84lDmwL4bcG5XOvNPNBSxZ
+         PYlbwowM0QhNjH0xt7kjeXCiK955ZBJ72ZLJIIGTsHpo8zHYjUHopOQpE4Fw6bl6od
+         ZagP5jxGutEPYwDafB/EU5ZbKcu5oQC54rxZuk59S/d+Bbog+fL+/1LtxtzkfStt1Y
+         vsJfCMVXeTvQw==
+Date:   Tue, 20 Jul 2021 13:31:53 +0200
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, Stefan Assmann <sassmann@kpanic.de>,
+        netdev@vger.kernel.org,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: Re: [PATCH net-next 3/3] iavf: fix locking of critical sections
+Message-ID: <20210720133153.0f13c92a@cakuba>
+In-Reply-To: <20210719163154.986679-4-anthony.l.nguyen@intel.com>
+References: <20210719163154.986679-1-anthony.l.nguyen@intel.com>
+        <20210719163154.986679-4-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net/tcp_fastopen: remove tcp_fastopen_ctx_lock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162678060496.25865.16134624249926173120.git-patchwork-notify@kernel.org>
-Date:   Tue, 20 Jul 2021 11:30:04 +0000
-References: <20210719101107.3203943-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210719101107.3203943-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, weiwan@google.com, ycheng@google.com,
-        ncardwell@google.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 19 Jul 2021 03:11:07 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Mon, 19 Jul 2021 09:31:54 -0700, Tony Nguyen wrote:
+> To avoid races between iavf_init_task(), iavf_reset_task(),
+> iavf_watchdog_task(), iavf_adminq_task() as well as the shutdown and
+> remove functions more locking is required.
+> The current protection by __IAVF_IN_CRITICAL_TASK is needed in
+> additional places.
 > 
-> Remove the (per netns) spinlock in favor of xchg() atomic operations.
+> - The reset task performs state transitions, therefore needs locking.
+> - The adminq task acts on replies from the PF in
+>   iavf_virtchnl_completion() which may alter the states.
+> - The init task is not only run during probe but also if a VF gets stuck
+>   to reinitialize it.
+> - The shutdown function performs a state transition.
+> - The remove function performs a state transition and also free's
+>   resources.
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Wei Wang <weiwan@google.com>
-> Cc: Yuchung Cheng <ycheng@google.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> 
-> [...]
+> iavf_lock_timeout() is introduced to avoid waiting infinitely
+> and cause a deadlock. Rather unlock and print a warning.
 
-Here is the summary with links:
-  - [net-next] net/tcp_fastopen: remove tcp_fastopen_ctx_lock
-    https://git.kernel.org/netdev/net-next/c/e93abb840a2c
+I have a vague recollection of complaining about something like this
+previously. Why not use a normal lock? Please at the very least include
+an explanation in the commit message.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+If you use bit locks you should use the _lock and _unlock flavours of
+the bitops.
