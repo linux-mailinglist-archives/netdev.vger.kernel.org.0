@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D9C3CF899
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C49133CF89C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238431AbhGTKZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:25:11 -0400
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:52555 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236973AbhGTKZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 06:25:04 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UgQE4aC_1626779139;
-Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0UgQE4aC_1626779139)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 20 Jul 2021 19:05:40 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: Re: [PATCH v2] vsock/virtio: set vsock frontend ready in
- virtio_vsock_probe()
-To:     Stefan Hajnoczi <stefanha@redhat.com>
-Cc:     sgarzare@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        jasowang@redhat.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210720071337.1995-1-xianting.tian@linux.alibaba.com>
- <YPakBTVDbgVcTGQX@stefanha-x1.localdomain>
-Message-ID: <b48bd02d-9514-ec0c-3779-fd5ddc5c2d3d@linux.alibaba.com>
-Date:   Tue, 20 Jul 2021 19:05:39 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        id S237722AbhGTK0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:26:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40114 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237177AbhGTKZX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 06:25:23 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8596C61107;
+        Tue, 20 Jul 2021 11:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626779161;
+        bh=+qOpfIZ2KxWKgu9KpXTV7Bv8qCzGPQfDmMztpoZHyv0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SEqqevoxN4NlJXodCzUzIjOChh5kcF15Gp82uUtrHgrXKWWK0tY41MNSNW+rufBBE
+         C3WYxcVyavA9BM6P01ftdsn0kl92lAUddMYDvrvgfERZ55zcccA5h1IGFaTV9kTGxD
+         qZ0Wa5YSpnyG4ZbPf+kHyNk1qyfKcJcFe2Kt8x6m5jLUq6LMTiUdUYCqoNghuolrfR
+         svT+DRKJzUTF7x6oCJCPLDtJuG/gdQzJatGJ5uESHopGjgRexa45mCXB6IKxW2+fnA
+         vdEJoUAJQ9zP2jWzK8gWqjbSga9iAFKWiXfHXRdWhaiL+UQgrt+eACDR6SQ+0Suwwb
+         5AbtFGUblPwtQ==
+Date:   Tue, 20 Jul 2021 13:05:54 +0200
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jia He <justin.he@arm.com>
+Cc:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, nd@arm.com,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>
+Subject: Re: [PATCH] Revert "qed: fix possible unpaired spin_{un}lock_bh in
+ _qed_mcp_cmd_and_union()"
+Message-ID: <20210720130554.5c85b3e6@cakuba>
+In-Reply-To: <20210720092739.3539-1-justin.he@arm.com>
+References: <20210720092739.3539-1-justin.he@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <YPakBTVDbgVcTGQX@stefanha-x1.localdomain>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 20 Jul 2021 17:27:39 +0800, Jia He wrote:
+> This reverts commit 2d2f5ded858a4f4659fc63e01dd55605598a8f05.
 
-在 2021/7/20 下午6:23, Stefan Hajnoczi 写道:
-> On Tue, Jul 20, 2021 at 03:13:37PM +0800, Xianting Tian wrote:
->> Add the missed virtio_device_ready() to set vsock frontend ready.
->>
->> Signed-off-by: Xianting Tian<xianting.tian@linux.alibaba.com>
->> ---
->>   net/vmw_vsock/virtio_transport.c | 2 ++
->>   1 file changed, 2 insertions(+)
-> Please include a changelog when you send v2, v3, etc patches.
-OK, thanks.
->> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->> index e0c2c992a..dc834b8fd 100644
->> --- a/net/vmw_vsock/virtio_transport.c
->> +++ b/net/vmw_vsock/virtio_transport.c
->> @@ -639,6 +639,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
->>   
->>   	mutex_unlock(&the_virtio_vsock_mutex);
->>   
->> +	virtio_device_ready(vdev);
-> Why is this patch necessary?
+The hash looks wrong, the patch was applied to netdev/net AFAICT,
+and the ref there is: 6206b7981a36 ("qed: fix possible unpaired
+spin_{un}lock_bh in _qed_mcp_cmd_and_union()")
 
-Sorry, I didn't notice the check in virtio_dev_probe(),
+Please tag the subject with "net":
 
-As Jason comment,  I alsoe think we need to be consistent: switch to use 
-virtio_device_ready() for all the drivers. What's opinion about this?
+[PATCH net] Revert ...
 
-> The core virtio_dev_probe() code already calls virtio_device_ready for
-> us:
->
->    static int virtio_dev_probe(struct device *_d)
->    {
->        ...
->        err = drv->probe(dev);
->        if (err)
->            goto err;
->    
->        /* If probe didn't do it, mark device DRIVER_OK ourselves. */
->        if (!(dev->config->get_status(dev) & VIRTIO_CONFIG_S_DRIVER_OK))
->            virtio_device_ready(dev);
+> That patch added additional spin_{un}lock_bh(), which was harmless
+> but pointless. The orginal code path has guaranteed the pair of
+> spin_{un}lock_bh().
+> 
+> We'd better revert it before we find the exact root cause of the
+> bug_on mentioned in that patch.
+> 
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Jia He <justin.he@arm.com>
+
+Please also add a Fixes tag.
+
+Fixes: 6206b7981a36 ("qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()")
