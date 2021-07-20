@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C49133CF89C
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 887EE3CF8AC
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 13:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237722AbhGTK0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 06:26:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40114 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237177AbhGTKZX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 06:25:23 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8596C61107;
-        Tue, 20 Jul 2021 11:05:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626779161;
-        bh=+qOpfIZ2KxWKgu9KpXTV7Bv8qCzGPQfDmMztpoZHyv0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SEqqevoxN4NlJXodCzUzIjOChh5kcF15Gp82uUtrHgrXKWWK0tY41MNSNW+rufBBE
-         C3WYxcVyavA9BM6P01ftdsn0kl92lAUddMYDvrvgfERZ55zcccA5h1IGFaTV9kTGxD
-         qZ0Wa5YSpnyG4ZbPf+kHyNk1qyfKcJcFe2Kt8x6m5jLUq6LMTiUdUYCqoNghuolrfR
-         svT+DRKJzUTF7x6oCJCPLDtJuG/gdQzJatGJ5uESHopGjgRexa45mCXB6IKxW2+fnA
-         vdEJoUAJQ9zP2jWzK8gWqjbSga9iAFKWiXfHXRdWhaiL+UQgrt+eACDR6SQ+0Suwwb
-         5AbtFGUblPwtQ==
-Date:   Tue, 20 Jul 2021 13:05:54 +0200
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jia He <justin.he@arm.com>
-Cc:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, nd@arm.com,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>
-Subject: Re: [PATCH] Revert "qed: fix possible unpaired spin_{un}lock_bh in
- _qed_mcp_cmd_and_union()"
-Message-ID: <20210720130554.5c85b3e6@cakuba>
-In-Reply-To: <20210720092739.3539-1-justin.he@arm.com>
-References: <20210720092739.3539-1-justin.he@arm.com>
+        id S237135AbhGTKep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 06:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231442AbhGTKep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 06:34:45 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCE6C061574
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 04:15:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=OjhbxZ2wMt3+iz56cTftWyFMbWmmFmJS0Pd9W0SeQMI=; b=PqeBNL6dBE1zKR6eR4kaJn57iN
+        QgA3Gdk8ZFLfWh2VbAQ9SWpQfAP7rFiVdNzD4GmANmRjeKhZUKhd23w8Kz/3UgvQo0WZOwrB9gzJ4
+        KqEP7Z19h+QX/0y8OGaUdzEAR2BKpV3U+nN9N7wVjGBBIJjDwyJK1HeOXIXAMYHSgDxhJcG+6bYk9
+        hxTt2goLITenwiOK4QI/YQ2PBXdwRruW0zWpLjMj+6LSZnBepqzyzfQXV6oBAhlNMJnlM98bHi0sc
+        fw4uINvjqqvouq3vVNMU0P11ca3isQ950D+oJTBp5B+XUkcjp0xLOAS83cokGn8FgDLtpd0DXH8wZ
+        UEFqsOgw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:53936 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1m5nib-0006Ey-57; Tue, 20 Jul 2021 12:15:21 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1m5nia-0003Ml-Um; Tue, 20 Jul 2021 12:15:20 +0100
+From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: phylink: add phy change pause mode debug
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1m5nia-0003Ml-Um@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Tue, 20 Jul 2021 12:15:20 +0100
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Jul 2021 17:27:39 +0800, Jia He wrote:
-> This reverts commit 2d2f5ded858a4f4659fc63e01dd55605598a8f05.
+Augment the phy link debug prints with the pause state.
 
-The hash looks wrong, the patch was applied to netdev/net AFAICT,
-and the ref there is: 6206b7981a36 ("qed: fix possible unpaired
-spin_{un}lock_bh in _qed_mcp_cmd_and_union()")
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/phylink.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Please tag the subject with "net":
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index eb29ef53d971..728eab380fd3 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -942,10 +942,11 @@ static void phylink_phy_change(struct phy_device *phydev, bool up)
+ 
+ 	phylink_run_resolve(pl);
+ 
+-	phylink_dbg(pl, "phy link %s %s/%s/%s\n", up ? "up" : "down",
++	phylink_dbg(pl, "phy link %s %s/%s/%s/%s\n", up ? "up" : "down",
+ 		    phy_modes(phydev->interface),
+ 		    phy_speed_to_str(phydev->speed),
+-		    phy_duplex_to_str(phydev->duplex));
++		    phy_duplex_to_str(phydev->duplex),
++		    phylink_pause_to_str(pl->phy_state.pause));
+ }
+ 
+ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+-- 
+2.20.1
 
-[PATCH net] Revert ...
-
-> That patch added additional spin_{un}lock_bh(), which was harmless
-> but pointless. The orginal code path has guaranteed the pair of
-> spin_{un}lock_bh().
-> 
-> We'd better revert it before we find the exact root cause of the
-> bug_on mentioned in that patch.
-> 
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Prabhakar Kushwaha <pkushwaha@marvell.com>
-> Signed-off-by: Jia He <justin.he@arm.com>
-
-Please also add a Fixes tag.
-
-Fixes: 6206b7981a36 ("qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()")
