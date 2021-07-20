@@ -2,138 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9EB93CF6D8
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 11:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B9013CF71D
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 11:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235476AbhGTIuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 04:50:40 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:12280 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235619AbhGTIsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 04:48:52 -0400
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GTYFx6xhRz7w9X;
-        Tue, 20 Jul 2021 17:24:53 +0800 (CST)
-Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 20 Jul 2021 17:29:23 +0800
-Received: from [10.67.103.6] (10.67.103.6) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 20 Jul
- 2021 17:29:23 +0800
-Subject: Re: [PATCH RFC] net: hns3: add a module parameter wq_unbound
-To:     Leon Romanovsky <leon@kernel.org>
-References: <1626770097-56989-1-git-send-email-moyufeng@huawei.com>
- <YPaQ0qW+uIToEM6c@unreal>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <shenjian15@huawei.com>, <lipeng321@huawei.com>,
-        <yisen.zhuang@huawei.com>, <linyunsheng@huawei.com>,
-        <zhangjiaran@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>, <salil.mehta@huawei.com>,
-        <linuxarm@huawei.com>, <linuxarm@openeuler.org>
-From:   moyufeng <moyufeng@huawei.com>
-Message-ID: <5442f62e-163c-fcee-55c2-263fe123c507@huawei.com>
-Date:   Tue, 20 Jul 2021 17:29:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
-MIME-Version: 1.0
-In-Reply-To: <YPaQ0qW+uIToEM6c@unreal>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+        id S235277AbhGTJEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 05:04:22 -0400
+Received: from pop36.abv.bg ([194.153.145.227]:33928 "EHLO pop36.abv.bg"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234806AbhGTJEV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 05:04:21 -0400
+X-Greylist: delayed 419 seconds by postgrey-1.27 at vger.kernel.org; Tue, 20 Jul 2021 05:04:19 EDT
+Received: from smtp.abv.bg (localhost [127.0.0.1])
+        by pop36.abv.bg (Postfix) with ESMTP id 16953180AA90;
+        Tue, 20 Jul 2021 12:37:48 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=abv.bg; s=smtp-out;
+        t=1626773868; bh=mPlI6hgEp7grsSif9s2vkTZdz6gtzjPUEOp/oqiK5UI=;
+        h=From:Subject:Date:Cc:To:From;
+        b=svJWeBryW3FrNGb9165p1tCW8zASIGZ97zrAJc8f3I+/ASFCZU5ZzLQbsRsVazTcb
+         RY2FG8Sr0Zq32szO8+1FjFgeWYFs4QgMgOyhvjHQ37maKKqyqPQBrB0do+CESvWiwh
+         jkAAoUlXynzSByzMxYu1yufo+WH4WsEP1S6t5x2Y=
+X-HELO: smtpclient.apple
+Authentication-Results: smtp.abv.bg; auth=pass (plain) smtp.auth=gvalkov@abv.bg
+Received: from 212-39-89-148.ip.btc-net.bg (HELO smtpclient.apple) (212.39.89.148)
+ by smtp.abv.bg (qpsmtpd/0.96) with ESMTPSA (ECDHE-RSA-AES256-GCM-SHA384 encrypted); Tue, 20 Jul 2021 12:37:48 +0300
+From:   Georgi Valkov <gvalkov@abv.bg>
+Content-Type: text/plain;
+        charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+Message-Id: <B60B8A4B-92A0-49B3-805D-809A2433B46C@abv.bg>
+Date:   Tue, 20 Jul 2021 12:37:43 +0300
+Cc:     =?utf-8?B?0JPQtdC+0YDQs9C4INCT0LXQvtGA0LPQuNC10LIg0JLRitC70LrQvtCy?= 
+        <gvalkov@abv.bg>, corsac@corsac.net, matti.vuorela@bitfactor.fi,
+        stable@vger.kernel.org
+To:     davem@davemloft.net, kuba@kernel.org, mhabets@solarflare.com,
+        luc.vanoostenryck@gmail.com, snelson@pensando.io, mst@redhat.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
+https://github.com/openwrt/openwrt/pull/4084
 
 
-On 2021/7/20 17:01, Leon Romanovsky wrote:
-> On Tue, Jul 20, 2021 at 04:34:57PM +0800, Yufeng Mo wrote:
->> To meet the requirements of different scenarios, the WQ_UNBOUND
->> flag of the workqueue is transferred as a module parameter. Users
->> can flexibly configure the usage mode as required.
->>
->> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
->> ---
->>  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 10 +++++++++-
->>  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 10 +++++++++-
->>  2 files changed, 18 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
->> index dd3354a..9816592 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
->> @@ -76,6 +76,10 @@ static struct hnae3_ae_algo ae_algo;
->>  
->>  static struct workqueue_struct *hclge_wq;
->>  
->> +static unsigned int wq_unbound;
->> +module_param(wq_unbound, uint, 0400);
->> +MODULE_PARM_DESC(wq_unbound, "Specifies WQ_UNBOUND flag for the workqueue, non-zero value takes effect");
-> 
-> Nice, but no. We don't like module parameters for such a basic thing.
-> Somehow all other NIC drivers in the world works without it and hns3
-> will success too.
-> 
-> Thanks
-> 
+=46rom dd109ded2b526636fff438d33433ab64ffd21583 Mon Sep 17 00:00:00 2001
+From: Georgi Valkov <gvalkov@abv.bg>
+Date: Fri, 16 Apr 2021 20:44:36 +0300
+Subject: [PATCH] ipheth: fix EOVERFLOW in ipheth_rcvbulk_callback
 
-Thanks for your comments. I'll change it to WQ_UNBOUND mode fixedly for
-more reasonable workqueue scheduling in complex scenarios.
+When rx_buf is allocated we need to account for IPHETH_IP_ALIGN,
+which reduces the usable size by 2 bytes. Otherwise we have 1512
+bytes usable instead of 1514, and if we receive more than 1512
+bytes, ipheth_rcvbulk_callback is called with status -EOVERFLOW,
+after which the driver malfunctiones and all communication stops.
 
-Thanks
+Fixes: ipheth 2-1:4.2: ipheth_rcvbulk_callback: urb status: -75
 
->> +
->>  static const struct pci_device_id ae_algo_pci_tbl[] = {
->>  	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_GE), 0},
->>  	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_25GE), 0},
->> @@ -12936,7 +12940,11 @@ static int hclge_init(void)
->>  {
->>  	pr_info("%s is initializing\n", HCLGE_NAME);
->>  
->> -	hclge_wq = alloc_workqueue("%s", 0, 0, HCLGE_NAME);
->> +	if (wq_unbound)
->> +		hclge_wq = alloc_workqueue("%s", WQ_UNBOUND, 0, HCLGE_NAME);
->> +	else
->> +		hclge_wq = alloc_workqueue("%s", 0, 0, HCLGE_NAME);
->> +
->>  	if (!hclge_wq) {
->>  		pr_err("%s: failed to create workqueue\n", HCLGE_NAME);
->>  		return -ENOMEM;
->> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
->> index 52eaf82..85f6772 100644
->> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
->> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
->> @@ -21,6 +21,10 @@ static struct hnae3_ae_algo ae_algovf;
->>  
->>  static struct workqueue_struct *hclgevf_wq;
->>  
->> +static unsigned int wq_unbound;
->> +module_param(wq_unbound, uint, 0400);
->> +MODULE_PARM_DESC(wq_unbound, "Specifies WQ_UNBOUND flag for the workqueue, non-zero value takes effect");
->> +
->>  static const struct pci_device_id ae_algovf_pci_tbl[] = {
->>  	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_VF), 0},
->>  	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_RDMA_DCB_PFC_VF),
->> @@ -3855,7 +3859,11 @@ static int hclgevf_init(void)
->>  {
->>  	pr_info("%s is initializing\n", HCLGEVF_NAME);
->>  
->> -	hclgevf_wq = alloc_workqueue("%s", 0, 0, HCLGEVF_NAME);
->> +	if (wq_unbound)
->> +		hclgevf_wq = alloc_workqueue("%s", WQ_UNBOUND, 0, HCLGEVF_NAME);
->> +	else
->> +		hclgevf_wq = alloc_workqueue("%s", 0, 0, HCLGEVF_NAME);
->> +
->>  	if (!hclgevf_wq) {
->>  		pr_err("%s: failed to create workqueue\n", HCLGEVF_NAME);
->>  		return -ENOMEM;
->> -- 
->> 2.8.1
->>
-> .
-> 
+Signed-off-by: Georgi Valkov <gvalkov@abv.bg>
+---
+ drivers/net/usb/ipheth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
+index 207e59e74935..06d9f19ca142 100644
+--- a/drivers/net/usb/ipheth.c
++++ b/drivers/net/usb/ipheth.c
+@@ -121,7 +121,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+ 	if (tx_buf =3D=3D NULL)
+ 		goto free_rx_urb;
+=20
+-	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
++	rx_buf =3D usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 				    GFP_KERNEL, &rx_urb->transfer_dma);
+ 	if (rx_buf =3D=3D NULL)
+ 		goto free_tx_buf;
+@@ -146,7 +146,7 @@ static int ipheth_alloc_urbs(struct ipheth_device =
+*iphone)
+=20
+ static void ipheth_free_urbs(struct ipheth_device *iphone)
+ {
+-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
++	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN, iphone->rx_buf,
+ 			  iphone->rx_urb->transfer_dma);
+ 	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
+ 			  iphone->tx_urb->transfer_dma);
+@@ -317,7 +317,7 @@ static int ipheth_rx_submit(struct ipheth_device =
+*dev, gfp_t mem_flags)
+=20
+ 	usb_fill_bulk_urb(dev->rx_urb, udev,
+ 			  usb_rcvbulkpipe(udev, dev->bulk_in),
+-			  dev->rx_buf, IPHETH_BUF_SIZE,
++			  dev->rx_buf, IPHETH_BUF_SIZE + =
+IPHETH_IP_ALIGN,
+ 			  ipheth_rcvbulk_callback,
+ 			  dev);
+ 	dev->rx_urb->transfer_flags |=3D URB_NO_TRANSFER_DMA_MAP;
+--=20
+2.31.1
+
+
