@@ -2,140 +2,439 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 531063D017A
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6585A3D01D3
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231452AbhGTRit (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 13:38:49 -0400
-Received: from mail-dm6nam10on2055.outbound.protection.outlook.com ([40.107.93.55]:15393
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231381AbhGTRia (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 13:38:30 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oZTqDy0mpYvUNoe9sgShI0L+mFdWs+1DfqQUSqtxIkBatRC6gC/jEOyYeMBJhoOBFUD/rgT1CfQqHxDMmOC9yWxCrdZ0YIBPh6ea3/YACkP2nFXuUNo/yOZjCRuwj5JSjqHaxVSl+zQeu+8sOB/q+jfrK4KadgvKzfAMGmwEksK43xExDmikREn3u5EGLqSa3YwCjkWvklLHXULmvkFKxU9aLvJfvAMh0kIbOysUezZarGnnDpRqMeWbh0C3f/U4ZUQIbsFLDOHawSaViNQLlXw0VJe/odRg3dRrieU1NdHrzTgqWFuu8nCF3j0zbD0d4eqpPUxnUGTupqtUxsHSDw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ei/0YmdBusq4LA/gB+ZJApvpnZUR4vcGRFNP67mqv0I=;
- b=E/B/5gUA/SZcPpiG/tMRa2VFrOBdHtwzW5XFWfQGbOeO2C134Lt3kA2v6bx1+5KkwOifDr58PH9zv8A91BYO3dws28jyJAERlnNobI692rkBWBXh444l+PNi/AgjTdR6diXPvyzbqD9kGiGyU+R6/kFie8MURALli4V0i9ouVZqJRY/PZZJu5p9pX5WLBxqywRMQcsFCMBLbvnfkeN3pnZY3V1xpjiC/h5S9uYZb/8mUWeBjzK1/cxqT/8h01xpV+wYN13GZK4XN0C0Gzovz3a1MAF9oBBPMX7Lf6BQUx5m2JP07U9XX5Tv1fzlId65BwrhCpVnp1CboOwGE3fbqfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ei/0YmdBusq4LA/gB+ZJApvpnZUR4vcGRFNP67mqv0I=;
- b=e1LxZhizbJEtyGyyjy7YDMCjqKQvEsKALKKJpa9SKSa1lO+lxJLEr3G8B2gRAx3JOTTwKnqO1nzQWbo4zKUz1mEfMgjOcjn1dXQRdR4+9umitspJJy5lwCHpaXud0Th9JV5GLi6toKSPMTc1MbaX8iZQnjEsTQVMLj9p8EaZJDvfb1Eef1erdyKEoBaEGcdPy4iwPgpqNYKh/p0hMpKqQN1UCi1jgUeMJHQJfUmLN9pum+Wg+ByoEp5090PXLfOa3DgXxeS7G0pYtPW8u1qzioELWH1AZdyEqKp3uW7kJUjL2eFCg5gyqiYag6kJ0NVJeCLSDJjfCGfuMLxyR1euzA==
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5239.namprd12.prod.outlook.com (2603:10b6:208:315::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.24; Tue, 20 Jul
- 2021 18:18:49 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d017:af2f:7049:5482]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d017:af2f:7049:5482%5]) with mapi id 15.20.4331.034; Tue, 20 Jul 2021
- 18:18:49 +0000
-Date:   Tue, 20 Jul 2021 15:18:48 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        linux-rdma@vger.kernel.org, Lior Nahmanson <liorna@nvidia.com>,
-        Meir Lichtinger <meirl@nvidia.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH rdma-next v1 0/3] Add ConnectX DCS offload support
-Message-ID: <20210720181848.GA1207526@nvidia.com>
-References: <cover.1624258894.git.leonro@nvidia.com>
+        id S231439AbhGTSAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 14:00:45 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:51467 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231452AbhGTSAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:00:17 -0400
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id BA49E20004;
+        Tue, 20 Jul 2021 18:40:42 +0000 (UTC)
+Date:   Tue, 20 Jul 2021 20:40:42 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Ramesh Shanmugasundaram <rashanmu@gmail.com>,
+        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        ChiYuan Huang <cy_huang@richtek.com>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Dilip Kota <eswara.kota@linux.intel.com>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
+Message-ID: <YPcYqolGFpwbDsiv@piout.net>
+References: <20210720172025.363238-1-robh@kernel.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1624258894.git.leonro@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0183.namprd13.prod.outlook.com
- (2603:10b6:208:2be::8) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.113.129) by BL1PR13CA0183.namprd13.prod.outlook.com (2603:10b6:208:2be::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.9 via Frontend Transport; Tue, 20 Jul 2021 18:18:48 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1m5uKO-005491-0e; Tue, 20 Jul 2021 15:18:48 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b2c50569-a699-4d3e-feaf-08d94baad1e4
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5239:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5239D7BDDC8E480E7491E1A5C2E29@BL1PR12MB5239.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:669;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LlXcfCIxCO3qfil5QWBCrif2OeK6EabJqB9GqdzKO20Q8d7pn9rJeWYHk/2F8+qdOyunQK+K+Ez2kK5CTP4xDuH6nbftayQW2RWUp/D3jS4dEVCFakLDProcyG5PwRNZrnCjWViW8ZsAhX6o0wh/i0denIPK0j+2NFLoKZxNb6T0Y8Z2H4LWQ9MoiwR0UzQwAhyk0ZdCTgqhKJIDr2MyNrCojNgE3jR9b7qK44uGtA7k04fuVCmiRLEVljMeAJLmA5lQSe+mA8mmamqGIsO+imEmcPSaJnbbqMD0zixxpUSQFfsWwXKlx9LuHYIf0AXBnlCjjn658JslDmWOsmgQhd6rELmDOHmSjFJAilphxIngwbuCqD7X+z+H2/Dzh+AUlM7CKcK/rDpJQwLUa4N4wOw9vrq9s9HbZB1cBZTPhsrzmkpFGxyN7X0OmoYNl9QyHxXmLKO0h1aVxq+/XAZvl54ZpT6IT9vIQGMXa2i02JK1kRFY4c+Fy5wWWUj/+tCOxVqCcv50xUyxCLspdd3uXhHfRZu/67YNO7AYSKQ/oWQB6CGBNVnr2ASsbPjZvE1gIt8AqdW6yODpuctaez5K7PhzQLuGvHyCA7yUkEo9Zi4WOp3BtgswexmwexH9vCM3zdsubTsH9p27R27bcm0h1EW0HvZV+CYAEXOYr+oKgRPJea1mvb9yrPjfRXmO4C7Rc1Izi4h64fsMNwhZwNGf5Hw648pgzqE8JEqhhnbhMuY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(39860400002)(376002)(346002)(136003)(5660300002)(66476007)(8936002)(8676002)(4326008)(66556008)(107886003)(26005)(66946007)(38100700002)(33656002)(86362001)(2616005)(54906003)(9786002)(1076003)(9746002)(186003)(6916009)(4744005)(36756003)(478600001)(2906002)(83380400001)(426003)(316002)(966005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ejCPD+a1Mie+oBAMyyn4ViQ6AlCD0nDjXYfL7QhAGYKNNr3BQeRJvLPwGUoB?=
- =?us-ascii?Q?xVhQyFMX3awM9s2+uSVd19j0mTWk1cKFtT6+K8a+bPKbB9dzHDFtm1uKlSKe?=
- =?us-ascii?Q?ZHGKrxIJ5KccvHbGUI6mohu89YOSmSgSKYH/5+mQTKEz3nS7ZAPLPKaSVj+H?=
- =?us-ascii?Q?wsKz6SUlGqt1RGP36hskQe6UwDt6qWTfSqRXKfaXdqAgd+r3YPlyVIjht1RQ?=
- =?us-ascii?Q?P+SjEV3WYgOeiN/RS2ZmPufGRrcsxdwaCuS+0ZstbVZrC/IudscveCvh8f+m?=
- =?us-ascii?Q?tiAgCCWf36T2NbmSoEhcO5FEANlq22QaZm4Ofjj3rIGPI7LQvuJ5W5l/ICXg?=
- =?us-ascii?Q?KI8FhXdn0IYFuAdXZESI9V63hzYNVXENf+CDBIIxSYJsCCMXOvh23qboowpo?=
- =?us-ascii?Q?cTkD0QAndfk1AyJxE17H9IiDLcNxQoltseb8u7/zgw50XxA9Gywr94fN7ws9?=
- =?us-ascii?Q?fKt/WBXIDPXdZMR9vdCgG6y3FNI+3ysSkJUjkH9N07WK82lkzL51VYgtjYnn?=
- =?us-ascii?Q?aR47lrbvJB8UxayHB1Xwk5CNI17BnLUh4qUkTg2IjvHNHLzUx4hQPa3yU4nJ?=
- =?us-ascii?Q?pGxtK/F0RrGKtq3v2t33BOmuCmjPy366qVpjfO5H432gpIFf/7CsnqLxDfAp?=
- =?us-ascii?Q?EdNl25cl63ZCpyCyXg3NAOF1ugOcxeiHaucbG0dYTRZLxBKYPCVXUpDcdp1G?=
- =?us-ascii?Q?hHkHjJCw4OBC+rYhchSvfDPMgvjUfwHHFej+6TwHzvNvVC7owEPYz7+ZnFFW?=
- =?us-ascii?Q?NA+S5VA1CYj5NXJ/3X/hrbohi/gM/qygqNDJF4svYn49nBtNpKBszAvGIimO?=
- =?us-ascii?Q?YxNRPzFdsF+cdiNgMcpDH95LCDnG+wSkwhgkCx14ysgzj8GgDVXUfj/h9tSk?=
- =?us-ascii?Q?rMcVSewR7zaW6ukKFe2Ay524q0/pT42Apzplx5z6AajnzXwaxkdkpkLwadOl?=
- =?us-ascii?Q?nYJd7uGqrEvRGswFXGSbmSOU1pCyOZqQ744FNEPseNgBkuUzIpO5fBt048N/?=
- =?us-ascii?Q?+PWXpmgiJT1yQI5wSp4xigPj4xuyMlD37lmxKo5DyVVgauAvKZmjMARf8eLB?=
- =?us-ascii?Q?dO1EaHplS+wkwnLWoP9gQZ38hKZ/ek65ioPjRjooUr/A+4vEpbrkp67kZ5VH?=
- =?us-ascii?Q?4smoTwjKXTZOkXNdVSDkWmw5WicISjO5MBTsS9xgy4TxNkB8xvU6hE3vLA0v?=
- =?us-ascii?Q?fwO63kyepRJq1VVTbBhHbYlrxStDFKO+cONC6kChw9fAKw5m//xNhAOUJ5es?=
- =?us-ascii?Q?Hx0XznVLGdmWVKbdT1LT4YkOlgar/451/TfLx84rqfeIKQ2t9sggdk7Zw0gL?=
- =?us-ascii?Q?VWiBIjLUqAmRtQvqZKSmUWrH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2c50569-a699-4d3e-feaf-08d94baad1e4
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2021 18:18:48.9168
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +9thYkqzCbPr2tuDgU2OcxwxH/QejcS6wZFmvSo9cEIBUplI9JGXGE3V6cT1bJ8j
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5239
+In-Reply-To: <20210720172025.363238-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 21, 2021 at 10:06:13AM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On 20/07/2021 11:20:25-0600, Rob Herring wrote:
+> There's no reason to have "status" properties in examples. "okay" is the
+> default, and "disabled" turns off some schema checks ('required'
+> specifically).
 > 
-> Changelog:
-> v1:
->  * Rephrase commit message of second patch
-> v0: https://lore.kernel.org/linux-rdma/cover.1622723815.git.leonro@nvidia.com
+> Enabling qca,ar71xx causes a warning, so let's fix the node names:
 > 
-> ------------
+> Documentation/devicetree/bindings/net/qca,ar71xx.example.dt.yaml: phy@3: '#phy-cells' is a required property
+>         From schema: schemas/phy/phy-provider.yaml
 > 
-> This patchset from Lior adds support of DCI stream channel (DCS) support.
-> 
-> DCS is an offload to SW load balancing of DC initiator work requests.
-> 
-> A single DC QP initiator (DCI) can be connected to only one target at the time
-> and can't start new connection until the previous work request is completed.
-> 
-> This limitation causes to delays when the initiator process needs to
-> transfer data to multiple targets at the same time.
-> 
-> Thanks
-> 
-> Lior Nahmanson (3):
->   net/mlx5: Add DCS caps & fields support
->   RDMA/mlx5: Separate DCI QP creation logic
->   RDMA/mlx5: Add DCS offload support
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Chen-Yu Tsai <wens@csie.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Sam Ravnborg <sam@ravnborg.org>
+> Cc: Rui Miguel Silva <rmfrfs@gmail.com>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Robert Marko <robert.marko@sartura.hr>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Alessandro Zummo <a.zummo@towertech.it>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Cc: Ramesh Shanmugasundaram <rashanmu@gmail.com>
+> Cc: "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+> Cc: ChiYuan Huang <cy_huang@richtek.com>
+> Cc: Wei Xu <xuwei5@hisilicon.com>
+> Cc: Dilip Kota <eswara.kota@linux.intel.com>
+> Cc: Karol Gugala <kgugala@antmicro.com>
+> Cc: Mateusz Holenko <mholenko@antmicro.com>
+> Cc: Olivier Moysan <olivier.moysan@st.com>
+> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-rtc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Applied to for-next, thanks
+> ---
+>  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml |  2 --
+>  .../display/panel/boe,tv101wum-nl6.yaml       |  1 -
+>  .../bindings/media/nxp,imx7-mipi-csi2.yaml    |  2 --
+>  .../bindings/media/renesas,drif.yaml          |  1 -
+>  .../bindings/net/intel,dwmac-plat.yaml        |  2 --
+>  .../bindings/net/intel,ixp4xx-ethernet.yaml   |  2 --
+>  .../bindings/net/nfc/samsung,s3fwrn5.yaml     |  3 ---
+>  .../devicetree/bindings/net/qca,ar71xx.yaml   | 25 ++++---------------
+>  .../regulator/richtek,rt6245-regulator.yaml   |  1 -
+>  .../regulator/vqmmc-ipq4019-regulator.yaml    |  1 -
+>  .../reset/hisilicon,hi3660-reset.yaml         |  1 -
+>  .../bindings/reset/intel,rcu-gw.yaml          |  1 -
+>  .../bindings/rtc/microcrystal,rv3032.yaml     |  1 -
+>  .../soc/litex/litex,soc-controller.yaml       |  1 -
+>  .../bindings/sound/st,stm32-sai.yaml          |  2 --
+>  .../bindings/sound/ti,j721e-cpb-audio.yaml    |  2 --
+>  .../sound/ti,j721e-cpb-ivi-audio.yaml         |  2 --
+>  17 files changed, 5 insertions(+), 45 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml b/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml
+> index 5d42d36608d9..4951b5ef5c6a 100644
+> --- a/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml
+> +++ b/Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-dw-hdmi.yaml
+> @@ -174,7 +174,6 @@ examples:
+>          phy-names = "phy";
+>          pinctrl-names = "default";
+>          pinctrl-0 = <&hdmi_pins>;
+> -        status = "disabled";
+>  
+>          ports {
+>              #address-cells = <1>;
+> @@ -233,7 +232,6 @@ examples:
+>          phy-names = "phy";
+>          pinctrl-names = "default";
+>          pinctrl-0 = <&hdmi_pins>;
+> -        status = "disabled";
+>  
+>          ports {
+>              #address-cells = <1>;
+> diff --git a/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.yaml b/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.yaml
+> index 38bc1d1b511e..b87a2e28c866 100644
+> --- a/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.yaml
+> +++ b/Documentation/devicetree/bindings/display/panel/boe,tv101wum-nl6.yaml
+> @@ -70,7 +70,6 @@ examples:
+>              avee-supply = <&ppvarp_lcd>;
+>              pp1800-supply = <&pp1800_lcd>;
+>              backlight = <&backlight_lcd0>;
+> -            status = "okay";
+>              port {
+>                  panel_in: endpoint {
+>                      remote-endpoint = <&dsi_out>;
+> diff --git a/Documentation/devicetree/bindings/media/nxp,imx7-mipi-csi2.yaml b/Documentation/devicetree/bindings/media/nxp,imx7-mipi-csi2.yaml
+> index 7c09eec78ce5..877183cf4278 100644
+> --- a/Documentation/devicetree/bindings/media/nxp,imx7-mipi-csi2.yaml
+> +++ b/Documentation/devicetree/bindings/media/nxp,imx7-mipi-csi2.yaml
+> @@ -200,8 +200,6 @@ examples:
+>          clock-names = "pclk", "wrap", "phy", "axi";
+>          power-domains = <&mipi_pd>;
+>  
+> -        status = "disabled";
+> -
+>          ports {
+>              #address-cells = <1>;
+>              #size-cells = <0>;
+> diff --git a/Documentation/devicetree/bindings/media/renesas,drif.yaml b/Documentation/devicetree/bindings/media/renesas,drif.yaml
+> index 2867d11fe156..9403b235e976 100644
+> --- a/Documentation/devicetree/bindings/media/renesas,drif.yaml
+> +++ b/Documentation/devicetree/bindings/media/renesas,drif.yaml
+> @@ -242,7 +242,6 @@ examples:
+>                      power-domains = <&sysc R8A7795_PD_ALWAYS_ON>;
+>                      resets = <&cpg 513>;
+>                      renesas,bonding = <&drif11>;
+> -                    status = "disabled";
+>              };
+>  
+>              drif11: rif@e6f70000 {
+> diff --git a/Documentation/devicetree/bindings/net/intel,dwmac-plat.yaml b/Documentation/devicetree/bindings/net/intel,dwmac-plat.yaml
+> index c1948ce00081..79fa04f5e40d 100644
+> --- a/Documentation/devicetree/bindings/net/intel,dwmac-plat.yaml
+> +++ b/Documentation/devicetree/bindings/net/intel,dwmac-plat.yaml
+> @@ -116,8 +116,6 @@ examples:
+>          snps,mtl-rx-config = <&mtl_rx_setup>;
+>          snps,mtl-tx-config = <&mtl_tx_setup>;
+>          snps,tso;
+> -        status = "okay";
+> -
+>          mdio0 {
+>              #address-cells = <1>;
+>              #size-cells = <0>;
+> diff --git a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+> index f2e91d1bf7d7..378ed2d3b003 100644
+> --- a/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+> +++ b/Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+> @@ -71,7 +71,6 @@ examples:
+>      ethernet@c8009000 {
+>        compatible = "intel,ixp4xx-ethernet";
+>        reg = <0xc8009000 0x1000>;
+> -      status = "disabled";
+>        queue-rx = <&qmgr 4>;
+>        queue-txready = <&qmgr 21>;
+>        intel,npe-handle = <&npe 1>;
+> @@ -82,7 +81,6 @@ examples:
+>      ethernet@c800c000 {
+>        compatible = "intel,ixp4xx-ethernet";
+>        reg = <0xc800c000 0x1000>;
+> -      status = "disabled";
+>        queue-rx = <&qmgr 3>;
+>        queue-txready = <&qmgr 20>;
+>        intel,npe-handle = <&npe 2>;
+> diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> index 081742c2b726..64995cbb0f97 100644
+> --- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> +++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> @@ -90,14 +90,11 @@ examples:
+>    # UART example on Raspberry Pi
+>    - |
+>      uart0 {
+> -        status = "okay";
+> -
+>          nfc {
+>              compatible = "samsung,s3fwrn82";
+>  
+>              en-gpios = <&gpio 20 GPIO_ACTIVE_HIGH>;
+>              wake-gpios = <&gpio 16 GPIO_ACTIVE_HIGH>;
+>  
+> -            status = "okay";
+>          };
+>      };
+> diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> index f0db22645d73..cf4d35edaa1b 100644
+> --- a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> +++ b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+> @@ -101,8 +101,6 @@ examples:
+>  
+>          phy-mode = "gmii";
+>  
+> -        status = "disabled";
+> -
+>          fixed-link {
+>              speed = <1000>;
+>              full-duplex;
+> @@ -148,32 +146,24 @@ examples:
+>                          reg = <0x1>;
+>                          phy-handle = <&phy_port0>;
+>                          phy-mode = "internal";
+> -
+> -                        status = "disabled";
+>                      };
+>  
+>                      switch_port2: port@2 {
+>                          reg = <0x2>;
+>                          phy-handle = <&phy_port1>;
+>                          phy-mode = "internal";
+> -
+> -                        status = "disabled";
+>                      };
+>  
+>                      switch_port3: port@3 {
+>                          reg = <0x3>;
+>                          phy-handle = <&phy_port2>;
+>                          phy-mode = "internal";
+> -
+> -                        status = "disabled";
+>                      };
+>  
+>                      switch_port4: port@4 {
+>                          reg = <0x4>;
+>                          phy-handle = <&phy_port3>;
+>                          phy-mode = "internal";
+> -
+> -                        status = "disabled";
+>                      };
+>                  };
+>  
+> @@ -183,34 +173,29 @@ examples:
+>  
+>                      interrupt-parent = <&switch10>;
+>  
+> -                    phy_port0: phy@0 {
+> +                    phy_port0: ethernet-phy@0 {
+>                          reg = <0x0>;
+>                          interrupts = <0>;
+> -                        status = "disabled";
+>                      };
+>  
+> -                    phy_port1: phy@1 {
+> +                    phy_port1: ethernet-phy@1 {
+>                          reg = <0x1>;
+>                          interrupts = <0>;
+> -                        status = "disabled";
+>                      };
+>  
+> -                    phy_port2: phy@2 {
+> +                    phy_port2: ethernet-phy@2 {
+>                          reg = <0x2>;
+>                          interrupts = <0>;
+> -                        status = "disabled";
+>                      };
+>  
+> -                    phy_port3: phy@3 {
+> +                    phy_port3: ethernet-phy@3 {
+>                          reg = <0x3>;
+>                          interrupts = <0>;
+> -                        status = "disabled";
+>                      };
+>  
+> -                    phy_port4: phy@4 {
+> +                    phy_port4: ethernet-phy@4 {
+>                          reg = <0x4>;
+>                          interrupts = <0>;
+> -                        status = "disabled";
+>                      };
+>                  };
+>              };
+> diff --git a/Documentation/devicetree/bindings/regulator/richtek,rt6245-regulator.yaml b/Documentation/devicetree/bindings/regulator/richtek,rt6245-regulator.yaml
+> index 796ceac87445..e983d0e70c9b 100644
+> --- a/Documentation/devicetree/bindings/regulator/richtek,rt6245-regulator.yaml
+> +++ b/Documentation/devicetree/bindings/regulator/richtek,rt6245-regulator.yaml
+> @@ -77,7 +77,6 @@ examples:
+>  
+>        rt6245@34 {
+>          compatible = "richtek,rt6245";
+> -        status = "okay";
+>          reg = <0x34>;
+>          enable-gpios = <&gpio26 2 0>;
+>  
+> diff --git a/Documentation/devicetree/bindings/regulator/vqmmc-ipq4019-regulator.yaml b/Documentation/devicetree/bindings/regulator/vqmmc-ipq4019-regulator.yaml
+> index 6f45582c914e..dd7a2f92634c 100644
+> --- a/Documentation/devicetree/bindings/regulator/vqmmc-ipq4019-regulator.yaml
+> +++ b/Documentation/devicetree/bindings/regulator/vqmmc-ipq4019-regulator.yaml
+> @@ -39,6 +39,5 @@ examples:
+>        regulator-min-microvolt = <1500000>;
+>        regulator-max-microvolt = <3000000>;
+>        regulator-always-on;
+> -      status = "disabled";
+>      };
+>  ...
+> diff --git a/Documentation/devicetree/bindings/reset/hisilicon,hi3660-reset.yaml b/Documentation/devicetree/bindings/reset/hisilicon,hi3660-reset.yaml
+> index 9bf40952e5b7..b0c41ab1a746 100644
+> --- a/Documentation/devicetree/bindings/reset/hisilicon,hi3660-reset.yaml
+> +++ b/Documentation/devicetree/bindings/reset/hisilicon,hi3660-reset.yaml
+> @@ -72,6 +72,5 @@ examples:
+>          resets = <&iomcu_rst 0x20 3>;
+>          pinctrl-names = "default";
+>          pinctrl-0 = <&i2c0_pmx_func &i2c0_cfg_func>;
+> -        status = "disabled";
+>      };
+>  ...
+> diff --git a/Documentation/devicetree/bindings/reset/intel,rcu-gw.yaml b/Documentation/devicetree/bindings/reset/intel,rcu-gw.yaml
+> index 6b2d56cc3f38..13bf6bb3f097 100644
+> --- a/Documentation/devicetree/bindings/reset/intel,rcu-gw.yaml
+> +++ b/Documentation/devicetree/bindings/reset/intel,rcu-gw.yaml
+> @@ -57,7 +57,6 @@ examples:
+>      };
+>  
+>      pwm: pwm@e0d00000 {
+> -        status = "disabled";
+>          compatible = "intel,lgm-pwm";
+>          reg = <0xe0d00000 0x30>;
+>          clocks = <&cgu0 1>;
+> diff --git a/Documentation/devicetree/bindings/rtc/microcrystal,rv3032.yaml b/Documentation/devicetree/bindings/rtc/microcrystal,rv3032.yaml
+> index a2c55303810d..9593840a4a2b 100644
+> --- a/Documentation/devicetree/bindings/rtc/microcrystal,rv3032.yaml
+> +++ b/Documentation/devicetree/bindings/rtc/microcrystal,rv3032.yaml
+> @@ -53,7 +53,6 @@ examples:
+>          rtc@51 {
+>              compatible = "microcrystal,rv3032";
+>              reg = <0x51>;
+> -            status = "okay";
+>              pinctrl-0 = <&rtc_nint_pins>;
+>              interrupts-extended = <&gpio1 16 IRQ_TYPE_LEVEL_HIGH>;
+>              trickle-resistor-ohms = <7000>;
+> diff --git a/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+> index c8b57c7fd08c..ecae9fa8561b 100644
+> --- a/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+> +++ b/Documentation/devicetree/bindings/soc/litex/litex,soc-controller.yaml
+> @@ -35,7 +35,6 @@ examples:
+>      soc_ctrl0: soc-controller@f0000000 {
+>          compatible = "litex,soc-controller";
+>          reg = <0xf0000000 0xc>;
+> -        status = "okay";
+>      };
+>  
+>  ...
+> diff --git a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
+> index 06e83461705c..f97132400bb6 100644
+> --- a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
+> +++ b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
+> @@ -180,7 +180,6 @@ examples:
+>        pinctrl-names = "default", "sleep";
+>        pinctrl-0 = <&sai2a_pins_a>, <&sai2b_pins_b>;
+>        pinctrl-1 = <&sai2a_sleep_pins_a>, <&sai2b_sleep_pins_b>;
+> -      status = "okay";
+>  
+>        sai2a: audio-controller@4400b004 {
+>          #sound-dai-cells = <0>;
+> @@ -190,7 +189,6 @@ examples:
+>          dma-names = "tx";
+>          clocks = <&rcc SAI2_K>;
+>          clock-names = "sai_ck";
+> -        status = "okay";
+>        };
+>      };
+>  
+> diff --git a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
+> index ec06789b21df..6806f53a4aed 100644
+> --- a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
+> +++ b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
+> @@ -127,8 +127,6 @@ examples:
+>          compatible = "ti,j721e-cpb-audio";
+>          model = "j721e-cpb";
+>  
+> -        status = "okay";
+> -
+>          ti,cpb-mcasp = <&mcasp10>;
+>          ti,cpb-codec = <&pcm3168a_1>;
+>  
+> diff --git a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-ivi-audio.yaml b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-ivi-audio.yaml
+> index ee9f960de36b..859d369c71e2 100644
+> --- a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-ivi-audio.yaml
+> +++ b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-ivi-audio.yaml
+> @@ -119,8 +119,6 @@ examples:
+>          compatible = "ti,j721e-cpb-ivi-audio";
+>          model = "j721e-cpb-ivi";
+>  
+> -        status = "okay";
+> -
+>          ti,cpb-mcasp = <&mcasp10>;
+>          ti,cpb-codec = <&pcm3168a_1>;
+>  
+> -- 
+> 2.27.0
+> 
 
-Jason
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
