@@ -2,255 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5DD63CFE7D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AD13CFDB9
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 17:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240036AbhGTPSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 11:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240274AbhGTOgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 10:36:17 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A009DC0613DC;
-        Tue, 20 Jul 2021 08:15:47 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id x192so33191424ybe.6;
-        Tue, 20 Jul 2021 08:15:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uaQPvq47KAC0e0Q736uuzY+FVBhHAhcKYYINkLHiZoE=;
-        b=Laz9/tp/dfCS4fjQUvlySWLHp2fuAlDtKgSMAcFKKKb8+DpPixU9AEdUXne9EThj0A
-         ZiyIRRE+Alp/kRfvHEav6GAAko5+aH1bgU26xPz9p0IUIjUszfRZLJWJQvsXsnDYYlF/
-         taEody36IDV5p3bdhiNAbRMv/66gz5w9DeRHDKEce3XWssHURxwVNpgXSbXxQ9CSE+up
-         Exl7Ofo3MN3xSTAeCenV+mCVhsKEf2OgUb8mOfvGuaNJCRx+ynCNGqra3fxQ78p22Z1I
-         oXzOSTkdg1+NZRkqWZW9hXnGqc3PwcAIoLReL/k/dfpaCk5iF2Cfk15JvDCGcTiVpu0v
-         h0iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uaQPvq47KAC0e0Q736uuzY+FVBhHAhcKYYINkLHiZoE=;
-        b=DZsDGMvLh4/wiJqvvaU5Rakzj3TSGfLdqx/C7XGLKxRp0qzm123yOlSJ0jsXy9J2e1
-         wVvOnfMUERM+wV4t8xsHKA9qkyY7hYb1wyyl89HRL+/LYW5BPBClIHD9CGPSRJSEMK56
-         0pJ+KNbXlQEcNtTymQSkbSmntUc5/tqkBAnNcnShIjs6mIzfMPH5uysli1uE0vNvUFKa
-         /WMkQx6GhVWgavTvAyerL0vTKr2NS7SAjbKNstYDApaUax28hTHbF0RqvJnjLNQXE24Z
-         Lap0MKW469dqzchlfw/d05kjz9FN9E/c4c4Ws/iQe7Ud6ST7EKlBXjKiOehr4JJIap13
-         eRwg==
-X-Gm-Message-State: AOAM533KxdyCIf04FLqtnInsDVcKI/gB9RA4Mzh9mbSx5GXWykYkKeDC
-        8ekR9R15G6Xd9d0Z4Fs6HaDRg/aRYPxPo6mo/J8=
-X-Google-Smtp-Source: ABdhPJyqufuskgWhbDx46oleIszFO/ZGvE4lcJf5djJEzqyAwn5fBvWyIl414WGgBeXzfRiRxYYlQ2QcBAtWdZzNk+I=
-X-Received: by 2002:a5b:94d:: with SMTP id x13mr36125505ybq.47.1626794145500;
- Tue, 20 Jul 2021 08:15:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210719143811.2135-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20210719143811.2135-3-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdXkPDaaRZZTCyn-Mwfakuzui69GWuiKUWYEOyhQmuFB=w@mail.gmail.com>
-In-Reply-To: <CAMuHMdXkPDaaRZZTCyn-Mwfakuzui69GWuiKUWYEOyhQmuFB=w@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 20 Jul 2021 16:15:19 +0100
-Message-ID: <CA+V-a8uge1Bn5BeuUjLR2+UkWN88uW99x92Ym3sgguiinbx=Ng@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] can: rcar_canfd: Add support for RZ/G2L family
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S240449AbhGTO6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 10:58:35 -0400
+Received: from mail-eopbgr50057.outbound.protection.outlook.com ([40.107.5.57]:9654
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241896AbhGTO47 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 10:56:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MKimzjSuLEgQg4gyQfptGuMHUl4Y5HmBu5QLtNB/LtZaEPstk36MDrHEPPju8Z19gZw5ROQ+0bCtRHmCzFGhcd568XpRUHlWYNkWhIEy9WZ2aRO8NDECW8urBUoY0jXfJwoCcqLDi19musQZ/MhmPzLo7pOf2dy6O8sEmi0nsA4TAVSlHVJvzIKtQs862oTy7hlothHGMp2EA+M7JWzzdDsZhJgXf0gBNVhGUk5Ecb6hjf9lrNJBhgnVL+NIbns3ztmY8rA9GZPViSqTricsZW4N0+0zspW/o2CLoF9HptTs5vWa3wXLEa2Hq+tmRW1MQwA0SnD5i6kUfxrGTPYRFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=amM3FE/4ZsPyf1At5EyS/WADEq3F0q294fG/XxbsPgc=;
+ b=fEsPN7Y5pOatfXhcMBoT21Nj1AjwKpnkeCWbaBnWWLSS7jytBOyCXjdqmrjdYc9eWZmyP1Jv59DR90hbrDhQ9V3krWAQEh2PNZIODekC+9e59YVh2TamyAPunetLrh3y0PPbT9VE9tGjGgfs7YQbffEm/ktxsD7KPRS/ES/pGTcDd7rudqC2sK50CeNQVAvbNpvRnopAxjcngT98x//Ud/nKcBy9bLjP6b+g9Ey/8D+f9HfDCjvR9pBlHttp5oi3DZ7PgmkvnnObPHAF4CL0oxA91rsIFVVvUMIhvgKyorTKOXQonFP5zKPLxzy1SgCCQRVcX5vD2T3wZfRQAd7kRg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=amM3FE/4ZsPyf1At5EyS/WADEq3F0q294fG/XxbsPgc=;
+ b=kmkEGD7JDqjSRpOarCHkrb8LIW2KH8zvBxN7caexAqVlGSdOenv60MRSZDW8Zk9bmbUA6/66VmX3buJuFyZ5oZTRfEfUs0UrMqid8O2C4+GA4/t7a3zS5db3+oV9pj6lDuWZ1uP7XIlr7sbc1kqxA7S8bL4sN6SK5D3nsg3SkrY=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB4429.eurprd04.prod.outlook.com (2603:10a6:803:6e::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Tue, 20 Jul
+ 2021 15:36:37 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.034; Tue, 20 Jul 2021
+ 15:36:37 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Marek Behun <kabel@blackhole.sk>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH v5 net-next 00/10] Let switchdev drivers offload and
+ unoffload bridge ports at their own convenience
+Thread-Topic: [PATCH v5 net-next 00/10] Let switchdev drivers offload and
+ unoffload bridge ports at their own convenience
+Thread-Index: AQHXfW29xPYONAiJQkyZbYsuqj9IL6tL5LQAgAAC2QCAAAOsAIAABemAgAABbgCAAAyhAA==
+Date:   Tue, 20 Jul 2021 15:36:37 +0000
+Message-ID: <20210720153636.pabfdzznzfuiinfs@skbuf>
+References: <20210720134655.892334-1-vladimir.oltean@nxp.com>
+ <YPbXTKj4teQZ1QRi@shredder> <20210720141200.xgk3mlipp2mzerjl@skbuf>
+ <YPbcxPKjbDxChnlK@shredder> <20210720144617.ptqt5mqlw5stidep@skbuf>
+ <YPbi7NSsdDEdvmcA@shredder>
+In-Reply-To: <YPbi7NSsdDEdvmcA@shredder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: idosch.org; dkim=none (message not signed)
+ header.d=none;idosch.org; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: af9f5631-8570-4d88-4207-08d94b9429ac
+x-ms-traffictypediagnostic: VI1PR04MB4429:
+x-microsoft-antispam-prvs: <VI1PR04MB44296DDFC17D3E28D337B6A5E0E29@VI1PR04MB4429.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1M/TH6nnT0ioHlodVEIL6zOJL3H5PWvbD/tuw+5+qE+l0gHVLzwYyvG9Hsb47NyecP5+lT1mPE7I7rrm6awT2CpJgoeuHfrAKBUYKzUSjlas4xD2AlI8aBg0bfgWuPnw/v2QmFASFd1fya+YXL4UDBvlDGHVpQOE0S4LHkWOC6FotFkofz3FzigJN3TcBp0I/KIwYqcABoWHpfqC6vlN3l7fH/hmBDNyjGRKl2hBjVBrfltvU3K+b10yRVP1VhEgTs7CI1G8W3C6sOOL+bUgW7YNUc9cXP2fZDDv2Qxjkh3KOP7+sPbx6OtNp+xN5C7Qw0sDRYWn7yb5yAKK/SqkWTQRn0rYzLA4rGmWT2+FCoBxromqTFXxQ92kh9fwejRyLp3UTNddkDOE+MEsGPV+2zg/dtscjyZTsxK+WhKqmJFEapqFywLFzPjBv3+1VSKYyHujzqX4tMG9OzV+tzpA9Ow/Em/7PYZ9my2zwT2FpmcX5qwiO3K4/R3m59W37o5LR9SN2aHoK+JlQmk6N+kmv+eaL5zouuh1WPE7XRh8z5/st0ji/+ios/KbQltrDbsBUN5tvPIRFYtPXTa8h5Oj9MwfQgD5LPQ8yAXsu6Z1T6P3QAhlErtsF2dViS1GEsTUVVdGXa2oDXLpqitAk5OZobc/iwnviIob4b9cZy0XyfUwnaCfoaaCKBRS0e7QhiR17yIEeL1N13Dg3KCi80pXBA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(346002)(136003)(376002)(39860400002)(366004)(71200400001)(2906002)(38100700002)(1076003)(44832011)(5660300002)(66476007)(26005)(83380400001)(316002)(9686003)(6486002)(6916009)(6512007)(186003)(478600001)(54906003)(33716001)(4326008)(6506007)(7416002)(66946007)(86362001)(64756008)(66556008)(91956017)(3716004)(8676002)(66446008)(76116006)(8936002)(122000001)(38070700004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?z/IbGmmdNmvHAuV3VbPFya2CyjfQHJsVSyAnAEi21wqgxEhJT1mAAHU+cwUS?=
+ =?us-ascii?Q?DPvT2EnOqhQmqTiVn1qdWVBaO8Dbw71Zi5jLwedGfJdUGTfZqKxX9NTkTQVZ?=
+ =?us-ascii?Q?hB3DeDFEJ4C1se/OdwLAh2lRAt/ec+EGw1Nyfb8aIj1DMLIw4ONYUbBUB4u7?=
+ =?us-ascii?Q?Abotu6wq5uoCGwCxF+BA9VKsqlcZebTq8l7HR/O1YJ/jXk78akqkT/lLwZeF?=
+ =?us-ascii?Q?QvVmleIYA0KzVFCjfDk/uB4eovu6T1cBWDZ48dukoExW88ugoth/bhkwpaXv?=
+ =?us-ascii?Q?yU7368rvDfN+/yyYs0wcWxQORnM5aGiwZhgUnhZ//d1cLMzsI+cqxtfDkgSz?=
+ =?us-ascii?Q?olYvrpSaQm7NIHEOF5w2nKgJJBHRTDAuz0/O0+RSS9jtwmY+T5rbnmvNg9Rf?=
+ =?us-ascii?Q?J/omO9WVQrt389m9nlscXLE63noJvZnPF487koMhZKCUc4MHFLVVsG3Y7q8m?=
+ =?us-ascii?Q?dPOVLQytOqwfAPgXWj36vD3l0K3Uc8oSYeucEYjNg3lCLxULZfupu/SmM1Pj?=
+ =?us-ascii?Q?pOgon7gQFo2oy2RwWcv8R9Zt3Rg9pX/I1z/KtBXdDLNKiVOcVoJRpXePlrrV?=
+ =?us-ascii?Q?UAS3S6l0QtSy2HHplsLT5acT64suMHoVUS2mYz2ltMhf5vZIbS6/uf0KxZfV?=
+ =?us-ascii?Q?QYPByvibdpS2ZIuHU5N3DEdQycUODix6kGKaUjayV6iFlVrQKpYU/oIenzWw?=
+ =?us-ascii?Q?piFu9kviWaxTckfrxa4M27GqYpomccdWUPuvPRVh1Sp0g7LGHX79McfOnGdj?=
+ =?us-ascii?Q?VCWQfGz3y15q6+bFUZAzPSzsSm+YetqEMPYnzmtYdyyI39LWOHVh+HpFxfjP?=
+ =?us-ascii?Q?gdo53JcMrmRYOP+n/Gnn1FXjkGWxQvqhGQHmoL6vD3bTeO495T6Mr1DnSCOy?=
+ =?us-ascii?Q?HM//0J5qr/G1WshgJLEeMxx1wpMtyFSTsRJpJBD6Qgs0KKwinC61rbtgdxTI?=
+ =?us-ascii?Q?+Kj2wYwtW9Eqb1E0/Ekl1bbo4S9g2+HSPIRS7Dtb3unSfumHtgEowXapNbkc?=
+ =?us-ascii?Q?e3ty1syAXi4ivuCLT8qirx0fAOGi218p4O+XZaIn1uF14jGbTfoKyXG0UrCr?=
+ =?us-ascii?Q?hswOwTyEirJNB1OiMKpbbbzZ7Ix+bTizjSd7WNfjdamq7jANX6O1D14nb+y0?=
+ =?us-ascii?Q?J3XU2DPFz0JmCKfgV0krTEe+dXxd9LeEgquwRrZlejfhqjbTOCci98MnFbqk?=
+ =?us-ascii?Q?qUpfPzS3uM/FfQOtJhldxXElWwZ0OUBMTOhWyCLpFgw0YSJtBAXvkuwQUnOW?=
+ =?us-ascii?Q?+fnQuUSxOOJ0ys2wB2UxVxsYQygD/cUBJoBodja7dRomWvtazlpMe34rfb2a?=
+ =?us-ascii?Q?EHMyC8rEl0G8DbKxHyXIiwie?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <17DEA3A2C6DEE74BB8461C5E632D3F6D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af9f5631-8570-4d88-4207-08d94b9429ac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jul 2021 15:36:37.5683
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pUnaDOrK1Qyqt2w02DmTGjFnb0Kk7IRiFB1ttwa9s4QRIwyNpP9queYVjUc8yJdK5VlrBkcks4jwpS6h4/2gBg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4429
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geert,
+On Tue, Jul 20, 2021 at 05:51:24PM +0300, Ido Schimmel wrote:
+> On Tue, Jul 20, 2021 at 02:46:18PM +0000, Vladimir Oltean wrote:
+> > On Tue, Jul 20, 2021 at 05:25:08PM +0300, Ido Schimmel wrote:
+> > > If you don't want to change the order, then at least make the
+> > > replay/cleanup optional and set it to 'false' for mlxsw. This should
+> > > mean that the only change in mlxsw should be adding calls to
+> > > switchdev_bridge_port_offload() / switchdev_bridge_port_unoffload() i=
+n
+> > > mlxsw_sp_bridge_port_create() / mlxsw_sp_bridge_port_destroy(),
+> > > respectively.
+> >=20
+> > I mean, I could guard br_{vlan,mdb,fdb}_replay() against NULL notifier
+> > block pointers, and then make mlxsw pass NULL for both the atomic_nb an=
+d
+> > blocking_nb.
+> >=20
+> > But why? How do you deal with a host-joined mdb that was auto-installed
+> > while there was no port under the bridge?
+>=20
+> mlxsw does not currently support such entries. It's on my TODO list.
+> When we add support for that, we will also take care of the replay.
 
-Thank you for the review.
+Okay, that I can do. I had the impression that mlxsw does - I knew for
+certain that DSA isn't the only driver offloading SWITCHDEV_OBJ_ID_HOST_MDB
+so I looked it up right now, and I remembered. cpsw was the other driver,
+and it does a pretty funny thing: the same thing as for
+SWITCHDEV_OBJ_ID_PORT_MDB.
 
-On Tue, Jul 20, 2021 at 11:31 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Mon, Jul 19, 2021 at 4:39 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > CANFD block on RZ/G2L SoC is almost identical to one found on
-> > R-Car Gen3 SoC's. On RZ/G2L SoC interrupt sources for each channel
-> > are split into different sources and the IP doesn't divide (1/2)
-> > CANFD clock within the IP.
-> >
-> > This patch adds compatible string for RZ/G2L family and registers
-> > the irq handlers required for CANFD operation. IRQ numbers are now
-> > fetched based on names instead of indices. For backward compatibility
-> > on non RZ/G2L SoC's we fallback reading based on indices.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/drivers/net/can/rcar/rcar_canfd.c
-> > +++ b/drivers/net/can/rcar/rcar_canfd.c
-> > @@ -37,9 +37,15 @@
-> >  #include <linux/bitmap.h>
-> >  #include <linux/bitops.h>
-> >  #include <linux/iopoll.h>
-> > +#include <linux/reset.h>
-> >
-> >  #define RCANFD_DRV_NAME                        "rcar_canfd"
-> >
-> > +enum rcanfd_chip_id {
-> > +       RENESAS_RCAR_GEN3 = 0,
-> > +       RENESAS_RZG2L,
-> > +};
-> > +
-> >  /* Global register bits */
-> >
-> >  /* RSCFDnCFDGRMCFG */
-> > @@ -513,6 +519,9 @@ struct rcar_canfd_global {
-> >         enum rcar_canfd_fcanclk fcan;   /* CANFD or Ext clock */
-> >         unsigned long channels_mask;    /* Enabled channels mask */
-> >         bool fdmode;                    /* CAN FD or Classical CAN only mode */
-> > +       struct reset_control *rstc1;     /* Pointer to reset source1 */
-> > +       struct reset_control *rstc2;     /* Pointer to reset source2 */
->
-> Are these comments helpful? IMHO they're stating the obvious.
->
-No :D will drop those.
-
-> > +       enum rcanfd_chip_id chip_id;
-> >  };
-> >
-> >  /* CAN FD mode nominal rate constants */
-> > @@ -1577,6 +1586,45 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
-> >         priv->can.clock.freq = fcan_freq;
-> >         dev_info(&pdev->dev, "can_clk rate is %u\n", priv->can.clock.freq);
-> >
-> > +       if (gpriv->chip_id == RENESAS_RZG2L) {
-> > +               char *irq_name;
-> > +               int err_irq;
-> > +               int tx_irq;
-> > +
-> > +               err_irq = platform_get_irq_byname(pdev, ch == 0 ? "can0_error" : "can1_error");
-> > +               if (err_irq < 0) {
-> > +                       err = err_irq;
-> > +                       goto fail;
-> > +               }
-> > +
-> > +               tx_irq = platform_get_irq_byname(pdev, ch == 0 ? "can0_tx" : "can1_tx");
-> > +               if (tx_irq < 0) {
-> > +                       err = tx_irq;
-> > +                       goto fail;
-> > +               }
-> > +
-> > +               irq_name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
-> > +                                         "canfd.chnerr%d", ch);
->
-> if (!irq_name) {
->     ret = -ENOMEM;
->     goto fail;
-> }
->
-> > +               err = devm_request_irq(&pdev->dev, err_irq,
-> > +                                      rcar_canfd_channel_interrupt, 0,
-> > +                                      irq_name, gpriv);
-> > +               if (err) {
-> > +                       dev_err(&pdev->dev, "devm_request_irq CH Err(%d) failed, error %d\n",
-> > +                               err_irq, err);
-> > +                       goto fail;
-> > +               }
-> > +               irq_name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
-> > +                                         "canfd.chntx%d", ch);
->
-> Likewise.
->
-> > +               err = devm_request_irq(&pdev->dev, tx_irq,
-> > +                                      rcar_canfd_channel_interrupt, 0,
-> > +                                      irq_name, gpriv);
-> > +               if (err) {
-> > +                       dev_err(&pdev->dev, "devm_request_irq Tx (%d) failed, error %d\n",
-> > +                               tx_irq, err);
-> > +                       goto fail;
-> > +               }
-> > +       }
-> > +
-> >         if (gpriv->fdmode) {
-> >                 priv->can.bittiming_const = &rcar_canfd_nom_bittiming_const;
-> >                 priv->can.data_bittiming_const =
->
-> > @@ -1649,27 +1700,64 @@ static int rcar_canfd_probe(struct platform_device *pdev)
-> >         if (of_child && of_device_is_available(of_child))
-> >                 channels_mask |= BIT(1);        /* Channel 1 */
-> >
-> > -       ch_irq = platform_get_irq(pdev, 0);
-> > -       if (ch_irq < 0) {
-> > -               err = ch_irq;
-> > -               goto fail_dev;
-> > -       }
-> > +       if (chip_id == RENESAS_RCAR_GEN3) {
-> > +               ch_irq = platform_get_irq_byname(pdev, "ch_int");
->
-> platform_get_irq_byname_optional()?
-> Unless you want to urge people to update their DTB.
->
-Good point will change it to platform_get_irq_byname_optional().
-
-> > +               if (ch_irq < 0) {
-> > +                       /* For backward compatibility get irq by index */
-> > +                       ch_irq = platform_get_irq(pdev, 0);
-> > +                       if (ch_irq < 0)
-> > +                               return ch_irq;
-> > +               }
-> >
-> > -       g_irq = platform_get_irq(pdev, 1);
-> > -       if (g_irq < 0) {
-> > -               err = g_irq;
-> > -               goto fail_dev;
-> > +               g_irq = platform_get_irq_byname(pdev, "g_int");
->
-> Likewise,
->
-agreed
-
-Cheers,
-Prabhakar
-
-> > +               if (g_irq < 0) {
-> > +                       /* For backward compatibility get irq by index */
-> > +                       g_irq = platform_get_irq(pdev, 1);
-> > +                       if (g_irq < 0)
-> > +                               return g_irq;
-> > +               }
-> > +       } else {
-> > +               g_irq = platform_get_irq_byname(pdev, "g_error");
-> > +               if (g_irq < 0)
-> > +                       return g_irq;
-> > +
-> > +               g_rx_irq = platform_get_irq_byname(pdev, "g_rx_fifo");
-> > +               if (g_rx_irq < 0)
-> > +                       return g_rx_irq;
-> >         }
-> >
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+I guess I'll just provide NULL pointers for every driver except those I
+already received acks for (dpaa2-switch, ocelot) and DSA. Then driver
+maintainers can take it from there as they wish. Hopefully this should
+also make the patches slide in easier.=
