@@ -2,102 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 950793D004B
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4F33D004C
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 19:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbhGTQv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 12:51:57 -0400
-Received: from angie.orcam.me.uk ([78.133.224.34]:32776 "EHLO
-        angie.orcam.me.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbhGTQvn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 12:51:43 -0400
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 40D5392009C; Tue, 20 Jul 2021 19:32:18 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 39CE492009B;
-        Tue, 20 Jul 2021 19:32:18 +0200 (CEST)
-Date:   Tue, 20 Jul 2021 19:32:18 +0200 (CEST)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-cc:     Shannon Nelson <snelson@pensando.io>, klassert@kernel.org,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        jeffrey.t.kirsher@intel.com, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: 3com: 3c59x: add a check against null pointer
- dereference
-In-Reply-To: <CAMhUBjnmeS5G4CNFhsV7EVFSfLspNNotd5qP-g8o8OsBx7xd5A@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2107201918150.9461@angie.orcam.me.uk>
-References: <1623498978-30759-1-git-send-email-zheyuma97@gmail.com> <7ca72971-e072-2489-99cc-3b25e111d333@pensando.io> <CAMhUBjnmeS5G4CNFhsV7EVFSfLspNNotd5qP-g8o8OsBx7xd5A@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S231384AbhGTQwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 12:52:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60948 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231147AbhGTQvt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 12:51:49 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C68E60234;
+        Tue, 20 Jul 2021 17:32:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626802347;
+        bh=ro/CHjcs0UBC2OW8hwzo1K8UKv2+cG9BJ4U9R80l1QI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UviF6JO0oSZx73mfK4YgSc+kae4SZkNrCEV1w+XjoWAXnIiJkVIm6T+tOQGWvDiLu
+         LH2pYNo9imtlFN8C/GaQyVB6tSvpUvaI34ux+9h1OG00R/1ZoZaw8kMg47eS6OFTp6
+         krBmzESWFrJne3BWPXWA0yqnUhG8MPADKPtL4Hpi0e+SNvjdlUBdMzn0T0rm56bSAS
+         TuqZO4w60BFosz6J4x03+59oag1zBRFliq8KEVfUpDtWOOd8PF/GBawhrZ62ue1xtq
+         042aQJAF7kR9QCk5VYU14/k4h7KpfOEDSI1/bSLUiwolMIdCJHxj8VLtUvh4GpIluz
+         YAhlYDyFXaFNA==
+Date:   Tue, 20 Jul 2021 19:32:23 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH RFC net-next] net: phy: marvell10g: add downshift
+ tunable support
+Message-ID: <20210720193223.194cb79e@dellmb>
+In-Reply-To: <20210720171401.GV22278@shell.armlinux.org.uk>
+References: <E1m5pwy-0003uX-Pf@rmk-PC.armlinux.org.uk>
+        <20210720170424.07cba755@dellmb>
+        <20210720171401.GV22278@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Jun 2021, Zheyu Ma wrote:
+On Tue, 20 Jul 2021 18:14:01 +0100
+"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 
-> > > When the driver is processing the interrupt, it will read the value of
-> > > the register to determine the status of the device. If the device is in
-> > > an incorrect state, the driver may mistakenly enter this branch. At this
-> > > time, the dma buffer has not been allocated, which will result in a null
-> > > pointer dereference.
-[...]
-> > > diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
-> > > index 741c67e546d4..e27901ded7a0 100644
-> > > --- a/drivers/net/ethernet/3com/3c59x.c
-> > > +++ b/drivers/net/ethernet/3com/3c59x.c
-> > > @@ -2300,7 +2300,7 @@ _vortex_interrupt(int irq, struct net_device *dev)
-> > >               }
-> > >
-> > >               if (status & DMADone) {
-> > > -                     if (ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) {
-> > > +                     if ((ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) && vp->tx_skb_dma) {
-> > >                               iowrite16(0x1000, ioaddr + Wn7_MasterStatus); /* Ack the event. */
-> > >                               dma_unmap_single(vp->gendev, vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, DMA_TO_DEVICE);
-> > >                               pkts_compl++;
-> >
-> > This means you won't be ack'ing the event - is this unacknowledged event
-> > going to cause an issue later?
-> >
-> 
-> First, I'm not an expert in networking, but from my perspective, I
-> don't think this will cause a problem. Because when the driver enters
-> this branch, It means that it thinks that the hardware has already
-> performed a DMA operation, and the driver only needs to do some
-> follow-up work, but this is not the case. At this time,
-> 'vp->tx_skb_dma' is still a null pointer, so there is no need for
-> follow-up work at this time, it is meaningless, and it is appropriate
-> not to perform any operations at this time.
+> On Tue, Jul 20, 2021 at 05:04:24PM +0200, Marek Beh=C3=BAn wrote:
+> > Hi Russell,
+> >=20
+> > On Tue, 20 Jul 2021 14:38:20 +0100
+> > Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> >  =20
+> > > Add support for the downshift tunable for the Marvell 88x3310 PHY.
+> > > Downshift is only usable with firmware 0.3.5.0 and later. =20
+> >=20
+> > mv3310_{g,s}et_features are also used for 88E211x, but there is no
+> > such register in the documentation for these PHYs. (Also firmware
+> > versions on those are different, the newest is 8.3.0.0, but thats
+> > not important.) My solution would be to rename the current methods
+> > prefix to mv211x_ and and add new mv3310_{g,s}et_tunable methods. =20
+>=20
+> There's more than just the tunables themselves - there's also
+> config_init().
+>=20
+> We already need to reject downshift when old firmware is running,
+> as that fails to work correctly. So, we can just do that for
+> 88E211x as well, adding a flag to struct mv3310_chip to indicate
+> whether downshift is present. Sound sensible?
 
- What are the circumstances you observe this behaviour under?  The state 
-of hardware is supposed to be consistent with the state of the driver.  If 
-an inconsistency happens, then there are various possible causes such as:
+Hmm, maybe add the flag to struct mv3310_priv, instead of struct
+mv3310_chip, since the latter is static. And fill in the flag in
+mv3310_probe() function, depending on firmware version?
 
-1. The driver has a bug (in which case you need to track the bug down and 
-   fix it).
+BTW would you agree with a patch renaming the mv3310_ prefixes to
+mv10g_ for all functions that are generic to both mv3310_ and mv2110_?
+I was thinking about such a thing because it has become rather
+confusing.
 
-2. The hardware does not behave as specified, e.g. due to an erratum (in 
-   which case you need to track the problem down and work it around in the 
-   driver).
-
-3. The hardware may have been disturbed, e.g. due to EMC interference (in 
-   which case you may implement a recovery attempt by reinitialising the 
-   hardware once an odd state has been discovered).
-
-4. The hardware is broken (throw it away).
-
-For #4 the solution is obvious.  For #3 you might want to implement a 
-hardware reset path rather than ignoring the inconsistent state and only 
-prevent the driver from crashing.  If you have a way to reproduce the 
-issue, which I gather you do, then it's likely not #3 as that would be 
-intermittent, and then you'll have to investigate what is causing the 
-problem to see if it is #1 or #2 (or maybe #4), and act accordingly.  
-
- Someone more familiar with this hardware (is there a spec available?) 
-might be able to assist you once you have figured out what the exact 
-scenario leading to the failure you have observed is.
-
- HTH,
-
-  Maciej
+Marek
