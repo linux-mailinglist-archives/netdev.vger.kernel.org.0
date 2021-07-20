@@ -2,118 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D153D01DA
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ADC73D01F1
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 20:52:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbhGTSCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 14:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44126 "EHLO
+        id S233517AbhGTSJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 14:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230471AbhGTSCb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:02:31 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A834DC061574
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 11:43:05 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id b14-20020a1c1b0e0000b02901fc3a62af78so2058381wmb.3
-        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 11:43:05 -0700 (PDT)
+        with ESMTP id S231948AbhGTSIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 14:08:37 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E625BC0613DB;
+        Tue, 20 Jul 2021 11:48:48 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id s5so196360ild.5;
+        Tue, 20 Jul 2021 11:48:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J0JG7RUcBoSxlQgScK4tXTDK4hQK4CAab6KB4pPNlfE=;
-        b=eISU/vW2BdVHQNC3zl/KZ2Q17ivOvcD445b7Z4xQBhPdICxxgvw6viBtTlS/5ztzm4
-         98RlGQriOQbfdb8qwHyW6TkClztan43ZYN5XwBDxvhz8cEqONTbixuNbvb1bKkgCLAEC
-         ZrIXhEoAXkeCV5HZgEJvSENi3+QYql6ebowAIVvIL2wvEl/EHbk8tSGwJEovPQckYYSX
-         rT7h42RxIXTcXDWDyuQr7MqjXrqmBmvmFyuzNZUvJ2PXuWXSrfBW6og3Vvm4v6J0//W3
-         59lPMN62lQrGavMZBXcpku+vDpCMqgJY1MPjCWB2R7hukoNtYOYvo7clYSfSVDUw1QIC
-         1pIQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YpcMaDPI7P19glmj5zvUUN7s8ahSgBugvVXf8ibq5PY=;
+        b=nJ4dvBw87qBktvxRy3yIDFpo6vehdxL3VOx61oLSBiz3NtwbJdaeF9aSCz4gIlW3/L
+         elQFWMZhnc8FX/u8ZQG0c31okZcPXP3OCaDD9q0GF8+zqiDVsQqCVB5KVsBoSlIzf6A5
+         jdWSdCwZZiGnTN9LQqV7lHGrgrUZhXJ2/GcUNO5cadcfL9Q6nP0TeQT8hmWQZHhQoSsX
+         /XHT37b5oSbzS+CQbq1v9KYhLu2wwhlxCDgj2DkPvBqu5l7vvttfZkYAi2QwvSKAd9Xc
+         NwOx0NZfbjEx3IawppTxaSWBIeN0bVjNw255+6qdS+Gt/dEU1UUTn/RSLmqNmPN2Ws1v
+         ASVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J0JG7RUcBoSxlQgScK4tXTDK4hQK4CAab6KB4pPNlfE=;
-        b=iryB0A9S0C51uGtckf4GbV5hMhnL/Gg6/7EVdQhmJIQvOns/1y/hJLHnmOlD+q+MS4
-         rm61+ObGEUY6KZjpY3GCjLWDAsm60TXHM2sfcj7IWBA1H+aLipoK+S/hHrgJHTtpurcj
-         YzrXdmTfHOqZaYlH/7BnL+IZLqaQIsqA6+nsElJgQ1Y9gFv1MUl1Tw4hhApXs4bMjDGk
-         YFZSaZDD6IfB7nd5Ph0IRhAyuy90t9e+Yz5JnmZ32FOldwA1T8QU2UGFMZSaNSJs3BUY
-         YYmsBRJiECoYyymZpzXBNhMP4KXx+oGXvnr+lliZFN1HyV3hS38OxyR/dhLfllGPo9dO
-         k0oA==
-X-Gm-Message-State: AOAM5301f5e1nHnjAqBTSOG6c4TiwtSb7in/ok2Bzar/T5ka8F8em7X5
-        Q/lGyPLAw0991/dEgeyK2scIuaNPlp0I1JDKB7092w==
-X-Google-Smtp-Source: ABdhPJxHAg5kwm++HDia0tzF4oJAiNObsuLxBJyiYT+4+osWFuZA0OtPJx9zsrUqy4L/1dpTfpRYZV/uC4/8B5Dre48=
-X-Received: by 2002:a7b:ce82:: with SMTP id q2mr38485181wmj.60.1626806583773;
- Tue, 20 Jul 2021 11:43:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YpcMaDPI7P19glmj5zvUUN7s8ahSgBugvVXf8ibq5PY=;
+        b=TVbv7AbYC95a86/5Tmn/RWZ1wnzESjJ6/ui8WCMHrCoNmlojxR9AcxoJ87m03THbhe
+         icclGkYsUw4wmIpC8AGwsopT2ldwHr83zlc8SV7gPgjfWkB4xCgjuzHcpKvGaoy6KjdI
+         k0wufEZ8Ws2NmbOHa5gByZM8ZUGw82A6/7j2d1XhUMLR6oRu5H/1qKxWFZOiOKv6EL3r
+         cIx6N8dsw2rj01G2g9aFQkd6J4S+Hqt4ji4wPScaRjHRtWeM8SvGEHKH73j6A1zHhLpw
+         m+gjXbwCO1tW8C4MwVBuYayjXsmU+a5u5EhGalNcb7RJrxlsAi1J+Wu6m8Tq9ZtsClIA
+         6R6w==
+X-Gm-Message-State: AOAM530EzT8f3U/6yh5aftf2bT+IcSoOKksrbgJhusDFqJhC9Majjz5Y
+        5E68e68GQt8nJA4oS9CoKX0=
+X-Google-Smtp-Source: ABdhPJwxZviUgrvxmZ6pOtGFafyW20KCgsCcWL9wGy6BSC1qhHQEvPn/L4SZGs/bEoKo7S2YJIFeDA==
+X-Received: by 2002:a92:b111:: with SMTP id t17mr22536443ilh.208.1626806927292;
+        Tue, 20 Jul 2021 11:48:47 -0700 (PDT)
+Received: from john-XPS-13-9370.lan ([172.243.157.240])
+        by smtp.gmail.com with ESMTPSA id a11sm12693352ioq.12.2021.07.20.11.48.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Jul 2021 11:48:46 -0700 (PDT)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        xiyou.wangcong@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        john.fastabend@gmail.com
+Subject: [PATCH bpf-next] bpf, selftests: fix test_maps now that sockmap supports UDP
+Date:   Tue, 20 Jul 2021 11:48:32 -0700
+Message-Id: <20210720184832.452430-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210701200535.1033513-1-kafai@fb.com> <CAADnVQ+Y4YFoctqKjFMgx1OXknAttup10npCEc1d1kjrQVp40w@mail.gmail.com>
- <CAADnVQ+RYgHYO=aJwoh7C_=CeX+nwYopb+pk=Pp709Z-WwQnPw@mail.gmail.com>
-In-Reply-To: <CAADnVQ+RYgHYO=aJwoh7C_=CeX+nwYopb+pk=Pp709Z-WwQnPw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 20 Jul 2021 20:42:50 +0200
-Message-ID: <CANn89iKjP6xaax7c2mr5NE-AWCkHehH3NQXWyGbt=TP95zq7yg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 0/8] bpf: Allow bpf tcp iter to do bpf_(get|set)sockopt
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi there.
+UDP socket support was added recently so testing UDP insert failure is no
+longer correct and causes test_maps failure. The fix is easy though, we
+simply need to test that UDP is correctly added instead of blocked.
 
-I was indeed on vacation, but I am back, and done with my netdev presentation :)
+Reported-by: Andrii Nakryiko <andrii@kernel.org>
+Fixes: 122e6c79efe1c ("sock_map: Update sock type checks for UDP")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ tools/testing/selftests/bpf/test_maps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I will take a look, thanks !
+diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+index d832d135211c..5a8e069e64fa 100644
+--- a/tools/testing/selftests/bpf/test_maps.c
++++ b/tools/testing/selftests/bpf/test_maps.c
+@@ -764,8 +764,8 @@ static void test_sockmap(unsigned int tasks, void *data)
+ 	udp = socket(AF_INET, SOCK_DGRAM, 0);
+ 	i = 0;
+ 	err = bpf_map_update_elem(fd, &i, &udp, BPF_ANY);
+-	if (!err) {
+-		printf("Failed socket SOCK_DGRAM allowed '%i:%i'\n",
++	if (err) {
++		printf("Failed socket update SOCK_DGRAM '%i:%i'\n",
+ 		       i, udp);
+ 		goto out_sockmap;
+ 	}
+-- 
+2.25.1
 
-On Tue, Jul 20, 2021 at 8:05 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Jul 14, 2021 at 6:29 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Thu, Jul 1, 2021 at 1:05 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > This set is to allow bpf tcp iter to call bpf_(get|set)sockopt.
-> > >
-> > > With bpf-tcp-cc, new algo rollout happens more often.  Instead of
-> > > restarting the applications to pick up the new tcp-cc, this set
-> > > allows the bpf tcp iter to call bpf_(get|set)sockopt(TCP_CONGESTION).
-> > > It is not limited to TCP_CONGESTION, the bpf tcp iter can call
-> > > bpf_(get|set)sockopt() with other options.  The bpf tcp iter can read
-> > > into all the fields of a tcp_sock, so there is a lot of flexibility
-> > > to select the desired sk to do setsockopt(), e.g. it can test for
-> > > TCP_LISTEN only and leave the established connections untouched,
-> > > or check the addr/port, or check the current tcp-cc name, ...etc.
-> > >
-> > > Patch 1-4 are some cleanup and prep work in the tcp and bpf seq_file.
-> > >
-> > > Patch 5 is to have the tcp seq_file iterate on the
-> > > port+addr lhash2 instead of the port only listening_hash.
-> > ...
-> > >  include/linux/bpf.h                           |   8 +
-> > >  include/net/inet_hashtables.h                 |   6 +
-> > >  include/net/tcp.h                             |   1 -
-> > >  kernel/bpf/bpf_iter.c                         |  22 +
-> > >  kernel/trace/bpf_trace.c                      |   7 +-
-> > >  net/core/filter.c                             |  34 ++
-> > >  net/ipv4/tcp_ipv4.c                           | 410 ++++++++++++++----
-> >
-> > Eric,
-> >
-> > Could you please review this set where it touches inet bits?
-> > I've looked a few times and it all looks fine to me, but I'm no expert
-> > in those parts.
->
-> Eric,
->
-> ping!
-> If you're on vacation or something I'm inclined to land the patches
-> and let Martin address your review feedback in follow up patches.
->
-> Thanks
