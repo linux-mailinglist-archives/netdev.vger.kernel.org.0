@@ -2,112 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 610483CF4B4
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 08:45:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85CB03CF4FD
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 09:02:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241753AbhGTGFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 02:05:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50132 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233172AbhGTGE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 02:04:59 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB4C061574;
-        Mon, 19 Jul 2021 23:45:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GTTk51m7tz9sWc;
-        Tue, 20 Jul 2021 16:45:32 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1626763534;
-        bh=A3vTUNzLQ/dSKpV+4mS7Ecw8d5D8VBPyIwlPcuGY6+g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tMhFlZygkcppI5W6KEnKyB6lFw641jqSfZD0w1visFPNGDCCnZH+xuDvviFVLAGcY
-         dfr64gb2yfqGSQjZG8/U6FM4/VfctC7GZNvEaE+OmebHTYjGtkGwpHdDtUOmHUoQ3N
-         CGCi/nu/+iHwquggcq2o3uRQjFNzLxzQKQNAR+AXFvg1hwhc7cILV0Xmx3YYeiHn3b
-         lEqYp0EPAhEOu+ydjwkLCL4aNrgAhU9Qg2CDL/Ts6bL9oImd1KydXpFujIpQtdqiY1
-         dwIzrodGVan6kLua+qxZWvAy5w+y0KVWKX1U8KFo7Iyac6Q4xwUSqGZRwt1Xnb1sBg
-         dbg8fekdvDpbw==
-Date:   Tue, 20 Jul 2021 16:45:31 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: linux-next: build failure in Linus' tree
-Message-ID: <20210720164531.3f122a89@canb.auug.org.au>
-In-Reply-To: <20210715095032.6897f1f6@canb.auug.org.au>
-References: <20210715095032.6897f1f6@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lT48fSUp7ookLJZB0iiHQ+E";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S243055AbhGTGVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 02:21:15 -0400
+Received: from m12-14.163.com ([220.181.12.14]:60175 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243192AbhGTGUb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 02:20:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=EFHAEyeznjaRByha1I
+        PeNQQ59dwCgkZn4Fm5w0k6liM=; b=AbFQ/rGcALzxH/YA8QEpkHnUt+e489Dd9V
+        82z8VcpZUFZlNK1PTEfeulp+0/ebdZcefmwTfZUMcqaYHPgpLzYLAmxefgE7p+B8
+        ebX1Y9hdw6oS8exjl26pazPxUwHc7gzq2bQiHdg0jhUv0TzuIIpWWH0NxU8tTfox
+        K+oj5d5Ec=
+Received: from wengjianfeng.ccdomain.com (unknown [218.17.89.92])
+        by smtp10 (Coremail) with SMTP id DsCowAAnOcOSdPZgzix+Bw--.36571S2;
+        Tue, 20 Jul 2021 15:00:36 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] rtl8xxxu: remove unnecessary labels
+Date:   Tue, 20 Jul 2021 15:00:40 +0800
+Message-Id: <20210720070040.20840-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DsCowAAnOcOSdPZgzix+Bw--.36571S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uw4kuFW8WF43Gw48XrWkZwb_yoW8AF4Upr
+        ZrC3yYkr1rJr1IqFW7J3WqvF1fu3WSyr97WFZrtw1Sqan3Zrn5WF1q9r9Yyr40gFykJFya
+        qrWDtrsrGa13KrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bjc_-UUUUU=
+X-Originating-IP: [218.17.89.92]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiERTVsV7+4Gp4+AAAsL
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lT48fSUp7ookLJZB0iiHQ+E
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-Hi all,
+Simplify the code by removing unnecessary labels and returning directly.
 
-On Thu, 15 Jul 2021 09:50:32 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> While compiling Linus' tree, a powerpc-allmodconfig build (and others)
-> with gcc 4.9 failed like this:
->=20
-> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c: In function 'ifh_e=
-ncode_bitfield':
-> include/linux/compiler_types.h:328:38: error: call to '__compiletime_asse=
-rt_431' declared with attribute error: Unsupported width, must be <=3D 40
->   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->                                       ^
-> include/linux/compiler_types.h:309:4: note: in definition of macro '__com=
-piletime_assert'
->     prefix ## suffix();    \
->     ^
-> include/linux/compiler_types.h:328:2: note: in expansion of macro '_compi=
-letime_assert'
->   _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
->   ^
-> drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c:28:2: note: in expa=
-nsion of macro 'compiletime_assert'
->   compiletime_assert(width <=3D 40, "Unsupported width, must be <=3D 40");
->   ^
->=20
-> Caused by commit
->=20
->   f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
->=20
-> I guess this is caused by the call to ifh_encode_bitfield() not being
-> inlined.
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-I am still getting these failures.
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
+index 4f93f88..3fd14e6 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
+@@ -256,10 +256,8 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
+ 		udelay(10);
+ 	}
+ 
+-	if (!count) {
+-		ret = -EBUSY;
+-		goto exit;
+-	}
++	if (!count)
++		return -EBUSY;
+ 
+ 	/* We should be able to optimize the following three entries into one */
+ 
+@@ -292,10 +290,8 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
+ 		udelay(10);
+ 	}
+ 
+-	if (!count) {
+-		ret = -EBUSY;
+-		goto exit;
+-	}
++	if (!count)
++		return -EBUSY;
+ 
+ 	/* 0x4C[23] = 0x4E[7] = 1, switch DPDT_SEL_P output from WL BB */
+ 	/*
+@@ -307,7 +303,6 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
+ 	val8 &= ~LEDCFG2_DPDT_SELECT;
+ 	rtl8xxxu_write8(priv, REG_LEDCFG2, val8);
+ 
+-exit:
+ 	return ret;
+ }
+ 
+@@ -327,7 +322,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
+ 
+ 	ret = rtl8723a_emu_to_active(priv);
+ 	if (ret)
+-		goto exit;
++		return ret;
+ 
+ 	/*
+ 	 * 0x0004[19] = 1, reset 8051
+@@ -353,7 +348,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
+ 	val32 &= ~(BIT(28) | BIT(29) | BIT(30));
+ 	val32 |= (0x06 << 28);
+ 	rtl8xxxu_write32(priv, REG_EFUSE_CTRL, val32);
+-exit:
++
+ 	return ret;
+ }
+ 
+-- 
+1.9.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/lT48fSUp7ookLJZB0iiHQ+E
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD2cQsACgkQAVBC80lX
-0Gy7cgf/XEQ1Z1IfJzG1mFqFnRZkSpqiX1sy7/P1OyK6W4Sa8SkIzBEBRcTQwGoc
-0RGaqwRdhSocX1rZaaQ2sO1xjzceHeWM2HCMbt2Toy+xJl+tGvyJRf6/YMuII/hS
-CX08QjZNxjNm5RnNWlY2vf9cjIkgi/tY5WNbf3GLnDWxKLlgnO3fTaNr0qZqeHqu
-W4NwQYeUoPkyZMB5tTvc78pe+UE3l+DtfBWYx9BwIzuP5ahJqGj9yaEk5+vu+byh
-DkFFuqN9ooKR4OXriIPxy/y//C0bGTxbMN/Ts1M7hVoujpHrTk9nl2w4Z0SqUcD0
-j95bo38K3CVAaxlpJLYJ6m6TdCejQw==
-=Etnj
------END PGP SIGNATURE-----
-
---Sig_/lT48fSUp7ookLJZB0iiHQ+E--
