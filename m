@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D4E3CFB3D
-	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D0F3CFB56
+	for <lists+netdev@lfdr.de>; Tue, 20 Jul 2021 15:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238704AbhGTNML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 09:12:11 -0400
-Received: from mail-eopbgr60072.outbound.protection.outlook.com ([40.107.6.72]:39553
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S239234AbhGTNNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 09:13:20 -0400
+Received: from mail-eopbgr10049.outbound.protection.outlook.com ([40.107.1.49]:24800
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238795AbhGTNHI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 09:07:08 -0400
+        id S238910AbhGTNGk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 09:06:40 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oNZzB3C4qaL/TWDPMg4mfR/pGgDSyaPA0QK9ccH3/VMz19RnKvyFufUw+tr9RjcC3TvPM+OPHuAG0zQS6+F1XjTMZ0HkW4nA6v/B9OE0Iuhq8RWMNHHoj1iYWbGeMzxFxpZNn5G4XpFBJr0AvRInpqObaydbculvcoQ2KtjApfIhIGC53m7+agX5avDFKwxnhiVvj0Xdn1VgzLAJWZ+PzJ6q3dJw+9WUB0HVR4GxojoVevlvDgjhMNNJaUYl2VXuV7HPYWtNpn2nvxGWD3KdUbzTUD3rdqZDRB1WUxveFQvEvUwVTSU+YDniYwpU6zHYmQ3NuIY380O47Bjs6KbCSA==
+ b=oQhE9haz44vfTuKffN2FsjONsZJtlPLQ/1GqZYO4y7soPTRz3ZczptQm2yCSoMCo8O5cgILNwLBvguRg23hHSMAFycT+LkldLxqMqVWt4k3vAH7yucsFdECO7G4yGyB1XT+YJfj4QTVSXBvSniffLPUGcMhEWQVTbabjKSH5EnppT49ofjEp0SQorkaSoltt0U2MDIvyXt12b+gYSUCuSNYbAXO4n39Fv+4R2O3rciBwB8rFENYYq1k0bScTrb3CnqNNhk2/EnC28/CT5XjiRb1vwe5zKvD7nzWI6qS01EQqaM7DxrK/ZwYOyRhsu34QenNs2/d231PRtJjqLcYUCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j1v5r3VHLcLwvZ43czbjpOSp/Uy0eQgsiDZ3Eoiz908=;
- b=my6/79pgwy/TIjxItF0vLZRxh6WzyWRUaYNwUyTKPF7LXC1bJGb0los7uHA/FN2VQrOTTY7ZMVQD2HuwTfitgU9b4c51mCMHWJCL+Dfn3AITIyxuRsRmJ5goiyWdOGVUCMgbUEIZGJ5RHQMYYdME0mkV5HXeKrqeYCHIcqsyt+c41IaxqjxkQsKDJaTeOUJSgRTkfZQaxDVYew7jyEH0kSRyjk4MgvSVDQkVyGh30KXdyDnCwJmhELkY/Vqr2HTmBn3CM8voI0LoZuYPao6b49zPNZNaVOQSCY6wJ4eEw/D4lDDpD3URae1F4pA4OaAlw8Y0CIO7uFnqFPtAuvu90Q==
+ bh=Boyt5OrRKnPgrQyEiKEtD+UeUYEPSTgYl1wxYIFcTaI=;
+ b=KLkJOztKRQWmquA9eNzey592qeJ24od7QE8xgluu3hUDvq4+gFpapM+Sm+nDu6iDez6RHA+DBdZfwlqCARXsg9oPH21wtV16xhVHMkLUEEupNKUW+z2prdHSjXTzAeYdg3u7GFybf1aCAFO6I8GBBY5NocrkSuJItqYPF+IfVPwQPT+3Cw5dhj33w8TJWkQNDE1Mrko8rPxhHmFk+uSV24otgG2XbwpK36DFKGPJvrGViJ5TPebQawPMqm9xjBTbcSsGIygdGbrM3gFOeo1ZLRsTbDInCrr/mzgcd2h2EVNeUIhQ5y9IXGIPQSJdCmpNoQOPzDhF2ddOBU7BUqNdMQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j1v5r3VHLcLwvZ43czbjpOSp/Uy0eQgsiDZ3Eoiz908=;
- b=pO+HnEJ3Uo0fflGngOwzbIwkq2gzIB7bkTBtTAXkP5C1vrDQYTILVgkFL4vz4mjGl29q7W2Xqsj5V36s5dqJ9YIKYjMgYtMxcUZw/3kNCTtDOTv4lpHAbFkSk40L+4I7odAyWemv+W+okFh6+4/qvjpY3hpJKb6H35Ho8Y9Mevw=
+ bh=Boyt5OrRKnPgrQyEiKEtD+UeUYEPSTgYl1wxYIFcTaI=;
+ b=md7DAA4llikoRcEubNxaqkZ2LvRgYNd4vLdnEm+Y3unPg41JRM4lD/99Xi4WgPuLSdrcSSGuiKPo0NMdxs/sL9+7yIfG+TK7d6k7/JyZj98tacEOix1MHpoYnPkDCR2iqylLHaGjvMkBq7NyMq8XOYq0nOUiyle9KUkXXU7lFXs=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13) with
+ by VI1PR0402MB3551.eurprd04.prod.outlook.com (2603:10a6:803:a::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Tue, 20 Jul
- 2021 13:47:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Tue, 20 Jul
+ 2021 13:47:14 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.034; Tue, 20 Jul 2021
- 13:47:12 +0000
+ 13:47:14 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -54,9 +54,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v5 net-next 01/10] net: dpaa2-switch: use extack in dpaa2_switch_port_bridge_join
-Date:   Tue, 20 Jul 2021 16:46:46 +0300
-Message-Id: <20210720134655.892334-2-vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 02/10] net: dpaa2-switch: refactor prechangeupper sanity checks
+Date:   Tue, 20 Jul 2021 16:46:47 +0300
+Message-Id: <20210720134655.892334-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210720134655.892334-1-vladimir.oltean@nxp.com>
 References: <20210720134655.892334-1-vladimir.oltean@nxp.com>
@@ -67,111 +67,128 @@ X-ClientProxiedBy: PR3P191CA0002.EURP191.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by PR3P191CA0002.EURP191.PROD.OUTLOOK.COM (2603:10a6:102:54::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19 via Frontend Transport; Tue, 20 Jul 2021 13:47:11 +0000
+Received: from localhost.localdomain (82.76.66.29) by PR3P191CA0002.EURP191.PROD.OUTLOOK.COM (2603:10a6:102:54::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19 via Frontend Transport; Tue, 20 Jul 2021 13:47:12 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 72289256-7c27-4bfa-6ce3-08d94b84e08a
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5696:
+X-MS-Office365-Filtering-Correlation-Id: cbef9b1b-d29b-43be-0af6-08d94b84e164
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3551:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5696112A76FE80C67886CB67E0E29@VI1PR04MB5696.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB3551835DBF44408F8BFCAC00E0E29@VI1PR0402MB3551.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1107;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BxQAaqe2B9m24HZXqpcPMtx3RZ6gUHTn7ULEG+1dk2dbjAw90eBkFhQjgCYP2l+IEP49Ze2mZIt47Gfcphg8xWN4200uLBkzAX8kd9Kvm2ix3vP++SrUp/P5oIXCv67G1XJbVbue+PdfEO9Z9i/oD9BLqMF04BguvnuPvX/GWg2/NJT51joffDfhmNFL6oE0o51rGByK+HcJbXPRwwVuRmkob+g3674Q6ujrM/T6fTkJUM2Bas1aVrsZNAJIoGMfZg8Y8cjEXMBtEjTaJa+nkjeMsfAeDlMbkf6Rm5KiqF7SLRCoNOpRIIT3izh+bB3Ftn5eHWR9hB8q+aDQXrgz6bugvoCvNJpeOC7mmWqDKC3ZT9dJq6MNdiI8vHnS+srgsjbGtOhyWfnvDzExjm3si/a0qsqkoO7i8R59wS5+QOA2nw4fxe7xounxzOq6u/4bnQ9o8r2gd0KzrtsjUEoXVXOLQhjs26Lg/c5KgzlNOdnt/f/hva5mB/ECwF+d14YIpdWkmJxGxd2OK+0EiXwX17g28U+oVSK3A0FdU+yGbHmyNp7X6+M1NZ6+64GHzDr1dsGJ/BQ012ae/TmasiVeCRoXTpaw6Kkka65DiSDtCsnuPHWebTeWFM5U/tk7FZvDdXWSyHacwae59FoeSKmoabZzqqM2YNPsvfoUBVctkjmngwukt1Gh5dsVytViY3deMlL4/KfDTqA0UKgX65+suw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(39860400002)(396003)(366004)(346002)(66946007)(6486002)(66556008)(316002)(26005)(54906003)(110136005)(38350700002)(6666004)(38100700002)(8676002)(83380400001)(4326008)(66476007)(8936002)(6512007)(2616005)(186003)(5660300002)(36756003)(52116002)(956004)(478600001)(7416002)(44832011)(86362001)(1076003)(2906002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: pXAXoRKHBNjT8rGkRs8knKzhfHCxmGmqOHSqTnqCt0X7a1OmXNEwLsxcaOHyiESzwBvUB8ipvpcKkMB/dTxnA7QV0ujE+5zAAjmrmrviOWGdfsvzzdOweakFWjmF46Tu7cMsH3Is2YfIpGKMQreipxGEBK8cLtZ6+os++FPcVtKPoMSlGExycT/70pko4zgrh0mZTIJm4yZEFAdjwrJ8W+hysd/aLlLNWZcI4KvSVL/130cmQ3eDiGBDHUz3XRyZ48KfVx+Wcly+V2P48INkK61k6Q6wd9uHu4cCTwkdD6pIe/+hgSwijdGJFAcP2a/nTTsVhV5nfdPZVVm7L3ehYVAZIcYgBJInnMaF/EPgef2Zr15G2/80vtu1gM02kAkZ9tE41/FkFfXs9GgY4ND0pMBgCjXUJub55Ys74lVaHYZwPghHZx0xMbSbZSgYBKI4fuOHBNUZqeNc8TvJtQB0e2yGaayNx6L/eYJ6PdGRdJVEISw0ElEY8zDae6f86zZAb2jkasAsJuQCLelPp4OPC+PoZsJS8spPl4EVHN3S4wiqiHyrsmeT3ENGDSVnm/zl+kPcuwpm9B9MHLMwltAqrO4d2ygkxuW0x5k1dpjxrnbCdxC+HqFCClI/J9bgelDdxW2zo60wGzugMMEA3ugZzwITs/kpnC8QoXk0IT+c/303k63wdrdwJXV2f2cvr9GKXPqXdxuHTyFY/y1DWRMB0Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(478600001)(44832011)(316002)(38100700002)(2616005)(956004)(5660300002)(6486002)(54906003)(1076003)(38350700002)(2906002)(66946007)(6512007)(7416002)(110136005)(86362001)(83380400001)(66476007)(8936002)(186003)(4326008)(66556008)(6506007)(6666004)(26005)(36756003)(8676002)(52116002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bQRUi5Uu1hR7H+OR9PTnTTKQepTOH1QiUntw9+dzONhD49JaWCgZwkQ2xil6?=
- =?us-ascii?Q?gK8uKeKxilvIOWa8mVMEPsBiLznf6PvaNP5tpuMGd7636s9h7mKZex9sLkzJ?=
- =?us-ascii?Q?l7UnFcOF3MS577xBeoI96JwDhbrqTcquEGnFRfDiUF/7vI3j55bOEdsuYjFf?=
- =?us-ascii?Q?itpdlVs6ucns5QZydxlUKzF1y85TmCK1a5LLbUf3fQCun2KPdS/JRMGprEuz?=
- =?us-ascii?Q?wqEa+Dav8suoYKIFHw34Q0PsT7dE5WNriJnsiyQ0KxNaDvLBGYNr35tmXbms?=
- =?us-ascii?Q?PWo4+UNhngcCWnuc8S6RSrGrb9O2hKgXW7HmWV7Oegf2cDUjhc6cSbsPbtz2?=
- =?us-ascii?Q?T3kGdHc6hF8jissaowLIEACFLEP/K2GjXkOEy+ThG0/+wZYRVJJmM1ScmahJ?=
- =?us-ascii?Q?D2OFzw752UgQmZax0oom0Elaly5SS1KSz2quwGONnuozkMoM+FzHMglvizSa?=
- =?us-ascii?Q?IxebQYMWA3NY4+Nszrol9NiFpjyegAv0gAvfWWBerEfPupwnDaqxKeW/Xum/?=
- =?us-ascii?Q?aiivYcFWBwBfT7vO+eo92oa2LNVRSK6GGU1UUUKqNGqEAgoWQPiyC+tBTU2r?=
- =?us-ascii?Q?a8/S+STWy6M6igP2veFDOnEZo8+ExbEDl3hd+xdrRXZ0b3pPXQCMjHQPgQuC?=
- =?us-ascii?Q?BFN9bSYanc+rD5e/D2mJlNbVxJFsmuKN0RYDv+kUdaMpdk1rSixMkTN6tiwn?=
- =?us-ascii?Q?s1AQBpBsTIe9c+LkGqQ4Uax49mcBaqu8Or4YIpK5nPx91sAMDVm7tVL6FN1+?=
- =?us-ascii?Q?p04ZEgZwKZml9QzwKvcYp7YmqcUmvu/X+AADoF7qW5S533JPMrYrk7kOHcUG?=
- =?us-ascii?Q?/qOwBz7w9EkGLqhRJ/B+QBzd3uXqDuCtFBE0C8v8zv8dOgs7SFd+NclyGArc?=
- =?us-ascii?Q?4bg9MSZ52y44wJSurh2d1TSqk3ocVYj7Q3BN3YVzikMsMN2Mu7mdnzQ0WzzR?=
- =?us-ascii?Q?SgDVcooXprLirbrN+QVKz/pA4odCetODYKWTVk6Sl22savVzx5eFx+GvnqAO?=
- =?us-ascii?Q?KcnT2zjZ+xvMsTPZUfF04yYNUkHciSKie4I8E+zFs4JkAyBZ1qZKzrQBhix0?=
- =?us-ascii?Q?5NqdGk7wpAvFatboDv7fpIb4PiMUj1G+a0BgyMpdbwY6Hihu+M9mFK9DVbwF?=
- =?us-ascii?Q?72DSgbivF8rW63qTtoztx5lxSsUebqcSXsjm09ZNcf+UaEGu1tgVLNeLS3O5?=
- =?us-ascii?Q?I4fV2R17EvIRyfLE+zJ+IiY3sz6epzbEZa2iBT5w+fs/0jau30Y6Bb35V9/v?=
- =?us-ascii?Q?kjMJ09pDVMrVMusZe61dATEXGOSSyF97f6Vr9QRKAwsLxzy5Xi2Yyr7jUglU?=
- =?us-ascii?Q?k3Urm3NMMjvY1EQDWEtK/MnJ?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KwtfOB5k3X3pu+8f0CEqR8//y0mOGYHp/qPXx2WTaxqtonOYo0tvjcSJ9Z6O?=
+ =?us-ascii?Q?LeSv3zHbeiM9P0p6UptYW9S0OzCRrTeacc5OFbEstVmH3Ta9Mf21y4Qm21Tr?=
+ =?us-ascii?Q?Lz8mBPIL6MLmWizV0EZJ8kx79Yh4ameDalvQkUtwaoE8DTskI66z6JxRXwPV?=
+ =?us-ascii?Q?KBKCQh/0m7+dg2uuCuj87l6mk2vaGPXefGkoQyGXwdopkKlD4sZSDe3QY/xx?=
+ =?us-ascii?Q?lod+BqkhzBOAPVLRRsbt07/NKl4RdGsqdNhiIXJPxdNrBMBTQ1ZZ++agjXCt?=
+ =?us-ascii?Q?TWDp9/8/TZ8GLEN32M9Jt/zFWzCQwYFVy0fmlKgVaqumGlFvWlUM8TMOpu1j?=
+ =?us-ascii?Q?tOg8D2IAx4SqpAZxTBFoBmpfCEtlxmOiWOm/ThLVPWHgUBj0OfndQXTGyJSL?=
+ =?us-ascii?Q?aXta6kjkerGGvMTkUKBP8wWHCFM4uH/4Dn9cuXzqjyxRT/HS7i2Ccd6o+dZ0?=
+ =?us-ascii?Q?UBqIvKx00awItcVdOKaZ/L0ZjZXUoTrpyXT8FgQ7mXqB3gyVO4bb7PM0Y/UH?=
+ =?us-ascii?Q?rl4kJVjS6phdZZRPC+dIYG8NLsv2khy7iNH01nhT+nEgJh7O+TmlQTNmA8n7?=
+ =?us-ascii?Q?wt2MwLP/ib93XkInI1czcLyE+mVWAY2o2Xz0HVqeI3IYfY0/rjXKajQr1IW/?=
+ =?us-ascii?Q?98zLfsl7FCwhknnhXrf2u7nTnFihGpm5j8/Bxq8el3nLQQTN2Ilg2MvEixPz?=
+ =?us-ascii?Q?qv1yqBaVFcdI8OV7KIVBgkdI2EtmEtgaxdIuNueerkJhGdr60EwJ/a9YLwtL?=
+ =?us-ascii?Q?8CfQyBRtFNjB44MBdYL1vhTB+/mKs9tLRXvlmSIyE6C20yzcRbvMdk1TqDc+?=
+ =?us-ascii?Q?yYiuI6cEJLw57x86reAjPQFHn2lWyqEV/v0TqV/2MvWMKzfL8bbBKIx5FvsP?=
+ =?us-ascii?Q?DtfBJOl7ho8rzfFAW/ApR3X+WrbQFZF9pDElTTzDqSQIut7swUJeRfZgE7I9?=
+ =?us-ascii?Q?IypSOrsLxZDElJ2Mj04UtTwTR1Q7Wjg9ieP+qJycPY1caDEH4uPsFdkx8rC9?=
+ =?us-ascii?Q?Jdi4+cuMvdEYI6Of2kHn7yfT2WXjZNT/+7ANSquU1xZAML5SwqPZ0s+dm7nh?=
+ =?us-ascii?Q?zgdimRi2WDTpnpgPkxFPTFJuVIAevNFe4T6u8qhS4eiozDtdsRUnDKgUW6ga?=
+ =?us-ascii?Q?3a+vjjKHKgnxEgIdUGic9T6mzSlzBHgCEC5i9+6uaUH3aNxI4Hn7O2ex7WMO?=
+ =?us-ascii?Q?xzHPJTWLMXAfbu5u00Vs9VTltSU7pkq6XQw+o7apNbdLweI1Izp/YOidZIL1?=
+ =?us-ascii?Q?xs22T8XXGxthefOtepcZfKg1k/MvbBHstOCajWkutZSHppIyM3HQWRhc3/7Z?=
+ =?us-ascii?Q?cxZ+YFRyZACdpMmE5ULGldlA?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72289256-7c27-4bfa-6ce3-08d94b84e08a
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbef9b1b-d29b-43be-0af6-08d94b84e164
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2021 13:47:12.6169
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2021 13:47:14.0341
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ovIOtNm4gqKJaasJwZWCpOwAEpJyn3JPAYBpbIqN/YLqfppVBEkdO8mp3Jacf11YKI/3DrPmKET5m4burHLogg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5696
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6rKLhnryeB2v+Izlj0Uofm4r8Dy3pfjtO5HQbiLLNwglD/NaIuKYC/LClgPvJSK5nY0SCkspxsqrMmVPMAZ56w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3551
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need to propagate the extack argument for
-dpaa2_switch_port_bridge_join to use it in a future patch, and it looks
-like there is already an error message there which is currently printed
-to the console. Move it over netlink so it is properly transmitted to
-user space.
+Make more room for some extra code in the NETDEV_PRECHANGEUPPER handler
+by moving what already exists into a dedicated function.
 
 Cc: Ioana Ciornei <ioana.ciornei@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Acked-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 v2->v3: patch is new
-v3->v5: none
+v3->v4: fix build error (s/dev/netdev/)
+v4->v5: none
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 37 +++++++++++++------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index f3d12d0714fb..62d322ebf1f2 100644
+index 62d322ebf1f2..23798feb40b2 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -1890,7 +1890,8 @@ static int dpaa2_switch_port_attr_set_event(struct net_device *netdev,
+@@ -2030,6 +2030,28 @@ static int dpaa2_switch_prevent_bridging_with_8021q_upper(struct net_device *net
+ 	return 0;
  }
  
- static int dpaa2_switch_port_bridge_join(struct net_device *netdev,
--					 struct net_device *upper_dev)
-+					 struct net_device *upper_dev,
-+					 struct netlink_ext_ack *extack)
++static int
++dpaa2_switch_prechangeupper_sanity_checks(struct net_device *netdev,
++					  struct net_device *upper_dev,
++					  struct netlink_ext_ack *extack)
++{
++	int err;
++
++	if (!br_vlan_enabled(upper_dev)) {
++		NL_SET_ERR_MSG_MOD(extack, "Cannot join a VLAN-unaware bridge");
++		return -EOPNOTSUPP;
++	}
++
++	err = dpaa2_switch_prevent_bridging_with_8021q_upper(netdev);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Cannot join a bridge while VLAN uppers are present");
++		return 0;
++	}
++
++	return 0;
++}
++
+ static int dpaa2_switch_port_netdevice_event(struct notifier_block *nb,
+ 					     unsigned long event, void *ptr)
  {
- 	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
- 	struct ethsw_core *ethsw = port_priv->ethsw_data;
-@@ -1906,8 +1907,8 @@ static int dpaa2_switch_port_bridge_join(struct net_device *netdev,
+@@ -2050,18 +2072,11 @@ static int dpaa2_switch_port_netdevice_event(struct notifier_block *nb,
+ 		if (!netif_is_bridge_master(upper_dev))
+ 			break;
  
- 		other_port_priv = netdev_priv(other_dev);
- 		if (other_port_priv->ethsw_data != port_priv->ethsw_data) {
--			netdev_err(netdev,
--				   "Interface from a different DPSW is in the bridge already!\n");
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Interface from a different DPSW is in the bridge already");
- 			return -EINVAL;
- 		}
- 	}
-@@ -2067,7 +2068,9 @@ static int dpaa2_switch_port_netdevice_event(struct notifier_block *nb,
- 		upper_dev = info->upper_dev;
- 		if (netif_is_bridge_master(upper_dev)) {
- 			if (info->linking)
--				err = dpaa2_switch_port_bridge_join(netdev, upper_dev);
-+				err = dpaa2_switch_port_bridge_join(netdev,
-+								    upper_dev,
-+								    extack);
- 			else
- 				err = dpaa2_switch_port_bridge_leave(netdev);
- 		}
+-		if (!br_vlan_enabled(upper_dev)) {
+-			NL_SET_ERR_MSG_MOD(extack, "Cannot join a VLAN-unaware bridge");
+-			err = -EOPNOTSUPP;
+-			goto out;
+-		}
+-
+-		err = dpaa2_switch_prevent_bridging_with_8021q_upper(netdev);
+-		if (err) {
+-			NL_SET_ERR_MSG_MOD(extack,
+-					   "Cannot join a bridge while VLAN uppers are present");
++		err = dpaa2_switch_prechangeupper_sanity_checks(netdev,
++								upper_dev,
++								extack);
++		if (err)
+ 			goto out;
+-		}
+ 
+ 		break;
+ 	case NETDEV_CHANGEUPPER:
 -- 
 2.25.1
 
