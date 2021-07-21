@@ -2,187 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14AB83D10A7
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D0D3D10D0
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239107AbhGUNYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 09:24:49 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:40083 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238984AbhGUNYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 09:24:48 -0400
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6171A580490;
-        Wed, 21 Jul 2021 10:05:24 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute6.internal (MEProxy); Wed, 21 Jul 2021 10:05:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm3; bh=BbpD5un6hz/Cp
-        pNPwZ3yWte9SCm7D64rp4YLYcyvMok=; b=QrsofyIqW14lIPCrOhOku+sLO5QDP
-        lm2aYVxZjgY2aFb/0azh1VJdwJJspzSN1bCv2XRiGhyHg5aRWWT+5QTgrr8GnqjN
-        TlHeAuZzNSrgHQ7I1t39mcafrdesnuCvSELmsLYzR8hMggIG7iLZd3rUXdBya4Mj
-        6EQGAMNo1WuS6j9tRlayHknlLg0MRcw0xdiKPAaELyXTxNi4/7iuebgXkyYnMWeh
-        1mrszPPQBNqGciVRgHBd9awGZPUDjt3pb12lfn/v5D87zTzzycvKvP3P8qMY0Ru5
-        2RcHv1La4e+Mz7dUsulp4TSP1z5lQWfh9uEEj7kpCODAmUf0KjVhx5Ibg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=BbpD5un6hz/CppNPwZ3yWte9SCm7D64rp4YLYcyvMok=; b=Pcfb2cwu
-        LL6qv8TdIXG56kO2StSfGS62a59irjInRNlRMP6vatPXLMBCLFsHZBNLngqga9bh
-        kzgk7rWScdSG3IVmiy+Va4vpmaLpcRaMLvh6/D58pdzDCF2ObXfruQsE1RJP1Dxc
-        omqZqm7+sq2zYBA+fV34TghXVVw3/L/bo7SZxMet2xQTHUUssgVDbir/jjsIxSZi
-        JjX1K5xpAGGAQuoE44dKASmon4wPmxYv3nal6eRy4cYlHBvuWHp9XvnTB+Y+Jc3u
-        vloA25Vu0UwlEXN3zfoNN7GYo4D+9XpL9QxknixBfvlCOEPQSQ4cWVpr/ls8anDL
-        1I9i2T1KOKiH3g==
-X-ME-Sender: <xms:pCn4YIXGOFlkpMCQXOODe1zPAFO-8YOziyBuxEu8LnkfWECQZ9yGGA>
-    <xme:pCn4YMkgGqByfA7QD3Sx2U176QsUFjCehkLvkxsfP2_vPBE8-KqgcNV-IKBNZmnsH
-    8k1iN1RYRSFwlgMhbc>
-X-ME-Received: <xmr:pCn4YMbjQCPL-lLPxKEA4IBLcdmZbu8d1lGfToMQ0PJyGyLUYpt3TK8-Ea9XKFcMnYvY66i2sv5Oqc7rtJgcrvID2UG6MMZV1ADi>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrfeeggdeijecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenog
-    evohgrshhtrghlqdfhgeduvddqtddvucdludehtddmnecujfgurhephffvufffkffojghf
-    ggfgsedtkeertdertddtnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceomhgrgi
-    himhgvsegtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepveejieejtdevgfff
-    gfejuefggfeutdelteekgeetueeftddutddtgfffhffgueffnecuffhomhgrihhnpeguvg
-    hvihgtvghtrhgvvgdrohhrghenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:pCn4YHVLsEI934yTM7JQ1cWbCTQQW6Orqqc1BPF21Wh8PlIvCye_yA>
-    <xmx:pCn4YCkD-wpEQZAZyzbL9mxHUUthi51iIMuW84Sq2JnvBq5FCsWVZw>
-    <xmx:pCn4YMfKaSpU-g6XM8HqwESoxiRj7lMZ9sKuIjRDrIeeQ3QSh9PS0g>
-    <xmx:pCn4YN_EvEVtksfjk6OnWSuCGFGeldClltfa3D5ewTcQ1pqe0OttNg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 21 Jul 2021 10:05:23 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime@cerno.tech>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-sunxi@googlegroups.com,
-        "David S. Miller" <davem@davemloft.net>,
-        de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 27/54] dt-bindings: net: wireless: Convert ESP ESP8089 binding to a schema
-Date:   Wed, 21 Jul 2021 16:03:57 +0200
-Message-Id: <20210721140424.725744-28-maxime@cerno.tech>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210721140424.725744-1-maxime@cerno.tech>
-References: <20210721140424.725744-1-maxime@cerno.tech>
+        id S239138AbhGUN0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 09:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238207AbhGUN0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 09:26:03 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1CEC0613CF;
+        Wed, 21 Jul 2021 07:06:39 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id nd37so3465578ejc.3;
+        Wed, 21 Jul 2021 07:06:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DAmDYxmMpDWNNKS5PvAQ9jk+GlaX2ZHizzSfKKpr7c8=;
+        b=rXlo5cDc2o6TPVIi9/5jj1a+i7h8oobVBPBUNHATW692zK7YfztPZGksFVsfKh7JNx
+         ZbkN/OVKpEtRDgMSuxaxE4fU1QXp9L8uneQYXYOzeSOTeiCWutG7dPa0I4dseec8LqNA
+         dKuGDz+WThWoIi2CckjuIQItS4V+eFFCHv6rVFuqOjVS7VuiPIHH3bLCAJDon/fSJRW7
+         XxU2EWJWUaewXCj3VNtp3zuVLeyC6HMKW0Z2c9V2Ros6wDdgtmwjc0ZgG7PMGfpITEUp
+         56vI/zVuQO4bLQEYHpPzIeFhH5S7KusrKp2CZBbHb76pvYbzqfgKLgxhs4jeKeDzVON4
+         fOyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DAmDYxmMpDWNNKS5PvAQ9jk+GlaX2ZHizzSfKKpr7c8=;
+        b=LeLD1SDHZIiQgs6On067sgsQAvjiEwNflSWCTuKF0XopabwCgR4/vo/1f8V/lP4zhK
+         1ygwPmp2KE5zepyxJiJPvtXLi5BDnfyeOZn7k+/7XfY6QOA2Uutjd82ZHFnsHkmGAwyK
+         d5ISWN/StYTrdx1e1ua3IWHEX7CX/3cVkeREUvWXOUFNIVZjJSYzQ95iaDpLQQ1ezawa
+         KYW9LuO944a8nPFF4YN+teW8rKUBTzHV87m08Rod+3ZfMRXauobuEV6rD3ZEYKeB0Y2g
+         0GL/DPd82C0cwIHKTKXN/BceAaeaLQ3nh7mfkRAfxGJqADUgzz/8oYoS3qRhs549veVz
+         S1vw==
+X-Gm-Message-State: AOAM530cpo17/5oTGJ7RCVUR3cFgmkeuAw0FrQvVp5ktL2XV6GP5+84d
+        CND5htiw7nqBzBi1wKB9WWRNBPY5sv35POcw52c=
+X-Google-Smtp-Source: ABdhPJzkczMR/KPGmaX7A1pCqBxTELfqlO5UbE+O/JtIXbXCT8oik3eChBfIqJizfo2mOlWUXZx+cvPK50XkAoFsgLc=
+X-Received: by 2002:a17:907:397:: with SMTP id ss23mr37918535ejb.470.1626876397998;
+ Wed, 21 Jul 2021 07:06:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1626752145-27266-1-git-send-email-linyunsheng@huawei.com>
+ <1626752145-27266-3-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com> <92e68f4e-49a4-568c-a281-2865b54a146e@huawei.com>
+In-Reply-To: <92e68f4e-49a4-568c-a281-2865b54a146e@huawei.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 21 Jul 2021 07:06:26 -0700
+Message-ID: <CAKgT0UfwiBowGN+ctqoFZ6qaQAUp-0uGJeukk4OHOEOOfbrEWw@mail.gmail.com>
+Subject: Re: [PATCH rfc v6 2/4] page_pool: add interface to manipulate frag
+ count in page pool
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, linuxarm@openeuler.org,
+        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
+        thomas.petazzoni@bootlin.com, hawk@kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
+        guro@fb.com, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
+        Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>, nogikh@google.com,
+        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, andrii@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>, songliubraving@fb.com,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ESP8089 Wireless Chip is supported by Linux (through an out-of-tree
-driver) thanks to its device tree binding.
+On Wed, Jul 21, 2021 at 1:15 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> On 2021/7/20 23:43, Alexander Duyck wrote:
+> > On Mon, Jul 19, 2021 at 8:36 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> >>
+> >> For 32 bit systems with 64 bit dma, dma_addr[1] is used to
+> >> store the upper 32 bit dma addr, those system should be rare
+> >> those days.
+> >>
+> >> For normal system, the dma_addr[1] in 'struct page' is not
+> >> used, so we can reuse dma_addr[1] for storing frag count,
+> >> which means how many frags this page might be splited to.
+> >>
+> >> In order to simplify the page frag support in the page pool,
+> >> the PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to indicate
+> >> the 32 bit systems with 64 bit dma, and the page frag support
+> >> in page pool is disabled for such system.
+> >>
+> >> The newly added page_pool_set_frag_count() is called to reserve
+> >> the maximum frag count before any page frag is passed to the
+> >> user. The page_pool_atomic_sub_frag_count_return() is called
+> >> when user is done with the page frag.
+> >>
+> >> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> >> ---
+> >>  include/linux/mm_types.h | 18 +++++++++++++-----
+> >>  include/net/page_pool.h  | 41 ++++++++++++++++++++++++++++++++++-------
+> >>  net/core/page_pool.c     |  4 ++++
+> >>  3 files changed, 51 insertions(+), 12 deletions(-)
+> >>
+> >
+> > <snip>
+> >
+> >> +static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+> >> +                                                         long nr)
+> >> +{
+> >> +       long frag_count = atomic_long_read(&page->pp_frag_count);
+> >> +       long ret;
+> >> +
+> >> +       if (frag_count == nr)
+> >> +               return 0;
+> >> +
+> >> +       ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+> >> +       WARN_ON(ret < 0);
+> >> +       return ret;
+> >>  }
+> >>
+> >
+> > So this should just be an atomic_long_sub_return call. You should get
+> > rid of the atomic_long_read portion of this as it can cover up
+> > reference count errors.
+>
+> atomic_long_sub_return() is used to avoid one possible cache bouncing and
+> barrrier caused by the last user.
 
-Now that we have the DT validation in place, let's convert the device
-tree bindings for that driver over to a YAML schema.
+I assume you mean "atomic_long_read()" here.
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: de Goede <hdegoede@redhat.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
----
- .../bindings/net/wireless/esp,esp8089.txt     | 30 -------------
- .../bindings/net/wireless/esp,esp8089.yaml    | 43 +++++++++++++++++++
- 2 files changed, 43 insertions(+), 30 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/wireless/esp,esp8089.txt
- create mode 100644 Documentation/devicetree/bindings/net/wireless/esp,esp8089.yaml
+> You are right that that may cover up the reference count errors. How about
+> something like below:
+>
+> static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+>                                                           long nr)
+> {
+> #ifdef CONFIG_DEBUG_PAGE_REF
+>         long ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+>
+>         WARN_ON(ret < 0);
+>
+>         return ret;
+> #else
+>         if (atomic_long_read(&page->pp_frag_count) == nr)
+>                 return 0;
+>
+>         return atomic_long_sub_return(nr, &page->pp_frag_count);
+> #end
+> }
+>
+> Or any better suggestion?
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/esp,esp8089.txt b/Documentation/devicetree/bindings/net/wireless/esp,esp8089.txt
-deleted file mode 100644
-index 6830c4786f8a..000000000000
---- a/Documentation/devicetree/bindings/net/wireless/esp,esp8089.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--Espressif ESP8089 wireless SDIO devices
--
--This node provides properties for controlling the ESP8089 wireless device.
--The node is expected to be specified as a child node to the SDIO controller
--that connects the device to the system.
--
--Required properties:
--
-- - compatible : Should be "esp,esp8089".
--
--Optional properties:
-- - esp,crystal-26M-en: Integer value for the crystal_26M_en firmware parameter
--
--Example:
--
--&mmc1 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--
--	vmmc-supply = <&reg_dldo1>;
--	mmc-pwrseq = <&wifi_pwrseq>;
--	bus-width = <4>;
--	non-removable;
--
--	esp8089: sdio_wifi@1 {
--		compatible = "esp,esp8089";
--		reg = <1>;
--		esp,crystal-26M-en = <2>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/net/wireless/esp,esp8089.yaml b/Documentation/devicetree/bindings/net/wireless/esp,esp8089.yaml
-new file mode 100644
-index 000000000000..284ef45add99
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/wireless/esp,esp8089.yaml
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/wireless/esp,esp8089.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Espressif ESP8089 Device Tree Bindings
-+
-+maintainers:
-+  - Hans de Goede <hdegoede@redhat.com>
-+
-+properties:
-+  compatible:
-+    const: esp,esp8089
-+
-+  reg:
-+    maxItems: 1
-+
-+  esp,crystal-26M-en:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: >
-+      Value for the crystal_26M_en firmware parameter
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+      mmc {
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+
-+          wifi@1 {
-+              compatible = "esp,esp8089";
-+              reg = <1>;
-+              esp,crystal-26M-en = <2>;
-+          };
-+      };
-+
-+...
--- 
-2.31.1
+So the one thing I might change would be to make it so that you only
+do the atomic_long_read if nr is a constant via __builtin_constant_p.
+That way you would be performing the comparison in
+__page_pool_put_page and in the cases of freeing or draining the
+page_frags you would be using the atomic_long_sub_return which should
+be paths where you would not expect it to match or that are slowpath
+anyway.
 
+Also I would keep the WARN_ON in both paths just to be on the safe side.
