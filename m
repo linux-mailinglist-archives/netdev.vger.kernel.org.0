@@ -2,67 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0923D176B
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 22:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58FE33D1781
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 22:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239929AbhGUTMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 15:12:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38996 "EHLO vps0.lunn.ch"
+        id S232633AbhGUT0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 15:26:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42422 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238276AbhGUTMk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 15:12:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=casm0fBJN/w1gZgDxRShD84HThb0ogBtG634HmnOurQ=; b=bL5qYm8tX3U43g+EGgU4AHaYRh
-        tWkV82c+7AVniUnYgQcSRTug7fhvl1J5ozeeviKzpjNaWUQ+9cUZeNxLM706lfZPGb8Z/c93NdjJr
-        sA02T2KF+6JEwR5v2U6YAMphhRThZ5R/wzmOXXNU1mR7I3cWgYKw0RxSvlkCpmzGCjhA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6IHJ-00EFMq-7P; Wed, 21 Jul 2021 21:53:13 +0200
-Date:   Wed, 21 Jul 2021 21:53:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sasha Neftin <sasha.neftin@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, vitaly.lifshits@intel.com,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: Re: [PATCH net-next 09/12] igc: Remove _I_PHY_ID checking
-Message-ID: <YPh7KTyNQScVjp13@lunn.ch>
-References: <20210720232101.3087589-1-anthony.l.nguyen@intel.com>
- <20210720232101.3087589-10-anthony.l.nguyen@intel.com>
- <YPg0PRYHe74+TucS@lunn.ch>
- <6cb7fbe9-35e2-8fb1-11fa-cbd6ce01bab2@intel.com>
+        id S229463AbhGUT0p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 15:26:45 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 559FB610CC;
+        Wed, 21 Jul 2021 20:07:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626898041;
+        bh=ffYfEchzU/5yNnkWXgvy1x8g6Mc0EK8A6psI53btj9o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PSpqoy+GmaETUUNIjkHRD/LyzqLrwKOhPAA72NQbQuvLlK5eLhAY0K3TW/mj6i1QM
+         YDpzQN6uJOERPpe3AsoWn1CYaK+7wvctNuNKu6zlw4S60dJVwLXHpKiWHwmxEC1HcO
+         ysuegjRkKL+H01vCxiXbNL0zqgMXqslxxBgRnKj2LIKY8DqWiBgluMBkWseogpbM2I
+         CR0sVhenRj1ClLZ2pvDT9rAFBnHHNoZd12ateiGlZcEbgFHivc3MUaiCnCYBLslFot
+         YEJrLnaaObFTTcbIrSTZG263DCBuzA7Hg71RAzx4G1qIDAb/CpJhQJJajLHeixVe2M
+         GFEWSq2XoLWfQ==
+Date:   Wed, 21 Jul 2021 22:07:16 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210721220716.539f780e@thinkpad>
+In-Reply-To: <YPh6b+dTZqQNX+Zk@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+        <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+        <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
+        <YPTKB0HGEtsydf9/@lunn.ch>
+        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
+        <YPbu8xOFDRZWMTBe@lunn.ch>
+        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
+        <20210721204543.08e79fac@thinkpad>
+        <YPh6b+dTZqQNX+Zk@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6cb7fbe9-35e2-8fb1-11fa-cbd6ce01bab2@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 09:02:13PM +0300, Sasha Neftin wrote:
-> On 7/21/2021 17:50, Andrew Lunn wrote:
-> > On Tue, Jul 20, 2021 at 04:20:58PM -0700, Tony Nguyen wrote:
-> > > From: Sasha Neftin <sasha.neftin@intel.com>
-> > > 
-> > > i225 devices have only one PHY vendor. There is no point checking
-> > > _I_PHY_ID during the link establishment and auto-negotiation process.
-> > > This patch comes to clean up these pointless checkings.
+On Wed, 21 Jul 2021 21:50:07 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
+
+> > Hi Heiner,
 > > 
-> > I don't know this hardware....
+> > in sysfs, all devices registered under LED class will have symlinks in
+> > /sys/class/leds. This is how device classes work in Linux.
 > > 
-> > Is the PHY integrated into the MAC? Or is it external?
-> i225 controller offers a fully-integrated Media Access Control
-> (MAC) and Physical Layer (PHY) port.
-> Both components (MAC and PHY) supports 2.5G
+> > There is a standardized format for LED device names, please look at
+> > Documentation/leds/leds-class.rst.
+> > 
+> > Basically the LED name is of the format
+> >   devicename:color:function  
+> 
+> The interesting part here is, what does devicename mean, in this
+> context?
+> 
+> We cannot use the interface name, because it is not unique, and user
+> space can change it whenever it wants. So we probably need to build
+> something around the bus ID, e.g. pci_id. Which is not very friendly
+> :-(
 
-Hi Sasha
+Unfortunately there isn't consensus about what the devicename should
+mean. There are two "schools of thought":
 
-Thanks for the info. Then this change make sense. But the commit
-message could of been better. It is not really about there being one
-PHY vendor, it is simply impossible for the PHY to be anything else,
-so there is no need to check.
+1. device name of the trigger source for the LED, i.e. if the LED
+   blinks on activity on mmc0, the devicename should be mmc0. We have
+   talked about this in the discussions about ethernet PHYs.
+   In the case of the igc driver if the LEDs are controlled by the MAC,
+   I guess some PCI identifier would be OK. Or maybe ethernet-mac
+   identifier, if we have something like that? (Since we can't use
+   interface names due to the possibility of renaming.)
 
-	Andrew
+   Pavel and I are supporters of this scheme.
+
+2. device name of the LED controller. For example LEDs controlled by
+   the maxim,max77650-led controller (leds-max77650.c) define device
+   name as "max77650"
+
+   Jacek supports this scheme.
+
+The complication is that both these schemes are used already in
+upstream kernel, and we have to maintain backwards compatibility of
+sysfs ABI, so we can't change that.
+
+I have been thinking for some time that maybe we should poll Linux
+kernel developers about these two schemes, so that a consensus is
+reached. Afterwards we can deprecate the other scheme and add a Kconfig
+option (default n for backwards compatibility) to use the new scheme.
+
+What do you think?
+
+Marek
