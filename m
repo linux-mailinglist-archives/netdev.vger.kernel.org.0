@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D50483D1465
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95DA93D146A
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:45:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233820AbhGUQEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 12:04:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59008 "EHLO
+        id S234013AbhGUQEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 12:04:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39930 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233471AbhGUQEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 12:04:41 -0400
+        by vger.kernel.org with ESMTP id S233554AbhGUQEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 12:04:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626885917;
+        s=mimecast20190719; t=1626885919;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=A774f2Th7dL8uyA+Ed6Ue0eihbrm9ddp25ruzofQLbA=;
-        b=OdGmqLWSexS9jKNSe+g5MQcIsxi/1VMra+Q12rzbk5GMs0Xed3695/pZuN+wee9WsVigC0
-        M9WKUJhyTcJmFlb+VP58349LW16H+iNcTQS0jOVRy1b7B4LaNxGjUYXTY/e413DXSC4OhP
-        0cQRNsK//51DddWLfSHsrwqJaSMENFE=
+        bh=DwKCXybqdYJgCEVqcEB3Z+Nt6LD1i2o79n/k3LGtGF8=;
+        b=GNMCBE8S8yaDzeWhA0OO5hnt9UqTnOgbev9vR2eH6do4vVrHy7IcxVgLWxbweMNNlZzt2D
+        nYCR7uECmtKGiPtTEWHFilJQneKd0WESaSYX1OgSRYShw1wtHaSB33OWieJNS/RcwA6Fiq
+        08k1HMZhgsQUsyB02sYfyUJWAMJ7qQk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-216-of5nlfWPMMCHLUc7DS-L-w-1; Wed, 21 Jul 2021 12:45:16 -0400
-X-MC-Unique: of5nlfWPMMCHLUc7DS-L-w-1
+ us-mta-534-mBC2ygcBOYuwoiv89_8P-Q-1; Wed, 21 Jul 2021 12:45:18 -0400
+X-MC-Unique: mBC2ygcBOYuwoiv89_8P-Q-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C7879804140;
-        Wed, 21 Jul 2021 16:45:14 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CE8F4800D62;
+        Wed, 21 Jul 2021 16:45:16 +0000 (UTC)
 Received: from gerbillo.redhat.com (ovpn-114-219.ams2.redhat.com [10.36.114.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A677797C0;
-        Wed, 21 Jul 2021 16:45:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 29ED4797C0;
+        Wed, 21 Jul 2021 16:45:14 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Florian Westphal <fw@strlen.de>,
         Eric Dumazet <edumazet@google.com>,
         linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Subject: [PATCH RFC 3/9] sk_buff: move the active_extensions into the state bitfield
-Date:   Wed, 21 Jul 2021 18:44:35 +0200
-Message-Id: <75a4e2fe7a521247984460b0687bc111239b71ef.1626882513.git.pabeni@redhat.com>
+Subject: [PATCH RFC 4/9] net: optimize GRO for the common case.
+Date:   Wed, 21 Jul 2021 18:44:36 +0200
+Message-Id: <7f2f6283a35ffc590eaf6dde88a5848db21ccd3f.1626882513.git.pabeni@redhat.com>
 In-Reply-To: <cover.1626882513.git.pabeni@redhat.com>
 References: <cover.1626882513.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -52,95 +52,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No functional change intended
+After the previous patches, at GRO time, skb->_state is
+usually 0, unless the packets comes from some H/W offload
+slowpath or tunnel without rx checksum offload.
+
+We can optimize the GRO code assuming !skb->_state is likely.
+This remove multiple conditionals in the fast-path, at the
+price of an additional one when we hit the above "slow-paths".
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
-v1 -> v2:
- - add CHECK_SKB_FIELD(_state) in __copy_skb_header
-2 problems:
-- this restrict the storage for new skb extensions to 0 or at most 1
-- can't provide a build time check to ensure SKB_EXT do not exceed
-  active_extensions
+ net/core/dev.c    | 29 +++++++++++++++++++++--------
+ net/core/skbuff.c |  8 +++++---
+ 2 files changed, 26 insertions(+), 11 deletions(-)
 
-I'm wondering about moving 2 random bits from the header section to
-the old active_extensions location (and explicitly copy them on clone)
-so that we can keep using 1 byte for extension and 1 byte for other
-state things
----
- include/linux/skbuff.h | 11 +++++------
- net/core/skbuff.c      |  1 +
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1b811585f6fc..03be9a774c58 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -670,7 +670,6 @@ typedef unsigned char *sk_buff_data_t;
-  *	@pfmemalloc: skbuff was allocated from PFMEMALLOC reserves
-  *	@pp_recycle: mark the packet for recycling instead of freeing (implies
-  *		page_pool support on driver)
-- *	@active_extensions: active extensions (skb_ext_id types)
-  *	@ndisc_nodetype: router type (from link layer)
-  *	@ooo_okay: allow the mapping of a socket to a queue to be changed
-  *	@l4_hash: indicate hash is a canonical 4-tuple hash over transport
-@@ -692,6 +691,7 @@ typedef unsigned char *sk_buff_data_t;
-  *	@_state: bitmap reporting the presence of some skb state info
-  *	@has_nfct: @_state bit for nfct info
-  *	@has_dst: @_state bit for dst pointer
-+ *	@active_extensions: @_state bits for active extensions (skb_ext_id types)
-  *	@napi_id: id of the NAPI struct this skb came from
-  *	@sender_cpu: (aka @napi_id) source CPU in XPS
-  *	@secmark: security marking
-@@ -796,9 +796,6 @@ struct sk_buff {
- 				head_frag:1,
- 				pfmemalloc:1,
- 				pp_recycle:1; /* page_pool recycle indicator */
--#ifdef CONFIG_SKB_EXTENSIONS
--	__u8			active_extensions;
--#endif
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 3ee58876e8f5..70c24ed9ca67 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6002,7 +6002,6 @@ static void gro_list_prepare(const struct list_head *head,
+ 		diffs |= skb_vlan_tag_present(p) ^ skb_vlan_tag_present(skb);
+ 		if (skb_vlan_tag_present(p))
+ 			diffs |= skb_vlan_tag_get(p) ^ skb_vlan_tag_get(skb);
+-		diffs |= skb_metadata_dst_cmp(p, skb);
+ 		diffs |= skb_metadata_differs(p, skb);
+ 		if (maclen == ETH_HLEN)
+ 			diffs |= compare_ether_header(skb_mac_header(p),
+@@ -6012,17 +6011,29 @@ static void gro_list_prepare(const struct list_head *head,
+ 				       skb_mac_header(skb),
+ 				       maclen);
  
- 	/* fields enclosed in headers_start/headers_end are copied
- 	 * using a single memcpy() in __copy_skb_header()
-@@ -875,6 +872,9 @@ struct sk_buff {
- 		struct {
- 			__u8	has_nfct:1;
- 			__u8	has_dst:1;
-+#ifdef CONFIG_SKB_EXTENSIONS
-+			__u8	active_extensions:5;
+-		diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
++		/* in most common scenarions _state is 0
++		 * otherwise we are already on some slower paths
++		 * either skip all the infrequent tests altogether or
++		 * avoid trying too hard to skip each of them individually
++		 */
++		if (!diffs && unlikely(skb->_state | p->_state)) {
++#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++			struct tc_skb_ext *skb_ext;
++			struct tc_skb_ext *p_ext;
 +#endif
- 		};
- 	};
++
++			diffs |= skb_metadata_dst_cmp(p, skb);
++			diffs |= skb_get_nfct(p) ^ skb_get_nfct(skb);
++
+ #if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+-		if (!diffs) {
+-			struct tc_skb_ext *skb_ext = skb_ext_find(skb, TC_SKB_EXT);
+-			struct tc_skb_ext *p_ext = skb_ext_find(p, TC_SKB_EXT);
++			skb_ext = skb_ext_find(skb, TC_SKB_EXT);
++			p_ext = skb_ext_find(p, TC_SKB_EXT);
  
-@@ -4283,8 +4283,6 @@ static inline void skb_ext_put(struct sk_buff *skb)
- static inline void __skb_ext_copy(struct sk_buff *dst,
- 				  const struct sk_buff *src)
- {
--	dst->active_extensions = src->active_extensions;
--
- 	if (src->active_extensions) {
- 		struct skb_ext *ext = src->extensions;
+ 			diffs |= (!!p_ext) ^ (!!skb_ext);
+ 			if (!diffs && unlikely(skb_ext))
+ 				diffs |= p_ext->chain ^ skb_ext->chain;
+-		}
+ #endif
++		}
  
-@@ -4296,6 +4294,7 @@ static inline void __skb_ext_copy(struct sk_buff *dst,
- static inline void skb_ext_copy(struct sk_buff *dst, const struct sk_buff *src)
- {
- 	skb_ext_put(dst);
-+	dst->active_extensions = src->active_extensions;
- 	__skb_ext_copy(dst, src);
+ 		NAPI_GRO_CB(p)->same_flow = !diffs;
+ 	}
+@@ -6287,8 +6298,10 @@ static void napi_reuse_skb(struct napi_struct *napi, struct sk_buff *skb)
+ 	skb->encapsulation = 0;
+ 	skb_shinfo(skb)->gso_type = 0;
+ 	skb->truesize = SKB_TRUESIZE(skb_end_offset(skb));
+-	skb_ext_reset(skb);
+-	nf_reset_ct(skb);
++	if (unlikely(skb->_state)) {
++		skb_ext_reset(skb);
++		nf_reset_ct(skb);
++	}
+ 
+ 	napi->skb = skb;
  }
- 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e94805bd8656..2ffe18595635 100644
+index 2ffe18595635..befb49d1a756 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -1001,6 +1001,7 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
- 	memcpy(&new->headers_start, &old->headers_start,
- 	       offsetof(struct sk_buff, headers_end) -
- 	       offsetof(struct sk_buff, headers_start));
-+	CHECK_SKB_FIELD(_state);
- 	CHECK_SKB_FIELD(protocol);
- 	CHECK_SKB_FIELD(csum);
- 	CHECK_SKB_FIELD(hash);
+@@ -943,9 +943,11 @@ void __kfree_skb_defer(struct sk_buff *skb)
+ 
+ void napi_skb_free_stolen_head(struct sk_buff *skb)
+ {
+-	nf_reset_ct(skb);
+-	skb_dst_drop(skb);
+-	skb_ext_put(skb);
++	if (unlikely(skb->_state)) {
++		nf_reset_ct(skb);
++		skb_dst_drop(skb);
++		skb_ext_put(skb);
++	}
+ 	napi_skb_cache_put(skb);
+ }
+ 
 -- 
 2.26.3
 
