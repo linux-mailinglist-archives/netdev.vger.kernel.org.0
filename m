@@ -2,113 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B6093D16A8
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6448C3D16FE
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 21:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbhGUSJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 14:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbhGUSJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 14:09:25 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71057C061575;
-        Wed, 21 Jul 2021 11:50:01 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id c17so1891358wmb.5;
-        Wed, 21 Jul 2021 11:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vYb01ay7yAvyr0PcX6y2FB2sBUlWe5IbSuTyUYl0Un4=;
-        b=MxQxgiI5oOvwG+qayndFX42qCbQID97lUa8wSqklhjGoarAuw19r17+yUewyjrhBtl
-         esWUk1GNPgPYq71oV8gALyHxg5fDMZm2tpCIjuJxeWWRjFrLxNXjIHf8oyt2XiEynOs5
-         z8+zUCAH8VrFqxIOxqx3CF3Z8JMc5jiziZoB4WN/kSo+AbVfuQTF6oEQjVSAsu6CbTZ2
-         eaQdXOfvHMsN4M8hQaJjl07CWvxNHoIVSrNlkKjV8l4mjohEWq5/QPaMrq6utBXW+BDW
-         +Jj+wKpfbD4D/YcFaZE1KhnbiZOcfpCunQd1yUlFb1VALmBWj4rmmsC2FO6n+uLHfTEf
-         TTSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vYb01ay7yAvyr0PcX6y2FB2sBUlWe5IbSuTyUYl0Un4=;
-        b=QOCVelYotEpuPTs84WvN9c7c16k/1Ms2L52cbYER80I21xahV07KpOSAyLYS4yVFdh
-         +VrR541lWj3GJ7GvnfodK6jZk2Oe09tekUxYzcCxk/IHXECmV+6CS3BHklLDmnkl9/F8
-         Uup1tOs2UFrF+eYqOF25MoDo4c+yUNJfiVAUj3NH0r1xiTEfmEATBVaNKJci1mLT+D1Q
-         o7Dumi9gcJ+WXE5uqTFSH0+bv/3P9rmCu1W9YdMXSi8n2/aDFGeHgpzJgngumEOF1GqY
-         gfh65JqqZ/1J40D9X2ANTCGWLKtSg8ikzvLOYcNz+ZBNt6KyUT6eFEPHL8nGKvaLijHa
-         C5bw==
-X-Gm-Message-State: AOAM533b+3f1kB2BpxRtPGu2mJMCddL6f6vC8R5pG+OcyCA7VrWmdVxe
-        jGXW3EVm8M2awVufxltEbQTe7b+X89ONDyCbRDE=
-X-Google-Smtp-Source: ABdhPJzL5QIyAHJOHzM1Hro8aRxi6GpLGTmfuXZ5uKRv3Y7iCqzdB291xa5oQQGFHJE0VVS0Lye6kG+WDeJW/J0g/uE=
-X-Received: by 2002:a1c:988a:: with SMTP id a132mr5379424wme.175.1626893400008;
- Wed, 21 Jul 2021 11:50:00 -0700 (PDT)
+        id S239213AbhGUSiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 14:38:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43842 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238552AbhGUSiA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 14:38:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A176C6121F;
+        Wed, 21 Jul 2021 19:18:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626895116;
+        bh=O7RmbrWBMFYhO559U+kYd50JMQyOzBHj+hbyIeatmH4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cpE+KsEcPnUnG1aTE3Tmaxv+nCquUOmfmnh7u5fppJxvkcGZNZir4yow3BRMYCllY
+         n5sfWFSexnN+2fJyN92qCMx5Y6kznTbiSNMeFbcYFHHh5QNMo0EGUSWxj/BqC2CSop
+         6nUAb+g91+usMkNImjP9Zg8bGQMf+WS1+O5w6M1mHtnps99mS/GINevJL4VVgifBH8
+         xSrv0if/NG2LG6ln6OjQJ7s6K9xbAKkbX968K/qgANgYA4Ha7SW39V1M5y68azXLNa
+         mKPjH8tRPdeG9q4ryXbvxvuuX3SgX5yMA6E6uABD2IoiJrHjM2rYrKl841WiHA8kKj
+         nM32UzBanopCQ==
+Date:   Wed, 21 Jul 2021 21:18:31 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210721211831.4b76c614@thinkpad>
+In-Reply-To: <YPV6+PQq1fvH8aSy@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+        <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+        <YPIAnq6r3KgQ5ivI@lunn.ch>
+        <87y2a2hm6m.fsf@kurt>
+        <YPV6+PQq1fvH8aSy@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <a0a956bbb2142d8de933d20a7a01e8ce66d048c0.1626883705.git.lucien.xin@gmail.com>
- <YPhqk1Sx5FKYyiK+@horizon.localdomain>
-In-Reply-To: <YPhqk1Sx5FKYyiK+@horizon.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 21 Jul 2021 14:49:49 -0400
-Message-ID: <CADvbK_ckYAVEuygZsnbWozfJKTV5Np+p_s8P=ZpErqu_j9S3Bg@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: do not update transport pathmtu if
- SPP_PMTUD_ENABLE is not set
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Jacek Szafraniec <jacek.szafraniec@nokia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 2:42 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Wed, Jul 21, 2021 at 12:08:25PM -0400, Xin Long wrote:
-> > Currently, in sctp_packet_config(), sctp_transport_pmtu_check() is
-> > called to update transport pathmtu with dst's mtu when dst's mtu
-> > has been changed by non sctp stack like xfrm.
-> >
-> > However, this should only happen when SPP_PMTUD_ENABLE is set, no
-> > matter where dst's mtu changed. This patch is to fix by checking
-> > SPP_PMTUD_ENABLE flag before calling sctp_transport_pmtu_check().
-> >
-> > Thanks Jacek for reporting and looking into this issue.
-> >
-> > Fixes: 69fec325a643 ('Revert "sctp: remove sctp_transport_pmtu_check"')
-> > Reported-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
-> > Tested-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/sctp/output.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/sctp/output.c b/net/sctp/output.c
-> > index 9032ce60d50e..8d5708dd2a1f 100644
-> > --- a/net/sctp/output.c
-> > +++ b/net/sctp/output.c
-> > @@ -104,8 +104,8 @@ void sctp_packet_config(struct sctp_packet *packet, __u32 vtag,
-> >               if (asoc->param_flags & SPP_PMTUD_ENABLE)
-> >                       sctp_assoc_sync_pmtu(asoc);
-> >       } else if (!sctp_transport_pl_enabled(tp) &&
-> > -                !sctp_transport_pmtu_check(tp)) {
-> > -             if (asoc->param_flags & SPP_PMTUD_ENABLE)
-> > +                asoc->param_flags & SPP_PMTUD_ENABLE)
->
-> Lacks a '{' here at the end of the line.
-ah, right, sorry, reposted.
+On Mon, 19 Jul 2021 15:15:36 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
->
-> Other than that:
-> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
->
-> (please add it on the v2)
->
-> > +             if (!sctp_transport_pmtu_check(tp))
-> >                       sctp_assoc_sync_pmtu(asoc);
-> >       }
-> >
-> > --
-> > 2.27.0
-> >
+> > Are there better ways to export this?  
+> 
+> As i said in another email, using LED triggers. For simple link speed
+> indication, take a look at CONFIG_LED_TRIGGER_PHY.
+
+Please don't use LED_TRIGGER_PHY. The way this driver works is against
+the ideas of LED subsystem and we would like to deprecate it.
+
+All network related LED control should be somehow configured via the
+"netdev" trigger. I am working on extending "netdev" trigger for this
+purpose. But first we need to be able to at least support offloading of
+LED triggers. Hopefully I will send another version for that this week.
+
+Marek
