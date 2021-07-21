@@ -2,136 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124D83D167F
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:39:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A1293D1693
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237163AbhGUR6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 13:58:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37388 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230269AbhGUR6U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 13:58:20 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 57E6561222;
-        Wed, 21 Jul 2021 18:38:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626892736;
-        bh=c58AgXYLjV8nxV+yGDWGaiNc8lcnebnlE03OtQCUX8g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=TXMnY/wOnELdxVY2UtnXI7v3JQ4uQNXB+95A3X/Ux1IpvCYoC+cOYlFW3kuVf4zxL
-         jOnCVH8WpF06Fw22zy1ijEG0BH6X7zrY1VXHBJDTJ7PPPU70RjlsIIN6wPnePqsEkT
-         dw6Y4/uW3a9A9aevLRFAyIeet0td3xhNCPBYjKcfSWaJ8QRfkLC6HPjcKTjQA6mBF6
-         H8CTepg+QFouXY97lVzm2urACHyzbkMwuLctp5Iboyce4Tp7gZ/u//Yl+I+Wey8a19
-         wudZz6BEjYQMJ5XkLfGgiACqpRodC7evSlKPclcqbBhh0YfBI1sDp4WNuq42HlzUQP
-         Bi0ZA6loAxRxg==
-Received: by mail-wm1-f52.google.com with SMTP id r16-20020a05600c2c50b029014c1adff1edso76550wmg.4;
-        Wed, 21 Jul 2021 11:38:56 -0700 (PDT)
-X-Gm-Message-State: AOAM533/H+Vl1K79Oflk7ZsVpxnbkE3oWMzIqvZ6u9j2kSeGqe/+uGtF
-        yeGc8qkh8NCTcuHe/qBAZ470/Y3QZJ0TGeE2SV4=
-X-Google-Smtp-Source: ABdhPJyhSRgfLaBTPJMwtpFNlY9q/GPNEb6Tfyk+uF/aS8k580kiJJMP0SB0r+iW16M91ZGiiwEn6z8lhMS6dEb2QmA=
-X-Received: by 2002:a1c:c90f:: with SMTP id f15mr5472491wmb.142.1626892734959;
- Wed, 21 Jul 2021 11:38:54 -0700 (PDT)
+        id S238697AbhGUSB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 14:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239290AbhGUSB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 14:01:57 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C0CC061575;
+        Wed, 21 Jul 2021 11:42:31 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id b12so1413585plh.10;
+        Wed, 21 Jul 2021 11:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0ew7m7SUbK8KldmxUiyHmG0bNK/g1aMZqNB+ugfhvrg=;
+        b=VKVbhP84vp4BGV2sU5tm16GM66xXfRjFL8JvEIA+TrM/R8mtdmvYSB7C0vpRr3iV9f
+         mvgIDn62KPRYn/fwhqWI4xKsanzfYDSD1CqLxaP/Wg6r1mc6rGtqLXfpbHZhgiXv0mJY
+         NVAp9cDxF+uMzHE4PPznhPgwMU413wULBqeYPxN4ojoxWwzeNJL7ndbRVK1VWQAfGggm
+         C/aXxMpF0l4sTtGg0l+N20NFiV1wOYmGqHM8PDaJ4LKHNEl2QXzFx9qR90G8mb9wIa4i
+         ZjnQ9s2DFDBkRKQ5UPlgKDjMR5E0z69EvxJUysjUWjcuZFwfKnZLFYnoMtld4dwRp6nL
+         KJvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0ew7m7SUbK8KldmxUiyHmG0bNK/g1aMZqNB+ugfhvrg=;
+        b=tL3awq+RYYwqIFH3UEy9v2qmgtaIj4BSKtiNdU60FdxYsbWjLS35e96Q1Uxr3X1Hvh
+         eduLieIief0b+QXHi70K1HH9nKrQ38APBAEvie2wt2hZ+MEvasfxYT8JNlgHKmHUQASY
+         CTldjNUL855bnhtUr9CvjNBrkuoiA4lJNOdViusvnT7mYFhIkT4PtVGMa9raiuUMBSvG
+         Hfn94b4/3t6yVUB1sWwHneZmMefHKrjLltwg22wG5Xg5g3421rQVTtltXP7QaioFzPJ8
+         LNealNt+bJi8dvh0Fiobys3DnTLMw65ZrLRA9wZg2CUIgepvyFJh0oc+iY8P+r6VEjGq
+         s7QQ==
+X-Gm-Message-State: AOAM533ziHTOwF83Ct0AW05LGf0Xh54S24J6nzDaK7ceN8QTxD+dmy3u
+        QAn+sqhm+C4ZQAGvYboznE4=
+X-Google-Smtp-Source: ABdhPJy95wMizfWeHJ/SDhWQuIVM/Mli/eU2hPSUj8ktKUR3k36/yzEwZuT9OzzRGn9GUCTTfXsQzA==
+X-Received: by 2002:a17:902:fe87:b029:12a:ef40:57a2 with SMTP id x7-20020a170902fe87b029012aef4057a2mr28710506plm.81.1626892951420;
+        Wed, 21 Jul 2021 11:42:31 -0700 (PDT)
+Received: from horizon.localdomain ([2001:1284:f013:bdcf:961b:3613:110d:86ce])
+        by smtp.gmail.com with ESMTPSA id f11sm31713406pga.61.2021.07.21.11.42.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 11:42:29 -0700 (PDT)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 32D86C087C; Wed, 21 Jul 2021 15:42:27 -0300 (-03)
+Date:   Wed, 21 Jul 2021 15:42:27 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-sctp@vger.kernel.org,
+        Jacek Szafraniec <jacek.szafraniec@nokia.com>
+Subject: Re: [PATCH net] sctp: do not update transport pathmtu if
+ SPP_PMTUD_ENABLE is not set
+Message-ID: <YPhqk1Sx5FKYyiK+@horizon.localdomain>
+References: <a0a956bbb2142d8de933d20a7a01e8ce66d048c0.1626883705.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <20210721151100.2042139-1-arnd@kernel.org> <CANH7hM7nLq9LthNi=D9qHsiS_eyhU8-CGjnXhsKYX9dqTaOmNw@mail.gmail.com>
-In-Reply-To: <CANH7hM7nLq9LthNi=D9qHsiS_eyhU8-CGjnXhsKYX9dqTaOmNw@mail.gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 21 Jul 2021 20:38:38 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a27ii4fPvB8QA149g6ofWHazPGb9EZL_7M4z5ymkepVnw@mail.gmail.com>
-Message-ID: <CAK8P3a27ii4fPvB8QA149g6ofWHazPGb9EZL_7M4z5ymkepVnw@mail.gmail.com>
-Subject: Re: [PATCH] gve: DQO: avoid unused variable warnings
-To:     Bailey Forrest <bcf@google.com>
-Cc:     Catherine Sullivan <csully@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a0a956bbb2142d8de933d20a7a01e8ce66d048c0.1626883705.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dma_unmap_len_set(pending_packet->bufs[pending_packet->num_bufs], len, len);
-On Wed, Jul 21, 2021 at 5:36 PM Bailey Forrest <bcf@google.com> wrote:
-> On Wed, Jul 21, 2021 at 8:11 AM Arnd Bergmann <arnd@kernel.org> wrote:
-> >
-> >
-> > +static void gve_unmap_packet(struct device *dev,
-> > +                            struct gve_tx_pending_packet_dqo *pending_packet)
-> > +{
-> > +       dma_addr_t addr;
-> > +       size_t len;
-> > +       int i;
-> > +
-> > +       /* SKB linear portion is guaranteed to be mapped */
-> > +       addr = dma_unmap_addr(&pending_packet->bufs[0], dma);
-> > +       len = dma_unmap_len(&pending_packet->bufs[0], len);
-> > +       dma_unmap_single(dev, addr, len, DMA_TO_DEVICE);
->
-> "SKB linear portion is guaranteed to be mapped" is only true if
-> gve_tx_add_skb_no_copy_dqo completed successfully.
->
-> This optimization is important for the success path because otherwise
-> there would be a per-packet branch misprediction, which I found to
-> have a large performance impact.
->
-> A solution which should address this would be something like:
->
-> +static void gve_unmap_packet(struct device *dev,
-> +     struct gve_tx_pending_packet_dqo *pending_packet
-> +     bool always_unmap_first)
-> +{
-> + dma_addr_t addr;
-> + size_t len;
-> + int i;
-> +
-> + if (always_unmap_first || pending_packet->num_bufs > 0) {
-> +  addr = dma_unmap_addr(&pending_packet->bufs[0], dma);
-> +  len = dma_unmap_len(&pending_packet->bufs[0], len);
-> +  dma_unmap_single(dev, addr, len, DMA_TO_DEVICE);
-> + }
-> +
-> + for (i = 1; i < pending_packet->num_bufs; i++) {
-> +  addr = dma_unmap_addr(&pending_packet->bufs[i], dma);
-> +  len = dma_unmap_len(&pending_packet->bufs[i], len);
-> +  dma_unmap_page(dev, addr, len, DMA_TO_DEVICE);
-> + }
-> + pending_packet->num_bufs = 0;
-> +}
->
-> (Sorry my email client keeps turning tabs into spaces...)
->
-> By doing this, we can rely on the compiler to optimize away the extra
-> branch in cases we know the first buffer will be mapped.
+On Wed, Jul 21, 2021 at 12:08:25PM -0400, Xin Long wrote:
+> Currently, in sctp_packet_config(), sctp_transport_pmtu_check() is
+> called to update transport pathmtu with dst's mtu when dst's mtu
+> has been changed by non sctp stack like xfrm.
+> 
+> However, this should only happen when SPP_PMTUD_ENABLE is set, no
+> matter where dst's mtu changed. This patch is to fix by checking
+> SPP_PMTUD_ENABLE flag before calling sctp_transport_pmtu_check().
+> 
+> Thanks Jacek for reporting and looking into this issue.
+> 
+> Fixes: 69fec325a643 ('Revert "sctp: remove sctp_transport_pmtu_check"')
+> Reported-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
+> Tested-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/sctp/output.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sctp/output.c b/net/sctp/output.c
+> index 9032ce60d50e..8d5708dd2a1f 100644
+> --- a/net/sctp/output.c
+> +++ b/net/sctp/output.c
+> @@ -104,8 +104,8 @@ void sctp_packet_config(struct sctp_packet *packet, __u32 vtag,
+>  		if (asoc->param_flags & SPP_PMTUD_ENABLE)
+>  			sctp_assoc_sync_pmtu(asoc);
+>  	} else if (!sctp_transport_pl_enabled(tp) &&
+> -		   !sctp_transport_pmtu_check(tp)) {
+> -		if (asoc->param_flags & SPP_PMTUD_ENABLE)
+> +		   asoc->param_flags & SPP_PMTUD_ENABLE)
 
-I didn't really change it here, I just moved the function up and changed
-the dma_unmap_addr/dma_unmap_len calls to avoid the warning.
+Lacks a '{' here at the end of the line.
 
-> > +static inline void gve_tx_dma_buf_set(struct gve_tx_dma_buf *buf,
-> > +                                     dma_addr_t addr, size_t len)
-> > +{
-> > +       dma_unmap_len_set(buf, len, len);
-> > +       dma_unmap_addr_set(buf, dma, addr);
-> > +}
->
-> checkpatch.pl will complain about `inline` in a C file.
->
-> However, I would prefer to just not introduce this helper because it
-> introduces indirection for the reader and the risk of passing the
-> arguments in the wrong order. Don't have a strong opinion here
-> though.
+Other than that:
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-Sure, feel free to just treat my patch as a bug report and send a different
-fix if you prefer to not have an inline function. This is usually the easiest
-way to get around the macro ignoring its arguments since the compiler
-does not warn for unused function arguments.
+(please add it on the v2)
 
-Open-codiung the call as
-
-dma_unmap_len_set(pending_packet->bufs[pending_packet->num_bufs], len, len);
-dma_unmap_len_addr(pending_packet->bufs[pending_packet->num_bufs], addr, dma);
-
-works as well, I just found the inline function more readable.
-
-     Arnd
+> +		if (!sctp_transport_pmtu_check(tp))
+>  			sctp_assoc_sync_pmtu(asoc);
+>  	}
+>  
+> -- 
+> 2.27.0
+> 
