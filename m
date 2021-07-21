@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5A33D11D4
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C80C3D11CD
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:03:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbhGUOXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 10:23:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56640 "EHLO mail.kernel.org"
+        id S238948AbhGUOWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 10:22:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239442AbhGUOTc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S239445AbhGUOTc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 21 Jul 2021 10:19:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2F06660FF1;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9ACBF61249;
         Wed, 21 Jul 2021 15:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1626879604;
-        bh=5TcyXITY13mlEpb9N11XNbpiRnui8Alq6NyhR8Fbot0=;
+        bh=Dno6DBZNx9K5C24Q1ufPPKusD1XABRmwgNfcHWzgeKM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W4o/j7QO/LnjGD+BxIQk7sa4kS5myfRzqYV14JbVHInaJMzY80Z9hW/DRHrNdr2WL
-         lhttSO+NKOurziU0St8IBRX/DjxQ3Xy/YRsUrAtd3HhqpSAUI7ah3TPH9fiih9uq/O
-         JNDY/oc8YhymI38OXTebQRdQVlcbyGlXMwqIYBKk8mduRFLOqg7uDanvyRXhk5OfTm
-         D6KxU1D9YDnpua4NL/fbDw3Sw0yu9TsGroXXR9rTLvi7H6D+tq3RyY7Z1Qrt0jMBw2
-         jHEdJrVa4/T/N1hH590oxrIv3r9bKVtVLtugTR6DaK9IeUZXJfVoXlZnRpAoQc2erZ
-         sIRCiUS+Oku0g==
+        b=hvfCVRuQsDRJWJn0H5fvxubeDYqpUGGtuwx0tBFhj1lRISU9V40Lg1Wek00ZbTt90
+         peipXB9oqFUkQQqwWMvX//Zp3Eq8tkzN0tt4FYInDUcszUoxNzrDvcPewoXu9+PpAO
+         qGC3F8PZk0ScZSl+xdRWbJkpeXJfJDwcsV0PkHLnLGSvrMbqweDPGVujG/i2uLjrDT
+         g2byBAjE9RXhNXMyL9oW6OFI3PMIL8ZWC1GkZzC787eGm+KvXpsK+Ep6UNB+dx4exL
+         zE2fm1w0JcFjRl4ILdPWCIwm5fE3km4ynZTtfrXKX9820pG2/IEUM2egX4Fd5YxMzR
+         CZnVEZDGfklHg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 203FB60CD3;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9421260A4E;
         Wed, 21 Jul 2021 15:00:04 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] r8169: Avoid duplicate sysfs entry creation error
+Subject: Re: [PATCH net-next] net: phylink: cleanup ksettings_set
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162687960412.27043.13400437965163469138.git-patchwork-notify@kernel.org>
+Message-Id: <162687960460.27043.14699625720287757152.git-patchwork-notify@kernel.org>
 Date:   Wed, 21 Jul 2021 15:00:04 +0000
-References: <20210720161740.5214-1-andre.przywara@arm.com>
-In-Reply-To: <20210720161740.5214-1-andre.przywara@arm.com>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sayanta.pattanayak@arm.com
+References: <E1m5nig-0003N1-1f@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1m5nig-0003N1-1f@rmk-PC.armlinux.org.uk>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 20 Jul 2021 17:17:40 +0100 you wrote:
-> From: Sayanta Pattanayak <sayanta.pattanayak@arm.com>
+On Tue, 20 Jul 2021 12:15:26 +0100 you wrote:
+> We only need to fiddle about with the supported mask after we have
+> validated the user's requested parameters. Simplify and streamline the
+> code by moving the linkmode copy and update of the autoneg bit after
+> validating the user's request.
 > 
-> When registering the MDIO bus for a r8169 device, we use the PCI
-> bus/device specifier as a (seemingly) unique device identifier.
-> However the very same BDF number can be used on another PCI segment,
-> which makes the driver fail probing:
+> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v3] r8169: Avoid duplicate sysfs entry creation error
-    https://git.kernel.org/netdev/net/c/e9a72f874d5b
+  - [net-next] net: phylink: cleanup ksettings_set
+    https://git.kernel.org/netdev/net-next/c/7cefb0b0e911
 
 You are awesome, thank you!
 --
