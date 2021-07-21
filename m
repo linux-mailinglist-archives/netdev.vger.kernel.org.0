@@ -2,116 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5FF3D1336
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 038253D133A
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbhGUPWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49544 "EHLO
+        id S231950AbhGUPYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:24:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbhGUPWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:22:31 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38684C061757;
-        Wed, 21 Jul 2021 09:03:07 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id w13so1635678wmc.3;
-        Wed, 21 Jul 2021 09:03:07 -0700 (PDT)
+        with ESMTP id S231889AbhGUPYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:24:21 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702F7C061575
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:04:57 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id z9so2540641qkg.5
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:04:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BFihmPhDKn1OhO3mdovxiKJBe1gvrjecydHMmuTPY9g=;
-        b=kwZtja13WI2/q4mfIvW5354h8ruJssSuAAkwaZVJoXVvABDwlFcqV2MOubIYc02FHc
-         lQ8VHn4Gc4DaiOSmpU3OWG2jgdPeaSJ2jWTsjUa89eI3vRitLNfU9wUUUUje3CWExULl
-         ZvuK7ne48qMjDS3d4dfGCqKoeTzfSQ1psjlQXNZj4wOZmKJ64CfsHb5CYYIT6GQfU+8G
-         ikoO3yNl+a+ymUCUwGvBjNch0/aLwzo68cOCb6TyaBiDl0SrC0whslDPS8CbEPyLrxfQ
-         Ic2ISDgdPZPjZRK/KEAZPLKSPKzxFsMnj+kNgGBjSPL00NHUVHM3BAOdR8zVtEJUBnZt
-         b2Ng==
+        bh=JV9VMqj3df1yfOSic0Q0B2vsE9Jz6Xq7DcAZSDfbsYQ=;
+        b=1niBHiVqeHeuU+//qLyYm2BizEzLgZCAx6jBX2Ap4JJImEaGiYHocOesxPMHc3Efme
+         vuItUsCNQM555NfmdAOdupCdPohf9XYxi4HHyu3dSmIQY1xWHSkr0t6XJPYlitTRidoH
+         vDMd4nVUAia7k4xNK4QiGjn8Fc80a8K48ihnVfZyhTYXws+1WidnIkz+ZdU5GpdcPEzM
+         kM4XLqFiJilLVEu7c4Pkz6o0Cl0fOFTnTJeLEKUrnFLJvl7UL9MLWybLvvwBqju3Y9oi
+         Q7GqfwVUas7BsJmGVeKnTJ8skRJH5n30zRNtC9gnk1Okansp0hcweErZMOpdTOvGMKWz
+         adBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BFihmPhDKn1OhO3mdovxiKJBe1gvrjecydHMmuTPY9g=;
-        b=eckybjKL24z7mvnW4nZpRxmuUyQYIOo28gi+/Z2aG2PQIH23QLzF/h5/87p3GXOpb8
-         Gx3aajIEuKnk40wBxgKgi0KbsmoWvjP7/fmxP0xJ5EunJ0U2nBvLBGlMm4rtshuwFqMs
-         NUBFGfPhcqjeNs2XrbNQmc4w3WnEegAOPZYTT5fM2gw5Tx3mG3aLnZBPv7MFsAdr/3Xr
-         SNWgDrVpIR8iQS3dzikUziFiI0iFfqRRmEnL/pjxqKCZXjkfuAPocgf7XaXESuT95klw
-         vNjRvtkw1xCZwqHThYtMifAmpRnQEEOd3vgXXRaKGkuQrJr301e/thtLPQeNNiHTeBx2
-         ZS3A==
-X-Gm-Message-State: AOAM532QuPhM1E4eLy/85zBf5G+GXZl4UDhEYcxMHBf3zwokdpsloEoH
-        fskZ3qObBlRT5qHscfAkm9YC6YV1sf3dcA==
-X-Google-Smtp-Source: ABdhPJzTPKwkPCR5cofqigN5E9PkljO644M51V1sUYdA+G2BVYFnQ1pn7IjR0rsVZH0TI2sCtRESDw==
-X-Received: by 2002:a1c:7e53:: with SMTP id z80mr1829898wmc.153.1626883385552;
-        Wed, 21 Jul 2021 09:03:05 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f3f:3d00:b167:4d03:da2:9d58? (p200300ea8f3f3d00b1674d030da29d58.dip0.t-ipconnect.de. [2003:ea:8f3f:3d00:b167:4d03:da2:9d58])
-        by smtp.googlemail.com with ESMTPSA id q72sm20352272wme.14.2021.07.21.09.03.02
+        bh=JV9VMqj3df1yfOSic0Q0B2vsE9Jz6Xq7DcAZSDfbsYQ=;
+        b=h9I2/ZUvo8PzaFQO8P9aAxtvN8C6qh9yvcbgXP4p2tyt7G7+7VTOKvDkeXxUY5TA4N
+         RY93z99hEzw0alhUHUcALfXvPoVugQvVUI/fs448Hssz/0GFVRAgCckpdyhL6SsfSsj+
+         iST2oMKOxXKPZfCXk6+AT/F24GC0ic2ej6UwSqA1ZkUeSs+O9FOJbB1uwvPxYgL2HBay
+         c0t3+bEsqTR9QWRf7K/1hmliPgFftCdhgP0UBfYr41D0Q99Fqm4uzCwZI8mVahDASR2B
+         3HVqWyOEhOhyv2QOJruCKZtSXJO4gYLD9KJ3hr8xgnOjBUZzEz3CDxtufJ3mAc3XaFzw
+         YvAQ==
+X-Gm-Message-State: AOAM530iFotK6QzZamfVuPMDWklhh/lvhwMghwLEae9Fq22g7V+INRKT
+        nd6gZewWm29Yj4KPXkIPk7GgMA==
+X-Google-Smtp-Source: ABdhPJwto4Z+BXIrGNiPYKujhMxAFPJMGc+lx8H346AjxNU1LZd87c4cj3qJIEgC1Y/Ot38IR4XfeQ==
+X-Received: by 2002:a05:620a:1fc:: with SMTP id x28mr416046qkn.84.1626883496682;
+        Wed, 21 Jul 2021 09:04:56 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id h10sm11233396qka.83.2021.07.21.09.04.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 09:03:04 -0700 (PDT)
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
- <20210716212427.821834-6-anthony.l.nguyen@intel.com>
- <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com> <YPTKB0HGEtsydf9/@lunn.ch>
- <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com> <YPbu8xOFDRZWMTBe@lunn.ch>
- <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com> <YPgwr2MB5gQVgDff@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <0bf24356-0090-a2d7-cd77-40cf04e05097@gmail.com>
-Date:   Wed, 21 Jul 2021 18:02:57 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Wed, 21 Jul 2021 09:04:56 -0700 (PDT)
+Subject: Re: [Patch net-next] net_sched: refactor TC action init API
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     Cong Wang <cong.wang@bytedance.com>,
+        Vlad Buslov <vladbu@nvidia.com>, Jiri Pirko <jiri@resnulli.us>
+References: <20210720233454.8311-1-xiyou.wangcong@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <9e6cd365-fda6-7329-78ad-e0ebe9068f28@mojatatu.com>
+Date:   Wed, 21 Jul 2021 12:04:55 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <YPgwr2MB5gQVgDff@lunn.ch>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210720233454.8311-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.07.2021 16:35, Andrew Lunn wrote:
->> Thanks for the hint, Andrew. If I make &netdev->dev the parent,
->> then I get:
->>
->> ll /sys/class/leds/
->> total 0
->> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led0 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led0
->> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led1 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led1
->> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led2 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led2
->>
->> Now the (linked) LED devices are under /sys/class/net/<ifname>, but still
->> the primary LED devices are under /sys/class/leds and their names have
->> to be unique therefore. The LED subsystem takes care of unique names,
->> but in case of a second network interface the LED device name suddenly
->> would be led0_1 (IIRC). So the names wouldn't be predictable, and I think
->> that's not what we want.
+On 2021-07-20 7:34 p.m., Cong Wang wrote:
+> From: Cong Wang<cong.wang@bytedance.com>
 > 
-> We need input from the LED maintainers, but do we actually need the
-> symbolic links in /sys/class/leds/? For this specific use case, not
-> generally. Allow an LED to opt out of the /sys/class/leds symlink.
+> TC action ->init() API has 10 parameters, it becomes harder
+> to read. Some of them are just boolean and can be replaced
+> by flags. Similarly for the internal API tcf_action_init()
+> and tcf_exts_validate().
 > 
-
-The links are created here:
-
-led_classdev_register_ext()
--> device_create_with_groups()
-   -> device_add()
-      -> device_add_class_symlinks()
-
-So it seems we'd need an extension to the device core to support
-class link opt-out.
-
-> If we could drop those, we can relax the naming requirements so that
-> the names is unique to a parent device, not globally unique.
+> This patch converts them to flags and fold them into
+> the upper 16 bits of "flags", whose lower 16 bits are still
+> reserved for user-space. More specifically, the following
+> kernel flags are introduced:
 > 
->     Andrew
+> TCA_ACT_FLAGS_POLICE replace 'name' in a few contexts, to
+> distinguish whether it is compatible with policer.
 > 
-Heiner
+> TCA_ACT_FLAGS_BIND replaces 'bind', to indicate whether
+> this action is bound to a filter.
+> 
+> TCA_ACT_FLAGS_REPLACE  replaces 'ovr' in most contexts,
+> means we are replacing an existing action.
+> 
+> TCA_ACT_FLAGS_NO_RTNL replaces 'rtnl_held' but has the
+> opposite meaning, because we still hold RTNL in most
+> cases.
+> 
+> The only user-space flag TCA_ACT_FLAGS_NO_PERCPU_STATS is
+> untouched and still stored as before.
+> 
+> I have tested this patch with tdc and I do not see any
+> failure related to this patch.
+> 
+> Cc: Vlad Buslov<vladbu@nvidia.com>
+> Cc: Jamal Hadi Salim<jhs@mojatatu.com>
+> Cc: Jiri Pirko<jiri@resnulli.us>
+> Signed-off-by: Cong Wang<cong.wang@bytedance.com>
+> ---
+
+Looks good to me.
+Acked-by: Jamal Hadi Salim<jhs@mojatatu.com>
+
+cheers,
+jamal
