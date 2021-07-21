@@ -2,65 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124EE3D163F
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F333D164A
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:24:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238615AbhGURlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 13:41:03 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:55574 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S238632AbhGURk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 13:40:56 -0400
-X-IronPort-AV: E=Sophos;i="5.84,258,1620658800"; 
-   d="scan'208";a="88346631"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 22 Jul 2021 03:21:32 +0900
-Received: from localhost.localdomain (unknown [10.226.92.105])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 719CF40078AD;
-        Thu, 22 Jul 2021 03:21:29 +0900 (JST)
-From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] ravb: Remove extra TAB
-Date:   Wed, 21 Jul 2021 19:21:26 +0100
-Message-Id: <20210721182126.18861-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        id S239097AbhGURmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 13:42:40 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:35826 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239055AbhGURmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 13:42:40 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 147D91C0B77; Wed, 21 Jul 2021 20:23:15 +0200 (CEST)
+Date:   Wed, 21 Jul 2021 20:23:14 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210721182314.GA7554@duo.ucw.cz>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
+ <YPTKB0HGEtsydf9/@lunn.ch>
+ <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
+ <YPbu8xOFDRZWMTBe@lunn.ch>
+ <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
+ <YPgwr2MB5gQVgDff@lunn.ch>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
+Content-Disposition: inline
+In-Reply-To: <YPgwr2MB5gQVgDff@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Align the member description comments for struct ravb_desc by
-removing the extra TAB.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/net/ethernet/renesas/ravb.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--PEIAKu/WMn1b1Hv9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index 86a1eb0634e8..80e62ca2e3d3 100644
---- a/drivers/net/ethernet/renesas/ravb.h
-+++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -864,7 +864,7 @@ enum GECMR_BIT {
- 
- /* The Ethernet AVB descriptor definitions. */
- struct ravb_desc {
--	__le16 ds;		/* Descriptor size */
-+	__le16 ds;	/* Descriptor size */
- 	u8 cc;		/* Content control MSBs (reserved) */
- 	u8 die_dt;	/* Descriptor interrupt enable and type */
- 	__le32 dptr;	/* Descriptor pointer */
--- 
-2.17.1
+On Wed 2021-07-21 16:35:27, Andrew Lunn wrote:
+> > Thanks for the hint, Andrew. If I make &netdev->dev the parent,
+> > then I get:
+> >=20
+> > ll /sys/class/leds/
+> > total 0
+> > lrwxrwxrwx 1 root root 0 Jul 20 21:37 led0 -> ../../devices/pci0000:00/=
+0000:00:1d.0/0000:03:00.0/net/enp3s0/led0
+> > lrwxrwxrwx 1 root root 0 Jul 20 21:37 led1 -> ../../devices/pci0000:00/=
+0000:00:1d.0/0000:03:00.0/net/enp3s0/led1
+> > lrwxrwxrwx 1 root root 0 Jul 20 21:37 led2 -> ../../devices/pci0000:00/=
+0000:00:1d.0/0000:03:00.0/net/enp3s0/led2
+> >=20
+> > Now the (linked) LED devices are under /sys/class/net/<ifname>, but sti=
+ll
+> > the primary LED devices are under /sys/class/leds and their names have
+> > to be unique therefore. The LED subsystem takes care of unique names,
+> > but in case of a second network interface the LED device name suddenly
+> > would be led0_1 (IIRC). So the names wouldn't be predictable, and I thi=
+nk
+> > that's not what we want.
+>=20
+> We need input from the LED maintainers, but do we actually need the
+> symbolic links in /sys/class/leds/? For this specific use case, not
+> generally. Allow an LED to opt out of the /sys/class/leds symlink.
+>=20
+> If we could drop those, we can relax the naming requirements so that
+> the names is unique to a parent device, not globally unique.
 
+Well, I believe we already negotiated acceptable naming with
+Marek... Is it unsuitable for some reason?
+
+
+
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--PEIAKu/WMn1b1Hv9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYPhmEgAKCRAw5/Bqldv6
+8mBJAKCEb0emOi5qDSkfBq2L+zhUmNDX9ACgrG/6tjLj4/uNrFftZxnju6hUsf8=
+=YoCP
+-----END PGP SIGNATURE-----
+
+--PEIAKu/WMn1b1Hv9--
