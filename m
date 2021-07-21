@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD1D3D05FC
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 02:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 033DF3D0613
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 02:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbhGTXTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 19:19:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56054 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232514AbhGTXT2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Jul 2021 19:19:28 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8B8B1610F7;
-        Wed, 21 Jul 2021 00:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626825606;
-        bh=gDM1sez5I4M6Wfpcgaj7USOuPAk+ZcHLxI+gD9dZafs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mMm3hyANAr83M6TYjezri1dfl4Req+ICbWcwaifz8j2SFHgWBhqLe3240aHhdqQsU
-         wg1LRcm7Dh6gbzGKU61wWhj6qLyZFojiEcVXq+17owUolq8zD/tLpFAdETayKFosTX
-         kQzxAnXx/HPgswZy6Ed50M2Ig/SsMU6NK5T32DRgEJU2mdxLtJWur0ng81vP6RtWiH
-         8agFfNEpJLslwMpCNrH8c4eIobvEjNSJC0zqhBYEd/JGgZysVku/2KwCodPE9IF7yW
-         k5ymiiXWh6hHPIGrwJLZ8352UPxwkLhZzZY4FYVN83TaDGRdjI0Lh1hNLgZhZJAnZo
-         gei1KUqmPfkew==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8507460C2A;
-        Wed, 21 Jul 2021 00:00:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231250AbhGTX2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 19:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230164AbhGTX1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 19:27:50 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909CAC061574;
+        Tue, 20 Jul 2021 17:08:25 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id j73so284391pge.1;
+        Tue, 20 Jul 2021 17:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XD+5w5d0nOB9HAnbrEPa07AhJ1PdtZ8e4Xmaj/6HQss=;
+        b=kJEAV6UouwUwSMFYLIK4L7bSOwlAIolxUiQtLqrrB+6J+Q8kFbKIIxMyYGIsxnRrCP
+         pMe6Ofv2hZMIpv5bSK6r8aHYwFjK9xuYLxBryjQ6zif7+2gfO4JzWGk8seswtCiUGHSW
+         Gxa85GPN/qIZeuGXckTXhXuozlWUhsugwpNsVqJ69vl3sl6tCYhg5TXvRIVG5fez8eOY
+         ihW1gXD+XiXkSGw1YGTaOVhyoerhYsYK5n7NHzhtlWPj2fq+XTLITySjYkU41EdNBYAJ
+         OkzT4t+J04p8aPTaNmL08FvV760zCthKJo2s8tuNnhTpASn+aMFNBbH/AFhjjBtYkRU6
+         gaLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XD+5w5d0nOB9HAnbrEPa07AhJ1PdtZ8e4Xmaj/6HQss=;
+        b=Tkn9ZnJhJyKAe8aMahw813gIMXYkLh5ticnor7Vq+DF+DzQKL9DmkMSADnKpbn25TL
+         uEysv1WB3TqvEZLHdJZ3lhot9Xcrvez/7GCmcBvj2eCsE36/ziWgSg/g/6wf2Uc/iCbg
+         srocXelE0IGF5mJIgFlnqPgXrN6I3M81Kcy/Hmsx1Fz86MhoXiziEJxO1xyYA/CdzcrY
+         Pb6fP3u/bWa+sGoxrLPJmLkmQlF+okKBPqySL7fBKCmLhfzrOQXLJfax+T8BvC3qCWk9
+         fw668aNnki418RXASiKHf/tY7fbvA52td20yj7yYPrHRjrhovJefdMQtV7R0CChYVqfk
+         jz7Q==
+X-Gm-Message-State: AOAM533IKa05o/n0aPuyagQrol2n/676SZA00M553cDaJWFgtk8LzTr3
+        2Q2Hp/K1zfCphwQlzcDSEmpnJZ4AHjs=
+X-Google-Smtp-Source: ABdhPJzRYbviZGkvTVWQgRFPZkgYCOC/8S/Cjf5x4oO992CAfD6fAoA3vidVMw/glul0EEM9I7xbeQ==
+X-Received: by 2002:a63:d84b:: with SMTP id k11mr33313928pgj.372.1626826105067;
+        Tue, 20 Jul 2021 17:08:25 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([2620:10d:c090:500::6:4ad3])
+        by smtp.gmail.com with ESMTPSA id o91sm3830168pjo.15.2021.07.20.17.08.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 20 Jul 2021 17:08:24 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, andrii@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf-next 0/4] libbpf: Move CO-RE logic into separate file.
+Date:   Tue, 20 Jul 2021 17:08:18 -0700
+Message-Id: <20210721000822.40958-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/12][pull request] 1GbE Intel Wired LAN Driver
- Updates 2021-07-20
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162682560654.6038.456724820415942144.git-patchwork-notify@kernel.org>
-Date:   Wed, 21 Jul 2021 00:00:06 +0000
-References: <20210720232101.3087589-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210720232101.3087589-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sasha.neftin@intel.com, vitaly.lifshits@intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Alexei Starovoitov <ast@kernel.org>
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Split CO-RE processing logic from libbpf into separate file
+with an interface that doesn't dependend on libbpf internal details.
+As the next step relo_core.c will be compiled with libbpf and with the kernel.
+The _internal_ interface between libbpf/CO-RE and kernel/CO-RE will be:
+int bpf_core_apply_relo_insn(const char *prog_name, struct bpf_insn *insn,
+			     int insn_idx,
+			     const struct bpf_core_relo *relo,
+			     int relo_idx,
+			     const struct btf *local_btf,
+			     struct bpf_core_cand_list *cands);
+where bpf_core_relo and bpf_core_cand_list are simple types
+prepared by kernel and libbpf.
 
-On Tue, 20 Jul 2021 16:20:49 -0700 you wrote:
-> This series contains updates to e1000e and igc drivers.
-> 
-> Sasha adds initial S0ix support for devices with CSME and adds polling
-> for exiting of DPG. He sets the PHY to low power idle when in S0ix. He
-> also adds support for new device IDs for and adds a space to debug
-> messaging to help with readability for e1000e.
-> 
-> [...]
+Though diff stat shows a lot of lines inserted/deleted they are moved lines.
+Pls review with diff.colorMoved.
 
-Here is the summary with links:
-  - [net-next,01/12] e1000e: Add handshake with the CSME to support S0ix
-    https://git.kernel.org/netdev/net-next/c/3e55d231716e
-  - [net-next,02/12] e1000e: Add polling mechanism to indicate CSME DPG exit
-    https://git.kernel.org/netdev/net-next/c/ef407b86d3cc
-  - [net-next,03/12] e1000e: Additional PHY power saving in S0ix
-    https://git.kernel.org/netdev/net-next/c/3ad3e28cb203
-  - [net-next,04/12] e1000e: Add support for Lunar Lake
-    https://git.kernel.org/netdev/net-next/c/820b8ff653a1
-  - [net-next,05/12] e1000e: Add support for the next LOM generation
-    https://git.kernel.org/netdev/net-next/c/8e25c0a212de
-  - [net-next,06/12] e1000e: Add space to the debug print
-    https://git.kernel.org/netdev/net-next/c/ade4162e80f1
-  - [net-next,07/12] net/e1000e: Fix spelling mistake "The" -> "This"
-    https://git.kernel.org/netdev/net-next/c/e0bc64d31c98
-  - [net-next,08/12] igc: Check if num of q_vectors is smaller than max before array access
-    https://git.kernel.org/netdev/net-next/c/373e2829e7c2
-  - [net-next,09/12] igc: Remove _I_PHY_ID checking
-    https://git.kernel.org/netdev/net-next/c/7c496de538ee
-  - [net-next,10/12] igc: Remove phy->type checking
-    https://git.kernel.org/netdev/net-next/c/47bca7de6a4f
-  - [net-next,11/12] igc: Set QBVCYCLET_S to 0 for TSN Basic Scheduling
-    https://git.kernel.org/netdev/net-next/c/62f5bbfb2afd
-  - [net-next,12/12] igc: Increase timeout value for Speed 100/1000/2500
-    https://git.kernel.org/netdev/net-next/c/b27b8dc77b5e
+Alexei Starovoitov (4):
+  libbpf: Cleanup the layering between CORE and bpf_program.
+  libbpf: Split bpf_core_apply_relo() into bpf_program indepdent helper.
+  libbpf: Move CO-RE types into relo_core.h.
+  libbpf: Split CO-RE logic into relo_core.c.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ tools/lib/bpf/Build             |    2 +-
+ tools/lib/bpf/libbpf.c          | 1344 +------------------------------
+ tools/lib/bpf/libbpf_internal.h |   81 +-
+ tools/lib/bpf/relo_core.c       | 1326 ++++++++++++++++++++++++++++++
+ tools/lib/bpf/relo_core.h       |  102 +++
+ 5 files changed, 1473 insertions(+), 1382 deletions(-)
+ create mode 100644 tools/lib/bpf/relo_core.c
+ create mode 100644 tools/lib/bpf/relo_core.h
 
+-- 
+2.30.2
 
