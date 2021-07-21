@@ -2,98 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17AD03D1170
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C2F3D1175
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:35:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237250AbhGUNyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 09:54:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50838 "EHLO mail.kernel.org"
+        id S239030AbhGUNzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 09:55:14 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38316 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232160AbhGUNyo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 09:54:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 21FCC608FE;
-        Wed, 21 Jul 2021 14:35:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626878121;
-        bh=bEM+kDm2sLkva1f/QePZ/LyZfm2n730ykL+StucW3ws=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XaZY1Y0Uu9xYrizou2TN6tDrFFre1EX7/JOKy20nmzenJkpFQ/XI3b/NLyWB5MW2/
-         RV7fqYs9ajGXZPAi6NOH5SlGA+8DICv5248q65Sypk5Ht7Ofoum0Pv5L5VGZTMhr44
-         AQY8Sb1a3IJcAKn5ZiN6CxPTPkQHoPeY7n5eSbpHsp0rulcj1f62EeODhOZmKC3dye
-         eQi2gkX9R8JT6LaSOEr2rWeruOfMkaDdX5SC3lW/G6gtPsdAplPib9OvIBNL0DgrJ7
-         3MBcsB0tghTImTciCDuvTUhs7vsN4qOC0i4pBVWKW0MX6QNYNbiMORPwe277qr1D6+
-         AUSTQ72+zACpg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1m6DJI-0001Iz-0j; Wed, 21 Jul 2021 16:34:56 +0200
-Date:   Wed, 21 Jul 2021 16:34:56 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Anirudh Rayabharam <mail@anirudhrb.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
-        YueHaibing <yuehaibing@huawei.com>, linux-usb@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] usb: hso: fix error handling code of
- hso_create_net_device
-Message-ID: <YPgwkEHzmxSPSLVA@hovoldconsulting.com>
-References: <20210714091327.677458-1-mudongliangabcd@gmail.com>
- <YPfOZp7YoagbE+Mh@kroah.com>
- <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
+        id S232160AbhGUNzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 09:55:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ajdrKYl+mdvVy6NRBRpq4GHIFDRVTvgDHU6NF9M0u9k=; b=r/KZlOIRI2I9emSi07nWzaiHGb
+        NmppCG/LWqWnUp3Ej5za69iuMnTNM2TREx+hcVhaAdYIQYHo86W8HDzo/oJuBxec4XbBrl4D+jo6n
+        rCX9vrPAr8gyMRkgOJyMzs17OsGJdRazsZzJqijiPA6aFqZlXin0HDKlEK2rDoaMn3qk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m6DJn-00ECyH-GB; Wed, 21 Jul 2021 16:35:27 +0200
+Date:   Wed, 21 Jul 2021 16:35:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <YPgwr2MB5gQVgDff@lunn.ch>
+References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
+ <20210716212427.821834-6-anthony.l.nguyen@intel.com>
+ <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
+ <YPTKB0HGEtsydf9/@lunn.ch>
+ <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
+ <YPbu8xOFDRZWMTBe@lunn.ch>
+ <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
+In-Reply-To: <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 04:17:01PM +0800, Dongliang Mu wrote:
-> On Wed, Jul 21, 2021 at 3:36 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Wed, Jul 14, 2021 at 05:13:22PM +0800, Dongliang Mu wrote:
-> > > The current error handling code of hso_create_net_device is
-> > > hso_free_net_device, no matter which errors lead to. For example,
-> > > WARNING in hso_free_net_device [1].
-> > >
-> > > Fix this by refactoring the error handling code of
-> > > hso_create_net_device by handling different errors by different code.
-> > >
-> > > [1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
-> > >
-> > > Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
-> > > Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
-> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > ---
-> > > v1->v2: change labels according to the comment of Dan Carpenter
-> > > v2->v3: change the style of error handling labels
-> > >  drivers/net/usb/hso.c | 33 +++++++++++++++++++++++----------
-> > >  1 file changed, 23 insertions(+), 10 deletions(-)
-> >
-> > Please resend the whole series, not just one patch of the series.
-> > Otherwise it makes it impossible to determine what patch from what
-> > series should be applied in what order.
-> >
+> Thanks for the hint, Andrew. If I make &netdev->dev the parent,
+> then I get:
 > 
-> Done. Please review the resend v3 patches.
+> ll /sys/class/leds/
+> total 0
+> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led0 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led0
+> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led1 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led1
+> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led2 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led2
 > 
-> > All of these are now dropped from my queue, please fix up and resend.
+> Now the (linked) LED devices are under /sys/class/net/<ifname>, but still
+> the primary LED devices are under /sys/class/leds and their names have
+> to be unique therefore. The LED subsystem takes care of unique names,
+> but in case of a second network interface the LED device name suddenly
+> would be led0_1 (IIRC). So the names wouldn't be predictable, and I think
+> that's not what we want.
 
-A version of this patch has already been applied to net-next.
+We need input from the LED maintainers, but do we actually need the
+symbolic links in /sys/class/leds/? For this specific use case, not
+generally. Allow an LED to opt out of the /sys/class/leds symlink.
 
-No idea which version that was or why the second patch hasn't been
-applied yet.
+If we could drop those, we can relax the naming requirements so that
+the names is unique to a parent device, not globally unique.
 
-Dongliang, if you're resending something here it should first be rebased
-on linux-next (net-next).
-
-Johan
+    Andrew
