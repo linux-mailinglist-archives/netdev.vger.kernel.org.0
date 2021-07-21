@@ -2,97 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F19D3D142E
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A54A43D144B
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbhGUPq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        id S232351AbhGUP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235143AbhGUPq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:46:57 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75456C061575
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:27:34 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id cu14so2003454pjb.0
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:27:34 -0700 (PDT)
+        with ESMTP id S231958AbhGUP4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:56:13 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD26C0613CF
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:36:26 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id d2so2912003wrn.0
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:36:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E8q+sxQ/OKWc9Yjv2NdwSWvKkf3e/JsO3sjkasoj5T4=;
-        b=PFbCjhOF3i/Qih8MWpNpCV1WDr1IkD812JarIXVhPKFUS9GojJTTe9Laxl6eXH9Ox/
-         lI5XNcYavP+RTWIGHN7tfcaET9UVWn70R26wRRPg0q6y1T5yr6QdY3wIghHroOC6Kw1V
-         XGzivzeBTQU9Cn3p/4OYMqb115LRSNYarpmjRC4rgVLAeC8p2msJQ6SZN3OGyn8OwbAJ
-         nsBXbx8ENY96O0ku0YZc9gJysN8/aiYyMetHRXBGhhTGlhIr4dhITRRQxTC5Mqt3uzkI
-         8QYa6s47awW6f9ZQT986o03QSi7re61pvRzgVt7aej4jGk64HrmMbl/BKbxU1oLw15an
-         x+1w==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=a/8wsJPBRqAulA2iRoXKuzBtfwc73W3ZHr3+SO18Ut0=;
+        b=wYY6sILB8mYYkpUGomqhF2bjViMJPOcNLXhKQK9TR66cpkpaPFArdeIT5QvZXRz38N
+         iS/R54a1BFDBTgqLNSN5yv47I03r8MhSqeRzgcvEC5BmgkDqr4IXPGRm6W5YhLrJjAc/
+         Q6OGIxZjVeJtO0rdOb+cYc9jb5fTn9wS/gbJI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E8q+sxQ/OKWc9Yjv2NdwSWvKkf3e/JsO3sjkasoj5T4=;
-        b=Wnp2oVQ5xP3Sxz/NKjLyTzxLw+zix/KF0bYWoBeenneslCM7zN1qtkhjKaDjyDnVtZ
-         z5KFdkdJFIbv3oxBaxuusju8Lk+q2jqMxeUu1YXBYhAMbnw7wEUDayPAbXjvl3fQyLAV
-         sEq6dH2WP20noJCUL7XMV6QiaYr6B0Ku34F5/78OlnMx6Xj0XFY3H6JpyFvq3ysb+upG
-         ZW46jfJoMoGv/rOBLr9uQGdMnj9EcEWrDNRGZK6NVHx7wC0q/WuM5sWUDcxYOa0O46/C
-         D52qILdzn1XUIr+el6NWNnFYS3wZoBHTPRnYgIgo1LB2TIys9Hhzy3Pc0adIWK344J9T
-         QQSg==
-X-Gm-Message-State: AOAM533fyv5PC0+Zq5PwfpKLND2xA/p05QKBuQvF9NgYV9uKsqcdjITH
-        p41A5ggbJjTTg+4Yew10UUo=
-X-Google-Smtp-Source: ABdhPJxrYFS6u6g9J7Ib9385Tt61Rm23ceo93gcW4Llpb4g/1KXiS9LQEmXOMJjdAaWUUEnFV/Gj2A==
-X-Received: by 2002:a17:90a:7441:: with SMTP id o1mr35327306pjk.96.1626884853939;
-        Wed, 21 Jul 2021 09:27:33 -0700 (PDT)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t2sm2344224pjq.0.2021.07.21.09.27.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 09:27:33 -0700 (PDT)
-Subject: Re: [PATCH v6 net-next 6/7] net: bridge: guard the switchdev replay
- helpers against a NULL notifier block
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>
-References: <20210721162403.1988814-1-vladimir.oltean@nxp.com>
- <20210721162403.1988814-7-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <dce98c0f-5ec4-8a54-209e-7891d239fbc9@gmail.com>
-Date:   Wed, 21 Jul 2021 09:27:31 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=a/8wsJPBRqAulA2iRoXKuzBtfwc73W3ZHr3+SO18Ut0=;
+        b=IcrKaf2enyRa7HeDuSaJDGsloeOUkLREncCGfGrLjkUhJU6f/Y0PPf5qhs7scNmzJY
+         L4WmTyju9UqlCBr7ZEm61202mxEWvE/vczrUYDwYj9MwrKQ9apBJmZ9HfhZ6Rft7+QI1
+         vPGKL26YZk+pTN4pYPPFi//VMc995iMQpk8xUWEhDYN8rk4hOCQvwDAcVG/UIvtaU6Gt
+         OUO2V8tvgsmXUhadKUre5plpyojRg7SCUesklL5BlHiV1ikk50gOkEqaFAjWJqs9xdLk
+         PfZVhxbPdhmRFPEKOnUJ0Yu2aVwk6kJhHXO/ESfLXeoCwDJYPiOWjDKIQ6ZLpyBmu3Jw
+         nxKg==
+X-Gm-Message-State: AOAM530qzs9nWTiCMXk2y8YEydky/ky23AJE5jLDDQlexiqAnObH2cBi
+        Da/YtMeWo2JHnGD0+P+pflzusQ==
+X-Google-Smtp-Source: ABdhPJykU8ykJheOdpZKzbx1L2Yg/kZEOrPqBfizdvy2xXQGnIx+UU+BsXcLYJ5Kqxihghz9wJxwXw==
+X-Received: by 2002:adf:fe0d:: with SMTP id n13mr43226426wrr.73.1626885384870;
+        Wed, 21 Jul 2021 09:36:24 -0700 (PDT)
+Received: from cloudflare.com (79.191.186.228.ipv4.supernova.orange.pl. [79.191.186.228])
+        by smtp.gmail.com with ESMTPSA id n23sm22905586wmc.38.2021.07.21.09.36.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 09:36:24 -0700 (PDT)
+References: <20210719214834.125484-1-john.fastabend@gmail.com>
+ <20210719214834.125484-4-john.fastabend@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
+        alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf 3/3] bpf, sockmap: fix memleak on ingress msg enqueue
+In-reply-to: <20210719214834.125484-4-john.fastabend@gmail.com>
+Date:   Wed, 21 Jul 2021 18:36:23 +0200
+Message-ID: <87sg07r5dk.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20210721162403.1988814-7-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/21/21 9:24 AM, Vladimir Oltean wrote:
-> There is a desire to make the object and FDB replay helpers optional
-> when moving them inside the bridge driver. For example a certain driver
-> might not offload host MDBs and there is no case where the replay
-> helpers would be of immediate use to it.
-> 
-> So it would be nice if we could allow drivers to pass NULL pointers for
-> the atomic and blocking notifier blocks, and the replay helpers to do
-> nothing in that case.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
+> If backlog handler is running during a tear down operation we may enqueue
+> data on the ingress msg queue while tear down is trying to free it.
+>
+>  sk_psock_backlog()
+>    sk_psock_handle_skb()
+>      skb_psock_skb_ingress()
+>        sk_psock_skb_ingress_enqueue()
+>          sk_psock_queue_msg(psock,msg)
+>                                            spin_lock(ingress_lock)
+>                                             sk_psock_zap_ingress()
+>                                              _sk_psock_purge_ingerss_msg()
+>                                               _sk_psock_purge_ingress_msg()
+>                                             -- free ingress_msg list --
+>                                            spin_unlock(ingress_lock)
+>            spin_lock(ingress_lock)
+>            list_add_tail(msg,ingress_msg) <- entry on list with no on
+>                                              left to free it.
+>            spin_unlock(ingress_lock)
+>
+> To fix we only enqueue from backlog if the ENABLED bit is set. The tear
+> down logic clears the bit with ingress_lock set so we wont enqueue the
+> msg in the last step.
+>
+> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  include/linux/skmsg.h | 54 ++++++++++++++++++++++++++++---------------
+>  net/core/skmsg.c      |  6 -----
+>  2 files changed, 35 insertions(+), 25 deletions(-)
+>
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index 96f319099744..883638888f93 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -285,11 +285,45 @@ static inline struct sk_psock *sk_psock(const struct sock *sk)
+>  	return rcu_dereference_sk_user_data(sk);
+>  }
+>  
+> +static inline void sk_psock_set_state(struct sk_psock *psock,
+> +				      enum sk_psock_state_bits bit)
+> +{
+> +	set_bit(bit, &psock->state);
+> +}
+> +
+> +static inline void sk_psock_clear_state(struct sk_psock *psock,
+> +					enum sk_psock_state_bits bit)
+> +{
+> +	clear_bit(bit, &psock->state);
+> +}
+> +
+> +static inline bool sk_psock_test_state(const struct sk_psock *psock,
+> +				       enum sk_psock_state_bits bit)
+> +{
+> +	return test_bit(bit, &psock->state);
+> +}
+> +
+> +static void sock_drop(struct sock *sk, struct sk_buff *skb)
+> +{
+> +	sk_drops_add(sk, skb);
+> +	kfree_skb(skb);
+> +}
+> +
+> +static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
+> +{
+> +	if (msg->skb)
+> +		sock_drop(psock->sk, msg->skb);
+> +	kfree(msg);
+> +}
+> +
+>  static inline void sk_psock_queue_msg(struct sk_psock *psock,
+>  				      struct sk_msg *msg)
+>  {
+>  	spin_lock_bh(&psock->ingress_lock);
+> -	list_add_tail(&msg->list, &psock->ingress_msg);
+> +        if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+
+Whitespace issue ^. Otherwise LGTM.
+
+> +		list_add_tail(&msg->list, &psock->ingress_msg);
+> +	else
+> +		drop_sk_msg(psock, msg);
+>  	spin_unlock_bh(&psock->ingress_lock);
+>  }
+>  
+
+[...]
