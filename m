@@ -2,73 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F34863D12D1
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079123D12EB
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238666AbhGUPJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:09:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47502 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232494AbhGUPJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 11:09:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6289261244;
-        Wed, 21 Jul 2021 15:50:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626882604;
-        bh=81Q6hrTZ9lUpnJZF3r3PL59vWz0XaDmEG7Hackf9dLY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ck77Chgex5ZJ3x5jL+PQppFZmswFWz/ykC5ovPuh1wawZQHKp7nW4w/q5fw3uYCqp
-         BV7x569NbpTYOXEtYozovbeCzHwgXnQiaCBBunBAA8FH8tFUb89SipU1BZrrNQPWHF
-         k1sd/pP2wfmBPaePgX/GhabXQ7XF/hHwOa8OzBjkPdDIYWZeKYRgupc1hQwDvS3Bbr
-         9xd6T4LQKJdtY3aAknvTNfd/Dm3Xg0KSkY9QBMVhLqXJS9CmtWMQ+SY7+eLmtiT0LL
-         w6jF9ZjTRkGm2/p7yKL2DWE0eUMZMWTsr0du9CV1ZzBihMx6N+ACh6tEZmT500RVgh
-         JYUTt+6WVoIPQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5570960CCF;
-        Wed, 21 Jul 2021 15:50:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S239750AbhGUPOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239870AbhGUPOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:14:39 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADA2C061575
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:55:15 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id 70so2310348pgh.2
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:55:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=AamAJMWACPXm/uhBeW58E0AsjcEWEr3w6J2GnzViHiA=;
+        b=WB+2PJIakQlOTm9wjhPJzp8hB1utuhxsTJnRUMf3O02ShM1OHfun//a3DiSuax3Ula
+         y4jLEgCZDspibyRcz8Th1U2MJ3praLixVFT3CM4gtQE/e5b8bl8hrd4KzY0JR5fbbiao
+         0MwRgc2g4gI+XmaGHpSK/NPbd/JKN1h9ADnL5X+HCuWjgLqXeTAxs0KApxmL15Fb0+8H
+         RvdwmFJ9C8EG3ArJTTI1w7+woXXHwzHhIF4f1pPVvft5JNmh8EcjR/4W1r+E/81yZ29j
+         2+RkCgA+gGmn316uEu+XzZyUNU5pDxltDh7tiuBGz6IohNXsfw/RBhIkRmfnF1qCITCA
+         k3OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=AamAJMWACPXm/uhBeW58E0AsjcEWEr3w6J2GnzViHiA=;
+        b=N3YNDs/+FxxZ2OOv3yXh4gI0H5hnDDxL1isNJ+gP1M9e+U7FewbQphHx498Wion39i
+         eJjm+QpfkGRx1nRNiVqOb23zJeMntdj7fVFde6MxkBrWL48qALJv7ikvbEgDdlRTzCH3
+         HAOrCWkpWZWvKzuB/Rgt3nf4lf1rC2yqiBvUrhx4p3UiC1LsqG7tAruhKoLVkiojvjDv
+         WCZOZK9N7sd5CCiTZWV2q/FXNhpq/C5102QbmzNnFVj0VaVXNcrq7zRMwJK9ySKCsDNd
+         Ag3aTM7/UOQDuql00wdgLPvn+9F2EysJfK4v+8X4bawPBNV+nBsE4m0knrmP+tczx5N2
+         HQfg==
+X-Gm-Message-State: AOAM531oqpIzHnuoDWA0sTRQDb7xY0U4M9qC+lnxYtiVQ+2cnGm4FNns
+        5RAQiPjdogka7+6iiTGRctO9lWBIpzzqxw==
+X-Google-Smtp-Source: ABdhPJwwQM3wb9won1K+8GVee0NEZPozhbd2UA018Tfv3tLtslZhN2u+D9aYesjxL2UPAAfxTRbfNQ==
+X-Received: by 2002:a63:ef57:: with SMTP id c23mr36356785pgk.60.1626882914844;
+        Wed, 21 Jul 2021 08:55:14 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id r10sm26922902pff.7.2021.07.21.08.55.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Jul 2021 08:55:14 -0700 (PDT)
+Subject: Re: [PATCH net-next] ionic: drop useless check of PCI driver data
+ validity
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, drivers@pensando.io,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <93b5b93f83fae371e53069fc27975e59de493a3b.1626861128.git.leonro@nvidia.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <bb9c5fdc-491a-03f6-2f67-083e375b8fc2@pensando.io>
+Date:   Wed, 21 Jul 2021 08:55:12 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] sctp: update active_key for asoc when old key is being
- replaced
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162688260434.19956.7821872857113679.git-patchwork-notify@kernel.org>
-Date:   Wed, 21 Jul 2021 15:50:04 +0000
-References: <a1e260329384a040f11f0f393327e25cf909da2e.1626811621.git.lucien.xin@gmail.com>
-In-Reply-To: <a1e260329384a040f11f0f393327e25cf909da2e.1626811621.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com
+In-Reply-To: <93b5b93f83fae371e53069fc27975e59de493a3b.1626861128.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 7/21/21 2:54 AM, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> The driver core will call to .remove callback only if .probe succeeded
+> and it will ensure that driver data has pointer to struct ionic.
+>
+> There is no need to check it again.
+>
+> Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Thanks,
 
-On Tue, 20 Jul 2021 16:07:01 -0400 you wrote:
-> syzbot reported a call trace:
-> 
->   BUG: KASAN: use-after-free in sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
->   Call Trace:
->    sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
->    sctp_set_owner_w net/sctp/socket.c:131 [inline]
->    sctp_sendmsg_to_asoc+0x152e/0x2180 net/sctp/socket.c:1865
->    sctp_sendmsg+0x103b/0x1d30 net/sctp/socket.c:2027
->    inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:821
->    sock_sendmsg_nosec net/socket.c:703 [inline]
->    sock_sendmsg+0xcf/0x120 net/socket.c:723
-> 
-> [...]
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-Here is the summary with links:
-  - [net] sctp: update active_key for asoc when old key is being replaced
-    https://git.kernel.org/netdev/net/c/58acd1009226
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c | 3 ---
+>   1 file changed, 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> index e4a5416adc80..505f605fa40b 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+> @@ -373,9 +373,6 @@ static void ionic_remove(struct pci_dev *pdev)
+>   {
+>   	struct ionic *ionic = pci_get_drvdata(pdev);
+>   
+> -	if (!ionic)
+> -		return;
+> -
+>   	del_timer_sync(&ionic->watchdog_timer);
+>   
+>   	if (ionic->lif) {
 
