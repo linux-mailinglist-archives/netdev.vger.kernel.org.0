@@ -2,146 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDA63D0FA9
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 15:39:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3B93D0FB2
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 15:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238227AbhGUM6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 08:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        id S238408AbhGUM7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 08:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238337AbhGUM5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 08:57:07 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C63C061574;
-        Wed, 21 Jul 2021 06:37:09 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id q15so2053477qkm.8;
-        Wed, 21 Jul 2021 06:37:09 -0700 (PDT)
+        with ESMTP id S238381AbhGUM7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 08:59:25 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E26C002B64;
+        Wed, 21 Jul 2021 06:40:00 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d12so2208048wre.13;
+        Wed, 21 Jul 2021 06:40:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uh01RhYYBX/9cJeTpZ4herRqCYgg+c5yWd7RJP1vPE4=;
-        b=ttPcGi41ChO5jWh67Rq2CEwXuAdMhJZawaeNETBMgEuClYxQgk9xjiRYl+d2b3KvLc
-         CbracepViCUfG7fdHaJxDYWbxVsyDAnbdkyIitxTTUhvSEwSST5ank4/BhMtQsSfDbLW
-         V3rPCA2trJSHl+I6Hgsbfeft/rSklrqmnx8vnuV58iQavmrTdNa6IWEwsXslXfoSP60+
-         YCtBIomio9al5fBDKGf+C0OasZQN6K2Nr0UfukVjJTlvHhIf7933CTmzBLGyKnD0U49i
-         NK+u2+SNKAsRKhLoxF19E7toNJb5PFEnYFK24n8OAvMgF0gPKCdWYzV1iTSBpLezB7o5
-         gKig==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=2YZWGZN/barbCQ4PSNvEgZE4u5ohSafJjdAflTNqMgo=;
+        b=DY6ZW5ektiXig4yptvS9aLBaijbyR5XPieFrWmitZje3FrzUAyXvmyB7XDFu5dbOFf
+         ndRlZKbo6PUsSs2Bs7mvgMWw2jRhNerf6IL4FR8yUixvcb+QNQs0+DMYPrFCGohOLEb9
+         HmD581Q2ZQn3OroMlsjTncDLnfKP2qU6lEk2R7a2SQxh7QqKInVyUzINM/zNoKvh4UWP
+         P3mL3d+ogtY6yOuai8T9npV3cRk+IEKgGPalzsq6jbbjxPo8D2b1dWCQ3+Oka5S4mJhu
+         zvOegmp8aEevP5/QEtCWoUHEqeSKnCGvFZ7NtsmcubOeIdh8xM59TDTGumsoft7kqShh
+         1jkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uh01RhYYBX/9cJeTpZ4herRqCYgg+c5yWd7RJP1vPE4=;
-        b=dzKUtuFdIBPUkGPIZg66Ykb9+wHScFTJtHe8aii0AzA9fyQadG+/AXZtsrPZLmHgbk
-         CR84RJSb//e3grJc3FvUpTIwFXjmdrDf/dc71RZfM2Fj9NHUVNsSyPMaAPLjfuNlnXM2
-         Hpq8vz8EBQELjZH1K+axpV/TdcqS9kXlY4MkcExxDpUt0ubHaJimbLdvjXQ0qO1Gcr3G
-         pAKPB59bMOR0cy0rlPRYuFSYuaWtYLq3ATZesLOHGkQ6rV7uFBkprA5GcmUWaAvlKtQA
-         K6sMJttmsjxKFOe8rCLybo1JBlR2CxGdIsVJb3aXTaTz/efH3xP1Yzbl1dQ9dtkYAQia
-         Kd1g==
-X-Gm-Message-State: AOAM531f/346JWe0YgbVhyJygZ82/D/iMw/tGlgtpQq/fcgHUoKHc67D
-        MP65o+HDti2u+FUwC63/cWY=
-X-Google-Smtp-Source: ABdhPJxyxcuUQq7+7lE+19VBeIl+gcagTSt9CBIWFUpKrnYFkf+yg0Tn031PfZiwNaPHNJwyiangEw==
-X-Received: by 2002:a05:620a:1305:: with SMTP id o5mr17697082qkj.213.1626874628846;
-        Wed, 21 Jul 2021 06:37:08 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a8:1102::1444? ([2620:10d:c091:480::1:8307])
-        by smtp.gmail.com with ESMTPSA id c11sm9046470qth.29.2021.07.21.06.37.07
+        bh=2YZWGZN/barbCQ4PSNvEgZE4u5ohSafJjdAflTNqMgo=;
+        b=YxGQJbGJmTgThSDTRSOyg8XUxiQhqaH0cP6OBtxPz/K9DhPYQXoPlpC8iRexepVsG6
+         y3iCLW1DRLfB2IVZBTyK0B+ma7Dxl5K6fRiNsE/zQP+MR24bja6VpDYKtf3/DRY3aB44
+         Rm7PEGiB3jOOFFbgftPeVqGbuMl4DkK2NKLPoXrwftXIRcq2f0Tig2RcJfYpzp7YaE08
+         br7UjiyYXzGUCWeOGF9FGctJ0+M0LT/c+7w0QctoQ+L8u/XDFwyuUGFvnUN/GIhoo6Ko
+         iIMwJIO2estRm/GoKBfkHQ2+Q1dTcskl8LeUr6lrOtEjfhkY9O0gJ9mhyUcqjODGDJif
+         ytwQ==
+X-Gm-Message-State: AOAM530rvD7zHLwvwrwz4BMg1YlZWPLJioJ1zBICa+8dQo/TVlmrzg4s
+        WGAW/r/b/Vn/MS66BcMGzG1/lAiU8zS8ZSH/
+X-Google-Smtp-Source: ABdhPJxUoK4ngIeYTYIeMp+nrdVW1rzVTvvMf1oFSztb8AbntNCukxzjtWSBNkREq7jtUpangYWSlQ==
+X-Received: by 2002:a5d:410b:: with SMTP id l11mr42738870wrp.173.1626874799148;
+        Wed, 21 Jul 2021 06:39:59 -0700 (PDT)
+Received: from ?IPv6:2a02:810d:d40:2317:2ef0:5dff:fe0a:a2d5? ([2a02:810d:d40:2317:2ef0:5dff:fe0a:a2d5])
+        by smtp.gmail.com with ESMTPSA id 129sm22792434wmz.26.2021.07.21.06.39.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 06:37:08 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: remove unnecessary labels
-To:     samirweng1979 <samirweng1979@163.com>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-References: <20210720070040.20840-1-samirweng1979@163.com>
-Message-ID: <eb5393c9-77d5-37f1-e9e8-67795958c9e6@gmail.com>
-Date:   Wed, 21 Jul 2021 09:37:07 -0400
+        Wed, 21 Jul 2021 06:39:58 -0700 (PDT)
+Subject: Re: [PATCH v2] Expose Peak USB device id in sysfs via phys_port_name.
+To:     =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210721124048.590426-1-nautsch2@gmail.com>
+ <20210721125926.593283-1-nautsch2@gmail.com>
+ <PA4PR03MB67973D473C7CE600A6104EE8D6E39@PA4PR03MB6797.eurprd03.prod.outlook.com>
+From:   Andre Naujoks <nautsch2@gmail.com>
+Message-ID: <fe8998f2-7897-735c-926f-6b6b74018784@gmail.com>
+Date:   Wed, 21 Jul 2021 15:39:57 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210720070040.20840-1-samirweng1979@163.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <PA4PR03MB67973D473C7CE600A6104EE8D6E39@PA4PR03MB6797.eurprd03.prod.outlook.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/21 3:00 AM, samirweng1979 wrote:
-> From: wengjianfeng <wengjianfeng@yulong.com>
+Am 21.07.21 um 15:29 schrieb Stéphane Grosjean:
+> Hi,
 > 
-> Simplify the code by removing unnecessary labels and returning directly.
+> The display and the possibility to change this "device_number" is a current modification of the peak_usb driver. This modification will offer this possibility for all CAN - USB interfaces of PEAK-System.
+
+Hi.
+
+By "current modification" you mean something not yet public? Do you have 
+a time frame for when you are planning to make it public? I'd really 
+like to use this :-)
+
 > 
-> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> However, it is planned to create new R/W entries for this (under /sys/class/net/canX/...) as is already the case in other USB - CAN interface drivers.
+
+I'd be fine with that. I just chose something, that was already 
+available and looked as if it made the most sense without breaking anything.
+
+Thanks for the reply!
+   Andre
+
+> 
+> — Stéphane
+> 
+> 
+> De : Andre Naujoks <nautsch2@gmail.com>
+> Envoyé : mercredi 21 juillet 2021 14:59
+> À : Wolfgang Grandegger <wg@grandegger.com>; Marc Kleine-Budde <mkl@pengutronix.de>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Stéphane Grosjean <s.grosjean@peak-system.com>; Vincent Mailhol <mailhol.vincent@wanadoo.fr>; Gustavo A. R. Silva <gustavoars@kernel.org>; Pavel Skripkin <paskripkin@gmail.com>; Colin Ian King <colin.king@canonical.com>; Andre Naujoks <nautsch2@gmail.com>; linux-can@vger.kernel.org <linux-can@vger.kernel.org>; netdev@vger.kernel.org <netdev@vger.kernel.org>; linux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>
+> Objet : [PATCH v2] Expose Peak USB device id in sysfs via phys_port_name.
+> 
+> The Peak USB CAN adapters can be assigned a device id via the Peak
+> provided tools (pcan-settings). This id can currently not be set by the
+> upstream kernel drivers, but some devices expose this id already.
+> 
+> The id can be used for consistent naming of CAN interfaces regardless of
+> order of attachment or recognition on the system. The classical CAN Peak
+> USB adapters expose this id via bcdDevice (combined with another value)
+> on USB-level in the sysfs tree and this value is then available in
+> ID_REVISION from udev. This is not a feasible approach, when a single
+> USB device offers more than one CAN-interface, like e.g. the PCAN-USB
+> Pro FD devices.
+> 
+> This patch exposes those ids via the, up to now unused, netdevice sysfs
+> attribute phys_port_name as a simple decimal ASCII representation of the
+> id. phys_port_id was not used, since the default print functions from
+> net/core/net-sysfs.c output a hex-encoded binary value, which is
+> overkill for a one-byte device id, like this one.
+> 
+> Signed-off-by: Andre Naujoks <nautsch2@gmail.com>
 > ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c | 17 ++++++-----------
->  1 file changed, 6 insertions(+), 11 deletions(-)
-
-NACK
-
-Using gotos to have a unified exit path keeps the code cleaner and makes
-it easier to ensure locking is correct where applicable.
-
-Jes
-
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
-> index 4f93f88..3fd14e6 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723a.c
-> @@ -256,10 +256,8 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
->  		udelay(10);
->  	}
->  
-> -	if (!count) {
-> -		ret = -EBUSY;
-> -		goto exit;
-> -	}
-> +	if (!count)
-> +		return -EBUSY;
->  
->  	/* We should be able to optimize the following three entries into one */
->  
-> @@ -292,10 +290,8 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
->  		udelay(10);
->  	}
->  
-> -	if (!count) {
-> -		ret = -EBUSY;
-> -		goto exit;
-> -	}
-> +	if (!count)
-> +		return3RGD9F -EBUSY;
->  
->  	/* 0x4C[23] = 0x4E[7] = 1, switch DPDT_SEL_P output from WL BB */
->  	/*
-> @@ -307,7 +303,6 @@ static int rtl8723a_emu_to_active(struct rtl8xxxu_priv *priv)
->  	val8 &= ~LEDCFG2_DPDT_SELECT;
->  	rtl8xxxu_write8(priv, REG_LEDCFG2, val8);
->  
-> -exit:
->  	return ret;
->  }
->  
-> @@ -327,7 +322,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
->  
->  	ret = rtl8723a_emu_to_active(priv);
->  	if (ret)
-> -		goto exit;
-> +		return ret;
->  
->  	/*
->  	 * 0x0004[19] = 1, reset 8051
-> @@ -353,7 +348,7 @@ static int rtl8723au_power_on(struct rtl8xxxu_priv *priv)
->  	val32 &= ~(BIT(28) | BIT(29) | BIT(30));
->  	val32 |= (0x06 << 28);
->  	rtl8xxxu_write32(priv, REG_EFUSE_CTRL, val32);
-> -exit:
+>   drivers/net/can/usb/peak_usb/pcan_usb_core.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+> index e8f43ed90b72..f6cbb01a58cc 100644
+> --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+> @@ -408,6 +408,21 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
+>           return NETDEV_TX_OK;
+>   }
+> 
+> +static int peak_usb_ndo_get_phys_port_name(struct net_device *netdev,
+> +                                          char *name, size_t len)
+> +{
+> +       const struct peak_usb_device *dev = netdev_priv(netdev);
+> +       int err;
 > +
->  	return ret;
->  }
->  
+> +       err = snprintf(name, len, "%u", dev->device_number);
+> +
+> +       if (err >= len || err <= 0) {
+> +               return -EINVAL;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>   /*
+>    * start the CAN interface.
+>    * Rx and Tx urbs are allocated here. Rx urbs are submitted here.
+> @@ -769,6 +784,7 @@ static const struct net_device_ops peak_usb_netdev_ops = {
+>           .ndo_stop = peak_usb_ndo_stop,
+>           .ndo_start_xmit = peak_usb_ndo_start_xmit,
+>           .ndo_change_mtu = can_change_mtu,
+> +       .ndo_get_phys_port_name = peak_usb_ndo_get_phys_port_name,
+>   };
+> 
+>   /*
+> --
+> 2.32.0
+> 
+> --
+> PEAK-System Technik GmbH
+> Sitz der Gesellschaft Darmstadt - HRB 9183
+> Geschaeftsfuehrung: Alexander Gach / Uwe Wilhelm
+> Unsere Datenschutzerklaerung mit wichtigen Hinweisen
+> zur Behandlung personenbezogener Daten finden Sie unter
+> www.peak-system.com/Datenschutz.483.0.html
 > 
 
