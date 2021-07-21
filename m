@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97DF73D103C
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 15:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E4E63D106A
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239087AbhGUNJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 09:09:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50502 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238996AbhGUNJH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 09:09:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3453C6121E;
-        Wed, 21 Jul 2021 13:49:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626875384;
-        bh=Fcd46JsRF5Xzokx8EbEQAOvgZr4ne1Di199XOOqGdXI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MlngOFVzPy6D4n/vJS8cjv7UbvZgk2BbOpnI5+S4srLE5uyBvjmuzvuK6bVFb3fFj
-         19HPLZGZUuiHcV3pVbD+3M2mCNVMqiZ2hmQprUrNSSdqQ2+6HZZKs4XkkeMRjPgsCF
-         j/6ZYtYhD/trRr673VMxc9e6EOc0rL1pUmfUtUijh5aOHbIGCnCQ8Nxi8CTPWlypNM
-         uCXisRccE7jOfEPF/4SZTKVHS8JIOZ6Wsk0Zon74S97Bmb3BzdgmWrhehfUzALQmrN
-         +an+o4ZhXnKawCDxTNtX0d6jgAw7c+hMbNWhkva58kZcDvUDKAJ5khJ/kid8yv0l2q
-         VRaXfzTQnwJtw==
-Received: by mail-ej1-f54.google.com with SMTP id dp20so3351333ejc.7;
-        Wed, 21 Jul 2021 06:49:44 -0700 (PDT)
-X-Gm-Message-State: AOAM5331v6oohHBSF80LwYsbKi9X5VAFuedk6zKHNBlB31uxJ0CB1qYQ
-        iVN8OjAlq9i/+Slb5UrxCjUu1TWer8xJtnoEgg==
-X-Google-Smtp-Source: ABdhPJzh5cj++jO5fwUbg47UmcOOhxrwvB/MBLzILA/PNS+iWEyxrXcgOCfI8OpXmusl3DEp7otnJa9jAjW0ixfrR7g=
-X-Received: by 2002:a17:906:5fc1:: with SMTP id k1mr37644013ejv.360.1626875382783;
- Wed, 21 Jul 2021 06:49:42 -0700 (PDT)
+        id S236495AbhGUNWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 09:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234862AbhGUNWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 09:22:01 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33961C061575
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 07:02:38 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id v1so2530184edt.6
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 07:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z3HxhlcjFVfeTyolNsFE13TofseeVib/v3WCt+5AZBY=;
+        b=YIl2GYpXvGrgpJUodUsU5XJOMKa8DPllLYd4a12ymeCI1rkodJiWdKD/6HonJF5ian
+         unwbtoayynN2Gn0gTy6miC9gtThNlZbT4sT0V8DCZ/G8YB2s08vT/wfj4BuwwILLrrz5
+         dqy27jZcbeoY+88NzzaIfhZrJNzBNZyfZA3+l5cIOO4hfoWKRXtFmJov8OV3IrvjeGNO
+         lEKx3nuqH0qSLk66wkfmLg+96wGqyb02y8K8S6g62oOUjZf8DvDh1JVAQ9NeGP93QooJ
+         npbtWJIqWekdJ9zW8Rl+IRWQPqvgozJcHXSMPn5RecGX0kWuH0+EbwDKAwYkRkPI1Sg5
+         XRUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z3HxhlcjFVfeTyolNsFE13TofseeVib/v3WCt+5AZBY=;
+        b=ocr0GGowfkkBbkJPuJ95w3Gj2SchBD5XEYkxhOOfue3ehVQA7gq+YSR9UNWdbhv66V
+         RDhvdonsPDDHEaxLrBw8eKwif8ceA7SfgH0gJJEED0asDgnekK5cvqLMejnjPGt4dBwz
+         Di7z4Ki4+8UEc7O+FXmFLl/1gOIXsCiw7O4hgepZ0Z/dCQPDDNRhnwClH0sTdTzIA9l8
+         zjAPpTcTCZ4SITf6V81GpEpVYPpRSO0Oi7eWYnYEJCalrgOe5Cr4Fg2iqkiQxtVMgZ9E
+         XRimgLfyd3g3jc7mMgPeTh/zTRUtVEa1tcsv89ph9v5q5mRZUyd+jgSTHfmGpTLeQwmn
+         CBVA==
+X-Gm-Message-State: AOAM533PgUW4gvykClyCB14L8TwfeGaw+WH2F7gcfHH5L4r0MH2ja0l5
+        foxk+FOn/oK6ge56ZEmJXFDAqusWiydYHsaKTSM=
+X-Google-Smtp-Source: ABdhPJzvKxIJl7J4QCQSCFGFErBQW1E9V4zYkfHYD/mFJ9fBqEkcIvx4v1IHsLoU4mkT3RP5bKIdOQ==
+X-Received: by 2002:aa7:db11:: with SMTP id t17mr47664722eds.297.1626876156414;
+        Wed, 21 Jul 2021 07:02:36 -0700 (PDT)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id f15sm8362925ejc.61.2021.07.21.07.02.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 07:02:35 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 0/2] net: bridge: multicast: add mdb and host context support
+Date:   Wed, 21 Jul 2021 17:01:25 +0300
+Message-Id: <20210721140127.773194-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20210720172025.363238-1-robh@kernel.org> <8343dfe9d1af1ad4ab806104b74a95819c765dea.camel@pengutronix.de>
-In-Reply-To: <8343dfe9d1af1ad4ab806104b74a95819c765dea.camel@pengutronix.de>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 21 Jul 2021 07:49:30 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+XEbEJuoSiQ=PeL-34FkLqG-eYA86FvNK7K-uGbaTFwg@mail.gmail.com>
-Message-ID: <CAL_Jsq+XEbEJuoSiQ=PeL-34FkLqG-eYA86FvNK7K-uGbaTFwg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: Remove "status" from schema examples
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ramesh Shanmugasundaram <rashanmu@gmail.com>,
-        "G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Dilip Kota <eswara.kota@linux.intel.com>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 2:33 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
->
-> Hi Rob,
->
-> On Tue, 2021-07-20 at 11:20 -0600, Rob Herring wrote:
-> > There's no reason to have "status" properties in examples. "okay" is the
-> > default, and "disabled" turns off some schema checks ('required'
-> > specifically).
->
-> Is this documented somewhere? If not, should it be? (Maybe in writing-
-> schema.rst -> Schema Contents -> examples?)
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-I don't think it is. I'm writing a schema for it which works for both
-those that read documentation and those that don't.
+Hi,
+This is a minor context improvement which chooses the proper multicast
+context when adding user mdb entries or host-joined entries (pointing to
+the bridge device). Patch 01 adds a helper which chooses the proper
+context when user-space is adding an mdb entry, note that it requires
+the vlan to be configured on at least 1 device (port or bridge) so it
+would have a multicast context. Patch 02 changes br_multicast_host_join
+to take a bridge multicast context parameter which is passed down from
+the respective functions, currently it is used for the timer config
+value only. This set is in preparation for adding all multicast options
+for vlans.
 
-Rob
+Thanks,
+ Nik
+
+
+Nikolay Aleksandrov (2):
+  net: bridge: multicast: add mdb context support
+  net: bridge: multicast: add context support for host-joined groups
+
+ net/bridge/br_mdb.c       | 45 +++++++++++++++++++++++++++++++++++----
+ net/bridge/br_multicast.c |  8 +++----
+ net/bridge/br_private.h   |  3 ++-
+ 3 files changed, 47 insertions(+), 9 deletions(-)
+
+-- 
+2.31.1
+
