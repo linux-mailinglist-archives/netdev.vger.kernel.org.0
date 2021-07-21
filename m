@@ -2,36 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E63333D122C
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 073923D1237
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239788AbhGUOjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 10:39:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33658 "EHLO mail.kernel.org"
+        id S239797AbhGUOmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 10:42:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232808AbhGUOjS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 10:39:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E36360E0C;
-        Wed, 21 Jul 2021 15:19:54 +0000 (UTC)
+        id S232808AbhGUOmO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 10:42:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 61E8260E0C;
+        Wed, 21 Jul 2021 15:22:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626880795;
-        bh=UZmUgiq+0zQRbNJ0Kg61Zjq+ze+yjskbVrAwJ89o1Gw=;
+        s=k20201202; t=1626880970;
+        bh=aoqDbVP+cfiPfy+Iu+/m5AKWZ/c2lRCRQKAI31Td0ro=;
         h=From:To:Cc:Subject:Date:From;
-        b=dg4lDZVW9E0iR/8jYLE/BGJ1d18WPys91V3j2iVk3/jwODmV2AKf/TooI6VXV2NqD
-         K7QrxzPBwNPP2AT0uTi9y5lRA+ZwgDjftQtWMRET0F0q/hshMO1bch7nJif6nKuM3o
-         BTqF+VbcOpk+LcEozOKV1p7Od5aAYLpNsCj9FZ0IS4AlKaPhFTTsJGv9Ejb+dK6cK5
-         dd/Le1z60tHMUFV57T7jDy1VEo2e+icLNUxWZReF8GR+W8DHnN6k+/uPd12Mdoma7J
-         bnYWQzCfSoRqi/Dv9lYXHVmU8/n4x+KdhRNY00MiXUROt4H0EHOpN4XxzBmFTqNaom
-         mjNBS0K9dElxQ==
+        b=TlPjuiG8q9lc0tPL8lMjFYuCjsGc4OrJ1Ou9Sd9C77K2T0yyM9c1MDtFlWBeqhRrr
+         D0QMZkP5ia9nIJjzrdt6+sKxRQ3SbodEFoC0+0BFV6/FvLBDSxXx6EZjkjdUdUewQQ
+         5GBHDh3W9CehL2R2lAJpBF7wywQBaLO7Po3sc182r6D3JqqmEDMDLy2Np7GsYKr1X6
+         lYUj3s2Yo3Barho8yPJhMO7bpQXrOLvGy2Teghr2MnTgNGBHpThh6jGtLLernHxNbT
+         I/VmX6beM6+FwoggA5d1HgRpPpuz7a4rB0ZgB3u+B++gWKpoe8XyBcRGg033CMgcqU
+         p/7YonQjckl+w==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ixp46x: fix ptp build failure
-Date:   Wed, 21 Jul 2021 17:19:32 +0200
-Message-Id: <20210721151951.2558679-1-arnd@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] netfilter: nfnl_hook: fix unused variable warning
+Date:   Wed, 21 Jul 2021 17:22:32 +0200
+Message-Id: <20210721152245.2751702-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -41,41 +46,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The rework of the ixp46x cpu detection left the network driver in
-a half broken state:
+The only user of this variable is in an #ifdef:
 
-drivers/net/ethernet/xscale/ptp_ixp46x.c: In function 'ptp_ixp_init':
-drivers/net/ethernet/xscale/ptp_ixp46x.c:290:51: error: 'IXP4XX_TIMESYNC_BASE_VIRT' undeclared (first use in this function)
-  290 |                 (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
-      |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/xscale/ptp_ixp46x.c:290:51: note: each undeclared identifier is reported only once for each function it appears in
-drivers/net/ethernet/xscale/ptp_ixp46x.c: At top level:
-drivers/net/ethernet/xscale/ptp_ixp46x.c:323:1: error: data definition has no type or storage class [-Werror]
-  323 | module_init(ptp_ixp_init);
+net/netfilter/nfnetlink_hook.c: In function 'nfnl_hook_entries_head':
+net/netfilter/nfnetlink_hook.c:177:28: error: unused variable 'netdev' [-Werror=unused-variable]
 
-I have patches to complete the transition for a future release, but
-for the moment, add the missing include statements to get it to build
-again.
-
-Fixes: 09aa9aabdcc4 ("soc: ixp4xx: move cpu detection to linux/soc/ixp4xx/cpu.h")
+Fixes: e2cf17d3774c ("netfilter: add new hook nfnl subsystem")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/xscale/ptp_ixp46x.c | 2 ++
+ net/netfilter/nfnetlink_hook.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-index 99d4d9439d05..a6fb88fd42f7 100644
---- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
-+++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-@@ -14,6 +14,8 @@
- #include <linux/kernel.h>
- #include <linux/ptp_clock_kernel.h>
- #include <linux/soc/ixp4xx/cpu.h>
-+#include <linux/module.h>
-+#include <mach/ixp4xx-regs.h>
+diff --git a/net/netfilter/nfnetlink_hook.c b/net/netfilter/nfnetlink_hook.c
+index 50b4e3c9347a..202f57d17bab 100644
+--- a/net/netfilter/nfnetlink_hook.c
++++ b/net/netfilter/nfnetlink_hook.c
+@@ -174,7 +174,9 @@ static const struct nf_hook_entries *
+ nfnl_hook_entries_head(u8 pf, unsigned int hook, struct net *net, const char *dev)
+ {
+ 	const struct nf_hook_entries *hook_head = NULL;
++#ifdef CONFIG_NETFILTER_INGRESS
+ 	struct net_device *netdev;
++#endif
  
- #include "ixp46x_ts.h"
- 
+ 	switch (pf) {
+ 	case NFPROTO_IPV4:
 -- 
 2.29.2
 
