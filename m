@@ -2,92 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 515973D0D92
+	by mail.lfdr.de (Postfix) with ESMTP id 08B163D0D91
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240094AbhGUKqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
+        id S240186AbhGUKqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238893AbhGUJgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103A0C061574
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:15:19 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m69G1-0003It-G7
-        for netdev@vger.kernel.org; Wed, 21 Jul 2021 12:15:17 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 9B322653A26
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 10:15:16 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 17DE6653A22;
-        Wed, 21 Jul 2021 10:15:16 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ed7c4f72;
-        Wed, 21 Jul 2021 10:15:15 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH] net: switchdev: switchdev_handle_fdb_del_to_device(): fix no-op function for disabled CONFIG_NET_SWITCHDEV
-Date:   Wed, 21 Jul 2021 12:15:11 +0200
-Message-Id: <20210721101511.76862-1-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S238913AbhGUJgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:02 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74419C061766
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id g22-20020a17090a5796b02901763aca3df6so729296pji.5
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KKo1EcfFUbZjUj2sF2Hy4VlPupKMjn+rZiu2OC+0fkY=;
+        b=sStCXx1Znb9NnU8uCE2GF3/m4CfZB8QRiv0toGK3PYZpog6q2BswdJpRhZW+754LcI
+         777XOFYMR4Gg20xBoHl4FvSD/a/g2vZS/CkJgZYZyeBP7xwIoEuBip3JNkPsi5jA7dvb
+         KbiVKnGvpgYEuC4KJygZ+Y3IGXKzvadBO4hrQYr+93ycFLdQs1UttpcU/zGwr/hUJV4S
+         xfzt3sVhaQQI4dvOU4ZRp9pKuwJi/Umcc0opvuH//XGa8Qt4o9Km2Zt2dAu7pirVgmtG
+         JMR2WOCReKlzJFWEWjJ7bq5kclmpSqNZtZLiWiUWG9n0u6m69d4+MG6SYXWV3uHJ2NTG
+         xofg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KKo1EcfFUbZjUj2sF2Hy4VlPupKMjn+rZiu2OC+0fkY=;
+        b=s0mqR/829QFdajjk8NTy5NsebYSG6PAlNHaKKSEp25L3F8mOR54u+lqYe4xVB1HFwF
+         0jZWRExowVf/hHVZAYU8T6FMH+i6CgwXQ39hyi8uuyPgL7DNKUKp1o/UYjeC+EC1vcV2
+         35rafXhTKWCwNTIW72/uzA9I+e3Bz/LSlt0ctQwo2UxQdXuXVPpvcBKK/gTLYvg6vJfj
+         rCR1UgyGRjZ8Eu8rd9aQAFTu/NUvj+kSIS4Z5reg5e6pJxC2l3thWMmQNqhI6dnDzj7N
+         DR+21lKmY/C4f8V6Q2YPSkDiRTtmukr+8FozaNCdzK5RJLTpBbPC9ORsyMmdRSwdsrHQ
+         8G5g==
+X-Gm-Message-State: AOAM533QtDUqNk8Q9Rax0aY+UstAT4sKNRCMFcqOhTe+J4OvElXinkwd
+        UDX9qKvO/yjBMp6hqnSMSeg=
+X-Google-Smtp-Source: ABdhPJyzenfi41CLW+RQT2R+CqTcu0bFYrzhsbEuaktWW+jO5e7NfuMufNQN6TCfGB6Tl0uECwaMzg==
+X-Received: by 2002:a17:902:a9c7:b029:12b:349:b318 with SMTP id b7-20020a170902a9c7b029012b0349b318mr27265309plr.13.1626862533047;
+        Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7460:f7c2:e664:b708])
+        by smtp.gmail.com with ESMTPSA id a4sm22738319pfk.5.2021.07.21.03.15.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 03:15:32 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Subject: [PATCH net-next] tcp: tweak len/truesize ratio for coalesce candidates
+Date:   Wed, 21 Jul 2021 03:15:28 -0700
+Message-Id: <20210721101528.329723-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.32.0.402.g57bb445576-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In patch 8ca07176ab00 ("net: switchdev: introduce a fanout helper for
-SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE") new functionality including static
-inline no-op functions if CONFIG_NET_SWITCHDEV is disabled was added.
+From: Eric Dumazet <edumazet@google.com>
 
-This patch fixes the following build error for disabled
-CONFIG_NET_SWITCHDEV:
+tcp_grow_window() is using skb->len/skb->truesize to increase tp->rcv_ssthresh
+which has a direct impact on advertized window sizes.
 
-| In file included from include/net/dsa.h:23,
-|                  from net/core/flow_dissector.c:8:
-| include/net/switchdev.h:410:1: error: expected identifier or ‘(’ before ‘{’ token
-|   410 | {
-|       | ^
-| include/net/switchdev.h:399:1: warning: ‘switchdev_handle_fdb_del_to_device’ declared ‘static’ but never defined [-Wunused-function]
-|   399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
-|       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We added TCP coalescing in linux-3.4 & linux-3.5:
 
-Fixes: 8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE")
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Instead of storing skbs with one or two MSS in receive queue (or OFO queue),
+we try to append segments together to reduce memory overhead.
+
+High performance network drivers tend to cook skb with 3 parts :
+
+1) sk_buff structure (256 bytes)
+2) skb->head contains room to copy headers as needed, and skb_shared_info
+3) page fragment(s) containing the ~1514 bytes frame (or more depending on MTU)
+
+Once coalesced into a previous skb, 1) and 2) are freed.
+
+We can therefore tweak the way we compute len/truesize ratio knowing
+that skb->truesize is inflated by 1) and 2) soon to be freed.
+
+This is done only for in-order skb, or skb coalesced into OFO queue.
+
+The result is that low rate flows no longer pay the memory price of having
+low GRO aggregation factor. Same result for drivers not using GRO.
+
+This is critical to allow a big enough receiver window,
+typically tcp_rmem[2] / 2.
+
+We have been using this at Google for about 5 years, it is due time
+to make it upstream.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Cc: Yuchung Cheng <ycheng@google.com>
 ---
- include/net/switchdev.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_input.c | 38 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 6f57eb2e89cc..66468ff8cc0a 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -406,7 +406,7 @@ switchdev_handle_fdb_del_to_device(struct net_device *dev,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
- 		int (*lag_del_cb)(struct net_device *dev,
- 				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info));
-+				  const struct switchdev_notifier_fdb_info *fdb_info))
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index bef2c8b64d83a0f3d4cca90f9b12912bf3d00807..501d8d4d4ba46f9a5de322ab690c320757e0990c 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -454,11 +454,12 @@ static void tcp_sndbuf_expand(struct sock *sk)
+  */
+ 
+ /* Slow part of check#2. */
+-static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
++static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
++			     unsigned int skbtruesize)
  {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	/* Optimize this! */
+-	int truesize = tcp_win_from_space(sk, skb->truesize) >> 1;
++	int truesize = tcp_win_from_space(sk, skbtruesize) >> 1;
+ 	int window = tcp_win_from_space(sk, sock_net(sk)->ipv4.sysctl_tcp_rmem[2]) >> 1;
+ 
+ 	while (tp->rcv_ssthresh <= window) {
+@@ -471,7 +472,27 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
  	return 0;
  }
+ 
+-static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
++/* Even if skb appears to have a bad len/truesize ratio, TCP coalescing
++ * can play nice with us, as sk_buff and skb->head might be either
++ * freed or shared with up to MAX_SKB_FRAGS segments.
++ * Only give a boost to drivers using page frag(s) to hold the frame(s),
++ * and if no payload was pulled in skb->head before reaching us.
++ */
++static u32 truesize_adjust(bool adjust, const struct sk_buff *skb)
++{
++	u32 truesize = skb->truesize;
++
++	if (adjust && !skb_headlen(skb)) {
++		truesize -= SKB_TRUESIZE(skb_end_offset(skb));
++		/* paranoid check, some drivers might be buggy */
++		if (unlikely((int)truesize < (int)skb->len))
++			truesize = skb->truesize;
++	}
++	return truesize;
++}
++
++static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
++			    bool adjust)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	int room;
+@@ -480,15 +501,16 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
+ 
+ 	/* Check #1 */
+ 	if (room > 0 && !tcp_under_memory_pressure(sk)) {
++		unsigned int truesize = truesize_adjust(adjust, skb);
+ 		int incr;
+ 
+ 		/* Check #2. Increase window, if skb with such overhead
+ 		 * will fit to rcvbuf in future.
+ 		 */
+-		if (tcp_win_from_space(sk, skb->truesize) <= skb->len)
++		if (tcp_win_from_space(sk, truesize) <= skb->len)
+ 			incr = 2 * tp->advmss;
+ 		else
+-			incr = __tcp_grow_window(sk, skb);
++			incr = __tcp_grow_window(sk, skb, truesize);
+ 
+ 		if (incr) {
+ 			incr = max_t(int, incr, 2 * skb->len);
+@@ -782,7 +804,7 @@ static void tcp_event_data_recv(struct sock *sk, struct sk_buff *skb)
+ 	tcp_ecn_check_ce(sk, skb);
+ 
+ 	if (skb->len >= 128)
+-		tcp_grow_window(sk, skb);
++		tcp_grow_window(sk, skb, true);
+ }
+ 
+ /* Called to compute a smoothed rtt estimate. The data fed to this
+@@ -4769,7 +4791,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 		 * and trigger fast retransmit.
+ 		 */
+ 		if (tcp_is_sack(tp))
+-			tcp_grow_window(sk, skb);
++			tcp_grow_window(sk, skb, true);
+ 		kfree_skb_partial(skb, fragstolen);
+ 		skb = NULL;
+ 		goto add_sack;
+@@ -4857,7 +4879,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
+ 		 * and trigger fast retransmit.
+ 		 */
+ 		if (tcp_is_sack(tp))
+-			tcp_grow_window(sk, skb);
++			tcp_grow_window(sk, skb, false);
+ 		skb_condense(skb);
+ 		skb_set_owner_r(skb, sk);
+ 	}
 -- 
-2.30.2
-
+2.32.0.402.g57bb445576-goog
 
