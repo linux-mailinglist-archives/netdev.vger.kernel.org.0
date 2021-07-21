@@ -2,103 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 926D23D0F17
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 15:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C5E3D0F27
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 15:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235479AbhGUMMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 08:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
+        id S236785AbhGUMTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 08:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234803AbhGUMMO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 08:12:14 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23803C061574;
-        Wed, 21 Jul 2021 05:52:51 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id h2so2258330edt.3;
-        Wed, 21 Jul 2021 05:52:51 -0700 (PDT)
+        with ESMTP id S235751AbhGUMT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 08:19:29 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58F9C061574;
+        Wed, 21 Jul 2021 06:00:04 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id f190so1269309wmf.4;
+        Wed, 21 Jul 2021 06:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lopkcsr4P+MdAdY820YUCByo+p9D0uTSe24WA3N0bWE=;
-        b=eqzyhtcaAHP6aZcni9mHwPJxWtbeDz+Y1LSAg/gBXGXsnYroQ1CDNYas06RC6x8gz4
-         AE7SI/LWG+UkCIl1k65Z1c3qoXRlRjK8Q2wqh0knG9TO/cpGi7+0WXbXojrir3mFiTBT
-         ebKzOEca4jjH5MtwWDJSD2BNpfwYTmZ7Xt1y+W3o+pfz3dkenvMKn//hYhjxZOvtsc0m
-         IiJOpoPmXDWMUlZMzB1zGdGtTU/QPMGxDV+O9YcWY0ZbY5/e+VVVcQthn6JMy6YRRpdx
-         6Nr+HJerBayJTOL5yARXbKxGrOm9OZo4D7iG8gPH/EddB4DtdRqZh2RNP+tQ4/Hah6qW
-         KZUQ==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=dSqJAOlSxZ15myCAkE3t0lhY1ZlRYiFCDX+JzW8ZRDA=;
+        b=nOgNsDCL6wc9pRUlqpN6unXU3aVQqr4x+E2FR4N+q0wSAh2lq2sak70YQr2Tx1sXUH
+         GRriCKrwBNWtCJ5D0jAv8iPNIvFEHjyhsP/i8HetZcOeMXfsFc2SbgsQW2R6dZPDFZvP
+         dJhMSOZZhKXELovAa2EX0a1g5fQrQuDa12cq9FZ2EjD5MgsegYyzon/Gi/CBTU5vy+BX
+         dhHQxtJ30KXQZ/1m+Wyp9c8Pgau9lDXjW8swo06UT4+UkS5NPjkIz6PJacf/4FgcwZla
+         GNYX5fKbAP5+hPanppHD861o8aw2nTmIORMPg6GkbUKkJ/qWjARZimEKXWjR8Qvk12kI
+         pZKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Lopkcsr4P+MdAdY820YUCByo+p9D0uTSe24WA3N0bWE=;
-        b=Qb1HWtcof95ltYIsKLidqYFo9apLzV9JTxK7N4sgkwAksxkrOlBJggtmTnVM2QmZA8
-         prtaeQtNHWW/34/ZOd9ZndSPEtwkwP8+agupbEwp772qV+d1nPpdT8Vc2lPfkw5JMnm6
-         27e0dD3lvCJxYOEebTgm2JPqn27by9rgOl/gNkuett9Z+XSHzHEtMALlAllLayA108a+
-         UWwHHPlCjBk3vPdSuxODVx4QMCv+tFQnDlIgjuaMMObtJlGzGw2vP34f7cLYzsQ2JzDj
-         sQtrWzGRBX+cKFyTEUeYzhxOk+0FoAVOc1MPFNRVaUuHVECrq9dmqSuw9zf6j9IM0qIw
-         DChQ==
-X-Gm-Message-State: AOAM530W7rfBUemoP/rnS0uZRr/xzDyu1uvb+WEmFzAkMMouWQwIU00L
-        xgVvUPoVTFrhZ4De5uKX8Jc=
-X-Google-Smtp-Source: ABdhPJyd4UBuTyZI4wZ4XjGR/XQCh5kjnHnFE7/PkvfsXgb2wlYwibfbXuty+872Yyk7495IaRIMEw==
-X-Received: by 2002:a50:875d:: with SMTP id 29mr47512294edv.340.1626871969738;
-        Wed, 21 Jul 2021 05:52:49 -0700 (PDT)
-Received: from localhost.localdomain ([176.30.109.247])
-        by smtp.gmail.com with ESMTPSA id g8sm10769279edv.84.2021.07.21.05.52.45
+        bh=dSqJAOlSxZ15myCAkE3t0lhY1ZlRYiFCDX+JzW8ZRDA=;
+        b=S3kD3G5i9aA+yT0oTwWTRXKyk1ur58pmg5GFrxCvY/trNv8PWJJQz0Zj6CPDlAAZfS
+         RI2Yc5QcwteWzbPeOdD3R9x1KSI1dWRgryYLxbJ0K1udrIILcxRiRjARa/l1FKF5r/wh
+         JSvDbI7psO9+5/CNrZGTEj/LHewpBfJxQUsht+YPwskiZDCLWx5vzmwXJn0oW3TPKQ8D
+         oIOLCNh7e/KtYPm0FpRkqWheaN0DBuX3QdYymCoR1WcLjW1WTsaQjNIr2mJrhVzeN192
+         c5q6wdQKr3QvUw/DjuGBvoEpQdafliEdrw0Tbj+C1n6SMJK0fs4H0JdP5PkEIR4HvWVF
+         uUyA==
+X-Gm-Message-State: AOAM533xIbqO8AxoTz2wRhEu93g8AdKr8AmKtyjNy23+aXG/pjkmpA1C
+        RD36hTM0zxaUcFCqgXeg1lI=
+X-Google-Smtp-Source: ABdhPJw6hmIKcrQMErznhiO56awpaW3krRisk7cmmq32dFNmzMH/whGmd1xzOqpWmSsdzfRO/Bj3LA==
+X-Received: by 2002:a7b:cd90:: with SMTP id y16mr37483562wmj.87.1626872403325;
+        Wed, 21 Jul 2021 06:00:03 -0700 (PDT)
+Received: from Buzz.nordsys.de ([2a02:810d:d40:2317:2ef0:5dff:fe0a:a2d5])
+        by smtp.gmail.com with ESMTPSA id q7sm22483733wmq.33.2021.07.21.06.00.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 05:52:49 -0700 (PDT)
-Date:   Wed, 21 Jul 2021 15:52:40 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     Andre Naujoks <nautsch2@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Wed, 21 Jul 2021 06:00:02 -0700 (PDT)
+From:   Andre Naujoks <nautsch2@gmail.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Stephane Grosjean <s.grosjean@peak-system.com>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
         Colin Ian King <colin.king@canonical.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Expose Peak USB device id in sysfs via phys_port_name.
-Message-ID: <20210721155240.57887e6c@gmail.com>
+        Andre Naujoks <nautsch2@gmail.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Expose Peak USB device id in sysfs via phys_port_name.
+Date:   Wed, 21 Jul 2021 14:59:25 +0200
+Message-Id: <20210721125926.593283-1-nautsch2@gmail.com>
+X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210721124048.590426-1-nautsch2@gmail.com>
 References: <20210721124048.590426-1-nautsch2@gmail.com>
-X-Mailer: Claws Mail 3.17.8git77 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Jul 2021 14:40:47 +0200
-Andre Naujoks <nautsch2@gmail.com> wrote:
+The Peak USB CAN adapters can be assigned a device id via the Peak
+provided tools (pcan-settings). This id can currently not be set by the
+upstream kernel drivers, but some devices expose this id already.
 
-> The Peak USB CAN adapters can be assigned a device id via the Peak
-> provided tools (pcan-settings). This id can currently not be set by
-> the upstream kernel drivers, but some devices expose this id already.
-> 
-> The id can be used for consistent naming of CAN interfaces regardless
-> of order of attachment or recognition on the system. The classical
-> CAN Peak USB adapters expose this id via bcdDevice (combined with
-> another value) on USB-level in the sysfs tree and this value is then
-> available in ID_REVISION from udev. This is not a feasible approach,
-> when a single USB device offers more than one CAN-interface, like
-> e.g. the PCAN-USB Pro FD devices.
-> 
-> This patch exposes those ids via the, up to now unused, netdevice
-> sysfs attribute phys_port_name as a simple decimal ASCII
-> representation of the id. phys_port_id was not used, since the
-> default print functions from net/core/net-sysfs.c output a
-> hex-encoded binary value, which is overkill for a one-byte device id,
-> like this one.
+The id can be used for consistent naming of CAN interfaces regardless of
+order of attachment or recognition on the system. The classical CAN Peak
+USB adapters expose this id via bcdDevice (combined with another value)
+on USB-level in the sysfs tree and this value is then available in
+ID_REVISION from udev. This is not a feasible approach, when a single
+USB device offers more than one CAN-interface, like e.g. the PCAN-USB
+Pro FD devices.
 
+This patch exposes those ids via the, up to now unused, netdevice sysfs
+attribute phys_port_name as a simple decimal ASCII representation of the
+id. phys_port_id was not used, since the default print functions from
+net/core/net-sysfs.c output a hex-encoded binary value, which is
+overkill for a one-byte device id, like this one.
 
-Hi, Andre!
+Signed-off-by: Andre Naujoks <nautsch2@gmail.com>
+---
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-You should add Signed-off-by tag to the patch
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+index e8f43ed90b72..f6cbb01a58cc 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+@@ -408,6 +408,21 @@ static netdev_tx_t peak_usb_ndo_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
++static int peak_usb_ndo_get_phys_port_name(struct net_device *netdev,
++					   char *name, size_t len)
++{
++	const struct peak_usb_device *dev = netdev_priv(netdev);
++	int err;
++
++	err = snprintf(name, len, "%u", dev->device_number);
++
++	if (err >= len || err <= 0) {
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /*
+  * start the CAN interface.
+  * Rx and Tx urbs are allocated here. Rx urbs are submitted here.
+@@ -769,6 +784,7 @@ static const struct net_device_ops peak_usb_netdev_ops = {
+ 	.ndo_stop = peak_usb_ndo_stop,
+ 	.ndo_start_xmit = peak_usb_ndo_start_xmit,
+ 	.ndo_change_mtu = can_change_mtu,
++	.ndo_get_phys_port_name = peak_usb_ndo_get_phys_port_name,
+ };
+ 
+ /*
+-- 
+2.32.0
 
-
-With regards,
-Pavel Skripkin
