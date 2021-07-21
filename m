@@ -2,404 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47DC33D0D8F
+	by mail.lfdr.de (Postfix) with ESMTP id 905343D0D90
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238676AbhGUKpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:45:12 -0400
-Received: from mail-eopbgr60073.outbound.protection.outlook.com ([40.107.6.73]:21728
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238141AbhGUJc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 05:32:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QwqFTnTKrm0kij+6t/+0HzCAhtknaXM5VAq7cehh678eSaxdkKSBVCa33/Et1NbvqPEqexH4w16sdBtsoSTRHIXyIJvATd0zzhWlsB8VBxwYdct9IERWFYiYoI1oauJZjWMYdHt6Bps/ZIwehgsCRbTVLHlagsYVyGUT6a+a+4NTxR5xUwED5EmTbRawpGxp8me7xDYufqvqbwmiWu8GsF0mlwYwK1Flu/mwSif7bp1wF+AWrrwQFqmCGCzuhYoRudCZYQ1AKJmrpkAQLTo0nSoi22lKBNnDfP1TCuPpM4/GWKpBKQcTmGy3pbm5G1NyyP1TQz5WjaVuLXRoTiYqHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mgtGxeyUcrhHwgZ30kb4K94aKLFiSjxyvU60PG1rr+s=;
- b=ftUeHBVgRURtOyO35yvorVMDAyZEKJoNifGM094OZ+avSZNkvFGqnjLnt5etJDbQwBYN2iAzd4LuxBUNDvUQif/hXLplr8ZN0i8uRZNmVnnB8pUfwlg6eMX0zDoMZccdMoz9ijP9+VpZfIQG5qcdt3GUfTHLmxJ/CDIF2KUL4aKeoCRm3dR1KDkb4/Uu/jXQkaho0f4X3yo4A9Mnsg1qLHFgJ3SW1uzGflV0HjxvHN4eg+ypeINV21Ihtpug31DsqenNSMkclWCuE7/92Btzq3OWzCA3LrjRoqzxGJhUGL/9a5StmwaAcBporSz8recB7P+IkXgpyCDw4Qlm6VQfoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mgtGxeyUcrhHwgZ30kb4K94aKLFiSjxyvU60PG1rr+s=;
- b=P71oi8gfsWjnyLs7Rvs/MJstxER8N1G7rxevjnTJwQNDIJFRv5zLFRJMDGPbxwEf5ETfiMbWqWFNL8KLsP187bPtH5clvoLe1oMGcU1JSKQ5E8+yO5YBy1kQdjHdQCLUSPSaZtcGwHKlTu6L4284svXs7Xd9qHqMRry0YfZxCKc=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
- by DBAPR04MB7480.eurprd04.prod.outlook.com (2603:10a6:10:1a3::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.23; Wed, 21 Jul
- 2021 10:12:05 +0000
-Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::9c70:fd2f:f676:4802]) by DB8PR04MB6795.eurprd04.prod.outlook.com
- ([fe80::9c70:fd2f:f676:4802%9]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
- 10:12:05 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com
-Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net-next 2/2] ARM: dts: imx6qdl: move phy properties into phy device node
-Date:   Wed, 21 Jul 2021 18:12:20 +0800
-Message-Id: <20210721101220.22781-3-qiangqing.zhang@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210721101220.22781-1-qiangqing.zhang@nxp.com>
-References: <20210721101220.22781-1-qiangqing.zhang@nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR04CA0195.apcprd04.prod.outlook.com
- (2603:1096:4:14::33) To DB8PR04MB6795.eurprd04.prod.outlook.com
- (2603:10a6:10:fa::15)
+        id S239858AbhGUKpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238727AbhGUJea (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:34:30 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010C2C0613DE
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:13:30 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id u8-20020a7bcb080000b02901e44e9caa2aso658538wmj.4
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=UXF+EfXU6wa5qR+0ALWX60hOpfEu/bQ6AbqNAj9mAaM=;
+        b=If4lpaTaX5ZnbTxqWFKiRfdv448LvTnNTcxmQzd1AXekaqSyU2xlu0izJe0k+g+ZSb
+         1c9SXI0jbdBmVpVWLq96e8mQ0LGFRRFjBBAnu+D65DN3zLmpKhWMPA05TyYY3fdQwMEQ
+         Q4SC8BVp1ghMSLWvMrCmBujIL9Kh/r1DHp14Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=UXF+EfXU6wa5qR+0ALWX60hOpfEu/bQ6AbqNAj9mAaM=;
+        b=HCAMKi3udkNugx7Yejc0Hnok01lEma0utI2fBuabhIobXywlLzcxyLvWBn85XhxAtK
+         iMEUCpqAI+uZEkyB844LVxufjNfL4ginvvwHFOP9BdJr90HL13KTt+Xoa49htEvGmpMC
+         HX9kHGmBpuYDayMuciEI5mI/CT3CtWoQVPVQGTWLkONs4ZpaH/q8ovCt+axyUiRhw7nw
+         GbDwC4hRAtRPe/ZQrij3XTyxJntq7KM10Mi+scFy5wLA4KgxXZcDi4bWlzmYK9Pwub9o
+         OyA8jVIbz5h2FDC9faqoC8rzu5DkVs++fUeaL9h7DqvozFWyLTwaP8Bal9Ue/g9uo13C
+         QSig==
+X-Gm-Message-State: AOAM531D8l6I7nMW14r2CUu/MQ2RQetYSCggKJhqXLO4VyBdMcxeGJpv
+        mjEYdEgeA2reL0vjLPZ3H1BA6A==
+X-Google-Smtp-Source: ABdhPJwdZGw8iLQs8GwoP4xYIObZoS2R8J1VK8LT6XNX/Rts5SiADaSp0vU8tYOWY+bGxs/9beATFg==
+X-Received: by 2002:a1c:63d6:: with SMTP id x205mr37587151wmb.42.1626862408413;
+        Wed, 21 Jul 2021 03:13:28 -0700 (PDT)
+Received: from cloudflare.com (79.191.183.149.ipv4.supernova.orange.pl. [79.191.183.149])
+        by smtp.gmail.com with ESMTPSA id a8sm26530054wrt.61.2021.07.21.03.13.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 03:13:27 -0700 (PDT)
+References: <20210719214834.125484-1-john.fastabend@gmail.com>
+ <20210719214834.125484-3-john.fastabend@gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
+        alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH bpf 2/3] bpf, sockmap: on cleanup we additionally need
+ to remove cached skb
+In-reply-to: <20210719214834.125484-3-john.fastabend@gmail.com>
+Date:   Wed, 21 Jul 2021 12:13:26 +0200
+Message-ID: <87tukoq8jd.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR04CA0195.apcprd04.prod.outlook.com (2603:1096:4:14::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 21 Jul 2021 10:12:02 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ec402709-641e-40e9-6118-08d94c2ffdb5
-X-MS-TrafficTypeDiagnostic: DBAPR04MB7480:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR04MB74804F9EA2643CE44491BCBAE6E39@DBAPR04MB7480.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:159;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bhbh/5qH+MgP4C9Y80hRStZuDGjPPs0pDMBVy57GTtUJm/7VDrMXewn5kqYARPRziTsYQ82er3hPexBB9qA+Whm5nSUqakn2KxC5LtvGdUFC7j2RGTnBcIHdAbvdI7gy+df2W9erRPuJM8j6hfLbSaos72XLEc9tsDi6SegneGhQ7IWPqohrLXUHXNniic0L5vh2QHF7OK3uzttmgEPw//32uOUG7hJ+BUP19MGvWOTDrpUSAMGzO7DmKykmuY3ojAtY+dKgb8ONoyWSsmed0FQP3ZyI2CNgFF3Y9SI6SkMtfozWrkBleKmBRNQJmo4tZX+yZ85LDGmvy7mRQLzZmFF51jrcoNXVLL9LC/6cbO6iKIQFDMqexPPq+WXDQ1jgGXR3r3Z86HG81clPkTyEemGfcMpuDEofuSH1lcklk/gwDVH3jtXnthp04W+PU6mQfTJUiz8NAerV7CSKbtWDY+7hK+GAyln+DTYVeChK62RiDQlIJvTaHZk+y9sf+JnmoaYeT5xbDuQVRrZ7F6AAlRhfe1AKsSqC21bINiCN+kLvtyouEe+dd2EScA6dVfVhPE6IDtIIQEf1/sUNQdGtgSLV/HDvd5nQB6kGHEe0+og5n84zf3QBXEj5GKw2kKvU/o5U/RdSW/diF6Hr/pyvq23Ezl47T0fD49dsCBE/tXKH/TmGWq8n+fS5WOAXR05eE/ZnDRKfhYqVGwfinvppuRsi102ICeS7fMXTzmiPDrk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(1076003)(4326008)(186003)(66476007)(66946007)(5660300002)(6486002)(8676002)(478600001)(7416002)(2906002)(26005)(52116002)(83380400001)(6506007)(86362001)(38350700002)(6666004)(8936002)(38100700002)(2616005)(6512007)(36756003)(956004)(316002)(66556008)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j4r3+ZS2bpar/At68dMUgCRYwLCl2ECGbBrZ1ybC7fafkVqBZNOY1z8vL/Se?=
- =?us-ascii?Q?0pNzW9LsgxmlWX9z5jyirKFHSdG0BrQDyHHQUgTRYrJBU0aDyy5+PrLiKyS2?=
- =?us-ascii?Q?n9PQ5gm93+SwevHMbycUje6uzf+rvSVnRvD3zCuc4nKjG1YzNhVW3ibj7KTb?=
- =?us-ascii?Q?jNtgWarx81SsIq3xn4XzeZUHv435j3K2OPt/lkbWZWhuJRtFPKaesRxhWie7?=
- =?us-ascii?Q?SAEFSYKvtunGGKxsHYXMXH+QgpbBGedXmgbzwmkZWR7TkPjazK1bcZvvC6ga?=
- =?us-ascii?Q?wodPeFdpUxCSyPLnLa0+e7OEvIydQEXKBchc/FwLUq/D3TA16E3ca/KobVse?=
- =?us-ascii?Q?9h/P4sHRqwokfyV+Rs737EL+gaRd7+Z+r/n3Um7zlhy8MBkQ8Dn4LynQLTin?=
- =?us-ascii?Q?YzZV/Qlo1J4yGXR4Z3owmCQVd6a/b4UqsVDLDLe3Gqisc72M1hzjz9rgiyL8?=
- =?us-ascii?Q?OWHgovAog1/dokB/fgn2IoGcwg58yQUw+DnfmmVylXdBFkr3KZXLrJKZRpLx?=
- =?us-ascii?Q?PBsn89xvGqNVRmrk/2kcDBrXQO4JWYZLVRcslkFaHrK9AkykHkYlgLx3NN1n?=
- =?us-ascii?Q?isiLSgwqpuniQBTOgJzRUsptwW471TjrdKU0ngHavdxQz7YKnaFpxID2C7e0?=
- =?us-ascii?Q?eq0z0YdRKnMQiGasGHm0YJP9V7GJZEyQL7jLV9nZJY5UFI0P+tTbzEUC+KXK?=
- =?us-ascii?Q?gG46LKqNgjTQV8ITzUNFhTgt/00rMDihFL/VI0aP4XafvQapPaROlrzEg6EN?=
- =?us-ascii?Q?AekNgDUZrw/JMbKp92svBM7VbfmegBedRqCi7sASD0wE6YQMbIVVwx55I6m3?=
- =?us-ascii?Q?K4WHMOABTlh89L7PPLY9UqHNtHDAG++NrTty9fTDgypddazESvES9W1Idjlt?=
- =?us-ascii?Q?VxIdSQdCXRdqvNZpLfMZENUuiSaubaGyL/wLPmzu22CPbUf0iFJyfIJ9Nvgy?=
- =?us-ascii?Q?f0F6Fbs2AdovxbI8lSTTJ8fK9ru33QE3U7zYSA7DdkA8+nwBsvgkba9iYcAh?=
- =?us-ascii?Q?52xw7Y1T+lm3WwzAzWq8htCANKVVImtuLO9RamtY4Vm7gMmhXnv0myxqg5+w?=
- =?us-ascii?Q?h8+zw2qXdZsGu3IxW6FMIFKtlkgMxOCGmmkpJ2W7SMi7YhvfcKtbF12ZJZ8/?=
- =?us-ascii?Q?imJwcNGkaG/2g3+iKBwBn6NhOQbmn8XHGlbZhNEXiOKwCOXo7QOItqaRSg59?=
- =?us-ascii?Q?IkEyTjrZZ28aaFCml8+RWyV2xbQ34VeA8Ho/AVgtYJxpZ8wyen7nT2HeAdIO?=
- =?us-ascii?Q?hs/Ui8Qy0KqUYzH342hIwnHEuz/DHzrGbFNdSA7E9Ht+Ix4lMgb6GU4RCzY8?=
- =?us-ascii?Q?HMqlS7RwV7LyRu8EFfDKh6n0?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec402709-641e-40e9-6118-08d94c2ffdb5
-X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 10:12:05.6667
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QGqqODsUGc1M9UheJ5UoHGXfxPepKkv8glBnfMhT2jzTI98iKSwgRFD9gIAF36g+uYEwy5VUDr9XUZQKJyzGqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7480
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes issues found by dtbs_check:
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/fsl,fec.yaml
+On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
+> Its possible if a socket is closed and the receive thread is under memory
+> pressure it may have cached a skb. We need to ensure these skbs are
+> free'd along with the normal ingress_skb queue.
+>
+> Before 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()") tear
+> down and backlog processing both had sock_lock for the common case of
+> socket close or unhash. So it was not possible to have both running in
+> parrallel so all we would need is the kfree in those kernels.
+>
+> But, latest kernels include the commit 799aa7f98d5e and this requires a
+> bit more work. Without the ingress_lock guarding reading/writing the
+> state->skb case its possible the tear down could run before the state
+> update causing it to leak memory or worse when the backlog reads the state
+> it could potentially run interleaved with the tear down and we might end up
+> free'ing the state->skb from tear down side but already have the reference
+> from backlog side. To resolve such races we wrap accesses in ingress_lock
+> on both sides serializing tear down and backlog case. In both cases this
+> only happens after an EAGAIN error case so having an extra lock in place
+> is likely fine. The normal path will skip the locks.
+>
+> Note, we check state->skb before grabbing lock. This works because
+> we can only enqueue with the mutex we hold already. Avoiding a race
+> on adding state->skb after the check. And if tear down path is running
+> that is also fine if the tear down path then removes state->skb we
+> will simply set skb=NULL and the subsequent goto is skipped. This
+> slight complication avoids locking in normal case.
+>
+> With this fix we no longer see this warning splat from tcp side on
+> socket close when we hit the above case with redirect to ingress self.
+>
+> [224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
+> [224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
+> [224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
+> [224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
+> [224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
+> [224913.935923] Code: 8b 83 20 02 00 00 85 c0 75 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 89 df e8 2b 11 fe ff eb c3 0f 0b e9 7c ff ff ff 0f 0b eb ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 90 0f 1f 44 00 00 41 57 41
+> [224913.935932] RSP: 0018:ffff88816271fd38 EFLAGS: 00010206
+> [224913.935941] RAX: 0000000000000ae8 RBX: ffff88815acd5240 RCX: dffffc0000000000
+> [224913.935948] RDX: 0000000000000003 RSI: 0000000000000ae8 RDI: ffff88815acd5460
+> [224913.935954] RBP: ffff88815acd5460 R08: ffffffff955c0ae8 R09: fffffbfff2e6f543
+> [224913.935961] R10: ffffffff9737aa17 R11: fffffbfff2e6f542 R12: ffff88815acd5390
+> [224913.935967] R13: ffff88815acd5480 R14: ffffffff98d0c080 R15: ffffffff96267500
+> [224913.935974] FS:  00007f86e6bd1700(0000) GS:ffff888451cc0000(0000) knlGS:0000000000000000
+> [224913.935981] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [224913.935988] CR2: 000000c0008eb000 CR3: 00000001020e0005 CR4: 00000000003706e0
+> [224913.935994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [224913.936000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [224913.936007] Call Trace:
+> [224913.936016]  inet_csk_destroy_sock+0xba/0x1f0
+> [224913.936033]  __tcp_close+0x620/0x790
+> [224913.936047]  tcp_close+0x20/0x80
+> [224913.936056]  inet_release+0x8f/0xf0
+> [224913.936070]  __sock_release+0x72/0x120
+> [224913.936083]  sock_close+0x14/0x20
+>
+> Reported-by: Jussi Maki <joamaki@gmail.com>
+> Fixes: a136678c0bdbb ("bpf: sk_msg, zap ingress queue on psock down")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
 
-According to the Micrel PHY dt-binding:
-Documentation/devicetree/bindings/net/micrel-ksz90x1.txt,
-Add clock delay in an Ethernet OF device node is deprecated, so move
-these properties to PHY OF device node.
+This looks fine to me.
 
-Suggested-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- arch/arm/boot/dts/imx6q-novena.dts           | 34 +++++++++++++-------
- arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi | 18 ++++++++---
- arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi     | 34 +++++++++++++-------
- arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi | 34 +++++++++++++-------
- arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi    | 34 +++++++++++++-------
- arch/arm/boot/dts/imx6qdl-sabrelite.dtsi     | 34 +++++++++++++-------
- 6 files changed, 124 insertions(+), 64 deletions(-)
+I've played around with the idea of wrapping read & write access to
+psock->work_state in helpers with set/steal semantics. Building on an
+example from net/core/fib_rules.c where nla_get_kuid_range() returns a
+(u32, u32) pair. But I'm not sure if what I ended up with is actually
+nicer. Leaving it for your consideration, if you want to use any of it.
 
-diff --git a/arch/arm/boot/dts/imx6q-novena.dts b/arch/arm/boot/dts/imx6q-novena.dts
-index 52e3567d1859..225cf6b7a7a4 100644
---- a/arch/arm/boot/dts/imx6q-novena.dts
-+++ b/arch/arm/boot/dts/imx6q-novena.dts
-@@ -222,20 +222,30 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet_novena>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
--	rxc-skew-ps = <3000>;
--	rxdv-skew-ps = <0>;
--	txc-skew-ps = <3000>;
--	txen-skew-ps = <0>;
--	rxd0-skew-ps = <0>;
--	rxd1-skew-ps = <0>;
--	rxd2-skew-ps = <0>;
--	rxd3-skew-ps = <0>;
--	txd0-skew-ps = <3000>;
--	txd1-skew-ps = <3000>;
--	txd2-skew-ps = <3000>;
--	txd3-skew-ps = <3000>;
- 	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			rxc-skew-ps = <3000>;
-+			rxdv-skew-ps = <0>;
-+			txc-skew-ps = <3000>;
-+			txen-skew-ps = <0>;
-+			rxd0-skew-ps = <0>;
-+			rxd1-skew-ps = <0>;
-+			rxd2-skew-ps = <0>;
-+			rxd3-skew-ps = <0>;
-+			txd0-skew-ps = <3000>;
-+			txd1-skew-ps = <3000>;
-+			txd2-skew-ps = <3000>;
-+			txd3-skew-ps = <3000>;
-+		};
-+	};
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 96f319099744..ed067986a7b5 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -71,12 +71,16 @@ struct sk_psock_link {
+ 	void				*link_raw;
  };
  
- &hdmi {
-diff --git a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-index ead7ba27e105..563bf9d44fe0 100644
---- a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
-@@ -316,12 +316,22 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio7 18 GPIO_ACTIVE_LOW>;
--	txd0-skew-ps = <0>;
--	txd1-skew-ps = <0>;
--	txd2-skew-ps = <0>;
--	txd3-skew-ps = <0>;
- 	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			txd0-skew-ps = <0>;
-+			txd1-skew-ps = <0>;
-+			txd2-skew-ps = <0>;
-+			txd3-skew-ps = <0>;
-+		};
-+	};
+-struct sk_psock_work_state {
+-	struct sk_buff			*skb;
++struct sk_psock_skb_slice {
+ 	u32				len;
+ 	u32				off;
  };
  
- &gpmi {
-diff --git a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-index d526f01a2c52..ac34709e9741 100644
---- a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
-@@ -190,23 +190,33 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
--	txen-skew-ps = <0>;
--	txc-skew-ps = <3000>;
--	rxdv-skew-ps = <0>;
--	rxc-skew-ps = <3000>;
--	rxd0-skew-ps = <0>;
--	rxd1-skew-ps = <0>;
--	rxd2-skew-ps = <0>;
--	rxd3-skew-ps = <0>;
--	txd0-skew-ps = <0>;
--	txd1-skew-ps = <0>;
--	txd2-skew-ps = <0>;
--	txd3-skew-ps = <0>;
- 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
- 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
- 	fsl,err006687-workaround-present;
- 	status = "okay";
++struct sk_psock_work_state {
++	struct sk_buff			*skb;
++	struct sk_psock_skb_slice	slice;
++};
 +
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			txen-skew-ps = <0>;
-+			txc-skew-ps = <3000>;
-+			rxdv-skew-ps = <0>;
-+			rxc-skew-ps = <3000>;
-+			rxd0-skew-ps = <0>;
-+			rxd1-skew-ps = <0>;
-+			rxd2-skew-ps = <0>;
-+			rxd3-skew-ps = <0>;
-+			txd0-skew-ps = <0>;
-+			txd1-skew-ps = <0>;
-+			txd2-skew-ps = <0>;
-+			txd3-skew-ps = <0>;
-+		};
-+	};
- };
+ struct sk_psock {
+ 	struct sock			*sk;
+ 	struct sock			*sk_redir;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 15d71288e741..da0542074c24 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -590,40 +590,82 @@ static void sock_drop(struct sock *sk, struct sk_buff *skb)
+ 	kfree_skb(skb);
+ }
  
- &hdmi {
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-index a0917823c244..c96f4d7e1e0d 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
-@@ -332,23 +332,33 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
--	txen-skew-ps = <0>;
--	txc-skew-ps = <3000>;
--	rxdv-skew-ps = <0>;
--	rxc-skew-ps = <3000>;
--	rxd0-skew-ps = <0>;
--	rxd1-skew-ps = <0>;
--	rxd2-skew-ps = <0>;
--	rxd3-skew-ps = <0>;
--	txd0-skew-ps = <0>;
--	txd1-skew-ps = <0>;
--	txd2-skew-ps = <0>;
--	txd3-skew-ps = <0>;
- 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
- 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
- 	fsl,err006687-workaround-present;
- 	status = "okay";
++static void __sk_psock_skb_state_set(struct sk_psock *psock,
++				     struct sk_buff *skb,
++				     const struct sk_psock_skb_slice *slice)
++{
++	struct sk_psock_work_state *state = &psock->work_state;
 +
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
++		state->skb = skb;
++		state->slice = *slice;
++	} else {
++		sock_drop(psock->sk, skb);
++	}
++}
 +
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			txen-skew-ps = <0>;
-+			txc-skew-ps = <3000>;
-+			rxdv-skew-ps = <0>;
-+			rxc-skew-ps = <3000>;
-+			rxd0-skew-ps = <0>;
-+			rxd1-skew-ps = <0>;
-+			rxd2-skew-ps = <0>;
-+			rxd3-skew-ps = <0>;
-+			txd0-skew-ps = <0>;
-+			txd1-skew-ps = <0>;
-+			txd2-skew-ps = <0>;
-+			txd3-skew-ps = <0>;
-+		};
-+	};
- };
++static void sk_psock_skb_state_set(struct sk_psock *psock,
++				   struct sk_buff *skb,
++				   const struct sk_psock_skb_slice *slice)
++{
++	spin_lock_bh(&psock->ingress_lock);
++	__sk_psock_skb_state_set(psock, skb, slice);
++	spin_unlock_bh(&psock->ingress_lock);
++}
++
++static struct sk_psock_skb_slice __sk_psock_skb_state_steal(struct sk_psock *psock,
++							    struct sk_buff **pskb)
++{
++	struct sk_psock_work_state *state = &psock->work_state;
++
++	*pskb = state->skb;
++	state->skb = NULL;
++
++	return state->slice;
++}
++
++static struct sk_psock_skb_slice sk_psock_skb_state_steal(struct sk_psock *psock,
++							  struct sk_buff **pskb)
++{
++	struct sk_psock_skb_slice ret;
++
++	spin_lock_bh(&psock->ingress_lock);
++	ret = __sk_psock_skb_state_steal(psock, pskb);
++	spin_unlock_bh(&psock->ingress_lock);
++
++	return ret;
++}
++
+ static void sk_psock_backlog(struct work_struct *work)
+ {
+ 	struct sk_psock *psock = container_of(work, struct sk_psock, work);
+ 	struct sk_psock_work_state *state = &psock->work_state;
+-	struct sk_buff *skb;
++	struct sk_psock_skb_slice slice = {};
++	struct sk_buff *skb = NULL;
+ 	bool ingress;
+-	u32 len, off;
+ 	int ret;
  
- &hdmi {
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-index 1243677b5f97..49da30d7510c 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-@@ -265,23 +265,33 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
--	txen-skew-ps = <0>;
--	txc-skew-ps = <3000>;
--	rxdv-skew-ps = <0>;
--	rxc-skew-ps = <3000>;
--	rxd0-skew-ps = <0>;
--	rxd1-skew-ps = <0>;
--	rxd2-skew-ps = <0>;
--	rxd3-skew-ps = <0>;
--	txd0-skew-ps = <0>;
--	txd1-skew-ps = <0>;
--	txd2-skew-ps = <0>;
--	txd3-skew-ps = <0>;
- 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
- 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
- 	fsl,err006687-workaround-present;
- 	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			txen-skew-ps = <0>;
-+			txc-skew-ps = <3000>;
-+			rxdv-skew-ps = <0>;
-+			rxc-skew-ps = <3000>;
-+			rxd0-skew-ps = <0>;
-+			rxd1-skew-ps = <0>;
-+			rxd2-skew-ps = <0>;
-+			rxd3-skew-ps = <0>;
-+			txd0-skew-ps = <0>;
-+			txd1-skew-ps = <0>;
-+			txd2-skew-ps = <0>;
-+			txd3-skew-ps = <0>;
-+		};
-+	};
- };
+ 	mutex_lock(&psock->work_mutex);
+ 	if (state->skb) {
+-		skb = state->skb;
+-		len = state->len;
+-		off = state->off;
+-		state->skb = NULL;
++		slice = sk_psock_skb_state_steal(psock, &skb);
+ 		goto start;
+ 	}
  
- &hdmi {
-diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-index fdc3aa9d544d..eb9a0b104f1c 100644
---- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
-@@ -324,20 +324,30 @@
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_enet>;
- 	phy-mode = "rgmii";
-+	phy-handle = <&ethphy>;
- 	phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
--	txen-skew-ps = <0>;
--	txc-skew-ps = <3000>;
--	rxdv-skew-ps = <0>;
--	rxc-skew-ps = <3000>;
--	rxd0-skew-ps = <0>;
--	rxd1-skew-ps = <0>;
--	rxd2-skew-ps = <0>;
--	rxd3-skew-ps = <0>;
--	txd0-skew-ps = <0>;
--	txd1-skew-ps = <0>;
--	txd2-skew-ps = <0>;
--	txd3-skew-ps = <0>;
- 	status = "okay";
-+
-+	mdio {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		ethphy: ethernet-phy {
-+			compatible = "ethernet-phy-ieee802.3-c22";
-+			txen-skew-ps = <0>;
-+			txc-skew-ps = <3000>;
-+			rxdv-skew-ps = <0>;
-+			rxc-skew-ps = <3000>;
-+			rxd0-skew-ps = <0>;
-+			rxd1-skew-ps = <0>;
-+			rxd2-skew-ps = <0>;
-+			rxd3-skew-ps = <0>;
-+			txd0-skew-ps = <0>;
-+			txd1-skew-ps = <0>;
-+			txd2-skew-ps = <0>;
-+			txd3-skew-ps = <0>;
-+		};
-+	};
- };
+ 	while ((skb = skb_dequeue(&psock->ingress_skb))) {
+-		len = skb->len;
+-		off = 0;
++		slice.len = skb->len;
++		slice.off = 0;
+ start:
+ 		ingress = skb_bpf_ingress(skb);
+ 		skb_bpf_redirect_clear(skb);
+ 		do {
+ 			ret = -EIO;
+ 			if (!sock_flag(psock->sk, SOCK_DEAD))
+-				ret = sk_psock_handle_skb(psock, skb, off,
+-							  len, ingress);
++				ret = sk_psock_handle_skb(psock, skb, slice.off,
++							  slice.len, ingress);
+ 			if (ret <= 0) {
+ 				if (ret == -EAGAIN) {
+-					state->skb = skb;
+-					state->len = len;
+-					state->off = off;
++					sk_psock_skb_state_set(psock, skb,
++							       &slice);
+ 					goto end;
+ 				}
+ 				/* Hard errors break pipe and stop xmit. */
+@@ -632,9 +674,9 @@ static void sk_psock_backlog(struct work_struct *work)
+ 				sock_drop(psock->sk, skb);
+ 				goto end;
+ 			}
+-			off += ret;
+-			len -= ret;
+-		} while (len);
++			slice.off += ret;
++			slice.len -= ret;
++		} while (slice.len);
  
- &hdmi {
--- 
-2.17.1
-
+ 		if (!ingress)
+ 			kfree_skb(skb);
+@@ -723,6 +765,12 @@ static void __sk_psock_zap_ingress(struct sk_psock *psock)
+ 		sock_drop(psock->sk, skb);
+ 	}
+ 	__sk_psock_purge_ingress_msg(psock);
++
++	/* We steal the skb here to ensure that calls to sk_psock_backlog
++	 * do not pick up the free'd skb.
++	 */
++	__sk_psock_skb_state_steal(psock, &skb);
++	kfree_skb(skb);
+ }
+ 
+ static void sk_psock_link_destroy(struct sk_psock *psock)
