@@ -2,206 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B673D0D9A
+	by mail.lfdr.de (Postfix) with ESMTP id 18F913D0D99
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239521AbhGUKqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238399AbhGUJtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:49:16 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7E0C0613DE;
-        Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y4so1876672pfi.9;
-        Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=crPkDkWQEoNERdMjzIoNvDVdZYJX2jUbiteH/e0Of1o=;
-        b=dpQF0qK/cZ1PBWjC1lNEtBNPQIY0ndTZOqudg/5nG+laJtg1EvtFbUy2df++wHmiLi
-         c6BCC2uROfhvdYwDWYWD1jecOacp6hyTQ93iH+xQCYDh0nO8befGldO1/+g9lnr74Jsv
-         CmOUB7aNlqIYBSVTdBy1KAz3fTJhPWw+/jwvvEOOadVZwZ+pWi0tv3SIK/XfCdM4Yw0C
-         CMWaIHisnetIQUkh+1i2GqoZdEdpLDithfUWVY4II/1DHvEJRJ2d7y6Gld4xfxrZsKbY
-         6Msig5LVrt5yFu08e+wuLM0X3juclFNnUEU2LztUJ2yenbExU+zvtkxD1pUa0R4LM97z
-         RFOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=crPkDkWQEoNERdMjzIoNvDVdZYJX2jUbiteH/e0Of1o=;
-        b=BGoM8rWEoFRz3ZFStBFzvULs6PV+o0kMohNo8Q/+wbZxq/+Iqn0SLdGDUEqFXz66mw
-         vn29lhlCQYArzWBu/CcKbQ049PV5TJka1Oi7qdjh4D6BAJl334EzbW78ivZIRz03CoUg
-         xZSfAwMCkgkKt0nI4ywk7xoFRtusPyf2+6ZtFaldppntdmr6Eh0LNBlK6lPXfa2fkK93
-         m28UOubUIa6tzvnhIfYPr4ZQTmjRdZaeOjmzz7E3i1xQQ193DkJ/EEcMjlQanc6lTtaZ
-         OPfLwEwK4m9zriep0PHsf6AFLKIiqdfeAIilHguwCzg5dYhY/Q5qD/LfpqbXJP+VXyva
-         dzPQ==
-X-Gm-Message-State: AOAM532DS6SvJ2XDxwRhiIR1Mu+lFnJE0dO86GxK8lbh5LD2kxGXTUGZ
-        ckgTnEP8QFEAvL4uepBJ57s=
-X-Google-Smtp-Source: ABdhPJwGK1w7GFZui+UX4nxgbHVeI56Iu2D5hjeSldD82+ip3NkTL1jWcNoRnxoO7LnJTjwfoGvugw==
-X-Received: by 2002:a65:6187:: with SMTP id c7mr35068030pgv.349.1626863345481;
-        Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
-        by smtp.gmail.com with ESMTPSA id t37sm26803912pfg.14.2021.07.21.03.28.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-From:   Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
- buffer remap function for HV IVM
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
-        rppt@kernel.org, Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
-        ardb@kernel.org, robh@kernel.org, nramas@linux.microsoft.com,
-        pgonda@google.com, martin.b.radev@gmail.com, david@redhat.com,
-        krish.sadhukhan@oracle.com, saravanand@fb.com,
-        xen-devel@lists.xenproject.org, keescook@chromium.org,
-        rientjes@google.com, hannes@cmpxchg.org,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        anparri@microsoft.com
-References: <20210707154629.3977369-1-ltykernel@gmail.com>
- <20210707154629.3977369-10-ltykernel@gmail.com>
- <20210720135437.GA13554@lst.de>
-Message-ID: <8f1a285d-4b67-8041-d326-af565b2756c0@gmail.com>
-Date:   Wed, 21 Jul 2021 18:28:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <20210720135437.GA13554@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S240491AbhGUKqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:49 -0400
+Received: from mail-eopbgr50067.outbound.protection.outlook.com ([40.107.5.67]:44319
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237919AbhGUJsx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 05:48:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cis+iPfASWBJRKZYPPl4bkdbywXpih8GM+TQ/W7uX/jSdbN8p45j7zFV34E7Z0VGlrKDakUgnSmo6+OKoHjddl411vLgpsLoCc1yDkFO8leTgiZlNw/ChGVFDk+AX7R2aF/21/Yeu89Lhvb07CJN/CWYbuiR/LCoFuAE5pzbRiNe5j7EUWGz/9wqEd6nLdVSn/X0h8PgSU6gCKzgVgQ3LmncDaonHGQbSGiRgZC/4qTIJAKlaOAyer/ebfwrE0woFBGk+R3iae2HgGtDkWbjtf2tpgQW5dlY16QYc5DR9Ua2pN0JDkKDGvrk105Hu0gMZos7QjPIpt+KF+Opk004Kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7aIrSJUn3axWWWn9pgnbQuaRNWgJSssTjQiP/+0mee8=;
+ b=mhTVd0TUa3zvFkqsCzLUdj1LOe6iUHqB6ryZxueqvtxiKKPurclyMnYPnRThZ4SEB1G7JE5kP+DQt/6+609H8LdXRI8aT0mAWtFHku/T2NlQ3mmEZWopScnSf6JxqmMMfOpM3uPTHYxGoJ04VVVb1FDv5Djk8eB2BwDe7iJwS3o6hvSExE5ARqy3t6zc0f/cUS4P1+jS2vERWuKWH/UERfQAWzJVUHRedGl3XaZnHygoOIV0qvrBfIf4Szsy0waFy1Vmj17UO+hd/qQ5Sfcktw0SsZ+DKhnNgpCtGI3bqDj1ELJPURwnfbv1HLF/vASnBUK5uyzAEDFT/eW4cu154A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7aIrSJUn3axWWWn9pgnbQuaRNWgJSssTjQiP/+0mee8=;
+ b=Zhsz/nnjcBh7j+WQ6g3J9SrQc6Y3OSCkmeQhg2H3nheFxkur1cZgOqvyunAAp9Ko3rPtx4XbO61mrZO9VVlH7sm+5ON5lJiBC4w0ZkbmDCbDjCK9KBoxEqhdwxQLiGgh8MDXF+sdBbVTy13HrglJJEFHwgjD287PohEc+a40Cwg=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5295.eurprd04.prod.outlook.com (2603:10a6:803:59::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.23; Wed, 21 Jul
+ 2021 10:29:25 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
+ 10:29:25 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>
+Subject: Re: [PATCH net-next v2] net: switchdev:
+ switchdev_handle_fdb_del_to_device(): fix no-op function for disabled
+ CONFIG_NET_SWITCHDEV
+Thread-Topic: [PATCH net-next v2] net: switchdev:
+ switchdev_handle_fdb_del_to_device(): fix no-op function for disabled
+ CONFIG_NET_SWITCHDEV
+Thread-Index: AQHXfhmXgt1h7RyhkEeONYxWnbzsP6tNOlkA
+Date:   Wed, 21 Jul 2021 10:29:25 +0000
+Message-ID: <20210721102924.ejzv3lxwbltx2wr2@skbuf>
+References: <20210721101714.78977-1-mkl@pengutronix.de>
+In-Reply-To: <20210721101714.78977-1-mkl@pengutronix.de>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 036a07ca-f4e0-4046-cb85-08d94c326986
+x-ms-traffictypediagnostic: VI1PR04MB5295:
+x-microsoft-antispam-prvs: <VI1PR04MB52956637EF1663DDE2B8F342E0E39@VI1PR04MB5295.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wbsmiimb7a2KMgAw9V5EK2ERV9NqEHmxYBj++re+BmV7Z0XTqHdYS8MZwnBwAEngEmHlVgNpan5Oo00L9Gk6V8cuuVSzwseCyt6cUNQKNudX7/YWeNiS2Cc5qJQukfzt2cDzK1VzDeaIyYOgnS6HHBHtxKAg4xsxW7JMwLMFQ3ptlQlPso6yNlzPXBmiSk0qE4sdLKH6QiHMGXmHC75BGEoOVlqJk10jwFIiQSUEoQzEh+lk6PAgn2yrQykpX7xVU6/3iDqaLLA2v/MxvLNFtKbd+lljnh5W26I9/Anse7BZ35ZBqudQrpz1+Wxev1vEmXj1moleS6sEp5qK+QwumWZ4TxL++oWWV+5wetuz5n8pGRrrR7p0eb78LJtY6/J9VfXmmldXrwJPVaAVh/+oudeoRErSds9wzaH1oNnXW73jlxLlRvQQ7f8pn3MCwOeZTUINwTv/9IrVzKAaFHjNJ2wH3LMJ9lvajyTf2ZuDQtp0USrZRE/0HczkXgZJzmaTSpLHUdhsux47pKwzF+QpMCNA8XWfWWkndqeb/26nyizgJo0agoGmFS+WEbVE1xQYgKGFIrDekZZXyxCU+uzS1cQ6VJp3uTrekEdj4DRmQrBVF81u2I4Mg2kKTaRMZw6TenUiVi/fgiiXbu8ITdq0Kt5PkAyQEdw7KDYYPjLd0FicPfsxyU60DxKrsVQ/lsJHQhLJAKg8smzGL8lA6GwD/FihUOA3RcHNqKNURaQgxIuEfCij2LcZuuqqfj4nFK8393Snx2n3QI+Yu+oJ15kYpw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(33716001)(6512007)(8676002)(5660300002)(4326008)(38100700002)(6506007)(6916009)(64756008)(54906003)(66476007)(66556008)(2906002)(8936002)(86362001)(9686003)(1076003)(966005)(66446008)(66946007)(316002)(44832011)(6486002)(122000001)(71200400001)(26005)(478600001)(76116006)(186003)(91956017)(83380400001)(38070700004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Rmh2VDRPTDAvRC9lbkxxNFgybDl5TlViSTgxTGpDTHJtNWVwNUZHdnlRYlBr?=
+ =?utf-8?B?c1JiUm1RV3JjSTMvbmpxNk9OSWYza2FrYVFBalBTYUUrY1FjRGdOUm1YdFRR?=
+ =?utf-8?B?aDhYMy9NOG9lbTZJcU4vSElnZEhRNmlDa1RsbzNOUnJEMk5BcVhWNU9QdDND?=
+ =?utf-8?B?bWdUNHJvUU1kalRTZVorOTl2bXoyeHI4cE91MEFBeFIxR0hGb2ZtTFk1eVJh?=
+ =?utf-8?B?T3dUdGdwdGNqdWRjeDVqSmc3aUlFVWlBU2lpeGc4ME4reEFHSnBORzU5Q3dD?=
+ =?utf-8?B?djNZd3IvOTFCNUJBMFp6SXovWXp2RVdiT25JZUlyNDVZWnNNM1VCdkpXK0c1?=
+ =?utf-8?B?NmhEbVZvNjlyNXl3TnFKc09UR295Y0RZMDJMd1FJR0ZlK3RXd3cvejdIdysv?=
+ =?utf-8?B?VzZiM2dWcG9lWVFGbHBnWGEwNjcvUElILzg2cy9PUVQ2bUltbjJaT21uMmJJ?=
+ =?utf-8?B?WVU2M0JRSWxycWppanJMTGM0S25QTmpzdnJJN2tQQXhrV2w5TmtJSE1hS1BX?=
+ =?utf-8?B?eHR0OWhWbndtclQyUXVxRXRBYnRXV0tQM0o2R3NnWENYZ2h4c1BQUTNHK0xV?=
+ =?utf-8?B?bkVtVUdYOEZmRHU3UEpQd0VaTW9VckVKTitVWHROSzVlZEhUbE93U1ZDM2Zn?=
+ =?utf-8?B?MWZ1WUFmRGpUYXdtcmQ5RnBTSFBvU0dxSWI4MVM4dFBiaTBTZFlDQjNMMU1T?=
+ =?utf-8?B?SG5xZUNZb0NpZ05yb1NORlZpdDNmTFd2bVM2REFuV3RucUVmMis2THptTFIw?=
+ =?utf-8?B?OVI4ejgvcFcwOGRnb3dnVzVTZm9PcE9URUFualdvdGhQbXZuWXE3NEV4M09H?=
+ =?utf-8?B?ekR5Vm9UU3lRRm53d25XWnRjcjFwTnZ4alZJcklNVUpxQzk1UCs1eW12MVc3?=
+ =?utf-8?B?RlZCMlkvVDJnSUk2cGduSzFoOFJvczRvTzF2STZVNXFVbENWaG9WeitUdENy?=
+ =?utf-8?B?MGg4WXYzOXZNSzJlQ3dWbEM4ckxJakxKOFlBWWlVSnhPTVJBZy9yU3BvMVo0?=
+ =?utf-8?B?eEk5dGF6Tk1QMUFwRzlrTjkrcmtsWDNnVTJEZUJyMDZoWjYxbm5BeEhTcEJr?=
+ =?utf-8?B?ZzVCV0owSU5iSDlGTG9wZVI2aU05Wk1HSmhPdHcrQkdINDZvNW9sTnZGYUcy?=
+ =?utf-8?B?dFh1V2E2QUxCci8ydmo0S3k5S2dqbUh5OUN0N3F1a2EwODNhSTVRcG1ROHlH?=
+ =?utf-8?B?R0RldDJIcmRHRnV0QUVDRzRlTlYzMUtIait4RkJseDc2cWYzQXJIamJKb3Az?=
+ =?utf-8?B?THFBNUJBdDUwRFZwWTdrMFVZek41RzRFWmJzNmd4L3hKMHVUcHhzb2pCUXpz?=
+ =?utf-8?B?N0pEZXpGSnA5S3R0WG9FVnlwb3luWE1BNmdVWTVrSFVOaHNuYXR2azlRcnZi?=
+ =?utf-8?B?S2xDL2ZrL28ycmxEODcvdzlwY2dmbTA0N0l1bHk0ZjdqOG5ySzAvcDVxdXo3?=
+ =?utf-8?B?WXZuVk1POWMvOEkyUEQvS24rZWg1ejVzRGE0Z2RpbWl1WmNLYkdJWTNxM3Fr?=
+ =?utf-8?B?Tk5kbFBBaTdUZXRKaEZLV3hPVkNvQ29jL3p1cWVMTkp6bURkVnd4YitVeGV6?=
+ =?utf-8?B?em1pZ2xSSjhhbGVVelhyYUpvV1Y0TnFBb0RtYkV2ODgzY0s4MEtYaVV6ekdx?=
+ =?utf-8?B?V0hmdjNKWmNQVzBwaDNUdEc1VWhsL3pzUXNUMzA0emdBRkRrVUhtc0Iraitn?=
+ =?utf-8?B?WmM0ZjM1V21lUkZGN294Z3Q4YytwMGJuanlzR0pFS21mNG1rQUcvUkFwQzR5?=
+ =?utf-8?Q?bMbcLpJHkg9+LiNyXWvMMxyruopEAtbYwCPFef1?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9B49F742532268459486F5892A05AC87@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 036a07ca-f4e0-4046-cb85-08d94c326986
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2021 10:29:25.1263
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: t5PNnOQa3eExpih3STLlsbAhU8ekzoB9Tzka47/C/SSgY7y5TpqwNAHTYzMdguNTFjapegV25lkozhuEK3+ZAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5295
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for review.
-
-On 7/20/2021 9:54 PM, Christoph Hellwig wrote:
-> 
-> Please split the swiotlb changes into a separate patch from the
-> consumer.
-
-OK. Will update.
-
-> 
->>   }
->> +
->> +/*
->> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
->> + */
->> +unsigned long hv_map_memory(unsigned long addr, unsigned long size)
->> +{
->> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
->> +				      sizeof(unsigned long),
->> +		       GFP_KERNEL);
->> +	unsigned long vaddr;
->> +	int i;
->> +
->> +	if (!pfns)
->> +		return (unsigned long)NULL;
->> +
->> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
->> +		pfns[i] = virt_to_hvpfn((void *)addr + i * HV_HYP_PAGE_SIZE) +
->> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
->> +
->> +	vaddr = (unsigned long)vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,
->> +					PAGE_KERNEL_IO);
->> +	kfree(pfns);
->> +
->> +	return vaddr;
-> 
-> This seems to miss a 'select VMAP_PFN'. 
-
-VMAP_PFN has been selected in the previous patch "RFC PATCH V4 08/13]
-HV/Vmbus: Initialize VMbus ring buffer for Isolation VM"
-
-> But more importantly I don't
-> think this actually works.  Various DMA APIs do expect a struct page
-> backing, so how is this going to work with say dma_mmap_attrs or
-> dma_get_sgtable_attrs?
-
-dma_mmap_attrs() and dma_get_sgtable_attrs() get input virtual address
-belonging to backing memory with struct page and returns bounce buffer
-dma physical address which is below shared_gpa_boundary(vTOM) and passed
-to Hyper-V via vmbus protocol.
-
-The new map virtual address is only to access bounce buffer in swiotlb
-code and will not be used other places. It's stored in the mem->vstart.
-So the new API set_memory_decrypted_map() in this series is only called
-in the swiotlb code. Other platforms may replace set_memory_decrypted()
-with set_memory_decrypted_map() as requested.
-
-> 
->> +static unsigned long __map_memory(unsigned long addr, unsigned long size)
->> +{
->> +	if (hv_is_isolation_supported())
->> +		return hv_map_memory(addr, size);
->> +
->> +	return addr;
->> +}
->> +
->> +static void __unmap_memory(unsigned long addr)
->> +{
->> +	if (hv_is_isolation_supported())
->> +		hv_unmap_memory(addr);
->> +}
->> +
->> +unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size)
->> +{
->> +	if (__set_memory_enc_dec(addr, size / PAGE_SIZE, false))
->> +		return (unsigned long)NULL;
->> +
->> +	return __map_memory(addr, size);
->> +}
->> +
->> +int set_memory_encrypted_unmap(unsigned long addr, unsigned long size)
->> +{
->> +	__unmap_memory(addr);
->> +	return __set_memory_enc_dec(addr, size / PAGE_SIZE, true);
->> +}
-> 
-> Why this obsfucation into all kinds of strange helpers?  Also I think
-> we want an ops vectors (or alternative calls) instead of the random
-> if checks here.
-
-Yes, agree and will add ops for different platforms to map/unmap memory.
-
-> 
->> + * @vstart:	The virtual start address of the swiotlb memory pool. The swiotlb
->> + *		memory pool may be remapped in the memory encrypted case and store
-> 
-> Normall we'd call this vaddr or cpu_addr.
-
-OK. Will update.
-
-> 
->> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->> -	memset(vaddr, 0, bytes);
->> +	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
-> 
-> Please always pass kernel virtual addresses as pointers.
-> 
-> And I think these APIs might need better names, e.g.
-> 
-> arch_dma_map_decrypted and arch_dma_unmap_decrypted.
-> 
-> Also these will need fallback versions for non-x86 architectures that
-> currently use memory encryption.
-
-Sure. Will update in the next version.
-
+SGkgTWFyYywNCg0KT24gV2VkLCBKdWwgMjEsIDIwMjEgYXQgMTI6MTc6MTRQTSArMDIwMCwgTWFy
+YyBLbGVpbmUtQnVkZGUgd3JvdGU6DQo+IEluIHBhdGNoIDhjYTA3MTc2YWIwMCAoIm5ldDogc3dp
+dGNoZGV2OiBpbnRyb2R1Y2UgYSBmYW5vdXQgaGVscGVyIGZvcg0KPiBTV0lUQ0hERVZfRkRCX3tB
+REQsREVMfV9UT19ERVZJQ0UiKSBuZXcgZnVuY3Rpb25hbGl0eSBpbmNsdWRpbmcgc3RhdGljDQo+
+IGlubGluZSBuby1vcCBmdW5jdGlvbnMgaWYgQ09ORklHX05FVF9TV0lUQ0hERVYgaXMgZGlzYWJs
+ZWQgd2FzIGFkZGVkLg0KPiANCj4gVGhpcyBwYXRjaCBmaXhlcyB0aGUgZm9sbG93aW5nIGJ1aWxk
+IGVycm9yIGZvciBkaXNhYmxlZA0KPiBDT05GSUdfTkVUX1NXSVRDSERFVjoNCj4gDQo+IHwgSW4g
+ZmlsZSBpbmNsdWRlZCBmcm9tIGluY2x1ZGUvbmV0L2RzYS5oOjIzLA0KPiB8ICAgICAgICAgICAg
+ICAgICAgZnJvbSBuZXQvY29yZS9mbG93X2Rpc3NlY3Rvci5jOjg6DQo+IHwgaW5jbHVkZS9uZXQv
+c3dpdGNoZGV2Lmg6NDEwOjE6IGVycm9yOiBleHBlY3RlZCBpZGVudGlmaWVyIG9yIOKAmCjigJkg
+YmVmb3JlIOKAmHvigJkgdG9rZW4NCj4gfCAgIDQxMCB8IHsNCj4gfCAgICAgICB8IF4NCj4gfCBp
+bmNsdWRlL25ldC9zd2l0Y2hkZXYuaDozOTk6MTogd2FybmluZzog4oCYc3dpdGNoZGV2X2hhbmRs
+ZV9mZGJfZGVsX3RvX2RldmljZeKAmSBkZWNsYXJlZCDigJhzdGF0aWPigJkgYnV0IG5ldmVyIGRl
+ZmluZWQgWy1XdW51c2VkLWZ1bmN0aW9uXQ0KPiB8ICAgMzk5IHwgc3dpdGNoZGV2X2hhbmRsZV9m
+ZGJfZGVsX3RvX2RldmljZShzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LA0KPiB8ICAgICAgIHwgXn5+
+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fg0KPiANCj4gRml4ZXM6IDhjYTA3MTc2YWIw
+MCAoIm5ldDogc3dpdGNoZGV2OiBpbnRyb2R1Y2UgYSBmYW5vdXQgaGVscGVyIGZvciBTV0lUQ0hE
+RVZfRkRCX3tBREQsREVMfV9UT19ERVZJQ0UiKQ0KPiBDYzogVmxhZGltaXIgT2x0ZWFuIDx2bGFk
+aW1pci5vbHRlYW5AbnhwLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogTWFyYyBLbGVpbmUtQnVkZGUg
+PG1rbEBwZW5ndXRyb25peC5kZT4NCj4gLS0tDQoNClRoYW5rIHlvdSBmb3IgdGhlIHBhdGNoIGFu
+ZCBzb3JyeSBmb3IgdGhlIGJyZWFrYWdlLCBJJ3ZlIGJlZW4gd2FpdGluZw0KZm9yIG15IHZlcnNp
+b24gdG8gZ2V0IGFjY2VwdGVkIHNpbmNlIHllc3RlcmRheToNCmh0dHBzOi8vcGF0Y2h3b3JrLmtl
+cm5lbC5vcmcvcHJvamVjdC9uZXRkZXZicGYvcGF0Y2gvMjAyMTA3MjAxNzM1NTcuOTk5NTM0LTIt
+dmxhZGltaXIub2x0ZWFuQG54cC5jb20v
