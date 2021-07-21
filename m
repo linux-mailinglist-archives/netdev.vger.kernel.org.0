@@ -2,141 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D453D1948
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 23:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCEDE3D195E
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 23:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229632AbhGUUuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 16:50:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229536AbhGUUue (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 16:50:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AAA466120A;
-        Wed, 21 Jul 2021 21:31:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626903071;
-        bh=kdg91hXD51FJVe4jRiptDDtiSgUu3ibBVXczOFFs+CM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f30pJgdu3q4ZNxICc1ztiq5Ne7+V5qtCFP496bc4wnbnQDpbQdTPkqoL1QRYI9qg2
-         7FbpCzGeJV8kgz8hr9zoEL+FtiWRwkPzjl9LtRiZyl95en6Yboyd1YJfs+0qv85Dae
-         u/fQ6+F++EoO1lUMi0Qcgiy9zCQEen+/+JWQJyIdpUEkrzZNXCSM6V2B0wuQ4v7Qvh
-         pNCPfLtDI7wHeMph2KdWnobN0VPXwpRpmnKLKBgR39NB2pUMiKAvV/6FY1/hNjKy3t
-         V1FJk/jxoQwAld+/lRz7RRbOHCyXv5Sq8DRDFrsEy04+ytnQcCvncsjMalJ7Dst9iE
-         PRn5vkUod5e1g==
-Date:   Wed, 21 Jul 2021 23:31:05 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <20210721233105.65468fd2@thinkpad>
-In-Reply-To: <YPiJjEBV1PZQu0S/@lunn.ch>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
-        <20210716212427.821834-6-anthony.l.nguyen@intel.com>
-        <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
-        <YPTKB0HGEtsydf9/@lunn.ch>
-        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
-        <YPbu8xOFDRZWMTBe@lunn.ch>
-        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
-        <20210721204543.08e79fac@thinkpad>
-        <YPh6b+dTZqQNX+Zk@lunn.ch>
-        <20210721220716.539f780e@thinkpad>
-        <YPiJjEBV1PZQu0S/@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230016AbhGUVFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 17:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229850AbhGUVFT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 17:05:19 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A63FC061575;
+        Wed, 21 Jul 2021 14:45:54 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id i18so5263100yba.13;
+        Wed, 21 Jul 2021 14:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ewxhe9y6zg8nseS9oPR72pbHVzU7RY2gNLP01JypPQI=;
+        b=IpK5CVT8ixclg3F7w0aN2H1KbagZ0kgcQdWAxkiW20vt4/yNQ/V+4+uILc7UYzD5A7
+         7zvhThTy9UCZkqgNabIfsrYrGvhvPBxbp0rIy8FNOdYbMdwDvU5Rx+Dclk0tq59F0464
+         PV1RsMiNla0v4YMEI3mRrtMfnzmdtQkzqkO9V7jRux2mvOfYby8OaM4aVRZNrFp5peon
+         BNgYMKIaoRhqqMXcbhnJj2YRfaIx2FmzuqzUPAAHB3NZNLJ6AKjyDGVrA4HH4Ht8CjQw
+         WT04NSoR6J7nv0oUs5aKUqFNbiE2CbkyQ08X04KQNlQyhqOMn3bAfHQQKd/0hZUoeCzI
+         LpbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ewxhe9y6zg8nseS9oPR72pbHVzU7RY2gNLP01JypPQI=;
+        b=BQECWsun0SB4RC2t2lgSj3aYl5hXFJJy/gjSlLa5vfrY71uw6CvXfpC1D85MF59e0u
+         zrWzGvtEIiGL6jS57e7r7QVPJQ6qA5h1ovkZmgG29mJkJAs55qd0NLzO1DKaR7fCO3IP
+         l+IYNBTy9dVdRMgMUQ3p5pNET5ypiL1HNpSqfkIWjEv90ScMpeliT05TEHcEkdageP4n
+         zNivRJrxVBz+qZAGcjkcLk3aXIy7kx8eUhsDh/kExyBlIoR6P5/0Oq5pdOJhX8sKDrfx
+         x8+qQjZ8ZZcSJOGSDb9jdCYurUEcI3yyFkDwOJaVJsalPoswzygy5eZfnem+wCoEgAPC
+         yJ0A==
+X-Gm-Message-State: AOAM532tpMSbo4FMNhisYAvDECVMWjeyNrZz0idblGMafKZ0T2NN93V8
+        7TImsKd9wVM3Ur5JETGN15AJzxT6ldIB2Q0jlxo=
+X-Google-Smtp-Source: ABdhPJzcksmfd3+9Uv5UZrxjxWZ9b2lOCdWQQM/swpTRGd1Y36WP8U1h33Y9HvQr2NQpgBLJW7/NkTGnIQFXHxH7Bls=
+X-Received: by 2002:a25:cdc7:: with SMTP id d190mr9727865ybf.425.1626903953596;
+ Wed, 21 Jul 2021 14:45:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210721212007.3876595-1-arnd@kernel.org>
+In-Reply-To: <20210721212007.3876595-1-arnd@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 21 Jul 2021 14:45:42 -0700
+Message-ID: <CAEf4BzavhrBKZHKpZctJt=K=8A0f77qr_W0OdPjqCNgDshjFog@mail.gmail.com>
+Subject: Re: [PATCH net-next] bpf: fix pointer cast warning
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Florent Revest <revest@chromium.org>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Jul 2021 22:54:36 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, Jul 21, 2021 at 2:20 PM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> kp->addr is a pointer, so it cannot be cast directly to a 'u64'
+> when it gets interpreted as an integer value:
+>
+> kernel/trace/bpf_trace.c: In function '____bpf_get_func_ip_kprobe':
+> kernel/trace/bpf_trace.c:968:21: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
+>   968 |         return kp ? (u64) kp->addr : 0;
+>
+> Use the uintptr_t type instead.
+>
+> Fixes: 9ffd9f3ff719 ("bpf: Add bpf_get_func_ip helper for kprobe programs")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
 
-> > > > Basically the LED name is of the format
-> > > >   devicename:color:function    
-> 
-> > Unfortunately there isn't consensus about what the devicename should
-> > mean. There are two "schools of thought":
-> > 
-> > 1. device name of the trigger source for the LED, i.e. if the LED
-> >    blinks on activity on mmc0, the devicename should be mmc0. We have
-> >    talked about this in the discussions about ethernet PHYs.
-> >    In the case of the igc driver if the LEDs are controlled by the MAC,
-> >    I guess some PCI identifier would be OK.  
-> 
-> I guess this is most likely for Ethernet LEDs, some sort of bus
-> identifier. But Ethernet makes use of all sorts of busses, so you will
-> also see USB, memory mapped for SOCs, MDIO, SPI, etc.
+I'll take this through the bpf-next tree, if no one objects. Thanks for the fix!
 
-That's why I think we should group them all under a name like ethmac0,
-ethmac1, ... We want to do this for PHY controlled LEDs (ethphy0,
-ethphy1, ...)
 
-> > 2. device name of the LED controller. For example LEDs controlled by
-> >    the maxim,max77650-led controller (leds-max77650.c) define device
-> >    name as "max77650"  
-> 
-> And what happens when the controller is just a tiny bit of silicon in
-> the corner of something else, not a standalone device? Would this be
-> 'igc', for LEDs controlled by the IGC Ethernet controller? 'mv88e6xxx'
-> for Marvell Ethernet switches? 
-
-This is one of the reasons why I prefer the first scheme.
-
-> Also, function is totally unclear. The whole reason we want to use
-> Linux LEDs is triggers, and it is the selected trigger which
-> determines the function.
-
-As I said there are two "schools of thought" for this as well.
-Devicetree deprecated the `linux,default-trigger` DT property and
-`function` property should be used instead. Jacek's then defined some
-function definition constants in include/dt-bindings/leds/common.h and
-sent a proposal for function to trigger mappings
-  https://lore.kernel.org/linux-leds/20200920162625.14754-1-jacek.anaszewski@gmail.com/
-But this was not implemented, and I together with Pavel do not agree
-with this proposal, and I proposed something different:
-  https://lore.kernel.org/linux-leds/20200920184422.60c04194@nic.cz/
-Since function to trigger mappings is not yet implemented in the code,
-we can still decide.
-
-Do you think I should a poll more kernel developers about their
-opinions?
-
-> Colour is also an issue. The IGC Ethernet controller has no idea what
-> colour the LEDs are in the RG-45 socket. And this is generic to
-> Ethernet MAC and PHY chips. The data sheets never mention colour.  You
-> might know the colour in DT (and maybe ACPI) systems where you have
-> specific information about the board. But in for PCIe card, USB
-> dongles, etc, colour is unknown.
-
-The LED core (function led_compose_name in drivers/leds/led-core.c)
-skips color and function if they are not present in fwnode, i.e.
-  "mmc0::"
-
-I guess in the case of igc, if the color is not known, and if we can
-agree on the first scheme for choosing the devicename part, then the
-LED names could be, depending on the scheme for function, either
-  "ethmac0::lan-0"
-  "ethmac0::lan-1"
-  "ethmac0::lan-2"
-or
-  "ethmac0::link"
-  "ethmac0::activity"
-  "ethmac0::rx"
-
-(If there is color defined in ACPI / DTS though, it should be also
- used.)
-
-So basically we need to decide on these two things:
-- scheme for device name
-- scheme for function to default trigger mappings
-
-Marek
+>  kernel/trace/bpf_trace.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 0de09f068697..a428d1ef0085 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -965,7 +965,7 @@ BPF_CALL_1(bpf_get_func_ip_kprobe, struct pt_regs *, regs)
+>  {
+>         struct kprobe *kp = kprobe_running();
+>
+> -       return kp ? (u64) kp->addr : 0;
+> +       return kp ? (uintptr_t)kp->addr : 0;
+>  }
+>
+>  static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> --
+> 2.29.2
+>
