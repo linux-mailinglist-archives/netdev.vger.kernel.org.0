@@ -2,140 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9120E3D106D
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:02:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F913D1082
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237806AbhGUNWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 09:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237641AbhGUNWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 09:22:03 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0669DC061575
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 07:02:40 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id ee25so2532117edb.5
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 07:02:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LfptcPBAYX0XhZdNHSy9bCep6fygv+/dGc7yUbbpivY=;
-        b=tPzfUROJpfPxtn5NDGuRsLr0LgX/7zCT7p3xJLZyn3uh+3WOwUSpPJJ/q1B6jKZ2ih
-         vNOUeLRiLOUfVBaUjvw8fMtJDXgDfUyaT+DBst12kTsRkoFioi8BiBH0LSpYkVNBclW1
-         ZJ0ZpdbUdv0cSHZHvHgs1C9WJnj4MBWREsneHrPFg4F4bYBxsUnfYg95JXAfrq67nKE1
-         Ek/VPnGlT2T5TK6/zUFeT+WZZ2cHqiuNjOFsTtC0vo6Mo5YjywW0Z3UqPV1+SrFBuMHL
-         4J6epLZZRO5+PQ/saO9eeQiS2f25Y7EM+ub5LStvSsQnVbGMhySMQFtiev50zRVR8E0h
-         YNQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LfptcPBAYX0XhZdNHSy9bCep6fygv+/dGc7yUbbpivY=;
-        b=fcXIllgDvHP0dKzL/5ZxCI+kOLBHbP20z8ETu6eYNgez//h1Hv5qKdmAD45Jrdx56l
-         BW9+WVmKP8E6a2K5udhWfhXulV0TLo+66cfapPetdOgl8c5tWXX790FOavUwgQTn/oB0
-         Ywo+56+bt+Lu4iw8vF4US5KagFhuJM4w6RO9bCoaMmgpz0UWDFcv8xLnnfQOrahm7FP8
-         wg4FLvb7ZA4Ti1buXSq+om8gaEPg3zS0iTjMZlVvyqAPdkNLSo99Y/khmYpkP1CcWVdN
-         cuexx5+32mgI+pFYspUmBAO1NBIqO7/rRXLhobG0sro8cenTgGG93B+MsvYFGUNKfWeM
-         WKtQ==
-X-Gm-Message-State: AOAM531ZUD1WhRVTvqb00pAQKxqe7Vzp99kYHURpudMDZHjSghd4R45n
-        VkpoZyXQc7GCJNqWu3xi9AifGpvr2dZTz51c1WU=
-X-Google-Smtp-Source: ABdhPJxZXQrVmrNF5JExcv2srRYuC902Expj95CbBopvl0rNECDdB2m65ran5yLzVh3POG6EROrD1g==
-X-Received: by 2002:a05:6402:1bc6:: with SMTP id ch6mr49123596edb.267.1626876158376;
-        Wed, 21 Jul 2021 07:02:38 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id f15sm8362925ejc.61.2021.07.21.07.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 07:02:38 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 2/2] net: bridge: multicast: add context support for host-joined groups
-Date:   Wed, 21 Jul 2021 17:01:27 +0300
-Message-Id: <20210721140127.773194-3-razor@blackwall.org>
+        id S239038AbhGUNYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 09:24:08 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:37391 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238996AbhGUNYH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 09:24:07 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id A6BCE580482;
+        Wed, 21 Jul 2021 10:04:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Wed, 21 Jul 2021 10:04:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=fm3; bh=WEtwLnx+QVbmS
+        8n18vDVOz92pmKoYRzOnL/9rJ8bn9I=; b=BlNfFNdGVLkv6FTAuHgxsMSV3Puxq
+        fInba0N+dkM8+nVm4InroKoKW/sm4O+nV4lsVyHYwOcNeCTh2zaIHMVOdigD/CIa
+        pTscfzsPE0MogAbMvrvOrvJxg1W+XJlRif+NAqtvxAVc+0k5ncyWXEusnx/S7kVd
+        XcA+Pvru5TxhVBP7N9+4tMfEqRR7EbNHl6qSL8rv13zC8cjEAUJLsXA1n3RfBbBp
+        0wT8FYfF7rE7l4voioNcw6qDzYXWhaeR+sqiXo73lpIruVWstaBTKUrNcTJjzkvx
+        bKLZZhnBJdNxXvdyDlg6q+4kb1UKIvOoo0trXn3SKTOiZV3HSSjQNAUfQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; bh=WEtwLnx+QVbmS8n18vDVOz92pmKoYRzOnL/9rJ8bn9I=; b=AD72dh2C
+        Uepx7MXWJRuIciJ0Ex+8R59oLqkN/B6oLMexutGb3kAD1KEWuy9EG9IcANiqLx5D
+        S8LE5MygcHI3XyDN889rDgrFuV0uPTgCoH78KfDGspmEtVBcaRlSzQFHtrRUSt9j
+        zemVhXDGZxD/jTa7sOHoEhSR+UQOgdgSMKyvvRmz8Gx6H8ZTB3eEBiTPxRHL7WRT
+        p3Ya2UNji+ded6t+Ja96hiWNC/DbQYDsCL6wNPuGludtDWzisiEHMdhv4V9wr15/
+        F3b+7MGShenaKObgtRYX4WNu2fsME38FL6pEdiTjcCifZC3MTQYxUD7XaJcLmtWS
+        roTrrbYCYqIE7A==
+X-ME-Sender: <xms:eyn4YLNCqHH8_cCwJLHRndiHSvfWvp0qi0boiet2ywyalKacK2bUJw>
+    <xme:eyn4YF9Ui49YPQANYaTyfQ4cM7hiWPIpARHma1LXkJbv10_DXydkMU-cW3zuQTijv
+    gYPvyR40aCXoNroJ_c>
+X-ME-Received: <xmr:eyn4YKSeFG2oGYEyA1XGstcFA5zbvglcZ2fTNLINniu2Zi0wqrt3aKjuPB62iD-gq_bFC3G0i9rSlhL__ucGWMVCOz-iWkVRQDeI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrfeeggdeiiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpedvkeelveefffekjefhffeuleetleefudeifeehuddugffghffhffehveevheeh
+    vdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:eyn4YPtPYrSDmlDXwr3YWFb6u4vW_tj1JmJsCKGWnmMo4xEGCx5uUQ>
+    <xmx:eyn4YDdUX8PrTMHsBMUVLsCm0Bh80rj_Z4ZHF6_N6sUC2FIU0ZdRtw>
+    <xmx:eyn4YL3h2qqLgXFIFHFBVRtCa5m-OmjHEIt7qbBi3TrW7qiOGmCmDQ>
+    <xmx:eyn4YEViL7NbPQ4XKkl3bQpCNnqBLjVOSNK7e-xzLx2rOw7XqCBbXw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 21 Jul 2021 10:04:43 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Chen-Yu Tsai <wens@csie.org>, Maxime Ripard <maxime@cerno.tech>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-sunxi@googlegroups.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH 07/54] dt-bindings: bluetooth: broadcom: Fix clocks check
+Date:   Wed, 21 Jul 2021 16:03:37 +0200
+Message-Id: <20210721140424.725744-8-maxime@cerno.tech>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210721140127.773194-1-razor@blackwall.org>
-References: <20210721140127.773194-1-razor@blackwall.org>
+In-Reply-To: <20210721140424.725744-1-maxime@cerno.tech>
+References: <20210721140424.725744-1-maxime@cerno.tech>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+The original binding was mentioning that valid values for the clocks and
+clock-names property were one or two clocks from extclk, txco and lpo,
+with extclk being deprecated in favor of txco.
 
-Adding bridge multicast context support for host-joined groups is easy
-because we only need the proper timer value. We pass the already chosen
-context and use its timer value.
+However, the current binding lists a valid array as extclk, txco and
+lpo, with either one or two items.
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+While this looks similar, it actually enforces that all the device trees
+use either ["extclk"], or ["extclk", "txco"]. That doesn't make much
+sense, since the two clocks are said to be equivalent, with one
+superseeding the other.
+
+lpo is also not a valid clock anymore, and would be as the third clock
+of the list, while we could have only this clock in the previous binding
+(and in DTs).
+
+Let's rework the clock clause to allow to have either:
+
+ - extclk, and mark it a deprecated
+ - txco alone
+ - lpo alone
+ - txco, lpo
+
+While ["extclk", "lpo"] wouldn't be valid, it wasn't found in any device
+tree so it's not an issue in practice.
+
+Similarly, ["lpo", "txco"] is still considered invalid, but it's
+generally considered as a best practice to fix the order of clocks.
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 ---
- net/bridge/br_mdb.c       | 2 +-
- net/bridge/br_multicast.c | 8 ++++----
- net/bridge/br_private.h   | 3 ++-
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ .../bindings/net/broadcom-bluetooth.yaml        | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 7b6c3b91d272..25d690b96cec 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -1105,7 +1105,7 @@ static int br_mdb_add_group(struct net_bridge *br, struct net_bridge_port *port,
- 			return -EEXIST;
- 		}
+diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+index fbdc2083bec4..5aac094fd217 100644
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+@@ -50,16 +50,29 @@ properties:
+       by interrupts and "host-wakeup" interrupt-names
  
--		br_multicast_host_join(mp, false);
-+		br_multicast_host_join(brmctx, mp, false);
- 		br_mdb_notify(br->dev, mp, NULL, RTM_NEWMDB);
+   clocks:
++    minItems: 1
+     maxItems: 2
+     description: 1 or 2 clocks as defined in clock-names below,
+       in that order
  
- 		return 0;
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 214d1bf854ad..470f1ec3b579 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1312,7 +1312,8 @@ struct net_bridge_port_group *br_multicast_new_port_group(
- 	return p;
- }
+   clock-names:
+     description: Names of the 1 to 2 supplied clocks
+-    items:
++    oneOf:
++      - const: extclk
++        deprecated: true
++        description: Deprecated in favor of txco
++
+       - const: txco
++        description: >
++          external reference clock (not a standalone crystal)
++
+       - const: lpo
+-      - const: extclk
++        description: >
++          external low power 32.768 kHz clock
++
++      - items:
++          - const: txco
++          - const: lpo
  
--void br_multicast_host_join(struct net_bridge_mdb_entry *mp, bool notify)
-+void br_multicast_host_join(const struct net_bridge_mcast *brmctx,
-+			    struct net_bridge_mdb_entry *mp, bool notify)
- {
- 	if (!mp->host_joined) {
- 		mp->host_joined = true;
-@@ -1325,8 +1326,7 @@ void br_multicast_host_join(struct net_bridge_mdb_entry *mp, bool notify)
- 	if (br_group_is_l2(&mp->addr))
- 		return;
- 
--	mod_timer(&mp->timer,
--		  jiffies + mp->br->multicast_ctx.multicast_membership_interval);
-+	mod_timer(&mp->timer, jiffies + brmctx->multicast_membership_interval);
- }
- 
- void br_multicast_host_leave(struct net_bridge_mdb_entry *mp, bool notify)
-@@ -1363,7 +1363,7 @@ __br_multicast_add_group(struct net_bridge_mcast *brmctx,
- 		return ERR_CAST(mp);
- 
- 	if (!pmctx) {
--		br_multicast_host_join(mp, true);
-+		br_multicast_host_join(brmctx, mp, true);
- 		goto out;
- 	}
- 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index af1f5c1c6b88..30fb56637049 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -900,7 +900,8 @@ void br_multicast_get_stats(const struct net_bridge *br,
- 			    struct br_mcast_stats *dest);
- void br_mdb_init(void);
- void br_mdb_uninit(void);
--void br_multicast_host_join(struct net_bridge_mdb_entry *mp, bool notify);
-+void br_multicast_host_join(const struct net_bridge_mcast *brmctx,
-+			    struct net_bridge_mdb_entry *mp, bool notify);
- void br_multicast_host_leave(struct net_bridge_mdb_entry *mp, bool notify);
- void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
- 				     u8 filter_mode);
+   vbat-supply:
+     description: phandle to regulator supply for VBAT
 -- 
 2.31.1
 
