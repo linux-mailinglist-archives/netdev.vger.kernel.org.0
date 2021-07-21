@@ -2,204 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B163D0D91
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E6BC3D0D95
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240186AbhGUKqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
+        id S240325AbhGUKqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238913AbhGUJgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:02 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74419C061766
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id g22-20020a17090a5796b02901763aca3df6so729296pji.5
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
+        with ESMTP id S238551AbhGUJgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:53 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392B8C0613E3;
+        Wed, 21 Jul 2021 03:17:29 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id j73so1441000pge.1;
+        Wed, 21 Jul 2021 03:17:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KKo1EcfFUbZjUj2sF2Hy4VlPupKMjn+rZiu2OC+0fkY=;
-        b=sStCXx1Znb9NnU8uCE2GF3/m4CfZB8QRiv0toGK3PYZpog6q2BswdJpRhZW+754LcI
-         777XOFYMR4Gg20xBoHl4FvSD/a/g2vZS/CkJgZYZyeBP7xwIoEuBip3JNkPsi5jA7dvb
-         KbiVKnGvpgYEuC4KJygZ+Y3IGXKzvadBO4hrQYr+93ycFLdQs1UttpcU/zGwr/hUJV4S
-         xfzt3sVhaQQI4dvOU4ZRp9pKuwJi/Umcc0opvuH//XGa8Qt4o9Km2Zt2dAu7pirVgmtG
-         JMR2WOCReKlzJFWEWjJ7bq5kclmpSqNZtZLiWiUWG9n0u6m69d4+MG6SYXWV3uHJ2NTG
-         xofg==
+        bh=GmFXEsAxbG8KZfMM+UsqBDrbJkHUFiGmqFsibv1XO4g=;
+        b=Fx32sue3mQepTLN9Ttrt6nLPas35qhyRkAnEpea2Mouer4p+Cp6rthrsL0RXkc9o1M
+         s4xuwkH74RNoERSESufIhVW5eNQj38mMmrHQXEDWSVGjLfLVy2TSkuvNab0maOwEyAmH
+         vhtKcsVhXIv3VHE2dy7Bxv3e2XjJSjApiub4YZQWmmJ3hpaLjd4pxLNhfMeBjBfkFE6G
+         wcs16zGFHsiqGI2ZwZeZ7hjkkP8Xgozod55VlGfbMi6U4GR0+/ul1sFKsHzpeZ/Mw/kQ
+         1RbnVd1EOtTJRIQcbHlan6TIBFQKtiHCYvWczkApNzkSqtUKeY9mFElQvgqpoxLK/XyU
+         8Mzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KKo1EcfFUbZjUj2sF2Hy4VlPupKMjn+rZiu2OC+0fkY=;
-        b=s0mqR/829QFdajjk8NTy5NsebYSG6PAlNHaKKSEp25L3F8mOR54u+lqYe4xVB1HFwF
-         0jZWRExowVf/hHVZAYU8T6FMH+i6CgwXQ39hyi8uuyPgL7DNKUKp1o/UYjeC+EC1vcV2
-         35rafXhTKWCwNTIW72/uzA9I+e3Bz/LSlt0ctQwo2UxQdXuXVPpvcBKK/gTLYvg6vJfj
-         rCR1UgyGRjZ8Eu8rd9aQAFTu/NUvj+kSIS4Z5reg5e6pJxC2l3thWMmQNqhI6dnDzj7N
-         DR+21lKmY/C4f8V6Q2YPSkDiRTtmukr+8FozaNCdzK5RJLTpBbPC9ORsyMmdRSwdsrHQ
-         8G5g==
-X-Gm-Message-State: AOAM533QtDUqNk8Q9Rax0aY+UstAT4sKNRCMFcqOhTe+J4OvElXinkwd
-        UDX9qKvO/yjBMp6hqnSMSeg=
-X-Google-Smtp-Source: ABdhPJyzenfi41CLW+RQT2R+CqTcu0bFYrzhsbEuaktWW+jO5e7NfuMufNQN6TCfGB6Tl0uECwaMzg==
-X-Received: by 2002:a17:902:a9c7:b029:12b:349:b318 with SMTP id b7-20020a170902a9c7b029012b0349b318mr27265309plr.13.1626862533047;
-        Wed, 21 Jul 2021 03:15:33 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7460:f7c2:e664:b708])
-        by smtp.gmail.com with ESMTPSA id a4sm22738319pfk.5.2021.07.21.03.15.32
+        bh=GmFXEsAxbG8KZfMM+UsqBDrbJkHUFiGmqFsibv1XO4g=;
+        b=llkvxkCmvQAILRG42cjdegu0GrLXO4MGeMtASaEHZM4Enxvi2ZOiHCoYpmk/VPbd5J
+         +FFivlWTMry8WjXRdABo9fy3QEEWVOgZgoBggq+XboymfeFf3lsD7z7kGOwCE0TGFoDg
+         ZwJM6em0t5yxx5qMAmrYUnUQnqJYwz70kjepwxS0qkY2SlPw+MHQ2SVF1dtUygKO/lOD
+         VWbmy0bNnlCOCiw9llYMkfMPNbVogeisrFxp2aSwZM1YBqxVlrKfK7Csw2uoDBdLzdaD
+         f3dOY2k8EJJwqOiSTephpZDWBGtMUNyY2awwVPAJ3lhye6pRRGFrieZ43MbfcvYyijiu
+         tjPQ==
+X-Gm-Message-State: AOAM531JwknIZkSX/Akn6w40zZLRvclfTWXsZfTlsxSDLSogUKVcit/1
+        IHh9L0Y7Qg9WcrlZXLfPyHtubP8nmoqEVIFRMEQ=
+X-Google-Smtp-Source: ABdhPJxabd+8ymM2NRg2/JRi5E0kd2wtw9dI2cxAd5OZTNoNwxYd09wBP09f+o8F+RdDtGAnclFeIQ==
+X-Received: by 2002:a62:160a:0:b029:328:56b9:b1ee with SMTP id 10-20020a62160a0000b029032856b9b1eemr36090473pfw.52.1626862648751;
+        Wed, 21 Jul 2021 03:17:28 -0700 (PDT)
+Received: from localhost.localdomain ([118.200.190.93])
+        by smtp.gmail.com with ESMTPSA id p33sm26481068pfw.40.2021.07.21.03.17.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 03:15:32 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Subject: [PATCH net-next] tcp: tweak len/truesize ratio for coalesce candidates
-Date:   Wed, 21 Jul 2021 03:15:28 -0700
-Message-Id: <20210721101528.329723-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.402.g57bb445576-goog
+        Wed, 21 Jul 2021 03:17:28 -0700 (PDT)
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
+        gregkh@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
+Subject: [PATCH] Bluetooth: skip invalid hci_sync_conn_complete_evt
+Date:   Wed, 21 Jul 2021 18:17:10 +0800
+Message-Id: <20210721101710.82974-1-desmondcheongzx@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Syzbot reported a corrupted list in kobject_add_internal [1]. This
+happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
+status 0 are sent for the same HCI connection. This causes us to
+register the device more than once which corrupts the kset list.
 
-tcp_grow_window() is using skb->len/skb->truesize to increase tp->rcv_ssthresh
-which has a direct impact on advertized window sizes.
+To fix this, in hci_sync_conn_complete_evt, we check whether we're
+trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
+times for one connection. If that's the case, the event is invalid, so
+we skip further processing and exit.
 
-We added TCP coalescing in linux-3.4 & linux-3.5:
-
-Instead of storing skbs with one or two MSS in receive queue (or OFO queue),
-we try to append segments together to reduce memory overhead.
-
-High performance network drivers tend to cook skb with 3 parts :
-
-1) sk_buff structure (256 bytes)
-2) skb->head contains room to copy headers as needed, and skb_shared_info
-3) page fragment(s) containing the ~1514 bytes frame (or more depending on MTU)
-
-Once coalesced into a previous skb, 1) and 2) are freed.
-
-We can therefore tweak the way we compute len/truesize ratio knowing
-that skb->truesize is inflated by 1) and 2) soon to be freed.
-
-This is done only for in-order skb, or skb coalesced into OFO queue.
-
-The result is that low rate flows no longer pay the memory price of having
-low GRO aggregation factor. Same result for drivers not using GRO.
-
-This is critical to allow a big enough receiver window,
-typically tcp_rmem[2] / 2.
-
-We have been using this at Google for about 5 years, it is due time
-to make it upstream.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Cc: Yuchung Cheng <ycheng@google.com>
+Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
+Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
+Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
+Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
 ---
- net/ipv4/tcp_input.c | 38 ++++++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 8 deletions(-)
+ net/bluetooth/hci_event.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index bef2c8b64d83a0f3d4cca90f9b12912bf3d00807..501d8d4d4ba46f9a5de322ab690c320757e0990c 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -454,11 +454,12 @@ static void tcp_sndbuf_expand(struct sock *sk)
-  */
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 016b2999f219..091a92338492 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4373,6 +4373,8 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
  
- /* Slow part of check#2. */
--static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
-+static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
-+			     unsigned int skbtruesize)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	/* Optimize this! */
--	int truesize = tcp_win_from_space(sk, skb->truesize) >> 1;
-+	int truesize = tcp_win_from_space(sk, skbtruesize) >> 1;
- 	int window = tcp_win_from_space(sk, sock_net(sk)->ipv4.sysctl_tcp_rmem[2]) >> 1;
- 
- 	while (tp->rcv_ssthresh <= window) {
-@@ -471,7 +472,27 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
- 	return 0;
- }
- 
--static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
-+/* Even if skb appears to have a bad len/truesize ratio, TCP coalescing
-+ * can play nice with us, as sk_buff and skb->head might be either
-+ * freed or shared with up to MAX_SKB_FRAGS segments.
-+ * Only give a boost to drivers using page frag(s) to hold the frame(s),
-+ * and if no payload was pulled in skb->head before reaching us.
-+ */
-+static u32 truesize_adjust(bool adjust, const struct sk_buff *skb)
-+{
-+	u32 truesize = skb->truesize;
-+
-+	if (adjust && !skb_headlen(skb)) {
-+		truesize -= SKB_TRUESIZE(skb_end_offset(skb));
-+		/* paranoid check, some drivers might be buggy */
-+		if (unlikely((int)truesize < (int)skb->len))
-+			truesize = skb->truesize;
-+	}
-+	return truesize;
-+}
-+
-+static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
-+			    bool adjust)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int room;
-@@ -480,15 +501,16 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
- 
- 	/* Check #1 */
- 	if (room > 0 && !tcp_under_memory_pressure(sk)) {
-+		unsigned int truesize = truesize_adjust(adjust, skb);
- 		int incr;
- 
- 		/* Check #2. Increase window, if skb with such overhead
- 		 * will fit to rcvbuf in future.
- 		 */
--		if (tcp_win_from_space(sk, skb->truesize) <= skb->len)
-+		if (tcp_win_from_space(sk, truesize) <= skb->len)
- 			incr = 2 * tp->advmss;
- 		else
--			incr = __tcp_grow_window(sk, skb);
-+			incr = __tcp_grow_window(sk, skb, truesize);
- 
- 		if (incr) {
- 			incr = max_t(int, incr, 2 * skb->len);
-@@ -782,7 +804,7 @@ static void tcp_event_data_recv(struct sock *sk, struct sk_buff *skb)
- 	tcp_ecn_check_ce(sk, skb);
- 
- 	if (skb->len >= 128)
--		tcp_grow_window(sk, skb);
-+		tcp_grow_window(sk, skb, true);
- }
- 
- /* Called to compute a smoothed rtt estimate. The data fed to this
-@@ -4769,7 +4791,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb);
-+			tcp_grow_window(sk, skb, true);
- 		kfree_skb_partial(skb, fragstolen);
- 		skb = NULL;
- 		goto add_sack;
-@@ -4857,7 +4879,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb);
-+			tcp_grow_window(sk, skb, false);
- 		skb_condense(skb);
- 		skb_set_owner_r(skb, sk);
- 	}
+ 	switch (ev->status) {
+ 	case 0x00:
++		if (conn->state == BT_CONNECTED)
++			goto unlock;  /* Already connected, event not valid */
+ 		conn->handle = __le16_to_cpu(ev->handle);
+ 		conn->state  = BT_CONNECTED;
+ 		conn->type   = ev->link_type;
 -- 
-2.32.0.402.g57bb445576-goog
+2.25.1
 
