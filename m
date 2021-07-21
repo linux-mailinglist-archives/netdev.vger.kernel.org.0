@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 177853D197E
+	by mail.lfdr.de (Postfix) with ESMTP id F41213D1981
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 23:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbhGUVRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 17:17:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24495 "EHLO
+        id S230078AbhGUVR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 17:17:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36839 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229979AbhGUVRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 17:17:50 -0400
+        by vger.kernel.org with ESMTP id S229995AbhGUVR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 17:17:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626904706;
+        s=mimecast20190719; t=1626904712;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cnthrEhqSK4f18XnoUkLoCiCM8/m0dpLypLCFrHKZCs=;
-        b=Oausivt1t+JkFkLEolppqbsSv1R0k57gFkfpNaCxyBB8ZBT2NMDDrhwxSWMyGR5RmowyQ2
-        BI2qQ6lCFo+AuZGiWv37qMFF4s1HKoURuZ4NNUk0mJoDbs2P4ZgR0thvSUBgNMBjGYISOa
-        tqEYeu/zZhl4M8Dh4fBeMsMSuxYuVVs=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-131-rkq-esfsNGyRLYr5EczCSQ-1; Wed, 21 Jul 2021 17:58:25 -0400
-X-MC-Unique: rkq-esfsNGyRLYr5EczCSQ-1
-Received: by mail-ej1-f72.google.com with SMTP id k1-20020a17090666c1b029041c273a883dso1305159ejp.3
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 14:58:25 -0700 (PDT)
+        bh=ccMewzkPCGXNEiOr3BDbhXGwV/AjKpWpsb/2bGggAwo=;
+        b=gBvgPFqb9JWGwhey1yGechMSpypi1qRGDIHslPEP0U00oUlrw9+6XPoXpoIZ4xmspfXUIk
+        GmzECq4DjJhDRHtNZwhqxptOKebyJ66k/saBw/2ua40IB+nPc+6Ep6swUprqSuDJXr3x9F
+        5jFKyz4pRkFmXqrEf8OSzXkdjNKp3zo=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-549-0rr1mVQ1Nz-ttPhCJsy26w-1; Wed, 21 Jul 2021 17:58:31 -0400
+X-MC-Unique: 0rr1mVQ1Nz-ttPhCJsy26w-1
+Received: by mail-ed1-f70.google.com with SMTP id v2-20020a50c4020000b02903a6620f87feso1723289edf.18
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 14:58:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cnthrEhqSK4f18XnoUkLoCiCM8/m0dpLypLCFrHKZCs=;
-        b=sJKX1YsxOUKr3Ri6W1Tp18iDHFuOjzAu0UjHvZj5vKgonbjCNwfx5wDJ+5ju0KM9qW
-         /r7PiYfxzQCkFI92XPAs70u1vZtvnpAwaMnFF8ipv9ZU6Ee1P+HLAHZi0lDBuXTYwO3O
-         ygdAOeuttIhNHX4dC6VdhTE2mI7WdWb9MPWkyl8vN6f3255DEV1sJozL6DhNDQNv2k3P
-         KT1u7qiqO50ZNRaGArtJxG5pzvOU0Z6sMtG+yJI+vgLSvoIwrszRaPeCh6Ch3hWVdhXH
-         4/r/JdN728H8Q8hsXXkeJZBMr7Ozh3xko0goAxPWaNcAtJPSKuDfWzCjzhvueNl9icvL
-         UaDQ==
-X-Gm-Message-State: AOAM530G+xpGYGYq3pkAAgSXV1q3lUFFEbOi9nNYqovm3DbARHQBAgeb
-        N6tIrX+3fzcfE23FDm6//zRfLyb0gHy7uUcKoi8iJuDftdWPOojEpxWn+pShTk/9GepM7+cyX6b
-        nrpTu3njI6s+uF0/4
-X-Received: by 2002:a17:906:6811:: with SMTP id k17mr40440361ejr.280.1626904704173;
-        Wed, 21 Jul 2021 14:58:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyJ4t0XIQQe8fG93ueNgrMdaYO+hzaOLTt1gHNTjIsb+whmwX14SfN65P5+wkYLrPXQbydCmw==
-X-Received: by 2002:a17:906:6811:: with SMTP id k17mr40440345ejr.280.1626904703985;
-        Wed, 21 Jul 2021 14:58:23 -0700 (PDT)
+        bh=ccMewzkPCGXNEiOr3BDbhXGwV/AjKpWpsb/2bGggAwo=;
+        b=PEC8f3KRxO0khFL61Iv7UTLl7wmOU3h2JK2QdfK5ieNY9jYfMV+xafUNFE6AvSZgJd
+         zxq9Y0hGexkVSf3UimoBX/utx3YUynSSu9CBA/+XJVivDSOHYFhh7yrt/oKqPDG+G7S9
+         rwyYIYqyJGSoo1WWJ/A1mVDqaIVtY7/dReNawmnljgEHc4JDAvOZYbUKnJbnZJp545V7
+         PtF2FF7mAHMC1ZTz4oL1gzsfANMadc5TVUIIjuCDWotBs3wYt/zNiyW+2XTOfJ++lrHj
+         ptxnF8vB46D4zcvE8OWrWjJLkmIdgSGcTf6d0ONr2RJu76P0L1UsuYR8Uan71+mVotQ8
+         rE7Q==
+X-Gm-Message-State: AOAM531GViwqDdq7MXzlZqCdKCLPqRL+o7wf5ftghfRO6OnIFOXv3m70
+        lRTEhAZr38lSSOQFcJwrOOdakW0xxgzIeYknfzLUUcnu3C1Z528rxz8Mi2mE0AL45I/RmP8j3ZJ
+        sFmT7mvbAmzVy1Tjz
+X-Received: by 2002:a17:906:7c6:: with SMTP id m6mr24060879ejc.456.1626904710336;
+        Wed, 21 Jul 2021 14:58:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/d/fmsrF6DFPHn3DuoAiXFEmIbfGuX7ba1DUS37m6SD8VFG7/J9X1w43TXoUs7i7D24VnZQ==
+X-Received: by 2002:a17:906:7c6:: with SMTP id m6mr24060870ejc.456.1626904710189;
+        Wed, 21 Jul 2021 14:58:30 -0700 (PDT)
 Received: from krava.cust.in.nbox.cz ([83.240.60.59])
-        by smtp.gmail.com with ESMTPSA id q24sm11283244edc.82.2021.07.21.14.58.23
+        by smtp.gmail.com with ESMTPSA id v16sm10741216edc.52.2021.07.21.14.58.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 14:58:23 -0700 (PDT)
+        Wed, 21 Jul 2021 14:58:29 -0700 (PDT)
 From:   Jiri Olsa <jolsa@redhat.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -62,9 +62,9 @@ Cc:     Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
         Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH bpf-next 2/3] libbpf: Allow decimal offset for kprobes
-Date:   Wed, 21 Jul 2021 23:58:09 +0200
-Message-Id: <20210721215810.889975-3-jolsa@kernel.org>
+Subject: [PATCH bpf-next 3/3] libbpf: Export bpf_program__attach_kprobe_opts function
+Date:   Wed, 21 Jul 2021 23:58:10 +0200
+Message-Id: <20210721215810.889975-4-jolsa@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210721215810.889975-1-jolsa@kernel.org>
 References: <20210721215810.889975-1-jolsa@kernel.org>
@@ -74,78 +74,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to specify decimal offset in SEC macro, like:
-  SEC("kprobe/bpf_fentry_test7+5")
+Exporting bpf_program__attach_kprobe_opts function.
 
-Adding selftest for that.
+Renaming bpf_program_attach_kprobe_opts to bpf_kprobe_opts
+and adding 'sz' field for forward/backward compatiblity.
 
 Suggested-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/lib/bpf/libbpf.c                                |  2 +-
- .../selftests/bpf/prog_tests/get_func_ip_test.c       |  2 ++
- tools/testing/selftests/bpf/progs/get_func_ip_test.c  | 11 +++++++++++
- 3 files changed, 14 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c   | 31 +++++++++++++++++--------------
+ tools/lib/bpf/libbpf.h   | 14 ++++++++++++++
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 32 insertions(+), 14 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index d46c2dd37be2..52f4f1d4f495 100644
+index 52f4f1d4f495..63a6239d8569 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -10424,7 +10424,7 @@ static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
- 	func_name = prog->sec_name + sec->len;
- 	opts.retprobe = strcmp(sec->sec, "kretprobe/") == 0;
- 
--	n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%lx", &func, &offset);
-+	n = sscanf(func_name, "%m[a-zA-Z0-9_.]+%li", &func, &offset);
- 	if (n < 1) {
- 		err = -EINVAL;
- 		pr_warn("kprobe name is invalid: %s\n", func_name);
-diff --git a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-index 088b3653610d..02a465f36d59 100644
---- a/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/get_func_ip_test.c
-@@ -17,6 +17,7 @@ void test_get_func_ip_test(void)
- 	 */
- #ifndef __x86_64__
- 	bpf_program__set_autoload(skel->progs.test6, false);
-+	bpf_program__set_autoload(skel->progs.test7, false);
- #endif
- 
- 	err = get_func_ip_test__load(skel);
-@@ -46,6 +47,7 @@ void test_get_func_ip_test(void)
- 	ASSERT_EQ(skel->bss->test5_result, 1, "test5_result");
- #ifdef __x86_64__
- 	ASSERT_EQ(skel->bss->test6_result, 1, "test6_result");
-+	ASSERT_EQ(skel->bss->test7_result, 1, "test7_result");
- #endif
- 
- cleanup:
-diff --git a/tools/testing/selftests/bpf/progs/get_func_ip_test.c b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-index acd587b6e859..a587aeca5ae0 100644
---- a/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-+++ b/tools/testing/selftests/bpf/progs/get_func_ip_test.c
-@@ -11,6 +11,7 @@ extern const void bpf_fentry_test3 __ksym;
- extern const void bpf_fentry_test4 __ksym;
- extern const void bpf_modify_return_test __ksym;
- extern const void bpf_fentry_test6 __ksym;
-+extern const void bpf_fentry_test7 __ksym;
- 
- __u64 test1_result = 0;
- SEC("fentry/bpf_fentry_test1")
-@@ -71,3 +72,13 @@ int test6(struct pt_regs *ctx)
- 	test6_result = (const void *) addr == &bpf_fentry_test6 + 5;
- 	return 0;
+@@ -10366,25 +10366,28 @@ static int perf_event_open_probe(bool uprobe, bool retprobe, const char *name,
+ 	return pfd;
  }
+ 
+-struct bpf_program_attach_kprobe_opts {
+-	bool retprobe;
+-	unsigned long offset;
+-};
+-
+-static struct bpf_link*
++struct bpf_link*
+ bpf_program__attach_kprobe_opts(struct bpf_program *prog,
+ 				const char *func_name,
+-				struct bpf_program_attach_kprobe_opts *opts)
++				struct bpf_kprobe_opts *opts)
+ {
+ 	char errmsg[STRERR_BUFSIZE];
+ 	struct bpf_link *link;
++	unsigned long offset;
++	bool retprobe;
+ 	int pfd, err;
+ 
+-	pfd = perf_event_open_probe(false /* uprobe */, opts->retprobe, func_name,
+-				    opts->offset, -1 /* pid */);
++	if (!OPTS_VALID(opts, bpf_kprobe_opts))
++		return libbpf_err_ptr(-EINVAL);
 +
-+__u64 test7_result = 0;
-+SEC("kprobe/bpf_fentry_test7+5")
-+int test7(struct pt_regs *ctx)
-+{
-+	__u64 addr = bpf_get_func_ip(ctx);
++	retprobe = OPTS_GET(opts, retprobe, false);
++	offset = OPTS_GET(opts, offset, 0);
 +
-+	test7_result = (const void *) addr == &bpf_fentry_test7 + 5;
-+	return 0;
-+}
++	pfd = perf_event_open_probe(false /* uprobe */, retprobe, func_name,
++				    offset, -1 /* pid */);
+ 	if (pfd < 0) {
+ 		pr_warn("prog '%s': failed to create %s '%s' perf event: %s\n",
+-			prog->name, opts->retprobe ? "kretprobe" : "kprobe", func_name,
++			prog->name, retprobe ? "kretprobe" : "kprobe", func_name,
+ 			libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+ 		return libbpf_err_ptr(pfd);
+ 	}
+@@ -10393,7 +10396,7 @@ bpf_program__attach_kprobe_opts(struct bpf_program *prog,
+ 	if (err) {
+ 		close(pfd);
+ 		pr_warn("prog '%s': failed to attach to %s '%s': %s\n",
+-			prog->name, opts->retprobe ? "kretprobe" : "kprobe", func_name,
++			prog->name, retprobe ? "kretprobe" : "kprobe", func_name,
+ 			libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+ 		return libbpf_err_ptr(err);
+ 	}
+@@ -10404,9 +10407,9 @@ struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
+ 					    bool retprobe,
+ 					    const char *func_name)
+ {
+-	struct bpf_program_attach_kprobe_opts opts = {
++	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts,
+ 		.retprobe = retprobe,
+-	};
++	);
+ 
+ 	return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
+ }
+@@ -10414,7 +10417,7 @@ struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
+ static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
+ 				      struct bpf_program *prog)
+ {
+-	struct bpf_program_attach_kprobe_opts opts;
++	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
+ 	unsigned long offset = 0;
+ 	struct bpf_link *link;
+ 	const char *func_name;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index 6b08c1023609..da4a63a1265d 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -104,6 +104,16 @@ struct bpf_object_open_opts {
+ };
+ #define bpf_object_open_opts__last_field btf_custom_path
+ 
++struct bpf_kprobe_opts {
++	/* size of this struct, for forward/backward compatiblity */
++	size_t sz;
++	/* kprobe is return probe */
++	bool retprobe;
++	/* function's offset to install kprobe to */
++	unsigned long offset;
++};
++#define bpf_kprobe_opts__last_field offset
++
+ LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
+ LIBBPF_API struct bpf_object *
+ bpf_object__open_file(const char *path, const struct bpf_object_open_opts *opts);
+@@ -249,6 +259,10 @@ bpf_program__attach_perf_event(struct bpf_program *prog, int pfd);
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_kprobe(struct bpf_program *prog, bool retprobe,
+ 			   const char *func_name);
++LIBBPF_API struct bpf_link*
++bpf_program__attach_kprobe_opts(struct bpf_program *prog,
++                                const char *func_name,
++                                struct bpf_kprobe_opts *opts);
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
+ 			   pid_t pid, const char *binary_path,
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 5bfc10722647..887d372a3f27 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -372,6 +372,7 @@ LIBBPF_0.5.0 {
+ 	global:
+ 		bpf_map__initial_value;
+ 		bpf_map_lookup_and_delete_elem_flags;
++		bpf_program__attach_kprobe_opts;
+ 		bpf_object__gen_loader;
+ 		btf_dump__dump_type_data;
+ 		libbpf_set_strict_mode;
 -- 
 2.31.1
 
