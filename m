@@ -2,159 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9623D1698
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8A23D169C
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:46:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239287AbhGUSFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 14:05:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38654 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231535AbhGUSFM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 14:05:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C5766121E;
-        Wed, 21 Jul 2021 18:45:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626893149;
-        bh=ESMnGGV4g5NlSlbPQ/VY5dMDhdeWacNJdDLjMiDrnek=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tQUZmDTWThp2RXBpnHq6rDOZU1MQH7LCc5aG9HUFubBDCi6JMpHqq4FyM28/zPcR+
-         HJjeCnj3oDrKW5/aIjQKL59QLEyo9/dS6VdD5bPztOXh3lDs+ZlwBc3UEe65GXgyQO
-         tLpBQ0MtsztZ2aG0mzfAP3P2ASi1LyXcF0E7g3+pAi0B9jXmqKEQDJuoR3GpVDn5Nm
-         qQGw/8vZeX7jy2J9gNtbsWmM1b/HMCKj61C0ucvQjcjKArGVlLpSYUgjE1Kjm0Zw03
-         75yRkqljQ4zKPxyGjGITk3N4uSiVfw5BQcyyuDl9mBcNg0KaUtZbv8uMFuhS3HAWgM
-         eoNzufp2Klv+A==
-Date:   Wed, 21 Jul 2021 20:45:43 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <20210721204543.08e79fac@thinkpad>
-In-Reply-To: <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
-        <20210716212427.821834-6-anthony.l.nguyen@intel.com>
-        <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
-        <YPTKB0HGEtsydf9/@lunn.ch>
-        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
-        <YPbu8xOFDRZWMTBe@lunn.ch>
-        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S239429AbhGUSFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 14:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231535AbhGUSFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 14:05:24 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A08C061575;
+        Wed, 21 Jul 2021 11:46:00 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id k4-20020a17090a5144b02901731c776526so155218pjm.4;
+        Wed, 21 Jul 2021 11:46:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UCmn/zTjqaJHJEOQhO1krx2JabX8XxHBsvR7Suz18sQ=;
+        b=Q5EwVV1GxDqwhBXAgVoxMT5XTwkVX+UCa22MdX1q8BdPXBob9Y1iJHhjuk/cYwwmBq
+         f6POV2Uou0+rnp/737lprC5Xn7dj+lWTZ8JNKgAn2P+2Au5HvX9EggMSOojwWxvVxIJp
+         6se3dCze9mR73eatBzBe3GKB7vGcP5NlC96DSLwLqn6jp+jHVwGVfAOANMPZw3EpYjwc
+         phF63H2dmAogFNP4D4mcBT7faEflJ34NCgRyj+rtg9dek+dQXcH75LIcUt5poodTvlCj
+         0xysc3x3WWrfs8Y3h6FT7xcuGZ0GEzqyyd7rlIh+5bq5FhIgmsnhdsYL+HPa6ox/QbO7
+         fJrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UCmn/zTjqaJHJEOQhO1krx2JabX8XxHBsvR7Suz18sQ=;
+        b=pd8GldowUM7KpSOtsCWkPCvjzjIpkOvXv+P97kZi90hPif0a+fHpVozh2vrWxeFqK2
+         IBLeJppq1T0X+pIym1PBCrxx8u4NrsUv7ifWkINhOgRbmn+IcdqaBM/lZQGayXvh9EUP
+         9v9776oOM3UtplsLAqzRXeVimwdILRVr78PxP7xBIa1JpT7RxMtLmNCMdIpGXZQ+OigK
+         CByJI3gGqKvlUy5YbBHRrZCHY+rd0aru2/tJO98SKy2YKoDiJOJ1wIQTeszu/J1MxQJG
+         RV8pGDw3RlwHYUu5zfjRO01uVkBM2BXwHaiQCFAmg4QPcBH0OoDuKk78D7uz1Dh6Z2Fs
+         l42Q==
+X-Gm-Message-State: AOAM531238Mb65yuajMQ7EahX6m8c/G1XH+MMLmGnZRQ3zUfDJjzznrj
+        qC9SRYp9e5DVrjYDHpxg5d5FwSHx1U83xA==
+X-Google-Smtp-Source: ABdhPJz9MMDqrGPyLjuYqu5Ea9XGHE6RXsgm9z5JJrsk/ATX6bgmX8+kC8AuCvL3IJy873y2mQvy4w==
+X-Received: by 2002:a63:5610:: with SMTP id k16mr37068273pgb.439.1626893159591;
+        Wed, 21 Jul 2021 11:45:59 -0700 (PDT)
+Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id m21sm23297840pjz.36.2021.07.21.11.45.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 11:45:59 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jacek Szafraniec <jacek.szafraniec@nokia.com>
+Subject: [PATCHv2 net] sctp: do not update transport pathmtu if SPP_PMTUD_ENABLE is not set
+Date:   Wed, 21 Jul 2021 14:45:54 -0400
+Message-Id: <46ea0cacefc4cebcb9e041edd201eece6d2e881d.1626893154.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Jul 2021 22:29:21 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+Currently, in sctp_packet_config(), sctp_transport_pmtu_check() is
+called to update transport pathmtu with dst's mtu when dst's mtu
+has been changed by non sctp stack like xfrm.
 
-> On 20.07.2021 17:42, Andrew Lunn wrote:
-> >> I checked the LED subsystem and didn't find a way to place the LED
-> >> sysfs files in a place other than /sys/class/leds. Maybe Pavel can
-> >> comment on whether I just missed something.  
-> > 
-> > https://lwn.net/ml/linux-kernel/20200908000300.6982-1-marek.behun@nic.cz/
-> > 
-> > It comments the sys files appear under
-> > /sys/class/net/<ifname>/phydev/leds/. phydev is a symbolic link to the
-> > phy devices, provided by the phydev subsystem. So they are actually
-> > attached to the PHY device. And this appears to be due to:
-> > 
-> > 	ret = devm_led_classdev_register_ext(&phydev->mdio.dev, &led->cdev, &init_data);
-> > 
-> > The LEDs are parented to the phy device. This has the nice side affect
-> > that PHYs are not part of the network name space. You can rename the
-> > interface, /sys/class/net/<ifname> changes, but the symbolic link
-> > still points to the phy device.
-> > 
-> > When not using phydev, it probably gets trickier. You probably want
-> > the LEDs parented to the PCI device, and you need to follow a
-> > different symbolic link out of /sys/class/net/<ifname>/ to find the
-> > LED.
-> > 
-> > There was talk of adding an ledtool, which knows about these
-> > links. But i pushed for it to be added to ethtool. Until we get an
-> > implementation actually merged, that is academic.
-> >   
-> >> For r8169 I'm facing a similar challenge like Kurt. Most family
-> >> members support three LED's:
-> >> - Per LED a mode 0 .. 15 can be set that defines which link speed(s)
-> >>   and/or activity is indicated.
-> >> - Period and duty cycle for blinking can be controlled, but this
-> >>   setting applies to all three LED's.  
-> > 
-> > Cross LED settings is a problem. The Marvell PHYs have a number of
-> > independent modes. Plus they have some shared modes which cross LEDs.
-> > At the moment, there is no good model for these shared modes.
-> > 
-> > We have to look at the trade offs here. At the moment we have at least
-> > 3 different ways of setting PHY LEDs via DT. Because each driver does
-> > it its own way, it probably allows full access to all features. But it
-> > is very unfriendly. Adopting Linux LEDs allows us to have a single
-> > uniform API for all these PHY LEDs, and probably all MAC drivers which
-> > don't use PHY drivers. But at the expense of probably not supporting
-> > all features of the hardware. My opinion is, we should ignore some of
-> > the hardware features in order to get a simple to use uniform
-> > interface for all LEDs, which probably covers the features most people
-> > are interested in anyway.
-> >   
-> 
-> Thanks for the hint, Andrew. If I make &netdev->dev the parent,
-> then I get:
-> 
-> ll /sys/class/leds/
-> total 0
-> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led0 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led0
-> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led1 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led1
-> lrwxrwxrwx 1 root root 0 Jul 20 21:37 led2 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/led2
-> 
-> Now the (linked) LED devices are under /sys/class/net/<ifname>, but still
-> the primary LED devices are under /sys/class/leds and their names have
-> to be unique therefore. The LED subsystem takes care of unique names,
-> but in case of a second network interface the LED device name suddenly
-> would be led0_1 (IIRC). So the names wouldn't be predictable, and I think
-> that's not what we want.
-> We could use something like led0_<pci_id>, but then userspace would have
-> to do echo foo > /sys/class/net/<ifname>/led0*/bar, and that's also not
-> nice.
+However, this should only happen when SPP_PMTUD_ENABLE is set, no
+matter where dst's mtu changed. This patch is to fix by checking
+SPP_PMTUD_ENABLE flag before calling sctp_transport_pmtu_check().
 
-Hi Heiner,
+Thanks Jacek for reporting and looking into this issue.
 
-in sysfs, all devices registered under LED class will have symlinks in
-/sys/class/leds. This is how device classes work in Linux.
+v1->v2:
+  - add the missing "{" to fix the build error.
 
-There is a standardized format for LED device names, please look at
-Documentation/leds/leds-class.rst.
+Fixes: 69fec325a643 ('Revert "sctp: remove sctp_transport_pmtu_check"')
+Reported-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
+Tested-by: Jacek Szafraniec <jacek.szafraniec@nokia.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+---
+ net/sctp/output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Basically the LED name is of the format
-  devicename:color:function
+diff --git a/net/sctp/output.c b/net/sctp/output.c
+index 9032ce60d50e..4dfb5ea82b05 100644
+--- a/net/sctp/output.c
++++ b/net/sctp/output.c
+@@ -104,8 +104,8 @@ void sctp_packet_config(struct sctp_packet *packet, __u32 vtag,
+ 		if (asoc->param_flags & SPP_PMTUD_ENABLE)
+ 			sctp_assoc_sync_pmtu(asoc);
+ 	} else if (!sctp_transport_pl_enabled(tp) &&
+-		   !sctp_transport_pmtu_check(tp)) {
+-		if (asoc->param_flags & SPP_PMTUD_ENABLE)
++		   asoc->param_flags & SPP_PMTUD_ENABLE) {
++		if (!sctp_transport_pmtu_check(tp))
+ 			sctp_assoc_sync_pmtu(asoc);
+ 	}
+ 
+-- 
+2.27.0
 
-The list of colors and functions is defined in
-  include/dt-bindings/leds/common.h
-
-The function part of the LED is also supposed to (in the future)
-specify trigger, i.e. something like:
-  if the function is "activity", the LED should blink on network
-  activity
-(Note that there is not yet a consensus. Jacek, for example, is of the
- opinion that the "activity" function should imply the CPU activity
- trigger. I think that "activity" function together with trigger-source
- defined to be a network device should imply network activity.)
-
-Does your driver register the LEDs based on device-tree?
-
-If so, then LED core will compose the name for the device for you.
-
-If not, then you need to compose the name (in the above format)
-yourself.
-
-Are your LEDs controlled by an ethernet PHY, or by the MAC itself?
-
-Marek
