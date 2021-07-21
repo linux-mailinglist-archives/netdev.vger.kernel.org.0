@@ -2,188 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C77A93D0D96
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8613D0D93
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240341AbhGUKqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S240236AbhGUKqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238709AbhGUJhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:37:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9F0C0613E9
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:18:19 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m69Iv-0003pE-IO; Wed, 21 Jul 2021 12:18:17 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:1b:ece1:995c:23c1] (unknown [IPv6:2a03:f580:87bc:d400:1b:ece1:995c:23c1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A1391653A40;
-        Wed, 21 Jul 2021 10:18:16 +0000 (UTC)
-Subject: Re: [PATCH] net: switchdev: switchdev_handle_fdb_del_to_device(): fix
- no-op function for disabled CONFIG_NET_SWITCHDEV
-To:     netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, kernel@pengutronix.de
-References: <20210721101511.76862-1-mkl@pengutronix.de>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <9d272c17-ba53-6b84-5fb5-9bce6e6e7f68@pengutronix.de>
-Date:   Wed, 21 Jul 2021 12:18:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S237986AbhGUJgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:20 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C9EC061768;
+        Wed, 21 Jul 2021 03:16:57 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id z17so1728527iog.12;
+        Wed, 21 Jul 2021 03:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QTF7O5HzF8haTDzz11IYFCmXhr6sJ8z3PRlb5qVd+sA=;
+        b=KIdPSwdI4SZOtof5J1rQaLGFzfdd9SgzgF8rKwZZkKepZEdqmY22ElWhF9ffDsaTVo
+         d6j+Lc8AZCU5of4jz6fsqMwqv7Q4ZfEQtz1nvNDaufwZ2UUXx1QrCbGbEKbdD2BnDFoW
+         k3N/IJ7WSFT+eSQkhbHIAKe/LguadIMTovMhmgJMPyVaXg0YKKtrGpHYI8g5PUhkVFPC
+         IpbGaW1uHdcdJaK8aaoPEkpX478TPvohjCNhe4CkHC+6ZoDv0AIN1SfHDyU6ePqSzTmd
+         AIY3qtOD3GllH6GNniWvlS6jYdAEpmUQxR7s94SoBeWnsPC9/7ZXMB97UwqrqE5FGfID
+         GrnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QTF7O5HzF8haTDzz11IYFCmXhr6sJ8z3PRlb5qVd+sA=;
+        b=X3+Dkc/eL/dLOGPjx+U09i62U/dh7WVRIzrQN1XYUws4qwsDHxgEEw6W27FH4SKKO+
+         bFhi0fdW/X2/uRBUwAQdCgORJ4IbxTWoVopSad8OMjqmkfnPwa0XWYU0J9s152vC0ywc
+         p0gpCe+CyslzmGZeqETtygqy0W7sQvKQso21dS73/M+N9edKUg1Mf3qZk6T4lxkwhiId
+         zQXHqwESqQ/58hV8GcEFIpPc89Hu3Bjgx7T80+EcVCxggtG2QN1oe8kuajaPIKZHf4pK
+         WeYTI2LKd90rTXiLH3l3Kkm60hJC3keu77qh5gNbRhVF895HawFsBXBTfTAnODtWH4pN
+         w1Sw==
+X-Gm-Message-State: AOAM530WddpCBiHnSHxFMEAMDEwxOPzuEhNCh9DvBZ1H5uGeXG0P+viK
+        OjKwdcELrAWIXYbL+69Q1a31YYmRZs+mmapjixE=
+X-Google-Smtp-Source: ABdhPJykrEstufjX8GoCvx9yyd+BDxsJ+ECFNHqexYaSxLEZ0C6NQGFBeEk4yQEF9Jmh7fGyoK27KZS6sI5TkW9KJDs=
+X-Received: by 2002:a5d:9f11:: with SMTP id q17mr24971479iot.62.1626862616943;
+ Wed, 21 Jul 2021 03:16:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210721101511.76862-1-mkl@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="WjdhByZxL6OxFxefI941R576ZTk0RhiCo"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210717142513.5411-1-len.baker@gmx.com>
+In-Reply-To: <20210717142513.5411-1-len.baker@gmx.com>
+From:   Stanislav Yakovlev <stas.yakovlev@gmail.com>
+Date:   Wed, 21 Jul 2021 14:20:45 +0400
+Message-ID: <CA++WF2ON8E=FNHj3SqO=OMvx6SBB=Lv517rmCrBTvG+6d=tL3A@mail.gmail.com>
+Subject: Re: [PATCH] ipw2x00: Use struct_size helper instead of open-coded arithmetic
+To:     Len Baker <len.baker@gmx.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---WjdhByZxL6OxFxefI941R576ZTk0RhiCo
-Content-Type: multipart/mixed; boundary="V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: netdev@vger.kernel.org
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, kernel@pengutronix.de
-Message-ID: <9d272c17-ba53-6b84-5fb5-9bce6e6e7f68@pengutronix.de>
-Subject: Re: [PATCH] net: switchdev: switchdev_handle_fdb_del_to_device(): fix
- no-op function for disabled CONFIG_NET_SWITCHDEV
-References: <20210721101511.76862-1-mkl@pengutronix.de>
-In-Reply-To: <20210721101511.76862-1-mkl@pengutronix.de>
+On Sat, 17 Jul 2021 at 18:25, Len Baker <len.baker@gmx.com> wrote:
+>
+> Dynamic size calculations (especially multiplication) should not be
+> performed in memory allocator function arguments due to the risk of them
+> overflowing. This could lead to values wrapping around and a smaller
+> allocation being made than the caller was expecting. Using those
+> allocations could lead to linear overflows of heap memory and other
+> misbehaviors.
+>
+> To avoid this scenario, use the struct_size helper.
+>
+> Signed-off-by: Len Baker <len.baker@gmx.com>
+> ---
+>  drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
 
---V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Looks fine, thanks!
 
-Hello,
-
-On 7/21/21 12:15 PM, Marc Kleine-Budde wrote:
-> In patch 8ca07176ab00 ("net: switchdev: introduce a fanout helper for
-> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE") new functionality including static
-> inline no-op functions if CONFIG_NET_SWITCHDEV is disabled was added.
->=20
-> This patch fixes the following build error for disabled
-> CONFIG_NET_SWITCHDEV:
->=20
-> | In file included from include/net/dsa.h:23,
-> |                  from net/core/flow_dissector.c:8:
-> | include/net/switchdev.h:410:1: error: expected identifier or =E2=80=98=
-(=E2=80=99 before =E2=80=98{=E2=80=99 token
-> |   410 | {
-> |       | ^
-> | include/net/switchdev.h:399:1: warning: =E2=80=98switchdev_handle_fdb=
-_del_to_device=E2=80=99 declared =E2=80=98static=E2=80=99 but never defin=
-ed [-Wunused-function]
-> |   399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
-> |       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->=20
-> Fixes: 8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWI=
-TCHDEV_FDB_{ADD,DEL}_TO_DEVICE")
-> Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-
-This patch is for net-next, I've send a v2 with a corrected subject.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz--
-
---WjdhByZxL6OxFxefI941R576ZTk0RhiCo
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD39GUACgkQqclaivrt
-76lHmQgAi3g00eL/VyLeslzNVaJbuFIRW8eQ06tqGjXTBlyQWU0+YLuXySpa6laq
-mJYtX4xBqPSZ5jC3RUU8SzoNrrhVmkd6y5vo0qsk+iSl2/Xfi0M/cefqNwNab05u
-IAZlTAhXHgXuqsTI5vfWS61svyjbrSigpb3YUajQbGzCvw6mTlL9Gz3gRCK4cIsM
-iBH2vP1Iq/LlHE3tvBmNCVu9QMi1yrJ1y0QxmIdJ9mKjuSy+ygk4VIYFX7AfvStS
-M5o0MjKCq/K+7YTdUSBssO0NcEsSJtXw6spm1PqdrDC9nwTWWaNq5f60zywt4ryW
-YZgoXSrCNP0+o4A/yqWwAPd3kKsWSw==
-=RsBy
------END PGP SIGNATURE-----
-
---WjdhByZxL6OxFxefI941R576ZTk0RhiCo--
+Stanislav.
