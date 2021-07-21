@@ -2,92 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C712F3D1A8F
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 01:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82E603D1A77
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 01:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbhGUXPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 19:15:46 -0400
-Received: from mout.gmx.net ([212.227.17.20]:38103 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229974AbhGUXPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 19:15:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1626911767;
-        bh=MTzoNI+4/t77AVtRX7F3dHidZZBtCwdh6utBGbbuUCM=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=h1ixPFzUldtN6+MF1sX2ojNNcTYmbrtAtZu9qs3VOOvnt09Ry2+x0B5b9zWk97w2p
-         /QVMTNgzHKUe3ytPAePdyF7kzV3zN3p0KmKZIUqvNXx1VtZkzqisbw7WMH3W2ODmvP
-         w24kuQBEOESKReg/UcQrmVBH4XPffruJUfxHVI54=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.67]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M6ll8-1m1M8T2p1a-008KqK; Wed, 21
- Jul 2021 23:56:51 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     woojung.huh@microchip.com, olteanv@gmail.com
-Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        id S231229AbhGUWzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 18:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230289AbhGUWzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 18:55:17 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8054FC061575;
+        Wed, 21 Jul 2021 16:35:52 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id dj21so4566180edb.0;
+        Wed, 21 Jul 2021 16:35:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uEqLdGKF6+rg1FAbUl0sbtAwny0zoTLNAfMvz3yVKUc=;
+        b=IHRJNobmB50DI1h20Pr7f4uYikBnbtt4dMTHrvLlItiKSyBfPs1MawYLBdF6CGP7RM
+         ex683UPnPIgomHpfLMJpvY5KGrTrqNSvXNlUWm8ktIxoH5Jt65uhiuDhHApFfyA0vGyf
+         96IbZP2kXwnNns73bc0FMfyrur4k6tZML9tjHeEtU8WcGBt89PaSCoa9ls6RPxymHO3/
+         azhEm+XTzmnTcMBlJehuAiKuEeNnzeXhu7NZ0uPvmMo4ExSSngKrXQdHVm+lbFHBqkgb
+         cvpK3Ytv5LEhzH7yQZi2EcZ2JIYwm7wtV+PK/FQf8PXvFrO7E5CYy4SowQk5bntPS/yq
+         MnFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uEqLdGKF6+rg1FAbUl0sbtAwny0zoTLNAfMvz3yVKUc=;
+        b=fJ4tnmE3aRgnTeHt6yMaRfjaWVf+TyIRPKaA3wcsfd3jG177q7KW+88JK5XLCF7OuQ
+         YYdrgUeLbjvMUa5Xi1SUAdIXcylC8BkHpUAw4/m6p8Tc0HIUnaJA9nBQusebalT9Suhk
+         7Uz1vWxAS9G7EW9Bl+3ARN850PiWGqBNxpRKwrooo71q8Q5VZTwbEJ6EWTMau6yRc3DE
+         gxECBTwfXsoIPUV0OzHSJZvrVYDXadjAmquOVQCK6J+XY5BQQg0qUtnDOteaoL0TElxJ
+         25eAp1OJ0lO0HWtHBe1WQfrkAXBzz+GtUPaeETXUH9OjE/YKcrLubiQL2B2MsIXGWM8J
+         jazg==
+X-Gm-Message-State: AOAM531sPyNhcThoQwQDdh98UsgXvWyNAEHACty5E8ZhvC4gSiYQGi7m
+        LXBfacUP2s+Prvj4snAOjIU=
+X-Google-Smtp-Source: ABdhPJzUiY8X3xBvpDKKpn7221qkP6gD+e4ElJEdL60keo8TvM/fgy9c/3pQFiH17fa+CZO8hHxKNw==
+X-Received: by 2002:a05:6402:1546:: with SMTP id p6mr44885499edx.206.1626910551162;
+        Wed, 21 Jul 2021 16:35:51 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id j1sm11479752edl.80.2021.07.21.16.35.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 16:35:50 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 02:35:49 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v2 2/2] net: dsa: tag_ksz: dont let the hardware process the layer 4 checksum
-Date:   Wed, 21 Jul 2021 23:56:42 +0200
-Message-Id: <20210721215642.19866-3-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: dsa: ensure linearized SKBs in case of tail
+ taggers
+Message-ID: <20210721233549.mhqlrt3l2bbyaawr@skbuf>
 References: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
+ <20210721215642.19866-2-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:VrYRZ8zYIkA/EmJQWzaTUwoWNymemMyGpBXSXegQD3tN4gQv8hr
- SKV/Rfr0ylf4Afz6WxOvFNJ47HRx9YkCa8eomMPWnuPnE5rXCHl+wgYia4nV/RQI3kHRbpz
- JnYxqysjd8rwUEKc9obqdFK4cE/cxP91xjQpGMQz4lTk/87hb2SlbVbS5hRJHKvLZRBZ7AS
- 6Oz0bYceci9NqZ0ricBrg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wttdpPwfjc8=:9y0l/U1MEUh58h4FCgqWsc
- uF2bw17XQlk+iIv91j6pCdIOf0hGu9AnwCR9tbVsGLQu2q0RXiHsvFhqNZPviXoWm45LXevJU
- b7ZGFelk9YvtIcXNUdfI0nzv4BqLToOdxFkrQi4TVI58PaVerNqmCbCdw03qv/Naq8ZTf9wiN
- ikCEPUZzF5+tNWaz2pA7Z2jjIEb5TAhgU9E7eWAlBOuetS8t1rt+mFkL0jxEZZp8iRFJg5HjE
- NIhoHX7tL5uErrNGsFgmBovQqVKl2p9oi1mLWWZvtNOV09u4W2Pdw1uUS9qqr3cboDd6uhcsY
- DZgW6MbDNjqYA9mkijp8RjyTMlPl68k4OuWYbeDK9aRtAw/60VTbASBbtl8w4b8b2XHH2L6YN
- CH/nGO3hTyyrLH4RM4tDScHRxoerfHnHZFT/BJ5gsc+Iq9xRAM7wMM4HF2PrKDtPIURCQSW3y
- ZplH9ssJNrFIeZz0IOSXdH5q0uCzBbZZzgpvPkl8J8ISZO1agSDxCLtv7Bxdf/uIFPByp0fHR
- gtq/1VjJQjxyRwBqol8O6oyAkmqmnvswziMCu9jWLyNhhtkeUHgkH0hasQR9OkZJcdg9NeNK3
- Xo4x/mT0JDe2vBIkuNBB4JkQHw6TMecKOoDbgT7XjeqnIjAPDViWFV+7eLDgWRhDjoDDTT6eq
- KUuyeIVstbWZ+Z3YXVx2PtrpDhjy/ilVbIgNhvu3hCXKN6ucfUWrdsjgCeGDIxsUmqGDnNhfd
- oxKyt3Kbzqx/IsRricuvNPi/RUeria5uy0T6DfodVPedz1OHt/hotI6XZYFzss86tiWNiRbG/
- elo+CySMsr7FPtAYPn6d8GykpNvgc/a6XBMFmb3BAjhCWNV4+gX/wkGvSdXmwjAnrMf/6PMqS
- oa07bBUeFQbu2rjffphWGo3zR34sIqHx1aRL42q+IaL1CloO+l34PduUy42TzC1JPNTlZJiIW
- PUIS3De+AOfmKC06A48bML4wwITualUq9RCu2/XkVwwtczwthelYtexI3aD1JQGLwUVlef5c2
- hV0ztaXXpYyF+9UjiZfEbpccelkz0zjHqVKygo91NTJVLQ7xMLCvYgaFfkWhpEAJDfpTlPwVm
- xqjnc/C36rpqP2lnu9uUdq5bkizW8PXsYoS1c5+CSMWVoRW7O6I9oSg3A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210721215642.19866-2-LinoSanfilippo@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SWYgdGhlIGNoZWNrc3VtIGNhbGN1bGF0aW9uIGlzIG9mZmxvYWRlZCB0byB0aGUgbmV0d29yayBk
-ZXZpY2UgKGUuZyBkdWUgdG8KTkVUSUZfRl9IV19DU1VNIGluaGVyaXRlZCBmcm9tIHRoZSBEU0Eg
-bWFzdGVyIGRldmljZSksIHRoZSBjYWxjdWxhdGVkCmxheWVyIDQgY2hlY2tzdW0gaXMgaW5jb3Jy
-ZWN0LiBUaGlzIGlzIHNpbmNlIHRoZSBEU0EgdGFnIHdoaWNoIGlzIHBsYWNlZAphZnRlciB0aGUg
-bGF5ZXIgNCBkYXRhIGlzIGNvbnNpZGVyZWQgYXMgYmVpbmcgcGFydCBvZiB0aGUgZGFhIGFuZCB0
-aHVzCmVycm9ybmVvdXNseSBpbmNsdWRlZCBpbnRvIHRoZSBjaGVja3N1bSBjYWxjdWxhdGlvbi4K
-VG8gYXZvaWQgdGhpcywgYWx3YXlzIGNhbGN1bGF0ZSB0aGUgbGF5ZXIgNCBjaGVja3N1bSBpbiBz
-b2Z0d2FyZS4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBwbyA8TGlub1NhbmZpbGlwcG9A
-Z214LmRlPgotLS0KIG5ldC9kc2EvdGFnX2tzei5jIHwgOSArKysrKysrKysKIDEgZmlsZSBjaGFu
-Z2VkLCA5IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9uZXQvZHNhL3RhZ19rc3ouYyBiL25l
-dC9kc2EvdGFnX2tzei5jCmluZGV4IDUzNTY1ZjQ4OTM0Yy4uYTIwMWNjZjI0MzVkIDEwMDY0NAot
-LS0gYS9uZXQvZHNhL3RhZ19rc3ouYworKysgYi9uZXQvZHNhL3RhZ19rc3ouYwpAQCAtNTMsNiAr
-NTMsOSBAQCBzdGF0aWMgc3RydWN0IHNrX2J1ZmYgKmtzejg3OTVfeG1pdChzdHJ1Y3Qgc2tfYnVm
-ZiAqc2tiLCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQogCXU4ICp0YWc7CiAJdTggKmFkZHI7CiAK
-KwlpZiAoc2tiLT5pcF9zdW1tZWQgPT0gQ0hFQ0tTVU1fUEFSVElBTCAmJiBza2JfY2hlY2tzdW1f
-aGVscChza2IpKQorCQlyZXR1cm4gTlVMTDsKKwogCS8qIFRhZyBlbmNvZGluZyAqLwogCXRhZyA9
-IHNrYl9wdXQoc2tiLCBLU1pfSU5HUkVTU19UQUdfTEVOKTsKIAlhZGRyID0gc2tiX21hY19oZWFk
-ZXIoc2tiKTsKQEAgLTExNCw2ICsxMTcsOSBAQCBzdGF0aWMgc3RydWN0IHNrX2J1ZmYgKmtzejk0
-NzdfeG1pdChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLAogCXU4ICphZGRyOwogCXUxNiB2YWw7CiAKKwlp
-ZiAoc2tiLT5pcF9zdW1tZWQgPT0gQ0hFQ0tTVU1fUEFSVElBTCAmJiBza2JfY2hlY2tzdW1faGVs
-cChza2IpKQorCQlyZXR1cm4gTlVMTDsKKwogCS8qIFRhZyBlbmNvZGluZyAqLwogCXRhZyA9IHNr
-Yl9wdXQoc2tiLCBLU1o5NDc3X0lOR1JFU1NfVEFHX0xFTik7CiAJYWRkciA9IHNrYl9tYWNfaGVh
-ZGVyKHNrYik7CkBAIC0xNjQsNiArMTcwLDkgQEAgc3RhdGljIHN0cnVjdCBza19idWZmICprc3o5
-ODkzX3htaXQoc3RydWN0IHNrX2J1ZmYgKnNrYiwKIAl1OCAqYWRkcjsKIAl1OCAqdGFnOwogCisJ
-aWYgKHNrYi0+aXBfc3VtbWVkID09IENIRUNLU1VNX1BBUlRJQUwgJiYgc2tiX2NoZWNrc3VtX2hl
-bHAoc2tiKSkKKwkJcmV0dXJuIE5VTEw7CisKIAkvKiBUYWcgZW5jb2RpbmcgKi8KIAl0YWcgPSBz
-a2JfcHV0KHNrYiwgS1NaX0lOR1JFU1NfVEFHX0xFTik7CiAJYWRkciA9IHNrYl9tYWNfaGVhZGVy
-KHNrYik7Ci0tIAoyLjMyLjAKCg==
+On Wed, Jul 21, 2021 at 11:56:41PM +0200, Lino Sanfilippo wrote:
+> The function skb_put() that is used by tail taggers to make room for the
+> DSA tag must only be called for linearized SKBS. However in case that the
+> slave device inherited features like NETIF_F_HW_SG or NETIF_F_FRAGLIST the
+> SKB passed to the slaves transmit function may not be linearized.
+> Avoid those SKBs by clearing the NETIF_F_HW_SG and NETIF_F_FRAGLIST flags
+> for tail taggers.
+> Furthermore since the tagging protocol can be changed at runtime move the
+> code for setting up the slaves features into dsa_slave_setup_tagger().
+> 
+> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> ---
+>  net/dsa/slave.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
+> 
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 22ce11cd770e..ae2a648ed9be 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1808,6 +1808,7 @@ void dsa_slave_setup_tagger(struct net_device *slave)
+>  	struct dsa_slave_priv *p = netdev_priv(slave);
+>  	const struct dsa_port *cpu_dp = dp->cpu_dp;
+>  	struct net_device *master = cpu_dp->master;
+> +	const struct dsa_switch *ds = dp->ds;
+>  
+>  	slave->needed_headroom = cpu_dp->tag_ops->needed_headroom;
+>  	slave->needed_tailroom = cpu_dp->tag_ops->needed_tailroom;
+> @@ -1819,6 +1820,14 @@ void dsa_slave_setup_tagger(struct net_device *slave)
+>  	slave->needed_tailroom += master->needed_tailroom;
+>  
+>  	p->xmit = cpu_dp->tag_ops->xmit;
+> +
+> +	slave->features = master->vlan_features | NETIF_F_HW_TC;
+> +	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
+> +		slave->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> +	slave->hw_features |= NETIF_F_HW_TC;
+> +	slave->features |= NETIF_F_LLTX;
+> +	if (slave->needed_tailroom)
+> +		slave->features &= ~(NETIF_F_SG | NETIF_F_FRAGLIST);
+>  }
+>  
+>  static struct lock_class_key dsa_slave_netdev_xmit_lock_key;
+> @@ -1881,11 +1890,6 @@ int dsa_slave_create(struct dsa_port *port)
+>  	if (slave_dev == NULL)
+>  		return -ENOMEM;
+>  
+> -	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
+> -	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
+> -		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+> -	slave_dev->hw_features |= NETIF_F_HW_TC;
+> -	slave_dev->features |= NETIF_F_LLTX;
+>  	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
+>  	if (!is_zero_ether_addr(port->mac))
+>  		ether_addr_copy(slave_dev->dev_addr, port->mac);
+> -- 
+> 2.32.0
+> 
+
+I would have probably changed the code in dsa_slave_create just like
+this:
+
+-	slave->features = master->vlan_features | NETIF_F_HW_TC;
++	slave->features = NETIF_F_HW_TC;
+...
+-	slave_dev->vlan_features = master->vlan_features;
+
+and in dsa_slave_setup_tagger:
+
++	vlan_features = master->vlan_features;
++	slave->features &= ~vlan_features;
++	if (slave->needed_tailroom)
++		vlan_features &= ~(NETIF_F_SG | NETIF_F_FRAGLIST);
++	slave->features |= vlan_features;
++	slave->vlan_features = vlan_features;
+
+no need to move around NETIF_F_HW_TC and NETIF_F_LLTX. Makes sense?
+
+And I would probably add:
+
+Fixes: 91da11f870f0 ("net: Distributed Switch Architecture protocol support")
