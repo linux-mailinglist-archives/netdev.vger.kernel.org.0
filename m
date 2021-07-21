@@ -2,143 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6BE83D0D81
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:24:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B30463D0D88
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238884AbhGUKnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238676AbhGUJ2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:28:52 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1635C061762
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:06:43 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id l1so1656775edr.11
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:06:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tiDqtvDIj2EXQJ5ZftNYScBwQwdfeCCd/jJFB9+5Koo=;
-        b=GCsI8xwpr1JYSd2W/gl9tq0qQL/KDJcwbzy07Jih+gTWTIk1ysaG5rLfr6l0p+x+Hi
-         ZnJ6Q0prf/ErgUTNaJv7aNO06g+3k4yfHx7cDZpD4vjVwwtKHVgLi2r3BOxxBM/i6CA+
-         w8lLK6Ngi2ntX0D6yrKtuzaoTt4cC2sWumelZOcKau9ZoLcHq/+SBZMIfrmDZP6mE0By
-         MBk0WrDe6U+Sc/W+2ZLNBkvspu+lk0Ov1ndR1oo/ZLGEchA0fcfx2jq4cw7NPzl/33ww
-         M8HMXiiheRvRFHUdXyyDItwWZtL3pCZuCH8DQtvDmmxJdifRXFjhNYrBQuNBc8KoOK8q
-         kX4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tiDqtvDIj2EXQJ5ZftNYScBwQwdfeCCd/jJFB9+5Koo=;
-        b=JkTFRGeNhVGfx5X3nfMe9lhZIJhCfNZIn5iy68Ph+mh1L1AaXc2MMdzciYv6r+8Mr9
-         DemHevTjKZa3exqu8zx8tXm8Wci+8kYNNunGuB9EtM/wjgZ1wdooN29FeJ6QsUBstvDw
-         XLRz6SVMrE/S/KeP8QlCN9pVLfx+o8In5raJ8MhCIEen3yR7N9NewNEjbMQjEqy3u3dV
-         WXYdjjZhxySDmCH19ZUK9Hab3NtlMJzZYs33wQHhwofL7ZmIYhsVG0aGS1GQKYiXRnDe
-         fu5Y92NlgHi1ANOID8a65MNK6dNGrz85DesonXzQcPC88/Psc/2NOKL56hPjZfSn5jxE
-         Sg0w==
-X-Gm-Message-State: AOAM532wDl3MmfUqMrHQ32UJiGkJqNPpUUmPNRAWHJjs9/LNOzoW0hkR
-        0FkTilt/X8dO6b0ctTNnlPEKZ+cGE3q31kAba94=
-X-Google-Smtp-Source: ABdhPJymQuR4zz3qnQfDXxD6mKz/euxlyUtX9I+7h9pF3zBqYVt3wj0dGTdTYEMmLDcRdRGJEf+UmQ==
-X-Received: by 2002:a05:6402:22bb:: with SMTP id cx27mr46205792edb.96.1626862002217;
-        Wed, 21 Jul 2021 03:06:42 -0700 (PDT)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id op26sm8339706ejb.27.2021.07.21.03.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 03:06:41 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next] net: bridge: multicast: fix igmp/mld port context null pointer dereferences
-Date:   Wed, 21 Jul 2021 13:06:24 +0300
-Message-Id: <20210721100624.704110-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.31.1
+        id S236844AbhGUKnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:43:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47472 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238695AbhGUJ3J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 05:29:09 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BAC960FE7;
+        Wed, 21 Jul 2021 10:09:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1626862185;
+        bh=AkCAzoeKK4dm3J0IYr3eqKdLUog3VqnY+aXSEhth1R0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=c1tD+1+8N7ya+U+R4FoCk5r1AY0+njsEQDtKrpnu5fKg2Nsyw8ad0RAbDRa8LMlYN
+         kIGK/SB0S4EC/Bt9LoElGD8+QX12QgKfoR1683w3NYrmezl45haNH7nWDa/e7NVumf
+         ZIzS+wQ0FwO2WzFS4jJEXOjj+Re557OYzd+zf9Xc=
+Date:   Wed, 21 Jul 2021 12:09:41 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     kernel@pengutronix.de,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>, Alex Elder <elder@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Andy Gross <agross@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Dexuan Cui <decui@microsoft.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Farman <farman@linux.ibm.com>,
+        Finn Thain <fthain@linux-m68k.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frank Li <lznuaa@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Geoff Levand <geoff@infradead.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>, Ira Weiny <ira.weiny@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Wang <jasowang@redhat.com>,
+        Jens Taprogge <jens.taprogge@taprogge.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Joey Pabalan <jpabalanb@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Johannes Thumshirn <morbidrsa@gmail.com>,
+        Jon Mason <jdmason@kudzu.us>, Juergen Gross <jgross@suse.com>,
+        Julien Grall <jgrall@amazon.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>, Len Brown <lenb@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Manohar Vanga <manohar.vanga@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Mark Gross <mgross@linux.intel.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Martyn Welch <martyn@welchs.me.uk>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Michael Buesch <m@bues.ch>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michael Jamet <michael.jamet@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Moritz Fischer <mdf@kernel.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Rich Felker <dalias@libc.org>,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Samuel Holland <samuel@sholland.org>,
+        Samuel Iglesias Gonsalvez <siglesias@igalia.com>,
+        SeongJae Park <sjpark@amazon.de>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Sven Van Asbroeck <TheSven73@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thorsten Scherer <t.scherer@eckelmann.de>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Tom Rix <trix@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Yufen Yu <yuyufen@huawei.com>, alsa-devel@alsa-project.org,
+        dmaengine@vger.kernel.org, greybus-dev@lists.linaro.org,
+        industrypack-devel@lists.sourceforge.net, kvm@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-media@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-parisc@vger.kernel.org,
+        linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-sunxi@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
+        platform-driver-x86@vger.kernel.org, sparclinux@vger.kernel.org,
+        target-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v4 0/5] bus: Make remove callback return void
+Message-ID: <YPfyZen4Y0uDKqDT@kroah.com>
+References: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210713193522.1770306-1-u.kleine-koenig@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On Tue, Jul 13, 2021 at 09:35:17PM +0200, Uwe Kleine-König wrote:
+> Hello,
+> 
+> this is v4 of the final patch set for my effort to make struct
+> bus_type::remove return void.
+> 
+> The first four patches contain cleanups that make some of these
+> callbacks (more obviously) always return 0. They are acked by the
+> respective maintainers. Bjorn Helgaas explicitly asked to include the
+> pci patch (#1) into this series, so Greg taking this is fine. I assume
+> the s390 people are fine with Greg taking patches #2 to #4, too, they
+> didn't explicitly said so though.
+> 
+> The last patch actually changes the prototype and so touches quite some
+> drivers and has the potential to conflict with future developments, so I
+> consider it beneficial to put these patches into next soon. I expect
+> that it will be Greg who takes the complete series, he already confirmed
+> via irc (for v2) to look into this series.
+> 
+> The only change compared to v3 is in the fourth patch where I modified a
+> few more drivers to fix build failures. Some of them were found by build
+> bots (thanks!), some of them I found myself using a regular expression
+> search. The newly modified files are:
+> 
+>  arch/sparc/kernel/vio.c
+>  drivers/nubus/bus.c
+>  drivers/sh/superhyway/superhyway.c
+>  drivers/vlynq/vlynq.c
+>  drivers/zorro/zorro-driver.c
+>  sound/ac97/bus.c
+> 
+> Best regards
+> Uwe
 
-With the recent change to use bridge/port multicast context pointers
-instead of bridge/port I missed to convert two locations which pass the
-port pointer as-is, but with the new model we need to verify the port
-context is non-NULL first and retrieve the port from it. The first
-location is when doing querier selection when a query is received, the
-second location is when leaving a group. The port context will be null
-if the packets originated from the bridge device (i.e. from the host).
-The fix is simple just check if the port context exists and retrieve
-the port pointer from it.
+Now queued up.  I can go make a git tag that people can pull from after
+0-day is finished testing this to verify all is good, if others need it.
 
-Fixes: adc47037a7d5 ("net: bridge: multicast: use multicast contexts instead of bridge or port")
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
-note: the != NULL checks are in line with the rest of the code style of
-      br_multicast_leave_group()
+thanks,
 
- net/bridge/br_multicast.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 976491951c82..214d1bf854ad 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -2827,9 +2827,11 @@ static int br_ip6_multicast_mld2_report(struct net_bridge_mcast *brmctx,
- #endif
- 
- static bool br_ip4_multicast_select_querier(struct net_bridge_mcast *brmctx,
--					    struct net_bridge_port *port,
-+					    struct net_bridge_mcast_port *pmctx,
- 					    __be32 saddr)
- {
-+	struct net_bridge_port *port = pmctx ? pmctx->port : NULL;
-+
- 	if (!timer_pending(&brmctx->ip4_own_query.timer) &&
- 	    !timer_pending(&brmctx->ip4_other_query.timer))
- 		goto update;
-@@ -2853,9 +2855,11 @@ static bool br_ip4_multicast_select_querier(struct net_bridge_mcast *brmctx,
- 
- #if IS_ENABLED(CONFIG_IPV6)
- static bool br_ip6_multicast_select_querier(struct net_bridge_mcast *brmctx,
--					    struct net_bridge_port *port,
-+					    struct net_bridge_mcast_port *pmctx,
- 					    struct in6_addr *saddr)
- {
-+	struct net_bridge_port *port = pmctx ? pmctx->port : NULL;
-+
- 	if (!timer_pending(&brmctx->ip6_own_query.timer) &&
- 	    !timer_pending(&brmctx->ip6_other_query.timer))
- 		goto update;
-@@ -3076,7 +3080,7 @@ br_ip4_multicast_query_received(struct net_bridge_mcast *brmctx,
- 				struct br_ip *saddr,
- 				unsigned long max_delay)
- {
--	if (!br_ip4_multicast_select_querier(brmctx, pmctx->port, saddr->src.ip4))
-+	if (!br_ip4_multicast_select_querier(brmctx, pmctx, saddr->src.ip4))
- 		return;
- 
- 	br_multicast_update_query_timer(brmctx, query, max_delay);
-@@ -3091,7 +3095,7 @@ br_ip6_multicast_query_received(struct net_bridge_mcast *brmctx,
- 				struct br_ip *saddr,
- 				unsigned long max_delay)
- {
--	if (!br_ip6_multicast_select_querier(brmctx, pmctx->port, &saddr->src.ip6))
-+	if (!br_ip6_multicast_select_querier(brmctx, pmctx, &saddr->src.ip6))
- 		return;
- 
- 	br_multicast_update_query_timer(brmctx, query, max_delay);
-@@ -3322,7 +3326,7 @@ br_multicast_leave_group(struct net_bridge_mcast *brmctx,
- 		mod_timer(&own_query->timer, time);
- 
- 		for (p = mlock_dereference(mp->ports, brmctx->br);
--		     p != NULL;
-+		     p != NULL && pmctx != NULL;
- 		     p = mlock_dereference(p->next, brmctx->br)) {
- 			if (!br_port_group_equal(p, pmctx->port, src))
- 				continue;
--- 
-2.31.1
-
+greg k-h
