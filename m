@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD6BD3D0B63
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 11:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B4533D0B69
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 11:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbhGUIix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 04:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238159AbhGUIZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 04:25:44 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8FDC061574
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 02:06:19 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id a6so1275464pgw.3
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 02:06:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j+YeTU4Z4GeNADjUpvlf1LXOdoqL7nhVd6Ldmr5c+tU=;
-        b=UhCsn0ggojdUmIpE2/H3RSvF8mXliP8Uxtt8Fs+ByMdmFQL3dp+Kj4iB6//9XxKT5u
-         Xpa9mYeY81wFebtlVVP72J/sogsGM4MVXlK4XUp1G+/LDCV0kjv9V0H15V+LO/w0qySF
-         ovwjTn8TGo+yXxbZV5+6N2WXOvR8LZZcLi9IqdXNJfdwLhXhqsLhfEhn/ijk77bpwPH9
-         psBRqj5X0oKIZest5eGbXFZMp+TsCCswx6xNq+GFW2+/YRa5Ug0j8yu+5OkL7CV9Tcm3
-         fCEdLRF5fObxV2urTcaCYCXHy2xW+zmk3Au02dT37BDL/F6U1zfgHmOzRYc6kCImORVB
-         3Jyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j+YeTU4Z4GeNADjUpvlf1LXOdoqL7nhVd6Ldmr5c+tU=;
-        b=tUh8/PyB5CNDk4nn2FE0c+nXm7TKHNd2On5qOOrdGDfDz/M75ACatiy7rwNnk0+s+H
-         aRvkOeyDGYpzy6hssbNZtF7fJKemTf+NjIv8J867WUKKrKAICnZ8sXlNlr+Oudx3/7iM
-         dpWV7UJ2oevZftuxhe/ZyJlQIQdWts4xDxckiaYhPPOLXEIZMiqSroz4UqXqwoKVh0Yf
-         RJBEwi3U97qYYB1ta3oQ+jtL55/r8lKmIfwnv1Ee4FUQyQCYvYkxrboiYeJaTG8EK+kR
-         s4NicWtJ5hyKAHPOlfDsxoY3quRNRd8OQbwucycxbe/a9vwIeEdFMhMhhCSFL/OCImXe
-         N7gQ==
-X-Gm-Message-State: AOAM533/ScpADXtIcpzgijXKUaLDxfLRhcyyp0Ia3M9arHtHRNdgawWe
-        ke3gF4REKDMzwDP0YT7jlzA=
-X-Google-Smtp-Source: ABdhPJwX+eEOMaIVhs0+oNGmurHeD2GZsXJ9ZOGGeggE980WccVAKkRxqOnyTNmVIeIzVcW9/oxGYQ==
-X-Received: by 2002:aa7:95a1:0:b029:359:ca4e:d25d with SMTP id a1-20020aa795a10000b0290359ca4ed25dmr628793pfk.51.1626858379059;
-        Wed, 21 Jul 2021 02:06:19 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7460:f7c2:e664:b708])
-        by smtp.gmail.com with ESMTPSA id l2sm25592244pfc.157.2021.07.21.02.06.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 02:06:18 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next] tcp: avoid indirect call in tcp_new_space()
-Date:   Wed, 21 Jul 2021 02:06:14 -0700
-Message-Id: <20210721090614.68297-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.32.0.402.g57bb445576-goog
+        id S237450AbhGUIjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 04:39:51 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:45902 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238203AbhGUI0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 04:26:23 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1626858419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=D7gg5VxuWurzD4vHHotgX8lONKIb8ymLdfuaw++jjGI=;
+        b=UrMg0KvD7JX4QfDfmM/KmOL26TZkhZmQiiEOoDikjvQ3P7OqfwPX2G329dJHhmIQb1er7w
+        jKF+HLVNxF9e27SZlydWdNDGwcnmakINXJCqSYAozvBx+aaQ1q9sKx5LU5Bjc8aK7Pxq6q
+        /W5csRkeAeZrHB2G0z6MD5fppBU2alnJ0fSSuIRrYBqyHfBMOcn2h0WveWhASRfhfJZtNj
+        bsKnhcwCdLL9aVi3wcQhZH0nHSBHTpv63TJaD8PYO6i2RyuKU1YQ3InvUqZPYw3O/GbJSy
+        rDT9bKWjjVEFS9NGg5O/Whs6BGvvWzof5Bzi3mRXpyC6bXgXtACJ0iKjsOAzBw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1626858419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=D7gg5VxuWurzD4vHHotgX8lONKIb8ymLdfuaw++jjGI=;
+        b=VEm47VCtQZiTBXmzBOmbWOt4d8R6YspWovL9eWUSc654oNYn+8tFNiEDcmft8dEKXTWuv+
+        SYSuamPjhIpzD1Bg==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next 10/11] net: dsa: tag_8021q: manage RX VLANs
+ dynamically at bridge join/leave time
+In-Reply-To: <20210719171452.463775-11-vladimir.oltean@nxp.com>
+References: <20210719171452.463775-1-vladimir.oltean@nxp.com>
+ <20210719171452.463775-11-vladimir.oltean@nxp.com>
+Date:   Wed, 21 Jul 2021 11:06:58 +0200
+Message-ID: <87lf60vxvx.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+--=-=-=
+Content-Type: text/plain
 
-For tcp sockets, sk->sk_write_space is most probably sk_stream_write_space().
+Hi Vladimir,
 
-Other sk->sk_write_space() calls in TCP are slow path and do not deserve
-any change.
+On Mon Jul 19 2021, Vladimir Oltean wrote:
+> This is not to say that the reason for the change in this patch is to
+> satisfy the hellcreek and similar use cases, that is merely a nice side
+> effect.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Is it possible to use tag_8021q for port separation use cases now? I'd
+be interested in it if that results in a simplified hellcreek
+implementation :).
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 149ceb5c94ffcd4499d3054fae31bd296a9e0bcd..bef2c8b64d83a0f3d4cca90f9b12912bf3d00807 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5383,7 +5383,7 @@ static void tcp_new_space(struct sock *sk)
- 		tp->snd_cwnd_stamp = tcp_jiffies32;
- 	}
- 
--	sk->sk_write_space(sk);
-+	INDIRECT_CALL_1(sk->sk_write_space, sk_stream_write_space, sk);
- }
- 
- static void tcp_check_space(struct sock *sk)
--- 
-2.32.0.402.g57bb445576-goog
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmD347ITHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRB5KluBy5jwpjjIEADXj6Ek5N8jaRei/UHFxGo+Om3nngwU
+TSYUt0TV156F/IXXp6gUlan073dooQZv84ZeXavpya+zQjG57VlooX9F9DxBjSCd
+de+RWdP/NAPATbUJoLvQlZPP5h0+qQgFzCrECWyVqQ54yncE2d//AY+Sm1ecjlHK
+Xa9s5kyHl2HZOKBUBmW2qdhemszjaqo7ilT+LeCFSCx72la7RwlVO9BklcpGddn1
+XFQ86MzC5e/7BssiGjJd3BInaXzIeKFcih28tF5ypv8AllTZr7g94VN5GtqxUWrF
+/wQk4uWfZwAkfstWUNAroNEl+9Fi+dGX/r7sB/6Ut5w6VGwXatWFHu0HndEP+WYj
+HAv0bp3sVJU5JP6hQsnwr4rVvUH8cq0LqFV39lvWiqFMB/WotR/RngNg/BrKI0fT
+jCud5rrTfhCuJKLw1+EdoNBW+hE46WBXg1sc+mxnkgVC6VRNUzD63N2WDC/Hr8Uc
+8v4E2X+CRhnK+1rn4noP0/7YJhyRnlaHlDoW73u4ji8E4Q5zYT4nCMBhTmzfOY7F
+Ltl9eIOq1eyK8NH6PVYhmfqFAoE+oTo9O+MjWW1UgZPZiPbyUnI0IfBg7y9QHOdI
+daqR/TzEK1dYl05zx7xQIqnlv5NwmTHWIuKuAqthvDuienkZvvvVSgHH1R+0T/UQ
+ZQPjA/eaLFzmzw==
+=Xw7C
+-----END PGP SIGNATURE-----
+--=-=-=--
