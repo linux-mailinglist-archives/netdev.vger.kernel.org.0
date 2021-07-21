@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD033D141D
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 854453D141F
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbhGUPpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:45:23 -0400
-Received: from mail-db8eur05on2070.outbound.protection.outlook.com ([40.107.20.70]:1893
+        id S235067AbhGUPpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:45:38 -0400
+Received: from mail-db8eur05on2063.outbound.protection.outlook.com ([40.107.20.63]:37513
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233767AbhGUPpO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234872AbhGUPpO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 21 Jul 2021 11:45:14 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mKh85u4zwWvt3LYhXOpTv2oKbR535Euz2sKvF+MTGWpMzI7Ry/qDnrytAvpDBFK2Caj4RMpFvswKOCrkXtIN5MLxufxe04Ujgh6QHC1YxnJ+nD/XKOdzzAFsfzBDdbPPDwLOyugurHcD0+lauUZASOBG3zWZrJR6+fWbFiK+Ia0chXpnEp7yA/jgY0pgbevMZMPgNlVbehwBUMfCIZVLJl3uespZNlEvr1IuY+o5EuzBmrZ02MIW4gy6v2XCzbOxK66085vqhoWNyQqXXaqwYqUboF9sLGOhOy+vk9BwA21qXX+GLzLgfNkBXyDqEC402pCGQS80F0JQ6+i2lu89eA==
+ b=G/cTBEB5OVp/37dMj1l3xMdRkthO2HDbAmxyzSbtr66y9FDjaBXMyOYxdSkXIxSJek3KUgXqaoG+JjR2f9mi68/+JsztD9NSXvhIHpArnQnDub6cbgMyQqvnU/tl3Jgi54TSLdsxt+3vNt1nFdLfCaz2KNRaeFK47AxoSKpwFReFBFP7ycx11Mr3Gx/i3KS8WIt9G3VBCuAYV8/G1alD6Uz2EQsVokZ9ePvs8d+JbnkY9j/73IUzRnqBIpdwCm6oGbigQLxQryq5Zz3Wzwy7fagJaX40Q7HDO7l5hzoU+IkE4DNbyc185Rct+nQo++QarGjfJglBGIOPZaA9UA7BQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9gEeKoYi4nqB+kTAdrjxJv+8gIPi54MqfqALyhtjMtY=;
- b=TCJXJgiVkvb6tTpWYm5ujiNxi/pEOF3TmT6aUFv/5l0F3+K5WZXlFGVj1zSsKyMnjiIsDh+Iwiyt6X2q7Y/hn0qYpPMEPfaNVncn3H1nUFYL/soJm6O5vyF+yG6h+uzhcj1giWotNrUDoDCrOWZJnCKznhMhIC3U5i0Y66/MeWq31EBmCA9lXTLCLtqSnVdthGVakF7AWu0tnF7lE4UkMvVFjGbMoBktUKri+oBGlccORS3Rjs0imMXVe71KisZVSbHDIWJGJnbv3fUEgJCEI1N3CVe28MoV4WmTnr0wUFfguV51VGTTdp0fza1whI6ksBuImClx9AmsEqrR1J37Sw==
+ bh=JL760jQgMQ6Q2QGTVFIIaQoZu+6rx1qOKazSNa/RPfY=;
+ b=FL3OKei+XoBV7WA2gexDHGSD4PCzl+Qoc83Dh5cc1o7kriLqdclHf2Q9IoBafiL4jIxMsjI7wuxDnqgM6+Jy3LjMlPC1gBSwGghDLeCJTIBhUTZZy67h/PFiF7YuRN8X9UPdLi+tlyI6yg/HzDtrGfzivRYbtA3iMnel+MyHLwhtbd2RIqA1hbh4/Nb4CH30+EjHCdT04EuQ9O4+/w5HQoio1A+IARwEVZi4RZWta8XnZV8wnNlav3/m3tf5nqzblsRmzogWFraWV0wf+1tPvUSnz+h2rtT/Bed4nbYy+3FMYu5zaqEPeHh4QiS0N02YmLcXFiWjLockQYYIzlcbkg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9gEeKoYi4nqB+kTAdrjxJv+8gIPi54MqfqALyhtjMtY=;
- b=Vx/k5CzfRaawgNyJFrDbFisqbVF4E4zUWcMGkqAcmKowWUeWuQ4a4O3ovaskRQA+0aK7ACIRLETsORndrCM1Nkqv556/bWFBl4McN6d3YiNy1Pv/LcsdJOtcPocoFGnG/eA9BOehecObz5fSgl+Uy5NBNyQt07+rYn3fs1iQhH0=
+ bh=JL760jQgMQ6Q2QGTVFIIaQoZu+6rx1qOKazSNa/RPfY=;
+ b=rPv66ZwqHdsuCMIxL7yYxANMF7xmRJ97sW62954znSephcDSxSvj1/x02zofj75MxMvUqImgKlG1D/mkkrlvy8ZhsWN60YTbbgr+7XFOjAS6KTBs7GKIQOtIOzv2z6yo8+GZq/ENx0VjlpogCd8zXV38z/gZ+usJrI/Xkg2AR8I=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VE1PR04MB7343.eurprd04.prod.outlook.com (2603:10a6:800:1a2::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.23; Wed, 21 Jul
- 2021 16:25:22 +0000
+ 2021 16:25:23 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
- 16:25:22 +0000
+ 16:25:23 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -53,9 +53,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH v6 net-next 3/7] net: bridge: disambiguate offload_fwd_mark
-Date:   Wed, 21 Jul 2021 19:23:59 +0300
-Message-Id: <20210721162403.1988814-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v6 net-next 4/7] net: bridge: switchdev: recycle unused hwdoms
+Date:   Wed, 21 Jul 2021 19:24:00 +0300
+Message-Id: <20210721162403.1988814-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210721162403.1988814-1-vladimir.oltean@nxp.com>
 References: <20210721162403.1988814-1-vladimir.oltean@nxp.com>
@@ -66,51 +66,51 @@ X-ClientProxiedBy: LO4P123CA0292.GBRP123.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by LO4P123CA0292.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:196::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 21 Jul 2021 16:25:21 +0000
+Received: from localhost.localdomain (82.76.66.29) by LO4P123CA0292.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:196::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 21 Jul 2021 16:25:22 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: eeddc0f0-3db7-4e4b-ab27-08d94c642346
+X-MS-Office365-Filtering-Correlation-Id: 5c97fb76-b417-41bf-9672-08d94c642432
 X-MS-TrafficTypeDiagnostic: VE1PR04MB7343:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7343C7E8CF14FC16BFE63FE5E0E39@VE1PR04MB7343.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB7343A9CB48CBCDE2D4255DC2E0E39@VE1PR04MB7343.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LUX03Ml1WCqj2Bs2vKJQY5Lg+s4P0iWzAJPvqCo+wMbx2i7x08/mc2IrOPzyxjvJdaHhvtRqPuYS3jHwqSF8GIoAtJUqbjJYCSWYFYXpEUlfnMOq9tSAtNxzJ4rtytO5EWUJ81uzMfuMcRZvussY3//hjGSQQgvN/U+sYcdFJIqwWzhEB2eT681kOb3bmEdUHzOI+hdn4bid1SMl1PuuYiVthCqp39tyvNHuShL21fGWwZfeVzVDs5mlGJ6Lk84KS+hZjnZaJ53bthZnzk/YoNfNdCdo7ikxB2dtdmDvIYvCqoCE/YR7ykkGrtq+CumVqMW8o8Skx05XI06lp6O1PNH8uegRJm6+FRYLbVunyUIpXWGAfK9Y1MknBFFmSXQjGssBeuqRQVJtE2W6nHYj0po3FYX8JMh9RYW5eqmTnSZbmBDQ/60D9BVZSSh4hAFsion6dErVBXCajdtuewMuK0jXOrVM/diR4AgJf+oeq67AqrTgzjlAkv1CFd1GUS4D0A0EbKxsSfrBVVxgv85FX/BTpeliktLQ1FgfDebfaRfNlorRqggNJ5o4ZnbSjr99BeZZ4WzYm01jL8Y/dTh0ZiJd+3vj2Ad+oDHJROdhwzxQfTyUOreM844zTi90tNUTJirLV1tXXxCOLtHTgZ/3HSpRRTYnVOKLLQj+jiNsM3fJFLvJlh15oyvkZsHKAi7F08zwS7BzVODobHMDr3ubKg==
+X-Microsoft-Antispam-Message-Info: o7+HlHPdTRgTNUaFSqAyRiaQ4CCzWCpEvwV5XkMQ3m4/7MslKNkgOYJXex+m66uBEbnp6XGiZqyB/uS3qToOk20zGcFmExOkYb2Yuez3Sl66R/ujfuSLFEjuOCJcw+QzwSxyS7oZ3m/PPGYwmQQI6qswlNxLxwgs5rcNnzTNKQBQEjB7WnS0jPjD0chhJGendZvIJ0P3DHbWdbiGJNbA+XFfDA+w0adMhgY5C1UIPe6fy0ZbgZcJ84ZVHVSdL2v4irdPbDdKw719gfHQYB+i516k95gHTCod+35W9MKDrKZ9ZYLxLvDCD7CgxZ+HlKlXWkMscjGCRH97aa67JFCOYRi3rTMPNCdn4vcdocv0PWh10U1FNH9fCge67sYcEmkMku03IF8mjfyS4aXH6abhS3TTBcGIZIjScOzKTRehDOlnQxhi2Z1F0OSqeKVVvoX3rxrzLCoa74YrP/iSRadr7TLHFEp6ZGvb7lZc8avz/L5+EVXP/fgIjSp52fB/4NjG3hzEvvRylXaqUaB668RxE/KsVuhFNThIauoGCBZ+SimxHWx+xZlnkq+KTZXtrU9V9QdS25ECbXkLs9xPokxPQsjBZXA9obxwxgYP2C9/UWI1VNmtTNLzqduJ1myMjVyoyzhbXUul0SmpWSx3A1CUd6HV1tZazUnF2hlgvNvv1SKdxCSwAxhhPgbrfJYuQJdpIkwwJlv4OJ8KReSqykGcbA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(376002)(346002)(39850400004)(366004)(186003)(110136005)(956004)(4326008)(44832011)(316002)(2616005)(54906003)(8676002)(8936002)(478600001)(83380400001)(36756003)(7416002)(2906002)(6486002)(6512007)(52116002)(1076003)(5660300002)(66946007)(66476007)(6666004)(38100700002)(6506007)(66556008)(38350700002)(86362001)(26005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pgarb975i3IDAPYGmuL0OqMuD0VMOewIrApBaXDylWba6r/7nQTZgnSCsj58?=
- =?us-ascii?Q?X4N6O66egOHkCpCKxD8x7rRJvdto2IbY4Hc9MsOLHtkqFhL+NzTqrQLcNPne?=
- =?us-ascii?Q?tlfupBBn3hhALb5J3mcfz4owbIbRO90jDUHtAmgi5Nwm5F1xqe28ms/hQPcG?=
- =?us-ascii?Q?RjB03MEVR7zegikYFjnKPrieot1Aed3zr1FjSAG39ud5rJRAv9u//eZVFMzr?=
- =?us-ascii?Q?eKBB3/AYtYLsKPoEP1rzEDFmOyeB0x7A6MrgW2uIZobkr/qgQ28P3gqcvu0l?=
- =?us-ascii?Q?0QeMwSdPEUIrUGzSBZU3aBUQLA2ef1l5T5sZhAIjElkk6T8RaEZHVycaPnEl?=
- =?us-ascii?Q?IaIJws15DyddpoVHFBmd2Ssdy4TfAetJ0WrKTgDDQEF4cvFFp4LG+opG65Bk?=
- =?us-ascii?Q?RocyAnQx6e6BY3zJsMWqahciQ+lzOPd5fQracZX4uJ331z9JA2TJiBvUqmYO?=
- =?us-ascii?Q?STCOPrkczBBCEuGAcJlEq38pUWlPxRWeBe0tV8UdNAsKQyyfFXcHjHPXOI2m?=
- =?us-ascii?Q?NN/to5bZ9gUN3u7YcGfdMpHdIi0m7/MkzdExms7VGbgkI2jJI8j6X3APtc3G?=
- =?us-ascii?Q?BYQUfUpc02+aRbcVIK082n5A3aHsBZADaRamlONhCssW3my1qvY+1tmBTPJf?=
- =?us-ascii?Q?HAl864FxTPl93IaWd0OyYO+SWdnxcazB+o+I2kH3bOrjjs0dWXngsoN3Y7kJ?=
- =?us-ascii?Q?NSlu4n6uhkazYYbI9MtAeWpnopITE4cFaOyBV7DQR9Rk1MGBDdyQpxsB4jJI?=
- =?us-ascii?Q?bmHDz2tWDXR1g0DWch6HDTP/wwXZVwUs3DNNkdTiWbp/Srb6FdaGuhXs1yd6?=
- =?us-ascii?Q?PVztFepEgRbBY2axZ1M+G/PtWmGc8iNKjuy2nFCrvFhdLz+EYTdm4TmhRzok?=
- =?us-ascii?Q?+0Jk1XsG6y63kzw0TjoAXilLn2ZNYJ68YDt8OYzPXLQwI/8THKUcZxlSE2ze?=
- =?us-ascii?Q?IT97lnnT1Xxz9xBME1T+XOB2JCXF8cpct/SAXI4YJdZMhHsL0LL+PEYCaUBD?=
- =?us-ascii?Q?N/PAmJzQxvY3CojwaaCoD47cvasCNC+3RcUB6un6OKJM18ErVb+RIFG2E7Dc?=
- =?us-ascii?Q?G92zbYKBnRCW1gmYj3jxvZNra+EFygdwO69n5TbwFCJEQZWyOwDyoFM4mFYq?=
- =?us-ascii?Q?PN45mkUra/jadjUomozofjq3OhcTbSokUGiVhXBVVgLOdcTdYy8GOu5PfQ8w?=
- =?us-ascii?Q?86lE321+CghDFNCbapxs6D6/ijK+H+XKlXLImLnXqJ0ve1iInEfvC903pAEg?=
- =?us-ascii?Q?Fc6Nt2PiW7TNAWovcm2389rT6Ri9JQyap6fWfNe7Wtj5kqLUcWcgAYSSPO7H?=
- =?us-ascii?Q?TfphC+1MprZooMTRqrjgx76R?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7NQV1fU3ngZr6ABc4BCKljQgWZLSBNH4j8mOvGS1oV3FNGiRA8vIUnV2XaNg?=
+ =?us-ascii?Q?5mTRc7XcXl8421D10iSJsP7ip8GizqtezK5Qwq0SKJhWxu58yVPn0Y0iZEKN?=
+ =?us-ascii?Q?SU0D5G1P7jPzBoUdyLzVOHUBJz26xr6OOFrBeReSNtujHYpS5L1DZFKSN7s/?=
+ =?us-ascii?Q?ssZ0pX1NB/YvEBzQ8mf2Mn0gh7F/CkOlp/A57h+Nf0e9Pr5C+21hQPuql7LZ?=
+ =?us-ascii?Q?heHZP7iZRHoiRMo3UBI+ZDJG69jNLaWGkZd7SQlPWhee/gXx6Tv2lZ5YHea0?=
+ =?us-ascii?Q?NWwdKq3/gPTYPr2KI9iN2l/2dJiDump8zCigsZesc3cKrxmHTYLR9pBMIDKt?=
+ =?us-ascii?Q?6Mj6rkxqMCfY9u3lHAIinHTihr6iI9HmPni1T34ieCZNAjHBSn85R2L4QnjY?=
+ =?us-ascii?Q?GfKka7keE9HR/0wTB84GBgPVP32ADgRDnMoPYTTQElJGZtKrb7YbPQQA3bH6?=
+ =?us-ascii?Q?eIkPDYhIbfuCHi9sws8JkN8B1VnRySaJtypeSJmyrc56lFmRoR6s2fj7PdcL?=
+ =?us-ascii?Q?eDjfG4I1d2pp9z0k98TRARt4xM2+uxpn7/a7f/jRSMypu7W1UKtANBgiJ5iY?=
+ =?us-ascii?Q?B0uSMafKezlgGsx049Mal/Ik4MvzO1nSbn7n3goBwEK4M2dtWlREHJunm73X?=
+ =?us-ascii?Q?pPXl+i9e/HYTZvXZt+a5i/cVAPSxjM+yoCHravbZuY2sGJBGWnOLi2C/c9dS?=
+ =?us-ascii?Q?PrKYv6xr8r3gd8R9Syv6tKTc5fj0B9VHj4W78/VfbG8keLOdXoGYcGL5eXVg?=
+ =?us-ascii?Q?/nNQvbNHaGIcyn1tBX52ukzhZ65YMUugZ0HjtWH7mJMuIrTKk6m68QUKKA4u?=
+ =?us-ascii?Q?lpXcT16FT1SSyItF4lXF2l5P8XX9Cs2snkNP8ddXXfkE/N3KXsUiIRf4IneL?=
+ =?us-ascii?Q?rsoHetlHMcII5gENXZb/4boPovANqk4ItjWVVyBl9SwMaLHi+l6++1kz0LcZ?=
+ =?us-ascii?Q?vghAD+nFTnO9IJVqKLwNUypyv4n/+ARU5AvT/4sT/maLjcVwnyjGDJ3q9nuM?=
+ =?us-ascii?Q?b7GdksdmR979fx2lA1FfEuV1hnR5urFuYgMzMQcX0JQjs1Le4mDPqz2mAwRt?=
+ =?us-ascii?Q?IxxDNZ4UjWbWFxT7sMvZ/j29qRR60szs2rwLRAo6vctAi3vrmEN61EZrJpGC?=
+ =?us-ascii?Q?gepWLC2SLnyzHb/hxBllzDSyjHCD3dkh1gAY7Hvph1HJU43dZnFcGSQaAx/p?=
+ =?us-ascii?Q?odE1tINXDbjKJ+FRo5TB4ucXhykESdeJxAYlfKrrlvVXx3InPfMHysB66tHp?=
+ =?us-ascii?Q?LvwZV2HpIFbtJLoNXeHDlXLtdg63mFLA4GPlQxS5NQ3RCWQ8hm1ccCq5J/F4?=
+ =?us-ascii?Q?8D7j3FyYiSULPyCHj7cLqT7X?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eeddc0f0-3db7-4e4b-ab27-08d94c642346
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c97fb76-b417-41bf-9672-08d94c642432
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 16:25:22.3179
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 16:25:23.8710
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LUSFzrNafkPmH9NJgxGuV2pb8hwruaSgDNI5Crw/OHgiBEZbeQ6dM85HWPHnFB4HWGbLtFTbQNtADlOPZ2RhxA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: bsLLnugwM0a4In1wlkNL6lgbwkXgHlj0aARSSKfmFrVViQVGAk55AHZTl9HL5pQL2MefAmddWIaGDmAgsz1pXw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7343
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -118,214 +118,241 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tobias Waldekranz <tobias@waldekranz.com>
 
-Before this change, four related - but distinct - concepts where named
-offload_fwd_mark:
+Since hwdoms have only been used thus far for equality comparisons, the
+bridge has used the simplest possible assignment policy; using a
+counter to keep track of the last value handed out.
 
-- skb->offload_fwd_mark: Set by the switchdev driver if the underlying
-  hardware has already forwarded this frame to the other ports in the
-  same hardware domain.
+With the upcoming transmit offloading, we need to perform set
+operations efficiently based on hwdoms, e.g. we want to answer
+questions like "has this skb been forwarded to any port within this
+hwdom?"
 
-- nbp->offload_fwd_mark: An idetifier used to group ports that share
-  the same hardware forwarding domain.
+Move to a bitmap-based allocation scheme that recycles hwdoms once all
+members leaves the bridge. This means that we can use a single
+unsigned long to keep track of the hwdoms that have received an skb.
 
-- br->offload_fwd_mark: Counter used to make sure that unique IDs are
-  used in cases where a bridge contains ports from multiple hardware
-  domains.
-
-- skb->cb->offload_fwd_mark: The hardware domain on which the frame
-  ingressed and was forwarded.
-
-Introduce the term "hardware forwarding domain" ("hwdom") in the
-bridge to denote a set of ports with the following property:
-
-    If an skb with skb->offload_fwd_mark set, is received on a port
-    belonging to hwdom N, that frame has already been forwarded to all
-    other ports in hwdom N.
-
-By decoupling the name from "offload_fwd_mark", we can extend the
-term's definition in the future - e.g. to add constraints that
-describe expected egress behavior - without overloading the meaning of
-"offload_fwd_mark".
-
-- nbp->offload_fwd_mark thus becomes nbp->hwdom.
-
-- br->offload_fwd_mark becomes br->last_hwdom.
-
-- skb->cb->offload_fwd_mark becomes skb->cb->src_hwdom. The slight
-  change in naming here mandates a slight change in behavior of the
-  nbp_switchdev_frame_mark() function. Previously, it only set this
-  value in skb->cb for packets with skb->offload_fwd_mark true (ones
-  which were forwarded in hardware). Whereas now we always track the
-  incoming hwdom for all packets coming from a switchdev (even for the
-  packets which weren't forwarded in hardware, such as STP BPDUs, IGMP
-  reports etc). As all uses of skb->cb->offload_fwd_mark were already
-  gated behind checks of skb->offload_fwd_mark, this will not introduce
-  any functional change, but it paves the way for future changes where
-  the ingressing hwdom must be known for frames coming from a switchdev
-  regardless of whether they were forwarded in hardware or not
-  (basically, if the skb comes from a switchdev, skb->cb->src_hwdom now
-  always tracks which one).
-
-  A typical example where this is relevant: the switchdev has a fixed
-  configuration to trap STP BPDUs, but STP is not running on the bridge
-  and the group_fwd_mask allows them to be forwarded. Say we have this
-  setup:
-
-        br0
-       / | \
-      /  |  \
-  swp0 swp1 swp2
-
-  A BPDU comes in on swp0 and is trapped to the CPU; the driver does not
-  set skb->offload_fwd_mark. The bridge determines that the frame should
-  be forwarded to swp{1,2}. It is imperative that forward offloading is
-  _not_ allowed in this case, as the source hwdom is already "poisoned".
-
-  Recording the source hwdom allows this case to be handled properly.
-
-v2->v3: added code comments
-v3->v6: none
+v1->v2: convert the typedef DECLARE_BITMAP(br_hwdom_map_t, BR_HWDOM_MAX)
+        into a plain unsigned long.
+v2->v6: none
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/bridge/br_if.c        |  2 +-
- net/bridge/br_private.h   | 21 ++++++++++++++++-----
- net/bridge/br_switchdev.c | 16 ++++++++--------
- 3 files changed, 25 insertions(+), 14 deletions(-)
+ net/bridge/br_if.c        |  4 +-
+ net/bridge/br_private.h   | 27 ++++++++---
+ net/bridge/br_switchdev.c | 94 ++++++++++++++++++++++++++-------------
+ 3 files changed, 86 insertions(+), 39 deletions(-)
 
 diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index 6e4a32354a13..838a277e3cf7 100644
+index 838a277e3cf7..c0df50e4abbb 100644
 --- a/net/bridge/br_if.c
 +++ b/net/bridge/br_if.c
-@@ -643,7 +643,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+@@ -349,6 +349,7 @@ static void del_nbp(struct net_bridge_port *p)
+ 	nbp_backup_clear(p);
+ 
+ 	nbp_update_port_count(br);
++	nbp_switchdev_del(p);
+ 
+ 	netdev_upper_dev_unlink(dev, br->dev);
+ 
+@@ -643,7 +644,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
  	if (err)
  		goto err5;
  
--	err = nbp_switchdev_mark_set(p);
-+	err = nbp_switchdev_hwdom_set(p);
+-	err = nbp_switchdev_hwdom_set(p);
++	err = nbp_switchdev_add(p);
  	if (err)
  		goto err6;
  
+@@ -719,6 +720,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev,
+ 	list_del_rcu(&p->list);
+ 	br_fdb_delete_by_port(br, p, 0, 1);
+ 	nbp_update_port_count(br);
++	nbp_switchdev_del(p);
+ err6:
+ 	netdev_upper_dev_unlink(dev, br->dev);
+ err5:
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 4681a4b6020f..4afba7da17ae 100644
+index 4afba7da17ae..1c1732d7212a 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -386,7 +386,10 @@ struct net_bridge_port {
- 	struct netpoll			*np;
- #endif
- #ifdef CONFIG_NET_SWITCHDEV
--	int				offload_fwd_mark;
-+	/* Identifier used to group ports that share the same switchdev
-+	 * hardware domain.
-+	 */
-+	int				hwdom;
- #endif
- 	u16				group_fwd_mask;
- 	u16				backup_redirected_cnt;
-@@ -510,7 +513,10 @@ struct net_bridge {
- 	u32				auto_cnt;
+@@ -29,6 +29,8 @@
  
- #ifdef CONFIG_NET_SWITCHDEV
--	int offload_fwd_mark;
-+	/* Counter used to make sure that hardware domains get unique
-+	 * identifiers in case a bridge spans multiple switchdev instances.
-+	 */
-+	int				last_hwdom;
+ #define BR_MULTICAST_DEFAULT_HASH_MAX 4096
+ 
++#define BR_HWDOM_MAX BITS_PER_LONG
++
+ #define BR_VERSION	"2.3"
+ 
+ /* Control of forwarding link local multicast */
+@@ -517,6 +519,8 @@ struct net_bridge {
+ 	 * identifiers in case a bridge spans multiple switchdev instances.
+ 	 */
+ 	int				last_hwdom;
++	/* Bit mask of hardware domain numbers in use */
++	unsigned long			busy_hwdoms;
  #endif
  	struct hlist_head		fdb_list;
  
-@@ -540,7 +546,12 @@ struct br_input_skb_cb {
- #endif
- 
- #ifdef CONFIG_NET_SWITCHDEV
--	int offload_fwd_mark;
-+	/* The switchdev hardware domain from which this packet was received.
-+	 * If skb->offload_fwd_mark was set, then this packet was already
-+	 * forwarded by hardware to the other ports in the source hardware
-+	 * domain, otherwise it wasn't.
-+	 */
-+	int src_hwdom;
- #endif
- };
- 
-@@ -1828,7 +1839,7 @@ static inline void br_sysfs_delbr(struct net_device *dev) { return; }
+@@ -1839,7 +1843,6 @@ static inline void br_sysfs_delbr(struct net_device *dev) { return; }
  
  /* br_switchdev.c */
  #ifdef CONFIG_NET_SWITCHDEV
--int nbp_switchdev_mark_set(struct net_bridge_port *p);
-+int nbp_switchdev_hwdom_set(struct net_bridge_port *p);
+-int nbp_switchdev_hwdom_set(struct net_bridge_port *p);
  void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
  			      struct sk_buff *skb);
  bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
-@@ -1848,7 +1859,7 @@ static inline void br_switchdev_frame_unmark(struct sk_buff *skb)
+@@ -1853,17 +1856,15 @@ void br_switchdev_fdb_notify(struct net_bridge *br,
+ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
+ 			       struct netlink_ext_ack *extack);
+ int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid);
++int nbp_switchdev_add(struct net_bridge_port *p);
++void nbp_switchdev_del(struct net_bridge_port *p);
++void br_switchdev_init(struct net_bridge *br);
+ 
+ static inline void br_switchdev_frame_unmark(struct sk_buff *skb)
+ {
  	skb->offload_fwd_mark = 0;
  }
  #else
--static inline int nbp_switchdev_mark_set(struct net_bridge_port *p)
-+static inline int nbp_switchdev_hwdom_set(struct net_bridge_port *p)
+-static inline int nbp_switchdev_hwdom_set(struct net_bridge_port *p)
+-{
+-	return 0;
+-}
+-
+ static inline void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
+ 					    struct sk_buff *skb)
  {
- 	return 0;
+@@ -1904,6 +1905,20 @@ br_switchdev_fdb_notify(struct net_bridge *br,
+ static inline void br_switchdev_frame_unmark(struct sk_buff *skb)
+ {
  }
++
++static inline int nbp_switchdev_add(struct net_bridge_port *p)
++{
++	return 0;
++}
++
++static inline void nbp_switchdev_del(struct net_bridge_port *p)
++{
++}
++
++static inline void br_switchdev_init(struct net_bridge *br)
++{
++}
++
+ #endif /* CONFIG_NET_SWITCHDEV */
+ 
+ /* br_arp_nd_proxy.c */
 diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index d3adee0f91f9..833fd30482c2 100644
+index 833fd30482c2..f3120f13c293 100644
 --- a/net/bridge/br_switchdev.c
 +++ b/net/bridge/br_switchdev.c
-@@ -8,20 +8,20 @@
+@@ -8,38 +8,6 @@
  
  #include "br_private.h"
  
--static int br_switchdev_mark_get(struct net_bridge *br, struct net_device *dev)
-+static int br_switchdev_hwdom_get(struct net_bridge *br, struct net_device *dev)
- {
- 	struct net_bridge_port *p;
- 
- 	/* dev is yet to be added to the port list. */
- 	list_for_each_entry(p, &br->port_list, list) {
- 		if (netdev_port_same_parent_id(dev, p->dev))
--			return p->offload_fwd_mark;
-+			return p->hwdom;
- 	}
- 
--	return ++br->offload_fwd_mark;
-+	return ++br->last_hwdom;
- }
- 
--int nbp_switchdev_mark_set(struct net_bridge_port *p)
-+int nbp_switchdev_hwdom_set(struct net_bridge_port *p)
- {
- 	struct netdev_phys_item_id ppid = { };
- 	int err;
-@@ -35,7 +35,7 @@ int nbp_switchdev_mark_set(struct net_bridge_port *p)
- 		return err;
- 	}
- 
--	p->offload_fwd_mark = br_switchdev_mark_get(p->br, p->dev);
-+	p->hwdom = br_switchdev_hwdom_get(p->br, p->dev);
- 
- 	return 0;
- }
-@@ -43,15 +43,15 @@ int nbp_switchdev_mark_set(struct net_bridge_port *p)
+-static int br_switchdev_hwdom_get(struct net_bridge *br, struct net_device *dev)
+-{
+-	struct net_bridge_port *p;
+-
+-	/* dev is yet to be added to the port list. */
+-	list_for_each_entry(p, &br->port_list, list) {
+-		if (netdev_port_same_parent_id(dev, p->dev))
+-			return p->hwdom;
+-	}
+-
+-	return ++br->last_hwdom;
+-}
+-
+-int nbp_switchdev_hwdom_set(struct net_bridge_port *p)
+-{
+-	struct netdev_phys_item_id ppid = { };
+-	int err;
+-
+-	ASSERT_RTNL();
+-
+-	err = dev_get_port_parent_id(p->dev, &ppid, true);
+-	if (err) {
+-		if (err == -EOPNOTSUPP)
+-			return 0;
+-		return err;
+-	}
+-
+-	p->hwdom = br_switchdev_hwdom_get(p->br, p->dev);
+-
+-	return 0;
+-}
+-
  void nbp_switchdev_frame_mark(const struct net_bridge_port *p,
  			      struct sk_buff *skb)
  {
--	if (skb->offload_fwd_mark && !WARN_ON_ONCE(!p->offload_fwd_mark))
--		BR_INPUT_SKB_CB(skb)->offload_fwd_mark = p->offload_fwd_mark;
+@@ -156,3 +124,65 @@ int br_switchdev_port_vlan_del(struct net_device *dev, u16 vid)
+ 
+ 	return switchdev_port_obj_del(dev, &v.obj);
+ }
++
++static int nbp_switchdev_hwdom_set(struct net_bridge_port *joining)
++{
++	struct net_bridge *br = joining->br;
++	struct net_bridge_port *p;
++	int hwdom;
++
++	/* joining is yet to be added to the port list. */
++	list_for_each_entry(p, &br->port_list, list) {
++		if (netdev_port_same_parent_id(joining->dev, p->dev)) {
++			joining->hwdom = p->hwdom;
++			return 0;
++		}
++	}
++
++	hwdom = find_next_zero_bit(&br->busy_hwdoms, BR_HWDOM_MAX, 1);
++	if (hwdom >= BR_HWDOM_MAX)
++		return -EBUSY;
++
++	set_bit(hwdom, &br->busy_hwdoms);
++	joining->hwdom = hwdom;
++	return 0;
++}
++
++static void nbp_switchdev_hwdom_put(struct net_bridge_port *leaving)
++{
++	struct net_bridge *br = leaving->br;
++	struct net_bridge_port *p;
++
++	/* leaving is no longer in the port list. */
++	list_for_each_entry(p, &br->port_list, list) {
++		if (p->hwdom == leaving->hwdom)
++			return;
++	}
++
++	clear_bit(leaving->hwdom, &br->busy_hwdoms);
++}
++
++int nbp_switchdev_add(struct net_bridge_port *p)
++{
++	struct netdev_phys_item_id ppid = { };
++	int err;
++
++	ASSERT_RTNL();
++
++	err = dev_get_port_parent_id(p->dev, &ppid, true);
++	if (err) {
++		if (err == -EOPNOTSUPP)
++			return 0;
++		return err;
++	}
++
++	return nbp_switchdev_hwdom_set(p);
++}
++
++void nbp_switchdev_del(struct net_bridge_port *p)
++{
++	ASSERT_RTNL();
++
 +	if (p->hwdom)
-+		BR_INPUT_SKB_CB(skb)->src_hwdom = p->hwdom;
- }
- 
- bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
- 				  const struct sk_buff *skb)
- {
- 	return !skb->offload_fwd_mark ||
--	       BR_INPUT_SKB_CB(skb)->offload_fwd_mark != p->offload_fwd_mark;
-+	       BR_INPUT_SKB_CB(skb)->src_hwdom != p->hwdom;
- }
- 
- /* Flags that can be offloaded to hardware */
++		nbp_switchdev_hwdom_put(p);
++}
 -- 
 2.25.1
 
