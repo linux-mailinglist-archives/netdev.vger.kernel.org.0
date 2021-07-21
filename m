@@ -2,160 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C43A73D128F
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF773D129A
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240013AbhGUO4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 10:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S240017AbhGUO5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 10:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239969AbhGUO4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 10:56:32 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE625C061575
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:37:08 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id y25so2763611ljy.13
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:37:08 -0700 (PDT)
+        with ESMTP id S239983AbhGUO5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 10:57:36 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DD0C0613C1
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:38:13 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id r11so2657469wro.9
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:38:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i7PLflitrAYc1ojvfYP6jnVUAWgG4SsQdyVSTkIdSQc=;
-        b=iQDxk669PHPJ3JK0QPn1UuRoWl+P7D6lRGEfG2KuJlRDFoJFl5osPA1cxkLOVNHnt5
-         CEUE4ZCxoaU7pfB2lv4TK++7glpEShMgjeuDjpENcjlbJPxbmhUgyWEp8Zgz25DpL1dQ
-         3OCilTwpDx2a2CWgx9O9p5n733X3XpYu6hnD4VbD0qkewo+Zw1BzOFOmIpebvAA9IQux
-         rJXXu4a3wWuyKnTsia0D0BoVq+pMEu6qGhKBqgkSkEXfzZv9F3oZmQ75xPvoPixfMBaE
-         IbdU+qUwtbqJH8/Q2CtB9yjqRf34dHjj7zQW6W70kopkA5Wcd/pgQa/gyNUNKiCP89WP
-         c6Ww==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=33SpBe959fa1CdZeT/RZuhePwiZ+3BM8bxkMEVqqlPo=;
+        b=yvWWehJ3jOQl0IS8nX37zu88M18cNKg52+GA7FhRhnzCn8lyXExTOvbKtr35AznVCb
+         yDVCcOy23vFD5Sm8tWxky/zdgXYqhZWxGxQImgVNe1dv/IWaz9aUy+D6CMjpsX/iPIK9
+         WoZFIyh3g9e6JpptUacc8mSRZWfg6z6Q89d1uFG5uVMhgNcnbh22+c1F4c0qdUjujWBS
+         wo+WDLk3myfvUD0zWEBwCvo+F+KnZNxexNLJa7WGLJe3VxpVEl4QfydfHSt9M0OL/wak
+         b5lnJQEooNOQXUMGovB4NV1nuCCceb9kAb+PdW3sbOZmUi+dgcGOUSCror3Vr0ICCLaF
+         uqZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i7PLflitrAYc1ojvfYP6jnVUAWgG4SsQdyVSTkIdSQc=;
-        b=eyJ05oJPlFMNQkL7B/gATipYT2p2FQtvLxqXh6hKnUPJv5dDaG0HVv3lMYUMFItbR/
-         7sDadNW+PsFv4BTG5ZYYr+BtwzgDoGwmd0ykGfXaElxzVd3Foku4SuAAPxmmZg1cZqoi
-         VWzaP40LjXlpG4jnJYIJNdKWOoqKG2NEaoj8YUL5smY2MCk6p43SGFakQZenbbzr6cIB
-         NsN/FHdy6MXWGFf3JoIpy6LIthpsl+1IwIQ9PwRFzJu7/tQr/+lsd0ABUdbW0aOvGfWB
-         6c/G+EzhcakZpL/5tLrPNdCyLeYRVbe4yXdIJm+OGdX4DVnRylAt7igW5lRG2yAVNZKY
-         PSpg==
-X-Gm-Message-State: AOAM532NOMs7vw7FwWfUKBIn5aw+FYoiXMS9GZ+ijqEKCKiJbGhDNGc4
-        Zc/IqZktFJxZ9Dgtv65J0Kh2HkBeM1vTEf+8VHV1Fw==
-X-Google-Smtp-Source: ABdhPJyWrUg1KaeLBbfAdHN/o0TIqKf5tf+8Ci5WIgXV5rPeUKicvf5HnDjWpj8bQju2vF1/BBsabuL0fOkrcD6bBh4=
-X-Received: by 2002:a05:651c:2ca:: with SMTP id f10mr31375708ljo.203.1626881826838;
- Wed, 21 Jul 2021 08:37:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=33SpBe959fa1CdZeT/RZuhePwiZ+3BM8bxkMEVqqlPo=;
+        b=ZM5qi+s/tlagp/ztAzQcxlzhnyKFqf/a9O+3Tf9Dy4x2aFkOFY1edm5SNJaZPeVNVD
+         Fe/G2Xx5hTvYnzTLor+q442w0xSmYAd33zeJjbPlI+n0ySmZhLdJg5stq1nA/s3FM0EU
+         FUIVPSTcIwZ46DPASpx6HrJhf9aB2qnIZSQaPcCD0sXDCWYpygGX77VHSB26ypPYeCxP
+         AGzH7r41fXfUhS4UGO4U01WB80/M2nVgsc6t4RpZ9LTmJLi34OmpqoZAuoFc/K5SxkVv
+         fQBx+Zx4IKtvQJeAlf7dw48/XO2/3MuFQTIKUOEomQPqkGltHw4gRm5NGvQ+tzGeF/ue
+         3pJA==
+X-Gm-Message-State: AOAM531w9qHh1T1BKWCAiY8mpBIbo1qjpZ1oSMVVd9nEiLuQgjM27WzK
+        Ywyc0zZmG+jaQ3wNe5iNAUazrw==
+X-Google-Smtp-Source: ABdhPJwGpaeE/n04pLKeha86hdiY1mdJnWBY4lziudAGlqmQDU3AM6mCNoWMZMrkH79zwqlys3DfkQ==
+X-Received: by 2002:a5d:6506:: with SMTP id x6mr42250747wru.86.1626881891916;
+        Wed, 21 Jul 2021 08:38:11 -0700 (PDT)
+Received: from localhost.localdomain ([149.86.71.195])
+        by smtp.gmail.com with ESMTPSA id n18sm26209714wrt.89.2021.07.21.08.38.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jul 2021 08:38:11 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and btf__load() APIs, support split BTF
+Date:   Wed, 21 Jul 2021 16:38:03 +0100
+Message-Id: <20210721153808.6902-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210721151100.2042139-1-arnd@kernel.org>
-In-Reply-To: <20210721151100.2042139-1-arnd@kernel.org>
-From:   Bailey Forrest <bcf@google.com>
-Date:   Wed, 21 Jul 2021 08:36:55 -0700
-Message-ID: <CANH7hM7nLq9LthNi=D9qHsiS_eyhU8-CGjnXhsKYX9dqTaOmNw@mail.gmail.com>
-Subject: Re: [PATCH] gve: DQO: avoid unused variable warnings
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Catherine Sullivan <csully@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the patch!
+As part of the effort to move towards a v1.0 for libbpf [0], this set
+improves some confusing function names related to BTF loading from and to
+the kernel:
 
-On Wed, Jul 21, 2021 at 8:11 AM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> The use of dma_unmap_addr()/dma_unmap_len() in the driver causes
-> multiple warnings when these macros are defined as empty:
->
-> drivers/net/ethernet/google/gve/gve_tx_dqo.c: In function 'gve_tx_add_skb_no_copy_dqo':
-> drivers/net/ethernet/google/gve/gve_tx_dqo.c:494:40: error: unused variable 'buf' [-Werror=unused-variable]
->   494 |                 struct gve_tx_dma_buf *buf =
->
-> As it turns out, there are three copies of the same loop,
-> and one of them is already split out into a separate function.
->
-> Fix the warning in this one place, and change the other two
-> to call it instead of open-coding the same loop.
->
-> Fixes: a57e5de476be ("gve: DQO: Add TX path")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> The warning is present in both 5.14-rc2 and net-next as of today
-> ---
->  drivers/net/ethernet/google/gve/gve_tx_dqo.c | 92 ++++++++------------
->  1 file changed, 35 insertions(+), 57 deletions(-)
->
-> diff --git a/drivers/net/ethernet/google/gve/gve_tx_dqo.c b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-> index 05ddb6a75c38..fffa882db493 100644
-> --- a/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-> +++ b/drivers/net/ethernet/google/gve/gve_tx_dqo.c
-> @@ -73,6 +73,26 @@ gve_free_pending_packet(struct gve_tx_ring *tx,
->         }
->  }
->
-> +static void gve_unmap_packet(struct device *dev,
-> +                            struct gve_tx_pending_packet_dqo *pending_packet)
-> +{
-> +       dma_addr_t addr;
-> +       size_t len;
-> +       int i;
-> +
-> +       /* SKB linear portion is guaranteed to be mapped */
-> +       addr = dma_unmap_addr(&pending_packet->bufs[0], dma);
-> +       len = dma_unmap_len(&pending_packet->bufs[0], len);
-> +       dma_unmap_single(dev, addr, len, DMA_TO_DEVICE);
+- btf__load() becomes btf__load_into_kernel().
+- btf__get_from_id becomes btf__load_from_kernel_by_id().
+- A new version btf__load_from_kernel_by_id_split() extends the former to
+  add support for split BTF.
 
-"SKB linear portion is guaranteed to be mapped" is only true if
-gve_tx_add_skb_no_copy_dqo completed successfully.
+The old functions are not removed or marked as deprecated yet, there
+should be in a future libbpf version.
 
-This optimization is important for the success path because otherwise
-there would be a per-packet branch misprediction, which I found to
-have a large performance impact.
+The last patch is a trivial change to bpftool to add support for dumping
+split BTF objects by referencing them by their id (and not only by their
+BTF path).
 
-A solution which should address this would be something like:
+[0] https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
 
-+static void gve_unmap_packet(struct device *dev,
-+     struct gve_tx_pending_packet_dqo *pending_packet
-+     bool always_unmap_first)
-+{
-+ dma_addr_t addr;
-+ size_t len;
-+ int i;
-+
-+ if (always_unmap_first || pending_packet->num_bufs > 0) {
-+  addr = dma_unmap_addr(&pending_packet->bufs[0], dma);
-+  len = dma_unmap_len(&pending_packet->bufs[0], len);
-+  dma_unmap_single(dev, addr, len, DMA_TO_DEVICE);
-+ }
-+
-+ for (i = 1; i < pending_packet->num_bufs; i++) {
-+  addr = dma_unmap_addr(&pending_packet->bufs[i], dma);
-+  len = dma_unmap_len(&pending_packet->bufs[i], len);
-+  dma_unmap_page(dev, addr, len, DMA_TO_DEVICE);
-+ }
-+ pending_packet->num_bufs = 0;
-+}
+v2:
+- Remove deprecation marking of legacy functions (patch 4/6 from v1).
+- Make btf__load_from_kernel_by_id{,_split}() return the btf struct.
+- Add new functions to v0.5.0 API (and not v0.6.0).
 
-(Sorry my email client keeps turning tabs into spaces...)
+Quentin Monnet (5):
+  libbpf: rename btf__load() as btf__load_into_kernel()
+  libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
+  tools: replace btf__get_from_id() with btf__load_from_kernel_by_id()
+  libbpf: add split BTF support for btf__load_from_kernel_by_id()
+  tools: bpftool: support dumping split BTF by id
 
-By doing this, we can rely on the compiler to optimize away the extra
-branch in cases we know the first buffer will be mapped.
+ tools/bpf/bpftool/btf.c                      |  8 ++---
+ tools/bpf/bpftool/btf_dumper.c               |  6 ++--
+ tools/bpf/bpftool/map.c                      | 16 +++++-----
+ tools/bpf/bpftool/prog.c                     | 29 +++++++++++------
+ tools/lib/bpf/btf.c                          | 33 ++++++++++++++------
+ tools/lib/bpf/btf.h                          |  4 +++
+ tools/lib/bpf/libbpf.c                       |  7 +++--
+ tools/lib/bpf/libbpf.map                     |  3 ++
+ tools/perf/util/bpf-event.c                  | 11 ++++---
+ tools/perf/util/bpf_counter.c                | 12 +++++--
+ tools/testing/selftests/bpf/prog_tests/btf.c |  4 ++-
+ 11 files changed, 86 insertions(+), 47 deletions(-)
 
->
-> +static inline void gve_tx_dma_buf_set(struct gve_tx_dma_buf *buf,
-> +                                     dma_addr_t addr, size_t len)
-> +{
-> +       dma_unmap_len_set(buf, len, len);
-> +       dma_unmap_addr_set(buf, dma, addr);
-> +}
+-- 
+2.30.2
 
-checkpatch.pl will complain about `inline` in a C file.
-
-However, I would prefer to just not introduce this helper because it
-introduces indirection for the reader and the risk of passing the
-arguments in the wrong order. Don't have a strong opinion here though.
