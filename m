@@ -2,174 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F1C3D15D3
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9713C3D1601
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 20:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237525AbhGURV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 13:21:58 -0400
-Received: from mga09.intel.com ([134.134.136.24]:20298 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237437AbhGURVv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 13:21:51 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10052"; a="211487612"
-X-IronPort-AV: E=Sophos;i="5.84,258,1620716400"; 
-   d="scan'208";a="211487612"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2021 11:02:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,258,1620716400"; 
-   d="scan'208";a="632719641"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga005.jf.intel.com with ESMTP; 21 Jul 2021 11:02:25 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Wed, 21 Jul 2021 11:02:24 -0700
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Wed, 21 Jul 2021 11:02:24 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Wed, 21 Jul 2021 11:02:24 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.177)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Wed, 21 Jul 2021 11:02:21 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K6o8AORw8hyV87PtvRGeSb37qPbdIETuM8e1bEoyiuC+1w9NAqYymQCFzavZ/LSAdIqtkK7pDDHjzKq3OJoL9zBCfYx1riqvPE/wEZDtOPx38kYIXuvuSdVHSZjeSwRMbqZjbmUZKAduRln2XLS0J3FoRfUY04EOHNp2OViopY2wnYI2hKPCKl0JZiYD9SI2ofHT/05Q470JketSL1XL04VYO7voW8Z6fL3HiN+9tcTQAJxdAKcGWDTjsTaJ7f7oJGjjlGxk8Hp8dIdpueyBSiqPJapYbjlrqZ53t7nPpUjwNaRyvGMMbdXdh2OZPo483CNUrb08qVKl9yYUS/93gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ooeKVGeTUtG29iRutisKX7oDfZ30JFnJzhuA9QH9kc=;
- b=fUduiayjiSP/fV0trsw+NRa+TNAzCFGo7j04xhKbm6dVX7LTJYUAKd6J7FVxG28rhtw9NTSGgiRJh8i0w+gyQsEWtCbnIwh7F8mAQhjpj45JQ4kNeBTU5J6H7x3a5w6xGkFh6sJ3kJHBdg0roVsiHi0eePhCXPbFI35GpLE0AZOvPjqD745LppVqy5H99ZgC+4i/fc4GWCZj5K7Tc/7XuMmZPOIJZ5WgMF/Q1RaXTxWshecZThzDPKIN3RzwUXcSnZpVJUDXzdlbrneLV3n5IlPbj6qJwTXse0APSsVf/LNPvgNeWU3ejSENMp6EspuTCSbQDg6Z89r/OUTL3D0V3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2ooeKVGeTUtG29iRutisKX7oDfZ30JFnJzhuA9QH9kc=;
- b=HgrH61WlAY8z0tr2JZ0pcP3KlM7E3E5kex66Z3458qZ8F9USjHS5eF8eSDvH7oAqPAMkl63YtOdYaTVAgZKyi/a4PZi9z52YmMeUtuU5EKVov/6AV6H8vY2qJOzDqLc87BYSE88tagHChsglVnC8OYjy4ol7JQ36RNiicoz9u5c=
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4787.namprd11.prod.outlook.com (2603:10b6:303:6e::10)
- by CO1PR11MB4994.namprd11.prod.outlook.com (2603:10b6:303:91::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.22; Wed, 21 Jul
- 2021 18:02:20 +0000
-Received: from CO1PR11MB4787.namprd11.prod.outlook.com
- ([fe80::b856:1bc7:d077:6e74]) by CO1PR11MB4787.namprd11.prod.outlook.com
- ([fe80::b856:1bc7:d077:6e74%4]) with mapi id 15.20.4352.025; Wed, 21 Jul 2021
- 18:02:20 +0000
-Subject: Re: [PATCH net-next 09/12] igc: Remove _I_PHY_ID checking
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <vitaly.lifshits@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>
-References: <20210720232101.3087589-1-anthony.l.nguyen@intel.com>
- <20210720232101.3087589-10-anthony.l.nguyen@intel.com>
- <YPg0PRYHe74+TucS@lunn.ch>
-From:   Sasha Neftin <sasha.neftin@intel.com>
-Message-ID: <6cb7fbe9-35e2-8fb1-11fa-cbd6ce01bab2@intel.com>
-Date:   Wed, 21 Jul 2021 21:02:13 +0300
+        id S238129AbhGURfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 13:35:02 -0400
+Received: from sonic309-27.consmr.mail.ne1.yahoo.com ([66.163.184.153]:34812
+        "EHLO sonic309-27.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237382AbhGURex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 13:34:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1626891327; bh=z/xxpg8EbUmWXtmWD5hTeLFg+erI4akH+xhekw4NvpI=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject:Reply-To; b=hrR4tkOkhMgUwJB2i7fw/ScepwUI0TzVZREYUAAhs2xsAAXoxZu3KxwBB0xquXD/WUB6M/RwCWS6eThSr3jdsnf5zGHt93ZvnxHI3bqCfj63vAHPamEx+D1Mz2zrpuP45r0u8tmPYYTIcaedtT9aH6ViPzK5efWeQF7PRF8VBZbiQszw04xod3wrrY4efwnTZtmPjk49NOt/VcBHrZOO8kv2jxJ7cr5UWQSOQTvvvxo1VsJaqxDQKoWlouKCTFaaj7wixKH6sicPyOW18t0dpWqLDkOzTHKt/7712j0yJ39gdoDArZ6B8u57yYtBcIXC/mS7UCdLwGH3V3spE+FgfA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1626891327; bh=yjnuXbuW80Sua3ucKVaVU6+Oyh+dLCnQFFA9/szvV4R=; h=X-Sonic-MF:Subject:To:From:Date:From:Subject; b=sko9fqN6w43DJFazMkinDJZEjTqGn2I2NctJydsgnTSFur0PGe80vEvNOrsG4KDKMqE5E28P9f6kfkQasL4pTjhw36gyrzS025RxxI4w2vYbCCYJYAoKVJy660Z1r9/KW62ZV3ChOffJ5fqJBsNSj8G6PqJI52W1IRarOI3/UiwrDz/dasFsc/7lrH0sXwDYJOdChms+CEuf4M1Q8K7Wh7iCZRTpJaEAnofdi5NIXLWt/9iIWGn67If67vGrsQQjd53YwoGo0ps93lewRFKvbDQxvlG7XgWT57+3oH+w0NPkUL6ODu1LbwdBW8zHXLdgLz/c4hGwTkmtjNdFMVnzVQ==
+X-YMail-OSG: e23Kp5wVM1lBXY4VW1Pkyl.WhgUs9QjnEYnFvplrn51ue4jMiMcQCwUidm3RQL8
+ 4TUBPNMFCwUqtqHmCdDaXFIPR7O66b6OusmI.9iylGpSFRNwWqKwocvTGXxhvQEKW9FVQH9b6BXx
+ QTmZPdX56Tm7C8iCTwwrp7xCN_HCbyRQJm4uDLuoDki4SAKQLdAPUuC9qhXXOmkrs7oWpiJQCPxe
+ nhbjmn9PeV7LDuc1Tm_997J.PmMvwRoNc1cLhRdkREc0rjKf37fDO1NOKdhYiNOkDmrn2UjE1gmb
+ ..ERH3N0XCgPiy5LyzhLwxohx1EVgFD6qngpDmgkCMCsddoAraHD1x0NDgIDc6na4_H10FHbCuL8
+ FadCEvvq4xkxmDEs0Rap17oM.2iYHUsEBna_Zo3XS5At9vT30GrIjei_VwceZdi_kzAWhMmZlsEZ
+ pk7U6thcFmQWsECwzfNFxR8dG0un0cy3fiedJof4sgzIVft.4AkViiC5vslG8rwVchgV2CGzkm7C
+ CxcPUT_K.6gvujx1bA..cBRdeWtezfd.n3bDzumSHk8BR083.RsUW7pgIef9a2hhcHB277rW5T78
+ s7AtAhaIanNJDjgV8.GYqiBJdZuBJJt2Cr9K9qWwgGdGTFoRVu0bYHCQIOv9TbJaY96HTbMFZTLC
+ b1yOZUK30qbaE7I24qLs89PkjuWCfRuaZb2GynRqwCkRW9zico21SqOOWrRlpro7Zfp.6xV.qjzo
+ hLsP.OZpC7d_DPssBrw95agbJal5s_7c26QuCjMM1IxwdA0mwGMlyBhxqd4NhlsV7HkstLDsVCEG
+ nW7dIE86lVyvXvLMcCrXgJqKBPuzpDdN97gCQfdp3BchO4Y60D1BsdWnRjKGqhfKrlS66pN.LPy2
+ p50HBTR5rDIKG0oXP_hGC6vE9WkQQ.5TMpP9a0KHURseoOUtcH9wgXRkAvxEJJTFSAXnHFA4z0xb
+ I7jjQaSHqca7.xK9QnSDnbq3H0Q6OVxxOkaAFoLCvAYSDBsaWkdip3pJo4XTSNJEe_YyYDWiisdG
+ Z7EbxlW7qlF.U2zikaDJ5N.SNXzBBhFJOGzN6qw02EHv4BxiMSwwkqxyjMSXW1vFoAGjl6QgL9Ha
+ G0hHKj.64K6IsxYq4fCzPtk1JOjbzfagC3C.A.blaq6s8IVHhzCuMtSxhIz7_pMuTD_4y.vZqLgk
+ QAQ2hvaf7yN59gPgRfeN5rnDej8RlSenUAhdzdGWiyW6JTN_XvFfFN9j9jIB3LbrmEafqW9PNaEQ
+ oy05HLjwLAgd9r1CYFtRWscKMNpS7BpH5wpxsOg3L2zYAR_ZSWfWdLr9OhskYYneEaC6Nq4aIB6B
+ HuBlOPJq5z33ldKU_ZEvsEz7zUTjHHV0PbOES5MBs3YELdJcP.8T5kq6A6XZ.gAhDf.YwEouzWH_
+ ftxPqWGHRu0mYywMu0x6mGu3hvkuIp4pZl1YayKbjbDJyY8m.VM735a_Pq0QBnGXVwDfkLRDviec
+ UrdykTLwhTNrJm3h3ezhbWMGB0KYae8zc7okQoG4gBTmBH0kgScVPqt9KjHKvkR0xq8JnpD1kj9x
+ vEf8T0HgLFEset1fS3840_l7XERkoDB.jOFU5kLIW2hhwNglG08YZijNEX0X82lc6APUD8T6HoM5
+ JbwpNpxUBzmpaIV2JzzsD5TAUq4eQLdb6wOYJ3mrGZKVE7ZTj9FoKXpxCLH4tqUi9kCizkpi5dRd
+ dYajOiwM9VUUIvRX6esFHa6j2Vpr9qwSaWJU31xNAvLoGSQP1gJ9ivANUWg.DUk96hZVoeBhmTen
+ z1Hy3GahO3hyhKsVBNzq6r03WNy_4.W560_iHvEoNyc3rcxG7HdOfGnFD2._WTYOv8wQ.sQOSKNn
+ RaGM0nPXNPw294qUNZ0v.jDuGg_aP31ggi0VS1q4Hp5zeNw2SIFRkQycj3HWuVkR78BSSdGYem0L
+ aYh_jhH5qlAvO7_Rit3MhuPbtOofbhx7.QudZCm1ycFrcttjqDJTgo8W7ZOPUIgU1day3kv0K7RJ
+ CEtSSw4M.ea.hOvEZKz7mvmZ1rz5qYf.ItvvX_G5.3yo_._02lNEIpz4BP6MHkW_PSyJZ9G6zU8l
+ QHKENiAhuk968LN96.RTa2ZRV3Z89tfU3obL4Z2iYXztqmAhjydC1lzI.5brgp5vmG0D3c4hDQCJ
+ hwtbKHOHohGxHy7YkMEmctH6ZumUZZRPCHI.ytlYLwEbS5JuiBZxLanN8vEn3tgRT3jFZJQ2hVNA
+ mHgTGyZV0FMz5XLKeMSViJA.h8FVMPoZaHyMg1OmUbfqsmc8OQeSRl8.1Zzu3VAEWpe.BtGGVeGy
+ nigT_HvbBqGFviPr99bJiGmR4jDbqjVPPF8ZuEMGSjJ2vOqnajwfNTrZs3WjwCNImBPynIhSjkHQ
+ 9UTOUueaKpFg3MUL6TiUQhlkDFFnWhJJNJWa2E8NwnMSa6cXhQrNQrU.WahdPkl61.3eAhJNteUT
+ FBsWGTMcCNDX_0ooi4AxvgiglyYibUIiC6oCBmosQaet0fp2l3CvLUBwemsX.9gAEFT.ibnauJKd
+ 9Kdin4rPpIdBAWyTHWYY.A5yzgGvefdJt42PohukT1Akw3ptjuQXZ2Wo5rBFrau0CP216x_TguDw
+ Z8rQPjIBfFGWz77VZhQLJ0QJiJyGIh_gl7loYcmkyIZSsoYuau4Um91LM8p44ZHCSOhCD3aFn8T2
+ 8Q743Zqe9JQEkPaN8RIznhwl6AyQJY1uJnBcqV7De3h6VhmsnXNwcUQ10jRGXZADW1gJfFEPwLDL
+ _Hv9w69H.yzXIOLW5SL_5v6rmCVt6RQyA.0Sr.c4pcDCEC40xoELA9JzSRGw0CfynXBOhPzrrYBo
+ shluBigSzpgRDanfE7wAcgcYX__M9uctVopzMtkTMuLYykzkOQbdX2wxOLkfMWTACMjutVUXe.Rn
+ k_A21KoNK4PnM6g9AkK4DtnkZIG1V2X5o3QuEbOyxskyjPZ.jPcAVvtA2qHCTW7AxRZNBLAYxaEi
+ aVFfJ430qFDeO140GGFA2WZUUWA5ThO8f5QBysJSMLCA3fihVGFGp
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Wed, 21 Jul 2021 18:15:18 +0000
+Received: by kubenode540.mail-prod1.omega.ne1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 2b3d54d16852bcc9a77bb6e694199967;
+          Wed, 21 Jul 2021 18:15:06 +0000 (UTC)
+Subject: Re: [PATCH RFC 0/9] sk_buff: optimize layout for GRO
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <cover.1626879395.git.pabeni@redhat.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+Message-ID: <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
+Date:   Wed, 21 Jul 2021 11:15:05 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
-In-Reply-To: <YPg0PRYHe74+TucS@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM6P191CA0023.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:209:8b::36) To CO1PR11MB4787.namprd11.prod.outlook.com
- (2603:10b6:303:6e::10)
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.168] (84.108.64.141) by AM6P191CA0023.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:8b::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.24 via Frontend Transport; Wed, 21 Jul 2021 18:02:18 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a9ec0716-3b2e-4804-256b-08d94c71af5c
-X-MS-TrafficTypeDiagnostic: CO1PR11MB4994:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO1PR11MB4994B0642A1765737EEBF97B97E39@CO1PR11MB4994.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jSPjCN5Zw2nIcnbSDKH5/b5YWbfcyYSF9bVpsePocrl0K1RtZ6hJOcY1FIf70XmaTGNXg0HEknT9ZgziOa3pKub9WXoHfT8/iXYID+S4Q3+mvH+X9moSmJlwbX9Jwg9yK7bUD47bPs3OsXVhjclaPkN4pRQKcRGWjeC5Nfjb8ZAuyIRuHVLab0a3W4mHhXduLC18R8flZX9OtRSweCSqiX2PyAsHQwqlkvNfwc3WbjIB+Ml6h3CH8gFIYHyxrDShaeprsBeKOih7oZmaT97AG1PktmWYG5PeNzyxUI2xdT5yGsX5Aeb+lWm3DVp2wtNwOaWRG6KeZHRtfI52FG28DZ+UDrhdW8onBaXV1HtOWV7mAj0Nb4lrh5hv3wGVU6XH4iTlJiF7hirUjhm3FsIjLYFmf6xFo4QUqVCrjyGuLA6eNo9kz8PwMTzNBF6sC0YAVwG1p+6kZ/kt9SdgglhK8b1gaM3d0cU6mBrz3zCv0jMBeuPieILV0SxWIysM3IN1l2rbM/eu0TkmS9V19a9955iseZDmpe7nIugIIZGS3G2kQnUjBt6BotR+NZDVs/pdkXQIRiKOx19t/fwqe7Ybmec5wStRAKqrmRJ/Rs51cumT6YJeuRpQ+2Yr15EYlP5G/7Pb/tRp00MO/SD1jsqR4E9JM1uvdYQ5T+2WPmzdcurSa1WLGpN250Pf51CahUO7ndvqrUYWzZCIhWkVx5C4UwRUQuimDVnbXu/R3msIjqO+dfG0cgbEmtKj6grIZOhg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4787.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(136003)(346002)(396003)(39860400002)(66946007)(6486002)(8936002)(44832011)(186003)(5660300002)(4326008)(16576012)(66476007)(66556008)(53546011)(316002)(31686004)(478600001)(26005)(2616005)(956004)(83380400001)(8676002)(54906003)(6666004)(31696002)(86362001)(2906002)(6636002)(36756003)(38100700002)(110136005)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QmY3S3lrMnRYeFpPNEhpU2VPalpWS3ZlT3pBdTVLU1VCb2U4ZnNCSlFqcWZJ?=
- =?utf-8?B?NFZ5dmhNdXlGZjczOFJmZzkzNy9vdWxNbDBGZ2Z2WFRmUTdpSExYVXZyT0Ri?=
- =?utf-8?B?a1lRNzZJWVRNcGZYNkh5RXp1ZzZmWFVoYnZvWjRrNWU2NE9ObmNWSk9ERkpF?=
- =?utf-8?B?amJkWk94Y2VPbHVUVUx6NTB1Y2NUdlVSMGUraWJQYUM5dTVOMzNXcnVncHBp?=
- =?utf-8?B?L1E2OTVWSDN6M1p0enprelNGQTFwTFh5R2g0eUNjUWNqYVMxN29xRWxITUIr?=
- =?utf-8?B?akNCRmRrWkF4MkZ4cUJJSFpab3JwaEFSSlE4eEtkRVBYU2Z2V1prcUJKTm44?=
- =?utf-8?B?TUpNWXNaUW8rcTVWbGxVbUNwZ0plVzcyN3BnRWVJa09FRUR0SFJ1TVpoRU1m?=
- =?utf-8?B?emhoQ1F1TFdMNGc2VnowbmNVTnNwT29sZHQxNEZMRlNBcmZjSVVJUzVmWURr?=
- =?utf-8?B?NVowaTU5eDFTK2I0UzNYbDA5SXUvMDNHWHhYc0dIaVZpL2doeEd6Q1cybG12?=
- =?utf-8?B?WnpIVTBSU2Q1WngwUUg4UGt3L1JSMlp3R0psYUJkeHdRWUdxaEUrWmRZb0ZD?=
- =?utf-8?B?R3R4TmRzQVhYVmVuSDk5VHJyWFhacW9oZW1leUg0TzFmTGM5UHAxZ3VhbDZl?=
- =?utf-8?B?anE1Z2tNUHF1bVBIOTEwNFRRT1JNUWFrQnRCQnRoRk4zaDBITXZMMXhTMko2?=
- =?utf-8?B?S20yVk5FbTgxUUpDeVJmWklNTVNZdHhIWFBtSmpJSzlHQ1NCMDlZY1BjRmFX?=
- =?utf-8?B?K0s0aTM1bnFjYnp6dGwwS1p3TS9tM2tCLzFHU2todXFjQTRqNlgvL3JnNGc0?=
- =?utf-8?B?aU1pMzczSDZqVVhQY3hUejRsVkdmaW9VaS9aTzRiWEFaRlVlSjRRSitlOU9o?=
- =?utf-8?B?YmdPSGN2bkcwamFkeE01NGJUU3hHdVBHM09weWNsT2dCWWFwbkc4akJSQ1VV?=
- =?utf-8?B?Q1o1QlV3LzhNQndMOHRFMXBNT1U5R1ZCUG1JTHk0TkZEaERSTjljSUxvZSsr?=
- =?utf-8?B?RWNQRE9qcXA2ay9aVGg0UVlFSGI3c213dFBMRnZ5U1N3dVdSWUJ5UTRMdHJ1?=
- =?utf-8?B?V29iTTdRTlE4SzF1cXFvakN1MTBvQkFYREliVDE3ajZmZEF4eTVXOWlLUnJ0?=
- =?utf-8?B?WHVDQjdsRDN3dmZLMHZYRFVkOXIzT0w2dlo3WnBnMmNHLzR5TW9COVBxNytI?=
- =?utf-8?B?eDNmT3dTbDR3Mk1jTXo4Wk1kdGF0M3ZzQTFQYUQ1T0RJY3RDQTVhdWoxcFBu?=
- =?utf-8?B?T0llUmx4b1lVUDlnbW0vU0tybHpOVnhtV2lSYzIyQzN0ZmhldGtNaFdBR1Nz?=
- =?utf-8?B?THArcFdvRzF3Uk9NUm5jbjF3UHRzVDNDU2VxMkNzSlBJWnhub2hJei83STZB?=
- =?utf-8?B?b2tmMGpML3VzU093Tyt1Q3BzWGJtK3FCWlVuWVNHaFI5S3dFemx0Qnc4T3Fw?=
- =?utf-8?B?bUp3QndraGNPZkFWNFlzY3J6RnZ1TFpHM3FOeW92ekcrb05OTDl4dmp2S2xh?=
- =?utf-8?B?R1IyYW10N1FsZHdvc2pxazhFNGtBbVh6aU1INlJGNGpQTlhnRlUrZXhyeU5P?=
- =?utf-8?B?bGtJTTl5SnA1WnMxczBtZE5hSnl3ODY2MXY3NDIwd0lNTWFhV2ZrbDdIZmY5?=
- =?utf-8?B?SEFMVW8zYkhnR1UwSUo3cjFLaDF0MkdVdFR5YTlNeGFGd0hNcVBuZklSSzhw?=
- =?utf-8?B?RE84OHNwbjVOZjdkenNXMStkaURlUCtvbXN4dzExYUFKUmVTdXNTRGRmY2JU?=
- =?utf-8?Q?7Ui3+rSmM7XYwVcsYk/9+uWGE2daS0UhW7D29Zp?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9ec0716-3b2e-4804-256b-08d94c71af5c
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4787.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 18:02:20.8146
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6rorbOwRaimUgoPqz3fSYc0FrdOEXHorteVK5D3mhmBCKpB5gBWKNrHcqh5hN3rdebh4CSX2TZfeoKj5f9Kx/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4994
-X-OriginatorOrg: intel.com
+In-Reply-To: <cover.1626879395.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Mailer: WebService/1.1.18469 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/21/2021 17:50, Andrew Lunn wrote:
-> On Tue, Jul 20, 2021 at 04:20:58PM -0700, Tony Nguyen wrote:
->> From: Sasha Neftin <sasha.neftin@intel.com>
->>
->> i225 devices have only one PHY vendor. There is no point checking
->> _I_PHY_ID during the link establishment and auto-negotiation process.
->> This patch comes to clean up these pointless checkings.
-> 
-> I don't know this hardware....
-> 
-> Is the PHY integrated into the MAC? Or is it external?
-i225 controller offers a fully-integrated Media Access Control
-(MAC) and Physical Layer (PHY) port.
-Both components (MAC and PHY) supports 2.5G
-> 
-> For the ixgbe, the InPhi CS4227 is now owned by Marvell, and it is
-> very difficult to get any information from them. At some point, it
-> would be nice to have a second source, maybe a Microchip PHY. The bits
-> of code you are removing make it easier to see where changes would be
-> needed to add support for a second PHY. Why would you want to limit it
-> to just one vendor?
-Not like that i210 devices. There is only one PHY ID/type for this 
-product. Only one port. No fiber, no SFP - only copper. No option for a 
-second PHY.
-> 
->         Andrew
-> 
-Sasha Neftin
+On 7/21/2021 9:44 AM, Paolo Abeni wrote:
+> This is a very early draft - in a different world would be
+> replaced by hallway discussion at in-person conference - aimed at
+> outlining some ideas and collect feedback on the overall outlook.
+> There are still bugs to be fixed, more test and benchmark need, etc.
+>
+> There are 3 main goals:
+> - [try to] avoid the overhead for uncommon conditions at GRO time
+>   (patches 1-4)
+> - enable backpressure for the veth GRO path (patches 5-6)
+> - reduce the number of cacheline used by the sk_buff lifecycle
+>   from 4 to 3, at least in some common scenarios (patches 1,7-9).
+>   The idea here is avoid the initialization of some fields and
+>   control their validity with a bitmask, as presented by at least
+>   Florian and Jesper in the past.
+
+If I understand correctly, you're creating an optimized case
+which excludes ct, secmark, vlan and UDP tunnel. Is this correct,
+and if so, why those particular fields? What impact will this have
+in the non-optimal (with any of the excluded fields) case?
+
+>
+> The above requires a bit of code churn in some places and, yes,
+> a few new bits in the sk_buff struct (using some existing holes)
+>
+> Paolo Abeni (9):
+>   sk_buff: track nfct status in newly added skb->_state
+>   sk_buff: track dst status in skb->_state
+>   sk_buff: move the active_extensions into the state bitfield
+>   net: optimize GRO for the common case.
+>   skbuff: introduce has_sk state bit.
+>   veth: use skb_prepare_for_gro()
+>   sk_buff: move inner header fields after tail
+>   sk_buff: move vlan field after tail.
+>   sk_buff: access secmark via getter/setter
+>
+>  drivers/net/veth.c               |   2 +-
+>  include/linux/skbuff.h           | 117 ++++++++++++++++++++++---------=
+
+>  include/net/dst.h                |   3 +
+>  include/net/sock.h               |   9 +++
+>  net/core/dev.c                   |  31 +++++---
+>  net/core/skbuff.c                |  40 +++++++----
+>  net/netfilter/nfnetlink_queue.c  |   6 +-
+>  net/netfilter/nft_meta.c         |   6 +-
+>  net/netfilter/xt_CONNSECMARK.c   |   8 +--
+>  net/netfilter/xt_SECMARK.c       |   2 +-
+>  security/apparmor/lsm.c          |  15 ++--
+>  security/selinux/hooks.c         |  10 +--
+>  security/smack/smack_lsm.c       |   4 +-
+>  security/smack/smack_netfilter.c |   4 +-
+>  14 files changed, 175 insertions(+), 82 deletions(-)
+>
+
