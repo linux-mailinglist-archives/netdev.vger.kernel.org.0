@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54A43D144B
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794663D144F
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232351AbhGUP4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
+        id S232125AbhGUP6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:58:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231958AbhGUP4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:56:13 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD26C0613CF
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:36:26 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id d2so2912003wrn.0
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:36:26 -0700 (PDT)
+        with ESMTP id S229816AbhGUP6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:58:17 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F8AC061757
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:38:54 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id m2so2890907wrq.2
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:38:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=references:user-agent:from:to:cc:subject:in-reply-to:date
          :message-id:mime-version;
-        bh=a/8wsJPBRqAulA2iRoXKuzBtfwc73W3ZHr3+SO18Ut0=;
-        b=wYY6sILB8mYYkpUGomqhF2bjViMJPOcNLXhKQK9TR66cpkpaPFArdeIT5QvZXRz38N
-         iS/R54a1BFDBTgqLNSN5yv47I03r8MhSqeRzgcvEC5BmgkDqr4IXPGRm6W5YhLrJjAc/
-         Q6OGIxZjVeJtO0rdOb+cYc9jb5fTn9wS/gbJI=
+        bh=qUp/hbe9LbIcAazlkz7Tc/uHNcSrR5NC/lxU1KgZVXk=;
+        b=Z9Y8ZluN9wBZoRUhS/Ki597CyB4ritDT9tYSCg4ThTsTJEARZBlgbSv0W3sgLhcvYD
+         GVnGT14AAlOEJdwb/Dtm1T/QnyIb+3lNFsYDsOvdmYIHuHoADWsIm45hHP1oftMpdsc0
+         LF1BOPihLuflhqwLAiwj2bXiCGk2vs9Ny4n8g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:references:user-agent:from:to:cc:subject
          :in-reply-to:date:message-id:mime-version;
-        bh=a/8wsJPBRqAulA2iRoXKuzBtfwc73W3ZHr3+SO18Ut0=;
-        b=IcrKaf2enyRa7HeDuSaJDGsloeOUkLREncCGfGrLjkUhJU6f/Y0PPf5qhs7scNmzJY
-         L4WmTyju9UqlCBr7ZEm61202mxEWvE/vczrUYDwYj9MwrKQ9apBJmZ9HfhZ6Rft7+QI1
-         vPGKL26YZk+pTN4pYPPFi//VMc995iMQpk8xUWEhDYN8rk4hOCQvwDAcVG/UIvtaU6Gt
-         OUO2V8tvgsmXUhadKUre5plpyojRg7SCUesklL5BlHiV1ikk50gOkEqaFAjWJqs9xdLk
-         PfZVhxbPdhmRFPEKOnUJ0Yu2aVwk6kJhHXO/ESfLXeoCwDJYPiOWjDKIQ6ZLpyBmu3Jw
-         nxKg==
-X-Gm-Message-State: AOAM530qzs9nWTiCMXk2y8YEydky/ky23AJE5jLDDQlexiqAnObH2cBi
-        Da/YtMeWo2JHnGD0+P+pflzusQ==
-X-Google-Smtp-Source: ABdhPJykU8ykJheOdpZKzbx1L2Yg/kZEOrPqBfizdvy2xXQGnIx+UU+BsXcLYJ5Kqxihghz9wJxwXw==
-X-Received: by 2002:adf:fe0d:: with SMTP id n13mr43226426wrr.73.1626885384870;
-        Wed, 21 Jul 2021 09:36:24 -0700 (PDT)
+        bh=qUp/hbe9LbIcAazlkz7Tc/uHNcSrR5NC/lxU1KgZVXk=;
+        b=P+YHbVvhAVb7H1YXCA/xcO+EpHmzZTb0fYUF+k2XOpeFO/Zwmz1YYf1ydkJqN/ZRwa
+         ggi0tWm+JuXhfZBVkGsyEN+yxjZdFmVcn20Nev5jrqL71H6H45UrNRwllP5wHre9cNny
+         eLi3fCPgX4tv8za8vHT/OOv0GPahEo6c6T8qDxEhPEZcjYvAzsvFEguar6CP2ucljPDy
+         Vn+6graOnb1OFAM8K/9UnQvPuPuV7o5UA+U/34htNEfbLXduAprEWpa4ihsg20tbwlxZ
+         bXaqyrI5l0zORFu93kkqUw/7YfWA8rD+OjgTrt0D0kxDXpQ+vjvgUhpwOD0Wuu58buRS
+         znXw==
+X-Gm-Message-State: AOAM530e6BzDvH4jYlOR0MWjtpvhyf50w//axhmVuoORjvYZds0yanNj
+        IIsQT33Su9NYTRQDmzDvSNyDYQ==
+X-Google-Smtp-Source: ABdhPJxzadLuuDAP25k4CLQBeMAWjFLJERpvFEPZvgUWeVLVBz+RbsTURmB6iCxIOMjmoQDGegBxkw==
+X-Received: by 2002:a5d:568d:: with SMTP id f13mr44124982wrv.380.1626885532635;
+        Wed, 21 Jul 2021 09:38:52 -0700 (PDT)
 Received: from cloudflare.com (79.191.186.228.ipv4.supernova.orange.pl. [79.191.186.228])
-        by smtp.gmail.com with ESMTPSA id n23sm22905586wmc.38.2021.07.21.09.36.23
+        by smtp.gmail.com with ESMTPSA id o19sm389685wmc.12.2021.07.21.09.38.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 09:36:24 -0700 (PDT)
+        Wed, 21 Jul 2021 09:38:52 -0700 (PDT)
 References: <20210719214834.125484-1-john.fastabend@gmail.com>
- <20210719214834.125484-4-john.fastabend@gmail.com>
 User-agent: mu4e 1.1.0; emacs 27.2
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
         alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: Re: [PATCH bpf 3/3] bpf, sockmap: fix memleak on ingress msg enqueue
-In-reply-to: <20210719214834.125484-4-john.fastabend@gmail.com>
-Date:   Wed, 21 Jul 2021 18:36:23 +0200
-Message-ID: <87sg07r5dk.fsf@cloudflare.com>
+Subject: Re: [PATCH bpf 0/3] sockmap fixes picked up by stress tests
+In-reply-to: <20210719214834.125484-1-john.fastabend@gmail.com>
+Date:   Wed, 21 Jul 2021 18:38:51 +0200
+Message-ID: <87r1frr59g.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
@@ -63,90 +62,54 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
-> If backlog handler is running during a tear down operation we may enqueue
-> data on the ingress msg queue while tear down is trying to free it.
+> Running stress tests with recent patch to remove an extra lock in sockmap
+> resulted in a couple new issues popping up. It seems only one of them
+> is actually related to the patch:
 >
->  sk_psock_backlog()
->    sk_psock_handle_skb()
->      skb_psock_skb_ingress()
->        sk_psock_skb_ingress_enqueue()
->          sk_psock_queue_msg(psock,msg)
->                                            spin_lock(ingress_lock)
->                                             sk_psock_zap_ingress()
->                                              _sk_psock_purge_ingerss_msg()
->                                               _sk_psock_purge_ingress_msg()
->                                             -- free ingress_msg list --
->                                            spin_unlock(ingress_lock)
->            spin_lock(ingress_lock)
->            list_add_tail(msg,ingress_msg) <- entry on list with no on
->                                              left to free it.
->            spin_unlock(ingress_lock)
+> 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
 >
-> To fix we only enqueue from backlog if the ENABLED bit is set. The tear
-> down logic clears the bit with ingress_lock set so we wont enqueue the
-> msg in the last step.
+> The other two issues had existed long before, but I guess the timing
+> with the serialization we had before was too tight to get any of
+> our tests or deployments to hit it.
 >
-> Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-> ---
+> With attached series stress testing sockmap+TCP with workloads that
+> create lots of short-lived connections no more splats like below were
+> seen on upstream bpf branch.
+>
+> [224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
+> [224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
+> [224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
+> [224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
+> [224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
+> [224913.935923] Code: 8b 83 20 02 00 00 85 c0 75 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 89 df e8 2b 11 fe ff eb c3 0f 0b e9 7c ff ff ff 0f 0b eb ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 90 0f 1f 44 00 00 41 57 41
+> [224913.935932] RSP: 0018:ffff88816271fd38 EFLAGS: 00010206
+> [224913.935941] RAX: 0000000000000ae8 RBX: ffff88815acd5240 RCX: dffffc0000000000
+> [224913.935948] RDX: 0000000000000003 RSI: 0000000000000ae8 RDI: ffff88815acd5460
+> [224913.935954] RBP: ffff88815acd5460 R08: ffffffff955c0ae8 R09: fffffbfff2e6f543
+> [224913.935961] R10: ffffffff9737aa17 R11: fffffbfff2e6f542 R12: ffff88815acd5390
+> [224913.935967] R13: ffff88815acd5480 R14: ffffffff98d0c080 R15: ffffffff96267500
+> [224913.935974] FS:  00007f86e6bd1700(0000) GS:ffff888451cc0000(0000) knlGS:0000000000000000
+> [224913.935981] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [224913.935988] CR2: 000000c0008eb000 CR3: 00000001020e0005 CR4: 00000000003706e0
+> [224913.935994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [224913.936000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [224913.936007] Call Trace:
+> [224913.936016]  inet_csk_destroy_sock+0xba/0x1f0
+> [224913.936033]  __tcp_close+0x620/0x790
+> [224913.936047]  tcp_close+0x20/0x80
+> [224913.936056]  inet_release+0x8f/0xf0
+> [224913.936070]  __sock_release+0x72/0x120
+>
+> John Fastabend (3):
+>   bpf, sockmap: zap ingress queues after stopping strparser
+>   bpf, sockmap: on cleanup we additionally need to remove cached skb
+>   bpf, sockmap: fix memleak on ingress msg enqueue
+>
 >  include/linux/skmsg.h | 54 ++++++++++++++++++++++++++++---------------
->  net/core/skmsg.c      |  6 -----
->  2 files changed, 35 insertions(+), 25 deletions(-)
->
-> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> index 96f319099744..883638888f93 100644
-> --- a/include/linux/skmsg.h
-> +++ b/include/linux/skmsg.h
-> @@ -285,11 +285,45 @@ static inline struct sk_psock *sk_psock(const struct sock *sk)
->  	return rcu_dereference_sk_user_data(sk);
->  }
->  
-> +static inline void sk_psock_set_state(struct sk_psock *psock,
-> +				      enum sk_psock_state_bits bit)
-> +{
-> +	set_bit(bit, &psock->state);
-> +}
-> +
-> +static inline void sk_psock_clear_state(struct sk_psock *psock,
-> +					enum sk_psock_state_bits bit)
-> +{
-> +	clear_bit(bit, &psock->state);
-> +}
-> +
-> +static inline bool sk_psock_test_state(const struct sk_psock *psock,
-> +				       enum sk_psock_state_bits bit)
-> +{
-> +	return test_bit(bit, &psock->state);
-> +}
-> +
-> +static void sock_drop(struct sock *sk, struct sk_buff *skb)
-> +{
-> +	sk_drops_add(sk, skb);
-> +	kfree_skb(skb);
-> +}
-> +
-> +static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
-> +{
-> +	if (msg->skb)
-> +		sock_drop(psock->sk, msg->skb);
-> +	kfree(msg);
-> +}
-> +
->  static inline void sk_psock_queue_msg(struct sk_psock *psock,
->  				      struct sk_msg *msg)
->  {
->  	spin_lock_bh(&psock->ingress_lock);
-> -	list_add_tail(&msg->list, &psock->ingress_msg);
-> +        if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
+>  net/core/skmsg.c      | 37 +++++++++++++++++++++--------
+>  2 files changed, 62 insertions(+), 29 deletions(-)
 
+Except for the uninitialized memory read reported by 0-day CI, this
+series LGTM. Feel free to add my stamp to v2:
 
-Whitespace issue ^. Otherwise LGTM.
-
-> +		list_add_tail(&msg->list, &psock->ingress_msg);
-> +	else
-> +		drop_sk_msg(psock, msg);
->  	spin_unlock_bh(&psock->ingress_lock);
->  }
->  
-
-[...]
+Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
