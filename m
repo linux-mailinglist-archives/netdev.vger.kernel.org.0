@@ -2,47 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D423D0D94
+	by mail.lfdr.de (Postfix) with ESMTP id C77A93D0D96
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240260AbhGUKqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54954 "EHLO
+        id S240341AbhGUKqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238540AbhGUJgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:41 -0400
+        with ESMTP id S238709AbhGUJhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:37:42 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3806C0613DE
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:17:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9F0C0613E9
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:18:19 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1m69Hw-0003ka-Eu
-        for netdev@vger.kernel.org; Wed, 21 Jul 2021 12:17:16 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 8CCD5653A39
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 10:17:15 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        id 1m69Iv-0003pE-IO; Wed, 21 Jul 2021 12:18:17 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:1b:ece1:995c:23c1] (unknown [IPv6:2a03:f580:87bc:d400:1b:ece1:995c:23c1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 52DC6653A35;
-        Wed, 21 Jul 2021 10:17:15 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ce2f8a4b;
-        Wed, 21 Jul 2021 10:17:14 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A1391653A40;
+        Wed, 21 Jul 2021 10:18:16 +0000 (UTC)
+Subject: Re: [PATCH] net: switchdev: switchdev_handle_fdb_del_to_device(): fix
+ no-op function for disabled CONFIG_NET_SWITCHDEV
 To:     netdev@vger.kernel.org
-Cc:     kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next v2] net: switchdev: switchdev_handle_fdb_del_to_device(): fix no-op function for disabled CONFIG_NET_SWITCHDEV
-Date:   Wed, 21 Jul 2021 12:17:14 +0200
-Message-Id: <20210721101714.78977-1-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, kernel@pengutronix.de
+References: <20210721101511.76862-1-mkl@pengutronix.de>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <9d272c17-ba53-6b84-5fb5-9bce6e6e7f68@pengutronix.de>
+Date:   Wed, 21 Jul 2021 12:18:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210721101511.76862-1-mkl@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="WjdhByZxL6OxFxefI941R576ZTk0RhiCo"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -51,46 +110,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In patch 8ca07176ab00 ("net: switchdev: introduce a fanout helper for
-SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE") new functionality including static
-inline no-op functions if CONFIG_NET_SWITCHDEV is disabled was added.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--WjdhByZxL6OxFxefI941R576ZTk0RhiCo
+Content-Type: multipart/mixed; boundary="V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>, kernel@pengutronix.de
+Message-ID: <9d272c17-ba53-6b84-5fb5-9bce6e6e7f68@pengutronix.de>
+Subject: Re: [PATCH] net: switchdev: switchdev_handle_fdb_del_to_device(): fix
+ no-op function for disabled CONFIG_NET_SWITCHDEV
+References: <20210721101511.76862-1-mkl@pengutronix.de>
+In-Reply-To: <20210721101511.76862-1-mkl@pengutronix.de>
 
-This patch fixes the following build error for disabled
-CONFIG_NET_SWITCHDEV:
+--V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-| In file included from include/net/dsa.h:23,
-|                  from net/core/flow_dissector.c:8:
-| include/net/switchdev.h:410:1: error: expected identifier or ‘(’ before ‘{’ token
-|   410 | {
-|       | ^
-| include/net/switchdev.h:399:1: warning: ‘switchdev_handle_fdb_del_to_device’ declared ‘static’ but never defined [-Wunused-function]
-|   399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
-|       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hello,
 
-Fixes: 8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE")
-Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
-changes since v1:
-- added net-next to patch subject
+On 7/21/21 12:15 PM, Marc Kleine-Budde wrote:
+> In patch 8ca07176ab00 ("net: switchdev: introduce a fanout helper for
+> SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE") new functionality including static
+> inline no-op functions if CONFIG_NET_SWITCHDEV is disabled was added.
+>=20
+> This patch fixes the following build error for disabled
+> CONFIG_NET_SWITCHDEV:
+>=20
+> | In file included from include/net/dsa.h:23,
+> |                  from net/core/flow_dissector.c:8:
+> | include/net/switchdev.h:410:1: error: expected identifier or =E2=80=98=
+(=E2=80=99 before =E2=80=98{=E2=80=99 token
+> |   410 | {
+> |       | ^
+> | include/net/switchdev.h:399:1: warning: =E2=80=98switchdev_handle_fdb=
+_del_to_device=E2=80=99 declared =E2=80=98static=E2=80=99 but never defin=
+ed [-Wunused-function]
+> |   399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+> |       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>=20
+> Fixes: 8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWI=
+TCHDEV_FDB_{ADD,DEL}_TO_DEVICE")
+> Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
- include/net/switchdev.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch is for net-next, I've send a v2 with a corrected subject.
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 6f57eb2e89cc..66468ff8cc0a 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -406,7 +406,7 @@ switchdev_handle_fdb_del_to_device(struct net_device *dev,
- 			      const struct switchdev_notifier_fdb_info *fdb_info),
- 		int (*lag_del_cb)(struct net_device *dev,
- 				  const struct net_device *orig_dev, const void *ctx,
--				  const struct switchdev_notifier_fdb_info *fdb_info));
-+				  const struct switchdev_notifier_fdb_info *fdb_info))
- {
- 	return 0;
- }
--- 
-2.30.2
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
+--V07fNtg6Te7tzKDC36UbbN7K3Baz2rgtz--
+
+--WjdhByZxL6OxFxefI941R576ZTk0RhiCo
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD39GUACgkQqclaivrt
+76lHmQgAi3g00eL/VyLeslzNVaJbuFIRW8eQ06tqGjXTBlyQWU0+YLuXySpa6laq
+mJYtX4xBqPSZ5jC3RUU8SzoNrrhVmkd6y5vo0qsk+iSl2/Xfi0M/cefqNwNab05u
+IAZlTAhXHgXuqsTI5vfWS61svyjbrSigpb3YUajQbGzCvw6mTlL9Gz3gRCK4cIsM
+iBH2vP1Iq/LlHE3tvBmNCVu9QMi1yrJ1y0QxmIdJ9mKjuSy+ygk4VIYFX7AfvStS
+M5o0MjKCq/K+7YTdUSBssO0NcEsSJtXw6spm1PqdrDC9nwTWWaNq5f60zywt4ryW
+YZgoXSrCNP0+o4A/yqWwAPd3kKsWSw==
+=RsBy
+-----END PGP SIGNATURE-----
+
+--WjdhByZxL6OxFxefI941R576ZTk0RhiCo--
