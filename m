@@ -2,66 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E75A83D097C
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 09:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 595A03D09B5
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 09:29:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234741AbhGUGat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 02:30:49 -0400
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:57103 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233002AbhGUGag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 02:30:36 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=haoxu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0UgV-rZj_1626851460;
-Received: from B-25KNML85-0107.local(mailfrom:haoxu@linux.alibaba.com fp:SMTPD_---0UgV-rZj_1626851460)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 21 Jul 2021 15:11:00 +0800
-Subject: Re: [RFC 0/4] open/accept directly into io_uring fixed file table
-To:     Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <cover.1625657451.git.asml.silence@gmail.com>
-From:   Hao Xu <haoxu@linux.alibaba.com>
-Message-ID: <39d65414-d3af-5af5-e8e8-fc883731700e@linux.alibaba.com>
-Date:   Wed, 21 Jul 2021 15:11:00 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.2
+        id S234994AbhGUGs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 02:48:56 -0400
+Received: from verein.lst.de ([213.95.11.211]:57680 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234507AbhGUGsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 02:48:12 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 67DB067373; Wed, 21 Jul 2021 09:28:47 +0200 (CEST)
+Date:   Wed, 21 Jul 2021 09:28:47 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     netdev@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v5 2/4] net: socket: rework SIOC?IFMAP ioctls
+Message-ID: <20210721072847.GB11257@lst.de>
+References: <20210720142436.2096733-1-arnd@kernel.org> <20210720142436.2096733-3-arnd@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <cover.1625657451.git.asml.silence@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210720142436.2096733-3-arnd@kernel.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2021/7/7 下午7:39, Pavel Begunkov 写道:
-> Implement an old idea allowing open/accept io_uring requests to register
-> a newly created file as a io_uring's fixed file instead of placing it
-> into a task's file table. The switching is encoded in io_uring's SQEs
-> by setting sqe->buf_index/file_index, so restricted to 2^16-1. Don't
-> think we need more, but may be a good idea to scrap u32 somewhere
-> instead.
-> 
->  From the net side only needs a function doing __sys_accept4_file()
-> but not installing fd, see 2/4.
-> 
-> Only RFC for now, the new functionality is tested only for open yet.
-> I hope we can remember the author of the idea to add attribution.
-> 
-Great feature! I believe this one leverages linked sqes, we may need to
-remind users to be careful when they use this feature in shared sqthread
-mode since linked sqes may be splited.
-> Pavel Begunkov (4):
->    io_uring: allow open directly into fixed fd table
->    net: add an accept helper not installing fd
->    io_uring: hand code io_accept()' fd installing
->    io_uring: accept directly into fixed file table
-> 
->   fs/io_uring.c                 | 113 +++++++++++++++++++++++++++++-----
->   include/linux/socket.h        |   3 +
->   include/uapi/linux/io_uring.h |   2 +
->   net/socket.c                  |  71 +++++++++++----------
->   4 files changed, 138 insertions(+), 51 deletions(-)
-> 
+> +static int dev_getifmap(struct net_device *dev, struct ifreq *ifr)
+> +{
+> +	struct ifmap *ifmap = &ifr->ifr_map;
+> +	struct compat_ifmap *cifmap = (struct compat_ifmap *)&ifr->ifr_map;
+> +
+> +	if (in_compat_syscall()) {
 
+Any reason that the cifmap declaration is outside this conditional?
+
+> +static int dev_setifmap(struct net_device *dev, struct ifreq *ifr)
+> +{
+> +	struct compat_ifmap *cifmap = (struct compat_ifmap *)&ifr->ifr_map;
+> +
+> +	if (!dev->netdev_ops->ndo_set_config)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (in_compat_syscall()) {
+
+Same here.
+
+Otherwise looks good:
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
