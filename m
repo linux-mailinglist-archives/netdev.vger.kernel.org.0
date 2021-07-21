@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF403D0D8E
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DC33D0D8F
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237994AbhGUKnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:43:43 -0400
-Received: from mail-eopbgr60050.outbound.protection.outlook.com ([40.107.6.50]:45696
+        id S238676AbhGUKpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:45:12 -0400
+Received: from mail-eopbgr60073.outbound.protection.outlook.com ([40.107.6.73]:21728
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237566AbhGUJcA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 05:32:00 -0400
+        id S238141AbhGUJc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 05:32:28 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EW96/CIiSPC+DUVbvh6QnlTTnev48vgQZA1BNdGEv0JluNd7jfyhgo4EaXC9XkSFMEML4GQ4N7U9HTc20pF9MdTTPuDl6qbHOGr4Ta0739/fNbF0gqxBfbv2iByy0P41DoDmok0mZYFcLfwMYmImL4k+os2s9PW28j56djUDvlnwO4GsxxPGK9awPnb/vwQCkXyqMCfwiKlj4ZQ15BHV2JJFzcYcTaASM2f4gGUOVHor5DopZrO8lUxHeXzDa6hVxHzgc376srNCXxtRvsXF5dKmNkkFskE0RWcpIkVcSAOc4P3/VCVZFj/5jLjjbu1D4A/mYcMQkWcEh0b705ultw==
+ b=QwqFTnTKrm0kij+6t/+0HzCAhtknaXM5VAq7cehh678eSaxdkKSBVCa33/Et1NbvqPEqexH4w16sdBtsoSTRHIXyIJvATd0zzhWlsB8VBxwYdct9IERWFYiYoI1oauJZjWMYdHt6Bps/ZIwehgsCRbTVLHlagsYVyGUT6a+a+4NTxR5xUwED5EmTbRawpGxp8me7xDYufqvqbwmiWu8GsF0mlwYwK1Flu/mwSif7bp1wF+AWrrwQFqmCGCzuhYoRudCZYQ1AKJmrpkAQLTo0nSoi22lKBNnDfP1TCuPpM4/GWKpBKQcTmGy3pbm5G1NyyP1TQz5WjaVuLXRoTiYqHg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+eUnslCw/qHp+T0wyI5XAUkzUatwF5S7M7N5Ysi0R4Q=;
- b=dmgV9lUfMn+OoGTMZkqVrDNrjulDertBDZt8GWpiMT3lnqvTCSyKkgR9mIUHpV0582NZwCBIS7zCMG35XzpzDy0rxdpsz1tKvBe5upYU8eC5fouDV/nBGnQuS/hKgjrpolFLuIsP/9VQYc0dYCLrTCvy3g8HwzADtkfU6chcvFdgHvcAw4yLnsml/srrdElFsjYO2K6BxY4O1i9cGGObIl2Fnq2Fh//9+99eY6zXjAos+1StSKEJ5r+PgAI1YX1PX3rjTezuxq4PH20yjRMoaOFgSrcdJGOemEbBK0r05btc9iW1y1RDop77ZCEdjAyQnOpmPZx3hFmBazWjSjoGJg==
+ bh=mgtGxeyUcrhHwgZ30kb4K94aKLFiSjxyvU60PG1rr+s=;
+ b=ftUeHBVgRURtOyO35yvorVMDAyZEKJoNifGM094OZ+avSZNkvFGqnjLnt5etJDbQwBYN2iAzd4LuxBUNDvUQif/hXLplr8ZN0i8uRZNmVnnB8pUfwlg6eMX0zDoMZccdMoz9ijP9+VpZfIQG5qcdt3GUfTHLmxJ/CDIF2KUL4aKeoCRm3dR1KDkb4/Uu/jXQkaho0f4X3yo4A9Mnsg1qLHFgJ3SW1uzGflV0HjxvHN4eg+ypeINV21Ihtpug31DsqenNSMkclWCuE7/92Btzq3OWzCA3LrjRoqzxGJhUGL/9a5StmwaAcBporSz8recB7P+IkXgpyCDw4Qlm6VQfoQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+eUnslCw/qHp+T0wyI5XAUkzUatwF5S7M7N5Ysi0R4Q=;
- b=XraNbnIwLzOXbt74jXm4sAJHzlvilc9ihirEEQBNXV8aQbiI2FSjbO40yajFZEfjsBRSUY+p0pTmhMoYeeBQFoy7JdlARkHRdHsQxq+62k0biUTVm9xiyx0mcNWlp23gLgsfEvBDo5XojB9V7Kp2d+EQtU8wY/e8bM6+JzUQ7X4=
+ bh=mgtGxeyUcrhHwgZ30kb4K94aKLFiSjxyvU60PG1rr+s=;
+ b=P71oi8gfsWjnyLs7Rvs/MJstxER8N1G7rxevjnTJwQNDIJFRv5zLFRJMDGPbxwEf5ETfiMbWqWFNL8KLsP187bPtH5clvoLe1oMGcU1JSKQ5E8+yO5YBy1kQdjHdQCLUSPSaZtcGwHKlTu6L4284svXs7Xd9qHqMRry0YfZxCKc=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DBAPR04MB7480.eurprd04.prod.outlook.com (2603:10a6:10:1a3::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.23; Wed, 21 Jul
- 2021 10:12:02 +0000
+ 2021 10:12:05 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9c70:fd2f:f676:4802]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::9c70:fd2f:f676:4802%9]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
- 10:12:01 +0000
+ 10:12:05 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
         festevam@gmail.com
 Cc:     linux-imx@nxp.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH net-next 1/2] dt-bindings: net: fsl,fec: improve the binding a bit
-Date:   Wed, 21 Jul 2021 18:12:19 +0800
-Message-Id: <20210721101220.22781-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH net-next 2/2] ARM: dts: imx6qdl: move phy properties into phy device node
+Date:   Wed, 21 Jul 2021 18:12:20 +0800
+Message-Id: <20210721101220.22781-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210721101220.22781-1-qiangqing.zhang@nxp.com>
 References: <20210721101220.22781-1-qiangqing.zhang@nxp.com>
@@ -55,141 +55,351 @@ X-ClientProxiedBy: SG2PR04CA0195.apcprd04.prod.outlook.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR04CA0195.apcprd04.prod.outlook.com (2603:1096:4:14::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 21 Jul 2021 10:11:58 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR04CA0195.apcprd04.prod.outlook.com (2603:1096:4:14::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend Transport; Wed, 21 Jul 2021 10:12:02 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 856bddb7-abe2-4b80-a7ba-08d94c2ffb89
+X-MS-Office365-Filtering-Correlation-Id: ec402709-641e-40e9-6118-08d94c2ffdb5
 X-MS-TrafficTypeDiagnostic: DBAPR04MB7480:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBAPR04MB7480C8603266AF86704963B3E6E39@DBAPR04MB7480.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <DBAPR04MB74804F9EA2643CE44491BCBAE6E39@DBAPR04MB7480.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:159;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Xc7rkrWK6dL3b+E05GqcLFumZ/UFd5M81CxQKO9WO8eBEHaVhXOGdPmTgJC5HFz3F7G9jkF+Oy+0rFRrL/ulU/Mv0UG7limRWRmujSq0IowJ/4UtgtzeJS1JPGNYyWLjtupAevL3AgGhVC3BegDQ4a0qOvZhfgfygl/J3ZGhVbWh/uKTEY6DbG8O9pRCa6AtyL6dg5PcGA2aMLEFe+cLMRQ/344GGLfICn29G/F4EKAVPgjK/oFJcZTKod5aiLg0tOe5R+wsZABqQWPR3X3xdkQQpY4NfELIcc5Xu1rEg4wpBvWpGaE9cfJOI2mAa3mvhqnfiCCAHggaq/DwA4pFpWChtO9QHrEZZ4b5DzrVqa31KYF7cFpQP3enuQA0ylhydZo1f9eDFYWvFWSL92gjeq/tRTfDstTT8mAy5szYbAoZ/h9QilZiiB5+3q0MWBdQmNKJV1fOeNFEA+bTgITEcsYCQYuOl0Ipoz2p3Jvjg7TWF5idsxM79CWoCumgwAWO/C2SuGop8Dn1GVTTHEtlVeqkA8kZXEVbnuwCpNV7ZKpeB/Tza4MN+u2b4MTZ9oEBnWpkE2KSbRmgZjz8B6E9NzVUyVkWnImywzwMGacOHN14xnn4AtJTE4qsXd7ESevim+1tBaqYpOKZf9xSAqc30hGV8zn8tiNdup5N+DVZKQzTbyZHzFeNuyIS5cd/YI+r43l+ioEHiNFBGRGlOpWS8g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(1076003)(4326008)(186003)(66476007)(66946007)(5660300002)(6486002)(8676002)(478600001)(7416002)(2906002)(26005)(52116002)(83380400001)(6506007)(86362001)(38350700002)(6666004)(8936002)(38100700002)(2616005)(6512007)(36756003)(956004)(316002)(66556008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Bhbh/5qH+MgP4C9Y80hRStZuDGjPPs0pDMBVy57GTtUJm/7VDrMXewn5kqYARPRziTsYQ82er3hPexBB9qA+Whm5nSUqakn2KxC5LtvGdUFC7j2RGTnBcIHdAbvdI7gy+df2W9erRPuJM8j6hfLbSaos72XLEc9tsDi6SegneGhQ7IWPqohrLXUHXNniic0L5vh2QHF7OK3uzttmgEPw//32uOUG7hJ+BUP19MGvWOTDrpUSAMGzO7DmKykmuY3ojAtY+dKgb8ONoyWSsmed0FQP3ZyI2CNgFF3Y9SI6SkMtfozWrkBleKmBRNQJmo4tZX+yZ85LDGmvy7mRQLzZmFF51jrcoNXVLL9LC/6cbO6iKIQFDMqexPPq+WXDQ1jgGXR3r3Z86HG81clPkTyEemGfcMpuDEofuSH1lcklk/gwDVH3jtXnthp04W+PU6mQfTJUiz8NAerV7CSKbtWDY+7hK+GAyln+DTYVeChK62RiDQlIJvTaHZk+y9sf+JnmoaYeT5xbDuQVRrZ7F6AAlRhfe1AKsSqC21bINiCN+kLvtyouEe+dd2EScA6dVfVhPE6IDtIIQEf1/sUNQdGtgSLV/HDvd5nQB6kGHEe0+og5n84zf3QBXEj5GKw2kKvU/o5U/RdSW/diF6Hr/pyvq23Ezl47T0fD49dsCBE/tXKH/TmGWq8n+fS5WOAXR05eE/ZnDRKfhYqVGwfinvppuRsi102ICeS7fMXTzmiPDrk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(1076003)(4326008)(186003)(66476007)(66946007)(5660300002)(6486002)(8676002)(478600001)(7416002)(2906002)(26005)(52116002)(83380400001)(6506007)(86362001)(38350700002)(6666004)(8936002)(38100700002)(2616005)(6512007)(36756003)(956004)(316002)(66556008)(32563001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lyu8FaDcNqBW0XBSRrUSKmHpQxFBLaXgpd1G0eYYbJ+DZVto3C0W4VFjU/Au?=
- =?us-ascii?Q?pGwmxCB5PMEREMRlsoIj/qcr6YEsLLCFrWxrgIQ1d0XPO7sZSkQirarVIuB1?=
- =?us-ascii?Q?r7RuvjY1bRw2F1RiXk5JdQXJay+qNwoNrLri/fsKo4JBthlknQybkUf92Ps4?=
- =?us-ascii?Q?YE5w3B39UonveK65QEqKpeNRkF5xtVnX+zxJkPJwGOllbX977Eg8uNLYQd0D?=
- =?us-ascii?Q?TYVdwlvg8QF618GsrFa4KZdMG2irnzWYIwXj0CPxPlzCy/Jm9KRMQ5on5svt?=
- =?us-ascii?Q?DN0w7s8mfezI8UTv9vTYyMvuFYQB+KlQXZgVYoxP9dykntqc4IeqcBKlx/1j?=
- =?us-ascii?Q?HpZlBE3ax3dSyTlFmpKM495tlDrIWasOz+TO+oCdDpvpFutPLQ7Gd3aqQlZa?=
- =?us-ascii?Q?KOgCXSQZPL8hkPv/FAsKQNi3rriyNhYSEHPVmmTzDVWSMuiVW2+pGiRxWL0j?=
- =?us-ascii?Q?+MA40ZJMKyTQOuv/4I/8f4y5D/YFZV8OtcMuCk162c8vmmyRpBbX1yiEx734?=
- =?us-ascii?Q?+wUm+9GccELhFerShILL5iBZ6kouTPUeoHt0Viusef2WNzyYxfYPfWSUNEcP?=
- =?us-ascii?Q?jieSlUGDOm8nv1gpZj68yM4jf2vQ1dlv/lJlaoQEv6F7NN2i6N/vfTSNuvfl?=
- =?us-ascii?Q?rHfxrwCvpNhh0WpEk5XZIcMeavbWnlxcmugetT2K6RIWsvUhag2upNCPvw8x?=
- =?us-ascii?Q?a/X2DzXpRIMbOXsNqfmVy0iDFw+UInOEmxgj/f5NohuMtM/wM/tszCry+W2X?=
- =?us-ascii?Q?8ycVkScAoh3lEDQuwHc3m6VoWn38xUh396g3k3Qda0fCW/snXOJgd+E53Lb/?=
- =?us-ascii?Q?t+N9sz5BzN144nKlMJgmvdKckagfK3BJ7sF9Y2R1Iix72oTESylRlONK5C70?=
- =?us-ascii?Q?lJVMONB5Fp+6e8zWUE5WV0xus4A8SViSfxnhzcu5cmpXUZaQTwjHd8DY0XmC?=
- =?us-ascii?Q?Aazt9ZHYSMRdKeDSQ/bhFOfq3lzfc3qK7dtJCzA0GCTVluy9n1SMt7yG+LpQ?=
- =?us-ascii?Q?2nNgHk6oyRdmilJNRw68woDgqdDvKcHsg3USPjxi52IgCqhjrv4NqkgLzAR5?=
- =?us-ascii?Q?Z6yOU0HBEbQb1BLXZj0I0g6k6XDWS3a7dvnvhskY8yUhXm/RcJ5o0jqMpKDk?=
- =?us-ascii?Q?5c+U2ZfjqoZGRmSxATxskSqoW5lXqEEBFgcKJNVyybES0q6abG91qFDianYN?=
- =?us-ascii?Q?H25Kxa/gxeGeDPNXJtqURZuBVDwWBd5pYfXRZgmUm+J78/mh5lfwqjZOGJjC?=
- =?us-ascii?Q?OB/8oOTta/clw5CdlOpB/KOQ2Ct118QCb3Axzx3wt+lUbB4N7NlFT78gvMY0?=
- =?us-ascii?Q?ecO+RdGyt3LQVKWolL8Tnxaz?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j4r3+ZS2bpar/At68dMUgCRYwLCl2ECGbBrZ1ybC7fafkVqBZNOY1z8vL/Se?=
+ =?us-ascii?Q?0pNzW9LsgxmlWX9z5jyirKFHSdG0BrQDyHHQUgTRYrJBU0aDyy5+PrLiKyS2?=
+ =?us-ascii?Q?n9PQ5gm93+SwevHMbycUje6uzf+rvSVnRvD3zCuc4nKjG1YzNhVW3ibj7KTb?=
+ =?us-ascii?Q?jNtgWarx81SsIq3xn4XzeZUHv435j3K2OPt/lkbWZWhuJRtFPKaesRxhWie7?=
+ =?us-ascii?Q?SAEFSYKvtunGGKxsHYXMXH+QgpbBGedXmgbzwmkZWR7TkPjazK1bcZvvC6ga?=
+ =?us-ascii?Q?wodPeFdpUxCSyPLnLa0+e7OEvIydQEXKBchc/FwLUq/D3TA16E3ca/KobVse?=
+ =?us-ascii?Q?9h/P4sHRqwokfyV+Rs737EL+gaRd7+Z+r/n3Um7zlhy8MBkQ8Dn4LynQLTin?=
+ =?us-ascii?Q?YzZV/Qlo1J4yGXR4Z3owmCQVd6a/b4UqsVDLDLe3Gqisc72M1hzjz9rgiyL8?=
+ =?us-ascii?Q?OWHgovAog1/dokB/fgn2IoGcwg58yQUw+DnfmmVylXdBFkr3KZXLrJKZRpLx?=
+ =?us-ascii?Q?PBsn89xvGqNVRmrk/2kcDBrXQO4JWYZLVRcslkFaHrK9AkykHkYlgLx3NN1n?=
+ =?us-ascii?Q?isiLSgwqpuniQBTOgJzRUsptwW471TjrdKU0ngHavdxQz7YKnaFpxID2C7e0?=
+ =?us-ascii?Q?eq0z0YdRKnMQiGasGHm0YJP9V7GJZEyQL7jLV9nZJY5UFI0P+tTbzEUC+KXK?=
+ =?us-ascii?Q?gG46LKqNgjTQV8ITzUNFhTgt/00rMDihFL/VI0aP4XafvQapPaROlrzEg6EN?=
+ =?us-ascii?Q?AekNgDUZrw/JMbKp92svBM7VbfmegBedRqCi7sASD0wE6YQMbIVVwx55I6m3?=
+ =?us-ascii?Q?K4WHMOABTlh89L7PPLY9UqHNtHDAG++NrTty9fTDgypddazESvES9W1Idjlt?=
+ =?us-ascii?Q?VxIdSQdCXRdqvNZpLfMZENUuiSaubaGyL/wLPmzu22CPbUf0iFJyfIJ9Nvgy?=
+ =?us-ascii?Q?f0F6Fbs2AdovxbI8lSTTJ8fK9ru33QE3U7zYSA7DdkA8+nwBsvgkba9iYcAh?=
+ =?us-ascii?Q?52xw7Y1T+lm3WwzAzWq8htCANKVVImtuLO9RamtY4Vm7gMmhXnv0myxqg5+w?=
+ =?us-ascii?Q?h8+zw2qXdZsGu3IxW6FMIFKtlkgMxOCGmmkpJ2W7SMi7YhvfcKtbF12ZJZ8/?=
+ =?us-ascii?Q?imJwcNGkaG/2g3+iKBwBn6NhOQbmn8XHGlbZhNEXiOKwCOXo7QOItqaRSg59?=
+ =?us-ascii?Q?IkEyTjrZZ28aaFCml8+RWyV2xbQ34VeA8Ho/AVgtYJxpZ8wyen7nT2HeAdIO?=
+ =?us-ascii?Q?hs/Ui8Qy0KqUYzH342hIwnHEuz/DHzrGbFNdSA7E9Ht+Ix4lMgb6GU4RCzY8?=
+ =?us-ascii?Q?HMqlS7RwV7LyRu8EFfDKh6n0?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 856bddb7-abe2-4b80-a7ba-08d94c2ffb89
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec402709-641e-40e9-6118-08d94c2ffdb5
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 10:12:01.8535
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 10:12:05.6667
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 25hhv9O+KA8IKZLqPmT6XM+p9WbFBMQQWool3ZmJXOECrbtj7YhepYDMX8JeVN9iW2CzSDaP1bSgeT8tgQEovA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: QGqqODsUGc1M9UheJ5UoHGXfxPepKkv8glBnfMhT2jzTI98iKSwgRFD9gIAF36g+uYEwy5VUDr9XUZQKJyzGqg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7480
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch improves the yaml a bit according to Rob Herring comments:
-1) normalize interrupt-names property, there is no reason to support
-random order.
-2) validate each string in clock-names property.
-3) add constraints for fsl,num-tx-queues/fsl,num-rx-queues property.
-4) change additionalProperties to false in order to do strict checking.
+This patch fixes issues found by dtbs_check:
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/net/fsl,fec.yaml
 
+According to the Micrel PHY dt-binding:
+Documentation/devicetree/bindings/net/micrel-ksz90x1.txt,
+Add clock delay in an Ethernet OF device node is deprecated, so move
+these properties to PHY OF device node.
+
+Suggested-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- .../devicetree/bindings/net/fsl,fec.yaml      | 34 +++++++++++--------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ arch/arm/boot/dts/imx6q-novena.dts           | 34 +++++++++++++-------
+ arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi | 18 ++++++++---
+ arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi     | 34 +++++++++++++-------
+ arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi | 34 +++++++++++++-------
+ arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi    | 34 +++++++++++++-------
+ arch/arm/boot/dts/imx6qdl-sabrelite.dtsi     | 34 +++++++++++++-------
+ 6 files changed, 124 insertions(+), 64 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-index 0f8ca4e574c6..dbcbec95fc9e 100644
---- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-+++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-@@ -49,19 +49,21 @@ properties:
-     maxItems: 4
+diff --git a/arch/arm/boot/dts/imx6q-novena.dts b/arch/arm/boot/dts/imx6q-novena.dts
+index 52e3567d1859..225cf6b7a7a4 100644
+--- a/arch/arm/boot/dts/imx6q-novena.dts
++++ b/arch/arm/boot/dts/imx6q-novena.dts
+@@ -222,20 +222,30 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet_novena>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
+-	rxc-skew-ps = <3000>;
+-	rxdv-skew-ps = <0>;
+-	txc-skew-ps = <3000>;
+-	txen-skew-ps = <0>;
+-	rxd0-skew-ps = <0>;
+-	rxd1-skew-ps = <0>;
+-	rxd2-skew-ps = <0>;
+-	rxd3-skew-ps = <0>;
+-	txd0-skew-ps = <3000>;
+-	txd1-skew-ps = <3000>;
+-	txd2-skew-ps = <3000>;
+-	txd3-skew-ps = <3000>;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			rxc-skew-ps = <3000>;
++			rxdv-skew-ps = <0>;
++			txc-skew-ps = <3000>;
++			txen-skew-ps = <0>;
++			rxd0-skew-ps = <0>;
++			rxd1-skew-ps = <0>;
++			rxd2-skew-ps = <0>;
++			rxd3-skew-ps = <0>;
++			txd0-skew-ps = <3000>;
++			txd1-skew-ps = <3000>;
++			txd2-skew-ps = <3000>;
++			txd3-skew-ps = <3000>;
++		};
++	};
+ };
  
-   interrupt-names:
--    description:
--      Names of the interrupts listed in interrupts property in the same order.
--      The defaults if not specified are
--      __Number of interrupts__   __Default__
--            1                       "int0"
--            2                       "int0", "pps"
--            3                       "int0", "int1", "int2"
--            4                       "int0", "int1", "int2", "pps"
--      The order may be changed as long as they correspond to the interrupts
--      property. Currently, only i.mx7 uses "int1" and "int2". They correspond to
--      tx/rx queues 1 and 2. "int0" will be used for queue 0 and ENET_MII interrupts.
--      For imx6sx, "int0" handles all 3 queues and ENET_MII. "pps" is for the pulse
--      per second interrupt associated with 1588 precision time protocol(PTP).
-+    oneOf:
-+      - items:
-+          - const: int0
-+      - items:
-+          - const: int0
-+          - const: pps
-+      - items:
-+          - const: int0
-+          - const: int1
-+          - const: int2
-+      - items:
-+          - const: int0
-+          - const: int1
-+          - const: int2
-+          - const: pps
+ &hdmi {
+diff --git a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
+index ead7ba27e105..563bf9d44fe0 100644
+--- a/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi
+@@ -316,12 +316,22 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio7 18 GPIO_ACTIVE_LOW>;
+-	txd0-skew-ps = <0>;
+-	txd1-skew-ps = <0>;
+-	txd2-skew-ps = <0>;
+-	txd3-skew-ps = <0>;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
+ };
  
-   clocks:
-     minItems: 2
-@@ -80,7 +82,7 @@ properties:
-   clock-names:
-     minItems: 2
-     maxItems: 5
--    contains:
-+    items:
-       enum:
-         - ipg
-         - ahb
-@@ -107,12 +109,14 @@ properties:
-     description:
-       The property is valid for enet-avb IP, which supports hw multi queues.
-       Should specify the tx queue number, otherwise set tx queue number to 1.
-+    enum: [1, 2, 3]
+ &gpmi {
+diff --git a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
+index d526f01a2c52..ac34709e9741 100644
+--- a/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-nit6xlite.dtsi
+@@ -190,23 +190,33 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
+-	txen-skew-ps = <0>;
+-	txc-skew-ps = <3000>;
+-	rxdv-skew-ps = <0>;
+-	rxc-skew-ps = <3000>;
+-	rxd0-skew-ps = <0>;
+-	rxd1-skew-ps = <0>;
+-	rxd2-skew-ps = <0>;
+-	rxd3-skew-ps = <0>;
+-	txd0-skew-ps = <0>;
+-	txd1-skew-ps = <0>;
+-	txd2-skew-ps = <0>;
+-	txd3-skew-ps = <0>;
+ 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
+ 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
+ 	fsl,err006687-workaround-present;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			txen-skew-ps = <0>;
++			txc-skew-ps = <3000>;
++			rxdv-skew-ps = <0>;
++			rxc-skew-ps = <3000>;
++			rxd0-skew-ps = <0>;
++			rxd1-skew-ps = <0>;
++			rxd2-skew-ps = <0>;
++			rxd3-skew-ps = <0>;
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
+ };
  
-   fsl,num-rx-queues:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     description:
-       The property is valid for enet-avb IP, which supports hw multi queues.
-       Should specify the rx queue number, otherwise set rx queue number to 1.
-+    enum: [1, 2, 3]
+ &hdmi {
+diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
+index a0917823c244..c96f4d7e1e0d 100644
+--- a/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-nitrogen6_max.dtsi
+@@ -332,23 +332,33 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
+-	txen-skew-ps = <0>;
+-	txc-skew-ps = <3000>;
+-	rxdv-skew-ps = <0>;
+-	rxc-skew-ps = <3000>;
+-	rxd0-skew-ps = <0>;
+-	rxd1-skew-ps = <0>;
+-	rxd2-skew-ps = <0>;
+-	rxd3-skew-ps = <0>;
+-	txd0-skew-ps = <0>;
+-	txd1-skew-ps = <0>;
+-	txd2-skew-ps = <0>;
+-	txd3-skew-ps = <0>;
+ 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
+ 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
+ 	fsl,err006687-workaround-present;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			txen-skew-ps = <0>;
++			txc-skew-ps = <3000>;
++			rxdv-skew-ps = <0>;
++			rxc-skew-ps = <3000>;
++			rxd0-skew-ps = <0>;
++			rxd1-skew-ps = <0>;
++			rxd2-skew-ps = <0>;
++			rxd3-skew-ps = <0>;
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
+ };
  
-   fsl,magic-packet:
-     $ref: /schemas/types.yaml#/definitions/flag
-@@ -179,7 +183,7 @@ required:
- # least undocumented properties. However, PHY may have a deprecated option to
- # place PHY OF properties in the MAC node, such as Micrel PHY, and we can find
- # these boards which is based on i.MX6QDL.
--additionalProperties: true
-+additionalProperties: false
+ &hdmi {
+diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
+index 1243677b5f97..49da30d7510c 100644
+--- a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
+@@ -265,23 +265,33 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
+-	txen-skew-ps = <0>;
+-	txc-skew-ps = <3000>;
+-	rxdv-skew-ps = <0>;
+-	rxc-skew-ps = <3000>;
+-	rxd0-skew-ps = <0>;
+-	rxd1-skew-ps = <0>;
+-	rxd2-skew-ps = <0>;
+-	rxd3-skew-ps = <0>;
+-	txd0-skew-ps = <0>;
+-	txd1-skew-ps = <0>;
+-	txd2-skew-ps = <0>;
+-	txd3-skew-ps = <0>;
+ 	interrupts-extended = <&gpio1 6 IRQ_TYPE_LEVEL_HIGH>,
+ 			      <&intc 0 119 IRQ_TYPE_LEVEL_HIGH>;
+ 	fsl,err006687-workaround-present;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			txen-skew-ps = <0>;
++			txc-skew-ps = <3000>;
++			rxdv-skew-ps = <0>;
++			rxc-skew-ps = <3000>;
++			rxd0-skew-ps = <0>;
++			rxd1-skew-ps = <0>;
++			rxd2-skew-ps = <0>;
++			rxd3-skew-ps = <0>;
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
+ };
  
- examples:
-   - |
+ &hdmi {
+diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+index fdc3aa9d544d..eb9a0b104f1c 100644
+--- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+@@ -324,20 +324,30 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_enet>;
+ 	phy-mode = "rgmii";
++	phy-handle = <&ethphy>;
+ 	phy-reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
+-	txen-skew-ps = <0>;
+-	txc-skew-ps = <3000>;
+-	rxdv-skew-ps = <0>;
+-	rxc-skew-ps = <3000>;
+-	rxd0-skew-ps = <0>;
+-	rxd1-skew-ps = <0>;
+-	rxd2-skew-ps = <0>;
+-	rxd3-skew-ps = <0>;
+-	txd0-skew-ps = <0>;
+-	txd1-skew-ps = <0>;
+-	txd2-skew-ps = <0>;
+-	txd3-skew-ps = <0>;
+ 	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy: ethernet-phy {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			txen-skew-ps = <0>;
++			txc-skew-ps = <3000>;
++			rxdv-skew-ps = <0>;
++			rxc-skew-ps = <3000>;
++			rxd0-skew-ps = <0>;
++			rxd1-skew-ps = <0>;
++			rxd2-skew-ps = <0>;
++			rxd3-skew-ps = <0>;
++			txd0-skew-ps = <0>;
++			txd1-skew-ps = <0>;
++			txd2-skew-ps = <0>;
++			txd3-skew-ps = <0>;
++		};
++	};
+ };
+ 
+ &hdmi {
 -- 
 2.17.1
 
