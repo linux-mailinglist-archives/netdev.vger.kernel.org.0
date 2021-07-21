@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6BC3D0D95
+	by mail.lfdr.de (Postfix) with ESMTP id 35D423D0D94
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 13:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240325AbhGUKqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 06:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        id S240260AbhGUKqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 06:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238551AbhGUJgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:53 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392B8C0613E3;
-        Wed, 21 Jul 2021 03:17:29 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id j73so1441000pge.1;
-        Wed, 21 Jul 2021 03:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GmFXEsAxbG8KZfMM+UsqBDrbJkHUFiGmqFsibv1XO4g=;
-        b=Fx32sue3mQepTLN9Ttrt6nLPas35qhyRkAnEpea2Mouer4p+Cp6rthrsL0RXkc9o1M
-         s4xuwkH74RNoERSESufIhVW5eNQj38mMmrHQXEDWSVGjLfLVy2TSkuvNab0maOwEyAmH
-         vhtKcsVhXIv3VHE2dy7Bxv3e2XjJSjApiub4YZQWmmJ3hpaLjd4pxLNhfMeBjBfkFE6G
-         wcs16zGFHsiqGI2ZwZeZ7hjkkP8Xgozod55VlGfbMi6U4GR0+/ul1sFKsHzpeZ/Mw/kQ
-         1RbnVd1EOtTJRIQcbHlan6TIBFQKtiHCYvWczkApNzkSqtUKeY9mFElQvgqpoxLK/XyU
-         8Mzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GmFXEsAxbG8KZfMM+UsqBDrbJkHUFiGmqFsibv1XO4g=;
-        b=llkvxkCmvQAILRG42cjdegu0GrLXO4MGeMtASaEHZM4Enxvi2ZOiHCoYpmk/VPbd5J
-         +FFivlWTMry8WjXRdABo9fy3QEEWVOgZgoBggq+XboymfeFf3lsD7z7kGOwCE0TGFoDg
-         ZwJM6em0t5yxx5qMAmrYUnUQnqJYwz70kjepwxS0qkY2SlPw+MHQ2SVF1dtUygKO/lOD
-         VWbmy0bNnlCOCiw9llYMkfMPNbVogeisrFxp2aSwZM1YBqxVlrKfK7Csw2uoDBdLzdaD
-         f3dOY2k8EJJwqOiSTephpZDWBGtMUNyY2awwVPAJ3lhye6pRRGFrieZ43MbfcvYyijiu
-         tjPQ==
-X-Gm-Message-State: AOAM531JwknIZkSX/Akn6w40zZLRvclfTWXsZfTlsxSDLSogUKVcit/1
-        IHh9L0Y7Qg9WcrlZXLfPyHtubP8nmoqEVIFRMEQ=
-X-Google-Smtp-Source: ABdhPJxabd+8ymM2NRg2/JRi5E0kd2wtw9dI2cxAd5OZTNoNwxYd09wBP09f+o8F+RdDtGAnclFeIQ==
-X-Received: by 2002:a62:160a:0:b029:328:56b9:b1ee with SMTP id 10-20020a62160a0000b029032856b9b1eemr36090473pfw.52.1626862648751;
-        Wed, 21 Jul 2021 03:17:28 -0700 (PDT)
-Received: from localhost.localdomain ([118.200.190.93])
-        by smtp.gmail.com with ESMTPSA id p33sm26481068pfw.40.2021.07.21.03.17.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 03:17:28 -0700 (PDT)
-From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, skhan@linuxfoundation.org,
-        gregkh@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Subject: [PATCH] Bluetooth: skip invalid hci_sync_conn_complete_evt
-Date:   Wed, 21 Jul 2021 18:17:10 +0800
-Message-Id: <20210721101710.82974-1-desmondcheongzx@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S238540AbhGUJgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 05:36:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3806C0613DE
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 03:17:17 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m69Hw-0003ka-Eu
+        for netdev@vger.kernel.org; Wed, 21 Jul 2021 12:17:16 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 8CCD5653A39
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 10:17:15 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 52DC6653A35;
+        Wed, 21 Jul 2021 10:17:15 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ce2f8a4b;
+        Wed, 21 Jul 2021 10:17:14 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCH net-next v2] net: switchdev: switchdev_handle_fdb_del_to_device(): fix no-op function for disabled CONFIG_NET_SWITCHDEV
+Date:   Wed, 21 Jul 2021 12:17:14 +0200
+Message-Id: <20210721101714.78977-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported a corrupted list in kobject_add_internal [1]. This
-happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
-status 0 are sent for the same HCI connection. This causes us to
-register the device more than once which corrupts the kset list.
+In patch 8ca07176ab00 ("net: switchdev: introduce a fanout helper for
+SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE") new functionality including static
+inline no-op functions if CONFIG_NET_SWITCHDEV is disabled was added.
 
-To fix this, in hci_sync_conn_complete_evt, we check whether we're
-trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
-times for one connection. If that's the case, the event is invalid, so
-we skip further processing and exit.
+This patch fixes the following build error for disabled
+CONFIG_NET_SWITCHDEV:
 
-Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
-Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+| In file included from include/net/dsa.h:23,
+|                  from net/core/flow_dissector.c:8:
+| include/net/switchdev.h:410:1: error: expected identifier or ‘(’ before ‘{’ token
+|   410 | {
+|       | ^
+| include/net/switchdev.h:399:1: warning: ‘switchdev_handle_fdb_del_to_device’ declared ‘static’ but never defined [-Wunused-function]
+|   399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+|       | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Fixes: 8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWITCHDEV_FDB_{ADD,DEL}_TO_DEVICE")
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/bluetooth/hci_event.c | 2 ++
- 1 file changed, 2 insertions(+)
+changes since v1:
+- added net-next to patch subject
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 016b2999f219..091a92338492 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4373,6 +4373,8 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
- 
- 	switch (ev->status) {
- 	case 0x00:
-+		if (conn->state == BT_CONNECTED)
-+			goto unlock;  /* Already connected, event not valid */
- 		conn->handle = __le16_to_cpu(ev->handle);
- 		conn->state  = BT_CONNECTED;
- 		conn->type   = ev->link_type;
+ include/net/switchdev.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 6f57eb2e89cc..66468ff8cc0a 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -406,7 +406,7 @@ switchdev_handle_fdb_del_to_device(struct net_device *dev,
+ 			      const struct switchdev_notifier_fdb_info *fdb_info),
+ 		int (*lag_del_cb)(struct net_device *dev,
+ 				  const struct net_device *orig_dev, const void *ctx,
+-				  const struct switchdev_notifier_fdb_info *fdb_info));
++				  const struct switchdev_notifier_fdb_info *fdb_info))
+ {
+ 	return 0;
+ }
 -- 
-2.25.1
+2.30.2
+
 
