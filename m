@@ -2,59 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B4783D12C3
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34863D12D1
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 17:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238938AbhGUPHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233168AbhGUPHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:07:30 -0400
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3876EC061575
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 08:48:07 -0700 (PDT)
-Received: from localhost (unknown [51.219.3.84])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 779C34CE6854C;
-        Wed, 21 Jul 2021 08:48:05 -0700 (PDT)
-Date:   Wed, 21 Jul 2021 08:47:59 -0700 (PDT)
-Message-Id: <20210721.084759.550228860951288308.davem@davemloft.net>
-To:     paul@jakma.org
-Cc:     gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        stable@vger.kernel.org, kjlu@umn.edu
-Subject: Re: [PATCH] NIU: fix missing revert of return and fix the driver
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <70d84870-2d7a-77b2-175b-ef1ff3cb6c38@jakma.org>
-References: <70d84870-2d7a-77b2-175b-ef1ff3cb6c38@jakma.org>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 21 Jul 2021 08:48:06 -0700 (PDT)
+        id S238666AbhGUPJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 11:09:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47502 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232494AbhGUPJ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 11:09:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6289261244;
+        Wed, 21 Jul 2021 15:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626882604;
+        bh=81Q6hrTZ9lUpnJZF3r3PL59vWz0XaDmEG7Hackf9dLY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ck77Chgex5ZJ3x5jL+PQppFZmswFWz/ykC5ovPuh1wawZQHKp7nW4w/q5fw3uYCqp
+         BV7x569NbpTYOXEtYozovbeCzHwgXnQiaCBBunBAA8FH8tFUb89SipU1BZrrNQPWHF
+         k1sd/pP2wfmBPaePgX/GhabXQ7XF/hHwOa8OzBjkPdDIYWZeKYRgupc1hQwDvS3Bbr
+         9xd6T4LQKJdtY3aAknvTNfd/Dm3Xg0KSkY9QBMVhLqXJS9CmtWMQ+SY7+eLmtiT0LL
+         w6jF9ZjTRkGm2/p7yKL2DWE0eUMZMWTsr0du9CV1ZzBihMx6N+ACh6tEZmT500RVgh
+         JYUTt+6WVoIPQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5570960CCF;
+        Wed, 21 Jul 2021 15:50:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] sctp: update active_key for asoc when old key is being
+ replaced
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162688260434.19956.7821872857113679.git-patchwork-notify@kernel.org>
+Date:   Wed, 21 Jul 2021 15:50:04 +0000
+References: <a1e260329384a040f11f0f393327e25cf909da2e.1626811621.git.lucien.xin@gmail.com>
+In-Reply-To: <a1e260329384a040f11f0f393327e25cf909da2e.1626811621.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Jakma <paul@jakma.org>
-Date: Tue, 20 Jul 2021 21:10:37 +0100 (BST)
+Hello:
 
-> The revert of commit 26fd962 missed out on reverting an incorrect
-> change to a return value. The niu_pci_vpd_scan_props(..) == 1 case
-> appears to be a normal path - treating it as an error and return
-> -EINVAL was breaking VPD_SCAN and causing the driver to fail to load.
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 20 Jul 2021 16:07:01 -0400 you wrote:
+> syzbot reported a call trace:
 > 
-> Fix it, so my Neptune card works again.
+>   BUG: KASAN: use-after-free in sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
+>   Call Trace:
+>    sctp_auth_shkey_hold+0x22/0xa0 net/sctp/auth.c:112
+>    sctp_set_owner_w net/sctp/socket.c:131 [inline]
+>    sctp_sendmsg_to_asoc+0x152e/0x2180 net/sctp/socket.c:1865
+>    sctp_sendmsg+0x103b/0x1d30 net/sctp/socket.c:2027
+>    inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:821
+>    sock_sendmsg_nosec net/socket.c:703 [inline]
+>    sock_sendmsg+0xcf/0x120 net/socket.c:723
 > 
-> Cc: Kangjie Lu <kjlu@umn.edu>
-> Cc: Shannon Nelson <shannon.lee.nelson@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Fixes: 7930742d ('Revert "niu: fix missing checks of
-> niu_pci_eeprom_read"')
-> Cc: stable <stable@vger.kernel.org>
-> Signed-off-by: Paul Jakma <paul@jakma.org>
-> ---
+> [...]
 
-This does not apply to the current networking GIT tree, what tree is it against?
+Here is the summary with links:
+  - [net] sctp: update active_key for asoc when old key is being replaced
+    https://git.kernel.org/netdev/net/c/58acd1009226
 
-Thank you.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
