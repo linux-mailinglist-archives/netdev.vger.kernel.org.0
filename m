@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 794663D144F
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:39:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83BD3D1454
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 18:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbhGUP6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 11:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbhGUP6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 11:58:17 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F8AC061757
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:38:54 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id m2so2890907wrq.2
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=qUp/hbe9LbIcAazlkz7Tc/uHNcSrR5NC/lxU1KgZVXk=;
-        b=Z9Y8ZluN9wBZoRUhS/Ki597CyB4ritDT9tYSCg4ThTsTJEARZBlgbSv0W3sgLhcvYD
-         GVnGT14AAlOEJdwb/Dtm1T/QnyIb+3lNFsYDsOvdmYIHuHoADWsIm45hHP1oftMpdsc0
-         LF1BOPihLuflhqwLAiwj2bXiCGk2vs9Ny4n8g=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=qUp/hbe9LbIcAazlkz7Tc/uHNcSrR5NC/lxU1KgZVXk=;
-        b=P+YHbVvhAVb7H1YXCA/xcO+EpHmzZTb0fYUF+k2XOpeFO/Zwmz1YYf1ydkJqN/ZRwa
-         ggi0tWm+JuXhfZBVkGsyEN+yxjZdFmVcn20Nev5jrqL71H6H45UrNRwllP5wHre9cNny
-         eLi3fCPgX4tv8za8vHT/OOv0GPahEo6c6T8qDxEhPEZcjYvAzsvFEguar6CP2ucljPDy
-         Vn+6graOnb1OFAM8K/9UnQvPuPuV7o5UA+U/34htNEfbLXduAprEWpa4ihsg20tbwlxZ
-         bXaqyrI5l0zORFu93kkqUw/7YfWA8rD+OjgTrt0D0kxDXpQ+vjvgUhpwOD0Wuu58buRS
-         znXw==
-X-Gm-Message-State: AOAM530e6BzDvH4jYlOR0MWjtpvhyf50w//axhmVuoORjvYZds0yanNj
-        IIsQT33Su9NYTRQDmzDvSNyDYQ==
-X-Google-Smtp-Source: ABdhPJxzadLuuDAP25k4CLQBeMAWjFLJERpvFEPZvgUWeVLVBz+RbsTURmB6iCxIOMjmoQDGegBxkw==
-X-Received: by 2002:a5d:568d:: with SMTP id f13mr44124982wrv.380.1626885532635;
-        Wed, 21 Jul 2021 09:38:52 -0700 (PDT)
-Received: from cloudflare.com (79.191.186.228.ipv4.supernova.orange.pl. [79.191.186.228])
-        by smtp.gmail.com with ESMTPSA id o19sm389685wmc.12.2021.07.21.09.38.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 09:38:52 -0700 (PDT)
-References: <20210719214834.125484-1-john.fastabend@gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, xiyou.wangcong@gmail.com,
-        alexei.starovoitov@gmail.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf 0/3] sockmap fixes picked up by stress tests
-In-reply-to: <20210719214834.125484-1-john.fastabend@gmail.com>
-Date:   Wed, 21 Jul 2021 18:38:51 +0200
-Message-ID: <87r1frr59g.fsf@cloudflare.com>
+        id S232488AbhGUQCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 12:02:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34082 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229750AbhGUQCP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 12:02:15 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CD87361245;
+        Wed, 21 Jul 2021 16:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626885771;
+        bh=7Ck9rmVTo0t8tKebV85ikRdarggjaTaFgG9+KzhlPfM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tEmHwzxBsUjnSAXt2vJ8e4mCZv5m3gwjhIliEOoWRX2M0d/zw4yTMTUMTBkKLsmpW
+         zhINgPE9/Le84ZnGk3qcxQvMbSjFabOPJhN6h/51r6PJLfHnbSJErryzih7tm7Vnl/
+         5eZp1FI+rlL6NVTx7t+fB53FVV9mUwVy3sGwuSuxMOjLnReHG8nh+qB8g5zFmVWQYn
+         960R7mhklWCUVtH8Pm9mkjxfyyHT811REVn2sX3Y2TDmq3oeqLYiUbe/PPXG7aaVA8
+         KQ8rG65IgqXiqT6AeGoTz8tGHKGsq4rHi1BHlN1tjksNS6nIHVqjPpG3x+qUjznxOr
+         SJvkXYfuExqPA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1m6FIh-0001Y8-Le; Wed, 21 Jul 2021 18:42:27 +0200
+Date:   Wed, 21 Jul 2021 18:42:27 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Rustam Kovhaev <rkovhaev@gmail.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        YueHaibing <yuehaibing@huawei.com>, linux-usb@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] usb: hso: fix error handling code of
+ hso_create_net_device
+Message-ID: <YPhOcwiEUW+cchJ1@hovoldconsulting.com>
+References: <20210714091327.677458-1-mudongliangabcd@gmail.com>
+ <YPfOZp7YoagbE+Mh@kroah.com>
+ <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
+ <YPgwkEHzmxSPSLVA@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YPgwkEHzmxSPSLVA@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 19, 2021 at 11:48 PM CEST, John Fastabend wrote:
-> Running stress tests with recent patch to remove an extra lock in sockmap
-> resulted in a couple new issues popping up. It seems only one of them
-> is actually related to the patch:
->
-> 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
->
-> The other two issues had existed long before, but I guess the timing
-> with the serialization we had before was too tight to get any of
-> our tests or deployments to hit it.
->
-> With attached series stress testing sockmap+TCP with workloads that
-> create lots of short-lived connections no more splats like below were
-> seen on upstream bpf branch.
->
-> [224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
-> [224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
-> [224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
-> [224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
-> [224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
-> [224913.935923] Code: 8b 83 20 02 00 00 85 c0 75 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 89 df e8 2b 11 fe ff eb c3 0f 0b e9 7c ff ff ff 0f 0b eb ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 90 0f 1f 44 00 00 41 57 41
-> [224913.935932] RSP: 0018:ffff88816271fd38 EFLAGS: 00010206
-> [224913.935941] RAX: 0000000000000ae8 RBX: ffff88815acd5240 RCX: dffffc0000000000
-> [224913.935948] RDX: 0000000000000003 RSI: 0000000000000ae8 RDI: ffff88815acd5460
-> [224913.935954] RBP: ffff88815acd5460 R08: ffffffff955c0ae8 R09: fffffbfff2e6f543
-> [224913.935961] R10: ffffffff9737aa17 R11: fffffbfff2e6f542 R12: ffff88815acd5390
-> [224913.935967] R13: ffff88815acd5480 R14: ffffffff98d0c080 R15: ffffffff96267500
-> [224913.935974] FS:  00007f86e6bd1700(0000) GS:ffff888451cc0000(0000) knlGS:0000000000000000
-> [224913.935981] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [224913.935988] CR2: 000000c0008eb000 CR3: 00000001020e0005 CR4: 00000000003706e0
-> [224913.935994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [224913.936000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [224913.936007] Call Trace:
-> [224913.936016]  inet_csk_destroy_sock+0xba/0x1f0
-> [224913.936033]  __tcp_close+0x620/0x790
-> [224913.936047]  tcp_close+0x20/0x80
-> [224913.936056]  inet_release+0x8f/0xf0
-> [224913.936070]  __sock_release+0x72/0x120
->
-> John Fastabend (3):
->   bpf, sockmap: zap ingress queues after stopping strparser
->   bpf, sockmap: on cleanup we additionally need to remove cached skb
->   bpf, sockmap: fix memleak on ingress msg enqueue
->
->  include/linux/skmsg.h | 54 ++++++++++++++++++++++++++++---------------
->  net/core/skmsg.c      | 37 +++++++++++++++++++++--------
->  2 files changed, 62 insertions(+), 29 deletions(-)
+On Wed, Jul 21, 2021 at 04:34:56PM +0200, Johan Hovold wrote:
+> On Wed, Jul 21, 2021 at 04:17:01PM +0800, Dongliang Mu wrote:
+> > On Wed, Jul 21, 2021 at 3:36 PM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Wed, Jul 14, 2021 at 05:13:22PM +0800, Dongliang Mu wrote:
+> > > > The current error handling code of hso_create_net_device is
+> > > > hso_free_net_device, no matter which errors lead to. For example,
+> > > > WARNING in hso_free_net_device [1].
+> > > >
+> > > > Fix this by refactoring the error handling code of
+> > > > hso_create_net_device by handling different errors by different code.
+> > > >
+> > > > [1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
+> > > >
+> > > > Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
+> > > > Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
+> > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > > ---
+> > > > v1->v2: change labels according to the comment of Dan Carpenter
+> > > > v2->v3: change the style of error handling labels
+> > > >  drivers/net/usb/hso.c | 33 +++++++++++++++++++++++----------
+> > > >  1 file changed, 23 insertions(+), 10 deletions(-)
+> > >
+> > > Please resend the whole series, not just one patch of the series.
+> > > Otherwise it makes it impossible to determine what patch from what
+> > > series should be applied in what order.
+> > >
+> > 
+> > Done. Please review the resend v3 patches.
+> > 
+> > > All of these are now dropped from my queue, please fix up and resend.
+> 
+> A version of this patch has already been applied to net-next.
 
-Except for the uninitialized memory read reported by 0-day CI, this
-series LGTM. Feel free to add my stamp to v2:
+That was apparently net (not net-next).
 
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+> No idea which version that was or why the second patch hasn't been
+> applied yet.
+> 
+> Dongliang, if you're resending something here it should first be rebased
+> on linux-next (net-next).
+
+And the resend of v3 of both patches has now also been applied to
+net-next.
+
+Hopefully there are no conflicts between v2 and v3 but we'll see soon.
+
+Johan
