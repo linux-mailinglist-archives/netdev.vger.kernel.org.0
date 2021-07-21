@@ -2,155 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 609BA3D0A84
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 10:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFB43D0A8F
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 10:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236202AbhGUHjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 03:39:18 -0400
-Received: from szxga03-in.huawei.com ([45.249.212.189]:12282 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236341AbhGUHfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 03:35:07 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GV7Z021S8z7wb4;
-        Wed, 21 Jul 2021 16:10:48 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 21 Jul 2021 16:15:24 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Wed, 21 Jul
- 2021 16:15:23 +0800
-Subject: Re: [PATCH rfc v6 2/4] page_pool: add interface to manipulate frag
- count in page pool
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Marcin Wojtas <mw@semihalf.com>, <linuxarm@openeuler.org>,
-        <yisen.zhuang@huawei.com>, "Salil Mehta" <salil.mehta@huawei.com>,
-        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Will Deacon" <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
-        <guro@fb.com>, Peter Xu <peterx@redhat.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "Alexander Lobakin" <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>, <nogikh@google.com>,
-        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
-        <kpsingh@kernel.org>, <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>, <songliubraving@fb.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <1626752145-27266-1-git-send-email-linyunsheng@huawei.com>
- <1626752145-27266-3-git-send-email-linyunsheng@huawei.com>
- <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <92e68f4e-49a4-568c-a281-2865b54a146e@huawei.com>
-Date:   Wed, 21 Jul 2021 16:15:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S235577AbhGUHli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 03:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236620AbhGUHg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 03:36:59 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F7EBC061574;
+        Wed, 21 Jul 2021 01:17:29 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id t2so1281242edd.13;
+        Wed, 21 Jul 2021 01:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sZgcPfQLiN9iP9K4OpawNyYKs238DZ60Ej7j3i33PTA=;
+        b=OWIZZmB+kIm0L5SFnNjmFXOtx+bO53YvZhJcG7R70xFGex0eMBAMLdTJXlS+t0r/nh
+         Q+g3yCP4m7Y2dULwwJGcmVHLmR/7LlaPJeBkAlSa86z+O7dVdcoi4qDbDucCvrpXvJHZ
+         wFD2jjuMGM7Aozet9MGX01lm6zre/oAwv7EUzSKbT6MFqzJuOpJN/1pZehO2PZ0Jh8CP
+         39SHRKcjd72t4ErLKDTz8JEhfdEQoqpZLFYQV9jJJHmRfG6e/KOyHnc0lEUqi1Bab/eY
+         3lFD5vEu2EgZzeEWUuscyE7cKWrmCAXIGkwXlSiKL+O47B2g3e7KjacfZ51kPe9Dhojc
+         0fTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sZgcPfQLiN9iP9K4OpawNyYKs238DZ60Ej7j3i33PTA=;
+        b=QsUzu2FiRT4ODH+TkO4Ac/pnW6EfOHAa+1kAueTLOIAONo55ObMSF32YMtXHABaopD
+         GumP2ReL2ZZ2I55BKLc3Ejj6ngLrfXEit/5hS4Tdb2VEuj38tQz0FAoCRVnD/h1ztRLy
+         HMWe85njxWBhn6HjBURjiJhvHOJVJ2e0jhHK3NfXIVzgbRbQTmArRSWC8g3vB+tM1GbH
+         svoSwo7NhgJ+OfaUk5fpABpLmjFNuRzeM+fCki/p6M3yj9KpSZBYK9BisqPp/kq/4ZDv
+         LSc8HHRWBjs5BQgpeQ4B35NB9SSAyU7Yv13Y15xDpmYjQCir/WLpPoOmlmmTjnIlevYi
+         3Jew==
+X-Gm-Message-State: AOAM531Ehn8f0xtF6hXcCOwpBrVD6WzWpMO24SlnQDP8dwVAE4ktSmZc
+        HjcdwukX5gTj/y64TyIsPu3Ho1OFQkoyfbG77Fc=
+X-Google-Smtp-Source: ABdhPJxpJM6V8VTne3Bjivlmwlbhl1eoSQv2ktowYhYbL60h/j9SjuBb6rO4vAECr8gosa4TYfYCq7cynOjY+rhJCRA=
+X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr46970258edd.66.1626855448078;
+ Wed, 21 Jul 2021 01:17:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+References: <20210714091327.677458-1-mudongliangabcd@gmail.com> <YPfOZp7YoagbE+Mh@kroah.com>
+In-Reply-To: <YPfOZp7YoagbE+Mh@kroah.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Wed, 21 Jul 2021 16:17:01 +0800
+Message-ID: <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] usb: hso: fix error handling code of hso_create_net_device
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Rustam Kovhaev <rkovhaev@gmail.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        YueHaibing <yuehaibing@huawei.com>, linux-usb@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/7/20 23:43, Alexander Duyck wrote:
-> On Mon, Jul 19, 2021 at 8:36 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>
->> For 32 bit systems with 64 bit dma, dma_addr[1] is used to
->> store the upper 32 bit dma addr, those system should be rare
->> those days.
->>
->> For normal system, the dma_addr[1] in 'struct page' is not
->> used, so we can reuse dma_addr[1] for storing frag count,
->> which means how many frags this page might be splited to.
->>
->> In order to simplify the page frag support in the page pool,
->> the PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to indicate
->> the 32 bit systems with 64 bit dma, and the page frag support
->> in page pool is disabled for such system.
->>
->> The newly added page_pool_set_frag_count() is called to reserve
->> the maximum frag count before any page frag is passed to the
->> user. The page_pool_atomic_sub_frag_count_return() is called
->> when user is done with the page frag.
->>
->> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->> ---
->>  include/linux/mm_types.h | 18 +++++++++++++-----
->>  include/net/page_pool.h  | 41 ++++++++++++++++++++++++++++++++++-------
->>  net/core/page_pool.c     |  4 ++++
->>  3 files changed, 51 insertions(+), 12 deletions(-)
->>
-> 
-> <snip>
-> 
->> +static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
->> +                                                         long nr)
->> +{
->> +       long frag_count = atomic_long_read(&page->pp_frag_count);
->> +       long ret;
->> +
->> +       if (frag_count == nr)
->> +               return 0;
->> +
->> +       ret = atomic_long_sub_return(nr, &page->pp_frag_count);
->> +       WARN_ON(ret < 0);
->> +       return ret;
->>  }
->>
-> 
-> So this should just be an atomic_long_sub_return call. You should get
-> rid of the atomic_long_read portion of this as it can cover up
-> reference count errors.
+On Wed, Jul 21, 2021 at 3:36 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Jul 14, 2021 at 05:13:22PM +0800, Dongliang Mu wrote:
+> > The current error handling code of hso_create_net_device is
+> > hso_free_net_device, no matter which errors lead to. For example,
+> > WARNING in hso_free_net_device [1].
+> >
+> > Fix this by refactoring the error handling code of
+> > hso_create_net_device by handling different errors by different code.
+> >
+> > [1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
+> >
+> > Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
+> > Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > ---
+> > v1->v2: change labels according to the comment of Dan Carpenter
+> > v2->v3: change the style of error handling labels
+> >  drivers/net/usb/hso.c | 33 +++++++++++++++++++++++----------
+> >  1 file changed, 23 insertions(+), 10 deletions(-)
+>
+> Please resend the whole series, not just one patch of the series.
+> Otherwise it makes it impossible to determine what patch from what
+> series should be applied in what order.
+>
 
-atomic_long_sub_return() is used to avoid one possible cache bouncing and
-barrrier caused by the last user.
+Done. Please review the resend v3 patches.
 
-You are right that that may cover up the reference count errors. How about
-something like below:
-
-static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
-							  long nr)
-{
-#ifdef CONFIG_DEBUG_PAGE_REF
-	long ret = atomic_long_sub_return(nr, &page->pp_frag_count);
-
-	WARN_ON(ret < 0);
-
-	return ret;
-#else
-	if (atomic_long_read(&page->pp_frag_count) == nr)
-		return 0;
-
-	return atomic_long_sub_return(nr, &page->pp_frag_count);
-#end
-}
-
-Or any better suggestion?
-
-
-> .
-> 
+> All of these are now dropped from my queue, please fix up and resend.
+>
+> thanks,
+>
+> greg k-h
