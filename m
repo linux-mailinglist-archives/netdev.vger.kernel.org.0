@@ -2,67 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD943D116A
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17AD03D1170
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 16:35:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbhGUNxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 09:53:25 -0400
-Received: from verein.lst.de ([213.95.11.211]:58979 "EHLO verein.lst.de"
+        id S237250AbhGUNyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 09:54:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232825AbhGUNxY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 09:53:24 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 089B867373; Wed, 21 Jul 2021 16:33:56 +0200 (CEST)
-Date:   Wed, 21 Jul 2021 16:33:55 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     Christoph Hellwig <hch@lst.de>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
-        rppt@kernel.org, Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com,
-        ardb@kernel.org, robh@kernel.org, nramas@linux.microsoft.com,
-        pgonda@google.com, martin.b.radev@gmail.com, david@redhat.com,
-        krish.sadhukhan@oracle.com, saravanand@fb.com,
-        xen-devel@lists.xenproject.org, keescook@chromium.org,
-        rientjes@google.com, hannes@cmpxchg.org,
-        michael.h.kelley@microsoft.com, iommu@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org, vkuznets@redhat.com, brijesh.singh@amd.com,
-        anparri@microsoft.com
-Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
- buffer remap function for HV IVM
-Message-ID: <20210721143355.GA10848@lst.de>
-References: <20210707154629.3977369-1-ltykernel@gmail.com> <20210707154629.3977369-10-ltykernel@gmail.com> <20210720135437.GA13554@lst.de> <8f1a285d-4b67-8041-d326-af565b2756c0@gmail.com>
+        id S232160AbhGUNyo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 09:54:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 21FCC608FE;
+        Wed, 21 Jul 2021 14:35:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626878121;
+        bh=bEM+kDm2sLkva1f/QePZ/LyZfm2n730ykL+StucW3ws=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XaZY1Y0Uu9xYrizou2TN6tDrFFre1EX7/JOKy20nmzenJkpFQ/XI3b/NLyWB5MW2/
+         RV7fqYs9ajGXZPAi6NOH5SlGA+8DICv5248q65Sypk5Ht7Ofoum0Pv5L5VGZTMhr44
+         AQY8Sb1a3IJcAKn5ZiN6CxPTPkQHoPeY7n5eSbpHsp0rulcj1f62EeODhOZmKC3dye
+         eQi2gkX9R8JT6LaSOEr2rWeruOfMkaDdX5SC3lW/G6gtPsdAplPib9OvIBNL0DgrJ7
+         3MBcsB0tghTImTciCDuvTUhs7vsN4qOC0i4pBVWKW0MX6QNYNbiMORPwe277qr1D6+
+         AUSTQ72+zACpg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1m6DJI-0001Iz-0j; Wed, 21 Jul 2021 16:34:56 +0200
+Date:   Wed, 21 Jul 2021 16:34:56 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Rustam Kovhaev <rkovhaev@gmail.com>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
+        YueHaibing <yuehaibing@huawei.com>, linux-usb@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 1/2] usb: hso: fix error handling code of
+ hso_create_net_device
+Message-ID: <YPgwkEHzmxSPSLVA@hovoldconsulting.com>
+References: <20210714091327.677458-1-mudongliangabcd@gmail.com>
+ <YPfOZp7YoagbE+Mh@kroah.com>
+ <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8f1a285d-4b67-8041-d326-af565b2756c0@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 06:28:48PM +0800, Tianyu Lan wrote:
-> dma_mmap_attrs() and dma_get_sgtable_attrs() get input virtual address
-> belonging to backing memory with struct page and returns bounce buffer
-> dma physical address which is below shared_gpa_boundary(vTOM) and passed
-> to Hyper-V via vmbus protocol.
->
-> The new map virtual address is only to access bounce buffer in swiotlb
-> code and will not be used other places. It's stored in the mem->vstart.
-> So the new API set_memory_decrypted_map() in this series is only called
-> in the swiotlb code. Other platforms may replace set_memory_decrypted()
-> with set_memory_decrypted_map() as requested.
+On Wed, Jul 21, 2021 at 04:17:01PM +0800, Dongliang Mu wrote:
+> On Wed, Jul 21, 2021 at 3:36 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Wed, Jul 14, 2021 at 05:13:22PM +0800, Dongliang Mu wrote:
+> > > The current error handling code of hso_create_net_device is
+> > > hso_free_net_device, no matter which errors lead to. For example,
+> > > WARNING in hso_free_net_device [1].
+> > >
+> > > Fix this by refactoring the error handling code of
+> > > hso_create_net_device by handling different errors by different code.
+> > >
+> > > [1] https://syzkaller.appspot.com/bug?id=66eff8d49af1b28370ad342787413e35bbe76efe
+> > >
+> > > Reported-by: syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com
+> > > Fixes: 5fcfb6d0bfcd ("hso: fix bailout in error case of probe")
+> > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > ---
+> > > v1->v2: change labels according to the comment of Dan Carpenter
+> > > v2->v3: change the style of error handling labels
+> > >  drivers/net/usb/hso.c | 33 +++++++++++++++++++++++----------
+> > >  1 file changed, 23 insertions(+), 10 deletions(-)
+> >
+> > Please resend the whole series, not just one patch of the series.
+> > Otherwise it makes it impossible to determine what patch from what
+> > series should be applied in what order.
+> >
+> 
+> Done. Please review the resend v3 patches.
+> 
+> > All of these are now dropped from my queue, please fix up and resend.
 
-It seems like you are indeed not using these new helpers in
-dma_direct_alloc.  How is dma_alloc_attrs/dma_alloc_coherent going to
-work on these systems?
+A version of this patch has already been applied to net-next.
+
+No idea which version that was or why the second patch hasn't been
+applied yet.
+
+Dongliang, if you're resending something here it should first be rebased
+on linux-next (net-next).
+
+Johan
