@@ -2,171 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4FE3D0652
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 03:12:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F143D0665
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 03:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbhGUAag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 20:30:36 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:7407 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhGUAaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 20:30:19 -0400
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GTy9J004Zz7xQZ;
-        Wed, 21 Jul 2021 09:07:15 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 21 Jul 2021 09:10:53 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
-        <netdev@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>
-Subject: [PATCH net] can: raw: fix raw_rcv panic for sock UAF
-Date:   Wed, 21 Jul 2021 09:09:37 +0800
-Message-ID: <20210721010937.670275-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S230013AbhGUAqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 20:46:23 -0400
+Received: from ozlabs.org ([203.11.71.1]:38045 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229750AbhGUAqS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Jul 2021 20:46:18 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GTybx6ZH0z9sWS;
+        Wed, 21 Jul 2021 11:26:53 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1626830814;
+        bh=PD5aBmlSsWDfHbyhJMyznAe/fch2NwDfbSt8on99lkg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RekI72uDE97Ftj1BZj8cNonY16kBEeaVOH2s2ws2PLGLjtfqm/f/gyt3yj3tHUJcf
+         TQjC18z3L69ek9/I/LAwMT+yZ9FMq4RajSlAeLczO0xPBHVNBvMBP7/X5cM+yy8Inq
+         Naqj4KRyY7Brmfeci+aYrqGO1TJOxOTVzpFDKOVdtvnbGnr6/jRL7aGJiPUwvybzx6
+         v6tJ2IOrJzT38lb53z317sa/nW14f057AhdXdCii9WFN3rNsy5VC4ss5RhcNH8Rwq6
+         Ywp47H3PIY4A9sHtlbK85KXY4KUorAEQ2f79oHOZzeSw/Q6PNpdqelmW3D/JH0CCyV
+         yasu1n1C+ZEZw==
+Date:   Wed, 21 Jul 2021 11:26:52 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210721112652.47225cb4@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/=Bvj6mJdUmBVPTVmWVIKz+V";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We get a bug during ltp can_filter test as following.
+--Sig_/=Bvj6mJdUmBVPTVmWVIKz+V
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-===========================================
-[60919.264984] BUG: unable to handle kernel NULL pointer dereference at 0000000000000010
-[60919.265223] PGD 8000003dda726067 P4D 8000003dda726067 PUD 3dda727067 PMD 0
-[60919.265443] Oops: 0000 [#1] SMP PTI
-[60919.265550] CPU: 30 PID: 3638365 Comm: can_filter Kdump: loaded Tainted: G        W         4.19.90+ #1
-[60919.266068] RIP: 0010:selinux_socket_sock_rcv_skb+0x3e/0x200
-[60919.293289] RSP: 0018:ffff8d53bfc03cf8 EFLAGS: 00010246
-[60919.307140] RAX: 0000000000000000 RBX: 000000000000001d RCX: 0000000000000007
-[60919.320756] RDX: 0000000000000001 RSI: ffff8d5104a8ed00 RDI: ffff8d53bfc03d30
-[60919.334319] RBP: ffff8d9338056800 R08: ffff8d53bfc29d80 R09: 0000000000000001
-[60919.347969] R10: ffff8d53bfc03ec0 R11: ffffb8526ef47c98 R12: ffff8d53bfc03d30
-[60919.350320] perf: interrupt took too long (3063 > 2500), lowering kernel.perf_event_max_sample_rate to 65000
-[60919.361148] R13: 0000000000000001 R14: ffff8d53bcf90000 R15: 0000000000000000
-[60919.361151] FS:  00007fb78b6b3600(0000) GS:ffff8d53bfc00000(0000) knlGS:0000000000000000
-[60919.400812] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[60919.413730] CR2: 0000000000000010 CR3: 0000003e3f784006 CR4: 00000000007606e0
-[60919.426479] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[60919.439339] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[60919.451608] PKRU: 55555554
-[60919.463622] Call Trace:
-[60919.475617]  <IRQ>
-[60919.487122]  ? update_load_avg+0x89/0x5d0
-[60919.498478]  ? update_load_avg+0x89/0x5d0
-[60919.509822]  ? account_entity_enqueue+0xc5/0xf0
-[60919.520709]  security_sock_rcv_skb+0x2a/0x40
-[60919.531413]  sk_filter_trim_cap+0x47/0x1b0
-[60919.542178]  ? kmem_cache_alloc+0x38/0x1b0
-[60919.552444]  sock_queue_rcv_skb+0x17/0x30
-[60919.562477]  raw_rcv+0x110/0x190 [can_raw]
-[60919.572539]  can_rcv_filter+0xbc/0x1b0 [can]
-[60919.582173]  can_receive+0x6b/0xb0 [can]
-[60919.591595]  can_rcv+0x31/0x70 [can]
-[60919.600783]  __netif_receive_skb_one_core+0x5a/0x80
-[60919.609864]  process_backlog+0x9b/0x150
-[60919.618691]  net_rx_action+0x156/0x400
-[60919.627310]  ? sched_clock_cpu+0xc/0xa0
-[60919.635714]  __do_softirq+0xe8/0x2e9
-[60919.644161]  do_softirq_own_stack+0x2a/0x40
-[60919.652154]  </IRQ>
-[60919.659899]  do_softirq.part.17+0x4f/0x60
-[60919.667475]  __local_bh_enable_ip+0x60/0x70
-[60919.675089]  __dev_queue_xmit+0x539/0x920
-[60919.682267]  ? finish_wait+0x80/0x80
-[60919.689218]  ? finish_wait+0x80/0x80
-[60919.695886]  ? sock_alloc_send_pskb+0x211/0x230
-[60919.702395]  ? can_send+0xe5/0x1f0 [can]
-[60919.708882]  can_send+0xe5/0x1f0 [can]
-[60919.715037]  raw_sendmsg+0x16d/0x268 [can_raw]
+Hi all,
 
-It's because raw_setsockopt() concurrently with
-unregister_netdevice_many(). Concurrent scenario as following.
+After merging the net-next tree, today's linux-next build (powerpc
+ppc64_defconfig) failed like this:
 
-	cpu0						cpu1
-raw_bind
-raw_setsockopt					unregister_netdevice_many
-						unlist_netdevice
-dev_get_by_index				raw_notifier
-raw_enable_filters				......
-can_rx_register
-can_rcv_list_find(..., net->can.rx_alldev_list)
+In file included from include/net/dsa.h:23,
+                 from net/ethernet/eth.c:59:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from include/net/dsa.h:23,
+                 from net/core/flow_dissector.c:8:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from include/net/dsa.h:23,
+                 from net/core/dev.c:102:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from include/net/vxlan.h:9,
+                 from drivers/net/ethernet/emulex/benet/be_main.c:22:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from include/net/vxlan.h:9,
+                 from drivers/net/ethernet/intel/ixgbe/ixgbe_main.c:37:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from include/net/vxlan.h:9,
+                 from drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:50:
+include/net/switchdev.h:410:1: error: expected identifier or '(' before '{'=
+ token
+  410 | {
+      | ^
+include/net/switchdev.h:399:1: warning: 'switchdev_handle_fdb_del_to_device=
+' declared 'static' but never defined [-Wunused-function]
+  399 | switchdev_handle_fdb_del_to_device(struct net_device *dev,
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-......
+Caused by commit
 
-sock_close
-raw_release(sock_a)
+  8ca07176ab00 ("net: switchdev: introduce a fanout helper for SWITCHDEV_FD=
+B_{ADD,DEL}_TO_DEVICE")
 
-......
+I have used the net-next tree from next-20210720 for today.
 
-can_receive
-can_rcv_filter(net->can.rx_alldev_list, ...)
-raw_rcv(skb, sock_a)
-BUG
+--=20
+Cheers,
+Stephen Rothwell
 
-After unlist_netdevice(), dev_get_by_index() return NULL in
-raw_setsockopt(). Function raw_enable_filters() will add sock
-and can_filter to net->can.rx_alldev_list. Then the sock is closed.
-Followed by, we sock_sendmsg() to a new vcan device use the same
-can_filter. Protocol stack match the old receiver whose sock has
-been released on net->can.rx_alldev_list in can_rcv_filter().
-Function raw_rcv() uses the freed sock. UAF BUG is triggered.
+--Sig_/=Bvj6mJdUmBVPTVmWVIKz+V
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-We can find that the key issue is that net_device has not been
-protected in raw_setsockopt(). Use rtnl_lock to protect net_device
-in raw_setsockopt().
+-----BEGIN PGP SIGNATURE-----
 
-Fixes: c18ce101f2e4 ("[CAN]: Add raw protocol")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/can/raw.c | 4 ++++
- 1 file changed, 4 insertions(+)
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD3d9wACgkQAVBC80lX
+0GwPwgf9HXVvl9iHMXpt6OtBw+q0VBSm/4vlMsRz3al1Ppbdp8qBSror7nsDCsJG
+1KYL1/8wjoDAk2dolYX29e9UGcXAfHWytPYTaQYjOpSEcheAC+tVw37yyV6df1pr
+lAPt5nDjHb/TgQBvHj9xRyjIhik9A8DWQpiZPGvV1gIGKpwUxLi+z4qCQiqo047b
++/fe2IDq21v+n2gCn8bBLC5cka+4604oRQKo5hjG5LGr7wP4PhTFsjvjGqqoWi7y
+NCaSQZdtgw8AotRmWcSWnOAUODAxZetOZmAJSaE2QZ7OFXU+q3IqXRc2LgUQYbt2
+wpwGxMUewy/pliDlc/O9lqOC4HT0AA==
+=KRAc
+-----END PGP SIGNATURE-----
 
-diff --git a/net/can/raw.c b/net/can/raw.c
-index ed4fcb7ab0c3..a63e9915c66a 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -546,6 +546,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 				return -EFAULT;
- 		}
- 
-+		rtnl_lock();
- 		lock_sock(sk);
- 
- 		if (ro->bound && ro->ifindex)
-@@ -588,6 +589,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 			dev_put(dev);
- 
- 		release_sock(sk);
-+		rtnl_unlock();
- 
- 		break;
- 
-@@ -600,6 +602,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 
- 		err_mask &= CAN_ERR_MASK;
- 
-+		rtnl_lock();
- 		lock_sock(sk);
- 
- 		if (ro->bound && ro->ifindex)
-@@ -627,6 +630,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 			dev_put(dev);
- 
- 		release_sock(sk);
-+		rtnl_unlock();
- 
- 		break;
- 
--- 
-2.25.1
-
+--Sig_/=Bvj6mJdUmBVPTVmWVIKz+V--
