@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A613D0696
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 04:04:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A6C3D06BE
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 04:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbhGUBXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Jul 2021 21:23:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbhGUBXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 21:23:24 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAB5C061574;
-        Tue, 20 Jul 2021 19:04:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=9ZdDeoeJBVHasYACD/U9e1/n6aWpbckywvGfg+hXFTo=; b=tocW9ftMAovoUtTPs67DWlJ+PE
-        +O6opCRNAC0OR23uJBWO+H/gDeaD/PNJ5C2A0VRAUQsUmcE/sO5goUAhXzDFVQ9UenoM9AV6Nkdtb
-        SiXsIidoLpmRluQE4U3LnLAPThQd4jEbsnVzHpSMAOQiFUZll4tP6Z6Gi7sm56Zcrf2DMaUIl3EE8
-        QX2rIo0wnN3HJveksaPBa1X6AY5ZSqqfnZTP28Wl4JHrUiLrDrhRvx2lWXjh9OhiV65qAkNUmYpE7
-        eL7rPpFbNAK7qPJiReQsdrdu9pNjNT4JVjNZIUAcDCr8MRSd6AuRLuSUyj+78WaeCocXE1bwLEm1N
-        9nzQ+GOA==;
-Received: from [2601:1c0:6280:3f0::a22f] (helo=smtpauth.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m61aG-008hYY-ML; Wed, 21 Jul 2021 02:03:49 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
-        Sanjay Kumar Konduri <sanjay.konduri@redpinesignals.com>,
-        Siva Rebbagondla <siva.rebbagondla@redpinesignals.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: [PATCH] bluetooth: btrsi: use non-kernel-doc comment for copyright
-Date:   Tue, 20 Jul 2021 19:03:34 -0700
-Message-Id: <20210721020334.3129-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
+        id S231394AbhGUBzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Jul 2021 21:55:02 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6900 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231255AbhGUByE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Jul 2021 21:54:04 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16L2XF3O167986
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 22:34:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=vjte2g6X1YlaVW9v/oKUCZylHUw6lkCSUV6/T/3M8u8=;
+ b=XVWyeLgFFfrXFUHkveClCbjc0tHi6gc/0+LwPlcTlLmxbsKIbmtWb3NOe/yfmI9oZYwo
+ MSu67VglsLmpm7LX0ATLpimyzJqsL5Uy97OOwR9k3VwNeOWIF624rloUEDc2zbQQCnCl
+ ebxH4+NxWiUPFc4yhrqcjwNUiGf+61slByvDzn91Ne6Se45T7XPqsQAPD6Vd8Sbqo19K
+ oBqTtrgOXpwGXGk5b4D/qLKupc7h0KBWegbEr+kKz9ZHvbwkvLlicyqqxG0v1WHBtxaJ
+ gq+/FHoCFFcCCOjCtWoE0KKPCuTT0qMIbNie1YkYD686bKD9D5OMuKuLk5lAOadippem yg== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 39x9c8t02q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 20 Jul 2021 22:34:41 -0400
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16L2BeoH014569
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 02:34:40 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma04wdc.us.ibm.com with ESMTP id 39upubpa08-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 02:34:40 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 16L2Yep039125354
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Jul 2021 02:34:40 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4E7CD124055;
+        Wed, 21 Jul 2021 02:34:40 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C17B5124053;
+        Wed, 21 Jul 2021 02:34:39 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.85.184.186])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Jul 2021 02:34:39 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Dany Madden <drt@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
+Subject: [PATCH net 1/1] ibmvnic: Remove the proper scrq flush
+Date:   Tue, 20 Jul 2021 19:34:39 -0700
+Message-Id: <20210721023439.1018976-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: u-DcLF6lbxXlZ0t0hcmL9OrYPD13MFMp
+X-Proofpoint-GUID: u-DcLF6lbxXlZ0t0hcmL9OrYPD13MFMp
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-20_15:2021-07-19,2021-07-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ malwarescore=0 adultscore=0 spamscore=0 phishscore=0 impostorscore=0
+ mlxlogscore=990 suspectscore=0 clxscore=1015 lowpriorityscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107210012
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernel-doc complains about a non-kernel-doc comment that uses "/**"
-to begin the comment, so change it to just "/*".
+Commit 65d6470d139a ("ibmvnic: clean pending indirect buffs during reset")
+intended to remove the call to ibmvnic_tx_scrq_flush() when the
+->resetting flag is true and was tested that way. But during the final
+rebase to net-next, the hunk got applied to a block few lines below
+(which happened to have the same diff context) and the wrong call to
+ibmvnic_tx_scrq_flush() got removed.
 
-drivers/bluetooth/btrsi.c:2: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Copyright (c) 2017 Redpine Signals Inc.
+Fix that by removing the correct ibmvnic_tx_scrq_flush() and restoring
+the one that was incorrectly removed.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Aditya Srivastava <yashsri421@gmail.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
-Cc: Sanjay Kumar Konduri <sanjay.konduri@redpinesignals.com>
-Cc: Siva Rebbagondla <siva.rebbagondla@redpinesignals.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 65d6470d139a ("ibmvnic: clean pending indirect buffs during reset")
+Reported-by: Dany Madden <drt@linux.ibm.com>
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/bluetooth/btrsi.c |    2 +-
+ drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- linux-next-20210720.orig/drivers/bluetooth/btrsi.c
-+++ linux-next-20210720/drivers/bluetooth/btrsi.c
-@@ -1,4 +1,4 @@
--/**
-+/*
-  * Copyright (c) 2017 Redpine Signals Inc.
-  *
-  * Permission to use, copy, modify, and/or distribute this software for any
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index d193023b6f30..8ab1b6f9fdde 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1895,7 +1895,6 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		tx_send_failed++;
+ 		tx_dropped++;
+ 		ret = NETDEV_TX_OK;
+-		ibmvnic_tx_scrq_flush(adapter, tx_scrq);
+ 		goto out;
+ 	}
+ 
+@@ -1917,6 +1916,7 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		dev_kfree_skb_any(skb);
+ 		tx_send_failed++;
+ 		tx_dropped++;
++		ibmvnic_tx_scrq_flush(adapter, tx_scrq);
+ 		ret = NETDEV_TX_OK;
+ 		goto out;
+ 	}
+-- 
+2.26.2
+
