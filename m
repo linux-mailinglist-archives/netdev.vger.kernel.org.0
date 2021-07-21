@@ -2,118 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11BD73D0A8B
-	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 10:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 609BA3D0A84
+	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 10:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236002AbhGUHlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 03:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236349AbhGUHfH (ORCPT
+        id S236202AbhGUHjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 03:39:18 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:12282 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236341AbhGUHfH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 03:35:07 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F073DC0613DB;
-        Wed, 21 Jul 2021 01:15:38 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id v14so578270plg.9;
-        Wed, 21 Jul 2021 01:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Wxcy7B70uHdtCZtzYHY9+tkRqLtyDIYNmVQhqkQuKMQ=;
-        b=b7snUcK34wADOU+Vlxm8K2nbAVUjfcaAl9DEWsm8rB2SheW7gWN4xag9ASUuZea1bP
-         AGlvO3cr8OkBYiW+7y2URPAsCqeDfJzEFc3DE9FA/rj/2szlNCpsB8MCbGILBAsVjMpb
-         vdspvmYzPg2AEYC4UzWJkajJBlX1XYSk29MIDi6DOb9nhyJWH0407cA7kO8NWkeO33li
-         gC8qWjtcwfDqN1GshUPixMbwFGVsrpu2187uAV/YvuKslsgZ3rEmpDOgtLY1MqQgA7wi
-         Tx825rpS8IbwGJR0nM3CRZYiL9uRQReQQvl/cb/K/Qr6QXaEFWataTxGlLZ3dsAef0id
-         RGGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Wxcy7B70uHdtCZtzYHY9+tkRqLtyDIYNmVQhqkQuKMQ=;
-        b=QVoQq0jjbIWPDVT71PAXQHbuy1qZl6h5UnqrMQJ668d+bHzGDNwPjoMoJmTF19W6Jf
-         g8It4drDoW0QeaZkIqKlMNLkb5nMa2Pv8+BucgLDifwGAZenC0EvmHWC5eWkuAh9xj8t
-         Hdpm3ixuB0SEfDM2ar6J3JTS9ZBqf8BKmEtfwk41hm9eA/xT3eSB/G+IofqG2C68Yz8o
-         tYiW/7hrj7XHau01XVx3uw9dP9bMpvw/3pkndnYGAP91r/ewYMkDdJeuTBEb0ZXUCkVL
-         iTiKAG2tVGVOiSl7wYEIvC1QNs/i57qUU9xzi6XOAhpQBNkfLgd4PUi5uUHxouWlxLXM
-         ++WQ==
-X-Gm-Message-State: AOAM5305dnrVocGKKiMErl6P5JHpm5RnggY92RXDNGALOyRAFvLVjsf/
-        RK6/345Uvs/ayrg/gKZ0z8U=
-X-Google-Smtp-Source: ABdhPJzq7o1yw/VLBQioWQfOJEjRLY8VoXnIzSelcqkVgT5OS8VTM2PyWoMOcDTZPcSwIRa3dUs3ng==
-X-Received: by 2002:a17:90a:86:: with SMTP id a6mr2583154pja.133.1626855338469;
-        Wed, 21 Jul 2021 01:15:38 -0700 (PDT)
-Received: from localhost.localdomain ([154.16.166.166])
-        by smtp.gmail.com with ESMTPSA id g1sm28391398pgs.23.2021.07.21.01.15.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 01:15:38 -0700 (PDT)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4GV7Z021S8z7wb4;
+        Wed, 21 Jul 2021 16:10:48 +0800 (CST)
+Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Jul 2021 16:15:24 +0800
+Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
+ (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Wed, 21 Jul
+ 2021 16:15:23 +0800
+Subject: Re: [PATCH rfc v6 2/4] page_pool: add interface to manipulate frag
+ count in page pool
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johan Hovold <johan@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        David Sterba <dsterba@suse.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Anirudh Rayabharam <mail@anirudhrb.com>
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH V3 2/2] usb: hso: remove the bailout parameter
-Date:   Wed, 21 Jul 2021 16:14:57 +0800
-Message-Id: <20210721081510.1516058-2-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210721081510.1516058-1-mudongliangabcd@gmail.com>
-References: <20210721081510.1516058-1-mudongliangabcd@gmail.com>
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Marcin Wojtas <mw@semihalf.com>, <linuxarm@openeuler.org>,
+        <yisen.zhuang@huawei.com>, "Salil Mehta" <salil.mehta@huawei.com>,
+        <thomas.petazzoni@bootlin.com>, <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Will Deacon" <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Vlastimil Babka" <vbabka@suse.cz>, <fenghua.yu@intel.com>,
+        <guro@fb.com>, Peter Xu <peterx@redhat.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "Alexander Lobakin" <alobakin@pm.me>,
+        Willem de Bruijn <willemb@google.com>, <wenxu@ucloud.cn>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Kevin Hao <haokexin@gmail.com>, <nogikh@google.com>,
+        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
+        <kpsingh@kernel.org>, <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>, <songliubraving@fb.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <1626752145-27266-1-git-send-email-linyunsheng@huawei.com>
+ <1626752145-27266-3-git-send-email-linyunsheng@huawei.com>
+ <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <92e68f4e-49a4-568c-a281-2865b54a146e@huawei.com>
+Date:   Wed, 21 Jul 2021 16:15:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
+ dggpemm500005.china.huawei.com (7.185.36.74)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two invocation sites of hso_free_net_device. After
-refactoring hso_create_net_device, this parameter is useless.
-Remove the bailout in the hso_free_net_device and change the invocation
-sites of this function.
+On 2021/7/20 23:43, Alexander Duyck wrote:
+> On Mon, Jul 19, 2021 at 8:36 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> For 32 bit systems with 64 bit dma, dma_addr[1] is used to
+>> store the upper 32 bit dma addr, those system should be rare
+>> those days.
+>>
+>> For normal system, the dma_addr[1] in 'struct page' is not
+>> used, so we can reuse dma_addr[1] for storing frag count,
+>> which means how many frags this page might be splited to.
+>>
+>> In order to simplify the page frag support in the page pool,
+>> the PAGE_POOL_DMA_USE_PP_FRAG_COUNT macro is added to indicate
+>> the 32 bit systems with 64 bit dma, and the page frag support
+>> in page pool is disabled for such system.
+>>
+>> The newly added page_pool_set_frag_count() is called to reserve
+>> the maximum frag count before any page frag is passed to the
+>> user. The page_pool_atomic_sub_frag_count_return() is called
+>> when user is done with the page frag.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  include/linux/mm_types.h | 18 +++++++++++++-----
+>>  include/net/page_pool.h  | 41 ++++++++++++++++++++++++++++++++++-------
+>>  net/core/page_pool.c     |  4 ++++
+>>  3 files changed, 51 insertions(+), 12 deletions(-)
+>>
+> 
+> <snip>
+> 
+>> +static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+>> +                                                         long nr)
+>> +{
+>> +       long frag_count = atomic_long_read(&page->pp_frag_count);
+>> +       long ret;
+>> +
+>> +       if (frag_count == nr)
+>> +               return 0;
+>> +
+>> +       ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+>> +       WARN_ON(ret < 0);
+>> +       return ret;
+>>  }
+>>
+> 
+> So this should just be an atomic_long_sub_return call. You should get
+> rid of the atomic_long_read portion of this as it can cover up
+> reference count errors.
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/usb/hso.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+atomic_long_sub_return() is used to avoid one possible cache bouncing and
+barrrier caused by the last user.
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index dec96e8ab567..827d574f764a 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -2353,7 +2353,7 @@ static int remove_net_device(struct hso_device *hso_dev)
- }
- 
- /* Frees our network device */
--static void hso_free_net_device(struct hso_device *hso_dev, bool bailout)
-+static void hso_free_net_device(struct hso_device *hso_dev)
- {
- 	int i;
- 	struct hso_net *hso_net = dev2net(hso_dev);
-@@ -2376,7 +2376,7 @@ static void hso_free_net_device(struct hso_device *hso_dev, bool bailout)
- 	kfree(hso_net->mux_bulk_tx_buf);
- 	hso_net->mux_bulk_tx_buf = NULL;
- 
--	if (hso_net->net && !bailout)
-+	if (hso_net->net)
- 		free_netdev(hso_net->net);
- 
- 	kfree(hso_dev);
-@@ -3133,7 +3133,7 @@ static void hso_free_interface(struct usb_interface *interface)
- 				rfkill_unregister(rfk);
- 				rfkill_destroy(rfk);
- 			}
--			hso_free_net_device(network_table[i], false);
-+			hso_free_net_device(network_table[i]);
- 		}
- 	}
- }
--- 
-2.25.1
+You are right that that may cover up the reference count errors. How about
+something like below:
 
+static inline long page_pool_atomic_sub_frag_count_return(struct page *page,
+							  long nr)
+{
+#ifdef CONFIG_DEBUG_PAGE_REF
+	long ret = atomic_long_sub_return(nr, &page->pp_frag_count);
+
+	WARN_ON(ret < 0);
+
+	return ret;
+#else
+	if (atomic_long_read(&page->pp_frag_count) == nr)
+		return 0;
+
+	return atomic_long_sub_return(nr, &page->pp_frag_count);
+#end
+}
+
+Or any better suggestion?
+
+
+> .
+> 
