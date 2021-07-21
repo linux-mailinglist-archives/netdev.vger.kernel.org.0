@@ -2,148 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A45B33D0BC4
+	by mail.lfdr.de (Postfix) with ESMTP id EC99F3D0BC5
 	for <lists+netdev@lfdr.de>; Wed, 21 Jul 2021 12:12:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236463AbhGUIk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 04:40:28 -0400
-Received: from lucky1.263xmail.com ([211.157.147.133]:51090 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236744AbhGUI1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 04:27:55 -0400
-Received: from localhost (unknown [192.168.167.70])
-        by lucky1.263xmail.com (Postfix) with ESMTP id AA31CD604A;
-        Wed, 21 Jul 2021 17:07:58 +0800 (CST)
-X-MAIL-GRAY: 0
-X-MAIL-DELIVERY: 1
-X-ADDR-CHECKED4: 1
-X-SKE-CHECKED: 1
-X-ANTISPAM-LEVEL: 2
-Received: from localhost.localdomain (unknown [113.57.152.160])
-        by smtp.263.net (postfix) whith ESMTP id P13644T140561998673664S1626858476493763_;
-        Wed, 21 Jul 2021 17:07:57 +0800 (CST)
-X-IP-DOMAINF: 1
-X-UNIQUE-TAG: <677266e43cc6ebe63ae9c4eeb930a4f8>
-X-RL-SENDER: chenhaoa@uniontech.com
-X-SENDER: chenhaoa@uniontech.com
-X-LOGIN-NAME: chenhaoa@uniontech.com
-X-FST-TO: peppe.cavallaro@st.com
-X-RCPT-COUNT: 12
-X-SENDER-IP: 113.57.152.160
-X-ATTACHMENT-NUM: 0
-X-System-Flag: 0
-From:   Hao Chen <chenhaoa@uniontech.com>
-To:     peppe.cavallaro@st.com
-Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org, qiangqing.zhang@nxp.com,
-        Hao Chen <chenhaoa@uniontech.com>
-Subject: [net,v6] net: stmmac: fix 'ethtool -P' return -EBUSY
-Date:   Wed, 21 Jul 2021 17:07:14 +0800
-Message-Id: <20210721090714.17416-1-chenhaoa@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        id S237124AbhGUIku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 04:40:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57730 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236733AbhGUIbs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 04:31:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 08FF860FE9
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 09:12:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626858745;
+        bh=m6A+yIrHXTFesp1MogKqTyNNizrUw8mq8jszGGFCEHs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=SLjn2Dl3HcPrVu5k6E5lTfZ3ZF1h9eHSOzZPsSvW9CB0NeOboC/8u2a6qdBQzAhh0
+         yUJkTgD9WbE9Ww6A4eyxxh0P1XLXJ6PCGgzf2iBzuldEsOTzF/FAvbW1349hXQhXus
+         4Hpoxkf2nVj+MXBew4OIu/2AyFRkP3ir/5UAyFErgwcdbzIya+kB5Wh+3JQOBq2XGE
+         e3L7qlGXE+WM+bQYebUBqHy6NxubeurfM1oca0YOZJu90FuZInL4SE/T4u7oy/lyay
+         Si2s2Ovrm06idfvh01xnsmcw9FzYhcwV5Sly45nEpFHxRsxydB1ZiFRZbn5t5m5q6I
+         z5T2BSdYjCcoQ==
+Received: by mail-wr1-f47.google.com with SMTP id k4so1358458wrc.8
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 02:12:24 -0700 (PDT)
+X-Gm-Message-State: AOAM530F0s6SRmk9cQDOU6u7VwB/ZPNRaFXIuetR1rvsHSYjo5hAL8HA
+        DZSd+a/ytBkJkmD2ULSRcku2SInPv51FEX+cCUU=
+X-Google-Smtp-Source: ABdhPJxW8J6KE9TLuawWr667LpKSxhP48gAhQbOQVSsOCqBIDhQQtsfdkcU0PN4Z8D0LC2/gIO5dur2xqVukuJDtoq4=
+X-Received: by 2002:adf:b318:: with SMTP id j24mr42689041wrd.361.1626858743588;
+ Wed, 21 Jul 2021 02:12:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210720142436.2096733-1-arnd@kernel.org> <20210720142436.2096733-4-arnd@kernel.org>
+ <20210721073250.GC11257@lst.de>
+In-Reply-To: <20210721073250.GC11257@lst.de>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 21 Jul 2021 11:12:07 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1gY63K0-J4mqtmLvKg1G1Bm0TzeA_Jjdn56Luae-bJdQ@mail.gmail.com>
+Message-ID: <CAK8P3a1gY63K0-J4mqtmLvKg1G1Bm0TzeA_Jjdn56Luae-bJdQ@mail.gmail.com>
+Subject: Re: [PATCH v5 3/4] net: socket: simplify dev_ifconf handling
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Networking <netdev@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I want to get permanent MAC address when the card is down. And I think
-it is more convenient to get statistics in the down state by 'ethtool -S'.
-But current all of the ethool command return -EBUSY.
+On Wed, Jul 21, 2021 at 9:32 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> > The implementation can be simplified further, based on the
+> > knowledge that the dynamic registration is only ever used
+> > > for IPv4.
+>
+> I think dropping register_gifconf (which seems like a nice cleanup!)
+> needs to be a separate prep patch to not make this too confusing.
 
-I don't think we should detect that the network card is up in '. Begin',
-which will cause that all the ethtool commands can't be used when the
-network card is down. If some ethtool commands can only be used in the
-up state, check it in the corresponding ethool OPS function is better.
-This is too rude and unreasonable.
+Right, good idea.
 
-I have checked the '. Begin' implementation of other drivers, most of which
-support the submission of NIC driver for the first time.
-They are too old to know why '. Begin' is implemented. I suspect that they
-have not noticed the usage of '. Begin'.
+> > index e6231837aff5..4727c7a3a988 100644
+> > --- a/include/linux/compat.h
+> > +++ b/include/linux/compat.h
+> > @@ -104,6 +104,11 @@ struct compat_ifmap {
+> >       unsigned char port;
+> >  };
+> >
+> > +struct compat_ifconf {
+> > +     compat_int_t    ifc_len;                /* size of buffer */
+> > +     compat_uptr_t   ifcbuf;
+> > +};
+> > +
+> >  #ifdef CONFIG_COMPAT
+> >
+> >  #ifndef compat_user_stack_pointer
+> > @@ -326,12 +331,6 @@ typedef struct compat_sigevent {
+> >       } _sigev_un;
+> >  } compat_sigevent_t;
+> >
+> > -struct compat_if_settings {
+> > -     unsigned int type;      /* Type of physical device or protocol */
+> > -     unsigned int size;      /* Size of the data allocated by the caller */
+> > -     compat_uptr_t ifs_ifsu; /* union of pointers */
+> > -};
+>
+> Does this actually compile as-is?  It adds a second definition of
+> compat_ifconf but removes the still used compat_if_settings?
 
-Fixes: 47dd7a540b8a ("net: add support for STMicroelectronics Ethernet
-		     controllers.")
+Indeed it does not. I must have applied a hunk to the wrong patch
+in an earlier rebase, and the build bots never picked up on it because
+the series was fine in the end.
 
-Compile-tested on arm64. Tested on an arm64 system with an on-board
-STMMAC chip.
+> Maybe it would be a better idea to add a prep patch that makes as much
+> as possible of compat.h available unconditionally instead of all these
+> little moves.
 
-Changes v5 ... v6:
-- The 4.19.90 kernel not support pm_runtime, so implemente '.begin' and
-  '.complete' again. Add return value check of pm_runtime function.
+Ok, I'll figure something out.
 
-Changes v4 ... v5:
-- test the '.begin' will return -13 error on my machine based on 4.19.90
-  kernel. The platform driver does not supported pm_runtime. So remove the
-  implementation of '.begin' and '.complete'.
-
-Changes v3 ... v4:
-- implement '.complete' ethtool OPS.
-
-Changes v2 ... v3:
-- add linux/pm_runtime.h head file.
-
-Changes v1 ... v2:
-- fix spell error of dev.
-
-Signed-off-by: Hao Chen <chenhaoa@uniontech.com>
----
- .../ethernet/stmicro/stmmac/stmmac_ethtool.c  | 21 +++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index d0ce608b81c3..e969bde36507 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -12,8 +12,9 @@
- #include <linux/ethtool.h>
- #include <linux/interrupt.h>
- #include <linux/mii.h>
--#include <linux/phylink.h>
- #include <linux/net_tstamp.h>
-+#include <linux/phylink.h>
-+#include <linux/pm_runtime.h>
- #include <asm/io.h>
- 
- #include "stmmac.h"
-@@ -410,11 +411,18 @@ static void stmmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
- 
- }
- 
--static int stmmac_check_if_running(struct net_device *dev)
-+static int stmmac_ethtool_begin(struct net_device *dev)
- {
--	if (!netif_running(dev))
--		return -EBUSY;
--	return 0;
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	return pm_runtime_resume_and_get(dev);
-+}
-+
-+static void stmmac_ethtool_complete(struct net_device *dev)
-+{
-+	struct stmmac_priv *priv = netdev_priv(dev);
-+
-+	pm_runtime_put(priv->device);
- }
- 
- static int stmmac_ethtool_get_regs_len(struct net_device *dev)
-@@ -1073,7 +1081,8 @@ static int stmmac_set_tunable(struct net_device *dev,
- static const struct ethtool_ops stmmac_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
--	.begin = stmmac_check_if_running,
-+	.begin = stmmac_ethtool_begin,
-+	.complete = stmmac_ethtool_complete,
- 	.get_drvinfo = stmmac_ethtool_getdrvinfo,
- 	.get_msglevel = stmmac_ethtool_getmsglevel,
- 	.set_msglevel = stmmac_ethtool_setmsglevel,
--- 
-2.20.1
-
-
-
+        Arnd
