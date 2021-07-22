@@ -2,170 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA4F3D26B2
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 17:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2593D26E1
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 17:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232576AbhGVOx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 10:53:29 -0400
-Received: from mail-bn7nam10on2106.outbound.protection.outlook.com ([40.107.92.106]:37427
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232217AbhGVOx2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 10:53:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BtDaSR4JUOCieCSsZj9DNLxSr/TIOuASBOpS4xbU3s/BL5W+ID5JDK5SFSLQs6lfuleCBqk3FHwsFwK72lz5BbGQP7N5nnpLFz1LWc92UlZZ1HnOqvxvuHW1Vo7j/6hfPA3oC57rjoWgXsH90N+EFvi9iK0MrxTKNGvW9WB0LnZXs151db87r9DY3jpsErEU1rSuT1gDN1AT3lHHE1gkvrlx1SkZK7jph8cGovb6/qBH4yst5iEWp2+Fur8praIf7+liNxFTo0v6B5G4VsFhrdThH2hJrC+XnITC8lyVbw+CRaLAIqIp9S/wrAv9WFeqZVJpP01HEHCUA0I379PEOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Npp4iX1PgCArjUt/0W6tKjavu4PGUTpGqwMp4K6RXHE=;
- b=JYzgb0h9ZROO60+8+DNsCZIZj6e6ZXvH5FBGIf47McdO41WDMet9EfQZ1U7156C7s/gYuks966Ub7xezxYpweH3kK90exzPO5zXK5qszIGPTkBC/7v5sehq/2jnfOlzZDOkABiYPWu9eAWULBq3MvK52TJe3g9vVpC9q11aNH/tmiDOPQHc5q/GDsn6zDgxVWVqSeqTd/OSYtWtuu32WJxHzywVN39xz9FMD6R9eoFS688h36YUJKpmwB48QvK0hpWV7g2e8GNuo19B/l1ditbXLYvCdiVLhyytSHdzvYJf4Ljj//lE/IgTLpWE1Zdk+vTRSPN9X58FOIwW/MmgsaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=in-advantage.com; dmarc=pass action=none
- header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Npp4iX1PgCArjUt/0W6tKjavu4PGUTpGqwMp4K6RXHE=;
- b=Q/2AUktlRMEpVj0E10uTTbI5YKNQv5IErQXQj5FiRVnrrkCh7kzJ+blcy2221AwtMxzBMX/qWMuAU2a4hnEdq8RHSoiKAtaBUl+3d1hKnf1UoxWFWvukzDxsz5Qhg27ENZ2klrymZ8nJE9QT8JEuwzd/JAM0XtRjyPaT47HVv3w=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CO1PR10MB4465.namprd10.prod.outlook.com
- (2603:10b6:303:6d::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Thu, 22 Jul
- 2021 15:34:01 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::e81f:cf8e:6ad6:d24d]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::e81f:cf8e:6ad6:d24d%3]) with mapi id 15.20.4331.034; Thu, 22 Jul 2021
- 15:34:01 +0000
-Date:   Thu, 22 Jul 2021 08:33:51 -0700
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 net-next 1/1] net: ethernet: ti: cpsw: allow MTU >
- 1500 when overridden by module parameter
-Message-ID: <20210722153351.GA3590944@euler>
-References: <20210721210538.22394-1-colin.foster@in-advantage.com>
- <YPl7LdLMMTmhSu1z@lunn.ch>
+        id S232706AbhGVPAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 11:00:08 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:21935 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232688AbhGVPAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 11:00:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626968437;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=Ry5DhG356ANv2igJZhQ+pgw95Y/FGgirnHdl1TlEnpE=;
+    b=N7LBRXLwjxN2fygdz7IxsyrvPAofyTjsb3lUdoNqrWDdet45Rsgnlf58SBHTqrOjpe
+    XHg4bfCMPMYpXmGRstZFaXLi6EYQSPCNp9drm+BF6qkl6ESZ8XE8Qbyhw76llswIedTh
+    nM/WZt55yHlD44LNUfGFAwBGNjlnkWFkn20tFP8B2CftxGQQphw2VvKn1qQ1buaHT1Dv
+    9UbGUu//UnjTSz5hAAwQ8gV47hius9oTqWqhCEz+2+qcHbflucZWbbyvQrniNWWTrjxa
+    s1CcNUIRQuMe5MuHBsmFSQIVXbl8bBQLQiLTgLZNIgGLXPzG38V7h3TguLLo7nATFDXE
+    s0Cw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u261EJF5OxJD4paA8ZuO1A=="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.28.1 DYNA|AUTH)
+    with ESMTPSA id g02a44x6MFeaQsv
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 22 Jul 2021 17:40:36 +0200 (CEST)
+Date:   Thu, 22 Jul 2021 17:40:32 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        dmaengine@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: Re: [RFC PATCH net-next 4/4] net: wwan: Add Qualcomm BAM-DMUX WWAN
+ network driver
+Message-ID: <YPmRcBXpRtKKSDl8@gerhold.net>
+References: <20210719145317.79692-1-stephan@gerhold.net>
+ <20210719145317.79692-5-stephan@gerhold.net>
+ <CAMZdPi8oxRMo0erfd0wrUPzD2UsbexoR=86u2N75Fd9RpXHoKg@mail.gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YPl7LdLMMTmhSu1z@lunn.ch>
-X-ClientProxiedBy: CO2PR05CA0053.namprd05.prod.outlook.com
- (2603:10b6:102:2::21) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from euler (67.185.175.147) by CO2PR05CA0053.namprd05.prod.outlook.com (2603:10b6:102:2::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9 via Frontend Transport; Thu, 22 Jul 2021 15:34:00 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 80e67995-cae6-4db1-f05a-08d94d262137
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4465:
-X-Microsoft-Antispam-PRVS: <CO1PR10MB44657C276FB3109EC2C9E839A4E49@CO1PR10MB4465.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Aj4kOk8N4BnhjuPOlE4Rx19tsyzla2yIFkv0nZ6onb+kxHwm6VkTsr1ntAj3JyLSTmUVJP6YJBmNEBvkXaiZeTlRE87yPzEbTz6cVEXteBdIyo37I4V8BBHjyIAcSMYdRmry8qLhZIF+UDU8YjUbEAumsJO6piO6rGW1eiiaxoH/jIVsgdEV4JtgsMMWDMEKXtbkOARBUmH/RoeH1URA1kVBtFWKItaW4suCvwuicPzew0Ftvr0VnepDQdSRyxTElpzmNp4r3nxSOi9Az7mZPvVKNlb/sgZLN/2dDS3lijHKHj8/fKLXgZVH5UuJtASVCQYtvB0jvCvCoxajrftWqjhSYsYtNJbNbNj7Uq5oXrrJFYb/cmlNvlX39KKQXwIgyFmLdui6a/ULsWISL4bmB3aywN6tK4yA7Mv4cz0ba0sNgsc+P6f9IxXnCuHAJno3OgzymoU8eRfLb11K+9Y3BPdT/DylHDvXmQGrm37knOi4U/uYoafEc3FOKjMJH2aTwSl0bGlAIKjHME4XkSlRvlYMmSYOlD43DR94286YFCi2oBJOkJQM5kKt4w6DiTP3tPVw+7SF76x3P+YmBpXRKevO/0yl78OQD2bAor0YwxSBA6i7teyGPHtWvJPm7D8vV9k/wbWdb3xBkRn/AXIuXCuoQMHHQZDAMt23PwLcaYsCZMa5Xw13Gb1GUzWW30DYHyIHEknuM3P/ygsU+36cbX3w+fwTYF+tV+0q12wWQJcfgRAYEud7gLCroqMFx3LGRUp3UlkoLLNCCn4MUM6r5uRetwViJj4D/vNuDBc6IVrrmP5Zen2NscsQ3t1SEA0b
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(346002)(396003)(39830400003)(136003)(55016002)(33656002)(6666004)(316002)(2906002)(33716001)(966005)(6496006)(52116002)(5660300002)(86362001)(44832011)(478600001)(8676002)(186003)(83380400001)(9576002)(26005)(54906003)(8936002)(956004)(4326008)(66946007)(9686003)(66556008)(1076003)(38350700002)(38100700002)(66476007)(6916009)(221023002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6owdTiPOpHf2VCrltvKleUdNc63nBNFj5iBSVgqvyzwoZR/vm51C8y22brlc?=
- =?us-ascii?Q?WNVMNG1cNu4OrxZ4ZHuV72+maH6Xt9Nv2E2BRAE76TRHI/0jT162LwSFUlU7?=
- =?us-ascii?Q?5M5LeaQ++KdbO0sH6lZTtT75x7dKsIjv7pXdAyZyBrpta91sVi1OBWZrSnrc?=
- =?us-ascii?Q?s14NFYO0S37rxboF7/IgRueY/MhJT7u/Th8q7ZFuull0/YXLcCBnRswBh2BT?=
- =?us-ascii?Q?uK1ajrpcJs6a5NEj6YPfotoqtJF6XUSwJweqISSFG8YKS62JQlKN3MZuecmv?=
- =?us-ascii?Q?weXa1aJ2zxPyFczomKaAjYtA/Ee4+vPgLMvF6TiguKyN4XGKO2esGMJp8UB4?=
- =?us-ascii?Q?Ou/cxpnrujDLOf/apPs2DKoqJUsX4KXUNtsTyOXFSP0fHBJ5BDTd3k9SU9zl?=
- =?us-ascii?Q?wNFuALP0891cXQKoIZ7bq5AvZQd8OCOApOzVJUzgAvAIf7AWxS71m6FRE415?=
- =?us-ascii?Q?gGWnspOZmR24hwdaHbr8BNanbMu3DFeLjb9MYMBxissWG96YkdlrKppzVsDj?=
- =?us-ascii?Q?id7qcavdoqCi41yE42deF7SFxJTqjmLM4aZ7N9rAB0A9jGS+b1tRz4+iN6Ih?=
- =?us-ascii?Q?N8fGoI6hvDdK/Cn1FG7GEfp6IgwAvsf4F3ZPv591FoTxH5dWONX1ZbmWWDxl?=
- =?us-ascii?Q?uhnfuSodaPr9i7XTFBT+VCvaJnS1v4cDikOSdWi28sIkt6WFKwOSMJ50CDnN?=
- =?us-ascii?Q?/FDZ7hvG4fuk7DOsoiqXm9jM1EyaCyX4accNmH6usDZKJpx9Ra2YyTnTYnM4?=
- =?us-ascii?Q?GtCobyKyenyyBgE++VTOwRGAkq2Xqpz/d2NNU8FjCw0f3p/U3fSw8AVpCrqE?=
- =?us-ascii?Q?0ep2PHM9wtE6hCk9LAWyB1mClKP1U9ZYHDjnDN/Rx0iAdTNmxDL0v0lwlV6y?=
- =?us-ascii?Q?/pOX+sNQdV/uV3kmQgt/R2i8uU4+Mu3732cC24QD64zlN5SEd3YOI5x2/PyI?=
- =?us-ascii?Q?c+S6GgqA+Swz4rzaB06DaIzV7UDt1D2Df1LNYrlSlNb2VKGXFARHCm0supLn?=
- =?us-ascii?Q?OQuApy45asipK96MioVM+MngsSUOuCCpFE4agmlBUXcwzuz8p4zhEMmMQEmy?=
- =?us-ascii?Q?BENhKnGW7yokPVZBD+7w9YXB6Co+1f3A62ZKh7H2g6w9Hqngwg/fDUvlEOGo?=
- =?us-ascii?Q?7bm7gjGGuLKV2/7c5zCaa+HVOa70GsIpofyMFqNXsKQaYhsVrw51y0QAgPbZ?=
- =?us-ascii?Q?vpv0Nafvb0u7cRd+YR271hTIX419uUaOGKeXkH5UfGT5jjNLDMO7AVFRHi+U?=
- =?us-ascii?Q?M0nDPUOw+ifZknqWWVK0ksIO+kZOOhCdhca/Qk+UEy7fZoWpk4ESU5uGwJYl?=
- =?us-ascii?Q?YO25eJkd49JWcb/2921LbjWN?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80e67995-cae6-4db1-f05a-08d94d262137
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 15:34:01.2824
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0CjKeXx6kUDyt/m7d6q3iJpe2jagzKjHdr5DgKFhJGWnDjkfQsAujlgimVG5TAP5hP4RrB9iBRcJ9upFQdkk7FFNV2X/geqew1Eec+wodBo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4465
+In-Reply-To: <CAMZdPi8oxRMo0erfd0wrUPzD2UsbexoR=86u2N75Fd9RpXHoKg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 04:05:33PM +0200, Andrew Lunn wrote:
-> On Wed, Jul 21, 2021 at 02:05:38PM -0700, Colin Foster wrote:
-> > The module parameter rx_packet_max can be overridden at module load or
-> > boot args. But it doesn't adjust the max_mtu for the device accordingly.
-> > 
-> > If a CPSW device is to be used in a DSA architecture, increasing the
-> > MTU by small amounts to account for switch overhead becomes necessary.
-> > This way, a boot arg of cpsw.rx_packet_max=1600 should allow the MTU
-> > to be increased to values of 1520, which is necessary for DSA tagging
-> > protocols like "ocelot" and "seville".
+Hi Loic,
+
+On Mon, Jul 19, 2021 at 06:01:33PM +0200, Loic Poulain wrote:
+> On Mon, 19 Jul 2021 at 17:01, Stephan Gerhold <stephan@gerhold.net> wrote:
+> >
+> > I'm not sure how to integrate the driver with the WWAN subsystem yet.
+> > At the moment the driver creates network interfaces for all channels
+> > announced by the modem, it does not make use of the WWAN link management
+> > yet. Unfortunately, this is a bit complicated:
+> >
+> > Both QMAP and the built-in multiplexing layer might be needed at some point.
+> > There are firmware versions that do not support QMAP and the other way around
+> > (the built-in multiplexing was disabled on very recent firmware versions).
+> > Only userspace can check if QMAP is supported in the firmware (via QMI).
+> >
+> > I could ignore QMAP completely for now but I think someone will show up
+> > who will need this eventually. And if there is going to be common code for
+> > QMAP/rmnet link management it would be nice if BAM-DMUX could also make
+> > use of it.
 > 
-> Hi Colin
+> I have this on my TODO list for mhi-net QMAP.
 > 
-> As far as your patch goes, it makes sense.
+
+Great, thanks!
+
+> > But the question is, how could this look like? How do we know if we should
+> > create a link for QMAP or a BAM-DMUX channel? Does it even make sense
+> > to manage the 1-8 channels via the WWAN link management?
 > 
-> However, module parameters are unlikely by netdev maintainers. Having
-> to set one in order to make DSA work is not nice. What is involved in
-> actually removing the module parameter and making the MTU change work
-> without it?
+> Couldn't it be specified via dts (property or different compatible
+> string)?
 
-Thanks for the feedback Andrew.
+It would probably work in most cases, but I have to admit that I would
+prefer to avoid this for the following reason: This driver is used on
+some smartphones that have different variants for different parts of the
+world. As far as Linux is concerned the hardware is pretty much
+identical, but the modem firmware is often somewhat device-specific.
 
-That's a good idea. I used the module parameter because it was already 
-there.
+This means that the same device tree is often used with different
+firmware versions. Perhaps we are lucky enough that the firmware
+versions have the same capabilities, but I'm not fully sure about that.
 
-My intent was to not change any existing default behavior. The below 
-forum post makes me think that simply changing the default value of 
-rx_packet_max from 1500 to 1998 alongside this patch is all that is 
-needed. It all seems too easy, so either my use-case is rare enough 
-that nobody considered it, or there's some limitation I'm missing.
+I think at the end the situation is fairly similar to qmi_wwan/USB.
+There the kernel also does not know if the modem supports QMAP or not.
+The way it's solved there at the moment is that ModemManager tries to
+enable it from user space and then the mode of the network interface
+can be switched through a sysfs file ("qmi/pass_through").
 
-https://e2e.ti.com/support/processors-group/processors/f/processors-forum/461724/how-to-send-receive-jumbo-packet-by-am335x-emac
+Something like this should probably also work in my case. This should
+also allow me to ignore QMAP for now and deal with it if someone really
+needs it at some point since it's quite complicated for BAM-DMUX.
+(I tried QMAP again today and listed the problems in [1] for reference,
+ but it's all BAM-DMUX specific...)
 
+[1] https://lore.kernel.org/netdev/YPmF8bzevuabO2K9@gerhold.net/
+
+>
+> would it make sense to have two drivers (with common core) to
+> manage either the multi-bam channel or newer QMAP based single
+> bam-channel modems.
 > 
-> > Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> > ---
-> >  drivers/net/ethernet/ti/cpsw.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> > index c0cd7de88316..d400163c4ef2 100644
-> > --- a/drivers/net/ethernet/ti/cpsw.c
-> > +++ b/drivers/net/ethernet/ti/cpsw.c
-> > @@ -1625,6 +1625,14 @@ static int cpsw_probe(struct platform_device *pdev)
-> >  		goto clean_cpts;
-> >  	}
-> >  
-> > +	/* adjust max_mtu to match module parameter rx_packet_max */
-> > +	if (cpsw->rx_packet_max > CPSW_MAX_PACKET_SIZE) {
-> > +		ndev->max_mtu = ETH_DATA_LEN + (cpsw->rx_packet_max -
-> > +				CPSW_MAX_PACKET_SIZE);
-> > +		dev_info(dev, "overriding default MTU to %d\n\n",
-> > +			 ndev->max_mtu);
-> 
-> There is no need for dev_info(). You could consider dev_dbg(), or just
-> remove it.
 
-Understood.
+There should be fairly little difference between those two usage modes,
+so I don't think it's worth splitting the driver for this. Actually
+right now (ignoring the link management of the WWAN subsystem),
+it's already possible to use both.
 
+I can use the network interfaces as-is in Raw-IP mode or I do
+"sudo ip link add link rmnet0 name rmnet0_qmap type rmnet mux_id 1"
+on top and use QMAP. The BAM-DMUX driver does not care, because it
+just hands over sent/received packets as-is and the modem data format
+must be always configured via QMI from user space.
+
+> >
+> > Another problem is that the WWAN subsystem currently creates all network
+> > interfaces below the common WWAN device. This means that userspace like
+> > ModemManager has no way to check which driver provides them. This is
+> > necessary though to decide how to set it up via QMI (ModemManager uses it).
 > 
->        Andrew
+> Well, I have quite a similar concern since I'm currently porting
+> mhi-net mbim to wwan framework, and I was thinking about not making
+> wwan device parent of the network link/netdev (in the same way as
+> wlan0 is not child of ieee80211 device), but not sure if it's a good
+> idea or not since we can not really consider driver name part of the
+> uapi.
+> 
+
+Hm, I think the main disadvantage of that would be that the network
+interface is no longer directly related to the WWAN device, right?
+Userspace would then need some special matching to find the network
+interfaces that belong to a certain control port.
+
+With the current setup, e.g. ModemManager can simply match the WWAN
+device and then look at its children and find the control port and
+network interfaces. How would it find the network interfaces if they are
+no longer below the WWAN device?
+
+> The way links are created is normally abstracted, so if you know which
+> bam variant you have from wwan network driver side (e.g. via dts), you
+> should have nothing to check on the user side, except the session id.
+
+In a perfect world it would probably be like this, but I'm afraid the
+Qualcomm firmware situation isn't as simple. User space needs to know
+which setup it is dealing with because all the setup happens via QMI.
+
+Let's take the BAM-DMUX channels vs QMAP mux-IDs for example:
+
+First, user space needs to configure the data format. This happens with
+the QMI WDA (Wireless Data Administrative Service) "Set Data Format"
+message. Parameter would be link layer format (Raw-IP in both cases)
+but also the uplink/downlink data aggregation protocol. This is either
+one of many QMAP versions (qmap|qmapv2|qmapv3|qmapv4|qmapv5), or simply
+"none" when using BAM-DMUX without QMAP.
+
+Then, the "session ID" (= BAM-DMUX channel or QMAP mux-ID) must be bound
+to a WDS (Wireless Data Service) session. The QMI message for that is
+different for BAM-DMUX and QMAP:
+
+  - BAM-DMUX: WDS "Bind Data Port"
+      (Parameter: SIO port number, can be derived from channel ID)
+
+  - QMAP: WDS "Bind MUX Data Port" (note the "MUX", different message!)
+      (Parameter: MUX ID, port type (USB/embedded/...), port number)
+
+My point here: Since userspace is responsible for QMI at the moment
+we will definitely need to make it aware of the setup that it needs to
+apply. Just having an abstract "session ID" won't be enough to set up
+the connection properly. :/
+
+Thanks!
+Stephan
