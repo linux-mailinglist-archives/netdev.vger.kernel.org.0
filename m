@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A08573D1BB0
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 04:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CC03D1BB9
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 04:19:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230381AbhGVB3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 21:29:52 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:36659 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbhGVB3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 21:29:50 -0400
-Received: by mail-il1-f199.google.com with SMTP id j13-20020a056e02218db02902141528bc7cso2668525ila.3
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 19:10:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=MRVdo3BP1bfGw5Jrpums3dR51jXt/diLyZxT/ln8Sgw=;
-        b=nET7+Z4Sovkgx7ALax0JbyU8qwXFo+qWs3zGn+43V0IAp0oHEqEIyNQpJauQxk6KYN
-         Eb4QjXz+n2P/j+4Mt17EtyqcgcaM+GU4eGCqusKgu5dK0Q1gWREylZAhkfNmB3xQBe20
-         RhLRMIthZYCetYoxPNbIiiENemoYvYVK5Xo7OziWG5r/zRviRhNXO976enhNfI9HnT+i
-         XhvPVrUvq+EO3LIbCD4gZOFheXzjnncIa1VsHiLoOUObCpe8NQHeXkshVPwZmWykR7F3
-         FLCY1RYTgksklwjihcVtK5BYmFDCe5c+OENEkKLkK/2Ek/HePr19uGRhdRwfSLV9w2o1
-         CTPA==
-X-Gm-Message-State: AOAM531/QONFD7Y+Xlie9/W4Tcn/2gResMpZhdszF6H7SlCqkQ5H9VIU
-        5aGDWX1hxPUGjsQ+ZporYVqCbvtOzcJv5bdXKmL6Xq71lOtb
-X-Google-Smtp-Source: ABdhPJzUl8h8RWguJgP1hh4+Fa0JSzaHhsIQzPR1aO9Qmj0Wg7bfZruedIEsxwi0atJinBStdSTzaFZxsr4N2+tjyW3MAjsfaBfv
+        id S230162AbhGVBij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 21:38:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39900 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229916AbhGVBii (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 21:38:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B8E961283;
+        Thu, 22 Jul 2021 02:19:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626920353;
+        bh=V1UpLXYBuJU8kNTRcmsXjmKxcV/EBx8bEE5f/Iz+LxU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rB+w5BxlQxE6BeETej9BMBWFAQyQCXnRSHFIvPFhCmta/lBi/B/XlME8D/NVIG211
+         3cXrmEMVXlHG4ZihloiVOnv+0IPyVRH2FarXFVTlbr/rKwnfViWBH/9NfBO/zkHbyw
+         cZF8OKfX3ktCTqILmIC5Af8qZ3AjsnVBBmzmEepIDIFuYVtvA8qHEpTm4AJacGUkHo
+         i9UrIgpzUcnE/eWVcWOR867d4IEAT2Q3zMlBj2uApRFXedJPSeYLGSTC6KqdZGre28
+         TCuDq5CehTs72+BW6THG+RNcXmyni86aDctPPbKn1PXbqw3CT5BKs1jvEl5lWs8Zdg
+         TCl3iZdi/AxbA==
+Date:   Thu, 22 Jul 2021 04:19:08 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Pavel Machek <pavel@ucw.cz>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <20210722041908.2f4c2937@thinkpad>
+In-Reply-To: <YPjNsbjKJ/9OTaxN@lunn.ch>
+References: <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
+        <YPTKB0HGEtsydf9/@lunn.ch>
+        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
+        <YPbu8xOFDRZWMTBe@lunn.ch>
+        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
+        <20210721204543.08e79fac@thinkpad>
+        <YPh6b+dTZqQNX+Zk@lunn.ch>
+        <20210721220716.539f780e@thinkpad>
+        <YPiJjEBV1PZQu0S/@lunn.ch>
+        <20210721224506.GB7278@duo.ucw.cz>
+        <YPjNsbjKJ/9OTaxN@lunn.ch>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c491:: with SMTP id t17mr28709574jam.56.1626919825473;
- Wed, 21 Jul 2021 19:10:25 -0700 (PDT)
-Date:   Wed, 21 Jul 2021 19:10:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000046837e05c7acca73@google.com>
-Subject: [syzbot] WARNING in ieee80211_offchannel_return
-From:   syzbot <syzbot+4c10031c63f173ea1dfc@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, 22 Jul 2021 03:45:21 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-syzbot found the following issue on:
+> On Thu, Jul 22, 2021 at 12:45:06AM +0200, Pavel Machek wrote:
+> > Hi!
+> >   
+> > > Also, function is totally unclear. The whole reason we want to use
+> > > Linux LEDs is triggers, and it is the selected trigger which
+> > > determines the function.  
+> > 
+> > Usually, yes. But "function" is what _manufacturer_ wanted LED to
+> > mean  
+> 
+> So you are saying the function should be the reset default of the PHY,
+> or MAC?
 
-HEAD commit:    23d2b94043ca igmp: Add ip_mc_list lock in ip_check_mc_rcu
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16cde812300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=da140227e4f25b17
-dashboard link: https://syzkaller.appspot.com/bug?extid=4c10031c63f173ea1dfc
+Pavel is talking about the manufacturer of the whole device, not just
+the controller. For example on Turris Omnia there are icons over the
+LEDs indicating their function. There are other devices, for example
+ethernet switches, with LEDs dedicated to indicate specific things, and
+these do not necessarily have to be the same as the LED controller
+default.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Of course the problem is that we are not always able to determine this
+from kernel. In the case of ethernet PHYs I would not create LED
+classdevs unless they are defined in DTS/ACPI. In the case of igc
+I am not exactly sure if the driver should register these LEDs. What if
+they the manufacturer did not connected LEDs to all 3 pins, but only 1,
+for example? Or used the LED pin for some other funtion, like GPIO (if
+igc supports it)? Do we want to create LED classdevs for potentially
+nonexistent LEDs? If yes, then I guess the function should be the reset
+default.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4c10031c63f173ea1dfc@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 8308 at net/mac80211/offchannel.c:136 ieee80211_offchannel_return+0x3e6/0x4a0 net/mac80211/offchannel.c:136
-Modules linked in:
-CPU: 0 PID: 8308 Comm: syz-executor.4 Tainted: G        W         5.14.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:ieee80211_offchannel_return+0x3e6/0x4a0 net/mac80211/offchannel.c:136
-Code: 00 48 01 c6 e8 4b 04 e9 f8 e9 0e ff ff ff e8 01 96 f9 f8 31 d2 48 89 de 4c 89 e7 e8 34 b3 15 00 e9 f7 fe ff ff e8 ea 95 f9 f8 <0f> 0b e9 6c ff ff ff e8 ae 1d 40 f9 e9 51 fc ff ff 48 89 df e8 d1
-RSP: 0018:ffffc900020f7230 EFLAGS: 00010212
-RAX: 00000000000006ed RBX: 0000000000000001 RCX: ffffc90012282000
-RDX: 0000000000040000 RSI: ffffffff887bf386 RDI: 0000000000000003
-RBP: ffff888075980d20 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff887beffc R11: 0000000000000000 R12: ffff88807443c800
-R13: ffff888075982968 R14: 0000000000000000 R15: 0000000000000001
-FS:  00007f1a294ca700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f02e832aab4 CR3: 0000000081623000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __ieee80211_scan_completed+0x776/0xef0 net/mac80211/scan.c:470
- ieee80211_scan_cancel+0x165/0x9b0 net/mac80211/scan.c:1277
- ieee80211_do_stop+0x1863/0x2050 net/mac80211/iface.c:384
- ieee80211_runtime_change_iftype net/mac80211/iface.c:1656 [inline]
- ieee80211_if_change_type+0x383/0x840 net/mac80211/iface.c:1694
- ieee80211_change_iface+0x26/0x210 net/mac80211/cfg.c:157
- rdev_change_virtual_intf net/wireless/rdev-ops.h:69 [inline]
- cfg80211_change_iface+0x335/0xf60 net/wireless/util.c:1073
- nl80211_set_interface+0x65c/0x8d0 net/wireless/nl80211.c:3923
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
- netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
- sock_sendmsg_nosec net/socket.c:703 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:723
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2392
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2446
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2475
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x4665d9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f1a294ca188 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 000000000056bf80 RCX: 00000000004665d9
-RDX: 0000000000000000 RSI: 0000000020000340 RDI: 0000000000000006
-RBP: 00000000004bfcb9 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056bf80
-R13: 00007ffe92760a3f R14: 00007f1a294ca300 R15: 0000000000022000
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Marek
