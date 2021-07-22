@@ -2,91 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 024053D2B5A
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 19:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2C83D2B97
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 20:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbhGVREO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 13:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhGVREN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 13:04:13 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66BBC061575;
-        Thu, 22 Jul 2021 10:44:48 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id m2-20020a17090a71c2b0290175cf22899cso312176pjs.2;
-        Thu, 22 Jul 2021 10:44:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QBvZGfhGPqv586kA+QHlMrcDII1Zc0Zi0WxS7GJ3bzo=;
-        b=VINP1t8dVL1tPyMdJJBMIZhsTXBtw4bbs6fEUyudHL0HiTKf5RS2be8FwKKfhG1x1T
-         YWcYZboNGQw9lusFEu603vChK59+AC/kL9wmDQErSToQDV7Wii6PeIOVLhi2iOtP+rst
-         l4QJEh0W2cqcQIk5EHXx+Mvbd0GugKrttZ0BOQvALqHrQ5I39f6j5DxcDgtoSyWo8uKL
-         jddYzr6bptePJTIUx0JYgr5p1gPH6frtBDAduKxATY6PAH+RWnfxVVdofhL3A77qJY/f
-         pD38ta2JjngDmTycE+gpInFd8+rdaJpKSKQpbagpdyVD51khRKCv4bSpjRSXPaBlfwAk
-         ZEaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QBvZGfhGPqv586kA+QHlMrcDII1Zc0Zi0WxS7GJ3bzo=;
-        b=jFqwEORqfbX4TrzygH3iP2DbXaesqxmyp2xJRcu3FP40x7p4qZD4SbjLZm1sqLdreT
-         BoDgnsV48TjyXXOb7NnKuR84Xi2O+AR95c700XmGwKXjmOAQY1LEQu01xUTOdPe1jlhH
-         TEcv3dlDkQfUVyabL0nlpaMM7ZaWt6umPrf4FN41wZxjZ0zaxF47ewdniE6hqJ6rWupK
-         boTR+A4IvcFazezb8BIfFQA5WkhQcK5VgZ3coBc0XDddSw3uE8PAqqFS7zkssEivLqVz
-         E0RVrQTuwVeVF008nqHuMJSZZO4PLkMnz9yvBdZFCwF6x6M/EygFq0nJSmoOBz6IJYnK
-         sPnA==
-X-Gm-Message-State: AOAM533F9ybWEKDMvHyVbjvTi3/kflMPpQY78gnLdrZBtiTCGPZ+ngR6
-        JFmCAeqvAY7IPokd86awJAU=
-X-Google-Smtp-Source: ABdhPJwLzBgrcFGsrw4o2GvSyiLGJ4FhAv2F1A8Y8vmLqPLJoWbIwXZ7BSLGx/42z8UhC/IACnXxJA==
-X-Received: by 2002:a63:5952:: with SMTP id j18mr1054001pgm.366.1626975888187;
-        Thu, 22 Jul 2021 10:44:48 -0700 (PDT)
-Received: from localhost.localdomain ([1.240.193.107])
-        by smtp.googlemail.com with ESMTPSA id t23sm31256840pfe.8.2021.07.22.10.44.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 10:44:47 -0700 (PDT)
-From:   Kangmin Park <l4stpr0gr4m@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ipv6: decrease hop limit counter in ip6_forward()
-Date:   Fri, 23 Jul 2021 02:44:43 +0900
-Message-Id: <20210722174443.416867-1-l4stpr0gr4m@gmail.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S229927AbhGVRTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 13:19:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32916 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229906AbhGVRTw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 13:19:52 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 99D6961380;
+        Thu, 22 Jul 2021 18:00:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626976827;
+        bh=Q1VqzHpSJ8tygysZ3SRO//ZxAxo1wdyk8kKF95CIhf4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=jYFJJESkXzM1yNYYbdOJ95cXdFiJeMOIcSyZb3+7MqXBarDROQOhbumcpawnd6Dum
+         gsEvMyxz9PgfsBwkN5ki3RPmOcc9AYrUAt4zBi1pqawJRlRp/WK4cOG+uy+3enlIg1
+         HIQl8K30wzfYQ6SQAdij7rC9i8+WB5xp9s5ItqqvsJ8XGhnFL2QElEHB3fEyne9P3Y
+         2zpkfKR/Tbq9sWYvsrH2bAfbYtbAZfAmjuC1R/xQ44qwUz61Fz0uCtMcCM5zmvugkK
+         HrxEVSt2yitwR1dd2hibMGB7muXzTGNQJGAfWLTi6tpur4GOFSL+Jxoousnrq/Vgr0
+         VIDTXY0E+MhxQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 888B3600AB;
+        Thu, 22 Jul 2021 18:00:27 +0000 (UTC)
+Subject: Re: [GIT] Networking
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20210722.061139.1666314878301149027.davem@davemloft.net>
+References: <20210722.061139.1666314878301149027.davem@davemloft.net>
+X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20210722.061139.1666314878301149027.davem@davemloft.net>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+X-PR-Tracked-Commit-Id: 7aaa0f311e2df2704fa8ddb8ed681a3b5841d0bf
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4784dc99c73c22cd4a24f3b8793728620b457485
+Message-Id: <162697682750.6012.8374445031240977744.pr-tracker-bot@kernel.org>
+Date:   Thu, 22 Jul 2021 18:00:27 +0000
+To:     David Miller <davem@davemloft.net>
+Cc:     torvalds@linux-foundation.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Decrease hop limit counter when deliver skb to ndp proxy.
+The pull request you sent on Thu, 22 Jul 2021 06:11:39 -0700 (PDT):
 
-Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
----
- net/ipv6/ip6_output.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 01bea76e3891..aaaf9622cf2d 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -549,9 +549,10 @@ int ip6_forward(struct sk_buff *skb)
- 	if (net->ipv6.devconf_all->proxy_ndp &&
- 	    pneigh_lookup(&nd_tbl, net, &hdr->daddr, skb->dev, 0)) {
- 		int proxied = ip6_forward_proxy_check(skb);
--		if (proxied > 0)
-+		if (proxied > 0) {
-+			hdr->hop_limit--;
- 			return ip6_input(skb);
--		else if (proxied < 0) {
-+		} else if (proxied < 0) {
- 			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
- 			goto drop;
- 		}
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4784dc99c73c22cd4a24f3b8793728620b457485
+
+Thank you!
+
 -- 
-2.26.2
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
