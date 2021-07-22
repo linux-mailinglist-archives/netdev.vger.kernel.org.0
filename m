@@ -2,164 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE053D1C8C
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 05:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 371D83D1D14
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 06:33:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbhGVDQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 23:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbhGVDQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 23:16:29 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 740C9C061575;
-        Wed, 21 Jul 2021 20:57:05 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id pf12-20020a17090b1d8cb0290175c085e7a5so2392070pjb.0;
-        Wed, 21 Jul 2021 20:57:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eFaQS4/KTkRNWySIsqDTE+2ou4eK63jeGeUW05LyArI=;
-        b=WRrHxI57vFLy9CLbw9XY3i3RwyAa+dasAPV46FWPT0Uzy0dVUroR8dLaJw2FgzW9Fl
-         eI9d4HMfWtixNbkqAp/fNjpfxXSJM/4BmYeuT9Tc3Ha/9sY/nNTDcUFygJtTLnxE7Xid
-         Wit0oyGxrkoKn1DUjdtgtTiNyNVYkT/n5WfaFkQYjK9TiTWdV6RsUtj9cQ++QHFJdApa
-         mqLVuGWVCjqySMyNh1X0WrwO+F6Etc7xU5AZ6LCeyI3XZZxjOcNNim/Y/80w6mdERdH4
-         IQmxnnTpdtiXw3XXPl4QqUTW1xwt7M7GK4h20lByfRgPHYlOGguOCSMq92fJa6cV72J2
-         zIVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eFaQS4/KTkRNWySIsqDTE+2ou4eK63jeGeUW05LyArI=;
-        b=IPkwxoL7FL3WG8KF4j3+xL2xyFHbATmOT9NYcYy8pc4C1jcBYNZpc2enqarh6U25H3
-         0pdx+pHHOhQF2wonIiPR2mr3yMy03+iTnGD5QFrBWzb7VOkhOwev4qADGN0lExj8JvLM
-         03bJqOiuUe8GkJx4Xibtyr64sQw9gxmEDPHv5Muzf6cXCmCxNYUEWv9L/EYCiQ91oJyl
-         +s77eBzexZ9T3w6MhUbzq+ipdiS5rjPAOGFMrUUNV4LtlkWZONssMu9o95s+iEENrBTE
-         ygi8+DUg7KUhos8v4hTHn0e7siTa8C+GheDXTl7eUycad0ed+3hSZ/WvRrukjYfYwt6u
-         Pr9A==
-X-Gm-Message-State: AOAM530JZ60cUNC2bo25M94mJnmwiw6cBhXozlWTnuLEHG1duIO+tgJJ
-        M5tVU2agUVWjoPCH24eKKjf6fQpiAJA=
-X-Google-Smtp-Source: ABdhPJz5Xo38lE2dm/V/uqEGpsaVAeNM+tyhZ8R0tGLZYIrGltFKG/w+3qGJePF+G/QlHK45m80cxg==
-X-Received: by 2002:a17:90a:e54a:: with SMTP id ei10mr6981023pjb.1.1626926224708;
-        Wed, 21 Jul 2021 20:57:04 -0700 (PDT)
-Received: from [10.230.31.46] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x10sm20484384pfh.56.2021.07.21.20.56.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 20:57:03 -0700 (PDT)
-Subject: Re: [PATCH v2 1/2] net: dsa: ensure linearized SKBs in case of tail
- taggers
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
- <20210721215642.19866-2-LinoSanfilippo@gmx.de>
- <20210721233549.mhqlrt3l2bbyaawr@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8460fa10-6db7-273c-a2c2-9b54cc660d9a@gmail.com>
-Date:   Wed, 21 Jul 2021 20:56:56 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S230091AbhGVDwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 23:52:36 -0400
+Received: from ozlabs.org ([203.11.71.1]:51835 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229905AbhGVDwf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 23:52:35 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GVfhM4qPHz9sXM;
+        Thu, 22 Jul 2021 14:33:07 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1626928390;
+        bh=Vzi7mqkU5zcj91egSNfnsIYg80io1ZM7W7/i8splPIM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SydseObja7No1RP/9nNNr83o49PStyFgC1Kb0gKtKCfEfmzpUir6W3X64OoDD4zDD
+         Exrv3lis0SYnCCga3zmJPuICFDxT1TP9yvOnylE5Uj7DfO+IEqIHa2anoQKyzyqhMa
+         1LDdolWAe59U0mazm5P+vb9JPrR4OFHPNCFgdtPwqFiSupQa5RmSMor0f0jtW0pp30
+         7T1tBiuczt1KXPAbEjFsN3N8libSs6CkNb5A0ZeuPLxpx9pARHQQGvR/GZOnirFqzu
+         c6II7xbzVS03AdcSa/PmzJR1FwYW+QYo9n4kwGWaW8VKVlxR1kHcYSncI6OpXaWwyE
+         hWBaBPZeKpDOw==
+Date:   Thu, 22 Jul 2021 14:33:06 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, Greg KH <greg@kroah.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bhaumik Bhatt <bbhatt@codeaurora.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Richard Laing <richard.laing@alliedtelesis.co.nz>
+Subject: Re: linux-next: manual merge of the mhi tree with the net-next tree
+Message-ID: <20210722143306.305aed6f@canb.auug.org.au>
+In-Reply-To: <20210716133738.0d163701@canb.auug.org.au>
+References: <20210716133738.0d163701@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20210721233549.mhqlrt3l2bbyaawr@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/P5CLjLME1KnvvnMgvlYF5Ay";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/P5CLjLME1KnvvnMgvlYF5Ay
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 7/21/2021 4:35 PM, Vladimir Oltean wrote:
-> On Wed, Jul 21, 2021 at 11:56:41PM +0200, Lino Sanfilippo wrote:
->> The function skb_put() that is used by tail taggers to make room for the
->> DSA tag must only be called for linearized SKBS. However in case that the
->> slave device inherited features like NETIF_F_HW_SG or NETIF_F_FRAGLIST the
->> SKB passed to the slaves transmit function may not be linearized.
->> Avoid those SKBs by clearing the NETIF_F_HW_SG and NETIF_F_FRAGLIST flags
->> for tail taggers.
->> Furthermore since the tagging protocol can be changed at runtime move the
->> code for setting up the slaves features into dsa_slave_setup_tagger().
->>
->> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
->> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
->> ---
->>   net/dsa/slave.c | 14 +++++++++-----
->>   1 file changed, 9 insertions(+), 5 deletions(-)
->>
->> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->> index 22ce11cd770e..ae2a648ed9be 100644
->> --- a/net/dsa/slave.c
->> +++ b/net/dsa/slave.c
->> @@ -1808,6 +1808,7 @@ void dsa_slave_setup_tagger(struct net_device *slave)
->>   	struct dsa_slave_priv *p = netdev_priv(slave);
->>   	const struct dsa_port *cpu_dp = dp->cpu_dp;
->>   	struct net_device *master = cpu_dp->master;
->> +	const struct dsa_switch *ds = dp->ds;
->>   
->>   	slave->needed_headroom = cpu_dp->tag_ops->needed_headroom;
->>   	slave->needed_tailroom = cpu_dp->tag_ops->needed_tailroom;
->> @@ -1819,6 +1820,14 @@ void dsa_slave_setup_tagger(struct net_device *slave)
->>   	slave->needed_tailroom += master->needed_tailroom;
->>   
->>   	p->xmit = cpu_dp->tag_ops->xmit;
->> +
->> +	slave->features = master->vlan_features | NETIF_F_HW_TC;
->> +	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
->> +		slave->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
->> +	slave->hw_features |= NETIF_F_HW_TC;
->> +	slave->features |= NETIF_F_LLTX;
->> +	if (slave->needed_tailroom)
->> +		slave->features &= ~(NETIF_F_SG | NETIF_F_FRAGLIST);
->>   }
->>   
->>   static struct lock_class_key dsa_slave_netdev_xmit_lock_key;
->> @@ -1881,11 +1890,6 @@ int dsa_slave_create(struct dsa_port *port)
->>   	if (slave_dev == NULL)
->>   		return -ENOMEM;
->>   
->> -	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
->> -	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
->> -		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
->> -	slave_dev->hw_features |= NETIF_F_HW_TC;
->> -	slave_dev->features |= NETIF_F_LLTX;
->>   	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
->>   	if (!is_zero_ether_addr(port->mac))
->>   		ether_addr_copy(slave_dev->dev_addr, port->mac);
->> -- 
->> 2.32.0
->>
-> 
-> I would have probably changed the code in dsa_slave_create just like
-> this:
-> 
-> -	slave->features = master->vlan_features | NETIF_F_HW_TC;
-> +	slave->features = NETIF_F_HW_TC;
-> ...
-> -	slave_dev->vlan_features = master->vlan_features;
-> 
-> and in dsa_slave_setup_tagger:
-> 
-> +	vlan_features = master->vlan_features;
-> +	slave->features &= ~vlan_features;
-> +	if (slave->needed_tailroom)
-> +		vlan_features &= ~(NETIF_F_SG | NETIF_F_FRAGLIST);
-> +	slave->features |= vlan_features;
-> +	slave->vlan_features = vlan_features;
-> 
-> no need to move around NETIF_F_HW_TC and NETIF_F_LLTX. Makes sense?
-> 
-> And I would probably add:
-> 
-> Fixes: 91da11f870f0 ("net: Distributed Switch Architecture protocol support")
+On Fri, 16 Jul 2021 13:37:38 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Today's linux-next merge of the mhi tree got a conflict in:
+>=20
+>   drivers/bus/mhi/pci_generic.c
+>=20
+> between commit:
+>=20
+>   5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MR=
+U")
+>=20
+> from the net-next tree and commit:
+>=20
+>   156ffb7fb7eb ("bus: mhi: pci_generic: Apply no-op for wake using sideba=
+nd wake boolean")
+>=20
+> from the mhi tree.
+>=20
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>=20
+>=20
+> diff --cc drivers/bus/mhi/pci_generic.c
+> index 19413daa0917,8bc6149249e3..000000000000
+> --- a/drivers/bus/mhi/pci_generic.c
+> +++ b/drivers/bus/mhi/pci_generic.c
+> @@@ -32,7 -32,8 +32,9 @@@
+>    * @edl: emergency download mode firmware path (if any)
+>    * @bar_num: PCI base address register to use for MHI MMIO register spa=
+ce
+>    * @dma_data_width: DMA transfer word size (32 or 64 bits)
+>  + * @mru_default: default MRU size for MBIM network packets
+> +  * @sideband_wake: Devices using dedicated sideband GPIO for wakeup ins=
+tead
+> +  *		   of inband wake support (such as sdx24)
+>    */
+>   struct mhi_pci_dev_info {
+>   	const struct mhi_controller_config *config;
+> @@@ -41,7 -42,7 +43,8 @@@
+>   	const char *edl;
+>   	unsigned int bar_num;
+>   	unsigned int dma_data_width;
+>  +	unsigned int mru_default;
+> + 	bool sideband_wake;
+>   };
+>  =20
+>   #define MHI_CHANNEL_CONFIG_UL(ch_num, ch_name, el_count, ev_ring) \
+> @@@ -254,7 -256,7 +258,8 @@@ static const struct mhi_pci_dev_info mh
+>   	.config =3D &modem_qcom_v1_mhiv_config,
+>   	.bar_num =3D MHI_PCI_DEFAULT_BAR_NUM,
+>   	.dma_data_width =3D 32,
+>  +	.mru_default =3D 32768
+> + 	.sideband_wake =3D false,
+>   };
+>  =20
+>   static const struct mhi_pci_dev_info mhi_qcom_sdx24_info =3D {
+> @@@ -643,11 -686,13 +689,14 @@@ static int mhi_pci_probe(struct pci_de
+>   	mhi_cntrl->status_cb =3D mhi_pci_status_cb;
+>   	mhi_cntrl->runtime_get =3D mhi_pci_runtime_get;
+>   	mhi_cntrl->runtime_put =3D mhi_pci_runtime_put;
+> - 	mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
+> - 	mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
+> - 	mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
+>  +	mhi_cntrl->mru =3D info->mru_default;
+>  =20
+> + 	if (info->sideband_wake) {
+> + 		mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
+> + 		mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
+> + 		mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
+> + 	}
+> +=20
+>   	err =3D mhi_pci_claim(mhi_cntrl, info->bar_num, DMA_BIT_MASK(info->dma=
+_data_width));
+>   	if (err)
+>   		return err;
 
-Agreed, with those fixed:
+This is now a conflict between the char-misc.current tree (where commit
+156ffb7fb7eb is now 56f6f4c4eb2a) and the net-next tree.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/P5CLjLME1KnvvnMgvlYF5Ay
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD49QIACgkQAVBC80lX
+0GylKgf/WQy3QWDT3SqsE3a3iYJ7wR/39A9yfNaEd3ffA3X/kCdHrm9zsZBwnjHK
+/1sLKy2L4fQLtTI4p8N/a4vixfeQEJLIwqzaBHr9aajyI6aZ3uIC7zr1JEZeXv3u
+SOOlTS3KfdDvukLtqZvInQPU6kBIOXJCIgVzekKu5VwcguIWE1RIY8mWln/9Hw82
+X/myO9SwvKZHNInKlpv60T+gvNbc8wy5U+k9l6lgpXPcQmy0SFeKh1ib16gKU1Lq
+aIF4Gy9JFgBToSGDEUmaeFpfPz6NBDYeTdNOYvEZRj1RFiexMt/0tHZuNruTm1Xi
+DZPVDGWi2TkOFsZujLrKx8/kW9HePA==
+=GaFk
+-----END PGP SIGNATURE-----
+
+--Sig_/P5CLjLME1KnvvnMgvlYF5Ay--
