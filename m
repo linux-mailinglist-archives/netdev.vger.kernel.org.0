@@ -2,33 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F373D1D24
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 06:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB5363D1D47
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 07:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbhGVEGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 00:06:50 -0400
-Received: from mail.zju.edu.cn ([61.164.42.155]:21728 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229492AbhGVEGt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 00:06:49 -0400
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 22 Jul 2021 12:47:20
- +0800 (GMT+08:00)
-X-Originating-IP: [222.205.18.100]
-Date:   Thu, 22 Jul 2021 12:47:20 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   LinMa <linma@zju.edu.cn>
-To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        "Johan Hedberg" <johan.hedberg@gmail.com>,
-        "Marcel Holtmann" <marcel@holtmann.org>,
+        id S229962AbhGVEgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 00:36:02 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:64343 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229529AbhGVEgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 00:36:02 -0400
+Received: from fsav114.sakura.ne.jp (fsav114.sakura.ne.jp [27.133.134.241])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 16M5GUVJ025255;
+        Thu, 22 Jul 2021 14:16:30 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav114.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp);
+ Thu, 22 Jul 2021 14:16:30 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav114.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 16M5GTOE025251
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 22 Jul 2021 14:16:30 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
+ section
+To:     LinMa <linma@zju.edu.cn>
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
- section
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
-In-Reply-To: <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
 References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
  <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
  <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
@@ -37,150 +41,64 @@ References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
  <2b0e515c-6381-bffe-7742-05148e1e2dcb@gmail.com>
  <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
  <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+ <7e4fafe2.58d70.17acc8a1a0b.Coremail.linma@zju.edu.cn>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <38e78054-7713-a142-4161-22890d8981ba@i-love.sakura.ne.jp>
+Date:   Thu, 22 Jul 2021 14:16:27 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Message-ID: <7e4fafe2.58d70.17acc8a1a0b.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: en_US
-X-CM-TRANSID: cS_KCgBnmXRY+PhgWr85AQ--.44612W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUOElNG3Dh-WwACsN
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+In-Reply-To: <7e4fafe2.58d70.17acc8a1a0b.Coremail.linma@zju.edu.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgVGV0c3VvLAoKSnVzdCBmaW5kIG91dCBhbm90aGVyIGludGVyZXN0aW5nIGZ1bmN0aW9uOiBz
-b2NrX293bmVkX2J5X3VzZXIoKS4gKEkgYW0ganVzdCBhIG5vb2Igb2Yga2VybmVsIGxvY2tzKQoK
-SGVuY2UgSSB0aGluayB0aGUgZm9sbG93aW5nIHBhdGNoIGhhcyB0aGUgc2FtZSAnZWZmZWN0JyBh
-cyB0aGUgb2xkIHBhdGNoIGUzMDU1MDllNjc4YjMgKCJCbHVldG9vdGg6IHVzZSBjb3JyZWN0IGxv
-Y2sgdG8gcHJldmVudCBVQUYgb2YgaGRldiBvYmplY3QiKQoKZGlmZiAtLWdpdCBhL25ldC9ibHVl
-dG9vdGgvaGNpX3NvY2suYyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwppbmRleCBiMDRhNWEw
-MmVjZjMuLjBjYzRiODhkYWE5NiAxMDA2NDQKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5j
-CisrKyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwpAQCAtNzYyLDcgKzc2MiwxMSBAQCB2b2lk
-IGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2RldiAqaGRldiwgaW50IGV2ZW50KQogICAg
-ICAgICAgICAgICAgLyogRGV0YWNoIHNvY2tldHMgZnJvbSBkZXZpY2UgKi8KICAgICAgICAgICAg
-ICAgIHJlYWRfbG9jaygmaGNpX3NrX2xpc3QubG9jayk7CiAgICAgICAgICAgICAgICBza19mb3Jf
-ZWFjaChzaywgJmhjaV9za19saXN0LmhlYWQpIHsKLSAgICAgICAgICAgICAgICAgICAgICAgbG9j
-a19zb2NrKHNrKTsKKyAgICAgICAgICAgICAgICAgICAgICAgYmhfbG9ja19zb2NrX25lc3RlZChz
-ayk7CitidXN5d2FpdDoKKyAgICAgICAgICAgICAgICAgICAgICAgaWYgKHNvY2tfb3duZWRfYnlf
-dXNlcihzaykpCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byBidXN5d2FpdDsK
-KwogICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+aGRldiA9PSBoZGV2KSB7
-CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaGNpX3BpKHNrKS0+aGRldiA9IE5VTEw7
-CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2stPnNrX2VyciA9IEVQSVBFOwpAQCAt
-NzcxLDcgKzc3NSw3IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0cnVjdCBoY2lfZGV2ICpo
-ZGV2LCBpbnQgZXZlbnQpCgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhjaV9kZXZf
-cHV0KGhkZXYpOwogICAgICAgICAgICAgICAgICAgICAgICB9Ci0gICAgICAgICAgICAgICAgICAg
-ICAgIHJlbGVhc2Vfc29jayhzayk7CisgICAgICAgICAgICAgICAgICAgICAgIGJoX3VubG9ja19z
-b2NrKHNrKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHJlYWRfdW5sb2NrKCZo
-Y2lfc2tfbGlzdC5sb2NrKTsKICAgICAgICB9CgpUaGUgc2FkIHRoaW5nIGlzIHRoYXQgaXQgc2Vl
-bXMgd2lsbCBjb3N0IENQVSByZXNvdXJjZSB0byBkbyBtZWFuaW5nbGVzcyB3YWl0Li4uCgpXaGF0
-IGRvIHlvdSB0aGluaz8gQ2FuIHRoaXMgc29ja19vd25lZF9ieV91c2VyKCkgZnVuY3Rpb24gZG8g
-YW55IGhlbHA/CgpUaGFua3MKTGluIE1hCgoKPiBGcm9tOiAiVGV0c3VvIEhhbmRhIiA8cGVuZ3Vp
-bi1rZXJuZWxAaS1sb3ZlLnNha3VyYS5uZS5qcD4KPiBTZW50IFRpbWU6IDIwMjEtMDctMTYgMjI6
-NDg6MTMgKEZyaWRheSkKPiBUbzogIkRlc21vbmQgQ2hlb25nIFpoaSBYaSIgPGRlc21vbmRjaGVv
-bmd6eEBnbWFpbC5jb20+LCBMaW5NYSA8bGlubWFAemp1LmVkdS5jbj4sICJMdWl6IEF1Z3VzdG8g
-dm9uIERlbnR6IiA8bHVpei5kZW50ekBnbWFpbC5jb20+LCAiSm9oYW4gSGVkYmVyZyIgPGpvaGFu
-LmhlZGJlcmdAZ21haWwuY29tPiwgIk1hcmNlbCBIb2x0bWFubiIgPG1hcmNlbEBob2x0bWFubi5v
-cmc+Cj4gQ2M6ICJsaW51eC1ibHVldG9vdGhAdmdlci5rZXJuZWwub3JnIiA8bGludXgtYmx1ZXRv
-b3RoQHZnZXIua2VybmVsLm9yZz4sICJEYXZpZCBTLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQu
-bmV0PiwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwub3JnPiwgIm9wZW4gbGlzdDpORVRX
-T1JLSU5HIFtHRU5FUkFMXSIgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+Cj4gU3ViamVjdDogUmU6
-IFtQQVRDSCB2M10gQmx1ZXRvb3RoOiBjYWxsIGxvY2tfc29jaygpIG91dHNpZGUgb2Ygc3Bpbmxv
-Y2sgc2VjdGlvbgo+IAo+IE9uIDIwMjEvMDcvMTYgMTM6MTEsIERlc21vbmQgQ2hlb25nIFpoaSBY
-aSB3cm90ZToKPiA+IE9uIDE2LzcvMjEgMTE6NDcgYW0sIERlc21vbmQgQ2hlb25nIFpoaSBYaSB3
-cm90ZToKPiA+PiBTYXcgdGhpcyBhbmQgdGhvdWdodCBJJ2Qgb2ZmZXIgbXkgdHdvIGNlbnRzLgo+
-ID4+IEJVRzogc2xlZXBpbmcgZnVuY3Rpb24gY2FsbGVkIGZyb20gaW52YWxpZCBjb250ZXh0Cj4g
-Pj4gVGhpcyBpcyB0aGUgb3JpZ2luYWwgcHJvYmxlbSB0aGF0IFRldHN1bydzIHBhdGNoIHdhcyB0
-cnlpbmcgdG8gZml4Lgo+IAo+IFllcy4KPiAKPiA+PiBVbmRlciB0aGUgaG9vZCBvZiBsb2NrX3Nv
-Y2ssIHdlIGNhbGwgbG9ja19zb2NrX25lc3RlZCB3aGljaCBtaWdodCBzbGVlcAo+ID4+IGJlY2F1
-c2Ugb2YgdGhlIG11dGV4X2FjcXVpcmUuCj4gCj4gQm90aCBsb2NrX3NvY2soKSBhbmQgbG9ja19z
-b2NrX25lc3RlZCgpIG1pZ2h0IHNsZWVwLgo+IAo+ID4+IEJ1dCB3ZSBzaG91bGRuJ3Qgc2xlZXAg
-d2hpbGUgaG9sZGluZyB0aGUgcncgc3BpbmxvY2suCj4gCj4gUmlnaHQuIEluIGF0b21pYyBjb250
-ZXh0IChlLmcuIGluc2lkZSBpbnRlcnJ1cHQgaGFuZGxlciwgc2NoZWR1bGFibGUgY29udGV4dAo+
-IHdpdGggaW50ZXJydXB0cyBvciBwcmVlbXB0aW9uIGRpc2FibGVkLCBzY2hlZHVsYWJsZSBjb250
-ZXh0IGluc2lkZSBSQ1UgcmVhZAo+IGNyaXRpY2FsIHNlY3Rpb24sIHNjaGVkdWxhYmxlIGNvbnRl
-eHQgaW5zaWRlIGEgc3BpbmxvY2sgc2VjdGlvbiksIHdlIG11c3Qgbm90Cj4gY2FsbCBmdW5jdGlv
-bnMgKGUuZy4gd2FpdGluZyBmb3IgYSBtdXRleCwgd2FpdGluZyBmb3IgYSBzZW1hcGhvcmUsIHdh
-aXRpbmcgZm9yCj4gYSBwYWdlIGZhdWx0KSB3aGljaCBhcmUgbm90IGF0b21pYy4KPiAKPiA+PiBT
-byB3ZSBlaXRoZXIgaGF2ZSB0byBhY3F1aXJlIGEgc3BpbmxvY2sgaW5zdGVhZCBvZiBhIG11dGV4
-IGFzIHdhcyBkb25lIGJlZm9yZSwKPiAKPiBSZWdhcmRpbmcgaGNpX3NvY2tfZGV2X2V2ZW50KEhD
-SV9ERVZfVU5SRUcpIGNhc2UsIHdlIGNhbid0IHVzZSBhIHNwaW5sb2NrLgo+IAo+IExpa2UgTGlu
-TWEgZXhwbGFpbmVkLCBsb2NrX3NvY2soKSBoYXMgdG8gYmUgdXNlZCBpbiBvcmRlciB0byBzZXJp
-YWxpemUgZnVuY3Rpb25zCj4gKGUuZy4gaGNpX3NvY2tfc2VuZG1zZygpKSB3aGljaCBhY2Nlc3Mg
-aGNpX3BpKHNrKS0+aGRldiBiZXR3ZWVuIGxvY2tfc29jayhzaykgYW5kCj4gcmVsZWFzZV9zb2Nr
-KHNrKS4gQW5kIGxpa2UgSSBleHBsYWluZWQsIHdlIGNhbid0IGRlZmVyIHJlc2V0dGluZyBoY2lf
-cGkoc2spLT5oZGV2Cj4gdG8gTlVMTCwgZm9yIGhjaV9zb2NrX2Rldl9ldmVudChIQ0lfREVWX1VO
-UkVHKSBpcyByZXNwb25zaWJsZSBmb3IgcmVzZXR0aW5nCj4gaGNpX3BpKHNrKS0+aGRldiB0byBO
-VUxMIGJlY2F1c2UgdGhlIGNhbGxlciBvZiBoY2lfc29ja19kZXZfZXZlbnQoSENJX0RFVl9VTlJF
-RykKPiBpbW1lZGlhdGVseSBkZXN0cm95cyByZXNvdXJjZXMgYXNzb2NpYXRlZCB3aXRoIHRoaXMg
-aGRldi4KPiAKPiA+PiBvciB3ZSBuZWVkIHRvIG1vdmUgbG9ja19zb2NrIG91dCBvZiB0aGUgcncg
-c3BpbmxvY2sgY3JpdGljYWwgc2VjdGlvbiBhcyBUZXRzdW8gcHJvcG9zZXMuCj4gCj4gRXhhY3Rs
-eS4gU2luY2UgdGhpcyBpcyBhIHJlZ3Jlc3Npb24gaW50cm9kdWNlZCB3aGVuIGZpeGluZyBDVkUt
-MjAyMS0zNTczLCBMaW51eAo+IGRpc3RyaWJ1dG9ycyBhcmUgd2FpdGluZyBmb3IgdGhpcyBwYXRj
-aCBzbyB0aGF0IHRoZXkgY2FuIGFwcGx5IHRoZSBmaXggZm9yIENWRS0yMDIxLTM1NzMuCj4gVGhp
-cyBwYXRjaCBzaG91bGQgYmUgc2VudCB0byBsaW51eC5naXQgYW5kIHN0YWJsZXMgYXMgc29vbiBh
-cyBwb3NzaWJsZS4gQnV0IGR1ZSB0byBsaXR0bGUKPiBhdHRlbnRpb24gb24gdGhpcyBwYXRjaCwg
-SSdtIGFscmVhZHkgdGVzdGluZyB0aGlzIHBhdGNoIGluIGxpbnV4LW5leHQuZ2l0IHZpYSBteSB0
-cmVlLgo+IEknbGwgZHJvcCB3aGVuIEJsdWV0b290aCBtYWludGFpbmVycyBwaWNrIHRoaXMgcGF0
-Y2ggdXAgZm9yIGxpbnV4LTUuMTQtcmNYLiAoT3Igc2hvdWxkIEkKPiBkaXJlY3RseSBzZW5kIHRv
-IExpbnVzPykKPiAKPiA+Pgo+ID4gCj4gPiBNeSBiYWQsIHdhcyB0aGlua2luZyBtb3JlIGFib3V0
-IHRoZSBwcm9ibGVtIGFuZCBub3RpY2VkIHlvdXIgcG9jIHdhcyBmb3IgaGNpX3NvY2tfc2VuZG1z
-ZywKPiA+IG5vdCBoY2lfc29ja19kZXZfZXZlbnQuCj4gCj4gSSBkaWRuJ3QgY2F0Y2ggdGhpcyBw
-YXJ0LiBBcmUgeW91IHRhbGtpbmcgYWJvdXQgYSBkaWZmZXJlbnQgcG9jPwo+IEFzIGZhciBhcyBJ
-J20gYXdhcmUsIGV4cC5jIGluIFBPQy56aXAgd2FzIGZvciBoY2lfc29ja19ib3VuZF9pb2N0bChI
-Q0lVTkJMT0NLQUREUikuCj4gCj4gaGNpX3NvY2tfYm91bmRfaW9jdGwoSENJVU5CTE9DS0FERFIp
-ICh3aGljaCBpcyBjYWxsZWQgYmV0d2VlbiBsb2NrX3NvY2soKSBhbmQgcmVsZWFzZV9zb2NrKCkp
-Cj4gY2FsbHMgY29weV9mcm9tX3VzZXIoKSB3aGljaCBtaWdodCBjYXVzZSBwYWdlIGZhdWx0LCBh
-bmQgdXNlcmZhdWx0ZmQgbWVjaGFuaXNtIGFsbG93cyBhbiBhdHRhY2tlcgo+IHRvIHNsb3dkb3du
-IHBhZ2UgZmF1bHQgaGFuZGxpbmcgZW5vdWdoIHRvIGhjaV9zb2NrX2Rldl9ldmVudChIQ0lfREVW
-X1VOUkVHKSB0byByZXR1cm4gd2l0aG91dAo+IHdhaXRpbmcgZm9yIGhjaV9zb2NrX2JvdW5kX2lv
-Y3RsKEhDSVVOQkxPQ0tBRERSKSB0byBjYWxsIHJlbGVhc2Vfc29jaygpLiBUaGlzIHJhY2Ugd2lu
-ZG93Cj4gcmVzdWx0cyBpbiBVQUYgKGRvZXNuJ3QgaXQsIExpbk1hPykuCj4gCj4gPiBJbiB0aGlz
-IGNhc2UsIGl0J3Mgbm90IGNsZWFyIHRvIG1lIHdoeSB0aGUgYXRvbWljIGNvbnRleHQgaXMgYmVp
-bmcgdmlvbGF0ZWQuCj4gCj4gSW4gYXRvbWljIGNvbnRleHQgKGluIGhjaV9zb2NrX2Rldl9ldmVu
-dChIQ0lfREVWX1VOUkVHKSBjYXNlLCBiZXR3ZWVuCj4gcmVhZF9sb2NrKCZoY2lfc2tfbGlzdC5s
-b2NrKSBhbmQgcmVhZF91bmxvY2soJmhjaV9za19saXN0LmxvY2spKSwgd2UgbXVzdCBub3QgY2Fs
-bAo+IGxvY2tfc29jayhzaykgd2hpY2ggbWlnaHQgd2FpdCBmb3IgaGNpX3NvY2tfYm91bmRfaW9j
-dGwoSENJVU5CTE9DS0FERFIpIHRvIGNhbGwgcmVsZWFzZV9zb2NrKCkuCj4gCj4gPiAKPiA+IFNv
-cnJ5IGZvciB0aGUgbm9pc2UuCj4gPiAKPiA+Pj4KPiA+Pj4gVGhlIHBhdGNoIHByb3ZpZGVkIGJ5
-IERlc21vbmQgYWRkcyB0aGUgbG9jYWxfYmhfZGlzYWJsZSgpIGJlZm9yZSB0aGUgYmhfbG9ja19z
-b2NrKCkgc28gSSBhbHNvIHRyeSB0aGF0IGluCj4gPj4+Cj4gPj4+IC0tLSBhL25ldC9ibHVldG9v
-dGgvaGNpX3NvY2suYwo+ID4+PiArKysgYi9uZXQvYmx1ZXRvb3RoL2hjaV9zb2NrLmMKPiA+Pj4g
-QEAgLTc2Miw2ICs3NjIsNyBAQCB2b2lkIGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2Rl
-diAqaGRldiwgaW50IGV2ZW50KQo+ID4+PiAgICAgICAgICAgICAgICAgIC8qIERldGFjaCBzb2Nr
-ZXRzIGZyb20gZGV2aWNlICovCj4gPj4+ICAgICAgICAgICAgICAgICAgcmVhZF9sb2NrKCZoY2lf
-c2tfbGlzdC5sb2NrKTsKPiA+Pj4gICAgICAgICAgICAgICAgICBza19mb3JfZWFjaChzaywgJmhj
-aV9za19saXN0LmhlYWQpIHsKPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgbG9jYWxfYmhf
-ZGlzYWJsZSgpOwo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgYmhfbG9ja19zb2NrX25l
-c3RlZChzayk7Cj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+
-aGRldiA9PSBoZGV2KSB7Cj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhj
-aV9waShzayktPmhkZXYgPSBOVUxMOwo+ID4+PiBAQCAtNzcyLDYgKzc3Myw3IEBAIHZvaWQgaGNp
-X3NvY2tfZGV2X2V2ZW50KHN0cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCj4gPj4+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhjaV9kZXZfcHV0KGhkZXYpOwo+ID4+PiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfQo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAg
-YmhfdW5sb2NrX3NvY2soc2spOwo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICBsb2NhbF9i
-aF9lbmFibGUoKTsKPiA+Pj4gICAgICAgICAgICAgICAgICB9Cj4gPj4+ICAgICAgICAgICAgICAg
-ICAgcmVhZF91bmxvY2soJmhjaV9za19saXN0LmxvY2spOwo+ID4+PiAgICAgICAgICB9Cj4gPj4+
-Cj4gPj4+IEJ1dCB0aGlzIGlzIG5vdCB1c2VmdWwsIHRoZSBVQUYgc3RpbGwgb2NjdXJzCj4gPj4+
-Cj4gPj4KPiA+PiBJIG1pZ2h0IGJlIHZlcnkgbWlzdGFrZW4gb24gdGhpcywgYnV0IEkgYmVsaWV2
-ZSB0aGUgVUFGIHN0aWxsIGhhcHBlbnMgYmVjYXVzZQo+ID4+IHlvdSBjYW4ndCByZWFsbHkgbWl4
-IGJoX2xvY2tfc29jayogYW5kIGxvY2tfc29jayogdG8gcHJvdGVjdCB0aGUgc2FtZSB0aGluZ3Mu
-Cj4gCj4gUmlnaHQuIGh0dHBzOi8vd3d3Lmtlcm5lbC5vcmcvZG9jL2h0bWwvdjUuMTMva2VybmVs
-LWhhY2tpbmcvbG9ja2luZy5odG1sCj4gCj4gPj4gVGhlIGZvcm1lciBob2xkcyB0aGUgc3Bpbmxv
-Y2sgJnNrLT5za19sb2NrLnNsb2NrIGFuZCBzeW5jaHJvbml6ZXMgYmV0d2Vlbgo+ID4+IHVzZXIg
-Y29udGV4dHMgYW5kIGJvdHRvbSBoYWx2ZXMsCj4gCj4gc2VyaWFsaXplcyBhY2Nlc3MgdG8gcmVz
-b3VyY2VzIHdoaWNoIG1pZ2h0IGJlIGFjY2Vzc2VkIGZyb20gYXRvbWljIChpLmUuIG5vbi1zY2hl
-ZHVsYWJsZSkgY29udGV4dHMKPiAKPiA+PiB3aGlsZSB0aGUgbGF0dGVyIGhvbGRzIGEgbXV0ZXgg
-b24gJnNrLT5za19sb2NrLmRlcF9tYXAgdG8gc3luY2hyb25pemUgYmV0d2Vlbgo+ID4+IG11bHRp
-cGxlIHVzZXJzLgo+IAo+IHNlcmlhbGl6ZXMgYWNjZXNzIHRvIHJlc291cmNlcyB3aGljaCBhcmUg
-YWNjZXNzZWQgZnJvbSBvbmx5IHNjaGVkdWxhYmxlIChpLmUuIG5vbi1hdG9taWMpIGNvbnRleHRz
-Cj4gCj4gPj4KPiA+PiBPbmUgb3B0aW9uIEkgY2FuIHRoaW5rIG9mIHdvdWxkIGJlIHRvIHN3aXRj
-aCBpbnN0YW5jZXMgb2YgbG9ja19zb2NrIHRvIGJoX2xvY2tfc29ja19uZXN0ZWQKPiA+PiBmb3Ig
-dXNlcnMgdGhhdCBtaWdodCByYWNlIChzdWNoIGFzIGhjaV9zb2NrX3NlbmRtc2csIGhjaV9zb2Nr
-X2JvdW5kX2lvY3RsLCBhbmQgb3RoZXJzIGFzCj4gPj4gbmVlZGVkKS4gQnV0IEknbSBub3Qgc3Vy
-ZSBpZiB0aGF0J3MgcXVpdGUgd2hhdCB3ZSB3YW50LCBwbHVzIHdlIHdvdWxkIG5lZWQgdG8gZW5z
-dXJlIHRoYXQKPiA+PiBzbGVlcGluZyBmdW5jdGlvbnMgYXJlbid0IGNhbGxlZCBiZXR3ZWVuIHRo
-ZSBiaF9sb2NrL3VubG9jay4KPiAKPiBXZSBjYW4ndCBkbyBpdCBmb3IgaGNpX3NvY2tfZGV2X2V2
-ZW50KEhDSV9ERVZfVU5SRUcpLgo=
+On 2021/07/22 13:47, LinMa wrote:
+> Hi Tetsuo,
+> 
+> Just find out another interesting function: sock_owned_by_user(). (I am just a noob of kernel locks)
+> 
+> Hence I think the following patch has the same 'effect' as the old patch e305509e678b3 ("Bluetooth: use correct lock to prevent UAF of hdev object")
+> 
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index b04a5a02ecf3..0cc4b88daa96 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -762,7 +762,11 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+>                 /* Detach sockets from device */
+>                 read_lock(&hci_sk_list.lock);
+>                 sk_for_each(sk, &hci_sk_list.head) {
+> -                       lock_sock(sk);
+> +                       bh_lock_sock_nested(sk);
+> +busywait:
+> +                       if (sock_owned_by_user(sk))
+> +                               goto busywait;
+> +
+>                         if (hci_pi(sk)->hdev == hdev) {
+>                                 hci_pi(sk)->hdev = NULL;
+>                                 sk->sk_err = EPIPE;
+> @@ -771,7 +775,7 @@ void hci_sock_dev_event(struct hci_dev *hdev, int event)
+> 
+>                                 hci_dev_put(hdev);
+>                         }
+> -                       release_sock(sk);
+> +                       bh_unlock_sock(sk);
+>                 }
+>                 read_unlock(&hci_sk_list.lock);
+>         }
+> 
+> The sad thing is that it seems will cost CPU resource to do meaningless wait...
+> 
+> What do you think? Can this sock_owned_by_user() function do any help?
+
+I don't think it helps.
+
+One of problems we are seeing (and my patch will fix) is a race window that
+this sk_for_each() loop needs to wait using lock_sock() because
+"hci_pi(sk)->hdev = hdev;" is called by hci_sock_bind() under lock_sock().
+Doing hci_pi(sk)->hdev == hdev comparison without lock_sock() will lead to
+failing to "/* Detach sockets from device */".
+
