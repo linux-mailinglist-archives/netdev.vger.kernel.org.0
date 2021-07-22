@@ -2,75 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A103D275E
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 18:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E913D276D
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 18:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229520AbhGVPeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 11:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
+        id S229527AbhGVPf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 11:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229476AbhGVPd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 11:33:59 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80781C061575;
-        Thu, 22 Jul 2021 09:14:33 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id h24-20020a9d64180000b029036edcf8f9a6so5783045otl.3;
-        Thu, 22 Jul 2021 09:14:33 -0700 (PDT)
+        with ESMTP id S229492AbhGVPf5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 11:35:57 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E4CC061575;
+        Thu, 22 Jul 2021 09:16:31 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id o30-20020a05600c511eb029022e0571d1a0so3285352wms.5;
+        Thu, 22 Jul 2021 09:16:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZwLf1u7jaPUywG1DGreYaTwnNe8RYIVmsCj8nQ93Ka8=;
-        b=EAsTk0sYzIEjozbdleJkxA/qLi7rafzfT9wAv/xQzDXVEhSdIws+dn50PffBVZTkM/
-         uVYtTl2ZYWxLhpoG8YQqVKKoRdTLLjjjKwcOE0zYM8b+atEDY48LalE+j63FpV2KJUjN
-         DFmiBCy8LKPPH5MmMJv85O8ksjX+cO3hL5lo5mTJEffKseiMSwyL8UgPWUYV9KJawDKG
-         p+FxQJeDLWiJi0CW/AHtHlJmnpkHreQvlW9F475PditiljxPmij7EnFWNFo9ap/R3jQE
-         9n7yWNL84mcIKEb594O4NiH/2hyIPWBBs8ZRZol8AFn/fNtSmYQmdM0gJK6S9oO6bvr8
-         aB/w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uUijDMlwf66Vepiz2SA/l8IhtRRiKMWBDC91ym25DGY=;
+        b=BhR7+5yZHxXBFGVNMAKcnaGuntaopLXHQRE5h+q7FtTa7FyEiHhIzM3sREmZLvSNXP
+         wrSshMJcbRbb8P+kaxI5JV5dE1hBNz/0GCtHNvYJYjY5reiQ2vRQWs7U/HJND5FmoR7G
+         jEQQIJGtmrTtPwP7ZaUexmph+D7ab/L1zE+ljcp2PH1Q78zIiZPf87AKtKIfXrWd30GK
+         5esKC9+qccKWW0djwtZ+LtLgW+VNz94tmbUdP01B9iMc4i+EyV8EsxWX5sbWm43r6WIl
+         KwDAj3I0DuTghhZ/R+zlyLVeEnLDXqZ1lMiVHanqet0P1F1iBqNoQudgGwOHKj1L+LaY
+         G64Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZwLf1u7jaPUywG1DGreYaTwnNe8RYIVmsCj8nQ93Ka8=;
-        b=VYBYHVX8ZFGCEOS4HdxCi4eZOU7FmKZvryhxx3x/tKdwYMkdztI4rmOrMoWH6kMYKj
-         TaEUNdFBwR1W8uwXdb2l12YcPyIDPGBSh17EJA14YH+x96PboRE4kHbbECyJxXZEant8
-         IkwsMNU0nnLIgYgc4nPmSiPX3u3wapT3+FDBVGUJyC4RIut5fN0S3M50F4nKXLsZir7p
-         oW3VYUNC537DIKg8+6kWk9E9ov28kuoNQLEtAmT5878SVN5A3B+ixVvD7trVSOndkYHd
-         e5BmXSD463dwDcRTetlm1Jp+57wvj/It9s1qexqI1+Zo0K7isipwVFf284IoFBGXiVWz
-         1SqQ==
-X-Gm-Message-State: AOAM533BAhlov8+CBD6fhbydndCb63HwetzQWmtlJas9AUhSLRxsQ6Qy
-        g63riIblD91f1dedN5VVUQk2OggdA0b/1fUN26QK8DbhYQk=
-X-Google-Smtp-Source: ABdhPJyrNAA7rdeydAkILSSSOZN9/8qtF7X891q4xLnu8Rhgb1CtxM7zlVM8jzlKnGaC4UezCXP0yCYgMeG/MiV5buY=
-X-Received: by 2002:a9d:7c8d:: with SMTP id q13mr334865otn.181.1626970472936;
- Thu, 22 Jul 2021 09:14:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uUijDMlwf66Vepiz2SA/l8IhtRRiKMWBDC91ym25DGY=;
+        b=l22c7K7hHYMJJpi9SSboubsTW2efatjSIs8da/4lFOOoYms1N3D3qIB4/fya+2Hqkj
+         iMDsuBo0XLSWE4btYIOtXtqipQfd6nOJSh0Y0va5As71yfm2gjCZ35c6+YFj1ru5+UWd
+         4jOV9v7Pcc54zb1eUhi0hTAO6FBvGshH87Dkdi8+zStcqLlNfPVARWGSMydsaDgxWLFY
+         wE47nzV6lD/7JKNlbVWMZLx2A//06jq6yRF3Bk8m8Fgk4kYuvhBMHyO6CE08gb9KKCtA
+         WagFxCfFY0rzYTvGRbht1Uvc7vzbdMdluCaf260XZJJVczJuZuaF5vGBrMmGpgpHEzf3
+         87Ug==
+X-Gm-Message-State: AOAM533DJp8zApUVGT3spT3Rk0Emr+CogZ0B7hd2WlkM/ZfUi0IoWr0V
+        kl2LTKIWJsrVhN0EPbZUHf0=
+X-Google-Smtp-Source: ABdhPJyvxfPmN771LA53eyYvC2w1VleRrv7+iyYmnrWPyZJqpmkQvtdm04VZ+XgZ12btuYoBrpfUbg==
+X-Received: by 2002:a7b:ce82:: with SMTP id q2mr9913989wmj.60.1626970589996;
+        Thu, 22 Jul 2021 09:16:29 -0700 (PDT)
+Received: from localhost.localdomain ([176.30.243.91])
+        by smtp.gmail.com with ESMTPSA id w15sm4697060wmi.3.2021.07.22.09.16.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 09:16:29 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     mani@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        bjorn.andersson@sonymobile.com, courtney.cavin@sonymobile.com
+Cc:     linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
+Subject: [PATCH] net: qrtr: fix memory leak in qrtr_local_enqueue
+Date:   Thu, 22 Jul 2021 19:16:25 +0300
+Message-Id: <20210722161625.6956-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <1626968964-17249-1-git-send-email-loic.poulain@linaro.org>
-In-Reply-To: <1626968964-17249-1-git-send-email-loic.poulain@linaro.org>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Thu, 22 Jul 2021 19:14:21 +0300
-Message-ID: <CAHNKnsS1yQq9vbuLaa0XuKQ2PEmsw--tx-Fb8sEpzUmiybzuRA@mail.gmail.com>
-Subject: Re: [PATCH] wwan: core: Fix missing RTM_NEWLINK event
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Loic,
+Syzbot reported memory leak in qrtr. The problem was in unputted
+struct sock. qrtr_local_enqueue() function calls qrtr_port_lookup()
+which takes sock reference if port was found. Then there is the following
+check:
 
-On Thu, Jul 22, 2021 at 6:39 PM Loic Poulain <loic.poulain@linaro.org> wrote:
-> By default there is no rtnetlink event generated when registering a
-> netdev with rtnl_link_ops until its rtnl_link_state is switched to
-> initialized (RTNL_LINK_INITIALIZED). This causes issues with user
-> tools like NetworkManager which relies on such event to manage links.
->
-> Fix that by setting link to initialized (via rtnl_configure_link).
+if (!ipc || &ipc->sk == skb->sk) {
+	...
+	return -ENODEV;
+}
 
-Shouldn't the __rtnl_newlink() function call rtnl_configure_link()
-just after the newlink() callback invocation? Or I missed something?
+Since we should drop the reference before returning from this function and
+ipc can be non-NULL inside this if, we should add qrtr_port_put() inside
+this if.
 
+Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
+Reported-and-tested-by: syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ net/qrtr/qrtr.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index e6f4a6202f82..d5ce428d0b25 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -839,6 +839,8 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 
+ 	ipc = qrtr_port_lookup(to->sq_port);
+ 	if (!ipc || &ipc->sk == skb->sk) { /* do not send to self */
++		if (ipc)
++			qrtr_port_put(ipc);
+ 		kfree_skb(skb);
+ 		return -ENODEV;
+ 	}
 -- 
-Sergey
+2.32.0
+
