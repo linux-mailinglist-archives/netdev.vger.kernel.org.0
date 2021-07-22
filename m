@@ -2,334 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D685E3D2462
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F983D247A
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231944AbhGVMbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 08:31:11 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59482 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231924AbhGVMbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:31:10 -0400
-Received: from localhost (unknown [51.219.3.84])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 005424D9C2E33;
-        Thu, 22 Jul 2021 06:11:44 -0700 (PDT)
-Date:   Thu, 22 Jul 2021 06:11:39 -0700 (PDT)
-Message-Id: <20210722.061139.1666314878301149027.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     netdev@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 22 Jul 2021 06:11:45 -0700 (PDT)
+        id S232099AbhGVMiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 08:38:46 -0400
+Received: from mail-dm6nam10on2114.outbound.protection.outlook.com ([40.107.93.114]:37313
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232035AbhGVMio (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 08:38:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B8MGG1GM4nchu0HkkM0BME5uQMEsw7lPJtFMhdEo8mSoDyLi2RoWit+EzHhhlnz9+uGRBaIVRT+wJYnrCSvmyY92ed2FIvB7PjW6a14LpSIPsnbk5HaztOPN03N5cuYadTuz8ccNsm2L+o6dlKiqqqAWa6NOnK9JfOdDSSzAb1ZdDuGlA/c2Ko929efB/uNl4teSKlBdV3JGuc+wI0vHC9m4AcMPUk6StZOWxUXlF64m4iPPEkEo+p/Rx/92mohuD4zw4e3eCWaDjVdI+VuMnNTo03WRyC0yO9KIDO4wKeAOVDv+/VhJ1xs89NniskDibpwz9I1iJxeuOhDKhz1GbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F5Hpq+QpnUDMoT8wkkB+XToexUjGm0r1QEK0PdIYZRg=;
+ b=DSxWm8v2lr1d1JNxoXeUxW1ENoyetlNNyHJmNc7kwR5p5u5AdL3qykvZuBYY+vGwxHZtUUaBtHRpwKa5ZfQByXFipTZcCQV9FCA4KoypJrx8j3Ow71suuf+raaKfaOVzAsro5dbEpvsM+HsY1b+NtkY5AldnU0nedRhtIqyLPrkOmaGjLPTzPnk41zAYN2ysOmfor7VWH8xSWCYp4jj59Pm7oJ5Uq+vsqs3DTLm1RNLbE7ovQKYhdYFl08HL6U28+v7x2VsH/HYFjd9MEbsTDCWWbYvYDCbYOcs7pUgnLpRrB8NkgRI0dDBVJJiTPI5rHOCocOFMZU2tS4OnS+SbpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F5Hpq+QpnUDMoT8wkkB+XToexUjGm0r1QEK0PdIYZRg=;
+ b=hxSmiecD9DUEcmVEuGicooB6gZ1rtbOQtvob+2CJX0DegrtIrjDHhJvX1+MeWVSRJ8WFZ9qauzJO/Gth7ZOz6o7zLJfMjBWjohc2bpyHIThSPkjufNdrj1pPk22ULmWish0K4pUYNVrJVOYxhB8iX5tTvTm76ynQF1d12oYonVA=
+Authentication-Results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by PH0PR13MB5035.namprd13.prod.outlook.com (2603:10b6:510:75::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.7; Thu, 22 Jul
+ 2021 13:19:17 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::cd1:e3ba:77fd:f4f3%7]) with mapi id 15.20.4352.024; Thu, 22 Jul 2021
+ 13:19:17 +0000
+Date:   Thu, 22 Jul 2021 15:19:11 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
+ action to net device
+Message-ID: <20210722131909.GB31574@corigine.com>
+References: <20210722091938.12956-1-simon.horman@corigine.com>
+ <20210722091938.12956-2-simon.horman@corigine.com>
+ <2b7f3729-2f87-881b-6b1f-d21ed2df3b20@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b7f3729-2f87-881b-6b1f-d21ed2df3b20@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-ClientProxiedBy: AM0PR02CA0033.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::46) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR02CA0033.eurprd02.prod.outlook.com (2603:10a6:208:3e::46) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend Transport; Thu, 22 Jul 2021 13:19:15 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 13d264f9-583e-4078-8e79-08d94d134ed9
+X-MS-TrafficTypeDiagnostic: PH0PR13MB5035:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <PH0PR13MB5035EE15644CD27A63093407E8E49@PH0PR13MB5035.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iaf3XOLoFGriSwWc+7G7qDdytVmDAk4RC8cmhKr9QhAl8jPv6MzbMCtiL/7+un5FTfhznnpifdWaqE81e1Vl3tHsMwMtyDgvUSEN6BCFXwcRurueFLuWGnqYsDXkR+gfOp/Pq8zFe1ytgm7FLlyYQEnHugZr1btCfMRQeIqMBeU3GNy6PYaH7Wo4o7roYUxB8IMt4izrK/L3auYbjmqxb27i2akaqKK/QRYt2NDbEUvSSYp3Ccpqc3Txqu10opP3ztf3OhAvAweZ1RXefYcnxgkDX8nFJA5Ax/LDOIEtEO8cFIE3iCzciTQrFRFG2MyKCAjcYjIcGgXkhWwxELwFz5IUgjQQvEcKAOkjZHYzj9IhkUYj/MEr3jnXy6Jiw5RMMf6HdWlNAkPyGqrukr1KlBr5y255VIxn/h8dFHrDXb9cfDpsB8tvGLdtlBph5EaIycLHqxrFMhuqwlJrHK5R3zoG421v85E45Mbq3EGxzsmOLvPWovCTlk3gS+rebUgkwHTltv1WAod9LI7cv6m7HjAg4W6S1krHXMkvMhC4aaQj8vBdlbwTWCOeo3wiDp3HyraAeZd/OBOFPyyQQ8eyZ3JxPtJuZ0qbq1kE6RZssCzRcNvWUrfe0DZK3A0RV7R7IsprfUD/dqrQpJgBYASKUw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39840400004)(136003)(376002)(396003)(366004)(66556008)(66476007)(44832011)(478600001)(2616005)(38100700002)(54906003)(6666004)(1076003)(86362001)(6916009)(8886007)(8936002)(36756003)(8676002)(55016002)(66946007)(107886003)(186003)(5660300002)(4326008)(7696005)(52116002)(316002)(53546011)(83380400001)(2906002)(33656002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pTRUE33KgKe3VakUP8MxnB/MUny0iSdSh/alk7NEwb/G9kvyhs4pxedHJjiF?=
+ =?us-ascii?Q?+kB/i8eu2VqlCieOFR3d+AfDMUscF5OOEqJjfD5MbbHQRdiYOsw8LRk1ROJN?=
+ =?us-ascii?Q?rqs8ivELi5CtM2yv8YBayi+4ZcS2bxln6XFUCNJujh7T/vmrYPGVQB4ebi03?=
+ =?us-ascii?Q?9q5uwxSU0EsVsuAMzeZEyiGvvlA6syRnyzA98VZhDLJQNwv43g1O2P1Y/6Qw?=
+ =?us-ascii?Q?mkOvm1zDRBYEtYnbaLvA/QJirMEYhlb0iwISje2bOxlqd9vbWnuTPCopn6Ve?=
+ =?us-ascii?Q?p2y5RFKzmPKESxfUsIUspRNl7V2D3Mv8iQ5rWhDTsPdWSTu5rbQphsyG8TEQ?=
+ =?us-ascii?Q?tIBdbUuahOLOZD6p2J854lfPZGUcgURpVWttSJCZbvEUJnXMdosJuINAEIHB?=
+ =?us-ascii?Q?rAYW9RbJk4DUDDiOOGLXdW3G1Q3UzqxPMF/NqUbKTO7UVe/V8itLP25OPlAy?=
+ =?us-ascii?Q?Qljn75lbVjWOwZG89TWDr//JmT9NJH+ipwC+mj6QnwwGkRSWsS621yT+b1x9?=
+ =?us-ascii?Q?E5275TtamSpiRm/H5/mUP9EjLwYTQwtylh5ouoNAtKYV32Sh4Q2r3ajENXBi?=
+ =?us-ascii?Q?OB7FCDsPdAlY3p/Pyo5QKnE/6P72cmGeApY8zERy+XKfQRZyoECg7NLfxfAF?=
+ =?us-ascii?Q?yflNa+XeG7wAdiepCi+uG2Kd9S7TT1K6aLyToGrLq4gwp79tRexrfSjm+/as?=
+ =?us-ascii?Q?yLlnlASKsJQewMnAFnqFoB/uFOJGJLDzuNDYHdssc60Dych5pBkCd8rv7YVX?=
+ =?us-ascii?Q?PIUJFoiSYSjZRqYaSzMPKPxo9FhxQR3gWfg+LewrSRYUBGMmdwDDwI0YoA0P?=
+ =?us-ascii?Q?N0Ca8s2a9TpISo3XR4g876BwVKrNXIE7gkmW5dCs7b1hzEzqzS9/XoZnc6B5?=
+ =?us-ascii?Q?ZzAmEsfrT6zwYrPqKgJijLzC66gLE/ka6JvFiG9R7ELpUKy0zpGEsFgtS6mC?=
+ =?us-ascii?Q?LGhtrII2bzSk07cmrUuv2G6tJd1OmC9dCqwj/JTnLm0SzDdovoDYtv+0YgB+?=
+ =?us-ascii?Q?5XSc+X7PWRZoYYSThroBiONicd1/ps9UR9twtw74p3pq4HYBxR6L79ICeEk5?=
+ =?us-ascii?Q?6PMYxirOoEeQg1It8NhyQS0YBF08bROUDGD0D70qdvVLmcSw3oH0rJMWs1wE?=
+ =?us-ascii?Q?l1GAh1dd4Wz1X8vAXQ4wEprcHvFm+ApAUd8cn2jd2pcP1Va/KWdGSJkRLaAU?=
+ =?us-ascii?Q?+R9Idx0vAtTJuA+qzaIGW56wwxZBI4qnYrRbopljDXKR5Wl29YjXg3egLNV/?=
+ =?us-ascii?Q?NKnqhGzMkR8tvdyAKmc92T+BpHfeL/9ndKZE4w9JKkf8OkDe88lnPegjeHve?=
+ =?us-ascii?Q?qNrO+IN/9r/rY5RWkd/9S7DRWxMsspGsJZMOiDpEnIYAVxaNzxfRmCOAsr+S?=
+ =?us-ascii?Q?fRJQdo4q7y9Jsibyh1+it5TBjlSo?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13d264f9-583e-4078-8e79-08d94d134ed9
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 13:19:17.3209
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dKVGQe9hPEZ5kqF0ZQQ4SgOeMPsMiBl0zW0MUfcnYPsB2WSxi9Ib6H1UcTwrOhYshwq9z43eSA60KL1xuONHcmzMGb3DREAfpRyi0qlXS6Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB5035
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-1) Fix type of bind option flag in af_xdp, from Baruch Siach.
-
-2) Fix use after free in bpf_xdp_link_release(), from Xuan Zhao.
-
-3) PM refcnt imbakance in r8152, from Takashi Iwai.
-
-4) Sign extension ug in liquidio, from Colin Ian King.
-
-5) Mising range check in s390 bpf jit, from Colin Ian King.
-
-6) Uninit value in caif_seqpkt_sendmsg(), from Ziyong Xuan.
-
-7) Fix skb page recycling race, from Ilias Apalodimas.
-
-8) Fix memory leak in tcindex_partial_destroy_work, from Pave Skripkin.
-
-9) netrom timer sk refcnt issues, from Nguyen Dinh Phi.
-
-10) Fix data races aroun tcp's tfo_active_disable_stamp, from Eric Dumazet.
-
-11) act_skbmod should only operate on ethernet packets, from Peilin Ye.
-
-12) Fix slab out-of-bpunds in fib6_nh_flush_exceptions(),, from Psolo Abeni.
-
-13) Fix sparx5 dependencies, from Yajun Deng.
-
-Please pull, thanks a lot!
-
-The following changes since commit 8096acd7442e613fad0354fc8dfdb2003cceea0b:
-
-  Merge tag 'net-5.14-rc2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-07-14 09:24:32 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to 7aaa0f311e2df2704fa8ddb8ed681a3b5841d0bf:
-
-  dpaa2-switch: seed the buffer pool after allocating the swp (2021-07-22 05:46:57 -0700)
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      net: ixp46x: fix ptp build failure
-
-Baruch Siach (1):
-      doc, af_xdp: Fix bind flags option typo
-
-Biju Das (2):
-      ravb: Fix a typo in comment
-      ravb: Remove extra TAB
-
-Chengwen Feng (1):
-      net: hns3: fix possible mismatches resp of mailbox
-
-Colin Ian King (2):
-      liquidio: Fix unintentional sign extension issue on left shift of u16
-      s390/bpf: Perform r1 range checking before accessing jit->seen_reg[r1]
-
-Daniel Borkmann (1):
-      bpf: Fix tail_call_reachable rejection for interpreter when jit failed
-
-David S. Miller (7):
-      Merge branch 'r8152-pm-fixxes'
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge branch 'bnxt_en-fixes'
-      Merge branch 'dt-bindinga-dwmac'
-      Merge branch 'octeon-DMAC'
-      Merge branch 'pmtu-esp'
-      Merge branch 'ksz-dsa-fixes'
-
-Dongliang Mu (1):
-      usb: hso: fix error handling code of hso_create_net_device
-
-Edwin Peer (1):
-      bnxt_en: reject ETS settings that will starve a TC
-
-Eric Dumazet (2):
-      net/tcp_fastopen: fix data races around tfo_active_disable_stamp
-      net/tcp_fastopen: remove obsolete extern
-
-Eric Woudstra (2):
-      mt7530 fix mt7530_fdb_write vid missing ivl bit
-      mt7530 mt7530_fdb_write only set ivl bit vid larger than 1
-
-Geert Uytterhoeven (1):
-      net: dsa: mv88e6xxx: NET_DSA_MV88E6XXX_PTP should depend on NET_DSA_MV88E6XXX
-
-Ilias Apalodimas (1):
-      skbuff: Fix a potential race while recycling page_pool packets
-
-Ioana Ciornei (1):
-      dpaa2-switch: seed the buffer pool after allocating the swp
-
-Jakub Kicinski (1):
-      Merge branch 'net-hns3-fixes-for-net'
-
-Jakub Sitnicki (1):
-      bpf, sockmap, udp: sk_prot needs inuse_idx set for proc stats
-
-Jia He (2):
-      qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
-      Revert "qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()"
-
-Jian Shen (2):
-      net: hns3: disable port VLAN filter when support function level VLAN filter control
-      net: hns3: fix rx VLAN offload state inconsistent issue
-
-Joakim Zhang (3):
-      dt-bindings: net: snps,dwmac: add missing DWMAC IP version
-      dt-bindings: net: imx-dwmac: convert imx-dwmac bindings to yaml
-      arm64: dts: imx8mp: change interrupt order per dt-binding
-
-John Fastabend (2):
-      bpf, sockmap: Fix potential memory leak on unlikely error case
-      bpf, sockmap, tcp: sk_prot needs inuse_idx set for proc stats
-
-Kalesh AP (1):
-      bnxt_en: don't disable an already disabled PCI device
-
-Landen Chao (1):
-      net: Update MAINTAINERS for MediaTek switch driver
-
-Lino Sanfilippo (2):
-      net: dsa: ensure linearized SKBs in case of tail taggers
-      net: dsa: tag_ksz: dont let the hardware process the layer 4 checksum
-
-Mahesh Bandewar (1):
-      bonding: fix build issue
-
-Markus Boehme (1):
-      ixgbe: Fix packet corruption due to missing DMA sync
-
-Maxim Kochetkov (1):
-      fsl/fman: Add fibre support
-
-Michael Chan (5):
-      bnxt_en: Refresh RoCE capabilities in bnxt_ulp_probe()
-      bnxt_en: Add missing check for BNXT_STATE_ABORT_ERR in bnxt_fw_rset_task()
-      bnxt_en: Validate vlan protocol ID on RX packets
-      bnxt_en: Move bnxt_ptp_init() to bnxt_open()
-      bnxt_en: Fix PTP capability discovery
-
-Nguyen Dinh Phi (1):
-      netrom: Decrease sock refcount when sock timers expire
-
-Paolo Abeni (1):
-      ipv6: fix another slab-out-of-bounds in fib6_nh_flush_exceptions
-
-Pavel Skripkin (1):
-      net: sched: fix memory leak in tcindex_partial_destroy_work
-
-Peilin Ye (1):
-      net/sched: act_skbmod: Skip non-Ethernet packets
-
-Peng Li (1):
-      net: hns3: add match_id to check mailbox response from PF to VF
-
-Pravin B Shelar (1):
-      net: Fix zero-copy head len calculation.
-
-Qitao Xu (3):
-      net: use %px to print skb address in trace_netif_receive_skb
-      net_sched: use %px to print skb address in trace_qdisc_dequeue()
-      net_sched: introduce tracepoint trace_qdisc_enqueue()
-
-Randy Dunlap (2):
-      net: hisilicon: rename CACHE_LINE_MASK to avoid redefinition
-      net: sparx5: fix unmet dependencies warning
-
-Sayanta Pattanayak (1):
-      r8169: Avoid duplicate sysfs entry creation error
-
-Somnath Kotur (2):
-      bnxt_en: fix error path of FW reset
-      bnxt_en: Check abort error state in bnxt_half_open_nic()
-
-Subbaraya Sundeep (3):
-      octeontx2-af: Enable transmit side LBK link
-      octeontx2-af: Prepare for allocating MCAM rules for AF
-      octeontx2-af: Introduce internal packet switching
-
-Sukadev Bhattiprolu (1):
-      ibmvnic: Remove the proper scrq flush
-
-Takashi Iwai (2):
-      r8152: Fix potential PM refcount imbalance
-      r8152: Fix a deadlock by doubly PM resume
-
-Tobias Klauser (1):
-      bpftool: Check malloc return value in mount_bpffs_for_pin
-
-Vadim Fedorenko (2):
-      udp: check encap socket in __udp_lib_err
-      selftests: net: add ESP-in-UDP PMTU test
-
-Vasily Averin (1):
-      ipv6: ip6_finish_output2: set sk into newly allocated nskb
-
-Vladimir Oltean (2):
-      net: bridge: do not replay fdb entries pointing towards the bridge twice
-      net: dsa: sja1105: make VID 4095 a bridge VLAN too
-
-Wei Wang (1):
-      tcp: disable TFO blackhole logic by default
-
-Xin Long (3):
-      sctp: trim optlen when it's a huge value in sctp_setsockopt
-      sctp: update active_key for asoc when old key is being replaced
-      sctp: do not update transport pathmtu if SPP_PMTUD_ENABLE is not set
-
-Xuan Zhuo (2):
-      bpf, test: fix NULL pointer dereference on invalid expected_attach_type
-      xdp, net: Fix use-after-free in bpf_xdp_link_release
-
-Yajun Deng (2):
-      net: decnet: Fix sleeping inside in af_decnet
-      net: sched: cls_api: Fix the the wrong parameter
-
-Ziyang Xuan (1):
-      net: fix uninit-value in caif_seqpkt_sendmsg
-
- Documentation/devicetree/bindings/net/imx-dwmac.txt       |  56 ---------
- Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml  |  93 +++++++++++++++
- Documentation/devicetree/bindings/net/snps,dwmac.yaml     |   3 +
- Documentation/networking/af_xdp.rst                       |   6 +-
- Documentation/networking/ip-sysctl.rst                    |   2 +-
- MAINTAINERS                                               |   1 +
- arch/arm64/boot/dts/freescale/imx8mp.dtsi                 |   6 +-
- arch/s390/net/bpf_jit_comp.c                              |   2 +-
- drivers/net/bonding/bond_main.c                           |   2 +
- drivers/net/dsa/mt7530.c                                  |   2 +
- drivers/net/dsa/mt7530.h                                  |   1 +
- drivers/net/dsa/mv88e6xxx/Kconfig                         |   2 +-
- drivers/net/dsa/sja1105/sja1105_main.c                    |   6 +
- drivers/net/ethernet/broadcom/bnxt/bnxt.c                 |  85 ++++++++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c             |  10 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c             |  24 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h             |   1 -
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c             |   9 +-
- drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.c   |   2 +-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c       |  16 +--
- drivers/net/ethernet/freescale/fman/mac.c                 |   1 +
- drivers/net/ethernet/hisilicon/hip04_eth.c                |   6 +-
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h           |   7 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   |   8 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c    |   1 +
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c |  10 ++
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c  |  19 ++++
- drivers/net/ethernet/ibm/ibmvnic.c                        |   2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c             |   3 +-
- drivers/net/ethernet/marvell/octeontx2/af/Makefile        |   2 +-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c           |  10 +-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h           |  21 ++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c       |   3 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c   |   5 +-
- drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c   |  48 ++++++--
- drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c       |  36 ++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c       |  47 ++++++--
- drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c    |  29 +++--
- drivers/net/ethernet/marvell/octeontx2/af/rvu_switch.c    | 258 ++++++++++++++++++++++++++++++++++++++++++
- drivers/net/ethernet/microchip/sparx5/Kconfig             |   1 +
- drivers/net/ethernet/realtek/r8169_main.c                 |   3 +-
- drivers/net/ethernet/renesas/ravb.h                       |   2 +-
- drivers/net/ethernet/renesas/ravb_main.c                  |   2 +-
- drivers/net/ethernet/xscale/ptp_ixp46x.c                  |   2 +
- drivers/net/usb/hso.c                                     |  33 ++++--
- drivers/net/usb/r8152.c                                   |  30 +++--
- include/net/tcp.h                                         |   1 -
- include/trace/events/net.h                                |   2 +-
- include/trace/events/qdisc.h                              |  28 ++++-
- kernel/bpf/verifier.c                                     |   2 +
- net/bpf/test_run.c                                        |   3 +
- net/bridge/br_fdb.c                                       |   2 +-
- net/caif/caif_socket.c                                    |   3 +-
- net/core/dev.c                                            |  34 ++++--
- net/core/skbuff.c                                         |  18 ++-
- net/core/skmsg.c                                          |  16 ++-
- net/decnet/af_decnet.c                                    |  27 ++---
- net/dsa/slave.c                                           |  14 ++-
- net/dsa/tag_ksz.c                                         |   9 ++
- net/ipv4/tcp_bpf.c                                        |   2 +-
- net/ipv4/tcp_fastopen.c                                   |  28 ++++-
- net/ipv4/tcp_ipv4.c                                       |   2 +-
- net/ipv4/udp.c                                            |  25 +++-
- net/ipv4/udp_bpf.c                                        |   2 +-
- net/ipv6/ip6_output.c                                     |   2 +-
- net/ipv6/route.c                                          |   2 +-
- net/ipv6/udp.c                                            |  25 +++-
- net/netrom/nr_timer.c                                     |  20 ++--
- net/sched/act_skbmod.c                                    |  12 +-
- net/sched/cls_api.c                                       |   2 +-
- net/sched/cls_tcindex.c                                   |   5 +-
- net/sctp/auth.c                                           |   2 +
- net/sctp/output.c                                         |   4 +-
- net/sctp/socket.c                                         |   4 +
- tools/bpf/bpftool/common.c                                |   5 +
- tools/testing/selftests/net/nettest.c                     |  55 ++++++++-
- tools/testing/selftests/net/pmtu.sh                       | 212 +++++++++++++++++++++++++++++++++-
- 77 files changed, 1217 insertions(+), 269 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/imx-dwmac.txt
- create mode 100644 Documentation/devicetree/bindings/net/nxp,dwmac-imx.yaml
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_switch.c
+On Thu, Jul 22, 2021 at 03:24:07PM +0300, Roi Dayan wrote:
+> 
+> 
+> On 2021-07-22 12:19 PM, Simon Horman wrote:
+> > From: Baowen Zheng <baowen.zheng@corigine.com>
+> > 
+> > Use flow_indr_dev_register/flow_indr_dev_setup_offload to
+> > offload tc action.
+> > 
+> > We offload the tc action mainly for ovs meter configuration.
+> > Make some basic changes for different vendors to return EOPNOTSUPP.
+> > 
+> > We need to call tc_cleanup_flow_action to clean up tc action entry since
+> > in tc_setup_action, some actions may hold dev refcnt, especially the mirror
+> > action.
+> > 
+> > As per review from the RFC, the kernel test robot will fail to run, so
+> > we add CONFIG_NET_CLS_ACT control for the action offload.
+> > 
+> > Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+> > Signed-off-by: Louis Peens <louis.peens@corigine.com>
+> > Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> > ---
+> >   drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |  2 +-
+> >   .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |  3 ++
+> >   .../ethernet/netronome/nfp/flower/offload.c   |  3 ++
+> >   include/linux/netdevice.h                     |  1 +
+> >   include/net/flow_offload.h                    | 15 ++++++++
+> >   include/net/pkt_cls.h                         | 15 ++++++++
+> >   net/core/flow_offload.c                       | 26 +++++++++++++-
+> >   net/sched/act_api.c                           | 33 +++++++++++++++++
+> >   net/sched/cls_api.c                           | 36 ++++++++++++++++---
+> >   9 files changed, 128 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+> > index 5e4429b14b8c..edbbf7b4df77 100644
+> > --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+> > +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+> > @@ -1951,7 +1951,7 @@ static int bnxt_tc_setup_indr_cb(struct net_device *netdev, struct Qdisc *sch, v
+> >   				 void *data,
+> >   				 void (*cleanup)(struct flow_block_cb *block_cb))
+> >   {
+> > -	if (!bnxt_is_netdev_indr_offload(netdev))
+> > +	if (!netdev || !bnxt_is_netdev_indr_offload(netdev))
+> >   		return -EOPNOTSUPP;
+> >   	switch (type) {
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> > index 059799e4f483..111daacc4cc3 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+> > @@ -486,6 +486,9 @@ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, struct Qdisc *sch, void *
+> >   			    void *data,
+> >   			    void (*cleanup)(struct flow_block_cb *block_cb))
+> >   {
+> > +	if (!netdev)
+> > +		return -EOPNOTSUPP;
+> > +
+> >   	switch (type) {
+> >   	case TC_SETUP_BLOCK:
+> >   		return mlx5e_rep_indr_setup_block(netdev, sch, cb_priv, type_data,
+> > diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+> > index 2406d33356ad..88bbc86347b4 100644
+> > --- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
+> > +++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+> > @@ -1869,6 +1869,9 @@ nfp_flower_indr_setup_tc_cb(struct net_device *netdev, struct Qdisc *sch, void *
+> >   			    void *data,
+> >   			    void (*cleanup)(struct flow_block_cb *block_cb))
+> >   {
+> > +	if (!netdev)
+> > +		return -EOPNOTSUPP;
+> > +
+> >   	if (!nfp_fl_is_netdev_to_offload(netdev))
+> >   		return -EOPNOTSUPP;
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 42f6f866d5f3..b138219baf6f 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -923,6 +923,7 @@ enum tc_setup_type {
+> >   	TC_SETUP_QDISC_TBF,
+> >   	TC_SETUP_QDISC_FIFO,
+> >   	TC_SETUP_QDISC_HTB,
+> > +	TC_SETUP_ACT,
+> >   };
+> >   /* These structures hold the attributes of bpf state that are being passed
+> > diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> > index 69c9eabf8325..26644596fd54 100644
+> > --- a/include/net/flow_offload.h
+> > +++ b/include/net/flow_offload.h
+> > @@ -553,6 +553,21 @@ struct flow_cls_offload {
+> >   	u32 classid;
+> >   };
+> > +enum flow_act_command {
+> > +	FLOW_ACT_REPLACE,
+> > +	FLOW_ACT_DESTROY,
+> > +	FLOW_ACT_STATS,
+> > +};
+> > +
+> > +struct flow_offload_action {
+> > +	struct netlink_ext_ack *extack;
+> > +	enum flow_act_command command;
+> > +	struct flow_stats stats;
+> > +	struct flow_action action;
+> > +};
+> > +
+> > +struct flow_offload_action *flow_action_alloc(unsigned int num_actions);
+> > +
+> >   static inline struct flow_rule *
+> >   flow_cls_offload_flow_rule(struct flow_cls_offload *flow_cmd)
+> >   {
+> > diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+> > index ec7823921bd2..cd4cf6b10f5d 100644
+> > --- a/include/net/pkt_cls.h
+> > +++ b/include/net/pkt_cls.h
+> > @@ -266,6 +266,9 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+> >   	for (; 0; (void)(i), (void)(a), (void)(exts))
+> >   #endif
+> > +#define tcf_act_for_each_action(i, a, actions) \
+> > +	for (i = 0; i < TCA_ACT_MAX_PRIO && ((a) = actions[i]); i++)
+> > +
+> >   static inline void
+> >   tcf_exts_stats_update(const struct tcf_exts *exts,
+> >   		      u64 bytes, u64 packets, u64 drops, u64 lastuse,
+> > @@ -536,8 +539,19 @@ tcf_match_indev(struct sk_buff *skb, int ifindex)
+> >   	return ifindex == skb->skb_iif;
+> >   }
+> > +#ifdef CONFIG_NET_CLS_ACT
+> >   int tc_setup_flow_action(struct flow_action *flow_action,
+> >   			 const struct tcf_exts *exts);
+> > +#else
+> > +static inline int tc_setup_flow_action(struct flow_action *flow_action,
+> > +				       const struct tcf_exts *exts)
+> > +{
+> > +		return 0;
+> > +}
+> > +#endif
+> > +
+> > +int tc_setup_action(struct flow_action *flow_action,
+> > +		    struct tc_action *actions[]);
+> >   void tc_cleanup_flow_action(struct flow_action *flow_action);
+> >   int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
+> > @@ -558,6 +572,7 @@ int tc_setup_cb_reoffload(struct tcf_block *block, struct tcf_proto *tp,
+> >   			  enum tc_setup_type type, void *type_data,
+> >   			  void *cb_priv, u32 *flags, unsigned int *in_hw_count);
+> >   unsigned int tcf_exts_num_actions(struct tcf_exts *exts);
+> > +unsigned int tcf_act_num_actions(struct tc_action *actions[]);
+> >   #ifdef CONFIG_NET_CLS_ACT
+> >   int tcf_qevent_init(struct tcf_qevent *qe, struct Qdisc *sch,
+> > diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+> > index 715b67f6c62f..0fa2f75cc9b3 100644
+> > --- a/net/core/flow_offload.c
+> > +++ b/net/core/flow_offload.c
+> > @@ -27,6 +27,27 @@ struct flow_rule *flow_rule_alloc(unsigned int num_actions)
+> >   }
+> >   EXPORT_SYMBOL(flow_rule_alloc);
+> > +struct flow_offload_action *flow_action_alloc(unsigned int num_actions)
+> > +{
+> > +	struct flow_offload_action *fl_action;
+> > +	int i;
+> > +
+> > +	fl_action = kzalloc(struct_size(fl_action, action.entries, num_actions),
+> > +			    GFP_KERNEL);
+> > +	if (!fl_action)
+> > +		return NULL;
+> 
+> Hi Simon,
+> 
+> Our automatic tests got a trace from flow_action_alloc()
+> introduced in this series.
+> I don't have specific commands right now but maybe its easy
+> to reproduce with option CONFIG_DEBUG_ATOMIC_SLEEP=y
+> 
+> fl_dump->fl_hw_update_stats->fl_hw_update_stats->tcf_exts_stats_update
+>   ->tcf_action_update_hw_stats->tcf_action_offload_cmd_pre->
+>     ->flow_action_alloc
+> 
+> Thanks,
+> Roi
+
+Thanks Roi,
+
+we'll look into this.
