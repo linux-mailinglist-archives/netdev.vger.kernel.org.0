@@ -2,158 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 037753D2AAF
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 19:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8203D2AB9
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 19:08:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234977AbhGVQSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 12:18:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40576 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234961AbhGVQRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 12:17:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1626973056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6OaaFBDYasoiIPsVBT+KwuldBimPeSqiViQl4LNJysI=;
-        b=M3FbyFoIWe3r5fecjdURBhoiZQyICgZ4BzZb39fY30ozyVDz4aFKBIUq9NWOlSlEWVlW4A
-        FG6LnYK6HWQey4ID7nNZmoKCNMXUn3qRLrrT4A8Su1M7uWs5ctvdTmLOnZxBtyN6KDcvek
-        OJaTZgv2KTsdn+5F1MRVWft4LvImaqg=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-552-ItusPtjQP-OUqxR3Wlb9iw-1; Thu, 22 Jul 2021 12:57:35 -0400
-X-MC-Unique: ItusPtjQP-OUqxR3Wlb9iw-1
-Received: by mail-wm1-f69.google.com with SMTP id k12-20020a05600c1c8cb0290212502cb19aso29847wms.0
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 09:57:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=6OaaFBDYasoiIPsVBT+KwuldBimPeSqiViQl4LNJysI=;
-        b=qGyVAI9GYoft12R/gHChR7XMSUC6J35BYQiEcA6OjhCDntTiG5Cm71ysGCeJunIbbF
-         7t0m6uY6TYfnayY8TrCVHz9tHyprcAyG3GTOc9ZJIkkkNT5XCh60JJNQyAk6VMyhxH+I
-         JRwut+qiv1sXhyDorOuUaDZysG2pDIXkeA5Dtv+8d5mGJS/VKLcRyAgxox7a7yVZFseh
-         qWE580anWaeT5q6hqPylN9KNry/4sHcZaIILKeEx3cm1aeCpfP81y5RTpBoMK6fJZXZ0
-         FyyPuj7OKHAV3pNOMAfC6JxOfvOPA7KyKqaeX4bTU2SOhLisXufDVFQgXOpydteRwgQI
-         DfDg==
-X-Gm-Message-State: AOAM533MrUyzy4jFYUyiC7/nnqiOBvvoRApbZ+GabwljXpehSH3tSXtV
-        fXbqHckDdbBoHIqpGLGYcVAUZkA2qx19thSZcrkS1ZeylGbKHF+iRV2ENYn2/Rsc7b+1+k5MSgO
-        LaMnymN12tFftUHUf
-X-Received: by 2002:a05:600c:5127:: with SMTP id o39mr531899wms.124.1626973053898;
-        Thu, 22 Jul 2021 09:57:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwybnGn59m8JlANQT/urK3RIFampLl/89DIBgFCvmmTFjroSiIfifkkhXt74zF++i13ezOKOw==
-X-Received: by 2002:a05:600c:5127:: with SMTP id o39mr531880wms.124.1626973053608;
-        Thu, 22 Jul 2021 09:57:33 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-57.dyn.eolo.it. [146.241.97.57])
-        by smtp.gmail.com with ESMTPSA id e8sm9178264wrc.6.2021.07.22.09.57.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 09:57:33 -0700 (PDT)
-Message-ID: <d3fe6ae85b8fad9090288c553f8d248603758506.camel@redhat.com>
-Subject: Re: [PATCH RFC 0/9] sk_buff: optimize layout for GRO
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Date:   Thu, 22 Jul 2021 18:57:31 +0200
-In-Reply-To: <2e9e57f0-98f9-b64d-fd82-aecef84835c5@schaufler-ca.com>
-References: <cover.1626879395.git.pabeni@redhat.com>
-         <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
-         <e6200ddd38510216f9f32051ce1acff21fc9c6d0.camel@redhat.com>
-         <2e9e57f0-98f9-b64d-fd82-aecef84835c5@schaufler-ca.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S233732AbhGVQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 12:21:19 -0400
+Received: from dispatch1-eu1.ppe-hosted.com ([185.132.181.6]:38370 "EHLO
+        dispatch1-eu1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231205AbhGVQVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 12:21:17 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-he1eur01lp2050.outbound.protection.outlook.com [104.47.0.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-eu1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D162C40069;
+        Thu, 22 Jul 2021 17:01:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E14Y3UGGKCM0ynWxyJcg45SCAga+v47Dsp0dBgXCCPWqtcSF+xQq60wne89bpseicmp9/xnyjvOqGrViwJtPKtGIFYSTo1FbEFwLH0XeciqklGuLC9wHiLPvt0H5KnP46APLzc/3hxTJ6sfTRGncUGBcJuAKtjm/J+N+N5w2Ux4FSC0xZL1FRhzJKOvcSD2QuzqDeZJtU1VKJmKD7Upt80RmVULyQBLL5xcxW4GQUNOMKNMXZjGKrArF4hUoqzTdJ1Fagx35WKKqQB+8qFSBvOprG1FGtY0RODXJ+8lornaVkh/MMdEgh9846Cv8hx3JinOqzLWGY8FxgCJcONVliw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4DBdLe2ha0qTsKm9WHvdrg/X7DokmF3zcH4TWsjdzc=;
+ b=Omd9zAglwvd8cLTiOSGdjtbVwGlPtl7xJ+zD8tuD+NWM/UbGeqR72bhohb3Hu3XsosP2BwxjjGBXqGxzOo5boJyiuU6hRcMUwznlkggtVlRyUiaJBCNZiAeFlKmnaGuVQ2jA36wsZoxE+A2uEk7nFtB975ZoNl0+a/fjoRGwJff4WfUI/fsDZSWE7Sw/P9GQ+xcPN/UWo4CwGrb3xF2n+/4zatEub/W0P9Uum8WuWe60V8WHsTqxnmV9DB/SzrUIV6YUZmlY+eecyIl5G/xNwROgFYDYhqetQW/4I94OQj0+HNBDH4ac1bL6qwmFPYQEjvta9IzHGBy/RJHJnNsToQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=drivenets.com; dmarc=pass action=none
+ header.from=drivenets.com; dkim=pass header.d=drivenets.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=drivenets.onmicrosoft.com; s=selector2-drivenets-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4DBdLe2ha0qTsKm9WHvdrg/X7DokmF3zcH4TWsjdzc=;
+ b=Wx/lK6inE7Ch75LrLclILUjAg6xDFar7BDQ0wxqceNsXHODgaZgRZ9b1qQLfjfx8J/kem4Cra6aYS15Q91yJF84dcSjd895GPzg2FtXghHx9N0UoeQHIIco8qXhMT7rUVOR6gKRzCFUyE6k2DzehBhLabnunnVFgnUMmtfCRMG8=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none
+ header.from=drivenets.com;
+Received: from AM6PR08MB4118.eurprd08.prod.outlook.com (2603:10a6:20b:aa::25)
+ by AM5PR0802MB2465.eurprd08.prod.outlook.com (2603:10a6:203:9f::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Thu, 22 Jul
+ 2021 17:01:47 +0000
+Received: from AM6PR08MB4118.eurprd08.prod.outlook.com
+ ([fe80::39dd:5002:3465:46ce]) by AM6PR08MB4118.eurprd08.prod.outlook.com
+ ([fe80::39dd:5002:3465:46ce%4]) with mapi id 15.20.4331.034; Thu, 22 Jul 2021
+ 17:01:47 +0000
+From:   Gilad Naaman <gnaaman@drivenets.com>
+To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, toke@redhat.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] net: Set true network header for ECN decapsulation
+Date:   Thu, 22 Jul 2021 20:01:28 +0300
+Message-Id: <20210722170128.223387-1-gnaaman@drivenets.com>
+X-Mailer: git-send-email 2.25.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO4P123CA0244.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a7::15) To AM6PR08MB4118.eurprd08.prod.outlook.com
+ (2603:10a6:20b:aa::25)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from gnaaman-pc.dev.drivenets.net (199.203.244.232) by LO4P123CA0244.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:1a7::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 17:01:46 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c3ada1b6-8b48-4a7e-dc3e-08d94d3263fd
+X-MS-TrafficTypeDiagnostic: AM5PR0802MB2465:
+X-Microsoft-Antispam-PRVS: <AM5PR0802MB2465795015DFFA170E67BF15BEE49@AM5PR0802MB2465.eurprd08.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0JemmuCCK0kBdRPR/P5r3QHZ6QuwAu0lHyLMYnukRO3yKyZF/+A+oJNm+TmyrF/3kQTisMd5d0GZQ3eTPJobcmzSqfCY2GJEX5345CLZ1qcEHCZP+SpOOuTbcshU2P6I9zav7jc1PgmUnXlHoFdb1+MmQbHcNG0KHD3UXJWFmV1v+DTrvBKq9MRX7qn1rV6RrewBqq8a6tF9b0Q94Qj0LjxGCPbNa7bJonfe4TLP5hvDdfGexB7Qozn/Y75Ob+fnFek/Bf1J/gLlxhvsipg9GLx372T3wnyRNvS6c2B79hn5Nl21kjtp7Li29eqHTXek8qBwQYScIUUHQPhd4b3QLm5r9ZXWktz8UBoTlFMv6m405xbchjJzICiY5XFxUQ4h7gDe6BqGuKuNHUZdzA5Qi0nyZRR/wrX2Ud/U4v9aKdwYgvLjKHUorfk+VwXZy0Y+GMkX4t/NLdpb2TTMHfYRGx9wxAhtdgBSzxK6qSaWRCBIgWFKH1DRxRtYLbZz1mVMuR+PosU4bRCTvznMbKvXgr0lecEA0GCG18QGx5yDes7O5EcSjdXKhIfUVlQzOUF8PzxT5JqCJUVFJvT/gFyw9KpXVzXzJDUAkOili4TlWgXWp9mYjBWV5tHc4QsqBh+2OHrDFLIRZXBc5vvIlTLu34MoDag8/m5NvxaryiWF2tDQiMpo8m4c9K3587NhAIFh57z4nMh+M7vBewFhqRaWddNDM9XxVGZFtuF88FvMpLc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR08MB4118.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(39840400004)(346002)(366004)(396003)(186003)(478600001)(956004)(1076003)(6666004)(26005)(66476007)(4326008)(8676002)(66946007)(36756003)(66556008)(86362001)(2906002)(6506007)(38100700002)(8936002)(83380400001)(5660300002)(52116002)(316002)(6486002)(38350700002)(2616005)(6512007)(66574015)(16060500005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b0hoWFl0b3g3cW1QREkvZVBTdi92cEt3ZnVNMU1pQmc4TGhWSWk2dGlYOUlV?=
+ =?utf-8?B?REZEMVFkMWVEWHd1SG95aTI0UUl1S3dNM2xodWhFbnhlT3JKNW5scWtWa0ZL?=
+ =?utf-8?B?V3ZseHc1V1BacVRnLzBwbnV0cXVlcG5tdEdHZHNEKzloc1FUamRFS2w2dU12?=
+ =?utf-8?B?Z2hMdlgxdU9oMk00dFAwellHS2ptdVYvQlZ5VTR1Ykd4STdra3Zha05Hb0xL?=
+ =?utf-8?B?UzAwT0tUbmtmZG5lT0dQWks4NHpnclZZaC9iUXY1Y0xXd0lCcllFSzF3Vk1P?=
+ =?utf-8?B?MjI2alhyc2RjTDFVOHJjVzZ5UEh2U2FGbXNsNmVVeGczUTJPOEtKYkN6bVJK?=
+ =?utf-8?B?M2pHYWtseTNJMTFIMUYyR1pKSEJSUGpZQjhwcUxDNzZDUnAwSVcrdEhCc0FN?=
+ =?utf-8?B?U3VGbm4xeFl2VFd5UGdwOTQ1bXB2NlVDZjE3VUxSYStENkZnK3BHQkZxNnNL?=
+ =?utf-8?B?WmcxNGdzdzA0VUNZYkY5K2hHcWorZ1RRSEZBZTZRSjE1cWZtb28ydU5ZdG9t?=
+ =?utf-8?B?OERjbkdsTmJjS0JnaUNDR0xOOTdSVkJ4MVRGdTdlaXZxYS94ZWIySkZVbU00?=
+ =?utf-8?B?OUU3WEVYUzlKR1U0OTQ2QjV0bXJJUFdjcHRiQWY3R29OMThKMEdKWmw1bS9Y?=
+ =?utf-8?B?VGJQejdQcWZTa3V4aEZITDRtSTcvVGlmRkZUL1JuZzg2OVlhNXgycVhPNUwx?=
+ =?utf-8?B?VnJhR3FEVUFnVmJFcnRQemxQMlNaTlpkN1JQbjZCbEZ3Rmc0WEpKcDJjV3JL?=
+ =?utf-8?B?bnNvM0swamYydEl5dWNIZlVIY1B3NVB1VVJ4VDVVQ09PTndoZUZ1aXlIYTc5?=
+ =?utf-8?B?LzNhYXdBU0V4K3dpMkxBUVFYdjUrTWJZdU14eVNpL2NqQmpyUk9jT2JMZlJ1?=
+ =?utf-8?B?N2NDOXZ1ZjQveTI3OUIxNTdTMHJSYitkRHZSNWRaNWNEZG1kaFdYdjVCVU52?=
+ =?utf-8?B?N3kzVnZ0bGtKQWgyd1NNOGZhOE1Qb1VlZktPSzQ3Wi9GM2lHY044Y25JeUda?=
+ =?utf-8?B?cEF2WnBnQ3MvcFZLWXdwSkcxNlpXTjFwY2w5bmtXdXQ2V3VPWStQT2ppeFRv?=
+ =?utf-8?B?V0lpV1l2YXZMTEhRY1pabm8vZzZWTHVUa3piWWllcWRUUmFCWk1tRUJmRXRo?=
+ =?utf-8?B?ckI2S0FONFU1QW5zcGhCNlY5QVBPdnVmc3hpRWg2RjI0dXVkWUFQc1o3ZTNF?=
+ =?utf-8?B?V1ZIQkFjMU9vbmE3SDI1dG9OVG9jVGYvYkRKR3FPVVZHdlNSVzNnTDVoZE95?=
+ =?utf-8?B?UDhpRVUwUkdXRTgrRTdMdVRWMkxobGh3VzlDS05wVDB5N3orcjhYUHBVbFhO?=
+ =?utf-8?B?WldibTBPNTQ1aEMwdDVxUzNTbUFyYVRMNFVoQjhTVmttUml5M1NwdFlkQkQw?=
+ =?utf-8?B?azh3VHJadExEcEtORUFMNHo3ZHBkelFaUjA1K1Vwa2drUFZ1cHR2c01TZndr?=
+ =?utf-8?B?OXozT1k4emIxNzhsZlkwMS8wQmprdk9jUER6U2lsRTI2MjVrSFc5bjRudmJF?=
+ =?utf-8?B?ZUpYUHdGazI1S3BBZGpjblp4WWU1Y0t5UlBFSHJvYkwwY3NaVmZOMnNyMStJ?=
+ =?utf-8?B?UFdKbGUrV2hmOVNzS0FyQkg0d3RhcUV2SDI1b2J6MUhabnZGWm12WDZwb2hT?=
+ =?utf-8?B?Y1g0dCtGN2xpVkRRYmpDTHAvejlwYy9LK3NORmFsbTc2bXFhWVZ4UlFUZmI4?=
+ =?utf-8?B?M2Izelo2S0d3eGN5NlFWb2JiNzNVaUFacmtsT2Q3SEkzc0VYaXpKU1hnT1Iw?=
+ =?utf-8?Q?eoZhupyWgH/90bOu7PYzh14giUz8hJh7fyEpTAH?=
+X-OriginatorOrg: drivenets.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c3ada1b6-8b48-4a7e-dc3e-08d94d3263fd
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR08MB4118.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 17:01:47.3099
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 662f82da-cf45-4bdf-b295-33b083f5d229
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OtCbuMD62GmCut2wmgARnGyMAOC5dCxEkEK6uDwvom0AGvYVUQa3i8CMh7fQfSoCe8XLcRXM/tQA/L13XKFUzA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0802MB2465
+X-MDID: 1626973310-wzvakWF7NpzD
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-07-22 at 09:04 -0700, Casey Schaufler wrote:
-> On 7/22/2021 12:10 AM, Paolo Abeni wrote:
-> > On Wed, 2021-07-21 at 11:15 -0700, Casey Schaufler wrote:
-> > > On 7/21/2021 9:44 AM, Paolo Abeni wrote:
-> > > > This is a very early draft - in a different world would be
-> > > > replaced by hallway discussion at in-person conference - aimed at
-> > > > outlining some ideas and collect feedback on the overall outlook.
-> > > > There are still bugs to be fixed, more test and benchmark need, etc.
-> > > > 
-> > > > There are 3 main goals:
-> > > > - [try to] avoid the overhead for uncommon conditions at GRO time
-> > > >   (patches 1-4)
-> > > > - enable backpressure for the veth GRO path (patches 5-6)
-> > > > - reduce the number of cacheline used by the sk_buff lifecycle
-> > > >   from 4 to 3, at least in some common scenarios (patches 1,7-9).
-> > > >   The idea here is avoid the initialization of some fields and
-> > > >   control their validity with a bitmask, as presented by at least
-> > > >   Florian and Jesper in the past.
-> > > If I understand correctly, you're creating an optimized case
-> > > which excludes ct, secmark, vlan and UDP tunnel. Is this correct,
-> > > and if so, why those particular fields? What impact will this have
-> > > in the non-optimal (with any of the excluded fields) case?
-> > Thank you for the feedback.
-> 
-> You're most welcome. You did request comments.
-> 
-> > There are 2 different relevant points:
-> > 
-> > - the GRO stage.
-> >   packets carring any of CT, dst, sk or skb_ext will do 2 additional
-> > conditionals per gro_receive WRT the current code. My understanding is
-> > that having any of such field set at GRO receive time is quite
-> > exceptional for real nic. All others packet will do 4 or 5 less
-> > conditionals, and will traverse a little less code.
-> > 
-> > - sk_buff lifecycle
-> >   * packets carrying vlan and UDP will not see any differences: sk_buff
-> > lifecycle will stil use 4 cachelines, as currently does, and no
-> > additional conditional is introduced.
-> >   * packets carring nfct or secmark will see an additional conditional
-> > every time such field is accessed. The number of cacheline used will
-> > still be 4, as in the current code. My understanding is that when such
-> > access happens, there is already a relevant amount of "additional" code
-> > to be executed, the conditional overhead should not be measurable.
-> 
-> I'm responsible for some of that "additonal" code. If the secmark
-> is considered to be outside the performance critical data there are
-> changes I would like to make that will substantially improve the
-> performance of that "additional" code that would include a u64
-> secmark. If use of a secmark is considered indicative of a "slow"
-> path, the rationale for restricting it to u32, that it might impact
-> the "usual" case performance, seems specious. I can't say that I
-> understand all the nuances and implications involved. It does
-> appear that the changes you've suggested could negate the classic
-> argument that requires the u32 secmark.
+In cases where the header straight after the tunnel header was
+another ethernet header (TEB), instead of the network header,
+the ECN decapsulation code would treat the ethernet header as if
+it was an IP header, resulting in mishandling and possible
+wrong drops or corruption of the IP header.
 
-I see now I did not reply to one of you questions - why I picked-up
- vlan, tunnel secmark fields to move them at sk_buff tail. 
+In this case, ECT(1) is sent, so IP_ECN_decapsulate tries to copy it to the
+inner IPv4 header, and correct its checksum.
 
-Tow main drivers on my side:
-- there are use cases/deployments that do not use them.
-- moving them around was doable in term of required changes.
+The offset of the ECT bits in an IPv4 header corresponds to the
+lower 2 bits of the second octet of the destination MAC address
+in the ethernet header.
+The IPv4 checksum corresponds to end of the source address.
 
-There are no "slow-path" implications on my side. For example, vlan_*
-fields are very critical performance wise, if the traffic is tagged.
-But surely there are busy servers not using tagget traffic which will
-enjoy the reduced cachelines footprint, and this changeset will not
-impact negatively the first case.
+In order to reproduce:
 
-WRT to the vlan example, secmark and nfct require an extra conditional
-to fetch the data. My understanding is that such additional conditional
-is not measurable performance-wise when benchmarking the security
-modules (or conntrack) because they have to do much more intersting
-things after fetching a few bytes from an already hot cacheline.
+    $ ip netns add A
+    $ ip netns add B
+    $ ip -n A link add _v0 type veth peer name _v1 netns B
+    $ ip -n A link set _v0 up
+    $ ip -n A addr add dev _v0 10.254.3.1/24
+    $ ip -n A route add default dev _v0 scope global
+    $ ip -n B link set _v1 up
+    $ ip -n B addr add dev _v1 10.254.1.6/24
+    $ ip -n B route add default dev _v1 scope global
+    $ ip -n B link add gre1 type gretap local 10.254.1.6 remote 10.254.3.1 key 0x49000000
+    $ ip -n B link set gre1 up
 
-Not sure if the above somehow clarify my statements.
+    # Now send an IPv4/GRE/Eth/IPv4 frame where the outer header has ECT(1),
+    # and the inner header has no ECT bits set:
 
-As for expanding secmark to 64 bits, I guess that could be an
-interesting follow-up discussion :)
+    $ cat send_pkt.py
+        #!/usr/bin/env python3
+        from scapy.all import *
 
-Cheers,
+        pkt = IP(b'E\x01\x00\xa7\x00\x00\x00\x00@/`%\n\xfe\x03\x01\n\xfe\x01\x06 \x00eXI\x00'
+                 b'\x00\x00\x18\xbe\x92\xa0\xee&\x18\xb0\x92\xa0l&\x08\x00E\x00\x00}\x8b\x85'
+                 b'@\x00\x01\x01\xe4\xf2\x82\x82\x82\x01\x82\x82\x82\x02\x08\x00d\x11\xa6\xeb'
+                 b'3\x1e\x1e\\xf3\\xf7`\x00\x00\x00\x00ZN\x00\x00\x00\x00\x00\x00\x10\x11\x12'
+                 b'\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !"#$%&\'()*+,-./01234'
+                 b'56789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
-Paolo
+        send(pkt)
+    $ sudo ip netns exec B tcpdump -neqlllvi gre1 icmp & ; sleep 1
+    $ sudo ip netns exec A python3 send_pkt.py
+
+In the original packet, the source/destinatio MAC addresses are
+dst=18:be:92:a0:ee:26 src=18:b0:92:a0:6c:26
+
+In the received packet, they are
+dst=18:bd:92:a0:ee:26 src=18:b0:92:a0:6c:27
+
+Thanks to Lahav Schlesinger <lschlesinger@drivenets.com> and Isaac Garzon <isaac@speed.io>
+for helping me pinpoint the origin.
+
+Fixes: b723748750ec ("tunnel: Propagate ECT(1) when decapsulating as recommended by RFC6040")
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Gilad Naaman <gnaaman@drivenets.com>
+---
+ net/ipv4/ip_tunnel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 0dca00745ac3..be75b409445c 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -390,7 +390,7 @@ int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
+ 		tunnel->i_seqno = ntohl(tpi->seq) + 1;
+ 	}
+ 
+-	skb_reset_network_header(skb);
++	skb_set_network_header(skb, (tunnel->dev->type == ARPHRD_ETHER) ? ETH_HLEN : 0);
+ 
+ 	err = IP_ECN_decapsulate(iph, skb);
+ 	if (unlikely(err)) {
+-- 
+2.25.1
 
