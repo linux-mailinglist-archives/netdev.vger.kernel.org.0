@@ -2,129 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 363573D2142
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 11:51:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72CDB3D214C
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 11:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbhGVJKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 05:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231421AbhGVJKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 05:10:20 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99FEC061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 02:50:53 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id h8so6031209eds.4
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 02:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=afOvuUyBtr0TcfV4r0srwkaU5LgoOmO/9k1OVhh31NA=;
-        b=IKJeTWz7Vmxsx1FNzDXy6kpE4AcTEd5Av3k4N9Baj2+zCCAggYkTbG3sn2SDSDNk89
-         SIAlVBH1nEznIXWHIudE1+lGEexleYp+l7VAkdep+SVBvfS1GMRvw0xmsdFB59honDoD
-         7Hli0D20PwabYnP+SiT4ri7UJd/5I26cT+ZYc0B4/kWy3LRYo/mwixHogiNE4GJQrgy5
-         jEabIpz5wMq5Mx4QrLEJXp42HnOZ+N31yfYYq5b6aDk8ncLCWT5DMvJo2qSifxA/1Wq9
-         HmdB0Uq5M7+j8IzW36alw3+/0uhbmSwOplVd2UQa0pSxdTN1fO83Uet/4SuKmAT2Wg2A
-         J6GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=afOvuUyBtr0TcfV4r0srwkaU5LgoOmO/9k1OVhh31NA=;
-        b=Z8PsTyoWlpeNQrhI6HUsb6KTBuOYjUwW85dIVpwxM4hLc29uXQcZ4uQ0piJYKzyyZC
-         xfYSXZ5IlLUcsgetx6o4dDm56kwE4aosmebv0UhgGPdb3g+JMPN+EJeIXKgx6n2S20t7
-         0LGUxk5MC47DZaGX+MAEHn3iHLhplw1gWIe3GFk+zVqW9M+6S87dQutklBXTrm2d6u8a
-         wVFCNWGC7QTHWH3kyDujVzvkvIamNtFO18IWjBJ2uYZMe6XnLZIzFuWA/ILo41NhZp35
-         VNfHMM+pdJm33blYXeSUEq3mflhvYlZWskZzhjy20oAzNji3hrGQAd2Uta2cr1Ea64BS
-         GjcQ==
-X-Gm-Message-State: AOAM533wJ0RWAb2i8YSdfvCNRNpXd0+TdYliK0Go3Tn+oqDs6Sue/k6x
-        zuVnvkBP7PT2dP1lBvzHVH0=
-X-Google-Smtp-Source: ABdhPJwO0VolPHC7ExU3yOW/2Hy7G1zj+URK5AKgvjjZWCfBnALhiNaOPwOxq0P04ry6Z3TN7D4RDQ==
-X-Received: by 2002:aa7:c641:: with SMTP id z1mr44787533edr.289.1626947452326;
-        Thu, 22 Jul 2021 02:50:52 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id gw15sm9322340ejb.42.2021.07.22.02.50.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 02:50:51 -0700 (PDT)
-Date:   Thu, 22 Jul 2021 12:50:49 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek Behun <kabel@blackhole.sk>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [RFC PATCH v3 net-next 00/24] Allow forwarding for the software
- bridge data path to be offloaded to capable devices
-Message-ID: <20210722095049.pym33fyuyu5b4gfs@skbuf>
-References: <20210712152142.800651-1-vladimir.oltean@nxp.com>
- <20210712174059.7916c0da@thinkpad>
- <20210712170120.xo34ztomimq5oqdg@skbuf>
- <20210712192711.126f2b35@thinkpad>
+        id S231418AbhGVJNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 05:13:25 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:22260 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231271AbhGVJNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 05:13:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626947623;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=VlCDu+5sVHcJ+UjO1vORlFl5NeSjpe3ptJssBD+UQGk=;
+    b=H7gef/JHuXBpl2EIThQtPpOIga1uFTJoFsQ1va0OEUq0fulR/QbyActsV7jwJe7mWY
+    aRcit3TK7nuxIAaqiLsZrtTMObDK0dAWjz/OWnXRZSFa2wJLtSxcYGnYNgeSWkT/o9hV
+    Zy6q+cv3PVo066ermoVCWV774XLfPKdD92aS7qDcZzBHI8ucn9ORVcKH2mGTtTypa5lC
+    2vAEO+KYu7zclSqptQxAPgX7fdrWXEaEuQAIKuYNDBaYiQ9lapCLgAXz3U79Q/cr7xpX
+    ZYCuFdgJSPK0FPZfQ6WTP9VXTsC+TFELl6tnwXit44x6zsy/WQOWmUelOYFM6Ude/dd7
+    Xc0w==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3htNmYasgbo6AhaFdcg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a00:6020:1cee:8300::b82]
+    by smtp.strato.de (RZmta 47.28.1 AUTH)
+    with ESMTPSA id Z03199x6M9rgKJL
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 22 Jul 2021 11:53:42 +0200 (CEST)
+Subject: Re: [PATCH net v2] can: raw: fix raw_rcv panic for sock UAF
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <d684ef4d-d6c1-56b0-dc9e-b330fb92ba87@hartkopp.net>
+Date:   Thu, 22 Jul 2021 11:53:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210712192711.126f2b35@thinkpad>
+In-Reply-To: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 12, 2021 at 07:27:11PM +0200, Marek Behun wrote:
-> Hi Vladimir,
-> 
-> On Mon, 12 Jul 2021 17:01:21 +0000
-> Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
-> 
-> > Hi Marek,
-> > 
-> > On Mon, Jul 12, 2021 at 05:40:59PM +0200, Marek Behun wrote:
-> > > Vladimir, on what mv88e6xxx devices are you developing this stuff?
-> > > Do you use Turris MOX for this?  
-> > 
-> > I didn't develop the Marvell stuff nor did I come up with the idea
-> > there, Tobias did. I also am not particularly interested in supporting
-> > this for Marvell beyond making sure that the patches look simple and
-> > okay, and pave the way for other drivers to do the same thing.
-> > 
-> > I did my testing using a different DSA driver and extra patches which
-> > I did not post here yet. I just reposted/adapted Tobias' work because
-> > mv88e6xxx needs less work to support the TX data plane offload, and this
-> > framework does need a first user to get accepted, so why delay it any
-> > further if mv88e6xxx needs 2 patches whereas other drivers need 30.
-> > 
-> > I did use the MOX for some minimal testing however, at least as far as
-> > I could - there is this COMPHY SERDES bug in the bootloader which makes
-> > the board fail to boot, and now the device tree workaround you gave me
-> > does not appear to bypass the issue any longer or I didn't reaply it
-> > properly.
-> 
-> Sorry about that. Current upstream U-Boot solves this issue, but we did
-> not release official update yet because there are still some things that
-> need to be done. We have some RCs, though.
-> 
-> If you are interested, it is pretty easy to upgrade:
-> - MTD partition "secure-firmware" needs to be flashed with
->     https://gitlab.nic.cz/turris/mox-boot-builder/uploads/8d5a17fae8f6e14ca11968ee5174c7ca/trusted-secure-firmware.bin
->   (this file needs to be signed by CZ.NIC)
-> - MTD partition "a53-firmware" (or "u-boot" in older DTS) needs to be
->   flashed with
->     https://secure.nic.cz/files/mbehun/a53-firmware.bin
->   (this file can be built by users themselves)
 
-Thanks. This worked in the sense that I could flash the trust zone
-firmware and U-Boot, and net-next will boot without hanging, but now the
-board is in a boot loop, due to what appears to be watchdog timer
-expiration. This happens regardless of whether CONFIG_ARMADA_37XX_WATCHDOG
-is set to y or n in the booted kernel.
+
+On 22.07.21 09:08, Ziyang Xuan wrote:
+> We get a bug during ltp can_filter test as following.
+> 
+> ===========================================
+> [60919.264984] BUG: unable to handle kernel NULL pointer dereference at 0000000000000010
+> [60919.265223] PGD 8000003dda726067 P4D 8000003dda726067 PUD 3dda727067 PMD 0
+> [60919.265443] Oops: 0000 [#1] SMP PTI
+> [60919.265550] CPU: 30 PID: 3638365 Comm: can_filter Kdump: loaded Tainted: G        W         4.19.90+ #1
+> [60919.266068] RIP: 0010:selinux_socket_sock_rcv_skb+0x3e/0x200
+> [60919.293289] RSP: 0018:ffff8d53bfc03cf8 EFLAGS: 00010246
+> [60919.307140] RAX: 0000000000000000 RBX: 000000000000001d RCX: 0000000000000007
+> [60919.320756] RDX: 0000000000000001 RSI: ffff8d5104a8ed00 RDI: ffff8d53bfc03d30
+> [60919.334319] RBP: ffff8d9338056800 R08: ffff8d53bfc29d80 R09: 0000000000000001
+> [60919.347969] R10: ffff8d53bfc03ec0 R11: ffffb8526ef47c98 R12: ffff8d53bfc03d30
+> [60919.350320] perf: interrupt took too long (3063 > 2500), lowering kernel.perf_event_max_sample_rate to 65000
+> [60919.361148] R13: 0000000000000001 R14: ffff8d53bcf90000 R15: 0000000000000000
+> [60919.361151] FS:  00007fb78b6b3600(0000) GS:ffff8d53bfc00000(0000) knlGS:0000000000000000
+> [60919.400812] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [60919.413730] CR2: 0000000000000010 CR3: 0000003e3f784006 CR4: 00000000007606e0
+> [60919.426479] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [60919.439339] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [60919.451608] PKRU: 55555554
+> [60919.463622] Call Trace:
+> [60919.475617]  <IRQ>
+> [60919.487122]  ? update_load_avg+0x89/0x5d0
+> [60919.498478]  ? update_load_avg+0x89/0x5d0
+> [60919.509822]  ? account_entity_enqueue+0xc5/0xf0
+> [60919.520709]  security_sock_rcv_skb+0x2a/0x40
+> [60919.531413]  sk_filter_trim_cap+0x47/0x1b0
+> [60919.542178]  ? kmem_cache_alloc+0x38/0x1b0
+> [60919.552444]  sock_queue_rcv_skb+0x17/0x30
+> [60919.562477]  raw_rcv+0x110/0x190 [can_raw]
+> [60919.572539]  can_rcv_filter+0xbc/0x1b0 [can]
+> [60919.582173]  can_receive+0x6b/0xb0 [can]
+> [60919.591595]  can_rcv+0x31/0x70 [can]
+> [60919.600783]  __netif_receive_skb_one_core+0x5a/0x80
+> [60919.609864]  process_backlog+0x9b/0x150
+> [60919.618691]  net_rx_action+0x156/0x400
+> [60919.627310]  ? sched_clock_cpu+0xc/0xa0
+> [60919.635714]  __do_softirq+0xe8/0x2e9
+> [60919.644161]  do_softirq_own_stack+0x2a/0x40
+> [60919.652154]  </IRQ>
+> [60919.659899]  do_softirq.part.17+0x4f/0x60
+> [60919.667475]  __local_bh_enable_ip+0x60/0x70
+> [60919.675089]  __dev_queue_xmit+0x539/0x920
+> [60919.682267]  ? finish_wait+0x80/0x80
+> [60919.689218]  ? finish_wait+0x80/0x80
+> [60919.695886]  ? sock_alloc_send_pskb+0x211/0x230
+> [60919.702395]  ? can_send+0xe5/0x1f0 [can]
+> [60919.708882]  can_send+0xe5/0x1f0 [can]
+> [60919.715037]  raw_sendmsg+0x16d/0x268 [can_raw]
+> 
+> It's because raw_setsockopt() concurrently with
+> unregister_netdevice_many(). Concurrent scenario as following.
+> 
+> 	cpu0						cpu1
+> raw_bind
+> raw_setsockopt					unregister_netdevice_many
+> 						unlist_netdevice
+> dev_get_by_index				raw_notifier
+> raw_enable_filters				......
+> can_rx_register
+> can_rcv_list_find(..., net->can.rx_alldev_list)
+> 
+> ......
+> 
+> sock_close
+> raw_release(sock_a)
+> 
+> ......
+> 
+> can_receive
+> can_rcv_filter(net->can.rx_alldev_list, ...)
+> raw_rcv(skb, sock_a)
+> BUG
+> 
+> After unlist_netdevice(), dev_get_by_index() return NULL in
+> raw_setsockopt(). Function raw_enable_filters() will add sock
+> and can_filter to net->can.rx_alldev_list. Then the sock is closed.
+> Followed by, we sock_sendmsg() to a new vcan device use the same
+> can_filter. Protocol stack match the old receiver whose sock has
+> been released on net->can.rx_alldev_list in can_rcv_filter().
+> Function raw_rcv() uses the freed sock. UAF BUG is triggered.
+> 
+> We can find that the key issue is that net_device has not been
+> protected in raw_setsockopt(). Use rtnl_lock to protect net_device
+> in raw_setsockopt().
+> 
+> Fixes: c18ce101f2e4 ("[CAN]: Add raw protocol")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+> v2:
+> - add exception handling for dev_get_by_index return NULL
+>   net/can/raw.c | 20 ++++++++++++++++++--
+>   1 file changed, 18 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/can/raw.c b/net/can/raw.c
+> index ed4fcb7ab0c3..cd5a49380116 100644
+> --- a/net/can/raw.c
+> +++ b/net/can/raw.c
+> @@ -546,10 +546,18 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   				return -EFAULT;
+>   		}
+>   
+> +		rtnl_lock();
+>   		lock_sock(sk);
+>   
+> -		if (ro->bound && ro->ifindex)
+> +		if (ro->bound && ro->ifindex) {
+>   			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
+> +			if (!dev) {
+
+
+> +				if (count > 1)
+> +					kfree(filter);
+
+This was NOT suggested!
+
+I've been talking about removing the other kfree() "improvement" you 
+suggested.
+
+The kfree() should only be done when ro->bound and ro->ifindex are cleared.
+
+So when you remove these two lines it should be ok.
+
+Please try to increase the context in the diff.
+
+Thanks,
+Oliver
+
+
+> +				err = -ENODEV;
+> +				goto out_fil;
+> +			}
+> +		}
+>   
+>   		if (ro->bound) {
+>   			/* (try to) register the new filters */
+> @@ -588,6 +596,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   			dev_put(dev);
+>   
+>   		release_sock(sk);
+> +		rtnl_unlock();
+>   
+>   		break;
+>   
+> @@ -600,10 +609,16 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   
+>   		err_mask &= CAN_ERR_MASK;
+>   
+> +		rtnl_lock();
+>   		lock_sock(sk);
+>   
+> -		if (ro->bound && ro->ifindex)
+> +		if (ro->bound && ro->ifindex) {
+>   			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
+> +			if (!dev) {
+> +				err = -ENODEV;
+> +				goto out_err;
+> +			}
+> +		}
+>   
+>   		/* remove current error mask */
+>   		if (ro->bound) {
+> @@ -627,6 +642,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   			dev_put(dev);
+>   
+>   		release_sock(sk);
+> +		rtnl_unlock();
+>   
+>   		break;
+>   
+> 
