@@ -2,124 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4862E3D22AE
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4F663D22E6
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbhGVKqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 06:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S231741AbhGVLGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 07:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231286AbhGVKqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 06:46:15 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ADD0C061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 04:26:50 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id r135so4783251ybc.0
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 04:26:50 -0700 (PDT)
+        with ESMTP id S231566AbhGVLGa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 07:06:30 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE30FC061575
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 04:47:04 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id bm6so5085336qkb.1
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 04:47:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LY/3UQVMLCt1YmqZR3yy9aFu3cFmtUpm6v8HH0OSmpc=;
-        b=DzQJSlI/+Mu0zyH8vlobVbL5E3AUDLfvusB5aX9EK/4Qdr0LwIaNjK64Smd0Ez3eBC
-         Jza1U59xvhpt9V4o0kuew5hXp3MLmNsQDRurz3U/iyFIt8d4yCF6X6v/W8WgfXX8BBgU
-         Oc9rnZucceIOUiCAm/y85j4vT0sN15aTpMSy1EeGobg+r+zcPxjmr1AJ+dOg32EIfuGI
-         IYOpUQC+FPdeWb/xt7CkFPw0SmZmTjNMih2HKR5KC8ThtrJQxoI+QpNSlT3avs5WOEnC
-         zLI9kFQwnzSIQbCf5hSOw9rMpMiQS8RzxZ1XiST4DFxAvq/jce9enPnQnJRx9bV4VhBG
-         Bs6A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=no5HzU2AGP2i04tSzHzClrDHs7RjfOj5uaDnvVZrTG8=;
+        b=TCXRAaFLrzeyejyBzPhPi0QcLG2clI6UxlDrPmD1mbT6e+0PR1gM0bQ5QUqNcUpUne
+         qRHTC8uAKemmb/tQT6ArRU3i1/O2ZGFRoNF1Uk1mkOnos2c44aiJ2v+mE3aO2Ew/6wys
+         fmFhUZJ8dpnU+gBNIAyMRo3xcD99z0rt586Si8qmtaRYqH35kunHI/JINNnzYXjOT4i7
+         TQd6joFNTbni4OQWxhEkO7JYIMHbLhHSAh+AZGEF7lA/2xyvFX14Ahf9dsU73gJGd340
+         qZw6eY6z37oebUxOs26bK3pKubfw054ap8jWoJ/tjei6YsrISjP0BH9/D/UlTcY5Cbz8
+         skMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LY/3UQVMLCt1YmqZR3yy9aFu3cFmtUpm6v8HH0OSmpc=;
-        b=tvFVO2SqhSg+sil3jOXase2VjJqcrpbB0hGeo5ZSbKo8ARltXlW979+Gi75vOL6IN+
-         +y0BKMlrtUvaIvnhLd4/C+5Za9gMaLHkzUaw+D6hEos0Ts4Ok++Dp8ENRII7ILVKrXqL
-         TaT6n9q5BFv+NWHsa+eZ68QvipQnFHcrYC5/kWz6rWQpVqzFAUtXo1AEgLRCcbKLf90g
-         1LSevGHrkQ2ZQzK9PzjnfDT+zQOC2a+7NnuT74X59TGzIVEoQoG8HaCX/lbAm3TBhnZM
-         Mp5V+XBz5DWkfPj9VoKfpwohgmqSVWBlIK6Bv4IITIFpEtwNbF+HhLiXnLzjDDEHMY5m
-         /ohw==
-X-Gm-Message-State: AOAM53378jAS+0M97lCh3AkXusrxBRWRh6kPCGE37cCO6NvbmEON8G/q
-        u+b3Cnru1fRJshUXhOvkwsyNgS9K+4kZT8fsr1OrlA==
-X-Google-Smtp-Source: ABdhPJyL4vwqaMpNugwufDInzlGAlBzOgDGT0wpkeVoth+W+20J79EbDnLUBZEHhtECw0hpcbHNjvL+caHgL2+V33GM=
-X-Received: by 2002:a25:afcd:: with SMTP id d13mr49814639ybj.504.1626953209728;
- Thu, 22 Jul 2021 04:26:49 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=no5HzU2AGP2i04tSzHzClrDHs7RjfOj5uaDnvVZrTG8=;
+        b=OI1pVOLk4QYB3D9VtjlBE38S0LSC3MZr/knKRBIoDMntU1DCw15pKZqTCBzjisfK7w
+         W66XJHGrHBGDmSMoEw2Acu0AE6UYwe+94KH46tbeVXaawrCzuByttIdW0W3s+limYpG9
+         rvYyH+tpK5YXK1qbefwb4lTEedoFNYDF8I7mWdN5EtCVnfIpeNXP62JvOA3aSFErGzzC
+         ui3GXXRYCT7lxWs/41Q12n+KZzls2JlaVkfW+awM1xPLwGxCHddJsD1+dwNNAqzio0Sn
+         PzYhMz7hFDWMt15bCFz/EebupT1yOH2hnvzrhU2HmhMs/agfBE1mfMnp/jiALXfCOxIs
+         V6Xg==
+X-Gm-Message-State: AOAM530ox+/jYdxq59L7KtNp1JRVH+NjG2ya2wuxHq5AQL2J0bRifm/v
+        fUCRJ337EQnq0qonYg8N4zE=
+X-Google-Smtp-Source: ABdhPJxEbTuSDHFL1UnJ903X/1FSnzpwhG/ECZU1O7GUTNwHocHRDEg6ZYCUw6EcSPWi/cT50ZgohA==
+X-Received: by 2002:a05:620a:2991:: with SMTP id r17mr22635468qkp.208.1626954424122;
+        Thu, 22 Jul 2021 04:47:04 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:194:8382:2ab0:43b0:3fe2:b50d:fb0f])
+        by smtp.gmail.com with ESMTPSA id o1sm10002671qta.87.2021.07.22.04.47.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 04:47:03 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 04:47:01 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Piotr Kwapulinski <piotr.kwapulinski@intel.com>,
+        netdev@vger.kernel.org,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Ashish K <ashishx.k@intel.com>
+Subject: Re: [PATCH net-next v2 1/1] i40e: add support for PTP external
+ synchronization clock
+Message-ID: <20210722114701.GA3439@hoboy.vegasvil.org>
+References: <20210720232348.3087841-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-References: <20210722110325.371-1-borisp@nvidia.com> <20210722110325.371-2-borisp@nvidia.com>
-In-Reply-To: <20210722110325.371-2-borisp@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 22 Jul 2021 13:26:38 +0200
-Message-ID: <CANn89iLP4yXDK9nOq6Lxs9NrfAOZ6RuX5B5SV0Japx50KvnEyQ@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 01/36] net: Introduce direct data placement
- tcp offload
-To:     Boris Pismenny <borisp@nvidia.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        smalin@marvell.com, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        benishay@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        Boris Pismenny <borisp@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210720232348.3087841-1-anthony.l.nguyen@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 1:04 PM Boris Pismenny <borisp@nvidia.com> wrote:
->
-> From: Boris Pismenny <borisp@mellanox.com>
->
->
-...
+On Tue, Jul 20, 2021 at 04:23:48PM -0700, Tony Nguyen wrote:
 
->  };
->
->  const char
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index e6ca5a1f3b59..4a7160bba09b 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -5149,6 +5149,9 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
->                 memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
->  #ifdef CONFIG_TLS_DEVICE
->                 nskb->decrypted = skb->decrypted;
-> +#endif
-> +#ifdef CONFIG_ULP_DDP
-> +               nskb->ddp_crc = skb->ddp_crc;
-
-Probably you do not want to attempt any collapse if skb->ddp_crc is
-set right there.
-
->  #endif
->                 TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(nskb)->end_seq = start;
->                 if (list)
-> @@ -5182,6 +5185,11 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
->  #ifdef CONFIG_TLS_DEVICE
->                                 if (skb->decrypted != nskb->decrypted)
->                                         goto end;
-> +#endif
-> +#ifdef CONFIG_ULP_DDP
+> +/**
+> + * i40e_set_subsystem_device_id - set subsystem device id
+> + * @hw: pointer to the hardware info
+> + *
+> + * Set PCI subsystem device id either from a pci_dev structure or
+> + * a specific FW register.
+> + **/
+> +static inline void i40e_set_subsystem_device_id(struct i40e_hw *hw)
+> +{
+> +	struct pci_dev *pdev = ((struct i40e_pf *)hw->back)->pdev;
 > +
-> +                               if (skb->ddp_crc != nskb->ddp_crc)
+> +	hw->subsystem_device_id = pdev->subsystem_device ?
+> +		pdev->subsystem_device :
+> +		(ushort)(rd32(hw, I40E_PFPCI_SUBSYSID) & USHRT_MAX);
+> +}
+> +
+>  /**
+>   * i40e_probe - Device initialization routine
+>   * @pdev: PCI device information struct
+> @@ -15262,7 +15281,7 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	hw->device_id = pdev->device;
+>  	pci_read_config_byte(pdev, PCI_REVISION_ID, &hw->revision_id);
+>  	hw->subsystem_vendor_id = pdev->subsystem_vendor;
+> -	hw->subsystem_device_id = pdev->subsystem_device;
+> +	i40e_set_subsystem_device_id(hw);
 
-This checks only the second, third, and remaining skbs.
+What does this have to do with $SUBJECT?  Nothing, AFAICT.
 
-> +                                       goto end;
->  #endif
->                         }
->                 }
-
-
-tcp_collapse() is copying data from small skbs to pack it to bigger
-skb (one page of payload), in case
-of memory emergency/pressure (socket queues are full)
-
-If your changes are trying to avoid 'needless'  copies, maybe you
-should reconsider and let the emergency packing be done.
-
-If the copy is not _possible_, you should rephrase your changelog to
-clearly state the kernel _cannot_ access this memory in any way.
+Thanks,
+Richard
