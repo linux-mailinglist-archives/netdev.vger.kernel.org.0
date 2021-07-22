@@ -2,161 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 371D83D1D14
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 06:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25F373D1D24
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 06:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230091AbhGVDwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 23:52:36 -0400
-Received: from ozlabs.org ([203.11.71.1]:51835 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229905AbhGVDwf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 23:52:35 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GVfhM4qPHz9sXM;
-        Thu, 22 Jul 2021 14:33:07 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1626928390;
-        bh=Vzi7mqkU5zcj91egSNfnsIYg80io1ZM7W7/i8splPIM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SydseObja7No1RP/9nNNr83o49PStyFgC1Kb0gKtKCfEfmzpUir6W3X64OoDD4zDD
-         Exrv3lis0SYnCCga3zmJPuICFDxT1TP9yvOnylE5Uj7DfO+IEqIHa2anoQKyzyqhMa
-         1LDdolWAe59U0mazm5P+vb9JPrR4OFHPNCFgdtPwqFiSupQa5RmSMor0f0jtW0pp30
-         7T1tBiuczt1KXPAbEjFsN3N8libSs6CkNb5A0ZeuPLxpx9pARHQQGvR/GZOnirFqzu
-         c6II7xbzVS03AdcSa/PmzJR1FwYW+QYo9n4kwGWaW8VKVlxR1kHcYSncI6OpXaWwyE
-         hWBaBPZeKpDOw==
-Date:   Thu, 22 Jul 2021 14:33:06 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, Greg KH <greg@kroah.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Richard Laing <richard.laing@alliedtelesis.co.nz>
-Subject: Re: linux-next: manual merge of the mhi tree with the net-next tree
-Message-ID: <20210722143306.305aed6f@canb.auug.org.au>
-In-Reply-To: <20210716133738.0d163701@canb.auug.org.au>
-References: <20210716133738.0d163701@canb.auug.org.au>
+        id S229649AbhGVEGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 00:06:50 -0400
+Received: from mail.zju.edu.cn ([61.164.42.155]:21728 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229492AbhGVEGt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 00:06:49 -0400
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 22 Jul 2021 12:47:20
+ +0800 (GMT+08:00)
+X-Originating-IP: [222.205.18.100]
+Date:   Thu, 22 Jul 2021 12:47:20 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   LinMa <linma@zju.edu.cn>
+To:     "Tetsuo Handa" <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        "Johan Hedberg" <johan.hedberg@gmail.com>,
+        "Marcel Holtmann" <marcel@holtmann.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Subject: Re: Re: [PATCH v3] Bluetooth: call lock_sock() outside of spinlock
+ section
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2021 www.mailtech.cn zju.edu.cn
+In-Reply-To: <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
+References: <20210627131134.5434-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <9deece33-5d7f-9dcb-9aaa-94c60d28fc9a@i-love.sakura.ne.jp>
+ <48d66166-4d39-4fe2-3392-7e0c84b9bdb3@i-love.sakura.ne.jp>
+ <CABBYNZJKWktRo1pCMdafAZ22sE2ZbZeMuFOO+tHUxOtEtTDTeA@mail.gmail.com>
+ <674e6b1c.4780d.17aa81ee04c.Coremail.linma@zju.edu.cn>
+ <2b0e515c-6381-bffe-7742-05148e1e2dcb@gmail.com>
+ <4b955786-d233-8d3f-4445-2422c1daf754@gmail.com>
+ <e07c5bbf-115c-6ffa-8492-7b749b9d286b@i-love.sakura.ne.jp>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/P5CLjLME1KnvvnMgvlYF5Ay";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Message-ID: <7e4fafe2.58d70.17acc8a1a0b.Coremail.linma@zju.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: cS_KCgBnmXRY+PhgWr85AQ--.44612W
+X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwUOElNG3Dh-WwACsN
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/P5CLjLME1KnvvnMgvlYF5Ay
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Fri, 16 Jul 2021 13:37:38 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the mhi tree got a conflict in:
->=20
->   drivers/bus/mhi/pci_generic.c
->=20
-> between commit:
->=20
->   5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MR=
-U")
->=20
-> from the net-next tree and commit:
->=20
->   156ffb7fb7eb ("bus: mhi: pci_generic: Apply no-op for wake using sideba=
-nd wake boolean")
->=20
-> from the mhi tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
->=20
-> diff --cc drivers/bus/mhi/pci_generic.c
-> index 19413daa0917,8bc6149249e3..000000000000
-> --- a/drivers/bus/mhi/pci_generic.c
-> +++ b/drivers/bus/mhi/pci_generic.c
-> @@@ -32,7 -32,8 +32,9 @@@
->    * @edl: emergency download mode firmware path (if any)
->    * @bar_num: PCI base address register to use for MHI MMIO register spa=
-ce
->    * @dma_data_width: DMA transfer word size (32 or 64 bits)
->  + * @mru_default: default MRU size for MBIM network packets
-> +  * @sideband_wake: Devices using dedicated sideband GPIO for wakeup ins=
-tead
-> +  *		   of inband wake support (such as sdx24)
->    */
->   struct mhi_pci_dev_info {
->   	const struct mhi_controller_config *config;
-> @@@ -41,7 -42,7 +43,8 @@@
->   	const char *edl;
->   	unsigned int bar_num;
->   	unsigned int dma_data_width;
->  +	unsigned int mru_default;
-> + 	bool sideband_wake;
->   };
->  =20
->   #define MHI_CHANNEL_CONFIG_UL(ch_num, ch_name, el_count, ev_ring) \
-> @@@ -254,7 -256,7 +258,8 @@@ static const struct mhi_pci_dev_info mh
->   	.config =3D &modem_qcom_v1_mhiv_config,
->   	.bar_num =3D MHI_PCI_DEFAULT_BAR_NUM,
->   	.dma_data_width =3D 32,
->  +	.mru_default =3D 32768
-> + 	.sideband_wake =3D false,
->   };
->  =20
->   static const struct mhi_pci_dev_info mhi_qcom_sdx24_info =3D {
-> @@@ -643,11 -686,13 +689,14 @@@ static int mhi_pci_probe(struct pci_de
->   	mhi_cntrl->status_cb =3D mhi_pci_status_cb;
->   	mhi_cntrl->runtime_get =3D mhi_pci_runtime_get;
->   	mhi_cntrl->runtime_put =3D mhi_pci_runtime_put;
-> - 	mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
-> - 	mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
-> - 	mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
->  +	mhi_cntrl->mru =3D info->mru_default;
->  =20
-> + 	if (info->sideband_wake) {
-> + 		mhi_cntrl->wake_get =3D mhi_pci_wake_get_nop;
-> + 		mhi_cntrl->wake_put =3D mhi_pci_wake_put_nop;
-> + 		mhi_cntrl->wake_toggle =3D mhi_pci_wake_toggle_nop;
-> + 	}
-> +=20
->   	err =3D mhi_pci_claim(mhi_cntrl, info->bar_num, DMA_BIT_MASK(info->dma=
-_data_width));
->   	if (err)
->   		return err;
-
-This is now a conflict between the char-misc.current tree (where commit
-156ffb7fb7eb is now 56f6f4c4eb2a) and the net-next tree.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/P5CLjLME1KnvvnMgvlYF5Ay
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD49QIACgkQAVBC80lX
-0GylKgf/WQy3QWDT3SqsE3a3iYJ7wR/39A9yfNaEd3ffA3X/kCdHrm9zsZBwnjHK
-/1sLKy2L4fQLtTI4p8N/a4vixfeQEJLIwqzaBHr9aajyI6aZ3uIC7zr1JEZeXv3u
-SOOlTS3KfdDvukLtqZvInQPU6kBIOXJCIgVzekKu5VwcguIWE1RIY8mWln/9Hw82
-X/myO9SwvKZHNInKlpv60T+gvNbc8wy5U+k9l6lgpXPcQmy0SFeKh1ib16gKU1Lq
-aIF4Gy9JFgBToSGDEUmaeFpfPz6NBDYeTdNOYvEZRj1RFiexMt/0tHZuNruTm1Xi
-DZPVDGWi2TkOFsZujLrKx8/kW9HePA==
-=GaFk
------END PGP SIGNATURE-----
-
---Sig_/P5CLjLME1KnvvnMgvlYF5Ay--
+SGkgVGV0c3VvLAoKSnVzdCBmaW5kIG91dCBhbm90aGVyIGludGVyZXN0aW5nIGZ1bmN0aW9uOiBz
+b2NrX293bmVkX2J5X3VzZXIoKS4gKEkgYW0ganVzdCBhIG5vb2Igb2Yga2VybmVsIGxvY2tzKQoK
+SGVuY2UgSSB0aGluayB0aGUgZm9sbG93aW5nIHBhdGNoIGhhcyB0aGUgc2FtZSAnZWZmZWN0JyBh
+cyB0aGUgb2xkIHBhdGNoIGUzMDU1MDllNjc4YjMgKCJCbHVldG9vdGg6IHVzZSBjb3JyZWN0IGxv
+Y2sgdG8gcHJldmVudCBVQUYgb2YgaGRldiBvYmplY3QiKQoKZGlmZiAtLWdpdCBhL25ldC9ibHVl
+dG9vdGgvaGNpX3NvY2suYyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwppbmRleCBiMDRhNWEw
+MmVjZjMuLjBjYzRiODhkYWE5NiAxMDA2NDQKLS0tIGEvbmV0L2JsdWV0b290aC9oY2lfc29jay5j
+CisrKyBiL25ldC9ibHVldG9vdGgvaGNpX3NvY2suYwpAQCAtNzYyLDcgKzc2MiwxMSBAQCB2b2lk
+IGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2RldiAqaGRldiwgaW50IGV2ZW50KQogICAg
+ICAgICAgICAgICAgLyogRGV0YWNoIHNvY2tldHMgZnJvbSBkZXZpY2UgKi8KICAgICAgICAgICAg
+ICAgIHJlYWRfbG9jaygmaGNpX3NrX2xpc3QubG9jayk7CiAgICAgICAgICAgICAgICBza19mb3Jf
+ZWFjaChzaywgJmhjaV9za19saXN0LmhlYWQpIHsKLSAgICAgICAgICAgICAgICAgICAgICAgbG9j
+a19zb2NrKHNrKTsKKyAgICAgICAgICAgICAgICAgICAgICAgYmhfbG9ja19zb2NrX25lc3RlZChz
+ayk7CitidXN5d2FpdDoKKyAgICAgICAgICAgICAgICAgICAgICAgaWYgKHNvY2tfb3duZWRfYnlf
+dXNlcihzaykpCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ290byBidXN5d2FpdDsK
+KwogICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+aGRldiA9PSBoZGV2KSB7
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaGNpX3BpKHNrKS0+aGRldiA9IE5VTEw7
+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2stPnNrX2VyciA9IEVQSVBFOwpAQCAt
+NzcxLDcgKzc3NSw3IEBAIHZvaWQgaGNpX3NvY2tfZGV2X2V2ZW50KHN0cnVjdCBoY2lfZGV2ICpo
+ZGV2LCBpbnQgZXZlbnQpCgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhjaV9kZXZf
+cHV0KGhkZXYpOwogICAgICAgICAgICAgICAgICAgICAgICB9Ci0gICAgICAgICAgICAgICAgICAg
+ICAgIHJlbGVhc2Vfc29jayhzayk7CisgICAgICAgICAgICAgICAgICAgICAgIGJoX3VubG9ja19z
+b2NrKHNrKTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHJlYWRfdW5sb2NrKCZo
+Y2lfc2tfbGlzdC5sb2NrKTsKICAgICAgICB9CgpUaGUgc2FkIHRoaW5nIGlzIHRoYXQgaXQgc2Vl
+bXMgd2lsbCBjb3N0IENQVSByZXNvdXJjZSB0byBkbyBtZWFuaW5nbGVzcyB3YWl0Li4uCgpXaGF0
+IGRvIHlvdSB0aGluaz8gQ2FuIHRoaXMgc29ja19vd25lZF9ieV91c2VyKCkgZnVuY3Rpb24gZG8g
+YW55IGhlbHA/CgpUaGFua3MKTGluIE1hCgoKPiBGcm9tOiAiVGV0c3VvIEhhbmRhIiA8cGVuZ3Vp
+bi1rZXJuZWxAaS1sb3ZlLnNha3VyYS5uZS5qcD4KPiBTZW50IFRpbWU6IDIwMjEtMDctMTYgMjI6
+NDg6MTMgKEZyaWRheSkKPiBUbzogIkRlc21vbmQgQ2hlb25nIFpoaSBYaSIgPGRlc21vbmRjaGVv
+bmd6eEBnbWFpbC5jb20+LCBMaW5NYSA8bGlubWFAemp1LmVkdS5jbj4sICJMdWl6IEF1Z3VzdG8g
+dm9uIERlbnR6IiA8bHVpei5kZW50ekBnbWFpbC5jb20+LCAiSm9oYW4gSGVkYmVyZyIgPGpvaGFu
+LmhlZGJlcmdAZ21haWwuY29tPiwgIk1hcmNlbCBIb2x0bWFubiIgPG1hcmNlbEBob2x0bWFubi5v
+cmc+Cj4gQ2M6ICJsaW51eC1ibHVldG9vdGhAdmdlci5rZXJuZWwub3JnIiA8bGludXgtYmx1ZXRv
+b3RoQHZnZXIua2VybmVsLm9yZz4sICJEYXZpZCBTLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQu
+bmV0PiwgIkpha3ViIEtpY2luc2tpIiA8a3ViYUBrZXJuZWwub3JnPiwgIm9wZW4gbGlzdDpORVRX
+T1JLSU5HIFtHRU5FUkFMXSIgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+Cj4gU3ViamVjdDogUmU6
+IFtQQVRDSCB2M10gQmx1ZXRvb3RoOiBjYWxsIGxvY2tfc29jaygpIG91dHNpZGUgb2Ygc3Bpbmxv
+Y2sgc2VjdGlvbgo+IAo+IE9uIDIwMjEvMDcvMTYgMTM6MTEsIERlc21vbmQgQ2hlb25nIFpoaSBY
+aSB3cm90ZToKPiA+IE9uIDE2LzcvMjEgMTE6NDcgYW0sIERlc21vbmQgQ2hlb25nIFpoaSBYaSB3
+cm90ZToKPiA+PiBTYXcgdGhpcyBhbmQgdGhvdWdodCBJJ2Qgb2ZmZXIgbXkgdHdvIGNlbnRzLgo+
+ID4+IEJVRzogc2xlZXBpbmcgZnVuY3Rpb24gY2FsbGVkIGZyb20gaW52YWxpZCBjb250ZXh0Cj4g
+Pj4gVGhpcyBpcyB0aGUgb3JpZ2luYWwgcHJvYmxlbSB0aGF0IFRldHN1bydzIHBhdGNoIHdhcyB0
+cnlpbmcgdG8gZml4Lgo+IAo+IFllcy4KPiAKPiA+PiBVbmRlciB0aGUgaG9vZCBvZiBsb2NrX3Nv
+Y2ssIHdlIGNhbGwgbG9ja19zb2NrX25lc3RlZCB3aGljaCBtaWdodCBzbGVlcAo+ID4+IGJlY2F1
+c2Ugb2YgdGhlIG11dGV4X2FjcXVpcmUuCj4gCj4gQm90aCBsb2NrX3NvY2soKSBhbmQgbG9ja19z
+b2NrX25lc3RlZCgpIG1pZ2h0IHNsZWVwLgo+IAo+ID4+IEJ1dCB3ZSBzaG91bGRuJ3Qgc2xlZXAg
+d2hpbGUgaG9sZGluZyB0aGUgcncgc3BpbmxvY2suCj4gCj4gUmlnaHQuIEluIGF0b21pYyBjb250
+ZXh0IChlLmcuIGluc2lkZSBpbnRlcnJ1cHQgaGFuZGxlciwgc2NoZWR1bGFibGUgY29udGV4dAo+
+IHdpdGggaW50ZXJydXB0cyBvciBwcmVlbXB0aW9uIGRpc2FibGVkLCBzY2hlZHVsYWJsZSBjb250
+ZXh0IGluc2lkZSBSQ1UgcmVhZAo+IGNyaXRpY2FsIHNlY3Rpb24sIHNjaGVkdWxhYmxlIGNvbnRl
+eHQgaW5zaWRlIGEgc3BpbmxvY2sgc2VjdGlvbiksIHdlIG11c3Qgbm90Cj4gY2FsbCBmdW5jdGlv
+bnMgKGUuZy4gd2FpdGluZyBmb3IgYSBtdXRleCwgd2FpdGluZyBmb3IgYSBzZW1hcGhvcmUsIHdh
+aXRpbmcgZm9yCj4gYSBwYWdlIGZhdWx0KSB3aGljaCBhcmUgbm90IGF0b21pYy4KPiAKPiA+PiBT
+byB3ZSBlaXRoZXIgaGF2ZSB0byBhY3F1aXJlIGEgc3BpbmxvY2sgaW5zdGVhZCBvZiBhIG11dGV4
+IGFzIHdhcyBkb25lIGJlZm9yZSwKPiAKPiBSZWdhcmRpbmcgaGNpX3NvY2tfZGV2X2V2ZW50KEhD
+SV9ERVZfVU5SRUcpIGNhc2UsIHdlIGNhbid0IHVzZSBhIHNwaW5sb2NrLgo+IAo+IExpa2UgTGlu
+TWEgZXhwbGFpbmVkLCBsb2NrX3NvY2soKSBoYXMgdG8gYmUgdXNlZCBpbiBvcmRlciB0byBzZXJp
+YWxpemUgZnVuY3Rpb25zCj4gKGUuZy4gaGNpX3NvY2tfc2VuZG1zZygpKSB3aGljaCBhY2Nlc3Mg
+aGNpX3BpKHNrKS0+aGRldiBiZXR3ZWVuIGxvY2tfc29jayhzaykgYW5kCj4gcmVsZWFzZV9zb2Nr
+KHNrKS4gQW5kIGxpa2UgSSBleHBsYWluZWQsIHdlIGNhbid0IGRlZmVyIHJlc2V0dGluZyBoY2lf
+cGkoc2spLT5oZGV2Cj4gdG8gTlVMTCwgZm9yIGhjaV9zb2NrX2Rldl9ldmVudChIQ0lfREVWX1VO
+UkVHKSBpcyByZXNwb25zaWJsZSBmb3IgcmVzZXR0aW5nCj4gaGNpX3BpKHNrKS0+aGRldiB0byBO
+VUxMIGJlY2F1c2UgdGhlIGNhbGxlciBvZiBoY2lfc29ja19kZXZfZXZlbnQoSENJX0RFVl9VTlJF
+RykKPiBpbW1lZGlhdGVseSBkZXN0cm95cyByZXNvdXJjZXMgYXNzb2NpYXRlZCB3aXRoIHRoaXMg
+aGRldi4KPiAKPiA+PiBvciB3ZSBuZWVkIHRvIG1vdmUgbG9ja19zb2NrIG91dCBvZiB0aGUgcncg
+c3BpbmxvY2sgY3JpdGljYWwgc2VjdGlvbiBhcyBUZXRzdW8gcHJvcG9zZXMuCj4gCj4gRXhhY3Rs
+eS4gU2luY2UgdGhpcyBpcyBhIHJlZ3Jlc3Npb24gaW50cm9kdWNlZCB3aGVuIGZpeGluZyBDVkUt
+MjAyMS0zNTczLCBMaW51eAo+IGRpc3RyaWJ1dG9ycyBhcmUgd2FpdGluZyBmb3IgdGhpcyBwYXRj
+aCBzbyB0aGF0IHRoZXkgY2FuIGFwcGx5IHRoZSBmaXggZm9yIENWRS0yMDIxLTM1NzMuCj4gVGhp
+cyBwYXRjaCBzaG91bGQgYmUgc2VudCB0byBsaW51eC5naXQgYW5kIHN0YWJsZXMgYXMgc29vbiBh
+cyBwb3NzaWJsZS4gQnV0IGR1ZSB0byBsaXR0bGUKPiBhdHRlbnRpb24gb24gdGhpcyBwYXRjaCwg
+SSdtIGFscmVhZHkgdGVzdGluZyB0aGlzIHBhdGNoIGluIGxpbnV4LW5leHQuZ2l0IHZpYSBteSB0
+cmVlLgo+IEknbGwgZHJvcCB3aGVuIEJsdWV0b290aCBtYWludGFpbmVycyBwaWNrIHRoaXMgcGF0
+Y2ggdXAgZm9yIGxpbnV4LTUuMTQtcmNYLiAoT3Igc2hvdWxkIEkKPiBkaXJlY3RseSBzZW5kIHRv
+IExpbnVzPykKPiAKPiA+Pgo+ID4gCj4gPiBNeSBiYWQsIHdhcyB0aGlua2luZyBtb3JlIGFib3V0
+IHRoZSBwcm9ibGVtIGFuZCBub3RpY2VkIHlvdXIgcG9jIHdhcyBmb3IgaGNpX3NvY2tfc2VuZG1z
+ZywKPiA+IG5vdCBoY2lfc29ja19kZXZfZXZlbnQuCj4gCj4gSSBkaWRuJ3QgY2F0Y2ggdGhpcyBw
+YXJ0LiBBcmUgeW91IHRhbGtpbmcgYWJvdXQgYSBkaWZmZXJlbnQgcG9jPwo+IEFzIGZhciBhcyBJ
+J20gYXdhcmUsIGV4cC5jIGluIFBPQy56aXAgd2FzIGZvciBoY2lfc29ja19ib3VuZF9pb2N0bChI
+Q0lVTkJMT0NLQUREUikuCj4gCj4gaGNpX3NvY2tfYm91bmRfaW9jdGwoSENJVU5CTE9DS0FERFIp
+ICh3aGljaCBpcyBjYWxsZWQgYmV0d2VlbiBsb2NrX3NvY2soKSBhbmQgcmVsZWFzZV9zb2NrKCkp
+Cj4gY2FsbHMgY29weV9mcm9tX3VzZXIoKSB3aGljaCBtaWdodCBjYXVzZSBwYWdlIGZhdWx0LCBh
+bmQgdXNlcmZhdWx0ZmQgbWVjaGFuaXNtIGFsbG93cyBhbiBhdHRhY2tlcgo+IHRvIHNsb3dkb3du
+IHBhZ2UgZmF1bHQgaGFuZGxpbmcgZW5vdWdoIHRvIGhjaV9zb2NrX2Rldl9ldmVudChIQ0lfREVW
+X1VOUkVHKSB0byByZXR1cm4gd2l0aG91dAo+IHdhaXRpbmcgZm9yIGhjaV9zb2NrX2JvdW5kX2lv
+Y3RsKEhDSVVOQkxPQ0tBRERSKSB0byBjYWxsIHJlbGVhc2Vfc29jaygpLiBUaGlzIHJhY2Ugd2lu
+ZG93Cj4gcmVzdWx0cyBpbiBVQUYgKGRvZXNuJ3QgaXQsIExpbk1hPykuCj4gCj4gPiBJbiB0aGlz
+IGNhc2UsIGl0J3Mgbm90IGNsZWFyIHRvIG1lIHdoeSB0aGUgYXRvbWljIGNvbnRleHQgaXMgYmVp
+bmcgdmlvbGF0ZWQuCj4gCj4gSW4gYXRvbWljIGNvbnRleHQgKGluIGhjaV9zb2NrX2Rldl9ldmVu
+dChIQ0lfREVWX1VOUkVHKSBjYXNlLCBiZXR3ZWVuCj4gcmVhZF9sb2NrKCZoY2lfc2tfbGlzdC5s
+b2NrKSBhbmQgcmVhZF91bmxvY2soJmhjaV9za19saXN0LmxvY2spKSwgd2UgbXVzdCBub3QgY2Fs
+bAo+IGxvY2tfc29jayhzaykgd2hpY2ggbWlnaHQgd2FpdCBmb3IgaGNpX3NvY2tfYm91bmRfaW9j
+dGwoSENJVU5CTE9DS0FERFIpIHRvIGNhbGwgcmVsZWFzZV9zb2NrKCkuCj4gCj4gPiAKPiA+IFNv
+cnJ5IGZvciB0aGUgbm9pc2UuCj4gPiAKPiA+Pj4KPiA+Pj4gVGhlIHBhdGNoIHByb3ZpZGVkIGJ5
+IERlc21vbmQgYWRkcyB0aGUgbG9jYWxfYmhfZGlzYWJsZSgpIGJlZm9yZSB0aGUgYmhfbG9ja19z
+b2NrKCkgc28gSSBhbHNvIHRyeSB0aGF0IGluCj4gPj4+Cj4gPj4+IC0tLSBhL25ldC9ibHVldG9v
+dGgvaGNpX3NvY2suYwo+ID4+PiArKysgYi9uZXQvYmx1ZXRvb3RoL2hjaV9zb2NrLmMKPiA+Pj4g
+QEAgLTc2Miw2ICs3NjIsNyBAQCB2b2lkIGhjaV9zb2NrX2Rldl9ldmVudChzdHJ1Y3QgaGNpX2Rl
+diAqaGRldiwgaW50IGV2ZW50KQo+ID4+PiAgICAgICAgICAgICAgICAgIC8qIERldGFjaCBzb2Nr
+ZXRzIGZyb20gZGV2aWNlICovCj4gPj4+ICAgICAgICAgICAgICAgICAgcmVhZF9sb2NrKCZoY2lf
+c2tfbGlzdC5sb2NrKTsKPiA+Pj4gICAgICAgICAgICAgICAgICBza19mb3JfZWFjaChzaywgJmhj
+aV9za19saXN0LmhlYWQpIHsKPiA+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgbG9jYWxfYmhf
+ZGlzYWJsZSgpOwo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgYmhfbG9ja19zb2NrX25l
+c3RlZChzayk7Cj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICAgICBpZiAoaGNpX3BpKHNrKS0+
+aGRldiA9PSBoZGV2KSB7Cj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhj
+aV9waShzayktPmhkZXYgPSBOVUxMOwo+ID4+PiBAQCAtNzcyLDYgKzc3Myw3IEBAIHZvaWQgaGNp
+X3NvY2tfZGV2X2V2ZW50KHN0cnVjdCBoY2lfZGV2ICpoZGV2LCBpbnQgZXZlbnQpCj4gPj4+ICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGhjaV9kZXZfcHV0KGhkZXYpOwo+ID4+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICAgfQo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgICAg
+YmhfdW5sb2NrX3NvY2soc2spOwo+ID4+PiArICAgICAgICAgICAgICAgICAgICAgICBsb2NhbF9i
+aF9lbmFibGUoKTsKPiA+Pj4gICAgICAgICAgICAgICAgICB9Cj4gPj4+ICAgICAgICAgICAgICAg
+ICAgcmVhZF91bmxvY2soJmhjaV9za19saXN0LmxvY2spOwo+ID4+PiAgICAgICAgICB9Cj4gPj4+
+Cj4gPj4+IEJ1dCB0aGlzIGlzIG5vdCB1c2VmdWwsIHRoZSBVQUYgc3RpbGwgb2NjdXJzCj4gPj4+
+Cj4gPj4KPiA+PiBJIG1pZ2h0IGJlIHZlcnkgbWlzdGFrZW4gb24gdGhpcywgYnV0IEkgYmVsaWV2
+ZSB0aGUgVUFGIHN0aWxsIGhhcHBlbnMgYmVjYXVzZQo+ID4+IHlvdSBjYW4ndCByZWFsbHkgbWl4
+IGJoX2xvY2tfc29jayogYW5kIGxvY2tfc29jayogdG8gcHJvdGVjdCB0aGUgc2FtZSB0aGluZ3Mu
+Cj4gCj4gUmlnaHQuIGh0dHBzOi8vd3d3Lmtlcm5lbC5vcmcvZG9jL2h0bWwvdjUuMTMva2VybmVs
+LWhhY2tpbmcvbG9ja2luZy5odG1sCj4gCj4gPj4gVGhlIGZvcm1lciBob2xkcyB0aGUgc3Bpbmxv
+Y2sgJnNrLT5za19sb2NrLnNsb2NrIGFuZCBzeW5jaHJvbml6ZXMgYmV0d2Vlbgo+ID4+IHVzZXIg
+Y29udGV4dHMgYW5kIGJvdHRvbSBoYWx2ZXMsCj4gCj4gc2VyaWFsaXplcyBhY2Nlc3MgdG8gcmVz
+b3VyY2VzIHdoaWNoIG1pZ2h0IGJlIGFjY2Vzc2VkIGZyb20gYXRvbWljIChpLmUuIG5vbi1zY2hl
+ZHVsYWJsZSkgY29udGV4dHMKPiAKPiA+PiB3aGlsZSB0aGUgbGF0dGVyIGhvbGRzIGEgbXV0ZXgg
+b24gJnNrLT5za19sb2NrLmRlcF9tYXAgdG8gc3luY2hyb25pemUgYmV0d2Vlbgo+ID4+IG11bHRp
+cGxlIHVzZXJzLgo+IAo+IHNlcmlhbGl6ZXMgYWNjZXNzIHRvIHJlc291cmNlcyB3aGljaCBhcmUg
+YWNjZXNzZWQgZnJvbSBvbmx5IHNjaGVkdWxhYmxlIChpLmUuIG5vbi1hdG9taWMpIGNvbnRleHRz
+Cj4gCj4gPj4KPiA+PiBPbmUgb3B0aW9uIEkgY2FuIHRoaW5rIG9mIHdvdWxkIGJlIHRvIHN3aXRj
+aCBpbnN0YW5jZXMgb2YgbG9ja19zb2NrIHRvIGJoX2xvY2tfc29ja19uZXN0ZWQKPiA+PiBmb3Ig
+dXNlcnMgdGhhdCBtaWdodCByYWNlIChzdWNoIGFzIGhjaV9zb2NrX3NlbmRtc2csIGhjaV9zb2Nr
+X2JvdW5kX2lvY3RsLCBhbmQgb3RoZXJzIGFzCj4gPj4gbmVlZGVkKS4gQnV0IEknbSBub3Qgc3Vy
+ZSBpZiB0aGF0J3MgcXVpdGUgd2hhdCB3ZSB3YW50LCBwbHVzIHdlIHdvdWxkIG5lZWQgdG8gZW5z
+dXJlIHRoYXQKPiA+PiBzbGVlcGluZyBmdW5jdGlvbnMgYXJlbid0IGNhbGxlZCBiZXR3ZWVuIHRo
+ZSBiaF9sb2NrL3VubG9jay4KPiAKPiBXZSBjYW4ndCBkbyBpdCBmb3IgaGNpX3NvY2tfZGV2X2V2
+ZW50KEhDSV9ERVZfVU5SRUcpLgo=
