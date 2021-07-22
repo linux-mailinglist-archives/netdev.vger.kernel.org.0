@@ -2,167 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B832D3D2605
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 894523D261C
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:47:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232421AbhGVOC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 10:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232394AbhGVOC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 10:02:26 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75049C061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 07:43:01 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id oz7so8756358ejc.2
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 07:43:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C/VSU7KXkWOC+MDPCbXJR+JKuXKFc+nH2Aa84MMmfs4=;
-        b=rOVXi/BDuJY1S9kAKZFrSSIMXCe9N7Qo4ZJ8L+5ik4HcNFfWgyP/cAxHoiEsAP8jsT
-         XrSnM92CkSGA/eB2hA5iRKsFpYq7aHD3a+yh0tAjAU+Fg5u2/XyJNamCHN18n7IMRoUz
-         l5GWYb44xCUyilYByA+Mdj9iH8acAizs893TaFNNk+9uX3JHYckEChzoWwye07TuI27P
-         SGNucXuGtTt5Enqpl3Z6mVAKgLLO6/kL+F9upY9GoslxhFNeAhw7Mo2XfB40j7pXlJjC
-         9E84iNtrl8o6SlvLXL8YAMwLWfM38V+MAFdJygo0/r8pAhoJT0AZ9oVU4gtBm8XT1IYG
-         tcKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=C/VSU7KXkWOC+MDPCbXJR+JKuXKFc+nH2Aa84MMmfs4=;
-        b=HwtmpPl6j/Mj7q0xjkLpN7Glp4DOR0WEfRW/ElyZnNFhKFOpBR+qlg4sezqZJTFF4H
-         QLhHLX8goZQSUZvEUCHGTiW1kuHZ2nPF38tP0V3acZsG/2AoP6QUfpceFuMLEE/f6/mV
-         XFnppVtNvdRkKv5kOnKaKXnjGfwWwpVyC52iYyir58qPAj5QCPbLicJRGpiaGoMwkt9Q
-         L1kS9uJFyOTkz7EOS1LuIF67VBPqyLnGdHZvUXu+PP97TMzHB0ko4pgndmsWeMYiRTp3
-         0e+XBSvT+sC6U7hlRnZW5hsxfbcri8EftMIFJwr2wpHJvAgBsaM35eHW2Qb3hxf0NPS3
-         7Pnw==
-X-Gm-Message-State: AOAM533qlpw154+8u7IzTrzat9rKBUk0cebCLXVaVjvc8Aodtz8Ps4Y+
-        o8g4XcjwmcFnBFVP0rmNhQ4=
-X-Google-Smtp-Source: ABdhPJw630p0/hE7MiagjJvMyh8LjKorpgegzf3tlu58x9dChOqdGK9+O2naOaH7s0EUxqiQO6+HzA==
-X-Received: by 2002:a17:906:13d4:: with SMTP id g20mr218116ejc.337.1626964979992;
-        Thu, 22 Jul 2021 07:42:59 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id gx11sm9622171ejc.33.2021.07.22.07.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 07:42:59 -0700 (PDT)
-From:   Ioana Ciornei <ciorneiioana@gmail.com>
-X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
-Date:   Thu, 22 Jul 2021 17:42:58 +0300
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, corbet@lwn.net,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next] docs: networking: dpaa2: add documentation for
- the switch driver
-Message-ID: <20210722144258.iir7cgowfplwzjlq@skbuf>
-References: <20210722132735.685606-1-ciorneiioana@gmail.com>
- <YPmASiX46tOjUOe/@lunn.ch>
+        id S232499AbhGVOGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 10:06:49 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:56819 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S232449AbhGVOGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 10:06:48 -0400
+Received: (qmail 8120 invoked by uid 1000); 22 Jul 2021 10:47:22 -0400
+Date:   Thu, 22 Jul 2021 10:47:21 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Thierry Escande <thierry.escande@collabora.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>
+Subject: Re: [syzbot] INFO: task hung in port100_probe
+Message-ID: <20210722144721.GA6592@rowland.harvard.edu>
+References: <000000000000c644cd05c55ca652@google.com>
+ <9e06e977-9a06-f411-ab76-7a44116e883b@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YPmASiX46tOjUOe/@lunn.ch>
+In-Reply-To: <9e06e977-9a06-f411-ab76-7a44116e883b@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 04:27:22PM +0200, Andrew Lunn wrote:
-> > +At the moment, the dpaa2-switch driver imposes the following restrictions on
-> > +the DPSW object that it will probe:
-> > +
-> > + * The maximum number of FDBs should be at least equal to the number of switch
-> > +   interfaces.
+On Thu, Jul 22, 2021 at 04:20:10PM +0200, Krzysztof Kozlowski wrote:
+> On 22/06/2021 17:43, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    fd0aa1a4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=13e1500c300000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=7ca96a2d153c74b0
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=abd2e0dafb481b621869
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1792e284300000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ad9d48300000
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com
+> > 
+> > INFO: task kworker/0:1:7 blocked for more than 143 seconds.
+> >       Not tainted 5.13.0-rc6-syzkaller #0
+> > "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> > task:kworker/0:1     state:D stack:25584 pid:    7 ppid:     2 flags:0x00004000
+> > Workqueue: usb_hub_wq hub_event
+> > Call Trace:
+> >  context_switch kernel/sched/core.c:4339 [inline]
+> >  __schedule+0x916/0x23e0 kernel/sched/core.c:5147
+> >  schedule+0xcf/0x270 kernel/sched/core.c:5226
+> >  schedule_timeout+0x1db/0x250 kernel/time/timer.c:1868
+> >  do_wait_for_common kernel/sched/completion.c:85 [inline]
+> >  __wait_for_common kernel/sched/completion.c:106 [inline]
+> >  wait_for_common kernel/sched/completion.c:117 [inline]
+> >  wait_for_completion+0x168/0x270 kernel/sched/completion.c:138
+> >  port100_send_cmd_sync drivers/nfc/port100.c:923 [inline]
+> >  port100_get_command_type_mask drivers/nfc/port100.c:1008 [inline]
+> >  port100_probe+0x9e4/0x1340 drivers/nfc/port100.c:1554
+> >  usb_probe_interface+0x315/0x7f0 drivers/usb/core/driver.c:396
+...
+
+> Cc: Thierry, Alan, Andrey,
 > 
-> Should maximum actually be minimum?
+> The issue is reproducible immediately on QEMU instance with
+> USB_DUMMY_HCD and USB_RAW_GADGET. I don't know about real port100 NFC
+> device.
 > 
-
-Uhh, it should have been minimum indeed. Will fix. Thanks!
-
-> This is necessary so that separation of switch ports can be
-> > +   done, ie when not under a bridge, each switch port will have its own FDB.
-> > +
-> > + * Both the broadcast and flooding configuration should be per FDB. This
-> > +   enables the driver to restrict the broadcast and flooding domains of each
-> > +   FDB depending on the switch ports that are sharing it (aka are under the
-> > +   same bridge).
-> > +
-> > + * The control interface of the switch should not be disabled
-> > +   (DPSW_OPT_CTRL_IF_DIS not passed as a create time option). Without the
-> > +   control interface, the driver is not capable to provide proper Rx/Tx traffic
-> > +   support on the switch port netdevices.
-> > +
-> > +Besides the configuration of the actual DPSW object, the dpaa2-switch driver
-> > +will need the following DPAA2 objects:
-> > +
-> > + * 1 DPMCP - A Management Command Portal object is needed for any interraction
-> > +   with the MC firmware.
-> > +
-> > + * 1 DPBP - A Buffer Pool is used for seeding buffers intended for the Rx path
-> > +   on the control interface.
-> > +
-> > + * Access to at least one DPIO object (Software Portal) is needed for any
-> > +   enqueue/dequeue operation to be performed on the control interface queues.
-> > +   The DPIO object will be shared, no need for a private one.
+> I spent some time looking into this and have no clue, except that it
+> looks like an effect of a race condition.
 > 
-> Are these requirements tested? Will the driver fail probe if they are
-> not met?
-
-Yes, they are tested.
-
-If the DPSW object configuration does not meet the requirements, the
-driver will error out on probe with a message explictly saying what
-is happening.
-
+> 1. When using syskaller reproducer against one USB device (In the C
+> reproducer change the loop in main() to use procid=0) - issue does not
+> happen.
 > 
-> > +Routing actions (redirect, trap, drop)
-> > +--------------------------------------
-> > +
-> > +The DPAA2 switch is able to offload flow-based redirection of packets making
-> > +use of ACL tables. Shared filter blocks are supported by sharing a single ACL
-> > +table between multiple ports.
-> > +
-> > +The following flow keys are supported:
-> > +
-> > + * Ethernet: dst_mac/src_mac
-> > + * IPv4: dst_ip/src_ip/ip_proto/tos
-> > + * VLAN: vlan_id/vlan_prio/vlan_tpid/vlan_dei
-> > + * L4: dst_port/src_port
-> > +
-> > +Also, the matchall filter can be used to redirect the entire traffic received
-> > +on a port.
-> > +
-> > +As per flow actions, the following are supported:
-> > +
-> > + * drop
-> > + * mirred egress redirect
-> > + * trap
-> > +
-> > +Each ACL entry (filter) can be setup with only one of the listed
-> > +actions.
-> > +
-> > +A sorted single linked list is used to keep the ACL entries by their
-> > +order of priority. When adding a new filter, this enables us to quickly
-> > +ascertain if the new entry has the highest priority of the entire block
-> > +or if we should make some space in the ACL table by increasing the
-> > +priority of the filters already in the table.
+> 2. With two threads or more talking to separate Dummy USB devices, the
+> issue appears. The more of them, the better...
 > 
-> It would be nice to have an example which shows priority in action,
-> since i don't understand what you are saying here.
+> 3. The reported problem is in missing complete. The correct flow is like:
+> port100_probe()
+> port100_get_command_type_mask()
+> port100_send_cmd_sync()
+> port100_send_cmd_async()
+> port100_submit_urb_for_ack()
+> port100_send_complete()
+> [   63.363863] port100 2-1:0.0: NFC: Urb failure (status -71)
+> port100_recv_ack()
+> [   63.369942] port100 2-1:0.0: NFC: Urb failure (status -71)
 > 
+> and schedule_work() which completes and unblocks port100_send_cmd_sync
+> 
+> However in the failing case (hung task) the port100_recv_ack() is never
+> called. It looks like USB core / HCD / gadget does not send the Ack/URB
+> complete.
+> 
+> I don't know why. The port100 NFC driver code looks OK, except it is not
+> prepared for missing ack/urb so it waits indefinitely. I could try to
+> convert it to wait_for_completion_timeout() but it won't be trivial and
+> more important - I am not sure if this is the problem. Somehow the ACK
+> with Urb failure is not sent back to the port100 device. Therefore I am
+> guessing that the race condition is somwhere in USB stack, not in
+> port100 driver.
+> 
+> The lockdep and other testing tools did not find anything here.
+> 
+> Anyone hints where the issue could be?
 
-Sure, will add an example.
+Here's what I wrote earlier: "It looks like the problem stems from the fact 
+that port100_send_frame_async() submits two URBs, but 
+port100_send_cmd_sync() only waits for one of them to complete.  The other 
+URB may then still be active when the driver tries to reuse it."
 
-On the other hand, I think this section might give too much details on
-the actual implementation (I took it from the commit message of the
-patch adding the support). Might as well just remove it and add the
-example.
+Of course, there may be more than one problem, so we may not be talking 
+about the same thing.
 
-All that I was trying to say is that the filters will not be added in
-the ACL table with the explicit priority specified by the user but
-rather with one determined based on all the rules currently present in
-the table.
-Nothing is unusual in the usage, the order in which the rules are
-executed will be respected.
+Does that help at all?
 
-Ioana
+Alan Stern
