@@ -2,84 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8119D3D25ED
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 011923D25EE
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbhGVN6k convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Jul 2021 09:58:40 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:47706 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbhGVN6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 09:58:39 -0400
-Received: from smtpclient.apple (p5b3d2eb8.dip0.t-ipconnect.de [91.61.46.184])
-        by mail.holtmann.org (Postfix) with ESMTPSA id E3DF1CECDF;
-        Thu, 22 Jul 2021 16:39:12 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
-Subject: Re: [PATCH] Bluetooth: skip invalid hci_sync_conn_complete_evt
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210721101710.82974-1-desmondcheongzx@gmail.com>
-Date:   Thu, 22 Jul 2021 16:39:12 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        skhan@linuxfoundation.org, gregkh@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-Content-Transfer-Encoding: 8BIT
-Message-Id: <A47B24AE-C807-4ADA-B0F7-8283ACC83BF7@holtmann.org>
-References: <20210721101710.82974-1-desmondcheongzx@gmail.com>
-To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
+        id S232445AbhGVN7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 09:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232458AbhGVN7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 09:59:14 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53484C061575
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 07:39:49 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id x16so4667550plg.3
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 07:39:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4O4ZT1NALkc2zE1gBG4BZfP7VuUf7AOSjs/+xceZfEY=;
+        b=Cfs2EN6evelRvQo4AYcf8YqckHamKqih0mFUuVnx6VwvuMxPj67E1BoMm4raYMK0+l
+         ZJgD4juT3PTGfUlTSQZTDDUFLVx3oh6eUvAYDD7ZO2Qyrg1z1SVCpx03JJIpNik2Lppc
+         Bf34sjTCDChx/lKQ0kY7GZwZB7eQkG6JRUJWCxSQq867AjfmCsjgn527B/mL2g9rRWXS
+         DU+hmSjoFksNfvBlaH7NrrmYnIe9As0TXcsJKj0PV3EflJsfuiopEbxf/5EN9NRJp9Pl
+         bTvHF9Jbh79ap+B/iA5XqKbnq4ucFDSXO+RkfVBtRXObZZd8nwVExbmmnGE2PJjnXe/c
+         j0NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4O4ZT1NALkc2zE1gBG4BZfP7VuUf7AOSjs/+xceZfEY=;
+        b=ITNuC3g2LY3KhB7ySyQd5AKcx8/CC2ZPYPwzVdAL39h3Lzcj184QHCnne8ABKUxHS5
+         kUanjqjTAf4RLgqT0zoIzTKUhIi1qZ5cNJiTMhEHhTak+V3rSXd+5v+gCcCAZ1ybwoZs
+         n7IkUefLaI/4HRAvA3oOR9/mdYffbsa/Z3cN6yM77D0UHoDahY+307htsn+teDd4ea5m
+         wLYpm/KvXF39hZHwHECrD5ldtUHg6O9sKK4jIRmZJxRI5hlpKc3t06LVHPk38+yY9eX/
+         MN9SdmU1d0eziDhWZaNTxMFZD3fNAWEbjhxTyB2++C2zbmHMVV37nAM6qfzjCAXC4cYv
+         dSXA==
+X-Gm-Message-State: AOAM533q7sdkDJKZ2cdG4dKUn5hwJJ9oT3mLFqZqLnhfdflhDEr1vYZI
+        yUrSK6lUqVafASM9YLI3jUj/iE+hUJiYBg==
+X-Google-Smtp-Source: ABdhPJwxMAkkD5Zfxg+iFNVdAsCahIxosf0qpdxr+XEiCjgSxcvGTl4KizjDpfkTGb/5UAxWNp0ksw==
+X-Received: by 2002:a17:902:c64b:b029:12b:25f7:9b17 with SMTP id s11-20020a170902c64bb029012b25f79b17mr61153pls.24.1626964788332;
+        Thu, 22 Jul 2021 07:39:48 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id d31sm13799209pgd.33.2021.07.22.07.39.47
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 07:39:48 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 07:39:44 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 213821] New: Cannot create LACP bond over virtual network
+ interfaces
+Message-ID: <20210722073944.32321f61@hermes.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Desmond,
 
-> Syzbot reported a corrupted list in kobject_add_internal [1]. This
-> happens when multiple HCI_EV_SYNC_CONN_COMPLETE event packets with
-> status 0 are sent for the same HCI connection. This causes us to
-> register the device more than once which corrupts the kset list.
 
-and that is actually forbidden by the spec. So we need to complain loudly that such a device is misbehaving.
+Begin forwarded message:
 
-> To fix this, in hci_sync_conn_complete_evt, we check whether we're
-> trying to process the same HCI_EV_SYNC_CONN_COMPLETE event multiple
-> times for one connection. If that's the case, the event is invalid, so
-> we skip further processing and exit.
-> 
-> Link: https://syzkaller.appspot.com/bug?extid=66264bf2fd0476be7e6c [1]
-> Reported-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-> Tested-by: syzbot+66264bf2fd0476be7e6c@syzkaller.appspotmail.com
-> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-> ---
-> net/bluetooth/hci_event.c | 2 ++
-> 1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 016b2999f219..091a92338492 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -4373,6 +4373,8 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev,
-> 
-> 	switch (ev->status) {
-> 	case 0x00:
-> +		if (conn->state == BT_CONNECTED)
-> +			goto unlock;  /* Already connected, event not valid */
+Date: Thu, 22 Jul 2021 14:04:56 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 213821] New: Cannot create LACP bond over virtual network interfaces
 
-The comment has go above and be a lot more details since this is not expected behavior from valid hardware and we should add a bt_dev_err as well.
 
-> 		conn->handle = __le16_to_cpu(ev->handle);
-> 		conn->state  = BT_CONNECTED;
-> 		conn->type   = ev->link_type;
+https://bugzilla.kernel.org/show_bug.cgi?id=213821
 
-Regards
+            Bug ID: 213821
+           Summary: Cannot create LACP bond over virtual network
+                    interfaces
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 3.10
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: darren.reed@softelsystems.com.au
+        Regression: No
 
-Marcel
+Typically an LACP bond is formed over a pair of physical network interfaces to
+another piece of hardware. This is the bread and butter of many systems
+engineers.
 
+But what about virtual network interfaces, such as tunnels?
+
+Except in 1 case, it does not work. Why?
+
+None of the virtual network interfaces (geneve, vxlan, ipip, gre) advertise
+either the network interface speed or the duplex of the connection. Check your
+output from "ethtool" to confirm. This prevents the 802.3ad driver from ever
+using the virtual network interface. That's the bug.
+
+There is of course some merit behind that because as virtual network interfaces
+they have no inherent speed. But then there's the tun driver.
+
+The tun driver advertises 10Mb/s and full duplex but it is the slowest of all
+the family of virtual network interfaces and thus the least desirable. It's not
+clear why someone chose 10Mb/s but it has its place.
+
+Why would I like to create a LACP bond over a pair of virtual interfaces?
+Because that's the easiest way to know if the other end is "dead". For example,
+if I create a L2TP tunnel between two systems and run an 802.3ad bond over each
+interface on the two systems then the LACP heartbeat becomes a defacto method
+of informing me about the status of the other system.
+
+In short, using an 802.3ad bond over a tunnel allows the bond network
+connection to become a virtual wire between the two systems. When the bond goes
+down, it as if the network cable has been unplugged.
+
+After all that, what would I like to see fixed? Where a virtual network device
+(such as geneve) is associated with a physical device (such as eno1) that it
+inherits the physical properties of speed and duplex of the physical device.
+This may also be applied to other virtual network devices that have a physical
+device associated with them upon creation.
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
