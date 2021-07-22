@@ -2,124 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73DD43D2489
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1943D248F
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:27:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232071AbhGVMpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 08:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
+        id S232132AbhGVMqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 08:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231938AbhGVMpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:45:10 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED29C061575;
-        Thu, 22 Jul 2021 06:25:44 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id c12so5946670wrt.3;
-        Thu, 22 Jul 2021 06:25:44 -0700 (PDT)
+        with ESMTP id S232118AbhGVMqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:46:40 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E853BC061757
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 06:27:14 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ga14so8378186ejc.6
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 06:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mUWOLWbYCSm/rovP4uz4q3GcAfsEzycZgM+L6hPpGFg=;
-        b=EIxJy7jjP0STE+V3GvZWU20nV7ZQP2swdueNX9dYT6kHAw5kyu3Q8wNQiLG5URECrD
-         4gTN+2+YvYwlhpDKAg9z1gIwZ1LIDozV4Xb4pffpVXsQuOnfy/ZHE6wNDOkQbsT1WGxZ
-         z/GlALooEBWQ2TUC39jKNMw4cUxEDfb3Fk+g2cDQkoj1yOFy6A+nhiZ9xHUn/JgvDuDI
-         hhY96yTsVeRaMpBbiGyALUoEINIKcxKEo8ngh4C/Ll5zjkyfN/y+2sOCJmbO/7fhABcu
-         BRFqKsbOqxSQbb6YcoDyjKIRSeItTStUb/WM7NmCFFCrsT/8I/9uFVuLPNLWf7stS9ga
-         tZsg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=POWpwm7eTXduCglpQjTkSnSyMZers9jD1y7x+UUfQTQ=;
+        b=oUsI1HCJUP8tAwhgnFjZQESPpP/9fkh1i7W9/DhQqRySzVhxvIeT+YFJpXFqHn3/rr
+         UeJKVFoKuzdKfwfw3AuXAp19L+yYHGVa1zZIHoQuIGdO3Yl7aFy3UBlS/dVb0S0Ks2fe
+         mZowFBFMoDaRfMGrmKSnuuEw+06e0KAemrtyS8jMzwKTUrJEyvLL/GjquFmvV9+nD/7J
+         qJ+u34QgZsgECy0SLbiDcLoMIxKJ8PSWgbTHdfq8R/IN1j0OW1wlgV5nU1u5G0Rtjs3n
+         Orbv2xM/TxNoGPFUPWam5ermlQ0nfn1oN4Cxov1pVpz6PflAv62pkKkuT9axLSHO2/iL
+         9X3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mUWOLWbYCSm/rovP4uz4q3GcAfsEzycZgM+L6hPpGFg=;
-        b=VapU02edkncV4/rSC8CrxsZPrXWJuqOTlVF4sg3t+/+ONoDQQCYVUZyGe0xMrTpJg8
-         BLfkKk5Tg4nCtIKuyEG/wWGD3EmgkxFH/yoBlFCBNlkIIgXl8Cgh8Yqy272Y1NxKQaMP
-         tVG2KWbc5Y5tGua/d3WnIalJ3LFHqh5X7d9kl5MGbpz21mSn+a2gv3mJVMnJdhO4klqW
-         GIjCmRnzTsxH/ZixvZpggGdl9wQccMmBAR5Zm+YGFDasv0LOXJIBVSFzLwHI7sd4VI//
-         sG1cBm3zFRqx7mas7bXF7PRu24c25QuJYsy8kKZEGSDgGb/Mr0nZaqb/cKu5OBKs2Vze
-         Nk8g==
-X-Gm-Message-State: AOAM531NHAHkQORyI6aCeBFMB3ukOeI32DL8kA+J0/iEmH7L6fTKzQu3
-        TQfUAt3xXJNo7VtpuYhtlmo=
-X-Google-Smtp-Source: ABdhPJxG1T9BimqH1Y6ye74RcGmbgFWMNsXM8Qw7GFgDiDc8BcL/Npnl1z5cb7PFtG0VbUSHhMPLbg==
-X-Received: by 2002:a5d:6189:: with SMTP id j9mr49525750wru.196.1626960342240;
-        Thu, 22 Jul 2021 06:25:42 -0700 (PDT)
-Received: from [10.0.0.18] ([37.168.21.168])
-        by smtp.gmail.com with ESMTPSA id d29sm36583975wrb.63.2021.07.22.06.25.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Jul 2021 06:25:41 -0700 (PDT)
-Subject: Re: [PATCH v2 bpf-next 0/8] bpf: Allow bpf tcp iter to do
- bpf_(get|set)sockopt
-To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>, kernel-team@fb.com,
-        Neal Cardwell <ncardwell@google.com>, netdev@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, Yuchung Cheng <ycheng@google.com>
-References: <20210701200535.1033513-1-kafai@fb.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d5ffdaf5-08e5-2b28-d891-73d507bae5fa@gmail.com>
-Date:   Thu, 22 Jul 2021 15:25:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        bh=POWpwm7eTXduCglpQjTkSnSyMZers9jD1y7x+UUfQTQ=;
+        b=C7TmZcWSfxwmguD2r8c6itAsv3aonTbUikO/aZ3dfBjGW0Lc0wQi3A5pM/hA8wd9vX
+         9kaSUFtDln2+aTJv9n2k3mey/LPtEblQpw/lTYw9ZXZdLBYkBM804V9IX+hU84MsffAK
+         TOYXgVHg7289DVBQoFqw+pR0jxBHG/VHDEzUG46FzexWJDc2rlaOUSYUgd/MnmAsdMtY
+         I+ZML8ApvpnWYv47q4eg0ibySn3/sqvPeQqpDvddt5mehxxyvOaGZ5VYL6goGRgaWikn
+         765lgCy5AHn423nHLtwuEKuMZWDrfu5mCHgVbnYmwxSvGZLTYoxrfToKM0TKccfLKIAi
+         PwyA==
+X-Gm-Message-State: AOAM530picgLzwldoy7yJB3Iofak6draLuEiscs0QaDSlzmkgAT32teN
+        S7zJ5aWWAK8EAoR7DaYWn0E=
+X-Google-Smtp-Source: ABdhPJyeo3yJkGBQC0mgqagZ5P8e5oTWJnVZnzBzFMgmweTzPhL+4lvMaMLr3hDtU0WewPSmgFfZPA==
+X-Received: by 2002:a17:906:6dcb:: with SMTP id j11mr18385674ejt.202.1626960433403;
+        Thu, 22 Jul 2021 06:27:13 -0700 (PDT)
+Received: from yoga-910.localhost ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id h3sm9516251ejf.53.2021.07.22.06.27.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 06:27:12 -0700 (PDT)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     corbet@lwn.net, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next] docs: networking: dpaa2: add documentation for the switch driver
+Date:   Thu, 22 Jul 2021 16:27:35 +0300
+Message-Id: <20210722132735.685606-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20210701200535.1033513-1-kafai@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
+Add a documentation entry for the DPAA2 switch listing it's
+requirements, features and some examples to go along them.
 
-On 7/1/21 10:05 PM, Martin KaFai Lau wrote:
-> This set is to allow bpf tcp iter to call bpf_(get|set)sockopt.
-> 
-> With bpf-tcp-cc, new algo rollout happens more often.  Instead of
-> restarting the applications to pick up the new tcp-cc, this set
-> allows the bpf tcp iter to call bpf_(get|set)sockopt(TCP_CONGESTION).
-> It is not limited to TCP_CONGESTION, the bpf tcp iter can call
-> bpf_(get|set)sockopt() with other options.  The bpf tcp iter can read
-> into all the fields of a tcp_sock, so there is a lot of flexibility
-> to select the desired sk to do setsockopt(), e.g. it can test for
-> TCP_LISTEN only and leave the established connections untouched,
-> or check the addr/port, or check the current tcp-cc name, ...etc.
-> 
-> Patch 1-4 are some cleanup and prep work in the tcp and bpf seq_file.
-> 
-> Patch 5 is to have the tcp seq_file iterate on the
-> port+addr lhash2 instead of the port only listening_hash.
-> 
-> Patch 6 is to have the bpf tcp iter doing batching which
-> then allows lock_sock.  lock_sock is needed for setsockopt.
-> 
-> Patch 7 allows the bpf tcp iter to call bpf_(get|set)sockopt.
-> 
-> v2:
-> - Use __GFP_NOWARN in patch 6
-> - Add bpf_getsockopt() in patch 7 to give a symmetrical user experience.
->   selftest in patch 8 is changed to also cover bpf_getsockopt().
-> - Remove CAP_NET_ADMIN check in patch 7. Tracing bpf prog has already
->   required CAP_SYS_ADMIN or CAP_PERFMON.
-> - Move some def macros to bpf_tracing_net.h in patch 8
-> 
-> Martin KaFai Lau (8):
->   tcp: seq_file: Avoid skipping sk during tcp_seek_last_pos
->   tcp: seq_file: Refactor net and family matching
->   bpf: tcp: seq_file: Remove bpf_seq_afinfo from tcp_iter_state
->   tcp: seq_file: Add listening_get_first()
->   tcp: seq_file: Replace listening_hash with lhash2
->   bpf: tcp: bpf iter batching and lock_sock
->   bpf: tcp: Support bpf_(get|set)sockopt in bpf tcp iter
->   bpf: selftest: Test batching and bpf_(get|set)sockopt in bpf tcp iter
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ .../ethernet/freescale/dpaa2/index.rst        |   1 +
+ .../freescale/dpaa2/switch-driver.rst         | 167 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 3 files changed, 169 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
 
-For the whole series :
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
-Sorry for the delay.
-
-BTW, it seems weird for new BPF features to use /proc/net "legacy"
-infrastructure and update it.
+diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst
+index ee40fcc5ddff..62f4a4aff6ec 100644
+--- a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/index.rst
+@@ -9,3 +9,4 @@ DPAA2 Documentation
+    dpio-driver
+    ethernet-driver
+    mac-phy-support
++   switch-driver
+diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
+new file mode 100644
+index 000000000000..dbeed66e0e4d
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
+@@ -0,0 +1,167 @@
++.. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
++
++===================
++DPAA2 Switch driver
++===================
++
++:Copyright: |copy| 2021 NXP
++
++The DPAA2 Switch driver probes on the Datapath Switch (DPSW) object which can
++be instantiated on the following DPAA2 SoCs and their variants: LS2088A and
++LX2160A.
++
++The driver uses the switch device driver model and exposes each switch port as
++a network interface, which can be included in a bridge or used as a standalone
++interface. Traffic switched between ports is offloaded into the hardware.
++
++The DPSW can have ports connected to DPNIs or to DPMACs for external access.
++::
++
++         [ethA]     [ethB]      [ethC]     [ethD]     [ethE]     [ethF]
++            :          :          :          :          :          :
++            :          :          :          :          :          :
++       [dpaa2-eth]  [dpaa2-eth]  [              dpaa2-switch              ]
++            :          :          :          :          :          :        kernel
++       =============================================================================
++            :          :          :          :          :          :        hardware
++         [DPNI]      [DPNI]     [============= DPSW =================]
++            |          |          |          |          |          |
++            |           ----------           |       [DPMAC]    [DPMAC]
++             -------------------------------            |          |
++                                                        |          |
++                                                      [PHY]      [PHY]
++
++Creating an Ethernet Switch
++===========================
++
++The dpaa2-switch driver probes on DPSW devices found on the fsl-mc bus. These
++devices can be either created statically through the boot time configuration
++file - DataPath Layout (DPL) - or at runtime using the DPAA2 object APIs
++(incorporated already into the restool userspace tool).
++
++At the moment, the dpaa2-switch driver imposes the following restrictions on
++the DPSW object that it will probe:
++
++ * The maximum number of FDBs should be at least equal to the number of switch
++   interfaces. This is necessary so that separation of switch ports can be
++   done, ie when not under a bridge, each switch port will have its own FDB.
++
++ * Both the broadcast and flooding configuration should be per FDB. This
++   enables the driver to restrict the broadcast and flooding domains of each
++   FDB depending on the switch ports that are sharing it (aka are under the
++   same bridge).
++
++ * The control interface of the switch should not be disabled
++   (DPSW_OPT_CTRL_IF_DIS not passed as a create time option). Without the
++   control interface, the driver is not capable to provide proper Rx/Tx traffic
++   support on the switch port netdevices.
++
++Besides the configuration of the actual DPSW object, the dpaa2-switch driver
++will need the following DPAA2 objects:
++
++ * 1 DPMCP - A Management Command Portal object is needed for any interraction
++   with the MC firmware.
++
++ * 1 DPBP - A Buffer Pool is used for seeding buffers intended for the Rx path
++   on the control interface.
++
++ * Access to at least one DPIO object (Software Portal) is needed for any
++   enqueue/dequeue operation to be performed on the control interface queues.
++   The DPIO object will be shared, no need for a private one.
++
++Switching features
++==================
++
++The driver supports the configuration of L2 forwarding rules in hardware for
++port bridging as well as standalone usage of the independent switch interfaces.
++
++The hardware is not configurable with respect to VLAN awareness, thus any DPAA2 switch port should be used only in usecases with a VLAN aware bridge::
++
++        $ ip link add dev br0 type bridge vlan_filtering 1
++
++        $ ip link add dev br1 type bridge
++        $ ip link set dev ethX master br1
++        Error: fsl_dpaa2_switch: Cannot join a VLAN-unaware bridge
++
++Topology and loop detection through STP is supported when ``stp_state 1`` is used at bridge create ::
++
++        $ ip link add dev br0 type bridge vlan_filtering 1 stp_state 1
++
++L2 FDB manipulation (add/delete/dump) is supported.
++
++HW FDB learning can be configured on each switch port independently through
++bridge commands. When the HW learning is disabled, a fast age procedure will be
++run and any previously learnt addresses will be removed.
++::
++
++        $ bridge link set dev ethX learning off
++        $ bridge link set dev ethX learning on
++
++Restricting the unknown unicast and multicast flooding domain is supported, but
++not independently of each other::
++
++        $ ip link set dev ethX type bridge_slave flood off mcast_flood off
++        $ ip link set dev ethX type bridge_slave flood off mcast_flood on
++        Error: fsl_dpaa2_switch: Cannot configure multicast flooding independently of unicast.
++
++Broadcast flooding on a switch port can be disabled/enabled through the brport sysfs::
++
++        $ echo 0 > /sys/bus/fsl-mc/devices/dpsw.Y/net/ethX/brport/broadcast_flood
++
++Offloads
++========
++
++Routing actions (redirect, trap, drop)
++--------------------------------------
++
++The DPAA2 switch is able to offload flow-based redirection of packets making
++use of ACL tables. Shared filter blocks are supported by sharing a single ACL
++table between multiple ports.
++
++The following flow keys are supported:
++
++ * Ethernet: dst_mac/src_mac
++ * IPv4: dst_ip/src_ip/ip_proto/tos
++ * VLAN: vlan_id/vlan_prio/vlan_tpid/vlan_dei
++ * L4: dst_port/src_port
++
++Also, the matchall filter can be used to redirect the entire traffic received
++on a port.
++
++As per flow actions, the following are supported:
++
++ * drop
++ * mirred egress redirect
++ * trap
++
++Each ACL entry (filter) can be setup with only one of the listed
++actions.
++
++A sorted single linked list is used to keep the ACL entries by their
++order of priority. When adding a new filter, this enables us to quickly
++ascertain if the new entry has the highest priority of the entire block
++or if we should make some space in the ACL table by increasing the
++priority of the filters already in the table.
++
++
++Example 1: send frames received on eth4 with a SA of 00:01:02:03:04:05 to the
++CPU::
++
++        $ tc qdisc add dev eth4 clsact
++        $ tc filter add dev eth4 ingress flower src_mac 00:01:02:03:04:05 skip_sw action trap
++
++Example 2: drop frames received on eth4 with VID 100 and PCP of 3::
++
++        $ tc filter add dev eth4 ingress protocol 802.1q flower skip_sw vlan_id 100 vlan_prio 3 action drop
++
++Example 3: redirect all frames received on eth4 to eth1::
++
++        $ tc filter add dev eth4 ingress matchall action mirred egress redirect dev eth1
++
++
++Example 4: Use a single shared filter block on both eth5 and eth6::
++
++        $ tc qdisc add dev eth5 ingress_block 1 clsact
++        $ tc qdisc add dev eth6 ingress_block 1 clsact
++        $ tc filter add block 1 ingress flower dst_mac 00:01:02:03:04:04 skip_sw action trap
+diff --git a/MAINTAINERS b/MAINTAINERS
+index da478d5c8b0c..a483934ac8f0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5683,6 +5683,7 @@ DPAA2 ETHERNET SWITCH DRIVER
+ M:	Ioana Ciornei <ioana.ciornei@nxp.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
++F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
+ F:	drivers/net/ethernet/freescale/dpaa2/dpaa2-switch*
+ F:	drivers/net/ethernet/freescale/dpaa2/dpsw*
+ 
+-- 
+2.31.1
 
