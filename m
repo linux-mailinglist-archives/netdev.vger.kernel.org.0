@@ -2,113 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4E73D24A9
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:32:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5632F3D24AB
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 15:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232082AbhGVMv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 08:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        id S232089AbhGVMwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 08:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbhGVMv5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:51:57 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA10C061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 06:32:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ICspZ4RtR4pacnzopZdqHgYYQgygGGPfu1yVd4wOaSg=; b=rxQjWUNZDon69dFNIgGXn/IUOm
-        vYpFphyRtEdN4Yab6lFV8jrj7rGS7RvkA5zy+YsILsQ47ZCZVTU1CQsYMy+YOjQknw30Zzc8ktuCD
-        wMbOIEoKfDrIYBoedf+F5FVwDjHsHkjOdpI4CwsuIF2lMTe2r6IQthdj+ugXh3NgWMqxwvVsA0kAt
-        g+CfpB0IQE12t0Bv/VU983XsEZ8qQyDx61kCRlg6AKbroK7oq10xnvJlgmuQYNkdg5hB7Viw/UWnj
-        oVaM9pWmfHgJyYjln2QQd5BgwKW1rCaclq/NuGF/MwjP4jgB5M1aFZfASTjGpvzRqfDx+SE/kJO8i
-        kN7AOq+w==;
-Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m6Yn7-00AIKg-6g; Thu, 22 Jul 2021 13:31:16 +0000
-Date:   Thu, 22 Jul 2021 14:31:09 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Boris Pismenny <borisp@nvidia.com>
-Cc:     dsahern@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        saeedm@nvidia.com, hch@lst.de, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com,
-        smalin@marvell.com, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
-        benishay@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        Boris Pismenny <borisp@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Subject: Re: [PATCH v5 net-next 02/36] iov_iter: DDP copy to iter/pages
-Message-ID: <YPlzHTnoxDinpOsP@infradead.org>
-References: <20210722110325.371-1-borisp@nvidia.com>
- <20210722110325.371-3-borisp@nvidia.com>
+        with ESMTP id S231925AbhGVMwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:52:36 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A90FC061575
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 06:33:12 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id k3so4209424qtq.7
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 06:33:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=a8cJpCaB8s42a39L5HqhxKqGl3pOrVnUmJfRFJRvs4s=;
+        b=vOUSlJJvJPemivKTqJcZSCYRb4GAkN7aUdpE9uMucY9SWwI0esP/trVOOaWYylnyKV
+         esL3BIkLKKIz7PLq4j21zkKjbt3nB2DxQFGk7k/pNGpTDEjXfrBuG+kpcydBGGFTzE6t
+         tWwQZlkOfuR1kuAX286t+uJHYXeoa9y131Hjmj096V9ZcjRBHPb/YCBDKVDkDpME4xbV
+         eVmkDNC0fTpX0YzMd307N5GLv8OWSMuPVQVvOHRSc2YuU6o0TS84l84Nu2hGEGDmI0Fm
+         EGHQaNXAMCdDpW4RHTDjYhNUxczwcEEQ7Awzt8h1vkBBt7qXnksYTDdMq5gSA0Dg68bi
+         It4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=a8cJpCaB8s42a39L5HqhxKqGl3pOrVnUmJfRFJRvs4s=;
+        b=n9vMeZe/pMdLRy7qOzb6UInSZqntDmKqB0pWErhxncKYJ0yhwIol3t6qP5/E1sTAN0
+         OvcRoP2C96WW9VY5j3qhWBLeBO1axHtUmzwCClWu9kbnAxHyPC+qy59NJBDOhjqabUxV
+         ZU0vJsyti13AwnwK7V9wnvNFWCwQZqkWq28BX6f3ZTGSMmYiRyVl+rG4drTQGreIp7+c
+         FNjzChyh+Vt3TDvs8bOrXUIUoaBfeBvFtbhqUSDJhjdXzFFWOFK9FRlCA55QUP0Mg/R9
+         7wLxOu2xdDg+AZiNqa8cqX3ovDiz8KEZ1fBF8Yz0VbbhpAxZp2w25zCNqsKcjI409bnp
+         JwLg==
+X-Gm-Message-State: AOAM532Fa5zhmge1IBeUVUNqenPZapkhsWiynQEG+9PVq1IAR4ztOkpg
+        4+bRkpCKv3g0VfH63PkogMDGkQ==
+X-Google-Smtp-Source: ABdhPJzqU+jnNekrcCIDj6E379xkVJy1ROBa/vu+uGNKTYIneKb9VJWQV9LB37zORu7b12SXNMUAxw==
+X-Received: by 2002:ac8:4a19:: with SMTP id x25mr35911607qtq.389.1626960791158;
+        Thu, 22 Jul 2021 06:33:11 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id e123sm12791185qkf.103.2021.07.22.06.33.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Jul 2021 06:33:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
+ action to net device
+To:     Vlad Buslov <vladbu@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+References: <20210722091938.12956-1-simon.horman@corigine.com>
+ <20210722091938.12956-2-simon.horman@corigine.com>
+ <ygnhim12qxxy.fsf@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
+Date:   Thu, 22 Jul 2021 09:33:09 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210722110325.371-3-borisp@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <ygnhim12qxxy.fsf@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +#ifdef CONFIG_ULP_DDP
-> +size_t _ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
-> +#endif
->  size_t _copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
->  bool _copy_from_iter_full(void *addr, size_t bytes, struct iov_iter *i);
->  size_t _copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i);
-> @@ -145,6 +148,16 @@ size_t copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
->  		return _copy_to_iter(addr, bytes, i);
->  }
->  
-> +#ifdef CONFIG_ULP_DDP
-> +static __always_inline __must_check
-> +size_t ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
-> +{
-> +	if (unlikely(!check_copy_size(addr, bytes, true)))
-> +		return 0;
-> +	return _ddp_copy_to_iter(addr, bytes, i);
-> +}
-> +#endif
+On 2021-07-22 9:29 a.m., Vlad Buslov wrote:
+> On Thu 22 Jul 2021 at 12:19, Simon Horman <simon.horman@corigine.com> wrote:
+>> From: Baowen Zheng <baowen.zheng@corigine.com>
+>>
+>> Use flow_indr_dev_register/flow_indr_dev_setup_offload to
+>> offload tc action.
+>>
+>> We offload the tc action mainly for ovs meter configuration.
+>> Make some basic changes for different vendors to return EOPNOTSUPP.
+>>
+>> We need to call tc_cleanup_flow_action to clean up tc action entry since
+>> in tc_setup_action, some actions may hold dev refcnt, especially the mirror
+>> action.
+>>
+>> As per review from the RFC, the kernel test robot will fail to run, so
+>> we add CONFIG_NET_CLS_ACT control for the action offload.
+>>
+>> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+>> Signed-off-by: Louis Peens <louis.peens@corigine.com>
+>> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+>> ---
+>>   drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |  2 +-
+>>   .../ethernet/mellanox/mlx5/core/en/rep/tc.c   |  3 ++
 
-There is no need to ifdef out externs with conditional implementations,
-or inlines using them.
+>>   			    void *data,
+>>   			    void (*cleanup)(struct flow_block_cb *block_cb))
+>>   {
+>> +	if (!netdev)
+>> +		return -EOPNOTSUPP;
+>> +
+>>   	switch (type) {
+>>   	case TC_SETUP_BLOCK:
+>>   		return mlx5e_rep_indr_setup_block(netdev, sch, cb_priv, type_data,
+>> diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
 
-> +#ifdef CONFIG_ULP_DDP
-> +static void ddp_memcpy_to_page(struct page *page, size_t offset, const char *from, size_t len)
+[..]
 
-Overly long line.
+>>   
+>> +	/* offload actions to hardware if possible */
+>> +	tcf_action_offload_cmd(actions, extack);
+>> +
+> 
+> I think this has already been suggested for RFC, but some sort of
+> visibility for offload status of action would be extremely welcome.
+> Perhaps "IN_HW" flag and counter, similar to what we have for offloaded
+> filters.
+> 
 
-> +	char *to = kmap_atomic(page);
-> +
-> +	if (to + offset != from)
-> +		memcpy(to + offset, from, len);
-> +
-> +	kunmap_atomic(to);
+Also showing a tc command line in the cover letter on how one would
+ask for a specific action to be offloaded.
 
-This looks completely bogus to any casual read, so please document why
-it makes sense.  And no, a magic, unexplained ddp in the name does not
-count as explanation at all.  Please think about a more useful name.
-
-Can this ever write to user page?  If yes it needs a flush_dcache_page.
-
-Last but not least: kmap_atomic is deprecated except for the very
-rate use case where it is actually called from atomic context.  Please
-use kmap_local_page instead.
-
-> +#ifdef CONFIG_CRYPTO_HASH
-> +	struct ahash_request *hash = hashp;
-> +	struct scatterlist sg;
-> +	size_t copied;
-> +
-> +	copied = ddp_copy_to_iter(addr, bytes, i);
-> +	sg_init_one(&sg, addr, copied);
-> +	ahash_request_set_crypt(hash, &sg, NULL, copied);
-> +	crypto_ahash_update(hash);
-> +	return copied;
-> +#else
-> +	return 0;
-> +#endif
-
-What is the point of this stub?  To me it looks extremely dangerous.
+cheers,
+jamal
