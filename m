@@ -2,113 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC853D25B2
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71083D25B7
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:29:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232290AbhGVNqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 09:46:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40506 "EHLO vps0.lunn.ch"
+        id S232371AbhGVNso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 09:48:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232231AbhGVNqv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 09:46:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=k0+aH2yUU+cNWHexCbe+XbKTU7eC/gqAsvgBA43Tr1Q=; b=i36rq8pgsaZAyfqVGG08yTUneg
-        y/1YtBBa4eyJfXco3i1ms5m07krdrNElUZPmCAHg1BE/qpt+4qhMl4G7mYWMiNpUSrU3N7aUCctC/
-        iiPebCTJ7Rdx400FlZG1RgwRzHKSgUBZSET8MMHpgIBwYDROR+mCtSq4MrW3njtU9MMw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6ZfW-00ELGo-Bg; Thu, 22 Jul 2021 16:27:22 +0200
-Date:   Thu, 22 Jul 2021 16:27:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        corbet@lwn.net, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net-next] docs: networking: dpaa2: add documentation for
- the switch driver
-Message-ID: <YPmASiX46tOjUOe/@lunn.ch>
-References: <20210722132735.685606-1-ciorneiioana@gmail.com>
+        id S229934AbhGVNsm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 09:48:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FE1A6101E;
+        Thu, 22 Jul 2021 14:29:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626964157;
+        bh=zM04WpA1f7iRwT47P4olhNDO3hfO6UH/Gt2Ynkv7aOQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cqbniFsd8XOi4XfrJjOLuySlDUQ7CBCdF3SdSpwbfun3l4gP0pHz9Wd5SRJfmw01D
+         rciF8Kv7FW46A5EwjsN3Vyf/5Rvh5E4R1qbfRkNj4Ah7m15FA70xcCyR2lJGOf7ydu
+         jIYTxKhsUR7/+TFmf1JMvzJem8QxdQDfXl9JoKgQvi8CA3aKTBIcT5vNSJ16PLNIQn
+         2iB22HcT9QKEsx04GsH092Gr337HqpBpxy1s9QDpdG8P/ZwhVhh5Akiv/OktZiNros
+         oQ4kaV5Pav2/o+o+R2LAoMB29VqRD9QNkOwZ0w8PFM5LeRC8/XOeJCgqB1Y3+bIYtV
+         oT1Qe8xs2kF/Q==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Christoph Hellwig <hch@lst.de>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH net-next v6 0/6] remove compat_alloc_user_space()
+Date:   Thu, 22 Jul 2021 16:28:57 +0200
+Message-Id: <20210722142903.213084-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210722132735.685606-1-ciorneiioana@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +At the moment, the dpaa2-switch driver imposes the following restrictions on
-> +the DPSW object that it will probe:
-> +
-> + * The maximum number of FDBs should be at least equal to the number of switch
-> +   interfaces.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Should maximum actually be minimum?
+This is the fifth version of my series, now spanning four patches
+instead of two, with a new approach for handling struct ifreq
+compatibility after I realized that my earlier approach introduces
+additional problems.
 
-This is necessary so that separation of switch ports can be
-> +   done, ie when not under a bridge, each switch port will have its own FDB.
-> +
-> + * Both the broadcast and flooding configuration should be per FDB. This
-> +   enables the driver to restrict the broadcast and flooding domains of each
-> +   FDB depending on the switch ports that are sharing it (aka are under the
-> +   same bridge).
-> +
-> + * The control interface of the switch should not be disabled
-> +   (DPSW_OPT_CTRL_IF_DIS not passed as a create time option). Without the
-> +   control interface, the driver is not capable to provide proper Rx/Tx traffic
-> +   support on the switch port netdevices.
-> +
-> +Besides the configuration of the actual DPSW object, the dpaa2-switch driver
-> +will need the following DPAA2 objects:
-> +
-> + * 1 DPMCP - A Management Command Portal object is needed for any interraction
-> +   with the MC firmware.
-> +
-> + * 1 DPBP - A Buffer Pool is used for seeding buffers intended for the Rx path
-> +   on the control interface.
-> +
-> + * Access to at least one DPIO object (Software Portal) is needed for any
-> +   enqueue/dequeue operation to be performed on the control interface queues.
-> +   The DPIO object will be shared, no need for a private one.
+The idea here is to always push down the compat conversion
+deeper into the call stack: rather than pretending to be
+native mode with a modified copy of the original data on
+the user space stack, have the code that actually works on
+the data understand the difference between native and compat
+versions.
 
-Are these requirements tested? Will the driver fail probe if they are
-not met?
+I have spent a long time looking at all drivers that implement
+an ndo_do_ioctl callback to verify that my assumptions are
+correct. This has led to a series of ~30 additional patches
+that I am not including here but will post separately, fixing
+a number of bugs in SIOCDEVPRIVATE ioctls, removing dead
+code, and splitting ndo_do_ioctl into multiple new ndo callbacks
+for private and ethernet specific commands.
 
-> +Routing actions (redirect, trap, drop)
-> +--------------------------------------
-> +
-> +The DPAA2 switch is able to offload flow-based redirection of packets making
-> +use of ACL tables. Shared filter blocks are supported by sharing a single ACL
-> +table between multiple ports.
-> +
-> +The following flow keys are supported:
-> +
-> + * Ethernet: dst_mac/src_mac
-> + * IPv4: dst_ip/src_ip/ip_proto/tos
-> + * VLAN: vlan_id/vlan_prio/vlan_tpid/vlan_dei
-> + * L4: dst_port/src_port
-> +
-> +Also, the matchall filter can be used to redirect the entire traffic received
-> +on a port.
-> +
-> +As per flow actions, the following are supported:
-> +
-> + * drop
-> + * mirred egress redirect
-> + * trap
-> +
-> +Each ACL entry (filter) can be setup with only one of the listed
-> +actions.
-> +
-> +A sorted single linked list is used to keep the ACL entries by their
-> +order of priority. When adding a new filter, this enables us to quickly
-> +ascertain if the new entry has the highest priority of the entire block
-> +or if we should make some space in the ACL table by increasing the
-> +priority of the filters already in the table.
+      Arnd
 
-It would be nice to have an example which shows priority in action,
-since i don't understand what you are saying here.
+Link: https://lore.kernel.org/netdev/20201124151828.169152-1-arnd@kernel.org/
 
-      Andrew
+Changes in v6:
+ - Split out and expand linux/compat.h rework
+ - Split ifconf change into two patches
+ - Rebase on latest net-next/master
+
+Changes in v5:
+ - Rebase to v5.14-rc2
+ - Fix a few build issues
+
+Changes in v4:
+ - build fix without CONFIG_INET
+ - build fix without CONFIG_COMPAT
+ - style fixes pointed out by hch
+
+Changes in v3:
+ - complete rewrite of the series
+
+Arnd Bergmann (6):
+  compat: make linux/compat.h available everywhere
+  ethtool: improve compat ioctl handling
+  net: socket: rework SIOC?IFMAP ioctls
+  net: socket: remove register_gifconf
+  net: socket: simplify dev_ifconf handling
+  net: socket: rework compat_ifreq_ioctl()
+
+ arch/arm64/include/asm/compat.h   |  14 +-
+ arch/mips/include/asm/compat.h    |  24 ++-
+ arch/parisc/include/asm/compat.h  |  14 +-
+ arch/powerpc/include/asm/compat.h |  11 --
+ arch/s390/include/asm/compat.h    |  14 +-
+ arch/sparc/include/asm/compat.h   |  14 +-
+ arch/x86/include/asm/compat.h     |  14 +-
+ arch/x86/include/asm/signal.h     |   1 +
+ include/asm-generic/compat.h      |  17 ++
+ include/linux/compat.h            |  32 ++--
+ include/linux/ethtool.h           |   4 -
+ include/linux/inetdevice.h        |   9 +
+ include/linux/netdevice.h         |  12 +-
+ net/appletalk/ddp.c               |   4 +-
+ net/core/dev_ioctl.c              | 153 +++++++++-------
+ net/ethtool/ioctl.c               | 136 ++++++++++++--
+ net/ieee802154/socket.c           |   4 +-
+ net/ipv4/af_inet.c                |   6 +-
+ net/ipv4/devinet.c                |   4 +-
+ net/qrtr/qrtr.c                   |   4 +-
+ net/socket.c                      | 292 +++++++-----------------------
+ 21 files changed, 352 insertions(+), 431 deletions(-)
+
+-- 
+2.29.2
+
+Cc: Al Viro <viro@zeniv.linux.org.uk> 
+Cc: Andrew Lunn <andrew@lunn.ch> 
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: David Ahern <dsahern@kernel.org> 
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org> 
+Cc: Jakub Kicinski <kuba@kernel.org> 
+Cc: Kees Cook <keescook@chromium.org> 
+Cc: Marco Elver <elver@google.com> 
+Cc: linux-kernel@vger.kernel.org 
+Cc: linux-arch@vger.kernel.org 
+Cc: netdev@vger.kernel.org 
