@@ -2,128 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E85AE3D2233
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 12:41:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 386583D2252
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 12:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbhGVKA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 06:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230410AbhGVKAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 06:00:55 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CD2C061575;
-        Thu, 22 Jul 2021 03:41:29 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id m2so5425104wrq.2;
-        Thu, 22 Jul 2021 03:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:in-reply-to:references:reply-to:date:message-id
-         :mime-version;
-        bh=hjjYYUQIehI9VeBc6wX+U/RUbbsWqT6Tuj+xVmXLLJs=;
-        b=pZWFd3ySNfxCmZ3C+m26RZYye81+LV1ZUBwjPTqMES8A6B3CRDREpZYhJcslazcRMk
-         nUmr3IKcjc9XK5dgcHgkWU8xjbyjsTDMwTwSiaR3ahg7T0WSqevXUuaoGsSYSHh3nww8
-         eO7ueQSWnhY/HfTgK/lDhp5dQHREk5qP/YeFR1NzY5BiA5mLCf1TOi/EjWKkzIB2rExZ
-         XMGBSx2NpZls/tdYvneNNmJivwo7ZMxYZyov+ww7zwVOLojukulUl88x8pm/TVEXdl4Z
-         izNU+KS6E/yYMsTgfwrHnc3i3FYYGx5UvU2YjGMWP4+0tds6QCU55K3+gvLmsAoVekf9
-         oEaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :reply-to:date:message-id:mime-version;
-        bh=hjjYYUQIehI9VeBc6wX+U/RUbbsWqT6Tuj+xVmXLLJs=;
-        b=VGXA8JrpF2AhBTHOsBXGclcEmkoklNJDON7ORbauALG0X0WxGufB5hoUyEmR+t9qFd
-         CHuQ06Syc/omz+7Z4U5gEyIkyHXtlfZRg5IzLSyCiXwKI4Q1V5R1rD7L26nGSMf9iVL3
-         UTdZFjyq/M3WB9hQBqlwvDTuDCvKE0jCJE478oYUQgeYx0XHiF5uqe/Cqkniv7CBK230
-         hBKYbHX3QU/3Ehcj6PnEx8M1QiOLw3hlcMNISszT74Mx8UjWPZHvqavM+RBDjlQ7rDJF
-         G1PBUT8mSFysmVoJ1eJUkBPvl7hZeQtA996mCm2GFezIqKfftc9+6USRwq4tcJScFYyz
-         YXSw==
-X-Gm-Message-State: AOAM530UsyYT+ZjNfDDofYRZCheml5gRcVYseRbf4GZrqcOsvd0K7Na/
-        U00nEORIzxvwmjYvI2fXJwms58tMw7I=
-X-Google-Smtp-Source: ABdhPJxmaCmpUOwaVK871lfudvLQYt/t+rKOG7aNEws5RQvVNrtZscqyvC0oroI8FXpKHs83KuwkuQ==
-X-Received: by 2002:a5d:59ab:: with SMTP id p11mr29856058wrr.74.1626950488555;
-        Thu, 22 Jul 2021 03:41:28 -0700 (PDT)
-Received: from jvdspc.jvds.net ([212.129.84.103])
-        by smtp.gmail.com with ESMTPSA id p9sm28709072wrx.59.2021.07.22.03.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 03:41:27 -0700 (PDT)
-Received: from jvdspc.jvds.net (localhost [127.0.0.1])
-        by jvdspc.jvds.net (8.16.1/8.15.2) with ESMTPS id 16MAfQgf019600
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 22 Jul 2021 11:41:26 +0100
-Received: (from jvd@localhost)
-        by jvdspc.jvds.net (8.16.1/8.16.1/Submit) id 16MAfOKU019599;
-        Thu, 22 Jul 2021 11:41:24 +0100
-X-Authentication-Warning: jvdspc.jvds.net: jvd set sender to jason.vas.dias@gmail.com using -f
-From:   "Jason Vas Dias" <jason.vas.dias@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     linux-kernel@vger.kernel.org, linux-8086@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: /proc/net/{udp,tcp}{,6} : ip address format : RFC : need for
- /proc/net/{udp,tcp}{,6}{{n,h},{le,be}} ?
-In-Reply-To: <hhlf60vmj6.fsf@jvdspc.jvds.net>
-References: <hhlf60vmj6.fsf@jvdspc.jvds.net>
-Reply-To: "Jason Vas Dias" <jason.vas.dias@gmail.com>
-Date:   Thu, 22 Jul 2021 11:41:24 +0100
-Message-ID: <hhwnpir5pn.fsf@jvdspc.jvds.net>
+        id S231668AbhGVKOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 06:14:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36028 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231453AbhGVKOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 06:14:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 10ACB60FF2;
+        Thu, 22 Jul 2021 10:55:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626951306;
+        bh=BJ6APhf3RzDbaRx9MSskmKukvlPphUZjkNXAiCLjq4U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tJS6H2raoggEzh/mOaRoAOyvnEvMH57PAQXqTQ7G1iQeQk6jp5JoZOjYupmVbzTt4
+         LrObS2Rf0tmov1bl59+wmqC+UO0vcN4IdgI9b6v5T90iNWgxV/NIjoaRqZaHBUy2n+
+         hx98jCTyUah9HfLz927v588OnDw5qI0POpV1Y3dCx61TN7ua+H+eVG1S/bzZ3Skd+T
+         HcybZomMzitJHpskL8JFWx6PACzq++Lajp5pJUTBPTKWb4uXCpIaevB7mLRSxU9xIq
+         qFdJfU8S8F1FM8ukEPBSH4FztIYCngfZ90hqEQ8lzov4WXOknIAgEYeRO/mxVVwX51
+         4M6PBGbiocQAA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Jiri Slaby <jirislaby@kernel.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Bob Copeland <me@bobcopeland.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ath5k: fix building with LEDS=m
+Date:   Thu, 22 Jul 2021 12:54:46 +0200
+Message-Id: <20210722105501.1000781-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Arnd Bergmann <arnd@arndb.de>
 
-RE: On 20 July 2021 at 23:41, Stephen Hemminger wrote:
->> So, yes what you say makes sense but that was not how the early
->> prehistoric (2.4 or earlier) versions of Linux decided to output addresses
->> and it can never change.
+Randconfig builds still show a failure for the ath5k driver,
+similar to the one that was fixed for ath9k earlier:
 
-I don't like those words: "it can never change" !:-)
+WARNING: unmet direct dependencies detected for MAC80211_LEDS
+  Depends on [n]: NET [=y] && WIRELESS [=y] && MAC80211 [=y] && (LEDS_CLASS [=m]=y || LEDS_CLASS [=m]=MAC80211 [=y])
+  Selected by [m]:
+  - ATH5K [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && (PCI [=y] || ATH25) && MAC80211 [=y]
+net/mac80211/led.c: In function 'ieee80211_alloc_led_names':
+net/mac80211/led.c:34:22: error: 'struct led_trigger' has no member named 'name'
+   34 |         local->rx_led.name = kasprintf(GFP_KERNEL, "%srx",
+      |                      ^
 
-How about either or both Options B & C under sysfs then?
+Copying the same logic from my ath9k patch makes this one work
+as well.
 
-ie. something like /sys/class/net/{udp,tcp}{,6,n,h,ip,bin}
-    6: ipv6
- [optionally:
-  [ n: hex, network byte order
-    h: hex, host byte order
-   ip: ipv4 ascii dotted quad decimal IPv4 address with ':' <port>
-       suffix, and decimal numbers         
-   ip6:ipv6 ascii 32-bit hex words of IPv6 address separated by ':' (or
-       '::') with '#' <port> suffix, with decimal numbers
-  ] [and / or:
-   bin:memory mapped read-only binary table
-  ]]
+Alternatively, we could just drop the 'select' from both ath5k and
+ath9k.
 
-I know ip route and netlink can be used. But since Linux is mandated to
-print the IP socket and routing tables in ASCII, which I think is a
-great idea for shell / perl / python / java / nodejs / lisp / "script language X" scripts,
-in the /proc/net/{udp,tcp}* files, it should net be precluded from providing
-a better attempt in new files / filesystems - that is all I am
-suggesting.
+Fixes: b64acb28da83 ("ath9k: fix build error with LEDS_CLASS=m")
+Fixes: 72cdab808714 ("ath9k: Do not select MAC80211_LEDS by default")
+Fixes: 3a078876caee ("ath5k: convert LED code to use mac80211 triggers")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/wireless/ath/ath5k/Kconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-It is a much more attractive proposition for scripts to parse some ASCII
-text rather than having to make a call into a native code library or run an
-executable like 'ip' (iproute2) to use netlink sockets for this ;
-since Linux has to do this job for the /proc filesystem anyway,
-why not at least consider then idea of improving & extending this
-excellent support for scripts , and make their task simpler and more
-efficient ? ie. they could use one number conversion routine for
-all numbers in each new file.
-
-I'd personally find such tables most useful, and might actually develop
-a module for them. Especially if they included the netlink IP stats
-like 64-bit total counts of rx & tx bytes for each socket as well
-as rx & tx queue lengths.
-
-Best Regards,
-Jason
-
-
-
-
-
-
-
-
+diff --git a/drivers/net/wireless/ath/ath5k/Kconfig b/drivers/net/wireless/ath/ath5k/Kconfig
+index f35cd8de228e..6914b37bb0fb 100644
+--- a/drivers/net/wireless/ath/ath5k/Kconfig
++++ b/drivers/net/wireless/ath/ath5k/Kconfig
+@@ -3,9 +3,7 @@ config ATH5K
+ 	tristate "Atheros 5xxx wireless cards support"
+ 	depends on (PCI || ATH25) && MAC80211
+ 	select ATH_COMMON
+-	select MAC80211_LEDS
+-	select LEDS_CLASS
+-	select NEW_LEDS
++	select MAC80211_LEDS if LEDS_CLASS=y || LEDS_CLASS=MAC80211
+ 	select ATH5K_AHB if ATH25
+ 	select ATH5K_PCI if !ATH25
+ 	help
+-- 
+2.29.2
 
