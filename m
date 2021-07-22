@@ -2,85 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86DC83D2525
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B481E3D254A
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232279AbhGVNZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 09:25:09 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40392 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232198AbhGVNZI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 09:25:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=9I5Yn7jbTPFxeXXmcV2hyvn+AXm6wM45iGZ04yQBfXQ=; b=bMKIeQtSLgDOkvicAxFY0sKlS4
-        kF+iLqp2nfKqlyFO6hmC2k/RqoQ+vBpSIKd++M/TYjDiN7E49QOmRyGFcbSsFCt4Guu9TJFKD1DUB
-        XkPjjIh1GtXMizQwobvTW6tsqSIkVX6pMC5b5AT3YDYckq1fzHtTFdcnNJAyuNUcG+sw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6ZKQ-00EL32-0X; Thu, 22 Jul 2021 16:05:34 +0200
-Date:   Thu, 22 Jul 2021 16:05:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-omap@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v1 net-next 1/1] net: ethernet: ti: cpsw: allow MTU >
- 1500 when overridden by module parameter
-Message-ID: <YPl7LdLMMTmhSu1z@lunn.ch>
-References: <20210721210538.22394-1-colin.foster@in-advantage.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210721210538.22394-1-colin.foster@in-advantage.com>
+        id S232245AbhGVNd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 09:33:26 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:15283 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232105AbhGVNdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 09:33:25 -0400
+X-IronPort-AV: E=Sophos;i="5.84,261,1620658800"; 
+   d="scan'208";a="88463911"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 22 Jul 2021 23:13:59 +0900
+Received: from localhost.localdomain (unknown [10.226.92.164])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 65D6D401224D;
+        Thu, 22 Jul 2021 23:13:55 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH net-next 00/18] Add Gigabit Ethernet driver support
+Date:   Thu, 22 Jul 2021 15:13:33 +0100
+Message-Id: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 02:05:38PM -0700, Colin Foster wrote:
-> The module parameter rx_packet_max can be overridden at module load or
-> boot args. But it doesn't adjust the max_mtu for the device accordingly.
-> 
-> If a CPSW device is to be used in a DSA architecture, increasing the
-> MTU by small amounts to account for switch overhead becomes necessary.
-> This way, a boot arg of cpsw.rx_packet_max=1600 should allow the MTU
-> to be increased to values of 1520, which is necessary for DSA tagging
-> protocols like "ocelot" and "seville".
+The DMAC and EMAC blocks of Gigabit Ethernet IP is almost similar to Ethernet AVB.
 
-Hi Colin
+The Gigabit Etherner IP consists of Ethernet controller (E-MAC), Internal TCP/IP Offload Engine (TOE) and Dedicated Direct memory access controller (DMAC).
 
-As far as your patch goes, it makes sense.
+With few changes in driver, we can support Gigabit ethernet driver as well.
 
-However, module parameters are unlikely by netdev maintainers. Having
-to set one in order to make DSA work is not nice. What is involved in
-actually removing the module parameter and making the MTU change work
-without it?
+This patch series is aims to support the same
 
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
->  drivers/net/ethernet/ti/cpsw.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-> index c0cd7de88316..d400163c4ef2 100644
-> --- a/drivers/net/ethernet/ti/cpsw.c
-> +++ b/drivers/net/ethernet/ti/cpsw.c
-> @@ -1625,6 +1625,14 @@ static int cpsw_probe(struct platform_device *pdev)
->  		goto clean_cpts;
->  	}
->  
-> +	/* adjust max_mtu to match module parameter rx_packet_max */
-> +	if (cpsw->rx_packet_max > CPSW_MAX_PACKET_SIZE) {
-> +		ndev->max_mtu = ETH_DATA_LEN + (cpsw->rx_packet_max -
-> +				CPSW_MAX_PACKET_SIZE);
-> +		dev_info(dev, "overriding default MTU to %d\n\n",
-> +			 ndev->max_mtu);
+RFC->V1
+  * Incorporated feedback from Andrew, Sergei, Geert and Prabhakar
+  * https://patchwork.kernel.org/project/linux-renesas-soc/list/?series=515525
 
-There is no need for dev_info(). You could consider dev_dbg(), or just
-remove it.
+Biju Das (18):
+  dt-bindings: net: renesas,etheravb: Document Gigabit Ethernet IP
+  drivers: clk: renesas: rzg2l-cpg: Add support to handle MUX clocks
+  drivers: clk: renesas: r9a07g044-cpg: Add ethernet clock sources
+  drivers: clk: renesas: r9a07g044-cpg: Add GbEthernet clock/reset
+  ravb: Replace chip type with a structure for driver data
+  ravb: Factorise ptp feature
+  ravb: Add features specific to R-Car Gen3
+  ravb: Add R-Car common features
+  ravb: Factorise ravb_ring_free function
+  ravb: Factorise ravb_ring_format function
+  ravb: Factorise ravb_ring_init function
+  ravb: Factorise {emac,dmac} init function
+  ravb: Factorise ravb_rx function
+  ravb: Factorise ravb_adjust_link function
+  ravb: Factorise ravb_set_features
+  ravb: Add reset support
+  ravb: Add GbEthernet driver support
+  arm64: dts: renesas: r9a07g044: Add GbEther nodes
 
-       Andrew
+ .../bindings/net/renesas,etheravb.yaml        |  57 +-
+ arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  42 +
+ drivers/clk/renesas/r9a07g044-cpg.c           |  27 +
+ drivers/clk/renesas/rzg2l-cpg.c               |  24 +
+ drivers/clk/renesas/rzg2l-cpg.h               |  15 +
+ drivers/net/ethernet/renesas/ravb.h           | 112 ++-
+ drivers/net/ethernet/renesas/ravb_main.c      | 922 +++++++++++++++---
+ 7 files changed, 1031 insertions(+), 168 deletions(-)
+
+-- 
+2.17.1
+
