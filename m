@@ -2,169 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A80CD3D2F7E
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 00:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 915853D2F8D
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 00:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbhGVV0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 17:26:05 -0400
-Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:45411 "EHLO
-        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbhGVV0E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 17:26:04 -0400
+        id S232192AbhGVVbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 17:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231799AbhGVVbC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 17:31:02 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D7DC061757
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 15:11:36 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d17so859230plh.10
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 15:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1626991599; x=1658527599;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/9PIWzOI8QOovn6TxUzvAwaFD5zwIopfMKXHGp/8x04=;
-  b=aSz2zQRIchqVOZ540QPK52tDfwsc4YWTHczasYJHmvao0i1ZwEg/xuMx
-   WHM6CWfn5UpLBKUtSj3SRboQGT0uO67IT3bdaT1rFmaUzuvxKFeS5HEdU
-   qvGt5BEfhiJZjgHVvIp57i+8sc3uHrb6GQsCR/FhG8zcoLXOzEJaOZ7dI
-   E=;
-X-IronPort-AV: E=Sophos;i="5.84,262,1620691200"; 
-   d="scan'208";a="945656428"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 22 Jul 2021 22:06:37 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 64B8B2836C6;
-        Thu, 22 Jul 2021 22:06:34 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Thu, 22 Jul 2021 22:06:33 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.90) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Thu, 22 Jul 2021 22:06:29 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <ast@kernel.org>, <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
-        <edumazet@google.com>, <kernel-team@fb.com>, <kuniyu@amazon.co.jp>,
-        <ncardwell@google.com>, <netdev@vger.kernel.org>,
-        <ycheng@google.com>, <yhs@fb.com>
-Subject: Re: [PATCH v2 bpf-next 1/8] tcp: seq_file: Avoid skipping sk during tcp_seek_last_pos
-Date:   Fri, 23 Jul 2021 07:06:26 +0900
-Message-ID: <20210722220626.15150-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210722214256.ncuz6k5bjt4vgru6@kafai-mbp.dhcp.thefacebook.com>
-References: <20210722214256.ncuz6k5bjt4vgru6@kafai-mbp.dhcp.thefacebook.com>
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aMIZjsYISiszbVqhO4K3RhbKJ7SsS4bFdaK7AFj0VYc=;
+        b=Tg0mtGKX5zqe89qEhdt9aswj+FEvdET9JmkvnZZPrBiSqSVSNgJ0aex4rzqyXrT0e8
+         P9KPnQdDvAVH85uQkpyHuNYRW5QT6+s2hN2jIJU8EsKReMjzunblRygDA6P/f28g5rgl
+         69hXeTOaLl9ayrMSzQ4aZ8nVzoyQXmT72Vqzt+5efzig0G1XYCnupWBoc50gFa+rohkf
+         jB7QYPa/j6nJ2nV5Dol58PK8xPdA37bR33zf4LdJK41lN9dnMLCl1t13n7enSitaxHEH
+         4oyrthvmd6jFH1vr29m6hEU7/SwFqLAnZBkIQThD8f3nzHLrjpPkF9G/HKwvOaCRBDY3
+         PnCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aMIZjsYISiszbVqhO4K3RhbKJ7SsS4bFdaK7AFj0VYc=;
+        b=MaYmyQqrxNjA6TCeSox0HpgQEJA0ZMl+ZEH1yZX5sHFNvVN8Jz5OExiw0qfvGIKEho
+         5RP3z5fHEsy6Dyyp8/tdJU0bnS3f3hSi3lolV9nv+dB7J7L8tFliYdF8iLgawl32KWQ5
+         1LbJeYqlCabavk3d6Wm/En2SvjoohdlLQTRWAr/74YSOyr4ZgQtCcJ/PIuCWfFdP/Psm
+         YGTnlmeY8SiGbh9N6WGzWF8Ad8v4QqZVA9TYhmsO04wiDOtyO/UkwL6N3s4k/6sqASx9
+         pjwVJ7qUB2byiubnMquH1Gr/bWtyLey1QARq26jOSIWghxAmUPzG+2F1wkCj65QV9MTv
+         TjOw==
+X-Gm-Message-State: AOAM5326AALJjK/Hg7SemFpyeVke4c7Rt0oAR8TteR4R/cfzi7gbplrx
+        J3oxEMEKaUl30rpQElrmUNeZDA==
+X-Google-Smtp-Source: ABdhPJz7kixwxzcsBzngPv2vBX8CYQK337RlCZsgHsR6bi4uGWSk6p7naWIzwdelpcngF6+IJN732Q==
+X-Received: by 2002:a17:90a:f18f:: with SMTP id bv15mr10628501pjb.63.1626991896089;
+        Thu, 22 Jul 2021 15:11:36 -0700 (PDT)
+Received: from hermes.local (204-195-33-123.wavecable.com. [204.195.33.123])
+        by smtp.gmail.com with ESMTPSA id a35sm20839654pgm.66.2021.07.22.15.11.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 15:11:35 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 15:11:32 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Ilya Dmitrichenko <errordeveloper@gmail.com>
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [PATCH iproute2] ip/tunnel: always print all known attributes
+Message-ID: <20210722151132.4384026a@hermes.local>
+In-Reply-To: <20210716153557.10192-1-errordeveloper@gmail.com>
+References: <20210716153557.10192-1-errordeveloper@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.90]
-X-ClientProxiedBy: EX13D39UWB004.ant.amazon.com (10.43.161.148) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Thu, 22 Jul 2021 14:42:56 -0700
-> On Fri, Jul 23, 2021 at 12:08:10AM +0900, Kuniyuki Iwashima wrote:
-> > From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > Date:   Thu, 22 Jul 2021 23:16:37 +0900
-> > > From:   Martin KaFai Lau <kafai@fb.com>
-> > > Date:   Thu, 1 Jul 2021 13:05:41 -0700
-> > > > st->bucket stores the current bucket number.
-> > > > st->offset stores the offset within this bucket that is the sk to be
-> > > > seq_show().  Thus, st->offset only makes sense within the same
-> > > > st->bucket.
-> > > > 
-> > > > These two variables are an optimization for the common no-lseek case.
-> > > > When resuming the seq_file iteration (i.e. seq_start()),
-> > > > tcp_seek_last_pos() tries to continue from the st->offset
-> > > > at bucket st->bucket.
-> > > > 
-> > > > However, it is possible that the bucket pointed by st->bucket
-> > > > has changed and st->offset may end up skipping the whole st->bucket
-> > > > without finding a sk.  In this case, tcp_seek_last_pos() currently
-> > > > continues to satisfy the offset condition in the next (and incorrect)
-> > > > bucket.  Instead, regardless of the offset value, the first sk of the
-> > > > next bucket should be returned.  Thus, "bucket == st->bucket" check is
-> > > > added to tcp_seek_last_pos().
-> > > > 
-> > > > The chance of hitting this is small and the issue is a decade old,
-> > > > so targeting for the next tree.
-> > > 
-> > > Multiple read()s or lseek()+read() can call tcp_seek_last_pos().
-> > > 
-> > > IIUC, the problem happens when the sockets placed before the last shown
-> > > socket in the list are closed between some read()s or lseek() and read().
-> > > 
-> > > I think there is still a case where bucket is valid but offset is invalid:
-> > > 
-> > >   listening_hash[1] -> sk1 -> sk2 -> sk3 -> nulls
-> > >   listening_hash[2] -> sk4 -> sk5 -> nulls
-> > > 
-> > >   read(/proc/net/tcp)
-> > >     end up with sk2
-> > > 
-> > >   close(sk1)
-> > > 
-> > >   listening_hash[1] -> sk2 -> sk3 -> nulls
-> > >   listening_hash[2] -> sk4 -> sk5 -> nulls
-> > > 
-> > >   read(/proc/net/tcp) (resume)
-> > >     offset = 2
-> > > 
-> > >     listening_get_next() returns sk2
-> > > 
-> > >     while (offset--)
-> > >       1st loop listening_get_next() returns sk3 (bucket == st->bucket)
-> > >       2nd loop listening_get_next() returns sk4 (bucket != st->bucket)
-> > > 
-> > >     show() starts from sk4
-> > > 
-> > >     only is sk3 skipped, but should be shown.
-> > 
-> > Sorry, this example is wrong.
-> > We can handle this properly by testing bucket != st->bucket.
-> > 
-> > In the case below, we cannot check if the offset is valid or not by testing
-> > the bucket.
-> > 
-> >   listening_hash[1] -> sk1 -> sk2 -> sk3 -> sk4 -> nulls
-> > 
-> >   read(/proc/net/tcp)
-> >     end up with sk2
-> > 
-> >   close(sk1)
-> > 
-> >   listening_hash[1] -> sk2 -> sk3 -> sk4 -> nulls
-> > 
-> >   read(/proc/net/tcp) (resume)
-> >     offset = 2
-> > 
-> >     listening_get_first() returns sk2
-> > 
-> >     while (offset--)
-> >       1st loop listening_get_next() returns sk3 (bucket == st->bucket)
-> >       2nd loop listening_get_next() returns sk4 (bucket == st->bucket)
-> > 
-> >     show() starts from sk4
-> > 
-> >     only is sk3 skipped, but should be shown.
-> > 
-> > 
-> > > 
-> > > In listening_get_next(), we can check if we passed through sk2, but this
-> > > does not work well if sk2 itself is closed... then there are no way to
-> > > check the offset is valid or not.
-> > > 
-> > > Handling this may be too much though, what do you think ?
-> There will be cases that misses sk after releasing
-> the bucket lock (and then things changed).  For example,
-> another case could be sk_new is added to the head of the bucket,
-> although it could arguably be treated as a legit miss since
-> "cat /proc/net/tcp" has already been in-progress.
+On Fri, 16 Jul 2021 16:35:57 +0100
+Ilya Dmitrichenko <errordeveloper@gmail.com> wrote:
+
+> Presently, if a Geneve or VXLAN interface was created with 'external',
+> it's not possible for a user to determine e.g. the value of 'dstport'
+> after creation. This change fixes that by avoiding early returns.
 > 
-> The chance of hitting m->buf limit and that bucket gets changed should be slim.
-> If there is use case such that lhash2 (already hashed by port+addr) is still
-> having a large bucket (e.g. many SO_REUSEPORT), it will be a better problem
-> to solve first.  imo, remembering sk2 to solve the "cat /proc/net/tcp" alone
-> does not worth it.
-
-That makes sense.
-Thank you for explaining!
-
-
+> This change partly reverts 00ff4b8e31af ("ip/tunnel: Be consistent when
+> printing tunnel collect metadata").
 > 
-> Thanks for the review!
+> Signed-off-by: Ilya Dmitrichenko <errordeveloper@gmail.com>
+
+The patch looks fine, but it doesn't patch checkpatch.
+Please fix your editor settings to do whitespace properly.
+
+~/git/iproute2 $ ~/Src/kernel/linux/scripts/checkpatch.pl ~/Downloads/iproute2-ip-tunnel-always-print-all-known-attributes.patch 
+ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit 00ff4b8e31af ("ip/tunnel: Be consistent when printing tunnel collect metadata")'
+#88: 
+This change partly reverts 00ff4b8e31af ("ip/tunnel: Be consistent when
+
+ERROR: code indent should use tabs where possible
+#129: FILE: ip/iplink_geneve.c:259:
++        }$
+
+WARNING: please, no spaces at the start of a line
+#129: FILE: ip/iplink_geneve.c:259:
++        }$
+
+ERROR: code indent should use tabs where possible
+#161: FILE: ip/iplink_vxlan.c:426:
++        }$
+
+WARNING: please, no spaces at the start of a line
+#161: FILE: ip/iplink_vxlan.c:426:
++        }$
+
+total: 3 errors, 2 warnings, 80 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+NOTE: Whitespace errors detected.
