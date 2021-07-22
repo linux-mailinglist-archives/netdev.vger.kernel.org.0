@@ -2,195 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B3B3D1EAA
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2385B3D1EB8
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231140AbhGVG3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 02:29:06 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:15045 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbhGVG3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 02:29:05 -0400
-Received: from dggeml757-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GVk523JJWzZrcj;
-        Thu, 22 Jul 2021 15:06:14 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- dggeml757-chm.china.huawei.com (10.1.199.137) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Thu, 22 Jul 2021 15:09:36 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <socketcan@hartkopp.net>
-CC:     <mkl@pengutronix.de>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] can: raw: fix raw_rcv panic for sock UAF
-Date:   Thu, 22 Jul 2021 15:08:19 +0800
-Message-ID: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S231408AbhGVGaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 02:30:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49149 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231376AbhGVGaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 02:30:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1626937855;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6GDEyDpumTN5IUPI+gElXinoItS3oXeAjDccXnHKb+I=;
+        b=Sd4ZcP7tNbqPIHSX98dxvGXM+kn6vzz+qgsm8WEFuJA5+RM06q8fFo6xPlmvH+j38037Z2
+        G6WJzphs0GIbvjGv5j20eWPIQOzyeDCbb2K7Gd8RpCF6OLGzfChnnqog6vlSAY2ZMhUsIz
+        N2p//wdNBwIeApv+Lf9teAIQAOLkvgM=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-453-NK5CC9oQPVSRkJqdX8yVwg-1; Thu, 22 Jul 2021 03:10:54 -0400
+X-MC-Unique: NK5CC9oQPVSRkJqdX8yVwg-1
+Received: by mail-wm1-f71.google.com with SMTP id g13-20020a05600c4ecdb0290242a8f4cf9cso1181768wmq.5
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 00:10:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=6GDEyDpumTN5IUPI+gElXinoItS3oXeAjDccXnHKb+I=;
+        b=BxIjINLR41JSqAjsiddUQvufIqq3feOg14+qmKmo9e/NiCw/S+45t/+I5oMmfY8B1q
+         wJVGvdP45k7Q1fOstLM5+LI6D6LoDnK+bQHC0FRFb/PjWvrkjbw5as88S6dKP317SH8f
+         Q+4YEAfhQo6dmLDp3MxNnuhoqWMYuU/bOlo/EyHokC0doattA9pno8S5RDXIffM5GSf3
+         Q/mCit9WWiMe2x1yAw6+yzE52pVlPngByvhHAwB70pou1jrNxMvGN4u3wyZKyDPUzS8y
+         Oec53XdhQGyNlkKd+/sTsJm4UfnoDRLaZCffndSjSvMZu29XlA8D+9QmoFyNDqscXuP4
+         HaNQ==
+X-Gm-Message-State: AOAM532wr2xdCNTERhocxlx2hx3X0fpcZT72/gR4pMV2IOmldyW/rKHX
+        Jlzg6/iIfjIbZRdRq3Ej2w957bWZfBgj7GtG/j7ZcymC48+WQCIGXK0l6uc8jix+ePlDxMRu/BH
+        La89PZu750+MXJuVk
+X-Received: by 2002:a7b:cbda:: with SMTP id n26mr40603520wmi.179.1626937853048;
+        Thu, 22 Jul 2021 00:10:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxfG/aAXoKgHTRexPzO6AsTiTtPq6UsftoDAUnhc4K7JdYB/4vWvNVTHFlY/ZtfBDrgE5AXDg==
+X-Received: by 2002:a7b:cbda:: with SMTP id n26mr40603506wmi.179.1626937852869;
+        Thu, 22 Jul 2021 00:10:52 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-57.dyn.eolo.it. [146.241.97.57])
+        by smtp.gmail.com with ESMTPSA id 6sm1861061wmi.3.2021.07.22.00.10.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 00:10:52 -0700 (PDT)
+Message-ID: <e6200ddd38510216f9f32051ce1acff21fc9c6d0.camel@redhat.com>
+Subject: Re: [PATCH RFC 0/9] sk_buff: optimize layout for GRO
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Date:   Thu, 22 Jul 2021 09:10:51 +0200
+In-Reply-To: <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
+References: <cover.1626879395.git.pabeni@redhat.com>
+         <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggeml757-chm.china.huawei.com (10.1.199.137)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We get a bug during ltp can_filter test as following.
+Hello,
 
-===========================================
-[60919.264984] BUG: unable to handle kernel NULL pointer dereference at 0000000000000010
-[60919.265223] PGD 8000003dda726067 P4D 8000003dda726067 PUD 3dda727067 PMD 0
-[60919.265443] Oops: 0000 [#1] SMP PTI
-[60919.265550] CPU: 30 PID: 3638365 Comm: can_filter Kdump: loaded Tainted: G        W         4.19.90+ #1
-[60919.266068] RIP: 0010:selinux_socket_sock_rcv_skb+0x3e/0x200
-[60919.293289] RSP: 0018:ffff8d53bfc03cf8 EFLAGS: 00010246
-[60919.307140] RAX: 0000000000000000 RBX: 000000000000001d RCX: 0000000000000007
-[60919.320756] RDX: 0000000000000001 RSI: ffff8d5104a8ed00 RDI: ffff8d53bfc03d30
-[60919.334319] RBP: ffff8d9338056800 R08: ffff8d53bfc29d80 R09: 0000000000000001
-[60919.347969] R10: ffff8d53bfc03ec0 R11: ffffb8526ef47c98 R12: ffff8d53bfc03d30
-[60919.350320] perf: interrupt took too long (3063 > 2500), lowering kernel.perf_event_max_sample_rate to 65000
-[60919.361148] R13: 0000000000000001 R14: ffff8d53bcf90000 R15: 0000000000000000
-[60919.361151] FS:  00007fb78b6b3600(0000) GS:ffff8d53bfc00000(0000) knlGS:0000000000000000
-[60919.400812] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[60919.413730] CR2: 0000000000000010 CR3: 0000003e3f784006 CR4: 00000000007606e0
-[60919.426479] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[60919.439339] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[60919.451608] PKRU: 55555554
-[60919.463622] Call Trace:
-[60919.475617]  <IRQ>
-[60919.487122]  ? update_load_avg+0x89/0x5d0
-[60919.498478]  ? update_load_avg+0x89/0x5d0
-[60919.509822]  ? account_entity_enqueue+0xc5/0xf0
-[60919.520709]  security_sock_rcv_skb+0x2a/0x40
-[60919.531413]  sk_filter_trim_cap+0x47/0x1b0
-[60919.542178]  ? kmem_cache_alloc+0x38/0x1b0
-[60919.552444]  sock_queue_rcv_skb+0x17/0x30
-[60919.562477]  raw_rcv+0x110/0x190 [can_raw]
-[60919.572539]  can_rcv_filter+0xbc/0x1b0 [can]
-[60919.582173]  can_receive+0x6b/0xb0 [can]
-[60919.591595]  can_rcv+0x31/0x70 [can]
-[60919.600783]  __netif_receive_skb_one_core+0x5a/0x80
-[60919.609864]  process_backlog+0x9b/0x150
-[60919.618691]  net_rx_action+0x156/0x400
-[60919.627310]  ? sched_clock_cpu+0xc/0xa0
-[60919.635714]  __do_softirq+0xe8/0x2e9
-[60919.644161]  do_softirq_own_stack+0x2a/0x40
-[60919.652154]  </IRQ>
-[60919.659899]  do_softirq.part.17+0x4f/0x60
-[60919.667475]  __local_bh_enable_ip+0x60/0x70
-[60919.675089]  __dev_queue_xmit+0x539/0x920
-[60919.682267]  ? finish_wait+0x80/0x80
-[60919.689218]  ? finish_wait+0x80/0x80
-[60919.695886]  ? sock_alloc_send_pskb+0x211/0x230
-[60919.702395]  ? can_send+0xe5/0x1f0 [can]
-[60919.708882]  can_send+0xe5/0x1f0 [can]
-[60919.715037]  raw_sendmsg+0x16d/0x268 [can_raw]
+On Wed, 2021-07-21 at 11:15 -0700, Casey Schaufler wrote:
+> On 7/21/2021 9:44 AM, Paolo Abeni wrote:
+> > This is a very early draft - in a different world would be
+> > replaced by hallway discussion at in-person conference - aimed at
+> > outlining some ideas and collect feedback on the overall outlook.
+> > There are still bugs to be fixed, more test and benchmark need, etc.
+> > 
+> > There are 3 main goals:
+> > - [try to] avoid the overhead for uncommon conditions at GRO time
+> >   (patches 1-4)
+> > - enable backpressure for the veth GRO path (patches 5-6)
+> > - reduce the number of cacheline used by the sk_buff lifecycle
+> >   from 4 to 3, at least in some common scenarios (patches 1,7-9).
+> >   The idea here is avoid the initialization of some fields and
+> >   control their validity with a bitmask, as presented by at least
+> >   Florian and Jesper in the past.
+> 
+> If I understand correctly, you're creating an optimized case
+> which excludes ct, secmark, vlan and UDP tunnel. Is this correct,
+> and if so, why those particular fields? What impact will this have
+> in the non-optimal (with any of the excluded fields) case?
 
-It's because raw_setsockopt() concurrently with
-unregister_netdevice_many(). Concurrent scenario as following.
+Thank you for the feedback.
 
-	cpu0						cpu1
-raw_bind
-raw_setsockopt					unregister_netdevice_many
-						unlist_netdevice
-dev_get_by_index				raw_notifier
-raw_enable_filters				......
-can_rx_register
-can_rcv_list_find(..., net->can.rx_alldev_list)
+There are 2 different relevant points:
 
-......
+- the GRO stage.
+  packets carring any of CT, dst, sk or skb_ext will do 2 additional
+conditionals per gro_receive WRT the current code. My understanding is
+that having any of such field set at GRO receive time is quite
+exceptional for real nic. All others packet will do 4 or 5 less
+conditionals, and will traverse a little less code.
 
-sock_close
-raw_release(sock_a)
+- sk_buff lifecycle
+  * packets carrying vlan and UDP will not see any differences: sk_buff
+lifecycle will stil use 4 cachelines, as currently does, and no
+additional conditional is introduced.
+  * packets carring nfct or secmark will see an additional conditional
+every time such field is accessed. The number of cacheline used will
+still be 4, as in the current code. My understanding is that when such
+access happens, there is already a relevant amount of "additional" code
+to be executed, the conditional overhead should not be measurable.
 
-......
+Cheers,
 
-can_receive
-can_rcv_filter(net->can.rx_alldev_list, ...)
-raw_rcv(skb, sock_a)
-BUG
-
-After unlist_netdevice(), dev_get_by_index() return NULL in
-raw_setsockopt(). Function raw_enable_filters() will add sock
-and can_filter to net->can.rx_alldev_list. Then the sock is closed.
-Followed by, we sock_sendmsg() to a new vcan device use the same
-can_filter. Protocol stack match the old receiver whose sock has
-been released on net->can.rx_alldev_list in can_rcv_filter().
-Function raw_rcv() uses the freed sock. UAF BUG is triggered.
-
-We can find that the key issue is that net_device has not been
-protected in raw_setsockopt(). Use rtnl_lock to protect net_device
-in raw_setsockopt().
-
-Fixes: c18ce101f2e4 ("[CAN]: Add raw protocol")
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
-v2:
-- add exception handling for dev_get_by_index return NULL
- net/can/raw.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
-
-diff --git a/net/can/raw.c b/net/can/raw.c
-index ed4fcb7ab0c3..cd5a49380116 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -546,10 +546,18 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 				return -EFAULT;
- 		}
- 
-+		rtnl_lock();
- 		lock_sock(sk);
- 
--		if (ro->bound && ro->ifindex)
-+		if (ro->bound && ro->ifindex) {
- 			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
-+			if (!dev) {
-+				if (count > 1)
-+					kfree(filter);
-+				err = -ENODEV;
-+				goto out_fil;
-+			}
-+		}
- 
- 		if (ro->bound) {
- 			/* (try to) register the new filters */
-@@ -588,6 +596,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 			dev_put(dev);
- 
- 		release_sock(sk);
-+		rtnl_unlock();
- 
- 		break;
- 
-@@ -600,10 +609,16 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 
- 		err_mask &= CAN_ERR_MASK;
- 
-+		rtnl_lock();
- 		lock_sock(sk);
- 
--		if (ro->bound && ro->ifindex)
-+		if (ro->bound && ro->ifindex) {
- 			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
-+			if (!dev) {
-+				err = -ENODEV;
-+				goto out_err;
-+			}
-+		}
- 
- 		/* remove current error mask */
- 		if (ro->bound) {
-@@ -627,6 +642,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
- 			dev_put(dev);
- 
- 		release_sock(sk);
-+		rtnl_unlock();
- 
- 		break;
- 
--- 
-2.25.1
+Paolo
 
