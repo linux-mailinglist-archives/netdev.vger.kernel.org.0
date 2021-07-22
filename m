@@ -2,92 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9E13D273C
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 18:06:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 039EC3D273F
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 18:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbhGVPZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 11:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
+        id S229554AbhGVPZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 11:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhGVPZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 11:25:00 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471B0C061575;
-        Thu, 22 Jul 2021 09:05:34 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id e14so4971408plh.8;
-        Thu, 22 Jul 2021 09:05:34 -0700 (PDT)
+        with ESMTP id S229549AbhGVPZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 11:25:09 -0400
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853A4C061757;
+        Thu, 22 Jul 2021 09:05:44 -0700 (PDT)
+Received: by mail-qv1-xf2d.google.com with SMTP id bz7so1069008qvb.7;
+        Thu, 22 Jul 2021 09:05:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=j2FsvvMjL+4fkX/qUSaxx8KmLD31gvj7x4fULCDYfgU=;
-        b=sWeeV6OY2qjEevZJ3PinYmi3I+R6SvzTknE3eAhUDm+xLXcTpTNhTD9aEjM6uuswAb
-         wygOuptdWE5oAjXkHo9toZ25qlGwqaLjFvaMObztxFMHRCIptYpvQz356QSxwsqzUY/O
-         RFGfxTZvop+rkm8P5TvZi0yO3D3rcBBpyDPyRXxtHp2eh5WK3YM2aCY5DHAQsBsc74dX
-         /akfn+OL4zigoGt1jHgEiRd/OnfmgBp85P5Kf9c+GHVK9uDj+lriohCgBkzw918ew8Mi
-         n9jzX7iHfWMkEr9N6asNEFjktf11vTCATxSH/OPxTkKRBXSkQ/jB0fgnAecG8ionxzjG
-         AnTQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LcdkUBavjDbrAs7Vlr0AuUelUjYUB1tsVVkbu76Tqy8=;
+        b=s/VcMshKKlprUR+cDoR+uiDzsjAIjhVmOeRDWt/jrLqlS8wYnkSGBnOnx2cc4b0ODT
+         EbK/AFX9XDT+iw3HfJK+rqih584UuJMn2BpbvAYntxzaWbWsijKEg56SKn0eMqvogUkz
+         w0tuYkDaOLJxymZISm6O9a+eJZC+rXZUgKPFmBcHR6BqD57cPhpOBdNnvve2wwm4mgsW
+         J04Q5U1Dot5xQk4z9fFqksWLmxMZNwJg+ruqKNXAVbVlqAsVaL8+5P2FCNEIrmysBzF+
+         benBokb7saQ6s0nKOuhMi+byeSuNesQH/yB34ShuXrAhLMXhOiSo9cV770xuf8ld4th2
+         u+oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=j2FsvvMjL+4fkX/qUSaxx8KmLD31gvj7x4fULCDYfgU=;
-        b=LSzdATwzUW1P16HvFmmNPDZIpcwBO/xl+IXgbI4QEpWm7MAg3Z7Dag0n680+AhdH5W
-         oO8HgJolCHjUBJ4WqhlSHNVVYhMXNBCe9iYaCZLrCVbapVl2hKPm7HbJNQRRbAh52dV5
-         q8lZClAxEiiMsGkGQMAGOeJBzXHkIhyxaObxLIJ4c4iUgU9Fx4I/5M1qQMKEPf9+Qia1
-         Q1SIROb+npDwLnXwOqoV3f3G0BtZHV+UXJvDL55cD7Lrhim7ce5zxTGtU9/4cV5KIxLS
-         q96m1+FOjkfikuZbj0tb3/71JIMmQeRavGqJFn+/07j1+BepgeaZWZU8rzOZE2HzFYFQ
-         NB9Q==
-X-Gm-Message-State: AOAM5335u+UDP/rcErlg2wrrpehp7XvYpwvVpdlNyUW0P3iHU5Bfw5HW
-        JrwBwz+b8L2Tjeoa/gWg1gtydVuPTjQ=
-X-Google-Smtp-Source: ABdhPJwOFGetWq/MdpAHO3k9946yJ5rSE7KTUGX/d4x0iNJAjozk9IhOMg3oT3Xke6K4x5XPPTjz0A==
-X-Received: by 2002:aa7:8e51:0:b029:332:920f:1430 with SMTP id d17-20020aa78e510000b0290332920f1430mr546029pfr.1.1626969933198;
-        Thu, 22 Jul 2021 09:05:33 -0700 (PDT)
-Received: from [10.67.49.104] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 201sm9157622pgd.37.2021.07.22.09.05.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Jul 2021 09:05:32 -0700 (PDT)
-Subject: Re: [PATCH v2 1/2] net: dsa: ensure linearized SKBs in case of tail
- taggers
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
- <20210721215642.19866-2-LinoSanfilippo@gmx.de>
- <20210721233549.mhqlrt3l2bbyaawr@skbuf>
- <8460fa10-6db7-273c-a2c2-9b54cc660d9a@gmail.com> <YPl9UX52nfvLzIFy@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e5ad77b7-377d-1f03-0335-54b6d6e890be@gmail.com>
-Date:   Thu, 22 Jul 2021 09:05:30 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        bh=LcdkUBavjDbrAs7Vlr0AuUelUjYUB1tsVVkbu76Tqy8=;
+        b=YaxEYnsInIWkWqZKZNXWHOp11CbnBYHbedlw0fJ85f+aURFAihLnNM8V3RJkNBcCrh
+         dxtmY+nT9h31E9Dofx2v4cBmbhLKWRKL6LD9Xea6Y1MIqpjBD/KltHSPhR2Cackpyo0q
+         XTxlfJdjnPh1ie7r0tu8DrpAOzvehnGTX2see4nSIK8ERvgLEi7vLxICa/GGVrafjqAd
+         2/LcK2vb+nQU3pyJ8FN/HckW8EJWi9B2rxTPIw070rRZ/tEQID/ug8qouKUPJc8iqIj7
+         Wn+R4vr6ohZBG0heTW5oiS2AADdsbUG4E6g5TUxiyFHByjXk+m+60t7FEagJs1RxGWMR
+         laQg==
+X-Gm-Message-State: AOAM5322UqwnCOezvlLmnkqaSvlbqijnWtERKCBkeLSj+C1DIgi7adB6
+        ERZ6HUA4T9yoPaTuo2TIf1DuTiEISsPF+Q==
+X-Google-Smtp-Source: ABdhPJyn4BMFf/ULemWQpWhvlDU4NqjR6XZ6wwneWdHcRhLyiD+IHjeRPAP06/nJpMwOjdjv0WBHzQ==
+X-Received: by 2002:a05:6214:1cb:: with SMTP id c11mr661094qvt.47.1626969943474;
+        Thu, 22 Jul 2021 09:05:43 -0700 (PDT)
+Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id 12sm12883718qkr.10.2021.07.22.09.05.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 09:05:43 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-sctp@vger.kernel.org
+Cc:     Jon Maloy <jmaloy@redhat.com>
+Subject: [PATCH net] tipc: fix implicit-connect for SYN+
+Date:   Thu, 22 Jul 2021 12:05:41 -0400
+Message-Id: <9f7076d5dd455e26df404b917bfe99f301c0eb72.1626969941.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <YPl9UX52nfvLzIFy@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/22/21 7:14 AM, Andrew Lunn wrote:
->> Agreed, with those fixed:
->>
->> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> Hi Florian, Vladimir
-> 
-> I would suggest stop adding Reviewed-by: when you actual want changes
-> made. The bot does not seem to be reading the actual emails, it just
-> looks for tags. And when there are sufficient tags, it merges,
-> independent of requests for change, open questions, etc.
+For implicit-connect, when it's either SYN- or SYN+, an ACK should
+be sent back to the client immediately. It's not appropriate for
+the client to enter established state only after receiving data
+from the server.
 
-Yes, I will definitively stop doing that. I did not think that the
-merging was handled by a bot, but if it is, that makes me seriously
-nervous about the whole process.
+On client side, after the SYN is sent out, tipc_wait_for_connect()
+should be called to wait for the ACK if timeout is set.
+
+This patch also restricts __tipc_sendstream() to call __sendmsg()
+only when it's in TIPC_OPEN state, so that the client can program
+in a single loop doing both connecting and data sending like:
+
+  for (...)
+      sendmsg(dest, buf);
+
+This makes the implicit-connect more implicit.
+
+Fixes: b97bf3fd8f6a ("[TIPC] Initial merge")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+---
+ net/tipc/socket.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 34a97ea36cc8..ebd300c26a44 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -158,6 +158,7 @@ static void tipc_sk_remove(struct tipc_sock *tsk);
+ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dsz);
+ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dsz);
+ static void tipc_sk_push_backlog(struct tipc_sock *tsk, bool nagle_ack);
++static int tipc_wait_for_connect(struct socket *sock, long *timeo_p);
+ 
+ static const struct proto_ops packet_ops;
+ static const struct proto_ops stream_ops;
+@@ -1515,8 +1516,13 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
+ 		rc = 0;
+ 	}
+ 
+-	if (unlikely(syn && !rc))
++	if (unlikely(syn && !rc)) {
+ 		tipc_set_sk_state(sk, TIPC_CONNECTING);
++		if (timeout) {
++			timeout = msecs_to_jiffies(timeout);
++			tipc_wait_for_connect(sock, &timeout);
++		}
++	}
+ 
+ 	return rc ? rc : dlen;
+ }
+@@ -1564,7 +1570,7 @@ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dlen)
+ 		return -EMSGSIZE;
+ 
+ 	/* Handle implicit connection setup */
+-	if (unlikely(dest)) {
++	if (unlikely(dest && sk->sk_state == TIPC_OPEN)) {
+ 		rc = __tipc_sendmsg(sock, m, dlen);
+ 		if (dlen && dlen == rc) {
+ 			tsk->peer_caps = tipc_node_get_capabilities(net, dnode);
+@@ -2689,9 +2695,10 @@ static int tipc_accept(struct socket *sock, struct socket *new_sock, int flags,
+ 		       bool kern)
+ {
+ 	struct sock *new_sk, *sk = sock->sk;
+-	struct sk_buff *buf;
+ 	struct tipc_sock *new_tsock;
++	struct msghdr m = {NULL,};
+ 	struct tipc_msg *msg;
++	struct sk_buff *buf;
+ 	long timeo;
+ 	int res;
+ 
+@@ -2737,19 +2744,17 @@ static int tipc_accept(struct socket *sock, struct socket *new_sock, int flags,
+ 	}
+ 
+ 	/*
+-	 * Respond to 'SYN-' by discarding it & returning 'ACK'-.
+-	 * Respond to 'SYN+' by queuing it on new socket.
++	 * Respond to 'SYN-' by discarding it & returning 'ACK'.
++	 * Respond to 'SYN+' by queuing it on new socket & returning 'ACK'.
+ 	 */
+ 	if (!msg_data_sz(msg)) {
+-		struct msghdr m = {NULL,};
+-
+ 		tsk_advance_rx_queue(sk);
+-		__tipc_sendstream(new_sock, &m, 0);
+ 	} else {
+ 		__skb_dequeue(&sk->sk_receive_queue);
+ 		__skb_queue_head(&new_sk->sk_receive_queue, buf);
+ 		skb_set_owner_r(buf, new_sk);
+ 	}
++	__tipc_sendstream(new_sock, &m, 0);
+ 	release_sock(new_sk);
+ exit:
+ 	release_sock(sk);
 -- 
-Florian
+2.27.0
+
