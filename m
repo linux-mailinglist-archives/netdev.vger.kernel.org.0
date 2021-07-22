@@ -2,147 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4323F3D1C89
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 05:52:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A473B3D1C8A
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 05:56:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbhGVDMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 23:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
+        id S230439AbhGVDPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 23:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229900AbhGVDMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 23:12:15 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2234C061575;
-        Wed, 21 Jul 2021 20:52:50 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id jx7-20020a17090b46c7b02901757deaf2c8so3681021pjb.0;
-        Wed, 21 Jul 2021 20:52:50 -0700 (PDT)
+        with ESMTP id S229900AbhGVDPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 23:15:33 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359D4C061575;
+        Wed, 21 Jul 2021 20:56:07 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id gx2so4325785pjb.5;
+        Wed, 21 Jul 2021 20:56:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MsrIEXBG2MXpg2Ixffs8oOP+CXS/zrxslRWb7KTsb1I=;
-        b=u68b+fXkPvyfMOMMZ5ZPJBIzW6BCtJOOws+ctggEnJnUq6fvV9r27KiohANRGg22jQ
-         aiJ+TNNKIj04lUWZQjYtpfGx4UwfyZ+e6Yrt+oNvnObnZFuqx3kIbFaRZa3RrGrXH7oy
-         14Cru7B397kbglzS0rrdnndWzRzM38ZGCgYu9ZEkW7ABOwyL4+O/9eWwVqJUt+V5L627
-         1x1hIclihym6ud9oCs8jQekXZNXh+Jwyv+StBOAxjMADis81pi+sAGHG7KsJDS/Vfzgt
-         JeUUkPShGiED6Wa2sJYyzlkXRETobez6nhHRYSZ4zsNDfw/fby/uSYC6PLj/w2QUdSZi
-         9uIQ==
+        bh=osmz6EY8uXQ1knNao0xDpmsxbyJi+Dvgv0W3ozo2sXQ=;
+        b=mju5I/Qjw+NtbeIcS7Y38iQgQAq8F6E/DcavUTSClL9h0pMOejTBqRkiLuF2WCw2Wg
+         OL5gruZ1m+ipN3l3tBlmoKwXhJx4epyrBvOzfnBwan20+YwOIz6jCalqqK14fXvZEx4t
+         kr6FA42G96kBJYDzKaeUvV/8UDeZX6Gyr3r3JGkjn14xnEvG+amDZP784M9pbZ72ATqF
+         Ffk4h+OBiSTk+z7Z5+R4U6Z0TrGWLXPl48VXajCrxkCQ5i2F5T7pvQZ0Jbrosg5JbaSF
+         T7ST1tMakpTX7axUk4uid+bQ97/Lb0EooS1QLe0cvUT4FVoKB+C7uK+XRLIovdDpFkqw
+         WxIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=MsrIEXBG2MXpg2Ixffs8oOP+CXS/zrxslRWb7KTsb1I=;
-        b=CzNxUnExzID094MpGymXYKDTC/dZWfe5ZxmRwABPULpeOaRb8e08hexpA7wTbTyLyF
-         fIif7/OzR9b2kxONJ9u7qhoVxHC54zPh/0RebBOYR1KvbfmnTbF4ncb4deifnHJixA7X
-         WgH6uW/4i9cfSn7eoynDUFptnp5mroPmCI+tzHti3yLQBA4ooybvHnsPWtTwncIbsnHz
-         31QZKX8IpvS7ayjPSfHcMKIMtC4JJDy/pfBsZA6NIvKGRLefC5OPbFgzmfc9QwbfaY3V
-         NUaBpJkcCuwzkCWRYAgVWT9urar7yqNL8vUjvyDp7PMZp2fihhTKr5oLae/T/pYDUCBx
-         TLkg==
-X-Gm-Message-State: AOAM533VQldJMkNhwaMXQEDOicSbcaVNT6LwSVcl21G2A+4WpfStrSR3
-        5+RaTQ8LBZVH3KK1iDkdqGnnL8DIa9U=
-X-Google-Smtp-Source: ABdhPJwnSbg9tw7Op5Wd2FzeFqdoQPJshpinCJo+Gh0JaTNeg/HmUlg3t7y/u58TweDWh1dqBelVIQ==
-X-Received: by 2002:a65:62da:: with SMTP id m26mr39062373pgv.370.1626925968746;
-        Wed, 21 Jul 2021 20:52:48 -0700 (PDT)
+        bh=osmz6EY8uXQ1knNao0xDpmsxbyJi+Dvgv0W3ozo2sXQ=;
+        b=X6BtenehT6+LefNgnmOQ8n9M3E+W08m581Jot8yTD7MGc8BHw0/vOMnW5xMuKF5UHZ
+         aDiVHJN1Tzuq9DajYc+sTUGou6GD4LU3KQPOHHfmUldadreIo5Y4iIr/nSEovSzBv61y
+         UQuUvVJXEO8F4bWkjHRMuwdIdmZJvuM/RG0l4oJ37dDSuHkKBAEHlRZs1MHtZ470FU4f
+         7U+aA5dikZW7iW3llfpLRMrMzYn+GoRvPQG1ELmMcT1Ck18EJyVDAv2f+P3ZVGZn9Ybi
+         sUAkbYFXwJEd9KNQqrwtzN4GKZ2qoDUKXZ3yEZ+m9lVUmEmTDpVD28HgiG1qjysi89Bi
+         Csag==
+X-Gm-Message-State: AOAM530CT3076/1wgsY7YDjzyh0XBqpnIzgYArhaLLCOvyWanx+JLPoT
+        QKQjig8A8PtLtHtwy+9frhp3RttoCVU=
+X-Google-Smtp-Source: ABdhPJwag0I+B+I3EAkXtmsfu0gL0jiGPDpzTGtG/xOSrd2MOu4twfxcMPlol7364JiU73fcODbZ/Q==
+X-Received: by 2002:a17:90a:c89:: with SMTP id v9mr39147840pja.175.1626926166241;
+        Wed, 21 Jul 2021 20:56:06 -0700 (PDT)
 Received: from [10.230.31.46] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id il2sm11232373pjb.29.2021.07.21.20.52.41
+        by smtp.gmail.com with ESMTPSA id f18sm1295868pjq.48.2021.07.21.20.56.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 20:52:48 -0700 (PDT)
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
- <20210716212427.821834-6-anthony.l.nguyen@intel.com>
- <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com> <YPTKB0HGEtsydf9/@lunn.ch>
- <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com> <YPbu8xOFDRZWMTBe@lunn.ch>
- <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
- <20210721204543.08e79fac@thinkpad> <YPh6b+dTZqQNX+Zk@lunn.ch>
- <20210721220716.539f780e@thinkpad>
+        Wed, 21 Jul 2021 20:56:05 -0700 (PDT)
+Subject: Re: [PATCH v2 2/2] net: dsa: tag_ksz: dont let the hardware process
+ the layer 4 checksum
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, woojung.huh@microchip.com,
+        olteanv@gmail.com
+Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
+ <20210721215642.19866-3-LinoSanfilippo@gmx.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <484e00c7-e76b-08a6-f247-b2f6e8302d9c@gmail.com>
-Date:   Wed, 21 Jul 2021 20:52:37 -0700
+Message-ID: <06583db0-ac0e-8e9d-324c-faf3f8b38ac0@gmail.com>
+Date:   Wed, 21 Jul 2021 20:55:57 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210721220716.539f780e@thinkpad>
+In-Reply-To: <20210721215642.19866-3-LinoSanfilippo@gmx.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 7/21/2021 1:07 PM, Marek Behún wrote:
-> On Wed, 21 Jul 2021 21:50:07 +0200
-> Andrew Lunn <andrew@lunn.ch> wrote:
+On 7/21/2021 2:56 PM, Lino Sanfilippo wrote:
+> If the checksum calculation is offloaded to the network device (e.g due to
+> NETIF_F_HW_CSUM inherited from the DSA master device), the calculated
+> layer 4 checksum is incorrect. This is since the DSA tag which is placed
+> after the layer 4 data is considered as being part of the daa and thus
+> errorneously included into the checksum calculation.
+> To avoid this, always calculate the layer 4 checksum in software.
 > 
->>> Hi Heiner,
->>>
->>> in sysfs, all devices registered under LED class will have symlinks in
->>> /sys/class/leds. This is how device classes work in Linux.
->>>
->>> There is a standardized format for LED device names, please look at
->>> Documentation/leds/leds-class.rst.
->>>
->>> Basically the LED name is of the format
->>>    devicename:color:function
->>
->> The interesting part here is, what does devicename mean, in this
->> context?
->>
->> We cannot use the interface name, because it is not unique, and user
->> space can change it whenever it wants. So we probably need to build
->> something around the bus ID, e.g. pci_id. Which is not very friendly
->> :-(
-> 
-> Unfortunately there isn't consensus about what the devicename should
-> mean. There are two "schools of thought":
-> 
-> 1. device name of the trigger source for the LED, i.e. if the LED
->     blinks on activity on mmc0, the devicename should be mmc0. We have
->     talked about this in the discussions about ethernet PHYs.
->     In the case of the igc driver if the LEDs are controlled by the MAC,
->     I guess some PCI identifier would be OK. Or maybe ethernet-mac
->     identifier, if we have something like that? (Since we can't use
->     interface names due to the possibility of renaming.)
-> 
->     Pavel and I are supporters of this scheme.
-> 
-> 2. device name of the LED controller. For example LEDs controlled by
->     the maxim,max77650-led controller (leds-max77650.c) define device
->     name as "max77650"
-> 
->     Jacek supports this scheme.
-> 
-> The complication is that both these schemes are used already in
-> upstream kernel, and we have to maintain backwards compatibility of
-> sysfs ABI, so we can't change that.
-> 
-> I have been thinking for some time that maybe we should poll Linux
-> kernel developers about these two schemes, so that a consensus is
-> reached. Afterwards we can deprecate the other scheme and add a Kconfig
-> option (default n for backwards compatibility) to use the new scheme.
-> 
-> What do you think?
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-FWIW, dev_name() should be the "devicename" from what you described 
-above. This is foundational property for all devices that Linux 
-registers that is used for logging, name spacing within /sys/, uniqe, 
-ABI stable, etc. Anything different would be virtually impossible to 
-maintain and would lead to ABI breakage down the road, guaranteed.
-
-Yes it can be long (especially with PCI devices), and unfriendly, but 
-hey, udev to the rescue then, rename based on user preferences.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
