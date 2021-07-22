@@ -2,92 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35CC03D1BB9
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 04:19:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2567D3D1C07
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 04:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbhGVBij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 21:38:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39900 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229916AbhGVBii (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Jul 2021 21:38:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B8E961283;
-        Thu, 22 Jul 2021 02:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626920353;
-        bh=V1UpLXYBuJU8kNTRcmsXjmKxcV/EBx8bEE5f/Iz+LxU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rB+w5BxlQxE6BeETej9BMBWFAQyQCXnRSHFIvPFhCmta/lBi/B/XlME8D/NVIG211
-         3cXrmEMVXlHG4ZihloiVOnv+0IPyVRH2FarXFVTlbr/rKwnfViWBH/9NfBO/zkHbyw
-         cZF8OKfX3ktCTqILmIC5Af8qZ3AjsnVBBmzmEepIDIFuYVtvA8qHEpTm4AJacGUkHo
-         i9UrIgpzUcnE/eWVcWOR867d4IEAT2Q3zMlBj2uApRFXedJPSeYLGSTC6KqdZGre28
-         TCuDq5CehTs72+BW6THG+RNcXmyni86aDctPPbKn1PXbqw3CT5BKs1jvEl5lWs8Zdg
-         TCl3iZdi/AxbA==
-Date:   Thu, 22 Jul 2021 04:19:08 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <20210722041908.2f4c2937@thinkpad>
-In-Reply-To: <YPjNsbjKJ/9OTaxN@lunn.ch>
-References: <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com>
-        <YPTKB0HGEtsydf9/@lunn.ch>
-        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
-        <YPbu8xOFDRZWMTBe@lunn.ch>
-        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
-        <20210721204543.08e79fac@thinkpad>
-        <YPh6b+dTZqQNX+Zk@lunn.ch>
-        <20210721220716.539f780e@thinkpad>
-        <YPiJjEBV1PZQu0S/@lunn.ch>
-        <20210721224506.GB7278@duo.ucw.cz>
-        <YPjNsbjKJ/9OTaxN@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230467AbhGVCGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 22:06:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229932AbhGVCGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 22:06:53 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6E9C061575
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 19:47:28 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id c197so5066195oib.11
+        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 19:47:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aXw9qTxwP+SnkbLHW21pIcAPQktMpjTpdE5RdL4BevQ=;
+        b=YQqk0qDRZsBK1JOxUJhnXo3iSaM59evSXPdFB5Py2DsxfSy4tm7gWWRf2dQfsNpXJR
+         3pnovjpYWoBGMQCP/WSZKKdiQ1vYmBdWvFrl9WqychpF6WE1ohmtCNfkL+CejBybZ2z4
+         j2Sl5DYPrUpFRMdwsa+dpKPRapdqv1AuHLL8MBgo3C5/wfE6IvTR2Zveuy1p3jkP2bKR
+         ANUI9Mj0TIYPWxvC+2E3Ogs+EQ1bzHdLDNFMQhtaPt+b2Ck5eLT+VU8okoS8w3px1R2w
+         WW8yWmYlDvybGt4N42P00zDJz45D8Nyl1SJF6UTTiAd9vbGLnxy+bayde6iZNSq5Z65j
+         LDVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aXw9qTxwP+SnkbLHW21pIcAPQktMpjTpdE5RdL4BevQ=;
+        b=HIgJrPqtXhXJiQOacXgPFph/X5P4P9Ue/faoPCC9VRgK85WHCNykNakylGM/zWW1YT
+         1zXp43ayRLM3lZhhnYrQU4Tg1h1ZGVgxWVv38UlYibBRPO+304uf2DSfu+dQuiNMCmxG
+         M/tQRH/FNjop1+FKZ55bQeOIi9tP39Oj4Q00ehnoJrwLc+vURhIzn9ibRJ8TQ9PEptbU
+         KmDrCGZNp+iN/KOVTA13L5Bo/TFi2jaZ5sUmSLt7C5kTYOxQmWCS2zE+Pq5541E5RX9h
+         N2ql+AvEBZCiifrFf0ZYmPmZq3yIqvCElgP4dB6d1w+ts/BPZHUqfiKN3egdCI2fpl7O
+         9CSQ==
+X-Gm-Message-State: AOAM531PCiqyd50mMQ/Aij5OZqcJSbqQPV2C4m2cbkhgNN0a51AG38Je
+        6uGU0PlNvmV1vymIBPOVnss=
+X-Google-Smtp-Source: ABdhPJzqjMuuP+bJn/f/6q9faMib6y+/4d5QnsExORrvch0cJsiBfwdxiERO6QnTb+8eaT9+QDxQrA==
+X-Received: by 2002:aca:b903:: with SMTP id j3mr3095848oif.179.1626922048298;
+        Wed, 21 Jul 2021 19:47:28 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.38])
+        by smtp.googlemail.com with ESMTPSA id k7sm4628353otn.60.2021.07.21.19.47.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Jul 2021 19:47:27 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 2/6] ipv6: ioam: Data plane support for
+ Pre-allocated Trace
+To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, tom@herbertland.com
+References: <20210720194301.23243-1-justin.iurman@uliege.be>
+ <20210720194301.23243-3-justin.iurman@uliege.be>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3801e3ce-089a-2252-ebdf-558b43824459@gmail.com>
+Date:   Wed, 21 Jul 2021 20:47:26 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210720194301.23243-3-justin.iurman@uliege.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Jul 2021 03:45:21 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On 7/20/21 1:42 PM, Justin Iurman wrote:
+> diff --git a/include/uapi/linux/in6.h b/include/uapi/linux/in6.h
+> index 5ad396a57eb3..c4c53a9ab959 100644
+> --- a/include/uapi/linux/in6.h
+> +++ b/include/uapi/linux/in6.h
+> @@ -145,6 +145,7 @@ struct in6_flowlabel_req {
+>  #define IPV6_TLV_PADN		1
+>  #define IPV6_TLV_ROUTERALERT	5
+>  #define IPV6_TLV_CALIPSO	7	/* RFC 5570 */
+> +#define IPV6_TLV_IOAM		49	/* TEMPORARY IANA allocation for IOAM */
 
-> On Thu, Jul 22, 2021 at 12:45:06AM +0200, Pavel Machek wrote:
-> > Hi!
-> >   
-> > > Also, function is totally unclear. The whole reason we want to use
-> > > Linux LEDs is triggers, and it is the selected trigger which
-> > > determines the function.  
-> > 
-> > Usually, yes. But "function" is what _manufacturer_ wanted LED to
-> > mean  
-> 
-> So you are saying the function should be the reset default of the PHY,
-> or MAC?
+why temporary and what is the risk the value changes between now and the
+final version?
 
-Pavel is talking about the manufacturer of the whole device, not just
-the controller. For example on Turris Omnia there are icons over the
-LEDs indicating their function. There are other devices, for example
-ethernet switches, with LEDs dedicated to indicate specific things, and
-these do not necessarily have to be the same as the LED controller
-default.
-
-Of course the problem is that we are not always able to determine this
-from kernel. In the case of ethernet PHYs I would not create LED
-classdevs unless they are defined in DTS/ACPI. In the case of igc
-I am not exactly sure if the driver should register these LEDs. What if
-they the manufacturer did not connected LEDs to all 3 pins, but only 1,
-for example? Or used the LED pin for some other funtion, like GPIO (if
-igc supports it)? Do we want to create LED classdevs for potentially
-nonexistent LEDs? If yes, then I guess the function should be the reset
-default.
-
-Marek
