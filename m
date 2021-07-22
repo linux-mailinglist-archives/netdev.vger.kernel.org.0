@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CD23D25BA
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2863D25BD
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:29:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbhGVNss (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 09:48:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44822 "EHLO mail.kernel.org"
+        id S232437AbhGVNsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 09:48:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232385AbhGVNsp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 09:48:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 52B2A61278;
-        Thu, 22 Jul 2021 14:29:18 +0000 (UTC)
+        id S232414AbhGVNss (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 09:48:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 35F006127C;
+        Thu, 22 Jul 2021 14:29:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626964160;
-        bh=O54DZAW58lGHxHXPsPQBp8/QBUnzIS5LKcItSp7Excs=;
+        s=k20201202; t=1626964163;
+        bh=xajuxrCvKB1Y1mrk9SEuzfkwt+MpNx7NzXHkP0RMqko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AqkNdsRXpOqG/nN4/8xyLZsKr4Uw+8fOJqKl6OULqYh8tt8yWoh5vjdda93hCN1ta
-         8SdPDfMAieTBdm6MpaoEJh+OmyeKzL2ACw+MjHQz9CwuDEfxmoYhl2fNBt7ytwqMNP
-         AHj+KUQrJP8fcalkk25WaesComooQK5wtT5KN8gd7xthrDOWSEYb4syYeRj6EZRSdc
-         QKAFn1lhPn/bM2uJBbS9gzyuhbWMlOLNey1eVXwK38UX9uv2fUO4wOQVxZKIdNPNZw
-         Aa5WVRWtkD9n4uBmSU/npRqTTPQC0+lms3p/Lx61BGOcu8Ppep+vJyNgc06LG1jat5
-         whRCzroswV8/A==
+        b=Msnlp1siR87z/SPkyxiFMazLN61nQL+jofb7cDHBw2+gCNlAZWqXor4Fnpn/QJPtj
+         DEx3flbg3MD7aj/sW/qph/TcWXeqjDLV1v7ZhT0CqtSPdgk81/DQd+2NV+V2QXThTZ
+         +XkACe/353KDkQnsvh6/M0HSjf1xPfBNFdAYUvje+I9zQHSpfrfAYt0hhYp10SPSoH
+         CETjgrxRdIuJPyLMPKTOD5zjIeaEQUoPTSuiC1NQlSj2CGqyXpQlFPEublAf7nXmHK
+         /utj9Loj3nfeFJPhjURDEG4HWjLDX8QpEkspRtVM8E9NZXBkhi/00p1+osH+E4F9gD
+         ZWcnfJ+08Dmvg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>, Al Viro <viro@zeniv.linux.org.uk>,
@@ -35,9 +35,9 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Al Viro <viro@zeniv.linux.org.uk>,
         Kees Cook <keescook@chromium.org>,
         Marco Elver <elver@google.com>, linux-kernel@vger.kernel.org,
         linux-arch@vger.kernel.org
-Subject: [PATCH net-next v6 1/6] compat: make linux/compat.h available everywhere
-Date:   Thu, 22 Jul 2021 16:28:58 +0200
-Message-Id: <20210722142903.213084-2-arnd@kernel.org>
+Subject: [PATCH net-next v6 2/6] ethtool: improve compat ioctl handling
+Date:   Thu, 22 Jul 2021 16:28:59 +0200
+Message-Id: <20210722142903.213084-3-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210722142903.213084-1-arnd@kernel.org>
 References: <20210722142903.213084-1-arnd@kernel.org>
@@ -49,467 +49,404 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Parts of linux/compat.h are under an #ifdef, but we end up
-using more of those over time, moving things around bit by
-bit.
+The ethtool compat ioctl handling is hidden away in net/socket.c,
+which introduces a couple of minor oddities:
 
-To get it over with once and for all, make all of this file
-uncondititonal now so it can be accessed everywhere. There
-are only a few types left that are in asm/compat.h but not
-yet in the asm-generic version, so add those in the process.
+- The implementation may end up diverging, as seen in the RXNFC
+  extension in commit 84a1d9c48200 ("net: ethtool: extend RXNFC
+  API to support RSS spreading of filter matches") that does not work
+  in compat mode.
 
-This requires providing a few more types in asm-generic/compat.h
-that were not already there. The only tricky one is
-compat_sigset_t, which needs a little help on 32-bit architectures
-and for x86.
+- Most architectures do not need the compat handling at all
+  because u64 and compat_u64 have the same alignment.
+
+- On x86, the conversion is done for both x32 and i386 user space,
+  but it's actually wrong to do it for x32 and cannot work there.
+
+- On 32-bit Arm, it never worked for compat oabi user space, since
+  that needs to do the same conversion but does not.
+
+- It would be nice to get rid of both compat_alloc_user_space()
+  and copy_in_user() throughout the kernel.
+
+None of these actually seems to be a serious problem that real
+users are likely to encounter, but fixing all of them actually
+leads to code that is both shorter and more readable.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
-Changed in v6:
- - split out linux/compat.h changes from multiple patches into
-   a separate change
- - Do it all at once
+Changes in v2:
+ - remove extraneous 'inline' keyword (davem)
+ - split helper functions into smaller units (hch)
+ - remove arm oabi check with missing dependency (0day bot)
 ---
- arch/arm64/include/asm/compat.h   | 14 +++-----------
- arch/mips/include/asm/compat.h    | 24 +++++++++++------------
- arch/parisc/include/asm/compat.h  | 14 +++-----------
- arch/powerpc/include/asm/compat.h | 11 -----------
- arch/s390/include/asm/compat.h    | 14 +++-----------
- arch/sparc/include/asm/compat.h   | 14 +++-----------
- arch/x86/include/asm/compat.h     | 14 +++-----------
- arch/x86/include/asm/signal.h     |  1 +
- include/asm-generic/compat.h      | 17 ++++++++++++++++
- include/linux/compat.h            | 32 +++++++++++++++----------------
- 10 files changed, 59 insertions(+), 96 deletions(-)
+ include/linux/ethtool.h |   4 --
+ net/ethtool/ioctl.c     | 136 +++++++++++++++++++++++++++++++++++-----
+ net/socket.c            | 125 +-----------------------------------
+ 3 files changed, 121 insertions(+), 144 deletions(-)
 
-diff --git a/arch/arm64/include/asm/compat.h b/arch/arm64/include/asm/compat.h
-index 23a9fb73c04f..79c1a750e357 100644
---- a/arch/arm64/include/asm/compat.h
-+++ b/arch/arm64/include/asm/compat.h
-@@ -5,6 +5,9 @@
- #ifndef __ASM_COMPAT_H
- #define __ASM_COMPAT_H
- 
-+#define compat_mode_t compat_mode_t
-+typedef u16		compat_mode_t;
-+
- #include <asm-generic/compat.h>
- 
- #ifdef CONFIG_COMPAT
-@@ -27,13 +30,9 @@ typedef u16		__compat_uid_t;
- typedef u16		__compat_gid_t;
- typedef u16		__compat_uid16_t;
- typedef u16		__compat_gid16_t;
--typedef u32		__compat_uid32_t;
--typedef u32		__compat_gid32_t;
--typedef u16		compat_mode_t;
- typedef u32		compat_dev_t;
- typedef s32		compat_nlink_t;
- typedef u16		compat_ipc_pid_t;
--typedef u32		compat_caddr_t;
- typedef __kernel_fsid_t	compat_fsid_t;
- 
- struct compat_stat {
-@@ -103,13 +102,6 @@ struct compat_statfs {
- 
- #define COMPAT_RLIM_INFINITY		0xffffffff
- 
--typedef u32		compat_old_sigset_t;
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- #define compat_user_stack_pointer() (user_stack_pointer(task_pt_regs(current)))
-diff --git a/arch/mips/include/asm/compat.h b/arch/mips/include/asm/compat.h
-index 65975712a22d..53f015a1b0a7 100644
---- a/arch/mips/include/asm/compat.h
-+++ b/arch/mips/include/asm/compat.h
-@@ -9,20 +9,25 @@
- #include <asm/page.h>
- #include <asm/ptrace.h>
- 
-+typedef s32		__compat_uid_t;
-+typedef s32		__compat_gid_t;
-+typedef __compat_uid_t	__compat_uid32_t;
-+typedef __compat_gid_t	__compat_gid32_t;
-+#define __compat_uid32_t __compat_uid32_t
-+#define __compat_gid32_t __compat_gid32_t
-+
-+#define _COMPAT_NSIG		128		/* Don't ask !$@#% ...	*/
-+#define _COMPAT_NSIG_BPW	32
-+typedef u32		compat_sigset_word;
-+
- #include <asm-generic/compat.h>
- 
- #define COMPAT_USER_HZ		100
- #define COMPAT_UTS_MACHINE	"mips\0\0\0"
- 
--typedef s32		__compat_uid_t;
--typedef s32		__compat_gid_t;
--typedef __compat_uid_t	__compat_uid32_t;
--typedef __compat_gid_t	__compat_gid32_t;
--typedef u32		compat_mode_t;
- typedef u32		compat_dev_t;
- typedef u32		compat_nlink_t;
- typedef s32		compat_ipc_pid_t;
--typedef s32		compat_caddr_t;
- typedef struct {
- 	s32	val[2];
- } compat_fsid_t;
-@@ -89,13 +94,6 @@ struct compat_statfs {
- 
- #define COMPAT_RLIM_INFINITY	0x7fffffffUL
- 
--typedef u32		compat_old_sigset_t;	/* at least 32 bits */
--
--#define _COMPAT_NSIG		128		/* Don't ask !$@#% ...	*/
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- static inline void __user *arch_compat_alloc_user_space(long len)
-diff --git a/arch/parisc/include/asm/compat.h b/arch/parisc/include/asm/compat.h
-index 1a609d38f667..b5d90e82b65d 100644
---- a/arch/parisc/include/asm/compat.h
-+++ b/arch/parisc/include/asm/compat.h
-@@ -8,6 +8,9 @@
- #include <linux/sched.h>
- #include <linux/thread_info.h>
- 
-+#define compat_mode_t compat_mode_t
-+typedef u16	compat_mode_t;
-+
- #include <asm-generic/compat.h>
- 
- #define COMPAT_USER_HZ 		100
-@@ -15,13 +18,9 @@
- 
- typedef u32	__compat_uid_t;
- typedef u32	__compat_gid_t;
--typedef u32	__compat_uid32_t;
--typedef u32	__compat_gid32_t;
--typedef u16	compat_mode_t;
- typedef u32	compat_dev_t;
- typedef u16	compat_nlink_t;
- typedef u16	compat_ipc_pid_t;
--typedef u32	compat_caddr_t;
- 
- struct compat_stat {
- 	compat_dev_t		st_dev;	/* dev_t is 32 bits on parisc */
-@@ -96,13 +95,6 @@ struct compat_sigcontext {
- 
- #define COMPAT_RLIM_INFINITY 0xffffffff
- 
--typedef u32		compat_old_sigset_t;	/* at least 32 bits */
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- struct compat_ipc64_perm {
-diff --git a/arch/powerpc/include/asm/compat.h b/arch/powerpc/include/asm/compat.h
-index 9191fc29e6ed..e33dcf134cdd 100644
---- a/arch/powerpc/include/asm/compat.h
-+++ b/arch/powerpc/include/asm/compat.h
-@@ -19,13 +19,9 @@
- 
- typedef u32		__compat_uid_t;
- typedef u32		__compat_gid_t;
--typedef u32		__compat_uid32_t;
--typedef u32		__compat_gid32_t;
--typedef u32		compat_mode_t;
- typedef u32		compat_dev_t;
- typedef s16		compat_nlink_t;
- typedef u16		compat_ipc_pid_t;
--typedef u32		compat_caddr_t;
- typedef __kernel_fsid_t	compat_fsid_t;
- 
- struct compat_stat {
-@@ -85,13 +81,6 @@ struct compat_statfs {
- 
- #define COMPAT_RLIM_INFINITY		0xffffffff
- 
--typedef u32		compat_old_sigset_t;
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- static inline void __user *arch_compat_alloc_user_space(long len)
-diff --git a/arch/s390/include/asm/compat.h b/arch/s390/include/asm/compat.h
-index ea5b9c34b7be..8d49505b4a43 100644
---- a/arch/s390/include/asm/compat.h
-+++ b/arch/s390/include/asm/compat.h
-@@ -9,6 +9,9 @@
- #include <linux/sched/task_stack.h>
- #include <linux/thread_info.h>
- 
-+#define compat_mode_t	compat_mode_t
-+typedef u16		compat_mode_t;
-+
- #include <asm-generic/compat.h>
- 
- #define __TYPE_IS_PTR(t) (!__builtin_types_compatible_p( \
-@@ -55,13 +58,9 @@
- 
- typedef u16		__compat_uid_t;
- typedef u16		__compat_gid_t;
--typedef u32		__compat_uid32_t;
--typedef u32		__compat_gid32_t;
--typedef u16		compat_mode_t;
- typedef u16		compat_dev_t;
- typedef u16		compat_nlink_t;
- typedef u16		compat_ipc_pid_t;
--typedef u32		compat_caddr_t;
- typedef __kernel_fsid_t	compat_fsid_t;
- 
- typedef struct {
-@@ -155,13 +154,6 @@ struct compat_statfs64 {
- 
- #define COMPAT_RLIM_INFINITY		0xffffffff
- 
--typedef u32		compat_old_sigset_t;	/* at least 32 bits */
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- /*
-diff --git a/arch/sparc/include/asm/compat.h b/arch/sparc/include/asm/compat.h
-index b85842cda99f..8b63410e830f 100644
---- a/arch/sparc/include/asm/compat.h
-+++ b/arch/sparc/include/asm/compat.h
-@@ -6,6 +6,9 @@
-  */
- #include <linux/types.h>
- 
-+#define compat_mode_t	compat_mode_t
-+typedef u16		compat_mode_t;
-+
- #include <asm-generic/compat.h>
- 
- #define COMPAT_USER_HZ		100
-@@ -13,13 +16,9 @@
- 
- typedef u16		__compat_uid_t;
- typedef u16		__compat_gid_t;
--typedef u32		__compat_uid32_t;
--typedef u32		__compat_gid32_t;
--typedef u16		compat_mode_t;
- typedef u16		compat_dev_t;
- typedef s16		compat_nlink_t;
- typedef u16		compat_ipc_pid_t;
--typedef u32		compat_caddr_t;
- typedef __kernel_fsid_t	compat_fsid_t;
- 
- struct compat_stat {
-@@ -115,13 +114,6 @@ struct compat_statfs {
- 
- #define COMPAT_RLIM_INFINITY 0x7fffffff
- 
--typedef u32		compat_old_sigset_t;
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32		compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- #ifdef CONFIG_COMPAT
-diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
-index be09c7eac89f..4ae01cdb99de 100644
---- a/arch/x86/include/asm/compat.h
-+++ b/arch/x86/include/asm/compat.h
-@@ -12,6 +12,9 @@
- #include <asm/user32.h>
- #include <asm/unistd.h>
- 
-+#define compat_mode_t	compat_mode_t
-+typedef u16		compat_mode_t;
-+
- #include <asm-generic/compat.h>
- 
- #define COMPAT_USER_HZ		100
-@@ -19,13 +22,9 @@
- 
- typedef u16		__compat_uid_t;
- typedef u16		__compat_gid_t;
--typedef u32		__compat_uid32_t;
--typedef u32		__compat_gid32_t;
--typedef u16		compat_mode_t;
- typedef u16		compat_dev_t;
- typedef u16		compat_nlink_t;
- typedef u16		compat_ipc_pid_t;
--typedef u32		compat_caddr_t;
- typedef __kernel_fsid_t	compat_fsid_t;
- 
- struct compat_stat {
-@@ -92,13 +91,6 @@ struct compat_statfs {
- 
- #define COMPAT_RLIM_INFINITY		0xffffffff
- 
--typedef u32		compat_old_sigset_t;	/* at least 32 bits */
--
--#define _COMPAT_NSIG		64
--#define _COMPAT_NSIG_BPW	32
--
--typedef u32               compat_sigset_word;
--
- #define COMPAT_OFF_T_MAX	0x7fffffff
- 
- struct compat_ipc64_perm {
-diff --git a/arch/x86/include/asm/signal.h b/arch/x86/include/asm/signal.h
-index 6fd8410a3910..2dfb5fea13af 100644
---- a/arch/x86/include/asm/signal.h
-+++ b/arch/x86/include/asm/signal.h
-@@ -29,6 +29,7 @@ typedef struct {
- #define SA_X32_ABI	0x01000000u
- 
- #ifndef CONFIG_COMPAT
-+#define compat_sigset_t compat_sigset_t
- typedef sigset_t compat_sigset_t;
- #endif
- 
-diff --git a/include/asm-generic/compat.h b/include/asm-generic/compat.h
-index 30f7b18a36f9..d46c0201cc34 100644
---- a/include/asm-generic/compat.h
-+++ b/include/asm-generic/compat.h
-@@ -20,7 +20,18 @@ typedef u16 compat_ushort_t;
- typedef u32 compat_uint_t;
- typedef u32 compat_ulong_t;
- typedef u32 compat_uptr_t;
-+typedef u32 compat_caddr_t;
- typedef u32 compat_aio_context_t;
-+typedef u32 compat_old_sigset_t;
-+
-+#ifndef __compat_uid32_t
-+typedef u32 __compat_uid32_t;
-+typedef u32 __compat_gid32_t;
-+#endif
-+
-+#ifndef compat_mode_t
-+typedef u32 compat_mode_t;
-+#endif
- 
- #ifdef CONFIG_COMPAT_FOR_U64_ALIGNMENT
- typedef s64 __attribute__((aligned(4))) compat_s64;
-@@ -30,4 +41,10 @@ typedef s64 compat_s64;
- typedef u64 compat_u64;
- #endif
- 
-+#ifndef _COMPAT_NSIG
-+typedef u32 compat_sigset_word;
-+#define _COMPAT_NSIG _NSIG
-+#define _COMPAT_NSIG_BPW 32
-+#endif
-+
- #endif
-diff --git a/include/linux/compat.h b/include/linux/compat.h
-index c270124e4402..8e0598c7d1d1 100644
---- a/include/linux/compat.h
-+++ b/include/linux/compat.h
-@@ -20,11 +20,8 @@
- #include <linux/unistd.h>
- 
- #include <asm/compat.h>
--
--#ifdef CONFIG_COMPAT
- #include <asm/siginfo.h>
- #include <asm/signal.h>
--#endif
- 
- #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
- /*
-@@ -95,8 +92,6 @@ struct compat_iovec {
- 	compat_size_t	iov_len;
- };
+diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+index 232daaec56e4..4711b96dae0c 100644
+--- a/include/linux/ethtool.h
++++ b/include/linux/ethtool.h
+@@ -17,8 +17,6 @@
+ #include <linux/compat.h>
+ #include <uapi/linux/ethtool.h>
  
 -#ifdef CONFIG_COMPAT
 -
- #ifndef compat_user_stack_pointer
- #define compat_user_stack_pointer() current_user_stack_pointer()
- #endif
-@@ -131,9 +126,11 @@ struct compat_tms {
- 
- #define _COMPAT_NSIG_WORDS	(_COMPAT_NSIG / _COMPAT_NSIG_BPW)
- 
-+#ifndef compat_sigset_t
- typedef struct {
- 	compat_sigset_word	sig[_COMPAT_NSIG_WORDS];
- } compat_sigset_t;
-+#endif
- 
- int set_compat_user_sigmask(const compat_sigset_t __user *umask,
- 			    size_t sigsetsize);
-@@ -384,6 +381,7 @@ struct compat_keyctl_kdf_params {
- 	__u32 __spare[8];
+ struct compat_ethtool_rx_flow_spec {
+ 	u32		flow_type;
+ 	union ethtool_flow_union h_u;
+@@ -38,8 +36,6 @@ struct compat_ethtool_rxnfc {
+ 	u32				rule_locs[];
  };
  
-+struct compat_stat;
- struct compat_statfs;
- struct compat_statfs64;
- struct compat_old_linux_dirent;
-@@ -428,7 +426,7 @@ put_compat_sigset(compat_sigset_t __user *compat, const sigset_t *set,
- 		  unsigned int size)
- {
- 	/* size <= sizeof(compat_sigset_t) <= sizeof(sigset_t) */
--#ifdef __BIG_ENDIAN
-+#if defined(__BIG_ENDIAN) && defined(CONFIG_64BIT)
- 	compat_sigset_t v;
- 	switch (_NSIG_WORDS) {
- 	case 4: v.sig[7] = (set->sig[3] >> 32); v.sig[6] = set->sig[3];
-@@ -929,17 +927,6 @@ asmlinkage long compat_sys_socketcall(int call, u32 __user *args);
+-#endif /* CONFIG_COMPAT */
+-
+ #include <linux/rculist.h>
  
- #endif /* CONFIG_ARCH_HAS_SYSCALL_WRAPPER */
- 
--
--/*
-- * For most but not all architectures, "am I in a compat syscall?" and
-- * "am I a compat task?" are the same question.  For architectures on which
-- * they aren't the same question, arch code can override in_compat_syscall.
-- */
--
--#ifndef in_compat_syscall
--static inline bool in_compat_syscall(void) { return is_compat_task(); }
--#endif
--
  /**
-  * ns_to_old_timeval32 - Compat version of ns_to_timeval
-  * @nsec:	the nanoseconds value to be converted
-@@ -969,6 +956,17 @@ int kcompat_sys_statfs64(const char __user * pathname, compat_size_t sz,
- int kcompat_sys_fstatfs64(unsigned int fd, compat_size_t sz,
- 			  struct compat_statfs64 __user * buf);
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index baa5d10043cb..6134b180f59f 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -7,6 +7,7 @@
+  * the information ethtool needs.
+  */
  
-+#ifdef CONFIG_COMPAT
-+
-+/*
-+ * For most but not all architectures, "am I in a compat syscall?" and
-+ * "am I a compat task?" are the same question.  For architectures on which
-+ * they aren't the same question, arch code can override in_compat_syscall.
-+ */
-+#ifndef in_compat_syscall
-+static inline bool in_compat_syscall(void) { return is_compat_task(); }
-+#endif
-+
- #else /* !CONFIG_COMPAT */
++#include <linux/compat.h>
+ #include <linux/module.h>
+ #include <linux/types.h>
+ #include <linux/capability.h>
+@@ -807,6 +808,120 @@ static noinline_for_stack int ethtool_get_sset_info(struct net_device *dev,
+ 	return ret;
+ }
  
- #define is_compat_task() (0)
++static noinline_for_stack int
++ethtool_rxnfc_copy_from_compat(struct ethtool_rxnfc *rxnfc,
++			       const struct compat_ethtool_rxnfc __user *useraddr,
++			       size_t size)
++{
++	struct compat_ethtool_rxnfc crxnfc = {};
++
++	/* We expect there to be holes between fs.m_ext and
++	 * fs.ring_cookie and at the end of fs, but nowhere else.
++	 * On non-x86, no conversion should be needed.
++	 */
++	BUILD_BUG_ON(!IS_ENABLED(CONFIG_X86_64) &&
++		     sizeof(struct compat_ethtool_rxnfc) !=
++		     sizeof(struct ethtool_rxnfc));
++	BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.m_ext) +
++		     sizeof(useraddr->fs.m_ext) !=
++		     offsetof(struct ethtool_rxnfc, fs.m_ext) +
++		     sizeof(rxnfc->fs.m_ext));
++	BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.location) -
++		     offsetof(struct compat_ethtool_rxnfc, fs.ring_cookie) !=
++		     offsetof(struct ethtool_rxnfc, fs.location) -
++		     offsetof(struct ethtool_rxnfc, fs.ring_cookie));
++
++	if (copy_from_user(&crxnfc, useraddr, min(size, sizeof(crxnfc))))
++		return -EFAULT;
++
++	*rxnfc = (struct ethtool_rxnfc) {
++		.cmd		= crxnfc.cmd,
++		.flow_type	= crxnfc.flow_type,
++		.data		= crxnfc.data,
++		.fs		= {
++			.flow_type	= crxnfc.fs.flow_type,
++			.h_u		= crxnfc.fs.h_u,
++			.h_ext		= crxnfc.fs.h_ext,
++			.m_u		= crxnfc.fs.m_u,
++			.m_ext		= crxnfc.fs.m_ext,
++			.ring_cookie	= crxnfc.fs.ring_cookie,
++			.location	= crxnfc.fs.location,
++		},
++		.rule_cnt	= crxnfc.rule_cnt,
++	};
++
++	return 0;
++}
++
++static int ethtool_rxnfc_copy_from_user(struct ethtool_rxnfc *rxnfc,
++					const void __user *useraddr,
++					size_t size)
++{
++	if (compat_need_64bit_alignment_fixup())
++		return ethtool_rxnfc_copy_from_compat(rxnfc, useraddr, size);
++
++	if (copy_from_user(rxnfc, useraddr, size))
++		return -EFAULT;
++
++	return 0;
++}
++
++static int ethtool_rxnfc_copy_to_compat(void __user *useraddr,
++					const struct ethtool_rxnfc *rxnfc,
++					size_t size, const u32 *rule_buf)
++{
++	struct compat_ethtool_rxnfc crxnfc;
++
++	memset(&crxnfc, 0, sizeof(crxnfc));
++	crxnfc = (struct compat_ethtool_rxnfc) {
++		.cmd		= rxnfc->cmd,
++		.flow_type	= rxnfc->flow_type,
++		.data		= rxnfc->data,
++		.fs		= {
++			.flow_type	= rxnfc->fs.flow_type,
++			.h_u		= rxnfc->fs.h_u,
++			.h_ext		= rxnfc->fs.h_ext,
++			.m_u		= rxnfc->fs.m_u,
++			.m_ext		= rxnfc->fs.m_ext,
++			.ring_cookie	= rxnfc->fs.ring_cookie,
++			.location	= rxnfc->fs.location,
++		},
++		.rule_cnt	= rxnfc->rule_cnt,
++	};
++
++	if (copy_to_user(useraddr, &crxnfc, min(size, sizeof(crxnfc))))
++		return -EFAULT;
++
++	return 0;
++}
++
++static int ethtool_rxnfc_copy_to_user(void __user *useraddr,
++				      const struct ethtool_rxnfc *rxnfc,
++				      size_t size, const u32 *rule_buf)
++{
++	int ret;
++
++	if (compat_need_64bit_alignment_fixup()) {
++		ret = ethtool_rxnfc_copy_to_compat(useraddr, rxnfc, size,
++						   rule_buf);
++		useraddr += offsetof(struct compat_ethtool_rxnfc, rule_locs);
++	} else {
++		ret = copy_to_user(useraddr, &rxnfc, size);
++		useraddr += offsetof(struct ethtool_rxnfc, rule_locs);
++	}
++
++	if (ret)
++		return -EFAULT;
++
++	if (rule_buf) {
++		if (copy_to_user(useraddr, rule_buf,
++				 rxnfc->rule_cnt * sizeof(u32)))
++			return -EFAULT;
++	}
++
++	return 0;
++}
++
+ static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
+ 						u32 cmd, void __user *useraddr)
+ {
+@@ -825,7 +940,7 @@ static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
+ 		info_size = (offsetof(struct ethtool_rxnfc, data) +
+ 			     sizeof(info.data));
+ 
+-	if (copy_from_user(&info, useraddr, info_size))
++	if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
+ 		return -EFAULT;
+ 
+ 	rc = dev->ethtool_ops->set_rxnfc(dev, &info);
+@@ -833,7 +948,7 @@ static noinline_for_stack int ethtool_set_rxnfc(struct net_device *dev,
+ 		return rc;
+ 
+ 	if (cmd == ETHTOOL_SRXCLSRLINS &&
+-	    copy_to_user(useraddr, &info, info_size))
++	    ethtool_rxnfc_copy_to_user(useraddr, &info, info_size, NULL))
+ 		return -EFAULT;
+ 
+ 	return 0;
+@@ -859,7 +974,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
+ 		info_size = (offsetof(struct ethtool_rxnfc, data) +
+ 			     sizeof(info.data));
+ 
+-	if (copy_from_user(&info, useraddr, info_size))
++	if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
+ 		return -EFAULT;
+ 
+ 	/* If FLOW_RSS was requested then user-space must be using the
+@@ -867,7 +982,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
+ 	 */
+ 	if (cmd == ETHTOOL_GRXFH && info.flow_type & FLOW_RSS) {
+ 		info_size = sizeof(info);
+-		if (copy_from_user(&info, useraddr, info_size))
++		if (ethtool_rxnfc_copy_from_user(&info, useraddr, info_size))
+ 			return -EFAULT;
+ 		/* Since malicious users may modify the original data,
+ 		 * we need to check whether FLOW_RSS is still requested.
+@@ -893,18 +1008,7 @@ static noinline_for_stack int ethtool_get_rxnfc(struct net_device *dev,
+ 	if (ret < 0)
+ 		goto err_out;
+ 
+-	ret = -EFAULT;
+-	if (copy_to_user(useraddr, &info, info_size))
+-		goto err_out;
+-
+-	if (rule_buf) {
+-		useraddr += offsetof(struct ethtool_rxnfc, rule_locs);
+-		if (copy_to_user(useraddr, rule_buf,
+-				 info.rule_cnt * sizeof(u32)))
+-			goto err_out;
+-	}
+-	ret = 0;
+-
++	ret = ethtool_rxnfc_copy_to_user(useraddr, &info, info_size, rule_buf);
+ err_out:
+ 	kfree(rule_buf);
+ 
+diff --git a/net/socket.c b/net/socket.c
+index 0b2dad3bdf7f..ec63cf6de33e 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -3152,128 +3152,6 @@ static int compat_dev_ifconf(struct net *net, struct compat_ifconf __user *uifc3
+ 	return 0;
+ }
+ 
+-static int ethtool_ioctl(struct net *net, struct compat_ifreq __user *ifr32)
+-{
+-	struct compat_ethtool_rxnfc __user *compat_rxnfc;
+-	bool convert_in = false, convert_out = false;
+-	size_t buf_size = 0;
+-	struct ethtool_rxnfc __user *rxnfc = NULL;
+-	struct ifreq ifr;
+-	u32 rule_cnt = 0, actual_rule_cnt;
+-	u32 ethcmd;
+-	u32 data;
+-	int ret;
+-
+-	if (get_user(data, &ifr32->ifr_ifru.ifru_data))
+-		return -EFAULT;
+-
+-	compat_rxnfc = compat_ptr(data);
+-
+-	if (get_user(ethcmd, &compat_rxnfc->cmd))
+-		return -EFAULT;
+-
+-	/* Most ethtool structures are defined without padding.
+-	 * Unfortunately struct ethtool_rxnfc is an exception.
+-	 */
+-	switch (ethcmd) {
+-	default:
+-		break;
+-	case ETHTOOL_GRXCLSRLALL:
+-		/* Buffer size is variable */
+-		if (get_user(rule_cnt, &compat_rxnfc->rule_cnt))
+-			return -EFAULT;
+-		if (rule_cnt > KMALLOC_MAX_SIZE / sizeof(u32))
+-			return -ENOMEM;
+-		buf_size += rule_cnt * sizeof(u32);
+-		fallthrough;
+-	case ETHTOOL_GRXRINGS:
+-	case ETHTOOL_GRXCLSRLCNT:
+-	case ETHTOOL_GRXCLSRULE:
+-	case ETHTOOL_SRXCLSRLINS:
+-		convert_out = true;
+-		fallthrough;
+-	case ETHTOOL_SRXCLSRLDEL:
+-		buf_size += sizeof(struct ethtool_rxnfc);
+-		convert_in = true;
+-		rxnfc = compat_alloc_user_space(buf_size);
+-		break;
+-	}
+-
+-	if (copy_from_user(&ifr.ifr_name, &ifr32->ifr_name, IFNAMSIZ))
+-		return -EFAULT;
+-
+-	ifr.ifr_data = convert_in ? rxnfc : (void __user *)compat_rxnfc;
+-
+-	if (convert_in) {
+-		/* We expect there to be holes between fs.m_ext and
+-		 * fs.ring_cookie and at the end of fs, but nowhere else.
+-		 */
+-		BUILD_BUG_ON(offsetof(struct compat_ethtool_rxnfc, fs.m_ext) +
+-			     sizeof(compat_rxnfc->fs.m_ext) !=
+-			     offsetof(struct ethtool_rxnfc, fs.m_ext) +
+-			     sizeof(rxnfc->fs.m_ext));
+-		BUILD_BUG_ON(
+-			offsetof(struct compat_ethtool_rxnfc, fs.location) -
+-			offsetof(struct compat_ethtool_rxnfc, fs.ring_cookie) !=
+-			offsetof(struct ethtool_rxnfc, fs.location) -
+-			offsetof(struct ethtool_rxnfc, fs.ring_cookie));
+-
+-		if (copy_in_user(rxnfc, compat_rxnfc,
+-				 (void __user *)(&rxnfc->fs.m_ext + 1) -
+-				 (void __user *)rxnfc) ||
+-		    copy_in_user(&rxnfc->fs.ring_cookie,
+-				 &compat_rxnfc->fs.ring_cookie,
+-				 (void __user *)(&rxnfc->fs.location + 1) -
+-				 (void __user *)&rxnfc->fs.ring_cookie))
+-			return -EFAULT;
+-		if (ethcmd == ETHTOOL_GRXCLSRLALL) {
+-			if (put_user(rule_cnt, &rxnfc->rule_cnt))
+-				return -EFAULT;
+-		} else if (copy_in_user(&rxnfc->rule_cnt,
+-					&compat_rxnfc->rule_cnt,
+-					sizeof(rxnfc->rule_cnt)))
+-			return -EFAULT;
+-	}
+-
+-	ret = dev_ioctl(net, SIOCETHTOOL, &ifr, NULL);
+-	if (ret)
+-		return ret;
+-
+-	if (convert_out) {
+-		if (copy_in_user(compat_rxnfc, rxnfc,
+-				 (const void __user *)(&rxnfc->fs.m_ext + 1) -
+-				 (const void __user *)rxnfc) ||
+-		    copy_in_user(&compat_rxnfc->fs.ring_cookie,
+-				 &rxnfc->fs.ring_cookie,
+-				 (const void __user *)(&rxnfc->fs.location + 1) -
+-				 (const void __user *)&rxnfc->fs.ring_cookie) ||
+-		    copy_in_user(&compat_rxnfc->rule_cnt, &rxnfc->rule_cnt,
+-				 sizeof(rxnfc->rule_cnt)))
+-			return -EFAULT;
+-
+-		if (ethcmd == ETHTOOL_GRXCLSRLALL) {
+-			/* As an optimisation, we only copy the actual
+-			 * number of rules that the underlying
+-			 * function returned.  Since Mallory might
+-			 * change the rule count in user memory, we
+-			 * check that it is less than the rule count
+-			 * originally given (as the user buffer size),
+-			 * which has been range-checked.
+-			 */
+-			if (get_user(actual_rule_cnt, &rxnfc->rule_cnt))
+-				return -EFAULT;
+-			if (actual_rule_cnt < rule_cnt)
+-				rule_cnt = actual_rule_cnt;
+-			if (copy_in_user(&compat_rxnfc->rule_locs[0],
+-					 &rxnfc->rule_locs[0],
+-					 rule_cnt * sizeof(u32)))
+-				return -EFAULT;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+ static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32)
+ {
+ 	compat_uptr_t uptr32;
+@@ -3428,8 +3306,6 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 		return old_bridge_ioctl(argp);
+ 	case SIOCGIFCONF:
+ 		return compat_dev_ifconf(net, argp);
+-	case SIOCETHTOOL:
+-		return ethtool_ioctl(net, argp);
+ 	case SIOCWANDEV:
+ 		return compat_siocwandev(net, argp);
+ 	case SIOCGIFMAP:
+@@ -3442,6 +3318,7 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
+ 		return sock->ops->gettstamp(sock, argp, cmd == SIOCGSTAMP_OLD,
+ 					    !COMPAT_USE_64BIT_TIME);
+ 
++	case SIOCETHTOOL:
+ 	case SIOCBONDSLAVEINFOQUERY:
+ 	case SIOCBONDINFOQUERY:
+ 	case SIOCSHWTSTAMP:
 -- 
 2.29.2
 
