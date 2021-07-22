@@ -2,128 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCE23D2CE8
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 21:42:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E17B3D2D0B
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 21:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230328AbhGVTCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 15:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbhGVTCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 15:02:00 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BDBC061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 12:42:35 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id o8so6473475ilf.4
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 12:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ojab.ru; s=ojab;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bEuCuHt84F523pMpVlgmLvJ4UIBF4EoLTs4dbDpATW8=;
-        b=mKU59JZsPpk4Uwrh9veqroWHFfmAS+JdwuvxLQdk+8vF9zAFjuiNoiHEI24a2DukKo
-         5MhOTtxunUNS4hbaqrDkjLwYr76tA5g73A4+lczu0NSSiOmMb+UKUc6r6h99MW6A5+b9
-         Q7bvYpxu1Mon2J4EnpLpVzxK+RGPMCxddZpU/EWqjSdsZnK8PKC4m/3T/xuu5KrT1ASi
-         wyy/tEO03vbX5aFkjMVtqkhVlsb6N31yshFICDUkrcKUmWz8qhBs0tytE1iqSKSKgECD
-         tpPtwFrUdXvO7VCKWdKQKxmu2xurNAK46JCBbIFn7O5l/cT9FyPL2gorlJMGX2WfLV2Q
-         qnEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bEuCuHt84F523pMpVlgmLvJ4UIBF4EoLTs4dbDpATW8=;
-        b=haG2eE1JRYGVYIVDGTQTmbXq/aeMQ5h67XW94aF66B/9DJgS+vNM9cLwwConvwRKHP
-         wSU11SIJtMjVQuylDZoYjM9VIMCKPn8FVLP3qVGRye9Ad0GHwog47quiCtAu7dnLfnVf
-         rGVfteO2AYgYL3MmwrAxJAjPXvhw6yh2ZUS702rsVYvudY+3quB9ibDUv6yHZYMFz4Nq
-         LYjAd15hucFveNiDi+yxliTvweR0ip4LNKpv3CvL4bZKab6/KuSrimCgerFFVtSNXM8z
-         jJUfOskrwIRqKJ7+pN/2ho2LKFNQZCyY94ne4Xb+Pv8a3P9dn4JmC0Ob91ozXCz5SJ+q
-         gmxg==
-X-Gm-Message-State: AOAM531/0gI/6Y52cuWYfj0sHewspRw4i6dMjNsdtwtweZICjz1VSgMl
-        9AO5FA9po34qlpmnMXqvR1DT1q3B2Gcd9YARN0xE1A==
-X-Google-Smtp-Source: ABdhPJyMABrkiHTJMS9LZm/CFEJBy6P8UgBeaGafeRs22DUJ5aaCx9PBDCrxo0HZCPVZx1y0wGfrIk1R5ZHDwpeYc/o=
-X-Received: by 2002:a05:6e02:1d0f:: with SMTP id i15mr893058ila.199.1626982954711;
- Thu, 22 Jul 2021 12:42:34 -0700 (PDT)
+        id S230079AbhGVTR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 15:17:27 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:20193 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229510AbhGVTR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 15:17:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626983697;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=BUH41gjbt1XSj/FQSf0qQOE7K8bX37cyxz4cMsA/9CM=;
+    b=AuixzfwzlB2pCJbUpNeofOh4iudUbrAKtLsCsz1sCCRlOhlP8AdL52Zhq6xGZjl+1e
+    Ba63K+oh/QELTY2qgB2NgEPkgL0ipw8cLgaDc3EztCaY+QDgSC/hwJE1SWUPuDTYgtJx
+    xfaRaqaHRH3APF+R2s+sYR6UGfi7+DaTm3vy5CVrkXmCTJu4FHFvSzKPWw5iUROZHc/r
+    uL7q0JIHuH2ukECzqHs6DWeVIfrUFCgfJPJJe1bQt6o+bcqRDVi0tM2PrTa36JNJBPrv
+    RyKedgqOmrlHQNy0BmY0EOsK2xppg7nuAM4efhSUYdZAHswn8D4PQ9vIp7sVcweNgyQf
+    y9Bw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3htNmYasgbo6AhaFdcg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a00:6020:1cee:8300::b82]
+    by smtp.strato.de (RZmta 47.28.1 AUTH)
+    with ESMTPSA id Z03199x6MJsuLhI
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 22 Jul 2021 21:54:56 +0200 (CEST)
+Subject: Re: [PATCH net v2] can: raw: fix raw_rcv panic for sock UAF
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <5a715cd9-b085-5f69-a3a2-675854233a8e@hartkopp.net>
+Date:   Thu, 22 Jul 2021 21:54:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210722193459.7474-1-ojab@ojab.ru>
-In-Reply-To: <20210722193459.7474-1-ojab@ojab.ru>
-From:   "ojab //" <ojab@ojab.ru>
-Date:   Thu, 22 Jul 2021 22:42:23 +0300
-Message-ID: <CAKzrAgRvOLX6rcKKz=8ghD+QLyMu-1KEPm5HkkLEAzuE1MQpDA@mail.gmail.com>
-Subject: Re: [PATCH V2] ath10k: don't fail if IRAM write fails
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, axel.rasmussen1@gmail.com
-Cc:     ath10k@lists.infradead.org,
-        Linux Wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-See also: https://lists.infradead.org/pipermail/ath10k/2021-May/012626.html
 
-On Thu, 22 Jul 2021 at 22:36, ojab <ojab@ojab.ru> wrote:
->
-> After reboot with kernel & firmware updates I found `failed to copy
-> target iram contents:` in dmesg and missing wlan interfaces for both
-> of my QCA9984 compex cards. Rolling back kernel/firmware didn't fixed
-> it, so while I have no idea what's actually happening, I don't see why
-> we should fail in this case, looks like some optional firmware ability
-> that could be skipped.
->
-> Also with additional logging there is
-> ```
-> [    6.839858] ath10k_pci 0000:04:00.0: No hardware memory
-> [    6.841205] ath10k_pci 0000:04:00.0: failed to copy target iram contents: -12
-> [    6.873578] ath10k_pci 0000:07:00.0: No hardware memory
-> [    6.875052] ath10k_pci 0000:07:00.0: failed to copy target iram contents: -12
-> ```
-> so exact branch could be seen.
->
-> Signed-off-by: Slava Kardakov <ojab@ojab.ru>
+
+On 22.07.21 09:08, Ziyang Xuan wrote:
+> We get a bug during ltp can_filter test as following.
+> 
+> ===========================================
+> [60919.264984] BUG: unable to handle kernel NULL pointer dereference at 0000000000000010
+> [60919.265223] PGD 8000003dda726067 P4D 8000003dda726067 PUD 3dda727067 PMD 0
+> [60919.265443] Oops: 0000 [#1] SMP PTI
+> [60919.265550] CPU: 30 PID: 3638365 Comm: can_filter Kdump: loaded Tainted: G        W         4.19.90+ #1
+> [60919.266068] RIP: 0010:selinux_socket_sock_rcv_skb+0x3e/0x200
+> [60919.293289] RSP: 0018:ffff8d53bfc03cf8 EFLAGS: 00010246
+> [60919.307140] RAX: 0000000000000000 RBX: 000000000000001d RCX: 0000000000000007
+> [60919.320756] RDX: 0000000000000001 RSI: ffff8d5104a8ed00 RDI: ffff8d53bfc03d30
+> [60919.334319] RBP: ffff8d9338056800 R08: ffff8d53bfc29d80 R09: 0000000000000001
+> [60919.347969] R10: ffff8d53bfc03ec0 R11: ffffb8526ef47c98 R12: ffff8d53bfc03d30
+> [60919.350320] perf: interrupt took too long (3063 > 2500), lowering kernel.perf_event_max_sample_rate to 65000
+> [60919.361148] R13: 0000000000000001 R14: ffff8d53bcf90000 R15: 0000000000000000
+> [60919.361151] FS:  00007fb78b6b3600(0000) GS:ffff8d53bfc00000(0000) knlGS:0000000000000000
+> [60919.400812] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [60919.413730] CR2: 0000000000000010 CR3: 0000003e3f784006 CR4: 00000000007606e0
+> [60919.426479] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [60919.439339] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [60919.451608] PKRU: 55555554
+> [60919.463622] Call Trace:
+> [60919.475617]  <IRQ>
+> [60919.487122]  ? update_load_avg+0x89/0x5d0
+> [60919.498478]  ? update_load_avg+0x89/0x5d0
+> [60919.509822]  ? account_entity_enqueue+0xc5/0xf0
+> [60919.520709]  security_sock_rcv_skb+0x2a/0x40
+> [60919.531413]  sk_filter_trim_cap+0x47/0x1b0
+> [60919.542178]  ? kmem_cache_alloc+0x38/0x1b0
+> [60919.552444]  sock_queue_rcv_skb+0x17/0x30
+> [60919.562477]  raw_rcv+0x110/0x190 [can_raw]
+> [60919.572539]  can_rcv_filter+0xbc/0x1b0 [can]
+> [60919.582173]  can_receive+0x6b/0xb0 [can]
+> [60919.591595]  can_rcv+0x31/0x70 [can]
+> [60919.600783]  __netif_receive_skb_one_core+0x5a/0x80
+> [60919.609864]  process_backlog+0x9b/0x150
+> [60919.618691]  net_rx_action+0x156/0x400
+> [60919.627310]  ? sched_clock_cpu+0xc/0xa0
+> [60919.635714]  __do_softirq+0xe8/0x2e9
+> [60919.644161]  do_softirq_own_stack+0x2a/0x40
+> [60919.652154]  </IRQ>
+> [60919.659899]  do_softirq.part.17+0x4f/0x60
+> [60919.667475]  __local_bh_enable_ip+0x60/0x70
+> [60919.675089]  __dev_queue_xmit+0x539/0x920
+> [60919.682267]  ? finish_wait+0x80/0x80
+> [60919.689218]  ? finish_wait+0x80/0x80
+> [60919.695886]  ? sock_alloc_send_pskb+0x211/0x230
+> [60919.702395]  ? can_send+0xe5/0x1f0 [can]
+> [60919.708882]  can_send+0xe5/0x1f0 [can]
+> [60919.715037]  raw_sendmsg+0x16d/0x268 [can_raw]
+> 
+> It's because raw_setsockopt() concurrently with
+> unregister_netdevice_many(). Concurrent scenario as following.
+> 
+> 	cpu0						cpu1
+> raw_bind
+> raw_setsockopt					unregister_netdevice_many
+> 						unlist_netdevice
+> dev_get_by_index				raw_notifier
+> raw_enable_filters				......
+> can_rx_register
+> can_rcv_list_find(..., net->can.rx_alldev_list)
+> 
+> ......
+> 
+> sock_close
+> raw_release(sock_a)
+> 
+> ......
+> 
+> can_receive
+> can_rcv_filter(net->can.rx_alldev_list, ...)
+> raw_rcv(skb, sock_a)
+> BUG
+> 
+> After unlist_netdevice(), dev_get_by_index() return NULL in
+> raw_setsockopt(). Function raw_enable_filters() will add sock
+> and can_filter to net->can.rx_alldev_list. Then the sock is closed.
+> Followed by, we sock_sendmsg() to a new vcan device use the same
+> can_filter. Protocol stack match the old receiver whose sock has
+> been released on net->can.rx_alldev_list in can_rcv_filter().
+> Function raw_rcv() uses the freed sock. UAF BUG is triggered.
+> 
+> We can find that the key issue is that net_device has not been
+> protected in raw_setsockopt(). Use rtnl_lock to protect net_device
+> in raw_setsockopt().
+> 
+> Fixes: c18ce101f2e4 ("[CAN]: Add raw protocol")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+
+Thanks!
+
 > ---
->  Of course I forgot to sing off, since I don't use it by default because I
->  hate my real name and kernel requires it
->
->  drivers/net/wireless/ath/ath10k/core.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-> index 2f9be182fbfb..d9fd5294e142 100644
-> --- a/drivers/net/wireless/ath/ath10k/core.c
-> +++ b/drivers/net/wireless/ath/ath10k/core.c
-> @@ -2691,8 +2691,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
->         u32 len, remaining_len;
->
->         hw_mem = ath10k_coredump_get_mem_layout(ar);
-> -       if (!hw_mem)
-> +       if (!hw_mem) {
-> +               ath10k_warn(ar, "No hardware memory");
->                 return -ENOMEM;
-> +       }
->
->         for (i = 0; i < hw_mem->region_table.size; i++) {
->                 tmp = &hw_mem->region_table.regions[i];
-> @@ -2702,8 +2704,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
->                 }
->         }
->
-> -       if (!mem_region)
-> +       if (!mem_region) {
-> +               ath10k_warn(ar, "No memory region");
->                 return -ENOMEM;
-> +       }
->
->         for (i = 0; i < ar->wmi.num_mem_chunks; i++) {
->                 if (ar->wmi.mem_chunks[i].req_id ==
-> @@ -2917,7 +2921,6 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
->                 if (status) {
->                         ath10k_warn(ar, "failed to copy target iram contents: %d",
->                                     status);
-> -                       goto err_hif_stop;
->                 }
->         }
->
-> --
-> 2.32.0
+> v2:
+> - add exception handling for dev_get_by_index return NULL
+>   net/can/raw.c | 20 ++++++++++++++++++--
+>   1 file changed, 18 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/can/raw.c b/net/can/raw.c
+> index ed4fcb7ab0c3..cd5a49380116 100644
+> --- a/net/can/raw.c
+> +++ b/net/can/raw.c
+> @@ -546,10 +546,18 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   				return -EFAULT;
+>   		}
+>   
+> +		rtnl_lock();
+>   		lock_sock(sk);
+>   
+> -		if (ro->bound && ro->ifindex)
+> +		if (ro->bound && ro->ifindex) {
+>   			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
+> +			if (!dev) {
+> +				if (count > 1)
+> +					kfree(filter);
+> +				err = -ENODEV;
+> +				goto out_fil;
+> +			}
+> +		}
+>   
+>   		if (ro->bound) {
+>   			/* (try to) register the new filters */
+> @@ -588,6 +596,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   			dev_put(dev);
+>   
+>   		release_sock(sk);
+> +		rtnl_unlock();
+>   
+>   		break;
+>   
+> @@ -600,10 +609,16 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   
+>   		err_mask &= CAN_ERR_MASK;
+>   
+> +		rtnl_lock();
+>   		lock_sock(sk);
+>   
+> -		if (ro->bound && ro->ifindex)
+> +		if (ro->bound && ro->ifindex) {
+>   			dev = dev_get_by_index(sock_net(sk), ro->ifindex);
+> +			if (!dev) {
+> +				err = -ENODEV;
+> +				goto out_err;
+> +			}
+> +		}
+>   
+>   		/* remove current error mask */
+>   		if (ro->bound) {
+> @@ -627,6 +642,7 @@ static int raw_setsockopt(struct socket *sock, int level, int optname,
+>   			dev_put(dev);
+>   
+>   		release_sock(sk);
+> +		rtnl_unlock();
+>   
+>   		break;
+>   
+> 
