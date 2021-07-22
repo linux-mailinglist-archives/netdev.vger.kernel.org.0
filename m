@@ -2,74 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7E33D2D98
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 22:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98C1C3D2DDF
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 22:42:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbhGVTnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 15:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
+        id S230480AbhGVUBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 16:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbhGVTnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 15:43:10 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AADC061575
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 13:23:45 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id j2so1522wrx.9
-        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 13:23:44 -0700 (PDT)
+        with ESMTP id S230393AbhGVUBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 16:01:51 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A64C061575;
+        Thu, 22 Jul 2021 13:42:24 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id y42so10481946lfa.3;
+        Thu, 22 Jul 2021 13:42:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pDRzsfWNbIGxMOyGMfCCilb7XZdT846IuowuCU4dEF0=;
-        b=Rcxa01wgsj9B0fVLSqmJnwHEcjScWIW8zXSqF2GzhCDTC3DA0Z1Mxk6bIuYCYeAtAN
-         TuTjgAfh4ZYYqU58MmxnfSSEIaJb5mH/O4eP7K8x42MLuowL3VtvczPeY7fxoquSYB+l
-         zZzCZh+z3vnCKEZqYwzlztWZ5EhlHj789LIHx/jFJ1VugIxGsuUn27AT/pVuXKwRvqGD
-         Xi0AWA6Z63Y9TAUEwpd1GspPL//84FRiOTt9O3gVr11omcvYTVa+2rH7ITPaz4CxWWyU
-         7pZmyJ+p9xABJzZ3TCLhWUrCitng9yvr0dWteV61ThfCC6fCyziw2h2Eesj4BGtQ5GRU
-         NUQQ==
+        bh=ARK0i0Bp9fQeNW3MXicGQaonPg0dq6jRH3wg0BWwTn4=;
+        b=WZgW4ag53VAMrGXAMpwI9NQ6N4Tip5aqiFghCld6Oy5L3xYIoDAL9uKS3yJTd/k2CQ
+         BljcGXsaEqzdb+QRgdDUoonr7naezV07fMpRm0gAX6rRiB/gTNlLsmaZ9/SkiN6Abcmm
+         b457Hu4KHBTsytE3WE3iuXhtL6eVEp3oWFboTTPyqgjRWWagEzL5mg2DAqTgPnSvm3eH
+         pm3QRtr868U+Pfn3RCmOwQwHu1bMM3HCsojsyXRlxot5uSKUwBWyl9zsUKtv/C0T9Lxm
+         RtIOLaaMRLG1W6dqxpK+1no8OeX317K/Vic/7kRkv4c20R562IKjG4Vgh4oLcMwCmYGn
+         +F+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=pDRzsfWNbIGxMOyGMfCCilb7XZdT846IuowuCU4dEF0=;
-        b=A6dZ+zWFAA0gD8T/fbHSqYa2mndH8Mbd/KNl+h52JvcJEuFiGddcClWo2DHRmItI8a
-         3Fb2VQ/QP6Y/304G4/lYwQuHq+t76yoykbMmeHP3WLLtQ8VXOfwVOF2nAn+hdJgT4QKi
-         uiEpZ6kGPiggnShullQ6572ojEerVgcGgrhOeKl2zi7/Bt+/koppKc0K5kpT8+ST2o8r
-         3goy2+VFJBucy/+GEX/KP33l9BXcI7zLtnGRQqI2kelQmB/7z3Gj8GiaG7n2x34sA1KN
-         JXMStnxho2TblfUbuBNU0dtUHLGxhAGjVUDfIiTUtIO9asAV+grbh8MOXrJlyFHmRIq6
-         48aw==
-X-Gm-Message-State: AOAM531N0YN3IeF5B21UKA/qOg/7Zr6Znu/guchkOxnZGEIVJU4xG73l
-        PAf07ZeGg25kgpxJpIBzoCc=
-X-Google-Smtp-Source: ABdhPJwhYVXgPJAWS08IIetPM9lId5ud3Uo5DxHgFl0bklH6Kq8Z8fAOUZfg2VpA7YBrnbUmrUZrGg==
-X-Received: by 2002:adf:d235:: with SMTP id k21mr1736681wrh.222.1626985423687;
-        Thu, 22 Jul 2021 13:23:43 -0700 (PDT)
-Received: from [192.168.1.28] ([213.57.108.142])
-        by smtp.gmail.com with ESMTPSA id y3sm31142636wrh.16.2021.07.22.13.23.40
+        bh=ARK0i0Bp9fQeNW3MXicGQaonPg0dq6jRH3wg0BWwTn4=;
+        b=XAJCusZxQ4k7P/WNQfc2HwYLWhnpNf35hPgGwk3nM03BW1tT9kBnRsaLpHgOanlpco
+         dydM+KoK+lwYLz+CwxCnPPKVC7X+V1MP/6kspwSLrBeC1Pg6u+EmQIy8jQ5fJtY2g4GS
+         yRWxmroV/meCwQYwabkIjL2gGp4BIEWOZxBZBREK44NjTtl2qpiTcHAcO0DHYXPE8adB
+         3Z2BvRVmXkFdG1UvzeuIg89ZgzgChqBiGU/EuvQ/YVaQGQiOK7xVSpl9SVZLlhP0p275
+         q3IVRPVurMMnEvmJHkB6ieKeweiy1fOw6obYl28ymZreI36MGsg/vGux6xsC7QMdIlpP
+         GhyQ==
+X-Gm-Message-State: AOAM530zKUQk2LEwmK1JZRdt511G5ZPfzJLdx8kbLpzJpu61NFTG+Wfw
+        TrYwUCSbBJkoa3oEixw3wb4=
+X-Google-Smtp-Source: ABdhPJybMvMZkieirq+YPEKqxwh9ShrXQ+Su1cIiIAaLIGKvJ2TT2pLL0bdeaMuM0VCGPWjFAHFpgg==
+X-Received: by 2002:a05:6512:30f:: with SMTP id t15mr775906lfp.399.1626986542561;
+        Thu, 22 Jul 2021 13:42:22 -0700 (PDT)
+Received: from [192.168.1.102] ([31.173.84.209])
+        by smtp.gmail.com with ESMTPSA id r15sm3202488ljk.92.2021.07.22.13.42.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Jul 2021 13:23:43 -0700 (PDT)
-Subject: Re: [PATCH v5 net-next 02/36] iov_iter: DDP copy to iter/pages
-To:     Christoph Hellwig <hch@infradead.org>,
-        Boris Pismenny <borisp@nvidia.com>
-Cc:     dsahern@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        saeedm@nvidia.com, hch@lst.de, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com,
-        smalin@marvell.com, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
-        benishay@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com,
-        Boris Pismenny <borisp@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-References: <20210722110325.371-1-borisp@nvidia.com>
- <20210722110325.371-3-borisp@nvidia.com> <YPlzHTnoxDinpOsP@infradead.org>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <6f7f96dc-f1e6-99d9-6ab4-920126615302@gmail.com>
-Date:   Thu, 22 Jul 2021 23:23:38 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        Thu, 22 Jul 2021 13:42:22 -0700 (PDT)
+Subject: Re: [PATCH net-next 05/18] ravb: Replace chip type with a structure
+ for driver data
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
+ <20210722141351.13668-6-biju.das.jz@bp.renesas.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <09e06a00-6b9e-c8b8-e5c3-67d82d900a74@gmail.com>
+Date:   Thu, 22 Jul 2021 23:42:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <YPlzHTnoxDinpOsP@infradead.org>
+In-Reply-To: <20210722141351.13668-6-biju.das.jz@bp.renesas.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,89 +78,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/07/2021 16:31, Christoph Hellwig wrote:
->> +#ifdef CONFIG_ULP_DDP
->> +size_t _ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
->> +#endif
->>  size_t _copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
->>  bool _copy_from_iter_full(void *addr, size_t bytes, struct iov_iter *i);
->>  size_t _copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i);
->> @@ -145,6 +148,16 @@ size_t copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
->>  		return _copy_to_iter(addr, bytes, i);
->>  }
->>  
->> +#ifdef CONFIG_ULP_DDP
->> +static __always_inline __must_check
->> +size_t ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
->> +{
->> +	if (unlikely(!check_copy_size(addr, bytes, true)))
->> +		return 0;
->> +	return _ddp_copy_to_iter(addr, bytes, i);
->> +}
->> +#endif
-> 
-> There is no need to ifdef out externs with conditional implementations,
-> or inlines using them.
-> 
->> +#ifdef CONFIG_ULP_DDP
->> +static void ddp_memcpy_to_page(struct page *page, size_t offset, const char *from, size_t len)
-> 
-> Overly long line.
-> 
->> +	char *to = kmap_atomic(page);
->> +
->> +	if (to + offset != from)
->> +		memcpy(to + offset, from, len);
->> +
->> +	kunmap_atomic(to);
-> 
-> This looks completely bogus to any casual read, so please document why
-> it makes sense.  And no, a magic, unexplained ddp in the name does not
-> count as explanation at all.  Please think about a more useful name.
+Hello!
 
-This routine, like other changes in this file, replicates the logic in
-memcpy_to_page. The only difference is that "ddp" avoids copies when the
-copy source and destinations buffers are one and the same. These are
-then used by nvme-tcp (see skb_ddp_copy_datagram_iter in nvme-tcp) which
-receives SKBs from the NIC that already placed data in its destination,
-and this is the source for the name Direct Data Placement. I'd gladly
-take suggestions for better names, but this is the best we came up with
-so far.
+On 7/22/21 5:13 PM, Biju Das wrote:
 
-The reason we are doing it is to avoid modifying memcpy_to_page itself,
-but rather allow users (e.g., nvme-tcp) to access this functionality
-directly.
-
+> The DMAC and EMAC blocks of Gigabit Ethernet IP is almost similar to
+> Ethernet AVB. With few changes in driver we can support both the IP.
 > 
-> Can this ever write to user page?  If yes it needs a flush_dcache_page.
-
-Yes, will add.
-
+> This patch is in preparation for supporting the same by replacing chip
+> type by a structure with values, feature bits and function pointers.
 > 
-> Last but not least: kmap_atomic is deprecated except for the very
-> rate use case where it is actually called from atomic context.  Please
-> use kmap_local_page instead.
+> Currently only values is added to structure and later patches will add
+> features and function pointers.
 > 
-
-Will look into it, thanks!
-
->> +#ifdef CONFIG_CRYPTO_HASH
->> +	struct ahash_request *hash = hashp;
->> +	struct scatterlist sg;
->> +	size_t copied;
->> +
->> +	copied = ddp_copy_to_iter(addr, bytes, i);
->> +	sg_init_one(&sg, addr, copied);
->> +	ahash_request_set_crypt(hash, &sg, NULL, copied);
->> +	crypto_ahash_update(hash);
->> +	return copied;
->> +#else
->> +	return 0;
->> +#endif
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      | 14 +++++
+>  drivers/net/ethernet/renesas/ravb_main.c | 76 +++++++++++++++++-------
+>  2 files changed, 67 insertions(+), 23 deletions(-)
 > 
-> What is the point of this stub?  To me it looks extremely dangerous.
-> 
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index 80e62ca2e3d3..0ed21262f26b 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -988,6 +988,18 @@ enum ravb_chip_id {
+>  	RCAR_GEN3,
+>  };
+>  
+> +struct ravb_drv_data {
 
-As above, we use the same logic as in hash_and_copy_to_iter. The purpose
-is again to eventually avoid the copy in case the source and destination
-buffers are one and the same.
+   I'd rather suggest *struct* ravb_hw_info... This is hardly a driver data, more like
+hwrdware's one. :-)
+
+> +	netdev_features_t net_features;
+> +	netdev_features_t net_hw_features;
+> +	const char (*gstrings_stats)[ETH_GSTRING_LEN];
+> +	size_t gstrings_size;
+> +	size_t stats_len;
+> +	u32 num_gstat_queue;
+> +	size_t skb_sz;
+> +	u8 num_tx_desc;
+> +	enum ravb_chip_id chip_id;
+
+   Mhm, I'd expect that chip_id is no longer needed with the feature structs... 
+
+[...]
+> @@ -1040,6 +1052,8 @@ struct ravb_private {
+>  	unsigned txcidm:1;		/* TX Clock Internal Delay Mode */
+>  	unsigned rgmii_override:1;	/* Deprecated rgmii-*id behavior */
+>  	int num_tx_desc;		/* TX descriptors per packet */
+> +
+> +	const struct ravb_drv_data *info;
+
+   So data or info? :-)
+
+[...]
+> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+> index 805397088850..84ebd6fef711 100644
+> --- a/drivers/net/ethernet/renesas/ravb_main.c
+> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+[...]
+> @@ -1176,9 +1179,12 @@ static void ravb_get_ethtool_stats(struct net_device *ndev,
+>  
+>  static void ravb_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
+>  {
+> +	struct ravb_private *priv = netdev_priv(ndev);
+> +	const struct ravb_drv_data *info = priv->info;
+> +
+>  	switch (stringset) {
+>  	case ETH_SS_STATS:
+> -		memcpy(data, ravb_gstrings_stats, sizeof(ravb_gstrings_stats));
+> +		memcpy(data, info->gstrings_stats, info->gstrings_size);
+>  		break;
+>  	}
+>  }
+> @@ -1924,12 +1930,36 @@ static int ravb_mdio_release(struct ravb_private *priv)
+>  	return 0;
+>  }
+>  
+> +static const struct ravb_drv_data ravb_gen3_data = {
+> +	.net_features = NETIF_F_RXCSUM,
+> +	.net_hw_features = NETIF_F_RXCSUM,
+> +	.gstrings_stats = ravb_gstrings_stats,
+> +	.gstrings_size = sizeof(ravb_gstrings_stats),
+> +	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
+> +	.num_gstat_queue = NUM_RX_QUEUE,
+> +	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
+> +	.num_tx_desc = NUM_TX_DESC_GEN3,
+> +	.chip_id = RCAR_GEN3,
+> +};
+> +
+> +static const struct ravb_drv_data ravb_gen2_data = {
+> +	.net_features = NETIF_F_RXCSUM,
+> +	.net_hw_features = NETIF_F_RXCSUM,
+
+   Mhm, why have the fields that don't change from SoC to SoC anyway?
+I do think they should be added when a new SoC support is added...
+
+> +	.gstrings_stats = ravb_gstrings_stats,
+> +	.gstrings_size = sizeof(ravb_gstrings_stats),
+> +	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
+
+   Same question...
+
+> +	.num_gstat_queue = NUM_RX_QUEUE,
+> +	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
+
+   Again why?
+
+> +	.num_tx_desc = NUM_TX_DESC_GEN2,
+> +	.chip_id = RCAR_GEN2,
+> +};
+> +
+[...]
+> @@ -2052,15 +2082,15 @@ static int ravb_probe(struct platform_device *pdev)
+>  	if (!ndev)
+>  		return -ENOMEM;
+>  
+> -	ndev->features = NETIF_F_RXCSUM;
+> -	ndev->hw_features = NETIF_F_RXCSUM;
+> +	info = of_device_get_match_data(&pdev->dev);
+> +
+> +	ndev->features = info->net_features;
+> +	ndev->hw_features = info->net_hw_features;
+>  
+>  	pm_runtime_enable(&pdev->dev);
+>  	pm_runtime_get_sync(&pdev->dev);
+>  
+> -	chip_id = (enum ravb_chip_id)of_device_get_match_data(&pdev->dev);
+> -
+> -	if (chip_id == RCAR_GEN3)
+> +	if (info->chip_id == RCAR_GEN3)
+
+   Ugh...
+
+>  		irq = platform_get_irq_byname(pdev, "ch22");
+>  	else
+>  		irq = platform_get_irq(pdev, 0);
+[...]
+> @@ -2099,7 +2130,7 @@ static int ravb_probe(struct platform_device *pdev)
+>  	priv->avb_link_active_low =
+>  		of_property_read_bool(np, "renesas,ether-link-active-low");
+>  
+> -	if (chip_id == RCAR_GEN3) {
+> +	if (info->chip_id == RCAR_GEN3) {
+
+   Ugh...
+
+>  		irq = platform_get_irq_byname(pdev, "ch24");
+>  		if (irq < 0) {
+>  			error = irq;
+[...]
+> @@ -2184,7 +2214,7 @@ static int ravb_probe(struct platform_device *pdev)
+>  	INIT_LIST_HEAD(&priv->ts_skb_list);
+>  
+>  	/* Initialise PTP Clock driver */
+> -	if (chip_id != RCAR_GEN2)
+> +	if (info->chip_id != RCAR_GEN2)
+>  		ravb_ptp_init(ndev, pdev);
+
+   Ugh...
+
+>  
+>  	/* Debug message level */
+> @@ -2232,7 +2262,7 @@ static int ravb_probe(struct platform_device *pdev)
+>  			  priv->desc_bat_dma);
+>  
+>  	/* Stop PTP Clock driver */
+> -	if (chip_id != RCAR_GEN2)
+> +	if (info->chip_id != RCAR_GEN2)
+>  		ravb_ptp_stop(ndev);
+
+  Ugh...
+
+
+>  out_disable_refclk:
+>  	clk_disable_unprepare(priv->refclk);
+
+MBR, Sergei
