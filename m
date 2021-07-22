@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73F243D2560
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE85C3D255E
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 16:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbhGVNeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 09:34:19 -0400
-Received: from relmlor2.renesas.com ([210.160.252.172]:54735 "EHLO
-        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232332AbhGVNeA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 09:34:00 -0400
+        id S232385AbhGVNeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 09:34:13 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:32869 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232105AbhGVNdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 09:33:44 -0400
 X-IronPort-AV: E=Sophos;i="5.84,261,1620658800"; 
-   d="scan'208";a="88414752"
+   d="scan'208";a="88463942"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 22 Jul 2021 23:14:15 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 22 Jul 2021 23:14:18 +0900
 Received: from localhost.localdomain (unknown [10.226.92.164])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id D78C9401224A;
-        Thu, 22 Jul 2021 23:14:11 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 7931A401224A;
+        Thu, 22 Jul 2021 23:14:15 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -32,9 +32,9 @@ Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>,
         Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH net-next 05/18] ravb: Replace chip type with a structure for driver data
-Date:   Thu, 22 Jul 2021 15:13:38 +0100
-Message-Id: <20210722141351.13668-6-biju.das.jz@bp.renesas.com>
+Subject: [PATCH net-next 06/18] ravb: Factorise ptp feature
+Date:   Thu, 22 Jul 2021 15:13:39 +0100
+Message-Id: <20210722141351.13668-7-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
 References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
@@ -42,248 +42,301 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DMAC and EMAC blocks of Gigabit Ethernet IP is almost similar to
-Ethernet AVB. With few changes in driver we can support both the IP.
+Gptp is active in CONFIG mode for R-Car Gen3, where as it is not
+active in CONFIG mode for R-Car Gen2. Add feature bits to handle
+both cases.
 
-This patch is in preparation for supporting the same by replacing chip
-type by a structure with values, feature bits and function pointers.
-
-Currently only values is added to structure and later patches will add
-features and function pointers.
+RZ/G2L does not support ptp feature. Factorise ptp feature
+specific to R-Car.
 
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/net/ethernet/renesas/ravb.h      | 14 +++++
- drivers/net/ethernet/renesas/ravb_main.c | 76 +++++++++++++++++-------
- 2 files changed, 67 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/renesas/ravb.h      |  1 +
+ drivers/net/ethernet/renesas/ravb_main.c | 81 ++++++++++++++++--------
+ 2 files changed, 56 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-index 80e62ca2e3d3..0ed21262f26b 100644
+index 0ed21262f26b..a474ed68db22 100644
 --- a/drivers/net/ethernet/renesas/ravb.h
 +++ b/drivers/net/ethernet/renesas/ravb.h
-@@ -988,6 +988,18 @@ enum ravb_chip_id {
- 	RCAR_GEN3,
+@@ -998,6 +998,7 @@ struct ravb_drv_data {
+ 	size_t skb_sz;
+ 	u8 num_tx_desc;
+ 	enum ravb_chip_id chip_id;
++	u32 features;
  };
  
-+struct ravb_drv_data {
-+	netdev_features_t net_features;
-+	netdev_features_t net_hw_features;
-+	const char (*gstrings_stats)[ETH_GSTRING_LEN];
-+	size_t gstrings_size;
-+	size_t stats_len;
-+	u32 num_gstat_queue;
-+	size_t skb_sz;
-+	u8 num_tx_desc;
-+	enum ravb_chip_id chip_id;
-+};
-+
  struct ravb_private {
- 	struct net_device *ndev;
- 	struct platform_device *pdev;
-@@ -1040,6 +1052,8 @@ struct ravb_private {
- 	unsigned txcidm:1;		/* TX Clock Internal Delay Mode */
- 	unsigned rgmii_override:1;	/* Deprecated rgmii-*id behavior */
- 	int num_tx_desc;		/* TX descriptors per packet */
-+
-+	const struct ravb_drv_data *info;
- };
- 
- static inline u32 ravb_read(struct net_device *ndev, enum ravb_reg reg)
 diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 805397088850..84ebd6fef711 100644
+index 84ebd6fef711..e966b76df32c 100644
 --- a/drivers/net/ethernet/renesas/ravb_main.c
 +++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -339,6 +339,7 @@ static void ravb_ring_format(struct net_device *ndev, int q)
- static int ravb_ring_init(struct net_device *ndev, int q)
+@@ -40,6 +40,14 @@
+ 		 NETIF_MSG_RX_ERR | \
+ 		 NETIF_MSG_TX_ERR)
+ 
++#define RAVB_PTP_CONFIG_ACTIVE		BIT(0)
++#define RAVB_PTP_CONFIG_INACTIVE	BIT(1)
++
++#define RAVB_PTP	(RAVB_PTP_CONFIG_ACTIVE | RAVB_PTP_CONFIG_INACTIVE)
++
++#define RAVB_RCAR_GEN3_FEATURES	RAVB_PTP_CONFIG_ACTIVE
++#define RAVB_RCAR_GEN2_FEATURES	RAVB_PTP_CONFIG_INACTIVE
++
+ static const char *ravb_rx_irqs[NUM_RX_QUEUE] = {
+ 	"ch0", /* RAVB_BE */
+ 	"ch1", /* RAVB_NC */
+@@ -804,6 +812,7 @@ static irqreturn_t ravb_interrupt(int irq, void *dev_id)
+ {
+ 	struct net_device *ndev = dev_id;
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 	irqreturn_t result = IRQ_NONE;
+ 	u32 iss;
+ 
+@@ -839,7 +848,7 @@ static irqreturn_t ravb_interrupt(int irq, void *dev_id)
+ 	}
+ 
+ 	/* gPTP interrupt status summary */
+-	if (iss & ISS_CGIS) {
++	if ((info->features & RAVB_PTP) && (iss & ISS_CGIS)) {
+ 		ravb_ptp_interrupt(ndev);
+ 		result = IRQ_HANDLED;
+ 	}
+@@ -1204,6 +1213,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+ 			      struct ethtool_ringparam *ring)
  {
  	struct ravb_private *priv = netdev_priv(ndev);
 +	const struct ravb_drv_data *info = priv->info;
- 	int num_tx_desc = priv->num_tx_desc;
- 	struct sk_buff *skb;
- 	int ring_size;
-@@ -353,7 +354,7 @@ static int ravb_ring_init(struct net_device *ndev, int q)
- 		goto error;
+ 	int error;
  
- 	for (i = 0; i < priv->num_rx_ring[q]; i++) {
--		skb = netdev_alloc_skb(ndev, RX_BUF_SZ + RAVB_ALIGN - 1);
-+		skb = netdev_alloc_skb(ndev, info->skb_sz);
- 		if (!skb)
- 			goto error;
- 		ravb_set_buffer_align(skb);
-@@ -1133,13 +1134,14 @@ static const char ravb_gstrings_stats[][ETH_GSTRING_LEN] = {
- 	"rx_queue_1_over_errors",
- };
+ 	if (ring->tx_pending > BE_TX_RING_MAX ||
+@@ -1217,7 +1227,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+ 	if (netif_running(ndev)) {
+ 		netif_device_detach(ndev);
+ 		/* Stop PTP Clock driver */
+-		if (priv->chip_id == RCAR_GEN2)
++		if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 			ravb_ptp_stop(ndev);
+ 		/* Wait for DMA stopping */
+ 		error = ravb_stop_dma(ndev);
+@@ -1249,7 +1259,7 @@ static int ravb_set_ringparam(struct net_device *ndev,
+ 		ravb_emac_init(ndev);
  
--#define RAVB_STATS_LEN	ARRAY_SIZE(ravb_gstrings_stats)
--
- static int ravb_get_sset_count(struct net_device *netdev, int sset)
- {
-+	struct ravb_private *priv = netdev_priv(netdev);
-+	const struct ravb_drv_data *info = priv->info;
-+
- 	switch (sset) {
- 	case ETH_SS_STATS:
--		return RAVB_STATS_LEN;
-+		return info->stats_len;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -1149,11 +1151,12 @@ static void ravb_get_ethtool_stats(struct net_device *ndev,
- 				   struct ethtool_stats *estats, u64 *data)
+ 		/* Initialise PTP Clock driver */
+-		if (priv->chip_id == RCAR_GEN2)
++		if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 			ravb_ptp_init(ndev, priv->pdev);
+ 
+ 		netif_device_attach(ndev);
+@@ -1262,6 +1272,7 @@ static int ravb_get_ts_info(struct net_device *ndev,
+ 			    struct ethtool_ts_info *info)
  {
  	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_drv_data *info = priv->info;
- 	int i = 0;
- 	int q;
++	const struct ravb_drv_data *data = priv->info;
  
- 	/* Device-specific stats */
--	for (q = RAVB_BE; q < NUM_RX_QUEUE; q++) {
-+	for (q = RAVB_BE; q < info->num_gstat_queue; q++) {
- 		struct net_device_stats *stats = &priv->stats[q];
+ 	info->so_timestamping =
+ 		SOF_TIMESTAMPING_TX_SOFTWARE |
+@@ -1275,7 +1286,8 @@ static int ravb_get_ts_info(struct net_device *ndev,
+ 		(1 << HWTSTAMP_FILTER_NONE) |
+ 		(1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+ 		(1 << HWTSTAMP_FILTER_ALL);
+-	info->phc_index = ptp_clock_index(priv->ptp.clock);
++	if (data->features & RAVB_PTP)
++		info->phc_index = ptp_clock_index(priv->ptp.clock);
  
- 		data[i++] = priv->cur_rx[q];
-@@ -1176,9 +1179,12 @@ static void ravb_get_ethtool_stats(struct net_device *ndev,
- 
- static void ravb_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
- {
-+	struct ravb_private *priv = netdev_priv(ndev);
-+	const struct ravb_drv_data *info = priv->info;
-+
- 	switch (stringset) {
- 	case ETH_SS_STATS:
--		memcpy(data, ravb_gstrings_stats, sizeof(ravb_gstrings_stats));
-+		memcpy(data, info->gstrings_stats, info->gstrings_size);
- 		break;
- 	}
- }
-@@ -1924,12 +1930,36 @@ static int ravb_mdio_release(struct ravb_private *priv)
  	return 0;
  }
- 
-+static const struct ravb_drv_data ravb_gen3_data = {
-+	.net_features = NETIF_F_RXCSUM,
-+	.net_hw_features = NETIF_F_RXCSUM,
-+	.gstrings_stats = ravb_gstrings_stats,
-+	.gstrings_size = sizeof(ravb_gstrings_stats),
-+	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
-+	.num_gstat_queue = NUM_RX_QUEUE,
-+	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
-+	.num_tx_desc = NUM_TX_DESC_GEN3,
-+	.chip_id = RCAR_GEN3,
-+};
-+
-+static const struct ravb_drv_data ravb_gen2_data = {
-+	.net_features = NETIF_F_RXCSUM,
-+	.net_hw_features = NETIF_F_RXCSUM,
-+	.gstrings_stats = ravb_gstrings_stats,
-+	.gstrings_size = sizeof(ravb_gstrings_stats),
-+	.stats_len = ARRAY_SIZE(ravb_gstrings_stats),
-+	.num_gstat_queue = NUM_RX_QUEUE,
-+	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
-+	.num_tx_desc = NUM_TX_DESC_GEN2,
-+	.chip_id = RCAR_GEN2,
-+};
-+
- static const struct of_device_id ravb_match_table[] = {
--	{ .compatible = "renesas,etheravb-r8a7790", .data = (void *)RCAR_GEN2 },
--	{ .compatible = "renesas,etheravb-r8a7794", .data = (void *)RCAR_GEN2 },
--	{ .compatible = "renesas,etheravb-rcar-gen2", .data = (void *)RCAR_GEN2 },
--	{ .compatible = "renesas,etheravb-r8a7795", .data = (void *)RCAR_GEN3 },
--	{ .compatible = "renesas,etheravb-rcar-gen3", .data = (void *)RCAR_GEN3 },
-+	{ .compatible = "renesas,etheravb-r8a7790", .data = &ravb_gen2_data },
-+	{ .compatible = "renesas,etheravb-r8a7794", .data = &ravb_gen2_data },
-+	{ .compatible = "renesas,etheravb-rcar-gen2", .data = &ravb_gen2_data },
-+	{ .compatible = "renesas,etheravb-r8a7795", .data = &ravb_gen3_data },
-+	{ .compatible = "renesas,etheravb-rcar-gen3", .data = &ravb_gen3_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ravb_match_table);
-@@ -2034,8 +2064,8 @@ static void ravb_set_delay_mode(struct net_device *ndev)
- static int ravb_probe(struct platform_device *pdev)
+@@ -1340,6 +1352,7 @@ static inline int ravb_hook_irq(unsigned int irq, irq_handler_t handler,
+ static int ravb_open(struct net_device *ndev)
  {
- 	struct device_node *np = pdev->dev.of_node;
-+	const struct ravb_drv_data *info;
- 	struct ravb_private *priv;
--	enum ravb_chip_id chip_id;
- 	struct net_device *ndev;
- 	int error, irq, q;
- 	struct resource *res;
-@@ -2052,15 +2082,15 @@ static int ravb_probe(struct platform_device *pdev)
- 	if (!ndev)
- 		return -ENOMEM;
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 	struct platform_device *pdev = priv->pdev;
+ 	struct device *dev = &pdev->dev;
+ 	int error;
+@@ -1388,7 +1401,7 @@ static int ravb_open(struct net_device *ndev)
+ 	ravb_emac_init(ndev);
  
--	ndev->features = NETIF_F_RXCSUM;
--	ndev->hw_features = NETIF_F_RXCSUM;
-+	info = of_device_get_match_data(&pdev->dev);
-+
-+	ndev->features = info->net_features;
-+	ndev->hw_features = info->net_hw_features;
+ 	/* Initialise PTP Clock driver */
+-	if (priv->chip_id == RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 		ravb_ptp_init(ndev, priv->pdev);
  
- 	pm_runtime_enable(&pdev->dev);
- 	pm_runtime_get_sync(&pdev->dev);
+ 	netif_tx_start_all_queues(ndev);
+@@ -1402,7 +1415,7 @@ static int ravb_open(struct net_device *ndev)
  
--	chip_id = (enum ravb_chip_id)of_device_get_match_data(&pdev->dev);
--
--	if (chip_id == RCAR_GEN3)
-+	if (info->chip_id == RCAR_GEN3)
- 		irq = platform_get_irq_byname(pdev, "ch22");
- 	else
- 		irq = platform_get_irq(pdev, 0);
-@@ -2073,6 +2103,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ out_ptp_stop:
+ 	/* Stop PTP Clock driver */
+-	if (priv->chip_id == RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 		ravb_ptp_stop(ndev);
+ out_free_irq_nc_tx:
+ 	if (priv->chip_id == RCAR_GEN2)
+@@ -1443,13 +1456,14 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ {
+ 	struct ravb_private *priv = container_of(work, struct ravb_private,
+ 						 work);
++	const struct ravb_drv_data *info = priv->info;
+ 	struct net_device *ndev = priv->ndev;
+ 	int error;
  
- 	priv = netdev_priv(ndev);
-+	priv->info = info;
- 	priv->ndev = ndev;
- 	priv->pdev = pdev;
- 	priv->num_tx_ring[RAVB_BE] = BE_TX_RING_SIZE;
-@@ -2099,7 +2130,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	priv->avb_link_active_low =
- 		of_property_read_bool(np, "renesas,ether-link-active-low");
+ 	netif_tx_stop_all_queues(ndev);
  
--	if (chip_id == RCAR_GEN3) {
-+	if (info->chip_id == RCAR_GEN3) {
- 		irq = platform_get_irq_byname(pdev, "ch24");
- 		if (irq < 0) {
- 			error = irq;
-@@ -2124,7 +2155,7 @@ static int ravb_probe(struct platform_device *pdev)
- 		}
+ 	/* Stop PTP Clock driver */
+-	if (priv->chip_id == RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Wait for DMA stopping */
+@@ -1484,7 +1498,7 @@ static void ravb_tx_timeout_work(struct work_struct *work)
+ 
+ out:
+ 	/* Initialise PTP Clock driver */
+-	if (priv->chip_id == RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 		ravb_ptp_init(ndev, priv->pdev);
+ 
+ 	netif_tx_start_all_queues(ndev);
+@@ -1681,6 +1695,7 @@ static int ravb_close(struct net_device *ndev)
+ {
+ 	struct device_node *np = ndev->dev.parent->of_node;
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 	struct ravb_tstamp_skb *ts_skb, *ts_skb2;
+ 
+ 	netif_tx_stop_all_queues(ndev);
+@@ -1691,7 +1706,7 @@ static int ravb_close(struct net_device *ndev)
+ 	ravb_write(ndev, 0, TIC);
+ 
+ 	/* Stop PTP Clock driver */
+-	if (priv->chip_id == RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_INACTIVE)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	/* Set the config mode to stop the AVB-DMAC's processes */
+@@ -1940,6 +1955,7 @@ static const struct ravb_drv_data ravb_gen3_data = {
+ 	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
+ 	.num_tx_desc = NUM_TX_DESC_GEN3,
+ 	.chip_id = RCAR_GEN3,
++	.features = RAVB_RCAR_GEN3_FEATURES,
+ };
+ 
+ static const struct ravb_drv_data ravb_gen2_data = {
+@@ -1952,6 +1968,7 @@ static const struct ravb_drv_data ravb_gen2_data = {
+ 	.skb_sz = RX_BUF_SZ + RAVB_ALIGN - 1,
+ 	.num_tx_desc = NUM_TX_DESC_GEN2,
+ 	.chip_id = RCAR_GEN2,
++	.features = RAVB_RCAR_GEN2_FEATURES,
+ };
+ 
+ static const struct of_device_id ravb_match_table[] = {
+@@ -1992,14 +2009,20 @@ static int ravb_set_gti(struct net_device *ndev)
+ static void ravb_set_config_mode(struct net_device *ndev)
+ {
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 
+-	if (priv->chip_id == RCAR_GEN2) {
++	switch (info->features & RAVB_PTP) {
++	case RAVB_PTP_CONFIG_INACTIVE:
+ 		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG);
+ 		/* Set CSEL value */
+ 		ravb_modify(ndev, CCC, CCC_CSEL, CCC_CSEL_HPB);
+-	} else {
++		break;
++	case RAVB_PTP_CONFIG_ACTIVE:
+ 		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG |
+ 			    CCC_GAC | CCC_CSEL_HPB);
++		break;
++	default:
++		ravb_modify(ndev, CCC, CCC_OPC, CCC_OPC_CONFIG);
  	}
+ }
  
--	priv->chip_id = chip_id;
-+	priv->chip_id = info->chip_id;
+@@ -2182,13 +2205,15 @@ static int ravb_probe(struct platform_device *pdev)
+ 	/* Set AVB config mode */
+ 	ravb_set_config_mode(ndev);
  
- 	priv->clk = devm_clk_get(&pdev->dev, NULL);
- 	if (IS_ERR(priv->clk)) {
-@@ -2142,8 +2173,7 @@ static int ravb_probe(struct platform_device *pdev)
- 	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
- 	ndev->min_mtu = ETH_MIN_MTU;
+-	/* Set GTI value */
+-	error = ravb_set_gti(ndev);
+-	if (error)
+-		goto out_disable_refclk;
++	if (info->features & RAVB_PTP) {
++		/* Set GTI value */
++		error = ravb_set_gti(ndev);
++		if (error)
++			goto out_disable_refclk;
  
--	priv->num_tx_desc = chip_id == RCAR_GEN2 ?
--		NUM_TX_DESC_GEN2 : NUM_TX_DESC_GEN3;
-+	priv->num_tx_desc = info->num_tx_desc;
+-	/* Request GTI loading */
+-	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
++		/* Request GTI loading */
++		ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
++	}
  
- 	/* Set function */
- 	ndev->netdev_ops = &ravb_netdev_ops;
-@@ -2184,7 +2214,7 @@ static int ravb_probe(struct platform_device *pdev)
+ 	if (priv->chip_id != RCAR_GEN2) {
+ 		ravb_parse_delay_mode(np, ndev);
+@@ -2214,7 +2239,7 @@ static int ravb_probe(struct platform_device *pdev)
  	INIT_LIST_HEAD(&priv->ts_skb_list);
  
  	/* Initialise PTP Clock driver */
--	if (chip_id != RCAR_GEN2)
-+	if (info->chip_id != RCAR_GEN2)
+-	if (info->chip_id != RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_ACTIVE)
  		ravb_ptp_init(ndev, pdev);
  
  	/* Debug message level */
-@@ -2232,7 +2262,7 @@ static int ravb_probe(struct platform_device *pdev)
+@@ -2262,7 +2287,7 @@ static int ravb_probe(struct platform_device *pdev)
  			  priv->desc_bat_dma);
  
  	/* Stop PTP Clock driver */
--	if (chip_id != RCAR_GEN2)
-+	if (info->chip_id != RCAR_GEN2)
+-	if (info->chip_id != RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_ACTIVE)
  		ravb_ptp_stop(ndev);
  out_disable_refclk:
  	clk_disable_unprepare(priv->refclk);
+@@ -2278,9 +2303,10 @@ static int ravb_remove(struct platform_device *pdev)
+ {
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 
+ 	/* Stop PTP Clock driver */
+-	if (priv->chip_id != RCAR_GEN2)
++	if (info->features & RAVB_PTP_CONFIG_ACTIVE)
+ 		ravb_ptp_stop(ndev);
+ 
+ 	clk_disable_unprepare(priv->refclk);
+@@ -2363,6 +2389,7 @@ static int __maybe_unused ravb_resume(struct device *dev)
+ {
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct ravb_private *priv = netdev_priv(ndev);
++	const struct ravb_drv_data *info = priv->info;
+ 	int ret = 0;
+ 
+ 	/* If WoL is enabled set reset mode to rearm the WoL logic */
+@@ -2377,13 +2404,15 @@ static int __maybe_unused ravb_resume(struct device *dev)
+ 	/* Set AVB config mode */
+ 	ravb_set_config_mode(ndev);
+ 
+-	/* Set GTI value */
+-	ret = ravb_set_gti(ndev);
+-	if (ret)
+-		return ret;
++	if (info->features & RAVB_PTP) {
++		/* Set GTI value */
++		ret = ravb_set_gti(ndev);
++		if (ret)
++			return ret;
+ 
+-	/* Request GTI loading */
+-	ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
++		/* Request GTI loading */
++		ravb_modify(ndev, GCCR, GCCR_LTI, GCCR_LTI);
++	}
+ 
+ 	if (priv->chip_id != RCAR_GEN2)
+ 		ravb_set_delay_mode(ndev);
 -- 
 2.17.1
 
