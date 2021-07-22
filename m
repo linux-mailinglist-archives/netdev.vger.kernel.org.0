@@ -2,142 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF1EB3D2C1C
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 20:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283B43D2C27
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 20:51:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbhGVSGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 14:06:38 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:42080
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229556AbhGVSGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 14:06:37 -0400
-Received: from [10.172.193.212] (1.general.cking.uk.vpn [10.172.193.212])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2A2523F23B;
-        Thu, 22 Jul 2021 18:47:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1626979629;
-        bh=av4zwA2qg/IApI8WkrvTH+6ZHVMbOV6Gx7+f/fxSs4I=;
-        h=To:Cc:From:Subject:Message-ID:Date:MIME-Version:Content-Type;
-        b=itxpjq0PldP522d6DxhxMw3jsVgnjwkZjV99w5KSZQP/g5AG6mTWoqCgfWLnA9a/l
-         FTjLKxUFe6kywst+9YvjHcaVe9sYXxOBnQIt7WpofCgOMz1K4TNUU4a1sy4fKieOsw
-         flSOLql4O6IQk0Op7vXs5dKt+FzmORL5rrGMFiBIit4CsZHlm3WrlnyYkIXZjztRpm
-         32qq+e6dF2YPNP12Ne0fX6kZ4rjEVP09vPBxtFqdLg7mVxIy7Je4JdRz65PZ3qlw+p
-         4RtyL9x8KJNteIWuoGDyMjTaNFUmSHCm220JAWnmTzn2lPamfNPki+7xKZ/KYEeRsr
-         Njz5lj/sULA0g==
-To:     Subbaraya Sundeep <sbhatta@marvell.com>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: re: octeontx2-af: Introduce internal packet switching
-Message-ID: <8fc78a8c-08cb-467a-f333-031f084e3f73@canonical.com>
-Date:   Thu, 22 Jul 2021 19:47:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S230149AbhGVSKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 14:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229771AbhGVSJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 14:09:59 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB0BC061757;
+        Thu, 22 Jul 2021 11:50:34 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n10so283264plf.4;
+        Thu, 22 Jul 2021 11:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wlySsb7NCcOdNyg1NZSKXQbRNOuXci6cKFNHTYDMHGI=;
+        b=tANL0sX86ZD+GqZzcCkAad8AnyAZk6TTJGaGkR/4dyZtkl623k8o1TY+N8OwmijmtX
+         7TrPOQV58VIi+OvKiMUQD0F0Aj8fgFvcGvEIj+E5pnOrJih29RGeTW0cB1m0a/F/vWcN
+         sqOB2rX+b3qJmMb0v0ASLQ125Ib/E+iaGMHOwA4KYJX8SbfSO8NwJ6l6uoBJo83ua63Y
+         ykMfg0+dUCQbtMpwvmLSYo+Eo643YOCl3OEtSywPPw/AbU9yT0FU72AQQS9bp+EFHbFM
+         lF1ImXC/bOSl6DZ78nujZ8Qn8eTroilrSccRoeMFyaV0Yhd/JnM0r1PlERoaJLBD6x6O
+         JYBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wlySsb7NCcOdNyg1NZSKXQbRNOuXci6cKFNHTYDMHGI=;
+        b=E+puHFRKEnvo67VlpE0oEz0ujrLT7R0gpdM/u4Gcr50gmAHrfR/NlE1GYz6isZolkf
+         +YWj2QcnUJ8nfDVPV7hTU05utss1I4u6aEfnunucZVdGEqzyljXQ0kFTVEhxxVKddt7q
+         vcsGqa6tQeb8yG52+wGVE7ZIbbVpPVDTNyh7rG37MlZLpe1Dl+XLzYpcMBdDmd1BOllX
+         Bs4Z9KjJd9ihtM2FnHGUb3l9nO7Im7pYab6OhGNYAJiLKKpKoq3foBvCJIBX7J6F4GJr
+         xH8n6RD/vbhoKwcFiDdVzZmHhKThJzP+KuaDLgV01rm97wneC4txr6ME393Mg5Nqs7eo
+         9oqA==
+X-Gm-Message-State: AOAM530rGexhvLPXN6sD8iqlIhLLjzbM6bgfxEZ2oYF5uwYovDbN7IgS
+        QLzLp/+rB8RZzW3n0l6nDro=
+X-Google-Smtp-Source: ABdhPJz+a6SU4QCvQpOJI9b8Z9IKDFCARTxqrN1f68A2kc5XvltUnF3KwjiRNwC0K9z+Ic8FvyizNA==
+X-Received: by 2002:a17:90b:1e50:: with SMTP id pi16mr1042402pjb.147.1626979833836;
+        Thu, 22 Jul 2021 11:50:33 -0700 (PDT)
+Received: from localhost.localdomain ([1.240.193.107])
+        by smtp.googlemail.com with ESMTPSA id w2sm5394925pjf.2.2021.07.22.11.50.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 11:50:33 -0700 (PDT)
+From:   Kangmin Park <l4stpr0gr4m@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mpls: defer ttl decrement in mpls_forward()
+Date:   Fri, 23 Jul 2021 03:50:28 +0900
+Message-Id: <20210722185028.17555-1-l4stpr0gr4m@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Defer ttl decrement to optimize in tx_err case. There is no need
+to decrease ttl in the case of goto tx_err.
 
-Static analysis of linux-next with Coverity has found a couple of
-uninitialized variable issues in the following commit:
+Signed-off-by: Kangmin Park <l4stpr0gr4m@gmail.com>
+---
+ net/mpls/af_mpls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 23109f8dd06d0bd04c9360cf7c501c97b0ab1545
-Author: Subbaraya Sundeep <sbhatta@marvell.com>
-Date:   Mon Jul 19 14:29:34 2021 +0530
+diff --git a/net/mpls/af_mpls.c b/net/mpls/af_mpls.c
+index 05a21dd072df..ffeb2df8be7a 100644
+--- a/net/mpls/af_mpls.c
++++ b/net/mpls/af_mpls.c
+@@ -407,7 +407,6 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
+ 	/* Verify ttl is valid */
+ 	if (dec.ttl <= 1)
+ 		goto err;
+-	dec.ttl -= 1;
+ 
+ 	/* Find the output device */
+ 	out_dev = rcu_dereference(nh->nh_dev);
+@@ -431,6 +430,7 @@ static int mpls_forward(struct sk_buff *skb, struct net_device *dev,
+ 	skb->dev = out_dev;
+ 	skb->protocol = htons(ETH_P_MPLS_UC);
+ 
++	dec.ttl -= 1;
+ 	if (unlikely(!new_header_size && dec.bos)) {
+ 		/* Penultimate hop popping */
+ 		if (!mpls_egress(dev_net(out_dev), rt, skb, dec))
+-- 
+2.26.2
 
-    octeontx2-af: Introduce internal packet switching
-
-The analysis is as follows:
-
-195void rvu_switch_disable(struct rvu *rvu)
-196{
-197        struct npc_delete_flow_req uninstall_req = { 0 };
-198        struct npc_mcam_free_entry_req free_req = { 0 };
-199        struct rvu_switch *rswitch = &rvu->rswitch;
-200        struct rvu_hwinfo *hw = rvu->hw;
-
-   1. var_decl: Declaring variable numvfs without initializer.
-
-201        int pf, vf, numvfs, hwvf;
-202        struct msg_rsp rsp;
-203        u16 pcifunc;
-204        int err;
-205
-
-   2. Condition !rswitch->used_entries, taking false branch.
-
-206        if (!rswitch->used_entries)
-207                return;
-208
-
-   3. Condition pf < hw->total_pfs, taking true branch.
-
-209        for (pf = 1; pf < hw->total_pfs; pf++) {
-
-   4. Condition !is_pf_cgxmapped(rvu, pf), taking false branch.
-
-210                if (!is_pf_cgxmapped(rvu, pf))
-211                        continue;
-212
-213                pcifunc = pf << 10;
-214                err = rvu_switch_install_rx_rule(rvu, pcifunc, 0xFFF);
-
-   5. Condition err, taking false branch.
-
-215                if (err)
-216                        dev_err(rvu->dev,
-217                                "Reverting RX rule for PF%d
-failed(%d)\n",
-218                                pf, err);
-219
-
-   Uninitialized scalar variable (UNINIT)
-   6. uninit_use: Using uninitialized value numvfs.
-
-   Uninitialized scalar variable (UNINIT)
-   9. uninit_use: Using uninitialized value hwvf.
-
-220                for (vf = 0; vf < numvfs; vf++, hwvf++) {
-221                        pcifunc = pf << 10 | ((vf + 1) & 0x3FF);
-222                        err = rvu_switch_install_rx_rule(rvu,
-pcifunc, 0xFFF);
-
-   7. Condition err, taking false branch.
-
-223                        if (err)
-224                                dev_err(rvu->dev,
-225                                        "Reverting RX rule for
-PF%dVF%d failed(%d)\n",
-226                                        pf, vf, err);
-227                }
-
-   8. Jumping back to the beginning of the loop.
-
-228        }
-229
-230        uninstall_req.start = rswitch->start_entry;
-231        uninstall_req.end =  rswitch->start_entry +
-rswitch->used_entries - 1;
-232        free_req.all = 1;
-233        rvu_mbox_handler_npc_delete_flow(rvu, &uninstall_req, &rsp);
-234        rvu_mbox_handler_npc_mcam_free_entry(rvu, &free_req, &rsp);
-235        rswitch->used_entries = 0;
-236        kfree(rswitch->entry2pcifunc);
-237}
-
-Colin
