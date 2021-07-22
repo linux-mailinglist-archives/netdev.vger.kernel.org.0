@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 494633D2720
+	by mail.lfdr.de (Postfix) with ESMTP id 921473D2721
 	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 17:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232741AbhGVPPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 11:15:41 -0400
+        id S232728AbhGVPPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 11:15:45 -0400
 Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:4577
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232702AbhGVPPe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 11:15:34 -0400
+        id S232729AbhGVPPi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 11:15:38 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AmBtcLXDUWQLwwBwKchJhHIF51Ot/bWGa58EZ0zhQu92bbdWLX1QBSfeSwkVbsuAGKl5wRGKy5tDIXpa0Sg6lgHP3CDnUtkqUQuOC+4iy/zc88rixgi24Q1phtz85KjbsPMwZLaPTICixuB589oljcUHtgi2JI+/oXRXR8cVJARBmyf91JltTwVSaDiReTh1eGGQsQmumK06Hp42KSDobQTAywPrHYykDLM1ygGjo4YpmY04PV314rczs9iP3dsCy57u2S96Ry16FL6u/h/FiXVo2pmdDgmuRgEqdVt3gcySzziif72Vtm2zWbeDvi+laMlfdhgkH7shEjExBC4Dzg==
+ b=BUNK6+o+2Nvt/v7KrJEHRAaZfrtk7Dt8HB39LY2G3SLzPg3Pv9TPNnAfOGWYieVjnXeHo0+R6Jm4H0auhSVMqXmUn4uk04LD2DX1XLK69wtrSs2iFGjBzz6p3NyM/ZGiFUdzFQIvsMWMAK7IER7y3GmKZmu+VfiHjHtAUJkiHuCo6oig92mzgkyUHk08oPqi9hCoNy1MTE5Kp9YU1mAZAg4EJCmxeS9gNlyeHF7ErJ0DhQyuzcikH5gw4bWaCSKcDMnjsg297nrQn1oY513Kq/LlM2vIyawJbbEfHWXQDghYsUjogSfTVKZkupNfJ4MJUvMuqWekjG+Vwg8xfv6oAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VIyOdgOJmzR2/wDE+ObKRA/618GSd4mK0KWd8UjTGS0=;
- b=Q/jJMB5UFxAq8nxP23Vo66tWk5Bl24+jhw+8uy8NdIiTnreWlLg94inRtuVWVpqSkWg9GNLO+3ODeQuFadZ9pWCyBLfZFzu0/OWRKmJV6QAL/OeFqPS9eMDlPbl04q2LE3hz8tJL4tPIu2ab+REDk6+A//FCDmhYBokNASHLDK/DJ/OUHfxZjYqDthlWr5kaSpXAW0PpSZI8rQj0H1iezxCVLxAUsXqS6mnSaMYz7FUHvuk0x5NI6QcwyNysaEUShuC5ALIPyvYbvJuwQ01+vVoMCCzVapZD8JFVxqPRkrFKaOuwxVFvy0EU8Lngq5maa7yuC55UGSltLHPUYYYVLA==
+ bh=bT++v7JIFEgiUTptbNQ1BXpNA0iMewfhGYU1bgX7trE=;
+ b=GGtuX5jfwpT8CsbRE2kNoEHw0Ub5jFy2NJ1/zXDoGq013ApMCLs25Uf+GMe25B04Deo8AQWv/R6qZD188nRaYiKL4J4+iOuKW/r8kyjgK/pGR7pF87cQA5XXj5zGsre+6dYpSWN+W0R+hnBo8tK1ilFhGVK1a1LQsmJCkqI7TAkPBnxxUzBEjha1zgwUhP2ApPSAlUhT/M31XT8RY+t5jeGKGcAkmCPthjVMLJQYLomLQ7VqQWxIFhUv8b3xKCYkMsu4ea9VnlQX6jMkXZdV8+ICekKbOJK37ajbC2AdN+zIit/6pAOS/i+Q8efzimHS9REW5iQ9+6cei2FPooyQwA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VIyOdgOJmzR2/wDE+ObKRA/618GSd4mK0KWd8UjTGS0=;
- b=JaIniru+1ysTrkV4bra6cE3NeKSXfo6hAbUcY6xOAB9Cl09AaYZhfN3GQApWbsRmAXMd9yvAWs/hr4bUEUWBf50B46i5u11XfA6lWC1RLfevdLQFPcjCWr2QIkzkzj0irxJzyVUDtnWU8eUk+BiBSob6HdUKoYOLPhkV77wxEGk=
+ bh=bT++v7JIFEgiUTptbNQ1BXpNA0iMewfhGYU1bgX7trE=;
+ b=GolA3UTacK2bJaq+NmouKbX+snDzuIYGmAPc+aVKgZNo53x9tuH1QfsUHvL/kOQUy8VnTm/8Es/pvX6DNaaUVkT2RYuGlhxL9/gzeYoaiYkrj9imFFdcHBZ2GchDGYRovY8mGxCz6lwMFR4w1wTkisgY2+nzpZqRiBEfOtXDeAA=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB3966.eurprd04.prod.outlook.com (2603:10a6:803:4e::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Thu, 22 Jul
- 2021 15:56:06 +0000
+ 2021 15:56:08 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4352.026; Thu, 22 Jul 2021
- 15:56:06 +0000
+ 15:56:08 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -53,9 +53,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Marek Behun <kabel@blackhole.sk>,
         DENG Qingfang <dqfext@gmail.com>
-Subject: [PATCH v5 net-next 3/5] net: dsa: add support for bridge TX forwarding offload
-Date:   Thu, 22 Jul 2021 18:55:40 +0300
-Message-Id: <20210722155542.2897921-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v5 net-next 4/5] net: dsa: mv88e6xxx: map virtual bridges with forwarding offload in the PVT
+Date:   Thu, 22 Jul 2021 18:55:41 +0300
+Message-Id: <20210722155542.2897921-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210722155542.2897921-1-vladimir.oltean@nxp.com>
 References: <20210722155542.2897921-1-vladimir.oltean@nxp.com>
@@ -66,321 +66,221 @@ X-ClientProxiedBy: AM3PR07CA0099.eurprd07.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM3PR07CA0099.eurprd07.prod.outlook.com (2603:10a6:207:6::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9 via Frontend Transport; Thu, 22 Jul 2021 15:56:05 +0000
+Received: from localhost.localdomain (82.76.66.29) by AM3PR07CA0099.eurprd07.prod.outlook.com (2603:10a6:207:6::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9 via Frontend Transport; Thu, 22 Jul 2021 15:56:06 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f470829d-e92e-4e85-6850-08d94d293736
+X-MS-Office365-Filtering-Correlation-Id: aa8e1a93-500e-4e7b-571a-08d94d293829
 X-MS-TrafficTypeDiagnostic: VI1PR04MB3966:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB3966D789A44FF0F52F8580A6E0E49@VI1PR04MB3966.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB39669A33331D5462F4FAF8FFE0E49@VI1PR04MB3966.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3eiDYtBRbH3E3HAsA4XYmKbmajR3+zqKUQamW8VhfjFtPzTXWd2/QewhRWs9hI1G6Yc46B0JxjC6lkGc1JDshW+aspa7KremZchW7Os2BCC8N1cxSyAkc1IFarOhoVUhc8cVwfOoITQpjov40YdNUihzFr7nj0SqUkE+c0PcvyREWfASYXnrUt8pROh3xxZHKl/fjt9pVu+X0vqA10mQIzswMM9XLZNfBQVIo7URts+G26nWlofDugzGoDeCuNsplWUlaSKjI8duIXkvLPknAcO7FC2orRwx8nMRc1G4OvXO54sddQSgX5Sr6nXEF1w58tX78e2DbS2qLRLiqQuXKko2/1sThVBPzM6h2Tc1UORlGBHn1CilotBGBKcYe7FNzi5q5O7qmSgSTw74DaA8yhusd8ljBvIBOtc7npCgTZ/hDGMlRWwIhtJewyg3Z0f0B4gydBGBtg/IjgPuUFJ+CNqnuMpws/oQXX28eE8t5qxZMqvVq853l/mLvB0qDA+7rPC+0vlAzWXAAsYNetriIjfV71QWvtabb27CCKC5qAaLfj93wzfDswbmwVCneWLqH0ssUJRaiFbx903f5K/6v101iPAJWaWLm9TSDrz6+MfGCJ0e7WB4VB8RpXblxc8FEgZBO/RGkEQ7Ed4ibIydKbo01B75j98o9VgZu2+5UK/Pj2C/VzxUrtqwW3CSaxLg3A+rN/umW5cTog0G2/ShYQ==
+X-Microsoft-Antispam-Message-Info: ZCdCxqnusLvZ2nzTgS9ok4E0kM9MV8luR8djJ3rTsqSAOXoaOodPlAVuSHcrqG1x0s7XbCmQV7tYupdNayTlTyqVk/RsNTRzLUi5g8TR26eUabjDbp5/VAgbglXgegeWAFPoBvoNSxrNRepQ2k1TKCmBE4n06H/uWa7cRM/RYQNpUYGhkNKjeB26ky6AYs4cJ1+nhX+tkK6fnhHkxZ+UX7REsgXrLr6LI2rMErYTj87yoCCIWmWtBK420S9H6AEGwltxAZM8xXJMDOzySuZbOhGOiKbi2tUq1GDs67tuaAtdr3jHldLwoUE6VaUMGI92oThRwIpyS69iq/sJiRvWZ20g8uN6aA16JnyzB2NCZa7aPgZLd2n2c3Mj892seTspIJyrJdgc6xyxMuGyvJu70iK4nt0g21HDgjiox7MQnuglzqozdE8ou/6t9vNKPXBg5CcNg4JLiJzbzdZKs9HMuTNuEAEGg4hI3LdKUZxgOUYeaMwBsqbLt1k52FuOrcDgfA87KhL5WNlRUVndiJ7TXRULSAq3EPZsv54oLK3VQekuxgQLRz5YpnShUrTCJVfHLAAoRlcrUYatmRskEf3kjbqauuzfGSZ9EVoMxbyJg4fODpGm/MHMD46j+RmXyYcQRyWgiSZZ1bVcrpEywiz9Mf29B/wvxJdvG602h8sue6bn2XF+6RRn2vDG+sPGLtVX
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(83380400001)(38350700002)(2616005)(7416002)(316002)(508600001)(86362001)(44832011)(66946007)(110136005)(6506007)(8936002)(4326008)(5660300002)(6512007)(8676002)(54906003)(186003)(66556008)(36756003)(1076003)(6486002)(6666004)(66476007)(52116002)(26005)(2906002)(38100700002)(956004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VNHZ+S3Rz6lyQW77fCvnVBR45Iq18HkOJmX7imRB1I0ZuVccuHpIlGh8IbKE?=
- =?us-ascii?Q?vsFXJ0MTUiIiW0FFjaHNF2NSF2r4hCWT3udALxlYh1XIr0o6Tz1aoCCxk5pI?=
- =?us-ascii?Q?37nAjG9STzx/G/uRMwWJnVhvxbDUF91cchNT0Siz6Fc5z9OFqbOOujpe4d+n?=
- =?us-ascii?Q?RMcuXS8oR05A88sKmv/yvhGBaSCXHFMNj5LhPqzkU3tEJulVyESDZEJs5cr7?=
- =?us-ascii?Q?u8N73FqpaPm5qjY2UiwtizHZDxgmvY3LuMgDy2HWi5Uj8AMeg8YCyCZi/HSF?=
- =?us-ascii?Q?zfCeglsvuDxA18yX7E8kr6aTVj6I7ng76l5Z+trpQdj8gUp4lZ0g3hnBc3C4?=
- =?us-ascii?Q?MK2TNvnQyWLe52pSG3UOfaQadGrzZWvAiRKSxq7UE5F74sQND788Xm9IfpG7?=
- =?us-ascii?Q?NEV/sC9FZSoSgZHIwAyJ9XoLI2Zqk5V1js7FAO27NzQKoTJ2LgMa2Vc0FAx/?=
- =?us-ascii?Q?zPuplIoNChN9r6drRlMKGF6AWao61SkVySAgxx6CU0vII0ZxGdSy6vvTXh7f?=
- =?us-ascii?Q?/GlwR9qBbza0OA1Dn8LLwQXfpM6EBB8jSbgXe7IkWSGVCJqa1lzD1BlyxFgS?=
- =?us-ascii?Q?0BiVx3Ufsrnqx6/sK3Q2AT9OmETsa7bqUYWpVxCuFZEZA7QOU3i/dUH3ZiMJ?=
- =?us-ascii?Q?t1PQIbokuhSniS5EWdYpWQFC0xW2+h1Djifb6ylrFEAGtWp9SK1HRNHolkXX?=
- =?us-ascii?Q?oI3daVg9LS3G41ggnrPUpxLx49kamqKVg/BwK0pTwO1d7ew7aLlxTgWf09QS?=
- =?us-ascii?Q?hAnsEcOmNbddMe65WOITIdR71PpakhePgIbAXqd8ss+aTlXx7mMCFLIPENVg?=
- =?us-ascii?Q?QxLlmz4hay6Sl6Kj9suabTo6G8mBZZclW0llFhuwskgEf1CXOSP/kjjN+htC?=
- =?us-ascii?Q?C9G0IERFWasudHbMOm5hdcJ3uwUkiHJQRRW63trE4tFywHQjzt6sEIDRrD9l?=
- =?us-ascii?Q?02GjaxgY59wFXqvzbQUUmfeqbqqaaeGJqiCSMTNHmXewxFpMmBRGDzcs65BC?=
- =?us-ascii?Q?yq/fQddM+I2FM81XKLUG/jWKxKOtUtY9F6vAA8HboCosmTopaQRUhxjr8nFj?=
- =?us-ascii?Q?DilHauL+Kz6o1QnCFlGh+aoK5COOi629/xHqAFNhUHmFBkWF5kcGEQkT8Wof?=
- =?us-ascii?Q?Mev2xKow8hNXDE4mrIbriiznwNKKqWq+89/d0UEBHrK2bs1KWSszITKZP5gw?=
- =?us-ascii?Q?q9kxFoi62anCUsMq8hjhbPuGUYg+HE8QgJkngMMkvCXO8hIiyssQDCuguIJS?=
- =?us-ascii?Q?7Vc94eZCbFAXPM/IRlu0CU35DA+Dup9GkfHm/1MqMBzFjXuPpSJOwM4WlWB/?=
- =?us-ascii?Q?RKXNLufzNNWJeYuCn946nACC?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NKLGSSp/Tzf+vMXfxBQ+VmsUHa3jFUy+F/dZAm3LNoNLy7UDkle8p8Vxh3yK?=
+ =?us-ascii?Q?s9/QhfiPDAI6w66ldMxgUHnO4J92RDpmwp9dFnyF94WbY1uKimxlaZv6x26T?=
+ =?us-ascii?Q?txAphD2dnLHg8lCs3L2zVfuBM+SNMDxVCyqrwTSizdj3leJ8ZlfYU5Hyi21T?=
+ =?us-ascii?Q?z3s+PuC/hEPmxDJ3DUIdMdOceu0K3cQr1wwBT9FunqffY99WvLBY1fcAHrux?=
+ =?us-ascii?Q?Q8T96/rZB9G+7II6E7SUn+fMz2WgNd4+3tFVSSqKWtCbVyVR+PijiKtddweJ?=
+ =?us-ascii?Q?7oU/Y7/M7e8N1IPP2ocg3zseZ/V1ermuBMg2SIuzIPYJpDJo3ymsnwBPyVQt?=
+ =?us-ascii?Q?wUy2+tzY5QTU8PithRh6Zed+RH3VngjcUFzxB23hKXpMJ7M1hRYQOG/6oS3K?=
+ =?us-ascii?Q?znmmwUwHZntEWZP+1hu4y43aQ6l9fOojTJGLBQ7r3YSePxYc6ms3QMxWKA5M?=
+ =?us-ascii?Q?0PZq2oaI3ymai/1QxQmRl0XLBjwKEWyeJBn+HYD0cpgMTvxEAaVIET/37/bk?=
+ =?us-ascii?Q?UIebCCdUIEXO8D4zPrr+1cRNJHV5nAAhuwBgcrCumQVZdCBJ7J2Ewt/sLQGZ?=
+ =?us-ascii?Q?KKKM01oU51MVJyxnocbS7DDshZSE7JTcrvh4G/h3+pajYS3KMJYdq3gvxBhC?=
+ =?us-ascii?Q?vlitzQPmEXZkOiSh9s5I7E+JwDonXzOjgZZvdx39Qz7PiR72MhBuSyuxfc7x?=
+ =?us-ascii?Q?PbO3qTSfxy6CplaczQbH52kTZl5HBld5Kj5oGEWL1219imfdOz0cfZKeqCmN?=
+ =?us-ascii?Q?mH7rxn9ONP63o0lLiDtoGKvb+Ti4BPCvePVTd5ggppBQD/XpA5X7JRmFkaEV?=
+ =?us-ascii?Q?A5RHPJZ0M7S8LRotXDu8a85VbDIfiPt2jl//hfw58IGv9OUOetboIKBuqYC5?=
+ =?us-ascii?Q?bpcSRQBE01taRHOddXZtKVITMjW2ARtHaRwb+sMacQZIy8I2JBS/a/H223FD?=
+ =?us-ascii?Q?YOhFBHcB/dZMHcV2sU3V+GXRsVnyu0eVkqKiDS8ei7beNZezU6SpySb+tEi9?=
+ =?us-ascii?Q?nPkXGj/15GlVTaWnw906R6zkvbPYvHcjIQXFnjc3ywL53LKgiJvQWN75FOYd?=
+ =?us-ascii?Q?WUMHwHt8f3ancTy52Lula/8lC0/l3ajLeIIwjh7Wx5TvatazXD3Y53X69y2B?=
+ =?us-ascii?Q?A3amT15qTGf0fV+1/s20n+E8U0yiNLJ/E5sOsbaGfgDEKGN2XDqqsnKmAegl?=
+ =?us-ascii?Q?AMNU65rfQ58TWLoDH5zOnwB7J3SxexLXPtmNZjsPONZiC3hLa9u+/iWjR2mK?=
+ =?us-ascii?Q?I0L+O4yFqpKrO3oyae/ZYkU58qg72V3cwLaDmFK9vfKzTdaGgwn6yvSVdYFF?=
+ =?us-ascii?Q?RnxerrWqxIiwaqTeLlyay16o?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f470829d-e92e-4e85-6850-08d94d293736
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa8e1a93-500e-4e7b-571a-08d94d293829
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 15:56:06.6895
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 15:56:08.2476
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: n4GMHyxbbB5MT2ZrelYtVUWKt/zCp9B4/sIZ3ffRqDTmupsAD6yQvmXvZFZHoqFX/d+Sq3NV9pqH5d/wIx3ybA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: vlx5tQ5hTnl7dSOKIvlERxBmzBpVaAtxC2jsCdBl3NyRWd9Zatteat7592XjAlETWLwBVrjofj37dKNsxVOhag==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3966
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For a DSA switch, to offload the forwarding process of a bridge device
-means to send the packets coming from the software bridge as data plane
-packets. This is contrary to everything that DSA has done so far,
-because the current taggers only know to send control packets (ones that
-target a specific destination port), whereas data plane packets are
-supposed to be forwarded according to the FDB lookup, much like packets
-ingressing on any regular ingress port. If the FDB lookup process
-returns multiple destination ports (flooding, multicast), then
-replication is also handled by the switch hardware - the bridge only
-sends a single packet and avoids the skb_clone().
+The mv88e6xxx switches have the ability to receive FORWARD (data plane)
+frames from the CPU port and route them according to the FDB. We can use
+this to offload the forwarding process of packets sent by the software
+bridge.
 
-DSA keeps for each bridge port a zero-based index (the number of the
-bridge). Multiple ports performing TX forwarding offload to the same
-bridge have the same dp->bridge_num value, and ports not offloading the
-TX data plane of a bridge have dp->bridge_num = -1.
+Because DSA supports bridge domain isolation between user ports, just
+sending FORWARD frames is not enough, as they might leak the intended
+broadcast domain of the bridge on behalf of which the packets are sent.
 
-The tagger can check if the packet that is being transmitted on has
-skb->offload_fwd_mark = true or not. If it does, it can be sure that the
-packet belongs to the data plane of a bridge, further information about
-which can be obtained based on dp->bridge_dev and dp->bridge_num.
-It can then compose a DSA tag for injecting a data plane packet into
-that bridge number.
+It should be noted that FORWARD frames are also (and typically) used to
+forward data plane packets on DSA links in cross-chip topologies. The
+FORWARD frame header contains the source port and switch ID, and
+switches receiving this frame header forward the packet according to
+their cross-chip port-based VLAN table (PVT).
 
-For the switch driver side, we offer two new dsa_switch_ops methods,
-called .port_bridge_fwd_offload_{add,del}, which are modeled after
-.port_bridge_{join,leave}.
-These methods are provided in case the driver needs to configure the
-hardware to treat packets coming from that bridge software interface as
-data plane packets. The switchdev <-> bridge interaction happens during
-the netdev_master_upper_dev_link() call, so to switch drivers, the
-effect is that the .port_bridge_fwd_offload_add() method is called
-immediately after .port_bridge_join().
+To address the bridging domain isolation in the context of offloading
+the forwarding on TX, the idea is that we can reuse the parts of the PVT
+that don't have any physical switch mapped to them, one entry for each
+software bridge. The switches will therefore think that behind their
+upstream port lie many switches, all in fact backed up by software
+bridges through tag_dsa.c, which constructs FORWARD packets with the
+right switch ID corresponding to each bridge.
 
-If the bridge number exceeds the number of bridges for which the switch
-driver can offload the TX data plane (and this includes the case where
-the driver can offload none), DSA falls back to simply returning
-tx_fwd_offload = false in the switchdev_bridge_port_offload() call.
+The mapping we use is absolutely trivial: DSA gives us a unique bridge
+number, and we add the number of the physical switches in the DSA switch
+tree to that, to obtain a unique virtual bridge device number to use in
+the PVT.
 
+Co-developed-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-v2->v3:
-- signal the offloading capability via switchdev_bridge_port_offload()
-- drop "bool bridge_fwd_offload" from the tagger
-- drop "struct dsa_bridge_fwd_accel_priv" from struct dsa_port and
-  replace it with a simple "int bridge_num"
-- drop .crosschip_bridge_fwd_offload_{add,del}()
-- drop the DSA_NOTIFIER_BRIDGE_FWD_OFFLOAD_{ADD,DEL} cross-chip notifier
-  and call the driver directly on the port
-v3->v4:
-- use dsa_tree_find_bridge_dev() in the unprepare code path to allow the
-  bridge_num to be properly reused when there is no port offloading a
-  given bridge anymore
-- drop the stray netif_set_real_num_tx_queues() change from v2
-- properly call dsa_port_bridge_tx_fwd_unprepare() instead of prepare()
-  in dsa_port_pre_bridge_leave()
-- fix dp->bridge_num remaining -1 in dsa_port_bridge_tx_fwd_prepare() by
-  removing the stray "int bridge_num" declaration which was shadowing
-  the variable which had the function-wide scope
-v4->v5:
-- rename functions for naming consistency
-- move dsa_port_bridge_tx_fwd_unoffload to dsa_port_bridge_leave instead
-  of pre_leave, so that we won't have the problem with dp->bridge_dev
-  still being populated
+v1->v2: keep Tobias' idea, reimplement using just dp->bridge_num instead
+        of hooking a dst->priv pointer and cooking the same thing within
+        mv88e6xxx, drop his authorship since patch is basically
+        rewritten.
+v2->v4: none
+v4->v5: rename functions for naming consistency
 
- include/net/dsa.h  | 18 ++++++++++
- net/dsa/dsa2.c     |  1 +
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 84 +++++++++++++++++++++++++++++++++++++++++++++-
- 4 files changed, 104 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 78 ++++++++++++++++++++++++++++++--
+ 1 file changed, 74 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 929bcaec4d41..f8eb2dc3fbef 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -162,6 +162,9 @@ struct dsa_switch_tree {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index beb41572d04e..af764b8445b7 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1221,14 +1221,36 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	bool found = false;
+ 	u16 pvlan;
  
- 	/* Track the largest switch index within a tree */
- 	unsigned int last_switch;
+-	list_for_each_entry(dp, &dst->ports, list) {
+-		if (dp->ds->index == dev && dp->index == port) {
++	/* dev is a physical switch */
++	if (dev <= dst->last_switch) {
++		list_for_each_entry(dp, &dst->ports, list) {
++			if (dp->ds->index == dev && dp->index == port) {
++				/* dp might be a DSA link or a user port, so it
++				 * might or might not have a bridge_dev
++				 * pointer. Use the "found" variable for both
++				 * cases.
++				 */
++				br = dp->bridge_dev;
++				found = true;
++				break;
++			}
++		}
++	/* dev is a virtual bridge */
++	} else {
++		list_for_each_entry(dp, &dst->ports, list) {
++			if (dp->bridge_num < 0)
++				continue;
 +
-+	/* Track the bridges with forwarding offload enabled */
-+	unsigned long fwd_offloading_bridges;
- };
- 
- #define dsa_lags_foreach_id(_id, _dst)				\
-@@ -262,6 +265,7 @@ struct dsa_port {
- 	bool			vlan_filtering;
- 	u8			stp_state;
- 	struct net_device	*bridge_dev;
-+	int			bridge_num;
- 	struct devlink_port	devlink_port;
- 	bool			devlink_port_setup;
- 	struct phylink		*pl;
-@@ -413,6 +417,12 @@ struct dsa_switch {
- 	 */
- 	unsigned int		num_lag_ids;
- 
-+	/* Drivers that support bridge forwarding offload should set this to
-+	 * the maximum number of bridges spanning the same switch tree that can
-+	 * be offloaded.
-+	 */
-+	unsigned int		num_fwd_offloading_bridges;
++			if (dp->bridge_num + 1 + dst->last_switch != dev)
++				continue;
 +
- 	size_t num_ports;
- };
++			br = dp->bridge_dev;
+ 			found = true;
+ 			break;
+ 		}
+ 	}
  
-@@ -696,6 +706,14 @@ struct dsa_switch_ops {
- 				    struct net_device *bridge);
- 	void	(*port_bridge_leave)(struct dsa_switch *ds, int port,
- 				     struct net_device *bridge);
-+	/* Called right after .port_bridge_join() */
-+	int	(*port_bridge_tx_fwd_offload)(struct dsa_switch *ds, int port,
-+					      struct net_device *bridge,
-+					      int bridge_num);
-+	/* Called right before .port_bridge_leave() */
-+	void	(*port_bridge_tx_fwd_unoffload)(struct dsa_switch *ds, int port,
-+						struct net_device *bridge,
-+						int bridge_num);
- 	void	(*port_stp_state_set)(struct dsa_switch *ds, int port,
- 				      u8 state);
- 	void	(*port_fast_age)(struct dsa_switch *ds, int port);
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index de5e93ba2a9d..c7fa85fb3086 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1044,6 +1044,7 @@ static struct dsa_port *dsa_port_touch(struct dsa_switch *ds, int index)
+-	/* Prevent frames from unknown switch or port */
++	/* Prevent frames from unknown switch or virtual bridge */
+ 	if (!found)
+ 		return 0;
  
- 	dp->ds = ds;
- 	dp->index = index;
-+	dp->bridge_num = -1;
+@@ -1236,7 +1258,6 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
+ 	if (dp->type == DSA_PORT_TYPE_CPU || dp->type == DSA_PORT_TYPE_DSA)
+ 		return mv88e6xxx_port_mask(chip);
  
- 	INIT_LIST_HEAD(&dp->list);
- 	list_add_tail(&dp->list, &dst->ports);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 78c70f5bdab5..b1d9aa4d313c 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -14,6 +14,8 @@
- #include <net/dsa.h>
- #include <net/gro_cells.h>
+-	br = dp->bridge_dev;
+ 	pvlan = 0;
  
-+#define DSA_MAX_NUM_OFFLOADING_BRIDGES		BITS_PER_LONG
-+
- enum {
- 	DSA_NOTIFIER_AGEING_TIME,
- 	DSA_NOTIFIER_BRIDGE_JOIN,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index f2704f101ccf..7b9bf45a76b6 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -230,6 +230,83 @@ static void dsa_port_switchdev_unsync_attrs(struct dsa_port *dp)
- 	 */
+ 	/* Frames from user ports can egress any local DSA links and CPU ports,
+@@ -2422,6 +2443,44 @@ static void mv88e6xxx_crosschip_bridge_leave(struct dsa_switch *ds,
+ 	mv88e6xxx_reg_unlock(chip);
  }
  
-+static int dsa_tree_find_bridge_num(struct dsa_switch_tree *dst,
-+				    struct net_device *bridge_dev)
++/* Treat the software bridge as a virtual single-port switch behind the
++ * CPU and map in the PVT. First dst->last_switch elements are taken by
++ * physical switches, so start from beyond that range.
++ */
++static int mv88e6xxx_map_virtual_bridge_to_pvt(struct dsa_switch *ds,
++					       int bridge_num)
 +{
-+	struct dsa_port *dp;
++	u8 dev = bridge_num + ds->dst->last_switch + 1;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
 +
-+	/* When preparing the offload for a port, it will have a valid
-+	 * dp->bridge_dev pointer but a not yet valid dp->bridge_num.
-+	 * However there might be other ports having the same dp->bridge_dev
-+	 * and a valid dp->bridge_num, so just ignore this port.
-+	 */
-+	list_for_each_entry(dp, &dst->ports, list)
-+		if (dp->bridge_dev == bridge_dev && dp->bridge_num != -1)
-+			return dp->bridge_num;
++	mv88e6xxx_reg_lock(chip);
++	err = mv88e6xxx_pvt_map(chip, dev, 0);
++	mv88e6xxx_reg_unlock(chip);
 +
-+	return -1;
++	return err;
 +}
 +
-+static void dsa_port_bridge_tx_fwd_unoffload(struct dsa_port *dp,
-+					     struct net_device *bridge_dev)
++static int mv88e6xxx_bridge_tx_fwd_offload(struct dsa_switch *ds, int port,
++					   struct net_device *br,
++					   int bridge_num)
 +{
-+	struct dsa_switch_tree *dst = dp->ds->dst;
-+	int bridge_num = dp->bridge_num;
-+	struct dsa_switch *ds = dp->ds;
-+
-+	/* No bridge TX forwarding offload => do nothing */
-+	if (!ds->ops->port_bridge_tx_fwd_unoffload || dp->bridge_num == -1)
-+		return;
-+
-+	dp->bridge_num = -1;
-+
-+	/* Check if the bridge is still in use, otherwise it is time
-+	 * to clean it up so we can reuse this bridge_num later.
-+	 */
-+	if (!dsa_tree_find_bridge_num(dst, bridge_dev))
-+		clear_bit(bridge_num, &dst->fwd_offloading_bridges);
-+
-+	/* Notify the chips only once the offload has been deactivated, so
-+	 * that they can update their configuration accordingly.
-+	 */
-+	ds->ops->port_bridge_tx_fwd_unoffload(ds, dp->index, bridge_dev,
-+					      bridge_num);
++	return mv88e6xxx_map_virtual_bridge_to_pvt(ds, bridge_num);
 +}
 +
-+static bool dsa_port_bridge_tx_fwd_offload(struct dsa_port *dp,
-+					   struct net_device *bridge_dev)
++static void mv88e6xxx_bridge_tx_fwd_unoffload(struct dsa_switch *ds, int port,
++					      struct net_device *br,
++					      int bridge_num)
 +{
-+	struct dsa_switch_tree *dst = dp->ds->dst;
-+	struct dsa_switch *ds = dp->ds;
-+	int bridge_num, err;
++	int err;
 +
-+	if (!ds->ops->port_bridge_tx_fwd_offload)
-+		return false;
-+
-+	bridge_num = dsa_tree_find_bridge_num(dst, bridge_dev);
-+	if (bridge_num < 0) {
-+		/* First port that offloads TX forwarding for this bridge */
-+		bridge_num = find_first_zero_bit(&dst->fwd_offloading_bridges,
-+						 DSA_MAX_NUM_OFFLOADING_BRIDGES);
-+		if (bridge_num >= ds->num_fwd_offloading_bridges)
-+			return false;
-+
-+		set_bit(bridge_num, &dst->fwd_offloading_bridges);
-+	}
-+
-+	dp->bridge_num = bridge_num;
-+
-+	/* Notify the driver */
-+	err = ds->ops->port_bridge_tx_fwd_offload(ds, dp->index, bridge_dev,
-+						  bridge_num);
++	err = mv88e6xxx_map_virtual_bridge_to_pvt(ds, bridge_num);
 +	if (err) {
-+		dsa_port_bridge_tx_fwd_unoffload(dp, bridge_dev);
-+		return false;
++		dev_err(ds->dev, "failed to remap cross-chip Port VLAN: %pe\n",
++			ERR_PTR(err));
 +	}
-+
-+	return true;
 +}
 +
- int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 			 struct netlink_ext_ack *extack)
+ static int mv88e6xxx_software_reset(struct mv88e6xxx_chip *chip)
  {
-@@ -241,6 +318,7 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 	};
- 	struct net_device *dev = dp->slave;
- 	struct net_device *brport_dev;
-+	bool tx_fwd_offload;
- 	int err;
+ 	if (chip->info->ops->reset)
+@@ -3025,6 +3084,15 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ 	chip->ds = ds;
+ 	ds->slave_mii_bus = mv88e6xxx_default_mdio_bus(chip);
  
- 	/* Here the interface is already bridged. Reflect the current
-@@ -254,10 +332,12 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
- 	if (err)
- 		goto out_rollback;
- 
-+	tx_fwd_offload = dsa_port_bridge_tx_fwd_offload(dp, br);
++	/* Since virtual bridges are mapped in the PVT, the number we support
++	 * depends on the physical switch topology. We need to let DSA figure
++	 * that out and therefore we cannot set this at dsa_register_switch()
++	 * time.
++	 */
++	if (mv88e6xxx_has_pvt(chip))
++		ds->num_fwd_offloading_bridges = MV88E6XXX_MAX_PVT_SWITCHES -
++						 ds->dst->last_switch - 1;
 +
- 	err = switchdev_bridge_port_offload(brport_dev, dev, dp,
- 					    &dsa_slave_switchdev_notifier,
- 					    &dsa_slave_switchdev_blocking_notifier,
--					    false, extack);
-+					    tx_fwd_offload, extack);
- 	if (err)
- 		goto out_rollback_unbridge;
+ 	mv88e6xxx_reg_lock(chip);
  
-@@ -302,6 +382,8 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
- 	 */
- 	dp->bridge_dev = NULL;
+ 	if (chip->info->ops->setup_errata) {
+@@ -6128,6 +6196,8 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.crosschip_lag_change	= mv88e6xxx_crosschip_lag_change,
+ 	.crosschip_lag_join	= mv88e6xxx_crosschip_lag_join,
+ 	.crosschip_lag_leave	= mv88e6xxx_crosschip_lag_leave,
++	.port_bridge_tx_fwd_offload = mv88e6xxx_bridge_tx_fwd_offload,
++	.port_bridge_tx_fwd_unoffload = mv88e6xxx_bridge_tx_fwd_unoffload,
+ };
  
-+	dsa_port_bridge_tx_fwd_unoffload(dp, br);
-+
- 	err = dsa_broadcast(DSA_NOTIFIER_BRIDGE_LEAVE, &info);
- 	if (err)
- 		pr_err("DSA: failed to notify DSA_NOTIFIER_BRIDGE_LEAVE\n");
+ static int mv88e6xxx_register_switch(struct mv88e6xxx_chip *chip)
 -- 
 2.25.1
 
