@@ -2,105 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125F83D1EEB
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:24:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91BB13D1EF1
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230454AbhGVGnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 02:43:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230399AbhGVGnp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 02:43:45 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F356161279;
-        Thu, 22 Jul 2021 07:24:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1626938644;
-        bh=B6CYSSIfwFnW6Rrkfx2ye/ODs6fFnkzK4VSqq6033yc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWeunvuRDB4fxnb3KD1Ef7v/tI8jqqsLG+15CfMeMH04xZ15mfk0L69xsAFZUnJ8U
-         YOZlzHtcHuAxXzTthcShuGGMVnRMw9cw+VXyQYbVEVP8oDVz5GDgpNYtBJj7kVW5hY
-         +LytrTF0GzU8YA+YNPeTcEJShfGskm3Z/UXWNX5aUHyI1uFI+eHB78wF+TdlSMaN4v
-         bd/dzgrN5nh9rQld6qBkKwqkejUVStqS9KIOOLSFZ3u3kicJMcZ6rxLKrAysHgzNpr
-         MdZwGQFXdKSAj1ssHeyvd5FkhWhtC4iCHKjq58ukCQEe7qDgH7lqh3oVlA1O8MZvUO
-         JKaRr3NWex6Hw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1m6T3Q-00040Q-8Y; Thu, 22 Jul 2021 09:23:37 +0200
-Date:   Thu, 22 Jul 2021 09:23:36 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Anirudh Rayabharam <mail@anirudhrb.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Rustam Kovhaev <rkovhaev@gmail.com>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        syzbot+44d53c7255bb1aea22d2@syzkaller.appspotmail.com,
-        YueHaibing <yuehaibing@huawei.com>, linux-usb@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] usb: hso: fix error handling code of
- hso_create_net_device
-Message-ID: <YPkc+HNUPcXQglpG@hovoldconsulting.com>
-References: <20210714091327.677458-1-mudongliangabcd@gmail.com>
- <YPfOZp7YoagbE+Mh@kroah.com>
- <CAD-N9QVi=TvS6sM+jcOf=Y5esECtRgTMgdFW+dqB-R_BuNv6AQ@mail.gmail.com>
- <YPgwkEHzmxSPSLVA@hovoldconsulting.com>
- <YPhOcwiEUW+cchJ1@hovoldconsulting.com>
- <CAD-N9QVD6BcWVRbsXJ8AV0nMmCetpE6ke0wWxogXpwihnjTvRA@mail.gmail.com>
+        id S231133AbhGVGn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 02:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230357AbhGVGnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 02:43:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE07C061799
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 00:23:52 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m6T3Y-00033Q-JC; Thu, 22 Jul 2021 09:23:44 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m6T3X-0004CG-46; Thu, 22 Jul 2021 09:23:43 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] net: usb: asix: ax88772: do not poll for PHY before registering it
+Date:   Thu, 22 Jul 2021 09:23:38 +0200
+Message-Id: <20210722072338.16083-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD-N9QVD6BcWVRbsXJ8AV0nMmCetpE6ke0wWxogXpwihnjTvRA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 01:32:48PM +0800, Dongliang Mu wrote:
-> On Thu, Jul 22, 2021 at 12:42 AM Johan Hovold <johan@kernel.org> wrote:
+asix_get_phyid() is used for two reasons here. To print debug message
+with the PHY ID and to wait until the PHY is powered up.
 
-> > > A version of this patch has already been applied to net-next.
-> >
-> > That was apparently net (not net-next).
-> >
-> > > No idea which version that was or why the second patch hasn't been
-> > > applied yet.
-> 
-> It seems because I only sent the 1/2 patch in the v3. Also due to
-> this, gregkh asked me to resend the whole patchset again.
+After migrating to the phylib, we can read PHYID from sysfs. If polling
+for the PHY is really needed, then we will need to handle it in the
+phylib as well.
 
-Yeah, it's hard to keep track of submissions sometimes, especially if
-not updating the whole series.
+This change was tested with:
+- ax88772a + internal PHY
+- ax88772b + external PHY
 
-> > > Dongliang, if you're resending something here it should first be rebased
-> > > on linux-next (net-next).
-> >
-> > And the resend of v3 of both patches has now also been applied to
-> > net-next.
-> >
-> > Hopefully there are no conflicts between v2 and v3 but we'll see soon.
-> 
-> You mean you apply a v2 patch into one tree? This thread already
-> contains the v3 patch, and there is no v2 patch in the mailing list
-> due to one incomplete email subject.
-> 
-> BTW, v2->v3 only some label change due to naming style.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/usb/asix_devices.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-Ok, I can't keep track of this either. I just noticed that this patch
-shows up in both net (for 5.14):
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 2c115216420a..049c20342a0b 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -714,7 +714,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	u8 buf[ETH_ALEN] = {0}, chipcode = 0;
+ 	struct asix_common_private *priv;
+ 	int ret, i;
+-	u32 phyid;
+ 
+ 	usbnet_get_endpoints(dev, intf);
+ 
+@@ -762,10 +761,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		return ret;
+ 	}
+ 
+-	/* Read PHYID register *AFTER* the PHY was reset properly */
+-	phyid = asix_get_phyid(dev);
+-	netdev_dbg(dev->net, "PHYID=0x%08x\n", phyid);
+-
+ 	/* Asix framing packs multiple eth frames into a 2K usb bulk transfer */
+ 	if (dev->driver_info->flags & FLAG_FRAMING_AX) {
+ 		/* hard_mtu  is still the default - the device does not support
+-- 
+2.30.2
 
-	https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=a6ecfb39ba9d7316057cea823b196b734f6b18ca
-
-and net-next (for 5.15):
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=788e67f18d797abbd48a96143511261f4f3b4f21
-
-The net one was applied on the 15th and the net-next one yesterday. 
-
-Judging from a quick look it appears to be the same diff so no damage
-done.
-
-Johan
