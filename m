@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C253D1F85
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DEDB3D1F86
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 09:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbhGVHSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 03:18:12 -0400
+        id S231268AbhGVHSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 03:18:13 -0400
 Received: from mail-sn1anam02on2093.outbound.protection.outlook.com ([40.107.96.93]:59110
         "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231229AbhGVHSJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 03:18:09 -0400
+        id S231237AbhGVHSL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 03:18:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ShtR8/u39h4YeliTJyec3srXj6phjsldsky2JPRwNKyIdzg2Bod0hAaoAH1jtO3oRNt7YfzY6wSP9s56hJ37IxS8xJYECddA0Fz6AvJvHYb1NZPqWdukVImwGM4uhB+8XCMrMzov4mUrph01UzCz/D2gBqBbJT3GCmV/Fo3IdVse4JXFQOHSbo33cDF9ckd2m8LRQA0VvWCocYtxZ6SX6P7F4JgT67kXG9CYQS/oA71PYtyyGXdyupm516SAWyxlprP/cJAS+cvajWJXKUsAFzZkL5jtSlTWKgLUYUSD/Ikw8tsD6DFLaZkXC32HS3aQaBypqdOMUzwVO3/JnDxC5g==
+ b=ApOsc4soMI3jCVFUqFmg+2RJ8tBV9vXYRVjeyCKwvHGeoStTEcu/3IW3b+7OUMxyvAmx9sHhtbSo97OI+I8rl9tMCYcs7ssG7d2bUkUQWjQY83w7btyynW5poP6gUr5uRtz5RM491K5h09t3V2LaopLVEBsf0d94a2jaMvZ+zLtIk5Ue+/9PQ4LWDbWCE4yzpAPKbj61/HNDJwl3uWhUhQhYri1+RoWaeHB4lDwxdS59TT+bIX3LKNbR6EvuU3HGGyIDA7WK1+yaqwVGSs73JoaZEz2IdGc1Z9mM+YKBmDXG/xyUPlgcwf47C4DszqY6AjISMUnHQETHQBcNr5TLnA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wq87lS/zyx9+ZHwGuAZ/0BsU4bkRsIRTvBZ8wyilxOY=;
- b=mX3llmuhoKap3qVzYjAeQC+tMB01P0WnOYnrNM06vS9k1ufHCu9sWgyZnTGjt0UFJkdH0aPSb8gE99PVEi0F+0Ij56djQNXlMJaOE7s/1W7NdNkGjWhjzZ9bC+V8RahIAJAt8Xtj3pQjWh9PQTE5KDufEPmKtDQQLFWc2oWovV+F5uTl/mphyqB0hHD/CwV4/32OMU2V7BwrYN6gUNaqcpXvehb3he/WH4kTGdhn9TrB+PU+CF3eV9ANh7BH9jQCaLKXZSFb6UHg+qMONA78l4/2l/m+smInqY+p/6TBWWTfwOfu1hsXjkPRtz3gW7qigiAIkqrliFK6fZUKRRB2aw==
+ bh=trYWb5VjcpTu8pmrejUxW7d92FYCKYAgeZrnLAxI61Y=;
+ b=NatUcqwA/4h84f+i79ZWGlCflZqjAOHaxnIUSWeS/s4zj7CASlUR7pgRs8KyPqa6Nk2rpDNR+cxivX34BCOB5iGT4W6nY5f9XT3YgaHgJkyoIxCgiCn3CKEEau+rtg3OouSttT9k4z71dLOu4vD5tegkBefZUg5iIq77LDis7bOqmvlMnTjTMT/akqnF9H4Jdbz/08Y6dZk92+S0zDWFw7ltfPHOtHNvrVdZesFV2u7pppV/ohV4Ibfu1Dgs2OM6I78w1peUq/cwdVCZ3MrqMeLnhzNt6GXggWAWYOz04XKsONCptOvfMbFpeWQn9GmqrOwyarNElnfVOR4xdjIwrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wq87lS/zyx9+ZHwGuAZ/0BsU4bkRsIRTvBZ8wyilxOY=;
- b=LjRQRarAHxzfVmxWMDojCYMBW/9fF7LD5oOULcuRRyntSDXVnRZJQgowPXgm1eRVcyTCZzN8EyKepuXMcuUX6ShT6GhkXuNT414Vj1VIelUtHeJXg+m5vN+XYWzumQ9nWyBAUH2IXJalkYGIUfRPulxtOKDHwpRlRCzOk9rOWQw=
+ bh=trYWb5VjcpTu8pmrejUxW7d92FYCKYAgeZrnLAxI61Y=;
+ b=EA/J72vQaE2jyikT2BxjUPlkHn99rofJ3m6qKHqLAipXUsb4Uonxxzs61T8A3ow2Df3rZwHp4pOcszzc0Z0B+VembXW+CT0fghLk2PgIOfDdrD8BaMR9+TjQYS5zvG1BRhLQpH24/pZc4+7D7+r7+9KJeKuhbWm1fOphoUQ7APM=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by PH0PR13MB4778.namprd13.prod.outlook.com (2603:10b6:510:76::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24; Thu, 22 Jul
- 2021 07:58:36 +0000
+ 2021 07:58:38 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::cd1:e3ba:77fd:f4f3%7]) with mapi id 15.20.4352.024; Thu, 22 Jul 2021
- 07:58:36 +0000
+ 07:58:38 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -45,9 +45,9 @@ Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Yinjun Zhang <yinjun.zhang@corigine.com>,
         Louis Peens <louis.peens@corigine.com>,
         Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next 5/9] nfp: flower-ct: compile match sections of flow_payload
-Date:   Thu, 22 Jul 2021 09:58:04 +0200
-Message-Id: <20210722075808.10095-6-simon.horman@corigine.com>
+Subject: [PATCH net-next 6/9] nfp: flower-ct: add actions into flow_pay for offload
+Date:   Thu, 22 Jul 2021 09:58:05 +0200
+Message-Id: <20210722075808.10095-7-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210722075808.10095-1-simon.horman@corigine.com>
 References: <20210722075808.10095-1-simon.horman@corigine.com>
@@ -58,53 +58,53 @@ X-ClientProxiedBy: AM0PR06CA0136.eurprd06.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from madeliefje.horms.nl (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR06CA0136.eurprd06.prod.outlook.com (2603:10a6:208:ab::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 07:58:35 +0000
+Received: from madeliefje.horms.nl (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM0PR06CA0136.eurprd06.prod.outlook.com (2603:10a6:208:ab::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 07:58:36 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 802afa02-45b8-476d-044f-08d94ce68266
+X-MS-Office365-Filtering-Correlation-Id: 01ac2ed9-f60b-4c36-44e3-08d94ce68363
 X-MS-TrafficTypeDiagnostic: PH0PR13MB4778:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB47785EAE17D9978C35FFFFFDE8E49@PH0PR13MB4778.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <PH0PR13MB4778D6438D3C06FCBFA4302DE8E49@PH0PR13MB4778.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /b5wXBISlAIofImH2wY/JypYCYAsZoNEq/CBUQ2PrM6dCQm7gOWAxHj9EuLARZQPnNPMlna507W1grZdsxYPRSTVdaRfUb8fYYPOmEU/qQeCyJPB8X2P1+3WVdFvFx5dsFzpi/HIbNLQWJyo9DIDfQKrWSOa1frAztt3Df6meeARVUDX2VsU3ty6j1DSQO4rXFTM5YTREhs5K864zJbq02zMDdqEvhx1dTeQ7e3QFAnhY/am1gmXqJXnIqE3o/idPL5V72vYWCUCN6zjQNFk4gajcwIoZLisRSeMcRa1lKSBXo7nZ+j7FEqAuy5cyq3mrKLSPXq6VHkygcbgRGJD8m1cvHXWug9nklQFK55957M1uu0+KrL66fC37HxegLLYbnXxXxXvgvJvv5pEWs3u3fHKPUYHdSgFoOxZd9JC5c5NCMBoyQFLjhG6eYBp6tvkt+PSqCShHVjQ7JVOgbJYITjjrJAAbKA1nyUehyZU88WauO0vRhz0zhFLihOG9ZxEeeor3HMVtFQFlG18smLGkumTT2tsBdwXiZwtNc4TFWtYXQw05B57YtHTISKS28pqfTtV7WRXNM9B7AstyBFw394G8ZnAZ7sofUbFwq237Q0SQmvso8BjaOSkbRYyKvV2zxJFrJeUMEwVlDiqTkRcVg==
+X-Microsoft-Antispam-Message-Info: zDpy9T6M9Jn1a5Dg9zDwuhVNL3LFb9c1ll4QYuqQ+zbuXnmMf1vkXVed2rYfdS450d4quJX/DWW8C+5FhIFvStFcHqaZa8OW7lOUeefqIRzPGt1vRtXi5n+m1SahkaB69vi2G8GObKZdAgYhqhyp5ywG7jYPT29hyQSNbq/1qnFwtRVo+Q61aS8eoPGUfhio9N82u5RcvLxmdkCIwA3Ls5o1f9r6K4ujxc2TEX81B1QKqp3lD10ZhGbRnF7QP4P2JE4sfjdObRRwSaVOjg/NRoFK+/mQbYwr11lFL0Mes6n1DAVRkk6uZTolLN+hb3TP/UvMMZiSFkzK88R5aKb5LRraGftQaPWF1ODuWzOxlF1R+an1VE0KPGokpQsPEHbDLFmu+nZ7VX9xydPxVBkufSyntm78xJTAJf75l63wK/fTaQcJ/dtIJ3vkTmi3B4CBzFWskDp5987cSWcOJ/gxShav/tuHvkZTpnF/cg3nG1/kceJuk6QLsdG2u8r5L58PO1JEApQz8i4OaXlw7srWChLjugcBux6tYpxaxpZVu0jxlfV+aV0Isc7/8+ozZLOmpaWy0GirukZn1Y/vCaMwO9Bl8XvXHTthUa6sKVO719YH6Hhb6s0mXREx6ZMWAFoYjKZf2PgyBVPEbQ6hyevw1g==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(376002)(396003)(366004)(39830400003)(44832011)(2616005)(36756003)(66476007)(8936002)(66556008)(8676002)(5660300002)(54906003)(6486002)(107886003)(186003)(38100700002)(6666004)(478600001)(2906002)(66946007)(6512007)(52116002)(1076003)(6506007)(110136005)(83380400001)(86362001)(4326008)(316002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4rSE5Xz1zGbu21+6lSL48wnkg9ly+XYX8KHnL3yC+vyf1+sxh4iFIShOr7Im?=
- =?us-ascii?Q?w6n89CbUxhIoiH8ypmzTox6kR4pFOmhjjDvmUU23kNtwvl8tAluJ9MzrW5Gv?=
- =?us-ascii?Q?DHeKb/DscXIfkRU94l8De2Wk/79fPDUnz6B9oyDEac3bFKGWQrjsfbNrNvZu?=
- =?us-ascii?Q?IplLKFAfQGAYLeY9XYNvDHT1dSYITEXlcDp9LVvXsU67Q3p5t1AiAMPi5NNw?=
- =?us-ascii?Q?tViqPas7OfRpSryb9LntNX796QMgyqSqdm+ozKBzqUB8hwcsWRu05mmJN13W?=
- =?us-ascii?Q?MNWvzM27x+ehRRmlfb7IhlX5CA9/YEFnqhikLRiv/sRbbZ+dQBtzx/MNarFO?=
- =?us-ascii?Q?CrbJqrbHol3YGyUrQkt0hNE2u27XBRhESGhcdyCA1ZKSuVx5tcRvoXwSV7VS?=
- =?us-ascii?Q?kz+g3E+sVWnn1AhkbOmTtBO6UQrJBFDu/8js9DRRsfRH3L+L/MwQPyAdA45W?=
- =?us-ascii?Q?95kKPttstdsGYxOL4tMpy8FtrodkEBSuo5H5iH/3UY3ClwrA4ifqHObUh5EE?=
- =?us-ascii?Q?kFWUQLlA6/PAo9G7FRGoO5EDNxolvhLzDgbwmyjiIu8ro2BCuTfkclKUJ+VY?=
- =?us-ascii?Q?qKheX8Qpl6AAm/QOuZPbPhmcOoLdxoT1msrNM4yT9+9FmVu0i/Y50ch9JNRM?=
- =?us-ascii?Q?lYBTVNQt86CVHYbv4TkMKnhK23pgF8JBqmWbfYuB4mtqPPOguMOXQ0MQ9Kdt?=
- =?us-ascii?Q?FNYLa6KmtRJBiMV203td6Hhk/YRp3WqLKHujDkZFhHwQ39xnw5mfQ4kne5eC?=
- =?us-ascii?Q?x8HdHeKFhmO/vvmNavpOnoSvevvX5pYon/NAuiFzFMdrD2GA5Yn10zRktVpB?=
- =?us-ascii?Q?oz8Koc709rAyxMQ05yyV7TGU3rwwJIBR6AgA1xd6v9qUFDATzxy9q9j8t8nJ?=
- =?us-ascii?Q?uuWJpu+mW5JNIkpFQ95jy8yU7fvw+5p+lnyTA6TgbAQY6LU968mytMs6VP4o?=
- =?us-ascii?Q?2M/rhReAGbHrhZUiyNO1lmXb9HDwnOZKSnzoIx1uDfo5Wr+4RSli+4PlCNYy?=
- =?us-ascii?Q?46IdwAFWAYRF55mGdOxtVeay/NyFpHR8aDisTXLKR3NCV6yh4l1Jjf3tqx7c?=
- =?us-ascii?Q?WpGP4MLn/br2Li23WR5bxE2miw7z9xmzOYA+5NG/43fLFrovQpsf7kNvzEwV?=
- =?us-ascii?Q?O5soBdRV9Rot0TUOl1dEdiDqeCmrbVP5HpYgxZ6nMqShioVocwiX1iQ+GUf0?=
- =?us-ascii?Q?9n/UaC3NT8k2ORxPo2l2+SO8qWCQ6y1jToiXz+ZBxEBt8wmOK5Fs+CihGLmB?=
- =?us-ascii?Q?zd+q3iy1DPFBL3U4+HxrOHBoiT/uTkOQkwG+yr5fIQJatISYb74sxTSNI+FU?=
- =?us-ascii?Q?fIaejx3Nh82st07ZMH++hvaMDm/9lZDBLyo3AZN+9szsY/dcoqQRaQwFsC5r?=
- =?us-ascii?Q?QZbOs2sDEpjbN2GfXTEZcBoi80of?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H3MG51hKVaDV1/2dOQj08fCLzUwtNbd2S1P2jsc0ZXF3d1zkWXQa359m1ffB?=
+ =?us-ascii?Q?gGzk3GswGQRF5qjNbF9HRtPwHzI9wd8WoQZD7budgIsS07NesH915HWNAwa4?=
+ =?us-ascii?Q?J7u+cz+6uF+CP+5/WefrnPUwKWFiUpQj9cXPplE59nEkwAipIOlPMXOfNhIv?=
+ =?us-ascii?Q?wFgEvIs2RWK4JV/Bsoje9lOd9x8uq9hep0o8TqqNEpPxvIsUOk6LBWqIq7tJ?=
+ =?us-ascii?Q?zrs0nJaRTayUTe0lwGLQ7rxqvAeQW3kkV/idzdxgHAAoPYep94z/J1KvVEQy?=
+ =?us-ascii?Q?WIp+HV1dnAc81q52Uf2EwVmw0Us9idRRk+p2eqQKhjj7eYrj7410eenikIAM?=
+ =?us-ascii?Q?thsW/ejDbS59Th58/sug3aoMIk7D6xIBGyrhMFlcnFYXYborrmDM/xc90yc9?=
+ =?us-ascii?Q?1cmef8WC/cpvBoOfUPMIJ+yjYeTAldgdEBaPkpU6rAFPwoRrbghApFT15em3?=
+ =?us-ascii?Q?6KqfUGrnZluzphUkNcN+mUCrXtDDjf2sMKkjv0qQqADQ5Vt8mXOC1HTdLynB?=
+ =?us-ascii?Q?o6k/X5NF/RKfhz4miZw0E2dFDEyBUos+Frms0PYUNmx2XA8h+lRNautXtZ3V?=
+ =?us-ascii?Q?uK3u87WDJi9v/3tF1QKvjWQ3TjGWHPAUz9cwGJ3X9F7xAyFBXwPtbOHuv6ej?=
+ =?us-ascii?Q?tIj/s0ve1ySttkD9ieokt/d+hv/uhWI3zaP10MHcrHXaNzQ9KomVo0HqIZ8I?=
+ =?us-ascii?Q?LT/WaNWYJgS6tqX135m5mcUH3gISFUmDSfeudF2nEnJXPPUo87RvNd/IONaj?=
+ =?us-ascii?Q?jQUOxmN1fAFx2naQeYmqtOC0835BR/XLkpcHWk17eGrq8tQLuqdHWTUs+T91?=
+ =?us-ascii?Q?9QJF/A3bRqN8gODkwzGAEwnGpjFseklHvpOexZz+SYgFl2ymTO94oZeyjjgR?=
+ =?us-ascii?Q?nr+UBdev7CKyY9AOJ2KHvs+906TT9bxOOZpvPPgDEV8uJewe3csP26WuGGoO?=
+ =?us-ascii?Q?YgsSqEi3I5lj2+nAF3CTyyi2udkfygfElTdXtQA0rx+LoRDEvYJ7XhugbKxA?=
+ =?us-ascii?Q?FKCqz5kA04bNb/w0dyMmMIPIao837+T8lsEOZ8NTldH6P23MQyoJI/DRtXaD?=
+ =?us-ascii?Q?Fm3GYuJV1aJAAfNjCuosuXTsOp8hesHBP/Ohyihd0qna9lTCCdMlC8yM6VT2?=
+ =?us-ascii?Q?92t7k3KHMKcGUE+oW1bfQJIBYqaCih/Jvk7QUaKz1cPy5+Ir5y1jFW5zYdVe?=
+ =?us-ascii?Q?XRTsLPwzD9tNLsShA4y/xTuzbXFP/A7W7p2B582dCHlywGaC3/VW0zkW1h15?=
+ =?us-ascii?Q?RpZzwrbJfTqEgIsKEdTevSuGombVpfi10jpIZHibRdsXdb38+lAm6OZrvs0Y?=
+ =?us-ascii?Q?joi0XpnEIUxBPS9H3LN6dilUmAEmP8DXJepfCl5xKqbZkgtGVOozytQskEFO?=
+ =?us-ascii?Q?ll9aDC3JkHp4zSGfbTDtxtLehsZg?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 802afa02-45b8-476d-044f-08d94ce68266
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01ac2ed9-f60b-4c36-44e3-08d94ce68363
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 07:58:36.4743
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 07:58:38.1051
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YnqS/8bNReAqd+tYtzFO2GlnbaZs4NAlODw5fvUfBJeIHeyM+NHhN40bPAWkFQNtIxlUX6F3mzfb0LhBMVt2t7tywDg2Yrmi2IkoCBJiCqM=
+X-MS-Exchange-CrossTenant-UserPrincipalName: EQs6eZKd3FeidCX1k8xSldLzaYoI/Hkv2oISBEWuVxJafYpX2CsLgCY4QZnlf2rJvs8d2MbjipIDUbg3EwCIRBd7G+DoVv4GT06v6cEq7Mw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4778
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -112,265 +112,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Add in the code to compile match part of the payload that will be
-sent to the firmware. This works similar to match.c does it, but
-since three flows needs to be merged it iterates through all three
-rules in a loop and combine the match fields to get the most strict
-match as result.
+Combine the actions from the three different rules into one and
+convert into the payload format expected by the nfp.
 
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 224 +++++++++++++++++-
- 1 file changed, 223 insertions(+), 1 deletion(-)
+ .../ethernet/netronome/nfp/flower/conntrack.c | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index e3fbd6b74746..e057403c1a8f 100644
+index e057403c1a8f..41b1f9773d46 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -478,10 +478,19 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
- 	struct nfp_fl_key_ls key_layer, tmp_layer;
- 	struct nfp_flower_priv *priv = zt->priv;
- 	u16 key_map[_FLOW_PAY_LAYERS_MAX];
-+	struct nfp_fl_payload *flow_pay;
- 
- 	struct flow_rule *rules[_CT_TYPE_MAX];
-+	u8 *key, *msk, *kdata, *mdata;
-+	struct net_device *netdev;
-+	bool qinq_sup;
-+	u32 port_id;
-+	u16 offset;
- 	int i, err;
- 
-+	netdev = m_entry->netdev;
-+	qinq_sup = !!(priv->flower_ext_feats & NFP_FL_FEATS_VLAN_QINQ);
-+
- 	rules[CT_TYPE_PRE_CT] = m_entry->tc_m_parent->pre_ct_parent->rule;
- 	rules[CT_TYPE_NFT] = m_entry->nft_parent->rule;
- 	rules[CT_TYPE_POST_CT] = m_entry->tc_m_parent->post_ct_parent->rule;
-@@ -503,7 +512,220 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
- 	}
- 	key_layer.key_size = nfp_fl_calc_key_layers_sz(key_layer, key_map);
- 
--	return 0;
-+	flow_pay = nfp_flower_allocate_new(&key_layer);
-+	if (!flow_pay)
-+		return -ENOMEM;
-+
-+	memset(flow_pay->unmasked_data, 0, key_layer.key_size);
-+	memset(flow_pay->mask_data, 0, key_layer.key_size);
-+
-+	kdata = flow_pay->unmasked_data;
-+	mdata = flow_pay->mask_data;
-+
-+	offset = key_map[FLOW_PAY_META_TCI];
-+	key = kdata + offset;
-+	msk = mdata + offset;
-+	nfp_flower_compile_meta((struct nfp_flower_meta_tci *)key,
-+				(struct nfp_flower_meta_tci *)msk,
-+				key_layer.key_layer);
-+
-+	if (NFP_FLOWER_LAYER_EXT_META & key_layer.key_layer) {
-+		offset =  key_map[FLOW_PAY_EXT_META];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		nfp_flower_compile_ext_meta((struct nfp_flower_ext_meta *)key,
-+					    key_layer.key_layer_two);
-+		nfp_flower_compile_ext_meta((struct nfp_flower_ext_meta *)msk,
-+					    key_layer.key_layer_two);
-+	}
-+
-+	/* Using in_port from the -trk rule. The tc merge checks should already
-+	 * be checking that the ingress netdevs are the same
-+	 */
-+	port_id = nfp_flower_get_port_id_from_netdev(priv->app, netdev);
-+	offset = key_map[FLOW_PAY_INPORT];
-+	key = kdata + offset;
-+	msk = mdata + offset;
-+	err = nfp_flower_compile_port((struct nfp_flower_in_port *)key,
-+				      port_id, false, tun_type, NULL);
-+	if (err)
-+		goto ct_offload_err;
-+	err = nfp_flower_compile_port((struct nfp_flower_in_port *)msk,
-+				      port_id, true, tun_type, NULL);
-+	if (err)
-+		goto ct_offload_err;
-+
-+	/* This following part works on the assumption that previous checks has
-+	 * already filtered out flows that has different values for the different
-+	 * layers. Here we iterate through all three rules and merge their respective
-+	 * masked value(cared bits), basic method is:
-+	 * final_key = (r1_key & r1_mask) | (r2_key & r2_mask) | (r3_key & r3_mask)
-+	 * final_mask = r1_mask | r2_mask | r3_mask
-+	 * If none of the rules contains a match that is also fine, that simply means
-+	 * that the layer is not present.
-+	 */
-+	if (!qinq_sup) {
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			offset = key_map[FLOW_PAY_META_TCI];
-+			key = kdata + offset;
-+			msk = mdata + offset;
-+			nfp_flower_compile_tci((struct nfp_flower_meta_tci *)key,
-+					       (struct nfp_flower_meta_tci *)msk,
-+					       rules[i]);
-+		}
-+	}
-+
-+	if (NFP_FLOWER_LAYER_MAC & key_layer.key_layer) {
-+		offset = key_map[FLOW_PAY_MAC_MPLS];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_mac((struct nfp_flower_mac_mpls *)key,
-+					       (struct nfp_flower_mac_mpls *)msk,
-+					       rules[i]);
-+			err = nfp_flower_compile_mpls((struct nfp_flower_mac_mpls *)key,
-+						      (struct nfp_flower_mac_mpls *)msk,
-+						      rules[i], NULL);
-+			if (err)
-+				goto ct_offload_err;
-+		}
-+	}
-+
-+	if (NFP_FLOWER_LAYER_IPV4 & key_layer.key_layer) {
-+		offset = key_map[FLOW_PAY_IPV4];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_ipv4((struct nfp_flower_ipv4 *)key,
-+						(struct nfp_flower_ipv4 *)msk,
-+						rules[i]);
-+		}
-+	}
-+
-+	if (NFP_FLOWER_LAYER_IPV6 & key_layer.key_layer) {
-+		offset = key_map[FLOW_PAY_IPV6];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_ipv6((struct nfp_flower_ipv6 *)key,
-+						(struct nfp_flower_ipv6 *)msk,
-+						rules[i]);
-+		}
-+	}
-+
-+	if (NFP_FLOWER_LAYER_TP & key_layer.key_layer) {
-+		offset = key_map[FLOW_PAY_L4];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_tport((struct nfp_flower_tp_ports *)key,
-+						 (struct nfp_flower_tp_ports *)msk,
-+						 rules[i]);
-+		}
-+	}
-+
-+	if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_GRE) {
-+		offset = key_map[FLOW_PAY_GRE];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
-+			struct nfp_flower_ipv6_gre_tun *gre_match;
-+			struct nfp_ipv6_addr_entry *entry;
-+			struct in6_addr *dst;
-+
-+			for (i = 0; i < _CT_TYPE_MAX; i++) {
-+				nfp_flower_compile_ipv6_gre_tun((void *)key,
-+								(void *)msk, rules[i]);
-+			}
-+			gre_match = (struct nfp_flower_ipv6_gre_tun *)key;
-+			dst = &gre_match->ipv6.dst;
-+
-+			entry = nfp_tunnel_add_ipv6_off(priv->app, dst);
-+			if (!entry)
-+				goto ct_offload_err;
-+
-+			flow_pay->nfp_tun_ipv6 = entry;
-+		} else {
-+			__be32 dst;
-+
-+			for (i = 0; i < _CT_TYPE_MAX; i++) {
-+				nfp_flower_compile_ipv4_gre_tun((void *)key,
-+								(void *)msk, rules[i]);
-+			}
-+			dst = ((struct nfp_flower_ipv4_gre_tun *)key)->ipv4.dst;
-+
-+			/* Store the tunnel destination in the rule data.
-+			 * This must be present and be an exact match.
-+			 */
-+			flow_pay->nfp_tun_ipv4_addr = dst;
-+			nfp_tunnel_add_ipv4_off(priv->app, dst);
-+		}
-+	}
-+
-+	if (NFP_FLOWER_LAYER2_QINQ & key_layer.key_layer_two) {
-+		offset = key_map[FLOW_PAY_QINQ];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_vlan((struct nfp_flower_vlan *)key,
-+						(struct nfp_flower_vlan *)msk,
-+						rules[i]);
-+		}
-+	}
-+
-+	if (key_layer.key_layer & NFP_FLOWER_LAYER_VXLAN ||
-+	    key_layer.key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
-+		offset = key_map[FLOW_PAY_UDP_TUN];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
-+			struct nfp_flower_ipv6_udp_tun *udp_match;
-+			struct nfp_ipv6_addr_entry *entry;
-+			struct in6_addr *dst;
-+
-+			for (i = 0; i < _CT_TYPE_MAX; i++) {
-+				nfp_flower_compile_ipv6_udp_tun((void *)key,
-+								(void *)msk, rules[i]);
-+			}
-+			udp_match = (struct nfp_flower_ipv6_udp_tun *)key;
-+			dst = &udp_match->ipv6.dst;
-+
-+			entry = nfp_tunnel_add_ipv6_off(priv->app, dst);
-+			if (!entry)
-+				goto ct_offload_err;
-+
-+			flow_pay->nfp_tun_ipv6 = entry;
-+		} else {
-+			__be32 dst;
-+
-+			for (i = 0; i < _CT_TYPE_MAX; i++) {
-+				nfp_flower_compile_ipv4_udp_tun((void *)key,
-+								(void *)msk, rules[i]);
-+			}
-+			dst = ((struct nfp_flower_ipv4_udp_tun *)key)->ipv4.dst;
-+
-+			/* Store the tunnel destination in the rule data.
-+			 * This must be present and be an exact match.
-+			 */
-+			flow_pay->nfp_tun_ipv4_addr = dst;
-+			nfp_tunnel_add_ipv4_off(priv->app, dst);
-+		}
-+
-+		if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_GENEVE_OP) {
-+			offset = key_map[FLOW_PAY_GENEVE_OPT];
-+			key = kdata + offset;
-+			msk = mdata + offset;
-+			for (i = 0; i < _CT_TYPE_MAX; i++)
-+				nfp_flower_compile_geneve_opt(key, msk, rules[i]);
-+		}
-+	}
-+
-+ct_offload_err:
-+	kfree(flow_pay->action_data);
-+	kfree(flow_pay->mask_data);
-+	kfree(flow_pay->unmasked_data);
-+	kfree(flow_pay);
-+	return err;
+@@ -471,6 +471,73 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
+ 	return key_size;
  }
  
- static int nfp_fl_ct_del_offload(struct nfp_app *app, unsigned long cookie,
++static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
++					struct nfp_flower_priv *priv,
++					struct net_device *netdev,
++					struct nfp_fl_payload *flow_pay)
++{
++	struct flow_action_entry *a_in;
++	int i, j, num_actions, id;
++	struct flow_rule *a_rule;
++	int err = 0, offset = 0;
++
++	num_actions = rules[CT_TYPE_PRE_CT]->action.num_entries +
++		      rules[CT_TYPE_NFT]->action.num_entries +
++		      rules[CT_TYPE_POST_CT]->action.num_entries;
++
++	a_rule = flow_rule_alloc(num_actions);
++	if (!a_rule)
++		return -ENOMEM;
++
++	/* Actions need a BASIC dissector. */
++	a_rule->match = rules[CT_TYPE_PRE_CT]->match;
++
++	/* Copy actions */
++	for (j = 0; j < _CT_TYPE_MAX; j++) {
++		if (flow_rule_match_key(rules[j], FLOW_DISSECTOR_KEY_BASIC)) {
++			struct flow_match_basic match;
++
++			/* ip_proto is the only field that needed in later compile_action,
++			 * needed to set the correct checksum flags. It doesn't really matter
++			 * which input rule's ip_proto field we take as the earlier merge checks
++			 * would have made sure that they don't conflict. We do not know which
++			 * of the subflows would have the ip_proto filled in, so we need to iterate
++			 * through the subflows and assign the proper subflow to a_rule
++			 */
++			flow_rule_match_basic(rules[j], &match);
++			if (match.mask->ip_proto)
++				a_rule->match = rules[j]->match;
++		}
++
++		for (i = 0; i < rules[j]->action.num_entries; i++) {
++			a_in = &rules[j]->action.entries[i];
++			id = a_in->id;
++
++			/* Ignore CT related actions as these would already have
++			 * been taken care of by previous checks, and we do not send
++			 * any CT actions to the firmware.
++			 */
++			switch (id) {
++			case FLOW_ACTION_CT:
++			case FLOW_ACTION_GOTO:
++			case FLOW_ACTION_CT_METADATA:
++				continue;
++			default:
++				memcpy(&a_rule->action.entries[offset++],
++				       a_in, sizeof(struct flow_action_entry));
++				break;
++			}
++		}
++	}
++
++	/* Some actions would have been ignored, so update the num_entries field */
++	a_rule->action.num_entries = offset;
++	err = nfp_flower_compile_action(priv->app, a_rule, netdev, flow_pay, NULL);
++	kfree(a_rule);
++
++	return err;
++}
++
+ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
+ {
+ 	enum nfp_flower_tun_type tun_type = NFP_FL_TUNNEL_NONE;
+@@ -720,6 +787,11 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
+ 		}
+ 	}
+ 
++	/* Merge actions into flow_pay */
++	err = nfp_fl_merge_actions_offload(rules, priv, netdev, flow_pay);
++	if (err)
++		goto ct_offload_err;
++
+ ct_offload_err:
+ 	kfree(flow_pay->action_data);
+ 	kfree(flow_pay->mask_data);
 -- 
 2.20.1
 
