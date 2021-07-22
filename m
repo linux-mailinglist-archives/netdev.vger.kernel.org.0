@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003FB3D227E
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:06:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A413D227F
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbhGVKZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 06:25:42 -0400
-Received: from mail-bn7nam10on2070.outbound.protection.outlook.com ([40.107.92.70]:14336
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S231861AbhGVKZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 06:25:47 -0400
+Received: from mail-bn8nam08on2057.outbound.protection.outlook.com ([40.107.100.57]:57440
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231820AbhGVKZb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 06:25:31 -0400
+        id S231796AbhGVKZg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 06:25:36 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QnX+MsETKv22jn+k/K3vPLr+vGoHr80V1mBQXRqLI3BobQpe8dfB5khYdsAqLIe+yuVbuTfykJrtqsejNNzU/voPAsi/3G5DTyBglnws8/qOA9QT/MTIbk1Bm814Jrxs+fM2OvtRoV94FzzLl6njtrq6kqyFAClbneoygo25/eVD3ZwhUqLBZEnzbyaNmJWMD8myGXwSDHvLfu2eILUnPHgtWnEj7QPyivuoz2Rga4G9AWH7AVd7meR2CgH8jLih1vjh5oG+nnIrZooNGakx+hgV2ZKoJHPAQO8hc8QwiLgaXmAStDHQAIZne9Oh+b8YRrq5d9O6w8kX2fkc7/blJQ==
+ b=gGsr+J5/Fj7tWRU+PzSPqGJQGh5menfwCeVxytxIebOeegeYZxexTwHmsTtxl2FIyvaKrO5Zksq+bp1mJPY84povI985ux627tBbc1yVe3v2dc5Tct2t+0dq89TEFGUUFvfH7Fjo5GDlEK8VGsAd99heT1GYz0FI7TWj0LjcJ5un0DcdWzq6EUet+M5eAWg5bmdsRmcp6I+uG1nMJVWuvWC2G9xCJM1YvZKRdEONg5/yjXsgfjM63SJZ5thmC9Ki7VmJLFiq8PsOcayxU3BV8nZiI48STlhE/+SFAn9TwrnxmvTdlKyQCxphuLthswI27WE+wdzuZMp0jkStajkMkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MAxudF1Jfwqss5SzIz9EI8r0/Xlh8GGDSBsDbv2ESKk=;
- b=gJjxquzliaaWTnVozCgk9u3kes+hVARJarjFL2kXv39x5C06P5XdMHU27hpb0Ws9BnZCt4ZNocTJISwEdGe4XnF9pzPWxYYdyomtBIraiPszY5r09ZwN+qcwWD+Sd2WJqqytEQt/oRAt2eSTXXHBugxr49Et6Z3F+IDQIQjnKC+6Gct9mwibEs1JmCxEIkN/u5wn8mKaYquF0cF5DPL7AJFzcGOeSppeHRbXsiQBfE7RuwaAWlk7ndAZvTz2G+mmHNB/IfYXfHYdvKpe731QdDubykW1UhY0DcyJxso4lemMa6KvH0VET/CD+IDnhw+HAVOtQGktfoXcG3l7aL1Ejw==
+ bh=DZDyYJpL1BwjLyHKPv4kjf6wRn+Kw2VKbmvpOLfLYvM=;
+ b=cop0FimPgMZTMc9ulFrM7FYblXWPvfVsHscdxO6WkfRjbFj1MY0+1FMnnGcsdQJpxbLJWFH3Pgs9S7p122MZW9D1uveXzFcxtqly53xNHFN4xTXxUHRuvtc8uc/HHuqfVI3GNFe21E/9LZpmWPwtX3O7MEApHiDo8KkD1FH7ccD+uf2EPCRfguZx1x4ZHOkn9Tv//9941JweC4p7DjrZ5nNjr48bvO/X7XMzDoQJh+tvhO4QOEGmpqVmcy6y6sDopBv/cpIpccvhnMTIZesv2yQejnCy2tRmNlEz6vZcNHFj60DGoB8rYIwZKbvl50wQKQi2rOmtJkzjXGppK8+ZqA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.36) smtp.rcpttodomain=marvell.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ 216.228.112.34) smtp.rcpttodomain=fb.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=quarantine sp=none pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MAxudF1Jfwqss5SzIz9EI8r0/Xlh8GGDSBsDbv2ESKk=;
- b=TsHNHcYWUpTMdoZ0TOlAWI0jHH/vpXRN/Mb5zwuj0L3+CR7mslcSZ4eFyJmGizcePJ//JiOlhedZ9NnvtslzWOXvlQmGywgIHioXiEfJTSEB2sFBhWSJlJrm8Xuo4i+pW+0PstxQvWS37XHfG2Udgh3ytLl0cdysl7RUI6Y9x1YqXbOu8l58tsqBAUJFWzAzLwsNXWZHmgRgbxD1oIBdpV+upQULsNYgL2rDCGi0rRfxPSvMvw7fDj4Rca2zraLspaYJS/WJ4sXO0nV1Qpevnu6Y7FLZGix+qFY6fueyTu0I3baBwZaYfKPfhF1LsWxBt4YsSkadCUlzkmAVewth/A==
-Received: from MWHPR12CA0062.namprd12.prod.outlook.com (2603:10b6:300:103::24)
- by BL0PR12MB2468.namprd12.prod.outlook.com (2603:10b6:207:44::29) with
+ bh=DZDyYJpL1BwjLyHKPv4kjf6wRn+Kw2VKbmvpOLfLYvM=;
+ b=UR43ydNMduFzOaLrmy/a0X3lF38j8Al6+e8vMTmvqFvHC0pIFHb54e6lCYNKlDWiiVR6TXojiHGW2MLn+iT/heM1vJEE8T2ELCTYaK0d2xUBbCr4KVPwI50Msj/At1PdQu39mWzMAms3+mrinWs7hbM/odW13bToxRvjTLxrg9PlxF0ZwKvF477sdaOmrv5ddYFL+cKdcHT6Apc72Cex7bfuIV6ZtUKg16iWx8cxkFKqSaMnB6di0wvhcG7Adj0ngrjJAK0gyvrOakSP+DvD8xdpsE1BqF7J3FoQHAoQbMTIxDO9+yToB6PJUVr2dOxCfKA3nFb4c20nPyEzhBhaVw==
+Received: from BN9PR03CA0213.namprd03.prod.outlook.com (2603:10b6:408:f8::8)
+ by CH0PR12MB5314.namprd12.prod.outlook.com (2603:10b6:610:d5::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Thu, 22 Jul
- 2021 11:06:05 +0000
-Received: from CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:103:cafe::1d) by MWHPR12CA0062.outlook.office365.com
- (2603:10b6:300:103::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend
- Transport; Thu, 22 Jul 2021 11:06:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
- smtp.mailfrom=nvidia.com; marvell.com; dkim=none (message not signed)
- header.d=none;marvell.com; dmarc=pass action=none header.from=nvidia.com;
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24; Thu, 22 Jul
+ 2021 11:06:10 +0000
+Received: from BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f8:cafe::7d) by BN9PR03CA0213.outlook.office365.com
+ (2603:10b6:408:f8::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.26 via Frontend
+ Transport; Thu, 22 Jul 2021 11:06:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; fb.com; dkim=none (message not signed)
+ header.d=none;fb.com; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.36; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.36) by
- CO1NAM11FT018.mail.protection.outlook.com (10.13.175.16) with Microsoft SMTP
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT042.mail.protection.outlook.com (10.13.177.85) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 11:06:04 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
- 2021 11:06:04 +0000
+ 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 11:06:10 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
+ 2021 11:06:09 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
+ 2021 11:06:08 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 22 Jul 2021 11:06:00 +0000
+ Transport; Thu, 22 Jul 2021 11:06:04 +0000
 From:   Boris Pismenny <borisp@nvidia.com>
 To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
         <saeedm@nvidia.com>, <hch@lst.de>, <sagi@grimberg.me>,
@@ -62,9 +65,9 @@ To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
 CC:     <boris.pismenny@gmail.com>, <linux-nvme@lists.infradead.org>,
         <netdev@vger.kernel.org>, <benishay@nvidia.com>,
         <ogerlitz@nvidia.com>, <yorayz@nvidia.com>
-Subject: [PATCH v5 net-next 23/36] net: Add to ulp_ddp support for fallback flow
-Date:   Thu, 22 Jul 2021 14:03:12 +0300
-Message-ID: <20210722110325.371-24-borisp@nvidia.com>
+Subject: [PATCH v5 net-next 24/36] net: Add MSG_DDP_CRC flag
+Date:   Thu, 22 Jul 2021 14:03:13 +0300
+Message-ID: <20210722110325.371-25-borisp@nvidia.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210722110325.371-1-borisp@nvidia.com>
 References: <20210722110325.371-1-borisp@nvidia.com>
@@ -73,160 +76,112 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4473b2b8-a685-4394-675f-08d94d00b32a
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2468:
-X-Microsoft-Antispam-PRVS: <BL0PR12MB2468DC9A5A2936F4A379C6C8BDE49@BL0PR12MB2468.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Office365-Filtering-Correlation-Id: 5ce402c1-a1a1-40ad-44d6-08d94d00b660
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5314:
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5314EC646C1A7BB02DE124AABDE49@CH0PR12MB5314.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1201;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LQlVI+xvg4TqqtGi35sGzz1I74C137j84BQOjOfR5Uz4ppoeK7EDB0XtZtmhe5OjQUVhAKxhqONeqtzlibEvwQMUYAy7KsDuwRT8yDwh361ToXV8avS03RCY7bl9T3DmYX1TCTZCBFdarMu9f5dlKYZBQgnaLz37R4DCkbelqkvHrw1CeE4+9xvKTj4idi9zSZPGRKkGFyaU/bF4/90miPfATLLzKqJsVbkdDBjLOUb/SlHlf44veHsJoTxvDi9Q2KZqxT3uAZFInd9rX+AFjqSKrzzcSSqr3TY31Y4TXKOOGGkOujvpaKBDNOuyXADkkFcRo2dE95U2wr7X86PJ7/VSLnViEePhkdmkLcYX5agkrwhrFgqQ+cj8QnmaRh+jDAo1mPh4R+GoOM21rfnFFw7ngMfGQL+e7vxEUckTp/0YONYrkG69H1ZL0aCq1xsV6Klkk4q310ZEPXscZR9ygUWXTQQx7uSE9sqRLtTZwI4NjYjWqqXpsR1Sz0q1yOjdca1qeDpwEzzmvyqZ+R5Hi9Z9gwbD3zHs7x+w6JI4NMCj4kRXGbm0WV+mG5ffDpoR9dhTLmJJpVG+zIdw2AKoHDKl1XJfFQoE3SxC7jzuyUxe/YrqPPmADgRAlDt3CwhH4mLXkfza3VvAY7uedW7qkhpHXhaVOOdw000mNDqgN1+4MRTfZm7aCSR/G8N8Yq1C00IvQpYnKdbQ6ApaAXbRtIy8LXm7wE2gLG6AyeGwR5o=
-X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(376002)(136003)(346002)(36840700001)(46966006)(8936002)(86362001)(426003)(36860700001)(36756003)(7696005)(336012)(107886003)(36906005)(921005)(316002)(478600001)(7416002)(2906002)(8676002)(54906003)(186003)(1076003)(110136005)(2616005)(70206006)(47076005)(5660300002)(82310400003)(70586007)(4326008)(6666004)(83380400001)(26005)(356005)(82740400003)(7636003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: DLwMYfk0rcrhnkWQ2EjsgAPotoVfXKiEW+rC4VDv93KS8SQXxjOY7rKh9e+Ousj8VcadPKMi2Rxs/rRC6IuNA0kBwAB2d0hsWFLzsyxBgzO1DgxqX+DgTvuDj6Hs725of77AA7cEnKEPXCCowT6YCMFAdzBHj2pnJCq715DgClIrnvN/EZ5iP4PXLwTphOD/fWpXlGsAnK5jjyR/dSStlsFE6vexDfpHouLdOPr2aIVrW+8svvEvZqqqGyzWPCqXovthrUr18dGbAp9YiSwKE2ju5afgPDhMiauH1ZDIQHNtHqApN0L4iG5mUuMyfnyZoru79gAOgo4ld7B1LKSIQNXcS885mKApnDdeyL4HeKFj8WwfN9s290xc7OJ6hB6JdaurTlgBEHTh67K16/2D3GivnHQ6Cfky0f22Im14mMpTYL+3J14Y9k15uBv96fjWJ8aWhNOnn0I4K+GOZzUTgMZ3nOYcSwKNqLxYN6tmDiSKwehdxhqIR+PvaDZQLyZhT2oJ/3L7HKvppqYl3eBqno1MVzIm0/hiFm86WXmHHUE7FiMdlk8bcoNJtQMrRxNBZhrglyuJ1jTt4FBirAvjMvBQR3ZRcHZfm1VQb68749jPc/IBzuPNJIakehl6MC4BLMM1kfeOB1kV4B1bnNnbgLTnvvw3FDSSgdy/JdLxjA9LSgOCSHJ5hj680ei9AW87lgbm7+Pi5aEnhYJMKNRGzhtVkTv1HmP1AvkYvw/3MrM=
+X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(376002)(396003)(39860400002)(136003)(346002)(36840700001)(46966006)(47076005)(4326008)(110136005)(478600001)(426003)(36860700001)(70206006)(70586007)(7696005)(82310400003)(2616005)(86362001)(5660300002)(2906002)(83380400001)(921005)(7416002)(316002)(82740400003)(6666004)(54906003)(36906005)(107886003)(186003)(36756003)(8676002)(1076003)(26005)(356005)(7636003)(8936002)(336012);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 11:06:04.9735
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 11:06:10.2098
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4473b2b8-a685-4394-675f-08d94d00b32a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ce402c1-a1a1-40ad-44d6-08d94d00b660
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2468
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5314
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Yoray Zack <yorayz@nvidia.com>
 
-Add ddp_ddgest_falback(), and ddp_get_pdu_info function to ulp.
-
-During DDP CRC Tx offload, the HW is responsible for calculate the crc,
-and therefore the SW not calculates it.
-
-If the HW changes for some reason,
-the SW should fallback from the offload and calculate the crc.
-This is checking in the ulp_ddp_validate_skb and if need fallback it do it.
+if the msg sent with this flag, turn up skb->ddp_crc bit.
 
 Signed-off-by: Yoray Zack <yorayz@nvidia.com>
 ---
- include/net/ulp_ddp.h |  7 +++++
- net/core/ulp_ddp.c    | 69 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 76 insertions(+)
+ include/linux/socket.h | 1 +
+ include/net/sock.h     | 6 ++++++
+ net/core/sock.c        | 7 +++++++
+ net/ipv4/tcp.c         | 6 ++++++
+ 4 files changed, 20 insertions(+)
 
-diff --git a/include/net/ulp_ddp.h b/include/net/ulp_ddp.h
-index 8f48fc121c3a..40bfcfe94cef 100644
---- a/include/net/ulp_ddp.h
-+++ b/include/net/ulp_ddp.h
-@@ -77,6 +77,7 @@ struct ulp_ddp_io {
-  * @hdr_len:	the size (in bytes) of the pdu header.
-  * @hdr:	pdu header.
-  * @req:	the ulp request for the original pdu.
-+ * @ddgst:	pdu data digest.
-  */
- struct ulp_ddp_pdu_info {
- 	struct list_head list;
-@@ -86,6 +87,7 @@ struct ulp_ddp_pdu_info {
- 	u32		hdr_len;
- 	void		*hdr;
- 	struct request	*req;
-+	__le32          ddgst;
- };
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 0d8e3dcb7f88..640ec8535f43 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -310,6 +310,7 @@ struct ucred {
+ 					  * plain text and require encryption
+ 					  */
  
- /* struct ulp_ddp_dev_ops - operations used by an upper layer protocol to configure ddp offload
-@@ -129,6 +131,8 @@ struct ulp_ddp_ulp_ops {
- 	bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
- 	/* NIC driver informs the ulp that ddp teardown is done - used for async completions*/
- 	void (*ddp_teardown_done)(void *ddp_ctx);
-+	/* NIC request ulp to calculate the ddgst and store it in pdu_info->ddgst */
-+	void (*ddp_ddgst_fallback)(struct ulp_ddp_pdu_info *pdu_info);
- };
- 
- /**
-@@ -182,4 +186,7 @@ int ulp_ddp_map_pdu_info(struct sock *sk, u32 start_seq, void *hdr,
- void ulp_ddp_close_pdu_info(struct sock *sk);
- bool ulp_ddp_need_map(struct sock *sk);
- struct ulp_ddp_pdu_info *ulp_ddp_get_pdu_info(struct sock *sk, u32 seq);
-+struct sk_buff *ulp_ddp_validate_xmit_skb(struct sock *sk,
-+					  struct net_device *dev,
-+					  struct sk_buff *skb);
- #endif //_ULP_DDP_H
-diff --git a/net/core/ulp_ddp.c b/net/core/ulp_ddp.c
-index 06ed4ad59e88..80366c7840a8 100644
---- a/net/core/ulp_ddp.c
-+++ b/net/core/ulp_ddp.c
-@@ -164,3 +164,72 @@ struct ulp_ddp_pdu_info *ulp_ddp_get_pdu_info(struct sock *sk, u32 seq)
- 	return info;
- } EXPORT_SYMBOL(ulp_ddp_get_pdu_info);
- 
-+static void ulp_ddp_ddgst_recalc(const struct ulp_ddp_ulp_ops *ulp_ops,
-+				 struct ulp_ddp_pdu_info *pdu_info)
-+{
-+	if (pdu_info->ddgst)
-+		return;
-+
-+	ulp_ops->ddp_ddgst_fallback(pdu_info);
-+}
-+
-+static struct sk_buff *ulp_ddp_fallback_skb(struct ulp_ddp_ctx *ctx,
-+					    struct sk_buff *skb,
-+					    struct sock *sk)
-+{
-+	const struct ulp_ddp_ulp_ops *ulp_ops = inet_csk(sk)->icsk_ulp_ddp_ops;
-+	int datalen = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
-+	struct ulp_ddp_pdu_info *pdu_info = NULL;
-+	int ddgst_start, ddgst_offset, ddgst_len;
-+	u32 seq = ntohl(tcp_hdr(skb)->seq);
-+	u32 end_skb_seq = seq + datalen;
-+	u32 first_seq = seq;
-+
-+	if (!(ulp_ops && ulp_ops->ddp_ddgst_fallback))
-+		return skb;
-+
-+again:
-+	/*  check if we can't use the last pdu_info
-+	 *  Reasons we can't use it:
-+	 *  1. first time and then pdu_info is NULL.
-+	 *  2. seq doesn't Map to this pdu_info (out of bounds).
++#define MSG_DDP_CRC  0x200000		/* Skb pdu need crc offload */
+ #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
+ #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
+ #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 5fa2fd192d18..84141fdc3b80 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2656,6 +2656,12 @@ static inline struct sk_buff *sk_validate_xmit_skb(struct sk_buff *skb,
+ 		pr_warn_ratelimited("unencrypted skb with no associated socket - dropping\n");
+ 		kfree_skb(skb);
+ 		skb = NULL;
++#endif
++#ifdef CONFIG_ULP_DDP
++	} else if (unlikely(skb->ddp_crc)) {
++		pr_warn_ratelimited("crc-offload skb with no associated socket - dropping\n");
++		kfree_skb(skb);
++		skb = NULL;
+ #endif
+ 	}
+ #endif
+diff --git a/net/core/sock.c b/net/core/sock.c
+index ba1c0f75cd45..616ffc523b5d 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2160,6 +2160,13 @@ static bool can_skb_orphan_partial(const struct sk_buff *skb)
+ 	 */
+ 	if (skb->decrypted)
+ 		return false;
++#endif
++#ifdef CONFIG_ULP_DDP
++	/* Drivers depend on in-order delivery for crc offload,
++	 * partial orphan breaks out-of-order-OK logic.
 +	 */
-+	if (!pdu_info || !between(seq, pdu_info->start_seq, pdu_info->end_seq - 1)) {
-+		pdu_info = ulp_ddp_get_pdu_info(sk, seq);
-+		if (!pdu_info)
-+			return skb;
-+	}
-+
-+	ddgst_start = pdu_info->end_seq - ctx->ddgst_len;
-+
-+	//check if this skb contains ddgst field
-+	if (between(ddgst_start, seq, end_skb_seq - 1) && pdu_info->data_len) {
-+		ulp_ddp_ddgst_recalc(ulp_ops, pdu_info);
-+		ddgst_offset = ddgst_start - first_seq + skb_headlen(skb);
-+		ddgst_len = min_t(int, ctx->ddgst_len, end_skb_seq - ddgst_start);
-+		skb_store_bits(skb, ddgst_offset, &pdu_info->ddgst, ddgst_len);
-+	}
-+
-+	//check if there is more PDU's in this skb
-+	if (between(pdu_info->end_seq, seq + 1, end_skb_seq - 1)) {
-+		seq = pdu_info->end_seq;
-+		goto again;
-+	}
-+
-+	return skb;
-+}
-+
-+struct sk_buff *ulp_ddp_validate_xmit_skb(struct sock *sk,
-+					  struct net_device *dev,
-+					  struct sk_buff *skb)
-+{
-+	struct ulp_ddp_ctx *ctx = ulp_ddp_get_ctx(sk);
-+
-+	if (!ctx)
-+		return skb;
-+
-+	if (dev == ctx->netdev)
-+		return skb;
-+
-+	return ulp_ddp_fallback_skb(ctx, skb, sk);
-+} EXPORT_SYMBOL(ulp_ddp_validate_xmit_skb);
++	if (skb->ddp_crc)
++		return false;
+ #endif
+ 	return (skb->destructor == sock_wfree ||
+ 		(IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree));
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index d5ab5f243640..36c445ed8a30 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -984,6 +984,9 @@ struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 
+ #ifdef CONFIG_TLS_DEVICE
+ 		skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
++#endif
++#ifdef CONFIG_ULP_DDP
++		skb->ddp_crc = !!(flags & MSG_DDP_CRC);
+ #endif
+ 		skb_entail(sk, skb);
+ 		copy = size_goal;
+@@ -1311,6 +1314,9 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 			if (!skb)
+ 				goto wait_for_space;
+ 
++#ifdef CONFIG_ULP_DDP
++			skb->ddp_crc = !!(flags & MSG_DDP_CRC);
++#endif
+ 			process_backlog++;
+ 			skb->ip_summed = CHECKSUM_PARTIAL;
+ 
 -- 
 2.24.1
 
