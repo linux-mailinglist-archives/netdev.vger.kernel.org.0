@@ -2,101 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF1863D1C1C
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 04:53:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB85E3D1C60
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 05:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbhGVCLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Jul 2021 22:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230098AbhGVCLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Jul 2021 22:11:43 -0400
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC72C061575
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 19:52:18 -0700 (PDT)
-Received: by mail-ot1-x32b.google.com with SMTP id 59-20020a9d0ac10000b0290462f0ab0800so3992781otq.11
-        for <netdev@vger.kernel.org>; Wed, 21 Jul 2021 19:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0nsyexf5E/9/BZ7RS+9HYAQFZhWchA8hAcqQ6FMD5hk=;
-        b=bHwbo0HEXR0nVkNp9y5f4VvP1CCKDqvhzXFe2xguEXzZZ+pZeCgpjPWv0uc66DSexX
-         kJJ1Zr6RpiCmPfyMPy9z1WtDqdalB62zrjPClfoKxVy1iOWtdAmpTih9W2SwHwiSWW+k
-         v9zZdoS/P6dMlK/t/oNJT5hasBHnQJNkVoTSYJ9xmcUzt0oUgJOOqWtU+0dqy1Rs2RVw
-         5bRNg731/DCD5eO16zwrwFZuYNr/0tM9BSwhq+pshwmQx9Iqdp9hsPSWGNJ9tLYamoY0
-         c36T0vSBB//pxN00qK987uUgEgk3hnnvNMvA+IfO6hVNDv+us3n9tzaCZ5Zfpn59kk3e
-         1GiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0nsyexf5E/9/BZ7RS+9HYAQFZhWchA8hAcqQ6FMD5hk=;
-        b=rtLMhnPYSX+AX90dAlKywixEh7KNCQfZtO2xC7JW2QzC8/Ps9ucR51iyGlGCB1cWw7
-         ZlQKUAMVbuboKj0b/vYpxe/2U/huC6EgQZxivlfPF+aF3RWODBvOhLpHnURQPbsQHTBG
-         WE07eKa71hbA5jcHsLMAMpVx3n1Qrg4xPzhh36PSNjHFwlnzJGLtTpaGiB924JEaahXz
-         UcKBjYWn1cgTf1FtL5kGOqVW8pTowEZGFRg3R98PNMR3unHWWOyrWC8y8aeRv/i+EiBC
-         rDvhTR/4PAxryN2uRYgjwm6h6/oxuZNwqfzigAAk55ByK7k7NR6DafChZBJySYKm4ZSh
-         Anyg==
-X-Gm-Message-State: AOAM533vuoRXpz1+bDB54HYRTYUlVfUquAyp4gfLCsHTStseISba580W
-        BiotIp37francxLt5lh2ok4=
-X-Google-Smtp-Source: ABdhPJxGmo3I6pg8bHu0zCk4W91GBQywcGBHUhOJnh+IBqTf6cYuDgljddKYdGm5JD8NC1iddyH+OA==
-X-Received: by 2002:a9d:ba3:: with SMTP id 32mr27657005oth.126.1626922338049;
-        Wed, 21 Jul 2021 19:52:18 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.38])
-        by smtp.googlemail.com with ESMTPSA id l196sm3930464oib.14.2021.07.21.19.52.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jul 2021 19:52:17 -0700 (PDT)
-Subject: Re: [PATCH net-next v5 6/6] selftests: net: Test for the IOAM
- insertion with IPv6
-To:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, tom@herbertland.com
-References: <20210720194301.23243-1-justin.iurman@uliege.be>
- <20210720194301.23243-7-justin.iurman@uliege.be>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <631216ff-c8ec-b602-e1ce-95808dd92b01@gmail.com>
-Date:   Wed, 21 Jul 2021 20:52:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        id S230439AbhGVCnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Jul 2021 22:43:25 -0400
+Received: from out2.migadu.com ([188.165.223.204]:49695 "EHLO out2.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230026AbhGVCnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Jul 2021 22:43:25 -0400
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1626924239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cKa+ywSRqP2GgvUqE2f7IzaLkIEmcnLx3Z1I9lknd/o=;
+        b=ipT2f6xhZE+GkIXRXKFtJ9TDI9PQ+y4InJVOdwh+cgO6eo7RE2Wm29YFS6hinS6aHV1G2x
+        Ad9XI7Z9tP6QeIZWPKEvOFvCDgMQWDDP47rrIdDqj7OPNWbXogk8VI0vbJfgDzdxlL/XSg
+        /iw+A4UH1edKQYFekdzXLpoUcnaTeQk=
+From:   Yajun Deng <yajun.deng@linux.dev>
+To:     jhs@mojatatu.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH] net: sched: cls_api: Fix the the wrong parameter
+Date:   Thu, 22 Jul 2021 11:23:43 +0800
+Message-Id: <20210722032343.7178-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20210720194301.23243-7-justin.iurman@uliege.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: yajun.deng@linux.dev
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/21 1:43 PM, Justin Iurman wrote:
-> +run()
-> +{
-> +  echo -n "IOAM test... "
-> +
-> +  ip netns exec ioam-node-alpha ping6 -c 5 -W 1 db02::2 &>/dev/null
-> +  if [ $? != 0 ]; then
-> +    echo "FAILED"
-> +    cleanup &>/dev/null
-> +    exit 0
-> +  fi
-> +
-> +  ip netns exec ioam-node-gamma ./ioam6_parser veth0 2 ${IOAM_NAMESPACE} ${IOAM_TRACE_TYPE} 64 ${ALPHA[0]} ${ALPHA[1]} ${ALPHA[2]} ${ALPHA[3]} ${ALPHA[4]} ${ALPHA[5]} ${ALPHA[6]} ${ALPHA[7]} ${ALPHA[8]} "${ALPHA[9]}" 63 ${BETA[0]} ${BETA[1]} ${BETA[2]} ${BETA[3]} ${BETA[4]} ${BETA[5]} ${BETA[6]} ${BETA[7]} ${BETA[8]} &
-> +
-> +  local spid=$!
-> +  sleep 0.1
-> +
-> +  ip netns exec ioam-node-alpha ping6 -c 5 -W 1 db02::2 &>/dev/null
-> +
-> +  wait $spid
-> +  [ $? = 0 ] && echo "PASSED" || echo "FAILED"
-> +}
-> +
-> +cleanup &>/dev/null
-> +setup
-> +run
-> +cleanup &>/dev/null
+The 4th parameter in tc_chain_notify() should be flags rather than seq.
+Let's change it back correctly.
 
-Can you add negative tests as well? i.e, things work like they should
-when enabled and configured properly, fail when the test should not and
-include any invalid combinations of parameters.
+Fixes: 32a4f5ecd738 ("net: sched: introduce chain object to uapi")
+Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+---
+ net/sched/cls_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index c8cb59a11098..1167cd0be179 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2897,7 +2897,7 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+ 		break;
+ 	case RTM_GETCHAIN:
+ 		err = tc_chain_notify(chain, skb, n->nlmsg_seq,
+-				      n->nlmsg_seq, n->nlmsg_type, true);
++				      n->nlmsg_flags, n->nlmsg_type, true);
+ 		if (err < 0)
+ 			NL_SET_ERR_MSG(extack, "Failed to send chain notify message");
+ 		break;
+-- 
+2.32.0
+
