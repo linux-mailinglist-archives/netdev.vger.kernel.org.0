@@ -2,103 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 832AB3D2FC8
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 00:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFD33D2FDC
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 00:34:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbhGVVig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 17:38:36 -0400
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:39742 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232375AbhGVVif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 17:38:35 -0400
-Received: by mail-pl1-f171.google.com with SMTP id e5so996870pla.6;
-        Thu, 22 Jul 2021 15:19:09 -0700 (PDT)
+        id S232375AbhGVVyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 17:54:21 -0400
+Received: from mail-pl1-f174.google.com ([209.85.214.174]:43829 "EHLO
+        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232320AbhGVVyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 17:54:20 -0400
+Received: by mail-pl1-f174.google.com with SMTP id d17so923592plh.10;
+        Thu, 22 Jul 2021 15:34:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lWYwLLr1F+wEohZcNxTrxT9x/1X4krqlfhkjTKwn5LU=;
-        b=Zw5P5x4B2pcmiuvW4R7oJVCjTwx72gcEgkCCMUOy5gKQ80kuskDFmKGvfeUGP/6Ufx
-         P+odj9q3IHgbF16n45gtEGoLT7M6u0EibME0h7ty7yyUL533IY3mkojcsNjNyvM/suKQ
-         VIr3AxPM0YMMMNLDZR4R76d30xvukAiArdGkS3p1HO5ZcOMYQ4MMvHtAUx2oLhfx6P4k
-         b2Nl/XnTW/jlgmryoZ1NctDWkRNTuAXy/ehpZzc3BSX04PxFzIJ0pfAxyR8b/oaUuU6l
-         /wr8GC5wvRQqcH06ZdoDCIIPvIvSiG3hH61mKzVpbwNudIlmerO0eVLrLOFN4m6FmeUY
-         xkoQ==
-X-Gm-Message-State: AOAM530Sv1GhZQIjLRz8FKGpKUZkRUA856e6HXyucw/tLsX9gRK8p47t
-        F3FiVPZEKXiNdP2oC2ORq3A=
-X-Google-Smtp-Source: ABdhPJyUsy0ro4YtJRuFm4vTMWqvS3mmCKFzmHMvFVjaECINrpaZu6M8QdvGu3PqOECaJ4mkPhFXWg==
-X-Received: by 2002:a63:449:: with SMTP id 70mr2067429pge.174.1626992349448;
-        Thu, 22 Jul 2021 15:19:09 -0700 (PDT)
-Received: from localhost ([191.96.121.239])
-        by smtp.gmail.com with ESMTPSA id q31sm8997884pjh.13.2021.07.22.15.19.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Jul 2021 15:19:08 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VyLGTqswjAT6qLthwUe8GNmcXwOWxADqbicD6omyIuc=;
+        b=tf+aLkVdAD4vPdXF88uXQy+vB3CYIO2MMdZ0hkxdyELg+W9F5P7mq8Cy1JLKF7eBCh
+         qiR2evj8JTDVZ1XN7HlrJSMCXgUFh36RfuqkNPQ+nJFrnqs51WkBsySYLzLbWcvW56qj
+         fDFvUsVvayrAzPYSzuSJQUIm6laskj/RnnW+sLk4LIReGQmtwM0BEb2hLhdt9ObQ8Btt
+         +K1xwX/vW8WUGaN+kpWucKNHoPCfcEGsIAutTxCkvQL7+PoCnpCKsX7Vlzl/QLoHBJfl
+         WZFKQcBlUsYzXkVeMqv0R7ZFr0i0xBQVyGZT/35S7xfDEcv5jRXz96gZ4euhrqZVHFck
+         Mytw==
+X-Gm-Message-State: AOAM533L/9nV55B49Xv8/zYBEU72IWC3R8hfk4q4L2YB5tLrz7MUYcYW
+        35IKjaTFBnWS12tYKSyEiz0=
+X-Google-Smtp-Source: ABdhPJxx0yOHbOnXxEhWB9G1POpQL+iRei2o0jQLKVrRd192woRgvj3mqtJOy4mH9/kNcn0rJ+kQGg==
+X-Received: by 2002:a63:1d18:: with SMTP id d24mr2084173pgd.69.1626993293716;
+        Thu, 22 Jul 2021 15:34:53 -0700 (PDT)
+Received: from garbanzo ([191.96.121.239])
+        by smtp.gmail.com with ESMTPSA id l2sm30573920pfc.157.2021.07.22.15.34.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jul 2021 15:34:52 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 15:34:49 -0700
 From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     gregkh@linuxfoundation.org, tj@kernel.org, shuah@kernel.org,
-        akpm@linux-foundation.org, rafael@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, andriin@fb.com,
-        daniel@iogearbox.net, atenart@kernel.org, alobakin@pm.me,
-        weiwan@google.com, ap420073@gmail.com
-Cc:     jeyu@kernel.org, ngupta@vflare.org,
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     tj@kernel.org, shuah@kernel.org, akpm@linux-foundation.org,
+        rafael@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, andriin@fb.com, daniel@iogearbox.net,
+        atenart@kernel.org, alobakin@pm.me, weiwan@google.com,
+        ap420073@gmail.com, jeyu@kernel.org, ngupta@vflare.org,
         sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
-        mcgrof@kernel.org, axboe@kernel.dk, mbenes@suse.com,
-        jpoimboe@redhat.com, tglx@linutronix.de, keescook@chromium.org,
-        jikos@kernel.org, rostedt@goodmis.org, peterz@infradead.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
         linux-block@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] kernel/module: add documentation for try_module_get()
-Date:   Thu, 22 Jul 2021 15:19:05 -0700
-Message-Id: <20210722221905.1718213-1-mcgrof@kernel.org>
-X-Mailer: git-send-email 2.30.2
+Subject: Re: [PATCH v2 1/4] selftests: add tests_sysfs module
+Message-ID: <20210722223449.ot5272wpc6o5uzlk@garbanzo>
+References: <20210703004632.621662-1-mcgrof@kernel.org>
+ <20210703004632.621662-2-mcgrof@kernel.org>
+ <YPgF2VAoxPIiKWX1@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YPgF2VAoxPIiKWX1@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is quite a bit of tribal knowledge around proper use of
-try_module_get() and that it must be used only in a context which
-can ensure the module won't be gone during the operation. Document
-this little bit of tribal knowledge.
+On Wed, Jul 21, 2021 at 01:32:41PM +0200, Greg KH wrote:
+> On Fri, Jul 02, 2021 at 05:46:29PM -0700, Luis Chamberlain wrote:
+> > This selftests will shortly be expanded upon with more tests which
+> > require further kernel changes in order to provide better test
+> > coverage.
+> 
+> Why is this not using kunit?  We should not be adding new in-kernel
+> tests that are not using that api anymore.
 
-Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
----
- kernel/module.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+No way. That cannot possibly be true. When was this decided? Did
+Shuah Khan, the maintainer of selftests, all of a sudden decide we
+are going to deprecate selftests in favor for trying to only use
+kunit? Did we have a conference where this was talked about and decided?
 
-diff --git a/kernel/module.c b/kernel/module.c
-index ed13917ea5f3..0d609647a54d 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -1066,6 +1066,28 @@ void __module_get(struct module *module)
- }
- EXPORT_SYMBOL(__module_get);
- 
-+/**
-+ * try_module_get - yields to module removal and bumps reference count otherwise
-+ * @module: the module we should check for
-+ *
-+ * This can be used to check if userspace has requested to remove a module,
-+ * and if so let the caller give up. Otherwise it takes a reference count to
-+ * ensure a request from userspace to remove the module cannot happen.
-+ *
-+ * Care must be taken to ensure the module cannot be removed during
-+ * try_module_get(). This can be done by having another entity other than the
-+ * module itself increment the module reference count, or through some other
-+ * means which gaurantees the module could not be removed during an operation.
-+ * An example of this later case is using this call in a sysfs file which the
-+ * module created. The sysfs store / read file operation is ensured to exist
-+ * and still be present by kernfs's active reference. If a sysfs file operation
-+ * is being run, the module which created it must still exist as the module is
-+ * in charge of removal of the sysfs file.
-+ *
-+ * The real value to try_module_get() is the module_is_live() check which
-+ * ensures this the caller of try_module_get() can yields to userspace module
-+ * removal requests and fail whatever it was about to process.
-+ */
- bool try_module_get(struct module *module)
- {
- 	bool ret = true;
--- 
-2.30.2
+If so all these are huge news to me and I missed the memo!
 
+If I would have been at such meeting I would have definitely yelled
+bloody murder!
+
+kunit relies on UML and UML is a simple one core architecture, to start
+with. This means I cannot run tests for multicore with it, which is
+where many races do happen! Yes, you can run kunit on other
+architectures, but all that is new.
+
+Second, I did help review kunit getting upstream, and suggested a few
+example tests, part of which were for sysctl to compare and contrast
+what is possible and what we cannot do.
+
+Not everything we want to test should be written as a kunit test.
+No way.
+
+In this case kunit is not ideal given I want to mimic something in
+userspace interaction, and expose races through error injection and
+if we can use as many cores to busy races out.
+
+Trust me, I'm an advocate of kunit, and I'm even trying to see ideally
+what tests from fstests / blktests could be kunit'ified. But in this
+case, no. Using a selftests is much better target framework.
+
+> > diff --git a/lib/test_sysfs.c b/lib/test_sysfs.c
+> > new file mode 100644
+> > index 000000000000..bf43016d40b5
+> > --- /dev/null
+> > +++ b/lib/test_sysfs.c
+> > @@ -0,0 +1,943 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> 
+> This does not match your "boiler-plate" text below, sorry.
+
+Indeed, I'll fix it.
+
+  Luis
