@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B05243D2383
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 14:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B336B3D23D0
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 14:50:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbhGVMFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 08:05:43 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:8404 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231738AbhGVMFm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 08:05:42 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16MCfFe4008517;
-        Thu, 22 Jul 2021 05:46:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=vbG5f71vUbU3JPV995brpcZN2JjUYvEDBUfJBgxbZF8=;
- b=PP4N65391H/7vvJ6h5YFCrv6h+RZ4MbVfKcvAnqGQtVU/eN8SGH1mn84YkZmzkkDzohR
- GdJLJBECd0Y2VmS+z+jFtcfk60KuPmlwIheGItnB4D8YcfxdNGrttbCBG9ztBfWPv1Ae
- 6xI+9C9f+oQ4mdDx8YXiF/UhPF7qhqKTck+UIa5+MK+YEw4mD7frPsHvXrMGAOIW6P5O
- tdLGX5djKHBQUWojq2CLXX8yzbBmVlYDyCWnoh3YAgONNVWEmhHXbqTSdfLYGnLJiJmv
- s5KrqO8t0RLJ9cnql9Vq1UDnX9B0HFlL+PXAiuuyn+rdZkZsXPTUYEM/wO6Tw36I60Ls 8w== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 39xx0qt6nh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 22 Jul 2021 05:46:14 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 22 Jul
- 2021 05:46:12 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 22 Jul 2021 05:46:12 -0700
-Received: from machine421.marvell.com (unknown [10.29.37.2])
-        by maili.marvell.com (Postfix) with ESMTP id 401853F7084;
-        Thu, 22 Jul 2021 05:46:11 -0700 (PDT)
-From:   Sunil Goutham <sgoutham@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     Sunil Goutham <sgoutham@marvell.com>
-Subject: [net PATCH] octeontx2-af: Remove unnecessary devm_kfree
-Date:   Thu, 22 Jul 2021 18:15:51 +0530
-Message-ID: <1626957951-31153-1-git-send-email-sgoutham@marvell.com>
-X-Mailer: git-send-email 2.7.4
+        id S232067AbhGVMJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 08:09:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33818 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230418AbhGVMJ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 08:09:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6DE8A6137D;
+        Thu, 22 Jul 2021 12:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1626958204;
+        bh=AvAnfgKMbAk4r38gt31QaTzOXYtSEjrqgjjEm8zkC90=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pIvMbeUqf8ddP7bv3Id3MXZNGZo3PMF6TrcY9NT8kNsy2v3q7xc9Ili6qdImyUPQY
+         jvD3UZRlldE5YQpRK3tLaxsLSn1RAeNZZkbacHNEVfiywuD5yiD5vVsQUDI1V7z6ZZ
+         4/+rpbGNTnqJoqySI1LCQY5uL3jgxYvgFzu43aSqgde01CbM8pidHG5rNIYfDBzoEL
+         NPHM+lIc0of5sZNjrsXhVkh/kpPueQqYOcfGN+H8U4kmmSVDgJa/0jyOsmnTQrdt1Y
+         04OZiJSMaMK1YdWRdkNCZbxSkaagrVIVmiHlWVwlKyN1lC4T6YxazXrCm8k6uT0JCI
+         4OV1If1dnUTmg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5E9E860C29;
+        Thu, 22 Jul 2021 12:50:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: bkyfCklfGlMWSdUAjkeTu9wJXqAbUOX4
-X-Proofpoint-ORIG-GUID: bkyfCklfGlMWSdUAjkeTu9wJXqAbUOX4
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-22_07:2021-07-22,2021-07-22 signatures=0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] nfp: fix return statement in nfp_net_parse_meta()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162695820438.13905.1765103600393643547.git-patchwork-notify@kernel.org>
+Date:   Thu, 22 Jul 2021 12:50:04 +0000
+References: <20210722112502.24472-1-simon.horman@corigine.com>
+In-Reply-To: <20210722112502.24472-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, niklas.soderlund@corigine.com,
+        louis.peens@corigine.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove devm_kfree of memory where VLAN entry to RVU PF mapping
-info is saved. This will be freed anyway at driver exit.
-Having this could result in warning from devm_kfree() if
-the memory is not allocated due to errors in rvu_nix_block_init()
-before nix_setup_txvlan().
+Hello:
 
-Fixes: 9a946def264d ("octeontx2-af: Modify nix_vtag_cfg mailbox to support TX VTAG entries")
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c | 1 -
- 1 file changed, 1 deletion(-)
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 0933699..0d2cd51 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -3842,7 +3842,6 @@ static void rvu_nix_block_freemem(struct rvu *rvu, int blkaddr,
- 		vlan = &nix_hw->txvlan;
- 		kfree(vlan->rsrc.bmap);
- 		mutex_destroy(&vlan->rsrc_lock);
--		devm_kfree(rvu->dev, vlan->entry2pfvf_map);
- 
- 		mcast = &nix_hw->mcast;
- 		qmem_free(rvu->dev, mcast->mce_ctx);
--- 
-2.7.4
+On Thu, 22 Jul 2021 13:25:02 +0200 you wrote:
+> From: Niklas Söderlund <niklas.soderlund@corigine.com>
+> 
+> The return type of the function is bool and while NULL do evaluate to
+> false it's not very nice, fix this by explicitly returning false. There
+> is no functional change.
+> 
+> Signed-off-by: Niklas Söderlund <niklas.soderlund@corigine.com>
+> Signed-off-by: Louis Peens <louis.peens@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] nfp: fix return statement in nfp_net_parse_meta()
+    https://git.kernel.org/netdev/net-next/c/4431531c482a
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
