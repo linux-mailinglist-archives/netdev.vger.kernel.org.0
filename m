@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 171F53D2268
-	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E3F3D2269
+	for <lists+netdev@lfdr.de>; Thu, 22 Jul 2021 13:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbhGVKYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 06:24:02 -0400
-Received: from mail-bn8nam11on2084.outbound.protection.outlook.com ([40.107.236.84]:41889
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        id S231674AbhGVKYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 06:24:04 -0400
+Received: from mail-bn1nam07on2046.outbound.protection.outlook.com ([40.107.212.46]:21252
+        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231628AbhGVKXv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 06:23:51 -0400
+        id S231629AbhGVKX4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 06:23:56 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QlDV84A2+LXPEeYJiABOiQVlrtSY6D26/4s4o1QAI5hNxiD5fAf2qzwpmSmraMMp1S7xQScEsa7SWOI9xRnFNQ66P3aXPv4LhNjfDLH3WbD8djbH1+/uUvgdIG8CDlVjyT+OeHYiKjkg+g0y+PV6wet+/CynCZ1VZmD0/dHDPJT1DTMqQST69kT2QjdMYN6hZd5dtIUIv5sE4AlVooEzSF09L5dWPv9vstjdkSzy7x9tXlzXrWatmAOLSQDEZCXxPSpC+EEJnTAtywdDVxDMnzLDvLeHX+MW/PyiXaW7kB5V5j63CikzM9bKSYkJLCaF6afEiyv/s8V0FCFloKxElQ==
+ b=Gz/OzZnCv4mTj2zngNDawBtOVY/vjMdQBXkB/EnngQyQ8571PHlzDdZSUovsiLGe0wJCHhxQGorjYer4JqPcaCvuTQU3oyGJ6Czrdc/2023OkujoajRO/j/lFyAc+2QhSMK4yWyKevHqyku81izNgtvx32M2CObqH0izE7XD3JzguVOIrU91bCQ/UVhK7b/jAbptszjso2eWYpxkui3lAQzeaw/JTOrpaFLRc8cA21bF5HUyRfoRpqkLq6Uw7IDckWeBfpETdgYOS/SPAEVTl6ecXs8Md2ayNBLUeQ6IBa+pQJXMw4OAcSolARdV/eBR2C357aw6B++vmiw0cFcnqg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xU5l6aDtsceNgoUrW3pxgrtmqwiI7usvRwB8T+szLtQ=;
- b=QehK6VS5tTLvEHVHYnaKzslYi6CHu2U2u4YgfZBMyHTfbeMOULRnSEbrMTkeqKzcgiy6t8a4jrc5ymX35SOb0Bhq4iAm9ZcN46p2a1FC1bpAQ9BFzaFizrbbaqOtHT5G1qxiiIRHvJfSHfUQzZyCg3dH4IHqFBQkXVHJVsjKe7fUHLMHjxaD6xxkgrQlSLawTkfzGZPXJAok2Mgzl6hJCg4RR9IDCztfdMSnnCAtuFD5f1dKbvjRfn4NxRWvOK+Xjhm7b/OwsGu4px2mV0O5aVt27nSih4X2885Uecl0tG8XCIi4ttf3ZDzWDSMA4SLHahPZ1Rg5ragq8M2xb4dzEQ==
+ bh=/aMa/LbdVVpeKmbblabEig4UwdwuOWkRhu0YaUZoYC8=;
+ b=H4Tz94q09hMh5AHUIyZ1xuFyPfPt265Nv8azwFSbT+o4BJkQ/mdMOWS9hbdZU+sj1Y3dzjMngrnjNQR08o/k9cTuZiWdo7G1ys65vNHpbpYc/7QzCcq7VQeeM7DKI3NyIblJ/RHK4XK45Hko6Kb+eyWT2HbIMt+vM0DCS5Y7rhrsOcp/xuMiMxu/Hc/kPSDYMgev5URsNW4aMZ64cCvjDLb8a6N7Q/gUOZmJCQq52ZRsx/VPvRIy+4H9x5IgiRIWzzsdCPPzfX9C+1N8lB2N625fkzSbWakto2YBAemp0i1oKT0+qctY+w55ksZ3oT9rdqyYhKELakc1sHAtXZMmGA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ 216.228.112.36) smtp.rcpttodomain=marvell.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xU5l6aDtsceNgoUrW3pxgrtmqwiI7usvRwB8T+szLtQ=;
- b=DiI8Xdf+XH7R51hS+OBIMmNHuZN1uThJJOk+cNbCwK1d/s7G0bXLTdskB4h6Kw8gXzlX4Y/2bIUW/JZ4+9ur5h2CoFBSJUzzSfwBh1zktyOL2zPtiG/mdqhPGmmQxQncIMwpJsGLJ+bxx/E5hiCFurcsLX3i00xZLdSi3Kj5ERiWZGVVF6ZK3BDNCCuc48CDJql8PmjpYRbZGus2MiW04uG52QDMM15BiM98jwwhnxSaOt6d2RIB9TrBlbsbDWkH5hhjZLytZxDE0udtfrzj7tjg1fiO9Qk3uHVe5B1JI2Uqs5oGM7ZXoTVSjZtQrXAeIFb4KH1a5K9azjuhtHdPJQ==
-Received: from BN0PR04CA0076.namprd04.prod.outlook.com (2603:10b6:408:ea::21)
- by CY4PR12MB1575.namprd12.prod.outlook.com (2603:10b6:910:f::23) with
+ bh=/aMa/LbdVVpeKmbblabEig4UwdwuOWkRhu0YaUZoYC8=;
+ b=ZOkajTKqJWB2b5c1RaYaF/2hyfUXDcjloRhfdCqZlDOWTZXHhtatP3pEl7BQug64OhtiApySTagyA2Mum+s6e19CvYmiFYqPWjYKvZkCysoWyQMqgsXcn7i2n90X7+FDu+woASdLwqFksXV2jnk1Nkym4FMW7ni1QpL4in5xsHNqARGF8+t3b4AhCapZ6lVh7nqkY+Dz215DMP3NAv1DD9c3JlwwPKbpfbJ2y4V0AA9TTflFYKO2ANQdsSLiGSZW0eUI0etNl4sT3+njm9E0Fe7V9hf+kkL1OgWwvcZEBLpvgjf6zjpu4B+NdNw8F7jytoaelGstiZYIqIbCiifvAA==
+Received: from BN9PR03CA0320.namprd03.prod.outlook.com (2603:10b6:408:112::25)
+ by MN2PR12MB3486.namprd12.prod.outlook.com (2603:10b6:208:c6::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Thu, 22 Jul
- 2021 11:04:25 +0000
-Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ea:cafe::77) by BN0PR04CA0076.outlook.office365.com
- (2603:10b6:408:ea::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24; Thu, 22 Jul
+ 2021 11:04:30 +0000
+Received: from BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:112:cafe::46) by BN9PR03CA0320.outlook.office365.com
+ (2603:10b6:408:112::25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend
- Transport; Thu, 22 Jul 2021 11:04:25 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=pass action=none header.from=nvidia.com;
+ Transport; Thu, 22 Jul 2021 11:04:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.36)
+ smtp.mailfrom=nvidia.com; marvell.com; dkim=none (message not signed)
+ header.d=none;marvell.com; dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
+ 216.228.112.36 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.36; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.36) by
+ BN8NAM11FT026.mail.protection.outlook.com (10.13.177.51) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 11:04:24 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
- 2021 11:04:24 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
- 2021 11:04:24 +0000
+ 15.20.4352.24 via Frontend Transport; Thu, 22 Jul 2021 11:04:29 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 22 Jul
+ 2021 11:04:28 +0000
 Received: from vdi.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 22 Jul 2021 11:04:19 +0000
+ Transport; Thu, 22 Jul 2021 11:04:24 +0000
 From:   Boris Pismenny <borisp@nvidia.com>
 To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
         <saeedm@nvidia.com>, <hch@lst.de>, <sagi@grimberg.me>,
@@ -66,12 +63,11 @@ CC:     <boris.pismenny@gmail.com>, <linux-nvme@lists.infradead.org>,
         <netdev@vger.kernel.org>, <benishay@nvidia.com>,
         <ogerlitz@nvidia.com>, <yorayz@nvidia.com>,
         Boris Pismenny <borisp@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
         Or Gerlitz <ogerlitz@mellanox.com>,
         Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v5 net-next 02/36] iov_iter: DDP copy to iter/pages
-Date:   Thu, 22 Jul 2021 14:02:51 +0300
-Message-ID: <20210722110325.371-3-borisp@nvidia.com>
+Subject: [PATCH v5 net-next 03/36] net: skb copy(+hash) iterators for DDP offloads
+Date:   Thu, 22 Jul 2021 14:02:52 +0300
+Message-ID: <20210722110325.371-4-borisp@nvidia.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210722110325.371-1-borisp@nvidia.com>
 References: <20210722110325.371-1-borisp@nvidia.com>
@@ -80,171 +76,137 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cc1bda8f-d512-4983-c86f-08d94d007797
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1575:
-X-Microsoft-Antispam-PRVS: <CY4PR12MB1575D2B0C43279EFB036FDD1BDE49@CY4PR12MB1575.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:530;
+X-MS-Office365-Filtering-Correlation-Id: 354ce2b0-fcd5-4de4-136e-08d94d007a65
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3486:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3486DC4C6B7088BCB9416F8DBDE49@MN2PR12MB3486.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:497;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AFklZ36uzu0+SigaEwzgPzh1c2C/vLV63T1wxRTGmA70w59x9tevJ7SP6Hi9rAisyzopfRKp9MmCQguKmKbdK2F5QE17X0i52V8p1iqxhk55p0Pz2ulL3eokSgR6peP0LgqDctw5z8tcbjjVDsfF6KUtBs6wg0oxWlQOKe1dMae8kQTU7BeDGzjyBXVLLP+EAavUQqmb7376prcyrtwvAjaGqCUnyP4uouYwU8vgms2lHpVlrFg4lN7qW+PPZ/S+aniK8Q4OwqL1Iv/KbWiTMV+NZD7fXeh9mOM0szjAYyOrYge6K9hakjraMeNshVwRVvXf2qRrmHM7pnmGiX7Mf51hsuBLPSE9YkLvCcbrT7Ol0fZ1gsNMCiuGYaocigWIKZHqeSGNZ3qwJmWQNTvVaTZ58P+pDWq7Wl1k4Iv3GLwFVY4t9zh21+n2a9jZECNfzAeHp2TnN3WMtOwl8mObxHcBi4vrjF34cHyyeFKUxBhlqNGlKT4JPa2cgejnQ0fReF6soap4hIA738jrIKhD0S/aPWI+8WvZ032PhHC5VJEK9pbSkecsAhlZKmOaGjZGsJddBg+BtzcOsAdSG63jBm3KQGcIm70Cc87Bc6m8Rj7WiZHxtPVEtAcf0BUFSokDVStPmWZ3wGMnTbdce/ZiH3PancdPgmAtXVIEmBP/A4MPyBb+1D5BhUgJQY6Jw9yYj9KpEK1hY+j1x/Iyi7riqDrMC5rA5gUvZPVtnoPfDG8=
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(136003)(39860400002)(36840700001)(46966006)(5660300002)(186003)(4326008)(1076003)(36906005)(54906003)(356005)(7636003)(316002)(82310400003)(8936002)(36860700001)(26005)(426003)(8676002)(6666004)(2906002)(7696005)(336012)(110136005)(478600001)(83380400001)(2616005)(36756003)(107886003)(70586007)(921005)(47076005)(86362001)(70206006)(82740400003)(7416002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Ss+cR4gX0w8eeS1jnnzy6ds/5RWKjAXNUjwzH2uPJzUXqh/xvkwP4LRcTwlNq5UyWdhcHZ8yT3xtZ9AwfcIOyS0SL/ryXULLKZoO4An87ENwTa+jY2jjtXBx8M+4PvNzPr+IfgDPFamae4P2jFV4ZzywDI+XY6RuA3KVLGxIoOxCP/qaLgGfT2gOOzGnn7ke53DjaGFqLtvhJHeoBveFahLzzH+Yoion06UkjuklUrQHN+aN/82dfmlavgiTRkUVfZWBrBRjI5xwK0ExAORoDTD28dUXJx9jEpgFUO5y7/s0ix88qBGdJDEh9XjIgvpSwFv/59EpgNin7a7Ce/kZp/aQYqf+fidhEMRps+TNsNSXzFBQm9tq4QE2johSmvzqjPW+VIpefBCkqDh18TG44tJsF6LofHpckcl1PURz9ZSO24LuqnQdJt8dT1a675acGijF9IXWaK+1ytZt8xE+2+ig+TQBpMOCwAFXqhbvugxzg0H4VbD2XhxJNZWJMHueQ5uign3dB7IcvX/JxGiNziWGfc5IzoAn97uLeoqICavSRQAslCiZzvW4TH1DBp3SoFkt9RfqfyYdAaBOoE89sFb2+5AdsWVR7Wt6e5nsLkRM0Gpw/QQGDMfonv4giDsDHq7U+1lrWY6xRPcVckJql9miSVwvcTY1eCBHTS6umppxyPh3qPN7pelDyjoDjPSA+0ExTMd9WUn8/YySI1kvIaNnh6SeENYNS1Ub530wg8c=
+X-Forefront-Antispam-Report: CIP:216.228.112.36;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid05.nvidia.com;CAT:NONE;SFS:(4636009)(39860400002)(136003)(346002)(396003)(376002)(46966006)(36840700001)(2906002)(86362001)(83380400001)(36860700001)(186003)(82310400003)(107886003)(6666004)(921005)(47076005)(8676002)(5660300002)(8936002)(70586007)(70206006)(54906003)(316002)(36756003)(426003)(4326008)(110136005)(36906005)(7696005)(356005)(7416002)(336012)(26005)(7636003)(1076003)(2616005)(478600001)(82740400003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 11:04:24.9721
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2021 11:04:29.6809
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc1bda8f-d512-4983-c86f-08d94d007797
+X-MS-Exchange-CrossTenant-Network-Message-Id: 354ce2b0-fcd5-4de4-136e-08d94d007a65
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.36];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT026.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1575
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3486
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Boris Pismenny <borisp@mellanox.com>
 
-When using direct data placement (DDP) the NIC writes some of the payload
-directly to the destination buffer, and constructs SKBs such that they
-point to this data. To skip copies when SKB data already resides in the
-destination we use the newly introduced routines in this commit, which
-check if (src == dst), and skip the copy when that's true.
+This commit introduces new functions to support direct data placement
+(DDP) NIC offloads that avoid copying data from SKBs.
 
-As the current user for these routines is in the block layer (nvme-tcp),
-then we only apply the change for bio_vec. Other routines use the normal
-methods for copying.
+Later patches will use this for nvme-tcp DDP offload.
 
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
+Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 ---
- include/linux/uio.h | 17 ++++++++++++++
- lib/iov_iter.c      | 55 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 72 insertions(+)
+ include/linux/skbuff.h |  9 ++++++++
+ net/core/datagram.c    | 48 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 57 insertions(+)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index d3ec87706d75..a61fdb369e0e 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -131,6 +131,9 @@ size_t copy_page_from_iter(struct page *page, size_t offset, size_t bytes,
- 			 struct iov_iter *i);
- 
- size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
-+#ifdef CONFIG_ULP_DDP
-+size_t _ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index d323ecd37448..8c1bfd7081d1 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3613,6 +3613,10 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
+ 			   struct poll_table_struct *wait);
+ int skb_copy_datagram_iter(const struct sk_buff *from, int offset,
+ 			   struct iov_iter *to, int size);
++#ifdef CONFIG_TCP_DDP
++int skb_ddp_copy_datagram_iter(const struct sk_buff *from, int offset,
++			       struct iov_iter *to, int size);
 +#endif
- size_t _copy_from_iter(void *addr, size_t bytes, struct iov_iter *i);
- bool _copy_from_iter_full(void *addr, size_t bytes, struct iov_iter *i);
- size_t _copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i);
-@@ -145,6 +148,16 @@ size_t copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
- 		return _copy_to_iter(addr, bytes, i);
- }
- 
-+#ifdef CONFIG_ULP_DDP
-+static __always_inline __must_check
-+size_t ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
-+{
-+	if (unlikely(!check_copy_size(addr, bytes, true)))
-+		return 0;
-+	return _ddp_copy_to_iter(addr, bytes, i);
-+}
-+#endif
-+
- static __always_inline __must_check
- size_t copy_from_iter(void *addr, size_t bytes, struct iov_iter *i)
+ static inline int skb_copy_datagram_msg(const struct sk_buff *from, int offset,
+ 					struct msghdr *msg, int size)
  {
-@@ -281,6 +294,10 @@ size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum, struct io
- bool csum_and_copy_from_iter_full(void *addr, size_t bytes, __wsum *csum, struct iov_iter *i);
- size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
- 		struct iov_iter *i);
-+#ifdef CONFIG_ULP_DDP
-+size_t ddp_hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
-+		struct iov_iter *i);
+@@ -3623,6 +3627,11 @@ int skb_copy_and_csum_datagram_msg(struct sk_buff *skb, int hlen,
+ int skb_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
+ 			   struct iov_iter *to, int len,
+ 			   struct ahash_request *hash);
++#ifdef CONFIG_TCP_DDP
++int skb_ddp_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
++					struct iov_iter *to, int len,
++					struct ahash_request *hash);
 +#endif
- 
- struct iovec *iovec_from_user(const struct iovec __user *uvector,
- 		unsigned long nr_segs, unsigned long fast_segs,
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index c701b7a187f2..2e9be46a9b56 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -508,6 +508,18 @@ void iov_iter_init(struct iov_iter *i, unsigned int direction,
- }
- EXPORT_SYMBOL(iov_iter_init);
- 
-+#ifdef CONFIG_ULP_DDP
-+static void ddp_memcpy_to_page(struct page *page, size_t offset, const char *from, size_t len)
-+{
-+	char *to = kmap_atomic(page);
-+
-+	if (to + offset != from)
-+		memcpy(to + offset, from, len);
-+
-+	kunmap_atomic(to);
-+}
-+#endif
-+
- static inline bool allocated(struct pipe_buffer *buf)
- {
- 	return buf->ops == &default_pipe_buf_ops;
-@@ -648,6 +660,28 @@ static size_t csum_and_copy_to_pipe_iter(const void *addr, size_t bytes,
- 	return bytes;
+ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
+ 				 struct iov_iter *from, int len);
+ int zerocopy_sg_from_iter(struct sk_buff *skb, struct iov_iter *frm);
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 15ab9ffb27fe..d346fd5da22c 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -495,6 +495,27 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+ 	return 0;
  }
  
-+#ifdef CONFIG_ULP_DDP
-+size_t _ddp_copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
++#ifdef CONFIG_TCP_DDP
++/**
++ *	skb_ddp_copy_and_hash_datagram_iter - Copies datagrams from skb frags to
++ *	an iterator and update a hash. If the iterator and skb frag point to the
++ *	same page and offset, then the copy is skipped.
++ *	@skb: buffer to copy
++ *	@offset: offset in the buffer to start copying from
++ *	@to: iovec iterator to copy to
++ *	@len: amount of data to copy from buffer to iovec
++ *      @hash: hash request to update
++ */
++int skb_ddp_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
++					struct iov_iter *to, int len,
++					struct ahash_request *hash)
 +{
-+	const char *from = addr;
-+	if (unlikely(iov_iter_is_pipe(i)))
-+		return copy_pipe_to_iter(addr, bytes, i);
-+	if (iter_is_iovec(i))
-+		might_fault();
-+	iterate_and_advance(i, bytes, v,
-+		copyout(v.iov_base, (from += v.iov_len) - v.iov_len, v.iov_len),
-+		ddp_memcpy_to_page(v.bv_page, v.bv_offset,
-+				   (from += v.bv_len) - v.bv_len, v.bv_len),
-+		memcpy(v.iov_base, (from += v.iov_len) - v.iov_len, v.iov_len),
-+		ddp_memcpy_to_page(v.bv_page, v.bv_offset,
-+				   (from += v.bv_len) - v.bv_len, v.bv_len)
-+		)
-+
-+	return bytes;
++	return __skb_datagram_iter(skb, offset, to, len, true,
++			ddp_hash_and_copy_to_iter, hash);
 +}
-+EXPORT_SYMBOL(_ddp_copy_to_iter);
++EXPORT_SYMBOL(skb_ddp_copy_and_hash_datagram_iter);
 +#endif
 +
- size_t _copy_to_iter(const void *addr, size_t bytes, struct iov_iter *i)
- {
- 	const char *from = addr;
-@@ -1818,6 +1852,27 @@ size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *_csstate,
+ /**
+  *	skb_copy_and_hash_datagram_iter - Copy datagram to an iovec iterator
+  *          and update a hash.
+@@ -513,6 +534,33 @@ int skb_copy_and_hash_datagram_iter(const struct sk_buff *skb, int offset,
  }
- EXPORT_SYMBOL(csum_and_copy_to_iter);
+ EXPORT_SYMBOL(skb_copy_and_hash_datagram_iter);
  
-+#ifdef CONFIG_ULP_DDP
-+size_t ddp_hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
-+		struct iov_iter *i)
++#ifdef CONFIG_TCP_DDP
++static size_t simple_ddp_copy_to_iter(const void *addr, size_t bytes,
++				      void *data __always_unused,
++				      struct iov_iter *i)
 +{
-+#ifdef CONFIG_CRYPTO_HASH
-+	struct ahash_request *hash = hashp;
-+	struct scatterlist sg;
-+	size_t copied;
-+
-+	copied = ddp_copy_to_iter(addr, bytes, i);
-+	sg_init_one(&sg, addr, copied);
-+	ahash_request_set_crypt(hash, &sg, NULL, copied);
-+	crypto_ahash_update(hash);
-+	return copied;
-+#else
-+	return 0;
-+#endif
++	return ddp_copy_to_iter(addr, bytes, i);
 +}
-+EXPORT_SYMBOL(ddp_hash_and_copy_to_iter);
++
++/**
++ *	skb_ddp_copy_datagram_iter - Copies datagrams from skb frags to an
++ *	iterator. If the iterator and skb frag point to the same page and
++ *	offset, then the copy is skipped.
++ *	@skb: buffer to copy
++ *	@offset: offset in the buffer to start copying from
++ *	@to: iovec iterator to copy to
++ *	@len: amount of data to copy from buffer to iovec
++ */
++int skb_ddp_copy_datagram_iter(const struct sk_buff *skb, int offset,
++			       struct iov_iter *to, int len)
++{
++	trace_skb_copy_datagram_iovec(skb, len);
++	return __skb_datagram_iter(skb, offset, to, len, false,
++			simple_ddp_copy_to_iter, NULL);
++}
++EXPORT_SYMBOL(skb_ddp_copy_datagram_iter);
 +#endif
 +
- size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
- 		struct iov_iter *i)
+ static size_t simple_copy_to_iter(const void *addr, size_t bytes,
+ 		void *data __always_unused, struct iov_iter *i)
  {
 -- 
 2.24.1
