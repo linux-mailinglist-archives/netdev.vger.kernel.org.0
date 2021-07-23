@@ -2,123 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F31ED3D350D
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 09:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B50E3D353C
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 09:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbhGWG2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 02:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbhGWG2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 02:28:44 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50B1C061575
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 00:09:17 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so7651289pja.5
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 00:09:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bhkkYXi3ADOrlZ4EDXCkVoxr0Z1zK3tnngVvHVFWdeg=;
-        b=hl0ctl9eQf/deghA9nh2F3A9bSDcalSOUBylDo9UrRj/xMNNvhEBQ47eras39JlOb3
-         nDYqMrJ94XVrPM1zhuoWIbTp1ep7unXJtcGWLmljj53mmc7UZgA7ErGQIfs+ac+Tm2e4
-         n+6ntjRsOK6LUsLFMHIQDpaajbjAhQ0LDmOmU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bhkkYXi3ADOrlZ4EDXCkVoxr0Z1zK3tnngVvHVFWdeg=;
-        b=TIpd0K64VPbhBHFwvjuOJlI8wLqzJY2TTAz+fzjCG/S1gHkwGNqNT5cEdAjEJr2jOG
-         vNJcxhmfuhhQPlLzWs9BQZG8GyzMyElCNX117lByNYKuWybnkmECakdm7KqKfi8wmI0t
-         cpsiZ1OrUXtB9eTVI2RW3dg6MH0cgyqJ8xqyo27qMADFaMfe0hDOedPBliqGJ5ORGgi3
-         aASeUJ4eiLYT5QAte81SXT4FdHWCbMjdypy2W7MjvCeJYV3PaiMHZQIsJtTFfLIaWG4z
-         VMQdqVA2COxNG1FOTeARff7KyuifzPVtBT5Stmuen3FQGC9i2cqRjgSbrSQC+XuyclP0
-         rJ2g==
-X-Gm-Message-State: AOAM530/Zk4dL460JJMfgA/U+Iw4P7KIuFQOwTIsn45m48MMIhfUCac4
-        tglktf7+Mq5j8PCPQhqfSoiceg==
-X-Google-Smtp-Source: ABdhPJwrICfiLeYa9gCBf5xIwAD5tWSH0gN9yJptX5bd7661BAPnf7l+DlYUNUpSWU8tQ54XF+SpmA==
-X-Received: by 2002:a17:90a:db52:: with SMTP id u18mr12684832pjx.56.1627024157295;
-        Fri, 23 Jul 2021 00:09:17 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c19sm5895870pfp.184.2021.07.23.00.09.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 00:09:16 -0700 (PDT)
-Date:   Fri, 23 Jul 2021 00:09:15 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Qitao Xu <qitao.xu@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-hardening@vger.kernel.org
-Subject: Re: [Patch net-next resend v2] net: use %px to print skb address in
- trace_netif_receive_skb
-Message-ID: <202107230000.B52B102@keescook>
-References: <20210715055923.43126-1-xiyou.wangcong@gmail.com>
+        id S233277AbhGWGtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 02:49:22 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7047 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233224AbhGWGtV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 02:49:21 -0400
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GWLR74lyXzYcps;
+        Fri, 23 Jul 2021 15:24:03 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 23 Jul 2021 15:29:53 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 23 Jul 2021 15:29:52 +0800
+From:   Yufeng Mo <moyufeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <jay.vosburgh@canonical.com>, <jiri@resnulli.us>
+CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
+        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linyunsheng@huawei.com>, <zhangjiaran@huawei.com>,
+        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
+        <salil.mehta@huawei.com>, <moyufeng@huawei.com>,
+        <linuxarm@huawei.com>, <linuxarm@openeuler.org>
+Subject: [PATCH RFC net-next] bonding: 3ad: fix the conflict between __bond_release_one and bond_3ad_state_machine_handler
+Date:   Fri, 23 Jul 2021 15:26:11 +0800
+Message-ID: <1627025171-18480-1-git-send-email-moyufeng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210715055923.43126-1-xiyou.wangcong@gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 14, 2021 at 10:59:23PM -0700, Cong Wang wrote:
-> From: Qitao Xu <qitao.xu@bytedance.com>
-> 
-> The print format of skb adress in tracepoint class net_dev_template
-> is changed to %px from %p, because we want to use skb address
-> as a quick way to identify a packet.
+Some time ago, I reported a calltrace issue
+"did not find a suitable aggregator", please see[1].
+After a period of analysis and reproduction, I find
+that this problem is caused by concurrency.
 
-No; %p was already hashed to uniquely identify unique addresses. This
-is needlessly exposing kernel addresses with no change in utility. See
-[1] for full details on when %px is justified (almost never).
+Before the problem occurs, the bond structure is like follows:
 
-> Note, trace ring buffer is only accessible to privileged users,
-> it is safe to use a real kernel address here.
+bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+                      \
+                        port0
+      \
+        slaver1(eth1) - agg1.lag_ports -> NULL
+                      \
+                        port1
 
-That's not accurate either; there is a difference between uid 0 and
-kernel mode privilege levels.
+If we run 'ifenslave bond0 -d eth1', the process is like below:
 
-Please revert these:
+excuting __bond_release_one()
+|
+bond_upper_dev_unlink()[step1]
+|                       |                       |
+|                       |                       bond_3ad_lacpdu_recv()
+|                       |                       ->bond_3ad_rx_indication()
+|                       |                       ->ad_rx_machine()
+|                       |                       ->__record_pdu()[step2]
+|                       |                       |
+|                       bond_3ad_state_machine_handler()
+|                       ->ad_port_selection_logic()
+|                       ->try to find free aggregator[step3]
+|                       ->try to find suitable aggregator[step4]
+|                       ->did not find a suitable aggregator[step5]
+|                       |
+|                       |
+bond_3ad_unbind_slave() |
 
-	851f36e40962408309ad2665bf0056c19a97881c
-	65875073eddd24d7b3968c1501ef29277398dc7b
+step1: already removed slaver1(eth1) from list, but port1 remains
+step2: receive a lacpdu and update port0
+step3: port0 will be removed from agg0.lag_ports. The struct is
+       "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+       same time, slaver1/agg1 has been removed from the list by step1.
+       So we can't find a free aggregator now.
+step4: can't find suitable aggregator because of step2
+step5: cause a calltrace since port->aggregator is NULL
 
-And adjust this to replace %px with %p:
+To solve this concurrency problem, the range of bond->mode_lock
+is extended from only bond_3ad_unbind_slave() to both
+bond_upper_dev_unlink() and bond_3ad_unbind_slave().
 
-	70713dddf3d25a02d1952f8c5d2688c986d2f2fb
+[1]https://lore.kernel.org/netdev/10374.1611947473@famine/
 
-Thanks!
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+---
+ drivers/net/bonding/bond_3ad.c  | 7 +------
+ drivers/net/bonding/bond_main.c | 3 +++
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
--Kees
-
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#p-format-specifier
-
-> 
-> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
-> ---
->  include/trace/events/net.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-> index 2399073c3afc..78c448c6ab4c 100644
-> --- a/include/trace/events/net.h
-> +++ b/include/trace/events/net.h
-> @@ -136,7 +136,7 @@ DECLARE_EVENT_CLASS(net_dev_template,
->  		__assign_str(name, skb->dev->name);
->  	),
->  
-> -	TP_printk("dev=%s skbaddr=%p len=%u",
-> +	TP_printk("dev=%s skbaddr=%px len=%u",
->  		__get_str(name), __entry->skbaddr, __entry->len)
->  )
->  
-> -- 
-> 2.27.0
-> 
-
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6908822..f0f5adb 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2099,15 +2099,13 @@ void bond_3ad_unbind_slave(struct slave *slave)
+ 	struct list_head *iter;
+ 	bool dummy_slave_update; /* Ignore this value as caller updates array */
+ 
+-	/* Sync against bond_3ad_state_machine_handler() */
+-	spin_lock_bh(&bond->mode_lock);
+ 	aggregator = &(SLAVE_AD_INFO(slave)->aggregator);
+ 	port = &(SLAVE_AD_INFO(slave)->port);
+ 
+ 	/* if slave is null, the whole port is not initialized */
+ 	if (!port->slave) {
+ 		slave_warn(bond->dev, slave->dev, "Trying to unbind an uninitialized port\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	slave_dbg(bond->dev, slave->dev, "Unbinding Link Aggregation Group %d\n",
+@@ -2239,9 +2237,6 @@ void bond_3ad_unbind_slave(struct slave *slave)
+ 		}
+ 	}
+ 	port->slave = NULL;
+-
+-out:
+-	spin_unlock_bh(&bond->mode_lock);
+ }
+ 
+ /**
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 0ff7567..00a501c 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2129,6 +2129,8 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	/* recompute stats just before removing the slave */
+ 	bond_get_stats(bond->dev, &bond->bond_stats);
+ 
++	/* Sync against bond_3ad_state_machine_handler() */
++	spin_lock_bh(&bond->mode_lock);
+ 	bond_upper_dev_unlink(bond, slave);
+ 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
+ 	 * for this slave anymore.
+@@ -2137,6 +2139,7 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 
+ 	if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 		bond_3ad_unbind_slave(slave);
++	spin_unlock_bh(&bond->mode_lock);
+ 
+ 	if (bond_mode_can_use_xmit_hash(bond))
+ 		bond_update_slave_arr(bond, slave);
 -- 
-Kees Cook
+2.8.1
+
