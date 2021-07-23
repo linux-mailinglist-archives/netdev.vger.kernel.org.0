@@ -2,105 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 107783D4235
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 23:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A62573D4244
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 23:38:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbhGWUvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 16:51:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57291 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231724AbhGWUvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 16:51:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1627075938;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kv9vWlWNi+5ipAdY4bqeIfUHmcLrOuXxFAhQX8y8DPQ=;
-        b=DaTcLh4LCWEC19YdnXYihrK0sdGoDCb5QSJ+SJ3Ubvkbd/7s3BeQ1s7x4VtNml/k4puq0Z
-        pFNzHapytJtMBJDHK36kG7W88QShpe8tfqobKt4jEtiz8cZC5qrI1spnPn6G1SV1d4ViBD
-        oU6R78lIlD9zmPOPZobHxWKoEyUcPro=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-150-kEgJDXBFOayLzha1W6758Q-1; Fri, 23 Jul 2021 17:32:17 -0400
-X-MC-Unique: kEgJDXBFOayLzha1W6758Q-1
-Received: by mail-ed1-f70.google.com with SMTP id dn8-20020a05640222e8b029039ef9536577so1372808edb.5
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 14:32:17 -0700 (PDT)
+        id S231954AbhGWU6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 16:58:15 -0400
+Received: from mail-il1-f182.google.com ([209.85.166.182]:46812 "EHLO
+        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231350AbhGWU6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 16:58:14 -0400
+Received: by mail-il1-f182.google.com with SMTP id r5so2770141ilc.13;
+        Fri, 23 Jul 2021 14:38:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=kv9vWlWNi+5ipAdY4bqeIfUHmcLrOuXxFAhQX8y8DPQ=;
-        b=jHBdsboS1VBjDiwuRxtFrOMLD3dOuHJFvA3J6cuzEZyn1NwEQ/lNB/cCy+CNTBj/5U
-         YX4QT//bwNAYIqdYQctp3Rz2fcP9NfH38Rbn2Eonxc1L+0yf2BX4g9KQuTh+Ia4VJt+/
-         wI9HDa4Zakttq4QzL0yxCp6wmmgdDhkbbx6bK7SI6wFE3JixxK0fMtYvrSM98Mc7dA09
-         ixWwbzZuEqoQFV8ITdMCfC/vi9yceGXgMmW/+UjyJD0CcbLr0GtM0qAqVDQxqkeCAH1A
-         qvJn6K3fkbEVgpoiFw8ReVVP2QwQNJxXjVCLdRu6CKo64g9Egq6i4t453BmMBkLj+bq2
-         zNmQ==
-X-Gm-Message-State: AOAM5334pciYQgzYm/S4sep3AkR+ihuU4IWGyPxX/1f1u18s1eiSNAsi
-        u0ucd181BLekmbm23LDaGxfM1bsbzLqdl9iM5PIeYTGsBgNercOsewp78I8w0DJCVmgi5nIJ+AB
-        J2agYOtWr5Jv14wIm
-X-Received: by 2002:aa7:c782:: with SMTP id n2mr7835122eds.77.1627075935040;
-        Fri, 23 Jul 2021 14:32:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxk+CAwx+wFR9eJE+a0xcoTVTHTZIVQC6H48Hygqbj8Y8yzDFolgzjOJnf7aWLMVNRVjoqjOg==
-X-Received: by 2002:aa7:c782:: with SMTP id n2mr7835098eds.77.1627075934782;
-        Fri, 23 Jul 2021 14:32:14 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id ep19sm11231563ejc.58.2021.07.23.14.32.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qLC1a0942Ze1tivGSf8NMdJuQgNlX4CCAdHKNqxYvFw=;
+        b=d9r2wBxYmwV9OKm0YYV3G+m8BmrLid2DSa4FflCKZfaItnV3suZlBf7YdxDxWtRVOh
+         78Kg45DgrPbVF3CNWrJ9hYZvsSCOpLSzEbwidAJwsdhWQ6+MwEnKuvz16I780Oihk2HT
+         8cL3zu1/vb48UPJMAnL5K7Zho08QDu0eK95fGVAJSXJe+z7Q2Z68N9B06gYZQ3ezWUnA
+         npdLMVU6AtcjDPxKQlGsDjZ9aAYx50mVy+JFWapdlE1MSn49T9f2+ea3xU4MXk+jMjYo
+         TuJ7wBgOoRwyzG8ru35OON3vLIb8KJ1aGVfyEgTMWWott3aH3l7XozIjPF9W3mhSbouu
+         0JKg==
+X-Gm-Message-State: AOAM532HB8r1+uc+16YygT0AfLA21sPp63ywT/AqGNWTrzrFMVlmbvRA
+        I1Aatv5xlFFZrG4ygtn/UQ==
+X-Google-Smtp-Source: ABdhPJzZQVJYy6rBmD8rhTRjqsu5y/388MRTnNj0Dek62WfDxQEci31NVIVSjh3spz/Rszg7/lvxJA==
+X-Received: by 2002:a92:de0a:: with SMTP id x10mr4799658ilm.215.1627076326664;
+        Fri, 23 Jul 2021 14:38:46 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id h6sm18168876iop.40.2021.07.23.14.38.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 14:32:14 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 8BB58180325; Fri, 23 Jul 2021 23:32:13 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/8] Improve XDP samples usability and output
-In-Reply-To: <20210721212833.701342-1-memxor@gmail.com>
-References: <20210721212833.701342-1-memxor@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 23 Jul 2021 23:32:13 +0200
-Message-ID: <87eebo7m3m.fsf@toke.dk>
+        Fri, 23 Jul 2021 14:38:46 -0700 (PDT)
+Received: (nullmailer pid 2634577 invoked by uid 1000);
+        Fri, 23 Jul 2021 21:38:43 -0000
+Date:   Fri, 23 Jul 2021 15:38:43 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Frank Rowand <frowand.list@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, linux-sunxi@googlegroups.com
+Subject: Re: [PATCH 07/54] dt-bindings: bluetooth: broadcom: Fix clocks check
+Message-ID: <20210723213843.GA2634543@robh.at.kernel.org>
+References: <20210721140424.725744-1-maxime@cerno.tech>
+ <20210721140424.725744-8-maxime@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210721140424.725744-8-maxime@cerno.tech>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
+On Wed, 21 Jul 2021 16:03:37 +0200, Maxime Ripard wrote:
+> The original binding was mentioning that valid values for the clocks and
+> clock-names property were one or two clocks from extclk, txco and lpo,
+> with extclk being deprecated in favor of txco.
+> 
+> However, the current binding lists a valid array as extclk, txco and
+> lpo, with either one or two items.
+> 
+> While this looks similar, it actually enforces that all the device trees
+> use either ["extclk"], or ["extclk", "txco"]. That doesn't make much
+> sense, since the two clocks are said to be equivalent, with one
+> superseeding the other.
+> 
+> lpo is also not a valid clock anymore, and would be as the third clock
+> of the list, while we could have only this clock in the previous binding
+> (and in DTs).
+> 
+> Let's rework the clock clause to allow to have either:
+> 
+>  - extclk, and mark it a deprecated
+>  - txco alone
+>  - lpo alone
+>  - txco, lpo
+> 
+> While ["extclk", "lpo"] wouldn't be valid, it wasn't found in any device
+> tree so it's not an issue in practice.
+> 
+> Similarly, ["lpo", "txco"] is still considered invalid, but it's
+> generally considered as a best practice to fix the order of clocks.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> ---
+>  .../bindings/net/broadcom-bluetooth.yaml        | 17 +++++++++++++++--
+>  1 file changed, 15 insertions(+), 2 deletions(-)
+> 
 
-> This set revamps XDP samples related to redirection to show better output and
-> implement missing features consolidating all their differences and giving them a
-> consistent look and feel, by implementing common features and command line
-> options.  Some of the TODO items like reporting redirect error numbers
-> (ENETDOWN, EINVAL, ENOSPC, etc.) have also been implemented.
->
-> Some of the features are:
-> * Received packet statistics
-> * xdp_redirect/xdp_redirect_map tracepoint statistics
-> * xdp_redirect_err/xdp_redirect_map_err tracepoint statistics (with support for
->   showing exact errno)
-> * xdp_cpumap_enqueue/xdp_cpumap_kthread tracepoint statistics
-> * xdp_devmap_xmit tracepoint statistics
-> * xdp_exception tracepoint statistics
-> * Per ifindex pair devmap_xmit stats shown dynamically (for xdp_monitor) to
->   decompose the total.
-> * Use of BPF skeleton and BPF static linking to share BPF programs.
-> * Use of vmlinux.h and tp_btf for raw_tracepoint support.
-> * Removal of redundant -N/--native-mode option (enforced by default now)
-> * ... and massive cleanups all over the place.
-
-I took this for a quick spin, and it's a great improvement over the
-status quo; it's not immediately obvious when using xdp_redirect and it
-doesn't work, and the stats output is awesome!
-
-Today is my last day before going on vacation for three weeks, and
-unfortunately I won't have time to review the code in detail before
-then; but wanted to express some encouragement before signing off -
-please keep at this! :)
-
--Toke
-
+Reviewed-by: Rob Herring <robh@kernel.org>
