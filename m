@@ -2,167 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C243D3E36
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:09:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 528593D3E20
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbhGWQ2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 12:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbhGWQ2X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:28:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4474C061575
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 10:08:56 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1m6yfL-0003cr-AI; Fri, 23 Jul 2021 19:08:51 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1m6yfJ-0008Gy-0t; Fri, 23 Jul 2021 19:08:49 +0200
-Date:   Fri, 23 Jul 2021 19:08:49 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1 1/1] net: phy: dp83td510: Add basic support
- for the DP83TD510 Ethernet PHY
-Message-ID: <20210723170848.lh3l62l7spcyphly@pengutronix.de>
-References: <20210723104218.25361-1-o.rempel@pengutronix.de>
- <YPrCiIz7baU26kLU@lunn.ch>
+        id S230246AbhGWQZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 12:25:24 -0400
+Received: from mga12.intel.com ([192.55.52.136]:34405 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229492AbhGWQZY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 12:25:24 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10054"; a="191508229"
+X-IronPort-AV: E=Sophos;i="5.84,264,1620716400"; 
+   d="scan'208";a="191508229"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2021 10:05:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,264,1620716400"; 
+   d="scan'208";a="663350239"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 23 Jul 2021 10:05:56 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/3][pull request] 1GbE Intel Wired LAN Driver Updates 2021-07-23
+Date:   Fri, 23 Jul 2021 10:09:07 -0700
+Message-Id: <20210723170910.296843-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YPrCiIz7baU26kLU@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 16:45:05 up 233 days,  4:51, 30 users,  load average: 0.21, 0.12,
- 0.10
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+This series contains updates to igb and e100 drivers.
 
-On Fri, Jul 23, 2021 at 03:22:16PM +0200, Andrew Lunn wrote:
-> On Fri, Jul 23, 2021 at 12:42:18PM +0200, Oleksij Rempel wrote:
-> > The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
-> > that supports 10M single pair cable.
-> > 
-> > This driver provides basic support for this chip:
-> > - link status
-> > - autoneg can be turned off
-> > - master/slave can be configured to be able to work without autoneg
-> > 
-> > This driver and PHY was tested with ASIX AX88772B USB Ethernet controller.
-> 
-> Hi Oleksij
-> 
-> There were patches flying around recently for another T1L PHY which
-> added new link modes. Please could you work together with that patch
-> to set the phydev features correctly to indicate this PHY is also a
-> T1L, and if it support 2.4v etc.
+Grzegorz adds a timeout check to prevent possible infinite loop for igb.
 
-ACK, thx. I was not able to spend enough time to investigate all needed
-caps, so I decided to go mainline with limited functionality first.
+Kees Cook adjusts memcpy() argument to represent the entire structure
+to allow for appropriate bounds checking for igb and e100.
 
-> > +static int dp83td510_config_aneg(struct phy_device *phydev)
-> > +{
-> > +	u16 ctrl = 0, pmd_ctrl = 0;
-> > +	int ret;
-> > +
-> > +	switch (phydev->master_slave_set) {
-> > +	case MASTER_SLAVE_CFG_MASTER_FORCE:
-> > +		if (phydev->autoneg) {
-> > +			phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> > +			phydev_warn(phydev, "Can't force master mode if autoneg is enabled\n");
-> > +			goto do_aneg;
-> > +		}
-> > +		pmd_ctrl |= DP83TD510_PMD_CTRL_MASTER_MODE;
-> > +		break;
-> > +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-> > +		if (phydev->autoneg) {
-> > +			phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> > +			phydev_warn(phydev, "Can't force slave mode if autoneg is enabled\n");
-> > +			goto do_aneg;
-> > +		}
-> > +		break;
-> > +	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-> > +	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-> > +		phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> > +		phydev_warn(phydev, "Preferred master/slave modes are not supported\n");
-> > +		goto do_aneg;
-> > +	case MASTER_SLAVE_CFG_UNKNOWN:
-> > +	case MASTER_SLAVE_CFG_UNSUPPORTED:
-> > +		goto do_aneg;
-> > +	default:
-> > +		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	ret = dp83td510_modify(phydev, DP83TD510_PMA_PMD_CTRL,
-> > +			       DP83TD510_PMD_CTRL_MASTER_MODE, pmd_ctrl);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +do_aneg:
-> > +	if (phydev->autoneg)
-> > +		ctrl |= DP83TD510_AN_ENABLE;
-> > +
-> > +	ret = dp83td510_modify_changed(phydev, DP83TD510_AN_CONTROL,
-> > +				       DP83TD510_AN_ENABLE, ctrl);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* Reset link if settings are changed */
-> > +	if (ret)
-> > +		ret = dp83td510_write(phydev, MII_BMCR, BMCR_RESET);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int dp83td510_strap(struct phy_device *phydev)
-> > +{
-> 
-> > +	phydev_info(phydev,
-> > +		    "bootstrap cfg: Pin 18: %s, Pin 30: %s, TX Vpp: %s, RX trap: %s, xMII mode: %s, PHY addr: 0x%x\n",
-> > +		    pin18 ? "RX_DV" : "CRS_DV",
-> > +		    pin30 ? "LED_1" : "CLKOUT",
-> > +		    tx_vpp ? "1.0V p2p" : "2.4V & 1.0V p2p",
-> > +		    rx_trap ? "< 40Ω" : "50Ω",
-> > +		    dp83td510_get_xmii_mode_str(xmii_mode),
-> > +		    addr);
-> 
-> What i learned reviewing the other T1L driver is that 2.4v operation
-> seems to be something you negotiate. Yet i don't see anything about it
-> in dp83td510_config_aneg() ?
+The following are changes since commit 356ae88f8322066a2cd1aee831b7fb768ff2905c:
+  Merge branch 'bridge-tx-fwd'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
 
-voltage depends on the end application: cable length, safety requirements. I do
-not see how this can be chosen only on auto negotiation. We would need proper
-user space interface to let user/integrator set the limits.
+Grzegorz Siwik (1):
+  igb: Add counter to i21x doublecheck
 
-May be IEEE 802.3cg (802.3-2019?) provides more information on how this should be
-done. Do any one has access to it? I'll be happy to have it.
+Kees Cook (2):
+  igb: Avoid memcpy() over-reading of ETH_SS_STATS
+  e100: Avoid memcpy() over-reading of ETH_SS_STATS
 
-Regards,
-Oleksij
+ drivers/net/ethernet/intel/e100.c            | 4 ++--
+ drivers/net/ethernet/intel/igb/e1000_mac.c   | 6 +++++-
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 3 +--
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.26.2
+
