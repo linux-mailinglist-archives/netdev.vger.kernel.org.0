@@ -2,117 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFE83D379A
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FF43D37AB
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbhGWIkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 04:40:25 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:34456
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229574AbhGWIkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:40:24 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 7CCD33F228
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 09:20:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627032057;
-        bh=aTDeZwBMgFtKPnWXdcaT3ED7J8vSM5/RBLMh7ZrqdvU=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=LTu56HzuohgJhGJku3TsWRyTXyPZ1s6e0k0WnkA8sCEfd30pteFrgPS7cKQ7LQejw
-         i1SuxxcxG5m3c3dm3GF0/bI7al4Y6jbsjwZq6x+ndD0dnSKO34ZV7i4Y13CYm0VxnK
-         OPBxCDvnekdwlW7TSi2AYE6CcOaRVeCgkFoCVfIKrjQdxYr8D4sZWn132T447ehbz7
-         yuhSVFYVDtsLoSRw6QgkeZCuOXvftR2m5JGsCeVssyiSGrfjjPS2xeAPbOiXTJVtbh
-         H54+erW+hJ3zy2D5P5g1OLSjEycLHyoY2yogm9k78Io3JRSMOqMPmDVyceAn0DkH6Q
-         QPCMmtb0EtmnQ==
-Received: by mail-ed1-f70.google.com with SMTP id w17-20020a50fa910000b02903a66550f6f4so379139edr.21
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:20:57 -0700 (PDT)
+        id S234221AbhGWIpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 04:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229949AbhGWIpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:45:25 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7530C061575;
+        Fri, 23 Jul 2021 02:25:57 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ga41so2599558ejc.10;
+        Fri, 23 Jul 2021 02:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FB3AqglCoLXT/Z22dR2tyxUlBgErLMHulIf7evT83VQ=;
+        b=GRNJGlPn9WbmOWkppKf8rxFmSHhoprrr3fuaDOwQFyo0Sjuzc3GbOp31OkNf20c9yw
+         nC4OfiLlZZtBMkl3h5ylX7IbFIXknwviRSCqJVPh7+AD7NcpZD05R7kH3AUU7chn+KKO
+         0FmNBAMQfdzddRYrSehctXKgeR7zw382Vyoyt+PkImmXew5K3mjXDUmo4kl9re8PNar8
+         M8/SerCH987rO8yJuAt+zD333EHmn6qSeAe/TEs9wJwkWJo+SMU7xgDpMIMl3C/aVxrM
+         +tP/bePHbDYPPe6edbieR5RGtYeSzGScN0z0AAu6UdMd20kUVcpuofgp2z3fRYkofqJA
+         iIzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aTDeZwBMgFtKPnWXdcaT3ED7J8vSM5/RBLMh7ZrqdvU=;
-        b=UHFr1lxBq63nc0+kCzcTHlHUlllf6TZFqJIvurhjc0nTJuPB7eBvH0rxeyakkIqrgy
-         Pjj46vTtkp1YC+oMN1X3IG3V1SWmn0l8JkMXvO9wXoh88sOM04AvgXxkhm3C9Q8U5/2o
-         u/Jc695kCHIZrQ4gsfrYA7qbF39Mo45KFimMpdOH54sLzzig3eB9jy6W/eT9zx97+Da3
-         cUvKwcID9V1srOFF55a7JSCHRMZ+PiX3atNewmPyidLoi+EBwH9RLQuJ1SkiwsPbdWry
-         79GPqH/pVLMCeEtInsMDdKufjwO9sCFkZPDjMAZmjT6jrNuTDGWAiwDbkixAiZ1Wksvu
-         Uc6A==
-X-Gm-Message-State: AOAM531juswzVhpfpamYJE4fV/ADYyQP9lYB5Trs8wBHoBuG5cXsLM1p
-        GoOSf6QhYpcbPx3BiciEfbRgV4drwuB9Ot0hw4gvLj+xAnfIFYi9/IRgFXmQUUtq6foUlTm7IK5
-        t3n9hJ55NW7Di0j0uJCS69HUhGDCjz61eyQ==
-X-Received: by 2002:a05:6402:48f:: with SMTP id k15mr4410252edv.262.1627032056930;
-        Fri, 23 Jul 2021 02:20:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxFWvw+F1lJTRxbZaqbZ3+elmi1lpNeFCfvGnWOh7b792sBrPXWzm9q8WmpJaHOZKdNudcPWg==
-X-Received: by 2002:a05:6402:48f:: with SMTP id k15mr4410243edv.262.1627032056837;
-        Fri, 23 Jul 2021 02:20:56 -0700 (PDT)
-Received: from localhost.localdomain ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id p23sm13602536edt.71.2021.07.23.02.20.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 02:20:56 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nfc: port100: constify protocol list array
-Date:   Fri, 23 Jul 2021 11:20:34 +0200
-Message-Id: <20210723092034.22603-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FB3AqglCoLXT/Z22dR2tyxUlBgErLMHulIf7evT83VQ=;
+        b=oVLa1OvyguJIQO5kjfViByLOF97aQb/r3Oq4vP2RZQbMo7/8mSaEsM7PIrTyCAdZJa
+         Jf/du5hKruoDMRwXHt+BSNVzAFUxRMDYLjOJdRRqd7sbFKWD9I5tqzfOLvC2zDcs5otR
+         I7lq3W1k2XT18JcB0CkdJ8v9FfiDE8QZmpq2RngHlxt0HMfOXS+1uwkF0hQeUjV87TxK
+         aC+cBsG1GHvKFlTbMBA12wf+n6uYd13PLywTYXHHp3To6zx1nXnqdYUQX9r5CIhaRbSd
+         swQPAWss8hx1y2snYocsklofXzDDIYrJsyCv36k2LAzN6UDSL2xJ/6BC35LtMN/O/hjE
+         kZ5g==
+X-Gm-Message-State: AOAM5321BVQ4fmt+0xo38CRsgBTnsw/eTYbWPCSvcYDyr1EZJfnUdWDu
+        FfnLWaBF63SKYcidJOCh78rDwG9loTDGCLHz1hg=
+X-Google-Smtp-Source: ABdhPJyWb/3efTBph4+zgG/RGwECZ6alS/cy0yHRiSgYm1166Dbwpd7gSShUSWJQ5lwE4pb+KipgSk2cpLGuqzjpKhU=
+X-Received: by 2002:a17:906:eda7:: with SMTP id sa7mr3822014ejb.135.1627032356226;
+ Fri, 23 Jul 2021 02:25:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210723050919.1910964-1-mudongliangabcd@gmail.com> <6fa2aecc-ab64-894d-77c2-0a19b524cc03@gmail.com>
+In-Reply-To: <6fa2aecc-ab64-894d-77c2-0a19b524cc03@gmail.com>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Fri, 23 Jul 2021 17:25:29 +0800
+Message-ID: <CAD-N9QXO4bX6SzMNir0fin0wVAZYhsS8-triiWPjY+Rz2WCy1w@mail.gmail.com>
+Subject: Re: [PATCH] cfg80211: free the object allocated in wiphy_apply_custom_regulatory
+To:     xiaoqiang zhao <zhaoxiaoqiang007@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-File-scope "port100_protocol" array is read-only and passed as pointer
-to const, so it can be made a const to increase code safety.
+On Fri, Jul 23, 2021 at 5:18 PM xiaoqiang zhao
+<zhaoxiaoqiang007@gmail.com> wrote:
+>
+>
+>
+> =E5=9C=A8 2021/7/23 13:09, Dongliang Mu =E5=86=99=E9=81=93:
+> > The commit beee24695157 ("cfg80211: Save the regulatory domain when
+> > setting custom regulatory") forgets to free the newly allocated regd
+> > object.
+> >
+> > Fix this by freeing the regd object in the error handling code and
+> > deletion function - mac80211_hwsim_del_radio.
+> >
+> > Reported-by: syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com
+> > Fixes: beee24695157 ("cfg80211: Save the regulatory domain when setting=
+ custom regulatory")
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > ---
+> >  drivers/net/wireless/mac80211_hwsim.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wirele=
+ss/mac80211_hwsim.c
+> > index ffa894f7312a..20b870af6356 100644
+> > --- a/drivers/net/wireless/mac80211_hwsim.c
+> > +++ b/drivers/net/wireless/mac80211_hwsim.c
+> > @@ -3404,6 +3404,8 @@ static int mac80211_hwsim_new_radio(struct genl_i=
+nfo *info,
+> >       debugfs_remove_recursive(data->debugfs);
+> >       ieee80211_unregister_hw(data->hw);
+> >  failed_hw:
+> > +     if (param->regd)
+> > +             kfree_rcu(get_wiphy_regdom(data->hw->wiphy));
+> >       device_release_driver(data->dev);
+>
+> hw->wiphy->regd may be NULL if previous reg_copy_regd failed, so how abou=
+t:
+> if (hw->wiphy->regd)
+>         rcu_free_regdom(get_wiphy_regdom(hw->wiphy))
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/port100.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Previously I would like to use this API(rcu_free_regdom), but it is
+static and located in non-global header file - reg.h.
 
-diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
-index ee9429997565..217c5dfa8549 100644
---- a/drivers/nfc/port100.c
-+++ b/drivers/nfc/port100.c
-@@ -217,7 +217,7 @@ struct port100_protocol {
- 	u8 value;
- } __packed;
- 
--static struct port100_protocol
-+static const struct port100_protocol
- in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
- 	[NFC_DIGITAL_FRAMING_NFCA_SHORT] = {
- 		{ PORT100_IN_PROT_INITIAL_GUARD_TIME,      6 },
-@@ -391,7 +391,7 @@ in_protocols[][PORT100_IN_MAX_NUM_PROTOCOLS + 1] = {
- 	},
- };
- 
--static struct port100_protocol
-+static const struct port100_protocol
- tg_protocols[][PORT100_TG_MAX_NUM_PROTOCOLS + 1] = {
- 	[NFC_DIGITAL_FRAMING_NFCA_SHORT] = {
- 		{ PORT100_TG_PROT_END, 0 },
-@@ -1130,7 +1130,7 @@ static int port100_in_set_rf(struct nfc_digital_dev *ddev, u8 rf)
- static int port100_in_set_framing(struct nfc_digital_dev *ddev, int param)
- {
- 	struct port100 *dev = nfc_digital_get_drvdata(ddev);
--	struct port100_protocol *protocols;
-+	const struct port100_protocol *protocols;
- 	struct sk_buff *skb;
- 	struct sk_buff *resp;
- 	int num_protocols;
-@@ -1287,7 +1287,7 @@ static int port100_tg_set_rf(struct nfc_digital_dev *ddev, u8 rf)
- static int port100_tg_set_framing(struct nfc_digital_dev *ddev, int param)
- {
- 	struct port100 *dev = nfc_digital_get_drvdata(ddev);
--	struct port100_protocol *protocols;
-+	const struct port100_protocol *protocols;
- 	struct sk_buff *skb;
- 	struct sk_buff *resp;
- 	int rc;
--- 
-2.27.0
+>
+> >  failed_bind:
+> >       device_unregister(data->dev);
+> > @@ -3454,6 +3456,8 @@ static void mac80211_hwsim_del_radio(struct mac80=
+211_hwsim_data *data,
+> >  {
+> >       hwsim_mcast_del_radio(data->idx, hwname, info);
+> >       debugfs_remove_recursive(data->debugfs);
+> > +     if (data->regd)
+> > +             kfree_rcu(get_wiphy_regdom(data->hw->wiphy));
+> this is not correct, because ieee80211_unregister_hw below will free
+> data->hw_wiphy->regd
 
+Can you point out the concrete code releasing regd? Maybe the link to elixi=
+r.
+
+> >       ieee80211_unregister_hw(data->hw);
+> >       device_release_driver(data->dev);
+> >       device_unregister(data->dev);
+> >
