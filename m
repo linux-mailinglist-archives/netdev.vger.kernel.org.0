@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 973DD3D402C
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 20:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB0E3D4032
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 20:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229698AbhGWRbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 13:31:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43146 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229570AbhGWRbl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 13:31:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=SnyKszF9IGSCnB8C8UzqAvlywVOYc6keZr8Q4pVBP2M=; b=Fz+0iC28NzKyE1hGtIcZm6gFda
-        LgMBIXhcaRp1vC20+uV1rfB5Fyyh6Ey9TcktgodqzOgG7FHc2NJquhXR9DVRlXrkVIeYhNKChBMpM
-        dJ8sjQ28eILXLGvvNEbl8egz+pPhIJTagt3o7F1uzHi/Bizs3R4JMCeXaKuPYELrbVyU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6zeX-00EX8N-93; Fri, 23 Jul 2021 20:12:05 +0200
-Date:   Fri, 23 Jul 2021 20:12:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1 1/1] net: phy: dp83td510: Add basic support
- for the DP83TD510 Ethernet PHY
-Message-ID: <YPsGddTXtk/Hinmp@lunn.ch>
-References: <20210723104218.25361-1-o.rempel@pengutronix.de>
- <YPrCiIz7baU26kLU@lunn.ch>
- <20210723170848.lh3l62l7spcyphly@pengutronix.de>
+        id S229588AbhGWRg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 13:36:29 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:61088 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229455AbhGWRg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 13:36:29 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16NIBgG2015681;
+        Fri, 23 Jul 2021 11:16:59 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=gYnkw50w80YUq7zRjAMU0GSkiBIjHrvh87PnMbJ7r8U=;
+ b=iO2AnMsnSkKsmVi8qTYlwoMmlqoeo0eJOgwlo3joQ3dTHnR8eGu6glqZymZG7ATAka7b
+ i1iaiZqefbRzZoXg37c7F8fNHyxQtAesco36tyapEDyV38t8Rs6e6Hz5LqMBItSyjRO9
+ Y7z5SIrJC8fAPUde3LUJ9i+3h0fVVrDVbB2CUKlf17X7WkobhhczR2Cq0SvzjGwMq53y
+ inFhAAdnbVb1LMrCc8rED5O7M7nJ1R0V+/PXfQJD94Bz5ZnTwLB+SAi4qx8zyAqle8xa
+ zjOeZLWeYOGsxSazoAXqhX2n5Re+V+WepotORO4GebWazEfzXh8AEFf5sE5QMXE6YakW yw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 39y972dwsg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 23 Jul 2021 11:16:59 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 23 Jul
+ 2021 11:16:57 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Fri, 23 Jul 2021 11:16:57 -0700
+Received: from machine421.marvell.com (unknown [10.29.37.2])
+        by maili.marvell.com (Postfix) with ESMTP id C59793F7061;
+        Fri, 23 Jul 2021 11:16:55 -0700 (PDT)
+From:   Sunil Goutham <sgoutham@marvell.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH v2 0/2] Support ethtool ntuple rule count change
+Date:   Fri, 23 Jul 2021 23:46:44 +0530
+Message-ID: <1627064206-16032-1-git-send-email-sgoutham@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210723170848.lh3l62l7spcyphly@pengutronix.de>
+Content-Type: text/plain
+X-Proofpoint-GUID: LcSdEj9BCgw1vR7K-68spPKl0j8smY4u
+X-Proofpoint-ORIG-GUID: LcSdEj9BCgw1vR7K-68spPKl0j8smY4u
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-23_09:2021-07-23,2021-07-23 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 07:08:49PM +0200, Oleksij Rempel wrote:
-> Hi Andrew,
-> 
-> On Fri, Jul 23, 2021 at 03:22:16PM +0200, Andrew Lunn wrote:
-> > On Fri, Jul 23, 2021 at 12:42:18PM +0200, Oleksij Rempel wrote:
-> > > The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
-> > > that supports 10M single pair cable.
-> > > 
-> > > This driver provides basic support for this chip:
-> > > - link status
-> > > - autoneg can be turned off
-> > > - master/slave can be configured to be able to work without autoneg
-> > > 
-> > > This driver and PHY was tested with ASIX AX88772B USB Ethernet controller.
-> > 
-> > Hi Oleksij
-> > 
-> > There were patches flying around recently for another T1L PHY which
-> > added new link modes. Please could you work together with that patch
-> > to set the phydev features correctly to indicate this PHY is also a
-> > T1L, and if it support 2.4v etc.
-> 
-> ACK, thx. I was not able to spend enough time to investigate all needed
-> caps, so I decided to go mainline with limited functionality first.
+Some NICs share resources like packet filters across
+multiple interfaces they support. From HW point of view
+it is possible to use all filters for a single interface.
+This 2 patch series adds support to modify ntuple rule
+count for OcteonTx2 netdev.
 
-Limited functionality is fine, but what is implemented should be
-correct. And from what i see in the patch, it is hard to know if the
-PHYs basic features are correctly determined. What does ethtool show?
-Is 100BaseT being offered? Half duplex?
+Changes from v1:
+   * No changes in code.
+   * Previous discussion didn't conclude, submiting patches again to revive it.
+   * Jakub suggested if devlink-resource can be used for this.
+   * But since ntuple rule insert and delete are part of ethtool,
+     I thought having this config also in ethtool makes sense ie
+     all ntuple related stuff within one tool.
+   * Also number of MCAM entries can be changed at runtime
+     without a driver reload.
 
-> voltage depends on the end application: cable length, safety requirements. I do
-> not see how this can be chosen only on auto negotiation. We would need proper
-> user space interface to let user/integrator set the limits.
+Sunil Goutham (2):
+  net: ethtool: Support setting ntuple rule count
+  octeontx2-pf: Support setting ntuple rule count
 
-I think we are talking at cross purposes here. As far as i understand
-T1L supports the data signals to be 2.4Vpp as well as the usual
-1Vpp. This is something which can be negotiated in the same way as
-master/slave, duplex etc.
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  3 +++
+ .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 27 ++++++++++++++++++++--
+ include/uapi/linux/ethtool.h                       |  1 +
+ net/ethtool/ioctl.c                                |  1 +
+ 5 files changed, 31 insertions(+), 2 deletions(-)
 
-I suspect you are talking about the PoE aspects. That is outside the
-scope for phylib. PoE in general is not really supported in the Linux
-kernel, and probably needs a subsystem of its own.
+-- 
+2.7.4
 
-   Andrew
