@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46AE03D3324
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 06:00:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CEC33D3321
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 06:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbhGWDTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 23:19:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39234 "EHLO mail.kernel.org"
+        id S234540AbhGWDTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 23:19:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234538AbhGWDSt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234539AbhGWDSt (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 22 Jul 2021 23:18:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A65F60E9C;
-        Fri, 23 Jul 2021 03:59:20 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A49A060ED4;
+        Fri, 23 Jul 2021 03:59:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627012761;
-        bh=mYSAb2tblnHSTGfIlA7dILXS4txeVAS9pK0nlQbYLr4=;
+        s=k20201202; t=1627012762;
+        bh=wawReU6F7YOSBc18njjMOeNXqgeMy62MK4NsQN4UstQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VE8ES28/joHP1bJOPrNGx8UWrpx4svzHO0m/s4SF5DE7RV61Wc6hEA+uxRNHgw5Et
-         TttgMh5TqCQnbO4i+2bcSAGWGlh/IYHIFWry1A6t0oLwxFEfhZbwk6x3DvSrf5gVLs
-         fdn/3t7WCsd5Pe5Nzw9cYwKDsaluMF93Jt4VLnaLsCV2SRzUzEHscW87ZrLcKC/Tn4
-         +J/Eo/RI976vOpnIgbXXVvZxBtOpheFoqMAP8rHckyHI0YoWGUcDmmSBBprSapSdqU
-         5lRrnZUhhJ8XTYeWhTudThlxoZCS/KHTUPU2W2Eerp0NaBHjdmfL4JlMAfayuQHmYy
-         hEazQe8OOOQmg==
+        b=WBb1VGS1riz51PhjJ1g3m/GJo6tPwMwxmqRnCz1zNlHiEyx21oFTkwZ7W4Y+vcrcI
+         tYMd9WpaTf0B8+2vth9HNwRK7W9zHjYQoB4DD/339kr6vLEV0IfttCCyQ1ulgGdRhf
+         mCodygT4/AdTxQeVLXItTR5w41J3utKGVFDmegT+22bI/lSPxnF2XvqWp93PzY6ujq
+         mKV5fJxlLIw1ecIBvLlZlzP94sv58NPK7pDbBsH2d+3uilTRkS/ywIonnnIr4p6sX/
+         3i1cR0CSz0QoAmXkYgBRu3kaDIn0VfjW4iyWAzeYASdTbkHWp9gRU48fWrvJLC7fA5
+         xwD5WZSpClBug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        =?UTF-8?q?S=C3=A9rgio?= <surkamp@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 2/7] net/802/garp: fix memleak in garp_request_join()
-Date:   Thu, 22 Jul 2021 23:59:12 -0400
-Message-Id: <20210723035918.532573-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 3/7] sctp: move 198 addresses from unusable to private scope
+Date:   Thu, 22 Jul 2021 23:59:13 -0400
+Message-Id: <20210723035918.532573-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210723035918.532573-1-sashal@kernel.org>
 References: <20210723035918.532573-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,82 +46,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 42ca63f980842918560b25f0244307fd83b4777c ]
+[ Upstream commit 1d11fa231cabeae09a95cb3e4cf1d9dd34e00f08 ]
 
-I got kmemleak report when doing fuzz test:
+The doc draft-stewart-tsvwg-sctp-ipv4-00 that restricts 198 addresses
+was never published. These addresses as private addresses should be
+allowed to use in SCTP.
 
-BUG: memory leak
-unreferenced object 0xffff88810c909b80 (size 64):
-  comm "syz", pid 957, jiffies 4295220394 (age 399.090s)
-  hex dump (first 32 bytes):
-    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 08 00 00 00 01 02 00 04  ................
-  backtrace:
-    [<00000000ca1f2e2e>] garp_request_join+0x285/0x3d0
-    [<00000000bf153351>] vlan_gvrp_request_join+0x15b/0x190
-    [<0000000024005e72>] vlan_dev_open+0x706/0x980
-    [<00000000dc20c4d4>] __dev_open+0x2bb/0x460
-    [<0000000066573004>] __dev_change_flags+0x501/0x650
-    [<0000000035b42f83>] rtnl_configure_link+0xee/0x280
-    [<00000000a5e69de0>] __rtnl_newlink+0xed5/0x1550
-    [<00000000a5258f4a>] rtnl_newlink+0x66/0x90
-    [<00000000506568ee>] rtnetlink_rcv_msg+0x439/0xbd0
-    [<00000000b7eaeae1>] netlink_rcv_skb+0x14d/0x420
-    [<00000000c373ce66>] netlink_unicast+0x550/0x750
-    [<00000000ec74ce74>] netlink_sendmsg+0x88b/0xda0
-    [<00000000381ff246>] sock_sendmsg+0xc9/0x120
-    [<000000008f6a2db3>] ____sys_sendmsg+0x6e8/0x820
-    [<000000008d9c1735>] ___sys_sendmsg+0x145/0x1c0
-    [<00000000aa39dd8b>] __sys_sendmsg+0xfe/0x1d0
+As Michael Tuexen suggested, this patch is to move 198 addresses from
+unusable to private scope.
 
-Calling garp_request_leave() after garp_request_join(), the attr->state
-is set to GARP_APPLICANT_VO, garp_attr_destroy() won't be called in last
-transmit event in garp_uninit_applicant(), the attr of applicant will be
-leaked. To fix this leak, iterate and free each attr of applicant before
-rerturning from garp_uninit_applicant().
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reported-by: Sérgio <surkamp@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/802/garp.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ include/net/sctp/constants.h | 4 +---
+ net/sctp/protocol.c          | 3 ++-
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/802/garp.c b/net/802/garp.c
-index b38ee6dcba45..5239b8f244e7 100644
---- a/net/802/garp.c
-+++ b/net/802/garp.c
-@@ -206,6 +206,19 @@ static void garp_attr_destroy(struct garp_applicant *app, struct garp_attr *attr
- 	kfree(attr);
- }
+diff --git a/include/net/sctp/constants.h b/include/net/sctp/constants.h
+index bf03bab93d9e..15cfec311500 100644
+--- a/include/net/sctp/constants.h
++++ b/include/net/sctp/constants.h
+@@ -344,8 +344,7 @@ typedef enum {
+ } sctp_scope_policy_t;
  
-+static void garp_attr_destroy_all(struct garp_applicant *app)
-+{
-+	struct rb_node *node, *next;
-+	struct garp_attr *attr;
-+
-+	for (node = rb_first(&app->gid);
-+	     next = node ? rb_next(node) : NULL, node != NULL;
-+	     node = next) {
-+		attr = rb_entry(node, struct garp_attr, node);
-+		garp_attr_destroy(app, attr);
-+	}
-+}
-+
- static int garp_pdu_init(struct garp_applicant *app)
- {
- 	struct sk_buff *skb;
-@@ -612,6 +625,7 @@ void garp_uninit_applicant(struct net_device *dev, struct garp_application *appl
+ /* Based on IPv4 scoping <draft-stewart-tsvwg-sctp-ipv4-00.txt>,
+- * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 198.18.0.0/24,
+- * 192.88.99.0/24.
++ * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 192.88.99.0/24.
+  * Also, RFC 8.4, non-unicast addresses are not considered valid SCTP
+  * addresses.
+  */
+@@ -353,7 +352,6 @@ typedef enum {
+ 	((htonl(INADDR_BROADCAST) == a) ||  \
+ 	 ipv4_is_multicast(a) ||	    \
+ 	 ipv4_is_zeronet(a) ||		    \
+-	 ipv4_is_test_198(a) ||		    \
+ 	 ipv4_is_anycast_6to4(a))
  
- 	spin_lock_bh(&app->lock);
- 	garp_gid_event(app, GARP_EVENT_TRANSMIT_PDU);
-+	garp_attr_destroy_all(app);
- 	garp_pdu_queue(app);
- 	spin_unlock_bh(&app->lock);
- 
+ /* Flags used for the bind address copy functions.  */
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index b0e401dfe160..8c62792658b6 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -411,7 +411,8 @@ static sctp_scope_t sctp_v4_scope(union sctp_addr *addr)
+ 		retval = SCTP_SCOPE_LINK;
+ 	} else if (ipv4_is_private_10(addr->v4.sin_addr.s_addr) ||
+ 		   ipv4_is_private_172(addr->v4.sin_addr.s_addr) ||
+-		   ipv4_is_private_192(addr->v4.sin_addr.s_addr)) {
++		   ipv4_is_private_192(addr->v4.sin_addr.s_addr) ||
++		   ipv4_is_test_198(addr->v4.sin_addr.s_addr)) {
+ 		retval = SCTP_SCOPE_PRIVATE;
+ 	} else {
+ 		retval = SCTP_SCOPE_GLOBAL;
 -- 
 2.30.2
 
