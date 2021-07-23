@@ -2,127 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222683D3C77
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41DBA3D3C9D
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235558AbhGWOv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 10:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235438AbhGWOv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 10:51:27 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC27C061575;
-        Fri, 23 Jul 2021 08:31:59 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id d18so2718705lfb.6;
-        Fri, 23 Jul 2021 08:31:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OaMQFsec0NzLLpOf7NP5EVhh2TGUHi54KtoO+USyjiE=;
-        b=j+RE9f9M4jLFONDoyX5Okg929LQmJ3Kox7FDvip52TSOScBMfinmkWh38BHT7an6VR
-         DuhsvVZ6715Jky8eWdQ/9vD7p9GQqtiReNOJcpPLQMBNe6cgm2nZTIohPrYdzdmZwzuu
-         mtDyvkoAlIRwQIELBm0h0ITVFaEf30vDtNSDpJeQqehmlAZWZ790f8dd03QGDrEdBBGT
-         474uHCAcZkb9+sXV85pIZvc5SSxuNTD5gy+s4MK8aoZoYS74LucutTIMYAbtQvRpDOVD
-         N+MwoH1DH7OGHzzqoUqNbUhymO7aXg7OIlGYAh4hH3XM3VIVLU0KBEbcgP1WQvYHO6tT
-         WnWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OaMQFsec0NzLLpOf7NP5EVhh2TGUHi54KtoO+USyjiE=;
-        b=Ao92k+yM2r7mLtcB59EpIyB3wT5K2+Ct3gm5QaLkzwiKJSymcmZOeymm9/CiUbW1cs
-         bPhqvvuaFicr8+ERIpZKMkne7XO2NvPT4wfchMZuLunwjwa5mJhGM/m7Q6mfY0NDwVQM
-         fzyrHMaOC+U0GXpRtZ4mhXjBCyQ5d8+T7XXbsMUt64SRuewpg5MEzIO+uBHrSuRZnZ8r
-         RdVVDqY+YMM+q536o2/wi95+gdVFQw/bfdCWVIC2AC50XJCa0GnKA8ufpSBabGrOVDKE
-         TNNKJo1bOS/G2+Na9oNtLJJHodQzbulMw7OA4nOQwz3QxiTNOOEd49vLLlmWEZlJ6kM4
-         L2vA==
-X-Gm-Message-State: AOAM532dX4mbS74pQd4fGbIK6i6mfbSZu+N56HKxo9dZhZeq4OVfMea7
-        4Jba4DCJEZ9PYhCX3OCYejA=
-X-Google-Smtp-Source: ABdhPJy2M5tILOLFh5iRpgWoc7jZAgwABTrFi8rY5WhoFNtBIcWZw5W57Ajp0eoS9a6H/u79RC4IIA==
-X-Received: by 2002:ac2:4c13:: with SMTP id t19mr3551237lfq.394.1627054317862;
-        Fri, 23 Jul 2021 08:31:57 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.227.213])
-        by smtp.gmail.com with ESMTPSA id j26sm1630849lfh.71.2021.07.23.08.31.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 08:31:57 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     mani@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        loic.poulain@linaro.org, bjorn.andersson@linaro.org,
-        xiyou.wangcong@gmail.com, edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
-Subject: [PATCH v2] net: qrtr: fix memory leaks
-Date:   Fri, 23 Jul 2021 18:31:32 +0300
-Message-Id: <20210723153132.6159-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210723122753.GA3739@thinkpad>
-References: <20210723122753.GA3739@thinkpad>
+        id S235620AbhGWPAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 11:00:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235774AbhGWO7a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 10:59:30 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 37D1560EE2;
+        Fri, 23 Jul 2021 15:40:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627054804;
+        bh=kENZX6ldexEr5QXVqtEDdJMka0c6IWQm1TmYsdLhYY8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qr/d1iZ+6OTS/y6+j5pmmcxMFA+Xeo202qx+v1RaE2CmEPdwqDJdph4g/KQ7F9ycG
+         XjaZJQNciZ+xtOY89T6KFgE/CBkpMPSo5dq9qH0Etn6/4ZoMaYnJz4u3rl33SpAu6d
+         Dzkc+JquqYHvR38fXq6P1hkFisHrDqbta5RUl4DguraNoGnUMnB3eRScO+oo1GQm+t
+         rxPc4gZ/HeA+NhnXu7AJmAWNXBFqaDU6z88q1yxFtyJGSw5s/3HuTuLkLPvxjoYVG0
+         qY+dfMmbmiludsnmd/n3Mfth50p5wX3/sM1xTWb/DUI0jJtgp5eCkfqR8P2VsEdpwO
+         LrERaeU/nvpbg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 288A5608AF;
+        Fri, 23 Jul 2021 15:40:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [net] tipc: fix sleeping in tipc accept routine
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162705480416.17668.10408580954160867036.git-patchwork-notify@kernel.org>
+Date:   Fri, 23 Jul 2021 15:40:04 +0000
+References: <20210723022534.5112-1-hoang.h.le@dektech.com.au>
+In-Reply-To: <20210723022534.5112-1-hoang.h.le@dektech.com.au>
+To:     Hoang Le <hoang.h.le@dektech.com.au>
+Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported memory leak in qrtr. The problem was in unputted
-struct sock. qrtr_local_enqueue() function calls qrtr_port_lookup()
-which takes sock reference if port was found. Then there is the following
-check:
+Hello:
 
-if (!ipc || &ipc->sk == skb->sk) {
-	...
-	return -ENODEV;
-}
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Since we should drop the reference before returning from this function and
-ipc can be non-NULL inside this if, we should add qrtr_port_put() inside
-this if.
+On Fri, 23 Jul 2021 09:25:34 +0700 you wrote:
+> The release_sock() is blocking function, it would change the state
+> after sleeping. In order to evaluate the stated condition outside
+> the socket lock context, switch to use wait_woken() instead.
+> 
+> Fixes: 6398e23cdb1d8 ("tipc: standardize accept routine")
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> 
+> [...]
 
-The similar corner case is in qrtr_endpoint_post() as Manivannan
-reported. In case of sock_queue_rcv_skb() failure we need to put
-port reference to avoid leaking struct sock pointer.
+Here is the summary with links:
+  - [net] tipc: fix sleeping in tipc accept routine
+    https://git.kernel.org/netdev/net/c/d237a7f11719
 
-Fixes: e04df98adf7d ("net: qrtr: Remove receive worker")
-Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
-Reported-and-tested-by: syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Changes in v2:
-	Added missing qrtr_port_put() in qrtr_endpoint_post() as Manivannan
-	reported.
-
----
- net/qrtr/qrtr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index b34358282f37..a8b2c9b21a8d 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -514,8 +514,10 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
- 		if (!ipc)
- 			goto err;
- 
--		if (sock_queue_rcv_skb(&ipc->sk, skb))
-+		if (sock_queue_rcv_skb(&ipc->sk, skb)) {
-+			qrtr_port_put(ipc);
- 			goto err;
-+		}
- 
- 		qrtr_port_put(ipc);
- 	}
-@@ -850,6 +852,8 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
- 
- 	ipc = qrtr_port_lookup(to->sq_port);
- 	if (!ipc || &ipc->sk == skb->sk) { /* do not send to self */
-+		if (ipc)
-+			qrtr_port_put(ipc);
- 		kfree_skb(skb);
- 		return -ENODEV;
- 	}
--- 
-2.32.0
 
