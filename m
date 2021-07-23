@@ -2,109 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4203D37C4
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:33:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CEC3D37CB
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbhGWIxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 04:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
+        id S231273AbhGWIzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 04:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbhGWIxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:53:07 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DA1C061575
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:33:40 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id o5-20020a1c4d050000b02901fc3a62af78so3110285wmh.3
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:33:40 -0700 (PDT)
+        with ESMTP id S230438AbhGWIze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:55:34 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8289C061575;
+        Fri, 23 Jul 2021 02:36:07 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id hg12-20020a17090b300cb02901736d9d2218so3004080pjb.1;
+        Fri, 23 Jul 2021 02:36:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wNO/xufjm/ydO0nEAzAdC1TVpL4USaiY16dhslOWRMU=;
-        b=q3AvKTf7zNfzeLb2JY4UUrPHviGUcd4UnjJWnM4hWtlHN5z3AMm6PedCcyaYxo+wQJ
-         RE2iZZMelc63WocDKmgocjer9y11/TGzakrS3GiddltRkmjRVvgoORx83Hm1cqFT0t/X
-         Lg3VhErnb2UyGfb2lu+Wnu/NACon2YLJCuMlrQcQPkng18lZTLtyyPQpVdCIYXIN9Bgh
-         Q1VJU4Dh7YQPULE9IBqNFxpBi2Gp3NoCRukj6ss8fZGPPPf5dEpOXz0rRQyDe60R5RXN
-         SYvebtv+ZG7hgGAxiZyjVpNAoXf4Xtd5e9eQHFT38+rB4maC3w+BSlytWaE/pGm1o37T
-         H91Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=ZTe2QhZNvjeunOdwndEKdmKEetZXSNLWlRKdUTF8nEA=;
+        b=noix7vBVUY0miC7zY6X47bnNSgos9y1DtT1DWKJwZfTTL96A3vHc2zzH9oNyR+Ymlo
+         4EwOUM1d91Tz4WtVSCASMVAkOfG2GXxWrpq72WKIsR+nE2PZlDsQbJ+Au/W/ICuZroZx
+         SLjVlomLADXPZmHCSoa2grT/cZArhJ8aa+6utp8LGeFnSUi8uIvscpmk1qrREtyNDnRI
+         BA9mG3NMJ16FrQ7Hdj97cCjb5Apx98W1Vq0omPxd0U8pI3fgeoF9V7vJ+w8SSJI3J4pB
+         LhvV/rVHaAIC9A8bSz6cqgwHrvCB0K4vvEX1928Eu4TCWUsgUzQ9OCMbuHxUgadmoTeN
+         1SWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wNO/xufjm/ydO0nEAzAdC1TVpL4USaiY16dhslOWRMU=;
-        b=kze8FdZhwJd/33JNIxzn9zcuds9G/41gmua9d0T5RPoRiKEwkk3YgUG/78BP+6Ca4n
-         wpvnQCqRBzjmdpeBYgdJfu/vXg3Qg6wcGJfYgdw7QOqaeuoB1W0D4YvnEokZd782UAJP
-         OrftO9F6Vl4zsX07NaagJOflTWFQzFMbttxS36OcVM/KhV6INc0hCONgRKqD/UKTf70a
-         D4AEm3fIhr/CGsgi5j5oNidZgXySnJ+M+/zoE9uTQHRs8/LnMyOmtV6kRyuJ5dXz7Cun
-         Whwgy33bDmKpQPaDEvmeo45j6B6I6JdJ3BV3p8kXe/0bqpe1wso2SsUi6Usz8lh+IqLL
-         8Ynw==
-X-Gm-Message-State: AOAM531AXiCyrtLFboOSfbNS/Ae5D2O/+CLpi4Y/qCGHC/TSd07U9vdz
-        2xxjYGdDFH+HySzTD3m9k4YRxg==
-X-Google-Smtp-Source: ABdhPJycn4YG4c32IaWIGbh4txpacWjLJEZVCvv0tODqTOl/CD0MKomcIPFB1PG/5Jn6whiAkZEkeg==
-X-Received: by 2002:a05:600c:1c9f:: with SMTP id k31mr13458225wms.47.1627032818619;
-        Fri, 23 Jul 2021 02:33:38 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id o7sm37724787wrv.72.2021.07.23.02.33.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 02:33:37 -0700 (PDT)
-Date:   Fri, 23 Jul 2021 11:33:36 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mlxsw@nvidia.com
-Subject: Re: [patch net-next v2] devlink: append split port number to the
- port name
-Message-ID: <YPqM8HUUsl1n0RKD@nanopsycho>
-References: <20210527104819.789840-1-jiri@resnulli.us>
- <162215100360.12583.10419235646821072826.git-patchwork-notify@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=ZTe2QhZNvjeunOdwndEKdmKEetZXSNLWlRKdUTF8nEA=;
+        b=YebfRpgcV2FOWFjwInvtDvOdej+bki3kFkJdkYwXJd7DvxKebI8l3WGOOie8ZUkOuD
+         gZMXzv4hf2ZPQXfof4oawNo1jxXrAQyYWd59V/ZpdvuP9Q5A2FB+jgXuRUyRfq0im4zQ
+         Q58ffSkwAG3m8UPe1X/ecSqBWScYDIKjr89EPe77b9R2kA9KTUn//L/vmvnY91/ElhWX
+         fePsqmPzTPTvYbFgW3qr8nAgb2thLmJGoqnW/RmeqTT8Dcnm6yABeDocQnVixnLfntnv
+         Zjb5i2ZgOHzr4pE3ipWXEghHiFFYvjR0lar5Ofi0A5uiXq2SHcboexUhGJyf/a8CvjVS
+         4I/A==
+X-Gm-Message-State: AOAM533L8RNqPO5RJZ6fft0wrZC1mc51aS/MdxZ7/a9ibBQQ7dLysE92
+        XXGDC+quDZc3GGO4hxAJ8rxlgZlYjCvLyeBNXZU=
+X-Google-Smtp-Source: ABdhPJx+9QoaAOcl/XoijfUaFdofNEePpqRuK0qvS5sdRzbvrBU3oIu8OFMTpje/RJ0CaWK4OC/zLQ==
+X-Received: by 2002:a62:8c52:0:b029:335:a9bc:47e1 with SMTP id m79-20020a628c520000b0290335a9bc47e1mr3630701pfd.11.1627032966912;
+        Fri, 23 Jul 2021 02:36:06 -0700 (PDT)
+Received: from [10.12.169.24] (5e.8a.38a9.ip4.static.sl-reverse.com. [169.56.138.94])
+        by smtp.gmail.com with ESMTPSA id s36sm22703766pgl.8.2021.07.23.02.36.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Jul 2021 02:36:06 -0700 (PDT)
+Subject: Re: [PATCH] cfg80211: free the object allocated in
+ wiphy_apply_custom_regulatory
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210723050919.1910964-1-mudongliangabcd@gmail.com>
+ <6fa2aecc-ab64-894d-77c2-0a19b524cc03@gmail.com>
+ <CAD-N9QXO4bX6SzMNir0fin0wVAZYhsS8-triiWPjY+Rz2WCy1w@mail.gmail.com>
+From:   xiaoqiang zhao <zhaoxiaoqiang007@gmail.com>
+Message-ID: <2e9e6fa7-a405-088d-3b4c-da62b85f3fc6@gmail.com>
+Date:   Fri, 23 Jul 2021 17:36:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <162215100360.12583.10419235646821072826.git-patchwork-notify@kernel.org>
+In-Reply-To: <CAD-N9QXO4bX6SzMNir0fin0wVAZYhsS8-triiWPjY+Rz2WCy1w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, May 27, 2021 at 11:30:03PM CEST, patchwork-bot+netdevbpf@kernel.org wrote:
->Hello:
->
->This patch was applied to netdev/net-next.git (refs/heads/master):
->
->On Thu, 27 May 2021 12:48:19 +0200 you wrote:
->> From: Jiri Pirko <jiri@nvidia.com>
->> 
->> Instead of doing sprintf twice in case the port is split or not, append
->> the split port suffix in case the port is split.
->> 
->> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
->> 
->> [...]
->
->Here is the summary with links:
->  - [net-next,v2] devlink: append split port number to the port name
->    https://git.kernel.org/netdev/net-next/c/f285f37cb1e6
->
->You are awesome, thank you!
 
-Something wrong happened. The patch was applied but eventually, the
-removed lines are back:
 
-acf1ee44ca5da (Parav Pandit    2020-03-03 08:12:42 -0600 9331)  case DEVLINK_PORT_FLAVOUR_VIRTUAL:
-f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9332)          n = snprintf(name, len, "p%u", attrs->phys.port_number);
-f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9333)          if (n < len && attrs->split)
-f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9334)                  n += snprintf(name + n, len - n, "s%u",
-f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9335)                                attrs->phys.split_subport_number);
-08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9336)          if (!attrs->split)
-378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9337)                  n = snprintf(name, len, "p%u", attrs->phys.port_number);
-08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9338)          else
-378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9339)                  n = snprintf(name, len, "p%us%u",
-378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9340)                               attrs->phys.port_number,
-378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9341)                               attrs->phys.split_subport_number);
-126285651b7f9 (David S. Miller 2021-06-07 13:01:52 -0700 9342) 
-08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9343)          break;
+在 2021/7/23 17:25, Dongliang Mu 写道:
+> Can you point out the concrete code releasing regd? Maybe the link to elixir.
+> 
+>>>       ieee80211_unregister_hw(data->hw);
+>>>       device_release_driver(data->dev);
+>>>       device_unregister(data->dev);
+>>>
 
-If I do "git reset --hard f285f37cb1e6b", everything is looking fine,
-in the current net-next, the removed lines are still present :O
-I see ghosts...
+call graph seems like this:
 
-Could you check & fix?
+ieee80211_unregister_hw
+(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/mac80211/main.c#L1368)
+	wiphy_unregister
+(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/wireless/core.c#L1011)
+		wiphy_regulatory_deregister
+(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/wireless/reg.c#L4057)
+			rcu_free_regdom
+
