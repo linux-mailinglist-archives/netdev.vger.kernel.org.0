@@ -2,57 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AE523D38E1
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 12:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA9293D38DD
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 12:38:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232514AbhGWJ6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 05:58:14 -0400
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:45974 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231871AbhGWJ6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:58:11 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0Ughmuvt_1627036712;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0Ughmuvt_1627036712)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 23 Jul 2021 18:38:43 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     lxu@maxlinear.com
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        chongjiapeng <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] net: phy: Remove unused including <linux/version.h>
-Date:   Fri, 23 Jul 2021 18:38:27 +0800
-Message-Id: <1627036707-73334-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S232141AbhGWJ6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:58:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49926 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232001AbhGWJ56 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 05:57:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C864D60EE6;
+        Fri, 23 Jul 2021 10:38:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627036712;
+        bh=tBUdeu52dSGAjDk/xY6fNmZKu9Ai7BBxRSfuL8mBkHs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Rge5e5zdUbmhH8MnTpq7iquBA+RJUJVqycL+V34aQdfhG4Q5Vd/a5igxEiEfDguQy
+         jJxvNe7HY4bGIHw7gaZm3HifJ0e/eNGBomQEwJgvTntMNrvC1Ij/aiUJYJ3j7x6bxU
+         o4ktjRuCmbCi0y5tosDzHA8W4TN41KL9KEhqOkYc=
+Date:   Fri, 23 Jul 2021 12:38:27 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, tj@kernel.org,
+        shuah@kernel.org, akpm@linux-foundation.org, rafael@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        andriin@fb.com, daniel@iogearbox.net, atenart@kernel.org,
+        alobakin@pm.me, weiwan@google.com, ap420073@gmail.com,
+        jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] selftests: add tests_sysfs module
+Message-ID: <YPqcIzKpEXftpZM8@kroah.com>
+References: <20210703004632.621662-1-mcgrof@kernel.org>
+ <20210703004632.621662-2-mcgrof@kernel.org>
+ <YPgF2VAoxPIiKWX1@kroah.com>
+ <20210722223449.ot5272wpc6o5uzlk@garbanzo>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210722223449.ot5272wpc6o5uzlk@garbanzo>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: chongjiapeng <jiapeng.chong@linux.alibaba.com>
+On Thu, Jul 22, 2021 at 03:34:49PM -0700, Luis Chamberlain wrote:
+> kunit relies on UML and UML is a simple one core architecture, to start
+> with.
 
-Eliminate the follow versioncheck warning:
+I thought the UML requirement was long gone, are you sure it is still
+present?
 
-./drivers/net/phy/mxl-gpy.c: 9 linux/version.h not needed.
+> This means I cannot run tests for multicore with it, which is
+> where many races do happen! Yes, you can run kunit on other
+> architectures, but all that is new.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: chongjiapeng <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/phy/mxl-gpy.c | 1 -
- 1 file changed, 1 deletion(-)
+What do you mean by "new"?  It should work today, in today's kernel
+tree, right?
 
-diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-index 12a02d8..2d5d508 100644
---- a/drivers/net/phy/mxl-gpy.c
-+++ b/drivers/net/phy/mxl-gpy.c
-@@ -6,7 +6,6 @@
-  *
-  */
- 
--#include <linux/version.h>
- #include <linux/module.h>
- #include <linux/bitfield.h>
- #include <linux/phy.h>
--- 
-1.8.3.1
+> In this case kunit is not ideal given I want to mimic something in
+> userspace interaction, and expose races through error injection and
+> if we can use as many cores to busy races out.
 
+Can you not do that with kunit?  If not, why not?
+
+thanks,
+
+greg k-h
