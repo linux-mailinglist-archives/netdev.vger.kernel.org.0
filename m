@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BB4C3D398D
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 13:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E52563D3A10
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 14:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234534AbhGWKw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 06:52:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36954 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234255AbhGWKw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 06:52:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D9F8E608FE;
-        Fri, 23 Jul 2021 11:32:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627039980;
-        bh=E12Fd6tOLIFaPm0JI7r7SizcNQfxlTR9E3+Kw2yKqlo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ffd9dTE9bW+IqGdXzw4oAaC3o2Tmzmp2Djhlph+vr15VQgZeCFyAOW6lBaC4OJfMp
-         aq/Y9YjO79OjzJgMzA4S7MJUSP+LeABQZvGeOIiGTAsjRoqos8NWsaxo1a0XpJjzql
-         0hlxZ41tqIjX5a7EC8uMlZmvSWe6FzVmsGmtsa2DqGqYNsPAmlOpGPgo+3C21GE3zp
-         wTBJre4ZjwHIbTao930P8JF3kDxrZfVG+hSxj1B8hKb8QTZeYzQy6jpTZDCk4nMZ+9
-         3a6bQ0A4sdRCgq0JO1CNJAH9iJssPdugMN0EKjhisiOfVY+8746XXW/H3TrYGvYYIX
-         Kobd5U/hrqhPQ==
-Date:   Fri, 23 Jul 2021 14:32:56 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     helgaas@kernel.org, hch@infradead.org, kw@linux.com,
-        logang@deltatee.com, linux-pci@vger.kernel.org, rajur@chelsio.com,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V6 7/8] PCI: Add "pci=disable_10bit_tag=" parameter for
- peer-to-peer support
-Message-ID: <YPqo6M0AKWLupvNU@unreal>
-References: <1627038402-114183-1-git-send-email-liudongdong3@huawei.com>
- <1627038402-114183-8-git-send-email-liudongdong3@huawei.com>
+        id S234835AbhGWLlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 07:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234601AbhGWLln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 07:41:43 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69492C061575;
+        Fri, 23 Jul 2021 05:22:16 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id ga41so3258354ejc.10;
+        Fri, 23 Jul 2021 05:22:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=s/UNyVSx8Uo8huA1dZoq7cmEWQXga5WOzxahb6SPanE=;
+        b=spCzqL16k4og6Li/5mUP8qW1wHvemfyaK7LcMUQ2WUOE4RsI1R42VWeW0DfONY5HLG
+         NZiM9XvdMnGsc7pa4tNFJRJWa83bIh038C9TFG++GaLIfq47SUEl3QslfxM1ejaLGpOm
+         M/7vhUyMjcC/GdwlJQT7dDS/7c4dQ4omyNQEjwVlrqCOyoqX8DJAvcuKwytGc6jsIJFL
+         kmMfTNQH7Gb7nbqi6ZoVdrQxk7UDO7eK5xG0okoMJaNecTFWutK+g7M8BagHLyKWh3wz
+         /oITIBIYFkqNTt0eEuCbhYfH7J4lEbArXrhKhX1kR6iFE4vReaMJY+3CEvj71RS1OuMF
+         4k2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s/UNyVSx8Uo8huA1dZoq7cmEWQXga5WOzxahb6SPanE=;
+        b=SRPcHuvb+kEGQmrf4Wq9QGsrCG7fIpUxfaBhCQJKetaG8op5bkz4g9cNElPZRxT2rJ
+         UeX9RLdWBLvkyd7u2SloPemMNMhhJABBo2g2c2/Do+f43NjIlENVLG/DTss9cu2X1qKs
+         BmEgdr0KnIqxiygm6fKBnSl8MuOPx/STCGdVFz1v6rEvVfQH0aLl3I18GU0Ibs5ZAof8
+         0ArvH7yHnQ0NBz1uOXyIdHWwNSsl2Thk0/K/zDvfB4hFuLOPN5LtyVnLQzVmSE5B8XWD
+         ETEFPGtcYDVjhAIZixbWkAlrqujqkftHbMuMM2g7gjudEqdvRXby2gE3LgE17Jzn4lMH
+         V0MA==
+X-Gm-Message-State: AOAM530Ix/7U01ONlWd3LhcQPFVs1g2c2hOlfDAl+7wNYUgoeU7ohiiK
+        o0pLjqnWtucdzyj9TeyG9/Q=
+X-Google-Smtp-Source: ABdhPJxbT/tsVsxRsuDbiBAibpeRekVmHirhKMo9QMEGiCD7DOP56DrA68ISPUr3a7I7OX4vdyLpyA==
+X-Received: by 2002:a17:906:a896:: with SMTP id ha22mr4294991ejb.479.1627042934954;
+        Fri, 23 Jul 2021 05:22:14 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id hb7sm10593712ejb.18.2021.07.23.05.22.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Jul 2021 05:22:14 -0700 (PDT)
+Date:   Fri, 23 Jul 2021 15:22:13 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: dsa: ensure linearized SKBs in case of tail
+ taggers
+Message-ID: <20210723122213.fvhudwyk36u7pw52@skbuf>
+References: <20210721215642.19866-1-LinoSanfilippo@gmx.de>
+ <20210721215642.19866-2-LinoSanfilippo@gmx.de>
+ <20210721233549.mhqlrt3l2bbyaawr@skbuf>
+ <8460fa10-6db7-273c-a2c2-9b54cc660d9a@gmail.com>
+ <YPl9UX52nfvLzIFy@lunn.ch>
+ <7b99c47a-1a3e-662d-edcd-8c91ccb3911e@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1627038402-114183-8-git-send-email-liudongdong3@huawei.com>
+In-Reply-To: <7b99c47a-1a3e-662d-edcd-8c91ccb3911e@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 07:06:41PM +0800, Dongdong Liu wrote:
-> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
-> sending Requests to other Endpoints (as opposed to host memory), the
-> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
-> unless an implementation-specific mechanism determines that the Endpoint
-> supports 10-Bit Tag Completer capability. Add "pci=disable_10bit_tag="
-> parameter to disable 10-Bit Tag Requester if the peer device does not
-> support the 10-Bit Tag Completer. This will make P2P traffic safe.
-> 
-> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
-> ---
->  Documentation/admin-guide/kernel-parameters.txt |  7 ++++
->  drivers/pci/pci.c                               | 56 +++++++++++++++++++++++++
->  drivers/pci/pci.h                               |  1 +
->  drivers/pci/pcie/portdrv_pci.c                  | 13 +++---
->  drivers/pci/probe.c                             |  9 ++--
->  5 files changed, 78 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index bdb2200..c2c4585 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -4019,6 +4019,13 @@
->  				bridges without forcing it upstream. Note:
->  				this removes isolation between devices and
->  				may put more devices in an IOMMU group.
-> +		disable_10bit_tag=<pci_dev>[; ...]
-> +				  Specify one or more PCI devices (in the format
-> +				  specified above) separated by semicolons.
-> +				  Disable 10-Bit Tag Requester if the peer
-> +				  device does not support the 10-Bit Tag
-> +				  Completer.This will make P2P traffic safe.
+On Fri, Jul 23, 2021 at 09:47:39AM +0200, Lino Sanfilippo wrote:
+> since I got a message that the patches have already been applied to netdev/net.git.
+> How should I proceed if I want to send a new version of the series? Just ignore the
+> merge to netdev and send the patches nevertheless?
 
-I can't imagine more awkward user experience than such kernel parameter.
-
-As a user, I will need to boot the system, hope for the best that system
-works, write down all PCI device numbers, guess which one doesn't work
-properly, update grub with new command line argument and reboot the
-system. Any HW change and this dance should be repeated.
-
-Thanks
+Since the git history is immutable you need to work with what is already
+in the current net/master branch. What do you want to change, just
+address the feedback I gave? If that is all, just don't bother, I intend
+to look at adding a framework through which the DSA master can declare
+what features it supports in conjunction with specific DSA tagging protocols.
+That is material for net-next, and Dave took your patch at the last
+minute for the "net" pull request towards Linus' tree. If you send
+another patch on "net" in that area now, we'd have to wait for another
+week or two until "net" will be merged again into "net-next". Not sure
+if it's worth it. The only thing that was of concern to me is that you
+assign the DSA interface's slave->vlan_features = master->vlan_features.
+So even though you clear the NETIF_F_SG feature for the DSA slave
+interface, VLAN uppers on top of DSA interfaces will still have NETIF_F_SG.
+However, those skbs will be linearized during the dev_queue_xmit call
+done by the 8021q driver towards DSA, so in the end, the way in which
+you restructured the code may not be cosmetically ideal, but also
+appears to not be functionally problematic.
+Anyway, your patch will probably conflict with the stable trees (the
+tag_ops->needed_tailroom was introduced very recently), so we will have
+another chance to fix it up when Greg sends the email that the patch
+failed to apply.
