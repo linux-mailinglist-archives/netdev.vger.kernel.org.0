@@ -2,113 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE3DD3D3E93
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389F23D3EB4
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbhGWQpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 12:45:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbhGWQpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:45:07 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA5AC061575
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 10:25:40 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b7so3132910wri.8
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 10:25:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PjeERi7upz0bSI36pGMn3mjTdet+nsuS/09bNkS+VnE=;
-        b=nBqZsBSC8BS+wPgs5VmujkQq/FCzPj/JIbH7YdSf5kKMX98ooJnNs1mljh5diiEuWx
-         UdHrrNkK1FU4XhpylPAABSPY6/324y6ZnO2q7YaAWCzAfO+4NZpc4H+4642kEwv2x9fk
-         tfLSqGdjxobO8UcGaemI8dkVqsj555Vc9abvamty3D6yRA2Y1AIUfguTN+iS+kPvbrhx
-         fWyVTqG0gnOdEmfgeXlDMuT/iinSegnv0K6nIsfiZLgLa/RlDmehmPbJ8egUZqovRdQb
-         sjwO0xqODVGW1ET9oXzEjXG9ewWqYW/QSJTWhKWFwNmJxPDe5puEvgXdPHR9jutODwNL
-         YH8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PjeERi7upz0bSI36pGMn3mjTdet+nsuS/09bNkS+VnE=;
-        b=A0P9Ak1tEXin+iKWGsOQBMBG9+dc/Eg0vbtL39cn3pZe0vTyrArLSwOnyLJB/40mDG
-         qTbt03Rdx3g6eINZMo8QsbM6iswFfCK3pELIhLb5KUdtX9twpIduD1rbDl6Xc6beAkdx
-         2sRzMxR5ryVB4zIRNyUmHSGOdp8KTpMTu/ENE9X5d3aiXdtAIzIbvufcYrnhkpLDR/3e
-         VsCbUlTOVSb8GZrntn+TWZzwdrUrsDCcn/nC9hkCLM2+Umf+KxhOOQaIpToAtyrrxtZD
-         OCl0du7CE4TOTR729CoIxGwB+0sB7o0QreEq5SrmFKhUn1N9sWBNKFRo0PbaqnfUGxx1
-         P6ig==
-X-Gm-Message-State: AOAM531q0ufXMz0tzzLP5sMxl5OcpA2KINXdWRGX4SrMXO+ZtyO7IIrv
-        r2wfQt5R7Smsg+qIhEtPTekLg3+bEcJP0g==
-X-Google-Smtp-Source: ABdhPJyPkhxq0lrs5SdrqngPDFkK8mSu7awcghjWyziR3fdQN6BfwmySLLeOG7UC+8bEXBevpx0onw==
-X-Received: by 2002:adf:df12:: with SMTP id y18mr6598619wrl.189.1627061138522;
-        Fri, 23 Jul 2021 10:25:38 -0700 (PDT)
-Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id f26sm27690440wmc.29.2021.07.23.10.25.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 10:25:38 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        tipc-discussion@lists.sourceforge.net
-Cc:     Hoang Huu Le <hoang.h.le@dektech.com.au>
-Subject: [PATCH net-next] tipc: fix an use-after-free issue in tipc_recvmsg
-Date:   Fri, 23 Jul 2021 13:25:36 -0400
-Message-Id: <a60f2c4e9eb8cce9da01c5bd561684011f7fa7da.1627061136.git.lucien.xin@gmail.com>
+        id S231633AbhGWQup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 12:50:45 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:10454 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230098AbhGWQuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:50:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1627061478; x=1658597478;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7q02+t9IdbPUK3xfkF8qG3zdY/QCcOJgPLbPDERww/U=;
+  b=n+Ha82b7LOtGL8DO3lxvE2UjtKHPUXR5ksJlcKlu6AWGL0oHUPfqbTrX
+   K53Z4NxYHb3jA4gpxbl9ZX6I1U3yj+90e2aIT0mmlNxkGZLf/AuHiO1wv
+   W647aB1UBOjnQkb52XXSKw86suKbEsGo3NcKRl+un7BzUGXIjfIJvUS5j
+   EFGiQ61eGzNQwOwenznczPq17wSvgzroCU9EdPPM0Pg8HMjTVRdqNvTIA
+   U9EcwoEKsQCCA/jM8ZzdRu0d1suqDWN3b1wi9JLS4jj2zNqQ2b3XBODkE
+   u8s8cdcx49KoRPPt3ZVrCJOT5WrljV3UhkCZNBxXPOKVJd+/ecJeQcbxL
+   A==;
+IronPort-SDR: yvE4mCD+FKZjBObLUQaLlR0GyMN0jBK9XB9ArcL9sDoCt52hK5D+c5q95FakLbYEOkYVFf6DDn
+ v7vBb1N0sCD8QRAaPaB92GcXOeYYJx6qNutxlZhW10Y669hMi4FnucxfIwY461wnDVT6ElIOOC
+ ISgFVPZFBwO50eCVo4Zj3YgFch0cwOmMA9PAw0N+s8DR3vWsfRBzG5OmKsLRoVUyG2qFNORRa4
+ oQAEksIbW2nHIqlBiB1r/upJtSCR4ijYFuLCBKmAsKgd6CXBfQjFEHjWiHeKhiV0tXhtGoUTuL
+ 0nBapwL5/4tDs8njMaZv3rTU
+X-IronPort-AV: E=Sophos;i="5.84,264,1620716400"; 
+   d="scan'208";a="63393536"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2021 10:31:17 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 23 Jul 2021 10:31:17 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2176.2 via Frontend Transport; Fri, 23 Jul 2021 10:31:11 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v3 net-next 00/10] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Fri, 23 Jul 2021 23:00:58 +0530
+Message-ID: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported an use-after-free crash:
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+compliant with the IEEE 802.3bw-2015 specification. The device  
+provides 100 Mbit/s transmit and receive capability over a single 
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+of KSZ series switch. This series of patches provide the DSA driver  
+support for Microchip LAN937X switch and it configures through  
+SPI interface. 
 
-  BUG: KASAN: use-after-free in tipc_recvmsg+0xf77/0xf90 net/tipc/socket.c:1979
-  Call Trace:
-   tipc_recvmsg+0xf77/0xf90 net/tipc/socket.c:1979
-   sock_recvmsg_nosec net/socket.c:943 [inline]
-   sock_recvmsg net/socket.c:961 [inline]
-   sock_recvmsg+0xca/0x110 net/socket.c:957
-   tipc_conn_rcv_from_sock+0x162/0x2f0 net/tipc/topsrv.c:398
-   tipc_conn_recv_work+0xeb/0x190 net/tipc/topsrv.c:421
-   process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
-   worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+This driver shares some of the functions from KSZ common 
+layer. 
 
-As Hoang pointed out, it was caused by skb_cb->bytes_read still accessed
-after calling tsk_advance_rx_queue() to free the skb in tipc_recvmsg().
+The LAN937x switch series family consists of following SKUs: 
 
-This patch is to fix it by accessing skb_cb->bytes_read earlier than
-calling tsk_advance_rx_queue().
+LAN9370: 
+  - 4 T1 Phys 
+  - 1 RGMII port 
 
-Fixes: f4919ff59c28 ("tipc: keep the skb in rcv queue until the whole data is read")
-Reported-by: syzbot+e6741b97d5552f97c24d@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/socket.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+LAN9371: 
+  - 3 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 9b0b311c7ec1..b0dd183a4dbc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -1973,10 +1973,12 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 		tipc_node_distr_xmit(sock_net(sk), &xmitq);
- 	}
- 
--	if (!skb_cb->bytes_read)
--		tsk_advance_rx_queue(sk);
-+	if (skb_cb->bytes_read)
-+		goto exit;
-+
-+	tsk_advance_rx_queue(sk);
- 
--	if (likely(!connected) || skb_cb->bytes_read)
-+	if (likely(!connected))
- 		goto exit;
- 
- 	/* Send connection flow control advertisement when applicable */
+LAN9372: 
+  - 5 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
+
+LAN9373: 
+  - 5 T1 Phys 
+  - 2 RGMII & 1 SGMII port 
+
+LAN9374: 
+  - 6 T1 Phys 
+  - 2 RGMII ports 
+
+More support will be added at a later stage.
+
+Changes in v3: 
+- Removed settings of cnt_ptr to zero and the memset() 
+  added a cleanup patch which moves this into ksz_init_mib_timer().
+- Used ret everywhere instead of rc
+- microchip,lan937x.yaml: Remove mdio compatible
+- microchip_t1.c: Renaming standard phy registers
+- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
+  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
+- tag_ksz.c: Changed Ingress and Egress naming convention based on 
+  Host
+- tag_ksz.c: converted to skb_mac_header(skb) from 
+  (is_link_local_ether_addr(hdr->h_dest))
+- lan937x_dev.c: Removed BCAST Storm protection settings since we
+  have Tc commands for them
+- lan937x_dev.c: Flow control setting in lan937x_port_setup function
+- lan937x_dev.c: RGMII internal delay added only for cpu port, 
+- lan937x_dev.c: of_get_compatible_child(node, 
+  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
+- lan937x_dev.c:lan937x_get_interface API: returned 
+  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
+- lan937x_main.c: Removed compat interface implementation in 
+  lan937x_config_cpu_port() API & dev_info corrected as well
+- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
+  = true
+- lan937x_main.c: Added explanation for lan937x_setup lines
+- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
+- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
+- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
+  function
+- lan937x_main.c: phy link layer changes  
+- lan937x_main.c: port mirroring: sniff port selection limiting to
+  one port
+- lan937x_main.c: Changed to global vlan filtering
+- lan937x_main.c: vlan_table array to structure
+- lan937x_main.c -Use extack instead of reporting errors to Console
+- lan937x_main.c - Remove cpu_port addition in vlan_add api
+- lan937x_main.c - removed pvid resetting
+
+Changes in v2:
+- return check for register read/writes
+- dt compatible compatible check is added against chip id value 
+- lan937x_internal_t1_tx_phy_write() is renamed to 
+  lan937x_internal_phy_write()
+- lan937x_is_internal_tx_phy_port is renamed to 
+  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
+- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
+  in case of failures 
+- Return value for lan937x_internal_phy_read() is 0xffff 
+  for non existent phy 
+- cpu_port checking is removed from lan937x_port_stp_state_set()
+- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
+- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
+- Tx phy driver support will be added later 
+- Legacy switch checkings in dts file are removed.
+- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
+- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
+- net/dsa/Kconfig: Family skew numbers altered in ascending order
+- microchip,lan937x.yaml: eth is replaced with ethernet
+- microchip,lan937x.yaml: spi1 is replaced with spi 
+- microchip,lan937x.yaml: cpu labelling is removed 
+- microchip,lan937x.yaml: port@x value will match the reg value now
+
+Prasanna Vengateshan (10):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: phy: Add support for LAN937x T1 phy driver
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  148 ++
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz8795.c           |    2 -
+ drivers/net/dsa/microchip/ksz9477.c           |    3 -
+ drivers/net/dsa/microchip/ksz_common.c        |    8 +-
+ drivers/net/dsa/microchip/ksz_common.h        |    5 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  696 ++++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |   83 ++
+ drivers/net/dsa/microchip/lan937x_main.c      | 1231 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  677 +++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  223 +++
+ drivers/net/phy/microchip_t1.c                |  319 ++++-
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   56 +
+ 17 files changed, 3408 insertions(+), 67 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+
 -- 
 2.27.0
 
