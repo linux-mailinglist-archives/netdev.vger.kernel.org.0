@@ -2,85 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0845A3D3AE6
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93A2C3D3AEB
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:10:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235128AbhGWM2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 08:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45236 "EHLO
+        id S235160AbhGWM3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 08:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232851AbhGWM2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 08:28:22 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58382C061575;
-        Fri, 23 Jul 2021 06:08:54 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id j2so794799edp.11;
-        Fri, 23 Jul 2021 06:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PAkhX5Xo98YeUW9gogd9oQuzn1u/1XQEnn+TYTLrMLU=;
-        b=nLGpsOsef3mPZvPURhVHCv5/LbnRnsl/AZtg5qi98FUrQrc9FGXLQUUZhgGPi00Njm
-         kRhlsafDhZ/Ir+BDHagW6tl6TfHTHBzYpChRuNK97NBdFrIz3fNjw8CDdyTouPEfNd0n
-         33FkAIkIjHrfFq9o6o+VhBGe6cfKOkXHUCb3TNdm1RMQEVvFSMDby8Yzx7gvAHwAzJWo
-         f7nbp351mxD0VB78Ft2iVsDUnrGJYlPRTvPqE6OweLR7tkybyQMPVGkT5s+tbhgcwaJk
-         xowIYqqrB87usYrt9EgiqAO6lVKA/51Y4xpWV5ddbyVigtBGDhP6j3L9hFsZUsmIgSWU
-         QDlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PAkhX5Xo98YeUW9gogd9oQuzn1u/1XQEnn+TYTLrMLU=;
-        b=A3juYI0btdlvxWk7+2k8AtOBNtzHrTljuiASCAbl2HAg5IIvTJaAPeyHFv3n/3GdcB
-         Jemk2x3FLZkft4yZMEDPU8fDM+qOV7jzCixAZioiYhqlZFdkVE8lDK7xNFjmCWL8Drfn
-         DmkHqL3a9v4KWEEg4LXHsDozd/DoQcwT/X+0SYiDA9Sh9YwnfZ+9Uf2DvR16IiWPtkW2
-         UJ4GFfxdF3LiGJ3kCvJf5EHXd+GhrFdhMKjZgDgbRrIZ8ERvQEaIzSO+q+q/P2yr5+OS
-         KT9wnLpwygAdVFkInbSo+ZJQxy5TsE4bCmNZgoCNJmGUdnKTf4Tovn0XombfOSlLta9x
-         Y8Bg==
-X-Gm-Message-State: AOAM531A5wx4EZc22YzOUZjq7UVh9R4WGj4bQsky7RYdX3/XTUIQBxNm
-        VXDzQh/ssW5VUq+REgffCHI=
-X-Google-Smtp-Source: ABdhPJx/9BRca9c3vlIqAYxdsyvYU/mwSwHs5XmUzc3hblRgBGVjpGX4CrAEBTtZGKoUmU/GTr9qbg==
-X-Received: by 2002:a05:6402:1d86:: with SMTP id dk6mr5606889edb.136.1627045732909;
-        Fri, 23 Jul 2021 06:08:52 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id f23sm9912748ejx.79.2021.07.23.06.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Jul 2021 06:08:52 -0700 (PDT)
-Date:   Fri, 23 Jul 2021 16:08:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     davem@davemloft.net, shawnguo@kernel.org,
-        linux-arm-kernel@lists.infradead.org, qiangqing.zhang@nxp.com,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next] ARM: dts: imx6qdl: Remove unnecessary mdio
- #address-cells/#size-cells
-Message-ID: <20210723130851.6tfl4ijl7hkqzchm@skbuf>
-References: <20210723112835.31743-1-festevam@gmail.com>
+        with ESMTP id S234972AbhGWM3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 08:29:45 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5743C061575;
+        Fri, 23 Jul 2021 06:10:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=W6wJL+7nnUO08SMNG3U7r9AB3QZ2lCJON3hvs8YkDQ4=; b=xIm9Fq7MVQRA/TIcmSnr9xclI
+        gzYQspxawTMz64c+VbIHX8z/Gvg0dD7CuOCjhelSlSDK7BFiiFADWuTbyVCG3+GOCkMugGIQ4Cqd8
+        XGN3GtVfDAumsyQILaR/JDmjDgFxSq2y9HteZZZ8BD5aomX56xcqO7Lv5DWiUoZ+/Ru/1+T9ybD77
+        lY9KtWD8fdMCYFrNNLYSrY0Q9qIFKJvtyR/pqHWUpvAWldajwb6Av98Eyl7zMC7q2fwKYDZFY8bAu
+        HsqKNbFel5/yBhLGDN2140iX/bjKoUnWxmEvtA4lXmtoDpWVXn0yN5j4gYwuMpw63evVxEpabb0ax
+        V3FHarsaQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:46512)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1m6uwO-00020S-QA; Fri, 23 Jul 2021 14:10:12 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1m6uwN-0001oq-2L; Fri, 23 Jul 2021 14:10:11 +0100
+Date:   Fri, 23 Jul 2021 14:10:11 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     lxu@maxlinear.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: Remove unused including <linux/version.h>
+Message-ID: <20210723131010.GC22278@shell.armlinux.org.uk>
+References: <1627036707-73334-1-git-send-email-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210723112835.31743-1-festevam@gmail.com>
+In-Reply-To: <1627036707-73334-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fabio,
+On Fri, Jul 23, 2021 at 06:38:27PM +0800, Jiapeng Chong wrote:
+> From: chongjiapeng <jiapeng.chong@linux.alibaba.com>
+> 
+> Eliminate the follow versioncheck warning:
+> 
+> ./drivers/net/phy/mxl-gpy.c: 9 linux/version.h not needed.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: chongjiapeng <jiapeng.chong@linux.alibaba.com>
 
-On Fri, Jul 23, 2021 at 08:28:35AM -0300, Fabio Estevam wrote:
-> Since commit dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into
-> phy device node") the following W=1 dtc warnings are seen:
-> 
-> arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi:323.7-334.4: Warning (avoid_unnecessary_addr_size): /soc/bus@2100000/ethernet@2188000/mdio: unnecessary #address-cells/#size-cells without "ranges" or child "reg" property
-> 
-> Remove the unnecessary mdio #address-cells/#size-cells to fix it.
-> 
-> Fixes: dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into phy device node")
-> Signed-off-by: Fabio Estevam <festevam@gmail.com>
-> ---
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-Are you actually sure this is the correct fix? If I look at mdio.yaml, I
-think it is pretty clear that the "ethernet-phy" subnode of the MDIO
-controller must have an "@[0-9a-f]+$" pattern, and a "reg" property. If
-it did, then it wouldn't warn about #address-cells.
+Thanks!
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
