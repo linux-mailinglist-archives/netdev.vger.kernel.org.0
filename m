@@ -2,69 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F193D3C9C
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6003D3CA7
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbhGWPAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 11:00:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47460 "EHLO mail.kernel.org"
+        id S235611AbhGWPDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 11:03:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48756 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235765AbhGWO7a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 10:59:30 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2A75260EBD;
-        Fri, 23 Jul 2021 15:40:04 +0000 (UTC)
+        id S235470AbhGWPDb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 11:03:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CB88760C51;
+        Fri, 23 Jul 2021 15:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627054804;
-        bh=R0L44uAf9kXc1MarPTVvuXq4z9Tihu/b/+LCxWdIKLM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qLUpCbHfmyqDkKQM4kBYqCNbmMGXz7JYRyGX+9KncUpDKx6MTfgXC0bNydkyWrpvQ
-         vMwfMFjKTOYRF7UpNLdw9pJhwg9n0UFhHrTQG/HF0VLsYIEkP/yeWkyFfZ7djTs9m9
-         iu38/tpLKdi35UHcpWsE5InBW69ZXFUAmUX53NwBrK3Y2C7rNP22T1n4iVXK3kqhXu
-         +NsLtpbZHj1qV9AGv3KfHHBQ51DE09pnm2L9MC/q3uW+/F5Z1limy9FPnjzFW3N6oQ
-         1MEXJnSdeaAqKzleiKBbxXROpblM84Hgp2JmxwA+CyOdSkWxW9jB6a31kSIhtCqevy
-         occkHVuowjobw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1E0A060972;
-        Fri, 23 Jul 2021 15:40:04 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1627055044;
+        bh=vhxORIpUlFOlz7p1YyAS/UfRmjF+Aiod9z/B9WU45dc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d17zTnCr9JLhnCtYCuiVILkQ+lwK4yTgpCMDm+HZhgUL/mnqy2h8bjllIojs4vPaJ
+         eUGtkl3ObvGBORX+NHbXDO6EhN+HGiITJHk0hCN9WT+tLMWofcaWDTx3YAmyBCz32o
+         jgYXraP9rkJtQeGvsXTw+nvcah7BUyv901yQ4JiN3F9sRnZ8cd3y2kjP0kz7LvCHs0
+         4O6Hmar785mEng8Serdnu6IW52cjza1755PERDNLtNqd1rtW8RfijvMO7MjPzPZLVk
+         bbNidAUrC5hFS3euLftq0POnCYn/9kEdqKaq8dLw9no3Od/9gJBt1ldDhBKCiidOXi
+         6+1MdARmX0JHw==
+Date:   Fri, 23 Jul 2021 21:13:50 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, loic.poulain@linaro.org,
+        bjorn.andersson@linaro.org, xiyou.wangcong@gmail.com,
+        edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] net: qrtr: fix memory leaks
+Message-ID: <20210723154350.GB3739@thinkpad>
+References: <20210723122753.GA3739@thinkpad>
+ <20210723153132.6159-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tipc: fix implicit-connect for SYN+
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162705480411.17668.14638810207586161441.git-patchwork-notify@kernel.org>
-Date:   Fri, 23 Jul 2021 15:40:04 +0000
-References: <9f7076d5dd455e26df404b917bfe99f301c0eb72.1626969941.git.lucien.xin@gmail.com>
-In-Reply-To: <9f7076d5dd455e26df404b917bfe99f301c0eb72.1626969941.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        tipc-discussion@lists.sourceforge.net, linux-sctp@vger.kernel.org,
-        jmaloy@redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210723153132.6159-1-paskripkin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 22 Jul 2021 12:05:41 -0400 you wrote:
-> For implicit-connect, when it's either SYN- or SYN+, an ACK should
-> be sent back to the client immediately. It's not appropriate for
-> the client to enter established state only after receiving data
-> from the server.
+On Fri, Jul 23, 2021 at 06:31:32PM +0300, Pavel Skripkin wrote:
+> Syzbot reported memory leak in qrtr. The problem was in unputted
+> struct sock. qrtr_local_enqueue() function calls qrtr_port_lookup()
+> which takes sock reference if port was found. Then there is the following
+> check:
 > 
-> On client side, after the SYN is sent out, tipc_wait_for_connect()
-> should be called to wait for the ACK if timeout is set.
+> if (!ipc || &ipc->sk == skb->sk) {
+> 	...
+> 	return -ENODEV;
+> }
 > 
-> [...]
+> Since we should drop the reference before returning from this function and
+> ipc can be non-NULL inside this if, we should add qrtr_port_put() inside
+> this if.
+> 
+> The similar corner case is in qrtr_endpoint_post() as Manivannan
+> reported. In case of sock_queue_rcv_skb() failure we need to put
+> port reference to avoid leaking struct sock pointer.
+> 
+> Fixes: e04df98adf7d ("net: qrtr: Remove receive worker")
+> Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
+> Reported-and-tested-by: syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
-Here is the summary with links:
-  - [net] tipc: fix implicit-connect for SYN+
-    https://git.kernel.org/netdev/net/c/f8dd60de1948
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
+Mani
 
-
+> ---
+> 
+> Changes in v2:
+> 	Added missing qrtr_port_put() in qrtr_endpoint_post() as Manivannan
+> 	reported.
+> 
+> ---
+>  net/qrtr/qrtr.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index b34358282f37..a8b2c9b21a8d 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -514,8 +514,10 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
+>  		if (!ipc)
+>  			goto err;
+>  
+> -		if (sock_queue_rcv_skb(&ipc->sk, skb))
+> +		if (sock_queue_rcv_skb(&ipc->sk, skb)) {
+> +			qrtr_port_put(ipc);
+>  			goto err;
+> +		}
+>  
+>  		qrtr_port_put(ipc);
+>  	}
+> @@ -850,6 +852,8 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>  
+>  	ipc = qrtr_port_lookup(to->sq_port);
+>  	if (!ipc || &ipc->sk == skb->sk) { /* do not send to self */
+> +		if (ipc)
+> +			qrtr_port_put(ipc);
+>  		kfree_skb(skb);
+>  		return -ENODEV;
+>  	}
+> -- 
+> 2.32.0
+> 
