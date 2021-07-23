@@ -2,111 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6003D3CA7
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E13A23D3CC8
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 17:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235611AbhGWPDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 11:03:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48756 "EHLO mail.kernel.org"
+        id S235676AbhGWPJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 11:09:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235470AbhGWPDb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 11:03:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB88760C51;
-        Fri, 23 Jul 2021 15:43:56 +0000 (UTC)
+        id S235663AbhGWPJb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 11:09:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id A028660EB5;
+        Fri, 23 Jul 2021 15:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627055044;
-        bh=vhxORIpUlFOlz7p1YyAS/UfRmjF+Aiod9z/B9WU45dc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d17zTnCr9JLhnCtYCuiVILkQ+lwK4yTgpCMDm+HZhgUL/mnqy2h8bjllIojs4vPaJ
-         eUGtkl3ObvGBORX+NHbXDO6EhN+HGiITJHk0hCN9WT+tLMWofcaWDTx3YAmyBCz32o
-         jgYXraP9rkJtQeGvsXTw+nvcah7BUyv901yQ4JiN3F9sRnZ8cd3y2kjP0kz7LvCHs0
-         4O6Hmar785mEng8Serdnu6IW52cjza1755PERDNLtNqd1rtW8RfijvMO7MjPzPZLVk
-         bbNidAUrC5hFS3euLftq0POnCYn/9kEdqKaq8dLw9no3Od/9gJBt1ldDhBKCiidOXi
-         6+1MdARmX0JHw==
-Date:   Fri, 23 Jul 2021 21:13:50 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, loic.poulain@linaro.org,
-        bjorn.andersson@linaro.org, xiyou.wangcong@gmail.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] net: qrtr: fix memory leaks
-Message-ID: <20210723154350.GB3739@thinkpad>
-References: <20210723122753.GA3739@thinkpad>
- <20210723153132.6159-1-paskripkin@gmail.com>
+        s=k20201202; t=1627055404;
+        bh=qPT4JWX5jO+VWBQCggeUdgQeTU1X4/maZRiWjQklwxc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Rtw96mJOt4+VSUqmjyBdFayL+BvuAChm+RWrnl3peVK/h/0rKJV8BryyuFiv1NUr2
+         n0CcaEs8tqGCcMQtjWJMblsVFgbEj/oPVuHicOvJwfsBD+wqM/9We/GT7A6X2XKvDN
+         qW3yfvoYabZW/hCXqRBb5mUJN4XYqRbSdNs5ASyg4o8c4Mb2+A9yUYBn5+7udEROBk
+         sDVfLRDLQuDLtxoRI0OdB65NX3dYtjX/XG6Vg+r0S8dvkWx8gjHE2jkcwxe0z2qQfd
+         jphKmuQuB6zlcRh+7RpBmZOy/NuzosRLwVoC1zX2bp1AR+zHT/CP9qh8ssiZtdOQ/K
+         DRXtrT3yrgPpw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 937F560721;
+        Fri, 23 Jul 2021 15:50:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210723153132.6159-1-paskripkin@gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: Set true network header for ECN decapsulation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162705540459.23511.8821493329364517880.git-patchwork-notify@kernel.org>
+Date:   Fri, 23 Jul 2021 15:50:04 +0000
+References: <20210722170128.223387-1-gnaaman@drivenets.com>
+In-Reply-To: <20210722170128.223387-1-gnaaman@drivenets.com>
+To:     Gilad Naaman <gnaaman@drivenets.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, toke@redhat.com, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 06:31:32PM +0300, Pavel Skripkin wrote:
-> Syzbot reported memory leak in qrtr. The problem was in unputted
-> struct sock. qrtr_local_enqueue() function calls qrtr_port_lookup()
-> which takes sock reference if port was found. Then there is the following
-> check:
-> 
-> if (!ipc || &ipc->sk == skb->sk) {
-> 	...
-> 	return -ENODEV;
-> }
-> 
-> Since we should drop the reference before returning from this function and
-> ipc can be non-NULL inside this if, we should add qrtr_port_put() inside
-> this if.
-> 
-> The similar corner case is in qrtr_endpoint_post() as Manivannan
-> reported. In case of sock_queue_rcv_skb() failure we need to put
-> port reference to avoid leaking struct sock pointer.
-> 
-> Fixes: e04df98adf7d ("net: qrtr: Remove receive worker")
-> Fixes: bdabad3e363d ("net: Add Qualcomm IPC router")
-> Reported-and-tested-by: syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Hello:
 
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Thanks,
-Mani
+On Thu, 22 Jul 2021 20:01:28 +0300 you wrote:
+> In cases where the header straight after the tunnel header was
+> another ethernet header (TEB), instead of the network header,
+> the ECN decapsulation code would treat the ethernet header as if
+> it was an IP header, resulting in mishandling and possible
+> wrong drops or corruption of the IP header.
+> 
+> In this case, ECT(1) is sent, so IP_ECN_decapsulate tries to copy it to the
+> inner IPv4 header, and correct its checksum.
+> 
+> [...]
 
-> ---
-> 
-> Changes in v2:
-> 	Added missing qrtr_port_put() in qrtr_endpoint_post() as Manivannan
-> 	reported.
-> 
-> ---
->  net/qrtr/qrtr.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-> index b34358282f37..a8b2c9b21a8d 100644
-> --- a/net/qrtr/qrtr.c
-> +++ b/net/qrtr/qrtr.c
-> @@ -514,8 +514,10 @@ int qrtr_endpoint_post(struct qrtr_endpoint *ep, const void *data, size_t len)
->  		if (!ipc)
->  			goto err;
->  
-> -		if (sock_queue_rcv_skb(&ipc->sk, skb))
-> +		if (sock_queue_rcv_skb(&ipc->sk, skb)) {
-> +			qrtr_port_put(ipc);
->  			goto err;
-> +		}
->  
->  		qrtr_port_put(ipc);
->  	}
-> @@ -850,6 +852,8 @@ static int qrtr_local_enqueue(struct qrtr_node *node, struct sk_buff *skb,
->  
->  	ipc = qrtr_port_lookup(to->sq_port);
->  	if (!ipc || &ipc->sk == skb->sk) { /* do not send to self */
-> +		if (ipc)
-> +			qrtr_port_put(ipc);
->  		kfree_skb(skb);
->  		return -ENODEV;
->  	}
-> -- 
-> 2.32.0
-> 
+Here is the summary with links:
+  - net: Set true network header for ECN decapsulation
+    https://git.kernel.org/netdev/net/c/227adfb2b1df
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
