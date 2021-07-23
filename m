@@ -2,109 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98BD43D31D5
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 04:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 317F73D31E3
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 04:34:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbhGWBvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 21:51:44 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:54991 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233166AbhGWBvn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 21:51:43 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4GWCyR6zrGz9sRf;
-        Fri, 23 Jul 2021 12:32:15 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1627007536;
-        bh=koKq4TgjUYq9/R+UtF4SotsRvhgnCeYaWHfyAdtWN38=;
-        h=Date:From:To:Cc:Subject:From;
-        b=snHmio27KXWOC8YyLuSXO49MhT6QepEY/rtiduHufDnRgdYQO2FovZilwxrF6Wb+p
-         ZX66DufrRNbYpzjXaRJayta4WQfWpGHjb1Keo5J3ll27A7K+6LvY83qtPtDJ7EdnlX
-         87k8q0nvvlm9H94CAp2OcAs2NmSwAN0Jso4UydYiTgATnpO7CqHwXD0WbSS2yTINaE
-         qu2NQCUSPYXT9Mglo1wVCmLOzFh4ODQW4NAVZAL9bKssy4jcsQFges52NjDrVOoXSm
-         brusGyUg0nEZJHFGr+DUS4g9Ml/ja0+j8qAcg+vSgXDszFrwRu1As+spGunfRAdtfo
-         hJ8uwWWqSGVqQ==
-Date:   Fri, 23 Jul 2021 12:32:13 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Wei Wang <weiwan@google.com>
-Subject: linux-next: manual merge of the net-next tree with Linus' tree
-Message-ID: <20210723123213.0a970ac7@canb.auug.org.au>
+        id S233217AbhGWBxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 21:53:31 -0400
+Received: from mail-pj1-f43.google.com ([209.85.216.43]:50821 "EHLO
+        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233433AbhGWBxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 21:53:30 -0400
+Received: by mail-pj1-f43.google.com with SMTP id l19so318512pjz.0;
+        Thu, 22 Jul 2021 19:34:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RREWwRklaZFXt0C4quifntpsOFbK/AfnI0Sh0jnaUmg=;
+        b=U03foEPWsW2DfPCXBxWAflP/v0TXNeTiZkUSRDn3VN4ryGn2q1oioraLyzQxaRIx7R
+         awEPJuRcccvHB7WoD+0QvyhTsUyZ+FK8rl68oDrcv/XPnyY/ucLNjE5iEiwgR6TvnfNu
+         VCv/jfbj+e5Fo/ThqnMtwvR+iseWt54tz0bOxbwXBkP/oQvcCayKqxbqTYiDXeyon0f6
+         Tq7JG1KJBxHi50Cu8nMWsAdjb/zwpX0oeM1DD/HUs1osnfl54XHm8Osi6NQQ/rhnPHiE
+         liIKV1aYYS81X22fSSPU5eZiChDTjru+RihbX90NZBlgISH8HcYcW+/h4dIGE+D3Lfae
+         ch0g==
+X-Gm-Message-State: AOAM5304ajlCpEutEqEN+cM2cENxloaRbWMVqn9Wr/G3u9ksY1/K36Dl
+        1GfmY6FoQ6MGsnxFVhO4EIgM/kgwF5Gqgg==
+X-Google-Smtp-Source: ABdhPJzjHKo0c5RWosVq5DDhWmIZFHW08248o5ty3hGtbxQ6eznyCONZvxh4FQ926BfpYN3JbCEfbg==
+X-Received: by 2002:a17:902:b188:b029:11b:1549:da31 with SMTP id s8-20020a170902b188b029011b1549da31mr2169395plr.7.1627007642006;
+        Thu, 22 Jul 2021 19:34:02 -0700 (PDT)
+Received: from ?IPv6:2601:647:4000:d7:286e:6a9d:f340:dcd9? ([2601:647:4000:d7:286e:6a9d:f340:dcd9])
+        by smtp.gmail.com with ESMTPSA id s7sm30561921pfk.12.2021.07.22.19.33.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Jul 2021 19:34:00 -0700 (PDT)
+Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
+To:     Luis Chamberlain <mcgrof@kernel.org>, gregkh@linuxfoundation.org,
+        tj@kernel.org, shuah@kernel.org, akpm@linux-foundation.org,
+        rafael@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, andriin@fb.com, daniel@iogearbox.net,
+        atenart@kernel.org, alobakin@pm.me, weiwan@google.com,
+        ap420073@gmail.com
+Cc:     jeyu@kernel.org, ngupta@vflare.org,
+        sergey.senozhatsky.work@gmail.com, minchan@kernel.org,
+        axboe@kernel.dk, mbenes@suse.com, jpoimboe@redhat.com,
+        tglx@linutronix.de, keescook@chromium.org, jikos@kernel.org,
+        rostedt@goodmis.org, peterz@infradead.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210722221905.1718213-1-mcgrof@kernel.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <2e9f16ad-5668-f15d-b3c3-f787ba55bcda@acm.org>
+Date:   Thu, 22 Jul 2021 19:33:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/jzgtEvjBY3eTR9W_rvEUN.D";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210722221905.1718213-1-mcgrof@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/jzgtEvjBY3eTR9W_rvEUN.D
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 7/22/21 3:19 PM, Luis Chamberlain wrote:
+> + * The real value to try_module_get() is the module_is_live() check which
+> + * ensures this the caller of try_module_get() can yields to userspace module
+> + * removal requests and fail whatever it was about to process.
 
-Hi all,
+can yields -> can yield?
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Otherwise this looks really well written to me.
 
-  net/ipv4/tcp_ipv4.c
-
-between commit:
-
-  213ad73d0607 ("tcp: disable TFO blackhole logic by default")
-
-from Linus' tree and commit:
-
-  e93abb840a2c ("net/tcp_fastopen: remove tcp_fastopen_ctx_lock")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv4/tcp_ipv4.c
-index a692626c19e4,e9321dd39cdb..000000000000
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@@ -2964,8 -2964,7 +2964,7 @@@ static int __net_init tcp_sk_init(struc
-  	net->ipv4.sysctl_tcp_comp_sack_slack_ns =3D 100 * NSEC_PER_USEC;
-  	net->ipv4.sysctl_tcp_comp_sack_nr =3D 44;
-  	net->ipv4.sysctl_tcp_fastopen =3D TFO_CLIENT_ENABLE;
-- 	spin_lock_init(&net->ipv4.tcp_fastopen_ctx_lock);
- -	net->ipv4.sysctl_tcp_fastopen_blackhole_timeout =3D 60 * 60;
- +	net->ipv4.sysctl_tcp_fastopen_blackhole_timeout =3D 0;
-  	atomic_set(&net->ipv4.tfo_active_disable_times, 0);
- =20
-  	/* Reno is always built in */
-
---Sig_/jzgtEvjBY3eTR9W_rvEUN.D
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmD6Ki0ACgkQAVBC80lX
-0GxZUgf/W9224sGFp0kqxPny1PD1fa2vNdUgOYvI8sLWEext9qFDZ3bJgN3vgzyR
-lDe/ph7OEKj3yOGdN1DRjWWSMPmP74BPW1EX0csRWG5KaPH0/vMjHqTBtP8NEnfu
-MMU67INKIniQi38nVIwruBpFJGg+P2FyE31lleznkBapy4PPrnpyXoUB5VEIwUkS
-1DczvTNpyHh39kS7f0r2bvME09RIkX8jeFv0VwkypErz6ijFQprYcD7tpEGsxGcZ
-76NdMOjFi5lk8nwp2H/g4elzr7Rr0LVRLIUuHl/W1XnTpfQoZ8bcKe5TPdMuAvDe
-WaT31X8PubruI/k5rujT3rv01eblew==
-=i9Q5
------END PGP SIGNATURE-----
-
---Sig_/jzgtEvjBY3eTR9W_rvEUN.D--
+Bart.
