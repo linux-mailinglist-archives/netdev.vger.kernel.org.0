@@ -2,120 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 194273D432D
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 00:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32343D434C
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 01:10:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233057AbhGWWPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 18:15:55 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:45323 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233019AbhGWWPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 18:15:53 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id F1E32582A2B;
-        Fri, 23 Jul 2021 18:56:24 -0400 (EDT)
-Received: from imap43 ([10.202.2.93])
-  by compute3.internal (MEProxy); Fri, 23 Jul 2021 18:56:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
-         h=mime-version:message-id:in-reply-to:references:date:from:to
-        :cc:subject:content-type; s=fm1; bh=tTFd1PFlfcqw1vOZmALYMCCs5zoz
-        hzoIchbtUK3cuNM=; b=i2GSngfh75gIui2mKvjPZkl8T9UqCsl31F/PQxgHMQgk
-        enWrowA9Bb73cLrPztR8pAnKoZO9pjwBqMTj6VHPJq0ceBV7aG/ldVuK4bjDljXK
-        0AIQb+35ZfH5VF25DC94yUyknAgyZiARgODGUxPF0lk6KjPuFgofzGw0SgvY2cTY
-        BrdQYlaw074S4yoUYRUDc8ATKLZn4atuSGXe/r22ixXoyi0ZfrtmjYwb/hkFLJkZ
-        hfVdk0LgIimeTOExWnD4weFJWdDuSMqk3BUlfywC3CVojzXQWUHke/f9NkZjpVle
-        OM3P/XO5RYzaGLa8Jo/5RZNjgXM7e+4UJ6edCzC5dQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=tTFd1P
-        Flfcqw1vOZmALYMCCs5zozhzoIchbtUK3cuNM=; b=fYenRrrkR8x34dU03tKL0j
-        4wbS284Hy28votnVcHS9AQBdc+239YYufMqud6o5vPDdZHJt38+Rkz2cOoeUEDCF
-        dw2+dMKUJJfcrOBBjCaY2NWEFAVrv1tfYojqXa4GmQ9LsNFNtl+JECR5ojZXfQya
-        Mnjb+9QoDuvnNoUZTkgwLpf5InzzBmR8uCEGUxwYjavRsf9fIVVROVK76ob9ox6n
-        QVOx+HFIW4lwKLdEQi5yLmqp3EMZmXsKg9RwwcerZmqpicfTzROQ1pruJdZOclp9
-        eMTIY/oJDD7kssFe1eU0CY8tuSJOzPAvUWL+PuhbQnXcX2HxwwlqjZTvKriCDITw
-        ==
-X-ME-Sender: <xms:F0n7YIU_5LGG2Pv7p7sjJS5WAP_XkROS8JCrwq-HdWrpT84UEDh9NA>
-    <xme:F0n7YMml0vsRKjDaWNnSL9nHkQjjSNy0TPJtIhsjnwa9UbWTjWYYMbjWz12lDE0UR
-    CmjU6WubMtEe1EWU3Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrfeelgdduhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvufgtsehttdertderreejnecuhfhrohhmpeetlhhishht
-    rghirhcuoegrlhhishhtrghirhesrghlihhsthgrihhrvdefrdhmvgeqnecuggftrfgrth
-    htvghrnhepffehffffleduieeitdehudelteevueevgeduuddtjeekvddvvdeugfeludek
-    hfehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hlihhsthgrihhrsegrlhhishhtrghirhdvfedrmhgv
-X-ME-Proxy: <xmx:F0n7YMaET5SUJLMmLdq5PpPT3qTVmNumWhAj0KUdRHTNXsbRe9YJtQ>
-    <xmx:F0n7YHXYkPbX0MC-M7aKRx3A0HyhLlJqWqEwJv9sukDF7FTKHradZw>
-    <xmx:F0n7YCkMRVyVGStVp-JbENQ8474khlhGlj0Xu0pRSC1DVUNIipev2g>
-    <xmx:GEn7YM4qoeiwEFAWohLF3Byr4Do6cfHYJ_W301sNEdSxJajolSkPnQ>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 91AA0AC0DD3; Fri, 23 Jul 2021 18:56:23 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-540-g21c5be8f1e-fm-20210722.001-g21c5be8f
-Mime-Version: 1.0
-Message-Id: <a3605b89-6db0-41d6-9170-06711fe7384a@www.fastmail.com>
-In-Reply-To: <20210721140424.725744-9-maxime@cerno.tech>
-References: <20210721140424.725744-1-maxime@cerno.tech>
- <20210721140424.725744-9-maxime@cerno.tech>
-Date:   Sat, 24 Jul 2021 08:56:02 +1000
-From:   Alistair <alistair@alistair23.me>
-To:     "Maxime Ripard" <maxime@cerno.tech>,
-        "Chen-Yu Tsai" <wens@csie.org>,
-        "Jernej Skrabec" <jernej.skrabec@siol.net>,
-        devicetree@vger.kernel.org, "Rob Herring" <robh+dt@kernel.org>,
-        "Frank Rowand" <frowand.list@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-sunxi@googlegroups.com,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, netdev@vger.kernel.org,
-        "Vasily Khoruzhick" <anarsoul@gmail.com>
-Subject: =?UTF-8?Q?Re:_[PATCH_08/54]_dt-bindings:_bluetooth:_realtek:_Add_missing?=
- =?UTF-8?Q?_max-speed?=
-Content-Type: text/plain
+        id S233064AbhGWW3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 18:29:40 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54102 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232904AbhGWW3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 18:29:37 -0400
+Received: by mail-io1-f72.google.com with SMTP id w3-20020a0566020343b02905393057ad92so2581382iou.20
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 16:10:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=6RQsGzkA52unvEXhAGOuDMaDb8vBCAzRbnUzWuORtwY=;
+        b=V7UmHMDa74uzltYB9LhSWX2MvWZ/XdWK6imatokmoFSkKjxyy1yJvT8mwJQ6wLK5ek
+         a9anO5ZQVbcmK68tOJ3WasiD2chDECz5iQ9KrzufxJsSvzYfzqdmxmGg5sKbzOT5eByw
+         u9h+4kcZz/LBgTkw5KySzX0AaF1wFOO8ZKw0n37BAMYijbUt1anm6cOZptJpzWyQPldO
+         0gGSQxwAaz3lhZJoM3UdFPCNT2is6Ra9RSZ1ShV2OcH08Xf4vsOHhagcMP+JPPR0EPgW
+         2gty7bzOZDSRD4EJHemiMJYz7ljNVxzgY9kxQ3ocKzgkFd4JR8+hU/P6w142Ft79GIO1
+         RXNg==
+X-Gm-Message-State: AOAM530XUZW+kpxlM106AzTMILBYDzK4aCHP2NP0e/jje8qSIWwRHBL4
+        XMYWMPHThkg3OepeIbT9xAc72kFZcuxVfLNtZ4C1XZOrwNZT
+X-Google-Smtp-Source: ABdhPJwBnb2izvcnLq+78+oC7ssLD4z4TZTwLRynmblYk+oOhI0ea8aORnvXRNoO10TBdt2CBU09OzlhW8R6f6V1sxyHgENr0RUQ
+MIME-Version: 1.0
+X-Received: by 2002:a5d:8747:: with SMTP id k7mr5777211iol.83.1627081809209;
+ Fri, 23 Jul 2021 16:10:09 -0700 (PDT)
+Date:   Fri, 23 Jul 2021 16:10:09 -0700
+In-Reply-To: <20210723194932.6c3b77a8@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000042305105c7d281d0@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in tipc_recvmsg
+From:   syzbot <syzbot+e6741b97d5552f97c24d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, devicetree@vger.kernel.org,
+        frowand.list@gmail.com, gregkh@linuxfoundation.org,
+        jmaloy@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, paskripkin@gmail.com, rafael@kernel.org,
+        robh@kernel.org, syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021, at 12:03 AM, Maxime Ripard wrote:
-> additionalProperties prevent any property not explicitly defined in the
-> binding to be used. Yet, some serial properties like max-speed are valid
-> and validated through the serial/serial.yaml binding.
-> 
-> Even though the ideal solution would be to use unevaluatedProperties
-> instead, it's not pratical due to the way the bus bindings have been
-> described. Let's add max-speed to remove the warning.
-> 
-> Cc: Alistair Francis <alistair@alistair23.me>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: Vasily Khoruzhick <anarsoul@gmail.com>
-> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Hello,
 
-Reviewed-by: Alistair Francis <alistair@alistair23.me>
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Alistair
+Reported-and-tested-by: syzbot+e6741b97d5552f97c24d@syzkaller.appspotmail.com
 
-> ---
-> Documentation/devicetree/bindings/net/realtek-bluetooth.yaml | 2 ++
-> 1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-> index 4f485df69ac3..deae94ef54b8 100644
-> --- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-> +++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-> @@ -34,6 +34,8 @@ properties:
->      maxItems: 1
->      description: GPIO specifier, used to wakeup the host processor
->  
-> +  max-speed: true
-> +
-> required:
->    - compatible
->  
-> -- 
-> 2.31.1
-> 
-> 
+Tested on:
+
+commit:         90d856e7 Add linux-next specific files for 20210723
+git tree:       linux-next
+kernel config:  https://syzkaller.appspot.com/x/.config?x=644211b3d3da598c
+dashboard link: https://syzkaller.appspot.com/bug?extid=e6741b97d5552f97c24d
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=118f857c300000
+
+Note: testing is done by a robot and is best-effort only.
