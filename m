@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7CEC3D37CB
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 567573D37D4
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbhGWIzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 04:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52410 "EHLO
+        id S231197AbhGWJAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbhGWIze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:55:34 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8289C061575;
-        Fri, 23 Jul 2021 02:36:07 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id hg12-20020a17090b300cb02901736d9d2218so3004080pjb.1;
-        Fri, 23 Jul 2021 02:36:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=ZTe2QhZNvjeunOdwndEKdmKEetZXSNLWlRKdUTF8nEA=;
-        b=noix7vBVUY0miC7zY6X47bnNSgos9y1DtT1DWKJwZfTTL96A3vHc2zzH9oNyR+Ymlo
-         4EwOUM1d91Tz4WtVSCASMVAkOfG2GXxWrpq72WKIsR+nE2PZlDsQbJ+Au/W/ICuZroZx
-         SLjVlomLADXPZmHCSoa2grT/cZArhJ8aa+6utp8LGeFnSUi8uIvscpmk1qrREtyNDnRI
-         BA9mG3NMJ16FrQ7Hdj97cCjb5Apx98W1Vq0omPxd0U8pI3fgeoF9V7vJ+w8SSJI3J4pB
-         LhvV/rVHaAIC9A8bSz6cqgwHrvCB0K4vvEX1928Eu4TCWUsgUzQ9OCMbuHxUgadmoTeN
-         1SWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=ZTe2QhZNvjeunOdwndEKdmKEetZXSNLWlRKdUTF8nEA=;
-        b=YebfRpgcV2FOWFjwInvtDvOdej+bki3kFkJdkYwXJd7DvxKebI8l3WGOOie8ZUkOuD
-         gZMXzv4hf2ZPQXfof4oawNo1jxXrAQyYWd59V/ZpdvuP9Q5A2FB+jgXuRUyRfq0im4zQ
-         Q58ffSkwAG3m8UPe1X/ecSqBWScYDIKjr89EPe77b9R2kA9KTUn//L/vmvnY91/ElhWX
-         fePsqmPzTPTvYbFgW3qr8nAgb2thLmJGoqnW/RmeqTT8Dcnm6yABeDocQnVixnLfntnv
-         Zjb5i2ZgOHzr4pE3ipWXEghHiFFYvjR0lar5Ofi0A5uiXq2SHcboexUhGJyf/a8CvjVS
-         4I/A==
-X-Gm-Message-State: AOAM533L8RNqPO5RJZ6fft0wrZC1mc51aS/MdxZ7/a9ibBQQ7dLysE92
-        XXGDC+quDZc3GGO4hxAJ8rxlgZlYjCvLyeBNXZU=
-X-Google-Smtp-Source: ABdhPJx+9QoaAOcl/XoijfUaFdofNEePpqRuK0qvS5sdRzbvrBU3oIu8OFMTpje/RJ0CaWK4OC/zLQ==
-X-Received: by 2002:a62:8c52:0:b029:335:a9bc:47e1 with SMTP id m79-20020a628c520000b0290335a9bc47e1mr3630701pfd.11.1627032966912;
-        Fri, 23 Jul 2021 02:36:06 -0700 (PDT)
-Received: from [10.12.169.24] (5e.8a.38a9.ip4.static.sl-reverse.com. [169.56.138.94])
-        by smtp.gmail.com with ESMTPSA id s36sm22703766pgl.8.2021.07.23.02.36.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Jul 2021 02:36:06 -0700 (PDT)
-Subject: Re: [PATCH] cfg80211: free the object allocated in
- wiphy_apply_custom_regulatory
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Ilan Peer <ilan.peer@intel.com>,
-        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
-        Johannes Berg <johannes.berg@intel.com>,
-        linux-wireless@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-References: <20210723050919.1910964-1-mudongliangabcd@gmail.com>
- <6fa2aecc-ab64-894d-77c2-0a19b524cc03@gmail.com>
- <CAD-N9QXO4bX6SzMNir0fin0wVAZYhsS8-triiWPjY+Rz2WCy1w@mail.gmail.com>
-From:   xiaoqiang zhao <zhaoxiaoqiang007@gmail.com>
-Message-ID: <2e9e6fa7-a405-088d-3b4c-da62b85f3fc6@gmail.com>
-Date:   Fri, 23 Jul 2021 17:36:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+        with ESMTP id S230397AbhGWJAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:00:51 -0400
+X-Greylist: delayed 94 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Jul 2021 02:41:25 PDT
+Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC6DC061575;
+        Fri, 23 Jul 2021 02:41:25 -0700 (PDT)
+Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
+        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 78A512E198D;
+        Fri, 23 Jul 2021 12:39:46 +0300 (MSK)
+Received: from iva8-5ba4ca89b0c6.qloud-c.yandex.net (iva8-5ba4ca89b0c6.qloud-c.yandex.net [2a02:6b8:c0c:a8ae:0:640:5ba4:ca89])
+        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id CFZnpdw2zJ-dj088eSL;
+        Fri, 23 Jul 2021 12:39:46 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1627033186; bh=sN7C3HUF4CT+oTysV0poD5qgCG15k/0i+3fQFTFO4/g=;
+        h=Cc:Message-Id:Date:Subject:To:From;
+        b=T3UVjrlXrr5EuXmpA4sw/4UHQY2svfo/tAZ+huXCiNvoGKSWOu0XLt2XzQUqxDYIs
+         hyN13AkNO5uviZfr2yKUIj1FlrsxUgpVM9LZrPeeamENX2o/JMEWfsQzB8YAfDLCn7
+         k+4p9DrsGrgbl9JICokJpx5aUIjQQqaoVcBZOB+Y=
+Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from 172.31.93.162-vpn.dhcp.yndx.net (172.31.93.162-vpn.dhcp.yndx.net [172.31.93.162])
+        by iva8-5ba4ca89b0c6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id oTYqu3ggUK-dj2urJdf;
+        Fri, 23 Jul 2021 12:39:45 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+From:   Dmitry Yakunin <zeil@yandex-team.ru>
+To:     kafai@fb.com, edumazet@google.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     dmtrmonakhov@yandex-team.ru
+Subject: [PATCH] tcp: use rto_min value from socket in retransmits timeout
+Date:   Fri, 23 Jul 2021 12:39:38 +0300
+Message-Id: <20210723093938.49354-1-zeil@yandex-team.ru>
 MIME-Version: 1.0
-In-Reply-To: <CAD-N9QXO4bX6SzMNir0fin0wVAZYhsS8-triiWPjY+Rz2WCy1w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt")
+adds ability to set rto_min value on socket less then default TCP_RTO_MIN.
+But retransmits_timed_out() function still uses TCP_RTO_MIN and
+tcp_retries{1,2} sysctls don't work properly for tuned socket values.
 
+Fixes: ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt")
+Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+Acked-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+---
+ net/ipv4/tcp_timer.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-在 2021/7/23 17:25, Dongliang Mu 写道:
-> Can you point out the concrete code releasing regd? Maybe the link to elixir.
-> 
->>>       ieee80211_unregister_hw(data->hw);
->>>       device_release_driver(data->dev);
->>>       device_unregister(data->dev);
->>>
-
-call graph seems like this:
-
-ieee80211_unregister_hw
-(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/mac80211/main.c#L1368)
-	wiphy_unregister
-(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/wireless/core.c#L1011)
-		wiphy_regulatory_deregister
-(https://elixir.bootlin.com/linux/v5.14-rc2/source/net/wireless/reg.c#L4057)
-			rcu_free_regdom
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 20cf4a9..66c4b97 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -199,12 +199,13 @@ static unsigned int tcp_model_timeout(struct sock *sk,
+  *  @boundary: max number of retransmissions
+  *  @timeout:  A custom timeout value.
+  *             If set to 0 the default timeout is calculated and used.
+- *             Using TCP_RTO_MIN and the number of unsuccessful retransmits.
++ *             Using icsk_rto_min value from socket or RTAX_RTO_MIN from route
++ *             and the number of unsuccessful retransmits.
+  *
+  * The default "timeout" value this function can calculate and use
+  * is equivalent to the timeout of a TCP Connection
+  * after "boundary" unsuccessful, exponentially backed-off
+- * retransmissions with an initial RTO of TCP_RTO_MIN.
++ * retransmissions with an initial RTO of icsk_rto_min or RTAX_RTO_MIN.
+  */
+ static bool retransmits_timed_out(struct sock *sk,
+ 				  unsigned int boundary,
+@@ -217,7 +218,7 @@ static bool retransmits_timed_out(struct sock *sk,
+ 
+ 	start_ts = tcp_sk(sk)->retrans_stamp;
+ 	if (likely(timeout == 0)) {
+-		unsigned int rto_base = TCP_RTO_MIN;
++		unsigned int rto_base = tcp_rto_min(sk);
+ 
+ 		if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV))
+ 			rto_base = tcp_timeout_init(sk);
+-- 
+2.7.4
 
