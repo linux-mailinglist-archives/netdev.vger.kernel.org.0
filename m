@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27A853D3471
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 08:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 232483D348D
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 08:20:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbhGWF2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 01:28:47 -0400
-Received: from verein.lst.de ([213.95.11.211]:37126 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229693AbhGWF2r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 01:28:47 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id CBA9367373; Fri, 23 Jul 2021 08:09:17 +0200 (CEST)
-Date:   Fri, 23 Jul 2021 08:09:17 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Boris Pismenny <borisp@nvidia.com>
-Cc:     dsahern@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        saeedm@nvidia.com, hch@lst.de, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com,
-        smalin@marvell.com, boris.pismenny@gmail.com,
-        linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
-        benishay@nvidia.com, ogerlitz@nvidia.com, yorayz@nvidia.com
-Subject: Re: [PATCH v5 net-next 23/36] net: Add to ulp_ddp support for
- fallback flow
-Message-ID: <20210723060917.GB32369@lst.de>
-References: <20210722110325.371-1-borisp@nvidia.com> <20210722110325.371-24-borisp@nvidia.com>
+        id S233963AbhGWFjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 01:39:14 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7416 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229788AbhGWFjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 01:39:11 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GWJwd10w4z7yHR;
+        Fri, 23 Jul 2021 14:16:01 +0800 (CST)
+Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 23 Jul 2021 14:19:41 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 23 Jul 2021 14:19:41 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <catalin.marinas@arm.com>, <will@kernel.org>, <maz@kernel.org>,
+        <mark.rutland@arm.com>, <dbrazdil@google.com>, <qperret@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <lipeng321@huawei.com>,
+        <huangguangbin2@huawei.com>
+Subject: [RFC PATCH net-next 0/4] net: hns3: add support for TX push
+Date:   Fri, 23 Jul 2021 14:16:05 +0800
+Message-ID: <1627020969-32945-1-git-send-email-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210722110325.371-24-borisp@nvidia.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggemi759-chm.china.huawei.com (10.1.198.145)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 22, 2021 at 02:03:12PM +0300, Boris Pismenny wrote:
->  	/* NIC driver informs the ulp that ddp teardown is done - used for async completions*/
->  	void (*ddp_teardown_done)(void *ddp_ctx);
-> +	/* NIC request ulp to calculate the ddgst and store it in pdu_info->ddgst */
-> +	void (*ddp_ddgst_fallback)(struct ulp_ddp_pdu_info *pdu_info);
+This series adds TX push support for the HNS3 ethernet driver.
 
-Overly long line.  More importantly this whole struct should probably
-use a kerneldoc comment anyway.
+Huazhong Tan (2):
+  net: hns3: add support for TX push mode
+  net: hns3: add ethtool priv-flag for TX push
 
->  } EXPORT_SYMBOL(ulp_ddp_get_pdu_info);
+Xiongfeng Wang (2):
+  arm64: barrier: add DGH macros to control memory accesses merging
+  io: add function to flush the write combine buffer to device
+    immediately
 
-> +	if (!pdu_info || !between(seq, pdu_info->start_seq, pdu_info->end_seq - 1)) {
+ arch/arm64/include/asm/assembler.h                 |  7 ++
+ arch/arm64/include/asm/barrier.h                   |  1 +
+ arch/arm64/include/asm/io.h                        |  2 +
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  2 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 82 ++++++++++++++++++++--
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  6 ++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 21 +++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  2 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 11 ++-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  8 +++
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  2 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 11 ++-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  8 +++
+ include/linux/io.h                                 |  6 ++
+ 14 files changed, 160 insertions(+), 9 deletions(-)
 
-More overly lone lines.  Please make sure to stick to 80 character lines
-unless you have a really good to go over that.
+-- 
+2.8.1
 
-> +	//check if this skb contains ddgst field
-
-Plase avoid //-style comments.
-
-> +	return ulp_ddp_fallback_skb(ctx, skb, sk);
-> +} EXPORT_SYMBOL(ulp_ddp_validate_xmit_skb);
-
-This is not how EXPORT_SYMBOLs are place.  Also please export any
-such deep internal interfaces using EXPORT_SYMBOL_GPL.
