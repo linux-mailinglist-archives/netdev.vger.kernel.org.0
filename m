@@ -2,102 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DBC3D380B
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A1563D3816
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbhGWJJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 05:09:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55754 "EHLO
+        id S231503AbhGWJML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbhGWJJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:09:39 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56C2C061575;
-        Fri, 23 Jul 2021 02:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=dL6vntKK9ZYtJOzmgbsbR2Qryum7c+XUwkgh92aExVU=; t=1627033812; x=1628243412; 
-        b=dUOhOjhBRbRn40UjCPNV6Pck7X/ICo2KXv2IPoYWnzuXNEyLf3hq8rJz5d4wucIHYe8sopApP5S
-        639Npk1wdfIkwCTmZkXDExqL2ZxSAEi4f19sMiTkSslTLCgtI7Qa5vyovA+6AqcqemdEktYPlhd46
-        Hp6OV2oviYTEr9FhRCmV7ur9IuH1zVK2KERAWK0JiXEd+9n3uWKwuM1x9QOM/uci5yNL8mYVAZ1E9
-        X9d7vIamYS99tudrsKbUSf8Ad/MycvsdiWX09czdbIKyn1VbWVtYpl3DsEO1x78NnZkKkz9F4Z/IR
-        C4eSlTKKDcqp2hUDvoBHbfJRkDUB3uZGAzGw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1m6rmG-000Uhx-As; Fri, 23 Jul 2021 11:50:11 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2021-07-23
-Date:   Fri, 23 Jul 2021 11:50:06 +0200
-Message-Id: <20210723095007.19246-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S231304AbhGWJMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:12:10 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0608EC061757
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:52:44 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id j6-20020a05600c1906b029023e8d74d693so1254235wmq.3
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:52:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XVfmLROS6zWD9ahsrkRPG/Htb6Q850jRPmTPvGrU1mE=;
+        b=rn56to9toHYdSIaifDEc+qaurH//AIkPrOIvKiLySOTFKGsJX04LP7K9LqztvsxaoT
+         LDdV9NS2cWVoqE+O7/G3CzgjKp0oI6RVIqhc0yj8bgzFXKeOAH5Af2Psa7D0cBGWG/B7
+         2po968e791BJHD6TzKNpke+YywrUItABhKizRrhCkgjhrAk41wFlaiUhR/zKg1Eiwbtv
+         UlV+uw9Q3Stb+wy+St33yswgRyV0S8dHXCJBHHAeTgL6XvvX6I1f7P2FJDJeGoqMy10R
+         Re0ctDp8y9p1aPwFmqgaO5WVXG+yRGeCBbbjFTIcMNluJhrDGNGM9AHBoCmToQfqU5pe
+         YzYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XVfmLROS6zWD9ahsrkRPG/Htb6Q850jRPmTPvGrU1mE=;
+        b=Wi+oqaiuv/RzfUKsZqd2CYbWfBDt952IpNBd1caliZgAld7GmZtVEy31iLnbe6FJSe
+         aLtAJHF4Fe1FnfO7wJqqf1hSes7yGfiegHpC9OoA11m4az5fdcD4RrlcjwyGbg0LTcS+
+         ouiUiM40P68G4m4M86eB4ODatR5qrR5i+MHCJt++L4yqq/cf0Lz1chc4+nG/IAEOCMRJ
+         3jS8a727AthWzUHj/BY3nfmQujvtY2sfnr2RoamMYucTu43XGpGM3adZsSbNmfI1uxEa
+         4ng3ITIVmuvICTmuDK5GdDNmNTPCZZ3NdqDxaGwC0SqK40lr1aaE5iYGCPjv4WHUT7Uh
+         njOA==
+X-Gm-Message-State: AOAM533hd6FTZPyTez4RtsOkXhStsiuopdhaCXTaGyJQ8qUB5L9Qe3WW
+        +7PloL1sKWMxW5aTzfPGMeqXZQ==
+X-Google-Smtp-Source: ABdhPJxOL5iR9IuziP9Adhe+mzKQHQ4+ZNRUiBXIBJKXA9B/oSTmzMo4Z6I4BM7vOQuXADZaau6JaA==
+X-Received: by 2002:a7b:cbd5:: with SMTP id n21mr13464446wmi.2.1627033962618;
+        Fri, 23 Jul 2021 02:52:42 -0700 (PDT)
+Received: from [192.168.1.8] ([149.86.77.94])
+        by smtp.gmail.com with ESMTPSA id z11sm32184405wru.65.2021.07.23.02.52.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Jul 2021 02:52:41 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v2 3/5] tools: replace btf__get_from_id() with
+ btf__load_from_kernel_by_id()
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20210721153808.6902-1-quentin@isovalent.com>
+ <20210721153808.6902-4-quentin@isovalent.com>
+ <CAEf4BzatvJORZvkz37_XJxvk5+Amr8V8iHq=1_4k_uCz0fE-eQ@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <3802e42d-321f-6580-8d6a-f862ac4f62da@isovalent.com>
+Date:   Fri, 23 Jul 2021 10:52:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzatvJORZvkz37_XJxvk5+Amr8V8iHq=1_4k_uCz0fE-eQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+2021-07-22 17:48 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>
+>> Replace the calls to deprecated function btf__get_from_id() with calls
+>> to btf__load_from_kernel_by_id() in tools/ (bpftool, perf, selftests).
+>> Update the surrounding code accordingly (instead of passing a pointer to
+>> the btf struct, get it as a return value from the function). Also make
+>> sure that btf__free() is called on the pointer after use.
+>>
+>> v2:
+>> - Given that btf__load_from_kernel_by_id() has changed since v1, adapt
+>>   the code accordingly instead of just renaming the function. Also add a
+>>   few calls to btf__free() when necessary.
+>>
+>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>> Acked-by: John Fastabend <john.fastabend@gmail.com>
+>> ---
+>>  tools/bpf/bpftool/btf.c                      |  8 ++----
+>>  tools/bpf/bpftool/btf_dumper.c               |  6 ++--
+>>  tools/bpf/bpftool/map.c                      | 16 +++++------
+>>  tools/bpf/bpftool/prog.c                     | 29 ++++++++++++++------
+>>  tools/perf/util/bpf-event.c                  | 11 ++++----
+>>  tools/perf/util/bpf_counter.c                | 12 ++++++--
+>>  tools/testing/selftests/bpf/prog_tests/btf.c |  4 ++-
+>>  7 files changed, 51 insertions(+), 35 deletions(-)
+>>
+> 
+> [...]
+> 
+>> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+>> index 09ae0381205b..12787758ce03 100644
+>> --- a/tools/bpf/bpftool/map.c
+>> +++ b/tools/bpf/bpftool/map.c
+>> @@ -805,12 +805,11 @@ static struct btf *get_map_kv_btf(const struct bpf_map_info *info)
+>>                 }
+>>                 return btf_vmlinux;
+>>         } else if (info->btf_value_type_id) {
+>> -               int err;
+>> -
+>> -               err = btf__get_from_id(info->btf_id, &btf);
+>> -               if (err || !btf) {
+>> +               btf = btf__load_from_kernel_by_id(info->btf_id);
+>> +               if (libbpf_get_error(btf)) {
+>>                         p_err("failed to get btf");
+>> -                       btf = err ? ERR_PTR(err) : ERR_PTR(-ESRCH);
+>> +                       if (!btf)
+>> +                               btf = ERR_PTR(-ESRCH);
+> 
+> why not do a simpler (less conditionals)
+> 
+> err = libbpf_get_error(btf);
+> if (err) {
+>     btf = ERR_PTR(err);
+> }
+> 
+> ?
 
-For 5.14, we only have a couple of fixes for now.
+Because if btf is NULL at this stage, this would change the return value
+from -ESRCH to NULL. This would be problematic in mapdump(), since we
+check this value ("if (IS_ERR(btf))") to detect a failure in
+get_map_kv_btf().
 
-Please pull and let me know if there's any problem.
+I could change that check in mapdump() to use libbpf_get_error()
+instead, but in that case it would similarly change the return value for
+mapdump() (and errno), which I think would be propagated up to main()
+and would return 0 instead of -ESRCH. This does not seem suitable and
+would play badly with batch mode, among other things.
 
-Thanks,
-johannes
+So I'm considering keeping the one additional if.
 
+> 
+>>                 }
+>>         }
+>>
+>> @@ -1039,11 +1038,10 @@ static void print_key_value(struct bpf_map_info *info, void *key,
+>>                             void *value)
+>>  {
+>>         json_writer_t *btf_wtr;
+>> -       struct btf *btf = NULL;
+>> -       int err;
+>> +       struct btf *btf;
+>>
+>> -       err = btf__get_from_id(info->btf_id, &btf);
+>> -       if (err) {
+>> +       btf = btf__load_from_kernel_by_id(info->btf_id);
+>> +       if (libbpf_get_error(btf)) {
+>>                 p_err("failed to get btf");
+>>                 return;
+>>         }
+> 
+> [...]
+> 
+>>
+>>         func_info = u64_to_ptr(info->func_info);
+>> @@ -781,6 +784,8 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+>>                 kernel_syms_destroy(&dd);
+>>         }
+>>
+>> +       btf__free(btf);
+>> +
+> 
+> warrants a Fixes: tag?
 
-
-The following changes since commit 9f42f674a89200d4f465a7db6070e079f3c6145f:
-
-  Merge tag 'arm64-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux (2021-07-22 10:38:19 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2021-07-23
-
-for you to fetch changes up to f9a5c358c8d26fed0cc45f2afc64633d4ba21dff:
-
-  cfg80211: Fix possible memory leak in function cfg80211_bss_update (2021-07-23 10:38:18 +0200)
-
-----------------------------------------------------------------
-Couple of fixes:
- * fix aggregation on mesh
- * fix late enabling of 4-addr mode
- * leave monitor SKBs with some headroom
- * limit band information for old applications
- * fix virt-wifi WARN_ON
- * fix memory leak in cfg80211 BSS list maintenance
-
-----------------------------------------------------------------
-Felix Fietkau (2):
-      mac80211: fix starting aggregation sessions on mesh interfaces
-      mac80211: fix enabling 4-address mode on a sta vif after assoc
-
-Johan Almbladh (1):
-      mac80211: Do not strip skb headroom on monitor frames
-
-Johannes Berg (1):
-      nl80211: limit band information in non-split data
-
-Matteo Croce (1):
-      virt_wifi: fix error on connect
-
-Nguyen Dinh Phi (1):
-      cfg80211: Fix possible memory leak in function cfg80211_bss_update
-
- drivers/net/wireless/virt_wifi.c | 52 ++++++++++++++++++++++--------------
- net/mac80211/cfg.c               | 19 ++++++++++++++
- net/mac80211/ieee80211_i.h       |  2 ++
- net/mac80211/mlme.c              |  4 +--
- net/mac80211/rx.c                |  3 ++-
- net/mac80211/tx.c                | 57 ++++++++++++++++++++++------------------
- net/wireless/nl80211.c           |  5 +++-
- net/wireless/scan.c              |  6 ++---
- 8 files changed, 95 insertions(+), 53 deletions(-)
-
+I don't mind adding the tags, but do they have any advantage here? My
+understanding is that they tend to be neon signs for backports to stable
+branches, but this patch depends on btf__load_from_kernel_by_id(),
+meaning more patches to pull. I'll see if I can move the btf__free()
+fixes to a separate commit, maybe.
