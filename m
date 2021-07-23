@@ -2,219 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A964C3D37B9
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:31:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4203D37C4
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234186AbhGWIus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 04:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
+        id S233231AbhGWIxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 04:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbhGWIur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:50:47 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F4C5C061757
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:31:20 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id b9so784663wrx.12
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:31:20 -0700 (PDT)
+        with ESMTP id S230520AbhGWIxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:53:07 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DA1C061575
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:33:40 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id o5-20020a1c4d050000b02901fc3a62af78so3110285wmh.3
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:33:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ULEN3AF9y2KBfuSZET2D57IROuZfXaP5RAdmvwCafsQ=;
-        b=OhpfGXZM9pyr07U9oikG8sZ8qa4lJe+DnSyMwCwxeM2LdOA1OtVArihKt5uXzQV9W3
-         bIbXGGElH7gHM1sewzEtZyHlpY/jtLjTKkfcwGpJAGsZKK13QKh4oFW/VxArpyWJxwCD
-         UQ5T/b5WApWXXuh8YXRPVtmfnj4Fba5tdgH7PD+pFSVFAwNnkE7i2fWSRtDEYVxNjqvN
-         DGy3F8wscXMtDm2muIOCgfkVCc0gzmHArZUQ6TC9RUQ/NnA8A7c7EtGFFgrAxz/qtvhg
-         cAp3AWn/oSqTbrQRkg/OOI/PcHarROs7MFUYvKTHd0mJJkhN73JesygbpREkpdZ6wvCE
-         KC8g==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wNO/xufjm/ydO0nEAzAdC1TVpL4USaiY16dhslOWRMU=;
+        b=q3AvKTf7zNfzeLb2JY4UUrPHviGUcd4UnjJWnM4hWtlHN5z3AMm6PedCcyaYxo+wQJ
+         RE2iZZMelc63WocDKmgocjer9y11/TGzakrS3GiddltRkmjRVvgoORx83Hm1cqFT0t/X
+         Lg3VhErnb2UyGfb2lu+Wnu/NACon2YLJCuMlrQcQPkng18lZTLtyyPQpVdCIYXIN9Bgh
+         Q1VJU4Dh7YQPULE9IBqNFxpBi2Gp3NoCRukj6ss8fZGPPPf5dEpOXz0rRQyDe60R5RXN
+         SYvebtv+ZG7hgGAxiZyjVpNAoXf4Xtd5e9eQHFT38+rB4maC3w+BSlytWaE/pGm1o37T
+         H91Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ULEN3AF9y2KBfuSZET2D57IROuZfXaP5RAdmvwCafsQ=;
-        b=qD1p3Euyrvf3V4jCKV83nPxb/nDWrvzULkqtqxkf476UbrN5csNq8OKOtZlOPh33Ky
-         tu75LRO93m0WUVSzOrw1exzkdEiFDqkTyMeZIAilhn11t2nEdTAdgHNRyireQnUAEKqF
-         jguBWY98J8eLpS2iJYq7XqucEmu4ZguYdIWSSJPPLKJtgLWXrMYbomwzEbcoXTaNHFZw
-         j+8+PqThC7KyXY9SZb0TEdGBZPk8J4141GAjRumZxlwvq0GZhRNSP6Fz2yuBmtxRkdok
-         q0Ccccmw/sfOTQ8EjZZarTcR0vbb4ZpToaTd0vAz2hRV8ErLwzV2jKrPatoM32mxbFXj
-         WZfQ==
-X-Gm-Message-State: AOAM533U09TQVdMLmcaaPOcS8eUEYPIW8xP/v2q256AcUmVcXm5Bu/KD
-        M8NwQb5BkhZRgUk2/3XC6DRt0A==
-X-Google-Smtp-Source: ABdhPJxgh6pxnRcnHBhLb1rPmzNOcdIbhacj+NE08wUryBm7Ulk0nVYCxvklUbWQObfU6xiomwA/eQ==
-X-Received: by 2002:adf:d84b:: with SMTP id k11mr202405wrl.135.1627032679155;
-        Fri, 23 Jul 2021 02:31:19 -0700 (PDT)
-Received: from [192.168.1.8] ([149.86.77.94])
-        by smtp.gmail.com with ESMTPSA id g138sm32616967wmg.32.2021.07.23.02.31.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Jul 2021 02:31:18 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v2 2/5] libbpf: rename btf__get_from_id() as
- btf__load_from_kernel_by_id()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20210721153808.6902-1-quentin@isovalent.com>
- <20210721153808.6902-3-quentin@isovalent.com>
- <CAEf4BzZqEZLt0_qgmniY-hqgEg7q0ur0Z5U0r8KFTwSz=2StSg@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <88d3cd19-5985-ad73-5f23-4f6f7d1b1be2@isovalent.com>
-Date:   Fri, 23 Jul 2021 10:31:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wNO/xufjm/ydO0nEAzAdC1TVpL4USaiY16dhslOWRMU=;
+        b=kze8FdZhwJd/33JNIxzn9zcuds9G/41gmua9d0T5RPoRiKEwkk3YgUG/78BP+6Ca4n
+         wpvnQCqRBzjmdpeBYgdJfu/vXg3Qg6wcGJfYgdw7QOqaeuoB1W0D4YvnEokZd782UAJP
+         OrftO9F6Vl4zsX07NaagJOflTWFQzFMbttxS36OcVM/KhV6INc0hCONgRKqD/UKTf70a
+         D4AEm3fIhr/CGsgi5j5oNidZgXySnJ+M+/zoE9uTQHRs8/LnMyOmtV6kRyuJ5dXz7Cun
+         Whwgy33bDmKpQPaDEvmeo45j6B6I6JdJ3BV3p8kXe/0bqpe1wso2SsUi6Usz8lh+IqLL
+         8Ynw==
+X-Gm-Message-State: AOAM531AXiCyrtLFboOSfbNS/Ae5D2O/+CLpi4Y/qCGHC/TSd07U9vdz
+        2xxjYGdDFH+HySzTD3m9k4YRxg==
+X-Google-Smtp-Source: ABdhPJycn4YG4c32IaWIGbh4txpacWjLJEZVCvv0tODqTOl/CD0MKomcIPFB1PG/5Jn6whiAkZEkeg==
+X-Received: by 2002:a05:600c:1c9f:: with SMTP id k31mr13458225wms.47.1627032818619;
+        Fri, 23 Jul 2021 02:33:38 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id o7sm37724787wrv.72.2021.07.23.02.33.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Jul 2021 02:33:37 -0700 (PDT)
+Date:   Fri, 23 Jul 2021 11:33:36 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        mlxsw@nvidia.com
+Subject: Re: [patch net-next v2] devlink: append split port number to the
+ port name
+Message-ID: <YPqM8HUUsl1n0RKD@nanopsycho>
+References: <20210527104819.789840-1-jiri@resnulli.us>
+ <162215100360.12583.10419235646821072826.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZqEZLt0_qgmniY-hqgEg7q0ur0Z5U0r8KFTwSz=2StSg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <162215100360.12583.10419235646821072826.git-patchwork-notify@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-07-22 17:39 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>
->> Rename function btf__get_from_id() as btf__load_from_kernel_by_id() to
->> better indicate what the function does. Change the new function so that,
->> instead of requiring a pointer to the pointer to update and returning
->> with an error code, it takes a single argument (the id of the BTF
->> object) and returns the corresponding pointer. This is more in line with
->> the existing constructors.
->>
->> The other tools calling the deprecated btf__get_from_id() function will
->> be updated in a future commit.
->>
->> References:
->>
->> - https://github.com/libbpf/libbpf/issues/278
->> - https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
->>
->> v2:
->> - Instead of a simple renaming, change the new function to make it
->>   return the pointer to the btf struct.
->> - API v0.5.0 instead of v0.6.0.
-> 
-> We generally keep such version changes to cover letters. It keeps each
-> individual commit clean and collects full history in the cover letter
-> which becomes a body of merge commit when the whole patch set is
-> applied. For next revision please consolidate the history in the cover
-> letter. Thanks!
+Thu, May 27, 2021 at 11:30:03PM CEST, patchwork-bot+netdevbpf@kernel.org wrote:
+>Hello:
+>
+>This patch was applied to netdev/net-next.git (refs/heads/master):
+>
+>On Thu, 27 May 2021 12:48:19 +0200 you wrote:
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Instead of doing sprintf twice in case the port is split or not, append
+>> the split port suffix in case the port is split.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> [...]
+>
+>Here is the summary with links:
+>  - [net-next,v2] devlink: append split port number to the port name
+>    https://git.kernel.org/netdev/net-next/c/f285f37cb1e6
+>
+>You are awesome, thank you!
 
-OK will do.
-I've seen other folks detailing the changes on individual patches, and
-done so in the past, although it's true the current trend is to have it
-in the cover letter (and I understand the motivation).
+Something wrong happened. The patch was applied but eventually, the
+removed lines are back:
 
-> 
->>
->> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
->> Acked-by: John Fastabend <john.fastabend@gmail.com>
->> ---
->>  tools/lib/bpf/btf.c      | 25 +++++++++++++++++--------
->>  tools/lib/bpf/btf.h      |  1 +
->>  tools/lib/bpf/libbpf.c   |  5 +++--
->>  tools/lib/bpf/libbpf.map |  1 +
->>  4 files changed, 22 insertions(+), 10 deletions(-)
->>
->> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
->> index 7e0de560490e..6654bdee7ad7 100644
->> --- a/tools/lib/bpf/btf.c
->> +++ b/tools/lib/bpf/btf.c
->> @@ -1383,21 +1383,30 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
->>         return btf;
->>  }
->>
->> +struct btf *btf__load_from_kernel_by_id(__u32 id)
->> +{
->> +       struct btf *btf;
->> +       int btf_fd;
->> +
->> +       btf_fd = bpf_btf_get_fd_by_id(id);
->> +       if (btf_fd < 0)
->> +               return ERR_PTR(-errno);
-> 
-> please use libbpf_err_ptr() for consistency, see
-> bpf_object__open_mem() for an example
+acf1ee44ca5da (Parav Pandit    2020-03-03 08:12:42 -0600 9331)  case DEVLINK_PORT_FLAVOUR_VIRTUAL:
+f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9332)          n = snprintf(name, len, "p%u", attrs->phys.port_number);
+f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9333)          if (n < len && attrs->split)
+f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9334)                  n += snprintf(name + n, len - n, "s%u",
+f285f37cb1e6b (Jiri Pirko      2021-05-27 12:48:19 +0200 9335)                                attrs->phys.split_subport_number);
+08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9336)          if (!attrs->split)
+378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9337)                  n = snprintf(name, len, "p%u", attrs->phys.port_number);
+08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9338)          else
+378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9339)                  n = snprintf(name, len, "p%us%u",
+378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9340)                               attrs->phys.port_number,
+378ef01b5f75e (Parav Pandit    2019-07-08 23:17:35 -0500 9341)                               attrs->phys.split_subport_number);
+126285651b7f9 (David S. Miller 2021-06-07 13:01:52 -0700 9342) 
+08474c1a9df0c (Jiri Pirko      2018-05-18 09:29:02 +0200 9343)          break;
 
-I can do that, but I'll need to uncouple btf__get_from_id() from the new
-function. If it calls btf__load_from_kernel_by_id() and
-LIBBPF_STRICT_CLEAN_PTRS is set, it would change its return value.
+If I do "git reset --hard f285f37cb1e6b", everything is looking fine,
+in the current net-next, the removed lines are still present :O
+I see ghosts...
 
-> 
->> +
->> +       btf = btf_get_from_fd(btf_fd, NULL);
->> +       close(btf_fd);
->> +
->> +       return libbpf_ptr(btf);
->> +}
->> +
->>  int btf__get_from_id(__u32 id, struct btf **btf)
->>  {
->>         struct btf *res;
->> -       int err, btf_fd;
->> +       int err;
->>
->>         *btf = NULL;
->> -       btf_fd = bpf_btf_get_fd_by_id(id);
->> -       if (btf_fd < 0)
->> -               return libbpf_err(-errno);
->> -
->> -       res = btf_get_from_fd(btf_fd, NULL);
->> +       res = btf__load_from_kernel_by_id(id);
->>         err = libbpf_get_error(res);
->>
->> -       close(btf_fd);
->> -
->>         if (err)
->>                 return libbpf_err(err);
->>
->> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
->> index fd8a21d936ef..3db9446bc133 100644
->> --- a/tools/lib/bpf/btf.h
->> +++ b/tools/lib/bpf/btf.h
->> @@ -68,6 +68,7 @@ LIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);
->>  LIBBPF_API const char *btf__name_by_offset(const struct btf *btf, __u32 offset);
->>  LIBBPF_API const char *btf__str_by_offset(const struct btf *btf, __u32 offset);
->>  LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
->> +LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
-> 
-> let's move this definition to after btf__parse() to keep all
-> "constructors" together (we can move btf__get_from_id() there for
-> completeness as well, I suppose).
-
-I thought about that but wasn't sure, OK will do.
-
-> 
->>  LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
->>                                     __u32 expected_key_size,
->>                                     __u32 expected_value_size,
->> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->> index 242e97892043..eff005b1eba1 100644
->> --- a/tools/lib/bpf/libbpf.c
->> +++ b/tools/lib/bpf/libbpf.c
->> @@ -9576,8 +9576,8 @@ static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_fd)
->>  {
->>         struct bpf_prog_info_linear *info_linear;
->>         struct bpf_prog_info *info;
->> -       struct btf *btf = NULL;
->>         int err = -EINVAL;
->> +       struct btf *btf;
->>
->>         info_linear = bpf_program__get_prog_info_linear(attach_prog_fd, 0);
->>         err = libbpf_get_error(info_linear);
->> @@ -9591,7 +9591,8 @@ static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_fd)
->>                 pr_warn("The target program doesn't have BTF\n");
->>                 goto out;
->>         }
->> -       if (btf__get_from_id(info->btf_id, &btf)) {
->> +       btf = btf__load_from_kernel_by_id(info->btf_id);
->> +       if (libbpf_get_error(btf)) {
-> 
-> there seems to be a bug in existing code and you are keeping it. On
-> error err will be 0. Let's fix it. Same for above if (!info->btf_id),
-> please fix that as well while you are at it.
-
-Oh right, I saw that err was initialised at -EINVAL and did not notice
-it was changed for the info_linear. I'll address it.
+Could you check & fix?
