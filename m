@@ -2,113 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 746873D382C
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F44F3D383F
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 12:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231542AbhGWJRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 05:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        id S231573AbhGWJTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbhGWJRh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:17:37 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8C1C061575
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:58:11 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id q3so1782980wrx.0
-        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 02:58:11 -0700 (PDT)
+        with ESMTP id S231309AbhGWJTe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:19:34 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0F5C061575;
+        Fri, 23 Jul 2021 03:00:07 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id m24so997460edp.12;
+        Fri, 23 Jul 2021 03:00:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=F5A/FebqA414tYs7IiBUTviygNuPc0o4KruGcqiTD/4=;
-        b=gi2iF2goYAexCGPMuvR7xUk0gYCgVSgNvzSjZOAEs+YpYwDuBgFnPcfDMqGzBDuUuG
-         fceP79kLjmnXdxLHx5Foo5K8ydvLID0CcfHq9CJ6KAuYBrkjLAxaMpQuixOVwoSYvJgX
-         Ia/ZmIKGzkc9yrfPJGeYb1f+5gOQNJdtDHkURSPulJkjxiwKUhOTcEn2CVz90De7hXQ/
-         NjfjTYs+Zs+2qCT51Xt5TFGB8/kfNFpEdc86EbUyN7WMmiJcqPAv4lqkrR7+16RZqcO0
-         kd71BEtCnqXB4Yl9AEq01zx7bwYaQtkTC+PNpFRxuaCLppQKdBTnVthdm9LQ3FFp5ONI
-         R20w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZpV/vhONNALORyd7/Lzj0LakU5S+Xd5zMk4SZvs6RU4=;
+        b=C3gTWjAIVXsJ4l7MrNGFHWpm+9NAtWTyOYv1gLDC2Is/bpbyYO31SXCbabv0iIItbv
+         DWS6UpYh+hAYbrO+H2hp/7BxPtBtjX3CVJpBGNuBZsjNbZDlpOGoM1NEcjv0I6nlFUIk
+         hh+eUrgUM+y6uEeLV9/Cwqv/TtZoqxrCD7KzzyAk7d5I31yGpkjPWAf0CSFBEBd5izHo
+         gqr4dLVkDNskq6a40gGnSOVpvOcaM9zuCHvkQ7cYX0el5EL2tpYJlTSvBWnn5vTC3h4n
+         kM+aVZJ6Qdf+j9TGk2iccKz5VWt4nbUbFLnqr3B1WxvHLrC3mv1VkCq3RlCf10ggCJb3
+         IF5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=F5A/FebqA414tYs7IiBUTviygNuPc0o4KruGcqiTD/4=;
-        b=hWiXra5KbF9WkroK76UbhzjZNsuq5vDAfp6kqKfbznDkz1SqasLlGK4CFPpvEYjmk/
-         MZk2ksPwHcl3tWJMpbjj2IbFR0izkOKwITlShP6Dur65ej+9ahxhbkE6e7ut7svimixV
-         Mrq4XMvYjTlBD4JpUi4PJha3VjTlGZJaH0hMiRwKSBJCVfzytJkEdv1Ls7skT+w0QoPe
-         +JrCDdeHbiPDp9eRKna0mLw4+hi/tYasMOdBG4UeYXmDXi1RNOFDa3pQm5sJujjpYGEe
-         rLT5mOFP9QrdBoBZ5DFEYQZd32OjbxPUyhbrp85iITxjkKe0sZskXd4PdoLlwKqyMcwV
-         H2xg==
-X-Gm-Message-State: AOAM532r3zF7WjIbLihHStLIizNT9pVJZBLIWgUJIi2TAG+SAvqpERBz
-        iMPm4QM2XaOe+UGsvzglNh6RDA==
-X-Google-Smtp-Source: ABdhPJwnenaKTlWwtLa0gFXS9HJxTOU31SKQcBDK3CLeq0XZa5yydQAju3bcG7J5loTHJRbGl2Lc2w==
-X-Received: by 2002:adf:c803:: with SMTP id d3mr4429419wrh.345.1627034290225;
-        Fri, 23 Jul 2021 02:58:10 -0700 (PDT)
-Received: from [192.168.1.8] ([149.86.77.94])
-        by smtp.gmail.com with ESMTPSA id m20sm11240467wms.3.2021.07.23.02.58.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Jul 2021 02:58:09 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and
- btf__load() APIs, support split BTF
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20210721153808.6902-1-quentin@isovalent.com>
- <CAEf4Bzb30BNeLgio52OrxHk2VWfKitnbNUnO0sAXZTA94bYfmg@mail.gmail.com>
- <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <82e61e60-e2e9-f42d-8e49-bbe416b7513d@isovalent.com>
-Date:   Fri, 23 Jul 2021 10:58:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZpV/vhONNALORyd7/Lzj0LakU5S+Xd5zMk4SZvs6RU4=;
+        b=XNotwsh2TjhnPw5pRs4OlCRc7U74c4SjArTLH9FdJrWlLcIU1LZhaCcFNBjuAMLbTv
+         26PBbKCp9AtKREWeEK6CYIA9sDbpfm37pIggZFmwFvA8CshITCofgHkF6Iv2VxEOuZj0
+         NvdfFurVNfKMOxWXi1tFIwx/AbyIS8tSTNlSfLHJowLoV5pStOPCKLC5gzZGPsnTQWzc
+         umqvHs/ucQaCd7I5s4zzYedxys47frb/f7MuV2EXaSSIcLUo6YABtxCD3VuL2abf7wSv
+         FVzI6wXk4aOjIWgnGdD0mSYJ8GuZuCaN558VDbXfECUGAMIAWGnj0H53pOwdNOOuu2oQ
+         Z6xw==
+X-Gm-Message-State: AOAM533b5vojx+TCba3NTi6+qVp1z/2bWWSXMdrS0dvhbd2C1Ud/yh+Q
+        oNowZEdGlbyr2KHzcpd3acy0/wne9TX0m7b1MdU=
+X-Google-Smtp-Source: ABdhPJwmJ5S6cM321VniOs3i8XtSQTT+mmPx00cCX2ciWS4LDxVGR9JZeJeFJ8g6TDTiNcVVhr/9AYLYFdyrKl9UIvs=
+X-Received: by 2002:a05:6402:2228:: with SMTP id cr8mr4644804edb.309.1627034405768;
+ Fri, 23 Jul 2021 03:00:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <20210723050919.1910964-1-mudongliangabcd@gmail.com>
+ <d2b0f847dbf6b6d1e585ef8de1d9d367f8d9fd3b.camel@sipsolutions.net>
+ <CAD-N9QWDNvo_3bdB=8edyYWvEV=b-66Tx-P6_7JGgrSYshDh0A@mail.gmail.com>
+ <11ba299b812212a07fe3631b7be0e8b8fd5fb569.camel@sipsolutions.net>
+ <CAD-N9QWRNyZnnDQ3XTQ_SAWNEgiMCJV+5Z69eHtRVcxYtXcM+A@mail.gmail.com> <e549fbb09d7c618762996aca4242c2ae50f85a5c.camel@sipsolutions.net>
+In-Reply-To: <e549fbb09d7c618762996aca4242c2ae50f85a5c.camel@sipsolutions.net>
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+Date:   Fri, 23 Jul 2021 17:59:39 +0800
+Message-ID: <CAD-N9QV02fnr8LLSwxTuyevYgkL_2aicO2b_7uZ46s6BGKaTmw@mail.gmail.com>
+Subject: Re: [PATCH] cfg80211: free the object allocated in wiphy_apply_custom_regulatory
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
+        linux-wireless@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-07-22 19:45 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Thu, Jul 22, 2021 at 5:58 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
->>
->> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>>
->>> As part of the effort to move towards a v1.0 for libbpf [0], this set
->>> improves some confusing function names related to BTF loading from and to
->>> the kernel:
->>>
->>> - btf__load() becomes btf__load_into_kernel().
->>> - btf__get_from_id becomes btf__load_from_kernel_by_id().
->>> - A new version btf__load_from_kernel_by_id_split() extends the former to
->>>   add support for split BTF.
->>>
->>> The old functions are not removed or marked as deprecated yet, there
->>> should be in a future libbpf version.
->>
->> Oh, and I was thinking about this whole deprecation having to be done
->> in two steps. It's super annoying to keep track of that. Ideally, we'd
->> have some macro that can mark API deprecated "in the future", when
->> actual libbpf version is >= to defined version. So something like
->> this:
->>
->> LIBBPF_DEPRECATED_AFTER(V(0,5), "API that will be marked deprecated in v0.6")
-> 
-> Better:
-> 
-> LIBBPF_DEPRECATED_SINCE(0, 6, "API that will be marked deprecated in v0.6")
+On Fri, Jul 23, 2021 at 5:42 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> Hi,
+>
+> On Fri, 2021-07-23 at 17:30 +0800, Dongliang Mu wrote:
+> > if zhao in the thread is right, we don't need to add this free
+> > operation to wiphy_free().
+>
+> Actually, no, that statement is not true.
+>
+> All that zhao claimed was that the free happens correctly during
+> unregister (or later), and that is indeed true, since it happens from
+>
+> ieee80211_unregister_hw()
+>  -> wiphy_unregister()
+>  -> wiphy_regulatory_deregister()
+>
 
-I was considering a very advanced feature called “opening a new GitHub
-issue” to track this :). But the macro game sounds interesting, I'll
-look into it for next version.
+Thanks for your explanation. Now the situation is more clear.
 
-One nit with LIBBPF_DEPRECATED_SINCE() is that the warning mentions a
-version (here v0.6) that we are unsure will exist (say we jump from v0.5
-to v1.0). But I don't suppose that's a real issue.
+>
+> However, syzbot of course is also correct. Abstracting a bit and
+> ignoring mac80211, the problem is that here we assign it before
+> wiphy_register(), then wiphy_register() doesn't get called or fails, and
+> therefore we don't call wiphy_unregister(), only wiphy_free().
 
-Thanks for the feedback!
-Quentin
+Yes, you're right. In this case, wiphy_register is not called. We
+should not call wiphy_unregister() to clean up anything.
+
+>
+> Hence the leak.
+>
+> But you can also easily see from that description that it's not related
+> to hwsim - we should add a secondary round of cleanups in wiphy_free()
+> or even move the call to wiphy_regulatory_deregister() into
+> wiphy_free(), we need to look what else this does to see if we can move
+> it or not.
+
+I agree to move the cleanup operation of regd to wiphy_free API.
+That's the partial functionability of this function.
+
+>
+> johannes
+>
