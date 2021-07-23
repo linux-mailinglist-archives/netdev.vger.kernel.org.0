@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 806BB3D30AF
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 02:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B607F3D30B3
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 02:16:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232797AbhGVXfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 19:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
+        id S232833AbhGVXf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 19:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232697AbhGVXfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 19:35:01 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7860AC061575;
-        Thu, 22 Jul 2021 17:15:35 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so1518225pjh.3;
-        Thu, 22 Jul 2021 17:15:35 -0700 (PDT)
+        with ESMTP id S232697AbhGVXf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 19:35:28 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11414C061575;
+        Thu, 22 Jul 2021 17:16:03 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id t21so1065847plr.13;
+        Thu, 22 Jul 2021 17:16:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=69hq61oIDGpZ3gk5Ncqu518QZ2L1yjLt5sjR865WQUM=;
-        b=pnyHDdk4mjK7XJbZIh6Zd2sRy3cy/KkH4efdWP2h2a4FwtTGFb78WiPJ+7uwugCh3k
-         Q129KOSXe1q/wdSDfX1LDk04cJgvsuRJ1SUr2Z+zhVDS6VcRuodpqLPH5axLQDPQwf/V
-         lzPz9fcCLkAg+xqC5omnmHBmwCprBndctOLnRn0H2xPialtlo/EIV7Oash0O8R5z4XTU
-         xTGuXAfN/q2dt6pHYVZeu6Q1QQJ8YJ/uilNPsPMLha2NHmnz5l8W4SIUqlYdwWfNllOl
-         uCfrujTrAf7qC7GDbkcV3UoXEpGHWmKNfRfxVHkc7XYIchek7o6xlToS6b0xT6grBWig
-         pq1w==
+        bh=6C8t0KuiTGD3399lPLvWX5wehcoUeIALWQ0saCvNA34=;
+        b=ntDOrn2q2OpiUMmwoEIHR3q++9zBsf5OhwZX/Yq6TnusSvTiRkSFE32VCjrMGbBeaR
+         rLhcSIVOeBsbIew8Mo3wn/iEYg2/1Z3kCPsZotWJwBErgOZueQWLZQO6hUvwc4fj1yB6
+         yIewZNXBMgCUq9TpHZw4MHPWIDYKUp1h4hrVo4dLR8rVfQj7GcD1f/g5SkjU+WA+COTc
+         fHFD4LHDWF98EAVY82RK6wHlojZfVPeSCP6Nyc2BibtK8CI3hWChp1yd6DxFHLFLJB8T
+         cpE2AcGRiXsVaFOaIXCtcZNYGPV5y38rAlRfDB3aj8AMdB4jdJiQoCcDvINcpxwQIdRi
+         iN1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=69hq61oIDGpZ3gk5Ncqu518QZ2L1yjLt5sjR865WQUM=;
-        b=jfSRVwzuJrEFSmCeeXJwnKWeBVAtrGWMl8RDh3rLQeKERyPXQJE6cyXGTBHmEimuk8
-         NjugKq0fbLMnPl7ULvN5OIh0dZTPxN25zns0U0imayFJsoBZyrrdYg70maoIRw3zI25N
-         G1katTvB5t5QmDPIvQLdgHGRieakaU5jNrTfeC2OpbMB9qPsJxuGQY+82lhXQFJkjHuy
-         0EB3mujTRIGTivEPqHWrejnTQY0q6Bzs9wdg+czUKy02rbQzySEZn83zsigwFlIb+wi6
-         iB20p5mPrAWCkFHoB2CJ3dkO9ZnjrXofzVQCTD6RHk/ty7Dzuk9xIykXho94H9OCEQTI
-         Tq7w==
-X-Gm-Message-State: AOAM531HDqi37lfzMFLS0LMunM0OutlRTB7W7bv56PyO/LVtgnZSRQXB
-        e4qUvS5+j/wdw8SnrXzQqlSt08/xXlc=
-X-Google-Smtp-Source: ABdhPJyQy6KtO8Ub8D7cMHUg0VAAKqrcXE76mP/syW7zaGAlsCozVWmFsqEhW6qKem5r8ZpRAkBVaA==
-X-Received: by 2002:a17:90a:fb51:: with SMTP id iq17mr11442245pjb.36.1626999334250;
-        Thu, 22 Jul 2021 17:15:34 -0700 (PDT)
+        bh=6C8t0KuiTGD3399lPLvWX5wehcoUeIALWQ0saCvNA34=;
+        b=Q0YQSNV+bzaUdbWqDlBk/anx6E/+zNBAMfKHzQITCo3QOnsZSM1Hy1ItqRuEGxDfDR
+         2rxm8qftbsUNocgHxbO6fshurye/o6rdxxY8vwI2e3D4KgIV7Fx4CcYr5wUAd4F5pc0R
+         9QGLBnVwCr9i9CFmhe9rIFD+bTYJMfwBtIQ1DFC+EP4AP7kI7oQSCAzjZvE5Zhp4LKQn
+         niC3CEfymhyWUNALuhmb+Tfzx248H+JqbfdtxPA+7OQ/pfa1kmEignbMYK6Df+VvCBuY
+         tBBDNhRr9O2bIcpWWhPYlOWxHKPXv7WG5BnqPIN+XQWD5694YvHIaOjT/jUF6y77D1wr
+         6s/A==
+X-Gm-Message-State: AOAM531heyTag1X0RD+Gx9sjKPwp2qf21Q3TYCjbm++ET0pvmCzJv7oY
+        EjHFAkM10p98X16d/8CERq7FbsC3cuI=
+X-Google-Smtp-Source: ABdhPJyX8rQSMnhrd3oS6/ojohGbmwCk4b+4mQUnxrCMkIaI1Hr3RcxG2Lj49+EfKfnizE1TA07Geg==
+X-Received: by 2002:aa7:8154:0:b029:310:70d:a516 with SMTP id d20-20020aa781540000b0290310070da516mr2165860pfn.63.1626999362298;
+        Thu, 22 Jul 2021 17:16:02 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j2sm33096134pfb.53.2021.07.22.17.15.32
+        by smtp.gmail.com with ESMTPSA id h25sm28370000pfo.190.2021.07.22.17.16.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 17:15:33 -0700 (PDT)
+        Thu, 22 Jul 2021 17:16:01 -0700 (PDT)
 From:   Doug Berger <opendmb@gmail.com>
 To:     stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -56,9 +56,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net backport to 4.14,4.19,5.4] net: bcmgenet: ensure EXT_ENERGY_DET_MASK is clear
-Date:   Thu, 22 Jul 2021 17:15:09 -0700
-Message-Id: <20210723001509.3274508-1-opendmb@gmail.com>
+Subject: [PATCH net backport to 4.4,4.9] net: bcmgenet: ensure EXT_ENERGY_DET_MASK is clear
+Date:   Thu, 22 Jul 2021 17:15:52 -0700
+Message-Id: <20210723001552.3274565-1-opendmb@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -82,25 +82,24 @@ serves no useful function.
 Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c   | 16 ++--------------
- .../net/ethernet/broadcom/genet/bcmgenet_wol.c   |  6 ------
- 2 files changed, 2 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c    | 15 +--------------
+ .../net/ethernet/broadcom/genet/bcmgenet_wol.c    |  6 ------
+ 2 files changed, 1 insertion(+), 20 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 21669a42718c..c4c5ca02a26c 100644
+index 2921ae13db28..5637adff1888 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1187,7 +1187,8 @@ static void bcmgenet_power_up(struct bcmgenet_priv *priv,
- 
+@@ -1094,7 +1094,7 @@ static void bcmgenet_power_up(struct bcmgenet_priv *priv,
  	switch (mode) {
  	case GENET_POWER_PASSIVE:
--		reg &= ~(EXT_PWR_DOWN_DLL | EXT_PWR_DOWN_BIAS);
-+		reg &= ~(EXT_PWR_DOWN_DLL | EXT_PWR_DOWN_BIAS |
-+			 EXT_ENERGY_DET_MASK);
- 		if (GENET_IS_V5(priv)) {
- 			reg &= ~(EXT_PWR_DOWN_PHY_EN |
- 				 EXT_PWR_DOWN_PHY_RD |
-@@ -2895,12 +2896,6 @@ static int bcmgenet_open(struct net_device *dev)
+ 		reg &= ~(EXT_PWR_DOWN_DLL | EXT_PWR_DOWN_PHY |
+-				EXT_PWR_DOWN_BIAS);
++			 EXT_PWR_DOWN_BIAS | EXT_ENERGY_DET_MASK);
+ 		/* fallthrough */
+ 	case GENET_POWER_CABLE_SENSE:
+ 		/* enable APD */
+@@ -2815,12 +2815,6 @@ static int bcmgenet_open(struct net_device *dev)
  
  	bcmgenet_set_hw_addr(priv, dev->dev_addr);
  
@@ -113,7 +112,7 @@ index 21669a42718c..c4c5ca02a26c 100644
  	/* Disable RX/TX DMA and flush TX queues */
  	dma_ctrl = bcmgenet_dma_disable(priv);
  
-@@ -3617,7 +3612,6 @@ static int bcmgenet_resume(struct device *d)
+@@ -3510,7 +3504,6 @@ static int bcmgenet_resume(struct device *d)
  	struct bcmgenet_priv *priv = netdev_priv(dev);
  	unsigned long dma_ctrl;
  	int ret;
@@ -121,7 +120,7 @@ index 21669a42718c..c4c5ca02a26c 100644
  
  	if (!netif_running(dev))
  		return 0;
-@@ -3649,12 +3643,6 @@ static int bcmgenet_resume(struct device *d)
+@@ -3545,12 +3538,6 @@ static int bcmgenet_resume(struct device *d)
  
  	bcmgenet_set_hw_addr(priv, dev->dev_addr);
  
@@ -135,10 +134,10 @@ index 21669a42718c..c4c5ca02a26c 100644
  		bcmgenet_power_up(priv, GENET_POWER_WOL_MAGIC);
  
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index a41f82379369..164988f3b4fa 100644
+index b97122926d3a..df107ed67220 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -160,12 +160,6 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+@@ -167,12 +167,6 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
  	reg |= CMD_RX_EN;
  	bcmgenet_umac_writel(priv, reg, UMAC_CMD);
  
@@ -148,8 +147,8 @@ index a41f82379369..164988f3b4fa 100644
 -		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
 -	}
 -
- 	return 0;
- }
+ 	/* Enable the MPD interrupt */
+ 	cpu_mask_clear = UMAC_IRQ_MPD_R;
  
 -- 
 2.25.1
