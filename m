@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1745D3D3ED4
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 325EA3D3ED1
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:34:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232993AbhGWQwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 12:52:02 -0400
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:44267 "EHLO
+        id S232160AbhGWQv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 12:51:56 -0400
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:8470 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232394AbhGWQvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:51:49 -0400
+        with ESMTP id S232216AbhGWQvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:51:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1627061542; x=1658597542;
+  t=1627061533; x=1658597533;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=gkFq4zlLBLQ6H1U4SY026WedeorGjBzBeO8IWHbDR8w=;
-  b=eAq63DubmqhrWQVeczqRgA0hzZwVLivge+G7yKBuF9wiJchRSZ/elBbz
-   ULf16L0Io+c4OmLRWRojZkzHrDTKj59r5T1LVhjnKeDjCOSs9umSQornh
-   RjmFfLBXeHZjX8JGYmNtpgTFKc6WGaMF3fFAManr1Sm2qCj8R3EDsfmLo
-   v7Q9dsn+sZPBVxFK0DhscPLBjIWoIVDoB8RQcQ7cNMmQQO4eXLQ0EStrg
-   QHMYi/wHR4vvTPQSEiOYiyTEI1IARsVWD+NzsvNxl+bSblS5iZMYLOEYL
-   TAsGbVLBC9XnO9a8WXkqQiXOXrB7zyjUCNnbk7Sf6CaMoozpmeyAoStkc
+  bh=s/IbI4U2eY/Rf6aGcu5LRgHiyor0Okw2MpZuEmrVh5w=;
+  b=eQxdrAVgD1ir6PxCxsThICgnCYLt7PAYkWMu+lcSkeJos1NajPW/FNME
+   X3rWeNEDbTJzpFY0BHyIvkdYrKm0oSDcWdv03Zeq4KviFv/e6+P1Xv0hD
+   iv0pCfGnQQrDrTpY+qVpbMpd/VK+8ZNXU72KNIQf9kBI5CsPrFEAz2GHd
+   EjxOTxk+IQ5Lss8fKF5sbuYUgOn4xKv+pz9lNdiKcYqQOBFfsB/kbFX/i
+   UJMJkJrSPy13tgyrshfD4x7M23UWiZAML8QzeC+1Epg/EMQNXQmuKoWuu
+   2EvVCkk2/h1jp71yv2JChGZjprWkpTCuXByv9AwxZDX2SdMWdE6UCGEq1
    Q==;
-IronPort-SDR: D3JVsd7pEFRZ3N/z7PFqZuy4TRaJtxtQ/xvy9F68uSKDGyQpFeD/pUrVNcjPeo250dgb+z4Uu4
- Bv2evxnAutyn8Z2gCTYL4fxrC+CsWQ8bTc/U/C6Llw74AnaTl0h809yN765cAiudNmeFNtga/6
- BKXgQQzKiZbD7JzbAGvrSd4cMkZM5F/OHdoxmaE9RKSIT0y6tyKozvrb4WAeLsqmo/nPt7vIRn
- Z7txJtB9zaMukytypEJnvm4vFihTkpovqw5oszR24C7/lntOR4rovfE96mOBKCAZPOqe/yincc
- zAnqTYurVLSan8bUD2hrxQQL
+IronPort-SDR: IWmxlCDfDse352/jJGLtR4miUk7befqJHK6lilieCpO+4pp62odTB2D6GirSmAn/MUWNTc9MHb
+ VhIybc6HS6tR1JvSzPl3GheE/gCEMNghp8e7tj1rzVUWEfeO7Rvn6LXyVs8PiuN52iq1g8GdI/
+ 6fiLP1nuOSrMuCwu6UL7HLt3gOLVQcO99XjnM+6Nhfqi0hSWNC4Q7sEzsCW7bwVYfFfOrqHKf/
+ 7PUJ71+S1wdp/SPyUYMQ2W+K7JIH5ZZP9w2iCpq7rkiggmSYa+YYyso7lK/7d1v0Zq6B3vYBBL
+ zdzSRMpnq4Ek+HBIrPAs80Rq
 X-IronPort-AV: E=Sophos;i="5.84,264,1620716400"; 
-   d="scan'208";a="63393567"
+   d="scan'208";a="125755770"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2021 10:32:21 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Jul 2021 10:32:12 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 23 Jul 2021 10:32:06 -0700
+ 15.1.2176.2; Fri, 23 Jul 2021 10:32:11 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Fri, 23 Jul 2021 10:32:01 -0700
+ 15.1.2176.2 via Frontend Transport; Fri, 23 Jul 2021 10:32:06 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -48,9 +48,9 @@ CC:     <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v3 net-next 09/10] net: dsa: microchip: add support for fdb and mdb management
-Date:   Fri, 23 Jul 2021 23:01:07 +0530
-Message-ID: <20210723173108.459770-10-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v3 net-next 10/10] net: dsa: microchip: add support for vlan operations
+Date:   Fri, 23 Jul 2021 23:01:08 +0530
+Message-ID: <20210723173108.459770-11-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
 References: <20210723173108.459770-1-prasanna.vengateshan@microchip.com>
@@ -61,582 +61,247 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for fdb_add, mdb_add, fdb_del, mdb_del and
-fdb_dump operations. ALU1 and ALU2 are used for fdb operations.
+Support for VLAN add, del, prepare and filtering operations.
 
-fdb_add: find any existing entries and update the port map.
-if ALU1 write is failed and attempt to write ALU2.
-If ALU2 is also failed then exit. Clear WRITE_FAIL for both ALU1
-& ALU2.
-
-fdb_del: find the matching entry and clear the respective port
-in the port map by writing the ALU tables
-
-fdb_dump: read and dump 2 ALUs upto last entry. ALU_START bit is
-used to find the last entry. If the read is timed out, then pass
-the error message.
-
-mdb_add: Find the empty slot in ALU and update the port map &
-mac address by writing the ALU
-
-mdb_del: find the matching entry and delete the respective port
-in port map by writing the ALU
+The VLAN aware is a global setting. Mixed vlan filterings
+are not supported. vlan_filtering_is_global is made as true
+in lan937x_setup function.
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 525 +++++++++++++++++++++++
- 1 file changed, 525 insertions(+)
+ drivers/net/dsa/microchip/lan937x_main.c | 198 +++++++++++++++++++++++
+ 1 file changed, 198 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 171c46f37fa4..fb780678ef8d 100644
+index fb780678ef8d..963b066a8ad1 100644
 --- a/drivers/net/dsa/microchip/lan937x_main.c
 +++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -15,6 +15,74 @@
+@@ -15,6 +15,14 @@
  #include "ksz_common.h"
  #include "lan937x_dev.h"
  
-+static u8 lan937x_get_fid(u16 vid)
++static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
 +{
-+	if (vid > ALU_FID_SIZE)
-+		return LAN937X_GET_FID(vid);
-+	else
-+		return vid;
++	unsigned int val;
++
++	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL, val,
++					!(val & VLAN_START), 10, 1000);
 +}
 +
-+static int lan937x_read_table(struct ksz_device *dev, u32 *table)
+ static u8 lan937x_get_fid(u16 vid)
+ {
+ 	if (vid > ALU_FID_SIZE)
+@@ -23,6 +31,97 @@ static u8 lan937x_get_fid(u16 vid)
+ 		return vid;
+ }
+ 
++static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
++				  struct lan937x_vlan *vlan_entry)
 +{
++	u32 data;
 +	int ret;
 +
-+	/* read alu table */
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &table[0]);
-+	if (ret < 0)
-+		return ret;
++	mutex_lock(&dev->vlan_mutex);
 +
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_B, &table[1]);
++	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
 +	if (ret < 0)
-+		return ret;
++		goto exit;
 +
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_C, &table[2]);
++	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
 +	if (ret < 0)
-+		return ret;
++		goto exit;
 +
-+	ret = ksz_read32(dev, REG_SW_ALU_VAL_D, &table[3]);
++	/* wait to be cleared */
++	ret = lan937x_wait_vlan_ctrl_ready(dev);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &data);
++	if (ret < 0)
++		goto exit;
++
++	vlan_entry->valid = !!(data & VLAN_VALID);
++	vlan_entry->fid	= data & VLAN_FID_M;
++
++	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
++			 &vlan_entry->untag_prtmap);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4,
++			 &vlan_entry->fwd_map);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
++	if (ret < 0)
++		goto exit;
++
++exit:
++	mutex_unlock(&dev->vlan_mutex);
 +
 +	return ret;
 +}
 +
-+static int lan937x_write_table(struct ksz_device *dev, u32 *table)
++static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
++				  struct lan937x_vlan *vlan_entry)
 +{
++	u32 data;
 +	int ret;
 +
-+	/* write alu table */
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_A, table[0]);
-+	if (ret < 0)
-+		return ret;
++	mutex_lock(&dev->vlan_mutex);
 +
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_B, table[1]);
-+	if (ret < 0)
-+		return ret;
++	data = vlan_entry->valid ? VLAN_VALID : 0;
++	data |= vlan_entry->fid;
 +
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_C, table[2]);
++	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY__4, data);
 +	if (ret < 0)
-+		return ret;
++		goto exit;
 +
-+	ret = ksz_write32(dev, REG_SW_ALU_VAL_D, table[3]);
++	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
++			  vlan_entry->untag_prtmap);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_entry->fwd_map);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
++	if (ret < 0)
++		goto exit;
++
++	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
++	if (ret < 0)
++		goto exit;
++
++	/* wait to be cleared */
++	ret = lan937x_wait_vlan_ctrl_ready(dev);
++	if (ret < 0)
++		goto exit;
++
++exit:
++	mutex_unlock(&dev->vlan_mutex);
 +
 +	return ret;
 +}
 +
-+static int lan937x_wait_alu_ready(int alu, struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_CTRL(alu),
-+					val, !(val & ALU_START), 10, 1000);
-+}
-+
-+static int lan937x_wait_alu_sta_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[2], REG_SW_ALU_STAT_CTRL__4,
-+					val, !(val & ALU_STAT_START), 10, 1000);
-+}
-+
- static enum dsa_tag_protocol lan937x_get_tag_protocol(struct dsa_switch *ds,
- 						      int port,
- 						      enum dsa_tag_protocol mp)
-@@ -129,6 +197,458 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ static int lan937x_read_table(struct ksz_device *dev, u32 *table)
+ {
+ 	int ret;
+@@ -197,6 +296,102 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
  	mutex_unlock(&dev->dev_mutex);
  }
  
-+static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid)
++static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
++				       bool flag,
++				       struct netlink_ext_ack *extack)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
-+	u8 val;
++	int ret;
 +
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* find any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
-+
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
-+
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  ALU_READ | ALU_START);
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* read ALU entry */
-+		ret = lan937x_read_table(dev, alu_table);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		/* update ALU entry */
-+		alu_table[0] = ALU_V_STATIC_VALID;
-+
-+		/* update port number */
-+		alu_table[1] |= BIT(port);
-+
-+		if (fid)
-+			alu_table[1] |= ALU_V_USE_FID;
-+
-+		alu_table[2] = (fid << ALU_V_FID_S);
-+		alu_table[2] |= ((addr[0] << 8) | addr[1]);
-+		alu_table[3] = ((addr[2] << 24) | (addr[3] << 16));
-+		alu_table[3] |= ((addr[4] << 8) | addr[5]);
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read8(dev, REG_SW_LUE_INT_STATUS__1, &val);
-+		if (ret < 0)
-+			break;
-+
-+		/* ALU2 write failed */
-+		if (val & WRITE_FAIL_INT && i == 1)
-+			dev_err(dev->dev, "Failed to write ALU\n");
-+
-+		/* if ALU1 write is failed and attempt to write ALU2,
-+		 * otherwise exit. Clear Write fail for both ALU1 & ALU2
-+		 */
-+		if (val & WRITE_FAIL_INT) {
-+			/* Write to clear the Write Fail */
-+			ret = ksz_write8(dev, REG_SW_LUE_INT_STATUS__1,
-+					 WRITE_FAIL_INT);
-+			if (ret < 0)
-+				break;
-+		} else {
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&dev->alu_mutex);
++	ret = lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE,
++			  flag);
 +
 +	return ret;
 +}
 +
-+static int lan937x_port_fdb_del(struct dsa_switch *ds, int port,
-+				const unsigned char *addr, u16 vid)
++static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
++				 const struct switchdev_obj_port_vlan *vlan,
++				 struct netlink_ext_ack *extack)
 +{
++	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
 +	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(vid);
-+	u32 alu_table[4];
-+	int ret, i;
-+	u32 data;
++	struct lan937x_vlan vlan_entry;
++	int ret;
 +
-+	mutex_lock(&dev->alu_mutex);
++	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
++	if (ret < 0) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table\n");
++		return ret;
++	}
 +
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* read any entry with mac & fid */
-+		data = fid << ALU_FID_INDEX_S;
-+		data |= ((addr[0] << 8) | addr[1]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_0, data);
-+		if (ret < 0)
-+			break;
++	vlan_entry.fid = lan937x_get_fid(vlan->vid);
++	vlan_entry.valid = true;
 +
-+		data = ((addr[2] << 24) | (addr[3] << 16));
-+		data |= ((addr[4] << 8) | addr[5]);
-+		ret = ksz_write32(dev, REG_SW_ALU_INDEX_1, data);
-+		if (ret < 0)
-+			break;
++	/* set/clear switch port when updating vlan table registers */
++	if (untagged)
++		vlan_entry.untag_prtmap |= BIT(port);
++	else
++		vlan_entry.untag_prtmap &= ~BIT(port);
 +
-+		/* start read operation */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_READ | ALU_START));
-+		if (ret < 0)
-+			break;
++	vlan_entry.fwd_map |= BIT(port);
 +
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
++	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
++	if (ret < 0) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table\n");
++		return ret;
++	}
++
++	/* change PVID */
++	if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
++		ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID,
++				       vlan->vid);
 +		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU\n");
-+			break;
-+		}
-+
-+		ret = ksz_read32(dev, REG_SW_ALU_VAL_A, &alu_table[0]);
-+		if (ret < 0)
-+			break;
-+
-+		if (alu_table[0] & ALU_V_STATIC_VALID) {
-+			/* read ALU entry */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0) {
-+				dev_err(dev->dev, "Failed to read ALU table\n");
-+				break;
-+			}
-+
-+			/* clear forwarding port */
-+			alu_table[1] &= ~BIT(port);
-+
-+			/* if there is no port to forward, clear table */
-+			if ((alu_table[1] & ALU_V_PORT_MAP) == 0) {
-+				alu_table[0] = 0;
-+				alu_table[1] = 0;
-+				alu_table[2] = 0;
-+				alu_table[3] = 0;
-+			}
-+		} else {
-+			alu_table[0] = 0;
-+			alu_table[1] = 0;
-+			alu_table[2] = 0;
-+			alu_table[3] = 0;
-+		}
-+
-+		ret = lan937x_write_table(dev, alu_table);
-+		if (ret < 0)
-+			break;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_WRITE | ALU_START));
-+		if (ret < 0)
-+			break;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_ready(i, dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to delete ALU Entries\n");
-+			break;
++			NL_SET_ERR_MSG_MOD(extack, "Failed to set pvid\n");
++			return ret;
 +		}
 +	}
 +
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
++	return 0;
 +}
 +
-+static void lan937x_convert_alu(struct lan_alu_struct *alu, u32 *alu_table)
++static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
++				 const struct switchdev_obj_port_vlan *vlan)
 +{
-+	alu->is_static = !!(alu_table[0] & ALU_V_STATIC_VALID);
-+	alu->is_src_filter = !!(alu_table[0] & ALU_V_SRC_FILTER);
-+	alu->is_dst_filter = !!(alu_table[0] & ALU_V_DST_FILTER);
-+	alu->prio_age = (alu_table[0] >> ALU_V_PRIO_AGE_CNT_S) &
-+			 ALU_V_PRIO_AGE_CNT_M;
-+	alu->mstp = alu_table[0] & ALU_V_MSTP_M;
-+
-+	alu->is_override = !!(alu_table[1] & ALU_V_OVERRIDE);
-+	alu->is_use_fid = !!(alu_table[1] & ALU_V_USE_FID);
-+	alu->port_forward = alu_table[1] & ALU_V_PORT_MAP;
-+
-+	alu->fid = (alu_table[2] >> ALU_V_FID_S) & ALU_V_FID_M;
-+
-+	alu->mac[0] = (alu_table[2] >> 8) & 0xFF;
-+	alu->mac[1] = alu_table[2] & 0xFF;
-+	alu->mac[2] = (alu_table[3] >> 24) & 0xFF;
-+	alu->mac[3] = (alu_table[3] >> 16) & 0xFF;
-+	alu->mac[4] = (alu_table[3] >> 8) & 0xFF;
-+	alu->mac[5] = alu_table[3] & 0xFF;
-+}
-+
-+static int lan937x_port_fdb_dump(struct dsa_switch *ds, int port,
-+				 dsa_fdb_dump_cb_t *cb, void *data)
-+{
++	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
 +	struct ksz_device *dev = ds->priv;
-+	struct lan_alu_struct alu;
-+	u32 lan937x_data;
-+	u32 alu_table[4];
-+	int timeout;
-+	int ret, i;
++	struct lan937x_vlan vlan_entry;
++	u16 pvid;
++	int ret;
 +
-+	mutex_lock(&dev->alu_mutex);
++	lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
++	pvid &= 0xFFF;
 +
-+	/* Accessing two ALU tables through loop */
-+	for (i = 0; i < ALU_STA_DYN_CNT; i++) {
-+		/* start ALU search */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i),
-+				  (ALU_START | ALU_SEARCH));
-+		if (ret < 0)
-+			goto exit;
++	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to get vlan table\n");
++		return ret;
++	}
++	/* clear port fwd map */
++	vlan_entry.fwd_map &= ~BIT(port);
 +
-+		do {
-+			timeout = 1000;
-+			do {
-+				ret = ksz_read32(dev, REG_SW_ALU_CTRL(i),
-+						 &lan937x_data);
-+				if (ret < 0)
-+					goto exit;
++	if (untagged)
++		vlan_entry.untag_prtmap &= ~BIT(port);
 +
-+				if ((lan937x_data & ALU_VALID) ||
-+				    !(lan937x_data & ALU_START))
-+					break;
-+				usleep_range(1, 10);
-+			} while (timeout-- > 0);
-+
-+			if (!timeout) {
-+				dev_err(dev->dev, "Failed to search ALU\n");
-+				ret = -ETIMEDOUT;
-+				goto exit;
-+			}
-+
-+			/* read ALU table */
-+			ret = lan937x_read_table(dev, alu_table);
-+			if (ret < 0)
-+				goto exit;
-+
-+			lan937x_convert_alu(&alu, alu_table);
-+
-+			if (alu.port_forward & BIT(port)) {
-+				ret = cb(alu.mac, alu.fid, alu.is_static, data);
-+				if (ret)
-+					goto exit;
-+			}
-+		} while (lan937x_data & ALU_START);
-+
-+exit:
-+		/* stop ALU search & continue to next ALU if available */
-+		ret = ksz_write32(dev, REG_SW_ALU_CTRL(i), 0);
++	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to set vlan table\n");
++		return ret;
 +	}
 +
-+	mutex_unlock(&dev->alu_mutex);
++	ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to set pvid\n");
++		return ret;
++	}
 +
-+	return ret;
++	return 0;
 +}
 +
-+static int lan937x_port_mdb_add(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
-+
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		/* find empty slot first */
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
-+
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		} else {
-+			/* found empty one */
-+			break;
-+		}
-+	}
-+
-+	/* no available entry */
-+	if (index == dev->num_statics) {
-+		ret = -ENOSPC;
-+		goto exit;
-+	}
-+
-+	/* add entry */
-+	static_table[0] = ALU_V_STATIC_VALID;
-+
-+	static_table[1] |= BIT(port);
-+	if (fid)
-+		static_table[1] |= ALU_V_USE_FID;
-+	static_table[2] = (fid << ALU_V_FID_S);
-+	static_table[2] |= mac_hi;
-+	static_table[3] = mac_lo;
-+
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
-+
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
-+	return ret;
-+}
-+
-+static int lan937x_port_mdb_del(struct dsa_switch *ds, int port,
-+				const struct switchdev_obj_port_mdb *mdb)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	u8 fid = lan937x_get_fid(mdb->vid);
-+	u32 static_table[4];
-+	u32 mac_hi, mac_lo;
-+	int index, ret;
-+	u32 data;
-+
-+	mac_hi = ((mdb->addr[0] << 8) | mdb->addr[1]);
-+	mac_lo = ((mdb->addr[2] << 24) | (mdb->addr[3] << 16));
-+	mac_lo |= ((mdb->addr[4] << 8) | mdb->addr[5]);
-+
-+	mutex_lock(&dev->alu_mutex);
-+
-+	/* Access the entries in the table */
-+	for (index = 0; index < dev->num_statics; index++) {
-+		data = (index << ALU_STAT_INDEX_S) |
-+			ALU_STAT_READ | ALU_STAT_START;
-+		ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+		if (ret < 0)
-+			goto exit;
-+
-+		/* wait to be finished */
-+		ret = lan937x_wait_alu_sta_ready(dev);
-+		if (ret < 0) {
-+			dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+			goto exit;
-+		}
-+
-+		/* read ALU static table */
-+		ret = lan937x_read_table(dev, static_table);
-+		if (ret < 0)
-+			goto exit;
-+
-+		if (static_table[0] & ALU_V_STATIC_VALID) {
-+			/* check this has same fid & mac address */
-+			if (((static_table[2] >> ALU_V_FID_S) == fid) &&
-+			    ((static_table[2] & ALU_V_MAC_ADDR_HI) == mac_hi) &&
-+			    static_table[3] == mac_lo) {
-+				/* found matching one */
-+				break;
-+			}
-+		}
-+	}
-+
-+	/* no available entry */
-+	if (index == dev->num_statics)
-+		goto exit;
-+
-+	/* clear port based on port arg */
-+	static_table[1] &= ~BIT(port);
-+
-+	if ((static_table[1] & ALU_V_PORT_MAP) == 0) {
-+		/* delete entry */
-+		static_table[0] = 0;
-+		static_table[1] = 0;
-+		static_table[2] = 0;
-+		static_table[3] = 0;
-+	}
-+
-+	ret = lan937x_write_table(dev, static_table);
-+	if (ret < 0)
-+		goto exit;
-+
-+	data = (index << ALU_STAT_INDEX_S) | ALU_STAT_START;
-+	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be finished */
-+	ret = lan937x_wait_alu_sta_ready(dev);
-+	if (ret < 0)
-+		dev_err(dev->dev, "Failed to read ALU STATIC\n");
-+
-+exit:
-+	mutex_unlock(&dev->alu_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
- 				   bool ingress)
-@@ -487,6 +1007,11 @@ const struct dsa_switch_ops lan937x_switch_ops = {
+ static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
+ 				const unsigned char *addr, u16 vid)
+ {
+@@ -1007,6 +1202,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
  	.port_bridge_leave = ksz_port_bridge_leave,
  	.port_stp_state_set = lan937x_port_stp_state_set,
  	.port_fast_age = ksz_port_fast_age,
-+	.port_fdb_dump = lan937x_port_fdb_dump,
-+	.port_fdb_add = lan937x_port_fdb_add,
-+	.port_fdb_del = lan937x_port_fdb_del,
-+	.port_mdb_add = lan937x_port_mdb_add,
-+	.port_mdb_del = lan937x_port_mdb_del,
- 	.port_mirror_add = lan937x_port_mirror_add,
- 	.port_mirror_del = lan937x_port_mirror_del,
- 	.port_max_mtu = lan937x_get_max_mtu,
++	.port_vlan_filtering = lan937x_port_vlan_filtering,
++	.port_vlan_add = lan937x_port_vlan_add,
++	.port_vlan_del = lan937x_port_vlan_del,
+ 	.port_fdb_dump = lan937x_port_fdb_dump,
+ 	.port_fdb_add = lan937x_port_fdb_add,
+ 	.port_fdb_del = lan937x_port_fdb_del,
 -- 
 2.27.0
 
