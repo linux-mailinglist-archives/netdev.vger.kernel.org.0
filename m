@@ -2,91 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 567573D37D4
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F653D37E3
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:43:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231197AbhGWJAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 05:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        id S231415AbhGWJCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:02:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230397AbhGWJAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:00:51 -0400
-X-Greylist: delayed 94 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 23 Jul 2021 02:41:25 PDT
-Received: from forwardcorp1o.mail.yandex.net (forwardcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC6DC061575;
-        Fri, 23 Jul 2021 02:41:25 -0700 (PDT)
-Received: from iva8-d077482f1536.qloud-c.yandex.net (iva8-d077482f1536.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:2f26:0:640:d077:482f])
-        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 78A512E198D;
-        Fri, 23 Jul 2021 12:39:46 +0300 (MSK)
-Received: from iva8-5ba4ca89b0c6.qloud-c.yandex.net (iva8-5ba4ca89b0c6.qloud-c.yandex.net [2a02:6b8:c0c:a8ae:0:640:5ba4:ca89])
-        by iva8-d077482f1536.qloud-c.yandex.net (mxbackcorp/Yandex) with ESMTP id CFZnpdw2zJ-dj088eSL;
-        Fri, 23 Jul 2021 12:39:46 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1627033186; bh=sN7C3HUF4CT+oTysV0poD5qgCG15k/0i+3fQFTFO4/g=;
-        h=Cc:Message-Id:Date:Subject:To:From;
-        b=T3UVjrlXrr5EuXmpA4sw/4UHQY2svfo/tAZ+huXCiNvoGKSWOu0XLt2XzQUqxDYIs
-         hyN13AkNO5uviZfr2yKUIj1FlrsxUgpVM9LZrPeeamENX2o/JMEWfsQzB8YAfDLCn7
-         k+4p9DrsGrgbl9JICokJpx5aUIjQQqaoVcBZOB+Y=
-Authentication-Results: iva8-d077482f1536.qloud-c.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from 172.31.93.162-vpn.dhcp.yndx.net (172.31.93.162-vpn.dhcp.yndx.net [172.31.93.162])
-        by iva8-5ba4ca89b0c6.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id oTYqu3ggUK-dj2urJdf;
-        Fri, 23 Jul 2021 12:39:45 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     kafai@fb.com, edumazet@google.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     dmtrmonakhov@yandex-team.ru
-Subject: [PATCH] tcp: use rto_min value from socket in retransmits timeout
-Date:   Fri, 23 Jul 2021 12:39:38 +0300
-Message-Id: <20210723093938.49354-1-zeil@yandex-team.ru>
+        with ESMTP id S231231AbhGWJCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:02:15 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77354C061575;
+        Fri, 23 Jul 2021 02:42:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=QL92lUyzg90XLPkGnyYRK/cIIOXbUO/VZDi5JxFk4aQ=;
+        t=1627033369; x=1628242969; b=UvFIjfYU8BvW5RN2N50q0aLQrge7TE0SXPuq3D72g9CsYBt
+        dvjqdaACHDOWOtk3gGjEuQjRgftzY3o/NU7qzya7xJoEYY4aay1SAih7/knD/cAI5vv7fkBpxJMME
+        xj8oOJHm3pRCCOrRy61gjo7ZcMPkqynQU5bg5q9QN2CpHz5sQJRzeAaU01BR9dHQEAPeesMmcT+kg
+        BcwwX+ae6d2OBBB7nNHPk56/IgRlQUWUvid54j7VAB6iWSxQw0DE9OfZmj/r2D0kWe43aQXbE96lp
+        e7zGptITyorX2awH77SfiO88SDBPRNP4h40/MkRm9qoJWH+1wFYAX84SkKBJx8wg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94.2)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1m6rf0-000UUq-A6; Fri, 23 Jul 2021 11:42:41 +0200
+Message-ID: <e549fbb09d7c618762996aca4242c2ae50f85a5c.camel@sipsolutions.net>
+Subject: Re: [PATCH] cfg80211: free the object allocated in
+ wiphy_apply_custom_regulatory
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Ilan Peer <ilan.peer@intel.com>,
+        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
+        linux-wireless@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Fri, 23 Jul 2021 11:42:40 +0200
+In-Reply-To: <CAD-N9QWRNyZnnDQ3XTQ_SAWNEgiMCJV+5Z69eHtRVcxYtXcM+A@mail.gmail.com>
+References: <20210723050919.1910964-1-mudongliangabcd@gmail.com>
+         <d2b0f847dbf6b6d1e585ef8de1d9d367f8d9fd3b.camel@sipsolutions.net>
+         <CAD-N9QWDNvo_3bdB=8edyYWvEV=b-66Tx-P6_7JGgrSYshDh0A@mail.gmail.com>
+         <11ba299b812212a07fe3631b7be0e8b8fd5fb569.camel@sipsolutions.net>
+         <CAD-N9QWRNyZnnDQ3XTQ_SAWNEgiMCJV+5Z69eHtRVcxYtXcM+A@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt")
-adds ability to set rto_min value on socket less then default TCP_RTO_MIN.
-But retransmits_timed_out() function still uses TCP_RTO_MIN and
-tcp_retries{1,2} sysctls don't work properly for tuned socket values.
+Hi,
 
-Fixes: ca584ba07086 ("tcp: bpf: Add TCP_BPF_RTO_MIN for bpf_setsockopt")
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Acked-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
----
- net/ipv4/tcp_timer.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+On Fri, 2021-07-23 at 17:30 +0800, Dongliang Mu wrote:
+> if zhao in the thread is right, we don't need to add this free
+> operation to wiphy_free().
 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 20cf4a9..66c4b97 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -199,12 +199,13 @@ static unsigned int tcp_model_timeout(struct sock *sk,
-  *  @boundary: max number of retransmissions
-  *  @timeout:  A custom timeout value.
-  *             If set to 0 the default timeout is calculated and used.
-- *             Using TCP_RTO_MIN and the number of unsuccessful retransmits.
-+ *             Using icsk_rto_min value from socket or RTAX_RTO_MIN from route
-+ *             and the number of unsuccessful retransmits.
-  *
-  * The default "timeout" value this function can calculate and use
-  * is equivalent to the timeout of a TCP Connection
-  * after "boundary" unsuccessful, exponentially backed-off
-- * retransmissions with an initial RTO of TCP_RTO_MIN.
-+ * retransmissions with an initial RTO of icsk_rto_min or RTAX_RTO_MIN.
-  */
- static bool retransmits_timed_out(struct sock *sk,
- 				  unsigned int boundary,
-@@ -217,7 +218,7 @@ static bool retransmits_timed_out(struct sock *sk,
- 
- 	start_ts = tcp_sk(sk)->retrans_stamp;
- 	if (likely(timeout == 0)) {
--		unsigned int rto_base = TCP_RTO_MIN;
-+		unsigned int rto_base = tcp_rto_min(sk);
- 
- 		if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV))
- 			rto_base = tcp_timeout_init(sk);
--- 
-2.7.4
+Actually, no, that statement is not true.
+
+All that zhao claimed was that the free happens correctly during
+unregister (or later), and that is indeed true, since it happens from
+
+ieee80211_unregister_hw()
+ -> wiphy_unregister()
+ -> wiphy_regulatory_deregister()
+
+
+However, syzbot of course is also correct. Abstracting a bit and
+ignoring mac80211, the problem is that here we assign it before
+wiphy_register(), then wiphy_register() doesn't get called or fails, and
+therefore we don't call wiphy_unregister(), only wiphy_free().
+
+Hence the leak.
+
+But you can also easily see from that description that it's not related
+to hwsim - we should add a secondary round of cleanups in wiphy_free()
+or even move the call to wiphy_regulatory_deregister() into
+wiphy_free(), we need to look what else this does to see if we can move
+it or not.
+
+johannes
 
