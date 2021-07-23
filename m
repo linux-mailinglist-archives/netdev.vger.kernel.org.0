@@ -2,53 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E68BC3D3AE0
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:07:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 384263D3AE3
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbhGWM04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 08:26:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42302 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232851AbhGWM0z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 08:26:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kp9/hrLWlzboWqshpLU+HHX29zRctIDSVcKMaAgsnEg=; b=UHterZXPd6SqZm6uNcqTvybK6h
-        pHBoEPnfnMD0/ohU3NLLm1oqQTpfahkFWxBht8+4zIAxxR4aCRIJnD2LWJX8UhJn509Dzp2+h87XH
-        oDlMuNZNVHClAWh8mse+FvlPHeNpj/C9izwAXFlxSqnxLIhcXGxZgUyiOekI5aTS8/k0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6utU-00EUif-NL; Fri, 23 Jul 2021 15:07:12 +0200
-Date:   Fri, 23 Jul 2021 15:07:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     lxu@maxlinear.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: Remove unused including <linux/version.h>
-Message-ID: <YPq/AGrCS+s7Qicj@lunn.ch>
-References: <1627036707-73334-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+        id S235175AbhGWM1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 08:27:15 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:36413 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S235119AbhGWM1O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 08:27:14 -0400
+Received: (qmail 39326 invoked by uid 1000); 23 Jul 2021 09:07:47 -0400
+Date:   Fri, 23 Jul 2021 09:07:47 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Thierry Escande <thierry.escande@collabora.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>
+Subject: Re: [syzbot] INFO: task hung in port100_probe
+Message-ID: <20210723130747.GB38923@rowland.harvard.edu>
+References: <000000000000c644cd05c55ca652@google.com>
+ <9e06e977-9a06-f411-ab76-7a44116e883b@canonical.com>
+ <20210722144721.GA6592@rowland.harvard.edu>
+ <b007e1e5-6978-3b7a-8d7f-3d8f3a448436@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1627036707-73334-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <b007e1e5-6978-3b7a-8d7f-3d8f3a448436@canonical.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 06:38:27PM +0800, Jiapeng Chong wrote:
-> From: chongjiapeng <jiapeng.chong@linux.alibaba.com>
+On Fri, Jul 23, 2021 at 11:05:09AM +0200, Krzysztof Kozlowski wrote:
+> On 22/07/2021 16:47, Alan Stern wrote:
+> > On Thu, Jul 22, 2021 at 04:20:10PM +0200, Krzysztof Kozlowski wrote:
+> >> Anyone hints where the issue could be?
+> > 
+> > Here's what I wrote earlier: "It looks like the problem stems from the fact 
+> > that port100_send_frame_async() submits two URBs, but 
+> > port100_send_cmd_sync() only waits for one of them to complete.  The other 
+> > URB may then still be active when the driver tries to reuse it."
 > 
-> Eliminate the follow versioncheck warning:
+> I see now you replied this to earlier syzbot report about "URB submitted
+> while active". Here is a slightly different issue - hung task on waiting
+> for completion coming from device ack.
 > 
-> ./drivers/net/phy/mxl-gpy.c: 9 linux/version.h not needed.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: chongjiapeng <jiapeng.chong@linux.alibaba.com>
+> However maybe these are both similar or at least come from similar root
+> cause in the driver.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Exactly what I was thinking.  :-)
 
-    Andrew
+> > Of course, there may be more than one problem, so we may not be talking 
+> > about the same thing.
+> > 
+> > Does that help at all?
+> 
+> Thanks, it gives me some ideas to look into although I spent already too
+> much time on this old driver. I doubt it has any users so maybe better
+> to mark it as BROKEN...
+
+Whatever you think is best.  I know nothing about port100.
+
+Alan Stern
