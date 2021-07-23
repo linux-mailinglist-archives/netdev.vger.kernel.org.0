@@ -2,130 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58253D3E4D
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC5D3D3E5F
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 19:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231330AbhGWQeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 12:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
+        id S231166AbhGWQid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 12:38:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbhGWQeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:34:44 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23884C061575;
-        Fri, 23 Jul 2021 10:15:17 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id mt6so3207955pjb.1;
-        Fri, 23 Jul 2021 10:15:17 -0700 (PDT)
+        with ESMTP id S229492AbhGWQiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 12:38:24 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265F0C061575;
+        Fri, 23 Jul 2021 10:18:58 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id k65so3333204yba.13;
+        Fri, 23 Jul 2021 10:18:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=1JRQTcX3mMh1waCjD0i+OlhIQ+cqEnYe3rn2a3l5PHM=;
-        b=fuyiDiQjakWS2nH4pRbhmN0vOH7iHesdh4D0ObiX/uzKRN2NGR36bRa2dK3XV5MoCB
-         MF2oe1U9kR27iEcDG04IxZgok7Fl/zd/c/dd5N+NWdc+/FP8qErhBWQgFVxV/kacXjtR
-         MW97Lzdlillv+7K1LoQJ0cF1Fsa/SpLtv4nLdMvwGWjtKMGwD5LG5wH/mn/3Xi0n32kC
-         c0vWuSpHvKoI/lxg7aonDUu5M4Of5KBg/EIlg2IdY8DeaRsIoKlWMEyCsi+JsNs4aiuE
-         3RKapUFqYN+qrfiH5r+peINoRzEVVMSuk5Z4MzafvYrrZjXGxeLRGzxA0RPx8VHr1CYo
-         OsIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XYhOJx6SWRUy7hodbXYp4adRvpeYjlJi8muFxkL/D1Q=;
+        b=eDqTLxR9Gw/Je8z62TzKChmp9FOXXH3A3ue1j7fkViu426FzOjKCXdP7/FS4oHHdeA
+         RKrTOO2ebZn5Nh/e17gE74hSbNqtJcGIqzcRwRjoQVoS/YFx/we71+fdrVAKX+uFMsZ7
+         xDdXiHfd4I31OoB4DZRt0GEAWjKzpf6mCurdmK5TxLI0/A0X+VQtJO0K63I/qTT2KZTN
+         lKf15IIzXz1fNrNkexneTZ9D1x26oIhAsQGVMs/p8PGHbVvtBH7Sp7zy2XE/UuWdlvtP
+         YP/gA/rvuI2/I7ShIDnV4zWxA6mpXJ1DaLfD9dTsdqHW64de4Zx/jQejVw1Xc+RmaDAs
+         0OSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1JRQTcX3mMh1waCjD0i+OlhIQ+cqEnYe3rn2a3l5PHM=;
-        b=YZD+bZRA3YIq7W+czPCw6ojBlrs7Qs/1kpW4WNWvgjE6DY0z3lLqOJRaxXY5ZbuVk7
-         KRlGTCrVZ2iYOCSMLqD3Ziz9tila1tWVmP6AOLKwd72kjQ67Rq7fKupZKiWwdRoxi9mA
-         TBAhwuVj2tUfgXNnvIZWyOfjhWIA9fjykJfr8yUvaiyhmvEA3OAFZaE0mo+802lwmkIv
-         o9lhMdvV8Bjtrabm6w9xUDfhIppzYbheSsHshAeHPocQO356pIZlRg+Bnq7hkydUkW87
-         5QYRRVrSPAMlGzBT7thEzbnXT9gYQjiXQMfc+x0zMz0zulRE0Ubgjsen3CX/YhnEpwyk
-         66pw==
-X-Gm-Message-State: AOAM530X+tWuVLo2556gh66AMCy1SOfVv8NwPDooQVHIEOUY5P5+oXDE
-        Z6mUe3RPfuop+8KzicHyZII=
-X-Google-Smtp-Source: ABdhPJwN1doRO2qvePYhlCrAXf76ZIjgkkW/wHSr9Esk/6YIZFVgz0Xh5Y/B/+lplVHFrsi8hABTrw==
-X-Received: by 2002:a62:30c5:0:b029:31e:fa6d:1738 with SMTP id w188-20020a6230c50000b029031efa6d1738mr5326632pfw.55.1627060516543;
-        Fri, 23 Jul 2021 10:15:16 -0700 (PDT)
-Received: from [10.69.44.239] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k198sm36382052pfd.148.2021.07.23.10.15.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Jul 2021 10:15:16 -0700 (PDT)
-Subject: Re: [PATCH v5 11/14] scsi: lpfc: Use irq_set_affinity
-To:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-pci@vger.kernel.org,
-        tglx@linutronix.de, jesse.brandeburg@intel.com,
-        robin.murphy@arm.com, mtosatti@redhat.com, mingo@kernel.org,
-        jbrandeb@kernel.org, frederic@kernel.org, juri.lelli@redhat.com,
-        abelits@marvell.com, bhelgaas@google.com, rostedt@goodmis.org,
-        peterz@infradead.org, davem@davemloft.net,
-        akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        stephen@networkplumber.org, rppt@linux.vnet.ibm.com,
-        chris.friesen@windriver.com, maz@kernel.org, nhorman@tuxdriver.com,
-        pjwaskiewicz@gmail.com, sassmann@redhat.com, thenzl@redhat.com,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com,
-        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jkc@redhat.com, faisal.latif@intel.com,
-        shiraz.saleem@intel.com, tariqt@nvidia.com, ahleihel@redhat.com,
-        kheib@redhat.com, borisp@nvidia.com, saeedm@nvidia.com,
-        benve@cisco.com, govind@gmx.com, jassisinghbrar@gmail.com,
-        ajit.khaparde@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        somnath.kotur@broadcom.com, nilal@redhat.com,
-        tatyana.e.nikolova@intel.com, mustafa.ismail@intel.com,
-        ahs3@redhat.com, leonro@nvidia.com,
-        chandrakanth.patil@broadcom.com, bjorn.andersson@linaro.org,
-        chunkuang.hu@kernel.org, yongqiang.niu@mediatek.com,
-        baolin.wang7@gmail.com, poros@redhat.com, minlei@redhat.com,
-        emilne@redhat.com, jejb@linux.ibm.com, martin.petersen@oracle.com,
-        _govind@gmx.com, kabel@kernel.org, viresh.kumar@linaro.org,
-        Tushar.Khandelwal@arm.com, kuba@kernel.org
-References: <20210720232624.1493424-1-nitesh@redhat.com>
- <20210720232624.1493424-12-nitesh@redhat.com>
-From:   James Smart <jsmart2021@gmail.com>
-Message-ID: <f1512e42-f2fa-b4e7-4133-4a6066b7ea0d@gmail.com>
-Date:   Fri, 23 Jul 2021 10:15:12 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XYhOJx6SWRUy7hodbXYp4adRvpeYjlJi8muFxkL/D1Q=;
+        b=eei+TLSRFijNe9BbJRehTdroqoaEUshvwJR+md1PaF32SvvZ1rOjVbmr4TBmCNzgiW
+         c/5nTVTY+3lE9AEaQLlIEH5OMYlgtCQXvDt6dQsSUH1sXR+DaE3HzLcSya4RHpSEhwIM
+         49GKub2m/RMkUJK1UPGlqOI2isdTbQOQq+FQF1TZ/8f9o+Aytf2AYCqHTxMXO1g68WFG
+         g64lEBWdHBrwNf5i0Xe+sgOrlOS4kOJYGgxs+w6HXCdQohvF+TpUA/4tHC7BifR1I62e
+         5Y4O2HP+kdPwa+WGJoCXOvFISRO8VQ8shzZBHW0tSOdKGJQzUOvDXRwbQ4WXTnsJEF6K
+         6+XQ==
+X-Gm-Message-State: AOAM533+sPO4N5VJj15XMwOJFGcSUtZeF7Y1gwgk0TSYNA5s2NNatMyK
+        pyeQLS4Qdw09QXOgNi+jvUh8hv2uk1jWlKK7n14=
+X-Google-Smtp-Source: ABdhPJweMZDH+WBXB+Sz0tUNWlFZSuAGAWbwZ+6Gv5YCnVMXWRKlBoAoYup+AJEeV9jTznmBHQlKno99DMdKuBTI2Uw=
+X-Received: by 2002:a25:b203:: with SMTP id i3mr7699933ybj.260.1627060737365;
+ Fri, 23 Jul 2021 10:18:57 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210720232624.1493424-12-nitesh@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210721153808.6902-1-quentin@isovalent.com> <20210721153808.6902-3-quentin@isovalent.com>
+ <CAEf4BzZqEZLt0_qgmniY-hqgEg7q0ur0Z5U0r8KFTwSz=2StSg@mail.gmail.com>
+ <88d3cd19-5985-ad73-5f23-4f6f7d1b1be2@isovalent.com> <CAEf4BzY4jVKN=3CdaLU1WOekGbT915dweNx0R4KMrW8U7E20cw@mail.gmail.com>
+ <004ebf5f-bac1-117b-e833-2f5ef6df0b4b@isovalent.com>
+In-Reply-To: <004ebf5f-bac1-117b-e833-2f5ef6df0b4b@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Jul 2021 10:18:46 -0700
+Message-ID: <CAEf4BzZAW_n=tgCNvsDY83FRL37DY_wODfhp+XNr6DA7C3A1qw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/5] libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/20/2021 4:26 PM, Nitesh Narayan Lal wrote:
-> The driver uses irq_set_affinity_hint to set the affinity for the lpfc
-> interrupts to a mask corresponding to the local NUMA node to avoid
-> performance overhead on AMD architectures.
-> 
-> However, irq_set_affinity_hint() setting the affinity is an undocumented
-> side effect that this function also sets the affinity under the hood.
-> To remove this side effect irq_set_affinity_hint() has been marked as
-> deprecated and new interfaces have been introduced.
-> 
-> Also, as per the commit dcaa21367938 ("scsi: lpfc: Change default IRQ model
-> on AMD architectures"):
-> "On AMD architecture, revert the irq allocation to the normal style
-> (non-managed) and then use irq_set_affinity_hint() to set the cpu affinity
-> and disable user-space rebalancing."
-> we don't really need to set the affinity_hint as user-space rebalancing for
-> the lpfc interrupts is not desired.
-> 
-> Hence, replace the irq_set_affinity_hint() with irq_set_affinity() which
-> only applies the affinity for the interrupts.
-> 
-> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
-> ---
->   drivers/scsi/lpfc/lpfc_init.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
+On Fri, Jul 23, 2021 at 9:13 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2021-07-23 08:54 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> > On Fri, Jul 23, 2021 at 2:31 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>
+> >> 2021-07-22 17:39 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> >>> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>
+> >>>> Rename function btf__get_from_id() as btf__load_from_kernel_by_id() to
+> >>>> better indicate what the function does. Change the new function so that,
+> >>>> instead of requiring a pointer to the pointer to update and returning
+> >>>> with an error code, it takes a single argument (the id of the BTF
+> >>>> object) and returns the corresponding pointer. This is more in line with
+> >>>> the existing constructors.
+> >>>>
+> >>>> The other tools calling the deprecated btf__get_from_id() function will
+> >>>> be updated in a future commit.
+> >>>>
+> >>>> References:
+> >>>>
+> >>>> - https://github.com/libbpf/libbpf/issues/278
+> >>>> - https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
+> >>>>
+>
+> >>>> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+> >>>> index 7e0de560490e..6654bdee7ad7 100644
+> >>>> --- a/tools/lib/bpf/btf.c
+> >>>> +++ b/tools/lib/bpf/btf.c
+> >>>> @@ -1383,21 +1383,30 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
+> >>>>         return btf;
+> >>>>  }
+> >>>>
+> >>>> +struct btf *btf__load_from_kernel_by_id(__u32 id)
+> >>>> +{
+> >>>> +       struct btf *btf;
+> >>>> +       int btf_fd;
+> >>>> +
+> >>>> +       btf_fd = bpf_btf_get_fd_by_id(id);
+> >>>> +       if (btf_fd < 0)
+> >>>> +               return ERR_PTR(-errno);
+> >>>
+> >>> please use libbpf_err_ptr() for consistency, see
+> >>> bpf_object__open_mem() for an example
+> >>
+> >> I can do that, but I'll need to uncouple btf__get_from_id() from the new
+> >> function. If it calls btf__load_from_kernel_by_id() and
+> >> LIBBPF_STRICT_CLEAN_PTRS is set, it would change its return value.
+> >
+> > No it won't, if libbpf_get_error() is used right after the API call.
+>
+> But we cannot be sure that users currently call libbpf_get_error() after
+> btf__get_from_id()? I'm fine if we assume they do (users currently
+> selecting the CLEAN_PTRS are probably savvy enough to call it I guess),
+> I'll update as you suggest.
 
-Looks good. Thanks
+I think you are still confused. It doesn't matter what the user does,
+the contract is for libbpf API to either return ERR_PTR(err) if no
+CLEAN_PTRS is requested, or return NULL and set errno to -err.
+libbpf_err_ptr() does that from inside the libbpf API (so you don't
+have to check CLEAN_PTRS explicitly, you are just passing an error to
+be returned, regardless of libbpf mode).
 
-Reviewed-by: James Smart <jsmart2021@gmail.com>
+If a user opted into CLEAN_PTRS, they don't have to use
+libbpf_get_error(), it's enough to check for NULL. If they care about
+the error code itself, they'll need to use -errno. If they haven't
+opted into CLEAN_PTRS yet, they have to use libbpf_get_error(), as
+that's the only supported way. Sure, they could check for NULL and
+that's a bug (and that's a very common one, which motivated
+CLEAN_PTRS), or they implement the IS_ERR() macro from the kernel
+(which is not officially supported, but works, of course). But again,
+all that is orthogonal to how libbpf has to return errors from inside
+for pointer-returning APIs.
 
--- james
-
+>
+> > With CLEAN_PTRS the result pointer is NULL but actual error is passed
+> > through errno. libbpf_get_error() knows about this and extracts error
+> > from errno if passed NULL pointer. With returning ERR_PTR(-errno) from
+> > btf__load_from_kernel_by_id() you are breaking CLEAN_PTRS guarantees.
+> OK right, this makes sense to me for btf__load_from_kernel_by_id().
