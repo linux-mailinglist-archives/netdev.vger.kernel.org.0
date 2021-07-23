@@ -2,136 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B48F3D3B03
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:22:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 811AB3D3B44
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 15:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235161AbhGWMmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 08:42:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42336 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233037AbhGWMl4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Jul 2021 08:41:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=vHXNKEv7LkkV4lJkCF5sXM2xDe7Ke1gz3Z6CdP9WlUw=; b=tl
-        0TqK87MEnAv9XxbGFqDdfFh1wMSPh6qZe2q5Lc6VfUcM8U+azFmXC2nXHhCf95+CGUIntSeZGM3Gw
-        HpunGGx0AmK5QbhIz2o6rOmd+qC9awp8CpOLGsndrL8jfeILCKY54S7NhGyuPtTY6uRMxtVfL4dMw
-        ALZn0KLOoVgp/Cs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m6v84-00EUqk-Ui; Fri, 23 Jul 2021 15:22:16 +0200
-Date:   Fri, 23 Jul 2021 15:22:16 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v1 1/1] net: phy: dp83td510: Add basic support
- for the DP83TD510 Ethernet PHY
-Message-ID: <YPrCiIz7baU26kLU@lunn.ch>
-References: <20210723104218.25361-1-o.rempel@pengutronix.de>
+        id S235094AbhGWMz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 08:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234972AbhGWMz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 08:55:27 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A012CC061575;
+        Fri, 23 Jul 2021 06:35:59 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id hp25so3565730ejc.11;
+        Fri, 23 Jul 2021 06:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=syQdpBaTHu3uZXlH1OVRUA7Md0MxaCJtCpKEccQDxYU=;
+        b=huxKMkt0pXXNh5W/94n8CXFbDb7BVJT05xDQ3kMIqeqJzgh+ugjnRjyXli0YWyYgDn
+         Hdxj+5BexGIoqPGN4yrJ/V6waa4oC7YpEj8zyF+frkDZOszrH5s9tIfW/T8z7azOzCox
+         XGy/sf7+Hb1BGFkxf343bYDJPBu2IaE0oG0j9bQJXm9Em/zr5ofm7B/rReBlgeJ7rhEN
+         qHHxRDXpq3oT0H0xygbSQfP+ESyqDOM+7YLNFKIu+nLmLVF4PtpHTEcFz5A41iSKR8By
+         RTYtFEBVx+Hmaj4DtDcJ7m5ryFnMEW43JPEkjT3JebanLhWEj5coUsMHXQEMzWl/gHw7
+         Adrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=syQdpBaTHu3uZXlH1OVRUA7Md0MxaCJtCpKEccQDxYU=;
+        b=reblioVDRNOtRjD/3enfiHA7ErJKMv4o4RsFl5zYDgfGKM49Y59B3lFTroUNLiCskj
+         g4DoxJJHiz7HwguzRXi5+9pI8O5m6KO8dmK09gahk5V1KwjMCwjh4peV5k4Gdxsb8LNW
+         WOXVapmC2p/YoVTMjoapU3uEuF4YUS49ICULE6sH3aBCtReEHJjq5/zRrwTPiOGZPDk3
+         4QBrB70LsFWSHWiC1rDh0T8xSJHvoF7MQhHVMDEsNOFaEyHcNprBwSBt8ID2f0l9aA4R
+         STawRXJwlLXzUOTxpVVwO8gBIqRaq219Vcpt/tvMe6PkGzB2CHgIw0LZLs8O5ug5ca/3
+         qoSw==
+X-Gm-Message-State: AOAM530IH0s5wlQNVhZbWNPPltc08ocpfn8vRV/IzsSgzugiqksFKaiu
+        TvjuKhAEHpZvx5wR1WsedP0=
+X-Google-Smtp-Source: ABdhPJwb3SBZhK1DPpsdXTPaCI0y0ohVwIroXkDpCWGROEDXHXeJgWea5S0x+piJIduQ49VuPoiSGQ==
+X-Received: by 2002:a17:906:180a:: with SMTP id v10mr4602237eje.112.1627047358195;
+        Fri, 23 Jul 2021 06:35:58 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id v16sm13478381edc.52.2021.07.23.06.35.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Jul 2021 06:35:57 -0700 (PDT)
+Date:   Fri, 23 Jul 2021 16:35:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next] ARM: dts: imx6qdl: Remove unnecessary mdio
+ #address-cells/#size-cells
+Message-ID: <20210723133556.xnhhxdkvassykavn@skbuf>
+References: <20210723112835.31743-1-festevam@gmail.com>
+ <20210723130851.6tfl4ijl7hkqzchm@skbuf>
+ <CAOMZO5BRt6M=4WrZMWQjYeDcOXMSFhcfjZ95tdUkst5Jm=yB6A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210723104218.25361-1-o.rempel@pengutronix.de>
+In-Reply-To: <CAOMZO5BRt6M=4WrZMWQjYeDcOXMSFhcfjZ95tdUkst5Jm=yB6A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 12:42:18PM +0200, Oleksij Rempel wrote:
-> The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
-> that supports 10M single pair cable.
+On Fri, Jul 23, 2021 at 10:15:52AM -0300, Fabio Estevam wrote:
+> Hi Vladimr,
 > 
-> This driver provides basic support for this chip:
-> - link status
-> - autoneg can be turned off
-> - master/slave can be configured to be able to work without autoneg
+> On Fri, Jul 23, 2021 at 10:08 AM Vladimir Oltean <olteanv@gmail.com> wrote:
 > 
-> This driver and PHY was tested with ASIX AX88772B USB Ethernet controller.
+> > Are you actually sure this is the correct fix? If I look at mdio.yaml, I
+> > think it is pretty clear that the "ethernet-phy" subnode of the MDIO
+> > controller must have an "@[0-9a-f]+$" pattern, and a "reg" property. If
+> > it did, then it wouldn't warn about #address-cells.
+> 
+> Thanks for reviewing it.
+> 
+> After double-checking I realize that the correct fix would be to pass
+> the phy address, like:
+> 
+> phy: ethernet-phy@1 {
+> reg = <1>;
+> 
+> Since the Ethernet PHY address is design dependant, I can not make the
+> fix myself.
+> 
+> I will try to ping the board maintainers for passing the correct phy address.
+> 
+> Thanks
 
-Hi Oleksij
+Normally you should have been able to make all PHY addresses be 0. That
+is the MDIO "broadcast address" and if there's a single PHY on the bus,
+it should respond to that.
 
-There were patches flying around recently for another T1L PHY which
-added new link modes. Please could you work together with that patch
-to set the phydev features correctly to indicate this PHY is also a
-T1L, and if it support 2.4v etc.
+Citation:
 
-> +static int dp83td510_config_aneg(struct phy_device *phydev)
-> +{
-> +	u16 ctrl = 0, pmd_ctrl = 0;
-> +	int ret;
-> +
-> +	switch (phydev->master_slave_set) {
-> +	case MASTER_SLAVE_CFG_MASTER_FORCE:
-> +		if (phydev->autoneg) {
-> +			phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> +			phydev_warn(phydev, "Can't force master mode if autoneg is enabled\n");
-> +			goto do_aneg;
-> +		}
-> +		pmd_ctrl |= DP83TD510_PMD_CTRL_MASTER_MODE;
-> +		break;
-> +	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-> +		if (phydev->autoneg) {
-> +			phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> +			phydev_warn(phydev, "Can't force slave mode if autoneg is enabled\n");
-> +			goto do_aneg;
-> +		}
-> +		break;
-> +	case MASTER_SLAVE_CFG_MASTER_PREFERRED:
-> +	case MASTER_SLAVE_CFG_SLAVE_PREFERRED:
-> +		phydev->master_slave_set = MASTER_SLAVE_CFG_UNSUPPORTED;
-> +		phydev_warn(phydev, "Preferred master/slave modes are not supported\n");
-> +		goto do_aneg;
-> +	case MASTER_SLAVE_CFG_UNKNOWN:
-> +	case MASTER_SLAVE_CFG_UNSUPPORTED:
-> +		goto do_aneg;
-> +	default:
-> +		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	ret = dp83td510_modify(phydev, DP83TD510_PMA_PMD_CTRL,
-> +			       DP83TD510_PMD_CTRL_MASTER_MODE, pmd_ctrl);
-> +	if (ret)
-> +		return ret;
-> +
-> +do_aneg:
-> +	if (phydev->autoneg)
-> +		ctrl |= DP83TD510_AN_ENABLE;
-> +
-> +	ret = dp83td510_modify_changed(phydev, DP83TD510_AN_CONTROL,
-> +				       DP83TD510_AN_ENABLE, ctrl);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Reset link if settings are changed */
-> +	if (ret)
-> +		ret = dp83td510_write(phydev, MII_BMCR, BMCR_RESET);
-> +
-> +	return ret;
-> +}
-> +
-> +static int dp83td510_strap(struct phy_device *phydev)
-> +{
+IEEE 802.3-2015:
 
-> +	phydev_info(phydev,
-> +		    "bootstrap cfg: Pin 18: %s, Pin 30: %s, TX Vpp: %s, RX trap: %s, xMII mode: %s, PHY addr: 0x%x\n",
-> +		    pin18 ? "RX_DV" : "CRS_DV",
-> +		    pin30 ? "LED_1" : "CLKOUT",
-> +		    tx_vpp ? "1.0V p2p" : "2.4V & 1.0V p2p",
-> +		    rx_trap ? "< 40Ω" : "50Ω",
-> +		    dp83td510_get_xmii_mode_str(xmii_mode),
-> +		    addr);
+22.2.4.5.5 PHYAD (PHY Address)
 
-What i learned reviewing the other T1L driver is that 2.4v operation
-seems to be something you negotiate. Yet i don't see anything about it
-in dp83td510_config_aneg() ?
+The PHY Address is five bits, allowing 32 unique PHY addresses. The first PHY address bit transmitted and
+received is the MSB of the address. A PHY that is connected to the station management entity via the
+mechanical interface defined in 22.6 shall always respond to transactions addressed to PHY Address zero
+<00000>. A station management entity that is attached to multiple PHYs must have prior knowledge of the
+appropriate PHY Address for each PHY.
 
-   Andrew
+However, if you google "MDIO broadcast address", you'll find all sorts
+of funny reports of buggy PHYs not adhering to that clause, under all
+sorts of pretexts...
