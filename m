@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B513D36B7
+	by mail.lfdr.de (Postfix) with ESMTP id A60623D36B8
 	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 10:31:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234594AbhGWHte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 03:49:34 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:34040 "EHLO
+        id S234480AbhGWHtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 03:49:35 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:34046 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234508AbhGWHtR (ORCPT
+        with ESMTP id S234516AbhGWHtR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 03:49:17 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id BBEEF21493; Fri, 23 Jul 2021 16:29:49 +0800 (AWST)
+        id 19DCA21494; Fri, 23 Jul 2021 16:29:50 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         Andrew Jeffery <andrew@aj.id.au>
-Subject: [PATCH net-next v3 11/16] mctp: Populate socket implementation
-Date:   Fri, 23 Jul 2021 16:29:27 +0800
-Message-Id: <20210723082932.3570396-12-jk@codeconstruct.com.au>
+Subject: [PATCH net-next v3 12/16] mctp: Implement message fragmentation & reassembly
+Date:   Fri, 23 Jul 2021 16:29:28 +0800
+Message-Id: <20210723082932.3570396-13-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210723082932.3570396-1-jk@codeconstruct.com.au>
 References: <20210723082932.3570396-1-jk@codeconstruct.com.au>
@@ -29,663 +29,568 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start filling-out the socket syscalls: bind, sendmsg & recvmsg.
+This change implements MCTP fragmentation (based on route & device MTU),
+and corresponding reassembly.
 
-This requires an input route implementation, so we add to
-mctp_route_input, allowing lookups on binds & message tags. This just
-handles single-packet messages at present, we will add fragmentation in
-a future change.
+The MCTP specification only allows for fragmentation on the originating
+message endpoint, and reassembly on the destination endpoint -
+intermediate nodes do not need to reassemble/refragment.  Consequently,
+we only fragment in the local transmit path, and reassemble
+locally-bound packets. Messages are required to be in-order, so we
+simply cancel reassembly on out-of-order or missing packets.
+
+In the fragmentation path, we just break up the message into MTU-sized
+fragments; the skb structure is a simple copy for now, which we can later
+improve with a shared data implementation.
+
+For reassembly, we keep track of incoming message fragments using the
+existing tag infrastructure, allocating a key on the (src,dest,tag)
+tuple, and reassembles matching fragments into a skb->frag_list.
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
 
 ---
 v2:
- - require CAP_NET_BIND_SERVICE for bind(), CAP_NET_RAW for TX.
- - be strict about sendmsg() tag bits
+ - limit max reassembly size
 v3:
  - fix comment typos
 ---
- include/net/mctp.h       |  59 ++++++++++
- include/net/netns/mctp.h |  13 +++
- net/mctp/af_mctp.c       | 203 +++++++++++++++++++++++++++++++++--
- net/mctp/route.c         | 226 ++++++++++++++++++++++++++++++++++++++-
- 4 files changed, 491 insertions(+), 10 deletions(-)
+ include/net/mctp.h |  25 ++-
+ net/mctp/af_mctp.c |   8 +
+ net/mctp/route.c   | 371 ++++++++++++++++++++++++++++++++++++++++-----
+ 3 files changed, 360 insertions(+), 44 deletions(-)
 
 diff --git a/include/net/mctp.h b/include/net/mctp.h
-index 8a7353a0aa2e..381d71983b78 100644
+index 381d71983b78..350facde2ceb 100644
 --- a/include/net/mctp.h
 +++ b/include/net/mctp.h
-@@ -12,6 +12,7 @@
- #include <linux/bits.h>
- #include <linux/mctp.h>
- #include <net/net_namespace.h>
-+#include <net/sock.h>
+@@ -84,9 +84,21 @@ struct mctp_sock {
+  *        updates to either list are performed under the netns_mctp->keys
+  *        lock.
+  *
+- * - there is a single destruction path for a mctp_sk_key - through socket
+- *   unhash (see mctp_sk_unhash). This performs the list removal under
+- *   keys_lock.
++ * - a key may have a sk_buff attached as part of an in-progress message
++ *   reassembly (->reasm_head). The reassembly context is protected by
++ *   reasm_lock, which may be acquired with the keys lock (above) held, if
++ *   necessary. Consequently, keys lock *cannot* be acquired with the
++ *   reasm_lock held.
++ *
++ * - there are two destruction paths for a mctp_sk_key:
++ *
++ *    - through socket unhash (see mctp_sk_unhash). This performs the list
++ *      removal under keys_lock.
++ *
++ *    - where a key is established to receive a reply message: after receiving
++ *      the (complete) reply, or during reassembly errors. Here, we clean up
++ *      the reassembly context (marking reasm_dead, to prevent another from
++ *      starting), and remove the socket from the netns & socket lists.
+  */
+ struct mctp_sk_key {
+ 	mctp_eid_t	peer_addr;
+@@ -102,6 +114,13 @@ struct mctp_sk_key {
+ 	/* per-socket list */
+ 	struct hlist_node sklist;
  
- /* MCTP packet definitions */
- struct mctp_hdr {
-@@ -46,6 +47,64 @@ static inline struct mctp_hdr *mctp_hdr(struct sk_buff *skb)
- 	return (struct mctp_hdr *)skb_network_header(skb);
- }
++	/* incoming fragment reassembly context */
++	spinlock_t	reasm_lock;
++	struct sk_buff	*reasm_head;
++	struct sk_buff	**reasm_tailp;
++	bool		reasm_dead;
++	u8		last_seq;
++
+ 	struct rcu_head	rcu;
+ };
  
-+/* socket implementation */
-+struct mctp_sock {
-+	struct sock	sk;
-+
-+	/* bind() params */
-+	int		bind_net;
-+	mctp_eid_t	bind_addr;
-+	__u8		bind_type;
-+
-+	/* list of mctp_sk_key, for incoming tag lookup. updates protected
-+	 * by sk->net->keys_lock
-+	 */
-+	struct hlist_head __rcu keys;
-+};
-+
-+/* Key for matching incoming packets to sockets or reassembly contexts.
-+ * Packets are matched on (src,dest,tag).
-+ *
-+ * Lifetime requirements:
-+ *
-+ *  - keys are free()ed via RCU
-+ *
-+ *  - a mctp_sk_key contains a reference to a struct sock; this is valid
-+ *    for the life of the key. On sock destruction (through unhash), the key is
-+ *    removed from lists (see below), and will not be observable after a RCU
-+ *    grace period.
-+ *
-+ *    any RX occurring within that grace period may still queue to the socket,
-+ *    but will hit the SOCK_DEAD case before the socket is freed.
-+ *
-+ * - these mctp_sk_keys appear on two lists:
-+ *     1) the struct mctp_sock->keys list
-+ *     2) the struct netns_mctp->keys list
-+ *
-+ *        updates to either list are performed under the netns_mctp->keys
-+ *        lock.
-+ *
-+ * - there is a single destruction path for a mctp_sk_key - through socket
-+ *   unhash (see mctp_sk_unhash). This performs the list removal under
-+ *   keys_lock.
-+ */
-+struct mctp_sk_key {
-+	mctp_eid_t	peer_addr;
-+	mctp_eid_t	local_addr;
-+	__u8		tag; /* incoming tag match; invert TO for local */
-+
-+	/* we hold a ref to sk when set */
-+	struct sock	*sk;
-+
-+	/* routing lookup list */
-+	struct hlist_node hlist;
-+
-+	/* per-socket list */
-+	struct hlist_node sklist;
-+
-+	struct rcu_head	rcu;
-+};
-+
- struct mctp_skb_cb {
- 	unsigned int	magic;
- 	unsigned int	net;
-diff --git a/include/net/netns/mctp.h b/include/net/netns/mctp.h
-index 2f5ebeeb320e..14ae6d37e52a 100644
---- a/include/net/netns/mctp.h
-+++ b/include/net/netns/mctp.h
-@@ -12,6 +12,19 @@ struct netns_mctp {
- 	/* Only updated under RTNL, entries freed via RCU */
- 	struct list_head routes;
- 
-+	/* Bound sockets: list of sockets bound by type.
-+	 * This list is updated from non-atomic contexts (under bind_lock),
-+	 * and read (under rcu) in packet rx
-+	 */
-+	struct mutex bind_lock;
-+	struct hlist_head binds;
-+
-+	/* tag allocations. This list is read and updated from atomic contexts,
-+	 * but elements are free()ed after a RCU grace-period
-+	 */
-+	spinlock_t keys_lock;
-+	struct hlist_head keys;
-+
- 	/* neighbour table */
- 	struct mutex neigh_lock;
- 	struct list_head neighbours;
 diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
-index 58701e6b282c..52bd7f2b78db 100644
+index 52bd7f2b78db..9ca836df19d0 100644
 --- a/net/mctp/af_mctp.c
 +++ b/net/mctp/af_mctp.c
-@@ -18,10 +18,6 @@
- 
- /* socket implementation */
- 
--struct mctp_sock {
--	struct sock	sk;
--};
--
- static int mctp_release(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
-@@ -36,18 +32,160 @@ static int mctp_release(struct socket *sock)
- 
- static int mctp_bind(struct socket *sock, struct sockaddr *addr, int addrlen)
- {
--	return 0;
-+	struct sock *sk = sock->sk;
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
-+	struct sockaddr_mctp *smctp;
-+	int rc;
+@@ -263,6 +263,14 @@ static void mctp_sk_unhash(struct sock *sk)
+ 	hlist_for_each_entry_safe(key, tmp, &msk->keys, sklist) {
+ 		hlist_del_rcu(&key->sklist);
+ 		hlist_del_rcu(&key->hlist);
 +
-+	if (addrlen < sizeof(*smctp))
-+		return -EINVAL;
++		spin_lock(&key->reasm_lock);
++		if (key->reasm_head)
++			kfree_skb(key->reasm_head);
++		key->reasm_head = NULL;
++		key->reasm_dead = true;
++		spin_unlock(&key->reasm_lock);
 +
-+	if (addr->sa_family != AF_MCTP)
-+		return -EAFNOSUPPORT;
-+
-+	if (!capable(CAP_NET_BIND_SERVICE))
-+		return -EACCES;
-+
-+	/* it's a valid sockaddr for MCTP, cast and do protocol checks */
-+	smctp = (struct sockaddr_mctp *)addr;
-+
-+	lock_sock(sk);
-+
-+	/* TODO: allow rebind */
-+	if (sk_hashed(sk)) {
-+		rc = -EADDRINUSE;
-+		goto out_release;
-+	}
-+	msk->bind_net = smctp->smctp_network;
-+	msk->bind_addr = smctp->smctp_addr.s_addr;
-+	msk->bind_type = smctp->smctp_type & 0x7f; /* ignore the IC bit */
-+
-+	rc = sk->sk_prot->hash(sk);
-+
-+out_release:
-+	release_sock(sk);
-+
-+	return rc;
- }
- 
- static int mctp_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- {
--	return 0;
-+	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
-+	const int hlen = MCTP_HEADER_MAXLEN + sizeof(struct mctp_hdr);
-+	int rc, addrlen = msg->msg_namelen;
-+	struct sock *sk = sock->sk;
-+	struct mctp_skb_cb *cb;
-+	struct mctp_route *rt;
-+	struct sk_buff *skb;
-+
-+	if (addr) {
-+		if (addrlen < sizeof(struct sockaddr_mctp))
-+			return -EINVAL;
-+		if (addr->smctp_family != AF_MCTP)
-+			return -EINVAL;
-+		if (addr->smctp_tag & ~(MCTP_TAG_MASK | MCTP_TAG_OWNER))
-+			return -EINVAL;
-+
-+	} else {
-+		/* TODO: connect()ed sockets */
-+		return -EDESTADDRREQ;
-+	}
-+
-+	if (!capable(CAP_NET_RAW))
-+		return -EACCES;
-+
-+	rt = mctp_route_lookup(sock_net(sk), addr->smctp_network,
-+			       addr->smctp_addr.s_addr);
-+	if (!rt)
-+		return -EHOSTUNREACH;
-+
-+	skb = sock_alloc_send_skb(sk, hlen + 1 + len,
-+				  msg->msg_flags & MSG_DONTWAIT, &rc);
-+	if (!skb)
-+		return rc;
-+
-+	skb_reserve(skb, hlen);
-+
-+	/* set type as fist byte in payload */
-+	*(u8 *)skb_put(skb, 1) = addr->smctp_type;
-+
-+	rc = memcpy_from_msg((void *)skb_put(skb, len), msg, len);
-+	if (rc < 0) {
-+		kfree_skb(skb);
-+		return rc;
-+	}
-+
-+	/* set up cb */
-+	cb = __mctp_cb(skb);
-+	cb->net = addr->smctp_network;
-+
-+	rc = mctp_local_output(sk, rt, skb, addr->smctp_addr.s_addr,
-+			       addr->smctp_tag);
-+
-+	return rc ? : len;
- }
- 
- static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 			int flags)
- {
--	return 0;
-+	DECLARE_SOCKADDR(struct sockaddr_mctp *, addr, msg->msg_name);
-+	struct sock *sk = sock->sk;
-+	struct sk_buff *skb;
-+	size_t msglen;
-+	u8 type;
-+	int rc;
-+
-+	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
-+		return -EOPNOTSUPP;
-+
-+	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &rc);
-+	if (!skb)
-+		return rc;
-+
-+	if (!skb->len) {
-+		rc = 0;
-+		goto out_free;
-+	}
-+
-+	/* extract message type, remove from data */
-+	type = *((u8 *)skb->data);
-+	msglen = skb->len - 1;
-+
-+	if (len < msglen)
-+		msg->msg_flags |= MSG_TRUNC;
-+	else
-+		len = msglen;
-+
-+	rc = skb_copy_datagram_msg(skb, 1, msg, len);
-+	if (rc < 0)
-+		goto out_free;
-+
-+	sock_recv_ts_and_drops(msg, sk, skb);
-+
-+	if (addr) {
-+		struct mctp_skb_cb *cb = mctp_cb(skb);
-+		/* TODO: expand mctp_skb_cb for header fields? */
-+		struct mctp_hdr *hdr = mctp_hdr(skb);
-+
-+		hdr = mctp_hdr(skb);
-+		addr = msg->msg_name;
-+		addr->smctp_family = AF_MCTP;
-+		addr->smctp_network = cb->net;
-+		addr->smctp_addr.s_addr = hdr->src;
-+		addr->smctp_type = type;
-+		addr->smctp_tag = hdr->flags_seq_tag &
-+					(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
-+		msg->msg_namelen = sizeof(*addr);
-+	}
-+
-+	rc = len;
-+
-+	if (flags & MSG_TRUNC)
-+		rc = msglen;
-+
-+out_free:
-+	skb_free_datagram(sk, skb);
-+	return rc;
- }
- 
- static int mctp_setsockopt(struct socket *sock, int level, int optname,
-@@ -83,16 +221,63 @@ static const struct proto_ops mctp_dgram_ops = {
- 	.sendpage	= sock_no_sendpage,
- };
- 
-+static int mctp_sk_init(struct sock *sk)
-+{
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
-+
-+	INIT_HLIST_HEAD(&msk->keys);
-+	return 0;
-+}
-+
- static void mctp_sk_close(struct sock *sk, long timeout)
- {
- 	sk_common_release(sk);
- }
- 
-+static int mctp_sk_hash(struct sock *sk)
-+{
-+	struct net *net = sock_net(sk);
-+
-+	mutex_lock(&net->mctp.bind_lock);
-+	sk_add_node_rcu(sk, &net->mctp.binds);
-+	mutex_unlock(&net->mctp.bind_lock);
-+
-+	return 0;
-+}
-+
-+static void mctp_sk_unhash(struct sock *sk)
-+{
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
-+	struct net *net = sock_net(sk);
-+	struct mctp_sk_key *key;
-+	struct hlist_node *tmp;
-+	unsigned long flags;
-+
-+	/* remove from any type-based binds */
-+	mutex_lock(&net->mctp.bind_lock);
-+	sk_del_node_init_rcu(sk);
-+	mutex_unlock(&net->mctp.bind_lock);
-+
-+	/* remove tag allocations */
-+	spin_lock_irqsave(&net->mctp.keys_lock, flags);
-+	hlist_for_each_entry_safe(key, tmp, &msk->keys, sklist) {
-+		hlist_del_rcu(&key->sklist);
-+		hlist_del_rcu(&key->hlist);
-+		kfree_rcu(key, rcu);
-+	}
-+	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
-+
-+	synchronize_rcu();
-+}
-+
- static struct proto mctp_proto = {
- 	.name		= "MCTP",
- 	.owner		= THIS_MODULE,
- 	.obj_size	= sizeof(struct mctp_sock),
-+	.init		= mctp_sk_init,
- 	.close		= mctp_sk_close,
-+	.hash		= mctp_sk_hash,
-+	.unhash		= mctp_sk_unhash,
- };
- 
- static int mctp_pf_create(struct net *net, struct socket *sock,
-@@ -147,6 +332,10 @@ static __init int mctp_init(void)
- {
- 	int rc;
- 
-+	/* ensure our uapi tag definitions match the header format */
-+	BUILD_BUG_ON(MCTP_TAG_OWNER != MCTP_HDR_FLAG_TO);
-+	BUILD_BUG_ON(MCTP_TAG_MASK != MCTP_HDR_TAG_MASK);
-+
- 	pr_info("mctp: management component transport protocol core\n");
- 
- 	rc = sock_register(&mctp_pf);
+ 		kfree_rcu(key, rcu);
+ 	}
+ 	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
 diff --git a/net/mctp/route.c b/net/mctp/route.c
-index 9edcb9804937..9f371c1914c4 100644
+index 9f371c1914c4..b961f43b5fbd 100644
 --- a/net/mctp/route.c
 +++ b/net/mctp/route.c
-@@ -30,10 +30,139 @@ static int mctp_route_discard(struct mctp_route *route, struct sk_buff *skb)
- 	return 0;
+@@ -23,6 +23,8 @@
+ #include <net/netlink.h>
+ #include <net/sock.h>
+ 
++static const unsigned int mctp_message_maxlen = 64 * 1024;
++
+ /* route output callbacks */
+ static int mctp_route_discard(struct mctp_route *route, struct sk_buff *skb)
+ {
+@@ -105,14 +107,125 @@ static struct mctp_sk_key *mctp_lookup_key(struct net *net, struct sk_buff *skb,
+ 	return ret;
  }
  
-+static struct mctp_sock *mctp_lookup_bind(struct net *net, struct sk_buff *skb)
++static struct mctp_sk_key *mctp_key_alloc(struct mctp_sock *msk,
++					  mctp_eid_t local, mctp_eid_t peer,
++					  u8 tag, gfp_t gfp)
 +{
-+	struct mctp_skb_cb *cb = mctp_cb(skb);
-+	struct mctp_hdr *mh;
-+	struct sock *sk;
-+	u8 type;
++	struct mctp_sk_key *key;
 +
-+	WARN_ON(!rcu_read_lock_held());
-+
-+	/* TODO: look up in skb->cb? */
-+	mh = mctp_hdr(skb);
-+
-+	if (!skb_headlen(skb))
++	key = kzalloc(sizeof(*key), gfp);
++	if (!key)
 +		return NULL;
 +
-+	type = (*(u8 *)skb->data) & 0x7f;
++	key->peer_addr = peer;
++	key->local_addr = local;
++	key->tag = tag;
++	key->sk = &msk->sk;
++	spin_lock_init(&key->reasm_lock);
 +
-+	sk_for_each_rcu(sk, &net->mctp.binds) {
-+		struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
-+
-+		if (msk->bind_net != MCTP_NET_ANY && msk->bind_net != cb->net)
-+			continue;
-+
-+		if (msk->bind_type != type)
-+			continue;
-+
-+		if (msk->bind_addr != MCTP_ADDR_ANY &&
-+		    msk->bind_addr != mh->dest)
-+			continue;
-+
-+		return msk;
-+	}
-+
-+	return NULL;
++	return key;
 +}
 +
-+static bool mctp_key_match(struct mctp_sk_key *key, mctp_eid_t local,
-+			   mctp_eid_t peer, u8 tag)
++static int mctp_key_add(struct mctp_sk_key *key, struct mctp_sock *msk)
 +{
-+	if (key->local_addr != local)
-+		return false;
++	struct net *net = sock_net(&msk->sk);
++	struct mctp_sk_key *tmp;
++	unsigned long flags;
++	int rc = 0;
 +
-+	if (key->peer_addr != peer)
-+		return false;
++	spin_lock_irqsave(&net->mctp.keys_lock, flags);
 +
-+	if (key->tag != tag)
-+		return false;
-+
-+	return true;
-+}
-+
-+static struct mctp_sk_key *mctp_lookup_key(struct net *net, struct sk_buff *skb,
-+					   mctp_eid_t peer)
-+{
-+	struct mctp_sk_key *key, *ret;
-+	struct mctp_hdr *mh;
-+	u8 tag;
-+
-+	WARN_ON(!rcu_read_lock_held());
-+
-+	mh = mctp_hdr(skb);
-+	tag = mh->flags_seq_tag & (MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
-+
-+	ret = NULL;
-+
-+	hlist_for_each_entry_rcu(key, &net->mctp.keys, hlist) {
-+		if (mctp_key_match(key, mh->dest, peer, tag)) {
-+			ret = key;
++	hlist_for_each_entry(tmp, &net->mctp.keys, hlist) {
++		if (mctp_key_match(tmp, key->local_addr, key->peer_addr,
++				   key->tag)) {
++			rc = -EEXIST;
 +			break;
 +		}
 +	}
 +
-+	return ret;
-+}
-+
- static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
- {
--	/* -> to local stack */
--	/* TODO: socket lookup, reassemble */
-+	struct net *net = dev_net(skb->dev);
-+	struct mctp_sk_key *key;
-+	struct mctp_sock *msk;
-+	struct mctp_hdr *mh;
-+
-+	msk = NULL;
-+
-+	/* we may be receiving a locally-routed packet; drop source sk
-+	 * accounting
-+	 */
-+	skb_orphan(skb);
-+
-+	/* ensure we have enough data for a header and a type */
-+	if (skb->len < sizeof(struct mctp_hdr) + 1)
-+		goto drop;
-+
-+	/* grab header, advance data ptr */
-+	mh = mctp_hdr(skb);
-+	skb_pull(skb, sizeof(struct mctp_hdr));
-+
-+	if (mh->ver != 1)
-+		goto drop;
-+
-+	/* TODO: reassembly */
-+	if ((mh->flags_seq_tag & (MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM))
-+				!= (MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM))
-+		goto drop;
-+
-+	rcu_read_lock();
-+	/* 1. lookup socket matching (src,dest,tag) */
-+	key = mctp_lookup_key(net, skb, mh->src);
-+
-+	/* 2. lookup socket macthing (BCAST,dest,tag) */
-+	if (!key)
-+		key = mctp_lookup_key(net, skb, MCTP_ADDR_ANY);
-+
-+	/* 3. SOM? -> lookup bound socket, conditionally (!EOM) create
-+	 * mapping for future (1)/(2).
-+	 */
-+	if (key)
-+		msk = container_of(key->sk, struct mctp_sock, sk);
-+	else if (!msk && (mh->flags_seq_tag & MCTP_HDR_FLAG_SOM))
-+		msk = mctp_lookup_bind(net, skb);
-+
-+	if (!msk)
-+		goto unlock_drop;
-+
-+	sock_queue_rcv_skb(&msk->sk, skb);
-+
-+	rcu_read_unlock();
-+
-+	return 0;
-+
-+unlock_drop:
-+	rcu_read_unlock();
-+drop:
- 	kfree_skb(skb);
- 	return 0;
- }
-@@ -91,6 +220,80 @@ static struct mctp_route *mctp_route_alloc(void)
- 	return rt;
- }
- 
-+/* tag management */
-+static void mctp_reserve_tag(struct net *net, struct mctp_sk_key *key,
-+			     struct mctp_sock *msk)
-+{
-+	struct netns_mctp *mns = &net->mctp;
-+
-+	lockdep_assert_held(&mns->keys_lock);
-+
-+	key->sk = &msk->sk;
-+
-+	/* we hold the net->key_lock here, allowing updates to both
-+	 * then net and sk
-+	 */
-+	hlist_add_head(&key->hlist, &mns->keys);
-+	hlist_add_head(&key->sklist, &msk->keys);
-+}
-+
-+/* Allocate a locally-owned tag value for (saddr, daddr), and reserve
-+ * it for the socket msk
-+ */
-+static int mctp_alloc_local_tag(struct mctp_sock *msk,
-+				mctp_eid_t saddr, mctp_eid_t daddr, u8 *tagp)
-+{
-+	struct net *net = sock_net(&msk->sk);
-+	struct netns_mctp *mns = &net->mctp;
-+	struct mctp_sk_key *key, *tmp;
-+	unsigned long flags;
-+	int rc = -EAGAIN;
-+	u8 tagbits;
-+
-+	/* be optimistic, alloc now */
-+	key = kzalloc(sizeof(*key), GFP_KERNEL);
-+	if (!key)
-+		return -ENOMEM;
-+	key->local_addr = saddr;
-+	key->peer_addr = daddr;
-+
-+	/* 8 possible tag values */
-+	tagbits = 0xff;
-+
-+	spin_lock_irqsave(&mns->keys_lock, flags);
-+
-+	/* Walk through the existing keys, looking for potential conflicting
-+	 * tags. If we find a conflict, clear that bit from tagbits
-+	 */
-+	hlist_for_each_entry(tmp, &mns->keys, hlist) {
-+		/* if we don't own the tag, it can't conflict */
-+		if (tmp->tag & MCTP_HDR_FLAG_TO)
-+			continue;
-+
-+		if ((tmp->peer_addr == daddr ||
-+		     tmp->peer_addr == MCTP_ADDR_ANY) &&
-+		    tmp->local_addr == saddr)
-+			tagbits &= ~(1 << tmp->tag);
-+
-+		if (!tagbits)
-+			break;
++	if (!rc) {
++		hlist_add_head(&key->hlist, &net->mctp.keys);
++		hlist_add_head(&key->sklist, &msk->keys);
 +	}
 +
-+	if (tagbits) {
-+		key->tag = __ffs(tagbits);
-+		mctp_reserve_tag(net, key, msk);
-+		*tagp = key->tag;
-+		rc = 0;
-+	}
-+
-+	spin_unlock_irqrestore(&mns->keys_lock, flags);
-+
-+	if (!tagbits)
-+		kfree(key);
++	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
 +
 +	return rc;
 +}
 +
- /* routing lookups */
- static inline bool mctp_rt_match_eid(struct mctp_route *rt,
- 				     unsigned int net, mctp_eid_t eid)
-@@ -140,11 +343,13 @@ int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb)
++/* Must be called with key->reasm_lock, which it will release. Will schedule
++ * the key for an RCU free.
++ */
++static void __mctp_key_unlock_drop(struct mctp_sk_key *key, struct net *net,
++				   unsigned long flags)
++	__releases(&key->reasm_lock)
++{
++	struct sk_buff *skb;
++
++	skb = key->reasm_head;
++	key->reasm_head = NULL;
++	key->reasm_dead = true;
++	spin_unlock_irqrestore(&key->reasm_lock, flags);
++
++	spin_lock_irqsave(&net->mctp.keys_lock, flags);
++	hlist_del_rcu(&key->hlist);
++	hlist_del_rcu(&key->sklist);
++	spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
++	kfree_rcu(key, rcu);
++
++	if (skb)
++		kfree_skb(skb);
++}
++
++static int mctp_frag_queue(struct mctp_sk_key *key, struct sk_buff *skb)
++{
++	struct mctp_hdr *hdr = mctp_hdr(skb);
++	u8 exp_seq, this_seq;
++
++	this_seq = (hdr->flags_seq_tag >> MCTP_HDR_SEQ_SHIFT)
++		& MCTP_HDR_SEQ_MASK;
++
++	if (!key->reasm_head) {
++		key->reasm_head = skb;
++		key->reasm_tailp = &(skb_shinfo(skb)->frag_list);
++		key->last_seq = this_seq;
++		return 0;
++	}
++
++	exp_seq = (key->last_seq + 1) & MCTP_HDR_SEQ_MASK;
++
++	if (this_seq != exp_seq)
++		return -EINVAL;
++
++	if (key->reasm_head->len + skb->len > mctp_message_maxlen)
++		return -EINVAL;
++
++	skb->next = NULL;
++	skb->sk = NULL;
++	*key->reasm_tailp = skb;
++	key->reasm_tailp = &skb->next;
++
++	key->last_seq = this_seq;
++
++	key->reasm_head->data_len += skb->len;
++	key->reasm_head->len += skb->len;
++	key->reasm_head->truesize += skb->truesize;
++
++	return 0;
++}
++
+ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 	struct mctp_sk_key *key;
+ 	struct mctp_sock *msk;
+ 	struct mctp_hdr *mh;
++	unsigned long f;
++	u8 tag, flags;
++	int rc;
+ 
+ 	msk = NULL;
++	rc = -EINVAL;
+ 
+ 	/* we may be receiving a locally-routed packet; drop source sk
+ 	 * accounting
+@@ -121,50 +234,143 @@ static int mctp_route_input(struct mctp_route *route, struct sk_buff *skb)
+ 
+ 	/* ensure we have enough data for a header and a type */
+ 	if (skb->len < sizeof(struct mctp_hdr) + 1)
+-		goto drop;
++		goto out;
+ 
+ 	/* grab header, advance data ptr */
+ 	mh = mctp_hdr(skb);
+ 	skb_pull(skb, sizeof(struct mctp_hdr));
+ 
+ 	if (mh->ver != 1)
+-		goto drop;
++		goto out;
+ 
+-	/* TODO: reassembly */
+-	if ((mh->flags_seq_tag & (MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM))
+-				!= (MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM))
+-		goto drop;
++	flags = mh->flags_seq_tag & (MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM);
++	tag = mh->flags_seq_tag & (MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
+ 
+ 	rcu_read_lock();
+-	/* 1. lookup socket matching (src,dest,tag) */
++
++	/* lookup socket / reasm context, exactly matching (src,dest,tag) */
+ 	key = mctp_lookup_key(net, skb, mh->src);
+ 
+-	/* 2. lookup socket macthing (BCAST,dest,tag) */
+-	if (!key)
+-		key = mctp_lookup_key(net, skb, MCTP_ADDR_ANY);
++	if (flags & MCTP_HDR_FLAG_SOM) {
++		if (key) {
++			msk = container_of(key->sk, struct mctp_sock, sk);
++		} else {
++			/* first response to a broadcast? do a more general
++			 * key lookup to find the socket, but don't use this
++			 * key for reassembly - we'll create a more specific
++			 * one for future packets if required (ie, !EOM).
++			 */
++			key = mctp_lookup_key(net, skb, MCTP_ADDR_ANY);
++			if (key) {
++				msk = container_of(key->sk,
++						   struct mctp_sock, sk);
++				key = NULL;
++			}
++		}
+ 
+-	/* 3. SOM? -> lookup bound socket, conditionally (!EOM) create
+-	 * mapping for future (1)/(2).
+-	 */
+-	if (key)
+-		msk = container_of(key->sk, struct mctp_sock, sk);
+-	else if (!msk && (mh->flags_seq_tag & MCTP_HDR_FLAG_SOM))
+-		msk = mctp_lookup_bind(net, skb);
++		if (!key && !msk && (tag & MCTP_HDR_FLAG_TO))
++			msk = mctp_lookup_bind(net, skb);
+ 
+-	if (!msk)
+-		goto unlock_drop;
++		if (!msk) {
++			rc = -ENOENT;
++			goto out;
++		}
+ 
+-	sock_queue_rcv_skb(&msk->sk, skb);
++		/* single-packet message? deliver to socket, clean up any
++		 * pending key.
++		 */
++		if (flags & MCTP_HDR_FLAG_EOM) {
++			sock_queue_rcv_skb(&msk->sk, skb);
++			if (key) {
++				spin_lock_irqsave(&key->reasm_lock, f);
++				/* we've hit a pending reassembly; not much we
++				 * can do but drop it
++				 */
++				__mctp_key_unlock_drop(key, net, f);
++			}
++			rc = 0;
++			goto out;
++		}
+ 
+-	rcu_read_unlock();
++		/* broadcast response or a bind() - create a key for further
++		 * packets for this message
++		 */
++		if (!key) {
++			key = mctp_key_alloc(msk, mh->dest, mh->src,
++					     tag, GFP_ATOMIC);
++			if (!key) {
++				rc = -ENOMEM;
++				goto out;
++			}
+ 
+-	return 0;
++			/* we can queue without the reasm lock here, as the
++			 * key isn't observable yet
++			 */
++			mctp_frag_queue(key, skb);
++
++			/* if the key_add fails, we've raced with another
++			 * SOM packet with the same src, dest and tag. There's
++			 * no way to distinguish future packets, so all we
++			 * can do is drop; we'll free the skb on exit from
++			 * this function.
++			 */
++			rc = mctp_key_add(key, msk);
++			if (rc)
++				kfree(key);
++
++		} else {
++			/* existing key: start reassembly */
++			spin_lock_irqsave(&key->reasm_lock, f);
++
++			if (key->reasm_head || key->reasm_dead) {
++				/* duplicate start? drop everything */
++				__mctp_key_unlock_drop(key, net, f);
++				rc = -EEXIST;
++			} else {
++				rc = mctp_frag_queue(key, skb);
++				spin_unlock_irqrestore(&key->reasm_lock, f);
++			}
++		}
++
++	} else if (key) {
++		/* this packet continues a previous message; reassemble
++		 * using the message-specific key
++		 */
++
++		spin_lock_irqsave(&key->reasm_lock, f);
++
++		/* we need to be continuing an existing reassembly... */
++		if (!key->reasm_head)
++			rc = -EINVAL;
++		else
++			rc = mctp_frag_queue(key, skb);
++
++		/* end of message? deliver to socket, and we're done with
++		 * the reassembly/response key
++		 */
++		if (!rc && flags & MCTP_HDR_FLAG_EOM) {
++			sock_queue_rcv_skb(key->sk, key->reasm_head);
++			key->reasm_head = NULL;
++			__mctp_key_unlock_drop(key, net, f);
++		} else {
++			spin_unlock_irqrestore(&key->reasm_lock, f);
++		}
++
++	} else {
++		/* not a start, no matching key */
++		rc = -ENOENT;
++	}
+ 
+-unlock_drop:
++out:
+ 	rcu_read_unlock();
+-drop:
+-	kfree_skb(skb);
+-	return 0;
++	if (rc)
++		kfree_skb(skb);
++	return rc;
++}
++
++static unsigned int mctp_route_mtu(struct mctp_route *rt)
++{
++	return rt->mtu ?: READ_ONCE(rt->dev->dev->mtu);
+ }
+ 
+ static int mctp_route_output(struct mctp_route *route, struct sk_buff *skb)
+@@ -228,8 +434,6 @@ static void mctp_reserve_tag(struct net *net, struct mctp_sk_key *key,
+ 
+ 	lockdep_assert_held(&mns->keys_lock);
+ 
+-	key->sk = &msk->sk;
+-
+ 	/* we hold the net->key_lock here, allowing updates to both
+ 	 * then net and sk
+ 	 */
+@@ -251,11 +455,9 @@ static int mctp_alloc_local_tag(struct mctp_sock *msk,
+ 	u8 tagbits;
+ 
+ 	/* be optimistic, alloc now */
+-	key = kzalloc(sizeof(*key), GFP_KERNEL);
++	key = mctp_key_alloc(msk, saddr, daddr, 0, GFP_KERNEL);
+ 	if (!key)
+ 		return -ENOMEM;
+-	key->local_addr = saddr;
+-	key->peer_addr = daddr;
+ 
+ 	/* 8 possible tag values */
+ 	tagbits = 0xff;
+@@ -340,6 +542,86 @@ int mctp_do_route(struct mctp_route *rt, struct sk_buff *skb)
+ 	return rc;
+ }
+ 
++static int mctp_do_fragment_route(struct mctp_route *rt, struct sk_buff *skb,
++				  unsigned int mtu, u8 tag)
++{
++	const unsigned int hlen = sizeof(struct mctp_hdr);
++	struct mctp_hdr *hdr, *hdr2;
++	unsigned int pos, size;
++	struct sk_buff *skb2;
++	int rc;
++	u8 seq;
++
++	hdr = mctp_hdr(skb);
++	seq = 0;
++	rc = 0;
++
++	if (mtu < hlen + 1) {
++		kfree_skb(skb);
++		return -EMSGSIZE;
++	}
++
++	/* we've got the header */
++	skb_pull(skb, hlen);
++
++	for (pos = 0; pos < skb->len;) {
++		/* size of message payload */
++		size = min(mtu - hlen, skb->len - pos);
++
++		skb2 = alloc_skb(MCTP_HEADER_MAXLEN + hlen + size, GFP_KERNEL);
++		if (!skb2) {
++			rc = -ENOMEM;
++			break;
++		}
++
++		/* generic skb copy */
++		skb2->protocol = skb->protocol;
++		skb2->priority = skb->priority;
++		skb2->dev = skb->dev;
++		memcpy(skb2->cb, skb->cb, sizeof(skb2->cb));
++
++		if (skb->sk)
++			skb_set_owner_w(skb2, skb->sk);
++
++		/* establish packet */
++		skb_reserve(skb2, MCTP_HEADER_MAXLEN);
++		skb_reset_network_header(skb2);
++		skb_put(skb2, hlen + size);
++		skb2->transport_header = skb2->network_header + hlen;
++
++		/* copy header fields, calculate SOM/EOM flags & seq */
++		hdr2 = mctp_hdr(skb2);
++		hdr2->ver = hdr->ver;
++		hdr2->dest = hdr->dest;
++		hdr2->src = hdr->src;
++		hdr2->flags_seq_tag = tag &
++			(MCTP_HDR_TAG_MASK | MCTP_HDR_FLAG_TO);
++
++		if (pos == 0)
++			hdr2->flags_seq_tag |= MCTP_HDR_FLAG_SOM;
++
++		if (pos + size == skb->len)
++			hdr2->flags_seq_tag |= MCTP_HDR_FLAG_EOM;
++
++		hdr2->flags_seq_tag |= seq << MCTP_HDR_SEQ_SHIFT;
++
++		/* copy message payload */
++		skb_copy_bits(skb, pos, skb_transport_header(skb2), size);
++
++		/* do route, but don't drop the rt reference */
++		rc = rt->output(rt, skb2);
++		if (rc)
++			break;
++
++		seq = (seq + 1) & MCTP_HDR_SEQ_MASK;
++		pos += size;
++	}
++
++	mctp_route_release(rt);
++	consume_skb(skb);
++	return rc;
++}
++
  int mctp_local_output(struct sock *sk, struct mctp_route *rt,
  		      struct sk_buff *skb, mctp_eid_t daddr, u8 req_tag)
  {
-+	struct mctp_sock *msk = container_of(sk, struct mctp_sock, sk);
+@@ -347,6 +629,7 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
  	struct mctp_skb_cb *cb = mctp_cb(skb);
  	struct mctp_hdr *hdr;
  	unsigned long flags;
++	unsigned int mtu;
  	mctp_eid_t saddr;
  	int rc;
-+	u8 tag;
+ 	u8 tag;
+@@ -376,26 +659,32 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 		tag = req_tag;
+ 	}
  
- 	if (WARN_ON(!rt->dev))
- 		return -EINVAL;
-@@ -162,6 +367,15 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
- 	if (rc)
- 		return rc;
+-	/* TODO: we have the route MTU here; packetise */
  
-+	if (req_tag & MCTP_HDR_FLAG_TO) {
-+		rc = mctp_alloc_local_tag(msk, saddr, daddr, &tag);
-+		if (rc)
-+			return rc;
-+		tag |= MCTP_HDR_FLAG_TO;
-+	} else {
-+		tag = req_tag;
-+	}
-+
- 	/* TODO: we have the route MTU here; packetise */
- 
++	skb->protocol = htons(ETH_P_MCTP);
++	skb->priority = 0;
  	skb_reset_transport_header(skb);
-@@ -171,8 +385,10 @@ int mctp_local_output(struct sock *sk, struct mctp_route *rt,
+ 	skb_push(skb, sizeof(struct mctp_hdr));
+ 	skb_reset_network_header(skb);
++	skb->dev = rt->dev->dev;
++
++	/* cb->net will have been set on initial ingress */
++	cb->src = saddr;
++
++	/* set up common header fields */
+ 	hdr = mctp_hdr(skb);
  	hdr->ver = 1;
  	hdr->dest = daddr;
  	hdr->src = saddr;
--	hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM; /* TODO */
-+	hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM | /* TODO */
-+		tag;
+-	hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM | /* TODO */
+-		tag;
  
-+	skb->dev = rt->dev->dev;
- 	skb->protocol = htons(ETH_P_MCTP);
- 	skb->priority = 0;
+-	skb->dev = rt->dev->dev;
+-	skb->protocol = htons(ETH_P_MCTP);
+-	skb->priority = 0;
++	mtu = mctp_route_mtu(rt);
  
-@@ -523,6 +739,10 @@ static int __net_init mctp_routes_net_init(struct net *net)
- 	struct netns_mctp *ns = &net->mctp;
- 
- 	INIT_LIST_HEAD(&ns->routes);
-+	INIT_HLIST_HEAD(&ns->binds);
-+	mutex_init(&ns->bind_lock);
-+	INIT_HLIST_HEAD(&ns->keys);
-+	spin_lock_init(&ns->keys_lock);
- 	return 0;
+-	/* cb->net will have been set on initial ingress */
+-	cb->src = saddr;
+-
+-	return mctp_do_route(rt, skb);
++	if (skb->len + sizeof(struct mctp_hdr) <= mtu) {
++		hdr->flags_seq_tag = MCTP_HDR_FLAG_SOM | MCTP_HDR_FLAG_EOM |
++			tag;
++		return mctp_do_route(rt, skb);
++	} else {
++		return mctp_do_fragment_route(rt, skb, mtu, tag);
++	}
  }
  
+ /* route management */
 -- 
 2.30.2
 
