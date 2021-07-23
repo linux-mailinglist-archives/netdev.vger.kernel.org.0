@@ -2,144 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 097EB3D4033
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 20:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 117CB3D403C
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 20:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbhGWRgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 13:36:31 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:40566 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229455AbhGWRga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 13:36:30 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16NIAuO5009424;
-        Fri, 23 Jul 2021 11:17:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=ZEfZDZ4DcpI02CvcRF53MrrzPSf8Mf+Au9d8KXvdwsA=;
- b=XvHXRe21aQYa6fa6mnLyEDjKaj5kxgLvGPvyuAQnC408kgfzw+mkta3Q+Wfj5TtArrdk
- ZJmDJ3JDezsYukadW5QGNg4hWloQdqJl+rlk+kuCR2vKBfbRY6wRogkUJ8nBfXhLTOsX
- fk+XMXqB8qIgTL13s2q4kW1fFwF7PFdO9HUlN9gyIrj1eBJbS+olZOxzHK0LayQe7qam
- wG3ukZ41elmybUmgIbikSxwyIS5MNwMHdMwbQ6ZytSaMtnwaUUqcC5c3ZB7o/x/39MwA
- vM+KVUKf5G33crGS1qLz+/+NyfFH/fbWpdqinidaYHUXF6G8PUYrj2mi9M1rGD1DzeIE mw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 39ys15j6ya-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 23 Jul 2021 11:17:02 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 23 Jul
- 2021 11:17:01 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Fri, 23 Jul 2021 11:17:01 -0700
-Received: from machine421.marvell.com (unknown [10.29.37.2])
-        by maili.marvell.com (Postfix) with ESMTP id AAEFC3F7061;
-        Fri, 23 Jul 2021 11:16:59 -0700 (PDT)
-From:   Sunil Goutham <sgoutham@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v2 2/2] octeontx2-pf: Support setting ntuple rule count
-Date:   Fri, 23 Jul 2021 23:46:46 +0530
-Message-ID: <1627064206-16032-3-git-send-email-sgoutham@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1627064206-16032-1-git-send-email-sgoutham@marvell.com>
-References: <1627064206-16032-1-git-send-email-sgoutham@marvell.com>
+        id S229626AbhGWRlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 13:41:16 -0400
+Received: from tulum.helixd.com ([162.252.81.98]:48491 "EHLO tulum.helixd.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229459AbhGWRlQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 13:41:16 -0400
+X-Greylist: delayed 69993 seconds by postgrey-1.27 at vger.kernel.org; Fri, 23 Jul 2021 13:41:16 EDT
+Received: from [IPv6:2600:8801:8800:12e8:90af:18a5:3772:6653] (unknown [IPv6:2600:8801:8800:12e8:90af:18a5:3772:6653])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: dalcocer@helixd.com)
+        by tulum.helixd.com (Postfix) with ESMTPSA id 3582420591;
+        Fri, 23 Jul 2021 11:21:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tulum.helixd.com;
+        s=mail; t=1627064508;
+        bh=ciewzSL6EnsO3RNuSM0Bfc4PKdti7t/I94oGMMQpDZ4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=KnvQ7UXug3UMIKoH3yOE8K2RsRzSpLTyq0nsTQFcSWoGs0Cir59L8HndFjhmZsrn4
+         Y060tTLvRiN4U5hd0EtmcXYBNFqLWkSFti5cxM21PZj1nYB9JjeTl2Nw5uiFi7u/dn
+         PFglTy1re6K1g3wDZUq5a/byaomwjbebL3iNlhLg=
+Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <6a70869d-d8d5-4647-0640-4e95866a0392@helixd.com>
+ <YPrHJe+zJGJ7oezW@lunn.ch>
+From:   Dario Alcocer <dalcocer@helixd.com>
+Message-ID: <0188e53d-1535-658a-4134-a5f05f214bef@helixd.com>
+Date:   Fri, 23 Jul 2021 11:21:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: OmPjVglyKMVXvln6Bt6Omg9RrlRYFxqe
-X-Proofpoint-GUID: OmPjVglyKMVXvln6Bt6Omg9RrlRYFxqe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-23_09:2021-07-23,2021-07-23 signatures=0
+In-Reply-To: <YPrHJe+zJGJ7oezW@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added support for changing ethtool ntuple filter count.
-Rule count change is supported only when there are no
-ntuple filters installed.
+On 7/23/21 6:41 AM, Andrew Lunn wrote:
+> On Thu, Jul 22, 2021 at 03:55:04PM -0700, Dario Alcocer wrote:
+>> root@dali:~# ip link
+>> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+>>      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+>> 2: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+>>      link/can
+>> 3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1508 qdisc mq state UP mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+>> 4: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>>      link/sit 0.0.0.0 brd 0.0.0.0
+>> 5: lan1@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+> 
+> NO-CARRIER suggests a PHY problem. You should see it report link up if
+> it really is up.
+> 
+> When then switch probes the PHYs should also probe. What PHY driver is
+> being used? You want the Marvell PHY driver, not genphy.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  1 +
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  3 +++
- .../ethernet/marvell/octeontx2/nic/otx2_flows.c    | 27 ++++++++++++++++++++--
- 3 files changed, 29 insertions(+), 2 deletions(-)
+Looks like the Marvell PHY driver is being used:
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 8fd58cd..6fe2bf7 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -825,6 +825,7 @@ int otx2_get_all_flows(struct otx2_nic *pfvf,
- int otx2_add_flow(struct otx2_nic *pfvf,
- 		  struct ethtool_rxnfc *nfc);
- int otx2_remove_flow(struct otx2_nic *pfvf, u32 location);
-+int otx2_set_flow_rule_count(struct otx2_nic *pfvf, int count);
- int otx2_prepare_flow_request(struct ethtool_rx_flow_spec *fsp,
- 			      struct npc_install_flow_req *req);
- void otx2_rss_ctx_flow_del(struct otx2_nic *pfvf, int ctx_id);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 8df748e..753a8cf 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -690,6 +690,9 @@ static int otx2_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *nfc)
- 		if (netif_running(dev) && ntuple)
- 			ret = otx2_remove_flow(pfvf, nfc->fs.location);
- 		break;
-+	case ETHTOOL_SRXCLSRLCNT:
-+		ret = otx2_set_flow_rule_count(pfvf, nfc->rule_cnt);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 4d9de52..ea2626c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -123,12 +123,29 @@ static int otx2_alloc_ntuple_mcam_entries(struct otx2_nic *pfvf, u16 count)
- 
- 	if (allocated != count)
- 		netdev_info(pfvf->netdev,
--			    "Unable to allocate %d MCAM entries for ntuple, got %d\n",
--			    count, allocated);
-+			    "Unable to allocate %d MCAM entries above default rules' "
-+			    "start index %d, got only %d\n",
-+			    count, flow_cfg->def_ent[0], allocated);
- 
- 	return allocated;
- }
- 
-+int otx2_set_flow_rule_count(struct otx2_nic *pfvf, int count)
-+{
-+	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
-+
-+	if (!flow_cfg)
-+		return 0;
-+
-+	if (flow_cfg->nr_flows) {
-+		netdev_err(pfvf->netdev,
-+			   "Cannot change count when there are active rules\n");
-+		return 0;
-+	}
-+
-+	return otx2_alloc_ntuple_mcam_entries(pfvf, count);
-+}
-+
- int otx2_alloc_mcam_entries(struct otx2_nic *pfvf)
- {
- 	struct otx2_flow_config *flow_cfg = pfvf->flow_cfg;
-@@ -923,6 +940,12 @@ int otx2_add_flow(struct otx2_nic *pfvf, struct ethtool_rxnfc *nfc)
- 	int err = 0;
- 	u32 ring;
- 
-+	if (!flow_cfg->ntuple_max_flows) {
-+		netdev_err(pfvf->netdev,
-+			   "Ntuple rule count is 0, allocate and retry\n");
-+		return -EINVAL;
-+	}
-+
- 	ring = ethtool_get_flow_spec_ring(fsp->ring_cookie);
- 	if (!(pfvf->flags & OTX2_FLAG_NTUPLE_SUPPORT))
- 		return -ENOMEM;
--- 
-2.7.4
+root@dali:~# grep -i phy /var/log/messages
+Jan  1 00:00:10 (none) user.info kernel: [    4.126862] libphy: 
+mv88e6xxx SMI: probed
+Jan  1 00:00:10 (none) user.info kernel: [    5.620909] mv88e6085 
+stmmac-0:1a lan1 (uninitialized): PHY [mv88e6xxx-0:00] driver [Marvell 
+88E1540]
+Jan  1 00:00:10 (none) user.info kernel: [    5.669606] mv88e6085 
+stmmac-0:1a lan2 (uninitialized): PHY [mv88e6xxx-0:01] driver [Marvell 
+88E1540]
+Jan  1 00:00:10 (none) user.info kernel: [    5.719458] mv88e6085 
+stmmac-0:1a lan3 (uninitialized): PHY [mv88e6xxx-0:02] driver [Marvell 
+88E1540]
+Jan  1 00:00:10 (none) user.info kernel: [    7.103178] mv88e6085 
+stmmac-0:1e lan4 (uninitialized): PHY [mv88e6xxx-2:00] driver [Marvell 
+88E1540]
+Jan  1 00:00:10 (none) user.info kernel: [    7.151820] mv88e6085 
+stmmac-0:1e dmz (uninitialized): PHY [mv88e6xxx-2:01] driver [Marvell 
+88E1540]
+Nov  1 12:01:37 (none) user.info kernel: [  107.993670] mv88e6085 
+stmmac-0:1a lan1: configuring for phy/gmii link mode
 
+
+>> 6: lan2@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+>> 7: lan3@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+>> 8: lan4@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+>> 9: dmz@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+>>      link/ether aa:10:22:58:38:77 brd ff:ff:ff:ff:ff:ff
+>> root@dali:~# ip route
+>> default via 192.168.0.1 dev eth0
+> 
+> That is not correct. eth0 just acts as a pipe towards the switch. It
+> does not have an IP address, and there should not be any routes using
+> it. It needs to be configured up, but that is all.
+> 
+
+I've been fighting with Busybox init to just bring up eth0 with no IPv4 
+configuration, without success. I'll go back and review the Busybox docs 
+to see how to bring up eth0 without any IPv4 configuration.
+
+>> The DSA switch tree is configured using this device tree fragment:
+>>
+>> gmac0 {
+>>      status = "okay";
+>>      phy-mode = "gmii";
+> 
+> gmii? That is a bit unusual. You normally see rgmii.
+> 
+
+I reviewed the schematic again and confirmed that gmii is being used. 
+The schematic shows RXD[7:0] and TXD[7:0] connected to port 6. However, 
+I just noticed no skew values are specified for RXD[7:4] and TXD[7:4]. I 
+  should fix that.
+
+>>      txc-skew-ps = <0xbb8>;
+>>      rxc-skew-ps = <0xbb8>;
+>>      txen-skew-ps = <0>;
+>>      rxdv-skew-ps = <0>;
+>>      rxd0-skew-ps = <0>;
+>>      rxd1-skew-ps = <0>;
+>>      rxd2-skew-ps = <0>;
+>>      rxd3-skew-ps = <0>;
+>>      txd0-skew-ps = <0>;
+>>      txd1-skew-ps = <0>;
+>>      txd2-skew-ps = <0>;
+>>      txd3-skew-ps = <0>;
+>>      max-frame-size = <3800>;
+>>
+>>      fixed-link {
+>>      speed = <0x3e8>;
+> 
+> decimal would be much more readable. Or is this not the source .dts
+> file, but you have decompiled the DTB back to DTS?
+> 
+
+The original .dts was auto-generated using Altera tools, which emit 
+hexadecimal. I've been converting to decimal as I make changes to the 
+.dts. The speed value 0x3e8 is 1000 decimal.
+
+>>          full-duplex;
+>>          pause;
+>>      };
+>>
+>>      mdio {
+>>          compatible = "snps,dwmac-mdio";
+>>          #address-cells = <0x1>;
+>>          #size-cells = <0x0>;
+>>
+>>          switch0: switch0@1a {
+>>              compatible = "marvell,mv88e6085";
+>>              reg = <0x1a>;
+>>              dsa,member = <0 0>;
+>>              ports {
+>>                  #address-cells = <1>;
+>>                  #size-cells = <0>;
+>>                  port@0 {
+>>                      reg = <0>;
+>>                      label = "lan1";
+>>                  };
+>>                  port@1 {
+>>                      reg = <1>;
+>>                      label = "lan2";
+>>                  };
+>>                  port@2 {
+>>                      reg = <2>;
+>>                      label = "lan3";
+>>                  };
+>>                  switch0port4: port@4 {
+>>                      reg = <4>;
+>>                      phy-mode = "rgmii-id";
+>>                      link = <&switch1port4>;
+>>                      fixed-link {
+>>                          speed = <1000>;
+>>                          full-duplex;
+>>                      };
+>>                  };
+>>                  port@6 {
+>>                      reg = <6>;
+>>                      ethernet = <&gmac0>;
+>>                      label = "cpu";
+>>                  };
+>>              };
+>>          };
+>>          switch1: switch1@1e {
+>>              compatible = "marvell,mv88e6085";
+>>              reg = <0x1e>;
+>>              dsa,member = <0 1>;
+>>              ports {
+>>                  #address-cells = <1>;
+>>                  #size-cells = <0>;
+>>                  port@0 {
+>>                      reg = <0>;
+>>                      label = "lan4";
+>>                  };
+>>                  port@1 {
+>>                      reg = <1>;
+>>                      label = "dmz";
+>>                  };
+>>                  switch1port4: port@4 {
+>>                      reg = <4>;
+>>                      link = <&switch0port4>;
+>>                      phy-mode = "rgmii-id";
+> 
+> You probably don't want both ends of the link in rgmii-id mode. That
+> will give you twice the delay.
+
+Ok, I'll change phy-mode to "rgmii" for both ends. It's a little 
+confusing that there's a reference to phy-mode at all, though, given the 
+actual connection is SERDES. My understanding is SERDES is a digital, 
+PHY-less connection.
+
+I'll update the .dts to include the missing skew settings and the 
+phy-mode setting for the dsa ports, then post my results. (I've already 
+fixed the .dts to specify the correct switch for the cpu port, an error 
+I caught after posting.)
+
+Thanks for the input!
