@@ -2,154 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B607F3D30B3
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 02:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8A63D30E4
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 02:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232833AbhGVXf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 19:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38974 "EHLO
+        id S232760AbhGVXrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 19:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232697AbhGVXf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 19:35:28 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11414C061575;
-        Thu, 22 Jul 2021 17:16:03 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id t21so1065847plr.13;
-        Thu, 22 Jul 2021 17:16:03 -0700 (PDT)
+        with ESMTP id S232682AbhGVXrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Jul 2021 19:47:16 -0400
+Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00A8C061757
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 17:27:50 -0700 (PDT)
+Received: by mail-qv1-xf4a.google.com with SMTP id t18-20020a0cd4120000b02902fbda5d4988so705783qvh.11
+        for <netdev@vger.kernel.org>; Thu, 22 Jul 2021 17:27:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6C8t0KuiTGD3399lPLvWX5wehcoUeIALWQ0saCvNA34=;
-        b=ntDOrn2q2OpiUMmwoEIHR3q++9zBsf5OhwZX/Yq6TnusSvTiRkSFE32VCjrMGbBeaR
-         rLhcSIVOeBsbIew8Mo3wn/iEYg2/1Z3kCPsZotWJwBErgOZueQWLZQO6hUvwc4fj1yB6
-         yIewZNXBMgCUq9TpHZw4MHPWIDYKUp1h4hrVo4dLR8rVfQj7GcD1f/g5SkjU+WA+COTc
-         fHFD4LHDWF98EAVY82RK6wHlojZfVPeSCP6Nyc2BibtK8CI3hWChp1yd6DxFHLFLJB8T
-         cpE2AcGRiXsVaFOaIXCtcZNYGPV5y38rAlRfDB3aj8AMdB4jdJiQoCcDvINcpxwQIdRi
-         iN1g==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=KaaKO6JSuYlU48c7gu61DViYcF3DfebwjsMEkD6F6Do=;
+        b=k7Yq2lZyuqV5/XONJUNkIw7Lh4tA19200eZsXHrqLyn1+ZW2DO77ZcweTrfUrVyC61
+         wCuqg9KXPNnp43tvuhXZZeozNiaF8tB+6omRfVtOPaK3jtjP56S+1uNjjiRV1DiTQjUi
+         EuWWKZyw3vnmTc8qzI1myXA++aYhyq+LSRqppB4qLbSFb+H+0tcum8XvkQo7lf4qdh/D
+         0b/lsaLhqhQH0/SgCs18sTyiMv5asP6qc1/nNIYSCQ3GtjOt77pAw92/lT5z01Tmhbbv
+         A/28yEBjcNX2Zf76Kh4uGlAviaeM0lu3JBqyF5z88J5+hDl4rxm3dUjr/r7qIV8Fo7ia
+         UY2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6C8t0KuiTGD3399lPLvWX5wehcoUeIALWQ0saCvNA34=;
-        b=Q0YQSNV+bzaUdbWqDlBk/anx6E/+zNBAMfKHzQITCo3QOnsZSM1Hy1ItqRuEGxDfDR
-         2rxm8qftbsUNocgHxbO6fshurye/o6rdxxY8vwI2e3D4KgIV7Fx4CcYr5wUAd4F5pc0R
-         9QGLBnVwCr9i9CFmhe9rIFD+bTYJMfwBtIQ1DFC+EP4AP7kI7oQSCAzjZvE5Zhp4LKQn
-         niC3CEfymhyWUNALuhmb+Tfzx248H+JqbfdtxPA+7OQ/pfa1kmEignbMYK6Df+VvCBuY
-         tBBDNhRr9O2bIcpWWhPYlOWxHKPXv7WG5BnqPIN+XQWD5694YvHIaOjT/jUF6y77D1wr
-         6s/A==
-X-Gm-Message-State: AOAM531heyTag1X0RD+Gx9sjKPwp2qf21Q3TYCjbm++ET0pvmCzJv7oY
-        EjHFAkM10p98X16d/8CERq7FbsC3cuI=
-X-Google-Smtp-Source: ABdhPJyX8rQSMnhrd3oS6/ojohGbmwCk4b+4mQUnxrCMkIaI1Hr3RcxG2Lj49+EfKfnizE1TA07Geg==
-X-Received: by 2002:aa7:8154:0:b029:310:70d:a516 with SMTP id d20-20020aa781540000b0290310070da516mr2165860pfn.63.1626999362298;
-        Thu, 22 Jul 2021 17:16:02 -0700 (PDT)
-Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id h25sm28370000pfo.190.2021.07.22.17.16.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Jul 2021 17:16:01 -0700 (PDT)
-From:   Doug Berger <opendmb@gmail.com>
-To:     stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net backport to 4.4,4.9] net: bcmgenet: ensure EXT_ENERGY_DET_MASK is clear
-Date:   Thu, 22 Jul 2021 17:15:52 -0700
-Message-Id: <20210723001552.3274565-1-opendmb@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=KaaKO6JSuYlU48c7gu61DViYcF3DfebwjsMEkD6F6Do=;
+        b=BPnUswcCUbIq9Dqz0RvNcZXf+cRomHoQVt+QWrhZ11uFqa0OmuSp6EbqJwdGxf8kI5
+         wYaZTKCS5svCEeXE8StPmMHdPpbWAL+c2/T8rpa1bm4phqazegP0yygQFfFMfMy5DH56
+         uFzrQ5lrYKPO7xl0QCf2nYCV6f8dF50cWc+3qpcm26jtHII2KX8naPPddj6xv9NizJsJ
+         srrZKgn7Qo2+2hT0AhE52XIUvTr88MKHRUsybZETHCrJGH5cY1TQ7VxF6DPulQgGiO4W
+         b249j2oEkZOuE2PmYi5sHuIDKRYLabekWTmXy2JTStJXiwC6imhZL/FHd+ZeT3Q2alC9
+         4LYg==
+X-Gm-Message-State: AOAM530LnB4H4GycHm186dxfF88sCsBCS6tNggwKHYRsWOyj/MNW//tI
+        7E2lgHkUQKvi0sUwmUuRZll3wkidKfQDbz7CIqxCZ0J19tvOZ/4BU5kd3e8SvZLeNbm1vS0MDXv
+        61WEyBRVG6yImRd6UzbTtkpAvhVnqYCx4F8d9eToFhaj7qNDHIrT/UQ==
+X-Google-Smtp-Source: ABdhPJzVY2paVqN56+UYMkJ6kbNfAcD978jAXGSvhBUZzdBpGCo+lzgcLXTWmGXytQxwowAhU/74byc=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:2a74:6a64:2627:e4ab])
+ (user=sdf job=sendgmr) by 2002:a05:6214:1021:: with SMTP id
+ k1mr2640636qvr.4.1627000069825; Thu, 22 Jul 2021 17:27:49 -0700 (PDT)
+Date:   Thu, 22 Jul 2021 17:27:47 -0700
+Message-Id: <20210723002747.3668098-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.32.0.432.gabb21c7263-goog
+Subject: [PATCH bpf-next] bpf: increase supported cgroup storage value size
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Upstream commit 5a3c680aa2c12c90c44af383fe6882a39875ab81 ]
+Current max cgroup storage value size is 4k (PAGE_SIZE). The other local
+storages accept up to 64k (BPF_LOCAL_STORAGE_MAX_VALUE_SIZE). Let's align
+max cgroup value size with the other storages.
 
-Setting the EXT_ENERGY_DET_MASK bit allows the port energy detection
-logic of the internal PHY to prevent the system from sleeping. Some
-internal PHYs will report that energy is detected when the network
-interface is closed which can prevent the system from going to sleep
-if WoL is enabled when the interface is brought down.
+For percpu, the max is 32k (PCPU_MIN_UNIT_SIZE) because percpu
+allocator is not happy about larger values.
 
-Since the driver does not support waking the system on this logic,
-this commit clears the bit whenever the internal PHY is powered up
-and the other logic for manipulating the bit is removed since it
-serves no useful function.
+netcnt test is extended to exercise those maximum values
+(non-percpu max size is close to, but not real max).
 
-Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c    | 15 +--------------
- .../net/ethernet/broadcom/genet/bcmgenet_wol.c    |  6 ------
- 2 files changed, 1 insertion(+), 20 deletions(-)
+ kernel/bpf/local_storage.c                    | 12 +++++-
+ tools/testing/selftests/bpf/netcnt_common.h   | 38 +++++++++++++++----
+ .../testing/selftests/bpf/progs/netcnt_prog.c | 29 +++++++-------
+ tools/testing/selftests/bpf/test_netcnt.c     | 25 +++++++-----
+ 4 files changed, 73 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 2921ae13db28..5637adff1888 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -1094,7 +1094,7 @@ static void bcmgenet_power_up(struct bcmgenet_priv *priv,
- 	switch (mode) {
- 	case GENET_POWER_PASSIVE:
- 		reg &= ~(EXT_PWR_DOWN_DLL | EXT_PWR_DOWN_PHY |
--				EXT_PWR_DOWN_BIAS);
-+			 EXT_PWR_DOWN_BIAS | EXT_ENERGY_DET_MASK);
- 		/* fallthrough */
- 	case GENET_POWER_CABLE_SENSE:
- 		/* enable APD */
-@@ -2815,12 +2815,6 @@ static int bcmgenet_open(struct net_device *dev)
+diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
+index 7ed2a14dc0de..a276da74c20a 100644
+--- a/kernel/bpf/local_storage.c
++++ b/kernel/bpf/local_storage.c
+@@ -1,6 +1,7 @@
+ //SPDX-License-Identifier: GPL-2.0
+ #include <linux/bpf-cgroup.h>
+ #include <linux/bpf.h>
++#include <linux/bpf_local_storage.h>
+ #include <linux/btf.h>
+ #include <linux/bug.h>
+ #include <linux/filter.h>
+@@ -284,8 +285,17 @@ static int cgroup_storage_get_next_key(struct bpf_map *_map, void *key,
+ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
+ {
+ 	int numa_node = bpf_map_attr_numa_node(attr);
++	__u32 max_value_size = PCPU_MIN_UNIT_SIZE;
+ 	struct bpf_cgroup_storage_map *map;
  
- 	bcmgenet_set_hw_addr(priv, dev->dev_addr);
++	/* percpu is bound by PCPU_MIN_UNIT_SIZE, non-percu
++	 * is the same as other local storages.
++	 */
++	if (attr->map_type == BPF_MAP_TYPE_CGROUP_STORAGE)
++		max_value_size = BPF_LOCAL_STORAGE_MAX_VALUE_SIZE;
++
++	BUILD_BUG_ON(PCPU_MIN_UNIT_SIZE > BPF_LOCAL_STORAGE_MAX_VALUE_SIZE);
++
+ 	if (attr->key_size != sizeof(struct bpf_cgroup_storage_key) &&
+ 	    attr->key_size != sizeof(__u64))
+ 		return ERR_PTR(-EINVAL);
+@@ -293,7 +303,7 @@ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
+ 	if (attr->value_size == 0)
+ 		return ERR_PTR(-EINVAL);
  
--	if (priv->internal_phy) {
--		reg = bcmgenet_ext_readl(priv, EXT_EXT_PWR_MGMT);
--		reg |= EXT_ENERGY_DET_MASK;
--		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
--	}
--
- 	/* Disable RX/TX DMA and flush TX queues */
- 	dma_ctrl = bcmgenet_dma_disable(priv);
+-	if (attr->value_size > PAGE_SIZE)
++	if (attr->value_size > max_value_size)
+ 		return ERR_PTR(-E2BIG);
  
-@@ -3510,7 +3504,6 @@ static int bcmgenet_resume(struct device *d)
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	unsigned long dma_ctrl;
- 	int ret;
--	u32 reg;
+ 	if (attr->map_flags & ~LOCAL_STORAGE_CREATE_FLAG_MASK ||
+diff --git a/tools/testing/selftests/bpf/netcnt_common.h b/tools/testing/selftests/bpf/netcnt_common.h
+index 81084c1c2c23..dfcf184ff713 100644
+--- a/tools/testing/selftests/bpf/netcnt_common.h
++++ b/tools/testing/selftests/bpf/netcnt_common.h
+@@ -6,19 +6,43 @@
  
- 	if (!netif_running(dev))
- 		return 0;
-@@ -3545,12 +3538,6 @@ static int bcmgenet_resume(struct device *d)
+ #define MAX_PERCPU_PACKETS 32
  
- 	bcmgenet_set_hw_addr(priv, dev->dev_addr);
++/* sizeof(struct bpf_local_storage_elem):
++ *
++ * It really is about 128 bytes, but allocate more to account for possible
++ * layout changes, different architectures, etc.
++ * It will wrap up to PAGE_SIZE internally anyway.
++ */
++#define SIZEOF_BPF_LOCAL_STORAGE_ELEM		256
++
++/* Try to estimate kernel's BPF_LOCAL_STORAGE_MAX_VALUE_SIZE: */
++#define BPF_LOCAL_STORAGE_MAX_VALUE_SIZE	(0xFFFF - \
++						 SIZEOF_BPF_LOCAL_STORAGE_ELEM)
++
++#define PCPU_MIN_UNIT_SIZE			32768
++
+ struct percpu_net_cnt {
+-	__u64 packets;
+-	__u64 bytes;
++	union {
++		struct {
++			__u64 packets;
++			__u64 bytes;
  
--	if (priv->internal_phy) {
--		reg = bcmgenet_ext_readl(priv, EXT_EXT_PWR_MGMT);
--		reg |= EXT_ENERGY_DET_MASK;
--		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
--	}
--
- 	if (priv->wolopts)
- 		bcmgenet_power_up(priv, GENET_POWER_WOL_MAGIC);
+-	__u64 prev_ts;
++			__u64 prev_ts;
  
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index b97122926d3a..df107ed67220 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -167,12 +167,6 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
- 	reg |= CMD_RX_EN;
- 	bcmgenet_umac_writel(priv, reg, UMAC_CMD);
+-	__u64 prev_packets;
+-	__u64 prev_bytes;
++			__u64 prev_packets;
++			__u64 prev_bytes;
++		} val;
++		__u8 data[PCPU_MIN_UNIT_SIZE];
++	};
+ };
  
--	if (priv->hw_params->flags & GENET_HAS_EXT) {
--		reg = bcmgenet_ext_readl(priv, EXT_EXT_PWR_MGMT);
--		reg &= ~EXT_ENERGY_DET_MASK;
--		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
--	}
--
- 	/* Enable the MPD interrupt */
- 	cpu_mask_clear = UMAC_IRQ_MPD_R;
+ struct net_cnt {
+-	__u64 packets;
+-	__u64 bytes;
++	union {
++		struct {
++			__u64 packets;
++			__u64 bytes;
++		} val;
++		__u8 data[BPF_LOCAL_STORAGE_MAX_VALUE_SIZE];
++	};
+ };
  
+ #endif
+diff --git a/tools/testing/selftests/bpf/progs/netcnt_prog.c b/tools/testing/selftests/bpf/progs/netcnt_prog.c
+index d071adf178bd..4b0884239892 100644
+--- a/tools/testing/selftests/bpf/progs/netcnt_prog.c
++++ b/tools/testing/selftests/bpf/progs/netcnt_prog.c
+@@ -34,34 +34,35 @@ int bpf_nextcnt(struct __sk_buff *skb)
+ 	cnt = bpf_get_local_storage(&netcnt, 0);
+ 	percpu_cnt = bpf_get_local_storage(&percpu_netcnt, 0);
+ 
+-	percpu_cnt->packets++;
+-	percpu_cnt->bytes += skb->len;
++	percpu_cnt->val.packets++;
++	percpu_cnt->val.bytes += skb->len;
+ 
+-	if (percpu_cnt->packets > MAX_PERCPU_PACKETS) {
+-		__sync_fetch_and_add(&cnt->packets,
+-				     percpu_cnt->packets);
+-		percpu_cnt->packets = 0;
++	if (percpu_cnt->val.packets > MAX_PERCPU_PACKETS) {
++		__sync_fetch_and_add(&cnt->val.packets,
++				     percpu_cnt->val.packets);
++		percpu_cnt->val.packets = 0;
+ 
+-		__sync_fetch_and_add(&cnt->bytes,
+-				     percpu_cnt->bytes);
+-		percpu_cnt->bytes = 0;
++		__sync_fetch_and_add(&cnt->val.bytes,
++				     percpu_cnt->val.bytes);
++		percpu_cnt->val.bytes = 0;
+ 	}
+ 
+ 	ts = bpf_ktime_get_ns();
+-	dt = ts - percpu_cnt->prev_ts;
++	dt = ts - percpu_cnt->val.prev_ts;
+ 
+ 	dt *= MAX_BPS;
+ 	dt /= NS_PER_SEC;
+ 
+-	if (cnt->bytes + percpu_cnt->bytes - percpu_cnt->prev_bytes < dt)
++	if (cnt->val.bytes + percpu_cnt->val.bytes -
++	    percpu_cnt->val.prev_bytes < dt)
+ 		ret = 1;
+ 	else
+ 		ret = 0;
+ 
+ 	if (dt > REFRESH_TIME_NS) {
+-		percpu_cnt->prev_ts = ts;
+-		percpu_cnt->prev_packets = cnt->packets;
+-		percpu_cnt->prev_bytes = cnt->bytes;
++		percpu_cnt->val.prev_ts = ts;
++		percpu_cnt->val.prev_packets = cnt->val.packets;
++		percpu_cnt->val.prev_bytes = cnt->val.bytes;
+ 	}
+ 
+ 	return !!ret;
+diff --git a/tools/testing/selftests/bpf/test_netcnt.c b/tools/testing/selftests/bpf/test_netcnt.c
+index a7b9a69f4fd5..1138765406a5 100644
+--- a/tools/testing/selftests/bpf/test_netcnt.c
++++ b/tools/testing/selftests/bpf/test_netcnt.c
+@@ -33,11 +33,11 @@ static int bpf_find_map(const char *test, struct bpf_object *obj,
+ 
+ int main(int argc, char **argv)
+ {
+-	struct percpu_net_cnt *percpu_netcnt;
++	struct percpu_net_cnt *percpu_netcnt = NULL;
+ 	struct bpf_cgroup_storage_key key;
++	struct net_cnt *netcnt = NULL;
+ 	int map_fd, percpu_map_fd;
+ 	int error = EXIT_FAILURE;
+-	struct net_cnt netcnt;
+ 	struct bpf_object *obj;
+ 	int prog_fd, cgroup_fd;
+ 	unsigned long packets;
+@@ -52,6 +52,12 @@ int main(int argc, char **argv)
+ 		goto err;
+ 	}
+ 
++	netcnt = malloc(sizeof(*netcnt));
++	if (!netcnt) {
++		printf("Not enough memory for non-per-cpu area\n");
++		goto err;
++	}
++
+ 	if (bpf_prog_load(BPF_PROG, BPF_PROG_TYPE_CGROUP_SKB,
+ 			  &obj, &prog_fd)) {
+ 		printf("Failed to load bpf program\n");
+@@ -96,7 +102,7 @@ int main(int argc, char **argv)
+ 		goto err;
+ 	}
+ 
+-	if (bpf_map_lookup_elem(map_fd, &key, &netcnt)) {
++	if (bpf_map_lookup_elem(map_fd, &key, netcnt)) {
+ 		printf("Failed to lookup cgroup storage\n");
+ 		goto err;
+ 	}
+@@ -109,17 +115,17 @@ int main(int argc, char **argv)
+ 	/* Some packets can be still in per-cpu cache, but not more than
+ 	 * MAX_PERCPU_PACKETS.
+ 	 */
+-	packets = netcnt.packets;
+-	bytes = netcnt.bytes;
++	packets = netcnt->val.packets;
++	bytes = netcnt->val.bytes;
+ 	for (cpu = 0; cpu < nproc; cpu++) {
+-		if (percpu_netcnt[cpu].packets > MAX_PERCPU_PACKETS) {
++		if (percpu_netcnt[cpu].val.packets > MAX_PERCPU_PACKETS) {
+ 			printf("Unexpected percpu value: %llu\n",
+-			       percpu_netcnt[cpu].packets);
++			       percpu_netcnt[cpu].val.packets);
+ 			goto err;
+ 		}
+ 
+-		packets += percpu_netcnt[cpu].packets;
+-		bytes += percpu_netcnt[cpu].bytes;
++		packets += percpu_netcnt[cpu].val.packets;
++		bytes += percpu_netcnt[cpu].val.bytes;
+ 	}
+ 
+ 	/* No packets should be lost */
+@@ -142,6 +148,7 @@ int main(int argc, char **argv)
+ err:
+ 	cleanup_cgroup_environment();
+ 	free(percpu_netcnt);
++	free(netcnt);
+ 
+ out:
+ 	return error;
 -- 
-2.25.1
+2.32.0.432.gabb21c7263-goog
 
