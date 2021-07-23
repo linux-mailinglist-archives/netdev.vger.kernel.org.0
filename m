@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2758F3D3777
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 872783D3780
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 11:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234483AbhGWId4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 04:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234248AbhGWIdy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 04:33:54 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7D0C061575;
-        Fri, 23 Jul 2021 02:14:27 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id h8so901828ede.4;
-        Fri, 23 Jul 2021 02:14:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NbPHQYpccgPPXxdL13skEjBuFu+tUEk7CeKyHs3IKUg=;
-        b=AWh/MIF8BIuxg8k9PNUfHx51+ad2EfWGynApPZiWxTlYcCX2TcCnTgC8/1D3Mco4JV
-         h9ZtzDdwZTZR+XialRBeb6vU3D0izXMF+HO07euIKTefo1B9aRNgOgy5HE41RrUqQxUA
-         bgbgOsgiNaJSR7vDIveXA0sAWcYeNtpjmyYnAxtS4tRY8arjYRBhDCrNIl5H3E4PW6yy
-         0V27JEGve+H2gxzSxB3+3C+EviDlGgfad0BPVMEqHq6yIbuvUX6HsBpt2AkAC+FK04N+
-         VH9R0n0I+VqY8TuU37svYGHguqBOGLx3YVo+xznpjwtjY0XpHrKr1WgyuQPDY/hDH6Cg
-         3ThQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NbPHQYpccgPPXxdL13skEjBuFu+tUEk7CeKyHs3IKUg=;
-        b=lLkoneAWcW4pFtw+DyQiTInAbQy07EACWuwMrulrF1AiGE7ip/UMGJwwLIo8XcNPtz
-         K2z/lhKCYMPNCS8e9cWrQ+ZCKJ4L6u4hrmnQv1I1qwBf/Kd1efBQ0Qxc1dcctL4cKeVl
-         0esy2l/JAXLDM/xsagDDS5UJVyCHmd++CTon0Sec1hdhUZLxJrVEGHlfUAoC1VM0YRIW
-         Wp+DpWvBGMcQLUusLVNCSp+6ryV+7u7sB5zcH5u1QgwnehRb5AZ49Fykzkrmijk7zrK0
-         OSHFXBgxJEhFcAEj7WN1DxDIfOGmRSIOGWXZR5z9DH3VjTHxq3qB+cuw0HiiNYAhxMv0
-         3eDg==
-X-Gm-Message-State: AOAM5302PuTXR9cSN9rvkTZT7NpvOjGym0KqGeubRa2cJpu4FbNiq38f
-        JKR9KuHOumDcPEKUnFA4cIqZSy98u9tjXYWjExU=
-X-Google-Smtp-Source: ABdhPJzniKTCol/NCrMd3ZkwCvOZwc4YHuCnfiYTstlFcAkt0DW9QXjlFFdHkOPPjyGRPda94lMnAZm6pVFXZQQLZ9E=
-X-Received: by 2002:aa7:d4c2:: with SMTP id t2mr4372223edr.241.1627031666105;
- Fri, 23 Jul 2021 02:14:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210723050919.1910964-1-mudongliangabcd@gmail.com> <d2b0f847dbf6b6d1e585ef8de1d9d367f8d9fd3b.camel@sipsolutions.net>
-In-Reply-To: <d2b0f847dbf6b6d1e585ef8de1d9d367f8d9fd3b.camel@sipsolutions.net>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Fri, 23 Jul 2021 17:13:59 +0800
-Message-ID: <CAD-N9QWDNvo_3bdB=8edyYWvEV=b-66Tx-P6_7JGgrSYshDh0A@mail.gmail.com>
-Subject: Re: [PATCH] cfg80211: free the object allocated in wiphy_apply_custom_regulatory
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S234418AbhGWIfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 04:35:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232370AbhGWIf2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Jul 2021 04:35:28 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2281A60EC0;
+        Fri, 23 Jul 2021 09:15:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627031761;
+        bh=R/tUNmGg+pjjdMkzRzL/1GJuqdzUtLr2Uhdivnec1/o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VxOKFweETR1//8RQLzgJ0MrOo3M0d67tmtbJGVUk0n5DwPbgWeEXngZeYczNF5mME
+         Z6Z87jumcJ7rcDk3gYqQjpkcRpzVGHPl4eaD1gz9ooLRFGMKbD3n6cCo40qEvwIHqK
+         D+UdUnV61g84F5GpDJl9XiZ2zxVhxXKfuQ0CanEab8lYFVMyB7huNq97mft1MwOwJx
+         Fn8SpMjuPPrUQZmhSnqv4X8P4EEfXg+clkd4IYJYROzctdDEe/B9j5Pzyd+tghfizS
+         ADTHeVs7FVYvXm+yVU1KIKaJ+mqG4OBa44VeGW+ho1c5M64AJDXNcPdhmxcSZ+K4Wy
+         6cWyKh/OGD+gQ==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Ilan Peer <ilan.peer@intel.com>,
-        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
-        linux-wireless@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+        Justin Iurman <justin.iurman@uliege.be>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Xin Long <lucien.xin@gmail.com>,
+        Matteo Croce <mcroce@microsoft.com>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Rocco Yue <rocco.yue@mediatek.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Praveen Chaudhary <praveen5582@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ipv6: ioam: fix unused function warning
+Date:   Fri, 23 Jul 2021 11:15:52 +0200
+Message-Id: <20210723091556.1740686-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 4:37 PM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> On Fri, 2021-07-23 at 13:09 +0800, Dongliang Mu wrote:
-> > The commit beee24695157 ("cfg80211: Save the regulatory domain when
-> > setting custom regulatory") forgets to free the newly allocated regd
-> > object.
->
-> Not really? It's not forgetting it, it just saves it?
+From: Arnd Bergmann <arnd@arndb.de>
 
-Yes, it saves the regd object in the function wiphy_apply_custom_regulatory.
+ioam6_if_id_max is defined globally but used only when
+CONFIG_SYSCTL is enabled:
 
-But its parent function - mac80211_hwsim_new_radio forgets to free
-this object when the ieee80211_register_hw fails.
+net/ipv6/addrconf.c:99:12: error: 'ioam6_if_id_max' defined but not used [-Werror=unused-variable]
 
->
-> +       new_regd = reg_copy_regd(regd);
-> +       if (IS_ERR(new_regd))
-> +               return;
-> +
-> +       tmp = get_wiphy_regdom(wiphy);
-> +       rcu_assign_pointer(wiphy->regd, new_regd);
-> +       rcu_free_regdom(tmp);
->
-> > Fix this by freeing the regd object in the error handling code and
-> > deletion function - mac80211_hwsim_del_radio.
->
-> This can't be right - the same would affect all other users of that
-> function, no?
+Move the variable definition closer to the usage inside of the
+same #ifdef.
 
-The problem occurs in the error handling code of
-mac80211_hwsim_new_radio, not wiphy_apply_custom_regulatory. My commit
-message may be not very clear.
+Fixes: 9ee11f0fff20 ("ipv6: ioam: Data plane support for Pre-allocated Trace")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ net/ipv6/addrconf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-So I think the code in the mac80211_hwsim_del_radio paired with
-mac80211_hwsim_new_radio should be changed correspondingly. If I miss
-any problems, please let me know.
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 1802287977f1..cd3171749622 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -96,8 +96,6 @@
+ #define IPV6_MAX_STRLEN \
+ 	sizeof("ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255")
+ 
+-static u32 ioam6_if_id_max = U16_MAX;
+-
+ static inline u32 cstamp_delta(unsigned long cstamp)
+ {
+ 	return (cstamp - INITIAL_JIFFIES) * 100UL / HZ;
+@@ -6551,6 +6549,8 @@ static int addrconf_sysctl_disable_policy(struct ctl_table *ctl, int write,
+ static int minus_one = -1;
+ static const int two_five_five = 255;
+ 
++static u32 ioam6_if_id_max = U16_MAX;
++
+ static const struct ctl_table addrconf_sysctl[] = {
+ 	{
+ 		.procname	= "forwarding",
+-- 
+2.29.2
 
-I have successfully tested my patch in the syzbot dashboard [1].
-
-[1] https://syzkaller.appspot.com/bug?extid=1638e7c770eef6b6c0d0
-
->
-> Perhaps somewhere we have a case where wiphy->regd is leaked, but than
-> that should be fixed more generally in cfg80211?
->
-> johannes
->
