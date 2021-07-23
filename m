@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C78E3D32A4
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 05:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDD353D32E6
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 05:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234115AbhGWDRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 23:17:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37870 "EHLO mail.kernel.org"
+        id S234493AbhGWDSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 23:18:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233911AbhGWDRY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 23:17:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6B5AC60F38;
-        Fri, 23 Jul 2021 03:57:57 +0000 (UTC)
+        id S234127AbhGWDRq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 23:17:46 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C8AE60F12;
+        Fri, 23 Jul 2021 03:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627012678;
-        bh=Z73zC9mi5tV6CVDwT9GE707q/SDbHfKXsCcTwqJI2cc=;
+        s=k20201202; t=1627012700;
+        bh=k75WPrQHUAe9Ia7rj+OvIhmoVCVv646+a7xLP7H9Qzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uxs+OCVlCU6Mw5YGIB5/OOQJTl1AxqQ0xoG3PsptzdLDkTJEZtu0eS7JbQXoY6l0N
-         1Zx7DNDdhCHfGLYGWofsGsOzmn+J2sZWLWVcD7UEG/jZf/SWQkZjHLLxOLYcIvEtD+
-         DQ0E6uHRZfGtM/yLJDvVkXHpTRdgQwzlMwSIdYjcRYrU30bkz0zgE5ATAnybsko92m
-         FZOFigiOaPfvWdE98aPxtopv8UwZ6du7mKFCdkT3fD45BNIx4DevUry1yBGt8c/sJ0
-         kJKxGADkrIkkHWpjth/U7r2Ckm02CPa6sVJl1ei3ZNnWSZSyqJlrRpZE18lwihYqS/
-         OLo2AtGFfmNmQ==
+        b=lGJoiCnZwE3tRNbjaMNV+dYqnKzo7B06BG0Dlzv/5Pm/bJEIPb+krGWEbWGUiNyKY
+         T03lW6eCCr3rxCqXAFawRanBj+/sfgKnKIH+6/DZ91mvpc2Erq7/hCmCBva0DI5cnG
+         Q5ObcSJfxd98UFr3xCTAIazYkxI0+M40VTDb4vg9E6GG8PN+2plZgsP8k35psS/NgV
+         XKunKf0EdISHyBlB3iDFQs/CVa2EVqOcHzCiz0hn7/5aMvApGphY5AgjlSGjnwgSm1
+         0X5xHToQqcvyHldKHKL1Bktuk8rrcMuS8QdoiTQbKcSNAMAOOzRDiOYIveHy0gsfXu
+         j++yD7scFDZ/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Vasily Averin <vvs@virtuozzo.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/17] ipv6: allocate enough headroom in ip6_finish_output2()
-Date:   Thu, 22 Jul 2021 23:57:38 -0400
-Message-Id: <20210723035748.531594-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 05/14] ipv6: allocate enough headroom in ip6_finish_output2()
+Date:   Thu, 22 Jul 2021 23:58:04 -0400
+Message-Id: <20210723035813.531837-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210723035748.531594-1-sashal@kernel.org>
-References: <20210723035748.531594-1-sashal@kernel.org>
+In-Reply-To: <20210723035813.531837-1-sashal@kernel.org>
+References: <20210723035813.531837-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -88,10 +88,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 28 insertions(+)
 
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 077d43af8226..f16f88ab608c 100644
+index 7a80c42fcce2..004ead8af5e9 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -60,10 +60,38 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+@@ -59,10 +59,38 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
  {
  	struct dst_entry *dst = skb_dst(skb);
  	struct net_device *dev = dst->dev;
