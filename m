@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29E083D3DDF
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 18:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A9B3D3DDE
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 18:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231377AbhGWQJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 12:09:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35868 "EHLO mail.kernel.org"
+        id S231338AbhGWQJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 12:09:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229847AbhGWQJc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230393AbhGWQJc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Jul 2021 12:09:32 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 32C3A60E9C;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3C1DD60EB5;
         Fri, 23 Jul 2021 16:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627059006;
-        bh=3/8tnojzEiEYMyqb8KSh1cm1Fsx5qkzL4Qylhfy0HOQ=;
+        bh=Maw2pDz5zbCE6MAg2tKnfkmkDkJ8MV+TvmEFBDQY8uc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Mee9nr9pD1QumHzYFS/TZRvlcDuT86s7GiFcTpfBE0vr/JcuFEYdDlKbG/moF7Aah
-         p081LZO5MyefV3TRwAPhOns7rNeR63H5J8VX5nzA7aJtoxjpJ5BicN5ugjEk5tdwq3
-         0i1Q1AHga0l5WtHBvID5pBCZumJSc6o8DDrD+SeO/+2g+u3xyd29nsw75+FOYuJQAB
-         3kkSfdKmNGaOeeAas4Adt/3xrDg6ICwcsiw/DC8Wbhtt0fEgol8USUibW2BTkdNO0m
-         osZCwReqDuhUwkFJbtnN88kfaiPVnndS/G2g1RHGh+7o8ok0Yob8Qqw0fogYkL2nEN
-         mC8GmdqHeGMQA==
+        b=bgq+DxgPKEY8QPCehSCYWq5Xb464GSYnESyd/qlmY854z80tfQguHiZxALcshMdqR
+         +RGBhSzeyT+sUuvXJvzbhp7oHKqCwy2g1R4jKjvVomWxwq/hUU4FySqI1Gh/wOlVcK
+         X4iiTN3XqxwH7vYfYXNDrbH+NkP6SPDeJW514MdNRycG5TZVw8cMunjhQ3gfm08zeV
+         bTll/Vf1it5YSpQGGCoG7p4kSQnBiWYG9LAeEKwKqqk0fMoKhiCDq2mzYlRkEwVqe9
+         45S2+F5tkFhrYGSTlg99BC4qA62aLQZxi5sJPGmwY6iubWnGUVjNV7lt906Ukxqh6I
+         KejEz/4WCKjOA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2537760972;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2F2B860721;
         Fri, 23 Jul 2021 16:50:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/6] netfilter: nf_tables: fix audit memory leak in
- nf_tables_commit
+Subject: Re: [PATCH v2] net: qrtr: fix memory leaks
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162705900614.21133.233240311011263145.git-patchwork-notify@kernel.org>
+Message-Id: <162705900618.21133.10256385935124978429.git-patchwork-notify@kernel.org>
 Date:   Fri, 23 Jul 2021 16:50:06 +0000
-References: <20210723155412.17916-2-pablo@netfilter.org>
-In-Reply-To: <20210723155412.17916-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
+References: <20210723153132.6159-1-paskripkin@gmail.com>
+In-Reply-To: <20210723153132.6159-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     mani@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        loic.poulain@linaro.org, bjorn.andersson@linaro.org,
+        xiyou.wangcong@gmail.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Fri, 23 Jul 2021 17:54:07 +0200 you wrote:
-> From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Fri, 23 Jul 2021 18:31:32 +0300 you wrote:
+> Syzbot reported memory leak in qrtr. The problem was in unputted
+> struct sock. qrtr_local_enqueue() function calls qrtr_port_lookup()
+> which takes sock reference if port was found. Then there is the following
+> check:
 > 
-> In nf_tables_commit, if nf_tables_commit_audit_alloc fails, it does not
-> free the adp variable.
-> 
-> Fix this by adding nf_tables_commit_audit_free which frees
-> the linked list with the head node adl.
+> if (!ipc || &ipc->sk == skb->sk) {
+> 	...
+> 	return -ENODEV;
+> }
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/6] netfilter: nf_tables: fix audit memory leak in nf_tables_commit
-    https://git.kernel.org/netdev/net/c/cfbe3650dd3e
-  - [net,2/6] netfilter: flowtable: avoid possible false sharing
-    https://git.kernel.org/netdev/net/c/32c3973d8083
-  - [net,3/6] netfilter: nft_last: avoid possible false sharing
-    https://git.kernel.org/netdev/net/c/32953df7a6eb
-  - [net,4/6] netfilter: conntrack: adjust stop timestamp to real expiry value
-    https://git.kernel.org/netdev/net/c/30a56a2b8818
-  - [net,5/6] netfilter: nft_nat: allow to specify layer 4 protocol NAT only
-    https://git.kernel.org/netdev/net/c/a33f387ecd5a
-  - [net,6/6] netfilter: nfnl_hook: fix unused variable warning
-    https://git.kernel.org/netdev/net/c/217e26bd87b2
+  - [v2] net: qrtr: fix memory leaks
+    https://git.kernel.org/netdev/net/c/52f3456a96c0
 
 You are awesome, thank you!
 --
