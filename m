@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A2B3D3354
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 06:01:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAB33D334A
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 06:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234805AbhGWDVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Jul 2021 23:21:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37776 "EHLO mail.kernel.org"
+        id S234530AbhGWDUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Jul 2021 23:20:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37850 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233804AbhGWDRT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Jul 2021 23:17:19 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EE6460F23;
-        Fri, 23 Jul 2021 03:57:52 +0000 (UTC)
+        id S234082AbhGWDRl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Jul 2021 23:17:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D5EBD60C41;
+        Fri, 23 Jul 2021 03:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627012673;
-        bh=Nm6TEqVJKMy3TLbAccAor1kxyGD7kwzDGMDOOrte7E8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8WwDknIUBan629ke7mB81ut1AkLTekt9Sz6+QO4LqPsxrmklxEUsiafvj7CQB0lX
-         4Y2Q29t5Y+dVDPuwRt1f7JGKcilmbCYuZ0hYLqKVEchPu5Z+B1GfzAbGg2NmegQvZp
-         UAKuSz5vsFaB6f5mAQetrKVxrcVxYXu6V/6YQMTVPZxfTN069Fqbue+itsiAKxpSV+
-         wguVGsQ8yPl8NV+q1xts7Z2WFB1lbbUfZfz4e8Sreint/+Lxzi6xUoEgFzi/4UIhD7
-         ALd6MZA+Z17qjGgm+2CgY93SwLp6rBKBloqA4E8L8nxP3gf9tuwweoQfKB5aQ2kxt/
-         OauwoZBKb6UKA==
+        s=k20201202; t=1627012695;
+        bh=kvU9NbfjxFYJOrIe3sBd/L5+WMCdcp4+RRDFDW6hncY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ckfC7Wt0k56KKVGixB6ts/FONJTmYND04UU1zHjqKMX0dZ6jrZIHp5iF0w73Juhvv
+         C32TsyRZIRAwXIe/M1iIecIcJGYMi/QS/PcGRw75o9GVs1JTv6HbYHr9Tn7Kejzvd/
+         TEpYwHcZQXVDkx0WciYmop9HAg+SreuaPH5joDrBrkUpqsQDWC72REdQHjEhijoTLo
+         S8i5MogUj94eUi+C7ceQK4RE+7PoLi/raQ7Uf7Sx0K3KUFwC4TYltVhNSJUSwXZLRV
+         ct2oV8zOHVKk2kynpmtUppXuDmTDwKfz/94D8dqOav3LOVGq5xgscXtyLO7p6BOT+l
+         GaQzJCxMva4vQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Hulk Robot <hulkci@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/17] net: annotate data race around sk_ll_usec
-Date:   Thu, 22 Jul 2021 23:57:34 -0400
-Message-Id: <20210723035748.531594-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 01/14] net/802/mrp: fix memleak in mrp_request_join()
+Date:   Thu, 22 Jul 2021 23:58:00 -0400
+Message-Id: <20210723035813.531837-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210723035748.531594-1-sashal@kernel.org>
-References: <20210723035748.531594-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,82 +41,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 0dbffbb5335a1e3aa6855e4ee317e25e669dd302 ]
+[ Upstream commit 996af62167d0e0ec69b938a3561e96f84ffff1aa ]
 
-sk_ll_usec is read locklessly from sk_can_busy_loop()
-while another thread can change its value in sock_setsockopt()
+I got kmemleak report when doing fuzz test:
 
-This is correct but needs annotations.
+BUG: memory leak
+unreferenced object 0xffff88810c239500 (size 64):
+comm "syz-executor940", pid 882, jiffies 4294712870 (age 14.631s)
+hex dump (first 32 bytes):
+01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+00 00 00 00 00 00 00 00 01 00 00 00 01 02 00 04 ................
+backtrace:
+[<00000000a323afa4>] slab_alloc_node mm/slub.c:2972 [inline]
+[<00000000a323afa4>] slab_alloc mm/slub.c:2980 [inline]
+[<00000000a323afa4>] __kmalloc+0x167/0x340 mm/slub.c:4130
+[<000000005034ca11>] kmalloc include/linux/slab.h:595 [inline]
+[<000000005034ca11>] mrp_attr_create net/802/mrp.c:276 [inline]
+[<000000005034ca11>] mrp_request_join+0x265/0x550 net/802/mrp.c:530
+[<00000000fcfd81f3>] vlan_mvrp_request_join+0x145/0x170 net/8021q/vlan_mvrp.c:40
+[<000000009258546e>] vlan_dev_open+0x477/0x890 net/8021q/vlan_dev.c:292
+[<0000000059acd82b>] __dev_open+0x281/0x410 net/core/dev.c:1609
+[<000000004e6dc695>] __dev_change_flags+0x424/0x560 net/core/dev.c:8767
+[<00000000471a09af>] rtnl_configure_link+0xd9/0x210 net/core/rtnetlink.c:3122
+[<0000000037a4672b>] __rtnl_newlink+0xe08/0x13e0 net/core/rtnetlink.c:3448
+[<000000008d5d0fda>] rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3488
+[<000000004882fe39>] rtnetlink_rcv_msg+0x369/0xa10 net/core/rtnetlink.c:5552
+[<00000000907e6c54>] netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2504
+[<00000000e7d7a8c4>] netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+[<00000000e7d7a8c4>] netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1340
+[<00000000e0645d50>] netlink_sendmsg+0x78e/0xc90 net/netlink/af_netlink.c:1929
+[<00000000c24559b7>] sock_sendmsg_nosec net/socket.c:654 [inline]
+[<00000000c24559b7>] sock_sendmsg+0x139/0x170 net/socket.c:674
+[<00000000fc210bc2>] ____sys_sendmsg+0x658/0x7d0 net/socket.c:2350
+[<00000000be4577b5>] ___sys_sendmsg+0xf8/0x170 net/socket.c:2404
 
-BUG: KCSAN: data-race in __skb_try_recv_datagram / sock_setsockopt
+Calling mrp_request_leave() after mrp_request_join(), the attr->state
+is set to MRP_APPLICANT_VO, mrp_attr_destroy() won't be called in last
+TX event in mrp_uninit_applicant(), the attr of applicant will be leaked.
+To fix this leak, iterate and free each attr of applicant before rerturning
+from mrp_uninit_applicant().
 
-write to 0xffff88814eb5f904 of 4 bytes by task 14011 on cpu 0:
- sock_setsockopt+0x1287/0x2090 net/core/sock.c:1175
- __sys_setsockopt+0x14f/0x200 net/socket.c:2100
- __do_sys_setsockopt net/socket.c:2115 [inline]
- __se_sys_setsockopt net/socket.c:2112 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2112
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffff88814eb5f904 of 4 bytes by task 14001 on cpu 1:
- sk_can_busy_loop include/net/busy_poll.h:41 [inline]
- __skb_try_recv_datagram+0x14f/0x320 net/core/datagram.c:273
- unix_dgram_recvmsg+0x14c/0x870 net/unix/af_unix.c:2101
- unix_seqpacket_recvmsg+0x5a/0x70 net/unix/af_unix.c:2067
- ____sys_recvmsg+0x15d/0x310 include/linux/uio.h:244
- ___sys_recvmsg net/socket.c:2598 [inline]
- do_recvmmsg+0x35c/0x9f0 net/socket.c:2692
- __sys_recvmmsg net/socket.c:2771 [inline]
- __do_sys_recvmmsg net/socket.c:2794 [inline]
- __se_sys_recvmmsg net/socket.c:2787 [inline]
- __x64_sys_recvmmsg+0xcf/0x150 net/socket.c:2787
- do_syscall_64+0x4a/0x90 arch/x86/entry/common.c:47
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000000 -> 0x00000101
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 14001 Comm: syz-executor.3 Not tainted 5.13.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/busy_poll.h | 2 +-
- net/core/sock.c         | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/802/mrp.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index b001fa91c14e..716b7c5f6fdd 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -36,7 +36,7 @@ static inline bool net_busy_loop_on(void)
- 
- static inline bool sk_can_busy_loop(const struct sock *sk)
- {
--	return sk->sk_ll_usec && !signal_pending(current);
-+	return READ_ONCE(sk->sk_ll_usec) && !signal_pending(current);
+diff --git a/net/802/mrp.c b/net/802/mrp.c
+index 2cfdfbfbb2ed..5b804dbe2d08 100644
+--- a/net/802/mrp.c
++++ b/net/802/mrp.c
+@@ -292,6 +292,19 @@ static void mrp_attr_destroy(struct mrp_applicant *app, struct mrp_attr *attr)
+ 	kfree(attr);
  }
  
- bool sk_busy_loop_end(void *p, unsigned long start_time);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 7de51ea15cdf..d638c5361ed2 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1164,7 +1164,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 			if (val < 0)
- 				ret = -EINVAL;
- 			else
--				sk->sk_ll_usec = val;
-+				WRITE_ONCE(sk->sk_ll_usec, val);
- 		}
- 		break;
- #endif
++static void mrp_attr_destroy_all(struct mrp_applicant *app)
++{
++	struct rb_node *node, *next;
++	struct mrp_attr *attr;
++
++	for (node = rb_first(&app->mad);
++	     next = node ? rb_next(node) : NULL, node != NULL;
++	     node = next) {
++		attr = rb_entry(node, struct mrp_attr, node);
++		mrp_attr_destroy(app, attr);
++	}
++}
++
+ static int mrp_pdu_init(struct mrp_applicant *app)
+ {
+ 	struct sk_buff *skb;
+@@ -895,6 +908,7 @@ void mrp_uninit_applicant(struct net_device *dev, struct mrp_application *appl)
+ 
+ 	spin_lock_bh(&app->lock);
+ 	mrp_mad_event(app, MRP_EVENT_TX);
++	mrp_attr_destroy_all(app);
+ 	mrp_pdu_queue(app);
+ 	spin_unlock_bh(&app->lock);
+ 
 -- 
 2.30.2
 
