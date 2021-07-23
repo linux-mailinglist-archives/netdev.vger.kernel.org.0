@@ -2,115 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F44F3D383F
-	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 12:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 090223D3865
+	for <lists+netdev@lfdr.de>; Fri, 23 Jul 2021 12:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231573AbhGWJTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 05:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbhGWJTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:19:34 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0F5C061575;
-        Fri, 23 Jul 2021 03:00:07 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id m24so997460edp.12;
-        Fri, 23 Jul 2021 03:00:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZpV/vhONNALORyd7/Lzj0LakU5S+Xd5zMk4SZvs6RU4=;
-        b=C3gTWjAIVXsJ4l7MrNGFHWpm+9NAtWTyOYv1gLDC2Is/bpbyYO31SXCbabv0iIItbv
-         DWS6UpYh+hAYbrO+H2hp/7BxPtBtjX3CVJpBGNuBZsjNbZDlpOGoM1NEcjv0I6nlFUIk
-         hh+eUrgUM+y6uEeLV9/Cwqv/TtZoqxrCD7KzzyAk7d5I31yGpkjPWAf0CSFBEBd5izHo
-         gqr4dLVkDNskq6a40gGnSOVpvOcaM9zuCHvkQ7cYX0el5EL2tpYJlTSvBWnn5vTC3h4n
-         kM+aVZJ6Qdf+j9TGk2iccKz5VWt4nbUbFLnqr3B1WxvHLrC3mv1VkCq3RlCf10ggCJb3
-         IF5g==
+        id S231674AbhGWJcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 05:32:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35303 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230238AbhGWJcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 05:32:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627035162;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o3LHYIwGpCkKsSkV53n4TZ0vps5VvYe3NdwkzicqRUQ=;
+        b=cnIWmb3ifDcxtcxklgu2eUmJhX3QOZYzsFEbMKtUuB+SswKFWnZHnkO5hPFOMMgWIZJCpm
+        MwDZjmwkItVAyceIG1kxKRAzCVBHpGPerZAexPzTfSIkPi1Km9bOJAFp/L9wWFsfyY1pH5
+        jVfutYOibAKm5Rh/daKclZ2F3a9CAck=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-205-UMpfU8TrMUiPWmkX2b4w2g-1; Fri, 23 Jul 2021 06:12:41 -0400
+X-MC-Unique: UMpfU8TrMUiPWmkX2b4w2g-1
+Received: by mail-io1-f69.google.com with SMTP id u15-20020a5ec00f0000b029052c7ba9d3c3so1297047iol.17
+        for <netdev@vger.kernel.org>; Fri, 23 Jul 2021 03:12:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZpV/vhONNALORyd7/Lzj0LakU5S+Xd5zMk4SZvs6RU4=;
-        b=XNotwsh2TjhnPw5pRs4OlCRc7U74c4SjArTLH9FdJrWlLcIU1LZhaCcFNBjuAMLbTv
-         26PBbKCp9AtKREWeEK6CYIA9sDbpfm37pIggZFmwFvA8CshITCofgHkF6Iv2VxEOuZj0
-         NvdfFurVNfKMOxWXi1tFIwx/AbyIS8tSTNlSfLHJowLoV5pStOPCKLC5gzZGPsnTQWzc
-         umqvHs/ucQaCd7I5s4zzYedxys47frb/f7MuV2EXaSSIcLUo6YABtxCD3VuL2abf7wSv
-         FVzI6wXk4aOjIWgnGdD0mSYJ8GuZuCaN558VDbXfECUGAMIAWGnj0H53pOwdNOOuu2oQ
-         Z6xw==
-X-Gm-Message-State: AOAM533b5vojx+TCba3NTi6+qVp1z/2bWWSXMdrS0dvhbd2C1Ud/yh+Q
-        oNowZEdGlbyr2KHzcpd3acy0/wne9TX0m7b1MdU=
-X-Google-Smtp-Source: ABdhPJwmJ5S6cM321VniOs3i8XtSQTT+mmPx00cCX2ciWS4LDxVGR9JZeJeFJ8g6TDTiNcVVhr/9AYLYFdyrKl9UIvs=
-X-Received: by 2002:a05:6402:2228:: with SMTP id cr8mr4644804edb.309.1627034405768;
- Fri, 23 Jul 2021 03:00:05 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o3LHYIwGpCkKsSkV53n4TZ0vps5VvYe3NdwkzicqRUQ=;
+        b=X+Uq/KxwRBm14AHL5yIwo3fSNmBQ1b3eLsS0/11/F+E8y4iMEJrrSRfkPVRcNS4cDN
+         rD7Ba8k4J3Bex0Be39VRLsThaR4yUtonFuqTYz0OxMfckrXGFQbw8YDWQ1YV2ijbg3Jr
+         8bksv9rQaugNAAU7smOG68uro57NVEAnnnxcr+Rpxf43dbwFYTOC5F9yCTtrWtqKFTda
+         Y7xCIIPt+Iz4rnWcOkAK7TNi4c6l0ci020TS5gmlV69blqmshMH0Hub81ip/lVRZG0TG
+         Bih+MbTgkFl4ftLEN0pGnMIxb0cgL5ZE77apLVD3dV42Q7vo4nFy4rdYp1oJHw+SzZPj
+         C2JQ==
+X-Gm-Message-State: AOAM530Lnq5gAq1049hH2AI1KO6SkjHXbySxZxLs7GjGIInp8PNbydqL
+        Ru3LLapT5tPn8rzSZ7kV15DC6ykNHcCE52D4GWNVrqZKFbyw/35oTw0eRqzjC7jc821CGLglgEu
+        t2uCwNJuymO3QvCX8DG0Jbt5gH9npOuCh
+X-Received: by 2002:a05:6602:24d8:: with SMTP id h24mr3412211ioe.27.1627035160996;
+        Fri, 23 Jul 2021 03:12:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxqQKCSuAaJ76C0PJ046BjMgnp46FjUZbNbjxDzuYta92PdgNG6foRxytxTNIdxphLKV1SDWWCGdp1hySJbTEg=
+X-Received: by 2002:a05:6602:24d8:: with SMTP id h24mr3412199ioe.27.1627035160822;
+ Fri, 23 Jul 2021 03:12:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210723050919.1910964-1-mudongliangabcd@gmail.com>
- <d2b0f847dbf6b6d1e585ef8de1d9d367f8d9fd3b.camel@sipsolutions.net>
- <CAD-N9QWDNvo_3bdB=8edyYWvEV=b-66Tx-P6_7JGgrSYshDh0A@mail.gmail.com>
- <11ba299b812212a07fe3631b7be0e8b8fd5fb569.camel@sipsolutions.net>
- <CAD-N9QWRNyZnnDQ3XTQ_SAWNEgiMCJV+5Z69eHtRVcxYtXcM+A@mail.gmail.com> <e549fbb09d7c618762996aca4242c2ae50f85a5c.camel@sipsolutions.net>
-In-Reply-To: <e549fbb09d7c618762996aca4242c2ae50f85a5c.camel@sipsolutions.net>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Fri, 23 Jul 2021 17:59:39 +0800
-Message-ID: <CAD-N9QV02fnr8LLSwxTuyevYgkL_2aicO2b_7uZ46s6BGKaTmw@mail.gmail.com>
-Subject: Re: [PATCH] cfg80211: free the object allocated in wiphy_apply_custom_regulatory
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Ilan Peer <ilan.peer@intel.com>,
-        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
-        linux-wireless@vger.kernel.org,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20210723035721.531372-1-sashal@kernel.org> <20210723035721.531372-9-sashal@kernel.org>
+In-Reply-To: <20210723035721.531372-9-sashal@kernel.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Fri, 23 Jul 2021 12:12:30 +0200
+Message-ID: <CACT4oucVa5Lw538M2TEc1ZNU4mUZms+9fiTxw-p5-7J7xcM+kQ@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.13 09/19] sfc: ensure correct number of XDP queues
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 5:42 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+Hi,
+
+On Fri, Jul 23, 2021 at 5:57 AM Sasha Levin <sashal@kernel.org> wrote:
 >
-> Hi,
+> From: =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com>
 >
-> On Fri, 2021-07-23 at 17:30 +0800, Dongliang Mu wrote:
-> > if zhao in the thread is right, we don't need to add this free
-> > operation to wiphy_free().
+> [ Upstream commit 788bc000d4c2f25232db19ab3a0add0ba4e27671 ]
+
+Applying this commit alone could be problematic, leading even to
+kernel crash in certain situations.
+
+The real fix is the previous one of the series:
+f43a24f446da sfc: fix lack of XDP TX queues - error XDP TX failed (-22)
+
+This one can be applied too, but not really a must-have.
+
+> Commit 99ba0ea616aa ("sfc: adjust efx->xdp_tx_queue_count with the real
+> number of initialized queues") intended to fix a problem caused by a
+> round up when calculating the number of XDP channels and queues.
+> However, this was not the real problem. The real problem was that the
+> number of XDP TX queues had been reduced to half in
+> commit e26ca4b53582 ("sfc: reduce the number of requested xdp ev queues")=
+,
+> but the variable xdp_tx_queue_count had remained the same.
 >
-> Actually, no, that statement is not true.
+> Once the correct number of XDP TX queues is created again in the
+> previous patch of this series, this also can be reverted since the error
+> doesn't actually exist.
 >
-> All that zhao claimed was that the free happens correctly during
-> unregister (or later), and that is indeed true, since it happens from
+> Only in the case that there is a bug in the code we can have different
+> values in xdp_queue_number and efx->xdp_tx_queue_count. Because of this,
+> and per Edward Cree's suggestion, I add instead a WARN_ON to catch if it
+> happens again in the future.
 >
-> ieee80211_unregister_hw()
->  -> wiphy_unregister()
->  -> wiphy_regulatory_deregister()
+> Note that the number of allocated queues can be higher than the number
+> of used ones due to the round up, as explained in the existing comment
+> in the code. That's why we also have to stop increasing xdp_queue_number
+> beyond efx->xdp_tx_queue_count.
+>
+> Signed-off-by: =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/ethernet/sfc/efx_channels.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethern=
+et/sfc/efx_channels.c
+> index a3ca406a3561..bea0b27baf4b 100644
+> --- a/drivers/net/ethernet/sfc/efx_channels.c
+> +++ b/drivers/net/ethernet/sfc/efx_channels.c
+> @@ -891,18 +891,20 @@ int efx_set_channels(struct efx_nic *efx)
+>                         if (efx_channel_is_xdp_tx(channel)) {
+>                                 efx_for_each_channel_tx_queue(tx_queue, c=
+hannel) {
+>                                         tx_queue->queue =3D next_queue++;
+> -                                       netif_dbg(efx, drv, efx->net_dev,=
+ "Channel %u TXQ %u is XDP %u, HW %u\n",
+> -                                                 channel->channel, tx_qu=
+eue->label,
+> -                                                 xdp_queue_number, tx_qu=
+eue->queue);
+> +
+>                                         /* We may have a few left-over XD=
+P TX
+>                                          * queues owing to xdp_tx_queue_c=
+ount
+>                                          * not dividing evenly by EFX_MAX=
+_TXQ_PER_CHANNEL.
+>                                          * We still allocate and probe th=
+ose
+>                                          * TXQs, but never use them.
+>                                          */
+> -                                       if (xdp_queue_number < efx->xdp_t=
+x_queue_count)
+> +                                       if (xdp_queue_number < efx->xdp_t=
+x_queue_count) {
+> +                                               netif_dbg(efx, drv, efx->=
+net_dev, "Channel %u TXQ %u is XDP %u, HW %u\n",
+> +                                                         channel->channe=
+l, tx_queue->label,
+> +                                                         xdp_queue_numbe=
+r, tx_queue->queue);
+>                                                 efx->xdp_tx_queues[xdp_qu=
+eue_number] =3D tx_queue;
+> -                                       xdp_queue_number++;
+> +                                               xdp_queue_number++;
+> +                                       }
+>                                 }
+>                         } else {
+>                                 efx_for_each_channel_tx_queue(tx_queue, c=
+hannel) {
+> @@ -914,8 +916,7 @@ int efx_set_channels(struct efx_nic *efx)
+>                         }
+>                 }
+>         }
+> -       if (xdp_queue_number)
+> -               efx->xdp_tx_queue_count =3D xdp_queue_number;
+> +       WARN_ON(xdp_queue_number !=3D efx->xdp_tx_queue_count);
+>
+>         rc =3D netif_set_real_num_tx_queues(efx->net_dev, efx->n_tx_chann=
+els);
+>         if (rc)
+> --
+> 2.30.2
 >
 
-Thanks for your explanation. Now the situation is more clear.
+--=20
+=C3=8D=C3=B1igo Huguet
 
->
-> However, syzbot of course is also correct. Abstracting a bit and
-> ignoring mac80211, the problem is that here we assign it before
-> wiphy_register(), then wiphy_register() doesn't get called or fails, and
-> therefore we don't call wiphy_unregister(), only wiphy_free().
-
-Yes, you're right. In this case, wiphy_register is not called. We
-should not call wiphy_unregister() to clean up anything.
-
->
-> Hence the leak.
->
-> But you can also easily see from that description that it's not related
-> to hwsim - we should add a secondary round of cleanups in wiphy_free()
-> or even move the call to wiphy_regulatory_deregister() into
-> wiphy_free(), we need to look what else this does to see if we can move
-> it or not.
-
-I agree to move the cleanup operation of regd to wiphy_free API.
-That's the partial functionability of this function.
-
->
-> johannes
->
