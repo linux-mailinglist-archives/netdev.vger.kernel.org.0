@@ -2,91 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E933D4930
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 20:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A803D4936
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 20:40:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhGXRye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 13:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbhGXRyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 13:54:32 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A5FC061575;
-        Sat, 24 Jul 2021 11:35:02 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id hb6so8722796ejc.8;
-        Sat, 24 Jul 2021 11:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=OYA3ci3b6kMBnU+mtfcyeRkI+VLghBV/ejTMP2wgjbk=;
-        b=lcGU5AZkxJgvvkmM0gsKcktB8hiUjMto2PdDe19tqvCNmYH93UeMtcZr5VltvvEj7l
-         zMCYrcHLkEESBOmVTjVf4HOoFQMDWBAXJtUvoSrySLmrdrNcM8bKJXwtRaRrRemwdUSi
-         ImnXqK+YMRCyK3F7R8IMm7IgT8YZzOO6PsSA88TGcpg49lnGUTSESEtMBx8KFj+GnUb+
-         xUxmWDZNkTz0/jZlin29JCu3tzOJ7gwyYoI6eUDHmqRBeSmYdU06X9YMIoX4juug9e/2
-         Yt2B9HO1Toa7FEpQk2n/MHkbu7ljdDhhn8sgQ8HnYZTtzWmfM72SrwjycVBbq7vynkEn
-         iHVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=OYA3ci3b6kMBnU+mtfcyeRkI+VLghBV/ejTMP2wgjbk=;
-        b=pPfHzcPsdbSIryevSGDx5KrVtW8ZjkpM9fQAB0crf5X8HwBUeX5/aEJ8wbAhwCkaff
-         3FunuKN/WXbpqdVFcu3hYQgnXfFbwBGXoFenjgaE6XwDxLwOlo3w0L2CrpaTkAlg6WfD
-         Ngf+B+Bg5nlgGTErGc3ZfPf81BlDwvX54Tv/cQXnZoqMAjOPj0R6Vi8Z3M+/ay0zB6Qc
-         YJD+VQR5oN3WnRbRl8oDv7w/bCgsOZuWBZlvrP8w1Urk0Z7aCj+sukkESOzRduOToGWT
-         Lz7hAOcHegvC70YAORNDCO22+hSNc3c/ZYlReUheZvcKoNX3za+6OvQQpkLx01ybJ/zs
-         qrmQ==
-X-Gm-Message-State: AOAM5318OQaDxHSmWzOm4yF7EO0xCOoxeT0hh254b0/AfyUH9DD8GcbJ
-        v+UUpNrDZdLOgJg/YUiJa6w=
-X-Google-Smtp-Source: ABdhPJxJNtYQUouT8g3hMDfErIithvJFi3+MI5uRbKPPMW/dyyA18GQfSC8G4AUom+PQ3CACvDB8ag==
-X-Received: by 2002:a17:906:28c4:: with SMTP id p4mr10317176ejd.302.1627151701388;
-        Sat, 24 Jul 2021 11:35:01 -0700 (PDT)
-Received: from pc ([196.235.233.206])
-        by smtp.gmail.com with ESMTPSA id i14sm12609218eja.91.2021.07.24.11.34.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 11:35:00 -0700 (PDT)
-Date:   Sat, 24 Jul 2021 19:34:57 +0100
-From:   Salah Triki <salah.triki@gmail.com>
-To:     Herton Ronaldo Krzesinski <herton@canonical.com>,
-        Hin-Tak Leung <htl10@users.sourceforge.net>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] wireless: rtl8187: replace udev with usb_get_dev()
-Message-ID: <20210724183457.GA470005@pc>
+        id S230055AbhGXR7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 13:59:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40178 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229530AbhGXR7d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Jul 2021 13:59:33 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1449D60BD3;
+        Sat, 24 Jul 2021 18:40:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627152005;
+        bh=iTtYTtRzmi24IbC0gYwXZ5XtX4dfA8c930yrnjPsVDM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oxp40UpTzYgOvj4cTO6J1WGd1HT05DSb0odkgroh2mUesigJXsQGmbvvwdOp4Rlw6
+         rC1gIi9JO6go6eeyp7rjSS1H3x6MQDaldlLU3uOSH2l251P+8kb6n4h0wHNto3M9W9
+         FUB+60og4WlKyCchu54qpqWbCaWWxjHE3GuIwe18QFslMUvl7k/VsghLCX2N2VfJRz
+         Sr9x5fHNXdnG+TjqBe+PVjeccujabv9MPrnQ3HBO6eYCC92/e7YX1eagcwued8hlw9
+         PpTXLJJR+pbGEO7azt9pIJkhgF2ibeUFICSSnKdenVNf1/dpphjgNhTk08LWkRoLgb
+         KCXh4IoGBVgcQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 084CB60A0C;
+        Sat, 24 Jul 2021 18:40:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: can 2021-07-24
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162715200502.23954.17648964928279230319.git-patchwork-notify@kernel.org>
+Date:   Sat, 24 Jul 2021 18:40:05 +0000
+References: <20210724171947.547867-1-mkl@pengutronix.de>
+In-Reply-To: <20210724171947.547867-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace udev with usb_get_dev() in order to make code cleaner.
+Hello:
 
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
- drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
-index eb68b2d3caa1..30bb3c2b8407 100644
---- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
-+++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
-@@ -1455,9 +1455,7 @@ static int rtl8187_probe(struct usb_interface *intf,
- 
- 	SET_IEEE80211_DEV(dev, &intf->dev);
- 	usb_set_intfdata(intf, dev);
--	priv->udev = udev;
--
--	usb_get_dev(udev);
-+	priv->udev = usb_get_dev(udev);
- 
- 	skb_queue_head_init(&priv->rx_queue);
- 
--- 
-2.25.1
+On Sat, 24 Jul 2021 19:19:41 +0200 you wrote:
+> Hello Jakub, hello David,
+> 
+> this is a pull request of 6 patches for net/master.
+> 
+> The first patch is by Joakim Zhang targets the imx8mp device tree. It
+> removes the imx6 fallback from the flexcan binding, as the imx6 is not
+> compatible with the imx8mp.
+> 
+> [...]
+
+Here is the summary with links:
+  - pull-request: can 2021-07-24
+    https://git.kernel.org/netdev/net/c/e394f1e3b139
+  - [net,2/6] can: raw: raw_setsockopt(): fix raw_rcv panic for sock UAF
+    https://git.kernel.org/netdev/net/c/54f93336d000
+  - [net,3/6] can: j1939: j1939_session_deactivate(): clarify lifetime of session object
+    https://git.kernel.org/netdev/net/c/0c71437dd50d
+  - [net,4/6] can: j1939: j1939_xtp_rx_dat_one(): fix rxtimer value between consecutive TP.DT to 750ms
+    https://git.kernel.org/netdev/net/c/c6eea1c8bda5
+  - [net,5/6] can: peak_usb: pcan_usb_handle_bus_evt(): fix reading rxerr/txerr values
+    https://git.kernel.org/netdev/net/c/590eb2b7d8cf
+  - [net,6/6] can: mcp251xfd: mcp251xfd_irq(): stop timestamping worker in case error in IRQ
+    https://git.kernel.org/netdev/net/c/ef68a7179606
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
