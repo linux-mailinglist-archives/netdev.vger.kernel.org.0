@@ -2,101 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6C83D48A7
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 18:37:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A5A3D48B3
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:03:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbhGXP5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 11:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
+        id S229898AbhGXQWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 12:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbhGXP5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 11:57:12 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90FEC061575;
-        Sat, 24 Jul 2021 09:37:44 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so8074353pjh.3;
-        Sat, 24 Jul 2021 09:37:44 -0700 (PDT)
+        with ESMTP id S229530AbhGXQWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:22:42 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A02DC061575;
+        Sat, 24 Jul 2021 10:03:13 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id n12so2193643wrr.2;
+        Sat, 24 Jul 2021 10:03:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=58ES39bJrYCI4yZSgZYLWPj6FS4iI+jyIri71waPCCE=;
-        b=RQx8YSnn1sc4taeC5u1cwP1A3qGEWRaEB3oenANQiUCFjI91oamhfvVH3MeHZy01OW
-         7L/fy8+dIxDliJ0a5xH8zl7cEouuI6nLExmvVBveVOPt4FDJJYYi0gVJ0DqhrDJyGJqj
-         UiXWgRjws0ipXgoHKw7KMpAj8k1yhHouTiNz2d2BF0vAcpwyyIkuyT5pYxaUu6Ozh//S
-         4X1lP0nhvs+V9bF96mD5IPu4WxW/ujiRMYaAGIcL8L9UupHhxZC3egXbYODURDhWOrWG
-         swJyLJkG64zTB+w9MFdA9ulaf8muGJaAFItwW8sfButzg3qR7zpHgp6U7OGjs0C/iSp3
-         SPZw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=yDHcOTToBqs7w6wQps432x/oWcA2vi+afsM+JxLzc90=;
+        b=XxUNVGUnSVvHCNaM/cYzYmkYEE9sPe2ia/RwP6nCogXwL2wQhU0gdGBgHxfL0CmkYs
+         SEmzaxC5DDvYNL65H9CsWyN9vbSFc9gPfa5RkVcqbuTGmmE1evShaAr+gUBsHG6xmwEZ
+         eqlPAD9wVn4Agd8l4IN4HCi+UY1PveznjXGtlhW5Bl20e17ugjHsQfuLOd3kFiJTbhfc
+         rs3i3AIoTbglAQcqBeo6e1wtc9WKfWRRkNPAyZmI+r6wTiHOeamjNwHr3gAxkK96lMn/
+         64f6OcklHDP1g8wa1LOI4G/zdhTFNxKpi3xG6N/0ZxB1Z03hntMTutybV7Q8JpBnubsl
+         EHww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=58ES39bJrYCI4yZSgZYLWPj6FS4iI+jyIri71waPCCE=;
-        b=Af1/zfq1Z4rmJNSfB66FA118YOk6HdjNlhBbzhPKBWS5S4xoFmJl3/iOfTt4MouW2f
-         sx9GWWdMJtGtpUd8fQrEk6nckk02ryRq9rd80cnFOzvkbHobZ7KGRFexsTQ/GtTwHMok
-         dAQevaB7zy3VLXQtRNqRy75KorcG26JMwo15aQInAv0RR1ljNtdfrldQWIk/77rDE8Do
-         Tqt1VIYlHQ+J2B7JO/xupcdsI7T8KbOxnyO7tfpXHIlnyt6kaU8J2u8J+zLt1bGrxDT+
-         c+efEe6F6QVGDTZ8WjqalJtmQLnsBDkUdgbZ4P+j9ItBhP4VdTWCytymcNYXbSijwu87
-         07SQ==
-X-Gm-Message-State: AOAM533FbgD5KacSEWp8njYtw0csvye3BdsUmiXYSjOB+uP2ixhufgea
-        WI1f//F+WNuYTurQFuE2yXxkGULxuos=
-X-Google-Smtp-Source: ABdhPJwiQiyJ77bf1ENGGXmgUX+ZsNnRLL07yQAJv3Cu7toWAAQJSHfcfemLY/3Gcx2fXKvBNbuUjw==
-X-Received: by 2002:a65:6489:: with SMTP id e9mr10184228pgv.409.1627144663739;
-        Sat, 24 Jul 2021 09:37:43 -0700 (PDT)
-Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id y30sm7982477pfa.220.2021.07.24.09.37.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Jul 2021 09:37:43 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yDHcOTToBqs7w6wQps432x/oWcA2vi+afsM+JxLzc90=;
+        b=WgQ6w8C+yYsyr8OBbOamD2HNh3zyQiTHgr7Y06sdAiMAictxdgcE3F11wuLCB6pv/2
+         yebtv2bvU3xrVDaGOswsJjoc0gslGTIzAoQUN3CKNkFovec7U1/YdFXF/IgCWqqrTYd9
+         7fiQeaJ/VkPFxXArNANFpCxZCINAd2CwKzPD9aDuphqph1H+r1IkDiX7clZMVJvmrKcA
+         INWKnXAbNdAYyF0wFbgFzd7hpd+Iu1sIvKjLztJoRSTh3yP8E80Q30eckh+Ea3fZRON0
+         COlLZSA2eKfhz5Hd1hSi7S4svj5Dn/H+vqYb5DX1ZZnha1llgSFyGbFLy52YQlpa6wmy
+         tv2Q==
+X-Gm-Message-State: AOAM533mXFvXumljIGuWDXR3ThvgQNQ3lmtjQbpE+uFLMfUsO/BKGl9i
+        +jrcAddK39hMaKc/rC18M2U=
+X-Google-Smtp-Source: ABdhPJze+QN1Vh7PNyKNbw8GNjjkhbsAZayu/kZkcomPcbckVlUgTtWNGicCK0BlIjNFq40KmxLjhQ==
+X-Received: by 2002:a5d:438c:: with SMTP id i12mr10762739wrq.99.1627146192044;
+        Sat, 24 Jul 2021 10:03:12 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id e3sm36706806wra.15.2021.07.24.10.03.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Jul 2021 10:03:11 -0700 (PDT)
+Date:   Sat, 24 Jul 2021 20:03:10 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Fabio Estevam <festevam@gmail.com>, davem@davemloft.net,
+        shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org,
+        qiangqing.zhang@nxp.com, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
 Subject: Re: [PATCH net-next] ARM: dts: imx6qdl: Remove unnecessary mdio
  #address-cells/#size-cells
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>
-Cc:     davem@davemloft.net, shawnguo@kernel.org,
-        linux-arm-kernel@lists.infradead.org, qiangqing.zhang@nxp.com,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
+Message-ID: <20210724170310.ylouwttmutkpin42@skbuf>
 References: <20210723112835.31743-1-festevam@gmail.com>
  <20210723130851.6tfl4ijl7hkqzchm@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <9455e5b8-d994-732f-2c3d-88c7a98aaf86@gmail.com>
-Date:   Sat, 24 Jul 2021 09:37:35 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ <9455e5b8-d994-732f-2c3d-88c7a98aaf86@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210723130851.6tfl4ijl7hkqzchm@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9455e5b8-d994-732f-2c3d-88c7a98aaf86@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jul 24, 2021 at 09:37:35AM -0700, Florian Fainelli wrote:
+> On 7/23/2021 6:08 AM, Vladimir Oltean wrote:
+> > Hi Fabio,
+> >
+> > On Fri, Jul 23, 2021 at 08:28:35AM -0300, Fabio Estevam wrote:
+> > > Since commit dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into
+> > > phy device node") the following W=1 dtc warnings are seen:
+> > >
+> > > arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi:323.7-334.4: Warning (avoid_unnecessary_addr_size): /soc/bus@2100000/ethernet@2188000/mdio: unnecessary #address-cells/#size-cells without "ranges" or child "reg" property
+> > >
+> > > Remove the unnecessary mdio #address-cells/#size-cells to fix it.
+> > >
+> > > Fixes: dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into phy device node")
+> > > Signed-off-by: Fabio Estevam <festevam@gmail.com>
+> > > ---
+> >
+> > Are you actually sure this is the correct fix? If I look at mdio.yaml, I
+> > think it is pretty clear that the "ethernet-phy" subnode of the MDIO
+> > controller must have an "@[0-9a-f]+$" pattern, and a "reg" property. If
+>
+> It is valid to omit the "reg" property of an Ethernet PHY which the kernel
+> will then dynamically scan for. If you know the Ethernet PHY address it's
+> obviously better to set it so you avoid scanning and the time spent in doing
+> that. The boot loader could (should?) also provide that information to the
+> kernel for the same reasons.
 
+Interesting, but brittle I suppose (it only works reliably with a single
+PHY on a shared MDIO bus). NXP has "QDS" boards for internal development
+and these have multi-port riser cards with various PHYs for various
+SERDES protocols, and we have a really hard time describing the hardware
+in DT (we currently use overlays applied by U-Boot), so we would like
+some sort of auto-detection of PHYs if that was possible, but I think
+that for anything except the simplest of cases it isn't. For example
+what happens if you unbind and rebind two net devices in a different
+order - they will connect to a PHY at a different address, won't they?
 
-On 7/23/2021 6:08 AM, Vladimir Oltean wrote:
-> Hi Fabio,
-> 
-> On Fri, Jul 23, 2021 at 08:28:35AM -0300, Fabio Estevam wrote:
->> Since commit dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into
->> phy device node") the following W=1 dtc warnings are seen:
->>
->> arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi:323.7-334.4: Warning (avoid_unnecessary_addr_size): /soc/bus@2100000/ethernet@2188000/mdio: unnecessary #address-cells/#size-cells without "ranges" or child "reg" property
->>
->> Remove the unnecessary mdio #address-cells/#size-cells to fix it.
->>
->> Fixes: dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into phy device node")
->> Signed-off-by: Fabio Estevam <festevam@gmail.com>
->> ---
-> 
-> Are you actually sure this is the correct fix? If I look at mdio.yaml, I
-> think it is pretty clear that the "ethernet-phy" subnode of the MDIO
-> controller must have an "@[0-9a-f]+$" pattern, and a "reg" property. If
-
-It is valid to omit the "reg" property of an Ethernet PHY which the 
-kernel will then dynamically scan for. If you know the Ethernet PHY 
-address it's obviously better to set it so you avoid scanning and the 
-time spent in doing that. The boot loader could (should?) also provide 
-that information to the kernel for the same reasons.
--- 
-Florian
+Anyway, I was wrong, ok, but I think the point still stands that
+according to mdio.yaml this DT description is not valid. So after your
+explanation, it is the DT schema that we should update.
