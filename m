@@ -2,76 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D20C73D4793
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 14:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A8163D47AF
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 14:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234263AbhGXLgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 07:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        id S234191AbhGXMHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 08:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231993AbhGXLgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 07:36:25 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661D5C061575
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 05:16:56 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so7442565pjh.3
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 05:16:56 -0700 (PDT)
+        with ESMTP id S230449AbhGXMHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 08:07:47 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE29C061575;
+        Sat, 24 Jul 2021 05:48:18 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id n6so5061667ljp.9;
+        Sat, 24 Jul 2021 05:48:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=g3ppGVpJEUxeRy6OPxPvby0Y7pmH2CyarpPHwAZK56k=;
-        b=sJ9VWl/R+dXyTDu2MuBY/AzA6EH1VgjefqbJ9Lm2MfOXlSEnaxmWev8lN1esr9fwJ0
-         Ecz3288LPhvwIYDgSlqOdX+h7h80Qu81489Z89Jj/GotXeJM8VCBsIgXODSsUWPW5V+D
-         aKw/iR/f0kFSdcQxJLHoy1Tn2sVlABekoiNZw40nJqFkY0EnE0XcHspDxY8ojpks0HVa
-         BjpJLEbIVRE7u9/s7Xa0X1Z1Iany5htY/31r4LnUp17xIok1DwSjtxe+qomBZCBoDpy/
-         d+NT0fs3e0z5KFYBO7GUc8ltkCoNfuB3ZO7zVm1rHhNjjtf8DndS5om2hOwJiwoGffIS
-         luqg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RfMSh6YLaZEkpisGzz8tzT+CWBhFXuhceR7+JI0KV/M=;
+        b=kA3ig6s28YpJPVSPJ4rtpTNz6R12Y92GVLIz6CG/yYbl686dISHG8qmMtBV+Nx9UFM
+         cAfH1i8HmgS9Qv9/1rYlY2QcUc5E2O1mrRYQTv4a0nuPS9WliPcBxIQUng5dFmFb2cpV
+         4nM9QvwpGgS/ySlcc7v6fypZSFiaWGG4lQt4knNUwvQu+otuc0etkjVBkpnORVpIh1qG
+         Os0pIBT7MSQvtArgSdVC2uo/5ZQhV94cBj1Oks2JsfHFkv+SXF9lhC6bPTG0UGf/Pj4r
+         vPwhWodCbpjrG9VbxxoUowMoG9TWURnoGhn9XnxbtqhDr6OY84F7//Vyn48ITMTjHdmV
+         3mwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g3ppGVpJEUxeRy6OPxPvby0Y7pmH2CyarpPHwAZK56k=;
-        b=ULHPGaFo5tFB9vEcsdnPpzOCyfZoGDwDXJ3G3l70chVyEUM77RzdCA8r7P11vb6Ct6
-         FWLFYWsB1iDB/0wjquIDRzLClo8BXrTcacwJjYZm459IHUBc9PRuFx1UMvTyAn2b+HAL
-         glKAk/+c5WJR6hc/W6I8zEK0KaL3Vc0RXYJZsfUzmW1y4UxuaWIV0Y2IJ8mHhVaXIPm4
-         7B1Vmx02hU4HZLJxvb0OXmI577/tQsr/0B8xy/RYAZwNsv/Yr2TvgQMgsHMikgY9KE8T
-         VMT3ydhxc7SkAxMBIp+P2glPVYkg0FjhGvj3J0p1g6bnpjbFCEl6Fdu+mDz1JHQk3Niy
-         Rsyw==
-X-Gm-Message-State: AOAM533YUKNBa0hn9/gxsaxOHhLuMf7+yVNrEDDTxLABrTJGMA4utmty
-        qv+elGonbKZ9qdC6CTeB/n8=
-X-Google-Smtp-Source: ABdhPJyKHMg/yTUBV6X16uO0rU4bf24EFIU2cKaSOyY/DmKfpzFct+e6pDQFQwG11+94gmJUtTc9fg==
-X-Received: by 2002:a63:2347:: with SMTP id u7mr3887059pgm.381.1627129016004;
-        Sat, 24 Jul 2021 05:16:56 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:645:c000:2163:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id t22sm9875175pjo.3.2021.07.24.05.16.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 05:16:55 -0700 (PDT)
-Date:   Sat, 24 Jul 2021 05:16:52 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Michael Chan <michael.chan@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        gospo@broadcom.com, pavan.chebbi@broadcom.com
-Subject: Re: [PATCH net] bnxt_en: Add missing periodic PHC overflow check
-Message-ID: <20210724121652.GA10654@hoboy.vegasvil.org>
-References: <1627077228-887-1-git-send-email-michael.chan@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RfMSh6YLaZEkpisGzz8tzT+CWBhFXuhceR7+JI0KV/M=;
+        b=GsO9BvQ8DD6VBHC7/3XL3iIn84xrHVvCp7nu+tU7FDEhaphEEwnYh47L0TtTxUORf+
+         KN74ZO5bVpIMF0M+2oNZlsDgr25+8VJR9mtcGLoCzQmqkNa1athv9QUOvgoyt5C61IUl
+         Pt4fN4/RPmWxvtQ3Oy2cuqrQYuGVcSgWlCKIB4Dq+Y10Q8hCA8RPVUHliHXV5b9gxGC1
+         punxSj3lFxO3VMvickIfvk7Rl9e95gzgsz303VPueDan3AhvDu5HvuB1+xHjwFiT1OSH
+         AmGsOIjF1kBRNkbZ6uzom4o807gc6nK7sdNARyxzxm6KnfaKlVpkFQ/EPdZUKKnVcjGj
+         st2A==
+X-Gm-Message-State: AOAM531/MOgYrVlTY0YG3AdBFjLy74vjvI0FjKSNum2rBam5zwzjoKnZ
+        dbnUUY/Rd0P5QQgB8pLhJPvjhg1hI4nk2sUXz1w=
+X-Google-Smtp-Source: ABdhPJwTKMzqfmKrpi+o6iZEl3eiwHJlpHehq/87sN2KhUYNKmn4LsVc1dET97l4kEBYxCo3vc5v0zH5kuzC+9kKgQA=
+X-Received: by 2002:a2e:a164:: with SMTP id u4mr6069456ljl.121.1627130896569;
+ Sat, 24 Jul 2021 05:48:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1627077228-887-1-git-send-email-michael.chan@broadcom.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20210723112835.31743-1-festevam@gmail.com> <20210723130851.6tfl4ijl7hkqzchm@skbuf>
+ <CAOMZO5BRt6M=4WrZMWQjYeDcOXMSFhcfjZ95tdUkst5Jm=yB6A@mail.gmail.com> <DB8PR04MB6795F1B7B273777BA55B81ABE6E69@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795F1B7B273777BA55B81ABE6E69@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Sat, 24 Jul 2021 09:48:05 -0300
+Message-ID: <CAOMZO5CvVA8xfkinRAhf=WLnLxjZ9mZask3jYm8=NSiSa5z+TQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] ARM: dts: imx6qdl: Remove unnecessary mdio #address-cells/#size-cells
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 05:53:48PM -0400, Michael Chan wrote:
-> We use the timecounter APIs for the 48-bit PHC and packet timestamps.
-> We must periodically update the timecounter at roughly half the
-> overflow interval.  The overflow interval is about 78 hours, so
-> update it every 19 hours (1/4 interval) for some extra margins.
-> 
-> Fixes: 390862f45c85 ("bnxt_en: Get the full 48-bit hardware timestamp periodically")
-> Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Hi Joakim and Vladimir,
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+On Sat, Jul 24, 2021 at 2:21 AM Joakim Zhang <qiangqing.zhang@nxp.com> wrote:
+
+> I prepare this patch to fix dtbs_check when convert fec binding into schema.
+> I realized that we need a "reg" under phy device node, but I also don't know how to add it since
+> the phy is obviously not on board. And I check the phy code, it supports auto scan for PHYs with empty
+> "reg" property.
+
+I looked in the U-Boot code for the nitrogenx6x board:
+https://source.denx.de/u-boot/u-boot/-/blob/master/board/boundary/nitrogen6x/nitrogen6x.c#L343-356
+
+and it scans for a range of Ethernet PHY addresses.
+
+As we can't pass a reg property in the dts in this case, the patch I
+sent that removes the
+#address-cells/#size-cells properties looks good, right?
+
+What do you think?
