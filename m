@@ -2,89 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 698543D48E9
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB98D3D48FA
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229689AbhGXQxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 12:53:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44004 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229461AbhGXQxp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Jul 2021 12:53:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=/jZ6Wby+hW1/SgAu/1GtyWyRk62rtJMaPwSQ9wbcqtk=; b=zL
-        89XaiDtAfz79K5D5QGnpUZAy5Da3N3Xw3LZNSzbaJFvEiyUSOGOJ9NjIj3jv6Tphn28TIQ3lfWGlx
-        +8mPK9Z1IAP2FKLI0fQ6sfyOJMIJG1jrUkuRn/uCQxOdftuZAoKdz6BsQvBZ/xOBeUn3q4hVz3ywD
-        /75t+CiJqUgOOHM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m7LXT-00EeGr-Lo; Sat, 24 Jul 2021 19:34:15 +0200
-Date:   Sat, 24 Jul 2021 19:34:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dario Alcocer <dalcocer@helixd.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
-Message-ID: <YPxPF2TFSDX8QNEv@lunn.ch>
-References: <6a70869d-d8d5-4647-0640-4e95866a0392@helixd.com>
- <YPrHJe+zJGJ7oezW@lunn.ch>
- <0188e53d-1535-658a-4134-a5f05f214bef@helixd.com>
- <YPsJnLCKVzEUV5cb@lunn.ch>
- <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
- <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com>
+        id S230010AbhGXRQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 13:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229947AbhGXRQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 13:16:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6199C061575
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 10:56:56 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m7LtC-0006BX-5X; Sat, 24 Jul 2021 19:56:42 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:41cc:c65c:f580:3bde])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B18D657090;
+        Sat, 24 Jul 2021 17:56:39 +0000 (UTC)
+Date:   Sat, 24 Jul 2021 19:56:37 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: Re: [PATCH v4 2/2] can: m_can: Add support for transceiver as phy
+Message-ID: <20210724175637.vcslc2iewcdqnvev@pengutronix.de>
+References: <20210510052541.14168-1-a-govindraju@ti.com>
+ <20210510052541.14168-3-a-govindraju@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="aozsztylvh5w2ifj"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com>
+In-Reply-To: <20210510052541.14168-3-a-govindraju@ti.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> root@dali:~# ip link
-> 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode
-> DEFAULT group default qlen 1000
->     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 2: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group
-> default qlen 10
->     link/can
-> 3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1508 qdisc mq state UP mode
-> DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
-> 4: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group
-> default qlen 1000
->     link/sit 0.0.0.0 brd 0.0.0.0
-> 5: lan1@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue
-> state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
-> 6: lan2@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
-> 7: lan3@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
-> 8: lan4@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
-> 9: dmz@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode
-> DEFAULT group default qlen 1000
->     link/ether b6:07:dc:be:30:f9 brd ff:ff:ff:ff:ff:ff
 
-I would suggest you configure all the interfaces up. I've made the
-stupid mistake of thinking the right most RJ-45 socket is lan1 when it
-is in fact dmz, etc. If you configure them all up, you should see
-kernel messages if any go up, and you can see LOWER_UP, etc.
+--aozsztylvh5w2ifj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-What does the link peer think? Does it think there is link? I think
-for this generation of switch, the PHYs by default are enabled and
-will perform autoneg, even if the interface is down. But if the
-interface is down, phylib will not be monitoring it, and so you don't
-see any kernel messages.
+On 10.05.2021 10:55:41, Aswath Govindraju wrote:
+> From: Faiz Abbas <faiz_abbas@ti.com>
+>=20
+> Add support for implementing transceiver node as phy. The max_bitrate is
+> obtained by getting a phy attribute.
+>=20
+> Signed-off-by: Faiz Abbas <faiz_abbas@ti.com>
+> Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+> ---
+>  drivers/net/can/m_can/m_can.c          | 11 +++++++++++
+>  drivers/net/can/m_can/m_can.h          |  2 ++
+>  drivers/net/can/m_can/m_can_platform.c | 13 +++++++++++++
+>  3 files changed, 26 insertions(+)
+>=20
+> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+> index 3cf6de21d19c..afbecc35d3b6 100644
+> --- a/drivers/net/can/m_can/m_can.c
+> +++ b/drivers/net/can/m_can/m_can.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/iopoll.h>
+>  #include <linux/can/dev.h>
+>  #include <linux/pinctrl/consumer.h>
+> +#include <linux/phy/phy.h>
+> =20
+>  #include "m_can.h"
+> =20
+> @@ -1514,6 +1515,7 @@ static void m_can_stop(struct net_device *dev)
+>  static int m_can_close(struct net_device *dev)
+>  {
+>  	struct m_can_classdev *cdev =3D netdev_priv(dev);
+> +	int err;
+> =20
+>  	netif_stop_queue(dev);
+> =20
+> @@ -1536,6 +1538,10 @@ static int m_can_close(struct net_device *dev)
+>  	close_candev(dev);
+>  	can_led_event(dev, CAN_LED_EVENT_STOP);
+> =20
+> +	err =3D phy_power_off(cdev->transceiver);
+> +	if (err)
+> +		return err;
 
-You might want to enable dbg prints in driver/nets/phy/phy.c, so you
-can see the state machine changes.
+No need to propagate errors in the close().
 
-    Andrew
+> +
+>  	return 0;
+>  }
+> =20
+> @@ -1721,6 +1727,10 @@ static int m_can_open(struct net_device *dev)
+>  	struct m_can_classdev *cdev =3D netdev_priv(dev);
+>  	int err;
+> =20
+> +	err =3D phy_power_on(cdev->transceiver);
+> +	if (err)
+> +		return err;
+> +
+>  	err =3D m_can_clk_start(cdev);
+>  	if (err)
+>  		return err;
+
+Here, don't handle the error properly.
+
+> @@ -1781,6 +1791,7 @@ static int m_can_open(struct net_device *dev)
+>  	close_candev(dev);
+>  exit_disable_clks:
+>  	m_can_clk_stop(cdev);
+> +	phy_power_off(cdev->transceiver);
+>  	return err;
+>  }
+> =20
+> diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
+> index ace071c3e58c..38cad068abad 100644
+> --- a/drivers/net/can/m_can/m_can.h
+> +++ b/drivers/net/can/m_can/m_can.h
+> @@ -28,6 +28,7 @@
+>  #include <linux/iopoll.h>
+>  #include <linux/can/dev.h>
+>  #include <linux/pinctrl/consumer.h>
+> +#include <linux/phy/phy.h>
+> =20
+>  /* m_can lec values */
+>  enum m_can_lec_type {
+> @@ -82,6 +83,7 @@ struct m_can_classdev {
+>  	struct workqueue_struct *tx_wq;
+>  	struct work_struct tx_work;
+>  	struct sk_buff *tx_skb;
+> +	struct phy *transceiver;
+> =20
+>  	struct can_bittiming_const *bit_timing;
+>  	struct can_bittiming_const *data_timing;
+> diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_c=
+an/m_can_platform.c
+> index 599de0e08cd7..f102d532b7f0 100644
+> --- a/drivers/net/can/m_can/m_can_platform.c
+> +++ b/drivers/net/can/m_can/m_can_platform.c
+> @@ -6,6 +6,7 @@
+>  // Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.=
+com/
+> =20
+>  #include <linux/platform_device.h>
+> +#include <linux/phy/phy.h>
+> =20
+>  #include "m_can.h"
+> =20
+> @@ -67,6 +68,7 @@ static int m_can_plat_probe(struct platform_device *pde=
+v)
+>  	struct resource *res;
+>  	void __iomem *addr;
+>  	void __iomem *mram_addr;
+> +	struct phy *transceiver;
+>  	int irq, ret =3D 0;
+> =20
+>  	mcan_class =3D m_can_class_allocate_dev(&pdev->dev,
+> @@ -101,6 +103,16 @@ static int m_can_plat_probe(struct platform_device *=
+pdev)
+>  		goto probe_fail;
+>  	}
+> =20
+> +	transceiver =3D devm_phy_optional_get(&pdev->dev, NULL);
+> +	if (IS_ERR(transceiver)) {
+> +		ret =3D PTR_ERR(transceiver);
+> +		dev_err_probe(&pdev->dev, ret, "failed to get phy\n");
+> +		return ret;
+
+Here you leak the memory allocated by m_can_class_allocate_dev().
+
+> +	}
+> +
+> +	if (transceiver)
+> +		mcan_class->can.bitrate_max =3D transceiver->attrs.max_link_rate;
+> +
+>  	priv->base =3D addr;
+>  	priv->mram_base =3D mram_addr;
+> =20
+> @@ -108,6 +120,7 @@ static int m_can_plat_probe(struct platform_device *p=
+dev)
+>  	mcan_class->pm_clock_support =3D 1;
+>  	mcan_class->can.clock.freq =3D clk_get_rate(mcan_class->cclk);
+>  	mcan_class->dev =3D &pdev->dev;
+> +	mcan_class->transceiver =3D transceiver;
+> =20
+>  	mcan_class->ops =3D &m_can_plat_ops;
+> =20
+> --=20
+> 2.17.1
+>=20
+>
+
+I've send a v5 fixing these problems.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--aozsztylvh5w2ifj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD8VFMACgkQqclaivrt
+76lU3Af6A5JrBDeFGF/y9LtAa9s/HuuJtW5am23+tonZTKV2LwpFZlxSR18/e9of
+ZpdHaLJf+XBo33FxQKc32zvHg+4u+d2qgfkrAJrqaSadRx0V3nwm08Ab/QBc4LPM
+gO99CqSvRUGZkmhiFMQ51u5WQHQ1VDS4UszqAcyuyZ7JIlwUE2/tzDU0/Ovmu6kO
+yuRIOHZuhEO8bHP26u1/4iZOpOhRfC9xg70/HeXZvwGQmLXLLZzXQJVY1+mPEjkn
+us6tglOHQO/SWugT8xwSxGydys3NN92aB+xxsmsd97det544z0wEjjS4d6gJYSaN
+/psJgaQEDFCttcrHRUMT4XfxylnhxA==
+=uHbx
+-----END PGP SIGNATURE-----
+
+--aozsztylvh5w2ifj--
