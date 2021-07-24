@@ -2,96 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3420F3D4850
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 17:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2493D4860
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 17:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbhGXOlK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 10:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbhGXOlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 10:41:09 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB14C061575;
-        Sat, 24 Jul 2021 08:21:40 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id a20so6780959plm.0;
-        Sat, 24 Jul 2021 08:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YO+3D7atNziJ00YoEqVQ4u+r3Pt08MtNO7aczD+MpIs=;
-        b=sWfQx2byWQ2XbJr/7AlVtlK+ZHLARyzVkDMrboDJKFf+GGtHlDyNOcUH9Fz6pW0BxK
-         HFl8sBcz84XqB8IoGhvXpwJhdrr/g019BHk/B+geRKW4CFa3ah9x1+sugScKHyKYQFtd
-         dGW4HhjyROkKhkDAb0YWhwwNkiR+olAKeHNL0Ih1bkxKm8z2NG+WAhCmvFFJtsDEjaKe
-         LWztnqEFO1lT6ynyvimLd3hricLi+OCSm21JgErch+qkRmDeSKqNH7Gp6bX5/1lqw/FN
-         /kuA1yNVR82ztAuIty/5EAUykzj9HjJfLSxV3Hi4ZvsDPqv+CavIroHhZ3BtM0vcRv42
-         1rig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YO+3D7atNziJ00YoEqVQ4u+r3Pt08MtNO7aczD+MpIs=;
-        b=HiB23Om8ijLcMUnOrCGsgQX5WV/7Grujxu9VQFYbN4tjqYMDDuHY6+RoUzV7ILXaMB
-         gDoUgTNpP1HEhZMC1/Hntupih61x+0GExaDEdAzTkMld3+1sjuzOWU6zcgbJ/s62tduX
-         dmtTP1eaJUR3oE23c0Of6EUinSewOF8tkiytovphTPtdeP/POTjbEzuG1bpWVD/m6qTX
-         dNAfl19GuhCEl6P7P4lZtH1lmQrTmW/hfUiR/6vRfi9THRZpn0I1OD/DxaX3Ic36+E8M
-         sCT4AjO+FWXkcAdrYJCq0/4WpKe1OwCsFN1XMUl77MJgw2QMx5Bo1+oR/b+28SnJt5Bm
-         0tkA==
-X-Gm-Message-State: AOAM53189qe22pcRYzKL0HEPjLYEPOqTRV0Zk2hDFwE0qYuo+6EM1FCi
-        IoLBZSi/QVKN0ucWsCANmBE=
-X-Google-Smtp-Source: ABdhPJy16SLT3P10eQ03C9l87/erJd/C/uV7Tf0YFLXDviZnwUZE/S9GPDy+jKPj3Vp4SB9zFA/Ykg==
-X-Received: by 2002:a63:1551:: with SMTP id 17mr10016420pgv.76.1627140099737;
-        Sat, 24 Jul 2021 08:21:39 -0700 (PDT)
-Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id w22sm36682527pfu.50.2021.07.24.08.21.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 08:21:39 -0700 (PDT)
-From:   Juhee Kang <claudiajkang@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [bpf-next 2/2] samples: bpf: Add the omitted xdp samples to .gitignore
-Date:   Sat, 24 Jul 2021 15:21:24 +0000
-Message-Id: <20210724152124.9762-2-claudiajkang@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210724152124.9762-1-claudiajkang@gmail.com>
-References: <20210724152124.9762-1-claudiajkang@gmail.com>
+        id S230026AbhGXO6c convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 24 Jul 2021 10:58:32 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:37358 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229545AbhGXO6a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Jul 2021 10:58:30 -0400
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+        by localhost (Postfix) with ESMTP id 4GX9Mm2wCszB8p0;
+        Sat, 24 Jul 2021 17:39:00 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Mhdamgu_XzUK; Sat, 24 Jul 2021 17:39:00 +0200 (CEST)
+Received: from vm-hermes.si.c-s.fr (vm-hermes.si.c-s.fr [192.168.25.253])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4GX9Mm1qk3zB8nr;
+        Sat, 24 Jul 2021 17:39:00 +0200 (CEST)
+Received: by vm-hermes.si.c-s.fr (Postfix, from userid 33)
+        id 5083C653; Sat, 24 Jul 2021 17:44:16 +0200 (CEST)
+Received: from 37-165-72-176.coucou-networks.fr
+ (37-165-72-176.coucou-networks.fr [37.165.72.176]) by messagerie.c-s.fr
+ (Horde Framework) with HTTP; Sat, 24 Jul 2021 17:44:16 +0200
+Date:   Sat, 24 Jul 2021 17:44:16 +0200
+Message-ID: <20210724174416.Horde.SGJpvfIKCho_9unV7fRnmA7@messagerie.c-s.fr>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Geoff Levand <geoff@infradead.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 03/10] net/ps3_gelic: Format cleanups
+References: <cover.1627068552.git.geoff@infradead.org>
+ <56efff53fcf563a1741904ea0f078d50c378b6cc.1627068552.git.geoff@infradead.org>
+In-Reply-To: <56efff53fcf563a1741904ea0f078d50c378b6cc.1627068552.git.geoff@infradead.org>
+User-Agent: Internet Messaging Program (IMP) H5 (6.2.3)
+Content-Type: text/plain; charset=UTF-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are recently added xdp samples (xdp_redirect_map_multi and
-xdpsock_ctrl_proc) which are not managed by .gitignore.
+Geoff Levand <geoff@infradead.org> a écrit :
 
-This commit adds these files to .gitignore.
+> In an effort to make the PS3 gelic driver easier to maintain, cleanup the
+> the driver source file formatting to be more consistent.
 
-Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
----
- samples/bpf/.gitignore | 2 ++
- 1 file changed, 2 insertions(+)
+Many of your changes in this patch go in the wrong direction.
 
-diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
-index 0b9548ea8477..fcba217f0ae2 100644
---- a/samples/bpf/.gitignore
-+++ b/samples/bpf/.gitignore
-@@ -45,11 +45,13 @@ xdp_monitor
- xdp_redirect
- xdp_redirect_cpu
- xdp_redirect_map
-+xdp_redirect_map_multi
- xdp_router_ipv4
- xdp_rxq_info
- xdp_sample_pkts
- xdp_tx_iptunnel
- xdpsock
-+xdpsock_ctrl_proc
- xsk_fwd
- testfile.img
- hbm_out.log
--- 
-2.27.0
+For instance, you shall not use { } in an if/else sequence with single  
+lines in both the if and the else. See  
+https://www.kernel.org/doc/html/latest/process/coding-style.html#placing-braces-and-spaces
+
+In a multiline operation, the argument of the second line must be  
+aligned to the matching parenthesis.
+
+Christophe
+
 
