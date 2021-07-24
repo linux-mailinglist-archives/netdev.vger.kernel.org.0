@@ -2,108 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A5A3D48B3
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902A03D48C8
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229898AbhGXQWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 12:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S230088AbhGXQje (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 12:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbhGXQWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:22:42 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A02DC061575;
-        Sat, 24 Jul 2021 10:03:13 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id n12so2193643wrr.2;
-        Sat, 24 Jul 2021 10:03:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yDHcOTToBqs7w6wQps432x/oWcA2vi+afsM+JxLzc90=;
-        b=XxUNVGUnSVvHCNaM/cYzYmkYEE9sPe2ia/RwP6nCogXwL2wQhU0gdGBgHxfL0CmkYs
-         SEmzaxC5DDvYNL65H9CsWyN9vbSFc9gPfa5RkVcqbuTGmmE1evShaAr+gUBsHG6xmwEZ
-         eqlPAD9wVn4Agd8l4IN4HCi+UY1PveznjXGtlhW5Bl20e17ugjHsQfuLOd3kFiJTbhfc
-         rs3i3AIoTbglAQcqBeo6e1wtc9WKfWRRkNPAyZmI+r6wTiHOeamjNwHr3gAxkK96lMn/
-         64f6OcklHDP1g8wa1LOI4G/zdhTFNxKpi3xG6N/0ZxB1Z03hntMTutybV7Q8JpBnubsl
-         EHww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yDHcOTToBqs7w6wQps432x/oWcA2vi+afsM+JxLzc90=;
-        b=WgQ6w8C+yYsyr8OBbOamD2HNh3zyQiTHgr7Y06sdAiMAictxdgcE3F11wuLCB6pv/2
-         yebtv2bvU3xrVDaGOswsJjoc0gslGTIzAoQUN3CKNkFovec7U1/YdFXF/IgCWqqrTYd9
-         7fiQeaJ/VkPFxXArNANFpCxZCINAd2CwKzPD9aDuphqph1H+r1IkDiX7clZMVJvmrKcA
-         INWKnXAbNdAYyF0wFbgFzd7hpd+Iu1sIvKjLztJoRSTh3yP8E80Q30eckh+Ea3fZRON0
-         COlLZSA2eKfhz5Hd1hSi7S4svj5Dn/H+vqYb5DX1ZZnha1llgSFyGbFLy52YQlpa6wmy
-         tv2Q==
-X-Gm-Message-State: AOAM533mXFvXumljIGuWDXR3ThvgQNQ3lmtjQbpE+uFLMfUsO/BKGl9i
-        +jrcAddK39hMaKc/rC18M2U=
-X-Google-Smtp-Source: ABdhPJze+QN1Vh7PNyKNbw8GNjjkhbsAZayu/kZkcomPcbckVlUgTtWNGicCK0BlIjNFq40KmxLjhQ==
-X-Received: by 2002:a5d:438c:: with SMTP id i12mr10762739wrq.99.1627146192044;
-        Sat, 24 Jul 2021 10:03:12 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id e3sm36706806wra.15.2021.07.24.10.03.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 10:03:11 -0700 (PDT)
-Date:   Sat, 24 Jul 2021 20:03:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>, davem@davemloft.net,
-        shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org,
-        qiangqing.zhang@nxp.com, robh+dt@kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next] ARM: dts: imx6qdl: Remove unnecessary mdio
- #address-cells/#size-cells
-Message-ID: <20210724170310.ylouwttmutkpin42@skbuf>
-References: <20210723112835.31743-1-festevam@gmail.com>
- <20210723130851.6tfl4ijl7hkqzchm@skbuf>
- <9455e5b8-d994-732f-2c3d-88c7a98aaf86@gmail.com>
+        with ESMTP id S229947AbhGXQj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:39:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2D0C061575
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 10:20:00 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m7LJf-0002QJ-DA
+        for netdev@vger.kernel.org; Sat, 24 Jul 2021 19:19:59 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 569D26569C4
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 17:19:55 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id B7D256569AC;
+        Sat, 24 Jul 2021 17:19:53 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id da0a1bc2;
+        Sat, 24 Jul 2021 17:19:52 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2021-07-24
+Date:   Sat, 24 Jul 2021 19:19:41 +0200
+Message-Id: <20210724171947.547867-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9455e5b8-d994-732f-2c3d-88c7a98aaf86@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 24, 2021 at 09:37:35AM -0700, Florian Fainelli wrote:
-> On 7/23/2021 6:08 AM, Vladimir Oltean wrote:
-> > Hi Fabio,
-> >
-> > On Fri, Jul 23, 2021 at 08:28:35AM -0300, Fabio Estevam wrote:
-> > > Since commit dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into
-> > > phy device node") the following W=1 dtc warnings are seen:
-> > >
-> > > arch/arm/boot/dts/imx6qdl-aristainetos2.dtsi:323.7-334.4: Warning (avoid_unnecessary_addr_size): /soc/bus@2100000/ethernet@2188000/mdio: unnecessary #address-cells/#size-cells without "ranges" or child "reg" property
-> > >
-> > > Remove the unnecessary mdio #address-cells/#size-cells to fix it.
-> > >
-> > > Fixes: dabb5db17c06 ("ARM: dts: imx6qdl: move phy properties into phy device node")
-> > > Signed-off-by: Fabio Estevam <festevam@gmail.com>
-> > > ---
-> >
-> > Are you actually sure this is the correct fix? If I look at mdio.yaml, I
-> > think it is pretty clear that the "ethernet-phy" subnode of the MDIO
-> > controller must have an "@[0-9a-f]+$" pattern, and a "reg" property. If
->
-> It is valid to omit the "reg" property of an Ethernet PHY which the kernel
-> will then dynamically scan for. If you know the Ethernet PHY address it's
-> obviously better to set it so you avoid scanning and the time spent in doing
-> that. The boot loader could (should?) also provide that information to the
-> kernel for the same reasons.
+Hello Jakub, hello David,
 
-Interesting, but brittle I suppose (it only works reliably with a single
-PHY on a shared MDIO bus). NXP has "QDS" boards for internal development
-and these have multi-port riser cards with various PHYs for various
-SERDES protocols, and we have a really hard time describing the hardware
-in DT (we currently use overlays applied by U-Boot), so we would like
-some sort of auto-detection of PHYs if that was possible, but I think
-that for anything except the simplest of cases it isn't. For example
-what happens if you unbind and rebind two net devices in a different
-order - they will connect to a PHY at a different address, won't they?
+this is a pull request of 6 patches for net/master.
 
-Anyway, I was wrong, ok, but I think the point still stands that
-according to mdio.yaml this DT description is not valid. So after your
-explanation, it is the DT schema that we should update.
+The first patch is by Joakim Zhang targets the imx8mp device tree. It
+removes the imx6 fallback from the flexcan binding, as the imx6 is not
+compatible with the imx8mp.
+
+Ziyang Xuan contributes a patch to fix a use-after-free in the CAN
+raw's raw_setsockopt().
+
+The next two patches target the CAN J1939 protocol. The first one is
+by Oleksij Rempel and clarifies the lifetime of session object in
+j1939_session_deactivate(). Zhang Changzhong's patch fixes the timeout
+value between consecutive TP.DT.
+
+Stephane Grosjean contributes a patch for the peak_usb driver to fix
+reading of the rxerr/txerr values.
+
+The last patch is by me for the mcp251xfd driver. It stops the
+timestamp worker in case of a fatal error in the IRQ handler.
+
+regards,
+Marc
+
+---
+
+The following changes since commit 5aa1959d18003472cc741dc490c3335c5bd804e2:
+
+  Merge branch 'ionic-fixes' (2021-07-23 21:57:52 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.14-20210724
+
+for you to fetch changes up to ef68a717960658e6a1e5f08adb0574326e9a12c2:
+
+  can: mcp251xfd: mcp251xfd_irq(): stop timestamping worker in case error in IRQ (2021-07-24 19:02:32 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.14-20210724
+
+----------------------------------------------------------------
+Joakim Zhang (1):
+      arm64: dts: imx8mp: remove fallback compatible string for FlexCAN
+
+Marc Kleine-Budde (1):
+      can: mcp251xfd: mcp251xfd_irq(): stop timestamping worker in case error in IRQ
+
+Oleksij Rempel (1):
+      can: j1939: j1939_session_deactivate(): clarify lifetime of session object
+
+Stephane Grosjean (1):
+      can: peak_usb: pcan_usb_handle_bus_evt(): fix reading rxerr/txerr values
+
+Zhang Changzhong (1):
+      can: j1939: j1939_xtp_rx_dat_one(): fix rxtimer value between consecutive TP.DT to 750ms
+
+Ziyang Xuan (1):
+      can: raw: raw_setsockopt(): fix raw_rcv panic for sock UAF
+
+ arch/arm64/boot/dts/freescale/imx8mp.dtsi      |  4 ++--
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |  1 +
+ drivers/net/can/usb/peak_usb/pcan_usb.c        | 10 ++++++----
+ net/can/j1939/transport.c                      | 11 ++++++++---
+ net/can/raw.c                                  | 20 ++++++++++++++++++--
+ 5 files changed, 35 insertions(+), 11 deletions(-)
+
+
