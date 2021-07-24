@@ -2,228 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD6D3D4A08
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 23:12:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43E33D4A17
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 23:26:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbhGXUbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 16:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
+        id S229853AbhGXUqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 16:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhGXUbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 16:31:34 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE7FC061575;
-        Sat, 24 Jul 2021 14:12:04 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id y34so8217689lfa.8;
-        Sat, 24 Jul 2021 14:12:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=akz4WOvbrA3cuPXF2MwZWYXXSucqau7Y/gPfBrEyArQ=;
-        b=Oo/pi0szYoOooKidy/toS6SrMwYGmuimGttHsHkR+Benn8/38jxqT23LWa8MR+PP32
-         TFVJOQEOcuxd/dXm2vox5sDhjkqb1Hi6ShTn55jc7t2QT2jpckxgE6+YE+ypVGINOOeI
-         2/fUOZB15wRpuq6Xf4FIc01Wm13bZJYgTmzOMr4aAXs7Gxf6SCUd3Iu28Vr8b/NnhUxu
-         jMo4IBQVmmvU+EtabRj2O5N0byuvECFct1oh/8qbBUKADjw+0Kfczo/jKMh9wI1vi0vk
-         sYNbtjwQmota+HJpCtTzgR0MjKnfnFIIvn5S2ohximboAVMHhQMGBl9acHX71QrTmsKE
-         mHgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=akz4WOvbrA3cuPXF2MwZWYXXSucqau7Y/gPfBrEyArQ=;
-        b=e9yQLE0DiS+3o4yYse/1mBAM2Nyk3SJNkID7bIagV8tT0iZrK+MAcI5/spuHtx0YE7
-         4eB39xL9/L+W1qbn6xm2jWSADpV41AD+GXSNl1UUH0Rc1h1qSv1a+dWXqlinwA1txpmf
-         4bZqAaf6I1nZgHfTK7GUy8EEGGGJGEwibEPX6V/jRWK59bhuZ4lWL7VimM6xvpS/PUvG
-         O6NoRfLg4nLJKMcWrm3ryAFqJwpYIv4QnQnf6b2YPUV405n6xEWv8lJl5pvBXoUg9vQl
-         wjhpzfFlojysjdJA+Svp4qRnafZLMR2+M9YQLPoj0dDvhDFTpCSKdnMYc/TRU8q6w/1N
-         I1rQ==
-X-Gm-Message-State: AOAM53124FIaEGyqONlsc57gSWfVSbbf/hRvLyApl/1hdeAR1F8TD0hp
-        7h38WVSAwRcSDyy5yTzfOuM=
-X-Google-Smtp-Source: ABdhPJwbOTrgW234nWycPTjuaAUQvh6KLZSBYPqhw7kqXWjzPn0mVZswoFfnAG+9jFA39XM6V99E9g==
-X-Received: by 2002:a05:6512:2152:: with SMTP id s18mr7246783lfr.124.1627161121193;
-        Sat, 24 Jul 2021 14:12:01 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.227.213])
-        by smtp.gmail.com with ESMTPSA id 68sm3605649ljf.103.2021.07.24.14.12.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 14:12:00 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        stefan@datenfreihafen.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+5e5a981ad7cc54c4b2b4@syzkaller.appspotmail.com
-Subject: [PATCH] net: llc: fix skb_over_panic
-Date:   Sun, 25 Jul 2021 00:11:59 +0300
-Message-Id: <20210724211159.32108-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S229601AbhGXUqH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 16:46:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A74CC061575
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 14:26:39 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m7PAC-0008Kz-54; Sat, 24 Jul 2021 23:26:28 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:41cc:c65c:f580:3bde])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E5E5D6571A6;
+        Sat, 24 Jul 2021 21:26:23 +0000 (UTC)
+Date:   Sat, 24 Jul 2021 23:26:23 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     socketcan@hartkopp.net, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] can: raw: fix raw_rcv panic for sock UAF
+Message-ID: <20210724212623.65as5y2pbg4lnspr@pengutronix.de>
+References: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="n7g5vkbmqkimt2k7"
+Content-Disposition: inline
+In-Reply-To: <20210722070819.1048263-1-william.xuanziyang@huawei.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot reported skb_over_panic() in llc_pdu_init_as_xid_cmd(). The
-problem was in wrong LCC header manipulations.
 
-Syzbot's reproducer tries to send XID packet. llc_ui_sendmsg() is
-doing following steps:
+--n7g5vkbmqkimt2k7
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	1. skb allocation with size = len + header size
-		len is passed from userpace and header size
-		is 3 since addr->sllc_xid is set.
+On 22.07.2021 15:08:19, Ziyang Xuan wrote:
+> We get a bug during ltp can_filter test as following.
 
-	2. skb_reserve() for header_len = 3
-	3. filling all other space with memcpy_from_msg()
+Applied to can/testing.
 
-Ok, at this moment we have fully loaded skb, only headers needs to be
-filled.
+Thnx,
+Marc
 
-Then code comes to llc_sap_action_send_xid_c(). This function pushes 3
-bytes for LLC PDU header and initializes it. Then comes
-llc_pdu_init_as_xid_cmd(). It initalizes next 3 bytes *AFTER* LLC PDU
-header and call skb_push(skb, 3). This looks wrong for 2 reasons:
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-	1. Bytes rigth after LLC header are user data, so this function
-	   was overwriting payload.
+--n7g5vkbmqkimt2k7
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	2. skb_push(skb, 3) call can cause skb_over_panic() since
-	   all free space was filled in llc_ui_sendmsg(). (This can
-	   happen is user passed 686 len: 686 + 14 (eth header) + 3 (LLC
-	   header) = 703. SKB_DATA_ALIGN(703) = 704)
+-----BEGIN PGP SIGNATURE-----
 
-So, in this patch I added 2 new private constansts: LLC_PDU_TYPE_U_XID
-and LLC_PDU_LEN_U_XID. LLC_PDU_LEN_U_XID is used to correctly reserve
-header size to handle LLC + XID case. LLC_PDU_TYPE_U_XID is used by
-llc_pdu_header_init() function to push 6 bytes instead of 3. And finally
-I removed skb_push() call from llc_pdu_init_as_xid_cmd().
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD8hXwACgkQqclaivrt
+76kpzwf+IvbX45gTtbq+bVmqxxagIwV7wAFjfT0TCVXPynz/NWoFp7pCk9yWUdyj
+o7P9B0S+ew4SanmD/CTjCBd9rcnj6VTeK64mGwZo7BX4HPXYUdPsC5C4n/C6ivji
+uNJPE1nlgJ21+HVQTttjgBltHVQ60bmQUIarDwkGZEQopArFvynGxwTkZU6m/y9q
+uTEcp97i3Sq2rXp+yY88mHwr3ApBaX33AHZY508jcMIo4hWTqs0ufzeAJYO6pa6W
+7NUowWOBYTqw6XMUO1I6hXJ95UB/bsaoCRE0lNw5TiEv8VuJPeZ1or36BZikgbqE
+97JqNendkCmvQIOGo78Ek3mi1887CA==
+=aSm0
+-----END PGP SIGNATURE-----
 
-This changes should not affect other parts of LLC, since after
-all steps we just transmit buffer.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-and-tested-by: syzbot+5e5a981ad7cc54c4b2b4@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Hi, net developers!
-
-I didn't find any LLC related tests, and, I guess, there isn't any since
-LLC (802.2) has "Odd fixes" status in MAINTAINERS file. I guess, my
-patch won't break something, since patch does not touch any core code,
-only XID cmd path. At least, patch was tested by syzbot... I look forward to
-receiving your views on this code.
-
-
-With regards,
-Pavel Skripkin
-
----
- include/net/llc_pdu.h | 31 +++++++++++++++++++++++--------
- net/llc/af_llc.c      | 10 +++++++++-
- net/llc/llc_s_ac.c    |  2 +-
- 3 files changed, 33 insertions(+), 10 deletions(-)
-
-diff --git a/include/net/llc_pdu.h b/include/net/llc_pdu.h
-index c0f0a13ed818..49aa79c7b278 100644
---- a/include/net/llc_pdu.h
-+++ b/include/net/llc_pdu.h
-@@ -15,9 +15,11 @@
- #include <linux/if_ether.h>
- 
- /* Lengths of frame formats */
--#define LLC_PDU_LEN_I	4       /* header and 2 control bytes */
--#define LLC_PDU_LEN_S	4
--#define LLC_PDU_LEN_U	3       /* header and 1 control byte */
-+#define LLC_PDU_LEN_I		4       /* header and 2 control bytes */
-+#define LLC_PDU_LEN_S		4
-+#define LLC_PDU_LEN_U		3       /* header and 1 control byte */
-+/* header and 1 control byte and XID info */
-+#define LLC_PDU_LEN_U_XID	(LLC_PDU_LEN_U + sizeof(struct llc_xid_info))
- /* Known SAP addresses */
- #define LLC_GLOBAL_SAP	0xFF
- #define LLC_NULL_SAP	0x00	/* not network-layer visible */
-@@ -50,9 +52,10 @@
- #define LLC_PDU_TYPE_U_MASK    0x03	/* 8-bit control field */
- #define LLC_PDU_TYPE_MASK      0x03
- 
--#define LLC_PDU_TYPE_I	0	/* first bit */
--#define LLC_PDU_TYPE_S	1	/* first two bits */
--#define LLC_PDU_TYPE_U	3	/* first two bits */
-+#define LLC_PDU_TYPE_I		0	/* first bit */
-+#define LLC_PDU_TYPE_S		1	/* first two bits */
-+#define LLC_PDU_TYPE_U		3	/* first two bits */
-+#define LLC_PDU_TYPE_U_XID	4	/* private type for detecting XID commands */
- 
- #define LLC_PDU_TYPE_IS_I(pdu) \
- 	((!(pdu->ctrl_1 & LLC_PDU_TYPE_I_MASK)) ? 1 : 0)
-@@ -230,9 +233,18 @@ static inline struct llc_pdu_un *llc_pdu_un_hdr(struct sk_buff *skb)
- static inline void llc_pdu_header_init(struct sk_buff *skb, u8 type,
- 				       u8 ssap, u8 dsap, u8 cr)
- {
--	const int hlen = type == LLC_PDU_TYPE_U ? 3 : 4;
-+	int hlen = 4; /* default value for I and S types */
- 	struct llc_pdu_un *pdu;
- 
-+	switch (type) {
-+	case LLC_PDU_TYPE_U:
-+		hlen = 3;
-+		break;
-+	case LLC_PDU_TYPE_U_XID:
-+		hlen = 6;
-+		break;
-+	}
-+
- 	skb_push(skb, hlen);
- 	skb_reset_network_header(skb);
- 	pdu = llc_pdu_un_hdr(skb);
-@@ -374,7 +386,10 @@ static inline void llc_pdu_init_as_xid_cmd(struct sk_buff *skb,
- 	xid_info->fmt_id = LLC_XID_FMT_ID;	/* 0x81 */
- 	xid_info->type	 = svcs_supported;
- 	xid_info->rw	 = rx_window << 1;	/* size of receive window */
--	skb_put(skb, sizeof(struct llc_xid_info));
-+
-+	/* no need to push/put since llc_pdu_header_init() has already
-+	 * pushed 3 + 3 bytes
-+	 */
- }
- 
- /**
-diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index 7180979114e4..ac5cadd02cfa 100644
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -98,8 +98,16 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
- {
- 	u8 rc = LLC_PDU_LEN_U;
- 
--	if (addr->sllc_test || addr->sllc_xid)
-+	if (addr->sllc_test)
- 		rc = LLC_PDU_LEN_U;
-+	else if (addr->sllc_xid)
-+		/* We need to expand header to sizeof(struct llc_xid_info)
-+		 * since llc_pdu_init_as_xid_cmd() sets 4,5,6 bytes of LLC header
-+		 * as XID PDU. In llc_ui_sendmsg() we reserved header size and then
-+		 * filled all other space with user data. If we won't reserve this
-+		 * bytes, llc_pdu_init_as_xid_cmd() will overwrite user data
-+		 */
-+		rc = LLC_PDU_LEN_U_XID;
- 	else if (sk->sk_type == SOCK_STREAM)
- 		rc = LLC_PDU_LEN_I;
- 	return rc;
-diff --git a/net/llc/llc_s_ac.c b/net/llc/llc_s_ac.c
-index b554f26c68ee..79d1cef8f15a 100644
---- a/net/llc/llc_s_ac.c
-+++ b/net/llc/llc_s_ac.c
-@@ -79,7 +79,7 @@ int llc_sap_action_send_xid_c(struct llc_sap *sap, struct sk_buff *skb)
- 	struct llc_sap_state_ev *ev = llc_sap_ev(skb);
- 	int rc;
- 
--	llc_pdu_header_init(skb, LLC_PDU_TYPE_U, ev->saddr.lsap,
-+	llc_pdu_header_init(skb, LLC_PDU_TYPE_U_XID, ev->saddr.lsap,
- 			    ev->daddr.lsap, LLC_PDU_CMD);
- 	llc_pdu_init_as_xid_cmd(skb, LLC_XID_NULL_CLASS_2, 0);
- 	rc = llc_mac_hdr_init(skb, ev->saddr.mac, ev->daddr.mac);
--- 
-2.32.0
-
+--n7g5vkbmqkimt2k7--
