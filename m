@@ -2,85 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 589133D48D3
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62FF73D48D5
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbhGXQjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 12:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbhGXQjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:39:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82924C061757
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 10:20:04 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m7LJi-0002VC-Sx
-        for netdev@vger.kernel.org; Sat, 24 Jul 2021 19:20:02 +0200
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id DBEB36569E5
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 17:19:59 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 762686569B3;
-        Sat, 24 Jul 2021 17:19:54 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 27c94318;
-        Sat, 24 Jul 2021 17:19:53 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+        id S230094AbhGXQk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 12:40:56 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:40844 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229713AbhGXQkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:40:55 -0400
+Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 54AF9200F82E;
+        Sat, 24 Jul 2021 19:21:25 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 54AF9200F82E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1627147285;
+        bh=8FMzY6Rr5+040NRJutZU6bBCsAo7fB+Ran/ixHXkOoc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qINxQhbPf+TkeW8tAu9ardcSEQlSkDIiT/xMk89hE6k/ssxk1fW1p1msSjVrycAS3
+         Hz3WblEkO0OSMZFmeff3QZgFUPmF0iA63e6gKZH141Uez1hXcVKh7iWsjPD7XtW3DZ
+         l+So6F4RTcf+r9W3r3z0S8f/lTRa+7vOY0+/66aRFVUcxYSare43muQOzGJlsT+xu2
+         klogT11aC1ZcVIMhY8SXZfb+WAWkVc8W9NlYvW2cE3xGOFo95hZS/nSqvv1ygX7sYr
+         TlJj97iZWMLzPImi1aQGdT33/ld5Csn4MPfHVNlreg5WZkq4Q4WbJ4S4FF6qh1U7Mp
+         6XM7afdP+cDbQ==
+From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 6/6] can: mcp251xfd: mcp251xfd_irq(): stop timestamping worker in case error in IRQ
-Date:   Sat, 24 Jul 2021 19:19:47 +0200
-Message-Id: <20210724171947.547867-7-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210724171947.547867-1-mkl@pengutronix.de>
-References: <20210724171947.547867-1-mkl@pengutronix.de>
+Cc:     stephen@networkplumber.org, justin.iurman@uliege.be
+Subject: [PATCH iproute2-next v2 0/3] Provide support for IOAM
+Date:   Sat, 24 Jul 2021 19:21:05 +0200
+Message-Id: <20210724172108.26524-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case an error occurred in the IRQ handler, the chip status is
-dumped via devcoredump and all IRQs are disabled, but the chip stays
-powered for further analysis.
+v2:
+ - Use print_{hex,0xhex} instead of print_string when possible (patch #1)
 
-The chip is in an undefined state and will not receive any CAN frames,
-so shut down the timestamping worker, which reads the TBC register
-regularly, too. This avoids any CRC read error messages if there is a
-communication problem with the chip.
+The IOAM patchset was merged yesterday (see net-next commits [1,2,3,4,5,6]).
+Therefore, this patchset provides support for IOAM inside iproute2, as well as
+manpage documentation. Here is a summary of added features inside iproute2.
 
-Fixes: efd8d98dfb90 ("can: mcp251xfd: add HW timestamp infrastructure")
-Link: https://lore.kernel.org/r/20210724155131.471303-1-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 1 +
- 1 file changed, 1 insertion(+)
+(1) configure IOAM namespaces and schemas:
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 47c3f408a799..9ae48072b6c6 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -2300,6 +2300,7 @@ static irqreturn_t mcp251xfd_irq(int irq, void *dev_id)
- 		   err, priv->regs_status.intf);
- 	mcp251xfd_dump(priv);
- 	mcp251xfd_chip_interrupts_disable(priv);
-+	mcp251xfd_timestamp_stop(priv);
- 
- 	return handled;
- }
+$ ip ioam
+Usage:	ip ioam { COMMAND | help }
+	ip ioam namespace show
+	ip ioam namespace add ID [ data DATA32 ] [ wide DATA64 ]
+	ip ioam namespace del ID
+	ip ioam schema show
+	ip ioam schema add ID DATA
+	ip ioam schema del ID
+	ip ioam namespace set ID schema { ID | none }
+	
+(2) provide a new encap type to insert the IOAM pre-allocated trace:
+
+$ ip -6 ro ad fc00::1/128 encap ioam6 trace type 0x800000 ns 1 size 12 dev eth0
+
+  [1] db67f219fc9365a0c456666ed7c134d43ab0be8a
+  [2] 9ee11f0fff205b4b3df9750bff5e94f97c71b6a0
+  [3] 8c6f6fa6772696be0c047a711858084b38763728
+  [4] 3edede08ff37c6a9370510508d5eeb54890baf47
+  [5] de8e80a54c96d2b75377e0e5319a64d32c88c690
+  [6] 968691c777af78d2daa2ee87cfaeeae825255a58
+
+Justin Iurman (3):
+  Add, show, link, remove IOAM namespaces and schemas
+  New IOAM6 encap type for routes
+  IOAM man8
+
+ include/uapi/linux/ioam6.h          | 133 +++++++++++
+ include/uapi/linux/ioam6_genl.h     |  52 +++++
+ include/uapi/linux/ioam6_iptunnel.h |  20 ++
+ include/uapi/linux/lwtunnel.h       |   1 +
+ ip/Makefile                         |   2 +-
+ ip/ip.c                             |   3 +-
+ ip/ip_common.h                      |   1 +
+ ip/ipioam6.c                        | 343 ++++++++++++++++++++++++++++
+ ip/iproute.c                        |   5 +-
+ ip/iproute_lwtunnel.c               | 121 ++++++++++
+ man/man8/ip-ioam.8                  |  72 ++++++
+ man/man8/ip-route.8.in              |  35 ++-
+ man/man8/ip.8                       |   7 +-
+ 13 files changed, 789 insertions(+), 6 deletions(-)
+ create mode 100644 include/uapi/linux/ioam6.h
+ create mode 100644 include/uapi/linux/ioam6_genl.h
+ create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ create mode 100644 ip/ipioam6.c
+ create mode 100644 man/man8/ip-ioam.8
+
 -- 
-2.30.2
-
+2.25.1
 
