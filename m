@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4092D3D48D8
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6573D48D6
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 19:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhGXQlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 12:41:02 -0400
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:40850 "EHLO
+        id S230218AbhGXQk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 12:40:57 -0400
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:40853 "EHLO
         serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229689AbhGXQk4 (ORCPT
+        with ESMTP id S229738AbhGXQk4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 12:40:56 -0400
 Received: from ubuntu.home (148.24-240-81.adsl-dyn.isp.belgacom.be [81.240.24.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id A9088200F838;
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id DBB48200F83A;
         Sat, 24 Jul 2021 19:21:25 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be A9088200F838
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be DBB48200F83A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1627147285;
-        bh=KMVFJYSqGr9ofcbClHlMeZ/HvKSTxc+eTY6BWUe0JTQ=;
+        s=ulg20190529; t=1627147286;
+        bh=shUzBFwwERa/LYEDS7rLFIt6yEEfrl/PAsDjlwZGhVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJtERvCrTZToP5TJHsp7KJwNJ0AtEKGFBuOg0SXL7hsx8lqbuN045UaJCxcQZDZLm
-         CAMIICy6L52oYXsZgv5o049blAVu2DWgL39volmH7u2djtWMiKp0IboFIHjVBU+7KE
-         qP9iXz6PP2fuOxG22p7GKATmJMNPqFY04rzESZPSerHO1WPfNo01mquwJwaZubCRnw
-         yvba4Hvuc8IjVIBE3W0jkaBRPOYMZEKOh9ozhnAbdIuPPTSEZcS638lxEwu5ZFz5cr
-         tO4QUn/ue5Uply54vtYguPuUeHFj/4GTHYV3sqTWLakrFGEJJbWOtmPK9GU4PL+hAI
-         KQU42rb+OCARw==
+        b=qE+JqEcgMP+hUY0RusJVxgYrFrkrVfHv1IG2Ophk1LlVntPMDhXLAQqhdxKoiyRfY
+         hLP3EVHU5lxZwgxqPLLalw7QNCMfNvgRZSnSWsvN90EB6/Abc7aQLTkItIUQwZKccI
+         z9InXOgqtMcWbanVk3yVnjGFqYuhtcjUKGZxvdOU+ZUB+JaM24lkRKgprJC13R2TGG
+         EmUMnhC8HmnD+kLK6aIvDjxp2ttRq3sfovm4FZlEj4jI4ukOwhQMu98SGnv6WxgUCi
+         tO22NRXv2H2IK53yUis3rESjy+z9gO93TNujdZ1l4DYDVw4C21ktXV6Hy+QGxlJkiI
+         azBXAgF8aaAtw==
 From:   Justin Iurman <justin.iurman@uliege.be>
 To:     netdev@vger.kernel.org
 Cc:     stephen@networkplumber.org, justin.iurman@uliege.be
-Subject: [PATCH iproute2-next v2 2/3] New IOAM6 encap type for routes
-Date:   Sat, 24 Jul 2021 19:21:07 +0200
-Message-Id: <20210724172108.26524-3-justin.iurman@uliege.be>
+Subject: [PATCH iproute2-next v2 3/3] IOAM man8
+Date:   Sat, 24 Jul 2021 19:21:08 +0200
+Message-Id: <20210724172108.26524-4-justin.iurman@uliege.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210724172108.26524-1-justin.iurman@uliege.be>
 References: <20210724172108.26524-1-justin.iurman@uliege.be>
@@ -42,405 +42,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch provides a new encap type for routes to insert an IOAM pre-allocated
-trace:
-
-$ ip -6 ro ad fc00::1/128 encap ioam6 trace type 0x800000 ns 1 size 12 dev eth0
-
-where:
- - "trace" may appear as useless but just anticipates for future implementations
-   of other ioam option types.
- - "type" is a bitfield (=u32) defining the IOAM pre-allocated trace type (see
-   the corresponding uapi).
- - "ns" is an IOAM namespace ID attached to the pre-allocated trace.
- - "size" is the trace pre-allocated size in bytes; must be a 4-octet multiple;
-   limited size (see IOAM6_TRACE_DATA_SIZE_MAX).
+This patch provides man8 documentation for IOAM inside ip, ip-ioam and ip-route.
 
 Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
 ---
- include/uapi/linux/ioam6.h          | 133 ++++++++++++++++++++++++++++
- include/uapi/linux/ioam6_iptunnel.h |  20 +++++
- include/uapi/linux/lwtunnel.h       |   1 +
- ip/iproute.c                        |   5 +-
- ip/iproute_lwtunnel.c               | 121 +++++++++++++++++++++++++
- 5 files changed, 278 insertions(+), 2 deletions(-)
- create mode 100644 include/uapi/linux/ioam6.h
- create mode 100644 include/uapi/linux/ioam6_iptunnel.h
+ man/man8/ip-ioam.8     | 72 ++++++++++++++++++++++++++++++++++++++++++
+ man/man8/ip-route.8.in | 35 +++++++++++++++++++-
+ man/man8/ip.8          |  7 +++-
+ 3 files changed, 112 insertions(+), 2 deletions(-)
+ create mode 100644 man/man8/ip-ioam.8
 
-diff --git a/include/uapi/linux/ioam6.h b/include/uapi/linux/ioam6.h
+diff --git a/man/man8/ip-ioam.8 b/man/man8/ip-ioam.8
 new file mode 100644
-index 00000000..0a2cc17d
+index 00000000..1bdc0ece
 --- /dev/null
-+++ b/include/uapi/linux/ioam6.h
-@@ -0,0 +1,133 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 IOAM implementation
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
++++ b/man/man8/ip-ioam.8
+@@ -0,0 +1,72 @@
++.TH IP\-IOAM 8 "05 Jul 2021" "iproute2" "Linux"
++.SH "NAME"
++ip-ioam \- IPv6 In-situ OAM (IOAM)
++.SH SYNOPSIS
++.sp
++.ad l
++.in +8
++.ti -8
++.B ip ioam
++.RI " { " COMMAND " | "
++.BR help " }"
++.sp
++.ti -8
 +
-+#ifndef _UAPI_LINUX_IOAM6_H
-+#define _UAPI_LINUX_IOAM6_H
++.ti -8
++.B ip ioam namespace show
 +
-+#include <asm/byteorder.h>
-+#include <linux/types.h>
++.ti -8
++.B ip ioam namespace add
++.I ID
++.BR " [ "
++.B data
++.I DATA32
++.BR "]"
++.BR " [ "
++.B wide
++.I DATA64
++.BR "]"
 +
-+#define IOAM6_U16_UNAVAILABLE U16_MAX
-+#define IOAM6_U32_UNAVAILABLE U32_MAX
-+#define IOAM6_U64_UNAVAILABLE U64_MAX
++.ti -8
++.B ip ioam namespace del
++.I ID
 +
-+#define IOAM6_DEFAULT_ID (IOAM6_U32_UNAVAILABLE >> 8)
-+#define IOAM6_DEFAULT_ID_WIDE (IOAM6_U64_UNAVAILABLE >> 8)
-+#define IOAM6_DEFAULT_IF_ID IOAM6_U16_UNAVAILABLE
-+#define IOAM6_DEFAULT_IF_ID_WIDE IOAM6_U32_UNAVAILABLE
++.ti -8
++.B ip ioam schema show
 +
-+/*
-+ * IPv6 IOAM Option Header
-+ */
-+struct ioam6_hdr {
-+	__u8 opt_type;
-+	__u8 opt_len;
-+	__u8 :8;				/* reserved */
-+#define IOAM6_TYPE_PREALLOC 0
-+	__u8 type;
-+} __attribute__((__packed__));
++.ti -8
++.B ip ioam schema add
++.I ID DATA
 +
-+/*
-+ * IOAM Trace Header
-+ */
-+struct ioam6_trace_hdr {
-+	__be16	namespace_id;
++.ti -8
++.B ip ioam schema del
++.I ID
 +
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
++.ti -8
++.B ip ioam namespace set
++.I ID
++.B schema
++.RI " { " ID " | "
++.BR none " }"
 +
-+	__u8	:1,				/* unused */
-+		:1,				/* unused */
-+		overflow:1,
-+		nodelen:5;
++.SH DESCRIPTION
++The \fBip ioam\fR command is used to configure IPv6 In-situ OAM (IOAM6)
++internal parameters, namely IOAM namespaces and schemas.
++.PP
++Those parameters also include the mapping between an IOAM namespace and an IOAM
++schema.
 +
-+	__u8	remlen:7,
-+		:1;				/* unused */
-+
-+	union {
-+		__be32 type_be32;
-+
-+		struct {
-+			__u32	bit7:1,
-+				bit6:1,
-+				bit5:1,
-+				bit4:1,
-+				bit3:1,
-+				bit2:1,
-+				bit1:1,
-+				bit0:1,
-+				bit15:1,	/* unused */
-+				bit14:1,	/* unused */
-+				bit13:1,	/* unused */
-+				bit12:1,	/* unused */
-+				bit11:1,
-+				bit10:1,
-+				bit9:1,
-+				bit8:1,
-+				bit23:1,	/* reserved */
-+				bit22:1,
-+				bit21:1,	/* unused */
-+				bit20:1,	/* unused */
-+				bit19:1,	/* unused */
-+				bit18:1,	/* unused */
-+				bit17:1,	/* unused */
-+				bit16:1,	/* unused */
-+				:8;		/* reserved */
-+		} type;
-+	};
-+
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+
-+	__u8	nodelen:5,
-+		overflow:1,
-+		:1,				/* unused */
-+		:1;				/* unused */
-+
-+	__u8	:1,				/* unused */
-+		remlen:7;
-+
-+	union {
-+		__be32 type_be32;
-+
-+		struct {
-+			__u32	bit0:1,
-+				bit1:1,
-+				bit2:1,
-+				bit3:1,
-+				bit4:1,
-+				bit5:1,
-+				bit6:1,
-+				bit7:1,
-+				bit8:1,
-+				bit9:1,
-+				bit10:1,
-+				bit11:1,
-+				bit12:1,	/* unused */
-+				bit13:1,	/* unused */
-+				bit14:1,	/* unused */
-+				bit15:1,	/* unused */
-+				bit16:1,	/* unused */
-+				bit17:1,	/* unused */
-+				bit18:1,	/* unused */
-+				bit19:1,	/* unused */
-+				bit20:1,	/* unused */
-+				bit21:1,	/* unused */
-+				bit22:1,
-+				bit23:1,	/* reserved */
-+				:8;		/* reserved */
-+		} type;
-+	};
-+
-+#else
-+#error "Please fix <asm/byteorder.h>"
-+#endif
-+
-+#define IOAM6_TRACE_DATA_SIZE_MAX 244
-+	__u8	data[0];
-+} __attribute__((__packed__));
-+
-+#endif /* _UAPI_LINUX_IOAM6_H */
-diff --git a/include/uapi/linux/ioam6_iptunnel.h b/include/uapi/linux/ioam6_iptunnel.h
-new file mode 100644
-index 00000000..bae14636
---- /dev/null
-+++ b/include/uapi/linux/ioam6_iptunnel.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 IOAM Lightweight Tunnel API
-+ *
-+ *  Author:
-+ *  Justin Iurman <justin.iurman@uliege.be>
-+ */
-+
-+#ifndef _UAPI_LINUX_IOAM6_IPTUNNEL_H
-+#define _UAPI_LINUX_IOAM6_IPTUNNEL_H
-+
-+enum {
-+	IOAM6_IPTUNNEL_UNSPEC,
-+	IOAM6_IPTUNNEL_TRACE,		/* struct ioam6_trace_hdr */
-+	__IOAM6_IPTUNNEL_MAX,
-+};
-+
-+#define IOAM6_IPTUNNEL_MAX (__IOAM6_IPTUNNEL_MAX - 1)
-+
-+#endif /* _UAPI_LINUX_IOAM6_IPTUNNEL_H */
-diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
-index b7c0191f..78f0ecd1 100644
---- a/include/uapi/linux/lwtunnel.h
-+++ b/include/uapi/linux/lwtunnel.h
-@@ -14,6 +14,7 @@ enum lwtunnel_encap_types {
- 	LWTUNNEL_ENCAP_BPF,
- 	LWTUNNEL_ENCAP_SEG6_LOCAL,
- 	LWTUNNEL_ENCAP_RPL,
-+	LWTUNNEL_ENCAP_IOAM6,
- 	__LWTUNNEL_ENCAP_MAX,
- };
++.SH EXAMPLES
++.PP
++.SS Configure an IOAM namespace (ID = 1) with both data (32 bits) and wide data (64 bits)
++.nf
++# ip ioam namespace add 1 data 0xdeadbeef wide 0xcafec0caf00dc0de
++.PP
++.SS Link an existing IOAM schema (ID = 7) to an existing IOAM namespace (ID = 1)
++.nf
++# ip ioam namespace set 1 schema 7
++.SH SEE ALSO
++.br
++.BR ip-route (8)
++.SH AUTHOR
++Justin Iurman <justin.iurman@uliege.be>
+diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
+index 4b1947ab..e12ccf6b 100644
+--- a/man/man8/ip-route.8.in
++++ b/man/man8/ip-route.8.in
+@@ -190,7 +190,7 @@ throw " | " unreachable " | " prohibit " | " blackhole " | " nat " ]"
+ .ti -8
+ .IR ENCAP " := [ "
+ .IR ENCAP_MPLS " | " ENCAP_IP " | " ENCAP_BPF " | "
+-.IR ENCAP_SEG6 " | " ENCAP_SEG6LOCAL " ] "
++.IR ENCAP_SEG6 " | " ENCAP_SEG6LOCAL " | " ENCAP_IOAM6 " ] "
  
-diff --git a/ip/iproute.c b/ip/iproute.c
-index bdeb9644..330203b0 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -101,8 +101,8 @@ static void usage(void)
- 		"TIME := NUMBER[s|ms]\n"
- 		"BOOL := [1|0]\n"
- 		"FEATURES := ecn\n"
--		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local | rpl ]\n"
--		"ENCAPHDR := [ MPLSLABEL | SEG6HDR | SEG6LOCAL ]\n"
-+		"ENCAPTYPE := [ mpls | ip | ip6 | seg6 | seg6local | rpl | ioam6 ]\n"
-+		"ENCAPHDR := [ MPLSLABEL | SEG6HDR | SEG6LOCAL | IOAM6HDR ]\n"
- 		"SEG6HDR := [ mode SEGMODE ] segs ADDR1,ADDRi,ADDRn [hmac HMACKEYID] [cleanup]\n"
- 		"SEGMODE := [ encap | inline ]\n"
- 		"SEG6LOCAL := action ACTION [ OPTIONS ] [ count ]\n"
-@@ -112,6 +112,7 @@ static void usage(void)
- 		"OPTIONS := OPTION [ OPTIONS ]\n"
- 		"OPTION := { srh SEG6HDR | nh4 ADDR | nh6 ADDR | iif DEV | oif DEV |\n"
- 		"            table TABLEID | vrftable TABLEID | endpoint PROGNAME }\n"
-+		"IOAM6HDR := trace type IOAM6_TRACE_TYPE ns IOAM6_NAMESPACE size IOAM6_TRACE_SIZE\n"
- 		"ROUTE_GET_FLAGS := [ fibmatch ]\n");
- 	exit(-1);
- }
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index c4bae68d..f1e001c4 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -34,6 +34,8 @@
- #include <linux/seg6_hmac.h>
- #include <linux/seg6_local.h>
- #include <linux/if_tunnel.h>
-+#include <linux/ioam6.h>
-+#include <linux/ioam6_iptunnel.h>
+ .ti -8
+ .IR ENCAP_MPLS " := "
+@@ -243,6 +243,17 @@ throw " | " unreachable " | " prohibit " | " blackhole " | " nat " ]"
+ .IR SEG6_ACTION_PARAM " ] [ "
+ .BR count " ] "
  
- static const char *format_encap_type(int type)
- {
-@@ -54,6 +56,8 @@ static const char *format_encap_type(int type)
- 		return "seg6local";
- 	case LWTUNNEL_ENCAP_RPL:
- 		return "rpl";
-+	case LWTUNNEL_ENCAP_IOAM6:
-+		return "ioam6";
- 	default:
- 		return "unknown";
- 	}
-@@ -90,6 +94,8 @@ static int read_encap_type(const char *name)
- 		return LWTUNNEL_ENCAP_SEG6_LOCAL;
- 	else if (strcmp(name, "rpl") == 0)
- 		return LWTUNNEL_ENCAP_RPL;
-+	else if (strcmp(name, "ioam6") == 0)
-+		return LWTUNNEL_ENCAP_IOAM6;
- 	else if (strcmp(name, "help") == 0)
- 		encap_type_usage();
++.ti -8
++.IR ENCAP_IOAM6 " := "
++.B ioam6
++.BR trace
++.BR type
++.IR IOAM6_TRACE_TYPE
++.BR ns
++.IR IOAM6_NAMESPACE
++.BR size
++.IR IOAM6_TRACE_SIZE
++
+ .ti -8
+ .IR ROUTE_GET_FLAGS " := "
+ .BR " [ "
+@@ -717,6 +728,9 @@ is a string specifying the supported encapsulation type. Namely:
+ .sp
+ .BI seg6local
+ - local SRv6 segment processing
++.sp
++.BI ioam6
++- encapsulation type IPv6 IOAM
  
-@@ -204,6 +210,23 @@ static void print_encap_rpl(FILE *fp, struct rtattr *encap)
- 	print_rpl_srh(fp, srh);
- }
+ .in -8
+ .I ENCAPHDR
+@@ -896,6 +910,20 @@ Additionally, encapsulate the matching packet within an outer IPv6 header
+ followed by the specified SRH. The destination address of the outer IPv6
+ header is set to the first segment of the new SRH. The source
+ address is set as described in \fBip-sr\fR(8).
++.in -2
++
++.B ioam6
++.in +2
++.I IOAM6_TRACE_TYPE
++- List of IOAM data required in the trace, represented by a bitfield (24 bits).
++.sp
++
++.I IOAM6_NAMESPACE
++- Numerical value to represent an IOAM namespace. See \fBip-ioam\fR(8).
++.sp
++
++.I IOAM6_TRACE_SIZE
++- Size, in octets, of the pre-allocated trace data block.
+ .in -4
  
-+static void print_encap_ioam6(FILE *fp, struct rtattr *encap)
-+{
-+	struct rtattr *tb[IOAM6_IPTUNNEL_MAX + 1];
-+	struct ioam6_trace_hdr *trace;
-+
-+	parse_rtattr_nested(tb, IOAM6_IPTUNNEL_MAX, encap);
-+
-+	if (!tb[IOAM6_IPTUNNEL_TRACE])
-+		return;
-+
-+	trace = RTA_DATA(tb[IOAM6_IPTUNNEL_TRACE]);
-+
-+	print_hex(PRINT_ANY, "type", "type %#06x ", ntohl(trace->type_be32) >> 8);
-+	print_uint(PRINT_ANY, "ns", "ns %u ", ntohs(trace->namespace_id));
-+	print_uint(PRINT_ANY, "size", "size %u ", trace->remlen * 4);
-+}
-+
- static const char *seg6_action_names[SEG6_LOCAL_ACTION_MAX + 1] = {
- 	[SEG6_LOCAL_ACTION_END]			= "End",
- 	[SEG6_LOCAL_ACTION_END_X]		= "End.X",
-@@ -657,6 +680,9 @@ void lwt_print_encap(FILE *fp, struct rtattr *encap_type,
- 	case LWTUNNEL_ENCAP_RPL:
- 		print_encap_rpl(fp, encap);
- 		break;
-+	case LWTUNNEL_ENCAP_IOAM6:
-+		print_encap_ioam6(fp, encap);
-+		break;
- 	}
- }
+ .in -8
+@@ -1220,6 +1248,11 @@ ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev
+ Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
+ .RE
+ .PP
++ip -6 route add 2001:db8:1::/64 encap ioam6 trace type 0x800000 ns 1 size 12 dev eth0
++.RS 4
++Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets.
++.RE
++.PP
+ ip route add 10.1.1.0/30 nhid 10
+ .RS 4
+ Adds an ipv4 route using nexthop object with id 10.
+diff --git a/man/man8/ip.8 b/man/man8/ip.8
+index c9f7671e..87cd2df8 100644
+--- a/man/man8/ip.8
++++ b/man/man8/ip.8
+@@ -22,7 +22,7 @@ ip \- show / manipulate routing, network devices, interfaces and tunnels
+ .BR link " | " address " | " addrlabel " | " route " | " rule " | " neigh " | "\
+  ntable " | " tunnel " | " tuntap " | " maddress " | "  mroute " | " mrule " | "\
+  monitor " | " xfrm " | " netns " | "  l2tp " | "  tcp_metrics " | " token " | "\
+- macsec " | " vrf " | " mptcp " }"
++ macsec " | " vrf " | " mptcp " | " ioam " }"
+ .sp
  
-@@ -853,6 +879,98 @@ out:
- 	return ret;
- }
+ .ti -8
+@@ -252,6 +252,10 @@ readability.
+ .B addrlabel
+ - label configuration for protocol address selection.
  
-+static int parse_encap_ioam6(struct rtattr *rta, size_t len, int *argcp,
-+			     char ***argvp)
-+{
-+	struct ioam6_trace_hdr *trace;
-+	char **argv = *argvp;
-+	int argc = *argcp;
-+	int ns_found = 0;
-+	__u16 size = 0;
-+	__u32 type = 0;
-+	__u16 ns;
++.TP
++.B ioam
++- manage IOAM namespaces and IOAM schemas.
 +
-+	trace = calloc(1, sizeof(*trace));
-+	if (!trace)
-+		return -1;
-+
-+	if (strcmp(*argv, "trace"))
-+		missarg("trace");
-+
-+	while (NEXT_ARG_OK()) {
-+		NEXT_ARG_FWD();
-+
-+		if (strcmp(*argv, "type") == 0) {
-+			NEXT_ARG();
-+
-+			if (type)
-+				duparg2("type", *argv);
-+
-+			if (get_u32(&type, *argv, 0) || !type)
-+				invarg("Invalid type", *argv);
-+
-+			trace->type_be32 = htonl(type << 8);
-+
-+		} else if (strcmp(*argv, "ns") == 0) {
-+			NEXT_ARG();
-+
-+			if (ns_found++)
-+				duparg2("ns", *argv);
-+
-+			if (!type)
-+				missarg("type");
-+
-+			if (get_u16(&ns, *argv, 0))
-+				invarg("Invalid namespace ID", *argv);
-+
-+			trace->namespace_id = htons(ns);
-+
-+		} else if (strcmp(*argv, "size") == 0) {
-+			NEXT_ARG();
-+
-+			if (size)
-+				duparg2("size", *argv);
-+
-+			if (!type)
-+				missarg("type");
-+			if (!ns_found)
-+				missarg("ns");
-+
-+			if (get_u16(&size, *argv, 0) || !size)
-+				invarg("Invalid size", *argv);
-+
-+			if (size % 4)
-+				invarg("Size must be a 4-octet multiple", *argv);
-+			if (size > IOAM6_TRACE_DATA_SIZE_MAX)
-+				invarg("Size too big", *argv);
-+
-+			trace->remlen = (__u8)(size / 4);
-+
-+		} else {
-+			break;
-+		}
-+	}
-+
-+	if (!type)
-+		missarg("type");
-+	if (!ns_found)
-+		missarg("ns");
-+	if (!size)
-+		missarg("size");
-+
-+	if (rta_addattr_l(rta, len, IOAM6_IPTUNNEL_TRACE, trace,
-+			  sizeof(*trace))) {
-+		free(trace);
-+		return -1;
-+	}
-+
-+	*argcp = argc + 1;
-+	*argvp = argv - 1;
-+
-+	free(trace);
-+	return 0;
-+}
-+
- struct lwt_x {
- 	struct rtattr *rta;
- 	size_t len;
-@@ -1744,6 +1862,9 @@ int lwt_parse_encap(struct rtattr *rta, size_t len, int *argcp, char ***argvp,
- 	case LWTUNNEL_ENCAP_RPL:
- 		ret = parse_encap_rpl(rta, len, &argc, &argv);
- 		break;
-+	case LWTUNNEL_ENCAP_IOAM6:
-+		ret = parse_encap_ioam6(rta, len, &argc, &argv);
-+		break;
- 	default:
- 		fprintf(stderr, "Error: unsupported encap type\n");
- 		break;
+ .TP
+ .B l2tp
+ - tunnel ethernet over IP (L2TPv3).
+@@ -405,6 +409,7 @@ was written by Alexey N. Kuznetsov and added in Linux 2.2.
+ .SH SEE ALSO
+ .BR ip-address (8),
+ .BR ip-addrlabel (8),
++.BR ip-ioam (8),
+ .BR ip-l2tp (8),
+ .BR ip-link (8),
+ .BR ip-maddress (8),
 -- 
 2.25.1
 
