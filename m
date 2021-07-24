@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B83623D4A4D
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 23:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A6E3D4A5A
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 23:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbhGXVJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 17:09:28 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:43998
+        id S231177AbhGXVJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 17:09:40 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:44046
         "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230344AbhGXVJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 17:09:22 -0400
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        by vger.kernel.org with ESMTP id S230340AbhGXVJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 17:09:25 -0400
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 425C93F34F
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 21:49:53 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 3E5313F35A
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 21:49:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627163393;
-        bh=6J2lTgqHYzy3l3MCZfIFQGtEtcoxxKRMkHa94SdSjak=;
+        s=20210705; t=1627163395;
+        bh=m3401JaeR7hF/iAuWRTaY4DOgJxinOQknlb5Rbk0RYA=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=Auw3vH/4t/KArtwICGNCg02LtuX3rsWgfguOwhLmmM40Tz2Z9hWlSsD9mjyL4CX00
-         DcE6qAn1tMxbzGPrIC1/yyl4UkiFmzBJyGdmBLHEWSJxSlYaqqp1byhwwTLzrzf5WH
-         SiU0vNUzz4TpwFUCiDF4LLa7Utium/5kxT54NhSRgwSFcBDmWJdQkgBSpsQ6fMTeT8
-         KrMyYs4ijB2t/5n9UfKr1fUg/9t074ggVDryG8dmoTtQdPDXatIovy/eaH2KylIORq
-         tt27XfveZ6MzXAhp3H7b98teMlNS2Lh86EQpB96Jlo7DK+px9MvczZzI2ayaxy2NbI
-         7Qyd/0grRPk5w==
-Received: by mail-ed1-f72.google.com with SMTP id i89-20020a50b0620000b02903b8906e05b4so2753467edd.19
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 14:49:53 -0700 (PDT)
+        b=iMw6cNKSAKr8nEOaP/CELlGoUsjsOW76upGW2t5VJHRDJkVwRPAKE+zwL0OJk5Xts
+         9nOBtbKVkc4DrUDqsZ9JVOcmcWwKezUVQ+QFJszjSKSNHtGWOWO5A2wjEj9KVlmtNb
+         Oagrp4mldV9hTM7LMhTLWFbCvF0AUwQLWoFbPURoKncIqLRQ6ceXYIfmOjdqKNdkS/
+         l0+JOzwfjSxZT0FvXXfMO+hPX7ZQgNTN1JQwNOSk2/zI8uunfSnNpKpyJlhpngmL3z
+         VNTmqVeqh8dyt+u8OBQ2L2jkv3doEDjo1/ksFEoggNBAaKqlaaB1rFK9HB1rCv5MSu
+         FkejFJ6JuGutw==
+Received: by mail-ed1-f71.google.com with SMTP id eg50-20020a05640228b2b02903a2e0d2acb7so1620443edb.16
+        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 14:49:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6J2lTgqHYzy3l3MCZfIFQGtEtcoxxKRMkHa94SdSjak=;
-        b=AXaYyL9znFhHF9U8rU+2J7z7oWvIDL7XOYG9UgsRR1SVsDHV+vVXs3AdEKSfgUell5
-         POWNNPGYk8iJ8Dn67xe8iatTMhgdfiYClB4qc9wOviAdS9Es8wGpBssRL0N8DgvZ1wfJ
-         qUc2Yx6Lwz4COrtXxHlyimb76tOUNGUcm/JqcnKBZ3HJZ46pekBhuR3wIH4Md5lnWcn+
-         8y2cJpQDP84x/g6mcOVrVJbSkoxcw8ua1TfizgnAamoWKx8tVDHCYuGHM5q8iM7YuTmB
-         78eJt6jTGryH2I38CKlPfjtOeLNaoaByw71y8TFZTKGDGxcK8tSjpb3qMJ7thjrdlk7R
-         5FDA==
-X-Gm-Message-State: AOAM53313sjYQ2zyBTv732gCKamCR2nUfZXypHdlvicTPWJNzFCZAWow
-        1XWY5AjQSEziaCj8hakMCklvweHWfUBcVmobTd0EcanwoYE/8O8OYzG4Q7N+vJFVwETvwgcPH/+
-        sBqPYGCFeI55kYqCW7TFKvJQ/hhLPWxV3+g==
-X-Received: by 2002:aa7:d143:: with SMTP id r3mr13186663edo.110.1627163392075;
-        Sat, 24 Jul 2021 14:49:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJynYqsTng3py05vnEd/zOimw7GtW4mRC4/+/JHfPY2EnELDBn9UeX+yaAenZaRxe7Mt5Rc8fA==
-X-Received: by 2002:aa7:d143:: with SMTP id r3mr13186647edo.110.1627163391958;
-        Sat, 24 Jul 2021 14:49:51 -0700 (PDT)
+        bh=m3401JaeR7hF/iAuWRTaY4DOgJxinOQknlb5Rbk0RYA=;
+        b=C0jEBbwxiYddbuRUxm9KE4J8Wj/asXRil+L7KOWRxOZhvJai6BQ0IEW1pwlL6Vt6gv
+         IbgnUVL0KHk6c1qMfislQ5nigBgKvi5X6QYaF2JnIvb9gI0IQ0xFA4EcjqncCDE07a3W
+         1rfRJp8yoUrrtnXE6A/RXzDfpuL/fb/Mqq6DLA7s+4KB2uMwaw6DD6yd8HisK26vrNVv
+         jBgMvhJw/x6cv9qVwrOXLitPJpAmgMl9myCiisUyYLwpPdtSHJ839EN/CZkGVezlvTv4
+         QBVqXZIG7XOLfrxN3PDtAyBAHt0jOz2RfJmqV4aHrcsgzc23ILJ9uoTH5XNrAFs660Wr
+         Gp5w==
+X-Gm-Message-State: AOAM533DDNYoIA6B26v4fLzXshwnzbkciUDuDkiDdNhHpyQ2SNXX/FPC
+        0h2gYitYEJQSq5Z36BeRN+4ppw/uuQH6nIhbfR690+T0ZP7Zhv45b1r5ogjI2521bJK9NZOvGpd
+        CrykZsQbA4XWMkLhMQYl2Hn+w8FYtBsm5RA==
+X-Received: by 2002:a17:907:216d:: with SMTP id rl13mr6534940ejb.190.1627163394854;
+        Sat, 24 Jul 2021 14:49:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwgKzAQcpLMspzu45StHAw3RghPL4mRPttr3WZv3iPoIq6uG7G3+HUmNDkSk4ospeFMgRLHEw==
+X-Received: by 2002:a17:907:216d:: with SMTP id rl13mr6534930ejb.190.1627163394731;
+        Sat, 24 Jul 2021 14:49:54 -0700 (PDT)
 Received: from localhost.localdomain ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id s10sm12821908ejc.39.2021.07.24.14.49.50
+        by smtp.gmail.com with ESMTPSA id s10sm12821908ejc.39.2021.07.24.14.49.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Jul 2021 14:49:51 -0700 (PDT)
+        Sat, 24 Jul 2021 14:49:54 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Charles Gorand <charles.gorand@effinnov.com>,
@@ -63,9 +63,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 09/12] nfc: constify nfc_ops
-Date:   Sat, 24 Jul 2021 23:49:25 +0200
-Message-Id: <20210724214928.122096-4-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 10/12] nfc: constify nfc_hci_ops
+Date:   Sat, 24 Jul 2021 23:49:26 +0200
+Message-Id: <20210724214928.122096-5-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210724214743.121884-1-krzysztof.kozlowski@canonical.com>
 References: <20210724214743.121884-1-krzysztof.kozlowski@canonical.com>
@@ -76,104 +76,91 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Neither the core nor the drivers modify the passed pointer to struct
-nfc_ops, so make it a pointer to const for correctness and safety.
+nfc_hci_ops, so make it a pointer to const for correctness and safety.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/nfc/pn533/pn533.c | 2 +-
- include/net/nfc/nfc.h     | 4 ++--
- net/nfc/core.c            | 2 +-
- net/nfc/digital_core.c    | 2 +-
- net/nfc/hci/core.c        | 2 +-
- net/nfc/nci/core.c        | 2 +-
- 6 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/nfc/microread/microread.c | 2 +-
+ drivers/nfc/pn544/pn544.c         | 2 +-
+ drivers/nfc/st21nfca/core.c       | 2 +-
+ include/net/nfc/hci.h             | 4 ++--
+ net/nfc/hci/core.c                | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index cd64bfe20402..2f3f3fe9a0ba 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2623,7 +2623,7 @@ static int pn533_dev_down(struct nfc_dev *nfc_dev)
- 	return ret;
+diff --git a/drivers/nfc/microread/microread.c b/drivers/nfc/microread/microread.c
+index 151a0631ec72..8e847524937c 100644
+--- a/drivers/nfc/microread/microread.c
++++ b/drivers/nfc/microread/microread.c
+@@ -625,7 +625,7 @@ static int microread_event_received(struct nfc_hci_dev *hdev, u8 pipe,
+ 	return r;
  }
  
--static struct nfc_ops pn533_nfc_ops = {
-+static const struct nfc_ops pn533_nfc_ops = {
- 	.dev_up = pn533_dev_up,
- 	.dev_down = pn533_dev_down,
- 	.dep_link_up = pn533_dep_link_up,
-diff --git a/include/net/nfc/nfc.h b/include/net/nfc/nfc.h
-index 31672021d071..85b698794b14 100644
---- a/include/net/nfc/nfc.h
-+++ b/include/net/nfc/nfc.h
-@@ -191,14 +191,14 @@ struct nfc_dev {
- 	const struct nfc_vendor_cmd *vendor_cmds;
- 	int n_vendor_cmds;
+-static struct nfc_hci_ops microread_hci_ops = {
++static const struct nfc_hci_ops microread_hci_ops = {
+ 	.open = microread_open,
+ 	.close = microread_close,
+ 	.hci_ready = microread_hci_ready,
+diff --git a/drivers/nfc/pn544/pn544.c b/drivers/nfc/pn544/pn544.c
+index f4d09ebba5c8..c2b4555ab4b7 100644
+--- a/drivers/nfc/pn544/pn544.c
++++ b/drivers/nfc/pn544/pn544.c
+@@ -881,7 +881,7 @@ static int pn544_hci_disable_se(struct nfc_hci_dev *hdev, u32 se_idx)
+ 	}
+ }
  
--	struct nfc_ops *ops;
-+	const struct nfc_ops *ops;
- 	struct genl_info *cur_cmd_info;
+-static struct nfc_hci_ops pn544_hci_ops = {
++static const struct nfc_hci_ops pn544_hci_ops = {
+ 	.open = pn544_hci_open,
+ 	.close = pn544_hci_close,
+ 	.hci_ready = pn544_hci_ready,
+diff --git a/drivers/nfc/st21nfca/core.c b/drivers/nfc/st21nfca/core.c
+index 675f8a342869..5e6c99fcfd27 100644
+--- a/drivers/nfc/st21nfca/core.c
++++ b/drivers/nfc/st21nfca/core.c
+@@ -912,7 +912,7 @@ static int st21nfca_hci_event_received(struct nfc_hci_dev *hdev, u8 pipe,
+ 	}
+ }
+ 
+-static struct nfc_hci_ops st21nfca_hci_ops = {
++static const struct nfc_hci_ops st21nfca_hci_ops = {
+ 	.open = st21nfca_hci_open,
+ 	.close = st21nfca_hci_close,
+ 	.load_session = st21nfca_hci_load_session,
+diff --git a/include/net/nfc/hci.h b/include/net/nfc/hci.h
+index 2daec8036be9..756c11084f65 100644
+--- a/include/net/nfc/hci.h
++++ b/include/net/nfc/hci.h
+@@ -118,7 +118,7 @@ struct nfc_hci_dev {
+ 
+ 	struct sk_buff_head msg_rx_queue;
+ 
+-	struct nfc_hci_ops *ops;
++	const struct nfc_hci_ops *ops;
+ 
+ 	struct nfc_llc *llc;
+ 
+@@ -151,7 +151,7 @@ struct nfc_hci_dev {
  };
- #define to_nfc_dev(_dev) container_of(_dev, struct nfc_dev, dev)
  
- extern struct class nfc_class;
- 
--struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
-+struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
- 				    u32 supported_protocols,
- 				    int tx_headroom,
- 				    int tx_tailroom);
-diff --git a/net/nfc/core.c b/net/nfc/core.c
-index 573c80c6ff7a..6ade54149b73 100644
---- a/net/nfc/core.c
-+++ b/net/nfc/core.c
-@@ -1048,7 +1048,7 @@ struct nfc_dev *nfc_get_device(unsigned int idx)
-  * @tx_headroom: reserved space at beginning of skb
-  * @tx_tailroom: reserved space at end of skb
-  */
--struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
-+struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
- 				    u32 supported_protocols,
- 				    int tx_headroom, int tx_tailroom)
- {
-diff --git a/net/nfc/digital_core.c b/net/nfc/digital_core.c
-index 5044c7db577e..8f2572decccd 100644
---- a/net/nfc/digital_core.c
-+++ b/net/nfc/digital_core.c
-@@ -732,7 +732,7 @@ static int digital_in_send(struct nfc_dev *nfc_dev, struct nfc_target *target,
- 	return rc;
- }
- 
--static struct nfc_ops digital_nfc_ops = {
-+static const struct nfc_ops digital_nfc_ops = {
- 	.dev_up = digital_dev_up,
- 	.dev_down = digital_dev_down,
- 	.start_poll = digital_start_poll,
+ /* hci device allocation */
+-struct nfc_hci_dev *nfc_hci_allocate_device(struct nfc_hci_ops *ops,
++struct nfc_hci_dev *nfc_hci_allocate_device(const struct nfc_hci_ops *ops,
+ 					    struct nfc_hci_init_data *init_data,
+ 					    unsigned long quirks,
+ 					    u32 protocols,
 diff --git a/net/nfc/hci/core.c b/net/nfc/hci/core.c
-index e37d30302b06..b33fe4ee1581 100644
+index b33fe4ee1581..ff94ac774937 100644
 --- a/net/nfc/hci/core.c
 +++ b/net/nfc/hci/core.c
-@@ -928,7 +928,7 @@ static int hci_fw_download(struct nfc_dev *nfc_dev, const char *firmware_name)
- 	return hdev->ops->fw_download(hdev, firmware_name);
- }
+@@ -947,7 +947,7 @@ static const struct nfc_ops hci_nfc_ops = {
+ 	.se_io = hci_se_io,
+ };
  
--static struct nfc_ops hci_nfc_ops = {
-+static const struct nfc_ops hci_nfc_ops = {
- 	.dev_up = hci_dev_up,
- 	.dev_down = hci_dev_down,
- 	.start_poll = hci_start_poll,
-diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
-index 50c625940fa3..400d66c4e210 100644
---- a/net/nfc/nci/core.c
-+++ b/net/nfc/nci/core.c
-@@ -1102,7 +1102,7 @@ static int nci_fw_download(struct nfc_dev *nfc_dev, const char *firmware_name)
- 	return ndev->ops->fw_download(ndev, firmware_name);
- }
- 
--static struct nfc_ops nci_nfc_ops = {
-+static const struct nfc_ops nci_nfc_ops = {
- 	.dev_up = nci_dev_up,
- 	.dev_down = nci_dev_down,
- 	.start_poll = nci_start_poll,
+-struct nfc_hci_dev *nfc_hci_allocate_device(struct nfc_hci_ops *ops,
++struct nfc_hci_dev *nfc_hci_allocate_device(const struct nfc_hci_ops *ops,
+ 					    struct nfc_hci_init_data *init_data,
+ 					    unsigned long quirks,
+ 					    u32 protocols,
 -- 
 2.27.0
 
