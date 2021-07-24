@@ -2,93 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0DA73D4817
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 16:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 585D73D484E
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 17:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232896AbhGXNcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Jul 2021 09:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        id S229995AbhGXOlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Jul 2021 10:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbhGXNcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 09:32:42 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D3FC061575
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 07:13:13 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id x14so520282edr.12
-        for <netdev@vger.kernel.org>; Sat, 24 Jul 2021 07:13:13 -0700 (PDT)
+        with ESMTP id S229545AbhGXOlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Jul 2021 10:41:07 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBFBC061575;
+        Sat, 24 Jul 2021 08:21:38 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id pf12-20020a17090b1d8cb0290175c085e7a5so13313130pjb.0;
+        Sat, 24 Jul 2021 08:21:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
-        bh=0QUoPd6lxRHbbDlTDPdI6yRfb8/O2NtURvwbx1YtCLs=;
-        b=pG0BF4k+wRpuO3vbzaLv+DAWGKGTZTr1HDnyiHLAOVtYK6ugtHMq1lt9JgTHEGY9GO
-         sHsDxvFtZORq2VsU6swgjaPIGGoG7v0ixA+f4T/JXJerNOW6q8f5fMPaA2SAI1q/1TV6
-         U1YQbiJDU3odBGxqYcIkqxzeTUCaP5o47kMAFmuVwgp8Zffz60eUHXYQw07zlyF6/Pir
-         Jo1SqHE/uVi+FGkmSQQUC3643q/8OLQDRlWxWuE/FUKlohI2qoQ5WYqRGsxRyI9Ep6IM
-         Ixp7uS524IjHrEnBCiU/nn08W2g3P4wiCmAPVh6PTt3ktMDI+sZKno686UBjwtmiEu4I
-         2UWA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r1ag42xDJLaVY9xMBOItoSUvNhhk/9cVUCkJzLTzDvQ=;
+        b=mM/h6Y0Xp2tak1Q0gjkuodOOFbWbpGPQl2csWweB83zYfGaDkW4/6KwIbZx1EJYeHO
+         Uzq/hBGAC0AWmVgmr2gz7r5ZdWPm7vNyOKYRabGFIz/NBj2Gc9ipt/Jr5jbHiNsGjW0S
+         S8uGOxVy1BIcBhWDg7D2avedI/8ZW6T7mjr0qeUych064RLL8aCsZMjLTIvB1eNgaes/
+         Rcn2GDDRbSWc6swNKRMErxQ5rFVOPhoqVYSgdtn+cKbTMa8gFN7joyDJ1w+cquyRPsZ7
+         96QwyoWK3NPc8ugYnZ48U1SmNPAv6P5Rj+1tgP8AGUWOs8rRw/B650bxuclkH2nMoWmD
+         X8fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to;
-        bh=0QUoPd6lxRHbbDlTDPdI6yRfb8/O2NtURvwbx1YtCLs=;
-        b=kSldi03HelnVpSUCZXB1iA8cUTbFEDl+qb97OuftJFgMfxxcQd8kEkogQ/2cbG/2nO
-         GhVOtRKEvUHnk1mnziN2tYIpp+NYcYWznEDcaFxgD/VpcLnCmBjoVaxMoyAD3CksyePN
-         014I0oruYLamJVG+yX5Ax7eeGdp84RM74dxdSZ0DA8/WcED4EI4AY7PiHQeBAoAUdG23
-         JX9ZpxhiljUx2/q79CkzC8DygsF+rqoh594Rg0+LpCP3BKP6ffp+Td55Nm6LG+tfcj/5
-         w8dndjqX5GikLPfWZtC8zW/Tou25b47ogJtaW2ynW5LXaLcrQ2xEHtQbSsZzVkGe3uLx
-         ow+Q==
-X-Gm-Message-State: AOAM532i279fRY2z/UftKCugBFuwTo6OFf16XIuDE4/BTXmP69tEsyKm
-        fvkvjlieQ2itFSWxHKxadwRFSjSegHsfjstdLDo=
-X-Google-Smtp-Source: ABdhPJy007VR1cWa+bZAkXpCpiDGwxVLMAtANKnYWUPG7nktD32tpUTT2kSqzQyrVvx35+qyTY6h16osabEK8tZm//k=
-X-Received: by 2002:a05:6402:881:: with SMTP id e1mr11596899edy.53.1627135992136;
- Sat, 24 Jul 2021 07:13:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=r1ag42xDJLaVY9xMBOItoSUvNhhk/9cVUCkJzLTzDvQ=;
+        b=Frqot/f3Ja+rg3s/iuumiljs4fsBrwCW3CvdqCQhM1z/+dUyOBX307bN1A2BxGEq/I
+         0nIdf+qk7nrsEG134ACgux9ZLT7eR8pHaANz7ATTW/5vBM9Sf5DTzZMytJY2Tz2DG+qy
+         Ylw+gJU9S1vQXhtSkThCE6XqWTudc9JlnzJKpBjx8mXMWN4JoXn5DqyiNnjTrQ/KLrvC
+         bnA8sOII3Xx2ptyUgHp9cMWLApcCPuLDOYNZt4rhNwBsTK+a70ilHZVukIEd2eqgis0U
+         oRA+Sr0h0dab6+ASSIZYip4HOEWEfziZz25JXn4ajv2oLcjivhU9VXFAcz4dU0qzD2Hh
+         D9yA==
+X-Gm-Message-State: AOAM532KrlGkocIdOcVswDnoI8xCEp0YZoZPsyQwAPh1zTkocB+edZPI
+        zwAQwdQiB6iI7jL44omES9M=
+X-Google-Smtp-Source: ABdhPJzc3WyvYVYK072FmsaT7J14rCP2CimF9HW8rLoggrzLrngQcfYDmXLWOP/6jm4c7srG//tgzg==
+X-Received: by 2002:a63:dd46:: with SMTP id g6mr9953964pgj.347.1627140097789;
+        Sat, 24 Jul 2021 08:21:37 -0700 (PDT)
+Received: from localhost.localdomain ([182.209.58.45])
+        by smtp.gmail.com with ESMTPSA id w22sm36682527pfu.50.2021.07.24.08.21.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Jul 2021 08:21:37 -0700 (PDT)
+From:   Juhee Kang <claudiajkang@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [bpf-next 1/2] samples: bpf: Fix tracex7 error raised on the missing argument
+Date:   Sat, 24 Jul 2021 15:21:23 +0000
+Message-Id: <20210724152124.9762-1-claudiajkang@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Reply-To: patzengu@outlook.com
-Sender: masokigrace774@gmail.com
-Received: by 2002:a17:906:d928:0:0:0:0 with HTTP; Sat, 24 Jul 2021 07:13:11
- -0700 (PDT)
-From:   "Mr. P. Z" <rm2568590@gmail.com>
-Date:   Sat, 24 Jul 2021 16:13:11 +0200
-X-Google-Sender-Auth: RnREw6giRxzKN3ivdzDx33xG3xc
-Message-ID: <CANvJxG2a7g-VC+tcdYm8tjO4Bb4EprLxwXz=TX+eXEgXczbkUg@mail.gmail.com>
-Subject: i need your co-operation
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The current behavior of 'tracex7' doesn't consist with other bpf samples
+tracex{1..6}. Other samples do not require any argument to run with, but
+tracex7 should be run with btrfs device argument. (it should be executed
+with test_override_return.sh)
+
+Currently, tracex7 doesn't have any description about how to run this
+program and raises an unexpected error. And this result might be
+confusing since users might not have a hunch about how to run this
+program.
+
+    // Current behavior
+    # ./tracex7
+    sh: 1: Syntax error: word unexpected (expecting ")")
+    // Fixed behavior
+    # ./tracex7
+    ERROR: Run with the btrfs device argument!
+
+In order to fix this error, this commit adds logic to report a message
+and exit when running this program with a missing argument.
+
+Additionally in test_override_return.sh, there is a problem with
+multiple directory(tmpmnt) creation. So in this commit adds a line with
+removing the directory with every execution.
+
+Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+---
+ samples/bpf/test_override_return.sh | 1 +
+ samples/bpf/tracex7_user.c          | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/samples/bpf/test_override_return.sh b/samples/bpf/test_override_return.sh
+index e68b9ee6814b..6480b55502c7 100755
+--- a/samples/bpf/test_override_return.sh
++++ b/samples/bpf/test_override_return.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+ 
++rm -rf tmpmnt
+ rm -f testfile.img
+ dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
+ DEVICE=$(losetup --show -f testfile.img)
+diff --git a/samples/bpf/tracex7_user.c b/samples/bpf/tracex7_user.c
+index fdcd6580dd73..8be7ce18d3ba 100644
+--- a/samples/bpf/tracex7_user.c
++++ b/samples/bpf/tracex7_user.c
+@@ -14,6 +14,11 @@ int main(int argc, char **argv)
+ 	int ret = 0;
+ 	FILE *f;
+ 
++	if (!argv[1]) {
++		fprintf(stderr, "ERROR: Run with the btrfs device argument!\n");
++		return 0;
++	}
++
+ 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+ 	obj = bpf_object__open_file(filename, NULL);
+ 	if (libbpf_get_error(obj)) {
 -- 
-My Dear Friend,
+2.27.0
 
-I am Mr.Patrice Zengu ,from Burkina Faso and i am the new bank telex
-manager of our bank here in Africa.
-
-I have the opportunity to transfer the sum of US$ 10.5Million to your
-bank account which i personally placed on an Escrow account without a
-name.
-
-I must tell you that after revision of files both old and new as the
-new telex manager ,i discovered that if these funds remains here
-without transferring it offshore,it will be lawfully recovered
-andmoved to the  Government of Burkina Faso treasury as an abandoned
-funds without any name.
-
-I want to let you know that a Burkinabe cannot stand as the depositor
-of these US dollars  since we are not allowed to operate on foreign
-currrency.I do not intend to work  and stay in Africa till the rest of
-my life.
-
-Moreso,i will not want my bank to know about these funds and if they
-happens to know probably,the funds will be moved to the Burkina Faso
-Government public treasury as an abandoned funds.
-
-I will furnish you with more details of this transfer and how it ca
-nbe perfectly and legally executed without any hitch since i am now in
-control.
-
-I am waiting to hear from you urgently to proceed.
-
-
-Yours sincerely,
-Mr.Patrice Zengu.
