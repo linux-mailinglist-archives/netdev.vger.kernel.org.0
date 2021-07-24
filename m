@@ -2,116 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A533E3D43EB
-	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 02:23:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A12823D43ED
+	for <lists+netdev@lfdr.de>; Sat, 24 Jul 2021 02:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbhGWXmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Jul 2021 19:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
+        id S233398AbhGWXnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Jul 2021 19:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbhGWXmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 19:42:52 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4970C061575;
-        Fri, 23 Jul 2021 17:23:19 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id g76so4919738ybf.4;
-        Fri, 23 Jul 2021 17:23:19 -0700 (PDT)
+        with ESMTP id S232724AbhGWXnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Jul 2021 19:43:13 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BBAC061575;
+        Fri, 23 Jul 2021 17:23:45 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id h14so4744259lfv.7;
+        Fri, 23 Jul 2021 17:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6P0/lMSGus5x8nH6Sli5eLn7UASCS6seLf/0GYYIIIQ=;
-        b=ECV2a2SC5urxzIS3v6v26Xqsu47wPplQLVDFny4RLSnPkXcaPBk8LKPT/2thdq/naZ
-         Uep9ZNiG2ucSuQs5bBYH34AJe0JMv36D0NC6C9ho31dGbfhE0oD/VHx71Jue6SGl76AG
-         Aoe9cHm6mbB0DG6ioKNIboAKoZv/4rb2gg5v2zlIRM0CjCv7FuzVPQXxmkpfhmoRLuTJ
-         QUHZtbFOnchD0C6WtGeQKhQwB9oTEoHtA7rBc8/nJiQAqanIXkSdxmXSWoK7RnfdFRwa
-         WFTSZV23IYWEZLYf7AiowPYuvnaoyx/YowehRGxvsKrlMxiUUnh0TG3fFWCXQcSjxaTv
-         UL5Q==
+         :cc:content-transfer-encoding;
+        bh=SYXm/LqphgtbOxvN7aATbnshiaBgzn0wuH/YjWk+EEg=;
+        b=UU99xjtOsg0uszSLt9R49AcaflmcP/V18Jayya2PPQpu3/uWYa6s9oYhlsXr6YvX5T
+         k9OaAY1K6SdznjYSROK7rlOndOjWQmrAeA2fXeH1bNfmuqkZUspc7UAQYiO5dv/7UkPs
+         LuW+28zdqitLJj5KesMrXzVot0fVPlqM4k52UyO21AdC9mgZqtvCJhSKhhzM58kUkuK2
+         TVkShFBhF3dZ8HGADFNtnQ9zlD8Iq7715dTptDeiC9AFOo8eTSOY/u3AoMJr6KJ0g6Dy
+         Ebcgq6BKWdtGa3zd8J3moB1nS7nHFxi5PhWWxd8/gJrwVyHELUqFyCJJKBClGZ1JbRFp
+         rhZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6P0/lMSGus5x8nH6Sli5eLn7UASCS6seLf/0GYYIIIQ=;
-        b=C8AF4sxLx4d5QYPiEGFxTI25/4wwZJWT9f8u64A5rvoiVEt0gJxJqfOG7u5Nhtub+a
-         NE/Bb0FDuuoIO2n5JOJnFBAH1Ek1Miyr5qAfu5wjchSmN871en3YWDKhYU0l3DLZQ1Xv
-         Mszu/qXqckmLi9SG0DWJ7bb0TQqNufDS/WLPbNlI4OrI9nH7yAbS8NwF8JmkImRcGBzC
-         Ryavmw45vhud1w4ssEqCRZ7PnQUDWqssrrfGZIEys7oE40cSG0veiS5QAZtWy+NAfTiF
-         4oKoinU6yAymKIoMwnuBs9GgR6couNdQWFSHVx+0EPtZlcsg+foGA3CoQ0+ieUFetEWT
-         5Erw==
-X-Gm-Message-State: AOAM533QHPXkyJXyN6gGCMWtNH61TM9N0t2axbdFAIbF2lyzId6QmOPy
-        bKnpHKNRtgG8v13EpnCdX/R6It3D2XIZZREFQwU=
-X-Google-Smtp-Source: ABdhPJzLBWErQKPH4YlLQ60mdUkOxchsyK7uTYbYXD0tuFfyDNsX6LyiiKZ6xLL30tWWmXBclI6JE3pH3lfSePFe1So=
-X-Received: by 2002:a25:b741:: with SMTP id e1mr9675263ybm.347.1627086198839;
- Fri, 23 Jul 2021 17:23:18 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SYXm/LqphgtbOxvN7aATbnshiaBgzn0wuH/YjWk+EEg=;
+        b=gSFKxK55pawR/45B96XubxBpSZ7kcO0+/45u9+cQoMyk017P5sb906lDoPSV+JTx/R
+         MJLOJpPOj90A/O+K17qWauHIXiC+h4VBkztutdEJ8ajh6Nq0JMPFFpX1kV2UngsExA3E
+         meYxm9u6dLuhkUNtkPZj7u0ORIWVs/I8RDSrj/ikrbSP9VaJJxrGLQRHP/JHOKkbuXpg
+         Il+tqS/T/oEZL4tliGlN1fhMsWn5SrpoSg/rMJUr6LQFRkdGRHMp6srTxTPa8mR8OuWM
+         J2egZBJIMEfoNlUaf4ntAvyyPZMH0VPjnWMRBK3psZcY4s1ikYtHxb9M/ocn9kK6qo9h
+         7jbw==
+X-Gm-Message-State: AOAM530UKzU9dDN9KgbizhZjBdSr6jAH+X0I817FA4DXPR+PnXJeHWRV
+        N9eSDg2NP5ZZJ20SIhUP0lihqpGi3R7OoJPYt7Y=
+X-Google-Smtp-Source: ABdhPJxmFA5nEkKWwUUkPBYZj8yFalRLY2szHWIhI/oUza/FdTUuHQYpX39zQUhzA1AHWiI2baFOdPWg1nJHPnOCwvo=
+X-Received: by 2002:a05:6512:3709:: with SMTP id z9mr4625983lfr.182.1627086223653;
+ Fri, 23 Jul 2021 17:23:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210721103822.3755111-1-johan.almbladh@anyfinetworks.com>
-In-Reply-To: <20210721103822.3755111-1-johan.almbladh@anyfinetworks.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 23 Jul 2021 17:23:07 -0700
-Message-ID: <CAEf4BzbchK6-4qtqnXqiAKeb=hmnJkw7UCTb4fVA67DUnRg5zA@mail.gmail.com>
-Subject: Re: [PATCH] bpf/tests: do not PASS tests without actually testing the result
-To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+References: <20210721000822.40958-1-alexei.starovoitov@gmail.com> <871r7q8hha.fsf@toke.dk>
+In-Reply-To: <871r7q8hha.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 23 Jul 2021 17:23:32 -0700
+Message-ID: <CAADnVQL3CSp9NASM-HLEKEuodEfKHjtU7mWDsrhJUCVy3R+V0g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/4] libbpf: Move CO-RE logic into separate file.
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tony Ambardar <Tony.Ambardar@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 21, 2021 at 3:39 AM Johan Almbladh
-<johan.almbladh@anyfinetworks.com> wrote:
+On Thu, Jul 22, 2021 at 9:02 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> Each test case can have a set of sub-tests, where each sub-test can
-> run the cBPF/eBPF test snippet with its own data_size and expected
-> result. Before, the end of the sub-test array was indicated by both
-> data_size and result being zero. However, most or all of the internal
-> eBPF tests has a data_size of zero already. When such a test also had
-> an expected value of zero, the test was never run but reported as
-> PASS anyway.
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 >
-> Now the test runner always runs the first sub-test, regardless of the
-> data_size and result values. The sub-test array zero-termination only
-> applies for any additional sub-tests.
+> > From: Alexei Starovoitov <ast@kernel.org>
+> >
+> > Split CO-RE processing logic from libbpf into separate file
+> > with an interface that doesn't dependend on libbpf internal details.
+> > As the next step relo_core.c will be compiled with libbpf and with the =
+kernel.
 >
-> There are other ways fix it of course, but this solution at least
-> removes the surprise of eBPF tests with a zero result always succeeding.
->
-> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-> ---
->  lib/test_bpf.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-> index d500320778c7..baff847a02da 100644
-> --- a/lib/test_bpf.c
-> +++ b/lib/test_bpf.c
-> @@ -6659,7 +6659,14 @@ static int run_one(const struct bpf_prog *fp, struct bpf_test *test)
->                 u64 duration;
->                 u32 ret;
->
-> -               if (test->test[i].data_size == 0 &&
-> +               /*
-> +                * NOTE: Several sub-tests may be present, in which case
-> +                * a zero {data_size, result} tuple indicates the end of
-> +                * the sub-test array. The first test is always run,
-> +                * even if both data_size and result happen to be zero.
-> +                */
-> +               if (i > 0 &&
+> Interesting! What's the use case for having it in the kernel as well? :)
 
-This feels pretty arbitrary, of course, but I don't see how to improve
-this easily without tons of code churn for each test specification.
-Applied to bpf-next, thanks!
-
-> +                   test->test[i].data_size == 0 &&
->                     test->test[i].result == 0)
->                         break;
->
-> --
-> 2.25.1
->
+The main motivation is signed programs, of course.
+Also there are other reasons:
+- give the verifier precise path to the field in load/store instructions.
+Currently it has to guess the field based on integer offset.
+That guessing is random in case of a union.
+- give the kermel ability to do CO-RE or symbolic field access.
+The insn patching is a small part of the bpf_core_apply_relo_insn().
+It can be done for x86 and any other archs just as well.
+Imagine a true kernel struct randomization.
+Not the existing one where gcc plugin does it at build time,
+but the one where the kernel randomizes struct cred every single boot.
+Or imagine kernel modules that are built once and then can be loaded
+and run on a variety of kernels.
