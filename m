@@ -2,421 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B81F3D4F84
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 20:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91B93D4FB1
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 21:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbhGYRwS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 25 Jul 2021 13:52:18 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:48365 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229825AbhGYRwS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Jul 2021 13:52:18 -0400
-Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
-        by localhost (Postfix) with ESMTP id 4GXs9q1cxpzBCTn;
-        Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qNNbYLWewUwJ; Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
-Received: from vm-hermes.si.c-s.fr (vm-hermes.si.c-s.fr [192.168.25.253])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4GXs9q0Sj8zBCTX;
-        Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
-Received: by vm-hermes.si.c-s.fr (Postfix, from userid 33)
-        id 5ED5A3D9; Sun, 25 Jul 2021 20:38:04 +0200 (CEST)
-Received: from 37-165-12-41.coucou-networks.fr
- (37-165-12-41.coucou-networks.fr [37.165.12.41]) by messagerie.c-s.fr (Horde
- Framework) with HTTP; Sun, 25 Jul 2021 20:38:04 +0200
-Date:   Sun, 25 Jul 2021 20:38:04 +0200
-Message-ID: <20210725203804.Horde.sruKcwZQKonIWKjB98332A2@messagerie.c-s.fr>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Geoff Levand <geoff@infradead.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v4 10/10] net/ps3_gelic: Fix DMA mapping problems
-References: <cover.1627068552.git.geoff@infradead.org>
- <7aa1d9b1b4ffadcbdc6f88e4f8d4a323da307595.1627068552.git.geoff@infradead.org>
-In-Reply-To: <7aa1d9b1b4ffadcbdc6f88e4f8d4a323da307595.1627068552.git.geoff@infradead.org>
-User-Agent: Internet Messaging Program (IMP) H5 (6.2.3)
-Content-Type: text/plain; charset=UTF-8; format=flowed; DelSp=Yes
+        id S231442AbhGYTGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 15:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230116AbhGYTGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 15:06:32 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF429C061757;
+        Sun, 25 Jul 2021 12:47:00 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id z6-20020a9d24860000b02904d14e47202cso7869147ota.4;
+        Sun, 25 Jul 2021 12:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VeZWPhsf+UxEhhOjwlwIVeUOu2AI3fn4qRU/WSvFopQ=;
+        b=qFSeiaLrU2hQGry4BAWsunWWxW3JeMucElv2gemNGYWBDARmoVcrZylwDmpjWqCp9f
+         O/p7h80N2k7YsasIufiLCJFh77GVnZrlBm0eh59QRIy7rMOX0cK01UAm90OH7lnZKt/i
+         ruDtwgFAV34OeRVK/f00TEOUJrkGcYlstPjhIMeAP1riDhaj/OuWtGNRNl/oKOXqPNO9
+         29WyTDpMCHwEnumuXOGFgr4lvkUmXGVvoVhKu0isa+5Qy1XObzp77YRb+UvjRpsWHxPP
+         T8iOITAcuE7zq3LTSC9Tz+Nfta71/L7XCXMYTdT9YwjH9pX3zq/RdZMDk3StpCU77jl+
+         j42A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VeZWPhsf+UxEhhOjwlwIVeUOu2AI3fn4qRU/WSvFopQ=;
+        b=kIM/dCcIfSfWPDMhiWsps/ceZbGWlC5tdheBY4mnyZUFQUAUP/akvJLOFfCpY0BEkM
+         NN/KniY6EiLUoA67Me8if07WwqLPn3zckAqbOdkrAK2bFbRZ48tE5oppA4V6yAEP9yEb
+         m+Wu3Eu9Wv5E4WOd4QjWwDRe5lmFWOwRBUm7x5xJl1qLw0Bs9/Dqfn3fJtMvXdrRNMr6
+         29UavwLT6BTwN3Q8SZfOIt1hJS74ZnSqIHae9bISauoF2aN/7XgtpU4GiT4tM6nGWfhX
+         wShRNPkfSdmdSoEG/XR6xlxxQ9wbg3FJg3yTePMDuhYG9qJqbO+FBcmcvl29J8H9VYLl
+         TlOg==
+X-Gm-Message-State: AOAM531177q1ziKQOc7XVsQef7BBMnkGZfLmSn+jxv9LkN1duS+8i9On
+        bnymXAz+vqqNPkbY9+9EzbhH7gA1phE=
+X-Google-Smtp-Source: ABdhPJwwWW+Vr+4VCWALaqrlSdJB5raI2ZBVlZZzHg3aEJ/ZWKJNilDcx8dKKs7pRnf9DilSWLBNug==
+X-Received: by 2002:a9d:7982:: with SMTP id h2mr9036623otm.291.1627242419881;
+        Sun, 25 Jul 2021 12:46:59 -0700 (PDT)
+Received: from 2603-8090-2005-39b3-0000-0000-0000-100a.res6.spectrum.com (2603-8090-2005-39b3-0000-0000-0000-100a.res6.spectrum.com. [2603:8090:2005:39b3::100a])
+        by smtp.gmail.com with ESMTPSA id s8sm5751923oie.43.2021.07.25.12.46.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Jul 2021 12:46:59 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Subject: Re: [PATCH] wireless: rtl8187: replace udev with usb_get_dev()
+To:     htl10@users.sourceforge.net,
+        Herton Ronaldo Krzesinski <herton@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        Salah Triki <salah.triki@gmail.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210724183457.GA470005@pc>
+ <53895498.1259278.1627160074135@mail.yahoo.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <e761905b-0449-9463-c3ab-923aff36e4df@lwfinger.net>
+Date:   Sun, 25 Jul 2021 14:46:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <53895498.1259278.1627160074135@mail.yahoo.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Geoff Levand <geoff@infradead.org> a écrit :
+On 7/24/21 3:54 PM, Hin-Tak Leung wrote:
+> 
+> 
+> On Saturday, 24 July 2021, 19:35:12 BST, Salah Triki <salah.triki@gmail.com> wrote:
+> 
+> 
+>  > Replace udev with usb_get_dev() in order to make code cleaner.
+> 
+>  > Signed-off-by: Salah Triki <salah.triki@gmail.com>
+>  > ---
+>  > drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c | 4 +---
+>  > 1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+>  > diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c 
+> b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+>  > index eb68b2d3caa1..30bb3c2b8407 100644
+>  > --- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+>  > +++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+>  > @@ -1455,9 +1455,7 @@ static int rtl8187_probe(struct usb_interface *intf,
+> 
+>  >     SET_IEEE80211_DEV(dev, &intf->dev);
+>  >     usb_set_intfdata(intf, dev);
+>  > -    priv->udev = udev;
+>  > -
+>  > -    usb_get_dev(udev);
+>  > +    priv->udev = usb_get_dev(udev);
+> 
+>  >     skb_queue_head_init(&priv->rx_queue);
+> 
+>  > --
+>  > 2.25.1
+> 
+> It is not cleaner - the change is not functionally equivalent. Before the 
+> change, the reference count is increased after the assignment; and after the 
+> change, before the assignment. So my question is, does the reference count 
+> increasing a little earlier matters? What can go wrong between very short time 
+> where the reference count increases, and priv->udev not yet assigned? I think 
+> there might be a race condition where the probbe function is called very shortly 
+> twice.
+> Especially if the time of running the reference count function is non-trivial.
+> 
+> Larry, what do you think?
 
-> Fixes several DMA mapping problems with the PS3's gelic network driver:
->
->  * Change from checking the return value of dma_map_single to using the
->    dma_mapping_error routine.
->  * Use the correct buffer length when mapping the RX skb.
->  * Improved error checking and debug logging.
+My belief was that probe routines were called in order, which was confirmed by 
+GregKH. As a result, there can be no race condition, and the order of setting 
+the reference count does not matter. On the other hand, the current code is not 
+misleading, nor unclear. Why should it be changed?
 
-The patch is quite big and probably deserves more explanation. For  
-instance, explain why the buffer length is not correct today.
+NACK on the patch.
 
-Also as it is a bug fixing patch, it should include a 'fixes' tag, and  
-a Cc: to stable@vger.kernel.org. Also, when possible, bug fixes should  
-be one of the first patches in a series like that so that they can be  
-applied to stable without applying the whole series.
-
-Christophe
-
->
-> Fixes runtime errors like these, and also other randomly occurring errors:
->
->   IP-Config: Complete:
->   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
->   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
->
-> Signed-off-by: Geoff Levand <geoff@infradead.org>
-> ---
->  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 183 +++++++++++--------
->  1 file changed, 108 insertions(+), 75 deletions(-)
->
-> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c  
-> b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> index 42f4de9ad5fe..11ddeacb1159 100644
-> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-> @@ -336,22 +336,31 @@ static int gelic_card_init_chain(struct  
-> gelic_card *card,
->  	struct gelic_descr_chain *chain, struct gelic_descr *start_descr,
->  	int descr_count)
->  {
-> -	int i;
-> -	struct gelic_descr *descr;
-> +	struct gelic_descr *descr = start_descr;
->  	struct device *dev = ctodev(card);
-> +	unsigned int index;
->
-> -	descr = start_descr;
-> -	memset(descr, 0, sizeof(*descr) *descr_count);
-> +	memset(start_descr, 0, descr_count * sizeof(*start_descr));
->
-> -	for (i = 0; i < descr_count; i++, descr++) {
-> -		descr->link.size = sizeof(struct gelic_hw_regs);
-> +	for (index = 0, descr = start_descr; index < descr_count;
-> +		index++, descr++) {
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
-> -		descr->link.cpu_addr =
-> -			dma_map_single(dev, descr, descr->link.size,
-> -				DMA_BIDIRECTIONAL);
->
-> -		if (!descr->link.cpu_addr)
-> -			goto iommu_error;
-> +		descr->link.size = sizeof(struct gelic_hw_regs);
-> +		descr->link.cpu_addr = dma_map_single(dev, descr,
-> +			descr->link.size, DMA_BIDIRECTIONAL);
-> +
-> +		if (unlikely(dma_mapping_error(dev, descr->link.cpu_addr))) {
-> +			dev_err(dev, "%s:%d: dma_mapping_error\n", __func__,
-> +				__LINE__);
-> +
-> +			for (index--, descr--; index > 0; index--, descr--) {
-> +				if (descr->link.cpu_addr) {
-> +					gelic_unmap_link(dev, descr);
-> +				}
-> +			}
-> +			return -ENOMEM;
-> +		}
->
->  		descr->next = descr + 1;
->  		descr->prev = descr - 1;
-> @@ -360,8 +369,9 @@ static int gelic_card_init_chain(struct gelic_card *card,
->  	(descr - 1)->next = start_descr;
->  	start_descr->prev = (descr - 1);
->
-> -	descr = start_descr;
-> -	for (i = 0; i < descr_count; i++, descr++) {
-> +	/* chain bus addr of hw descriptor */
-> +	for (index = 0, descr = start_descr; index < descr_count;
-> +		index++, descr++) {
->  		descr->hw_regs.next_descr_addr =
->  			cpu_to_be32(descr->next->link.cpu_addr);
->  	}
-> @@ -373,12 +383,6 @@ static int gelic_card_init_chain(struct  
-> gelic_card *card,
->  	(descr - 1)->hw_regs.next_descr_addr = 0;
->
->  	return 0;
-> -
-> -iommu_error:
-> -	for (i--, descr--; 0 <= i; i--, descr--)
-> -		if (descr->link.cpu_addr)
-> -			gelic_unmap_link(dev, descr);
-> -	return -ENOMEM;
->  }
->
->  /**
-> @@ -395,49 +399,63 @@ static int gelic_descr_prepare_rx(struct  
-> gelic_card *card,
->  	struct gelic_descr *descr)
->  {
->  	struct device *dev = ctodev(card);
-> -	int offset;
-> -	unsigned int bufsize;
-> +	struct aligned_buff {
-> +		unsigned int total_bytes;
-> +		unsigned int offset;
-> +	};
-> +	struct aligned_buff a_buf;
-> +	dma_addr_t cpu_addr;
->
->  	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE) {
->  		dev_err(dev, "%s:%d: ERROR status\n", __func__, __LINE__);
->  	}
->
-> -	/* we need to round up the buffer size to a multiple of 128 */
-> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
-> +	a_buf.total_bytes = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN)
-> +		+ GELIC_NET_RXBUF_ALIGN;
-> +
-> +	descr->skb = dev_alloc_skb(a_buf.total_bytes);
->
-> -	/* and we need to have it 128 byte aligned, therefore we allocate a
-> -	 * bit more */
-> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
->  	if (!descr->skb) {
-> -		descr->hw_regs.payload.dev_addr = 0; /* tell DMAC don't touch memory */
-> +		descr->hw_regs.payload.dev_addr = 0;
-> +		descr->hw_regs.payload.size = 0;
->  		return -ENOMEM;
->  	}
-> -	descr->hw_regs.payload.size = cpu_to_be32(bufsize);
-> +
-> +	a_buf.offset = PTR_ALIGN(descr->skb->data, GELIC_NET_RXBUF_ALIGN)
-> +		- descr->skb->data;
-> +
-> +	if (a_buf.offset) {
-> +		dev_dbg(dev, "%s:%d: offset=%u\n", __func__, __LINE__,
-> +			a_buf.offset);
-> +		skb_reserve(descr->skb, a_buf.offset);
-> +	}
-> +
->  	descr->hw_regs.dmac_cmd_status = 0;
->  	descr->hw_regs.result_size = 0;
->  	descr->hw_regs.valid_size = 0;
->  	descr->hw_regs.data_error = 0;
->
-> -	offset = ((unsigned long)descr->skb->data) &
-> -		(GELIC_NET_RXBUF_ALIGN - 1);
-> -	if (offset)
-> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
-> -	/* io-mmu-map the skb */
-> -	descr->hw_regs.payload.dev_addr = cpu_to_be32(dma_map_single(dev,
-> -						     descr->skb->data,
-> -						     GELIC_NET_MAX_MTU,
-> -						     DMA_FROM_DEVICE));
-> -	if (!descr->hw_regs.payload.dev_addr) {
-> +	descr->hw_regs.payload.size = a_buf.total_bytes - a_buf.offset;
-> +	cpu_addr = dma_map_single(dev, descr->skb->data,
-> +		descr->hw_regs.payload.size, DMA_FROM_DEVICE);
-> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
-> +
-> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
-> +		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
-> +
-> +		descr->hw_regs.payload.dev_addr = 0;
-> +		descr->hw_regs.payload.size = 0;
-> +
->  		dev_kfree_skb_any(descr->skb);
->  		descr->skb = NULL;
-> -		dev_info(dev,
-> -			 "%s:Could not iommu-map rx buffer\n", __func__);
-> +
->  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
-> +
->  		return -ENOMEM;
-> -	} else {
-> -		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-> -		return 0;
->  	}
-> +
-> +	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-> +	return 0;
->  }
->
->  /**
-> @@ -454,13 +472,18 @@ static void gelic_card_release_rx_chain(struct  
-> gelic_card *card)
->  		if (descr->skb) {
->  			dma_unmap_single(dev,
->  				be32_to_cpu(descr->hw_regs.payload.dev_addr),
-> -				descr->skb->len, DMA_FROM_DEVICE);
-> -			descr->hw_regs.payload.dev_addr = 0;
-> +				descr->hw_regs.payload.size, DMA_FROM_DEVICE);
-> +
->  			dev_kfree_skb_any(descr->skb);
->  			descr->skb = NULL;
-> +
->  			gelic_descr_set_status(descr,
->  				GELIC_DESCR_DMA_NOT_IN_USE);
->  		}
-> +
-> +		descr->hw_regs.payload.dev_addr = 0;
-> +		descr->hw_regs.payload.size = 0;
-> +
->  		descr = descr->next;
->  	} while (descr != card->rx_chain.head);
->  }
-> @@ -526,17 +549,19 @@ static void gelic_descr_release_tx(struct  
-> gelic_card *card,
->  		GELIC_DESCR_TX_TAIL));
->
->  	dma_unmap_single(dev, be32_to_cpu(descr->hw_regs.payload.dev_addr),
-> -		skb->len, DMA_TO_DEVICE);
-> -	dev_kfree_skb_any(skb);
-> +		descr->hw_regs.payload.size, DMA_TO_DEVICE);
->
->  	descr->hw_regs.payload.dev_addr = 0;
->  	descr->hw_regs.payload.size = 0;
-> +
-> +	dev_kfree_skb_any(skb);
-> +	descr->skb = NULL;
-> +
->  	descr->hw_regs.next_descr_addr = 0;
->  	descr->hw_regs.result_size = 0;
->  	descr->hw_regs.valid_size = 0;
->  	descr->hw_regs.data_status = 0;
->  	descr->hw_regs.data_error = 0;
-> -	descr->skb = NULL;
->
->  	gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
->  }
-> @@ -565,31 +590,34 @@ static void gelic_card_wake_queues(struct  
-> gelic_card *card)
->  static void gelic_card_release_tx_chain(struct gelic_card *card, int stop)
->  {
->  	struct gelic_descr_chain *tx_chain;
-> -	enum gelic_descr_dma_status status;
->  	struct device *dev = ctodev(card);
-> -	struct net_device *netdev;
-> -	int release = 0;
-> +	int release;
-> +
-> +	for (release = 0, tx_chain = &card->tx_chain;
-> +		tx_chain->head != tx_chain->tail && tx_chain->tail;
-> +		tx_chain->tail = tx_chain->tail->next) {
-> +		enum gelic_descr_dma_status status;
-> +		struct gelic_descr *descr;
-> +		struct net_device *netdev;
-> +
-> +		descr = tx_chain->tail;
-> +		status = gelic_descr_get_status(descr);
-> +		netdev = descr->skb->dev;
->
-> -	for (tx_chain = &card->tx_chain;
-> -	     tx_chain->head != tx_chain->tail && tx_chain->tail;
-> -	     tx_chain->tail = tx_chain->tail->next) {
-> -		status = gelic_descr_get_status(tx_chain->tail);
-> -		netdev = tx_chain->tail->skb->dev;
->  		switch (status) {
->  		case GELIC_DESCR_DMA_RESPONSE_ERROR:
->  		case GELIC_DESCR_DMA_PROTECTION_ERROR:
->  		case GELIC_DESCR_DMA_FORCE_END:
-> -			 dev_info_ratelimited(dev,
-> -					 "%s:%d: forcing end of tx descriptor with status %x\n",
-> -					 __func__, __LINE__, status);
-> +			dev_info_ratelimited(dev,
-> +				"%s:%d: forcing end of tx descriptor with status %x\n",
-> +				__func__, __LINE__, status);
->  			netdev->stats.tx_dropped++;
->  			break;
->
->  		case GELIC_DESCR_DMA_COMPLETE:
-> -			if (tx_chain->tail->skb) {
-> +			if (descr->skb) {
->  				netdev->stats.tx_packets++;
-> -				netdev->stats.tx_bytes +=
-> -					tx_chain->tail->skb->len;
-> +				netdev->stats.tx_bytes += descr->skb->len;
->  			}
->  			break;
->
-> @@ -599,7 +627,7 @@ static void gelic_card_release_tx_chain(struct  
-> gelic_card *card, int stop)
->  			}
->  		}
->
-> -		gelic_descr_release_tx(card, tx_chain->tail);
-> +		gelic_descr_release_tx(card, descr);
->  		release++;
->  	}
->  out:
-> @@ -703,19 +731,19 @@ int gelic_net_stop(struct net_device *netdev)
->   *
->   * returns the address of the next descriptor, or NULL if not available.
->   */
-> -static struct gelic_descr *
-> -gelic_card_get_next_tx_descr(struct gelic_card *card)
-> +static struct gelic_descr *gelic_card_get_next_tx_descr(struct  
-> gelic_card *card)
->  {
->  	if (!card->tx_chain.head)
->  		return NULL;
-> +
->  	/*  see if the next descriptor is free */
->  	if (card->tx_chain.tail != card->tx_chain.head->next &&
-> -		gelic_descr_get_status(card->tx_chain.head) ==
-> -			GELIC_DESCR_DMA_NOT_IN_USE)
-> +		(gelic_descr_get_status(card->tx_chain.head) ==
-> +			GELIC_DESCR_DMA_NOT_IN_USE)) {
->  		return card->tx_chain.head;
-> -	else
-> -		return NULL;
-> +	}
->
-> +	return NULL;
->  }
->
->  /**
-> @@ -809,18 +837,23 @@ static int gelic_descr_prepare_tx(struct  
-> gelic_card *card,
->  		if (!skb_tmp) {
->  			return -ENOMEM;
->  		}
-> +
->  		skb = skb_tmp;
->  	}
->
-> -	cpu_addr = dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
-> +	descr->hw_regs.payload.size = skb->len;
-> +	cpu_addr = dma_map_single(dev, skb->data, descr->hw_regs.payload.size,
-> +		DMA_TO_DEVICE);
-> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
->
-> -	if (!cpu_addr) {
-> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
->  		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
-> +
-> +		descr->hw_regs.payload.dev_addr = 0;
-> +		descr->hw_regs.payload.size = 0;
->  		return -ENOMEM;
->  	}
->
-> -	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
-> -	descr->hw_regs.payload.size = cpu_to_be32(skb->len);
->  	descr->skb = skb;
->  	descr->hw_regs.data_status = 0;
->  	descr->hw_regs.next_descr_addr = 0; /* terminate hw descr */
-> @@ -948,9 +981,9 @@ static void gelic_net_pass_skb_up(struct  
-> gelic_descr *descr,
->
->  	data_status = be32_to_cpu(descr->hw_regs.data_status);
->  	data_error = be32_to_cpu(descr->hw_regs.data_error);
-> -	/* unmap skb buffer */
-> +
->  	dma_unmap_single(dev, be32_to_cpu(descr->hw_regs.payload.dev_addr),
-> -			 GELIC_NET_MAX_MTU, DMA_FROM_DEVICE);
-> +			 descr->hw_regs.payload.size, DMA_FROM_DEVICE);
->
->  	skb_put(skb, be32_to_cpu(descr->hw_regs.valid_size) ?
->  		be32_to_cpu(descr->hw_regs.valid_size) :
-> --
-> 2.25.1
-
+Larry
 
