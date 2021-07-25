@@ -2,121 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296F83D4DB6
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 15:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6A13D4DC8
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 15:45:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230439AbhGYMrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 08:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
+        id S230523AbhGYNEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 09:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbhGYMrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 08:47:20 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D23C061757;
-        Sun, 25 Jul 2021 06:27:49 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id nd39so11565720ejc.5;
-        Sun, 25 Jul 2021 06:27:49 -0700 (PDT)
+        with ESMTP id S230029AbhGYNEz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 09:04:55 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1CEC061757;
+        Sun, 25 Jul 2021 06:45:25 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l19so9146850pjz.0;
+        Sun, 25 Jul 2021 06:45:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ug8zSMnU2kdew7XA3SZRT3wjKRPWxWw7Hd9uOpR6CJA=;
-        b=gd2oUl8nbz84CXt9wnNFIsRdmnwQoogkMOycJdnORJdtf/u84hmFvhMAf/JyZ2KpLr
-         g1ST/icPVs2fMUeP4eHYJjcoQDEcgdQqSLwa0yVElQVyPEcyqRxGiXWoIxE7ZtkYu2Cw
-         SC9pE0qsJVHRkZAW7S1I4xicRIU4aVnriezrtG4ZPdGnQ+4qhsL9biTAr4R7c7cH9lel
-         pDL88NPGJ0AInK0kXjIq3PpXVVsWlkXwX3aCPaQFHrBA0WoruBJaviydIfY/LzNnb5Uu
-         7hGAMP4oW9VpbwjgKeEHAI7MGbNdx+mhxyTK++vs5tgRUetnvfHJYZ8AeXLBGh8lBv4Z
-         q22Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CPKcV5apB8857BwhvHUW6j9y3xBf0R05HIIXcW+LSY4=;
+        b=n2gJKKRkUbCzf5Hs2VPam4LEhvjmAxzvLF95EdZA9ZgJEQ1val0sheYNX2gLs3RvuE
+         /itKSQV4kUZan4uRGqQuBxSEXP1jV2Ok0NlRKpGs1CfUsp2oPfMz7kQFdfh1WkMrFK0j
+         x2GA6lvDzfz2s8F13cN+i74dA0wUrJfVacrEuGXFt4AQi9iBDbFbjf+8dPPFhJ7x7tfm
+         mKf9Ldz+9SyGhrm2e5R92NMWsctxHNOmaDL1sq+mQJ4LsL6dXgFUJPlwaK1pSB1bjHZe
+         SHaol54evRXm6Js1jLO253QORCJWZlyP2xJrV+ZTVjt50Vxb2yu3NSiw1kPDc11Frd6D
+         27JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ug8zSMnU2kdew7XA3SZRT3wjKRPWxWw7Hd9uOpR6CJA=;
-        b=MUkU4ojqnnvRHdcvWrKkTIQaJCNwfwtL7BDVtP9ptHVFmvKwWeEbwHQz7qgkhKxRS/
-         J3nuTRyozTxOP7x/8rsGXKNFyJbFh43zsQksCqAZFwHCyYVCaOSc/5DvdF547SCLI1dg
-         JR4iI+3KYLOrQJf6mv8C8dEKIBVx1aN4iTDjfUmrgvWIzlFiHVvawtAPbwbmWIrBGTy7
-         jacS9KaZE1/sL52lM18E9DeAIhPXl1LdDieJTAA6KBxcxQtrM43UWzh6Iimp4fiW710V
-         cFQd5tdqHYn+JHQJQITd2hUgH9yaPi8laSvyve+V3dqyo8qqb++uZO+BqZXxXMs5k9JM
-         xh5A==
-X-Gm-Message-State: AOAM530SoHeu1/Ya54DCXQraUAvuLXibzna8FA7RxtrMke59jx7YSLG5
-        6gTRX6Xjq7y5U8fKeaQvGE4UqLSNU+6lc6pSdRA=
-X-Google-Smtp-Source: ABdhPJyy5ZC9QKf9nblbrjmiCMuYBIj1PGsylZzS8j9ydD/aG3lgDrsVKxYxZmOTacQNVr33TTuypV4whMxeZ/1vTrY=
-X-Received: by 2002:aa7:cfcf:: with SMTP id r15mr16001396edy.161.1627219667975;
- Sun, 25 Jul 2021 06:27:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CPKcV5apB8857BwhvHUW6j9y3xBf0R05HIIXcW+LSY4=;
+        b=U/EeWhq3i3920aD4CqbnTur5UFUjfWEUIaWiqt49gvgmIONk70fzm1wbt7lO3ZO13G
+         IPT5LeE9gfQgz7WAx5rabCVBQd1lIUotkSOSY5SlzNRIH1qMH39wAhbNCzy9n7g1HXsn
+         ixaPBPoBho4eXFEDQZP/uxAhGz1b0qBNpOPCbe0D4TXdElq6k8eoH3x6N4W8LmUwQ8rJ
+         cOCtAf+T5Z4vWL81DO+zNsusqs8I45H71sSJuWkcQhlLDLAezBG1y8GfH7PM3zVB12g0
+         sRILxjoELvcdZF1+CQs6tZCPKMnhp++fGerDWjAEAQViMwAd3nZLs0+1UfiQ4dzST30u
+         XRIg==
+X-Gm-Message-State: AOAM531PlLym676Ua8B71WJtOooMXRYEHyhWmoU9XcKPgCsdhNIOQ58F
+        tORtCwA2QMiV1XkCcvGwCf/j3NxJKBm36CCYNDI=
+X-Google-Smtp-Source: ABdhPJyTg2y+y0eDTyVJ0DnhpPnoW2D2ZfdaBaSqY4UW+mdvgWK5Tp0JwP6xSEfBkX3PNYweGHJZnQ==
+X-Received: by 2002:a17:902:c950:b029:12b:6dff:737e with SMTP id i16-20020a170902c950b029012b6dff737emr10850220pla.23.1627220724905;
+        Sun, 25 Jul 2021 06:45:24 -0700 (PDT)
+Received: from fanta-arch.tsinghua.edu.cn ([103.207.71.57])
+        by smtp.gmail.com with ESMTPSA id a13sm41608567pfl.92.2021.07.25.06.45.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Jul 2021 06:45:24 -0700 (PDT)
+From:   Letu Ren <fantasquex@gmail.com>
+To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zheyuma97@gmail.com, Letu Ren <fantasquex@gmail.com>
+Subject: [PATCH] net/qla3xxx: fix schedule while atomic in ql_wait_for_drvr_lock and ql_adapter_reset
+Date:   Sun, 25 Jul 2021 21:45:12 +0800
+Message-Id: <20210725134512.42044-1-fantasquex@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20210725094246.pkdpvl5aaaftur3a@pengutronix.de> <20210725103630.23864-1-paskripkin@gmail.com>
-In-Reply-To: <20210725103630.23864-1-paskripkin@gmail.com>
-From:   Yasushi SHOJI <yasushi.shoji@gmail.com>
-Date:   Sun, 25 Jul 2021 22:27:37 +0900
-Message-ID: <CAELBRWKfyOBanMBteO=LpL9R1QMp97zTYtKY689jeR2gDOa_Gw@mail.gmail.com>
-Subject: Re: [PATCH] net: can: add missing urb->transfer_dma initialization
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     mkl@pengutronix.de, wg@grandegger.com, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Yasushi SHOJI <yashi@spacecubics.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
+When calling the 'ql_wait_for_drvr_lock' and 'ql_adapter_reset', the driver
+has already acquired the spin lock, so the driver should not call 'ssleep'
+in atomic context.
 
-I've tested this patch on top of v5.14-rc2.  All good.
+This bug can be fixed by using 'mdelay' instead of 'ssleep'.
 
-Tested-by: Yasushi SHOJI <yashi@spacecubics.com>
+Reported-by: Letu Ren <fantasquex@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
+---
+ drivers/net/ethernet/qlogic/qla3xxx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Some nitpicks.
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+index 2376b2729633..c00ad57575ea 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -154,7 +154,7 @@ static int ql_wait_for_drvr_lock(struct ql3_adapter *qdev)
+ 				      "driver lock acquired\n");
+ 			return 1;
+ 		}
+-		ssleep(1);
++		mdelay(1000);
+ 	} while (++i < 10);
+ 
+ 	netdev_err(qdev->ndev, "Timed out waiting for driver lock...\n");
+@@ -3274,7 +3274,7 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
+ 		if ((value & ISP_CONTROL_SR) == 0)
+ 			break;
+ 
+-		ssleep(1);
++		mdelay(1000);
+ 	} while ((--max_wait_time));
+ 
+ 	/*
+@@ -3310,7 +3310,7 @@ static int ql_adapter_reset(struct ql3_adapter *qdev)
+ 						   ispControlStatus);
+ 			if ((value & ISP_CONTROL_FSR) == 0)
+ 				break;
+-			ssleep(1);
++			mdelay(1000);
+ 		} while ((--max_wait_time));
+ 	}
+ 	if (max_wait_time == 0)
+-- 
+2.32.0
 
-On Sun, Jul 25, 2021 at 7:36 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
->
-> Yasushi reported, that his Microchip CAN Analyzer stopped working since
-> commit 91c02557174b ("can: mcba_usb: fix memory leak in mcba_usb").
-> The problem was in missing urb->transfer_dma initialization.
->
-> In my previous patch to this driver I refactored mcba_usb_start() code to
-> avoid leaking usb coherent buffers. To achive it, I passed local stack
-
-achieve
-
-> variable to usb_alloc_coherent() and then saved it to private array to
-> correctly free all coherent buffers on ->close() call. But I forgot to
-> inialize urb->transfer_dma with variable passed to usb_alloc_coherent().
-
-initialize
-
-> All of this was causing device to not work, since dma addr 0 is not valid
-> and following log can be found on bug report page, which points exactly to
-> problem described above.
->
-> [   33.862175] DMAR: [DMA Write] Request device [00:14.0] PASID ffffffff fault addr 0 [fault reason 05] PTE Write access is not set
->
-> Bug report: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=990850
->
-> Reported-by: Yasushi SHOJI <yasushi.shoji@gmail.com>
-> Fixes: 91c02557174b ("can: mcba_usb: fix memory leak in mcba_usb")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
->  drivers/net/can/usb/mcba_usb.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-> index a45865bd7254..a1a154c08b7f 100644
-> --- a/drivers/net/can/usb/mcba_usb.c
-> +++ b/drivers/net/can/usb/mcba_usb.c
-> @@ -653,6 +653,8 @@ static int mcba_usb_start(struct mcba_priv *priv)
->                         break;
->                 }
->
-> +               urb->transfer_dma = buf_dma;
-> +
->                 usb_fill_bulk_urb(urb, priv->udev,
->                                   usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_IN),
->                                   buf, MCBA_USB_RX_BUFF_SIZE,
-> --
-> 2.32.0
-
-Pavel, thanks again for your quick fix. :-)
-
-Best,
---
-               yashi
