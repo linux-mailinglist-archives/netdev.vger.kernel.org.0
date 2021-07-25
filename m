@@ -2,144 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1873D4CF7
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 11:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E39E3D4CFE
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 11:50:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbhGYJF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 05:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbhGYJF6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 05:05:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DCBC06175F
-        for <netdev@vger.kernel.org>; Sun, 25 Jul 2021 02:46:28 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m7ai5-0006YS-AR; Sun, 25 Jul 2021 11:46:13 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:6671:797e:8cf2:7596])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 80320657530;
-        Sun, 25 Jul 2021 09:46:06 +0000 (UTC)
-Date:   Sun, 25 Jul 2021 11:46:05 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-can@vger.kernel.org, clang-built-linux@googlegroups.com,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] can: rcar_canfd: Add support for RZ/G2L family
-Message-ID: <20210725094605.gzhrbunkot7ytvel@pengutronix.de>
-References: <20210721194951.30983-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <202107251336.iD47PRoA-lkp@intel.com>
+        id S231196AbhGYJJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 05:09:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54402 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230421AbhGYJJe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 05:09:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id D1A5360F3A;
+        Sun, 25 Jul 2021 09:50:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627206604;
+        bh=QlD6/ABz2xaVs2ESNzPp5sEPCjbZndKeKh3o7mAdYfU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=t005lI+oCDyZDVMfFjL25lcXEFiXQcdP4NgEsGIxqYkZgarXg7HPHE0UVsfHhnAdY
+         LCznzm4T9p1PGijD28Pmertv2tJLVjIatqbNn3LDo9BDy1T1tr7OeHd7AsCT9H28IF
+         jYVQo30qnpB86gOorUcu6FagGzn7/DPPYg4MspMCF2GYxpE1TneL2ujBMj58EcCGaS
+         QGRu1U1NM0w5jV5Cx2QB7A+gBx9iItsqt7/RFNcVtn378uzxqSpsVIXJJ8rBMW0S8G
+         6VTWjuvC/BPxrNTHGQ6BUlsew9sag2qS/v0i00f/jMOGJc71U41rYjvATaIkkXnEOh
+         hWw0mdwtJnjDQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C9E9C60A39;
+        Sun, 25 Jul 2021 09:50:04 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y4plgjlsv5x2mcmy"
-Content-Disposition: inline
-In-Reply-To: <202107251336.iD47PRoA-lkp@intel.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] tipc: fix an use-after-free issue in tipc_recvmsg
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162720660482.12734.3061304983506878022.git-patchwork-notify@kernel.org>
+Date:   Sun, 25 Jul 2021 09:50:04 +0000
+References: <a60f2c4e9eb8cce9da01c5bd561684011f7fa7da.1627061136.git.lucien.xin@gmail.com>
+In-Reply-To: <a60f2c4e9eb8cce9da01c5bd561684011f7fa7da.1627061136.git.lucien.xin@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jmaloy@redhat.com, tipc-discussion@lists.sourceforge.net,
+        hoang.h.le@dektech.com.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---y4plgjlsv5x2mcmy
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On 25.07.2021 13:39:37, kernel test robot wrote:
-> Hi Lad,
->=20
-> Thank you for the patch! Perhaps something to improve:
->=20
-> [auto build test WARNING on renesas-devel/next]
-> [also build test WARNING on v5.14-rc2 next-20210723]
-> [cannot apply to mkl-can-next/testing robh/for-next]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
->=20
-> url:    https://github.com/0day-ci/linux/commits/Lad-Prabhakar/Renesas-RZ=
--G2L-CANFD-support/20210722-035332
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-dev=
-el.git next
-> config: arm64-randconfig-r031-20210723 (attached as .config)
-> compiler: clang version 13.0.0 (https://github.com/llvm/llvm-project 9625=
-ca5b602616b2f5584e8a49ba93c52c141e40)
-> reproduce (this is a W=3D1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbi=
-n/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install arm64 cross compiling tool for clang build
->         # apt-get install binutils-aarch64-linux-gnu
->         # https://github.com/0day-ci/linux/commit/082d605e73c5922419a736a=
-a9ecd3a76c0241bf7
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Lad-Prabhakar/Renesas-RZ-G2L-CAN=
-FD-support/20210722-035332
->         git checkout 082d605e73c5922419a736aa9ecd3a76c0241bf7
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.cross AR=
-CH=3Darm64=20
->=20
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->=20
-> All warnings (new ones prefixed by >>):
->=20
-> >> drivers/net/can/rcar/rcar_canfd.c:1699:12: warning: cast to smaller in=
-teger type 'enum rcanfd_chip_id' from 'const void *' [-Wvoid-pointer-to-enu=
-m-cast]
->            chip_id =3D (enum rcanfd_chip_id)of_device_get_match_data(&pde=
-v->dev);
->                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
-~~~~~
->    1 warning generated.
+On Fri, 23 Jul 2021 13:25:36 -0400 you wrote:
+> syzbot reported an use-after-free crash:
+> 
+>   BUG: KASAN: use-after-free in tipc_recvmsg+0xf77/0xf90 net/tipc/socket.c:1979
+>   Call Trace:
+>    tipc_recvmsg+0xf77/0xf90 net/tipc/socket.c:1979
+>    sock_recvmsg_nosec net/socket.c:943 [inline]
+>    sock_recvmsg net/socket.c:961 [inline]
+>    sock_recvmsg+0xca/0x110 net/socket.c:957
+>    tipc_conn_rcv_from_sock+0x162/0x2f0 net/tipc/topsrv.c:398
+>    tipc_conn_recv_work+0xeb/0x190 net/tipc/topsrv.c:421
+>    process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
+>    worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
+> 
+> [...]
 
-Seems we need the cast (uintptr_t), that I asked you to remove. Can you
-test if
+Here is the summary with links:
+  - [net-next] tipc: fix an use-after-free issue in tipc_recvmsg
+    https://git.kernel.org/netdev/net-next/c/cc19862ffe45
 
-| chip_id =3D (enum rcanfd_chip_id)(uintptr_t)of_device_get_match_data(&pde=
-v->dev);
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-works?
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---y4plgjlsv5x2mcmy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD9MtsACgkQqclaivrt
-76kqAQgAjSoUVJ3e+wxfDmjcDBWUjqWHDAX/uFWGQXQfCOdcCnnujfMBMJbgcAC0
-QqyEWtFblN+zYQCqhUoJLNURHBbhAkCiByljWA0uNw8aO8GzsOiISDusY8us3FdK
-VRpUW8yNEC9/7RdcpBew8HaE/0fVETC1OdSolqUsS2H1UWXFQsRQzCaYeEn5EFse
-1ldsDrRsyXvvXZiKqibPKJ4DBhrmw81STNVBH+pIRexhrTGQrH5XVzARTJO7XJO8
-6hTXIiCx5l0H0mwHXqBq6AZswzcEcqnH7P5U3N8i5MzKBi+v5H3RA63U/ytRMmn6
-Qs1YmDFcUN7Sl4tcGqkQ1S+PWhZsEw==
-=2kyD
------END PGP SIGNATURE-----
-
---y4plgjlsv5x2mcmy--
