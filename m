@@ -2,109 +2,421 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED6833D4F89
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 20:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B81F3D4F84
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 20:33:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbhGYR5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 13:57:18 -0400
-Received: from mail-bn8nam08on2061.outbound.protection.outlook.com ([40.107.100.61]:44896
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230217AbhGYR5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Jul 2021 13:57:17 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XXhTdrLsm2DRrIhGc3twF3/R1yscZuAevrtpSl00qbAgBC6Uq1cMFBHO9ecg1JV+dG1JIAEYQLV1JXm78EEaSvXAwuCkFJ2aMNKngfOducK98i1dEeT1i7H89koE+R/AScUOu6rHl5rbxQd9xylDuDvCzK3UW5zE2WYZTydjz8aHMSafAnE4jEATfuSgiDlhVQkf+0KQnnvgFN8LC+xWWAgt/+4eEMSUZFvaCpj4buj+PjbfNWW2RgytqgW80Al0jsvat9Ibok04GU9XySWZfBxlJI0ol40gjwunmC86w7mqxg13lV4Etq28+Q8p1aFFtkfTNqQNOug6PXnYvEETyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sDpmiN2IBkJdk0Gf223kJbEO7bPEXu1RRubLx46LSNI=;
- b=GsRbu7T4EKIUn10b3JFSF4O4s6UPUosLvTsrJCZepNHJ7v0cYcA0HBDWAwgX6hQnnXTErLIA/re9N9IWV1WKV2QpjoNuJRYVwU1z9bKAECVuq8RW1GjB54VcDi+TI0dzyKhOOo1D5QORw34qeNylfU+MoTGYqLgDe8lE19gjcN4naQ+4ws95VczA6iC1CWn32UpGYEnXkEdkRcM4vLthwCFJ3zDz1fYecpDuUoEJW4jf6Zbh44THvG2CwlZFfl0VZxpJF9XfboXApYQkwpmvHWxaW4NElUzuuIwN3ghkCLizZV303u7tsfdy9jKwhqziI3/oxndVXPMSx059iub6Yw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sDpmiN2IBkJdk0Gf223kJbEO7bPEXu1RRubLx46LSNI=;
- b=kzT3AzcmoPwB+mFcmxcR/Q2uK12hUL1+jqZmhqRRabE7HosvkCjW7Zv2q5KD6hzmsfBpMVyS8Pj8mwB5DbpjYUx65CW1JGlzCSmcZVREpe3TbM8EcPZeE7U5KGE0GrTlpxrmNwUCArmYSz2u9yz1jmW9Kks872aKd3HNkpqEuIvVeHhnYpz9weESjhHt+Z1Z9BM90vAq+HPzzEtVmjjRtiu8Gv1JIYwGwqQWoNOxFvMumpo9Hi49P9N4cNYA+gSI4Wj4tZBmrYmKsRuXw/6DaCZ+1leA6ri2e6hx5lhRM/BB1ZFRbqq3FsNWyfJWbRW3c9vSa2wgseNGwgLG9XhbMg==
-Received: from DS7PR03CA0075.namprd03.prod.outlook.com (2603:10b6:5:3bb::20)
- by CY4PR12MB1269.namprd12.prod.outlook.com (2603:10b6:903:40::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24; Sun, 25 Jul
- 2021 18:37:44 +0000
-Received: from DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3bb:cafe::43) by DS7PR03CA0075.outlook.office365.com
- (2603:10b6:5:3bb::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.24 via Frontend
- Transport; Sun, 25 Jul 2021 18:37:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT034.mail.protection.outlook.com (10.13.173.47) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4352.24 via Frontend Transport; Sun, 25 Jul 2021 18:37:43 +0000
-Received: from localhost (172.20.187.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 25 Jul
- 2021 18:37:42 +0000
-Date:   Sun, 25 Jul 2021 21:37:39 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] devlink: Remove duplicated registration check
-Message-ID: <YP2vc4CDrxVzKc4d@unreal>
-References: <ed7bbb1e4c51dd58e6035a058e93d16f883b09ce.1627215829.git.leonro@nvidia.com>
+        id S230507AbhGYRwS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 25 Jul 2021 13:52:18 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:48365 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229825AbhGYRwS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 13:52:18 -0400
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+        by localhost (Postfix) with ESMTP id 4GXs9q1cxpzBCTn;
+        Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qNNbYLWewUwJ; Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
+Received: from vm-hermes.si.c-s.fr (vm-hermes.si.c-s.fr [192.168.25.253])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4GXs9q0Sj8zBCTX;
+        Sun, 25 Jul 2021 20:32:47 +0200 (CEST)
+Received: by vm-hermes.si.c-s.fr (Postfix, from userid 33)
+        id 5ED5A3D9; Sun, 25 Jul 2021 20:38:04 +0200 (CEST)
+Received: from 37-165-12-41.coucou-networks.fr
+ (37-165-12-41.coucou-networks.fr [37.165.12.41]) by messagerie.c-s.fr (Horde
+ Framework) with HTTP; Sun, 25 Jul 2021 20:38:04 +0200
+Date:   Sun, 25 Jul 2021 20:38:04 +0200
+Message-ID: <20210725203804.Horde.sruKcwZQKonIWKjB98332A2@messagerie.c-s.fr>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Geoff Levand <geoff@infradead.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 10/10] net/ps3_gelic: Fix DMA mapping problems
+References: <cover.1627068552.git.geoff@infradead.org>
+ <7aa1d9b1b4ffadcbdc6f88e4f8d4a323da307595.1627068552.git.geoff@infradead.org>
+In-Reply-To: <7aa1d9b1b4ffadcbdc6f88e4f8d4a323da307595.1627068552.git.geoff@infradead.org>
+User-Agent: Internet Messaging Program (IMP) H5 (6.2.3)
+Content-Type: text/plain; charset=UTF-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <ed7bbb1e4c51dd58e6035a058e93d16f883b09ce.1627215829.git.leonro@nvidia.com>
-X-Originating-IP: [172.20.187.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5131c1e8-0a78-42c4-9bc5-08d94f9b4a8a
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1269:
-X-Microsoft-Antispam-PRVS: <CY4PR12MB12698B9E710DB5CD97472B0EBDE79@CY4PR12MB1269.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hQc6WZgZzaBk6AcIuRJGOcOcAFNa0evKMVtN5DGo1xi1lHLNpmsvB3fq3TCElke+4S+3DtUhD3XFO8tT5o3OMUBcGbnIBGKkmwRgLwMiAzMVTFB+6rcmS1VMZxQBY/5Rou0JpoDWSZ9PZrCy74hcOK0dOQdgc/d6GbLMy6ma+hUolvpz2WN4lhlVNx9xKpCrLlrqPswCp4F+Pte5yMcdizjssfAYIwZfPccBNSDO4QI5h0/eislJwDtTFNE70wPEFgZCHfR936hTBgtfqTaehEAZERcQ7XnQTk/yoi7iSJLLXuJbylwvOHogWr/9WL3kQc/OpBeSjo8rFon2mHeY4leAruaeOrJXAcBtzOmidb9dMO2SkkPqoZE558AsjswSrkxgz5kbfzW4hHSzD1bK3Y/q+k+GIwE+DyTkWPsCeLZP7TTVk/A7bAes2wM+lvBZ0Az35D1ahI87EN8g6MELh+pUw5ies3AI+s0T1xDJsbjio7VuzeHGvxkDqrZeHSvB3K6mH15yPf8sX780pdZIY/ZaqL6d177Gv9IagT4elrwTXQhuooLHy5k75KKUl+EXYxmxBlcqQ9f0uWZUtZeoQfLr2s25G00YwhH7RjamYo3QvlGNwAQ0z6WUJ4wXjxuCivNZfzzHFk2ZQCrhle3aF7akH86fy8Pb7QoTU54BPhmMpIYUy7SoJDLD3O+RK5PkRlZNCYcw9cxWcy0n0DHmcA==
-X-Forefront-Antispam-Report: CIP:216.228.112.34;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:schybrid03.nvidia.com;CAT:NONE;SFS:(7916004)(4636009)(396003)(39860400002)(136003)(376002)(346002)(36840700001)(46966006)(83380400001)(82310400003)(82740400003)(2906002)(8936002)(4744005)(8676002)(6666004)(6636002)(186003)(36906005)(336012)(426003)(70206006)(70586007)(4326008)(86362001)(16526019)(9686003)(54906003)(316002)(5660300002)(7636003)(478600001)(33716001)(356005)(110136005)(26005)(47076005)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2021 18:37:43.7739
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5131c1e8-0a78-42c4-9bc5-08d94f9b4a8a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.112.34];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1269
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jul 25, 2021 at 03:24:41PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Both registered flag and devlink pointer are set at the same time
-> and indicate the same thing - devlink/devlink_port are ready. Instead
-> of checking ->registered use devlink pointer as an indication.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Geoff Levand <geoff@infradead.org> a écrit :
+
+> Fixes several DMA mapping problems with the PS3's gelic network driver:
+>
+>  * Change from checking the return value of dma_map_single to using the
+>    dma_mapping_error routine.
+>  * Use the correct buffer length when mapping the RX skb.
+>  * Improved error checking and debug logging.
+
+The patch is quite big and probably deserves more explanation. For  
+instance, explain why the buffer length is not correct today.
+
+Also as it is a bug fixing patch, it should include a 'fixes' tag, and  
+a Cc: to stable@vger.kernel.org. Also, when possible, bug fixes should  
+be one of the first patches in a series like that so that they can be  
+applied to stable without applying the whole series.
+
+Christophe
+
+>
+> Fixes runtime errors like these, and also other randomly occurring errors:
+>
+>   IP-Config: Complete:
+>   DMA-API: ps3_gelic_driver sb_05: device driver failed to check map error
+>   WARNING: CPU: 0 PID: 0 at kernel/dma/debug.c:1027 .check_unmap+0x888/0x8dc
+>
+> Signed-off-by: Geoff Levand <geoff@infradead.org>
 > ---
->  include/net/devlink.h |  4 +---
->  net/core/devlink.c    | 19 ++++++++++---------
->  2 files changed, 11 insertions(+), 12 deletions(-)
+>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 183 +++++++++++--------
+>  1 file changed, 108 insertions(+), 75 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c  
+> b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> index 42f4de9ad5fe..11ddeacb1159 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> @@ -336,22 +336,31 @@ static int gelic_card_init_chain(struct  
+> gelic_card *card,
+>  	struct gelic_descr_chain *chain, struct gelic_descr *start_descr,
+>  	int descr_count)
+>  {
+> -	int i;
+> -	struct gelic_descr *descr;
+> +	struct gelic_descr *descr = start_descr;
+>  	struct device *dev = ctodev(card);
+> +	unsigned int index;
+>
+> -	descr = start_descr;
+> -	memset(descr, 0, sizeof(*descr) *descr_count);
+> +	memset(start_descr, 0, descr_count * sizeof(*start_descr));
+>
+> -	for (i = 0; i < descr_count; i++, descr++) {
+> -		descr->link.size = sizeof(struct gelic_hw_regs);
+> +	for (index = 0, descr = start_descr; index < descr_count;
+> +		index++, descr++) {
+>  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+> -		descr->link.cpu_addr =
+> -			dma_map_single(dev, descr, descr->link.size,
+> -				DMA_BIDIRECTIONAL);
+>
+> -		if (!descr->link.cpu_addr)
+> -			goto iommu_error;
+> +		descr->link.size = sizeof(struct gelic_hw_regs);
+> +		descr->link.cpu_addr = dma_map_single(dev, descr,
+> +			descr->link.size, DMA_BIDIRECTIONAL);
+> +
+> +		if (unlikely(dma_mapping_error(dev, descr->link.cpu_addr))) {
+> +			dev_err(dev, "%s:%d: dma_mapping_error\n", __func__,
+> +				__LINE__);
+> +
+> +			for (index--, descr--; index > 0; index--, descr--) {
+> +				if (descr->link.cpu_addr) {
+> +					gelic_unmap_link(dev, descr);
+> +				}
+> +			}
+> +			return -ENOMEM;
+> +		}
+>
+>  		descr->next = descr + 1;
+>  		descr->prev = descr - 1;
+> @@ -360,8 +369,9 @@ static int gelic_card_init_chain(struct gelic_card *card,
+>  	(descr - 1)->next = start_descr;
+>  	start_descr->prev = (descr - 1);
+>
+> -	descr = start_descr;
+> -	for (i = 0; i < descr_count; i++, descr++) {
+> +	/* chain bus addr of hw descriptor */
+> +	for (index = 0, descr = start_descr; index < descr_count;
+> +		index++, descr++) {
+>  		descr->hw_regs.next_descr_addr =
+>  			cpu_to_be32(descr->next->link.cpu_addr);
+>  	}
+> @@ -373,12 +383,6 @@ static int gelic_card_init_chain(struct  
+> gelic_card *card,
+>  	(descr - 1)->hw_regs.next_descr_addr = 0;
+>
+>  	return 0;
+> -
+> -iommu_error:
+> -	for (i--, descr--; 0 <= i; i--, descr--)
+> -		if (descr->link.cpu_addr)
+> -			gelic_unmap_link(dev, descr);
+> -	return -ENOMEM;
+>  }
+>
+>  /**
+> @@ -395,49 +399,63 @@ static int gelic_descr_prepare_rx(struct  
+> gelic_card *card,
+>  	struct gelic_descr *descr)
+>  {
+>  	struct device *dev = ctodev(card);
+> -	int offset;
+> -	unsigned int bufsize;
+> +	struct aligned_buff {
+> +		unsigned int total_bytes;
+> +		unsigned int offset;
+> +	};
+> +	struct aligned_buff a_buf;
+> +	dma_addr_t cpu_addr;
+>
+>  	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE) {
+>  		dev_err(dev, "%s:%d: ERROR status\n", __func__, __LINE__);
+>  	}
+>
+> -	/* we need to round up the buffer size to a multiple of 128 */
+> -	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
+> +	a_buf.total_bytes = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN)
+> +		+ GELIC_NET_RXBUF_ALIGN;
+> +
+> +	descr->skb = dev_alloc_skb(a_buf.total_bytes);
+>
+> -	/* and we need to have it 128 byte aligned, therefore we allocate a
+> -	 * bit more */
+> -	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
+>  	if (!descr->skb) {
+> -		descr->hw_regs.payload.dev_addr = 0; /* tell DMAC don't touch memory */
+> +		descr->hw_regs.payload.dev_addr = 0;
+> +		descr->hw_regs.payload.size = 0;
+>  		return -ENOMEM;
+>  	}
+> -	descr->hw_regs.payload.size = cpu_to_be32(bufsize);
+> +
+> +	a_buf.offset = PTR_ALIGN(descr->skb->data, GELIC_NET_RXBUF_ALIGN)
+> +		- descr->skb->data;
+> +
+> +	if (a_buf.offset) {
+> +		dev_dbg(dev, "%s:%d: offset=%u\n", __func__, __LINE__,
+> +			a_buf.offset);
+> +		skb_reserve(descr->skb, a_buf.offset);
+> +	}
+> +
+>  	descr->hw_regs.dmac_cmd_status = 0;
+>  	descr->hw_regs.result_size = 0;
+>  	descr->hw_regs.valid_size = 0;
+>  	descr->hw_regs.data_error = 0;
+>
+> -	offset = ((unsigned long)descr->skb->data) &
+> -		(GELIC_NET_RXBUF_ALIGN - 1);
+> -	if (offset)
+> -		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
+> -	/* io-mmu-map the skb */
+> -	descr->hw_regs.payload.dev_addr = cpu_to_be32(dma_map_single(dev,
+> -						     descr->skb->data,
+> -						     GELIC_NET_MAX_MTU,
+> -						     DMA_FROM_DEVICE));
+> -	if (!descr->hw_regs.payload.dev_addr) {
+> +	descr->hw_regs.payload.size = a_buf.total_bytes - a_buf.offset;
+> +	cpu_addr = dma_map_single(dev, descr->skb->data,
+> +		descr->hw_regs.payload.size, DMA_FROM_DEVICE);
+> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
+> +
+> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
+> +		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
+> +
+> +		descr->hw_regs.payload.dev_addr = 0;
+> +		descr->hw_regs.payload.size = 0;
+> +
+>  		dev_kfree_skb_any(descr->skb);
+>  		descr->skb = NULL;
+> -		dev_info(dev,
+> -			 "%s:Could not iommu-map rx buffer\n", __func__);
+> +
+>  		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+> +
+>  		return -ENOMEM;
+> -	} else {
+> -		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
+> -		return 0;
+>  	}
+> +
+> +	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
+> +	return 0;
+>  }
+>
+>  /**
+> @@ -454,13 +472,18 @@ static void gelic_card_release_rx_chain(struct  
+> gelic_card *card)
+>  		if (descr->skb) {
+>  			dma_unmap_single(dev,
+>  				be32_to_cpu(descr->hw_regs.payload.dev_addr),
+> -				descr->skb->len, DMA_FROM_DEVICE);
+> -			descr->hw_regs.payload.dev_addr = 0;
+> +				descr->hw_regs.payload.size, DMA_FROM_DEVICE);
+> +
+>  			dev_kfree_skb_any(descr->skb);
+>  			descr->skb = NULL;
+> +
+>  			gelic_descr_set_status(descr,
+>  				GELIC_DESCR_DMA_NOT_IN_USE);
+>  		}
+> +
+> +		descr->hw_regs.payload.dev_addr = 0;
+> +		descr->hw_regs.payload.size = 0;
+> +
+>  		descr = descr->next;
+>  	} while (descr != card->rx_chain.head);
+>  }
+> @@ -526,17 +549,19 @@ static void gelic_descr_release_tx(struct  
+> gelic_card *card,
+>  		GELIC_DESCR_TX_TAIL));
+>
+>  	dma_unmap_single(dev, be32_to_cpu(descr->hw_regs.payload.dev_addr),
+> -		skb->len, DMA_TO_DEVICE);
+> -	dev_kfree_skb_any(skb);
+> +		descr->hw_regs.payload.size, DMA_TO_DEVICE);
+>
+>  	descr->hw_regs.payload.dev_addr = 0;
+>  	descr->hw_regs.payload.size = 0;
+> +
+> +	dev_kfree_skb_any(skb);
+> +	descr->skb = NULL;
+> +
+>  	descr->hw_regs.next_descr_addr = 0;
+>  	descr->hw_regs.result_size = 0;
+>  	descr->hw_regs.valid_size = 0;
+>  	descr->hw_regs.data_status = 0;
+>  	descr->hw_regs.data_error = 0;
+> -	descr->skb = NULL;
+>
+>  	gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
+>  }
+> @@ -565,31 +590,34 @@ static void gelic_card_wake_queues(struct  
+> gelic_card *card)
+>  static void gelic_card_release_tx_chain(struct gelic_card *card, int stop)
+>  {
+>  	struct gelic_descr_chain *tx_chain;
+> -	enum gelic_descr_dma_status status;
+>  	struct device *dev = ctodev(card);
+> -	struct net_device *netdev;
+> -	int release = 0;
+> +	int release;
+> +
+> +	for (release = 0, tx_chain = &card->tx_chain;
+> +		tx_chain->head != tx_chain->tail && tx_chain->tail;
+> +		tx_chain->tail = tx_chain->tail->next) {
+> +		enum gelic_descr_dma_status status;
+> +		struct gelic_descr *descr;
+> +		struct net_device *netdev;
+> +
+> +		descr = tx_chain->tail;
+> +		status = gelic_descr_get_status(descr);
+> +		netdev = descr->skb->dev;
+>
+> -	for (tx_chain = &card->tx_chain;
+> -	     tx_chain->head != tx_chain->tail && tx_chain->tail;
+> -	     tx_chain->tail = tx_chain->tail->next) {
+> -		status = gelic_descr_get_status(tx_chain->tail);
+> -		netdev = tx_chain->tail->skb->dev;
+>  		switch (status) {
+>  		case GELIC_DESCR_DMA_RESPONSE_ERROR:
+>  		case GELIC_DESCR_DMA_PROTECTION_ERROR:
+>  		case GELIC_DESCR_DMA_FORCE_END:
+> -			 dev_info_ratelimited(dev,
+> -					 "%s:%d: forcing end of tx descriptor with status %x\n",
+> -					 __func__, __LINE__, status);
+> +			dev_info_ratelimited(dev,
+> +				"%s:%d: forcing end of tx descriptor with status %x\n",
+> +				__func__, __LINE__, status);
+>  			netdev->stats.tx_dropped++;
+>  			break;
+>
+>  		case GELIC_DESCR_DMA_COMPLETE:
+> -			if (tx_chain->tail->skb) {
+> +			if (descr->skb) {
+>  				netdev->stats.tx_packets++;
+> -				netdev->stats.tx_bytes +=
+> -					tx_chain->tail->skb->len;
+> +				netdev->stats.tx_bytes += descr->skb->len;
+>  			}
+>  			break;
+>
+> @@ -599,7 +627,7 @@ static void gelic_card_release_tx_chain(struct  
+> gelic_card *card, int stop)
+>  			}
+>  		}
+>
+> -		gelic_descr_release_tx(card, tx_chain->tail);
+> +		gelic_descr_release_tx(card, descr);
+>  		release++;
+>  	}
+>  out:
+> @@ -703,19 +731,19 @@ int gelic_net_stop(struct net_device *netdev)
+>   *
+>   * returns the address of the next descriptor, or NULL if not available.
+>   */
+> -static struct gelic_descr *
+> -gelic_card_get_next_tx_descr(struct gelic_card *card)
+> +static struct gelic_descr *gelic_card_get_next_tx_descr(struct  
+> gelic_card *card)
+>  {
+>  	if (!card->tx_chain.head)
+>  		return NULL;
+> +
+>  	/*  see if the next descriptor is free */
+>  	if (card->tx_chain.tail != card->tx_chain.head->next &&
+> -		gelic_descr_get_status(card->tx_chain.head) ==
+> -			GELIC_DESCR_DMA_NOT_IN_USE)
+> +		(gelic_descr_get_status(card->tx_chain.head) ==
+> +			GELIC_DESCR_DMA_NOT_IN_USE)) {
+>  		return card->tx_chain.head;
+> -	else
+> -		return NULL;
+> +	}
+>
+> +	return NULL;
+>  }
+>
+>  /**
+> @@ -809,18 +837,23 @@ static int gelic_descr_prepare_tx(struct  
+> gelic_card *card,
+>  		if (!skb_tmp) {
+>  			return -ENOMEM;
+>  		}
+> +
+>  		skb = skb_tmp;
+>  	}
+>
+> -	cpu_addr = dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
+> +	descr->hw_regs.payload.size = skb->len;
+> +	cpu_addr = dma_map_single(dev, skb->data, descr->hw_regs.payload.size,
+> +		DMA_TO_DEVICE);
+> +	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
+>
+> -	if (!cpu_addr) {
+> +	if (unlikely(dma_mapping_error(dev, cpu_addr))) {
+>  		dev_err(dev, "%s:%d: dma_mapping_error\n", __func__, __LINE__);
+> +
+> +		descr->hw_regs.payload.dev_addr = 0;
+> +		descr->hw_regs.payload.size = 0;
+>  		return -ENOMEM;
+>  	}
+>
+> -	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
+> -	descr->hw_regs.payload.size = cpu_to_be32(skb->len);
+>  	descr->skb = skb;
+>  	descr->hw_regs.data_status = 0;
+>  	descr->hw_regs.next_descr_addr = 0; /* terminate hw descr */
+> @@ -948,9 +981,9 @@ static void gelic_net_pass_skb_up(struct  
+> gelic_descr *descr,
+>
+>  	data_status = be32_to_cpu(descr->hw_regs.data_status);
+>  	data_error = be32_to_cpu(descr->hw_regs.data_error);
+> -	/* unmap skb buffer */
+> +
+>  	dma_unmap_single(dev, be32_to_cpu(descr->hw_regs.payload.dev_addr),
+> -			 GELIC_NET_MAX_MTU, DMA_FROM_DEVICE);
+> +			 descr->hw_regs.payload.size, DMA_FROM_DEVICE);
+>
+>  	skb_put(skb, be32_to_cpu(descr->hw_regs.valid_size) ?
+>  		be32_to_cpu(descr->hw_regs.valid_size) :
+> --
+> 2.25.1
 
-Sorry, please drop this patch for now, I'll need to resubmit it after will
-fix completely bogus 6a5689ba0259 ("net/mlx5e: Fix possible non-initialized struct usage").
 
-Thanks
