@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 188E43D501F
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 23:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D79B3D5025
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 23:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbhGYUvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 16:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
+        id S230284AbhGYUz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 16:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229709AbhGYUvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 16:51:09 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3938EC061757;
-        Sun, 25 Jul 2021 14:31:38 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id gn26so7263871ejc.3;
-        Sun, 25 Jul 2021 14:31:38 -0700 (PDT)
+        with ESMTP id S229709AbhGYUzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 16:55:55 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A0FC061757;
+        Sun, 25 Jul 2021 14:36:25 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id x14so3154772edr.12;
+        Sun, 25 Jul 2021 14:36:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZZflIiB2DoTKcobh1NO9JbdOskY9ZuUpO9VblSztVDU=;
-        b=Z6iHfurLI8vbWoI5+fWv/JIjleaRXpMhSoOhLrkFwTfGhwiF2D5jRkJOvQiJINqO/4
-         bKYLK0VWrURWAe2Pjpf3T54yhOEak0GcCrFed0YYZWTWsfBiIIkj687GRFVGTBDMCVgD
-         Nx+fcEO86EN9ToC3eCf8tMfmEuL8lH0u3ZcTMhuNXyUHVl0TegWdB5ETy48wJvF9QgOj
-         o2aX0XqMIRTTxoYFsOSs0PU0Cc45LwOb5E+egA5HgoRog0k97AlvWuDTMaAv6SizNgQc
-         eIP+TK5rWKBP/2yUzL/q86r76rpJ1FGldk1QbYOZMka477cp+VKfUy+OrNxxfN1bbTdx
-         m8rw==
+        bh=BaU+N0BfuToMVHnQxHJcdw1g5XT9u+x4MA4dw2dsg6w=;
+        b=L4HSFfOaxMtA+pdF7zh7PH4vjhZ0Mmw7PiMvF6TtxfVhWSipsc8KPw2YgUZKHcUeTl
+         7/nYv/1Qt9x5ezOKc7pF0rCgsw9MNAvHuBDucH8No1bYEj36u0JchxlLxLCKkM5mc0gW
+         ZnGVM0Jpylcn74QC2QbaiKtaZVon7z90pDZb2riWAXFURz3mQL3Te2x1WwmxDQWAel3r
+         dx+mUKI56CG6oCXYl1HeC+YIBqp6EeALW4wyxc4v8oLT1sbucVYBQhYc3lF22X0id4ZP
+         ybAMyrXAhMdJCBHUCuPS9mImPe4RMA0neyHHD5ZpXfqC7JQhf7rAa2plFnT1UU2A4cNJ
+         en6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZZflIiB2DoTKcobh1NO9JbdOskY9ZuUpO9VblSztVDU=;
-        b=qBMHG6H9215mb0HNwdlhv0hzgapetW0g7WD3vuYActI0BCLNRltTQY/bqhK0I5wy8P
-         3MAUeP0DeU4Urm6aN1zs1c2wQMcV7ENaYef/OjZEe2nAjsl0TM57FWEGV2nB0TyoT+ll
-         dfulIDMAWgJotdiaV7j61gXdDhP7oprzh4Som+djziGkydMESTGk+DHOY/U0/7FOuFFh
-         Zu0AExFyRRRIop7DsSjwcF0/NUMLxdPYAfgnLJEsV7xywuaOZMUTPecvzMeWuIsYFqpz
-         F/IXopFLvJ5oUUWO+Lms6mKgUts11NlKIKQVFM4CiGWsB1eOPsiYbI2wWoXtQ9NGxSav
-         7MEg==
-X-Gm-Message-State: AOAM532DswKCJBvozGdK9IrKMMEvt1+o8A10iimh3UlMDfu9605iWCWR
-        eE/kJYZ+9OOPTC8lCxJJxsQ9dVW/Ly+lyRzIHbI=
-X-Google-Smtp-Source: ABdhPJyyO0Kzq2ppjxpKL8XAJr/CRcXz68N2oXu8vqQw3B23WZzCLDtsFOtzWNaF7w3djEsvXKTLbDm8b+dyd8c4HLw=
-X-Received: by 2002:a17:906:6686:: with SMTP id z6mr4153833ejo.539.1627248696694;
- Sun, 25 Jul 2021 14:31:36 -0700 (PDT)
+        bh=BaU+N0BfuToMVHnQxHJcdw1g5XT9u+x4MA4dw2dsg6w=;
+        b=UtOMV00qaHBB5Uz65u8Z0+iJGiKkI+AGMtDVS9K0AHzbJRTXpvhiPHUi9u0mgP7fZ/
+         KL7LKLnp0T4D9eMxzDtyIYzz1aKrwtsJcGoICsN8Ndq5iFUNauilLlMOm4oktww6DaVR
+         mEpph6KtCU5O6pk45GvRPovRBXNl8d7PuleeETLYIpbbrXhj2F8FEDI/f0N3GMh9am6P
+         ZH1D1RR0BWotetPQMwj69TpNIubp3rBPB38pxGigRH7Sq6Zz3Sbfz3W41o4O2EFBIW3o
+         Nzp2ApIGZdxDwJwqKvLJ3Vx6gS9T4olVbQub9vjVxC/Oz4ReuOocmbwSpQf7v2afGH62
+         F4eA==
+X-Gm-Message-State: AOAM530XLeAZs/vZVy789/EL3m0gkFPIpHyNGDgNyjcHaUa4nJce4tpd
+        RueJgYasJA0aqeEi5K5xVZE4EnJla39uDyK8x9Q=
+X-Google-Smtp-Source: ABdhPJw8yetmtnh4PgMNKWMDRgBgW6N2HsYtGLPuEvOBbU1oj6RsHlMK0dcTs8o2FcBDKpuf+HxbqxyUlr2SO2mx5CQ=
+X-Received: by 2002:a50:fb04:: with SMTP id d4mr17730527edq.143.1627248983956;
+ Sun, 25 Jul 2021 14:36:23 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210717204057.67495-1-martin.blumenstingl@googlemail.com>
- <20210717204057.67495-3-martin.blumenstingl@googlemail.com> <2170471a1c144adb882d06e08f3c9d1a@realtek.com>
-In-Reply-To: <2170471a1c144adb882d06e08f3c9d1a@realtek.com>
+ <20210717204057.67495-6-martin.blumenstingl@googlemail.com> <1a299cd8c1be4fba8360780ef6f70f0f@realtek.com>
+In-Reply-To: <1a299cd8c1be4fba8360780ef6f70f0f@realtek.com>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 25 Jul 2021 23:31:26 +0200
-Message-ID: <CAFBinCCqVpqC+CaJqTjhCj6-4rFcttQ-cFjOPwtKFbXbnop3XA@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/7] rtw88: Use rtw_iterate_vifs where the iterator
- reads or writes registers
+Date:   Sun, 25 Jul 2021 23:36:13 +0200
+Message-ID: <CAFBinCAJNqbpoqSSFYYBJg818KHCKx5nFzsKZdR=D+sTXQj6dg@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 5/7] rtw88: Configure the registers from
+ rtw_bf_assoc() outside the RCU lock
 To:     Pkshih <pkshih@realtek.com>
 Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
         "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
@@ -66,60 +66,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ping-Ke,
+Hi Ping-Ke,
 
 On Mon, Jul 19, 2021 at 7:47 AM Pkshih <pkshih@realtek.com> wrote:
+[...]
+> The rcu_read_lock() in this function is used to access ieee80211_find_sta() and protect 'sta'.
+> A simple way is to shrink the critical section, like:
 >
+>         rcu_read_lock();
 >
+>         sta = ieee80211_find_sta(vif, bssid);
+>         if (!sta) {
+>                 rtw_warn(rtwdev, "failed to find station entry for bss %pM\n",
+>                          bssid);
+>                 rcu_read_unlock();
+>         }
 >
-> > -----Original Message-----
-> > From: Martin Blumenstingl [mailto:martin.blumenstingl@googlemail.com]
-> > Sent: Sunday, July 18, 2021 4:41 AM
-> > To: linux-wireless@vger.kernel.org
-> > Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.net; netdev@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; Neo Jou; Jernej Skrabec; Martin Blumenstingl
-> > Subject: [PATCH RFC v1 2/7] rtw88: Use rtw_iterate_vifs where the iterator reads or writes registers
-> >
-> > Upcoming SDIO support may sleep in the read/write handlers. Switch
-> > all users of rtw_iterate_vifs_atomic() which are either reading or
-> > writing a register to rtw_iterate_vifs().
-> >
-> > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> > ---
-> >  drivers/net/wireless/realtek/rtw88/main.c | 6 +++---
-> >  drivers/net/wireless/realtek/rtw88/ps.c   | 2 +-
-> >  2 files changed, 4 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-> > index c6364837e83b..207161a8f5bd 100644
-> > --- a/drivers/net/wireless/realtek/rtw88/main.c
-> > +++ b/drivers/net/wireless/realtek/rtw88/main.c
-> > @@ -229,8 +229,8 @@ static void rtw_watch_dog_work(struct work_struct *work)
-> >       rtw_phy_dynamic_mechanism(rtwdev);
-> >
-> >       data.rtwdev = rtwdev;
-> > -     /* use atomic version to avoid taking local->iflist_mtx mutex */
-> > -     rtw_iterate_vifs_atomic(rtwdev, rtw_vif_watch_dog_iter, &data);
-> > +
-> > +     rtw_iterate_vifs(rtwdev, rtw_vif_watch_dog_iter, &data);
+>         vht_cap = &sta->vht_cap;
 >
-> You revert the fix of [1].
-Thanks for bringing this to my attention!
+>         rcu_read_unlock();
+I agree that reducing the amount of code under the lock will help my
+use-case as well
+in your code-example I am wondering if we should change
+  struct ieee80211_sta_vht_cap *vht_cap;
+  vht_cap = &sta->vht_cap;
+to
+  struct ieee80211_sta_vht_cap vht_cap;
+  vht_cap = sta->vht_cap;
 
-> I think we can move out rtw_chip_cfg_csi_rate() from rtw_dynamic_csi_rate(), and
-> add/set a field cfg_csi_rate to itera data. Then, we do rtw_chip_cfg_csi_rate()
-> outside iterate function. Therefore, we can keep the atomic version of iterate_vifs.
-just to make sure that I understand this correctly:
-rtw_iterate_vifs_atomic can be the iterator as it was before
-inside the iterator func I use something like:
-    iter_data->cfg_csi_rate = rtwvif->bfee.role == RTW_BFEE_SU ||
-rtwvif->bfee.role == RTW_BFEE_MU || iter_data->cfg_csi_rate;
-(the last iter_data->cfg_csi_rate may read a bit strange, but I think
-it's needed because there can be multiple interfaces and if any of
-them has cfg_csi_rate true then we need to remember that)
-then move the rtw_chip_cfg_csi_rate outside the iterator function,
-taking iter_data->cfg_csi_rate to decide whether it needs to be called
+My thinking is that ieee80211_sta may be freed in parallel to this code running.
+If that cannot happen then your code will be fine.
+
+So I am hoping that you can also share your thoughts on this one.
 
 
-Best regards,
+Thank you and best regards,
 Martin
