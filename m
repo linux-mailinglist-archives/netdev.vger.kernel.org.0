@@ -2,104 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 355FA3D4F5A
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 19:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1565F3D4F67
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 20:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbhGYRSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 13:18:16 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:58376 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229545AbhGYRSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 13:18:15 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16PHpicd020329;
-        Sun, 25 Jul 2021 17:58:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2021-07-09; bh=Ygb71Ej7t4/iCOSbs3hi14+PKz2VeCjb05VDTH4vhug=;
- b=f48Vh/5Fhn9LTxlZo/KWQL2syByztQFnkMY0lC+g5AM1HggwCKFy0ogQVlcib/u2WU/j
- Y4mGfZlMQUcfUU6gGHY9Zgk31Nw48/53q0cp3t/G8NoFuE4E4OeZ3VmCwVbNeyNwOY7i
- 2Gtgxuf7H5pcmnvj4JUaKDexHYIkuwobI+De5lPaIhAjUHV+Wm7crTggzdiQb6bbx38b
- kKowfy06TuhTOEUnM6Sd0qdxE36rsZzjH9JRaGUk7RTuuWhFQUDCW15Xkr2emfV2JWB9
- 8Oy4Pgbrjn3c5Igwc3avBk1wMsPmPgBhI9r63aAAUz0utBKib2NSwDn7IW9RwYj4b/4q wQ== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2020-01-29; bh=Ygb71Ej7t4/iCOSbs3hi14+PKz2VeCjb05VDTH4vhug=;
- b=jMnhItR6Ba+v5wuRAInW15nDU+kyMPXDQlVGxNXmTNX7sCBciuuUICURfVmOOJt6hfTV
- /7qypz2+MYIvdzf/+UWMpjVECGkG/PPLjYKhMOu12oJb6kbM+jRGry828HqcW3MC71e6
- GngsAYrG6cSTmJgviMTo5IonXFLRecNisx0iAngxrlR+K9WTpcVRyDCJBBOh6aOuMk3w
- w9w4ZwE3IM4DpptYbDlFlC50Fpa5OHyzOaY8ek3I0JOTso5FKxO0Y2h+ONr3JyUomGlh
- 7KfpCg7nV+mo8q1M5BtEysv6ilMfBvW6hSQ3EL5L1vA1ABv4YqnIj3bjSOs8yiIDuJm2 5w== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3a09n31n0s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 25 Jul 2021 17:58:29 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16PHoeJC179201;
-        Sun, 25 Jul 2021 17:58:28 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 3a0vmrhnjk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 25 Jul 2021 17:58:28 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 16PHwRWB193976;
-        Sun, 25 Jul 2021 17:58:27 GMT
-Received: from manjaro.in.oracle.com (dhcp-10-191-232-135.vpn.oracle.com [10.191.232.135])
-        by userp3020.oracle.com with ESMTP id 3a0vmrhner-1;
-        Sun, 25 Jul 2021 17:58:27 +0000
-From:   Harshvardhan Jha <harshvardhan.jha@oracle.com>
-To:     aelior@marvell.com
-Cc:     GR-everest-linux-l2@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Harshvardhan Jha <harshvardhan.jha@oracle.com>
-Subject: [PATCH net] net: qede: Fix end of loop tests for list_for_each_entry
-Date:   Sun, 25 Jul 2021 23:28:04 +0530
-Message-Id: <20210725175803.60559-1-harshvardhan.jha@oracle.com>
-X-Mailer: git-send-email 2.32.0
+        id S230515AbhGYRek convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 25 Jul 2021 13:34:40 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:60882 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229825AbhGYRej (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 13:34:39 -0400
+Received: from localhost (mailhub3.si.c-s.fr [192.168.12.233])
+        by localhost (Postfix) with ESMTP id 4GXrnR3D0qzBCT7;
+        Sun, 25 Jul 2021 20:15:07 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Sq9mXGMKc0Gf; Sun, 25 Jul 2021 20:15:07 +0200 (CEST)
+Received: from vm-hermes.si.c-s.fr (vm-hermes.si.c-s.fr [192.168.25.253])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4GXrnR26f4zBCSl;
+        Sun, 25 Jul 2021 20:15:07 +0200 (CEST)
+Received: by vm-hermes.si.c-s.fr (Postfix, from userid 33)
+        id 8F1B6F6; Sun, 25 Jul 2021 20:20:24 +0200 (CEST)
+Received: from 37-165-12-41.coucou-networks.fr
+ (37-165-12-41.coucou-networks.fr [37.165.12.41]) by messagerie.c-s.fr (Horde
+ Framework) with HTTP; Sun, 25 Jul 2021 20:20:24 +0200
+Date:   Sun, 25 Jul 2021 20:20:24 +0200
+Message-ID: <20210725202024.Horde.ny_SOmXxQaV1anUeTSqDWQ2@messagerie.c-s.fr>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Geoff Levand <geoff@infradead.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v4 04/10] net/ps3_gelic: Add new macro BUG_ON_DEBUG
+References: <cover.1627068552.git.geoff@infradead.org>
+ <bc659850d4eec3b2358c1ccb0e00952ceaa6012f.1627068552.git.geoff@infradead.org>
+In-Reply-To: <bc659850d4eec3b2358c1ccb0e00952ceaa6012f.1627068552.git.geoff@infradead.org>
+User-Agent: Internet Messaging Program (IMP) H5 (6.2.3)
+Content-Type: text/plain; charset=UTF-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: wXNOiNO1AF_db4ZP1-y7SxLtEvl7nt0u
-X-Proofpoint-ORIG-GUID: wXNOiNO1AF_db4ZP1-y7SxLtEvl7nt0u
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The list_for_each_entry() iterator, "vlan" in this code, can never be
-NULL so the warning will never be printed.
+Geoff Levand <geoff@infradead.org> a écrit :
 
-Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
----
-From static analysis.  Not tested.
----
- drivers/net/ethernet/qlogic/qede/qede_filter.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Add a new preprocessor macro BUG_ON_DEBUG, that expands to BUG_ON when
+> the preprocessor macro DEBUG is defined, or to WARN_ON when DEBUG is not
+> defined.  Also, replace all occurrences of BUG_ON with BUG_ON_DEBUG.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index c59b72c90293..a2e4dfb5cb44 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -831,7 +831,7 @@ int qede_configure_vlan_filters(struct qede_dev *edev)
- int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
- {
- 	struct qede_dev *edev = netdev_priv(dev);
--	struct qede_vlan *vlan = NULL;
-+	struct qede_vlan *vlan;
- 	int rc = 0;
- 
- 	DP_VERBOSE(edev, NETIF_MSG_IFDOWN, "Removing vlan 0x%04x\n", vid);
-@@ -842,7 +842,7 @@ int qede_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)
- 		if (vlan->vid == vid)
- 			break;
- 
--	if (!vlan || (vlan->vid != vid)) {
-+	if (list_entry_is_head(vlan, &edev->vlan_list, list)) {
- 		DP_VERBOSE(edev, (NETIF_MSG_IFUP | NETIF_MSG_IFDOWN),
- 			   "Vlan isn't configured\n");
- 		goto out;
--- 
-2.32.0
+Why is BUG_ON() needed at all if WARN_ON() is enough ?
+
+You just have to set panic_on_warn  to get the system to stop at first  
+warning.
+
+BUG_ON() should be avoided unless vital.
+
+Please read  
+https://www.kernel.org/doc/html/latest/process/deprecated.html#bug-and-bug-on
+
+Christophe
+
+
+>
+> Signed-off-by: Geoff Levand <geoff@infradead.org>
+> ---
+>  drivers/net/ethernet/toshiba/ps3_gelic_net.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c  
+> b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> index ded467d81f36..946e9bfa071b 100644
+> --- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> +++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
+> @@ -44,6 +44,13 @@ MODULE_AUTHOR("SCE Inc.");
+>  MODULE_DESCRIPTION("Gelic Network driver");
+>  MODULE_LICENSE("GPL");
+>
+> +#define BUG_ON_DEBUG(_cond) do { \
+> +	if (__is_defined(DEBUG)) \
+> +		BUG_ON(_cond); \
+> +	else \
+> +		WARN_ON(_cond); \
+> +} while (0)
+> +
+>  int gelic_card_set_irq_mask(struct gelic_card *card, u64 mask)
+>  {
+>  	struct device *dev = ctodev(card);
+> @@ -505,7 +512,7 @@ static void gelic_descr_release_tx(struct  
+> gelic_card *card,
+>  	struct sk_buff *skb = descr->skb;
+>  	struct device *dev = ctodev(card);
+>
+> -	BUG_ON(!(be32_to_cpu(descr->hw_regs.data_status) &
+> +	BUG_ON_DEBUG(!(be32_to_cpu(descr->hw_regs.data_status) &
+>  		GELIC_DESCR_TX_TAIL));
+>
+>  	dma_unmap_single(dev, be32_to_cpu(descr->hw_regs.payload.dev_addr),
+> @@ -1667,7 +1674,7 @@ static void gelic_card_get_vlan_info(struct  
+> gelic_card *card)
+>  	}
+>
+>  	if (card->vlan[GELIC_PORT_ETHERNET_0].tx) {
+> -		BUG_ON(!card->vlan[GELIC_PORT_WIRELESS].tx);
+> +		BUG_ON_DEBUG(!card->vlan[GELIC_PORT_WIRELESS].tx);
+>  		card->vlan_required = 1;
+>  	} else
+>  		card->vlan_required = 0;
+> @@ -1709,7 +1716,7 @@ static int ps3_gelic_driver_probe(struct  
+> ps3_system_bus_device *sb_dev)
+>  	if (result) {
+>  		dev_err(dev, "%s:%d: ps3_dma_region_create failed: %d\n",
+>  			__func__, __LINE__, result);
+> -		BUG_ON("check region type");
+> +		BUG_ON_DEBUG("check region type");
+>  		goto fail_dma_region;
+>  	}
+>
+> --
+> 2.25.1
+
 
