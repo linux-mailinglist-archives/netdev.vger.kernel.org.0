@@ -2,105 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFED03D4D22
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 12:36:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD8F3D4D54
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 14:24:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbhGYJ4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 05:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbhGYJ4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 05:56:08 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1414BC061757;
-        Sun, 25 Jul 2021 03:36:39 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id n6so7460371ljp.9;
-        Sun, 25 Jul 2021 03:36:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aarvg0TTfvKjkSQKBsj6uJsxUeEpwsw54ucZqfr+0m8=;
-        b=pZBE315Zem6xl19QuzZbVTJiHj8club9EojyADJ1KPPmp7IRobtURFM0nUGbpZn2XN
-         0YjwoAVZ4Wp4afGR1XPqedgl/qxXGZwQfryni6/bZ3npA+3nDuxZ7uHDQWgOamui0vbj
-         CHvd3nK1FOPmXSgt1WD9rYG7ie78FKkC89nyXkTp+Qx/sL5Jk+z9Gc7+PyeIu1syTdd9
-         qT7C3XObRwgLyOfl0CXUC9iOl0OT+MeAV2C3etqJeS2FOc5Hwft0uKlRDXM8V4hHXhJ+
-         LohOB8CZsGJQXBW2kYyouC6MMpEKa9L4LWNBniTPewPk1IFx02SyWT7ATEWUneU5NAXL
-         U32Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aarvg0TTfvKjkSQKBsj6uJsxUeEpwsw54ucZqfr+0m8=;
-        b=G0cQVqfHNgsLmnEH3UA5A7B7nz7db+pwNkALX/b5xzSsMAQv/OPJXbyt5pH7ZBwLEj
-         y68WQ/mt3S1ymF8JBJp5Wrc+pZsp8A2Pu6iikR6g376GYNHhvuxJSwEe7yIqmizitAix
-         Whfo85Maw/xsBW25ZJXeZgZAv5hmNZUD6U7gZty57wNFdGvcLmECDeu43ZoBGqVhl8IT
-         Xsd02h2bx1T170gP0irxHQfYyF5RjYSj0ytCd0YzGQ+ZI4eN0iJhEvM5kPNEEi6C5JTS
-         HEX6zjthj+ppz79lWEzew0hbGNJArOoZdotiEI/czWHW9kyTk6kLzSkcJO2wiSGkJAbn
-         xynw==
-X-Gm-Message-State: AOAM5336KxbKujJn+8Cpj7VyxB9Pqd4simujEWril9QCjHO/S8hYG6ZU
-        viXrSc8oYAwtSwrvmAKaIFg=
-X-Google-Smtp-Source: ABdhPJyrriP/Txq+Lo0VtCC89NtRAXqKJuiwNHXOtwIwokKp6y/aZ59fLsssbeStCA+a/Tt+t/WiuQ==
-X-Received: by 2002:a2e:950:: with SMTP id 77mr8806854ljj.438.1627209397132;
-        Sun, 25 Jul 2021 03:36:37 -0700 (PDT)
-Received: from localhost.localdomain ([2a00:1fa0:81a:8fc0:522:ed96:7da0:a814])
-        by smtp.gmail.com with ESMTPSA id y27sm94421lfa.260.2021.07.25.03.36.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Jul 2021 03:36:36 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     mkl@pengutronix.de, yasushi.shoji@gmail.com, wg@grandegger.com
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH] net: can: add missing urb->transfer_dma initialization
-Date:   Sun, 25 Jul 2021 13:36:30 +0300
-Message-Id: <20210725103630.23864-1-paskripkin@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210725094246.pkdpvl5aaaftur3a@pengutronix.de>
-References: <20210725094246.pkdpvl5aaaftur3a@pengutronix.de>
+        id S230325AbhGYLoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 07:44:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229538AbhGYLoR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 07:44:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 373716056B;
+        Sun, 25 Jul 2021 12:24:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627215887;
+        bh=iyHBZBMQHrLtGg3F5twV/u7oxW4MK9dAHrwhgymmVm8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=U2tuasGNjWrEjvplmPvlWtlB2oi63MZWioRC+p1b0txyBlUNYqqh8R9RYOvLOk3Le
+         cfLH3tOJ6wsb8JmttnrIf4v8vba/5SNA8/D7/Lk0VQoAXiCCj97ByCs1WPFvnIn5u0
+         xCt2V8j3XEIiROhrql7GQ5fj0KrK1F7s13Hbdout+SNggOR/zUOdrFulaDE1Bi8Kz3
+         GGPRW3swRPryfkaRoS7faPiOv3HSYjhirpdrDPlMXT2aBT+xxq1s8sTZJuqduAZOyy
+         SLLoqYHU5fmMfQHcq6S1IcAJ1+2kzaefR7RR4jubwXUIlPjiUyVxVFRLIofwhPcU9F
+         Ffcf9ADyykRHw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] devlink: Remove duplicated registration check
+Date:   Sun, 25 Jul 2021 15:24:41 +0300
+Message-Id: <ed7bbb1e4c51dd58e6035a058e93d16f883b09ce.1627215829.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yasushi reported, that his Microchip CAN Analyzer stopped working since
-commit 91c02557174b ("can: mcba_usb: fix memory leak in mcba_usb").
-The problem was in missing urb->transfer_dma initialization.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-In my previous patch to this driver I refactored mcba_usb_start() code to
-avoid leaking usb coherent buffers. To achive it, I passed local stack
-variable to usb_alloc_coherent() and then saved it to private array to
-correctly free all coherent buffers on ->close() call. But I forgot to
-inialize urb->transfer_dma with variable passed to usb_alloc_coherent().
+Both registered flag and devlink pointer are set at the same time
+and indicate the same thing - devlink/devlink_port are ready. Instead
+of checking ->registered use devlink pointer as an indication.
 
-All of this was causing device to not work, since dma addr 0 is not valid
-and following log can be found on bug report page, which points exactly to
-problem described above.
-
-[   33.862175] DMAR: [DMA Write] Request device [00:14.0] PASID ffffffff fault addr 0 [fault reason 05] PTE Write access is not set
-
-Bug report: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=990850
-
-Reported-by: Yasushi SHOJI <yasushi.shoji@gmail.com>
-Fixes: 91c02557174b ("can: mcba_usb: fix memory leak in mcba_usb")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/net/can/usb/mcba_usb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/net/devlink.h |  4 +---
+ net/core/devlink.c    | 19 ++++++++++---------
+ 2 files changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
-index a45865bd7254..a1a154c08b7f 100644
---- a/drivers/net/can/usb/mcba_usb.c
-+++ b/drivers/net/can/usb/mcba_usb.c
-@@ -653,6 +653,8 @@ static int mcba_usb_start(struct mcba_priv *priv)
- 			break;
- 		}
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 57b738b78073..e48a62320407 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -55,8 +55,7 @@ struct devlink {
+ 			    * port, sb, dpipe, resource, params, region, traps and more.
+ 			    */
+ 	u8 reload_failed:1,
+-	   reload_enabled:1,
+-	   registered:1;
++	   reload_enabled:1;
+ 	char priv[0] __aligned(NETDEV_ALIGN);
+ };
  
-+		urb->transfer_dma = buf_dma;
+@@ -158,7 +157,6 @@ struct devlink_port {
+ 	struct list_head region_list;
+ 	struct devlink *devlink;
+ 	unsigned int index;
+-	bool registered;
+ 	spinlock_t type_lock; /* Protects type and type_dev
+ 			       * pointer consistency.
+ 			       */
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 8fdd04f00fd7..b596a971b473 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -115,7 +115,7 @@ static void __devlink_net_set(struct devlink *devlink, struct net *net)
+ 
+ void devlink_net_set(struct devlink *devlink, struct net *net)
+ {
+-	if (WARN_ON(devlink->registered))
++	if (WARN_ON(devlink->dev))
+ 		return;
+ 	__devlink_net_set(devlink, net);
+ }
+@@ -1043,7 +1043,7 @@ static void devlink_port_notify(struct devlink_port *devlink_port,
+ 	struct sk_buff *msg;
+ 	int err;
+ 
+-	if (!devlink_port->registered)
++	if (!devlink_port->devlink)
+ 		return;
+ 
+ 	WARN_ON(cmd != DEVLINK_CMD_PORT_NEW && cmd != DEVLINK_CMD_PORT_DEL);
+@@ -8817,8 +8817,8 @@ EXPORT_SYMBOL_GPL(devlink_alloc);
+  */
+ int devlink_register(struct devlink *devlink, struct device *dev)
+ {
++	WARN_ON(devlink->dev);
+ 	devlink->dev = dev;
+-	devlink->registered = true;
+ 	mutex_lock(&devlink_mutex);
+ 	list_add_tail(&devlink->list, &devlink_list);
+ 	devlink_notify(devlink, DEVLINK_CMD_NEW);
+@@ -8960,9 +8960,10 @@ int devlink_port_register(struct devlink *devlink,
+ 		mutex_unlock(&devlink->lock);
+ 		return -EEXIST;
+ 	}
 +
- 		usb_fill_bulk_urb(urb, priv->udev,
- 				  usb_rcvbulkpipe(priv->udev, MCBA_USB_EP_IN),
- 				  buf, MCBA_USB_RX_BUFF_SIZE,
++	WARN_ON(devlink_port->devlink);
+ 	devlink_port->devlink = devlink;
+ 	devlink_port->index = port_index;
+-	devlink_port->registered = true;
+ 	spin_lock_init(&devlink_port->type_lock);
+ 	INIT_LIST_HEAD(&devlink_port->reporter_list);
+ 	mutex_init(&devlink_port->reporters_lock);
+@@ -9001,7 +9002,7 @@ static void __devlink_port_type_set(struct devlink_port *devlink_port,
+ 				    enum devlink_port_type type,
+ 				    void *type_dev)
+ {
+-	if (WARN_ON(!devlink_port->registered))
++	if (WARN_ON(!devlink_port->devlink))
+ 		return;
+ 	devlink_port_type_warn_cancel(devlink_port);
+ 	spin_lock_bh(&devlink_port->type_lock);
+@@ -9121,7 +9122,7 @@ void devlink_port_attrs_set(struct devlink_port *devlink_port,
+ {
+ 	int ret;
+ 
+-	if (WARN_ON(devlink_port->registered))
++	if (WARN_ON(devlink_port->devlink))
+ 		return;
+ 	devlink_port->attrs = *attrs;
+ 	ret = __devlink_port_attrs_set(devlink_port, attrs->flavour);
+@@ -9145,7 +9146,7 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
+ 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
+ 	int ret;
+ 
+-	if (WARN_ON(devlink_port->registered))
++	if (WARN_ON(devlink_port->devlink))
+ 		return;
+ 	ret = __devlink_port_attrs_set(devlink_port,
+ 				       DEVLINK_PORT_FLAVOUR_PCI_PF);
+@@ -9172,7 +9173,7 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
+ 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
+ 	int ret;
+ 
+-	if (WARN_ON(devlink_port->registered))
++	if (WARN_ON(devlink_port->devlink))
+ 		return;
+ 	ret = __devlink_port_attrs_set(devlink_port,
+ 				       DEVLINK_PORT_FLAVOUR_PCI_VF);
+@@ -9200,7 +9201,7 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
+ 	struct devlink_port_attrs *attrs = &devlink_port->attrs;
+ 	int ret;
+ 
+-	if (WARN_ON(devlink_port->registered))
++	if (WARN_ON(devlink_port->devlink))
+ 		return;
+ 	ret = __devlink_port_attrs_set(devlink_port,
+ 				       DEVLINK_PORT_FLAVOUR_PCI_SF);
 -- 
-2.32.0
+2.31.1
 
