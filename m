@@ -2,96 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93DDD3D506A
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 00:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E47B33D5078
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 00:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbhGYVo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 17:44:58 -0400
-Received: from mail-il1-f176.google.com ([209.85.166.176]:46878 "EHLO
-        mail-il1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbhGYVo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 17:44:58 -0400
-Received: by mail-il1-f176.google.com with SMTP id r5so7073099ilc.13;
-        Sun, 25 Jul 2021 15:25:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=bfV54EGNX7QM/avi9Ym1d5XEwwIaFGu3hKWgMFw+twQ=;
-        b=gZe54hPqzph4r30Q0cIEo1vXzkOTWHC27EJWSZbgc+FGHjGTExbdEPljWOd6e/bjM0
-         JUC6wEVGd2/T/buvgeYty/J9YO+p34y8WrLRcDT5JwUvenMlIb7KrH8djT/dW1x4/VY5
-         QnzEcjDf/s5tkQtHKO0lEE9PBvMW0TP7laVYmd5yMCpBgAsI8yMcdg5xDVE8DE3lSUCD
-         KliTpGPpPQK304JdCZOymG/LNRfgNeH35v5/b5kxcjip1PTfnMYAkU1zEZH1oXgZ+A2u
-         ePFDANbD0vI9HsuNVYY1N+jslxEXm6V0aGp7zIX6fbOThfhi0Fd2h2Ve2A/FXNuIIrac
-         dUgQ==
-X-Gm-Message-State: AOAM532riRgOwvRllczRid51FGEvAOrQnBC3lxEggJCJtEkiCPLPR/AO
-        7bTI4v4qklJUD4ldWdqJYA==
-X-Google-Smtp-Source: ABdhPJz7sehIjKPVRRXQU9jNngs6H+dktG1OrVWvfczvtxRlLnL3r7Of8U6SBHj7BPK7/630fo8wCg==
-X-Received: by 2002:a92:d305:: with SMTP id x5mr11113322ila.150.1627251926708;
-        Sun, 25 Jul 2021 15:25:26 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id l12sm3532731ilg.2.2021.07.25.15.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Jul 2021 15:25:26 -0700 (PDT)
-Received: (nullmailer pid 2960747 invoked by uid 1000);
-        Sun, 25 Jul 2021 22:25:22 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Dario Binacchi <dariobin@libero.it>
-Cc:     devicetree@vger.kernel.org, linux-can@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        id S229829AbhGYWLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 18:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229531AbhGYWLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 18:11:48 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB856C061757;
+        Sun, 25 Jul 2021 15:52:17 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1m7myW-0004UM-SO; Mon, 26 Jul 2021 00:52:01 +0200
+Date:   Mon, 26 Jul 2021 00:52:00 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     Florian Westphal <fw@strlen.de>, Paul Moore <paul@paul-moore.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-In-Reply-To: <20210725160318.9312-2-dariobin@libero.it>
-References: <20210725160318.9312-1-dariobin@libero.it> <20210725160318.9312-2-dariobin@libero.it>
-Subject: Re: [PATCH 2/2] dt-bindings: net: can: c_can: convert to json-schema
-Date:   Sun, 25 Jul 2021 16:25:22 -0600
-Message-Id: <1627251922.224313.2960746.nullmailer@robh.at.kernel.org>
+        Eric Dumazet <edumazet@google.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Subject: Re: [PATCH RFC 0/9] sk_buff: optimize layout for GRO
+Message-ID: <20210725225200.GL9904@breakpoint.cc>
+References: <cover.1626879395.git.pabeni@redhat.com>
+ <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
+ <e6200ddd38510216f9f32051ce1acff21fc9c6d0.camel@redhat.com>
+ <2e9e57f0-98f9-b64d-fd82-aecef84835c5@schaufler-ca.com>
+ <d3fe6ae85b8fad9090288c553f8d248603758506.camel@redhat.com>
+ <CAHC9VhT0uuBdmmT1HhMjjQswiJxWuy3cZdRQZ4Zzf-H8n5arLQ@mail.gmail.com>
+ <20210724185141.GJ9904@breakpoint.cc>
+ <CAHC9VhSsNWSus4xr7erxQs_4GyfJYb7_6a8juisWue6Xc4fVkQ@mail.gmail.com>
+ <20210725162528.GK9904@breakpoint.cc>
+ <75982e4e-f6b1-ade2-311f-1532254e2764@schaufler-ca.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <75982e4e-f6b1-ade2-311f-1532254e2764@schaufler-ca.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 25 Jul 2021 18:03:18 +0200, Dario Binacchi wrote:
-> Convert the Bosch C_CAN/D_CAN controller device tree binding
-> documentation to json-schema.
+Casey Schaufler <casey@schaufler-ca.com> wrote:
+> RedHat and android use SELinux and will want this. Ubuntu doesn't
+> yet, but netfilter in in the AppArmor task list. Tizen definitely
+> uses it with Smack. The notion that security modules are only used
+> in fringe cases is antiquated. 
+
+I was not talking about LSM in general, I was referring to the
+extended info that Paul mentioned.
+
+If thats indeed going to be used on every distro then skb extensions
+are not suitable for this, it would result in extr akmalloc for every
+skb.
+
+> > It certainly makes more sense to me than doing lookups
+> > in a hashtable based on a ID
 > 
-> Document missing properties.
-> Remove "ti,hwmods" as it is no longer used in TI dts.
-> Make "clocks" required as it is used in all dts.
-> Correct nodename in the example.
-> 
-> Signed-off-by: Dario Binacchi <dariobin@libero.it>
-> ---
-> 
->  .../bindings/net/can/bosch,c_can.yaml         | 85 +++++++++++++++++++
->  .../devicetree/bindings/net/can/c_can.txt     | 65 --------------
->  2 files changed, 85 insertions(+), 65 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/can/c_can.txt
-> 
+> Agreed. The data burden required to support a hash scheme
+> for the security module stacking case is staggering.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+It depends on the type of data (and its lifetime).
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-
-\ndoc reference errors (make refcheckdocs):
-Documentation/devicetree/bindings/net/can/bosch,c_can.yaml: Documentation/devicetree/bindings/soc/ti/sci-pm-domain.txt
-Documentation/devicetree/bindings/net/can/bosch,c_can.yaml: Documentation/devicetree/bindings/clock/ti,sci-clk.txt
-
-See https://patchwork.ozlabs.org/patch/1509610
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+I suspect you have something that is more like skb->dev/dst,
+i.e. reference to object that persists after the skb is free'd.
