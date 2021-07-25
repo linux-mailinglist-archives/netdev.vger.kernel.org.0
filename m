@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5D43D4F33
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 19:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 666723D4F34
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 19:43:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbhGYRCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 13:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
+        id S231264AbhGYRCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 13:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbhGYRC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 13:02:28 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564CAC061757;
-        Sun, 25 Jul 2021 10:42:57 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id w12so8133061wro.13;
-        Sun, 25 Jul 2021 10:42:57 -0700 (PDT)
+        with ESMTP id S231215AbhGYRCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 13:02:30 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E7C061760;
+        Sun, 25 Jul 2021 10:42:59 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id g15so8227874wrd.3;
+        Sun, 25 Jul 2021 10:42:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=a/WDB9iBmTwQvIwKvnM6p7qqZQ9YfFoIlHFXmRdJ3Ho=;
-        b=YjGVxqvISpyIu4MwJaFDH+febidQRZEVw0q7aWPxBldCURqqgI22SbI48N1tdPkkih
-         qvSiz6aeq8U/1bEHd8YOMRvk50/nXii5ZSM7grg7T1lqV71M1KiMa+g7jXJHCkq3Kdc7
-         zBm6C/Rsw6txiJ3btwLHhLdIJiGLgqSSrr2q+EoUTuJUHw/p6o27lYCHVk2njYwLL9NW
-         7dSL2ACQ9Qm/TOIfMRGYscBTG0vZuvj0aGxZu+0wRNe/uWsN/vUelCkNDVQEkFl6eSeg
-         EQQwBqPdNC8CGzQJjleLFDzcmn0zbHRoritR8Dh++s8S0M07xJsgn3LQE51iXOvU099r
-         Nc6w==
+        bh=tVrnpxoDkaN0jrzq6nieYy+rY5JvXq2p46DbX0cd5Uw=;
+        b=AuF6gtqT897ETw4TKleI0C7pWPjtifsW7Xa2Y/eA2fWGNQ0a/If3dNrg0CMZmOXdOY
+         x8rZMSPGsM4p6R3gRydFDprn5lExT3fGq+oNwZefhuQVOCT5LctIUxL4VC9W6jqZWAIG
+         KxZFqB39WwVq8uDQ1emrU7vf+B/yZVU4n/vUXRwZpDKR6IyQi5EO8TqRoW76pVoUIBn8
+         OPcUNe4qANMZAUmmhCWHmUMZA049yGqer2O8E5XbFLMCrkmSB+3Sbdk0L8R2tkCQQKSr
+         7DFXb18hEZvXpZhwujLufo/8VfHIFocQ+HQzIlP+jYU8oXVTOE/xHJmDkWF/k0/0FvNG
+         qx2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=a/WDB9iBmTwQvIwKvnM6p7qqZQ9YfFoIlHFXmRdJ3Ho=;
-        b=elLx1S+W5AyKiYVeUXb2L/hmgRWCOz4Nt064Ce4ub2K8zPZgsCWA5qSioT4e0mR3RG
-         cjBdSKCJqZ/CylbYdIFdKV5azsV87w9GR56iLHUfmGy0npLUgPXkXuanxtyl7GTCDT/+
-         6Qh8lep/mmkuPRE7o3Hv/CK6053V2T7e8tRtLvTt89hZXpO0azdUJF+n3u9Cwaulrht1
-         npP83BlPHwKFcLi8BA5DKcf0mtq2rn0cjkhIsYh+TbcvEyRGnq3PYEkK4tpflTNgFo0D
-         pufYT0sUKTSDy8LrnoPi12Tztvhc1+1F/IhJc2fChbOq+JmoTKPG0yozWP75I9gh2Cj4
-         pITQ==
-X-Gm-Message-State: AOAM531ZvrmgjXTZtnTt4Etivj8tjipJWL6fG9gVH76OrhoxXdF9iXKC
-        7MEZaiGw9uIfDjasEar6i4mg+0gG54dc/Q==
-X-Google-Smtp-Source: ABdhPJzOGke5SWoPaHgZICCabs/X9+nt/S+/5zW3ImlksrUrxjYMwDK/fjdxwoti2WctcE+1hgnYiQ==
-X-Received: by 2002:a5d:4ccb:: with SMTP id c11mr15114420wrt.331.1627234975888;
-        Sun, 25 Jul 2021 10:42:55 -0700 (PDT)
+        bh=tVrnpxoDkaN0jrzq6nieYy+rY5JvXq2p46DbX0cd5Uw=;
+        b=CeHh3O1cK7Jpz3x9iYb6tkhlIj5ojAfWnOOu4CrB+MBhGnL1rgOeNR6spWXJgZ8dGD
+         aC6DnExL8hOOCGcXW1prZipoIUhH0dwBp9N+ZkD2kW4n7nImPCHa59Ic5gcabmVRmDzc
+         FaYwxv+mcqdgJb6VdXX23oRMd0V4+mHXHUjgc8LLBSKXa0VeMFZV+hRDl9Nt0Khzit1A
+         Iv0lOu49vpV8gl6TA6ycdhSqtyi7TGFzygij3MkdhfsYc4ET8opMk/HS+yoo5fB2rkna
+         eLBWAXvGI6W6HYzQcH6auSdaBXTAW2HIxNZ+RAvKvNh+REJ0Op5HFX7s2SUly7AVoNhp
+         a2kw==
+X-Gm-Message-State: AOAM532gNEcEz7S2KRkVIldt4fAAUrYBKBrpm95Z7AfTTb/Kl/z9aU4+
+        /mUUlqFyNpFlHmesVdDVdXFdC/eFiX9TeQ==
+X-Google-Smtp-Source: ABdhPJxV1Kbkh3xC3qtUse1tablZt+XIlSAIyyQTxUM8y09YrarbG8wOrWTsF6fuivVoQZTp+aMuaw==
+X-Received: by 2002:a05:6000:1001:: with SMTP id a1mr15648653wrx.121.1627234977708;
+        Sun, 25 Jul 2021 10:42:57 -0700 (PDT)
 Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id n18sm38201388wrt.89.2021.07.25.10.42.55
+        by smtp.gmail.com with ESMTPSA id x15sm1074246wrs.57.2021.07.25.10.42.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Jul 2021 10:42:55 -0700 (PDT)
+        Sun, 25 Jul 2021 10:42:57 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Subject: [PATCHv2 net 1/2] sctp: improve the code for pmtu probe send and recv update
-Date:   Sun, 25 Jul 2021 13:42:50 -0400
-Message-Id: <dc0739fe99347616c3b1bd8b70d7986b9899e827.1627234857.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net 2/2] sctp: send pmtu probe only if packet loss in Search Complete state
+Date:   Sun, 25 Jul 2021 13:42:51 -0400
+Message-Id: <bdfa36e82da000b725c490e8ae62194302fd85ef.1627234857.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <cover.1627234857.git.lucien.xin@gmail.com>
 References: <cover.1627234857.git.lucien.xin@gmail.com>
@@ -63,153 +63,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch does 3 things:
+This patch is to introduce last_rtx_chunks into sctp_transport to detect
+if there's any packet retransmission/loss happened by checking against
+asoc's rtx_data_chunks in sctp_transport_pl_send().
 
-  - make sctp_transport_pl_send() and sctp_transport_pl_recv()
-    return bool type to decide if more probe is needed to send.
+If there is, namely, transport->last_rtx_chunks != asoc->rtx_data_chunks,
+the pmtu probe will be sent out. Otherwise, increment the pl.raise_count
+and return when it's in Search Complete state.
 
-  - pr_debug() only when probe is really needed to send.
+With this patch, if in Search Complete state, which is a long period, it
+doesn't need to keep probing the current pmtu unless there's data packet
+loss. This will save quite some traffic.
 
-  - count pl.raise_count in sctp_transport_pl_send() instead of
-    sctp_transport_pl_recv(), and it's only incremented for the
-    1st probe for the same size.
+v1->v2:
+  - add the missing Fixes tag.
 
-These are preparations for the next patch to make probes happen
-only when there's packet loss in Search Complete state.
-
+Fixes: 0dac127c0557 ("sctp: do black hole detection in search complete state")
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/sctp/structs.h |  4 ++--
- net/sctp/sm_statefuns.c    | 15 +++++++-------
- net/sctp/transport.c       | 41 +++++++++++++++++++++-----------------
- 3 files changed, 32 insertions(+), 28 deletions(-)
+ include/net/sctp/structs.h | 1 +
+ net/sctp/transport.c       | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 32fc4a309df5..f3d414ed208e 100644
+index f3d414ed208e..651bba654d77 100644
 --- a/include/net/sctp/structs.h
 +++ b/include/net/sctp/structs.h
-@@ -1024,8 +1024,8 @@ bool sctp_transport_update_pmtu(struct sctp_transport *t, u32 pmtu);
- void sctp_transport_immediate_rtx(struct sctp_transport *);
- void sctp_transport_dst_release(struct sctp_transport *t);
- void sctp_transport_dst_confirm(struct sctp_transport *t);
--void sctp_transport_pl_send(struct sctp_transport *t);
--void sctp_transport_pl_recv(struct sctp_transport *t);
-+bool sctp_transport_pl_send(struct sctp_transport *t);
-+bool sctp_transport_pl_recv(struct sctp_transport *t);
+@@ -984,6 +984,7 @@ struct sctp_transport {
+ 	} cacc;
  
- 
- /* This is the structure we use to queue packets as they come into
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 09a8f23ec709..32df65f68c12 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -1109,12 +1109,12 @@ enum sctp_disposition sctp_sf_send_probe(struct net *net,
- 	if (!sctp_transport_pl_enabled(transport))
- 		return SCTP_DISPOSITION_CONSUME;
- 
--	sctp_transport_pl_send(transport);
--
--	reply = sctp_make_heartbeat(asoc, transport, transport->pl.probe_size);
--	if (!reply)
--		return SCTP_DISPOSITION_NOMEM;
--	sctp_add_cmd_sf(commands, SCTP_CMD_REPLY, SCTP_CHUNK(reply));
-+	if (sctp_transport_pl_send(transport)) {
-+		reply = sctp_make_heartbeat(asoc, transport, transport->pl.probe_size);
-+		if (!reply)
-+			return SCTP_DISPOSITION_NOMEM;
-+		sctp_add_cmd_sf(commands, SCTP_CMD_REPLY, SCTP_CHUNK(reply));
-+	}
- 	sctp_add_cmd_sf(commands, SCTP_CMD_PROBE_TIMER_UPDATE,
- 			SCTP_TRANSPORT(transport));
- 
-@@ -1274,8 +1274,7 @@ enum sctp_disposition sctp_sf_backbeat_8_3(struct net *net,
- 		    !sctp_transport_pl_enabled(link))
- 			return SCTP_DISPOSITION_DISCARD;
- 
--		sctp_transport_pl_recv(link);
--		if (link->pl.state == SCTP_PL_COMPLETE)
-+		if (sctp_transport_pl_recv(link))
- 			return SCTP_DISPOSITION_CONSUME;
- 
- 		return sctp_sf_send_probe(net, ep, asoc, type, link, commands);
+ 	struct {
++		__u32 last_rtx_chunks;
+ 		__u16 pmtu;
+ 		__u16 probe_size;
+ 		__u16 probe_high;
 diff --git a/net/sctp/transport.c b/net/sctp/transport.c
-index 397a6244dd97..23e7bd3e3bd4 100644
+index 23e7bd3e3bd4..a3d3ca6dd63d 100644
 --- a/net/sctp/transport.c
 +++ b/net/sctp/transport.c
-@@ -258,16 +258,12 @@ void sctp_transport_pmtu(struct sctp_transport *transport, struct sock *sk)
- 	sctp_transport_pl_update(transport);
- }
+@@ -263,6 +263,7 @@ bool sctp_transport_pl_send(struct sctp_transport *t)
+ 	if (t->pl.probe_count < SCTP_MAX_PROBES)
+ 		goto out;
  
--void sctp_transport_pl_send(struct sctp_transport *t)
-+bool sctp_transport_pl_send(struct sctp_transport *t)
- {
--	pr_debug("%s: PLPMTUD: transport: %p, state: %d, pmtu: %d, size: %d, high: %d\n",
--		 __func__, t, t->pl.state, t->pl.pmtu, t->pl.probe_size, t->pl.probe_high);
--
--	if (t->pl.probe_count < SCTP_MAX_PROBES) {
--		t->pl.probe_count++;
--		return;
--	}
-+	if (t->pl.probe_count < SCTP_MAX_PROBES)
-+		goto out;
- 
-+	t->pl.probe_count = 0;
++	t->pl.last_rtx_chunks = t->asoc->rtx_data_chunks;
+ 	t->pl.probe_count = 0;
  	if (t->pl.state == SCTP_PL_BASE) {
  		if (t->pl.probe_size == SCTP_BASE_PLPMTU) { /* BASE_PLPMTU Confirmation Failed */
- 			t->pl.state = SCTP_PL_ERROR; /* Base -> Error */
-@@ -299,10 +295,20 @@ void sctp_transport_pl_send(struct sctp_transport *t)
- 			sctp_assoc_sync_pmtu(t->asoc);
- 		}
- 	}
--	t->pl.probe_count = 1;
-+
-+out:
-+	if (t->pl.state == SCTP_PL_COMPLETE && t->pl.raise_count < 30 &&
-+	    !t->pl.probe_count)
-+		t->pl.raise_count++;
-+
-+	pr_debug("%s: PLPMTUD: transport: %p, state: %d, pmtu: %d, size: %d, high: %d\n",
-+		 __func__, t, t->pl.state, t->pl.pmtu, t->pl.probe_size, t->pl.probe_high);
-+
-+	t->pl.probe_count++;
-+	return true;
- }
+@@ -298,8 +299,10 @@ bool sctp_transport_pl_send(struct sctp_transport *t)
  
--void sctp_transport_pl_recv(struct sctp_transport *t)
-+bool sctp_transport_pl_recv(struct sctp_transport *t)
- {
+ out:
+ 	if (t->pl.state == SCTP_PL_COMPLETE && t->pl.raise_count < 30 &&
+-	    !t->pl.probe_count)
++	    !t->pl.probe_count && t->pl.last_rtx_chunks == t->asoc->rtx_data_chunks) {
+ 		t->pl.raise_count++;
++		return false;
++	}
+ 
  	pr_debug("%s: PLPMTUD: transport: %p, state: %d, pmtu: %d, size: %d, high: %d\n",
  		 __func__, t, t->pl.state, t->pl.pmtu, t->pl.probe_size, t->pl.probe_high);
-@@ -323,7 +329,7 @@ void sctp_transport_pl_recv(struct sctp_transport *t)
- 		if (!t->pl.probe_high) {
- 			t->pl.probe_size = min(t->pl.probe_size + SCTP_PL_BIG_STEP,
- 					       SCTP_MAX_PLPMTU);
--			return;
-+			return false;
- 		}
- 		t->pl.probe_size += SCTP_PL_MIN_STEP;
- 		if (t->pl.probe_size >= t->pl.probe_high) {
-@@ -335,14 +341,13 @@ void sctp_transport_pl_recv(struct sctp_transport *t)
- 			t->pathmtu = t->pl.pmtu + sctp_transport_pl_hlen(t);
- 			sctp_assoc_sync_pmtu(t->asoc);
- 		}
--	} else if (t->pl.state == SCTP_PL_COMPLETE) {
--		t->pl.raise_count++;
--		if (t->pl.raise_count == 30) {
--			/* Raise probe_size again after 30 * interval in Search Complete */
--			t->pl.state = SCTP_PL_SEARCH; /* Search Complete -> Search */
--			t->pl.probe_size += SCTP_PL_MIN_STEP;
--		}
-+	} else if (t->pl.state == SCTP_PL_COMPLETE && t->pl.raise_count == 30) {
-+		/* Raise probe_size again after 30 * interval in Search Complete */
-+		t->pl.state = SCTP_PL_SEARCH; /* Search Complete -> Search */
-+		t->pl.probe_size += SCTP_PL_MIN_STEP;
- 	}
-+
-+	return t->pl.state == SCTP_PL_COMPLETE;
- }
+@@ -313,6 +316,7 @@ bool sctp_transport_pl_recv(struct sctp_transport *t)
+ 	pr_debug("%s: PLPMTUD: transport: %p, state: %d, pmtu: %d, size: %d, high: %d\n",
+ 		 __func__, t, t->pl.state, t->pl.pmtu, t->pl.probe_size, t->pl.probe_high);
  
- static bool sctp_transport_pl_toobig(struct sctp_transport *t, u32 pmtu)
++	t->pl.last_rtx_chunks = t->asoc->rtx_data_chunks;
+ 	t->pl.pmtu = t->pl.probe_size;
+ 	t->pl.probe_count = 0;
+ 	if (t->pl.state == SCTP_PL_BASE) {
 -- 
 2.27.0
 
