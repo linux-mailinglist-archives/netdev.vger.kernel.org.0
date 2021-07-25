@@ -2,106 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA3C3D4C55
-	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 08:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 774C23D4C69
+	for <lists+netdev@lfdr.de>; Sun, 25 Jul 2021 08:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbhGYFfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 01:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbhGYFfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 01:35:11 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D4BC061757;
-        Sat, 24 Jul 2021 23:15:40 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id x14so2283831edr.12;
-        Sat, 24 Jul 2021 23:15:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dtsDN8UE7KPVVcd4PEUyYbKdwuylFOBB12bakeDTWEs=;
-        b=hWqG/A9h1mqw3EXHS6Cul9yfKV8Vc37BNs9K80tjTuwTYv3ZDj9dyweU8kZrQH9/mq
-         qRE7f6EwYHdvjoE4afY5g8/32QWLAU230YZOOPE1h7h/mvjTWsZJ+MDxySvv0FhbmqoG
-         wfu1m6Yxy09Uu7I8ZZL83HbybCnltD9hpE8iQZ5txHW/+tmFk8ylr6gUaCSJaC7atuHa
-         IJ6SQfFI+BjGhgqdNeBTiuC8JeecjwX3D/GSK1uTCwrZjM3lDso88+ma0dYoySANYXua
-         KKJNu8ZGXQD5zmttMkeM7zF9GipNMYZl4FrozkfyKflBOqIpTelejuhVSVnuYdHyOimG
-         TyXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dtsDN8UE7KPVVcd4PEUyYbKdwuylFOBB12bakeDTWEs=;
-        b=OOlWmc+sXNvHoWnyKtrE4SpuJrGJKVoE1S0A1Tk1ar2nwICbySTQzd7QrlsJokNMuc
-         EazCUTtX5aae6qqXU+6XttN4chBfK/fYptPSeuxhDJ99SIX//tYD0P2wD0Xj5b3GbdVP
-         gAA3W4YVTqE8S604QuGX3ySqShBeVIKJEmeOQzpxXI1DOSED+CR+ZpgNaEBTer8E029o
-         OoSgpQvT4iq7fJMPRXSSM/UvXjFtNMpSrfQsxIDaabI67LF3pipfn/X/JcE88x0w3r7n
-         GlUnMErtmn7uvGj8LMEszjWcsZJvYksY7uW8yfnLFwYZi7xRePEPHwH+bnUO2BabLztu
-         pSxA==
-X-Gm-Message-State: AOAM532fOR5ijaXwOymRSPwK1anQfWNPdj72Ez1zfmOR8ZVk7vefTk3w
-        CDhQW18Qvmj8eohL7qrb547MNwj+S9w=
-X-Google-Smtp-Source: ABdhPJxHz/ysGgS2mbWQk881hBx/qyW6Vxb6SOVX3Sp3nS/SmigQVvPHCNJdT/l0GMlYidjXld8nbw==
-X-Received: by 2002:aa7:ca57:: with SMTP id j23mr14313902edt.224.1627193739295;
-        Sat, 24 Jul 2021 23:15:39 -0700 (PDT)
-Received: from [192.168.0.108] ([77.127.114.213])
-        by smtp.gmail.com with ESMTPSA id a5sm17336000edj.20.2021.07.24.23.15.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Jul 2021 23:15:38 -0700 (PDT)
-Subject: Re: [PATCH] mlx4: Fix missing error code in mlx4_load_one()
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, tariqt@nvidia.com
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1627036569-71880-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <f62d2d35-3838-06a8-8230-4cc2e9166ac7@gmail.com>
-Date:   Sun, 25 Jul 2021 09:15:36 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S230239AbhGYFwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 01:52:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229460AbhGYFwe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 01:52:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1501760F13;
+        Sun, 25 Jul 2021 06:33:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627194784;
+        bh=wlXW6USsZex8XdiwmwtjzhgxjC6oifv3Uj+wH6B39gM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lmT3R1OgC+HAe1MwvwkIeU+qo8cAgYd34TMKQfMqAngmhTXkemgZvp9jthyRHAYdW
+         goc+oAwqSYX3M5VX66MGJzFzocozaH6KO/0dBJ7/2rjefSU3adu+Vm3Wo0VY641aCI
+         I6CYsDKQ3UQBvxMpgqGTb0RDyncXKcwXZPbNJJnk=
+Date:   Sun, 25 Jul 2021 08:33:01 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hin-Tak Leung <htl10@users.sourceforge.net>
+Cc:     Herton Ronaldo Krzesinski <herton@canonical.com>,
+        Larry Finger <larry.finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Salah Triki <salah.triki@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wireless: rtl8187: replace udev with usb_get_dev()
+Message-ID: <YP0FnUlHD4I7hWIi@kroah.com>
+References: <20210724183457.GA470005@pc>
+ <53895498.1259278.1627160074135@mail.yahoo.com>
 MIME-Version: 1.0
-In-Reply-To: <1627036569-71880-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <53895498.1259278.1627160074135@mail.yahoo.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jul 24, 2021 at 08:54:34PM +0000, Hin-Tak Leung wrote:
+>  
+> 
+> On Saturday, 24 July 2021, 19:35:12 BST, Salah Triki <salah.triki@gmail.com> wrote:
+> 
+> 
+> > Replace udev with usb_get_dev() in order to make code cleaner.
+> 
+> > Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> > ---
+> > drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c | 4 +---
+> > 1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> > diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+> > index eb68b2d3caa1..30bb3c2b8407 100644
+> > --- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+> > +++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
+> > @@ -1455,9 +1455,7 @@ static int rtl8187_probe(struct usb_interface *intf,
+> 
+> >     SET_IEEE80211_DEV(dev, &intf->dev);
+> >     usb_set_intfdata(intf, dev);
+> > -    priv->udev = udev;
+> > -
+> > -    usb_get_dev(udev);
+> > +    priv->udev = usb_get_dev(udev);
+> 
+> >     skb_queue_head_init(&priv->rx_queue);
+> 
+> > -- 
+> > 2.25.1
+> 
+> It is not cleaner - the change is not functionally equivalent. Before the change, the reference count is increased after the assignment; and after the change, before the assignment. So my question is, does the reference count increasing a little earlier matters? What can go wrong between very short time where the reference count increases, and priv->udev not yet assigned? I think there might be a race condition where the probbe function is called very shortly twice.
+> Especially if the time of running the reference count function is non-trivial.
 
+Probe functions are called in order, this should not be an issue.
 
-On 7/23/2021 1:36 PM, Jiapeng Chong wrote:
-> The error code is missing in this code scenario, add the error code
-> '-EINVAL' to the return value 'err'.
-> 
-> Eliminate the follow smatch warning:
-> 
-> drivers/net/ethernet/mellanox/mlx4/main.c:3538 mlx4_load_one() warn:
-> missing error code 'err'.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Fixes: 7ae0e400cd93 ("net/mlx4_core: Flexible (asymmetric) allocation of
-> EQs and MSI-X vectors for PF/VFs")
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/main.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-> index 00c8465..28ac469 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-> @@ -3535,6 +3535,7 @@ static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
->   
->   		if (!SRIOV_VALID_STATE(dev->flags)) {
->   			mlx4_err(dev, "Invalid SRIOV state\n");
-> +			err = -EINVAL;
->   			goto err_close;
->   		}
->   	}
-> 
+This patch changes nothing, I do not think it is needed at all.
 
-Thanks for you patch.
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+thanks,
 
-Regards,
-Tariq
+greg k-h
