@@ -2,77 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39E3F3D51F3
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 05:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C39903D520D
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 06:01:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbhGZDQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 23:16:57 -0400
-Received: from out0.migadu.com ([94.23.1.103]:26221 "EHLO out0.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230321AbhGZDQz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Jul 2021 23:16:55 -0400
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1627271839;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=42/x3cunuNFrK5WXYNzv0PumgHH417h+iX4VfozjEqg=;
-        b=TTEDvxwLws0uMFv8PMZ4WRAA59G66FCBFtiLFTvnsFeltMxFuQk7l7cp4tACqzT9nHNY5g
-        M2zbbPyGukGSDcBtLh3VIHQ8lk+cSHfB5YjoJ9enWMDamCcWT0AnAWDS7+WhLFcSTcjQg0
-        5KGfiyhcz2rKOta51MylqUExs8RZlTY=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        roopa@nvidia.com, nikolay@nvidia.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH] netfilter: nf_conntrack_bridge: Fix not free when error
-Date:   Mon, 26 Jul 2021 11:57:02 +0800
-Message-Id: <20210726035702.11964-1-yajun.deng@linux.dev>
+        id S231621AbhGZDVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 23:21:15 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:35823 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230321AbhGZDVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 23:21:15 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16Q41XabC018603, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16Q41XabC018603
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 26 Jul 2021 12:01:33 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 26 Jul 2021 12:01:33 +0800
+Received: from fc34.localdomain (172.21.177.102) by RTEXMBS04.realtek.com.tw
+ (172.21.6.97) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 26 Jul
+ 2021 12:01:32 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next RESEND 0/2] r8152: split the source code
+Date:   Mon, 26 Jul 2021 12:01:07 +0800
+Message-ID: <1394712342-15778-371-Taiwan-albertk@realtek.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <1394712342-15778-368-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-368-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.102]
+X-ClientProxiedBy: RTEXMBS01.realtek.com.tw (172.21.6.94) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/23/2021 16:12:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzcvMjMgpFWkyCAwMjowNTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIxLzcvMjYgpFekyCAwMjo1MjowMA==?=
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/26/2021 03:51:53
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165230 [Jul 25 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;realtek.com:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, headers_charset}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/26/2021 03:54:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should be added kfree_skb_list() when err is not equal to zero
-in nf_br_ip_fragment().
+The r8152.c is too large to find out the desired part, so I speparate it
 
-Fixes: 3c171f496ef5 ("netfilter: bridge: add connection tracking system")
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- net/bridge/netfilter/nf_conntrack_bridge.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Hayes Wang (2):
+  r8152: group the usb ethernet of realtek
+  r8152: separate the r8152.c into r8152_main.c and r8152_fw.c
 
-diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
-index 8d033a75a766..059f53903eda 100644
---- a/net/bridge/netfilter/nf_conntrack_bridge.c
-+++ b/net/bridge/netfilter/nf_conntrack_bridge.c
-@@ -83,12 +83,16 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
- 
- 			skb->tstamp = tstamp;
- 			err = output(net, sk, data, skb);
--			if (err || !iter.frag)
--				break;
--
-+			if (err) {
-+				kfree_skb_list(iter.frag);
-+				return err;
-+			}
-+
-+			if (!iter.frag)
-+				return 0;
-+
- 			skb = ip_fraglist_next(&iter);
- 		}
--		return err;
- 	}
- slow_path:
- 	/* This is a linearized skbuff, the original geometry is lost for us.
+ MAINTAINERS                                   |   11 +-
+ drivers/net/usb/Kconfig                       |   30 +-
+ drivers/net/usb/Makefile                      |    4 +-
+ drivers/net/usb/realtek/Kconfig               |   33 +
+ drivers/net/usb/realtek/Makefile              |    9 +
+ drivers/net/usb/realtek/r8152_basic.h         |  861 ++++++
+ drivers/net/usb/realtek/r8152_fw.c            | 1557 ++++++++++
+ .../net/usb/{r8152.c => realtek/r8152_main.c} | 2590 +----------------
+ drivers/net/usb/{ => realtek}/r8153_ecm.c     |    0
+ drivers/net/usb/{ => realtek}/rtl8150.c       |    0
+ 10 files changed, 2580 insertions(+), 2515 deletions(-)
+ create mode 100644 drivers/net/usb/realtek/Kconfig
+ create mode 100644 drivers/net/usb/realtek/Makefile
+ create mode 100644 drivers/net/usb/realtek/r8152_basic.h
+ create mode 100644 drivers/net/usb/realtek/r8152_fw.c
+ rename drivers/net/usb/{r8152.c => realtek/r8152_main.c} (75%)
+ rename drivers/net/usb/{ => realtek}/r8153_ecm.c (100%)
+ rename drivers/net/usb/{ => realtek}/rtl8150.c (100%)
+
 -- 
-2.32.0
+2.31.1
 
