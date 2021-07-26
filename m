@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC143D5B40
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA413D5B4E
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233719AbhGZNdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 09:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        id S234776AbhGZNd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 09:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233841AbhGZNcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:32:55 -0400
+        with ESMTP id S234755AbhGZNdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:33:04 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208D1C06121C
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:12:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00105C06179F
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:12:35 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1m81LK-0001uP-EK
-        for netdev@vger.kernel.org; Mon, 26 Jul 2021 16:12:30 +0200
+        id 1m81LO-000247-Ci
+        for netdev@vger.kernel.org; Mon, 26 Jul 2021 16:12:34 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id ED9AA658255
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:12:10 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 674F265827C
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:12:19 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 209C56581A2;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 2A8246581A4;
         Mon, 26 Jul 2021 14:11:53 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a828b6a3;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 2d7bcc92;
         Mon, 26 Jul 2021 14:11:46 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 18/46] can: mcp251xfd: Fix header block to clarify independence from OF
-Date:   Mon, 26 Jul 2021 16:11:16 +0200
-Message-Id: <20210726141144.862529-19-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH net-next 19/46] can: mcp251xfd: mcp251xfd_open(): request IRQ as shared
+Date:   Mon, 26 Jul 2021 16:11:17 +0200
+Message-Id: <20210726141144.862529-20-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210726141144.862529-1-mkl@pengutronix.de>
 References: <20210726141144.862529-1-mkl@pengutronix.de>
@@ -54,34 +52,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The driver's IRQ handler supports shared IRQs, so request a shared IRQ
+handler.
 
-The driver is neither dependent on OF, nor it requires any OF headers.
-Fix header block to clarify independence from OF.
-
-Link: https://lore.kernel.org/r/http://lore.kernel.org/r/20210531084444.1785397-2-mkl@pengutronix.de
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20210724205212.737328-1-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
  drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 1544e19b60b9..90b06052549d 100644
+index 90b06052549d..2b1e57552e1c 100644
 --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
 +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -15,10 +15,10 @@
- #include <linux/bitfield.h>
- #include <linux/clk.h>
- #include <linux/device.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
+@@ -2527,8 +2527,8 @@ static int mcp251xfd_open(struct net_device *ndev)
+ 	can_rx_offload_enable(&priv->offload);
  
- #include <asm/unaligned.h>
+ 	err = request_threaded_irq(spi->irq, NULL, mcp251xfd_irq,
+-				   IRQF_ONESHOT, dev_name(&spi->dev),
+-				   priv);
++				   IRQF_SHARED | IRQF_ONESHOT,
++				   dev_name(&spi->dev), priv);
+ 	if (err)
+ 		goto out_can_rx_offload_disable;
  
 -- 
 2.30.2
