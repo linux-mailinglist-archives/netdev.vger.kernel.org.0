@@ -2,215 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A99CC3D50A5
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 01:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EBE23D50C2
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 02:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbhGYWsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 18:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231280AbhGYWsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 18:48:35 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB2FC061760
-        for <netdev@vger.kernel.org>; Sun, 25 Jul 2021 16:29:05 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 7D6258365A;
-        Mon, 26 Jul 2021 11:28:59 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1627255739;
-        bh=UvzX0Q6INANcNn41JhJ2142wxQNEFgj9Cm7uo/Z3HQA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=g6HonNKcejxIaReksnZphRpN9G7AumH0PjsCSG1wNqPcGi162UAnmdDVqXQah+83M
-         b5MyfrT0WzG53UcgveP6LFd5h2dmYSFVUai8XpVOGv05TrLcTkYuuGYiBS056q0L7R
-         MhjjDaIxsLwcw3UP66HfQM3KpKhRovNpO2ctfzqNCtk7i4cF22z6zNCg/VGnFo7XIc
-         47WSOzfALGLE4q9w6CdzXWZ7hoUcmzbeLUiYMf6wNcbaE8yoLAZRzkjwfvPZi/PGLu
-         6D+g3QCqn0HC1So2OYWtq+OVe7uH9HdRHM+nJgojFAyH9/o/DK+sxg/y6V70whVovM
-         RVx7noAtqV/YA==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B60fdf3ba0000>; Mon, 26 Jul 2021 11:28:58 +1200
-Received: from coled-dl.ws.atlnz.lc (coled-dl.ws.atlnz.lc [10.33.25.26])
-        by pat.atlnz.lc (Postfix) with ESMTP id D2CE013EE4B;
-        Mon, 26 Jul 2021 11:28:58 +1200 (NZST)
-Received: by coled-dl.ws.atlnz.lc (Postfix, from userid 1801)
-        id C98DA24296F; Mon, 26 Jul 2021 11:28:58 +1200 (NZST)
-From:   Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
-To:     pablo@netfilter.org
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, shuah@kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>,
-        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
-        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
-        Blair Steven <blair.steven@alliedtelesis.co.nz>
-Subject: [PATCH 2/3] net: netfilter: Add RFC-7597 Section 5.1 PSID support
-Date:   Mon, 26 Jul 2021 11:28:40 +1200
-Message-Id: <20210725232840.30565-1-Cole.Dishington@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210722071750.GG9904@breakpoint.cc>
-References: <20210722071750.GG9904@breakpoint.cc>
+        id S231355AbhGYXs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 19:48:58 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:37398 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231285AbhGYXs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 19:48:56 -0400
+Received: by mail-io1-f69.google.com with SMTP id e7-20020a0566020447b029050017e563a6so7316307iov.4
+        for <netdev@vger.kernel.org>; Sun, 25 Jul 2021 17:29:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=HapdQG+zthiUobnTEPfoSW7q18/Z9dQsVC64iOywMdA=;
+        b=X4N6g6lLgb3KK+pYR55h6ckihHStT6G9hFdD1PtMPSSq62eR/ALFu4nHEgk8MEZvJ6
+         +KdmLTUdymhhb8w+1py46seU2bLcYS0qp1iw7Zk7+blSneUuo9/ov8KsdarMaDn+i3av
+         4eZInUtOJs8xiBq6D8JqBVdwGzGB500b1cRykh8sylNQ0oYvG30nHshg8+4vMXqiUlLr
+         oyGY8kCAs/j0RCxsBj7aeO3cMwSiq1BFElkqaAdd4T5OxrGTVrwzBc+ZBrkLXaZq7iX3
+         RAGeJNvzUtYeY3K04lLyK6mYznJoHa1wjPYBnjmsfK/qC5CLTas6XPj8yxsfWRXEepLd
+         0JwQ==
+X-Gm-Message-State: AOAM530fqIkuNxtXpLqg3TB09rFfWTgzNggf0+hiUrzXWTVGCHLITLH4
+        mDiXw1MmZdb07fDWK2Sklfytgisc2dQ1VZwc/arcCQcac5pl
+X-Google-Smtp-Source: ABdhPJyqtMwGONMKqD+rbwimGb8oQ7FhM2dITv7cjmxMdCRixFhMcEI9Qbt5LH9BVyIrelsrDGRJZI74jFJ9UTROg6CMDpw/B8PV
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=dvql9Go4 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=e_q4qTt1xDgA:10 a=xOT0nC9th1TpZTiSAT0A:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+X-Received: by 2002:a92:d8c5:: with SMTP id l5mr11190835ilo.79.1627259365167;
+ Sun, 25 Jul 2021 17:29:25 -0700 (PDT)
+Date:   Sun, 25 Jul 2021 17:29:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006b15c805c7fbd885@google.com>
+Subject: [syzbot] memory leak in mld_newpack
+From:   syzbot <syzbot+dcd3e13cf4472f2e0ba1@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds support for masquerading into a smaller subset of ports -
-defined by the PSID values from RFC-7597 Section 5.1. This is part of
-the support for MAP-E and Lightweight 4over6, which allows multiple
-devices to share an IPv4 address by splitting the L4 port / id into
-ranges.
+Hello,
 
-Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
-Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
-Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
-Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
-Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
-Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+syzbot found the following issue on:
+
+HEAD commit:    8cae8cd89f05 seq_file: disallow extremely large seq buffer..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1100e00a300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7384ed231a0fd986
+dashboard link: https://syzkaller.appspot.com/bug?extid=dcd3e13cf4472f2e0ba1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c646a2300000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dcd3e13cf4472f2e0ba1@syzkaller.appspotmail.com
+
+2021/07/22 00:14:37 executed programs: 3
+2021/07/22 00:14:42 executed programs: 5
+2021/07/22 00:14:48 executed programs: 7
+BUG: memory leak
+unreferenced object 0xffff88810df2ad00 (size 232):
+  comm "kworker/1:2", pid 2838, jiffies 4294938475 (age 902.280s)
+  hex dump (first 32 bytes):
+    a0 34 1f 19 81 88 ff ff a0 34 1f 19 81 88 ff ff  .4.......4......
+    00 40 1c 10 81 88 ff ff 00 00 00 00 00 00 00 00  .@..............
+  backtrace:
+    [<ffffffff836e0f5f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff836eb79a>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff836eb79a>] alloc_skb_with_frags+0x6a/0x2b0 net/core/skbuff.c:6005
+    [<ffffffff836d9083>] sock_alloc_send_pskb+0x353/0x3c0 net/core/sock.c:2461
+    [<ffffffff83b7fd64>] mld_newpack+0x84/0x200 net/ipv6/mcast.c:1751
+    [<ffffffff83b7ff83>] add_grhead+0xa3/0xc0 net/ipv6/mcast.c:1854
+    [<ffffffff83b80c26>] add_grec+0x7b6/0x820 net/ipv6/mcast.c:1992
+    [<ffffffff83b830d3>] mld_send_cr net/ipv6/mcast.c:2118 [inline]
+    [<ffffffff83b830d3>] mld_ifc_work+0x273/0x750 net/ipv6/mcast.c:2655
+    [<ffffffff81262669>] process_one_work+0x2c9/0x610 kernel/workqueue.c:2276
+    [<ffffffff81262f59>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
+    [<ffffffff8126c3b8>] kthread+0x188/0x1d0 kernel/kthread.c:319
+    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+BUG: memory leak
+unreferenced object 0xffff88811109ca00 (size 232):
+  comm "kworker/1:2", pid 2838, jiffies 4294938656 (age 900.470s)
+  hex dump (first 32 bytes):
+    a0 ac 9e 16 81 88 ff ff a0 ac 9e 16 81 88 ff ff  ................
+    00 00 37 13 81 88 ff ff 00 00 00 00 00 00 00 00  ..7.............
+  backtrace:
+    [<ffffffff836e0f5f>] __alloc_skb+0x20f/0x280 net/core/skbuff.c:414
+    [<ffffffff83b6bb36>] alloc_skb include/linux/skbuff.h:1112 [inline]
+    [<ffffffff83b6bb36>] ndisc_alloc_skb+0x56/0xe0 net/ipv6/ndisc.c:420
+    [<ffffffff83b7085c>] ndisc_send_rs+0x1bc/0x2a0 net/ipv6/ndisc.c:686
+    [<ffffffff83b46bae>] addrconf_dad_completed+0x17e/0x560 net/ipv6/addrconf.c:4195
+    [<ffffffff83b4736d>] addrconf_dad_work+0x3dd/0x900 net/ipv6/addrconf.c:4105
+    [<ffffffff81262669>] process_one_work+0x2c9/0x610 kernel/workqueue.c:2276
+    [<ffffffff81262f59>] worker_thread+0x59/0x5d0 kernel/workqueue.c:2422
+    [<ffffffff8126c3b8>] kthread+0x188/0x1d0 kernel/kthread.c:319
+    [<ffffffff810022cf>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+
+
 ---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Notes:
-    Thanks for your time reviewing!
-   =20
-    Changes in v6:
-    - Use prandom_u32_max() rather than prandom_u32() % max for generatin=
-g PSID sub-range offset.
-    - Use u32 for power_j for the case of a=3D0,psid_len=3D0.
-
- net/netfilter/nf_nat_core.c       | 39 +++++++++++++++++++++++++++----
- net/netfilter/nf_nat_masquerade.c | 27 +++++++++++++++++++--
- 2 files changed, 60 insertions(+), 6 deletions(-)
-
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index 7de595ead06a..f07a3473aab5 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -195,13 +195,36 @@ static bool nf_nat_inet_in_range(const struct nf_co=
-nntrack_tuple *t,
- static bool l4proto_in_range(const struct nf_conntrack_tuple *tuple,
- 			     enum nf_nat_manip_type maniptype,
- 			     const union nf_conntrack_man_proto *min,
--			     const union nf_conntrack_man_proto *max)
-+			     const union nf_conntrack_man_proto *max,
-+			     const union nf_conntrack_man_proto *base,
-+			     bool is_psid)
- {
- 	__be16 port;
-+	u16 psid, psid_mask, offset_mask;
-+
-+	/* In this case we are in PSID mode, avoid checking all ranges by compu=
-ting bitmasks */
-+	if (is_psid) {
-+		u32 power_j =3D ntohs(max->all) - ntohs(min->all) + 1;
-+		u32 offset =3D ntohs(base->all);
-+		u16 power_a;
-+
-+		if (offset =3D=3D 0)
-+			offset =3D 1 << 16;
-+
-+		power_a =3D (1 << 16) / offset;
-+		offset_mask =3D (power_a - 1) * offset;
-+		psid_mask =3D ((offset / power_j) << 1) - 1;
-+		psid =3D ntohs(min->all) & psid_mask;
-+	}
-=20
- 	switch (tuple->dst.protonum) {
- 	case IPPROTO_ICMP:
- 	case IPPROTO_ICMPV6:
-+		if (is_psid) {
-+			return (offset_mask =3D=3D 0 ||
-+				(ntohs(tuple->src.u.icmp.id) & offset_mask) !=3D 0) &&
-+				((ntohs(tuple->src.u.icmp.id) & psid_mask) =3D=3D psid);
-+		}
- 		return ntohs(tuple->src.u.icmp.id) >=3D ntohs(min->icmp.id) &&
- 		       ntohs(tuple->src.u.icmp.id) <=3D ntohs(max->icmp.id);
- 	case IPPROTO_GRE: /* all fall though */
-@@ -215,6 +238,10 @@ static bool l4proto_in_range(const struct nf_conntra=
-ck_tuple *tuple,
- 		else
- 			port =3D tuple->dst.u.all;
-=20
-+		if (is_psid) {
-+			return (offset_mask =3D=3D 0 || (ntohs(port) & offset_mask) !=3D 0) &=
-&
-+				((ntohs(port) & psid_mask) =3D=3D psid);
-+		}
- 		return ntohs(port) >=3D ntohs(min->all) &&
- 		       ntohs(port) <=3D ntohs(max->all);
- 	default:
-@@ -239,7 +266,8 @@ static int in_range(const struct nf_conntrack_tuple *=
-tuple,
- 		return 1;
-=20
- 	return l4proto_in_range(tuple, NF_NAT_MANIP_SRC,
--				&range->min_proto, &range->max_proto);
-+				&range->min_proto, &range->max_proto, &range->base_proto,
-+				range->flags & NF_NAT_RANGE_PSID);
- }
-=20
- static inline int
-@@ -532,8 +560,11 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
- 			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
- 			    l4proto_in_range(tuple, maniptype,
--			          &range->min_proto,
--			          &range->max_proto) &&
-+				  &range->min_proto,
-+				  &range->max_proto,
-+				  &range->base_proto,
-+				  range->flags &
-+				  NF_NAT_RANGE_PSID) &&
- 			    (range->min_proto.all =3D=3D range->max_proto.all ||
- 			     !nf_nat_used_tuple(tuple, ct)))
- 				return;
-diff --git a/net/netfilter/nf_nat_masquerade.c b/net/netfilter/nf_nat_mas=
-querade.c
-index 8e8a65d46345..19a4754cda76 100644
---- a/net/netfilter/nf_nat_masquerade.c
-+++ b/net/netfilter/nf_nat_masquerade.c
-@@ -55,8 +55,31 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned i=
-nt hooknum,
- 	newrange.flags       =3D range->flags | NF_NAT_RANGE_MAP_IPS;
- 	newrange.min_addr.ip =3D newsrc;
- 	newrange.max_addr.ip =3D newsrc;
--	newrange.min_proto   =3D range->min_proto;
--	newrange.max_proto   =3D range->max_proto;
-+
-+	if (range->flags & NF_NAT_RANGE_PSID) {
-+		u16 base =3D ntohs(range->base_proto.all);
-+		u16 min =3D  ntohs(range->min_proto.all);
-+		u16 off =3D 0;
-+
-+		/* xtables should stop base > 2^15 by enforcement of
-+		 * 0 <=3D offset_len < 16 argument, with offset_len=3D0
-+		 * as a special case inwhich base=3D0.
-+		 */
-+		if (WARN_ON_ONCE(base > (1 << 15)))
-+			return NF_DROP;
-+
-+		/* If offset=3D0, port range is in one contiguous block */
-+		if (base)
-+			off =3D prandom_u32_max(((1 << 16) / base) - 1);
-+
-+		newrange.min_proto.all   =3D htons(min + base * off);
-+		newrange.max_proto.all   =3D htons(ntohs(newrange.min_proto.all) + nto=
-hs(range->max_proto.all) - min);
-+		newrange.base_proto      =3D range->base_proto;
-+		newrange.flags           =3D newrange.flags | NF_NAT_RANGE_PROTO_SPECI=
-FIED;
-+	} else {
-+		newrange.min_proto       =3D range->min_proto;
-+		newrange.max_proto       =3D range->max_proto;
-+	}
-=20
- 	/* Hand modified range to generic setup. */
- 	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
---=20
-2.32.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
