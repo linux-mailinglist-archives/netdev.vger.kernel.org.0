@@ -2,112 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 305403D58AE
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:44:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97D013D58E6
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233598AbhGZLD2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Jul 2021 07:03:28 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:42927 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbhGZLD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 07:03:27 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16QBhm463012553, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16QBhm463012553
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 26 Jul 2021 19:43:48 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 26 Jul 2021 19:43:47 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 26 Jul 2021 19:43:46 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
- RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
- 15.01.2106.013; Mon, 26 Jul 2021 19:43:46 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: RE: [PATCH net-next RESEND 2/2] r8152: separate the r8152.c into r8152_main.c and r8152_fw.c
-Thread-Topic: [PATCH net-next RESEND 2/2] r8152: separate the r8152.c into
- r8152_main.c and r8152_fw.c
-Thread-Index: AQHXgdL4UhnFIS2opkGLRT1L0R8XUatUWD4AgACR1mD//38YAIAAqNrw//+C5QCAAIjmkA==
-Date:   Mon, 26 Jul 2021 11:43:46 +0000
-Message-ID: <13e5ff767f304e1db6b755c10ae47c92@realtek.com>
-References: <1394712342-15778-368-Taiwan-albertk@realtek.com>
- <1394712342-15778-371-Taiwan-albertk@realtek.com>
- <1394712342-15778-373-Taiwan-albertk@realtek.com>
- <YP5mFKeJsGezjdve@kroah.com> <c6b44f93a5b14fbb98d4c6cb0ed2a77f@realtek.com>
- <YP50SIgqAEyKWSpA@kroah.com> <47801164b7b3406b895be1542e0ce4a2@realtek.com>
- <YP6Y+i5VzZOJjoW7@kroah.com>
-In-Reply-To: <YP6Y+i5VzZOJjoW7@kroah.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.203]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/7/26_=3F=3F_10:24:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233709AbhGZLPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 07:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233522AbhGZLPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 07:15:42 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E27C061757;
+        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id c11so11204766plg.11;
+        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Br3Rygrceikh+egpBafkuMHhS17q8AtpKYbcy30kWyk=;
+        b=X3yX6J3IcdR1vyvYidVE9wtrepuqM3yzkOdsiOh169BEiDq9tuM9R/Jc9o0jn4eFS+
+         g/PsiKVRKOVIvfjjMn/gKPt6moMCe+e0szrD4BBUtDzZK3c7X7KRw8I0zoCDDjzYBAML
+         eUUKRiFjWoyGqsYLYwcb/1hchc4O1Daq+cHNbwNzxl0bS2X4pRb1/JO0eWo4/qf6ZWtJ
+         zd4nYhiSIygMaGUJNvO8b0/Soq4wtKuAz2JMLeavZxwviVa5RUnY4eMvv36vHmthCXz1
+         neQhn608epsSE6LNB0AvTs3bW1+qz9WsH9jVmkx9MWEk4WkliRp+4zKQlaSHxiwV48fI
+         CRwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Br3Rygrceikh+egpBafkuMHhS17q8AtpKYbcy30kWyk=;
+        b=i1gxKHWTZJm83uI02RDJWpIHGmG86i0jCsWRxp5K9liPihoPmVLUfn+jcJOm4LJQLi
+         GLYUz17txWg4TITOWW5GLWjNRLlUwzU+la58DWdDsJk5fKRLScJ88nqkdYOQedbspnkE
+         t0o6weHKaYhFJxZkGz3B4UeuLRBtzeejtr752opaN5Ia5mi9NF56z2UKfmjyZ7NkDR+o
+         +Smq9e7l0sHix09An4cQOoz1/FfACYYar7bqHkfOCo5/mmMOKg0Z4y6mYiy9RA1JZe9Q
+         v08KqtlmWiXbe9O1qbGUuDQ0GzsWs4Y39AEDlC1RgBBmPtTMDgdlHqlNzkRg1fKddFXD
+         iePg==
+X-Gm-Message-State: AOAM532yV2FacQGkufocnjaPhj2kGUYAarInMdpA4FDg9RdxKY2Jdloz
+        kb6nXVTfzkREV40e8TX8XpQ=
+X-Google-Smtp-Source: ABdhPJwDN5wtGtCN3P4WD8+NZSNySaC38fQiBrQXnw2ubEtNTrcgJ8YyT5qEIZc9o+TG1TONyE5Wvg==
+X-Received: by 2002:a63:2bcf:: with SMTP id r198mr7687025pgr.373.1627300571013;
+        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
+Received: from localhost.localdomain ([154.16.166.171])
+        by smtp.gmail.com with ESMTPSA id b22sm13720541pjq.37.2021.07.26.04.56.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 04:56:10 -0700 (PDT)
+From:   Dongliang Mu <mudongliangabcd@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Luis R. Rodriguez" <lrodriguez@atheros.com>,
+        "John W. Linville" <linville@tuxdriver.com>
+Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: wireless: move the deallocation of regulatory domain to wiphy_free
+Date:   Mon, 26 Jul 2021 19:55:53 +0800
+Message-Id: <20210726115554.2258657-1-mudongliangabcd@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/26/2021 11:27:20
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 165243 [Jul 26 2021]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
-X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;realtek.com:7.1.1
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 07/26/2021 11:29:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org>
-> Sent: Monday, July 26, 2021 7:14 PM
-[...]
-> > We support a new chip or feature with a test driver.
-> > The test driver is similar with the upstream driver, except
-> > the method of the firmware. After we confirm that the
-> > test driver work fine, we compare the differences with
-> > the upstream driver and submit patches. And the code
-> > about firmware takes us more time to find out the
-> > differences. Therefore, I wish to move the part of
-> > the firmware out.
-> 
-> Great, then submit the broken up driver as part of a patchset that adds
-> new device support, as that makes more sense when that happens, right?
+If wiphy_register fails or does not get called, which leads to
+that, ieee80211_register_hw returns with an error. Then the error
+handling code of mac80211_hwsim_new_radio does not free wiphy->regd.
+Note that, the free stack trace of wiphy->regd is as follows:
 
-I got it. I will submit them with the support of new device in the future.
+ieee80211_unregister_hw()
+  -> wiphy_unregister()
+    -> wiphy_regulatory_deregister()
+      -> rcu_free_regdom()
 
-Best Regards,
-Hayes
+Fix this by moving the free operation of regd from wiphy_unregister to
+wiphy_free.
 
+Reported-by: syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com
+Fixes: 3e0c3ff36c4c ("cfg80211: allow multiple driver regulatory_hints()")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+---
+ net/wireless/core.c | 3 +++
+ net/wireless/reg.c  | 9 +++++----
+ net/wireless/reg.h  | 1 +
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/net/wireless/core.c b/net/wireless/core.c
+index 03323121ca50..2cc2bdddc9e8 100644
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -1085,6 +1085,9 @@ void cfg80211_dev_free(struct cfg80211_registered_device *rdev)
+ 
+ void wiphy_free(struct wiphy *wiphy)
+ {
++	rcu_free_regdom(get_wiphy_regdom(wiphy));
++	RCU_INIT_POINTER(wiphy->regd, NULL);
++
+ 	put_device(&wiphy->dev);
+ }
+ EXPORT_SYMBOL(wiphy_free);
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index c2d0ff7f089f..246f882e0021 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -196,12 +196,16 @@ enum nl80211_dfs_regions reg_get_dfs_region(struct wiphy *wiphy)
+ 	return regd->dfs_region;
+ }
+ 
+-static void rcu_free_regdom(const struct ieee80211_regdomain *r)
++/*
++ * Free the regulatory domain associated with the wiphy
++ */
++void rcu_free_regdom(const struct ieee80211_regdomain *r)
+ {
+ 	if (!r)
+ 		return;
+ 	kfree_rcu((struct ieee80211_regdomain *)r, rcu_head);
+ }
++EXPORT_SYMBOL(rcu_free_regdom);
+ 
+ static struct regulatory_request *get_last_request(void)
+ {
+@@ -4064,9 +4068,6 @@ void wiphy_regulatory_deregister(struct wiphy *wiphy)
+ 	if (!reg_dev_ignore_cell_hint(wiphy))
+ 		reg_num_devs_support_basehint--;
+ 
+-	rcu_free_regdom(get_wiphy_regdom(wiphy));
+-	RCU_INIT_POINTER(wiphy->regd, NULL);
+-
+ 	if (lr)
+ 		request_wiphy = wiphy_idx_to_wiphy(lr->wiphy_idx);
+ 
+diff --git a/net/wireless/reg.h b/net/wireless/reg.h
+index f3707f729024..03de4e5ece85 100644
+--- a/net/wireless/reg.h
++++ b/net/wireless/reg.h
+@@ -32,6 +32,7 @@ bool reg_is_valid_request(const char *alpha2);
+ bool is_world_regdom(const char *alpha2);
+ bool reg_supported_dfs_region(enum nl80211_dfs_regions dfs_region);
+ enum nl80211_dfs_regions reg_get_dfs_region(struct wiphy *wiphy);
++void rcu_free_regdom(const struct ieee80211_regdomain *r);
+ 
+ int regulatory_hint_user(const char *alpha2,
+ 			 enum nl80211_user_reg_hint_type user_reg_hint_type);
+-- 
+2.25.1
 
