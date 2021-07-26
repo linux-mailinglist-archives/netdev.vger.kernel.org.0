@@ -2,101 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B01D83D5CFE
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 17:30:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CB443D5D01
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 17:30:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235026AbhGZOt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 10:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
+        id S235057AbhGZOt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 10:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234546AbhGZOt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 10:49:27 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74CCC061757;
-        Mon, 26 Jul 2021 08:29:55 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z2so16235770lft.1;
-        Mon, 26 Jul 2021 08:29:55 -0700 (PDT)
+        with ESMTP id S234546AbhGZOt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 10:49:57 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB679C061757;
+        Mon, 26 Jul 2021 08:30:25 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id bp1so16230573lfb.3;
+        Mon, 26 Jul 2021 08:30:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QQDP+eHMr4gIyfgZISAXdJqxWneVlfNIaPi7Q7Y+BwY=;
-        b=SwEHCOQT1sN8eHHMk33PPlmsf2WsfQgiHx8uF0f9S896ItrbMhXMPfDroM8u/gPvlr
-         jwcDjHRK7IgMnr/RlEFwSUMQ7w7bb8fHlGO17KZ9Ml7hYWvXbFbD7S5pLW3is2aEaw+W
-         7BMpPSJqapC2KUknmlHtxNq9Ph+r2LVKDs6aBSYfeuBiMIr5cxUsDGT+qnC5XepvYurQ
-         UTjv11zmP//A1j7QBJ3djJ+W0kjagOj6ntkLvR1X6wHqbFNgB9v/767T595LLzo/a16d
-         QCS/H8BWUODnEgzYrTvPUjTNHhMToryAk+86NXZjrcbbm2r6ENXgOfQSdOESaO2PEwCL
-         0w8g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=m6QF1tp2oEexOjNTXdUF+9gO2IJD1K9qh4FZF8+8zOk=;
+        b=M2ahqcsAPFIMPPM8R3AQtSCIcD8xQ691fWWGwSBZe0clTrURhNfpXwhLzpDfgiHwiT
+         AlI/aw7DmFApa7WrksFcwRgsjO7LYLPMyBBTyXfDYGZYj/LBhHbeiCTkG8sUtezRf6fs
+         /1l/z5a9DNfCOJ8s8/rufOn+Fcs1A8/F0L3paIgLQPbAKhdHItLKbwbR/fv7xz7LgKWr
+         ewvBtV65q+5O53rHaD5Gaww6+wGfCBsVSF2AvMnsiT0lxQUlNQT94AEU8mViX+yrfPvI
+         NSnN/zhv6B52sLRRxPOnca3gja7QApIqlGtcinZgrS8zwKaV14eESRy36lyvQ3LwFujo
+         hafA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QQDP+eHMr4gIyfgZISAXdJqxWneVlfNIaPi7Q7Y+BwY=;
-        b=NxbK7tT9VFAlFl975jNRkqRxJ5PAzPCw08MCjRzt2luWr6EmRTDcbXqh7bn/LktWw4
-         72gDF87qZQwz0yAhS1ae3LurZhAVnoScDdmVHWajOoPeE6ZUtsRFng/5tgnSUVh9Gwhv
-         LLy5k88IR8XeFYOvointQEyPVncDB9HpyXOVdqElA4Vx3XVrefo+GQLmlJhSnivkM19u
-         arRtqcRYRCEurm+1knCnNeyOv8kVE1nucPTSWUuyqaZcAka+vkCfpnN+e+u4bGLf60vk
-         XMrHe5iNcDXtxVV2Iw9eTa70Don95O6HZvMfkmrdYeubITezsJjSvXGQpU46aoech2dZ
-         9Bfg==
-X-Gm-Message-State: AOAM5319M3Tgw0ipMGoK41T82YzHj7/5PZOna9vyJv4+rtDpNvhD0yEy
-        Nn0zeLoB2C3YDZt0o1jMAfY=
-X-Google-Smtp-Source: ABdhPJwtzMFVQxYvh3fdYb9FSirxW5NjdglUjsIIDuSENTmCpKDBFWTRtL1xs+mKvC9NONt7zsDLkg==
-X-Received: by 2002:a05:6512:3147:: with SMTP id s7mr12921939lfi.189.1627313394193;
-        Mon, 26 Jul 2021 08:29:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=m6QF1tp2oEexOjNTXdUF+9gO2IJD1K9qh4FZF8+8zOk=;
+        b=K1twJY19XpDz3kR/PAXv0pJ9HOqUDm4CnKgcFxoD8AGTprH4E1+S0MIzfAU2eUtlUK
+         iSWLah9Tl++9VsSkAtwJ/8Dq6Kb7VYP0aFRI3xvwHOfNhj5ZvSKOdi7NdhoCqSqVu04t
+         8h8w51XhL+SFLhI58KmJQ1H57O8Lj1xGr7RrlcyQswJnMWH2YBvzGlbC48TWLxxYuMK0
+         v0l6gY4zTEqDqYGdTDvmwtI6WiGLNOU0G7IKUOcLGFhVSmxN6SqJ+2BsF2idosIeWKmz
+         crDF3NuLTobI1awB5Y4OeNEjepu6OCNa61gBdjlKtFpfXfJVHhJ4PGcLo5/9DYXgAXb0
+         Z2ZQ==
+X-Gm-Message-State: AOAM5337q7xcCEyR7vSnJ8B3/g8iVLYAARiduTUDwaSupUuRcIxtseLW
+        MVku0J7Rb2q7lP+9yJMQEMM=
+X-Google-Smtp-Source: ABdhPJwUEKtnIPwRGnHBP1N66CPbwnE0w6NqQ4CT37se67Ch93WGWuqy3wQmIMbFdCQQhx/8Ir+Q4g==
+X-Received: by 2002:a05:6512:230b:: with SMTP id o11mr13961981lfu.292.1627313424007;
+        Mon, 26 Jul 2021 08:30:24 -0700 (PDT)
 Received: from localhost.localdomain ([46.61.204.59])
-        by smtp.gmail.com with ESMTPSA id r201sm30165lff.179.2021.07.26.08.29.52
+        by smtp.gmail.com with ESMTPSA id f10sm31408lfk.84.2021.07.26.08.30.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 08:29:53 -0700 (PDT)
+        Mon, 26 Jul 2021 08:30:23 -0700 (PDT)
 From:   Pavel Skripkin <paskripkin@gmail.com>
 To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
         socketcan@hartkopp.net, mailhol.vincent@wanadoo.fr,
-        b.krumboeck@gmail.com, haas@ems-wuensche.com, Stefan.Maetje@esd.eu,
-        matthias.fuchs@esd.eu
+        b.krumboeck@gmail.com
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 0/3] can: fix same memory leaks in can drivers
-Date:   Mon, 26 Jul 2021 18:29:38 +0300
-Message-Id: <cover.1627311383.git.paskripkin@gmail.com>
+Subject: [PATCH 1/3] can: usb_8dev: fix memory leak
+Date:   Mon, 26 Jul 2021 18:30:18 +0300
+Message-Id: <57ea53a8ba4687fd75045edb89489ca2a8ba4d60.1627311383.git.paskripkin@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1627311383.git.paskripkin@gmail.com>
+References: <cover.1627311383.git.paskripkin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Marc and can drivers maintainers/reviewers!
+In usb_8dev_start() MAX_RX_URBS coherent buffers are allocated and there
+is nothing, that frees them:
 
-A long time ago syzbot reported memory leak in mcba_usb can driver[1]. It was
-using strange pattern for allocating coherent buffers, which was leading to
-memory leaks. Yesterday I got a report, that mcba_usb stopped working since my commit.
-I came up with quick fix and all started working well.
+1) In callback function the urb is resubmitted and that's all
+2) In disconnect function urbs are simply killed, but URB_FREE_BUFFER
+   is not set (see usb_8dev_start) and this flag cannot be used with
+   coherent buffers.
 
-There are at least 3 more drivers with this pattern, I decided to fix leaks
-in them too, since code is actually the same (I guess, driver authors just copy pasted
-code parts). Each of following patches is combination of 91c02557174b
-("can: mcba_usb: fix memory leak in mcba_usb") and my yesterday fix [2].
+So, all allocated buffers should be freed with usb_free_coherent()
+explicitly.
 
+Side note: This code looks like a copy-paste of other can drivers.
+The same patch was applied to mcba_usb driver and it works nice
+with real hardware. There is no change in functionality, only clean-up
+code for coherent buffers
 
-Dear maintainers/reviewers, if You have one of these hardware pieces, please, test
-these patches and report any errors you will find.
-
-[1] https://syzkaller.appspot.com/bug?id=c94c1c23e829d5ac97995d51219f0c5a0cd1fa54
-[2] https://lore.kernel.org/netdev/20210725103630.23864-1-paskripkin@gmail.com/
-
-
-With regards,
-Pavel Skripkin
-
-Pavel Skripkin (3):
-  can: usb_8dev: fix memory leak
-  can: ems_usb: fix memory leak
-  can: esd_usb2: fix memory leak
-
- drivers/net/can/usb/ems_usb.c  | 14 +++++++++++++-
- drivers/net/can/usb/esd_usb2.c | 16 +++++++++++++++-
+Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
  drivers/net/can/usb/usb_8dev.c | 15 +++++++++++++--
- 3 files changed, 41 insertions(+), 4 deletions(-)
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
+index b6e7ef0d5bc6..d1b83bd1b3cb 100644
+--- a/drivers/net/can/usb/usb_8dev.c
++++ b/drivers/net/can/usb/usb_8dev.c
+@@ -137,7 +137,8 @@ struct usb_8dev_priv {
+ 	u8 *cmd_msg_buffer;
+ 
+ 	struct mutex usb_8dev_cmd_lock;
+-
++	void *rxbuf[MAX_RX_URBS];
++	dma_addr_t rxbuf_dma[MAX_RX_URBS];
+ };
+ 
+ /* tx frame */
+@@ -733,6 +734,7 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
+ 	for (i = 0; i < MAX_RX_URBS; i++) {
+ 		struct urb *urb = NULL;
+ 		u8 *buf;
++		dma_addr_t buf_dma;
+ 
+ 		/* create a URB, and a buffer for it */
+ 		urb = usb_alloc_urb(0, GFP_KERNEL);
+@@ -742,7 +744,7 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
+ 		}
+ 
+ 		buf = usb_alloc_coherent(priv->udev, RX_BUFFER_SIZE, GFP_KERNEL,
+-					 &urb->transfer_dma);
++					 &buf_dma);
+ 		if (!buf) {
+ 			netdev_err(netdev, "No memory left for USB buffer\n");
+ 			usb_free_urb(urb);
+@@ -750,6 +752,8 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
+ 			break;
+ 		}
+ 
++		urb->transfer_dma = buf_dma;
++
+ 		usb_fill_bulk_urb(urb, priv->udev,
+ 				  usb_rcvbulkpipe(priv->udev,
+ 						  USB_8DEV_ENDP_DATA_RX),
+@@ -767,6 +771,9 @@ static int usb_8dev_start(struct usb_8dev_priv *priv)
+ 			break;
+ 		}
+ 
++		priv->rxbuf[i] = buf;
++		priv->rxbuf_dma[i] = buf_dma;
++
+ 		/* Drop reference, USB core will take care of freeing it */
+ 		usb_free_urb(urb);
+ 	}
+@@ -836,6 +843,10 @@ static void unlink_all_urbs(struct usb_8dev_priv *priv)
+ 
+ 	usb_kill_anchored_urbs(&priv->rx_submitted);
+ 
++	for (i = 0; i < MAX_RX_URBS; ++i)
++		usb_free_coherent(priv->udev, RX_BUFFER_SIZE,
++				  priv->rxbuf[i], priv->rxbuf_dma[i]);
++
+ 	usb_kill_anchored_urbs(&priv->tx_submitted);
+ 	atomic_set(&priv->active_tx_urbs, 0);
+ 
 -- 
 2.32.0
 
