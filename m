@@ -2,142 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEFC03D5858
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C72823D585C
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:14:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233279AbhGZKbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 06:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232375AbhGZKbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 06:31:17 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0493C061757;
-        Mon, 26 Jul 2021 04:11:45 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id r17so14750758lfe.2;
-        Mon, 26 Jul 2021 04:11:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n6bJSXqmcuKJfAgVqQXN6el/oURcZ0UU9SDbTUMNCAM=;
-        b=g0xMMZ/KPNpXWtAf3Vg1zFQ0eLd6TQvlY3jGoDtGSvZsBNagZf8KHfo3ktl6kgkENs
-         OMCazNSxkroLdVQONm97uoPloWGucMNkqcQ3MUaNVv6oAO7JRsI8jx+IB7reM2R4e5+l
-         7OxQsX4wUVvpU5ndlams6jhHu+YyMtRCFEn7qWupmUz9IleoQvxRtALdr9Z++fiaxGEd
-         Uz1b+INwfoyN9B6y2vbuAVma+AYt0kyk91IaprJIRS7qokct3U15VuNL/dxP3Eeftixg
-         Av8hLhGU66i8wMkQg3NamgOLeCcTgVNdZGlBdfWI5CgnQnS1eeVnwfEEIy7X5VRouUDF
-         eAaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n6bJSXqmcuKJfAgVqQXN6el/oURcZ0UU9SDbTUMNCAM=;
-        b=COQt/Il8QFhDmtzVJQ4tx09ICdujUMCyZLI/OiCqunRfbJ/cSrMguImwKuxrZRSz+P
-         6nwS5Wcs8q+Ritmns+lvnbj7jeXrzjKaYr4YcCW9bS3pL/vWV0WO9cHsHXgwadGr+wYe
-         LKCZ5i2P+/4CKuC1OFd86x0+GngZ6LaDBvqPm6qha7VvV0dm/gbOkYKl0xX+boAlqZcq
-         gixpwUxp5cKUNWwOFYxHyvWEri/HG4bv1ptOr466E0OsWpfnVzTiDc/f4ZjKzE4s88aY
-         YBB59CbwbmA8J6JdWDOIVGqRg7yP0CXq56NaG2SDFBN9CN6KkgkYbhnsOxGYY7cG8SDE
-         nKRQ==
-X-Gm-Message-State: AOAM532pRju4p17zOz8U5qSEIABcFfzrbR1vAssOED9UCzV9LwMsErfm
-        z1LgAN9K9CchUdDx9hD6UOk=
-X-Google-Smtp-Source: ABdhPJzdwv+HmcbqytJU0HH8+7k/WPlg+x1ObKdecgnmut1qbxCfWJ5Gg57D3WDolyh9m7MNNn/hRg==
-X-Received: by 2002:ac2:52b4:: with SMTP id r20mr13193991lfm.104.1627297903256;
-        Mon, 26 Jul 2021 04:11:43 -0700 (PDT)
-Received: from localhost.localdomain ([46.61.204.59])
-        by smtp.gmail.com with ESMTPSA id bt12sm2450642lfb.14.2021.07.26.04.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 04:11:43 -0700 (PDT)
-Date:   Mon, 26 Jul 2021 14:11:40 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     paul@paul-moore.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/2] net: cipso: fix warnings in netlbl_cipsov4_add_std
-Message-ID: <20210726141140.24e8db78@gmail.com>
-In-Reply-To: <53de0ccd1aa3fffa6bce2a2ae7a5ca07e0af6d3a.1625900431.git.paskripkin@gmail.com>
-References: <cover.1625900431.git.paskripkin@gmail.com>
-        <53de0ccd1aa3fffa6bce2a2ae7a5ca07e0af6d3a.1625900431.git.paskripkin@gmail.com>
-X-Mailer: Claws Mail 3.17.8git77 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+        id S233194AbhGZKdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 06:33:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57340 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232572AbhGZKdl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 06:33:41 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7990160184;
+        Mon, 26 Jul 2021 11:14:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627298050;
+        bh=W9GU23h8JqXuVx3Zrr0eWbRa095s4Id54sN23YORlwE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F0LtcUN6j3/ABTB8fiFXu5VbY6sb7K+qhs/msGmUFewk3CxJJh3DdwXAlJGUUUoOp
+         fb55z/YcSBLqTwXklrRL52SslhkYY0ip+Gw7L7cPLn9xZZauK4F/nDlYxsVn7HaoBy
+         0Ak5IKZecIyxRsG+57xGmtlq+ssoH/36wwRTFs6c=
+Date:   Mon, 26 Jul 2021 13:14:02 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Hayes Wang <hayeswang@realtek.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH net-next RESEND 2/2] r8152: separate the r8152.c into
+ r8152_main.c and r8152_fw.c
+Message-ID: <YP6Y+i5VzZOJjoW7@kroah.com>
+References: <1394712342-15778-368-Taiwan-albertk@realtek.com>
+ <1394712342-15778-371-Taiwan-albertk@realtek.com>
+ <1394712342-15778-373-Taiwan-albertk@realtek.com>
+ <YP5mFKeJsGezjdve@kroah.com>
+ <c6b44f93a5b14fbb98d4c6cb0ed2a77f@realtek.com>
+ <YP50SIgqAEyKWSpA@kroah.com>
+ <47801164b7b3406b895be1542e0ce4a2@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <47801164b7b3406b895be1542e0ce4a2@realtek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 10 Jul 2021 10:03:13 +0300
-Pavel Skripkin <paskripkin@gmail.com> wrote:
-
-> Syzbot reported warning in netlbl_cipsov4_add(). The
-> problem was in too big doi_def->map.std->lvl.local_size
-> passed to kcalloc(). Since this value comes from userpace there is
-> no need to warn if value is not correct.
+On Mon, Jul 26, 2021 at 11:09:06AM +0000, Hayes Wang wrote:
+> Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Monday, July 26, 2021 4:37 PM
+> [...]
+> > You also do other things, like renaming defines, which is not just
+> > moving code around, right?
 > 
-> The same problem may occur with other kcalloc() calls in
-> this function, so, I've added __GFP_NOWARN flag to all
-> kcalloc() calls there.
+> Yes. You are right.
+
+So resend the series and only do "one thing per patch" please.
+
+> [...]
+> > I do not know, is it really easier to find things in 3 different files
+> > instead of one?  That's up to you, but you did not say why this change
+> > is needed.
 > 
-> Reported-and-tested-by:
-> syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com Fixes:
-> 96cb8e3313c7 ("[NetLabel]: CIPSOv4 and Unlabeled packet integration")
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com> ---
->  net/netlabel/netlabel_cipso_v4.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/netlabel/netlabel_cipso_v4.c
-> b/net/netlabel/netlabel_cipso_v4.c index 4f50a64315cf..50f40943c815
-> 100644 --- a/net/netlabel/netlabel_cipso_v4.c
-> +++ b/net/netlabel/netlabel_cipso_v4.c
-> @@ -187,14 +187,14 @@ static int netlbl_cipsov4_add_std(struct
-> genl_info *info, }
->  	doi_def->map.std->lvl.local =
-> kcalloc(doi_def->map.std->lvl.local_size, sizeof(u32),
-> -					      GFP_KERNEL);
-> +					      GFP_KERNEL |
-> __GFP_NOWARN); if (doi_def->map.std->lvl.local == NULL) {
->  		ret_val = -ENOMEM;
->  		goto add_std_failure;
->  	}
->  	doi_def->map.std->lvl.cipso =
-> kcalloc(doi_def->map.std->lvl.cipso_size, sizeof(u32),
-> -					      GFP_KERNEL);
-> +					      GFP_KERNEL |
-> __GFP_NOWARN); if (doi_def->map.std->lvl.cipso == NULL) {
->  		ret_val = -ENOMEM;
->  		goto add_std_failure;
-> @@ -263,7 +263,7 @@ static int netlbl_cipsov4_add_std(struct
-> genl_info *info, doi_def->map.std->cat.local = kcalloc(
->  					      doi_def->map.std->cat.local_size,
->  					      sizeof(u32),
-> -					      GFP_KERNEL);
-> +					      GFP_KERNEL |
-> __GFP_NOWARN); if (doi_def->map.std->cat.local == NULL) {
->  			ret_val = -ENOMEM;
->  			goto add_std_failure;
-> @@ -271,7 +271,7 @@ static int netlbl_cipsov4_add_std(struct
-> genl_info *info, doi_def->map.std->cat.cipso = kcalloc(
->  					      doi_def->map.std->cat.cipso_size,
->  					      sizeof(u32),
-> -					      GFP_KERNEL);
-> +					      GFP_KERNEL |
-> __GFP_NOWARN); if (doi_def->map.std->cat.cipso == NULL) {
->  			ret_val = -ENOMEM;
->  			goto add_std_failure;
+> We support a new chip or feature with a test driver.
+> The test driver is similar with the upstream driver, except
+> the method of the firmware. After we confirm that the
+> test driver work fine, we compare the differences with
+> the upstream driver and submit patches. And the code
+> about firmware takes us more time to find out the
+> differences. Therefore, I wish to move the part of
+> the firmware out.
 
+Great, then submit the broken up driver as part of a patchset that adds
+new device support, as that makes more sense when that happens, right?
 
-Hi, net developers!
+thanks,
 
-Is this patch merged somewhere? I've checked net tree and Paul Moore
-tree on https://git.kernel.org/, but didn't find it. Did I miss it
-somewhere? If not, it's just a gentle ping :)
-
-Btw: maybe I should send it as separete patch, since 2/2 in this
-series is invalid as already in-tree?
-
-
- 
-With regards,
-Pavel Skripkin
-
+greg k-h
