@@ -2,151 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D013D58E6
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27BEE3D5952
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 14:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233709AbhGZLPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 07:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
+        id S234009AbhGZLi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 07:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233522AbhGZLPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 07:15:42 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E27C061757;
-        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id c11so11204766plg.11;
-        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Br3Rygrceikh+egpBafkuMHhS17q8AtpKYbcy30kWyk=;
-        b=X3yX6J3IcdR1vyvYidVE9wtrepuqM3yzkOdsiOh169BEiDq9tuM9R/Jc9o0jn4eFS+
-         g/PsiKVRKOVIvfjjMn/gKPt6moMCe+e0szrD4BBUtDzZK3c7X7KRw8I0zoCDDjzYBAML
-         eUUKRiFjWoyGqsYLYwcb/1hchc4O1Daq+cHNbwNzxl0bS2X4pRb1/JO0eWo4/qf6ZWtJ
-         zd4nYhiSIygMaGUJNvO8b0/Soq4wtKuAz2JMLeavZxwviVa5RUnY4eMvv36vHmthCXz1
-         neQhn608epsSE6LNB0AvTs3bW1+qz9WsH9jVmkx9MWEk4WkliRp+4zKQlaSHxiwV48fI
-         CRwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Br3Rygrceikh+egpBafkuMHhS17q8AtpKYbcy30kWyk=;
-        b=i1gxKHWTZJm83uI02RDJWpIHGmG86i0jCsWRxp5K9liPihoPmVLUfn+jcJOm4LJQLi
-         GLYUz17txWg4TITOWW5GLWjNRLlUwzU+la58DWdDsJk5fKRLScJ88nqkdYOQedbspnkE
-         t0o6weHKaYhFJxZkGz3B4UeuLRBtzeejtr752opaN5Ia5mi9NF56z2UKfmjyZ7NkDR+o
-         +Smq9e7l0sHix09An4cQOoz1/FfACYYar7bqHkfOCo5/mmMOKg0Z4y6mYiy9RA1JZe9Q
-         v08KqtlmWiXbe9O1qbGUuDQ0GzsWs4Y39AEDlC1RgBBmPtTMDgdlHqlNzkRg1fKddFXD
-         iePg==
-X-Gm-Message-State: AOAM532yV2FacQGkufocnjaPhj2kGUYAarInMdpA4FDg9RdxKY2Jdloz
-        kb6nXVTfzkREV40e8TX8XpQ=
-X-Google-Smtp-Source: ABdhPJwDN5wtGtCN3P4WD8+NZSNySaC38fQiBrQXnw2ubEtNTrcgJ8YyT5qEIZc9o+TG1TONyE5Wvg==
-X-Received: by 2002:a63:2bcf:: with SMTP id r198mr7687025pgr.373.1627300571013;
-        Mon, 26 Jul 2021 04:56:11 -0700 (PDT)
-Received: from localhost.localdomain ([154.16.166.171])
-        by smtp.gmail.com with ESMTPSA id b22sm13720541pjq.37.2021.07.26.04.56.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 04:56:10 -0700 (PDT)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S233972AbhGZLi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 07:38:28 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD140C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 05:18:55 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m7zZN-0004Av-So; Mon, 26 Jul 2021 14:18:53 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m7zZL-0006RE-Nm; Mon, 26 Jul 2021 14:18:51 +0200
+Date:   Mon, 26 Jul 2021 14:18:51 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Dan Murphy <dmurphy@ti.com>, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Luis R. Rodriguez" <lrodriguez@atheros.com>,
-        "John W. Linville" <linville@tuxdriver.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: wireless: move the deallocation of regulatory domain to wiphy_free
-Date:   Mon, 26 Jul 2021 19:55:53 +0800
-Message-Id: <20210726115554.2258657-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v1 1/1] net: phy: dp83td510: Add basic support
+ for the DP83TD510 Ethernet PHY
+Message-ID: <20210726121851.u3flif2opshwgz5e@pengutronix.de>
+References: <20210723104218.25361-1-o.rempel@pengutronix.de>
+ <YPrCiIz7baU26kLU@lunn.ch>
+ <20210723170848.lh3l62l7spcyphly@pengutronix.de>
+ <YPsGddTXtk/Hinmp@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YPsGddTXtk/Hinmp@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 20:57:42 up 233 days,  9:04, 26 users,  load average: 0.04, 0.04,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If wiphy_register fails or does not get called, which leads to
-that, ieee80211_register_hw returns with an error. Then the error
-handling code of mac80211_hwsim_new_radio does not free wiphy->regd.
-Note that, the free stack trace of wiphy->regd is as follows:
+Hi Andrew,
 
-ieee80211_unregister_hw()
-  -> wiphy_unregister()
-    -> wiphy_regulatory_deregister()
-      -> rcu_free_regdom()
+On Fri, Jul 23, 2021 at 08:12:05PM +0200, Andrew Lunn wrote:
+> On Fri, Jul 23, 2021 at 07:08:49PM +0200, Oleksij Rempel wrote:
+> > Hi Andrew,
+> > 
+> > On Fri, Jul 23, 2021 at 03:22:16PM +0200, Andrew Lunn wrote:
+> > > On Fri, Jul 23, 2021 at 12:42:18PM +0200, Oleksij Rempel wrote:
+> > > > The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
+> > > > that supports 10M single pair cable.
+> > > > 
+> > > > This driver provides basic support for this chip:
+> > > > - link status
+> > > > - autoneg can be turned off
+> > > > - master/slave can be configured to be able to work without autoneg
+> > > > 
+> > > > This driver and PHY was tested with ASIX AX88772B USB Ethernet controller.
+> > > 
+> > > Hi Oleksij
+> > > 
+> > > There were patches flying around recently for another T1L PHY which
+> > > added new link modes. Please could you work together with that patch
+> > > to set the phydev features correctly to indicate this PHY is also a
+> > > T1L, and if it support 2.4v etc.
+> > 
+> > ACK, thx. I was not able to spend enough time to investigate all needed
+> > caps, so I decided to go mainline with limited functionality first.
+> 
+> Limited functionality is fine, but what is implemented should be
+> correct. And from what i see in the patch, it is hard to know if the
+> PHYs basic features are correctly determined. What does ethtool show?
+> Is 100BaseT being offered? Half duplex?
 
-Fix this by moving the free operation of regd from wiphy_unregister to
-wiphy_free.
+With current driver ethtool with show this information:
+Settings for eth1:
+	Supported ports: [ TP	 MII ]
+	Supported link modes:   Not reported
+	Supported pause frame use: Symmetric Receive-only
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  Not reported
+	Advertised pause frame use: No
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Speed: 10Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+	master-slave cfg: unknown
+	master-slave status: unknown
+	Port: Twisted Pair
+	PHYAD: 1
+	Transceiver: external
+	MDI-X: Unknown
+	Supports Wake-on: pg
+	Wake-on: p
+        Current message level: 0x00000007 (7)
+                               drv probe link
+	Link detected: yes
 
-Reported-by: syzbot+1638e7c770eef6b6c0d0@syzkaller.appspotmail.com
-Fixes: 3e0c3ff36c4c ("cfg80211: allow multiple driver regulatory_hints()")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- net/wireless/core.c | 3 +++
- net/wireless/reg.c  | 9 +++++----
- net/wireless/reg.h  | 1 +
- 3 files changed, 9 insertions(+), 4 deletions(-)
+> > voltage depends on the end application: cable length, safety requirements. I do
+> > not see how this can be chosen only on auto negotiation. We would need proper
+> > user space interface to let user/integrator set the limits.
+> 
+> I think we are talking at cross purposes here. As far as i understand
+> T1L supports the data signals to be 2.4Vpp as well as the usual
+> 1Vpp. This is something which can be negotiated in the same way as
+> master/slave, duplex etc.
+> 
+> I suspect you are talking about the PoE aspects. That is outside the
+> scope for phylib. PoE in general is not really supported in the Linux
+> kernel, and probably needs a subsystem of its own.
 
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 03323121ca50..2cc2bdddc9e8 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -1085,6 +1085,9 @@ void cfg80211_dev_free(struct cfg80211_registered_device *rdev)
- 
- void wiphy_free(struct wiphy *wiphy)
- {
-+	rcu_free_regdom(get_wiphy_regdom(wiphy));
-+	RCU_INIT_POINTER(wiphy->regd, NULL);
-+
- 	put_device(&wiphy->dev);
- }
- EXPORT_SYMBOL(wiphy_free);
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index c2d0ff7f089f..246f882e0021 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -196,12 +196,16 @@ enum nl80211_dfs_regions reg_get_dfs_region(struct wiphy *wiphy)
- 	return regd->dfs_region;
- }
- 
--static void rcu_free_regdom(const struct ieee80211_regdomain *r)
-+/*
-+ * Free the regulatory domain associated with the wiphy
-+ */
-+void rcu_free_regdom(const struct ieee80211_regdomain *r)
- {
- 	if (!r)
- 		return;
- 	kfree_rcu((struct ieee80211_regdomain *)r, rcu_head);
- }
-+EXPORT_SYMBOL(rcu_free_regdom);
- 
- static struct regulatory_request *get_last_request(void)
- {
-@@ -4064,9 +4068,6 @@ void wiphy_regulatory_deregister(struct wiphy *wiphy)
- 	if (!reg_dev_ignore_cell_hint(wiphy))
- 		reg_num_devs_support_basehint--;
- 
--	rcu_free_regdom(get_wiphy_regdom(wiphy));
--	RCU_INIT_POINTER(wiphy->regd, NULL);
--
- 	if (lr)
- 		request_wiphy = wiphy_idx_to_wiphy(lr->wiphy_idx);
- 
-diff --git a/net/wireless/reg.h b/net/wireless/reg.h
-index f3707f729024..03de4e5ece85 100644
---- a/net/wireless/reg.h
-+++ b/net/wireless/reg.h
-@@ -32,6 +32,7 @@ bool reg_is_valid_request(const char *alpha2);
- bool is_world_regdom(const char *alpha2);
- bool reg_supported_dfs_region(enum nl80211_dfs_regions dfs_region);
- enum nl80211_dfs_regions reg_get_dfs_region(struct wiphy *wiphy);
-+void rcu_free_regdom(const struct ieee80211_regdomain *r);
- 
- int regulatory_hint_user(const char *alpha2,
- 			 enum nl80211_user_reg_hint_type user_reg_hint_type);
+No, no. I'm talking about data signals configuration (2.4Vpp/1Vpp), which
+depends on application and cable length. 1Vpp should not be used with
+cable over 200 meter and 2.4Vpp should not be used on safety critical
+applications. 
+
+Regards,
+Oleksij
 -- 
-2.25.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
