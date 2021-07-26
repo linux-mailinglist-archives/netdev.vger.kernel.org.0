@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B60163D5B6F
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D843D5B65
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234863AbhGZNec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 09:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
+        id S234497AbhGZNeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 09:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234877AbhGZNdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:33:46 -0400
+        with ESMTP id S234833AbhGZNde (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:33:34 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0643CC061A14
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:12:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5B2C0619EF
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:12:48 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1m81Ld-0002VW-BM
-        for netdev@vger.kernel.org; Mon, 26 Jul 2021 16:12:49 +0200
+        id 1m81La-0002Qq-II
+        for netdev@vger.kernel.org; Mon, 26 Jul 2021 16:12:46 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 00EF16582F8
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:12:29 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 5AB806582DE
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:12:27 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 72930658211;
-        Mon, 26 Jul 2021 14:12:05 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4C2B0658219;
+        Mon, 26 Jul 2021 14:12:06 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 52d528fc;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id cfe6ba4d;
         Mon, 26 Jul 2021 14:11:46 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 37/46] can: peak_usb: pcan_usb_decode_error(): upgrade handling of bus state changes
-Date:   Mon, 26 Jul 2021 16:11:35 +0200
-Message-Id: <20210726141144.862529-38-mkl@pengutronix.de>
+Subject: [PATCH net-next 38/46] can: etas_es58x: fix three typos in author name and documentation
+Date:   Mon, 26 Jul 2021 16:11:36 +0200
+Message-Id: <20210726141144.862529-39-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210726141144.862529-1-mkl@pengutronix.de>
 References: <20210726141144.862529-1-mkl@pengutronix.de>
@@ -54,215 +54,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephane Grosjean <s.grosjean@peak-system.com>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-This patch updates old code by using the can_change_state() function
-published since by the socket-can module.
+Change the author name from "lastname firstname" to "firstname
+lastname".
 
-In particular, this new code better manages the change of bus state by
-also using the value of the error counters that the driver now
-systematically asks for when initializing the channel.
+Fix a typo in a variable name in the documentation of struct
+es58x_parameters::fifo_mask.
 
-Link: https://lore.kernel.org/r/20210715142842.35793-1-s.grosjean@peak-system.com
-Signed-off-by: Stephane Grosjean <s.grosjean@peak-system.com>
+Fix a typo in the title of the datasheet (E701 -> E70) and re-indent
+the comments.
+
+Link: https://lore.kernel.org/r/20210628155420.1176217-2-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/usb/peak_usb/pcan_usb.c | 166 ++++++------------------
- 1 file changed, 43 insertions(+), 123 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_core.c |  2 +-
+ drivers/net/can/usb/etas_es58x/es58x_core.h |  2 +-
+ drivers/net/can/usb/etas_es58x/es58x_fd.c   | 16 ++++++++--------
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index fea44e33c3dd..e36e60c3703a 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -452,145 +452,65 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
- {
- 	struct sk_buff *skb;
- 	struct can_frame *cf;
--	enum can_state new_state;
-+	enum can_state new_state = CAN_STATE_ERROR_ACTIVE;
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
+index 8e9102482c52..4758f793627a 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
+@@ -19,7 +19,7 @@
+ #include "es58x_core.h"
  
- 	/* ignore this error until 1st ts received */
- 	if (n == PCAN_USB_ERROR_QOVR)
- 		if (!mc->pdev->time_ref.tick_count)
- 			return 0;
+ #define DRV_VERSION "1.00"
+-MODULE_AUTHOR("Mailhol Vincent <mailhol.vincent@wanadoo.fr>");
++MODULE_AUTHOR("Vincent Mailhol <mailhol.vincent@wanadoo.fr>");
+ MODULE_AUTHOR("Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>");
+ MODULE_DESCRIPTION("Socket CAN driver for ETAS ES58X USB adapters");
+ MODULE_VERSION(DRV_VERSION);
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
+index fcf219e727bf..826a15871573 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_core.h
++++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
+@@ -287,7 +287,7 @@ struct es58x_priv {
+  * @rx_urb_cmd_max_len: Maximum length of a RX URB command.
+  * @fifo_mask: Bit mask to quickly convert the tx_tail and tx_head
+  *	field of the struct es58x_priv into echo_skb
+- *	indexes. Properties: @fifo_mask = echos_skb_max - 1 where
++ *	indexes. Properties: @fifo_mask = echo_skb_max - 1 where
+  *	echo_skb_max must be a power of two. Also, echo_skb_max must
+  *	not exceed the maximum size of the device internal TX FIFO
+  *	length. This parameter is used to control the network queue
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index 1a2779d383a4..e8a77d136165 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -463,9 +463,9 @@ static int es58x_fd_get_timestamp(struct es58x_device *es58x_dev)
+ }
  
--	new_state = mc->pdev->dev.can.state;
--
--	switch (mc->pdev->dev.can.state) {
--	case CAN_STATE_ERROR_ACTIVE:
--		if (n & PCAN_USB_ERROR_BUS_LIGHT) {
--			new_state = CAN_STATE_ERROR_WARNING;
--			break;
--		}
--		fallthrough;
--
--	case CAN_STATE_ERROR_WARNING:
--		if (n & PCAN_USB_ERROR_BUS_HEAVY) {
--			new_state = CAN_STATE_ERROR_PASSIVE;
--			break;
--		}
--		if (n & PCAN_USB_ERROR_BUS_OFF) {
--			new_state = CAN_STATE_BUS_OFF;
--			break;
--		}
--		if (n & ~PCAN_USB_ERROR_BUS) {
--			/*
--			 * trick to bypass next comparison and process other
--			 * errors
--			 */
--			new_state = CAN_STATE_MAX;
--			break;
--		}
--		if ((n & PCAN_USB_ERROR_BUS_LIGHT) == 0) {
--			/* no error (back to active state) */
--			new_state = CAN_STATE_ERROR_ACTIVE;
--			break;
--		}
--		break;
--
--	case CAN_STATE_ERROR_PASSIVE:
--		if (n & PCAN_USB_ERROR_BUS_OFF) {
--			new_state = CAN_STATE_BUS_OFF;
--			break;
--		}
--		if (n & PCAN_USB_ERROR_BUS_LIGHT) {
--			new_state = CAN_STATE_ERROR_WARNING;
--			break;
--		}
--		if (n & ~PCAN_USB_ERROR_BUS) {
--			/*
--			 * trick to bypass next comparison and process other
--			 * errors
--			 */
--			new_state = CAN_STATE_MAX;
--			break;
--		}
--
--		if ((n & PCAN_USB_ERROR_BUS_HEAVY) == 0) {
--			/* no error (back to warning state) */
--			new_state = CAN_STATE_ERROR_WARNING;
--			break;
--		}
--		break;
--
--	default:
--		/* do nothing waiting for restart */
--		return 0;
--	}
--
--	/* donot post any error if current state didn't change */
--	if (mc->pdev->dev.can.state == new_state)
--		return 0;
--
- 	/* allocate an skb to store the error frame */
- 	skb = alloc_can_err_skb(mc->netdev, &cf);
--	if (!skb)
--		return -ENOMEM;
--
--	switch (new_state) {
--	case CAN_STATE_BUS_OFF:
--		cf->can_id |= CAN_ERR_BUSOFF;
--		mc->pdev->dev.can.can_stats.bus_off++;
--		can_bus_off(mc->netdev);
--		break;
--
--	case CAN_STATE_ERROR_PASSIVE:
--		cf->can_id |= CAN_ERR_CRTL;
--		cf->data[1] = (mc->pdev->bec.txerr > mc->pdev->bec.rxerr) ?
--				CAN_ERR_CRTL_TX_PASSIVE :
--				CAN_ERR_CRTL_RX_PASSIVE;
--		cf->data[6] = mc->pdev->bec.txerr;
--		cf->data[7] = mc->pdev->bec.rxerr;
--
--		mc->pdev->dev.can.can_stats.error_passive++;
--		break;
--
--	case CAN_STATE_ERROR_WARNING:
--		cf->can_id |= CAN_ERR_CRTL;
--		cf->data[1] = (mc->pdev->bec.txerr > mc->pdev->bec.rxerr) ?
--				CAN_ERR_CRTL_TX_WARNING :
--				CAN_ERR_CRTL_RX_WARNING;
--		cf->data[6] = mc->pdev->bec.txerr;
--		cf->data[7] = mc->pdev->bec.rxerr;
--
--		mc->pdev->dev.can.can_stats.error_warning++;
--		break;
+ /* Nominal bittiming constants for ES582.1 and ES584.1 as specified in
+- * the microcontroller datasheet: "SAM E701/S70/V70/V71 Family"
+- * section 49.6.8 "MCAN Nominal Bit Timing and Prescaler Register"
+- * from Microchip.
++ * the microcontroller datasheet: "SAM E70/S70/V70/V71 Family" section
++ * 49.6.8 "MCAN Nominal Bit Timing and Prescaler Register" from
++ * Microchip.
+  *
+  * The values from the specification are the hardware register
+  * values. To convert them to the functional values, all ranges were
+@@ -484,8 +484,8 @@ static const struct can_bittiming_const es58x_fd_nom_bittiming_const = {
+ };
  
--	case CAN_STATE_ERROR_ACTIVE:
--		cf->can_id |= CAN_ERR_CRTL;
--		cf->data[1] = CAN_ERR_CRTL_ACTIVE;
--
--		/* sync local copies of rxerr/txerr counters */
--		mc->pdev->bec.txerr = 0;
--		mc->pdev->bec.rxerr = 0;
--		break;
--
--	default:
--		/* CAN_STATE_MAX (trick to handle other errors) */
--		if (n & PCAN_USB_ERROR_TXQFULL)
--			netdev_dbg(mc->netdev, "device Tx queue full)\n");
--
--		if (n & PCAN_USB_ERROR_RXQOVR) {
--			netdev_dbg(mc->netdev, "data overrun interrupt\n");
-+	if (n & PCAN_USB_ERROR_RXQOVR) {
-+		/* data overrun interrupt */
-+		netdev_dbg(mc->netdev, "data overrun interrupt\n");
-+		mc->netdev->stats.rx_over_errors++;
-+		mc->netdev->stats.rx_errors++;
-+		if (cf) {
- 			cf->can_id |= CAN_ERR_CRTL;
- 			cf->data[1] |= CAN_ERR_CRTL_RX_OVERFLOW;
--			mc->netdev->stats.rx_over_errors++;
--			mc->netdev->stats.rx_errors++;
- 		}
-+	}
+ /* Data bittiming constants for ES582.1 and ES584.1 as specified in
+- * the microcontroller datasheet: "SAM E701/S70/V70/V71 Family"
+- * section 49.6.4 "MCAN Data Bit Timing and Prescaler Register" from
++ * the microcontroller datasheet: "SAM E70/S70/V70/V71 Family" section
++ * 49.6.4 "MCAN Data Bit Timing and Prescaler Register" from
+  * Microchip.
+  */
+ static const struct can_bittiming_const es58x_fd_data_bittiming_const = {
+@@ -501,9 +501,9 @@ static const struct can_bittiming_const es58x_fd_data_bittiming_const = {
+ };
  
--		cf->data[6] = mc->pdev->bec.txerr;
--		cf->data[7] = mc->pdev->bec.rxerr;
-+	if (n & PCAN_USB_ERROR_TXQFULL)
-+		netdev_dbg(mc->netdev, "device Tx queue full)\n");
- 
--		new_state = mc->pdev->dev.can.state;
--		break;
-+	if (n & PCAN_USB_ERROR_BUS_OFF) {
-+		new_state = CAN_STATE_BUS_OFF;
-+	} else if (n & PCAN_USB_ERROR_BUS_HEAVY) {
-+		new_state = ((mc->pdev->bec.txerr >= 128) ||
-+			     (mc->pdev->bec.rxerr >= 128)) ?
-+				CAN_STATE_ERROR_PASSIVE :
-+				CAN_STATE_ERROR_WARNING;
-+	} else {
-+		new_state = CAN_STATE_ERROR_ACTIVE;
- 	}
- 
--	mc->pdev->dev.can.state = new_state;
-+	/* handle change of state */
-+	if (new_state != mc->pdev->dev.can.state) {
-+		enum can_state tx_state =
-+			(mc->pdev->bec.txerr >= mc->pdev->bec.rxerr) ?
-+				new_state : 0;
-+		enum can_state rx_state =
-+			(mc->pdev->bec.txerr <= mc->pdev->bec.rxerr) ?
-+				new_state : 0;
-+
-+		can_change_state(mc->netdev, cf, tx_state, rx_state);
-+
-+		if (new_state == CAN_STATE_BUS_OFF) {
-+			can_bus_off(mc->netdev);
-+		} else if (cf && (cf->can_id & CAN_ERR_CRTL)) {
-+			/* Supply TX/RX error counters in case of
-+			 * controller error.
-+			 */
-+			cf->data[6] = mc->pdev->bec.txerr;
-+			cf->data[7] = mc->pdev->bec.rxerr;
-+		}
-+	}
-+
-+	if (!skb)
-+		return -ENOMEM;
- 
- 	if (status_len & PCAN_USB_STATUSLEN_TIMESTAMP) {
- 		struct skb_shared_hwtstamps *hwts = skb_hwtstamps(skb);
+ /* Transmission Delay Compensation constants for ES582.1 and ES584.1
+- * as specified in the microcontroller datasheet: "SAM
+- * E701/S70/V70/V71 Family" section 49.6.15 "MCAN Transmitter Delay
+- * Compensation Register" from Microchip.
++ * as specified in the microcontroller datasheet: "SAM E70/S70/V70/V71
++ * Family" section 49.6.15 "MCAN Transmitter Delay Compensation
++ * Register" from Microchip.
+  */
+ static const struct can_tdc_const es58x_tdc_const = {
+ 	.tdcv_max = 0, /* Manual mode not supported. */
 -- 
 2.30.2
 
