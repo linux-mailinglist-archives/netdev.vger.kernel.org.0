@@ -2,149 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 110613D54B0
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 09:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69AF23D5500
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 10:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbhGZHPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 03:15:04 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:59604
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231725AbhGZHPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 03:15:03 -0400
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 4E1E63F257
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:55:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627286131;
-        bh=FvaN4SdC0zxcpggC8bSxsPEztnFEL+6bxNge1diRFzQ=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=PZcRFcihiy2U7YbiB7bJ7YLh3MxqoWQxoGj8dmRLBIEd3X71wrpwHaaUXhs5BXCwc
-         jzXrYvWp5r0elxE8aapXiIzSsCWt+hTQJyur5i7Cfrcw4m7vdwiFQY01quT3QTSuax
-         TgZZ+Pa3LxGsPWWjSlBKPBbAC3gvBRkv2BZbtXh+DOE9/KIbhbkn7ZDAGCf7EmR7hY
-         Zv9e8J+9+SIYnoIDHyjcZs1EWbPrkpgsKDb6YHVQaXdNqdHurL6vRI8CE11yf0Tnte
-         t9nqkxag+ItEOM3nYBPmJ59ksZkn+PO6Bz/wl7OiH+xcV8OBXuxyC2W/E4BmBzkFTc
-         UUUuRDQoLS2Zw==
-Received: by mail-ej1-f72.google.com with SMTP id g21-20020a1709061e15b029052292d7c3b4so1816917ejj.9
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 00:55:29 -0700 (PDT)
+        id S232779AbhGZH0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 03:26:01 -0400
+Received: from mail-vs1-f48.google.com ([209.85.217.48]:37412 "EHLO
+        mail-vs1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231778AbhGZH0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 03:26:00 -0400
+Received: by mail-vs1-f48.google.com with SMTP id o8so4780526vss.4;
+        Mon, 26 Jul 2021 01:06:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FvaN4SdC0zxcpggC8bSxsPEztnFEL+6bxNge1diRFzQ=;
-        b=kZ6VLuBZ0LVrb80RORvbTjJ9e73EnpiqhSj16TWCpDods0qdcKj+iiRX3rumQaPEjo
-         MIyYku6cItONxO156aseMHdtPU0HRlQI7SfkS4Lp7y12ATdZVcxPM4hI9pyn1A0ndO4H
-         tL3ViUB9jK4ffYuhsd/rzBw8W34TrBmJkQIsrlJFdu/zJb9ZccT9wzaqu6oBNJ0iqRE/
-         Ru3H/Ax8n3Wo2KLUsYKQX2Akc3I1M2fS81rXccLYKhjP81ImbXaqEGS4gV7jx1Msp3k3
-         k2V9ww8mAr//ijor3YfRfbOGLt1AvHUsj9ITk8BRasL1qUyfwSQLY851jm1cqPL2vHRf
-         4kiA==
-X-Gm-Message-State: AOAM530WX4oYNzvBZrqmRuA1AnMhL7INrip/eSet1w+d+6p3jWyT7b7X
-        6Z3VlAYni8LK/BUxFyU3caTfO4UsQqs89rWFkvCUGZb82A40k+gcWIh2PFV7vaP16o2gHFmvjWm
-        PWkKMvLxqpyTh4zkEYEXux8108JksB5+wHA==
-X-Received: by 2002:a05:6402:b8a:: with SMTP id cf10mr19704690edb.61.1627286129510;
-        Mon, 26 Jul 2021 00:55:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzs0UmEkOvoygFFaLmTFWp2A8ytDvkEF8K93BiDtS5olNm+AVEIwQfY3opR+oXzikcn12XV+A==
-X-Received: by 2002:a05:6402:b8a:: with SMTP id cf10mr19704680edb.61.1627286129380;
-        Mon, 26 Jul 2021 00:55:29 -0700 (PDT)
-Received: from [192.168.8.102] ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id w13sm4023959ede.24.2021.07.26.00.55.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Jul 2021 00:55:29 -0700 (PDT)
-Subject: Re: [PATCH] nfc: s3fwrn5: remove unnecessary label
-To:     samirweng1979 <samirweng1979@163.com>, k.opasiak@samsung.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-References: <20210726032917.30076-1-samirweng1979@163.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <94177278-c8fe-89f3-97f0-7010078b9ba2@canonical.com>
-Date:   Mon, 26 Jul 2021 09:55:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gp9OmnOPDAt4fp1/ogFdO2jZWIyyUuaqMagtlSZFSwY=;
+        b=qfP9gAWTdhUL/pcHPJ8RgxiZOfwFG+KaIBRwXUQOBYMgY1Exa1y21xorXik3/hsYFI
+         LCbveT+AxM8yejr1teDzL6cvO1nPmFqvw+zwUmz3exHB13WUgZYXkQed8rnLr3jCSiEn
+         OuLbWS5ZaE1WdD+JN6CAW9F8GkKU5/QPnY/E3j95L0Nig+UhONFAE7C3Ws9NxqZS3rd/
+         ytlM+1KOaJkQzxAJreIUl+bZYVLTFVLx5s11s7T07fsbOgh9QDUjCgU0OobVwWH1eiUR
+         FbrJb8DvGrNFETlfgP1/T7b9jZ6/lncu677BiJIfEtAXulrP9TzDaTakzCtOfhrdqJB3
+         mWBw==
+X-Gm-Message-State: AOAM532ubxCrApLvTVzfqpTCIArDxDZGaO5/HpQdM2hlytWofSIcYpOF
+        mPJASFA2LptGzjezfBb1gTFPsj1M7xbQC9g3mXk=
+X-Google-Smtp-Source: ABdhPJwcpq4P0Ht4+tBFeDdI9JCqtFlxr0nD+WvWY/9MTNCBx1ktzOvRWPWJ+n5Ag1Z1ukKgM6WEoOw1u+zfe66J9Po=
+X-Received: by 2002:a67:3c2:: with SMTP id 185mr11218083vsd.42.1627286789226;
+ Mon, 26 Jul 2021 01:06:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210726032917.30076-1-samirweng1979@163.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210721194951.30983-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <202107251336.iD47PRoA-lkp@intel.com> <20210725094605.gzhrbunkot7ytvel@pengutronix.de>
+In-Reply-To: <20210725094605.gzhrbunkot7ytvel@pengutronix.de>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 26 Jul 2021 10:06:18 +0200
+Message-ID: <CAMuHMdUuFdc5JJfdsvFTfKPh1Z+o0iTabHLso4U6DUHRJowD6g@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] can: rcar_canfd: Add support for RZ/G2L family
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     kernel test robot <lkp@intel.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/07/2021 05:29, samirweng1979 wrote:
-> From: wengjianfeng <wengjianfeng@yulong.com>
-> 
-> Simplify the code by removing unnecessary label and returning directly.
-> 
-> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
-> ---
->  drivers/nfc/s3fwrn5/firmware.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
+Hi Marc,
 
+On Sun, Jul 25, 2021 at 11:46 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 25.07.2021 13:39:37, kernel test robot wrote:
+> > [auto build test WARNING on renesas-devel/next]
+> > [also build test WARNING on v5.14-rc2 next-20210723]
+> > [cannot apply to mkl-can-next/testing robh/for-next]
+> > [If your patch is applied to the wrong git tree, kindly drop us a note.
+> > And when submitting patch, we suggest to use '--base' as documented in
+> > https://git-scm.com/docs/git-format-patch]
+> >
+> > url:    https://github.com/0day-ci/linux/commits/Lad-Prabhakar/Renesas-RZ-G2L-CANFD-support/20210722-035332
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-devel.git next
+> > config: arm64-randconfig-r031-20210723 (attached as .config)
+> > compiler: clang version 13.0.0 (https://github.com/llvm/llvm-project 9625ca5b602616b2f5584e8a49ba93c52c141e40)
+> > reproduce (this is a W=1 build):
+> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> >         chmod +x ~/bin/make.cross
+> >         # install arm64 cross compiling tool for clang build
+> >         # apt-get install binutils-aarch64-linux-gnu
+> >         # https://github.com/0day-ci/linux/commit/082d605e73c5922419a736aa9ecd3a76c0241bf7
+> >         git remote add linux-review https://github.com/0day-ci/linux
+> >         git fetch --no-tags linux-review Lad-Prabhakar/Renesas-RZ-G2L-CANFD-support/20210722-035332
+> >         git checkout 082d605e73c5922419a736aa9ecd3a76c0241bf7
+> >         # save the attached .config to linux build tree
+> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm64
+> >
+> > If you fix the issue, kindly add following tag as appropriate
+> > Reported-by: kernel test robot <lkp@intel.com>
+> >
+> > All warnings (new ones prefixed by >>):
+> >
+> > >> drivers/net/can/rcar/rcar_canfd.c:1699:12: warning: cast to smaller integer type 'enum rcanfd_chip_id' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+> >            chip_id = (enum rcanfd_chip_id)of_device_get_match_data(&pdev->dev);
+> >                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >    1 warning generated.
+>
+> Seems we need the cast (uintptr_t), that I asked you to remove. Can you
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Bummer, I had seen your comment while reading email on my phone,
+but forgot to reply when I got back to my computer...
 
-Best regards,
-Krzysztof
+> test if
+>
+> | chip_id = (enum rcanfd_chip_id)(uintptr_t)of_device_get_match_data(&pdev->dev);
+>
+> works?
 
-> diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
-> index eb5d7a5b..1421ffd 100644
-> --- a/drivers/nfc/s3fwrn5/firmware.c
-> +++ b/drivers/nfc/s3fwrn5/firmware.c
-> @@ -421,10 +421,9 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
->  
->  	tfm = crypto_alloc_shash("sha1", 0, 0);
->  	if (IS_ERR(tfm)) {
-> -		ret = PTR_ERR(tfm);
->  		dev_err(&fw_info->ndev->nfc_dev->dev,
->  			"Cannot allocate shash (code=%d)\n", ret);
-> -		goto out;
-> +		return PTR_ERR(tfm);
->  	}
->  
->  	ret = crypto_shash_tfm_digest(tfm, fw->image, image_size, hash_data);
-> @@ -433,7 +432,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
->  	if (ret) {
->  		dev_err(&fw_info->ndev->nfc_dev->dev,
->  			"Cannot compute hash (code=%d)\n", ret);
-> -		goto out;
-> +		return ret;
->  	}
->  
->  	/* Firmware update process */
-> @@ -446,7 +445,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
->  	if (ret < 0) {
->  		dev_err(&fw_info->ndev->nfc_dev->dev,
->  			"Unable to enter update mode\n");
-> -		goto out;
-> +		return ret;
->  	}
->  
->  	for (off = 0; off < image_size; off += fw_info->sector_size) {
-> @@ -455,7 +454,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
->  		if (ret < 0) {
->  			dev_err(&fw_info->ndev->nfc_dev->dev,
->  				"Firmware update error (code=%d)\n", ret);
-> -			goto out;
-> +			return ret;
->  		}
->  	}
->  
-> @@ -463,13 +462,12 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
->  	if (ret < 0) {
->  		dev_err(&fw_info->ndev->nfc_dev->dev,
->  			"Unable to complete update mode\n");
-> -		goto out;
-> +		return ret;
->  	}
->  
->  	dev_info(&fw_info->ndev->nfc_dev->dev,
->  		"Firmware update: success\n");
->  
-> -out:
->  	return ret;
->  }
->  
-> 
+Just
+
+    chip_id = (uintptr_t)of_device_get_match_data(&pdev->dev);
+
+should be fine.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
