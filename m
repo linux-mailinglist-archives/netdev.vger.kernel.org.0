@@ -2,122 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029513D65C7
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 19:29:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F28E73D65E5
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 19:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236183AbhGZQtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 12:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
+        id S231455AbhGZQ7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 12:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235110AbhGZQtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 12:49:10 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 299E4C061798;
-        Mon, 26 Jul 2021 10:29:21 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id r17so16847690lfe.2;
-        Mon, 26 Jul 2021 10:29:21 -0700 (PDT)
+        with ESMTP id S229646AbhGZQ7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 12:59:45 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E114C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 10:40:14 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id j21so12897740ioo.6
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 10:40:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ndKq+LGDON/UckbBHbtSzNl8tCW9FVvB6He4yfXkxNE=;
-        b=YsxgKSTD9vroLSiRzpOsnVo3wM9+Mx0r4LrK++z5i3tX+lM7nSsj5Z3vsu6lZxUvv/
-         q+xT9GVTvJ8qnaUaHTHR9g1R1eLE+a/ZnPG68w4HACOceDhJWSbe6IQxsKcW32DGipNR
-         r4BcKujtBuXwYE1dxVHwghud5C0WMHrRWbcXegseNXHbq8bknb3PQjmrKn/rx9CjeBEw
-         5hBtqmAmvHy5NlRd7QLMdKGvtxm0f4jWLqdqlKKC1r/l30/CKU7m6T8ocVftlySQCOPE
-         LpU2SDZZTXzSyC5ZFssi5kS6O+ay9760WSMW+PxjlQr76QXacRdl9/fjb8pkNe+FJbsr
-         FhvA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vibDd1ZtmcJJ8CZRfex6KJyuRRDjWadOPJekQLM4f94=;
+        b=iNFNKkkNtC/iB8qo6UJAAwmjVeGa7yMXuqaoLbNb3QbmLmDoY5Ktz3tGdBtn/368rZ
+         neWGXw1baU56lh8xfWzP71w38kZSIngKSaC1JFxc1UX2pxbllSN/79rsrpL72+1cXnCX
+         MCbJoCf4tREYGdU2l52GJixqei1yEivt9Z/pq2o9EYOa++64kCURxQj51UGqdFo9RhTs
+         s5Rp82QSqZ5o5aN9OmjVqbj5SQDatkcPwlUN+1woV2BbYKWj4ONULZ0AAKjvzWesN6Li
+         5lou1bFIE9Skmu/w51L3jUzoDQziROBXrgKzhfANjxq/RhY+2y5IAVIWMd2Zd9MBskri
+         qzew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ndKq+LGDON/UckbBHbtSzNl8tCW9FVvB6He4yfXkxNE=;
-        b=V7PA48pEjicKKMDDcKBhfsz0SlHsOv7OhSBphF5z4iMnt6uY5w6ciDScAB/O2mF5wf
-         TV5nz/qVVOYRFcty6oR4V9YbMsmyD7/RZSvOKG6uaJjLEd4YzsJC021aWrYRxp7/38LP
-         DyYUHoBJlLfm/lgwOhJ0JhL9IsVlIPY0nL6c7cSF+jWKShLfsIVELytdn5fwnMnS66z6
-         +RBGguWvrg15hfrCTyZjr9dioSMaajKDFZAnbndvgc+MKLcTDmHTZBvFHEA8CKt0kyTC
-         ZWlp4hsCgBV8TqMfbAthkMENKbR3jV7NNb7OrZRDhHKp3GkrQw1auNVRLBDQYP6CC8MK
-         IvAw==
-X-Gm-Message-State: AOAM533CR6RkTlTH41JpjtdNXS4pHRPOYUaJp42sp7/Q+4puTI5RnJoy
-        Sc6rjiF4btVljLkOACkT08M=
-X-Google-Smtp-Source: ABdhPJynhVi5xWfz4QxD21z+iK+btrTFhGSenshuxDRY6e4XjYz3lHMpwXa17bNhLBrSf8tCpQkqbg==
-X-Received: by 2002:ac2:4c97:: with SMTP id d23mr13427935lfl.249.1627320559562;
-        Mon, 26 Jul 2021 10:29:19 -0700 (PDT)
-Received: from localhost.localdomain ([185.215.60.94])
-        by smtp.gmail.com with ESMTPSA id d8sm57071lfq.138.2021.07.26.10.29.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vibDd1ZtmcJJ8CZRfex6KJyuRRDjWadOPJekQLM4f94=;
+        b=YQF7H6JCYyxJoCQEigr9QYcuaf9+ctTDLWposBKgFi2KqNqgLnkVDycpWvchIrqW6v
+         kHcOp99xQ3bjSkW0EitDBasT0ck4UzSQvNA7pLTqfAiRP/TXCSsyzV6oJTNTIW0m6ZoA
+         vKK8OzXHxziYdGAu/W6WZ97dqG1PSuDJ68+eaMlKH+A7AVRrzNgoKfcPCTdsFH6KWCDg
+         Yl6qZRnB1Ww55rYzDMF8PmhNuRoHnz5UP3+21ebgK9tnCj+ESIjDvJjlIVWCpH2sONvE
+         GzpRh8HFkfi2hVVL9ETJR88aoh/pDGFlFokuyqQsk7MLZIYMUHDdb5EuvdC93fxhjRXx
+         TKKw==
+X-Gm-Message-State: AOAM530deqOMeK7DVtNfWWtAontY3llTRP9QmrqUhzzl3hGVQWjCBIQe
+        YKHthXFU1j+bCNIL88hTwhhQJA==
+X-Google-Smtp-Source: ABdhPJymFm+GPWr6Pa/ZdLlskZYnKViV4V5iWZbBXr61SmCciFfAO47JZDFIAUt/InV7dAAiuiZpcw==
+X-Received: by 2002:a05:6638:264e:: with SMTP id n14mr17521329jat.71.1627321213817;
+        Mon, 26 Jul 2021 10:40:13 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id l4sm202721ilh.41.2021.07.26.10.40.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 10:29:19 -0700 (PDT)
-Date:   Mon, 26 Jul 2021 20:29:16 +0300
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        socketcan@hartkopp.net, mailhol.vincent@wanadoo.fr,
-        b.krumboeck@gmail.com, haas@ems-wuensche.com, Stefan.Maetje@esd.eu,
-        matthias.fuchs@esd.eu
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] can: fix same memory leaks in can drivers
-Message-ID: <20210726202916.5945e3d9@gmail.com>
-In-Reply-To: <cover.1627311383.git.paskripkin@gmail.com>
-References: <cover.1627311383.git.paskripkin@gmail.com>
-X-Mailer: Claws Mail 3.17.8git77 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
+        Mon, 26 Jul 2021 10:40:13 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     leon@kernel.org, bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: ipa: kill IPA_VALIDATION
+Date:   Mon, 26 Jul 2021 12:40:06 -0500
+Message-Id: <20210726174010.396765-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Jul 2021 18:29:38 +0300
-Pavel Skripkin <paskripkin@gmail.com> wrote:
+A few months ago I proposed cleaning up some code that validates
+certain things conditionally, arguing that doing so once is enough,
+thus doing so always should not be necessary.
+  https://lore.kernel.org/netdev/20210320141729.1956732-1-elder@linaro.org/
+Leon Romanovsky felt strongly that this was a mistake, and in the
+end I agreed to change my plans.
 
-> Hi, Marc and can drivers maintainers/reviewers!
-> 
+This series finally completes what I said I would do about this,
+ultimately eliminating the IPA_VALIDATION symbol and conditional
+code entirely.
 
-I reread this I found out, that I missed logic here.
+The first patch both extends and simplifies some validation done for
+IPA immediate commands, and performs those tests unconditionally.
 
-I mean:
+The second patch fixes a bug that wasn't normally exposed because of
+the conditional compilation (a reason Leon was right about this).
+It makes filter and routing table validation occur unconditionally.
 
-> A long time ago syzbot reported memory leak in mcba_usb can
-> driver[1]. It was using strange pattern for allocating coherent
-> buffers, which was leading to memory leaks.
+The third eliminates the remaining conditionally-defined code and
+removes the line in the Makefile used to enable validation.
 
-I fixed this wrong pattern in mcba_usb driver and 
+And the fourth removes all comments containing ipa_assert()
+statements, replacing most of them with WARN_ON() calls.
 
-> Yesterday I got a report,
-> that mcba_usb stopped working since my commit. I came up with quick
-> fix and all started working well.
-> 
-> There are at least 3 more drivers with this pattern, I decided to fix
-> leaks in them too, since code is actually the same (I guess, driver
-> authors just copy pasted code parts). Each of following patches is
-> combination of 91c02557174b ("can: mcba_usb: fix memory leak in
-> mcba_usb") and my yesterday fix [2].
-> 
-> 
-> Dear maintainers/reviewers, if You have one of these hardware pieces,
-> please, test these patches and report any errors you will find.
-> 
-> [1]
-> https://syzkaller.appspot.com/bug?id=c94c1c23e829d5ac97995d51219f0c5a0cd1fa54
-> [2]
-> https://lore.kernel.org/netdev/20210725103630.23864-1-paskripkin@gmail.com/
-> 
-> 
-> With regards,
-> Pavel Skripkin
-> 
-> Pavel Skripkin (3):
->   can: usb_8dev: fix memory leak
->   can: ems_usb: fix memory leak
->   can: esd_usb2: fix memory leak
-> 
->  drivers/net/can/usb/ems_usb.c  | 14 +++++++++++++-
->  drivers/net/can/usb/esd_usb2.c | 16 +++++++++++++++-
->  drivers/net/can/usb/usb_8dev.c | 15 +++++++++++++--
->  3 files changed, 41 insertions(+), 4 deletions(-)
-> 
+					-Alex
 
+Alex Elder (4):
+  net: ipa: fix ipa_cmd_table_valid()
+  net: ipa: always validate filter and route tables
+  net: ipa: kill the remaining conditional validation code
+  net: ipa: use WARN_ON() rather than assertions
 
+ drivers/net/ipa/Makefile        |  3 --
+ drivers/net/ipa/gsi.c           |  2 --
+ drivers/net/ipa/gsi_trans.c     | 34 +++++++++++-----------
+ drivers/net/ipa/ipa_cmd.c       | 51 +++++++++++++++++++--------------
+ drivers/net/ipa/ipa_cmd.h       | 22 +-------------
+ drivers/net/ipa/ipa_endpoint.c  | 26 ++++++++++-------
+ drivers/net/ipa/ipa_interrupt.c |  8 ++++--
+ drivers/net/ipa/ipa_main.c      |  7 +----
+ drivers/net/ipa/ipa_reg.h       | 12 ++++----
+ drivers/net/ipa/ipa_resource.c  |  3 +-
+ drivers/net/ipa/ipa_table.c     | 40 ++++++++++++--------------
+ drivers/net/ipa/ipa_table.h     | 16 -----------
+ 12 files changed, 96 insertions(+), 128 deletions(-)
 
-With regards,
-Pavel Skripkin
+-- 
+2.27.0
+
