@@ -2,155 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3FA3D5D07
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 17:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DB73D5D2B
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 17:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235142AbhGZOui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 10:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234766AbhGZOuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 10:50:37 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF15BC061764;
-        Mon, 26 Jul 2021 08:31:05 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id l4so11769082ljq.4;
-        Mon, 26 Jul 2021 08:31:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O/A0BOjIm3z4R6uvHm/L/KPzVr+aE6zy1njqB67lKvI=;
-        b=matyVmWB9x6rQG2ibSGAIqTE9ZYLQxC9cofwJ/WSe5eMlOYJwApNSHUmN7ob/QmYzZ
-         Zf4L+DLxYLSi9IP1/fTFN4Fvq9Dj3oA+q0TtLk/nLV0AvbVnB+mAGIy+OHxU54Slrx+5
-         4ZYOazlPl8hjBfZssrtpKqBcCapV1xll7BQc1wop35z2WespNpYdz9TluRWJJjWzotWa
-         NGIj6PaQmywdRyZjC+FlH/VG49fqnXPxXBbRCqH01kHT06NBAA/wjodIybcv8agXZ1ZM
-         O0y9Nk6YQFO7ZlALrVxDcq5jw/mpNKc0h+VJCrVEMf6uPp4Piex61RFZDLuNp9x/EZGI
-         6T7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O/A0BOjIm3z4R6uvHm/L/KPzVr+aE6zy1njqB67lKvI=;
-        b=RzY4rOqShocaHMvYtEVKBgL7k+B6EgODFGYHQetzfBnT3FxXXn6fNNDCSl3cP1TCGn
-         S+n6ygPrt9LP2myW6ehVBFlmiWVWdCMBgsBPQ4yLscuC4KPfYDrQsw4lgSYlS69xohRP
-         8i9tJbZpIOdmgaNi+Vii4AhLx98MqS0KAc4o3jKGPm3kxCPwkVKHjS5/joJd9iDc6Zcd
-         mv/EaIzta3AHXuGOxhRCyI8Bvc0jFfqdM4MbOIUFliAYAMwt/GTkBpgWf51hhZeIiL9R
-         GrdeD8S3Ew0oO3o2FAbMOH+gK+67KXTdYupLjzGvl454DYxkytfG7JIoXHwQZ1ngYKhC
-         PXHg==
-X-Gm-Message-State: AOAM5326vR7PTbyHVnbswpTvF7I65qJEbICIcZCm80pqsRB6WMqlmBf6
-        Orn5ZizhakEoNhtcGYBY93c=
-X-Google-Smtp-Source: ABdhPJwda2EQ55vKJ2lD86vBnBC1lEUgq1+UiH+MLlPORmQWoyKNNldrmwI2osCgdCO8uvMd8rCIGQ==
-X-Received: by 2002:a2e:a90b:: with SMTP id j11mr12663613ljq.338.1627313464111;
-        Mon, 26 Jul 2021 08:31:04 -0700 (PDT)
-Received: from localhost.localdomain ([46.61.204.59])
-        by smtp.gmail.com with ESMTPSA id m11sm2623lji.8.2021.07.26.08.31.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 08:31:03 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        socketcan@hartkopp.net, mailhol.vincent@wanadoo.fr,
-        Stefan.Maetje@esd.eu, matthias.fuchs@esd.eu
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>
-Subject: [PATCH 3/3] can: esd_usb2: fix memory leak
-Date:   Mon, 26 Jul 2021 18:31:01 +0300
-Message-Id: <a6ccf6adbcfeaad8c4ed24e94c50b2dd3db57c15.1627311383.git.paskripkin@gmail.com>
+        id S235062AbhGZO6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 10:58:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37946 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234828AbhGZO57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 10:57:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4A83660E08;
+        Mon, 26 Jul 2021 15:38:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627313907;
+        bh=01/JO6usR+VPk1oBGw6nYtyQUuT9bYjtw/c5SW8nOK4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PFAUZxnu/BSpW1blskUPPm10wnLnVLm5oFycXdoYiCumvF+Wa7C9IYuzIILk6t+f1
+         fbW29/B+MB6XR6cL60TmpuIRUg3JTpYjDKu6xb11MwEmbBKNTAF/AK0BQgUYiIvitu
+         5226mZb3LEPQ81IyObgs52WCoGh+YLm7tM0q9m3M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        Miklos Szeredi <mszeredi@redhat.com>, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH net] af_unix: fix garbage collect vs. MSG_PEEK
+Date:   Mon, 26 Jul 2021 17:36:21 +0200
+Message-Id: <20210726153621.2658658-1-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1627311383.git.paskripkin@gmail.com>
-References: <cover.1627311383.git.paskripkin@gmail.com>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2514; i=gregkh@linuxfoundation.org; h=from:subject; bh=bz3syxy3B1km/gtEPYOzOd3gBFTVjESC3kq691QUQek=; b=owGbwMvMwCRo6H6F97bub03G02pJDAn/rmXbKGUkriuZuN5O4OM5KU6hg2/F2msydtkl5xxbO++y j7lgRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAExE7wfDHM5lZwSZnUx376y9IBnCwS 18UbjgPMOC+f8ZPtkdPCn4YsV/174ZVztnCHf0AQA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In esd_usb2_setup_rx_urbs() MAX_RX_URBS coherent buffers are
-allocated and there is nothing, that frees them:
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-1) In callback function the urb is resubmitted and that's all
-2) In disconnect function urbs are simply killed, but URB_FREE_BUFFER
-   is not set (see esd_usb2_setup_rx_urbs) and this flag cannot be used
-   with coherent buffers.
+Gc assumes that in-flight sockets that don't have an external ref can't
+gain one while unix_gc_lock is held.  That is true because
+unix_notinflight() will be called before detaching fds, which takes
+unix_gc_lock.
 
-So, all allocated buffers should be freed with usb_free_coherent()
-explicitly.
+Only MSG_PEEK was somehow overlooked.  That one also clones the fds, also
+keeping them in the skb.  But through MSG_PEEK an external reference can
+definitely be gained without ever touching unix_gc_lock.
 
-Side note: This code looks like a copy-paste of other can drivers.
-The same patch was applied to mcba_usb driver and it works nice
-with real hardware. There is no change in functionality, only clean-up
-code for coherent buffers
-
-Fixes: 96d8e90382dc ("can: Add driver for esd CAN-USB/2 device")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/esd_usb2.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ net/unix/af_unix.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
-index 65b58f8fc328..303560abe2b0 100644
---- a/drivers/net/can/usb/esd_usb2.c
-+++ b/drivers/net/can/usb/esd_usb2.c
-@@ -195,6 +195,8 @@ struct esd_usb2 {
- 	int net_count;
- 	u32 version;
- 	int rxinitdone;
-+	void *rxbuf[MAX_RX_URBS];
-+	dma_addr_t rxbuf_dma[MAX_RX_URBS];
- };
+Note, this is a resend of this old submission that somehow fell through
+the cracks:
+	https://lore.kernel.org/netdev/CAOssrKcfncAYsQWkfLGFgoOxAQJVT2hYVWdBA6Cw7hhO8RJ_wQ@mail.gmail.com/
+and was never submitted "properly" and this issue never seemed to get
+resolved properly.
+
+I've cleaned it up and made the change much smaller and localized to
+only one file.  I kept Miklos's authorship as he did the hard work on
+this, I just removed lines and fixed a formatting issue :)
+
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 23c92ad15c61..cdea997aa5bf 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1526,6 +1526,18 @@ static int unix_getname(struct socket *sock, struct sockaddr *uaddr, int peer)
+ 	return err;
+ }
  
- struct esd_usb2_net_priv {
-@@ -545,6 +547,7 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 	for (i = 0; i < MAX_RX_URBS; i++) {
- 		struct urb *urb = NULL;
- 		u8 *buf = NULL;
-+		dma_addr_t buf_dma;
- 
- 		/* create a URB, and a buffer for it */
- 		urb = usb_alloc_urb(0, GFP_KERNEL);
-@@ -554,7 +557,7 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 		}
- 
- 		buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL,
--					 &urb->transfer_dma);
-+					 &buf_dma);
- 		if (!buf) {
- 			dev_warn(dev->udev->dev.parent,
- 				 "No memory left for USB buffer\n");
-@@ -562,6 +565,8 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 			goto freeurb;
- 		}
- 
-+		urb->transfer_dma = buf_dma;
++static void unix_peek_fds(struct scm_cookie *scm, struct sk_buff *skb)
++{
++	scm->fp = scm_fp_dup(UNIXCB(skb).fp);
 +
- 		usb_fill_bulk_urb(urb, dev->udev,
- 				  usb_rcvbulkpipe(dev->udev, 1),
- 				  buf, RX_BUFFER_SIZE,
-@@ -574,8 +579,12 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 			usb_unanchor_urb(urb);
- 			usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf,
- 					  urb->transfer_dma);
-+			goto freeusrb;
- 		}
++	/* During garbage collection it is assumed that in-flight sockets don't
++	 * get a new external reference.  So we need to wait until current run
++	 * finishes.
++	 */
++	spin_lock(&unix_gc_lock);
++	spin_unlock(&unix_gc_lock);
++}
++
+ static int unix_scm_to_skb(struct scm_cookie *scm, struct sk_buff *skb, bool send_fds)
+ {
+ 	int err = 0;
+@@ -2175,7 +2187,7 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+ 		sk_peek_offset_fwd(sk, size);
  
-+		dev->rxbuf[i] = buf;
-+		dev->rxbuf_dma[i] = buf_dma;
-+
- freeurb:
- 		/* Drop reference, USB core will take care of freeing it */
- 		usb_free_urb(urb);
-@@ -663,6 +672,11 @@ static void unlink_all_urbs(struct esd_usb2 *dev)
- 	int i, j;
+ 		if (UNIXCB(skb).fp)
+-			scm.fp = scm_fp_dup(UNIXCB(skb).fp);
++			unix_peek_fds(&scm, skb);
+ 	}
+ 	err = (flags & MSG_TRUNC) ? skb->len - skip : size;
  
- 	usb_kill_anchored_urbs(&dev->rx_submitted);
-+
-+	for (i = 0; i < MAX_RX_URBS; ++i)
-+		usb_free_coherent(dev->udev, RX_BUFFER_SIZE,
-+				  dev->rxbuf[i], dev->rxbuf_dma[i]);
-+
- 	for (i = 0; i < dev->net_count; i++) {
- 		priv = dev->nets[i];
- 		if (priv) {
+@@ -2418,7 +2430,7 @@ static int unix_stream_read_generic(struct unix_stream_read_state *state,
+ 			/* It is questionable, see note in unix_dgram_recvmsg.
+ 			 */
+ 			if (UNIXCB(skb).fp)
+-				scm.fp = scm_fp_dup(UNIXCB(skb).fp);
++				unix_peek_fds(&scm, skb);
+ 
+ 			sk_peek_offset_fwd(sk, chunk);
+ 
 -- 
 2.32.0
 
