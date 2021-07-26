@@ -2,59 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B9C3D6814
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 22:19:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F413D6835
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 22:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233019AbhGZTjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 15:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232959AbhGZTjH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 15:39:07 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7D8C061757
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 13:19:36 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id o7-20020ac87c470000b029025f8084df09so5125024qtv.6
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 13:19:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=YZiRJCULAk0NgZWlw4NhyxwOUxRg8I5AfZi4pSeW7rI=;
-        b=oQk1seDxX4hy9rYxFNTS4Ro/4O8OjDW/nJG6LXNJQ4gEQfyB7E2Ki+yYYUKVihluxW
-         mhc4l38AX0jaJzO8qyMuIKSCGO54O2pLS1Nf0LTNJQOZKdhWC6DCxAfYbYTgGLyS84n1
-         fi8eBKB3R5lruvnoxW4nlI2YsNcVmcJsc1sn8RCxtMWbQ6kx3FotZF7Vu5DjrXyghHP0
-         bIHkLLUA+e4f5g5wqnjpLXfmnhNEpchc2rrGsHnBlshsQt8PWdpmPs/I6UkTQbBOELIS
-         Vh0UCpQNPD0OdL1XtUn4tS9qZBQb6yBwgiFyFx1Uqhgf5l1iDqaTr4xSIBGvtWcJCRQu
-         Npcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=YZiRJCULAk0NgZWlw4NhyxwOUxRg8I5AfZi4pSeW7rI=;
-        b=ImGE95kPd+V8ssxYClRe6tfl+Rgo50o42Kzy0yA0ORt3I+XTOHzrgkDLnHW4gZoA+q
-         LaBJaEdt3VPdiyz+vz5mwESagGGmclT4wSZu2fZwKIbaBQEdZTiRB+ij+4YxxxIfjR/v
-         6tvGqAsp7aJ72DcH+fiT2Teu+0KSBadvVrWjU68Vm4yKDaRLk/ttSRfVv99X0VWCPMKg
-         70DcjJf6QNWnMVNfLzKwhlAsdcIM0MJohiPOfSdqk6tIlZWxV/Xjnh6al/9Gy9eUVfTu
-         P+ma7RzSQfhm4qY0fPAqw9YzioLkS7FOMkiulDU/aUdp6oTft8YYAOTh5pRzejR+V3G9
-         7wpg==
-X-Gm-Message-State: AOAM532L+me8dGeyZp+DIuyggTFBEsS0HFdmFb+HkMDcFA5ZVMkDLzXf
-        wdFOarI2kq+4Y1yj85qnqOXOaEPm
-X-Google-Smtp-Source: ABdhPJy3LTbBOQ7NzZ8565Lly5b5AVSH3LlZs2RZM9CPhqw6+vphE/8RaBXr21HOSoDuH7z/OqsDJOe0gw==
-X-Received: from fawn.svl.corp.google.com ([2620:15c:2cd:202:ccf7:db54:b9d7:814f])
- (user=morbo job=sendgmr) by 2002:a05:6214:10c8:: with SMTP id
- r8mr19696156qvs.28.1627330775317; Mon, 26 Jul 2021 13:19:35 -0700 (PDT)
-Date:   Mon, 26 Jul 2021 13:19:24 -0700
-In-Reply-To: <20210726201924.3202278-1-morbo@google.com>
-Message-Id: <20210726201924.3202278-4-morbo@google.com>
-Mime-Version: 1.0
-References: <20210714091747.2814370-1-morbo@google.com> <20210726201924.3202278-1-morbo@google.com>
-X-Mailer: git-send-email 2.32.0.432.gabb21c7263-goog
-Subject: [PATCH v2 3/3] scsi: qla2xxx: remove unused variable 'status'
-From:   Bill Wendling <morbo@google.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <nathan@kernel.org>,
+        id S232992AbhGZT4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 15:56:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55580 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232932AbhGZT4H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 15:56:07 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7E68060F23;
+        Mon, 26 Jul 2021 20:36:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627331795;
+        bh=HfQsMWlTTFO+J6sGnODlHkVipfoWKzy95l9j0DhdDnk=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=oFyLm5G3WEPynq1qxFE/fPymF0gEch8Sdv0Q7ZU1e199VBHimmAyAkrBgQfvRnigR
+         izd10GlwoqHBLInSeauP7Ek2nH0HoL9/Bez0/YKS3P1KPZCRe7mlUdLWHOS266tI7G
+         FH9I2+YP0ukFvhQFQGbo/JTVMbUDUmZdiv1PflQP/rPP29+g85JEUglBWnztwduj/p
+         A9Ac2aRkLR8wSBD2hkNZ/07qUkJxNUId6Gg2i765eZwvzfjS0Ovb/DFNoO/iouMVw8
+         Sr2qpfAiVGIuLOQCx+exqrIm0YqjtRFwwpQAbgWIZcRaQ043U7uIqenxnTDYHIQdz0
+         opF5m0kPYlTuw==
+Subject: Re: [PATCH v2 2/3] bnx2x: remove unused variable 'cur_data_offset'
+To:     Bill Wendling <morbo@google.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
         Nick Desaulniers <ndesaulniers@google.com>,
         Ariel Elior <aelior@marvell.com>,
         Sudarsana Kalluru <skalluru@marvell.com>,
@@ -64,42 +36,70 @@ To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         GR-QLogic-Storage-Upstream@marvell.com,
         "James E . J . Bottomley" <jejb@linux.ibm.com>,
         "Martin K . Petersen" <martin.petersen@oracle.com>
-Cc:     Bill Wendling <morbo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+References: <20210714091747.2814370-1-morbo@google.com>
+ <20210726201924.3202278-1-morbo@google.com>
+ <20210726201924.3202278-3-morbo@google.com>
+From:   Nathan Chancellor <nathan@kernel.org>
+Message-ID: <d86ec071-00bf-e379-bdc6-c68da44ec5b7@kernel.org>
+Date:   Mon, 26 Jul 2021 13:36:33 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <20210726201924.3202278-3-morbo@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the clang build warning:
+On 7/26/2021 1:19 PM, 'Bill Wendling' via Clang Built Linux wrote:
+> Fix the clang build warning:
+> 
+>    drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c:1862:13: error: variable 'cur_data_offset' set but not used [-Werror,-Wunused-but-set-variable]
+>          dma_addr_t cur_data_offset;
+> 
+> Signed-off-by: Bill Wendling <morbo@google.com>
 
-  drivers/scsi/qla2xxx/qla_nx.c:2209:6: error: variable 'status' set but not used [-Werror,-Wunused-but-set-variable]
-        int status = 0;
+It has been unused since the function's introduction in commit 
+67c431a5f2f3 ("bnx2x: Support statistics collection for VFs by the PF"), 
+perhaps a leftover remnant from a previous version?
 
-Signed-off-by: Bill Wendling <morbo@google.com>
----
- drivers/scsi/qla2xxx/qla_nx.c | 2 --
- 1 file changed, 2 deletions(-)
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-diff --git a/drivers/scsi/qla2xxx/qla_nx.c b/drivers/scsi/qla2xxx/qla_nx.c
-index 615e44af1ca6..11aad97dfca8 100644
---- a/drivers/scsi/qla2xxx/qla_nx.c
-+++ b/drivers/scsi/qla2xxx/qla_nx.c
-@@ -2166,7 +2166,6 @@ qla82xx_poll(int irq, void *dev_id)
- 	struct qla_hw_data *ha;
- 	struct rsp_que *rsp;
- 	struct device_reg_82xx __iomem *reg;
--	int status = 0;
- 	uint32_t stat;
- 	uint32_t host_int = 0;
- 	uint16_t mb[8];
-@@ -2195,7 +2194,6 @@ qla82xx_poll(int irq, void *dev_id)
- 		case 0x10:
- 		case 0x11:
- 			qla82xx_mbx_completion(vha, MSW(stat));
--			status |= MBX_INTERRUPT;
- 			break;
- 		case 0x12:
- 			mb[0] = MSW(stat);
--- 
-2.32.0.432.gabb21c7263-goog
-
+> ---
+>   drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c | 6 ------
+>   1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
+> index 27943b0446c2..f255fd0b16db 100644
+> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
+> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c
+> @@ -1858,7 +1858,6 @@ void bnx2x_iov_adjust_stats_req(struct bnx2x *bp)
+>   {
+>   	int i;
+>   	int first_queue_query_index, num_queues_req;
+> -	dma_addr_t cur_data_offset;
+>   	struct stats_query_entry *cur_query_entry;
+>   	u8 stats_count = 0;
+>   	bool is_fcoe = false;
+> @@ -1879,10 +1878,6 @@ void bnx2x_iov_adjust_stats_req(struct bnx2x *bp)
+>   	       BNX2X_NUM_ETH_QUEUES(bp), is_fcoe, first_queue_query_index,
+>   	       first_queue_query_index + num_queues_req);
+>   
+> -	cur_data_offset = bp->fw_stats_data_mapping +
+> -		offsetof(struct bnx2x_fw_stats_data, queue_stats) +
+> -		num_queues_req * sizeof(struct per_queue_stats);
+> -
+>   	cur_query_entry = &bp->fw_stats_req->
+>   		query[first_queue_query_index + num_queues_req];
+>   
+> @@ -1933,7 +1928,6 @@ void bnx2x_iov_adjust_stats_req(struct bnx2x *bp)
+>   			       cur_query_entry->funcID,
+>   			       j, cur_query_entry->index);
+>   			cur_query_entry++;
+> -			cur_data_offset += sizeof(struct per_queue_stats);
+>   			stats_count++;
+>   
+>   			/* all stats are coalesced to the leading queue */
+> 
