@@ -2,155 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375943D5166
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 04:51:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7F43D517A
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 05:07:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231924AbhGZCKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Jul 2021 22:10:46 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:7430 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231418AbhGZCKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Jul 2021 22:10:14 -0400
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GY4834QkYz80BN;
-        Mon, 26 Jul 2021 10:46:59 +0800 (CST)
-Received: from dggemi759-chm.china.huawei.com (10.1.198.145) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Mon, 26 Jul 2021 10:50:42 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- dggemi759-chm.china.huawei.com (10.1.198.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 26 Jul 2021 10:50:42 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <moyufeng@huawei.com>,
-        <chenhao288@hisilicon.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH V3 net-next 7/7] net: hns3: add devlink reload support for VF
-Date:   Mon, 26 Jul 2021 10:47:07 +0800
-Message-ID: <1627267627-38467-8-git-send-email-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1627267627-38467-1-git-send-email-huangguangbin2@huawei.com>
-References: <1627267627-38467-1-git-send-email-huangguangbin2@huawei.com>
+        id S231387AbhGZC1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Jul 2021 22:27:03 -0400
+Received: from mga14.intel.com ([192.55.52.115]:18086 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230272AbhGZC1C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Jul 2021 22:27:02 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10056"; a="211868952"
+X-IronPort-AV: E=Sophos;i="5.84,269,1620716400"; 
+   d="scan'208";a="211868952"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2021 20:07:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,269,1620716400"; 
+   d="scan'208";a="504552717"
+Received: from linux.intel.com ([10.54.29.200])
+  by FMSMGA003.fm.intel.com with ESMTP; 25 Jul 2021 20:07:30 -0700
+Received: from linux.intel.com (vwong3-iLBPG3.png.intel.com [10.88.229.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 9DADB58060A;
+        Sun, 25 Jul 2021 20:07:27 -0700 (PDT)
+Date:   Mon, 26 Jul 2021 11:07:24 +0800
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     mohammad.athari.ismail@intel.com
+Cc:     Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH net] net: stmmac: add est_irq_status callback function
+ for GMAC 4.10 and 5.10
+Message-ID: <20210726030724.GA9206@linux.intel.com>
+References: <20210726022020.5907-1-mohammad.athari.ismail@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggemi759-chm.china.huawei.com (10.1.198.145)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210726022020.5907-1-mohammad.athari.ismail@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+On Mon, Jul 26, 2021 at 10:20:20AM +0800, mohammad.athari.ismail@intel.com wrote:
+> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> 
+> Assign dwmac5_est_irq_status to est_irq_status callback function for
+> GMAC 4.10 and 5.10. With this, EST related interrupts could be handled
+> properly.
+> 
+> Fixes: e49aa315cb01 ("net: stmmac: EST interrupts handling and error reporting")
+> Cc: <stable@vger.kernel.org> # 5.13.x
+> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 
-Add devlink reload support for HNS3 ethernet VF driver.
-
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3vf/hclgevf_devlink.c        | 71 ++++++++++++++++++++++
- 1 file changed, 71 insertions(+)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-index 49993c8be313..21a45279fd99 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.c
-@@ -34,8 +34,75 @@ static int hclgevf_devlink_info_get(struct devlink *devlink,
- 						version_str);
- }
- 
-+static int hclgevf_devlink_reload_down(struct devlink *devlink,
-+				       bool netns_change,
-+				       enum devlink_reload_action action,
-+				       enum devlink_reload_limit limit,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct hclgevf_devlink_priv *priv = devlink_priv(devlink);
-+	struct hclgevf_dev *hdev = priv->hdev;
-+	struct hnae3_handle *h = &hdev->nic;
-+	struct pci_dev *pdev = hdev->pdev;
-+	int ret;
-+
-+	if (test_bit(HCLGEVF_STATE_RST_HANDLING, &hdev->state)) {
-+		dev_err(&pdev->dev, "reset is handling\n");
-+		return -EBUSY;
-+	}
-+
-+	switch (action) {
-+	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-+		rtnl_lock();
-+		ret = hdev->nic_client->ops->reset_notify(h, HNAE3_DOWN_CLIENT);
-+		if (ret) {
-+			rtnl_unlock();
-+			return ret;
-+		}
-+
-+		ret = hdev->nic_client->ops->reset_notify(h,
-+							  HNAE3_UNINIT_CLIENT);
-+		rtnl_unlock();
-+		return ret;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int hclgevf_devlink_reload_up(struct devlink *devlink,
-+				     enum devlink_reload_action action,
-+				     enum devlink_reload_limit limit,
-+				     u32 *actions_performed,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct hclgevf_devlink_priv *priv = devlink_priv(devlink);
-+	struct hclgevf_dev *hdev = priv->hdev;
-+	struct hnae3_handle *h = &hdev->nic;
-+	int ret;
-+
-+	*actions_performed = BIT(action);
-+	switch (action) {
-+	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-+		rtnl_lock();
-+		ret = hdev->nic_client->ops->reset_notify(h, HNAE3_INIT_CLIENT);
-+		if (ret) {
-+			rtnl_unlock();
-+			return ret;
-+		}
-+
-+		ret = hdev->nic_client->ops->reset_notify(h, HNAE3_UP_CLIENT);
-+		rtnl_unlock();
-+		return ret;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static const struct devlink_ops hclgevf_devlink_ops = {
- 	.info_get = hclgevf_devlink_info_get,
-+	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-+	.reload_down = hclgevf_devlink_reload_down,
-+	.reload_up = hclgevf_devlink_reload_up,
- };
- 
- int hclgevf_devlink_init(struct hclgevf_dev *hdev)
-@@ -62,6 +129,8 @@ int hclgevf_devlink_init(struct hclgevf_dev *hdev)
- 
- 	hdev->devlink = devlink;
- 
-+	devlink_reload_enable(devlink);
-+
- 	return 0;
- 
- out_reg_fail:
-@@ -76,6 +145,8 @@ void hclgevf_devlink_uninit(struct hclgevf_dev *hdev)
- 	if (!devlink)
- 		return;
- 
-+	devlink_reload_disable(devlink);
-+
- 	devlink_unregister(devlink);
- 
- 	devlink_free(devlink);
--- 
-2.8.1
+Acked-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 
