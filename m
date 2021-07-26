@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 307693D6404
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:45:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC5DD3D6409
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238737AbhGZPx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 11:53:59 -0400
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:31430 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239613AbhGZPxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 11:53:52 -0400
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 503F176F79;
-        Mon, 26 Jul 2021 19:34:16 +0300 (MSK)
+        id S239654AbhGZPyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 11:54:09 -0400
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:29654 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239639AbhGZPyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 11:54:04 -0400
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id B8180520D07;
+        Mon, 26 Jul 2021 19:34:30 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1627317256;
-        bh=ryDfW+J/VW9hKhGCsjMSOFxd88HMnpxcIzleRIVZO2g=;
+        s=mail202102; t=1627317270;
+        bh=eUL8Cw/3k5FqvIluVwVrx3fPpQfCpj6l3rLBCKcnnN0=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=A75G3d7B5/Q0jvkijsglzttpRMdDr8BtyJECfmqyfPLy/hgg0Xqpr88v8ZBSXiOfx
-         8/fC1N6OSuVMCtxPhom9765YU3E++dW//w7nkt4tvHnUe45Or7YoEpRDqp6sS30Rs/
-         1oDnzc/yzVCFHnWgvyL65yRKTEmjWRK3Vu4lYZEnuCff2sgpy+0HJ4juKJWOv4ArkH
-         ziw8I9Z7LMZpgpOSKYW2wBEH4XFhva/DnJV39hbsFbuXOyB5Pu9NO/+fx0NSP9Irmn
-         sSSHSnrWcYB2LZ+7uMpoNsovdTRf8TvPRa1beAIJwv0C77DhDLt0EGPn/Sao7eweTN
-         pvrXch8o/JsTQ==
+        b=m90co9hzQxiOWtDRS57gfW9K3v5G0sbo+SmWAKFzFTvTrOqVqhIGqg01nkY69f98d
+         /VErOoH2XTEvMSKW+en5wQICsgec4Bz46E8WxVYpLOUoabMn0aQXkznCFY6V3YpcI9
+         1TyjlW1chexAWPAXmMs85DwBKelGdU+0oSmHN7JZXHXCGuI2PC43uj3I78fxHysDwk
+         imIk6aVGwAxJE/yFWmdkW6XQoJabNdGYSXGpiTAKK5YY2Lq03jz/F+emIDdzCLLVbd
+         BxSCKb54kyllrVtIX8AxOWwZPKrhQwwjWpB3v2SBEyq0h7o+vfCzzfcQPuH3LSw6hi
+         +Mqu6v8ykIYaw==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 1973676E7D;
-        Mon, 26 Jul 2021 19:34:16 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 62A24520D7F;
+        Mon, 26 Jul 2021 19:34:30 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 26
- Jul 2021 19:34:15 +0300
+ Jul 2021 19:34:29 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,23 +41,22 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <oxffffaa@gmail.com>
-Subject: [RFC PATCH v1 5/7] af_vsock: rename variables in receive loop
-Date:   Mon, 26 Jul 2021 19:34:06 +0300
-Message-ID: <20210726163409.2589994-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v1 6/7] vsock_test: update message bounds test for MSG_EOR
+Date:   Mon, 26 Jul 2021 19:34:21 +0300
+Message-ID: <20210726163424.2590110-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
 References: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.129]
+X-Originating-IP: [10.64.68.128]
 X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
@@ -98,56 +97,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Record is supported via MSG_EOR flag, while current logic operates
-with message, so rename variables from 'record' to 'message'.
+Set 'MSG_EOR' in one of message sent, check that 'MSG_EOR'
+is visible in corresponding message at receiver.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/af_vsock.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/vsock/vsock_test.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 3e02cc3b24f8..e2c0cfb334d2 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -2014,7 +2014,7 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+index 67766bfe176f..2a3638c0a008 100644
+--- a/tools/testing/vsock/vsock_test.c
++++ b/tools/testing/vsock/vsock_test.c
+@@ -282,6 +282,7 @@ static void test_stream_msg_peek_server(const struct test_opts *opts)
+ }
+ 
+ #define MESSAGES_CNT 7
++#define MSG_EOR_IDX (MESSAGES_CNT / 2)
+ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
  {
- 	const struct vsock_transport *transport;
- 	struct vsock_sock *vsk;
--	ssize_t record_len;
-+	ssize_t msg_len;
- 	long timeout;
- 	int err = 0;
- 	DEFINE_WAIT(wait);
-@@ -2028,9 +2028,9 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
- 	if (err <= 0)
- 		goto out;
+ 	int fd;
+@@ -294,7 +295,7 @@ static void test_seqpacket_msg_bounds_client(const struct test_opts *opts)
  
--	record_len = transport->seqpacket_dequeue(vsk, msg, flags);
-+	msg_len = transport->seqpacket_dequeue(vsk, msg, flags);
+ 	/* Send several messages, one with MSG_EOR flag */
+ 	for (int i = 0; i < MESSAGES_CNT; i++)
+-		send_byte(fd, 1, 0);
++		send_byte(fd, 1, (i == MSG_EOR_IDX) ? MSG_EOR : 0);
  
--	if (record_len < 0) {
-+	if (msg_len < 0) {
- 		err = -ENOMEM;
- 		goto out;
- 	}
-@@ -2044,14 +2044,14 @@ static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
- 		 * packet.
- 		 */
- 		if (flags & MSG_TRUNC)
--			err = record_len;
-+			err = msg_len;
- 		else
- 			err = len - msg_data_left(msg);
- 
- 		/* Always set MSG_TRUNC if real length of packet is
- 		 * bigger than user's buffer.
- 		 */
--		if (record_len > len)
-+		if (msg_len > len)
- 			msg->msg_flags |= MSG_TRUNC;
+ 	control_writeln("SENDDONE");
+ 	close(fd);
+@@ -324,6 +325,11 @@ static void test_seqpacket_msg_bounds_server(const struct test_opts *opts)
+ 			perror("message bound violated");
+ 			exit(EXIT_FAILURE);
+ 		}
++
++		if ((i == MSG_EOR_IDX) ^ !!(msg.msg_flags & MSG_EOR)) {
++			perror("MSG_EOR");
++			exit(EXIT_FAILURE);
++		}
  	}
  
+ 	close(fd);
 -- 
 2.25.1
 
