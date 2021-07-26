@@ -2,150 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A26D3D6852
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 22:59:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2B93D6870
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 23:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232877AbhGZUSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 16:18:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
+        id S233019AbhGZU2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 16:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232597AbhGZUSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 16:18:47 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31463C061757;
-        Mon, 26 Jul 2021 13:59:15 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id b128so6150484wmb.4;
-        Mon, 26 Jul 2021 13:59:15 -0700 (PDT)
+        with ESMTP id S232772AbhGZU2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 16:28:36 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2711C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:09:03 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id 21so12549943oin.8
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:09:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=R9+/OkDWq1U3L4FDn4wnvYqUwRAVYSebcgs1aKFvCto=;
-        b=TZNDnn/XY7qO8s6WvP7JIUtodqB9WY8kb4057YYMfNr90nYNUIs0z7mhTjdlZ2Izos
-         cp5NNIQYbNR3crt/d7Mn3NB0Jpu4Xwfx5TRsaZANeykzE+2hs9qrP4R5oqwDi1hf1oFG
-         IQBpTokB2lweGEovx9kteLRr96K9PQAxLmhCOrXYihHEFixPivb7ITGEbCVXO/dpsKnw
-         f1Z93Un/a7CoHcq1Bae+G1epdIZVllc7xmyVxcRZBtZIvNN1WSIlEy8iZdoIurS+aQyF
-         2o0FPgkHn31QnjVlt/nJ5jhiSoNI0vBCu96PMhWrNhUemT58YKv0b0/G41rsNIh1jkXf
-         00sA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=oXkMDnOqq/DPcnD7mfVR6UB5DY1khlo7ja70QYQxWc8=;
+        b=gfViN/N9eGxcDKOrblBLQ7nnVWvwqzAS9/IGAXTq8FDpwpUAa6PGesnxEOKbbd/YCm
+         yk43teWcFYrFzQTl5Ugg+5cByqPdSXvEyp3/NRzYojuG94Tu+4RIj0u+sb1QbB/Cmpfe
+         KzYRIvGhAkdTd1s6j0yovB9td9Ih5KejJaVHQDsJP14UXwLNLtr23xvl4PuKc8cLvxyx
+         3vjdQj+n37w08i+iXA8M8/03XX6YUCn0iPNMe2zfmP0rpYLWhSLLRN1Unz1rOG/n3BHw
+         1WcTxQMcZdQL0Rv15vAWlqPwkVfVRQTenKQdfgm6m4DiMvJe8t7lIkVSfgOCEB7bS6Bi
+         LWiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=R9+/OkDWq1U3L4FDn4wnvYqUwRAVYSebcgs1aKFvCto=;
-        b=Wjrk4YK8o+ek/7W3JRzWWBEG7D0eOmGJ8YJVNsUxwIque4TJBnBPwGArcHXkYbLf/q
-         5aQZpQGV8r55aPa7bSaUhsDX9axx4mL70+FGPFq6858oPEwmkjyJATbRCtyFShLDq+FF
-         oa3UH6uOuhJEz6Ov45Dc1hAymtTy3nSzejrUA7y0Uz4JyAUMw3JYfAukiVP3qWFTo+JO
-         sdd8C63vSv7cnrWMlUF4v2wCu+tbgz05N0GVM0A0ICUvbU2rHsYuAsqZiJzivpQ9Sp73
-         dtTv7ARV32MB+86NyMS8r0DDaSWBTxoIESjH2GCF12/vkNnKUNRU1MHHPg9ZVRIvoGHN
-         oBFg==
-X-Gm-Message-State: AOAM530e0WJQhr/L9oBbTKVYRMebZN2gPZ/8Kd22IcUi6pyvKWckv/64
-        Ux2KTbF2CINeVtxnb7Y86Rw+6w//ox/ixw==
-X-Google-Smtp-Source: ABdhPJzeNqCUIA8aNn0cV54M9NlO7QQraCAQv1y2iAEfMSrH2qlA4t9IpLCspUdBDis/k9c5fR7Iag==
-X-Received: by 2002:a1c:494:: with SMTP id 142mr19098834wme.60.1627333153453;
-        Mon, 26 Jul 2021 13:59:13 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f3a:f500:a0c3:d466:871c:51b2? (p200300ea8f3af500a0c3d466871c51b2.dip0.t-ipconnect.de. [2003:ea:8f3a:f500:a0c3:d466:871c:51b2])
-        by smtp.googlemail.com with ESMTPSA id w9sm842882wmc.19.2021.07.26.13.59.12
+        bh=oXkMDnOqq/DPcnD7mfVR6UB5DY1khlo7ja70QYQxWc8=;
+        b=Up8Eh4D5PZV8tWft+CGLewtb8BY2q1hV+CYmWucN2UegLm2WIBkTU9Dgo2sQXizXpv
+         Vk3FAUMnRokDtbUJDZx0U/knxJap7ZoeXZeHK3ESrCkHvD8PeQCTYycynYvgS6tXhCNJ
+         yMG1+s7dlZXPcRP+60RqnlwdSdbfTdJv1BJ++QOrpxk4GsCgIxI8C5eXsW/mrfZAVXhJ
+         /STmNx2rw/vprpEu4aaCitW6D3yWEi3JnHfzpuQHrS1dpwTDt2px4Bodn1Lz0jJINmPW
+         G8iEyaP8b/tPUtW+4q+99jLeuC8J0lkHRTcNwxXk8ATwOayFDmHvQWLwgj7dQQI8fEKi
+         dXXA==
+X-Gm-Message-State: AOAM533XicETAwyujsZ3K5n5EEA8suzyUrCSYasvggJuNlF6k7l98kCc
+        2bG6njXzcWOiNDZzPoqynQuB4DJ11pk=
+X-Google-Smtp-Source: ABdhPJy/zi0Rg9voQWsq6PubqTHxcdAbLwL79/3ZahNEWOxPANLcawwvuyudkQbHHoyE1ROsB0VW/w==
+X-Received: by 2002:aca:3502:: with SMTP id c2mr678948oia.157.1627333743170;
+        Mon, 26 Jul 2021 14:09:03 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([8.48.134.27])
+        by smtp.googlemail.com with ESMTPSA id a19sm201941oic.38.2021.07.26.14.09.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Jul 2021 13:59:12 -0700 (PDT)
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-References: <20210716212427.821834-1-anthony.l.nguyen@intel.com>
- <20210716212427.821834-6-anthony.l.nguyen@intel.com>
- <f705bcd6-c55c-0b07-612f-38348d85bbee@gmail.com> <YPTKB0HGEtsydf9/@lunn.ch>
- <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com> <YPbu8xOFDRZWMTBe@lunn.ch>
- <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
- <20210721204543.08e79fac@thinkpad> <YPh6b+dTZqQNX+Zk@lunn.ch>
- <20210721220716.539f780e@thinkpad>
- <4d8db4ce-0413-1f41-544d-fe665d3e104c@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <6d2697b1-f0f6-aa9f-579c-48a7abb8559d@gmail.com>
-Date:   Mon, 26 Jul 2021 22:59:05 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Mon, 26 Jul 2021 14:09:02 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] ipneigh: add support to print brief output
+ of neigh cache in tabular format
+To:     Gokul Sivakumar <gokulkumar792@gmail.com>, netdev@vger.kernel.org
+References: <20210725153913.3316181-1-gokulkumar792@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <390278ce-2405-ae9e-9b07-ea8c699d762c@gmail.com>
+Date:   Mon, 26 Jul 2021 15:09:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <4d8db4ce-0413-1f41-544d-fe665d3e104c@gmail.com>
+In-Reply-To: <20210725153913.3316181-1-gokulkumar792@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.07.2021 19:42, Jacek Anaszewski wrote:
-> Hi Marek,
+On 7/25/21 9:39 AM, Gokul Sivakumar wrote:
+> Make use of the already available brief flag and print the basic details of
+> the IPv4 or IPv6 neighbour cache in a tabular format for better readability
+> when the brief output is expected.
 > 
-> On 7/21/21 10:07 PM, Marek Behún wrote:
->> On Wed, 21 Jul 2021 21:50:07 +0200
->> Andrew Lunn <andrew@lunn.ch> wrote:
->>
->>>> Hi Heiner,
->>>>
->>>> in sysfs, all devices registered under LED class will have symlinks in
->>>> /sys/class/leds. This is how device classes work in Linux.
->>>>
->>>> There is a standardized format for LED device names, please look at
->>>> Documentation/leds/leds-class.rst.
->>>>
->>>> Basically the LED name is of the format
->>>>    devicename:color:function
->>>
->>> The interesting part here is, what does devicename mean, in this
->>> context?
->>>
->>> We cannot use the interface name, because it is not unique, and user
->>> space can change it whenever it wants. So we probably need to build
->>> something around the bus ID, e.g. pci_id. Which is not very friendly
->>> :-(
->>
->> Unfortunately there isn't consensus about what the devicename should
->> mean. There are two "schools of thought":
->>
->> 1. device name of the trigger source for the LED, i.e. if the LED
->>     blinks on activity on mmc0, the devicename should be mmc0. We have
->>     talked about this in the discussions about ethernet PHYs.
->>     In the case of the igc driver if the LEDs are controlled by the MAC,
->>     I guess some PCI identifier would be OK. Or maybe ethernet-mac
->>     identifier, if we have something like that? (Since we can't use
->>     interface names due to the possibility of renaming.)
->>
->>     Pavel and I are supporters of this scheme.
->>
->> 2. device name of the LED controller. For example LEDs controlled by
->>     the maxim,max77650-led controller (leds-max77650.c) define device
->>     name as "max77650"
->>
->>     Jacek supports this scheme.
-> 
-> I believe you must have misinterpreted some my of my statements.
-> The whole effort behind LED naming unification was getting rid of
-> hardware device names in favour of Linux provided device names.
-> See e.g. the excerpt from Documentation/leds/leds-class.rst:
-> 
-> - devicename:
->         it should refer to a unique identifier created by the kernel,
->         like e.g. phyN for network devices or inputN for input devices, rather
->         than to the hardware; the information related to the product and the bus
->         to which given device is hooked is available in sysfs and can be
->         retrieved using get_led_device_info.sh script from tools/leds; generally
->         this section is expected mostly for LEDs that are somehow associated with
->         other devices.
-> 
-> 
-The issue with this is mentioned by Andrew a few lines before. At least in
-network subsystem the kernel identifiers can be changed from userspace.
-Typical example is the interface renaming from eth0 to e.g. enp1s0.
-Then a LED eth0-led1 would have to be automagically renamed to enp1s0-led1.
-An option for this could be to make a LED renaming function subscribe to
-interface name change notifications. But this looks to me to like using a
-quite big hammer for a rather small nail.
+> $ ip -br neigh
+> bridge0          172.16.12.100                           b0:fc:36:2f:07:43
+> bridge0          172.16.12.174                           8c:16:45:2f:bc:1c
+> bridge0          172.16.12.250                           04:d9:f5:c1:0c:74
+> bridge0          fe80::267b:9f70:745e:d54d               b0:fc:36:2f:07:43
+> bridge0          fd16:a115:6a62:0:8744:efa1:9933:2c4c    8c:16:45:2f:bc:1c
+> bridge0          fe80::6d9:f5ff:fec1:c74                 04:d9:f5:c1:0c:74
+
+I am guessing you put the device first to be consistent with the output
+for the other 2 commands.
+
+In this case I think the network address should be first then device and
+lladdr which is consistent with existing output just removing 'dev'
+keyword and flags.
+
+
