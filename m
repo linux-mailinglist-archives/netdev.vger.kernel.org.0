@@ -2,149 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 867B83D5F10
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 17:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD013D5FB2
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236301AbhGZPQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 11:16:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53050 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236659AbhGZPMC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 11:12:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2567E6056C;
-        Mon, 26 Jul 2021 15:52:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627314746;
-        bh=vSyBHE9E4dJbHwvbLbDjiFMygZzZJE4Q1Qc0fD+7fiA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qYb1/a/xxKzrRRNPxST2RgPHrq6JkQFm93ZlJHdjN/mOfOqneDRk9wbo/3bw/5qHK
-         mZYv5ECAq+LLL/4iw0+Wf+Yxcb1ePEzpZA2P/VFF+dCAeSExbilgx0NMAdnUMzGTOu
-         EoEHTHnHNgT+9oj+mrzhXdv3X8i4KEuPpjAfepSLsgw4R5k1gdl8+YZ7K5x/b59n8A
-         J1wjsvpUS1SbBSPQKswGvb5i/0x1F9XHDRo4NMRDB+F4x7DqtX/vjfxpEgxFWewIit
-         Zfnv5PAPHCNYfWOnriH9WqqOOgNvUVDOxOjrO1veVRQdRnnGyhxFqHbOmd/eIL8134
-         x7/r0tnGEn1ug==
-Date:   Mon, 26 Jul 2021 17:52:23 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org
-Subject: Re: mvpp2 switch from gmac to xlg requires ifdown/ifup
-Message-ID: <20210726175223.3122f544@thinkpad>
-In-Reply-To: <20210723080538.GB22278@shell.armlinux.org.uk>
-References: <20210723035202.09a299d6@thinkpad>
-        <20210723080538.GB22278@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S236535AbhGZPS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 11:18:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236209AbhGZPSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 11:18:37 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25DCC061764
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id r18so12496197iot.4
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2oqVdc+Bwmni6M3nVJzlpNG4FMWWLNOhFE43b4PtG5Q=;
+        b=cKI0ApA8ngPZMooBLOh7lfAS1DsT2EHd2K3e68CR4zgtntvO2LDikDqPfrKKxfL+HZ
+         KjDxlBy4CqosymqCj4oljmWfEhXMB9Ljoaq1uG3SCr3OXux7uJbEVNvDlCSaSSudh+4q
+         gFlnjYV+fYFBzX+CxkZIODAe3Vek39iWL6hvI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2oqVdc+Bwmni6M3nVJzlpNG4FMWWLNOhFE43b4PtG5Q=;
+        b=Uj57hksk7fEMITRmp9Q97rbgGz6I2PCa0Yy4vKA8T4XZsYRR6XBciuVAJKt4f7YEOH
+         fMhKx8AKk2gcsy5RubNWy/vcqVFH0d4uHYAHLuWyHqpxCjYj3Bq0y1HZ+Xue0Dde8bwc
+         FnCEvzEdZHJepTDuEC5ZUt/MwrjCWjMnO2XuwzVJVYLZoMjGh9wd1yMq2ZkuPOM+FLHV
+         q2CFUG/DmwquGUjYHkumcvX4fkog1veHu9xtuF7sgu/f2/qeAgFVZ85fqiwpQV4njaXJ
+         1SlPyMsP2BEeN9PT+tX9FchQZYHUi9802TovyQfiVVJdGJbdqC/v/G9ar2SaV+inwsmB
+         phQw==
+X-Gm-Message-State: AOAM532XN1MGEfSIAYS1fKEVenSrRbPt3GN4DCKsYbTKio8w8jF+E3ec
+        zrL2naUTNt7f05SkcYejHRri2g==
+X-Google-Smtp-Source: ABdhPJzcoLCiWULduAJ6beoqhxsv3ChnwQVAVpBm3E4lg/mBvDeOOmGaoHxC4yOFi27MB7GKWKBa+Q==
+X-Received: by 2002:a5e:c109:: with SMTP id v9mr15382903iol.76.1627315145241;
+        Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id h24sm169070ioj.32.2021.07.26.08.59.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Jul 2021 08:59:04 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] dt-bindings: net: qcom,ipa: make imem
+ interconnect optional
+To:     Rob Herring <robh@kernel.org>, Alex Elder <elder@linaro.org>
+Cc:     bjorn.andersson@linaro.org, agross@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org,
+        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210719212456.3176086-1-elder@linaro.org>
+ <20210719212456.3176086-2-elder@linaro.org>
+ <20210723205252.GA2550230@robh.at.kernel.org>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <6c1779aa-c90c-2160-f8b9-497fb8c32dc5@ieee.org>
+Date:   Mon, 26 Jul 2021 10:59:03 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210723205252.GA2550230@robh.at.kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Jul 2021 09:05:38 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+On 7/23/21 3:52 PM, Rob Herring wrote:
+> On Mon, Jul 19, 2021 at 04:24:54PM -0500, Alex Elder wrote:
+>> On some newer SoCs, the interconnect between IPA and SoC internal
+>> memory (imem) is not used.  Reflect this in the binding by moving
+>> the definition of the "imem" interconnect to the end and defining
+>> minItems to be 2 for both the interconnects and interconnect-names
+>> properties.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+>> ---
+>>   .../devicetree/bindings/net/qcom,ipa.yaml      | 18 ++++++++++--------
+>>   1 file changed, 10 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> index ed88ba4b94df5..4853ab7017bd9 100644
+>> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
+>> @@ -87,16 +87,18 @@ properties:
+>>         - const: ipa-setup-ready
+>>   
+>>     interconnects:
+>> +    minItems: 2
+>>       items:
+>> -      - description: Interconnect path between IPA and main memory
+>> -      - description: Interconnect path between IPA and internal memory
+>> -      - description: Interconnect path between IPA and the AP subsystem
+>> +      - description: Path leading to system memory
+>> +      - description: Path between the AP and IPA config space
+>> +      - description: Path leading to internal memory
+>>   
+>>     interconnect-names:
+>> +    minItems: 2
+>>       items:
+>>         - const: memory
+>> -      - const: imem
+>>         - const: config
+>> +      - const: imem
+> 
+> What about existing users? This will generate warnings. Doing this for
+> the 2nd item would avoid the need for .dts updates:
+> 
+> - enum: [ imem, config ]
 
-> On Fri, Jul 23, 2021 at 03:52:02AM +0200, Marek Beh=C3=BAn wrote:
-> > Hello Russell (and possibly others),
-> >=20
-> > I discovered that with mvpp2 when switching from gmac (sgmii or
-> > 2500base-x mode) to xlg (10gbase-r mode) due to phylink requesting this
-> > change, the link won't come up unless I do
-> >   ifconfig ethX down
-> >   ifconfig ethX up
-> >=20
-> > Can be reproduced on MacchiatoBIN:
-> > 1. connect the two 10g RJ-45 ports (88X3310 PHY) with one cable
-> > 2. bring the interfaces up
-> > 3. the PHYs should link in 10gbase-t, links on MACs will go up in
-> >    10gbase-r
-> > 4. use ethtool on one of the interfaces to advertise modes only up to
-> >    2500base-t
-> > 5. the PHYs will unlink and then link at 2.5gbase-t, links on MACs will
-> >    go up in 2500base-x
-> > 6. use ethtool on the same interface as in step 4 to advertise all
-> >    supported modes
-> >=20
-> > 7. the PHYs will unlink and then link at 10gbase-t, BUT MACs won't link
-> >    !!!
-> > 8. execute
-> >      ifconfig ethX down ; ifconfig ethX up
-> >    on both interfaces. After this, the MACs will successfully link in
-> >    10gbase-r with the PHYs
-> >=20
-> > It seems that the mvpp2 driver code needs to make additional stuff when
-> > chaning mode from gmac to xlg. I haven't yet been able to find out
-> > what, though.
-> >=20
-> > BTW I discovered this because I am working on adding support for
-> > 5gbase-r mode to mvpp2, so that the PHY can support 5gbase-t on copper
-> > side.
-> > The ifdown/ifup cycle is required when switching from gmac to xlg, i.e.:
-> > 	sgmii		to	5gbase-r
-> > 	sgmii		to	10gbase-r
-> > 	2500base-x	to	5gbase-r
-> > 	2500base-x	to	10gbase-r
-> > but also when switching from xlg to different xlg:
-> > 	5gbase-r	to	10gbase-r
-> > 	10gbase-r	to	5gbase-r
-> >=20
-> > Did someone notice this bug? I see that Russell made some changes in
-> > the phylink pcs API that touched mvpp2 (the .mac_config method got
-> > split into .mac_prepare, .mac_config and .mac_finish, and also some
-> > other changes). I haven't tried yet if the switch from gmac to xlg
-> > worked at some time in the past. But if it did, maybe these changes
-> > could be the cause? =20
->=20
-> What are the PHY leds doing when you encounter this bug?
->=20
+If I understand correctly, the effect of this would be that
+the second item can either be "imem" or "config", and the third
+(if present) could only be "imem"?
 
-Table summary:
+And you're saying that otherwise, existing users (the only
+one it applies to at the moment is "sdm845.dtsi") would
+produce warnings, because the interconnects are listed
+in an order different from what the binding specifies.
 
-			PHY0/eth0	PHY1/eth1
-			green	yellow	green	yellow
-after boot		ON	OFF	ON	OFF
-eth0 up			ON	OFF	ON	OFF
-eth1 up			blink	ON	blink	ON
-eth0 adv -10g -5g	blink	OFF	blink	OFF
-eth0 adv +5g *	 	OFF	OFF	OFF	OFF
-eth0 down		ON	OFF	ON	OFF
-eth0 up			blink**	OFF	blink** OFF
-eth1 down		ON	OFF	ON	OFF
-eth1 up			blink	OFF	blink	OFF
+Is that correct?
 
- (*  PHYs are linked now, but MACs are not)
- (** blinks only for a while after link, pings do not work,
-     read my opinion below)
- (The last 5 lines basically the same happens if I set it to advertise
-  10g instead of 5g, but in case of 10g the yellow LED is ON when the
-  PHYs are linked.)
+If so, what you propose suggests "imem" could be listed twice.
+It doesn't make sense, and maybe it's precluded in other ways
+so that's OK.  But I'd be happy to update "sdm845.dtsi" to
+address your concern.  (Maybe that's something you would rather
+avoid?)
 
-In words:
+Also, I need to make a separate update to "sm8350.dtsi" because
+that was defined before I understood what I do now about the 
+interconnects.  It uses the wrong names, and should combine
+its first two interconnects into just one.
 
-After boot, the green LED is ON on both PHYs.
+					-Alex
 
-Bringing both interfaces up changes nothing.
+> 
+> Rob
+> 
 
-Plugging cable so that they link (at 10gbase-t) bring the yellow LEDs
-ON, and the green LEDs OFF, but the green LEDs blinks on activity.
-(For example when pinging eth0's ipv6 address via eth1.)
-
-Disabling advertisement of 10gbase-t and 5gbase-t on eth0 makes the
-PHYs link at 2.5gbase-t. Both LEDs are OFF, but green blinks on
-activity.
-
-Enabling advertisement of 5gbase-t makes the PHYs link, but the MACs
-do not link with the PHYs, and there is no blinking on activity, and
-pings do not work.
-
-Taking one interface (eth0) down and up makes the PHYs link (we are
-still at 5gbase-t), and the green LEDs blink for a few times because of
-activity on both PHYs. But the pings do not work. I think this is
-because the eth0's PHY sent some neighbour discovery packets, and the
-eth1's PHY received them. But pings do not work because those packets
-don't go from eth1's PHY to eth1's MAC.
-
-Taking the second interface (eth1) down and up makes the PHYs again
-link at 5gbase-t, and the green LEDs start blinking on activity. Pings
-work.
-
-Marek
