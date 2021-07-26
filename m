@@ -2,192 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 945C13D6595
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 19:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5FE3D6516
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 19:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbhGZQkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 12:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235921AbhGZQjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 12:39:23 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75264C0BB56C;
-        Mon, 26 Jul 2021 09:53:42 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id a13so12723451iol.5;
-        Mon, 26 Jul 2021 09:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TST9Evg7YSFkD3gtj7vE6ssLhHqcDOyzBWsiW3nAOtU=;
-        b=EtQVp/7xn4iOGk0sx21Sc6VgUSdHlqVsdJGC7DKW1MbFDrNgvJXlaou2doksWKup3y
-         ICQ1SleyQr9qCMMIEc1PhRzALxZzTjrXwWOGgN5LE8az6q/ugwVVKfs3imEN7QA+rAZd
-         3idQFzHsZS8dMl3+jgx7uz5aPaPfm6Uiqkhow0ghf5SMBBXy5prxaJjHvKBWpaKgDnEI
-         zjovrYuFnBfa4k47PEyG/lk7rlsU/tiheC/JRyVNLVFE1sSAjg9SsFCfvayiISWg1FA6
-         ZSTAXPeHoxStKzVN1Keq2ge23YNDzPO9HhHImWskxj78/7nb+SG18/gW+Qn8XUbVOs9J
-         08Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TST9Evg7YSFkD3gtj7vE6ssLhHqcDOyzBWsiW3nAOtU=;
-        b=gchGfsaocSPgKsWMpJe6zx6bb3NvPup7wbzXwI0mGF6HXDPDEcHqABYjxMC0M/NVby
-         hqGlQBh5wagjh7eupzNuP/ZVSUNaDiaNeAALauxocd0Vp2B4oFmKlVFZhcELXMFE5P26
-         5SuarMv8NZ+ZJRr35Ikl0sBmrywy+JWyCi9PkXauwm0fSBoDAXpwECtuUcDvOvBN3PNF
-         Utt2owIlw0zNgf41pKCQjH6aHOQBPVo7Vw7WtPdu7rR/XGfPHgdJwncy0NjeR6LdMmft
-         tMUQhRJ3Jnbc8Kg9SSCHHztW4nWgWolqB1uXsjQzA+N+E0pvDB8U+Jp0jNWoD0HYpEKO
-         2BZg==
-X-Gm-Message-State: AOAM53177bSzhk4fAJyesNRP/791aXv+qTOfmgDVf45oUr4Ob7IGjJ2R
-        ocOME1kWcRWpu3ecyJYHthRtdmjrAoi5eg==
-X-Google-Smtp-Source: ABdhPJw1g0qO1f6KWN5aZ++YxD8UtDOSc7QJOoGlV3iBJakUdcthFmj7aaqnx22VRXz9jd9Jfbpipw==
-X-Received: by 2002:a05:6638:538:: with SMTP id j24mr17268989jar.59.1627318421937;
-        Mon, 26 Jul 2021 09:53:41 -0700 (PDT)
-Received: from john-XPS-13-9370.lan ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id r198sm254483ior.7.2021.07.26.09.53.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 09:53:41 -0700 (PDT)
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     jakub@cloudflare.com, daniel@iogearbox.net,
-        xiyou.wangcong@gmail.com, alexei.starovoitov@gmail.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        john.fastabend@gmail.com
-Subject: [PATCH bpf v2 3/3] bpf, sockmap: fix memleak on ingress msg enqueue
-Date:   Mon, 26 Jul 2021 09:53:04 -0700
-Message-Id: <20210726165304.1443836-4-john.fastabend@gmail.com>
+        id S235627AbhGZQTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 12:19:55 -0400
+Received: from mail-eopbgr150077.outbound.protection.outlook.com ([40.107.15.77]:42242
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242038AbhGZQQ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 12:16:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hm1XqWxYjpGvx1sbKbl6YDC5hO8Wro8ccPMoZKuDakUO1P9jRatbWoqelGRdXrKtnlCLmCht6Fa4eLbFfpC40Hfnx9FxdI8gnPGDTtWYMSlWUHH8YOfO5Xe91xEDT1CkxVAIoILg3XXe0FtBo2+3dHwBw5djHHFcJGwlaHWOGq62fv43Rf74loIEHwbMMs0K0EoHXpCBbUHv8fHcJaztEuo0+IrN9ENlWU7GfOPX37YVPdrKfghPbKRNPQwY8zLDXSqqcA5AEGcDIvS2VQQrMbW7GjDup6UQKQfmJVTxwgQNqz6aSGYufIVvtHTzWfF041sI14SuhxW5sRlDSfpjqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6luHFJoDp3oT1b1WOGU7ERfpGkWlcbXSMyTT640UT24=;
+ b=hN77uC7PEd8/aseh+cD96Sr1EN0v2bToDtmf1qcxdjJmdDRiamopzPp8OKn8kKYXp1nJcaYZHX7I60JZBMAn/+J2bSLzvsXgtN27h10h2T29pawjSVJPjzVD+KdvAjJR+9lNl5laywi8gKzYz8mnCKVP3lUytmEMiXG/Y/LXdyKxkpyGcxaqIux10AUIxt4J2GBud8P+eHqjdOwVZpxa62ROWGPYdfs9hQbf/+l67mRwPdhaovyufgZ+v7aIBg7IWs+GwAO+46E8/NM7almHBrkAU8//REj9E8rMzV08TyG79/vLc29BrrEXX0yveMcSUZq87xeWlPbchWo1XnnsZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6luHFJoDp3oT1b1WOGU7ERfpGkWlcbXSMyTT640UT24=;
+ b=cjc/Eb19ym7c2irCwJZBgcNfG3ow/kGg+JNnBETOJ8E90Np1TYGo5nfiDFE4kfgx13Iqyn3oM8QlVaWM9YDk10Ydr6slQeJ04K8ll/GM6KFV6wuQDQYWC3+gphFngnYcA3ig58xFt6/W4BsUE8rLbSF7CfvcV9shqrzfJEPepyM=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB7328.eurprd04.prod.outlook.com (2603:10a6:800:1a5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Mon, 26 Jul
+ 2021 16:56:04 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4352.031; Mon, 26 Jul 2021
+ 16:56:04 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next 6/9] net: dsa: sja1105: deny more than one VLAN-aware bridge
+Date:   Mon, 26 Jul 2021 19:55:33 +0300
+Message-Id: <20210726165536.1338471-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210726165304.1443836-1-john.fastabend@gmail.com>
-References: <20210726165304.1443836-1-john.fastabend@gmail.com>
-MIME-Version: 1.0
+In-Reply-To: <20210726165536.1338471-1-vladimir.oltean@nxp.com>
+References: <20210726165536.1338471-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR05CA0078.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (82.76.66.29) by AM0PR05CA0078.eurprd05.prod.outlook.com (2603:10a6:208:136::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.26 via Frontend Transport; Mon, 26 Jul 2021 16:56:04 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ff9d4531-8cb9-46a4-3e15-08d95056417f
+X-MS-TrafficTypeDiagnostic: VE1PR04MB7328:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB7328EAB67A252716E9B2661BE0E89@VE1PR04MB7328.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HcyuOy6BufWe11b0159Z+9yzwXyKakZxcTG5Fr/0CuqQEuh6ATLMqGx4Sm1kDZkBDdfRQ19e7rvZQy13qHlLcJL8IYAl99kTtBVaQTYKKRTPWdbVcvC3zrw4QKoNG/hohV3G8f7B7KTMjW55L6CrJaXQnesD1Aw0K8cEIxn3nWSHPcEA7q/hfgmW89e+7B1+1Ufyz2xmBuVXE+RIOBmeXIx/w8gKYlmRFxxEYb6nqAZRk+ArIqHEmV3oNnTsx8Z6M9GMJ4aWnjSXKeWZuCFfanG4JOy/RBAKfVdqMSwCQ2sWUBPB1m0H7+L2py/rgIVTeAB4ZLAQXcX6fnr92ZG74F8XT4M2vsFQrZBZQtbMZqDTQ6uqGlCqQ6AJR6Kir3f7YxRvcvi/+bU0kXOIDhn+1dB+NO3WB+R6LDIgxm+WY5z3QEJuNsnR0N3G+NiVOjCNMPVt7mkYn4eAodws8X3q2HOZj2iAvfN8/j8JaSpSgx6o5ZBLS55LQR0tiH+ywWb57d52/0/VtCa44yzYWWOl3FK0CqQly7PKEf6han8cW30OuyaPtGCMTNUVz1hjCOHpOY38ixMn1GxE9MDQraGd0IzctLbCPbRZm1P5cizHptm7MGSz/isSN7+Ni1PJXGWiq3uLq5HaTh3N7z0OK9a++pTYdrDEzrVw3KIqlR0oJgHq8tOpakuMhZgAxGrie4amISUPvDu1OOOkyz6KBuTMww==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39850400004)(136003)(346002)(366004)(36756003)(38350700002)(38100700002)(83380400001)(478600001)(44832011)(956004)(6666004)(86362001)(2616005)(2906002)(52116002)(8676002)(8936002)(66556008)(5660300002)(66946007)(54906003)(110136005)(66476007)(316002)(26005)(6512007)(6506007)(186003)(1076003)(4326008)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SjAkCcIzoQsCaooGyqZgGU0Yycj02FQnmxacjvcCQMdsTUuYTe4HTXVzhfD/?=
+ =?us-ascii?Q?zA1FTHLlXBeGaeLqj1ML2DLZROp3KG3Yru9r65LN8D4KR9xFcPNWwU99LSUu?=
+ =?us-ascii?Q?0pD7PCNJzlYiI9VOKzuZpqM2eKAaKNrrLlkdwHVAldoGsxbFIpBwqNu8UhXu?=
+ =?us-ascii?Q?FO57U83GhFXt6C7ryAwAJ06KbPOeu8GRTzfbIh68dsCD5kVZJcGCl7q03pLg?=
+ =?us-ascii?Q?3JC3qrhJnAudaYJ1UaM4yJhO61Ywc0sjzdnty74+Y2kuFRfobyn0zRYca6yP?=
+ =?us-ascii?Q?EzkiK4Fe8Y6rkTYmahXYJn8MF/Gvu6AAzslUcLmcbJrT1ntNlYi92VkhhIn7?=
+ =?us-ascii?Q?yGEnQY7Ug4H2Z81I2XmKOImHGxA05InoGtWHKBUolXVEKyX53nvMgVy1qtD1?=
+ =?us-ascii?Q?suLl+0bPys085D2YTzToGGRwlRkQXjlvVGK4AGtSPgr/zn+X5BTcr3AooESc?=
+ =?us-ascii?Q?5CgxSeN7typHk/p2w1d/fpWWsgTLoXmTwnCVrT1JxFBlCIYWJ7FXUywmW8GK?=
+ =?us-ascii?Q?8vB05M6GkxjAq93zU/+VqZxnI1MMH0qTcnJz8cC3bqHFo/ggX/s8q6wyqDxO?=
+ =?us-ascii?Q?q5dSbEjPrQ/Cdit1tnLw9+pYOp0YsGri4i0mro1y4mmjyN8i5LS0FUxUEyGy?=
+ =?us-ascii?Q?WW6dVx5H+gr+qnd5DbTD6lkqxhczYd6GJ4cdG2bv50OX79g0E69Q3oHqbgau?=
+ =?us-ascii?Q?KbqLb1usoB6aMe3TRz6I7m5EfIdPg7ifM9yn42yuAIupaD6CtPKaGgF4tUFJ?=
+ =?us-ascii?Q?SYwIzqICd4sLW2yCL6XLZjJ4u3pAb0iL4dGRjOTMHI6pzmqQJYDa4n2/zfXx?=
+ =?us-ascii?Q?yLUiXGMQizfriicxq6Urt2ZEpln0fDC+d5rGyngzTw8Zaz7S01PTIxzOIQLG?=
+ =?us-ascii?Q?YIlGD3rBta48h6N89CxRuTh/DGu2ywQ0uKw3lxnxeqDaItzwO8OfCdy3JuWq?=
+ =?us-ascii?Q?BhBghWlsSLmsAhU8Z3gX6/xEKbv/y0R+SKlcPsSWX/tHEiTFMjRtOZfrvSoY?=
+ =?us-ascii?Q?CGPMtThzkz3t7uHCZgYjUY70l+701cDby6rsT3Eqh1WRbKmH6OVT0MmpKPeN?=
+ =?us-ascii?Q?6O6qd79oKBA9g6gny3GUbSh1if/X8E4OtclNF6hDa45ZCuJt1exdM1VuddIe?=
+ =?us-ascii?Q?f47rS65YJTuaIpNBearJpXNNXWtQvtFKs/Rc21xVXlo6ID/Q2zOrBZQY2kK6?=
+ =?us-ascii?Q?hFefqWaheOqP8ii6akeTHXDQcpr2kF0MEYQsoINt5U/HLNpt1umH+vRdJUeG?=
+ =?us-ascii?Q?zPw5A4T+A5f1D2YYSyGftAe4xF2R+tF4Qu6oZstbnzBhua+WljEj+MTTMZ8G?=
+ =?us-ascii?Q?XqlRbRNtC6hmlwgIZR60ewRV?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff9d4531-8cb9-46a4-3e15-08d95056417f
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2021 16:56:04.7722
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cIkGdA1IGusEiqWxjNyaZ3fDnTfN68PXTO3fyEmO32dyZlXI3m7t99mKDodGvEFg8qSEqOa6tPmCfqQbD6cC2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7328
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If backlog handler is running during a tear down operation we may enqueue
-data on the ingress msg queue while tear down is trying to free it.
+With tag_sja1105.c's only ability being to perform an imprecise RX
+procedure and identify whether a packet comes from a VLAN-aware bridge
+or not, we have no way to determine whether a packet with VLAN ID 5
+comes from, say, br0 or br1. Actually we could, but it would mean that
+we need to restrict all VLANs from br0 to be different from all VLANs
+from br1, and this includes the default_pvid, which makes a setup with 2
+VLAN-aware bridges highly imprectical.
 
- sk_psock_backlog()
-   sk_psock_handle_skb()
-     skb_psock_skb_ingress()
-       sk_psock_skb_ingress_enqueue()
-         sk_psock_queue_msg(psock,msg)
-                                           spin_lock(ingress_lock)
-                                            sk_psock_zap_ingress()
-                                             _sk_psock_purge_ingerss_msg()
-                                              _sk_psock_purge_ingress_msg()
-                                            -- free ingress_msg list --
-                                           spin_unlock(ingress_lock)
-           spin_lock(ingress_lock)
-           list_add_tail(msg,ingress_msg) <- entry on list with no one
-                                             left to free it.
-           spin_unlock(ingress_lock)
+The fact of the matter is that this isn't even that big of a practical
+limitation, since even with a single VLAN-aware bridge we can pretty
+much enforce forwarding isolation based on the VLAN port membership.
 
-To fix we only enqueue from backlog if the ENABLED bit is set. The tear
-down logic clears the bit with ingress_lock set so we wont enqueue the
-msg in the last step.
+So in the end, tell the user that they need to model their setup using a
+single VLAN-aware bridge.
 
-Fixes: 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/linux/skmsg.h | 54 ++++++++++++++++++++++++++++---------------
- net/core/skmsg.c      |  6 -----
- 2 files changed, 35 insertions(+), 25 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index 96f319099744..94b4b61ba775 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -285,11 +285,45 @@ static inline struct sk_psock *sk_psock(const struct sock *sk)
- 	return rcu_dereference_sk_user_data(sk);
- }
- 
-+static inline void sk_psock_set_state(struct sk_psock *psock,
-+				      enum sk_psock_state_bits bit)
-+{
-+	set_bit(bit, &psock->state);
-+}
-+
-+static inline void sk_psock_clear_state(struct sk_psock *psock,
-+					enum sk_psock_state_bits bit)
-+{
-+	clear_bit(bit, &psock->state);
-+}
-+
-+static inline bool sk_psock_test_state(const struct sk_psock *psock,
-+				       enum sk_psock_state_bits bit)
-+{
-+	return test_bit(bit, &psock->state);
-+}
-+
-+static void sock_drop(struct sock *sk, struct sk_buff *skb)
-+{
-+	sk_drops_add(sk, skb);
-+	kfree_skb(skb);
-+}
-+
-+static inline void drop_sk_msg(struct sk_psock *psock, struct sk_msg *msg)
-+{
-+	if (msg->skb)
-+		sock_drop(psock->sk, msg->skb);
-+	kfree(msg);
-+}
-+
- static inline void sk_psock_queue_msg(struct sk_psock *psock,
- 				      struct sk_msg *msg)
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index a380f37fd22d..ef63226fed2b 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -2257,12 +2257,25 @@ static int sja1105_prechangeupper(struct dsa_switch *ds, int port,
  {
- 	spin_lock_bh(&psock->ingress_lock);
--	list_add_tail(&msg->list, &psock->ingress_msg);
-+	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
-+		list_add_tail(&msg->list, &psock->ingress_msg);
-+	else
-+		drop_sk_msg(psock, msg);
- 	spin_unlock_bh(&psock->ingress_lock);
+ 	struct netlink_ext_ack *extack = info->info.extack;
+ 	struct net_device *upper = info->upper_dev;
++	struct dsa_switch_tree *dst = ds->dst;
++	struct dsa_port *dp;
+ 
+ 	if (is_vlan_dev(upper)) {
+ 		NL_SET_ERR_MSG_MOD(extack, "8021q uppers are not supported");
+ 		return -EBUSY;
+ 	}
+ 
++	if (netif_is_bridge_master(upper)) {
++		list_for_each_entry(dp, &dst->ports, list) {
++			if (dp->bridge_dev && dp->bridge_dev != upper &&
++			    br_vlan_enabled(dp->bridge_dev)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Only one VLAN-aware bridge is supported");
++				return -EBUSY;
++			}
++		}
++	}
++
+ 	return 0;
  }
  
-@@ -406,24 +440,6 @@ static inline void sk_psock_restore_proto(struct sock *sk,
- 		psock->psock_update_sk_prot(sk, psock, true);
- }
- 
--static inline void sk_psock_set_state(struct sk_psock *psock,
--				      enum sk_psock_state_bits bit)
--{
--	set_bit(bit, &psock->state);
--}
--
--static inline void sk_psock_clear_state(struct sk_psock *psock,
--					enum sk_psock_state_bits bit)
--{
--	clear_bit(bit, &psock->state);
--}
--
--static inline bool sk_psock_test_state(const struct sk_psock *psock,
--				       enum sk_psock_state_bits bit)
--{
--	return test_bit(bit, &psock->state);
--}
--
- static inline struct sk_psock *sk_psock_get(struct sock *sk)
- {
- 	struct sk_psock *psock;
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 036cdb33a94a..2d6249b28928 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -584,12 +584,6 @@ static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
- 	return sk_psock_skb_ingress(psock, skb);
- }
- 
--static void sock_drop(struct sock *sk, struct sk_buff *skb)
--{
--	sk_drops_add(sk, skb);
--	kfree_skb(skb);
--}
--
- static void sk_psock_skb_state(struct sk_psock *psock,
- 			       struct sk_psock_work_state *state,
- 			       struct sk_buff *skb,
 -- 
 2.25.1
 
