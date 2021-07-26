@@ -2,125 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AFD53D64F0
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A5153D6503
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236063AbhGZQRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 12:17:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49884 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241129AbhGZQPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 12:15:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9BCBA60F57;
-        Mon, 26 Jul 2021 16:55:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627318553;
-        bh=EevERKxgq8g7N6FFNGl7+xFknPDb6AKUPvnKdbzFUqU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r0zOaDNJMGUSx39WZ4fL36NbJ39sPZKLYHI9KoUUftAPbKJGx3XjeSPvDSWU5QVE9
-         y/UFzUsJvTLV+nkWEG54VafmJ0VguesX/mWFs0NZiDfN1Pfd1Q2/q6MT35DP+2DQdy
-         D58KqhAausjH/XuPYoe7wPHR5kfSCXeL0rAzGYGV6WW43ATNzEsaUsxW2f64x+O7ws
-         46uS4ZfK0TDhRNBLgi6lhEzZOiE7wk1N0WEssu7nBrawbYNnUX5iuiTZHXxx4cP8Bv
-         C9ffn87TQHjN3sNZwpZQ5ATJgl8S+PBH04BnXgvSEm5Hekv0t5Uo2w2w1DJGb1iAwa
-         6dj7+6csFNuXA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 02/16] net/mlx5e: Block LRO if firmware asks for tunneled LRO
-Date:   Mon, 26 Jul 2021 09:55:30 -0700
-Message-Id: <20210726165544.389143-3-saeed@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210726165544.389143-1-saeed@kernel.org>
-References: <20210726165544.389143-1-saeed@kernel.org>
-MIME-Version: 1.0
+        id S240122AbhGZQS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 12:18:57 -0400
+Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:59207
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241842AbhGZQQk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 12:16:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L6CCX9SZeCSUsUbKktjiScMGhQC4a6TKC9KjLJbDGLisc1lMYpPzow1GXRQMM9HdYCPUje3Yy08H6PncQT7qy5vWeqAupY9Wk4cCX5EzYFkZ7dnkcBt1uFQH9MhtfPkO4vPw+gLSO7cTfVj54Xw4ag+2CS8LMXXhm5W/a5/IeQfayQFWmtAYtwgq82kxS/McIL73TqBjSKN0weSCSrZlCeGOgwuR/tQfnHbKhk/4mqdbFF3Opu3u7PK3JxYmQowFnFq2MnCc0S9r3nfO/aOZqCdLOQqu8EMxbiXAc2y1b9/qVuhSH55tJXmkpIEASi+uFu+oO04O2jEj7ocUwe7YqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=glUPOV9fjji5oiTAHlt7feLpOsGwWSGXaG3IUHgvQrQ=;
+ b=gitExVG41SREBLmWvbIzv+ZPRFyY1qoOpBv5DGPmNTIo1K6RyFhLU1bVfrmjTr1hRGN6G43gzS5FOeoI8koDNDUIgaknxqgm22IYKoQmfLRDwv2XZuq5z6UgHoCpAn7h46fI+eewo0leQ/QFufSmVWimO3mF2Fihtdtz1j54tzAPy0H8/NdU5hszXWNJb2V9lXMrccoJ7tB7NObhQcrClxc97meQ4alVd170UFmxHejhBxkAi2MFcNVoXfYUfauvJ4o0oR5jcgspCmMg3wo3bB9qWgxxa9aINzf3jF50ZIbHmlFKaDbxK4nFluOPzd2soEWsRfOuVcVX/KgtWWjqYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=glUPOV9fjji5oiTAHlt7feLpOsGwWSGXaG3IUHgvQrQ=;
+ b=TpjWR/KgkIwDUHskdOBuFvbPOtHFPugVk2xvwiqnZaeQiNt9lpyyB/ETaJIvEsSEW29phVUsJFMVDrpifjRHUvnOjOiRYaLkOVr123mdJ36lms4UsW9Zs8hIZu8c5VW1jF7aGDHjvl2OLZSmuW7hcqcIRcmbMVW6imX7aycKA5c=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB7328.eurprd04.prod.outlook.com (2603:10a6:800:1a5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Mon, 26 Jul
+ 2021 16:56:02 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::109:1995:3e6b:5bd0%2]) with mapi id 15.20.4352.031; Mon, 26 Jul 2021
+ 16:56:02 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Colin Ian King <colin.king@canonical.com>
+Subject: [PATCH net-next 3/9] net: dsa: sja1105: remove redundant re-assignment of pointer table
+Date:   Mon, 26 Jul 2021 19:55:30 +0300
+Message-Id: <20210726165536.1338471-4-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210726165536.1338471-1-vladimir.oltean@nxp.com>
+References: <20210726165536.1338471-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR05CA0078.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (82.76.66.29) by AM0PR05CA0078.eurprd05.prod.outlook.com (2603:10a6:208:136::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.26 via Frontend Transport; Mon, 26 Jul 2021 16:56:01 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1fdc2f8f-ec03-492b-00e3-08d950563fd5
+X-MS-TrafficTypeDiagnostic: VE1PR04MB7328:
+X-Microsoft-Antispam-PRVS: <VE1PR04MB7328834DC26F4684CD41FC00E0E89@VE1PR04MB7328.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1824;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hxd1to1Csta9e96iQYxDSnh571atv5lve+zzCxDnHAivosTJ1SnqHZ6lOFcPCSHxxae5SzP+4Oatr8saKSRfpNmDbNni+RznYFt4zPM76BS4RDRPctv+CxHgeBe2YbinJikkRxbOxV2Pc2cc95hy3yEzLGmVmeQC4e8X/o4jVALQzv3NA5KSYjQCy0n/RJ/JNM412kOSo/Svqwa3QAAThpUXgFMHUJpFtAirH5E+k1xt0gMAeFsQPUeLrapu67pK8ZPln94vLzSdEJU6eBy67o0UtSx+9UqvFVor9ygUnSLrHui5iqmc0rYo5+7Edpv4q+cuNFU8yjC8IEYfUwdOLgzTo6VdAYR6DpK58zMmGWZslvsqNSWBITysGZ02duu0wiLpx8By/VXAhcXuPMFh+mWHXEjnCPnX4uqEmM9mZUxI3mRkZJo19HiGzO00DHpOzhQgULxf/0QRhodfmw3PL2niSGI93+Ks4B1rnxAnrkqF0c/rDtoA9JXClppcOd6FO3hISuoxLqV0HOerUFsiKAGnLh6F45jt02YP0rxH8+7i02fIU6QkGsKs5WsFsFAiD7nVK8t8WD5Dj/oJfkiKJlTAXZBo1dHoCE1smIJF4sxC+VS4fKQkSYl/g4OPyw2C5j8pGvZceUScIx4PcDhF6h4ljUbBAM4KCaIvTImHabpEUfuakOp7aitQuEAcjzmfw7+5qC4MQfQkdJempQD67g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39850400004)(136003)(346002)(366004)(36756003)(38350700002)(38100700002)(83380400001)(4744005)(478600001)(44832011)(956004)(6666004)(86362001)(2616005)(2906002)(52116002)(8676002)(8936002)(66556008)(5660300002)(66946007)(54906003)(110136005)(66476007)(316002)(26005)(6512007)(6506007)(186003)(1076003)(4326008)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aqtRSdxmAAZmUo/VNAh291372zx2NBdymyYDWSYgDuug337FlXjekJjJAR/x?=
+ =?us-ascii?Q?sBjSrnwH0jlz94/8czZgKgbvE18Ke+OSS5qadc18zs6l1ntuLo29kqZz+V3g?=
+ =?us-ascii?Q?3UQPVELihdRFnSi4LrW0fP8Sk61nKAzxyM8HXMDLGhni2zb9C1b12P+4nYNy?=
+ =?us-ascii?Q?zYLLfaqCaLiNaBikGUkZV3Pw3AWyUWUT6KKNXi8pQGQuCA2tGP/hNCTPIxi1?=
+ =?us-ascii?Q?zl28faCzY7BzQZUl3FHKsDJ5WiG+FoWoIpAgq24EWQkwivVYfUOmwfcoCbzy?=
+ =?us-ascii?Q?d/pwGHt0E7t9smVMLR/D2PKspqwxt7AMbG8pwPksPMOYWEl7CY2KyZrqkfQ4?=
+ =?us-ascii?Q?fGjImnj+89wV7SG3Dz5SssGn15BgxZJCEw8g3YmpmTb42P5iTAXf1CZsht2I?=
+ =?us-ascii?Q?dbo5RkxD+1eqPe8kpVJdMLEEDN181tGaCON2hnd5pUkIY21TLfR7s2b41aun?=
+ =?us-ascii?Q?LOjvBb84AfVG27Za8KTKsR36AL254RQ4TYI3Tf7R5sK2L9t8FNjxQk78rKf8?=
+ =?us-ascii?Q?Myqd5pJUuCdbP4D9G3AmjsEOhCxnfWN2lM76HmJVxZPH9xTILhqLIQIsRMp8?=
+ =?us-ascii?Q?Gp8HWd+zuHj0rvUgalNlFV9OoI+V4ja7v8AoHO4hsMDU0eSjvfpzOCi8Yuc4?=
+ =?us-ascii?Q?TKHJrRmnoeQS5qBt5PEk4vk9WvjiAl1xRlG77+fxq2JRIBBLZonnZNabJybW?=
+ =?us-ascii?Q?jLYcKoBIdshXDc5ddCQnFu44A5s5KI11lIZzIlTT+biuP7igGMmRQkLoOkcL?=
+ =?us-ascii?Q?ShQPvz6rSacCusMZc8LsHw6t7AkguuQEnzNk5yGqeSzEkzPoZLW9SjR+HjPN?=
+ =?us-ascii?Q?MJaRFgQdC0GJhd9rc7V2aj3ZfRKynv+yHKD5ZcJ8qTd0xSMZMXOhJLx/oWz0?=
+ =?us-ascii?Q?N2lbeaFozd+DbQcqKdf5A53scdbYtNPCode3Xef6+fmpimxsrST19cyO3Q/x?=
+ =?us-ascii?Q?yP4zRhGqPQHtLCPt5Osa5Nk8bTRzbid+ET5hKDHctCcIqRqJBThyKw1MwVrF?=
+ =?us-ascii?Q?xbbyOP/5XZr7ruddLzDVPrIAixrLuZ74R5MO4CWmvR5sDV0YQao+faiaT+x6?=
+ =?us-ascii?Q?2jc0b9GpoVOBNP3AThx/vDs5SOn7CljDtkkAOVaQKt/6RhLOJ9g7xIbSrt07?=
+ =?us-ascii?Q?S9CcmHPKvsRl+QeblmYvr77fbQxAlE7+kDo6t8lLikpRzxdNZwK8F7aOgxGO?=
+ =?us-ascii?Q?yrfnwy14pC5Eeod8GxuXFSuFMKM0W0WBHcb9zapBDLiL5Ors3aYL7lh2HYE/?=
+ =?us-ascii?Q?KAA6x6/LiYJPVcl5ufiWHU/WFOviEbYJ+kXHlIvrpUk9R5yQngtSOA175PhE?=
+ =?us-ascii?Q?MYuQ4+/zpq8A0Yytu/y9Fk7U?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fdc2f8f-ec03-492b-00e3-08d950563fd5
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2021 16:56:01.9958
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IMdXSjqnxPVuoOM+yNMgddjVLx1XeWG3PW9EmAc55r0x7w8mraBQEt8Ci7BhNiLXqkpNglhN5Wi6r8d1cW3ARg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7328
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-This commit does a cleanup in LRO configuration.
+The pointer table is being re-assigned with a value that is never
+read. The assignment is redundant and can be removed.
 
-LRO is a parameter of an RQ, but its state is changed by modifying a TIR
-related to the RQ.
-
-The current status: LRO for tunneled packets is not supported in the
-driver, inner TIRs may enable LRO on creation, but LRO status of inner
-TIRs isn't changed in mlx5e_modify_tirs_lro(). This is inconsistent, but
-as long as the firmware doesn't declare support for tunneled LRO, it
-works, because the same RQs are shared between the inner and outer TIRs.
-
-This commit does two fixes:
-
-1. If the firmware has the tunneled LRO capability, LRO is blocked
-altogether, because it's not possible to block it for inner TIRs only,
-when the same RQs are shared between inner and outer TIRs, and the
-driver won't be able to handle tunneled LRO traffic.
-
-2. mlx5e_modify_tirs_lro() is patched to modify LRO state for all TIRs,
-including inner ones, because all TIRs related to an RQ should agree on
-their LRO state.
-
-Fixes: 7b3722fa9ef6 ("net/mlx5e: Support RSS for GRE tunneled packets")
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Addresses-Coverity: ("Unused value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 15 +++++++++++++++
- include/linux/mlx5/mlx5_ifc.h                     |  3 ++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d09e65557e75..b651134b0f6b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2576,6 +2576,14 @@ static int mlx5e_modify_tirs_lro(struct mlx5e_priv *priv)
- 		err = mlx5_core_modify_tir(mdev, priv->indir_tir[tt].tirn, in);
- 		if (err)
- 			goto free_in;
-+
-+		/* Verify inner tirs resources allocated */
-+		if (!priv->inner_indir_tir[0].tirn)
-+			continue;
-+
-+		err = mlx5_core_modify_tir(mdev, priv->inner_indir_tir[tt].tirn, in);
-+		if (err)
-+			goto free_in;
- 	}
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 07bb65a36083..4f1331ff5053 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -2163,8 +2163,6 @@ static int sja1105_build_vlan_table(struct sja1105_private *priv)
+ 	if (!new_vlan)
+ 		return -ENOMEM;
  
- 	for (ix = 0; ix < priv->max_nch; ix++) {
-@@ -4808,7 +4816,14 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 	netdev->hw_enc_features  |= NETIF_F_HW_VLAN_CTAG_TX;
- 	netdev->hw_enc_features  |= NETIF_F_HW_VLAN_CTAG_RX;
- 
-+	/* Tunneled LRO is not supported in the driver, and the same RQs are
-+	 * shared between inner and outer TIRs, so the driver can't disable LRO
-+	 * for inner TIRs while having it enabled for outer TIRs. Due to this,
-+	 * block LRO altogether if the firmware declares tunneled LRO support.
-+	 */
- 	if (!!MLX5_CAP_ETH(mdev, lro_cap) &&
-+	    !MLX5_CAP_ETH(mdev, tunnel_lro_vxlan) &&
-+	    !MLX5_CAP_ETH(mdev, tunnel_lro_gre) &&
- 	    mlx5e_check_fragmented_striding_rq_cap(mdev))
- 		netdev->vlan_features    |= NETIF_F_LRO;
- 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index b0009aa3647f..6bbae0c3bc0b 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -921,7 +921,8 @@ struct mlx5_ifc_per_protocol_networking_offload_caps_bits {
- 	u8         scatter_fcs[0x1];
- 	u8         enhanced_multi_pkt_send_wqe[0x1];
- 	u8         tunnel_lso_const_out_ip_id[0x1];
--	u8         reserved_at_1c[0x2];
-+	u8         tunnel_lro_gre[0x1];
-+	u8         tunnel_lro_vxlan[0x1];
- 	u8         tunnel_stateless_gre[0x1];
- 	u8         tunnel_stateless_vxlan[0x1];
+-	table = &priv->static_config.tables[BLK_IDX_VLAN_LOOKUP];
+-
+ 	for (i = 0; i < VLAN_N_VID; i++)
+ 		new_vlan[i].vlanid = VLAN_N_VID;
  
 -- 
-2.31.1
+2.25.1
 
