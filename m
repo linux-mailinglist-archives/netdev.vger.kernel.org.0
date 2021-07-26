@@ -2,251 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E19FF3D5856
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEFC03D5858
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232702AbhGZKa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 06:30:58 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41578 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232263AbhGZKa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 06:30:57 -0400
-Received: by mail-io1-f72.google.com with SMTP id c18-20020a0566023352b0290523c137a6a4so8356318ioz.8
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 04:11:26 -0700 (PDT)
+        id S233279AbhGZKbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 06:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232375AbhGZKbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 06:31:17 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0493C061757;
+        Mon, 26 Jul 2021 04:11:45 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id r17so14750758lfe.2;
+        Mon, 26 Jul 2021 04:11:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=n6bJSXqmcuKJfAgVqQXN6el/oURcZ0UU9SDbTUMNCAM=;
+        b=g0xMMZ/KPNpXWtAf3Vg1zFQ0eLd6TQvlY3jGoDtGSvZsBNagZf8KHfo3ktl6kgkENs
+         OMCazNSxkroLdVQONm97uoPloWGucMNkqcQ3MUaNVv6oAO7JRsI8jx+IB7reM2R4e5+l
+         7OxQsX4wUVvpU5ndlams6jhHu+YyMtRCFEn7qWupmUz9IleoQvxRtALdr9Z++fiaxGEd
+         Uz1b+INwfoyN9B6y2vbuAVma+AYt0kyk91IaprJIRS7qokct3U15VuNL/dxP3Eeftixg
+         Av8hLhGU66i8wMkQg3NamgOLeCcTgVNdZGlBdfWI5CgnQnS1eeVnwfEEIy7X5VRouUDF
+         eAaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DBgSQulEimYK54fL+ksLZGwR2PD3Tq44nHtHlrBZwi0=;
-        b=mC9/L5AwautZOhhFMNxVF8eQ569qqk/wYnWLdlw2WKruDUATXALGaW3wXV9QbBoZ4E
-         gf+tNKh0U7Mza31StrW1SUzzAiH04ao4wXA+Bd8LGAOnVu4Ezi8aNHJG11dnvH3Bob2E
-         I1I8BOpUbDuhnBIvmuQkl/n8GbH8GTsgSfgfm4po9P//s59WMaC6BGC+1S4Nz7LvD4mS
-         AN3JXm6RDI/ZABJrQmlDdosJKdN9h6bAIZkXBk4JV/M81jVCgxXm4HKIUMzdRcIyPh08
-         tLcuAUH5tsvFTTNN6m1aSd+u6nbeDO7YFFm7ZCUk9aV4R3bZot003QB+shaIxFpIEkVk
-         Voxw==
-X-Gm-Message-State: AOAM532K+4zwTY7G2k4M9sP4mPdbiNADHQKn2MfMs5FSuOqYOQ4yN9G8
-        dALAdhc57ZBEwci5kbeGtew7w/970VOGqDTKGKBsh3XStmy6
-X-Google-Smtp-Source: ABdhPJyqMx0kZ4orxnK8tGZg/c9ZIiAwIlzGvpCuhGVoYal09omcrPvOmesOl5wA1zY/D+svIu1oxv2K1uKu3I8HDwnCi3/o5muK
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=n6bJSXqmcuKJfAgVqQXN6el/oURcZ0UU9SDbTUMNCAM=;
+        b=COQt/Il8QFhDmtzVJQ4tx09ICdujUMCyZLI/OiCqunRfbJ/cSrMguImwKuxrZRSz+P
+         6nwS5Wcs8q+Ritmns+lvnbj7jeXrzjKaYr4YcCW9bS3pL/vWV0WO9cHsHXgwadGr+wYe
+         LKCZ5i2P+/4CKuC1OFd86x0+GngZ6LaDBvqPm6qha7VvV0dm/gbOkYKl0xX+boAlqZcq
+         gixpwUxp5cKUNWwOFYxHyvWEri/HG4bv1ptOr466E0OsWpfnVzTiDc/f4ZjKzE4s88aY
+         YBB59CbwbmA8J6JdWDOIVGqRg7yP0CXq56NaG2SDFBN9CN6KkgkYbhnsOxGYY7cG8SDE
+         nKRQ==
+X-Gm-Message-State: AOAM532pRju4p17zOz8U5qSEIABcFfzrbR1vAssOED9UCzV9LwMsErfm
+        z1LgAN9K9CchUdDx9hD6UOk=
+X-Google-Smtp-Source: ABdhPJzdwv+HmcbqytJU0HH8+7k/WPlg+x1ObKdecgnmut1qbxCfWJ5Gg57D3WDolyh9m7MNNn/hRg==
+X-Received: by 2002:ac2:52b4:: with SMTP id r20mr13193991lfm.104.1627297903256;
+        Mon, 26 Jul 2021 04:11:43 -0700 (PDT)
+Received: from localhost.localdomain ([46.61.204.59])
+        by smtp.gmail.com with ESMTPSA id bt12sm2450642lfb.14.2021.07.26.04.11.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 04:11:43 -0700 (PDT)
+Date:   Mon, 26 Jul 2021 14:11:40 +0300
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     paul@paul-moore.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/2] net: cipso: fix warnings in netlbl_cipsov4_add_std
+Message-ID: <20210726141140.24e8db78@gmail.com>
+In-Reply-To: <53de0ccd1aa3fffa6bce2a2ae7a5ca07e0af6d3a.1625900431.git.paskripkin@gmail.com>
+References: <cover.1625900431.git.paskripkin@gmail.com>
+        <53de0ccd1aa3fffa6bce2a2ae7a5ca07e0af6d3a.1625900431.git.paskripkin@gmail.com>
+X-Mailer: Claws Mail 3.17.8git77 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a02:cd0a:: with SMTP id g10mr15941097jaq.18.1627297885992;
- Mon, 26 Jul 2021 04:11:25 -0700 (PDT)
-Date:   Mon, 26 Jul 2021 04:11:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000703c0f05c804d095@google.com>
-Subject: [syzbot] INFO: rcu detected stall in batadv_tt_purge (2)
-From:   syzbot <syzbot+08504d998fc4589919ac@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, fweisbec@gmail.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mingo@kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vinicius.gomes@intel.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, 10 Jul 2021 10:03:13 +0300
+Pavel Skripkin <paskripkin@gmail.com> wrote:
 
-syzbot found the following issue on:
-
-HEAD commit:    7b6ae471e541 Merge tag 'spi-fix-v5.14-rc2' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17849f74300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f7dfeb6dfc05ea19
-dashboard link: https://syzkaller.appspot.com/bug?extid=08504d998fc4589919ac
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12fc675a300000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1566d2ea300000
-
-The issue was bisected to:
-
-commit b5b73b26b3ca34574124ed7ae9c5ba8391a7f176
-Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Date:   Thu Sep 10 00:03:11 2020 +0000
-
-    taprio: Fix allowing too small intervals
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1468a696300000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1668a696300000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1268a696300000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+08504d998fc4589919ac@syzkaller.appspotmail.com
-Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
-
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	0-...!: (2 ticks this GP) idle=4de/1/0x4000000000000000 softirq=11238/11238 fqs=0 
-	(t=13326 jiffies g=13217 q=742)
-rcu: rcu_preempt kthread timer wakeup didn't happen for 13325 jiffies! g13217 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
-rcu: 	Possible timer handling issue on cpu=0 timer-softirq=29073
-rcu: rcu_preempt kthread starved for 13326 jiffies! g13217 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=0
-rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
-rcu: RCU grace-period kthread stack dump:
-task:rcu_preempt     state:I stack:29096 pid:   14 ppid:     2 flags:0x00004000
-Call Trace:
- context_switch kernel/sched/core.c:4683 [inline]
- __schedule+0x93a/0x26f0 kernel/sched/core.c:5940
- schedule+0xd3/0x270 kernel/sched/core.c:6019
- schedule_timeout+0x14a/0x2a0 kernel/time/timer.c:1878
- rcu_gp_fqs_loop kernel/rcu/tree.c:1996 [inline]
- rcu_gp_kthread+0xd34/0x1980 kernel/rcu/tree.c:2169
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-rcu: Stack dump where RCU GP kthread last ran:
-NMI backtrace for cpu 0
-CPU: 0 PID: 10 Comm: kworker/u4:1 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_tt_purge
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
- nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_check_gp_kthread_starvation.cold+0x1d1/0x1d6 kernel/rcu/tree_stall.h:479
- print_cpu_stall kernel/rcu/tree_stall.h:623 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:700 [inline]
- rcu_pending kernel/rcu/tree.c:3922 [inline]
- rcu_sched_clock_irq.cold+0x9a/0x747 kernel/rcu/tree.c:2641
- update_process_times+0x16d/0x200 kernel/time/timer.c:1782
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
- tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1421
- __run_hrtimer kernel/time/hrtimer.c:1537 [inline]
- __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1601
- hrtimer_interrupt+0x330/0xa00 kernel/time/hrtimer.c:1663
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1089 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1106
- sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1100
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:__local_bh_enable_ip+0xa8/0x120 kernel/softirq.c:390
-Code: 1d ad 91 bc 7e 65 8b 05 a6 91 bc 7e a9 00 ff ff 00 74 45 bf 01 00 00 00 e8 15 2a 09 00 e8 50 84 35 00 fb 65 8b 05 88 91 bc 7e <85> c0 74 58 5b 5d c3 65 8b 05 d6 98 bc 7e 85 c0 75 a2 0f 0b eb 9e
-RSP: 0018:ffffc90000f0fc10 EFLAGS: 00000206
-RAX: 0000000080000000 RBX: 00000000fffffe00 RCX: 1ffffffff1fa584a
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffffff88ca93e5 R08: 0000000000000001 R09: ffffffff8fcd7987
-R10: 0000000000000001 R11: 0000000000000000 R12: ffffc90000f0fdb0
-R13: ffff888042de12f8 R14: 0000000000000082 R15: dffffc0000000000
- spin_unlock_bh include/linux/spinlock.h:399 [inline]
- batadv_tt_local_purge+0x285/0x370 net/batman-adv/translation-table.c:1369
- batadv_tt_purge+0x2c/0xaf0 net/batman-adv/translation-table.c:3591
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-NMI backtrace for cpu 0
-CPU: 0 PID: 10 Comm: kworker/u4:1 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_tt_purge
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
- nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
- nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x25e/0x3f0 kernel/rcu/tree_stall.h:342
- print_cpu_stall kernel/rcu/tree_stall.h:625 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:700 [inline]
- rcu_pending kernel/rcu/tree.c:3922 [inline]
- rcu_sched_clock_irq.cold+0x9f/0x747 kernel/rcu/tree.c:2641
- update_process_times+0x16d/0x200 kernel/time/timer.c:1782
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:226
- tick_sched_timer+0x1b0/0x2d0 kernel/time/tick-sched.c:1421
- __run_hrtimer kernel/time/hrtimer.c:1537 [inline]
- __hrtimer_run_queues+0x1c0/0xe50 kernel/time/hrtimer.c:1601
- hrtimer_interrupt+0x330/0xa00 kernel/time/hrtimer.c:1663
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1089 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1106
- sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1100
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:__local_bh_enable_ip+0xa8/0x120 kernel/softirq.c:390
-Code: 1d ad 91 bc 7e 65 8b 05 a6 91 bc 7e a9 00 ff ff 00 74 45 bf 01 00 00 00 e8 15 2a 09 00 e8 50 84 35 00 fb 65 8b 05 88 91 bc 7e <85> c0 74 58 5b 5d c3 65 8b 05 d6 98 bc 7e 85 c0 75 a2 0f 0b eb 9e
-RSP: 0018:ffffc90000f0fc10 EFLAGS: 00000206
-RAX: 0000000080000000 RBX: 00000000fffffe00 RCX: 1ffffffff1fa584a
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffffffff88ca93e5 R08: 0000000000000001 R09: ffffffff8fcd7987
-R10: 0000000000000001 R11: 0000000000000000 R12: ffffc90000f0fdb0
-R13: ffff888042de12f8 R14: 0000000000000082 R15: dffffc0000000000
- spin_unlock_bh include/linux/spinlock.h:399 [inline]
- batadv_tt_local_purge+0x285/0x370 net/batman-adv/translation-table.c:1369
- batadv_tt_purge+0x2c/0xaf0 net/batman-adv/translation-table.c:3591
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 9018 Comm: kworker/u4:2 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_unbound toggle_allocation_gate
-RIP: 0010:__sanitizer_cov_trace_const_cmp4+0xc/0x70 kernel/kcov.c:283
-Code: 00 00 00 48 89 7c 30 e8 48 89 4c 30 f0 4c 89 54 d8 20 48 89 10 5b c3 0f 1f 80 00 00 00 00 41 89 f8 bf 03 00 00 00 4c 8b 14 24 <89> f1 65 48 8b 34 25 00 f0 01 00 e8 e4 ee ff ff 84 c0 74 4b 48 8b
-RSP: 0018:ffffc90000fd8df8 EFLAGS: 00000046
-RAX: 0000000000010002 RBX: ffff8880b9d424c0 RCX: 0000000000000000
-RDX: ffff88802e756280 RSI: 0000000000000001 RDI: 0000000000000003
-RBP: ffff88802539bb40 R08: 0000000000000007 R09: ffffffff904c64ab
-R10: ffffffff816467fb R11: 0000000000000000 R12: 0000000000000001
-R13: 0000000000000000 R14: ffff8880b9d423c0 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000600 CR3: 000000000b68e000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- cpu_max_bits_warn include/linux/cpumask.h:108 [inline]
- cpumask_check include/linux/cpumask.h:115 [inline]
- cpumask_test_cpu include/linux/cpumask.h:344 [inline]
- cpu_online include/linux/cpumask.h:895 [inline]
- trace_hrtimer_start include/trace/events/timer.h:195 [inline]
- debug_activate kernel/time/hrtimer.c:476 [inline]
- enqueue_hrtimer+0x4b/0x3e0 kernel/time/hrtimer.c:982
- __run_hrtimer kernel/time/hrtimer.c:1554 [inline]
- __hrtimer_run_queues+0xb02/0xe50 kernel/time/hrtimer.c:1601
- hrtimer_interrupt+0x330/0xa00 kernel/time/hrtimer.c:1663
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1089 [inline]
- __sysvec_apic_timer_interrupt+0x146/0x530 arch/x86/kernel/apic/apic.c:1106
- sysvec_apic_timer_interrupt+0x8e/0xc0 arch/x86/kernel/apic/apic.c:1100
- </IRQ>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
-RIP: 0010:csd_lock_wait kernel/smp.c:440 [inline]
-RIP: 0010:smp_call_function_many_cond+0x452/0xc20 kernel/smp.c:967
-Code: 0b 00 85 ed 74 4d 48 b8 00 00 00 00 00 fc ff df 4d 89 f4 4c 89 f5 49 c1 ec 03 83 e5 07 49 01 c4 83 c5 03 e8 c0 48 0b 00 f3 90 <41> 0f b6 04 24 40 38 c5 7c 08 84 c0 0f 85 33 06 00 00 8b 43 08 31
-RSP: 0018:ffffc900037b7a00 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: ffff8880b9c55de0 RCX: 0000000000000000
-RDX: ffff88802e756280 RSI: ffffffff816975f0 RDI: 0000000000000003
-RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81697616 R11: 0000000000000000 R12: ffffed101738abbd
-R13: 0000000000000000 R14: ffff8880b9c55de8 R15: 0000000000000001
- on_each_cpu_cond_mask+0x56/0xa0 kernel/smp.c:1133
- on_each_cpu include/linux/smp.h:71 [inline]
- text_poke_sync arch/x86/kernel/alternative.c:929 [inline]
- text_poke_bp_batch+0x1b3/0x560 arch/x86/kernel/alternative.c:1114
- text_poke_flush arch/x86/kernel/alternative.c:1268 [inline]
- text_poke_flush arch/x86/kernel/alternative.c:1265 [inline]
- text_poke_finish+0x16/0x30 arch/x86/kernel/alternative.c:1275
- arch_jump_label_transform_apply+0x13/0x20 arch/x86/kernel/jump_label.c:145
- jump_label_update+0x1d5/0x430 kernel/jump_label.c:830
- static_key_disable_cpuslocked+0x152/0x1b0 kernel/jump_label.c:207
- static_key_disable+0x16/0x20 kernel/jump_label.c:215
- toggle_allocation_gate mm/kfence/core.c:637 [inline]
- toggle_allocation_gate+0x185/0x390 mm/kfence/core.c:615
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+> Syzbot reported warning in netlbl_cipsov4_add(). The
+> problem was in too big doi_def->map.std->lvl.local_size
+> passed to kcalloc(). Since this value comes from userpace there is
+> no need to warn if value is not correct.
+> 
+> The same problem may occur with other kcalloc() calls in
+> this function, so, I've added __GFP_NOWARN flag to all
+> kcalloc() calls there.
+> 
+> Reported-and-tested-by:
+> syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com Fixes:
+> 96cb8e3313c7 ("[NetLabel]: CIPSOv4 and Unlabeled packet integration")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com> ---
+>  net/netlabel/netlabel_cipso_v4.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/netlabel/netlabel_cipso_v4.c
+> b/net/netlabel/netlabel_cipso_v4.c index 4f50a64315cf..50f40943c815
+> 100644 --- a/net/netlabel/netlabel_cipso_v4.c
+> +++ b/net/netlabel/netlabel_cipso_v4.c
+> @@ -187,14 +187,14 @@ static int netlbl_cipsov4_add_std(struct
+> genl_info *info, }
+>  	doi_def->map.std->lvl.local =
+> kcalloc(doi_def->map.std->lvl.local_size, sizeof(u32),
+> -					      GFP_KERNEL);
+> +					      GFP_KERNEL |
+> __GFP_NOWARN); if (doi_def->map.std->lvl.local == NULL) {
+>  		ret_val = -ENOMEM;
+>  		goto add_std_failure;
+>  	}
+>  	doi_def->map.std->lvl.cipso =
+> kcalloc(doi_def->map.std->lvl.cipso_size, sizeof(u32),
+> -					      GFP_KERNEL);
+> +					      GFP_KERNEL |
+> __GFP_NOWARN); if (doi_def->map.std->lvl.cipso == NULL) {
+>  		ret_val = -ENOMEM;
+>  		goto add_std_failure;
+> @@ -263,7 +263,7 @@ static int netlbl_cipsov4_add_std(struct
+> genl_info *info, doi_def->map.std->cat.local = kcalloc(
+>  					      doi_def->map.std->cat.local_size,
+>  					      sizeof(u32),
+> -					      GFP_KERNEL);
+> +					      GFP_KERNEL |
+> __GFP_NOWARN); if (doi_def->map.std->cat.local == NULL) {
+>  			ret_val = -ENOMEM;
+>  			goto add_std_failure;
+> @@ -271,7 +271,7 @@ static int netlbl_cipsov4_add_std(struct
+> genl_info *info, doi_def->map.std->cat.cipso = kcalloc(
+>  					      doi_def->map.std->cat.cipso_size,
+>  					      sizeof(u32),
+> -					      GFP_KERNEL);
+> +					      GFP_KERNEL |
+> __GFP_NOWARN); if (doi_def->map.std->cat.cipso == NULL) {
+>  			ret_val = -ENOMEM;
+>  			goto add_std_failure;
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Hi, net developers!
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Is this patch merged somewhere? I've checked net tree and Paul Moore
+tree on https://git.kernel.org/, but didn't find it. Did I miss it
+somewhere? If not, it's just a gentle ping :)
+
+Btw: maybe I should send it as separete patch, since 2/2 in this
+series is invalid as already in-tree?
+
+
+ 
+With regards,
+Pavel Skripkin
+
