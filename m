@@ -2,115 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C27653D6775
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F8C53D677B
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbhGZSmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 14:42:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33268 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229593AbhGZSmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 14:42:15 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF3B660F6D;
-        Mon, 26 Jul 2021 19:22:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627327364;
-        bh=GPp3eOsZSKAJOPnpQxw6ScV5mylXbFIUk8/qVauEq04=;
-        h=Date:From:To:Cc:Subject:From;
-        b=sRQJKN5+ZZ7b4hR/K333Ba3M6ic9UDQDg2eQV5d6mQmKk3gmhDUR16tZJsYcpchyz
-         DEgFHNgFgrItMv6oJm6fa9yciQEgJwxL7/5z9lu75g9YgazCTu8oUp5oVfM1KIcxxd
-         WV1ortnk1ktp03LG9/503rtEoFKkLSQHIcZXt8pHbuVwuNtIrMCJ42L49yTFbp2nPY
-         JVKlhRvnTlBjDiZrHQ3NZgPzcOH7U3v6E1TXu7lCZ04s3Xw+NEss/RTPjrWPQ4BnSd
-         8iM4bHKaKx6ZkWf36Sz0vHEYfP2k45BRtEROXDy5F7WPuccgJormqbmwIUF7S1C9OL
-         uuDB4feGyFw+g==
-Date:   Mon, 26 Jul 2021 14:25:11 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        id S231848AbhGZSqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 14:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231639AbhGZSqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 14:46:36 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198A6C061760
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:27:04 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id e14so12947288plh.8
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:27:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hoMlUsxgOOMGyLP12ayUGrpST+sHWMEehNbEOHJGoRk=;
+        b=ddbNF3f4TElNBsVQqChP50/s0j6AMvocnzqu/pOjrladH5tctXf84jU1JXLONMhhHM
+         DDaFTH0/VyAUvD2dxdLKsjInLVqQvQiDonyje1Zmo2WyogzYSSYH4BFwP1lp6U/2m6OZ
+         wqK4s1kD8T7b1+flKvlcDsNDXfG7l+NL/+L8Q=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hoMlUsxgOOMGyLP12ayUGrpST+sHWMEehNbEOHJGoRk=;
+        b=SkV9XIVjM5Xx9ehnyi6hkrwd9aqDne4b/3rCmNM3KGCfOXf/LuTrSB5diLdQdcIDQE
+         A7f6Tr3DFOH2SdWe8dBcTnAs3gXgwzjXjW19N/U+Wx/KuSjqE1R8pDdLG14BpsaIbMYd
+         jVHqqprI48uFgAefgORYRu4SLN2UV8/9QylAsHURQnJbnIdvirGFqg6cwRiK6I1y5aH9
+         hC0r3aeERFAuZ2APgM7G31yl2rvCx3A1r1WZksrKigf8jcxugkQPjtNY3587fNZ9kJXl
+         ibqa0b6NzJlbyokqblp38WBxtcU9jGfRejML1XlPoBI26kfbItTCthEADhD40hUoyJ1N
+         Ir7w==
+X-Gm-Message-State: AOAM531s/o2a3QQzoziN9bD2BHRmuWFt26f6UZVd6K/No2N97/8C6vw0
+        XpLuyyKx3e2e2DnsyQl0DDlO/A==
+X-Google-Smtp-Source: ABdhPJywrEtEv4h4Eh+iM8aL7EAjhtx6Xn/lXC18vPIDXhD87eVvoQlRbvHZKQPJXa+pZqw1iI0wEg==
+X-Received: by 2002:aa7:980a:0:b029:358:adf9:c37b with SMTP id e10-20020aa7980a0000b0290358adf9c37bmr19394081pfl.12.1627327623361;
+        Mon, 26 Jul 2021 12:27:03 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q14sm851027pfn.73.2021.07.26.12.27.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 12:27:02 -0700 (PDT)
+Date:   Mon, 26 Jul 2021 12:27:01 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] flow_dissector: Fix out-of-bounds warnings
-Message-ID: <20210726192511.GA23259@embeddedor>
+        davem@davemloft.net, kuba@kernel.org,
+        Miklos Szeredi <mszeredi@redhat.com>, stable@vger.kernel.org
+Subject: Re: [PATCH net] af_unix: fix garbage collect vs. MSG_PEEK
+Message-ID: <202107261049.DC0C9178@keescook>
+References: <20210726153621.2658658-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20210726153621.2658658-1-gregkh@linuxfoundation.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following out-of-bounds warnings:
+On Mon, Jul 26, 2021 at 05:36:21PM +0200, Greg Kroah-Hartman wrote:
+> From: Miklos Szeredi <mszeredi@redhat.com>
+> 
+> Gc assumes that in-flight sockets that don't have an external ref can't
 
-    net/core/flow_dissector.c: In function '__skb_flow_dissect':
->> net/core/flow_dissector.c:1104:4: warning: 'memcpy' offset [24, 39] from the object at '<unknown>' is out of the bounds of referenced subobject 'saddr' with type 'struct in6_addr' at offset 8 [-Warray-bounds]
-     1104 |    memcpy(&key_addrs->v6addrs, &iph->saddr,
-          |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     1105 |           sizeof(key_addrs->v6addrs));
-          |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    In file included from include/linux/ipv6.h:5,
-                     from net/core/flow_dissector.c:6:
-    include/uapi/linux/ipv6.h:133:18: note: subobject 'saddr' declared here
-      133 |  struct in6_addr saddr;
-          |                  ^~~~~
->> net/core/flow_dissector.c:1059:4: warning: 'memcpy' offset [16, 19] from the object at '<unknown>' is out of the bounds of referenced subobject 'saddr' with type 'unsigned int' at offset 12 [-Warray-bounds]
-     1059 |    memcpy(&key_addrs->v4addrs, &iph->saddr,
-          |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     1060 |           sizeof(key_addrs->v4addrs));
-          |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    In file included from include/linux/ip.h:17,
-                     from net/core/flow_dissector.c:5:
-    include/uapi/linux/ip.h:103:9: note: subobject 'saddr' declared here
-      103 |  __be32 saddr;
-          |         ^~~~~
+I think this commit log could be expanded. I had to really study things
+to even beging to understand what was going on. I assume "Gc" here means
+specifically unix_gc()?
 
-The problem is that the original code is trying to copy data into a
-couple of struct members adjacent to each other in a single call to
-memcpy().  So, the compiler legitimately complains about it. As these
-are just a couple of members, fix this by copying each one of them in
-separate calls to memcpy().
+> gain one while unix_gc_lock is held.  That is true because
+> unix_notinflight() will be called before detaching fds, which takes
+> unix_gc_lock.
 
-This helps with the ongoing efforts to globally enable -Warray-bounds
-and get us closer to being able to tighten the FORTIFY_SOURCE routines
-on memcpy().
+In reading the code, I *think* what is being protected by unix_gc_lock is
+user->unix_inflight, u->inflight, unix_tot_inflight, and gc_inflight_list?
 
-Link: https://github.com/KSPP/linux/issues/109
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/lkml/d5ae2e65-1f18-2577-246f-bada7eee6ccd@intel.com/
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- net/core/flow_dissector.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+I note that unix_tot_inflight isn't an atomic but is read outside of
+locking by unix_release_sock() and wait_for_unix_gc(), which seems wrong
+(or at least inefficient).
 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 2aadbfc5193b..39d7be03e568 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1056,8 +1056,10 @@ bool __skb_flow_dissect(const struct net *net,
- 							      FLOW_DISSECTOR_KEY_IPV4_ADDRS,
- 							      target_container);
- 
--			memcpy(&key_addrs->v4addrs, &iph->saddr,
--			       sizeof(key_addrs->v4addrs));
-+			memcpy(&key_addrs->v4addrs.src, &iph->saddr,
-+			       sizeof(key_addrs->v4addrs.src));
-+			memcpy(&key_addrs->v4addrs.dst, &iph->daddr,
-+			       sizeof(key_addrs->v4addrs.dst));
- 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 		}
- 
-@@ -1101,8 +1103,10 @@ bool __skb_flow_dissect(const struct net *net,
- 							      FLOW_DISSECTOR_KEY_IPV6_ADDRS,
- 							      target_container);
- 
--			memcpy(&key_addrs->v6addrs, &iph->saddr,
--			       sizeof(key_addrs->v6addrs));
-+			memcpy(&key_addrs->v6addrs.src, &iph->saddr,
-+			       sizeof(key_addrs->v6addrs.src));
-+			memcpy(&key_addrs->v6addrs.dst, &iph->daddr,
-+			       sizeof(key_addrs->v6addrs.dst));
- 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
- 		}
- 
+But regardless, are the "external references" the f_count (i.e. get_file()
+of u->sk.sk_socket->file) being changed by scm_fp_dup() and read by
+unix_gc() (i.e. file_count())? It seems the test in unix_gc() is for
+the making sure f_count isn't out of sync with u->inflight (is this the
+corresponding "internal" reference?):
+
+                total_refs = file_count(u->sk.sk_socket->file);
+                inflight_refs = atomic_long_read(&u->inflight);
+
+                BUG_ON(inflight_refs < 1);
+                BUG_ON(total_refs < inflight_refs);
+                if (total_refs == inflight_refs) {
+
+> Only MSG_PEEK was somehow overlooked.  That one also clones the fds, also
+> keeping them in the skb.  But through MSG_PEEK an external reference can
+> definitely be gained without ever touching unix_gc_lock.
+
+The idea appears to be that all scm_fp_dup() callers need to refresh the
+u->inflight counts which is what unix_attach_fds() and unix_detach_fds()
+do. Why is lock/unlock sufficient for unix_peek_fds()?
+
+I assume the rationale is because MSG_PEEK uses a temporary scm, which
+only gets fput() clean-up on destroy ("inflight" is neither incremented
+nor decremented at any point in the scm lifetime).
+
+But I don't see why any of this helps.
+
+unix_attach_fds():
+	fget(), spin_lock(), inflight++, spin_unlock()
+unix_detach_fds():
+	spin_lock(), inflight--, spin_unlock(), fput()
+unix_peek_fds():
+	fget(), spin_lock(), spin_unlock()
+unix_gx():
+	spin_lock(), "total_refs == inflight_refs" to hitlist,
+	spin_unlock(), free hitlist skbs
+
+Doesn't this mean total_refs and inflight_refs can still get out of
+sync? What keeps an skb from being "visible" to unix_peek_fds() between
+the unix_gx() spin_unlock() and the unix_peek_fds() fget()?
+
+A: unix_gx():
+	spin_lock()
+	find "total_refs == inflight_refs", add to hitlist
+	spin_unlock()
+B: unix_peek_fds():
+	fget()
+A: unix_gc():
+	walk hitlist and free(skb)
+B: unix_peek_fds():
+	*use freed skb*
+
+I feel like I must be missing something since the above race would
+appear to exist even for unix_attach_fds()/unix_detach_fds():
+
+A: unix_gx():
+	spin_lock()
+	find "total_refs == inflight_refs", add to hitlist
+	spin_unlock()
+B: unix_attach_fds():
+	fget()
+A: unix_gc():
+	walk hitlist and free(skb)
+B: unix_attach_fds():
+	*use freed skb*
+
+I'm assuming I'm missing a top-level usage count on skb that is held by
+callers, which means the skb isn't actually freed by unix_gc(). But I
+return to not understanding why adding the lock/unlock helps.
+
+What are the expected locking semantics here?
+
+-Kees
+
+> 
+> Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  net/unix/af_unix.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> Note, this is a resend of this old submission that somehow fell through
+> the cracks:
+> 	https://lore.kernel.org/netdev/CAOssrKcfncAYsQWkfLGFgoOxAQJVT2hYVWdBA6Cw7hhO8RJ_wQ@mail.gmail.com/
+> and was never submitted "properly" and this issue never seemed to get
+> resolved properly.
+> 
+> I've cleaned it up and made the change much smaller and localized to
+> only one file.  I kept Miklos's authorship as he did the hard work on
+> this, I just removed lines and fixed a formatting issue :)
+> 
+> 
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index 23c92ad15c61..cdea997aa5bf 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -1526,6 +1526,18 @@ static int unix_getname(struct socket *sock, struct sockaddr *uaddr, int peer)
+>  	return err;
+>  }
+>  
+> +static void unix_peek_fds(struct scm_cookie *scm, struct sk_buff *skb)
+> +{
+> +	scm->fp = scm_fp_dup(UNIXCB(skb).fp);
+> +
+> +	/* During garbage collection it is assumed that in-flight sockets don't
+> +	 * get a new external reference.  So we need to wait until current run
+> +	 * finishes.
+> +	 */
+> +	spin_lock(&unix_gc_lock);
+> +	spin_unlock(&unix_gc_lock);
+> +}
+
+
 -- 
-2.27.0
-
+Kees Cook
