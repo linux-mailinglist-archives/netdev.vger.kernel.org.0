@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6C63D65E6
+	by mail.lfdr.de (Postfix) with ESMTP id C7F833D65E7
 	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 19:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbhGZQ7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 12:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        id S231207AbhGZQ7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 12:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbhGZQ7r (ORCPT
+        with ESMTP id S229851AbhGZQ7r (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 12:59:47 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE89C061765
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0081CC061764
         for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 10:40:15 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id l11so9751218iln.4
+Received: by mail-io1-xd29.google.com with SMTP id m13so12860448iol.7
         for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 10:40:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7lEqg3TOKz14G7O++U3GKk3SokkJPyKbuqy0/ExBt4k=;
-        b=LCAMM+Az3vCW4kU8XKuOsy1mQJVeGS58zmXuWZtImcD6yxBwsdn2gV6yfPPVO6pVSn
-         rxPZLs+CnTGMMkEnMTpsvmOr8Tmkx7vejD3LcxntRfDzDmfvL/liQVH6Dyc0cEWLw8F3
-         6Qv3+NXscFltuJX/oCVx4dR/a2XITK/rhBk52Ft43nqVa6tlq+GYpywLa+LKDlXNQ2Jt
-         YIURNAP07sU5YRbQCQQrWw0UXAILYKp9Vf0FV1WThYSvzZIdfKjqi+CY+ClTbtb8Nacz
-         jKBbkCzg5xgZYMLaCwSwgHuRqhudQKDvEuBZdJQYG82wN3DYqqhS7lHwnZ6dSl06pJqh
-         h0PA==
+        bh=RhapsKA6J25kD25lmyi6/Yv9x0InAtnL2pbV2Xb9qwU=;
+        b=EgeRPtba7JmXRFpCb8FHFkqy26AmvA+X5gH4ja6s47tmBi07ies/bKg+QIpedEfGnt
+         mVWdIky5xLde1ZvHr6eg6JlgIUDcmAJ0upfIAo6kaz42joyY8cRNU5xzx9ZSzr/yq5ef
+         AK4muCJVTIpkbnpDark9BNW398xyLVilfvTETNoiJmfbEWtgYvI6gWf0cu8dPYO4uGfx
+         mZPgq8UVbTcEK65nrbN/+AECMrmvC3MczDPGy/tnUqFM2ROaf57QpJtJ70uuxYncRxh2
+         3OSiENmJjmcxu7i9J4GcMk52Wn+Bk3Ib310OzcH/ZbamQtRd8n5wFE8sDPl/+rRryRQu
+         VxlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7lEqg3TOKz14G7O++U3GKk3SokkJPyKbuqy0/ExBt4k=;
-        b=GLw7h0BjkfNGfmcEY9KAjmT9dhxxBFSDa1kSZ909tvtT4OG6pR2hyT8rIERDeIBWiU
-         e33iMCc8BLpy/0+rXI8FlxY3Rhx4Odrg56xJjoungvZfSem2ACjZu8CiET5hnHpDorB8
-         e5K1CTSQhJfLucqcm6R+gKvFVFitk+gmeWgx6MCpQmUufAf/rPV0oVD/aj/cV/gVKTLS
-         RIJQs8ygnjUP0omNfq0T41AeVX9CTRdj9mRrwK4kAYh/RnoEPlyzAgKpwn0xGdkvHlMJ
-         4XQFt2fqt+JHtNSZwlG4PZ9CF1ir7cbNZWopgRg0G5tFI0UogzLUG/pC2/1U55y6pVrB
-         y82Q==
-X-Gm-Message-State: AOAM532/patSe0jg1aY+OlGjGYQMFblkfQ51fjMhVyEFAhetqczsYIeF
-        TyElshS1bg+64Mo/QPw/2eQk8w==
-X-Google-Smtp-Source: ABdhPJwInLk84GK5wqBKjPr9ug/NL9/BrC/x9MobHR+LlWEJC/wd1SKjvj6KDMUyVK+8DxnTCgd1ug==
-X-Received: by 2002:a05:6e02:12ab:: with SMTP id f11mr14040422ilr.200.1627321214611;
-        Mon, 26 Jul 2021 10:40:14 -0700 (PDT)
+        bh=RhapsKA6J25kD25lmyi6/Yv9x0InAtnL2pbV2Xb9qwU=;
+        b=ndYb21oQ2hVR8c7rQ1d4/7VgOgR3wRZfJW0lv2zpoGyKdT+SrlhaBjdLd07GWsMpo2
+         q378iEiR8spG3NG2mCdv7TGS0c7HkZOt9FOlF/9DEOjX6k8DtiSCyF89bP2/zT2bHPVs
+         RY8rAfbufmvH7gPkRa4aeX2b5Zwl6OaQRmVSoco/xv+vCPuYzukd9OxVMhb8JCw5lymn
+         U6Q+WpBpULztE9fA8aGnjBRna49d+uhG5s+z0Al3tkikquiX11CeA7HJjt6a8JE2tkiQ
+         R2Db91d+cg4+YwKffZgDBrchrR91Ad7j0IRGrwEVa4bkhRf+67K3twoahh7JnOPmzHTs
+         sNaA==
+X-Gm-Message-State: AOAM532UmxWQAoJws6JsEupPa7tRRc0p6K6patGHMVqAxlcm/8eE+daC
+        Yr176XTLJRr3Nn4fXn7tKf1hDQ==
+X-Google-Smtp-Source: ABdhPJzNTzH8TAa3FXHtMoMQSHtJ4Bt6ACJgbxs9EQoSZIU5vvzPeoIvhruLSjPLb345LwHR/MQuKg==
+X-Received: by 2002:a02:93a7:: with SMTP id z36mr17237528jah.112.1627321215463;
+        Mon, 26 Jul 2021 10:40:15 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id l4sm202721ilh.41.2021.07.26.10.40.13
+        by smtp.gmail.com with ESMTPSA id l4sm202721ilh.41.2021.07.26.10.40.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 10:40:14 -0700 (PDT)
+        Mon, 26 Jul 2021 10:40:15 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     leon@kernel.org, bjorn.andersson@linaro.org, evgreen@chromium.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/4] net: ipa: fix ipa_cmd_table_valid()
-Date:   Mon, 26 Jul 2021 12:40:07 -0500
-Message-Id: <20210726174010.396765-2-elder@linaro.org>
+Subject: [PATCH net-next 2/4] net: ipa: always validate filter and route tables
+Date:   Mon, 26 Jul 2021 12:40:08 -0500
+Message-Id: <20210726174010.396765-3-elder@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210726174010.396765-1-elder@linaro.org>
 References: <20210726174010.396765-1-elder@linaro.org>
@@ -64,154 +64,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stop supporting different sizes for hashed and non-hashed filter or
-route tables.  Add BUILD_BUG_ON() calls to verify the sizes of the
-fields in the filter/route table initialization immediate command
-are the same.
+All checks in ipa_table_validate_build() are computed at build time,
+so build that unconditionally.
 
-Add a check to ipa_cmd_table_valid() to ensure the size of the
-memory region being checked fits within the immediate command field
-that must hold it.
+In ipa_table_valid() calls to ipa_table_valid_one() are missing the
+IPA pointer parameter is missing in (a bug that shows up only when
+IPA_VALIDATE is defined).  Don't bother checking whether hashed
+table memory regions are valid if hashed tables are not supported.
 
-Remove two Boolean parameters used only for error reporting.  This
-actually fixes a bug that would only show up if IPA_VALIDATE were
-defined.  Define ipa_cmd_table_valid() unconditionally (no longer
-dependent on IPA_VALIDATE).
+With those things fixed, have these table validation functions built
+unconditionally (not dependent on IPA_VALIDATE).
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_cmd.c   | 38 ++++++++++++++++++++++++-------------
- drivers/net/ipa/ipa_cmd.h   | 15 +++------------
- drivers/net/ipa/ipa_table.c |  2 +-
- 3 files changed, 29 insertions(+), 26 deletions(-)
+ drivers/net/ipa/ipa_table.c | 36 +++++++++++++++++-------------------
+ drivers/net/ipa/ipa_table.h | 16 ----------------
+ 2 files changed, 17 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index af44ca41189e3..bda8677eae88d 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -159,35 +159,45 @@ static void ipa_cmd_validate_build(void)
- 	BUILD_BUG_ON(TABLE_SIZE > field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK));
- #undef TABLE_COUNT_MAX
- #undef TABLE_SIZE
--}
+diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
+index 4f5b6749f6aae..c607ebec74567 100644
+--- a/drivers/net/ipa/ipa_table.c
++++ b/drivers/net/ipa/ipa_table.c
+@@ -120,8 +120,6 @@
+  */
+ #define IPA_ZERO_RULE_SIZE		(2 * sizeof(__le32))
  
 -#ifdef IPA_VALIDATE
-+	/* Hashed and non-hashed fields are assumed to be the same size */
-+	BUILD_BUG_ON(field_max(IP_FLTRT_FLAGS_HASH_SIZE_FMASK) !=
-+		     field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK));
-+	BUILD_BUG_ON(field_max(IP_FLTRT_FLAGS_HASH_ADDR_FMASK) !=
-+		     field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK));
-+}
- 
- /* Validate a memory region holding a table */
--bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
--			 bool route, bool ipv6, bool hashed)
-+bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem, bool route)
+-
+ /* Check things that can be validated at build time. */
+ static void ipa_table_validate_build(void)
  {
-+	u32 offset_max = field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	u32 size_max = field_max(IP_FLTRT_FLAGS_NHASH_SIZE_FMASK);
-+	const char *table = route ? "route" : "filter";
- 	struct device *dev = &ipa->pdev->dev;
--	u32 offset_max;
+@@ -169,7 +167,7 @@ ipa_table_valid_one(struct ipa *ipa, enum ipa_mem_id mem_id, bool route)
+ 		return true;
  
--	offset_max = hashed ? field_max(IP_FLTRT_FLAGS_HASH_ADDR_FMASK)
--			    : field_max(IP_FLTRT_FLAGS_NHASH_ADDR_FMASK);
-+	/* Size must fit in the immediate command field that holds it */
-+	if (mem->size > size_max) {
-+		dev_err(dev, "%s table region size too large\n", table);
-+		dev_err(dev, "    (0x%04x > 0x%04x)\n",
-+			mem->size, size_max);
+ 	/* Hashed table regions can be zero size if hashing is not supported */
+-	if (hashed && !mem->size)
++	if (ipa_table_hash_support(ipa) && !mem->size)
+ 		return true;
+ 
+ 	dev_err(dev, "%s table region %u size 0x%02x, expected 0x%02x\n",
+@@ -183,14 +181,22 @@ bool ipa_table_valid(struct ipa *ipa)
+ {
+ 	bool valid;
+ 
+-	valid = ipa_table_valid_one(IPA_MEM_V4_FILTER, false);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V4_FILTER_HASHED, false);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V6_FILTER, false);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V6_FILTER_HASHED, false);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V4_ROUTE, true);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V4_ROUTE_HASHED, true);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V6_ROUTE, true);
+-	valid = valid && ipa_table_valid_one(IPA_MEM_V6_ROUTE_HASHED, true);
++	valid = ipa_table_valid_one(ipa, IPA_MEM_V4_FILTER, false);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_FILTER, false);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_ROUTE, true);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_ROUTE, true);
 +
-+		return false;
-+	}
++	if (!ipa_table_hash_support(ipa))
++		return valid;
 +
-+	/* Offset must fit in the immediate command field that holds it */
- 	if (mem->offset > offset_max ||
- 	    ipa->mem_offset > offset_max - mem->offset) {
--		dev_err(dev, "IPv%c %s%s table region offset too large\n",
--			ipv6 ? '6' : '4', hashed ? "hashed " : "",
--			route ? "route" : "filter");
-+		dev_err(dev, "%s table region offset too large\n", table);
- 		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
- 			ipa->mem_offset, mem->offset, offset_max);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_FILTER_HASHED,
++					     false);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_FILTER_HASHED,
++					     false);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V4_ROUTE_HASHED,
++					     true);
++	valid = valid && ipa_table_valid_one(ipa, IPA_MEM_V6_ROUTE_HASHED,
++					     true);
  
- 		return false;
- 	}
- 
-+	/* Entire memory range must fit within IPA-local memory */
- 	if (mem->offset > ipa->mem_size ||
- 	    mem->size > ipa->mem_size - mem->offset) {
--		dev_err(dev, "IPv%c %s%s table region out of range\n",
--			ipv6 ? '6' : '4', hashed ? "hashed " : "",
--			route ? "route" : "filter");
-+		dev_err(dev, "%s table region out of range\n", table);
- 		dev_err(dev, "    (0x%04x + 0x%04x > 0x%04x)\n",
- 			mem->offset, mem->size, ipa->mem_size);
- 
-@@ -197,6 +207,8 @@ bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
+ 	return valid;
+ }
+@@ -217,14 +223,6 @@ bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_map)
  	return true;
  }
  
-+#ifdef IPA_VALIDATE
-+
- /* Validate the memory region that holds headers */
- static bool ipa_cmd_header_valid(struct ipa *ipa)
+-#else /* !IPA_VALIDATE */
+-static void ipa_table_validate_build(void)
+-
+-{
+-}
+-
+-#endif /* !IPA_VALIDATE */
+-
+ /* Zero entry count means no table, so just return a 0 address */
+ static dma_addr_t ipa_table_addr(struct ipa *ipa, bool filter_mask, u16 count)
  {
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index b99262281f41c..ea723419c826b 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -57,20 +57,18 @@ struct ipa_cmd_info {
- 	enum dma_data_direction direction;
- };
+diff --git a/drivers/net/ipa/ipa_table.h b/drivers/net/ipa/ipa_table.h
+index 1e2be9fce2f81..b6a9a0d79d68e 100644
+--- a/drivers/net/ipa/ipa_table.h
++++ b/drivers/net/ipa/ipa_table.h
+@@ -16,8 +16,6 @@ struct ipa;
+ /* The maximum number of route table entries (IPv4, IPv6; hashed or not) */
+ #define IPA_ROUTE_COUNT_MAX	15
  
 -#ifdef IPA_VALIDATE
 -
  /**
-  * ipa_cmd_table_valid() - Validate a memory region holding a table
-  * @ipa:	- IPA pointer
-  * @mem:	- IPA memory region descriptor
-  * @route:	- Whether the region holds a route or filter table
-- * @ipv6:	- Whether the table is for IPv6 or IPv4
-- * @hashed:	- Whether the table is hashed or non-hashed
-  *
-  * Return:	true if region is valid, false otherwise
+  * ipa_table_valid() - Validate route and filter table memory regions
+  * @ipa:	IPA pointer
+@@ -35,20 +33,6 @@ bool ipa_table_valid(struct ipa *ipa);
   */
- bool ipa_cmd_table_valid(struct ipa *ipa, const struct ipa_mem *mem,
--			    bool route, bool ipv6, bool hashed);
-+			    bool route);
-+
-+#ifdef IPA_VALIDATE
+ bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask);
  
- /**
-  * ipa_cmd_data_valid() - Validate command-realted configuration is valid
-@@ -82,13 +80,6 @@ bool ipa_cmd_data_valid(struct ipa *ipa);
- 
- #else /* !IPA_VALIDATE */
- 
--static inline bool ipa_cmd_table_valid(struct ipa *ipa,
--				       const struct ipa_mem *mem, bool route,
--				       bool ipv6, bool hashed)
+-#else /* !IPA_VALIDATE */
+-
+-static inline bool ipa_table_valid(struct ipa *ipa)
 -{
 -	return true;
 -}
 -
- static inline bool ipa_cmd_data_valid(struct ipa *ipa)
- {
- 	return true;
-diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-index c617a9156f26d..4f5b6749f6aae 100644
---- a/drivers/net/ipa/ipa_table.c
-+++ b/drivers/net/ipa/ipa_table.c
-@@ -161,7 +161,7 @@ ipa_table_valid_one(struct ipa *ipa, enum ipa_mem_id mem_id, bool route)
- 	else
- 		size = (1 + IPA_FILTER_COUNT_MAX) * sizeof(__le64);
- 
--	if (!ipa_cmd_table_valid(ipa, mem, route, ipv6, hashed))
-+	if (!ipa_cmd_table_valid(ipa, mem, route))
- 		return false;
- 
- 	/* mem->size >= size is sufficient, but we'll demand more */
+-static inline bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask)
+-{
+-	return true;
+-}
+-
+-#endif /* !IPA_VALIDATE */
+-
+ /**
+  * ipa_table_hash_support() - Return true if hashed tables are supported
+  * @ipa:	IPA pointer
 -- 
 2.27.0
 
