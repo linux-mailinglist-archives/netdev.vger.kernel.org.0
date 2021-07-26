@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4843D589F
+	by mail.lfdr.de (Postfix) with ESMTP id 00B323D589D
 	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233558AbhGZK7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 06:59:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59878 "EHLO mail.kernel.org"
+        id S233526AbhGZK7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 06:59:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233351AbhGZK7g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S233320AbhGZK7g (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 26 Jul 2021 06:59:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 29A3760EB2;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2063A60F37;
         Mon, 26 Jul 2021 11:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627299605;
-        bh=kMAs2b3tuO2e+8hgSQdeVypEf1a13iD9tSUV8798Utg=;
+        bh=P0VWAHD/zyJMSYph8fmllrZeBljhmPMnD2WdyZQDzVA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FnyKnd9AGDsgQaV+kul09GPPEMl8LTTcFDQ/LQaIDbTvYHGFnUZnWfPDjANa1lBcz
-         l+EtQTwzDiDGmcrCz7szvCSEGOLY1UE6vuks/OvFFHkoGBFQryuqKXgiMxiTP7jf9y
-         QUQJ7QVOIq2fpdXq8ORLYMfVnL0BaQBXND+Thkc8DLyy5y0IMOi8VI3Gd0xCgtg/xl
-         pPJN8OuxVyNz7VsjiEjTbqCtyAgCJ7upcda/7Gc3QNTyzo5WWxI6g763dPAK4F7AaE
-         WLW4Gtg5j/MBbRtAOoRHc1n8ezbC+UvByia2Ov9EqqKe2caMl9s6Piui6IGHMHhlAI
-         3i3bDB25pyhVQ==
+        b=Cj75vVVCgLbldOp17oK9up57uAVKIk1j9crcWtXxhtl1tNwqcI0H16GT6t9e0Msgs
+         XA6g+PMKQnJCZuE58w+bheb486DXwmfLypFPBa6v41ACd6tArUOieOjxms42JoSPEQ
+         7x/iiHN0wqGsAEhZkrof1Ft3If6tJEuBBM1a9aAMgkuBkleIHWxLalls+VDvsbxGfS
+         DKHARlwwZq2byDji15qsvCWds5+GSZMTZBGVkTsFbWY90vJvovMBKPTl5JcF2dobD/
+         okzyjDx9Pbd9oEtjBjiXalwYVWSPm59Pn621sguxRr1rmZ1qQccc85V4Up126TwBMT
+         9UKIKjAbSKTCg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1E8F160A5B;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1447F60A12;
         Mon, 26 Jul 2021 11:40:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: stmmac: add est_irq_status callback function for
- GMAC 4.10 and 5.10
+Subject: Re: [PATCH v2] sctp: delete addr based on sin6_scope_id
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162729960512.898.7324413513898376609.git-patchwork-notify@kernel.org>
+Message-Id: <162729960507.898.16793961146197522908.git-patchwork-notify@kernel.org>
 Date:   Mon, 26 Jul 2021 11:40:05 +0000
-References: <20210726022020.5907-1-mohammad.athari.ismail@intel.com>
-In-Reply-To: <20210726022020.5907-1-mohammad.athari.ismail@intel.com>
-To:     Ismail@ci.codeaurora.org,
-        Mohammad Athari <mohammad.athari.ismail@intel.com>
-Cc:     alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
-        kuba@kernel.org, peppe.cavallaro@st.com, mcoquelin.stm32@gmail.com,
-        boon.leong.ong@intel.com, weifeng.voon@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
+References: <20210726054733.75937-1-peterchenshen@gmail.com>
+In-Reply-To: <20210726054733.75937-1-peterchenshen@gmail.com>
+To:     Chen Shen <peterchenshen@gmail.com>
+Cc:     marcelo.leitner@gmail.com, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,22 +48,21 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Mon, 26 Jul 2021 10:20:20 +0800 you wrote:
-> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-> 
-> Assign dwmac5_est_irq_status to est_irq_status callback function for
-> GMAC 4.10 and 5.10. With this, EST related interrupts could be handled
-> properly.
-> 
-> Fixes: e49aa315cb01 ("net: stmmac: EST interrupts handling and error reporting")
-> Cc: <stable@vger.kernel.org> # 5.13.x
-> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+On Mon, 26 Jul 2021 13:47:34 +0800 you wrote:
+> sctp_inet6addr_event deletes 'addr' from 'local_addr_list' when setting
+> netdev down, but it is possible to delete the incorrect entry (match
+> the first one with the same ipaddr, but the different 'ifindex'), if
+> there are some netdevs with the same 'local-link' ipaddr added already.
+> It should delete the entry depending on 'sin6_addr' and 'sin6_scope_id'
+> both. otherwise, the endpoint will call 'sctp_sf_ootb' if it can't find
+> the according association when receives 'heartbeat', and finally will
+> reply 'abort'.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] net: stmmac: add est_irq_status callback function for GMAC 4.10 and 5.10
-    https://git.kernel.org/netdev/net/c/94cbe7db7d75
+  - [v2] sctp: delete addr based on sin6_scope_id
+    https://git.kernel.org/netdev/net/c/2ebda0271483
 
 You are awesome, thank you!
 --
