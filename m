@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3FB53D67A6
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 740433D67A8
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232359AbhGZTGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 15:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S232597AbhGZTGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 15:06:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbhGZTGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 15:06:05 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0297EC061765
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:46:33 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id c16so2578318wrp.13
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:46:32 -0700 (PDT)
+        with ESMTP id S232486AbhGZTGH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 15:06:07 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE99C061760
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:46:36 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id m19so2190797wms.0
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 12:46:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ILATnZqRiQY9FgPagP60p+Si5ORzJlVbPQeLM6Ax6lg=;
-        b=OoNb/0rNSjn+ZGLef7e/ORsuq+Vfv38GXcvIpqJMpLAOt+3PHHf34SG2lLk/jRLKzd
-         rSeQHmXJf6wied9ry7uRr8orm408g5LXU18ItLivPx3//gD88U8tVl9D3JiNRm7xWd3e
-         q3i6d+EN19vD+XSJEtPvPollISMjKJxHbCU1b549ivnO93Mx2eUCzn4Bl9hmRKEZHgFv
-         7XOeOfDi/AjzMYGeLiYv+IHs8AODsBjHvDKN1BIXehmtuWNEUnnF2TzFjr1alvOCIEL8
-         gBBoBHVXO/4gCjlv+ms/PSQoBOfhLOdFsiNl6KC0quJ6HDFOhZgaU7ys2FIBfkhDbr+H
-         GvNQ==
+        bh=tF0j5Xm0bF8m4G035UbGZ9Q9JYc8Vy6FKBt23lBIRD8=;
+        b=bzqs1y/RJoGgHXk1coqljVztmwYwpOyCylKnJL46TEtIY0F831hvKqR10Unm0lNwtq
+         Vuc6ykE8IJlBEixGB19rVLjYQ3Wh+jiev32cAcMfK6lqXwVDOMFksyohzeel44pgag3P
+         tivjOtuvZs+MasH/SiX1691xWdiY3uBTb3XxZ1Oa7ijv1GldtpFeEu82DemwjrG102Mc
+         kXVX4BLuMvgudNids+e2pfQ//pErrrMLiNzphPzdZYn0SFtGt1EFWpOYaFqxsFS7l/9w
+         bW14dnKd8HN0Ul0HeZOXuJZXI1AOrVX69R8hQfIqEKgI6LLsQNW75/JKrcFE2LfqkFob
+         eoFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ILATnZqRiQY9FgPagP60p+Si5ORzJlVbPQeLM6Ax6lg=;
-        b=Fca6fmtdf2GmAqeuJLKqxX4MmhBsm3oeHxe+q7mgXaLw9nLyAJ9RGudKY6nn/vCtnD
-         IafyHvahMsQvPr8Qx++ozu33ppm9yZItoC1ed/mpTWyfMusNulV8VJMT76bq7Wy1fsMf
-         tjLrzJetxo68lsO+1ktdgIcVZHMdr6R66xy/YflDchHjg3pDZvio1KUF/71chn9jDEj7
-         tKkiCzTGjVe0+12QJg7XtxgAdVFfMICqjWH5vEVTWqw0tr/cddLRhfnRkTurwWKyED0K
-         UOP+Uj8Ax/nhnVTjM6fY4jKcqWZU8RNOkuj8i5ClNybCJtYTmmxJ5i1v2CVsGzAseVZ6
-         gTWQ==
-X-Gm-Message-State: AOAM531hiWj9orzF5Gh/B6dbfpm0tdjIBX/ksMYcETC/aIdj4Wd0YZhZ
-        kx4AfHC17OPfq3nrQ/onbRJO3Q==
-X-Google-Smtp-Source: ABdhPJwI6OEvQvCCFaNr9SXq75cDadkBkFE80tcs9OmqxInS0S694912t298vdjU4TUtL8xPQNyPRA==
-X-Received: by 2002:adf:d225:: with SMTP id k5mr10956276wrh.10.1627328791657;
-        Mon, 26 Jul 2021 12:46:31 -0700 (PDT)
+        bh=tF0j5Xm0bF8m4G035UbGZ9Q9JYc8Vy6FKBt23lBIRD8=;
+        b=oSPp8sfhoUsikOlG30PpXMmyQ6ssarKBT05EG/SvSeyQpBhk8oa786Q/qhRq4+PyLN
+         6ktII6GesCTO6mGH85epUNzzA7R+YQIP4ua+cmKBHKkHEPPRLMB7C7gJcaEdG/1EuoMy
+         yNG7DSkfMUQr0HHpYPlCLUEvHkQZWljq9TJfUexfVQC4b+/6Q9nY3EisammyL+OzZH9I
+         MulIHgEnP/EnV4p9gmzOR5WSypqskJk4GOcfLZeLL6XTcCp1clMv6WJ1KoIuO8n+mTlQ
+         c+Oa76ArRZblLbvqsCfOPwBCnFartkJjDkmvPJIaxr4GLFfOIOuA0jSP1nQpLcL3su9V
+         Br0w==
+X-Gm-Message-State: AOAM531EzKtbB1bvegt+9jG9jI46+w3rb/kyoxxXVFt0wYnQJQN2W7xU
+        zDMJHOWDVlo+BjdCXUNJ7eeyAQ==
+X-Google-Smtp-Source: ABdhPJxA2UThUCOszokaOHWuzajrJtwI5b/lmlXulRr/3hdfQYrLr7aeMorztYJLrUczIBIhl/rq/A==
+X-Received: by 2002:a1c:9a97:: with SMTP id c145mr570025wme.42.1627328794861;
+        Mon, 26 Jul 2021 12:46:34 -0700 (PDT)
 Received: from hornet.engleder.at (dynamic-2f5ziwnqeg6t9oqqip-pd01.res.v6.highway.a1.net. [2001:871:23d:d66a:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id r4sm741528wre.84.2021.07.26.12.46.30
+        by smtp.gmail.com with ESMTPSA id r4sm741528wre.84.2021.07.26.12.46.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 12:46:31 -0700 (PDT)
+        Mon, 26 Jul 2021 12:46:34 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         michal.simek@xilinx.com
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 2/5] dt-bindings: net: Add tsnep Ethernet controller
-Date:   Mon, 26 Jul 2021 21:46:00 +0200
-Message-Id: <20210726194603.14671-3-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next 3/5] dt-bindings: arm: Add Engleder bindings
+Date:   Mon, 26 Jul 2021 21:46:01 +0200
+Message-Id: <20210726194603.14671-4-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210726194603.14671-1-gerhard@engleder-embedded.com>
 References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
@@ -64,101 +64,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TSN endpoint Ethernet MAC is a FPGA based network device for
-real-time communication.
-
-It is integrated as normal Ethernet controller with
-ethernet-controller.yaml and ethernet-phy.yaml.
+Engleder bindings for devicetrees with TSN endpoint Ethernet MAC.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- .../bindings/net/engleder,tsnep.yaml          | 77 +++++++++++++++++++
- 1 file changed, 77 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/engleder,tsnep.yaml
+ .../devicetree/bindings/arm/engleder.yaml     | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/engleder.yaml
 
-diff --git a/Documentation/devicetree/bindings/net/engleder,tsnep.yaml b/Documentation/devicetree/bindings/net/engleder,tsnep.yaml
+diff --git a/Documentation/devicetree/bindings/arm/engleder.yaml b/Documentation/devicetree/bindings/arm/engleder.yaml
 new file mode 100644
-index 000000000000..ef2ca45d36a0
+index 000000000000..18a918c7cda5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/net/engleder,tsnep.yaml
-@@ -0,0 +1,77 @@
++++ b/Documentation/devicetree/bindings/arm/engleder.yaml
+@@ -0,0 +1,22 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/net/engleder,tsnep.yaml#
++$id: http://devicetree.org/schemas/arm/engleder.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: TSN endpoint Ethernet MAC binding
++title: Engleder TSN endpoint Ethernet MAC bindings
 +
 +maintainers:
 +  - Gerhard Engleder <gerhard@engleder-embedded.com>
 +
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+
 +properties:
++  $nodename:
++    const: "/"
 +  compatible:
-+    oneOf:
++    items:
 +      - enum:
-+        - engleder,tsnep
++          - engleder,zynqmp-tsnep
 +
-+  reg: true
-+  interrupts: true
++additionalProperties: true
 +
-+  local-mac-address: true
-+  mac-address: true
-+  nvmem-cells: true
-+  nvmem-cells-names: true
-+
-+  phy-connection-type: true
-+  phy-mode: true
-+
-+  phy-handle: true
-+
-+  '#address-cells':
-+    description: Number of address cells for the MDIO bus.
-+    const: 1
-+
-+  '#size-cells':
-+    description: Number of size cells on the MDIO bus.
-+    const: 0
-+
-+patternProperties:
-+  "^ethernet-phy@[0-9a-f]$":
-+    type: object
-+    $ref: ethernet-phy.yaml#
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - phy-mode
-+  - phy-handle
-+  - '#address-cells'
-+  - '#size-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    axi {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        tnsep0: ethernet@a0000000 {
-+            compatible = "engleder,tsnep";
-+            reg = <0x0 0xa0000000 0x0 0x10000>;
-+            interrupts = <0 89 1>;
-+            interrupt-parent = <&gic>;
-+            local-mac-address = [00 00 00 00 00 00];
-+            phy-mode = "rgmii";
-+            phy-handle = <&phy0>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            phy0: ethernet-phy@1 {
-+                reg = <1>;
-+            };
-+        };
-+    };
++...
 -- 
 2.20.1
 
