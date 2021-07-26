@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1CB3D57D5
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 12:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A56B3D584C
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 13:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbhGZKPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 06:15:25 -0400
-Received: from mail-vs1-f47.google.com ([209.85.217.47]:47042 "EHLO
-        mail-vs1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231792AbhGZKPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 06:15:24 -0400
-Received: by mail-vs1-f47.google.com with SMTP id e4so4929272vsr.13;
-        Mon, 26 Jul 2021 03:55:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PC9p+DhA09pyYVa2lDRMUzwd/1DxS6/ThMpBKEZ540I=;
-        b=pILa0j9bgOz0YPQ3fL1228VorzEe/yXfYV0eQVs150f+EsrOYwibcE2SEqAjLg1Pa4
-         8cd4NKDr+4/592gakN1X65/2Qoo1iGo0m9nXCNXLDOoXTnjjyd1PEj2qFYejdziXhbEJ
-         0/kU9LMT1KN7gB1OuxfqethV3OKBGiiyLvyJZoyAiHuE3TWnkkx1jAUGvjqt0qUX0tSI
-         PUZ+D8kArYGcS5jTW3dgO8It+ed3apkm44e9N2zJXt1BWu4uFHngG4yCa1G9sRMH/U3U
-         BLxNJ3UljHfqqe0/Xiz7GKXkMnwSCi36t0Co+8t5Z160eiAdqdhTguGoy+wa9SuSV/Aq
-         nITQ==
-X-Gm-Message-State: AOAM530it2fctg1clvT5FrQMGrfLTY0N6GwTYW/wc0h3Ez1UMjwTaLnG
-        gzEnlDBHzvWFkiG317D4tOG3AAZrNJrfTO4XKQQ=
-X-Google-Smtp-Source: ABdhPJwFkdsN6fVdy6k+zl2b/JKqOhILxbWjTtcaJLtfiCJQtkV2QMsJyCiySjUSMG67/vOSXvXz2+fRSOJ220Rj3HA=
-X-Received: by 2002:a67:7789:: with SMTP id s131mr8454510vsc.40.1627296952092;
- Mon, 26 Jul 2021 03:55:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
- <b295ec23-f8b2-0432-83e6-16078754e5e3@gmail.com> <YPneBpUk6z8iy94G@lunn.ch> <TYCPR01MB593398E6E5422E81C01F1F8C86E59@TYCPR01MB5933.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYCPR01MB593398E6E5422E81C01F1F8C86E59@TYCPR01MB5933.jpnprd01.prod.outlook.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 26 Jul 2021 12:55:41 +0200
-Message-ID: <CAMuHMdXecUYTSjGUyDZDFKfwT+Fgi4n4o08b0Yunu70JmpnN=w@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/18] Add Gigabit Ethernet driver support
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        id S233093AbhGZK2x convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Jul 2021 06:28:53 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:40035 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232263AbhGZK2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 06:28:49 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 16QB97Bj8004450, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36502.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 16QB97Bj8004450
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 26 Jul 2021 19:09:07 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36502.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 26 Jul 2021 19:09:07 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 26 Jul 2021 19:09:06 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91]) by
+ RTEXMBS04.realtek.com.tw ([fe80::5bd:6f71:b434:7c91%5]) with mapi id
+ 15.01.2106.013; Mon, 26 Jul 2021 19:09:06 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next RESEND 2/2] r8152: separate the r8152.c into r8152_main.c and r8152_fw.c
+Thread-Topic: [PATCH net-next RESEND 2/2] r8152: separate the r8152.c into
+ r8152_main.c and r8152_fw.c
+Thread-Index: AQHXgdL4UhnFIS2opkGLRT1L0R8XUatUWD4AgACR1mD//38YAIAAqNrw
+Date:   Mon, 26 Jul 2021 11:09:06 +0000
+Message-ID: <47801164b7b3406b895be1542e0ce4a2@realtek.com>
+References: <1394712342-15778-368-Taiwan-albertk@realtek.com>
+ <1394712342-15778-371-Taiwan-albertk@realtek.com>
+ <1394712342-15778-373-Taiwan-albertk@realtek.com>
+ <YP5mFKeJsGezjdve@kroah.com> <c6b44f93a5b14fbb98d4c6cb0ed2a77f@realtek.com>
+ <YP50SIgqAEyKWSpA@kroah.com>
+In-Reply-To: <YP50SIgqAEyKWSpA@kroah.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2021/7/26_=3F=3F_10:24:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36502.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-AntiSpam-Outbound-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/26/2021 10:49:04
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165241 [Jul 26 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: hayeswang@realtek.com
+X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: realtek.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/26/2021 10:51:00
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Biju,
+Greg KH <gregkh@linuxfoundation.org>
+> Sent: Monday, July 26, 2021 4:37 PM
+[...]
+> You also do other things, like renaming defines, which is not just
+> moving code around, right?
 
-On Fri, Jul 23, 2021 at 8:28 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > Subject: Re: [PATCH net-next 00/18] Add Gigabit Ethernet driver support
-> >
-> > On Thu, Jul 22, 2021 at 11:53:59PM +0300, Sergei Shtylyov wrote:
-> > > On 7/22/21 5:13 PM, Biju Das wrote:
-> > >
-> > > > The DMAC and EMAC blocks of Gigabit Ethernet IP is almost similar to
-> > Ethernet AVB.
-> > > >
-> > > > The Gigabit Etherner IP consists of Ethernet controller (E-MAC),
-> > Internal TCP/IP Offload Engine (TOE) and Dedicated Direct memory access
-> > controller (DMAC).
-> > > >
-> > > > With few changes in driver, we can support Gigabit ethernet driver as
-> > well.
-> > > >
-> > > > This patch series is aims to support the same
-> > > >
-> > > > RFC->V1
-> > > >   * Incorporated feedback from Andrew, Sergei, Geert and Prabhakar
-> > > >   *
-> > > > https://jpn01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fpa
-> > > > tchwork.kernel.org%2Fproject%2Flinux-renesas-soc%2Flist%2F%3Fseries%
-> > > > 3D515525&amp;data=04%7C01%7Cbiju.das.jz%40bp.renesas.com%7C6fe3922cc
-> > > > 35d4178cb1d08d94d54bc75%7C53d82571da1947e49cb4625a166a4a2a%7C0%7C0%7
-> > > > C637625848601442706%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQ
-> > > > IjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;sdata=bOpIqV1g
-> > > > lMUXqz9rsX0UK3Oqap2J1cY86TGVOJvzYe4%3D&amp;reserved=0
-> > > >
-> > > > Biju Das (18):
-> > > >   dt-bindings: net: renesas,etheravb: Document Gigabit Ethernet IP
-> > > >   drivers: clk: renesas: rzg2l-cpg: Add support to handle MUX clocks
-> > > >   drivers: clk: renesas: r9a07g044-cpg: Add ethernet clock sources
-> > > >   drivers: clk: renesas: r9a07g044-cpg: Add GbEthernet clock/reset
-> > >
-> > >
-> > >    It's not a good idea to have the patch to the defferent subsystems
-> > > lumped all together in a single series...
-> >
-> > Agreed.
-> >
-> > Are these changes inseparable? If so, you need to be up front on this, and
-> > you need an agreement with the subsystem maintainers how the patches are
-> > going to be merged? Through which tree. And you need Acked-by from the
-> > other tree maintainers.
-> >
-> > Ideally you submit multiple patchsets. This assumes all sets will compile
-> > independently.
->
-> Agreed. Will split this patch series in 3 patchsets
->
-> 1) single binding patch
->
-> 2) Clock patchset
->
-> 3) ravb driver patchset.
+Yes. You are right.
 
-4) dts part.
+[...]
+> I do not know, is it really easier to find things in 3 different files
+> instead of one?  That's up to you, but you did not say why this change
+> is needed.
 
-Part 2 should pass through renesas-clk.
-Part 4 should pass through renesas-devel.
+We support a new chip or feature with a test driver.
+The test driver is similar with the upstream driver, except
+the method of the firmware. After we confirm that the
+test driver work fine, we compare the differences with
+the upstream driver and submit patches. And the code
+about firmware takes us more time to find out the
+differences. Therefore, I wish to move the part of
+the firmware out.
 
-Gr{oetje,eeting}s,
+I don't sure if it is acceptable for such patches.
+If it is unacceptable, I would abandon these patches.
 
-                        Geert
+Best Regards,
+Hayes
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
