@@ -2,124 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1123D52D7
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 07:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 149993D52EE
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 07:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbhGZEuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 00:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S231754AbhGZFHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 01:07:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbhGZEuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 00:50:11 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397BBC061757
-        for <netdev@vger.kernel.org>; Sun, 25 Jul 2021 22:30:38 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 96DC98365A;
-        Mon, 26 Jul 2021 17:30:32 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1627277432;
-        bh=exJYd7du+PGHHw+mkZbiwYCJstw++sVoWARZeuq1qmo=;
-        h=From:To:Cc:Subject:Date;
-        b=TxJwODeDcSDlstP+t9HgQR8MsR1AF1ybDoL0ed+nlgRPnPp6KRUzJZo2eir7fMM49
-         6Pea+RHGQYrsERefUJIM0w5E4pZlQkHylop5n6SUJJJw2xm5ugQU2Hi27qB/CI6TYu
-         6Hpx8E83WImh+hO9dJC7QMxpNJCkGld193a3Q12bosB1YAiFe8WvUREwcm6btRKb/0
-         U0yL0sZdHzshkgDpgIAQbhyA7d05J1KG1dLssxdV29UirCt4C99dZE+qcNLK+NXLyC
-         m9zoXRCHe36zFt/s40Ea6kncWd0pyDO45jD36G67rxcxPMeE4ZgAmEPoXQFYbEDIb5
-         jjScBkmOU3/sA==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B60fe48780000>; Mon, 26 Jul 2021 17:30:32 +1200
-Received: from richardl-dl.ws.atlnz.lc (richardl-dl.ws.atlnz.lc [10.33.23.13])
-        by pat.atlnz.lc (Postfix) with ESMTP id 70CF113EE4B;
-        Mon, 26 Jul 2021 17:30:32 +1200 (NZST)
-Received: by richardl-dl.ws.atlnz.lc (Postfix, from userid 1481)
-        id 6C1D5320AE4; Mon, 26 Jul 2021 17:30:32 +1200 (NZST)
-From:   Richard Laing <richard.laing@alliedtelesis.co.nz>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
-        linux-kernel@vger.kernel.org,
-        Richard Laing <richard.laing@alliedtelesis.co.nz>
-Subject: [PATCH] net: mhi: Improve MBIM packet counting
-Date:   Mon, 26 Jul 2021 17:30:03 +1200
-Message-Id: <20210726053003.29857-1-richard.laing@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S229654AbhGZFHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 01:07:34 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84688C061757;
+        Sun, 25 Jul 2021 22:48:03 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id x12so1037160qvo.12;
+        Sun, 25 Jul 2021 22:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=IjUSYUWGzcBLQG2iUil833w4Zd3GqFtQlxGn9nyit5k=;
+        b=S9uFWcpxD/QrakM9dEgq7JCJjBUPkX7T1EySjVtZwLGkdUscQN63QmH6Q5zUZf6AuU
+         WkA3XibX9Evq7Z4Bpxx0BTT46+3hFFkeip6slBVPcazG9e+JYhN9tvJ4SYBdO8Kn1B3M
+         6kCm7DmeCzcnnKKJw2DZ0hSmeRieTzVEX6axuqOXizgmfAbVSd5vNFWyP+GJ7PzwSJBh
+         yigd0EK/l1Xu0SNQOpEKDTY8g7d4ESRn9WFX39wihsb6/ASbBmZyWdnXka0RDkZQjE6s
+         T2sQctiULV4+IUSaWs9Oxgb/hJWjGRghDcrOIN0LvEpiT5vxam9C5M2hS7smSqNYvHkY
+         6Ntw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IjUSYUWGzcBLQG2iUil833w4Zd3GqFtQlxGn9nyit5k=;
+        b=PEGUeXnYcgXG96a01QvU8jHxdaTmEBn2o46iSvrUqE7z24ndFF5R13dUaea2Wa8d3b
+         ci3B7Z4oIa3NKLSnMNpTHzzQCVMDU3DffpMe2ci31XFlbp3lWha554LAhOEQ+zfHTt0/
+         Zb7gKg6cd7oZic1NZ00Yjjk08beZxAOc065h7X8bbL+z0vshaslDISOzy2LJgw6a7IKO
+         uzanxMrJ9KNS36KDZiN5MZOMyPEdL8Dk9Fgsx/Pn2NMMcvnj3vqImO4GvZBkz34tXRrB
+         2mqkEkkMFlnLkL6RWd8FTdZgZlicMloYdNV6QjXEK4Tca9wd+3pqX3Eh5/9v3jsPq1eJ
+         w1jQ==
+X-Gm-Message-State: AOAM532rXz3cis65QqTKFfhPf7YyuzUgDiThKPv8Qp8xN3TU0cNvm6m0
+        JB5I0rM7RjEW9df/6Jof6Q==
+X-Google-Smtp-Source: ABdhPJwm7C4CimaVH15ZzSIqWqjk0cJnOJWk7qqez3PMwEi4SZVW9nem4uFkEGvQaoWw65dU5tghmA==
+X-Received: by 2002:ad4:5cad:: with SMTP id q13mr16416000qvh.10.1627278482331;
+        Sun, 25 Jul 2021 22:48:02 -0700 (PDT)
+Received: from localhost.localdomain (74.121.150.105.16clouds.com. [74.121.150.105])
+        by smtp.gmail.com with ESMTPSA id h7sm14799668qtq.79.2021.07.25.22.48.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Jul 2021 22:48:01 -0700 (PDT)
+From:   Chen Shen <peterchenshen@gmail.com>
+To:     marcelo.leitner@gmail.com
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chen Shen <peterchenshen@gmail.com>
+Subject: [PATCH v2] sctp: delete addr based on sin6_scope_id
+Date:   Mon, 26 Jul 2021 13:47:34 +0800
+Message-Id: <20210726054733.75937-1-peterchenshen@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <YP3tOORtoNHZXQdt@horizon.localdomain>
+References: <YP3tOORtoNHZXQdt@horizon.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=dvql9Go4 c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=e_q4qTt1xDgA:10 a=Qj9HRg2PlNJ9qBswoWQA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets are aggregated over the MBIM link and currently the MHI net
-device will count each aggregated packet rather then the actual
-packets themselves.
+sctp_inet6addr_event deletes 'addr' from 'local_addr_list' when setting
+netdev down, but it is possible to delete the incorrect entry (match
+the first one with the same ipaddr, but the different 'ifindex'), if
+there are some netdevs with the same 'local-link' ipaddr added already.
+It should delete the entry depending on 'sin6_addr' and 'sin6_scope_id'
+both. otherwise, the endpoint will call 'sctp_sf_ootb' if it can't find
+the according association when receives 'heartbeat', and finally will
+reply 'abort'.
 
-If a protocol handler module is specified, use that to count the
-packets rather than directly in the MHI net device. This is in line
-with the behaviour of the USB net cdc_mbim driver.
+For example:
+1.when linux startup
+the entries in local_addr_list:
+ifindex:35 addr:fe80::40:43ff:fe80:0 (eths0.201)
+ifindex:36 addr:fe80::40:43ff:fe80:0 (eths0.209)
+ifindex:37 addr:fe80::40:43ff:fe80:0 (eths0.210)
 
-Signed-off-by: Richard Laing <richard.laing@alliedtelesis.co.nz>
+the route table:
+local fe80::40:43ff:fe80:0 dev eths0.201
+local fe80::40:43ff:fe80:0 dev eths0.209
+local fe80::40:43ff:fe80:0 dev eths0.210
+
+2.after 'ifconfig eths0.209 down'
+the entries in local_addr_list:
+ifindex:36 addr:fe80::40:43ff:fe80:0 (eths0.209)
+ifindex:37 addr:fe80::40:43ff:fe80:0 (eths0.210)
+
+the route table:
+local fe80::40:43ff:fe80:0 dev eths0.201
+local fe80::40:43ff:fe80:0 dev eths0.210
+
+3.asoc not found for src:[fe80::40:43ff:fe80:0]:37381 dst:[:1]:53335
+::1->fe80::40:43ff:fe80:0 HEARTBEAT
+fe80::40:43ff:fe80:0->::1 ABORT
+
+Signed-off-by: Chen Shen <peterchenshen@gmail.com>
 ---
- drivers/net/mhi/net.c        | 14 +++++++-------
- drivers/net/mhi/proto_mbim.c |  4 ++++
- 2 files changed, 11 insertions(+), 7 deletions(-)
+ net/sctp/ipv6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-index a5a2aa19bb91..0cc7dcd0ff96 100644
---- a/drivers/net/mhi/net.c
-+++ b/drivers/net/mhi/net.c
-@@ -205,11 +205,6 @@ static void mhi_net_dl_callback(struct mhi_device *m=
-hi_dev,
- 			mhi_netdev->skbagg_head =3D NULL;
- 		}
-=20
--		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
--		u64_stats_inc(&mhi_netdev->stats.rx_packets);
--		u64_stats_add(&mhi_netdev->stats.rx_bytes, skb->len);
--		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
--
- 		switch (skb->data[0] & 0xf0) {
- 		case 0x40:
- 			skb->protocol =3D htons(ETH_P_IP);
-@@ -222,10 +217,15 @@ static void mhi_net_dl_callback(struct mhi_device *=
-mhi_dev,
- 			break;
- 		}
-=20
--		if (proto && proto->rx)
-+		if (proto && proto->rx) {
- 			proto->rx(mhi_netdev, skb);
--		else
-+		} else {
-+			u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
-+			u64_stats_inc(&mhi_netdev->stats.rx_packets);
-+			u64_stats_add(&mhi_netdev->stats.rx_bytes, skb->len);
-+			u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
- 			netif_rx(skb);
-+		}
- 	}
-=20
- 	/* Refill if RX buffers queue becomes low */
-diff --git a/drivers/net/mhi/proto_mbim.c b/drivers/net/mhi/proto_mbim.c
-index f1cc7f35bb85..761d90b28ee6 100644
---- a/drivers/net/mhi/proto_mbim.c
-+++ b/drivers/net/mhi/proto_mbim.c
-@@ -211,6 +211,10 @@ static void mbim_rx(struct mhi_net_dev *mhi_netdev, =
-struct sk_buff *skb)
- 				continue;
- 			}
-=20
-+			u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
-+			u64_stats_inc(&mhi_netdev->stats.rx_packets);
-+			u64_stats_add(&mhi_netdev->stats.rx_bytes, skbn->len);
-+			u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
- 			netif_rx(skbn);
- 		}
- next_ndp:
---=20
-2.32.0
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index 52c92b8d827f..f5f54229b055 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -99,8 +99,9 @@ static int sctp_inet6addr_event(struct notifier_block *this, unsigned long ev,
+ 		list_for_each_entry_safe(addr, temp,
+ 					&net->sctp.local_addr_list, list) {
+ 			if (addr->a.sa.sa_family == AF_INET6 &&
+-					ipv6_addr_equal(&addr->a.v6.sin6_addr,
+-						&ifa->addr)) {
++			    ipv6_addr_equal(&addr->a.v6.sin6_addr,
++					    &ifa->addr) &&
++			    addr->a.v6.sin6_scope_id == ifa->idev->dev->ifindex) {
+ 				sctp_addr_wq_mgmt(net, addr, SCTP_ADDR_DEL);
+ 				found = 1;
+ 				addr->valid = 0;
+-- 
+2.19.0
 
