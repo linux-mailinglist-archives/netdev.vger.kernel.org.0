@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65EA73D5AB3
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 15:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A89723D5AB8
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 15:50:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbhGZNHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 09:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233963AbhGZNHs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:07:48 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CE1C061757
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 06:48:15 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id e5so11359697ljp.6
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 06:48:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ivg9o7rg5ISps4s8xPiG/wJJnOVUYqQKPCeKI3UTaIM=;
-        b=wDfbtJKa8rkewnwwlv1vOunBRLNNIZ0IAovVCNkT8dYkmoebPukHdYjqoBpQQCkIPA
-         BSt7fdmqa99u+m2zWNqQXPIC1VyfNkdhpQOt/dZe5Qh9mr62G7pLWe8ZCGTuungQ1xzl
-         IXolVFnrUHy9hm4a4ZtiCHE96Lwb9Wo+lPA++LrNbqUvHEi77vClI/M3LdrANuaNqJy9
-         8v7id8U/2+MLo/Kt9EM/YRgkO9MPXW/E5uW9KkqLdXpt9ojmw6qiGWwGmimZ9Bw2NJoY
-         kLz9pzTwHjsCTamE5VXBJc5y6ICqsWUmNjz05PYzPX3FCWkc4HYvNnmpELZmljm1jO5t
-         nrcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ivg9o7rg5ISps4s8xPiG/wJJnOVUYqQKPCeKI3UTaIM=;
-        b=SSW8NP8v/JRm/mWsoG8E0aGbk82m3tGRdAoEay0lS+EuYR83KYeyUOs9IYWAuiks/7
-         XmfWnnGzEGNvXhPcyGjC+64abces7S0RU70iY8qu1oRP6Q8KlHFsZPhgk3sK535TFfPG
-         LdpAWStLs39+lLY5aFahtj/0QGCMh9ck1z1MPXGTyzRaf//BzNfeHvVqEEbUPz257Tua
-         mriYAY9V3W7yuw4kScUK5BNfZ5dXeerUt0brI6yw7O7OLeukPuQOlZ50ow8qEWQHRm/L
-         FqNyqw/6Q1jd3bflvYFl1g6pixMwEZd67R+lIF9Qep6Q1eNQtYiV/NJQTIaB4zoHO2qr
-         5sug==
-X-Gm-Message-State: AOAM5331PWcdV4t6DB7LSKOslE5G1UtvoypCY4GS6Tm1EpDYYeknIgA8
-        jm4ljjwopORGREzYdJ7RS566PajPHvwf8QUSZpCVLg==
-X-Google-Smtp-Source: ABdhPJxHXb9YaS4LzM7Q/bLNJhDwrbwHc+yaqpazQVVWNbe7nnL7ulo3RPPZbSQsR8iDmz8lMczetqJdTfausWL/L+g=
-X-Received: by 2002:a05:651c:1211:: with SMTP id i17mr12499330lja.122.1627307293966;
- Mon, 26 Jul 2021 06:48:13 -0700 (PDT)
+        id S234271AbhGZNJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 09:09:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34870 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234201AbhGZNJk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 09:09:40 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F04E060F5B;
+        Mon, 26 Jul 2021 13:50:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627307409;
+        bh=BuNMA3OKwOYxcJ66+DLzg/7KwAyvnoKVkl1tFGUMWS8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=P/1yzU4WFw1YA2y9Y90WL3vvHP25Z+OMrcmhS1A3CHif9fOgqF687i/09CB2QqoYR
+         ZlQJoiuwOwSOgQ7YJ/A+qxOaIlPbPLjKxzbgdUmaNGJFK4SnF7A7kU4x5ho3Vh/xQ2
+         h2r6nN+DgR9Ar1O893fwL/h+XmuDgp5DyJWLITSVBNeSLRdSAV1XbqE0pvb8HbZCUq
+         mJAYSsqLXqdYafBo3MqsBOfklVa3t4QHPvdgg9NrtEzfydX09oRdmSKqugaE6/RzuD
+         UETr9EvtzCYKUGwvXAdg3CEwT0R+3smcX6H/rVEPNW0RteW37KDLlI7tW3m2DILuVg
+         t/ZSQ6Y4Suemw==
+Received: by mail-wm1-f52.google.com with SMTP id n21so5381032wmq.5;
+        Mon, 26 Jul 2021 06:50:08 -0700 (PDT)
+X-Gm-Message-State: AOAM533fRx2q9IYt0XDc75i0xpcNyzbWCAk2HTvpN5Oj33moX1Z5O3oR
+        MD8MZzlPq79OLYGIukYiPniGA3imaqiM6Yxllxs=
+X-Google-Smtp-Source: ABdhPJyGJ7XZF274Qssdtdvh4G6RwXymeoSoqclwy/LWz9iPSyyiUet+63KF+hCHfoNCBLc9Lbx4BwTyc4C3DbvqXRg=
+X-Received: by 2002:a1c:c90f:: with SMTP id f15mr26978923wmb.142.1627307407556;
+ Mon, 26 Jul 2021 06:50:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <CALvZod66KF-8xKB1dyY2twizDE=svE8iXT_nqvsrfWg1a92f4A@mail.gmail.com>
- <cover.1626688654.git.vvs@virtuozzo.com> <9123bca3-23bb-1361-c48f-e468c81ad4f6@virtuozzo.com>
- <CALvZod4HCRHpPJtGE=8tU1Yj=WsWHpocP0q0JU3r4F2fMmAw5w@mail.gmail.com> <08151b5b-f84a-aa32-82a6-0b6e94e63338@virtuozzo.com>
-In-Reply-To: <08151b5b-f84a-aa32-82a6-0b6e94e63338@virtuozzo.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 26 Jul 2021 06:48:02 -0700
-Message-ID: <CALvZod5-XtaeawPtEgnp9xwouy0KfuDbpykB6Z3b+8YJyCrLVA@mail.gmail.com>
-Subject: Re: [PATCH v5 02/16] memcg: enable accounting for IP address and
- routing-related objects
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Roman Gushchin <guro@fb.com>,
+References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
+ <b295ec23-f8b2-0432-83e6-16078754e5e3@gmail.com> <YPneBpUk6z8iy94G@lunn.ch>
+ <TYCPR01MB593398E6E5422E81C01F1F8C86E59@TYCPR01MB5933.jpnprd01.prod.outlook.com>
+ <CAMuHMdXecUYTSjGUyDZDFKfwT+Fgi4n4o08b0Yunu70JmpnN=w@mail.gmail.com>
+In-Reply-To: <CAMuHMdXecUYTSjGUyDZDFKfwT+Fgi4n4o08b0Yunu70JmpnN=w@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 26 Jul 2021 15:49:48 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0zcXT7xtXpt3-Yf=7Oiitrch5KjcqMcRf4ZRK56B_NqA@mail.gmail.com>
+Message-ID: <CAK8P3a0zcXT7xtXpt3-Yf=7Oiitrch5KjcqMcRf4ZRK56B_NqA@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/18] Add Gigabit Ethernet driver support
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
+        Adam Ford <aford173@gmail.com>,
+        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 26, 2021 at 3:23 AM Vasily Averin <vvs@virtuozzo.com> wrote:
->
-[...]
+On Mon, Jul 26, 2021 at 12:56 PM Geert Uytterhoeven
+<geert@linux-m68k.org> wrote:
+> On Fri, Jul 23, 2021 at 8:28 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> > >
+> > > Are these changes inseparable? If so, you need to be up front on this, and
+> > > you need an agreement with the subsystem maintainers how the patches are
+> > > going to be merged? Through which tree. And you need Acked-by from the
+> > > other tree maintainers.
+> > >
+> > > Ideally you submit multiple patchsets. This assumes all sets will compile
+> > > independently.
 > >
-> > Can you please also change in_interrupt() in active_memcg() as well?
-> > There are other unrelated in_interrupt() in that file but the one in
-> > active_memcg() should be coupled with this change.
+> > Agreed. Will split this patch series in 3 patchsets
+> >
+> > 1) single binding patch
+> >
+> > 2) Clock patchset
+> >
+> > 3) ravb driver patchset.
 >
-> Could you please elaborate?
-> From my point of view active_memcg is paired with set_active_memcg() and is not related to this case.
-> active_memcg uses memcg that was set by set_active_memcg(), either from int_active_memcg per-cpu pointer
-> or from current->active_memcg pointer.
-> I'm agree, it in case of disabled BH it is incorrect to use int_active_memcg,
-> we still can use current->active_memcg. However it isn't a problem,
-> memcg will be properly provided in both cases.
+> 4) dts part.
 >
-> I think it's better to fix set_active_memcg/active_memcg by separate patch.
->
-> Am I missed something perhaps?
->
+> Part 2 should pass through renesas-clk.
+> Part 4 should pass through renesas-devel.
 
-No you are right. That should be a separate patch.
+Sounds good. To clarify: the changes should not just compile, but
+each branch should be usable independently with no loss of
+functionality. Using the feature depends on having all branches
+merged, but they should not introduced regressions when applied
+into some other tree.
+
+I hope this was already obvious to everyone involved.
+
+       Arnd
