@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AC843D6501
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:59:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE193D6502
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236815AbhGZQSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 12:18:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50214 "EHLO mail.kernel.org"
+        id S239351AbhGZQSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 12:18:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241832AbhGZQQi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S241833AbhGZQQi (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 26 Jul 2021 12:16:38 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A62B660F37;
-        Mon, 26 Jul 2021 16:55:57 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2816960F6E;
+        Mon, 26 Jul 2021 16:55:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627318558;
-        bh=Rk56lEbgzZ+QkEpxOE2R3nyPedr6GOUp6ESkU4Cdk3M=;
+        bh=YgO8KAoqnQlYZnINVZBYLU1GrAO8YmnXbyFhbdgiavc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uC8Cq/ZEcNC7cPl+TTwJRtxi5p2tFrK+A6DVW35Mx6DX+IxrpIqolUO38GCZJH5hr
-         F2pxLtOqVMKoJFaSbd4dTlf+HuEXrlBPFgofA67zQYN+B5QnI2NgmRJVsZbPB6jt5b
-         OJvHLFpS3vpzY/VH67uoXen43eNEZEDLuWt5ywUOePiqNtvIiedjXgt0kE03S6jBm3
-         RIthAka8RhOFiE9ppKo4yDR368wamDmH+vC1K0cMU/C1I1nGS7iZ2s1IFipyS5RzXu
-         Q26UxgRhA5fNCH0wxLY0eeaPLs2PrM9qR0fNFY4zEph3T5rnq0K8qUbD5IYH6LcZZY
-         5DLj3qs79OLcQ==
+        b=rXvwis669Fd/xzosRsSGGP0ExU90buy43LmJSG8R5KPHzlmU8EmToFjTdK5tfr4lo
+         F085mTmmAXVqs6SI1wBeU/vyOnCPbD8mRl+VP9mDhiPSjggEQAbQ06W6tyt/UlbkuN
+         f4v6dJiwZdQoIshgElA9Jn8x+BmcBYOmbQY2rJaOdrqJ/L5GnyX4mF56rWDTjaKsWh
+         wCrrlIrOeHqf3oISBuSXgSxSoyvyo6/9s96fmitjIYgnFWbwHbY2UvlQXzRm5WiMSN
+         K6SX6dvcqeU2JFziQbSwlRzLG/F7L9Psrh580D/5s394AdFEOka1X0/kIMddSwwP24
+         ZjnU1WZDrhoeQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 10/16] net/mlx5e: Remove mlx5e_priv usage from mlx5e_build_*tir_ctx*()
-Date:   Mon, 26 Jul 2021 09:55:38 -0700
-Message-Id: <20210726165544.389143-11-saeed@kernel.org>
+Subject: [net-next 11/16] net/mlx5e: Remove lro_param from mlx5e_build_indir_tir_ctx_common()
+Date:   Mon, 26 Jul 2021 09:55:39 -0700
+Message-Id: <20210726165544.389143-12-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210726165544.389143-1-saeed@kernel.org>
 References: <20210726165544.389143-1-saeed@kernel.org>
@@ -43,231 +43,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-The functions that build TIR context for TIR create and modify commands
-used to depend on struct mlx5e_priv and fetch some values directly from
-different places. It increased coupling of code and the chance of weird
-misbehavior due to hidden complex dependencies.
-
-As the first step, this commit removes the priv parameter from these
-functions. Instead, the necessary values are passed directly.
+In order to reduce the list of parameters and to define clearer
+responsibility for mlx5e_build_indir_tir_ctx_common(), stop passing
+lro_param and instead call mlx5e_build_tir_ctx_lro() directly where
+needed.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   | 12 +++
- .../ethernet/mellanox/mlx5/core/en/params.h   |  6 ++
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 74 ++++++++++---------
- 3 files changed, 56 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 150c8e82c738..fc602d85ca48 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -167,6 +167,18 @@ u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
- 	return is_linear_skb ? mlx5e_get_linear_rq_headroom(params, xsk) : 0;
- }
- 
-+struct mlx5e_lro_param mlx5e_get_lro_param(struct mlx5e_params *params)
-+{
-+	struct mlx5e_lro_param lro_param;
-+
-+	lro_param = (struct mlx5e_lro_param) {
-+		.enabled = params->lro_en,
-+		.timeout = params->lro_timeout,
-+	};
-+
-+	return lro_param;
-+}
-+
- u16 mlx5e_calc_sq_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
- {
- 	bool is_mpwqe = MLX5E_GET_PFLAG(params, MLX5E_PFLAG_SKB_TX_MPWQE);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index e9593f5f0661..879ad46d754e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -11,6 +11,11 @@ struct mlx5e_xsk_param {
- 	u16 chunk_size;
- };
- 
-+struct mlx5e_lro_param {
-+	bool enabled;
-+	u32 timeout;
-+};
-+
- struct mlx5e_cq_param {
- 	u32                        cqc[MLX5_ST_SZ_DW(cqc)];
- 	struct mlx5_wq_param       wq;
-@@ -120,6 +125,7 @@ u8 mlx5e_mpwqe_get_log_num_strides(struct mlx5_core_dev *mdev,
- u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
- 			  struct mlx5e_params *params,
- 			  struct mlx5e_xsk_param *xsk);
-+struct mlx5e_lro_param mlx5e_get_lro_param(struct mlx5e_params *params);
- 
- /* Build queue parameters */
- 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index a70ada2e7208..72782f0fd5eb 100644
+index 72782f0fd5eb..69a4a9336615 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2371,9 +2371,9 @@ struct mlx5e_tirc_config mlx5e_tirc_get_default_config(enum mlx5e_traffic_types
- 	return tirc_default_config[tt];
+@@ -3130,7 +3130,6 @@ static void mlx5e_cleanup_nic_tx(struct mlx5e_priv *priv)
  }
  
--static void mlx5e_build_tir_ctx_lro(struct mlx5e_params *params, void *tirc)
-+static void mlx5e_build_tir_ctx_lro(struct mlx5e_lro_param *lro_param, void *tirc)
- {
--	if (!params->lro_en)
-+	if (!lro_param->enabled)
- 		return;
- 
- #define ROUGH_MAX_L2_L3_HDR_SZ 256
-@@ -2383,7 +2383,7 @@ static void mlx5e_build_tir_ctx_lro(struct mlx5e_params *params, void *tirc)
- 		 MLX5_TIRC_LRO_ENABLE_MASK_IPV6_LRO);
- 	MLX5_SET(tirc, tirc, lro_max_ip_payload_size,
- 		 (MLX5E_PARAMS_DEFAULT_LRO_WQE_SZ - ROUGH_MAX_L2_L3_HDR_SZ) >> 8);
--	MLX5_SET(tirc, tirc, lro_timeout_period_usecs, params->lro_timeout);
-+	MLX5_SET(tirc, tirc, lro_timeout_period_usecs, lro_param->timeout);
- }
- 
- void mlx5e_build_indir_tir_ctx_hash(struct mlx5e_rss_params *rss_params,
-@@ -2456,6 +2456,7 @@ static int mlx5e_modify_tirs_lro(struct mlx5e_priv *priv)
- {
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5e_rx_res *res = priv->rx_res;
-+	struct mlx5e_lro_param lro_param;
- 
- 	void *in;
- 	void *tirc;
-@@ -2472,7 +2473,8 @@ static int mlx5e_modify_tirs_lro(struct mlx5e_priv *priv)
- 	MLX5_SET(modify_tir_in, in, bitmask.lro, 1);
- 	tirc = MLX5_ADDR_OF(modify_tir_in, in, ctx);
- 
--	mlx5e_build_tir_ctx_lro(&priv->channels.params, tirc);
-+	lro_param = mlx5e_get_lro_param(&priv->channels.params);
-+	mlx5e_build_tir_ctx_lro(&lro_param, tirc);
- 
- 	for (tt = 0; tt < MLX5E_NUM_INDIR_TIRS; tt++) {
- 		err = mlx5_core_modify_tir(mdev, res->rss[tt].indir_tir.tirn, in);
-@@ -3127,50 +3129,34 @@ static void mlx5e_cleanup_nic_tx(struct mlx5e_priv *priv)
- 	mlx5e_destroy_tises(priv);
- }
- 
--static void mlx5e_build_indir_tir_ctx_common(struct mlx5e_priv *priv,
-+static void mlx5e_build_indir_tir_ctx_common(struct mlx5_core_dev *mdev,
-+					     struct mlx5e_lro_param *lro_param,
-+					     bool inner_ft_support,
+ static void mlx5e_build_indir_tir_ctx_common(struct mlx5_core_dev *mdev,
+-					     struct mlx5e_lro_param *lro_param,
+ 					     bool inner_ft_support,
  					     u32 rqtn, u32 *tirc)
  {
--	MLX5_SET(tirc, tirc, transport_domain, priv->mdev->mlx5e_res.hw_objs.td.tdn);
-+	MLX5_SET(tirc, tirc, transport_domain, mdev->mlx5e_res.hw_objs.td.tdn);
+@@ -3138,8 +3137,6 @@ static void mlx5e_build_indir_tir_ctx_common(struct mlx5_core_dev *mdev,
  	MLX5_SET(tirc, tirc, disp_type, MLX5_TIRC_DISP_TYPE_INDIRECT);
  	MLX5_SET(tirc, tirc, indirect_table, rqtn);
--	MLX5_SET(tirc, tirc, tunneled_offload_en,
--		 priv->channels.params.tunneled_offload_en);
-+	MLX5_SET(tirc, tirc, tunneled_offload_en, inner_ft_support);
- 
--	mlx5e_build_tir_ctx_lro(&priv->channels.params, tirc);
-+	mlx5e_build_tir_ctx_lro(lro_param, tirc);
+ 	MLX5_SET(tirc, tirc, tunneled_offload_en, inner_ft_support);
+-
+-	mlx5e_build_tir_ctx_lro(lro_param, tirc);
  }
  
--static void mlx5e_build_indir_tir_ctx(struct mlx5e_priv *priv,
--				      enum mlx5e_traffic_types tt,
--				      u32 *tirc)
-+static void mlx5e_build_direct_tir_ctx(struct mlx5_core_dev *mdev,
-+				       struct mlx5e_lro_param *lro_param,
-+				       bool inner_ft_support,
-+				       u32 rqtn, u32 *tirc)
+ static void mlx5e_build_direct_tir_ctx(struct mlx5_core_dev *mdev,
+@@ -3147,7 +3144,8 @@ static void mlx5e_build_direct_tir_ctx(struct mlx5_core_dev *mdev,
+ 				       bool inner_ft_support,
+ 				       u32 rqtn, u32 *tirc)
  {
--	u32 rqtn = mlx5e_rqt_get_rqtn(&priv->rx_res->indir_rqt);
--
--	mlx5e_build_indir_tir_ctx_common(priv, rqtn, tirc);
--	mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
--				       &tirc_default_config[tt], tirc, false);
--}
--
--static void mlx5e_build_direct_tir_ctx(struct mlx5e_priv *priv, u32 rqtn, u32 *tirc)
--{
--	mlx5e_build_indir_tir_ctx_common(priv, rqtn, tirc);
-+	mlx5e_build_indir_tir_ctx_common(mdev, lro_param, inner_ft_support, rqtn, tirc);
+-	mlx5e_build_indir_tir_ctx_common(mdev, lro_param, inner_ft_support, rqtn, tirc);
++	mlx5e_build_indir_tir_ctx_common(mdev, inner_ft_support, rqtn, tirc);
++	mlx5e_build_tir_ctx_lro(lro_param, tirc);
  	MLX5_SET(tirc, tirc, rx_hash_fn, MLX5_RX_HASH_FN_INVERTED_XOR8);
  }
  
--static void mlx5e_build_inner_indir_tir_ctx(struct mlx5e_priv *priv,
--					    enum mlx5e_traffic_types tt,
--					    u32 *tirc)
--{
--	u32 rqtn = mlx5e_rqt_get_rqtn(&priv->rx_res->indir_rqt);
--
--	mlx5e_build_indir_tir_ctx_common(priv, rqtn, tirc);
--	mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
--				       &tirc_default_config[tt], tirc, true);
--}
--
- int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
- {
- 	struct mlx5e_rx_res *res = priv->rx_res;
-+	struct mlx5e_lro_param lro_param;
- 	struct mlx5e_tir *tir;
-+	u32 indir_rqtn;
- 	void *tirc;
- 	int inlen;
- 	int i = 0;
-@@ -3183,11 +3169,19 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
- 	if (!in)
- 		return -ENOMEM;
- 
-+	lro_param = mlx5e_get_lro_param(&priv->channels.params);
-+	indir_rqtn = mlx5e_rqt_get_rqtn(&priv->rx_res->indir_rqt);
-+
- 	for (tt = 0; tt < MLX5E_NUM_INDIR_TIRS; tt++) {
+@@ -3176,9 +3174,10 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
  		memset(in, 0, inlen);
  		tir = &res->rss[tt].indir_tir;
  		tirc = MLX5_ADDR_OF(create_tir_in, in, ctx);
--		mlx5e_build_indir_tir_ctx(priv, tt, tirc);
-+		mlx5e_build_indir_tir_ctx_common(priv->mdev, &lro_param,
-+						 priv->channels.params.tunneled_offload_en,
-+						 indir_rqtn, tirc);
-+		mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
-+					       &tirc_default_config[tt], tirc, false);
-+
- 		err = mlx5e_create_tir(priv->mdev, tir, in);
- 		if (err) {
- 			mlx5_core_warn(priv->mdev, "create indirect tirs failed, %d\n", err);
-@@ -3202,7 +3196,11 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
+-		mlx5e_build_indir_tir_ctx_common(priv->mdev, &lro_param,
++		mlx5e_build_indir_tir_ctx_common(priv->mdev,
+ 						 priv->channels.params.tunneled_offload_en,
+ 						 indir_rqtn, tirc);
++		mlx5e_build_tir_ctx_lro(&lro_param, tirc);
+ 		mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
+ 					       &tirc_default_config[tt], tirc, false);
+ 
+@@ -3196,9 +3195,10 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
  		memset(in, 0, inlen);
  		tir = &res->rss[i].inner_indir_tir;
  		tirc = MLX5_ADDR_OF(create_tir_in, in, ctx);
--		mlx5e_build_inner_indir_tir_ctx(priv, i, tirc);
-+		mlx5e_build_indir_tir_ctx_common(priv->mdev, &lro_param,
-+						 priv->channels.params.tunneled_offload_en,
-+						 indir_rqtn, tirc);
-+		mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
-+					       &tirc_default_config[i], tirc, true);
+-		mlx5e_build_indir_tir_ctx_common(priv->mdev, &lro_param,
++		mlx5e_build_indir_tir_ctx_common(priv->mdev,
+ 						 priv->channels.params.tunneled_offload_en,
+ 						 indir_rqtn, tirc);
++		mlx5e_build_tir_ctx_lro(&lro_param, tirc);
+ 		mlx5e_build_indir_tir_ctx_hash(&priv->rx_res->rss_params,
+ 					       &tirc_default_config[i], tirc, true);
  		err = mlx5e_create_tir(priv->mdev, tir, in);
- 		if (err) {
- 			mlx5_core_warn(priv->mdev, "create inner indirect tirs failed, %d\n", err);
-@@ -3230,6 +3228,7 @@ int mlx5e_create_indirect_tirs(struct mlx5e_priv *priv, bool inner_ttc)
- static int mlx5e_create_direct_tir(struct mlx5e_priv *priv, struct mlx5e_tir *tir,
- 				   struct mlx5e_rqt *rqt)
- {
-+	struct mlx5e_lro_param lro_param;
- 	void *tirc;
- 	int inlen;
- 	int err = 0;
-@@ -3241,7 +3240,10 @@ static int mlx5e_create_direct_tir(struct mlx5e_priv *priv, struct mlx5e_tir *ti
- 		return -ENOMEM;
- 
- 	tirc = MLX5_ADDR_OF(create_tir_in, in, ctx);
--	mlx5e_build_direct_tir_ctx(priv, mlx5e_rqt_get_rqtn(rqt), tirc);
-+	lro_param = mlx5e_get_lro_param(&priv->channels.params);
-+	mlx5e_build_direct_tir_ctx(priv->mdev, &lro_param,
-+				   priv->channels.params.tunneled_offload_en,
-+				   mlx5e_rqt_get_rqtn(rqt), tirc);
- 	err = mlx5e_create_tir(priv->mdev, tir, in);
- 	if (unlikely(err))
- 		mlx5_core_warn(priv->mdev, "create tirs failed, %d\n", err);
 -- 
 2.31.1
 
