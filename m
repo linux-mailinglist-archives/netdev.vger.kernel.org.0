@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1883D555F
+	by mail.lfdr.de (Postfix) with ESMTP id D2AA83D5560
 	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 10:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233160AbhGZHir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 03:38:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56926 "EHLO
+        id S233194AbhGZHiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 03:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbhGZHiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 03:38:10 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E27C0613C1
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 01:18:39 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id b7so9460318edu.3
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 01:18:39 -0700 (PDT)
+        with ESMTP id S232783AbhGZHiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 03:38:11 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949A6C0613D5
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 01:18:40 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id gt31so15015526ejc.12
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 01:18:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=RRL0VLp6qutZXrZd4cRKeYTVqt51qEo+4j74ZFYX/gc=;
-        b=BtHsmB+RrZLYGEilIWKd3ro5Fruw+0KUz/jj7xb9KlhaLSkI91RcRRH2lXN8MoBQYX
-         wCRMYIw1pXVLQ03XMgVcMfnNjtPajuZ/V2/YcZ+kzjUhOg3J+QWd05xe6N+EHMDXJI02
-         4HII4KJB3ncMYzDjvbeLtvEJ1vWmpVTioLiBm2acbQ2nu2BteQXpB7t+3b6vFwADYgLu
-         Q/nZPiSgt5zWKoHwnYf4z5Dty5wDa5WvNirKX574fDkBaGV/mQkQOF4T5+62zhHeCM1M
-         o0h1b/1ne2vXTqceBGnuGna7AvOkUPu6P8XJB6N/1TrBy2loqN1QcXZoWsL/0RELNRvv
-         VSYA==
+        bh=Y/3mORpxkuB6AYmO7nTlUm+T8wNLmTVSEafeQ3TI9HU=;
+        b=EFvWIrJE9buKJTtSmYumCJi3hFL4WZmcPxtCdFjdk5lMga9XOXZSnauRqVtE548LOA
+         Lb0VxpPl9RohHkR4FjN1FYj+8Nf5ybpd7mwKbfvCR6t9JWPIwvf6iKnyEq1dhysyFa4S
+         oOUPfiHHlS3tS4RhbqwU3GfXK0BKniOZ3MaBPMfb9jJE3/mag1KEGPiqt4lcJw6kVcBO
+         O6viSgdfPuAwNw9nAx/5LrcEmuUjOb9JXD6r8PbIEBoK7fn/KQoZheP2kkjKjocfGS3o
+         86FVVFhfQjxucN6od5ll//wJtt9A1nO1CWcBNTtk3R8bQ1rxuOgjdDcYdP2sIlW6Djf3
+         6gVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=RRL0VLp6qutZXrZd4cRKeYTVqt51qEo+4j74ZFYX/gc=;
-        b=V/JdYPfmo2DEJaspdRQ7lV8qIpZoB/BrguWiDk1w9aXzZr49B485ChZOD5+qBtoh+W
-         /AeHCoBZD+8ad9sUH7zVyy2Nx5FZ7PvhozG+cPe5pyNMZYaLHcBrzeV7zGVTqmBI2Dp3
-         BTay6criNnFZrB61BDXiSYcmOXqZqEOb/bxcaQ5LrJskleUSJnnIBCU7ReQF83xSqqs3
-         v6GYargAC+cbieUMl4YI29UvwNHYgGH4f8gtbqAhJ1CgkCOwkAsIm+EttQqWpLPo8SfG
-         eWhmWr3lficBJ/rJFhsCQBeiJb0Ad5F8IoVhxk6Cib9mYxRVr83L+uO1t2vF9J7oUJpK
-         oxIg==
-X-Gm-Message-State: AOAM531cX8kp4nCT80Z7l/GVMSGScImjTzwm4e/Z4wmEecMfN30bmTre
-        02O7biWHcHHRsSrCU6LKSKcNXA==
-X-Google-Smtp-Source: ABdhPJxGTrsrwbJ5F+ALRAUAE9uFPYEEbSG6NV2mH3u8WDC5547xpdmNTkKyIy7lOYXEqlfOt303RA==
-X-Received: by 2002:a05:6402:37a:: with SMTP id s26mr20498653edw.114.1627287518221;
-        Mon, 26 Jul 2021 01:18:38 -0700 (PDT)
+        bh=Y/3mORpxkuB6AYmO7nTlUm+T8wNLmTVSEafeQ3TI9HU=;
+        b=aiAXTA4hgPt2aELF8T4NnsG82CHOr+SG4alAhMkiwRnWeV/Zj46FMt4lBDKlVMQg8A
+         zd3CtI+zwRhj0HG9TMn53nctAX2hi0bIPJJinhAI8Eb6FSq6HBZOIyFMtdZjtcq6BdGB
+         YatIxr6nvOJERRxu9CTBI030j+tx9fLhvVC/vFlRCaj0lC452eOLJWKiqf/19dzsYRZm
+         nVg1VkkLENlaakBh7BdEg08jOsGJHakLBfeXKgZVl5irBbZ2bi4S/5IpQkZBHvSsJSyR
+         1AMyiMSKQHWeFKXctDGqvJbSkvnsIHJGAbQeZF7VFWVKHQsK+z35+LkboGi/aPus/zjZ
+         zKfA==
+X-Gm-Message-State: AOAM533UgNgkU0ete7WXW84Idd+mKwbqy/hgRAoE3XkkI/4o0trP7DXi
+        s037L6oxsqXGCyshf0n1Ds/i0A==
+X-Google-Smtp-Source: ABdhPJxXWdghP9RHL8bsAIg3jvfVJ7efL+iEYI85sKehCFcC79s1Z7VaNWf/kzxm6S53XxURP48wzw==
+X-Received: by 2002:a17:906:ae4d:: with SMTP id lf13mr16053726ejb.355.1627287519177;
+        Mon, 26 Jul 2021 01:18:39 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id q9sm13937539ejf.70.2021.07.26.01.18.37
+        by smtp.gmail.com with ESMTPSA id q9sm13937539ejf.70.2021.07.26.01.18.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 01:18:37 -0700 (PDT)
+        Mon, 26 Jul 2021 01:18:38 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,9 +54,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         Tony.Ambardar@gmail.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [RFC PATCH 10/14] bpf/tests: add branch conversion JIT test
-Date:   Mon, 26 Jul 2021 10:17:34 +0200
-Message-Id: <20210726081738.1833704-11-johan.almbladh@anyfinetworks.com>
+Subject: [RFC PATCH 11/14] bpf/tests: add test for 32-bit context pointer argument passing
+Date:   Mon, 26 Jul 2021 10:17:35 +0200
+Message-Id: <20210726081738.1833704-12-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210726081738.1833704-1-johan.almbladh@anyfinetworks.com>
 References: <20210726081738.1833704-1-johan.almbladh@anyfinetworks.com>
@@ -66,72 +66,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some JITs may need to convert a conditional jump instruction to
-to short PC-relative branch and a long unconditional jump, if the
-PC-relative offset exceeds offset field width in the CPU instruction.
-This test triggers such branch conversion on the 32-bit MIPS JIT.
+On a 32-bit architecture, the context pointer should occupy the low
+half of R0, and the other half should be zero.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 ---
- lib/test_bpf.c | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ lib/test_bpf.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 8b94902702ed..55914b6236aa 100644
+index 55914b6236aa..314af6eaeb92 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -461,6 +461,36 @@ static int bpf_fill_stxdw(struct bpf_test *self)
- 	return __bpf_fill_stxdw(self, BPF_DW);
- }
- 
-+static int bpf_fill_long_jmp(struct bpf_test *self)
-+{
-+	unsigned int len = BPF_MAXINSNS;
-+	struct bpf_insn *insn;
-+	int i;
-+
-+	insn = kmalloc_array(len, sizeof(*insn), GFP_KERNEL);
-+	if (!insn)
-+		return -ENOMEM;
-+
-+	insn[0] = BPF_ALU64_IMM(BPF_MOV, R0, 1);
-+	insn[1] = BPF_JMP_IMM(BPF_JEQ, R0, 1, len - 2 - 1);
-+
-+	/*
-+	 * Fill with a complex 64-bit operation that expands to a lot of
-+	 * instructions on 32-bit JITs. The large jump offset can then
-+	 * overflow the conditional branch field size, triggering a branch
-+	 * conversion mechanism in some JITs.
-+	 */
-+	for (i = 2; i < len - 1; i++)
-+		insn[i] = BPF_ALU64_IMM(BPF_MUL, R0, (i << 16) + i);
-+
-+	insn[len - 1] = BPF_EXIT_INSN();
-+
-+	self->u.ptr.insns = insn;
-+	self->u.ptr.len = len;
-+
-+	return 0;
-+}
-+
- static struct bpf_test tests[] = {
- 	{
- 		"TAX",
-@@ -6892,6 +6922,14 @@ static struct bpf_test tests[] = {
- 		{ },
- 		{ { 0, 1 } },
+@@ -2084,6 +2084,22 @@ static struct bpf_test tests[] = {
+ #undef NUMER
+ #undef DENOM
  	},
-+	{	/* Mainly checking JIT here. */
-+		"BPF_MAXINSNS: Very long conditional jump",
++#ifdef CONFIG_32BIT
++	{
++		"INT: 32-bit context pointer word order and zero-extension",
++		.u.insns_int = {
++			BPF_ALU32_IMM(BPF_MOV, R0, 0),
++			BPF_JMP32_IMM(BPF_JEQ, R1, 0, 3),
++			BPF_ALU64_IMM(BPF_RSH, R1, 32),
++			BPF_JMP32_IMM(BPF_JNE, R1, 0, 1),
++			BPF_ALU32_IMM(BPF_MOV, R0, 1),
++			BPF_EXIT_INSN(),
++		},
++		INTERNAL,
 +		{ },
-+		INTERNAL | FLAG_NO_DATA,
-+		{ },
-+		{ { 0, 1 } },
-+		.fill_helper = bpf_fill_long_jmp,
++		{ { 0, 1 } }
 +	},
++#endif
  	{
- 		"JMP_JA: Jump, gap, jump, ...",
- 		{ },
+ 		"check: missing ret",
+ 		.u.insns = {
 -- 
 2.25.1
 
