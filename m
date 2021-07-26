@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6183D5BD6
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53D93D5C28
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 16:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234702AbhGZN55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 09:57:57 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:40666 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234462AbhGZN54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 09:57:56 -0400
-Received: by mail-io1-f70.google.com with SMTP id q137-20020a6b8e8f0000b02904bd1794d00eso8769358iod.7
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:38:25 -0700 (PDT)
+        id S234802AbhGZOMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 10:12:16 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:60902
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234725AbhGZOMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 10:12:10 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 782843F346
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 14:52:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627311152;
+        bh=P0l7ucawZtHhjUJpWjjS78w5LayhCUV4MmW7+VY+YFU=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=mweqI1ywT2MEPAGkv5aGUpzkJRW0/+QKeLqdWmjagINa+9DGJdai4u9TH2wWwGcFn
+         U2uMJl8KA4ivA6UT1QLt3Yaxott7m93hZexIjFPqQpvsiZFic5cAvgTIMp12EC4Ite
+         UXccgkbuzWgGGInfBlXu4AVgiKgQTYJSqpCOU+3ZyNMVAn0C8Hdo6EIgaPtXHX9tZy
+         ngoMVnHiZII8bePaMALnwSr+cgA6PZb4n1MD6l2Sl1eriHvg1x+f27GTbReShYqzjW
+         l0x01V8AUwqn9zbzZEE6A+r01kpbiS+RPfVV003CRBekGwT0/epkNU9qvym6YuZqbn
+         ITkCwtsPx2xUA==
+Received: by mail-ed1-f70.google.com with SMTP id n24-20020aa7c7980000b02903bb4e1d45aaso3170231eds.15
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 07:52:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=rh2WebIAL7rAkd4Y7+OUKTcKX8jr6+sYkZ+Orf4DiGA=;
-        b=b4eL1wHnrBppyzHbPeF6c3nSn/dGkbFbdtAQFDCLkf3XridSCipbFS/l3Ga+IiJpSV
-         md69xBT30oxauh6WI+wFKF8FKsc3Qp1uqvYqFkLxOuZ5In0W7Bv938j3sXq19BtLKhrI
-         GG2x4W8uBF80eZ0EVVl7disx0XN9kSg8tgwlFZ1GEJcbdZfPgWaWhBE1wKMFoCVtHZMk
-         qlIxKQUqrfewqRNP4kuKkuaDK+E34AncwZKXJf5DDlzjjZzZrCXXKMIlROQu4MFoSiSs
-         o4jMqVlhgMx+J1k4byuBGsq6ZXUx/mcy6dL3wqbB+VjTHdk1j1SoU8PiowHJDnwuuhn6
-         Jdmg==
-X-Gm-Message-State: AOAM532BwG1z3gON2aAI8ZNQ+/sY3K5Tqlhb++0cKAdJSNEU/70/MHjp
-        yrKX+dnPMtVlwR0MjRA1X0W2z+nWkr+sXA3UFWuOO+heLqcS
-X-Google-Smtp-Source: ABdhPJwr8jbbv1L9zecIIjUiPDqhnjQ2FHQEXeJdrDY3mtA9+2iaBxbNRaQM6uiqjzF7YSgqqRoZSDXVR4wpf2fHKwUGZIp3tmbt
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P0l7ucawZtHhjUJpWjjS78w5LayhCUV4MmW7+VY+YFU=;
+        b=JFkW7KaM2fFLGE08nrxvVfPTFfvDuiKx5jm7Yq/22kvBP9MmvKUkYd6axIbzBjTFvS
+         VjHz4LPlsEUUep/vYMhN5RAG5+NFq62mx7bJxH2O4BNRbw3R2tmqxHJpbuSzexYVw+vS
+         ifKt3fNlLn7RVr9IVfxew2Q5eRpVLpU7jdBFnB28++pnf4YdixHgLzYrHfgQNxO+xQO+
+         Qfx4oD/iFGHjcHnHkf/tQDrYy1vXA7jJQ1Jh7xI4bso95C36wapuRjpFssx+53E826R7
+         Sc+RPDaMYKUXXOTliTdnlIyCVPLusxmXSep812hYf8HsZntnuCUA1k6z6xWNQCObxexn
+         WuJA==
+X-Gm-Message-State: AOAM532QtwKzp4Ny01o3HuLHLjKhIpicpt5v7iWJAQbVlhdV1C5pNUkM
+        V0pc2aL3bJ90pxDNgmMzKvboAeymkEd310aT95QTZw1bNdrqUgVmfWGAgyKs/wgIL/r/Ztukfit
+        zzBdaLboc6OsU3MxpQUiBUe2aK7at9cBxvg==
+X-Received: by 2002:a17:907:e87:: with SMTP id ho7mr17518028ejc.184.1627311151437;
+        Mon, 26 Jul 2021 07:52:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzbGOBrT7HrBw1RufsByTXKDeTJ2h4upbT0ndwDrZuwP/ONxaeOmoEJ+bHKjJt9zMXOsmYbKA==
+X-Received: by 2002:a17:907:e87:: with SMTP id ho7mr17518017ejc.184.1627311151224;
+        Mon, 26 Jul 2021 07:52:31 -0700 (PDT)
+Received: from localhost.localdomain ([86.32.47.9])
+        by smtp.gmail.com with ESMTPSA id l16sm12750753eje.67.2021.07.26.07.52.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 07:52:30 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bongsu Jeon <bongsu.jeon@samsung.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/7] nfc: constify pointed data
+Date:   Mon, 26 Jul 2021 16:52:17 +0200
+Message-Id: <20210726145224.146006-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:d2c2:: with SMTP id w2mr13584853ilg.256.1627310305172;
- Mon, 26 Jul 2021 07:38:25 -0700 (PDT)
-Date:   Mon, 26 Jul 2021 07:38:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ade97e05c807b40f@google.com>
-Subject: [syzbot] general protection fault in hwsim_exit_net
-From:   syzbot <syzbot+78dd535cdc52a06948f7@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi,
 
-syzbot found the following issue on:
+Patchset makes const the data pointed by several pointers.  Not
+extensively tested, hoping most of it has only build-time impact.
 
-HEAD commit:    3d5895cd3517 Merge tag 's390-5.14-3' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=107699a6300000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7273c75708b55890
-dashboard link: https://syzkaller.appspot.com/bug?extid=78dd535cdc52a06948f7
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
-userspace arch: i386
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+78dd535cdc52a06948f7@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc00000000df: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000006f8-0x00000000000006ff]
-CPU: 0 PID: 19531 Comm: kworker/u4:5 Not tainted 5.14.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:read_pnet include/net/net_namespace.h:325 [inline]
-RIP: 0010:wiphy_net include/net/cfg80211.h:5107 [inline]
-RIP: 0010:hwsim_exit_net+0x160/0xca0 drivers/net/wireless/mac80211_hwsim.c:4201
-Code: 8b 73 18 49 8d 7e 40 48 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 2a 0a 00 00 4d 8b 76 40 49 8d be f8 06 00 00 48 89 f8 48 c1 e8 03 <80> 3c 28 00 0f 85 04 0a 00 00 48 8b 44 24 08 49 3b 86 f8 06 00 00
-RSP: 0018:ffffc9000ad5fb18 EFLAGS: 00010202
-RAX: 00000000000000df RBX: ffff888000173260 RCX: 0000000000000000
-RDX: ffff88806c08d4c0 RSI: ffffffff8532af70 RDI: 00000000000006f8
-RBP: dffffc0000000000 R08: 0000000000000001 R09: 0000000000000003
-R10: fffff520015abf55 R11: 0000000000086088 R12: ffff888151b83260
-R13: ffff888000173260 R14: 0000000000000000 R15: fffffbfff18ef7dc
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000090d52c5 CR3: 000000006769c000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:175
- cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:595
- process_one_work+0x98d/0x1630 kernel/workqueue.c:2276
- worker_thread+0x658/0x11f0 kernel/workqueue.c:2422
- kthread+0x3e5/0x4d0 kernel/kthread.c:319
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-Modules linked in:
----[ end trace a4f6519c3ad068a3 ]---
-RIP: 0010:read_pnet include/net/net_namespace.h:325 [inline]
-RIP: 0010:wiphy_net include/net/cfg80211.h:5107 [inline]
-RIP: 0010:hwsim_exit_net+0x160/0xca0 drivers/net/wireless/mac80211_hwsim.c:4201
-Code: 8b 73 18 49 8d 7e 40 48 89 f8 48 c1 e8 03 80 3c 28 00 0f 85 2a 0a 00 00 4d 8b 76 40 49 8d be f8 06 00 00 48 89 f8 48 c1 e8 03 <80> 3c 28 00 0f 85 04 0a 00 00 48 8b 44 24 08 49 3b 86 f8 06 00 00
-RSP: 0018:ffffc9000ad5fb18 EFLAGS: 00010202
-RAX: 00000000000000df RBX: ffff888000173260 RCX: 0000000000000000
-RDX: ffff88806c08d4c0 RSI: ffffffff8532af70 RDI: 00000000000006f8
-RBP: dffffc0000000000 R08: 0000000000000001 R09: 0000000000000003
-R10: fffff520015abf55 R11: 0000000000086088 R12: ffff888151b83260
-R13: ffff888000173260 R14: 0000000000000000 R15: fffffbfff18ef7dc
-FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000090d52c5 CR3: 000000006769c000 CR4: 00000000001526f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Best regards,
+Krzysztof
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Krzysztof Kozlowski (7):
+  nfc: annotate af_nfc_exit() as __exit
+  nfc: hci: annotate nfc_llc_init() as __init
+  nfc: constify several pointers to u8, char and sk_buff
+  nfc: constify local pointer variables
+  nfc: nci: constify several pointers to u8, sk_buff and other structs
+  nfc: hci: pass callback data param as pointer in nci_request()
+  nfc: hci: cleanup unneeded spaces
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+ drivers/nfc/pn544/pn544.c  |   4 +-
+ include/net/nfc/nci_core.h |  18 ++---
+ include/net/nfc/nfc.h      |   4 +-
+ net/nfc/af_nfc.c           |   2 +-
+ net/nfc/core.c             |   6 +-
+ net/nfc/hci/core.c         |   8 +--
+ net/nfc/hci/llc.c          |   2 +-
+ net/nfc/hci/llc_shdlc.c    |  10 +--
+ net/nfc/llcp.h             |   8 +--
+ net/nfc/llcp_commands.c    |  46 +++++++------
+ net/nfc/llcp_core.c        |  44 ++++++------
+ net/nfc/nci/core.c         | 134 ++++++++++++++++++-------------------
+ net/nfc/nci/data.c         |  12 ++--
+ net/nfc/nci/hci.c          |  52 +++++++-------
+ net/nfc/nci/ntf.c          |  87 +++++++++++++-----------
+ net/nfc/nci/rsp.c          |  48 +++++++------
+ net/nfc/nci/spi.c          |   2 +-
+ net/nfc/netlink.c          |   2 +-
+ net/nfc/nfc.h              |   2 +-
+ 19 files changed, 254 insertions(+), 237 deletions(-)
+
+-- 
+2.27.0
+
