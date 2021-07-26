@@ -2,168 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1103D687F
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 23:15:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6D4B3D688A
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 23:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233491AbhGZUe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 16:34:59 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46276 "EHLO vps0.lunn.ch"
+        id S233468AbhGZUjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 16:39:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36802 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232788AbhGZUe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 16:34:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Yoc2z7uSUjkhWnv+tKrvr5GkQUl2nOVtSonxg9WBwAg=; b=fx8fYTsSCW+Qonl46qValLkRYL
-        itn1Vur0eObChQR30YQp85ntEWfAPd3naBCSLlLPbX5huNS8U4c+mDF4Ab2hFJmTXId9l5eN1GsgW
-        beKngG6niNYpyXY1+4PzYV3/bf3ck04bV1PjkYHLySD0tUHm7Mk5DeK4QqYDm8gJjQNI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m87wX-00EuuR-Cu; Mon, 26 Jul 2021 23:15:21 +0200
-Date:   Mon, 26 Jul 2021 23:15:21 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        michal.simek@xilinx.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 4/5] tsnep: Add TSN endpoint Ethernet MAC driver
-Message-ID: <YP8l6cWaQU/2NoIA@lunn.ch>
-References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
- <20210726194603.14671-5-gerhard@engleder-embedded.com>
+        id S232788AbhGZUjo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 16:39:44 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1023760F94;
+        Mon, 26 Jul 2021 21:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627334413;
+        bh=G1p25avqGfyWyg8DRY7MOjFOMVYQc0IHpJA9Sl0ihSg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QqillQYygjstWVA6oc8RP2vDz+e6ccZAvxrw/r1SqIC3pn5Hy/NCPfB871DpQ1ExM
+         jzE3cpNyT5S6YL+kh8/UA/iYM2xaAgzVn7lnQWldHWP7S9+OyFdAOVkNKDz7yDwYTJ
+         ADaf2vzt4AE3ulU7d/UoX0h3mZWU2xJ3BVl/ifrB7NDYbNxP6zhL381Z4JNbKc268p
+         HAEJZiIEWzapX+hLsotY37ryCCFFpZqgNDLN4oTV623UAJ0QnnR1ZfWTWtrv7VlOGD
+         n2JGaZox41N4raTsVnTdfioRFsAo2uuFl2/K4LpjG6h8KiohNwRe1YjHH1vBwJsOJm
+         FFy9PMLovvGKw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0429C60972;
+        Mon, 26 Jul 2021 21:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210726194603.14671-5-gerhard@engleder-embedded.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: can-next 2021-07-25
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162733441301.18684.10819552730140170023.git-patchwork-notify@kernel.org>
+Date:   Mon, 26 Jul 2021 21:20:13 +0000
+References: <20210726141144.862529-1-mkl@pengutronix.de>
+In-Reply-To: <20210726141144.862529-1-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
-> +{
-> +	struct tsnep_adapter *adapter = bus->priv;
-> +	u16 data;
-> +	int retval;
-> +
-> +	if (adapter->loopback)
-> +		return 0;
-> +
-> +	retval = tsnep_read_md(adapter, addr, regnum, &data);
-> +	if (retval != 0)
-> +		return retval;
+Hello:
 
-It appears your MDIO bus can only do C22. Please add a test for C45 and return -EOPNOTSUPP.
+This pull request was applied to netdev/net-next.git (refs/heads/master):
 
-> +static void tsnep_phy_link_status_change(struct net_device *netdev)
-> +{
-> +	struct tsnep_adapter *adapter = netdev_priv(netdev);
-> +	struct phy_device *phydev = netdev->phydev;
-> +
-> +	if (adapter->loopback)
-> +		return;
-> +
-> +	if (adapter->gmii2rgmii) {
-> +		u16 val;
-> +
-> +		if (phydev->link && phydev->speed == 1000)
-> +			val = BMCR_SPEED1000;
-> +		else
-> +			val = BMCR_SPEED100;
-> +		tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
-> +			       ECM_GMII2RGMII_BMCR, val);
-> +	}
+On Mon, 26 Jul 2021 16:10:58 +0200 you wrote:
+> Hello Jakub, hello David,
+> 
+> this is a pull request of 46 patches for net-next/master.
+> 
+> The first 6 patches target the CAN J1939 protocol. One is from
+> gushengxian, fixing a grammatical error, 5 are by me fixing a checkpatch
+> warning, make use of the fallthrough pseudo-keyword, and use
+> consistent variable naming.
+> 
+> [...]
 
-I _think_ this is wrong. They way the PHYs are chained means you
-should not need to do this, the xgmiitorgmii_read_status() does it.
-Maybe you have the chaining setup wrong?
+Here is the summary with links:
+  - pull-request: can-next 2021-07-25
+    https://git.kernel.org/netdev/net-next/c/d20e5880fe9d
+  - [net-next,02/46] can: j1939: fix checkpatch warnings
+    https://git.kernel.org/netdev/net-next/c/333128737955
+  - [net-next,03/46] can: j1939: replace fall through comment by fallthrough pseudo-keyword
+    https://git.kernel.org/netdev/net-next/c/641ba6ded234
+  - [net-next,04/46] can: j1939: j1939_session_completed(): use consistent name se_skb for the session skb
+    https://git.kernel.org/netdev/net-next/c/7ac56e40d054
+  - [net-next,05/46] can: j1939: j1939_session_tx_dat(): use consistent name se_skcb for session skb control buffer
+    https://git.kernel.org/netdev/net-next/c/78b77c760f71
+  - [net-next,06/46] can: j1939: j1939_xtp_rx_dat_one(): use separate pointer for session skb control buffer
+    https://git.kernel.org/netdev/net-next/c/a08ec5fe709f
+  - [net-next,07/46] can: rx-offload: add skb queue for use during ISR
+    https://git.kernel.org/netdev/net-next/c/c757096ea103
+  - [net-next,08/46] can: rx-offload: can_rx_offload_irq_finish(): directly call napi_schedule()
+    https://git.kernel.org/netdev/net-next/c/1e0d8e507ea4
+  - [net-next,09/46] can: rx-offload: can_rx_offload_threaded_irq_finish(): add new function to be called from threaded interrupt
+    https://git.kernel.org/netdev/net-next/c/30bfec4fec59
+  - [net-next,10/46] can: bittiming: fix documentation for struct can_tdc
+    https://git.kernel.org/netdev/net-next/c/8345a3307381
+  - [net-next,11/46] can: netlink: clear data_bittiming if FD is turned off
+    https://git.kernel.org/netdev/net-next/c/e3b0a4a47064
+  - [net-next,12/46] can: netlink: remove redundant check in can_validate()
+    https://git.kernel.org/netdev/net-next/c/6b6bd1999267
+  - [net-next,13/46] dt-bindings: net: can: Document transceiver implementation as phy
+    https://git.kernel.org/netdev/net-next/c/9c0e7ccd831b
+  - [net-next,14/46] can: m_can: Add support for transceiver as phy
+    https://git.kernel.org/netdev/net-next/c/d836cb5fe045
+  - [net-next,15/46] can: m_can: use devm_platform_ioremap_resource_byname
+    https://git.kernel.org/netdev/net-next/c/9808dba1bbcb
+  - [net-next,16/46] can: m_can: remove support for custom bit timing
+    https://git.kernel.org/netdev/net-next/c/0ddd83fbebbc
+  - [net-next,17/46] can: mcp251xfd: mcp251xfd_probe(): try to get crystal clock rate from property
+    https://git.kernel.org/netdev/net-next/c/74f89cf17e44
+  - [net-next,18/46] can: mcp251xfd: Fix header block to clarify independence from OF
+    https://git.kernel.org/netdev/net-next/c/71520f85f908
+  - [net-next,19/46] can: mcp251xfd: mcp251xfd_open(): request IRQ as shared
+    https://git.kernel.org/netdev/net-next/c/cb6adfe27680
+  - [net-next,20/46] can: esd_usb2: use DEVICE_ATTR_RO() helper macro
+    https://git.kernel.org/netdev/net-next/c/681e4a764521
+  - [net-next,21/46] can: janz-ican3: use DEVICE_ATTR_RO/RW() helper macro
+    https://git.kernel.org/netdev/net-next/c/f731707c5667
+  - [net-next,22/46] can: at91_can: use DEVICE_ATTR_RW() helper macro
+    https://git.kernel.org/netdev/net-next/c/42b9fd6ec7c9
+  - [net-next,23/46] net: at91_can: remove redundant blank lines
+    https://git.kernel.org/netdev/net-next/c/822a99c41fb4
+  - [net-next,24/46] net: at91_can: add blank line after declarations
+    https://git.kernel.org/netdev/net-next/c/933850c4b912
+  - [net-next,25/46] net: at91_can: fix the code style issue about macro
+    https://git.kernel.org/netdev/net-next/c/57bca980bad4
+  - [net-next,26/46] net: at91_can: use BIT macro
+    https://git.kernel.org/netdev/net-next/c/8ed1661cf21e
+  - [net-next,27/46] net: at91_can: fix the alignment issue
+    https://git.kernel.org/netdev/net-next/c/ccc5f1c994df
+  - [net-next,28/46] net: at91_can: add braces {} to all arms of the statement
+    https://git.kernel.org/netdev/net-next/c/02400533bb70
+  - [net-next,29/46] net: at91_can: remove redundant space
+    https://git.kernel.org/netdev/net-next/c/fc1d97d4fbfd
+  - [net-next,30/46] net: at91_can: fix the comments style issue
+    https://git.kernel.org/netdev/net-next/c/5bbe60493a21
+  - [net-next,31/46] can: peak_pci: convert comments to network style comments
+    https://git.kernel.org/netdev/net-next/c/9b69aff9fd1a
+  - [net-next,32/46] can: peak_pci: fix checkpatch warnings
+    https://git.kernel.org/netdev/net-next/c/fe1fa1387a15
+  - [net-next,33/46] can: peak_pci: Add name and FW version of the card in kernel buffer
+    https://git.kernel.org/netdev/net-next/c/805ff68c8e7f
+  - [net-next,34/46] can: peak_usb: pcan_usb_get_device_id(): read value only in case of success
+    https://git.kernel.org/netdev/net-next/c/1d0214a0f5db
+  - [net-next,35/46] can: peak_usb: PCAN-USB: add support of loopback and one-shot mode
+    https://git.kernel.org/netdev/net-next/c/3a7939495ce8
+  - [net-next,36/46] can: peak_usb: pcan_usb_encode_msg(): add information
+    https://git.kernel.org/netdev/net-next/c/1763c547648d
+  - [net-next,37/46] can: peak_usb: pcan_usb_decode_error(): upgrade handling of bus state changes
+    https://git.kernel.org/netdev/net-next/c/c11dcee75830
+  - [net-next,38/46] can: etas_es58x: fix three typos in author name and documentation
+    https://git.kernel.org/netdev/net-next/c/58fb92a517b5
+  - [net-next,39/46] can: etas_es58x: use error pointer during device probing
+    https://git.kernel.org/netdev/net-next/c/45cb13963df3
+  - [net-next,40/46] can: etas_es58x: use devm_kzalloc() to allocate device resources
+    https://git.kernel.org/netdev/net-next/c/6bde4c7fd845
+  - [net-next,41/46] can: etas_es58x: add es58x_free_netdevs() to factorize code
+    https://git.kernel.org/netdev/net-next/c/004653f0abf2
+  - [net-next,42/46] can: etas_es58x: use sizeof and sizeof_field macros instead of constant values
+    https://git.kernel.org/netdev/net-next/c/7fcecf51c18f
+  - [net-next,43/46] can: etas_es58x: rewrite the message cast in es58{1,_fd}_tx_can_msg to increase readability
+    https://git.kernel.org/netdev/net-next/c/f4f5247daa45
+  - [net-next,44/46] can: flexcan: add platform data header
+    https://git.kernel.org/netdev/net-next/c/896e7f3e7424
+  - [net-next,45/46] can: flexcan: add mcf5441x support
+    https://git.kernel.org/netdev/net-next/c/d9cead75b1c6
+  - [net-next,46/46] can: flexcan: update Kconfig to enable coldfire
+    https://git.kernel.org/netdev/net-next/c/8dad5561c13a
 
-> +static int tsnep_phy_open(struct tsnep_adapter *adapter)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask);
-> +	struct ethtool_eee ethtool_eee;
-> +	int retval;
-> +
-> +	retval = phy_connect_direct(adapter->netdev, adapter->phydev,
-> +				    tsnep_phy_link_status_change,
-> +				    adapter->phy_mode);
-> +	if (retval)
-> +		return -EIO;
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-phy_connect_direct() returns an error code. Use it, rather than
-changing it to something else. This applies everywhere. You must have
-a good reason to change error codes, and then it is wise to put a
-comment why you change it.
 
-> +
-> +	/* MAC supports only 100Mbps|1000Mbps full duplex
-> +	 * SPE (Single Pair Ethernet) is also an option but not implemented yet
-> +	 */
-> +	linkmode_zero(mask);
-> +	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, mask);
-> +	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, mask);
-> +	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, mask);
-> +	linkmode_and(mask, adapter->phydev->supported, mask);
-> +	linkmode_copy(adapter->phydev->supported, mask);
-> +	linkmode_copy(adapter->phydev->advertising, mask);
-
-You should not be accessing the phydev directly. Use
-phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT),
-etc.
-
-> +static int tsnep_phy_init(struct tsnep_adapter *adapter)
-> +{
-> +	struct device_node *dn;
-> +	u16 val;
-> +	u32 id;
-> +	int retval;
-> +
-> +	retval = of_get_phy_mode(adapter->pdev->dev.of_node,
-> +				 &adapter->phy_mode);
-> +	if (retval)
-> +		adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
-> +
-> +	dn = of_parse_phandle(adapter->pdev->dev.of_node, "phy-handle", 0);
-> +	adapter->phydev = of_phy_find_device(dn);
-> +	if (!adapter->phydev)
-> +		adapter->phydev = phy_find_first(adapter->mdiobus);
-> +	if (!adapter->phydev)
-> +		return -EIO;
-> +
-> +	/* detect optional GMII2RGMII */
-> +	retval = tsnep_read_md(adapter, ECM_GMII2RGMII_ADDR, MII_PHYSID1, &val);
-> +	if (retval)
-> +		return retval;
-> +	id = val << 16;
-> +	retval = tsnep_read_md(adapter, ECM_GMII2RGMII_ADDR, MII_PHYSID2, &val);
-> +	if (retval)
-> +		return retval;
-> +	id |= val;
-> +	if (id == 0)
-> +		adapter->gmii2rgmii = true;
-
-This is where i think GMII2RGMII goes wrong. MAC phy-handle should
-point to the GMII2RGMII device in DT. The GMII2RGMII should have a
-phy-handle which points to the PHY.
-
-> +	/* reset PHY */
-> +	retval = tsnep_write_md(adapter, adapter->phydev->mdio.addr, MII_BMCR,
-> +				BMCR_RESET);
-> +	if (retval)
-> +		return retval;
-> +
-> +	/* reset GMII2RGMII */
-> +	if (adapter->gmii2rgmii) {
-> +		retval = tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
-> +					ECM_GMII2RGMII_BMCR, BMCR_RESET);
-> +		if (retval)
-> +			return retval;
-> +		retval = tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
-> +					ECM_GMII2RGMII_BMCR, BMCR_SPEED100);
-> +		if (retval)
-> +			return retval;
-> +	}
-
-The PHY driver is in control of the PHY, not the MAC. Please remove.
-
-    Andrew
