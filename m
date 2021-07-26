@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D98F3D6709
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A03ED3D6711
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 21:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhGZSTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 14:19:55 -0400
-Received: from relay.sw.ru ([185.231.240.75]:55084 "EHLO relay.sw.ru"
+        id S233006AbhGZSUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 14:20:23 -0400
+Received: from relay.sw.ru ([185.231.240.75]:55118 "EHLO relay.sw.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232742AbhGZSTv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 14:19:51 -0400
+        id S232754AbhGZST6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 14:19:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:Subject
-        :From; bh=5useEdTraDabNukS5dPf+83pq0fTm+yVCCArjRQXtkc=; b=Sbnj8zxzpBhlwPQQuU3
-        edyljQohLh5vMnf8nGH5g8S0DeHRK9y3Lc8+caKyDpbFRBGFWdmYwGVPnmagG8KYtMNsqmUi4nuAu
-        ubm5oeKhkkBgj7Fh82YASnPGvPHC0DhA0NrcJnOp/U+IoOuTCwyZ+ahu71P9ASjLL/QEaUpblE0=;
+        :From; bh=w+0FNs53pgnmzx96zi7TBJAdHiw/aP1PrzGmhZUmSkE=; b=kMRAY6JBbUXgmAw9dOW
+        EYTUeFdnFpc6mIFKMIiT1BHbhnGqcvbMvhv4GcELknYw+UTxIxAo69Ha9jPl3hEosozXHCSDRTvXS
+        Xg1U2IMvsUJ4aZoLEr3f7GlZG8Q0jwdJvb4qMKByFG4H0BZ7TvRZWIRvaP58qknKqpeg+IaEMuQ=;
 Received: from [10.93.0.56]
         by relay.sw.ru with esmtp (Exim 4.94.2)
         (envelope-from <vvs@virtuozzo.com>)
-        id 1m85pq-005JSL-4D; Mon, 26 Jul 2021 22:00:18 +0300
+        id 1m85px-005JSj-Jm; Mon, 26 Jul 2021 22:00:25 +0300
 From:   Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH v6 03/16] memcg: enable accounting for inet_bin_bucket cache
+Subject: [PATCH v6 04/16] memcg: enable accounting for VLAN group array
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     cgroups@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
         Shakeel Butt <shakeelb@google.com>,
@@ -29,15 +29,12 @@ Cc:     cgroups@vger.kernel.org, Michal Hocko <mhocko@kernel.org>,
         Vladimir Davydov <vdavydov.dev@gmail.com>,
         Roman Gushchin <guro@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <9bf9d9bd-03b1-2adb-17b4-5d59a86a9394@virtuozzo.com>
  <cover.1627321321.git.vvs@virtuozzo.com>
-Message-ID: <e8910e6f-1efe-b613-9456-ead37f955d61@virtuozzo.com>
-Date:   Mon, 26 Jul 2021 22:00:17 +0300
+Message-ID: <787536ed-6257-ac73-0ccc-c487f776671b@virtuozzo.com>
+Date:   Mon, 26 Jul 2021 22:00:24 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
@@ -49,47 +46,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net namespace can create up to 64K tcp and dccp ports and force kernel
-to allocate up to several megabytes of memory per netns
-for inet_bind_bucket objects.
+vlan array consume up to 8 pages of memory per net device.
 
 It makes sense to account for them to restrict the host's memory
 consumption from inside the memcg-limited container.
 
 Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
 ---
- net/dccp/proto.c | 2 +-
- net/ipv4/tcp.c   | 4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ net/8021q/vlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 7eb0fb2..abb5c59 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -1126,7 +1126,7 @@ static int __init dccp_init(void)
- 	dccp_hashinfo.bind_bucket_cachep =
- 		kmem_cache_create("dccp_bind_bucket",
- 				  sizeof(struct inet_bind_bucket), 0,
--				  SLAB_HWCACHE_ALIGN, NULL);
-+				  SLAB_HWCACHE_ALIGN | SLAB_ACCOUNT, NULL);
- 	if (!dccp_hashinfo.bind_bucket_cachep)
- 		goto out_free_hashinfo2;
+diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
+index 4cdf841..55275ef 100644
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -67,7 +67,7 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
+ 		return 0;
  
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index d5ab5f2..5c0605e 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4509,7 +4509,9 @@ void __init tcp_init(void)
- 	tcp_hashinfo.bind_bucket_cachep =
- 		kmem_cache_create("tcp_bind_bucket",
- 				  sizeof(struct inet_bind_bucket), 0,
--				  SLAB_HWCACHE_ALIGN|SLAB_PANIC, NULL);
-+				  SLAB_HWCACHE_ALIGN | SLAB_PANIC |
-+				  SLAB_ACCOUNT,
-+				  NULL);
+ 	size = sizeof(struct net_device *) * VLAN_GROUP_ARRAY_PART_LEN;
+-	array = kzalloc(size, GFP_KERNEL);
++	array = kzalloc(size, GFP_KERNEL_ACCOUNT);
+ 	if (array == NULL)
+ 		return -ENOBUFS;
  
- 	/* Size and allocate the main established and bind bucket
- 	 * hash tables.
 -- 
 1.8.3.1
 
