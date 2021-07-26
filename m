@@ -2,142 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDD013D5FB2
-	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8683D3D63D3
+	for <lists+netdev@lfdr.de>; Mon, 26 Jul 2021 18:44:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236535AbhGZPS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 11:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236209AbhGZPSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 11:18:37 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25DCC061764
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id r18so12496197iot.4
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2oqVdc+Bwmni6M3nVJzlpNG4FMWWLNOhFE43b4PtG5Q=;
-        b=cKI0ApA8ngPZMooBLOh7lfAS1DsT2EHd2K3e68CR4zgtntvO2LDikDqPfrKKxfL+HZ
-         KjDxlBy4CqosymqCj4oljmWfEhXMB9Ljoaq1uG3SCr3OXux7uJbEVNvDlCSaSSudh+4q
-         gFlnjYV+fYFBzX+CxkZIODAe3Vek39iWL6hvI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2oqVdc+Bwmni6M3nVJzlpNG4FMWWLNOhFE43b4PtG5Q=;
-        b=Uj57hksk7fEMITRmp9Q97rbgGz6I2PCa0Yy4vKA8T4XZsYRR6XBciuVAJKt4f7YEOH
-         fMhKx8AKk2gcsy5RubNWy/vcqVFH0d4uHYAHLuWyHqpxCjYj3Bq0y1HZ+Xue0Dde8bwc
-         FnCEvzEdZHJepTDuEC5ZUt/MwrjCWjMnO2XuwzVJVYLZoMjGh9wd1yMq2ZkuPOM+FLHV
-         q2CFUG/DmwquGUjYHkumcvX4fkog1veHu9xtuF7sgu/f2/qeAgFVZ85fqiwpQV4njaXJ
-         1SlPyMsP2BEeN9PT+tX9FchQZYHUi9802TovyQfiVVJdGJbdqC/v/G9ar2SaV+inwsmB
-         phQw==
-X-Gm-Message-State: AOAM532XN1MGEfSIAYS1fKEVenSrRbPt3GN4DCKsYbTKio8w8jF+E3ec
-        zrL2naUTNt7f05SkcYejHRri2g==
-X-Google-Smtp-Source: ABdhPJzcoLCiWULduAJ6beoqhxsv3ChnwQVAVpBm3E4lg/mBvDeOOmGaoHxC4yOFi27MB7GKWKBa+Q==
-X-Received: by 2002:a5e:c109:: with SMTP id v9mr15382903iol.76.1627315145241;
-        Mon, 26 Jul 2021 08:59:05 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id h24sm169070ioj.32.2021.07.26.08.59.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Jul 2021 08:59:04 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] dt-bindings: net: qcom,ipa: make imem
- interconnect optional
-To:     Rob Herring <robh@kernel.org>, Alex Elder <elder@linaro.org>
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210719212456.3176086-1-elder@linaro.org>
- <20210719212456.3176086-2-elder@linaro.org>
- <20210723205252.GA2550230@robh.at.kernel.org>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <6c1779aa-c90c-2160-f8b9-497fb8c32dc5@ieee.org>
-Date:   Mon, 26 Jul 2021 10:59:03 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S239385AbhGZPv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 11:51:59 -0400
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:30779 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233056AbhGZPvz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 11:51:55 -0400
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id D670F76F1F;
+        Mon, 26 Jul 2021 19:32:20 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail202102; t=1627317140;
+        bh=1nfwqB6HCexuAjnK/ArPrVqt48gRoNbKKsoOEwcBINA=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=nMmqMhOVMFL1WdvJzV6oVhOiCgjjprAfuF8CImjhSJRTdQpc7l/JlZa2/UxrJxEIA
+         CKVsjKMnhnQUfHvIhBKT6LKZlsjUP/k+IWB1ZJQl54B5a+XFRLF0Jc7OsGRx9t0BzD
+         3wi8ADdWLSim6A+5slCDQNPeHpuxAld3Q/R2k70w7oqb8WQFZHDNue7G/C4a/tnMbF
+         vUQYTVqsVNrMB7x2rZdAY7iFa7oY1Dn6juzMU7K+4z0LtuxYWj7AxCuzyTWLq2jpyt
+         PowyLCYGs9WW2FrLBqUDB+Tq2DCQGanCPWaqu22X6iZHJrpgBRhVOQaHOaadijce5y
+         DY7KJTn+Wokmw==
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id CC34376F3D;
+        Mon, 26 Jul 2021 19:32:19 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 26
+ Jul 2021 19:32:19 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Norbert Slusarek <nslusarek@gmx.net>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <oxffffaa@gmail.com>
+Subject: [RFC PATCH v1 0/7] virtio/vsock: introduce MSG_EOR flag for SEQPACKET
+Date:   Mon, 26 Jul 2021 19:31:33 +0300
+Message-ID: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210723205252.GA2550230@robh.at.kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/26/2021 16:13:33
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 165254 [Jul 26 2021]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: LuaCore: 449 449 5db59deca4a4f5e6ea34a93b13bc730e229092f4
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;arseniy-pc.avp.ru:7.1.1;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/26/2021 16:15:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 26.07.2021 14:57:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/07/26 14:52:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/07/26 14:01:00 #16958312
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/21 3:52 PM, Rob Herring wrote:
-> On Mon, Jul 19, 2021 at 04:24:54PM -0500, Alex Elder wrote:
->> On some newer SoCs, the interconnect between IPA and SoC internal
->> memory (imem) is not used.  Reflect this in the binding by moving
->> the definition of the "imem" interconnect to the end and defining
->> minItems to be 2 for both the interconnects and interconnect-names
->> properties.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>   .../devicetree/bindings/net/qcom,ipa.yaml      | 18 ++++++++++--------
->>   1 file changed, 10 insertions(+), 8 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->> index ed88ba4b94df5..4853ab7017bd9 100644
->> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
->> @@ -87,16 +87,18 @@ properties:
->>         - const: ipa-setup-ready
->>   
->>     interconnects:
->> +    minItems: 2
->>       items:
->> -      - description: Interconnect path between IPA and main memory
->> -      - description: Interconnect path between IPA and internal memory
->> -      - description: Interconnect path between IPA and the AP subsystem
->> +      - description: Path leading to system memory
->> +      - description: Path between the AP and IPA config space
->> +      - description: Path leading to internal memory
->>   
->>     interconnect-names:
->> +    minItems: 2
->>       items:
->>         - const: memory
->> -      - const: imem
->>         - const: config
->> +      - const: imem
-> 
-> What about existing users? This will generate warnings. Doing this for
-> the 2nd item would avoid the need for .dts updates:
-> 
-> - enum: [ imem, config ]
+	This patchset implements support of MSG_EOR bit for SEQPACKET
+AF_VSOCK sockets over virtio transport.
+	Idea is to distinguish concepts of 'messages' and 'records'.
+Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
+etc. It has fixed maximum length, and it bounds are visible using
+return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
+Current implementation based on message definition above.
+	Record has unlimited length, it consists of multiple message,
+and bounds of record are visible via MSG_EOR flag returned from
+'recvmsg()' call. Sender passes MSG_EOR to sending system call and
+receiver will see MSG_EOR when corresponding message will be processed.
+	To support MSG_EOR new bit was added along with existing
+'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
+works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
+is used to mark 'MSG_EOR' bit passed from userspace.
+	This patchset includes simple test for MSG_EOR.
+ 	Also i've added new vsock test for '-EAGAIN' receive result.
 
-If I understand correctly, the effect of this would be that
-the second item can either be "imem" or "config", and the third
-(if present) could only be "imem"?
+ Arseny Krasnov(7):
+  virtio/vsock: add 'VIRTIO_VSOCK_SEQ_EOM' bit
+  vsock: rename implementation from 'record' to 'message'
+  vhost/vsock: support MSG_EOR bit processing
+  virito/vsock: support MSG_EOR bit processing
+  af_vsock: rename variables in receive loop
+  vsock_test: update message bounds test for MSG_EOR
+  vsock_test: 'SO_RCVTIMEO' test for SEQPACKET
 
-And you're saying that otherwise, existing users (the only
-one it applies to at the moment is "sdm845.dtsi") would
-produce warnings, because the interconnects are listed
-in an order different from what the binding specifies.
+ drivers/vhost/vsock.c                   | 28 +++++++----
+ include/uapi/linux/virtio_vsock.h       |  1 +
+ net/vmw_vsock/af_vsock.c                | 10 ++--
+ net/vmw_vsock/virtio_transport_common.c | 23 +++++----
+ tools/testing/vsock/vsock_test.c        | 57 ++++++++++++++++++++++-
+ 5 files changed, 96 insertions(+), 23 deletions(-)
 
-Is that correct?
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 
-If so, what you propose suggests "imem" could be listed twice.
-It doesn't make sense, and maybe it's precluded in other ways
-so that's OK.  But I'd be happy to update "sdm845.dtsi" to
-address your concern.  (Maybe that's something you would rather
-avoid?)
-
-Also, I need to make a separate update to "sm8350.dtsi" because
-that was defined before I understood what I do now about the 
-interconnects.  It uses the wrong names, and should combine
-its first two interconnects into just one.
-
-					-Alex
-
-> 
-> Rob
-> 
+-- 
+2.25.1
 
