@@ -2,71 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE3E3D7EC5
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DAA03D7ECF
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbhG0UAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:00:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231213AbhG0UAO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 16:00:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0C5AC60F9E;
-        Tue, 27 Jul 2021 20:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627416014;
-        bh=DWxuwv9MrG9KyWhAm/nAR1pYgmx0UU4riGcmruIdOFw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KKwn3Lxxb9ystuAqticq81hz2A+YvBCYA/fhsnguKXJ5/2Lv/F3N6XKWpB1LbkBsC
-         bQJisElb5Q/ohsD5dvnI8lJ2h2+LbxBpWyrcJ+4JZ2o+RLh/Fl0xX/0RABrrKY8Z0W
-         cNo1elQei2q0qN0BW4170dBaSVFQnYPHo29Ay3/QxNjS+bgsobw6AQnaE+oIXxJT4u
-         AVePmv953SJ+WdqGc3KD8mY0aTw7MSMqt3SavWxAieuGOBD+toZoJ5CNqzk2hWraZ8
-         4KF5YKLDrNHGzCStbbhn3r/KI1dXxxzH5l/AsbFarQ9vnyNGli7oJHJQm0fWkMnUFn
-         6tCBBPKY0HqkQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0414760A56;
-        Tue, 27 Jul 2021 20:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231364AbhG0UG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230476AbhG0UGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:06:24 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2CCC061764
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:06:22 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id ds11-20020a17090b08cbb0290172f971883bso6434883pjb.1
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:06:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qD/PBt3CNf26h7b3FD4L2B5zkfWzkBxO/uqzlPboJk4=;
+        b=RtKqi/DcgLMxnMaj3mmxGPKAlnxq8ASoHJIzENVvIf3qFiGfkOTG3XdpIhr6YpXXDj
+         NIq54XP3HiGYLgLnhQCb5WsbrWd2m9bnyWVyvbsDVfIVyeGddeJXCgxZXd5HVQ/6cFFQ
+         oLWOXdmGT91LEzQMFj1574ESYTGDz9iCP7LxU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qD/PBt3CNf26h7b3FD4L2B5zkfWzkBxO/uqzlPboJk4=;
+        b=EbTXI5gUjUbvTEwFsMqrJjQkLYMY1F43n6TRdG7gGWW4vzXPB1IqxgbsEJ0kSdITVK
+         FwsoHIndH8mn3LPuEUsPX9u3f6SD+HhKxgOpTS0snt02/KfvUm5ovqiIz2Feu9Wagd5W
+         yIBlFzXg3JgW0EtRkcqrjkO7IMfoo/WL+ZZjktev8LMLBLub2zioZSpdlIxBA8kVahhO
+         cMMQLrVSsC0X7pCc0uIhSeJn3Pzl9YCkgYpRRC05fDYA/Zuc5Xa3awNZIxZjd/sAF6n0
+         CP7gNUM5m73g/5Z7Qyb9k87Q6AhEeVMBnXm58j+IK5PXRT6Z1z9u7McBH+i5e6/gGJEs
+         EVIA==
+X-Gm-Message-State: AOAM533/4ZqO5jrwNLrzCoq2EdyGAXubp5RhjpX60iV90zpg5U5ZT+mO
+        vAofvQAY5n3c3qXXU0ilJ2YQuHto+Hw3/wcu7sqkXw==
+X-Google-Smtp-Source: ABdhPJwHwSVtXYZElTiWWA6Bv52JZubsCu2gGXGiKvvmMRBeVFTzoiIWcaSwvUKA3i3Aa/uGinn2/U6KKAmEYcASojQ=
+X-Received: by 2002:a17:902:7885:b029:12c:437a:95eb with SMTP id
+ q5-20020a1709027885b029012c437a95ebmr4647830pll.80.1627416381609; Tue, 27 Jul
+ 2021 13:06:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND] net: cipso: fix warnings in netlbl_cipsov4_add_std
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162741601401.17427.16591015519654450734.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Jul 2021 20:00:14 +0000
-References: <20210727163530.3057-1-paskripkin@gmail.com>
-In-Reply-To: <20210727163530.3057-1-paskripkin@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     paul@paul-moore.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+References: <20210727190001.914-1-kbowman@cloudflare.com> <20210727195459.GA15181@salvia>
+In-Reply-To: <20210727195459.GA15181@salvia>
+From:   Alex Forster <aforster@cloudflare.com>
+Date:   Tue, 27 Jul 2021 15:06:05 -0500
+Message-ID: <CAKxSbF0tjY7EV=OOyfND8CxSmusfghvURQYnBxMz=DoNtGrfSg@mail.gmail.com>
+Subject: Re: [PATCH] netfilter: xt_NFLOG: allow 128 character log prefixes
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Kyle Bowman <kbowman@cloudflare.com>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         linux-kernel@vger.kernel.org,
-        syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+(And again, this time as plain-text...)
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+> Why do you need to make the two consistent? iptables NFLOG prefix
+> length is a subset of nftables log action, this is sufficient for the
+> iptables-nft layer. I might be missing the use-case on your side,
+> could you please elaborate?
 
-On Tue, 27 Jul 2021 19:35:30 +0300 you wrote:
-> Syzbot reported warning in netlbl_cipsov4_add(). The
-> problem was in too big doi_def->map.std->lvl.local_size
-> passed to kcalloc(). Since this value comes from userpace there is
-> no need to warn if value is not correct.
-> 
-> The same problem may occur with other kcalloc() calls in
-> this function, so, I've added __GFP_NOWARN flag to all
-> kcalloc() calls there.
-> 
-> [...]
+We use the nflog prefix space to attach various bits of metadata to
+iptables and nftables rules that are dynamically generated and
+installed on our edge. 63 printable chars is a bit too tight to fit
+everything that we need, so we're running this patch internally and
+are looking to upstream it.
 
-Here is the summary with links:
-  - [RESEND] net: cipso: fix warnings in netlbl_cipsov4_add_std
-    https://git.kernel.org/netdev/net-next/c/8ca34a13f7f9
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Alex Forster
