@@ -2,148 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577793D7A32
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 17:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C3C83D7A39
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 17:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbhG0PuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 11:50:14 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48876 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229537AbhG0PuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 11:50:13 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16RFfRTt021591;
-        Tue, 27 Jul 2021 08:49:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=OWoDjjrjdyLC6r5eEQJwLjoQN+5bnDyviSysYA595hc=;
- b=QVIMrjVnOJfKU27vHvRdDTl3lplzMEKHd34+N+1dC19c2Pm+5bxRGGaicwguJXkz0jx7
- JLkUzygIiO6F4ZWybQzyzEgc+6UZwsK3wpmV/HXNsqsnM8Ga417Fs+9D/IArGsIJCOcl
- 0aZai0pjPGv7Ua/zvL7D9ZFuAcnytaorMi8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3a235hdynn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 27 Jul 2021 08:49:57 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 27 Jul 2021 08:49:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OA9BN/wPfV8aIVNw9UCbCbdZPyh6Bz/QY094miiV+6uQeK1i+YeAdSx6D9HMg/QnqNJs1tpI6VRRsVbqTAof509m8hpTABlNYbOEZKA29EPLOTXIIizAb5hFd/z0iRF2zm6voB87p264rwVCeN7W/8SZn4BOjvFV+1nRhEG8gDTu+mnVTx5xkmprBHnCfCNt1e63cQcFwDmyAXCijnp0PQqgGkKpqr9/1GwElWT02Wk/VWa06W/T3GNaFmTN3qildzimpEWDTCf4rKBVRmWPmTcQVtmWim0ubdGSc0beoUaT/pvTZzQxFnLR4mCmT3NU4GOAKn+OaRJt3XrTAp2gbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OWoDjjrjdyLC6r5eEQJwLjoQN+5bnDyviSysYA595hc=;
- b=QWtZd1uNk2+HGOpyA8EdbRT8WrZ5x7niGcVJff3lHqYDquAOoG4Ka9Ai3bnlurP8IyvoKBR25n916jn2uOWtqt0zXArUghVOkz7HcfGWobDGQrnphr7vNIuEtSjFhMprk6xYD6tK7A9lnccVc/PcKr14wohX+RzpPxzItKf4oTt8Ye2dGl9LORNgSEjsODM1p4kLam7OxO9VjenHIxSUnWgQPxkf4zKb8v0oz31/N1r8R9az86M9dlp7bCmP3keZFatEso5naCyLIGnJFljYJzJXHQp7dS5HdmDXOCAxkXefbyhkK3MLAurbZ0Hhkopi8rECszaYiaU/BGHyU/wrXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (52.132.118.155) by
- SA0PR15MB3760.namprd15.prod.outlook.com (20.181.57.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4352.25; Tue, 27 Jul 2021 15:49:54 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4352.031; Tue, 27 Jul 2021
- 15:49:54 +0000
-Subject: Re: [PATCH] libbpf: fix commnet typo
-To:     Jason Wang <wangborong@cdjrlc.com>, <daniel@iogearbox.net>
-CC:     <ast@kernel.org>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20210727115928.74600-1-wangborong@cdjrlc.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <16d5c24d-5a5f-5a33-02be-1f61a0ba665c@fb.com>
-Date:   Tue, 27 Jul 2021 08:49:50 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210727115928.74600-1-wangborong@cdjrlc.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR05CA0098.namprd05.prod.outlook.com
- (2603:10b6:a03:334::13) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        id S237078AbhG0PyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 11:54:01 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:43223 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229537AbhG0PyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 11:54:00 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 092C42224D;
+        Tue, 27 Jul 2021 17:53:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1627401239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UDzeKsJ6IHS1gqsAMNylBBlijfHCP0pmNgS+W/hH5+4=;
+        b=dHEgVQ5SHymgK26Nl9Aou7qxKZ3iza4V4Tgu+y0N6BFT0SU/JwIM+xStMgcULdg4apr0ze
+        HoKm0ZBVUZYm/BJVQremz5sn5yHb8GDDgRqqtINOZ8KGapDkJgkIA48Nh+ueBaZ6mWBJVA
+        mqlOVKyCP4HxUy5Ba3lveoaQdFocoN8=
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:4698) by SJ0PR05CA0098.namprd05.prod.outlook.com (2603:10b6:a03:334::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.7 via Frontend Transport; Tue, 27 Jul 2021 15:49:53 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a90767c1-6e7b-4437-c706-08d951162d76
-X-MS-TrafficTypeDiagnostic: SA0PR15MB3760:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR15MB3760D31F4592CB64F6146BDED3E99@SA0PR15MB3760.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mHRo07kPROp8zpU0Y19UEXlqwI9wsM6/ZHRve7BxwNnFHzWb30lOVXh5gL9beTPABiWpOe/5zIrnSRovYcKcWdSlbSoFCXySZxbNwiAuGyHlDA3J7+pMHmnoXQ2SSYgXi4IEzOyCwNm8WxX5yiodEDSx5vxnokDwxVWoJn1P6gb0vOpPldg0PdQLQLO+f1FEcQwp+m5EvolspeCl6iVH05PoyszekDuD6M/QYsIhvx6unuaZGSRpdyZ3rB9SxjYbNmLhzW0/G5rOyn2rZRVMU3t432Hi0voAGBuTtH3s5S6NthJ9ALuFJ7kVxrASs1ES0m8YJ2s/KnBYFaBfqFR+MCGB+jC1vRnNj6yHCJeJfZQWWYN7cQWkyshjmEBw+fPafjQ0fJh5ONe5woeygzG1KQglqKIG4nRP51GcbEsIa2+WfLLEA61hSkuvmU6FQ6OHx8Qiq0SOKIIfj6PQlUHoHXBTdXRek6Syyh6W6rR6Hv79lwnHAEjE1dzJWKBq9oM2k/mIJISLYNMfgPHskMpkoFaJm3Ccmb2WhcDURcec+5lU8cCK/rWPkySAy53OAtLgMB4RO1qXog/6L7RSiXWa0lUUFyLuUI0+KpBLxSeTJsws42mB32jT83tb41Arp50rRXnMVuMflgPZ4xf0VWz3/mQXZCVeQcDph5IE93/atJ3tbbTfEc//ye1c1CQ+hlv9aEKfoyQvHhEOzI0Vzt9YquqmcW2qhvNFhBZAleNZ3HM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(366004)(136003)(346002)(558084003)(66476007)(66946007)(478600001)(66556008)(38100700002)(2906002)(31696002)(8676002)(52116002)(31686004)(186003)(86362001)(8936002)(6486002)(36756003)(316002)(53546011)(5660300002)(2616005)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q3VaeE1OTzBZOVFCb2J2VWNWQWltblc5d2VaVmZOS0FiSUxNQVBpR0VDWEN3?=
- =?utf-8?B?b2xDaTFtVUFtQlp1ZlNRKy9CQlJ4Z1dEWVpUOFJrdlNIeVlCT2xkRmw1NzFY?=
- =?utf-8?B?clIySmdKaWgwQXhzaTBRTDM2WG4zaDkwcGtjNWduSm5qNndnQk5VbkdPYlVp?=
- =?utf-8?B?dS9DRG40V1NpWDdtM2hWaHJpdG1NNzJ0Sk1vUldkbEYvb0w1blhhQTc3L255?=
- =?utf-8?B?UU1oTmVXbHlINjlEU0Nma3JLaFVneFk1RmRjNzJCWGlBL2hhcXlWaVRsL2ZQ?=
- =?utf-8?B?YmN1Zzk4d0NaMjg1RllSbHd0WlljNXJtVWVQRUpvY09DUDg4dW43KzRFSUw0?=
- =?utf-8?B?cmxLRGtnT3VVTUJ5ZVQzcjg3WXcxTE5nQ0tQOGhIUGFaWitIaTljQWhUZ1NM?=
- =?utf-8?B?cWpHSmhmUHRydXVSWTFENmdPVmlpaGpMT2haem4xblBjT0hicjJNdDJ4YXly?=
- =?utf-8?B?ZFJEK1RkTUhxNkVtTUkraVVRbVFTY3R3OEptN0lwNWQwWXlVU2twMHpzNUR0?=
- =?utf-8?B?S0VrbVJDSVVDbm5sMUlnbUl0RXcwSnN5RnljR09DTkc1SzhteUQvRU5BaTdQ?=
- =?utf-8?B?ZUdVTVBoRkFDak9MenQxNVF1clR2ZWEyZ0lMZzBxOXdub1Rjb1hwTEN0YkVC?=
- =?utf-8?B?VHJTRFlzUDVhQXJmdlVsVXVJSXVvTENydWJtU0xnaGM4MmM4dGc5M1ZDNUI4?=
- =?utf-8?B?OEdGME8zM1hMaW1Ga3QrNzhLbWpiZzRSQmNZMzU4UGFkcGtianUrM1lGVkdR?=
- =?utf-8?B?RVl4SDh4MDU5VDllUFZJNnFmSFduWWlmdjNjZGVkNm8rb2hhV3NTNCtnZldk?=
- =?utf-8?B?dUVFdXJNcUk5amVHOGRCMmk1ZUxXNHE2VmpOM3NESTllV1lzZS9wbzBOdERu?=
- =?utf-8?B?UGR2c1VMZkNtWkY2V2tpRTBBQU04WlNzUFBud1JlNGk4cExQOW1HK0J1ZTdX?=
- =?utf-8?B?RWhzOHFIM2pja1dXa2ZBT2xvSEJYTVhFVUwzUDBFUER4czNFOFpmOFdrTDVF?=
- =?utf-8?B?S1FMeHNieXo0dWM5cTRjdVMrU1BhWFRhbmxKVnBKME5GNGhXdVVGZGlJWkYw?=
- =?utf-8?B?OGhiMzFaOXlCemZVbTJEVzVTMHZXa21XaVowejkvMHBvUDhpVTkyY1FwMTRV?=
- =?utf-8?B?Y0xSM3pyZ2NjL3VsM0F1cHRvQ1dQZmp3dWhwVjlySlVBR21TOUpqWGcwS2RJ?=
- =?utf-8?B?K0djaTNUVTN1czBJdDAxL29Ya0tMb2E2Z04rbG90L2N0MlZCZzVIWk44a0ZD?=
- =?utf-8?B?TTlGellTQmgxYzJidUtZdjhHaWIzTTRzV2JyK3N5MC84bjhxdFBvMFFCSGlQ?=
- =?utf-8?B?VXZlMTNpNHpYNmN0eTE2Vkd5YmQ0MzgzVk5iQzV6TFMvOGttK2FxYnFSR3Q4?=
- =?utf-8?B?RzlFQjc3VkY0bVJ3OUo3UzgrM2tyRHJEb0dkMWNwZzNvdVVjK2FNMUNVSEdM?=
- =?utf-8?B?QVRyWWdOajlEb1A4T3NaSUtKZjZGandDd3hkTVZQeU5ZaGx4YnRFY1gxKzFV?=
- =?utf-8?B?R1ppQjdmUnNGSTFQaDF4RGxVUi80NFFydjEycUtFbDF2cjgvcjBxWDVpSHdU?=
- =?utf-8?B?QkFBcEVQREZUWkZkN2kxRGJjTVBTMitPNEhHS1NReUl6VjJXOVJENW92MGdU?=
- =?utf-8?B?emcwRTFJc2xlV3VnQU5MS1czaVVJU3VGalcybnFEdWpoMFpGSi8zci9jZmpQ?=
- =?utf-8?B?U1JBM1NvQnhiOEdhRzhRUW5ma2Rsa2ZzSUFIMDN5bjdGN2pOTjB3d0ZqRi9t?=
- =?utf-8?B?aXVKNnhFWUM3cmMvUzB4VzdQL00rYmdwSFpYa2J1WFFRYkw0cHQ5SmtGb1J5?=
- =?utf-8?B?TEgxQVhFZUhOYzltQmxrUT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a90767c1-6e7b-4437-c706-08d951162d76
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2021 15:49:54.5354
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4/LIV8+/6UrEtxipQSpe77v1fQ4yf/GGpseQVVtNQhOZOtJH/fxMk+8iT8QSC3Gg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR15MB3760
-X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 4yF3fPebINZY-A_NwQFop7Z3_r7XUbK4
-X-Proofpoint-ORIG-GUID: 4yF3fPebINZY-A_NwQFop7Z3_r7XUbK4
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-27_10:2021-07-27,2021-07-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- impostorscore=0 priorityscore=1501 phishscore=0 suspectscore=0
- mlxlogscore=662 spamscore=0 bulkscore=0 malwarescore=0 mlxscore=0
- adultscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107270094
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Tue, 27 Jul 2021 17:53:58 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     =?UTF-8?Q?Marek_Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     andrew@lunn.ch, anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
+        davem@davemloft.net, dvorax.fuxbrumer@linux.intel.com,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        jacek.anaszewski@gmail.com, kuba@kernel.org, kurt@linutronix.de,
+        linux-leds@vger.kernel.org, netdev@vger.kernel.org, pavel@ucw.cz,
+        sasha.neftin@intel.com, vinicius.gomes@intel.com,
+        vitaly.lifshits@intel.com
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+In-Reply-To: <20210727172828.1529c764@thinkpad>
+References: <YP9n+VKcRDIvypes@lunn.ch>
+ <20210727081528.9816-1-michael@walle.cc> <20210727165605.5c8ddb68@thinkpad>
+ <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
+ <20210727172828.1529c764@thinkpad>
+User-Agent: Roundcube Webmail/1.4.11
+Message-ID: <8edcc387025a6212d58fe01865725734@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 7/27/21 4:59 AM, Jason Wang wrote:
-> Remove the repeated word 'the' in line 48.
+Am 2021-07-27 17:28, schrieb Marek Behún:
+> On Tue, 27 Jul 2021 17:03:53 +0200
+> Michael Walle <michael@walle.cc> wrote:
 > 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+>> I wasn't talking about ethN being same as the network interface name.
+>> For clarity I'll use ethernetN now. My question was why would you
+>> use ethmacN or ethphyN instead if just ethernetN for both. What is
+>> the reason for having two different names? I'm not sure who is using
+>> that name anyway. If it is for an user, I don't think he is interested
+>> in knowing wether that LED is controlled by the PHY or by the MAC.
+> 
+> Suppose that the system has 2 ethernet MACs, each with an attached PHY.
+> Each MAC-PHY pair has one LED, but one MAC-PHY pair has the LED
+> attached to the MAC, and the second pair has the LED attached to the
+> PHY:
+>      +------+        +------+
+>      | macA |        | macB |
+>      +-+--+-+        +-+----+
+>        |  |            |
+>       /   +------+   +-+----+
+>    ledA   | phyA |   | phyB |
+>           +------+   +----+-+
+>                           |
+>                            \
+>                             ledB
+> 
+> Now suppose that during system initialization the system enumerates
+> MACs and PHYs in different order:
+>    macA -> 0      phyA -> 1
+>    macB -> 1      phyB -> 0
+> 
+> If we used the devicename as you are suggesting, then for the two LEDs
+> the devicename part would be the same:
+>   ledA -> macA -> ethernet0
+>   ledB -> phyB -> ethernet0
+> although they are clearly on different MACs.
 
-Acked-by: Yonghong Song <yhs@fb.com>
+Why is that the case? Why can't both the MAC and the PHY request a 
+unique
+name from the same namespace? As Andrew pointed out, the names in
+/sys/class/leds don't really matter. Ok, it will still depend on the
+probe order which might not be the case if you split it between ethmac
+and ethphy.
+
+Sorry, if I may ask stupid questions here. I don't want to cause much
+trouble, here. I was just wondering why we have to make up two different
+(totally unrelated names to the network interface names) instead of just
+one (again totally unrelated to the interface name and index).
+
+> We could create a simple atomically increasing index only for MACs, and
+> for a LED connected to a PHY, instead of using the PHY's index, we
+> would look at the attached MAC and use the MAC index.
+
+Oh, I see. I was assuming we are talking about "just a number" not
+related to anything.
+
+> The problem is that PHYs and MACs are not always attached, and are not
+> necessarily mapped 1-to-1. It is possible to have a board where one PHY
+> can connect to 2 different MACs and you can switch between them, and
+> also vice versa.
+> 
+>> > So it can for example happen that within a network namespace you
+>> > have only one interface, eth0, but in /sys/class/leds you would see
+>> >   eth0:green:activity
+>> >   eth1:green:activity
+>> > So you would know that there are at least 2 network interfaces on the
+>> > system, and also with renaming it can happen that the first LED is not
+>> > in fact connected to the eth0 interface in your network namespace.
+>> 
+>> But the first problem persists wether its named ethernetN or ethphyN,
+>> no?
+> 
+> No. The N in the "ethphyN" for etherent PHYs is supposed to be 
+> unrelated
+> to the N in "ethN" for interface names. So if you have eth0 network
+> interface with attached phy ethphy0, this is a coincidence. (That is
+> why Andrew is proposing to start the index for PHYs at a different
+> number, like 42.)
+
+Yes, in my case ethernet0 has nothing to do with eth0, either.
+
+But I was actually referring to your "you see the leds in /sys/ of all
+the network adapters". That problem still persists, right?
+
+-michael
