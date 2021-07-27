@@ -2,243 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A49BC3D81CF
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B592C3D81FE
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232774AbhG0Vah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        id S232228AbhG0Vnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbhG0Vah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:30:37 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FB3C061757;
-        Tue, 27 Jul 2021 14:30:36 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id x192so492109ybe.0;
-        Tue, 27 Jul 2021 14:30:36 -0700 (PDT)
+        with ESMTP id S231445AbhG0Vnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:43:52 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F2DC061757;
+        Tue, 27 Jul 2021 14:43:51 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id k65so372447yba.13;
+        Tue, 27 Jul 2021 14:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8Xk/FxiJNZqJn1RcVkvNgh+Bha6b3Cf+U0VMD2/lHzQ=;
-        b=CtIRk0mW+TSzm9qBAQz5NyhK1eDuFmyOBs6Kt+W8usd9qEGSRRscAa2Ukepv+LeqAS
-         govy/AUWUO4Qf6BHlpXJXp/k0uzHtGeUBNQ2Yb34tnawbpBqGwBKSgBa4KVmY7iHAJWg
-         Qs5I2uW528qwG606kbXTpE/nBQbs+SLpkN2quKrmbHPsYbsfX6fie5oEm7yF7jR/uABW
-         OOmfqPw3EkpK0FVIJK03SM2Xipe/sG18npCiNuNqMBX5fbnUBRnjqae16ZLsFMUmMNr0
-         7WRQ1VW7R95JhmLcSsrGjSv8AnCOq2hX0zbuAgjBxqfUXEvYrUJu4E3NoT9CoMPMARvy
-         uc1g==
+        bh=6u6wypJQeJmb/YfTyzmyqM0UJtBE0z6heRiSyMm9WoU=;
+        b=ZwLmxb1TgizpkLWoUujWJlH4yHyMAxPpF7B1gyLjsnAFVyvUuGAl/582R6EQnGqPOQ
+         VJYtZ96O+yh4aOftf1fjI0N6eZvizFHokQl/4bkWhB+9rqRhsyGGmpv9G+814ldsINAj
+         pyThT4+/GMqmDiOvzi4dFzQIx4EgR8ivUE3Mslc/vublLkMoY06AzGHLtFtp+OpfHEdj
+         oVCENJjFGcvOyn5yhHLqjMZF/Ki76bjYjNuy2tR7d871OX0zrCuRjGdkzoTxOUV5fnPa
+         +yTGMKCUtkW7tMrZqa5fM9Hxv267csgf/A1SsTF7O/y+Y4YEnKBOBy2fMZcrqzjybtbn
+         QKAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8Xk/FxiJNZqJn1RcVkvNgh+Bha6b3Cf+U0VMD2/lHzQ=;
-        b=D/674Z5oYvuy9/8mRzKmM5cmcaMXld5SVVF9CixRlvRoZu468tYRCrqEiaXlffMPTn
-         lZug/cI6k/h7NtumphYpxJQWaIJVDrWYR2o9c/36heVT8NRzXK2QvB9X//KCjnY4vmkY
-         9NxPLj0nnem9vcIUMnKdpfbIJiE1DzUjGR9HTkS5GenW/3KfqTKdVRgxNd6XQXNe+75P
-         SSgOq5PiI2gVHUUuEFYcByw9XMkbtm5f6+Si09SWu0tWQ0VyQ1EAb+YDk9/x+mjmJBcJ
-         R559M6LISNXLYmsFuy1XRjMfL1iHMT0HnzHK5zonylylgQsZQYTdExe7XwoAoQFZ5Fqw
-         WJnw==
-X-Gm-Message-State: AOAM530GZ7JBRjqHRDvBft0zqVBAibc64k4Cx9D1lRCCLOrBdY8n5sQ2
-        JtU12+kfFe9ZamTK+ss4VY7ttuMHGIEPETHSu6Y=
-X-Google-Smtp-Source: ABdhPJzbycA9Tw1adabInEtO3yvthYqrmBqPiKSGQwlaDFSe/IW+6+8w9swfE+pGDTtfva/txWXE3rI1kXIbv3VvUuY=
-X-Received: by 2002:a25:1455:: with SMTP id 82mr34077343ybu.403.1627421435731;
- Tue, 27 Jul 2021 14:30:35 -0700 (PDT)
+        bh=6u6wypJQeJmb/YfTyzmyqM0UJtBE0z6heRiSyMm9WoU=;
+        b=LM2m3zSBD9SMeY2IGMeapGx2RY+eAYw7JniIflNFA+BhloYPEaZXrtQXDOCSARviid
+         y9HOOOYWn/wBUkMm2418fmxF8vSaNGYn/Hv4bzfKIB0Tat1I5Tpb+OtZzLHpXTRTMNfm
+         5R7aCYzHq0V2oUAQeaqKHe+S3Ymj8sw+4b7u+IXJwYhnOs9IesTPpOxK4tEIzyCeisZ6
+         bPbkqzaaBRBVPnbWBiI7t1NactpHh6qoQRHBxEasOwsFizHhiXvKgFR5DSnwJhpzSeJ+
+         f+LRQkwDJiNJCm0eUnMB3vmWJqxuPTz+BhxKKbK9I6gJWte28JluUd7/Gw5CBgfxiYme
+         MXhQ==
+X-Gm-Message-State: AOAM532hMqMiNhPUjksmsIsZW6lk1eYsivBDsYyyEAGJe9VTmBXLnZf1
+        FJ42p7mLY4qdFogPrknPKYYdbqv6mVfahqD7eh8=
+X-Google-Smtp-Source: ABdhPJz2rkdMm/N4pD3+cl4Wyi4GGBdI0Z2R9PTOr2miyLr3QrjV5+sF/QXS2PdyG9pr1d9ANZ+DmXR8OPMsHNQSAJs=
+X-Received: by 2002:a25:cdc7:: with SMTP id d190mr32876992ybf.425.1627422230617;
+ Tue, 27 Jul 2021 14:43:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210726230032.1806348-1-sdf@google.com> <CAEf4BzaLc7rvUPquXnf+qxjrLSkCR21D7hj0HNVACmwNpgZvSw@mail.gmail.com>
- <YQBw+SLUQf0phOik@google.com>
-In-Reply-To: <YQBw+SLUQf0phOik@google.com>
+References: <20210727141119.19812-1-pavo.banicevic@sartura.hr>
+ <20210727141119.19812-2-pavo.banicevic@sartura.hr> <CAKwvOdkwwXV9rN6bzRs_+hbq5thHNSbEtqwOZ7340a79=NqjSg@mail.gmail.com>
+In-Reply-To: <CAKwvOdkwwXV9rN6bzRs_+hbq5thHNSbEtqwOZ7340a79=NqjSg@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Jul 2021 14:30:24 -0700
-Message-ID: <CAEf4BzbEht9srvg8kJowM1e-t=2WOE3GCHWWJWsYYwKfT06iSQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] bpf: increase supported cgroup storage value size
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+Date:   Tue, 27 Jul 2021 14:43:39 -0700
+Message-ID: <CAEf4Bza2zZK2m4fmDUXKoURxMmUcfr8gvLR9wxF1vFPBmc2gHA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] arm: include: asm: swab: mask rev16 instruction for clang
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Pavo Banicevic <pavo.banicevic@sartura.hr>,
+        Arnd Bergmann <arnd@linaro.org>, linux@armlinux.org.uk,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        matt.redfearn@mips.com, Ingo Molnar <mingo@kernel.org>,
+        dvlasenk@redhat.com, Juraj Vijtiuk <juraj.vijtiuk@sartura.hr>,
+        robert.marko@sartura.hr, Luka Perkov <luka.perkov@sartura.hr>,
+        Jakov Petrina <jakov.petrina@sartura.hr>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 1:47 PM <sdf@google.com> wrote:
+On Tue, Jul 27, 2021 at 10:53 AM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
 >
-> On 07/27, Andrii Nakryiko wrote:
-> > On Mon, Jul 26, 2021 at 4:00 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Current max cgroup storage value size is 4k (PAGE_SIZE). The other local
-> > > storages accept up to 64k (BPF_LOCAL_STORAGE_MAX_VALUE_SIZE). Let's
-> > align
-> > > max cgroup value size with the other storages.
-> > >
-> > > For percpu, the max is 32k (PCPU_MIN_UNIT_SIZE) because percpu
-> > > allocator is not happy about larger values.
-> > >
-> > > netcnt test is extended to exercise those maximum values
-> > > (non-percpu max size is close to, but not real max).
-> > >
-> > > v3:
-> > > * refine SIZEOF_BPF_LOCAL_STORAGE_ELEM comment (Yonghong Song)
-> > > * anonymous struct in percpu_net_cnt & net_cnt (Yonghong Song)
-> > > * reorder free (Yonghong Song)
-> > >
-> > > v2:
-> > > * cap max_value_size instead of BUILD_BUG_ON (Martin KaFai Lau)
-> > >
-> > > Cc: Martin KaFai Lau <kafai@fb.com>
-> > > Cc: Yonghong Song <yhs@fb.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  kernel/bpf/local_storage.c                  | 11 +++++-
-> > >  tools/testing/selftests/bpf/netcnt_common.h | 38 +++++++++++++++++----
-> > >  tools/testing/selftests/bpf/test_netcnt.c   | 17 ++++++---
-> > >  3 files changed, 53 insertions(+), 13 deletions(-)
-> > >
-> > > diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-> > > index 7ed2a14dc0de..035e9e3a7132 100644
-> > > --- a/kernel/bpf/local_storage.c
-> > > +++ b/kernel/bpf/local_storage.c
-> > > @@ -1,6 +1,7 @@
-> > >  //SPDX-License-Identifier: GPL-2.0
-> > >  #include <linux/bpf-cgroup.h>
-> > >  #include <linux/bpf.h>
-> > > +#include <linux/bpf_local_storage.h>
-> > >  #include <linux/btf.h>
-> > >  #include <linux/bug.h>
-> > >  #include <linux/filter.h>
-> > > @@ -283,9 +284,17 @@ static int cgroup_storage_get_next_key(struct
-> > bpf_map *_map, void *key,
-> > >
-> > >  static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
-> > >  {
-> > > +       __u32 max_value_size = BPF_LOCAL_STORAGE_MAX_VALUE_SIZE;
-> > >         int numa_node = bpf_map_attr_numa_node(attr);
-> > >         struct bpf_cgroup_storage_map *map;
-> > >
-> > > +       /* percpu is bound by PCPU_MIN_UNIT_SIZE, non-percu
-> > > +        * is the same as other local storages.
-> > > +        */
-> > > +       if (attr->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
-> > > +               max_value_size = min_t(__u32, max_value_size,
-> > > +                                      PCPU_MIN_UNIT_SIZE);
-> > > +
-> > >         if (attr->key_size != sizeof(struct bpf_cgroup_storage_key) &&
-> > >             attr->key_size != sizeof(__u64))
-> > >                 return ERR_PTR(-EINVAL);
-> > > @@ -293,7 +302,7 @@ static struct bpf_map
-> > *cgroup_storage_map_alloc(union bpf_attr *attr)
-> > >         if (attr->value_size == 0)
-> > >                 return ERR_PTR(-EINVAL);
-> > >
-> > > -       if (attr->value_size > PAGE_SIZE)
-> > > +       if (attr->value_size > max_value_size)
-> > >                 return ERR_PTR(-E2BIG);
-> > >
-> > >         if (attr->map_flags & ~LOCAL_STORAGE_CREATE_FLAG_MASK ||
-> > > diff --git a/tools/testing/selftests/bpf/netcnt_common.h
-> > b/tools/testing/selftests/bpf/netcnt_common.h
-> > > index 81084c1c2c23..87f5b97e1932 100644
-> > > --- a/tools/testing/selftests/bpf/netcnt_common.h
-> > > +++ b/tools/testing/selftests/bpf/netcnt_common.h
-> > > @@ -6,19 +6,43 @@
-> > >
-> > >  #define MAX_PERCPU_PACKETS 32
-> > >
-> > > +/* sizeof(struct bpf_local_storage_elem):
-> > > + *
-> > > + * It really is about 128 bytes on x86_64, but allocate more to
-> > account for
-> > > + * possible layout changes, different architectures, etc.
-> > > + * The kernel will wrap up to PAGE_SIZE internally anyway.
-> > > + */
-> > > +#define SIZEOF_BPF_LOCAL_STORAGE_ELEM          256
-> > > +
-> > > +/* Try to estimate kernel's BPF_LOCAL_STORAGE_MAX_VALUE_SIZE: */
-> > > +#define BPF_LOCAL_STORAGE_MAX_VALUE_SIZE       (0xFFFF - \
-> > > +
-> > SIZEOF_BPF_LOCAL_STORAGE_ELEM)
-> > > +
-> > > +#define PCPU_MIN_UNIT_SIZE                     32768
-> > > +
-> > >  struct percpu_net_cnt {
-> > > -       __u64 packets;
-> > > -       __u64 bytes;
-> > > +       union {
+> On Tue, Jul 27, 2021 at 7:12 AM Pavo Banicevic
+> <pavo.banicevic@sartura.hr> wrote:
+> >
+> > From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> >
+> > The samples/bpf with clang -emit-llvm reuses linux headers to build
+> > bpf samples, and this w/a only for samples (samples/bpf/Makefile
+> > CLANG-bpf).
+> >
+> > It allows to build samples/bpf for arm bpf using clang.
+> > In another way clang -emit-llvm generates errors like:
+> >
+> > CLANG-bpf  samples/bpf/tc_l2_redirect_kern.o
+> > <inline asm>:1:2: error: invalid register/token name
+> > rev16 r3, r0
+> >
+> > This decision is arguable, probably there is another way, but
+> > it doesn't have impact on samples/bpf, so it's easier just ignore
+> > it for clang, at least for now.
 >
-> > so you have a struct with a single anonymous union inside, isn't that
-> > right? Any problems with just making struct percpu_net_cnt into union
-> > percpu_net_cnt?
-> We'd have to s/struct/union/ everywhere in this case, not sure
-> we want to add more churn? Seemed easier to do anonymous union+struct.
+> NACK
+>
+> The way to fix these is to sort out the header includes, not turning
+> off arbitrary things that are used by the actual kernel build for 32b
+> ARM.
 
-4 occurrences for net_cnt and another 4 for percpu_net_cnt, not much
-churn (and all pretty localized). But I honestly don't care, just
-wanted to note that you don't need this extra nesting.
+Would it be too horrible to just get rid of `clang -emit-llvm` and use
+vmlinux.h (we don't need to do CO-RE, btw, just generate vmlinux.h
+from the matching kernel)? Kumar has already started moving in that
+direction in his recent patch set ([0]). Would that get rid of all
+these issues?
+
+  [0] https://patchwork.kernel.org/project/netdevbpf/list/?series=519281&state=*
+
 
 >
-> > > +               struct {
-> > > +                       __u64 packets;
-> > > +                       __u64 bytes;
-> > >
-> > > -       __u64 prev_ts;
-> > > +                       __u64 prev_ts;
-> > >
-> > > -       __u64 prev_packets;
-> > > -       __u64 prev_bytes;
-> > > +                       __u64 prev_packets;
-> > > +                       __u64 prev_bytes;
-> > > +               };
-> > > +               __u8 data[PCPU_MIN_UNIT_SIZE];
-> > > +       };
-> > >  };
-> > >
-> > >  struct net_cnt {
-> > > -       __u64 packets;
-> > > -       __u64 bytes;
-> > > +       union {
+> >
+> > Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> > ---
+> >  arch/arm/include/asm/swab.h | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/arch/arm/include/asm/swab.h b/arch/arm/include/asm/swab.h
+> > index c6051823048b..a9fd9cd33d5e 100644
+> > --- a/arch/arm/include/asm/swab.h
+> > +++ b/arch/arm/include/asm/swab.h
+> > @@ -25,8 +25,11 @@ static inline __attribute_const__ __u32 __arch_swahb32(__u32 x)
+> >         __asm__ ("rev16 %0, %1" : "=r" (x) : "r" (x));
+> >         return x;
+> >  }
+> > +
+> > +#ifndef __clang__
+> >  #define __arch_swahb32 __arch_swahb32
+> >  #define __arch_swab16(x) ((__u16)__arch_swahb32(x))
+> > +#endif
+> >
+> >  static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
+> >  {
+> > --
+> > 2.32.0
+> >
 >
-> > similarly here
 >
-> > > +               struct {
-> > > +                       __u64 packets;
-> > > +                       __u64 bytes;
-> > > +               };
-> > > +               __u8 data[BPF_LOCAL_STORAGE_MAX_VALUE_SIZE];
-> > > +       };
-> > >  };
-> > >
-> > >  #endif
-> > > diff --git a/tools/testing/selftests/bpf/test_netcnt.c
-> > b/tools/testing/selftests/bpf/test_netcnt.c
-> > > index a7b9a69f4fd5..372afccf2d17 100644
-> > > --- a/tools/testing/selftests/bpf/test_netcnt.c
-> > > +++ b/tools/testing/selftests/bpf/test_netcnt.c
-> > > @@ -33,11 +33,11 @@ static int bpf_find_map(const char *test, struct
-> > bpf_object *obj,
-> > >
-> > >  int main(int argc, char **argv)
-> > >  {
-> > > -       struct percpu_net_cnt *percpu_netcnt;
-> > > +       struct percpu_net_cnt *percpu_netcnt = NULL;
-> > >         struct bpf_cgroup_storage_key key;
-> > > +       struct net_cnt *netcnt = NULL;
-> > >         int map_fd, percpu_map_fd;
-> > >         int error = EXIT_FAILURE;
-> > > -       struct net_cnt netcnt;
-> > >         struct bpf_object *obj;
-> > >         int prog_fd, cgroup_fd;
-> > >         unsigned long packets;
-> > > @@ -52,6 +52,12 @@ int main(int argc, char **argv)
-> > >                 goto err;
-> > >         }
-> > >
-> > > +       netcnt = malloc(sizeof(*netcnt));
->
-> > curious, was it too big to be just allocated on the stack? Isn't the
-> > thread stack size much bigger than 64KB (at least by default)?
-> I haven't tried really, I just moved it to malloc because it crossed
-> some unconscious boundary for the 'stuff I allocate on the stack'.
-> I can try it out if you prefer to keep it on the stack, let me know.
-
-Yeah, if it can stay on the stack. Less thinking about freeing memory.
+> --
+> Thanks,
+> ~Nick Desaulniers
