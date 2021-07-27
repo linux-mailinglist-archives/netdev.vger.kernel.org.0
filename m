@@ -2,88 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F043D6BA6
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 03:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A133D6C0D
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 04:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbhG0BRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 21:17:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46548 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233249AbhG0BRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Jul 2021 21:17:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=HMgJV3uvT/ccXgXUndUBzgjHpSF3q66T70QHV1OP8Po=; b=3MfQ7sVIZ9ABcm1rZUJXDAOPnh
-        Z43SVdviFaDETNTo9/eYjtVOulvrFrt01OgBt7cqN/Ma1vw5kaHKU1KyAE5wgaLR29ztSF1nOSN5a
-        O7FZ3jlhEOeMSB85yl/jHIuPxJDXRWpCjPBn9tAwS6qbv6ZbmlItSMjNPg8aAknen8VI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m8CLJ-00Ex3M-Ej; Tue, 27 Jul 2021 03:57:13 +0200
-Date:   Tue, 27 Jul 2021 03:57:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <YP9n+VKcRDIvypes@lunn.ch>
-References: <YPTKB0HGEtsydf9/@lunn.ch>
- <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
- <YPbu8xOFDRZWMTBe@lunn.ch>
- <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
- <20210721204543.08e79fac@thinkpad>
- <YPh6b+dTZqQNX+Zk@lunn.ch>
- <20210721220716.539f780e@thinkpad>
- <4d8db4ce-0413-1f41-544d-fe665d3e104c@gmail.com>
- <6d2697b1-f0f6-aa9f-579c-48a7abb8559d@gmail.com>
- <20210727020619.2ba78163@thinkpad>
+        id S234505AbhG0CES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 22:04:18 -0400
+Received: from maynard.decadent.org.uk ([95.217.213.242]:43920 "EHLO
+        maynard.decadent.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233727AbhG0CEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 22:04:16 -0400
+X-Greylist: delayed 1459 seconds by postgrey-1.27 at vger.kernel.org; Mon, 26 Jul 2021 22:04:16 EDT
+Received: from 168.7-181-91.adsl-dyn.isp.belgacom.be ([91.181.7.168] helo=deadeye)
+        by maynard with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1m8Chj-0007ER-B8; Tue, 27 Jul 2021 04:20:23 +0200
+Received: from ben by deadeye with local (Exim 4.94.2)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1m8Chi-000cTJ-KA; Tue, 27 Jul 2021 04:20:22 +0200
+Date:   Tue, 27 Jul 2021 04:20:22 +0200
+From:   Ben Hutchings <ben@decadent.org.uk>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        Ilja Van Sprundel <ivansprundel@ioactive.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>, carnil@debian.org
+Subject: Re: [PATCH net 1/4] sctp: validate from_addr_param return
+Message-ID: <YP9tZryTbUGaQQ+e@decadent.org.uk>
+References: <cover.1624904195.git.marcelo.leitner@gmail.com>
+ <a8a08b7fbb0bf76377e26584682c12dd82202d2e.1624904195.git.marcelo.leitner@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="l8KlNNhMC8kbt7or"
 Content-Disposition: inline
-In-Reply-To: <20210727020619.2ba78163@thinkpad>
+In-Reply-To: <a8a08b7fbb0bf76377e26584682c12dd82202d2e.1624904195.git.marcelo.leitner@gmail.com>
+X-SA-Exim-Connect-IP: 91.181.7.168
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The last time we discussed this (Andrew, Pavel and I), we've decided
-> that for ethernet PHY controlled LEDs we want the devicename part
-> should be something like
->    phyN  or  ethphyN  or  ethernet-phyN
-> with N a number unique for every PHY (a simple atomically increased
-> integer for every ethernet PHY).
 
-We might want to rethink this. PHYs typically have 2 or 3 LEDs. So we
-want a way to indicate which LED of a PHY it is. So i suspect we will
-want something like
+--l8KlNNhMC8kbt7or
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ethphyN-led0, ethphyN-led1, ethphyN-led2.
+On Mon, Jun 28, 2021 at 04:13:41PM -0300, Marcelo Ricardo Leitner wrote:
+[...]
+> @@ -1174,7 +1175,8 @@ static struct sctp_association *__sctp_rcv_asconf_l=
+ookup(
+>  	if (unlikely(!af))
+>  		return NULL;
+> =20
+> -	af->from_addr_param(&paddr, param, peer_port, 0);
+> +	if (af->from_addr_param(&paddr, param, peer_port, 0))
+> +		return NULL;
+> =20
+>  	return __sctp_lookup_association(net, laddr, &paddr, transportp);
+>  }
+[...]
 
-I would also suggest N starts at 42, in order to make it clear it is a
-made up arbitrary number, it has no meaning other than it is
-unique. What we don't want is people thinking ethphy0-led0 has
-anything to do with eth0.
+This condition needs to be inverted, doesn't it?
 
-> I confess that I am growing a little frustrated here, because there
-> seems to be no optimal solution with given constraints and no official
-> consensus for a suboptimal yet acceptable solution.
+Ben.
 
-I do think it is clear that the base name is mostly irrelevant and not
-going to be used in any meaningful way. You are unlikely to access
-these LEDs via /sys/class/leds. You are going to go into
-/sys/class/net/<ifname> and then either follow the device symlink, or
-the phydev symlink and look for LEDs there. And then only the -ledM
-part of the name might be useful. Since the name is mostly
-meaningless, we should just decide and move on.
+--=20
+Ben Hutchings
+friends: People who know you well, but like you anyway.
 
-     Andrew
+--l8KlNNhMC8kbt7or
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmD/bWEACgkQ57/I7JWG
+EQkoVw/9EGrgEYZ3OHwwXGI2peGZ3V0z/R0pYw7Jpvs5skI49MeuwZdHMXB3h+Kf
+57nYT9Sy+mOI8ilvlBcXpTimv4Nnog4nv2cT/GX7VpxcWeegQDBLpCqAdOF4C64S
+gc078OeX2DTq0nc59cdookKN1Z3QKdpNshw9WrPOPdX7lWeB93UB2DZENpM4Q+N1
+dDM35HSuCYzotfgyryuAY1khHJHgN7f4MloZfIskKPlsBitSPA4SwtR2FafyNohA
+nyAot0de8WMx7wdNCYVdK7TfL2KgVuaXakMkQpVOSynv2aVigeDPkw0NXruanAPx
+dCF+LvdKVbxuD7XwTmdmRovMsuMG9fzYFYe2szNUVvw0aN9JFWs2TCc00clqhvyU
+XMn+XxMJMCZS+fbsuKjOCDgxn4wxVaWyFzys0xMyPvAjnMOig4r91gkzgxVwV6zq
+TYIB0lUIFwszNHOjqugEHXrx4Ks0lNxIz28eDdoEXewabDFkVpt6jJGg/dEmFOqx
+5Izr9uRhJ2Mcj5IXJQegCLzRp9eeYzFg9YdmQ4Jkc2CGNCG3uuzue7xowPsh0Da8
+KxgqM04QL7GsFk4wDvukNstlKyB2aD9pdoKR3niRWQKC7R9k4aToWdht6loZx+eS
+Ewemb1LmsRXFOu+UtEy5ZS0nGC9bl2siqap38G/KFFtxYEqfqlA=
+=lAh5
+-----END PGP SIGNATURE-----
+
+--l8KlNNhMC8kbt7or--
