@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF9D3D7EBF
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFE3E3D7EC5
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhG0UAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:00:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40746 "EHLO mail.kernel.org"
+        id S232140AbhG0UAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:00:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40762 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229681AbhG0UAO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S231213AbhG0UAO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Jul 2021 16:00:14 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 025E660FC2;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0C5AC60F9E;
         Tue, 27 Jul 2021 20:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627416014;
-        bh=d0ZP2pOk1dVuAkqL8ks/8KOUxF5Ghmlabk6beOTdtW0=;
+        bh=DWxuwv9MrG9KyWhAm/nAR1pYgmx0UU4riGcmruIdOFw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bQhQFgC4lCZSGYteM/6nqj8xhGUJ0uUFf7lYtaH/lwXeCSKDjTdqit2GE+qGgzagX
-         uVj+LuF5SEfp3An/XcSuRm8k+0c57AVTUciuM90Dc70ijkYhSNWJXSZgwge7TYpgP8
-         kLJLQjBwx1o8le3fcLGC1hrVu9KjMlBvBi9eVbCwPNE1Mezc/XwEyGlzXqN+xE7EGC
-         jMJWzd+eV9ifoprkbergpMnfZQmS8VC/DcZos3yqPsoAeRGofFgHS35qW80sYAxDtf
-         34FaLi12+chm7xrZ5NzxPQ8N8TiIAgju6F5A0BUcUljsSaybxJvKJOJTUNVMcVhzhf
-         23NgHMHGj6RTg==
+        b=KKwn3Lxxb9ystuAqticq81hz2A+YvBCYA/fhsnguKXJ5/2Lv/F3N6XKWpB1LbkBsC
+         bQJisElb5Q/ohsD5dvnI8lJ2h2+LbxBpWyrcJ+4JZ2o+RLh/Fl0xX/0RABrrKY8Z0W
+         cNo1elQei2q0qN0BW4170dBaSVFQnYPHo29Ay3/QxNjS+bgsobw6AQnaE+oIXxJT4u
+         AVePmv953SJ+WdqGc3KD8mY0aTw7MSMqt3SavWxAieuGOBD+toZoJ5CNqzk2hWraZ8
+         4KF5YKLDrNHGzCStbbhn3r/KI1dXxxzH5l/AsbFarQ9vnyNGli7oJHJQm0fWkMnUFn
+         6tCBBPKY0HqkQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EE65760A6C;
-        Tue, 27 Jul 2021 20:00:13 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0414760A56;
+        Tue, 27 Jul 2021 20:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10] ionic: driver updates 27-July-2021
+Subject: Re: [PATCH RESEND] net: cipso: fix warnings in netlbl_cipsov4_add_std
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162741601397.17427.863934488517066772.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Jul 2021 20:00:13 +0000
-References: <20210727174334.67931-1-snelson@pensando.io>
-In-Reply-To: <20210727174334.67931-1-snelson@pensando.io>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        drivers@pensando.io
+Message-Id: <162741601401.17427.16591015519654450734.git-patchwork-notify@kernel.org>
+Date:   Tue, 27 Jul 2021 20:00:14 +0000
+References: <20210727163530.3057-1-paskripkin@gmail.com>
+In-Reply-To: <20210727163530.3057-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     paul@paul-moore.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+cdd51ee2e6b0b2e18c0d@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 27 Jul 2021 10:43:24 -0700 you wrote:
-> This is a collection of small driver updates for adding a couple of
-> small features and for a bit of code cleaning.
+On Tue, 27 Jul 2021 19:35:30 +0300 you wrote:
+> Syzbot reported warning in netlbl_cipsov4_add(). The
+> problem was in too big doi_def->map.std->lvl.local_size
+> passed to kcalloc(). Since this value comes from userpace there is
+> no need to warn if value is not correct.
 > 
-> Shannon Nelson (10):
->   ionic: minimize resources when under kdump
->   ionic: monitor fw status generation
->   ionic: print firmware version on identify
->   ionic: init reconfig err to 0
->   ionic: use fewer inits on the buf_info struct
->   ionic: increment num-vfs before configure
->   ionic: remove unneeded comp union fields
->   ionic: block some ethtool operations when fw in reset
->   ionic: enable rxhash only with multiple queues
->   ionic: add function tag to debug string
+> The same problem may occur with other kcalloc() calls in
+> this function, so, I've added __GFP_NOWARN flag to all
+> kcalloc() calls there.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,01/10] ionic: minimize resources when under kdump
-    https://git.kernel.org/netdev/net-next/c/c0b03e839950
-  - [net-next,02/10] ionic: monitor fw status generation
-    https://git.kernel.org/netdev/net-next/c/d2662072c094
-  - [net-next,03/10] ionic: print firmware version on identify
-    https://git.kernel.org/netdev/net-next/c/73d618bb7e19
-  - [net-next,04/10] ionic: init reconfig err to 0
-    https://git.kernel.org/netdev/net-next/c/e7f52aa44380
-  - [net-next,05/10] ionic: use fewer inits on the buf_info struct
-    https://git.kernel.org/netdev/net-next/c/e75ccac1d064
-  - [net-next,06/10] ionic: increment num-vfs before configure
-    https://git.kernel.org/netdev/net-next/c/73618201acaa
-  - [net-next,07/10] ionic: remove unneeded comp union fields
-    https://git.kernel.org/netdev/net-next/c/a1cda1844bee
-  - [net-next,08/10] ionic: block some ethtool operations when fw in reset
-    https://git.kernel.org/netdev/net-next/c/f51236867736
-  - [net-next,09/10] ionic: enable rxhash only with multiple queues
-    https://git.kernel.org/netdev/net-next/c/6edddead9550
-  - [net-next,10/10] ionic: add function tag to debug string
-    https://git.kernel.org/netdev/net-next/c/18d6426402de
+  - [RESEND] net: cipso: fix warnings in netlbl_cipsov4_add_std
+    https://git.kernel.org/netdev/net-next/c/8ca34a13f7f9
 
 You are awesome, thank you!
 --
