@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9278C3D7633
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 047713D764F
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237320AbhG0NY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:24:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57240 "EHLO mail.kernel.org"
+        id S236878AbhG0NYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:24:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237048AbhG0NWe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237042AbhG0NWe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Jul 2021 09:22:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 20D5E61AF9;
-        Tue, 27 Jul 2021 13:20:29 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7388B61AA2;
+        Tue, 27 Jul 2021 13:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627392030;
-        bh=nSD7LdegPn+9sy55d3Yjt/Quqp+eNrJSeU6quDsLdrY=;
+        s=k20201202; t=1627392031;
+        bh=qIGfDpru0oO9Fr0i0PAGsSNQxUD60VwsnCq72zqnMA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDlvLixeB97UkZVSmyQcUxgjsoEvchCAKZYJ7qO9PtGtUuiZ2e1zdWR4OfT/QZjS8
-         0522qwn5rnvpwll9aI5P49u1c7igsMPwgDCFF8k6TpXoozZsnRYivCqEJb7zyjclGO
-         d+GxlbSigX/Xj0m3ZtdU1qfylK+gaENhH/2XVZIyRdJfOdFAn02LV2Z+FUnYvh2OkZ
-         eKL1JWA7jZtbZAQZ7rSG04yo9bf7K/pfLQiKDTplch1gQoj7N5nGEnD4PogtXw0yiP
-         +E+EQ7r7Tayc895x7iWx14P0AqyJ+157kUJCYlfkp47wxtxR36jjtJ3vZDytZ0GHhN
-         1h1+jvUElBQtw==
+        b=lvQmCdc1tif1DDWl/2nmPqY0cjsZGQZ3NpJyxDDD8Dj1sToZYY3UaVyqes+qktIkc
+         Rx3ghp9IlpO2wBTnRyOMABDwfKzvQqmO/L5hMk4LKIQ2fuu43SSQ8X6xKXKvFH/X8Z
+         Tpqt9O2T+VPHN8Jsn3RoIY19KNm4UCVhxW6NVhR2YfaVuig/WojV0VL0G6MeG/ioUi
+         VeZCIxlOLlLm8cxZDJdjP9ZjSdcgGGN+9sMid3t5IsajLc+e13SlOIGGNmDtO6pphs
+         1o0WwK/6NxCUp93u+/wYxoVG+FKsjIcxTwYAuvioOIePhLp2DbMB4tY6KefYWUND2F
+         fBwWrWh+2wfvA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Woudstra <ericwouds@gmail.com>,
+Cc:     Pravin B Shelar <pshelar@ovn.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 4/5] mt7530 fix mt7530_fdb_write vid missing ivl bit
-Date:   Tue, 27 Jul 2021 09:20:23 -0400
-Message-Id: <20210727132024.835810-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 5/5] net: Fix zero-copy head len calculation.
+Date:   Tue, 27 Jul 2021 09:20:24 -0400
+Message-Id: <20210727132024.835810-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727132024.835810-1-sashal@kernel.org>
 References: <20210727132024.835810-1-sashal@kernel.org>
@@ -44,60 +42,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Woudstra <ericwouds@gmail.com>
+From: Pravin B Shelar <pshelar@ovn.org>
 
-[ Upstream commit 11d8d98cbeef1496469b268d79938b05524731e8 ]
+[ Upstream commit a17ad0961706244dce48ec941f7e476a38c0e727 ]
 
-According to reference guides mt7530 (mt7620) and mt7531:
+In some cases skb head could be locked and entire header
+data is pulled from skb. When skb_zerocopy() called in such cases,
+following BUG is triggered. This patch fixes it by copying entire
+skb in such cases.
+This could be optimized incase this is performance bottleneck.
 
-NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
-read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
-will be used to read/write the address table.
+---8<---
+kernel BUG at net/core/skbuff.c:2961!
+invalid opcode: 0000 [#1] SMP PTI
+CPU: 2 PID: 0 Comm: swapper/2 Tainted: G           OE     5.4.0-77-generic #86-Ubuntu
+Hardware name: OpenStack Foundation OpenStack Nova, BIOS 1.13.0-1ubuntu1.1 04/01/2014
+RIP: 0010:skb_zerocopy+0x37a/0x3a0
+RSP: 0018:ffffbcc70013ca38 EFLAGS: 00010246
+Call Trace:
+ <IRQ>
+ queue_userspace_packet+0x2af/0x5e0 [openvswitch]
+ ovs_dp_upcall+0x3d/0x60 [openvswitch]
+ ovs_dp_process_packet+0x125/0x150 [openvswitch]
+ ovs_vport_receive+0x77/0xd0 [openvswitch]
+ netdev_port_receive+0x87/0x130 [openvswitch]
+ netdev_frame_hook+0x4b/0x60 [openvswitch]
+ __netif_receive_skb_core+0x2b4/0xc90
+ __netif_receive_skb_one_core+0x3f/0xa0
+ __netif_receive_skb+0x18/0x60
+ process_backlog+0xa9/0x160
+ net_rx_action+0x142/0x390
+ __do_softirq+0xe1/0x2d6
+ irq_exit+0xae/0xb0
+ do_IRQ+0x5a/0xf0
+ common_interrupt+0xf/0xf
 
-Since the function only fills in CVID and no FID, we need to set the
-IVL bit. The existing code does not set it.
+Code that triggered BUG:
+int
+skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
+{
+        int i, j = 0;
+        int plen = 0; /* length of skb->head fragment */
+        int ret;
+        struct page *page;
+        unsigned int offset;
 
-This is a fix for the issue I dropped here earlier:
+        BUG_ON(!from->head_frag && !hlen);
 
-http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
-
-With this patch, it is now possible to delete the 'self' fdb entry
-manually. However, wifi roaming still has the same issue, the entry
-does not get deleted automatically. Wifi roaming also needs a fix
-somewhere else to function correctly in combination with vlan.
-
-Signed-off-by: Eric Woudstra <ericwouds@gmail.com>
+Signed-off-by: Pravin B Shelar <pshelar@ovn.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mt7530.c | 1 +
- drivers/net/dsa/mt7530.h | 1 +
- 2 files changed, 2 insertions(+)
+ net/core/skbuff.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 58c16aa00a70..8c7b67018b45 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -414,6 +414,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
- 	int i;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 18dc8524e525..a278258e68cb 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -2702,8 +2702,11 @@ skb_zerocopy_headlen(const struct sk_buff *from)
  
- 	reg[1] |= vid & CVID_MASK;
-+	reg[1] |= ATA2_IVL;
- 	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
- 	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
- 	/* STATIC_ENT indicate that entry is static wouldn't
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 74db9822eb40..3a4aab2b1898 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -41,6 +41,7 @@
- #define  STATIC_EMP			0
- #define  STATIC_ENT			3
- #define MT7530_ATA2			0x78
-+#define  ATA2_IVL			BIT(15)
+ 	if (!from->head_frag ||
+ 	    skb_headlen(from) < L1_CACHE_BYTES ||
+-	    skb_shinfo(from)->nr_frags >= MAX_SKB_FRAGS)
++	    skb_shinfo(from)->nr_frags >= MAX_SKB_FRAGS) {
+ 		hlen = skb_headlen(from);
++		if (!hlen)
++			hlen = from->len;
++	}
  
- /* Register for address table write data */
- #define MT7530_ATWD			0x7c
+ 	if (skb_has_frag_list(from))
+ 		hlen = from->len;
 -- 
 2.30.2
 
