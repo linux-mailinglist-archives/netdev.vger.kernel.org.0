@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A303D83B7
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C52C3D83CD
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233023AbhG0XKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 19:10:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55948 "EHLO mail.kernel.org"
+        id S232735AbhG0XUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 19:20:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34644 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232198AbhG0XKG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 19:10:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id E310860F90;
-        Tue, 27 Jul 2021 23:10:05 +0000 (UTC)
+        id S232198AbhG0XUx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 19:20:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 74F8B60F57;
+        Tue, 27 Jul 2021 23:20:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627427405;
-        bh=91NlHb2pLhHcjpQvKQw0CLmiWwYWplDzaYo3UF9YO2g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lIB5UiYWzgztce4GOXwqBGSHRFM1prWEbpqix2DJeHc9/X+S1g3d8w/bmQYqcZdUY
-         ynWDLwBu3GyUdDFPeIJlYyjfo9+JwzrCriIfUCUrtBapDtLhss7C5ZFCfryS+cw6no
-         ZvnJTjW3WJ8TlBFFRKkQRVfuMAuGjWrlluBT+Kjgk6OnWeyTAQzhu+A1MLMbyb5QbH
-         G5vIq+Xmw41Wg5kEyQVEjTFKyXeFWRu39oxs+y2jTLJzFDKRqtkmjqfI4XCJRFMXfb
-         pTGEEqit60rV4Yn+s/oJhGBQHdrKWhhB2oUq/5jS+tugsoNMPivTspgklQq1FpLMS5
-         aKXXk6iryvh5Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D667B60A56;
-        Tue, 27 Jul 2021 23:10:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1627428052;
+        bh=5VRRgncMF6P5oTcT3OHSfMI60RoeGtynPBhktvm32zY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=T4YTBmwLSoAqM/sFkepsAZFIGulZ/mDKn8lioMOcjUrQA5ZfTL0mICBLIR1HDX/zj
+         VScXK7lPe2Jkh3cq2ttPghMeX9mFU8FwapjrrHnn6/c22BHom4b22eGI2tOl1/GgNF
+         HNCCDDPhOsZg0oCMc0x8zIis0D6ULZmlF27kckI88fD8zwB7EoOlVU0RxMCi7AGi5v
+         0pWzuX1p7mQPVw2KxWmn/Bc4s/6mqax9cO8xGNpyF1tYfOmsbX/gIx3uCoN9gxcJrG
+         TsRD9NOZx8DeKdMHwKndQNvF2UcYUCCzmvHVD9PwWSQhtDpEEBdj6ekYC3VBZEeMtY
+         N8mn2UhrBYe9Q==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 00/12] mlx5 fixes 2021-07-27
+Date:   Tue, 27 Jul 2021 16:20:38 -0700
+Message-Id: <20210727232050.606896-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: ipa: add clock references
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162742740587.8559.12295112318591386270.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Jul 2021 23:10:05 +0000
-References: <20210727211933.926593-1-elder@linaro.org>
-In-Reply-To: <20210727211933.926593-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
-        evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Hi Dave, Jakub,
 
-On Tue, 27 Jul 2021 16:19:28 -0500 you wrote:
-> This series continues preparation for implementing runtime power
-> management for IPA.  We need to ensure that the IPA core clock and
-> interconnects are operational whenever IPA hardware is accessed.
-> And in particular this means that any external entry point that can
-> lead to accessing IPA hardware must guarantee the hardware is "up"
-> when it is accessed.
-> 
-> [...]
+This series introduces some fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-Here is the summary with links:
-  - [net-next,1/5] net: ipa: get clock in ipa_probe()
-    https://git.kernel.org/netdev/net-next/c/923a6b698447
-  - [net-next,2/5] net: ipa: get another clock for ipa_setup()
-    https://git.kernel.org/netdev/net-next/c/cf8dfe6ab8e7
-  - [net-next,3/5] net: ipa: add clock reference for remoteproc SSR
-    https://git.kernel.org/netdev/net-next/c/34c6034b4764
-  - [net-next,4/5] net: ipa: add a clock reference for netdev operations
-    https://git.kernel.org/netdev/net-next/c/f2b0355363f3
-  - [net-next,5/5] net: ipa: don't suspend endpoints if setup not complete
-    https://git.kernel.org/netdev/net-next/c/2c257248ce8e
+Thanks,
+Saeed.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+---
+The following changes since commit 8373cd38a8888549ace7c7617163a2e826970a92:
 
+  net: hns3: change the method of obtaining default ptp cycle (2021-07-27 20:59:32 +0100)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2021-07-27
+
+for you to fetch changes up to 740452e09cf5fc489ce60831cf11abef117b5d26:
+
+  net/mlx5: Fix mlx5_vport_tbl_attr chain from u16 to u32 (2021-07-27 16:10:06 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2021-07-27
+
+----------------------------------------------------------------
+Aya Levin (4):
+      net/mlx5e: Consider PTP-RQ when setting RX VLAN stripping
+      net/mlx5e: Fix page allocation failure for trap-RQ over SF
+      net/mlx5e: Fix page allocation failure for ptp-RQ over SF
+      net/mlx5: Unload device upon firmware fatal error
+
+Chris Mi (1):
+      net/mlx5: Fix mlx5_vport_tbl_attr chain from u16 to u32
+
+Dima Chumak (1):
+      net/mlx5e: Fix nullptr in mlx5e_hairpin_get_mdev()
+
+Maor Dickman (2):
+      net/mlx5e: Disable Rx ntuple offload for uplink representor
+      net/mlx5: E-Switch, Set destination vport vhca id only when merged eswitch is supported
+
+Maor Gottlieb (1):
+      net/mlx5: Fix flow table chaining
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Add NETIF_F_HW_TC to hw_features when HTB offload is available
+
+Roi Dayan (1):
+      net/mlx5: E-Switch, handle devcom events only for ports on the same device
+
+Tariq Toukan (1):
+      net/mlx5e: RX, Avoid possible data corruption when relaxed ordering and LRO combined
+
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  5 +--
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    | 11 ++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  7 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/trap.c  |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 38 +++++++++++++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 33 +++++++++++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 10 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  | 10 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/health.c   | 12 +++++--
+ 10 files changed, 98 insertions(+), 32 deletions(-)
