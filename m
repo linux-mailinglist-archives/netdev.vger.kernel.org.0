@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACEF3D7509
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6803D7517
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236528AbhG0M0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 08:26:54 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:18083 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231981AbhG0M0x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 08:26:53 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1627388813; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=Q6hAM6vysUdsneiXBqcVC/h93AYOHGPjOJpOhDCKNt0=; b=pCxrMPpV+aaGvpvbw1apMeYgyS7lI2y0DOhNjdVtDwSvPo887QAZ5i2KcsDJyWzGKsMDT680
- dZXtqyMRfiA0PGZTWjXDtE8Z7hAx0cYbCxeF/8iBPRUrL+wjjh8gJOrKvaQaN1CGw+vut/Af
- KaVvV/ebtRSV+hWlhyEb1dY4zrg=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 60fffb6e1dd16c87888e8e96 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 27 Jul 2021 12:26:22
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 34AC4C433F1; Tue, 27 Jul 2021 12:26:21 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ECF58C433F1;
-        Tue, 27 Jul 2021 12:26:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ECF58C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Julian Calaby <julian.calaby@gmail.com>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Brooke Basile <brookebasile@gmail.com>,
-        syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath9k: hif_usb: fix memory leak in ath9k_hif_usb_firmware_cb
-References: <20210709084351.2087311-1-mudongliangabcd@gmail.com>
-        <CAGRGNgUNnf=62xnFE4zUiVJ+n6NyGjFUmdR2JChbRkhsDSy0Yw@mail.gmail.com>
-Date:   Tue, 27 Jul 2021 15:26:14 +0300
-In-Reply-To: <CAGRGNgUNnf=62xnFE4zUiVJ+n6NyGjFUmdR2JChbRkhsDSy0Yw@mail.gmail.com>
-        (Julian Calaby's message of "Tue, 27 Jul 2021 17:24:44 +1000")
-Message-ID: <877dhcgcyh.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S232034AbhG0Mep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 08:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231960AbhG0Meo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 08:34:44 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3D2C061760
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 05:34:44 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id y200so15827211iof.1
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 05:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Tx9WvkWlXQvIsbgtedpwBAlQFYtHs5upNNRDEpjIglQ=;
+        b=vO5XZU9BXnHptTBM+WggVXH2CaX0yV5LKBqx88pts1JAm04TVUlSPL5LyfY9UWGvyQ
+         eM5Hd9bznmo2b9FGabQmJA84kYQ8E8y8juU6PVKXYjc6KeJNeJcIRZCZKXhzictTjwsz
+         GhQxybF/4wZCgNvwn028rw42lIoR20IfP/o1h5qYnBbj7KG8WZFsm/mPE8WROnyQXCYu
+         k2Su1QiyfSJs4uj7cIN6H7fHDm+kRjrD+LQwr4ruk0GJ+F75AiXMLz1PAUzctB7k2VGl
+         +XR7TT06Sb7zxP4v8Hxz2THiHUCJpsiMDbTt/ByEzMQzN4cilLYSGrIbB9ehYTOmKFLS
+         6RRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Tx9WvkWlXQvIsbgtedpwBAlQFYtHs5upNNRDEpjIglQ=;
+        b=Imx0kycbasox05J8VaeuZr42kQ780367M1Txg0TVHHOgQ3BVvhohJOHutYDEqEojxf
+         Lq3ByUIkkXh+9mC4Gh2pwzv2QZkRfI4cobIU1yLmuTKQ0o5MPbwUcJKlHMk5XZ7TFCna
+         4I6rrEjbMdnJSGD59hD9EyS7HO7K96R/tdL5jrtjdlKXFY45ox2Mh0iwnSfXYWTtBeGt
+         CfrEKFwkUzy/nvNPqDYuaYtBik0cK3Bz6QY0GkqWr3AlMVxJwHA0IydROeNiUBK11baO
+         c3jNX4Z/YVKDCRs1/Wnc3q11iVVk6R8Sbie5UM1o7rxRJXVp/NgqUSVCvnU26z+Kpx7U
+         +LCA==
+X-Gm-Message-State: AOAM530jQqjt1KSNL4435kStfkNUHe4gSusb0E87IM6eEieHHwMe6USO
+        oqVbJOg3j8I8Qcy2ApJLLhr7FQ==
+X-Google-Smtp-Source: ABdhPJyhYcnf1iI72d0MzaCwlF0xDi4eWkQRYB2e0zDRTTkBeNa/R02wqQIJbwGPLox7L09kzjTdLw==
+X-Received: by 2002:a6b:794b:: with SMTP id j11mr18708688iop.129.1627389282964;
+        Tue, 27 Jul 2021 05:34:42 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id c1sm1769461ils.21.2021.07.27.05.34.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jul 2021 05:34:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] net: ipa: kill IPA_VALIDATION
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210726174010.396765-1-elder@linaro.org>
+ <YP/rFwvIHOvIwMNO@unreal>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <5b97f7b1-f65f-617e-61b4-2fdc5f08bc3e@linaro.org>
+Date:   Tue, 27 Jul 2021 07:34:41 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <YP/rFwvIHOvIwMNO@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Julian Calaby <julian.calaby@gmail.com> writes:
+On 7/27/21 6:16 AM, Leon Romanovsky wrote:
+> On Mon, Jul 26, 2021 at 12:40:06PM -0500, Alex Elder wrote:
+>> A few months ago I proposed cleaning up some code that validates
+>> certain things conditionally, arguing that doing so once is enough,
+>> thus doing so always should not be necessary.
+>>   https://lore.kernel.org/netdev/20210320141729.1956732-1-elder@linaro.org/
+>> Leon Romanovsky felt strongly that this was a mistake, and in the
+>> end I agreed to change my plans.
+> 
+> <...>
+> 
+>> The second patch fixes a bug that wasn't normally exposed because of
+>> the conditional compilation (a reason Leon was right about this).
+> 
+> Thanks Alex,
+> 
+> If you want another anti pattern that is very popular in netdev, the following pattern is
+> wrong by definition :):
+> if (WARN_ON(...))
+>   return ...
 
-> Hi Dongliang,
->
-> (Drive-by review, I know almost nothing about the code in question)
->
-> On Fri, Jul 9, 2021 at 6:47 PM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
->>
->> The commit 03fb92a432ea ("ath9k: hif_usb: fix race condition between
->> usb_get_urb() and usb_kill_anchored_urbs()") adds three usb_get_urb
->> in ath9k_hif_usb_dealloc_tx_urbs and usb_free_urb.
->>
->> Fix this bug by adding corresponding usb_free_urb in
->> ath9k_hif_usb_dealloc_tx_urbs other and hif_usb_stop.
->>
->> Reported-by: syzbot+6692c72009680f7c4eb2@syzkaller.appspotmail.com
->> Fixes: 03fb92a432ea ("ath9k: hif_usb: fix race condition between usb_get_urb() and usb_kill_anchored_urbs()")
->> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
->> ---
->>  drivers/net/wireless/ath/ath9k/hif_usb.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
->> index 860da13bfb6a..bda91ff3289b 100644
->> --- a/drivers/net/wireless/ath/ath9k/hif_usb.c
->> +++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
->> @@ -457,6 +457,7 @@ static void hif_usb_stop(void *hif_handle)
->>                 usb_kill_urb(tx_buf->urb);
->>                 list_del(&tx_buf->list);
->>                 usb_free_urb(tx_buf->urb);
->> +               usb_free_urb(tx_buf->urb);
->
-> Ok, so if I'm reading this correctly, before the first usb_free_urb()
-> call, we have two references to the urb at tx_buf->urb.
->
-> Why?
->
-> Isn't the better fix here to detangle why there's more than one
-> reference to it and resolve it that way? This looks like a hack to fix
-> something much more fundamentally broken.
+I understand this reasoning.
 
-Yeah, this looks very suspicious.
+I had it return an error if the WARN_ON() condition was true in cases
+where the function returned a value and callers already handled errors.
+I looked back at the patch and here is one of those cases:
 
-One more thing: also the patch should be tested with real hardware. I'm
-worried that people are just trying to fix a syzbot warning and not
-really considering how it works in real life. That's why I'm extra
-careful with syzbot patches for wireless drivers.
+gsi_channel_trans_alloc()
+- If too many TREs are requested we do not want to allocate them
+  from the pool, or it will cause further breakage.  By returning
+  early, no transaction will be filled or committed, and an error
+  message will (often) be reported, which will indicate the source
+  of the error.  If any error occurs during initialization, we fail
+  that whole process and everything should be cleaned up.  So in
+  this case at least, returning if this ever occurred is better
+  than allowing control to continue into the function.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+In any case I take your point.  I will now add to my task list
+a review of these spots.  I'd like to be sure an error message
+*is* reported at an appropriate level up the chain of callers so
+I can always identify the culprit in the a WARN_ON() fires (even
+though it should never
+ happen).  And in each case I'll evaluate
+whether returning is better than not.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks.
+
+					-Alex
+
+> The WARN_*() macros are intended catch impossible flows, something that
+> shouldn't exist. The idea that printed stack to dmesg and return to the
+> caller will fix the situation is a very naive one. That stack already
+> says that something very wrong in the system.
+> 
+> If such flow can be valid use "if(...) return ..", if not use plain
+> WARN_ON(...).
+> 
+> Thanks
+> 
+
