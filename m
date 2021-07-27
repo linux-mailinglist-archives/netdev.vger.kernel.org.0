@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 223E33D771D
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 549DF3D7728
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236760AbhG0NqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:46:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46086 "EHLO mail.kernel.org"
+        id S236776AbhG0NqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:46:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236712AbhG0NqD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:46:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0C0C961AD0;
-        Tue, 27 Jul 2021 13:46:01 +0000 (UTC)
+        id S236722AbhG0NqE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 09:46:04 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A841A61A80;
+        Tue, 27 Jul 2021 13:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627393563;
-        bh=pgNr9aeitLvY9UqYWVAdFVVf3MOf59XamjPF8Ttl2Q0=;
+        s=k20201202; t=1627393564;
+        bh=I8vyS+/Pjbcd6AJ+GB5Pnp5mSYNlThQR0Wnf5h6uVBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lnvFcSiLFPynJdHXSuuz0ahirPx54Z4Fr8rZAZcF2tjrTi7qD4gfTa0xqob00kjog
-         hZ/fzT7CRjpEBSznwOgXe6TYeCxy9y/svXcjJnLTHHJ2wujCNlE6LdjWcitQ9Um0Cb
-         dTaHmDmZa/CdmYN60wRzLG0oHqfOL6/SeX9mZK5ARze/lw9yEhgVUXra7ZL/YRqqXU
-         qLMe1PKXqWaDiFhurYKoZAN8hJlY9SLck3t/ofHkLQP4XFDLqz15XcmBhG8CGnCvuC
-         ZhyTrmuycBZs5zrOnnjHH5vI3AZV/2FaNRw6gXhy01QYk90kxN2NFqdkBEHcXGBC+E
-         T4S6L34LImlPA==
+        b=HbEQm0T8xoeDmW3CLjFogtHnJJb0YE/q3o5BmYERlhmeuJVlYX9G00Zc8t42HlkuJ
+         EnAb+6RvCL0T9M5mZdh6eCL8hrwf3e9uGBdp5YSiFo6DaxTS+KRt3C+9YyaTq0Fhdh
+         ZazDzR37LY3h0h9sDu2gYvlCZi88SdPt/PE/0aVmBLnA2YcpBhQW41ho9JfVcSrbDH
+         a7SovBuBtZhIYIAKSMGsd4cdZxwelS4/vkxY2vGFRUWhzuPsgHQOd9jPPulv+NUYaV
+         UBCH9zxBmi2ts2rCnJB3wKrXhJxtQCpJA+Mw5HN5e75CU6Ji4fnNkSPhKWXSO8SiJq
+         MkVRsFT9yIAgw==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-Subject: [PATCH net-next v3 02/31] staging: rtlwifi: use siocdevprivate
-Date:   Tue, 27 Jul 2021 15:44:48 +0200
-Message-Id: <20210727134517.1384504-3-arnd@kernel.org>
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH net-next v3 03/31] staging: wlan-ng: use siocdevprivate
+Date:   Tue, 27 Jul 2021 15:44:49 +0200
+Message-Id: <20210727134517.1384504-4-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210727134517.1384504-1-arnd@kernel.org>
 References: <20210727134517.1384504-1-arnd@kernel.org>
@@ -43,183 +42,148 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-rtl8188eu has an "android private" ioctl command multiplexer
-that is not currently safe for use in compat mode because
-of its triple-indirect pointer.
+wlan-ng has two private ioctls that correctly work in compat
+mode. Move these over to the new ndo_siocdevprivate mechanism.
 
-rtl8723bs uses a different interface on the SIOCDEVPRIVATE
-command, based on the iwpriv data structure
+The p80211netdev_ethtool() function is commented out and
+has no use here, so this can be removed
 
-Both also have normal unreachable iwpriv commands, and all
-of the above should probably just get removed. For the
-moment, just switch over to the new interface.
-
-Cc: Larry Finger <Larry.Finger@lwfinger.net>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/staging/rtl8188eu/include/osdep_intf.h |  2 ++
- .../staging/rtl8188eu/include/rtw_android.h    |  3 ++-
- drivers/staging/rtl8188eu/os_dep/ioctl_linux.c |  3 ---
- drivers/staging/rtl8188eu/os_dep/os_intfs.c    |  1 +
- drivers/staging/rtl8188eu/os_dep/rtw_android.c | 14 +++++++++++---
- drivers/staging/rtl8723bs/include/osdep_intf.h |  2 ++
- drivers/staging/rtl8723bs/os_dep/ioctl_linux.c | 18 +++++++++++++++---
- drivers/staging/rtl8723bs/os_dep/os_intfs.c    |  1 +
- 8 files changed, 34 insertions(+), 10 deletions(-)
+ drivers/staging/wlan-ng/p80211netdev.c | 76 ++++----------------------
+ 1 file changed, 11 insertions(+), 65 deletions(-)
 
-diff --git a/drivers/staging/rtl8188eu/include/osdep_intf.h b/drivers/staging/rtl8188eu/include/osdep_intf.h
-index 5012b9176526..34decb03e92f 100644
---- a/drivers/staging/rtl8188eu/include/osdep_intf.h
-+++ b/drivers/staging/rtl8188eu/include/osdep_intf.h
-@@ -22,6 +22,8 @@ void rtw_stop_drv_threads(struct adapter *padapter);
- void rtw_cancel_all_timer(struct adapter *padapter);
+diff --git a/drivers/staging/wlan-ng/p80211netdev.c b/drivers/staging/wlan-ng/p80211netdev.c
+index 6f470e7ba647..1c62130a5eee 100644
+--- a/drivers/staging/wlan-ng/p80211netdev.c
++++ b/drivers/staging/wlan-ng/p80211netdev.c
+@@ -98,8 +98,8 @@ static int p80211knetdev_stop(struct net_device *netdev);
+ static netdev_tx_t p80211knetdev_hard_start_xmit(struct sk_buff *skb,
+ 						 struct net_device *netdev);
+ static void p80211knetdev_set_multicast_list(struct net_device *dev);
+-static int p80211knetdev_do_ioctl(struct net_device *dev, struct ifreq *ifr,
+-				  int cmd);
++static int p80211knetdev_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++					void __user *data, int cmd);
+ static int p80211knetdev_set_mac_address(struct net_device *dev, void *addr);
+ static void p80211knetdev_tx_timeout(struct net_device *netdev, unsigned int txqueue);
+ static int p80211_rx_typedrop(struct wlandevice *wlandev, u16 fc);
+@@ -461,56 +461,8 @@ static void p80211knetdev_set_multicast_list(struct net_device *dev)
+ 		wlandev->set_multicast_list(wlandev, dev);
+ }
  
- int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+int rtw_android_priv_cmd(struct net_device *dev, struct ifreq *rq,
-+			 void __user *data, int cmd);
- 
- struct net_device *rtw_init_netdev(void);
- u16 rtw_recv_select_queue(struct sk_buff *skb);
-diff --git a/drivers/staging/rtl8188eu/include/rtw_android.h b/drivers/staging/rtl8188eu/include/rtw_android.h
-index 2c26993b8205..3018fc1e8de8 100644
---- a/drivers/staging/rtl8188eu/include/rtw_android.h
-+++ b/drivers/staging/rtl8188eu/include/rtw_android.h
-@@ -45,6 +45,7 @@ enum ANDROID_WIFI_CMD {
- 	ANDROID_WIFI_CMD_MAX
- };
- 
--int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd);
-+int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr,
-+			 void __user *data, int cmd);
- 
- #endif /* __RTW_ANDROID_H__ */
-diff --git a/drivers/staging/rtl8188eu/os_dep/ioctl_linux.c b/drivers/staging/rtl8188eu/os_dep/ioctl_linux.c
-index b958a8d882b0..193a3dde462c 100644
---- a/drivers/staging/rtl8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/rtl8188eu/os_dep/ioctl_linux.c
-@@ -2769,9 +2769,6 @@ int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 		ret = rtw_hostapd_ioctl(dev, &wrq->u.data);
- 		break;
- #endif /*  CONFIG_88EU_AP_MODE */
--	case (SIOCDEVPRIVATE + 1):
--		ret = rtw_android_priv_cmd(dev, rq, cmd);
--		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		break;
-diff --git a/drivers/staging/rtl8188eu/os_dep/os_intfs.c b/drivers/staging/rtl8188eu/os_dep/os_intfs.c
-index 423c382e3d20..596e03e7b286 100644
---- a/drivers/staging/rtl8188eu/os_dep/os_intfs.c
-+++ b/drivers/staging/rtl8188eu/os_dep/os_intfs.c
-@@ -288,6 +288,7 @@ static const struct net_device_ops rtw_netdev_ops = {
- 	.ndo_set_mac_address = rtw_net_set_mac_address,
- 	.ndo_get_stats = rtw_net_get_stats,
- 	.ndo_do_ioctl = rtw_ioctl,
-+	.ndo_siocdevprivate = rtw_android_priv_cmd,
- };
- 
- static const struct device_type wlan_type = {
-diff --git a/drivers/staging/rtl8188eu/os_dep/rtw_android.c b/drivers/staging/rtl8188eu/os_dep/rtw_android.c
-index 3c5446999686..a13df3880378 100644
---- a/drivers/staging/rtl8188eu/os_dep/rtw_android.c
-+++ b/drivers/staging/rtl8188eu/os_dep/rtw_android.c
-@@ -5,6 +5,7 @@
+-#ifdef SIOCETHTOOL
+-
+-static int p80211netdev_ethtool(struct wlandevice *wlandev,
+-				void __user *useraddr)
+-{
+-	u32 ethcmd;
+-	struct ethtool_drvinfo info;
+-	struct ethtool_value edata;
+-
+-	memset(&info, 0, sizeof(info));
+-	memset(&edata, 0, sizeof(edata));
+-
+-	if (copy_from_user(&ethcmd, useraddr, sizeof(ethcmd)))
+-		return -EFAULT;
+-
+-	switch (ethcmd) {
+-	case ETHTOOL_GDRVINFO:
+-		info.cmd = ethcmd;
+-		snprintf(info.driver, sizeof(info.driver), "p80211_%s",
+-			 wlandev->nsdname);
+-		snprintf(info.version, sizeof(info.version), "%s",
+-			 WLAN_RELEASE);
+-
+-		if (copy_to_user(useraddr, &info, sizeof(info)))
+-			return -EFAULT;
+-		return 0;
+-#ifdef ETHTOOL_GLINK
+-	case ETHTOOL_GLINK:
+-		edata.cmd = ethcmd;
+-
+-		if (wlandev->linkstatus &&
+-		    (wlandev->macmode != WLAN_MACMODE_NONE)) {
+-			edata.data = 1;
+-		} else {
+-			edata.data = 0;
+-		}
+-
+-		if (copy_to_user(useraddr, &edata, sizeof(edata)))
+-			return -EFAULT;
+-		return 0;
+-#endif
+-	}
+-
+-	return -EOPNOTSUPP;
+-}
+-
+-#endif
+-
+ /*----------------------------------------------------------------
+- * p80211knetdev_do_ioctl
++ * p80211knetdev_siocdevprivate
   *
-  ******************************************************************************/
- 
-+#include <linux/compat.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
- 
-@@ -116,7 +117,8 @@ static int android_get_p2p_addr(struct net_device *net, char *command,
- 	return ETH_ALEN;
- }
- 
--int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
-+int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr,
-+			 void __user *data, int cmd)
+  * Handle an ioctl call on one of our devices.  Everything Linux
+  * ioctl specific is done here.  Then we pass the contents of the
+@@ -537,8 +489,9 @@ static int p80211netdev_ethtool(struct wlandevice *wlandev,
+  *	locks.
+  *----------------------------------------------------------------
+  */
+-static int p80211knetdev_do_ioctl(struct net_device *dev,
+-				  struct ifreq *ifr, int cmd)
++static int p80211knetdev_siocdevprivate(struct net_device *dev,
++					struct ifreq *ifr,
++					void __user *data, int cmd)
  {
- 	int ret = 0;
- 	char *command;
-@@ -124,9 +126,15 @@ int rtw_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
- 	int bytes_written = 0;
- 	struct android_wifi_priv_cmd priv_cmd;
+ 	int result = 0;
+ 	struct p80211ioctl_req *req = (struct p80211ioctl_req *)ifr;
+@@ -547,13 +500,8 @@ static int p80211knetdev_do_ioctl(struct net_device *dev,
  
--	if (!ifr->ifr_data)
-+	if (cmd != SIOCDEVPRIVATE)
-+		return -EOPNOTSUPP;
-+
-+	if (in_compat_syscall()) /* to be implemented */
-+		return -EOPNOTSUPP;
-+
-+	if (!data)
- 		return -EINVAL;
--	if (copy_from_user(&priv_cmd, ifr->ifr_data, sizeof(priv_cmd)))
-+	if (copy_from_user(&priv_cmd, data, sizeof(priv_cmd)))
- 		return -EFAULT;
- 	if (priv_cmd.total_len < 1)
- 		return -EINVAL;
-diff --git a/drivers/staging/rtl8723bs/include/osdep_intf.h b/drivers/staging/rtl8723bs/include/osdep_intf.h
-index 111e0179712a..5badd441c14b 100644
---- a/drivers/staging/rtl8723bs/include/osdep_intf.h
-+++ b/drivers/staging/rtl8723bs/include/osdep_intf.h
-@@ -48,6 +48,8 @@ void rtw_stop_drv_threads(struct adapter *padapter);
- void rtw_cancel_all_timer(struct adapter *padapter);
+ 	netdev_dbg(dev, "rx'd ioctl, cmd=%d, len=%d\n", cmd, req->len);
  
- int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+int rtw_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+		       void __user *data, int cmd);
- 
- int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);
- struct net_device *rtw_init_netdev(struct adapter *padapter);
-diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-index f95000df8942..aa7bd76bb5f1 100644
---- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-+++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-@@ -4485,6 +4485,21 @@ static int rtw_ioctl_wext_private(struct net_device *dev, union iwreq_data *wrq_
- 	return err;
- }
- 
-+int rtw_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+		       void __user *data, int cmd)
-+{
-+	struct iwreq *wrq = (struct iwreq *)rq;
-+
-+	/* little hope of fixing this, better remove the whole function */
+-#ifdef SIOCETHTOOL
+-	if (cmd == SIOCETHTOOL) {
+-		result =
+-		    p80211netdev_ethtool(wlandev, (void __user *)ifr->ifr_data);
+-		goto bail;
+-	}
+-#endif
 +	if (in_compat_syscall())
 +		return -EOPNOTSUPP;
-+
-+	if (cmd != SIOCDEVPRIVATE)
-+		return -EOPNOTSUPP;
-+
-+	return rtw_ioctl_wext_private(dev, &wrq->u);
-+}
-+
- int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- {
- 	struct iwreq *wrq = (struct iwreq *)rq;
-@@ -4497,9 +4512,6 @@ int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 	case RTL_IOCTL_HOSTAPD:
- 		ret = rtw_hostapd_ioctl(dev, &wrq->u.data);
- 		break;
--	case SIOCDEVPRIVATE:
--		ret = rtw_ioctl_wext_private(dev, &wrq->u);
--		break;
- 	default:
- 		ret = -EOPNOTSUPP;
- 		break;
-diff --git a/drivers/staging/rtl8723bs/os_dep/os_intfs.c b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-index 648456b992bb..9e38b53d3b4a 100644
---- a/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-+++ b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
-@@ -459,6 +459,7 @@ static const struct net_device_ops rtw_netdev_ops = {
- 	.ndo_set_mac_address = rtw_net_set_mac_address,
- 	.ndo_get_stats = rtw_net_get_stats,
- 	.ndo_do_ioctl = rtw_ioctl,
-+	.ndo_siocdevprivate = rtw_siocdevprivate,
- };
  
- int rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname)
+ 	/* Test the magic, assume ifr is good if it's there */
+ 	if (req->magic != P80211_IOCTL_MAGIC) {
+@@ -569,7 +517,7 @@ static int p80211knetdev_do_ioctl(struct net_device *dev,
+ 		goto bail;
+ 	}
+ 
+-	msgbuf = memdup_user(req->data, req->len);
++	msgbuf = memdup_user(data, req->len);
+ 	if (IS_ERR(msgbuf)) {
+ 		result = PTR_ERR(msgbuf);
+ 		goto bail;
+@@ -578,10 +526,8 @@ static int p80211knetdev_do_ioctl(struct net_device *dev,
+ 	result = p80211req_dorequest(wlandev, msgbuf);
+ 
+ 	if (result == 0) {
+-		if (copy_to_user
+-		    (req->data, msgbuf, req->len)) {
++		if (copy_to_user(data, msgbuf, req->len))
+ 			result = -EFAULT;
+-		}
+ 	}
+ 	kfree(msgbuf);
+ 
+@@ -682,7 +628,7 @@ static const struct net_device_ops p80211_netdev_ops = {
+ 	.ndo_stop = p80211knetdev_stop,
+ 	.ndo_start_xmit = p80211knetdev_hard_start_xmit,
+ 	.ndo_set_rx_mode = p80211knetdev_set_multicast_list,
+-	.ndo_do_ioctl = p80211knetdev_do_ioctl,
++	.ndo_siocdevprivate = p80211knetdev_siocdevprivate,
+ 	.ndo_set_mac_address = p80211knetdev_set_mac_address,
+ 	.ndo_tx_timeout = p80211knetdev_tx_timeout,
+ 	.ndo_validate_addr = eth_validate_addr,
 -- 
 2.29.2
 
