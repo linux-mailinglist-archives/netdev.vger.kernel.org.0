@@ -2,232 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 072293D7F7F
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25BFE3D7F80
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232223AbhG0Utr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
+        id S232346AbhG0Ut7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbhG0Utq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:49:46 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50EABC061757;
-        Tue, 27 Jul 2021 13:49:46 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id s19so199550ybc.6;
-        Tue, 27 Jul 2021 13:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bas5UVt2W1vU/voQ8R2arXrfi794+5825d/MjT9oGMU=;
-        b=SzJnxA8uPLDM9y/lsjQu6zhSpPdKOt4k9U+G0Mqwi2xJ2ITJWj16hd3eRbRnqAp73G
-         Orj/9r7eIRcRUXad4KSfEeoQtFRwJzukm2f15XMMAevyX7FvkmaRMMSybhxJMEPx8kZ+
-         vaNytNMKTN8tjqVE05PWX0bQ1HXum55aSltR0sr99xYQuABfdu6xXOaapBJwTYVu7YGG
-         t/w8XTmRoW2WtSidKLl1JnmmS3hhSQ3kmSZS8Alq5/128d948xXJ+AdAPwgPoNaXAvsH
-         Se8c9KSDC/gTz5nCFQb8m5wC6EyxvGPaxaoueIX8T+Os/1BFTCEgzRfsMSNCaIdmlFbd
-         GrXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bas5UVt2W1vU/voQ8R2arXrfi794+5825d/MjT9oGMU=;
-        b=rRU6HCkQ/6oKi1gZPU6I/T9QgAVRqTgzJCBJDfjoAbmApohKS+E2454gWYHt5Z10qk
-         cNVGnXPoxDIi+n97U3mDoUwj8EJTMMtrjz7p5A1acQDmnCfD4nC5llHMTxsqb1yOPDkv
-         u/inj/BJXn1L7tpcYNh4egv7f5/gPl0kdTWfUjCHuuJM4PB0wqGpzhiPhUzTNT+K0wm3
-         VSr6SSAtKcX4CNp/oFibr+dq9E/BSsQDoQKVoHzPUdxqsvWLqze9EpI8q2VtF6+WeOdO
-         bZ7xhWoclRDtSi6w7HNT0UCmIu1aVn9JrAQNcQa5G16sjHRqZ17hoB7U3OvZUH1F+tsS
-         72EA==
-X-Gm-Message-State: AOAM532yFo+ZeSdp5FPc3eoSpEk8fIb0E1gju0QLtK1Jf/0ZPfdkwGRJ
-        MFHRSH+2NqhjSgSYTiZr83N5XUX/qfqrF3y416Y=
-X-Google-Smtp-Source: ABdhPJwsVwCDwEkWiiktTxYYhAGcIBD1izumUyFEArPPnSOetxCYDx2HINmj79U6jrB12QPnEVvLl8LK2hja2ZWqDnE=
-X-Received: by 2002:a25:a045:: with SMTP id x63mr22905255ybh.27.1627418985491;
- Tue, 27 Jul 2021 13:49:45 -0700 (PDT)
+        with ESMTP id S231135AbhG0Ut6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:49:58 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364A7C061757
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:49:57 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id C5A78806B6;
+        Wed, 28 Jul 2021 08:49:53 +1200 (NZST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1627418993;
+        bh=0k8KzzaYoFIF7lHReVwIRNgaUtivHiU9nnWoYTIR+IY=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=F+74VlHuMo4UdzHkjON6IcqnvBm5r7DIqHGFavyvZk9xN44H39J0gp1Xc0EWUGj+Q
+         X79y+mWfNIlTwoJ0FU9Mx1wk/ngYLFJUJ45XukPslj7Q+COo1lJ1ivM/stlR9sfZlY
+         44+PnwdMLELddmEYozZWJ1neuCwf565axZmC8kL7HyvchcP52Yxj6qZ957wbq9lJis
+         6h1S5xhlFH2bHqLrSDs0d5Ba6oB5neOKhaOyU7qT7w+Ke7VPDyOR5NrLBhcbfobh39
+         v+fhacadGzbv+3DwcXWa5KVRaPLtIlEOEnZNTkj0KyN9IwQq8B1S3P/vJMRQ9pYARV
+         NYqUxZ5Am+2Tw==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B610071710001>; Wed, 28 Jul 2021 08:49:53 +1200
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.23; Wed, 28 Jul 2021 08:49:53 +1200
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.023; Wed, 28 Jul 2021 08:49:53 +1200
+From:   Richard Laing <Richard.Laing@alliedtelesis.co.nz>
+To:     Loic Poulain <loic.poulain@linaro.org>
+CC:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bus: mhi: pci-generic: configurable network interface MRU
+Thread-Topic: [PATCH] bus: mhi: pci-generic: configurable network interface
+ MRU
+Thread-Index: AQHXePXNQwvlV1kNe0CXQRxG8ENZtqtJUccAgADBqICAC8MmAIAAwDkA
+Date:   Tue, 27 Jul 2021 20:49:52 +0000
+Message-ID: <a984248c-c9be-b8e0-b6bc-1cf2aabb09f5@alliedtelesis.co.nz>
+References: <20210714211805.22350-1-richard.laing@alliedtelesis.co.nz>
+ <CAMZdPi-1E5pieVwt_XFF-+PML-cX05nM=PdD0pApD_ym5k_uMQ@mail.gmail.com>
+ <5165a859-1b00-e50e-985e-25044cf0e9ec@alliedtelesis.co.nz>
+ <CAMZdPi8MZp5Vx_ZnjjQWptms9vj6bEMoV83pcv4wmgxbZz0wjQ@mail.gmail.com>
+In-Reply-To: <CAMZdPi8MZp5Vx_ZnjjQWptms9vj6bEMoV83pcv4wmgxbZz0wjQ@mail.gmail.com>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.16.78]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D61BBE1B9CF5B541B2454CEB393DE04C@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20210721153808.6902-1-quentin@isovalent.com> <CAEf4Bzb30BNeLgio52OrxHk2VWfKitnbNUnO0sAXZTA94bYfmg@mail.gmail.com>
- <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
- <82e61e60-e2e9-f42d-8e49-bbe416b7513d@isovalent.com> <CAEf4BzYpCr=Vdfc3moaapQqBxYV3SKfD72s0F=FAh_zLzSqxqA@mail.gmail.com>
- <bb0d3640-c6da-a802-4794-50cd033119ac@isovalent.com>
-In-Reply-To: <bb0d3640-c6da-a802-4794-50cd033119ac@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Jul 2021 13:49:34 -0700
-Message-ID: <CAEf4BzZ8wXhpRwPkBmH3i94oVea2BucC56PCK-0j4N_3gk29Ng@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and
- btf__load() APIs, support split BTF
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=dvql9Go4 c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=8KpF8ikWtqQA:10 a=IkcTkHD0fZMA:10 a=e_q4qTt1xDgA:10 a=R6aZAQg3Yvr2Z4M2TdcA:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 4:39 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> 2021-07-23 08:51 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> > On Fri, Jul 23, 2021 at 2:58 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>
-> >> 2021-07-22 19:45 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> >>> On Thu, Jul 22, 2021 at 5:58 PM Andrii Nakryiko
-> >>> <andrii.nakryiko@gmail.com> wrote:
-> >>>>
-> >>>> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>>>>
-> >>>>> As part of the effort to move towards a v1.0 for libbpf [0], this set
-> >>>>> improves some confusing function names related to BTF loading from and to
-> >>>>> the kernel:
-> >>>>>
-> >>>>> - btf__load() becomes btf__load_into_kernel().
-> >>>>> - btf__get_from_id becomes btf__load_from_kernel_by_id().
-> >>>>> - A new version btf__load_from_kernel_by_id_split() extends the former to
-> >>>>>   add support for split BTF.
-> >>>>>
-> >>>>> The old functions are not removed or marked as deprecated yet, there
-> >>>>> should be in a future libbpf version.
-> >>>>
-> >>>> Oh, and I was thinking about this whole deprecation having to be done
-> >>>> in two steps. It's super annoying to keep track of that. Ideally, we'd
-> >>>> have some macro that can mark API deprecated "in the future", when
-> >>>> actual libbpf version is >= to defined version. So something like
-> >>>> this:
-> >>>>
-> >>>> LIBBPF_DEPRECATED_AFTER(V(0,5), "API that will be marked deprecated in v0.6")
-> >>>
-> >>> Better:
-> >>>
-> >>> LIBBPF_DEPRECATED_SINCE(0, 6, "API that will be marked deprecated in v0.6")
->
-> So I've been looking into this, and it's not _that_ simple to do. Unless
-> I missed something about preprocessing macros, I cannot bake a "#if" in
-> a "#define", to have the attribute printed if and only if the current
-> version is >= 0.6 in this example.
->
-> I've come up with something, but it is not optimal because I have to
-> write a check and macros for each version number used with the
-> LIBBPF_DEPRECATED_SINCE macro. If we really wanted to automate that part
-> I guess we could generate a header with those macros from the Makefile
-> and include it in libbpf_common.h, but that does not really look much
-> cleaner to me.
-
-Yeah, let's not add unnecessary code generation. It sucks, of course,
-that we can't do #ifdef inside a macro :(
-
-So it's either do something like what you did with defining
-version-specific macros, which is actually not too bad, because it's
-not like we have tons of those versions anyways.
-
-LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
-LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-
-Alternatively, we can go with:
-
-#if LIBBPF_AT_OR_NEWER(0, 6)
-LIBBPF_DEPRECATED("use btf__load_from_kernel_by_id instead")
-#endif
-LIBBPF API int btf__get_from_id(__u32 id, struct btf **btf);
-
-I don't really dislike the second variant too much either, but
-LIBBPF_DEPRECATED_SINCE() reads nicer. Let's go with that. See some
-comments below about implementation.
-
->
-> Here's my current code, below - does it correspond to what you had in
-> mind? Or did you think of something else?
->
-> ------
->
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index ec14aa725bb0..095d5dc30d50 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -8,6 +8,7 @@ LIBBPF_VERSION := $(shell \
->         grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
->         sort -rV | head -n1 | cut -d'_' -f2)
->  LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
-> +LIBBPF_MINOR_VERSION := $(firstword $(subst ., ,$(subst $(LIBBPF_MAJOR_VERSION)., ,$(LIBBPF_VERSION))))
-
-Given all this is for internal use, I'd instead define something like
-__LIBBPF_CURVER as an integer that is easy to compare against:
-
-#define __LIBBPF_CURVER (LIBBPF_MAJOR_VERSION * 100 +
-LIBBPF_MINOR_VERSION) * 100 + LIBBPF_PATCH_VERSION
-
-That will simplify some stuff below and is generally easier to use in
-code, if we will need this somewhere to use explicitly.
-
->
->  MAKEFLAGS += --no-print-directory
->
-> @@ -86,6 +87,8 @@ override CFLAGS += -Werror -Wall
->  override CFLAGS += $(INCLUDES)
->  override CFLAGS += -fvisibility=hidden
->  override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
-> +override CFLAGS += -DLIBBPF_MAJOR_VERSION=$(LIBBPF_MAJOR_VERSION)
-> +override CFLAGS += -DLIBBPF_MINOR_VERSION=$(LIBBPF_MINOR_VERSION)
->
->  # flags specific for shared library
->  SHLIB_FLAGS := -DSHARED -fPIC
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index cf8490f95641..8b6b5442dbd8 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -45,7 +45,8 @@ LIBBPF_API struct btf *btf__parse_raw(const char *path);
->  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
->  LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
->  LIBBPF_API struct btf *btf__load_from_kernel_by_id_split(__u32 id, struct btf *base_btf);
-> -LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-> +LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
-
-nit: given how long those deprecations will be, let's keep them at a
-separate (first) line and keep LIBBPF_API near the function
-declaration itself
-
-> +int btf__get_from_id(__u32 id, struct btf **btf);
->
->  LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
->  LIBBPF_API int btf__load(struct btf *btf);
-> diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
-> index 947d8bd8a7bb..9ba9f8135dc8 100644
-> --- a/tools/lib/bpf/libbpf_common.h
-> +++ b/tools/lib/bpf/libbpf_common.h
-> @@ -17,6 +17,28 @@
->
->  #define LIBBPF_DEPRECATED(msg) __attribute__((deprecated(msg)))
->
-> +#ifndef LIBBPF_DEPRECATED_SINCE
-
-why #ifndef conditional?
-
-> +#define __LIBBPF_VERSION_CHECK(major, minor) \
-> +       LIBBPF_MAJOR_VERSION > major || \
-> +               (LIBBPF_MAJOR_VERSION == major && LIBBPF_MINOR_VERSION >= minor)
-
-so we don't need this if we do __LIBBPF_CURVER
-
-> +
-> +/* Add checks for other versions below when planning deprecation of API symbols
-> + * with the LIBBPF_DEPRECATED_SINCE macro.
-> + */
-> +#if __LIBBPF_VERSION_CHECK(0, 6)
-> +#define __LIBBPF_MARK_DEPRECATED_0_6(X) X
-> +#else
-> +#define __LIBBPF_MARK_DEPRECATED_0_6(X)
-> +#endif
-> +
-> +#define __LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-> +       __LIBBPF_MARK_DEPRECATED_ ## major ## _ ## minor (LIBBPF_DEPRECATED("v" # major "." # minor "+, " msg))
-> +
-> +/* Mark a symbol as deprecated when libbpf version is >= {major}.{minor} */
-> +#define LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-> +       __LIBBPF_DEPRECATED_SINCE(major, minor, msg)
-
-Is it needed for some macro value concatenation magic to have this
-nested __LIBBPF_DEPRECATED_SINCE?
-
-> +#endif /* LIBBPF_DEPRECATED_SINCE */
-> +
->  /* Helper macro to declare and initialize libbpf options struct
->   *
->   * This dance with uninitialized declaration, followed by memset to zero,
+DQoNCk9uIDcvMjcvMjEgOToyMSBQTSwgTG9pYyBQb3VsYWluIHdyb3RlOg0KPiBOb3RlIHRoYXQg
+dGhlIGRlZmF1bHQgTVJVIHlvdSBkZWZpbmUgaXMgbm90IE1ISSBjb250cm9sbGVyIHNwZWNpZmlj
+DQo+IGJ1dCBNSEkgY2hhbm5lbCBzcGVjaWZpYyAoSVAvTUJJTSBjaGFubmVsKSwgc28gaXQgc2hv
+dWxkIG5vdCBiZSBhDQo+IHByb3BlcnR5IG9mIHRoZSBNSEkgY29udHJvbGxlci4gQUZBSUssIFRo
+ZSBNSEkgc3BlY2lmaWNhdGlvbiBhbHJlYWR5DQo+IGRlZmluZXMgTVJVIGZvciB0aGUgdHJhbnNm
+ZXJlZCBidWZmZXJzIHdoaWNoIGlzIDY1NTM1LiBJIHdvdWxkDQo+IHJlY29tbWVuZCB0byBtb3Zl
+IHRoaXMgcHJvcCB0byB0aGUgY2hhbm5lbCBjb25maWcuDQoNClRoYXQgbWFrZXMgc2Vuc2UgdGhh
+bmsgeW91LiBJIGFzc3VtZSB0aGUgVUwgYW5kIERMIGNoYW5uZWxzIGNvdWxkIGJlIA0KZXhwZWN0
+ZWQgdG8gaGF2ZSB0aGUgc2FtZSBNUlU/DQoNClJlZ2FyZHMsDQpSaWNoYXJk
