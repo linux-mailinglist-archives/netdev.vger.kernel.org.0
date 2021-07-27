@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B7C3D813E
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:17:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C32ED3D7FD9
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:59:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbhG0VRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
+        id S232995AbhG0U7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233242AbhG0VQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:16:56 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0D7C061760
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:16:56 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id mt6so1910348pjb.1
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:16:56 -0700 (PDT)
+        with ESMTP id S232664AbhG0U7K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:59:10 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA63C061765
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:09 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso987783pjf.4
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vvD4cE9CC0UwuFk0tFrxkl0FdzddHJztTx+G0lXko2o=;
-        b=X2kAI6271c2kBTWRkNK+SRyUD05VC55sahGiHWkGhtgogxcqv13k4bEJx1CzoRkXNa
-         NYhpiT00hyKycZt5MZCqoJys0Vj8ijuU6JI/ftE4rUt3HcwgYje+gBJFSIJVGEF29R+B
-         1p8D2+Q//lxigAx/4Pqgw4xuPqYVkWyNr336o=
+        bh=bokzvyrG/U6aqJMcplPprkAXMLOtluQLvxu28yduQ3I=;
+        b=BRJ6YXZFlzjubx3iY+P/cRdBsRsX9+VYLhU8PHg2kq/i8EQRUyFiRWx/kjBN2fHZ57
+         Rbvn2BG0HVn8p+mlpPeMBNL1FomMRZkRcy6dAl/Lz52OpvlFYUdeYvXs1q7RrMdf5wMe
+         Wym2Ven54uHKxbOOcmPeVL9UTM7qkeunpAHmw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vvD4cE9CC0UwuFk0tFrxkl0FdzddHJztTx+G0lXko2o=;
-        b=QlwOcbQrakupZzxfriTjUkp/GUSRfJzTJ3+Augtu/OzI3Nes1yPk9Um39CFVf/8Ew7
-         4Rx3T5ilMSHaZti55P6JVfNYcg8y+VGH9JZZmTCxAu8q0PT4p3SLOPd/hDiabKo/QKod
-         787bMfiHhw32sXsA4jz/5WbZmBGeJ6rHPv4i8hgtIt7VQiSNNhh0NtHVY+fiEVLLMuFI
-         Ec2XRhrghmJApFP2aaAnxDpzqYh+HyMG39VM9lqzib81tXHIGTiZ+HTYhp9kYb9JQ/PT
-         O8jIlXgbmDCHJHdo/UBwqXJ0YNYQh5dVi/5GYtRIjfK3ykgIY7jpxV5Z6QHeHhKQuOKr
-         9vkQ==
-X-Gm-Message-State: AOAM533KWNshCn5i3RiFHiDCcWwVpSlgvaN97YzTRKMStWO9Nv2K6B8m
-        HBwmtJB+cyaftIQvk/dDCHmgRA==
-X-Google-Smtp-Source: ABdhPJzx5uKJYYGIQeb6ncc39fFtWiuuJzbqS3/tvESRfbaEkAgXMJJefnvqpPoyIhq8uFbnDuQ/Yw==
-X-Received: by 2002:a17:90a:3fc6:: with SMTP id u6mr9309818pjm.146.1627420615860;
-        Tue, 27 Jul 2021 14:16:55 -0700 (PDT)
+        bh=bokzvyrG/U6aqJMcplPprkAXMLOtluQLvxu28yduQ3I=;
+        b=t72MJoFt5C7SBZqP4i01AUjvuCa8m6BMg+qADnJJgyXtYrJrCG6M/qqKqqEz2pekKK
+         7zIgoRpDZOFzhtsBvVRiNYUw3K+TgVIWqJFoZB8buZhzoKrSNjQ6ANGeSDABLB+Et35B
+         XiKYfDiGV29zYIsz8mMcYMYm07vvqHlPjz/wELZTC0slCYzBHKEtnBR1ClWc0xnEMWnK
+         MJHldQnwza1TFEGND4t1tvS6lPQ65rm4aS/4JRZL7HC0om3sqDRkrrB9kd/BGcbroOS5
+         i3IfwcIZjfP1+je2cjO8Y9lWgHngKwS2psrLGQXjOAkVAHL+X6dJzcMyTAvfPvf4jBto
+         KlOA==
+X-Gm-Message-State: AOAM530LeOt9fj+Qpr5Ljo7BPDaax14oquKtmTWtC8avSnwZ1LP8pBel
+        eplVnStygCTLn6bL2zpN1Chtjw==
+X-Google-Smtp-Source: ABdhPJxFkKX2Cb+2kct+lBvPCB88+g8EFFUo2+jlZ/mx9XAKU9M3E91dz4xBGj+tCH29yt2HnGdwfQ==
+X-Received: by 2002:aa7:80d3:0:b029:347:820c:fbf with SMTP id a19-20020aa780d30000b0290347820c0fbfmr25091421pfn.73.1627419549404;
+        Tue, 27 Jul 2021 13:59:09 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t9sm5079279pgc.81.2021.07.27.14.16.51
+        by smtp.gmail.com with ESMTPSA id b7sm4526752pfl.195.2021.07.27.13.59.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 14:16:54 -0700 (PDT)
+        Tue, 27 Jul 2021 13:59:09 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-hardening@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 21/64] cxgb4: Use struct_group() for memcpy() region
-Date:   Tue, 27 Jul 2021 13:58:12 -0700
-Message-Id: <20210727205855.411487-22-keescook@chromium.org>
+Subject: [PATCH 22/64] bnx2x: Use struct_group() for memcpy() region
+Date:   Tue, 27 Jul 2021 13:58:13 -0700
+Message-Id: <20210727205855.411487-23-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3924; h=from:subject; bh=y2sMUjTim/gIwxveSmmQhx7NYTt7b1pVbIiPi7Evl4M=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOEnE25c6OQAZUZh7are7MybFphgO5c0XjmqaoM cypZk3uJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzhAAKCRCJcvTf3G3AJrVgD/ 9EUipW/aGz8pZZO+KYM/hHRGzHn3eJ8lr6sIZd2kwgY/YenMRyXcbyazHaKtq9k4qFGDfasF7ov858 QgSo0FLS6kKdp77nml8K4O9E8I7ayBPKVtULTSDvCMtWKEqBcfC6Q7M0Nb1UixUrR2Z1JhZZK9WtWH ID8omgKPI4LnnaYo4ycEAVB9pzBuOp2dw3mX8jThZiOXisc1A8O6CIE/RAKv1Fno46ecBIpYI58Lfj Q2dLClrapmNlYoUxj2kteXxZy308YbZng7p0daoSE68G8Dm0g06bXBLPRLc/bImHPgA3klYnSoixgZ RMD6kvFN+5q7n8MnIJdaq7gJBYyPBy/9C6wwG2lmKxvmgPKgNj1zDkyb7ttS5FAEi0kc+f+uE/Qvc6 LxFFznj1facXXLvYjxYdFVv9TF/b9/6/BBeUCOHLnyB4kGzOqlN4zBCzSlX25q7Qr8HnPEr34tJ/mP 3QyTlF29k5BfJetxRga3bVSYt4eLe0vVj8bLZug1htSckQNfV4X1STPomfizJ8F8ssl8VR+AZqcEPZ ru/Rhw2gsydUoGnN1DHmcUDJjNa8iHRdhVeY0MaxkmG0p3DjmhYkpj3nmosca/JbyjnMdcrVrIyErT CYzNTxmbAjdwEJnwSyRPybVcS5R4LwUCJqb30qR0qVGXDBcsbP8DrEjKddqA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3598; h=from:subject; bh=A1ElP4tjKK6Dp0sFHqCrYLWenZcmBSW5YxsW0evE5y8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOFm863HXtOc8ZeFmq+4wnVfKZlM+JRATLTvRzZ tF2gptuJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzhQAKCRCJcvTf3G3AJg5IEA CxuS8kVvtGTeWwaE8ktJ8PBB1PQTvGy+LqQckpDdbfcwdWpfpfUaRcWDUYeyxQViauxQkjKX+WtpGq hyus00PTGVEQ+WIyIaFXYIjua1ivJAE+8+FSub7TLXSsMnwjQ+LHHUYqIonTydXZVNbnI26vGNsNW7 ZiV9OdkeutbHuBOgoqWEev1HlbW4+SZ11/dsn9f2pkkzB8YIhMzFPMi81NohsNTWNaJi74eoKX6qCr e5hNPHv43bf04K61+a0YVVBBpstRQLsnB1CKmBSNAfoc0edgbIAlA0OMq9CdvWO82lwYn6tk73H1Th 7fuTfssESoKBnqznYLIApEuQg37xDIDAdFz4SIssl7up5lwyunQcndQRrMZj1Y0tXkcj5w6CCUCWPw lmJrQWyWwVSqc682o6B1DYKJ4oZqFDaiMvdanoCeHEjy6x8afQF7duJMQRMS14TygWN8NoWnEQuqEI a0XvMB5J/4Z8eLg8jRrtFzwMiR9aIWjrHcHSQ+Co9sVbkxRgedeTJXK3HctCj2xHW68hdTNWPREow9 XuwAmRn6yMPi0xBwSZ1DDYkz8HIa5o6cUScE4nvrwcxz17OQhpwTybWpV3OxK3O2n9Oi/oLBwMKtNZ ogeLRK3dAHlvMOQzHJDjzkWma5VuOaPCqM5XgIHjiRuhS4PU0czJaG8Sd63Q==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -73,94 +73,91 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
 intentionally writing across neighboring fields.
 
-Use struct_group() in struct fw_eth_tx_pkt_vm_wr around members ethmacdst,
-ethmacsrc, ethtype, and vlantci, so they can be referenced together. This
-will allow memcpy() and sizeof() to more easily reason about sizes,
-improve readability, and avoid future warnings about writing beyond the
-end of ethmacdst.
+Use struct_group() in struct nig_stats around members egress_mac_pkt0_lo,
+egress_mac_pkt0_hi, egress_mac_pkt1_lo, and egress_mac_pkt1_hi (and the
+respective members in struct bnx2x_eth_stats), so they can be referenced
+together. This will allow memcpy() and sizeof() to more easily reason
+about sizes, improve readability, and avoid future warnings about writing
+beyond the end of struct bnx2x_eth_stats's rx_stat_ifhcinbadoctets_hi.
 
-"pahole" shows no size nor member offset changes to struct
-fw_eth_tx_pkt_vm_wr. "objdump -d" shows no object code changes.
+"pahole" shows no size nor member offset changes to either struct.
+"objdump -d" shows no meaningful object code changes (i.e. only source
+line number induced differences and optimizations).
+
+Additionally adds BUILD_BUG_ON() to compare the separate struct group
+sizes.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/sge.c      |  8 +++++---
- drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h | 10 ++++++----
- drivers/net/ethernet/chelsio/cxgb4vf/sge.c    |  7 ++-----
- 3 files changed, 13 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c |  7 ++++---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h | 14 ++++++++++----
+ 2 files changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 6a099cb34b12..9080b2c5ffe8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -1842,8 +1842,10 @@ static netdev_tx_t cxgb4_vf_eth_xmit(struct sk_buff *skb,
- 	 * (including the VLAN tag) into the header so we reject anything
- 	 * smaller than that ...
- 	 */
--	fw_hdr_copy_len = sizeof(wr->ethmacdst) + sizeof(wr->ethmacsrc) +
--			  sizeof(wr->ethtype) + sizeof(wr->vlantci);
-+	BUILD_BUG_ON(sizeof(wr->firmware) !=
-+		     (sizeof(wr->ethmacdst) + sizeof(wr->ethmacsrc) +
-+		      sizeof(wr->ethtype) + sizeof(wr->vlantci)));
-+	fw_hdr_copy_len = sizeof(wr->firmware);
- 	ret = cxgb4_validate_skb(skb, dev, fw_hdr_copy_len);
- 	if (ret)
- 		goto out_free;
-@@ -1924,7 +1926,7 @@ static netdev_tx_t cxgb4_vf_eth_xmit(struct sk_buff *skb,
- 	wr->equiq_to_len16 = cpu_to_be32(wr_mid);
- 	wr->r3[0] = cpu_to_be32(0);
- 	wr->r3[1] = cpu_to_be32(0);
--	skb_copy_from_linear_data(skb, (void *)wr->ethmacdst, fw_hdr_copy_len);
-+	skb_copy_from_linear_data(skb, &wr->firmware, fw_hdr_copy_len);
- 	end = (u64 *)wr + flits;
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
+index 0b193edb73b8..2bb133ae61c3 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.c
+@@ -849,7 +849,8 @@ static int bnx2x_hw_stats_update(struct bnx2x *bp)
  
- 	/* If this is a Large Send Offload packet we'll put in an LSO CPL
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-index 0a326c054707..2419459a0b85 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h
-@@ -794,10 +794,12 @@ struct fw_eth_tx_pkt_vm_wr {
- 	__be32 op_immdlen;
- 	__be32 equiq_to_len16;
- 	__be32 r3[2];
--	u8 ethmacdst[6];
--	u8 ethmacsrc[6];
--	__be16 ethtype;
--	__be16 vlantci;
-+	struct_group(firmware,
-+		u8 ethmacdst[ETH_ALEN];
-+		u8 ethmacsrc[ETH_ALEN];
-+		__be16 ethtype;
-+		__be16 vlantci;
+ 	memcpy(old, new, sizeof(struct nig_stats));
+ 
+-	memcpy(&(estats->rx_stat_ifhcinbadoctets_hi), &(pstats->mac_stx[1]),
++	BUILD_BUG_ON(sizeof(estats->shared) != sizeof(pstats->mac_stx[1]));
++	memcpy(&(estats->shared), &(pstats->mac_stx[1]),
+ 	       sizeof(struct mac_stx));
+ 	estats->brb_drop_hi = pstats->brb_drop_hi;
+ 	estats->brb_drop_lo = pstats->brb_drop_lo;
+@@ -1634,9 +1635,9 @@ void bnx2x_stats_init(struct bnx2x *bp)
+ 			REG_RD(bp, NIG_REG_STAT0_BRB_TRUNCATE + port*0x38);
+ 	if (!CHIP_IS_E3(bp)) {
+ 		REG_RD_DMAE(bp, NIG_REG_STAT0_EGRESS_MAC_PKT0 + port*0x50,
+-			    &(bp->port.old_nig_stats.egress_mac_pkt0_lo), 2);
++			    &(bp->port.old_nig_stats.egress_mac_pkt0), 2);
+ 		REG_RD_DMAE(bp, NIG_REG_STAT0_EGRESS_MAC_PKT1 + port*0x50,
+-			    &(bp->port.old_nig_stats.egress_mac_pkt1_lo), 2);
++			    &(bp->port.old_nig_stats.egress_mac_pkt1), 2);
+ 	}
+ 
+ 	/* Prepare statistics ramrod data */
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+index d55e63692cf3..ae93c078707b 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+@@ -36,10 +36,14 @@ struct nig_stats {
+ 	u32 pbf_octets;
+ 	u32 pbf_packet;
+ 	u32 safc_inp;
+-	u32 egress_mac_pkt0_lo;
+-	u32 egress_mac_pkt0_hi;
+-	u32 egress_mac_pkt1_lo;
+-	u32 egress_mac_pkt1_hi;
++	struct_group(egress_mac_pkt0,
++		u32 egress_mac_pkt0_lo;
++		u32 egress_mac_pkt0_hi;
++	);
++	struct_group(egress_mac_pkt1,
++		u32 egress_mac_pkt1_lo;
++		u32 egress_mac_pkt1_hi;
 +	);
  };
  
- #define FW_CMD_MAX_TIMEOUT 10000
-diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-index 7bc80eeb2c21..671ca93e64ab 100644
---- a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
-@@ -1167,10 +1167,7 @@ netdev_tx_t t4vf_eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct cpl_tx_pkt_core *cpl;
- 	const struct skb_shared_info *ssi;
- 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
--	const size_t fw_hdr_copy_len = (sizeof(wr->ethmacdst) +
--					sizeof(wr->ethmacsrc) +
--					sizeof(wr->ethtype) +
--					sizeof(wr->vlantci));
-+	const size_t fw_hdr_copy_len = sizeof(wr->firmware);
+ enum bnx2x_stats_event {
+@@ -83,6 +87,7 @@ struct bnx2x_eth_stats {
+ 	u32 no_buff_discard_hi;
+ 	u32 no_buff_discard_lo;
  
- 	/*
- 	 * The chip minimum packet length is 10 octets but the firmware
-@@ -1267,7 +1264,7 @@ netdev_tx_t t4vf_eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 	wr->equiq_to_len16 = cpu_to_be32(wr_mid);
- 	wr->r3[0] = cpu_to_be32(0);
- 	wr->r3[1] = cpu_to_be32(0);
--	skb_copy_from_linear_data(skb, (void *)wr->ethmacdst, fw_hdr_copy_len);
-+	skb_copy_from_linear_data(skb, &wr->firmware, fw_hdr_copy_len);
- 	end = (u64 *)wr + flits;
++	struct_group(shared,
+ 	u32 rx_stat_ifhcinbadoctets_hi;
+ 	u32 rx_stat_ifhcinbadoctets_lo;
+ 	u32 tx_stat_ifhcoutbadoctets_hi;
+@@ -159,6 +164,7 @@ struct bnx2x_eth_stats {
+ 	u32 tx_stat_dot3statsinternalmactransmiterrors_lo;
+ 	u32 tx_stat_bmac_ufl_hi;
+ 	u32 tx_stat_bmac_ufl_lo;
++	);
  
- 	/*
+ 	u32 pause_frames_received_hi;
+ 	u32 pause_frames_received_lo;
 -- 
 2.30.2
 
