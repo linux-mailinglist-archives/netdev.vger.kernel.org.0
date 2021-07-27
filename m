@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 436FE3D8241
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 00:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A086A3D824E
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 00:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232376AbhG0WGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 18:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
+        id S232198AbhG0WKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 18:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbhG0WGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 18:06:06 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9B2C061764
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 15:06:05 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id a13so548070iol.5
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 15:06:05 -0700 (PDT)
+        with ESMTP id S231814AbhG0WKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 18:10:51 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9752DC061757;
+        Tue, 27 Jul 2021 15:10:50 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id d73so499785ybc.10;
+        Tue, 27 Jul 2021 15:10:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=24fNvdDqc9wRqbTVQ35UG+1S1PudTFZXO0uh9mrYHA4=;
-        b=sLexgjU7FGdCpOaJn94ehHaz//zF8YcCjdTf438kAAd+yXU8/VeNw2ygeKeShJ84fF
-         GAKrEWNWij/LjRY0e4kRswpOfhJnHUHuVaw9/3gggO0RJUXSZ1fkhGo+iZTMDY3Rb4eL
-         hxQAPFOWWuMVLpCASXjxByrZZloYng5t1MbRlyjRJCY6QGer4b/+424VseMXCSK3fMU8
-         ap9DQvkYNojLxzhZs+cxI0BB1BZokQS7+KVfvkhP0xc5EZu1Oz8eVPWOxUSOmPHq8JHE
-         9f0RCAQDY3jcaZpD5c05X6Ls1yEVk5mJxI8zxCpYrJXAtdNawhZrlxM5BgozC19htp00
-         mtaQ==
+        bh=4e5KPgwqpie2+fO0IyN0BfwYGfWe7NhxqAu2gbPE+CY=;
+        b=bZacNpkggHdLV3OW0wZ3cq1cqgBcngrHxPFWNqf8Zs1vxmrpyzSoHXOGQg6oSYE3IX
+         6HzG9F3I9yOqbbUa++xWYJljAzqXm8qb/gQwtgI16w0HOqpwpExY+0JewIsmMjMN6CNB
+         1He+Rw097TJo5Ush6zKq48qxV6AMDATZzVeplp/GIy0RsKg7EITlkrMd3/nVML5emHnd
+         iQ7F7oDCJPLTuejwg4E+OmLJMI2COOFCedQ0XYKCycJjgnIeA42oGDSb7vJQCLcExN+P
+         fZx2OxnyaeuoLyczmcx0AnKeoXrkZGqRDHb5nr3NiEZ/Ac8Uns9A/q0YRLow40OP/E0W
+         zxlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=24fNvdDqc9wRqbTVQ35UG+1S1PudTFZXO0uh9mrYHA4=;
-        b=bS6EvJYsL6q3ZyaTCH/NSvh/hVFKxVjFvgZLMQfhxh0vp1QsS0h+uqf3lqx+tjSeoL
-         o9qskcG5Wslad+VR224DQb4C/vyq0hpkOX6XirQt9GtpPxfGloQMXv312lG6Ncu22nE7
-         B61BI3yLLB/f9WwDHU0K3IT9TuSP4IUpBuE36oOHxnSRx13gfSjy/pzncXXy+Pr74uxZ
-         WeVLy7WAjR29ai17Zp/vosdkM74NH96mCh+3YICpI1UPnc8Npnwbs/FmRqof3KuqrxPF
-         Cm4jH8i8AjJyw9d1/fo7I77sLlO2TFTQHQTE0Oe6KrO5uWj5Dc0YARpq/Hbp90W4osbs
-         fR6Q==
-X-Gm-Message-State: AOAM531eg3QK0UURIYkE7Xfcb4XpZmgwhhwAZJkt7Vw0LzAA+T+iAnlB
-        ueK6O/RxMnn6vQt7wBRwRoH8Vwm2FJmaGf8UlwxiWQ==
-X-Google-Smtp-Source: ABdhPJw1JBbt2TZFpNM518pCAlLevcCsqKZQXWByinHGUOJjOLxcEL10+ZVRwDya6cjszCYWzBaD8U2qzvctvqkiTSE=
-X-Received: by 2002:a05:6638:538:: with SMTP id j24mr23110989jar.59.1627423565166;
- Tue, 27 Jul 2021 15:06:05 -0700 (PDT)
+        bh=4e5KPgwqpie2+fO0IyN0BfwYGfWe7NhxqAu2gbPE+CY=;
+        b=aqY5zyNb4rB6m1+zpSdMUFgt1sofIolvsaeKVXscV76I75gb72Ps7YpzxGfESI9FFM
+         BCmoBTUVjGlxfhq+t9RwnKGAlXw417cCe1U7hE50BY7oH853YLCtChfGWGgmNJmq+Grl
+         UN15tgpZ0Oe+4w5/EdlELsILRmwF9pn0ZeNo0VF4/y46dpBaswqwOf/3U91r1Am1Xa04
+         19YhPJLBptxOrWwb/s5hWR2Hcz7g8PHrSeVJBPOQN8zCa+foRwhKR/oEf81R/BuMjNBX
+         XKrKx97SyS+IhMBsIaxmS2lZycmzHErmp1uOqDHQTwpGgaeo3E1WNsKPmWf97DBc2lmu
+         0IWg==
+X-Gm-Message-State: AOAM531rqHaLyDTy724Hee91ibmShUGzpsHxsbqKXk7ellduvdpQa4H0
+        GhldDwKEOF2D5RVGLHBhe/JOuhy2obucmW7OYOs=
+X-Google-Smtp-Source: ABdhPJxuo51FKGB3+vdWsC47t2KnIl41MVLJWw8UDmt59BoR16a0skszeZze2ivcZwt3KPi/OrgocHyEA7q4lLUbwe4=
+X-Received: by 2002:a25:9942:: with SMTP id n2mr34524345ybo.230.1627423849929;
+ Tue, 27 Jul 2021 15:10:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
- <20210726194603.14671-5-gerhard@engleder-embedded.com> <YP8pM+qD/AfuSCcU@lunn.ch>
-In-Reply-To: <YP8pM+qD/AfuSCcU@lunn.ch>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Wed, 28 Jul 2021 00:05:54 +0200
-Message-ID: <CANr-f5y7eVbAf_NK3puJa3AcnkLXMbhzfwwmZ+r2KuWMbDhhsA@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/5] tsnep: Add TSN endpoint Ethernet MAC driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+References: <20210727160500.1713554-1-john.fastabend@gmail.com> <20210727173713.qm24aiwli2bacrlm@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210727173713.qm24aiwli2bacrlm@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 27 Jul 2021 15:10:38 -0700
+Message-ID: <CAEf4BzbLiQ3o=ZipMu4GWYhnGEXg5wgSWP8ox7Hoy-+Zjt5LaA@mail.gmail.com>
+Subject: Re: [PATCH bpf v3 0/3] sockmap fixes picked up by stress tests
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > This driver provides a driver specific interface in tsnep_stream.c for
-> > direct access to all but the first TX/RX queue pair. There are two
-> > reasons for this interface. First: It enables the reservation or direct use
-> > of TX/RX queue pairs by real-time application on dedicated CPU cores or
-> > in user space.
+On Tue, Jul 27, 2021 at 10:37 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> Hi Gerhard
+> On Tue, Jul 27, 2021 at 09:04:57AM -0700, John Fastabend wrote:
+> > Running stress tests with recent patch to remove an extra lock in sockmap
+> > resulted in a couple new issues popping up. It seems only one of them
+> > is actually related to the patch:
+> >
+> > 799aa7f98d53 ("skmsg: Avoid lock_sock() in sk_psock_backlog()")
+> >
+> > The other two issues had existed long before, but I guess the timing
+> > with the serialization we had before was too tight to get any of
+> > our tests or deployments to hit it.
+> >
+> > With attached series stress testing sockmap+TCP with workloads that
+> > create lots of short-lived connections no more splats like below were
+> > seen on upstream bpf branch.
+> >
+> > [224913.935822] WARNING: CPU: 3 PID: 32100 at net/core/stream.c:208 sk_stream_kill_queues+0x212/0x220
+> > [224913.935841] Modules linked in: fuse overlay bpf_preload x86_pkg_temp_thermal intel_uncore wmi_bmof squashfs sch_fq_codel efivarfs ip_tables x_tables uas xhci_pci ixgbe mdio xfrm_algo xhci_hcd wmi
+> > [224913.935897] CPU: 3 PID: 32100 Comm: fgs-bench Tainted: G          I       5.14.0-rc1alu+ #181
+> > [224913.935908] Hardware name: Dell Inc. Precision 5820 Tower/002KVM, BIOS 1.9.2 01/24/2019
+> > [224913.935914] RIP: 0010:sk_stream_kill_queues+0x212/0x220
+> > [224913.935923] Code: 8b 83 20 02 00 00 85 c0 75 20 5b 5d 41 5c 41 5d 41 5e 41 5f c3 48 89 df e8 2b 11 fe ff eb c3 0f 0b e9 7c ff ff ff 0f 0b eb ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 90 0f 1f 44 00 00 41 57 41
+> > [224913.935932] RSP: 0018:ffff88816271fd38 EFLAGS: 00010206
+> > [224913.935941] RAX: 0000000000000ae8 RBX: ffff88815acd5240 RCX: dffffc0000000000
+> > [224913.935948] RDX: 0000000000000003 RSI: 0000000000000ae8 RDI: ffff88815acd5460
+> > [224913.935954] RBP: ffff88815acd5460 R08: ffffffff955c0ae8 R09: fffffbfff2e6f543
+> > [224913.935961] R10: ffffffff9737aa17 R11: fffffbfff2e6f542 R12: ffff88815acd5390
+> > [224913.935967] R13: ffff88815acd5480 R14: ffffffff98d0c080 R15: ffffffff96267500
+> > [224913.935974] FS:  00007f86e6bd1700(0000) GS:ffff888451cc0000(0000) knlGS:0000000000000000
+> > [224913.935981] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [224913.935988] CR2: 000000c0008eb000 CR3: 00000001020e0005 CR4: 00000000003706e0
+> > [224913.935994] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [224913.936000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > [224913.936007] Call Trace:
+> > [224913.936016]  inet_csk_destroy_sock+0xba/0x1f0
+> > [224913.936033]  __tcp_close+0x620/0x790
+> > [224913.936047]  tcp_close+0x20/0x80
+> > [224913.936056]  inet_release+0x8f/0xf0
+> > [224913.936070]  __sock_release+0x72/0x120
+> >
+> > v3: make sock_drop inline in skmsg.h
+> > v2: init skb to null and fix a space/tab issue. Added Jakub's acks.
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-Hi Andrew,
-
-> I expect you will get a lot of push back with a character device in
-> the middle of an Ethernet driver. One that mmap the Tx/Rx queue is
-> going to need a lot of review to make sure it is secure. Maybe talk to
-> the XDP/AF_XDP people, there might be a way to do it through that?
-
-I also expect some discussion about this feature. Mapping device specific
-TX/RX queues to user space is not done in mainline Linux so far. It is done
-out-of-tree for real-time communication since years. It enables interrupt free
-(hard and soft IRQ) zero copy communication without any context switch
-between kernel space and user space. This is ideal for real-time. It is similar
-to UIO, but with DMA support and only for some TX/RX queues and not for
-the whole device.
-
-If the mmap of TX/RX queue can be done by any user space program, then
-it might not be secure. The mmap of TX/RX queue will be done by the
-real-time application and the real-time application needs to be privileged
-anyway (SCHED_FIFO, mlock, ...). So for the real-time use case I don't see
-any security problem.
-
-There are some reasons for not using XDP/AF_XDP:
-- XDP/AF_XDP does not support timed transmission and this device has
-  a very special style of timed transmission (schedule with relative timings
-  for DMA start and transmit time within descriptor ring, the relative timings
-  define the timing of the _next_ descriptor/frame)
-- XDP/AF_XDP requires Linux and the additional TX/RX Queues of this
-  device are designed to be used also by other CPU cores which do not run
-  Linux
-- XDP/AF_XDP needs hard and/or soft IRQ processing
-
-> So i strongly suggest your drop tsnep_stream.c for the moment. Get the
-> basic plain boring Ethernet driver merged. Then start a discussion
-> about a suitable API for exporting rings to user space.
-
-I will follow your suggestion and drop tsnep_stream.c for the moment.
-Any early comments about this feature are welcome, because the direct
-use of additional TX/RX queues for real-time communication is the main
-feature of this device.
-
-Gerhard
+Applied to bpf, thanks.
