@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3113D7732
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91393D7735
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237102AbhG0Nqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:46:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46476 "EHLO mail.kernel.org"
+        id S237143AbhG0Nqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:46:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236860AbhG0NqS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:46:18 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0576661A8B;
-        Tue, 27 Jul 2021 13:46:16 +0000 (UTC)
+        id S236882AbhG0NqT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 09:46:19 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E25D61A7A;
+        Tue, 27 Jul 2021 13:46:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627393578;
-        bh=79XTVpCt/ykWdmIsFWtzZbSIe8bov8bIjAYDooG6RHI=;
+        s=k20201202; t=1627393579;
+        bh=sCWScan1YM+efElA/8QC1aA+DiJUApS8hHSW+UJyHbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcT/f4FuRrUC9JeIW/rccwUoBiOG1R8L0yPELnVkGB9wPnVDZE6PSTIHX7wrnGU+1
-         dt9KeQa+NtnGJ4PtOHbJ2ioNOclcglbrpSXHHmgxXIgdr43AWU/j5PSRyO2vF/haJL
-         0+IlR8Lwg/n5CPGkQx9lpg09XufBivFx64hxkJyCcmsdXetOa/WjQ7y99N5IFK5LvY
-         tezmiSokeH+6TSu9xlzfYmNKsMSSEbEIREnx/qUWYvXGKmgj4ziUoFL5Zi6GXDTaN9
-         lmvq7/dB+v1vftmT/N3K//dQq8iRS82tBFd7L0uJrDULt91R1u3i8SZMY7J8f7d6/d
-         rdaEqJX50CQYw==
+        b=knoIAHDwGGRctetWrRB+OPWpdpK0QFweC1vNfV3QWBEWY5l0jgWekG2Mldc8UXXue
+         J93RsiDjDlM3Vb2ropUfbclaxq/y8pxyjN+MECU/mHGnn5iSIj2BC0oUm3KINpRGit
+         yy0/51nRVAJKzjqyMgbBMOWUSHTV+W7BKFNnPdOT5PdkfCYLLnCPDwKRpWqNhfRJV7
+         DVvYmk278T/ANHfJeQuh+1QtBCqOcp+XHVSA2CDgPX+4cgt9etHNf4tOIP9eudh4a4
+         ehmBbmIk0v6rKw9V7Hsu4+jrnN0TqupSTNngldk2fGNrv8kfa8ZofKLnqGnQAhfp6O
+         DS12H09darTHQ==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH net-next v3 11/31] tehuti: use ndo_siocdevprivate
-Date:   Tue, 27 Jul 2021 15:44:57 +0200
-Message-Id: <20210727134517.1384504-12-arnd@kernel.org>
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH net-next v3 12/31] eql: use ndo_siocdevprivate
+Date:   Tue, 27 Jul 2021 15:44:58 +0200
+Message-Id: <20210727134517.1384504-13-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210727134517.1384504-1-arnd@kernel.org>
 References: <20210727134517.1384504-1-arnd@kernel.org>
@@ -43,75 +42,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Tehuti only implements private ioctl commands, and implements
-them by overriding the ifreq layout, which is broken in
-compat mode.
+The private ioctls in eql pass the arguments correctly through ifr_data,
+but the slaving_request_t and slave_config_t structures are incompatible
+with compat mode and need special conversion code in the driver.
 
-Move it to the ndo_siocdevprivate callback in order to fix this.
+Convert to siocdevprivate for now, and return an error when called
+in compat mode.
 
-Cc: Andy Gospodarek <andy@greyhouse.net>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/tehuti/tehuti.c | 18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ drivers/net/eql.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
-index d054c6e83b1c..8f6abaec41d1 100644
---- a/drivers/net/ethernet/tehuti/tehuti.c
-+++ b/drivers/net/ethernet/tehuti/tehuti.c
-@@ -637,7 +637,8 @@ static int bdx_range_check(struct bdx_priv *priv, u32 offset)
- 		-EINVAL : 0;
- }
+diff --git a/drivers/net/eql.c b/drivers/net/eql.c
+index 74263f8efe1a..8ef34901c2d8 100644
+--- a/drivers/net/eql.c
++++ b/drivers/net/eql.c
+@@ -113,6 +113,7 @@
  
--static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
-+static int bdx_siocdevprivate(struct net_device *ndev, struct ifreq *ifr,
-+			      void __user *udata, int cmd)
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/compat.h>
+ #include <linux/capability.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+@@ -131,7 +132,8 @@
+ 
+ static int eql_open(struct net_device *dev);
+ static int eql_close(struct net_device *dev);
+-static int eql_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
++static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++			      void __user *data, int cmd);
+ static netdev_tx_t eql_slave_xmit(struct sk_buff *skb, struct net_device *dev);
+ 
+ #define eql_is_slave(dev)	((dev->flags & IFF_SLAVE) == IFF_SLAVE)
+@@ -170,7 +172,7 @@ static const char version[] __initconst =
+ static const struct net_device_ops eql_netdev_ops = {
+ 	.ndo_open	= eql_open,
+ 	.ndo_stop	= eql_close,
+-	.ndo_do_ioctl	= eql_ioctl,
++	.ndo_siocdevprivate = eql_siocdevprivate,
+ 	.ndo_start_xmit	= eql_slave_xmit,
+ };
+ 
+@@ -268,25 +270,29 @@ static int eql_s_slave_cfg(struct net_device *dev, slave_config_t __user *sc);
+ static int eql_g_master_cfg(struct net_device *dev, master_config_t __user *mc);
+ static int eql_s_master_cfg(struct net_device *dev, master_config_t __user *mc);
+ 
+-static int eql_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
++			      void __user *data, int cmd)
  {
- 	struct bdx_priv *priv = netdev_priv(ndev);
- 	u32 data[3];
-@@ -647,7 +648,7 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
+ 	if (cmd != EQL_GETMASTRCFG && cmd != EQL_GETSLAVECFG &&
+ 	    !capable(CAP_NET_ADMIN))
+ 	  	return -EPERM;
  
- 	DBG("jiffies=%ld cmd=%d\n", jiffies, cmd);
- 	if (cmd != SIOCDEVPRIVATE) {
--		error = copy_from_user(data, ifr->ifr_data, sizeof(data));
-+		error = copy_from_user(data, udata, sizeof(data));
- 		if (error) {
- 			pr_err("can't copy from user\n");
- 			RET(-EFAULT);
-@@ -669,7 +670,7 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
- 		data[2] = READ_REG(priv, data[1]);
- 		DBG("read_reg(0x%x)=0x%x (dec %d)\n", data[1], data[2],
- 		    data[2]);
--		error = copy_to_user(ifr->ifr_data, data, sizeof(data));
-+		error = copy_to_user(udata, data, sizeof(data));
- 		if (error)
- 			RET(-EFAULT);
- 		break;
-@@ -688,15 +689,6 @@ static int bdx_ioctl_priv(struct net_device *ndev, struct ifreq *ifr, int cmd)
- 	return 0;
- }
- 
--static int bdx_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
--{
--	ENTER;
--	if (cmd >= SIOCDEVPRIVATE && cmd <= (SIOCDEVPRIVATE + 15))
--		RET(bdx_ioctl_priv(ndev, ifr, cmd));
--	else
--		RET(-EOPNOTSUPP);
--}
--
- /**
-  * __bdx_vlan_rx_vid - private helper for adding/killing VLAN vid
-  * @ndev: network device
-@@ -1860,7 +1852,7 @@ static const struct net_device_ops bdx_netdev_ops = {
- 	.ndo_stop		= bdx_close,
- 	.ndo_start_xmit		= bdx_tx_transmit,
- 	.ndo_validate_addr	= eth_validate_addr,
--	.ndo_do_ioctl		= bdx_ioctl,
-+	.ndo_siocdevprivate	= bdx_siocdevprivate,
- 	.ndo_set_rx_mode	= bdx_setmulti,
- 	.ndo_change_mtu		= bdx_change_mtu,
- 	.ndo_set_mac_address	= bdx_set_mac,
++	if (in_compat_syscall()) /* to be implemented */
++		return -EOPNOTSUPP;
++
+ 	switch (cmd) {
+ 		case EQL_ENSLAVE:
+-			return eql_enslave(dev, ifr->ifr_data);
++			return eql_enslave(dev, data);
+ 		case EQL_EMANCIPATE:
+-			return eql_emancipate(dev, ifr->ifr_data);
++			return eql_emancipate(dev, data);
+ 		case EQL_GETSLAVECFG:
+-			return eql_g_slave_cfg(dev, ifr->ifr_data);
++			return eql_g_slave_cfg(dev, data);
+ 		case EQL_SETSLAVECFG:
+-			return eql_s_slave_cfg(dev, ifr->ifr_data);
++			return eql_s_slave_cfg(dev, data);
+ 		case EQL_GETMASTRCFG:
+-			return eql_g_master_cfg(dev, ifr->ifr_data);
++			return eql_g_master_cfg(dev, data);
+ 		case EQL_SETMASTRCFG:
+-			return eql_s_master_cfg(dev, ifr->ifr_data);
++			return eql_s_master_cfg(dev, data);
+ 		default:
+ 			return -EOPNOTSUPP;
+ 	}
 -- 
 2.29.2
 
