@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 904863D6DA1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 06:45:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F973D6DC6
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 07:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235186AbhG0EpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 00:45:02 -0400
-Received: from relay.sw.ru ([185.231.240.75]:35166 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235147AbhG0EpB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 00:45:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=virtuozzo.com; s=relay; h=Content-Type:MIME-Version:Date:Message-ID:From:
-        Subject; bh=/+c65/gT4Io1ufXamU1e2psgnYkOi5vjG8kGJF++OHo=; b=Ui+jyG8CSoRsIhhdk
-        CgYVGe+dD8MtMbyE9CEOdC4C2Toq4wq6hHORYH5UyU1pz03B+ZK3/1TFXc3+X96ZASFPJ/fWQFcdu
-        mFeW/8GMwrtOgRkkMWE3BsNlLXvF5m+1Ntd1aA6IZ9l+D+Kb4qH/GtNobsZES4dxVFFlLZm8/HzNk
-        =;
-Received: from [10.93.0.56]
-        by relay.sw.ru with esmtp (Exim 4.94.2)
-        (envelope-from <vvs@virtuozzo.com>)
-        id 1m8ExW-005LMz-8H; Tue, 27 Jul 2021 07:44:50 +0300
-Subject: Re: [PATCH v6 00/16] memcg accounting from OpenVZ
-To:     David Miller <davem@davemloft.net>
-Cc:     akpm@linux-foundation.org, tj@kernel.org, cgroups@vger.kernel.org,
-        mhocko@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        guro@fb.com, shakeelb@google.com, nglaive@gmail.com,
-        viro@zeniv.linux.org.uk, adobriyan@gmail.com, avagin@gmail.com,
-        bp@alien8.de, christian.brauner@ubuntu.com, dsahern@kernel.org,
-        0x7f454c46@gmail.com, edumazet@google.com, ebiederm@xmission.com,
-        gregkh@linuxfoundation.org, yoshfuji@linux-ipv6.org, hpa@zytor.com,
-        mingo@redhat.com, kuba@kernel.org, bfields@fieldses.org,
-        jlayton@kernel.org, axboe@kernel.dk, jirislaby@kernel.org,
-        ktkhai@virtuozzo.com, oleg@redhat.com, serge@hallyn.com,
-        tglx@linutronix.de, lizefan.x@bytedance.com,
-        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <9bf9d9bd-03b1-2adb-17b4-5d59a86a9394@virtuozzo.com>
- <fdb0666c-7b8e-2062-64f4-5bef64fad950@virtuozzo.com>
- <20210726.225931.53899469422140706.davem@davemloft.net>
-From:   Vasily Averin <vvs@virtuozzo.com>
-Message-ID: <6f21a0e0-bd36-b6be-1ffa-0dc86c06c470@virtuozzo.com>
-Date:   Tue, 27 Jul 2021 07:44:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S235063AbhG0FDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 01:03:00 -0400
+Received: from mx21.baidu.com ([220.181.3.85]:42734 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234867AbhG0FC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 01:02:59 -0400
+Received: from BJHW-Mail-Ex02.internal.baidu.com (unknown [10.127.64.12])
+        by Forcepoint Email with ESMTPS id B2F71E783FFD8FFD276F;
+        Tue, 27 Jul 2021 13:02:54 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BJHW-Mail-Ex02.internal.baidu.com (10.127.64.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Tue, 27 Jul 2021 13:02:54 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Tue, 27 Jul 2021 13:02:53 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <luciano.coelho@intel.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <johannes.berg@intel.com>, <nathan.errera@intel.com>,
+        <avraham.stern@intel.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Cai Huoqing <caihuoqing@baidu.com>
+Subject: [PATCH] iwlwifi: mvm: Change "ERR_PTR(EINVAL)" to "ERR_PTR(-EINVAL)"
+Date:   Tue, 27 Jul 2021 13:02:47 +0800
+Message-ID: <20210727050247.610-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20210726.225931.53899469422140706.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-Ex12.internal.baidu.com (172.31.51.52) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/21 12:59 AM, David Miller wrote:
-> 
-> This series does not apply cleanly to net-next, please respin.
+Use "ERR_PTR(-EINVAL)" instead of "ERR_PTR(EINVAL)"
 
-Dear David,
-I found that you have already approved net-related patches of this series and included them into net-next.
-So I'll respin v7 without these patches.
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you,
-	Vasily Averin
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
+index 32b4d1935788..4d9952e3343f 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.h
+@@ -133,7 +133,7 @@ struct iwl_mvm_vif;
+  * and no TID data as this is also not needed.
+  * One thing to note, is that these stations have an ID in the fw, but not
+  * in mac80211. In order to "reserve" them a sta_id in %fw_id_to_mac_id
+- * we fill ERR_PTR(EINVAL) in this mapping and all other dereferencing of
++ * we fill ERR_PTR(-EINVAL) in this mapping and all other dereferencing of
+  * pointers from this mapping need to check that the value is not error
+  * or NULL.
+  *
+-- 
+2.25.1
+
