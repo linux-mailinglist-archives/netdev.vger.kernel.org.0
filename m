@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F623D7660
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A054F3D765D
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236718AbhG0N2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:28:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56508 "EHLO mail.kernel.org"
+        id S236748AbhG0N17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:27:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56532 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236968AbhG0NUd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:20:33 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 458CD61AA4;
-        Tue, 27 Jul 2021 13:20:20 +0000 (UTC)
+        id S236978AbhG0NUj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 09:20:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 90F0D61A88;
+        Tue, 27 Jul 2021 13:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627392021;
-        bh=STB3VqE7g8PVcbC1z+atZrXZEwTg3uCDULyIz2SRS4A=;
+        s=k20201202; t=1627392022;
+        bh=VS7vIddUPJA9FndTyAYSL8l/jEgXNGOTOZn/ujc4N3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZILCbUUaFbHWzX9Ow7jPVLzFi7yCvjUey36PFwlzJhfoxgcXCeolY/UZAh3wDk9H
-         3gcnxH5953btJ4dVfxKrq88y6/TKW3yNbaxlKbobjsE0zWGRGlFveSBMfV50FRzx37
-         GBtd8t0SUdSQWrawXLsTpFdS7wk7BF7LU07pKqcG1n8vbXHwrkMNNjkh2aVD1Qn75m
-         aVGgF+plllHj1wO4kAfQEkWIRtr0QCo+7YTQlXbc7qc4r6oFFsNhiluNCjCjGl8jep
-         oS2MQ5jMJsy+otcbjbjm0pcNtrRbJWJnVBxXgi4hD9yqLuAyTmdYnv/fFoHpiw60Re
-         pH8ANndpq/xeg==
+        b=DFVP9v7s3FCn5sgEFXAZYTriYcKIzDO0WYjnyDt4Vkmhh6otZG6sM1tSSzuh1iQLB
+         jkAxUxLgsYj2JY5+dC9dm/LXSXYDfyom/UhD+h+ArB8W3hCHur/57SJ8LxrIY70Jqp
+         53d4u5RM8bFOYtX1aVtBbet4yYdzLDsWDmnRuX3nT0QbQbpXlSWuDQtOkJq0vU0Uh0
+         WDd8nyYle1MPnb/8O+88SXlDG36GPYkj6KczzRsXHSjy8Ii6dSjLNPsqhwZiXNZWSK
+         S5HM64NuKm23jHnbwtIprGuQ8uXH/zdh/RUJZ0TNn6RAECJnybyndFEoUK5bDeKgVm
+         IKlneYXCJzX3A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia He <justin.he@arm.com>, Lijian Zhang <Lijian.Zhang@arm.com>,
+Cc:     Eric Woudstra <ericwouds@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 4/6] qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
-Date:   Tue, 27 Jul 2021 09:20:13 -0400
-Message-Id: <20210727132015.835651-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 5/6] mt7530 fix mt7530_fdb_write vid missing ivl bit
+Date:   Tue, 27 Jul 2021 09:20:14 -0400
+Message-Id: <20210727132015.835651-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727132015.835651-1-sashal@kernel.org>
 References: <20210727132015.835651-1-sashal@kernel.org>
@@ -42,111 +44,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia He <justin.he@arm.com>
+From: Eric Woudstra <ericwouds@gmail.com>
 
-[ Upstream commit 6206b7981a36476f4695d661ae139f7db36a802d ]
+[ Upstream commit 11d8d98cbeef1496469b268d79938b05524731e8 ]
 
-Liajian reported a bug_on hit on a ThunderX2 arm64 server with FastLinQ
-QL41000 ethernet controller:
- BUG: scheduling while atomic: kworker/0:4/531/0x00000200
-  [qed_probe:488()]hw prepare failed
-  kernel BUG at mm/vmalloc.c:2355!
-  Internal error: Oops - BUG: 0 [#1] SMP
-  CPU: 0 PID: 531 Comm: kworker/0:4 Tainted: G W 5.4.0-77-generic #86-Ubuntu
-  pstate: 00400009 (nzcv daif +PAN -UAO)
- Call trace:
-  vunmap+0x4c/0x50
-  iounmap+0x48/0x58
-  qed_free_pci+0x60/0x80 [qed]
-  qed_probe+0x35c/0x688 [qed]
-  __qede_probe+0x88/0x5c8 [qede]
-  qede_probe+0x60/0xe0 [qede]
-  local_pci_probe+0x48/0xa0
-  work_for_cpu_fn+0x24/0x38
-  process_one_work+0x1d0/0x468
-  worker_thread+0x238/0x4e0
-  kthread+0xf0/0x118
-  ret_from_fork+0x10/0x18
+According to reference guides mt7530 (mt7620) and mt7531:
 
-In this case, qed_hw_prepare() returns error due to hw/fw error, but in
-theory work queue should be in process context instead of interrupt.
+NOTE: When IVL is reset, MAC[47:0] and FID[2:0] will be used to
+read/write the address table. When IVL is set, MAC[47:0] and CVID[11:0]
+will be used to read/write the address table.
 
-The root cause might be the unpaired spin_{un}lock_bh() in
-_qed_mcp_cmd_and_union(), which causes botton half is disabled incorrectly.
+Since the function only fills in CVID and no FID, we need to set the
+IVL bit. The existing code does not set it.
 
-Reported-by: Lijian Zhang <Lijian.Zhang@arm.com>
-Signed-off-by: Jia He <justin.he@arm.com>
+This is a fix for the issue I dropped here earlier:
+
+http://lists.infradead.org/pipermail/linux-mediatek/2021-June/025697.html
+
+With this patch, it is now possible to delete the 'self' fdb entry
+manually. However, wifi roaming still has the same issue, the entry
+does not get deleted automatically. Wifi roaming also needs a fix
+somewhere else to function correctly in combination with vlan.
+
+Signed-off-by: Eric Woudstra <ericwouds@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_mcp.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mt7530.c | 1 +
+ drivers/net/dsa/mt7530.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-index 938ace333af1..0d62db3241be 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
-@@ -498,14 +498,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 6335c4ea0957..96dbc51caf48 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -414,6 +414,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
+ 	int i;
  
- 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	reg[1] |= vid & CVID_MASK;
++	reg[1] |= ATA2_IVL;
+ 	reg[2] |= (aging & AGE_TIMER_MASK) << AGE_TIMER;
+ 	reg[2] |= (port_mask & PORT_MAP_MASK) << PORT_MAP;
+ 	/* STATIC_ENT indicate that entry is static wouldn't
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 101d309ee445..72f53e6bc145 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -43,6 +43,7 @@
+ #define  STATIC_EMP			0
+ #define  STATIC_ENT			3
+ #define MT7530_ATA2			0x78
++#define  ATA2_IVL			BIT(15)
  
--		if (!qed_mcp_has_pending_cmd(p_hwfn))
-+		if (!qed_mcp_has_pending_cmd(p_hwfn)) {
-+			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 			break;
-+		}
- 
- 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
--		if (!rc)
-+		if (!rc) {
-+			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 			break;
--		else if (rc != -EAGAIN)
-+		} else if (rc != -EAGAIN) {
- 			goto err;
-+		}
- 
- 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 
-@@ -522,6 +526,8 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
- 		return -EAGAIN;
- 	}
- 
-+	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
-+
- 	/* Send the mailbox command */
- 	qed_mcp_reread_offsets(p_hwfn, p_ptt);
- 	seq_num = ++p_hwfn->mcp_info->drv_mb_seq;
-@@ -548,14 +554,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
- 
- 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
- 
--		if (p_cmd_elem->b_is_completed)
-+		if (p_cmd_elem->b_is_completed) {
-+			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 			break;
-+		}
- 
- 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
--		if (!rc)
-+		if (!rc) {
-+			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 			break;
--		else if (rc != -EAGAIN)
-+		} else if (rc != -EAGAIN) {
- 			goto err;
-+		}
- 
- 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 	} while (++cnt < max_retries);
-@@ -576,6 +586,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
- 		return -EAGAIN;
- 	}
- 
-+	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
- 	qed_mcp_cmd_del_elem(p_hwfn, p_cmd_elem);
- 	spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
- 
+ /* Register for address table write data */
+ #define MT7530_ATWD			0x7c
 -- 
 2.30.2
 
