@@ -2,143 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D34EF3D6CD1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 05:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 451373D6CE6
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 05:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235034AbhG0Cwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 22:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234422AbhG0Cwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 22:52:50 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94ED9C061757;
-        Mon, 26 Jul 2021 20:33:17 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id m193so18454015ybf.9;
-        Mon, 26 Jul 2021 20:33:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QdeVN6Yrp8BCXWx3T1YVZzGUy63biAiHMHNxhQDVUsY=;
-        b=Eirvxm5IZvCTiFeyg9gnFJShgAb10jrYzecJVyouIDLjC+6MiJPkbcah9EzvbZVrnM
-         yvyvqsh1yNNJtnVwuENW3zY8eygyZOUOH42CHjT2oj3ZZYv9OuZJi3Bl/BK6Uvwy/Xot
-         9A1CDNhqPjq4M2Zq6A+n3Qw1D/4GAyn/ls/NJFCPYnMoQk+jmtgQ7jVAs3ZqRFy28N5v
-         zLzvJv+uRI2OscPOSWKQwt8pQbEqNlrYIbECMl+YtzOhxnAtROwUS+jKiHfIQxqy0KRQ
-         eDpRAPe4yEl5ZwkTMYLEVKydjR2ORAOjGpLfbbI3YvEpGUTcf0BcAgCo5H32PE312mQ2
-         1L6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QdeVN6Yrp8BCXWx3T1YVZzGUy63biAiHMHNxhQDVUsY=;
-        b=GmQk9PSTjnv5Sgz9Q8zPu6egVpf6ODQ7oKNxcKkAAFrPP+WygXdomkIsF7gXEB6UCV
-         +7XV88pc1NjLEAwRggS64ZJShWoAY8czOh+69CSdYugcSDHgG+7gjUzAL6yZYuu40fy6
-         b5mRdb1CEV5UsT67FNayWLFZwu4nJp/NNPzHWhTjGouVexs1DIR+Au60mCMd27TfKY5n
-         k/lzUDDezN1+aMAeaaP/DXYF9klBSEOEpiAKfxGcm9oGXEOssYYZ8aswDGLhnp0ySwL2
-         JAnUB0VV/JnwQL1+RqJj80zqCPNAFYFXIYWXpuMIlhx+wvsKwa5x23dZCdIcN06HLXgM
-         pfaQ==
-X-Gm-Message-State: AOAM532yPu0dpj4d6mH/cXvIKPf5K9IoasWLqPJrw9DgNdGSv5ijrCbz
-        Zrud1Y29xhRbFS7cA/JLp5YcCdvPmOrb7UzAP+M=
-X-Google-Smtp-Source: ABdhPJzbPWveM1BLPDEscw9t44WDEDhXlr2bP59I+K8BDLjAnSu6Q/QFFcN4FWY2o19eXT3pFsau0kXbzR0Nxciplhc=
-X-Received: by 2002:a25:2396:: with SMTP id j144mr21349553ybj.481.1627356796838;
- Mon, 26 Jul 2021 20:33:16 -0700 (PDT)
+        id S235113AbhG0C4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 22:56:51 -0400
+Received: from mga12.intel.com ([192.55.52.136]:45171 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234990AbhG0C4u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 22:56:50 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10057"; a="191955827"
+X-IronPort-AV: E=Sophos;i="5.84,272,1620716400"; 
+   d="scan'208";a="191955827"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2021 20:37:18 -0700
+X-IronPort-AV: E=Sophos;i="5.84,272,1620716400"; 
+   d="scan'208";a="474230278"
+Received: from nmanikan-mobl1.amr.corp.intel.com (HELO localhost.localdomain) ([10.209.99.32])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2021 20:37:17 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        sasha.neftin@intel.com, anthony.l.nguyen@intel.com,
+        linux-pci@vger.kernel.org, bhelgaas@google.com,
+        netdev@vger.kernel.org, mlichvar@redhat.com,
+        richardcochran@gmail.com, hch@infradead.org, helgaas@kernel.org,
+        pmenzel@molgen.mpg.de
+Subject: [PATCH next-queue v6 0/4] igc: Add support for PCIe PTM
+Date:   Mon, 26 Jul 2021 20:36:53 -0700
+Message-Id: <20210727033657.39885-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20210724152124.9762-1-claudiajkang@gmail.com> <CAEf4Bzb-9TKKdL4x4UYw8T925pASYjt3+29+0xXq-reNG3qy8A@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb-9TKKdL4x4UYw8T925pASYjt3+29+0xXq-reNG3qy8A@mail.gmail.com>
-From:   Juhee Kang <claudiajkang@gmail.com>
-Date:   Tue, 27 Jul 2021 12:32:41 +0900
-Message-ID: <CAK+SQuTQ7OfxCLzrwtV6K7-Kug6ZL+11=_f+hBgNteKtqnXGYw@mail.gmail.com>
-Subject: Re: [bpf-next 1/2] samples: bpf: Fix tracex7 error raised on the
- missing argument
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 5:08 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Jul 24, 2021 at 8:21 AM Juhee Kang <claudiajkang@gmail.com> wrote:
-> >
-> > The current behavior of 'tracex7' doesn't consist with other bpf samples
-> > tracex{1..6}. Other samples do not require any argument to run with, but
-> > tracex7 should be run with btrfs device argument. (it should be executed
-> > with test_override_return.sh)
-> >
-> > Currently, tracex7 doesn't have any description about how to run this
-> > program and raises an unexpected error. And this result might be
-> > confusing since users might not have a hunch about how to run this
-> > program.
-> >
-> >     // Current behavior
-> >     # ./tracex7
-> >     sh: 1: Syntax error: word unexpected (expecting ")")
-> >     // Fixed behavior
-> >     # ./tracex7
-> >     ERROR: Run with the btrfs device argument!
-> >
-> > In order to fix this error, this commit adds logic to report a message
-> > and exit when running this program with a missing argument.
-> >
-> > Additionally in test_override_return.sh, there is a problem with
-> > multiple directory(tmpmnt) creation. So in this commit adds a line with
-> > removing the directory with every execution.
-> >
-> > Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
-> > ---
-> >  samples/bpf/test_override_return.sh | 1 +
-> >  samples/bpf/tracex7_user.c          | 5 +++++
-> >  2 files changed, 6 insertions(+)
-> >
-> > diff --git a/samples/bpf/test_override_return.sh b/samples/bpf/test_override_return.sh
-> > index e68b9ee6814b..6480b55502c7 100755
-> > --- a/samples/bpf/test_override_return.sh
-> > +++ b/samples/bpf/test_override_return.sh
-> > @@ -1,5 +1,6 @@
-> >  #!/bin/bash
-> >
-> > +rm -rf tmpmnt
->
-> Do we need -rf or -r would do?
->
+Hi,
 
-It works properly using only -r.
-Thanks for pointing it out! I will stick to this method.
+Changes from v5:
+  - Improved commit messages (Paul Menzel);
+  - Clearer loop for PCIe PTM timestamps retrieval (Paul Menzel);
 
-I will send the next version as soon as possible.
+Changes from v4:
+  - Improved commit messages (Bjorn Helgaas);
 
-> >  rm -f testfile.img
-> >  dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
-> >  DEVICE=$(losetup --show -f testfile.img)
-> > diff --git a/samples/bpf/tracex7_user.c b/samples/bpf/tracex7_user.c
-> > index fdcd6580dd73..8be7ce18d3ba 100644
-> > --- a/samples/bpf/tracex7_user.c
-> > +++ b/samples/bpf/tracex7_user.c
-> > @@ -14,6 +14,11 @@ int main(int argc, char **argv)
-> >         int ret = 0;
-> >         FILE *f;
-> >
-> > +       if (!argv[1]) {
-> > +               fprintf(stderr, "ERROR: Run with the btrfs device argument!\n");
-> > +               return 0;
-> > +       }
-> > +
-> >         snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-> >         obj = bpf_object__open_file(filename, NULL);
-> >         if (libbpf_get_error(obj)) {
-> > --
-> > 2.27.0
-> >
+Changes from v3:
+  - More descriptive commit messages and comments (Bjorn Helgaas);
+  - Added a pcie_ptm_enabled() helper (Bjorn Helgaas);
+
+Changes from v2:
+  - Now the PTM timestamps are retrieved synchronously with the
+    ioctl();
+  - Fixed some typos in constants;
+  - The IGC_PTM_STAT register is write-1-to-clear, document this more
+    clearly;
+
+Changes from v1:
+  - This now should cross compile better, convert_art_ns_to_tsc() will
+    only be used if CONFIG_X86_TSC is enabled;
+  - PCIe PTM errors reported by the NIC are logged and PTM cycles are
+    restarted in case an error is detected;
+
+Original cover letter (lightly edited):
+
+This adds support for PCIe PTM (Precision Time Measurement) to the igc
+driver. PCIe PTM allows the NIC and Host clocks to be compared more
+precisely, improving the clock synchronization accuracy.
+
+Patch 1/4 reverts a commit that made pci_enable_ptm() private to the
+PCI subsystem, reverting makes it possible for it to be called from
+the drivers.
+
+Patch 2/4 adds the pcie_ptm_enabled() helper.
+
+Patch 3/4 calls pci_enable_ptm() from the igc driver.
+
+Patch 4/4 implements the PCIe PTM support. Exposing it via the
+.getcrosststamp() API implies that the time measurements are made
+synchronously with the ioctl(). The hardware was implemented so the
+most convenient way to retrieve that information would be
+asynchronously. So, to follow the expectations of the ioctl() we have
+to use less convenient ways, triggering an PCIe PTM dialog every time
+a ioctl() is received.
+
+Some questions are raised (also pointed out in the commit message):
+
+1. Using convert_art_ns_to_tsc() is too x86 specific, there should be
+   a common way to create a 'system_counterval_t' from a timestamp.
+
+2. convert_art_ns_to_tsc() says that it should only be used when
+   X86_FEATURE_TSC_KNOWN_FREQ is true, but during tests it works even
+   when it returns false. Should that check be done?
+
+Cheers,
 
 
+Vinicius Costa Gomes (4):
+  Revert "PCI: Make pci_enable_ptm() private"
+  PCI: Add pcie_ptm_enabled()
+  igc: Enable PCIe PTM
+  igc: Add support for PTP getcrosststamp()
+
+ drivers/net/ethernet/intel/igc/igc.h         |   1 +
+ drivers/net/ethernet/intel/igc/igc_defines.h |  31 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |   6 +
+ drivers/net/ethernet/intel/igc/igc_ptp.c     | 179 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_regs.h    |  23 +++
+ drivers/pci/pci.h                            |   3 -
+ drivers/pci/pcie/ptm.c                       |   9 +
+ include/linux/pci.h                          |  10 ++
+ 8 files changed, 259 insertions(+), 3 deletions(-)
 
 -- 
+2.32.0
 
-Best regards,
-Juhee Kang
