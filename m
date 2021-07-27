@@ -2,268 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B3C3D6B0D
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:30:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7606D3D6B14
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:34:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234403AbhGZXt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 19:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233843AbhGZXtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:49:53 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC67C061757;
-        Mon, 26 Jul 2021 17:30:20 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id k65so13189897yba.13;
-        Mon, 26 Jul 2021 17:30:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WlahV91siRimjn5Od4QMmgRdTNqfaI93h5YP2ufAleM=;
-        b=bRRDCCRM8Ysc/7n8ReGL7u0AZT6YqOT90xC4edP0CLn9VnnVFxzKJTY+nfBRtYZo+7
-         fkNyQ/On/WId3txLmG5Lw4YuqaAAvAvUc1hcAsGQUfhkUd2tuQBMJuiAXdolDAswX9WT
-         O+XaP8eKp0EcvzsoaH6LOZt5/AwckAt3RXDlHqJH9RSc2xyC12nOO6OYNpS4difxYyHY
-         RpB85toIYVM7AxfOUwaShKbkBUsEqt3mcrVOCk1jB6w/0OVpmG+e9uG3zKQHFbeZB+vo
-         gspifWERbt31O4wtJeqVNxgaQxupY5TUqHeq5i+JErPIKZ4aGknytJ3lzryKAGfnw7HQ
-         F5nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WlahV91siRimjn5Od4QMmgRdTNqfaI93h5YP2ufAleM=;
-        b=PV/RzWzMG1aqZ/G4QIPvMu15APdK3h1VFon4299I4Yfv+ivArg1LgOSGv8s4pe9DTp
-         vCMOSzpMk/ODTtOfp2fumdFT8r4Ae0x6u26LDR6Yg3QPajMVCT+icp4OA/D74Rbuo8xs
-         H2R319K2hpDKYtpgDSdHLddt2tcTvQD2lP0fCgIN4iTq/DPe9UGRO4ctK+NY/8gTJSq8
-         GU4gu/Ooeq36XDGs6qOHORp37Yiet16WNyZYGD90FL346JLHB8jAO2tbHvqDhGBKnAt/
-         VMVmsfVkcgQjA7dX83CEQv3KPYzuiSHeLW7H6ij48DqPpW2sJ41xP94lofnCkGsB9+kP
-         tONQ==
-X-Gm-Message-State: AOAM530gbHw3zokM0SSsHE3UzqHh655KbIV3kj4y4qs+4QDY810M4ZM3
-        0zERmFJ/lQtxjfkSH98JsDv2dlGaqPf3vZNDRjI=
-X-Google-Smtp-Source: ABdhPJxZXKGNSaIrmlXFd3lcCt8NDgz2o2kpO2hUE/I853+pYfA0WyPWplCnDd23A21flqbjJWotxIXUBVpOWxpK1xk=
-X-Received: by 2002:a25:8205:: with SMTP id q5mr27524628ybk.440.1627345819451;
- Mon, 26 Jul 2021 17:30:19 -0700 (PDT)
+        id S234251AbhGZXxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 19:53:44 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39536 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233843AbhGZXxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:53:42 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16R0EI4m023574;
+        Mon, 26 Jul 2021 17:33:55 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=cH/WZrqLgza0lusOI4mu0AMG60vAutnBOAwL6wgsa2Y=;
+ b=RqtKlUYbrdP2lu3S74ToMGeAosr35fOtK9DzW+5u4oYG403SfhF9jwkqbNETK0/FxspU
+ rPMr9yDJoYN52zjrr8e/1rT9icAu5haOuRA/KoEdBGUZZU+D6FwgbDbIRiEBMynGLyj3
+ SKlXz09POz2BrzxQ7NabWg7SA4UioPx5stI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3a23569hjh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 26 Jul 2021 17:33:55 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 26 Jul 2021 17:33:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KBXclVsDS5gOC4e45aOqdBPcHok5Kk0BSpD3cW8O+mEngzJP8bfLoeFMijMvULLitUg4xJBpkXJ3cphxCRCnYDE83QUqJmWkVqp5uRN0LGXoX+Kku/3zKpMYtvqr2gdVgtwZ0UvpGyz99j+EEBLLvb538NfFKxXY1LKTsgTH2qccrwUxjAZm2sOAuTKqJh43ORlCGVP3rVcKwfxpzIoyuW2+3pqJZTW1u5sdasrR+/5Xca2pEJqto8GS62hTTJpyQkVB7f0i4Uuel9Z757xYQhNxhRIYhwxyCx8fzm4/ftsScoKAwhq9862bD8nSyxxTeqpBhU/O72/2EPQUp4MHBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cH/WZrqLgza0lusOI4mu0AMG60vAutnBOAwL6wgsa2Y=;
+ b=eonHTjPeL/3m7lchx50B2rCRqhdsxDGLzBIJVU/sJtd8GjxGqLp1DsU7QNPAlOr3GkFw3vkqYnWIhIm4HlmB3/tWQOrvUvvjGQ7bRXajA4iSbsQluEGpKWIeqVl2OVo5qpPG9MBuBIISftz5H4oDMMSyc8xMaZGMk9JsvMCCp70wbYA30uSzZ/YK31tVGLH9VpQEOT3Smx2fEcTGX6+85lcVoqwIDh8bAQ3R/MK+xDD33j588TuaUuwAfnfH4s8SWQd29xsRoB+TF6c63N7CwWeZrD01Wws+jHQxci0kCpJgl1lEfHDP9/sW4yVZkZhWITH3H6uFtXbEkhFyIc3T2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SN7PR15MB4207.namprd15.prod.outlook.com (2603:10b6:806:109::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.29; Tue, 27 Jul
+ 2021 00:33:54 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::1b5:fa51:a2b9:28f]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::1b5:fa51:a2b9:28f%9]) with mapi id 15.20.4352.031; Tue, 27 Jul 2021
+ 00:33:54 +0000
+Date:   Mon, 26 Jul 2021 17:33:51 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v3] bpf: increase supported cgroup storage value
+ size
+Message-ID: <20210727003351.e5znun6pstjamzz2@kafai-mbp.dhcp.thefacebook.com>
+References: <20210726230032.1806348-1-sdf@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210726230032.1806348-1-sdf@google.com>
+X-ClientProxiedBy: SJ0PR03CA0266.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::31) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
-References: <20210721093832.78081-1-desmondcheongzx@gmail.com> <20210721093832.78081-2-desmondcheongzx@gmail.com>
-In-Reply-To: <20210721093832.78081-2-desmondcheongzx@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 26 Jul 2021 17:30:08 -0700
-Message-ID: <CABBYNZLus8GyPuTp4jmAeSEdsYTZ-4gK6OvGXqcABhci8tBOwA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] Bluetooth: fix inconsistent lock state in SCO
-To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, matthieu.baerts@tessares.net,
-        stefan@datenfreihafen.org,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        skhan@linuxfoundation.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:ac8c) by SJ0PR03CA0266.namprd03.prod.outlook.com (2603:10b6:a03:3a0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend Transport; Tue, 27 Jul 2021 00:33:53 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f8f09354-9508-4653-346e-08d950963685
+X-MS-TrafficTypeDiagnostic: SN7PR15MB4207:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN7PR15MB4207C3FB554BC1F11CD9C1ABD5E99@SN7PR15MB4207.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CbWfUrTSbyAj69KWmjzRyNDfU0CeiYjYJthv5A2310LfucrhMhEQ16A7zKnesV+aEtnDvNIyhSn0cZ+MI7gz2aBL9r3SBQa0nMrwxgUhb/o2T5V0k0jsj7zVoNAjVgdio9rPiczaDqLtjTfcopXp89mwObDveSvD61Znb44BwmaEDWKz2CCEqVhik2fHNhGQbKfRU3Tf6H8eZvdrG3kH48NeQfjjvxw+HKhXcwC6LawNJwi2wVAJ9SuTp/C9OlfrdiEBRu6HcxH/2mO8DtEQtczqEs4BBPEBh58IvpzNhstkEvQvWV7Wn+GVOS94Nir/nKvIV6Dd3ebCLfbA2haEtP906LBy6mbx6fg+WiWb1SLtpkIHEvw6th8tQnSwKhiSdSAQmN/PBB/v6u+AEfVLAeT9CUtvN6AAnMOXpVfGuXaCUdUI+qwX3kJM9I7Cl5PBr+f45ePGop7REfRBFXBjUrwy202STKlIlHYKzH0OkML/vbHtQXViIDU1Lz0/KeN1fARy9z5AfdBq5BGMRnM40r6vuzMvhchB+/PfXRhgXHY/z19HvlnPBwgXzW8CCLjQQP2ptqTqUWuVOKo1WZ4TLDNJVdTSDOyc/8WmLFaUjmb/CPOou6IxQsNz8kDj5VhEdQvzoqzM8EXKA86RlwS2Uw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(376002)(346002)(39860400002)(136003)(7696005)(8936002)(86362001)(52116002)(478600001)(9686003)(4744005)(8676002)(83380400001)(1076003)(38100700002)(5660300002)(55016002)(6506007)(6916009)(4326008)(186003)(2906002)(66946007)(66556008)(66476007)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?spC6idCoF8k5HuY2vBPGDpiI/ff4Zec3PRW1u1zQnY1kbfi8DKGT/b4sdVOR?=
+ =?us-ascii?Q?qsR65odZtFqOksDkljDf9FgZNSOxBRsaUMtgjL/PBu0TmQgxqHAY6HbgDSiZ?=
+ =?us-ascii?Q?Z+h7YzSt3PO5/vUZSrg3i0X1KqtTm50Jyv6uBQkl745W9zpbw19YLn72/we1?=
+ =?us-ascii?Q?dYMec0pOWvAUaq8ni5zpXxxSKqTFo7t+Ti369Q6kRupFR2IjzH+eEXaKLNaw?=
+ =?us-ascii?Q?mWvD/zy+ByG/lWdTl2nBcqYHzB8GgEqf6ms0qjV24qsExaHmz2/5QB5jjHAx?=
+ =?us-ascii?Q?4Mkc6zuON+RjEW4EUbiKIP+DnAGs1oF67KIAsAXFM8AyvWmGjwI4C4GiPqPW?=
+ =?us-ascii?Q?qpFgdaz/nYXnvR5hnZibzceoQmuT7h5U3bOEkNxNGQvlErEGxoGZsUQsAGWb?=
+ =?us-ascii?Q?JtAtZ05SW/la8TzOZZpgzAdqoEksOfadtwIzRcKzYg+MYGE224BqRKzvZxYV?=
+ =?us-ascii?Q?ev8UonhAoSsKQTZjnQgt8r69pKnvUTj2VnuXB583SUNglCYZ4avbvBTEWsQY?=
+ =?us-ascii?Q?Syehs0YOU+ynPu18Ubx+OJjvVZz7885O//sBRLG32+Hen+dWeYefsuw4Uxdr?=
+ =?us-ascii?Q?4cfFi9VGp5SD0MND9XJjhhuZ314pRz+GQVPPs3VCnNdwxFniaCNvSV8/DXfb?=
+ =?us-ascii?Q?YpZE8HNkhmfwMZR67tOrwJNkzslpsHFQE4DrLCteplB//jFADl8uLtHJnI4i?=
+ =?us-ascii?Q?uStFHJ1A5Nw1J+7tjp0A52jvxNF59CBpApFdCfc41ZM0kX0FwO0CDDhbrGaJ?=
+ =?us-ascii?Q?p2z8/IZisgydZnBNOBKiJe6EmTCfUJWPrhIqda01xF43z0aKASfn5YjUADXL?=
+ =?us-ascii?Q?bAhiPQWoi2neolCfSXDScZubxDouCtsXQHwdiiXiTiMY6W7pBR7kfP30ViFP?=
+ =?us-ascii?Q?z73QguCsMhkXC5yIfGcHIo/nYb5f9mC42VLOoTJGTUp+ILpiUC2RH2hnZb7F?=
+ =?us-ascii?Q?Qh4gROBujXIz/ykG88UIaEq2dpKKt1XiXIGkCZFSkBCSay2FnuCGarOdNX+P?=
+ =?us-ascii?Q?1l87Qc3FH852+EeKXpX5jMAzSeZqS2UCSwT49UMUBi0+N547HS9D2djhT4Ko?=
+ =?us-ascii?Q?bd5OAbScfrwXLfI/X18dUyiPM5YkgoMtccjl5h1GAo3C5Sg0j9uGds3ligKx?=
+ =?us-ascii?Q?6A33sQb6s8+ckWLj/WuACJhsztFrORoxRY2/RUmugGmF9p6sf3DAmomm90tA?=
+ =?us-ascii?Q?h6UJbghfcLXlatA+OQ+z5mV3H6JIwne7Vd4/aSd591SSkeWb5z+bKL79HKwz?=
+ =?us-ascii?Q?Did8jxp7G5Iu/seWB0asT8SYUNPTLWMm8YN0Rz8ZwjByAv7H51wJRXo6daxA?=
+ =?us-ascii?Q?4qY1DnggN8f6rQfUWiNRnnAMKskV/u2fHeKER1Tx4yWgLQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8f09354-9508-4653-346e-08d950963685
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2021 00:33:54.1204
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KuvhOJk2NEjgfT9laDNdCORVkHv3UCNg2SBp5xKSs3z8hH3WL+QZcTvSd0yx3fqQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR15MB4207
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: iJ9b6cc4OGaR4BmePrFIt4FhYgxMQUjj
+X-Proofpoint-GUID: iJ9b6cc4OGaR4BmePrFIt4FhYgxMQUjj
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-26_14:2021-07-26,2021-07-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 spamscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ clxscore=1015 priorityscore=1501 mlxlogscore=708 mlxscore=0 adultscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2107270000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Desmond,
-
-On Wed, Jul 21, 2021 at 2:39 AM Desmond Cheong Zhi Xi
-<desmondcheongzx@gmail.com> wrote:
->
-> Syzbot reported an inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock
-> usage in sco_conn_del and sco_sock_timeout that could lead to
-> deadlocks.
->
-> This inconsistent lock state can also happen in sco_conn_ready,
-> rfcomm_connect_ind, and bt_accept_enqueue.
->
-> The issue is that these functions take a spin lock on the socket with
-> interrupts enabled, but sco_sock_timeout takes the lock in an IRQ
-> context. This could lead to deadlocks:
->
->        CPU0
->        ----
->   lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
->   <Interrupt>
->     lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
-
-Having a second look at this, it does seem this is due to use of
-sk->sk_timer which apparently run its callback on IRQ context, so I
-wonder if wouldn't be a better idea to switch to a delayed_work to
-avoid having to deal with the likes of local_bh_disable, in fact it
-seems we have been misusing it since the documentation says it is for
-sock cleanup not for handling things like SNDTIMEO, we don't really
-use it for other socket types so I wonder when we start using
-delayed_work we forgot about sco.c.
-
->  *** DEADLOCK ***
->
-> We fix this by ensuring that local bh is disabled before calling
-> bh_lock_sock.
->
-> After doing this, we additionally need to protect sco_conn_lock by
-> disabling local bh.
->
-> This is necessary because sco_conn_del makes a call to sco_chan_del
-> while holding on to the sock lock, and sco_chan_del itself makes a
-> call to sco_conn_lock. If sco_conn_lock is held elsewhere with
-> interrupts enabled, there could still be a
-> slock-AF_BLUETOOTH-BTPROTO_SCO --> &conn->lock#2 lock inversion as
-> follows:
->
->         CPU0                    CPU1
->         ----                    ----
->    lock(&conn->lock#2);
->                                 local_irq_disable();
->                                 lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
->                                 lock(&conn->lock#2);
->    <Interrupt>
->      lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
->
->   *** DEADLOCK ***
->
-> Although sco_conn_del disables local bh before calling sco_chan_del,
-> we can still wrap the calls to sco_conn_lock in sco_chan_del, with
-> local_bh_disable/enable as this pair of functions are reentrant.
->
-> Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-> Tested-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-> ---
->  net/bluetooth/sco.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
->
-> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-> index 3bd41563f118..34f3419c3330 100644
-> --- a/net/bluetooth/sco.c
-> +++ b/net/bluetooth/sco.c
-> @@ -140,10 +140,12 @@ static void sco_chan_del(struct sock *sk, int err)
->         BT_DBG("sk %p, conn %p, err %d", sk, conn, err);
->
->         if (conn) {
-> +               local_bh_disable();
->                 sco_conn_lock(conn);
->                 conn->sk = NULL;
->                 sco_pi(sk)->conn = NULL;
->                 sco_conn_unlock(conn);
-> +               local_bh_enable();
->
->                 if (conn->hcon)
->                         hci_conn_drop(conn->hcon);
-> @@ -167,16 +169,22 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
->         BT_DBG("hcon %p conn %p, err %d", hcon, conn, err);
->
->         /* Kill socket */
-> +       local_bh_disable();
->         sco_conn_lock(conn);
->         sk = conn->sk;
->         sco_conn_unlock(conn);
-> +       local_bh_enable();
->
->         if (sk) {
->                 sock_hold(sk);
-> +
-> +               local_bh_disable();
->                 bh_lock_sock(sk);
->                 sco_sock_clear_timer(sk);
->                 sco_chan_del(sk, err);
->                 bh_unlock_sock(sk);
-> +               local_bh_enable();
-> +
->                 sco_sock_kill(sk);
->                 sock_put(sk);
->         }
-> @@ -202,6 +210,7 @@ static int sco_chan_add(struct sco_conn *conn, struct sock *sk,
->  {
->         int err = 0;
->
-> +       local_bh_disable();
->         sco_conn_lock(conn);
->         if (conn->sk)
->                 err = -EBUSY;
-> @@ -209,6 +218,7 @@ static int sco_chan_add(struct sco_conn *conn, struct sock *sk,
->                 __sco_chan_add(conn, sk, parent);
->
->         sco_conn_unlock(conn);
-> +       local_bh_enable();
->         return err;
->  }
->
-> @@ -303,9 +313,11 @@ static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
->  {
->         struct sock *sk;
->
-> +       local_bh_disable();
->         sco_conn_lock(conn);
->         sk = conn->sk;
->         sco_conn_unlock(conn);
-> +       local_bh_enable();
->
->         if (!sk)
->                 goto drop;
-> @@ -420,10 +432,12 @@ static void __sco_sock_close(struct sock *sk)
->                 if (sco_pi(sk)->conn->hcon) {
->                         sk->sk_state = BT_DISCONN;
->                         sco_sock_set_timer(sk, SCO_DISCONN_TIMEOUT);
-> +                       local_bh_disable();
->                         sco_conn_lock(sco_pi(sk)->conn);
->                         hci_conn_drop(sco_pi(sk)->conn->hcon);
->                         sco_pi(sk)->conn->hcon = NULL;
->                         sco_conn_unlock(sco_pi(sk)->conn);
-> +                       local_bh_enable();
->                 } else
->                         sco_chan_del(sk, ECONNRESET);
->                 break;
-> @@ -1084,21 +1098,26 @@ static void sco_conn_ready(struct sco_conn *conn)
->
->         if (sk) {
->                 sco_sock_clear_timer(sk);
-> +               local_bh_disable();
->                 bh_lock_sock(sk);
->                 sk->sk_state = BT_CONNECTED;
->                 sk->sk_state_change(sk);
->                 bh_unlock_sock(sk);
-> +               local_bh_enable();
->         } else {
-> +               local_bh_disable();
->                 sco_conn_lock(conn);
->
->                 if (!conn->hcon) {
->                         sco_conn_unlock(conn);
-> +                       local_bh_enable();
->                         return;
->                 }
->
->                 parent = sco_get_sock_listen(&conn->hcon->src);
->                 if (!parent) {
->                         sco_conn_unlock(conn);
-> +                       local_bh_enable();
->                         return;
->                 }
->
-> @@ -1109,6 +1128,7 @@ static void sco_conn_ready(struct sco_conn *conn)
->                 if (!sk) {
->                         bh_unlock_sock(parent);
->                         sco_conn_unlock(conn);
-> +                       local_bh_enable();
->                         return;
->                 }
->
-> @@ -1131,6 +1151,7 @@ static void sco_conn_ready(struct sco_conn *conn)
->                 bh_unlock_sock(parent);
->
->                 sco_conn_unlock(conn);
-> +               local_bh_enable();
->         }
->  }
->
-> --
-> 2.25.1
->
-
-
--- 
-Luiz Augusto von Dentz
+On Mon, Jul 26, 2021 at 04:00:32PM -0700, Stanislav Fomichev wrote:
+> Current max cgroup storage value size is 4k (PAGE_SIZE). The other local
+> storages accept up to 64k (BPF_LOCAL_STORAGE_MAX_VALUE_SIZE). Let's align
+> max cgroup value size with the other storages.
+> 
+> For percpu, the max is 32k (PCPU_MIN_UNIT_SIZE) because percpu
+> allocator is not happy about larger values.
+> 
+> netcnt test is extended to exercise those maximum values
+> (non-percpu max size is close to, but not real max).
+> 
+> v3:
+> * refine SIZEOF_BPF_LOCAL_STORAGE_ELEM comment (Yonghong Song)
+> * anonymous struct in percpu_net_cnt & net_cnt (Yonghong Song)
+> * reorder free (Yonghong Song)
+> 
+> v2:
+> * cap max_value_size instead of BUILD_BUG_ON (Martin KaFai Lau)
+Acked-by: Martin KaFai Lau <kafai@fb.com>
