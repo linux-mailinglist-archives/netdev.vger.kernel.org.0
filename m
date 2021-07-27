@@ -2,94 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B6FB3D81A2
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 330CC3D81A9
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:21:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235037AbhG0VUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:20:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37744 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234113AbhG0VT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 17:19:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C5BA60FA0;
-        Tue, 27 Jul 2021 21:18:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627420740;
-        bh=WmBPx1Yv944WSgHzak0rUdbiFwHmXA9AEErppz095mw=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Yhxrd8TFAkXrlR9r4ZRtp1p0sOIsB3ZuHtZ7oYU4pXZvEaqyymH79DJSjO7iRK0si
-         GSkXTTyUofgJqP034jp+1ZTvpxMOzmU1ZGhjE0qTg4I6idDUP9ThURBnvBclsuNBhC
-         u1tZ6C5YrfZBbxqk5ahpRO+VLSzVj3IEDOAgpOob/SggphKjlTaaTST/9JYGw9qJid
-         8957SpfZCeNiETD/zLB4cNWxzBDrGN9HQH+PNdMkwgJzIdpYFU/NFrV7mI6t8oFQsi
-         iwRWwF/foCBjtefKMixR8I7lM2u4IUX+zsUkg8iCrC0hdyyEJdWn/XDDKg0i/Pt6xD
-         FkiBVpBB37WQw==
-Subject: Re: [PATCH 31/64] fortify: Explicitly disable Clang support
-To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-32-keescook@chromium.org>
-From:   Nathan Chancellor <nathan@kernel.org>
-Message-ID: <da989ffc-da64-33a2-581e-6920eb7ebd2d@kernel.org>
-Date:   Tue, 27 Jul 2021 14:18:58 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S234271AbhG0VVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232163AbhG0VVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:21:03 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B405FC0619E4
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:19:36 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id m13so407211iol.7
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:19:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FZgXW2V/OmKKCTONUYggrHApUH/cqcNZ6/eLxchFR40=;
+        b=VM7KUz0bF1HEiw7DUvb0cAp/g9JcMdSpkE+1acS68yPoa2/OpWNBkieA2Lu5+ZFgS3
+         DabDqKTvy6RQWLCuKi2ELVEbV7Ewa1qHCDtLod11+AjBV2agVt//Iuos+xSVOkR2ZNa1
+         x3X+hTbIFAhxJpvNoQmjTiNIqwHxbqNFhIzyzyn5+mNkHZqAnlj/08jiM1est/OLMZoV
+         +trp+QyJi1CRgoWPPcbxZ43e1+IoSZ7blHTAVpU5imQQ7CWQdxgE4b0edPDATadNMZxl
+         vbOYCHomWvRdiPCp4Aie/kSiIfLxTqaaTKDc/oMY37O7sszm3ZwypAY5bHgrvrFxWEbg
+         8ONA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FZgXW2V/OmKKCTONUYggrHApUH/cqcNZ6/eLxchFR40=;
+        b=f8uHOJn/WsxhFaWZ1gSUNnF9UUM/nUGB35Zzq5u6JUfSTgemRTHTSBzYkmJ7YOtCOV
+         1TsHwECNpH5gV7Ns5brLk8Vl3+OtnUXLSMRx22Zx4MR0nR9ThRydCXYqbD+/jnBkd+NL
+         xztk2VSbdfvenQW5koQLnICPPwgHMxs71GOtJt7RnPc0bJJBo48FsqYDeDXKhDW7VwA3
+         Lf3UYyatoqk3XKsZ3rorX0T2lHKDbGqnh9SVsRkDgubZUdjQra8rT83TKy2Tnw8lfnxx
+         yACqVjFpHCy9+KIRyeBG2RVW3xsfqMj5shq2snwI95R5KGo253g2yOD+ZERKvFuxkMRN
+         jO3A==
+X-Gm-Message-State: AOAM530MvyjHp3GpI0AMCzY6RAN/sbwKwhSiMeprngssZWEYnlXIfcrU
+        jtY7T691ykgPwQmxxSlo0hdPnPOPK91ZqQ==
+X-Google-Smtp-Source: ABdhPJyKyHin6AJhtDilAfPr1Ta2tQ2NmkxOXC7J0laG+PMpC0T6eeyG5+wP1CJLyqJVUu4jWSh36Q==
+X-Received: by 2002:a6b:b24e:: with SMTP id b75mr20870753iof.94.1627420776131;
+        Tue, 27 Jul 2021 14:19:36 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id s21sm3136068iot.33.2021.07.27.14.19.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jul 2021 14:19:35 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: ipa: add clock references
+Date:   Tue, 27 Jul 2021 16:19:28 -0500
+Message-Id: <20210727211933.926593-1-elder@linaro.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20210727205855.411487-32-keescook@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/2021 1:58 PM, Kees Cook wrote:
-> Clang has never correctly compiled the FORTIFY_SOURCE defenses due to
-> a couple bugs:
-> 
-> 	Eliding inlines with matching __builtin_* names
-> 	https://bugs.llvm.org/show_bug.cgi?id=50322
-> 
-> 	Incorrect __builtin_constant_p() of some globals
-> 	https://bugs.llvm.org/show_bug.cgi?id=41459
-> 
-> In the process of making improvements to the FORTIFY_SOURCE defenses, the
-> first (silent) bug (coincidentally) becomes worked around, but exposes
-> the latter which breaks the build. As such, Clang must not be used with
-> CONFIG_FORTIFY_SOURCE until at least latter bug is fixed (in Clang 13),
-> and the fortify routines have been rearranged.
-> 
-> Update the Kconfig to reflect the reality of the current situation.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->   security/Kconfig | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/security/Kconfig b/security/Kconfig
-> index 0ced7fd33e4d..8f0e675e70a4 100644
-> --- a/security/Kconfig
-> +++ b/security/Kconfig
-> @@ -191,6 +191,9 @@ config HARDENED_USERCOPY_PAGESPAN
->   config FORTIFY_SOURCE
->   	bool "Harden common str/mem functions against buffer overflows"
->   	depends on ARCH_HAS_FORTIFY_SOURCE
-> +	# https://bugs.llvm.org/show_bug.cgi?id=50322
-> +	# https://bugs.llvm.org/show_bug.cgi?id=41459
-> +	depends on !CONFIG_CC_IS_CLANG
+This series continues preparation for implementing runtime power
+management for IPA.  We need to ensure that the IPA core clock and
+interconnects are operational whenever IPA hardware is accessed.
+And in particular this means that any external entry point that can
+lead to accessing IPA hardware must guarantee the hardware is "up"
+when it is accessed.
 
-Should be !CC_IS_CLANG, Kconfig is hard :)
+The first four patches in this series take IPA clock references when
+needed by such external entry points, dropping those references in
+those same functions when they are no longer required.
 
->   	help
->   	  Detect overflows of buffers in common string and memory functions
->   	  where the compiler can determine and validate the buffer sizes.
-> 
+The last patch is a bit different, though it too prepares for
+enabling runtime power management.  It avoids suspending/resuming
+endpoints if setup is not complete.
 
-Cheers,
-Nathan
+					-Alex
+
+Alex Elder (5):
+  net: ipa: get clock in ipa_probe()
+  net: ipa: get another clock for ipa_setup()
+  net: ipa: add clock reference for remoteproc SSR
+  net: ipa: add a clock reference for netdev operations
+  net: ipa: don't suspend endpoints if setup not complete
+
+ drivers/net/ipa/ipa_main.c  | 37 ++++++++++++++++++++++++++-----------
+ drivers/net/ipa/ipa_modem.c | 14 +++++++++++++-
+ drivers/net/ipa/ipa_smp2p.c |  5 +++++
+ 3 files changed, 44 insertions(+), 12 deletions(-)
+
+-- 
+2.27.0
+
