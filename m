@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BD8E3D75D1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA4B3D75D3
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236727AbhG0NSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        id S236812AbhG0NTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236664AbhG0NS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 09:18:29 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA50C061757;
-        Tue, 27 Jul 2021 06:18:28 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id a80-20020a1c98530000b0290245467f26a4so2353110wme.0;
-        Tue, 27 Jul 2021 06:18:28 -0700 (PDT)
+        with ESMTP id S236690AbhG0NSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 09:18:30 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D766C061760;
+        Tue, 27 Jul 2021 06:18:30 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id e2so15194903wrq.6;
+        Tue, 27 Jul 2021 06:18:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XDCGMnZwqvwnTKJJVSQ0Q5+65eOgD5z0zzT93aFCQ3w=;
-        b=MYeuHGrEEHHAjHLJSuKvDKLY88yETDOobeq4y4BPEYJ2ynCTXEbCsRJ5bmNf5ek1lc
-         9KYGs+qOyorxU+LUbXrG1siJA0BskfMF5aoRBYGchNuBGLT/wiTA/krL7SlUUz356z3E
-         xt+N3PeL3cm4qhuy5g5jAh49rI2s5rXiGVIR6GWEUbX2Mos1uSQfuClSvQWziWkDYAPY
-         F5hbK4QCZzabexB1CRft0ESwZ99GB52zuCoqAgSaKc1KX3Jlr3+4xXu28zADKDpmK5x9
-         4ziOV01N6EaojIeKpLCvwhHJ/Jtqh4eO8TlKAWSxKXAAtHCt9wCJMg+a/qm9bQcfR+Zo
-         i6Wg==
+        bh=w0E15WjB5l/ONlsxKyYmXzmAa5QhDL/Q1sNeXYjyMj0=;
+        b=uUsTWlZ5IECec8LeH2Qess+6ugcZBHvIjnGMH2EKHngBsmGVnHgLfTfbBcVM6NleDJ
+         X/IhZX8zab44AnJmuLCk0zlV1D/4PBoZJ4bgc6VrQR79tLMVQ2RgvGcl96nspWspd54H
+         2S3P2Zx5yCLsUSyKliwpn4xp55UywCJ7A0tZhykFFa2+JvmgRA236Z4r7TqI5jAvuceG
+         ZfASMz1aDD9FZiWWOTPI9PFUQ/OFKmHtmdnZeuA4HeiR/xl4pkQkK3jqHZi8eKfv2rFS
+         mAVnsccPY94vZRuHIN9C3j25Z9y4jzPtxefVQaV1Kq0oSGCIvL8PO5rRv6MrklYEW6Mc
+         Rd4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XDCGMnZwqvwnTKJJVSQ0Q5+65eOgD5z0zzT93aFCQ3w=;
-        b=ovdIFt3a49YjNLzS9olpaEsp16oQSG48XwukK72ldZI5GwkhrVyNfHKgDFTYaTj0EQ
-         kpsIJ55BzQES3VvUlx/Rwqmgd8M6S8sWuVSKdvbnmz5AhQmlR8r8jZdBZtiMBNbXjVEm
-         Va7/LWw8ny24nXcR5ucDPBo4Gr8lkUy5gmm/qWRVy9evKLZKwhiPxELYavU4q7tjtrxN
-         nMmxx2x2Z6383TCWpZMrvvQr6fU0eJXNMI1srUTP9dtuhCXq4YVTxPZ9NfbHXsSI7UYs
-         v/PpS0nNrhErhuwLXxd21iQ0Yn1PbGuGbhpHAC8nHBiFEExsJDmV/xSHn8bMXXRX3CV2
-         PDTw==
-X-Gm-Message-State: AOAM532sOulS/3Kbgm15TQJXJZjIMyyuwJk9TW97XtQn3mgZTfeX2Yhv
-        Q5w+sjgA9GM+4jLK6RiVmgg=
-X-Google-Smtp-Source: ABdhPJzmozIXrR296GOfl+lUOgmr8EIZz9IZ19/3CkT6Psa2dtE/Dk7IsnECXmcOVxBIsKqB8+2USw==
-X-Received: by 2002:a1c:a54b:: with SMTP id o72mr4183901wme.114.1627391907558;
-        Tue, 27 Jul 2021 06:18:27 -0700 (PDT)
+        bh=w0E15WjB5l/ONlsxKyYmXzmAa5QhDL/Q1sNeXYjyMj0=;
+        b=oldbxovgYYpAXOxgcaHaQw9reXMaeR0/WnvHp7vj1449yyu/VPVFTBprLvEAVW3sxt
+         z73WaocwRnju+f2ATTkI8FJ2wStXcSuIO1WqIRJOE52FxyBmNanoyNmIlrpSucWMBUpv
+         uzNZnq+FA6G2M7IHKr4YevVChuHoQ1TvvQPDbOoGpmxS3qaETX6R7FiheIRzL+N24x3I
+         Yc/gir5P20BEafIT3+dwT+5DU3TtETvlp31RzanVkYRdD+2J4GtFu0XpH7wjeSfwI6ku
+         nH7CmJIIUP/78v86+jBOMdmtGul0EMflsIBYHBPC37qyWeoYo//pe7AN2nIvAazYcRJ2
+         9OYg==
+X-Gm-Message-State: AOAM5324Z9RC9qnlbYmQEhjUbc67xSKC9NrbO6KQbgTa3JZwJ0JVgwww
+        9ynSoJuPlObNIHnHa5vJ3GM=
+X-Google-Smtp-Source: ABdhPJxZ2S18ykjGqbvgizyeJzdEvjvAdTIgKaLjxPQwfPXbUr/rpoUAcUQqqGQ80efhQWlXIUztwg==
+X-Received: by 2002:a05:6000:11c8:: with SMTP id i8mr2820578wrx.300.1627391909103;
+        Tue, 27 Jul 2021 06:18:29 -0700 (PDT)
 Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id u11sm3277553wrr.44.2021.07.27.06.18.25
+        by smtp.gmail.com with ESMTPSA id u11sm3277553wrr.44.2021.07.27.06.18.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 27 Jul 2021 06:18:27 -0700 (PDT)
+        Tue, 27 Jul 2021 06:18:28 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
 Cc:     jonathan.lemon@gmail.com, ciara.loftus@intel.com,
         joamaki@gmail.com, bpf@vger.kernel.org, yhs@fb.com,
         andrii@kernel.org
-Subject: [PATCH bpf-next 12/17] selftests: xsk: decrease batch size
-Date:   Tue, 27 Jul 2021 15:17:48 +0200
-Message-Id: <20210727131753.10924-13-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 13/17] selftests: xsk: remove cleanup at end of program
+Date:   Tue, 27 Jul 2021 15:17:49 +0200
+Message-Id: <20210727131753.10924-14-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210727131753.10924-1-magnus.karlsson@gmail.com>
 References: <20210727131753.10924-1-magnus.karlsson@gmail.com>
@@ -68,27 +68,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Decrease the batch size from 64 to 8 to stress the system some more
-and avoid potentially overflowing some buffers in the skb case.
+Remove the cleanup right before the program/process exits as this will
+trigger the cleanup without us having to write or maintain any
+code. The application is not a library, so let us benefit from that.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 29 +++++-------------------
+ 1 file changed, 6 insertions(+), 23 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 0fb657b505ae..1c5457e9f1d6 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -36,7 +36,7 @@
- #define UDP_PKT_DATA_SIZE (UDP_PKT_SIZE - sizeof(struct udphdr))
- #define USLEEP_MAX 10000
- #define SOCK_RECONF_CTR 10
--#define BATCH_SIZE 64
-+#define BATCH_SIZE 8
- #define POLL_TMOUT 1000
- #define DEFAULT_PKT_CNT (4 * 1024)
- #define RX_FULL_RXQSIZE 32
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 327129f83fef..8cc66c3ce94a 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -1045,25 +1045,21 @@ static void run_pkt_test(int mode, int type)
+ 
+ int main(int argc, char **argv)
+ {
+-	bool failure = false;
+ 	int i, j;
+ 
+-	for (int i = 0; i < MAX_INTERFACES; i++) {
++	for (i = 0; i < MAX_INTERFACES; i++) {
+ 		ifdict[i] = malloc(sizeof(struct ifobject));
+ 		if (!ifdict[i])
+ 			exit_with_error(errno);
+ 
+ 		ifdict[i]->ifdict_index = i;
+ 		ifdict[i]->xsk_arr = calloc(2, sizeof(struct xsk_socket_info *));
+-		if (!ifdict[i]->xsk_arr) {
+-			failure = true;
+-			goto cleanup;
+-		}
++		if (!ifdict[i]->xsk_arr)
++			exit_with_error(errno);
++
+ 		ifdict[i]->umem_arr = calloc(2, sizeof(struct xsk_umem_info *));
+-		if (!ifdict[i]->umem_arr) {
+-			failure = true;
+-			goto cleanup;
+-		}
++		if (!ifdict[i]->umem_arr)
++			exit_with_error(errno);
+ 	}
+ 
+ 	setlocale(LC_ALL, "");
+@@ -1082,19 +1078,6 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
+-cleanup:
+-	for (int i = 0; i < MAX_INTERFACES; i++) {
+-		if (ifdict[i]->ns_fd != -1)
+-			close(ifdict[i]->ns_fd);
+-		free(ifdict[i]->xsk_arr);
+-		free(ifdict[i]->umem_arr);
+-		free(ifdict[i]);
+-	}
+-
+-	if (failure)
+-		exit_with_error(errno);
+-
+ 	ksft_exit_pass();
+-
+ 	return 0;
+ }
 -- 
 2.29.0
 
