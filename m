@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A101D3D7826
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 16:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C713D7837
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 16:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237216AbhG0OIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 10:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
+        id S236762AbhG0OMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 10:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237121AbhG0OHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 10:07:50 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CBBC0617BF;
-        Tue, 27 Jul 2021 07:07:40 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id F3F9DC01F; Tue, 27 Jul 2021 16:07:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1627394858; bh=QI9NM+ntTRyETfWyMRmRllPOnsq2Qxq/y2QwpHonQpc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OUeCMFppUuAhM4vHcwEr5QY6aCxKhRg6OQ9Ww+oT0eyH1lCSWCwbdahQH7JNps5Jk
-         3B1e8XHBzLQLz5bj6WNwCZCrCS0nSEkWg+M2gSQ00hi2FQylEFD/hZxJQN2cVowH0I
-         Wr2baxlbIQLo/lgZEoa2MXuckCZsAmEzQtlS8hRToiyel9DwWw6wEVboRPM+jMZDdC
-         GxdwXPU6+DLfzciU3EaIxNN0wPuy4A4sqZCK5C7jHM9iXz5lUiPDfAinlpD7VIgG2z
-         akXn1UVHVTeJJMkl7ml2UBKfXgejQdN8BtzKHvwByFvIEpmlcZEaPGpGnpUoxzcis0
-         X84XWEhCV+6ZQ==
-X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on nautica.notk.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=unavailable version=3.3.2
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id EB9A7C009;
-        Tue, 27 Jul 2021 16:07:33 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1627394856; bh=QI9NM+ntTRyETfWyMRmRllPOnsq2Qxq/y2QwpHonQpc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pn05Bq1fkIQ5dMWWMMhjFU61rkNfdRvNZ+9xveK8HyiHwQfk4ASNjfg27JEONO2QG
-         TUXgeU7ZgPP8Vb4GCcyoXRrJlTcgdaykkuLMUwcbs+70Mk8Pk5lfqxb4ChNuw8i5GG
-         ZTmWvOM3kZN5x0BdrIHc3Hu7obCOTOHtcAKrFK2Rw8Kyx2VqmBb8/ZkurUREZuNutl
-         YV+RnVQLTtemm99ui7jjZLNu2fgmsEf3+wnACbaEL4ZyqHg3QPsO5MIcwLvlYUGV20
-         RgXsVQiQrnZ2iAjrByQ9VFYGEeCFetSuMQA5S0rkNBWdoXCr7/4ihXjlwZXhg+FxLc
-         Bf3Gq1KcBGtcg==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id f1d2c809;
-        Tue, 27 Jul 2021 14:07:29 +0000 (UTC)
-Date:   Tue, 27 Jul 2021 23:07:14 +0900
-From:   asmadeus@codewreck.org
-To:     Harshvardhan Jha <harshvardhan.jha@oracle.com>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
-        kuba@kernel.org, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] 9p/xen: Fix end of loop tests for list_for_each_entry
-Message-ID: <YQATEmmSsYABH/cu@codewreck.org>
-References: <alpine.DEB.2.21.2107261654130.10122@sstabellini-ThinkPad-T480s>
- <20210727000709.225032-1-harshvardhan.jha@oracle.com>
+        with ESMTP id S236648AbhG0OMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 10:12:37 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A026C061757
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 07:12:34 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id b9so14548212wrx.12
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 07:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wxFe0uNWW9r8apP/FU5g02YgcMO4sIOQrIvQ0ldAwCE=;
+        b=tKqva2x/CG8NzNjWImVr+kujX/2pkcv6GBJov7A0FHrtTM+AWUaZg2RbsIt+2FlCm9
+         MzAOgq5MVu7g44j7ba+GmRwMWp8FsuxUIzw2wnBV/giol1NiN51RCQeb/dbT/KdDnbcN
+         xOM10soYVdAlqUz8jz9HAMYFBVicmcOR3rAcAyR3eVJocoqUN2Ei0IVTNdgM/RDIKr8G
+         xfDdwLzGJAEsvexyVUv4E2q3DnwYOgmYcTdfoKlH+zb4+LA36Y6VluffdgsH+KN89DNL
+         ZP2UaaUjHblc3whx0DDG85xV38HvCrZ0PgS9Oly7LyceGcyk6DUTkcSn995pXbHOt3s0
+         tf2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wxFe0uNWW9r8apP/FU5g02YgcMO4sIOQrIvQ0ldAwCE=;
+        b=MJW1RldmzNYeMdwHAYKcxKF+kbYnV4l6z0xqib3PtXfD/oEUrKSkSSQVtufqQEOy06
+         5SHctrqanVgENfuBSJrsIpI/6kM57a+PIGnAYdskpT/Qt+Na6FClPBYLBo7ZXg1gU2dR
+         5tcONUXsIULmqoT1xS7b/GWss2myliTzEirEG4quYYVHtWB0cLiFMW1tZdBtZMwiLY73
+         QJ7ztatnfnGYt8M4EFkJghuABJ5YVZT0CTTt6jkNvp/+y0rtQE48NQcYp3GEkG+LFAWu
+         y6XE5+BISFD5+/02atokRFyZkRd0V8Bk8aotbz/NNHOPXC+tIiy2W2ljAbtB5ro3UiCg
+         FE8Q==
+X-Gm-Message-State: AOAM5314e+LYcuoz/NHf9lKZnw5sJN4knFg8BIg1kvdZn8XfudVvBrlP
+        B5opGA4awtdWlshAb+xsmM4p3g==
+X-Google-Smtp-Source: ABdhPJyo/1NSvfJMApolEVn/Cme3lrJZj6EUMJjCA+6U4kBT2iMR/FUJLcqUvmi6jmSG+c2lQdwkTg==
+X-Received: by 2002:a5d:64c8:: with SMTP id f8mr25032728wri.290.1627395152923;
+        Tue, 27 Jul 2021 07:12:32 -0700 (PDT)
+Received: from localhost.localdomain ([89.18.44.40])
+        by smtp.gmail.com with ESMTPSA id t1sm3403912wrm.42.2021.07.27.07.12.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jul 2021 07:12:32 -0700 (PDT)
+From:   Pavo Banicevic <pavo.banicevic@sartura.hr>
+To:     linux@armlinux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, ivan.khoronzhuk@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, matt.redfearn@mips.com,
+        mingo@kernel.org, dvlasenk@redhat.com, juraj.vijtiuk@sartura.hr,
+        robert.marko@sartura.hr, luka.perkov@sartura.hr,
+        jakov.petrina@sartura.hr
+Cc:     Pavo Banicevic <pavo.banicevic@sartura.hr>
+Subject: [PATCH 0/3] Address compilation of eBPF related software with clang compiler on arm architecture
+Date:   Tue, 27 Jul 2021 16:11:16 +0200
+Message-Id: <20210727141119.19812-1-pavo.banicevic@sartura.hr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210727000709.225032-1-harshvardhan.jha@oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Harshvardhan Jha wrote on Tue, Jul 27, 2021 at 05:37:10AM +0530:
-> This patch addresses the following problems:
->  - priv can never be NULL, so this part of the check is useless
->  - if the loop ran through the whole list, priv->client is invalid and
-> it is more appropriate and sufficient to check for the end of
-> list_for_each_entry loop condition.
-> 
-> Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
+This patchset is fixing compilation issues that are encountered in our usage of the Linux kernel.
 
-Alright, taken and pushed to linux-next.
-I'll send it to Linus next week-ish
+Two patches are addressing compilation of eBPF related software with clang compiler on arm architecture.
+The third patch resolves compilation of the perf tool in this specific scenario.
 
-FWIW, this isn't a merge so messing with the commit message is fine and
-you didn't really need to resend (either is fine), but if you do for
-next time please tag in the subject it's a v2 (e.g. [PATCH v2]),
-optionally with a changelog below the three dashes that won't be
-included in the final commit message (not really useful here as we discussed
-the change just before, but for bigger subsystems it can help)
+We are also interested in possible alternative approaches in fixing these compilation issues which could
+then be incorporated into the mainline.
+
+Ivan Khoronzhuk (2):
+  arm: include: asm: swab: mask rev16 instruction for clang
+  arm: include: asm: unified: mask .syntax unified for clang
+
+Matt Redfearn (1):
+  include/uapi/linux/swab: Fix potentially missing __always_inline
+
+ arch/arm/include/asm/swab.h    | 3 +++
+ arch/arm/include/asm/unified.h | 4 +++-
+ include/uapi/linux/swab.h      | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
 -- 
-Dominique
+2.32.0
+
