@@ -2,141 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3016A3D6FBA
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 08:53:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F473D6FC1
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 08:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235590AbhG0Gxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 02:53:40 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:34526
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235205AbhG0Gxi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 02:53:38 -0400
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        id S235659AbhG0Gyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 02:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235504AbhG0Gyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 02:54:36 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFB2C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 23:54:37 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m8Gys-0006Jm-P6; Tue, 27 Jul 2021 08:54:22 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:ebcc:d5d8:601d:f340])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 2508B3F376
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 06:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627368818;
-        bh=qN8OJFf6Po6PVFEhUmeuvpneJoBvci7+fruSnaLegCQ=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=Bvo8ExcB6ryYZEnySjB2VjmyHWF41rFKKMOHI/0PvTZad3ICkG3RlnhrdJsnsAY4K
-         EAR7X7tjG7N5aslV/MfBqC/2iAsCgXtuDOSc9yhNV+fqFTnyEfyOTp7vYHz8YObcjt
-         8RUgWN3+jJrysUEQdnmtdFslHBnZq9roLPsX5R2cJvHW4+aBVXlFxfssU/9qHVUzZ+
-         ktcnpUyMbZrLB6IyUs85RTv1qUg1l6EyFkKX3EUGMP60k2Qggpy/s0N4NaIAQIBolL
-         cEKNyJRVmxYI/p8czj93+TqyiI5C3n5qffRTFLuoJ/xYrKfwGwwbxsNawjvE0mfq91
-         t8QkE2zp5gzvg==
-Received: by mail-ej1-f70.google.com with SMTP id qf6-20020a1709077f06b029057e66b6665aso1792708ejc.18
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 23:53:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qN8OJFf6Po6PVFEhUmeuvpneJoBvci7+fruSnaLegCQ=;
-        b=ZjoFTCJTHQlEnUPfJuhhB69yp85fiQ7pvxgqM4+xr9rXpKs/Orx+q5WIPujKBFg3s2
-         3DRairsh5PmB5vfL1Eggy/CKWZBAQINWDveyzpIvJ9UOxPIc/aDoKDZ4cgzhjj2kBXOH
-         g1JzWpOPJJwn7LE2O/f27VKv7W0Qp2yjWbe8RUuexrwbtBe07XTP2555t7GSU2FRat3n
-         rWanNbSyDKwKhKdsxqHoYurmxFHZMYgs5hQs8xf/q5t4nJfKj2dq1wUcQdre5klCCtD0
-         cAH0QGoFsg/Lu5bSptPXJT8wXSpqgspDxUyLiZePcCAaUx/fl5JZSImo99wlQhxyhnhO
-         IMyw==
-X-Gm-Message-State: AOAM532GR9+23+Ia4bQPrzAMZD+ZQHbty/bRfabpkuCj2u87j3SyI21Q
-        +nirDUnBxQTkPSlWZT6LdI3Qj6KK9IKm8QXFBWJYYOPZA4z9Joq9T3xGO3TR2fcC8hF+UFgeVve
-        kjTCHutDK/7XLxEFaBb7wfO4d5J9QQiph1ut+wXS6XTZtBRgeVA==
-X-Received: by 2002:a05:6402:1846:: with SMTP id v6mr8052318edy.198.1627368816956;
-        Mon, 26 Jul 2021 23:53:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzYdD2hDnkETruFxQmylsUBZw88ismuEmU2WP6U9HAo2K2rEXtDKURDvsFgfMewoRu4uhjd2VcTqS0lweEkMF8=
-X-Received: by 2002:a05:6402:1846:: with SMTP id v6mr8052290edy.198.1627368816680;
- Mon, 26 Jul 2021 23:53:36 -0700 (PDT)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 07494658DBB;
+        Tue, 27 Jul 2021 06:54:16 +0000 (UTC)
+Date:   Tue, 27 Jul 2021 08:54:16 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Aswath Govindraju <a-govindraju@ti.com>
+Cc:     Chandrasekar Ramakrishnan <rcsekar@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: Re: [PATCH v4 0/2] MCAN: Add support for implementing transceiver as
+ a phy
+Message-ID: <20210727065416.k2kye47iiuubkpoz@pengutronix.de>
+References: <20210510052541.14168-1-a-govindraju@ti.com>
+ <2c5b76f7-8899-ab84-736b-790482764384@ti.com>
+ <20210616091709.n7x62wmvafz4rzs7@pengutronix.de>
+ <218d6825-82c0-38f5-19ab-235f8e6f74a0@ti.com>
 MIME-Version: 1.0
-References: <20210712133500.1126371-1-kai.heng.feng@canonical.com> <20210712133500.1126371-3-kai.heng.feng@canonical.com>
-In-Reply-To: <20210712133500.1126371-3-kai.heng.feng@canonical.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Tue, 27 Jul 2021 14:53:23 +0800
-Message-ID: <CAAd53p5B5f5U_J1L+SpjZ46AFEr1kMqwgqnF2dYKvDwY2x3GzA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] e1000e: Serialize TGP e1000e PM ops
-To:     "Neftin, Sasha" <sasha.neftin@intel.com>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        AceLan Kao <acelan.kao@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="v2azx64h5w2k2b3r"
+Content-Disposition: inline
+In-Reply-To: <218d6825-82c0-38f5-19ab-235f8e6f74a0@ti.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sasha,
 
-On Mon, Jul 12, 2021 at 9:35 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
->
-> On TGL systems, PCI_COMMAND may randomly flip to 0 on system resume.
-> This is devastating to drivers that use pci_set_master(), like NVMe and
-> xHCI, to enable DMA in their resume routine, as pci_set_master() can
-> inadvertently disable PCI_COMMAND_IO and PCI_COMMAND_MEMORY, making
-> resources inaccessible.
->
-> The issue is reproducible on all kernel releases, but the situation is
-> exacerbated by commit 6cecf02e77ab ("Revert "e1000e: disable s0ix entry
-> and exit flows for ME systems"").
->
-> Seems like ME can do many things to other PCI devices until it's finally out of
-> ULP polling. So ensure e1000e PM ops are serialized by enforcing suspend/resume
-> order to workaround the issue.
->
-> Of course this will make system suspend and resume a bit slower, but we
-> probably need to settle on this workaround until ME is fully supported.
->
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=212039
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+--v2azx64h5w2k2b3r
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Series "e1000e: Add handshake with the CSME to support s0ix" doesn't
-fix the issue, so this patch is still needed.
+On 19.07.2021 19:47:33, Aswath Govindraju wrote:
+> I am planning on posting device tree patches to arm64 tree and
+> Nishanth(maintainer of the tree) requested for an immutable tag if the
+> dependent patches are not in master. So, after applying this patch
+> series, can you please provide an immutable tag ?
 
-Kai-Heng
+The patches are included in my pull request with the tag
+linux-can-next-for-5.15-20210725 [1], meanwhile they are in
+net-next/master.
 
-> ---
->  drivers/net/ethernet/intel/e1000e/netdev.c | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index e63445a8ce12..0244d3dd90a3 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-> @@ -7319,7 +7319,8 @@ static const struct net_device_ops e1000e_netdev_ops = {
->
->  static void e1000e_create_device_links(struct pci_dev *pdev)
->  {
-> -       struct pci_dev *tgp_mei_me;
-> +       struct pci_bus *bus = pdev->bus;
-> +       struct pci_dev *tgp_mei_me, *p;
->
->         /* Find TGP mei_me devices and make e1000e power depend on mei_me */
->         tgp_mei_me = pci_get_device(PCI_VENDOR_ID_INTEL, 0xa0e0, NULL);
-> @@ -7335,6 +7336,17 @@ static void e1000e_create_device_links(struct pci_dev *pdev)
->                 pci_info(pdev, "System and runtime PM depends on %s\n",
->                          pci_name(tgp_mei_me));
->
-> +       /* Find other devices in the SoC and make them depend on e1000e */
-> +       list_for_each_entry(p, &bus->devices, bus_list) {
-> +               if (&p->dev == &pdev->dev || &p->dev == &tgp_mei_me->dev)
-> +                       continue;
-> +
-> +               if (device_link_add(&p->dev, &pdev->dev,
-> +                                   DL_FLAG_AUTOREMOVE_SUPPLIER))
-> +                       pci_info(p, "System PM depends on %s\n",
-> +                                pci_name(pdev));
-> +       }
-> +
->         pci_dev_put(tgp_mei_me);
->  }
->
-> --
-> 2.31.1
->
+Hope that helps,
+Marc
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/=
+log/?h=3Dlinux-can-next-for-5.15-20210725
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--v2azx64h5w2k2b3r
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmD/rZUACgkQqclaivrt
+76m3tAf/YPWX2pxQDaenuXAhziJe1b3a8dM/H5hQZNEPWEnHLNVUiPZMr2cdkEqi
+n9H29B9DCjMijeGJNzvjLSPwazaPAopW9BAYkYJ1HW/Ou/V8eYag8icJdlU3CAM4
+BTLtIusvbQ1CMrUZsU0y/qSlh9V2agH58I1naVROXXGFHFyTN7/+MUqrm1/GD5IA
+/LWjOhGgA3OmZ7wxhzp8YL3PlXgONUAlMPpdPw7i5HOWaXB27DYK16tndyPWQnd9
+CIT0cYxKsz5aT60YPuTKYo6+3HuToZRcuRvkKgXbX9IJisv3GLVedAb3SjdEto4y
+zpEK+qakjxUwTdmMzaKmFvggvK5zkw==
+=Ul5n
+-----END PGP SIGNATURE-----
+
+--v2azx64h5w2k2b3r--
