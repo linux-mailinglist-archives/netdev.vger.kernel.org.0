@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 566883D7690
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 370293D762A
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236927AbhG0NaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:30:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56508 "EHLO mail.kernel.org"
+        id S237232AbhG0NYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:24:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236757AbhG0NTw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:19:52 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1871261A8D;
-        Tue, 27 Jul 2021 13:19:25 +0000 (UTC)
+        id S236862AbhG0NUR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 09:20:17 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8A1661AAD;
+        Tue, 27 Jul 2021 13:19:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627391965;
-        bh=Zlt0qbFtUjzGAo5uuJdLB8VD57BEQ/9zCNIslWdnwkU=;
+        s=k20201202; t=1627391986;
+        bh=TDI08tLR/NnGq08rpgOJHeEMoqEPTSQ5y6xMVG/q2c4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsdjBKazCuZgu2SzTjEN6ihnYKpriQpxSp6F19J61pRlkS6QKXHs3ZgNOOB2HoTF8
-         y+77HmNPSodoTD4e+DgzKvbajU7g2Z/h9UcGC8SB7YmxDt9EdKBrN/QtzKjrDXHRGM
-         9b6EPfttHG45iRjgc8VjNgguXM7f8smgz/pVvx4MlkrM3wApoNU2XWmaMuxF+SFb8a
-         bFjyNauWnevBfOn1Kdcxs40h3saTPu81YflRrBw6FDxBgA+XsNdzmZTJsp1u2n0UmE
-         ZiM35tzoBhBQCNcQMDtHZjXYxhj+iEwOn88PJ45UNfDy6kaF8BcJ9NOsLyxXF91Gca
-         CQJyzLtujZsYA==
+        b=Dgvin16CDifLFf1ORhcCi3A4Z0sa4qkwXxAJnpgYGsy7QeYNX1LU/zk5DdHkZv/Qp
+         FSudjV9B8aoqkUk19Gex0jzk3uqTyG3oid/EXjzdViWVP+AJElsgXrtsk+Z0k3Bdmr
+         OHScCstO0AKgHd8lIKBNkDHkhc8kFOxNqAaDpU1Q1TmwyLbU7oYgYRVfAnh4Dx7q5p
+         JdJ3mg+t3VzowrYr91Haz1k8MT0cWbTw/i6PFFtFC6CYjq4Qfz1DwIjchyenfZrMtv
+         CJoMw3mNWicyuNI3vYsgUSitkf7FJIEJhEoZCrwBIw+4MygsbcHgeQsShivGB8OLcU
+         +AXB1g0hCzrBQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
+Cc:     Takashi Iwai <tiwai@suse.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 12/21] net: Fix zero-copy head len calculation.
-Date:   Tue, 27 Jul 2021 09:18:59 -0400
-Message-Id: <20210727131908.834086-12-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/17] r8152: Fix potential PM refcount imbalance
+Date:   Tue, 27 Jul 2021 09:19:27 -0400
+Message-Id: <20210727131938.834920-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210727131908.834086-1-sashal@kernel.org>
-References: <20210727131908.834086-1-sashal@kernel.org>
+In-Reply-To: <20210727131938.834920-1-sashal@kernel.org>
+References: <20210727131938.834920-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,77 +43,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pravin B Shelar <pshelar@ovn.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit a17ad0961706244dce48ec941f7e476a38c0e727 ]
+[ Upstream commit 9c23aa51477a37f8b56c3c40192248db0663c196 ]
 
-In some cases skb head could be locked and entire header
-data is pulled from skb. When skb_zerocopy() called in such cases,
-following BUG is triggered. This patch fixes it by copying entire
-skb in such cases.
-This could be optimized incase this is performance bottleneck.
+rtl8152_close() takes the refcount via usb_autopm_get_interface() but
+it doesn't release when RTL8152_UNPLUG test hits.  This may lead to
+the imbalance of PM refcount.  This patch addresses it.
 
----8<---
-kernel BUG at net/core/skbuff.c:2961!
-invalid opcode: 0000 [#1] SMP PTI
-CPU: 2 PID: 0 Comm: swapper/2 Tainted: G           OE     5.4.0-77-generic #86-Ubuntu
-Hardware name: OpenStack Foundation OpenStack Nova, BIOS 1.13.0-1ubuntu1.1 04/01/2014
-RIP: 0010:skb_zerocopy+0x37a/0x3a0
-RSP: 0018:ffffbcc70013ca38 EFLAGS: 00010246
-Call Trace:
- <IRQ>
- queue_userspace_packet+0x2af/0x5e0 [openvswitch]
- ovs_dp_upcall+0x3d/0x60 [openvswitch]
- ovs_dp_process_packet+0x125/0x150 [openvswitch]
- ovs_vport_receive+0x77/0xd0 [openvswitch]
- netdev_port_receive+0x87/0x130 [openvswitch]
- netdev_frame_hook+0x4b/0x60 [openvswitch]
- __netif_receive_skb_core+0x2b4/0xc90
- __netif_receive_skb_one_core+0x3f/0xa0
- __netif_receive_skb+0x18/0x60
- process_backlog+0xa9/0x160
- net_rx_action+0x142/0x390
- __do_softirq+0xe1/0x2d6
- irq_exit+0xae/0xb0
- do_IRQ+0x5a/0xf0
- common_interrupt+0xf/0xf
-
-Code that triggered BUG:
-int
-skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
-{
-        int i, j = 0;
-        int plen = 0; /* length of skb->head fragment */
-        int ret;
-        struct page *page;
-        unsigned int offset;
-
-        BUG_ON(!from->head_frag && !hlen);
-
-Signed-off-by: Pravin B Shelar <pshelar@ovn.org>
+Link: https://bugzilla.suse.com/show_bug.cgi?id=1186194
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/usb/r8152.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index bbc3b4b62032..abb45c1a2468 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3005,8 +3005,11 @@ skb_zerocopy_headlen(const struct sk_buff *from)
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 95e27fb7d2c1..105622e1defa 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5282,9 +5282,10 @@ static int rtl8152_close(struct net_device *netdev)
+ 		tp->rtl_ops.down(tp);
  
- 	if (!from->head_frag ||
- 	    skb_headlen(from) < L1_CACHE_BYTES ||
--	    skb_shinfo(from)->nr_frags >= MAX_SKB_FRAGS)
-+	    skb_shinfo(from)->nr_frags >= MAX_SKB_FRAGS) {
- 		hlen = skb_headlen(from);
-+		if (!hlen)
-+			hlen = from->len;
+ 		mutex_unlock(&tp->control);
 +	}
  
- 	if (skb_has_frag_list(from))
- 		hlen = from->len;
++	if (!res)
+ 		usb_autopm_put_interface(tp->intf);
+-	}
+ 
+ 	free_all_mem(tp);
+ 
 -- 
 2.30.2
 
