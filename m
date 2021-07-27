@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1403D8089
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C28A73D80CB
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:07:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231368AbhG0VGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55822 "EHLO
+        id S234632AbhG0VHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231432AbhG0VGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:06:52 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD49C061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:51 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so6614456pja.5
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:51 -0700 (PDT)
+        with ESMTP id S233434AbhG0VHD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:07:03 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42699C061799
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:58 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so1073908pjh.3
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ix+5YCGgtf4ASFZ4v/FG8sEQnqankYDKBfCTYQuGyCQ=;
-        b=bnW6f5ZW6PRNMZTriXsLXCjk+oTRJuSSLMLz4NTDsbeQQuOz8avWkiTWuVD5pzhNMg
-         iYCqb4IKkBB7T/0UQWl/ua4svjdGwPBZ+rR0OQm74+vwXdPpiJrnKVlZXTKACJK+Udlc
-         zOJKY2stD38NmwWjsipdZ/+lTjPzW1nI+JqKk=
+        bh=p/9n5XlKkS6wfkCIPw1DbbDsmNaE09gzmWAUlzSJHk0=;
+        b=SW72vFpyRvi/mMVr/UQMOgHPlxYF/P0e1ZiidnPntTAcbmVZzEGGh8mQvyc6/PMYan
+         7VRaIK2m566aD8CTsIKSvbx/ZXJ+9IYZ/X/O7tqEYF1n1rL4di55gpn/tChdbhLwc+Wz
+         CXtVDDX34F4hVt3hvgvuSFi8Unf3XeFPwkISI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ix+5YCGgtf4ASFZ4v/FG8sEQnqankYDKBfCTYQuGyCQ=;
-        b=cH20prO9+Qef6qlVULuf1pdV3t6pUWWEs2KljpTODEufmY7lyBRstjawFUZlzh3HMl
-         xosyUGWyE1a9FJ8g3xFYrZXUYcKYRCTrBPh8DeAAunr4NlJ2LXolI1iWHwl7v3dn1luv
-         WP7WAygb7ZjslVYlQcLWalzQuF7pa7bh3gTdlpXe8wpVn5+Sxr+DqoLHovV8zrT5H+Xg
-         HfWBfmLf6gly2X+z6txzyzSTCc6O7o63Fzjlr0ZQIll4OPZoibiREU1Js/PsLBpbQXcT
-         QVLM3tIyBE7Vi01KncJb3xfpBFkYciOrfhubfbcVrNjGuDOqMvK+wVYrbwBTXT7hKNBI
-         oSgg==
-X-Gm-Message-State: AOAM531vWxcc7QAEhZ/VdbiejgmcW8dNkOzhfxbbgpS0oqX9HNdyRtEs
-        kZ/13VTX1sFas+0exKB9WxnJaw==
-X-Google-Smtp-Source: ABdhPJwjggurGSKfII6BwItVhzcFMZ6EXwHYvl5td/Q0hyu7n7FMd1AYamrRsA+/bObA3M9juNtcYg==
-X-Received: by 2002:a63:ee11:: with SMTP id e17mr25530642pgi.323.1627420011461;
-        Tue, 27 Jul 2021 14:06:51 -0700 (PDT)
+        bh=p/9n5XlKkS6wfkCIPw1DbbDsmNaE09gzmWAUlzSJHk0=;
+        b=BDwWmBCJb52Q+L7WmySau2ImT8An1dptSAUcms9LRQjq94cOuU7Z0koxE13RqWOqD2
+         iTVNUF4QxgHyr9FpRibqC9/01KGtBdgJoHFh2w4UMkrvD39PXlEIwS3fPXmwZwllmW1m
+         FvHAXj4uz9O9YHXfDFpPpqGCo0WlJm4eokb1chiA/BIdQtUe+XigR6xRglMpkIgp+ZXc
+         tDnUUXrLeBj51FrenRYmQZWHEzhgrKdcyBW1H1nSkXnJFRC1a2waC+BDrywc2J9d3rl2
+         lLINEgUCVnDwtIvntHOeZMOsQIdidcsl5RHGnhEzaW10/4SIWXw59D0U+4268M7IjTIw
+         XvHQ==
+X-Gm-Message-State: AOAM533eB5qYLCWPA+0gVSRW6uV0Epv/XRzdDnA/yvhrMiNj2e4v2fQN
+        ttvfrm1hOMGAGis0YFU9SJzQbA==
+X-Google-Smtp-Source: ABdhPJxaFQSeLhkc1zJ2oaBRJsMZBtjwIKQhIZuTJXa2K2J8IKVPpYMViisfXlARKBOGaL/7RusDbg==
+X-Received: by 2002:a17:90a:12c7:: with SMTP id b7mr6026153pjg.205.1627420017868;
+        Tue, 27 Jul 2021 14:06:57 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d67sm4856651pfd.81.2021.07.27.14.06.50
+        by smtp.gmail.com with ESMTPSA id r18sm5038817pgk.54.2021.07.27.14.06.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 14:06:50 -0700 (PDT)
+        Tue, 27 Jul 2021 14:06:54 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-hardening@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 40/64] net: 802: Use memset_after() to clear struct fields
-Date:   Tue, 27 Jul 2021 13:58:31 -0700
-Message-Id: <20210727205855.411487-41-keescook@chromium.org>
+Subject: [PATCH 41/64] net: dccp: Use memset_after() for TP zeroing
+Date:   Tue, 27 Jul 2021 13:58:32 -0700
+Message-Id: <20210727205855.411487-42-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1002; h=from:subject; bh=W7mlz4eEFjlHgTTisxMegB0ZhUGQYb0aFf/Mmy3UOio=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOJorvZuoNL45b35HsPI1mAinyEnA8ZX78L8pdJ 8EQ0wWuJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBziQAKCRCJcvTf3G3AJi3aD/ 9pKVrL7GGdaVZl4FyfYev6TME/fJq+q9IgkVKQ6QCoKY5T/n8lqb9wXu0sEDlYK/V1GqgYIyOt/r7B kfASageiRvyRg6nT+2AFkSJGPmwhPkUx2C0pnq6h2eqXzqar9s8LCEi8fZCrBkXObTwmGt5Elv2lL9 u3iRYv/VfrwevBjfH2MskR4OJDtdPLapzgjtDpmesjJgIuFqbLVbP0StJ/6qcp3046MFgobYGk5guX yTH4PNsJHtyrgdozwjttdVzeuhBt2WzgJQ1eaObNsLLLG37mPRxwCItRBkCwVkgMqOjQ4hE4IYAhXt A46hMy1iM0tpGB/EfZqHobJSxHkdDF8gcTzETtHJpWWBZYyLUvM2XIQ/jR1mne6xOpVdLMQUFxCFnn mY2w5SBcpciTvwuit/vfLui8lZtt29yIVecQbgt9pRHcNcLDYVr8lSjPmpO/H/Ey43fgftvpDaUE1K kZYNcM8o3ZI3ko0BO+gOPvhnYi1Hhu7xktOgZx9M3VFKye7+Rx5Hna1V2YsePjXkMGHbDlKaxCDbwc Es30R4/sgZcQr1pAtYhRgMIV9sd0TuiSf3pQyy3q5FvtNiOSMBvVO2cVjj+RDAqI4SNkvoAH2zrvou WNPNye5apRTKo4NrCQk68ENprSWgvKWfzUOE9H92IsOJCSP1oSa6QuA89TCQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=950; h=from:subject; bh=setFCuudESAmPvU7TENmlV2MS4FRl7JRml2jjTFJDIg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOJKZ5loXhOKkjkBoj4absMkEGlM+ZkGAgDZtTY /isiJOGJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBziQAKCRCJcvTf3G3AJl2GEA CkmbILRtScVKazMb1tWpR5Wl/pQ4wUktuV62qIpYEEpFPkHrnESIQz1ChkzSepdcASTNc4T6oa0NP9 WsXo723hzRQElBcUpAdaEQZWe/aRzQgxz6NuJ0ucec44ap26fdlOUq5jkNdSul5xj992thaeMiUWHl M4YJzdgCpzk8OEKhzLzvrViKkK+IaPDmTMBwHh7u5gjX9tk2OqSPx/ZXot6tYvhFg6/Oy0vv+xHrlp iovAgyyLvDPGPpUEgGj2aKBFXc/d/xxdCSuI3b1elrnHoEBod1sM3BVLd8BTraljZmNAi7wrINJzHM eu2aKaVwpvUJwWQr2BuBBRGeV74y1K8w+/Tvp0fufvz6558D1uGi5jCrDj5V4/Nj5+HrvI6IbWlYbY NSCPJB6kzUX1DRdtcu/6/wMtBFe02I7zLytHfwOcQVNqWqm6EA+YewjYVECp7lCvhT+po+Tp2LcZA6 YKyyOzP6+CTDLOyriNbgoebelLFhlWWOSb9rZGEBhs9FxI4qFJJAxmatGkCcUH0MYAz6v5PPfjvR86 yjrrxYWYwC6cjmhctqIhpAdMEd0GZec2ed3KYFABa9OyGSC8Ezex48JITcr9RBnKCdqux3UCJodziE nhi84Hw40jD0Ho9czi4juaFwDxA2xtuq+zKB1K159GTFsJfOh3CFAYS1xoow==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -79,22 +79,24 @@ of zeroing through the end of the struct.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- net/802/hippi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dccp/trace.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/802/hippi.c b/net/802/hippi.c
-index f80b33a8f7e0..00f6666b4b16 100644
---- a/net/802/hippi.c
-+++ b/net/802/hippi.c
-@@ -65,7 +65,7 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
- 	hip->le.src_addr_type	= 2;	/* 12 bit SC address */
+diff --git a/net/dccp/trace.h b/net/dccp/trace.h
+index 5062421beee9..3c2594da49fc 100644
+--- a/net/dccp/trace.h
++++ b/net/dccp/trace.h
+@@ -60,9 +60,7 @@ TRACE_EVENT(dccp_probe,
+ 			__entry->tx_t_ipi = hc->tx_t_ipi;
+ 		} else {
+ 			__entry->tx_s = 0;
+-			memset(&__entry->tx_rtt, 0, (void *)&__entry->tx_t_ipi -
+-			       (void *)&__entry->tx_rtt +
+-			       sizeof(__entry->tx_t_ipi));
++			memset_after(__entry, 0, tx_s);
+ 		}
+ 	),
  
- 	memcpy(hip->le.src_switch_addr, dev->dev_addr + 3, 3);
--	memset(&hip->le.reserved, 0, 16);
-+	memset_after(&hip->le, 0, src_switch_addr);
- 
- 	hip->snap.dsap		= HIPPI_EXTENDED_SAP;
- 	hip->snap.ssap		= HIPPI_EXTENDED_SAP;
 -- 
 2.30.2
 
