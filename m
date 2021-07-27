@@ -2,62 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C80103D83F1
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7278F3D840F
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:31:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233132AbhG0X2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 19:28:09 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:33683 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232972AbhG0X2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 19:28:08 -0400
-Received: by mail-io1-f72.google.com with SMTP id l9-20020a6b70090000b02904df6556dad4so428222ioc.0
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 16:28:06 -0700 (PDT)
+        id S233773AbhG0XbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 19:31:09 -0400
+Received: from mail-pl1-f177.google.com ([209.85.214.177]:35355 "EHLO
+        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232745AbhG0XbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 19:31:08 -0400
+Received: by mail-pl1-f177.google.com with SMTP id f13so440557plj.2;
+        Tue, 27 Jul 2021 16:31:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=o+xohfaKx0eRBXKeZWoG/RFdPcbzbopGddR2do92Akw=;
-        b=kqe9iXWalt+4UYh+BNizDFKK4D2EXmoeaOv8OGRjzn+iiMvcajXapfjkYslEpNwpeR
-         UIJULo3K5plQE+F3M3NaHoQezmhntVmOoZkZz7H074VQLk84F9JkWHAJPm0LpFTmJRzk
-         QHUmIyfQzmRuRSbVMa+19bBj859l2RJGU0Z2PCnGVR5haNgQIS446aH/MKBbGoQuBmU3
-         MD9qX8EKcRDVlHk6XFLNjPCLn9fG0GWKUStS6/6RyB0pFZDa4aedODDUyJUSSPBFejuA
-         ZmpQFRPviG3BZc2WTPhQAqXZqZmD5BCthwvdo++9loUrR5Jhr++mfKdN2nL7GCc4qbFe
-         yq5A==
-X-Gm-Message-State: AOAM531M3VE9PH5AvQITOo3EYbV/C8p8Jd+9B26qHaUNN7chy9Fh98W4
-        kho0lSaPO2CVas7iTJEJJmFCzG3UuOPTT0hWhOHkylDSlLAJ
-X-Google-Smtp-Source: ABdhPJymsLUnghnpljxzoV3XPtlT7OCAGWIsKe3mEd2UVlAKDQBBXJBylRL1TGFTIMq7BFjxAs1v2Maaoa9ch7uR9CkMjdnG7peU
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cfNumURh2GjYDfPowtmTPayG3eiC6vg99u71kmeqTyM=;
+        b=P4HQ5+Qmq+0csMAsEg9nhirA44nQPKj6isxmK94eq8Gdqr/TXHQADqlWvUzrCr0eHG
+         5mC/8fdAp1zsISBAQmzzkYoKjXQAp2GE+CaXd+HOc4C0lktHXgdg8Dc+lnOhNxGzCnPN
+         Eg0TAB05T+5Y18lYA8ofHhhbm2GpQIGbewxLzcoa/l8mVrU2cDE1FgH2YKDzZHPwJVIw
+         IlNeLO+omVC2/s6HtnGZSDrqd7rPF6zVC9Eq1ZfVBEN8LCsKsmWFzQG5198eNHMRl/lT
+         Ufde+Y27nYfDbp+jzayTCfNynJVzQCvUU+P7fJKRvk4yYToqgrz3EX+0A3tT6k5Ij04z
+         tSfg==
+X-Gm-Message-State: AOAM533ynIv4XmZhecCMMNBF+578d5x4pIjL/AHWHJdA4EGdFp3qPau0
+        /8+dbVrhNdLjVLfGXB0KV5M=
+X-Google-Smtp-Source: ABdhPJxjlXDVaN8+tg1bxudbyKmetnxeWdVqGkL064ebMKIBrwhnuUBgPMqLVVo86W/q+KmaVUhOyQ==
+X-Received: by 2002:a17:902:8493:b029:12c:552f:1fb1 with SMTP id c19-20020a1709028493b029012c552f1fb1mr2088759plo.26.1627428666440;
+        Tue, 27 Jul 2021 16:31:06 -0700 (PDT)
+Received: from ?IPv6:2620:0:1000:2004:f8ef:f6a:11cc:887d? ([2620:0:1000:2004:f8ef:f6a:11cc:887d])
+        by smtp.gmail.com with ESMTPSA id j12sm4695249pfj.208.2021.07.27.16.31.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jul 2021 16:31:05 -0700 (PDT)
+Subject: Re: [PATCH 33/64] lib: Introduce CONFIG_TEST_MEMCPY
+To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-34-keescook@chromium.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <9827144a-dacf-61dc-d554-6c69434708de@acm.org>
+Date:   Tue, 27 Jul 2021 16:31:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:c04f:: with SMTP id o15mr2041189ilf.156.1627428486474;
- Tue, 27 Jul 2021 16:28:06 -0700 (PDT)
-Date:   Tue, 27 Jul 2021 16:28:06 -0700
-In-Reply-To: <20210727174318.53806d27@gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d5736905c82338ac@google.com>
-Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in xfrm_set_default
-From:   syzbot <syzbot+9cd5837a045bbee5b810@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        paskripkin@gmail.com, steffen.klassert@secunet.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210727205855.411487-34-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 7/27/21 1:58 PM, Kees Cook wrote:
+> +static int __init test_memcpy_init(void)
+> +{
+> +	int err = 0;
+> +
+> +	err |= test_memcpy();
+> +	err |= test_memmove();
+> +	err |= test_memset();
+> +
+> +	if (err) {
+> +		pr_warn("FAIL!\n");
+> +		err = -EINVAL;
+> +	} else {
+> +		pr_info("all tests passed\n");
+> +	}
+> +
+> +	return err;
+> +}
+> +
+> +static void __exit test_memcpy_exit(void)
+> +{ }
+> +
+> +module_init(test_memcpy_init);
+> +module_exit(test_memcpy_exit);
+> +MODULE_LICENSE("GPL");
 
-syzbot tried to test the proposed patch but the build/boot failed:
+Has it been considered to implement this test using the Kunit framework?
 
-net/xfrm/xfrm_user.c:1977:2: error: expected ';' before 'net'
+Thanks,
 
+Bart.
 
-Tested on:
-
-commit:         42d0b5f5 Add linux-next specific files for 20210727
-git tree:       linux-next
-dashboard link: https://syzkaller.appspot.com/bug?extid=9cd5837a045bbee5b810
-compiler:       
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=147b8d0a300000
 
