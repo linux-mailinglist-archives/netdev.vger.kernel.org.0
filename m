@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 811F73D6AC8
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E97733D6AD0
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234214AbhGZX1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 19:27:32 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:2520 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233843AbhGZX1b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:27:31 -0400
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16R02dJB009873;
-        Tue, 27 Jul 2021 00:07:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2021-07-09;
- bh=b5DkrcWqLQZxmjE/yC8G9x3pPclYWR6dZfCV7/oGyt8=;
- b=s5c132hjkTEwVgSeE/NT+XC9P97cgwaqsCqZnWdWPPfcADDL/8FGLkNHhESFFI7wg4Dn
- KSFZ1yBDvDcNmq+YQ7LhdnzUggFnXnKhiAH2oa8YLi3V7UVE0AkffsIcYSaDekGOHiK9
- zSmNVfxA6LLuLJLtOw4mbz0UAbkoT+duHgmQLq9UHQFi3FT3MHde1FYDUecnJSzD2irQ
- iAGodV5khyEWANQAQAG6tFXAVw05cqNzpe8gnn74mzi1zRLSJLLhoMUBIjJu92Q8nPva
- ITxUmUBJ6zxGzPq0V7lMLlN3VRYdOs76bD4Ahv/zQ990ov2+1QTQCuk2LENPKEK9QrAg aQ== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=corp-2020-01-29;
- bh=b5DkrcWqLQZxmjE/yC8G9x3pPclYWR6dZfCV7/oGyt8=;
- b=WkFj0xU+wutVZkxgNN2htqD8ldSJqTlc4ioyYN8HEjZpK9zw5KHit13BA9vfsuJ2MUmx
- aYBx81qpVNqoeXUncObWCm7zvV3VPHSlO1t63fFhm5/UH83jMkHAYgllAcBjEvQrUu/D
- KbfVTchu9WPitIc8Dezg7laM4Kss/ZBdvncYZ2QDQV5JeR8YQew4mk0CtiSInK44o+b7
- ReE2mHBokz7mFT2my3uZaXQKGqxXA4HD2+X8JdbwJCoAQoT8RKxtF2rXQy08sF/40FWJ
- V1j4FBHGfC11ZwQ9imnIqmmA33tFO2crxJ0CToAbFBy6OR4Vq+n6HEQbxXfr/JWBEdf8 NQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3a234n0e90-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 27 Jul 2021 00:07:39 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16R07bCA031100;
-        Tue, 27 Jul 2021 00:07:38 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 3a2349c9r9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 27 Jul 2021 00:07:38 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 16R07bIr031075;
-        Tue, 27 Jul 2021 00:07:37 GMT
-Received: from manjaro.in.oracle.com (dhcp-10-191-222-3.vpn.oracle.com [10.191.222.3])
-        by aserp3030.oracle.com with ESMTP id 3a2349c9hn-1;
-        Tue, 27 Jul 2021 00:07:24 +0000
-From:   Harshvardhan Jha <harshvardhan.jha@oracle.com>
-To:     ericvh@gmail.com
-Cc:     lucho@ionkov.net, asmadeus@codewreck.org, davem@davemloft.net,
-        kuba@kernel.org, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Harshvardhan Jha <harshvardhan.jha@oracle.com>
-Subject: [PATCH] 9p/xen: Fix end of loop tests for list_for_each_entry
-Date:   Tue, 27 Jul 2021 05:37:10 +0530
-Message-Id: <20210727000709.225032-1-harshvardhan.jha@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <alpine.DEB.2.21.2107261654130.10122@sstabellini-ThinkPad-T480s>
-References: <alpine.DEB.2.21.2107261654130.10122@sstabellini-ThinkPad-T480s>
+        id S234226AbhGZXdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 19:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234088AbhGZXdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:33:20 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29140C061765
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 17:13:48 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id ca5so2916403pjb.5
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 17:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y1ObdeHfUvaGE6OdEsaKDeYTqGoMK1JQpRZjmzTf8+Q=;
+        b=EiNoQ8au0i56j/OiC+h66C4LOENB6lLHoY6Tm8yue/H/qoswbC6dKNJ77idpBeV8iQ
+         35xrZltDlaMstieVOVl8wLThjrBrbc2Odmgi7+wJSA/26s+/Chgn5b1i8HvCFPWjQom4
+         CtvR/92QaJVL4NvG1g3u4u81wCcomKzu+TeUgAeUk14X9V8zerbio60aojUPcwbKKUni
+         jjvdqGD92cW9Y+aNlCOpuHc9zkpwIQN1NufpJufg8mTi6zGXvE1uPnaVYyU84nOS7u3L
+         hSGqzI+Ikts6bLugoEfHGjibClLib7ukJY9abVKDIWruv6TpNNRvk8e2qyAPF5T2EXEg
+         1Llg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=y1ObdeHfUvaGE6OdEsaKDeYTqGoMK1JQpRZjmzTf8+Q=;
+        b=EK9j9mLpxSXr87CIo+TpNeOHuCmdWW1Da8Joop4ijiSQSiJ83Q92lk9nZAuzH/TLf5
+         t305FJItHnohSVb9eU1ez4y2aosYPmqEeZVL+L97Fk8Nl0qyZCqFGs4pqb48QmzTazsJ
+         tgEoiD1o+OkFG7m1BfoD03MFfCaO7Uvpn15fUcwEPR92LUE1XV3MFA+UfJDn7lxMhfF1
+         iKsEUeXYqIzEjwtJMtWBpdeDaOUs8hjYWwvurdR75/aASYVVL+dFnw0nE+4YX8o+hdMQ
+         +w6ohN+B15UZlP7EF8CLUkpqqxViuaE2OngCU+2RHWzZy0Z7EV5Hu+K6sqAEapLVuynx
+         Gi+Q==
+X-Gm-Message-State: AOAM533DpfO/1ZzSzGdWwAMJLCWytQhI8IWp+AtOCk4PiPsvXOoLI0fn
+        9HzRY4G1oxb3xKzknNtp9Io7ThjXpX+9ug==
+X-Google-Smtp-Source: ABdhPJwOj7fy0Q+JX+8pFaI6/DxyXuSVyM0/beMbaLW4FHceDUnotQA8TT4Py/PMs8u7ivXD+bojPg==
+X-Received: by 2002:a63:da0a:: with SMTP id c10mr20686628pgh.255.1627344827333;
+        Mon, 26 Jul 2021 17:13:47 -0700 (PDT)
+Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
+        by smtp.gmail.com with ESMTPSA id k1sm1079452pga.70.2021.07.26.17.13.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 17:13:46 -0700 (PDT)
+From:   Jiang Wang <jiang.wang@bytedance.com>
+To:     netdev@vger.kernel.org
+Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
+        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf-next v1 0/5] sockmap: add sockmap support for unix stream socket
+Date:   Tue, 27 Jul 2021 00:12:47 +0000
+Message-Id: <20210727001252.1287673-1-jiang.wang@bytedance.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: clMVn-w0eemomDdiBljtF4wnrzKtlAdl
-X-Proofpoint-GUID: clMVn-w0eemomDdiBljtF4wnrzKtlAdl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch addresses the following problems:
- - priv can never be NULL, so this part of the check is useless
- - if the loop ran through the whole list, priv->client is invalid and
-it is more appropriate and sufficient to check for the end of
-list_for_each_entry loop condition.
+This patch series add support for unix stream type
+for sockmap. Sockmap already supports TCP, UDP,
+unix dgram types. The unix stream support is similar
+to unix dgram.
 
-Signed-off-by: Harshvardhan Jha <harshvardhan.jha@oracle.com>
----
- net/9p/trans_xen.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Also add selftests for unix stream type in sockmap tests.
 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index f4fea28e05da..3ec1a51a6944 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -138,7 +138,7 @@ static bool p9_xen_write_todo(struct xen_9pfs_dataring *ring, RING_IDX size)
- 
- static int p9_xen_request(struct p9_client *client, struct p9_req_t *p9_req)
- {
--	struct xen_9pfs_front_priv *priv = NULL;
-+	struct xen_9pfs_front_priv *priv;
- 	RING_IDX cons, prod, masked_cons, masked_prod;
- 	unsigned long flags;
- 	u32 size = p9_req->tc.size;
-@@ -151,7 +151,7 @@ static int p9_xen_request(struct p9_client *client, struct p9_req_t *p9_req)
- 			break;
- 	}
- 	read_unlock(&xen_9pfs_lock);
--	if (!priv || priv->client != client)
-+	if (list_entry_is_head(priv, &xen_9pfs_devs, list))
- 		return -EINVAL;
- 
- 	num = p9_req->tc.tag % priv->num_rings;
+
+Jiang Wang (5):
+  af_unix: add read_sock for stream socket types
+  af_unix: add unix_stream_proto for sockmap
+  selftest/bpf: add tests for sockmap with unix stream type.
+  selftest/bpf: change udp to inet in some function names
+  selftest/bpf: add new tests in sockmap for unix stream to tcp.
+
+ include/net/af_unix.h                         |  8 +-
+ net/core/sock_map.c                           |  8 +-
+ net/unix/af_unix.c                            | 89 ++++++++++++++++--
+ net/unix/unix_bpf.c                           | 93 ++++++++++++++-----
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 48 ++++++----
+ 5 files changed, 194 insertions(+), 52 deletions(-)
+
 -- 
-2.32.0
+2.20.1
 
