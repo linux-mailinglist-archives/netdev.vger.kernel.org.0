@@ -2,90 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0EDD3D7791
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F15D3D77B9
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 16:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232457AbhG0NzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:55:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50768 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232314AbhG0NzQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:55:16 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C36161220;
-        Tue, 27 Jul 2021 13:55:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627394116;
-        bh=r9Ehp4FfQF7Ry5rGGdla1pRbvCkTzIIe34SMTERdObQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tLxD0EQCwjABQSMiNKxgRYy9KCkP95Ydc+VCMvnRhsVI8qF+H33MDE5QobYrwUDNa
-         +jjp2s8duvSDqLOnb/DwkJ8Qr3e0ocwqm/DiH3qXK8C2o+iii/xoYa/rb21WT6B7V8
-         cZga3W+WbfvW6zoM0erRpaQjs5egu9Trag8yMhY9KdCkIt31AKMqLFiNcASxE+Opva
-         qpchHVz1mBgXGIqypUAqXNhcmqMiaNyb5oGCVE3MMGyUvBLE1JPNbuJ1rPC+ScZZ34
-         UG3JaO+U+eQpZIYh9bSXC9enOFSDou4J2GRfLXRxIIk1FUAMVi++uPEfYhtCbc1MX2
-         g8iKJ5JI6UjJA==
-Date:   Tue, 27 Jul 2021 15:55:10 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        netdev@vger.kernel.org, sasha.neftin@intel.com,
-        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-Message-ID: <20210727155510.256e5fcc@thinkpad>
-In-Reply-To: <YP9n+VKcRDIvypes@lunn.ch>
-References: <YPTKB0HGEtsydf9/@lunn.ch>
-        <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
-        <YPbu8xOFDRZWMTBe@lunn.ch>
-        <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
-        <20210721204543.08e79fac@thinkpad>
-        <YPh6b+dTZqQNX+Zk@lunn.ch>
-        <20210721220716.539f780e@thinkpad>
-        <4d8db4ce-0413-1f41-544d-fe665d3e104c@gmail.com>
-        <6d2697b1-f0f6-aa9f-579c-48a7abb8559d@gmail.com>
-        <20210727020619.2ba78163@thinkpad>
-        <YP9n+VKcRDIvypes@lunn.ch>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S236609AbhG0OAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 10:00:43 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7069 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230500AbhG0OAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 10:00:38 -0400
+Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GYyw04w68zYdMH;
+        Tue, 27 Jul 2021 21:54:40 +0800 (CST)
+Received: from [10.67.103.235] (10.67.103.235) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Tue, 27 Jul 2021 22:00:35 +0800
+Subject: Re: [PATCH V6 7/8] PCI: Add "pci=disable_10bit_tag=" parameter for
+ peer-to-peer support
+To:     Logan Gunthorpe <logang@deltatee.com>,
+        Leon Romanovsky <leon@kernel.org>
+References: <1627038402-114183-1-git-send-email-liudongdong3@huawei.com>
+ <1627038402-114183-8-git-send-email-liudongdong3@huawei.com>
+ <YPqo6M0AKWLupvNU@unreal> <a8a8ffee-67e8-c899-3d04-1e28fb72560a@deltatee.com>
+ <YP0HOf7kE1aOkqjV@unreal> <bc9b7b00-40eb-7d4e-f3b3-1d4174f10be5@deltatee.com>
+CC:     <helgaas@kernel.org>, <hch@infradead.org>, <kw@linux.com>,
+        <linux-pci@vger.kernel.org>, <rajur@chelsio.com>,
+        <hverkuil-cisco@xs4all.nl>, <linux-media@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+From:   Dongdong Liu <liudongdong3@huawei.com>
+Message-ID: <12c7f276-6869-a432-a138-4fce88da87e3@huawei.com>
+Date:   Tue, 27 Jul 2021 22:00:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <bc9b7b00-40eb-7d4e-f3b3-1d4174f10be5@deltatee.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.103.235]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggeme758-chm.china.huawei.com (10.3.19.104)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
 
-On Tue, 27 Jul 2021 03:57:13 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
 
-> > The last time we discussed this (Andrew, Pavel and I), we've decided
-> > that for ethernet PHY controlled LEDs we want the devicename part
-> > should be something like
-> >    phyN  or  ethphyN  or  ethernet-phyN
-> > with N a number unique for every PHY (a simple atomically increased
-> > integer for every ethernet PHY).  
-> 
-> We might want to rethink this. PHYs typically have 2 or 3 LEDs. So we
-> want a way to indicate which LED of a PHY it is. So i suspect we will
-> want something like
-> 
-> ethphyN-led0, ethphyN-led1, ethphyN-led2.
+On 2021/7/26 23:48, Logan Gunthorpe wrote:
+>
+>
+> On 2021-07-25 12:39 a.m., Leon Romanovsky wrote:
+>> On Fri, Jul 23, 2021 at 10:20:50AM -0600, Logan Gunthorpe wrote:
+>>>
+>>>
+>>>
+>>> On 2021-07-23 5:32 a.m., Leon Romanovsky wrote:
+>>>> On Fri, Jul 23, 2021 at 07:06:41PM +0800, Dongdong Liu wrote:
+>>>>> PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
+>>>>> sending Requests to other Endpoints (as opposed to host memory), the
+>>>>> Endpoint must not send 10-Bit Tag Requests to another given Endpoint
+>>>>> unless an implementation-specific mechanism determines that the Endpoint
+>>>>> supports 10-Bit Tag Completer capability. Add "pci=disable_10bit_tag="
+>>>>> parameter to disable 10-Bit Tag Requester if the peer device does not
+>>>>> support the 10-Bit Tag Completer. This will make P2P traffic safe.
+>>>>>
+>>>>> Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
+>>>>> ---
+>>>>>  Documentation/admin-guide/kernel-parameters.txt |  7 ++++
+>>>>>  drivers/pci/pci.c                               | 56 +++++++++++++++++++++++++
+>>>>>  drivers/pci/pci.h                               |  1 +
+>>>>>  drivers/pci/pcie/portdrv_pci.c                  | 13 +++---
+>>>>>  drivers/pci/probe.c                             |  9 ++--
+>>>>>  5 files changed, 78 insertions(+), 8 deletions(-)
+>>>>>
+>>>>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>>>>> index bdb2200..c2c4585 100644
+>>>>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>>>>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>>>>> @@ -4019,6 +4019,13 @@
+>>>>>  				bridges without forcing it upstream. Note:
+>>>>>  				this removes isolation between devices and
+>>>>>  				may put more devices in an IOMMU group.
+>>>>> +		disable_10bit_tag=<pci_dev>[; ...]
+>>>>> +				  Specify one or more PCI devices (in the format
+>>>>> +				  specified above) separated by semicolons.
+>>>>> +				  Disable 10-Bit Tag Requester if the peer
+>>>>> +				  device does not support the 10-Bit Tag
+>>>>> +				  Completer.This will make P2P traffic safe.
+>>>>
+>>>> I can't imagine more awkward user experience than such kernel parameter.
+>>>>
+>>>> As a user, I will need to boot the system, hope for the best that system
+>>>> works, write down all PCI device numbers, guess which one doesn't work
+>>>> properly, update grub with new command line argument and reboot the
+>>>> system. Any HW change and this dance should be repeated.
+>>>
+>>> There are already two such PCI parameters with this pattern and they are
+>>> not that awkward. pci_dev may be specified with either vendor/device IDS
+>>> or with a path of BDFs (which protects against renumbering).
+>>
+>> Unfortunately, in the real world, BDF is not so stable. It changes with
+>> addition of new hardware, BIOS upgrades and even broken servers.
+>
+> That's why it supports using a *path* of BDFs which tends not to catch
+> the wrong device if the topology changes.
+>
+>> Vendor/device IDs doesn't work if you have multiple devices of same
+>> vendor in the system.
+>
+> Yes, but it's fine for some use cases. That's why there's a range of
+> options.
+>
+>>>
+>>> This flag is only useful in P2PDMA traffic, and if the user attempts
+>>> such a transfer, it prints a warning (see the next patch) with the exact
+>>> parameter that needs to be added to the command line.
+>>
+>> Dongdong citied PCI spec and it was very clear - don't enable this
+>> feature unless you clearly know that it is safe to enable. This is
+>> completely opposite to the proposal here - always enable and disable
+>> if something is printed to the dmesg.
+>
+> Quoting from patch 4:
+>
+> "For platforms where the RC supports 10-Bit Tag Completer capability,
+> it is highly recommended for platform firmware or operating software
+> that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
+> bit automatically in Endpoints with 10-Bit Tag Requester capability.
+> This enables the important class of 10-Bit Tag capable adapters that
+> send Memory Read Requests only to host memory."
+>
+> Notice the last sentence. It's saying that devices who only talk to host
+> memory should have 10-bit tags enabled. In the kernel we call devices
+> that talk to things besides host memory "P2PDMA". So the spec is saying
+> not to enable 10bit tags for devices participating in P2PDMA. The kernel
+> needs a way to allow users to do that. The kernel parameter only stops
+> the feature from being enabled for a specific device, and the only
+> use-case is P2PDMA which is not that common and requires the user to be
+> aware of their topology. So I really don't think this is that big a problem.
+>
+>>>
+>>> This has worked well for disable_acs_redir and was used for
+>>> resource_alignment before that for quite some time. So save a better
+>>> suggestion I think this is more than acceptable.
+>>
+>> I don't know about other parameters and their history, but we are not in
+>> 90s anymore and addition of modules parameters (for the PCI it is kernel
+>> cmdline arguments) are better to be changed to some configuration tool/sysfs.
+>
+> The problem was that the ACS bits had to be set before the kernel
+> enumerated the devices. The IOMMU code simply was not able to support
+> dynamic adjustments to its groups. I assume changing 10bit tags
+> dynamically is similarly tricky -- but if it's not then, yes a sysfs
+> interface in addition to the kernel parameter would be a good idea.
+PCIe spec 5.0 section 7.5.3.16 Device Control 2 Register
+10-Bit Tag Requester Enable says that
+If software changes the value of this bit while the Function
+has outstanding Non-Posted Requests, the result is undefined.
 
-But... there is still color and function and possibly function-numerator
-to differentiate them. I was talking only about the devicename part. So
-for three LEDs you can have, for example:
-  ethphyN:green:link
-  ethphyN:yellow:activity
-Even if you don't have information about color, the default function
-(on chip reset) should be different. And even if it is not, the
-function enumerator would fix this:
-  ethphyN::link-1
-  ethphyN::link-2
+So 10-Bit Tag Requester Enable should be set before probe the device 
+driver.
 
-Marek
+Thanks,
+Dongdong
+>
+> Logan
+> .
+>
