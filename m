@@ -2,80 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25BFE3D7F80
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:50:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 951113D7F90
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:54:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232346AbhG0Ut7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51986 "EHLO
+        id S232022AbhG0Uyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbhG0Ut6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:49:58 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364A7C061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:49:57 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id C5A78806B6;
-        Wed, 28 Jul 2021 08:49:53 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1627418993;
-        bh=0k8KzzaYoFIF7lHReVwIRNgaUtivHiU9nnWoYTIR+IY=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=F+74VlHuMo4UdzHkjON6IcqnvBm5r7DIqHGFavyvZk9xN44H39J0gp1Xc0EWUGj+Q
-         X79y+mWfNIlTwoJ0FU9Mx1wk/ngYLFJUJ45XukPslj7Q+COo1lJ1ivM/stlR9sfZlY
-         44+PnwdMLELddmEYozZWJ1neuCwf565axZmC8kL7HyvchcP52Yxj6qZ957wbq9lJis
-         6h1S5xhlFH2bHqLrSDs0d5Ba6oB5neOKhaOyU7qT7w+Ke7VPDyOR5NrLBhcbfobh39
-         v+fhacadGzbv+3DwcXWa5KVRaPLtIlEOEnZNTkj0KyN9IwQq8B1S3P/vJMRQ9pYARV
-         NYqUxZ5Am+2Tw==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B610071710001>; Wed, 28 Jul 2021 08:49:53 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
- by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
- Microsoft SMTP Server (TLS) id 15.0.1497.23; Wed, 28 Jul 2021 08:49:53 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.023; Wed, 28 Jul 2021 08:49:53 +1200
-From:   Richard Laing <Richard.Laing@alliedtelesis.co.nz>
-To:     Loic Poulain <loic.poulain@linaro.org>
-CC:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] bus: mhi: pci-generic: configurable network interface MRU
-Thread-Topic: [PATCH] bus: mhi: pci-generic: configurable network interface
- MRU
-Thread-Index: AQHXePXNQwvlV1kNe0CXQRxG8ENZtqtJUccAgADBqICAC8MmAIAAwDkA
-Date:   Tue, 27 Jul 2021 20:49:52 +0000
-Message-ID: <a984248c-c9be-b8e0-b6bc-1cf2aabb09f5@alliedtelesis.co.nz>
-References: <20210714211805.22350-1-richard.laing@alliedtelesis.co.nz>
- <CAMZdPi-1E5pieVwt_XFF-+PML-cX05nM=PdD0pApD_ym5k_uMQ@mail.gmail.com>
- <5165a859-1b00-e50e-985e-25044cf0e9ec@alliedtelesis.co.nz>
- <CAMZdPi8MZp5Vx_ZnjjQWptms9vj6bEMoV83pcv4wmgxbZz0wjQ@mail.gmail.com>
-In-Reply-To: <CAMZdPi8MZp5Vx_ZnjjQWptms9vj6bEMoV83pcv4wmgxbZz0wjQ@mail.gmail.com>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.16.78]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D61BBE1B9CF5B541B2454CEB393DE04C@atlnz.lc>
-Content-Transfer-Encoding: base64
+        with ESMTP id S231516AbhG0Uyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:54:46 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD19C061757;
+        Tue, 27 Jul 2021 13:54:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=MBrBM2hWSSFJKN0za7twq1O9odGp29rpAsJCQ0flnEg=; b=vbm6nTwMY9s5EUFtqtEUpQ/fdO
+        50MABQ301exgOgwuy15+9Q0GSyqRn0P9WyXq5dgm2UR5LQ9oawo84jeNCDARuh7gqA7/kIsfVwZ73
+        ZYkRar/zbKmHnkPbEEyxUFqcFfsDmyeBkLKnkz8ht4sVpncWYKo3NkdeUVxF0Fz2fUpoNpDnewUmt
+        ZaoB4iQDKLUkDBsTQ147poEW4F2OUO8D0QqX237/WXVQIGMPbEH1nx9r9T7x6Z7x8T65eC6kDN9a5
+        pwi+7X4ZTm0BP/7oQ4gXfpaAaQWl8gJ8z4VwJOMmcN94TpvWy6sUw/Ijrg/lf0b3lDG0ruSOvP9fY
+        BYWrgWAg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1m8U5l-00GHkQ-28; Tue, 27 Jul 2021 20:54:21 +0000
+Date:   Tue, 27 Jul 2021 13:54:21 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andriin@fb.com" <andriin@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "alobakin@pm.me" <alobakin@pm.me>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "ap420073@gmail.com" <ap420073@gmail.com>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "sergey.senozhatsky.work@gmail.com" 
+        <sergey.senozhatsky.work@gmail.com>,
+        "minchan@kernel.org" <minchan@kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "mbenes@suse.com" <mbenes@suse.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        Hannes Reinecke <hare@suse.de>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
+Message-ID: <YQByfUaDaXCUqrlo@bombadil.infradead.org>
+References: <20210722221905.1718213-1-mcgrof@kernel.org>
+ <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
+ <YQBCvKgH481C7o1c@bombadil.infradead.org>
+ <YQBGemOIF4sp/ges@kroah.com>
+ <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
+ <YQBSutZfhqfTzKQa@kroah.com>
 MIME-Version: 1.0
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=dvql9Go4 c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=8KpF8ikWtqQA:10 a=IkcTkHD0fZMA:10 a=e_q4qTt1xDgA:10 a=R6aZAQg3Yvr2Z4M2TdcA:9 a=QEXdDO2ut3YA:10
-X-SEG-SpamProfiler-Score: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQBSutZfhqfTzKQa@kroah.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDcvMjcvMjEgOToyMSBQTSwgTG9pYyBQb3VsYWluIHdyb3RlOg0KPiBOb3RlIHRoYXQg
-dGhlIGRlZmF1bHQgTVJVIHlvdSBkZWZpbmUgaXMgbm90IE1ISSBjb250cm9sbGVyIHNwZWNpZmlj
-DQo+IGJ1dCBNSEkgY2hhbm5lbCBzcGVjaWZpYyAoSVAvTUJJTSBjaGFubmVsKSwgc28gaXQgc2hv
-dWxkIG5vdCBiZSBhDQo+IHByb3BlcnR5IG9mIHRoZSBNSEkgY29udHJvbGxlci4gQUZBSUssIFRo
-ZSBNSEkgc3BlY2lmaWNhdGlvbiBhbHJlYWR5DQo+IGRlZmluZXMgTVJVIGZvciB0aGUgdHJhbnNm
-ZXJlZCBidWZmZXJzIHdoaWNoIGlzIDY1NTM1LiBJIHdvdWxkDQo+IHJlY29tbWVuZCB0byBtb3Zl
-IHRoaXMgcHJvcCB0byB0aGUgY2hhbm5lbCBjb25maWcuDQoNClRoYXQgbWFrZXMgc2Vuc2UgdGhh
-bmsgeW91LiBJIGFzc3VtZSB0aGUgVUwgYW5kIERMIGNoYW5uZWxzIGNvdWxkIGJlIA0KZXhwZWN0
-ZWQgdG8gaGF2ZSB0aGUgc2FtZSBNUlU/DQoNClJlZ2FyZHMsDQpSaWNoYXJk
+On Tue, Jul 27, 2021 at 08:38:50PM +0200, gregkh@linuxfoundation.org wrote:
+> On Tue, Jul 27, 2021 at 11:18:03AM -0700, Luis Chamberlain wrote:
+> > On Tue, Jul 27, 2021 at 07:46:34PM +0200, gregkh@linuxfoundation.org wrote:
+> > > On Tue, Jul 27, 2021 at 10:30:36AM -0700, Luis Chamberlain wrote:
+> > > > On Sat, Jul 24, 2021 at 12:15:10PM +0000, David Laight wrote:
+> > > > > From: Luis Chamberlain
+> > > > > > Sent: 22 July 2021 23:19
+> > > > The sysfs store / read file operations are gauranteed to exist using
+> > > > kernfs's active reference (see kernfs_active()).
+> > > 
+> > > But that has nothing to do with module reference counts.  kernfs knows
+> > > nothing about modules.
+> > 
+> > Yes but we are talking about sysfs files which the module creates. So
+> > but inference again, an active reference protects a module.
+> 
+> What active reference? 
+
+kernfs_active()
+
+> > > > In fact, this documentation patch was motivated by my own solution to a
+> > > > possible deadlock when sysfs is used. Using the same example above, if
+> > > > the same sysfs file uses *any* lock, which is *also* used on the exit
+> > > > routine, you can easily trigger a deadlock. This can happen for example
+> > > > by the lock being obtained by the removal routine, then the sysfs file
+> > > > gets called, waits for the lock to complete, then the module's exit
+> > > > routine starts cleaning up and removing sysfs files, but we won't be
+> > > > able to remove the sysfs file (due to kernefs active reference) until
+> > > > the sysfs file complets, but it cannot complete because the lock is
+> > > > already held.
+> > > > 
+> > > > Yes, this is a generic problem. Yes I have proof [0]. Yes, a generic
+> > > > solution has been proposed [1], and because Greg is not convinced and I
+> > > > need to move on with life, I am suggesting a temporary driver specific
+> > > > solution (to which Greg is still NACK'ing, without even proposing any
+> > > > alternatives) [2].
+> > > > 
+> > > > [0] https://lkml.kernel.org/r/20210703004632.621662-5-mcgrof@kernel.org
+> > > > [1] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com 
+> > > > [2] https://lkml.kernel.org/r/20210723174919.ka3tzyre432uilf7@garbanzo
+> > > 
+> > > My problem with your proposed solution is that it is still racy, you can
+> > > not increment your own module reference count from 0 -> 1 and expect it
+> > > to work properly.  You need external code to do that somewhere.
+> > 
+> > You are not providing *any* proof for this.
+> 
+> I did provide proof of that.  Here it is again.
+
+<irrelevant example> 
+
+sysfs files are safe to use try_module_get() because once they are
+active a removal of the file cannot happen, and so removal will wait.
+
+> > And even so, I believe I have clarified as best as possible how a
+> > kernfs active reference implicitly protects the module when we are
+> > talking about sysfs files.
+> 
+> I do not see any link anywhere between kernfs and modules, what am I
+> missing?  Pointers to lines of code would be appreciated.
+
+I provided a selftests with error injections inserted all over
+kernfs_fop_write_iter(). Please study that and my error injection
+code.
+
+> > > Now trying to tie sysfs files to the modules that own them would be
+> > > nice, but as we have seen, that way lies way too many kernel changes,
+> > > right?
+> > 
+> > It's not a one-liner fix. Yes.
+> > 
+> > > Hm, maybe.  Did we think about this from the kobj_attribute level?  If
+> > > we use the "wrapper" logic there and the use of the macros we already
+> > > have for attributes, we might be able to get the module pointer directly
+> > > "for free".
+> > >
+> > > Did we try that?
+> > 
+> > That was my hope. I tried that first. Last year in November I determined
+> > kernfs is kobject stupid. But more importantly *neither* are struct device
+> > specific, so neither of them have semantics for modules or even devices.
+> 
+> But what about at the kobject level?
+
+kernfs is kobject stupid.
+
+> I will try to look at that this week, can't promise anything...
+
+  Luis
