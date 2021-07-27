@@ -2,206 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49953D7A06
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 17:41:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 571E63D7A1F
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 17:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232698AbhG0Pla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 11:41:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229506AbhG0Pl3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 11:41:29 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A40661B53;
-        Tue, 27 Jul 2021 15:41:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627400488;
-        bh=9JFngbViX27YFCZbm+3u4TkuQ+lxMmT7wrLTRSbVfHQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KA8wvbfUDkMNypag39fC4om9HEtRcuWrRr94Xm3bgb0pqOf8QpdVMwG0KoLKYlp2o
-         9OmqmxOcB/Sgqe9k6RIXILy/e4rA0X2ztI4NV9Rib+0nTxG1vftMi8+Pu8SeKVxDkf
-         C37JigWIjWBtrJ/1tROUygs6SxgG3RVqeBfYPpVxTF9np8Azt8XWrPJb5tqu5/3+lh
-         PVzdPAvAbK/1RgAK3ocOLH+JZ420Ox/970F0WnQ6jvTvNlCp99SvvmjHC6nuQZB7fg
-         lthn1QKJyXXcInhxiXo5AyIqUWx0T+CSMvYcYIh6NoZvI+sK+NoZkdWHz75T6MxUEy
-         PenXsAE72LsiQ==
-Date:   Tue, 27 Jul 2021 18:41:24 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dongdong Liu <liudongdong3@huawei.com>
-Cc:     Logan Gunthorpe <logang@deltatee.com>, helgaas@kernel.org,
-        hch@infradead.org, kw@linux.com, linux-pci@vger.kernel.org,
-        rajur@chelsio.com, hverkuil-cisco@xs4all.nl,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH V6 7/8] PCI: Add "pci=disable_10bit_tag=" parameter for
- peer-to-peer support
-Message-ID: <YQApJBcXV+ZoU9Nd@unreal>
-References: <1627038402-114183-1-git-send-email-liudongdong3@huawei.com>
- <1627038402-114183-8-git-send-email-liudongdong3@huawei.com>
- <YPqo6M0AKWLupvNU@unreal>
- <a8a8ffee-67e8-c899-3d04-1e28fb72560a@deltatee.com>
- <YP0HOf7kE1aOkqjV@unreal>
- <bc9b7b00-40eb-7d4e-f3b3-1d4174f10be5@deltatee.com>
- <YP/oXP7ZZ1D5kd+A@unreal>
- <a0dd96a4-3d39-54d4-1995-7f57dc68fa60@huawei.com>
+        id S237160AbhG0PrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 11:47:10 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30482 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237116AbhG0PrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 11:47:06 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16RFiRol006191;
+        Tue, 27 Jul 2021 08:46:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : references
+ : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=pn5GGVogEhi5odJ9sKw+8sInrHAd/N7e4nJ6L2NkyQg=;
+ b=lQZY4IDO28Dk7OxBtJA3/oofdpOex6CYkosZUdF7PCE+4oi2nynzuyByORR9fKbQACtV
+ Eam0sAQ7tLSs3f2Oy1T3d0tGZ5oy1YfsKY3mX5khJ6reRmxAsG52eCXIQ537zo4S8/VT
+ lMpuLkw075gOnuQjRV7vXhFjo6O0NEvQwm0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3a2bfc3d8a-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 27 Jul 2021 08:46:34 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 27 Jul 2021 08:46:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HNKsaLPbv91q1AZFQrZFvmYAAeLda9vISX5+yvQJrcpicsXfCnByKVRU4JWUcoXOGkdfjQpk3b8UY2+fQhgYPj9pdlANrVwY1PEBPYdbS2F2vxFpK6UUg71SYtzi2mUm57SbtCQ/ge5XQxKgtx1omtUbJvoDP1foumCMjU3miGPOV6sMS1X1VuH2O0HrQkrzlqNgadrpb5HAWbs7Q+6OhkA7MhFSVGDfVC9dsq8KJprfNw5XgQLys2flylLbvMET2ptorvdCcVQv/Er4n0i/zHbW5jIfIQHWZ8aM1wJWuEUR4/q6kn7KwofdQbT49Vt0SZwDGhGauWIvRp/U59/Gbg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pn5GGVogEhi5odJ9sKw+8sInrHAd/N7e4nJ6L2NkyQg=;
+ b=XBGoHGZpdEEqrqtCenPPl4pp0Pw7RFvVdRIHwVXq3cjzRriJt9euE4zNuAYnGFvc1JAYo9SqnZzR01VwuODg4P4qKTwo7zA/C0AcvHRpzisX7QYAAIcoEy0HQm3lvrQO4UfSBqaj+uh9mnkrVx+PturVRQX4+WsZzWOIhBlZC0ILQqZdu84J0QYRNAJNQKezB0UIXFK7ryU/AKTX/2mNtCj+OUj0rJvcCHQXD5kqX52hqv/zEBx9Qovn5NF7/jkg/OefgH/W8lN25zT/BJdzoZiCBHTHWmRLjoQ8oq2EuviGeh6UB7pW0rghk1fi9vmupc+UjDuh2S13l3zOdnwZ5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: sartura.hr; dkim=none (message not signed)
+ header.d=none;sartura.hr; dmarc=none action=none header.from=fb.com;
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SN7PR15MB4176.namprd15.prod.outlook.com (2603:10b6:806:10c::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17; Tue, 27 Jul
+ 2021 15:46:27 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4352.031; Tue, 27 Jul 2021
+ 15:46:27 +0000
+Subject: Re: [PATCH 1/3] arm: include: asm: swab: mask rev16 instruction for
+ clang
+To:     Pavo Banicevic <pavo.banicevic@sartura.hr>,
+        <linux@armlinux.org.uk>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <nathan@kernel.org>, <ndesaulniers@google.com>,
+        <ivan.khoronzhuk@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <clang-built-linux@googlegroups.com>,
+        <matt.redfearn@mips.com>, <mingo@kernel.org>,
+        <dvlasenk@redhat.com>, <juraj.vijtiuk@sartura.hr>,
+        <robert.marko@sartura.hr>, <luka.perkov@sartura.hr>,
+        <jakov.petrina@sartura.hr>
+References: <20210727141119.19812-1-pavo.banicevic@sartura.hr>
+ <20210727141119.19812-2-pavo.banicevic@sartura.hr>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <424add3f-d79a-79dd-2e6a-dbb966bf7349@fb.com>
+Date:   Tue, 27 Jul 2021 08:46:23 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
+In-Reply-To: <20210727141119.19812-2-pavo.banicevic@sartura.hr>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0257.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a0::22) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a0dd96a4-3d39-54d4-1995-7f57dc68fa60@huawei.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:4698) by SJ0PR03CA0257.namprd03.prod.outlook.com (2603:10b6:a03:3a0::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.26 via Frontend Transport; Tue, 27 Jul 2021 15:46:25 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ed5593dd-066b-41f8-5ad6-08d95115b1c4
+X-MS-TrafficTypeDiagnostic: SN7PR15MB4176:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN7PR15MB4176A8B0D22E0801863756F9D3E99@SN7PR15MB4176.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NlPjqn1lJQBv7831THrxCOxijGP98oiPWbHatTiWQlY4k+RlaKFNrlLUXpng65+Szhj5XjWSU/LxaAV6YVudxL+N+E0nhd5nC7ZLwEIbwa2MZ7NIVGaw8k5Xu+sia31ccoir5sGZ1Ab6MZIhswoVHfWqRkK3ntan4r3mNZMBvL9L69ojgR7+EDpsPrOSoGCbl62v9biZuQ9BNPkI7ZVk04uYQIVLiMZdhldzpookoDOCkfqa7A4+Imfh5aXXxVOjti2Er+0vgHvzpnimdrDH76ZK8G9jOASTcRe1YAcWs93sLFqCIwWJuNLOtVZHtWzG1bodoT9G8nRnuY6dRziEgxV53SGTxQ4ckcAJWhIR63KT8Zm6rTcQHqPDlaG7EkbJC9z36FbrCjvuPp6FBRtEJPKxsdMRHu/tQ1A5fDhxL/aFAILie0mGXNKboHrPURbeV7gDKen9V5b52j7/Nx8NUYCeXUzZ9S7JgKE2P7tJuRTBZy8+TYbzMKAkg+4bssLD1rNbdIjMwFHt6r9WpwRY74rZFv7mZOqfEJ/ObMUJJveSCvCUWNwhiTRowuUVQqWH9bOmt5IKIUudvQ4x1Rco0p2en0msi65Lz0+sN9oUXGPakdBaTf1Iqbk/FBx8d2yP5b7ykwzPq/EC9nq3LPQLRe877HxREay+DFbuLbYT6OI1bIwC0uyB8XqGTbQ4nGPqBz/vDHpEqC2ki+AgSwRwS1yViM7sr/bwG5p4ksDVPsXy3CoRiMEh/ikIe8P8cWvP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(2616005)(36756003)(53546011)(2906002)(86362001)(6486002)(186003)(8676002)(478600001)(66946007)(66476007)(52116002)(66556008)(8936002)(7416002)(921005)(31686004)(31696002)(5660300002)(38100700002)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MCtJeUluc3JzTmp4K1RyNTU3V1R5RHUwOUtmZkF4UGYzcUNRWkoyL1JtdjlC?=
+ =?utf-8?B?Q2tucnFzZmdwdElJZERub0pjQnJTS1lqc0EyUnZtb3Y1R1hBcEFlZUUzNTVh?=
+ =?utf-8?B?UU5Sb2J6NzZrUEFzZzRvdG8zTDVTSTdkeVJ0V2tDN21IVjVBZDlBd0NBVlJq?=
+ =?utf-8?B?ZzJIbWtSMityQ1ZZKzBQSEs3QnZldVlTSkNYM2kyMG0xdlRnbmVMdFVheEFu?=
+ =?utf-8?B?b2I2cTVNLzgzdU02U2pKb0RsR3dtUGVCUEp4RFRsSDdkWUlVWWRtb0k2b0NX?=
+ =?utf-8?B?cXp5TzZUQVhnNDhoaldCSXUwS0xGaGdxZEE5bnI2Y3o3bjQ3UkxMbmE5aEk1?=
+ =?utf-8?B?allkY0dzbXdNRlphTXBBTnVJbGp0Yy9Zd1FUT3NnTHZFaDMzNW5IMTdxMTYy?=
+ =?utf-8?B?bk1aRmFKMzgwM1orNVpGay9DRFJGcHgxbmRXOUgyUzF6d0ZGWGMrT2JaS25O?=
+ =?utf-8?B?Q2JOdFJURUp4Y3JTclYrZnVjYjBFbzlYNlB5dy9mcmZHb2RsMkpUQUY0VHBQ?=
+ =?utf-8?B?NjdkS2JaeVZoUVhZdS90eCtQSmlGbGxmWGhVK0hFbXJoV215RDFxZWF6Z0xo?=
+ =?utf-8?B?eUVCUFRwZ3lXTnJyV1FyUmxYdDhubTlORk1IcjVVNEFndjRQc0lCNjliczZP?=
+ =?utf-8?B?MWxXTkUyaTRRTnFabDJFZXd3M24zU2NFSjA5NXNtWWhIUmpPTFhGUnRzQm5V?=
+ =?utf-8?B?R1k2TmJZenM3WUg0YlJaTGxHZVVpY0lXWEpGQ2xWUTBTL3V0N1VxeGVCemQ2?=
+ =?utf-8?B?ZGI1KzNqTnhTRWVCbVRQZVVTdEkzN2ZKcm13RlYzcGMzaTZ3MmpSQklMNmRM?=
+ =?utf-8?B?dHpRUDE4V2dkczNGeU1ZSFJhVzNBT1E4VlpDaEY5b3I3U2hFaFhhVkRrYzho?=
+ =?utf-8?B?UWtVbUNEVVRvVWpYTGNaMjBrU1RqSWxPNlFPQklTOFprWTNURVo4RHJqOSsx?=
+ =?utf-8?B?Q3RjTXBIYkcwSEtPc1RERVNYdkFWZjN0UjZLcFpGWEc2NkVNdVZIeEw4NGlt?=
+ =?utf-8?B?WVAxeXp5ZE9SWVdQQUw3T3pXU0RJekNLNS8vY1hwL25nYVJ6ZVFieU1tNnpr?=
+ =?utf-8?B?YmVNN1ppQjZLQXF3Wit3VHZPTUNJdkI4SW9Sd25JanVjU2ZpbFlieDZaQWpn?=
+ =?utf-8?B?MTVPWGJkQnE1eER2Y1JEV3AyWXNZV0c4eU81RG9yUHo1QnBtVU44TDdocmdr?=
+ =?utf-8?B?VDNmeTh6YmpleEFsT0toUVM2MW5mZ2U0UlBYeWVYSEZ4djRyVGwrQ2FocTBB?=
+ =?utf-8?B?aFNMNFlROUNaRTVIVjY5TEhRdC9hL0t5SnRsRmVuVkQxU3p5bDdoNFFZd2RT?=
+ =?utf-8?B?QmdKZVZkdThvMExFcHE4cHpjMGFaZ0lLckw3Zk9ZOHFRZDJOdFpFUS9mUkpD?=
+ =?utf-8?B?Wnd0dDA5eG5QMlpvMVdGZEFuS04weXYwT3NrRnNLRlpOdnJldUplNlNrcHRi?=
+ =?utf-8?B?K3F2dlp0QVBFVlp4T1VsMDdsbCthbkZXWFd1VjVSWVBCZWpGOWZHYlowQytZ?=
+ =?utf-8?B?bTRyM3hxODA4eDVjN2hKZG1EZ3RsWEJzSFdqOUx4Y2wxMmdCUWlrT3A4bWZ3?=
+ =?utf-8?B?cytRenNWaTZyTWJZWmdSYVVzY1NqTm56OWhIWGk2TGhhMktOd3VYUm4wcDAx?=
+ =?utf-8?B?eXZqU3RCeG92QkRlMlplbzU4UStJN3V5cjlLdExVYU9TbXZhd252YnRGU2tN?=
+ =?utf-8?B?SUFNREtJbVQreUdHa0VhZkxHb2ppVkpTT2drQTF5MmhuVGpaQVpMWlVaK0JO?=
+ =?utf-8?B?bnNzOHBYSHZSUXVWVWZlMFJBbzc2Y3doallmQzlMWUQwem5Va2RuN01xeCtl?=
+ =?utf-8?B?U2dmSTAxcDM0Y1UwTytvQT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed5593dd-066b-41f8-5ad6-08d95115b1c4
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2021 15:46:26.9993
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1kFwau23EySKr4z1jFZY+IKsypC3+MADhunEWMNRM1hKrZX2vPVrmhyGTNgKZr30
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR15MB4176
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: pe_1I5CukfauFBJHpx04hDyv0lUAcAgo
+X-Proofpoint-ORIG-GUID: pe_1I5CukfauFBJHpx04hDyv0lUAcAgo
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-27_10:2021-07-27,2021-07-27 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ malwarescore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
+ clxscore=1011 mlxscore=0 bulkscore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2107270094
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 10:30:40PM +0800, Dongdong Liu wrote:
-> 
-> 
-> On 2021/7/27 19:05, Leon Romanovsky wrote:
-> > On Mon, Jul 26, 2021 at 09:48:57AM -0600, Logan Gunthorpe wrote:
-> > > 
-> > > 
-> > > On 2021-07-25 12:39 a.m., Leon Romanovsky wrote:
-> > > > On Fri, Jul 23, 2021 at 10:20:50AM -0600, Logan Gunthorpe wrote:
-> > > > > 
-> > > > > 
-> > > > > 
-> > > > > On 2021-07-23 5:32 a.m., Leon Romanovsky wrote:
-> > > > > > On Fri, Jul 23, 2021 at 07:06:41PM +0800, Dongdong Liu wrote:
-> > > > > > > PCIe spec 5.0 r1.0 section 2.2.6.2 says that if an Endpoint supports
-> > > > > > > sending Requests to other Endpoints (as opposed to host memory), the
-> > > > > > > Endpoint must not send 10-Bit Tag Requests to another given Endpoint
-> > > > > > > unless an implementation-specific mechanism determines that the Endpoint
-> > > > > > > supports 10-Bit Tag Completer capability. Add "pci=disable_10bit_tag="
-> > > > > > > parameter to disable 10-Bit Tag Requester if the peer device does not
-> > > > > > > support the 10-Bit Tag Completer. This will make P2P traffic safe.
-> > > > > > > 
-> > > > > > > Signed-off-by: Dongdong Liu <liudongdong3@huawei.com>
-> > > > > > > ---
-> > > > > > >  Documentation/admin-guide/kernel-parameters.txt |  7 ++++
-> > > > > > >  drivers/pci/pci.c                               | 56 +++++++++++++++++++++++++
-> > > > > > >  drivers/pci/pci.h                               |  1 +
-> > > > > > >  drivers/pci/pcie/portdrv_pci.c                  | 13 +++---
-> > > > > > >  drivers/pci/probe.c                             |  9 ++--
-> > > > > > >  5 files changed, 78 insertions(+), 8 deletions(-)
-> > > > > > > 
-> > > > > > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > index bdb2200..c2c4585 100644
-> > > > > > > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > > > > > > @@ -4019,6 +4019,13 @@
-> > > > > > >  				bridges without forcing it upstream. Note:
-> > > > > > >  				this removes isolation between devices and
-> > > > > > >  				may put more devices in an IOMMU group.
-> > > > > > > +		disable_10bit_tag=<pci_dev>[; ...]
-> > > > > > > +				  Specify one or more PCI devices (in the format
-> > > > > > > +				  specified above) separated by semicolons.
-> > > > > > > +				  Disable 10-Bit Tag Requester if the peer
-> > > > > > > +				  device does not support the 10-Bit Tag
-> > > > > > > +				  Completer.This will make P2P traffic safe.
-> > > > > > 
-> > > > > > I can't imagine more awkward user experience than such kernel parameter.
-> > > > > > 
-> > > > > > As a user, I will need to boot the system, hope for the best that system
-> > > > > > works, write down all PCI device numbers, guess which one doesn't work
-> > > > > > properly, update grub with new command line argument and reboot the
-> > > > > > system. Any HW change and this dance should be repeated.
-> > > > > 
-> > > > > There are already two such PCI parameters with this pattern and they are
-> > > > > not that awkward. pci_dev may be specified with either vendor/device IDS
-> > > > > or with a path of BDFs (which protects against renumbering).
-> > > > 
-> > > > Unfortunately, in the real world, BDF is not so stable. It changes with
-> > > > addition of new hardware, BIOS upgrades and even broken servers.
-> > > 
-> > > That's why it supports using a *path* of BDFs which tends not to catch
-> > > the wrong device if the topology changes.
-> > > 
-> > > > Vendor/device IDs doesn't work if you have multiple devices of same
-> > > > vendor in the system.
-> > > 
-> > > Yes, but it's fine for some use cases. That's why there's a range of
-> > > options.
-> > 
-> > The thing is that you are adding PCI parameter that is applicable to everyone.
-> > 
-> > We probably see different usage models for this feature. In my world, users
-> > have thousands of servers that runs 24x7, with VMs on top, some of them perform
-> > FW upgrades without stopping anything. The idea that you can reboot such server
-> > any time, simply doesn't exist.
-> > 
-> > So if I need to enable/disable this feature for one of the VFs, I will be stuck.
-> > 
-> > > 
-> > > > > 
-> > > > > This flag is only useful in P2PDMA traffic, and if the user attempts
-> > > > > such a transfer, it prints a warning (see the next patch) with the exact
-> > > > > parameter that needs to be added to the command line.
-> > > > 
-> > > > Dongdong citied PCI spec and it was very clear - don't enable this
-> > > > feature unless you clearly know that it is safe to enable. This is
-> > > > completely opposite to the proposal here - always enable and disable
-> > > > if something is printed to the dmesg.
-> > > 
-> > > Quoting from patch 4:
-> > > 
-> > > "For platforms where the RC supports 10-Bit Tag Completer capability,
-> > > it is highly recommended for platform firmware or operating software
-> > > that configures PCIe hierarchies to Set the 10-Bit Tag Requester Enable
-> > > bit automatically in Endpoints with 10-Bit Tag Requester capability.
-> > > This enables the important class of 10-Bit Tag capable adapters that
-> > > send Memory Read Requests only to host memory."
-> > > 
-> > > Notice the last sentence. It's saying that devices who only talk to host
-> > > memory should have 10-bit tags enabled. In the kernel we call devices
-> > > that talk to things besides host memory "P2PDMA". So the spec is saying
-> > > not to enable 10bit tags for devices participating in P2PDMA. The kernel
-> > > needs a way to allow users to do that. The kernel parameter only stops
-> > > the feature from being enabled for a specific device, and the only
-> > > use-case is P2PDMA which is not that common and requires the user to be
-> > > aware of their topology. So I really don't think this is that big a problem.
-> > 
-> > I'm not question the feature and the need of configuration. My concern
-> > is just *how* this feature is configured.
-> > 
-> > > 
-> > > > > 
-> > > > > This has worked well for disable_acs_redir and was used for
-> > > > > resource_alignment before that for quite some time. So save a better
-> > > > > suggestion I think this is more than acceptable.
-> > > > 
-> > > > I don't know about other parameters and their history, but we are not in
-> > > > 90s anymore and addition of modules parameters (for the PCI it is kernel
-> > > > cmdline arguments) are better to be changed to some configuration tool/sysfs.
-> > > 
-> > > The problem was that the ACS bits had to be set before the kernel
-> > > enumerated the devices. The IOMMU code simply was not able to support
-> > > dynamic adjustments to its groups. I assume changing 10bit tags
-> > > dynamically is similarly tricky -- but if it's not then, yes a sysfs
-> > > interface in addition to the kernel parameter would be a good idea.
-> > 
-> > I think that it is doable with combination of drivers_autoprobe disable
-> > and some sysfs knob to enable/disable this feature before driver bind.
-> > 
-> > It should be very similar to that we did for the dynamic MSI-X, see
-> > /sys/bus/pci/devices/.../sriov_vf_msix_count
-> 
-> Many thanks for your suggestion.
-> 
-> Seems a sysfs could be work ok,  but need to make sure 10-Bit Tag Requester
-> to be set before binding the device driver as
-> PCIe spec 5.0 section 7.5.3.16 Device Control 2 Register
-> 10-Bit Tag Requester Enable says that
-> If software changes the value of this bit while the Function
-> has outstanding Non-Posted Requests, the result is undefined.
-
-This is where drivers_autoprobe will help.
-
-Thanks
 
 
+On 7/27/21 7:11 AM, Pavo Banicevic wrote:
+> From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 > 
-> Thanks,
-> Dongdong
-> > 
-> > Thanks
-> > 
-> > > 
-> > > Logan
-> > .
-> > 
+> The samples/bpf with clang -emit-llvm reuses linux headers to build
+> bpf samples, and this w/a only for samples (samples/bpf/Makefile
+> CLANG-bpf).
+> 
+> It allows to build samples/bpf for arm bpf using clang.
+> In another way clang -emit-llvm generates errors like:
+> 
+> CLANG-bpf  samples/bpf/tc_l2_redirect_kern.o
+> <inline asm>:1:2: error: invalid register/token name
+> rev16 r3, r0
+> 
+> This decision is arguable, probably there is another way, but
+> it doesn't have impact on samples/bpf, so it's easier just ignore
+> it for clang, at least for now.
+> 
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>   arch/arm/include/asm/swab.h | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/arch/arm/include/asm/swab.h b/arch/arm/include/asm/swab.h
+> index c6051823048b..a9fd9cd33d5e 100644
+> --- a/arch/arm/include/asm/swab.h
+> +++ b/arch/arm/include/asm/swab.h
+> @@ -25,8 +25,11 @@ static inline __attribute_const__ __u32 __arch_swahb32(__u32 x)
+>   	__asm__ ("rev16 %0, %1" : "=r" (x) : "r" (x));
+>   	return x;
+>   }
+> +
+> +#ifndef __clang__
+>   #define __arch_swahb32 __arch_swahb32
+>   #define __arch_swab16(x) ((__u16)__arch_swahb32(x))
+> +#endif
+
+What if the kernel is compiled with clang compiler?
+Does this still work?
+
+To workaround samples/bpf issue, I think you can use
+__BPF_TRACING__ macro.
+
+>   
+>   static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
+>   {
+> 
