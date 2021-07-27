@@ -2,103 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A8D03D82F0
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 00:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593263D832A
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 00:41:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbhG0Waw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 18:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232198AbhG0Wav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 18:30:51 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CBF4C061757;
-        Tue, 27 Jul 2021 15:30:48 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id t128so1259414oig.1;
-        Tue, 27 Jul 2021 15:30:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TM+0hfl782kZ94bU2+mpLOzzj7zbvQhOg+LQO69XhJk=;
-        b=OnZ0m3U6tk3aCgWWTpT1MeD5/y+cwwRGzbM1zoIOCsQa4Vm9x21ssaUT8KnrIx+bhB
-         Wa4U8xGQ285YoMNgnePTt2oCAcFoa8EIx3hrP27YcLLsbYrem2nEpOrbnmPnPX0ir/Ic
-         V51k/BxJeVFK/eNOf91oJ90M75vlYzafc5fjuq+9/rO8ZtxNzXPK1thYL0Dwh0Tn2olv
-         SivSSSssPuoXELYpGRGeF7OTsoxb6Cx0zu/1/SiPhOUEi34dJjExAZbJyPC9Z46LMBVp
-         AhzMesAzkabVEr5OAd/P4rBe8czDEUBkikopbW0OPFtJ2NPn2COjgAV4AOGkH4MMFPaQ
-         1nfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TM+0hfl782kZ94bU2+mpLOzzj7zbvQhOg+LQO69XhJk=;
-        b=GNatqslYyovwt59XqOC+19IUTiuOic4t7U9leDpu70u8DHHyk7c1UilrR4HBNBTo6Z
-         9T1Hp2dG5uVGshXJbpWMRr5wK3/4HrVDhDp5fKPcINh8HpTAtD9/mm0azc+MI6dmIvaF
-         U6M5M/WjFerrFko2cYXh4V/d4VpA+3O11dPrr6kCCtcbawArcBFsKABfCoPsBiT5vFwG
-         EArKoeF+njCVDw/hcrsC+674BLEI42mvaqWJiffCmBAA1wgWCb0H2cXtyT4NBMxMgfw+
-         FWjCci+TqGbUl3Sofm5UOoHGzOxxyRm+fbpErne9ptpLK+u/P7uIo0qrdVkKWbNT31DX
-         TLVw==
-X-Gm-Message-State: AOAM532ykbS4Vz9X0JCEgXxHLm68W32LcyRQpKImA1SBLn9gxEkTDH2j
-        KkAdS9PCTPU/0kidMVXQT34=
-X-Google-Smtp-Source: ABdhPJz1wrwXjwcPUI1kIk1ky0ig9jrAicZ/h11+lv2H2/uL4SXlKLhoPqS89RPsBt2E7Mkq8bcgCQ==
-X-Received: by 2002:aca:d505:: with SMTP id m5mr4174267oig.5.1627425047828;
-        Tue, 27 Jul 2021 15:30:47 -0700 (PDT)
-Received: from localhost.localdomain (cpe-24-31-246-181.kc.res.rr.com. [24.31.246.181])
-        by smtp.gmail.com with ESMTPSA id c16sm783982otd.18.2021.07.27.15.30.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Jul 2021 15:30:46 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Subject: Re: [PATCH 07/64] staging: rtl8192e: Use struct_group() for memcpy()
- region
-To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-8-keescook@chromium.org>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <fa3a9a2f-b611-7fe4-9359-88fa51239765@lwfinger.net>
-Date:   Tue, 27 Jul 2021 17:30:45 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S232992AbhG0WlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 18:41:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48734 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232336AbhG0WlP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 18:41:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=pmcqorDtNtoD1g0ufe4Uy6O//KZkJ4mkvGlwp8H6qmc=; b=a7GbZNXpXwi2yZ6GNzX5yM+bX2
+        SIE2L8vR3kJDTO2xUad3wLZMXQOwFFHPKgCsIBRWHS8lTmQOcnFGOD8sW12X1YebHS94hwihdmdbZ
+        qE4f0SJ38dA2WT2adbX78YXuv4DyqGu5wcHjkq3BRuGz/Q9/zNKVGzRx2kouAtHDb45c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m8Vl5-00F5hR-4C; Wed, 28 Jul 2021 00:41:07 +0200
+Date:   Wed, 28 Jul 2021 00:41:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 4/5] tsnep: Add TSN endpoint Ethernet MAC driver
+Message-ID: <YQCLg3iLubJW+3yB@lunn.ch>
+References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
+ <20210726194603.14671-5-gerhard@engleder-embedded.com>
+ <YP8pM+qD/AfuSCcU@lunn.ch>
+ <CANr-f5y7eVbAf_NK3puJa3AcnkLXMbhzfwwmZ+r2KuWMbDhhsA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210727205855.411487-8-keescook@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5y7eVbAf_NK3puJa3AcnkLXMbhzfwwmZ+r2KuWMbDhhsA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/21 3:57 PM, Kees Cook wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring fields.
-> 
-> Use struct_group() around members addr1, addr2, and addr3 in struct
-> rtllib_hdr_4addr, and members qui, qui_type, qui_subtype, version,
-> and ac_info in struct rtllib_qos_information_element, so they can be
-> referenced together. This will allow memcpy() and sizeof() to more easily
-> reason about sizes, improve readability, and avoid future warnings about
-> writing beyond the end of addr1 and qui.
-> 
-> "pahole" shows no size nor member offset changes to struct
-> rtllib_hdr_4addr nor struct rtllib_qos_information_element. "objdump -d"
-> shows no meaningful object code changes (i.e. only source line number
-> induced differences and optimizations).
-> 
-> Signed-off-by: Kees Cook<keescook@chromium.org>
+> I also expect some discussion about this feature. Mapping device specific
+> TX/RX queues to user space is not done in mainline Linux so far.
 
-Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+That is probably not quite true. I expect GPUs do it, or at least
+something very similar.
 
-Looks good.
+> I will follow your suggestion and drop tsnep_stream.c for the moment.
+> Any early comments about this feature are welcome, because the direct
+> use of additional TX/RX queues for real-time communication is the main
+> feature of this device.
 
-Larry
+I know enough to know i don't know enough about cache management from
+user space to be able to make any sensible recommendations.
 
+You probably want to start a discussion with the XDP people and get
+them to agree XDP does not work for your use case. Also, the people
+who implemented zero-copy, MSG_ZEROCOPY and make sure that is also
+unsuitable. Then see if you can reuse some GPU code which has been
+well reviewed and tested. You will get less pushback that way,
+compared to your own code which will need a good review by somebody
+who understands all the issues.
+
+    Andrew
