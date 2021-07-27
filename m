@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F1913D7FD2
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 287803D8042
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232733AbhG0U7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
+        id S233544AbhG0VBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbhG0U7H (ORCPT
+        with ESMTP id S232499AbhG0U7H (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:59:07 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EC5C0613CF
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:06 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id d17so17579680plh.10
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:06 -0700 (PDT)
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6154CC061798
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:07 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id o44-20020a17090a0a2fb0290176ca3e5a2fso1053329pjo.1
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iuUva0FySkNQOcUDbwdlW2WIxXp65/YwLJggvLs0d2Q=;
-        b=SDf9ocitfb5Rs0PPIYeCT0/fXFDoOwuSmJ71BqMp8qK67TG51IYhnkPZYy/Q3tNO21
-         Gnrpr40E1hlQTmSfDar2EtSdufgNM0qMB+9w03gQuMGr7mQ5uzF4Kn4bygKa0DXqbzlv
-         VufURF9CT4nl7hDYdR1ieA2X/jXjjsUujEGMU=
+        bh=2339k4b0c5OWODNkIvToUoNb0tla173APtop2g87yK0=;
+        b=iEi8m5VvnHSI7PFGMBkWP99DR9/hasEmGaHMmQ/hAQvXWolvYn1ZqWUISR9yx86HKe
+         271G4W/Ncz7bw1+gj01x3c+6WGGDOH9Vwl/Z+aiHCXNR+A9GI+MIw4zbZztpHvcFA5pK
+         3bJY25UolqjG5yrPadDsyTKAutRNBCjMgVGtE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iuUva0FySkNQOcUDbwdlW2WIxXp65/YwLJggvLs0d2Q=;
-        b=GU0oTjj6GsU7uF+pLj9phefOmULHpPRQovtX9AfeG78mggNrMB7WxhxQhhX7nDWhlo
-         F+oVQB7+Q3fMMg29u5hakZHpCQr1CZ+fA/lzzVKIiDOuXxTu5XEC5w6TrcFS7d/+vv2s
-         O0uWJFqa+NOFoIvzEU+KlbCKYYWVOCR/ije+7xRlLnBQZuYZ5wrp4lxFs398DOTDQDmN
-         675QPR2RWRCeazEDFkwXORNOT4TYm3Sx0xkIurEzSUtOiyns76LHonlbNkmbCWK9yBJQ
-         +PQzsogQVx0brl0Up20NqYK67fvnmW8gx4Of5XMBxYxd/EMcVBuNHIJSoZAqx7ZONaiy
-         FPUA==
-X-Gm-Message-State: AOAM5332xwD4VdojpfYXp1Vog+uByPzSGRex7AdUep+73+4acbpLKrUP
-        B1+wy412VMy6245Vu2wdKSaqlw==
-X-Google-Smtp-Source: ABdhPJxd9cckzW204bnJlLeGWRw8HsEr60nmuyps9sZC+nCmiB8MQlX0YoxOoNf+wmuMOuPBFQp8bg==
-X-Received: by 2002:a63:44a:: with SMTP id 71mr25103040pge.259.1627419545742;
-        Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
+        bh=2339k4b0c5OWODNkIvToUoNb0tla173APtop2g87yK0=;
+        b=Gcqd0ZUzCjBLqzYOihdJc9TXwcfIzaZrUlzQza5pJh5abNI3TDs363Cey93yu4r4wb
+         26r9pVyQTYITz5EFl+rAq67nTBLWRdxEjsEHqpp1h5J4cvSdQwCIcHhHDS8Baj4s52jH
+         DO8/S9Lo0hXUV713F7xgfCdxydfD7kbyvhqmkG8aVQlXLm2L3xqpso8otvLR/y9I0bXI
+         pY9OqnFvKqm0rCMQ1Wwo2jmoMRur9Vxq/NS+iAu+2EPInbgL1P3a+oz+A78w8fzXmt2p
+         HWIhVNcpPpEnPGa2HDrGtu9R1YbUBaUlPIg19uAvWX85x5nllCEc69+BkOP901+RSwc5
+         EZEA==
+X-Gm-Message-State: AOAM5338Ip0LNMm+INia/i2tHdRegGtYvkZ10l6dM9lj9AZXGcBBoR5f
+        dV4WAk9yk0ljqfVvj8KWpReSuA==
+X-Google-Smtp-Source: ABdhPJyJWxUGA3LrJs4BG51/vLWpJYAHbkWL9HNsMr9tG1fy6upd+bj3BEBNQksVHaNDSvFaiNMgng==
+X-Received: by 2002:a63:5610:: with SMTP id k16mr25193869pgb.439.1627419546981;
+        Tue, 27 Jul 2021 13:59:06 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b10sm4629437pfi.122.2021.07.27.13.59.03
+        by smtp.gmail.com with ESMTPSA id j20sm4672710pfc.203.2021.07.27.13.59.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 05/64] skbuff: Switch structure bounds to struct_group()
-Date:   Tue, 27 Jul 2021 13:57:56 -0700
-Message-Id: <20210727205855.411487-6-keescook@chromium.org>
+Subject: [PATCH 06/64] bnxt_en: Use struct_group_attr() for memcpy() region
+Date:   Tue, 27 Jul 2021 13:57:57 -0700
+Message-Id: <20210727205855.411487-7-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3898; h=from:subject; bh=zDRFvFHICr3CPhHUYpPjYfgsT3sRvZztC648O8M/Z+4=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOBpvR1C53LhaWwxonGRaK5/85L2Hs7G8ZVB/N6 FPHA+JWJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgQAKCRCJcvTf3G3AJq8YEA Cme+/3zGc1ol3V7MYHOv02AJS8eYSYvP56YPTN+IWhbG/R9iao0T79B3njP05AdYDQ/YzSVZFyf/nM dA48kevzTJQ5BH6U98ciGMAoiY4MhSCxDjxpggkoOLHCkKWSmCLxIFysdAaSpZoavbJiYSBCDvceLN RiDHeuN7xznxcDnJd55tsJ+s4n3qET0tTBt0l2kGnVjwvTSyzmILuKrvcWemv1D0RVYiX+E2jt99TI xBdZECNgLTvRPfaECNOE/oYadRe/oj4m0V1SGwAAc25mY74Wuw87dVvp6r6XamWTMVynN4sRe1Au0l ZqV6k+AJMT52RN/mXQfd19TzgH+9eLex0ywIpeVu7Wc7KOxzgkA7tN9HjgNuY4CRUVFKbPReaMQdus vwUmDgDCcu9Dx0l4QzTYz361oipSEVY20vjIwEsR6yog6nyRGOYLp1uAmwh9xz2Kp3fv2XoaAzZXR2 I0ceyOT34//v3kbI8cZDJ0fHg0ntu/bSopVzECOxn6N5NUgkRQDKgdk28qyMDnLCU3wodi4dVaFQGS knqS45LxCRnyHOiKsBXLi2kVHORjmVCZ5fuyRrq1JDcWHgY3T3Fb/Pf8qql4TTPlb51tmVciwA7mKN nveG2L2Sw3sIt442QEpUEQ42yM7ri+HBQuuh4OsJ/a9P5DszIHRUcnJVBWcQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2358; h=from:subject; bh=urnr1c0HuSr0zcemksTCEth1t70QAfbHaEcP+c1mXUA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOBqioJQ+1gy1GQQan/jf7RJ1/WXH5A0qXVd7xV vq5+5hOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgQAKCRCJcvTf3G3AJiWREA CNm4WJeCn47J5obmfhInAVhQHs+WaRodzYXqYlwhYZwqztfgNWLmnuTFB7WixSIet+ogzFMJ1r7fzU QnWXAsLuJ3BX98gUGzvKpmV42J3D2bYmtlrZs7Eyhzqsf8YU/1DgzM/cyzoMB1MkY7QVnFyA9ECldc n4XuqAu3QiaIe+5lzEXU3cW0wy5VDaO3U89VhsX3c6FWjMhQ0FF71U5yZVlZ7s8QMcwjgGQ/rSZ5HS tHMaYMmuprGsc0WRWDxssLMce4AZIdKRwnQBGxYX56oM9u/26JaL77KjZeahVv+n4nC+KkXfWFoSls jO+qT1zevLJBtQfWAqBgbtl6mxUkW3D/0aBPlL7o63ss885dcW9pWjj8sVkqG2AOPVUcl+mMOp+VQm 5qmqUeZbnxJVtXjSRXpvzpBMjNj47QiFJaRRu++FQ9+TJ9TwFws9C31mCXsNjIBK/xzNCc0OuY/J2T Fuuz5AL5SsvRzztZGGQvpjWG2xGgfilhJucEqfeyaJrFQIvjGMIAVFYzMGX4dwwIpBMhxVU4spof3f TLNENoSRR30/sOaQWASgjwj8RqwZ3WioWr4/ALRyqYdHD8j5usq3wgrSpYlAC1AQpefx1uLVDOyes3 1j+4vL+JqxKC93LWdqu/2gVD/VBJnBjDTcrSW3GQTmYSKuzKxca2WKziYSew==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -73,102 +73,64 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
 intentionally writing across neighboring fields.
 
-Replace the existing empty member position markers "headers_start" and
-"headers_end" with a struct_group(). This will allow memcpy() and sizeof()
-to more easily reason about sizes, and improve readability.
+Use struct_group() around members queue_id, min_bw, max_bw, tsa, pri_lvl,
+and bw_weight so they can be referenced together. This will allow memcpy()
+and sizeof() to more easily reason about sizes, improve readability,
+and avoid future warnings about writing beyond the end of queue_id.
 
-"pahole" shows no size nor member offset changes to struct sk_buff.
-"objdump -d" shows no no meaningful object code changes (i.e. only source
-line number induced differences and optimizations.)
+"pahole" shows no size nor member offset changes to struct bnxt_cos2bw_cfg.
+"objdump -d" shows no meaningful object code changes (i.e. only source
+line number induced differences and optimizations).
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/net/wireguard/queueing.h |  4 +---
- include/linux/skbuff.h           |  9 ++++-----
- net/core/skbuff.c                | 14 +++++---------
- 3 files changed, 10 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |  4 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h | 14 ++++++++------
+ 2 files changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
-index 4ef2944a68bc..52da5e963003 100644
---- a/drivers/net/wireguard/queueing.h
-+++ b/drivers/net/wireguard/queueing.h
-@@ -79,9 +79,7 @@ static inline void wg_reset_packet(struct sk_buff *skb, bool encapsulating)
- 	u8 sw_hash = skb->sw_hash;
- 	u32 hash = skb->hash;
- 	skb_scrub_packet(skb, true);
--	memset(&skb->headers_start, 0,
--	       offsetof(struct sk_buff, headers_end) -
--		       offsetof(struct sk_buff, headers_start));
-+	memset(&skb->headers, 0, sizeof(skb->headers));
- 	if (encapsulating) {
- 		skb->l4_hash = l4_hash;
- 		skb->sw_hash = sw_hash;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f19190820e63..b4032e9b130e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -800,11 +800,10 @@ struct sk_buff {
- 	__u8			active_extensions;
- #endif
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+index 8a68df4d9e59..95c636f89329 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+@@ -148,10 +148,10 @@ static int bnxt_hwrm_queue_cos2bw_qcfg(struct bnxt *bp, struct ieee_ets *ets)
+ 	}
  
--	/* fields enclosed in headers_start/headers_end are copied
-+	/* Fields enclosed in headers group are copied
- 	 * using a single memcpy() in __copy_skb_header()
- 	 */
--	/* private: */
--	__u32			headers_start[0];
-+	struct_group(headers,
- 	/* public: */
+ 	data = &resp->queue_id0 + offsetof(struct bnxt_cos2bw_cfg, queue_id);
+-	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw) - 4) {
++	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw.cfg)) {
+ 		int tc;
  
- /* if you move pkt_type around you also must adapt those constants */
-@@ -920,8 +919,8 @@ struct sk_buff {
- 	u64			kcov_handle;
- #endif
+-		memcpy(&cos2bw.queue_id, data, sizeof(cos2bw) - 4);
++		memcpy(&cos2bw.cfg, data, sizeof(cos2bw.cfg));
+ 		if (i == 0)
+ 			cos2bw.queue_id = resp->queue_id0;
  
--	/* private: */
--	__u32			headers_end[0];
-+	); /* end headers group */
-+
- 	/* public: */
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
+index 6eed231de565..716742522161 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
+@@ -23,13 +23,15 @@ struct bnxt_dcb {
  
- 	/* These elements must be at the end, see alloc_skb() for details.  */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fc7942c0dddc..5f29c65507e0 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -987,12 +987,10 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- }
- EXPORT_SYMBOL(napi_consume_skb);
+ struct bnxt_cos2bw_cfg {
+ 	u8			pad[3];
+-	u8			queue_id;
+-	__le32			min_bw;
+-	__le32			max_bw;
++	struct_group_attr(cfg, __packed,
++		u8		queue_id;
++		__le32		min_bw;
++		__le32		max_bw;
+ #define BW_VALUE_UNIT_PERCENT1_100		(0x1UL << 29)
+-	u8			tsa;
+-	u8			pri_lvl;
+-	u8			bw_weight;
++		u8		tsa;
++		u8		pri_lvl;
++		u8		bw_weight;
++	);
+ 	u8			unused;
+ };
  
--/* Make sure a field is enclosed inside headers_start/headers_end section */
-+/* Make sure a field is contained by headers group */
- #define CHECK_SKB_FIELD(field) \
--	BUILD_BUG_ON(offsetof(struct sk_buff, field) <		\
--		     offsetof(struct sk_buff, headers_start));	\
--	BUILD_BUG_ON(offsetof(struct sk_buff, field) >		\
--		     offsetof(struct sk_buff, headers_end));	\
-+	BUILD_BUG_ON(offsetof(struct sk_buff, field) !=		\
-+		     offsetof(struct sk_buff, headers.field));	\
- 
- static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
- {
-@@ -1004,14 +1002,12 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
- 	__skb_ext_copy(new, old);
- 	__nf_copy(new, old, false);
- 
--	/* Note : this field could be in headers_start/headers_end section
-+	/* Note : this field could be in the headers group.
- 	 * It is not yet because we do not want to have a 16 bit hole
- 	 */
- 	new->queue_mapping = old->queue_mapping;
- 
--	memcpy(&new->headers_start, &old->headers_start,
--	       offsetof(struct sk_buff, headers_end) -
--	       offsetof(struct sk_buff, headers_start));
-+	memcpy(&new->headers, &old->headers, sizeof(new->headers));
- 	CHECK_SKB_FIELD(protocol);
- 	CHECK_SKB_FIELD(csum);
- 	CHECK_SKB_FIELD(hash);
 -- 
 2.30.2
 
