@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6793D83CF
+	by mail.lfdr.de (Postfix) with ESMTP id B52A23D83D0
 	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbhG0XU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 19:20:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34764 "EHLO mail.kernel.org"
+        id S233248AbhG0XVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 19:21:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232745AbhG0XUy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S232774AbhG0XUy (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Jul 2021 19:20:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5F68060FA0;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E040260FC2;
         Tue, 27 Jul 2021 23:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627428053;
-        bh=t4M9msfE+PU7chh65MHiMhA6/Vp0mGTsNprsKB7Lxw0=;
+        s=k20201202; t=1627428054;
+        bh=37/3bzpTa9W95WTyqcx/+wdBlmK7AxMxt7U5RRb+URw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZ8S6uYv0x7SDkQGAFH1D3SSD1gXTXmRUCugX6RjMq+a2AgPyNFdPgdLfdXkk3TJO
-         xNtLYEz63VMKGaE0VG1cTZx165QLmToZXz3LMEBocBcIMnU4lYM8ntAdRalHLar8g8
-         cw21emuE9I8rJcCptJsQBiG6uosvOBEkziHfz2j5y4ifErgXat1o9RyBWdza1+Ztau
-         FgwS3HYZMR8C9cP61Ib9po7Si2vzncZF0moqfORkjDbR1mRLkIPkyK1Haku2Iqbwzo
-         egpWoPG2ziyLhVnmRYYtQ/kax8jYbz+cMXC0E1ekpivxyCx8ld3mKxW3lGJxVruEfm
-         rrEifaontyPYg==
+        b=C2Svpo8ySPhKeB7VJblMjBNr9wYzvVNYemSd0GvCWFuD3yEf0YWfQzH8SelTwwOpz
+         NAuR1HencsWbq1Yuz6dabTEf+81YmY8VaN+1X3kkIGnCFxzjAjF1ZaYMt9pIbI1z2l
+         1E97FufvJ4ExnSmo9RK0+DfpA1HNIhckLgoqfrCpvPVZpVD0Jvpiha704JiCirRMw6
+         rlkpe4KnMX01X+40MGCqRibp+oi3aI/RtTwBYrPMBvIeXwwB8MTHoyWyFu9T1qwA8B
+         JaClvFdl4zrcmvmiPMqLjdPXqYfubvCvJ9gcp1Kl44ljhFs0hb/ygurzu1BwtC+n5X
+         5QQrFnDyDLUWg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 02/12] net/mlx5e: Disable Rx ntuple offload for uplink representor
-Date:   Tue, 27 Jul 2021 16:20:40 -0700
-Message-Id: <20210727232050.606896-3-saeed@kernel.org>
+Subject: [net 03/12] net/mlx5: E-Switch, Set destination vport vhca id only when merged eswitch is supported
+Date:   Tue, 27 Jul 2021 16:20:41 -0700
+Message-Id: <20210727232050.606896-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210727232050.606896-1-saeed@kernel.org>
 References: <20210727232050.606896-1-saeed@kernel.org>
@@ -43,118 +43,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maor Dickman <maord@nvidia.com>
 
-Rx ntuple offload is not supported in switchdev mode.
-Tryng to enable it cause kernel panic.
+Destination vport vhca id is valid flag is set only merged eswitch isn't supported.
+Change destination vport vhca id value to be set also only when merged eswitch
+is supported.
 
- BUG: kernel NULL pointer dereference, address: 0000000000000008
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 80000001065a5067 P4D 80000001065a5067 PUD 106594067 PMD 0
- Oops: 0000 [#1] SMP PTI
- CPU: 7 PID: 1089 Comm: ethtool Not tainted 5.13.0-rc7_for_upstream_min_debug_2021_06_23_16_44 #1
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- RIP: 0010:mlx5e_arfs_enable+0x70/0xd0 [mlx5_core]
- Code: 44 24 10 00 00 00 00 48 c7 44 24 18 00 00 00 00 49 63 c4 48 89 e2 44 89 e6 48 69 c0 20 08 00 00 48 89 ef 48 03 85 68 ac 00 00 <48> 8b 40 08 48 89 44 24 08 e8 d2 aa fd ff 48 83 05 82 96 18 00 01
- RSP: 0018:ffff8881047679e0 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: 0000004000000000 RCX: 0000004000000000
- RDX: ffff8881047679e0 RSI: 0000000000000000 RDI: ffff888115100880
- RBP: ffff888115100880 R08: ffffffffa00f6cb0 R09: ffff888104767a18
- R10: ffff8881151000a0 R11: ffff888109479540 R12: 0000000000000000
- R13: ffff888104767bb8 R14: ffff888115100000 R15: ffff8881151000a0
- FS:  00007f41a64ab740(0000) GS:ffff8882f5dc0000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000008 CR3: 0000000104cbc005 CR4: 0000000000370ea0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  set_feature_arfs+0x1e/0x40 [mlx5_core]
-  mlx5e_handle_feature+0x43/0xa0 [mlx5_core]
-  mlx5e_set_features+0x139/0x1b0 [mlx5_core]
-  __netdev_update_features+0x2b3/0xaf0
-  ethnl_set_features+0x176/0x3a0
-  ? __nla_parse+0x22/0x30
-  genl_family_rcv_msg_doit+0xe2/0x140
-  genl_rcv_msg+0xde/0x1d0
-  ? features_reply_size+0xe0/0xe0
-  ? genl_get_cmd+0xd0/0xd0
-  netlink_rcv_skb+0x4e/0xf0
-  genl_rcv+0x24/0x40
-  netlink_unicast+0x1f6/0x2b0
-  netlink_sendmsg+0x225/0x450
-  sock_sendmsg+0x33/0x40
-  __sys_sendto+0xd4/0x120
-  ? __sys_recvmsg+0x4e/0x90
-  ? exc_page_fault+0x219/0x740
-  __x64_sys_sendto+0x25/0x30
-  do_syscall_64+0x3f/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7f41a65b0cba
- Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
- RSP: 002b:00007ffd8d688358 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
- RAX: ffffffffffffffda RBX: 00000000010f42a0 RCX: 00007f41a65b0cba
- RDX: 0000000000000058 RSI: 00000000010f43b0 RDI: 0000000000000003
- RBP: 000000000047ae60 R08: 00007f41a667c000 R09: 000000000000000c
- R10: 0000000000000000 R11: 0000000000000246 R12: 00000000010f4340
- R13: 00000000010f4350 R14: 00007ffd8d688400 R15: 00000000010f42a0
- Modules linked in: mlx5_vdpa vhost_iotlb vdpa xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad ib_ipoib rdma_cm iw_cm ib_cm mlx5_ib ib_uverbs ib_core overlay mlx5_core ptp pps_core fuse
- CR2: 0000000000000008
- ---[ end trace c66523f2aba94b43 ]---
-
-Fixes: 7a9fb35e8c3a ("net/mlx5e: Do not reload ethernet ports when changing eswitch mode")
+Fixes: e4ad91f23f10 ("net/mlx5e: Split offloaded eswitch TC rules for port mirroring")
 Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 29 +++++++++++++------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index d09e65557e75..c6f99fc77411 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3829,6 +3829,24 @@ int mlx5e_set_features(struct net_device *netdev, netdev_features_t features)
- 	return 0;
- }
- 
-+static netdev_features_t mlx5e_fix_uplink_rep_features(struct net_device *netdev,
-+						       netdev_features_t features)
-+{
-+	features &= ~NETIF_F_HW_TLS_RX;
-+	if (netdev->features & NETIF_F_HW_TLS_RX)
-+		netdev_warn(netdev, "Disabling hw_tls_rx, not supported in switchdev mode\n");
-+
-+	features &= ~NETIF_F_HW_TLS_TX;
-+	if (netdev->features & NETIF_F_HW_TLS_TX)
-+		netdev_warn(netdev, "Disabling hw_tls_tx, not supported in switchdev mode\n");
-+
-+	features &= ~NETIF_F_NTUPLE;
-+	if (netdev->features & NETIF_F_NTUPLE)
-+		netdev_warn(netdev, "Disabling ntuple, not supported in switchdev mode\n");
-+
-+	return features;
-+}
-+
- static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 					    netdev_features_t features)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 7579f3402776..b0a2ca9037ac 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -382,10 +382,11 @@ esw_setup_vport_dest(struct mlx5_flow_destination *dest, struct mlx5_flow_act *f
  {
-@@ -3860,15 +3878,8 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 			netdev_warn(netdev, "Disabling rxhash, not supported when CQE compress is active\n");
- 	}
- 
--	if (mlx5e_is_uplink_rep(priv)) {
--		features &= ~NETIF_F_HW_TLS_RX;
--		if (netdev->features & NETIF_F_HW_TLS_RX)
--			netdev_warn(netdev, "Disabling hw_tls_rx, not supported in switchdev mode\n");
--
--		features &= ~NETIF_F_HW_TLS_TX;
--		if (netdev->features & NETIF_F_HW_TLS_TX)
--			netdev_warn(netdev, "Disabling hw_tls_tx, not supported in switchdev mode\n");
--	}
-+	if (mlx5e_is_uplink_rep(priv))
-+		features = mlx5e_fix_uplink_rep_features(netdev, features);
- 
- 	mutex_unlock(&priv->state_lock);
- 
+ 	dest[dest_idx].type = MLX5_FLOW_DESTINATION_TYPE_VPORT;
+ 	dest[dest_idx].vport.num = esw_attr->dests[attr_idx].rep->vport;
+-	dest[dest_idx].vport.vhca_id =
+-		MLX5_CAP_GEN(esw_attr->dests[attr_idx].mdev, vhca_id);
+-	if (MLX5_CAP_ESW(esw->dev, merged_eswitch))
++	if (MLX5_CAP_ESW(esw->dev, merged_eswitch)) {
++		dest[dest_idx].vport.vhca_id =
++			MLX5_CAP_GEN(esw_attr->dests[attr_idx].mdev, vhca_id);
+ 		dest[dest_idx].vport.flags |= MLX5_FLOW_DEST_VPORT_VHCA_ID;
++	}
+ 	if (esw_attr->dests[attr_idx].flags & MLX5_ESW_DEST_ENCAP) {
+ 		if (pkt_reformat) {
+ 			flow_act->action |= MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT;
 -- 
 2.31.1
 
