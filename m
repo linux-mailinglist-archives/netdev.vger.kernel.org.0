@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691883D7539
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:42:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BFD33D7548
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbhG0Mmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 08:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231975AbhG0Mma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 08:42:30 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A81C061757;
-        Tue, 27 Jul 2021 05:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=1xxPIZzwnUCYdIgCzjeIvifN5KI2/48eyHiiOas8Njw=; b=pAC+vmFgqg6OQ4sHwUtWijpcB/
-        u2WL9Et9YUG8LVvi/trCTP2DXHK+8hqfID8wzV5jCJ26NqRRK0cIUKilASn7/jExlSQUmwJFczPfs
-        IO/ElggiatF1tbMR43XmZ0fzLp9RGf4MbsrtPnoHcsgmiRMZvjuYynYOdIGrvYXjl9+5ajS++qPtg
-        OICyVwKxpfEIo2qtLW2dJfk3Rdxq+z//y1oazsj6StrygQeppuaTWaxtD2AgjlmpmoyqMGj5ODZEg
-        pJudGcLCyCQJGRoPC1h0nkZyP0jxsgYGIrSU3PXhw4WVa7O8t4QZNNBQ6ffenp4p/+QhADyVuPrdR
-        hdnBVPyw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m8MPk-00Ekef-Qj; Tue, 27 Jul 2021 12:42:28 +0000
-Date:   Tue, 27 Jul 2021 05:42:28 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        linux-wireless@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] intersil: remove obsolete prism54 wireless driver
-Message-ID: <YP//NPZbVXZ5efZJ@bombadil.infradead.org>
-References: <20210713054025.32006-1-lukas.bulwahn@gmail.com>
- <20210715220644.2d2xfututdoimszm@garbanzo>
- <6f490ee6-4879-cac5-d351-112f21c6b23f@gmail.com>
- <87mtq8guh7.fsf@codeaurora.org>
+        id S236320AbhG0MrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 08:47:24 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54002 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232008AbhG0MrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 08:47:21 -0400
+Received: by mail-io1-f72.google.com with SMTP id w3-20020a0566020343b02905393057ad92so10977767iou.20
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 05:47:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=2d+TOuGtvJGgz3vuVsGSX8Tp9+Eg4KJ09YS1h9Stn6Q=;
+        b=t+P+YhWDkJv4fycJNS4DbmWibVFF4yg3Jr70WXYRfzppdVaiR6cqzKR/ZmWRyaCOTS
+         FOIRpNgk1iVeUhzGydZL8Dt9swpBv/Mg8GlEXsXOlTgdJiJuzjVAAqp486cDS+P8VFxH
+         M5kjq66aEGjaukGr8Tq7h3hUBpsdOD7ibAUkfkycskfXlvXUBB1OCA/zFsi0+adbp27F
+         RoafM4ZKIUg0rZdrSf3PEn+22GCmPTvrhE6dj4M8CvbPhJU5IjuS1Vrtu73DFnFosoIV
+         W70Yq6qEJLxlKzKO0tj4YhcIvhqRCYmss1Wy2AaZu+f5k5qJWuFHrcaRWu4mZZ4DVO+B
+         eKaQ==
+X-Gm-Message-State: AOAM532MUR81qebpu94DUV/KdDmaoHaVvUiPWhoCPDRwFp3WGZykPPj4
+        BKJj9tIj00Ye7RlumBW9r0QYmBHwIno3Bkr9oEBtI9S9O8q2
+X-Google-Smtp-Source: ABdhPJySr5hZvAcfZg5mG19/JowkwPOV8j5zj0KK5mItwRcXbf6jOEhgftmFtUw/svz5f72wnPDiUicllXxB1xUfQSaqxUh108WO
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mtq8guh7.fsf@codeaurora.org>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+X-Received: by 2002:a02:85a5:: with SMTP id d34mr21210692jai.132.1627390041086;
+ Tue, 27 Jul 2021 05:47:21 -0700 (PDT)
+Date:   Tue, 27 Jul 2021 05:47:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004f5de905c81a45e7@google.com>
+Subject: [syzbot] UBSAN: shift-out-of-bounds in xfrm_set_default
+From:   syzbot <syzbot+9cd5837a045bbee5b810@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 09:07:48AM +0300, Kalle Valo wrote:
-> Christian Lamparter <chunkeey@gmail.com> writes:
-> 
-> > On 16/07/2021 00:06, Luis Chamberlain wrote:
-> >> On Tue, Jul 13, 2021 at 07:40:25AM +0200, Lukas Bulwahn wrote:
-> >>> Commit 1d89cae1b47d ("MAINTAINERS: mark prism54 obsolete") indicated the
-> >>> prism54 driver as obsolete in July 2010.
-> >>>
-> >>> Now, after being exposed for ten years to refactoring, general tree-wide
-> >>> changes and various janitor clean-up, it is really time to delete the
-> >>> driver for good.
-> >>>
-> >>> This was discovered as part of a checkpatch evaluation, investigating all
-> >>> reports of checkpatch's WARNING:OBSOLETE check.
-> >>>
-> >>> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> >>> ---
-> >
-> > noted. Farewell.
-> 
-> How do we know that there are no users left? It's surprising how ancient
-> hardware some people use. Is the driver broken or what?
-> 
-> (Reads commit 1d89cae1b47d)
-> 
-> Ah, p54 is supposed to replace prism54. Does that include all the
-> hardware supported by prism54?
+Hello,
 
-There was a one off chipset someone told me about long ago that p54
-didn't work for. But that persond disappeared from the face of the
-earth. Additionally, distributions have been blacklisting prism54
-for years now.
+syzbot found the following issue on:
 
-> If yes, that should be clearly documented
-> in the commit log and I can add that.
+HEAD commit:    90d856e71443 Add linux-next specific files for 20210723
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=133fd00a300000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=298516715f6ad5cd
+dashboard link: https://syzkaller.appspot.com/bug?extid=9cd5837a045bbee5b810
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.1
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1263bba6300000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1066b4d4300000
 
-Agreed. Feel free to quote the above.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9cd5837a045bbee5b810@syzkaller.appspotmail.com
 
-  Luis
+netlink: 228 bytes leftover after parsing attributes in process `syz-executor669'.
+================================================================================
+UBSAN: shift-out-of-bounds in net/xfrm/xfrm_user.c:1969:18
+shift exponent 255 is too large for 32-bit type 'int'
+CPU: 0 PID: 8437 Comm: syz-executor669 Not tainted 5.14.0-rc2-next-20210723-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:105
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:327
+ xfrm_set_default.cold+0x21/0x102 net/xfrm/xfrm_user.c:1969
+ xfrm_user_rcv_msg+0x430/0xa20 net/xfrm/xfrm_user.c:2864
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2504
+ xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2886
+ netlink_unicast_kernel net/netlink/af_netlink.c:1314 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1340
+ netlink_sendmsg+0x86d/0xdb0 net/netlink/af_netlink.c:1929
+ sock_sendmsg_nosec net/socket.c:703 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:723
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2392
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2446
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2475
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x43f0d9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc71f859f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000400488 RCX: 000000000043f0d9
+RDX: 0000000000000000 RSI: 0000000020000740 RDI: 0000000000000003
+RBP: 00000000004030c0 R08: 0000000000000000 R09: 0000000000400488
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000403150
+R13: 0000000000000000 R14: 00000000004ad018 R15: 0000000000400488
+================================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
