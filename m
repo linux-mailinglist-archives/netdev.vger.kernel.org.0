@@ -2,119 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7102C3D7274
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 11:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D87A3D72E5
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 12:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236155AbhG0J6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 05:58:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20044 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236061AbhG0J6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 05:58:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1627379889;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=T2rQBG2yVNE7y1+uB+3b6lsmKXViZKQecoiM/1czVBA=;
-        b=Mg426BPKHiEYYUn6qqnuG/nyDQOJYDyb/m0yJ9SCdyQyFrbVZWvK4O6C/8bSJhPF8gZO/G
-        nHTn3GoCk0wG5MwAUysIh/DFJIaZ8gCsE5dqdeDmNjZZCdFR3ji7i6ztzV/5lJqDNCOs8v
-        zS+PIf3+QKLIzPjTx95po+Z97nyJyb8=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-500-o5ngx6oqOlGnnMbUlSWK0w-1; Tue, 27 Jul 2021 05:58:07 -0400
-X-MC-Unique: o5ngx6oqOlGnnMbUlSWK0w-1
-Received: by mail-ej1-f69.google.com with SMTP id lu19-20020a170906fad3b029058768348f55so1000654ejb.12
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 02:58:07 -0700 (PDT)
+        id S236131AbhG0KPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 06:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236152AbhG0KPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 06:15:37 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E66C061757
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 03:15:34 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id nb11so21239133ejc.4
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 03:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+T75AOpYGFSLU6IJVWaPfqwjxNQcCkDp5FDRrgqc0bI=;
+        b=fd9CpsCidwELp1+59OJTFmrRkgfvzWD03utI/qdSFQW8uOUkThfVKCUTdDgconS9yh
+         jrRNMDI/24sbw3LuqQEaJQUcfMS6zfpJVaaZbCqlrty0L/woVGRvBdxt1HOFJm5OngPO
+         eTJteNbN7Zq+hn95zWX9dNAAOkwmawaaN8CPLFc9nZlWFdQMImmFfxdKaCjWcv/k/AeY
+         abaaWev6uP6Ir24dX4fnGJUFqFVoEColBK7zhNnETazlFJpPRc/cyA2ssllrlcDdw99+
+         sZbUyqJ8tmi98FDNL2Z2lly5lc005+xTkZWGCxIH9KHO85eHsojEb6RrqfCb081+c3J+
+         AZIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=T2rQBG2yVNE7y1+uB+3b6lsmKXViZKQecoiM/1czVBA=;
-        b=MwM1PDmbJhacHRluxzAfgYtiBvKMqFVnk4yV7CDGEB+rOWjtYbLcCKlVmcxOuBaSoK
-         bUzSA6p+1hfNg9V7gRFpITk3S/Y+W+d3mGkAtkjv0W7RA+A+Ups2sfJn38oMNOh8+E5T
-         UvxXLgFhSm/NfwcznUiAZCVC/UMiEAdh8uoLlPrm8osC3sw1IXoDXGIxksl7o2q6lnsY
-         Kpmbqclx3nbiRMcuWLPRgFdew15HZ1jMFDkM6BICgfzRnMWB2z6Wdyhlj5/zPL5JsTop
-         311tJbUbk8zuyZniCNKlB0fh3DRfnX2nR/nvKLy+j9pBMYt4DRjNypmq76AAaFDxYvMn
-         pL3g==
-X-Gm-Message-State: AOAM533tq+EgIGwuNVdKSO9MOQHdFXS2Jj8ILkV6Cd43FHg2SgtKYrXG
-        ANc9ftzX0jg87YsZ7wtNiVRMDfX8Gs3f0AFSaH0jejXx7V10D6KpxCabs+syWT1BQ0+yZK9QTZr
-        PBj8JZruFOiqiKuuG
-X-Received: by 2002:a17:906:ce47:: with SMTP id se7mr3742430ejb.240.1627379886418;
-        Tue, 27 Jul 2021 02:58:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx8eyrbNlN1DVbEoRIS2U/HCt0SR/iGRuCNgiSKmvCYAIQaFF1wZB5TRpL7dxgdXFiMYR9Wkg==
-X-Received: by 2002:a17:906:ce47:: with SMTP id se7mr3742409ejb.240.1627379886242;
-        Tue, 27 Jul 2021 02:58:06 -0700 (PDT)
-Received: from steredhat (host-79-18-148-79.retail.telecomitalia.it. [79.18.148.79])
-        by smtp.gmail.com with ESMTPSA id f18sm726664ejx.23.2021.07.27.02.58.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 02:58:05 -0700 (PDT)
-Date:   Tue, 27 Jul 2021 11:58:03 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-Subject: Re: [MASSMAIL KLMS] Re: [RFC PATCH v1 0/7] virtio/vsock: introduce
- MSG_EOR flag for SEQPACKET
-Message-ID: <20210727095803.s26subp3pgclqzvi@steredhat>
-References: <20210726163137.2589102-1-arseny.krasnov@kaspersky.com>
- <20210727075948.yl4w3foqa6rp4obg@steredhat>
- <2df68589-96b9-abd4-ad1c-e25918b908a9@kaspersky.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+T75AOpYGFSLU6IJVWaPfqwjxNQcCkDp5FDRrgqc0bI=;
+        b=fq+eKpRkMUWl5Db2violLTJAbBkMIJORx/YEqmHZ53HWeuF0cgdk4pfnfDaTQXUP6c
+         29Pzrog9at+hpSjJVvGuElSljsYu3IZYHWesPFLYUgYCe4TUiK9ZUgxnNol0TqnqlwcA
+         F675sP9fqDElWDNU8OBQ+5sQ2owEv6wNRuRqMI777lux4Y1UCjAQJmizZNAp85DUpSh2
+         fxgTko9x7IVVxQpCrLWtaIrV/lFA+cMLsRqHt91otA2XvmaMY2mzKNPNOd1NwMjH0Gw6
+         3tL7pgQEukgmq2AyIJNiQul0SIjEBGwBp+yU3Bc0pHjRf2gI5jUt/k8jMGMVJrxdc/cy
+         xZ7w==
+X-Gm-Message-State: AOAM5314SXikmV+fbL9irrXuFi7YFTtw/gLPKsop4R49Bsu5qI5xQGIU
+        EuI+XBSxR32cRfL0kiCCKxwDmlSOWOjV5VayMemg/Q==
+X-Google-Smtp-Source: ABdhPJxUv93YK+lIQMKEKDcRDn0oD9+Y3wwskgSl8RXlNP5GrAmpmwFI/oTLyIa917oKTDcXm0zXDfDQVDubXQ64jiU=
+X-Received: by 2002:a17:906:c107:: with SMTP id do7mr21170421ejc.469.1627380933430;
+ Tue, 27 Jul 2021 03:15:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <2df68589-96b9-abd4-ad1c-e25918b908a9@kaspersky.com>
+References: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20210726142536.1223744-1-vladimir.oltean@nxp.com>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Tue, 27 Jul 2021 12:15:22 +0200
+Message-ID: <CADYN=9JvXL-Fc23Rs_4SW2c65YBqSVQptmRCcXA7zp7CbR7pJg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: build all switchdev drivers as modules when
+ the bridge is a module
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Linux Kernel Functional Testing <lkft@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 12:34:36PM +0300, Arseny Krasnov wrote:
+On Mon, 26 Jul 2021 at 16:26, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 >
->On 27.07.2021 10:59, Stefano Garzarella wrote:
->> Caution: This is an external email. Be cautious while opening links or attachments.
->>
->>
->>
->> On Mon, Jul 26, 2021 at 07:31:33PM +0300, Arseny Krasnov wrote:
->>>       This patchset implements support of MSG_EOR bit for SEQPACKET
->>> AF_VSOCK sockets over virtio transport.
->>>       Idea is to distinguish concepts of 'messages' and 'records'.
->>> Message is result of sending calls: 'write()', 'send()', 'sendmsg()'
->>> etc. It has fixed maximum length, and it bounds are visible using
->>> return from receive calls: 'read()', 'recv()', 'recvmsg()' etc.
->>> Current implementation based on message definition above.
->>>       Record has unlimited length, it consists of multiple message,
->>> and bounds of record are visible via MSG_EOR flag returned from
->>> 'recvmsg()' call. Sender passes MSG_EOR to sending system call and
->>> receiver will see MSG_EOR when corresponding message will be processed.
->>>       To support MSG_EOR new bit was added along with existing
->>> 'VIRTIO_VSOCK_SEQ_EOR': 'VIRTIO_VSOCK_SEQ_EOM'(end-of-message) - now it
->>> works in the same way as 'VIRTIO_VSOCK_SEQ_EOR'. But 'VIRTIO_VSOCK_SEQ_EOR'
->>> is used to mark 'MSG_EOR' bit passed from userspace.
->> At this point it's probably better to rename the old flag, so we stay
->> compatible.
->>
->> What happens if one of the two peers does not support MSG_EOR handling,
->> while the other does?
->>
->> I'll do a closer review in the next few days.
->Thank You, also i think MSG_EOR support must be described in spec
+> Currently, all drivers depend on the bool CONFIG_NET_SWITCHDEV, but only
+> the drivers that call some sort of function exported by the bridge, like
+> br_vlan_enabled() or whatever, have an extra dependency on CONFIG_BRIDGE.
+>
+> Since the blamed commit, all switchdev drivers have a functional
+> dependency upon switchdev_bridge_port_{,un}offload(), which is a pair of
+> functions exported by the bridge module and not by the bridge-independent
+> part of CONFIG_NET_SWITCHDEV.
+>
+> Problems appear when we have:
+>
+> CONFIG_BRIDGE=m
+> CONFIG_NET_SWITCHDEV=y
+> CONFIG_TI_CPSW_SWITCHDEV=y
+>
+> because cpsw, am65_cpsw and sparx5 will then be built-in but they will
+> call a symbol exported by a loadable module. This is not possible and
+> will result in the following build error:
+>
+> drivers/net/ethernet/ti/cpsw_new.o: in function `cpsw_netdevice_event':
+> drivers/net/ethernet/ti/cpsw_new.c:1520: undefined reference to
+>                                         `switchdev_bridge_port_offload'
+> drivers/net/ethernet/ti/cpsw_new.c:1537: undefined reference to
+>                                         `switchdev_bridge_port_unoffload'
+>
+> As mentioned, the other switchdev drivers don't suffer from this because
+> switchdev_bridge_port_offload() is not the first symbol exported by the
+> bridge that they are calling, so they already needed to deal with this
+> in the same way.
+>
+> Fixes: 2f5dc00f7a3e ("net: bridge: switchdev: let drivers inform which bridge ports are offloaded")
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Yep, sure!
+Thank you for providing this fix.
 
-What do you think about the concerns above?
+Tested building omap2plus_defconfig.
 
-Stefano
+Tested-by: Anders Roxell <anders.roxell@linaro.org>
 
+Cheers,
+Anders
+
+> ---
+>  drivers/net/ethernet/microchip/sparx5/Kconfig | 1 +
+>  drivers/net/ethernet/ti/Kconfig               | 2 ++
+>  2 files changed, 3 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/microchip/sparx5/Kconfig b/drivers/net/ethernet/microchip/sparx5/Kconfig
+> index 7bdbb2d09a14..d39ae2a6fb49 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/Kconfig
+> +++ b/drivers/net/ethernet/microchip/sparx5/Kconfig
+> @@ -1,5 +1,6 @@
+>  config SPARX5_SWITCH
+>         tristate "Sparx5 switch driver"
+> +       depends on BRIDGE || BRIDGE=n
+>         depends on NET_SWITCHDEV
+>         depends on HAS_IOMEM
+>         depends on OF
+> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+> index affcf92cd3aa..7ac8e5ecbe97 100644
+> --- a/drivers/net/ethernet/ti/Kconfig
+> +++ b/drivers/net/ethernet/ti/Kconfig
+> @@ -64,6 +64,7 @@ config TI_CPSW
+>  config TI_CPSW_SWITCHDEV
+>         tristate "TI CPSW Switch Support with switchdev"
+>         depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || COMPILE_TEST
+> +       depends on BRIDGE || BRIDGE=n
+>         depends on NET_SWITCHDEV
+>         depends on TI_CPTS || !TI_CPTS
+>         select PAGE_POOL
+> @@ -109,6 +110,7 @@ config TI_K3_AM65_CPSW_NUSS
+>  config TI_K3_AM65_CPSW_SWITCHDEV
+>         bool "TI K3 AM654x/J721E CPSW Switch mode support"
+>         depends on TI_K3_AM65_CPSW_NUSS
+> +       depends on BRIDGE || BRIDGE=n
+>         depends on NET_SWITCHDEV
+>         help
+>          This enables switchdev support for TI K3 CPSWxG Ethernet
+> --
+> 2.25.1
+>
