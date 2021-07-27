@@ -2,256 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1583D6B95
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 03:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F043D6BA6
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 03:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbhG0A7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 20:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbhG0A7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 20:59:42 -0400
-Received: from tulum.helixd.com (unknown [IPv6:2604:4500:0:9::b0fd:3c92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2D9C061757
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 18:40:04 -0700 (PDT)
-Received: from [IPv6:2600:8801:8800:12e8:12e:8d0e:775b:1aa3] (unknown [IPv6:2600:8801:8800:12e8:12e:8d0e:775b:1aa3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: dalcocer@helixd.com)
-        by tulum.helixd.com (Postfix) with ESMTPSA id E3BCB20777;
-        Mon, 26 Jul 2021 18:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tulum.helixd.com;
-        s=mail; t=1627350000;
-        bh=625Tcktxu8SmCM3WTWYyA5+Rmsdnrf3Gq4dZLeviBF4=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=Y0itbjJifwnNMGSPHEMkuKSwEJ3srFavgzRucNKJ5vQqghIlnEaxckMmotSBe+peC
-         Vkaj0Nx/dwU7bY5iWfj3oMYZejXbLLz+4GS3EymV5BOl3buCWfbhCw3KLmqCzGQtuA
-         pUXZjaokNVEp5YdhdxIHHXo/8a3itJkAU/dGwEQs=
-Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
-From:   Dario Alcocer <dalcocer@helixd.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <6a70869d-d8d5-4647-0640-4e95866a0392@helixd.com>
- <YPrHJe+zJGJ7oezW@lunn.ch> <0188e53d-1535-658a-4134-a5f05f214bef@helixd.com>
- <YPsJnLCKVzEUV5cb@lunn.ch> <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
- <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com> <YPxPF2TFSDX8QNEv@lunn.ch>
- <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
- <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
-Message-ID: <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
-Date:   Mon, 26 Jul 2021 18:39:58 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S234092AbhG0BRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 21:17:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46548 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233249AbhG0BRA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Jul 2021 21:17:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HMgJV3uvT/ccXgXUndUBzgjHpSF3q66T70QHV1OP8Po=; b=3MfQ7sVIZ9ABcm1rZUJXDAOPnh
+        Z43SVdviFaDETNTo9/eYjtVOulvrFrt01OgBt7cqN/Ma1vw5kaHKU1KyAE5wgaLR29ztSF1nOSN5a
+        O7FZ3jlhEOeMSB85yl/jHIuPxJDXRWpCjPBn9tAwS6qbv6ZbmlItSMjNPg8aAknen8VI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m8CLJ-00Ex3M-Ej; Tue, 27 Jul 2021 03:57:13 +0200
+Date:   Tue, 27 Jul 2021 03:57:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        netdev@vger.kernel.org, sasha.neftin@intel.com,
+        vitaly.lifshits@intel.com, vinicius.gomes@intel.com,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Message-ID: <YP9n+VKcRDIvypes@lunn.ch>
+References: <YPTKB0HGEtsydf9/@lunn.ch>
+ <88d23db8-d2d2-5816-6ba1-3bd80738c398@gmail.com>
+ <YPbu8xOFDRZWMTBe@lunn.ch>
+ <3b7ad100-643e-c173-0d43-52e65d41c8c3@gmail.com>
+ <20210721204543.08e79fac@thinkpad>
+ <YPh6b+dTZqQNX+Zk@lunn.ch>
+ <20210721220716.539f780e@thinkpad>
+ <4d8db4ce-0413-1f41-544d-fe665d3e104c@gmail.com>
+ <6d2697b1-f0f6-aa9f-579c-48a7abb8559d@gmail.com>
+ <20210727020619.2ba78163@thinkpad>
 MIME-Version: 1.0
-In-Reply-To: <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210727020619.2ba78163@thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/24/21 7:36 PM, Dario Alcocer wrote:
-> On 7/24/21 7:26 PM, Dario Alcocer wrote:
->> On 7/24/21 10:34 AM, Andrew Lunn wrote:
->>> You might want to enable dbg prints in driver/nets/phy/phy.c, so you
->>> can see the state machine changes.
->>
->> Great suggestion. I added the following to the boot options:
->>
->> dyndbg="file net/dsa/* +p; file drivers/net/phy/phy.c +p"
->>
->> The relevant messages collected from the system log are below. 
->> Interestingly, all of the ports go from UP to NOLINK. In addition, 
->> "breaking chain for DSA event 7" is reported, once for each port.
+> The last time we discussed this (Andrew, Pavel and I), we've decided
+> that for ethernet PHY controlled LEDs we want the devicename part
+> should be something like
+>    phyN  or  ethphyN  or  ethernet-phyN
+> with N a number unique for every PHY (a simple atomically increased
+> integer for every ethernet PHY).
 
-Andrew,
+We might want to rethink this. PHYs typically have 2 or 3 LEDs. So we
+want a way to indicate which LED of a PHY it is. So i suspect we will
+want something like
 
-As I mentioned before, the system log shows that each switch port link 
-state goes from UP to NOLINK when "ip link set DEVNAME up" runs.
+ethphyN-led0, ethphyN-led1, ethphyN-led2.
 
-Since you suggested it's probably a PHY problem, I used kernel tracing 
-to track PHY-related calls in the following files:
+I would also suggest N starts at 42, in order to make it clear it is a
+made up arbitrary number, it has no meaning other than it is
+unique. What we don't want is people thinking ethphy0-led0 has
+anything to do with eth0.
 
-* drivers/net/phy/phylink.c
-* drivers/net/phy/marvell.c
-* net/dsa/port.c
+> I confess that I am growing a little frustrated here, because there
+> seems to be no optimal solution with given constraints and no official
+> consensus for a suboptimal yet acceptable solution.
 
-I set up the kernel tracing before trying to bring up the lan1 interface:
+I do think it is clear that the base name is mostly irrelevant and not
+going to be used in any meaningful way. You are unlikely to access
+these LEDs via /sys/class/leds. You are going to go into
+/sys/class/net/<ifname> and then either follow the device symlink, or
+the phydev symlink and look for LEDs there. And then only the -ledM
+part of the name might be useful. Since the name is mostly
+meaningless, we should just decide and move on.
 
-root@dali:~# mount -t tracefs tracefs /sys/kernel/tracing
-root@dali:~# echo 0 > /sys/kernel/tracing/tracing_on
-root@dali:~# echo function_graph > /sys/kernel/tracing/current_tracer
-root@dali:~# echo phylink_\* > /sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo dsa_port_phylink_\* >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo m88e1510_probe >> /sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_config_init >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo m88e1510_config_aneg >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_read_status >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_ack_interrupt >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_config_intr >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo m88e1121_did_interrupt >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo genphy_resume >> /sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo genphy_suspend >> /sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_read_page >> /sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_write_page >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_get_sset_count >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo marvell_get_strings >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo m88e1540_get_tunable >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo m88e1540_set_tunable >> 
-/sys/kernel/tracing/set_ftrace_filter
-root@dali:~# echo 1 > /sys/kernel/tracing/tracing_on
-
-I then tried bringing up lan1 again to see which functions would be 
-called, then stopped kernel tracing:
-
-root@dali:~# ip addr add 192.0.2.1/24 dev lan1
-root@dali:~# ip link set lan1 up
-[  511.763909] mv88e6085 stmmac-0:1a lan1: configuring for phy/gmii link 
-mode
-[  511.773082] 8021q: adding VLAN 0 to HW filter on device lan1
-root@dali:~# echo 0 > /sys/kernel/tracing/tracing_on
-
-I then dumped the trace buffer:
-
-root@dali:~# cat /sys/kernel/tracing/trace
-# tracer: function_graph
-#
-# CPU  DURATION                  FUNCTION CALLS
-# |     |   |                     |   |   |   |
-  1) + 10.900 us   |  phylink_ethtool_ksettings_get();
-  1)   5.220 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   2.060 us    |    phylink_get_fixed_state();
-  1)   1.890 us    |    phylink_get_ksettings();
-  1) + 11.740 us   |  }
-  1)   6.760 us    |  phylink_ethtool_ksettings_get();
-  1)   4.890 us    |  phylink_ethtool_ksettings_get();
-  1)   4.670 us    |  phylink_ethtool_ksettings_get();
-  1) + 11.560 us   |  phylink_ethtool_ksettings_get();
-  1)   5.060 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   2.010 us    |    phylink_get_fixed_state();
-  1)   1.810 us    |    phylink_get_ksettings();
-  1) + 12.140 us   |  }
-  1)   5.890 us    |  phylink_ethtool_ksettings_get();
-  1)   5.300 us    |  phylink_ethtool_ksettings_get();
-  1)   4.630 us    |  phylink_ethtool_ksettings_get();
-  1) + 10.070 us   |  phylink_ethtool_ksettings_get();
-  1)   5.100 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   1.910 us    |    phylink_get_fixed_state();
-  1)   1.840 us    |    phylink_get_ksettings();
-  1) + 12.120 us   |  }
-  1)   5.910 us    |  phylink_ethtool_ksettings_get();
-  1)   5.410 us    |  phylink_ethtool_ksettings_get();
-  1)   4.630 us    |  phylink_ethtool_ksettings_get();
-  1) + 10.560 us   |  phylink_ethtool_ksettings_get();
-  1)   4.620 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   1.920 us    |    phylink_get_fixed_state();
-  1)   1.930 us    |    phylink_get_ksettings();
-  1) + 12.370 us   |  }
-  1)   5.290 us    |  phylink_ethtool_ksettings_get();
-  1)   4.570 us    |  phylink_ethtool_ksettings_get();
-  1)   4.500 us    |  phylink_ethtool_ksettings_get();
-  0)               |  phylink_start() {
-  0)   2.510 us    |    phylink_resolve_flow();
-  0)               |    phylink_mac_config() {
-  0)   2.260 us    |      dsa_port_phylink_mac_config();
-  0)   5.830 us    |    }
-  0) + 14.740 us   |    phylink_run_resolve.part.0();
-  0)               |    genphy_resume() {
-  ------------------------------------------
-  0)     ip-626     =>   kworker-20
-  ------------------------------------------
-
-  0)               |  phylink_resolve() {
-  0)   1.860 us    |    phylink_resolve_flow();
-  0)   6.800 us    |  }
-  ------------------------------------------
-  0)   kworker-20   =>     ip-626
-  ------------------------------------------
-
-  0) # 1818.330 us |    } /* genphy_resume */
-  0) # 8730.320 us |  } /* phylink_start */
-  ------------------------------------------
-  0)     ip-626     =>   kworker-20
-  ------------------------------------------
-
-  0)               |  m88e1510_config_aneg() {
-  0) # 1871.880 us |    marvell_read_page();
-  0) # 1807.480 us |    marvell_write_page();
-  0) # 1804.300 us |    marvell_write_page();
-  0) * 42803.07 us |  }
-  0) * 13283.95 us |  marvell_read_status();
-  0)               |  phylink_phy_change() {
-  0)   3.990 us    |    phylink_run_resolve.part.0();
-  0)   8.930 us    |  }
-  0)               |  phylink_resolve() {
-  0)   2.110 us    |    phylink_resolve_flow();
-  0)   6.320 us    |  }
-  1) + 11.280 us   |  phylink_ethtool_ksettings_get();
-  1)   4.560 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   2.180 us    |    phylink_get_fixed_state();
-  1)   1.960 us    |    phylink_get_ksettings();
-  1) + 12.620 us   |  }
-  1)   5.290 us    |  phylink_ethtool_ksettings_get();
-  1)   4.980 us    |  phylink_ethtool_ksettings_get();
-  1)   5.000 us    |  phylink_ethtool_ksettings_get();
-  1) + 10.430 us   |  phylink_ethtool_ksettings_get();
-  1)   4.860 us    |  phylink_ethtool_ksettings_get();
-  1)               |  phylink_ethtool_ksettings_get() {
-  1)   2.070 us    |    phylink_get_fixed_state();
-  1)   1.950 us    |    phylink_get_ksettings();
-  1) + 12.090 us   |  }
-  1)   5.310 us    |  phylink_ethtool_ksettings_get();
-  1)   5.110 us    |  phylink_ethtool_ksettings_get();
-  1)   4.730 us    |  phylink_ethtool_ksettings_get();
-
-I filtered the output to see which specific calls are made when checking 
-the port link status:
-
-root@dali:~# cat /sys/kernel/tracing/trace | fgrep '|' | cut -d '|' -f 2 
-| sort | uniq
-
-       dsa_port_phylink_mac_config();
-     genphy_resume() {
-     marvell_read_page();
-     marvell_write_page();
-     phylink_get_fixed_state();
-     phylink_get_ksettings();
-     phylink_mac_config() {
-     phylink_resolve_flow();
-     phylink_run_resolve.part.0();
-     }
-     } /* genphy_resume */
-   m88e1510_config_aneg() {
-   marvell_read_status();
-   phylink_ethtool_ksettings_get() {
-   phylink_ethtool_ksettings_get();
-   phylink_phy_change() {
-   phylink_resolve() {
-   phylink_start() {
-   }
-   } /* phylink_start */
-root@dali:~#
-
-I will focus on adding more tracing to these specific functions, in 
-hopes of narrowing down the link issue further.
-
-Let me know if you have any other suggestions, in case I missed something.
-
-Thanks!
-
+     Andrew
