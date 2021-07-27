@@ -2,129 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 135BB3D7AA1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 18:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD1E3D7AAF
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 18:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbhG0QM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 12:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
+        id S229569AbhG0QNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 12:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhG0QMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 12:12:25 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC881C061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 09:12:25 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id 185so16570476iou.10
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 09:12:25 -0700 (PDT)
+        with ESMTP id S229660AbhG0QNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 12:13:43 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040C2C061760
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 09:13:40 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id l24so9914872qtj.4
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 09:13:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=En0pdER263cW6I9Y+7h6JpCEP6J2OKalf20rLcFu4hw=;
-        b=rerItmmL4CKodwYIafStYT4zF7z73d3RgcBSRv8LtW2EnRunsia41t9bVwn2NwtnLM
-         pM4nAXq54xzf9jLI/WzVR7+tNBGqI0q0Hp6j1V1fEEjsr8lihfJz8D4LKSbreh+EGxGo
-         Saml+Kzhb0cwVvVrDzFtVoromXzZmtsUqiwXvAQvwDvNzvPS0XVw57wDUVUvDMPkru1l
-         DfayMQXgkb4T0KmxHK4xu3NWQd74BtyfTI9DaV+YqD4eD5XuoJvDq8VSrNADgc4IpJ2Z
-         YCB/f45C+BnXGXZCyTHFvyFoiN8Ez3Z2vx6jeqegFfPLPHtyTMpRU1L8eY1a24JnzvJw
-         dmcQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qdgzUd3PowCb3VGOZd/z0SLZdtdbzj4bi19g1zyGXG0=;
+        b=nIyraceI5n0OhGr96/yKNqKWBC02sh6IqRfEizhXmaEiEhLeW+ROVW34aeB3YXN+Sl
+         3rHA0ylcjZ5+BsCDvXChahAs+5qan0nvm56wup3VZV0qLsxO0DK+8vs1AZnUJUCnEiTA
+         Yk/APelCFeyiTGS38eE4kA0WBmnuVwfDFn6l69rPGX7Jcxe8hhxb/8RdCBEDXJAwB+xW
+         fy5ZQkXsdty4F9bKt8jx7txzrxBGFYvFfn8PWjabHwwBkDZfG9CjOUiEb68v28MufXc6
+         0svQz55cne1WITXm8AMR6gRTD9mYN6OGnVAaE9e2cqATIuY6TaO6+X/Oa2PHliPCATcX
+         PRwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=En0pdER263cW6I9Y+7h6JpCEP6J2OKalf20rLcFu4hw=;
-        b=H/5tqTriDQQPhNFYZl04I0aozl0OW+7ZXkjn4yYQM7yUXN7py/3VPH9M9Ch+klZ5Ms
-         liPLTZIbN24PbaESvDd/4dIf7tStZwc/HOMwYhPxkMobFtGZGRfJ3xFCy8SiiNFCO4pv
-         rrLUnJ+ax8X6JNX4GHwwemhH4htfgRe4SC8b1Kr+IyCKRTQBDbSnV92QuYSRdSMZ2dBi
-         1p8YsN4GqLIiR1mH3mZuWilyOukJfDqZwxzpZ0IB6TTivmGZC0xzrREfktjWOGcGgg9z
-         x74+/y4iRfxeM4tY/o6PKTNv36qr0aCMA/TwEKmBVRdcBNKEcX4KFT2NS/ngaAhvyvuy
-         bCFQ==
-X-Gm-Message-State: AOAM532j331LeSSN9HaDp5djoPU+uZddZLxLKo/nU/2W9WQm+GyyleNp
-        1GI6N3kU9A+3SvDpSpV2V7Y=
-X-Google-Smtp-Source: ABdhPJyA4/8us+YIsNAs6wih0jaAnQG2bl2G+A2X0yM2hv9wp37p/1yPp1nHxcUrDWL2v2CZftQqTw==
-X-Received: by 2002:a05:6602:249a:: with SMTP id g26mr19406362ioe.150.1627402345081;
-        Tue, 27 Jul 2021 09:12:25 -0700 (PDT)
-Received: from localhost ([172.243.157.240])
-        by smtp.gmail.com with ESMTPSA id k4sm2488361ior.55.2021.07.27.09.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 09:12:24 -0700 (PDT)
-Date:   Tue, 27 Jul 2021 09:12:17 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <610030612aaa3_199a412083d@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210723183630.5088-1-xiyou.wangcong@gmail.com>
-References: <20210723183630.5088-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next] unix_bpf: fix a potential deadlock in
- unix_dgram_bpf_recvmsg()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qdgzUd3PowCb3VGOZd/z0SLZdtdbzj4bi19g1zyGXG0=;
+        b=olEluSoYSHbx9Up3C6GYjLvz7XuOnwegK36QrM3bophIPUqrNobptnoFJS2KJDULnA
+         L9igKp9WCD/P5w7cY5EdHWKdRr4EtJkBTLtTmp8YjfEYmdauqlabG2Lcew6nhojRw1d7
+         z6V7yqhJFnsbEbtvlgDvMFVrqMc1orHKKtMoF/S2kOPUz5jCsAhhvOekh2xHEysYSm4a
+         NbCm4dMy6DIxihB6cCp8HvnXgzZNGIv7QbYxHyXypjlqnAR/L0J8aEFhBHxP7MXb4Iv2
+         YSl718VvcQaW03ZHwnXSsUmn4Kn2ty5n1k2P837iHoWyamVNIF6QV+wHRIkNHunXjQ4R
+         yVSg==
+X-Gm-Message-State: AOAM533CypPgNbO0l+mm81ZEB5sXJT0GKPucZfA27rRDj95CL6LW1ywq
+        /Q6JAWBxa5DZOxfGOUiX/jNhnQ==
+X-Google-Smtp-Source: ABdhPJz6CroJ0vO+ZwqVgyGiDPFcL2XZzNBTuGAnmK/KG+JZCqX9B1JxEYQ4JRPT8kTuKFr0knigZA==
+X-Received: by 2002:ac8:4706:: with SMTP id f6mr20127077qtp.315.1627402419092;
+        Tue, 27 Jul 2021 09:13:39 -0700 (PDT)
+Received: from [192.168.1.171] (bras-base-kntaon1617w-grc-28-184-148-47-47.dsl.bell.ca. [184.148.47.47])
+        by smtp.googlemail.com with ESMTPSA id x23sm1998378qkf.36.2021.07.27.09.13.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jul 2021 09:13:38 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] flow_offload: allow user to offload tc
+ action to net device
+To:     Vlad Buslov <vladbu@nvidia.com>,
+        Simon Horman <simon.horman@corigine.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+References: <20210722091938.12956-1-simon.horman@corigine.com>
+ <20210722091938.12956-2-simon.horman@corigine.com>
+ <ygnhim12qxxy.fsf@nvidia.com>
+ <13f494c9-e7f0-2fbb-89f9-b1500432a2f6@mojatatu.com>
+ <20210727130419.GA6665@corigine.com> <ygnh7dhbrfd0.fsf@nvidia.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <95d6873c-256c-0462-60f7-56dbffb8221b@mojatatu.com>
+Date:   Tue, 27 Jul 2021 12:13:37 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <ygnh7dhbrfd0.fsf@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On 2021-07-27 10:38 a.m., Vlad Buslov wrote:
 > 
-> As Eric noticed, __unix_dgram_recvmsg() may acquire u->iolock
-> too, so we have to release it before calling this function.
-> 
-> Fixes: 9825d866ce0d ("af_unix: Implement unix_dgram_bpf_recvmsg()")
-> Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  net/unix/unix_bpf.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
-> index db0cda29fb2f..b07cb30e87b1 100644
-> --- a/net/unix/unix_bpf.c
-> +++ b/net/unix/unix_bpf.c
-> @@ -53,8 +53,9 @@ static int unix_dgram_bpf_recvmsg(struct sock *sk, struct msghdr *msg,
->  	mutex_lock(&u->iolock);
->  	if (!skb_queue_empty(&sk->sk_receive_queue) &&
->  	    sk_psock_queue_empty(psock)) {
-> -		ret = __unix_dgram_recvmsg(sk, msg, len, flags);
-> -		goto out;
-> +		mutex_unlock(&u->iolock);
-> +		sk_psock_put(sk, psock);
-> +		return __unix_dgram_recvmsg(sk, msg, len, flags);
->  	}
+> On Tue 27 Jul 2021 at 16:04, Simon Horman <simon.horman@corigine.com> wrote:
 
-Is there a reason to grab the mutex_lock(u->iolock) above the
-skb_queue_emptyaand sk_psock_queue_empty checks?
-
-Could it be move here just above the msg_bytes_ready label?
-
->  
->  msg_bytes_ready:
-> @@ -68,13 +69,13 @@ static int unix_dgram_bpf_recvmsg(struct sock *sk, struct msghdr *msg,
->  		if (data) {
->  			if (!sk_psock_queue_empty(psock))
->  				goto msg_bytes_ready;
-> -			ret = __unix_dgram_recvmsg(sk, msg, len, flags);
-> -			goto out;
-> +			mutex_unlock(&u->iolock);
-> +			sk_psock_put(sk, psock);
-> +			return __unix_dgram_recvmsg(sk, msg, len, flags);
->  		}
->  		copied = -EAGAIN;
->  	}
->  	ret = copied;
-> -out:
->  	mutex_unlock(&u->iolock);
->  	sk_psock_put(sk, psock);
->  	return ret;
-> -- 
-> 2.27.0
+>>>
+>>> Also showing a tc command line in the cover letter on how one would
+>>> ask for a specific action to be offloaded.
+>>
+>> In practice actions are offloaded when a flow using them is offloaded.
+>> So I think we need to consider what the meaning of IN_HW is.
+>>
+>> Is it that:
+>>
+>> * The driver (and potentially hardware, though not in our current
+>>    implementation) has accepted the action for offload;
+>> * That a classifier that uses the action has bee offloaded;
+>> * Or something else?
 > 
+> I think we have the same issue with filters - they might not be in
+> hardware after driver callback returned "success" (due to neigh state
+> being invalid for tunnel_key encap, for example).
+> 
+
+Sounds like we need another state for this. Otherwise, how do you debug
+that something is sitting in the driver and not in hardware after you
+issued a command to offload it? How do i tell today?
+Also knowing reason why something is sitting in the driver would be
+helpful.
+
+>> With regards to a counter, I'm not quite sure what this would be:
+>>
+>> * The number of devices where the action has been offloaded (which ties
+>>    into the question of what we mean by IN_HW)
+>> * The number of offloaded classifier instances using the action
+>> * Something else
+> 
+> I would prefer to have semantics similar to filters:
+> 
+> 1. Count number of driver callbacks that returned "success".
+> 
+> 2. If count > 0, then set in_hw flag.
+> 
+> 3. Set in_hw_count to success count.
+> 
+> This would allow user to immediately determine whether action passed
+> driver validation.
+>
+
+I didnt follow this:
+Are we refering to the the "block" semantics (where a filter for
+example applies to multiple devices)?
+
+>>
+>> Regarding a flag to control offload:
+>>
+>> * For classifiers (at least the flower classifier) there is the skip_sw and
+>>    skip_hw flags, which allow control of placement of a classifier in SW and
+>>    HW.
+>> * We could add similar flags for actions, which at least in my
+>>    world view would have the net-effect of controlling which classifiers can
+>>    be added to sw and hw - f.e. a classifier that uses an action marked
+>>    skip_hw could not be added to HW.
+
+I guess it depends on the hardware implementation.
+In S/W we have two modes:
+Approach A: create an action and then 2) bind it to a filter.
+Approach B: Create a filter and then bind it to an action.
+
+And #2A can be repeated multiple times for the same action
+(would require some index as a reference for the action)
+To Simon's comment above that would mean allowing
+"a classifier that uses an action marked skip_hw to be added to HW"
+i.e
+Some hardware is capable of doing both option #A and #B.
+
+Todays offload assumes #B - in which both filter and action are assumed
+offloaded.
+
+I am hoping whatever approach we end up agreeing on doesnt limit
+either mode.
+
+>> * Doing so would add some extra complexity and its not immediately apparent
+>>    to me what the use-case would be given that there are already flags for
+>>    classifiers.
+> Yeah, adding such flag for action offload seems to complicate things.
+> Also, "skip_sw" flag doesn't even make much sense for actions. I thought
+> that "skip_hw" flag would be nice to have for users that would like to
+> avoid "spamming" their NIC drivers (potentially causing higher latency
+> and resource consumption) for filters/actions they have no intention to
+> offload to hardware, but I'm not sure how useful is that option really
+> is.
+
+Hold on Vlad.
+So you are looking at this mostly as an optimization to speed up h/w
+control updates? ;->
+
+I was looking at it more as a (currently missing) feature improvement.
+We already have a use case that is implemented by s/w today. The feature
+mimics it in h/w.
+
+At minimal all existing NICs should be able to support the counters
+as mapped to simple actions like drop. I understand for example if some
+cant support adding separately offloading of tunnels for example.
+So the syntax is something along the lines of:
+
+tc actions add action drop index 15 skip_sw
+tc filter add dev ...parent ... protocol ip prio X ..\
+u32/flower skip_sw match ... flowid 1:10 action gact index 15
+
+You get an error if counter index 15 is not offloaded or
+if skip_sw was left out..
+
+And then later on, if you support sharing of actions:
+tc filter add dev ...parent ... protocol ip prio X2 ..\
+u32/flower skip_sw match ... flowid 1:10 action gact index 15
+
+cheers,
+jamal
+
+
