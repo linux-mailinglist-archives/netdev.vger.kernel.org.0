@@ -2,114 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD223D6EDA
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 08:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3AB3D6F78
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 08:31:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbhG0GKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 02:10:53 -0400
-Received: from so254-9.mailgun.net ([198.61.254.9]:29490 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235512AbhG0GKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 02:10:52 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1627366252; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=mGArwDTjXra5T2pzBW7Oz+IaFD5IRPeuL9dvd7Qx/g4=; b=NyipvcG0lRH6k/Hw3YqgfNViIZRwsWa0XXd7r+Is+ti50AtZNFbNFK9BdRUul7IFpoH6gu1x
- NJ3YJcFotd2jnd9wIeSQSLLmSEMNcF5Dit1hc3VwL2D9C9Aex140X8J71HI7+JAtCYrcXt+6
- 8JR/PA2KeNUgt+XLwAcYNLTjm6k=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 60ffa36a9771b05b248831e5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 27 Jul 2021 06:10:50
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7B1A5C433F1; Tue, 27 Jul 2021 06:10:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from tykki (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 55400C433F1;
-        Tue, 27 Jul 2021 06:10:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 55400C433F1
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Hin-Tak Leung <htl10@users.sourceforge.net>
-Cc:     Herton Ronaldo Krzesinski <herton@canonical.com>,
-        Larry Finger <larry.finger@lwfinger.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
-        Salah Triki <salah.triki@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] wireless: rtl8187: replace udev with usb_get_dev()
-References: <20210724183457.GA470005@pc>
-        <53895498.1259278.1627160074135@mail.yahoo.com>
-Date:   Tue, 27 Jul 2021 09:10:45 +0300
-In-Reply-To: <53895498.1259278.1627160074135@mail.yahoo.com> (Hin-Tak Leung's
-        message of "Sat, 24 Jul 2021 20:54:34 +0000 (UTC)")
-Message-ID: <87im0wguca.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S235323AbhG0Gbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 02:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234226AbhG0Gba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 02:31:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1C2C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 23:31:31 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m8Gcj-00049b-Mq; Tue, 27 Jul 2021 08:31:29 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1m8Gci-0007Pa-C6; Tue, 27 Jul 2021 08:31:28 +0200
+Date:   Tue, 27 Jul 2021 08:31:28 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     alexandru.tachici@analog.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: Re: [PATCH v2 3/7] net: phy: adin1100: Add initial support for
+ ADIN1100 industrial PHY
+Message-ID: <20210727063128.7ralgt4n6lbk7c2e@pengutronix.de>
+References: <20210712130631.38153-1-alexandru.tachici@analog.com>
+ <20210712130631.38153-4-alexandru.tachici@analog.com>
+ <YO3GNqqUbyxId+Mn@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YO3GNqqUbyxId+Mn@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:30:30 up 236 days, 20:36, 14 users,  load average: 0.13, 0.10,
+ 0.03
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hin-Tak Leung <htl10@users.sourceforge.net> writes:
+On Tue, Jul 13, 2021 at 06:58:30PM +0200, Andrew Lunn wrote:
+> > +static const int phy_10_features_array[] = {
+> > +	ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
+> 
+> Does you device implement ETHTOOL_LINK_MODE_10baseT1L_Half_BIT? I'm
+> assuming half duplex is part of the standard?
 
-> On Saturday, 24 July 2021, 19:35:12 BST, Salah Triki <salah.triki@gmail.com> wrote:
->
->> Replace udev with usb_get_dev() in order to make code cleaner.
->
->> Signed-off-by: Salah Triki <salah.triki@gmail.com>
->> ---
->> drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c | 4 +---
->> 1 file changed, 1 insertion(+), 3 deletions(-)
->
->> diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
-> b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
->> index eb68b2d3caa1..30bb3c2b8407 100644
->> --- a/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
->> +++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/dev.c
->> @@ -1455,9 +1455,7 @@ static int rtl8187_probe(struct usb_interface *intf,
->
->>     SET_IEEE80211_DEV(dev, &intf->dev);
->>     usb_set_intfdata(intf, dev);
->> -    priv->udev = udev;
->> -
->> -    usb_get_dev(udev);
->> +    priv->udev = usb_get_dev(udev);
->
->>     skb_queue_head_init(&priv->rx_queue);
->
->> -- 
->> 2.25.1
->
-> It is not cleaner - the change is not functionally equivalent. Before
-> the change, the reference count is increased after the assignment; and
-> after the change, before the assignment. So my question is, does the
-> reference count increasing a little earlier matters? What can go wrong
-> between very short time where the reference count increases, and
-> priv->udev not yet assigned? I think there might be a race condition
-> where the probbe function is called very shortly twice. Especially if
-> the time of running the reference count function is non-trivial.
->
-> Larry, what do you think? 
-
-BTW, please don't use HTML in emails. Our lists drop all HTML mail (and
-for a good reason).
+No, there is no ETHTOOL_LINK_MODE_10baseT1L_Half_BIT according to
+802.3cg-2019.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
