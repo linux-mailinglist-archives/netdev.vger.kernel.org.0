@@ -2,193 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 418543D746F
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 13:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFBD3D74A4
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 13:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236238AbhG0Ljl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 07:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
+        id S236414AbhG0L5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 07:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231758AbhG0Lji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 07:39:38 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB6BC061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 04:39:30 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id p5so9719425wro.7
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 04:39:30 -0700 (PDT)
+        with ESMTP id S231802AbhG0L5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 07:57:35 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E3FC061757;
+        Tue, 27 Jul 2021 04:57:35 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id f13so12239453edq.13;
+        Tue, 27 Jul 2021 04:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h2m8MDNRUeecSVOD85AOxrv5mxE54jWuAS006+0+LsA=;
-        b=SozljIC5zKcUuv56DIesOYSDJixp4GmrIaq4adqtdlCgI+a1Wo6IFZ5/eiDGk7u5jq
-         dVv43z+Q3pSdD+JaCAlbH+T+MJRpKgPRHY+vLtHZVK1l2prK6Rg5FGUMLKrzX+xlKEIH
-         cmNezPWC7h2SQULE7XE4QE79RO1oh6VWGciHScGB7T3TlS+lJl9xDDw4gaAjddaDN3zC
-         n5AQa7A9LX/WJriHRav/yFhnBrHYSyc9Ba3WzkU8swQTNK6S6+7oXeFrpr6AKQDVBVs1
-         PpTVTqxKFes8OnrMZa68ior1YtVvx5zeHvqH/EfV54lkFrs6iiwgUJn9/wv7+eGudTTN
-         sMdw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p0DWAB4t1tJcsckdcxMqGk/mRhll9m/JiTYWeKlyRr8=;
+        b=BvEa2g68qsxugdRrqJai9aNZuzBhLagnC30fsrRDdgGjOivz+9fb7mZLcrS+K7IKKO
+         iMdzNK8gMINqaUh7fbeTRpI9m0BAt+yhdCZUCdizdw+ltnla9fRD6JPP9azfYkr7qKTU
+         4E9IasSo+rsetg3Zsy5XdqD0qB6v2pqQWsjH1mMSLYBK+tFRgnrYB/mCIVUpH2bLmN+2
+         jf5rjU463FrLnvq3tabtBV2laN4VHI1NmIjsCRj3avZrYydBKwVxjaBLSouagDeZJRpz
+         aB2YXeNRqbHKY7wp6G9wf99rkXPnfordLNqU2UUxYIXfMcoRVa5XOVwO/8c1Vmcn1r2S
+         Uk9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=h2m8MDNRUeecSVOD85AOxrv5mxE54jWuAS006+0+LsA=;
-        b=iu+cCxaZm0bwBHNnI6kitOiotIqD4m9tkZmDxEkJ8UUFn+IjgsSYvHysTuXOMsVkHz
-         AsRh5LnO88GWwBcFq4EoqUI9NJUcRoB8XgolqKLlTi1AyUzd8bx1yvV5leElHrFN468z
-         RPOHSndy0USojJoSOVGr2ote7/Cw/fW1N99m5Bs6ga+ZYN4ShPSt5Kky89cHMEmsWo/p
-         vT3bttgFeNYSG9g7kAY72FlCMfAzvizhUcWU+a9os3DySUO9ztr59BLbL3FhP+7tMFlf
-         wsfTYBToSQOMFV5t2Ur1FhHjGgIgMet2bv1Cwry88mfrU0E0nr2tF3Q2YUZ7fItLHUrZ
-         Hn2A==
-X-Gm-Message-State: AOAM530tNy8BoreHpLLRAaiCjSRKe8bUn4iUK5etnMdqKIKcBFkIzP6u
-        sC0a63OXvTWcRrtZP51XqkFw2Q==
-X-Google-Smtp-Source: ABdhPJzOOIn5jRuwokNkhxUndOgzFs86Nej7c9EIpALDA/yA8fINtaoAKbYy/BgwmFpYSQ7rhnh5KQ==
-X-Received: by 2002:a5d:5685:: with SMTP id f5mr9343743wrv.369.1627385968948;
-        Tue, 27 Jul 2021 04:39:28 -0700 (PDT)
-Received: from [192.168.1.8] ([149.86.74.3])
-        by smtp.gmail.com with ESMTPSA id h15sm2804807wrq.88.2021.07.27.04.39.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Jul 2021 04:39:28 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and
- btf__load() APIs, support split BTF
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20210721153808.6902-1-quentin@isovalent.com>
- <CAEf4Bzb30BNeLgio52OrxHk2VWfKitnbNUnO0sAXZTA94bYfmg@mail.gmail.com>
- <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
- <82e61e60-e2e9-f42d-8e49-bbe416b7513d@isovalent.com>
- <CAEf4BzYpCr=Vdfc3moaapQqBxYV3SKfD72s0F=FAh_zLzSqxqA@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <bb0d3640-c6da-a802-4794-50cd033119ac@isovalent.com>
-Date:   Tue, 27 Jul 2021 12:39:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p0DWAB4t1tJcsckdcxMqGk/mRhll9m/JiTYWeKlyRr8=;
+        b=O38oSaLxKngOdCcO4yaZi//VLQxL8TvS6Fdts2dUs2aw+xmYiQDOPXRLWT8xfdz+h7
+         vJ4i4K1+yPkMaqr29p03NF0hcHZWWr6BJmrna/ddCLUmgKPf23EBYiQZtI5dnJs9mzjI
+         z6ajKVnneJGk+d3fazIXjPDKpZ9GrqfgrM+Bb1WuJHm/MnPPYdSnsWvCjN71RPKxoEDl
+         sBa5uoitj+9CEcM36oSTMx+aQKA3VxE7EmjxYhX/+XNnPiVjjkKWJ6fjlOpfFkwtmHi5
+         TFGstuIQbnkcJPI+uULeBi3g2nrCeZDvkJTJKwmmyxRCQIWR1axIeXPGfD8uJsh4akTi
+         AjYw==
+X-Gm-Message-State: AOAM530fNFsIpO9lU9o2FCV/LvDvZqzw3iNWLiE97pMQDJ7ctdPjBynm
+        /8Y+WPR/ffh9AxXNknfzM4c=
+X-Google-Smtp-Source: ABdhPJxIAep0weNy40bdDhpt0sK+i4v8WkIc0iMb16IapnHccMfUtay1lqUZnBn2pDv9Rjzq/do8Lg==
+X-Received: by 2002:aa7:d342:: with SMTP id m2mr3571197edr.40.1627387053603;
+        Tue, 27 Jul 2021 04:57:33 -0700 (PDT)
+Received: from skbuf ([82.76.66.29])
+        by smtp.gmail.com with ESMTPSA id h8sm841189ejj.22.2021.07.27.04.57.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jul 2021 04:57:33 -0700 (PDT)
+Date:   Tue, 27 Jul 2021 14:57:31 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?UGF3ZcWC?= Dembicki <paweldembicki@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Linus Wallej <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dsa: vsc73xx: add support for vlan filtering
+Message-ID: <20210727115731.s7kkwh3k7ficgune@skbuf>
+References: <20210120063019.1989081-1-paweldembicki@gmail.com>
+ <20210121224505.nwfipzncw2h5d3rw@skbuf>
+ <CAJN1KkyCopZLzHc76GC9fi4nPf_y52syKZHQ1J4zbx7Z9sauyQ@mail.gmail.com>
+ <20210128003755.am4onc5d2xtmu2la@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzYpCr=Vdfc3moaapQqBxYV3SKfD72s0F=FAh_zLzSqxqA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210128003755.am4onc5d2xtmu2la@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2021-07-23 08:51 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> On Fri, Jul 23, 2021 at 2:58 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>
->> 2021-07-22 19:45 UTC-0700 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
->>> On Thu, Jul 22, 2021 at 5:58 PM Andrii Nakryiko
->>> <andrii.nakryiko@gmail.com> wrote:
->>>>
->>>> On Wed, Jul 21, 2021 at 8:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>>>>
->>>>> As part of the effort to move towards a v1.0 for libbpf [0], this set
->>>>> improves some confusing function names related to BTF loading from and to
->>>>> the kernel:
->>>>>
->>>>> - btf__load() becomes btf__load_into_kernel().
->>>>> - btf__get_from_id becomes btf__load_from_kernel_by_id().
->>>>> - A new version btf__load_from_kernel_by_id_split() extends the former to
->>>>>   add support for split BTF.
->>>>>
->>>>> The old functions are not removed or marked as deprecated yet, there
->>>>> should be in a future libbpf version.
->>>>
->>>> Oh, and I was thinking about this whole deprecation having to be done
->>>> in two steps. It's super annoying to keep track of that. Ideally, we'd
->>>> have some macro that can mark API deprecated "in the future", when
->>>> actual libbpf version is >= to defined version. So something like
->>>> this:
->>>>
->>>> LIBBPF_DEPRECATED_AFTER(V(0,5), "API that will be marked deprecated in v0.6")
->>>
->>> Better:
->>>
->>> LIBBPF_DEPRECATED_SINCE(0, 6, "API that will be marked deprecated in v0.6")
+Hi Pawel,
 
-So I've been looking into this, and it's not _that_ simple to do. Unless
-I missed something about preprocessing macros, I cannot bake a "#if" in
-a "#define", to have the attribute printed if and only if the current
-version is >= 0.6 in this example.
+On Thu, Jan 28, 2021 at 02:37:55AM +0200, Vladimir Oltean wrote:
+> With even more enhancements to the bridge and DSA data path, the source
+> port information might not even matter for the network stack when the
+> port is bridged, since the packet will end up in the data path of the
+> bridge anyway, regardless of which bridged port the packet came in
+> through (a notable exception to this is link-local traffic like bridge
+> PDUs - some switches treat link-local packets differently than normal
+> data ones). On transmission, the imprecise steering to the correct
+> egress port poses further complications, because of the flooding
+> implementation in the Linux bridge: a packet that is to be flooded
+> towards swp0, swp1 and swp2 will be cloned by the bridge once per egress
+> port, and each skb will be individually delivered to each net_device
+> driver for xmit. The bridge does not know that the packet transmission
+> through a DSA driver with no tagging protocol is imprecise, and instead
+> of delivering the packet just towards the requested egress port, that
+> the switch will likely flood the packet.  So each packet will end up
+> flooded once by the software bridge, and twice by the hardware bridge.
+> This can be modeled as a TX-side offload for packet flooding, and could
+> be used to prevent the bridge from cloning the packets in the first
+> place, and just deliver them once to a randomly chosen port which is
+> bridged.
 
-I've come up with something, but it is not optimal because I have to
-write a check and macros for each version number used with the
-LIBBPF_DEPRECATED_SINCE macro. If we really wanted to automate that part
-I guess we could generate a header with those macros from the Makefile
-and include it in libbpf_common.h, but that does not really look much
-cleaner to me.
+Did you make any progress with getting rid of DSA_TAG_PROTO_NONE for
+vsc73xx?
 
-Here's my current code, below - does it correspond to what you had in
-mind? Or did you think of something else?
+Just FYI, the bridge and DSA enhancement that I was talking about above
+got accepted and you should be able to make use of it.
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=356ae88f8322066a2cd1aee831b7fb768ff2905c
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=beeee08ca1d432891f9e1f6188eea85ffac68527
 
-------
-
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index ec14aa725bb0..095d5dc30d50 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -8,6 +8,7 @@ LIBBPF_VERSION := $(shell \
- 	grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
- 	sort -rV | head -n1 | cut -d'_' -f2)
- LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
-+LIBBPF_MINOR_VERSION := $(firstword $(subst ., ,$(subst $(LIBBPF_MAJOR_VERSION)., ,$(LIBBPF_VERSION))))
- 
- MAKEFLAGS += --no-print-directory
- 
-@@ -86,6 +87,8 @@ override CFLAGS += -Werror -Wall
- override CFLAGS += $(INCLUDES)
- override CFLAGS += -fvisibility=hidden
- override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
-+override CFLAGS += -DLIBBPF_MAJOR_VERSION=$(LIBBPF_MAJOR_VERSION)
-+override CFLAGS += -DLIBBPF_MINOR_VERSION=$(LIBBPF_MINOR_VERSION)
- 
- # flags specific for shared library
- SHLIB_FLAGS := -DSHARED -fPIC
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index cf8490f95641..8b6b5442dbd8 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -45,7 +45,8 @@ LIBBPF_API struct btf *btf__parse_raw(const char *path);
- LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
- LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
- LIBBPF_API struct btf *btf__load_from_kernel_by_id_split(__u32 id, struct btf *base_btf);
--LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-+LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
-+int btf__get_from_id(__u32 id, struct btf **btf);
- 
- LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
- LIBBPF_API int btf__load(struct btf *btf);
-diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
-index 947d8bd8a7bb..9ba9f8135dc8 100644
---- a/tools/lib/bpf/libbpf_common.h
-+++ b/tools/lib/bpf/libbpf_common.h
-@@ -17,6 +17,28 @@
- 
- #define LIBBPF_DEPRECATED(msg) __attribute__((deprecated(msg)))
- 
-+#ifndef LIBBPF_DEPRECATED_SINCE
-+#define __LIBBPF_VERSION_CHECK(major, minor) \
-+	LIBBPF_MAJOR_VERSION > major || \
-+		(LIBBPF_MAJOR_VERSION == major && LIBBPF_MINOR_VERSION >= minor)
-+
-+/* Add checks for other versions below when planning deprecation of API symbols
-+ * with the LIBBPF_DEPRECATED_SINCE macro.
-+ */
-+#if __LIBBPF_VERSION_CHECK(0, 6)
-+#define __LIBBPF_MARK_DEPRECATED_0_6(X) X
-+#else
-+#define __LIBBPF_MARK_DEPRECATED_0_6(X)
-+#endif
-+
-+#define __LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-+	__LIBBPF_MARK_DEPRECATED_ ## major ## _ ## minor (LIBBPF_DEPRECATED("v" # major "." # minor "+, " msg))
-+
-+/* Mark a symbol as deprecated when libbpf version is >= {major}.{minor} */
-+#define LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-+	__LIBBPF_DEPRECATED_SINCE(major, minor, msg)
-+#endif /* LIBBPF_DEPRECATED_SINCE */
-+
- /* Helper macro to declare and initialize libbpf options struct
-  *
-  * This dance with uninitialized declaration, followed by memset to zero,
+Assuming you haven't solved your issue with link-local packets, you
+should at least be able to configure the switch as follows:
+- in standalone mode and under a VLAN-unaware bridge: enable Shared VLAN
+  Learning, set VLAN_TCI_IGNORE_ENA to always classify packets to the
+  port-based VLAN and not look at the VLAN headers, reserve the
+  1024-3071 VID range for tag_8021q, and call dsa_tag_8021q_register().
+- under a VLAN-aware bridge: same as the above except enable Independent
+  VLAN Learning and disable VLAN_TCI_IGNORE_ENA. Packets from ports
+  under a VLAN-aware bridge will come tagged with the bridge VLAN, so
+  you can draw inspiration from net/dsa/tag_sja1105.c to see how to
+  perform reception for those (dsa_find_designated_bridge_port_by_vid).
+This should give you the ability to expose the switch as an STP-incapable
+bridge accelerator with port isolation and VLAN support, which frankly
+seems about all that the hardware can offer.
