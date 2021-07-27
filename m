@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0673D74ED
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B243D7521
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 14:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236529AbhG0MUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 08:20:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231956AbhG0MUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 08:20:05 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id DDECA61A71;
-        Tue, 27 Jul 2021 12:20:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627388405;
-        bh=7QqbboyJNPASEkO0eyud8Wcbnkp7e6D1a10bYIhJ5HI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V3CF6lFFO+9qTOICVnuPNLV6wm+kUlp159BmKhQrvvx1r/YOdDXiUbhwy6EALiJnx
-         j0R1uQ7dyAv3L/lvttv3v6DLo2EEMK845DWV/Db6ZIVg4hddeYxNjrvOiUo2jWs/0Y
-         bmaBypHKdiTIQnv1GCryFgLsCdcrGg7bklIw0j4KsXwbm5DutMZNfTRKWkIPUyCRJr
-         7eeVnSiYRLrmMKOLhJJ4tIC8JLnLexUfZ12DLyKil2/BkgHqmqSBEP9sjrajr9qrMb
-         XyF3+mdiqJYvdLFyO1MuxIjqjihjRzFCucKTT95OS4yUdyovl2my8CBu/2UvtBxRI4
-         eDu++dkR498nw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CD38760A59;
-        Tue, 27 Jul 2021 12:20:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S236558AbhG0MgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 08:36:13 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:25706 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236284AbhG0MeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 08:34:14 -0400
+X-Greylist: delayed 566 seconds by postgrey-1.27 at vger.kernel.org; Tue, 27 Jul 2021 08:34:13 EDT
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.13]) by rmmx-syy-dmz-app10-12010 (RichMail) with SMTP id 2eea60fffae9c01-993fb; Tue, 27 Jul 2021 20:24:14 +0800 (CST)
+X-RM-TRANSID: 2eea60fffae9c01-993fb
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[223.112.105.130])
+        by rmsmtp-syy-appsvr07-12007 (RichMail) with SMTP id 2ee760fffae9a02-874d5;
+        Tue, 27 Jul 2021 20:24:14 +0800 (CST)
+X-RM-TRANSID: 2ee760fffae9a02-874d5
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+To:     k.opasiak@samsung.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tang Bin <tangbin@cmss.chinamobile.com>,
+        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Subject: [PATCH] nfc: s3fwrn5: fix undefined parameter values in dev_err()
+Date:   Tue, 27 Jul 2021 20:25:06 +0800
+Message-Id: <20210727122506.6900-1-tangbin@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.20.1.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: llc: fix skb_over_panic
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162738840583.23438.3319262289505200786.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Jul 2021 12:20:05 +0000
-References: <20210724211159.32108-1-paskripkin@gmail.com>
-In-Reply-To: <20210724211159.32108-1-paskripkin@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, matthieu.baerts@tessares.net,
-        stefan@datenfreihafen.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+5e5a981ad7cc54c4b2b4@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In the function s3fwrn5_fw_download(), the 'ret' is not assigned,
+so the correct value should be given in dev_err function.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Fixes: a0302ff5906a ("nfc: s3fwrn5: remove unnecessary label")
+Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+---
+ drivers/nfc/s3fwrn5/firmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Sun, 25 Jul 2021 00:11:59 +0300 you wrote:
-> Syzbot reported skb_over_panic() in llc_pdu_init_as_xid_cmd(). The
-> problem was in wrong LCC header manipulations.
-> 
-> Syzbot's reproducer tries to send XID packet. llc_ui_sendmsg() is
-> doing following steps:
-> 
-> 	1. skb allocation with size = len + header size
-> 		len is passed from userpace and header size
-> 		is 3 since addr->sllc_xid is set.
-> 
-> [...]
+diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
+index 1421ffd46d9a..52c6f76adfb2 100644
+--- a/drivers/nfc/s3fwrn5/firmware.c
++++ b/drivers/nfc/s3fwrn5/firmware.c
+@@ -422,7 +422,7 @@ int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info)
+ 	tfm = crypto_alloc_shash("sha1", 0, 0);
+ 	if (IS_ERR(tfm)) {
+ 		dev_err(&fw_info->ndev->nfc_dev->dev,
+-			"Cannot allocate shash (code=%d)\n", ret);
++			"Cannot allocate shash (code=%d)\n", PTR_ERR(tfm));
+ 		return PTR_ERR(tfm);
+ 	}
+ 
+-- 
+2.18.2
 
-Here is the summary with links:
-  - net: llc: fix skb_over_panic
-    https://git.kernel.org/netdev/net/c/c7c9d2102c9c
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
