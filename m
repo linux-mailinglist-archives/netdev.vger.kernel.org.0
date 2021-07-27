@@ -2,169 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951113D7F90
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:54:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5998A3D8046
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbhG0Uyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53044 "EHLO
+        id S234048AbhG0VBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231516AbhG0Uyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:54:46 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD19C061757;
-        Tue, 27 Jul 2021 13:54:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=MBrBM2hWSSFJKN0za7twq1O9odGp29rpAsJCQ0flnEg=; b=vbm6nTwMY9s5EUFtqtEUpQ/fdO
-        50MABQ301exgOgwuy15+9Q0GSyqRn0P9WyXq5dgm2UR5LQ9oawo84jeNCDARuh7gqA7/kIsfVwZ73
-        ZYkRar/zbKmHnkPbEEyxUFqcFfsDmyeBkLKnkz8ht4sVpncWYKo3NkdeUVxF0Fz2fUpoNpDnewUmt
-        ZaoB4iQDKLUkDBsTQ147poEW4F2OUO8D0QqX237/WXVQIGMPbEH1nx9r9T7x6Z7x8T65eC6kDN9a5
-        pwi+7X4ZTm0BP/7oQ4gXfpaAaQWl8gJ8z4VwJOMmcN94TpvWy6sUw/Ijrg/lf0b3lDG0ruSOvP9fY
-        BYWrgWAg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m8U5l-00GHkQ-28; Tue, 27 Jul 2021 20:54:21 +0000
-Date:   Tue, 27 Jul 2021 13:54:21 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andriin@fb.com" <andriin@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "alobakin@pm.me" <alobakin@pm.me>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "ap420073@gmail.com" <ap420073@gmail.com>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "sergey.senozhatsky.work@gmail.com" 
-        <sergey.senozhatsky.work@gmail.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "mbenes@suse.com" <mbenes@suse.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "jikos@kernel.org" <jikos@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
-Message-ID: <YQByfUaDaXCUqrlo@bombadil.infradead.org>
-References: <20210722221905.1718213-1-mcgrof@kernel.org>
- <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
- <YQBCvKgH481C7o1c@bombadil.infradead.org>
- <YQBGemOIF4sp/ges@kroah.com>
- <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
- <YQBSutZfhqfTzKQa@kroah.com>
+        with ESMTP id S232408AbhG0U7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:59:06 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8D4C061798
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id e2-20020a17090a4a02b029016f3020d867so1035537pjh.3
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pj8bqnZek7DQGNCWLNQ0g1MGQCZIVVP0FzEBXBYiI7Y=;
+        b=HGNcgmkgioh1CGhVV9MmNSHIIrZU3zyWU9FQ5VTwPn9W0umAdlgjeKjEauZRV7JvPz
+         /xO8V7bI0qXeAL0brzQ/n76823kTps6Q+jg5Lqgw2S0FCPeBRaMRbbQJIg+2s9yZN23w
+         YMWhNsoWAH6pujsciw3v5szvSdnTqVCKJT8K4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Pj8bqnZek7DQGNCWLNQ0g1MGQCZIVVP0FzEBXBYiI7Y=;
+        b=qs/FOp5bYoW1WqhstMIBIfAZLEB+Dsh4vNZLDdsa55BW8N5rLE9wAP5jQ3OFmOyVvg
+         HKxMapTqWALwkbEn3uc1kP5YkFvsnjCcxt4zVRxEBaYs+pBi4PJa68qvR3IB/dWmo5Xp
+         e5d84zPoIFo/q12P5jEAFA5dzY5I6bRO0ZE0KATuj0+mQE17tTdLRNBQB+SwoNxLPd3R
+         1Te/OD9O1YX//QrSeFrl8qL4oJLeyVOO3Bay3T8cPRh5HCVmyMuAEqTxlww6fIjCwBmP
+         wfsEN+djgWilRt93phtj6SNkgtNNG0mWL7BALKgcEV8V/t0ok/bLATdUNUxeJrZP4awW
+         Z1BA==
+X-Gm-Message-State: AOAM5303nDK85KHOfjS1B/XPmk06m0OcrUmLvwqbH96pbVtYcblu9lTW
+        qYAk5485D6/OPF5dziCVDd/eBQ==
+X-Google-Smtp-Source: ABdhPJwQjtrpDZXCytTxeG9yF6HC6xTn6UlfN5aFtxlz0qj/DQHfEGxGJNxB1m8L8ACZ2Ym4GjhdUQ==
+X-Received: by 2002:a17:90a:bd06:: with SMTP id y6mr24299379pjr.6.1627419545039;
+        Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id b22sm3589308pjq.37.2021.07.27.13.59.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jul 2021 13:59:02 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     linux-hardening@vger.kernel.org
+Cc:     Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH 00/64] Introduce strict memcpy() bounds checking
+Date:   Tue, 27 Jul 2021 13:57:51 -0700
+Message-Id: <20210727205855.411487-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YQBSutZfhqfTzKQa@kroah.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=14542; h=from:subject; bh=3tzv74ZEYGmAd5y8uADc3iW7VORzfnMWeib6wFauI3E=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOAailZMrySr8Hn5051y4jmV7pP1R0P8T0EYvJP PELScHiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgAAKCRCJcvTf3G3AJuDsD/ 49eMPKhRTb8JW/0fu88Js34IrgzhJADjmGc/UumkwlOoDoPkpm1YlMabyJe2OYGVqkIrU6PyPcmKwG YVxEGJ73OfhUQSwuchPcRrV7nhD8bPMqaij8yvd/9p7RR0lekdDNFhdcQgmlrLiOXFP2mokQ4kOIAW zanWodV+4IjYS8aIK+1uMkvRK1kIlxFuMwl1i9ThUz7Wi9lyrz3TJFZZR+1151uW9wzNMZSvI2ba1k gbAu6TN8Qvqlyakd+WhGhH6Th6JcXfGkzkN7xXhLJzXfNE/duHabQB2IUEi2k8LAjXFBgJtr+odhU8 HKyA/Y92NIKc4lwIY3q8mXlMdPjdOaQxNWt+Sz76KxQQ14l7sdbypO4OWNdIc/wWzMcKvJAjqKMtNH kocl8xdR/eRtz9R52PCPSif7oDbeYBByDvIB+b4IxdfKIWV1pkn8dgJf81GmUN4wCiaAtMUtvIV/UQ 8hfFOJiP1AMiAzRLt1waXayNuZJ7mTdnbDyJnbj1DtpWJdRrTBjYmWVefNxuxjboVlPrPBo9s/nAvt WpUMeOoFJ/bdWexQFk0g85Kuljf0EHobF3GWuemhqaWEWjSY9Y/jAkzQh2B2OY+bBCFwt6iAk/3qGb G4nqBUEAEMRyidD1kH/Dpq1knG3U7nzJQBcWvNYItFJIl3BjyK80L24ZXZOw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 08:38:50PM +0200, gregkh@linuxfoundation.org wrote:
-> On Tue, Jul 27, 2021 at 11:18:03AM -0700, Luis Chamberlain wrote:
-> > On Tue, Jul 27, 2021 at 07:46:34PM +0200, gregkh@linuxfoundation.org wrote:
-> > > On Tue, Jul 27, 2021 at 10:30:36AM -0700, Luis Chamberlain wrote:
-> > > > On Sat, Jul 24, 2021 at 12:15:10PM +0000, David Laight wrote:
-> > > > > From: Luis Chamberlain
-> > > > > > Sent: 22 July 2021 23:19
-> > > > The sysfs store / read file operations are gauranteed to exist using
-> > > > kernfs's active reference (see kernfs_active()).
-> > > 
-> > > But that has nothing to do with module reference counts.  kernfs knows
-> > > nothing about modules.
-> > 
-> > Yes but we are talking about sysfs files which the module creates. So
-> > but inference again, an active reference protects a module.
-> 
-> What active reference? 
+Hi,
 
-kernfs_active()
+This patch series (based on next-20210726) implements stricter (no struct
+member overflows) bounds checking for memcpy(), memmove(), and memset()
+under CONFIG_FORTIFY_SOURCE. To quote a later patch in the series:
 
-> > > > In fact, this documentation patch was motivated by my own solution to a
-> > > > possible deadlock when sysfs is used. Using the same example above, if
-> > > > the same sysfs file uses *any* lock, which is *also* used on the exit
-> > > > routine, you can easily trigger a deadlock. This can happen for example
-> > > > by the lock being obtained by the removal routine, then the sysfs file
-> > > > gets called, waits for the lock to complete, then the module's exit
-> > > > routine starts cleaning up and removing sysfs files, but we won't be
-> > > > able to remove the sysfs file (due to kernefs active reference) until
-> > > > the sysfs file complets, but it cannot complete because the lock is
-> > > > already held.
-> > > > 
-> > > > Yes, this is a generic problem. Yes I have proof [0]. Yes, a generic
-> > > > solution has been proposed [1], and because Greg is not convinced and I
-> > > > need to move on with life, I am suggesting a temporary driver specific
-> > > > solution (to which Greg is still NACK'ing, without even proposing any
-> > > > alternatives) [2].
-> > > > 
-> > > > [0] https://lkml.kernel.org/r/20210703004632.621662-5-mcgrof@kernel.org
-> > > > [1] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com 
-> > > > [2] https://lkml.kernel.org/r/20210723174919.ka3tzyre432uilf7@garbanzo
-> > > 
-> > > My problem with your proposed solution is that it is still racy, you can
-> > > not increment your own module reference count from 0 -> 1 and expect it
-> > > to work properly.  You need external code to do that somewhere.
-> > 
-> > You are not providing *any* proof for this.
-> 
-> I did provide proof of that.  Here it is again.
+    tl;dr: In order to eliminate a large class of common buffer overflow
+    flaws that continue to persist in the kernel, have memcpy() (under
+    CONFIG_FORTIFY_SOURCE) perform bounds checking of the destination struct
+    member when they have a known size. This would have caught all of the
+    memcpy()-related buffer write overflow flaws identified in at least the
+    last three years.
 
-<irrelevant example> 
+As this series introduces various helpers and performs several phases of
+treewide cleanups, I'm expecting to carry this series in my tree, so I'd
+love to get some Reviews and Acks. Given the size, I've mostly aimed this
+series at various mailing lists, otherwise the CC size got really big. :)
 
-sysfs files are safe to use try_module_get() because once they are
-active a removal of the file cannot happen, and so removal will wait.
+Specifically, this series is logically split into several steps:
 
-> > And even so, I believe I have clarified as best as possible how a
-> > kernfs active reference implicitly protects the module when we are
-> > talking about sysfs files.
-> 
-> I do not see any link anywhere between kernfs and modules, what am I
-> missing?  Pointers to lines of code would be appreciated.
+Clean up remaining simple compile-time memcpy() warnings:
+  media: omap3isp: Extract struct group for memcpy() region
+  mac80211: Use flex-array for radiotap header bitmap
+  rpmsg: glink: Replace strncpy() with strscpy_pad()
 
-I provided a selftests with error injections inserted all over
-kernfs_fop_write_iter(). Please study that and my error injection
-code.
+Introduce struct_group() and apply it treewide to avoid compile-time
+memcpy() warnings:
+  stddef: Introduce struct_group() helper macro
+  skbuff: Switch structure bounds to struct_group()
+  bnxt_en: Use struct_group_attr() for memcpy() region
+  staging: rtl8192e: Use struct_group() for memcpy() region
+  staging: rtl8192u: Use struct_group() for memcpy() region
+  staging: rtl8723bs: Avoid field-overflowing memcpy()
+  lib80211: Use struct_group() for memcpy() region
+  net/mlx5e: Avoid field-overflowing memcpy()
+  mwl8k: Use struct_group() for memcpy() region
+  libertas: Use struct_group() for memcpy() region
+  libertas_tf: Use struct_group() for memcpy() region
+  ipw2x00: Use struct_group() for memcpy() region
+  thermal: intel: int340x_thermal: Use struct_group() for memcpy() region
+  iommu/amd: Use struct_group() for memcpy() region
+  cxgb3: Use struct_group() for memcpy() region
+  ip: Use struct_group() for memcpy() regions
+  intersil: Use struct_group() for memcpy() region
+  cxgb4: Use struct_group() for memcpy() region
+  bnx2x: Use struct_group() for memcpy() region
+  drm/amd/pm: Use struct_group() for memcpy() region
+  staging: wlan-ng: Use struct_group() for memcpy() region
+  drm/mga/mga_ioc32: Use struct_group() for memcpy() region
+  net/mlx5e: Use struct_group() for memcpy() region
+  HID: cp2112: Use struct_group() for memcpy() region
 
-> > > Now trying to tie sysfs files to the modules that own them would be
-> > > nice, but as we have seen, that way lies way too many kernel changes,
-> > > right?
-> > 
-> > It's not a one-liner fix. Yes.
-> > 
-> > > Hm, maybe.  Did we think about this from the kobj_attribute level?  If
-> > > we use the "wrapper" logic there and the use of the macros we already
-> > > have for attributes, we might be able to get the module pointer directly
-> > > "for free".
-> > >
-> > > Did we try that?
-> > 
-> > That was my hope. I tried that first. Last year in November I determined
-> > kernfs is kobject stupid. But more importantly *neither* are struct device
-> > specific, so neither of them have semantics for modules or even devices.
-> 
-> But what about at the kobject level?
+Prepare fortify for additional hardening:
+  compiler_types.h: Remove __compiletime_object_size()
+  lib/string: Move helper functions out of string.c
+  fortify: Move remaining fortify helpers into fortify-string.h
+  fortify: Explicitly disable Clang support
 
-kernfs is kobject stupid.
+Add compile-time and run-time tests:
+  fortify: Add compile-time FORTIFY_SOURCE tests
+  lib: Introduce CONFIG_TEST_MEMCPY
 
-> I will try to look at that this week, can't promise anything...
+Enable new compile-time memcpy() and memmove() bounds checking:
+  fortify: Detect struct member overflows in memcpy() at compile-time
+  fortify: Detect struct member overflows in memmove() at compile-time
 
-  Luis
+Clean up remaining simple compile-time memset() warnings:
+  scsi: ibmvscsi: Avoid multi-field memset() overflow by aiming at srp
+
+Introduce memset_after() helper and apply it (and struct_group())
+treewide to avoid compile-time memset() warnings:
+  string.h: Introduce memset_after() for wiping trailing members/padding
+  xfrm: Use memset_after() to clear padding
+  mac80211: Use memset_after() to clear tx status
+  net: 802: Use memset_after() to clear struct fields
+  net: dccp: Use memset_after() for TP zeroing
+  net: qede: Use memset_after() for counters
+  ath11k: Use memset_after() for clearing queue descriptors
+  iw_cxgb4: Use memset_after() for cpl_t5_pass_accept_rpl
+  intel_th: msu: Use memset_after() for clearing hw header
+  IB/mthca: Use memset_after() for clearing mpt_entry
+  btrfs: Use memset_after() to clear end of struct
+  drbd: Use struct_group() to zero algs
+  cm4000_cs: Use struct_group() to zero struct cm4000_dev region
+  KVM: x86: Use struct_group() to zero decode cache
+  tracing: Use struct_group() to zero struct trace_iterator
+  dm integrity: Use struct_group() to zero struct journal_sector
+  HID: roccat: Use struct_group() to zero kone_mouse_event
+  ipv6: Use struct_group() to zero rt6_info
+  RDMA/mlx5: Use struct_group() to zero struct mlx5_ib_mr
+  ethtool: stats: Use struct_group() to clear all stats at once
+  netfilter: conntrack: Use struct_group() to zero struct nf_conn
+  powerpc: Split memset() to avoid multi-field overflow
+
+Enable new compile-time memset() bounds checking:
+  fortify: Detect struct member overflows in memset() at compile-time
+
+Enable Clang support and global array-bounds checking:
+  fortify: Work around Clang inlining bugs
+  Makefile: Enable -Warray-bounds
+
+Avoid run-time memcpy() bounds check warnings:
+  netlink: Avoid false-positive memcpy() warning
+  iwlwifi: dbg_ini: Split memcpy() to avoid multi-field write
+
+Enable run-time memcpy() bounds checking:
+  fortify: Add run-time WARN for cross-field memcpy()
+
+A future series will clean up for and add run-time memset() bounds
+checking.
+
+Thanks!
+
+-Kees
+
+
+ Makefile                                      |   1 -
+ arch/s390/lib/string.c                        |   3 +
+ arch/x86/boot/compressed/misc.c               |   3 +-
+ arch/x86/kvm/emulate.c                        |   3 +-
+ arch/x86/kvm/kvm_emulate.h                    |  19 +-
+ arch/x86/lib/memcpy_32.c                      |   1 +
+ arch/x86/lib/string_32.c                      |   1 +
+ drivers/block/drbd/drbd_main.c                |   3 +-
+ drivers/block/drbd/drbd_protocol.h            |   6 +-
+ drivers/block/drbd/drbd_receiver.c            |   3 +-
+ drivers/char/pcmcia/cm4000_cs.c               |   9 +-
+ drivers/gpu/drm/amd/include/atomfirmware.h    |   9 +-
+ .../drm/amd/pm/inc/smu11_driver_if_arcturus.h |   3 +-
+ .../drm/amd/pm/inc/smu11_driver_if_navi10.h   |   3 +-
+ .../amd/pm/inc/smu13_driver_if_aldebaran.h    |   3 +-
+ .../gpu/drm/amd/pm/swsmu/smu11/arcturus_ppt.c |   6 +-
+ .../gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.c   |  12 +-
+ .../drm/amd/pm/swsmu/smu13/aldebaran_ppt.c    |   6 +-
+ drivers/gpu/drm/mga/mga_ioc32.c               |  30 +-
+ drivers/hid/hid-cp2112.c                      |  14 +-
+ drivers/hid/hid-roccat-kone.c                 |   2 +-
+ drivers/hid/hid-roccat-kone.h                 |  12 +-
+ drivers/hwtracing/intel_th/msu.c              |   4 +-
+ drivers/infiniband/hw/cxgb4/cm.c              |   5 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   4 +-
+ drivers/infiniband/hw/mthca/mthca_mr.c        |   3 +-
+ drivers/iommu/amd/init.c                      |   9 +-
+ drivers/macintosh/smu.c                       |   3 +-
+ drivers/md/dm-integrity.c                     |   9 +-
+ drivers/media/platform/omap3isp/ispstat.c     |   5 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_stats.c |   7 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_stats.h |  14 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |   4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h |  14 +-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c      |   9 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |   8 +-
+ drivers/net/ethernet/chelsio/cxgb4/t4_msg.h   |   2 +-
+ drivers/net/ethernet/chelsio/cxgb4/t4fw_api.h |  10 +-
+ drivers/net/ethernet/chelsio/cxgb4vf/sge.c    |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |   2 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |   2 +-
+ drivers/net/wireguard/queueing.h              |   4 +-
+ drivers/net/wireless/ath/ath11k/hal_rx.c      |  13 +-
+ drivers/net/wireless/ath/carl9170/tx.c        |   4 +-
+ drivers/net/wireless/intel/ipw2x00/libipw.h   |  12 +-
+ .../net/wireless/intel/ipw2x00/libipw_rx.c    |   8 +-
+ drivers/net/wireless/intel/iwlwifi/fw/file.h  |   2 +-
+ .../net/wireless/intel/iwlwifi/iwl-dbg-tlv.c  |   3 +-
+ .../net/wireless/intersil/hostap/hostap_hw.c  |   5 +-
+ .../wireless/intersil/hostap/hostap_wlan.h    |  14 +-
+ drivers/net/wireless/intersil/p54/txrx.c      |   4 +-
+ drivers/net/wireless/marvell/libertas/host.h  |  10 +-
+ drivers/net/wireless/marvell/libertas/tx.c    |   5 +-
+ .../marvell/libertas_tf/libertas_tf.h         |  10 +-
+ .../net/wireless/marvell/libertas_tf/main.c   |   3 +-
+ drivers/net/wireless/marvell/mwl8k.c          |  10 +-
+ drivers/rpmsg/qcom_glink_native.c             |   2 +-
+ drivers/scsi/ibmvscsi/ibmvscsi.c              |   2 +-
+ drivers/staging/rtl8192e/rtllib.h             |  20 +-
+ drivers/staging/rtl8192e/rtllib_crypt_ccmp.c  |   3 +-
+ drivers/staging/rtl8192e/rtllib_rx.c          |   8 +-
+ .../staging/rtl8192u/ieee80211/ieee80211.h    |  24 +-
+ .../rtl8192u/ieee80211/ieee80211_crypt_ccmp.c |   3 +-
+ .../staging/rtl8192u/ieee80211/ieee80211_rx.c |   8 +-
+ drivers/staging/rtl8723bs/core/rtw_mlme.c     |   2 +-
+ drivers/staging/rtl8723bs/core/rtw_security.c |   5 +-
+ drivers/staging/rtl8723bs/core/rtw_xmit.c     |   5 +-
+ drivers/staging/wlan-ng/hfa384x.h             |  16 +-
+ drivers/staging/wlan-ng/hfa384x_usb.c         |   4 +-
+ .../intel/int340x_thermal/acpi_thermal_rel.c  |   5 +-
+ .../intel/int340x_thermal/acpi_thermal_rel.h  |  48 +--
+ fs/btrfs/root-tree.c                          |   5 +-
+ include/linux/compiler-gcc.h                  |   2 -
+ include/linux/compiler_types.h                |   4 -
+ include/linux/fortify-string.h                | 234 +++++++++++---
+ include/linux/ieee80211.h                     |   8 +-
+ include/linux/if_vlan.h                       |   6 +-
+ include/linux/skbuff.h                        |   9 +-
+ include/linux/stddef.h                        |  34 ++
+ include/linux/string.h                        |  26 +-
+ include/linux/thread_info.h                   |   2 +-
+ include/linux/trace_events.h                  |  26 +-
+ include/net/flow.h                            |   6 +-
+ include/net/ieee80211_radiotap.h              |  24 +-
+ include/net/ip6_fib.h                         |  30 +-
+ include/net/mac80211.h                        |   4 +-
+ include/net/netfilter/nf_conntrack.h          |  20 +-
+ include/uapi/drm/mga_drm.h                    |  37 ++-
+ include/uapi/linux/if_ether.h                 |  12 +-
+ include/uapi/linux/ip.h                       |  12 +-
+ include/uapi/linux/ipv6.h                     |  12 +-
+ include/uapi/linux/netlink.h                  |   1 +
+ include/uapi/linux/omap3isp.h                 |  44 ++-
+ kernel/trace/trace.c                          |   4 +-
+ lib/.gitignore                                |   2 +
+ lib/Kconfig.debug                             |   3 +
+ lib/Makefile                                  |  32 ++
+ lib/string.c                                  | 210 +------------
+ lib/string_helpers.c                          | 201 ++++++++++++
+ lib/test_fortify/read_overflow-memchr.c       |   5 +
+ lib/test_fortify/read_overflow-memchr_inv.c   |   5 +
+ lib/test_fortify/read_overflow-memcmp.c       |   5 +
+ lib/test_fortify/read_overflow-memscan.c      |   5 +
+ lib/test_fortify/read_overflow2-memcmp.c      |   5 +
+ lib/test_fortify/read_overflow2-memcpy.c      |   5 +
+ lib/test_fortify/read_overflow2-memmove.c     |   5 +
+ .../read_overflow2_field-memcpy.c             |   5 +
+ .../read_overflow2_field-memmove.c            |   5 +
+ lib/test_fortify/test_fortify.h               |  31 ++
+ lib/test_fortify/write_overflow-memcpy.c      |   5 +
+ lib/test_fortify/write_overflow-memmove.c     |   5 +
+ lib/test_fortify/write_overflow-memset.c      |   5 +
+ lib/test_fortify/write_overflow-strlcpy.c     |   5 +
+ lib/test_fortify/write_overflow-strncpy.c     |   5 +
+ lib/test_fortify/write_overflow-strscpy.c     |   5 +
+ .../write_overflow_field-memcpy.c             |   5 +
+ .../write_overflow_field-memmove.c            |   5 +
+ .../write_overflow_field-memset.c             |   5 +
+ lib/test_memcpy.c                             | 297 ++++++++++++++++++
+ net/802/hippi.c                               |   2 +-
+ net/core/flow_dissector.c                     |  10 +-
+ net/core/skbuff.c                             |  14 +-
+ net/dccp/trace.h                              |   4 +-
+ net/ethtool/stats.c                           |  15 +-
+ net/ipv4/ip_output.c                          |   6 +-
+ net/ipv6/route.c                              |   4 +-
+ net/mac80211/rx.c                             |   2 +-
+ net/netfilter/nf_conntrack_core.c             |   4 +-
+ net/netlink/af_netlink.c                      |   4 +-
+ net/wireless/lib80211_crypt_ccmp.c            |   3 +-
+ net/wireless/radiotap.c                       |   5 +-
+ net/xfrm/xfrm_policy.c                        |   4 +-
+ net/xfrm/xfrm_user.c                          |   2 +-
+ scripts/test_fortify.sh                       |  64 ++++
+ security/Kconfig                              |   3 +
+ 137 files changed, 1484 insertions(+), 633 deletions(-)
+ create mode 100644 lib/test_fortify/read_overflow-memchr.c
+ create mode 100644 lib/test_fortify/read_overflow-memchr_inv.c
+ create mode 100644 lib/test_fortify/read_overflow-memcmp.c
+ create mode 100644 lib/test_fortify/read_overflow-memscan.c
+ create mode 100644 lib/test_fortify/read_overflow2-memcmp.c
+ create mode 100644 lib/test_fortify/read_overflow2-memcpy.c
+ create mode 100644 lib/test_fortify/read_overflow2-memmove.c
+ create mode 100644 lib/test_fortify/read_overflow2_field-memcpy.c
+ create mode 100644 lib/test_fortify/read_overflow2_field-memmove.c
+ create mode 100644 lib/test_fortify/test_fortify.h
+ create mode 100644 lib/test_fortify/write_overflow-memcpy.c
+ create mode 100644 lib/test_fortify/write_overflow-memmove.c
+ create mode 100644 lib/test_fortify/write_overflow-memset.c
+ create mode 100644 lib/test_fortify/write_overflow-strlcpy.c
+ create mode 100644 lib/test_fortify/write_overflow-strncpy.c
+ create mode 100644 lib/test_fortify/write_overflow-strscpy.c
+ create mode 100644 lib/test_fortify/write_overflow_field-memcpy.c
+ create mode 100644 lib/test_fortify/write_overflow_field-memmove.c
+ create mode 100644 lib/test_fortify/write_overflow_field-memset.c
+ create mode 100644 lib/test_memcpy.c
+ create mode 100644 scripts/test_fortify.sh
+
+-- 
+2.30.2
+
