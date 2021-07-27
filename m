@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD583D7603
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86AA43D75FA
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232123AbhG0NUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:20:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56488 "EHLO mail.kernel.org"
+        id S236907AbhG0NUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:20:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56490 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236745AbhG0NTv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S236744AbhG0NTv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Jul 2021 09:19:51 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9490E61A80;
-        Tue, 27 Jul 2021 13:19:19 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DF4B161A3B;
+        Tue, 27 Jul 2021 13:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627391960;
-        bh=4dGRU6wbGefDj45r4umdl1N8zIxJ1aCI5VWDm0LvqpE=;
+        s=k20201202; t=1627391961;
+        bh=8uPZydX9gBsF0it8nG3NA0wwVehYKRnuuB9H8lWB2Lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TEQFPJFBVqx+XTqw6ys8894X4VyaMfk0i3DHyxMg7z/MICQJQzIbzNlKRvxP4H3Af
-         RgPyE6Q19VSkvjggJcRAcp9HT5ACw8hA66PpjrIqG7h6+xUqsMm8xakKHMkiyGg6N9
-         deGDloEhWAvwoQGgNOynuWGYMCoNI/1eIKRy/D0Zf7bDByeE92qNtcAPHV8ljcRpSC
-         FEUeLviAHxbJlzaX+yHNJ+bgJWKsRoPauTqrtItmffyHu6y3ID19ouRyZvBQY0BJYf
-         NBQi9toH2H7Jv6El8C46NOAhNKiAbfxrluQ/PIWUfgnShonfSNT4IMxU5TYomknTuH
-         zCDQVvwo1h03g==
+        b=pv4w4R1AXITc0+OvM0tBW/w6kT5riyNW6n2p750fN0x8Mql5AMoQ9uv5vw/e1IfRk
+         YTlHmz4ZR64MpUMD+kl4NyQkgSaNdrm0BvSfDq1H+UScy6IcbUc0C5TFEWYoahCkOQ
+         tvbm19jREVNllKS5WNNHV0hMJCECIGKrZwZt/Z9GIaZbTejdP1hqq58YBEiyklLG9Y
+         +vOTLbVvEOvwIyX/xjd/eUMK45DuZqp/6ptrQ/kS6bXHrvpYjoA6Ort1k6/h1asTfJ
+         t15PYxDTxYTHg5d4mG1XafPo5NtdQiTkQel9o8czRlyGQcEPLEj9vxqXVHl9ieS3m2
+         G01KLYrzQLuEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>,
+Cc:     Jia He <justin.he@arm.com>, Lijian Zhang <Lijian.Zhang@arm.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 08/21] r8152: Fix a deadlock by doubly PM resume
-Date:   Tue, 27 Jul 2021 09:18:55 -0400
-Message-Id: <20210727131908.834086-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.13 09/21] qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
+Date:   Tue, 27 Jul 2021 09:18:56 -0400
+Message-Id: <20210727131908.834086-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727131908.834086-1-sashal@kernel.org>
 References: <20210727131908.834086-1-sashal@kernel.org>
@@ -43,109 +42,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jia He <justin.he@arm.com>
 
-[ Upstream commit 776ac63a986d211286230c4fd70f85390eabedcd ]
+[ Upstream commit 6206b7981a36476f4695d661ae139f7db36a802d ]
 
-r8152 driver sets up the MAC address at reset-resume, while
-rtl8152_set_mac_address() has the temporary autopm get/put.  This may
-lead to a deadlock as the PM lock has been already taken for the
-execution of the runtime PM callback.
+Liajian reported a bug_on hit on a ThunderX2 arm64 server with FastLinQ
+QL41000 ethernet controller:
+ BUG: scheduling while atomic: kworker/0:4/531/0x00000200
+  [qed_probe:488()]hw prepare failed
+  kernel BUG at mm/vmalloc.c:2355!
+  Internal error: Oops - BUG: 0 [#1] SMP
+  CPU: 0 PID: 531 Comm: kworker/0:4 Tainted: G W 5.4.0-77-generic #86-Ubuntu
+  pstate: 00400009 (nzcv daif +PAN -UAO)
+ Call trace:
+  vunmap+0x4c/0x50
+  iounmap+0x48/0x58
+  qed_free_pci+0x60/0x80 [qed]
+  qed_probe+0x35c/0x688 [qed]
+  __qede_probe+0x88/0x5c8 [qede]
+  qede_probe+0x60/0xe0 [qede]
+  local_pci_probe+0x48/0xa0
+  work_for_cpu_fn+0x24/0x38
+  process_one_work+0x1d0/0x468
+  worker_thread+0x238/0x4e0
+  kthread+0xf0/0x118
+  ret_from_fork+0x10/0x18
 
-This patch adds the workaround to avoid the superfluous autpm when
-called from rtl8152_reset_resume().
+In this case, qed_hw_prepare() returns error due to hw/fw error, but in
+theory work queue should be in process context instead of interrupt.
 
-Link: https://bugzilla.suse.com/show_bug.cgi?id=1186194
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+The root cause might be the unpaired spin_{un}lock_bh() in
+_qed_mcp_cmd_and_union(), which causes botton half is disabled incorrectly.
+
+Reported-by: Lijian Zhang <Lijian.Zhang@arm.com>
+Signed-off-by: Jia He <justin.he@arm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/r8152.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 8dcc55e4a5bc..2cf763b4ea84 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -1550,7 +1550,8 @@ static int
- rtl8152_set_speed(struct r8152 *tp, u8 autoneg, u32 speed, u8 duplex,
- 		  u32 advertising);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index cd882c453394..caeef25c89bb 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -474,14 +474,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
  
--static int rtl8152_set_mac_address(struct net_device *netdev, void *p)
-+static int __rtl8152_set_mac_address(struct net_device *netdev, void *p,
-+				     bool in_resume)
- {
- 	struct r8152 *tp = netdev_priv(netdev);
- 	struct sockaddr *addr = p;
-@@ -1559,9 +1560,11 @@ static int rtl8152_set_mac_address(struct net_device *netdev, void *p)
- 	if (!is_valid_ether_addr(addr->sa_data))
- 		goto out1;
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
  
--	ret = usb_autopm_get_interface(tp->intf);
--	if (ret < 0)
--		goto out1;
-+	if (!in_resume) {
-+		ret = usb_autopm_get_interface(tp->intf);
-+		if (ret < 0)
-+			goto out1;
-+	}
+-		if (!qed_mcp_has_pending_cmd(p_hwfn))
++		if (!qed_mcp_has_pending_cmd(p_hwfn)) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
  
- 	mutex_lock(&tp->control);
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
  
-@@ -1573,11 +1576,17 @@ static int rtl8152_set_mac_address(struct net_device *netdev, void *p)
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
  
- 	mutex_unlock(&tp->control);
+@@ -498,6 +502,8 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
  
--	usb_autopm_put_interface(tp->intf);
-+	if (!in_resume)
-+		usb_autopm_put_interface(tp->intf);
- out1:
- 	return ret;
- }
- 
-+static int rtl8152_set_mac_address(struct net_device *netdev, void *p)
-+{
-+	return __rtl8152_set_mac_address(netdev, p, false);
-+}
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
 +
- /* Devices containing proper chips can support a persistent
-  * host system provided MAC address.
-  * Examples of this are Dell TB15 and Dell WD15 docks
-@@ -1696,7 +1705,7 @@ static int determine_ethernet_addr(struct r8152 *tp, struct sockaddr *sa)
- 	return ret;
- }
+ 	/* Send the mailbox command */
+ 	qed_mcp_reread_offsets(p_hwfn, p_ptt);
+ 	seq_num = ++p_hwfn->mcp_info->drv_mb_seq;
+@@ -524,14 +530,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
  
--static int set_ethernet_addr(struct r8152 *tp)
-+static int set_ethernet_addr(struct r8152 *tp, bool in_resume)
- {
- 	struct net_device *dev = tp->netdev;
- 	struct sockaddr sa;
-@@ -1709,7 +1718,7 @@ static int set_ethernet_addr(struct r8152 *tp)
- 	if (tp->version == RTL_VER_01)
- 		ether_addr_copy(dev->dev_addr, sa.sa_data);
- 	else
--		ret = rtl8152_set_mac_address(dev, &sa);
-+		ret = __rtl8152_set_mac_address(dev, &sa, in_resume);
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
  
- 	return ret;
- }
-@@ -8442,7 +8451,7 @@ static int rtl8152_reset_resume(struct usb_interface *intf)
- 	clear_bit(SELECTIVE_SUSPEND, &tp->flags);
- 	tp->rtl_ops.init(tp);
- 	queue_delayed_work(system_long_wq, &tp->hw_phy_work, 0);
--	set_ethernet_addr(tp);
-+	set_ethernet_addr(tp, true);
- 	return rtl8152_resume(intf);
- }
+-		if (p_cmd_elem->b_is_completed)
++		if (p_cmd_elem->b_is_completed) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
  
-@@ -9562,7 +9571,7 @@ static int rtl8152_probe(struct usb_interface *intf,
- 	tp->rtl_fw.retry = true;
- #endif
- 	queue_delayed_work(system_long_wq, &tp->hw_phy_work, 0);
--	set_ethernet_addr(tp);
-+	set_ethernet_addr(tp, false);
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
  
- 	usb_set_intfdata(intf, tp);
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	} while (++cnt < max_retries);
+@@ -554,6 +564,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
+ 
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	qed_mcp_cmd_del_elem(p_hwfn, p_cmd_elem);
+ 	spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
  
 -- 
 2.30.2
