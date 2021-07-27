@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5100F3D7638
+	by mail.lfdr.de (Postfix) with ESMTP id 0178D3D7637
 	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237394AbhG0NZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:25:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57308 "EHLO mail.kernel.org"
+        id S236874AbhG0NZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:25:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237019AbhG0NWe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237043AbhG0NWe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 27 Jul 2021 09:22:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 935CD61AA3;
-        Tue, 27 Jul 2021 13:20:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CFB5E61AEF;
+        Tue, 27 Jul 2021 13:20:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627392027;
-        bh=nkadAqFC6N6e3FztxYq8/NmSdB2on2QZ953tiE7PvUM=;
+        s=k20201202; t=1627392028;
+        bh=IEMBuGM2e14tCOC30Js/a/PP3e+BUjqDR2jRxGaGQkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=peYFhBA4YR0bjbrVNx+DJAm/wiS0rsGmeGxU5nND4X9EGLgyfr+1R4M6pytg58hZR
-         WgZAKsmVtH9J6nKmorZP6nq5HKKc+8JWxoqickYn7HmRGcBOcN/+JPtmgx4FizRVAP
-         LGZKFfx48Vvqzo/B7oBK+6YHna7A6HS4Wbka9/pcSBNP7R2+3pIzt/iv06lninF328
-         mWvv6sLcN9um1atld2DVDdHTP8Zt/HbclNo2iCmrwxaDgtftnPwbuFM8saEdoFvpnG
-         kE+o6bBcaCLTGVxiRjCTilqOcSR31OLsHN9+0h+XUyX014FcbNzel4eBlA/sC7CSKo
-         V+mtR7paYjpOg==
+        b=fa7Rx8DZfgPG1h5PfKip8WK+6S/FfY/ygR4oTuMDYwVxxk10n49Aa192VrZe/BiqS
+         r4N/rc9c7Kk/+AhOvP841FRdIjYb4OwXE0KKSQMxbPprf/M+VmRmaapaNLrut3uH/7
+         vdQ4wAi7glYdg1cyMwecpCVNkEFC3eDmyZVJYI2SUQmdfCiQnYGl8W2UKZt6T/ZohA
+         hu3MkezU3pezGo+9vbOHvzqgrnaLkv9tUHTwm4Bl+BdZaBd5RwGj0Ak03DO0CvNBgO
+         8IOdPlS553qVLdKQJGmjXJGXpmk1idv6UzolzdK7valEgjycA1wwB/kVx4ZQ1COhX2
+         yV89uvqXpJGig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>,
+Cc:     Jia He <justin.he@arm.com>, Lijian Zhang <Lijian.Zhang@arm.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 2/5] r8152: Fix potential PM refcount imbalance
-Date:   Tue, 27 Jul 2021 09:20:21 -0400
-Message-Id: <20210727132024.835810-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 3/5] qed: fix possible unpaired spin_{un}lock_bh in _qed_mcp_cmd_and_union()
+Date:   Tue, 27 Jul 2021 09:20:22 -0400
+Message-Id: <20210727132024.835810-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727132024.835810-1-sashal@kernel.org>
 References: <20210727132024.835810-1-sashal@kernel.org>
@@ -43,37 +42,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jia He <justin.he@arm.com>
 
-[ Upstream commit 9c23aa51477a37f8b56c3c40192248db0663c196 ]
+[ Upstream commit 6206b7981a36476f4695d661ae139f7db36a802d ]
 
-rtl8152_close() takes the refcount via usb_autopm_get_interface() but
-it doesn't release when RTL8152_UNPLUG test hits.  This may lead to
-the imbalance of PM refcount.  This patch addresses it.
+Liajian reported a bug_on hit on a ThunderX2 arm64 server with FastLinQ
+QL41000 ethernet controller:
+ BUG: scheduling while atomic: kworker/0:4/531/0x00000200
+  [qed_probe:488()]hw prepare failed
+  kernel BUG at mm/vmalloc.c:2355!
+  Internal error: Oops - BUG: 0 [#1] SMP
+  CPU: 0 PID: 531 Comm: kworker/0:4 Tainted: G W 5.4.0-77-generic #86-Ubuntu
+  pstate: 00400009 (nzcv daif +PAN -UAO)
+ Call trace:
+  vunmap+0x4c/0x50
+  iounmap+0x48/0x58
+  qed_free_pci+0x60/0x80 [qed]
+  qed_probe+0x35c/0x688 [qed]
+  __qede_probe+0x88/0x5c8 [qede]
+  qede_probe+0x60/0xe0 [qede]
+  local_pci_probe+0x48/0xa0
+  work_for_cpu_fn+0x24/0x38
+  process_one_work+0x1d0/0x468
+  worker_thread+0x238/0x4e0
+  kthread+0xf0/0x118
+  ret_from_fork+0x10/0x18
 
-Link: https://bugzilla.suse.com/show_bug.cgi?id=1186194
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+In this case, qed_hw_prepare() returns error due to hw/fw error, but in
+theory work queue should be in process context instead of interrupt.
+
+The root cause might be the unpaired spin_{un}lock_bh() in
+_qed_mcp_cmd_and_union(), which causes botton half is disabled incorrectly.
+
+Reported-by: Lijian Zhang <Lijian.Zhang@arm.com>
+Signed-off-by: Jia He <justin.he@arm.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/r8152.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 8da3c891c9e8..a5a4fef09b93 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -3953,9 +3953,10 @@ static int rtl8152_close(struct net_device *netdev)
- 		tp->rtl_ops.down(tp);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index ef17ca09d303..789ecc19c412 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -497,14 +497,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
  
- 		mutex_unlock(&tp->control);
-+	}
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
  
-+	if (!res)
- 		usb_autopm_put_interface(tp->intf);
--	}
+-		if (!qed_mcp_has_pending_cmd(p_hwfn))
++		if (!qed_mcp_has_pending_cmd(p_hwfn)) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
  
- 	free_all_mem(tp);
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
+ 
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 
+@@ -521,6 +525,8 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
+ 
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
++
+ 	/* Send the mailbox command */
+ 	qed_mcp_reread_offsets(p_hwfn, p_ptt);
+ 	seq_num = ++p_hwfn->mcp_info->drv_mb_seq;
+@@ -547,14 +553,18 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 
+ 		spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 
+-		if (p_cmd_elem->b_is_completed)
++		if (p_cmd_elem->b_is_completed) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
++		}
+ 
+ 		rc = qed_mcp_update_pending_cmd(p_hwfn, p_ptt);
+-		if (!rc)
++		if (!rc) {
++			spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 			break;
+-		else if (rc != -EAGAIN)
++		} else if (rc != -EAGAIN) {
+ 			goto err;
++		}
+ 
+ 		spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	} while (++cnt < max_retries);
+@@ -575,6 +585,7 @@ _qed_mcp_cmd_and_union(struct qed_hwfn *p_hwfn,
+ 		return -EAGAIN;
+ 	}
+ 
++	spin_lock_bh(&p_hwfn->mcp_info->cmd_lock);
+ 	qed_mcp_cmd_del_elem(p_hwfn, p_cmd_elem);
+ 	spin_unlock_bh(&p_hwfn->mcp_info->cmd_lock);
  
 -- 
 2.30.2
