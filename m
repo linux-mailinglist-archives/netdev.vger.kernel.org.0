@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C369F3D76D6
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3862D3D76FB
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:40:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237048AbhG0NcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:32:14 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:10217 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236960AbhG0Nap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 09:30:45 -0400
-X-IronPort-AV: E=Sophos;i="5.84,273,1620658800"; 
-   d="scan'208";a="88920787"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 27 Jul 2021 22:30:44 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 48C5A4270492;
-        Tue, 27 Jul 2021 22:30:41 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH v4 3/3] arm64: dts: renesas: r9a07g044: Add CANFD node
-Date:   Tue, 27 Jul 2021 14:30:22 +0100
-Message-Id: <20210727133022.634-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210727133022.634-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210727133022.634-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        id S236768AbhG0Nkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:40:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232268AbhG0Nkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 09:40:43 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F51C061757
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 06:40:44 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id 10so12058322ill.10
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 06:40:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QJojNdCNRZdeObtsdoaPzzj/IMsZp6P9O1kQugt1wqE=;
+        b=XO6Dflo3jfQxB+ZjvaKObEax0uqfNoBdNWv4uPuHWMz3JVC94vavSgNOZfwad7WFK+
+         6BqDKAPrvF5NbnboVNkt/ucxU9z0ncfICAFLEwMye6SlkKgkx2/de5SPelrUQU0cPKv/
+         UDw655RUl31r9icQLn45hsNbqVw45T/psE3HhU8Eq0pcOay0J56ZJiRWPhKmaTwMOmbZ
+         nRDMZ2CY2fK2pUufh6Ja0307DNBHFZBl56DRDboTaHRDyxQ0CnLJukYZRg31tAfxirCN
+         wWp7CK2i2KpJtYIWKzxtX2wCpXkjc3ymzRjLgoCPDRU97fhDkEutDe1MG4BuhIKPZo2q
+         LSYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QJojNdCNRZdeObtsdoaPzzj/IMsZp6P9O1kQugt1wqE=;
+        b=qme+/VfWoq+qGeGw3W2Tn7mJbcpyg1JQoBbEsLhoMMyd87EBopx5TDfdBTS/PPsnKg
+         29VcTfHdDD/MqMqYzh4gSF2GHV7X8VXjh8nepLWUAZl1smVWk4yDcCKZZ+Yd7XCzm7TM
+         AeJssEeMlaAHvnLocBIQpuBvr57D36JfvLzx13wokR38T8+k1yckVHSEquOS/Q7LJMre
+         ZCb3yu0MZNnI7sXGRAFCc4IXHF36jqYS9RDGIrolPqrvwd/IYQuFIWJPQoFuZKtIxthS
+         O8Y44c9TBD/HVj/8QmxYHM2ikLSSwIqzvB3/iB6SR0ga5+Rv0uRiBvR/hrEMi1c6Z36F
+         7pFg==
+X-Gm-Message-State: AOAM531a9FrbX6CoiPkHPRBG3AIK6HYf1cHnTiG1NnbzXKszRm8btBEU
+        sHg65zMpK4lSZ1Z5J/jvGL1bww==
+X-Google-Smtp-Source: ABdhPJyWOJJLJx2IeJbv+UMqbCtDpwaYJjnSAw1w2Y1nSyjQpBYZbTvHwYh1lpSqHhwjPVAQnG7nDA==
+X-Received: by 2002:a05:6e02:12ab:: with SMTP id f11mr17030876ilr.200.1627393243454;
+        Tue, 27 Jul 2021 06:40:43 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r198sm2342266ior.7.2021.07.27.06.40.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jul 2021 06:40:42 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] net: ipa: kill IPA_VALIDATION
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, elder@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210726174010.396765-1-elder@linaro.org>
+ <YP/rFwvIHOvIwMNO@unreal> <5b97f7b1-f65f-617e-61b4-2fdc5f08bc3e@linaro.org>
+ <YQACaxKhxDFZSCF3@unreal>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <07765bd2-eade-ee52-fa18-56f2e573461a@linaro.org>
+Date:   Tue, 27 Jul 2021 08:40:42 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <YQACaxKhxDFZSCF3@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add CANFD node to R9A07G044 (RZ/G2L) SoC DTSI.
+On 7/27/21 7:56 AM, Leon Romanovsky wrote:
+>> In any case I take your point.  I will now add to my task list
+>> a review of these spots.  I'd like to be sure an error message
+>> *is*  reported at an appropriate level up the chain of callers so
+>> I can always identify the culprit in the a WARN_ON() fires (even
+>> though it should never
+>>   happen).  And in each case I'll evaluate
+>> whether returning is better than not.
+> You can, but users don't :). So if it is valid but error flow, that
+> needs user awareness, simply print something to the dmesg with *_err()
+> prints.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
----
- arch/arm64/boot/dts/renesas/r9a07g044.dtsi | 41 ++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+For some reason you seem to care about users.
 
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g044.dtsi b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
-index 9a7489dc70d1..51655c09f1f8 100644
---- a/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a07g044.dtsi
-@@ -13,6 +13,13 @@
- 	#address-cells = <2>;
- 	#size-cells = <2>;
- 
-+	/* External CAN clock - to be overridden by boards that provide it */
-+	can_clk: can {
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <0>;
-+	};
-+
- 	/* clock can be either from exclk or crystal oscillator (XIN/XOUT) */
- 	extal_clk: extal {
- 		compatible = "fixed-clock";
-@@ -89,6 +96,40 @@
- 			status = "disabled";
- 		};
- 
-+		canfd: can@10050000 {
-+			compatible = "renesas,r9a07g044-canfd", "renesas,rzg2l-canfd";
-+			reg = <0 0x10050000 0 0x8000>;
-+			interrupts = <GIC_SPI 426 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 427 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 428 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 429 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "g_err", "g_recc",
-+					  "ch0_err", "ch0_rec", "ch0_trx",
-+					  "ch1_err", "ch1_rec", "ch1_trx";
-+			clocks = <&cpg CPG_MOD R9A07G044_CANFD_PCLK>,
-+				 <&cpg CPG_CORE R9A07G044_CLK_P0_DIV2>,
-+				 <&can_clk>;
-+			clock-names = "fck", "canfd", "can_clk";
-+			assigned-clocks = <&cpg CPG_CORE R9A07G044_CLK_P0_DIV2>;
-+			assigned-clock-rates = <50000000>;
-+			resets = <&cpg R9A07G044_CANFD_RSTP_N>,
-+				 <&cpg R9A07G044_CANFD_RSTC_N>;
-+			reset-names = "rstp_n", "rstc_n";
-+			power-domains = <&cpg>;
-+			status = "disabled";
-+
-+			channel0 {
-+				status = "disabled";
-+			};
-+			channel1 {
-+				status = "disabled";
-+			};
-+		};
-+
- 		i2c0: i2c@10058000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
--- 
-2.17.1
+I guess the WARN stack trace tells me where it comes from.
+This would be an invalid error flow, and should never happen.
 
+I'll still plan to review each of these again.
+
+> BTW, I'm trying to untangle some of the flows in net/core/devlink.c
+> and such if(WARN()) pattern is even harmful, because it is very hard to
+> understand when that error is rare/non-exist/real.
+
+That's what assert() is for, but we've already had that
+discussion :)
+
+					-Alex
