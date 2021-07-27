@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E063D81A6
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6FB3D81A2
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233306AbhG0VUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235121AbhG0VUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:20:03 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834FFC06136A;
-        Tue, 27 Jul 2021 14:17:58 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id v46so363034ybi.3;
-        Tue, 27 Jul 2021 14:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=N0YopGj12bQGWfMdc3jkyR2E2qRKbpuIhWGg2LpvYYc=;
-        b=fnpjhchgw22BQ0yXyTWlGm7QISRq8QvpJrKVU4oqt1VFqRwb2BsdTMm6advPdgqDhl
-         hGHbFrZeLqqYw3JqYgfqLFr0aFlysgq9YyYAEgSJpcR6/XTsk8mFO/yFbj4PsqFxRODQ
-         gMiHAAUmZSUp7wMHiwiVK/MR5JKARSIxqwjVmZbEcC+nXFJeZkyo6sel3/ulwK8zesuR
-         ePmyTdLEKPj+R8ZDoraJIxFiSjDYiWSQDvZl8Yygz7jU+fDHH2jetvRq0LJ2oRyWfuK1
-         XpX2hQicYrgJ3wlUXN4IzyS1s029QCXKDiZ4dtG3aUkYK7ESXeDjAcdbZAUTRumkvn4R
-         bveA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=N0YopGj12bQGWfMdc3jkyR2E2qRKbpuIhWGg2LpvYYc=;
-        b=VmRvuPETTxm1p4ok5EdNc4i4dNDqyLUE13jCmAGDS6kwnfGszpoZNbtJirec98rR+l
-         F2WlvYcRZHa0oLeDle0Btxb5B+LLKHKi4ZqaIkKSDXT4ckXBEW9GPZRhLmexxMEvNk3c
-         l4g6bFaEbt1g1nJXH15DYc9lcIUWG5liBXCR0D2gcIAbQBp+lZznK+u4CR1p3i3WAxn3
-         qHAKX6vLg7sxATofevUZPly1sIDpQ2+P7aipd8N7N1QRaOWDpt3s2Y/aebUbR2gcRa+J
-         y+sXVVP6S1JXGmXU34U0hydFjC5IX2IyJNMq3TILc98pPWxSacGKLkhM5jacyxFh0DSq
-         Pr7A==
-X-Gm-Message-State: AOAM533a6JMkIkB57HZazTa4YiN3L2nkRrYd94srhUAY/Y4Z57H5+OdR
-        NIcPwG+BEZQ6Vwc5ca+QEc9dJxhevaEDE7K/V30=
-X-Google-Smtp-Source: ABdhPJxkfTc6jsEilq04G4xnwG5iajUVdwv/eSrHcRbskv4JbDzLbDGEqRF8hN+ykj4m/aGPDwFJAqKB/tG1quafeF4=
-X-Received: by 2002:a25:6148:: with SMTP id v69mr12085934ybb.510.1627420677808;
- Tue, 27 Jul 2021 14:17:57 -0700 (PDT)
+        id S235037AbhG0VUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:20:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37744 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234113AbhG0VT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 17:19:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C5BA60FA0;
+        Tue, 27 Jul 2021 21:18:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627420740;
+        bh=WmBPx1Yv944WSgHzak0rUdbiFwHmXA9AEErppz095mw=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Yhxrd8TFAkXrlR9r4ZRtp1p0sOIsB3ZuHtZ7oYU4pXZvEaqyymH79DJSjO7iRK0si
+         GSkXTTyUofgJqP034jp+1ZTvpxMOzmU1ZGhjE0qTg4I6idDUP9ThURBnvBclsuNBhC
+         u1tZ6C5YrfZBbxqk5ahpRO+VLSzVj3IEDOAgpOob/SggphKjlTaaTST/9JYGw9qJid
+         8957SpfZCeNiETD/zLB4cNWxzBDrGN9HQH+PNdMkwgJzIdpYFU/NFrV7mI6t8oFQsi
+         iwRWwF/foCBjtefKMixR8I7lM2u4IUX+zsUkg8iCrC0hdyyEJdWn/XDDKg0i/Pt6xD
+         FkiBVpBB37WQw==
+Subject: Re: [PATCH 31/64] fortify: Explicitly disable Clang support
+To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-32-keescook@chromium.org>
+From:   Nathan Chancellor <nathan@kernel.org>
+Message-ID: <da989ffc-da64-33a2-581e-6920eb7ebd2d@kernel.org>
+Date:   Tue, 27 Jul 2021 14:18:58 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <DB8P193MB0581FEB4CB90263430546C4C88E99@DB8P193MB0581.EURP193.PROD.OUTLOOK.COM>
-In-Reply-To: <DB8P193MB0581FEB4CB90263430546C4C88E99@DB8P193MB0581.EURP193.PROD.OUTLOOK.COM>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Jul 2021 14:17:46 -0700
-Message-ID: <CAEf4BzaSthevAa_0Jjc4meKtW898NPgzd6yywzLLfztVa_c55Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: fix probe for BPF_PROG_TYPE_CGROUP_SOCKOPT
-To:     =?UTF-8?B?Um9iaW4gR8O2Z2dl?= <r.goegge@outlook.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210727205855.411487-32-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 7:41 AM Robin G=C3=B6gge <r.goegge@outlook.com> wro=
-te:
->
-> This patch fixes the probe for BPF_PROG_TYPE_CGROUP_SOCKOPT,
-> so the probe reports accurate results when used by e.g.
-> bpftool.
->
-> Fixes: 4cdbfb59c44a ("libbpf: support sockopt hooks")
->
-> Signed-off-by: Robin G=C3=B6gge <r.goegge@outlook.com>
-> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+On 7/27/2021 1:58 PM, Kees Cook wrote:
+> Clang has never correctly compiled the FORTIFY_SOURCE defenses due to
+> a couple bugs:
+> 
+> 	Eliding inlines with matching __builtin_* names
+> 	https://bugs.llvm.org/show_bug.cgi?id=50322
+> 
+> 	Incorrect __builtin_constant_p() of some globals
+> 	https://bugs.llvm.org/show_bug.cgi?id=41459
+> 
+> In the process of making improvements to the FORTIFY_SOURCE defenses, the
+> first (silent) bug (coincidentally) becomes worked around, but exposes
+> the latter which breaks the build. As such, Clang must not be used with
+> CONFIG_FORTIFY_SOURCE until at least latter bug is fixed (in Clang 13),
+> and the fortify routines have been rearranged.
+> 
+> Update the Kconfig to reflect the reality of the current situation.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 > ---
+>   security/Kconfig | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/security/Kconfig b/security/Kconfig
+> index 0ced7fd33e4d..8f0e675e70a4 100644
+> --- a/security/Kconfig
+> +++ b/security/Kconfig
+> @@ -191,6 +191,9 @@ config HARDENED_USERCOPY_PAGESPAN
+>   config FORTIFY_SOURCE
+>   	bool "Harden common str/mem functions against buffer overflows"
+>   	depends on ARCH_HAS_FORTIFY_SOURCE
+> +	# https://bugs.llvm.org/show_bug.cgi?id=50322
+> +	# https://bugs.llvm.org/show_bug.cgi?id=41459
+> +	depends on !CONFIG_CC_IS_CLANG
 
-Looks good, I'll apply to bpf tree once this patch makes it into patchworks=
-.
+Should be !CC_IS_CLANG, Kconfig is hard :)
 
-Meanwhile, looking at probe_load() seems like a bunch of other program
-types are not handled properly as well. Would you mind checking that
-as well and following up with more fixes for this? See also [0] for
-this whole probing APIs situation.
+>   	help
+>   	  Detect overflows of buffers in common string and memory functions
+>   	  where the compiler can determine and validate the buffer sizes.
+> 
 
-  [0] https://github.com/libbpf/libbpf/issues/312
-
->  tools/lib/bpf/libbpf_probes.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.=
-c
-> index ecaae2927ab8..cd8c703dde71 100644
-> --- a/tools/lib/bpf/libbpf_probes.c
-> +++ b/tools/lib/bpf/libbpf_probes.c
-> @@ -75,6 +75,9 @@ probe_load(enum bpf_prog_type prog_type, const struct b=
-pf_insn *insns,
->         case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
->                 xattr.expected_attach_type =3D BPF_CGROUP_INET4_CONNECT;
->                 break;
-> +       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-> +               xattr.expected_attach_type =3D BPF_CGROUP_GETSOCKOPT;
-> +               break;
->         case BPF_PROG_TYPE_SK_LOOKUP:
->                 xattr.expected_attach_type =3D BPF_SK_LOOKUP;
->                 break;
-> @@ -104,7 +107,6 @@ probe_load(enum bpf_prog_type prog_type, const struct=
- bpf_insn *insns,
->         case BPF_PROG_TYPE_SK_REUSEPORT:
->         case BPF_PROG_TYPE_FLOW_DISSECTOR:
->         case BPF_PROG_TYPE_CGROUP_SYSCTL:
-> -       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
->         case BPF_PROG_TYPE_TRACING:
->         case BPF_PROG_TYPE_STRUCT_OPS:
->         case BPF_PROG_TYPE_EXT:
-> --
-> 2.25.1
->
+Cheers,
+Nathan
