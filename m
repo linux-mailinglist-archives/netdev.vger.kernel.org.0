@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 052913D772C
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C1D3D7725
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 15:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbhG0Nqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 09:46:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46306 "EHLO mail.kernel.org"
+        id S236922AbhG0NqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 09:46:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46386 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236721AbhG0NqL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 09:46:11 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A9D1619F5;
-        Tue, 27 Jul 2021 13:46:10 +0000 (UTC)
+        id S236802AbhG0NqN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 09:46:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 20E7D61A80;
+        Tue, 27 Jul 2021 13:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627393571;
-        bh=+t9fgxzXlhR6aMB1NCCu4ndbySWH7P+Oqdf5Vmqkihs=;
+        s=k20201202; t=1627393573;
+        bh=jEGLRjSxSpreeMNYZWv9qGfyBSmCVqlGarHcGd930ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s5hvaYII0JI/yTMojcAbHnRFPE3DsxQrcdUu6WAdNMCZ0AhHv08oHIVYp2knEXQZ8
-         0KpnHD1dKUc0T88Eeb2IE5yQe2Met5WI4kuSnsArK6T0o1IgKjETUaa9TTzun9jQQ2
-         dBZAhdfTwHko51YlM5kOH24yfRcpwa2/3FgEH36amqzfVmrhWgx2rJbbAtR1AKyNyn
-         4oFb00PJwN3m0fL0klGd00jFyab5kvRU8cmUawzIqlGG4yzu3rPa3eiKTSv9YKoRDl
-         fEKsSfWsXaBbnLJiF3MLNDR7m+P/vyC5ql5TAM3hxP9uUdTTx6K99PT/p5CQRMxK1L
-         1dHI/7+jH9fdA==
+        b=bVjxPzTpAMjvPH3OFSezDbICzfAIAhhjkOcOHrx9bDsc2c2xmbr6NZZIikLy4JrdI
+         aaM6z7FZ72cAdIcgSw1378/Fxs1Ay+pC4l4MqBulc6Wp5A/10aMXjzoTLDMv7X/7VH
+         VqxEhB3dUHAZ1T3qixsz9JDO8br7HevBN2hyM5eEL7T6kGkQfP2xtvWrKhUitXc3mG
+         hKq2A4KbVmr6PrV47yq3Mj4xlnG/FrBBihxsQ2EtYZUz9yUVDkWKbBoHJ3KsrqNyUu
+         0VN7ZG50a5M8w7MEam8iOtYkhCcBpI4xsEe8qrMVWjvqYXh2hdNdQMx19FzGcPkpak
+         0HqmtD8g5rgOg==
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-parisc@vger.kernel.org
-Subject: [PATCH net-next v3 07/31] tulip: use ndo_siocdevprivate
-Date:   Tue, 27 Jul 2021 15:44:53 +0200
-Message-Id: <20210727134517.1384504-8-arnd@kernel.org>
+        Arnd Bergmann <arnd@arndb.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: [PATCH net-next v3 08/31] bonding: use siocdevprivate
+Date:   Tue, 27 Jul 2021 15:44:54 +0200
+Message-Id: <20210727134517.1384504-9-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210727134517.1384504-1-arnd@kernel.org>
 References: <20210727134517.1384504-1-arnd@kernel.org>
@@ -42,74 +45,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The tulip driver has a debugging method over ioctl built-in, but it
-does not actually check the command type, which may end up leading
-to random behavior when trying to run other ioctls on it.
+The bonding driver supports two command codes for each operation: one
+in the SIOCDEVPRIVATE range and another one with the same definition
+but a unique command code.
 
-Change the driver to use ndo_siocdevprivate and limit the execution
-further to the first private command code. If anyone still has tools
-to run these debugging commands, they might have to be patched for
-it if they pass different ioctl command.
+Only the second set currently works in compat mode, as the ifr_data
+expansion overwrites part of the ifr_slave field.
 
-The function has existed in this form since the driver was merged in
-Linux-1.1.86.
+Move the private ones into ndo_siocdevprivate and change the
+implementation to call the other function.  This makes both version
+work correctly.
 
-Cc: linux-parisc@vger.kernel.org
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/dec/tulip/de4x5.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/bonding/bond_main.c | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index b125d7faefdf..36ab4cbf2ad0 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -443,6 +443,7 @@
-     =========================================================================
- */
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 31730efa7538..96864183f92e 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4000,7 +4000,6 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
+ 		}
  
-+#include <linux/compat.h>
- #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/string.h>
-@@ -902,7 +903,8 @@ static int     de4x5_close(struct net_device *dev);
- static struct  net_device_stats *de4x5_get_stats(struct net_device *dev);
- static void    de4x5_local_stats(struct net_device *dev, char *buf, int pkt_len);
- static void    set_multicast_list(struct net_device *dev);
--static int     de4x5_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-+static int     de4x5_siocdevprivate(struct net_device *dev, struct ifreq *rq,
-+				    void __user *data, int cmd);
+ 		return 0;
+-	case BOND_INFO_QUERY_OLD:
+ 	case SIOCBONDINFOQUERY:
+ 		u_binfo = (struct ifbond __user *)ifr->ifr_data;
  
- /*
- ** Private functions
-@@ -1084,7 +1086,7 @@ static const struct net_device_ops de4x5_netdev_ops = {
-     .ndo_start_xmit	= de4x5_queue_pkt,
-     .ndo_get_stats	= de4x5_get_stats,
-     .ndo_set_rx_mode	= set_multicast_list,
--    .ndo_do_ioctl	= de4x5_ioctl,
-+    .ndo_siocdevprivate	= de4x5_siocdevprivate,
-     .ndo_set_mac_address= eth_mac_addr,
-     .ndo_validate_addr	= eth_validate_addr,
- };
-@@ -5357,7 +5359,7 @@ de4x5_dbg_rx(struct sk_buff *skb, int len)
- ** this function is only used for my testing.
- */
- static int
--de4x5_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-+de4x5_siocdevprivate(struct net_device *dev, struct ifreq *rq, void __user *data, int cmd)
- {
-     struct de4x5_private *lp = netdev_priv(dev);
-     struct de4x5_ioctl *ioc = (struct de4x5_ioctl *) &rq->ifr_ifru;
-@@ -5371,6 +5373,9 @@ de4x5_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-     } tmp;
-     u_long flags = 0;
+@@ -4012,7 +4011,6 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
+ 			return -EFAULT;
  
-+    if (cmd != SIOCDEVPRIVATE || in_compat_syscall())
-+	return -EOPNOTSUPP;
+ 		return 0;
+-	case BOND_SLAVE_INFO_QUERY_OLD:
+ 	case SIOCBONDSLAVEINFOQUERY:
+ 		u_sinfo = (struct ifslave __user *)ifr->ifr_data;
+ 
+@@ -4042,19 +4040,15 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
+ 		return -ENODEV;
+ 
+ 	switch (cmd) {
+-	case BOND_ENSLAVE_OLD:
+ 	case SIOCBONDENSLAVE:
+ 		res = bond_enslave(bond_dev, slave_dev, NULL);
+ 		break;
+-	case BOND_RELEASE_OLD:
+ 	case SIOCBONDRELEASE:
+ 		res = bond_release(bond_dev, slave_dev);
+ 		break;
+-	case BOND_SETHWADDR_OLD:
+ 	case SIOCBONDSETHWADDR:
+ 		res = bond_set_dev_addr(bond_dev, slave_dev);
+ 		break;
+-	case BOND_CHANGE_ACTIVE_OLD:
+ 	case SIOCBONDCHANGEACTIVE:
+ 		bond_opt_initstr(&newval, slave_dev->name);
+ 		res = __bond_opt_set_notify(bond, BOND_OPT_ACTIVE_SLAVE,
+@@ -4067,6 +4061,29 @@ static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd
+ 	return res;
+ }
+ 
++static int bond_siocdevprivate(struct net_device *bond_dev, struct ifreq *ifr,
++			       void __user *data, int cmd)
++{
++	struct ifreq ifrdata = { .ifr_data = data };
 +
-     switch(ioc->cmd) {
-     case DE4X5_GET_HWADDR:           /* Get the hardware address */
- 	ioc->len = ETH_ALEN;
++	switch (cmd) {
++	case BOND_INFO_QUERY_OLD:
++		return bond_do_ioctl(bond_dev, &ifrdata, SIOCBONDINFOQUERY);
++	case BOND_SLAVE_INFO_QUERY_OLD:
++		return bond_do_ioctl(bond_dev, &ifrdata, SIOCBONDSLAVEINFOQUERY);
++	case BOND_ENSLAVE_OLD:
++		return bond_do_ioctl(bond_dev, ifr, SIOCBONDENSLAVE);
++	case BOND_RELEASE_OLD:
++		return bond_do_ioctl(bond_dev, ifr, SIOCBONDRELEASE);
++	case BOND_SETHWADDR_OLD:
++		return bond_do_ioctl(bond_dev, ifr, SIOCBONDSETHWADDR);
++	case BOND_CHANGE_ACTIVE_OLD:
++		return bond_do_ioctl(bond_dev, ifr, SIOCBONDCHANGEACTIVE);
++	}
++
++	return -EOPNOTSUPP;
++}
++
+ static void bond_change_rx_flags(struct net_device *bond_dev, int change)
+ {
+ 	struct bonding *bond = netdev_priv(bond_dev);
+@@ -4956,6 +4973,7 @@ static const struct net_device_ops bond_netdev_ops = {
+ 	.ndo_select_queue	= bond_select_queue,
+ 	.ndo_get_stats64	= bond_get_stats,
+ 	.ndo_do_ioctl		= bond_do_ioctl,
++	.ndo_siocdevprivate	= bond_siocdevprivate,
+ 	.ndo_change_rx_flags	= bond_change_rx_flags,
+ 	.ndo_set_rx_mode	= bond_set_rx_mode,
+ 	.ndo_change_mtu		= bond_change_mtu,
 -- 
 2.29.2
 
