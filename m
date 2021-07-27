@@ -2,188 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E27563D6C15
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 04:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E91F3D6C18
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 04:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234491AbhG0CKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 22:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
+        id S234516AbhG0CLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 22:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233727AbhG0CKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 22:10:53 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BE5C061757
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 19:51:17 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id y18so13503986oiv.3
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 19:51:16 -0700 (PDT)
+        with ESMTP id S234530AbhG0CLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 22:11:01 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A125C061757
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 19:51:28 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id jg2so14836264ejc.0
+        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 19:51:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8hlT8YULz/udHP9aA6WQeMdyXPVu3rVmOKlnBogFVBk=;
-        b=oarikdotjqNFyTu58c4dtZl+jDBY+/HoDxi2lUNVnHePWwPZ7gqwKy5MYxiK1ENmN5
-         8XO1KsLLtl+xrFPVUUdGNi5jr8ArEIbUuKgTBYyYW6UmwxBPF7impxaLGXKEkC9cUPu6
-         QBqOQXQ9If7rIENsMMWIuvjitAszn4mqYEim5m87NvNOHb2PKypCKw5WUQcYr8bIua3V
-         8z9PVyRw0DsD5Hj/cNx9E0gj/EdqRlWi0k90Di8yj8e5l1NdbgQpwIl+g/Ufyr4A4EXW
-         lFVzYkMiNlcW2xqQMFy1EdsUA4u2BCczuekgN8yOcd6Xco2Cd4cP8X66xDOV1AjyQHBS
-         o2fA==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4WHrVtr5sg23UAa6EThmaj5rgrsjHnF8yQxTJ5xwbHI=;
+        b=1cPbkOXwbNJeJR9K0+joPmNyrC3HTGx/eKKvaNhylYjcsx3W8LTcJ0DJR8smMKrYnP
+         595qtG0YmWyW3dtndWc8cw4fZ52/UJeGx/fUsZqGkOCE8OH1EcwhwJwNTCkeHhX8uwgq
+         /i3IQsK1VI8RBUmh/Ml5Ul32CiJMXSwZh4zQG7MJ53h4eLo0v1KJ42zhG1W0aqEGacpR
+         H/F0LufrNfRDLNazmGzmv5hJm+6drPPowFukCEjzyi0cMXFA9CB+32WKrbhnpQV/0oDm
+         2d8ud02E2YA1hmKi3xZwA5q+JoJ0QFm6Y4WwEeoqyQTTgq5txzzZa0LEhGWr9sIw8YgF
+         hymA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8hlT8YULz/udHP9aA6WQeMdyXPVu3rVmOKlnBogFVBk=;
-        b=gmDfGExn6GE/gM+ozjOnBGTHdf2p4j8yBxCpdp6pHWE2fCbPgj/ZnAiPnCFukLfGJC
-         ZYrbi92TJHaNO30wbca+p796NgKDSh4OXxuErsNViZS/qV3Tg6FUvI9zQBnxj2FNbUT2
-         pbREsPhaqZp6PmmJEyhuFfxJ1/vMU1MXkuP1Izso9pqyWXpyqS7CbqqprUy/1+23WbET
-         Fc2ndDIRH+eUeuAIFK3rYKX0PwQVU5njOzYVR/gWSno4nm1rzbOirtVNuY9GjmyvBf7s
-         wSB6NdGy5m+ldwIImr3sJ5o3oR5NKjF6hdOVWnlf/LVstxUuLRmEDVC4bTt/kjkSyqFF
-         2mGA==
-X-Gm-Message-State: AOAM5315hHIxE5QBPuufp5GTYmQ6DBlx32GOKJsmy+f6Po1Q1uJI2si3
-        fUAdu0qgqqTfpjWKSRHn0kptUqti/ro=
-X-Google-Smtp-Source: ABdhPJwvQDhJTpyj5Sl79zlNW1Ss9Fll+V3OqN+1RzXioOuhfb7jkEQjCYy4af2HB7pZP7Uze06mug==
-X-Received: by 2002:aca:6109:: with SMTP id v9mr12969678oib.147.1627354276334;
-        Mon, 26 Jul 2021 19:51:16 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([8.48.134.27])
-        by smtp.googlemail.com with ESMTPSA id w207sm370728oie.42.2021.07.26.19.51.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Jul 2021 19:51:15 -0700 (PDT)
-Subject: Re: [PATCH iproute2] libbpf: fix attach of prog with multiple
- sections
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>, Martynas Pumputis <m@lambda.lt>,
-        Networking <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-References: <20210705124307.201303-1-m@lambda.lt>
- <CAEf4Bzb_FAOMK+8J+wyvbR2etYFDU1ae=P3pwW3fzfcWctZ1Xw@mail.gmail.com>
- <df3396c3-9a4a-824d-648f-69f4da5bc78b@lambda.lt> <YPpIeppWpqFCSaqZ@Laptop-X1>
- <CAEf4Bzavevcn=p7iBSH6iXMOCXp5kCu71a1kZ7PSawW=LW5NSQ@mail.gmail.com>
- <0cc404df-078a-686e-c5ce-8473c0e220f5@gmail.com>
- <CAEf4Bza3gMzfSQcv_QDzVP=vsCzxy=8DHwU-EVqOt8XagK7OHw@mail.gmail.com>
- <cce56767-efbe-e572-6290-111c6c845578@gmail.com>
- <CAEf4BzZHTuq8FhxyoQ-gksXspUqmocsEGyU2D5r6pFibOSSVMw@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <69ee30ef-5bdb-9179-c6a4-f87502b14e31@gmail.com>
-Date:   Mon, 26 Jul 2021 20:51:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4WHrVtr5sg23UAa6EThmaj5rgrsjHnF8yQxTJ5xwbHI=;
+        b=ZoHn9ia6LGK5uD6o2o9q/BwkhWCZlTcSJStwEQj0/rizP0shoJecNdCZ2D6WLaBeDW
+         VZFgwV0Cm+ZueqtFnTRjXcUICPrZZsKMaA55Uqh3b4+UA/OJsZzv7dq8m1+P85/jjQyV
+         1l26ITXAcHXgkkVjUH+YBMa7imVg0VcnJZxk+bEIMxy3aVnH14ROYVO5GmS0rzongBlS
+         77vMrdqb0DCJ2yq8YbFQe0PnGUgtKf+lEfoa2NoDtNiHNWXRHDOe+9Al259gdSnGQyFx
+         rzbOn9GvzavfmEyPQ9ERf1REE1jPp1Xi5jrTwRRIrGatzzRRG4cQkdno1MRJT11SIt9y
+         bgeQ==
+X-Gm-Message-State: AOAM532T2efleFIztrgl+gRVfvZCUKF3F3+lnjlorS/gAuIjSR/S1eBa
+        jphHTVbBjxAoSSOEbmf9wqb4AnmPudq6d5JtN3Vt
+X-Google-Smtp-Source: ABdhPJwHPD0Z80FVpbY6mNL4iUjH016kgam/1kNydDeJjksoFXbWq5MWYiKX1ebs3b6hp7/EgLCS7m1sr0X5yDuVv4k=
+X-Received: by 2002:a17:907:3345:: with SMTP id yr5mr9671067ejb.542.1627354287120;
+ Mon, 26 Jul 2021 19:51:27 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZHTuq8FhxyoQ-gksXspUqmocsEGyU2D5r6pFibOSSVMw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1626879395.git.pabeni@redhat.com> <1252ad17-3460-5e6a-8f0d-05d91a1a7b96@schaufler-ca.com>
+ <e6200ddd38510216f9f32051ce1acff21fc9c6d0.camel@redhat.com>
+ <2e9e57f0-98f9-b64d-fd82-aecef84835c5@schaufler-ca.com> <d3fe6ae85b8fad9090288c553f8d248603758506.camel@redhat.com>
+ <CAHC9VhT0uuBdmmT1HhMjjQswiJxWuy3cZdRQZ4Zzf-H8n5arLQ@mail.gmail.com>
+ <20210724185141.GJ9904@breakpoint.cc> <CAHC9VhSsNWSus4xr7erxQs_4GyfJYb7_6a8juisWue6Xc4fVkQ@mail.gmail.com>
+ <20210725162528.GK9904@breakpoint.cc> <75982e4e-f6b1-ade2-311f-1532254e2764@schaufler-ca.com>
+ <20210725225200.GL9904@breakpoint.cc> <d0186e8f-41f8-7d4d-5c2c-706bfe3c30cc@schaufler-ca.com>
+In-Reply-To: <d0186e8f-41f8-7d4d-5c2c-706bfe3c30cc@schaufler-ca.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 26 Jul 2021 22:51:16 -0400
+Message-ID: <CAHC9VhSTputyDZMrdU0SmO0gg=P3uskT6ejJkfOwn6bFgaFB3A@mail.gmail.com>
+Subject: Re: [PATCH RFC 0/9] sk_buff: optimize layout for GRO
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     Florian Westphal <fw@strlen.de>, Paolo Abeni <pabeni@redhat.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/26/21 9:13 AM, Andrii Nakryiko wrote:
-> On Mon, Jul 26, 2021 at 6:58 AM David Ahern <dsahern@gmail.com> wrote:
->>
->> On 7/23/21 6:25 PM, Andrii Nakryiko wrote:
->>>>>>>> This is still problematic, because one section can have multiple BPF
->>>>>>>> programs. I.e., it's possible two define two or more XDP BPF programs
->>>>>>>> all with SEC("xdp") and libbpf works just fine with that. I suggest
->>>>>>>> moving users to specify the program name (i.e., C function name
->>>>>>>> representing the BPF program). All the xdp_mycustom_suffix namings are
->>>>>>>> a hack and will be rejected by libbpf 1.0, so it would be great to get
->>>>>>>> a head start on fixing this early on.
->>>>>>>
->>>>>>> Thanks for bringing this up. Currently, there is no way to specify a
->>>>>>> function name with "tc exec bpf" (only a section name via the "sec" arg). So
->>>>>>> probably, we should just add another arg to specify the function name.
->>>>>>
->>>>>> How about add a "prog" arg to load specified program name and mark
->>>>>> "sec" as not recommended? To keep backwards compatibility we just load the
->>>>>> first program in the section.
->>>>>
->>>>> Why not error out if there is more than one program with the same
->>>>> section name? if there is just one (and thus section name is still
->>>>> unique) -- then proceed. It seems much less confusing, IMO.
->>>>>
->>>>
->>>> Let' see if I understand this correctly: libbpf 1.0 is not going to
->>>> allow SEC("xdp_foo") or SEC("xdp_bar") kind of section names - which is
->>>> the hint for libbpf to know program type. Instead only SEC("xdp") is
->>>> allowed.
->>>
->>> Right.
->>>
->>>>
->>>> Further, a single object file is not going to be allowed to have
->>>> multiple SEC("xdp") instances for each program name.
->>>
->>> On the contrary. Libbpf already allows (and will keep allowing)
->>> multiple BPF programs with SEC("xdp") in a single object file. Which
->>> is why section_name is not a unique program identifier.
->>>
->>
->> Does that require BTF? My attempts at loading an object file with 2
->> SEC("xdp") programs failed. This is using bpftool from top of tree and
->> loadall.
-> 
-> You mean kernel BTF? Not if XDP programs themselves were built
-> requiring CO-RE. So if those programs use #include "vmlinux.h", or
-> there is BPF_CORE_READ() use somewhere in the code, or explicit
-> __attribute__((preserve_access_index)) is used on some of the used
-> structs, then yes, vmlinux BTF will be needed. But otherwise no. Do
-> you have verbose error logs? I think with bpftool you can get them
-> with -d argument.
-> 
+On Mon, Jul 26, 2021 at 11:13 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
+> On 7/25/2021 3:52 PM, Florian Westphal wrote:
+> > Casey Schaufler <casey@schaufler-ca.com> wrote:
+> >> RedHat and android use SELinux and will want this. Ubuntu doesn't
+> >> yet, but netfilter in in the AppArmor task list. Tizen definitely
+> >> uses it with Smack. The notion that security modules are only used
+> >> in fringe cases is antiquated.
+> > I was not talking about LSM in general, I was referring to the
+> > extended info that Paul mentioned.
+> >
+> > If thats indeed going to be used on every distro then skb extensions
+> > are not suitable for this, it would result in extr akmalloc for every
+> > skb.
+>
+> I am explicitly talking about the use of secmarks. All my
+> references are uses of secmarks.
 
-xdp_l3fwd is built using an old school compile line - no CO-RE or BTF,
-just a basic compile line extracted from samples/bpf 2-3 years ago.
-Works fine for what I need and take this nothing more than an example to
-verify your comment
+I'm talking about a void* which would contain LSM specific data; as I
+said earlier, think of inodes.  This LSM specific data would include
+the existing secmark data as well as network peer security information
+which would finally (!!!) allow us to handle forwarded traffic and
+enable a number of other fixes and performance improvements.
 
-"Libbpf already allows (and will keep allowing) multiple BPF programs
-with SEC("xdp") in a single object file."
+(The details are a bit beyond this discussion but it basically
+revolves around us not having to investigate the import the packet
+headers every time we want to determine the network peer security
+attributes, we could store the resolved LSM information in the
+sk_buff.security blob.)
 
-
-The bpftool command line to load the programs is:
-
-$ bpftool -ddd prog loadall xdp_l3fwd.o /sys/fs/bpf
-
-It fails because libbpf is trying to put 2 programs at the same path:
-
-libbpf: pinned program '/sys/fs/bpf/xdp'
-libbpf: failed to pin program: File exists
-libbpf: unpinned program '/sys/fs/bpf/xdp'
-Error: failed to pin all programs
-
-The code that works is this:
-
-SEC("xdp_l3fwd")
-int xdp_l3fwd_prog(struct xdp_md *ctx)
-{
-        return xdp_l3fwd_flags(ctx, 0);
-}
-
-SEC("xdp_l3fwd_direct")
-int xdp_l3fwd_direct_prog(struct xdp_md *ctx)
-{
-        return xdp_l3fwd_flags(ctx, BPF_FIB_LOOKUP_DIRECT);
-}
-
-The code that fails is this:
-
-SEC("xdp")
-int xdp_l3fwd_prog(struct xdp_md *ctx)
-{
-        return xdp_l3fwd_flags(ctx, 0);
-}
-
-SEC("xdp")
-int xdp_l3fwd_direct_prog(struct xdp_md *ctx)
-{
-        return xdp_l3fwd_flags(ctx, BPF_FIB_LOOKUP_DIRECT);
-}
-
-which is what you said should work -- 2 programs with the same section name.
-
-From a very quick check of bpftool vs libbpf, the former is calling
-bpf_object__pin_programs from the latter and passing the base path
-(/sys/fs/bpf in this example) and then bpf_object__pin_programs adds the
-pin_name for the prog - which must be the same for both programs since
-the second one fails.
-
+-- 
+paul moore
+www.paul-moore.com
