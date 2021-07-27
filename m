@@ -2,210 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA0B3D7C2C
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 19:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A219D3D7C28
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 19:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230287AbhG0RbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 13:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
+        id S230000AbhG0RbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 13:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbhG0RbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 13:31:03 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56863C061757;
-        Tue, 27 Jul 2021 10:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kw8e7WCfmPeWl1fPv7zmiWyxo4YPnIDyNybMn9Zb0OY=; b=zmBSYf/TZ+Y56ZIpiaxuHTwu26
-        DiIOjo+e3bDXf2GxL0I1SHj5etVxU8I7yZ/C8q4SqtN45lgsW5TdY7GfQtUo/5euF19uM3jToZw9H
-        JXk/j5y7xw4CdLNVD9RjeBdvKdAOdOIbPPFrcvyhQ9DmOEu4fW+Fn9/P+Zh3HOorMrgR522ajbzgQ
-        7S4KrzpLUyabt01tJeC7DR5Mih//Jzk14e6jpnTZ6lve4dOOYeBzmDSFemzhSHHI2sL8guzbXe858
-        PU3aKcHnyXNwt4aBybEwI0yvO/akLFjRM9OPhxDrFfEbtWd9EqK/o3piICtk8tH2KxybPERsmGsiC
-        kWy0BgDg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m8Qua-00FZrC-9l; Tue, 27 Jul 2021 17:30:36 +0000
-Date:   Tue, 27 Jul 2021 10:30:36 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andriin@fb.com" <andriin@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "alobakin@pm.me" <alobakin@pm.me>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "ap420073@gmail.com" <ap420073@gmail.com>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "sergey.senozhatsky.work@gmail.com" 
-        <sergey.senozhatsky.work@gmail.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "mbenes@suse.com" <mbenes@suse.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "jikos@kernel.org" <jikos@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
-Message-ID: <YQBCvKgH481C7o1c@bombadil.infradead.org>
-References: <20210722221905.1718213-1-mcgrof@kernel.org>
- <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
+        with ESMTP id S229453AbhG0RbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 13:31:00 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D06C061757;
+        Tue, 27 Jul 2021 10:31:00 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id a26so22922787lfr.11;
+        Tue, 27 Jul 2021 10:31:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=WmlkGbrkM3a2AT1p/6eYnuGLhgp+ub6+Yuxgg6oi8yY=;
+        b=ki2TicAWtsulBl81ZFe/Oh/bTHmtGyZaSnGcbCQPoZJTrtibOgW5Yany3+1UZxsxqd
+         A3huph0k55HtDLbEeqsZPvVHZLI614dX0aePNJkMNrq+l39yK1ePuBUD0rxQy7Rbdtpt
+         ozynXhzsJlh7BQDCgbc9QDK81xtpvopDWltT+9iK6WDxgEJGTYzc3t9cJogKB2L57FVh
+         1VUYiAQg0kHpYrj15i+uIhJU0tIQWe2Gzzd5Czk7NPRnx8+KrTT0Nk1DK6WIbGB4fmZQ
+         MxD4+/sIjcDgxFZvHIAlO+VPlIvQdkt+t6vU3BgkhUO0DuEoLQYXYnZw/NXW8jfZfGWv
+         rW5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=WmlkGbrkM3a2AT1p/6eYnuGLhgp+ub6+Yuxgg6oi8yY=;
+        b=frO7P3KXAf1nRjpNjExisvXPG+aZnCouffs4nLHt8SYBcWtCBhg0UP/uYGTkWIsyJK
+         /41LiK5/bwosTclmYStMCC3XV3ji/xvdSpUV8K5+2IYt5nfpJio6M13rEusqFXID8P8K
+         j/Quj9rz/imfFBqFab4kw8cXn82pxx9PbkBO0aT95d5jfzG9EMwR40Q7A3a131R8i3KB
+         ogZyOMLxTnP8xAuZoLraFimTDfGFl0xakrGF7ee36URK8qKY053zdFXrSXFv1OFz8BzO
+         ZwsDvGc3Thsp3ArsVsxxBhGMIyAmLDOf0jxDWV+4UGbsPGhY+opcTK8a+ACXbb+rRFnL
+         8arQ==
+X-Gm-Message-State: AOAM530T7qicWjiKqjm34qIa1AA/YlsfsQqLC8xo5wHWxVx2kJRbV7os
+        vwVbNwZSoW23oiBfgualejI=
+X-Google-Smtp-Source: ABdhPJxzK1adGqAHxZULx6sENBEuammItjvYBZv89tuUdbChr/yZtAAzZiikAjqXQXXwpWLz/2nG5w==
+X-Received: by 2002:ac2:5e9a:: with SMTP id b26mr17876604lfq.362.1627407058841;
+        Tue, 27 Jul 2021 10:30:58 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.227.213])
+        by smtp.gmail.com with ESMTPSA id n28sm346380lfh.176.2021.07.27.10.30.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jul 2021 10:30:58 -0700 (PDT)
+Date:   Tue, 27 Jul 2021 20:30:56 +0300
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     syzbot <syzbot+9cd5837a045bbee5b810@syzkaller.appspotmail.com>,
+        clang-built-linux@googlegroups.com, kbuild-all@lists.01.org,
+        davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH] net: xfrm: fix shift-out-of-bounce
+Message-ID: <20210727203056.377e5758@gmail.com>
+In-Reply-To: <202107280113.ykJy6Oc4-lkp@intel.com>
+References: <20210727174318.53806d27@gmail.com>
+        <202107280113.ykJy6Oc4-lkp@intel.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Type: multipart/mixed; boundary="MP_/w+5mWJ0hzkLOGrIDgVYQu8r"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 24, 2021 at 12:15:10PM +0000, David Laight wrote:
-> From: Luis Chamberlain
-> > Sent: 22 July 2021 23:19
-> > 
-> > There is quite a bit of tribal knowledge around proper use of
-> > try_module_get() and that it must be used only in a context which
-> > can ensure the module won't be gone during the operation. Document
-> > this little bit of tribal knowledge.
-> > 
-> ...
+--MP_/w+5mWJ0hzkLOGrIDgVYQu8r
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+On Wed, 28 Jul 2021 01:25:18 +0800
+kernel test robot <lkp@intel.com> wrote:
+
+> Hi Pavel,
 > 
-> Some typos.
+> Thank you for the patch! Yet something to improve:
 > 
-> > +/**
-> > + * try_module_get - yields to module removal and bumps reference count otherwise
-> > + * @module: the module we should check for
-> > + *
-> > + * This can be used to check if userspace has requested to remove a module,
->                                                            a module be removed
-> > + * and if so let the caller give up. Otherwise it takes a reference count to
-> > + * ensure a request from userspace to remove the module cannot happen.
-> > + *
-> > + * Care must be taken to ensure the module cannot be removed during
-> > + * try_module_get(). This can be done by having another entity other than the
-> > + * module itself increment the module reference count, or through some other
-> > + * means which gaurantees the module could not be removed during an operation.
->                   guarantees
-> > + * An example of this later case is using this call in a sysfs file which the
-> > + * module created. The sysfs store / read file operation is ensured to exist
->                                                             ^^^^^^^^^^^^^^^^^^^
-> Not sure what that is supposed to mean.
-
-I'll clarify further. How about:
-
-The sysfs store / read file operations are gauranteed to exist using
-kernfs's active reference (see kernfs_active()).
-
-> > + * and still be present by kernfs's active reference. If a sysfs file operation
-> > + * is being run, the module which created it must still exist as the module is
-> > + * in charge of removal of the sysfs file.
-> > + *
-> > + * The real value to try_module_get() is the module_is_live() check which
-> > + * ensures this the caller of try_module_get() can yields to userspace module
-> > + * removal requests and fail whatever it was about to process.
-> > + */
+> [auto build test ERROR on ipsec-next/master]
+> [also build test ERROR on next-20210726]
+> [cannot apply to ipsec/master net-next/master net/master
+> sparc-next/master v5.14-rc3] [If your patch is applied to the wrong
+> git tree, kindly drop us a note. And when submitting patch, we
+> suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
 > 
-> But is the comment even right?
-> I think you need to consider when try_module_get() can actually fail.
-
-Let's do that!
-
-> I believe the following is right.
-> The caller has to have valid module reference and module unload
-> must actually be in progress - ie the ref count is zero and
-> there are no active IO operations.
-
-If the refcount bump succeeded then module unload will simply not
-happen. So what exactly do you mean with the first part of
-"The caller has to have a valid module reference" ?
-
-> The module's unload function must (eventually) invalidate the
-> caller's module reference to stop try_module_get() being called
-> with a (very) stale pointer.
-
-Once a module's exit call is triggered the state is MODULE_STATE_GOING,
-which is what module_is_live() checks for.
-
-> So there is a potentially horrid race:
-> The module unload is going to do:
-> 	driver_data->module_ref = 0;
-> and elsewhere there'll be:
-> 	ref = driver_data->module_ref;
-> 	if (!ref || !try_module_get(ref))
-> 		return -error;
+> url:
+> https://github.com/0day-ci/linux/commits/Pavel-Skripkin/net-xfrm-fix-shift-out-of-bounce/20210727-224549
+> base:
+> https://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git
+> master config: s390-randconfig-r034-20210727 (attached as .config)
+> compiler: clang version 13.0.0 (https://github.com/llvm/llvm-project
+> c658b472f3e61e1818e1909bf02f3d65470018a5) reproduce (this is a W=1
+> build): wget
+> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross
+> -O ~/bin/make.cross chmod +x ~/bin/make.cross # install s390 cross
+> compiling tool for clang build # apt-get install
+> binutils-s390x-linux-gnu #
+> https://github.com/0day-ci/linux/commit/0d1cb044926e3d81c86b5add2eeaf38c7aec7f90
+> git remote add linux-review https://github.com/0day-ci/linux git
+> fetch --no-tags linux-review
+> Pavel-Skripkin/net-xfrm-fix-shift-out-of-bounce/20210727-224549 git
+> checkout 0d1cb044926e3d81c86b5add2eeaf38c7aec7f90 # save the attached
+> .config to linux build tree mkdir build_dir
+> COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross
+> O=build_dir ARCH=s390 SHELL=/bin/bash net/xfrm/
 > 
-> You have to have try_module_get() to allow the module unload
-> function to sleep.
-> But the above code still needs a driver lock to ensure the
-> unload code doesn't race with the try_module_get() and the
-> 'ref' be invalidated before try_module_get() looks at it.
-> (eg if an interrupt defers processing.)
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 > 
-> So there can be no 'yielding'.
+> All errors (new ones prefixed by >>):
+> 
+>    In file included from net/xfrm/xfrm_user.c:22:
+>    In file included from include/linux/skbuff.h:31:
+>    In file included from include/linux/dma-mapping.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/s390/include/asm/io.h:75:
+>    include/asm-generic/io.h:464:31: warning: performing pointer
+> arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] val = __raw_readb(PCI_IOBASE + addr);
+> ~~~~~~~~~~ ^ include/asm-generic/io.h:477:61: warning: performing
+> pointer arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] val = __le16_to_cpu((__le16
+> __force)__raw_readw(PCI_IOBASE + addr)); ~~~~~~~~~~ ^
+> include/uapi/linux/byteorder/big_endian.h:36:59: note: expanded from
+> macro '__le16_to_cpu' #define __le16_to_cpu(x) __swab16((__force
+> __u16)(__le16)(x)) ^ include/uapi/linux/swab.h:102:54: note: expanded
+> from macro '__swab16' #define __swab16(x)
+> (__u16)__builtin_bswap16((__u16)(x)) ^
+>    In file included from net/xfrm/xfrm_user.c:22:
+>    In file included from include/linux/skbuff.h:31:
+>    In file included from include/linux/dma-mapping.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/s390/include/asm/io.h:75:
+>    include/asm-generic/io.h:490:61: warning: performing pointer
+> arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] val = __le32_to_cpu((__le32
+> __force)__raw_readl(PCI_IOBASE + addr)); ~~~~~~~~~~ ^
+> include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from
+> macro '__le32_to_cpu' #define __le32_to_cpu(x) __swab32((__force
+> __u32)(__le32)(x)) ^ include/uapi/linux/swab.h:115:54: note: expanded
+> from macro '__swab32' #define __swab32(x)
+> (__u32)__builtin_bswap32((__u32)(x)) ^
+>    In file included from net/xfrm/xfrm_user.c:22:
+>    In file included from include/linux/skbuff.h:31:
+>    In file included from include/linux/dma-mapping.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/s390/include/asm/io.h:75:
+>    include/asm-generic/io.h:501:33: warning: performing pointer
+> arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] __raw_writeb(value, PCI_IOBASE + addr);
+> ~~~~~~~~~~ ^ include/asm-generic/io.h:511:59: warning: performing
+> pointer arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] __raw_writew((u16
+> __force)cpu_to_le16(value), PCI_IOBASE + addr); ~~~~~~~~~~ ^
+> include/asm-generic/io.h:521:59: warning: performing pointer
+> arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] __raw_writel((u32
+> __force)cpu_to_le32(value), PCI_IOBASE + addr); ~~~~~~~~~~ ^
+> include/asm-generic/io.h:609:20: warning: performing pointer
+> arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] readsb(PCI_IOBASE + addr, buffer, count);
+> ~~~~~~~~~~ ^ include/asm-generic/io.h:617:20: warning: performing
+> pointer arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] readsw(PCI_IOBASE + addr, buffer, count);
+> ~~~~~~~~~~ ^ include/asm-generic/io.h:625:20: warning: performing
+> pointer arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] readsl(PCI_IOBASE + addr, buffer, count);
+> ~~~~~~~~~~ ^ include/asm-generic/io.h:634:21: warning: performing
+> pointer arithmetic on a null pointer has undefined behavior
+> [-Wnull-pointer-arithmetic] writesb(PCI_IOBASE + addr, buffer,
+> count); ~~~~~~~~~~ ^ include/asm-generic/io.h:643:21: warning:
+> performing pointer arithmetic on a null pointer has undefined
+> behavior [-Wnull-pointer-arithmetic] writesw(PCI_IOBASE + addr,
+> buffer, count); ~~~~~~~~~~ ^ include/asm-generic/io.h:652:21:
+> warning: performing pointer arithmetic on a null pointer has
+> undefined behavior [-Wnull-pointer-arithmetic] writesl(PCI_IOBASE +
+> addr, buffer, count); ~~~~~~~~~~ ^
+> >> net/xfrm/xfrm_user.c:1975:54: error: expected ';' after expression
+>            dirmask = (1 << up->dirmask) & XFRM_POL_DEFAULT_MASK
+>                                                                ^
+>                                                                ;
 
-Oh but there is. Consider access to a random sysfs file 'add_new_device'
-which takes as input a name, for driver foo, and so foo's
-add_new_foobar_device(name="bar") is called. Unless sysfs file
-"yields" by using try_module_get() before trying to add a new
-foo device called "bar", it will essentially be racing with the
-exit routine of module foo, and depending on how locking is implemented
-(most drivers get it wrong), this easily leads to crashes.
+Oops :) Thank you, kernel test robot.
 
-In fact, this documentation patch was motivated by my own solution to a
-possible deadlock when sysfs is used. Using the same example above, if
-the same sysfs file uses *any* lock, which is *also* used on the exit
-routine, you can easily trigger a deadlock. This can happen for example
-by the lock being obtained by the removal routine, then the sysfs file
-gets called, waits for the lock to complete, then the module's exit
-routine starts cleaning up and removing sysfs files, but we won't be
-able to remove the sysfs file (due to kernefs active reference) until
-the sysfs file complets, but it cannot complete because the lock is
-already held.
+#syz test
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
 
-Yes, this is a generic problem. Yes I have proof [0]. Yes, a generic
-solution has been proposed [1], and because Greg is not convinced and I
-need to move on with life, I am suggesting a temporary driver specific
-solution (to which Greg is still NACK'ing, without even proposing any
-alternatives) [2].
 
-[0] https://lkml.kernel.org/r/20210703004632.621662-5-mcgrof@kernel.org
-[1] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com 
-[2] https://lkml.kernel.org/r/20210723174919.ka3tzyre432uilf7@garbanzo
+With regards,
+Pavel Skripkin
 
-> I'm pretty much certain try_module_get(THIS_MODULE) is pretty
-> much never going to fail.
 
-It would have to take something very asynchronous and detached from
-the module to run. But the only thing I can think now, is something
-takes a module pointer right before after try_stop_module() and then
-a piece of code in between try_stop_module() and free_module()
-asynchronously tries to run something with that pointer.
 
-In the end I can only think of buggy code. Perhaps the more type of
-common issue could be code which purposely leave module pointers around
-with the intent of cleaning up using a module removal notifier event and
-that for some stupid reason runs something asynchronously with that
-pointer.
+--MP_/w+5mWJ0hzkLOGrIDgVYQu8r
+Content-Type: text/x-patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename=0001-net-xfrm-fix-shift-out-of-bounce.patch
 
-> (It is mostly needed to give a worker thread a reference.)
+From e7cf3838979bf3079a511b6809e971945f50eb25 Mon Sep 17 00:00:00 2001
+From: Pavel Skripkin <paskripkin@gmail.com>
+Date: Tue, 27 Jul 2021 17:38:24 +0300
+Subject: [PATCH] net: xfrm: fix shift-out-of-bounce
 
-Greg, do you have a real world example which demonstrates the race
-better? Or perhaps a selftest? Or a kunit test?
+We need to check up->dirmask to avoid shift-out-of-bounce bug,
+since up->dirmask comes from userspace.
 
-  Luis
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
+ net/xfrm/xfrm_user.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index acc3a0dab331..4a7bb169314e 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -1966,9 +1966,14 @@ static int xfrm_set_default(struct sk_buff *skb, struct nlmsghdr *nlh,
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct xfrm_userpolicy_default *up = nlmsg_data(nlh);
+-	u8 dirmask = (1 << up->dirmask) & XFRM_POL_DEFAULT_MASK;
++	u8 dirmask;
+ 	u8 old_default = net->xfrm.policy_default;
+ 
++	if (up->dirmask >= sizeof(up->action) * 8)
++		return -EINVAL;
++
++	dirmask = (1 << up->dirmask) & XFRM_POL_DEFAULT_MASK;
++
+ 	net->xfrm.policy_default = (old_default & (0xff ^ dirmask))
+ 				    | (up->action << up->dirmask);
+ 
+-- 
+2.32.0
+
+
+--MP_/w+5mWJ0hzkLOGrIDgVYQu8r--
