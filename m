@@ -2,112 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4F93D711C
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 10:23:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50CE53D7190
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 10:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235960AbhG0IWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 04:22:03 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:5647 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235906AbhG0IWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 04:22:00 -0400
-X-IronPort-AV: E=Sophos;i="5.84,272,1620658800"; 
-   d="scan'208";a="88892218"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 27 Jul 2021 17:21:59 +0900
-Received: from localhost.localdomain (unknown [10.166.14.185])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 54ACA400D4FF;
-        Tue, 27 Jul 2021 17:21:59 +0900 (JST)
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH 2/2] sh_eth: Fix descriptor counters' conditions
-Date:   Tue, 27 Jul 2021 17:21:47 +0900
-Message-Id: <20210727082147.270734-3-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210727082147.270734-1-yoshihiro.shimoda.uh@renesas.com>
-References: <20210727082147.270734-1-yoshihiro.shimoda.uh@renesas.com>
+        id S235990AbhG0IxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 04:53:10 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:46287 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235885AbhG0IxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 04:53:09 -0400
+Received: (Authenticated sender: ralf@linux-mips.org)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 5C64F20014;
+        Tue, 27 Jul 2021 08:53:07 +0000 (UTC)
+Date:   Tue, 27 Jul 2021 10:53:05 +0200
+From:   Ralf Baechle <ralf@linux-mips.org>
+To:     linux-man@vger.kernel.org,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        Alejandro Colomar <alx.manpages@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        Thomas Osterried <thomas@osterried.de>
+Subject: [PATCH] packet.7: Describe SOCK_PACKET netif name length issues and
+ workarounds.
+Message-ID: <YP/Jcc4AFIcvgXls@linux-mips.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The descriptor counters ({cur,dirty}_[rt]x) acts as free counters
-so that conditions are possible to be incorrect when a left value
-was overflowed.
+Describe the issues with SOCK_PACKET possibly truncating network interface
+names in results, solutions and possible workarounds.
 
-So, for example, sh_eth_tx_free() could not free any descriptors
-because the following condition was checked as a signed value,
-and then "NETDEV WATCHDOG" happened:
+While the issue is know for a long time it appears to have never been
+documented properly and is has started to bite software antiques badly since
+the introduction of Predictable Network Interface Names.  So let's document
+it.
 
-    for (; mdp->cur_tx - mdp->dirty_tx > 0; mdp->dirty_tx++) {
-
-To fix the issue, add get_num_desc() to calculate numbers of
-remaining descriptors.
-
-Fixes: 86a74ff21a7a ("net: sh_eth: add support for Renesas SuperH Ethernet")
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 ---
- drivers/net/ethernet/renesas/sh_eth.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ man7/packet.7 | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index 840478692a37..7c9445ad684b 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -1227,6 +1227,14 @@ static const struct mdiobb_ops bb_ops = {
- 	.get_mdio_data = sh_get_mdio,
- };
- 
-+static u32 get_num_desc(u32 from, u32 subtract)
-+{
-+	if (from >= subtract)
-+		return from - subtract;
-+
-+	return U32_MAX - subtract + 1 + from;
-+}
-+
- /* free Tx skb function */
- static int sh_eth_tx_free(struct net_device *ndev, bool sent_only)
- {
-@@ -1236,7 +1244,7 @@ static int sh_eth_tx_free(struct net_device *ndev, bool sent_only)
- 	int entry;
- 	bool sent;
- 
--	for (; mdp->cur_tx - mdp->dirty_tx > 0; mdp->dirty_tx++) {
-+	for (; get_num_desc(mdp->cur_tx, mdp->dirty_tx) > 0; mdp->dirty_tx++) {
- 		entry = mdp->dirty_tx % mdp->num_tx_ring;
- 		txdesc = &mdp->tx_ring[entry];
- 		sent = !(txdesc->status & cpu_to_le32(TD_TACT));
-@@ -1587,7 +1595,7 @@ static int sh_eth_rx(struct net_device *ndev, u32 intr_status, int *quota)
- 	struct sh_eth_rxdesc *rxdesc;
- 
- 	int entry = mdp->cur_rx % mdp->num_rx_ring;
--	int boguscnt = (mdp->dirty_rx + mdp->num_rx_ring) - mdp->cur_rx;
-+	int boguscnt = get_num_desc(mdp->dirty_rx, mdp->cur_rx) + mdp->num_rx_ring;
- 	int limit;
- 	struct sk_buff *skb;
- 	u32 desc_status;
-@@ -1667,7 +1675,7 @@ static int sh_eth_rx(struct net_device *ndev, u32 intr_status, int *quota)
- 	}
- 
- 	/* Refill the Rx ring buffers. */
--	for (; mdp->cur_rx - mdp->dirty_rx > 0; mdp->dirty_rx++) {
-+	for (; get_num_desc(mdp->cur_rx, mdp->dirty_rx) > 0; mdp->dirty_rx++) {
- 		entry = mdp->dirty_rx % mdp->num_rx_ring;
- 		rxdesc = &mdp->rx_ring[entry];
- 		/* The size of the buffer is 32 byte boundary. */
-@@ -2499,7 +2507,7 @@ static netdev_tx_t sh_eth_start_xmit(struct sk_buff *skb,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&mdp->lock, flags);
--	if ((mdp->cur_tx - mdp->dirty_tx) >= (mdp->num_tx_ring - 4)) {
-+	if (get_num_desc(mdp->cur_tx, mdp->dirty_tx) >= (mdp->num_tx_ring - 4)) {
- 		if (!sh_eth_tx_free(ndev, true)) {
- 			netif_warn(mdp, tx_queued, ndev, "TxFD exhausted.\n");
- 			netif_stop_queue(ndev);
--- 
-2.25.1
-
+diff --git a/man7/packet.7 b/man7/packet.7
+index 706efbb54..7697bbdeb 100644
+--- a/man7/packet.7
++++ b/man7/packet.7
+@@ -627,6 +627,34 @@ extension is an ugly hack and should be replaced by a control message.
+ There is currently no way to get the original destination address of
+ packets via
+ .BR SOCK_DGRAM .
++.PP
++The
++.I spkt_device
++field of
++.I sockaddr_pkt
++has a size of 14 bytes which is less than the constant
++.B IFNAMSIZ
++defined in
++.I <net/if.h>
++which is 16 bytes and describes the system limit for a network interface
++name.  This means the names of network devices longer than 14 bytes will be
++truncated to fit into
++.I spkt_device .
++All these lengths include the terminating null byte (\(aq\e0\(aq)).
++.PP
++Issues from this with old code typically show up with very long interface
++names used by the
++.B Predictable Network Interface Names
++feature enabled by default in many modern Linux distributions.
++.PP
++The preferred solution is to rewrite code to avoid
++.BR SOCK_PACKET .
++Possible user solutions are to disable
++.B Predictable Network Interface Names
++or to rename the interface to a name of at most 13 bytes, for example using
++the
++.BR IP (8)
++tool.
+ .\" .SH CREDITS
+ .\" This man page was written by Andi Kleen with help from Matthew Wilcox.
+ .\" AF_PACKET in Linux 2.2 was implemented
+@@ -637,7 +665,8 @@ packets via
+ .BR capabilities (7),
+ .BR ip (7),
+ .BR raw (7),
+-.BR socket (7)
++.BR socket (7),
++.BR ip (8),
+ .PP
+ RFC\ 894 for the standard IP Ethernet encapsulation.
+ RFC\ 1700 for the IEEE 802.3 IP encapsulation.
