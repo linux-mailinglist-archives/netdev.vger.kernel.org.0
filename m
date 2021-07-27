@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A71763D83D8
+	by mail.lfdr.de (Postfix) with ESMTP id F02E53D83D9
 	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 01:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233455AbhG0XVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 19:21:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35148 "EHLO mail.kernel.org"
+        id S233874AbhG0XVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 19:21:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233173AbhG0XU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 19:20:57 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DB74A60F9D;
-        Tue, 27 Jul 2021 23:20:56 +0000 (UTC)
+        id S233414AbhG0XU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 19:20:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5894B60F5E;
+        Tue, 27 Jul 2021 23:20:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627428057;
-        bh=UEBetwmTrildB+RjV4mzCaZ7CcH42WJ35PXDqP/mUZE=;
+        bh=UiKdMONG33AJPMkQRdMxShMFSxi4u5GzfcIWB35xMvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e5oJtNDgNtoJLKPcaZlTz0eco/tCsC6oaItrMUvDGJHuVcu1qnGRJLCf2rf5+z8MU
-         l7G90lsp3yF4ng75QLppjG2dPBjJuWf8VWUPMJUXxGQUthxoLROpLBFUCKL/LBOrOs
-         Kj6THo+Xjq98SBItYez0O3kTigpSoGNKcm1uoee9JpE2QtYo+FITgYkOEJryk9N6ZV
-         hZh6kaJKVThmM8tckZtai6LQAlcPHQghN/SlVFsZMReEiwS2Pw0BG0coG2H/mNQjz/
-         FdVQNoq9pEI2LtEVbXCeV0t+1+edc76EnjY9c7A/tVWGmXB/l6lqUa+4xm4GjfZtvt
-         kd5LpueSxpDEg==
+        b=T2hGdML5/i2/pK8r51mN+fTlhN9mgHpFSgMWc62ncA0FrbELGWD4Q+gMsqLCEpnbM
+         2/+Vp52gp96tfBqxPDgZ7u6E01DRLRa5hEroc7gHkxvnzP3Mcn0n7gx5Z4fjdaqae0
+         W3Zt4IZuO8TJc6nIRaJ9fGbu5EAdAlIlJ0y75HEk1OWMGys/qFmMAvyEnKlirVo8+g
+         RP/3dpzviywzv7nvbrp/5hQA0oCfKQIWzaL5TnwWLPA3bV3UHZAQbsr2nlMkjHBces
+         IDdyUAfE44o87eP+vhI0ETIrxINcRVcXW3w7FX5yweNYV0X/KxGP5og4Fv6i6Aw4O1
+         nvrHMyBEfUocQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Aya Levin <ayal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 09/12] net/mlx5e: Fix page allocation failure for ptp-RQ over SF
-Date:   Tue, 27 Jul 2021 16:20:47 -0700
-Message-Id: <20210727232050.606896-10-saeed@kernel.org>
+        Aya Levin <ayal@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 10/12] net/mlx5: Unload device upon firmware fatal error
+Date:   Tue, 27 Jul 2021 16:20:48 -0700
+Message-Id: <20210727232050.606896-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210727232050.606896-1-saeed@kernel.org>
 References: <20210727232050.606896-1-saeed@kernel.org>
@@ -42,30 +43,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Set the correct pci-device pointer to the ptp-RQ. This allows access to
-dma_mask and avoids allocation request with wrong pci-device.
+When fw_fatal reporter reports an error, the firmware in not responding.
+Unload the device to ensure that the driver closes all its resources,
+even if recovery is not due (user disabled auto-recovery or reporter is
+in grace period). On successful recovery the device is loaded back up.
 
-Fixes: a099da8ffcf6 ("net/mlx5e: Add RQ to PTP channel")
+Fixes: b3bd076f7501 ("net/mlx5: Report devlink health on FW fatal issues")
 Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/health.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-index 07b429b94d93..efef4adce086 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
-@@ -497,7 +497,7 @@ static int mlx5e_init_ptp_rq(struct mlx5e_ptp *c, struct mlx5e_params *params,
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index 9ff163c5bcde..9abeb80ffa31 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -626,8 +626,16 @@ static void mlx5_fw_fatal_reporter_err_work(struct work_struct *work)
+ 	}
+ 	fw_reporter_ctx.err_synd = health->synd;
+ 	fw_reporter_ctx.miss_counter = health->miss_counter;
+-	devlink_health_report(health->fw_fatal_reporter,
+-			      "FW fatal error reported", &fw_reporter_ctx);
++	if (devlink_health_report(health->fw_fatal_reporter,
++				  "FW fatal error reported", &fw_reporter_ctx) == -ECANCELED) {
++		/* If recovery wasn't performed, due to grace period,
++		 * unload the driver. This ensures that the driver
++		 * closes all its resources and it is not subjected to
++		 * requests from the kernel.
++		 */
++		mlx5_core_err(dev, "Driver is in error state. Unloading\n");
++		mlx5_unload_one(dev);
++	}
+ }
  
- 	rq->wq_type      = params->rq_wq_type;
--	rq->pdev         = mdev->device;
-+	rq->pdev         = c->pdev;
- 	rq->netdev       = priv->netdev;
- 	rq->priv         = priv;
- 	rq->clock        = &mdev->clock;
+ static const struct devlink_health_reporter_ops mlx5_fw_fatal_reporter_ops = {
 -- 
 2.31.1
 
