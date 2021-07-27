@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 165F13D81E4
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7213D8179
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232844AbhG0Vgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34624 "EHLO
+        id S235302AbhG0VSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232604AbhG0Vgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:36:52 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BAFC061796
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:36:51 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so6735231pja.5
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:36:51 -0700 (PDT)
+        with ESMTP id S233554AbhG0VQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:16:58 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556C9C061760
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:16:57 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id m1so1904585pjv.2
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:16:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4BnfRKheoEyJ1stoqG1udFT4VTgOpqL9vmyJJWgrwhQ=;
-        b=NTFTSGnaaL1PjdfbInP9wW4+rEyfYbhJ/keeV1wnvEThtRN2gdcrpRCZ7hd1LSPL/w
-         gpm7aIDUJ/FjLYIardaQXcuOjI/ZjGwWIdtBU8XtYG2CMUC8Us1z4TA/eJ27DZ+AF+dn
-         3omle6d7QFY3/lutHZTQhs0+KkQrfijMwyIfQ=
+        bh=SsQl9AGgDVz4dMjQrj5Kn4zFkC00P69ydvQa5XL3s70=;
+        b=Rs6HYoDB8JCI5LZcFDXmByirUGKdsEtYf0xGfbcTHeZOr8iLIgjdfNm+fUHA8pOrtM
+         dUxzT2LIMFv8uDeD3I7uQhaPpIzublFtLZaKhb6m8G+5wrXncTNkX9kgfHOyRoc8fGvX
+         nUFj4adSWSn12tKJr3EXvjYqssUobHPHsIXqI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4BnfRKheoEyJ1stoqG1udFT4VTgOpqL9vmyJJWgrwhQ=;
-        b=XdZdY3PdaVNyLH2BztKhKri52iPPuwfTMavQWZ7uQ5+z0/W6T7q9lZBXy47TFU9HKv
-         QPEip/1i/Z/AtNQT80EphK5iaaqmZppZIaTPEaEq0ntaFo4GiMTYReqYBeJGu1F7DmsV
-         rSfvPhDH7ssui8DXc9/V/y74Yt0c1/w3+2BBRja5QkIWa8DexzD9pKrf5U1LeJVHChds
-         rf/iAZvOewcEB+RThAmpTF+Ic42seT3f+LPPat1R5y7ye4PC0C1lVLVHnen4iVOhGfTG
-         euKUiPTFfDzkPMLKEYgE4bTZUdwGHNn+Wr37AbXRJhZKwNtstEp106Q4+5vRypQueOeL
-         3Lag==
-X-Gm-Message-State: AOAM5300I4J7eqzvL8+K9vvcHr0SmzvCv4xMYBhsbJrU+A+lniOfvnqf
-        wTDeZ1sxvHup1da2PbmLmZGerQ==
-X-Google-Smtp-Source: ABdhPJywXHABddj5YKILKb1GKuMRYeJ3OumAxfDVgtAesPzGrRwd3W2ViDD691FQDqn6Bsbeqru0EA==
-X-Received: by 2002:a63:154d:: with SMTP id 13mr214806pgv.116.1627421811222;
-        Tue, 27 Jul 2021 14:36:51 -0700 (PDT)
+        bh=SsQl9AGgDVz4dMjQrj5Kn4zFkC00P69ydvQa5XL3s70=;
+        b=ub/5WrI0KdrAQtmwkjfox5DZjusaKes35VGD1WkPRXLRSFgtlOCnxgFyyubHymNJqa
+         WPPuODLpe3dMWiBANvU2QskvddeK56fPgMSuOTMPw52fWkbMuIoTtbD9XdLy6o6Z0p+/
+         ZNoOKvpWBp7orkJt+s0Y7J+fkVwCDL3t53DJmVudrAzC+AocIE8T7RAB9hfg8agjejgb
+         X0JBhF+uprcSTO0S9ek12qFY91XjSm8siLcFgftLOz0oWitCZi9DAk+ga7ui1O5A8uyS
+         ENHksePH0pJ0kQgHgeRzGS56cUe7dZzYreXsoBsH9D6gjifpRYOa1JcABnLCK/k2Lmiu
+         GSBA==
+X-Gm-Message-State: AOAM530QkDc9GQmgkk58syYSFGi9So7fWFhqblYtDyHRqPO5Ad0x0gN2
+        rdm9Yq0R6cxvFFlzUJEDT6mx9g==
+X-Google-Smtp-Source: ABdhPJxHQnolGrNqUWuxT3TRrygeD/Y4uv8PYH40HLi8EsnsRtbjxlRySGM6XIllWkttnsKi9TCjpQ==
+X-Received: by 2002:a62:ce0f:0:b029:39a:a638:f25b with SMTP id y15-20020a62ce0f0000b029039aa638f25bmr10561280pfg.42.1627420616933;
+        Tue, 27 Jul 2021 14:16:56 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z9sm4890526pfa.2.2021.07.27.14.36.49
+        by smtp.gmail.com with ESMTPSA id v10sm3566644pjd.29.2021.07.27.14.16.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 14:36:50 -0700 (PDT)
+        Tue, 27 Jul 2021 14:16:54 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-hardening@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 48/64] drbd: Use struct_group() to zero algs
-Date:   Tue, 27 Jul 2021 13:58:39 -0700
-Message-Id: <20210727205855.411487-49-keescook@chromium.org>
+Subject: [PATCH 49/64] cm4000_cs: Use struct_group() to zero struct cm4000_dev region
+Date:   Tue, 27 Jul 2021 13:58:40 -0700
+Message-Id: <20210727205855.411487-50-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2322; h=from:subject; bh=1syui6IaJX/LeKhpA35yXKLKiDQJbdN3KjOA72sb0yw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOL7jOa6t9HnTRkat/yBLQ7dAwkDK4D28V8dSKs BckHWDOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBziwAKCRCJcvTf3G3AJjzYD/ 4zCOLV8aaPBAT/bUiOjvDCTgLgraBRaR3pGWcZHMGJANYM2EkJwwuDhYBGkXFsg/LT9+C0FBP8Y/Zc 5zPMr5Ck8KK1vkPuvxC1XxLeWJhbO7Z9IV0T96RT6vedIbwG/X0HJaMaOlT+1avad2HTRLXhAUzKf9 gxK4g4ZAvz/FXSOFqfOu4JDUZkbvgdqXKTRl1Ks3V/KGyA9ON1fkJKujv9YXdTGyFFudWFZewLc3BP DZPR81LSq8W/amm31XbR+stxT3RkRdzalx01+vXbX9LJoiC0gu7l/6U4b5J/VpCStcDJGVQl8FIhTi V+1401vurSluzntSGK22z+Cm1SERyXlJmS441MJeAecPsqSCnwghfDjdjciI3UKJWO/K9Qg++zKSTX Xg46C2C1CDENzVc/BEXLX4bRTM4AwyujZVJ2hRQ7bxl9SnluGtBytRpsMg8Msnryyvs3X8cmlQ9bUl XRrL69gqQC1H0bptqlRAOSNMxXAHdZVeI6VwFfJlkcw9nlt77JLmR4IN0CztbMsOydMgnp7kFIyOow V3/czlAK48y8FIgtBvWH5SaTNQHjO8KDpB/sU7DTiAlRVmRb+H9uM3KcdDUwf+cI08Yry5bLkSot5g ggAqgBoLiqeU0j1EpwD4W48NHRYgozq2B6FyI6ymPjBsMY1DKp1cRWhDZRww==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1505; h=from:subject; bh=pEaLYejpw1rouLzkWI/x3bS06fu+DrrD0bTA3jR4D24=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOLvAh3w+r+2Msan2T2U4UOiQHuaUCBe1ciGiHP 57FYFAmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBziwAKCRCJcvTf3G3AJoDND/ 49iXlS8sP97A+TuQ1hW5zJk7qY4Cq/D6b+K1NZSr+4oxO8lsE5F6t9Yp5H2qKpQDH3aG1Y9eseHUet DuqxELASm6TEbv9OaDETKL/st1lYW3XnzIdg4jtHyIUR7l5R/zIZWVCZjBklYrBtW+5MfFN8QuuF/F lvWawq3IPr3DCsm73XdFP6Bc1lZvICUNlEpP/HrD4TRKQi8UcHlSKwLWB74WqQx4AXq0BeprPCj2+K 42l0klkcuGwQNXyEcytxOhIx1zOxhcCTx0MIEflgGQVpkEiSYsDfzS1bJdn9uw6osxjKzg81OaNfq3 nTCOrIrEUVrjsW/YQShJRG1piOtrMFenXJVqU+berM3mVlnU+b+WDEDFNI+DLr5KX7D5l7IPFskN7l QyIaULkhJZ6CLvwzOoVY7vIlqZi9yNnUcfzAODBfpImwjzd2gLx/nV18ywN1M+ifdG3l0jjRTOV39w 4QYa5ZAzd0U/P351r3R8m8ZaiSHjEUVJeN1PD7EexenIxVofRslJik5zDpKZPpb133Y5HOZQsfajom cIz74vJI2Jk82zGIJHBlsHVUj9yJkvhh/o3qK0i/XCfm4ybkalh4dXPTiXC5ddEfdP/qhK66ovmt1y Gr7orTiLuQ3FhBQJUseFFY2YfzQgiCe7UUGAJJZGZ/PgkQ1TY0MyXJ3eMxkA==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -73,61 +73,44 @@ In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memset(), avoid intentionally writing across
 neighboring fields.
 
-Add a struct_group() for the algs so that memset() can correctly reason
-about the size.
+Add struct_group() to mark region of struct cm4000_dev that should be
+initialized to zero.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/block/drbd/drbd_main.c     | 3 ++-
- drivers/block/drbd/drbd_protocol.h | 6 ++++--
- drivers/block/drbd/drbd_receiver.c | 3 ++-
- 3 files changed, 8 insertions(+), 4 deletions(-)
+ drivers/char/pcmcia/cm4000_cs.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index 55234a558e98..b824679cfcb2 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -729,7 +729,8 @@ int drbd_send_sync_param(struct drbd_peer_device *peer_device)
- 	cmd = apv >= 89 ? P_SYNC_PARAM89 : P_SYNC_PARAM;
+diff --git a/drivers/char/pcmcia/cm4000_cs.c b/drivers/char/pcmcia/cm4000_cs.c
+index 8f1bce0b4fe5..2f43e7088e16 100644
+--- a/drivers/char/pcmcia/cm4000_cs.c
++++ b/drivers/char/pcmcia/cm4000_cs.c
+@@ -116,8 +116,9 @@ struct cm4000_dev {
+ 	wait_queue_head_t atrq;		/* wait for ATR valid */
+ 	wait_queue_head_t readq;	/* used by write to wake blk.read */
  
- 	/* initialize verify_alg and csums_alg */
--	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
-+	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
-+	memset(&p->algs, 0, sizeof(p->algs));
+-	/* warning: do not move this fields.
++	/* warning: do not move this struct group.
+ 	 * initialising to zero depends on it - see ZERO_DEV below.  */
++	struct_group(init,
+ 	unsigned char atr_csum;
+ 	unsigned char atr_len_retry;
+ 	unsigned short atr_len;
+@@ -140,12 +141,10 @@ struct cm4000_dev {
  
- 	if (get_ldev(peer_device->device)) {
- 		dc = rcu_dereference(peer_device->device->ldev->disk_conf);
-diff --git a/drivers/block/drbd/drbd_protocol.h b/drivers/block/drbd/drbd_protocol.h
-index dea59c92ecc1..a882b65ab5d2 100644
---- a/drivers/block/drbd/drbd_protocol.h
-+++ b/drivers/block/drbd/drbd_protocol.h
-@@ -283,8 +283,10 @@ struct p_rs_param_89 {
- 
- struct p_rs_param_95 {
- 	u32 resync_rate;
--	char verify_alg[SHARED_SECRET_MAX];
--	char csums_alg[SHARED_SECRET_MAX];
-+	struct_group(algs,
-+		char verify_alg[SHARED_SECRET_MAX];
-+		char csums_alg[SHARED_SECRET_MAX];
+ 	struct timer_list timer;	/* used to keep monitor running */
+ 	int monitor_running;
 +	);
- 	u32 c_plan_ahead;
- 	u32 c_delay_target;
- 	u32 c_fill_target;
-diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
-index 1f740e42e457..6df2539e215b 100644
---- a/drivers/block/drbd/drbd_receiver.c
-+++ b/drivers/block/drbd/drbd_receiver.c
-@@ -3921,7 +3921,8 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
+ };
  
- 	/* initialize verify_alg and csums_alg */
- 	p = pi->data;
--	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
-+	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
-+	memset(&p->algs, 0, sizeof(p->algs));
+-#define	ZERO_DEV(dev)  						\
+-	memset(&dev->atr_csum,0,				\
+-		sizeof(struct cm4000_dev) - 			\
+-		offsetof(struct cm4000_dev, atr_csum))
++#define	ZERO_DEV(dev)	memset(&dev->init, 0, sizeof(dev->init))
  
- 	err = drbd_recv_all(peer_device->connection, p, header_size);
- 	if (err)
+ static struct pcmcia_device *dev_table[CM4000_MAX_DEV];
+ static struct class *cmm_class;
 -- 
 2.30.2
 
