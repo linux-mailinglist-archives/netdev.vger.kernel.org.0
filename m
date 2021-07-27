@@ -2,185 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315DF3D7DD0
+	by mail.lfdr.de (Postfix) with ESMTP id 1999F3D7DCE
 	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 20:39:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230341AbhG0Si5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 14:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50290 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbhG0Siz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 14:38:55 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CB5C061757;
-        Tue, 27 Jul 2021 11:38:53 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id u12so16652105eds.2;
-        Tue, 27 Jul 2021 11:38:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9ueGDlrIDyyhxrV4NQq28M57e2BsW0VmTFATXW8SVcY=;
-        b=SFxwE+tLmGGaaPvmxvhX9z5KDUoKQRtDV4qSQxtuI7fzII+4jnBizPioauqQH9ek/6
-         +XL/ys4mN8O4yJibD1q+fpTQiXooZtXkKGhSJu1lfzQVfDBqBS/H1ZmhL8OLiAKSlP49
-         peX5nNKO/VtOSyNp+S5putGDvLHzbrSTD+N7Of9/j0GaEHgsq5vXlDoOWp1ZdvRgB/GA
-         0MJQtBHG+P0XlrQlMrH5OUL/Ref9bbNZbASmfNfsZsj6CGNt77JDiA7W6KmWMCaHjzP+
-         B92gpTeQjXvRLxnaPR+FRgD/l+ks/kVS5+dlJLa2ZftTzB2puU+5Tc9bhI24zu3dZYWt
-         Vhwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9ueGDlrIDyyhxrV4NQq28M57e2BsW0VmTFATXW8SVcY=;
-        b=dwKuwCijFe+E8CbjHDV8C8mcTH8cqgI/eIa6VqgWPNV28C0Ky9Sxl2YLrf9qQBykcn
-         We86NmYvhRyzIRfvlcYZuGmySIobZJsq0bVAyKyitDnZXEZpo4mIvYDsZv1GqsEALWih
-         IG4pvMsH2WmdQ0wOjhgcDZGkfTZQAf28mq0jCQwBCR0SvhRnrMQnGFSWjo2e8zBSRGTu
-         nHZbGerCYyhEgsZ1jUS51hQIoYQIxsjM0zfVGFEQBmgmvt7048tYOBTYooyU0TK1/jwI
-         RJbd6l6CaAvq4at7CMUMmJMIGJxxx8xpXTsLXM5pL3ztGjESe/xC49ffycbiRztvRkIw
-         /XIg==
-X-Gm-Message-State: AOAM531yd+PsINwCzKF3a6weP0eHRJFajjQ6UOUD4yGfMEGnmJs1SU25
-        3iKQUzDlD2xECRyGeRXyU3Fxciqd6Jge+scyXBU=
-X-Google-Smtp-Source: ABdhPJwB8FRWS2J5s3syc6/M+EMNaReP0OaIRZlBGLVThpmeTSMNEz5G45mKFfDPXEoD2mggktSf1ht0pmg3nj+wicA=
-X-Received: by 2002:aa7:d703:: with SMTP id t3mr29303497edq.50.1627411132094;
- Tue, 27 Jul 2021 11:38:52 -0700 (PDT)
+        id S230136AbhG0Six (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 14:38:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229581AbhG0Six (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 14:38:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6B61C60F9E;
+        Tue, 27 Jul 2021 18:38:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1627411132;
+        bh=7P1dk2Zya5Hxz/KwAAaJC49En7ygIfIysjTZnKxCPvA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h2ju/8bpR2Yw9THzOV5z3GFnwbg17C1REx2LCLzeeG5RBGFHUn/owLfUTeXNqIg/o
+         Z70mgBSwI7MQ/NrLm/LoVqbaqg4zEDgatBR387cBgwKe7jz06+KvjkEceUXf733uxW
+         PhLlZe3eYtuvN/ZB9UN8WvHeb1pBlwOX8T/vtI+w=
+Date:   Tue, 27 Jul 2021 20:38:50 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andriin@fb.com" <andriin@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "alobakin@pm.me" <alobakin@pm.me>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "ap420073@gmail.com" <ap420073@gmail.com>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "sergey.senozhatsky.work@gmail.com" 
+        <sergey.senozhatsky.work@gmail.com>,
+        "minchan@kernel.org" <minchan@kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "mbenes@suse.com" <mbenes@suse.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        Hannes Reinecke <hare@suse.de>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
+Message-ID: <YQBSutZfhqfTzKQa@kroah.com>
+References: <20210722221905.1718213-1-mcgrof@kernel.org>
+ <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
+ <YQBCvKgH481C7o1c@bombadil.infradead.org>
+ <YQBGemOIF4sp/ges@kroah.com>
+ <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
 MIME-Version: 1.0
-References: <1626752145-27266-1-git-send-email-linyunsheng@huawei.com>
- <1626752145-27266-3-git-send-email-linyunsheng@huawei.com>
- <CAKgT0Uf=WbpngDPQ1V0X+XSJbZ91=cuaz8r_J96=BrXg01PJFA@mail.gmail.com>
- <92e68f4e-49a4-568c-a281-2865b54a146e@huawei.com> <CAKgT0UfwiBowGN+ctqoFZ6qaQAUp-0uGJeukk4OHOEOOfbrEWw@mail.gmail.com>
- <fffae41f-b0a3-3c43-491f-096d31ba94ca@huawei.com> <CAKgT0UcBgo0Ex=x514qGeLvppJr-0vqx9ZngAFDTwugjtKUrOA@mail.gmail.com>
- <41283c5f-2f58-7fa7-e8fe-a91207a57353@huawei.com> <CAKgT0Ud+PRzz7mgX1dru1=i3TDiaGOoyhg7vp6cz+3NzVFZf+A@mail.gmail.com>
- <20210724130709.GA1461@ip-172-31-30-86.us-east-2.compute.internal>
- <CAKgT0UckhFhvmsjNhBM6tX_EUn12NCn--puJkwVUGitk9yZedw@mail.gmail.com> <75213c28-d586-3dfe-c2a7-738af9dd9864@huawei.com>
-In-Reply-To: <75213c28-d586-3dfe-c2a7-738af9dd9864@huawei.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 27 Jul 2021 11:38:40 -0700
-Message-ID: <CAKgT0UcvPaP8AqjiF9eSXSWgnJqGVCNccW-brYeqmkZucpgb8A@mail.gmail.com>
-Subject: Re: [PATCH rfc v6 2/4] page_pool: add interface to manipulate frag
- count in page pool
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Yunsheng Lin <yunshenglin0825@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Marcin Wojtas <mw@semihalf.com>, linuxarm@openeuler.org,
-        yisen.zhuang@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
-        thomas.petazzoni@bootlin.com, hawk@kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, fenghua.yu@intel.com,
-        guro@fb.com, Peter Xu <peterx@redhat.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Willem de Bruijn <willemb@google.com>, wenxu@ucloud.cn,
-        Cong Wang <cong.wang@bytedance.com>,
-        Kevin Hao <haokexin@gmail.com>, nogikh@google.com,
-        Marco Elver <elver@google.com>, Yonghong Song <yhs@fb.com>,
-        kpsingh@kernel.org, andrii@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>, songliubraving@fb.com,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 12:54 AM Yunsheng Lin <linyunsheng@huawei.com> wrot=
-e:
->
-> On 2021/7/26 0:49, Alexander Duyck wrote:
-> > On Sat, Jul 24, 2021 at 6:07 AM Yunsheng Lin <yunshenglin0825@gmail.com=
-> wrote:
-> >>
-> >> On Fri, Jul 23, 2021 at 09:08:00AM -0700, Alexander Duyck wrote:
-> >>> On Fri, Jul 23, 2021 at 4:12 AM Yunsheng Lin <linyunsheng@huawei.com>=
- wrote:
-> >>>>
-> >>>> On 2021/7/22 23:18, Alexander Duyck wrote:
-> >>>>>>>
+On Tue, Jul 27, 2021 at 11:18:03AM -0700, Luis Chamberlain wrote:
+> On Tue, Jul 27, 2021 at 07:46:34PM +0200, gregkh@linuxfoundation.org wrote:
+> > On Tue, Jul 27, 2021 at 10:30:36AM -0700, Luis Chamberlain wrote:
+> > > On Sat, Jul 24, 2021 at 12:15:10PM +0000, David Laight wrote:
+> > > > From: Luis Chamberlain
+> > > > > Sent: 22 July 2021 23:19
+> > > > > 
+> > > > > There is quite a bit of tribal knowledge around proper use of
+> > > > > try_module_get() and that it must be used only in a context which
+> > > > > can ensure the module won't be gone during the operation. Document
+> > > > > this little bit of tribal knowledge.
+> > > > > 
+> > > > ...
+> > > > 
+> > > > Some typos.
+> > > > 
+> > > > > +/**
+> > > > > + * try_module_get - yields to module removal and bumps reference count otherwise
+> > > > > + * @module: the module we should check for
+> > > > > + *
+> > > > > + * This can be used to check if userspace has requested to remove a module,
+> > > >                                                            a module be removed
+> > > > > + * and if so let the caller give up. Otherwise it takes a reference count to
+> > > > > + * ensure a request from userspace to remove the module cannot happen.
+> > > > > + *
+> > > > > + * Care must be taken to ensure the module cannot be removed during
+> > > > > + * try_module_get(). This can be done by having another entity other than the
+> > > > > + * module itself increment the module reference count, or through some other
+> > > > > + * means which gaurantees the module could not be removed during an operation.
+> > > >                   guarantees
+> > > > > + * An example of this later case is using this call in a sysfs file which the
+> > > > > + * module created. The sysfs store / read file operation is ensured to exist
+> > > >                                                             ^^^^^^^^^^^^^^^^^^^
+> > > > Not sure what that is supposed to mean.
+> > > 
+> > > I'll clarify further. How about:
+> > > 
+> > > The sysfs store / read file operations are gauranteed to exist using
+> > > kernfs's active reference (see kernfs_active()).
+> > 
+> > But that has nothing to do with module reference counts.  kernfs knows
+> > nothing about modules.
+> 
+> Yes but we are talking about sysfs files which the module creates. So
+> but inference again, an active reference protects a module.
 
-<snip>
+What active reference?  sysfs creation/removal/rename/whatever right now
+has nothing to do with module reference counts as they are totally
+disconnected.  kernfs has nothing to do with module reference counts
+either.  So I do not know what you are inferring here.
 
-> >>>
-> >>> Rather than trying to reuse the devices page pool it might make more
-> >>> sense to see if you couldn't have TCP just use some sort of circular
-> >>> buffer of memory that is directly mapped for the device that it is
-> >>> going to be transmitting to. Essentially what you would be doing is
-> >>> creating a pre-mapped page and would need to communicate that the
-> >>> memory is already mapped for the device you want to send it to so tha=
-t
-> >>> it could skip that step.
-> >>
-> >> IIUC sk_page_frag_refill() is already doing a similar reusing as the
-> >> rx reusing implemented in most driver except for the not pre-mapping
-> >> part.
-> >>
-> >> And it seems that even if we pre-map the page and communicate that the
-> >> memory is already mapped to the driver, it is likely that we will not
-> >> be able to reuse the page when the circular buffer is not big enough
-> >> or tx completion/tcp ack is not happening quickly enough, which might
-> >> means unmapping/deallocating old circular buffer and allocating/mappin=
-g
-> >> new circular buffer.
-> >>
-> >> Using page pool we might be able to alleviate the above problem as it
-> >> does for rx?
+> > > > So there is a potentially horrid race:
+> > > > The module unload is going to do:
+> > > > 	driver_data->module_ref = 0;
+> > > > and elsewhere there'll be:
+> > > > 	ref = driver_data->module_ref;
+> > > > 	if (!ref || !try_module_get(ref))
+> > > > 		return -error;
+> > > > 
+> > > > You have to have try_module_get() to allow the module unload
+> > > > function to sleep.
+> > > > But the above code still needs a driver lock to ensure the
+> > > > unload code doesn't race with the try_module_get() and the
+> > > > 'ref' be invalidated before try_module_get() looks at it.
+> > > > (eg if an interrupt defers processing.)
+> > > > 
+> > > > So there can be no 'yielding'.
+> > > 
+> > > Oh but there is. Consider access to a random sysfs file 'add_new_device'
+> > > which takes as input a name, for driver foo, and so foo's
+> > > add_new_foobar_device(name="bar") is called. Unless sysfs file
+> > > "yields" by using try_module_get() before trying to add a new
+> > > foo device called "bar", it will essentially be racing with the
+> > > exit routine of module foo, and depending on how locking is implemented
+> > > (most drivers get it wrong), this easily leads to crashes.
+> > > 
+> > > In fact, this documentation patch was motivated by my own solution to a
+> > > possible deadlock when sysfs is used. Using the same example above, if
+> > > the same sysfs file uses *any* lock, which is *also* used on the exit
+> > > routine, you can easily trigger a deadlock. This can happen for example
+> > > by the lock being obtained by the removal routine, then the sysfs file
+> > > gets called, waits for the lock to complete, then the module's exit
+> > > routine starts cleaning up and removing sysfs files, but we won't be
+> > > able to remove the sysfs file (due to kernefs active reference) until
+> > > the sysfs file complets, but it cannot complete because the lock is
+> > > already held.
+> > > 
+> > > Yes, this is a generic problem. Yes I have proof [0]. Yes, a generic
+> > > solution has been proposed [1], and because Greg is not convinced and I
+> > > need to move on with life, I am suggesting a temporary driver specific
+> > > solution (to which Greg is still NACK'ing, without even proposing any
+> > > alternatives) [2].
+> > > 
+> > > [0] https://lkml.kernel.org/r/20210703004632.621662-5-mcgrof@kernel.org
+> > > [1] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com 
+> > > [2] https://lkml.kernel.org/r/20210723174919.ka3tzyre432uilf7@garbanzo
+> > 
+> > My problem with your proposed solution is that it is still racy, you can
+> > not increment your own module reference count from 0 -> 1 and expect it
+> > to work properly.  You need external code to do that somewhere.
+> 
+> You are not providing *any* proof for this.
+
+I did provide proof of that.  Here it is again.
+
+Consider these lines of code:
+
+ 1	int foo(int baz)
+ 2	{
+ 3		int retval
+ 4
+ 5		if (!try_module_get(THIS_MODULE))
+ 6			return -ERROR;
+ 7		retval = do_something(baz)
+ 8		put_module(THIS_MODULE);
+ 9		return retval;
+10	}
+
+Going into the call to foo(), there is no reference held on THIS_MODULE.
+
+Right before line 5 is called (or really, right before the jump to
+try_module_get(), yet still within foo() (i.e. lines 2-4 where you have
+fun stack frames set up, and ftrace hooks, and other nifty things),
+userspace asks for the module to be unloaded, and the module is removed
+from the system and the memory for this code is overwritten with all
+0x00.
+
+Then, we try to call into try_module_get(), but yet, that call
+instruction is gone and boom.
+
+Or better yet, after put_module() is called, the module is unloaded
+_before_ the return happens.  Then we try to make the return jump back,
+but that instruction was overwritten with all 0x00.  Or different code
+because a new module was loaded then.
+
+Yes, your window is smaller, but it is still there, and still can be
+triggered.  That is why in the 2.5 days we removed almost all instances
+of this pattern.  There are still some floating around in the kernel,
+but odds are they are broken because NO ONE TESTS UNLOADING MODULES
+UNDER STRESS.
+
+Except your crazy customer :)
+
+> And even so, I believe I have clarified as best as possible how a
+> kernfs active reference implicitly protects the module when we are
+> talking about sysfs files.
+
+I do not see any link anywhere between kernfs and modules, what am I
+missing?  Pointers to lines of code would be appreciated.
+
+> > Now trying to tie sysfs files to the modules that own them would be
+> > nice, but as we have seen, that way lies way too many kernel changes,
+> > right?
+> 
+> It's not a one-liner fix. Yes.
+> 
+> > Hm, maybe.  Did we think about this from the kobj_attribute level?  If
+> > we use the "wrapper" logic there and the use of the macros we already
+> > have for attributes, we might be able to get the module pointer directly
+> > "for free".
 > >
-> > I would say that instead of looking at going straight for the page
-> > pool it might make more sense to look at seeing if we can coalesce the
-> > DMA mapping of the pages first at the socket layer rather than trying
-> > to introduce the overhead for the page pool. In the case of sockets we
-> > already have the destructors that are called when the memory is freed,
-> > so instead of making sockets use page pool it might make more sense to
-> > extend the socket buffer allocation/freeing to incorporate bulk
-> > mapping and unmapping of pages to optimize the socket Tx path in the
-> > 32K page case.
->
-> I was able to enable tx recycling prototyping based on page pool to
-> run some performance test, the performance improvement is about +20%
-> =EF=BC=8830Gbit -> 38Gbit=EF=BC=89 for single thread iperf tcp flow when =
-IOMMU is in
-> strict mode. And CPU usage descreases about 10% for four threads iperf
-> tcp flow for line speed of 100Gbit when IOMMU is in strict mode.
+> > Did we try that?
+> 
+> That was my hope. I tried that first. Last year in November I determined
+> kernfs is kobject stupid. But more importantly *neither* are struct device
+> specific, so neither of them have semantics for modules or even devices.
 
-That isn't surprising given that for most devices the IOMMU will be
-called per frag which can add a fair bit of overhead.
+But what about at the kobject level?
 
-> Looking at the prototyping code, I am agreed that it is a bit controversi=
-al
-> to use the page pool for tx as the page pool is assuming NAPI polling
-> protection for allocation side.
->
-> So I will take a deeper look about your suggestion above to see how to
-> implement it.
->
-> Also, I am assuming the "destructors" means tcp_wfree() for TCP, right?
-> It seems tcp_wfree() is mainly used to do memory accounting and free
-> "struct sock" if necessary.
+I will try to look at that this week, can't promise anything...
 
-Yes, that is what I was thinking. If we had some way to add something
-like an argument or way to push the information about where the skbs
-are being freed back to the socket the socket could then be looking at
-pre-mapping the pages for the device if we assume a 1:1 mapping from
-the socket to the device.
-
-> I am not so familiar with socket layer to understand how the "destructors=
-"
-> will be helpful here, any detailed idea how to use "destructors" here?
-
-The basic idea is the destructors are called when the skb is orphaned
-or freed. So it might be a good spot to put in any logic to free pages
-from your special pool. The only thing you would need to sort out is
-making certain to bump reference counts appropriately if the skb is
-cloned and the destructor is copied.
+greg k-h
