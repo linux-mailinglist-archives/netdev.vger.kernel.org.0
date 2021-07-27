@@ -2,105 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC1D3D7D40
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 20:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F7AC3D7D4F
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 20:18:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbhG0SQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 14:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        id S229914AbhG0SSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 14:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbhG0SQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 14:16:24 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5FC9C061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 11:16:24 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id q6so337522oiw.7
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 11:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vco8IpmvI6e4OgtXcayTW8PQqRayAHHPZ/9BbWzucA4=;
-        b=KN7/6VIjU3/F+4L3/EZyEx+FP90Tprwrv0m8vVXi0CnormS05ojsXWgodoDjclStRp
-         v/rpN6F23Yvjn1GdoYiP+07pe7wyKSbASEi3wA4Yjn12db1j57L2AK/nB9edsXDJ0oph
-         c2q6vRz4lc9woO8aP3+5WrZpsIHK5vJY5GbXc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vco8IpmvI6e4OgtXcayTW8PQqRayAHHPZ/9BbWzucA4=;
-        b=OvPetdH/CsDZfiv0xNcstnszFuxNMobgZ6BvjK87Cjf41pbt+3+wOf0wGmaUAdWM8o
-         lOyKTfRnA5dkj2AMoYpdhmMDi8yhdj38Pklv6CwJPMoh7cC0ucepdLYGmV93m56Ml8jF
-         5OlZGYE1DGkAWrmNOoUeOqGGh+VbAqzwjZTlQNbvvhX+TWOjI6lvVhcF6gc+yFh5Usuq
-         bSDmQ1Y/MSGDfrqWpjG5IxF+DTBQ5xsjwGjndkjT2s4wepMP8RFYUgxosefOHQKWFCai
-         48UI6AGtYOnhVX5ke8/dvyNeQkkL4/NF8PlaCaRIdF0ul9O9LKg8wvxMgZF9vmjiYG5j
-         T/8Q==
-X-Gm-Message-State: AOAM532CxlMb7R3GM/C8Z5kViQ4IrwIzQc35eLrHh/nNUuB4ohVQpFYS
-        DUPInE3HyLtuzMdUtpWnTW8cssngMO4Kog==
-X-Google-Smtp-Source: ABdhPJzPTA2lI7iOH2VTf4BUhFbDB5KCYgSNQbyHoVPrDWXmebUURldhXEfkOi0fjdSYp1lGmQyFzA==
-X-Received: by 2002:aca:b182:: with SMTP id a124mr3956016oif.87.1627409783826;
-        Tue, 27 Jul 2021 11:16:23 -0700 (PDT)
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com. [209.85.167.170])
-        by smtp.gmail.com with ESMTPSA id z81sm678992oia.41.2021.07.27.11.16.22
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Jul 2021 11:16:23 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id q6so337445oiw.7
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 11:16:22 -0700 (PDT)
-X-Received: by 2002:aca:304f:: with SMTP id w76mr3634238oiw.77.1627409782401;
- Tue, 27 Jul 2021 11:16:22 -0700 (PDT)
+        with ESMTP id S229537AbhG0SSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 14:18:23 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CFCC061760;
+        Tue, 27 Jul 2021 11:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/wH+bt150laCfivNWd1GtrgcQyf1VwVgzN2kPwmqJJo=; b=ygtKXlWcjHlUArlv1um/OmOXYP
+        ZBHc9FJo2URjB5RY2d5YCaJVQcVt/r5ahSiyAYk1yfF60HXKutJrRaQ5kETGpuJks00upJ2c+1GxY
+        Ft0aVq6Ky73sFv8zCSMaqYVrjioU1dQ50B2qjpDbth2cXoZi+D28IrxI7lBbzvMmI9b2i+F/TVVnM
+        ca22l0qbtwpUXOrAR1tVRryUoEkdLdJkOn/+OIZTs+PyGc2DzIIlG/8b7wPp+in4mVN6M5JSlQ0Rf
+        WJbzRobfmiXqZBnC5n4y9DCeRqOls44TUVvgahtJB0/ryljBg2QrpWQjV/kmgd0aqfyb0OBS5/fZS
+        fZOkE4mg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1m8ReV-00FndS-RP; Tue, 27 Jul 2021 18:18:03 +0000
+Date:   Tue, 27 Jul 2021 11:18:03 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "tj@kernel.org" <tj@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andriin@fb.com" <andriin@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "alobakin@pm.me" <alobakin@pm.me>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "ap420073@gmail.com" <ap420073@gmail.com>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "sergey.senozhatsky.work@gmail.com" 
+        <sergey.senozhatsky.work@gmail.com>,
+        "minchan@kernel.org" <minchan@kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "mbenes@suse.com" <mbenes@suse.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        Hannes Reinecke <hare@suse.de>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
+Message-ID: <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
+References: <20210722221905.1718213-1-mcgrof@kernel.org>
+ <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
+ <YQBCvKgH481C7o1c@bombadil.infradead.org>
+ <YQBGemOIF4sp/ges@kroah.com>
 MIME-Version: 1.0
-References: <20210718084202.5118-1-len.baker@gmx.com> <87eebkgt8t.fsf@codeaurora.org>
-In-Reply-To: <87eebkgt8t.fsf@codeaurora.org>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 27 Jul 2021 11:16:11 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXNm_aKAJcJVCx45VqAXTgXjfOju7xZPa_3MAvBzn2r7_w@mail.gmail.com>
-Message-ID: <CA+ASDXNm_aKAJcJVCx45VqAXTgXjfOju7xZPa_3MAvBzn2r7_w@mail.gmail.com>
-Subject: Re: [PATCH v3] rtw88: Remove unnecessary check code
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Len Baker <len.baker@gmx.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Pkshih <pkshih@realtek.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQBGemOIF4sp/ges@kroah.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 26, 2021 at 11:34 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+On Tue, Jul 27, 2021 at 07:46:34PM +0200, gregkh@linuxfoundation.org wrote:
+> On Tue, Jul 27, 2021 at 10:30:36AM -0700, Luis Chamberlain wrote:
+> > On Sat, Jul 24, 2021 at 12:15:10PM +0000, David Laight wrote:
+> > > From: Luis Chamberlain
+> > > > Sent: 22 July 2021 23:19
+> > > > 
+> > > > There is quite a bit of tribal knowledge around proper use of
+> > > > try_module_get() and that it must be used only in a context which
+> > > > can ensure the module won't be gone during the operation. Document
+> > > > this little bit of tribal knowledge.
+> > > > 
+> > > ...
+> > > 
+> > > Some typos.
+> > > 
+> > > > +/**
+> > > > + * try_module_get - yields to module removal and bumps reference count otherwise
+> > > > + * @module: the module we should check for
+> > > > + *
+> > > > + * This can be used to check if userspace has requested to remove a module,
+> > >                                                            a module be removed
+> > > > + * and if so let the caller give up. Otherwise it takes a reference count to
+> > > > + * ensure a request from userspace to remove the module cannot happen.
+> > > > + *
+> > > > + * Care must be taken to ensure the module cannot be removed during
+> > > > + * try_module_get(). This can be done by having another entity other than the
+> > > > + * module itself increment the module reference count, or through some other
+> > > > + * means which gaurantees the module could not be removed during an operation.
+> > >                   guarantees
+> > > > + * An example of this later case is using this call in a sysfs file which the
+> > > > + * module created. The sysfs store / read file operation is ensured to exist
+> > >                                                             ^^^^^^^^^^^^^^^^^^^
+> > > Not sure what that is supposed to mean.
+> > 
+> > I'll clarify further. How about:
+> > 
+> > The sysfs store / read file operations are gauranteed to exist using
+> > kernfs's active reference (see kernfs_active()).
+> 
+> But that has nothing to do with module reference counts.  kernfs knows
+> nothing about modules.
+
+Yes but we are talking about sysfs files which the module creates. So
+but inference again, an active reference protects a module.
+
+> > > So there is a potentially horrid race:
+> > > The module unload is going to do:
+> > > 	driver_data->module_ref = 0;
+> > > and elsewhere there'll be:
+> > > 	ref = driver_data->module_ref;
+> > > 	if (!ref || !try_module_get(ref))
+> > > 		return -error;
+> > > 
+> > > You have to have try_module_get() to allow the module unload
+> > > function to sleep.
+> > > But the above code still needs a driver lock to ensure the
+> > > unload code doesn't race with the try_module_get() and the
+> > > 'ref' be invalidated before try_module_get() looks at it.
+> > > (eg if an interrupt defers processing.)
+> > > 
+> > > So there can be no 'yielding'.
+> > 
+> > Oh but there is. Consider access to a random sysfs file 'add_new_device'
+> > which takes as input a name, for driver foo, and so foo's
+> > add_new_foobar_device(name="bar") is called. Unless sysfs file
+> > "yields" by using try_module_get() before trying to add a new
+> > foo device called "bar", it will essentially be racing with the
+> > exit routine of module foo, and depending on how locking is implemented
+> > (most drivers get it wrong), this easily leads to crashes.
+> > 
+> > In fact, this documentation patch was motivated by my own solution to a
+> > possible deadlock when sysfs is used. Using the same example above, if
+> > the same sysfs file uses *any* lock, which is *also* used on the exit
+> > routine, you can easily trigger a deadlock. This can happen for example
+> > by the lock being obtained by the removal routine, then the sysfs file
+> > gets called, waits for the lock to complete, then the module's exit
+> > routine starts cleaning up and removing sysfs files, but we won't be
+> > able to remove the sysfs file (due to kernefs active reference) until
+> > the sysfs file complets, but it cannot complete because the lock is
+> > already held.
+> > 
+> > Yes, this is a generic problem. Yes I have proof [0]. Yes, a generic
+> > solution has been proposed [1], and because Greg is not convinced and I
+> > need to move on with life, I am suggesting a temporary driver specific
+> > solution (to which Greg is still NACK'ing, without even proposing any
+> > alternatives) [2].
+> > 
+> > [0] https://lkml.kernel.org/r/20210703004632.621662-5-mcgrof@kernel.org
+> > [1] https://lkml.kernel.org/r/20210401235925.GR4332@42.do-not-panic.com 
+> > [2] https://lkml.kernel.org/r/20210723174919.ka3tzyre432uilf7@garbanzo
+> 
+> My problem with your proposed solution is that it is still racy, you can
+> not increment your own module reference count from 0 -> 1 and expect it
+> to work properly.  You need external code to do that somewhere.
+
+You are not providing *any* proof for this. And even so, I believe I
+have clarified as best as possible how a kernfs active reference
+implicitly protects the module when we are talking about sysfs files.
+
+> Now trying to tie sysfs files to the modules that own them would be
+> nice, but as we have seen, that way lies way too many kernel changes,
+> right?
+
+It's not a one-liner fix. Yes.
+
+> Hm, maybe.  Did we think about this from the kobj_attribute level?  If
+> we use the "wrapper" logic there and the use of the macros we already
+> have for attributes, we might be able to get the module pointer directly
+> "for free".
 >
-> Len Baker <len.baker@gmx.com> writes:
->
-> > The rtw_pci_init_rx_ring function is only ever called with a fixed
-> > constant or RTK_MAX_RX_DESC_NUM for the "len" argument. Since this
-> > constant is defined as 512, the "if (len > TRX_BD_IDX_MASK)" check
-> > can never happen (TRX_BD_IDX_MASK is defined as GENMASK(11, 0) or in
-> > other words as 4095).
-> >
-> > So, remove this check.
-> >
-> > Signed-off-by: Len Baker <len.baker@gmx.com>
->
-> Are everyone ok with this version?
+> Did we try that?
 
-I suppose? I'm not really sure where the line should be drawn on
-excessive bounds checking, false warnings from otherwise quite useful
-static analysis tools, etc., but I suppose it doesn't make much sense
-to add additional excess bounds checks just to quiet Coverity.
+That was my hope. I tried that first. Last year in November I determined
+kernfs is kobject stupid. But more importantly *neither* are struct device
+specific, so neither of them have semantics for modules or even devices.
 
-It might be nice to include the true motivation in the patch
-description though, which is: "this also quiets a false warning from
-Coverity".
+> this thread has been going on for so long I can't
+> remember anymore...
 
-Anyway, feel free to pick one of these:
+Please...
 
-Shrug-by: Brian Norris <briannorris@chromium.org>
-
-or
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+  Luis
