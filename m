@@ -2,126 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 585D43D70E1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 10:09:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B123D70FF
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 10:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235958AbhG0IJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 04:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S235955AbhG0IPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 04:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235786AbhG0II6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 04:08:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21529C061765
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 01:08:59 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m8I8w-0006l7-Td; Tue, 27 Jul 2021 10:08:50 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m8I8u-0005sw-OZ; Tue, 27 Jul 2021 10:08:48 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1m8I8u-0004FF-NY; Tue, 27 Jul 2021 10:08:48 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Finn Thain <fthain@linux-m68k.org>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org, linux-m68k@lists.linux-m68k.org
-Subject: [PATCH 2/5] nubus: Make struct nubus_driver::remove return void
-Date:   Tue, 27 Jul 2021 10:08:37 +0200
-Message-Id: <20210727080840.3550927-3-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210727080840.3550927-1-u.kleine-koenig@pengutronix.de>
-References: <20210727080840.3550927-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S235940AbhG0IPi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 04:15:38 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B15CC061757;
+        Tue, 27 Jul 2021 01:15:38 -0700 (PDT)
+Received: from mwalle01.kontron.local (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 090102224A;
+        Tue, 27 Jul 2021 10:15:34 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1627373736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7wzkpiE705hBjrRDTlxVySidFADOCKJFCAvrd4XNPjI=;
+        b=i29QLO2HcWu9ux3wGI/xPUh4OqP8xI0ljTCjO56X+lyDaxldxJg4KvzN0m3pMA5NUJw27X
+        uSDDzZFH+UqfrPswwSua7yRapfj9u1MkUhAUFjxPRX1sn1NyBR69VNYcoATrHJ4sE8bM/9
+        a+f8Pw210QeEK4f689UGzNMy9pa2oYM=
+From:   Michael Walle <michael@walle.cc>
+To:     andrew@lunn.ch
+Cc:     anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
+        davem@davemloft.net, dvorax.fuxbrumer@linux.intel.com,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        jacek.anaszewski@gmail.com, kabel@kernel.org, kuba@kernel.org,
+        kurt@linutronix.de, linux-leds@vger.kernel.org,
+        netdev@vger.kernel.org, pavel@ucw.cz, sasha.neftin@intel.com,
+        vinicius.gomes@intel.com, vitaly.lifshits@intel.com,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
+Date:   Tue, 27 Jul 2021 10:15:28 +0200
+Message-Id: <20210727081528.9816-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <YP9n+VKcRDIvypes@lunn.ch>
+References: <YP9n+VKcRDIvypes@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=JbhrniV2vNHdVwpfhOpuz1F2d1zKsTqaep2udV5D+Zk=; m=x7vdvVMVl5wHK8X7+wGP5Ra6XOkCM87tL3t7TNPTKwg=; p=M8x4NLAOxru7JT+Gx9SxrzxvaGHJbzJ2lK5/w5joXMM=; g=204cfdb681a19c4390cf9518bfe9e7d01d0688de
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmD/vvcACgkQwfwUeK3K7AmgHwf/XLV x9JQnVHroRcWok/CacSA+YekHsCKimEcdiUsdyGeLGVlXSOzdeOWuT1gYG1xhIK7fJo+0Qn4o4PsL huvZUf0dbMWC7xiOh0N81NqP+1bbzfO+A81upPmoyBM7x+FS2Qk3t82mko0vWSJ6+mSIEGLfms9Sq p8aCbw8pakerSHRL1Dm5UFMteSgC1qtmhcLU5l0hPhTFoMWozLu+cpRjQ/FtuyeT83GfPkwRS0emx ODjTxs2FPcpS70Tfn69NucKBYqN5MKyu32ffUPYQf0G0GdmCPJEcRqickNlHeUVs1pvyshjtQ8OAi U0kOupcXhQhncFbDDmifKzU/e5JYapQ==
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam: Yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The nubus core ignores the return value of the remove callback (in
-nubus_device_remove()) and all implementers return 0 anyway.
+>> The last time we discussed this (Andrew, Pavel and I), we've decided
+>> that for ethernet PHY controlled LEDs we want the devicename part
+>> should be something like
+>>    phyN  or  ethphyN  or  ethernet-phyN
+>> with N a number unique for every PHY (a simple atomically increased
+>> integer for every ethernet PHY).
+>
+> We might want to rethink this. PHYs typically have 2 or 3 LEDs. So we
+> want a way to indicate which LED of a PHY it is. So i suspect we will
+> want something like
+>
+> ethphyN-led0, ethphyN-led1, ethphyN-led2.
+>
+> I would also suggest N starts at 42, in order to make it clear it is a
+> made up arbitrary number, it has no meaning other than it is
+> unique. What we don't want is people thinking ethphy0-led0 has
+> anything to do with eth0.
 
-So make it impossible for future drivers to return an unused error code
-by changing the remove prototype to return void.
+Why do we have to distiguish between LEDs connected to the PHY and LEDs
+connected to the MAC at all? Why not just name it ethN either if its behind
+the PHY or the MAC? Does it really matter from the users POV?
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/net/ethernet/8390/mac8390.c     | 3 +--
- drivers/net/ethernet/natsemi/macsonic.c | 4 +---
- include/linux/nubus.h                   | 2 +-
- 3 files changed, 3 insertions(+), 6 deletions(-)
+>> I confess that I am growing a little frustrated here, because there
+>> seems to be no optimal solution with given constraints and no official
+>> consensus for a suboptimal yet acceptable solution.
+>
+> I do think it is clear that the base name is mostly irrelevant and not
+> going to be used in any meaningful way. You are unlikely to access
+> these LEDs via /sys/class/leds. You are going to go into
+> /sys/class/net/<ifname> and then either follow the device symlink, or
+> the phydev symlink and look for LEDs there. And then only the -ledM
+> part of the name might be useful. Since the name is mostly
+> meaningless, we should just decide and move on.
 
-diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
-index 9aac7119d382..91b04abfd687 100644
---- a/drivers/net/ethernet/8390/mac8390.c
-+++ b/drivers/net/ethernet/8390/mac8390.c
-@@ -428,13 +428,12 @@ static int mac8390_device_probe(struct nubus_board *board)
- 	return err;
- }
- 
--static int mac8390_device_remove(struct nubus_board *board)
-+static void mac8390_device_remove(struct nubus_board *board)
- {
- 	struct net_device *dev = nubus_get_drvdata(board);
- 
- 	unregister_netdev(dev);
- 	free_netdev(dev);
--	return 0;
- }
- 
- static struct nubus_driver mac8390_driver = {
-diff --git a/drivers/net/ethernet/natsemi/macsonic.c b/drivers/net/ethernet/natsemi/macsonic.c
-index 2289e1fe3741..8709d700e15a 100644
---- a/drivers/net/ethernet/natsemi/macsonic.c
-+++ b/drivers/net/ethernet/natsemi/macsonic.c
-@@ -603,7 +603,7 @@ static int mac_sonic_nubus_probe(struct nubus_board *board)
- 	return err;
- }
- 
--static int mac_sonic_nubus_remove(struct nubus_board *board)
-+static void mac_sonic_nubus_remove(struct nubus_board *board)
- {
- 	struct net_device *ndev = nubus_get_drvdata(board);
- 	struct sonic_local *lp = netdev_priv(ndev);
-@@ -613,8 +613,6 @@ static int mac_sonic_nubus_remove(struct nubus_board *board)
- 			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
- 			  lp->descriptors, lp->descriptors_laddr);
- 	free_netdev(ndev);
--
--	return 0;
- }
- 
- static struct nubus_driver mac_sonic_nubus_driver = {
-diff --git a/include/linux/nubus.h b/include/linux/nubus.h
-index eba50b057f6f..392fc6c53e96 100644
---- a/include/linux/nubus.h
-+++ b/include/linux/nubus.h
-@@ -86,7 +86,7 @@ extern struct list_head nubus_func_rsrcs;
- struct nubus_driver {
- 	struct device_driver driver;
- 	int (*probe)(struct nubus_board *board);
--	int (*remove)(struct nubus_board *board);
-+	void (*remove)(struct nubus_board *board);
- };
- 
- extern struct bus_type nubus_bus_type;
--- 
-2.30.2
+Even more if it is not relevant ;)
 
+-michael
