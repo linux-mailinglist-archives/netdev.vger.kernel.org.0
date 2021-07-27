@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97BC53D7FC1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0994B3D7FCE
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232169AbhG0U7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        id S232607AbhG0U7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232212AbhG0U7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:59:05 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9874CC061799
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:03 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id j1so1780734pjv.3
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:03 -0700 (PDT)
+        with ESMTP id S232376AbhG0U7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:59:06 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14894C061765
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id a4-20020a17090aa504b0290176a0d2b67aso6632277pjq.2
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:59:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7nuFdIglNEHNCZJ4OURvNLaS8oKexf2Xbsw8tAobRMI=;
-        b=fXdIa5xzPdxqW9JkE+8PrL7R3HOjzt/uPGhXwllYH14fLZCAy6MK5N+Aom2hlW1RLu
-         LzaLP/I2bdBUasKo/LWt7kuMLca0bx1GK2a8LA0g1v3rpw0p8gJnsxnOKfkunXhaof5t
-         +9cGUtaq4+nJifYIALqVfSUNMPZBcUPcyBLJc=
+        bh=HpqGAKzdyVBA/Xfwi2YIWzNMC8MxbuJr9wu4OHi5PCI=;
+        b=b9n3PLWe+yZgButmI22wyxu+eeyOUhPxCDUEfynBqPyMnsrnYQiVExI+J4v3rxE5/o
+         G8J1IXNU0m0vNz/8YTkfJoaVZZj0wRBYaQuAJPoofDusamLFunZmfD45sWLn68LLU6JA
+         BeETDRJ6OBfY6C94RhaCenx0bdi00zda2HbHY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7nuFdIglNEHNCZJ4OURvNLaS8oKexf2Xbsw8tAobRMI=;
-        b=bL2cDiCKz5C7UxE0vjFRosz/lj+P3K5iVZpa1suXn4lx9S2/MEqz2ZdlJe78+uNeZI
-         mf8c6qRAxhtKiWGC2d5sGI3BuAXbK1ofIqaOTydGTDm9Q1Pj1yIl11faro9Gom9yR08k
-         VGeLhir80xthLkQgTdamGtzkmbsAn6xriV+q7sYZkCZlyxLYVXkwXqIZZer0RRbapS16
-         8iSDcHJnjA/KcqjLw4v+gcIDDy2ApjMbIBIZIghVzthVkB7HVG2AM1wl27BLo1XHEB2Y
-         gjSgq3ST/UgimX8OJkG80Sk4MtlTJGvom32TRtmxwiUx5DqQhw+bkReblhxqUBdZpYYf
-         UIsA==
-X-Gm-Message-State: AOAM5300QO60MNDK4ftF91omCLxlrenRd8qxYs/nKy3tn3SdbF0fJrzP
-        LASPInEel7/vUtj8j8t6fB5TOLaTDKLYUgqI
-X-Google-Smtp-Source: ABdhPJxucZUfEOCwFmOc5wsWAybtREO6GX9yQ3Vd7QeNwkxYfGm08yYOn/RWC1L2rMGwaMab2R+i4g==
-X-Received: by 2002:a17:90a:af8c:: with SMTP id w12mr12989398pjq.109.1627419543028;
-        Tue, 27 Jul 2021 13:59:03 -0700 (PDT)
+        bh=HpqGAKzdyVBA/Xfwi2YIWzNMC8MxbuJr9wu4OHi5PCI=;
+        b=bNCmrV/07jr1/jGNtO8ygrY3YScmwVS94fDWWBTYhBC1OuHhg+0rqT6XPcXPiDUuG8
+         ikponj4NwykqQu9aC4xcxy69mP5ZXXQLgbjJQUuCuChV1VmqAET8mJndCtE1W60uNwob
+         7UwsRiXFvazeHd+iTsPz/OhkjY4G62w0Za1ICAByV0clKsa9Max2fX9/5qSK5VqYJxTv
+         ns68BObK9fo9MaH5d5wP7+xya8YRx5+e8JAN/pKAuAz0pRsWlnArJUwiOJ7Fm5b6PTVG
+         P0FohlDkr+Cbn89Hqnccq7RnQhcUcVQSOkowQFnvtiRLgYyOikfmnktcOcSrs9ymDvyj
+         C85A==
+X-Gm-Message-State: AOAM533MzcI7f8dqqZowZ/0OA5Zu7MLiiggWTpvQDTtXZEzMO5u0D0rg
+        2FykcP25bGH5lVyCrodS+H17PA==
+X-Google-Smtp-Source: ABdhPJwDSoBnYuvYRba1s+KLi8H28OXxuTeCqk1M8Bi6vVkOBrXn2p1i6DPX5y3V6fg7nYwJU2Ltsg==
+X-Received: by 2002:a05:6a00:1391:b029:347:168f:1be7 with SMTP id t17-20020a056a001391b0290347168f1be7mr25305700pfg.70.1627419544638;
+        Tue, 27 Jul 2021 13:59:04 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id i1sm3849350pjs.31.2021.07.27.13.59.02
+        by smtp.gmail.com with ESMTPSA id z11sm547955pjq.13.2021.07.27.13.59.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 27 Jul 2021 13:59:02 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy() region
-Date:   Tue, 27 Jul 2021 13:57:52 -0700
-Message-Id: <20210727205855.411487-2-keescook@chromium.org>
+Subject: [PATCH 02/64] mac80211: Use flex-array for radiotap header bitmap
+Date:   Tue, 27 Jul 2021 13:57:53 -0700
+Message-Id: <20210727205855.411487-3-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4703; h=from:subject; bh=LCf4h7e2PK4sOgvQBd73gWCkmhRKJC4tH4kH78fVevA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOAJSAPyozNrKWpqJWAzYod2fmvBM+4l2MwYKWh O4ocQxiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgAAKCRCJcvTf3G3AJoP0D/ 9KTuhNSJSjVRPOJFWeuepSlknmUmM/K2t4MDDXqOX/kDkR2wcXh6ttU5lVNW0YgBjHXAF5eWLYpPt5 XHm/KeoOX2MLhuXazp4Ti4YBKlziUsZTs5O6dl8oGQF8vvSOgQVD4x549qIJAaUMy/Q9HqWzVqq85p yP3Plkr/yT7Fr9RDFQxzPqOdsDFBoD1ZLcppau6vdTB0PZWIhyCpFYq2uKiDluWvj75Xhxrp9micdg U2R1bGYEEaNcOOSkguLQYe0+7XbhyY11oRTvhbZEZRUrrqPf99XF/yF1XvvLi6e8z/hVvbVGsEd8Mv Qiu6hKrvxmLG/6Gu1PUewl4RyNN90iXJ3Rh3zLatEPwPBHAFaGnBpr5RP4Ntn7iSsskKZBwlebvul7 dZxKtji4NE+xbeZup0zNKAjAcLeI8QVdmPiAbeqCybdrJc75zf4LhhuDwRXTdbrsXCooEGGuiMw3/v x+EUAxYAP0mwGpMCMNzDB9dpyGAKbRXmGfGhZu9JSilm3k8JsxQ47nQ3+PU4JxTEAGP/RA6CAwR6zV 7KB5mLzU0yyN2b7Az2uKl0RkeneD9qcEy0xqorM/qFH7O+d020ljiEXSwPXdgJdOF7fiAdpmoeK2uM 3RKFyedkYhLmnhtvfdEg6qb1tMNiC33AbBzVnm8LJMBkL2upkdQjzlsDvzsA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3134; h=from:subject; bh=5kQsK42FaWrxRPo6tG17S0vU5dwTXkF5YJ2Hl+bjQYs=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOASZA2wSHJdmV0oArAVWb1HVe/NAsbCB3ibAr6 bxRmCeCJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgAAKCRCJcvTf3G3AJucAD/ 9WI40Y8DsttY+40HaEXLlcd6Xryj8yJoVYK9d3gFpDvBSXYBI3VB3m525SOa2sCJC28jHTFRiHhMP6 huqw/nIdms4tjuS8pOZ+DGwzggPQcPgixq4hWdvWbXbeWvQ8mzb3g3NqUh7MCUUYaHd0XZHxeZEa68 KBhKJTR1IzAMdGAY+67PouIo4YzyBaBznnCQb+NLdIUlfT6t8W4CZN8+AQx4EbaO/u03il9VH+AfXK zdL7aZ+v+6RlA8EstG3CnlY/VnSeo0q9XrTH0Q56zymAeoXPIKieJGMZFa6iM2gjIrRUcDFGpVhu7C FZJrEnBqWU+ZIq8c+Zv+XxxBR1dgFsXNeW0wYvt3oXMHiOFT6xXQ9AnpctZU8KlMtct/hdjCaZw4oR 6asBqobuZZVyim88vDBe4PCm0P2lmf5t8CRqSL58iOkzZjRIH+nNwtC8icwiMHZbEOgdBWJYI4n844 m7nJHNp9t3NKdyBYEy6/4q2ExNfaSeCS36fcueGEcPaVGU6/xc4bbPtOCUCt/ocW7/1gVWfDLaGod7 erVQcNz7hMISnSKfJsI54OZh2ah7BqVzDbpCwCewNsGxodKlGatSWB6nfpU2DxvtQKgn0q2ExYIS5K sH5r2wLmmPf369ln2Cl1YKvhBYGnsOEMQkCSbYctGbRwD2e8tiHtSiSMTzJw==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -71,145 +71,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for FORTIFY_SOURCE performing compile-time and run-time
 field bounds checking for memcpy(), memmove(), and memset(), avoid
-intentionally writing across neighboring fields.  Wrap the target region
-in a common named structure. This additionally fixes a theoretical
-misalignment of the copy (since the size of "buf" changes between 64-bit
-and 32-bit, but this is likely never built for 64-bit).
+intentionally writing across neighboring fields.
 
-FWIW, I think this code is totally broken on 64-bit (which appears to
-not be a "real" build configuration): it would either always fail (with
-an uninitialized data->buf_size) or would cause corruption in userspace
-due to the copy_to_user() in the call path against an uninitialized
-data->buf value:
+The it_present member of struct ieee80211_radiotap_header is treated as a
+flexible array (multiple u32s can be conditionally present). In order for
+memcpy() to reason (or really, not reason) about the size of operations
+against this struct, use of bytes beyond it_present need to be treated
+as part of the flexible array. Add a union/struct to contain the new
+"bitmap" member, for use with trailing presence bitmaps and arguments.
 
-omap3isp_stat_request_statistics_time32(...)
-    struct omap3isp_stat_data data64;
-    ...
-    omap3isp_stat_request_statistics(stat, &data64);
+Additionally improve readability in the iterator code which walks
+through the bitmaps and arguments.
 
-int omap3isp_stat_request_statistics(struct ispstat *stat,
-                                     struct omap3isp_stat_data *data)
-    ...
-    buf = isp_stat_buf_get(stat, data);
-
-static struct ispstat_buffer *isp_stat_buf_get(struct ispstat *stat,
-                                               struct omap3isp_stat_data *data)
-...
-    if (buf->buf_size > data->buf_size) {
-            ...
-            return ERR_PTR(-EINVAL);
-    }
-    ...
-    rval = copy_to_user(data->buf,
-                        buf->virt_addr,
-                        buf->buf_size);
-
-Regardless, additionally initialize data64 to be zero-filled to avoid
-undefined behavior.
-
-Fixes: 378e3f81cb56 ("media: omap3isp: support 64-bit version of omap3isp_stat_data")
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/media/platform/omap3isp/ispstat.c |  5 +--
- include/uapi/linux/omap3isp.h             | 44 +++++++++++++++++------
- 2 files changed, 36 insertions(+), 13 deletions(-)
+ include/net/ieee80211_radiotap.h | 24 ++++++++++++++++++++----
+ net/mac80211/rx.c                |  2 +-
+ net/wireless/radiotap.c          |  5 ++---
+ 3 files changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
-index 5b9b57f4d9bf..ea8222fed38e 100644
---- a/drivers/media/platform/omap3isp/ispstat.c
-+++ b/drivers/media/platform/omap3isp/ispstat.c
-@@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
- int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
- 					struct omap3isp_stat_data_time32 *data)
- {
--	struct omap3isp_stat_data data64;
-+	struct omap3isp_stat_data data64 = { };
- 	int ret;
+diff --git a/include/net/ieee80211_radiotap.h b/include/net/ieee80211_radiotap.h
+index c0854933e24f..101c1e961032 100644
+--- a/include/net/ieee80211_radiotap.h
++++ b/include/net/ieee80211_radiotap.h
+@@ -39,10 +39,26 @@ struct ieee80211_radiotap_header {
+ 	 */
+ 	__le16 it_len;
  
- 	ret = omap3isp_stat_request_statistics(stat, &data64);
-@@ -521,7 +521,8 @@ int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
- 
- 	data->ts.tv_sec = data64.ts.tv_sec;
- 	data->ts.tv_usec = data64.ts.tv_usec;
--	memcpy(&data->buf, &data64.buf, sizeof(*data) - sizeof(data->ts));
-+	data->buf = (uintptr_t)data64.buf;
-+	memcpy(&data->frame, &data64.buf, sizeof(data->frame));
- 
- 	return 0;
- }
-diff --git a/include/uapi/linux/omap3isp.h b/include/uapi/linux/omap3isp.h
-index 87b55755f4ff..0a16af91621f 100644
---- a/include/uapi/linux/omap3isp.h
-+++ b/include/uapi/linux/omap3isp.h
-@@ -159,13 +159,25 @@ struct omap3isp_h3a_aewb_config {
- };
- 
- /**
-- * struct omap3isp_stat_data - Statistic data sent to or received from user
-- * @ts: Timestamp of returned framestats.
-- * @buf: Pointer to pass to user.
-+ * struct omap3isp_stat_frame - Statistic data without timestamp nor pointer.
-+ * @buf_size: Size of buffer.
-  * @frame_number: Frame number of requested stats.
-  * @cur_frame: Current frame number being processed.
-  * @config_counter: Number of the configuration associated with the data.
-  */
-+struct omap3isp_stat_frame {
-+	__u32 buf_size;
-+	__u16 frame_number;
-+	__u16 cur_frame;
-+	__u16 config_counter;
-+};
+-	/**
+-	 * @it_present: (first) present word
+-	 */
+-	__le32 it_present;
++	union {
++		/**
++		 * @it_present: (first) present word
++		 */
++		__le32 it_present;
 +
-+/**
-+ * struct omap3isp_stat_data - Statistic data sent to or received from user
-+ * @ts: Timestamp of returned framestats.
-+ * @buf: Pointer to pass to user.
-+ * @frame: Statistic data for frame.
-+ */
- struct omap3isp_stat_data {
- #ifdef __KERNEL__
- 	struct {
-@@ -176,10 +188,15 @@ struct omap3isp_stat_data {
- 	struct timeval ts;
- #endif
- 	void __user *buf;
--	__u32 buf_size;
--	__u16 frame_number;
--	__u16 cur_frame;
--	__u16 config_counter;
-+	union {
 +		struct {
-+			__u32 buf_size;
-+			__u16 frame_number;
-+			__u16 cur_frame;
-+			__u16 config_counter;
++			/* The compiler makes it difficult to overlap
++			 * a flex-array with an existing singleton,
++			 * so we're forced to add an empty named
++			 * variable here.
++			 */
++			struct { } __unused;
++
++			/**
++			 * @bitmap: all presence bitmaps
++			 */
++			__le32 bitmap[];
 +		};
-+		struct omap3isp_stat_frame frame;
 +	};
- };
+ } __packed;
  
- #ifdef __KERNEL__
-@@ -189,10 +206,15 @@ struct omap3isp_stat_data_time32 {
- 		__s32	tv_usec;
- 	} ts;
- 	__u32 buf;
--	__u32 buf_size;
--	__u16 frame_number;
--	__u16 cur_frame;
--	__u16 config_counter;
-+	union {
-+		struct {
-+			__u32 buf_size;
-+			__u16 frame_number;
-+			__u16 cur_frame;
-+			__u16 config_counter;
-+		};
-+		struct omap3isp_stat_frame frame;
-+	};
- };
- #endif
+ /* version is always 0 */
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 2563473b5cf1..0d959a98e908 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -328,7 +328,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
  
+ 	rthdr = skb_push(skb, rtap_len);
+ 	memset(rthdr, 0, rtap_len - rtap.len - rtap.pad);
+-	it_present = &rthdr->it_present;
++	it_present = rthdr->bitmap;
+ 
+ 	/* radiotap header, set always present flags */
+ 	rthdr->it_len = cpu_to_le16(rtap_len);
+diff --git a/net/wireless/radiotap.c b/net/wireless/radiotap.c
+index 36f1b59a78bf..9f4f1a772964 100644
+--- a/net/wireless/radiotap.c
++++ b/net/wireless/radiotap.c
+@@ -115,10 +115,9 @@ int ieee80211_radiotap_iterator_init(
+ 	iterator->_max_length = get_unaligned_le16(&radiotap_header->it_len);
+ 	iterator->_arg_index = 0;
+ 	iterator->_bitmap_shifter = get_unaligned_le32(&radiotap_header->it_present);
+-	iterator->_arg = (uint8_t *)radiotap_header + sizeof(*radiotap_header);
++	iterator->_arg = (uint8_t *)&radiotap_header->bitmap[1];
+ 	iterator->_reset_on_ext = 0;
+-	iterator->_next_bitmap = &radiotap_header->it_present;
+-	iterator->_next_bitmap++;
++	iterator->_next_bitmap = &radiotap_header->bitmap[1];
+ 	iterator->_vns = vns;
+ 	iterator->current_namespace = &radiotap_ns;
+ 	iterator->is_radiotap_ns = 1;
 -- 
 2.30.2
 
