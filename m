@@ -2,151 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46BE53D6AE3
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B3C3D6B0D
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 02:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234528AbhGZXde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Jul 2021 19:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        id S234403AbhGZXt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Jul 2021 19:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbhGZXdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:33:32 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F828C0613CF
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 17:13:59 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id l19so15386741pjz.0
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 17:13:59 -0700 (PDT)
+        with ESMTP id S233843AbhGZXtx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Jul 2021 19:49:53 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC67C061757;
+        Mon, 26 Jul 2021 17:30:20 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id k65so13189897yba.13;
+        Mon, 26 Jul 2021 17:30:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xo9oCszY1wVSWInM0N7RJBmIw+UR++7bOEyCFX9CQVQ=;
-        b=vcxr6Bp52vuJqZKpdg4hum40i3CMKesCveNDgYa8huCyO9U2GHZo/oETvUej5xfQMC
-         QMOqw+vNe024kjRgE0Q+IyBzyDsMMwCancCV+2g5nOWkt+bpiw88nFRFZuNJHbddzSUH
-         nrZAo5f8kM0vS3GdooEm6RZquOdAZCBOZRvy3f9BZNLMcFdebz0JwvLunyJLY68wsLlr
-         4jg+NcyTi4AXukjyXVW8SS/LkrUBtQrNwdAHafADCEFlTUn1ntelRf3/1UuE8ClxokZ1
-         7Bymesqb8/y9K0xyi9W66qlF9Gk2sD9tgVkrhgeE2fVPKSL7fsvHzjHIXl5DD0RhY6Eu
-         KsoA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WlahV91siRimjn5Od4QMmgRdTNqfaI93h5YP2ufAleM=;
+        b=bRRDCCRM8Ysc/7n8ReGL7u0AZT6YqOT90xC4edP0CLn9VnnVFxzKJTY+nfBRtYZo+7
+         fkNyQ/On/WId3txLmG5Lw4YuqaAAvAvUc1hcAsGQUfhkUd2tuQBMJuiAXdolDAswX9WT
+         O+XaP8eKp0EcvzsoaH6LOZt5/AwckAt3RXDlHqJH9RSc2xyC12nOO6OYNpS4difxYyHY
+         RpB85toIYVM7AxfOUwaShKbkBUsEqt3mcrVOCk1jB6w/0OVpmG+e9uG3zKQHFbeZB+vo
+         gspifWERbt31O4wtJeqVNxgaQxupY5TUqHeq5i+JErPIKZ4aGknytJ3lzryKAGfnw7HQ
+         F5nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xo9oCszY1wVSWInM0N7RJBmIw+UR++7bOEyCFX9CQVQ=;
-        b=Uh2sxZOjyaifVrBZRfPP6FLel948e+MD3jUOMoNpU65T+MbPdVD6sDBynuvWeuWBBO
-         hnUW5Bdw2UPoCj9MsR74dM8JR6pNqa2dDXcyGAESCHoVkche1RL5qsCDRmSpC3ftMQvB
-         feowf216HU89c5qc9np0AZNLM1EzLJfNh03ckwL3BjZUKYeP64+IGD1lXlMI8i4yluCX
-         h9QKWIG7hFJ04Ef7jhfse5OQ0kMTy/P9PpVgZONh2G90uvCc6eTdrS50vSp/bB4QDSw+
-         r5ieC48RQ+wdhihFjz7HvQZlJ3B64ij9tJufwK4jw2P2dKnoGPRaCB+iSq6n2JqgHcY4
-         KL5w==
-X-Gm-Message-State: AOAM530MJedaYLLQ+nM4AZpYIRb3NJ5G/XO08dsk/gEMtfC9Aj6cnPSo
-        MYDyPV9uGZXu6KyChSSNtoqKaZ85Nyn9XA==
-X-Google-Smtp-Source: ABdhPJxk7OPz3nTHlyYT9hlVowvjF7NZpw6KpnYY0OhXTszRPIdQqtim4HBtJs/yOjmDQwWypIsAIA==
-X-Received: by 2002:a63:494d:: with SMTP id y13mr21174753pgk.248.1627344838812;
-        Mon, 26 Jul 2021 17:13:58 -0700 (PDT)
-Received: from ip-10-124-121-13.byted.org (ec2-54-241-92-238.us-west-1.compute.amazonaws.com. [54.241.92.238])
-        by smtp.gmail.com with ESMTPSA id k1sm1079452pga.70.2021.07.26.17.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jul 2021 17:13:58 -0700 (PDT)
-From:   Jiang Wang <jiang.wang@bytedance.com>
-To:     netdev@vger.kernel.org
-Cc:     cong.wang@bytedance.com, duanxiongchun@bytedance.com,
-        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v1 5/5] selftest/bpf: add new tests in sockmap for unix stream to tcp.
-Date:   Tue, 27 Jul 2021 00:12:52 +0000
-Message-Id: <20210727001252.1287673-6-jiang.wang@bytedance.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210727001252.1287673-1-jiang.wang@bytedance.com>
-References: <20210727001252.1287673-1-jiang.wang@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WlahV91siRimjn5Od4QMmgRdTNqfaI93h5YP2ufAleM=;
+        b=PV/RzWzMG1aqZ/G4QIPvMu15APdK3h1VFon4299I4Yfv+ivArg1LgOSGv8s4pe9DTp
+         vCMOSzpMk/ODTtOfp2fumdFT8r4Ae0x6u26LDR6Yg3QPajMVCT+icp4OA/D74Rbuo8xs
+         H2R319K2hpDKYtpgDSdHLddt2tcTvQD2lP0fCgIN4iTq/DPe9UGRO4ctK+NY/8gTJSq8
+         GU4gu/Ooeq36XDGs6qOHORp37Yiet16WNyZYGD90FL346JLHB8jAO2tbHvqDhGBKnAt/
+         VMVmsfVkcgQjA7dX83CEQv3KPYzuiSHeLW7H6ij48DqPpW2sJ41xP94lofnCkGsB9+kP
+         tONQ==
+X-Gm-Message-State: AOAM530gbHw3zokM0SSsHE3UzqHh655KbIV3kj4y4qs+4QDY810M4ZM3
+        0zERmFJ/lQtxjfkSH98JsDv2dlGaqPf3vZNDRjI=
+X-Google-Smtp-Source: ABdhPJxZXKGNSaIrmlXFd3lcCt8NDgz2o2kpO2hUE/I853+pYfA0WyPWplCnDd23A21flqbjJWotxIXUBVpOWxpK1xk=
+X-Received: by 2002:a25:8205:: with SMTP id q5mr27524628ybk.440.1627345819451;
+ Mon, 26 Jul 2021 17:30:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210721093832.78081-1-desmondcheongzx@gmail.com> <20210721093832.78081-2-desmondcheongzx@gmail.com>
+In-Reply-To: <20210721093832.78081-2-desmondcheongzx@gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Mon, 26 Jul 2021 17:30:08 -0700
+Message-ID: <CABBYNZLus8GyPuTp4jmAeSEdsYTZ-4gK6OvGXqcABhci8tBOwA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] Bluetooth: fix inconsistent lock state in SCO
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, matthieu.baerts@tessares.net,
+        stefan@datenfreihafen.org,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        skhan@linuxfoundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two new test cases in sockmap tests, where unix stream is
-redirected to tcp and vice versa.
+Hi Desmond,
 
-Signed-off-by: Jiang Wang <jiang.wang@bytedance.com>
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>.
----
- .../selftests/bpf/prog_tests/sockmap_listen.c    | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+On Wed, Jul 21, 2021 at 2:39 AM Desmond Cheong Zhi Xi
+<desmondcheongzx@gmail.com> wrote:
+>
+> Syzbot reported an inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock
+> usage in sco_conn_del and sco_sock_timeout that could lead to
+> deadlocks.
+>
+> This inconsistent lock state can also happen in sco_conn_ready,
+> rfcomm_connect_ind, and bt_accept_enqueue.
+>
+> The issue is that these functions take a spin lock on the socket with
+> interrupts enabled, but sco_sock_timeout takes the lock in an IRQ
+> context. This could lead to deadlocks:
+>
+>        CPU0
+>        ----
+>   lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>   <Interrupt>
+>     lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-index 07ed8081f..afa14fb66 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-@@ -1884,7 +1884,7 @@ static void inet_unix_redir_to_connected(int family, int type, int sock_mapfd,
- 	xclose(p0);
- }
- 
--static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void inet_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1899,9 +1899,13 @@ static void udp_unix_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_EGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	inet_unix_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				    REDIR_INGRESS);
-+	inet_unix_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				    REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1961,7 +1965,7 @@ static void unix_inet_redir_to_connected(int family, int type, int sock_mapfd,
- 
- }
- 
--static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
-+static void unix_inet_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 					    struct bpf_map *inner_map, int family)
- {
- 	int verdict = bpf_program__fd(skel->progs.prog_skb_verdict);
-@@ -1976,9 +1980,13 @@ static void unix_udp_skb_redir_to_connected(struct test_sockmap_listen *skel,
- 	skel->bss->test_ingress = false;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_EGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_EGRESS);
- 	skel->bss->test_ingress = true;
- 	unix_inet_redir_to_connected(family, SOCK_DGRAM, sock_map, verdict_map,
- 				     REDIR_INGRESS);
-+	unix_inet_redir_to_connected(family, SOCK_STREAM, sock_map, verdict_map,
-+				     REDIR_INGRESS);
- 
- 	xbpf_prog_detach2(verdict, sock_map, BPF_SK_SKB_VERDICT);
- }
-@@ -1994,8 +2002,8 @@ static void test_udp_unix_redir(struct test_sockmap_listen *skel, struct bpf_map
- 	snprintf(s, sizeof(s), "%s %s %s", map_name, family_name, __func__);
- 	if (!test__start_subtest(s))
- 		return;
--	udp_unix_skb_redir_to_connected(skel, map, family);
--	unix_udp_skb_redir_to_connected(skel, map, family);
-+	inet_unix_skb_redir_to_connected(skel, map, family);
-+	unix_inet_skb_redir_to_connected(skel, map, family);
- }
- 
- static void run_tests(struct test_sockmap_listen *skel, struct bpf_map *map,
+Having a second look at this, it does seem this is due to use of
+sk->sk_timer which apparently run its callback on IRQ context, so I
+wonder if wouldn't be a better idea to switch to a delayed_work to
+avoid having to deal with the likes of local_bh_disable, in fact it
+seems we have been misusing it since the documentation says it is for
+sock cleanup not for handling things like SNDTIMEO, we don't really
+use it for other socket types so I wonder when we start using
+delayed_work we forgot about sco.c.
+
+>  *** DEADLOCK ***
+>
+> We fix this by ensuring that local bh is disabled before calling
+> bh_lock_sock.
+>
+> After doing this, we additionally need to protect sco_conn_lock by
+> disabling local bh.
+>
+> This is necessary because sco_conn_del makes a call to sco_chan_del
+> while holding on to the sock lock, and sco_chan_del itself makes a
+> call to sco_conn_lock. If sco_conn_lock is held elsewhere with
+> interrupts enabled, there could still be a
+> slock-AF_BLUETOOTH-BTPROTO_SCO --> &conn->lock#2 lock inversion as
+> follows:
+>
+>         CPU0                    CPU1
+>         ----                    ----
+>    lock(&conn->lock#2);
+>                                 local_irq_disable();
+>                                 lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>                                 lock(&conn->lock#2);
+>    <Interrupt>
+>      lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>
+>   *** DEADLOCK ***
+>
+> Although sco_conn_del disables local bh before calling sco_chan_del,
+> we can still wrap the calls to sco_conn_lock in sco_chan_del, with
+> local_bh_disable/enable as this pair of functions are reentrant.
+>
+> Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+> Tested-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+> ---
+>  net/bluetooth/sco.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>
+> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> index 3bd41563f118..34f3419c3330 100644
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -140,10 +140,12 @@ static void sco_chan_del(struct sock *sk, int err)
+>         BT_DBG("sk %p, conn %p, err %d", sk, conn, err);
+>
+>         if (conn) {
+> +               local_bh_disable();
+>                 sco_conn_lock(conn);
+>                 conn->sk = NULL;
+>                 sco_pi(sk)->conn = NULL;
+>                 sco_conn_unlock(conn);
+> +               local_bh_enable();
+>
+>                 if (conn->hcon)
+>                         hci_conn_drop(conn->hcon);
+> @@ -167,16 +169,22 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+>         BT_DBG("hcon %p conn %p, err %d", hcon, conn, err);
+>
+>         /* Kill socket */
+> +       local_bh_disable();
+>         sco_conn_lock(conn);
+>         sk = conn->sk;
+>         sco_conn_unlock(conn);
+> +       local_bh_enable();
+>
+>         if (sk) {
+>                 sock_hold(sk);
+> +
+> +               local_bh_disable();
+>                 bh_lock_sock(sk);
+>                 sco_sock_clear_timer(sk);
+>                 sco_chan_del(sk, err);
+>                 bh_unlock_sock(sk);
+> +               local_bh_enable();
+> +
+>                 sco_sock_kill(sk);
+>                 sock_put(sk);
+>         }
+> @@ -202,6 +210,7 @@ static int sco_chan_add(struct sco_conn *conn, struct sock *sk,
+>  {
+>         int err = 0;
+>
+> +       local_bh_disable();
+>         sco_conn_lock(conn);
+>         if (conn->sk)
+>                 err = -EBUSY;
+> @@ -209,6 +218,7 @@ static int sco_chan_add(struct sco_conn *conn, struct sock *sk,
+>                 __sco_chan_add(conn, sk, parent);
+>
+>         sco_conn_unlock(conn);
+> +       local_bh_enable();
+>         return err;
+>  }
+>
+> @@ -303,9 +313,11 @@ static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
+>  {
+>         struct sock *sk;
+>
+> +       local_bh_disable();
+>         sco_conn_lock(conn);
+>         sk = conn->sk;
+>         sco_conn_unlock(conn);
+> +       local_bh_enable();
+>
+>         if (!sk)
+>                 goto drop;
+> @@ -420,10 +432,12 @@ static void __sco_sock_close(struct sock *sk)
+>                 if (sco_pi(sk)->conn->hcon) {
+>                         sk->sk_state = BT_DISCONN;
+>                         sco_sock_set_timer(sk, SCO_DISCONN_TIMEOUT);
+> +                       local_bh_disable();
+>                         sco_conn_lock(sco_pi(sk)->conn);
+>                         hci_conn_drop(sco_pi(sk)->conn->hcon);
+>                         sco_pi(sk)->conn->hcon = NULL;
+>                         sco_conn_unlock(sco_pi(sk)->conn);
+> +                       local_bh_enable();
+>                 } else
+>                         sco_chan_del(sk, ECONNRESET);
+>                 break;
+> @@ -1084,21 +1098,26 @@ static void sco_conn_ready(struct sco_conn *conn)
+>
+>         if (sk) {
+>                 sco_sock_clear_timer(sk);
+> +               local_bh_disable();
+>                 bh_lock_sock(sk);
+>                 sk->sk_state = BT_CONNECTED;
+>                 sk->sk_state_change(sk);
+>                 bh_unlock_sock(sk);
+> +               local_bh_enable();
+>         } else {
+> +               local_bh_disable();
+>                 sco_conn_lock(conn);
+>
+>                 if (!conn->hcon) {
+>                         sco_conn_unlock(conn);
+> +                       local_bh_enable();
+>                         return;
+>                 }
+>
+>                 parent = sco_get_sock_listen(&conn->hcon->src);
+>                 if (!parent) {
+>                         sco_conn_unlock(conn);
+> +                       local_bh_enable();
+>                         return;
+>                 }
+>
+> @@ -1109,6 +1128,7 @@ static void sco_conn_ready(struct sco_conn *conn)
+>                 if (!sk) {
+>                         bh_unlock_sock(parent);
+>                         sco_conn_unlock(conn);
+> +                       local_bh_enable();
+>                         return;
+>                 }
+>
+> @@ -1131,6 +1151,7 @@ static void sco_conn_ready(struct sco_conn *conn)
+>                 bh_unlock_sock(parent);
+>
+>                 sco_conn_unlock(conn);
+> +               local_bh_enable();
+>         }
+>  }
+>
+> --
+> 2.25.1
+>
+
+
 -- 
-2.20.1
-
+Luiz Augusto von Dentz
