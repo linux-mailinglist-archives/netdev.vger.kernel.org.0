@@ -2,68 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96CB43D81CD
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A49BC3D81CF
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232518AbhG0VaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:30:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231944AbhG0VaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Jul 2021 17:30:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 4067960FC0;
-        Tue, 27 Jul 2021 21:30:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627421405;
-        bh=/0TH+8S4Jwlt7pjr4CYE1nNWJcFGEsRlfZrY8Ylx06w=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MxDf0ksAFo0ZHubjhsGrlqNzxlJcgrykYyBQZ99KVVyJhXkLxbV232+cLob3EvY5E
-         yCgdxW4JZb1vEDYQPy6BXYYX5zbzc5YXqDmh38ay6fmSV83//THTz3ZHnjTWgQisjH
-         TwP2WRynwLOzKR2Gw5nAQiMhqys9qdmNX7u5aOP72r9frYNjzJyNQ2r3FGB5l6Ief7
-         vTKeS1owLX7bKDYv9+V1ZDhWdhTKifFpMpj2rF68vpRqYTIZw2WCnvxvmNtVUmLrVt
-         FcqyGwqqzKzTe8xJNTWWicrTaFToHUOelgsxSF1cArBhjwpU+qM1KyJusEN3IygAjl
-         BDzqaNDCPwDqw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 33B1660A59;
-        Tue, 27 Jul 2021 21:30:05 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232774AbhG0Vah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231135AbhG0Vah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:30:37 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71FB3C061757;
+        Tue, 27 Jul 2021 14:30:36 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id x192so492109ybe.0;
+        Tue, 27 Jul 2021 14:30:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8Xk/FxiJNZqJn1RcVkvNgh+Bha6b3Cf+U0VMD2/lHzQ=;
+        b=CtIRk0mW+TSzm9qBAQz5NyhK1eDuFmyOBs6Kt+W8usd9qEGSRRscAa2Ukepv+LeqAS
+         govy/AUWUO4Qf6BHlpXJXp/k0uzHtGeUBNQ2Yb34tnawbpBqGwBKSgBa4KVmY7iHAJWg
+         Qs5I2uW528qwG606kbXTpE/nBQbs+SLpkN2quKrmbHPsYbsfX6fie5oEm7yF7jR/uABW
+         OOmfqPw3EkpK0FVIJK03SM2Xipe/sG18npCiNuNqMBX5fbnUBRnjqae16ZLsFMUmMNr0
+         7WRQ1VW7R95JhmLcSsrGjSv8AnCOq2hX0zbuAgjBxqfUXEvYrUJu4E3NoT9CoMPMARvy
+         uc1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8Xk/FxiJNZqJn1RcVkvNgh+Bha6b3Cf+U0VMD2/lHzQ=;
+        b=D/674Z5oYvuy9/8mRzKmM5cmcaMXld5SVVF9CixRlvRoZu468tYRCrqEiaXlffMPTn
+         lZug/cI6k/h7NtumphYpxJQWaIJVDrWYR2o9c/36heVT8NRzXK2QvB9X//KCjnY4vmkY
+         9NxPLj0nnem9vcIUMnKdpfbIJiE1DzUjGR9HTkS5GenW/3KfqTKdVRgxNd6XQXNe+75P
+         SSgOq5PiI2gVHUUuEFYcByw9XMkbtm5f6+Si09SWu0tWQ0VyQ1EAb+YDk9/x+mjmJBcJ
+         R559M6LISNXLYmsFuy1XRjMfL1iHMT0HnzHK5zonylylgQsZQYTdExe7XwoAoQFZ5Fqw
+         WJnw==
+X-Gm-Message-State: AOAM530GZ7JBRjqHRDvBft0zqVBAibc64k4Cx9D1lRCCLOrBdY8n5sQ2
+        JtU12+kfFe9ZamTK+ss4VY7ttuMHGIEPETHSu6Y=
+X-Google-Smtp-Source: ABdhPJzbycA9Tw1adabInEtO3yvthYqrmBqPiKSGQwlaDFSe/IW+6+8w9swfE+pGDTtfva/txWXE3rI1kXIbv3VvUuY=
+X-Received: by 2002:a25:1455:: with SMTP id 82mr34077343ybu.403.1627421435731;
+ Tue, 27 Jul 2021 14:30:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] libbpf: fix commnet typo
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162742140520.28558.9400918409950700066.git-patchwork-notify@kernel.org>
-Date:   Tue, 27 Jul 2021 21:30:05 +0000
-References: <20210727115928.74600-1-wangborong@cdjrlc.com>
-In-Reply-To: <20210727115928.74600-1-wangborong@cdjrlc.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20210726230032.1806348-1-sdf@google.com> <CAEf4BzaLc7rvUPquXnf+qxjrLSkCR21D7hj0HNVACmwNpgZvSw@mail.gmail.com>
+ <YQBw+SLUQf0phOik@google.com>
+In-Reply-To: <YQBw+SLUQf0phOik@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 27 Jul 2021 14:30:24 -0700
+Message-ID: <CAEf4BzbEht9srvg8kJowM1e-t=2WOE3GCHWWJWsYYwKfT06iSQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] bpf: increase supported cgroup storage value size
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, Jul 27, 2021 at 1:47 PM <sdf@google.com> wrote:
+>
+> On 07/27, Andrii Nakryiko wrote:
+> > On Mon, Jul 26, 2021 at 4:00 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > > Current max cgroup storage value size is 4k (PAGE_SIZE). The other local
+> > > storages accept up to 64k (BPF_LOCAL_STORAGE_MAX_VALUE_SIZE). Let's
+> > align
+> > > max cgroup value size with the other storages.
+> > >
+> > > For percpu, the max is 32k (PCPU_MIN_UNIT_SIZE) because percpu
+> > > allocator is not happy about larger values.
+> > >
+> > > netcnt test is extended to exercise those maximum values
+> > > (non-percpu max size is close to, but not real max).
+> > >
+> > > v3:
+> > > * refine SIZEOF_BPF_LOCAL_STORAGE_ELEM comment (Yonghong Song)
+> > > * anonymous struct in percpu_net_cnt & net_cnt (Yonghong Song)
+> > > * reorder free (Yonghong Song)
+> > >
+> > > v2:
+> > > * cap max_value_size instead of BUILD_BUG_ON (Martin KaFai Lau)
+> > >
+> > > Cc: Martin KaFai Lau <kafai@fb.com>
+> > > Cc: Yonghong Song <yhs@fb.com>
+> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > ---
+> > >  kernel/bpf/local_storage.c                  | 11 +++++-
+> > >  tools/testing/selftests/bpf/netcnt_common.h | 38 +++++++++++++++++----
+> > >  tools/testing/selftests/bpf/test_netcnt.c   | 17 ++++++---
+> > >  3 files changed, 53 insertions(+), 13 deletions(-)
+> > >
+> > > diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
+> > > index 7ed2a14dc0de..035e9e3a7132 100644
+> > > --- a/kernel/bpf/local_storage.c
+> > > +++ b/kernel/bpf/local_storage.c
+> > > @@ -1,6 +1,7 @@
+> > >  //SPDX-License-Identifier: GPL-2.0
+> > >  #include <linux/bpf-cgroup.h>
+> > >  #include <linux/bpf.h>
+> > > +#include <linux/bpf_local_storage.h>
+> > >  #include <linux/btf.h>
+> > >  #include <linux/bug.h>
+> > >  #include <linux/filter.h>
+> > > @@ -283,9 +284,17 @@ static int cgroup_storage_get_next_key(struct
+> > bpf_map *_map, void *key,
+> > >
+> > >  static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
+> > >  {
+> > > +       __u32 max_value_size = BPF_LOCAL_STORAGE_MAX_VALUE_SIZE;
+> > >         int numa_node = bpf_map_attr_numa_node(attr);
+> > >         struct bpf_cgroup_storage_map *map;
+> > >
+> > > +       /* percpu is bound by PCPU_MIN_UNIT_SIZE, non-percu
+> > > +        * is the same as other local storages.
+> > > +        */
+> > > +       if (attr->map_type == BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE)
+> > > +               max_value_size = min_t(__u32, max_value_size,
+> > > +                                      PCPU_MIN_UNIT_SIZE);
+> > > +
+> > >         if (attr->key_size != sizeof(struct bpf_cgroup_storage_key) &&
+> > >             attr->key_size != sizeof(__u64))
+> > >                 return ERR_PTR(-EINVAL);
+> > > @@ -293,7 +302,7 @@ static struct bpf_map
+> > *cgroup_storage_map_alloc(union bpf_attr *attr)
+> > >         if (attr->value_size == 0)
+> > >                 return ERR_PTR(-EINVAL);
+> > >
+> > > -       if (attr->value_size > PAGE_SIZE)
+> > > +       if (attr->value_size > max_value_size)
+> > >                 return ERR_PTR(-E2BIG);
+> > >
+> > >         if (attr->map_flags & ~LOCAL_STORAGE_CREATE_FLAG_MASK ||
+> > > diff --git a/tools/testing/selftests/bpf/netcnt_common.h
+> > b/tools/testing/selftests/bpf/netcnt_common.h
+> > > index 81084c1c2c23..87f5b97e1932 100644
+> > > --- a/tools/testing/selftests/bpf/netcnt_common.h
+> > > +++ b/tools/testing/selftests/bpf/netcnt_common.h
+> > > @@ -6,19 +6,43 @@
+> > >
+> > >  #define MAX_PERCPU_PACKETS 32
+> > >
+> > > +/* sizeof(struct bpf_local_storage_elem):
+> > > + *
+> > > + * It really is about 128 bytes on x86_64, but allocate more to
+> > account for
+> > > + * possible layout changes, different architectures, etc.
+> > > + * The kernel will wrap up to PAGE_SIZE internally anyway.
+> > > + */
+> > > +#define SIZEOF_BPF_LOCAL_STORAGE_ELEM          256
+> > > +
+> > > +/* Try to estimate kernel's BPF_LOCAL_STORAGE_MAX_VALUE_SIZE: */
+> > > +#define BPF_LOCAL_STORAGE_MAX_VALUE_SIZE       (0xFFFF - \
+> > > +
+> > SIZEOF_BPF_LOCAL_STORAGE_ELEM)
+> > > +
+> > > +#define PCPU_MIN_UNIT_SIZE                     32768
+> > > +
+> > >  struct percpu_net_cnt {
+> > > -       __u64 packets;
+> > > -       __u64 bytes;
+> > > +       union {
+>
+> > so you have a struct with a single anonymous union inside, isn't that
+> > right? Any problems with just making struct percpu_net_cnt into union
+> > percpu_net_cnt?
+> We'd have to s/struct/union/ everywhere in this case, not sure
+> we want to add more churn? Seemed easier to do anonymous union+struct.
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+4 occurrences for net_cnt and another 4 for percpu_net_cnt, not much
+churn (and all pretty localized). But I honestly don't care, just
+wanted to note that you don't need this extra nesting.
 
-On Tue, 27 Jul 2021 19:59:28 +0800 you wrote:
-> Remove the repeated word 'the' in line 48.
-> 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-> ---
->  tools/lib/bpf/libbpf.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> > > +               struct {
+> > > +                       __u64 packets;
+> > > +                       __u64 bytes;
+> > >
+> > > -       __u64 prev_ts;
+> > > +                       __u64 prev_ts;
+> > >
+> > > -       __u64 prev_packets;
+> > > -       __u64 prev_bytes;
+> > > +                       __u64 prev_packets;
+> > > +                       __u64 prev_bytes;
+> > > +               };
+> > > +               __u8 data[PCPU_MIN_UNIT_SIZE];
+> > > +       };
+> > >  };
+> > >
+> > >  struct net_cnt {
+> > > -       __u64 packets;
+> > > -       __u64 bytes;
+> > > +       union {
+>
+> > similarly here
+>
+> > > +               struct {
+> > > +                       __u64 packets;
+> > > +                       __u64 bytes;
+> > > +               };
+> > > +               __u8 data[BPF_LOCAL_STORAGE_MAX_VALUE_SIZE];
+> > > +       };
+> > >  };
+> > >
+> > >  #endif
+> > > diff --git a/tools/testing/selftests/bpf/test_netcnt.c
+> > b/tools/testing/selftests/bpf/test_netcnt.c
+> > > index a7b9a69f4fd5..372afccf2d17 100644
+> > > --- a/tools/testing/selftests/bpf/test_netcnt.c
+> > > +++ b/tools/testing/selftests/bpf/test_netcnt.c
+> > > @@ -33,11 +33,11 @@ static int bpf_find_map(const char *test, struct
+> > bpf_object *obj,
+> > >
+> > >  int main(int argc, char **argv)
+> > >  {
+> > > -       struct percpu_net_cnt *percpu_netcnt;
+> > > +       struct percpu_net_cnt *percpu_netcnt = NULL;
+> > >         struct bpf_cgroup_storage_key key;
+> > > +       struct net_cnt *netcnt = NULL;
+> > >         int map_fd, percpu_map_fd;
+> > >         int error = EXIT_FAILURE;
+> > > -       struct net_cnt netcnt;
+> > >         struct bpf_object *obj;
+> > >         int prog_fd, cgroup_fd;
+> > >         unsigned long packets;
+> > > @@ -52,6 +52,12 @@ int main(int argc, char **argv)
+> > >                 goto err;
+> > >         }
+> > >
+> > > +       netcnt = malloc(sizeof(*netcnt));
+>
+> > curious, was it too big to be just allocated on the stack? Isn't the
+> > thread stack size much bigger than 64KB (at least by default)?
+> I haven't tried really, I just moved it to malloc because it crossed
+> some unconscious boundary for the 'stuff I allocate on the stack'.
+> I can try it out if you prefer to keep it on the stack, let me know.
 
-Here is the summary with links:
-  - libbpf: fix commnet typo
-    https://git.kernel.org/bpf/bpf-next/c/c139e40a515d
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Yeah, if it can stay on the stack. Less thinking about freeing memory.
