@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E1D3D71C1
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 11:14:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E403D71BB
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 11:12:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236073AbhG0JN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 05:13:59 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:23541 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235942AbhG0JN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 05:13:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1627377235;
-    s=strato-dkim-0002; d=fpond.eu;
-    h=Subject:References:In-Reply-To:Message-ID:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=XqBcMoIkFDWH7t7weL/F33n8KKtmIXCBVhETpaRVRYU=;
-    b=hR3wmLtFn5vSE8vRpYx0Tb/uRawFMqt4Z2cVf+mr0MSvQOQfnljNwgIZQAON4FulI6
-    eAGYm3wk1qTLkMJ7B/VLskcuWM8/Z9gQAuCEGmsR8pbWBjzjPmq8s2l+tppn2LSjJipT
-    A6YILLUuVoxfc9WaZHV1U1FneXi9EO7AvzXCMB0P+8g5y1qMsh/lCcB7imYI1jc/mopA
-    eGWXKLs8TJGtXLO5zVlPPsTw226pjFxj+BNP2Kge0+jJTCLUqw27+wOxcGz5Pr5GODKO
-    qSCxMVxS1DKxNlVOC8O/Dtrm2EK0hUn6GZ8B0zmVyV706tr6Dc+ym3u6v5G+tXJz9cST
-    2S2Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":OWANVUa4dPFUgKR/3dpvnYP0Np73amq+g13rqGzvv3qxio1R8fCt/7N+Odk="
-X-RZG-CLASS-ID: mo00
-Received: from oxapp04-03.back.ox.d0m.de
-    by smtp-ox.front (RZmta 47.28.1 AUTH)
-    with ESMTPSA id n07311x6R9Dtn97
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Tue, 27 Jul 2021 11:13:55 +0200 (CEST)
-Date:   Tue, 27 Jul 2021 11:13:55 +0200 (CEST)
-From:   Ulrich Hecht <uli@fpond.eu>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Message-ID: <1863500318.822017.1627377235170@webmail.strato.com>
-In-Reply-To: <1879319092.816143.1627376136422@webmail.strato.com>
-References: <20210727082147.270734-1-yoshihiro.shimoda.uh@renesas.com>
- <20210727082147.270734-2-yoshihiro.shimoda.uh@renesas.com>
- <1879319092.816143.1627376136422@webmail.strato.com>
-Subject: Re: [PATCH 1/2] ravb: Fix descriptor counters' conditions
+        id S236055AbhG0JMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 05:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235981AbhG0JMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 05:12:08 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C433C061760
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 02:12:06 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d17so15006695plh.10
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 02:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9rluK+pOhIb8FILDrgZN4MclSo9wi1R9TyuuYegFS3c=;
+        b=O8RNZOylgIfFd5MJB6bCTVdF9M+YC3fNptlBHMCtVio314rf3eWtCfGWIGhQV5q4tw
+         wPuKCyTFlHtgAoX9G/xJlIjgDaq8SyuKQ/OfClRzWJZe6FYm0drviLCKPGBOx7WD5jHM
+         IcblQ3zfH9PfEUKyzdnpf3wSqpKS7M8dKN+zWYhOujSLbKwjB4zjuShC3cEOF+l24NUf
+         bUm4S8vnqIZ4FNtZOs569hu77icxuZRMfa8kL6SGsPa6joINB9gDvv0tIkJLKpDwfX1t
+         kQrJ8XwDr627CliLCTFbVa+4wozAmCt9kyCApFh+aV/3XgedL7tlQjJ3KlqQbuzbxFOP
+         f62g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9rluK+pOhIb8FILDrgZN4MclSo9wi1R9TyuuYegFS3c=;
+        b=DTbpwx23I9f0hhU0az0gEISEsVAMBmRdVY8wQWEvbrfH71UBgaiqSwLap6V8PG/HJP
+         zyB0531HFPS4bBmv5z1Acql+HLTXO8fU/c+9vgkqf2oAcxIw002jOm6e5hHTITxNvSjG
+         Ap7SwW3uqmy0GbYSuJOodAFWM4KmMp5lA0J+qkh+za0831qGNClGJSGA7CIrIA5pHohb
+         jwaFdWDDP0KvjTjZ5N/ltKUWrZ/EoBW+of6Ls4OPC1VxHlKWkhWr1hEEWI5tT/OXoD6F
+         g2kevGDI7A/sXOvDvBGNIk1zH83lEVZXTY0fj/hZ1WxMu9W2Tojd40hja4t3OncxwSCG
+         uF7w==
+X-Gm-Message-State: AOAM531Nc6B7QGFSw4glxxjHgOK/aRwftgZpmkZVdyBK1gDuJEzuEpZR
+        2avVWaNiLRaxfAXXMP7g4YjzuCuM7YYAsmqtuKPcmeKTtlZThw==
+X-Google-Smtp-Source: ABdhPJw2EKqlRylpPbp9OkXdj7y3BeX7ygqlaMweZ8bIg/J3FA1oS1bRlPVBYElNVJbV8Iv4ya+imTT0SW6KULLALUQ=
+X-Received: by 2002:a62:d447:0:b029:291:19f7:ddcd with SMTP id
+ u7-20020a62d4470000b029029119f7ddcdmr22329027pfl.54.1627377125991; Tue, 27
+ Jul 2021 02:12:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-Importance: Normal
-X-Mailer: Open-Xchange Mailer v7.10.5-Rev16
-X-Originating-Client: open-xchange-appsuite
+References: <20210714211805.22350-1-richard.laing@alliedtelesis.co.nz>
+ <CAMZdPi-1E5pieVwt_XFF-+PML-cX05nM=PdD0pApD_ym5k_uMQ@mail.gmail.com> <5165a859-1b00-e50e-985e-25044cf0e9ec@alliedtelesis.co.nz>
+In-Reply-To: <5165a859-1b00-e50e-985e-25044cf0e9ec@alliedtelesis.co.nz>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Tue, 27 Jul 2021 11:21:52 +0200
+Message-ID: <CAMZdPi8MZp5Vx_ZnjjQWptms9vj6bEMoV83pcv4wmgxbZz0wjQ@mail.gmail.com>
+Subject: Re: [PATCH] bus: mhi: pci-generic: configurable network interface MRU
+To:     Richard Laing <Richard.Laing@alliedtelesis.co.nz>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> On 07/27/2021 10:55 AM Ulrich Hecht <uli@fpond.eu> wrote:
-> 
->  
-> > On 07/27/2021 10:21 AM Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > 
-> >  
-> > The descriptor counters ({cur,dirty}_[rt]x) acts as free counters
-> > so that conditions are possible to be incorrect when a left value
-> > was overflowed.
-> > 
-> > So, for example, ravb_tx_free() could not free any descriptors
-> > because the following condition was checked as a signed value,
-> > and then "NETDEV WATCHDOG" happened:
-> > 
-> >     for (; priv->cur_tx[q] - priv->dirty_tx[q] > 0; priv->dirty_tx[q]++) {
-> > 
-> > To fix the issue, add get_num_desc() to calculate numbers of
-> > remaining descriptors.
-> > 
-> > Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > ---
-> >  drivers/net/ethernet/renesas/ravb_main.c | 22 +++++++++++++++-------
-> >  1 file changed, 15 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> > index 805397088850..70fbac572036 100644
-> > --- a/drivers/net/ethernet/renesas/ravb_main.c
-> > +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> > @@ -172,6 +172,14 @@ static const struct mdiobb_ops bb_ops = {
-> >  	.get_mdio_data = ravb_get_mdio_data,
-> >  };
-> >  
-> > +static u32 get_num_desc(u32 from, u32 subtract)
-> > +{
-> > +	if (from >= subtract)
-> > +		return from - subtract;
-> > +
-> > +	return U32_MAX - subtract + 1 + from;
-> > +}
+On Mon, 19 Jul 2021 at 23:44, Richard Laing
+<Richard.Laing@alliedtelesis.co.nz> wrote:
 >
-> This is a very roundabout way to implement an unsigned subtraction. :)
-> I think it would make more sense to simply return 0 if "subtract" is larger than "from".
-> (Likewise for sh_eth).
+> Hi Loic,
+>
+> On 7/19/21 10:11 PM, Loic Poulain wrote:
+> > For my interest do you have some numbers here highlighting improvement?
+> These are some of the numbers we found from initial testing using an
+> external packet generator:
+>
+> packet size    packets sent  throughput (%pps)
+> 64             1000000        6.21%
+> 128            1000000        7.42%
+> 256            1000000        10.79%
+> 512            1000000        16.40%
+> 1024           1000000        34.34%
+> 1262           1000000        43.82%
+> 1263           1000000        22.45%    <--
+> 1280           1000000        23.15%
+> 1500           1000000        46.32%
+> 1518           1000000        46.84%
+>
+> You can see the sudden drop of almost 50% between 1262 and 1263 byte
+> packets. This is what caused us to investigate further. Following the
+> change to 32KB buffers the drop in throughput is no longer seen.
+>
+> packet size    packets sent  throughput (%pps)
+> 64             1000000       4.41%
+> 128            1000000       7.70%
+> 256            1000000       14.26%
+> 512            1000000       27.06%
+> 1024           1000000       49.39%
+> 1280           1000000       58.82%
+> 1428           1000000       62.63%
+>
+> In all cases we were testing with the modem itself in internal loopback
+> mode.
+>
+> We have noted that our modem defaults to 32KB buffers (and a maximum of
+> 32 packets per buffer) and also that these values can be changed. We are
+> considering adding the ability to tune the buffer size, perhaps adding a
+> sysfs entry or netlink message to change the buffer size instead of the
+> hard coded value. Any comments would be appreciated.
 
-...and the tests for "> 0" should be rewritten as "!= 0". Sorry, not fully awake yet.
+Thanks for the info, that's interesting.
 
-CU
-Uli
+Note that the default MRU you define is not MHI controller specific
+but MHI channel specific (IP/MBIM channel), so it should not be a
+property of the MHI controller. AFAIK, The MHI specification already
+defines MRU for the transfered buffers which is 65535. I would
+recommend to move this prop to the channel config.
+
+Regards,
+Loic
+
+>
+> Regards,
+> Richard
+>
+>
+>
