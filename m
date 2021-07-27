@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61E923D809A
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 562633D80DF
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233167AbhG0VHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        id S232867AbhG0VIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232774AbhG0VGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:06:55 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FDAC061764
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:53 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id mt6so1867449pjb.1
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:53 -0700 (PDT)
+        with ESMTP id S229681AbhG0VG5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:06:57 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D10C0617A4
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:56 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id m1so1862447pjv.2
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:06:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=clRlkcTWzJOWdb6SjT1HZu+AyElzVwLtoYPXziOiXRE=;
-        b=MBUIR3iBfXKxxQGTkwEdR+msAp6pxmWHaDphvmnJvT1Zw3YRPe0XXCC1E1e0Bq7P9v
-         PHNDTqIkm/jI1FEa26EuyG+8VRkITbDssqS0hfWFfeIsKVWMxs6NsU4giYYW+nhBICQ9
-         RxMzcJq+3X+F/NXCQU0H77itPS7DDeCUh+z/o=
+        bh=UPGlu1gG6API/iCexVdVFLvP4yi8HHonlHYke9K7UR0=;
+        b=m3xmCqlfQQl6y88gzGHqm2N3UvKEnCdok/BJyDNoduQEklW/A7rLG1ArcEbIa4sNpg
+         gyE4VCnVWyScIlaG1xhcD8qrQj5NdPxQkhHLzIIQou5A0leQoAsnAyLU3S12xLMU/Hpr
+         6bYRGbAjxTPd/EtMM4GpfIh0ws6if/8UYqIYg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=clRlkcTWzJOWdb6SjT1HZu+AyElzVwLtoYPXziOiXRE=;
-        b=ZqNoPfr6y/Aju4QYIhUqwUNubpFsnmgRSoJj/NJdFltEg0mrUookdkBcN/pVFnlnjx
-         vSvlB4SxzrsW0IniwiFGu55qpU50mo+x0UbpxxANEDD2mWo3VBp7ANdy1J9KSMqpOI0h
-         I0y5YyOyKujyUVX3lW/mNzEq78rd87n17M9s1s8X2JDezQSJ45ggXMyDG97J9zHZ4Yeq
-         Plf4MZLb2j7YI+rjNDmbQ54iQLxEM+UiAW2Z9ZAoaDaLvC2uk+l/DM7OX2d6ZDdYi4JF
-         izB+gYCB7eKERzkoPs6nCsJIdgUprDforYYtRD9/ZtTmnosR+4vtnuROFeuGgHOf/EYj
-         Q/Lg==
-X-Gm-Message-State: AOAM531/QTeTAM8qjzGhCfwtggN5pKm3KgmhH6fDJlxQmaMbefE+9CEs
-        KwRXYd9KMJGc88C6Ts9UKHuySw==
-X-Google-Smtp-Source: ABdhPJyQWD89modfR5XqhD/BrBVi4uhzmxv+/WY0dPBKz1b0mLB8ON+0pnmzIlozqgKLDJGyoixVLw==
-X-Received: by 2002:a65:420d:: with SMTP id c13mr9244079pgq.123.1627420013548;
-        Tue, 27 Jul 2021 14:06:53 -0700 (PDT)
+        bh=UPGlu1gG6API/iCexVdVFLvP4yi8HHonlHYke9K7UR0=;
+        b=B7OOSoNrhoy3cDDLwZ3LnbfCNr602pZaR+Ylvz8CylV67I6p1vd/m0wHkk7Iv+KW/R
+         6k2p8MeYnkH/+pEfg+DNAtfY2t0qE8mE6mre7sNXmeUn1jV+s1+WXblSkZgTOhUcLNmB
+         zvwbOeVLbb7z8G/IATKtaWDeHFEcelRuY6f7B+UH1Nwjrk1BTGg9ZPUg0ZDyIa6ur3mj
+         nZOtihk4A6id0FFGy0F0qRcjQxQU5MYMGSvO7L8/AI0kkQnsEczPF8btxfJg4MF7KxJ7
+         z1NsjTCFSxxKKxVwO7Uv6PDHj8f9sw1wJoBSzOclpXZh51EvrASQ9c8n1HCt6O4CEGCB
+         vqUQ==
+X-Gm-Message-State: AOAM530BRUZtYb0DuheNxgxavE309vT4rikgTG8oIB8TydZ49AkROEOZ
+        PaChRsZ/6tQ01p9d0LkpCskw4A==
+X-Google-Smtp-Source: ABdhPJyRr41WjbyJq9nCLCxMpkCCFYsX51CfWKd4/S2P+UzJSAsEt1kW141ndTqkUOB7pGW66MCilA==
+X-Received: by 2002:aa7:9546:0:b029:32e:5fdf:9576 with SMTP id w6-20020aa795460000b029032e5fdf9576mr25063139pfq.5.1627420015943;
+        Tue, 27 Jul 2021 14:06:55 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id l1sm3813994pjq.1.2021.07.27.14.06.50
+        by smtp.gmail.com with ESMTPSA id d29sm4704061pfq.193.2021.07.27.14.06.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 14:06:50 -0700 (PDT)
+        Tue, 27 Jul 2021 14:06:54 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     linux-hardening@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -55,14 +55,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
         linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH 16/64] thermal: intel: int340x_thermal: Use struct_group() for memcpy() region
-Date:   Tue, 27 Jul 2021 13:58:07 -0700
-Message-Id: <20210727205855.411487-17-keescook@chromium.org>
+Subject: [PATCH 17/64] iommu/amd: Use struct_group() for memcpy() region
+Date:   Tue, 27 Jul 2021 13:58:08 -0700
+Message-Id: <20210727205855.411487-18-keescook@chromium.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210727205855.411487-1-keescook@chromium.org>
 References: <20210727205855.411487-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3277; h=from:subject; bh=FXb9nQQ+9raXNRheCnPL/rsMtfpVZSmOVeEiPUzBx+k=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHOD97boEQtghYWjunVAHXryqRBeKslQ/U0/9Z2K SuHsN8WJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgwAKCRCJcvTf3G3AJs4JD/ 4t9krlI0msPh0DWMgqWRsM+X+y+HiMVgVUi7JkKAiBNJZoty9G4c1eS7yLV6TgLer2yFH8Ds58wUxF O6n5C18sFXheNiEEW+6vqVVeyQpO6nOPUonTlA8hTYBZp6CBNW7L7fqFalI7RlROQmukoEwMQZpWKx EuiGE22FT/3gJFEHq6KV61yPGYruCiyqaRADMcMMvyaJddy1qUkMgv0+9MsD6Pk/GN14+iLJT/WvX/ +Ncg6xMtv77TZnfLggNoIAXvzxqKTuj4YKPXx37SB2DDRCzdDh7R0hdU6WnJYEDwR5nd28AxRY9pW0 3/vFBrVdXmb5M1ePJqtCrbIM24arQveQJ0OFOeHTeWVNTcpF2rYY6HkYdqN5OgBXbagUUrHLo5sTJT oCoXT0USJzevlZoW3hXd+qGHUmuaA7+oUpf8ERJftB1gtBZ5+mAE3oNp6XoGlqZWXKaZOqEXohtJdE JKAKoqmW3JI+EQI+YUWLhorOoexqDCL3tG1VxN6M8wVEznEOVlCPdgcKjMwd4TvvKajC88ejnODvYX Yx+uFlSgaEFH992Tzy+Sem73iwT45T1pxFzlgXi6UKZ/H5V8dY1HWDHhQdWkFNrA7YldsHu5LMPO23 EVZMhiu2pPLzAvDWB389kz3t6FqAo/HGYnm8kfHnyCibi/cFhsXVyBwQujpg==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1451; h=from:subject; bh=3pnVXRScRiXcKlAzWmxtHjgtqdCSr5x9f+6aO5KQ5qc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBhAHODYV9h07PQ3v5RAvzij9k85T7DPu/8sNSs65Q4 0y0UliiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYQBzgwAKCRCJcvTf3G3AJiW2D/ 4nEDA70nGUYhVyf7oYOlQgzyry3f6d0tKPbEYWNkte1rIRW3O2InK76AVJyf0Q/BtnVYPXNStIrzaO SUDw2yOwXO4oq2+xlKHbSpDQcYZna36Xqovo10kVGY112L7kOGbUfQZZPm+9ZCxh9fprwP+ezpdrPw 5RhPSv0UwMiQYY/cih9csRF3Y0cUslbWzBAlMAKY4vV665FdBYm4Cd1UbBRiX7n5X6rkASp/R5KUJO gT9lqJlutTZcY84HhE2e7nVfUM1tK/zoQ1ZeRZ2l14KFhykcFSW9gTHS3VJa2Fr3ta26jaAzpIQzRI I1VZSdlxpEUPAljbEi8ms11eBPC5N8+yPox2bH9yz8bPLwwHOwyP+yRXagJSrsB0JY9elrri4Jr0d4 L0spfyNNFhXi1pYLN/VwHLWk0qCJ6U6H1/1yJ5fkSANbabpn+M+34UuJ87NhDZnoboRjX68s2N9xUp Ztc8gb6cNuq1OK7yjw+/s+IPxRe2Xrjyj6xMHQ75Nmq+kDqedEV8h/okfZHv9FN6eZGw8+d+79qrHr /MdSe/HI+xPECZcwJiIqojDU9hyrQ75Slj1hn65lXR2jBuZkuxOB9VWtjVZyPGXbccWBvdccl0Sthp x+6FisSerA0XyrnefqEYTnx+5XYfaYWhfusWvoUDsVRDlD5XjnXe/NKxjhWQ==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -70,106 +70,49 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation for FORTIFY_SOURCE performing compile-time and run-time
-field bounds checking for memcpy(), avoid intentionally writing across
-neighboring fields.
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-Use struct_group() in struct art around members weight, and ac[0-9]_max,
-so they can be referenced together. This will allow memcpy() and sizeof()
+Use struct_group() in struct ivhd_entry around members ext and hidh, so
+they can be referenced together. This will allow memcpy() and sizeof()
 to more easily reason about sizes, improve readability, and avoid future
-warnings about writing beyond the end of weight.
+warnings about writing beyond the end of ext.
 
-"pahole" shows no size nor member offset changes to struct art.
-"objdump -d" shows no meaningful object code changes (i.e. only source
-line number induced differences).
+"pahole" shows no size nor member offset changes to struct ivhd_entry.
+"objdump -d" shows no object code changes.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- .../intel/int340x_thermal/acpi_thermal_rel.c  |  5 +-
- .../intel/int340x_thermal/acpi_thermal_rel.h  | 48 ++++++++++---------
- 2 files changed, 29 insertions(+), 24 deletions(-)
+ drivers/iommu/amd/init.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-index a478cff8162a..e90690a234c4 100644
---- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-+++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-@@ -250,8 +250,9 @@ static int fill_art(char __user *ubuf)
- 		get_single_name(arts[i].source, art_user[i].source_device);
- 		get_single_name(arts[i].target, art_user[i].target_device);
- 		/* copy the rest int data in addition to source and target */
--		memcpy(&art_user[i].weight, &arts[i].weight,
--			sizeof(u64) * (ACPI_NR_ART_ELEMENTS - 2));
-+		BUILD_BUG_ON(sizeof(art_user[i].data) !=
-+			     sizeof(u64) * (ACPI_NR_ART_ELEMENTS - 2));
-+		memcpy(&art_user[i].data, &arts[i].data, sizeof(art_user[i].data));
- 	}
- 
- 	if (copy_to_user(ubuf, art_user, art_len))
-diff --git a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-index 58822575fd54..78d942477035 100644
---- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-+++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.h
-@@ -17,17 +17,19 @@
- struct art {
- 	acpi_handle source;
- 	acpi_handle target;
--	u64 weight;
--	u64 ac0_max;
--	u64 ac1_max;
--	u64 ac2_max;
--	u64 ac3_max;
--	u64 ac4_max;
--	u64 ac5_max;
--	u64 ac6_max;
--	u64 ac7_max;
--	u64 ac8_max;
--	u64 ac9_max;
-+	struct_group(data,
-+		u64 weight;
-+		u64 ac0_max;
-+		u64 ac1_max;
-+		u64 ac2_max;
-+		u64 ac3_max;
-+		u64 ac4_max;
-+		u64 ac5_max;
-+		u64 ac6_max;
-+		u64 ac7_max;
-+		u64 ac8_max;
-+		u64 ac9_max;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 46280e6e1535..2df84737417b 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -121,8 +121,10 @@ struct ivhd_entry {
+ 	u8 type;
+ 	u16 devid;
+ 	u8 flags;
+-	u32 ext;
+-	u32 hidh;
++	struct_group(ext_hid,
++		u32 ext;
++		u32 hidh;
 +	);
- } __packed;
+ 	u64 cid;
+ 	u8 uidf;
+ 	u8 uidl;
+@@ -1378,7 +1380,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 				break;
+ 			}
  
- struct trt {
-@@ -47,17 +49,19 @@ union art_object {
- 	struct {
- 		char source_device[8]; /* ACPI single name */
- 		char target_device[8]; /* ACPI single name */
--		u64 weight;
--		u64 ac0_max_level;
--		u64 ac1_max_level;
--		u64 ac2_max_level;
--		u64 ac3_max_level;
--		u64 ac4_max_level;
--		u64 ac5_max_level;
--		u64 ac6_max_level;
--		u64 ac7_max_level;
--		u64 ac8_max_level;
--		u64 ac9_max_level;
-+		struct_group(data,
-+			u64 weight;
-+			u64 ac0_max_level;
-+			u64 ac1_max_level;
-+			u64 ac2_max_level;
-+			u64 ac3_max_level;
-+			u64 ac4_max_level;
-+			u64 ac5_max_level;
-+			u64 ac6_max_level;
-+			u64 ac7_max_level;
-+			u64 ac8_max_level;
-+			u64 ac9_max_level;
-+		);
- 	};
- 	u64 __data[ACPI_NR_ART_ELEMENTS];
- };
+-			memcpy(hid, (u8 *)(&e->ext), ACPIHID_HID_LEN - 1);
++			BUILD_BUG_ON(sizeof(e->ext_hid) != ACPIHID_HID_LEN - 1);
++			memcpy(hid, &e->ext_hid, ACPIHID_HID_LEN - 1);
+ 			hid[ACPIHID_HID_LEN - 1] = '\0';
+ 
+ 			if (!(*hid)) {
 -- 
 2.30.2
 
