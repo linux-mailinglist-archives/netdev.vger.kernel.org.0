@@ -2,126 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 143E63D81B2
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8293D81B6
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 23:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234516AbhG0VVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 17:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        id S232827AbhG0VWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 17:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233449AbhG0VVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:21:15 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D88DC0619FF
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:19:41 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id j21so409156ioo.6
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 14:19:41 -0700 (PDT)
+        with ESMTP id S234850AbhG0VWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 17:22:23 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FF8C061199;
+        Tue, 27 Jul 2021 14:20:55 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id d73so305663ybc.10;
+        Tue, 27 Jul 2021 14:20:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ctl/Z08dFkY9O1sSrsyFhIw0eSry4lTuONlS/T0EM90=;
-        b=XTURmhTwiW7Hfg9YNHm1nO1MyeyZHZtacTSnvfLAUsS21ypTKoAJZOaQ0NFqn09yaI
-         bJbtJTI+9TbdpZPiDjhqXpvgaD4sF5OWPzayo04r79NNien2rcx2kLa1ldnwX6kEp4K3
-         tZ6vxqO3NyuB39tHLly9fKtEMTlhiNf71nRZ2xGXFowj8W09bEJz3QcO7gijMOznNr9k
-         sQrEIun0zb9MSO14Y2r/oULsQ9b6uwRhyDPvsvSe1vwzByhPi+K7bfu6KxLmDIPH/1bd
-         cvgJ5nD78hppb+xpxN9xjfQPGyN/6NiKfblMs1PZdwIDaUTQzeSw4WlMk5bzsPT0thVU
-         m2ZA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iB3qgeViRpIjT93w0QydPOg+Ii5RDB3TR8rNyXNBTEQ=;
+        b=fFcNEB8Lsvr2/BVLHn0JVzailtB5iHyYSl3beRfbb9I0jotBWWN88x1OEsOQ08GIvQ
+         LAcPZeFufJHDai/v2cq0K1zWQ1b+7yd7Mu1AviyRZcOOevvrhJ9og5foGVzAOy1euA1u
+         1KcF7pwxWXsCqdaMA3UdSLBEoceSKXcLBWSHynQbw9FmWQ9ZZnZCFvbcsSRGxo/1Ww3o
+         cItyV8QPd4rmngHiiRPzBqyCRD7vZTISIRdlZeEuh3oAegNSc7ET89wiRdi3jwlJQt0R
+         G1DtRtjSmOSMI+CHUEBSatuqe5W2QWv51WgzzMPXESgiGtlHWhA8VwBb9GO/1QJU6o5j
+         qzVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ctl/Z08dFkY9O1sSrsyFhIw0eSry4lTuONlS/T0EM90=;
-        b=P4a13tbkF1KtEw2lqcaGS9Z+j4Vaw8ieQPG/FcbyyLcn6bK1EZkg+Wu7Djz7yf7qbJ
-         3wfMTJkKv2ROj2Qj7T2kHid3UcsQg/7Ge1jGdGFQ/wj/ImtigMwQoq0yXLLO24mwHVMy
-         zsYoklIBovjNo3q2I96ZsMJubuMpERt3DT3lzjFum5wvSRM4gxUZtaLdosypkRpBLrdD
-         xHe8V8offa2bG8fc5u/RTjC2MvkIUm8X+oa4Go+l/PEqdameEis/bIenAw/4+a1s6+qR
-         XqMEi+udXpJrPYIkrMkdi43ArfI6IoGbF/MAA352iZkPyBbZSRVLPbyTnsJRUis1+wwY
-         M+bg==
-X-Gm-Message-State: AOAM533d1FdpKTjuKXCzkm0DOdSVzZ1YjwsB6wpdAK8D7R4MD8REstD1
-        Lw5HiGummblfeHrysot7JsP+bw==
-X-Google-Smtp-Source: ABdhPJxytZGBFgWUpCMTwqSZ7DYsGjFJm+faRhVvJfue3Dx6YMm/Pz8PXjlydHvHbS0qw6bXjhiuiA==
-X-Received: by 2002:a05:6602:248f:: with SMTP id g15mr6353033ioe.198.1627420780474;
-        Tue, 27 Jul 2021 14:19:40 -0700 (PDT)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id s21sm3136068iot.33.2021.07.27.14.19.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 14:19:40 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     bjorn.andersson@linaro.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: don't suspend endpoints if setup not complete
-Date:   Tue, 27 Jul 2021 16:19:33 -0500
-Message-Id: <20210727211933.926593-6-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210727211933.926593-1-elder@linaro.org>
-References: <20210727211933.926593-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iB3qgeViRpIjT93w0QydPOg+Ii5RDB3TR8rNyXNBTEQ=;
+        b=hOvZULZMqoARvH0mGQHrfr6KhPIIpltM6tSM0VxesKbAOChg+DJ1g9H4csNqs4z30B
+         CuLRTIP3EomxokjubA0n/7oRrq5JuHf2pLMeFh+U3D0QFK+4GEpRStN47e4zS0nMEG32
+         mlR27p/h9JlxNrV+1jozyxeYurohWgkpaebJIT6goNQR4xZMiS7AqiVOx5o5J+w96cyG
+         UzWAJ5Bs/m5wTJRWYBDSophCQcawfXy3awoTSmmIhgNedj69SRe5OGEV95m1jOrXGRjB
+         SS2u/g5nCwAg7DMTqHHfVqSKX1Skw7H4FrsSurIxVCz12Hn4LFo6ipNtc62Gsv+IIFar
+         CZdQ==
+X-Gm-Message-State: AOAM530hlz03vMzZ3rS6lO7mP13vpsRm6x0ekZwaJnb7PB+N1/lmuRzi
+        A5PcNHtV4gvGnF6O9KoYa/QkG7mBdpWtwj5mXVo=
+X-Google-Smtp-Source: ABdhPJxK0LV5QRIbJQ8Tv+Z6Ie2DAFRChRfIe3L+mVhmtv+BsysxoSdr4WKzdbUvpPlzdBQxr1bsFUniM+dHtbHIPyw=
+X-Received: by 2002:a25:b203:: with SMTP id i3mr34416195ybj.260.1627420854479;
+ Tue, 27 Jul 2021 14:20:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210727115928.74600-1-wangborong@cdjrlc.com>
+In-Reply-To: <20210727115928.74600-1-wangborong@cdjrlc.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 27 Jul 2021 14:20:43 -0700
+Message-ID: <CAEf4Bza5UwEOPEo3Ww-TugJmT91dmfCggFAF6JQmeimCebYPVQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: fix commnet typo
+To:     wangborong@cdjrlc.com
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until we complete the setup stage of initialization, GSI is not
-initialized and therefore endpoints aren't usable.  So avoid
-suspending endpoints during system suspend unless setup is complete.
+On Tue, Jul 27, 2021 at 5:00 AM Jason Wang <wangborong@cdjrlc.com> wrote:
+>
+> Remove the repeated word 'the' in line 48.
+>
+> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+> ---
 
-Clear the setup_complete flag at the top of ipa_teardown() to
-reflect the fact that things are no longer in setup state.
+Fixed the typo in the subject of a patch fixing a typo in libbpf
+comment :) Applied to bpf-next.
 
-Get rid of a misplaced (and superfluous) comment.
-
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_main.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 67aba68e6e3b4..2e728d4914c82 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -194,6 +194,9 @@ static void ipa_teardown(struct ipa *ipa)
- 	struct ipa_endpoint *exception_endpoint;
- 	struct ipa_endpoint *command_endpoint;
- 
-+	/* We're going to tear everything down, as if setup never completed */
-+	ipa->setup_complete = false;
-+
- 	ipa_qmi_teardown(ipa);
- 	ipa_endpoint_default_route_clear(ipa);
- 	exception_endpoint = ipa->name_map[IPA_ENDPOINT_AP_LAN_RX];
-@@ -885,13 +888,11 @@ static int ipa_suspend(struct device *dev)
- {
- 	struct ipa *ipa = dev_get_drvdata(dev);
- 
--	/* When a suspended RX endpoint has a packet ready to receive, we
--	 * get an IPA SUSPEND interrupt.  We trigger a system resume in
--	 * that case, but only on the first such interrupt since suspend.
--	 */
--	__clear_bit(IPA_FLAG_RESUMED, ipa->flags);
--
--	ipa_endpoint_suspend(ipa);
-+	/* Endpoints aren't usable until setup is complete */
-+	if (ipa->setup_complete) {
-+		__clear_bit(IPA_FLAG_RESUMED, ipa->flags);
-+		ipa_endpoint_suspend(ipa);
-+	}
- 
- 	ipa_clock_put(ipa);
- 
-@@ -917,7 +918,9 @@ static int ipa_resume(struct device *dev)
- 	 */
- 	ipa_clock_get(ipa);
- 
--	ipa_endpoint_resume(ipa);
-+	/* Endpoints aren't usable until setup is complete */
-+	if (ipa->setup_complete)
-+		ipa_endpoint_resume(ipa);
- 
- 	return 0;
- }
--- 
-2.27.0
-
+>  tools/lib/bpf/libbpf.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 4c153c379989..d474816ecd70 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -7236,7 +7236,7 @@ static int bpf_object__collect_relos(struct bpf_object *obj)
+>
+>         for (i = 0; i < obj->nr_programs; i++) {
+>                 struct bpf_program *p = &obj->programs[i];
+> -
+> +
+>                 if (!p->nr_reloc)
+>                         continue;
+>
+> @@ -9533,7 +9533,7 @@ static int find_btf_by_prefix_kind(const struct btf *btf, const char *prefix,
+>         ret = snprintf(btf_type_name, sizeof(btf_type_name),
+>                        "%s%s", prefix, name);
+>         /* snprintf returns the number of characters written excluding the
+> -        * the terminating null. So, if >= BTF_MAX_NAME_SIZE are written, it
+> +        * terminating null. So, if >= BTF_MAX_NAME_SIZE are written, it
+>          * indicates truncation.
+>          */
+>         if (ret < 0 || ret >= sizeof(btf_type_name))
+> @@ -10075,7 +10075,7 @@ struct bpf_link {
+>  int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
+>  {
+>         int ret;
+> -
+> +
+>         ret = bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
+>         return libbpf_err_errno(ret);
+>  }
+> --
+> 2.32.0
+>
