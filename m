@@ -2,119 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4620B3D6D18
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 06:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F263D6D25
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 06:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbhG0EEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 00:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46284 "EHLO
+        id S233553AbhG0ELI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 00:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbhG0EDX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 00:03:23 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EAFC0613CF
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 21:03:22 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id w6so13636507oiv.11
-        for <netdev@vger.kernel.org>; Mon, 26 Jul 2021 21:03:22 -0700 (PDT)
+        with ESMTP id S231361AbhG0ELG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 00:11:06 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F5AC061757;
+        Mon, 26 Jul 2021 21:11:06 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id b6so15961160pji.4;
+        Mon, 26 Jul 2021 21:11:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fTzo6vxMfYlgbUOwSMawZfNKJyreGjClP9wAsvVTm1E=;
-        b=UD6VtD2nxoM4yb0LGkCOvaX/zF9yrw4fA6tqSCoTSL82aBwK6yqzv0t2Hz5VkIh/da
-         U7yhPJqRFbxApmj84K1i+pXiVe6aku3GXsqXD1Gr0E24zeni9vl8X2Ft59zum4tg7ABv
-         RrVdeW5K4K/YjAP3pmiafa7WtuBsVd0+fZX5olSmVMK1nHp8tsPBxPm6G7+7eGn9ZFlP
-         7QR+rmk3sAqSdk47QNGEv0p5waWj28vyuS07t6VnIvCCZr3ShLf4G62vnrE7edmJgc/L
-         Gcwk1m4LZIpMUGOrRG4xWX95uINhn33c5huopzBpkKNnX1oTDbgg4cVNeuZjHsHCufPR
-         57SA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZOkKQ9mkCrA/qKt17/VrVIc8lBqLzH6oDA9OLUrqsLg=;
+        b=j+UUCcJ0m+14hlwaznZVmHvpFYYB4iQJqThy2jxxWCrpSyiDxy281u59mJaijMiAvb
+         jaKoYw+oIzbTAvvU/Pl/pLVAeKMjGd7X4jPrGErNqQAGGDQ1MJwf8vxWFKkykn7oy9ul
+         7dP4xIxA5jA0M9DPAdcYXfEMvqOdi6meD182lL8s0QjxdtJ1DHVHT6CQwCGUMCvZx2W4
+         02AG+bjrGF1gsSAsS0f3SxTaa0uBn+REAK9T6XZ6VSDd/fo5EDI9Wdi4UQgJzibUpTo2
+         nD90UZ2pZDD6k9bZ+yTPm7GG74OsDcjQ4D5Sv892g7aEW0ktmx7F5OdBWwLV82cG4b8x
+         x6+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fTzo6vxMfYlgbUOwSMawZfNKJyreGjClP9wAsvVTm1E=;
-        b=EzMLAGX76kt10usExVyd3oHMn9M7ucV4H1GR+aoLN/vFIBECkMjmbjsKqKvCNq34RD
-         GQeHkGvoWf8FiSLwPAbM6SH000hpwOS6TEbmqR9pxTs2R7kzxnVS9Hu3RfKuXwgRqk3v
-         Nb0PMsG7rok0Kzb0w3OjwLyEffu7y98z3inh8sIKv5GHIbWYXJ6KN7aXi5XbpWC9jzKV
-         nf+moJqUdpaPtf1eBgEpAsKoteUjyqBumH96WUwiePgqMKgNpHxw+nMZygFHL6ArPgjT
-         r9wK/iTDQ3k9VRurnQIJzxVdwO1aXCWwh4NC697vGpYbdO4NYq5ouWWL+NYDDEftX8Ux
-         D7zQ==
-X-Gm-Message-State: AOAM531I+Hjvv0KHWkoDAWz4Bl9W9rBwS5dnAq2xO1bBUHtQ7UpnJ+B4
-        2zSZwh+wJBWoPQLDnrxNkzyF623uovOENcTOTDLGTA==
-X-Google-Smtp-Source: ABdhPJw+jVLOBD8BsPXzGNdeDNl26ZITTDr1jQEW6mn0yo21vve5G56PdP7KPn7IkR9wNjAU5XZ6SguuPw+dYD0C/Eo=
-X-Received: by 2002:aca:abd4:: with SMTP id u203mr13772228oie.13.1627358602134;
- Mon, 26 Jul 2021 21:03:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZOkKQ9mkCrA/qKt17/VrVIc8lBqLzH6oDA9OLUrqsLg=;
+        b=MeJ20jT5gtiSlyaXZQXqIMcumd9YRxKeofY3W5xU0SD5d5el3+zN/2TM9ZBHvnq+z0
+         Pu6MNmJmXNE5ohUAGpdzQE3RTtJ+sMCMs6RNvVtlpypm9thsA7Yq/CFw1IkPavVOol+i
+         IBg2cYjQ1OCnzHDpGCfluqQtpWrkTYmMdJF9xkMxOLNAQOflnH5qxGSHE4RICygbE7dt
+         V/z02mMq40JTn8XOpJxsBfn4L0ijMzIyriHiLBfm3lxr9U7yfiRGCun5VKl9xKH989Qy
+         PNhycjq7gc1XDNQZf0kKwGR/SRqTv2T65UU8KFEPj9c0k1bBOt50bMsX7EbppuaIzpSn
+         ShQA==
+X-Gm-Message-State: AOAM530Gjyi9O6Mg3oTN9xVNOPYNPRoPA6F8/8lqQRDTetOmX2AldLqe
+        4pGtx8BeWPcz83qOb08F3L0=
+X-Google-Smtp-Source: ABdhPJy34SnLNcMy/4Hy814wU8BxlaglEkiGaDxa+XAFhJuwwVb+PtmTf0LOf1Qle2pFypECDx4cww==
+X-Received: by 2002:a62:1c14:0:b029:34a:70f5:40da with SMTP id c20-20020a621c140000b029034a70f540damr21425236pfc.37.1627359065665;
+        Mon, 26 Jul 2021 21:11:05 -0700 (PDT)
+Received: from localhost.localdomain ([182.209.58.45])
+        by smtp.gmail.com with ESMTPSA id p3sm1493866pgi.20.2021.07.26.21.11.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jul 2021 21:11:05 -0700 (PDT)
+From:   Juhee Kang <claudiajkang@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Yonghong Song <yhs@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [bpf-next v2 1/2] samples: bpf: Fix tracex7 error raised on the missing argument
+Date:   Tue, 27 Jul 2021 04:10:55 +0000
+Message-Id: <20210727041056.23455-1-claudiajkang@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20210721162403.1988814-1-vladimir.oltean@nxp.com>
- <20210721162403.1988814-6-vladimir.oltean@nxp.com> <CA+G9fYtaM=hexrmMvDXzeHZKuLCp53kRYyyvbBXZzveQzgDSyA@mail.gmail.com>
- <YP7ByrIz4LvrvIY5@lunn.ch>
-In-Reply-To: <YP7ByrIz4LvrvIY5@lunn.ch>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 27 Jul 2021 09:33:10 +0530
-Message-ID: <CA+G9fYtxDUJLRG7sv0aHox=+i7fFaCnLEjA0aaDRXPh+3h57hA@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next 5/7] net: bridge: switchdev: let drivers
- inform which bridge ports are offloaded
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        bridge@lists.linux-foundation.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Marek Behun <kabel@blackhole.sk>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Jul 2021 at 19:38, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Mon, Jul 26, 2021 at 07:21:20PM +0530, Naresh Kamboju wrote:
-> > On Wed, 21 Jul 2021 at 21:56, Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
-> > >
-> > > On reception of an skb, the bridge checks if it was marked as 'already
-> > > forwarded in hardware' (checks if skb->offload_fwd_mark == 1), and if it
-> > > is, it assigns the source hardware domain of that skb based on the
-> > > hardware domain of the ingress port. Then during forwarding, it enforces
-> > > that the egress port must have a different hardware domain than the
-> > > ingress one (this is done in nbp_switchdev_allowed_egress).
->
-> > [Please ignore if it is already reported]
-> >
-> > Following build error noticed on Linux next 20210723 tag
-> > with omap2plus_defconfig on arm architecture.
->
-> Hi Naresh
->
-> Please trim emails when replying. It is really annoying to have to
-> page down and down and down to find your part in the email, and you
-> always wonder if you accidentally jumped over something when paging
-> down at speed.
+The current behavior of 'tracex7' doesn't consist with other bpf samples
+tracex{1..6}. Other samples do not require any argument to run with, but
+tracex7 should be run with btrfs device argument. (it should be executed
+with test_override_return.sh)
 
-It was my bad,
-I will follow your suggestions in future reports.
-Thank you !
+Currently, tracex7 doesn't have any description about how to run this
+program and raises an unexpected error. And this result might be
+confusing since users might not have a hunch about how to run this
+program.
 
->
->      Andrew
+    // Current behavior
+    # ./tracex7
+    sh: 1: Syntax error: word unexpected (expecting ")")
+    // Fixed behavior
+    # ./tracex7
+    ERROR: Run with the btrfs device argument!
 
-- Naresh
+In order to fix this error, this commit adds logic to report a message
+and exit when running this program with a missing argument.
+
+Additionally in test_override_return.sh, there is a problem with
+multiple directory(tmpmnt) creation. So in this commit adds a line with
+removing the directory with every execution.
+
+Signed-off-by: Juhee Kang <claudiajkang@gmail.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+Change in v2:
+ - change directory remove option from -rf to -r
+
+ samples/bpf/test_override_return.sh | 1 +
+ samples/bpf/tracex7_user.c          | 5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/samples/bpf/test_override_return.sh b/samples/bpf/test_override_return.sh
+index e68b9ee6814b..35db26f736b9 100755
+--- a/samples/bpf/test_override_return.sh
++++ b/samples/bpf/test_override_return.sh
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+ 
++rm -r tmpmnt
+ rm -f testfile.img
+ dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
+ DEVICE=$(losetup --show -f testfile.img)
+diff --git a/samples/bpf/tracex7_user.c b/samples/bpf/tracex7_user.c
+index fdcd6580dd73..8be7ce18d3ba 100644
+--- a/samples/bpf/tracex7_user.c
++++ b/samples/bpf/tracex7_user.c
+@@ -14,6 +14,11 @@ int main(int argc, char **argv)
+ 	int ret = 0;
+ 	FILE *f;
+ 
++	if (!argv[1]) {
++		fprintf(stderr, "ERROR: Run with the btrfs device argument!\n");
++		return 0;
++	}
++
+ 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+ 	obj = bpf_object__open_file(filename, NULL);
+ 	if (libbpf_get_error(obj)) {
+-- 
+2.27.0
+
