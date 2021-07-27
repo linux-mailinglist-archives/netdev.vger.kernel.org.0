@@ -2,226 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CED083D7F78
-	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB7B3D7F7D
+	for <lists+netdev@lfdr.de>; Tue, 27 Jul 2021 22:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbhG0UtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 16:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
+        id S232261AbhG0Utk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 16:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231834AbhG0Us5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:48:57 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CBAC061757;
-        Tue, 27 Jul 2021 13:48:56 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id f12so387753ljn.1;
-        Tue, 27 Jul 2021 13:48:55 -0700 (PDT)
+        with ESMTP id S231834AbhG0Utj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 16:49:39 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDB3C061760
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:49:39 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id a13so325905iol.5
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 13:49:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lF7mD1BVxioHFdomMrb2MRtMYijGt5v/snpw5amiNlQ=;
-        b=ZjD43cgTjfivt4bHDpq5HvYzL/dIuanOURUGI4JeLB+d4gylPbEUWsFpBEhCEs0a/d
-         7+/SQ1owF01STh+s4HjdoX/McTv6W3Vy+iiuYtkvcMWm+H/fSkGvYyEBGCaoWfwfOdLD
-         T2Bwa3yQ4uDXjqtR4wtzGl/XVL3dC3bZVhcaa7zPpJ3LUOjiaDdbVoGgb6Pf/4Lp5Jtj
-         rc8ybs8imjP291LpOm7Pp7ma+co5ILMANo9DzeUt/Hln+f28tY9dEqO4PEMlPabC4t4J
-         L4ZG61DnbQOxBexw94E+KcMX5mG0qufES7JYTy8o6clN9WBmjrJt/iCkFTjA9MOebxnJ
-         d0Vw==
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=64tNPGucwZBu9cEJcgaC2pBbTlgtzE/y1Q1KvB08ytA=;
+        b=IdGN52UmTF1b0dKE/DwwfwWVY0ALlk16Cl+YXbIzE2iWthfEQaKtZ5aUMXKt/6ETmE
+         /nux9Q5iPxerbE11u4zDnPA+lFzHEiGGbxhaeXxn5cJnhWPV/PM/v39KpMui2t1PcbVa
+         wx2Kg2NSm5J7JudzswT0nb0WykvPNC15TkK0aBMTLKNCx7aW8eH5kEZ2xbNtiiEYH7os
+         Sc++SOQlIGyC9tCAgJ9LPeuwuE7QVxiw35lOAi+huU8IMFL7Yayn77kjv1Zu4VXKwsB3
+         oGxl2VSTa5x7E6zVoSysEhylZgprynD2J/P8y/7Q2lJcAcqpCuLGQWHbmLrOPmWfp5D+
+         HUmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lF7mD1BVxioHFdomMrb2MRtMYijGt5v/snpw5amiNlQ=;
-        b=Ocd3K4PXeUqEiSurVvZhDypBNqjK4FLExXnCI9uv5XfPXmmeTsXd3KFRlQGR0TBPPZ
-         1Lrbl2qM1LMYA66/Puo8mPng0QFbqTrXb3uXpgaSRSXAMes0e4cEA+fxihVrLXkShwwl
-         Gceg9qKhiBKlh0y/2VDtWjh3FIHXahlje3CD3YbXwSZBSJcqL2kqEVMlXVdA3JmEN4x5
-         iB7HnTXqbIuXHMUi/mSXh5pE/0oqkKun4+RY21eG1ZT8wBDt0lX2Mp18LGRgf0RW917F
-         yvrnaCer9Uz+oZ/ftZNYdLD2Id1c0II6UeLwa8tmRchtv3DQg/jPsKHY6GrVdxwhHlkR
-         R7jg==
-X-Gm-Message-State: AOAM531CRWJQfP2zvuIdrKHB7vy8onrziCwZwpHqOsev4bvO3EM7BuqG
-        1VGVcAoKU3NSng+8GQggkpY=
-X-Google-Smtp-Source: ABdhPJyRlF492gkc3EkRMK9s+uMn4Su0BIzXqPdAzVIB3P41wFNOasqcqcMVHGrrX44f2krVi8To5Q==
-X-Received: by 2002:a2e:7e06:: with SMTP id z6mr17020364ljc.394.1627418934371;
-        Tue, 27 Jul 2021 13:48:54 -0700 (PDT)
-Received: from [192.168.1.102] ([178.176.79.110])
-        by smtp.gmail.com with ESMTPSA id i25sm360933ljg.20.2021.07.27.13.48.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Jul 2021 13:48:54 -0700 (PDT)
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Subject: Re: [PATCH net-next 08/18] ravb: Add R-Car common features
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omprussia.ru>,
-        Adam Ford <aford173@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Yuusuke Ashizuka <ashiduka@fujitsu.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210722141351.13668-1-biju.das.jz@bp.renesas.com>
- <20210722141351.13668-9-biju.das.jz@bp.renesas.com>
-Message-ID: <d493b1d2-6d05-9eb3-c5f5-f3828938fe56@gmail.com>
-Date:   Tue, 27 Jul 2021 23:48:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=64tNPGucwZBu9cEJcgaC2pBbTlgtzE/y1Q1KvB08ytA=;
+        b=WnuXqlJCt1fJv2g9hjyP5O2EqKguNvD2FKKXuE9enbFl8L2t11PTVdNL7/GR8RJHrY
+         wt8OQ+PmUQADl31EBdfCsKpVQPkSnzw2B1q9FQF22Ws2So5CncC+6khAbmajgZZenBSf
+         Lk629iY0ebpZzbcY2kjEUXuChAC/1bVj7wBAFjsHuy9YvIrQz0UwWIpgbjWeiaEay5z3
+         xUWGJxtbrDu0MMB44rlDRFyILV0x0gRJi+smwU1BdxNdtn6dZfHJoVFCmJWr/LrZS7ya
+         P3Ua1DUg2o4GWHQWYBuzyhmY1GCGGO1Wt3NmUNfdBaLUXwQszZ2JpZHy64nchc+8eeIC
+         TW3g==
+X-Gm-Message-State: AOAM5303syOqSxXlNBNPELznHzK/F96Jnf6tJzDd1HQhz5u/CEHg4No+
+        7SCoiQxXBVqpeNYij65NdDVnQ7V38nr4I9SxxHJBXQ==
+X-Google-Smtp-Source: ABdhPJzr+kjWb75ibDmQA0bhH6DcFg215f5lkpfWA45ZPPGKvzYMzXTwddcEO0toK39m6cpENiwgU9mfdLv9Ythzan0=
+X-Received: by 2002:a05:6638:41a7:: with SMTP id az39mr23015848jab.52.1627418978515;
+ Tue, 27 Jul 2021 13:49:38 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210722141351.13668-9-biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
+ <20210726194603.14671-5-gerhard@engleder-embedded.com> <YP8l6cWaQU/2NoIA@lunn.ch>
+In-Reply-To: <YP8l6cWaQU/2NoIA@lunn.ch>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Tue, 27 Jul 2021 22:49:27 +0200
+Message-ID: <CANr-f5xOn1VcKZQNfb+iunHjq+8uUkxNQb0F1_gkjqd4CxGKDQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/5] tsnep: Add TSN endpoint Ethernet MAC driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Mon, Jul 26, 2021 at 11:15 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > +static int tsnep_mdiobus_read(struct mii_bus *bus, int addr, int regnum)
+> > +{
+> > +     struct tsnep_adapter *adapter = bus->priv;
+> > +     u16 data;
+> > +     int retval;
+> > +
+> > +     if (adapter->loopback)
+> > +             return 0;
+> > +
+> > +     retval = tsnep_read_md(adapter, addr, regnum, &data);
+> > +     if (retval != 0)
+> > +             return retval;
+>
+> It appears your MDIO bus can only do C22. Please add a test for C45 and return -EOPNOTSUPP.
 
-On 7/22/21 5:13 PM, Biju Das wrote:
+You are right. I will add that check.
 
-> The below features are supported by both R-Car Gen2 and Gen3.
-> 
-> 1) magic packet detection
-> 2) multiple TSRQ support
-> 3) extended descriptor in rx
+> > +static void tsnep_phy_link_status_change(struct net_device *netdev)
+> > +{
+> > +     struct tsnep_adapter *adapter = netdev_priv(netdev);
+> > +     struct phy_device *phydev = netdev->phydev;
+> > +
+> > +     if (adapter->loopback)
+> > +             return;
+> > +
+> > +     if (adapter->gmii2rgmii) {
+> > +             u16 val;
+> > +
+> > +             if (phydev->link && phydev->speed == 1000)
+> > +                     val = BMCR_SPEED1000;
+> > +             else
+> > +                     val = BMCR_SPEED100;
+> > +             tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
+> > +                            ECM_GMII2RGMII_BMCR, val);
+> > +     }
+>
+> I _think_ this is wrong. They way the PHYs are chained means you
+> should not need to do this, the xgmiitorgmii_read_status() does it.
+> Maybe you have the chaining setup wrong?
 
-   I think this one should better be called timestamping...
+I will try to use xgmiitorgmii.
 
-> 4) No half duplex support
+> > +static int tsnep_phy_open(struct tsnep_adapter *adapter)
+> > +{
+> > +     __ETHTOOL_DECLARE_LINK_MODE_MASK(mask);
+> > +     struct ethtool_eee ethtool_eee;
+> > +     int retval;
+> > +
+> > +     retval = phy_connect_direct(adapter->netdev, adapter->phydev,
+> > +                                 tsnep_phy_link_status_change,
+> > +                                 adapter->phy_mode);
+> > +     if (retval)
+> > +             return -EIO;
+>
+> phy_connect_direct() returns an error code. Use it, rather than
+> changing it to something else. This applies everywhere. You must have
+> a good reason to change error codes, and then it is wise to put a
+> comment why you change it.
 
-   Couldn't we avoid the "negative" features?
+I will fix it.
 
-> 5) override mtu change
+> > +
+> > +     /* MAC supports only 100Mbps|1000Mbps full duplex
+> > +      * SPE (Single Pair Ethernet) is also an option but not implemented yet
+> > +      */
+> > +     linkmode_zero(mask);
+> > +     linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, mask);
+> > +     linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, mask);
+> > +     linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, mask);
+> > +     linkmode_and(mask, adapter->phydev->supported, mask);
+> > +     linkmode_copy(adapter->phydev->supported, mask);
+> > +     linkmode_copy(adapter->phydev->advertising, mask);
+>
+> You should not be accessing the phydev directly. Use
+> phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT),
+> etc.I will try to use xgmiitorgmii.
 
-   Hm, I'd vote for the individual patches covering only single feature...
+I will use phy_remove_link_mode().
 
-> Add features bits to support the same.
-> 
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  drivers/net/ethernet/renesas/ravb_main.c | 110 +++++++++++++++--------
->  1 file changed, 71 insertions(+), 39 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index b3c99f974632..4ef2565534d2 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -680,11 +694,14 @@ static void ravb_rcv_snd_enable(struct net_device *ndev)
->  /* function for waiting dma process finished */
->  static int ravb_stop_dma(struct net_device *ndev)
->  {
-> +	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_drv_data *info = priv->info;
->  	int error;
->  
->  	/* Wait for stopping the hardware TX process */
-> -	error = ravb_wait(ndev, TCCR,
-> -			  TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3, 0);
-> +	if (info->features & RAVB_MULTI_TSRQ)
-> +		error = ravb_wait(ndev, TCCR,
-> +				  TCCR_TSRQ0 | TCCR_TSRQ1 | TCCR_TSRQ2 | TCCR_TSRQ3, 0);
->  	if (error)
+> > +static int tsnep_phy_init(struct tsnep_adapter *adapter)
+> > +{
+> > +     struct device_node *dn;
+> > +     u16 val;
+> > +     u32 id;
+> > +     int retval;
+> > +
+> > +     retval = of_get_phy_mode(adapter->pdev->dev.of_node,
+> > +                              &adapter->phy_mode);
+> > +     if (retval)
+> > +             adapter->phy_mode = PHY_INTERFACE_MODE_GMII;
+> > +
+> > +     dn = of_parse_phandle(adapter->pdev->dev.of_node, "phy-handle", 0);
+> > +     adapter->phydev = of_phy_find_device(dn);
+> > +     if (!adapter->phydev)
+> > +             adapter->phydev = phy_find_first(adapter->mdiobus);
+> > +     if (!adapter->phydev)
+> > +             return -EIO;
+> > +
+> > +     /* detect optional GMII2RGMII */I will try to use xgmiitorgmii.
+> > +     retval = tsnep_read_md(adapter, ECM_GMII2RGMII_ADDR, MII_PHYSID1, &val);
+> > +     if (retval)
+> > +             return retval;
+> > +     id = val << 16;
+> > +     retval = tsnep_read_md(adapter, ECM_GMII2RGMII_ADDR, MII_PHYSID2, &val);
+> > +     if (retval)
+> > +             return retval;
+> > +     id |= val;
+> > +     if (id == 0)
+> > +             adapter->gmii2rgmii = true;
+>
+> This is where i think GMII2RGMII goes wrong. MAC phy-handle should
+> point to the GMII2RGMII device in DT. The GMII2RGMII should have a
+> phy-handle which points to the PHY.
 
-   What if the above *if* skips the ravb_wait() call -- didn't you get a complaint from gcc
-about the unnintialized variable?
+As mentioned above, I will try to use xgmiitorgmii.
 
-[...]
-> @@ -808,11 +826,14 @@ static bool ravb_queue_interrupt(struct net_device *ndev, int q)
->  
->  static bool ravb_timestamp_interrupt(struct net_device *ndev)
->  {
-> +	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_drv_data *info = priv->info;
->  	u32 tis = ravb_read(ndev, TIS);
->  
->  	if (tis & TIS_TFUF) {
->  		ravb_write(ndev, ~(TIS_TFUF | TIS_RESERVED), TIS);
-> -		ravb_get_tx_tstamp(ndev);
-> +		if (info->features & RAVB_EX_RX_DESC)
+> > +     /* reset PHY */
+> > +     retval = tsnep_write_md(adapter, adapter->phydev->mdio.addr, MII_BMCR,
+> > +                             BMCR_RESET);
+> > +     if (retval)
+> > +             return retval;
+> > +
+> > +     /* reset GMII2RGMII */
+> > +     if (adapter->gmii2rgmii) {
+> > +             retval = tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
+> > +                                     ECM_GMII2RGMII_BMCR, BMCR_RESET);
+> > +             if (retval)
+> > +                     return retval;
+> > +             retval = tsnep_write_md(adapter, ECM_GMII2RGMII_ADDR,
+> > +                                     ECM_GMII2RGMII_BMCR, BMCR_SPEED100);
+> > +             if (retval)
+> > +                     return retval;
+> > +     }
+>
+> The PHY driver is in control of the PHY, not the MAC. Please remove.
 
-   Yeah, definitely a bad feature name...
+Ok, I will do that.
 
-> +			ravb_get_tx_tstamp(ndev);
->  		return true;
->  	}
->  	return false;
-[...]
-> @@ -1069,15 +1091,17 @@ static int ravb_phy_init(struct net_device *ndev)
->  		netdev_info(ndev, "limited PHY to 100Mbit/s\n");
->  	}
->  
-> -	/* 10BASE, Pause and Asym Pause is not supported */
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Pause_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Asym_Pause_BIT);
-> +	if (info->features & RAVB_NO_HALF_DUPLEX) {
-> +		/* 10BASE, Pause and Asym Pause is not supported */
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Half_BIT);
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_10baseT_Full_BIT);
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Pause_BIT);
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_Asym_Pause_BIT);
->  
-> -	/* Half Duplex is not supported */
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-> -	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-> +		/* Half Duplex is not supported */
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_100baseT_Half_BIT);
-
-    Mhm? Some of the half-duplex modes sre unsupported still?
-
-[...]
-> @@ -1314,8 +1338,9 @@ static void ravb_get_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)
->  static int ravb_set_wol(struct net_device *ndev, struct ethtool_wolinfo *wol)
->  {
->  	struct ravb_private *priv = netdev_priv(ndev);
-> +	const struct ravb_drv_data *info = priv->info;
->  
-> -	if (wol->wolopts & ~WAKE_MAGIC)
-> +	if ((wol->wolopts & ~WAKE_MAGIC) || (!(info->features & RAVB_MAGIC)))
-
-   Parens about !x not needed. And I think the second operand should come first instead...
-
->  		return -EOPNOTSUPP;
->  
->  	priv->wol_enabled = !!(wol->wolopts & WAKE_MAGIC);
-[...]
-> @@ -1595,28 +1621,30 @@ static netdev_tx_t ravb_start_xmit(struct sk_buff *skb, struct net_device *ndev)
->  	desc->dptr = cpu_to_le32(dma_addr);
->  
->  	/* TX timestamp required */
-> -	if (q == RAVB_NC) {
-> -		ts_skb = kmalloc(sizeof(*ts_skb), GFP_ATOMIC);
-> -		if (!ts_skb) {
-> -			if (num_tx_desc > 1) {
-> -				desc--;
-> -				dma_unmap_single(ndev->dev.parent, dma_addr,
-> -						 len, DMA_TO_DEVICE);
-> +	if (info->features & RAVB_EX_RX_DESC) {
-
-   Definitely a bad name...
-
-[...]
-> @@ -2205,8 +2235,10 @@ static int ravb_probe(struct platform_device *pdev)
->  	}
->  	clk_prepare_enable(priv->refclk);
->  
-> -	ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
-> -	ndev->min_mtu = ETH_MIN_MTU;
-> +	if (info->features & RAVB_OVERRIDE_MTU_CHANGE) {
-
-   Why? :-/ Could you tell me more details?
-
-> +		ndev->max_mtu = 2048 - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
-> +		ndev->min_mtu = ETH_MIN_MTU;
-> +	}
->  
->  	priv->num_tx_desc = info->num_tx_desc;
->  
-
-MBR, Sergei
+Gerhard
