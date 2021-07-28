@@ -2,129 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E613D87B9
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD7C83D8805
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbhG1GOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 02:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232985AbhG1GOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 02:14:05 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC36C061757;
-        Tue, 27 Jul 2021 23:14:04 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id ds11-20020a17090b08cbb0290172f971883bso8447399pjb.1;
-        Tue, 27 Jul 2021 23:14:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HFtqBh3AzPDg30WEMBgyL27C+XnWPP05l4OdVS5va+k=;
-        b=EVtXQu4G5iBgujHQWxFLU2Ir7PB69hHsT5LXrFODAmTNTHbNyySb+wca4uHFE63MfG
-         cZwxRyOgwtp2v0xWu+UjXLh7EqUPIcXlHwsg/mg5fM1Mbbgr/hy0ousG9N10ySP5Sipd
-         eRcZXW4qVpOi7nMrTbv1kavI1e7NSMckZjBaFPiaWtxVTuT7fV26oON+owZtA6SQXvoo
-         8D0YRfDzIZE0bwuQo25Ak4GmYH+HOZB777WrDRuOhxr71lKwRP7RL5bZipY9DsuIUSLT
-         z8ZmBxwPbyXLByN+KleRtIBMMzASvK7bqK0lcKG0LuyXHB6LS3nXEryvWuKfNb0gE1xs
-         IYBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HFtqBh3AzPDg30WEMBgyL27C+XnWPP05l4OdVS5va+k=;
-        b=jgHkiNscivGsTLzhYABmvU0aKi+Ux54kslfrezL3YFtlWUbz9xB28ttgn8FRDBY8IZ
-         rtfHgNhjPVkImWfowWn2QfSe0rbpCSfX/qBDcuL2qqfDVCWCmswL60AYkWjArnqoykSM
-         6M8nm+WiyWKDegGaKW7bhLq5KDAeGERerwtXURSyXG5iQzh7eWdVDbVE/G4iRFuTGFX8
-         3QxH5b8sElQJoaanNPHi59b5aveoJDeQkgb/OoI/QHa4Vo3z7E1XlPuNTN/Wg1Qj6x9h
-         NvrZ1a+xdqHR5B4DxCaWTq2OipMWl/Y/9xEstksfT/yydg2/F6s5Lzo2yX1h3UhJOa5C
-         VWtg==
-X-Gm-Message-State: AOAM530T2N7lx+4Zhc0FTHq6EuBTASWZO/PA7jouotj7aUxJerpFumpx
-        ay0Tn3v4Vhzh8JGdDV5BSAGHrKic6zx8RMmmeBk=
-X-Google-Smtp-Source: ABdhPJwQtqTMPkc66YW7IA7vch37TNRJpgC4mzcBMH64oG0GKCXmPSgQzBmi2xEbjSH3FcFLNMQ7KLPImi9ZsqwRRog=
-X-Received: by 2002:a17:90a:d58f:: with SMTP id v15mr7937074pju.117.1627452844205;
- Tue, 27 Jul 2021 23:14:04 -0700 (PDT)
+        id S234578AbhG1GfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 02:35:02 -0400
+Received: from gateway32.websitewelcome.com ([192.185.145.171]:17613 "EHLO
+        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234237AbhG1GfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 02:35:00 -0400
+X-Greylist: delayed 1366 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Jul 2021 02:35:00 EDT
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway32.websitewelcome.com (Postfix) with ESMTP id A72D8AE7DB
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 01:12:11 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 8cnbmKvtLoIHn8cnbmV3ks; Wed, 28 Jul 2021 01:12:11 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/gCRywG3p9gdzDsdnfCiyJuRt7hlhcIRTlf1DfYGxQk=; b=VcIfYrm9dG72K/ZQdtfuvuRlxT
+        V3vj8YAhGaZx/cGjli4zOBFYlJLoXo0Vsd02K5fRjcNQP9NIaIESg+YOXV99qTCB2Yo/O/8WHP1ds
+        tXZbD1nJiwP3eEvBBTiZUo+VuIrDMlwm0ktVaXENnRTX4JuI9vlmD7ltgDRPbsHiRknznvoYhhE9n
+        E8MtFRCudEt5DeNW0MrlXGslPCSnGcfJ5OUAGOu7TVmX7V7cwyVfPVrDjuE3onf3wAwUBuIo0NmMx
+        IpJTghBwcX95Gj2Ml9t6eR6MSITfuKehPikhPibC8RrQ3I91RzhVBZtQ0/pRauPtwPnnaJk7AevGt
+        aQE41uZw==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:44814 helo=[192.168.15.8])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1m8cna-003PI6-Vi; Wed, 28 Jul 2021 01:12:11 -0500
+Subject: Re: [PATCH 19/64] ip: Use struct_group() for memcpy() regions
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-20-keescook@chromium.org> <YQDxaYrHu0PeBIuX@kroah.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <baead202-569f-775f-348c-aa64e69f03ed@embeddedor.com>
+Date:   Wed, 28 Jul 2021 01:14:33 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210727131753.10924-1-magnus.karlsson@gmail.com>
- <20210727131753.10924-5-magnus.karlsson@gmail.com> <8d3d2bdb-3750-80dd-3874-def189e0e51f@fb.com>
-In-Reply-To: <8d3d2bdb-3750-80dd-3874-def189e0e51f@fb.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 28 Jul 2021 08:13:53 +0200
-Message-ID: <CAJ8uoz3=J8V-frhiSvP6OrYqkrsSY0n3ZrQT5ALxU4w3aCzGvQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 04/17] selftests: xsk: set rlimit per thread
-To:     Yonghong Song <yhs@fb.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        Jussi Maki <joamaki@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <YQDxaYrHu0PeBIuX@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1m8cna-003PI6-Vi
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:44814
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 9
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 8:39 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 7/27/21 6:17 AM, Magnus Karlsson wrote:
-> > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> >
-> > Set rlimit per thread instead of on the main thread. The main thread
-> > does not register any umem area so do not need this.
->
-> I think setrlimit() is per process. Did I miss anything?
 
-No, you are correct. I must have gotten confused by the heat or
-something. Will remove this patch from the set.
 
-Thanks!
+On 7/28/21 00:55, Greg Kroah-Hartman wrote:
+> On Tue, Jul 27, 2021 at 01:58:10PM -0700, Kees Cook wrote:
+>> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+>> field bounds checking for memcpy(), memmove(), and memset(), avoid
+>> intentionally writing across neighboring fields.
+>>
+>> Use struct_group() in struct flowi4, struct ipv4hdr, and struct ipv6hdr
+>> around members saddr and daddr, so they can be referenced together. This
+>> will allow memcpy() and sizeof() to more easily reason about sizes,
+>> improve readability, and avoid future warnings about writing beyond the
+>> end of saddr.
+>>
+>> "pahole" shows no size nor member offset changes to struct flowi4.
+>> "objdump -d" shows no meaningful object code changes (i.e. only source
+>> line number induced differences.)
+>>
+>> Note that since this is a UAPI header, struct_group() has been open
+>> coded.
+>>
+>> Signed-off-by: Kees Cook <keescook@chromium.org>
+>> ---
+>>  include/net/flow.h            |  6 ++++--
+>>  include/uapi/linux/if_ether.h | 12 ++++++++++--
+>>  include/uapi/linux/ip.h       | 12 ++++++++++--
+>>  include/uapi/linux/ipv6.h     | 12 ++++++++++--
+>>  net/core/flow_dissector.c     | 10 ++++++----
+>>  net/ipv4/ip_output.c          |  6 ++----
+>>  6 files changed, 42 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/include/net/flow.h b/include/net/flow.h
+>> index 6f5e70240071..f1a3b6c8eae2 100644
+>> --- a/include/net/flow.h
+>> +++ b/include/net/flow.h
+>> @@ -81,8 +81,10 @@ struct flowi4 {
+>>  #define flowi4_multipath_hash	__fl_common.flowic_multipath_hash
+>>  
+>>  	/* (saddr,daddr) must be grouped, same order as in IP header */
+>> -	__be32			saddr;
+>> -	__be32			daddr;
+>> +	struct_group(addrs,
+>> +		__be32			saddr;
+>> +		__be32			daddr;
+>> +	);
+>>  
+>>  	union flowi_uli		uli;
+>>  #define fl4_sport		uli.ports.sport
+>> diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
+>> index a0b637911d3c..8f5667b2ea92 100644
+>> --- a/include/uapi/linux/if_ether.h
+>> +++ b/include/uapi/linux/if_ether.h
+>> @@ -163,8 +163,16 @@
+>>  
+>>  #if __UAPI_DEF_ETHHDR
+>>  struct ethhdr {
+>> -	unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
+>> -	unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
+>> +	union {
+>> +		struct {
+>> +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
+>> +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
+>> +		};
+>> +		struct {
+>> +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
+>> +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
+>> +		} addrs;
+> 
+> A union of the same fields in the same structure in the same way?
+> 
+> Ah, because struct_group() can not be used here?  Still feels odd to see
+> in a userspace-visible header.
+> 
+>> +	};
+>>  	__be16		h_proto;		/* packet type ID field	*/
+>>  } __attribute__((packed));
+>>  #endif
+>> diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+>> index e42d13b55cf3..33647a37e56b 100644
+>> --- a/include/uapi/linux/ip.h
+>> +++ b/include/uapi/linux/ip.h
+>> @@ -100,8 +100,16 @@ struct iphdr {
+>>  	__u8	ttl;
+>>  	__u8	protocol;
+>>  	__sum16	check;
+>> -	__be32	saddr;
+>> -	__be32	daddr;
+>> +	union {
+>> +		struct {
+>> +			__be32	saddr;
+>> +			__be32	daddr;
+>> +		} addrs;
+>> +		struct {
+>> +			__be32	saddr;
+>> +			__be32	daddr;
+>> +		};
+> 
+> Same here (except you named the first struct addrs, not the second,
+> unlike above).
+> 
+> 
+>> +	};
+>>  	/*The options start here. */
+>>  };
+>>  
+>> diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+>> index b243a53fa985..1c26d32e733b 100644
+>> --- a/include/uapi/linux/ipv6.h
+>> +++ b/include/uapi/linux/ipv6.h
+>> @@ -130,8 +130,16 @@ struct ipv6hdr {
+>>  	__u8			nexthdr;
+>>  	__u8			hop_limit;
+>>  
+>> -	struct	in6_addr	saddr;
+>> -	struct	in6_addr	daddr;
+>> +	union {
+>> +		struct {
+>> +			struct	in6_addr	saddr;
+>> +			struct	in6_addr	daddr;
+>> +		} addrs;
+>> +		struct {
+>> +			struct	in6_addr	saddr;
+>> +			struct	in6_addr	daddr;
+>> +		};
+> 
+> addrs first?  Consistancy is key :)
 
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >   tools/testing/selftests/bpf/xdpxceiver.c | 9 +++++----
-> >   1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index 4d8ee636fc24..2100ab4e58b7 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -252,6 +252,7 @@ static void gen_eth_frame(struct xsk_umem_info *umem, u64 addr)
-> >
-> >   static void xsk_configure_umem(struct ifobject *data, void *buffer, int idx)
-> >   {
-> > +     const struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
-> >       struct xsk_umem_config cfg = {
-> >               .fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS,
-> >               .comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS,
-> > @@ -263,6 +264,10 @@ static void xsk_configure_umem(struct ifobject *data, void *buffer, int idx)
-> >       struct xsk_umem_info *umem;
-> >       int ret;
-> >
-> > +     ret = XSK_UMEM__DEFAULT_FRAME_SIZE;
-> > +     if (setrlimit(RLIMIT_MEMLOCK, &_rlim))
-> > +             exit_with_error(errno);
-> > +
-> >       umem = calloc(1, sizeof(struct xsk_umem_info));
-> >       if (!umem)
-> >               exit_with_error(errno);
-> > @@ -1088,13 +1093,9 @@ static void run_pkt_test(int mode, int type)
-> >
-> >   int main(int argc, char **argv)
-> >   {
-> > -     struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
-> >       bool failure = false;
-> >       int i, j;
-> >
-> > -     if (setrlimit(RLIMIT_MEMLOCK, &_rlim))
-> > -             exit_with_error(errno);
-> > -
-> >       for (int i = 0; i < MAX_INTERFACES; i++) {
-> >               ifdict[i] = malloc(sizeof(struct ifobject));
-> >               if (!ifdict[i])
-> >
+I think addrs should be second. In general, I think all newly added
+non-anonymous structures should be second.
+
+Thanks
+--
+Gustavo
