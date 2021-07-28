@@ -2,119 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E48A3D9714
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 22:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA7A33D971D
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 22:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbhG1Uv5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 16:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S231720AbhG1UwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 16:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231697AbhG1Uvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 16:51:53 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82340C061765
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 13:51:51 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id n19so4451864ioz.0
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 13:51:51 -0700 (PDT)
+        with ESMTP id S231825AbhG1UwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 16:52:22 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7800C061757;
+        Wed, 28 Jul 2021 13:52:18 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id b9so4073667wrx.12;
+        Wed, 28 Jul 2021 13:52:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lQryhZRpBDogvHVvPU/fbTSTLbqOv2BW46SJ0iT0+Kk=;
-        b=QPwP35TBa172vGVYjCVnQNJ8/Z5GEw9t/L13P3rnCIQ7lIEi8iXeMT25pYXjC5Oe5p
-         PrmyQJxWTQ9U5jUCesPeJwxaYFrO3o6YpXi4Wbqx3Ya88GOkWh8eLwnk7bCgUsCjIiEH
-         Oimg3j91WIGh6CIMvdgu4glTEushsIQKW541kJ81GvDvtUqs/VQaansZEyVx34MUetGc
-         VhZpZTa4kBtgHhPKJ1LJrDVct5/LE3lI/W5lV7PnPtBu5rIeC+/i+HdKxcGEqv1yyRzr
-         Z/0NGjpYMphirTeLqDvblR3eyktG7EtlTkCwOCpSZQYAfLwLu3Efl+czsS7BdZObtRtm
-         73FQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PUAw6z5Mv2Gc2MTPDaFS8HQXeD9s7MU+i2BPK1JVR3k=;
+        b=ERum8YtVoz22rlJfSAMNFjru7xCCFlIncst5ebw/3Vx1lWzxJFdMcestrTlYY5SRjY
+         rVwimvYmeUZnAplwOnCEglFuXMya/6TZo8szaiTVj7T6MeaGE6Jlw62KInGdKAi2DN3K
+         ZK7EKOu27l5XFz/FrjbgxZMAu2cUzPmH7xqaw6mz8AZKPK+v6CGf0uqXVY+RcBCZ61j0
+         6o/3/7YL4PtRXJ5lyOd9mCy4iacjnIQe+cqyIDpo6/m5AUr17ubXq+XMgf3ItKEq2swT
+         ylIafEEmaYs/8hevwWCNUsMimSkbDPUoWNf+r7LKYD37o7Ze1XC+NNPXabRuA2VTTlZP
+         tyuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lQryhZRpBDogvHVvPU/fbTSTLbqOv2BW46SJ0iT0+Kk=;
-        b=dlfU+CpjjczWAZ2PAlWLbJUUOTNpaiaGHWpqXC94o8Pya8l2TZ/fWkUcyPN0EJINTH
-         BTCoftAVwvfsDGkFzHvCZJLEISH0mpIZBCfU0G32ueCWkQKRMUPkOlxSAGu4Yy5+ggzG
-         U/N5X2avdMqFjnH+cJGIxoQcebZ3ixyofaSsMfHljlZ7IkAFV/9U1697jzrqIQsE1NUJ
-         h9IKNs0DL2mkzkR8UOnPgOEn0NzlyU0qiC4hfGc2ywJpeVDYMOdQo9RRI5HEGQ4Md7W3
-         yRJg4xARYq434ykxOWWQB5AhFtyT2bEyWxkjbzMDHDRsd5DTEmk6JEj9cnG27QViNcEz
-         NTSA==
-X-Gm-Message-State: AOAM532KKLkEQC/IagyZRpK/sobA3/FH/OZn7xpvANfEcdZmY5QG1qnT
-        6lm0Wi2SzBoiNMAd8/VOUHSNjHSNA1VNAoKB2im8Mg==
-X-Google-Smtp-Source: ABdhPJyz3si1e6J74f54OMY+3WrZFPDX1HMkiL1piCDiYhFWrwcljdJ3zgzAj8iqLInp7qcHJsoS0s3n2RiAPeCbDB4=
-X-Received: by 2002:a5e:dc0c:: with SMTP id b12mr1035138iok.141.1627505510888;
- Wed, 28 Jul 2021 13:51:50 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PUAw6z5Mv2Gc2MTPDaFS8HQXeD9s7MU+i2BPK1JVR3k=;
+        b=uUCHL7C52H7/AF/JMwWIs9ezxrzFPRNZiSYCGODl35rthsXKWaHFBurM2O0QOULWh7
+         l40ghFYa0ElBzM8mV9AhsbhtpkImXl0CjjT9sZl3/5ytezbNfiy+rkUmP31JWXpjSyCB
+         i5BbS7brS3CR2o0H4PIrg6EJ0wE47U5vNsobrkANakyBFM1ZipLKFotkMGCySphwXL3j
+         cUjssNygek2IbK3lqw9hjf2jIKk/x0XqDOT05zw4K5Bg1oUZMloRF6rp8EYvXotG/aBt
+         3pdOG59tk3vfJsIkGw+pwMjgFL00QOZH6x5C5g5sXAAHGQyA66Ov99/ItOYpdrDWRCt/
+         r3Lg==
+X-Gm-Message-State: AOAM530u8b5m5GXZTL5IkKy/kzuV1b2EQhsjEGwXVG9KzZkbHhziSuek
+        AH1Mi0ecHQeV6+dzjfErFA3MQfzODyQ=
+X-Google-Smtp-Source: ABdhPJyvd7DAw8cIvkEcBYZ7k2TywI17Nq42UxTn/6MyUe1NtfuPiFOdAwMLcSCXJyt5x/qUuolCWQ==
+X-Received: by 2002:a05:6000:1d0:: with SMTP id t16mr178657wrx.213.1627505537556;
+        Wed, 28 Jul 2021 13:52:17 -0700 (PDT)
+Received: from [10.8.0.150] ([195.53.121.100])
+        by smtp.gmail.com with ESMTPSA id c15sm640429wrw.93.2021.07.28.13.52.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Jul 2021 13:52:17 -0700 (PDT)
+Subject: Re: [PATCH] packet.7: Describe SOCK_PACKET netif name length issues
+ and workarounds.
+To:     Ralf Baechle <ralf@linux-mips.org>
+Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        Thomas Osterried <thomas@osterried.de>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-man@vger.kernel.org
+References: <YP/Jcc4AFIcvgXls@linux-mips.org>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <a050e248-af45-0678-b25c-27e249fb5565@gmail.com>
+Date:   Wed, 28 Jul 2021 22:52:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
- <20210726194603.14671-6-gerhard@engleder-embedded.com> <CAL_JsqJC19OsTCa6T98m8bOJ3Z4jUbaVO13MwZFK78XPSpoWBg@mail.gmail.com>
- <CANr-f5yW4sob_fgxhEafHME71QML8K-+Ka5AzNm5p3A0Ktv02Q@mail.gmail.com>
- <CAL_JsqK9OvwicCbckvpk4CMWbhcP8yDBXAW_7CmLzR__-fJf0Q@mail.gmail.com>
- <CANr-f5zWdFAYAteE7tX5qTvT4XMZ+kxaHy03=BnRxFbQLt3pUg@mail.gmail.com>
- <43958f2b-6756-056a-b2fa-cb8f6d84f603@xilinx.com> <CANr-f5xu=xHn7CGve3=Msd8CEcoDujQzSYSNQ2Zbh7NOvyXFYA@mail.gmail.com>
- <839bdf26-6aef-7e05-94b9-78c0d2061bf9@xilinx.com>
-In-Reply-To: <839bdf26-6aef-7e05-94b9-78c0d2061bf9@xilinx.com>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Wed, 28 Jul 2021 22:51:39 +0200
-Message-ID: <CANr-f5xJbTYa-jPzVMPcAV2Un+POBn24gd+604rzPt36RkRcDQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 5/5] arm64: dts: zynqmp: Add ZCU104 based TSN endpoint
-To:     Michal Simek <michal.simek@xilinx.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YP/Jcc4AFIcvgXls@linux-mips.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 12:59 PM Michal Simek <michal.simek@xilinx.com> wro=
-te:
-> >> In past we said that we won't be accepting any FPGA description in
-> >> u-boot/linux projects. I don't think anything has changed from that ti=
-me
-> >> and I don't want to end up in situation that we will have a lot of
-> >> configurations which none else can try and use.
-> You have to share to customers bitstream. Likely also boot.bin with
-> PS/PL configuration and other files in it. That's why it will be quite
-> simple to also share them full DT or DT overlay just for your IP in the
-> same image.
+Hello Ralf,
 
-That's possible of course.
+On 7/27/21 10:53 AM, Ralf Baechle wrote:
+> Describe the issues with SOCK_PACKET possibly truncating network interface
+> names in results, solutions and possible workarounds.
+> 
+> While the issue is know for a long time it appears to have never been
+> documented properly and is has started to bite software antiques badly since
+> the introduction of Predictable Network Interface Names.  So let's document
+> it.
+> 
+> Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
 
-> Till now I didn't hear any strong argument why this should be accepted.
+Thanks for the patch!
+Please see a few comments below.
 
-I want to try a new argument:
+Thanks,
 
-For new bindings a schema is used. The goal is to ensure that the binding
-schema and the driver fit together. The validation chain is the following:
-1) The binding schema is used to validate the device tree.
-2) The device tree is used to "validate" the driver by booting.
+Alex
 
-So the kernel tree needs to contain a device tree which uses the binding
-to build up the complete validation chain. The validation of the driver aga=
-inst
-the binding is not possible without a device tree. The only option would be
-to compare driver and binding manually, which is error prone.
+> ---
+>   man7/packet.7 | 31 ++++++++++++++++++++++++++++++-
+>   1 file changed, 30 insertions(+), 1 deletion(-)
+> 
+> diff --git a/man7/packet.7 b/man7/packet.7
+> index 706efbb54..7697bbdeb 100644
+> --- a/man7/packet.7
+> +++ b/man7/packet.7
+> @@ -627,6 +627,34 @@ extension is an ugly hack and should be replaced by a control message.
+>   There is currently no way to get the original destination address of
+>   packets via
+>   .BR SOCK_DGRAM .
 
-If device trees with FPGA descriptions are not allowed in the kernel tree, =
-then
-the kernel tree will never contain complete validation chains f=C3=BCr FPGA=
- based
-IPs. The validation of bindings for FPGA based IPs has to rely on device tr=
-ees
-which are maintained out of tree. It is possible/likely that schema
-validation is
-not done out of tree. As a result it is more likely that binding and
-driver do not
-fit together for FPGA based IPs. In the end the quality of the support for =
-FPGA
-based IPs would suffer.
+Since the bug spreads across multiple paragraphs, maybe consider adding 
+a subsection of BUGS to keep it organized?
 
-I suggest allowing a single device tree with FPGA descriptions for a bindin=
-g
-of FPGA based IPs. This will build up the complete validation chain in the
-kernel tree and ensures that binding and driver fit together. This single d=
-evice
-tree would form the reference platform for the FPGA based IP.
+> +.PP
+> +The
+> +.I spkt_device
+> +field of
+> +.I sockaddr_pkt
+> +has a size of 14 bytes which is less than the constant
+> +.B IFNAMSIZ
+> +defined in
+> +.I <net/if.h>
+> +which is 16 bytes and describes the system limit for a network interface
 
-Gerhard
+
+See the following extract from man-pages(7):
+
+$ man 7 man-pages | sed -n '/Use semantic newlines/,/^$/p';
+    Use semantic newlines
+        In the source of a manual page,  new  sentences  should  be
+        started  on new lines, and long sentences should split into
+        lines at clause breaks (commas, semicolons, colons, and  so
+        on).   This  convention,  sometimes known as "semantic new‐
+        lines", makes it easier to see the effect of patches, which
+        often  operate at the level of individual sentences or sen‐
+        tence clauses.
+
+
+> +name.  This means the names of network devices longer than 14 bytes will be
+> +truncated to fit into
+> +.I spkt_device .
+> +All these lengths include the terminating null byte (\(aq\e0\(aq)).
+> +.PP
+> +Issues from this with old code typically show up with very long interface
+> +names used by the
+> +.B Predictable Network Interface Names
+> +feature enabled by default in many modern Linux distributions.
+> +.PP
+> +The preferred solution is to rewrite code to avoid
+> +.BR SOCK_PACKET .
+> +Possible user solutions are to disable
+> +.B Predictable Network Interface Names
+> +or to rename the interface to a name of at most 13 bytes, for example using
+> +the
+> +.BR IP (8)
+
+You probably meant s/IP/ip/
+
+> +tool.
+>   .\" .SH CREDITS
+>   .\" This man page was written by Andi Kleen with help from Matthew Wilcox.
+>   .\" AF_PACKET in Linux 2.2 was implemented
+> @@ -637,7 +665,8 @@ packets via
+>   .BR capabilities (7),
+>   .BR ip (7),
+>   .BR raw (7),
+> -.BR socket (7)
+> +.BR socket (7),
+> +.BR ip (8),
+>   .PP
+>   RFC\ 894 for the standard IP Ethernet encapsulation.
+>   RFC\ 1700 for the IEEE 802.3 IP encapsulation.
+> 
+
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
