@@ -2,136 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60C443D9268
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 17:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 729763D92C2
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 18:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236736AbhG1P4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 11:56:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53850 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230144AbhG1P4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 11:56:43 -0400
-Received: from oasis.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D12C360D07;
-        Wed, 28 Jul 2021 15:56:40 +0000 (UTC)
-Date:   Wed, 28 Jul 2021 11:56:33 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jann Horn <jannh@google.com>
-Cc:     Kees Cook <keescook@chromium.org>, Ingo Molnar <mingo@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Qitao Xu <qitao.xu@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-hardening@vger.kernel.org
-Subject: Re: tracepoints and %p [was: Re: [Patch net-next resend v2] net:
- use %px to print skb address in trace_netif_receive_skb]
-Message-ID: <20210728115633.614e9bd9@oasis.local.home>
-In-Reply-To: <CAG48ez0b-t_kJXVeFixYMoqRa-g1VRPUhFVknttiBYnf-cjTyg@mail.gmail.com>
-References: <20210715055923.43126-1-xiyou.wangcong@gmail.com>
-        <202107230000.B52B102@keescook>
-        <CAG48ez0b-t_kJXVeFixYMoqRa-g1VRPUhFVknttiBYnf-cjTyg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S237398AbhG1QIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 12:08:06 -0400
+Received: from m34-101.88.com ([104.250.34.101]:43659 "HELO 88.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with SMTP
+        id S237699AbhG1QGi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 12:06:38 -0400
+X-Greylist: delayed 356 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Jul 2021 12:06:37 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=email.cn;
+        s=dkim; h=From:To:Date; bh=+0wI7mv8XUU8mTLbxor4A/f7cmasr0sNeQo/+
+        h10VfE=; b=Lzl9S29cJ09P3Nnj9lH4xUNIMgRrLqjq79yqXJQcdL+ahOnSRRf21
+        ca1Gpju7Ix7thIicLtYFZLFqbTytF2wJMK8Jlzqy/uT325oOk2rbXnARMyMcQMFw
+        RYFC7RxBYIa70mmAtkCZJOhVm5eYV5nDUg8Or3fFOyxaBa4xFMeh2g=
+Received: from localhost.localdomain (unknown [113.251.14.68])
+        by v_coremail2-frontend-1 (Coremail) with SMTP id LCKnCgDn9QTQfgFhsjoLAA--.39671S2;
+        Wed, 28 Jul 2021 23:59:13 +0800 (CST)
+From:   Hu Haowen <src.res@email.cn>
+To:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net
+Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Documentation: networking: add ioam6-sysctl into index
+Date:   Wed, 28 Jul 2021 23:59:12 +0800
+Message-Id: <20210728155912.9293-1-src.res@email.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: LCKnCgDn9QTQfgFhsjoLAA--.39671S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUU5-7k0a2IF6w4kM7kC6x804xWl1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2
+        x7M28EF7xvwVC0I7IYx2IY67AKxVWUCVW8JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWU
+        JVW8JwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        74AGY7Cv6cx26F4UJr1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04
+        k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26F4UJr1UMxC20s026xCaFVCjc4AY6r1j
+        6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7
+        AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE
+        2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcV
+        C2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kfnx
+        nUUI43ZEXa7IUnLSdPUUUUU==
+X-Originating-IP: [113.251.14.68]
+X-CM-SenderInfo: hvufh21hv6vzxdlohubq/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Jul 2021 17:13:12 +0200
-Jann Horn <jannh@google.com> wrote:
+Append ioam6-sysctl to toctree in order to get rid of building warnings.
 
-> +tracing maintainers
-> 
-> On Fri, Jul 23, 2021 at 9:09 AM Kees Cook <keescook@chromium.org> wrote:
-> > On Wed, Jul 14, 2021 at 10:59:23PM -0700, Cong Wang wrote:  
-> > > From: Qitao Xu <qitao.xu@bytedance.com>
-> > >
-> > > The print format of skb adress in tracepoint class net_dev_template
-> > > is changed to %px from %p, because we want to use skb address
-> > > as a quick way to identify a packet.  
-> >
-> > No; %p was already hashed to uniquely identify unique addresses. This
-> > is needlessly exposing kernel addresses with no change in utility. See
-> > [1] for full details on when %px is justified (almost never).
-> >  
-> > > Note, trace ring buffer is only accessible to privileged users,
-> > > it is safe to use a real kernel address here.  
-> >
-> > That's not accurate either; there is a difference between uid 0 and
-> > kernel mode privilege levels.
-> >
-> > Please revert these:
-> >
-> >         851f36e40962408309ad2665bf0056c19a97881c
-> >         65875073eddd24d7b3968c1501ef29277398dc7b
-> >
-> > And adjust this to replace %px with %p:
-> >
-> >         70713dddf3d25a02d1952f8c5d2688c986d2f2fb
-> >
-> > Thanks!
-> >
-> > -Kees  
-> 
-> Hi Kees,
-> 
-> as far as I understand, the printf format strings for tracepoints
-> don't matter for exposing what data is exposed to userspace - the raw
-> data, not the formatted data, is stored in the ring buffer that
-> userspace can access via e.g. trace_pipe_raw (see
-> https://www.kernel.org/doc/Documentation/trace/ftrace.txt), and the
-> data can then be formatted **by userspace tooling** (e.g.
-> libtraceevent). As far as I understand, the stuff that root can read
-> via debugfs is the data stored by TP_fast_assign() (although root
-> _can_ also let the kernel do the printing and read it in text form).
-> Maybe Steven Rostedt can help with whether that's true and provide
-> more detail on this.
+Signed-off-by: Hu Haowen <src.res@email.cn>
+---
+ Documentation/networking/index.rst | 1 +
+ 1 file changed, 1 insertion(+)
 
-That is exactly what is happening. I wrote the following to the replied
-text up at the top, then noticed you basically stated the same thing
-here ;-)
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index e9ce55992aa9..a91a2739f8ed 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -57,6 +57,7 @@ Contents:
+    gen_stats
+    gtp
+    ila
++   ioam6-sysctl
+    ipddp
+    ip_dynaddr
+    ipsec
+-- 
+2.25.1
 
-"You can get the raw data from the trace buffers directly via the
-trace_pipe_raw. The data is copied directly without any processing. The
-TP_fast_assign() adds the data into the buffer, and the printf() is
-only reading what's in that buffer. The hashing happens later. If you
-read the buffers directly, you get all the data you want."
-
-> 
-> In my view, the ftrace subsystem, just like the BPF subsystem, is
-> root-only debug tracing infrastructure that can and should log
-> detailed information about kernel internals, no matter whether that
-> information might be helpful to attackers, because if an attacker is
-> sufficiently privileged to access this level of debug information,
-> that's beyond the point where it makes sense to worry about exposing
-> kernel pointers. But even if you disagree, I don't think that ftrace
-> format strings are relevant here.
-
-Anyway, those patches are not needed. (Kees is going to hate me).
-
-Since a345a6718bd56 added in 5.12, you can just do:
-
- # trace-cmd start -e net_dev_start_xmit
- # trace-cmd show
-[..]
-            sshd-1853    [007] ...1  1995.000611: net_dev_start_xmit: dev=em1 queue_mapping=0 skbaddr=00000000f8c47ebd vlan_tagged=0 vlan_proto=0x0000 vlan_tci=0x0000 protocol=0x0800 ip_summed=3 len=150 data_len=84 network_offset=14 transport_offset_valid=1 transport_offset=34 tx_flags=0 gso_size=0 gso_segs=1 gso_type=0x1
-
-Notice the value of skbaddr=00000000f8c47ebd ?
-
-Now I do:
-
-	# trace-cmd start -O nohash-ptr -e net_dev_start_xmit
-	# trace-cmd show
-[..]
-            sshd-1853    [007] ...1  2089.462722: net_dev_start_xmit: dev= queue_mapping=0 skbaddr=ffff8cfbc3ffd0e0 vlan_tagged=0 vlan_proto=0x0000 vlan_tci=0x0000 protocol=0x0800 ip_summed=3 len=150 data_len=84 network_offset=14 transport_offset_valid=1 transport_offset=34 tx_flags=0 gso_size=0 gso_segs=1 gso_type=0x1
-
-And now we have:
-
-skbaddr=ffff8cfbc3ffd0e0
-
--- Steve
