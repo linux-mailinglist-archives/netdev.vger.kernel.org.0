@@ -2,92 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A103D85F7
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 04:56:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0D03D8600
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 05:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233484AbhG1C4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 22:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49870 "EHLO
+        id S233500AbhG1DHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 23:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233223AbhG1C4X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 22:56:23 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28957C061757;
-        Tue, 27 Jul 2021 19:56:21 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b7so660828wri.8;
-        Tue, 27 Jul 2021 19:56:21 -0700 (PDT)
+        with ESMTP id S233406AbhG1DG6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 23:06:58 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F92EC061757
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 20:06:57 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id f13so1007033plj.2
+        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 20:06:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zLiCtDrbfM7Zil6a+2UAV/7Kv2nTAUKX/1fK+JXbJlE=;
-        b=SdCAh9tmMIHWmyLgeE7UTkk0c82Yqw8PdKWmYEUkX24qABw8bE7sUAIGxPXOxotFWQ
-         WRHEv3rdPGdKaCTBUouWNjDAuI5QIqepqq63fHxTcR/GK/L0CLyh+HuBvF0IfgU8g+a8
-         36BECF5m6WHJhGYbp+l3+ppWdE4i6owKBedQ5iXH9WBZp+7BgEhydzC+8IHisv+yUKCe
-         cCo1XaXcNIkczVyRVTJHkeSP55FgKM0z4d0e6m6dRhkn0aVyLYXTrp5ycfmr8aCsWM/H
-         nqlLWHwANg412Xv2mI29P4fXU8xqzPETHIxJWwbwktlZm87ztJdRiIG2MSqb/0Zn4iYh
-         iurg==
+        bh=pejIH5+7yKrAyTqV4XSNocnONr/PoCDhuZqzyMXTrGQ=;
+        b=a/FYXZG7THmkwc9n/hIY8ngHLGZJhVNxUCuiqQfnGHxzN/5eTRYfbO5r+uSdsul9oF
+         hxO1f4Lf7+VQvYPDNDYzbe+TvW1GG0Cdq1GUIJRZj5w59LD0Rvv6FVG02qKXp30kwbtp
+         qbGlZ0P0c0FyoQWbAa1y2jHM6aiwez9OcNCBN7UMEDOH7XWSQG4OIPdG5CsaRlPDxzSh
+         FV515tjhu9WCh1+T1Ni0vaQelvUnz/xHClwm9lYclBq9dDEdmiTdDJvOMdRN/XFoMreb
+         eHXGDC38kCfNW+oHftAdjks0DDdzmvGIpOJKNRDUULvKCM9EU05WdEuYhLgAx+GW6XvM
+         3TvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zLiCtDrbfM7Zil6a+2UAV/7Kv2nTAUKX/1fK+JXbJlE=;
-        b=C57msJZ1ZunrcddGeQ8fO3TKBvX3mYql0BnFCmQj7GyErILzBE6o/I2VpWSwawTy2m
-         DZARgRej8JTnNXVabuPVZRpM7BX67syBeaaYAkIL1YRpE6wR31mg+9UKGy1wRyasLxF9
-         2OxzQiRB7rROhWTBQwj9C4jQeP+Ll3jva1fhOjHWdkEPLAQfa7jdu/AQsk/mBtydjpsV
-         oDvQUoG0qfIHajYOaFs9zw7QnJimqCCjyiL+gzFvdoBTFVsj/3D7Hut80vBqTVgFljfT
-         hQtmoUMySXL5RWiDxWEZKpByPOyMY8z7Kvd5vPc6Fxq2x6P4OhXXnGdxSdCahzFSQXzq
-         W4nQ==
-X-Gm-Message-State: AOAM530cCOpSn/iy64hCtl43L2+YlzPicV5suQY5cdo2FoJSQHeH/rzQ
-        3UWKUEzOt56iGCGedGjYbq28NJ/Gi5gKcARyTic=
-X-Google-Smtp-Source: ABdhPJzjKwD+pb4dnF/eE4NjV85CIBBaBgD3h6emxoxO89BpLf7h5UbGNGRHm/pgBqw3odC58ghLWukWzMfceXtyqto=
-X-Received: by 2002:adf:f80f:: with SMTP id s15mr13613565wrp.330.1627440979654;
- Tue, 27 Jul 2021 19:56:19 -0700 (PDT)
+        bh=pejIH5+7yKrAyTqV4XSNocnONr/PoCDhuZqzyMXTrGQ=;
+        b=FB9oRFi9bwx+QK9yHq8jLMWaQddWfypP4fUPIpIltH6r4/rTVS3SokiuU+dJwVLONf
+         Y86OI4TM9GFptWFlrGYTkmt4aK36uJ+OpGNT1ENekuZHmTANGkYgxdP7tbpg2wPe8ziR
+         pakpiRLTe0vY9eTCxQ4d9AZ0qO2uh+TkVPRgcpUIABTguwwOS4byaX7teolvjTOkpNMS
+         iVwblxB6DpnDujlMmsHtcof9L19ZK052WPjhByDfr3xirpJPozLIRPq4yTv/IyCV6vVd
+         316CUlA/xUpIVlQRKTyWVsB4ZfZ5qWHksRaXbP+kJT+tOhskolce++9FgxUDAr78jngR
+         qU6g==
+X-Gm-Message-State: AOAM530bYITZfFqGLVQOISu1Uu4L6trmilq2D5XluGYJGxOCXqiq2yDI
+        HIGBA2RirB3VjATb2QktqQ0Unnkb84J6nN+7NnE=
+X-Google-Smtp-Source: ABdhPJzdS7MaWAZCC3ggxLAgis7WQFc+mgr4oBH6vEbdH1n5H3b1pHBBrVipsLDJy7f5aE7YavUE+wdT6TRjFeyzakA=
+X-Received: by 2002:a17:902:728c:b029:12c:5423:54d8 with SMTP id
+ d12-20020a170902728cb029012c542354d8mr2900564pll.70.1627441616993; Tue, 27
+ Jul 2021 20:06:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <599e6c1fdcc50f16597380118c9b3b6790241d50.1627439903.git.marcelo.leitner@gmail.com>
-In-Reply-To: <599e6c1fdcc50f16597380118c9b3b6790241d50.1627439903.git.marcelo.leitner@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 27 Jul 2021 22:56:10 -0400
-Message-ID: <CADvbK_c44QfUkW5ZUcNWKuQaagPqdL5_qi7KGbmp4qgorb3X4g@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: fix return value check in __sctp_rcv_asconf_lookup
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>,
-        Ilja Van Sprundel <ivansprundel@ioactive.com>,
-        Salvatore Bonaccorso <carnil@debian.org>
+References: <20210723183630.5088-1-xiyou.wangcong@gmail.com> <610030612aaa3_199a412083d@john-XPS-13-9370.notmuch>
+In-Reply-To: <610030612aaa3_199a412083d@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 27 Jul 2021 20:06:45 -0700
+Message-ID: <CAM_iQpWGyJcx2o=HUWoyB+E-7Z1y9LEwb362TTLGxrwuz9yULg@mail.gmail.com>
+Subject: Re: [Patch bpf-next] unix_bpf: fix a potential deadlock in unix_dgram_bpf_recvmsg()
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 10:41 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
+On Tue, Jul 27, 2021 at 9:12 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> As Ben Hutchings noticed, this check should have been inverted: the call
-> returns true in case of success.
+> Is there a reason to grab the mutex_lock(u->iolock) above the
+> skb_queue_emptyaand sk_psock_queue_empty checks?
 >
-> Reported-by: Ben Hutchings <ben@decadent.org.uk>
-> Fixes: 0c5dc070ff3d ("sctp: validate from_addr_param return")
-> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> ---
->  net/sctp/input.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/sctp/input.c b/net/sctp/input.c
-> index eb3c2a34a31c64d5322f326613f4a4a02f8c902e..5ef86fdb11769d9c8a32219c5c7361fc34217b02 100644
-> --- a/net/sctp/input.c
-> +++ b/net/sctp/input.c
-> @@ -1203,7 +1203,7 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
->         if (unlikely(!af))
->                 return NULL;
->
-> -       if (af->from_addr_param(&paddr, param, peer_port, 0))
-> +       if (!af->from_addr_param(&paddr, param, peer_port, 0))
->                 return NULL;
->
->         return __sctp_lookup_association(net, laddr, &paddr, transportp);
-> --
-> 2.31.1
->
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
+> Could it be move here just above the msg_bytes_ready label?
+
+The check of the receive queue is more accurate with lock.
+
+Thanks.
