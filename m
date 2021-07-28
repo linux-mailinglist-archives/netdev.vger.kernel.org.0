@@ -2,126 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C02063D89C1
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE323D89CA
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235336AbhG1I2U convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Jul 2021 04:28:20 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47781 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235272AbhG1I2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 04:28:18 -0400
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-11-xmCxCxZxO7ayZHiHESiNOw-1; Wed, 28 Jul 2021 09:28:14 +0100
-X-MC-Unique: xmCxCxZxO7ayZHiHESiNOw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.23; Wed, 28 Jul 2021 09:28:11 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.023; Wed, 28 Jul 2021 09:28:11 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Luis Chamberlain' <mcgrof@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "tj@kernel.org" <tj@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andriin@fb.com" <andriin@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "alobakin@pm.me" <alobakin@pm.me>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "ap420073@gmail.com" <ap420073@gmail.com>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "sergey.senozhatsky.work@gmail.com" 
-        <sergey.senozhatsky.work@gmail.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "mbenes@suse.com" <mbenes@suse.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "jikos@kernel.org" <jikos@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        "Hannes Reinecke" <hare@suse.de>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] kernel/module: add documentation for try_module_get()
-Thread-Topic: [PATCH] kernel/module: add documentation for try_module_get()
-Thread-Index: AQHXf0eaxD6lEmY4bU6QViNa8xuU1KtSAuiAgAVRuyeAALu/4A==
-Date:   Wed, 28 Jul 2021 08:28:11 +0000
-Message-ID: <6054c136290346d581e276abbb2e3ff1@AcuMS.aculab.com>
-References: <20210722221905.1718213-1-mcgrof@kernel.org>
- <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
- <YQBCvKgH481C7o1c@bombadil.infradead.org> <YQBGemOIF4sp/ges@kroah.com>
- <YQBN2/K4Ne5orgzS@bombadil.infradead.org> <YQBSutZfhqfTzKQa@kroah.com>
- <YQByfUaDaXCUqrlo@bombadil.infradead.org>
-In-Reply-To: <YQByfUaDaXCUqrlo@bombadil.infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S234542AbhG1IaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 04:30:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235025AbhG1IaI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 04:30:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 429FA60FE4;
+        Wed, 28 Jul 2021 08:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627461007;
+        bh=412QLOWl6lsgrJvaETIkLRDap172jok0TCDCOOeQmD0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WPniMS3RK9cSY8owpTbfM50AdVmxNCOZ6d9ebpBSoh3QvAncAQo7fKTC9OJbgp4Uw
+         TMio8ZagfKXDAzlqx3V7xJJULgHvseAEfolQckfk1epOEXu/4IWY/qmQLlR2S9JNnz
+         k2nfcxT2v7m1TqAKETZ4CP2GB9dPHGJKfLxgInLH4Lel75VD+Cfolr6Wh0HJw5f7so
+         5kgtYnBvWJ+tr4Bj8NOHdup5acJO5/2pd+CDbvWL4zqhK/tWODo5Ns9GAvqr2D6Cs4
+         IlM01H0TBHTnO/0UhJAMoKcp/f6K6BIn/Xjb4lJViGUCcCs2j3zJa07fY0MOPTw6Bp
+         SzUdNA9x7l2iQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 314C660A6C;
+        Wed, 28 Jul 2021 08:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] tulip: windbond-840: Fix missing pci_disable_device() in
+ probe and remove
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162746100719.27952.3800646890142714725.git-patchwork-notify@kernel.org>
+Date:   Wed, 28 Jul 2021 08:30:07 +0000
+References: <20210728074313.272055-1-wanghai38@huawei.com>
+In-Reply-To: <20210728074313.272055-1-wanghai38@huawei.com>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        christophe.jaillet@wanadoo.fr, gustavoars@kernel.org,
+        tanghui20@huawei.com, netdev@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-...
-> sysfs files are safe to use try_module_get() because once they are
-> active a removal of the file cannot happen, and so removal will wait.
+Hello:
 
-I doubt it.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-If the module_remove() function removes sysfs nodes then (something
-like) this has to happen.
+On Wed, 28 Jul 2021 15:43:13 +0800 you wrote:
+> Replace pci_enable_device() with pcim_enable_device(),
+> pci_disable_device() and pci_release_regions() will be
+> called in release automatically.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+> 
+> [...]
 
-1) rmmod (or similar) tries to remove the module.
-2) The reference count is zero so the remove is allowed.
-3) Something tries to access a sysfs node in the module.
-3a) If sysfs knew the nodes were in a module it could use
-    try_module_get() to ensure the module wasn't being unloaded.
-    Failure would cause the sysfs access to fail.
-    But I'm not sure it does, and in any case it doesn't help.
-3b) The sysfs thread calls into the module code and waits on a mutex.
-3c) The rmmod thread gets around to calling into sysfs to remove the nodes.
+Here is the summary with links:
+  - tulip: windbond-840: Fix missing pci_disable_device() in probe and remove
+    https://git.kernel.org/netdev/net/c/76a16be07b20
 
-At this point we hit the standard 'deregistering a callback' issue.
-Exactly the same issue affects removal of per-device sysfs node
-from a driver's .remove function.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Typically this is solved by making the deregister routing sleep
-until all the callbacks have completed.
-
-So this would require functions like SYSFS_REMOVE_GROUP() and
-hwmon_device_unregister() to be allowed to sleep and not be
-called with any locks (of any kind) held that the callback
-functions acquire.
-
-The module reference count is irrelevant.
-
-	David
-
-    
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
