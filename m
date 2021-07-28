@@ -2,140 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19EE33D8A32
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2470F3D8A44
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235391AbhG1JCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 05:02:11 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:42376 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234163AbhG1JCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 05:02:09 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2DF0A22262;
-        Wed, 28 Jul 2021 09:02:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1627462927;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sp2fXaO4+VkU0ewmSUxyDBIfoqxWZ/YmzoRuKp72TwU=;
-        b=QJtqaRDeD/r+6BS2RpMLHsBckRf2sr1w3iN33pezOooEqpnn8T7DqSapcRxyMPIZfjRSjm
-        7J+1lee9yCSAoX/yXx5qOnlJlNQlP5/7ZOeqDMcdtfzJJyxwr5G3M0hN/eM3VNhe4zl7mM
-        ShgAu0K7CLyKCgHUkgVaDq862Mit+3M=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1627462927;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sp2fXaO4+VkU0ewmSUxyDBIfoqxWZ/YmzoRuKp72TwU=;
-        b=pmBfIB2QkmA3xf4kSvM/Kul+M1rkY2xpWB6cH5WhgISANis+5+m+8zDuM/QuNvL/ktFiFp
-        tiOqD9YAirWKVzAw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 15362A3B8B;
-        Wed, 28 Jul 2021 09:02:07 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 4CA03DA8A7; Wed, 28 Jul 2021 10:59:22 +0200 (CEST)
-Date:   Wed, 28 Jul 2021 10:59:22 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        nborisov@suse.com
-Subject: Re: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy()
- region
-Message-ID: <20210728085921.GV5047@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        nborisov@suse.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-2-keescook@chromium.org>
+        id S234163AbhG1JGr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Jul 2021 05:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230520AbhG1JGq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 05:06:46 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9F7C061757;
+        Wed, 28 Jul 2021 02:06:45 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1m8fWN-00060Q-S5; Wed, 28 Jul 2021 11:06:35 +0200
+Date:   Wed, 28 Jul 2021 11:06:35 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
+Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>,
+        Scott Parlane <scott.parlane@alliedtelesis.co.nz>,
+        Blair Steven <blair.steven@alliedtelesis.co.nz>
+Subject: Re: [PATCH] net: netfilter: Fix port selection of FTP for
+ NF_NAT_RANGE_PROTO_SPECIFIED
+Message-ID: <20210728090635.GB15121@breakpoint.cc>
+References: <20210728032134.21983-1-Cole.Dishington@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210727205855.411487-2-keescook@chromium.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20210728032134.21983-1-Cole.Dishington@alliedtelesis.co.nz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 01:57:52PM -0700, Kees Cook wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring fields.  Wrap the target region
-> in a common named structure. This additionally fixes a theoretical
-> misalignment of the copy (since the size of "buf" changes between 64-bit
-> and 32-bit, but this is likely never built for 64-bit).
+Cole Dishington <Cole.Dishington@alliedtelesis.co.nz> wrote:
+> FTP port selection ignores specified port ranges (with iptables
+> masquerade --to-ports) when creating an expectation, based on
+> FTP commands PORT or PASV, for the data connection.
 > 
-> FWIW, I think this code is totally broken on 64-bit (which appears to
-> not be a "real" build configuration): it would either always fail (with
-> an uninitialized data->buf_size) or would cause corruption in userspace
-> due to the copy_to_user() in the call path against an uninitialized
-> data->buf value:
-> 
-> omap3isp_stat_request_statistics_time32(...)
->     struct omap3isp_stat_data data64;
->     ...
->     omap3isp_stat_request_statistics(stat, &data64);
-> 
-> int omap3isp_stat_request_statistics(struct ispstat *stat,
->                                      struct omap3isp_stat_data *data)
->     ...
->     buf = isp_stat_buf_get(stat, data);
-> 
-> static struct ispstat_buffer *isp_stat_buf_get(struct ispstat *stat,
->                                                struct omap3isp_stat_data *data)
-> ...
->     if (buf->buf_size > data->buf_size) {
->             ...
->             return ERR_PTR(-EINVAL);
->     }
->     ...
->     rval = copy_to_user(data->buf,
->                         buf->virt_addr,
->                         buf->buf_size);
-> 
-> Regardless, additionally initialize data64 to be zero-filled to avoid
-> undefined behavior.
-> 
-> Fixes: 378e3f81cb56 ("media: omap3isp: support 64-bit version of omap3isp_stat_data")
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> Co-developed-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Signed-off-by: Anthony Lineham <anthony.lineham@alliedtelesis.co.nz>
+> Co-developed-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Signed-off-by: Scott Parlane <scott.parlane@alliedtelesis.co.nz>
+> Co-developed-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+> Signed-off-by: Blair Steven <blair.steven@alliedtelesis.co.nz>
+> Signed-off-by: Cole Dishington <Cole.Dishington@alliedtelesis.co.nz>
 > ---
->  drivers/media/platform/omap3isp/ispstat.c |  5 +--
->  include/uapi/linux/omap3isp.h             | 44 +++++++++++++++++------
->  2 files changed, 36 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
-> index 5b9b57f4d9bf..ea8222fed38e 100644
-> --- a/drivers/media/platform/omap3isp/ispstat.c
-> +++ b/drivers/media/platform/omap3isp/ispstat.c
-> @@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
->  int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
->  					struct omap3isp_stat_data_time32 *data)
->  {
-> -	struct omap3isp_stat_data data64;
-> +	struct omap3isp_stat_data data64 = { };
+> Notes:
+>     Currently with iptables -t nat -j MASQUERADE -p tcp --to-ports 10000-10005,
+>     creating a passive ftp connection from a client will result in the control
+>     connection being within the specified port range but the data connection being
+>     outside of the range. This patch fixes this behaviour to have both connections
+>     be in the specified range.
+> 
+>  include/net/netfilter/nf_conntrack.h |  3 +++
+>  net/netfilter/nf_nat_core.c          | 10 ++++++----
+>  net/netfilter/nf_nat_ftp.c           | 26 ++++++++++++--------------
+>  net/netfilter/nf_nat_helper.c        | 12 ++++++++----
+>  4 files changed, 29 insertions(+), 22 deletions(-)
+> 
+> diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+> index cc663c68ddc4..b98d5d04c7ab 100644
+> --- a/include/net/netfilter/nf_conntrack.h
+> +++ b/include/net/netfilter/nf_conntrack.h
+> @@ -24,6 +24,8 @@
+>  
+>  #include <net/netfilter/nf_conntrack_tuple.h>
+>  
+> +#include <uapi/linux/netfilter/nf_nat.h>
+> +
+>  struct nf_ct_udp {
+>  	unsigned long	stream_ts;
+>  };
+> @@ -99,6 +101,7 @@ struct nf_conn {
+>  
+>  #if IS_ENABLED(CONFIG_NF_NAT)
+>  	struct hlist_node	nat_bysource;
+> +	struct nf_nat_range2 range;
+>  #endif
 
-Should this be { 0 } ?
+Thats almost a 20% size increase of this structure.
 
-We've seen patches trying to switch from { 0 } to {  } but the answer
-was that { 0 } is supposed to be used,
-http://www.ex-parrot.com/~chris/random/initialise.html
+Could you try to rework it based on this?
+diff --git a/include/net/netfilter/nf_nat.h b/include/net/netfilter/nf_nat.h
+--- a/include/net/netfilter/nf_nat.h
++++ b/include/net/netfilter/nf_nat.h
+@@ -27,12 +27,18 @@ union nf_conntrack_nat_help {
+ #endif
+ };
+ 
++struct nf_conn_nat_range_info {
++	union nf_conntrack_man_proto	min_proto;
++	union nf_conntrack_man_proto	max_proto;
++};
++
+ /* The structure embedded in the conntrack structure. */
+ struct nf_conn_nat {
+ 	union nf_conntrack_nat_help help;
+ #if IS_ENABLED(CONFIG_NF_NAT_MASQUERADE)
+ 	int masq_index;
+ #endif
++	struct nf_conn_nat_range_info range_info;
+ };
+ 
+ /* Set up the info structure to map into this range. */
 
-(from https://lore.kernel.org/lkml/fbddb15a-6e46-3f21-23ba-b18f66e3448a@suse.com/)
+... and then store the range min/max proto iff nf_nat_setup_info had
+NF_NAT_RANGE_PROTO_SPECIFIED flag set.
+
+I don't think there is a need to keep the information in nf_conn.
+
