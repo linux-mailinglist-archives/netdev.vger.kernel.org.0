@@ -2,352 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EACE3D93F1
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0965B3D93F6
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:07:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231469AbhG1RGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 13:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhG1RFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 13:05:49 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C398C06179A
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:46 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id jg2so5824312ejc.0
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZCZN43jWD2vq/l1OsMAXPbnAOZR2i3qxBbDBOhKuvZw=;
-        b=DuCrJsKBuypqmT6k6/pckBl6VrsGUvttIq1j0LlVRJYUz0UdaLgmaWvCwZEdevSQk/
-         tXISoLlq0w+APUt9rSLUjb6bZrgiVayuDwidUaU/gQGm9O+F5E8KAIR7q8d2yC7OamxF
-         c2DgRDYFyVrsM3O3ISy46QI/v6PnZGcbcDy4AEzaJWEYBqm/r+xSBUVCUhqsDYREkNWj
-         pTk2Cg7GwO+Ak12hDX9Gw7w7DUeSwfLE+nPeHkKLSVNumL9jN/BV+UFTu9NXeg+++w8f
-         lLJJIvjZGmxfxDf5c+kBFGdm7CbgtuRAtAt+OvkF5EwwBVgeHw7mXh6r1LoYEkkbNsHu
-         7E4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZCZN43jWD2vq/l1OsMAXPbnAOZR2i3qxBbDBOhKuvZw=;
-        b=GUwE4g1rwoNi4enj35lN7Asi585Ezld/Ie/JIEhloG76WPELiZcZcReIhu12izBxIY
-         6eqsWA4EGBY/QLt+c6HJF6xlLOa+uKT/+OTWzfYAsnGAjRNXM+U17YBAyJ5ZPv8XcwAZ
-         jVU218HOmJmK50Wf4Ns9hSNUr2v4uFhj+8byJjxI0wC7nFLB2HCDWcqI/6f6RT/S3/16
-         rSNHf6p3wiX6EMgbBX8AuBMrB6/5PV7atvz03LCGWHpEp1AhMR+afsGkt4duC/bRtFpO
-         3XsXbJ4dn36euXoc3cyAy1Dw73Fli6fhgPddyUi9JaXAIJHkpXnvvqGnyqp3H66ibcPB
-         jJjA==
-X-Gm-Message-State: AOAM532ap4yKtENKWBI0C2PhjERzqtk4JqNWRrpOlQ3EdJ7ox1wEOk9A
-        RXC1h9ztvS0XsZsEdYRIqfcDMg==
-X-Google-Smtp-Source: ABdhPJwdczx4mUDshXzCLeIiyhVoeUB3nVSaGH5jtctQva7JWfmKSMpjVChrqDK7BlspnwHAgcte/A==
-X-Received: by 2002:a17:906:c087:: with SMTP id f7mr417156ejz.487.1627491945178;
-        Wed, 28 Jul 2021 10:05:45 -0700 (PDT)
-Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id bd24sm139349edb.56.2021.07.28.10.05.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 10:05:44 -0700 (PDT)
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        Tony.Ambardar@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH 14/14] bpf/tests: Add tail call test suite
-Date:   Wed, 28 Jul 2021 19:05:02 +0200
-Message-Id: <20210728170502.351010-15-johan.almbladh@anyfinetworks.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
-References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+        id S230428AbhG1RHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 13:07:17 -0400
+Received: from mga17.intel.com ([192.55.52.151]:32424 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229567AbhG1RHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 13:07:16 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10059"; a="192989419"
+X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; 
+   d="scan'208";a="192989419"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2021 10:06:51 -0700
+X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; 
+   d="scan'208";a="517613242"
+Received: from sobsiex-desk2.amr.corp.intel.com (HELO [10.212.198.197]) ([10.212.198.197])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2021 10:06:46 -0700
+Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
+ visibility support
+To:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
+        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
+        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
+        Tianyu.Lan@microsoft.com, rientjes@google.com,
+        martin.b.radev@gmail.com, akpm@linux-foundation.org,
+        rppt@kernel.org, kirill.shutemov@linux.intel.com,
+        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
+        saravanand@fb.com, xen-devel@lists.xenproject.org,
+        pgonda@google.com, david@redhat.com, keescook@chromium.org,
+        hannes@cmpxchg.org, sfr@canb.auug.org.au,
+        michael.h.kelley@microsoft.com
+Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+        vkuznets@redhat.com, anparri@microsoft.com
+References: <20210728145232.285861-1-ltykernel@gmail.com>
+ <20210728145232.285861-4-ltykernel@gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <a2444c36-0103-8e1c-7005-d97f77f90e85@intel.com>
+Date:   Wed, 28 Jul 2021 10:06:45 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210728145232.285861-4-ltykernel@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While BPF_CALL instructions were tested implicitly by the cBPF-to-eBPF
-translation, there has not been any tests for BPF_TAIL_CALL instructions.
-The new test suite includes tests for tail call chaining, tail call count
-tracking and error paths. It is mainly intended for JIT development and
-testing.
+On 7/28/21 7:52 AM, Tianyu Lan wrote:
+> @@ -1986,7 +1988,9 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>  	int ret;
+>  
+>  	/* Nothing to do if memory encryption is not active */
+> -	if (!mem_encrypt_active())
+> +	if (hv_is_isolation_supported())
+> +		return hv_set_mem_enc(addr, numpages, enc);
+> +	else if (!mem_encrypt_active())
+>  		return 0;
 
-Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Reported-by: kernel test robot <lkp@intel.com>
----
- lib/test_bpf.c | 249 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 249 insertions(+)
+One more thing.  If you're going to be patching generic code, please
+start using feature checks that can get optimized away at runtime.
+hv_is_isolation_supported() doesn't look like the world's cheapest
+check.  It can't be inlined and costs at least a function call.
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index af5758151d0a..222d454b2ed4 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -8981,8 +8981,249 @@ static __init int test_bpf(void)
- 	return err_cnt ? -EINVAL : 0;
- }
- 
-+struct tail_call_test {
-+	const char *descr;
-+	struct bpf_insn insns[MAX_INSNS];
-+	int result;
-+	int stack_depth;
-+};
-+
-+/*
-+ * Magic marker used in test snippets for tail calls below.
-+ * BPF_LD/MOV to R2 and R2 with this immediate value is replaced
-+ * with the proper values by the test runner.
-+ */
-+#define TAIL_CALL_MARKER 0x7a11ca11
-+
-+/* Special offset to indicate a NULL call target */
-+#define TAIL_CALL_NULL 0x7fff
-+
-+#define TAIL_CALL(offset)			       \
-+	BPF_LD_IMM64(R2, TAIL_CALL_MARKER),	       \
-+	BPF_RAW_INSN(BPF_ALU | BPF_MOV | BPF_K, R3, 0, \
-+		     offset, TAIL_CALL_MARKER),	       \
-+	BPF_JMP_IMM(BPF_TAIL_CALL, 0, 0, 0)
-+
-+/*
-+ * Tail call tests. Each test case may call any other test in the table,
-+ * including itself, specified as a relative index offset from the calling
-+ * test. The index TAIL_CALL_NULL can be used to specify a NULL target
-+ * function to test the JIT error path.
-+ */
-+static struct tail_call_test tail_call_tests[] = {
-+	{
-+		"Tail call leaf",
-+		.insns = {
-+			BPF_ALU64_REG(BPF_MOV, R0, R1),
-+			BPF_ALU64_IMM(BPF_ADD, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 1,
-+	},
-+	{
-+		"Tail call 2",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_ADD, R1, 2),
-+			TAIL_CALL(-1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, -1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 3,
-+	},
-+	{
-+		"Tail call 3",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_ADD, R1, 3),
-+			TAIL_CALL(-1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, -1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 6,
-+	},
-+	{
-+		"Tail call 4",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_ADD, R1, 4),
-+			TAIL_CALL(-1),
-+			BPF_ALU64_IMM(BPF_MOV, R0, -1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 10,
-+	},
-+	{
-+		"Tail call error path, max count reached",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_ADD, R1, 1),
-+			BPF_ALU64_REG(BPF_MOV, R0, R1),
-+			TAIL_CALL(0),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = MAX_TAIL_CALL_CNT + 1,
-+	},
-+	{
-+		"Tail call error path, NULL target",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -1),
-+			TAIL_CALL(TAIL_CALL_NULL),
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 1,
-+	},
-+	{
-+		/* Must be the last test */
-+		"Tail call error path, index out of range",
-+		.insns = {
-+			BPF_ALU64_IMM(BPF_MOV, R0, -1),
-+			TAIL_CALL(1),    /* Index out of range */
-+			BPF_ALU64_IMM(BPF_MOV, R0, 1),
-+			BPF_EXIT_INSN(),
-+		},
-+		.result = 1,
-+	},
-+};
-+
-+static void __init destroy_tail_call_tests(struct bpf_array *progs)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(tail_call_tests); i++)
-+		if (progs->ptrs[i])
-+			bpf_prog_free(progs->ptrs[i]);
-+	kfree(progs);
-+}
-+
-+static __init int prepare_tail_call_tests(struct bpf_array **pprogs)
-+{
-+	struct bpf_array *progs;
-+	int ntests = ARRAY_SIZE(tail_call_tests);
-+	int which, err;
-+
-+	/* Allocate the table of programs to be used for tall calls */
-+	progs = kzalloc(sizeof(*progs) + (ntests + 1) * sizeof(progs->ptrs[0]),
-+			GFP_KERNEL);
-+	if (!progs)
-+		goto out_nomem;
-+
-+	/* Create all eBPF programs and populate the table */
-+	for (which = 0; which < ntests; which++) {
-+		struct tail_call_test *test = &tail_call_tests[which];
-+		struct bpf_prog *fp;
-+		int len, i;
-+
-+		/* Compute the number of program instructions */
-+		for (len = 0; len < MAX_INSNS; len++) {
-+			struct bpf_insn *insn = &test->insns[len];
-+
-+			if (len < MAX_INSNS - 1 &&
-+			    insn->code == (BPF_LD | BPF_DW | BPF_IMM))
-+				len++;
-+			if (insn->code == 0)
-+				break;
-+		}
-+
-+		/* Allocate and initialize the program */
-+		fp = bpf_prog_alloc(bpf_prog_size(len), 0);
-+		if (!fp)
-+			goto out_nomem;
-+
-+		fp->len = len;
-+		fp->type = BPF_PROG_TYPE_SOCKET_FILTER;
-+		fp->aux->stack_depth = test->stack_depth;
-+		memcpy(fp->insnsi, test->insns, len * sizeof(struct bpf_insn));
-+
-+		/* Relocate runtime tail call offsets and addresses */
-+		for (i = 0; i < len; i++) {
-+			struct bpf_insn *insn = &fp->insnsi[i];
-+			int target;
-+
-+			if (insn->imm != TAIL_CALL_MARKER)
-+				continue;
-+
-+			switch (insn->code) {
-+			case BPF_LD | BPF_DW | BPF_IMM:
-+				if (insn->dst_reg == R2) {
-+					insn[0].imm = (u32)(long)progs;
-+					insn[1].imm = ((u64)(long)progs) >> 32;
-+				}
-+				break;
-+
-+			case BPF_ALU | BPF_MOV | BPF_K:
-+			case BPF_ALU64 | BPF_MOV | BPF_K:
-+				if (insn->off == TAIL_CALL_NULL)
-+					target = ntests;
-+				else
-+					target = which + insn->off;
-+				if (insn->dst_reg == R3)
-+					insn->imm = target;
-+				break;
-+			}
-+		}
-+
-+		fp = bpf_prog_select_runtime(fp, &err);
-+		if (err)
-+			goto out_err;
-+
-+		progs->ptrs[which] = fp;
-+	}
-+
-+	/* The last entry contains a NULL program pointer */
-+	progs->map.max_entries = ntests + 1;
-+	*pprogs = progs;
-+	return 0;
-+
-+out_nomem:
-+	err = -ENOMEM;
-+
-+out_err:
-+	if (progs)
-+		destroy_tail_call_tests(progs);
-+	return err;
-+}
-+
-+static __init int test_tail_calls(struct bpf_array *progs)
-+{
-+	int i, err_cnt = 0, pass_cnt = 0;
-+	int jit_cnt = 0, run_cnt = 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(tail_call_tests); i++) {
-+		struct tail_call_test *test = &tail_call_tests[i];
-+		struct bpf_prog *fp = progs->ptrs[i];
-+		u64 duration;
-+		int ret;
-+
-+		cond_resched();
-+
-+		pr_info("#%d %s ", i, test->descr);
-+		if (!fp) {
-+			err_cnt++;
-+			continue;
-+		}
-+		pr_cont("jited:%u ", fp->jited);
-+
-+		run_cnt++;
-+		if (fp->jited)
-+			jit_cnt++;
-+
-+		ret = __run_one(fp, NULL, MAX_TESTRUNS, &duration);
-+		if (ret == test->result) {
-+			pr_cont("%lld PASS", duration);
-+			pass_cnt++;
-+		} else {
-+			pr_cont("ret %d != %d FAIL", ret, test->result);
-+			err_cnt++;
-+		}
-+	}
-+
-+	pr_info("%s: Summary: %d PASSED, %d FAILED, [%d/%d JIT'ed]\n",
-+		__func__, pass_cnt, err_cnt, jit_cnt, run_cnt);
-+
-+	return err_cnt ? -EINVAL : 0;
-+}
-+
- static int __init test_bpf_init(void)
- {
-+	struct bpf_array *progs = NULL;
- 	int ret;
- 
- 	ret = prepare_bpf_tests();
-@@ -8994,6 +9235,14 @@ static int __init test_bpf_init(void)
- 	if (ret)
- 		return ret;
- 
-+	ret = prepare_tail_call_tests(&progs);
-+	if (ret)
-+		return ret;
-+	ret = test_tail_calls(progs);
-+	destroy_tail_call_tests(progs);
-+	if (ret)
-+		return ret;
-+
- 	return test_skb_segment();
- }
- 
--- 
-2.25.1
+These checks could, with basically no effort be wrapped in a header like
+this:
 
+static inline bool hv_is_isolation_supported(void)
+{
+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+		return 0;
+
+	// out of line function call:
+	return __hv_is_isolation_supported();
+}	
+
+I don't think it would be the end of the world to add an
+X86_FEATURE_HYPERV_GUEST, either.  There are plenty of bits allocated
+for Xen and VMWare.
