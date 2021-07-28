@@ -2,101 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C72693D8C4A
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 12:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C623D8C43
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 12:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236075AbhG1Kz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 06:55:26 -0400
-Received: from m15113.mail.126.com ([220.181.15.113]:51581 "EHLO
-        m15113.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232530AbhG1KzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 06:55:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=2PFzgfjcY3uTE1yPG9
-        WCfCRS+p3+UpTzgxogbw7XsIc=; b=MAkkbuu8dFs9aTEKLwwg0sKBQ3Tzb+k/7T
-        BxhB8A0jIoD+PQcu52lJLk2pbNvJ6PM7uTF0/YSjYxN6xH+BOKVF4T+w0FhCBJUf
-        gOPkcmDfLyZPXeZeNXR+hJnDEp1xZzICpd3qjiARkEuljzhi0nkcsz1lr2QyHghl
-        SZRUqWtAE=
-Received: from localhost.localdomain (unknown [221.221.159.150])
-        by smtp3 (Coremail) with SMTP id DcmowABXDoNnNwFhQ07ZTQ--.17643S4;
-        Wed, 28 Jul 2021 18:54:33 +0800 (CST)
-From:   zhang kai <zhangkaiheb@126.com>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        krzysztof.kozlowski@canonical.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhang kai <zhangkaiheb@126.com>
-Subject: [PATCH] net: let flow have same hash in two directions
-Date:   Wed, 28 Jul 2021 18:54:18 +0800
-Message-Id: <20210728105418.7379-1-zhangkaiheb@126.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: DcmowABXDoNnNwFhQ07ZTQ--.17643S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KF4xAFWDuw43Ar4rKFykKrg_yoW8ZFyfpr
-        WfAF12g3y8ur15WrsrJrs29w17KFZ5Z3yfWa4fuw1FkFsxuFnxWF1akrZ8Gan8ur1jya4U
-        GrW8Jry5C3Z2vrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UKkskUUUUU=
-X-Originating-IP: [221.221.159.150]
-X-CM-SenderInfo: x2kd0wxndlxvbe6rjloofrz/1tbi2Qnd-lpECAxCLwAAsE
+        id S235918AbhG1KyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 06:54:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231340AbhG1KyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 06:54:23 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF0FC061757
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 03:54:21 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id m9so2532208ljp.7
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 03:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y7BSRF2BV2wKYMpkMU6AInonSJrtXWVBGV0wA+UfcSQ=;
+        b=HvxZxKORsgd1u77vvKkzSHVmzDZnFgdXGSifvV+HmSIPnClkA6lYo7Qz7nvYlLjejZ
+         PK9B0U1dzVIDM4JKLg5sSHucPcc5bP4ZeDpjmSTAFJSiF4x48AfpDxMdOGxhIAJqc77U
+         oc7qawDYmcTBtp40SM72ZiIXxtcm1lp5rspVI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y7BSRF2BV2wKYMpkMU6AInonSJrtXWVBGV0wA+UfcSQ=;
+        b=AA+c+3fIEP/dYWi+FJwMTsBeenYFo6ioRvtmxYYrOIz2SGL55GieqWScVjMzJrkI8N
+         a0bwW9GAy5BnH1Z3I5S6Ym40chLVg1HyHl529bVkfWz/qUDTjowPYD0B392X0Fvr4j0p
+         bgQXL906Q2ul629w+ySoWo66dA8eR2NteQNaRscFNEkBxFv38yFxPf1U/SyU1xvOXZYz
+         19qyfwvay7QLcDhNG2GYw8IDIQUAoNBKxtU2T0gDkaKqt2qZ8yBTf0HQcEKDVLL0i1OQ
+         rtDqP3Qa8FBrgIYODbvTff62Mj7PB0y4dCqLRJZ34cCLUPBRLnKNTUCRCvjHY+WeCROK
+         gPVQ==
+X-Gm-Message-State: AOAM533eLlksevyoDByr8nADvn+41AQovIpvZJ5YIalFSGQt0Yfu/dif
+        FMe+Ux3hA7SC39zN39De1hTzIg==
+X-Google-Smtp-Source: ABdhPJzsNcjtwcC6XUZJ5ZJ1M5kI8nrl9w1bOGQ6hWCdCY07r8K6xPGQ9TuYLQLsRgK+FjENio3Z4w==
+X-Received: by 2002:a05:651c:1144:: with SMTP id h4mr18097576ljo.396.1627469659652;
+        Wed, 28 Jul 2021 03:54:19 -0700 (PDT)
+Received: from [172.16.11.1] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id o1sm555702lfk.298.2021.07.28.03.54.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Jul 2021 03:54:19 -0700 (PDT)
+Subject: Re: [PATCH 04/64] stddef: Introduce struct_group() helper macro
+To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
+Cc:     Keith Packard <keithpac@amazon.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-5-keescook@chromium.org>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Message-ID: <41183a98-bdb9-4ad6-7eab-5a7292a6df84@rasmusvillemoes.dk>
+Date:   Wed, 28 Jul 2021 12:54:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <20210727205855.411487-5-keescook@chromium.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-using same source and destination ip/port for flow hash calculation
-within the two directions.
+On 27/07/2021 22.57, Kees Cook wrote:
 
-Signed-off-by: zhang kai <zhangkaiheb@126.com>
----
- net/core/flow_dissector.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+> In order to have a regular programmatic way to describe a struct
+> region that can be used for references and sizing, can be examined for
+> bounds checking, avoids forcing the use of intermediate identifiers,
+> and avoids polluting the global namespace, introduce the struct_group()
+> macro. This macro wraps the member declarations to create an anonymous
+> union of an anonymous struct (no intermediate name) and a named struct
+> (for references and sizing):
+> 
+> 	struct foo {
+> 		int one;
+> 		struct_group(thing,
+> 			int two,
+> 			int three,
+> 		);
+> 		int four;
+> 	};
 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 3ed7c98a9..dfc18f212 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1504,7 +1504,7 @@ __be32 flow_get_u32_dst(const struct flow_keys *flow)
- }
- EXPORT_SYMBOL(flow_get_u32_dst);
- 
--/* Sort the source and destination IP (and the ports if the IP are the same),
-+/* Sort the source and destination IP and the ports,
-  * to have consistent hash within the two directions
-  */
- static inline void __flow_hash_consistentify(struct flow_keys *keys)
-@@ -1515,11 +1515,11 @@ static inline void __flow_hash_consistentify(struct flow_keys *keys)
- 	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
- 		addr_diff = (__force u32)keys->addrs.v4addrs.dst -
- 			    (__force u32)keys->addrs.v4addrs.src;
--		if ((addr_diff < 0) ||
--		    (addr_diff == 0 &&
--		     ((__force u16)keys->ports.dst <
--		      (__force u16)keys->ports.src))) {
-+		if (addr_diff < 0)
- 			swap(keys->addrs.v4addrs.src, keys->addrs.v4addrs.dst);
-+
-+		if ((__force u16)keys->ports.dst <
-+		    (__force u16)keys->ports.src) {
- 			swap(keys->ports.src, keys->ports.dst);
- 		}
- 		break;
-@@ -1527,13 +1527,13 @@ static inline void __flow_hash_consistentify(struct flow_keys *keys)
- 		addr_diff = memcmp(&keys->addrs.v6addrs.dst,
- 				   &keys->addrs.v6addrs.src,
- 				   sizeof(keys->addrs.v6addrs.dst));
--		if ((addr_diff < 0) ||
--		    (addr_diff == 0 &&
--		     ((__force u16)keys->ports.dst <
--		      (__force u16)keys->ports.src))) {
-+		if (addr_diff < 0) {
- 			for (i = 0; i < 4; i++)
- 				swap(keys->addrs.v6addrs.src.s6_addr32[i],
- 				     keys->addrs.v6addrs.dst.s6_addr32[i]);
-+		}
-+		if ((__force u16)keys->ports.dst <
-+		    (__force u16)keys->ports.src) {
- 			swap(keys->ports.src, keys->ports.dst);
- 		}
- 		break;
--- 
-2.17.1
+That example won't compile, the commas after two and three should be
+semicolons.
 
+And your implementation relies on MEMBERS not containing any comma
+tokens, but as
+
+  int a, b, c, d;
+
+is a valid way to declare multiple members, consider making MEMBERS
+variadic
+
+#define struct_group(NAME, MEMBERS...)
+
+to have it slurp up every subsequent argument and make that work.
+
+> 
+> Co-developed-by: Keith Packard <keithpac@amazon.com>
+> Signed-off-by: Keith Packard <keithpac@amazon.com>
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  include/linux/stddef.h | 34 ++++++++++++++++++++++++++++++++++
+
+Bikeshedding a bit, but do we need to add 34 lines that need to be
+preprocessed to virtually each and every translation unit [as opposed to
+adding a struct_group.h header]? Oh well, you need it for struct
+skbuff.h, so it would be pulled in by a lot regardless :(
+
+Rasmus
