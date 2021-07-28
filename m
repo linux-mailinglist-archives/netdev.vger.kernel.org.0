@@ -2,154 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E878A3D9192
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 17:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6F183D9197
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 17:14:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235721AbhG1PNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 11:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S236793AbhG1PO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 11:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbhG1PNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 11:13:43 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558B7C061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 08:13:41 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id r23so3525013lji.3
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 08:13:41 -0700 (PDT)
+        with ESMTP id S235546AbhG1POZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 11:14:25 -0400
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E870CC061764
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 08:14:22 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id x12-20020a05620a14acb02903b8f9d28c19so1756975qkj.23
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 08:14:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iH7MSHpYkHvJt7wqynx3N1nt28MSGKLy81RVHV/rOTQ=;
-        b=llOIVjkPDOZVDBnCosKuNvsEwkGlWS1duCcU81fec5dLbyZ+vz3cfmKDjR9lQtzwSG
-         A0ymlnFmm9551mLAmo5Whqh/m6dBueJazpXw/bGY1fiIosrvEj2QAAxL5QpxTKUYSIlS
-         HX7IoGgIHHYboHkDAS9HOUX4BCbesRw74+gJuKvZbUZDwK/3KZfYK8/gLLT3rSpiKBJM
-         9LN5HJL/IwS1rnrcnZ738sljO+6aSoih7gJROXbEZhfMWE/uLDXzLMAF6fnB4//FdKtX
-         SjS5Hd0psszALArFmdQekmeSjC+2D82Tytzk4WzeKsRxLO6AeVG/ev1ccO2iv4SqMl7a
-         iXAw==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=xfZZ3ta3RJs39O7zEmblbC+9ILKgix6dlFzx9fhcN9A=;
+        b=DOykGsXbmCRZXB989DixJCtWtu4w+mCBGQLBPdIxOHUWwehn6GCCY2DqZDUvOEGk6h
+         y7xzPtCY/jTnUMRM1aFHYWcmdQVAvL2RLq4ksl/n8wwdugJs+IchFpUOyEcxvrwbt2iN
+         tgITLgZt9QClGRjc4ZAru2lkqVUaEqbEY3EuWCfsBrF+iuICaig08fcvSsH0vnU8kmC0
+         sXW/Y86dq0crJhhpj52DhTyXqsjAlUsE3daQnoKTAD+qlYm9tZS8axiyRQV5rM+QiG80
+         YS6tZKuk6tBK6uoUUENH+uEPw0aWUG2iBCV5HZV40bkqwZ3+RZjlsIn1Pmn54SohDG85
+         ACRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iH7MSHpYkHvJt7wqynx3N1nt28MSGKLy81RVHV/rOTQ=;
-        b=gatnsR8vFBSXrw6LA2Wmq5Lt2XOS2dUR9pd+zDS0+RReh9R5D/ClKWajzUP5cNgWbP
-         lezLNAFqr63Uy051bmzFtbbi6UeNsanO2CFlFqPS5E7frWhKtXjLQv0RcmM0o+FLoqjQ
-         TPH+7s4ec3XZwUxvVIEfTzRdrsY1hybM8+Fx4InwQE2q78sFnbi3YnsxN0kL9tNum66h
-         1P1NdY4F1HiP+i1p3QfTAffeO7TftK5gBZfxbbIQb8eLEVX/pXugFjLe9urTt3fBI9Er
-         XSTu1B1tp00WCASYqDbzlqC7EjYFgU1ItGRK1Npzp0rjghOCxBuR6kPf9gIDy5bFQb1c
-         g18A==
-X-Gm-Message-State: AOAM533507ihFAhaZNH/JTsEL/iuXx5V5wkWZoDjYT+RNPxIw1ZCxZdM
-        bJMizQ7kA9TQ4T+w7e1dJdxgY/k4vlAHAjjOvfWmqA==
-X-Google-Smtp-Source: ABdhPJzeiZ+1TgzPSirdloqJjM8mUbNaOn+fNJgtn233eJ55reHRi5N7Rx6u/RLgqpRP2CibU35ecP2NVyDLu+yjOlU=
-X-Received: by 2002:a05:651c:218:: with SMTP id y24mr221427ljn.448.1627485219260;
- Wed, 28 Jul 2021 08:13:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210715055923.43126-1-xiyou.wangcong@gmail.com> <202107230000.B52B102@keescook>
-In-Reply-To: <202107230000.B52B102@keescook>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 28 Jul 2021 17:13:12 +0200
-Message-ID: <CAG48ez0b-t_kJXVeFixYMoqRa-g1VRPUhFVknttiBYnf-cjTyg@mail.gmail.com>
-Subject: tracepoints and %p [was: Re: [Patch net-next resend v2] net: use %px
- to print skb address in trace_netif_receive_skb]
-To:     Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Qitao Xu <qitao.xu@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-hardening@vger.kernel.org
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=xfZZ3ta3RJs39O7zEmblbC+9ILKgix6dlFzx9fhcN9A=;
+        b=rn4ffgGga+LwMRVwIucoGMWObKiXiWzs6I2XYLc3nvRxW0IEwN3Lmw3UAiKx1Lxcz9
+         CCKCKxM4qdRhhQ3445SVgXKSdoX8txkNy0/h/NZj2KmGh9Kwi9LQRVOBh/+4wNMXHd3T
+         qzY9L74VEsPm5DiT57ZlOdzZI8Mllig/ywCa2ca9TeJFuY7dn06C0FdJC8bBCuTbUyBs
+         f8exh5RBN5SN70dk7ztkjSPNBV/LKhXgoXcQcxOmMaUfu8actlvl+G23Ek/cZNYQvOVh
+         y61mFrPJUAPh11rv3nBV8bQR+HVDmiUZJv4KM445YFrIoEEEmcGsUnzr8pC2Qa2SPqd7
+         D3aQ==
+X-Gm-Message-State: AOAM533Zl3gZF/fw/O6Y140RMV2MhyBuBcRVupKrSijy4e/BvlwOwxuH
+        ptIphDLTUjAtvp2Ue+ipO101amRVYGCjQ/K1qamG9pwN2sjli+0x3rICNURVurCxbTWZ7pLDxk7
+        NA8FKp6772bf3RPWhPZFqhZkg3i3Mkop5runXslqyzN52uyfolNSlfw==
+X-Google-Smtp-Source: ABdhPJwH+S36DfWuafDinqDURszU2zYS5C6uYVP5FNsg5i1f93BBY8b+A+/xPbK5dWf5HZwvorwzCYg=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:35e0:b2c:7263:cba9])
+ (user=sdf job=sendgmr) by 2002:a0c:ca09:: with SMTP id c9mr26901qvk.61.1627485261815;
+ Wed, 28 Jul 2021 08:14:21 -0700 (PDT)
+Date:   Wed, 28 Jul 2021 08:14:19 -0700
+Message-Id: <20210728151419.501183-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.32.0.554.ge1b32706d8-goog
+Subject: [PATCH bpf-next] selftests/bpf: move netcnt test under test_progs
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+tracing maintainers
+Rewrite to skel and ASSERT macros as well while we are at it.
 
-On Fri, Jul 23, 2021 at 9:09 AM Kees Cook <keescook@chromium.org> wrote:
-> On Wed, Jul 14, 2021 at 10:59:23PM -0700, Cong Wang wrote:
-> > From: Qitao Xu <qitao.xu@bytedance.com>
-> >
-> > The print format of skb adress in tracepoint class net_dev_template
-> > is changed to %px from %p, because we want to use skb address
-> > as a quick way to identify a packet.
->
-> No; %p was already hashed to uniquely identify unique addresses. This
-> is needlessly exposing kernel addresses with no change in utility. See
-> [1] for full details on when %px is justified (almost never).
->
-> > Note, trace ring buffer is only accessible to privileged users,
-> > it is safe to use a real kernel address here.
->
-> That's not accurate either; there is a difference between uid 0 and
-> kernel mode privilege levels.
->
-> Please revert these:
->
->         851f36e40962408309ad2665bf0056c19a97881c
->         65875073eddd24d7b3968c1501ef29277398dc7b
->
-> And adjust this to replace %px with %p:
->
->         70713dddf3d25a02d1952f8c5d2688c986d2f2fb
->
-> Thanks!
->
-> -Kees
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../testing/selftests/bpf/prog_tests/netcnt.c |  93 +++++++++++
+ tools/testing/selftests/bpf/test_netcnt.c     | 148 ------------------
+ 3 files changed, 94 insertions(+), 150 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/netcnt.c
+ delete mode 100644 tools/testing/selftests/bpf/test_netcnt.c
 
-Hi Kees,
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index f405b20c1e6c..2a58b7b5aea4 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -38,7 +38,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_verifier_log test_dev_cgroup \
+ 	test_sock test_sockmap get_cgroup_id_user \
+ 	test_cgroup_storage \
+-	test_netcnt test_tcpnotify_user test_sysctl \
++	test_tcpnotify_user test_sysctl \
+ 	test_progs-no_alu32
+ 
+ # Also test bpf-gcc, if present
+@@ -197,7 +197,6 @@ $(OUTPUT)/test_sockmap: cgroup_helpers.c
+ $(OUTPUT)/test_tcpnotify_user: cgroup_helpers.c trace_helpers.c
+ $(OUTPUT)/get_cgroup_id_user: cgroup_helpers.c
+ $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
+-$(OUTPUT)/test_netcnt: cgroup_helpers.c
+ $(OUTPUT)/test_sock_fields: cgroup_helpers.c
+ $(OUTPUT)/test_sysctl: cgroup_helpers.c
+ 
+diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
+new file mode 100644
+index 000000000000..063a40d228b6
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
+@@ -0,0 +1,93 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <sys/sysinfo.h>
++#include <test_progs.h>
++#include "netcnt_prog.skel.h"
++#include "netcnt_common.h"
++
++#define CG_NAME "/netcnt"
++
++void test_netcnt(void)
++{
++	union percpu_net_cnt *percpu_netcnt = NULL;
++	struct bpf_cgroup_storage_key key;
++	int map_fd, percpu_map_fd;
++	struct netcnt_prog *skel;
++	unsigned long packets;
++	union net_cnt netcnt;
++	unsigned long bytes;
++	int cpu, nproc;
++	int cg_fd = -1;
++
++	skel = netcnt_prog__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
++		return;
++
++	nproc = get_nprocs_conf();
++	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
++	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
++		goto err;
++
++	cg_fd = test__join_cgroup(CG_NAME);
++	if (!ASSERT_GE(cg_fd, 0, "test__join_cgroup"))
++		goto err;
++
++	skel->links.bpf_nextcnt =
++		bpf_program__attach_cgroup(skel->progs.bpf_nextcnt, cg_fd);
++	if (!ASSERT_OK_PTR(skel->links.bpf_nextcnt,
++			   "attach_cgroup(bpf_nextcnt)"))
++		goto err;
++
++	if (system("which ping6 &>/dev/null") == 0)
++		assert(!system("ping6 ::1 -c 10000 -f -q > /dev/null"));
++	else
++		assert(!system("ping -6 ::1 -c 10000 -f -q > /dev/null"));
++
++	map_fd = bpf_map__fd(skel->maps.netcnt);
++	if (!ASSERT_GE(map_fd, 0, "bpf_map__fd(netcnt)"))
++		goto err;
++
++	percpu_map_fd = bpf_map__fd(skel->maps.percpu_netcnt);
++	if (!ASSERT_GE(percpu_map_fd, 0, "bpf_map__fd(percpu_netcnt)"))
++		goto err;
++
++	if (!ASSERT_OK(bpf_map_get_next_key(map_fd, NULL, &key),
++		       "bpf_map_get_next_key"))
++		goto err;
++
++	if (!ASSERT_OK(bpf_map_lookup_elem(map_fd, &key, &netcnt),
++		       "bpf_map_lookup_elem(netcnt)"))
++		goto err;
++
++	if (!ASSERT_OK(bpf_map_lookup_elem(percpu_map_fd, &key,
++					   &percpu_netcnt[0]),
++		       "bpf_map_lookup_elem(percpu_netcnt)"))
++		goto err;
++
++	/* Some packets can be still in per-cpu cache, but not more than
++	 * MAX_PERCPU_PACKETS.
++	 */
++	packets = netcnt.packets;
++	bytes = netcnt.bytes;
++	for (cpu = 0; cpu < nproc; cpu++) {
++		ASSERT_LE(percpu_netcnt[cpu].packets, MAX_PERCPU_PACKETS,
++			  "MAX_PERCPU_PACKETS");
++
++		packets += percpu_netcnt[cpu].packets;
++		bytes += percpu_netcnt[cpu].bytes;
++	}
++
++	/* No packets should be lost */
++	ASSERT_EQ(packets, 10000, "packets");
++
++	/* Let's check that bytes counter matches the number of packets
++	 * multiplied by the size of ipv6 ICMP packet.
++	 */
++	ASSERT_EQ(bytes, packets * 104, "bytes");
++
++err:
++	if (cg_fd != -1)
++		close(cg_fd);
++	free(percpu_netcnt);
++	netcnt_prog__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/test_netcnt.c b/tools/testing/selftests/bpf/test_netcnt.c
+deleted file mode 100644
+index 4990a99e7381..000000000000
+--- a/tools/testing/selftests/bpf/test_netcnt.c
++++ /dev/null
+@@ -1,148 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <errno.h>
+-#include <assert.h>
+-#include <sys/sysinfo.h>
+-#include <sys/time.h>
+-
+-#include <linux/bpf.h>
+-#include <bpf/bpf.h>
+-#include <bpf/libbpf.h>
+-
+-#include "cgroup_helpers.h"
+-#include "bpf_rlimit.h"
+-#include "netcnt_common.h"
+-
+-#define BPF_PROG "./netcnt_prog.o"
+-#define TEST_CGROUP "/test-network-counters/"
+-
+-static int bpf_find_map(const char *test, struct bpf_object *obj,
+-			const char *name)
+-{
+-	struct bpf_map *map;
+-
+-	map = bpf_object__find_map_by_name(obj, name);
+-	if (!map) {
+-		printf("%s:FAIL:map '%s' not found\n", test, name);
+-		return -1;
+-	}
+-	return bpf_map__fd(map);
+-}
+-
+-int main(int argc, char **argv)
+-{
+-	union percpu_net_cnt *percpu_netcnt;
+-	struct bpf_cgroup_storage_key key;
+-	int map_fd, percpu_map_fd;
+-	int error = EXIT_FAILURE;
+-	struct bpf_object *obj;
+-	int prog_fd, cgroup_fd;
+-	unsigned long packets;
+-	union net_cnt netcnt;
+-	unsigned long bytes;
+-	int cpu, nproc;
+-	__u32 prog_cnt;
+-
+-	nproc = get_nprocs_conf();
+-	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
+-	if (!percpu_netcnt) {
+-		printf("Not enough memory for per-cpu area (%d cpus)\n", nproc);
+-		goto err;
+-	}
+-
+-	if (bpf_prog_load(BPF_PROG, BPF_PROG_TYPE_CGROUP_SKB,
+-			  &obj, &prog_fd)) {
+-		printf("Failed to load bpf program\n");
+-		goto out;
+-	}
+-
+-	cgroup_fd = cgroup_setup_and_join(TEST_CGROUP);
+-	if (cgroup_fd < 0)
+-		goto err;
+-
+-	/* Attach bpf program */
+-	if (bpf_prog_attach(prog_fd, cgroup_fd, BPF_CGROUP_INET_EGRESS, 0)) {
+-		printf("Failed to attach bpf program");
+-		goto err;
+-	}
+-
+-	if (system("which ping6 &>/dev/null") == 0)
+-		assert(!system("ping6 ::1 -c 10000 -f -q > /dev/null"));
+-	else
+-		assert(!system("ping -6 ::1 -c 10000 -f -q > /dev/null"));
+-
+-	if (bpf_prog_query(cgroup_fd, BPF_CGROUP_INET_EGRESS, 0, NULL, NULL,
+-			   &prog_cnt)) {
+-		printf("Failed to query attached programs");
+-		goto err;
+-	}
+-
+-	map_fd = bpf_find_map(__func__, obj, "netcnt");
+-	if (map_fd < 0) {
+-		printf("Failed to find bpf map with net counters");
+-		goto err;
+-	}
+-
+-	percpu_map_fd = bpf_find_map(__func__, obj, "percpu_netcnt");
+-	if (percpu_map_fd < 0) {
+-		printf("Failed to find bpf map with percpu net counters");
+-		goto err;
+-	}
+-
+-	if (bpf_map_get_next_key(map_fd, NULL, &key)) {
+-		printf("Failed to get key in cgroup storage\n");
+-		goto err;
+-	}
+-
+-	if (bpf_map_lookup_elem(map_fd, &key, &netcnt)) {
+-		printf("Failed to lookup cgroup storage\n");
+-		goto err;
+-	}
+-
+-	if (bpf_map_lookup_elem(percpu_map_fd, &key, &percpu_netcnt[0])) {
+-		printf("Failed to lookup percpu cgroup storage\n");
+-		goto err;
+-	}
+-
+-	/* Some packets can be still in per-cpu cache, but not more than
+-	 * MAX_PERCPU_PACKETS.
+-	 */
+-	packets = netcnt.packets;
+-	bytes = netcnt.bytes;
+-	for (cpu = 0; cpu < nproc; cpu++) {
+-		if (percpu_netcnt[cpu].packets > MAX_PERCPU_PACKETS) {
+-			printf("Unexpected percpu value: %llu\n",
+-			       percpu_netcnt[cpu].packets);
+-			goto err;
+-		}
+-
+-		packets += percpu_netcnt[cpu].packets;
+-		bytes += percpu_netcnt[cpu].bytes;
+-	}
+-
+-	/* No packets should be lost */
+-	if (packets != 10000) {
+-		printf("Unexpected packet count: %lu\n", packets);
+-		goto err;
+-	}
+-
+-	/* Let's check that bytes counter matches the number of packets
+-	 * multiplied by the size of ipv6 ICMP packet.
+-	 */
+-	if (bytes != packets * 104) {
+-		printf("Unexpected bytes count: %lu\n", bytes);
+-		goto err;
+-	}
+-
+-	error = 0;
+-	printf("test_netcnt:PASS\n");
+-
+-err:
+-	cleanup_cgroup_environment();
+-	free(percpu_netcnt);
+-
+-out:
+-	return error;
+-}
+-- 
+2.32.0.554.ge1b32706d8-goog
 
-as far as I understand, the printf format strings for tracepoints
-don't matter for exposing what data is exposed to userspace - the raw
-data, not the formatted data, is stored in the ring buffer that
-userspace can access via e.g. trace_pipe_raw (see
-https://www.kernel.org/doc/Documentation/trace/ftrace.txt), and the
-data can then be formatted **by userspace tooling** (e.g.
-libtraceevent). As far as I understand, the stuff that root can read
-via debugfs is the data stored by TP_fast_assign() (although root
-_can_ also let the kernel do the printing and read it in text form).
-Maybe Steven Rostedt can help with whether that's true and provide
-more detail on this.
-
-In my view, the ftrace subsystem, just like the BPF subsystem, is
-root-only debug tracing infrastructure that can and should log
-detailed information about kernel internals, no matter whether that
-information might be helpful to attackers, because if an attacker is
-sufficiently privileged to access this level of debug information,
-that's beyond the point where it makes sense to worry about exposing
-kernel pointers. But even if you disagree, I don't think that ftrace
-format strings are relevant here.
-
-
-
-
-> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#p-format-specifier
->
-> >
-> > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> > Signed-off-by: Qitao Xu <qitao.xu@bytedance.com>
-> > ---
-> >  include/trace/events/net.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-> > index 2399073c3afc..78c448c6ab4c 100644
-> > --- a/include/trace/events/net.h
-> > +++ b/include/trace/events/net.h
-> > @@ -136,7 +136,7 @@ DECLARE_EVENT_CLASS(net_dev_template,
-> >               __assign_str(name, skb->dev->name);
-> >       ),
-> >
-> > -     TP_printk("dev=%s skbaddr=%p len=%u",
-> > +     TP_printk("dev=%s skbaddr=%px len=%u",
-> >               __get_str(name), __entry->skbaddr, __entry->len)
-> >  )
-> >
-> > --
-> > 2.27.0
-> >
->
-> --
-> Kees Cook
