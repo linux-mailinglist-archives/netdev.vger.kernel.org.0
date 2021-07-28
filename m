@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94BBF3D98EC
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:31:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2527E3D98F5
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232230AbhG1Wbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 18:31:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7600 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231989AbhG1Wbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:31:50 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16SM79Yk028832;
-        Wed, 28 Jul 2021 15:31:34 -0700
+        id S232290AbhG1Wgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 18:36:38 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18450 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232154AbhG1Wgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:36:37 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16SM9PvK028351;
+        Wed, 28 Jul 2021 15:36:21 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=eM1qLnHZg5hI3V+ygr18ythW9JTZHdSTh6QNWjtwqiE=;
- b=otrSHJQnULlxqkVNvcchi1gCtN/kH65+50oAKKgLbDs2KLaXVMETcQVBjqah4fN5L5ed
- erC2NjAQv3ktWc7XarOj8iQZ2GFdh86S2srM7HRTV41oXO1MEGuQimJ4XzINSHh9FBY6
- Dzxn3Wr72eb9DD9WP+jiF5JIRcZLGZlyOtA= 
+ bh=bdhn4cLc7b0K8Hs0/pXvCu6GVjOscbz810w4aGsAtmQ=;
+ b=ojON6phLtIZOZiJLF3xFY7uPYDMoAqDiRHzpLC0NGHDFTpVWJh7YnwHIBVo9NdFBaY1E
+ M2TPF6NsIunRtBE3GOLu5JNNlLu7JGHzk94bk1hG+PvlOIyZzGsHYXARa58KCPzx9Re1
+ Azxk3mJ21HE1XEoeacst1BL+xlAFSh0pX3A= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3a38tpk4cd-1
+        by mx0a-00082601.pphosted.com with ESMTP id 3a3bu99n3r-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 28 Jul 2021 15:31:34 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+        Wed, 28 Jul 2021 15:36:21 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 28 Jul 2021 15:31:33 -0700
+ 15.1.2176.2; Wed, 28 Jul 2021 15:36:20 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J/FjProD3lB0dWYdo9tedSCerJuD4QYjmzRkom6X8eu8yDzVGp2GGaKrpTWo6yz6bPIdI7yXb2f89inWKwavLp6M2SkSXJ9a2Ee2fRfGSUlMzUl15Dmh08qrzBb5En0rv00QnVrw9tYxH65mtr1hIXK410NThAuOjszHT76ziendeVmgm0SKQizSzakC8d4wimy7Dpwlmvo2uKdK9ZvFe9g/ifw0B19djNk/Jgas5tc9bDmMY2RpjmwlmLsxHj85B47EkOyV0xpGvU6kkQCjEqFL/Uo9IX7iHw8EJOMm0a6g4CpJf1bFwXpZgrOTEoYXXxbHa/EuJs+T2dvqk1Ty7A==
+ b=hli9mcuyLcJQFzDVOVxFUDtBf0jbHK4BqAEAgyWDGEOR2KTr14yVwYEAo+8hifGdTOqyb65eqedAy9sIutvLnPFwNb/HUwzumuA9F53Ocs8nV5upxTZUmxqkla00IeuBD+DmL1lbcOtLzDwLIxaeco1V3Kwd5SLCsdi3wezFVb41f0Cf2XZxbM+EEYbJYoztjBNjwpiCO/QoyrU7P2lsOIfpT4o/a115DpUo6muvMBLCqUIbqtB3iIOZkjuxxjqQVOR+dV4fPU3vmWCA1IG8c+PqAmCdhcCNqRh3LY3mQMVzLiqFAvz/b45N0cWViAAvFVV3K0S6G5sZuknOXetFvA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eM1qLnHZg5hI3V+ygr18ythW9JTZHdSTh6QNWjtwqiE=;
- b=N8wVkPEAj56jcBLyvIy5t1QubHpuhBUZrFZML28Prd22s3V7Vi6fRT5mrechDv4HuZIsrLn74ApySfnBVf7a6MsLY4ViTKK7ZPS+eWY/fmScIt0l7dk54u1TC4FcCDzD+ex6QYvOjlCn56K1CaCFTGIR90Ba3hJ73B08COqHC75oAsR2B3n6V+QyzJjrV+EQjU7YhVmRtdt2aQPw9Rsipa6pIiZDB3S6prduiIBt0vHE2T6Sk7DYSTodS/1Rd4tZwcOTbrQmvBv0KWwddtmnHWtfDwObXrnMmSb/5UofqpVMjpDHVEt8WXOIbYsAjlDSkijOOYNzgn49FFJxDlayKg==
+ bh=bdhn4cLc7b0K8Hs0/pXvCu6GVjOscbz810w4aGsAtmQ=;
+ b=RAAJSNkILbzG1zbI/zDUp9eddJojHKrx4yX4bVPwr095+qo0Ap3nLlwT+FYDT4b+aE5xGrRzVk9eImBLSmqC20NZOXIDpO/nCIrKnLrNroqk6uIJarXGh38hgY3o+3NH79OfKq9BxqJxHiI9yNxRLFK+XtQA+hZ3zmv466YQQm/x1IuUYwV+mU4eqnk3P+QsMZQignG7DNLEvCtTLwQaONKm+YrupJAp5BqEY8YrFKrouEps/FV+ncWnUWxJF1u3u/LlaXg1G61NiGsPt8E3dHyEphC2cNRiKPXG6zTwfkZt85fVQnb1FiXsbzezMdinY1xFT8BUK4DPeNZQiVdVMw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
 Received: from DM5PR1501MB2055.namprd15.prod.outlook.com (2603:10b6:4:a1::13)
- by DM6PR15MB2522.namprd15.prod.outlook.com (2603:10b6:5:1a9::11) with
+ by DM5PR15MB1147.namprd15.prod.outlook.com (2603:10b6:3:bc::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Wed, 28 Jul
- 2021 22:31:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18; Wed, 28 Jul
+ 2021 22:36:19 +0000
 Received: from DM5PR1501MB2055.namprd15.prod.outlook.com
  ([fe80::b0e1:ea29:ca0a:be9f]) by DM5PR1501MB2055.namprd15.prod.outlook.com
  ([fe80::b0e1:ea29:ca0a:be9f%7]) with mapi id 15.20.4352.033; Wed, 28 Jul 2021
- 22:31:32 +0000
-Subject: Re: [PATCH 01/14] bpf/tests: Add BPF_JMP32 test cases
+ 22:36:19 +0000
+Subject: Re: [PATCH 02/14] bpf/tests: Add BPF_MOV tests for zero and sign
+ extension
 To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
         <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
 CC:     <kafai@fb.com>, <songliubraving@fb.com>,
@@ -58,86 +59,86 @@ CC:     <kafai@fb.com>, <songliubraving@fb.com>,
         <Tony.Ambardar@gmail.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>
 References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
- <20210728170502.351010-2-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-3-johan.almbladh@anyfinetworks.com>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <ede57ee2-a975-b98c-5978-102280a77d8c@fb.com>
-Date:   Wed, 28 Jul 2021 15:31:28 -0700
+Message-ID: <f91e2557-e4b6-3d87-b0e4-c0c9244c0fa1@fb.com>
+Date:   Wed, 28 Jul 2021 15:36:15 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210728170502.351010-2-johan.almbladh@anyfinetworks.com>
+In-Reply-To: <20210728170502.351010-3-johan.almbladh@anyfinetworks.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW3PR05CA0017.namprd05.prod.outlook.com
- (2603:10b6:303:2b::22) To DM5PR1501MB2055.namprd15.prod.outlook.com
+X-ClientProxiedBy: MWHPR17CA0088.namprd17.prod.outlook.com
+ (2603:10b6:300:c2::26) To DM5PR1501MB2055.namprd15.prod.outlook.com
  (2603:10b6:4:a1::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:8298) by MW3PR05CA0017.namprd05.prod.outlook.com (2603:10b6:303:2b::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9 via Frontend Transport; Wed, 28 Jul 2021 22:31:31 +0000
+Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:8298) by MWHPR17CA0088.namprd17.prod.outlook.com (2603:10b6:300:c2::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend Transport; Wed, 28 Jul 2021 22:36:17 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3f6be388-4eea-430c-42a2-08d952177339
-X-MS-TrafficTypeDiagnostic: DM6PR15MB2522:
+X-MS-Office365-Filtering-Correlation-Id: 96d86e7f-e34f-4a24-6182-08d952181e6e
+X-MS-TrafficTypeDiagnostic: DM5PR15MB1147:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR15MB25223C6202F7EE2A63300750D3EA9@DM6PR15MB2522.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR15MB114703462F58B9C9FFEACF48D3EA9@DM5PR15MB1147.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rEWJDaEX0symsOrjegJXLZ+VupJ5jIvzLTNDlwUciOaLKfZfmvPfKaBD4gD9eCoGu6Vd2BC0bl1mTwYxo/tvKU3YqddowtS2G3Rr7cx3qmmjuTikAMmL1qBafvqNkcvwWWdfFjs3VnZCS3+DNy4JVCttHXdbIJtukUBKbuoOxBXHbGHbdGliCOZzIZk2BogUP2nFqFy234EruAPTSs+ZBY3u95UKCUquIi4at/eXR8ug+UgDnlFp7Ay0d1vduE2Qwji8ex5UU/52FMc2pOIoHh2/6frCtHpTbk9sO0l6+F3pZoGT/Ry6GX9vzut+PoOH6N2ZA5baGpDtUjI4mNeIkFCHEyHHkIYVzjYGG9E3/Q1Yz9mnwZL8A+SSLZkcNTZrXRQkpUyuFByvecHoCcY9WTm++RkVdjuhh+YEGIM+nzs/Y4GI61SVQYFHjAi64T6Gy07MxcRmZRhDjOkOcuEtdeg6Do97dwUTjrYVV/J+8/6eniyB4PArWesc0aZCwwFdpy393kNwTAy8IidRzEcvLCF1YKxwj2W47YnVgUR5hZHvD7ED2pLwsrm12e//EZ8sLjJZrt21D5BZZMOUvFtXNl/x4CSNy2S9cGGZj51pvec+hO1FXBu5Hx26ubLWeCL8IqpNiHtlKOHShAdE6+H/iDpk3SwoohFr122L/rYURM9HCfwTVRDcSIccI8sABzmNvpHAaKtsOwAOhn5mTkPheQUXqMqYr+5HaOlWmChsrYc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1501MB2055.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(8936002)(2616005)(2906002)(478600001)(66556008)(316002)(8676002)(31686004)(5660300002)(6486002)(186003)(66946007)(66476007)(86362001)(6666004)(52116002)(31696002)(53546011)(38100700002)(4326008)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 4dsSFXUwghAKSNoyrYjLD2f7j6knDREXOZGrFaWs2238Sqj9gW5Agw0LnbGwObKSR/bhA8X4IVTaYUeQAZRnHcy/3jf1DilIkRJQqOSRXGBMdA5bbvANd2tpgFJ1S/ptxVsQ6Eu/HL/2vLMxa5WvJWV++kalSObVFVEO015vBrAH7GIPOWmqUfnXxC5Yz74HXhsD33ybWSMOw5L78qJsd/Y29G6M/MNXs0adRhoysEYuNP6OGbRtmS2cDA+kmWZ2B3gEWdHDooQ0xYvg1+IWrU4+sO4iyPobtkIXB7KpTNYBOBI+vBkKpazT6yG/ddSIcVntWlLcNIvnTwbYhO0rfy7yo+1vBTTDGglrJN/Bhe4arB7bBeTjvRkx9jiO/K+p30eqMsTeoWv4WODU0MxxagYlA85QSWlMDMLWRtbPnOdu1bD6nJS57DM5pPsEWVaRVTlXTPfkI7Ibn/P6N2YK2Zg1gP4rm4/iKSDU56QM1b6liI6+kc4bVF46U9rhDzZnauFxAeH5A9uu82WZFzS5Yr0WJaSXrwoCd37ykX9J8jnNZRib+X1d9J+Z7ijJ0US2M8YBcuJxUH7sDVOjFv9dWkFsa30aoRquVztEerNbT0FtoQUFlXqS+fNFnln9nSpIaddR5wGUVEzAAaSeP+TmeyF0d4xWB1JBVBDxSvXO5JBP78N4NGTvR31ns8Mzt3jlSVvoQ0gE7KqyIqtZqp2ICA+f+pdFoyrk/LCB1VzvOds=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1501MB2055.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(346002)(39860400002)(376002)(396003)(478600001)(2616005)(86362001)(66476007)(2906002)(31686004)(53546011)(66556008)(66946007)(4744005)(8676002)(4326008)(31696002)(8936002)(38100700002)(5660300002)(52116002)(36756003)(316002)(6486002)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L2ZkVHJTbG9SSElYYUZJNVR5UTRNdFFtbHp3N0dXMWFYZTlSRjdMekx1dFJX?=
- =?utf-8?B?TTR4enY0UWd2djZxMjB6UmVXT1VuOFR1dzFIUGpvcC9wb3ZkMjk2Nk53eVMy?=
- =?utf-8?B?d1J2L2Nlei9iVytNRytQaFo4OWtvVFA0MzVURUFVRXZmdFlYMU5aVzQ5UjFn?=
- =?utf-8?B?YkFJU2VMNzVROUNjZkhMblV5ck1NdzJrVmJsUUhSVzBOUEF4N2ZHa01jOFVK?=
- =?utf-8?B?RzBlenRESXBtYm5OVDBsV0w4QzQwYm0za3ByaHNxeDQwZXBPSCsxVm8wQkpx?=
- =?utf-8?B?Y3JYcVVrbFFFN3ZlQXVjbGF2Wkd6WVFHQ0JjdWxGcG1XVmcveTdHclIyWExV?=
- =?utf-8?B?YlVSNWhQN2RYY083VGdxVE1uOXFWdG9XNTBpVFkxeEhLblN6MGI3TGhTNktO?=
- =?utf-8?B?bS96RzErUjU3ZmkwMWM4NGgyQTJoRWZnejh1eTNCemMrKzkwSGVWbmFlY3U0?=
- =?utf-8?B?Ymx5OC94ZEU3QnNiR25LNFRDRDJHQ0tiMkVUNTRxdmtGRUFrdmJYMlZ2V1c2?=
- =?utf-8?B?ZW9hbEcyd3pxQUdGRWFXalVjM1BKVlZNeWFRR0Jld3dlRFFaVExEemhBbytz?=
- =?utf-8?B?VVlZVG9IZHN6QjA4bWIwbXdxUytXalBQaFdXUnJ5WDNPWjU0T3Y1RGFFaGVL?=
- =?utf-8?B?dHlDZWgyMFp2OXowVHBPYS9FYXRkeTRnbUppRzZSQlkrQUZ5UmpGeEY1TFli?=
- =?utf-8?B?VWd6L0xBUGNKbWQ0cnRMRFhMbVBoQkwyMGpnZEtwcm1oR0pXVGNjbjJXdXkv?=
- =?utf-8?B?bEFWSG0rUzliNzBoc0V6UnQ3RWdQcUpjQ2ZqYW1RRUQyUHZTVyt2b0lrSGNM?=
- =?utf-8?B?SmVjK1pJTGVUZDhvdS9aeE9OV1hBdGNOZHRicE53YXVuT1RsaUpraVRDS1ZM?=
- =?utf-8?B?VENSYkRJb2pzZHEvd0VTd0lZaVZ3RytGamNMclNtbWM4TnNibnltNjFuUitM?=
- =?utf-8?B?VDN1TkRVbGNXZmtrY09SUytGV0l3YXIvSWxFOFJxUmNPWkhZVTZXUlVjQUFV?=
- =?utf-8?B?eFp1QjltWTJqcEprRWlnaXdoQTdxNEdhZTdTdTNRcXhOMnZrTGcvb2Q5d1hk?=
- =?utf-8?B?ZkE1UjZEY00xeTVFdFpsYy8xVzRBaFNVR0ZXTnR6YlBoRTFOTUg1RlZ5SS90?=
- =?utf-8?B?NkxnQi9oVzZIU3ZqSSt6VVBETGJlUFdFdlhZazBXclhxNlJPV1FVQ3FFMy94?=
- =?utf-8?B?cDhFcVFKK21wb09FRlNvRFlidGpCdlNkdUtleEQwZ25uSE9EY1NCZ1QvN1Vj?=
- =?utf-8?B?SXBPcDM5ZnFRQ3VLRDhnc1kvNDNlNlNuVmRXUWU4QWUzTWFhL1I5dzZNNWtT?=
- =?utf-8?B?Z0RRT1FOMU5ZK0JDVmY4cDRkaGQ1cXJ6c1Z1aS9neE9lZlQvU1R2aG1pZTBa?=
- =?utf-8?B?SG1jUWFscUFUeHRpWmY3Z0lKOWEyeGNsZ21FY3BxdzZkVnRTZHJVYmpzczBr?=
- =?utf-8?B?d3BFZE9jNmNSSmYvZi9QTkV3SVNKdUlpR25rL1g4ODJxYmhJQmtnR2RvZGxS?=
- =?utf-8?B?QlJLSGw3TVN5cjRjNHVwN2JUZENpejQwbExuODB0NUpwcDRYaXpqaHhaWk1U?=
- =?utf-8?B?VXE1c1ArMXZEeEFVaHdDNHRJc21LcWxsdS9zNTg5aUxveTkrd0pDNndHanBr?=
- =?utf-8?B?ajd4L0YvVE9MbVlGTVRQMjNCSzdlbWVyRUNRLzlPOXNXQkNDWmg5V2Eya1o5?=
- =?utf-8?B?MGRHOTFyVDFWdGUrOGdxQzlxMTYvZ3JKZ0ZwMHR1ckI3SWN2eW0va1gzSjYv?=
- =?utf-8?B?RWVxZGd1Nm02ZzBGYVdvaldPTHlTblAycDRhQllaSkFsVXN3c04wZDlQbmY0?=
- =?utf-8?B?ZHBJL2lJUmFDUnJja2FkQT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f6be388-4eea-430c-42a2-08d952177339
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Z2xFQUFOTm5rQzYvUUx4MmtPYklGbDNDa3B6WE5wVEhNbWZITWIwYXlTbkg5?=
+ =?utf-8?B?aG54SkVGcTJtTnV6UzBkblZWTE4vVGFxY1libkUrVmxGeEhNRWducFlySER2?=
+ =?utf-8?B?V01VVWhyTGErdm9oRFRLUnlQV0FuNVVMcHM5ODFDN1IrMU9tdEhnd0Z2eWU0?=
+ =?utf-8?B?aFd1b1hSOXhWeXUzbXhtcmdzL2MvRlVQSU15a3IwbENydGd3YlRwcGw1UldH?=
+ =?utf-8?B?c2l0M3ZpOTUrcGltMnNQMHlXUytRQU1zQlFabGJRTGh2emIxeGFlN1diZ1dB?=
+ =?utf-8?B?aG01VGxtVDRIWjF1YS8zRFV4LytCdEQrR2ovdEJkSGpoU1pXZjdKNnpvWjF1?=
+ =?utf-8?B?aHI5Sll4b21pcnY5aUlCQytPRXlRNDJCT0RHOWo2YWlldE5Dd2xHMlNKVUhq?=
+ =?utf-8?B?ZTFnMWdtNVRKSVYzWmJwWDBPWWM5MjdnS1g3bFlWK2dVanlJRkdNVThHOXlh?=
+ =?utf-8?B?aEdVQlpvN0p2SmlSOWlLaWRWTFhKR3NSbkdFNHRXT1RvakoxalVwRFF1dWRr?=
+ =?utf-8?B?VkY1TEk1VkdQZGh3Y2tIUXhLOEdEMklJTkFDck0zY3hpZmYxcUpIN1pjbkth?=
+ =?utf-8?B?QWZaZlhHMGg1NW1zUGlrZk1jZit4MFJlZkZIakNxaEhjSEFtU2ZuZUpIaVBC?=
+ =?utf-8?B?Y01veFNQdkhhNHZheS90L09oWGxTSTkwVVMyWUp0c2pTdzVXZTFWREdJS05i?=
+ =?utf-8?B?VVgrNFFYUGkydlJ0M2dBRW0xVmJYS3JBRjRCcDVHemFIaGpIaEV0dlN4NDAy?=
+ =?utf-8?B?RUxkd2JQZkc5ZXluQkppVHFoYm1aMkdMZ1BSZXlTbTVXV3dwRkszZmZtWU5Q?=
+ =?utf-8?B?VHVTeGNTcmU0NWlOWnhoSjZBTklvek9TUlRhWUR3TEVuNXJObmtVLytOR0Ri?=
+ =?utf-8?B?MmFrVm01a0k4ZWxybnFubzUyQTJQVzJlMmpoQWtlVDBDVThFdXVmQytFZ2tY?=
+ =?utf-8?B?Mzk4SEVtSDZxYi9xblkvNjFDcW5HNkl6bWhQWEgxMXR6SDRzU0xKTWN4aEw2?=
+ =?utf-8?B?dkxIakh2dDJoS2xQYjV3VFpSekxjeTgyWFoyYkdsdFhUWnZJODkwRCtNcXpk?=
+ =?utf-8?B?WklvVzZkUkd5eGpmS3pRUHoyRmd1THROMXNyc0dwRk53WTFNZTIrbzFjelVv?=
+ =?utf-8?B?akI2Y1piVzhBK1hNeFZrWmI2NmNHenl5aVU1aWRib0FxQmhVbFdoRDFDaC9y?=
+ =?utf-8?B?eTU0TklOWHNGdzFqTWRUY3FSM0dsNm95aUxYbVBLZDUxR1NKQTBPVDdZMlFT?=
+ =?utf-8?B?Nk0rclh4K281THl1V2g4MmRqSEpWTmtxSUptRUZJbmJGTlZyZFFOWHRzRmZT?=
+ =?utf-8?B?YU16SXJ5M2FYNEtmcHArOW5ib3Fsdm9kQm9QWTk3bk5Cbm5FYzhTT3N2U0pO?=
+ =?utf-8?B?ekRKNU83OS9UaW1iSFVHY205SG05SFdpbHBzYm5Oeng5c1NhaW4vd2tMQkw1?=
+ =?utf-8?B?VGpsVDVKUnQzc244ZGNqcXNUQ0FCeXhJaytaYmp1ZDRyaFBBWUVCWXJRVFMr?=
+ =?utf-8?B?em43N3E3bmUzS3llOG5zUjltVkhQc3FXMVVMMFo4K1JvSXBOQ0s1T09paTA3?=
+ =?utf-8?B?M3VkbFM1MjNvNWdkNjlycnREKytqbVYzdGNvSWxLcGF2RFNROGFuc3dlK0Z3?=
+ =?utf-8?B?VS9FdWpnWTBmVG1TY2xBTms3ZFRMS2QzNFFxYUhCanoyaGRsUnd6T3BObkRB?=
+ =?utf-8?B?ZERPOFBLOHAvUE9ZVG92eHFxQ0VhRlM1OHJMQ3JNOFZQblRveTVkVTZVOHVD?=
+ =?utf-8?B?R2xjMmQyOGMrc3h2RjhyYjdOU2FnUHNEVFRJVUpoMUNjMjlZWE04aDFxREpH?=
+ =?utf-8?B?VlFHazFXWkFvVUQ0TnFSUT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 96d86e7f-e34f-4a24-6182-08d952181e6e
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR1501MB2055.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 22:31:32.2702
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 22:36:19.4228
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hbY5JIWMsup6R0spxDC+yBC9cc1QtYUMdA2qjmItfJ+Oi8r+14ob2ffP+33EOq27
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2522
+X-MS-Exchange-CrossTenant-UserPrincipalName: +UTA787Q1A2puv8/UBkpbtBxMZFP9+bZYWRPrn7FAS4sSjb09EueADj5vdTjIs6k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1147
 X-OriginatorOrg: fb.com
-X-Proofpoint-GUID: 5BVd_Vx3dgT5vSpCTByV_fowt6Uan9bE
-X-Proofpoint-ORIG-GUID: 5BVd_Vx3dgT5vSpCTByV_fowt6Uan9bE
+X-Proofpoint-ORIG-GUID: Ilhhm8QyebnH8DYXLMQKZR4LiXdNCv59
+X-Proofpoint-GUID: Ilhhm8QyebnH8DYXLMQKZR4LiXdNCv59
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
  definitions=2021-07-28_12:2021-07-27,2021-07-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
- lowpriorityscore=0 suspectscore=0 spamscore=0 clxscore=1015 malwarescore=0
- bulkscore=0 mlxlogscore=999 impostorscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107280115
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=898
+ lowpriorityscore=0 suspectscore=0 spamscore=0 malwarescore=0
+ impostorscore=0 adultscore=0 mlxscore=0 bulkscore=0 clxscore=1015
+ phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2107280115
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -146,388 +147,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 7/28/21 10:04 AM, Johan Almbladh wrote:
-> An eBPF JIT may implement JMP32 operations in a different way than JMP,
-> especially on 32-bit architectures. This patch adds a series of tests
-> for JMP32 operations, mainly for testing JITs.
+> Tests for ALU32 and ALU64 MOV with different sizes of the immediate
+> value. Depending on the immediate field width of the native CPU
+> instructions, a JIT may generate code differently depending on the
+> immediate value. Test that zero or sign extension is performed as
+> expected. Mainly for JIT testing.
 > 
 > Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-LGTM with a few minor comments below.
-
 Acked-by: Yonghong Song <yhs@fb.com>
-
-> ---
->   lib/test_bpf.c | 511 +++++++++++++++++++++++++++++++++++++++++++++++++
->   1 file changed, 511 insertions(+)
-> 
-> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-> index f6d5d30d01bf..bfac033db590 100644
-> --- a/lib/test_bpf.c
-> +++ b/lib/test_bpf.c
-> @@ -4398,6 +4398,517 @@ static struct bpf_test tests[] = {
->   		{ { 0, 4134 } },
->   		.fill_helper = bpf_fill_stxdw,
->   	},
-> +	/* BPF_JMP32 | BPF_JEQ | BPF_K */
-> +	{
-> +		"JMP32_JEQ_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
-> +			BPF_JMP32_IMM(BPF_JEQ, R0, 321, 1),
-> +			BPF_JMP32_IMM(BPF_JEQ, R0, 123, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 123 } }
-> +	},
-[...]
-> +	/* BPF_JMP32 | BPF_JGT | BPF_X */
-> +	{
-> +		"JMP32_JGT_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
-> +			BPF_JMP32_REG(BPF_JGT, R0, R1, 1),
-
-Maybe change the offset from 1 to 2? Otherwise, this may jump to
-   BPF_JMP32_REG(BPF_JGT, R0, R1, 1)
-which will just do the same comparison and jump to BTT_EXIT_INSN()
-which will also have R0 = 0xfffffffe at the end.
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
-> +			BPF_JMP32_REG(BPF_JGT, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JGE | BPF_K */
-> +	{
-> +		"JMP32_JGE_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
-> +			BPF_JMP32_IMM(BPF_JGE, R0, 124, 1),
-> +			BPF_JMP32_IMM(BPF_JGE, R0, 123, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 123 } }
-> +	},
-> +	{
-> +		"JMP32_JGE_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_JMP32_IMM(BPF_JGE, R0, 0xffffffff, 1),
-> +			BPF_JMP32_IMM(BPF_JGE, R0, 0xfffffffe, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JGE | BPF_X */
-> +	{
-> +		"JMP32_JGE_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
-> +			BPF_JMP32_REG(BPF_JGE, R0, R1, 1),
-
-ditto, change offset 1 to 2?
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffe),
-> +			BPF_JMP32_REG(BPF_JGE, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JLT | BPF_K */
-> +	{
-> +		"JMP32_JLT_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
-> +			BPF_JMP32_IMM(BPF_JLT, R0, 123, 1),
-> +			BPF_JMP32_IMM(BPF_JLT, R0, 124, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 123 } }
-> +	},
-> +	{
-> +		"JMP32_JLT_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_JMP32_IMM(BPF_JLT, R0, 0xfffffffd, 1),
-> +			BPF_JMP32_IMM(BPF_JLT, R0, 0xffffffff, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JLT | BPF_X */
-> +	{
-> +		"JMP32_JLT_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
-> +			BPF_JMP32_REG(BPF_JLT, R0, R1, 1),
-
-ditto.
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
-> +			BPF_JMP32_REG(BPF_JLT, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JLE | BPF_K */
-> +	{
-> +		"JMP32_JLE_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
-> +			BPF_JMP32_IMM(BPF_JLE, R0, 122, 1),
-> +			BPF_JMP32_IMM(BPF_JLE, R0, 123, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 123 } }
-> +	},
-> +	{
-> +		"JMP32_JLE_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_JMP32_IMM(BPF_JLE, R0, 0xfffffffd, 1),
-> +			BPF_JMP32_IMM(BPF_JLE, R0, 0xfffffffe, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JLE | BPF_X */
-> +	{
-> +		"JMP32_JLE_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
-> +			BPF_JMP32_REG(BPF_JLE, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffe),
-> +			BPF_JMP32_REG(BPF_JLE, R0, R1, 1),
-
-ditto
-
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, 0xfffffffe } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSGT | BPF_K */
-> +	{
-> +		"JMP32_JSGT_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-> +			BPF_JMP32_IMM(BPF_JSGT, R0, -123, 1),
-> +			BPF_JMP32_IMM(BPF_JSGT, R0, -124, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -123 } }
-> +	},
-> +	{
-> +		"JMP32_JSGT_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_JMP32_IMM(BPF_JSGT, R0, -12345678, 1),
-> +			BPF_JMP32_IMM(BPF_JSGT, R0, -12345679, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSGT | BPF_X */
-> +	{
-> +		"JMP32_JSGT_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
-> +			BPF_JMP32_REG(BPF_JSGT, R0, R1, 1),
-
-ditto
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345679),
-> +			BPF_JMP32_REG(BPF_JSGT, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSGE | BPF_K */
-> +	{
-> +		"JMP32_JSGE_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-> +			BPF_JMP32_IMM(BPF_JSGE, R0, -122, 1),
-> +			BPF_JMP32_IMM(BPF_JSGE, R0, -123, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -123 } }
-> +	},
-> +	{
-> +		"JMP32_JSGE_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_JMP32_IMM(BPF_JSGE, R0, -12345677, 1),
-> +			BPF_JMP32_IMM(BPF_JSGE, R0, -12345678, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSGE | BPF_X */
-> +	{
-> +		"JMP32_JSGE_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345677),
-> +			BPF_JMP32_REG(BPF_JSGE, R0, R1, 1),
-
-ditto
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
-> +			BPF_JMP32_REG(BPF_JSGE, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSLT | BPF_K */
-> +	{
-> +		"JMP32_JSLT_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-> +			BPF_JMP32_IMM(BPF_JSLT, R0, -123, 1),
-> +			BPF_JMP32_IMM(BPF_JSLT, R0, -122, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -123 } }
-> +	},
-> +	{
-> +		"JMP32_JSLT_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_JMP32_IMM(BPF_JSLT, R0, -12345678, 1),
-> +			BPF_JMP32_IMM(BPF_JSLT, R0, -12345677, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSLT | BPF_X */
-> +	{
-> +		"JMP32_JSLT_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
-> +			BPF_JMP32_REG(BPF_JSLT, R0, R1, 1),
-
-ditto
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345677),
-> +			BPF_JMP32_REG(BPF_JSLT, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSLE | BPF_K */
-> +	{
-> +		"JMP32_JSLE_K: Small immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
-> +			BPF_JMP32_IMM(BPF_JSLE, R0, -124, 1),
-> +			BPF_JMP32_IMM(BPF_JSLE, R0, -123, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -123 } }
-> +	},
-> +	{
-> +		"JMP32_JSLE_K: Large immediate",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_JMP32_IMM(BPF_JSLE, R0, -12345679, 1),
-> +			BPF_JMP32_IMM(BPF_JSLE, R0, -12345678, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
-> +	/* BPF_JMP32 | BPF_JSLE | BPF_K */
-> +	{
-> +		"JMP32_JSLE_X",
-> +		.u.insns_int = {
-> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345679),
-> +			BPF_JMP32_REG(BPF_JSLE, R0, R1, 1),
-
-ditto
-
-> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
-> +			BPF_JMP32_REG(BPF_JSLE, R0, R1, 1),
-> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
-> +			BPF_EXIT_INSN(),
-> +		},
-> +		INTERNAL,
-> +		{ },
-> +		{ { 0, -12345678 } }
-> +	},
->   	/* BPF_JMP | BPF_EXIT */
->   	{
->   		"JMP_EXIT",
-> 
