@@ -2,82 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B8E3D97B2
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:41:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C01D3D97B9
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbhG1VlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 17:41:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44518 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230156AbhG1VlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:41:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1627508471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mx31kKBVBEoAlz5cPxD8jYRoivcPG7uJktRgpDD2MsI=;
-        b=U2AQjmwgXTVHVtZ+jBDN7IBBom1EsCuuhXV5MdxySyF4gmdkfHNeFvTnivc4RGZ1eM7qU0
-        bW3JltT0r/dfQQPGIxRpTrVeZ6T0e19E4yhsmLkk4QFPEMgz6wXsZ/G3sGXus9NmBgLlJO
-        //xYbyKdIyZKC2xSm01zGA6+Zc44/EE=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-171-zekqLJAYOH6P4_rJ7rZHAg-1; Wed, 28 Jul 2021 17:41:09 -0400
-X-MC-Unique: zekqLJAYOH6P4_rJ7rZHAg-1
-Received: by mail-lf1-f72.google.com with SMTP id f13-20020a19380d0000b029037ad1141c33so1644182lfa.8
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:41:09 -0700 (PDT)
+        id S231929AbhG1VqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 17:46:02 -0400
+Received: from mail-pj1-f49.google.com ([209.85.216.49]:40676 "EHLO
+        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230156AbhG1VqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:46:00 -0400
+Received: by mail-pj1-f49.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so12204025pja.5;
+        Wed, 28 Jul 2021 14:45:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
-         :message-id:subject:to:cc;
-        bh=mx31kKBVBEoAlz5cPxD8jYRoivcPG7uJktRgpDD2MsI=;
-        b=hrlXFrKVMd8SIiHZHVOKp3KWO2eIFcXIdtm7ZY3oWc/oxj7PUSJidoBidoyBRQrdER
-         LA/hraUK+W5BZS1GyeBgnXJLWAWVgI8a7wjAf7isV0zADx/+Z5FPKvT7CqgbRhmgUmfb
-         IuNZqbKymcPgoUCgkVGCMgsdQNcbGxd2EDm/crC2ALPhO1oFmWSL0lwmY7hf1O1SAPW4
-         605JrA55SdY9bPkMlBBBWO0KLtA8ssPxgoaO59WukuJZxttM1/W1ELj3A/ika4ntr+XT
-         tUtFwN6ns8eluYaKrvAgObIYUbSpGjG6zjB3cP3tLDK0miw4anZVTyal9xJj0dUhg0Io
-         AjXw==
-X-Gm-Message-State: AOAM530W+VMyd9UYkqMKQrBoC+I7F3nL7AzFUC6CC6x2kSv9D9ageVCW
-        rVkZE6r7pp+x2FJp8VPCMmq7rvVZ+l+QeydYgyo2XsOrrfl/88P4BIIAEHCKohzsfwIiZy+dpvE
-        YGr4TrjfWiTcCarsL3TF71jMiPx7CEs6s
-X-Received: by 2002:a05:651c:b29:: with SMTP id b41mr1017776ljr.185.1627508468356;
-        Wed, 28 Jul 2021 14:41:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyTftXB9O45g6nMRLt/pkUh4eYLoLl27GPuzse0TyHZZQb7f5vlZFRdPNizNt8PqwMI4PIHYSRvmOBJ9zvZlLE=
-X-Received: by 2002:a05:651c:b29:: with SMTP id b41mr1017769ljr.185.1627508468174;
- Wed, 28 Jul 2021 14:41:08 -0700 (PDT)
-Received: from 868169051519 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 28 Jul 2021 14:41:07 -0700
-From:   mleitner@redhat.com
-References: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XicekCZGMuTmx7BgzDuVSPZdtJx2YNBwg9Vgy0Mbawo=;
+        b=VsdJVD9iLYkTZckyM9peEdy+mj36F+LurPNiPrqbBO6rJKeUSWwHC90l6NckKkKhfo
+         zAy4Mz7RazjHVctU+QhA1AFPT+vWsk+WdTqR7QOCBeSQoHgVn+A/Z83IxjJr6j4hZXJs
+         0uerb8kXtF31NZkzAthE0gRaNV/BtrgQP0a589Xgj/oDHp4zPIQ1qp++TltPKeXqXwSJ
+         LC3BLPoTYx2M7VjImbGndHv2Tg79A0ywsKJE+PswfiIzKTRekyvR2uqAXbfSJ7LM+6qh
+         BdoqCYnLtO0vHhagqQedYZZt9KUcvywgBvk4gcJilvXFFwJRSowpP1T+oCYwNcLqQ6af
+         xo6w==
+X-Gm-Message-State: AOAM531C83eFuhpmkEosL4s1i1/EdD6jkGzrdl4onTfDWVAkaLu8VbqH
+        aiVm+XQTeQ5ZQnl90gUcZSU=
+X-Google-Smtp-Source: ABdhPJw8GLTntP9/607bFZm4hvTLuV2RygVm16ypIjamKfpthJMPHWWs51SpMIWNplCV818V7piMmg==
+X-Received: by 2002:a62:61c3:0:b029:35b:cb61:d2c3 with SMTP id v186-20020a6261c30000b029035bcb61d2c3mr1780844pfb.62.1627508758153;
+        Wed, 28 Jul 2021 14:45:58 -0700 (PDT)
+Received: from bvanassche-linux.mtv.corp.google.com ([2620:15c:211:1:3328:5f8d:f6e2:85ea])
+        by smtp.gmail.com with ESMTPSA id b15sm876167pgj.60.2021.07.28.14.45.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Jul 2021 14:45:57 -0700 (PDT)
+Subject: Re: [PATCH 48/64] drbd: Use struct_group() to zero algs
+To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-49-keescook@chromium.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+Message-ID: <1cc74e5e-8d28-6da4-244e-861eac075ca2@acm.org>
+Date:   Wed, 28 Jul 2021 14:45:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
-Date:   Wed, 28 Jul 2021 14:41:07 -0700
-Message-ID: <CALnP8ZYTGAY4UGbZTbVaPJ7+6ziRN5S-7EZTtJg_voaZL9+REQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/sched: store the last executed chain also
- for clsact egress
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alaa Hleilel <alaa@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210727205855.411487-49-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 08:08:00PM +0200, Davide Caratti wrote:
-> currently, only 'ingress' and 'clsact ingress' qdiscs store the tc 'chain
-> id' in the skb extension. However, userspace programs (like ovs) are able
-> to setup egress rules, and datapath gets confused in case it doesn't find
-> the 'chain id' for a packet that's "recirculated" by tc.
-> Change tcf_classify() to have the same semantic as tcf_classify_ingress()
-> so that a single function can be called in ingress / egress, using the tc
-> ingress / egress block respectively.
->
-> Suggested-by: Alaa Hleilel <alaa@nvidia.com>
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+On 7/27/21 1:58 PM, Kees Cook wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memset(), avoid intentionally writing across
+> neighboring fields.
+> 
+> Add a struct_group() for the algs so that memset() can correctly reason
+> about the size.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>   drivers/block/drbd/drbd_main.c     | 3 ++-
+>   drivers/block/drbd/drbd_protocol.h | 6 ++++--
+>   drivers/block/drbd/drbd_receiver.c | 3 ++-
+>   3 files changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+> index 55234a558e98..b824679cfcb2 100644
+> --- a/drivers/block/drbd/drbd_main.c
+> +++ b/drivers/block/drbd/drbd_main.c
+> @@ -729,7 +729,8 @@ int drbd_send_sync_param(struct drbd_peer_device *peer_device)
+>   	cmd = apv >= 89 ? P_SYNC_PARAM89 : P_SYNC_PARAM;
+>   
+>   	/* initialize verify_alg and csums_alg */
+> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
+> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
+> +	memset(&p->algs, 0, sizeof(p->algs));
+>   
+>   	if (get_ldev(peer_device->device)) {
+>   		dc = rcu_dereference(peer_device->device->ldev->disk_conf);
+> diff --git a/drivers/block/drbd/drbd_protocol.h b/drivers/block/drbd/drbd_protocol.h
+> index dea59c92ecc1..a882b65ab5d2 100644
+> --- a/drivers/block/drbd/drbd_protocol.h
+> +++ b/drivers/block/drbd/drbd_protocol.h
+> @@ -283,8 +283,10 @@ struct p_rs_param_89 {
+>   
+>   struct p_rs_param_95 {
+>   	u32 resync_rate;
+> -	char verify_alg[SHARED_SECRET_MAX];
+> -	char csums_alg[SHARED_SECRET_MAX];
+> +	struct_group(algs,
+> +		char verify_alg[SHARED_SECRET_MAX];
+> +		char csums_alg[SHARED_SECRET_MAX];
+> +	);
+>   	u32 c_plan_ahead;
+>   	u32 c_delay_target;
+>   	u32 c_fill_target;
+> diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
+> index 1f740e42e457..6df2539e215b 100644
+> --- a/drivers/block/drbd/drbd_receiver.c
+> +++ b/drivers/block/drbd/drbd_receiver.c
+> @@ -3921,7 +3921,8 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
+>   
+>   	/* initialize verify_alg and csums_alg */
+>   	p = pi->data;
+> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
+> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
+> +	memset(&p->algs, 0, sizeof(p->algs));
 
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Using struct_group() introduces complexity. Has it been considered not 
+to modify struct p_rs_param_95 and instead to use two memset() calls 
+instead of one (one memset() call per member)?
 
+Thanks,
+
+Bart.
