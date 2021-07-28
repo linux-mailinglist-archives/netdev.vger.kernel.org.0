@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC9C3D949D
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A6FA3D94A1
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231231AbhG1Rxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 13:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        id S231191AbhG1Rx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 13:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbhG1Rxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 13:53:50 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3F6C061765;
-        Wed, 28 Jul 2021 10:53:47 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so11214970pja.5;
-        Wed, 28 Jul 2021 10:53:47 -0700 (PDT)
+        with ESMTP id S231273AbhG1Rxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 13:53:54 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2671C061757;
+        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ca5so6291174pjb.5;
+        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=+UFJID3RK8Mvf3O9hNEMzPnkq+/m+AsX5JYEUoSr13k=;
-        b=JYdQ5tZKKdcp4RlelLIau9Za74wbrVH+YGbCQCINoGN5L/pd+JA8l0SuJIsus9oWnf
-         yoPZiNNvlEXGNO0O1WyvXpMdp8hUUyZHUgy6Elx4DbRshi3HuO+CpEM+RyhoY/NFQV80
-         8XGcmoALThMEp1YYbeTH5TspZdHPzGz/82MZyNQNmioaSL/xpvskZVpm/6SmQt0KGXci
-         P3Jmi4BqCMjzqkrpxYqs8zJwRHCkn8TlAu+rDxQIcqgVdDYzOhW/lQUu+now/bXGPbCA
-         DGiFJNX31RivzZlZA7/YY5dyqhc2WT2/TbiTYofmzDLbeOSFfQX6GM7AgSxSelVI32FG
-         VwNQ==
+        bh=4PfC04M9Z5wtL0vKbvHcVlWUtOEqkXBLD/NMtF2oJRM=;
+        b=c5eq1xqa8KnEO2pxegnJGOLCeTNjWXinbE5neY3Fr3kWRfW+iSt2lcTN/R7oxw5QGS
+         mKjl/CsBjoRTiSnbNVMllxNwR8rfnJ7TEvjHUBPzuKtucXv37rg72Or5S8Q6gieKlzv6
+         oX2++teMVgUNos3Jv78iBHtPQjL5u1Rv2M1LVGMA2pD43ATrPVrw8D8AfVOI3LQl9hLa
+         iDGFam7TSbRfaVhdyZ3CypbTNK/jqj1NPzqYZZFbweEoutZeVY05tUqE7+08+F5wm1c3
+         OxpCH8SV2P1moq7zbKbQg1EjZLG9Pldb3cN34uS2yCwE9sk+FR55h96VzV/BaHGpdeZs
+         3MwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+UFJID3RK8Mvf3O9hNEMzPnkq+/m+AsX5JYEUoSr13k=;
-        b=ld7km2n+fhQ9JW0y9MfYVbODphed8tdffRMJgHxgBvqDiHNDHwxNJgRjYgo0rKg3f5
-         gz5yc3PgwRk48Gn9wP1jfks3YVw6YZshEaG+97c6JCPqzAo8GKuAsLdJJRXOOzSeagPO
-         /n9QCWXMTsyfpHtR9nsfKHptOlt1TAeSi1SmRoE7HNClETnmLBvzgP9Gje3dxRsu4D1a
-         Y3vNJc6Cfda2GaUerfULj/0vSbyqrVoFXv5P6sfq9eIvLpOOgLo0f4Gqq01TSTwUWzSf
-         /pZDB75WKJNrIQO+lln3kIMXdiKajQuu0oVha9GqbCsu5BWd7sivt2rcitrL/+mGJYtI
-         GXfw==
-X-Gm-Message-State: AOAM531gCS6+T1Pc4JgO9LUMVlrT3bHtPanZbmWSu5shd9JNESbh/vBy
-        h7SkqkOlfzbkRLHqVBe0AqI=
-X-Google-Smtp-Source: ABdhPJymE0InCyHTFO2miHWl9+IfFhQc6gc9jInoQiSnQj9jSF+3qp1HQRvIyrL8hUdiQLUh6jkO9A==
-X-Received: by 2002:a17:903:2289:b029:12c:5642:c4df with SMTP id b9-20020a1709032289b029012c5642c4dfmr872792plh.23.1627494826812;
-        Wed, 28 Jul 2021 10:53:46 -0700 (PDT)
+        bh=4PfC04M9Z5wtL0vKbvHcVlWUtOEqkXBLD/NMtF2oJRM=;
+        b=A0GXYLf2XMeeS9CqKIRniIFDVsP1q3nWZ3SfHDiZeNprytXbUlS/QFMrzApi+kliER
+         ewFVIWy1F+p1Ae+gaJgCAimt0eEV8dl2JHLSX/vEe3QY16uczU6BPCYmEVfhft95VKPo
+         dBckHMUH075yBHBI1UvUpfPzwtNUW9bOu/1RMA8IUvUzDx09RA79rZnPzhI/TQT9yG0T
+         63vm+i0snVMV8cOkpvPHL3ifV6PFSSRX36ZUNLI0LJV4Yzs2YPTRIup0Bm5xn1Tsrhg4
+         OhxIPp/IlR/9+vU/31blmMtwlNk28x5yb2yjxZKlsK7R50+Ok3608ISByBiEwmuXUig2
+         v6/w==
+X-Gm-Message-State: AOAM533MhnUkG2Duu5fjW5k6VAX6yJ1/e1LaMNYVykFlrQCBfbEyRCxl
+        sVWN82F1cxg/rvk4gu1+kMo=
+X-Google-Smtp-Source: ABdhPJxHHHJbldPuFoH4WOkqBVFeq5AAussEvUokUpyiJIbADOk0gjMcm9uJqFX5l4l/g5/1hXSC6Q==
+X-Received: by 2002:a17:90b:2246:: with SMTP id hk6mr898497pjb.112.1627494832396;
+        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
 Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id m19sm647113pfa.135.2021.07.28.10.53.42
+        by smtp.gmail.com with ESMTPSA id m19sm647113pfa.135.2021.07.28.10.53.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 10:53:46 -0700 (PDT)
+        Wed, 28 Jul 2021 10:53:51 -0700 (PDT)
 From:   DENG Qingfang <dqfext@gmail.com>
 To:     Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
@@ -59,9 +59,9 @@ To:     Sean Wang <sean.wang@mediatek.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFC net-next 1/2] net: dsa: tag_mtk: skip address learning on transmit to standalone ports
-Date:   Thu, 29 Jul 2021 01:53:25 +0800
-Message-Id: <20210728175327.1150120-2-dqfext@gmail.com>
+Subject: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone ports to the CPU
+Date:   Thu, 29 Jul 2021 01:53:26 +0800
+Message-Id: <20210728175327.1150120-3-dqfext@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210728175327.1150120-1-dqfext@gmail.com>
 References: <20210728175327.1150120-1-dqfext@gmail.com>
@@ -84,56 +84,193 @@ offloaded:
      .        .       .
      A        B       C
 
-Address learning is enabled on offloaded ports (swp0~2) and the CPU
-port, so when client A sends a packet to C, the following will happen:
+Ideally, when the switch receives a packet from swp3 or swp4, it should
+forward the packet to the CPU, according to the port matrix and unknown
+unicast flood settings.
 
-1. The switch learns that client A can be reached at swp0.
-2. The switch probably already knows that client C can be reached at the
-   CPU port, so it forwards the packet to the CPU.
-3. The bridge core knows client C can be reached at bond0, so it
-   forwards the packet back to the switch.
-4. The switch learns that client A can be reached at the CPU port.
-5. The switch forwards the packet to either swp3 or swp4, according to
-   the packet's tag.
+But packet loss will happen if the destination address is at one of the
+offloaded ports (swp0~2). For example, when client C sends a packet to
+A, the FDB lookup will indicate that it should be forwarded to swp0, but
+the port matrix of swp3 and swp4 is configured to only allow the CPU to
+be its destination, so it is dropped.
 
-That makes client A's MAC address flap between swp0 and the CPU port. If
-client B sends a packet to A, it is possible that the packet is
-forwarded to the CPU. With offload_fwd_mark = 1, the bridge core won't
-forward it back to the switch, resulting in packet loss.
+MT7530's FDB has 8 filter IDs, but they are only available for shared
+VLAN learning, and all VLAN-unaware ports use 0 as the default filter
+ID.
 
-To avoid that, skip address learning on the CPU port when the destination
-port is standalone, which can be done by setting the SA_DIS bit of the
-MTK tag, if bridge_dev of the destination port is not set.
+Fortunately, MT7530 supports ACL, and the ACL action happens before the
+FDB lookup. So we install an ACL rule which traps all packets to the
+CPU, and enable it for standalone ports. This way, the packet loss can
+be avoided.
 
 Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- net/dsa/tag_mtk.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mt7530.c | 28 ++++++++++++++++++++
+ drivers/net/dsa/mt7530.h | 56 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-index cc3ba864ad5b..8c361812e21b 100644
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -15,8 +15,7 @@
- #define MTK_HDR_XMIT_TAGGED_TPID_8100	1
- #define MTK_HDR_XMIT_TAGGED_TPID_88A8	2
- #define MTK_HDR_RECV_SOURCE_PORT_MASK	GENMASK(2, 0)
--#define MTK_HDR_XMIT_DP_BIT_MASK	GENMASK(5, 0)
--#define MTK_HDR_XMIT_SA_DIS		BIT(6)
-+#define MTK_HDR_XMIT_SA_DIS_SHIFT	6
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 69f21b71614c..6b5c85446e6f 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1228,6 +1228,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 		mt7530_rmw(priv, MT7530_PCR_P(port),
+ 			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
+ 	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
++	/* Don't trap frames to the CPU port */
++	mt7530_clear(priv, MT7530_PCR_P(port), PORT_ACL_EN);
  
- static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
- 				    struct net_device *dev)
-@@ -50,7 +49,8 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
- 	 * whether that's a combined special tag with 802.1Q header.
+ 	mutex_unlock(&priv->reg_mutex);
+ 
+@@ -1328,6 +1330,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
+ 			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
+ 	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
++	/* Trap all frames to the CPU port */
++	mt7530_set(priv, MT7530_PCR_P(port), PORT_ACL_EN);
+ 
+ 	mutex_unlock(&priv->reg_mutex);
+ }
+@@ -2037,6 +2041,24 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
+ 	return ret;
+ }
+ 
++static void
++mt7530_setup_acl(struct mt7530_priv *priv)
++{
++	u32 action;
++
++	/* Set ACL pattern mask to 0 to match unconditionally */
++	mt7530_write(priv, MT7530_VAWD1, 0);
++	mt7530_write(priv, MT7530_VAWD2, 0);
++	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_ACL_MASK, 0);
++
++	/* Set ACL action to forward frames to the CPU port */
++	action = ACL_PORT_EN | ACL_PORT(BIT(MT7530_CPU_PORT)) |
++		 ACL_EG_TAG(MT7530_VLAN_EG_CONSISTENT);
++	mt7530_write(priv, MT7530_VAWD1, action);
++	mt7530_write(priv, MT7530_VAWD2, 0);
++	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_ACL_ACTION, 0);
++}
++
+ static int
+ mt7530_setup(struct dsa_switch *ds)
+ {
+@@ -2133,6 +2155,8 @@ mt7530_setup(struct dsa_switch *ds)
+ 
+ 			/* Disable learning by default on all user ports */
+ 			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++			/* Trap all frames to the CPU port */
++			mt7530_set(priv, MT7530_PCR_P(i), PORT_ACL_EN);
+ 		}
+ 		/* Enable consistent egress tag */
+ 		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+@@ -2300,6 +2324,8 @@ mt7531_setup(struct dsa_switch *ds)
+ 
+ 			/* Disable learning by default on all user ports */
+ 			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
++			/* Trap all frames to the CPU port */
++			mt7530_set(priv, MT7530_PCR_P(i), PORT_ACL_EN);
+ 		}
+ 
+ 		/* Enable consistent egress tag */
+@@ -3005,6 +3031,8 @@ mt753x_setup(struct dsa_switch *ds)
+ 	if (ret)
+ 		return ret;
+ 
++	mt7530_setup_acl(priv);
++
+ 	ret = mt7530_setup_irq(priv);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index b19b389ff10a..10cb278d7c36 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -137,6 +137,15 @@ enum mt7530_vlan_cmd {
  	 */
- 	mtk_tag[0] = xmit_tpid;
--	mtk_tag[1] = (1 << dp->index) & MTK_HDR_XMIT_DP_BIT_MASK;
-+	mtk_tag[1] = BIT(dp->index) |
-+		     (!dp->bridge_dev << MTK_HDR_XMIT_SA_DIS_SHIFT);
+ 	MT7530_VTCR_RD_VID = 0,
+ 	MT7530_VTCR_WR_VID = 1,
++	/* Read/Write the specified ACL rule pattern */
++	MT7530_VTCR_RD_ACL_PATTERN = 4,
++	MT7530_VTCR_WR_ACL_PATTERN = 5,
++	/* Read/Write the specified ACL rule mask */
++	MT7530_VTCR_RD_ACL_MASK = 8,
++	MT7530_VTCR_WR_ACL_MASK = 9,
++	/* Read/Write the specified ACL rule action */
++	MT7530_VTCR_RD_ACL_ACTION = 10,
++	MT7530_VTCR_WR_ACL_ACTION = 11,
+ };
  
- 	/* Tag control information is kept for 802.1Q */
- 	if (xmit_tpid == MTK_HDR_XMIT_UNTAGGED) {
+ /* Register for setup vlan and acl write data */
+@@ -153,6 +162,35 @@ enum mt7530_vlan_cmd {
+ #define  PORT_MEM_SHFT			16
+ #define  PORT_MEM_MASK			0xff
+ 
++/* ACL rule pattern */
++#define  BIT_CMP(x)			(((x) & 0xffff) << 16)
++#define  CMP_PAT(x)			((x) & 0xffff)
++
++/* ACL rule action */
++#define  ACL_MANG			BIT(29)
++#define  ACL_INT_EN			BIT(28)
++#define  ACL_CNT_EN			BIT(27)
++#define  ACL_CNT_IDX(x)			(((x) & 0x7) << 24)
++#define  VLAN_PORT_EN			BIT(23)
++#define  DA_SWAP			BIT(22)
++#define  SA_SWAP			BIT(21)
++#define  PPP_RM				BIT(20)
++#define  LKY_VLAN			BIT(19)
++#define  ACL_EG_TAG(x)			(((x) & 0x7) << 16)
++#define  ACL_PORT(x)			(((x) & 0xff) << 8)
++#define  ACL_PORT_EN			BIT(7)
++#define  PRI_USER(x)			(((x) & 0x7) << 4)
++#define  ACL_MIR_EN			BIT(3)
++#define  ACL_PORT_FW(x)			((x) & 0x7)
++
++enum mt7530_to_cpu_port_fw {
++	PORT_FW_DEFAULT,
++	PORT_FW_EXCLUDE_CPU = 4,
++	PORT_FW_INCLUDE_CPU,
++	PORT_FW_CPU_ONLY,
++	PORT_FW_DROP,
++};
++
+ #define MT7530_VAWD2			0x98
+ /* Egress Tag Control */
+ #define  ETAG_CTRL_P(p, x)		(((x) & 0x3) << ((p) << 1))
+@@ -164,6 +202,23 @@ enum mt7530_vlan_egress_attr {
+ 	MT7530_VLAN_EGRESS_STACK = 3,
+ };
+ 
++/* ACL rule pattern */
++#define  ACL_TABLE_EN			BIT(19)
++#define  OFST_TP(x)			(((x) & 0x7) << 16)
++#define  ACL_SP(x)			(((x) & 0xff) << 8)
++#define  WORD_OFST(x)			(((x) & 0x7f) << 1)
++#define  CMP_SEL			BIT(0)
++
++enum mt7530_acl_offset_type {
++	MT7530_ACL_MAC_HEADER,
++	MT7530_ACL_L2_PAYLOAD,
++	MT7530_ACL_IP_HEADER,
++	MT7530_ACL_IP_DATAGRAM,
++	MT7530_ACL_TCP_UDP_HEADER,
++	MT7530_ACL_TCP_UDP_DATAGRAM,
++	MT7530_ACL_IPV6_HEADER,
++};
++
+ /* Register for address age control */
+ #define MT7530_AAC			0xa0
+ /* Disable ageing */
+@@ -192,6 +247,7 @@ enum mt7530_stp_state {
+ 
+ /* Register for port control */
+ #define MT7530_PCR_P(x)			(0x2004 + ((x) * 0x100))
++#define  PORT_ACL_EN			BIT(10)
+ #define  PORT_TX_MIR			BIT(9)
+ #define  PORT_RX_MIR			BIT(8)
+ #define  PORT_VLAN(x)			((x) & 0x3)
 -- 
 2.25.1
 
