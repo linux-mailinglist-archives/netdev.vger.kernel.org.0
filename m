@@ -2,154 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553D53D883E
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E1C3D883C
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234950AbhG1GuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 02:50:18 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:53992
-        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234931AbhG1Gt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 02:49:59 -0400
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id ADE813FE72
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 06:49:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627454970;
-        bh=u5wymAXnL9yVxfEB09vbeM1W+wc1wAMvpQhdfXWNsKY=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
-        b=s3Ukw21GfqNsxMk28D5IJJIRPYjOv+ns2lswxnPVNXGU+5TNaZ1frTPRNSG6qK5BL
-         vft1IJW8tcvwY+v6dFOgNRyUCnjLbXTgKGtFOdmbuUGVslCgptAfM45Eo5NBK8Dmbm
-         qaD7UlJvcNFiRxojM59koxMp7WnCtP+cetCdML5Czo1po7xKZrRwKGdvX/At8YFwPO
-         I0QdCcC6yEPnCs0kAvMHPTMFtqIKxQTFBZlvtM13y+aUxNQd2VuEgf3knidyaJuZTz
-         HTe1GkEkvbdWN8GVSx8P2jtjmlfmo3A1X1d2/fmKn0+cIvSaZypO/vFADWyzJcilYL
-         AiYIJTT09SLAA==
-Received: by mail-ed1-f72.google.com with SMTP id p2-20020a50c9420000b02903a12bbba1ebso767507edh.6
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 23:49:30 -0700 (PDT)
+        id S235000AbhG1GuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 02:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234930AbhG1GuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 02:50:00 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1177C061757;
+        Tue, 27 Jul 2021 23:49:17 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id b9so1126508wrx.12;
+        Tue, 27 Jul 2021 23:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4QAhzd/W0r8TJvQ/tpkZasgmlrwwDur43nPhrGFrRIA=;
+        b=pyzMPjnpqh3TLRmWRVavu271u1CyT3f5MOJE+UznBFg6IY1mrVCqsx+lG6YhkOzobg
+         0aLRr9cMLbK675LA3c3mke+hrsbK6nUE1VQzyjBZiQw/j/UooMA2AtjR8M0riPgwkZBG
+         aaAsY5TbuSLFjCJ1Bsx+g7Yrm8ag2ffq42OnNN30W/nuz/g/y5CmMnmJn18Zhb9WNhjI
+         vGFTYCq4P8iCW+xzjHgjwvmG0vbwOBHBLjunmtnVY+brR+5So/oya/k4g41IEkYp/ZGk
+         z8L8MhEe62BFPUYA/rZvCrNG2kL6eXNg58rkl0xz1WK0Jy7g++FhyHYI6KY0KXe0xfDj
+         KIQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=u5wymAXnL9yVxfEB09vbeM1W+wc1wAMvpQhdfXWNsKY=;
-        b=IPkVQ2/fuUyBKATliQZlngMwx6RHp+Psd28aWMB5qNJkBrBhsqF63cdqau4wRxCeE6
-         WLCVnqRam/BQkrgYwLK3lB/PdH7BSOTTkI96B0WmSDihbVgMW76w3HKPet65r4P87I3Y
-         iy38YK/zgmVeIpNyg+s7vE0KV2Vq9P4miMQndbLvCwNQxqDqCeIeOj/GabsKztFMgJj6
-         /qyGRN0MKVivWoSHXfgtJri0fiLLfsZUz6O4ulgTdKut6My3RwUxCAcViWWevJzKL/uR
-         mSXol9O9Oj5McbppD1iwUzUrslF8eEpTnXnuiCMkj5LJ9Wz3GF+O2qwdUORkpoeDOlur
-         ULKA==
-X-Gm-Message-State: AOAM532tJ9OEYcBNg6pjm8JyZEZ+2U2biJpsSpmpBd3HCF4KAMMAzPs5
-        fbhGLTw+zNfWDehmWlUJW6AR66oD9+OpkCEuCVQM6PVLgW5NQhGq1If5NPqnnAZDNr9XQzqT7Ho
-        cPzuzVxlaqNTKKzuG4GnzwzZXeDQDd6IrCQ==
-X-Received: by 2002:a17:907:629c:: with SMTP id nd28mr1086455ejc.403.1627454970421;
-        Tue, 27 Jul 2021 23:49:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwhwIxdK1rvmb+nHkDvXvuiqJxTKKPsvzlRGw4p6rWIs3aTz86BmAFyhMDLaycvEfVzWlJzWg==
-X-Received: by 2002:a17:907:629c:: with SMTP id nd28mr1086441ejc.403.1627454970296;
-        Tue, 27 Jul 2021 23:49:30 -0700 (PDT)
-Received: from localhost.localdomain ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id qt10sm1656394ejb.110.2021.07.27.23.49.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 23:49:29 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        bh=4QAhzd/W0r8TJvQ/tpkZasgmlrwwDur43nPhrGFrRIA=;
+        b=QjKoI0nDpJdFWLZaIHpqg3mXIaW+FpYKH3xsjV7WJSHLG9qUKZnPk/fUx80zflfV9J
+         TAiRl3lcQY3a6uXpgq6G/ROzMjBGPc61tvnRl1tcaNS3LN4a6y5YEceiMG9IPSsMNduX
+         kUJ4Mj6bSi/w0r5TLdYuIfLfZfS1bjBuGD0/bEBsOxhzgSZkOiigSi6EejF5xvAUuRc3
+         E6ErpCSlMB24KhDOQo6bZlaS64lnCOEfYsHzkIWE+6cJTavCWjggWDiyE1jhLyjYNgCK
+         pCr7Do3Dx+Z3znN1JAYIVbeH6icifRDc0kF55Hrm3LB7Srrfpv/EKPt15Y5fh7W6j+Vp
+         IZwg==
+X-Gm-Message-State: AOAM531QIT2oj43KM7XO25WeKMKDOVIvocu/yvIVSGdy2QE5qr6tf9FQ
+        HtY31LSVkKQXGH3x7/gtBw8=
+X-Google-Smtp-Source: ABdhPJwJpMNzVJpwqpGUESN/5Co8gxCcqD1N306uZYlkH7VRPncRr+WmEINitJRNk7nilX4rzwSinw==
+X-Received: by 2002:adf:cd86:: with SMTP id q6mr27839488wrj.422.1627454956496;
+        Tue, 27 Jul 2021 23:49:16 -0700 (PDT)
+Received: from [10.30.0.16] ([188.241.83.98])
+        by smtp.gmail.com with ESMTPSA id k6sm4495714wrm.10.2021.07.27.23.49.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jul 2021 23:49:15 -0700 (PDT)
+Subject: Re: [RFC] tcp: Initial support for RFC5925 auth option
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Subject: [PATCH] nfc: nfcsim: fix use after free during module unload
-Date:   Wed, 28 Jul 2021 08:49:09 +0200
-Message-Id: <20210728064909.5356-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Menglong Dong <dong.menglong@zte.com.cn>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-crypto@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Salam Noureddine <noureddine@arista.com>,
+        Bob Gilligan <gilligan@arista.com>,
+        Dmitry Safonov <dima@arista.com>
+References: <01383a8751e97ef826ef2adf93bfde3a08195a43.1626693859.git.cdleonard@gmail.com>
+ <e2215577-2dc5-9669-20b8-91c7700fa987@gmail.com>
+ <CA+HUmGhtPHbT=aBLS_Ny_t802s3RWaE+tupd4T8U9x50eW3JXg@mail.gmail.com>
+ <3afe618a-e848-83c3-2cc5-6ad66f3ef44b@gmail.com>
+ <CA+HUmGgwvn7uPfoKqy1extwEksAXOcTf2trDX8dcYGtdeppebQ@mail.gmail.com>
+From:   Leonard Crestez <cdleonard@gmail.com>
+Message-ID: <d21b8b0a-fe9b-e5d1-674a-4f2ad6d0543e@gmail.com>
+Date:   Wed, 28 Jul 2021 09:49:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+HUmGgwvn7uPfoKqy1extwEksAXOcTf2trDX8dcYGtdeppebQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a use after free memory corruption during module exit:
- - nfcsim_exit()
-  - nfcsim_device_free(dev0)
-    - nfc_digital_unregister_device()
-      This iterates over command queue and frees all commands,
-    - dev->up = false
-    - nfcsim_link_shutdown()
-      - nfcsim_link_recv_wake()
-        This wakes the sleeping thread nfcsim_link_recv_skb().
 
- - nfcsim_link_recv_skb()
-   Wake from wait_event_interruptible_timeout(),
-   call directly the deb->cb callback even though (dev->up == false),
-   - digital_send_cmd_complete()
-     Dereference of "struct digital_cmd" cmd which was freed earlier by
-     nfc_digital_unregister_device().
 
-This causes memory corruption shortly after (with unrelated stack
-trace):
+On 7/27/21 11:23 PM, Francesco Ruggeri wrote:
+> On Tue, Jul 27, 2021 at 11:06 AM Leonard Crestez <cdleonard@gmail.com> wrote:
 
-  nfc nfc0: NFC: nfcsim_recv_wq: Device is down
-  llcp: nfc_llcp_recv: err -19
-  nfc nfc1: NFC: nfcsim_recv_wq: Device is down
-  BUG: unable to handle page fault for address: ffffffffffffffed
-  Call Trace:
-   fsnotify+0x54b/0x5c0
-   __fsnotify_parent+0x1fe/0x300
-   ? vfs_write+0x27c/0x390
-   vfs_write+0x27c/0x390
-   ksys_write+0x63/0xe0
-   do_syscall_64+0x3b/0x90
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>> On 7/27/21 6:05 AM, Francesco Ruggeri wrote:
+>>> Hi Leonard,
+>>>
+>>> thanks for taking on this task!
+>>>
+>>>> I'm especially interested in feedback regarding ABI and testing.
+>>>
+>>> I noticed that the TCP connection identifier is not part of the
+>>> representation of the MKT (tcp_authopt_key_info).
+>>> This could cause some issues if, for example 2 MKTs with different
+>>> <remote IP, remote TCP port> in the TCP connection identifier but same
+>>> KeyID (recv_id) are installed on a socket. In that case
+>>> tcp_authopt_inbound_key_lookup() may not pick the correct MKT for the
+>>> connection. Matching incoming segments only based on recv_id may not
+>>> comply with the RFC.
+>>> I think there may be other cases where TCP connection identifiers may
+>>> be needed to resolve conflicts, but I have to look at your patch in
+>>> more detail.
+>>
+>> The RFC doesn't specify what the "tcp connection identifier" needs to
+>> contains so for this first version nothing was implemented.
+>>
+>> Looking at MD5 support in linux the initial commit only supported
+>> binding keys to addresses and only relatively support was added for
+>> address prefixes and interfaces. Remote ports still have no effect.
+>>
+>> I think adding explicit address binding for TCP-AO would be sufficient,
+>> this can be enhanced later. The most typical usecase for TCP auth is to
+>> connect with a BGP peer with a fixed IP address.
+>>
+>> As far as I understand this only actually matters for SYN packets where
+>> you want a single listen socket to accept client using overlapping
+>> keyids. For an active connection userspace can only add keys for the
+>> upcoming destination.
+> 
+> The RFC does not seem to put any restrictions on the MKTs used with a
+> TCP connection, except that every segment must match at most one MKT,
+> where the matching is done on the socket pair and for incoming
+> segments on the KeyID, and for outgoing segments by designating a
+> desired MKT.
+> If I understand what you suggest for the initial commit, socket pair
+> matching would not be done, and user level (together with out-of-band
+> coordination between peers) would be responsible for making sure that
+> the segments' socket pairs are consistent with the implied socket
+> pairs of the MKTs on the socket. Failure to do that would be
+> considered a misconfiguration and would result in undefined behavior.
+> Is that correct?
 
-KASAN report:
+All MKTs are assigned to individual sockets via setsockopt, there is no 
+sharing of keys. For an established connection the socket is already 
+determined by linux TCP stack based on addr/port so no further matching 
+on per-key address needs to be done.
 
-  BUG: KASAN: use-after-free in digital_send_cmd_complete+0x16/0x50
-  Write of size 8 at addr ffff88800a05f720 by task kworker/0:2/71
-  Workqueue: events nfcsim_recv_wq [nfcsim]
-  Call Trace:
-   dump_stack_lvl+0x45/0x59
-   print_address_description.constprop.0+0x21/0x140
-   ? digital_send_cmd_complete+0x16/0x50
-   ? digital_send_cmd_complete+0x16/0x50
-   kasan_report.cold+0x7f/0x11b
-   ? digital_send_cmd_complete+0x16/0x50
-   ? digital_dep_link_down+0x60/0x60
-   digital_send_cmd_complete+0x16/0x50
-   nfcsim_recv_wq+0x38f/0x3d5 [nfcsim]
-   ? nfcsim_in_send_cmd+0x4a/0x4a [nfcsim]
-   ? lock_is_held_type+0x98/0x110
-   ? finish_wait+0x110/0x110
-   ? rcu_read_lock_sched_held+0x9c/0xd0
-   ? rcu_read_lock_bh_held+0xb0/0xb0
-   ? lockdep_hardirqs_on_prepare+0x12e/0x1f0
+The only interesting cases are:
 
-This flow of calling digital_send_cmd_complete() callback on driver exit
-is specific to nfcsim which implements reading and sending work queues.
-Since the NFC digital device was unregistered, the callback should not
-be called.
+1) Keys in SYN packets are possibly ambiguous. Current limitation is 
+that a server socket needs all key ids to be different and this is 
+indeed bad.
+2) User is currently allowed to configure same keyid multiple times. RFC 
+does not allow this and behavior is undefined.
 
-Fixes: 204bddcb508f ("NFC: nfcsim: Make use of the Digital layer")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/nfc/nfcsim.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> Even if the MKT's socket pair is not used in the initial commit, would
+> it help having it in the API, to avoid future incompatibilities with
+> user level? Or would it be understood that user level code using the
+> initial commit may have to change with future commits?
 
-diff --git a/drivers/nfc/nfcsim.c b/drivers/nfc/nfcsim.c
-index a9864fcdfba6..dd27c85190d3 100644
---- a/drivers/nfc/nfcsim.c
-+++ b/drivers/nfc/nfcsim.c
-@@ -192,8 +192,7 @@ static void nfcsim_recv_wq(struct work_struct *work)
- 
- 		if (!IS_ERR(skb))
- 			dev_kfree_skb(skb);
--
--		skb = ERR_PTR(-ENODEV);
-+		return;
- 	}
- 
- 	dev->cb(dev->nfc_digital_dev, dev->arg, skb);
--- 
-2.27.0
+The rules used to distinguish keys in SYN packets can be further 
+elaborated by extending the uapi tcp_authopt_key structure. Increasing 
+the size of a structure doesn't break ABI if you're careful with length 
+checks.
 
+--
+Regards,
+Leonard
