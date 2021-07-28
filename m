@@ -2,275 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0F83D9906
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0663D9918
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbhG1WuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 18:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232073AbhG1WuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:50:23 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1775CC061757;
-        Wed, 28 Jul 2021 15:50:20 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id j77so4725685ybj.3;
-        Wed, 28 Jul 2021 15:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xDglts5u6VpbhAGOZw3Y55QgpbppwZZ4z2QzwRWYIMw=;
-        b=eIhxy57lYiIrdgmnFC7BRTAEesLAb4gLsJQeoG/65b1YzdtHwDXRSbxJTnVcG0EASf
-         kbp4e47lKcmtOq2+Di7E6T5iH4+/IVc1scAG2IWA0Us2wPph7L/4g8KQVUuh6fA5vbiV
-         xKVhazCDLSddziWs1wTtasX2qOrAlLApeOzb3p/57+9XfkrtRpNSpP2DtALyARHkIDVn
-         851552cmTNttBrfFx3JpMe988uT/CUVskrbD4bY8e/ibJzV27GRzLwNCsEcsy+TArL1W
-         Rm+ZFboyIkiRvmb63IFr7OZE/feFe9wnq8W9GjxsU+u+NYWXRbNuFGyNkheXgWFZeaij
-         dqGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xDglts5u6VpbhAGOZw3Y55QgpbppwZZ4z2QzwRWYIMw=;
-        b=Tj3Ikcw9x0PhhQ45cgfTdQPpNXRqAyt7+DOJb/T1vNf0E+3iZA5Dky9AbqsKZ47OpG
-         iQMSjk3CcRlPRav/FVxMGGzb+8puBXxyrGOdq8yZ7rL6cFWCrdshba6JNVmzpeR6eekM
-         vbYOp5CHbibhQQG4Zy+a2SrJQJkhKLj64qo+M1kwo8ufgeRAZ4rIw5rkhdM2Fts2dLCc
-         IHwj2CGR8hhMPCyDoZMZNT4LU+1YBIvf+iFGJyxQ+1az4nRHrJxxadFneDaOf7cDUx4Q
-         qaSyfNFi6d1PZP3UjhsJII20JxqveQqbbro+j57beCG1keCvNHieRsy74EhcZ5vJDwQg
-         Qdfw==
-X-Gm-Message-State: AOAM5306BiXCmN2Zj3B52a2YJpvKa/yESikpqKg1FPtw+EF7iUalXYhJ
-        iaMDr1kTpYkocfS6dKjAPKahQJdNYcEuobzpJw0=
-X-Google-Smtp-Source: ABdhPJygSR7K8iQnG/zIAjQnp2X206xR9Ica52iAlCPgC8m7bMf1qoOiLsIIJjJeMk87sEjwdFqBRsYU2LrPAnFE92U=
-X-Received: by 2002:a25:8205:: with SMTP id q5mr2678137ybk.440.1627512619052;
- Wed, 28 Jul 2021 15:50:19 -0700 (PDT)
+        id S232311AbhG1Wx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 18:53:27 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4958 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232143AbhG1Wx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:53:26 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16SMrAGe017453;
+        Wed, 28 Jul 2021 15:53:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=y2IwvHa524+hI7HxCgOhnKe0Hxzk6FCLqlEpPVWisfA=;
+ b=VS7bOXR9dfdZdPHaACmTgvBNTRfqpf5BZoCdFNKd6nqOS0tJcZo72m+sQE7qBrP8QR+x
+ cZ22J3HGr5ChZR9dTuDKUOpc0aSJS8U1yQLQI5ESKrWmQrTlpjMnvI99cxCBh+sCxFgg
+ UcyAQXISy3nJTCJMLdRMNWsnM87g3mG4rPc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3a3bu99qgq-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 28 Jul 2021 15:53:11 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 28 Jul 2021 15:53:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SfZFs7YbxjMhgEqkNVF+OS+R16cmVl3C8+Ro/M1ArnB6eshoBxmYbWsxf/DvubeUyrVBnYQcjJkw8snbHgnIS23nQ9OwFmUVE/mNpQHh5FI9C6RamMdidJhihqMyeWMfkiAJErBJS5SA9Tio7hz+kf8H0RM98TMN4v7pa3uc9Qs93eL/2dJrxr5+XpDWxgjH2pOTxltgeEm+jnU9/Lk45m2b6s6ePdcsBc+9M+aMaH6MWcEULCvSoe3rjQ2EDlH5CWGD9ZDeOpf1O2Z6i2z+MOE9euRHyinlHWkNZhKXgh4Ez0dYvsx+5fxoqZe+R/wiSOjkQts0Oyc+Ar7XcfSkzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y2IwvHa524+hI7HxCgOhnKe0Hxzk6FCLqlEpPVWisfA=;
+ b=Ii1C1bvdkZbkgI7uc2mAFWOBzfd1luS2w0Z2h9/UThw45R3CrlJTznuxB9Ag4MgZoXiVktxSX1A5loB+hzsNHE5sU+aELv4Bnkbu6TctsTsEUNlb8EeK3pJyQc7z08Vggk8E+S97i7hg/VWKUToGCegC6lxqaMI8UKwI/68ZB7lPBRvUVbKubiRyr6t9ZwAZTYpuNFjsoQAZBdo9J3R8FoMpc6U6/IwLA+9yT5b2iXpPtfsY6V2UEgy6kFWnbIDu3iEgUZQOF0SzI+yKvhJMrTrq0MXwssMpEHU7KkqLdO+EQjsV3xJ/qSjusTXWpt7ygXfbKvwfThMSiTnABgc3JQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from DM5PR1501MB2055.namprd15.prod.outlook.com (2603:10b6:4:a1::13)
+ by DM6PR15MB3322.namprd15.prod.outlook.com (2603:10b6:5:16f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.19; Wed, 28 Jul
+ 2021 22:53:09 +0000
+Received: from DM5PR1501MB2055.namprd15.prod.outlook.com
+ ([fe80::b0e1:ea29:ca0a:be9f]) by DM5PR1501MB2055.namprd15.prod.outlook.com
+ ([fe80::b0e1:ea29:ca0a:be9f%7]) with mapi id 15.20.4352.033; Wed, 28 Jul 2021
+ 22:53:09 +0000
+Subject: Re: [PATCH 04/14] bpf/tests: Add more tests of ALU32 and ALU64
+ bitwise operations
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
+CC:     <kafai@fb.com>, <songliubraving@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <Tony.Ambardar@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-5-johan.almbladh@anyfinetworks.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <989326f9-5758-9669-56c0-76b6b23ec92b@fb.com>
+Date:   Wed, 28 Jul 2021 15:53:07 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
+In-Reply-To: <20210728170502.351010-5-johan.almbladh@anyfinetworks.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR14CA0030.namprd14.prod.outlook.com
+ (2603:10b6:300:12b::16) To DM5PR1501MB2055.namprd15.prod.outlook.com
+ (2603:10b6:4:a1::13)
 MIME-Version: 1.0
-References: <20210728071721.411669-1-desmondcheongzx@gmail.com>
-In-Reply-To: <20210728071721.411669-1-desmondcheongzx@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 28 Jul 2021 15:50:08 -0700
-Message-ID: <CABBYNZJcSS+fnTtF4S4UqASaG2DSN4DxwC-8AZAOaEkfu68uew@mail.gmail.com>
-Subject: Re: [PATCH v4] Bluetooth: schedule SCO timeouts with delayed_work
-To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        skhan@linuxfoundation.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:8298) by MWHPR14CA0030.namprd14.prod.outlook.com (2603:10b6:300:12b::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Wed, 28 Jul 2021 22:53:08 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9d904869-6e64-41c8-0017-08d9521a78ab
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3322:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB3322A894689A4C495B0C03D6D3EA9@DM6PR15MB3322.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:309;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: b7pWmhoKTNRLliSaG+s8u+tdNUKQ+uerSB4TpBQb19U2nA4cFs0dmK7GkUPtDGuOY/OVNhoFevZBPMcz1k4KT+ou2juGfVpQ/bWiOFJ10QK3i9jZUCUUDZcikox64jFKusuiziO/jbpp5/jsYNxmecEQBqRaKoGe8f+cNtxkcIgi2U32q/tmQh1RRTXjJkDLqZsYlMqOVveLtn/SWOgyXwxL0TOdno2KOXL2QK4XbElSCPo4o7jnNu1BCfJX0Z6p/RlEtqxKaE/7xRW2u2tqkYmE/N6c17w2SkSgFWzeswGSbxfzCBxCVJJjgyHK6Rw+ABqY/5ZtOUmVQ453miIwQ1xRJNVpHNlH9JTF0T2Cq/gWoU2r7/oWwnjSlfSlyDcT8zgtGkYVFXDJbDZgdor1y27mATgd4rftnzvetDT9sv88Eb7Pdn1kRiWi/Gc8BoUHHKF7PJB24LTGLjUhQJr0P/zth5i4xmLzNsy2Tn72IT1WCiYjTyIAGDa4a5zvqTEk2NxW2lqc6DawFR14BZ+Jsz/SA+7i+LOME406oZc0IsEgIhMHMQyE79AXGJQkMaKnKDDgnDZi55evIyKKydQglp0SYmks24uFEJfKMoXXWNxd6+k4zQsuyQ8QFlvZsPD50zo9FKpcraPXLMKQpKxeylbU/qsseNNcAuuZZbv2Wbv6wJNDYhU72r3JaE7z4aaEd3XH0N9itInRlxZJmHGlJo8RUNRsqo2ONezoFxTNLRY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1501MB2055.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(66476007)(6486002)(66556008)(31686004)(5660300002)(8676002)(4326008)(36756003)(186003)(53546011)(38100700002)(4744005)(316002)(2616005)(2906002)(52116002)(86362001)(8936002)(508600001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N2xXSlRHTXorNnJBcXJJWnNESXpIY29nM1g1WVRtL3dVbVE1Zm56azhXU2g3?=
+ =?utf-8?B?YjkxTUpFQXl5OUxEWFg4VENyRjh1K0s3RDhMV3lZZnBVVFBEdExwWDljNng3?=
+ =?utf-8?B?RG9XelcrVzR6VVFqYXN3WHJldG0rZm5wMTBxMUIvWDZvWmdyeEEwY3QwZkNY?=
+ =?utf-8?B?dFFIQWpOYkoyNmg2MFJnS1pZMzkvRjg1R05TcDV6ZzBCeitKaGdXUEdlZXZr?=
+ =?utf-8?B?Y29VWG5weXpUaEYyS2llbnlxTDZybk5IUTF3VnhsM1VMUVdKZTFmL05FY1da?=
+ =?utf-8?B?RWp4clJrM2pYK2dueE9aS0FjL3BFc29SK25FZmN0dG5ndFJQOEUyK2w2cjhX?=
+ =?utf-8?B?dnNnenpNTDArT2REMnVhVElwN2w3Q3hJbG1FNmh2aFRvM2x6SkxldzZwWU9m?=
+ =?utf-8?B?Q2t4aEQwVmJ5R1ZvQktDMEVVMTJQdmJIQTkzTDFmcjhiWndxMEtVRWlZWkl1?=
+ =?utf-8?B?ZnpsckdRWm5PQW9zL2trTUdkMTVEenpaSEVwQmdUNUlDTjc3SFZWYXpNRFhL?=
+ =?utf-8?B?dUtwbU1relUxZXlQYVl4QTlXRmplUWVCWUFSbE1WTzdHRjNlKzY5RGhZRm15?=
+ =?utf-8?B?Q0QvRlk1NUoxZlBMRGp3S05IWkJXaTZjUkVaa1MxWGk4ZTVnaERkbE4wWGdC?=
+ =?utf-8?B?bStMQnlXTXM5WlJYKzhMeDhKaERVbVcxRk9DdDhlVXZqb1k2NTAwMDNDMXkr?=
+ =?utf-8?B?N1c4THM1QW43c2xUS0Y3dkVHREV5ZUpZVEhudm4xTnBRak9hZ1ZoNGNqcFpX?=
+ =?utf-8?B?UGZqSk9kaTZkd0U4VlltR01yb3UzeTYxcm9PbEp3aUphRWlaMXU1WkZFVEJh?=
+ =?utf-8?B?cDFDMDJzVFNnYXVjejM4ZjVzTU55ZTNDYWpEWFFCUnZQOVNhVU5DalkrWE51?=
+ =?utf-8?B?bkhqNktHQmRlU29GUVhvcTg5NEJQNkRjdUUxY2lTaG1GWS93Q1B0OWRqV2RR?=
+ =?utf-8?B?Zjk4L2M1dU5yRHJKV2FTbHdBZHNUZDM3SUVvbUVFVDQyU1FvNXlFSThtbUtq?=
+ =?utf-8?B?SUx6WllyUFFpbyt3WnZHOVcxZHJHZ25DK092NHo5dHBPS2VZUmxOT2w5cG4w?=
+ =?utf-8?B?L3VmV2xFTi9CT0kvRXBQT2xidDNVT2NEenVnbGJGYnFZTVNndmRZcHFwRGEw?=
+ =?utf-8?B?TjRySXJYWDlXWGZFM0kxMG43a1U4aFppdytNMlNHWGVvUlNnYisvak9BYUxO?=
+ =?utf-8?B?KzZ4bnZlam1PYUs1QXJ0Q0Y3eTVRRjk1Y0lIM2ttSGRZNnpSekoydzljRlJD?=
+ =?utf-8?B?UER2Ry9aT1I3aUxvU3hUSk45ci9lZTQvVzQrMWJMdVVrSkdMKzZQbll1SmNI?=
+ =?utf-8?B?Y2RTRDB2UDVRS2ljVlV4ZUh4Uzk4TEgxYk5CY2ZhbjRVY0huc1l0WFVCdWFX?=
+ =?utf-8?B?TWlvR0pvZEM5ZnNHMlkycTRaS3pZY3dJanlxRHJ6d09qeitGTjB4UWFKT2Qx?=
+ =?utf-8?B?OXgyOEdBK3Nvam80SmxsT29qNTBnKzlQaHJtbWIyM0dmS3drYmE5UkkxUXFv?=
+ =?utf-8?B?d3A4aVY1ZDJJSGsyclpmNzhnM21WSDFyci9QVWVxRUFzT0owODNJZk9NWUpt?=
+ =?utf-8?B?ckNOSWlzWWc5N040YUkyenhSaDlDR3Z2SmplempDOC9DZTRuKzA5MlRMWThZ?=
+ =?utf-8?B?WTVGNzUzYm9GMit2REpXREh5aHRlWGVMNWxCN3ZLbXI1VklXQUMxdS9udlVh?=
+ =?utf-8?B?M3g0NjJ3L2kvWUQxRVM5N2V0aHFJdlFlWWxDaUtreWRBZGhrNVR0SDRYZFlV?=
+ =?utf-8?B?MFl3L3ZSNkp5ZjR3cXhMTFpoVXczR1ZOLzducWZUdUlHRWZrd3N3a3VCaitZ?=
+ =?utf-8?B?aFdSdWZGRFRXczBIR0tUZz09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d904869-6e64-41c8-0017-08d9521a78ab
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1501MB2055.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 22:53:09.8005
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5szlhvSjzGYjQ4OKpZkBVeSqYSlHE8qKs2yvNZJzG5Vtm7E5Y5XknVe55ruDx8vX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3322
+X-OriginatorOrg: fb.com
+X-Proofpoint-ORIG-GUID: Ed_VGVJ9ScVK5DUMv6JToe3GYwYIKT0x
+X-Proofpoint-GUID: Ed_VGVJ9ScVK5DUMv6JToe3GYwYIKT0x
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-28_12:2021-07-27,2021-07-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=678
+ lowpriorityscore=0 suspectscore=0 spamscore=0 malwarescore=0
+ impostorscore=0 adultscore=0 mlxscore=0 bulkscore=0 clxscore=1015
+ phishscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2107140000 definitions=main-2107280117
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Desmond,
-
-On Wed, Jul 28, 2021 at 12:17 AM Desmond Cheong Zhi Xi
-<desmondcheongzx@gmail.com> wrote:
->
-> struct sock.sk_timer should be used as a sock cleanup timer. However,
-> SCO uses it to implement sock timeouts.
->
-> This causes issues because struct sock.sk_timer's callback is run in
-> an IRQ context, and the timer callback function sco_sock_timeout takes
-> a spin lock on the socket. However, other functions such as
-> sco_conn_del, sco_conn_ready, rfcomm_connect_ind, and
-> bt_accept_enqueue also take the spin lock with interrupts enabled.
->
-> This inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock usage could
-> lead to deadlocks as reported by Syzbot [1]:
->        CPU0
->        ----
->   lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
->   <Interrupt>
->     lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
->
-> To fix this, we use delayed work to implement SCO sock timouts
-> instead. This allows us to avoid taking the spin lock on the socket in
-> an IRQ context, and corrects the misuse of struct sock.sk_timer.
->
-> Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
-> Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-> ---
-
-Is there a way to trigger syzbot to know if this change really fixes it?
-
-> Hi,
->
-> As suggested, this patch addresses the inconsistent lock state while
-> avoiding having to deal with local_bh_disable.
->
-> Now that sco_sock_timeout is no longer run in IRQ context, it might
-> be the case that bh_lock_sock is no longer needed to sync between
-> SOFTIRQ and user contexts, so we can switch to lock_sock.
->
-> I'm not too certain about this, or if there's any benefit to using
-> lock_sock instead, so I've left that out of this patch.
->
-> v3 -> v4:
-> - Switch to using delayed_work to schedule SCO sock timeouts instead
-> of using local_bh_disable. As suggested by Luiz Augusto von Dentz.
->
-> v2 -> v3:
-> - Split SCO and RFCOMM code changes, as suggested by Luiz Augusto von
-> Dentz.
-> - Simplify local bh disabling in SCO by using local_bh_disable/enable
-> inside sco_chan_del since local_bh_disable/enable pairs are reentrant.
->
-> v1 -> v2:
-> - Instead of pulling out the clean-up code out from sco_chan_del and
-> using it directly in sco_conn_del, disable local softirqs for relevant
-> sections.
-> - Disable local softirqs more thoroughly for instances of
-> bh_lock_sock/bh_lock_sock_nested in the bluetooth subsystem.
-> Specifically, the calls in af_bluetooth.c and rfcomm/sock.c are now made
-> with local softirqs disabled as well.
->
-> Best wishes,
-> Desmond
->
->  net/bluetooth/sco.c | 39 ++++++++++++++++++++++++---------------
->  1 file changed, 24 insertions(+), 15 deletions(-)
->
-> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-> index 3bd41563f118..b6dd16153d38 100644
-> --- a/net/bluetooth/sco.c
-> +++ b/net/bluetooth/sco.c
-> @@ -48,6 +48,8 @@ struct sco_conn {
->         spinlock_t      lock;
->         struct sock     *sk;
->
-> +       struct delayed_work     sk_timer;
-> +
->         unsigned int    mtu;
->  };
->
-> @@ -74,9 +76,11 @@ struct sco_pinfo {
->  #define SCO_CONN_TIMEOUT       (HZ * 40)
->  #define SCO_DISCONN_TIMEOUT    (HZ * 2)
->
-> -static void sco_sock_timeout(struct timer_list *t)
-> +static void sco_sock_timeout(struct work_struct *work)
->  {
-> -       struct sock *sk = from_timer(sk, t, sk_timer);
-> +       struct sco_conn *conn = container_of(work, struct sco_conn,
-> +                                            sk_timer.work);
-> +       struct sock *sk = conn->sk;
->
->         BT_DBG("sock %p state %d", sk, sk->sk_state);
->
-> @@ -89,16 +93,18 @@ static void sco_sock_timeout(struct timer_list *t)
->         sock_put(sk);
->  }
->
-> -static void sco_sock_set_timer(struct sock *sk, long timeout)
-> +static void sco_sock_set_timer(struct sock *sk, struct delayed_work *work,
-> +                              long timeout)
->  {
->         BT_DBG("sock %p state %d timeout %ld", sk, sk->sk_state, timeout);
-> -       sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
-> +       cancel_delayed_work(work);
-> +       schedule_delayed_work(work, timeout);
->  }
->
-> -static void sco_sock_clear_timer(struct sock *sk)
-> +static void sco_sock_clear_timer(struct sock *sk, struct delayed_work *work)
->  {
->         BT_DBG("sock %p state %d", sk, sk->sk_state);
-> -       sk_stop_timer(sk, &sk->sk_timer);
-> +       cancel_delayed_work(work);
->  }
->
->  /* ---- SCO connections ---- */
-> @@ -174,7 +180,7 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
->         if (sk) {
->                 sock_hold(sk);
->                 bh_lock_sock(sk);
-> -               sco_sock_clear_timer(sk);
-> +               sco_sock_clear_timer(sk, &conn->sk_timer);
->                 sco_chan_del(sk, err);
->                 bh_unlock_sock(sk);
->                 sco_sock_kill(sk);
-> @@ -193,6 +199,8 @@ static void __sco_chan_add(struct sco_conn *conn, struct sock *sk,
->         sco_pi(sk)->conn = conn;
->         conn->sk = sk;
->
-> +       INIT_DELAYED_WORK(&conn->sk_timer, sco_sock_timeout);
-> +
->         if (parent)
->                 bt_accept_enqueue(parent, sk, true);
->  }
-> @@ -260,11 +268,11 @@ static int sco_connect(struct sock *sk)
->                 goto done;
->
->         if (hcon->state == BT_CONNECTED) {
-> -               sco_sock_clear_timer(sk);
-> +               sco_sock_clear_timer(sk, &conn->sk_timer);
->                 sk->sk_state = BT_CONNECTED;
->         } else {
->                 sk->sk_state = BT_CONNECT;
-> -               sco_sock_set_timer(sk, sk->sk_sndtimeo);
-> +               sco_sock_set_timer(sk, &conn->sk_timer, sk->sk_sndtimeo);
->         }
->
->  done:
-> @@ -419,7 +427,8 @@ static void __sco_sock_close(struct sock *sk)
->         case BT_CONFIG:
->                 if (sco_pi(sk)->conn->hcon) {
->                         sk->sk_state = BT_DISCONN;
-> -                       sco_sock_set_timer(sk, SCO_DISCONN_TIMEOUT);
-> +                       sco_sock_set_timer(sk, &sco_pi(sk)->conn->sk_timer,
-> +                                          SCO_DISCONN_TIMEOUT);
->                         sco_conn_lock(sco_pi(sk)->conn);
->                         hci_conn_drop(sco_pi(sk)->conn->hcon);
->                         sco_pi(sk)->conn->hcon = NULL;
-> @@ -443,7 +452,8 @@ static void __sco_sock_close(struct sock *sk)
->  /* Must be called on unlocked socket. */
->  static void sco_sock_close(struct sock *sk)
->  {
-> -       sco_sock_clear_timer(sk);
-> +       if (sco_pi(sk)->conn)
-> +               sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
->         lock_sock(sk);
->         __sco_sock_close(sk);
->         release_sock(sk);
-> @@ -500,8 +510,6 @@ static struct sock *sco_sock_alloc(struct net *net, struct socket *sock,
->
->         sco_pi(sk)->setting = BT_VOICE_CVSD_16BIT;
->
-> -       timer_setup(&sk->sk_timer, sco_sock_timeout, 0);
-> -
->         bt_sock_link(&sco_sk_list, sk);
->         return sk;
->  }
-> @@ -1036,7 +1044,8 @@ static int sco_sock_shutdown(struct socket *sock, int how)
->
->         if (!sk->sk_shutdown) {
->                 sk->sk_shutdown = SHUTDOWN_MASK;
-> -               sco_sock_clear_timer(sk);
-> +               if (sco_pi(sk)->conn)
-> +                       sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
->                 __sco_sock_close(sk);
->
->                 if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime &&
-> @@ -1083,7 +1092,7 @@ static void sco_conn_ready(struct sco_conn *conn)
->         BT_DBG("conn %p", conn);
->
->         if (sk) {
-> -               sco_sock_clear_timer(sk);
-> +               sco_sock_clear_timer(sk, &conn->sk_timer);
->                 bh_lock_sock(sk);
->                 sk->sk_state = BT_CONNECTED;
->                 sk->sk_state_change(sk);
-> --
-> 2.25.1
->
 
 
--- 
-Luiz Augusto von Dentz
+On 7/28/21 10:04 AM, Johan Almbladh wrote:
+> This patch adds tests of BPF_AND, BPF_OR and BPF_XOR with different
+> magnitude of the immediate value. Mainly checking 32-bit JIT sub-word
+> handling and zero/sign extension.
+> 
+> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+
+Acked-by: Yonghong Song <yhs@fb.com>
