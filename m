@@ -2,96 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFDC43D972F
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6C33D9737
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231888AbhG1VBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 17:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbhG1VB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:01:29 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD47DC0613D3
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:01:26 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id m10-20020a17090a34cab0290176b52c60ddso5918931pjf.4
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:01:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v4TsexyUVtPmnWQp8z0vQybdqGDFJ+IKH3X3D8imsE4=;
-        b=hg+gKirQh4CStWcllp3dCMDGaMydMxkrfDz7dI28grfxRHealC37a8xJDfYI0FVrQZ
-         2tYUG05gAJbnL7ZSiMGxXN0BbgqYaSHUyURFCYtvwZV0Mx+omFId8CJj1UovnV0ee9cA
-         66wsvWC92AbI6ez9cGn13eYUvZ7XhoUJQlPzE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v4TsexyUVtPmnWQp8z0vQybdqGDFJ+IKH3X3D8imsE4=;
-        b=euXEnU/QEHCednM4oAoHEpCGMX0sKeKPla3kRHOx+AFk6a3wAR/DA2rjGZj9n27Dzb
-         QbWrFsW0YR5ocSGfgztru9nxE4ziq9rkrEPbxCETZoV7adXYkKHeNAD0By5Rv/q3SIvj
-         EzfwPbQjRISrm7Ds2DCSunzMcsAKmuy4+PqUowSwCsP+/s0mAbZ3Gr9RqKXKss0MRFYc
-         0v/2d+LBQlpabmGN3olRNFgABOcpEjq0ASfLiSIuNSR6JYSRp56o8eXPnT0wc1dVqKgV
-         M5lmo+wcffCca66r+qBq/L7BuofOQZnbWL7i9NqIzu/P5DW9XW/S+zGLOXRNIQ6bvcuB
-         YCeg==
-X-Gm-Message-State: AOAM533U32PeWgs2V+yqr/Xh7Re/zIdBezxDckfD2RCr6BZxfUK3P4dj
-        W/5Jc5Ye63EXh59xKWYx+4Ts0Q==
-X-Google-Smtp-Source: ABdhPJzkF5cilzb73BCpcxICFq3XUeRAJh6fZICuqCaVMVL6bCDUAwLUBtlkfh9/lXbLB+5T11D9+w==
-X-Received: by 2002:a17:902:d717:b029:12c:1653:d611 with SMTP id w23-20020a170902d717b029012c1653d611mr1508273ply.51.1627506086388;
-        Wed, 28 Jul 2021 14:01:26 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t3sm932392pfd.153.2021.07.28.14.01.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 14:01:25 -0700 (PDT)
-Date:   Wed, 28 Jul 2021 14:01:24 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 19/64] ip: Use struct_group() for memcpy() regions
-Message-ID: <202107281358.8E12638@keescook>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-20-keescook@chromium.org>
- <YQDxaYrHu0PeBIuX@kroah.com>
+        id S231719AbhG1VFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 17:05:04 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50710 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231350AbhG1VFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 17:05:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=BtZW607qNOD3e0gMonQVnWRfeBOSie9refbYyYzzrg4=; b=V6RnpvzICovOVmaf/kU4yalbwp
+        hnL8jzaq33Q5ynBKTNGEvmOOIc9dQpUSVda9cqKnlPLxJ7DIw4HYTr9VWfVh/49Ryx8rw4uvfFIZd
+        hhkrUdHgxwHsVlvQB/TMr4C6yC7ocVcwxp70h7slt8YglylnPAW12vQqqI8nf+gxt4e0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m8qjb-00FEZb-Tk; Wed, 28 Jul 2021 23:04:59 +0200
+Date:   Wed, 28 Jul 2021 23:04:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: net: dsa: mv88e6xxx: no multicasts rx'd after enabling hw time
+ stamping
+Message-ID: <YQHGe6Rv9T4+E3AG@lunn.ch>
+References: <CAFSKS=Pv4qjfikHcvyycneAkQWTXQkKS_0oEVQ3JyE5UL6H=MQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YQDxaYrHu0PeBIuX@kroah.com>
+In-Reply-To: <CAFSKS=Pv4qjfikHcvyycneAkQWTXQkKS_0oEVQ3JyE5UL6H=MQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 07:55:53AM +0200, Greg Kroah-Hartman wrote:
-> >  struct ethhdr {
-> > -	unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
-> > -	unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
-> > +	union {
-> > +		struct {
-> > +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
-> > +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
-> > +		};
-> > +		struct {
-> > +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
-> > +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
-> > +		} addrs;
+On Wed, Jul 28, 2021 at 03:44:24PM -0500, George McCollister wrote:
+> If I do the following on one of my mv88e6390 switch ports I stop
+> receiving multicast frames.
+> hwstamp_ctl -i lan0 -t 1 -r 12
 > 
-> A union of the same fields in the same structure in the same way?
+> Has anyone seen anything like this or have any ideas what might be
+> going on? Does anyone have PTP working on the mv88e6390?
 > 
-> Ah, because struct_group() can not be used here?  Still feels odd to see
-> in a userspace-visible header.
+> I tried this but it doesn't help:
+> ip maddr add 01:xx:xx:xx:xx:xx dev lan0
+> 
+> I've tried sending 01:1B:19:00:00:00, 01:80:C2:00:00:0E as well as
+> other random ll multicast addresses. Nothing gets through once
+> hardware timestamping is switched on. The switch counters indicate
+> they're making it into the outward facing switch port but are not
+> being sent out the CPU facing switch port. I ran into this while
+> trying to get ptp4l to work.
 
-Yeah, there is some inconsistency here. I will clean this up for v2.
+Hi George
 
-Is there a place we can put kernel-specific macros for use in UAPI
-headers? (I need to figure out where things like __kernel_size_t get
-defined...)
+All my testing was i think on 6352.
 
--- 
-Kees Cook
+I assume you get multicast before using hwstamp_ctl?
+
+Maybe use:
+
+https://github.com/lunn/mv88e6xxx_dump
+
+and dump the ATU before and afterwards.
+
+The 6390 family introduced a new way to configured which reserved
+management addresses get forwarded to the CPU. Maybe take a look at
+mv88e6390_g1_mgmt_rsvd2cpu() and see if you can spot anything odd
+going on.
+
+You might also want to check if mv88e6352_port_set_mcast_flood() is
+being called.
+
+      Andrew
