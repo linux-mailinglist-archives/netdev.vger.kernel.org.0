@@ -2,117 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0526E3D97AE
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2B8E3D97B2
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231982AbhG1VkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 17:40:20 -0400
-Received: from smtp-out2.suse.de ([195.135.220.29]:49486 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbhG1VkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:40:19 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A4D301FFF7;
-        Wed, 28 Jul 2021 21:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1627508415;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
+        id S231888AbhG1VlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 17:41:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44518 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230156AbhG1VlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:41:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627508471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=oR4vzK6aCnqNgUfz40K7pF710nacCw6QNahoytQWvX8=;
-        b=P+ZyHs6ofwzlskr3maz1kpnvrKfXlFoSHajF4uBqYXJi2q7qQ4/a6KvY4/0cgio85hOyYh
-        EBOqUdyPJGAHk7Z+VzxfdvaESSda8uIHQnCY8HfeOaPgPC13mEZcQZ10rs+T5vJ9Pm4uqI
-        xEfXn1PQjEiV1Wbs/RqxZWRTjMTIBAg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1627508415;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oR4vzK6aCnqNgUfz40K7pF710nacCw6QNahoytQWvX8=;
-        b=l8IhwodTcUf+H2UTz+tdhmnb2dLWuiDuSzYxRUsIHmqcrBZ5Hdp9nLOp6zptu/z+kIJUOu
-        wq++yx9GJLecP8CA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 81390A3B83;
-        Wed, 28 Jul 2021 21:40:15 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 6EF36DA8A7; Wed, 28 Jul 2021 23:37:30 +0200 (CEST)
-Date:   Wed, 28 Jul 2021 23:37:30 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        nborisov@suse.com
-Subject: Re: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy()
- region
-Message-ID: <20210728213730.GR5047@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Bart Van Assche <bvanassche@acm.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com,
-        nborisov@suse.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-2-keescook@chromium.org>
- <20210728085921.GV5047@twin.jikos.cz>
- <20210728091434.GQ1931@kadam>
- <c52a52d9-a9e0-5020-80fe-4aada39035d3@acm.org>
+        bh=mx31kKBVBEoAlz5cPxD8jYRoivcPG7uJktRgpDD2MsI=;
+        b=U2AQjmwgXTVHVtZ+jBDN7IBBom1EsCuuhXV5MdxySyF4gmdkfHNeFvTnivc4RGZ1eM7qU0
+        bW3JltT0r/dfQQPGIxRpTrVeZ6T0e19E4yhsmLkk4QFPEMgz6wXsZ/G3sGXus9NmBgLlJO
+        //xYbyKdIyZKC2xSm01zGA6+Zc44/EE=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-171-zekqLJAYOH6P4_rJ7rZHAg-1; Wed, 28 Jul 2021 17:41:09 -0400
+X-MC-Unique: zekqLJAYOH6P4_rJ7rZHAg-1
+Received: by mail-lf1-f72.google.com with SMTP id f13-20020a19380d0000b029037ad1141c33so1644182lfa.8
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:41:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:references:mime-version:in-reply-to:date
+         :message-id:subject:to:cc;
+        bh=mx31kKBVBEoAlz5cPxD8jYRoivcPG7uJktRgpDD2MsI=;
+        b=hrlXFrKVMd8SIiHZHVOKp3KWO2eIFcXIdtm7ZY3oWc/oxj7PUSJidoBidoyBRQrdER
+         LA/hraUK+W5BZS1GyeBgnXJLWAWVgI8a7wjAf7isV0zADx/+Z5FPKvT7CqgbRhmgUmfb
+         IuNZqbKymcPgoUCgkVGCMgsdQNcbGxd2EDm/crC2ALPhO1oFmWSL0lwmY7hf1O1SAPW4
+         605JrA55SdY9bPkMlBBBWO0KLtA8ssPxgoaO59WukuJZxttM1/W1ELj3A/ika4ntr+XT
+         tUtFwN6ns8eluYaKrvAgObIYUbSpGjG6zjB3cP3tLDK0miw4anZVTyal9xJj0dUhg0Io
+         AjXw==
+X-Gm-Message-State: AOAM530W+VMyd9UYkqMKQrBoC+I7F3nL7AzFUC6CC6x2kSv9D9ageVCW
+        rVkZE6r7pp+x2FJp8VPCMmq7rvVZ+l+QeydYgyo2XsOrrfl/88P4BIIAEHCKohzsfwIiZy+dpvE
+        YGr4TrjfWiTcCarsL3TF71jMiPx7CEs6s
+X-Received: by 2002:a05:651c:b29:: with SMTP id b41mr1017776ljr.185.1627508468356;
+        Wed, 28 Jul 2021 14:41:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTftXB9O45g6nMRLt/pkUh4eYLoLl27GPuzse0TyHZZQb7f5vlZFRdPNizNt8PqwMI4PIHYSRvmOBJ9zvZlLE=
+X-Received: by 2002:a05:651c:b29:: with SMTP id b41mr1017769ljr.185.1627508468174;
+ Wed, 28 Jul 2021 14:41:08 -0700 (PDT)
+Received: from 868169051519 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 28 Jul 2021 14:41:07 -0700
+From:   mleitner@redhat.com
+References: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c52a52d9-a9e0-5020-80fe-4aada39035d3@acm.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
+Date:   Wed, 28 Jul 2021 14:41:07 -0700
+Message-ID: <CALnP8ZYTGAY4UGbZTbVaPJ7+6ziRN5S-7EZTtJg_voaZL9+REQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/sched: store the last executed chain also
+ for clsact egress
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alaa Hleilel <alaa@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 02:37:20PM -0700, Bart Van Assche wrote:
-> On 7/28/21 2:14 AM, Dan Carpenter wrote:
-> > On Wed, Jul 28, 2021 at 10:59:22AM +0200, David Sterba wrote:
-> >>>   drivers/media/platform/omap3isp/ispstat.c |  5 +--
-> >>>   include/uapi/linux/omap3isp.h             | 44 +++++++++++++++++------
-> >>>   2 files changed, 36 insertions(+), 13 deletions(-)
-> >>>
-> >>> diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
-> >>> index 5b9b57f4d9bf..ea8222fed38e 100644
-> >>> --- a/drivers/media/platform/omap3isp/ispstat.c
-> >>> +++ b/drivers/media/platform/omap3isp/ispstat.c
-> >>> @@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
-> >>>   int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
-> >>>   					struct omap3isp_stat_data_time32 *data)
-> >>>   {
-> >>> -	struct omap3isp_stat_data data64;
-> >>> +	struct omap3isp_stat_data data64 = { };
-> >>
-> >> Should this be { 0 } ?
-> >>
-> >> We've seen patches trying to switch from { 0 } to {  } but the answer
-> >> was that { 0 } is supposed to be used,
-> >> http://www.ex-parrot.com/~chris/random/initialise.html
-> >>
-> >> (from https://lore.kernel.org/lkml/fbddb15a-6e46-3f21-23ba-b18f66e3448a@suse.com/)
-> > 
-> > In the kernel we don't care about portability so much.  Use the = { }
-> > GCC extension.  If the first member of the struct is a pointer then
-> > Sparse will complain about = { 0 }.
-> 
-> +1 for { }.
+On Wed, Jul 28, 2021 at 08:08:00PM +0200, Davide Caratti wrote:
+> currently, only 'ingress' and 'clsact ingress' qdiscs store the tc 'chain
+> id' in the skb extension. However, userspace programs (like ovs) are able
+> to setup egress rules, and datapath gets confused in case it doesn't find
+> the 'chain id' for a packet that's "recirculated" by tc.
+> Change tcf_classify() to have the same semantic as tcf_classify_ingress()
+> so that a single function can be called in ingress / egress, using the tc
+> ingress / egress block respectively.
+>
+> Suggested-by: Alaa Hleilel <alaa@nvidia.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Oh, I thought the tendency is is to use { 0 } because that can also
-intialize the compound members, by a "scalar 0" as it appears in the
-code.
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+
