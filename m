@@ -2,185 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 039D13D87C7
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:19:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A40C3D87D4
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 08:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbhG1GTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 02:19:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57494 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231199AbhG1GTo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 02:19:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2B8BC60F59;
-        Wed, 28 Jul 2021 06:19:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1627453182;
-        bh=jzQuz+FxNSuPOpcBxvBdUPKEHHxSVIBlwZ520J114Qg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G415GDubuNnoFZNUO3Akbs6Yro6HwxHPDYBUPD1Je/Dkmdt9ysqOtqcLKUEN6Xj0e
-         Qxw0gJNQdccgSCI3xkXBWKMvEGgUGYJw/tQMw3OCUE1b0g7y22+6L2lFw7ih+DbI7Q
-         UbltwqAC2OGz4xic/gOwmBxTzDbXvlRGpGObqXu8=
-Date:   Wed, 28 Jul 2021 08:19:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 19/64] ip: Use struct_group() for memcpy() regions
-Message-ID: <YQD2/CA7zJU7MW6M@kroah.com>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-20-keescook@chromium.org>
- <YQDxaYrHu0PeBIuX@kroah.com>
- <baead202-569f-775f-348c-aa64e69f03ed@embeddedor.com>
+        id S234451AbhG1GXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 02:23:39 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:7754 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234122AbhG1GXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 02:23:37 -0400
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GZNk970cBzYhMc;
+        Wed, 28 Jul 2021 14:17:37 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 28 Jul 2021 14:23:33 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 28 Jul 2021 14:23:33 +0800
+From:   Yufeng Mo <moyufeng@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <jay.vosburgh@canonical.com>, <jiri@resnulli.us>
+CC:     <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
+        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linyunsheng@huawei.com>, <zhangjiaran@huawei.com>,
+        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
+        <salil.mehta@huawei.com>, <moyufeng@huawei.com>,
+        <linuxarm@huawei.com>, <linuxarm@openeuler.org>
+Subject: [PATCH net-next] bonding: 3ad: fix the concurrency between __bond_release_one() and bond_3ad_state_machine_handler()
+Date:   Wed, 28 Jul 2021 14:19:52 +0800
+Message-ID: <1627453192-54463-1-git-send-email-moyufeng@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <baead202-569f-775f-348c-aa64e69f03ed@embeddedor.com>
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 01:14:33AM -0500, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 7/28/21 00:55, Greg Kroah-Hartman wrote:
-> > On Tue, Jul 27, 2021 at 01:58:10PM -0700, Kees Cook wrote:
-> >> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> >> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> >> intentionally writing across neighboring fields.
-> >>
-> >> Use struct_group() in struct flowi4, struct ipv4hdr, and struct ipv6hdr
-> >> around members saddr and daddr, so they can be referenced together. This
-> >> will allow memcpy() and sizeof() to more easily reason about sizes,
-> >> improve readability, and avoid future warnings about writing beyond the
-> >> end of saddr.
-> >>
-> >> "pahole" shows no size nor member offset changes to struct flowi4.
-> >> "objdump -d" shows no meaningful object code changes (i.e. only source
-> >> line number induced differences.)
-> >>
-> >> Note that since this is a UAPI header, struct_group() has been open
-> >> coded.
-> >>
-> >> Signed-off-by: Kees Cook <keescook@chromium.org>
-> >> ---
-> >>  include/net/flow.h            |  6 ++++--
-> >>  include/uapi/linux/if_ether.h | 12 ++++++++++--
-> >>  include/uapi/linux/ip.h       | 12 ++++++++++--
-> >>  include/uapi/linux/ipv6.h     | 12 ++++++++++--
-> >>  net/core/flow_dissector.c     | 10 ++++++----
-> >>  net/ipv4/ip_output.c          |  6 ++----
-> >>  6 files changed, 42 insertions(+), 16 deletions(-)
-> >>
-> >> diff --git a/include/net/flow.h b/include/net/flow.h
-> >> index 6f5e70240071..f1a3b6c8eae2 100644
-> >> --- a/include/net/flow.h
-> >> +++ b/include/net/flow.h
-> >> @@ -81,8 +81,10 @@ struct flowi4 {
-> >>  #define flowi4_multipath_hash	__fl_common.flowic_multipath_hash
-> >>  
-> >>  	/* (saddr,daddr) must be grouped, same order as in IP header */
-> >> -	__be32			saddr;
-> >> -	__be32			daddr;
-> >> +	struct_group(addrs,
-> >> +		__be32			saddr;
-> >> +		__be32			daddr;
-> >> +	);
-> >>  
-> >>  	union flowi_uli		uli;
-> >>  #define fl4_sport		uli.ports.sport
-> >> diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
-> >> index a0b637911d3c..8f5667b2ea92 100644
-> >> --- a/include/uapi/linux/if_ether.h
-> >> +++ b/include/uapi/linux/if_ether.h
-> >> @@ -163,8 +163,16 @@
-> >>  
-> >>  #if __UAPI_DEF_ETHHDR
-> >>  struct ethhdr {
-> >> -	unsigned char	h_dest[ETH_ALEN];	/* destination eth addr	*/
-> >> -	unsigned char	h_source[ETH_ALEN];	/* source ether addr	*/
-> >> +	union {
-> >> +		struct {
-> >> +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
-> >> +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
-> >> +		};
-> >> +		struct {
-> >> +			unsigned char h_dest[ETH_ALEN];	  /* destination eth addr */
-> >> +			unsigned char h_source[ETH_ALEN]; /* source ether addr	  */
-> >> +		} addrs;
-> > 
-> > A union of the same fields in the same structure in the same way?
-> > 
-> > Ah, because struct_group() can not be used here?  Still feels odd to see
-> > in a userspace-visible header.
-> > 
-> >> +	};
-> >>  	__be16		h_proto;		/* packet type ID field	*/
-> >>  } __attribute__((packed));
-> >>  #endif
-> >> diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
-> >> index e42d13b55cf3..33647a37e56b 100644
-> >> --- a/include/uapi/linux/ip.h
-> >> +++ b/include/uapi/linux/ip.h
-> >> @@ -100,8 +100,16 @@ struct iphdr {
-> >>  	__u8	ttl;
-> >>  	__u8	protocol;
-> >>  	__sum16	check;
-> >> -	__be32	saddr;
-> >> -	__be32	daddr;
-> >> +	union {
-> >> +		struct {
-> >> +			__be32	saddr;
-> >> +			__be32	daddr;
-> >> +		} addrs;
-> >> +		struct {
-> >> +			__be32	saddr;
-> >> +			__be32	daddr;
-> >> +		};
-> > 
-> > Same here (except you named the first struct addrs, not the second,
-> > unlike above).
-> > 
-> > 
-> >> +	};
-> >>  	/*The options start here. */
-> >>  };
-> >>  
-> >> diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-> >> index b243a53fa985..1c26d32e733b 100644
-> >> --- a/include/uapi/linux/ipv6.h
-> >> +++ b/include/uapi/linux/ipv6.h
-> >> @@ -130,8 +130,16 @@ struct ipv6hdr {
-> >>  	__u8			nexthdr;
-> >>  	__u8			hop_limit;
-> >>  
-> >> -	struct	in6_addr	saddr;
-> >> -	struct	in6_addr	daddr;
-> >> +	union {
-> >> +		struct {
-> >> +			struct	in6_addr	saddr;
-> >> +			struct	in6_addr	daddr;
-> >> +		} addrs;
-> >> +		struct {
-> >> +			struct	in6_addr	saddr;
-> >> +			struct	in6_addr	daddr;
-> >> +		};
-> > 
-> > addrs first?  Consistancy is key :)
-> 
-> I think addrs should be second. In general, I think all newly added
-> non-anonymous structures should be second.
+Some time ago, I reported a calltrace issue
+"did not find a suitable aggregator", please see[1].
+After a period of analysis and reproduction, I find
+that this problem is caused by concurrency.
 
-Why not use a local version of the macro like was done in the DRM header
-file, to make it always work the same and more obvious what is
-happening?  If I were a userspace developer and saw the above, I would
-think that the kernel developers have lost it :)
+Before the problem occurs, the bond structure is like follows:
 
-thanks,
+bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+                      \
+                        port0
+      \
+        slaver1(eth1) - agg1.lag_ports -> NULL
+                      \
+                        port1
 
-greg k-h
+If we run 'ifenslave bond0 -d eth1', the process is like below:
+
+excuting __bond_release_one()
+|
+bond_upper_dev_unlink()[step1]
+|                       |                       |
+|                       |                       bond_3ad_lacpdu_recv()
+|                       |                       ->bond_3ad_rx_indication()
+|                       |                       spin_lock_bh()
+|                       |                       ->ad_rx_machine()
+|                       |                       ->__record_pdu()[step2]
+|                       |                       spin_unlock_bh()
+|                       |                       |
+|                       bond_3ad_state_machine_handler()
+|                       spin_lock_bh()
+|                       ->ad_port_selection_logic()
+|                       ->try to find free aggregator[step3]
+|                       ->try to find suitable aggregator[step4]
+|                       ->did not find a suitable aggregator[step5]
+|                       spin_unlock_bh()
+|                       |
+|                       |
+bond_3ad_unbind_slave() |
+spin_lock_bh()
+spin_unlock_bh()
+
+step1: already removed slaver1(eth1) from list, but port1 remains
+step2: receive a lacpdu and update port0
+step3: port0 will be removed from agg0.lag_ports. The struct is
+       "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+	   same time, slaver1/agg1 has been removed from the list by step1.
+	   So we can't find a free aggregator now.
+step4: can't find suitable aggregator because of step2
+step5: cause a calltrace since port->aggregator is NULL
+
+To solve this concurrency problem, the range of bond->mode_lock
+is extended from only bond_3ad_unbind_slave() to both
+bond_upper_dev_unlink() and bond_3ad_unbind_slave().
+
+[1]https://lore.kernel.org/netdev/10374.1611947473@famine/
+
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+---
+ drivers/net/bonding/bond_3ad.c  | 7 +------
+ drivers/net/bonding/bond_main.c | 6 +++++-
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index 6908822..f0f5adb 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2099,15 +2099,13 @@ void bond_3ad_unbind_slave(struct slave *slave)
+ 	struct list_head *iter;
+ 	bool dummy_slave_update; /* Ignore this value as caller updates array */
+ 
+-	/* Sync against bond_3ad_state_machine_handler() */
+-	spin_lock_bh(&bond->mode_lock);
+ 	aggregator = &(SLAVE_AD_INFO(slave)->aggregator);
+ 	port = &(SLAVE_AD_INFO(slave)->port);
+ 
+ 	/* if slave is null, the whole port is not initialized */
+ 	if (!port->slave) {
+ 		slave_warn(bond->dev, slave->dev, "Trying to unbind an uninitialized port\n");
+-		goto out;
++		return;
+ 	}
+ 
+ 	slave_dbg(bond->dev, slave->dev, "Unbinding Link Aggregation Group %d\n",
+@@ -2239,9 +2237,6 @@ void bond_3ad_unbind_slave(struct slave *slave)
+ 		}
+ 	}
+ 	port->slave = NULL;
+-
+-out:
+-	spin_unlock_bh(&bond->mode_lock);
+ }
+ 
+ /**
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 0ff7567..deb019e 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2129,14 +2129,18 @@ static int __bond_release_one(struct net_device *bond_dev,
+ 	/* recompute stats just before removing the slave */
+ 	bond_get_stats(bond->dev, &bond->bond_stats);
+ 
+-	bond_upper_dev_unlink(bond, slave);
+ 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
+ 	 * for this slave anymore.
+ 	 */
+ 	netdev_rx_handler_unregister(slave_dev);
+ 
++	/* Sync against bond_3ad_state_machine_handler() */
++	spin_lock_bh(&bond->mode_lock);
++	bond_upper_dev_unlink(bond, slave);
++
+ 	if (BOND_MODE(bond) == BOND_MODE_8023AD)
+ 		bond_3ad_unbind_slave(slave);
++	spin_unlock_bh(&bond->mode_lock);
+ 
+ 	if (bond_mode_can_use_xmit_hash(bond))
+ 		bond_update_slave_arr(bond, slave);
+-- 
+2.8.1
+
