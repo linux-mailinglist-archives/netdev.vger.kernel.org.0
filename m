@@ -2,149 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A5873D89BD
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C02063D89C1
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbhG1I1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 04:27:42 -0400
-Received: from www62.your-server.de ([213.133.104.62]:37546 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234495AbhG1I1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 04:27:41 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m8eud-0007Me-LW; Wed, 28 Jul 2021 10:27:35 +0200
-Received: from [2a01:118f:54a:7f00:89b1:4cb8:1a49:dc0f] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1m8eud-000G9X-Ad; Wed, 28 Jul 2021 10:27:35 +0200
-Subject: Re: [RFC PATCH 00/14] bpf/tests: Extend the eBPF test suite
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tony Ambardar <Tony.Ambardar@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20210726081738.1833704-1-johan.almbladh@anyfinetworks.com>
- <CAEf4BzYdvjz36K7=qYnfL6q=cX=ha27Ro2x6cV1X4hp22VEO=g@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5afe26c6-7ab1-88ab-a3e0-eb007256a856@iogearbox.net>
-Date:   Wed, 28 Jul 2021 10:27:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S235336AbhG1I2U convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Jul 2021 04:28:20 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47781 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235272AbhG1I2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 04:28:18 -0400
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-11-xmCxCxZxO7ayZHiHESiNOw-1; Wed, 28 Jul 2021 09:28:14 +0100
+X-MC-Unique: xmCxCxZxO7ayZHiHESiNOw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Wed, 28 Jul 2021 09:28:11 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.023; Wed, 28 Jul 2021 09:28:11 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Luis Chamberlain' <mcgrof@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "tj@kernel.org" <tj@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andriin@fb.com" <andriin@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "alobakin@pm.me" <alobakin@pm.me>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "ap420073@gmail.com" <ap420073@gmail.com>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "ngupta@vflare.org" <ngupta@vflare.org>,
+        "sergey.senozhatsky.work@gmail.com" 
+        <sergey.senozhatsky.work@gmail.com>,
+        "minchan@kernel.org" <minchan@kernel.org>,
+        "axboe@kernel.dk" <axboe@kernel.dk>,
+        "mbenes@suse.com" <mbenes@suse.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Douglas Gilbert <dgilbert@interlog.com>,
+        "Hannes Reinecke" <hare@suse.de>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] kernel/module: add documentation for try_module_get()
+Thread-Topic: [PATCH] kernel/module: add documentation for try_module_get()
+Thread-Index: AQHXf0eaxD6lEmY4bU6QViNa8xuU1KtSAuiAgAVRuyeAALu/4A==
+Date:   Wed, 28 Jul 2021 08:28:11 +0000
+Message-ID: <6054c136290346d581e276abbb2e3ff1@AcuMS.aculab.com>
+References: <20210722221905.1718213-1-mcgrof@kernel.org>
+ <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
+ <YQBCvKgH481C7o1c@bombadil.infradead.org> <YQBGemOIF4sp/ges@kroah.com>
+ <YQBN2/K4Ne5orgzS@bombadil.infradead.org> <YQBSutZfhqfTzKQa@kroah.com>
+ <YQByfUaDaXCUqrlo@bombadil.infradead.org>
+In-Reply-To: <YQByfUaDaXCUqrlo@bombadil.infradead.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzYdvjz36K7=qYnfL6q=cX=ha27Ro2x6cV1X4hp22VEO=g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26245/Tue Jul 27 10:20:01 2021)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/21 12:53 AM, Andrii Nakryiko wrote:
-> On Mon, Jul 26, 2021 at 1:18 AM Johan Almbladh
-> <johan.almbladh@anyfinetworks.com> wrote:
->>
->> Greetings,
->>
->> During my work with the 32-bit MIPS JIT implementation I also added a
->> number of new test cases in the test_bpf kernel module. I found it
->> valuable to be able to throughly test the JIT on a low level with
->> minimum dependency on user space tooling. If you think it would be useful,
->> I have prepared a patch set with my additions. I have verified it on
->> x86_64 and i386, with/without JIT and JIT hardening. The interpreter
->> passes all tests. The JITs do too, with one exception, see NOTE below.
->> The result for the x86_64 JIT is summarized below.
->>
->>      test_bpf: Summary: 577 PASSED, 0 FAILED, [565/565 JIT'ed]
->>      test_bpf: test_tail_calls: Summary: 6 PASSED, 1 FAILED, [7/7 JIT'ed]
->>
->> I have inserted the new tests in the location where related tests are run,
->> rather than putting them at the end. I have also tried to use the same
->> description style as the surrounding tests. Below is a summary of the
->> new tests.
->>
->> * Operations not previously covered
->>    JMP32, ALU32 ARSH, remaining ATOMIC operations including
->>    XCHG and CMPXCHG.
->>
->> * ALU operations with edge cases
->>    32-bit JITs implement ALU64 operations with two 32-bit registers per
->>    operand. Even "trivial" operations like bit shifts are non-trivial to
->>    implement. Test different input values that may trigger different JIT
->>    code paths. JITs may also implement BPF_K operations differently
->>    depending on if the immediate fits the corresponding field width of the
->>    native CPU instruction or not, so test that too.
->>
->> * Word order in load/store
->>    The word order should follow endianness. Test that DW load/store
->>    operations result in the expected word order in memory.
->>
->> * 32-bit eBPF argument zero extension
->>    On a 32-bit JIT the eBPF argument is a 32-bit pointer. If passed in
->>    a CPU register only one register in the mapped pair contains valid
->>    data. Verify that value is properly zero-extended.
->>
->> * Long conditional jumps
->>    Test to trigger the relative-to-absolute branch conversion in MIPS JITs,
->>    when the PC-relative offset overflows the field width of the MIPS branch
->>    instruction.
->>
->> * Tail calls
->>    A new test suite to test tail calls. Also test error paths and TCC
->>    limit.
->>
->> NOTE: There is a minor discrepancy between the interpreter and the
->> (x86) JITs. With MAX_TAIL_CALL_CNT = 32, the interpreter seems to allow
->> up to 33 tail calls, whereas the JITs stop at 32. This causes the max TCC
-> 
-> Given the intended case was to allow 32, let's fix up the interpreter
-> to be in line with JITs?
+...
+> sysfs files are safe to use try_module_get() because once they are
+> active a removal of the file cannot happen, and so removal will wait.
 
-Yes, lets fix up the interpreter.
+I doubt it.
 
-Could you send a fix for the latter, Johan, along with this series?
+If the module_remove() function removes sysfs nodes then (something
+like) this has to happen.
 
-Big thanks for adding all the new tests by the way!
+1) rmmod (or similar) tries to remove the module.
+2) The reference count is zero so the remove is allowed.
+3) Something tries to access a sysfs node in the module.
+3a) If sysfs knew the nodes were in a module it could use
+    try_module_get() to ensure the module wasn't being unloaded.
+    Failure would cause the sysfs access to fail.
+    But I'm not sure it does, and in any case it doesn't help.
+3b) The sysfs thread calls into the module code and waits on a mutex.
+3c) The rmmod thread gets around to calling into sysfs to remove the nodes.
 
->> test to fail for the JITs, since I used the interpreter as reference.
->> Either we change the interpreter behavior, change the JITs, or relax the
->> test to allow both behaviors.
->>
->> Let me know what you think.
->>
->> Cheers,
->> Johan
->>
->> Johan Almbladh (14):
->>    bpf/tests: add BPF_JMP32 test cases
->>    bpf/tests: add BPF_MOV tests for zero and sign extension
->>    bpf/tests: fix typos in test case descriptions
->>    bpf/tests: add more tests of ALU32 and ALU64 bitwise operations
->>    bpf/tests: add more ALU32 tests for BPF_LSH/RSH/ARSH
->>    bpf/tests: add more BPF_LSH/RSH/ARSH tests for ALU64
->>    bpf/tests: add more ALU64 BPF_MUL tests
->>    bpf/tests: add tests for ALU operations implemented with function
->>      calls
->>    bpf/tests: add word-order tests for load/store of double words
->>    bpf/tests: add branch conversion JIT test
->>    bpf/tests: add test for 32-bit context pointer argument passing
->>    bpf/tests: add tests for atomic operations
->>    bpf/tests: add tests for BPF_CMPXCHG
->>    bpf/tests: add tail call test suite
->>
->>   lib/test_bpf.c | 2732 +++++++++++++++++++++++++++++++++++++++++++-----
->>   1 file changed, 2475 insertions(+), 257 deletions(-)
->>
->> --
->> 2.25.1
->>
+At this point we hit the standard 'deregistering a callback' issue.
+Exactly the same issue affects removal of per-device sysfs node
+from a driver's .remove function.
+
+Typically this is solved by making the deregister routing sleep
+until all the callbacks have completed.
+
+So this would require functions like SYSFS_REMOVE_GROUP() and
+hwmon_device_unregister() to be allowed to sleep and not be
+called with any locks (of any kind) held that the callback
+functions acquire.
+
+The module reference count is irrelevant.
+
+	David
+
+    
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
