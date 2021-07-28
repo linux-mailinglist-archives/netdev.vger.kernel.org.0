@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 909CC3D9602
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 21:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 071713D9606
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 21:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230300AbhG1TYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 15:24:14 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50576 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229542AbhG1TYN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 15:24:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aFv9sT0cxR5NccK1AcZhjra4GfhXLnSG8WtLz1k6r8Y=; b=FG5CsXWVwG3OcJTtQGk+/6Q7Bq
-        XQ0vLKoIDw33mNyK/W1ie+huQXXc3JLn5GqRR/SeWsisoCGwPLtJQaN4yEAQbUVDN44vX02OxJ33y
-        wRPYr3onZBm8gSCpAwVUJ+7btmYy98LV1zrFl5AhORZ8JciShTyjxyW9j1bpcGoQYJrE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m8pA2-00FDy7-Om; Wed, 28 Jul 2021 21:24:10 +0200
-Date:   Wed, 28 Jul 2021 21:24:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Dario Alcocer <dalcocer@helixd.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
-Message-ID: <YQGu2r02XdMR5Ajp@lunn.ch>
-References: <YPsJnLCKVzEUV5cb@lunn.ch>
- <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
- <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com>
- <YPxPF2TFSDX8QNEv@lunn.ch>
- <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
- <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
- <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
- <fb7ced72-384c-9908-0a35-5f425ec52748@helixd.com>
- <YQGgvj2e7dqrHDCc@lunn.ch>
- <59790fef-bf4a-17e5-4927-5f8d8a1645f7@helixd.com>
+        id S231312AbhG1T0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 15:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229690AbhG1T0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 15:26:30 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C377C061757;
+        Wed, 28 Jul 2021 12:26:27 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id g23-20020a17090a5797b02901765d605e14so5586462pji.5;
+        Wed, 28 Jul 2021 12:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=tlSkpJrxofz4KLJFo6IpJsCRmIFL97VN126VaWV4qiw=;
+        b=jIg2mC1/DGImRz3PHpmlqT7eLIBfAG8bnO8n/qKq9ND/F7HfetxYndGjMT1UT4vkMA
+         HaP7ybr96J1uYuyrYpmR7jcH9izgDE+a3LSJcfi6rBo0c5xvduwGP6uK5ZV7Sbtcn2Tg
+         3/6bTX7g6XfiUXkT+tzknTbi6F3Z+q7UV1RS08OBt0/gXEl1tvhsiFRC2NtP4uLkmQz6
+         fKHem3bxSOiOowbu7VNOVuoEmCGxTmgJdPytz6ODrWjFhzYGtHiQrLV/B8RRJLT+7B1F
+         Mp0W0tKSjgB0TNKXhjRmM9flD9wJBE6EY3v5XwReil5ErPYFjbWVNhyvgox+K3KYvxUi
+         /SRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=tlSkpJrxofz4KLJFo6IpJsCRmIFL97VN126VaWV4qiw=;
+        b=P7KjMLMCp1qjRgva0ks3+Fh2tBJQs7uirP6EOKNkkrWe8sxj6gk6YkvxYq6Ku1PKdg
+         qjug5Yq7PqWeDkhsmMkfwtXFX6zfYeWEgw3N4N5MZ39KYEd04+gkG5Q70OMwCgH4LG+H
+         AGEwRdOz9ZKYqhqYXoqCIHoxkSo78aBWDpl1wpYGRSdVKlGZPxzPQn8wbkWWnGO3E8t0
+         9o6tTIWAz5APZ1ugGw2BXoCxxew4JWntuP0talnhO2HxM5ZeRWsDq9oYfuEiYRRo3Sqf
+         Om7dcirtEYcAFJcFSKVhJOqT7cNx1UNYvWS9fAGgqP78GPvFtTA+qtpo3htcl5z1rSl9
+         ZLZQ==
+X-Gm-Message-State: AOAM531Qq2Y15HwIfKW8caMZYA6D1F9vnSI32TchrvqJsnQ2fxt4NOv3
+        OGyc8kPv6HYKcZD1HDeVVqk=
+X-Google-Smtp-Source: ABdhPJybhrs86OwDT9S6CH/ON+qQJ6YcWgPrjWd9MiaEbHudhatgNC9w/i8nBMQXyEwa9+ZAh/va0w==
+X-Received: by 2002:a17:90b:3b4e:: with SMTP id ot14mr11145950pjb.50.1627500386852;
+        Wed, 28 Jul 2021 12:26:26 -0700 (PDT)
+Received: from novachrono.. ([223.236.188.83])
+        by smtp.gmail.com with ESMTPSA id c23sm795130pfo.174.2021.07.28.12.26.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Jul 2021 12:26:26 -0700 (PDT)
+From:   Rajat Asthana <rajatasthana4@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Rajat Asthana <rajatasthana4@gmail.com>
+Subject: [PATCH v2] ath9k_htc: Add a missing spin_lock_init()
+Date:   Thu, 29 Jul 2021 00:55:33 +0530
+Message-Id: <20210728192533.18727-1-rajatasthana4@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <738fa8cc-c9c4-66c1-e2ee-fe02caa7ef63@gmail.com>
+References: <738fa8cc-c9c4-66c1-e2ee-fe02caa7ef63@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <59790fef-bf4a-17e5-4927-5f8d8a1645f7@helixd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 11:33:35AM -0700, Dario Alcocer wrote:
-> On 7/28/21 11:23 AM, Andrew Lunn wrote:
-> > On Wed, Jul 28, 2021 at 11:07:37AM -0700, Dario Alcocer wrote:
-> > > It appears the port link-state issue is caused by the mv88e6xxx switch
-> > > driver. The function mv88e6xxx_mac_config identifies the PHY as internal and
-> > > skips the call to mv88e6xxx_port_setup_mac.
-> > > 
-> > > It does not make sense to me why internal PHY configuration should be
-> > > skipped.
-> > 
-> > The switch should do the configuration itself for internal PHYs. At
-> > least that works for other switches. What value does CMODE have for
-> > the port? 0xf?
-> > 
-> >      Andrew
-> > 
-> 
-> Is CMODE available via the DSA debugfs? Here are the registers for port0,
-> which should be lan1:
-> 
-> root@dali:~# ls /sys/kernel/debug/dsa/switch0/
-> port0/        port1/        port2/        port3/        port4/ port5/
-> port6/        tag_protocol  tree
-> root@dali:~# ls /sys/kernel/debug/dsa/switch0/port0/
-> fdb    mdb    regs   stats  vlan
-> root@dali:~# cat /sys/kernel/debug/dsa/switch0/port0/regs
->  0: 100f
+Syzkaller reported a lockdep warning on non-initialized spinlock:
 
-It is the lower nibble of this register. So 0xf.
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 PID: 10 Comm: ksoftirqd/0 Not tainted 5.13.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x143/0x1db lib/dump_stack.c:120
+ assign_lock_key kernel/locking/lockdep.c:937 [inline]
+ register_lock_class+0x1077/0x1180 kernel/locking/lockdep.c:1249
+ __lock_acquire+0x102/0x5230 kernel/locking/lockdep.c:4781
+ lock_acquire kernel/locking/lockdep.c:5512 [inline]
+ lock_acquire+0x19d/0x700 kernel/locking/lockdep.c:5477
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+ spin_lock_bh include/linux/spinlock.h:359 [inline]
+ ath9k_wmi_event_tasklet+0x231/0x3f0 drivers/net/wireless/ath/ath9k/wmi.c:172
+ tasklet_action_common.constprop.0+0x201/0x2e0 kernel/softirq.c:784
+ __do_softirq+0x1b0/0x944 kernel/softirq.c:559
+ run_ksoftirqd kernel/softirq.c:921 [inline]
+ run_ksoftirqd+0x21/0x50 kernel/softirq.c:913
+ smpboot_thread_fn+0x3ec/0x870 kernel/smpboot.c:165
+ kthread+0x38c/0x460 kernel/kthread.c:313
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
 
-Take a look at:
+We missed a spin_lock_init() in ath9k_wmi_event_tasklet() when the wmi
+event is WMI_TXSTATUS_EVENTID. So, add a spin_lock_init() in
+ath9k_init_wmi().
 
-https://github.com/lunn/mv88e6xxx_dump/blob/master/mv88e6xxx_dump.c
+Signed-off-by: Rajat Asthana <rajatasthana4@gmail.com>
+---
+ drivers/net/wireless/ath/ath9k/wmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The 1 in 100f means it has found the PHY. But there is no link,
-10/Half duplex, etc.
+diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
+index fe29ad4b9023..480de2170816 100644
+--- a/drivers/net/wireless/ath/ath9k/wmi.c
++++ b/drivers/net/wireless/ath/ath9k/wmi.c
+@@ -101,6 +101,7 @@ struct wmi *ath9k_init_wmi(struct ath9k_htc_priv *priv)
+ 	skb_queue_head_init(&wmi->wmi_event_queue);
+ 	spin_lock_init(&wmi->wmi_lock);
+ 	spin_lock_init(&wmi->event_lock);
++	spin_lock_init(&wmi->drv_priv->tx.tx_lock);
+ 	mutex_init(&wmi->op_mutex);
+ 	mutex_init(&wmi->multi_write_mutex);
+ 	mutex_init(&wmi->multi_rmw_mutex);
+-- 
+2.32.0
 
->  1: 0003
-
-This at least looks sensible. Nothing is forced, normal speed
-detection should be performed. So what should happen is the link
-speed, duplex etc from the internal PHY should directly appear in
-register 0. There is no need for software to ask the PHY and then
-configure the MAC.
-
-	  Andrew
