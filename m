@@ -2,151 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFD33D85AC
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 03:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F41F3D85CA
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 04:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234095AbhG1Buh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 21:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
+        id S233430AbhG1CH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 22:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232926AbhG1Bug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 21:50:36 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F03C061764
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 18:50:35 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id e14so778852plh.8
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 18:50:35 -0700 (PDT)
+        with ESMTP id S233260AbhG1CH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 22:07:56 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2BBC061757;
+        Tue, 27 Jul 2021 19:07:54 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id c16so831100plh.7;
+        Tue, 27 Jul 2021 19:07:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Uxwg9y2D5FscAC8WTII8k+Fl1MaCKaIyqWX2425pbwg=;
-        b=LrIioahOxuG0Yy87ee4V5QkSIPXjkcKgctqXOSVmOvUvbl3AGJicrLW+CgQjr1Drb9
-         2+LoeVSx6hMKWQ3vNE2BnohqbgXg5IYeiV7M4xOT5JsYW83C6ivu5hTcWryqGo7UZRdo
-         H7BcuPUaJ6KHTDmRelDadDBO+fGgawogS5vN8=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5mXMjFPqPwFYqgDq1yqkwzfqi2rFOlo0l2pItgAk0Ng=;
+        b=MdLIJXGQlUxFzYCyWYJRYBGi5eFuhpyYUtSmbbHTYV0IubJLEhICHBM+kQKOXcugaS
+         rJ9zFAFusLuHPGz0dHF7l0j2NLF4Tdp94IEiZ+ScPhrudkWYpe5h/luZzzMe8u/Z5z8k
+         fbnOmWmLitck4SSADPA3zeAKpb1To3Dkh1lpqX7Do1J0ogQFyQ+RTI2cEYjSpVW/j0l/
+         AdcBV7tT3LtcPNTM1HAhRQexmT0lrP/nplvwD+IcPjgksZ2QTOBvo9eZ7AEhx00LU4gL
+         6uJ9XsJoTBUJIxZ8IUyru8zMxCu8ka3soqsZVflM3U5Ek+J3Js1HiMz6e51zqoIWHY4f
+         Df/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Uxwg9y2D5FscAC8WTII8k+Fl1MaCKaIyqWX2425pbwg=;
-        b=Xa4svrruIz0ewuVegvAEi7Ua2DI7q8sm4Hp63o/wFjSsIW/C3W9RDfEf3DlpeOb/w2
-         ik3xxfrmnySTz5DyKTHL37xJG9I6DfeHWZhtOE+WF0nudqDUjEw8Wk/LBXY1d9jeuDYC
-         legxSFPX7JT0HgfOr0H7RiTtP3+3r78+3jkthgM6FEhvtSwG5J+E3CpUtkSap6PxV6y1
-         xuKtDnpn79A8RWpKDblFZXCAY2ruZPMfnLjnnYDIi0q2cDIOFI49OB7K82r3aLWOO42q
-         PAfbQcibJoaulYGBlZX8XNbEmhWHO1mM3rQ31RYH1/YmB+lngQ4Q8c5jFry+58z+sgRO
-         i+kg==
-X-Gm-Message-State: AOAM530J51alr784L2l3+xJXjMbinvnKRyMovmz8sPFUp8L9nE7IsqAF
-        G+viKPu/R/PLes0LROJP8Z2vxQ==
-X-Google-Smtp-Source: ABdhPJyheVx5T5IFdDGIlFJGMqu67VgDnTIUx7vGl5lFj0tDG77pOvHSTj72nmspZwOompBVxs+mRA==
-X-Received: by 2002:a17:90a:bb0d:: with SMTP id u13mr25562521pjr.88.1627437035064;
-        Tue, 27 Jul 2021 18:50:35 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id s193sm5105347pfc.183.2021.07.27.18.50.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Jul 2021 18:50:34 -0700 (PDT)
-Date:   Tue, 27 Jul 2021 18:50:33 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     linux-hardening@vger.kernel.org,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy()
- region
-Message-ID: <202107271849.00A81539B@keescook>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-2-keescook@chromium.org>
- <20210728005546.GA35706@embeddedor>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5mXMjFPqPwFYqgDq1yqkwzfqi2rFOlo0l2pItgAk0Ng=;
+        b=Uyhtp7dl23z09JC1aAF9mB+4SXMVRLYVNgdx+VyVCBt4fG3P49Yq/J/S9SV54qJWHR
+         OCkwXRv95mo8cc0c1qHuAEbTNR/RQ+D+XChVpPvO+smQLK0X+bT2pKbYR11IXyykFH4G
+         O2Dqrxp07wm/8rMYCTgkjxNwL75jr6GLMYNrCzMFKZhF2pEx+wB67gD70hM8K1TQVVk5
+         6ly+lepe9GMZlpH0c/ESHbX5GuIjFOBqBHEZTr2A/rwfQiogmgFRGYdLNNOPONER0RUR
+         Ky4lTFctjfZGkIlSAvgnSd0OjsE1RyVQGPs1/2ZJJwfF97DHjhOELqmhamgPFkoezzg9
+         muKw==
+X-Gm-Message-State: AOAM532mWKtk/eHMdKvJfGb9vveUYFwR1RtyL/0N0rDMaj5wj9pWdbe6
+        NQWaua52OpAJHKgh8luOkTNHzQitXoWX5Z+sGVU=
+X-Google-Smtp-Source: ABdhPJyPZXkdPgV465qK/iIZ6+cZ7aKV9G8U3swzQ+rDg0M1oNPMtKGj9dHG7T6zOPdzBZ+62F6s1uiYRvC544TCAm0=
+X-Received: by 2002:a05:6a00:26e5:b029:330:be3:cacd with SMTP id
+ p37-20020a056a0026e5b02903300be3cacdmr25949003pfw.78.1627438074471; Tue, 27
+ Jul 2021 19:07:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210728005546.GA35706@embeddedor>
+References: <20210727001252.1287673-1-jiang.wang@bytedance.com>
+ <20210727001252.1287673-3-jiang.wang@bytedance.com> <6100363add8a9_199a412089@john-XPS-13-9370.notmuch>
+In-Reply-To: <6100363add8a9_199a412089@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 27 Jul 2021 19:07:43 -0700
+Message-ID: <CAM_iQpVedTzRbf-bC7WuGMFYF=qnUxbnUdqJ9+FaxrTAn5DkTw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 2/5] af_unix: add unix_stream_proto for sockmap
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jiang Wang <jiang.wang@bytedance.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "Cong Wang ." <cong.wang@bytedance.com>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 07:55:46PM -0500, Gustavo A. R. Silva wrote:
-> On Tue, Jul 27, 2021 at 01:57:52PM -0700, Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally writing across neighboring fields.  Wrap the target region
-> > in a common named structure. This additionally fixes a theoretical
-> > misalignment of the copy (since the size of "buf" changes between 64-bit
-> > and 32-bit, but this is likely never built for 64-bit).
-> > 
-> > FWIW, I think this code is totally broken on 64-bit (which appears to
-> > not be a "real" build configuration): it would either always fail (with
-> > an uninitialized data->buf_size) or would cause corruption in userspace
-> > due to the copy_to_user() in the call path against an uninitialized
-> > data->buf value:
-> > 
-> > omap3isp_stat_request_statistics_time32(...)
-> >     struct omap3isp_stat_data data64;
-> >     ...
-> >     omap3isp_stat_request_statistics(stat, &data64);
-> > 
-> > int omap3isp_stat_request_statistics(struct ispstat *stat,
-> >                                      struct omap3isp_stat_data *data)
-> >     ...
-> >     buf = isp_stat_buf_get(stat, data);
-> > 
-> > static struct ispstat_buffer *isp_stat_buf_get(struct ispstat *stat,
-> >                                                struct omap3isp_stat_data *data)
-> > ...
-> >     if (buf->buf_size > data->buf_size) {
-> >             ...
-> >             return ERR_PTR(-EINVAL);
-> >     }
-> >     ...
-> >     rval = copy_to_user(data->buf,
-> >                         buf->virt_addr,
-> >                         buf->buf_size);
-> > 
-> > Regardless, additionally initialize data64 to be zero-filled to avoid
-> > undefined behavior.
-> > 
-> > Fixes: 378e3f81cb56 ("media: omap3isp: support 64-bit version of omap3isp_stat_data")
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  drivers/media/platform/omap3isp/ispstat.c |  5 +--
-> >  include/uapi/linux/omap3isp.h             | 44 +++++++++++++++++------
-> >  2 files changed, 36 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
-> > index 5b9b57f4d9bf..ea8222fed38e 100644
-> > --- a/drivers/media/platform/omap3isp/ispstat.c
-> > +++ b/drivers/media/platform/omap3isp/ispstat.c
-> > @@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
-> >  int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
-> >  					struct omap3isp_stat_data_time32 *data)
-> >  {
-> > -	struct omap3isp_stat_data data64;
-> > +	struct omap3isp_stat_data data64 = { };
-> >  	int ret;
-> >  
-> >  	ret = omap3isp_stat_request_statistics(stat, &data64);
-> > @@ -521,7 +521,8 @@ int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
-> >  
-> >  	data->ts.tv_sec = data64.ts.tv_sec;
-> >  	data->ts.tv_usec = data64.ts.tv_usec;
-> > -	memcpy(&data->buf, &data64.buf, sizeof(*data) - sizeof(data->ts));
-> > +	data->buf = (uintptr_t)data64.buf;
-> > +	memcpy(&data->frame, &data64.buf, sizeof(data->frame));
-> 
-> I think this should be:
-> 
-> 	memcpy(..., &data64.frame, ...);
-> 
-> instead.
+On Tue, Jul 27, 2021 at 9:37 AM John Fastabend <john.fastabend@gmail.com> wrote:
+> Do we really need an unhash hook for unix_stream? I'm doing some testing
+> now to pull it out of TCP side as well. It seems to be an artifact of old
+> code that is no longer necessary. On TCP side at least just using close()
+> looks to be enough now.
 
-Whoops; thanks! This is what I get for temporarily silencing the
-read-overflow warnings. :)
+How do you handle the disconnection from remote without ->unhash()?
 
--Kees
+For all stream sockets, we still only allow established sockets to stay
+in sockmap, which means we have to remove it if it is disconnected
+or closed.
 
--- 
-Kees Cook
+But it seems Jiang forgot to call ->unhash() when disconnecting.
+
+Thanks.
