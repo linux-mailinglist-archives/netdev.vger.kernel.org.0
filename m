@@ -2,268 +2,532 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C8B3D98DE
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94BBF3D98EC
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 00:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232281AbhG1W3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 18:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbhG1W3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:29:35 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21128C061757;
-        Wed, 28 Jul 2021 15:29:32 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id x192so6717145ybe.0;
-        Wed, 28 Jul 2021 15:29:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fHvjSU6A/A/tr+gPQptlB2SWGj1sGblRzSgZshCcQOo=;
-        b=JQjz90RmV7aN27g1GPoEeRUhhN6avPW3Pw/vubleWcZRjCnDqoLGK8uPEExoSapnaJ
-         dGDP2OoBx+lKqQDKJzKWTaWnlUGJw+k9NuDxSsavNOom+aukMyObe3mSM4/aeI6rIiDx
-         uNQXasjATmG2YAn7XIXOuugm7dZ/GPxdchsQRSFK8CL/r50j+Knw/yhJE0QcMN7pPR/K
-         Z7sCCE4heb5SRdCXh02sf76GKPF4MOlhB8jgZ42JyMpsuGoCIvm2L07eHMd8YbwZ/zas
-         YKn6LBkYfQYuZ4v0hMjG4V7y94iA9YPFrLgWnz4v3NBYUkODMOph7ItssGdv9Tuhp0Yv
-         1+6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fHvjSU6A/A/tr+gPQptlB2SWGj1sGblRzSgZshCcQOo=;
-        b=Fvfz1nifGBaWqDRH3xnSXEFREf4mRi3y3aCo/GNAqmkrHJPeAsHq2Hu6u4PH/Bu2WZ
-         rNz40I+doBLPdPDrPauzYb5T0PuiDDWCL+Gy0sss6GTXYRvRk5oPw4AJWPoatrCWpj2d
-         iD4DfpeaA7GEjmHZZsIo6Wi4YdLjl1ElKmPUflakwjF9wUxvo032o/v0qCxvckgwzahu
-         PZz0ZfShGlQm/CDW0Z31UM1kePnboMV6s6T8G/NsYe1CHy1GTpu7NAfMDzWI6bNWsVB2
-         a5onwncqC2Lk5n67SP8xBPtSoVpB/VjpwYCoCVORTD/aR3hLTEgOGg6qM0a2i4X03Bhl
-         c/WA==
-X-Gm-Message-State: AOAM533xgXTIXvNruPYEMVWonJ3+4hAM7X4ppAYmv+xYtyIJ+6AU6KUV
-        nY0m5n1WZOsHWYqWRjLbMT0kayOjPUXcKF3MPPE=
-X-Google-Smtp-Source: ABdhPJxG6Djkv6N25OH46FcBQXbxjX6Rdhezm/hkYTFSGuT9+amg1u1l/RtqS2/EtwJeaBrTiJyKLdwKsSsSAtNXPd8=
-X-Received: by 2002:a25:cdc7:: with SMTP id d190mr2489823ybf.425.1627511371351;
- Wed, 28 Jul 2021 15:29:31 -0700 (PDT)
+        id S232230AbhG1Wbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 18:31:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7600 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231989AbhG1Wbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 18:31:50 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16SM79Yk028832;
+        Wed, 28 Jul 2021 15:31:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=eM1qLnHZg5hI3V+ygr18ythW9JTZHdSTh6QNWjtwqiE=;
+ b=otrSHJQnULlxqkVNvcchi1gCtN/kH65+50oAKKgLbDs2KLaXVMETcQVBjqah4fN5L5ed
+ erC2NjAQv3ktWc7XarOj8iQZ2GFdh86S2srM7HRTV41oXO1MEGuQimJ4XzINSHh9FBY6
+ Dzxn3Wr72eb9DD9WP+jiF5JIRcZLGZlyOtA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3a38tpk4cd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 28 Jul 2021 15:31:34 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 28 Jul 2021 15:31:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J/FjProD3lB0dWYdo9tedSCerJuD4QYjmzRkom6X8eu8yDzVGp2GGaKrpTWo6yz6bPIdI7yXb2f89inWKwavLp6M2SkSXJ9a2Ee2fRfGSUlMzUl15Dmh08qrzBb5En0rv00QnVrw9tYxH65mtr1hIXK410NThAuOjszHT76ziendeVmgm0SKQizSzakC8d4wimy7Dpwlmvo2uKdK9ZvFe9g/ifw0B19djNk/Jgas5tc9bDmMY2RpjmwlmLsxHj85B47EkOyV0xpGvU6kkQCjEqFL/Uo9IX7iHw8EJOMm0a6g4CpJf1bFwXpZgrOTEoYXXxbHa/EuJs+T2dvqk1Ty7A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eM1qLnHZg5hI3V+ygr18ythW9JTZHdSTh6QNWjtwqiE=;
+ b=N8wVkPEAj56jcBLyvIy5t1QubHpuhBUZrFZML28Prd22s3V7Vi6fRT5mrechDv4HuZIsrLn74ApySfnBVf7a6MsLY4ViTKK7ZPS+eWY/fmScIt0l7dk54u1TC4FcCDzD+ex6QYvOjlCn56K1CaCFTGIR90Ba3hJ73B08COqHC75oAsR2B3n6V+QyzJjrV+EQjU7YhVmRtdt2aQPw9Rsipa6pIiZDB3S6prduiIBt0vHE2T6Sk7DYSTodS/1Rd4tZwcOTbrQmvBv0KWwddtmnHWtfDwObXrnMmSb/5UofqpVMjpDHVEt8WXOIbYsAjlDSkijOOYNzgn49FFJxDlayKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from DM5PR1501MB2055.namprd15.prod.outlook.com (2603:10b6:4:a1::13)
+ by DM6PR15MB2522.namprd15.prod.outlook.com (2603:10b6:5:1a9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Wed, 28 Jul
+ 2021 22:31:32 +0000
+Received: from DM5PR1501MB2055.namprd15.prod.outlook.com
+ ([fe80::b0e1:ea29:ca0a:be9f]) by DM5PR1501MB2055.namprd15.prod.outlook.com
+ ([fe80::b0e1:ea29:ca0a:be9f%7]) with mapi id 15.20.4352.033; Wed, 28 Jul 2021
+ 22:31:32 +0000
+Subject: Re: [PATCH 01/14] bpf/tests: Add BPF_JMP32 test cases
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
+CC:     <kafai@fb.com>, <songliubraving@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <Tony.Ambardar@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-2-johan.almbladh@anyfinetworks.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <ede57ee2-a975-b98c-5978-102280a77d8c@fb.com>
+Date:   Wed, 28 Jul 2021 15:31:28 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
+In-Reply-To: <20210728170502.351010-2-johan.almbladh@anyfinetworks.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW3PR05CA0017.namprd05.prod.outlook.com
+ (2603:10b6:303:2b::22) To DM5PR1501MB2055.namprd15.prod.outlook.com
+ (2603:10b6:4:a1::13)
 MIME-Version: 1.0
-References: <20210721153808.6902-1-quentin@isovalent.com> <CAEf4Bzb30BNeLgio52OrxHk2VWfKitnbNUnO0sAXZTA94bYfmg@mail.gmail.com>
- <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
- <82e61e60-e2e9-f42d-8e49-bbe416b7513d@isovalent.com> <CAEf4BzYpCr=Vdfc3moaapQqBxYV3SKfD72s0F=FAh_zLzSqxqA@mail.gmail.com>
- <bb0d3640-c6da-a802-4794-50cd033119ac@isovalent.com> <CAEf4BzZ8wXhpRwPkBmH3i94oVea2BucC56PCK-0j4N_3gk29Ng@mail.gmail.com>
- <CACdoK4+HCt6+70rKsWuwqMkuOGGcUPCgretnVp430gb_mWpUQw@mail.gmail.com>
-In-Reply-To: <CACdoK4+HCt6+70rKsWuwqMkuOGGcUPCgretnVp430gb_mWpUQw@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 28 Jul 2021 15:29:20 -0700
-Message-ID: <CAEf4Bzbt9vXEYeaSYfbnYrRW_MPOaRxqjpQj_6_5NUMCLOzUYQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and
- btf__load() APIs, support split BTF
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:8298) by MW3PR05CA0017.namprd05.prod.outlook.com (2603:10b6:303:2b::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9 via Frontend Transport; Wed, 28 Jul 2021 22:31:31 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3f6be388-4eea-430c-42a2-08d952177339
+X-MS-TrafficTypeDiagnostic: DM6PR15MB2522:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR15MB25223C6202F7EE2A63300750D3EA9@DM6PR15MB2522.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rEWJDaEX0symsOrjegJXLZ+VupJ5jIvzLTNDlwUciOaLKfZfmvPfKaBD4gD9eCoGu6Vd2BC0bl1mTwYxo/tvKU3YqddowtS2G3Rr7cx3qmmjuTikAMmL1qBafvqNkcvwWWdfFjs3VnZCS3+DNy4JVCttHXdbIJtukUBKbuoOxBXHbGHbdGliCOZzIZk2BogUP2nFqFy234EruAPTSs+ZBY3u95UKCUquIi4at/eXR8ug+UgDnlFp7Ay0d1vduE2Qwji8ex5UU/52FMc2pOIoHh2/6frCtHpTbk9sO0l6+F3pZoGT/Ry6GX9vzut+PoOH6N2ZA5baGpDtUjI4mNeIkFCHEyHHkIYVzjYGG9E3/Q1Yz9mnwZL8A+SSLZkcNTZrXRQkpUyuFByvecHoCcY9WTm++RkVdjuhh+YEGIM+nzs/Y4GI61SVQYFHjAi64T6Gy07MxcRmZRhDjOkOcuEtdeg6Do97dwUTjrYVV/J+8/6eniyB4PArWesc0aZCwwFdpy393kNwTAy8IidRzEcvLCF1YKxwj2W47YnVgUR5hZHvD7ED2pLwsrm12e//EZ8sLjJZrt21D5BZZMOUvFtXNl/x4CSNy2S9cGGZj51pvec+hO1FXBu5Hx26ubLWeCL8IqpNiHtlKOHShAdE6+H/iDpk3SwoohFr122L/rYURM9HCfwTVRDcSIccI8sABzmNvpHAaKtsOwAOhn5mTkPheQUXqMqYr+5HaOlWmChsrYc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1501MB2055.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(8936002)(2616005)(2906002)(478600001)(66556008)(316002)(8676002)(31686004)(5660300002)(6486002)(186003)(66946007)(66476007)(86362001)(6666004)(52116002)(31696002)(53546011)(38100700002)(4326008)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L2ZkVHJTbG9SSElYYUZJNVR5UTRNdFFtbHp3N0dXMWFYZTlSRjdMekx1dFJX?=
+ =?utf-8?B?TTR4enY0UWd2djZxMjB6UmVXT1VuOFR1dzFIUGpvcC9wb3ZkMjk2Nk53eVMy?=
+ =?utf-8?B?d1J2L2Nlei9iVytNRytQaFo4OWtvVFA0MzVURUFVRXZmdFlYMU5aVzQ5UjFn?=
+ =?utf-8?B?YkFJU2VMNzVROUNjZkhMblV5ck1NdzJrVmJsUUhSVzBOUEF4N2ZHa01jOFVK?=
+ =?utf-8?B?RzBlenRESXBtYm5OVDBsV0w4QzQwYm0za3ByaHNxeDQwZXBPSCsxVm8wQkpx?=
+ =?utf-8?B?Y3JYcVVrbFFFN3ZlQXVjbGF2Wkd6WVFHQ0JjdWxGcG1XVmcveTdHclIyWExV?=
+ =?utf-8?B?YlVSNWhQN2RYY083VGdxVE1uOXFWdG9XNTBpVFkxeEhLblN6MGI3TGhTNktO?=
+ =?utf-8?B?bS96RzErUjU3ZmkwMWM4NGgyQTJoRWZnejh1eTNCemMrKzkwSGVWbmFlY3U0?=
+ =?utf-8?B?Ymx5OC94ZEU3QnNiR25LNFRDRDJHQ0tiMkVUNTRxdmtGRUFrdmJYMlZ2V1c2?=
+ =?utf-8?B?ZW9hbEcyd3pxQUdGRWFXalVjM1BKVlZNeWFRR0Jld3dlRFFaVExEemhBbytz?=
+ =?utf-8?B?VVlZVG9IZHN6QjA4bWIwbXdxUytXalBQaFdXUnJ5WDNPWjU0T3Y1RGFFaGVL?=
+ =?utf-8?B?dHlDZWgyMFp2OXowVHBPYS9FYXRkeTRnbUppRzZSQlkrQUZ5UmpGeEY1TFli?=
+ =?utf-8?B?VWd6L0xBUGNKbWQ0cnRMRFhMbVBoQkwyMGpnZEtwcm1oR0pXVGNjbjJXdXkv?=
+ =?utf-8?B?bEFWSG0rUzliNzBoc0V6UnQ3RWdQcUpjQ2ZqYW1RRUQyUHZTVyt2b0lrSGNM?=
+ =?utf-8?B?SmVjK1pJTGVUZDhvdS9aeE9OV1hBdGNOZHRicE53YXVuT1RsaUpraVRDS1ZM?=
+ =?utf-8?B?VENSYkRJb2pzZHEvd0VTd0lZaVZ3RytGamNMclNtbWM4TnNibnltNjFuUitM?=
+ =?utf-8?B?VDN1TkRVbGNXZmtrY09SUytGV0l3YXIvSWxFOFJxUmNPWkhZVTZXUlVjQUFV?=
+ =?utf-8?B?eFp1QjltWTJqcEprRWlnaXdoQTdxNEdhZTdTdTNRcXhOMnZrTGcvb2Q5d1hk?=
+ =?utf-8?B?ZkE1UjZEY00xeTVFdFpsYy8xVzRBaFNVR0ZXTnR6YlBoRTFOTUg1RlZ5SS90?=
+ =?utf-8?B?NkxnQi9oVzZIU3ZqSSt6VVBETGJlUFdFdlhZazBXclhxNlJPV1FVQ3FFMy94?=
+ =?utf-8?B?cDhFcVFKK21wb09FRlNvRFlidGpCdlNkdUtleEQwZ25uSE9EY1NCZ1QvN1Vj?=
+ =?utf-8?B?SXBPcDM5ZnFRQ3VLRDhnc1kvNDNlNlNuVmRXUWU4QWUzTWFhL1I5dzZNNWtT?=
+ =?utf-8?B?Z0RRT1FOMU5ZK0JDVmY4cDRkaGQ1cXJ6c1Z1aS9neE9lZlQvU1R2aG1pZTBa?=
+ =?utf-8?B?SG1jUWFscUFUeHRpWmY3Z0lKOWEyeGNsZ21FY3BxdzZkVnRTZHJVYmpzczBr?=
+ =?utf-8?B?d3BFZE9jNmNSSmYvZi9QTkV3SVNKdUlpR25rL1g4ODJxYmhJQmtnR2RvZGxS?=
+ =?utf-8?B?QlJLSGw3TVN5cjRjNHVwN2JUZENpejQwbExuODB0NUpwcDRYaXpqaHhaWk1U?=
+ =?utf-8?B?VXE1c1ArMXZEeEFVaHdDNHRJc21LcWxsdS9zNTg5aUxveTkrd0pDNndHanBr?=
+ =?utf-8?B?ajd4L0YvVE9MbVlGTVRQMjNCSzdlbWVyRUNRLzlPOXNXQkNDWmg5V2Eya1o5?=
+ =?utf-8?B?MGRHOTFyVDFWdGUrOGdxQzlxMTYvZ3JKZ0ZwMHR1ckI3SWN2eW0va1gzSjYv?=
+ =?utf-8?B?RWVxZGd1Nm02ZzBGYVdvaldPTHlTblAycDRhQllaSkFsVXN3c04wZDlQbmY0?=
+ =?utf-8?B?ZHBJL2lJUmFDUnJja2FkQT09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f6be388-4eea-430c-42a2-08d952177339
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1501MB2055.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 22:31:32.2702
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hbY5JIWMsup6R0spxDC+yBC9cc1QtYUMdA2qjmItfJ+Oi8r+14ob2ffP+33EOq27
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB2522
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: 5BVd_Vx3dgT5vSpCTByV_fowt6Uan9bE
+X-Proofpoint-ORIG-GUID: 5BVd_Vx3dgT5vSpCTByV_fowt6Uan9bE
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-28_12:2021-07-27,2021-07-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=0 spamscore=0 clxscore=1015 malwarescore=0
+ bulkscore=0 mlxlogscore=999 impostorscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2107280115
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 2:54 PM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> On Tue, 27 Jul 2021 at 21:49, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > > >>>
-> > > >>> LIBBPF_DEPRECATED_SINCE(0, 6, "API that will be marked deprecated in v0.6")
-> > >
-> > > So I've been looking into this, and it's not _that_ simple to do. Unless
-> > > I missed something about preprocessing macros, I cannot bake a "#if" in
-> > > a "#define", to have the attribute printed if and only if the current
-> > > version is >= 0.6 in this example.
-> > >
-> > > I've come up with something, but it is not optimal because I have to
-> > > write a check and macros for each version number used with the
-> > > LIBBPF_DEPRECATED_SINCE macro. If we really wanted to automate that part
-> > > I guess we could generate a header with those macros from the Makefile
-> > > and include it in libbpf_common.h, but that does not really look much
-> > > cleaner to me.
-> >
-> > Yeah, let's not add unnecessary code generation. It sucks, of course,
-> > that we can't do #ifdef inside a macro :(
-> >
-> > So it's either do something like what you did with defining
-> > version-specific macros, which is actually not too bad, because it's
-> > not like we have tons of those versions anyways.
-> >
-> > LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
-> > LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-> >
-> > Alternatively, we can go with:
-> >
-> > #if LIBBPF_AT_OR_NEWER(0, 6)
-> > LIBBPF_DEPRECATED("use btf__load_from_kernel_by_id instead")
-> > #endif
-> > LIBBPF API int btf__get_from_id(__u32 id, struct btf **btf);
-> >
-> > I don't really dislike the second variant too much either, but
-> > LIBBPF_DEPRECATED_SINCE() reads nicer. Let's go with that. See some
-> > comments below about implementation.
->
-> Ok.
->
-> >
-> > >
-> > > Here's my current code, below - does it correspond to what you had in
-> > > mind? Or did you think of something else?
-> > >
-> > > ------
-> > >
-> > > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> > > index ec14aa725bb0..095d5dc30d50 100644
-> > > --- a/tools/lib/bpf/Makefile
-> > > +++ b/tools/lib/bpf/Makefile
-> > > @@ -8,6 +8,7 @@ LIBBPF_VERSION := $(shell \
-> > >         grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
-> > >         sort -rV | head -n1 | cut -d'_' -f2)
-> > >  LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
-> > > +LIBBPF_MINOR_VERSION := $(firstword $(subst ., ,$(subst $(LIBBPF_MAJOR_VERSION)., ,$(LIBBPF_VERSION))))
-> >
-> > Given all this is for internal use, I'd instead define something like
-> > __LIBBPF_CURVER as an integer that is easy to compare against:
-> >
-> > #define __LIBBPF_CURVER (LIBBPF_MAJOR_VERSION * 100 +
-> > LIBBPF_MINOR_VERSION) * 100 + LIBBPF_PATCH_VERSION
-> >
-> > That will simplify some stuff below and is generally easier to use in
-> > code, if we will need this somewhere to use explicitly.
->
-> Did you mean computing __LIBBPF_CURVER in the Makefile, or in the
-> header?
 
-I was thinking Makefile, but if it's simpler to do in the header
-that's fine as well.
 
->
-> I can do that if you want, although I'm not convinced it will simplify
-> much. Instead of having one long-ish condition, we'll have to compute
-> the integer for the current version, as well as for each of the versions
-> that we list for deprecating functions. I suppose I can add another
-> dedicated macro.
+On 7/28/21 10:04 AM, Johan Almbladh wrote:
+> An eBPF JIT may implement JMP32 operations in a different way than JMP,
+> especially on 32-bit architectures. This patch adds a series of tests
+> for JMP32 operations, mainly for testing JITs.
+> 
+> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-feels like if we need to do some comparisons, then writing
+LGTM with a few minor comments below.
 
-#if __LIBBPF_VER > 102
-/* do something */
-#endif
+Acked-by: Yonghong Song <yhs@fb.com>
 
-is much simpler than comparing MAJOR_VERSION and MINOR_VERSION
-separately. It's just that currently with 0 major version it might
-look a bit awkward right now, but that's temporary.
+> ---
+>   lib/test_bpf.c | 511 +++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 511 insertions(+)
+> 
+> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+> index f6d5d30d01bf..bfac033db590 100644
+> --- a/lib/test_bpf.c
+> +++ b/lib/test_bpf.c
+> @@ -4398,6 +4398,517 @@ static struct bpf_test tests[] = {
+>   		{ { 0, 4134 } },
+>   		.fill_helper = bpf_fill_stxdw,
+>   	},
+> +	/* BPF_JMP32 | BPF_JEQ | BPF_K */
+> +	{
+> +		"JMP32_JEQ_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
+> +			BPF_JMP32_IMM(BPF_JEQ, R0, 321, 1),
+> +			BPF_JMP32_IMM(BPF_JEQ, R0, 123, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 123 } }
+> +	},
+[...]
+> +	/* BPF_JMP32 | BPF_JGT | BPF_X */
+> +	{
+> +		"JMP32_JGT_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
+> +			BPF_JMP32_REG(BPF_JGT, R0, R1, 1),
 
->
-> Do you actually want the patch version? I chose to leave it aside
-> because 1) I thought it would not be relevant for deprecating symbols,
-> and 2) if anything like a -rc1 suffix is ever appended to the version,
-> it makes it more complex to parse from the version string.
+Maybe change the offset from 1 to 2? Otherwise, this may jump to
+   BPF_JMP32_REG(BPF_JGT, R0, R1, 1)
+which will just do the same comparison and jump to BTT_EXIT_INSN()
+which will also have R0 = 0xfffffffe at the end.
 
-yeah, you are probably right. major  and minor should be enough
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
+> +			BPF_JMP32_REG(BPF_JGT, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JGE | BPF_K */
+> +	{
+> +		"JMP32_JGE_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
+> +			BPF_JMP32_IMM(BPF_JGE, R0, 124, 1),
+> +			BPF_JMP32_IMM(BPF_JGE, R0, 123, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 123 } }
+> +	},
+> +	{
+> +		"JMP32_JGE_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_JMP32_IMM(BPF_JGE, R0, 0xffffffff, 1),
+> +			BPF_JMP32_IMM(BPF_JGE, R0, 0xfffffffe, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JGE | BPF_X */
+> +	{
+> +		"JMP32_JGE_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
+> +			BPF_JMP32_REG(BPF_JGE, R0, R1, 1),
 
->
-> >
-> > >
-> > >  MAKEFLAGS += --no-print-directory
-> > >
-> > > @@ -86,6 +87,8 @@ override CFLAGS += -Werror -Wall
-> > >  override CFLAGS += $(INCLUDES)
-> > >  override CFLAGS += -fvisibility=hidden
-> > >  override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
-> > > +override CFLAGS += -DLIBBPF_MAJOR_VERSION=$(LIBBPF_MAJOR_VERSION)
-> > > +override CFLAGS += -DLIBBPF_MINOR_VERSION=$(LIBBPF_MINOR_VERSION)
-> > >
-> > >  # flags specific for shared library
-> > >  SHLIB_FLAGS := -DSHARED -fPIC
-> > > diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> > > index cf8490f95641..8b6b5442dbd8 100644
-> > > --- a/tools/lib/bpf/btf.h
-> > > +++ b/tools/lib/bpf/btf.h
-> > > @@ -45,7 +45,8 @@ LIBBPF_API struct btf *btf__parse_raw(const char *path);
-> > >  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
-> > >  LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
-> > >  LIBBPF_API struct btf *btf__load_from_kernel_by_id_split(__u32 id, struct btf *base_btf);
-> > > -LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
-> > > +LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
-> >
-> > nit: given how long those deprecations will be, let's keep them at a
-> > separate (first) line and keep LIBBPF_API near the function
-> > declaration itself
->
-> I thought having the LIBBPF_API on a separate line would slightly reduce
-> the risk, when moving lines around, to move the function prototype but
-> not the deprecation attribute. But ok, fine.
+ditto, change offset 1 to 2?
 
-highly improbable and then we'll most probably catch it during build anyways
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffe),
+> +			BPF_JMP32_REG(BPF_JGE, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JLT | BPF_K */
+> +	{
+> +		"JMP32_JLT_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
+> +			BPF_JMP32_IMM(BPF_JLT, R0, 123, 1),
+> +			BPF_JMP32_IMM(BPF_JLT, R0, 124, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 123 } }
+> +	},
+> +	{
+> +		"JMP32_JLT_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_JMP32_IMM(BPF_JLT, R0, 0xfffffffd, 1),
+> +			BPF_JMP32_IMM(BPF_JLT, R0, 0xffffffff, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JLT | BPF_X */
+> +	{
+> +		"JMP32_JLT_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
+> +			BPF_JMP32_REG(BPF_JLT, R0, R1, 1),
 
->
-> >
-> > > +int btf__get_from_id(__u32 id, struct btf **btf);
-> > >
-> > >  LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
-> > >  LIBBPF_API int btf__load(struct btf *btf);
-> > > diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
-> > > index 947d8bd8a7bb..9ba9f8135dc8 100644
-> > > --- a/tools/lib/bpf/libbpf_common.h
-> > > +++ b/tools/lib/bpf/libbpf_common.h
-> > > @@ -17,6 +17,28 @@
-> > >
-> > >  #define LIBBPF_DEPRECATED(msg) __attribute__((deprecated(msg)))
-> > >
-> > > +#ifndef LIBBPF_DEPRECATED_SINCE
-> >
-> > why #ifndef conditional?
->
-> Right, we don't expect to have the macro defined elsewhere. I'll remove
-> it.
->
-> >
-> > > +#define __LIBBPF_VERSION_CHECK(major, minor) \
-> > > +       LIBBPF_MAJOR_VERSION > major || \
-> > > +               (LIBBPF_MAJOR_VERSION == major && LIBBPF_MINOR_VERSION >= minor)
-> >
-> > so we don't need this if we do __LIBBPF_CURVER
->
-> Right, but we do need to compute an integer for each of the versions
-> listed below (0.6 for now). I'll see if I can come up with something
-> short.
+ditto.
 
-see above, I'd just do 102 etc. I wonder if 006 will be treated as an
-octal number, in that case probably fine to do just 6. Or we can have
-a small macro for this, of course. Don't know, doesn't seem to matter
-all that much
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
+> +			BPF_JMP32_REG(BPF_JLT, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JLE | BPF_K */
+> +	{
+> +		"JMP32_JLE_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 123),
+> +			BPF_JMP32_IMM(BPF_JLE, R0, 122, 1),
+> +			BPF_JMP32_IMM(BPF_JLE, R0, 123, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 123 } }
+> +	},
+> +	{
+> +		"JMP32_JLE_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_JMP32_IMM(BPF_JLE, R0, 0xfffffffd, 1),
+> +			BPF_JMP32_IMM(BPF_JLE, R0, 0xfffffffe, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JLE | BPF_X */
+> +	{
+> +		"JMP32_JLE_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffd),
+> +			BPF_JMP32_REG(BPF_JLE, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 0xfffffffe),
+> +			BPF_JMP32_REG(BPF_JLE, R0, R1, 1),
 
->
-> >
-> > > +
-> > > +/* Add checks for other versions below when planning deprecation of API symbols
-> > > + * with the LIBBPF_DEPRECATED_SINCE macro.
-> > > + */
-> > > +#if __LIBBPF_VERSION_CHECK(0, 6)
-> > > +#define __LIBBPF_MARK_DEPRECATED_0_6(X) X
-> > > +#else
-> > > +#define __LIBBPF_MARK_DEPRECATED_0_6(X)
-> > > +#endif
-> > > +
-> > > +#define __LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-> > > +       __LIBBPF_MARK_DEPRECATED_ ## major ## _ ## minor (LIBBPF_DEPRECATED("v" # major "." # minor "+, " msg))
-> > > +
-> > > +/* Mark a symbol as deprecated when libbpf version is >= {major}.{minor} */
-> > > +#define LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
-> > > +       __LIBBPF_DEPRECATED_SINCE(major, minor, msg)
-> >
-> > Is it needed for some macro value concatenation magic to have this
-> > nested __LIBBPF_DEPRECATED_SINCE?
->
-> I double-checked (I needed to, anyway), and it seems not. It's a
-> leftover from an earlier version of my code, I'll clean it up before
-> the proper submission.
+ditto
 
-ok, thanks
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 0xfffffffe } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSGT | BPF_K */
+> +	{
+> +		"JMP32_JSGT_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
+> +			BPF_JMP32_IMM(BPF_JSGT, R0, -123, 1),
+> +			BPF_JMP32_IMM(BPF_JSGT, R0, -124, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -123 } }
+> +	},
+> +	{
+> +		"JMP32_JSGT_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_JMP32_IMM(BPF_JSGT, R0, -12345678, 1),
+> +			BPF_JMP32_IMM(BPF_JSGT, R0, -12345679, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSGT | BPF_X */
+> +	{
+> +		"JMP32_JSGT_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
+> +			BPF_JMP32_REG(BPF_JSGT, R0, R1, 1),
 
->
-> Thanks!
-> Quentin
+ditto
+
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345679),
+> +			BPF_JMP32_REG(BPF_JSGT, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSGE | BPF_K */
+> +	{
+> +		"JMP32_JSGE_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
+> +			BPF_JMP32_IMM(BPF_JSGE, R0, -122, 1),
+> +			BPF_JMP32_IMM(BPF_JSGE, R0, -123, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -123 } }
+> +	},
+> +	{
+> +		"JMP32_JSGE_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_JMP32_IMM(BPF_JSGE, R0, -12345677, 1),
+> +			BPF_JMP32_IMM(BPF_JSGE, R0, -12345678, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSGE | BPF_X */
+> +	{
+> +		"JMP32_JSGE_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345677),
+> +			BPF_JMP32_REG(BPF_JSGE, R0, R1, 1),
+
+ditto
+
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
+> +			BPF_JMP32_REG(BPF_JSGE, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSLT | BPF_K */
+> +	{
+> +		"JMP32_JSLT_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
+> +			BPF_JMP32_IMM(BPF_JSLT, R0, -123, 1),
+> +			BPF_JMP32_IMM(BPF_JSLT, R0, -122, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -123 } }
+> +	},
+> +	{
+> +		"JMP32_JSLT_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_JMP32_IMM(BPF_JSLT, R0, -12345678, 1),
+> +			BPF_JMP32_IMM(BPF_JSLT, R0, -12345677, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSLT | BPF_X */
+> +	{
+> +		"JMP32_JSLT_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
+> +			BPF_JMP32_REG(BPF_JSLT, R0, R1, 1),
+
+ditto
+
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345677),
+> +			BPF_JMP32_REG(BPF_JSLT, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSLE | BPF_K */
+> +	{
+> +		"JMP32_JSLE_K: Small immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -123),
+> +			BPF_JMP32_IMM(BPF_JSLE, R0, -124, 1),
+> +			BPF_JMP32_IMM(BPF_JSLE, R0, -123, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -123 } }
+> +	},
+> +	{
+> +		"JMP32_JSLE_K: Large immediate",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_JMP32_IMM(BPF_JSLE, R0, -12345679, 1),
+> +			BPF_JMP32_IMM(BPF_JSLE, R0, -12345678, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+> +	/* BPF_JMP32 | BPF_JSLE | BPF_K */
+> +	{
+> +		"JMP32_JSLE_X",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, -12345678),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345679),
+> +			BPF_JMP32_REG(BPF_JSLE, R0, R1, 1),
+
+ditto
+
+> +			BPF_ALU32_IMM(BPF_MOV, R1, -12345678),
+> +			BPF_JMP32_REG(BPF_JSLE, R0, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, -12345678 } }
+> +	},
+>   	/* BPF_JMP | BPF_EXIT */
+>   	{
+>   		"JMP_EXIT",
+> 
