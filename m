@@ -2,96 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617903D8A89
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59CD03D8AA5
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235496AbhG1J0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 05:26:12 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:46536 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231482AbhG1J0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 05:26:11 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9CE3A222EA;
-        Wed, 28 Jul 2021 09:26:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1627464368;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5viwOi0Ex8EMpcyt5fZAmdaE8zZE3JenBgOEfHjTO8U=;
-        b=s2tZ7LKmgkhy+ZcYKXY0OMBdF6rgfEncaTSZK7ZE/m30LIKZxGFisayoitYrPoUKgQFilK
-        JvtrvqLBc81t+lTUPqdiALN99CIl4lL5iiGoJzH4SmvIp9lTCLyWsuBMqJ5PpfanZxmV/N
-        Ro/wN4dr9AdUz3PKRKyK9FUdOlBL5bs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1627464368;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5viwOi0Ex8EMpcyt5fZAmdaE8zZE3JenBgOEfHjTO8U=;
-        b=XqnccbRI7Ba90MUmDKttFQTuMWonwuyX1swzv/h7m5E54hesuDgaFK/aI8UPg+OaZi/FOS
-        XAEigI499ra4OLDQ==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 8903AA3B8C;
-        Wed, 28 Jul 2021 09:26:08 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id C207DDA8CC; Wed, 28 Jul 2021 11:23:23 +0200 (CEST)
-Date:   Wed, 28 Jul 2021 11:23:23 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 02/64] mac80211: Use flex-array for radiotap header bitmap
-Message-ID: <20210728092323.GW5047@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-3-keescook@chromium.org>
- <20210728073556.GP1931@kadam>
+        id S235656AbhG1JaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 05:30:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49806 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235573AbhG1JaN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 05:30:13 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id C5B7E60F9E;
+        Wed, 28 Jul 2021 09:30:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627464605;
+        bh=78UH4qs9amkD7Y0zC390ms7kf9EJk2n6+azlfFWCHpI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TdxtBCDAEnkTzX3JrfkJITk7WaKMpPXwSdPbBzMmn61fLny5GYxp9UYYsC1iDiiki
+         atffj0sEzmdfWHwP0LVo3jGUYKEKzm54jPXDU9n8AJ76x0hmgIlgQwZoOQ41CzB7tT
+         hfIlnl+6j4ALDTD9tC0WuAQHNV96bz4XzNgouCIIuDUgn0w0QxUd1EEmWigf76sKEu
+         t36RWkCxNWRRTCaRx48iPF/pS/D06cKWfmwZq9CjBMeHJSic+rl9E/nqsG18fQzUCh
+         a97fV0KWqycd56ZPhKrr2zfgL+p/MAa8460ZDJdctDi4J+avrzwh+7x9mX2fZpFr+A
+         FdRNneaNd3LBA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B83F5609E8;
+        Wed, 28 Jul 2021 09:30:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210728073556.GP1931@kadam>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nfc: nfcsim: fix use after free during module unload
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162746460574.7734.11456826869103789563.git-patchwork-notify@kernel.org>
+Date:   Wed, 28 Jul 2021 09:30:05 +0000
+References: <20210728064909.5356-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20210728064909.5356-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 10:35:56AM +0300, Dan Carpenter wrote:
-> @@ -372,7 +372,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
->  			ieee80211_calculate_rx_timestamp(local, status,
->  							 mpdulen, 0),
->  			pos);
-> -		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_TSFT);
-> +		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_TSFT);
+Hello:
 
-A drive-by comment, not related to the patchset, but rather the
-ieee80211 driver itself.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Shift expressions with (1 << NUMBER) can be subtly broken once the
-NUMBER is 31 and the value gets silently cast to a 64bit type. It will
-become 0xfffffffff80000000.
+On Wed, 28 Jul 2021 08:49:09 +0200 you wrote:
+> There is a use after free memory corruption during module exit:
+>  - nfcsim_exit()
+>   - nfcsim_device_free(dev0)
+>     - nfc_digital_unregister_device()
+>       This iterates over command queue and frees all commands,
+>     - dev->up = false
+>     - nfcsim_link_shutdown()
+>       - nfcsim_link_recv_wake()
+>         This wakes the sleeping thread nfcsim_link_recv_skb().
+> 
+> [...]
 
-I've checked the IEEE80211_RADIOTAP_* defintions if this is even remotely
-possible and yes, IEEE80211_RADIOTAP_EXT == 31. Fortunatelly it seems to
-be used with used with a 32bit types (eg. _bitmap_shifter) so there are
-no surprises.
+Here is the summary with links:
+  - nfc: nfcsim: fix use after free during module unload
+    https://git.kernel.org/netdev/net/c/5e7b30d24a5b
 
-The recommended practice is to always use unsigned types for shifts, so
-"1U << ..." at least.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
