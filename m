@@ -2,89 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BE63D89B9
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:24:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A5873D89BD
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235371AbhG1IYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 04:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235070AbhG1IYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 04:24:19 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7A7C061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 01:24:18 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id c3so1898416ilh.3
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 01:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=omd/1SeMY2p1KwQ68qQgqLrMpU5rLhs6hW4OZ6EqVao=;
-        b=DhbRAwsCbfDhDyg3qozsu6aQqCi78QGxEVQAOtVPEIe+91lKB+K0r1dNKG36DX3Odm
-         sUzW7wRRHTMzTAbPZ/kyGS+uV9b1ZuQwptdsfgmTDh4GpetO+ZSMC3OoCSeu/LdRf5mN
-         R0WenLG3jJFjDFlur4fHNzx5QmOk285ArZkDSopNGlo5gsn1G7kOIDeiYVvljCUZDZpk
-         +yWZ5PS3FZOJNzyM52xblX7lwGKWNZDdvLjstMLuQnkH8+MHRS/wR2U/9eF//IvLEtTf
-         rtgP83bzrM/9FTtkzTfDHq5r2kUbGgtPKnbl77ggkE+7xYDayS+I4kgoJX+GNX5cXcKf
-         oM+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=omd/1SeMY2p1KwQ68qQgqLrMpU5rLhs6hW4OZ6EqVao=;
-        b=Y8FtZTRWD4WkzGBekKTY14QQh/U5dGuFZ+BPgsPXjHBbUxc0BSCgPP+yH4o9rk4tvl
-         YcETl5qrjG4MaJV3uD2B5Ae7CI4QbikOQ388paCg+LE2DO5F6qcA6wY3+uQFnD1POjYA
-         p4fdd34osqsdW2ODvOhycUBEAMbV98w+tdXb7dfQaIt491SCFm/k0srqvw8arG60XZvC
-         QsvWUsuCHBYVDsRE3eodNPUllmU2Vb5Xg4H3MGEgPIPp3ysqGU/OxW1p1dx79Kt/82VB
-         aQwhjT/Ffe59utgp+bEQ2/x/V6oYUrHDYwdd811ZKL5pjmv5bPPeFtFyXfSZ6gPFr8Qu
-         y+Lw==
-X-Gm-Message-State: AOAM530hBVBt7341+uKQmRunTpX8u9n4KWNv9C2OrknwZ6qVbRfa0mA9
-        0lztP31e53Jl+khK32LjuBGomtwqSABsWPuDLg5YZSjcLOlGwoiM
-X-Google-Smtp-Source: ABdhPJylcOgm9kOTb+2MslpnGeIT4+c72Va9hxQ2TRtKnwQcTIJZaaWVTT3rxafvYmck+V2+pGvfMsWxJkr0eHaZPnE=
-X-Received: by 2002:a92:cec5:: with SMTP id z5mr18570399ilq.226.1627460657663;
- Wed, 28 Jul 2021 01:24:17 -0700 (PDT)
+        id S235190AbhG1I1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 04:27:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37546 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234495AbhG1I1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 04:27:41 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1m8eud-0007Me-LW; Wed, 28 Jul 2021 10:27:35 +0200
+Received: from [2a01:118f:54a:7f00:89b1:4cb8:1a49:dc0f] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1m8eud-000G9X-Ad; Wed, 28 Jul 2021 10:27:35 +0200
+Subject: Re: [RFC PATCH 00/14] bpf/tests: Extend the eBPF test suite
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tony Ambardar <Tony.Ambardar@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20210726081738.1833704-1-johan.almbladh@anyfinetworks.com>
+ <CAEf4BzYdvjz36K7=qYnfL6q=cX=ha27Ro2x6cV1X4hp22VEO=g@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5afe26c6-7ab1-88ab-a3e0-eb007256a856@iogearbox.net>
+Date:   Wed, 28 Jul 2021 10:27:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
- <20210726194603.14671-5-gerhard@engleder-embedded.com> <YP8pM+qD/AfuSCcU@lunn.ch>
- <CANr-f5y7eVbAf_NK3puJa3AcnkLXMbhzfwwmZ+r2KuWMbDhhsA@mail.gmail.com> <YQCLg3iLubJW+3yB@lunn.ch>
-In-Reply-To: <YQCLg3iLubJW+3yB@lunn.ch>
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-Date:   Wed, 28 Jul 2021 10:24:06 +0200
-Message-ID: <CANr-f5wYUK4R_XsujwvhSbz-t3==UefQ9VM9kgoaP+Y-Qs_Aww@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/5] tsnep: Add TSN endpoint Ethernet MAC driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAEf4BzYdvjz36K7=qYnfL6q=cX=ha27Ro2x6cV1X4hp22VEO=g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26245/Tue Jul 27 10:20:01 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 12:41 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > I also expect some discussion about this feature. Mapping device specific
-> > TX/RX queues to user space is not done in mainline Linux so far.
->
-> That is probably not quite true. I expect GPUs do it, or at least
-> something very similar.
->
-> > I will follow your suggestion and drop tsnep_stream.c for the moment.
-> > Any early comments about this feature are welcome, because the direct
-> > use of additional TX/RX queues for real-time communication is the main
-> > feature of this device.
->
-> I know enough to know i don't know enough about cache management from
-> user space to be able to make any sensible recommendations.
->
-> You probably want to start a discussion with the XDP people and get
-> them to agree XDP does not work for your use case. Also, the people
-> who implemented zero-copy, MSG_ZEROCOPY and make sure that is also
-> unsuitable. Then see if you can reuse some GPU code which has been
-> well reviewed and tested. You will get less pushback that way,
-> compared to your own code which will need a good review by somebody
-> who understands all the issues.
+On 7/27/21 12:53 AM, Andrii Nakryiko wrote:
+> On Mon, Jul 26, 2021 at 1:18 AM Johan Almbladh
+> <johan.almbladh@anyfinetworks.com> wrote:
+>>
+>> Greetings,
+>>
+>> During my work with the 32-bit MIPS JIT implementation I also added a
+>> number of new test cases in the test_bpf kernel module. I found it
+>> valuable to be able to throughly test the JIT on a low level with
+>> minimum dependency on user space tooling. If you think it would be useful,
+>> I have prepared a patch set with my additions. I have verified it on
+>> x86_64 and i386, with/without JIT and JIT hardening. The interpreter
+>> passes all tests. The JITs do too, with one exception, see NOTE below.
+>> The result for the x86_64 JIT is summarized below.
+>>
+>>      test_bpf: Summary: 577 PASSED, 0 FAILED, [565/565 JIT'ed]
+>>      test_bpf: test_tail_calls: Summary: 6 PASSED, 1 FAILED, [7/7 JIT'ed]
+>>
+>> I have inserted the new tests in the location where related tests are run,
+>> rather than putting them at the end. I have also tried to use the same
+>> description style as the surrounding tests. Below is a summary of the
+>> new tests.
+>>
+>> * Operations not previously covered
+>>    JMP32, ALU32 ARSH, remaining ATOMIC operations including
+>>    XCHG and CMPXCHG.
+>>
+>> * ALU operations with edge cases
+>>    32-bit JITs implement ALU64 operations with two 32-bit registers per
+>>    operand. Even "trivial" operations like bit shifts are non-trivial to
+>>    implement. Test different input values that may trigger different JIT
+>>    code paths. JITs may also implement BPF_K operations differently
+>>    depending on if the immediate fits the corresponding field width of the
+>>    native CPU instruction or not, so test that too.
+>>
+>> * Word order in load/store
+>>    The word order should follow endianness. Test that DW load/store
+>>    operations result in the expected word order in memory.
+>>
+>> * 32-bit eBPF argument zero extension
+>>    On a 32-bit JIT the eBPF argument is a 32-bit pointer. If passed in
+>>    a CPU register only one register in the mapped pair contains valid
+>>    data. Verify that value is properly zero-extended.
+>>
+>> * Long conditional jumps
+>>    Test to trigger the relative-to-absolute branch conversion in MIPS JITs,
+>>    when the PC-relative offset overflows the field width of the MIPS branch
+>>    instruction.
+>>
+>> * Tail calls
+>>    A new test suite to test tail calls. Also test error paths and TCC
+>>    limit.
+>>
+>> NOTE: There is a minor discrepancy between the interpreter and the
+>> (x86) JITs. With MAX_TAIL_CALL_CNT = 32, the interpreter seems to allow
+>> up to 33 tail calls, whereas the JITs stop at 32. This causes the max TCC
+> 
+> Given the intended case was to allow 32, let's fix up the interpreter
+> to be in line with JITs?
 
-I will try to follow your suggestions. Thanks!
+Yes, lets fix up the interpreter.
 
-Gerhard
+Could you send a fix for the latter, Johan, along with this series?
+
+Big thanks for adding all the new tests by the way!
+
+>> test to fail for the JITs, since I used the interpreter as reference.
+>> Either we change the interpreter behavior, change the JITs, or relax the
+>> test to allow both behaviors.
+>>
+>> Let me know what you think.
+>>
+>> Cheers,
+>> Johan
+>>
+>> Johan Almbladh (14):
+>>    bpf/tests: add BPF_JMP32 test cases
+>>    bpf/tests: add BPF_MOV tests for zero and sign extension
+>>    bpf/tests: fix typos in test case descriptions
+>>    bpf/tests: add more tests of ALU32 and ALU64 bitwise operations
+>>    bpf/tests: add more ALU32 tests for BPF_LSH/RSH/ARSH
+>>    bpf/tests: add more BPF_LSH/RSH/ARSH tests for ALU64
+>>    bpf/tests: add more ALU64 BPF_MUL tests
+>>    bpf/tests: add tests for ALU operations implemented with function
+>>      calls
+>>    bpf/tests: add word-order tests for load/store of double words
+>>    bpf/tests: add branch conversion JIT test
+>>    bpf/tests: add test for 32-bit context pointer argument passing
+>>    bpf/tests: add tests for atomic operations
+>>    bpf/tests: add tests for BPF_CMPXCHG
+>>    bpf/tests: add tail call test suite
+>>
+>>   lib/test_bpf.c | 2732 +++++++++++++++++++++++++++++++++++++++++++-----
+>>   1 file changed, 2475 insertions(+), 257 deletions(-)
+>>
+>> --
+>> 2.25.1
+>>
+
