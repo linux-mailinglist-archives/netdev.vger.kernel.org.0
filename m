@@ -2,90 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 627473D89C9
+	by mail.lfdr.de (Postfix) with ESMTP id 194FB3D89C8
 	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 10:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234989AbhG1IaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 04:30:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35148 "EHLO mail.kernel.org"
+        id S235315AbhG1IaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 04:30:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234508AbhG1IaI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S234892AbhG1IaI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 28 Jul 2021 04:30:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 28C3D60FC2;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3304B60FA0;
         Wed, 28 Jul 2021 08:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627461007;
-        bh=3W8nPmdKah7YNRFAt3oGk8yJM/HPZGLcMCeSV55ppEw=;
+        bh=MleTnvKM2YCpU8wq/3k8LY31lmnxGS809yWS6ZGGQqQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ePxwS+Ut3/CO+IUBH04Cs22Ppj0XupjPwweWtM8x2imqpIb4XjMeg49KWDL0BuAN/
-         6EyWYyKR/94JBEOCvvBuRJ/A/I1aTUSbHdIvox2sKfAbrS3y3pJpUhsib8316a8NhK
-         X2AZHmMLZlDJHz5ocBmXoG+kgkXERg7fHteAWd78qNQlbfg7JtwZqDy5+Vow0QjvXF
-         qQ95yqt41yIqfetsvamZrnNgHxpsPAx+Isnxa64Ai01GxBVbl7n/kN8k41hW+sZ5um
-         6mkeVsSb3+gdPn90jH28uXhXYUnBV1OCksAFzPiUIUKvg75CUE5ErjwEUxbFItA+6o
-         waQoE6mm1kBAw==
+        b=j6kNI0oxWcATQ4EQRmdjQ/HAJj4qayC3bsVEA2ghyPMf4Jfx5RxhMowm8u8nc/a7L
+         UvZeS/JzsS7nJmCstiO0LCYn7moJsFdmEaYsw8QTm+gCvtMPmD8X4IoLJVUZqq7yQg
+         6ak92jheISC13KYM+dDH43ZlxnIdZTcftMuhc87ixb7CzoQqQhDUDs3ZVQtmcSDpyz
+         +G4sNeW/rVj+8JBLQ5fdtTiUURudxZT6YMDWBf6MWs6gqbgmt8jO8C4hROL1ePmzXH
+         JnuAqzNODjBZSmzvqU6sk8gq35fdh169k6wKZsTgXes2euWURIvRXGbSB3zx+Hppzq
+         NjaEViINHdG7Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1D028609F7;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2775060A7B;
         Wed, 28 Jul 2021 08:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net 01/12] net/mlx5: Fix flow table chaining
+Subject: Re: [PATCH net] sctp: fix return value check in __sctp_rcv_asconf_lookup
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162746100711.27952.7505869598390036355.git-patchwork-notify@kernel.org>
+Message-Id: <162746100715.27952.16141673680549517209.git-patchwork-notify@kernel.org>
 Date:   Wed, 28 Jul 2021 08:30:07 +0000
-References: <20210727232050.606896-2-saeed@kernel.org>
-In-Reply-To: <20210727232050.606896-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        tariqt@nvidia.com, maorg@nvidia.com, mbloch@nvidia.com,
-        saeedm@nvidia.com
+References: <599e6c1fdcc50f16597380118c9b3b6790241d50.1627439903.git.marcelo.leitner@gmail.com>
+In-Reply-To: <599e6c1fdcc50f16597380118c9b3b6790241d50.1627439903.git.marcelo.leitner@gmail.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        ben@decadent.org.uk, ivansprundel@ioactive.com, carnil@debian.org,
+        lucien.xin@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 27 Jul 2021 16:20:39 -0700 you wrote:
-> From: Maor Gottlieb <maorg@nvidia.com>
+On Tue, 27 Jul 2021 23:40:54 -0300 you wrote:
+> As Ben Hutchings noticed, this check should have been inverted: the call
+> returns true in case of success.
 > 
-> Fix a bug when flow table is created in priority that already
-> has other flow tables as shown in the below diagram.
-> If the new flow table (FT-B) has the lowest level in the priority,
-> we need to connect the flow tables from the previous priority (p0)
-> to this new table. In addition when this flow table is destroyed
-> (FT-B), we need to connect the flow tables from the previous
-> priority (p0) to the next level flow table (FT-C) in the same
-> priority of the destroyed table (if exists).
+> Reported-by: Ben Hutchings <ben@decadent.org.uk>
+> Fixes: 0c5dc070ff3d ("sctp: validate from_addr_param return")
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,01/12] net/mlx5: Fix flow table chaining
-    https://git.kernel.org/netdev/net/c/8b54874ef161
-  - [net,02/12] net/mlx5e: Disable Rx ntuple offload for uplink representor
-    https://git.kernel.org/netdev/net/c/90b22b9bcd24
-  - [net,03/12] net/mlx5: E-Switch, Set destination vport vhca id only when merged eswitch is supported
-    https://git.kernel.org/netdev/net/c/c671972534c6
-  - [net,04/12] net/mlx5: E-Switch, handle devcom events only for ports on the same device
-    https://git.kernel.org/netdev/net/c/dd3fddb82780
-  - [net,05/12] net/mlx5e: RX, Avoid possible data corruption when relaxed ordering and LRO combined
-    https://git.kernel.org/netdev/net/c/e2351e517068
-  - [net,06/12] net/mlx5e: Add NETIF_F_HW_TC to hw_features when HTB offload is available
-    https://git.kernel.org/netdev/net/c/9841d58f3550
-  - [net,07/12] net/mlx5e: Consider PTP-RQ when setting RX VLAN stripping
-    https://git.kernel.org/netdev/net/c/a759f845d1f7
-  - [net,08/12] net/mlx5e: Fix page allocation failure for trap-RQ over SF
-    https://git.kernel.org/netdev/net/c/497008e78345
-  - [net,09/12] net/mlx5e: Fix page allocation failure for ptp-RQ over SF
-    https://git.kernel.org/netdev/net/c/678b1ae1af4a
-  - [net,10/12] net/mlx5: Unload device upon firmware fatal error
-    https://git.kernel.org/netdev/net/c/7f331bf0f060
-  - [net,11/12] net/mlx5e: Fix nullptr in mlx5e_hairpin_get_mdev()
-    https://git.kernel.org/netdev/net/c/b1c2f6312c50
-  - [net,12/12] net/mlx5: Fix mlx5_vport_tbl_attr chain from u16 to u32
-    https://git.kernel.org/netdev/net/c/740452e09cf5
+  - [net] sctp: fix return value check in __sctp_rcv_asconf_lookup
+    https://git.kernel.org/netdev/net/c/557fb5862c92
 
 You are awesome, thank you!
 --
