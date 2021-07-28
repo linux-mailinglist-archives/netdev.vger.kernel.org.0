@@ -2,174 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B3B3D8AC1
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE033D8AC5
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235543AbhG1Jhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 05:37:37 -0400
-Received: from mail-bn1nam07on2100.outbound.protection.outlook.com ([40.107.212.100]:59207
-        "EHLO NAM02-BN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231322AbhG1Jhg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 05:37:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MpAVg4p4hvquIYmsTMg1RZjQr1pQvUfK6QLwUvhxLy/ZJRUyDeYLv2e0ugq1kdGYgE0kAsQMWlqlrt5HUUnFQCMUEBBB00iU8dstKYX0KZ/soyNhXcejTQcKa0/vEKfnt5GpXDNaQ0wWZn36TvDTT/mYyinH8cgbru2aVaLlBkb+TPsdhX364feXRxZh4y3mP0A+TULYsY2yvbhcmJbMFP/JH9X0tQMRMoBVdA0FCVKFRBd8hiIRMlQoq2wEZAfsRPO0ptPeAq7QXvMAqO9mYjYNvsgS7W108grtU2ouqollWYEeq+O6OtbUtNmIYn0l36hFd/OPzppm9wUarI/hbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=brwECbCqFC359Kfh1RA+iiXquT25LjE76lk1tHzFyfI=;
- b=J3HAQth6iKQ+m98e8hiBMXJyY0/TcTlMObluLGkoi9lJodLwPyWNIiFAH75c/o322Ch06OpqziV1PgyfgikJGq58ig2V+JW5cmN0YWmwViYk2z0obkl51ePtScR5ELKuYL/X3qIW6AFhaCOGJWq9FPLRNhkJmSXPfeKDoPBulJviDPpUuDEdJwEbAQ93dc9AQE3qeFiZUqscJxzFadFrzOfb0CvfrShq/UnrLPlQTaPIbmWRqaPtKKkbasOcEg5AtJh796/nCHLYyL84SfQWnYkECKeyWz/rEdEB6s8UlfvwY1M5JbL42FO4PbogiLIFd3lkrqRqPwCisFdKl92Mrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=brwECbCqFC359Kfh1RA+iiXquT25LjE76lk1tHzFyfI=;
- b=uMdMrlPpR+coFMF9swUoffJrPy/yj176nOx6c2OhFs+Vy/KIEVzRs8/HcqFqWfGNrFl/WZEIPLcGQeaQTgExESRCrZUBFER7DJXJRji0dZ5p6sraimS7lt3SifMS1brepbxXY/+o6tcexyNU2++97H7PCj4nKJnZn1fYXFT+cWA=
-Authentication-Results: oracle.com; dkim=none (message not signed)
- header.d=none;oracle.com; dmarc=none action=none header.from=corigine.com;
-Received: from DM6PR13MB4249.namprd13.prod.outlook.com (2603:10b6:5:7b::25) by
- DM6PR13MB4052.namprd13.prod.outlook.com (2603:10b6:5:2a1::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4373.7; Wed, 28 Jul 2021 09:37:32 +0000
-Received: from DM6PR13MB4249.namprd13.prod.outlook.com
- ([fe80::3c5f:ccfc:c008:b4aa]) by DM6PR13MB4249.namprd13.prod.outlook.com
- ([fe80::3c5f:ccfc:c008:b4aa%3]) with mapi id 15.20.4373.018; Wed, 28 Jul 2021
- 09:37:32 +0000
-Subject: Re: [PATCH net-next] nfp: flower-ct: fix error return code in
- nfp_fl_ct_add_offload()
-To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     simon.horman@corigine.com, kuba@kernel.org, davem@davemloft.net,
-        yinjun.zhang@corigine.com, dan.carpenter@oracle.com
-References: <20210728091631.2421865-1-yangyingliang@huawei.com>
-From:   Louis Peens <louis.peens@corigine.com>
-Message-ID: <0776b133-91f0-33ef-edc9-8f275798d44b@corigine.com>
-Date:   Wed, 28 Jul 2021 11:36:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <20210728091631.2421865-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0368.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18e::13) To DM6PR13MB4249.namprd13.prod.outlook.com
- (2603:10b6:5:7b::25)
+        id S235522AbhG1Jio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 05:38:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51300 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231576AbhG1Jin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 05:38:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 47B7560F9E;
+        Wed, 28 Jul 2021 09:38:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627465122;
+        bh=FXnuQeg0BTDrLkshLrDL5Ji6P2ynWULeXV/J/p6ePpI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YH2wFlBgLn/jjMdvtkYrMGaueHAm721iWO/Qnom13Nh7H0DSm8QJ6lDT3aQyZRFPF
+         u+EzHa5o4EShr2ID1ZrugKxIU9uJ9qkTRJt+m5NhJSigufgPxVitvSISrCZrOFV7oD
+         uaXMHofsAw0Y7qaZfPBnFdrbZ6msdZtuAdn9hpIYALOxWdRNfudp1k9LZZPOl66QTU
+         rLwJCZfqU5cz+t3RrB+ZqNokRTyee1pcfV6rhMWQ250hGmMhSkEAj6SrR6z1k4pvZE
+         ezz1ZiCcVUeQV4/7zbQVksba/q9LrKStbfEcnTlubKYum7iGSPMoaOWPpk3ta3LUAx
+         iiKayYt3DUpuw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, jasowang@redhat.com,
+        alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+        tirthendu.sarkar@intel.com, toke@redhat.com
+Subject: [PATCH v10 bpf-next 00/18] mvneta: introduce XDP multi-buffer support
+Date:   Wed, 28 Jul 2021 11:38:05 +0200
+Message-Id: <cover.1627463617.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.1.2.53] (105.30.25.75) by LO4P123CA0368.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:18e::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.20 via Frontend Transport; Wed, 28 Jul 2021 09:37:29 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b4996265-6822-43c4-03f4-08d951ab52e4
-X-MS-TrafficTypeDiagnostic: DM6PR13MB4052:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR13MB40521508C62920D68061424C88EA9@DM6PR13MB4052.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QO3zvbjj156R36jPspigMgkSUq++0dT6Gd9cg6dOk2eJq+1ao2fS6bHhR1JYLCgFmnNOdqCVp79kGa7AZVz+rxbiwshQ/Fsy0i0/KfmYo57A1DXlgvs2fKDks4iiG43KS4/cgS6BXyJLpLtruQMXzJYabI9SNyz2viNgCPhuY2BmO7Eh7bmvAxHT2qzrei0JzkkkPceXOjWfIGlvpwdIRDqKcHFhkauH55uDVxrX9VQTIOxyhB9rRRbo+Y53e8b0Ax2uf9KDNfsB7IIDBI2IEFCSDG1nd9Xlhk0YB0B33n3lAiT2T1vBHN0DJXLoRngi+ngeCm5h7NLJ+1Lad+jlCJbrDNe0NfA2UFTm/F1sWmDlLzuLdgka3Bqx9WYjOv5Y56PV31rSS6Dl2PTqC5g9Npy2ms3SZqAk1fHDBU326lC45lUyArVn8jbm1EWk9upkAyzOyvOhOog+R+7sts8fqrn6+z0ijEfzVUvoHVCamaxsOU/k//Om7XUAttrcQ5n13zlh5lpLWgeMd8MoDBnMEe5qEJzYsSi8x91uftBaqvdCyWO3rAraJuhQdbFPP5aEiTdgFYhgASGfRz9zI0HkvYcMdhAFvEbLxg/CEPL8fYrBOlsX4WVC0FDCOIyCaXsvhXScpATkWcJq+BdkOTtHkT34wEJYqr7sqNkkHJ7mZcCNdCvZP0GB97VOcrSDZEewLwd8KrAlT9mH62WPudgVy8XmjNzGoJlVaRIhAS1AyTuYWZr8/ll2uPuGTu5lShcBQlIuDvRhmES6/Yd8DekbXQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB4249.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(39830400003)(376002)(396003)(366004)(31686004)(2906002)(52116002)(2616005)(8936002)(53546011)(186003)(956004)(6666004)(83380400001)(36756003)(44832011)(4326008)(26005)(31696002)(478600001)(8676002)(86362001)(38100700002)(38350700002)(66946007)(16576012)(316002)(5660300002)(6486002)(66476007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ejVrbGpTOHJweXB4NzBIdkNNUzdpT2hxcWxYTG1qTUVBblhWOVpFOTljZVl2?=
- =?utf-8?B?Tm4zY0hCWHRoNktVNVh2UDBRamJBWHNCcFk4NVQ3OGJYd1lJYm8xcGgwL0RF?=
- =?utf-8?B?ZlVIbW12M2pKdXJ0UGhCWXk4KzFsRVdkNy8yNmFmdzFENnFhQ2tpN1lHeUw3?=
- =?utf-8?B?OHFtUWNLNVhINHRQbDFacDh5QTFzUis4MnJJQVRTWWd1R3lHSk04TE1SSHF1?=
- =?utf-8?B?ZE4zWUZlMXRmK1pZMkRrNUIwdmFVVnNkNmhiRXBidEFEakxEWUMrdm9FeU1H?=
- =?utf-8?B?MmFFelZIMlp2QjZNekdDRXlYc1VhUlV4NEhvK0ZYd3BmSmlVK0h3eEtoUXJu?=
- =?utf-8?B?VzV2VTYyb3JWU0RtMUc4SnJGWVVBMi80OEdBTHJQeDVUcUZLeE1RdzN3c1hJ?=
- =?utf-8?B?dlZWMWo3QUtzSmZDN0xTT3dxZXgzSWQ0NStaREZTZ2tydjVycUdpNnFSRnd3?=
- =?utf-8?B?Tm04cFA0K2dtVXhBQWJSVitXOUxUS3FqN3JEMTIxNnBjclhoSUJ3akx4RnhB?=
- =?utf-8?B?M01LeDRKL3gwOElGeXNuWkEwQmZDbyt6WHNqWTAvN2JtUWVqa2U0L1I1TEhs?=
- =?utf-8?B?c2tLd2FJcjBpSXJxc0VqLzNxRGo0M2R3dVM4VWlRcndTTWFiU0lYREtzTHJX?=
- =?utf-8?B?TjIrOWV6Y2hKclJMYldmaDdsZWlSYnFYaVFSejZvVFJBc1ZRVFVVUG00VUtM?=
- =?utf-8?B?dHZLeGIycWN5RkFHZG1oWlI0ZHVJVWMxekVMQ0g4Ym1CekVVM2pDcWI4Y1FM?=
- =?utf-8?B?OHFyT1hUaVlMNEVrR21VM3VlbGNteE9FeE9VOGF4RStLajJEcEV1bktrZ1lC?=
- =?utf-8?B?SjY0dmxQNE5SN0JPdjdJL3paQW5MakpKd0hLWkp4MStaOG5laitoSFNjQUw4?=
- =?utf-8?B?UDhqaks2MFFSYXhBUjNuQXd4djUrWjZ2S0NzK0ZHRTZBZy9tYWQrWFFkU1hT?=
- =?utf-8?B?Q0pwRkNjOVhUYUJNWlFiN2ZpZlBmdzhYc1dhdk5TcGpKSU5VZjR1eFRWc1FF?=
- =?utf-8?B?MFpYYStvYWxoTGMwTkt4dE5PdWVOTmY4RElRem5UaWhHUWNraVk3S0oxeE1B?=
- =?utf-8?B?Vk5TY1p3d2srNW5RM2hkNzl1bW05WUJhQVFJMldFY1pvVGxDc2hOOXU3VFl5?=
- =?utf-8?B?Z25KOUtxbk9sOEY5NGV1alM1Z0VJVWc1NTJCZlFId2VLcSs2Ri9rNlg4L3Zv?=
- =?utf-8?B?QXErN0UzTEtCS29uMGorcXpZV1l6QzEzanBLbFA5WnJNN3FvSzRZMXQ4d0hF?=
- =?utf-8?B?V3JZTi95SkxWNHVEZVRFLzNSbmJHd0tsY0FmNnZaN09tYXpHeE93K1NKZ2Z4?=
- =?utf-8?B?RGhHWTY3T2ZZYTNKWWdtZVJQWXBLT0V1SlIyMndsazVsSEVsdGN6ODhXUGR6?=
- =?utf-8?B?dGptTmhVNCtjdE5yUHlwN2tLek9nR2dvYUxrWjd2U3QyZ29Bdm9pSnUvcEdI?=
- =?utf-8?B?TUFBV0ljU1BpLzhWTXZwNzY5M2x0MGN4MFIvK2lUQ2dRNUlxNTZ4R3ZrZEll?=
- =?utf-8?B?anFYNnZIclRrbE42UTY0d05pampjM1NRQngxM3BUcjBtbFlxdzJQR0NCYmRS?=
- =?utf-8?B?T0RROXF6Tlg0dEFjczd1dk91Y09COE4ya0JvVldLRzQ1YnAxVU5hNzZ6bmtx?=
- =?utf-8?B?RjVrbnZ0d3djNEpEcHZFajFoVHZaa1kzNVdzU09QdDZrNnpReVg4T2dLcjdC?=
- =?utf-8?B?cFNqTUpuMXc5MXJ2VkE4eGNuZlYzYlZ4OHRidkQvalZkOEkxNFBzRzhVV3lv?=
- =?utf-8?Q?EddhTrmpkYCyA4QMvS1glY7pHgEbJ65zmcjKvy5?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4996265-6822-43c4-03f4-08d951ab52e4
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB4249.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 09:37:32.2957
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c9sTb2tnWZS+m/xzGMrqV//AdURuoUJFQnxmLV4bzVm1ffVyUBqLmOZjVCcbTkgVgcYkRoBrOA7qnqKdFTDNNDK9ONw1wnyECiiKg1MkJxg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB4052
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series introduce XDP multi-buffer support. The mvneta driver is
+the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+please focus on how these new types of xdp_{buff,frame} packets
+traverse the different layers and the layout design. It is on purpose
+that BPF-helpers are kept simple, as we don't want to expose the
+internal layout to allow later changes.
 
+The main idea for the new multi-buffer layout is to reuse the same
+layout used for non-linear SKB. This rely on the "skb_shared_info"
+struct at the end of the first buffer to link together subsequent
+buffers. Keeping the layout compatible with SKBs is also done to ease
+and speedup creating a SKB from an xdp_{buff,frame}.
+Converting xdp_frame to SKB and deliver it to the network stack is shown
+in patch 05/18 (e.g. cpumaps).
 
-On 2021/07/28 11:16, Yang Yingliang wrote:
-> If nfp_tunnel_add_ipv6_off() fails, it should return error code
-> in nfp_fl_ct_add_offload().
-> 
-> Fixes: 5a2b93041646 ("nfp: flower-ct: compile match sections of flow_payload")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Ah, thanks Yang, I was just preparing a patch for this myself. This was first reported by
-Dan Carpenter <dan.carpenter@oracle.com> on 26 Jul 2021 (added to CC).
+A multi-buffer bit (mb) has been introduced in the flags field of xdp_{buff,frame}
+structure to notify the bpf/network layer if this is a xdp multi-buffer frame
+(mb = 1) or not (mb = 0).
+The mb bit will be set by a xdp multi-buffer capable driver only for
+non-linear frames maintaining the capability to receive linear frames
+without any extra cost since the skb_shared_info structure at the end
+of the first buffer will be initialized only if mb is set.
+Moreover the flags field in xdp_{buff,frame} will be reused even for
+xdp rx csum offloading in future series.
 
-	'Hello Louis Peens,
+Typical use cases for this series are:
+- Jumbo-frames
+- Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+- TSO
 
-	The patch 5a2b93041646: "nfp: flower-ct: compile match sections of
-	flow_payload" from Jul 22, 2021, leads to the following static
-	checker warning:
-	.....'
+The two following ebpf helpers (and related selftests) has been introduced:
+- bpf_xdp_adjust_data:
+  Move xdp_md->data and xdp_md->data_end pointers in subsequent fragments
+  according to the offset provided by the ebpf program. This helper can be
+  used to read/write values in frame payload.
+- bpf_xdp_get_buff_len:
+  Return the total frame size (linear + paged parts)
 
-I'm not sure what the usual procedure would be for this, I would think adding
-another "Reported-by" line would be sufficient?
+bpf_xdp_adjust_tail and bpf_xdp_copy helpers have been modified to take into
+account xdp multi-buff frames.
 
-Anyway, for the patch itself the change looks good to me, thanks:
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-> ---
->  drivers/net/ethernet/netronome/nfp/flower/conntrack.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-> index 1ac3b65df600..bfd7d1c35076 100644
-> --- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-> +++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-> @@ -710,8 +710,10 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
->  			dst = &gre_match->ipv6.dst;
->  
->  			entry = nfp_tunnel_add_ipv6_off(priv->app, dst);
-> -			if (!entry)
-> +			if (!entry) {
-> +				err = -ENOMEM;
->  				goto ct_offload_err;
-> +			}
->  
->  			flow_pay->nfp_tun_ipv6 = entry;
->  		} else {
-> @@ -760,8 +762,10 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
->  			dst = &udp_match->ipv6.dst;
->  
->  			entry = nfp_tunnel_add_ipv6_off(priv->app, dst);
-> -			if (!entry)
-> +			if (!entry) {
-> +				err = -ENOMEM;
->  				goto ct_offload_err;
-> +			}
->  
->  			flow_pay->nfp_tun_ipv6 = entry;
->  		} else {
-> 
+More info about the main idea behind this approach can be found here [1][2].
+
+Changes since v9:
+- introduce bpf_xdp_adjust_data helper and related selftest
+- add xdp_frags_size and xdp_frags_tsize fields in skb_shared_info
+- introduce xdp_update_skb_shared_info utility routine in ordere to not reset
+  frags array in skb_shared_info converting from a xdp_buff/xdp_frame to a skb 
+- simplify bpf_xdp_copy routine
+
+Changes since v8:
+- add proper dma unmapping if XDP_TX fails on mvneta for a xdp multi-buff
+- switch back to skb_shared_info implementation from previous xdp_shared_info
+  one
+- avoid using a bietfield in xdp_buff/xdp_frame since it introduces performance
+  regressions. Tested now on 10G NIC (ixgbe) to verify there are no performance
+  penalties for regular codebase
+- add bpf_xdp_get_buff_len helper and remove frame_length field in xdp ctx
+- add data_len field in skb_shared_info struct
+- introduce XDP_FLAGS_FRAGS_PF_MEMALLOC flag
+
+Changes since v7:
+- rebase on top of bpf-next
+- fix sparse warnings
+- improve comments for frame_length in include/net/xdp.h
+
+Changes since v6:
+- the main difference respect to previous versions is the new approach proposed
+  by Eelco to pass full length of the packet to eBPF layer in XDP context
+- reintroduce multi-buff support to eBPF kself-tests
+- reintroduce multi-buff support to bpf_xdp_adjust_tail helper
+- introduce multi-buffer support to bpf_xdp_copy helper
+- rebase on top of bpf-next
+
+Changes since v5:
+- rebase on top of bpf-next
+- initialize mb bit in xdp_init_buff() and drop per-driver initialization
+- drop xdp->mb initialization in xdp_convert_zc_to_xdp_frame()
+- postpone introduction of frame_length field in XDP ctx to another series
+- minor changes
+
+Changes since v4:
+- rebase ontop of bpf-next
+- introduce xdp_shared_info to build xdp multi-buff instead of using the
+  skb_shared_info struct
+- introduce frame_length in xdp ctx
+- drop previous bpf helpers
+- fix bpf_xdp_adjust_tail for xdp multi-buff
+- introduce xdp multi-buff self-tests for bpf_xdp_adjust_tail
+- fix xdp_return_frame_bulk for xdp multi-buff
+
+Changes since v3:
+- rebase ontop of bpf-next
+- add patch 10/13 to copy back paged data from a xdp multi-buff frame to
+  userspace buffer for xdp multi-buff selftests
+
+Changes since v2:
+- add throughput measurements
+- drop bpf_xdp_adjust_mb_header bpf helper
+- introduce selftest for xdp multibuffer
+- addressed comments on bpf_xdp_get_frags_count
+- introduce xdp multi-buff support to cpumaps
+
+Changes since v1:
+- Fix use-after-free in xdp_return_{buff/frame}
+- Introduce bpf helpers
+- Introduce xdp_mb sample program
+- access skb_shared_info->nr_frags only on the last fragment
+
+Changes since RFC:
+- squash multi-buffer bit initialization in a single patch
+- add mvneta non-linear XDP buff support for tx side
+
+[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+[2] https://netdevconf.info/0x14/session.html?tutorial-add-XDP-support-to-a-NIC-driver (XDPmulti-buffers section)
+
+Eelco Chaudron (3):
+  bpf: add multi-buff support to the bpf_xdp_adjust_tail() API
+  bpf: add multi-buffer support to xdp copy helpers
+  bpf: update xdp_adjust_tail selftest to include multi-buffer
+
+Lorenzo Bianconi (15):
+  net: skbuff: add size metadata to skb_shared_info for xdp
+  xdp: introduce flags field in xdp_buff/xdp_frame
+  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
+  net: mvneta: simplify mvneta_swbm_add_rx_fragment management
+  net: xdp: add xdp_update_skb_shared_info utility routine
+  net: marvell: rely on xdp_update_skb_shared_info utility routine
+  xdp: add multi-buff support to xdp_return_{buff/frame}
+  net: mvneta: add multi buffer support to XDP_TX
+  net: mvneta: enable jumbo frames for XDP
+  bpf: introduce bpf_xdp_get_buff_len helper
+  bpf: move user_size out of bpf_test_init
+  bpf: introduce multibuff support to bpf_prog_test_run_xdp()
+  bpf: test_run: add xdp_shared_info pointer in bpf_test_finish
+    signature
+  net: xdp: introduce bpf_xdp_adjust_data helper
+  bpf: add bpf_xdp_adjust_data selftest
+
+ drivers/net/ethernet/marvell/mvneta.c         | 213 ++++++++++--------
+ include/linux/skbuff.h                        |   6 +-
+ include/net/xdp.h                             |  95 +++++++-
+ include/uapi/linux/bpf.h                      |  38 ++++
+ kernel/trace/bpf_trace.c                      |   3 +
+ net/bpf/test_run.c                            | 117 ++++++++--
+ net/core/filter.c                             | 210 ++++++++++++++++-
+ net/core/xdp.c                                |  76 ++++++-
+ tools/include/uapi/linux/bpf.h                |  38 ++++
+ .../bpf/prog_tests/xdp_adjust_data.c          |  55 +++++
+ .../bpf/prog_tests/xdp_adjust_tail.c          | 118 ++++++++++
+ .../selftests/bpf/prog_tests/xdp_bpf2bpf.c    | 151 +++++++++----
+ .../bpf/progs/test_xdp_adjust_tail_grow.c     |  10 +-
+ .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 ++-
+ .../selftests/bpf/progs/test_xdp_bpf2bpf.c    |   2 +-
+ .../bpf/progs/test_xdp_update_frags.c         |  49 ++++
+ 16 files changed, 1044 insertions(+), 169 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+
+-- 
+2.31.1
+
