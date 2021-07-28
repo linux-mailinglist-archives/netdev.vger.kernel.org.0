@@ -2,191 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D685B3D9511
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4223D9513
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:12:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbhG1SMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 14:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
+        id S230514AbhG1SMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 14:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbhG1SMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 14:12:08 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6A3C061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:06 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id ca5so6365166pjb.5
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:06 -0700 (PDT)
+        with ESMTP id S230493AbhG1SMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 14:12:10 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721E7C061765
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:08 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id d1so3714660pll.1
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JiBsds8o2Lj0F8SccTwWun5I3n6wZM5I4fHmjuefKhc=;
-        b=FBab3qU+oidojM3h8N54xFZ1reMJMsN4L7qModPlhQDeGvEx/Jg9RJAZITXnX6ojwY
-         6MC51mkCM8qW1YJapI04syn2Zcb178JF4WFRXSZPrnmgewm8P1qv2ipEDd29IlaipH9K
-         VCop3kyDdezWD/4jMlv08W9kPy4IsF5So+EJw=
+        bh=Hi/qnt6ObfwIsE3/4sPNHgGSgkGS7HfKLuQN0+ZMfow=;
+        b=Bxn7qIfm4bhr9hhOMMdt1U+Jrkxl2U77NUjxIJso/xBmzV3MzG7hZvt+Hj0NcNCE0m
+         8L79NLtU06l8qwtmgHyVUSNRTlAwRaBkw3UUiNVPB7dp0n7hX0lBB5IZy4A1guyOC0Yl
+         Kavs51dALIoyYvAcpSZY0bPUXXbXjIXIGmU+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JiBsds8o2Lj0F8SccTwWun5I3n6wZM5I4fHmjuefKhc=;
-        b=XmBs80L4vlVBzqYY5LXKrcOpJCdt4DUnCQ0HidoNmIqXdeR2kIm8qQFy9Tz/WDCDeC
-         CbRxRa7eFPzLE51wYrnNrZSjZtTXG1T+pybr0fMtp+LtI01M3PBnVtEyymuwUiHRVa2V
-         WweH9/XEhXf1WWT5voIZXmVgJu3CFxtC5ZwmZjWb/hIsL4dIPQxIK+6js1Jgh/psEBYv
-         c8lZxAy9QcISwOg45AkqjFWwPjTquIodz5/4mSECw+y39nnrx6JYBcB/DXiYv9w1+pZO
-         /QyqihKbs6E/sROHJQ/D/4QVarmZNxgC4PhdrvS6R3xvP+YM34XHS2AylclWZZ/oy4H4
-         yCgg==
-X-Gm-Message-State: AOAM5311ECfF0u6yf4/FITaQdRSU6La+QeFtDNjaGK7sI4vlXnk0/kgl
-        dG8TPKBrpAkf8bCUJPrfeI+/U0m4DYx4sA==
-X-Google-Smtp-Source: ABdhPJyGs1kuS+AfHhdPIoKWJ/BJIv+43A40fdHRFCiAPzmYXxgmztY6FlpGvcRn2B3Lk0GrGfVeqQ==
-X-Received: by 2002:a62:7d16:0:b029:32d:cfc4:279c with SMTP id y22-20020a627d160000b029032dcfc4279cmr1052505pfc.8.1627495926104;
-        Wed, 28 Jul 2021 11:12:06 -0700 (PDT)
+        bh=Hi/qnt6ObfwIsE3/4sPNHgGSgkGS7HfKLuQN0+ZMfow=;
+        b=R/IUsDRqOMi1Xk3jb1UqFDh7vtqvpXvjcArt+G10jflWw2VJGR1tkgZS6ggU6yO4Nf
+         An7Hllye4hEzsgAgmzXE5wzyLco8z5V157cVvXNO25wz3ikRsUZUdGEhEeEMJ7rZije6
+         58a2Q3+ctnOkOYegRwRSNa3MbD93tvlHpQcxfXCHqKmKXw7WE7OHHd4dlATk7fq/Yh3Y
+         A7pF9CLTadUZ8C+qskCY01KfJouw2utulgeKsBT9fA7/5ws7IfUpcHIvPzGXZ998txEC
+         0Wpxt9Bqwpo4cjRVM7sKDx9Fts1Zif4edWTmGRTpCH15fBv8vQCAwltrzWefJJuVSLeB
+         msTg==
+X-Gm-Message-State: AOAM532foZT7IFntqVu9skj43j/0u38cTXQiqFASxCxzihF7i2uWiJXj
+        zV73soDnwXNOWgkK4ZdyNq+H8A==
+X-Google-Smtp-Source: ABdhPJxtBjy+v5sl1nuXxGx+S0FotCXEWL0hbAc5l634iLrodpugmv2MIycDhJ7A9d4DSTxW7y3BKw==
+X-Received: by 2002:a17:903:4052:b029:12c:3745:4788 with SMTP id n18-20020a1709034052b029012c37454788mr929780pla.7.1627495927408;
+        Wed, 28 Jul 2021 11:12:07 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a16sm678901pfo.66.2021.07.28.11.12.04
+        by smtp.gmail.com with ESMTPSA id a16sm678901pfo.66.2021.07.28.11.12.06
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Jul 2021 11:12:05 -0700 (PDT)
+        Wed, 28 Jul 2021 11:12:06 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         richardcochran@gmail.com, pavan.chebbi@broadcom.com,
         edwin.peer@broadcom.com
-Subject: [PATCH net-next 5/6] bnxt_en: Event handler for PPS events
-Date:   Wed, 28 Jul 2021 14:11:44 -0400
-Message-Id: <1627495905-17396-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 6/6] bnxt_en: Log if an invalid signal detected on TSIO pin
+Date:   Wed, 28 Jul 2021 14:11:45 -0400
+Message-Id: <1627495905-17396-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1627495905-17396-1-git-send-email-michael.chan@broadcom.com>
 References: <1627495905-17396-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000094ff2805c832ec25"
+        boundary="000000000000ad2c7105c832ecbb"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000094ff2805c832ec25
+--000000000000ad2c7105c832ecbb
 
 From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Once the PPS pins are configured, the FW can report
-PPS values using ASYNC event. This patch adds the
-ASYNC event handler and subsequent reporting of the
-events to kernel.
+FW can report to driver via ASYNC event if it encountered an
+invalid signal on any TSIO PIN. Driver will log this event
+for the user to take corrective action.
 
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Arvind Susarla <arvind.susarla@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  5 ++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 27 +++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 26 ++++++++++++++++++
- 3 files changed, 58 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 18 ++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h | 10 ++++++++++
+ 2 files changed, 28 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 13e44ce3963f..f3b606bccfb0 100644
+index f3b606bccfb0..4fe87c214c77 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -277,6 +277,7 @@ static const u16 bnxt_async_events_arr[] = {
- 	ASYNC_EVENT_CMPL_EVENT_ID_DEBUG_NOTIFICATION,
+@@ -278,6 +278,7 @@ static const u16 bnxt_async_events_arr[] = {
  	ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG,
  	ASYNC_EVENT_CMPL_EVENT_ID_ECHO_REQUEST,
-+	ASYNC_EVENT_CMPL_EVENT_ID_PPS_TIMESTAMP,
+ 	ASYNC_EVENT_CMPL_EVENT_ID_PPS_TIMESTAMP,
++	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_REPORT,
  };
  
  static struct workqueue_struct *bnxt_pf_wq;
-@@ -2202,6 +2203,10 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 		}
+@@ -2043,6 +2044,19 @@ static u16 bnxt_agg_ring_id_to_grp_idx(struct bnxt *bp, u16 ring_id)
+ 	return INVALID_HW_RING_ID;
+ }
+ 
++static void bnxt_event_error_report(struct bnxt *bp, u32 data1, u32 data2)
++{
++	switch (BNXT_EVENT_ERROR_REPORT_TYPE(data1)) {
++	case ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_INVALID_SIGNAL:
++		netdev_err(bp->dev, "1PPS: Received invalid signal on pin%lu from the external source. Please fix the signal and reconfigure the pin\n",
++			   BNXT_EVENT_INVALID_SIGNAL_DATA(data2));
++		break;
++	default:
++		netdev_err(bp->dev, "FW reported unknown error type\n");
++		break;
++	}
++}
++
+ #define BNXT_GET_EVENT_PORT(data)	\
+ 	((data) &			\
+ 	 ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_EVENT_DATA1_PORT_ID_MASK)
+@@ -2207,6 +2221,10 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		bnxt_ptp_pps_event(bp, data1, data2);
  		goto async_event_process_exit;
  	}
-+	case ASYNC_EVENT_CMPL_EVENT_ID_PPS_TIMESTAMP: {
-+		bnxt_ptp_pps_event(bp, data1, data2);
++	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_REPORT: {
++		bnxt_event_error_report(bp, data1, data2);
 +		goto async_event_process_exit;
 +	}
  	default:
  		goto async_event_process_exit;
  	}
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index c389a2a65a90..e33e311e2341 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -155,6 +155,33 @@ static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
- 	return rc;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index aa733f1b235a..e379c48c1df9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -496,6 +496,16 @@ struct rx_tpa_end_cmp_ext {
+ 	!!((data1) &							\
+ 	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_RECOVERY_ENABLED)
  
-+void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2)
-+{
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	struct ptp_clock_event event;
-+	u64 ns, pps_ts;
++#define BNXT_EVENT_ERROR_REPORT_TYPE(data1)				\
++	(((data1) &							\
++	  ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_MASK) >>\
++	 ASYNC_EVENT_CMPL_ERROR_REPORT_BASE_EVENT_DATA1_ERROR_TYPE_SFT)
 +
-+	pps_ts = EVENT_PPS_TS(data2, data1);
-+	spin_lock_bh(&ptp->ptp_lock);
-+	ns = timecounter_cyc2time(&ptp->tc, pps_ts);
-+	spin_unlock_bh(&ptp->ptp_lock);
-+
-+	switch (EVENT_DATA2_PPS_EVENT_TYPE(data2)) {
-+	case ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TYPE_INTERNAL:
-+		event.pps_times.ts_real = ns_to_timespec64(ns);
-+		event.type = PTP_CLOCK_PPSUSR;
-+		event.index = EVENT_DATA2_PPS_PIN_NUM(data2);
-+		break;
-+	case ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TYPE_EXTERNAL:
-+		event.timestamp = ns;
-+		event.type = PTP_CLOCK_EXTTS;
-+		event.index = EVENT_DATA2_PPS_PIN_NUM(data2);
-+		break;
-+	}
-+
-+	ptp_clock_event(bp->ptp_cfg->ptp_clock, &event);
-+}
-+
- static int bnxt_ptp_cfg_pin(struct bnxt *bp, u8 pin, u8 usage)
- {
- 	struct hwrm_func_ptp_pin_cfg_input req = {0};
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 84f2b06ed79a..88923346ab50 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -29,6 +29,31 @@ struct pps_pin {
- 
- #define TSIO_PIN_VALID(pin) ((pin) < (BNXT_MAX_TSIO_PINS))
- 
-+#define EVENT_DATA2_PPS_EVENT_TYPE(data2)				\
-+	((data2) & ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TYPE)
-+
-+#define EVENT_DATA2_PPS_PIN_NUM(data2)					\
++#define BNXT_EVENT_INVALID_SIGNAL_DATA(data2)				\
 +	(((data2) &							\
-+	  ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PIN_NUMBER_MASK) >>\
-+	 ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PIN_NUMBER_SFT)
++	  ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_EVENT_DATA2_PIN_ID_MASK) >>\
++	 ASYNC_EVENT_CMPL_ERROR_REPORT_INVALID_SIGNAL_EVENT_DATA2_PIN_ID_SFT)
 +
-+#define BNXT_DATA2_UPPER_MSK						\
-+	ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PPS_TIMESTAMP_UPPER_MASK
-+
-+#define BNXT_DATA2_UPPER_SFT						\
-+	(32 -								\
-+	 ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_PPS_TIMESTAMP_UPPER_SFT)
-+
-+#define BNXT_DATA1_LOWER_MSK						\
-+	ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA1_PPS_TIMESTAMP_LOWER_MASK
-+
-+#define BNXT_DATA1_LOWER_SFT						\
-+	  ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA1_PPS_TIMESTAMP_LOWER_SFT
-+
-+#define EVENT_PPS_TS(data2, data1)					\
-+	(((u64)((data2) & BNXT_DATA2_UPPER_MSK) << BNXT_DATA2_UPPER_SFT) |\
-+	 (((data1) & BNXT_DATA1_LOWER_MSK) >> BNXT_DATA1_LOWER_SFT))
-+
- #define BNXT_PPS_PIN_DISABLE	0
- #define BNXT_PPS_PIN_ENABLE	1
- #define BNXT_PPS_PIN_NONE	0
-@@ -97,6 +122,7 @@ do {						\
- #endif
- 
- int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id);
-+void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2);
- void bnxt_ptp_reapply_pps(struct bnxt *bp);
- int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
- int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
+ struct nqe_cn {
+ 	__le16	type;
+ 	#define NQ_CN_TYPE_MASK           0x3fUL
 -- 
 2.18.1
 
 
---00000000000094ff2805c832ec25
+--000000000000ad2c7105c832ecbb
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -257,13 +217,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICx2hPqMDil/1GOPsg6ITkKFflt+oBTe
-veMPJx+0ho7gMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcy
-ODE4MTIwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICF7eSEQm1i3loO55p1viwkYbSj7OXo/
+aIdzGPm29pGSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcy
+ODE4MTIwOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQA2TR0cYPRst7AvW0w4ZfDMb8372XKHKlKdqZp98vG5g/AyQD7H
-qkh02c34vVoe89FPOw/GkBaiGjMAOYmw3OTE9rXi2by3vxeT/3f9Dni1JuamrOQuGONx40mXp8bJ
-54Mpb1n00Tabgg/gyADEehoj1E8lAg9z9J6nWOsIkDR9dSVkpuUe3fdWLE1/Tt+6iJEAHwsNbicY
-1ggySwqtXDjqd+ckr9ufnIpkZ7r98rak9mBqrfx90bJ5agybvCk0jnHZg7h0n8gP/frWZHd0G0Us
-e9Ob2gs5SWKaTL4pPRCwzP+G4qfTXySbsh2N9343szGN6nFi7UN2b7yCfXONUgeu
---00000000000094ff2805c832ec25--
+ATANBgkqhkiG9w0BAQEFAASCAQAJkU/aDpgYcD6jNkgX5th2peM2MXooyXloC4RrQVGLo3vjd5t1
+AwfvGMgVQ1eSNPDEUAHypnXE61aK0G12NtnV9HubVj3lGkPYn8v6t7NwkwfVEu/4Ud1h7pLK9+q+
+YkRpxiQvLUKXhE7lt81jL3hjomhktgbKoqQVpI2SfYkfo5TdEUsV6O1XcJS6Gc0wNnXHOnvokVBX
+82+CABZeBokwmjdgv8S2P1+A+voYPtZsdyixc2Ka+M1gjZ2bwybmjGWyiizuf7rzYZ/1N/PquTxZ
+cJZCfKcO0hxza+POz2uL8GBM5hxln+ZZGuNAUrXGHVAUu4CYfXi/MpFE/kxjHYdG
+--000000000000ad2c7105c832ecbb--
