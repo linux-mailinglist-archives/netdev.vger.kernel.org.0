@@ -2,136 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0965B3D93F6
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0074C3D9430
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230428AbhG1RHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 13:07:17 -0400
-Received: from mga17.intel.com ([192.55.52.151]:32424 "EHLO mga17.intel.com"
+        id S230054AbhG1RX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 13:23:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229567AbhG1RHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 13:07:16 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10059"; a="192989419"
-X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; 
-   d="scan'208";a="192989419"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2021 10:06:51 -0700
-X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; 
-   d="scan'208";a="517613242"
-Received: from sobsiex-desk2.amr.corp.intel.com (HELO [10.212.198.197]) ([10.212.198.197])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2021 10:06:46 -0700
-Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-To:     Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
-        jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org,
-        will@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, arnd@arndb.de,
-        hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, ardb@kernel.org,
-        Tianyu.Lan@microsoft.com, rientjes@google.com,
-        martin.b.radev@gmail.com, akpm@linux-foundation.org,
-        rppt@kernel.org, kirill.shutemov@linux.intel.com,
-        aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com,
-        saravanand@fb.com, xen-devel@lists.xenproject.org,
-        pgonda@google.com, david@redhat.com, keescook@chromium.org,
-        hannes@cmpxchg.org, sfr@canb.auug.org.au,
-        michael.h.kelley@microsoft.com
-Cc:     iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
-        vkuznets@redhat.com, anparri@microsoft.com
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-4-ltykernel@gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <a2444c36-0103-8e1c-7005-d97f77f90e85@intel.com>
-Date:   Wed, 28 Jul 2021 10:06:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229574AbhG1RX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 13:23:27 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D5AF56103B;
+        Wed, 28 Jul 2021 17:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627493005;
+        bh=oy2CdTpDQZqSOXZB0jmZSt0g6kLN/VjpudOGzr8rM1Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LMTrXSBJdcPhhVK888FzkTPIHHm1QFIqtRu60IEoVpEUAZ/PyMNeRlhQDj6f+lJrn
+         LuNrLo9g+x4eWRU8zc2XHBEJ/hBzjPNaWRXq72zeR3Z/4hn0Tswg/Udvl6kkXTkmG0
+         qyUP9yn4iLclKOk3DiUlVepSrd9vx8YNF4lA2gLLE0nX25tdtqE8y7PhR25OxLK28Q
+         oO5MPFValqqViyBawxoEP4yoFIjAGlc7UZlcG9Sp34Cql7PkNRH3c5WWmws/LU+E3P
+         C8NX9uV7a0ejx04WN8j6rKGz7svCPo+d458miN5KN3RTwWhKNIeqlRfO1cOejMasFh
+         hK6a+l6dFwrow==
+Received: by mail-ej1-f52.google.com with SMTP id o5so5850791ejy.2;
+        Wed, 28 Jul 2021 10:23:25 -0700 (PDT)
+X-Gm-Message-State: AOAM532S7ljnTHLog9caJ4MEPSU3qiE92Mfk1TWjHAElpo+wqW3OcI9e
+        HXk4Ka66cubgk12Id3mU+m4hPIkCqWiaVg6qlQ==
+X-Google-Smtp-Source: ABdhPJzBRhqr2Ud4HELrNH9AHHg58LqSJjd4vf9qzNk7vw7IkgfkJNJ/8+Otv5jy2oAsvgquPL7L3ePPRqeCXlHZK28=
+X-Received: by 2002:a17:907:766c:: with SMTP id kk12mr477374ejc.525.1627493004282;
+ Wed, 28 Jul 2021 10:23:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210728145232.285861-4-ltykernel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210712130631.38153-1-alexandru.tachici@analog.com>
+ <20210712130631.38153-8-alexandru.tachici@analog.com> <20210727055329.7y23ob7kir3te2e4@pengutronix.de>
+In-Reply-To: <20210727055329.7y23ob7kir3te2e4@pengutronix.de>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 28 Jul 2021 11:23:12 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJXAPW7KRAdJac+uje95Nk-b6ojjow8VEzkF=PZvbDvnA@mail.gmail.com>
+Message-ID: <CAL_JsqJXAPW7KRAdJac+uje95Nk-b6ojjow8VEzkF=PZvbDvnA@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] dt-bindings: adin1100: Add binding for ADIN1100
+ Ethernet PHY
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Alexandru Tachici <alexandru.tachici@analog.com>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/21 7:52 AM, Tianyu Lan wrote:
-> @@ -1986,7 +1988,9 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
->  	int ret;
->  
->  	/* Nothing to do if memory encryption is not active */
-> -	if (!mem_encrypt_active())
-> +	if (hv_is_isolation_supported())
-> +		return hv_set_mem_enc(addr, numpages, enc);
-> +	else if (!mem_encrypt_active())
->  		return 0;
+On Mon, Jul 26, 2021 at 11:53 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>
+> On Mon, Jul 12, 2021 at 04:06:31PM +0300, alexandru.tachici@analog.com wrote:
+> > From: Alexandru Tachici <alexandru.tachici@analog.com>
+> >
+> > DT bindings for the ADIN1100 10BASE-T1L Ethernet PHY.
+> >
+> > Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+> > ---
+> >  .../devicetree/bindings/net/adi,adin1100.yaml | 45 +++++++++++++++++++
+> >  1 file changed, 45 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1100.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/adi,adin1100.yaml b/Documentation/devicetree/bindings/net/adi,adin1100.yaml
+> > new file mode 100644
+> > index 000000000000..14943164da7a
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/adi,adin1100.yaml
+> > @@ -0,0 +1,45 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/adi,adin1100.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Analog Devices ADIN1100 PHY
+> > +
+> > +maintainers:
+> > +  - Alexandru Tachici <alexandru.tachici@analog.com>
+> > +
+> > +description:
+> > +  Bindings for Analog Devices Industrial Low Power 10BASE-T1L Ethernet PHY
+> > +
+> > +allOf:
+> > +  - $ref: ethernet-phy.yaml#
+> > +
+> > +properties:
+> > +  adi,disable-2400mv-tx-level:
+> > +    description:
+> > +      Prevent ADIN1100 from using the 2.4 V pk-pk transmit level.
+> > +    type: boolean
+>
+> This property should be generic. It is defined by IEEE 802.3cg 2019 and can
+> be implemented on all T1L PHYs.
+>
+> I assume, it should be something like:
+> ethernet-phy-10base-t1l-2.4vpp-enable
+> ethernet-phy-10base-t1l-2.4vpp-disable
 
-One more thing.  If you're going to be patching generic code, please
-start using feature checks that can get optimized away at runtime.
-hv_is_isolation_supported() doesn't look like the world's cheapest
-check.  It can't be inlined and costs at least a function call.
+'ethernet-phy-' is a bit redundant and I'd make it a tristate (not
+present, 0, 1). So just '10base-t1l-2.4vpp'?
 
-These checks could, with basically no effort be wrapped in a header like
-this:
-
-static inline bool hv_is_isolation_supported(void)
-{
-	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-		return 0;
-
-	// out of line function call:
-	return __hv_is_isolation_supported();
-}	
-
-I don't think it would be the end of the world to add an
-X86_FEATURE_HYPERV_GUEST, either.  There are plenty of bits allocated
-for Xen and VMWare.
+> To overwrite bootstrapped of fuzed values if supported. The IEEE 802.3cg
+> specification uses following wordings for this functionality:
+> "10BASE-T1L increased transmit level request ..."
