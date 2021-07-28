@@ -2,275 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A6FA3D94A1
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DA13D94F9
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:07:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231191AbhG1Rx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 13:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhG1Rxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 13:53:54 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2671C061757;
-        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id ca5so6291174pjb.5;
-        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=4PfC04M9Z5wtL0vKbvHcVlWUtOEqkXBLD/NMtF2oJRM=;
-        b=c5eq1xqa8KnEO2pxegnJGOLCeTNjWXinbE5neY3Fr3kWRfW+iSt2lcTN/R7oxw5QGS
-         mKjl/CsBjoRTiSnbNVMllxNwR8rfnJ7TEvjHUBPzuKtucXv37rg72Or5S8Q6gieKlzv6
-         oX2++teMVgUNos3Jv78iBHtPQjL5u1Rv2M1LVGMA2pD43ATrPVrw8D8AfVOI3LQl9hLa
-         iDGFam7TSbRfaVhdyZ3CypbTNK/jqj1NPzqYZZFbweEoutZeVY05tUqE7+08+F5wm1c3
-         OxpCH8SV2P1moq7zbKbQg1EjZLG9Pldb3cN34uS2yCwE9sk+FR55h96VzV/BaHGpdeZs
-         3MwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4PfC04M9Z5wtL0vKbvHcVlWUtOEqkXBLD/NMtF2oJRM=;
-        b=A0GXYLf2XMeeS9CqKIRniIFDVsP1q3nWZ3SfHDiZeNprytXbUlS/QFMrzApi+kliER
-         ewFVIWy1F+p1Ae+gaJgCAimt0eEV8dl2JHLSX/vEe3QY16uczU6BPCYmEVfhft95VKPo
-         dBckHMUH075yBHBI1UvUpfPzwtNUW9bOu/1RMA8IUvUzDx09RA79rZnPzhI/TQT9yG0T
-         63vm+i0snVMV8cOkpvPHL3ifV6PFSSRX36ZUNLI0LJV4Yzs2YPTRIup0Bm5xn1Tsrhg4
-         OhxIPp/IlR/9+vU/31blmMtwlNk28x5yb2yjxZKlsK7R50+Ok3608ISByBiEwmuXUig2
-         v6/w==
-X-Gm-Message-State: AOAM533MhnUkG2Duu5fjW5k6VAX6yJ1/e1LaMNYVykFlrQCBfbEyRCxl
-        sVWN82F1cxg/rvk4gu1+kMo=
-X-Google-Smtp-Source: ABdhPJxHHHJbldPuFoH4WOkqBVFeq5AAussEvUokUpyiJIbADOk0gjMcm9uJqFX5l4l/g5/1hXSC6Q==
-X-Received: by 2002:a17:90b:2246:: with SMTP id hk6mr898497pjb.112.1627494832396;
-        Wed, 28 Jul 2021 10:53:52 -0700 (PDT)
-Received: from haswell-ubuntu20.lan ([138.197.212.246])
-        by smtp.gmail.com with ESMTPSA id m19sm647113pfa.135.2021.07.28.10.53.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 10:53:51 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [RFC net-next 2/2] net: dsa: mt7530: trap packets from standalone ports to the CPU
-Date:   Thu, 29 Jul 2021 01:53:26 +0800
-Message-Id: <20210728175327.1150120-3-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210728175327.1150120-1-dqfext@gmail.com>
-References: <20210728175327.1150120-1-dqfext@gmail.com>
+        id S229719AbhG1SHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 14:07:42 -0400
+Received: from tulum.helixd.com ([162.252.81.98]:48909 "EHLO tulum.helixd.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229542AbhG1SHl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 14:07:41 -0400
+Received: from [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242] (unknown [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: dalcocer@helixd.com)
+        by tulum.helixd.com (Postfix) with ESMTPSA id C7DED1FD43;
+        Wed, 28 Jul 2021 11:07:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tulum.helixd.com;
+        s=mail; t=1627495659;
+        bh=Pv81ObY5wvD9qYpMtiXGr02Rb/e7/n9Xrwrdn4tphzk=;
+        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
+        b=hqNgSN471aXwC8Tu4Hmta0+QywAxV5tpj47gRURuerPBv26+GUthsXNwUA8Skm6w7
+         A0mH2jd3Xq4LOYMSvp2zYumZt/YVpR6q2XuTSzFGu3IcR+gaQoXy0wcCeeaPiek1HU
+         VIfoQTjmmf41mH9whDrQQZhiEs4hS3F15uh+DGGI=
+Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
+From:   Dario Alcocer <dalcocer@helixd.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <6a70869d-d8d5-4647-0640-4e95866a0392@helixd.com>
+ <YPrHJe+zJGJ7oezW@lunn.ch> <0188e53d-1535-658a-4134-a5f05f214bef@helixd.com>
+ <YPsJnLCKVzEUV5cb@lunn.ch> <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
+ <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com> <YPxPF2TFSDX8QNEv@lunn.ch>
+ <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
+ <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
+ <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
+Message-ID: <fb7ced72-384c-9908-0a35-5f425ec52748@helixd.com>
+Date:   Wed, 28 Jul 2021 11:07:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Consider the following bridge configuration, where bond0 is not
-offloaded:
+It appears the port link-state issue is caused by the mv88e6xxx switch 
+driver. The function mv88e6xxx_mac_config identifies the PHY as internal 
+and skips the call to mv88e6xxx_port_setup_mac.
 
-         +-- br0 --+
-        / /   |     \
-       / /    |      \
-      /  |    |     bond0
-     /   |    |     /   \
-   swp0 swp1 swp2 swp3 swp4
-     .        .       .
-     .        .       .
-     A        B       C
+It does not make sense to me why internal PHY configuration should be 
+skipped.
 
-Ideally, when the switch receives a packet from swp3 or swp4, it should
-forward the packet to the CPU, according to the port matrix and unknown
-unicast flood settings.
+During boot, the 5.4.114 kernel successfully probes both switch chips, 
+and the SERDES link appears to be brought up successfully:
 
-But packet loss will happen if the destination address is at one of the
-offloaded ports (swp0~2). For example, when client C sends a packet to
-A, the FDB lookup will indicate that it should be forwarded to swp0, but
-the port matrix of swp3 and swp4 is configured to only allow the CPU to
-be its destination, so it is dropped.
+[    2.782024] libphy: Fixed MDIO Bus: probed
+[    2.800458] socfpga-dwmac ff700000.ethernet: IRQ eth_wake_irq not found
+[    2.807070] socfpga-dwmac ff700000.ethernet: IRQ eth_lpi not found
+[    2.813367] socfpga-dwmac ff700000.ethernet: PTP uses main clock
+[    2.819537] socfpga-dwmac ff700000.ethernet: Version ID not available
+[    2.825978] socfpga-dwmac ff700000.ethernet:         DWMAC1000
+[    2.831186] socfpga-dwmac ff700000.ethernet: DMA HW capability 
+register supported
+[    2.838647] socfpga-dwmac ff700000.ethernet: RX Checksum Offload 
+Engine supported
+[    2.846108] socfpga-dwmac ff700000.ethernet: COE Type 2
+[    2.851312] socfpga-dwmac ff700000.ethernet: TX Checksum insertion 
+supported
+[    2.858338] socfpga-dwmac ff700000.ethernet: Enhanced/Alternate 
+descriptors
+[    2.865279] socfpga-dwmac ff700000.ethernet: Extended descriptors not 
+supported
+[    2.872557] socfpga-dwmac ff700000.ethernet: Ring mode enabled
+[    2.878382] socfpga-dwmac ff700000.ethernet: device MAC address 
+fa:8b:6f:1f:4b:83
+[    2.886010] libphy: stmmac: probed
+[    2.890027] mv88e6085 stmmac-0:1a: switch 0x1760 detected: Marvell 
+88E6176, revision 1
+[    3.085696] libphy: mv88e6xxx SMI: probed
+[    3.090416] mv88e6085 stmmac-0:1e: switch 0x1760 detected: Marvell 
+88E6176, revision 1
+[    3.281274] libphy: mv88e6xxx SMI: probed
+[    3.626689] mv88e6085 stmmac-0:1e: switch 0x1760 detected: Marvell 
+88E6176, revision 1
+[    3.824809] libphy: mv88e6xxx SMI: probed
+[    4.983937] mv88e6085 stmmac-0:1a lan1 (uninitialized): PHY 
+[mv88e6xxx-0:00] driver [Marvell 88E1540]
+[    4.999891] mv88e6085 stmmac-0:1a lan2 (uninitialized): PHY 
+[mv88e6xxx-0:01] driver [Marvell 88E1540]
+[    5.016620] mv88e6085 stmmac-0:1a lan3 (uninitialized): PHY 
+[mv88e6xxx-0:02] driver [Marvell 88E1540]
+[    5.032460] mv88e6085 stmmac-0:1a: configuring for fixed/1000base-x 
+link mode
+[    5.039594] mv88e6xxx_mac_config: switch=0, port=4, mode=0x1
+[    5.045245] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
+speed=1000, duplex=1
+[    5.053875] mv88e6xxx_mac_config: switch=0, port=4, mode=0x1
+[    5.059522] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
+speed=1000, duplex=1
+[    5.084915] mv88e6085 stmmac-0:1a: Link is Up - 1Gbps/Full - flow 
+control off
+[    6.253481] mv88e6085 stmmac-0:1e lan4 (uninitialized): PHY 
+[mv88e6xxx-2:00] driver [Marvell 88E1540]
+[    6.273714] mv88e6085 stmmac-0:1e dmz (uninitialized): PHY 
+[mv88e6xxx-2:01] driver [Marvell 88E1540]
+[    6.290369] mv88e6085 stmmac-0:1e: configuring for fixed/1000base-x 
+link mode
+[    6.297503] mv88e6xxx_mac_config: switch=1, port=4, mode=0x1
+[    6.303152] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
+speed=1000, duplex=1
+[    6.311774] mv88e6xxx_mac_config: switch=1, port=4, mode=0x1
+[    6.317435] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
+speed=1000, duplex=1
+[    6.340344] mv88e6085 stmmac-0:1e: Link is Up - 1Gbps/Full - flow 
+control off
+[    6.348972] debugfs: Directory 'switch0' with parent 'dsa' already 
+present!
+[    6.355938] DSA: failed to create debugfs interface for switch 0 (-14)
+[    6.362692] DSA: tree 0 setup
 
-MT7530's FDB has 8 filter IDs, but they are only available for shared
-VLAN learning, and all VLAN-unaware ports use 0 as the default filter
-ID.
+After booting, I logged in and set up dynamic tracing for the relevant 
+kernel routines:
 
-Fortunately, MT7530 supports ACL, and the ACL action happens before the
-FDB lookup. So we install an ACL rule which traps all packets to the
-CPU, and enable it for standalone ports. This way, the packet loss can
-be avoided.
+dali login: root
+Password:
+root@dali:~# echo 'file drivers/net/phy/marvell.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file drivers/net/phy/phy_device.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file drivers/net/phy/phylink.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file drivers/net/phy/phy.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file net/dsa/port.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file net/dsa/slave.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'file drivers/net/dsa/mv88e6xxx/chip.c +p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'func mv88e6xxx_read -p' > 
+/sys/kernel/debug/dynamic_debug/control
+root@dali:~# echo 'func mv88e6xxx_write -p' > 
+/sys/kernel/debug/dynamic_debug/control
 
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/dsa/mt7530.c | 28 ++++++++++++++++++++
- drivers/net/dsa/mt7530.h | 56 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 84 insertions(+)
+I then attempted to bring up the lan1 port and duplicated the 
+LOWERLAYERDOWN issue. I inserted begin/end markers in the system log to 
+locate the PHY traces:
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 69f21b71614c..6b5c85446e6f 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1228,6 +1228,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
- 		mt7530_rmw(priv, MT7530_PCR_P(port),
- 			   PCR_MATRIX_MASK, PCR_MATRIX(port_bitmap));
- 	priv->ports[port].pm |= PCR_MATRIX(port_bitmap);
-+	/* Don't trap frames to the CPU port */
-+	mt7530_clear(priv, MT7530_PCR_P(port), PORT_ACL_EN);
- 
- 	mutex_unlock(&priv->reg_mutex);
- 
-@@ -1328,6 +1330,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
- 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
- 			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
- 	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
-+	/* Trap all frames to the CPU port */
-+	mt7530_set(priv, MT7530_PCR_P(port), PORT_ACL_EN);
- 
- 	mutex_unlock(&priv->reg_mutex);
- }
-@@ -2037,6 +2041,24 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
- 	return ret;
- }
- 
-+static void
-+mt7530_setup_acl(struct mt7530_priv *priv)
-+{
-+	u32 action;
-+
-+	/* Set ACL pattern mask to 0 to match unconditionally */
-+	mt7530_write(priv, MT7530_VAWD1, 0);
-+	mt7530_write(priv, MT7530_VAWD2, 0);
-+	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_ACL_MASK, 0);
-+
-+	/* Set ACL action to forward frames to the CPU port */
-+	action = ACL_PORT_EN | ACL_PORT(BIT(MT7530_CPU_PORT)) |
-+		 ACL_EG_TAG(MT7530_VLAN_EG_CONSISTENT);
-+	mt7530_write(priv, MT7530_VAWD1, action);
-+	mt7530_write(priv, MT7530_VAWD2, 0);
-+	mt7530_vlan_cmd(priv, MT7530_VTCR_WR_ACL_ACTION, 0);
-+}
-+
- static int
- mt7530_setup(struct dsa_switch *ds)
- {
-@@ -2133,6 +2155,8 @@ mt7530_setup(struct dsa_switch *ds)
- 
- 			/* Disable learning by default on all user ports */
- 			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
-+			/* Trap all frames to the CPU port */
-+			mt7530_set(priv, MT7530_PCR_P(i), PORT_ACL_EN);
- 		}
- 		/* Enable consistent egress tag */
- 		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-@@ -2300,6 +2324,8 @@ mt7531_setup(struct dsa_switch *ds)
- 
- 			/* Disable learning by default on all user ports */
- 			mt7530_set(priv, MT7530_PSC_P(i), SA_DIS);
-+			/* Trap all frames to the CPU port */
-+			mt7530_set(priv, MT7530_PCR_P(i), PORT_ACL_EN);
- 		}
- 
- 		/* Enable consistent egress tag */
-@@ -3005,6 +3031,8 @@ mt753x_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
- 
-+	mt7530_setup_acl(priv);
-+
- 	ret = mt7530_setup_irq(priv);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index b19b389ff10a..10cb278d7c36 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -137,6 +137,15 @@ enum mt7530_vlan_cmd {
- 	 */
- 	MT7530_VTCR_RD_VID = 0,
- 	MT7530_VTCR_WR_VID = 1,
-+	/* Read/Write the specified ACL rule pattern */
-+	MT7530_VTCR_RD_ACL_PATTERN = 4,
-+	MT7530_VTCR_WR_ACL_PATTERN = 5,
-+	/* Read/Write the specified ACL rule mask */
-+	MT7530_VTCR_RD_ACL_MASK = 8,
-+	MT7530_VTCR_WR_ACL_MASK = 9,
-+	/* Read/Write the specified ACL rule action */
-+	MT7530_VTCR_RD_ACL_ACTION = 10,
-+	MT7530_VTCR_WR_ACL_ACTION = 11,
- };
- 
- /* Register for setup vlan and acl write data */
-@@ -153,6 +162,35 @@ enum mt7530_vlan_cmd {
- #define  PORT_MEM_SHFT			16
- #define  PORT_MEM_MASK			0xff
- 
-+/* ACL rule pattern */
-+#define  BIT_CMP(x)			(((x) & 0xffff) << 16)
-+#define  CMP_PAT(x)			((x) & 0xffff)
-+
-+/* ACL rule action */
-+#define  ACL_MANG			BIT(29)
-+#define  ACL_INT_EN			BIT(28)
-+#define  ACL_CNT_EN			BIT(27)
-+#define  ACL_CNT_IDX(x)			(((x) & 0x7) << 24)
-+#define  VLAN_PORT_EN			BIT(23)
-+#define  DA_SWAP			BIT(22)
-+#define  SA_SWAP			BIT(21)
-+#define  PPP_RM				BIT(20)
-+#define  LKY_VLAN			BIT(19)
-+#define  ACL_EG_TAG(x)			(((x) & 0x7) << 16)
-+#define  ACL_PORT(x)			(((x) & 0xff) << 8)
-+#define  ACL_PORT_EN			BIT(7)
-+#define  PRI_USER(x)			(((x) & 0x7) << 4)
-+#define  ACL_MIR_EN			BIT(3)
-+#define  ACL_PORT_FW(x)			((x) & 0x7)
-+
-+enum mt7530_to_cpu_port_fw {
-+	PORT_FW_DEFAULT,
-+	PORT_FW_EXCLUDE_CPU = 4,
-+	PORT_FW_INCLUDE_CPU,
-+	PORT_FW_CPU_ONLY,
-+	PORT_FW_DROP,
-+};
-+
- #define MT7530_VAWD2			0x98
- /* Egress Tag Control */
- #define  ETAG_CTRL_P(p, x)		(((x) & 0x3) << ((p) << 1))
-@@ -164,6 +202,23 @@ enum mt7530_vlan_egress_attr {
- 	MT7530_VLAN_EGRESS_STACK = 3,
- };
- 
-+/* ACL rule pattern */
-+#define  ACL_TABLE_EN			BIT(19)
-+#define  OFST_TP(x)			(((x) & 0x7) << 16)
-+#define  ACL_SP(x)			(((x) & 0xff) << 8)
-+#define  WORD_OFST(x)			(((x) & 0x7f) << 1)
-+#define  CMP_SEL			BIT(0)
-+
-+enum mt7530_acl_offset_type {
-+	MT7530_ACL_MAC_HEADER,
-+	MT7530_ACL_L2_PAYLOAD,
-+	MT7530_ACL_IP_HEADER,
-+	MT7530_ACL_IP_DATAGRAM,
-+	MT7530_ACL_TCP_UDP_HEADER,
-+	MT7530_ACL_TCP_UDP_DATAGRAM,
-+	MT7530_ACL_IPV6_HEADER,
-+};
-+
- /* Register for address age control */
- #define MT7530_AAC			0xa0
- /* Disable ageing */
-@@ -192,6 +247,7 @@ enum mt7530_stp_state {
- 
- /* Register for port control */
- #define MT7530_PCR_P(x)			(0x2004 + ((x) * 0x100))
-+#define  PORT_ACL_EN			BIT(10)
- #define  PORT_TX_MIR			BIT(9)
- #define  PORT_RX_MIR			BIT(8)
- #define  PORT_VLAN(x)			((x) & 0x3)
--- 
-2.25.1
+root@dali:~# logger -t adhoc begin: bring up lan1 port
+root@dali:~# ip addr add 192.0.2.1/24 dev lan1
+root@dali:~# ip link set lan1 up
+[   64.087971] mv88e6085 stmmac-0:1a lan1: configuring for phy/gmii link 
+mode
+[   64.094929] mv88e6xxx_mac_config: switch=0, port=0, mode=0x0
+[   64.100563] mv88e6xxx_mac_config: skip MAC config for internal PHY
+[   64.109285] 8021q: adding VLAN 0 to HW filter on device lan1
+root@dali:~# ip link
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode 
+DEFAULT group default qlen 1000
+     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group 
+default qlen 10
+     link/can
+3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1508 qdisc mq state UP 
+mode DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+4: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group 
+default qlen 1000
+     link/sit 0.0.0.0 brd 0.0.0.0
+5: lan1@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue 
+state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+6: lan2@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
+DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+7: lan3@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
+DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+8: lan4@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
+DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+9: dmz@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
+DEFAULT group default qlen 1000
+     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
+root@dali:~# logger -t adhoc end: bring up lan1 port
 
+The extracted PHY traces from the system log are below:
+
+root@dali:~# sed -ne '/adhoc: begin:/,/adhoc: end:/p' /var/log/messages
+Nov  1 12:00:54 (none) user.notice adhoc: begin: bring up lan1 port
+Nov  1 12:00:54 (none) user.info kernel: [   64.087971] mv88e6085 
+stmmac-0:1a lan1: configuring for phy/gmii link mode
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094872] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094882] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: setting pause=10
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094898] mv88e6085 
+stmmac-0:1a lan1: phylink_mac_config: mode=phy/gmii/Unknown/Unknown 
+adv=00,00000000,000022ef pause=10 link=0 an=1
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094912] 
+dsa_port_phylink_mac_config: config type=0, mode=0, interface="gmii", 
+speed=-1, duplex=255, pause=16, link=0 an_enabled=1 an_complete=0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094918] 
+dsa_port_phylink_mac_config: switch=0, port=0 "lan1"
+Nov  1 12:00:54 (none) user.debug kernel: [   64.094923] 
+dsa_port_phylink_mac_config: calling switch op phylink_mac_config
+Nov  1 12:00:54 (none) user.info kernel: [   64.094929] 
+mv88e6xxx_mac_config: switch=0, port=0, mode=0x0
+Nov  1 12:00:54 (none) user.info kernel: [   64.100563] 
+mv88e6xxx_mac_config: skip MAC config for internal PHY
+Nov  1 12:00:54 (none) user.debug kernel: [   64.106754] 
+phylink_run_resolve: phylink_disable_state==false, dispatch 
+system_power_efficient_wq
+Nov  1 12:00:54 (none) user.debug kernel: [   64.106803] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve: link_an_mode=phy
+Nov  1 12:00:54 (none) user.debug kernel: [   64.106814] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
+Nov  1 12:00:54 (none) user.debug kernel: [   64.106823] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: setting pause=00
+Nov  1 12:00:54 (none) user.debug kernel: [   64.106832] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve: have netdev, link_changed=0
+Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: Joining mDNS 
+multicast group on interface lan1.IPv4 with address 192.0.2.1.
+Nov  1 12:00:54 (none) user.debug kernel: [   64.108923] libphy: 
+genphy_resume: phy_clear_bits returns 0x0
+Nov  1 12:00:54 (none) user.info kernel: [   64.109285] 8021q: adding 
+VLAN 0 to HW filter on device lan1
+Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: New relevant 
+interface lan1.IPv4 for mDNS.
+Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: Registering new 
+address record for 192.0.2.1 on lan1.IPv4.
+Nov  1 12:00:54 (none) user.debug kernel: [   64.119685] 
+marvell_read_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
+suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.121499] 
+marvell_read_page: __phy_read(phydev, 22) returns 0x0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.121511] 
+marvell_write_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
+suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.126302] 
+marvell_write_page: __phy_write(phydev, 22, 2) returns 0x0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.129909] 
+marvell_write_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
+suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.131711] 
+marvell_write_page: __phy_write(phydev, 22, 0) returns 0x0
+Nov  1 12:00:54 (none) user.debug kernel: [   64.158548] 
+m88e1510_config_aneg: set copper page
+Nov  1 12:00:54 (none) user.debug kernel: [   64.160371] 
+marvell_read_status: read status from copper page
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171227] 
+phylink_run_resolve: phylink_disable_state==false, dispatch 
+system_power_efficient_wq
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171247] mv88e6085 
+stmmac-0:1a lan1: phy link down gmii/1Gbps/Half
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171258] Marvell 88E1540 
+mv88e6xxx-0:00: PHY state change UP -> NOLINK
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171271] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve: link_an_mode=phy
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171281] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171290] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve_flow: setting pause=00
+Nov  1 12:00:54 (none) user.debug kernel: [   64.171298] mv88e6085 
+stmmac-0:1a lan1: phylink_resolve: have netdev, link_changed=0
+Nov  1 12:00:55 (none) user.notice adhoc: end: bring up lan1 port
+root@dali:~#
