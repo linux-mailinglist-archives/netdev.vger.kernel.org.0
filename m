@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44BCB3D93E8
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AFFF3D93EC
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 19:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbhG1RGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 13:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
+        id S231191AbhG1RGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 13:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230453AbhG1RFp (ORCPT
+        with ESMTP id S231245AbhG1RFp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 13:05:45 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DD1C0617A2
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:40 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id gn26so5769229ejc.3
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:40 -0700 (PDT)
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9E6C0617A5
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:42 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x14so4165477edr.12
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 10:05:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BV0g4jcYTdScS9hJerOKHAsgtkMy07OGBzUAP0n2p64=;
-        b=1EgDVk9XUee01DEmamomECqencYCWb2Ifv2YxRfl7pH5T2RMdU1eiUTJlK5KDymJqy
-         FRLGUunnhkJ5nzBS+NwSGtZbE4YarPRnjKxWkoYYdSsBMDPZ2BIjSrFXrUiGQ0mhsHzE
-         mj5tsOePVxIqEnuuwtGN21h2cOhrA4h+gGAEoYGGzAatKWXRKt7f9CzPyPfBlVvrtGHG
-         1WSGLJif8lCm0ySql4Ra8gw79drNQFybMaftu98EiBMbIi/1uraQtD29Nhh8/TdyCBhd
-         jgnHSM9862GCOaV/0/7npj1WdwK1UuYjj/1L+9qG2PaNEZHcbXmRuz0zlGSUvFS+NGi0
-         1csw==
+        bh=RRL0VLp6qutZXrZd4cRKeYTVqt51qEo+4j74ZFYX/gc=;
+        b=KRfqerB4VTDxxbA3y6UzEebVUH0ALRUnLBb3IjTdzlb2dtDlof8ZjWQUf7+xVeZDOP
+         TtaWQ+fntm89vMX06hrbgCd0IcGVvDItsvRthw8CxsAjQWmp0IKG3YH9rbTyMiYuoMN4
+         o9a655OWi10lrM2U1wdtz9EgSH6ddQvwa40jvo59XqtkL0L8ElFqip1aowa4Cdk5ZSmk
+         qohiTk2mka5LOo/rz0zXHAyxiabNqx7Srxr9DhI/JChErvpDIoFH4Kz5UT5taK3s16ZH
+         bURl9a9Ps22Whw4c0u87lZ0jakDZOm82veT8hizsJUAg9pZ8+NOJPTFs/4k6V1UAkAID
+         tK5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BV0g4jcYTdScS9hJerOKHAsgtkMy07OGBzUAP0n2p64=;
-        b=D1kg5vj+5t9ddjJIQhzYZv+NR/ZeqcV9aOCDD6Pj2Q3duGfGzN6JqlwyX+5Z/Q+PF4
-         TzVocrlg30RYK0tp/tuPt4IVChYPqB/Xrt586Twr26ez6F4mPDlSOTLBezGC8uANysnB
-         ujolmOlHhxrSLWR8uRO/P7gvcjkC99liQpZiTY2MreoF7lgrwtIkgGoh/VeIY3In3fQD
-         m1rTD4DXx8FXnMfhIrdtwvtLQrsOsG49zRoMfl6yuStJI0eKcG8kYZzRnewGa4cjA+wm
-         8TevERa9Q4skeW4LK1KyP3olXi9QBu9KleDqAkub1tAY9JhIi8sW1ObZbUInsrDy9Trq
-         yoLA==
-X-Gm-Message-State: AOAM532tPJf5B6gQdff3gyKRK2J9HFKL/oils9YEFRHc99lNvcCXl1Za
-        7rUFJWAVzxCJDgM6r85DDtjuYQ==
-X-Google-Smtp-Source: ABdhPJyTLyPC5ZiZNt2Ngm4s3tutaX0w/34TS6SZRQIGzuL3DPp3wub2mKwX4tEHkThI6HQS+5StbQ==
-X-Received: by 2002:a17:907:1c92:: with SMTP id nb18mr458345ejc.191.1627491939489;
-        Wed, 28 Jul 2021 10:05:39 -0700 (PDT)
+        bh=RRL0VLp6qutZXrZd4cRKeYTVqt51qEo+4j74ZFYX/gc=;
+        b=KogN8gLnPUoSE5YIgU23yte2F/zSgSV/+GawOAPYTrx93vmkQ6uIZJA0QynnJaF5sm
+         mj31vSUU0pbeFC2iW9+N1iEvSxjpwxa362K27xxWtOJTcOScZh22l3XN/j+exQ8gfPG1
+         /9Yt/1IDAvUWeEjDwdT617ylszbXskytDwWD4I3BN7L9pZ2llLR0X3P0e94jFmkEr50G
+         R64LaKEgWuccCwqiIcHUC0ld+dqN15S2dEWjgiuwgKqCp3TkkiiQRS2TXU4pQe0ow68F
+         Ik8b8DI2OAzOTUiwJA8dgGKSYLhI2TN/4C9FLNBggNtz88JTIBXeyKiMlXthAvSD15xo
+         L2lQ==
+X-Gm-Message-State: AOAM533eEkxXjK4eWKZShpnzUdqCx271/PMgEMZcIEfqnpD6D6TtsXE6
+        V3o0C+1Pv9aPRyD1ktogkD5gvSsmzZHsu7lYMqk=
+X-Google-Smtp-Source: ABdhPJzEl6xuRN5mlrhZ5qK3Q+xJly8EfAb/H8Lwegn+sSFyypw9tAcur2O0cxMRQw+fZWuUoEEVpw==
+X-Received: by 2002:a50:fe10:: with SMTP id f16mr965092edt.85.1627491940668;
+        Wed, 28 Jul 2021 10:05:40 -0700 (PDT)
 Received: from anpc2.lan (static-213-115-136-2.sme.telenor.se. [213.115.136.2])
-        by smtp.gmail.com with ESMTPSA id bd24sm139349edb.56.2021.07.28.10.05.38
+        by smtp.gmail.com with ESMTPSA id bd24sm139349edb.56.2021.07.28.10.05.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 10:05:39 -0700 (PDT)
+        Wed, 28 Jul 2021 10:05:40 -0700 (PDT)
 From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -54,9 +54,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         Tony.Ambardar@gmail.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Subject: [PATCH 09/14] bpf/tests: Add word-order tests for load/store of double words
-Date:   Wed, 28 Jul 2021 19:04:57 +0200
-Message-Id: <20210728170502.351010-10-johan.almbladh@anyfinetworks.com>
+Subject: [PATCH 10/14] bpf/tests: Add branch conversion JIT test
+Date:   Wed, 28 Jul 2021 19:04:58 +0200
+Message-Id: <20210728170502.351010-11-johan.almbladh@anyfinetworks.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
 References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
@@ -66,62 +66,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A double word (64-bit) load/store may be implemented as two successive
-32-bit operations, one for each word. Check that the order of those
-operations is consistent with the machine endianness.
+Some JITs may need to convert a conditional jump instruction to
+to short PC-relative branch and a long unconditional jump, if the
+PC-relative offset exceeds offset field width in the CPU instruction.
+This test triggers such branch conversion on the 32-bit MIPS JIT.
 
 Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 ---
- lib/test_bpf.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ lib/test_bpf.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
 diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index 1115e39630ce..8b94902702ed 100644
+index 8b94902702ed..55914b6236aa 100644
 --- a/lib/test_bpf.c
 +++ b/lib/test_bpf.c
-@@ -5417,6 +5417,42 @@ static struct bpf_test tests[] = {
- 		{ { 0, 0xffffffff } },
- 		.stack_depth = 40,
- 	},
-+	{
-+		"STX_MEM_DW: Store double word: first word in memory",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0),
-+			BPF_LD_IMM64(R1, 0x0123456789abcdefLL),
-+			BPF_STX_MEM(BPF_DW, R10, R1, -40),
-+			BPF_LDX_MEM(BPF_W, R0, R10, -40),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+#ifdef __BIG_ENDIAN
-+		{ { 0, 0x01234567 } },
-+#else
-+		{ { 0, 0x89abcdef } },
-+#endif
-+		.stack_depth = 40,
-+	},
-+	{
-+		"STX_MEM_DW: Store double word: second word in memory",
-+		.u.insns_int = {
-+			BPF_LD_IMM64(R0, 0),
-+			BPF_LD_IMM64(R1, 0x0123456789abcdefLL),
-+			BPF_STX_MEM(BPF_DW, R10, R1, -40),
-+			BPF_LDX_MEM(BPF_W, R0, R10, -36),
-+			BPF_EXIT_INSN(),
-+		},
-+		INTERNAL,
-+		{ },
-+#ifdef __BIG_ENDIAN
-+		{ { 0, 0x89abcdef } },
-+#else
-+		{ { 0, 0x01234567 } },
-+#endif
-+		.stack_depth = 40,
-+	},
- 	/* BPF_STX | BPF_ATOMIC | BPF_W/DW */
+@@ -461,6 +461,36 @@ static int bpf_fill_stxdw(struct bpf_test *self)
+ 	return __bpf_fill_stxdw(self, BPF_DW);
+ }
+ 
++static int bpf_fill_long_jmp(struct bpf_test *self)
++{
++	unsigned int len = BPF_MAXINSNS;
++	struct bpf_insn *insn;
++	int i;
++
++	insn = kmalloc_array(len, sizeof(*insn), GFP_KERNEL);
++	if (!insn)
++		return -ENOMEM;
++
++	insn[0] = BPF_ALU64_IMM(BPF_MOV, R0, 1);
++	insn[1] = BPF_JMP_IMM(BPF_JEQ, R0, 1, len - 2 - 1);
++
++	/*
++	 * Fill with a complex 64-bit operation that expands to a lot of
++	 * instructions on 32-bit JITs. The large jump offset can then
++	 * overflow the conditional branch field size, triggering a branch
++	 * conversion mechanism in some JITs.
++	 */
++	for (i = 2; i < len - 1; i++)
++		insn[i] = BPF_ALU64_IMM(BPF_MUL, R0, (i << 16) + i);
++
++	insn[len - 1] = BPF_EXIT_INSN();
++
++	self->u.ptr.insns = insn;
++	self->u.ptr.len = len;
++
++	return 0;
++}
++
+ static struct bpf_test tests[] = {
  	{
- 		"STX_XADD_W: Test: 0x12 + 0x10 = 0x22",
+ 		"TAX",
+@@ -6892,6 +6922,14 @@ static struct bpf_test tests[] = {
+ 		{ },
+ 		{ { 0, 1 } },
+ 	},
++	{	/* Mainly checking JIT here. */
++		"BPF_MAXINSNS: Very long conditional jump",
++		{ },
++		INTERNAL | FLAG_NO_DATA,
++		{ },
++		{ { 0, 1 } },
++		.fill_helper = bpf_fill_long_jmp,
++	},
+ 	{
+ 		"JMP_JA: Jump, gap, jump, ...",
+ 		{ },
 -- 
 2.25.1
 
