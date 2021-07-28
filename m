@@ -2,550 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C83853DD707
-	for <lists+netdev@lfdr.de>; Mon,  2 Aug 2021 15:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 462913D99C4
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 01:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233914AbhHBNYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 2 Aug 2021 09:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233960AbhHBNYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 2 Aug 2021 09:24:44 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9F8C06175F;
-        Mon,  2 Aug 2021 06:24:34 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id m12so16693612wru.12;
-        Mon, 02 Aug 2021 06:24:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+TBdEtPdVYzFv8jP7bbGUGRnUKqNGvClUvKea29qjIQ=;
-        b=kSKEjD95oJwuKUU/vNbNnfFlRHO8Y+pZE5CFwEWMA415cKpBh6abrWOSxP5Cizj3jq
-         jZXDvyiZvEBsoWCM2Xh1RyTXKmdyi9iW50g4VzBKHLLErCAd60i5iNCRv2KgZqvN5JCl
-         i13wL+MuxWszKFys0KeUqRHwxlLDOMz4T1bGSIwftd/mRRcA2cfUzTdJR7BiVTl1n9B2
-         h0KSbInepof6g+NoF+hRI9JG/V3s5G6hILXX6cCZQpr2aufh0Ump09nPr/6n4oShHK/T
-         cNLLBUKECJD6K82xumT8qrC7OLPaQLI8HP5w8sTkZQG1M2rzIV0yuwxM8loihz0HCTsz
-         sYtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=+TBdEtPdVYzFv8jP7bbGUGRnUKqNGvClUvKea29qjIQ=;
-        b=RL7+NoQtN4+BOy0J6N52//sgAWd51cc87zDbmGec7UM8f/WcqLciQUNU7cCy9CkFeu
-         uKpopA8bqQWDNBsd6Wl+5PamITlVjzGUB7WS/dpHn4zhra0llwBq3kDMkCWVBNwHF/gB
-         Zmp4XJFGGwpXdJXqAMLxsloP0UNXNrpfJSSbg9dTIA0nk8M1wFbXeH2Y00Jt5v8nE2QD
-         u4qlhRV9tZyaQgoV+JQgSx0D2cCQKK2XuDrL+xfkxcGxFb5KkxN+nR3Y0DEZ5Ld1Dz8g
-         1UYHQuPGTnHClQgvC+5QTskzko/00Sf7A29to5bsGS6ydW7tKIRPHIxM4Syay8EUP5CU
-         2IgA==
-X-Gm-Message-State: AOAM532lr/sOUxmdTC8W/CK2SxNgTVGriDEpXd7MhtfgmikHn7ScsTyA
-        Pycs1fNfEwQv/HeKCtuzRn5iOOVfJQp/bq8=
-X-Google-Smtp-Source: ABdhPJytCIE2rDtypyjKwqsK44IVmIKxKGQpAv6mtq4TB0LIOEMoYRSR7SO+EQurHa7zt06c34iFxw==
-X-Received: by 2002:adf:f145:: with SMTP id y5mr17598071wro.102.1627910672959;
-        Mon, 02 Aug 2021 06:24:32 -0700 (PDT)
-Received: from localhost.localdomain ([77.109.191.101])
-        by smtp.gmail.com with ESMTPSA id o28sm11731404wra.71.2021.08.02.06.24.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Aug 2021 06:24:32 -0700 (PDT)
-From:   joamaki@gmail.com
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, j.vosburgh@gmail.com,
-        andy@greyhouse.net, vfalico@gmail.com, andrii@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        Jussi Maki <joamaki@gmail.com>
-Subject: [PATCH bpf-next v4 6/6] selftests/bpf: Add tests for XDP bonding
-Date:   Wed, 28 Jul 2021 23:43:50 +0000
-Message-Id: <20210728234350.28796-7-joamaki@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210728234350.28796-1-joamaki@gmail.com>
-References: <20210609135537.1460244-1-joamaki@gmail.com>
- <20210728234350.28796-1-joamaki@gmail.com>
+        id S232727AbhG1Xwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 19:52:32 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23368 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232609AbhG1Xwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 19:52:30 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16SNnEqL011521;
+        Wed, 28 Jul 2021 16:52:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=vKOaTnq93hhberq5UZQrxSk9y4qbefPy/lG9x5lsKLA=;
+ b=D7py8OO4XX6wMKY9kjHJt+1O/qPXmdNZ6WQfoEgTLvrC9aZkU/4926rLle1RHGf8IYZb
+ Zid10TY8HTgdQe8ctildx04R0oDtz48Abi/8I/EEvQgKRyTh8YUSZ852AWr37X/Dq1ok
+ wOCC5lveFDVAI8HWQuJr5SjN2HS6uWo0UlM= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 3a3ecngyh3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 28 Jul 2021 16:52:15 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 28 Jul 2021 16:52:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LRD5jT0C+fQpCHlP+bJLeXiYrRfs+a+PO6fFO6bvGPGXpTZ0TG9YyaH+tvRMNSFQ7cHs1BpD8xp/d5Igr5WIdacn0ldDfRtbvoiV8C9nCyGucz4ioKFmdc4lpd0YLHzY0bZjzCdOcKGCP/8NnVF4popnFJcJd3NdbNbcv15w2xrnMxh3TTsl4CfcrgKjhrECD9cmb+qtEkXokaOpRqJbsrp35YbR1S+a6JIMHw+gDP1hH1barc/KmX2p8YmnCP7gGREqbBtub2RSqkB7qt16a0FM5rhqF2kpyXIauIs8RCnCW8j5YX08kvN0j+9WH0Ut2mz+nH4t6cpNTYg5VTlHig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vKOaTnq93hhberq5UZQrxSk9y4qbefPy/lG9x5lsKLA=;
+ b=EazhCjHFSeWpLicQIT60Wp5biRg6YYBz0QYOR68xjUuRdsMR4k9TWjVe+raBUmq24NxTVBMU3jJhp7RfxOolJmduoMumvA5Bcp7beARANwkFk4sqBvfWU57c1joKUhq/n/+Au2XkwTm2YT5kpCSfV0iVHWTz2QDlUhX1jQ7cEX0OyEzbavBJhpDqsQg8AnbT9A6GvBAMKm0Ybb32xLYubQxfl4KvBEPjs4BL7eKWnh6u2alSWWUZl1HQdgd3ib+CxW+bhI7UWlUkh0EmHxtkI9VIGY+bOIIlUi+DFpCpbU8zyDFhFjw5sgzkLFFJazaj6cV9Ct2w75lUFbOxZn1DBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by SA1PR15MB4435.namprd15.prod.outlook.com (2603:10b6:806:196::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18; Wed, 28 Jul
+ 2021 23:52:12 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4373.021; Wed, 28 Jul 2021
+ 23:52:12 +0000
+Subject: Re: [PATCH 08/14] bpf/tests: Add tests for ALU operations implemented
+ with function calls
+To:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
+CC:     <kafai@fb.com>, <songliubraving@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <Tony.Ambardar@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-9-johan.almbladh@anyfinetworks.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <ba3656eb-500b-9f14-1c97-d27868f1c3e6@fb.com>
+Date:   Wed, 28 Jul 2021 16:52:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
+In-Reply-To: <20210728170502.351010-9-johan.almbladh@anyfinetworks.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR11CA0045.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::22) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c8::1398] (2620:10d:c090:400::5:8298) by BYAPR11CA0045.namprd11.prod.outlook.com (2603:10b6:a03:80::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend Transport; Wed, 28 Jul 2021 23:52:11 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f1cb998b-75c2-45f5-6f68-08d95222b7f4
+X-MS-TrafficTypeDiagnostic: SA1PR15MB4435:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA1PR15MB44350B415D1D7909D155EEECD3EA9@SA1PR15MB4435.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gckL69XIoyLpytmdGqOJLqTrCOpnC8Fd4ZTDG/7/5BRNLpT2e5r2ocLSO0zUR3ORvpZaUa9+IXzfyQrqWtBLL8SAFmtXHZkp5J0KEjxkUbVe+uULgJfmTjji4i6mO/QU8gdIFOJlF9LrCARsK+lTZUXCoge4u/ZeoJQoLbENYcjit8FdJB2Y1PDXFgM2kZgNSPKR+opIbktIKZmiAmieHA6Qpzp2Y+pONIxlfDLipFoXBf9CaXe8M4Paog+LZrRu9Chk7JN+SXbhNjiY2/ixZzYAnPYWqgc8o6wFX8aCqz/6y7anPPD+G+iEwO6U1O2px5SI4nZqdoWU6TZ+yDf4Vrg748Abz0GhkgYolinVpoLLFD3E+ZNBPJBspnIEABMYXWOHg7PsmFBqfbmuD8zmJcxa+s5KmE0hFF4OSYY+CqWeONta+tNV79EndV5GZlA7sTivUGQMnmLLd2F4KVKvihbLhU4B2eNbAHpSZa+nn2GwavbCV4gSo45AsZVuAQSAdyhl9GuOKpXmhOGursTVChhQvORQMTxHo5L9WI7ycHUD28r+w7IGMm/PjbxpVMgoZmhYARxCEq0nGHcSCvDCrqVYpb41ZQ6hj4m+nt9TvNGjuzAFL/QcdEiwUMGP9LPb228XJM+BuTXFFpYHDitUYUGRgJ7PDfxw8okdHQfwuTcjWxjKH2qLWsXfuZbvsmdxw6J+Bw3Q3s9yTPAYwJA2vJIzvA4kuqugzlS95bvA8EA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(31696002)(508600001)(8936002)(6486002)(86362001)(2906002)(66946007)(8676002)(38100700002)(66476007)(316002)(6666004)(31686004)(53546011)(4326008)(2616005)(66556008)(52116002)(36756003)(5660300002)(186003)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eVJPNjVsbUxjSmlPK1VjUDFoVkpyTEVqOGlFbUdJV1U1ZzIyckJxRXFpajc4?=
+ =?utf-8?B?U2VBamdyTGRzOENldjVVUFlRRlBRZDdOSlBxdkFuUFNtR1prSUVRNks0cG9Z?=
+ =?utf-8?B?azV6ZTVnaVJpQkora2F1ZHNIckt0Tzg1eGY5aFZNeFBpM0hHRGpRR2NWMlRB?=
+ =?utf-8?B?WG1lOE1WekU2YjlIVXluMU9tMG80TTByVlVOQzlBRWl6T2xRWHlyMkVXd0Y1?=
+ =?utf-8?B?VHJQc2ZjYWczQnlQRUxONmZtbmJwZVNyd3dVdWNlTEkwK0VWcHhZSkNwV25Z?=
+ =?utf-8?B?U0dTYzlFbkREY2o4TEswcjZjbWQ1NDlmRk5JOEMzaDZTQWdmbVdxM2pPOGVI?=
+ =?utf-8?B?OFY3QXZINGgvVG5DUjZ0WlFHcDhrVVI3eHZUVTV2MElBdXhXbEVTTTFZZGMy?=
+ =?utf-8?B?ODNmcGNSSUg0UFI2dzdpMEk1ZzJEdHdqcGdoNXpIMk9pL3ZMQUdSVHIwWUhG?=
+ =?utf-8?B?NW8xV0trR1Rua1hoQUtsVU14ODFlcEJ5elUrWXNRdnhuY0VUOXRmMTNYWi9x?=
+ =?utf-8?B?QTNxSTFhc3BXSm1wNHJpUEFKd0lya2l6ME1zMCtjV0xWRS9aOVBpSUpaWnNw?=
+ =?utf-8?B?MnRxVEtVZEkra2lwSGsvVXBwdjY1TzR2dDl1NS81VkU4MTA3TWdCT1BpNGhl?=
+ =?utf-8?B?U05rT3g0azI5RmgrL2dkMXJLTFFRdXRsU0pacTd4Z0h2b0FNcmg0TVNmZGVR?=
+ =?utf-8?B?a1JoRXBFemJzendReGl4THJwYWd4MEFwQkZ5NnUzdlBibVZTbkNiZlZ1cTRX?=
+ =?utf-8?B?V09GQXBnR29UTmNhOEtIOXQ1TjhuQnhKY0JZaExwaG1ZS3FlOW8vUU1Va2to?=
+ =?utf-8?B?RjNLcFNMcGFIZUlSL1VQT0UrYUk1LzJDbGtjWnorSCt6MDU4elo5MW1qUDFJ?=
+ =?utf-8?B?TERLZTJnT0FLZC9vVzJES3hrcEp5NzJoVGhSTlNnYTU1d2Q4RkpuL2NjWXRp?=
+ =?utf-8?B?ZXV3REhjcmg1eGw1Y0U2Q0pYQVRpT2dSbkYxeHR0NGQ5SkQwYkh0alNiUWFM?=
+ =?utf-8?B?Wm5OMWpVUXhNbTVTWU8rMmtia1RZajVaTkpqcmFCa3p1M2lHUmdSZlhXb09V?=
+ =?utf-8?B?YnVlYXVzR3JtVis5OUJJUzFrelJBR2twdjJqQVVxSzIwbVduTkJUeUNBSW83?=
+ =?utf-8?B?cU9iT3dUdDRjTWZJdkRUOC9iSGFCZlFHZGNiN1pzQVAwQkpONkVOZHBFRHgx?=
+ =?utf-8?B?Y3p0RWdpaG52U3dNOThEcUFXU1o3dEpXbG8zblBjWU9jZFp4UUdpRHF4aWtC?=
+ =?utf-8?B?K0l2RGNPOXFDb0s5aDlsZU9KWmZOOHEzUVc0TmJsSE5Db3dldURGZXZvVHdE?=
+ =?utf-8?B?bytLWFlJeWJwcHU2WkwzSEdXT0FJQWJjRWsrMWpFS2gxUnU2RkozNEgwcURr?=
+ =?utf-8?B?cUN1dS9rem5uTE5idHNKYjdqSGFPeVlnbGxhS3VBbkJ3M2F3NHdhb2EzbVhS?=
+ =?utf-8?B?OWxoaytxeWdnZTZXbjBRbit6R0hydldEN1dXZGpUWnQyWHhHQjJjZW9qUXlr?=
+ =?utf-8?B?VGdQU2dJMVRpcnJXZlg1UFpyL0pnTHdSYlg0UlY2Tm5QaHBoTzZvRHphT1U4?=
+ =?utf-8?B?b0RDdjk3ZTdkVDYzRUtzbDlVQTVkT3hBODd1UGVZMjNCVitSUWZibkM3SUU1?=
+ =?utf-8?B?eHN2dXFUeXFja0x0TUdISko0aHAvWVFNNDdDVlV3b1NMbFAwdlVqc1pqb0tW?=
+ =?utf-8?B?bjBBU2VBK3QwUXIrRlBRUTBwTjNFODY3VXZzdU1xM0NGQVhuME9uNnFUYms0?=
+ =?utf-8?B?dUxxc29Ua3g2MzdQZnBsUmhWM0hiV1QxYjhOMHlSdzdFOUlFUm5FYU5OSnpu?=
+ =?utf-8?Q?OhtzeRNcWCYMHh5BRnNRM6R19A/WvZeFd2fgE=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1cb998b-75c2-45f5-6f68-08d95222b7f4
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 23:52:11.9180
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aKd/yeiCJ6NBLEObKcCxkItG+arL+ojiaSyIiV/x+V4JMIkrT/i82MeG0e0xlPIY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4435
+X-OriginatorOrg: fb.com
+X-Proofpoint-GUID: aM2zKMKEWckCDk9LTe5kxREEtHrNqYIR
+X-Proofpoint-ORIG-GUID: aM2zKMKEWckCDk9LTe5kxREEtHrNqYIR
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-28_12:2021-07-27,2021-07-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0 spamscore=0
+ mlxlogscore=999 bulkscore=0 clxscore=1015 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2107280124
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jussi Maki <joamaki@gmail.com>
 
-Add a test suite to test XDP bonding implementation
-over a pair of veth devices.
 
-Signed-off-by: Jussi Maki <joamaki@gmail.com>
----
- .../selftests/bpf/prog_tests/xdp_bonding.c    | 467 ++++++++++++++++++
- 1 file changed, 467 insertions(+)
+On 7/28/21 10:04 AM, Johan Almbladh wrote:
+> 32-bit JITs may implement complex ALU64 instructions using function calls.
+> The new tests check aspects related to this, such as register clobbering
+> and register argument re-ordering.
+> 
+> Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+> ---
+>   lib/test_bpf.c | 138 +++++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 138 insertions(+)
+> 
+> diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+> index eb61088a674f..1115e39630ce 100644
+> --- a/lib/test_bpf.c
+> +++ b/lib/test_bpf.c
+> @@ -1916,6 +1916,144 @@ static struct bpf_test tests[] = {
+>   		{ },
+>   		{ { 0, -1 } }
+>   	},
+> +	{
+> +		/*
+> +		 * Register (non-)clobbering test, in the case where a 32-bit
+> +		 * JIT implements complex ALU64 operations via function calls.
+> +		 */
+> +		"INT: Register clobbering, R1 updated",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 123456789),
+> +			BPF_ALU32_IMM(BPF_MOV, R2, 2),
+> +			BPF_ALU32_IMM(BPF_MOV, R3, 3),
+> +			BPF_ALU32_IMM(BPF_MOV, R4, 4),
+> +			BPF_ALU32_IMM(BPF_MOV, R5, 5),
+> +			BPF_ALU32_IMM(BPF_MOV, R6, 6),
+> +			BPF_ALU32_IMM(BPF_MOV, R7, 7),
+> +			BPF_ALU32_IMM(BPF_MOV, R8, 8),
+> +			BPF_ALU32_IMM(BPF_MOV, R9, 9),
+> +			BPF_ALU64_IMM(BPF_DIV, R1, 123456789),
+> +			BPF_JMP_IMM(BPF_JNE, R0, 0, 10),
+> +			BPF_JMP_IMM(BPF_JNE, R1, 1, 9),
+> +			BPF_JMP_IMM(BPF_JNE, R2, 2, 8),
+> +			BPF_JMP_IMM(BPF_JNE, R3, 3, 7),
+> +			BPF_JMP_IMM(BPF_JNE, R4, 4, 6),
+> +			BPF_JMP_IMM(BPF_JNE, R5, 5, 5),
+> +			BPF_JMP_IMM(BPF_JNE, R6, 6, 4),
+> +			BPF_JMP_IMM(BPF_JNE, R7, 7, 3),
+> +			BPF_JMP_IMM(BPF_JNE, R8, 8, 2),
+> +			BPF_JMP_IMM(BPF_JNE, R9, 9, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 1),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 1 } }
+> +	},
+> +	{
+> +		"INT: Register clobbering, R2 updated",
+> +		.u.insns_int = {
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 0),
+> +			BPF_ALU32_IMM(BPF_MOV, R1, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R2, 2 * 123456789),
+> +			BPF_ALU32_IMM(BPF_MOV, R3, 3),
+> +			BPF_ALU32_IMM(BPF_MOV, R4, 4),
+> +			BPF_ALU32_IMM(BPF_MOV, R5, 5),
+> +			BPF_ALU32_IMM(BPF_MOV, R6, 6),
+> +			BPF_ALU32_IMM(BPF_MOV, R7, 7),
+> +			BPF_ALU32_IMM(BPF_MOV, R8, 8),
+> +			BPF_ALU32_IMM(BPF_MOV, R9, 9),
+> +			BPF_ALU64_IMM(BPF_DIV, R2, 123456789),
+> +			BPF_JMP_IMM(BPF_JNE, R0, 0, 10),
+> +			BPF_JMP_IMM(BPF_JNE, R1, 1, 9),
+> +			BPF_JMP_IMM(BPF_JNE, R2, 2, 8),
+> +			BPF_JMP_IMM(BPF_JNE, R3, 3, 7),
+> +			BPF_JMP_IMM(BPF_JNE, R4, 4, 6),
+> +			BPF_JMP_IMM(BPF_JNE, R5, 5, 5),
+> +			BPF_JMP_IMM(BPF_JNE, R6, 6, 4),
+> +			BPF_JMP_IMM(BPF_JNE, R7, 7, 3),
+> +			BPF_JMP_IMM(BPF_JNE, R8, 8, 2),
+> +			BPF_JMP_IMM(BPF_JNE, R9, 9, 1),
+> +			BPF_ALU32_IMM(BPF_MOV, R0, 1),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 1 } }
+> +	},
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
-new file mode 100644
-index 000000000000..6e84c2d8d7ac
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
-@@ -0,0 +1,467 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/**
-+ * Test XDP bonding support
-+ *
-+ * Sets up two bonded veth pairs between two fresh namespaces
-+ * and verifies that XDP_TX program loaded on a bond device
-+ * are correctly loaded onto the slave devices and XDP_TX'd
-+ * packets are balanced using bonding.
-+ */
-+
-+#define _GNU_SOURCE
-+#include <sched.h>
-+#include <net/if.h>
-+#include <linux/if_link.h>
-+#include "test_progs.h"
-+#include "network_helpers.h"
-+#include <linux/if_bonding.h>
-+#include <linux/limits.h>
-+#include <linux/udp.h>
-+
-+#define BOND1_MAC {0x00, 0x11, 0x22, 0x33, 0x44, 0x55}
-+#define BOND1_MAC_STR "00:11:22:33:44:55"
-+#define BOND2_MAC {0x00, 0x22, 0x33, 0x44, 0x55, 0x66}
-+#define BOND2_MAC_STR "00:22:33:44:55:66"
-+#define NPACKETS 100
-+
-+static int root_netns_fd = -1;
-+
-+static void restore_root_netns(void)
-+{
-+	ASSERT_OK(setns(root_netns_fd, CLONE_NEWNET), "restore_root_netns");
-+}
-+
-+int setns_by_name(char *name)
-+{
-+	int nsfd, err;
-+	char nspath[PATH_MAX];
-+
-+	snprintf(nspath, sizeof(nspath), "%s/%s", "/var/run/netns", name);
-+	nsfd = open(nspath, O_RDONLY | O_CLOEXEC);
-+	if (nsfd < 0)
-+		return -1;
-+
-+	err = setns(nsfd, CLONE_NEWNET);
-+	close(nsfd);
-+	return err;
-+}
-+
-+static int get_rx_packets(const char *iface)
-+{
-+	FILE *f;
-+	char line[512];
-+	int iface_len = strlen(iface);
-+
-+	f = fopen("/proc/net/dev", "r");
-+	if (!f)
-+		return -1;
-+
-+	while (fgets(line, sizeof(line), f)) {
-+		char *p = line;
-+
-+		while (*p == ' ')
-+			p++; /* skip whitespace */
-+		if (!strncmp(p, iface, iface_len)) {
-+			p += iface_len;
-+			if (*p++ != ':')
-+				continue;
-+			while (*p == ' ')
-+				p++; /* skip whitespace */
-+			while (*p && *p != ' ')
-+				p++; /* skip rx bytes */
-+			while (*p == ' ')
-+				p++; /* skip whitespace */
-+			fclose(f);
-+			return atoi(p);
-+		}
-+	}
-+	fclose(f);
-+	return -1;
-+}
-+
-+enum {
-+	BOND_ONE_NO_ATTACH = 0,
-+	BOND_BOTH_AND_ATTACH,
-+};
-+
-+static const char * const mode_names[] = {
-+	[BOND_MODE_ROUNDROBIN]   = "balance-rr",
-+	[BOND_MODE_ACTIVEBACKUP] = "active-backup",
-+	[BOND_MODE_XOR]          = "balance-xor",
-+	[BOND_MODE_BROADCAST]    = "broadcast",
-+	[BOND_MODE_8023AD]       = "802.3ad",
-+	[BOND_MODE_TLB]          = "balance-tlb",
-+	[BOND_MODE_ALB]          = "balance-alb",
-+};
-+
-+static const char * const xmit_policy_names[] = {
-+	[BOND_XMIT_POLICY_LAYER2]       = "layer2",
-+	[BOND_XMIT_POLICY_LAYER34]      = "layer3+4",
-+	[BOND_XMIT_POLICY_LAYER23]      = "layer2+3",
-+	[BOND_XMIT_POLICY_ENCAP23]      = "encap2+3",
-+	[BOND_XMIT_POLICY_ENCAP34]      = "encap3+4",
-+};
-+
-+#define MAX_LOADED 8
-+static struct bpf_object *loaded_bpf_objects[MAX_LOADED] = {};
-+static int n_loaded_bpf_objects;
-+
-+static int load_xdp_program(const char *filename, const char *sec_name, const char *iface)
-+{
-+	struct bpf_prog_load_attr prog_load_attr = {
-+		.prog_type = BPF_PROG_TYPE_XDP,
-+		.file = filename,
-+	};
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	int prog_fd = -1;
-+	int ifindex, err;
-+
-+	err = bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd);
-+	if (!ASSERT_OK(err, "prog load xattr"))
-+		return err;
-+
-+	prog = bpf_object__find_program_by_title(obj, sec_name);
-+	if (!ASSERT_OK_PTR(prog, "find program"))
-+		goto err;
-+
-+	prog_fd = bpf_program__fd(prog);
-+	if (!ASSERT_GE(prog_fd, 0, "get program fd"))
-+		goto err;
-+
-+	ifindex = if_nametoindex(iface);
-+	if (!ASSERT_GT(ifindex, 0, "get ifindex"))
-+		goto err;
-+
-+	err = bpf_set_link_xdp_fd(ifindex, prog_fd, XDP_FLAGS_DRV_MODE | XDP_FLAGS_DRV_MODE);
-+	if (!ASSERT_OK(err, "load xdp program"))
-+		goto err;
-+
-+	loaded_bpf_objects[n_loaded_bpf_objects++] = obj;
-+	if (n_loaded_bpf_objects == MAX_LOADED) {
-+		fprintf(stderr, "Too many loaded BPF objects\n");
-+		goto err;
-+	}
-+
-+	return 0;
-+
-+err:
-+	bpf_object__close(obj);
-+	return -1;
-+}
-+
-+static int bonding_setup(int mode, int xmit_policy, int bond_both_attach)
-+{
-+#define SYS(fmt, ...)						\
-+	({							\
-+		char cmd[1024];					\
-+		snprintf(cmd, sizeof(cmd), fmt, ##__VA_ARGS__);	\
-+		if (!ASSERT_OK(system(cmd), cmd))		\
-+			return -1;				\
-+	})
-+
-+	SYS("ip netns add ns_dst");
-+	SYS("ip link add veth1_1 type veth peer name veth2_1 netns ns_dst");
-+	SYS("ip link add veth1_2 type veth peer name veth2_2 netns ns_dst");
-+
-+	SYS("ip link add bond1 type bond mode %s xmit_hash_policy %s",
-+	    mode_names[mode], xmit_policy_names[xmit_policy]);
-+	SYS("ip link set bond1 up address " BOND1_MAC_STR " addrgenmode none");
-+	SYS("ip -netns ns_dst link add bond2 type bond mode %s xmit_hash_policy %s",
-+	    mode_names[mode], xmit_policy_names[xmit_policy]);
-+	SYS("ip -netns ns_dst link set bond2 up address " BOND2_MAC_STR " addrgenmode none");
-+
-+	SYS("ip link set veth1_1 master bond1");
-+	if (bond_both_attach == BOND_BOTH_AND_ATTACH) {
-+		SYS("ip link set veth1_2 master bond1");
-+	} else {
-+		SYS("ip link set veth1_2 up addrgenmode none");
-+
-+		if (load_xdp_program("xdp_dummy.o", "xdp_dummy", "veth1_2"))
-+			return -1;
-+	}
-+
-+	SYS("ip -netns ns_dst link set veth2_1 master bond2");
-+
-+	if (bond_both_attach == BOND_BOTH_AND_ATTACH)
-+		SYS("ip -netns ns_dst link set veth2_2 master bond2");
-+	else
-+		SYS("ip -netns ns_dst link set veth2_2 up addrgenmode none");
-+
-+	/* Load a dummy program on sending side as with veth peer needs to have a
-+	 * XDP program loaded as well.
-+	 */
-+	if (load_xdp_program("xdp_dummy.o", "xdp_dummy", "bond1"))
-+		return -1;
-+
-+	if (bond_both_attach == BOND_BOTH_AND_ATTACH) {
-+		if (!ASSERT_OK(setns_by_name("ns_dst"), "set netns to ns_dst"))
-+			return -1;
-+		if (load_xdp_program("xdp_tx.o", "tx", "bond2"))
-+			return -1;
-+		restore_root_netns();
-+	}
-+
-+#undef SYS
-+	return 0;
-+}
-+
-+static void bonding_cleanup(void)
-+{
-+	restore_root_netns();
-+	while (n_loaded_bpf_objects) {
-+		n_loaded_bpf_objects--;
-+		bpf_object__close(loaded_bpf_objects[n_loaded_bpf_objects]);
-+	}
-+	ASSERT_OK(system("ip link delete bond1"), "delete bond1");
-+	ASSERT_OK(system("ip link delete veth1_1"), "delete veth1_1");
-+	ASSERT_OK(system("ip link delete veth1_2"), "delete veth1_2");
-+	ASSERT_OK(system("ip netns delete ns_dst"), "delete ns_dst");
-+}
-+
-+static int send_udp_packets(int vary_dst_ip)
-+{
-+	struct ethhdr eh = {
-+		.h_source = BOND1_MAC,
-+		.h_dest = BOND2_MAC,
-+		.h_proto = htons(ETH_P_IP),
-+	};
-+	uint8_t buf[128] = {};
-+	struct iphdr *iph = (struct iphdr *)(buf + sizeof(eh));
-+	struct udphdr *uh = (struct udphdr *)(buf + sizeof(eh) + sizeof(*iph));
-+	int i, s = -1;
-+	int ifindex;
-+
-+	s = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
-+	if (!ASSERT_GE(s, 0, "socket"))
-+		goto err;
-+
-+	ifindex = if_nametoindex("bond1");
-+	if (!ASSERT_GT(ifindex, 0, "get bond1 ifindex"))
-+		goto err;
-+
-+	memcpy(buf, &eh, sizeof(eh));
-+	iph->ihl = 5;
-+	iph->version = 4;
-+	iph->tos = 16;
-+	iph->id = 1;
-+	iph->ttl = 64;
-+	iph->protocol = IPPROTO_UDP;
-+	iph->saddr = 1;
-+	iph->daddr = 2;
-+	iph->tot_len = htons(sizeof(buf) - ETH_HLEN);
-+	iph->check = 0;
-+
-+	for (i = 1; i <= NPACKETS; i++) {
-+		int n;
-+		struct sockaddr_ll saddr_ll = {
-+			.sll_ifindex = ifindex,
-+			.sll_halen = ETH_ALEN,
-+			.sll_addr = BOND2_MAC,
-+		};
-+
-+		/* vary the UDP destination port for even distribution with roundrobin/xor modes */
-+		uh->dest++;
-+
-+		if (vary_dst_ip)
-+			iph->daddr++;
-+
-+		n = sendto(s, buf, sizeof(buf), 0, (struct sockaddr *)&saddr_ll, sizeof(saddr_ll));
-+		if (!ASSERT_EQ(n, sizeof(buf), "sendto"))
-+			goto err;
-+	}
-+
-+	return 0;
-+
-+err:
-+	if (s >= 0)
-+		close(s);
-+	return -1;
-+}
-+
-+void test_xdp_bonding_with_mode(char *name, int mode, int xmit_policy)
-+{
-+	int bond1_rx;
-+
-+	if (!test__start_subtest(name))
-+		return;
-+
-+	if (bonding_setup(mode, xmit_policy, BOND_BOTH_AND_ATTACH))
-+		goto out;
-+
-+	if (send_udp_packets(xmit_policy != BOND_XMIT_POLICY_LAYER34))
-+		goto out;
-+
-+	bond1_rx = get_rx_packets("bond1");
-+	ASSERT_EQ(bond1_rx, NPACKETS, "expected more received packets");
-+
-+	switch (mode) {
-+	case BOND_MODE_ROUNDROBIN:
-+	case BOND_MODE_XOR: {
-+		int veth1_rx = get_rx_packets("veth1_1");
-+		int veth2_rx = get_rx_packets("veth1_2");
-+		int diff = abs(veth1_rx - veth2_rx);
-+
-+		ASSERT_GE(veth1_rx + veth2_rx, NPACKETS, "expected more packets");
-+
-+		switch (xmit_policy) {
-+		case BOND_XMIT_POLICY_LAYER2:
-+			ASSERT_GE(diff, NPACKETS,
-+				  "expected packets on only one of the interfaces");
-+			break;
-+		case BOND_XMIT_POLICY_LAYER23:
-+		case BOND_XMIT_POLICY_LAYER34:
-+			ASSERT_LT(diff, NPACKETS/2,
-+				  "expected even distribution of packets");
-+			break;
-+		default:
-+			PRINT_FAIL("Unimplemented xmit_policy=%d\n", xmit_policy);
-+			break;
-+		}
-+		break;
-+	}
-+	case BOND_MODE_ACTIVEBACKUP: {
-+		int veth1_rx = get_rx_packets("veth1_1");
-+		int veth2_rx = get_rx_packets("veth1_2");
-+		int diff = abs(veth1_rx - veth2_rx);
-+
-+		ASSERT_GE(diff, NPACKETS,
-+			  "expected packets on only one of the interfaces");
-+		break;
-+	}
-+	default:
-+		PRINT_FAIL("Unimplemented xmit_policy=%d\n", xmit_policy);
-+		break;
-+	}
-+
-+out:
-+	bonding_cleanup();
-+}
-+
-+
-+/* Test the broadcast redirection using xdp_redirect_map_multi_prog and adding
-+ * all the interfaces to it and checking that broadcasting won't send the packet
-+ * to neither the ingress bond device (bond2) or its slave (veth2_1).
-+ */
-+void test_xdp_bonding_redirect_multi(void)
-+{
-+	static const char * const ifaces[] = {"bond2", "veth2_1", "veth2_2"};
-+	struct bpf_prog_load_attr prog_load_attr = {
-+		.prog_type = BPF_PROG_TYPE_UNSPEC,
-+		.file = "xdp_redirect_multi_kern.o",
-+	};
-+	struct bpf_program *redirect_prog;
-+	int prog_fd, map_all_fd;
-+	struct bpf_object *obj;
-+	int veth1_1_rx, veth1_2_rx;
-+	int err;
-+
-+	if (!test__start_subtest("xdp_bonding_redirect_multi"))
-+		return;
-+
-+	if (bonding_setup(BOND_MODE_ROUNDROBIN, BOND_XMIT_POLICY_LAYER23, BOND_ONE_NO_ATTACH))
-+		goto out;
-+
-+	err = bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd);
-+	if (!ASSERT_OK(err, "prog load xattr"))
-+		goto out;
-+
-+	map_all_fd = bpf_object__find_map_fd_by_name(obj, "map_all");
-+	if (!ASSERT_GE(map_all_fd, 0, "find map_all fd"))
-+		goto out;
-+
-+	redirect_prog = bpf_object__find_program_by_name(obj, "xdp_redirect_map_multi_prog");
-+	if (!ASSERT_OK_PTR(redirect_prog, "find xdp_redirect_map_multi_prog"))
-+		goto out;
-+
-+	prog_fd = bpf_program__fd(redirect_prog);
-+	if (!ASSERT_GE(prog_fd, 0, "get prog fd"))
-+		goto out;
-+
-+	if (!ASSERT_OK(setns_by_name("ns_dst"), "could not set netns to ns_dst"))
-+		goto out;
-+
-+	/* populate the devmap with the relevant interfaces */
-+	for (int i = 0; i < ARRAY_SIZE(ifaces); i++) {
-+		int ifindex = if_nametoindex(ifaces[i]);
-+
-+		if (!ASSERT_GT(ifindex, 0, "could not get interface index"))
-+			goto out;
-+
-+		if (!ASSERT_OK(bpf_map_update_elem(map_all_fd, &ifindex, &ifindex, 0),
-+			       "add interface to map_all"))
-+			goto out;
-+	}
-+
-+	/* finally attach the program */
-+	err = bpf_set_link_xdp_fd(if_nametoindex("bond2"), prog_fd,
-+				  XDP_FLAGS_DRV_MODE | XDP_FLAGS_UPDATE_IF_NOEXIST);
-+	if (!ASSERT_OK(err, "set bond2 xdp"))
-+		goto out;
-+
-+	restore_root_netns();
-+
-+	if (send_udp_packets(BOND_MODE_ROUNDROBIN))
-+		goto out;
-+
-+	veth1_1_rx = get_rx_packets("veth1_1");
-+	veth1_2_rx = get_rx_packets("veth1_2");
-+
-+	ASSERT_EQ(veth1_1_rx, 0, "expected no packets on veth1_1");
-+	ASSERT_GE(veth1_2_rx, NPACKETS, "expected packets on veth1_2");
-+
-+out:
-+	restore_root_netns();
-+	bpf_object__close(obj);
-+	bonding_cleanup();
-+}
-+
-+static int libbpf_debug_print(enum libbpf_print_level level,
-+			      const char *format, va_list args)
-+{
-+	if (level != LIBBPF_WARN)
-+		vprintf(format, args);
-+	return 0;
-+}
-+
-+struct bond_test_case {
-+	char *name;
-+	int mode;
-+	int xmit_policy;
-+};
-+
-+static	struct bond_test_case bond_test_cases[] = {
-+	{ "xdp_bonding_roundrobin", BOND_MODE_ROUNDROBIN, BOND_XMIT_POLICY_LAYER23, },
-+	{ "xdp_bonding_activebackup", BOND_MODE_ACTIVEBACKUP, BOND_XMIT_POLICY_LAYER23 },
-+
-+	{ "xdp_bonding_xor_layer2", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER2, },
-+	{ "xdp_bonding_xor_layer23", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER23, },
-+	{ "xdp_bonding_xor_layer34", BOND_MODE_XOR, BOND_XMIT_POLICY_LAYER34, },
-+};
-+
-+void test_xdp_bonding(void)
-+{
-+	libbpf_print_fn_t old_print_fn;
-+	int i;
-+
-+	old_print_fn = libbpf_set_print(libbpf_debug_print);
-+
-+	root_netns_fd = open("/proc/self/ns/net", O_RDONLY);
-+	if (!ASSERT_GE(root_netns_fd, 0, "open /proc/self/ns/net"))
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(bond_test_cases); i++) {
-+		struct bond_test_case *test_case = &bond_test_cases[i];
-+
-+		test_xdp_bonding_with_mode(
-+			test_case->name,
-+			test_case->mode,
-+			test_case->xmit_policy);
-+	}
-+
-+	test_xdp_bonding_redirect_multi();
-+
-+	libbpf_set_print(old_print_fn);
-+	close(root_netns_fd);
-+}
--- 
-2.17.1
+It looks like the above two tests, "R1 updated" and "R2 updated" should 
+be very similar and the only difference is one immediate is 123456789 
+and another is 2 * 123456789. But for generated code, they all just have
+the final immediate. Could you explain what the difference in terms of
+jit for the above two tests?
 
+> +	{
+> +		/*
+> +		 * Test 32-bit JITs that implement complex ALU64 operations as
+> +		 * function calls R0 = f(R1, R2), and must re-arrange operands.
+> +		 */
+> +#define NUMER 0xfedcba9876543210ULL
+> +#define DENOM 0x0123456789abcdefULL
+> +		"ALU64_DIV X: Operand register permutations",
+> +		.u.insns_int = {
+> +			/* R0 / R2 */
+> +			BPF_LD_IMM64(R0, NUMER),
+> +			BPF_LD_IMM64(R2, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R0, R2),
+> +			BPF_JMP_IMM(BPF_JEQ, R0, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R1 / R0 */
+> +			BPF_LD_IMM64(R1, NUMER),
+> +			BPF_LD_IMM64(R0, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R1, R0),
+> +			BPF_JMP_IMM(BPF_JEQ, R1, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R0 / R1 */
+> +			BPF_LD_IMM64(R0, NUMER),
+> +			BPF_LD_IMM64(R1, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R0, R1),
+> +			BPF_JMP_IMM(BPF_JEQ, R0, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R2 / R0 */
+> +			BPF_LD_IMM64(R2, NUMER),
+> +			BPF_LD_IMM64(R0, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R2, R0),
+> +			BPF_JMP_IMM(BPF_JEQ, R2, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R2 / R1 */
+> +			BPF_LD_IMM64(R2, NUMER),
+> +			BPF_LD_IMM64(R1, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R2, R1),
+> +			BPF_JMP_IMM(BPF_JEQ, R2, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R1 / R2 */
+> +			BPF_LD_IMM64(R1, NUMER),
+> +			BPF_LD_IMM64(R2, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R1, R2),
+> +			BPF_JMP_IMM(BPF_JEQ, R1, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			BPF_LD_IMM64(R0, 1),
+
+Do we need this BPF_LD_IMM64(R0, 1)?
+First, if we have it, and next "BPF_ALU64_REG(BPF_DIV, R1, R1)"
+generates incorrect value and exit and then you will get
+exit value 1, which will signal the test success.
+
+Second, if you don't have this R0 = 1, R0 will be DENOM
+and you will be fine.
+
+> +			/* R1 / R1 */
+> +			BPF_LD_IMM64(R1, NUMER),
+> +			BPF_ALU64_REG(BPF_DIV, R1, R1),
+> +			BPF_JMP_IMM(BPF_JEQ, R1, 1, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R2 / R2 */
+> +			BPF_LD_IMM64(R2, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R2, R2),
+> +			BPF_JMP_IMM(BPF_JEQ, R2, 1, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* R3 / R4 */
+> +			BPF_LD_IMM64(R3, NUMER),
+> +			BPF_LD_IMM64(R4, DENOM),
+> +			BPF_ALU64_REG(BPF_DIV, R3, R4),
+> +			BPF_JMP_IMM(BPF_JEQ, R3, NUMER / DENOM, 1),
+> +			BPF_EXIT_INSN(),
+> +			/* Successful return */
+> +			BPF_LD_IMM64(R0, 1),
+> +			BPF_EXIT_INSN(),
+> +		},
+> +		INTERNAL,
+> +		{ },
+> +		{ { 0, 1 } },
+> +#undef NUMER
+> +#undef DENOM
+> +	},
+>   	{
+>   		"check: missing ret",
+>   		.u.insns = {
+> 
