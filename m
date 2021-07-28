@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79A013D97E4
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC273D97E5
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232111AbhG1VzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 17:55:06 -0400
+        id S232163AbhG1VzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 17:55:07 -0400
 Received: from mail-eopbgr80074.outbound.protection.outlook.com ([40.107.8.74]:44933
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232130AbhG1Vy7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 17:54:59 -0400
+        id S232105AbhG1VzE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 17:55:04 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=An17tn5FKWL/Dp+Lo1qXDEobRNLIigilcrHLrtb561HkRorZFWe59W9nc2z/5MBgPIu0Hd557ItgorTLuts4WrUkJ6pCkDK8s31hQeNvtXmhJxCBlst42XCPNJPIk5a6Nf0QNnNSGKQfshdjRApqsTDgxZsFqgynq5WUqXbNEDAQJdHP1UWZbuSpCfE96cGtPQJhVOlZQDrN/Em2fAnk80cCuneRIwU7Blwv3VfTVsg7YYeDh1li9jPWr4FF+VH+vC+V9dJTeMD+I+SzPzs1lQ5H/5uFOmHelLtPeZkDVo37V/ujU9hPCWDLaxC8gsT4o5C+e6O4jxNUunc3VDY0mQ==
+ b=MFz8WJ+7p0VslFpioOZ6J17x6sbg4kW+41mgLERW7i5PV7dXlWSscL1bTAS0iOH4l5yGakRH1HItrvC7yR+DyrTeaixpblgKpk6ey6OIxhTdqSIRbH9JYOB3CcvAUkIGVSZ/RrGnbleTjEbArQZ3GrWU319VnYIm8i5UQoWUS8OGZ6QxKUeThTtN42r2Hb4bJ1ZyPiWnF25EMkuDUC5OF8AE3a9F9bRlzFHHzBpMNVXbhdbcbwhcmRx4W9tdFLgrpSimfk/d1jNtcf2oVHR10xVoflQu71Y3flKC5fYk9KBilk+6aqtvIYe0tj4NDuaVwiRLbzoVCs+ubi2ysrWxWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yCzPdhIS4oXM+f5vdB74F75e3unn1+4TG+s1vZqcbJk=;
- b=H/Iy2LRDQG7mD4caelvEDtGekBZu/P98auMQb54zs6WLur5vNz0iJwza9DLLrjVWEItKigTMN3UbFXcbCDaJWDUvVCe/SRauMGcQfM8LomPrZE3sxDXn6Yy8AHTgyhp+oKBvlZk3Xs3ao3gVTLnIAKfLAeuaWyG+VVcXl9hMn1n/6sowmfUng58R7hSCtso7p9Sj153ojeGGfv8SJst+G/Ol2JUzE0AneLjKWKxiUeuoqCWgD8oKXtkrvg9mkvadDdfHLcCuKp49d/MrGB/8E74Oe7s5lWIZ80elSHnG1tsOM5Vqemfw2y5+l4nUsaewK1sdBDIXgqjSQLNLkQCQJQ==
+ bh=jJm7eEQZOay5O3nbeepwlLz01m38N4QObNs35l+mDGA=;
+ b=XXdBp5Rpkz3gS+pqzBtp3jgw+5BedUXGe4MZDCTMQJBk2ltCDBbOzKM/JKIRkUJS+Eb7vjon7bqbOliMBHeTEQkWgfrAd0AU+LV3kdBSKRdJs2v+5gx1DCY6UcDejE1PofbPgy1YGhGseq/CXoyfXJxv/EehH79ZlKMMvPSJwyv4+UbKydwJMPTeAttun4ZjMWPNuA75wDZtEdGAdgDscdHT5KYFNrAPYPlkaAbk0/bFYEuOgi+aHJaFOiw2AzMJjGz9QxxiUmpNy2afXu3eHkapSleWJmDcjXlBY4NWNwGb9NaOhbQe5/k/YTlv95f2sCnknywQ+NiLGKEufQSjYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yCzPdhIS4oXM+f5vdB74F75e3unn1+4TG+s1vZqcbJk=;
- b=JN33GNlf2CxtqXHrffNmuO9Au369VzGT6ECAzzbBHPLPkx9Ge6lkMfYXOHl3nzrrZlXwSSrrqofH50CbNwTYYb9lpf39SgjobsJ4/H8Q/Xdo2+JZQ3NfrvHcXzoRzOCg3y/pET/FcJ7uHwEAx2+hrwcI9BAZ01LrJksdN54woYg=
+ bh=jJm7eEQZOay5O3nbeepwlLz01m38N4QObNs35l+mDGA=;
+ b=TLaUad/Z19TteqtVxNxKreM/fVrBUhe3SqJdYs2lyMhnrm0uQOfYiY+TmL1/nVLfkcfzrpJppI4Wy0ueIs8PGFFnpkREPp9OiB+wdxd9IBtp92kzSqJNqBg+Veee7vG0GXdcLpkrZGGrADKTy6LeoNs/AS60n3s+7PKk3iWPbgg=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
@@ -43,9 +43,9 @@ To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 2/3] net: dsa: sja1105: make sure untagged packets are dropped on ingress ports with no pvid
-Date:   Thu, 29 Jul 2021 00:54:28 +0300
-Message-Id: <20210728215429.3989666-3-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 3/3] net: dsa: tag_sja1105: fix control packets on SJA1110 being received on an imprecise port
+Date:   Thu, 29 Jul 2021 00:54:29 +0300
+Message-Id: <20210728215429.3989666-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210728215429.3989666-1-vladimir.oltean@nxp.com>
 References: <20210728215429.3989666-1-vladimir.oltean@nxp.com>
@@ -56,219 +56,169 @@ X-ClientProxiedBy: AM8P191CA0015.EURP191.PROD.OUTLOOK.COM
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (82.76.66.29) by AM8P191CA0015.EURP191.PROD.OUTLOOK.COM (2603:10a6:20b:21a::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Wed, 28 Jul 2021 21:54:54 +0000
+Received: from localhost.localdomain (82.76.66.29) by AM8P191CA0015.EURP191.PROD.OUTLOOK.COM (2603:10a6:20b:21a::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.21 via Frontend Transport; Wed, 28 Jul 2021 21:54:55 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 43133c91-aa76-4a85-ac99-08d95212558c
+X-MS-Office365-Filtering-Correlation-Id: 02f70db7-d9bc-42ba-4a0d-08d9521255f5
 X-MS-TrafficTypeDiagnostic: AM0PR04MB4564:
-X-Microsoft-Antispam-PRVS: <AM0PR04MB456423D779ECA0C00F2DAF7EE0EA9@AM0PR04MB4564.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4564D9808D0016C9C41DC293E0EA9@AM0PR04MB4564.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n8mOTsfRmP8hs1YSey2k+B88IviT715+BfF5lCC1lZ3pVO+C5tmZhDW0dvv+nGA9cQI1e1fFK1TVrg5y53T728XeWBtWs6i7rgFmicZj34uZ6OojcqNBjuRSr7K/xzldlfKcNroihVqax+qdQZvSsSmrUvRqV7Xn1IEMHbfzI5psLV+4XKoCEIU3eXQOWzn6D34QUTGdpUdbBpZoQBv8qkglJ60nmmgZ50nFU1GRNcbgRAflSZMpd8XgJCJvfkMA8i2TsqJJNauTA2MeJY8FaxZ/5tMcy6J46GhHf+z+7AWAnQG20XiWL8qQ2j5qrrKHR/CG6lDtP00HCMdQIPLChMLQSq087E/JQSlT7d9QR3pmSMjgWd5GlHkr8cALjDPOFM8hVYJs0ctz2bJl9MrqpOI5DgdSdHH/3wpGne3fZkdNCz9WfSW1kSqwseHxgUiWKQY1pmBOwKdbQMbUix4+PL9ASage73qwwLpLAlMPwa2jgoXxFk0Gi7JTwQCHL7KvVoIYdRYGz8OrLuCYFz9hbcNQSu0SFB6pn+4Tfn52nlS2fQzphFgI+pbDGdQmbvkIAjxvddYlTUXqe8d9XdyZBB6xS1xLCZf8zMEMuw5NoMp4Xhcr8LJHC5+eeWHsWjFHIozmOVT2v5QrjHaTPEHrXFbRw20isYUdU2yAviEU+QTAdzu0Lz2HNbK7nKfHdaX5fkB15Y/rNISKouwE/wzA8A==
+X-Microsoft-Antispam-Message-Info: i8r1fQKj4x4dPsiP58KCXU+dFhdFY6/G7+i2RQIX2jjsdXm5OjN9/Bst8OcXrGaWFqevSQjeI7ezSsm81KWCVDbyxDp8vSAI6eQvwZ/piK/0S2M3rImAwwHBcNdcnrxh20vVrtZ9Jj+xS3LAOE2zBZtV2QYuz3SSprmyARvD3Zk16eb8gjbHwFdahH/4gvKKOUgl8I2VWJzrzDqmJxpm9pXmJoTgjtpIhM1SGkosgzPvTypB0WV1DovyDyBFYxZuPy3IOG5S2eUswQTvgCk7y5gR/XwPl4YcIgJ9//wUgd98tTFFNi655Lczn3NHsIN6NyHHSjLGPGuqQr3t7Kykj6YJ3pJ0nR1zWStNSPntOSSPS6RKkDNYzP6IVvxCT+BDMhDth2PsXoVLCmSYsQWOYG4XF9xhBJ2S/FfO1MQG+YEchUBfosVtfrYbi45ryn00BKLKVMNbzmMneY6IxYomfYRnJqukg2Op4ScViJnSmAFa9BVDz4ptBBK6GRQx1Vf7DC3iedj2y/hKZCZjDXtaT9WyELLnvBipKErTjfaLy8igW1SE6JfLz6UIiMf8DFgSoW4OrEo/5cG+rnnCM5pzROqljmkzwEulLisMwQfWa/qKbZwBlgWEQu3yZbxCSk05fGJLlxjoT8YDs3Xis70RMBK/pq/L/P1RRidKUPeQ2VUgegoJ4+z69apLClwnSfFnoGYrMMg05h+L/vvo40g3jg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(26005)(83380400001)(6486002)(86362001)(110136005)(36756003)(66946007)(4326008)(316002)(8676002)(54906003)(66476007)(66556008)(6512007)(2616005)(956004)(44832011)(2906002)(6506007)(1076003)(8936002)(186003)(38100700002)(38350700002)(508600001)(52116002)(6666004)(5660300002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yE2M69LCuqqDqJpOv7Z5SFo7+TMVMNiNa3Rz/7/OJXJtYsYqr4n80bj6L6Vc?=
- =?us-ascii?Q?JJT3iWTCImQL+OObp+q2pin7Nsc6+hKjTjb420VsEYU/KGfppwONdK5VNa5G?=
- =?us-ascii?Q?4PGyG2bWumiX4y94S22mt1cioGQpuLtHTILxlZYxdNPAgDds9UQpA0KGnduZ?=
- =?us-ascii?Q?WXKmLFUTbure9AxPLJPFbhsFvJ8Z9i1mcFzHyCnjqYfJdiNGSXi8F9d3jqbS?=
- =?us-ascii?Q?YFwDywWt/k9eZVJAsde5u4oJ0ZI/HgfP060WkQ7KjB2pelgCqJ3/7xe+TDEk?=
- =?us-ascii?Q?xSf61PvRYZZkkYJkm5/CRCGuI6Uc5RQ4GNNVWFLDu4BdY6VCpkr0BYHCKKkG?=
- =?us-ascii?Q?6WiAsvJJGOsjxq+dBY7oLLW7Qs/sWiTrw5aEMk0jB/Ae2/cYyL2rgsgBjlBD?=
- =?us-ascii?Q?fbZJjBaHwP4e+HpYOWoprZ39UlbgEe/BD5aq2lZ5Sv/OawNy8RnvoP0CsKb5?=
- =?us-ascii?Q?noZUd6bhSNvUMFnNaEb6Ax+GDN9r4I4nWyrd0noAw4GZUlMoQH8uNPRgBZka?=
- =?us-ascii?Q?2cA+E55JcBSj3f3Kt9PW2ZhDlmVVx/zaqolojzXGCY25ZDZYl6KahmBNH1v1?=
- =?us-ascii?Q?jI4DJNLkybM38MiBszXxoUtrUzyrTcY6Mu5yDs6F7efRyCHPdfuwxEIkne+g?=
- =?us-ascii?Q?m9ZwGO49IW005n7f9qIoOz3Ty0IrWCpCAbVkt/XNFkPriy6F9+z4MEx0kkPB?=
- =?us-ascii?Q?TRQmfZzhfxHz552oeq+rXtSkBBvjjCucKazzGFnzstVAAK2F7acnPojFDY5h?=
- =?us-ascii?Q?RcSuGUMVzN30ngljNF1lO7TczH/3sY+cNy8Yp33AE9oznl5QQKS5WcQ8l8BR?=
- =?us-ascii?Q?r1arHfsY7HVY9HnxUwLdQ+ECU6mmLz9LNL/mZe6iYubmQC3zozJevLP9V+TM?=
- =?us-ascii?Q?mBr3hp8wSm0TfSGaPIcDceUTQp5e/caQQEBgI6NKUDWCAiDT/Wo0/sUAN+Ql?=
- =?us-ascii?Q?/1oY/SaPv9OWsp2UMO/dNkC+ypc2WJtGEwql+YOnZTMHHnBr/VV4KoqsTq4/?=
- =?us-ascii?Q?eA5JUbxIhddzqyKiAR1kEmclJIEtXKHzzZw5qunRaXqCmkTWIXQiXFNs/yAi?=
- =?us-ascii?Q?YCjrKsm7FCOd06ZPmddfAyOQjcUwP0XsQNLFmEA9coFx12sHLFcBRajLkm1P?=
- =?us-ascii?Q?fD6DPIVo6i3ZGj4A8s6NjlrcRS+C5+toYKTZcRXZH+74A9uIc/EenKGpIjCZ?=
- =?us-ascii?Q?sBJW1lCRTs1fWW9yWMI25ymqlPe+suo+xS90VBhWkEv6j+L76VMVJuUT8pss?=
- =?us-ascii?Q?+RAS7/sNF/IdUTV+M68TaT6E0eP5Ok4mwWl465lSHpB92gcVbnZFahGMVXO5?=
- =?us-ascii?Q?0iLegQlqQlStTr829R2t9pmz?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7F6sHOyijJGVUfmEJdzU8/6m2ULRYnz2n5i2Wq3bPS3vdccZftX6l9cLg2pp?=
+ =?us-ascii?Q?iVfVF1W83Z/xw9uH5DSHdkw9+mmrch8rjva51Spu/ueSdfueyTXUVT3R6lIk?=
+ =?us-ascii?Q?XgCQDacy37UjVx9pvo6ijboWPqyc+uu9XxIiV+P6IGOYEMPMuDNaXLTz22iQ?=
+ =?us-ascii?Q?NoOSxh/NuMKmJyQmrPhlLJOmEtORN5fCKSBnC+Sl3wnTAarOK6j5VphppyX8?=
+ =?us-ascii?Q?CT9Yn6xQWk5fPw2DzskXRLg1aXb0NcM9V6/SYBIfwqpY7OGT03KIJWCRouX4?=
+ =?us-ascii?Q?O871eFL5oTlEZ8/v4rhN43ENcw/2jm3S25H46B4DX5XFfErvapiTLYqcZg8g?=
+ =?us-ascii?Q?sQgHN0EYR3lOgWpkWs4ChIIlvMfYlVv6Zl2NqlokhFaHsMmmCIm7bfSEswqC?=
+ =?us-ascii?Q?/QN4kJjV+KbMpbxqMSn3mSvUESgBhSLIG2RuPgznZFx/AIY3vCKwNO87OvrQ?=
+ =?us-ascii?Q?tZl/4RQTz802l6b/F0y3dnegJjwFO4GbdLxFS8n8fcAWYbuL899czjuH61/0?=
+ =?us-ascii?Q?vUdrqVHf2xejKhsu8TRC8fcxbnF1JjmjmPqeN7M5fRORx3pVRXpcjNU7OefE?=
+ =?us-ascii?Q?2lEtTx2Sv+MMcBvm1Pg0FiqiqGArUFbKFGYDCDTHIfzFNDmhcV0mi3VmpIi0?=
+ =?us-ascii?Q?bjXF38lWw0MbfMOx1zP1zI6+P9+QFLRcpQmXTgKldmD+uuBBAiifYBIloiqy?=
+ =?us-ascii?Q?Yo39Qw1I87Zuc9/7nlygu37wp/t5ag+PXtKTSbC4e5h8cE4VgTcJj2uAN7nk?=
+ =?us-ascii?Q?FZmdD9FzkzfMk01pTSm1QOL0nrrezcAuAZAIhKiyC+envucnVa0v5TJz8JhP?=
+ =?us-ascii?Q?tTdGt8UQpNFdliISg/XoN/+YPJCL1KeSW2ZDUhYyWdw+noJtEPi0UtAFBD4d?=
+ =?us-ascii?Q?0dCZaC40J0JF37Vh6rxdNC+r+wlyfid9MiSsA2Jd2TyFIWRZ1GZNAU6gle3W?=
+ =?us-ascii?Q?kq1637LzcARXM3Dmam9UQxhf2XEUWQSoZKG5Hp6PlueaXVntu6WmuF125448?=
+ =?us-ascii?Q?8izfZw5sXN0Em4Iwj3jrM+yTSydZmOk0dHdNcRB+MamynymYLzy2Oq0WFHbZ?=
+ =?us-ascii?Q?QoTUFbgxZ7X96DtyPR3xUHZmsSDYHL7rPv6GYU24PtkJA1KJJD5NcIs9PEi5?=
+ =?us-ascii?Q?+yWJYXCqJcGjojHgs7HgjSmfE9julnmKGSLVnKKvVIWElWCty9fihWOAGSUY?=
+ =?us-ascii?Q?DfyBf1f3rSkON6enKP6nMo/fEu++o4wwRmzRQBFFB/AozJ+33ZnaJgeLeO7P?=
+ =?us-ascii?Q?6YnrDrSpSdFdOiKUTQTPJ0yOSIQiI7fwsorppWizWax2WwHli1fUzevkJAnu?=
+ =?us-ascii?Q?mRsQ/yBxUnr8eUqLNRsnMohv?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43133c91-aa76-4a85-ac99-08d95212558c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02f70db7-d9bc-42ba-4a0d-08d9521255f5
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 21:54:54.9486
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 21:54:55.6582
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eJaocI8wue8Pg/MjMClEXGlYjD+D4wFN8ZV69nZFZE5Tuco2qw8Ig3pFlkNCp5apkU35HuomocXpxmuqfMZMAw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: jZifxiGHEmViLrfw+37qFltDw3lOB8zH0TjdBPy9cUsr601hWhXI0hx/2K/FY0YCvFNUNeKZe6NtKtWIt/lrbA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4564
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Surprisingly, this configuration:
+On RX, a control packet with SJA1110 will have:
+- an in-band control extension (DSA tag) composed of a header and an
+  optional trailer (if it is a timestamp frame). We can (and do) deduce
+  the source port and switch id from this.
+- a VLAN header, which can either be the tag_8021q RX VLAN (pvid) or the
+  bridge VLAN. The sja1105_vlan_rcv() function attempts to deduce the
+  source port and switch id a second time from this.
 
-ip link add br0 type bridge vlan_filtering 1
-ip link set swp2 master br0
-bridge vlan del dev swp2 vid 1
+The basic idea is that even though we don't need the source port
+information from the tag_8021q header if it's a control packet, we do
+need to strip that header before we pass it on to the network stack.
 
-still has the sja1105 switch sending untagged packets to the CPU (and
-failing to decode them, since dsa_find_designated_bridge_port_by_vid
-searches by VID 1 and rightfully finds no bridge VLAN 1 on a port).
+The problem is that we call sja1105_vlan_rcv for ports under VLAN-aware
+bridges, and that function tells us it couldn't identify a tag_8021q
+header, so we need to perform imprecise RX by VID. Well, we don't,
+because we already know the source port and switch ID.
 
-Dumping the switch configuration, the VLANs are managed properly:
-- the pvid of swp2 is 1 in the MAC Configuration Table, but
-- only the CPU port is in the port membership of VLANID 1 in the VLAN
-  Lookup Table
+This patch drops the return value from sja1105_vlan_rcv and we just look
+at the source_port and switch_id values from sja1105_rcv and sja1110_rcv
+which were initialized to -1. If they are still -1 it means we need to
+perform imprecise RX.
 
-When the ingress packets are tagged with VID 1, they are properly
-dropped. But when they are untagged, they are able to reach the CPU
-port. Also, when the pvid in the MAC Configuration Table is changed to
-e.g. 55 (an unused VLAN), the untagged packets are also dropped.
-
-So it looks like:
-- the switch bypasses ingress VLAN membership checks for untagged traffic
-- the reason why the untagged traffic is dropped when I make the pvid 55
-  is due to the lack of valid destination ports in VLAN 55, rather than
-  an ingress membership violation
-- the ingress VLAN membership cheks are only done for VLAN-tagged traffic
-
-Interesting. It looks like there is an explicit bit to drop untagged
-traffic, so we should probably be using that to preserve user expectations.
-
-Note that only VLAN-aware ports should drop untagged packets due to no
-pvid - when VLAN-unaware, the software bridge doesn't do this even if
-there is no pvid on any bridge port and on the bridge itself. So the new
-sja1105_drop_untagged() function cannot simply be called with "false"
-from sja1105_bridge_vlan_add() and with "true" from sja1105_bridge_vlan_del.
-Instead, we need to also consider the VLAN awareness state. That means
-we need to hook the "drop untagged" setting in all the same places where
-the "commit pvid" logic is, and it needs to factor in all the state when
-flipping the "drop untagged" bit: is our current pvid in the VLAN Lookup
-Table, and is the current port in that VLAN's port membership list?
-VLAN-unaware ports will never drop untagged frames because these checks
-always succeed by construction, and the tag_8021q VLANs cannot be changed
-by the user.
-
+Fixes: 884be12f8566 ("net: dsa: sja1105: add support for imprecise RX")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 74 +++++++++++++++++++-------
- 1 file changed, 56 insertions(+), 18 deletions(-)
+ net/dsa/tag_sja1105.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 293c77622657..5ab1676a7448 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -57,6 +57,38 @@ static bool sja1105_can_forward(struct sja1105_l2_forwarding_entry *l2_fwd,
- 	return !!(l2_fwd[from].reach_port & BIT(to));
+diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
+index cddee4b499d8..c1f993d592ef 100644
+--- a/net/dsa/tag_sja1105.c
++++ b/net/dsa/tag_sja1105.c
+@@ -368,10 +368,11 @@ static bool sja1110_skb_has_inband_control_extension(const struct sk_buff *skb)
+ 	return ntohs(eth_hdr(skb)->h_proto) == ETH_P_SJA1110;
  }
  
-+static int sja1105_is_vlan_configured(struct sja1105_private *priv, u16 vid)
-+{
-+	struct sja1105_vlan_lookup_entry *vlan;
-+	int count, i;
-+
-+	vlan = priv->static_config.tables[BLK_IDX_VLAN_LOOKUP].entries;
-+	count = priv->static_config.tables[BLK_IDX_VLAN_LOOKUP].entry_count;
-+
-+	for (i = 0; i < count; i++)
-+		if (vlan[i].vlanid == vid)
-+			return i;
-+
-+	/* Return an invalid entry index if not found */
-+	return -1;
-+}
-+
-+static int sja1105_drop_untagged(struct dsa_switch *ds, int port, bool drop)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	struct sja1105_mac_config_entry *mac;
-+
-+	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
-+
-+	if (mac[port].drpuntag == drop)
-+		return 0;
-+
-+	mac[port].drpuntag = drop;
-+
-+	return sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, port,
-+					    &mac[port], true);
-+}
-+
- static int sja1105_pvid_apply(struct sja1105_private *priv, int port, u16 pvid)
+-/* Returns true for imprecise RX and sets the @vid.
+- * Returns false for precise RX and sets @source_port and @switch_id.
++/* If the VLAN in the packet is a tag_8021q one, set @source_port and
++ * @switch_id and strip the header. Otherwise set @vid and keep it in the
++ * packet.
+  */
+-static bool sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
++static void sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
+ 			     int *switch_id, u16 *vid)
  {
- 	struct sja1105_mac_config_entry *mac;
-@@ -76,6 +108,9 @@ static int sja1105_commit_pvid(struct dsa_switch *ds, int port)
- {
- 	struct dsa_port *dp = dsa_to_port(ds, port);
- 	struct sja1105_private *priv = ds->priv;
-+	struct sja1105_vlan_lookup_entry *vlan;
-+	bool drop_untagged = false;
-+	int match, rc;
- 	u16 pvid;
- 
- 	if (dp->bridge_dev && br_vlan_enabled(dp->bridge_dev))
-@@ -83,7 +118,18 @@ static int sja1105_commit_pvid(struct dsa_switch *ds, int port)
+ 	struct vlan_ethhdr *hdr = (struct vlan_ethhdr *)skb_mac_header(skb);
+@@ -382,15 +383,11 @@ static bool sja1105_vlan_rcv(struct sk_buff *skb, int *source_port,
  	else
- 		pvid = priv->tag_8021q_pvid[port];
+ 		vlan_tci = ntohs(hdr->h_vlan_TCI);
  
--	return sja1105_pvid_apply(priv, port, pvid);
-+	rc = sja1105_pvid_apply(priv, port, pvid);
-+	if (rc)
-+		return rc;
-+
-+	vlan = priv->static_config.tables[BLK_IDX_VLAN_LOOKUP].entries;
-+
-+	match = sja1105_is_vlan_configured(priv, pvid);
-+
-+	if (match < 0 || !(vlan[match].vmemb_port & BIT(port)))
-+		drop_untagged = true;
-+
-+	return sja1105_drop_untagged(ds, port, drop_untagged);
+-	if (vid_is_dsa_8021q_rxvlan(vlan_tci & VLAN_VID_MASK)) {
+-		dsa_8021q_rcv(skb, source_port, switch_id);
+-		return false;
+-	}
++	if (vid_is_dsa_8021q_rxvlan(vlan_tci & VLAN_VID_MASK))
++		return dsa_8021q_rcv(skb, source_port, switch_id);
+ 
+ 	/* Try our best with imprecise RX */
+ 	*vid = vlan_tci & VLAN_VID_MASK;
+-
+-	return true;
  }
  
- static int sja1105_init_mac_settings(struct sja1105_private *priv)
-@@ -1997,22 +2043,6 @@ sja1105_get_tag_protocol(struct dsa_switch *ds, int port,
- 	return priv->info->tag_proto;
- }
- 
--static int sja1105_is_vlan_configured(struct sja1105_private *priv, u16 vid)
--{
--	struct sja1105_vlan_lookup_entry *vlan;
--	int count, i;
--
--	vlan = priv->static_config.tables[BLK_IDX_VLAN_LOOKUP].entries;
--	count = priv->static_config.tables[BLK_IDX_VLAN_LOOKUP].entry_count;
--
--	for (i = 0; i < count; i++)
--		if (vlan[i].vlanid == vid)
--			return i;
--
--	/* Return an invalid entry index if not found */
--	return -1;
--}
--
- /* The TPID setting belongs to the General Parameters table,
-  * which can only be partially reconfigured at runtime (and not the TPID).
-  * So a switch reset is required.
-@@ -2219,8 +2249,16 @@ static int sja1105_bridge_vlan_del(struct dsa_switch *ds, int port,
- 				   const struct switchdev_obj_port_vlan *vlan)
+ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+@@ -399,7 +396,6 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
  {
- 	struct sja1105_private *priv = ds->priv;
-+	int rc;
+ 	int source_port = -1, switch_id = -1;
+ 	struct sja1105_meta meta = {0};
+-	bool imprecise_rx = false;
+ 	struct ethhdr *hdr;
+ 	bool is_link_local;
+ 	bool is_meta;
+@@ -413,8 +409,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
  
--	return sja1105_vlan_del(priv, port, vlan->vid);
-+	rc = sja1105_vlan_del(priv, port, vlan->vid);
-+	if (rc)
-+		return rc;
-+
-+	/* In case the pvid was deleted, make sure that untagged packets will
-+	 * be dropped.
-+	 */
-+	return sja1105_commit_pvid(ds, port);
- }
+ 	if (sja1105_skb_has_tag_8021q(skb)) {
+ 		/* Normal traffic path. */
+-		imprecise_rx = sja1105_vlan_rcv(skb, &source_port, &switch_id,
+-						&vid);
++		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vid);
+ 	} else if (is_link_local) {
+ 		/* Management traffic path. Switch embeds the switch ID and
+ 		 * port ID into bytes of the destination MAC, courtesy of
+@@ -433,7 +428,7 @@ static struct sk_buff *sja1105_rcv(struct sk_buff *skb,
+ 		return NULL;
+ 	}
  
- static int sja1105_dsa_8021q_vlan_add(struct dsa_switch *ds, int port, u16 vid,
+-	if (imprecise_rx)
++	if (source_port == -1 || switch_id == -1)
+ 		skb->dev = dsa_find_designated_bridge_port_by_vid(netdev, vid);
+ 	else
+ 		skb->dev = dsa_master_find_slave(netdev, switch_id, source_port);
+@@ -550,7 +545,6 @@ static struct sk_buff *sja1110_rcv(struct sk_buff *skb,
+ 				   struct packet_type *pt)
+ {
+ 	int source_port = -1, switch_id = -1;
+-	bool imprecise_rx = false;
+ 	u16 vid;
+ 
+ 	skb->offload_fwd_mark = 1;
+@@ -564,10 +558,9 @@ static struct sk_buff *sja1110_rcv(struct sk_buff *skb,
+ 
+ 	/* Packets with in-band control extensions might still have RX VLANs */
+ 	if (likely(sja1105_skb_has_tag_8021q(skb)))
+-		imprecise_rx = sja1105_vlan_rcv(skb, &source_port, &switch_id,
+-						&vid);
++		sja1105_vlan_rcv(skb, &source_port, &switch_id, &vid);
+ 
+-	if (imprecise_rx)
++	if (source_port == -1 || switch_id == -1)
+ 		skb->dev = dsa_find_designated_bridge_port_by_vid(netdev, vid);
+ 	else
+ 		skb->dev = dsa_master_find_slave(netdev, switch_id, source_port);
 -- 
 2.25.1
 
