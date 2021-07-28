@@ -2,95 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5783D864D
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 05:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC2713D86D9
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 06:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233695AbhG1D4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 23:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233437AbhG1D4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 23:56:32 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2FAC061757;
-        Tue, 27 Jul 2021 20:56:31 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1627444588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9E0nnN668dDZh85+CdDKSKSGySlDjGKSlxvO1PKLsaQ=;
-        b=IzKDepchuVgF9VSRh8upQ81qaRKl2+WlNPeX5KMu7GKiH2tnQr79203VKNbGJ7FysTKWNH
-        JSG6iS1JwLpZ5Mxn09ebE5pnxEeLhl3GGa51mMLLztmBKwB8mbVuQ2SCgSNZKLHz+SYWbO
-        RYGlvR7N+qFB1jo4aDj2p/3fySH+FtY=
-From:   Yajun Deng <yajun.deng@linux.dev>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     herbert@gondor.apana.org.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH] Revert "net: Get rid of consume_skb when tracing is off"
-Date:   Wed, 28 Jul 2021 11:56:05 +0800
-Message-Id: <20210728035605.24510-1-yajun.deng@linux.dev>
+        id S230450AbhG1Emt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 00:42:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33856 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229546AbhG1Ems (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 00:42:48 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 86E2760F41;
+        Wed, 28 Jul 2021 04:42:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627447367;
+        bh=dOk+2tFiWObmw55S1h9slR4A4T3f+tlYA4VqWOD2eAE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=asPRK8N64wo9bRcUDj3+v7oCKxySBOZvt/v7+Ul8CUaSzKyZPUVlLsBPnm9NGj8aL
+         t5IuM3IQXPrHb8Yz9D1mratdKG9R7S2c6Yh0zwS5GpHg29+SDGojG4OjVqAnE7tBpM
+         jAYxTK0V3onNdQN5uaDwZHNbxeDz3CHlU72GMmyDdw3HGwL6DH9eW9xA1/Dl42zjDN
+         Mx5AQotOjd6cHYwVOYCdo1B2deACWPfuxLWKtXpFn4h3EM2Sw91Cq07kOjltlEe6ME
+         9G2X5bnCZTkzA9pUjeaTaMt7xOmJ0XcdN+dMfePsl7645X7vk6VmD2uTl+suSMo30h
+         OeKWby67B9Y7A==
+Date:   Tue, 27 Jul 2021 23:45:17 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 06/64] bnxt_en: Use struct_group_attr() for memcpy()
+ region
+Message-ID: <20210728044517.GE35706@embeddedor>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-7-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: yajun.deng@linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210727205855.411487-7-keescook@chromium.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit be769db2f95861cc8c7c8fedcc71a8c39b803b10.
-There is trace_kfree_skb() in kfree_skb(), the trace_kfree_skb() is
-also a trace function.
+On Tue, Jul 27, 2021 at 01:57:57PM -0700, Kees Cook wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memcpy(), memmove(), and memset(), avoid
+> intentionally writing across neighboring fields.
+> 
+> Use struct_group() around members queue_id, min_bw, max_bw, tsa, pri_lvl,
+> and bw_weight so they can be referenced together. This will allow memcpy()
+> and sizeof() to more easily reason about sizes, improve readability,
+> and avoid future warnings about writing beyond the end of queue_id.
+> 
+> "pahole" shows no size nor member offset changes to struct bnxt_cos2bw_cfg.
+> "objdump -d" shows no meaningful object code changes (i.e. only source
+> line number induced differences and optimizations).
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-Fixes: be769db2f958 (net: Get rid of consume_skb when tracing is off)
-Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
----
- include/linux/skbuff.h | 9 ---------
- net/core/skbuff.c      | 2 --
- 2 files changed, 11 deletions(-)
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f19190820e63..da897d455d58 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1072,16 +1072,7 @@ void kfree_skb(struct sk_buff *skb);
- void kfree_skb_list(struct sk_buff *segs);
- void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
- void skb_tx_error(struct sk_buff *skb);
--
--#ifdef CONFIG_TRACEPOINTS
- void consume_skb(struct sk_buff *skb);
--#else
--static inline void consume_skb(struct sk_buff *skb)
--{
--	return kfree_skb(skb);
--}
--#endif
--
- void __consume_stateless_skb(struct sk_buff *skb);
- void  __kfree_skb(struct sk_buff *skb);
- extern struct kmem_cache *skbuff_head_cache;
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fc7942c0dddc..f4c6529ce6b9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -893,7 +893,6 @@ void skb_tx_error(struct sk_buff *skb)
- }
- EXPORT_SYMBOL(skb_tx_error);
- 
--#ifdef CONFIG_TRACEPOINTS
- /**
-  *	consume_skb - free an skbuff
-  *	@skb: buffer to free
-@@ -911,7 +910,6 @@ void consume_skb(struct sk_buff *skb)
- 	__kfree_skb(skb);
- }
- EXPORT_SYMBOL(consume_skb);
--#endif
- 
- /**
-  *	__consume_stateless_skb - free an skbuff, assuming it is stateless
--- 
-2.32.0
+Thanks
+--
+Gustavo
 
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c |  4 ++--
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h | 14 ++++++++------
+>  2 files changed, 10 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+> index 8a68df4d9e59..95c636f89329 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
+> @@ -148,10 +148,10 @@ static int bnxt_hwrm_queue_cos2bw_qcfg(struct bnxt *bp, struct ieee_ets *ets)
+>  	}
+>  
+>  	data = &resp->queue_id0 + offsetof(struct bnxt_cos2bw_cfg, queue_id);
+> -	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw) - 4) {
+> +	for (i = 0; i < bp->max_tc; i++, data += sizeof(cos2bw.cfg)) {
+>  		int tc;
+>  
+> -		memcpy(&cos2bw.queue_id, data, sizeof(cos2bw) - 4);
+> +		memcpy(&cos2bw.cfg, data, sizeof(cos2bw.cfg));
+>  		if (i == 0)
+>  			cos2bw.queue_id = resp->queue_id0;
+>  
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
+> index 6eed231de565..716742522161 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.h
+> @@ -23,13 +23,15 @@ struct bnxt_dcb {
+>  
+>  struct bnxt_cos2bw_cfg {
+>  	u8			pad[3];
+> -	u8			queue_id;
+> -	__le32			min_bw;
+> -	__le32			max_bw;
+> +	struct_group_attr(cfg, __packed,
+> +		u8		queue_id;
+> +		__le32		min_bw;
+> +		__le32		max_bw;
+>  #define BW_VALUE_UNIT_PERCENT1_100		(0x1UL << 29)
+> -	u8			tsa;
+> -	u8			pri_lvl;
+> -	u8			bw_weight;
+> +		u8		tsa;
+> +		u8		pri_lvl;
+> +		u8		bw_weight;
+> +	);
+>  	u8			unused;
+>  };
+>  
+> -- 
+> 2.30.2
+> 
