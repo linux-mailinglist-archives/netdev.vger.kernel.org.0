@@ -2,271 +2,427 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DA13D94F9
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94E983D9567
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbhG1SHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 14:07:42 -0400
-Received: from tulum.helixd.com ([162.252.81.98]:48909 "EHLO tulum.helixd.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229542AbhG1SHl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 14:07:41 -0400
-Received: from [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242] (unknown [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: dalcocer@helixd.com)
-        by tulum.helixd.com (Postfix) with ESMTPSA id C7DED1FD43;
-        Wed, 28 Jul 2021 11:07:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tulum.helixd.com;
-        s=mail; t=1627495659;
-        bh=Pv81ObY5wvD9qYpMtiXGr02Rb/e7/n9Xrwrdn4tphzk=;
-        h=Subject:From:To:Cc:References:Date:In-Reply-To:From;
-        b=hqNgSN471aXwC8Tu4Hmta0+QywAxV5tpj47gRURuerPBv26+GUthsXNwUA8Skm6w7
-         A0mH2jd3Xq4LOYMSvp2zYumZt/YVpR6q2XuTSzFGu3IcR+gaQoXy0wcCeeaPiek1HU
-         VIfoQTjmmf41mH9whDrQQZhiEs4hS3F15uh+DGGI=
-Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
-From:   Dario Alcocer <dalcocer@helixd.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <6a70869d-d8d5-4647-0640-4e95866a0392@helixd.com>
- <YPrHJe+zJGJ7oezW@lunn.ch> <0188e53d-1535-658a-4134-a5f05f214bef@helixd.com>
- <YPsJnLCKVzEUV5cb@lunn.ch> <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
- <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com> <YPxPF2TFSDX8QNEv@lunn.ch>
- <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
- <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
- <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
-Message-ID: <fb7ced72-384c-9908-0a35-5f425ec52748@helixd.com>
-Date:   Wed, 28 Jul 2021 11:07:37 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230059AbhG1SkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 14:40:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32605 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229556AbhG1SkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 14:40:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1627497610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=BhGUbLOqvYauXPaXxsNzBiQ1sZLlExxdLVjO0HjaZvY=;
+        b=Zt7CSMU0IoDmY1UATy9a2ptCfbZRKxbjuBt4WA5HdVp4WEuhg0LqnxCPaS0KAmTAqlhpFo
+        ezl3ZeUNcFmQZj2aWJh94NH0auU8nbatxWfMQ/3zUsDL1gVlhVTo737saVxt8tXTcTzKHZ
+        TEdkDDFSW8n+poG7NoZPI5jKve5PxZE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-425-A69sZy76NPan2qbhFuUgEw-1; Wed, 28 Jul 2021 14:40:07 -0400
+X-MC-Unique: A69sZy76NPan2qbhFuUgEw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D55B871805;
+        Wed, 28 Jul 2021 18:40:00 +0000 (UTC)
+Received: from dcaratti.station (unknown [10.40.194.137])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F6E660BD9;
+        Wed, 28 Jul 2021 18:39:57 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Alaa Hleilel <alaa@nvidia.com>
+Subject: [PATCH net-next] net/sched: store the last executed chain also for clsact egress
+Date:   Wed, 28 Jul 2021 20:08:00 +0200
+Message-Id: <cf72f28de22cfb326d4f8f6ea77f2253fcd17aad.1627494599.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It appears the port link-state issue is caused by the mv88e6xxx switch 
-driver. The function mv88e6xxx_mac_config identifies the PHY as internal 
-and skips the call to mv88e6xxx_port_setup_mac.
+currently, only 'ingress' and 'clsact ingress' qdiscs store the tc 'chain
+id' in the skb extension. However, userspace programs (like ovs) are able
+to setup egress rules, and datapath gets confused in case it doesn't find
+the 'chain id' for a packet that's "recirculated" by tc.
+Change tcf_classify() to have the same semantic as tcf_classify_ingress()
+so that a single function can be called in ingress / egress, using the tc
+ingress / egress block respectively.
 
-It does not make sense to me why internal PHY configuration should be 
-skipped.
+Suggested-by: Alaa Hleilel <alaa@nvidia.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ include/net/pkt_cls.h    | 22 +++++++--------------
+ net/core/dev.c           |  5 ++---
+ net/sched/cls_api.c      | 42 ++++++++++++++++------------------------
+ net/sched/sch_atm.c      |  2 +-
+ net/sched/sch_cake.c     |  2 +-
+ net/sched/sch_cbq.c      |  2 +-
+ net/sched/sch_drr.c      |  2 +-
+ net/sched/sch_dsmark.c   |  2 +-
+ net/sched/sch_ets.c      |  2 +-
+ net/sched/sch_fq_codel.c |  2 +-
+ net/sched/sch_fq_pie.c   |  2 +-
+ net/sched/sch_hfsc.c     |  2 +-
+ net/sched/sch_htb.c      |  2 +-
+ net/sched/sch_multiq.c   |  2 +-
+ net/sched/sch_prio.c     |  2 +-
+ net/sched/sch_qfq.c      |  2 +-
+ net/sched/sch_sfb.c      |  2 +-
+ net/sched/sch_sfq.c      |  2 +-
+ 18 files changed, 41 insertions(+), 58 deletions(-)
 
-During boot, the 5.4.114 kernel successfully probes both switch chips, 
-and the SERDES link appears to be brought up successfully:
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index ec7823921bd2..dc28fcb6f0a2 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -76,12 +76,10 @@ static inline struct Qdisc *tcf_block_q(struct tcf_block *block)
+ 	return block->q;
+ }
+ 
+-int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+-		 struct tcf_result *res, bool compat_mode);
+-int tcf_classify_ingress(struct sk_buff *skb,
+-			 const struct tcf_block *ingress_block,
+-			 const struct tcf_proto *tp, struct tcf_result *res,
+-			 bool compat_mode);
++int tcf_classify(struct sk_buff *skb,
++		 const struct tcf_block *block,
++		 const struct tcf_proto *tp, struct tcf_result *res,
++		 bool compat_mode);
+ 
+ #else
+ static inline bool tcf_block_shared(struct tcf_block *block)
+@@ -138,20 +136,14 @@ void tc_setup_cb_block_unregister(struct tcf_block *block, flow_setup_cb_t *cb,
+ {
+ }
+ 
+-static inline int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
++static inline int tcf_classify(struct sk_buff *skb,
++			       const struct tcf_block *block,
++			       const struct tcf_proto *tp,
+ 			       struct tcf_result *res, bool compat_mode)
+ {
+ 	return TC_ACT_UNSPEC;
+ }
+ 
+-static inline int tcf_classify_ingress(struct sk_buff *skb,
+-				       const struct tcf_block *ingress_block,
+-				       const struct tcf_proto *tp,
+-				       struct tcf_result *res, bool compat_mode)
+-{
+-	return TC_ACT_UNSPEC;
+-}
+-
+ #endif
+ 
+ static inline unsigned long
+diff --git a/net/core/dev.c b/net/core/dev.c
+index fb5d12a3d52d..90d4cc223e79 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4012,7 +4012,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+ 	qdisc_skb_cb(skb)->post_ct = false;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+-	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
++	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+ 	case TC_ACT_OK:
+ 	case TC_ACT_RECLASSIFY:
+ 		skb->tc_index = TC_H_MIN(cl_res.classid);
+@@ -5164,8 +5164,7 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+ 	skb->tc_at_ingress = 1;
+ 	mini_qdisc_bstats_cpu_update(miniq, skb);
+ 
+-	switch (tcf_classify_ingress(skb, miniq->block, miniq->filter_list,
+-				     &cl_res, false)) {
++	switch (tcf_classify(skb, miniq->block, miniq->filter_list, &cl_res, false)) {
+ 	case TC_ACT_OK:
+ 	case TC_ACT_RECLASSIFY:
+ 		skb->tc_index = TC_H_MIN(cl_res.classid);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 1167cd0be179..7be5b9d2aead 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1577,20 +1577,10 @@ static inline int __tcf_classify(struct sk_buff *skb,
+ #endif
+ }
+ 
+-int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
++int tcf_classify(struct sk_buff *skb,
++		 const struct tcf_block *block,
++		 const struct tcf_proto *tp,
+ 		 struct tcf_result *res, bool compat_mode)
+-{
+-	u32 last_executed_chain = 0;
+-
+-	return __tcf_classify(skb, tp, tp, res, compat_mode,
+-			      &last_executed_chain);
+-}
+-EXPORT_SYMBOL(tcf_classify);
+-
+-int tcf_classify_ingress(struct sk_buff *skb,
+-			 const struct tcf_block *ingress_block,
+-			 const struct tcf_proto *tp,
+-			 struct tcf_result *res, bool compat_mode)
+ {
+ #if !IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	u32 last_executed_chain = 0;
+@@ -1603,20 +1593,22 @@ int tcf_classify_ingress(struct sk_buff *skb,
+ 	struct tc_skb_ext *ext;
+ 	int ret;
+ 
+-	ext = skb_ext_find(skb, TC_SKB_EXT);
++	if (block) {
++		ext = skb_ext_find(skb, TC_SKB_EXT);
+ 
+-	if (ext && ext->chain) {
+-		struct tcf_chain *fchain;
++		if (ext && ext->chain) {
++			struct tcf_chain *fchain;
+ 
+-		fchain = tcf_chain_lookup_rcu(ingress_block, ext->chain);
+-		if (!fchain)
+-			return TC_ACT_SHOT;
++			fchain = tcf_chain_lookup_rcu(block, ext->chain);
++			if (!fchain)
++				return TC_ACT_SHOT;
+ 
+-		/* Consume, so cloned/redirect skbs won't inherit ext */
+-		skb_ext_del(skb, TC_SKB_EXT);
++			/* Consume, so cloned/redirect skbs won't inherit ext */
++			skb_ext_del(skb, TC_SKB_EXT);
+ 
+-		tp = rcu_dereference_bh(fchain->filter_chain);
+-		last_executed_chain = fchain->index;
++			tp = rcu_dereference_bh(fchain->filter_chain);
++			last_executed_chain = fchain->index;
++		}
+ 	}
+ 
+ 	ret = __tcf_classify(skb, tp, orig_tp, res, compat_mode,
+@@ -1635,7 +1627,7 @@ int tcf_classify_ingress(struct sk_buff *skb,
+ 	return ret;
+ #endif
+ }
+-EXPORT_SYMBOL(tcf_classify_ingress);
++EXPORT_SYMBOL(tcf_classify);
+ 
+ struct tcf_chain_info {
+ 	struct tcf_proto __rcu **pprev;
+@@ -3825,7 +3817,7 @@ struct sk_buff *tcf_qevent_handle(struct tcf_qevent *qe, struct Qdisc *sch, stru
+ 
+ 	fl = rcu_dereference_bh(qe->filter_chain);
+ 
+-	switch (tcf_classify(skb, fl, &cl_res, false)) {
++	switch (tcf_classify(skb, NULL, fl, &cl_res, false)) {
+ 	case TC_ACT_SHOT:
+ 		qdisc_qstats_drop(sch);
+ 		__qdisc_drop(skb, to_free);
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index d0c9a57398fc..7d8518176b45 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -394,7 +394,7 @@ static int atm_tc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		list_for_each_entry(flow, &p->flows, list) {
+ 			fl = rcu_dereference_bh(flow->filter_list);
+ 			if (fl) {
+-				result = tcf_classify(skb, fl, &res, true);
++				result = tcf_classify(skb, NULL, fl, &res, true);
+ 				if (result < 0)
+ 					continue;
+ 				flow = (struct atm_flow_data *)res.class;
+diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
+index 951542843cab..ecc5c4d93779 100644
+--- a/net/sched/sch_cake.c
++++ b/net/sched/sch_cake.c
+@@ -1665,7 +1665,7 @@ static u32 cake_classify(struct Qdisc *sch, struct cake_tin_data **t,
+ 		goto hash;
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	result = tcf_classify(skb, filter, &res, false);
++	result = tcf_classify(skb, NULL, filter, &res, false);
+ 
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index b79a7e27bb31..2dabaffd39d0 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -228,7 +228,7 @@ cbq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 		/*
+ 		 * Step 2+n. Apply classifier.
+ 		 */
+-		result = tcf_classify(skb, fl, &res, true);
++		result = tcf_classify(skb, NULL, fl, &res, true);
+ 		if (!fl || result < 0)
+ 			goto fallback;
+ 
+diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
+index fc1e47069593..642cd179b7a7 100644
+--- a/net/sched/sch_drr.c
++++ b/net/sched/sch_drr.c
+@@ -317,7 +317,7 @@ static struct drr_class *drr_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+ 	fl = rcu_dereference_bh(q->filter_list);
+-	result = tcf_classify(skb, fl, &res, false);
++	result = tcf_classify(skb, NULL, fl, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
+index d320bcfb2da2..4c100d105269 100644
+--- a/net/sched/sch_dsmark.c
++++ b/net/sched/sch_dsmark.c
+@@ -242,7 +242,7 @@ static int dsmark_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	else {
+ 		struct tcf_result res;
+ 		struct tcf_proto *fl = rcu_dereference_bh(p->filter_list);
+-		int result = tcf_classify(skb, fl, &res, false);
++		int result = tcf_classify(skb, NULL, fl, &res, false);
+ 
+ 		pr_debug("result %d class 0x%04x\n", result, res.classid);
+ 
+diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
+index c1e84d1eeaba..925924fab1ab 100644
+--- a/net/sched/sch_ets.c
++++ b/net/sched/sch_ets.c
+@@ -390,7 +390,7 @@ static struct ets_class *ets_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+ 	if (TC_H_MAJ(skb->priority) != sch->handle) {
+ 		fl = rcu_dereference_bh(q->filter_list);
+-		err = tcf_classify(skb, fl, &res, false);
++		err = tcf_classify(skb, NULL, fl, &res, false);
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (err) {
+ 		case TC_ACT_STOLEN:
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index bbd5f8753600..c4afdd026f51 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -91,7 +91,7 @@ static unsigned int fq_codel_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 		return fq_codel_hash(q, skb) + 1;
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	result = tcf_classify(skb, filter, &res, false);
++	result = tcf_classify(skb, NULL, filter, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
+index cac684952edc..830f3559f727 100644
+--- a/net/sched/sch_fq_pie.c
++++ b/net/sched/sch_fq_pie.c
+@@ -94,7 +94,7 @@ static unsigned int fq_pie_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 		return fq_pie_hash(q, skb) + 1;
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	result = tcf_classify(skb, filter, &res, false);
++	result = tcf_classify(skb, NULL, filter, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
+index bf0034c66e35..b7ac30cca035 100644
+--- a/net/sched/sch_hfsc.c
++++ b/net/sched/sch_hfsc.c
+@@ -1130,7 +1130,7 @@ hfsc_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+ 	head = &q->root;
+ 	tcf = rcu_dereference_bh(q->root.filter_list);
+-	while (tcf && (result = tcf_classify(skb, tcf, &res, false)) >= 0) {
++	while (tcf && (result = tcf_classify(skb, NULL, tcf, &res, false)) >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+ 		case TC_ACT_QUEUED:
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 5f7ac27a5264..81ea8332547a 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -238,7 +238,7 @@ static struct htb_class *htb_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 	}
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	while (tcf && (result = tcf_classify(skb, tcf, &res, false)) >= 0) {
++	while (tcf && (result = tcf_classify(skb, NULL, tcf, &res, false)) >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+ 		case TC_ACT_QUEUED:
+diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
+index 5c27b4270b90..e282e7382117 100644
+--- a/net/sched/sch_multiq.c
++++ b/net/sched/sch_multiq.c
+@@ -36,7 +36,7 @@ multiq_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 	int err;
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	err = tcf_classify(skb, fl, &res, false);
++	err = tcf_classify(skb, NULL, fl, &res, false);
+ #ifdef CONFIG_NET_CLS_ACT
+ 	switch (err) {
+ 	case TC_ACT_STOLEN:
+diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
+index 3eabb871a1d5..03fdf31ccb6a 100644
+--- a/net/sched/sch_prio.c
++++ b/net/sched/sch_prio.c
+@@ -39,7 +39,7 @@ prio_classify(struct sk_buff *skb, struct Qdisc *sch, int *qerr)
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+ 	if (TC_H_MAJ(skb->priority) != sch->handle) {
+ 		fl = rcu_dereference_bh(q->filter_list);
+-		err = tcf_classify(skb, fl, &res, false);
++		err = tcf_classify(skb, NULL, fl, &res, false);
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (err) {
+ 		case TC_ACT_STOLEN:
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index b692a0de1ad5..58a9d42b52b8 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -690,7 +690,7 @@ static struct qfq_class *qfq_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+ 	fl = rcu_dereference_bh(q->filter_list);
+-	result = tcf_classify(skb, fl, &res, false);
++	result = tcf_classify(skb, NULL, fl, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+index dde829d4b9f8..3d061a13d7ed 100644
+--- a/net/sched/sch_sfb.c
++++ b/net/sched/sch_sfb.c
+@@ -257,7 +257,7 @@ static bool sfb_classify(struct sk_buff *skb, struct tcf_proto *fl,
+ 	struct tcf_result res;
+ 	int result;
+ 
+-	result = tcf_classify(skb, fl, &res, false);
++	result = tcf_classify(skb, NULL, fl, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
+index 066754a18569..f8e569f79f13 100644
+--- a/net/sched/sch_sfq.c
++++ b/net/sched/sch_sfq.c
+@@ -178,7 +178,7 @@ static unsigned int sfq_classify(struct sk_buff *skb, struct Qdisc *sch,
+ 		return sfq_hash(q, skb) + 1;
+ 
+ 	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
+-	result = tcf_classify(skb, fl, &res, false);
++	result = tcf_classify(skb, NULL, fl, &res, false);
+ 	if (result >= 0) {
+ #ifdef CONFIG_NET_CLS_ACT
+ 		switch (result) {
+-- 
+2.31.1
 
-[    2.782024] libphy: Fixed MDIO Bus: probed
-[    2.800458] socfpga-dwmac ff700000.ethernet: IRQ eth_wake_irq not found
-[    2.807070] socfpga-dwmac ff700000.ethernet: IRQ eth_lpi not found
-[    2.813367] socfpga-dwmac ff700000.ethernet: PTP uses main clock
-[    2.819537] socfpga-dwmac ff700000.ethernet: Version ID not available
-[    2.825978] socfpga-dwmac ff700000.ethernet:         DWMAC1000
-[    2.831186] socfpga-dwmac ff700000.ethernet: DMA HW capability 
-register supported
-[    2.838647] socfpga-dwmac ff700000.ethernet: RX Checksum Offload 
-Engine supported
-[    2.846108] socfpga-dwmac ff700000.ethernet: COE Type 2
-[    2.851312] socfpga-dwmac ff700000.ethernet: TX Checksum insertion 
-supported
-[    2.858338] socfpga-dwmac ff700000.ethernet: Enhanced/Alternate 
-descriptors
-[    2.865279] socfpga-dwmac ff700000.ethernet: Extended descriptors not 
-supported
-[    2.872557] socfpga-dwmac ff700000.ethernet: Ring mode enabled
-[    2.878382] socfpga-dwmac ff700000.ethernet: device MAC address 
-fa:8b:6f:1f:4b:83
-[    2.886010] libphy: stmmac: probed
-[    2.890027] mv88e6085 stmmac-0:1a: switch 0x1760 detected: Marvell 
-88E6176, revision 1
-[    3.085696] libphy: mv88e6xxx SMI: probed
-[    3.090416] mv88e6085 stmmac-0:1e: switch 0x1760 detected: Marvell 
-88E6176, revision 1
-[    3.281274] libphy: mv88e6xxx SMI: probed
-[    3.626689] mv88e6085 stmmac-0:1e: switch 0x1760 detected: Marvell 
-88E6176, revision 1
-[    3.824809] libphy: mv88e6xxx SMI: probed
-[    4.983937] mv88e6085 stmmac-0:1a lan1 (uninitialized): PHY 
-[mv88e6xxx-0:00] driver [Marvell 88E1540]
-[    4.999891] mv88e6085 stmmac-0:1a lan2 (uninitialized): PHY 
-[mv88e6xxx-0:01] driver [Marvell 88E1540]
-[    5.016620] mv88e6085 stmmac-0:1a lan3 (uninitialized): PHY 
-[mv88e6xxx-0:02] driver [Marvell 88E1540]
-[    5.032460] mv88e6085 stmmac-0:1a: configuring for fixed/1000base-x 
-link mode
-[    5.039594] mv88e6xxx_mac_config: switch=0, port=4, mode=0x1
-[    5.045245] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
-speed=1000, duplex=1
-[    5.053875] mv88e6xxx_mac_config: switch=0, port=4, mode=0x1
-[    5.059522] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
-speed=1000, duplex=1
-[    5.084915] mv88e6085 stmmac-0:1a: Link is Up - 1Gbps/Full - flow 
-control off
-[    6.253481] mv88e6085 stmmac-0:1e lan4 (uninitialized): PHY 
-[mv88e6xxx-2:00] driver [Marvell 88E1540]
-[    6.273714] mv88e6085 stmmac-0:1e dmz (uninitialized): PHY 
-[mv88e6xxx-2:01] driver [Marvell 88E1540]
-[    6.290369] mv88e6085 stmmac-0:1e: configuring for fixed/1000base-x 
-link mode
-[    6.297503] mv88e6xxx_mac_config: switch=1, port=4, mode=0x1
-[    6.303152] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
-speed=1000, duplex=1
-[    6.311774] mv88e6xxx_mac_config: switch=1, port=4, mode=0x1
-[    6.317435] mv88e6xxx_mac_config: mode==MLO_AN_FIXED, force link up, 
-speed=1000, duplex=1
-[    6.340344] mv88e6085 stmmac-0:1e: Link is Up - 1Gbps/Full - flow 
-control off
-[    6.348972] debugfs: Directory 'switch0' with parent 'dsa' already 
-present!
-[    6.355938] DSA: failed to create debugfs interface for switch 0 (-14)
-[    6.362692] DSA: tree 0 setup
-
-After booting, I logged in and set up dynamic tracing for the relevant 
-kernel routines:
-
-dali login: root
-Password:
-root@dali:~# echo 'file drivers/net/phy/marvell.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file drivers/net/phy/phy_device.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file drivers/net/phy/phylink.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file drivers/net/phy/phy.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file net/dsa/port.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file net/dsa/slave.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'file drivers/net/dsa/mv88e6xxx/chip.c +p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'func mv88e6xxx_read -p' > 
-/sys/kernel/debug/dynamic_debug/control
-root@dali:~# echo 'func mv88e6xxx_write -p' > 
-/sys/kernel/debug/dynamic_debug/control
-
-I then attempted to bring up the lan1 port and duplicated the 
-LOWERLAYERDOWN issue. I inserted begin/end markers in the system log to 
-locate the PHY traces:
-
-root@dali:~# logger -t adhoc begin: bring up lan1 port
-root@dali:~# ip addr add 192.0.2.1/24 dev lan1
-root@dali:~# ip link set lan1 up
-[   64.087971] mv88e6085 stmmac-0:1a lan1: configuring for phy/gmii link 
-mode
-[   64.094929] mv88e6xxx_mac_config: switch=0, port=0, mode=0x0
-[   64.100563] mv88e6xxx_mac_config: skip MAC config for internal PHY
-[   64.109285] 8021q: adding VLAN 0 to HW filter on device lan1
-root@dali:~# ip link
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode 
-DEFAULT group default qlen 1000
-     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group 
-default qlen 10
-     link/can
-3: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1508 qdisc mq state UP 
-mode DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-4: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group 
-default qlen 1000
-     link/sit 0.0.0.0 brd 0.0.0.0
-5: lan1@eth0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue 
-state LOWERLAYERDOWN mode DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-6: lan2@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
-DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-7: lan3@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
-DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-8: lan4@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
-DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-9: dmz@eth0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode 
-DEFAULT group default qlen 1000
-     link/ether fa:8b:6f:1f:4b:83 brd ff:ff:ff:ff:ff:ff
-root@dali:~# logger -t adhoc end: bring up lan1 port
-
-The extracted PHY traces from the system log are below:
-
-root@dali:~# sed -ne '/adhoc: begin:/,/adhoc: end:/p' /var/log/messages
-Nov  1 12:00:54 (none) user.notice adhoc: begin: bring up lan1 port
-Nov  1 12:00:54 (none) user.info kernel: [   64.087971] mv88e6085 
-stmmac-0:1a lan1: configuring for phy/gmii link mode
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094872] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094882] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: setting pause=10
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094898] mv88e6085 
-stmmac-0:1a lan1: phylink_mac_config: mode=phy/gmii/Unknown/Unknown 
-adv=00,00000000,000022ef pause=10 link=0 an=1
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094912] 
-dsa_port_phylink_mac_config: config type=0, mode=0, interface="gmii", 
-speed=-1, duplex=255, pause=16, link=0 an_enabled=1 an_complete=0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094918] 
-dsa_port_phylink_mac_config: switch=0, port=0 "lan1"
-Nov  1 12:00:54 (none) user.debug kernel: [   64.094923] 
-dsa_port_phylink_mac_config: calling switch op phylink_mac_config
-Nov  1 12:00:54 (none) user.info kernel: [   64.094929] 
-mv88e6xxx_mac_config: switch=0, port=0, mode=0x0
-Nov  1 12:00:54 (none) user.info kernel: [   64.100563] 
-mv88e6xxx_mac_config: skip MAC config for internal PHY
-Nov  1 12:00:54 (none) user.debug kernel: [   64.106754] 
-phylink_run_resolve: phylink_disable_state==false, dispatch 
-system_power_efficient_wq
-Nov  1 12:00:54 (none) user.debug kernel: [   64.106803] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve: link_an_mode=phy
-Nov  1 12:00:54 (none) user.debug kernel: [   64.106814] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
-Nov  1 12:00:54 (none) user.debug kernel: [   64.106823] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: setting pause=00
-Nov  1 12:00:54 (none) user.debug kernel: [   64.106832] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve: have netdev, link_changed=0
-Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: Joining mDNS 
-multicast group on interface lan1.IPv4 with address 192.0.2.1.
-Nov  1 12:00:54 (none) user.debug kernel: [   64.108923] libphy: 
-genphy_resume: phy_clear_bits returns 0x0
-Nov  1 12:00:54 (none) user.info kernel: [   64.109285] 8021q: adding 
-VLAN 0 to HW filter on device lan1
-Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: New relevant 
-interface lan1.IPv4 for mDNS.
-Nov  1 12:00:54 (none) daemon.info avahi-daemon[529]: Registering new 
-address record for 192.0.2.1 on lan1.IPv4.
-Nov  1 12:00:54 (none) user.debug kernel: [   64.119685] 
-marvell_read_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
-suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.121499] 
-marvell_read_page: __phy_read(phydev, 22) returns 0x0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.121511] 
-marvell_write_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
-suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.126302] 
-marvell_write_page: __phy_write(phydev, 22, 2) returns 0x0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.129909] 
-marvell_write_page: id=0x1410eb1(21040817), state=UP, flags=0x0, link=0, 
-suspended=0, suspended_by_mdio_bus=0, autoneg=1, autoneg_complete=0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.131711] 
-marvell_write_page: __phy_write(phydev, 22, 0) returns 0x0
-Nov  1 12:00:54 (none) user.debug kernel: [   64.158548] 
-m88e1510_config_aneg: set copper page
-Nov  1 12:00:54 (none) user.debug kernel: [   64.160371] 
-marvell_read_status: read status from copper page
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171227] 
-phylink_run_resolve: phylink_disable_state==false, dispatch 
-system_power_efficient_wq
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171247] mv88e6085 
-stmmac-0:1a lan1: phy link down gmii/1Gbps/Half
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171258] Marvell 88E1540 
-mv88e6xxx-0:00: PHY state change UP -> NOLINK
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171271] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve: link_an_mode=phy
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171281] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: link config MLO_PAUSE_AN: set
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171290] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve_flow: setting pause=00
-Nov  1 12:00:54 (none) user.debug kernel: [   64.171298] mv88e6085 
-stmmac-0:1a lan1: phylink_resolve: have netdev, link_changed=0
-Nov  1 12:00:55 (none) user.notice adhoc: end: bring up lan1 port
-root@dali:~#
