@@ -2,181 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 678323D9954
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 01:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B3443D995F
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 01:20:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232400AbhG1XOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 19:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232392AbhG1XOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 19:14:40 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9501C061765
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 16:14:37 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id ca5so7444250pjb.5
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 16:14:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cp/1gwQbxKm35mFKd4TC2EFL1W+EtjwqZdL50egUVws=;
-        b=g6KzbBrSxn/nD5fbAKhLB3KhfMjP/EBF+i23w0kpmbqop6NS+P75BVA3oYPWAQv5TN
-         jVsYj83mHem2R5QZIvfE5d5URqJJQjsLnk9ETh7AN/rE48OqfmjnQNOSXEPIuAu+rr1g
-         LBym6tSkzsztfvOHVLJCIdl6Clmjoz1sl02aM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cp/1gwQbxKm35mFKd4TC2EFL1W+EtjwqZdL50egUVws=;
-        b=R6xCjyDXom2e9lMDwNDSX22zcoccAI05fv4a/9rlgUix5j/a3FgSPk26FrMpl0dJTS
-         kFvO6DxEDY3PwoTekBLiHwQV8MFfKkD7v7j7xfHM/0Xe3vP7RiyVJNpWH6jquzwgzM0Z
-         Di+s9saNfu7CaPmwifJwpuexIK9onLhW3pPQDITWj8oWJEr2SlzOGaPQOy+RxPdQg7dz
-         Q1zz7EQUAiAnHZh2bCJrglFKomrr4jf2yk+13jWG5dkkuUnjOzqyHSdyMYr+xtRxVKkI
-         LaOlhTig98D78XoqvbncDIQMs97mHkjYKiZbhvKK79weauwrdPh7E/VW6cLZuKXU03/Q
-         dHUQ==
-X-Gm-Message-State: AOAM530hjgkxf8359/GTaQhc9Atf7fDUEFyB6hSLXFUJYf4jDH/u9toS
-        KrW0KISZ517cNnZUskHEDJDx5g==
-X-Google-Smtp-Source: ABdhPJx1kv+LtzCaHLxEQ+7p9oKRsC6DgKBut532PtzT8ERKet67b0w3z4Vqt6OM2ER7XfKqYAMq8Q==
-X-Received: by 2002:a63:5a08:: with SMTP id o8mr1175343pgb.120.1627514077222;
-        Wed, 28 Jul 2021 16:14:37 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 16sm1132146pfu.109.2021.07.28.16.14.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 16:14:36 -0700 (PDT)
-Date:   Wed, 28 Jul 2021 16:14:35 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 02/64] mac80211: Use flex-array for radiotap header bitmap
-Message-ID: <202107281602.4D9ED671@keescook>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-3-keescook@chromium.org>
- <20210728073556.GP1931@kadam>
+        id S232392AbhG1XU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 19:20:27 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35348 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232105AbhG1XU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 19:20:26 -0400
+Received: from [2a01:118f:54a:7f00:89b1:4cb8:1a49:dc0f] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1m8sqc-000Bg2-Hb; Thu, 29 Jul 2021 01:20:22 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, andrii.nakryiko@gmail.com,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2021-07-29
+Date:   Thu, 29 Jul 2021 01:20:21 +0200
+Message-Id: <20210728232021.17617-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210728073556.GP1931@kadam>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26246/Wed Jul 28 10:18:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 10:35:56AM +0300, Dan Carpenter wrote:
-> On Tue, Jul 27, 2021 at 01:57:53PM -0700, Kees Cook wrote:
-> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > field bounds checking for memcpy(), memmove(), and memset(), avoid
-> > intentionally writing across neighboring fields.
-> > 
-> > The it_present member of struct ieee80211_radiotap_header is treated as a
-> > flexible array (multiple u32s can be conditionally present). In order for
-> > memcpy() to reason (or really, not reason) about the size of operations
-> > against this struct, use of bytes beyond it_present need to be treated
-> > as part of the flexible array. Add a union/struct to contain the new
-> > "bitmap" member, for use with trailing presence bitmaps and arguments.
-> > 
-> > Additionally improve readability in the iterator code which walks
-> > through the bitmaps and arguments.
-> > 
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  include/net/ieee80211_radiotap.h | 24 ++++++++++++++++++++----
-> >  net/mac80211/rx.c                |  2 +-
-> >  net/wireless/radiotap.c          |  5 ++---
-> >  3 files changed, 23 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/include/net/ieee80211_radiotap.h b/include/net/ieee80211_radiotap.h
-> > index c0854933e24f..101c1e961032 100644
-> > --- a/include/net/ieee80211_radiotap.h
-> > +++ b/include/net/ieee80211_radiotap.h
-> > @@ -39,10 +39,26 @@ struct ieee80211_radiotap_header {
-> >  	 */
-> >  	__le16 it_len;
-> >  
-> > -	/**
-> > -	 * @it_present: (first) present word
-> > -	 */
-> > -	__le32 it_present;
-> > +	union {
-> > +		/**
-> > +		 * @it_present: (first) present word
-> > +		 */
-> > +		__le32 it_present;
-> > +
-> > +		struct {
-> > +			/* The compiler makes it difficult to overlap
-> > +			 * a flex-array with an existing singleton,
-> > +			 * so we're forced to add an empty named
-> > +			 * variable here.
-> > +			 */
-> > +			struct { } __unused;
-> > +
-> > +			/**
-> > +			 * @bitmap: all presence bitmaps
-> > +			 */
-> > +			__le32 bitmap[];
-> > +		};
-> > +	};
-> >  } __packed;
-> 
-> This patch is so confusing...
+Hi David, hi Jakub,
 
-Right, unfortunately your patch doesn't work under the strict memcpy().
-:(
+The following pull-request contains BPF updates for your *net* tree.
 
-Here are the constraints I navigated to come to the original patch I
-sent:
+We've added 9 non-merge commits during the last 14 day(s) which contain
+a total of 20 files changed, 446 insertions(+), 138 deletions(-).
 
-* I need to directly reference a flexible array for the it_present
-  pointer because pos is based on it, and the compiler thinks pos
-  walks off the end of the struct:
+The main changes are:
 
-	In function 'fortify_memcpy_chk',
-	    inlined from 'ieee80211_add_rx_radiotap_header' at net/mac80211/rx.c:652:3:
-	./include/linux/fortify-string.h:285:4: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()?  [-Wattribute-warning]
-	  285 |    __write_overflow_field();
-	      |    ^~~~~~~~~~~~~~~~~~~~~~~~
+1) Fix UBSAN out-of-bounds splat for showing XDP link fdinfo, from Lorenz Bauer.
 
-* It's churn/fragile to change the sizeof(), so I can't just do:
-	-	__le32 it_present;
-	+	__le32 it_bitmap[];
+2) Fix insufficient Spectre v4 mitigation in BPF runtime, from Daniel Borkmann,
+   Piotr Krysiuk and Benedict Schlueter.
 
-* I want to use a union:
-	-	__le32 it_present;
-	+	union {
-	+		__le32 it_present;
-	+		__le32 it_bitmap[];
-	+	};
-* ... but I can't actually use a union because of compiler constraints
-  on flexible array members:
-	./include/net/ieee80211_radiotap.h:50:10: error: flexible array member in union
-	   50 |   __le32 it_optional[];
-	      |          ^~~~~~~~~~~
+3) Batch of fixes for BPF sockmap found under stress testing, from John Fastabend.
 
-* So I came to the horrible thing I original sent. :P
+Please consider pulling these changes from:
 
-If I could escape the __le32 *it_present incrementing, I could use a
-simple change:
-	 	__le32 it_present;
-	+	__le32 it_optional[];
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 
+Thanks a lot!
 
-> Btw, after the end of the __le32 data there is a bunch of other le64,
-> u8 and le16 data so the struct is not accurate or complete.
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
 
-Hm, docs seem to indicate that the packet format is multiples of u32?
-*shrug*
+Alexei Starovoitov, Jakub Sitnicki, Martin KaFai Lau
 
-Hmpf.
+----------------------------------------------------------------
 
--Kees
+The following changes since commit 20192d9c9f6ae447c461285c915502ffbddf5696:
 
--- 
-Kees Cook
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-07-15 14:39:45 -0700)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 2039f26f3aca5b0e419b98f65dd36481337b86ee:
+
+  bpf: Fix leakage due to insufficient speculative store bypass mitigation (2021-07-29 00:27:52 +0200)
+
+----------------------------------------------------------------
+Andrii Nakryiko (1):
+      Merge branch 'sockmap fixes picked up by stress tests'
+
+Daniel Borkmann (5):
+      bpf: Remove superfluous aux sanitation on subprog rejection
+      bpf: Fix pointer arithmetic mask tightening under state pruning
+      bpf, selftests: Add test cases for pointer alu from multiple paths
+      bpf: Introduce BPF nospec instruction for mitigating Spectre v4
+      bpf: Fix leakage due to insufficient speculative store bypass mitigation
+
+John Fastabend (3):
+      bpf, sockmap: Zap ingress queues after stopping strparser
+      bpf, sockmap: On cleanup we additionally need to remove cached skb
+      bpf, sockmap: Fix memleak on ingress msg enqueue
+
+Lorenz Bauer (1):
+      bpf: Fix OOB read when printing XDP link fdinfo
+
+ arch/arm/net/bpf_jit_32.c                          |   3 +
+ arch/arm64/net/bpf_jit_comp.c                      |  13 ++
+ arch/mips/net/ebpf_jit.c                           |   3 +
+ arch/powerpc/net/bpf_jit_comp32.c                  |   6 +
+ arch/powerpc/net/bpf_jit_comp64.c                  |   6 +
+ arch/riscv/net/bpf_jit_comp32.c                    |   4 +
+ arch/riscv/net/bpf_jit_comp64.c                    |   4 +
+ arch/s390/net/bpf_jit_comp.c                       |   5 +
+ arch/sparc/net/bpf_jit_comp_64.c                   |   3 +
+ arch/x86/net/bpf_jit_comp.c                        |   7 +
+ arch/x86/net/bpf_jit_comp32.c                      |   6 +
+ include/linux/bpf_types.h                          |   1 +
+ include/linux/bpf_verifier.h                       |   3 +-
+ include/linux/filter.h                             |  15 ++
+ include/linux/skmsg.h                              |  54 +++--
+ kernel/bpf/core.c                                  |  19 +-
+ kernel/bpf/disasm.c                                |  16 +-
+ kernel/bpf/verifier.c                              | 148 +++++--------
+ net/core/skmsg.c                                   |  39 +++-
+ .../selftests/bpf/verifier/value_ptr_arith.c       | 229 +++++++++++++++++++++
+ 20 files changed, 446 insertions(+), 138 deletions(-)
