@@ -2,283 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D1013D950F
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6883D9510
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 20:12:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbhG1SMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 14:12:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
+        id S231175AbhG1SMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 14:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbhG1SMF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 14:12:05 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FE7C061765
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:03 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id ca5so6364978pjb.5
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:03 -0700 (PDT)
+        with ESMTP id S230427AbhG1SMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 14:12:06 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32828C0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:05 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id mt6so6455192pjb.1
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 11:12:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sexhwTvb3Q+GZCJkuUlzsBoKy2ylMsNzTismU60EOdk=;
-        b=WLdGfyUgZqhDGcifo0MuAJULtwQ1A6a0CxI8t8wUc6uQQXwRC6Znm9lSpiRs9UXwvF
-         DRiMthdKsnf2F0szMho2Av4PYmukuJuEoZArXY4IQDSHU9tWSq0IxpDYI5GSUDVf3Sxs
-         RvaSYiIu8Ga+Jw5BsqopDYQsf7Eo+tV3wzrpI=
+        bh=H+Rqa7Ccw13r/GyqL1W7ZH42PxLAPfwGjBbmnfLTMnk=;
+        b=Vk+82mbHKMGs75bYqwFE5RWQ0i6uuDP+WUKM8OupfWWgq0Enuo4QOpzadhTLibiq4V
+         g2ZCiPwa5/bq3ctGYJzoJFhBFut9c0OF85T+z/Uzka98ioNSXbluMX2SaF15FJUBJrh7
+         rCaoAyrESBTNv0Re+VW7QfhPYi9yuuklkjjXI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=sexhwTvb3Q+GZCJkuUlzsBoKy2ylMsNzTismU60EOdk=;
-        b=YnwR3nvoY+AepwZrEl1kiFZeHXMIVAL4AHatHnxTQqDRnPtlzauYWHJqhP9tXMGVgC
-         FeIsiUXbh7IPGXxk6VVq1szNmKA92IEKeSOKW6sygqhz/zZZL/IV5m0kT4lXaHNnTf14
-         W+fbhLPUbEFMx6dkZrI9QSagm7o8sILIGvnDsd3TQ2cqbrAjv3aWAhy8OkLEqyFyMmEh
-         NDYbI9xJ30jdeSEXxLFSWKl79hWFFZ8yurxhn69hJBG+VUPAIA+FhiLYvOi48VLxJhua
-         oRlwFq+meiQCn3fbnB7Cr5D1YBDfK37XESwiVDp4HA9sJ1O0ibeQ3i8KgSKTDtGsViTp
-         lFvg==
-X-Gm-Message-State: AOAM53245+4Bc651oe6rc2GxIBBaTrpyevXEKo4IxWHuGb7li/xTkfZQ
-        4i3Di7baB8c6UrlQyjanNBZcTQ==
-X-Google-Smtp-Source: ABdhPJx3Hi1i8AJjvCH2nugquoaYj/5BokfpAgK9xvthYNLtMDxiuVXZNVVTZGshfCxUoBwSmaliXg==
-X-Received: by 2002:a65:4307:: with SMTP id j7mr111215pgq.387.1627495923160;
-        Wed, 28 Jul 2021 11:12:03 -0700 (PDT)
+        bh=H+Rqa7Ccw13r/GyqL1W7ZH42PxLAPfwGjBbmnfLTMnk=;
+        b=f4oX8iDsUYuulPiLV6wqBALyHs1SAyMmZN6/2ChPhfz862/wkT+Wgf8atDLBWRdthm
+         m+pEdWNyZiu14cQtcLlPGtANVbf92phDppdpfcTPW5amexO22AusGLNYjAiMXrbtwQrg
+         +5xVgbEygc18CTmHUBP8m0lgt4xkTs8NoG08agqrhBWkT3oE5QXfIg5VOdO0jmcjnfLR
+         R8ENDdnApaIkIpaAS+orwE5AoV2pQPvKgslZaxQQSgss7AGpfA+Bse434gkKmPSuKX31
+         fWbgZaktJ+lXgYR8Ld/3nzvWKV2KV8i9S9rT10vwZxX5jWd83DKdMABjv66b7dUSQch4
+         dfGw==
+X-Gm-Message-State: AOAM53157Yt616ArZLLTVwhLGMzNk3XujmuXqx/lvbD73KHcOR3jIV8M
+        Owp1Br0djHal++iiQLZf3uTLGg==
+X-Google-Smtp-Source: ABdhPJwVjzdtYKyFp47kiGrQ/syT86fMgRU/FSCL6En2siXdv4H+Sq+LYmRFu+i4hoPV/tYsVairlw==
+X-Received: by 2002:a17:902:7085:b029:114:eb3f:fe29 with SMTP id z5-20020a1709027085b0290114eb3ffe29mr961481plk.40.1627495924430;
+        Wed, 28 Jul 2021 11:12:04 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a16sm678901pfo.66.2021.07.28.11.12.02
+        by smtp.gmail.com with ESMTPSA id a16sm678901pfo.66.2021.07.28.11.12.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 28 Jul 2021 11:12:02 -0700 (PDT)
+        Wed, 28 Jul 2021 11:12:03 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         richardcochran@gmail.com, pavan.chebbi@broadcom.com,
         edwin.peer@broadcom.com
-Subject: [PATCH net-next 3/6] bnxt_en: 1PPS support for 5750X family chips
-Date:   Wed, 28 Jul 2021 14:11:42 -0400
-Message-Id: <1627495905-17396-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 4/6] bnxt_en: 1PPS functions to configure TSIO pins
+Date:   Wed, 28 Jul 2021 14:11:43 -0400
+Message-Id: <1627495905-17396-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1627495905-17396-1-git-send-email-michael.chan@broadcom.com>
 References: <1627495905-17396-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000067833b05c832ec7d"
+        boundary="0000000000007b252705c832ec66"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000067833b05c832ec7d
+--0000000000007b252705c832ec66
 
 From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-1PPS (One Pulse Per Second) is a signal generated either
-by the NIC PHC or an external timing source.
-Integrating the support to configure and use 1PPS using
-the TSIO pins along with PTP timestamps will add Grand
-Master capability to the 5750X family chipsets.
-
-This patch initializes the driver data structures and
-registers the 1PPS with kernel, based on the TSIO pins'
-capability in the hardware. This will create a /dev/ppsX
-device which applications can use to receive PPS events.
-
-Later patches will define functions to configure and use
-the pins.
+Application will send ioctls to set/clear PPS pin functions
+based on user input. This patch implements the driver
+callbacks that will configure the TSIO pins using firmware
+commands. After firmware reset, the TSIO pins will be reconfigured
+again.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 89 ++++++++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 22 +++++
- 4 files changed, 113 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 174 +++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |   5 +
+ 3 files changed, 178 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index c9c158fb86c5..8b0db8116b87 100644
+index 8b0db8116b87..13e44ce3963f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7545,6 +7545,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 	flags_ext = le32_to_cpu(resp->flags_ext);
- 	if (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_EXT_HW_STATS_SUPPORTED)
- 		bp->fw_cap |= BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED;
-+	if (BNXT_PF(bp) && (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_PTP_PPS_SUPPORTED))
-+		bp->fw_cap |= BNXT_FW_CAP_PTP_PPS;
- 
- 	bp->tx_push_thresh = 0;
- 	if ((flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED) &&
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index bcf8d00b8c80..aa733f1b235a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1887,6 +1887,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
- 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
- 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
-+	#define BNXT_FW_CAP_PTP_PPS			0x10000000
- 	#define BNXT_FW_CAP_RING_MONITOR		0x40000000
- 
- #define BNXT_NEW_RM(bp)		((bp)->fw_cap & BNXT_FW_CAP_NEW_RM)
+@@ -12150,6 +12150,7 @@ static void bnxt_fw_reset_task(struct work_struct *work)
+ 			bnxt_reenable_sriov(bp);
+ 		bnxt_vf_reps_alloc(bp);
+ 		bnxt_vf_reps_open(bp);
++		bnxt_ptp_reapply_pps(bp);
+ 		bnxt_dl_health_recovery_done(bp);
+ 		bnxt_dl_health_status_update(bp, true);
+ 		rtnl_unlock();
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 49531e7e3c6d..5b51c9e0464e 100644
+index 5b51c9e0464e..c389a2a65a90 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -412,6 +412,80 @@ static const struct ptp_clock_info bnxt_ptp_caps = {
- 	.enable		= bnxt_ptp_enable,
- };
+@@ -155,10 +155,180 @@ static int bnxt_ptp_adjfreq(struct ptp_clock_info *ptp_info, s32 ppb)
+ 	return rc;
+ }
  
-+static int bnxt_ptp_verify(struct ptp_clock_info *ptp_info, unsigned int pin,
-+			   enum ptp_pin_function func, unsigned int chan)
+-static int bnxt_ptp_enable(struct ptp_clock_info *ptp,
++static int bnxt_ptp_cfg_pin(struct bnxt *bp, u8 pin, u8 usage)
 +{
-+	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
-+						ptp_info);
-+	/* Allow only PPS pin function configuration */
-+	if (ptp->pps_info.pins[pin].usage <= BNXT_PPS_PIN_PPS_OUT &&
-+	    func != PTP_PF_PHYSYNC)
-+		return 0;
-+	else
-+		return -EOPNOTSUPP;
-+}
-+
-+/* bp->hwrm_cmd_lock held by the caller */
-+static int bnxt_ptp_pps_init(struct bnxt *bp)
-+{
-+	struct hwrm_func_ptp_pin_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
-+	struct hwrm_func_ptp_pin_qcfg_input req = {0};
++	struct hwrm_func_ptp_pin_cfg_input req = {0};
 +	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	struct ptp_clock_info *ptp_info;
-+	struct bnxt_pps *pps_info;
-+	u8 *pin_usg;
-+	u32 i, rc;
++	u8 state = usage != BNXT_PPS_PIN_NONE;
++	u8 *pin_state, *pin_usg;
++	u32 enables;
++	int rc;
 +
-+	/* Query current/default PIN CFG */
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_PTP_PIN_QCFG, -1, -1);
-+
-+	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-+	if (rc || !resp->num_pins)
++	if (!TSIO_PIN_VALID(pin)) {
++		netdev_err(ptp->bp->dev, "1PPS: Invalid pin. Check pin-function configuration\n");
 +		return -EOPNOTSUPP;
-+
-+	ptp_info = &ptp->ptp_info;
-+	pps_info = &ptp->pps_info;
-+	pps_info->num_pins = resp->num_pins;
-+	ptp_info->n_pins = pps_info->num_pins;
-+	ptp_info->pin_config = kcalloc(ptp_info->n_pins,
-+				       sizeof(*ptp_info->pin_config),
-+				       GFP_KERNEL);
-+	if (!ptp_info->pin_config)
-+		return -ENOMEM;
-+
-+	/* Report the TSIO capability to kernel */
-+	pin_usg = &resp->pin0_usage;
-+	for (i = 0; i < pps_info->num_pins; i++, pin_usg++) {
-+		snprintf(ptp_info->pin_config[i].name,
-+			 sizeof(ptp_info->pin_config[i].name), "bnxt_pps%d", i);
-+		ptp_info->pin_config[i].index = i;
-+		ptp_info->pin_config[i].chan = i;
-+		if (*pin_usg == BNXT_PPS_PIN_PPS_IN)
-+			ptp_info->pin_config[i].func = PTP_PF_EXTTS;
-+		else if (*pin_usg == BNXT_PPS_PIN_PPS_OUT)
-+			ptp_info->pin_config[i].func = PTP_PF_PEROUT;
-+		else
-+			ptp_info->pin_config[i].func = PTP_PF_NONE;
-+
-+		pps_info->pins[i].usage = *pin_usg;
 +	}
 +
-+	/* Only 1 each of ext_ts and per_out pins is available in HW */
-+	ptp_info->n_ext_ts = 1;
-+	ptp_info->n_per_out = 1;
-+	ptp_info->pps = 1;
-+	ptp_info->verify = bnxt_ptp_verify;
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_PTP_PIN_CFG, -1, -1);
++	enables = (FUNC_PTP_PIN_CFG_REQ_ENABLES_PIN0_STATE |
++		   FUNC_PTP_PIN_CFG_REQ_ENABLES_PIN0_USAGE) << (pin * 2);
++	req.enables = cpu_to_le32(enables);
++
++	pin_state = &req.pin0_state;
++	pin_usg = &req.pin0_usage;
++
++	*(pin_state + (pin * 2)) = state;
++	*(pin_usg + (pin * 2)) = usage;
++
++	rc = hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (rc)
++		return rc;
++
++	ptp->pps_info.pins[pin].usage = usage;
++	ptp->pps_info.pins[pin].state = state;
 +
 +	return 0;
 +}
 +
-+static bool bnxt_pps_config_ok(struct bnxt *bp)
++static int bnxt_ptp_cfg_event(struct bnxt *bp, u8 event)
 +{
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	struct hwrm_func_ptp_cfg_input req = {0};
 +
-+	return !(bp->fw_cap & BNXT_FW_CAP_PTP_PPS) == !ptp->ptp_info.pin_config;
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_PTP_CFG, -1, -1);
++	req.enables = cpu_to_le16(FUNC_PTP_CFG_REQ_ENABLES_PTP_PPS_EVENT);
++	req.ptp_pps_event = event;
++	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
 +}
 +
- int bnxt_ptp_init(struct bnxt *bp)
- {
- 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-@@ -424,9 +498,15 @@ int bnxt_ptp_init(struct bnxt *bp)
- 	if (rc)
- 		return rc;
- 
--	if (ptp->ptp_clock)
-+	if (ptp->ptp_clock && bnxt_pps_config_ok(bp))
- 		return 0;
- 
-+	if (ptp->ptp_clock) {
-+		ptp_clock_unregister(ptp->ptp_clock);
-+		ptp->ptp_clock = NULL;
-+		kfree(ptp->ptp_info.pin_config);
-+		ptp->ptp_info.pin_config = NULL;
-+	}
- 	atomic_set(&ptp->tx_avail, BNXT_MAX_TX_TS);
- 	spin_lock_init(&ptp->ptp_lock);
- 
-@@ -439,6 +519,10 @@ int bnxt_ptp_init(struct bnxt *bp)
- 	timecounter_init(&ptp->tc, &ptp->cc, ktime_to_ns(ktime_get_real()));
- 
- 	ptp->ptp_info = bnxt_ptp_caps;
-+	if ((bp->fw_cap & BNXT_FW_CAP_PTP_PPS)) {
-+		if (bnxt_ptp_pps_init(bp))
-+			netdev_err(bp->dev, "1pps not initialized, continuing without 1pps support\n");
-+	}
- 	ptp->ptp_clock = ptp_clock_register(&ptp->ptp_info, &bp->pdev->dev);
- 	if (IS_ERR(ptp->ptp_clock)) {
- 		int err = PTR_ERR(ptp->ptp_clock);
-@@ -468,6 +552,9 @@ void bnxt_ptp_clear(struct bnxt *bp)
- 		ptp_clock_unregister(ptp->ptp_clock);
- 
- 	ptp->ptp_clock = NULL;
-+	kfree(ptp->ptp_info.pin_config);
-+	ptp->ptp_info.pin_config = NULL;
++void bnxt_ptp_reapply_pps(struct bnxt *bp)
++{
++	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
++	struct bnxt_pps *pps;
++	u32 pin = 0;
++	int rc;
 +
- 	if (ptp->tx_skb) {
- 		dev_kfree_skb_any(ptp->tx_skb);
- 		ptp->tx_skb = NULL;
++	if (!ptp || !(bp->fw_cap & BNXT_FW_CAP_PTP_PPS) ||
++	    !(ptp->ptp_info.pin_config))
++		return;
++	pps = &ptp->pps_info;
++	for (pin = 0; pin < BNXT_MAX_TSIO_PINS; pin++) {
++		if (pps->pins[pin].state) {
++			rc = bnxt_ptp_cfg_pin(bp, pin, pps->pins[pin].usage);
++			if (!rc && pps->pins[pin].event)
++				rc = bnxt_ptp_cfg_event(bp,
++							pps->pins[pin].event);
++			if (rc)
++				netdev_err(bp->dev, "1PPS: Failed to configure pin%d\n",
++					   pin);
++		}
++	}
++}
++
++static int bnxt_get_target_cycles(struct bnxt_ptp_cfg *ptp, u64 target_ns,
++				  u64 *cycles_delta)
++{
++	u64 cycles_now;
++	u64 nsec_now, nsec_delta;
++	int rc;
++
++	spin_lock_bh(&ptp->ptp_lock);
++	rc = bnxt_refclk_read(ptp->bp, NULL, &cycles_now);
++	if (rc) {
++		spin_unlock_bh(&ptp->ptp_lock);
++		return rc;
++	}
++	nsec_now = timecounter_cyc2time(&ptp->tc, cycles_now);
++	spin_unlock_bh(&ptp->ptp_lock);
++
++	nsec_delta = target_ns - nsec_now;
++	*cycles_delta = div64_u64(nsec_delta << ptp->cc.shift, ptp->cc.mult);
++	return 0;
++}
++
++static int bnxt_ptp_perout_cfg(struct bnxt_ptp_cfg *ptp,
++			       struct ptp_clock_request *rq)
++{
++	struct hwrm_func_ptp_cfg_input req = {0};
++	struct bnxt *bp = ptp->bp;
++	struct timespec64 ts;
++	u64 target_ns, delta;
++	u16 enables;
++	int rc;
++
++	ts.tv_sec = rq->perout.start.sec;
++	ts.tv_nsec = rq->perout.start.nsec;
++	target_ns = timespec64_to_ns(&ts);
++
++	rc = bnxt_get_target_cycles(ptp, target_ns, &delta);
++	if (rc)
++		return rc;
++
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_FUNC_PTP_CFG, -1, -1);
++
++	enables = FUNC_PTP_CFG_REQ_ENABLES_PTP_FREQ_ADJ_EXT_PERIOD |
++		  FUNC_PTP_CFG_REQ_ENABLES_PTP_FREQ_ADJ_EXT_UP |
++		  FUNC_PTP_CFG_REQ_ENABLES_PTP_FREQ_ADJ_EXT_PHASE;
++	req.enables = cpu_to_le16(enables);
++	req.ptp_pps_event = 0;
++	req.ptp_freq_adj_dll_source = 0;
++	req.ptp_freq_adj_dll_phase = 0;
++	req.ptp_freq_adj_ext_period = cpu_to_le32(NSEC_PER_SEC);
++	req.ptp_freq_adj_ext_up = 0;
++	req.ptp_freq_adj_ext_phase_lower = cpu_to_le32(delta);
++
++	return hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++}
++
++static int bnxt_ptp_enable(struct ptp_clock_info *ptp_info,
+ 			   struct ptp_clock_request *rq, int on)
+ {
+-	return -EOPNOTSUPP;
++	struct bnxt_ptp_cfg *ptp = container_of(ptp_info, struct bnxt_ptp_cfg,
++						ptp_info);
++	struct bnxt *bp = ptp->bp;
++	u8 pin_id;
++	int rc;
++
++	switch (rq->type) {
++	case PTP_CLK_REQ_EXTTS:
++		/* Configure an External PPS IN */
++		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS,
++				      rq->extts.index);
++		if (!on)
++			break;
++		rc = bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_IN);
++		if (rc)
++			return rc;
++		rc = bnxt_ptp_cfg_event(bp, BNXT_PPS_EVENT_EXTERNAL);
++		if (!rc)
++			ptp->pps_info.pins[pin_id].event = BNXT_PPS_EVENT_EXTERNAL;
++		return rc;
++	case PTP_CLK_REQ_PEROUT:
++		/* Configure a Periodic PPS OUT */
++		pin_id = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT,
++				      rq->perout.index);
++		if (!on)
++			break;
++
++		rc = bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_OUT);
++		if (!rc)
++			rc = bnxt_ptp_perout_cfg(ptp, rq);
++
++		return rc;
++	case PTP_CLK_REQ_PPS:
++		/* Configure PHC PPS IN */
++		rc = bnxt_ptp_cfg_pin(bp, 0, BNXT_PPS_PIN_PPS_IN);
++		if (rc)
++			return rc;
++		rc = bnxt_ptp_cfg_event(bp, BNXT_PPS_EVENT_INTERNAL);
++		if (!rc)
++			ptp->pps_info.pins[0].event = BNXT_PPS_EVENT_INTERNAL;
++		return rc;
++	default:
++		netdev_err(ptp->bp->dev, "Unrecognized PIN function\n");
++		return -EOPNOTSUPP;
++	}
++
++	return bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_NONE);
+ }
+ 
+ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 4135ea3ec788..619a6a1bf9fa 100644
+index 619a6a1bf9fa..84f2b06ed79a 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -21,11 +21,33 @@
- #define BNXT_PTP_QTS_TX_ENABLES	(PORT_TS_QUERY_REQ_ENABLES_PTP_SEQ_ID |	\
+@@ -22,9 +22,13 @@
  				 PORT_TS_QUERY_REQ_ENABLES_TS_REQ_TIMEOUT)
  
-+struct pps_pin {
-+	u8 usage;
-+};
+ struct pps_pin {
++	u8 event;
+ 	u8 usage;
++	u8 state;
+ };
+ 
++#define TSIO_PIN_VALID(pin) ((pin) < (BNXT_MAX_TSIO_PINS))
 +
-+#define BNXT_PPS_PIN_DISABLE	0
-+#define BNXT_PPS_PIN_ENABLE	1
-+#define BNXT_PPS_PIN_NONE	0
-+#define BNXT_PPS_PIN_PPS_IN	1
-+#define BNXT_PPS_PIN_PPS_OUT	2
-+#define BNXT_PPS_PIN_SYNC_IN	3
-+#define BNXT_PPS_PIN_SYNC_OUT	4
-+
-+#define BNXT_PPS_EVENT_INTERNAL	1
-+#define BNXT_PPS_EVENT_EXTERNAL	2
-+
-+struct bnxt_pps {
-+	u8 num_pins;
-+#define BNXT_MAX_TSIO_PINS	4
-+	struct pps_pin pins[BNXT_MAX_TSIO_PINS];
-+};
-+
- struct bnxt_ptp_cfg {
- 	struct ptp_clock_info	ptp_info;
- 	struct ptp_clock	*ptp_clock;
- 	struct cyclecounter	cc;
- 	struct timecounter	tc;
-+	struct bnxt_pps		pps_info;
- 	/* serialize timecounter access */
- 	spinlock_t		ptp_lock;
- 	struct sk_buff		*tx_skb;
+ #define BNXT_PPS_PIN_DISABLE	0
+ #define BNXT_PPS_PIN_ENABLE	1
+ #define BNXT_PPS_PIN_NONE	0
+@@ -93,6 +97,7 @@ do {						\
+ #endif
+ 
+ int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id);
++void bnxt_ptp_reapply_pps(struct bnxt *bp);
+ int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
+ int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
+ int bnxt_get_tx_ts_p5(struct bnxt *bp, struct sk_buff *skb);
 -- 
 2.18.1
 
 
---00000000000067833b05c832ec7d
+--0000000000007b252705c832ec66
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -349,13 +379,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOAnYYqnoeApj/GxfBIpksKylG5WDLaB
-FTenY4jDSn1dMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcy
-ODE4MTIwM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIBS45pXNHvPXIPOPnmtNUxVf0T+lAxZJ
+HZoCdE5gugWDMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDcy
+ODE4MTIwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAnlornHTp1celByrb98I9GMS9ji3J6/OfNY+DyDOn5zGFxw+mt
-Qhu3mYrF0PVrptx3k44te5J9VhqB6UK3vQEYfulfio5BOFeYbIWBzyd0x8cMsnm5ifbc/mRf27lw
-aqn2qKKtS4CmFel5mbTTPKvxX3lQ0HVBojkPUCFi908T4bdip+laDdPk63rUpLkoRG1JZ2QWt8gv
-XLejXSJ+FXGvDkI+Do3usAgaEIvnHyI6kNZWj3h/g2J6ZZqubboKEr9MD1PDyqhntQse21Ep2PI4
-RBakbyKC5f5fl+inF2G9eB5SIqdC5OmmufenZAJxGoV3vagz+BT3BOz7MP4tM4U2
---00000000000067833b05c832ec7d--
+ATANBgkqhkiG9w0BAQEFAASCAQAE7sT+UrnsqJf4sQMlEqBinD3LIZFBtrqnZdq/xRLnHU0BR4SL
+GX0z3Z3SSYoJ7AtKVbe8ue+5wsDdlaSV29hx/npgnWVKdDT7am/2qb7MoTVSUHlZPOiJ4UmITsnX
+OUSOOiy2FpNlnMrpbrn30w/uHVEJrVJvLzI7C67g1NpvcOzx0bEHkNGKXjCOldwn4WBpgj4+q+mM
+38Hhhr5ibMifdrD5h4X3EqkzNg/D0bMbWLfz9vXsd3AJ/uqwsj9U6m6jMT4kZwkQ2MVZULjK6V2D
+xlVHkp/Xzkutz2qBPGmh5o/Wnglb2FHksHzLDKsAfLssVVNmDJHmFf4HlFD9Tvx6
+--0000000000007b252705c832ec66--
