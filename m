@@ -2,80 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19AAA3D84D4
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 02:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32B2A3D84E5
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 02:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbhG1Ara (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Jul 2021 20:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232883AbhG1Ar3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Jul 2021 20:47:29 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC3DC061757
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 17:47:28 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id z26so1596870oih.10
-        for <netdev@vger.kernel.org>; Tue, 27 Jul 2021 17:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=zhc4sNO4YwZX3YH/Z2Pm1GDok8umxrWhReSIgmRsWUw=;
-        b=HuFiPIr6Yr5hHRDMBrA3WvlqLk5NhpaKLesD7qLMxP3XZUi1zjxiVQy8ZBH8tYo7WH
-         j85RZMpO9IFHUXkenHwlEA042dSo7W4Anpxxp7G0GjaB+3+ffaVW2Fq3HV/K3yMwcflf
-         zwTcdpiBgFidVnyVRjKxkXvrLHBts295w7AfapBP3JiXHko/MXyid7UQTKXItuA/7uQt
-         1lcWzZv6H00WFSJMcEW704ZPnyp2Ih4PgI7hSWX8nLb/wMAfMstfpACcOf9wjllDIGmG
-         BCO1PnFCjK236Z7/r1vTIsnXD1rqkMaj+A85flScmiWGxJJR/DW5wxh0NW/YcgUSEOs6
-         Pgjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=zhc4sNO4YwZX3YH/Z2Pm1GDok8umxrWhReSIgmRsWUw=;
-        b=nXNLDd4Y96qfDGpEEdLUSwXN5VHgLn+Tuu5qhj9Snv/kFKCBBVli9tgcuELWQxcc92
-         zOwoqt2K/nbIiSm3goWEi+PE2kO3N3inho1txOt04EVIyBY2lZn250Fdtpif8Jvcbu2K
-         0Deb4zlS89EIL9BT8d9RF690vR1DIvC7pf51+z00OvSo5h0IKGFmWobmIIR9+7yQk96U
-         n9TwStQ0muWn0EO1Ym/bcwvh0Z9klgWeBrEX6hR5wsLE6tUD08624olEK8D4kM+OK65f
-         XhNARgof0ozQLKCvt5yPRi0/xwqOdtIpqswHA1/sujeMogDYEDImE8DbrbdD6/lpFpXw
-         I5Tw==
-X-Gm-Message-State: AOAM530LutQEoWZ52hNF5jChYSY5O6PNZAV5i916KR+KDOjuhJJwMWFb
-        A9DWChbZpw0JJdQ98APyNNT0PRG/hAC5yw23rps=
-X-Google-Smtp-Source: ABdhPJzUubgN9/ehWc79LXHV/SdpykFgD/wFKPUu6fN/rV0CE+NpKKd6IsYb2mYafVYzcQd9JG0EWcoDkwq+ZfZxmeA=
-X-Received: by 2002:aca:538c:: with SMTP id h134mr16738652oib.145.1627433248342;
- Tue, 27 Jul 2021 17:47:28 -0700 (PDT)
+        id S233860AbhG1AxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Jul 2021 20:53:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36318 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232883AbhG1AxS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Jul 2021 20:53:18 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 871DE60F9D;
+        Wed, 28 Jul 2021 00:53:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627433597;
+        bh=V7BMF/FvyWPzFRxxOCJEliV/8jG21FrrgDKLm323gMc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E95F9MNM8J/ruiWgqyL/OWAja7QE9lwWMH1hn56E1drKRJHzRI71JR4r7Q1k8mdzZ
+         THWkufcNZzoKNvRSMagzkbUm27LRKFtlehEUMH4pc70s3QrW6G3K+Za3ex2enBCoxi
+         RxhJ9V6QnTgQHZb3fPI3lSYsKzdqo6n8/Tgv0EC3YiuNFdbETPAJSI9xdS+/M7M93Z
+         TIznOV5w1BAv74+8tyDs6nkDSQPXknW0EwQBtxRDhtH80R5NW6BJOxUkiqCx19Jyg4
+         CTZaFhhXp8bu5AnQZCfWe6BVJR4do/lHoLrJuxUaJIaQms4USCSRZmPotcjAMpAHYG
+         buZPMn28624/A==
+Date:   Tue, 27 Jul 2021 19:55:46 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 01/64] media: omap3isp: Extract struct group for memcpy()
+ region
+Message-ID: <20210728005546.GA35706@embeddedor>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-2-keescook@chromium.org>
 MIME-Version: 1.0
-Sender: sdavidscott64@gmail.com
-Received: by 2002:ac9:7985:0:0:0:0:0 with HTTP; Tue, 27 Jul 2021 17:47:28
- -0700 (PDT)
-From:   "Mr. Mustafa Ali." <mustafaliali85@gmail.com>
-Date:   Wed, 28 Jul 2021 01:47:28 +0100
-X-Google-Sender-Auth: -nvqh93KqmYyRya0r-zgtoMXN7U
-Message-ID: <CA+rJsgyMnE0uS=Eb5pEmRwAwYdUQVR71Gowfxs7u9nz+wUqq1Q@mail.gmail.com>
-Subject: Greetings Dear Friend.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210727205855.411487-2-keescook@chromium.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Friend,
+On Tue, Jul 27, 2021 at 01:57:52PM -0700, Kees Cook wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memcpy(), memmove(), and memset(), avoid
+> intentionally writing across neighboring fields.  Wrap the target region
+> in a common named structure. This additionally fixes a theoretical
+> misalignment of the copy (since the size of "buf" changes between 64-bit
+> and 32-bit, but this is likely never built for 64-bit).
+> 
+> FWIW, I think this code is totally broken on 64-bit (which appears to
+> not be a "real" build configuration): it would either always fail (with
+> an uninitialized data->buf_size) or would cause corruption in userspace
+> due to the copy_to_user() in the call path against an uninitialized
+> data->buf value:
+> 
+> omap3isp_stat_request_statistics_time32(...)
+>     struct omap3isp_stat_data data64;
+>     ...
+>     omap3isp_stat_request_statistics(stat, &data64);
+> 
+> int omap3isp_stat_request_statistics(struct ispstat *stat,
+>                                      struct omap3isp_stat_data *data)
+>     ...
+>     buf = isp_stat_buf_get(stat, data);
+> 
+> static struct ispstat_buffer *isp_stat_buf_get(struct ispstat *stat,
+>                                                struct omap3isp_stat_data *data)
+> ...
+>     if (buf->buf_size > data->buf_size) {
+>             ...
+>             return ERR_PTR(-EINVAL);
+>     }
+>     ...
+>     rval = copy_to_user(data->buf,
+>                         buf->virt_addr,
+>                         buf->buf_size);
+> 
+> Regardless, additionally initialize data64 to be zero-filled to avoid
+> undefined behavior.
+> 
+> Fixes: 378e3f81cb56 ("media: omap3isp: support 64-bit version of omap3isp_stat_data")
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  drivers/media/platform/omap3isp/ispstat.c |  5 +--
+>  include/uapi/linux/omap3isp.h             | 44 +++++++++++++++++------
+>  2 files changed, 36 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/media/platform/omap3isp/ispstat.c b/drivers/media/platform/omap3isp/ispstat.c
+> index 5b9b57f4d9bf..ea8222fed38e 100644
+> --- a/drivers/media/platform/omap3isp/ispstat.c
+> +++ b/drivers/media/platform/omap3isp/ispstat.c
+> @@ -512,7 +512,7 @@ int omap3isp_stat_request_statistics(struct ispstat *stat,
+>  int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
+>  					struct omap3isp_stat_data_time32 *data)
+>  {
+> -	struct omap3isp_stat_data data64;
+> +	struct omap3isp_stat_data data64 = { };
+>  	int ret;
+>  
+>  	ret = omap3isp_stat_request_statistics(stat, &data64);
+> @@ -521,7 +521,8 @@ int omap3isp_stat_request_statistics_time32(struct ispstat *stat,
+>  
+>  	data->ts.tv_sec = data64.ts.tv_sec;
+>  	data->ts.tv_usec = data64.ts.tv_usec;
+> -	memcpy(&data->buf, &data64.buf, sizeof(*data) - sizeof(data->ts));
+> +	data->buf = (uintptr_t)data64.buf;
+> +	memcpy(&data->frame, &data64.buf, sizeof(data->frame));
 
-This message might meet you in utmost surprise. However, It's just my
-urgent needed for a foreign partner that made me contact you for this
-transaction. I assured you of honesty and reliability to champion this
-business opportunity. I am a banker by profession in Turkey, and
-currently holding the post of Auditor in Standard Chartered Bank.
+I think this should be:
 
+	memcpy(..., &data64.frame, ...);
 
-I have the opportunity of transferring the leftover funds ($15 Million
-Dollars) of one of my clients who died along with his entire family in
-crisis in Myanmar Asia. I am inviting you for a business deal where
-this money can be shared between us if you agree to my business
-proposal.
+instead.
 
+--
+Gustavo
 
-Further details of the transfer will be forwarded to you immediately
-after I receive your return letter.
-
-
-Best Regards,
-Mr. Mustafa Ali.
+>  
+>  	return 0;
+>  }
+> diff --git a/include/uapi/linux/omap3isp.h b/include/uapi/linux/omap3isp.h
+> index 87b55755f4ff..0a16af91621f 100644
+> --- a/include/uapi/linux/omap3isp.h
+> +++ b/include/uapi/linux/omap3isp.h
+> @@ -159,13 +159,25 @@ struct omap3isp_h3a_aewb_config {
+>  };
+>  
+>  /**
+> - * struct omap3isp_stat_data - Statistic data sent to or received from user
+> - * @ts: Timestamp of returned framestats.
+> - * @buf: Pointer to pass to user.
+> + * struct omap3isp_stat_frame - Statistic data without timestamp nor pointer.
+> + * @buf_size: Size of buffer.
+>   * @frame_number: Frame number of requested stats.
+>   * @cur_frame: Current frame number being processed.
+>   * @config_counter: Number of the configuration associated with the data.
+>   */
+> +struct omap3isp_stat_frame {
+> +	__u32 buf_size;
+> +	__u16 frame_number;
+> +	__u16 cur_frame;
+> +	__u16 config_counter;
+> +};
+> +
+> +/**
+> + * struct omap3isp_stat_data - Statistic data sent to or received from user
+> + * @ts: Timestamp of returned framestats.
+> + * @buf: Pointer to pass to user.
+> + * @frame: Statistic data for frame.
+> + */
+>  struct omap3isp_stat_data {
+>  #ifdef __KERNEL__
+>  	struct {
+> @@ -176,10 +188,15 @@ struct omap3isp_stat_data {
+>  	struct timeval ts;
+>  #endif
+>  	void __user *buf;
+> -	__u32 buf_size;
+> -	__u16 frame_number;
+> -	__u16 cur_frame;
+> -	__u16 config_counter;
+> +	union {
+> +		struct {
+> +			__u32 buf_size;
+> +			__u16 frame_number;
+> +			__u16 cur_frame;
+> +			__u16 config_counter;
+> +		};
+> +		struct omap3isp_stat_frame frame;
+> +	};
+>  };
+>  
+>  #ifdef __KERNEL__
+> @@ -189,10 +206,15 @@ struct omap3isp_stat_data_time32 {
+>  		__s32	tv_usec;
+>  	} ts;
+>  	__u32 buf;
+> -	__u32 buf_size;
+> -	__u16 frame_number;
+> -	__u16 cur_frame;
+> -	__u16 config_counter;
+> +	union {
+> +		struct {
+> +			__u32 buf_size;
+> +			__u16 frame_number;
+> +			__u16 cur_frame;
+> +			__u16 config_counter;
+> +		};
+> +		struct omap3isp_stat_frame frame;
+> +	};
+>  };
+>  #endif
+>  
+> -- 
+> 2.30.2
+> 
