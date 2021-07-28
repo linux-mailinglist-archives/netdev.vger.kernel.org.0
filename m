@@ -2,174 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E543D8AEE
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FB93D8B07
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 11:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbhG1JkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 05:40:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52326 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231524AbhG1JkM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 05:40:12 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C5A560FE7;
-        Wed, 28 Jul 2021 09:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627465211;
-        bh=L6HltSPqAJA403xBR4Z2bmI0frjkR0Z1YCQaSySnqII=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/6laCG/xgemgCoPf05csZBNNoiaLhgcdLO3uYHVZvTQ8JTiDyBpAOFksjcxxKWt4
-         lQ2WnZoxWCEN4zrJHIAUQIF83j96USyFlx4DNC/KYAl28TIRTYjLlC9YJjpH/tQdlv
-         BOv8TvilhTPpqXkUyYE9MYqeqDT/VCL/UdednIJBEirrBMokgV7chBvZ4D7VdrTBb1
-         xT3xVaMTRO3PNXn2XnBcMmvMtoYprl4Oc+H1INApVQW4n0h2DTwHp6+UaEgKPXxZKr
-         m9aOVIO0zEKRjRWQjm/FVBA5lN8x6cMFtiYXogsGdhwiLPbkYInbep1tZBa9t/SAUn
-         jTsRO84iem+AA==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        tirthendu.sarkar@intel.com, toke@redhat.com
-Subject: [PATCH v10 bpf-next 18/18] bpf: add bpf_xdp_adjust_data selftest
-Date:   Wed, 28 Jul 2021 11:38:23 +0200
-Message-Id: <8761f8ba2fd7f2940017c5b4c2aac1c6beeed066.1627463617.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1627463617.git.lorenzo@kernel.org>
-References: <cover.1627463617.git.lorenzo@kernel.org>
+        id S235607AbhG1JpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 05:45:05 -0400
+Received: from smtp-out2.suse.de ([195.135.220.29]:39346 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231408AbhG1JpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 05:45:03 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D0A3220192;
+        Wed, 28 Jul 2021 09:45:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1627465500;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2V2BZGwQx38O4MS3PRn5zsVNMTv9yCXn2m+qCzLq9X8=;
+        b=qISOv7ZY9hulXEAWirIGv076VG+Fy6/bFjd1f4ypkccP1xm9nEv8+TAb68zuXNUPMQy0cU
+        /rfLtmn9f3OAEwizZKY+rLIPDTqNf5cyvxLkj5zm0TqSvqnoOA8NGUWehu0f8+QJqJceZe
+        oGP2ijInSIdmaUrT8lpYfEcXl7p/oUo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1627465500;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2V2BZGwQx38O4MS3PRn5zsVNMTv9yCXn2m+qCzLq9X8=;
+        b=Ha0E1f8zdnFNiVa3aeBcp0nZudDEJp4IhJRHzPeiXA+AIOODgJaOEUN3U5kyeT8py1qjno
+        mgxJ85JZdbFf0eDA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id BC57DA3B81;
+        Wed, 28 Jul 2021 09:45:00 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id F10E9DA952; Wed, 28 Jul 2021 11:42:15 +0200 (CEST)
+Date:   Wed, 28 Jul 2021 11:42:15 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 47/64] btrfs: Use memset_after() to clear end of struct
+Message-ID: <20210728094215.GX5047@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-48-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210727205855.411487-48-keescook@chromium.org>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce kernel selftest for new bpf_xdp_adjust_data helper.
+On Tue, Jul 27, 2021 at 01:58:38PM -0700, Kees Cook wrote:
+> In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> field bounds checking for memset(), avoid intentionally writing across
+> neighboring fields.
+> 
+> Use memset_after() so memset() doesn't get confused about writing
+> beyond the destination member that is intended to be the starting point
+> of zeroing through the end of the struct.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+>  fs/btrfs/root-tree.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/fs/btrfs/root-tree.c b/fs/btrfs/root-tree.c
+> index 702dc5441f03..ec9e78f65fca 100644
+> --- a/fs/btrfs/root-tree.c
+> +++ b/fs/btrfs/root-tree.c
+> @@ -39,10 +39,7 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
+>  		need_reset = 1;
+>  	}
+>  	if (need_reset) {
+> -		memset(&item->generation_v2, 0,
+> -			sizeof(*item) - offsetof(struct btrfs_root_item,
+> -					generation_v2));
+> -
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- .../bpf/prog_tests/xdp_adjust_data.c          | 55 +++++++++++++++++++
- .../bpf/progs/test_xdp_update_frags.c         | 49 +++++++++++++++++
- 2 files changed, 104 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
+Please add
+		/* Clear all members from generation_v2 onwards */
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
-new file mode 100644
-index 000000000000..a3e098b72fc9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_data.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+
-+void test_xdp_update_frag(void)
-+{
-+	const char *file = "./test_xdp_update_frags.o";
-+	__u32 duration, retval, size;
-+	struct bpf_object *obj;
-+	int err, prog_fd;
-+	__u8 *buf;
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	buf = malloc(128);
-+	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
-+		return;
-+
-+	memset(buf, 0, 128);
-+
-+	err = bpf_prog_test_run(prog_fd, 1, buf, 128,
-+				buf, &size, &retval, &duration);
-+	free(buf);
-+
-+	CHECK(err || retval != XDP_DROP,
-+	      "128b", "err %d errno %d retval %d size %d\n",
-+	      err, errno, retval, size);
-+
-+	buf = malloc(9000);
-+	if (CHECK(!buf, "malloc()", "error:%s\n", strerror(errno)))
-+		return;
-+
-+	memset(buf, 0, 9000);
-+	buf[5000] = 0xaa; /* marker at offset 5000 (frag0) */
-+
-+	err = bpf_prog_test_run(prog_fd, 1, buf, 9000,
-+				buf, &size, &retval, &duration);
-+
-+	/* test_xdp_update_frags: buf[5000]: 0xaa -> 0xbb */
-+	CHECK(err || retval != XDP_PASS || buf[5000] != 0xbb,
-+	      "9000b", "err %d errno %d retval %d size %d\n",
-+	      err, errno, retval, size);
-+
-+	free(buf);
-+
-+	bpf_object__close(obj);
-+}
-+
-+void test_xdp_adjust_data(void)
-+{
-+	if (test__start_subtest("xdp_adjust_data"))
-+		test_xdp_update_frag();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
-new file mode 100644
-index 000000000000..2392cc3b6ba5
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c
-@@ -0,0 +1,49 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of version 2 of the GNU General Public
-+ * License as published by the Free Software Foundation.
-+ */
-+#include <linux/bpf.h>
-+#include <linux/if_ether.h>
-+#include <bpf/bpf_helpers.h>
-+
-+int _version SEC("version") = 1;
-+
-+SEC("xdp_adjust_frags")
-+int _xdp_adjust_frags(struct xdp_md *xdp)
-+{
-+	__u8 *data_end = (void *)(long)xdp->data_end;
-+	__u8 *data = (void *)(long)xdp->data;
-+	__u32 offset = 5000; /* marker offset */
-+	int ret = XDP_DROP;
-+	int data_len;
-+
-+	if (data + sizeof(__u32) > data_end)
-+		return XDP_DROP;
-+
-+	data_len = bpf_xdp_adjust_data(xdp, offset);
-+	if (data_len < 0)
-+		return XDP_DROP;
-+
-+	if (data_len > 5000)
-+		goto out;
-+
-+	data_end = (void *)(long)xdp->data_end;
-+	data = (void *)(long)xdp->data;
-+	offset -= data_len; /* offset in frag0 */
-+
-+	if (data + offset + 1 > data_end)
-+		goto out;
-+
-+	if (data[offset] != 0xaa) /* marker */
-+		goto out;
-+
-+	data[offset] = 0xbb; /* update the marker */
-+	ret = XDP_PASS;
-+out:
-+	bpf_xdp_adjust_data(xdp, 0);
-+	return ret;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.31.1
+> +		memset_after(item, 0, level);
+>  		generate_random_guid(item->uuid);
 
+Acked-by: David Sterba <dsterba@suse.com>
