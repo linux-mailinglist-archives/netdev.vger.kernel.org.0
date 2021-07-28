@@ -2,359 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89493D88EE
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 09:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C443D8906
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 09:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbhG1Hgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 03:36:38 -0400
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:30350 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232691AbhG1Hgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 03:36:35 -0400
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16S7Ganb006586;
-        Wed, 28 Jul 2021 07:36:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=iUyZsdg71UL/8uTbbAssii/OaMusSXBn/yn5ciEwzi8=;
- b=gY0/+SxgKcwTwXxGPOJ/fe25gNEuPkXyvEOh4bgUGv6hWcPgFK+Cg41zSorjIAO+xTyZ
- k1T/peowZLclkvFP0MvYajkPwSbAqFfirCwBdGp7JNVtJy9qwwxNiYBgmE2piBjSORc6
- D5lAzI7mb5/vX2pCbdB0xhaG/f6gvaKAeSdYeklhZnTC4eOzWvNdbFD4BEPmVJe4xdzZ
- PaYnxxqnf20zGtp0Qzgw2GcDbEf4rhRM6rHC1DvWsdWLjN2aZmDsYabZ1jkrbMP1ce17
- wi2FZqzwwKfN7RRTKGGNRabinlV5MUoV8MIqtQXgMCvgrtfyM4nbXSEdT6i1IGtLueT1 cg== 
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2020-01-29;
- bh=iUyZsdg71UL/8uTbbAssii/OaMusSXBn/yn5ciEwzi8=;
- b=ljPnWkPl26nSs0geomrsojj+//SJtixsyM4QKiMNSRA29197ACzsiqCohhnYuN3zU0C5
- xT7+bb88T+Fp9/zNrrf6O3G1Vt+PFR0BzwDKCQQZdHBvFvb5Wy9E/rclgAMumWHxpSGm
- 2J7ldYWH4mXtkeHTAiLMGZl7LwmCF2AKvjJWleH+fqgKtRl6rgttfjE5EO2Ezz9K3eyG
- LF/4IbcB+KrQq7kwgcm8OqPhwVH88uDu9mg44pXypoAeTLh+f68ekSMx/njK5ZYeyXFc
- 8vtNOAKUm4vc+aDMELMF05ZX1KOrsA8SP8QmHC4OJkbonFWvo9rAw7EaI61r21cnvHbi Mw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3a2jkfa0bd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 28 Jul 2021 07:36:23 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16S7Yu9I071526;
-        Wed, 28 Jul 2021 07:36:23 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2109.outbound.protection.outlook.com [104.47.55.109])
-        by userp3030.oracle.com with ESMTP id 3a2354m8gd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 28 Jul 2021 07:36:22 +0000
+        id S234326AbhG1HmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 03:42:24 -0400
+Received: from mail-mw2nam12on2077.outbound.protection.outlook.com ([40.107.244.77]:65393
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233277AbhG1HmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 03:42:23 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ea4Zpd2uT0/uYTRhXs3Widgzk0chWwnH615aWSriqLweKkNAEPs9I0iEd2R1ReTm7RjsUYeWR/Dvgrr/LuHWHAzuQkBzodTgkmlqrbLoynyla9TcUl1CSs6z8kJ4tTsl5jK3oBmEw3t7/SP9OrIsF+4jZIHwtiIU7cT+mIpqYJhliQuGCT391Mtc6hZpbyqGQ7tVN5nwbA+F5LyPBDA/pzAexPQBdHkR7v3/a1d8wfPm204pJpmqOipOZJLugcQNF0fytomj6gIWNYY5FHKgFC1239XQxrftg077suDVIs+IJMZHD9GBA/iZoaEzZCbBWqA4YhH6nV89s56nnNi6bQ==
+ b=F+ZXMh7A8EVccEROfWW/EOOAANANeQ7O81sfJ+GeZLXj26kCL2S/3Qb0mtQ7lLxtBLCeJROznSuOfgqwLeD226YAiIKCYjWr80ih/8PGF7yg/0WBXIeyf0Ly8hSzjWi0H9WL2XHrr9VvsIeWr3vTaE+Ib+3IzZelgmTI9ehxfvsL/55Z1e89+7J5ylThkow09g4mXQPdYeh0TA009sU6L4vspcCFiTIGsgWAvD/oR3EK64j7q5ePbrsOCzE/+FvFH6Kf8UUkaDtzyD1bwQuM6HRNnTE6FkEdtJdCbjq77cy4ruz/jMm1TKpxgbQPh+lHxXXrXgtw4zSfw+fBAAaVdw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iUyZsdg71UL/8uTbbAssii/OaMusSXBn/yn5ciEwzi8=;
- b=MvXVOwWYxn+jBSCwCSRikvgjxGYHNKLPSPbzN4JqiB6zIvIdlzEpjWnJ52BkTh9MOnHUlgeTQqruwJnu1ZH4hSH24b0nz0P7Bd9WWby3PuEwj7EBEDVlOc3IpdzEQFDjccCDFLBxK5Gr+TSHqUmwbVWvhwILgQ42RjV+uk361RCB6Z8TOsmWKgwro8CwGycy8ETuolJOFrV3UDGLk+Y3NpbnzJeNFP0tmY9qRjpjSWn0TDPdMSyEBGynColtfiBFGsKIRlvKXt5n3mUR0T7L0FKHt0KDvlAQpk01s0RJVND7S+jvlewh5j4I9KVTIf+PzkZJ1WHv3JQclbfwM8A2eQ==
+ bh=gh9+J3nihvYX2zB+JL+F3dDeuwfd1JnJgXGv9UjEzmc=;
+ b=T13zhip8ZLrbVhqyAbGEIZVhVTYVUPePr8wl0NfAxTVzqy665FJ/Jngl5pH79TvrPBJ874vLxAFHZWgMQJp5eGt8NN2zcsrOFJQrXRydqIZe6AHO0k8TCviXkLaimmtEjtkEB3PP2DCgsOLQ0I1ML73gPOp1fNo6TbwAxnAEQo8yBlvqqiRAe1EYL1oOg8K1v2x+i9+tI93W80MRW3pX4/atW+4Sard27101BDPRJQyOMz5lNr7isvda1bIMIKfU/b2u1Nx6B5CPHrVz2MX9wBbGmNRRHCASwoIIDI7HV16yNtJQf0F239eniu/t3aL3xYxFmQxhgqGRgw7s/gadyQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iUyZsdg71UL/8uTbbAssii/OaMusSXBn/yn5ciEwzi8=;
- b=S9sFUDYguRa/BR6/QbooMUAMrz+dB4UuaF0zN8RsyF71M1qaZcQj8v9zvr2vy3/Su4+17wLspnkm1IRB9xzpYuOa3KUN4CviIwamoo1Nb/2PoMY3GvS97UTp/GJE2gUEcHrM/AZGS4mphrDq2K+iOHZugmdO0X/ThWPGPtLNTvA=
-Authentication-Results: chromium.org; dkim=none (message not signed)
- header.d=none;chromium.org; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR10MB1823.namprd10.prod.outlook.com
- (2603:10b6:300:110::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.19; Wed, 28 Jul
- 2021 07:36:20 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5820:e42b:73d7:4268%7]) with mapi id 15.20.4352.032; Wed, 28 Jul 2021
- 07:36:20 +0000
-Date:   Wed, 28 Jul 2021 10:35:56 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 02/64] mac80211: Use flex-array for radiotap header bitmap
-Message-ID: <20210728073556.GP1931@kadam>
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-3-keescook@chromium.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210727205855.411487-3-keescook@chromium.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0059.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::12)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+ bh=gh9+J3nihvYX2zB+JL+F3dDeuwfd1JnJgXGv9UjEzmc=;
+ b=qRyRslBcepdzwWkflFUYqvDLy0ELotxnY2rR0sBR8E0lbb4dJtuyvBiIQAOeSIWBmu5Ysqizqf2wvVUiDGfphpX2/rQkjy0soeMvGEIV2rjFgItzXidtFQkXaWyxLf3nwuIbN3BJ3ujNFMhjDiI/dkzC9JO2ERbCLmgYdjFyVMh4BfsIZ0zYYZ/cGOvH863aWclYjoszsR44G5MPxP8lDYBIivsdmvmWw4cunOgdAEYs23OLBMo+eWlOvCoeQSG6K0okhsHAAVlIzaTPvYAVz+Jp7L34dNDPvpoJHXxUkOXNEWcknrKXMXSyfaKCRdZzAPt3Zt5oPunfxiRskcON+w==
+Authentication-Results: openeuler.org; dkim=none (message not signed)
+ header.d=none;openeuler.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com (2603:10b6:5:39e::17)
+ by DM8PR12MB5478.namprd12.prod.outlook.com (2603:10b6:8:29::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.26; Wed, 28 Jul
+ 2021 07:42:20 +0000
+Received: from DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287]) by DM4PR12MB5278.namprd12.prod.outlook.com
+ ([fe80::c170:83a0:720d:6287%5]) with mapi id 15.20.4373.019; Wed, 28 Jul 2021
+ 07:42:20 +0000
+Subject: Re: [PATCH net-next] bonding: 3ad: fix the concurrency between
+ __bond_release_one() and bond_3ad_state_machine_handler()
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+To:     Yufeng Mo <moyufeng@huawei.com>, davem@davemloft.net,
+        kuba@kernel.org, jay.vosburgh@canonical.com, jiri@resnulli.us
+Cc:     netdev@vger.kernel.org, shenjian15@huawei.com,
+        lipeng321@huawei.com, yisen.zhuang@huawei.com,
+        linyunsheng@huawei.com, zhangjiaran@huawei.com,
+        huangguangbin2@huawei.com, chenhao288@hisilicon.com,
+        salil.mehta@huawei.com, linuxarm@huawei.com, linuxarm@openeuler.org
+References: <1627453192-54463-1-git-send-email-moyufeng@huawei.com>
+ <47d9f710-59f7-0ccc-d41b-ee7ee0f69017@nvidia.com>
+Message-ID: <627397f9-4183-4d29-8e16-e668107e0448@nvidia.com>
+Date:   Wed, 28 Jul 2021 10:42:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <47d9f710-59f7-0ccc-d41b-ee7ee0f69017@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: ZR0P278CA0056.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:21::7) To DM4PR12MB5278.namprd12.prod.outlook.com
+ (2603:10b6:5:39e::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kadam (102.222.70.252) by JNAP275CA0059.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Wed, 28 Jul 2021 07:36:11 +0000
+Received: from [10.21.241.208] (213.179.129.39) by ZR0P278CA0056.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:21::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Wed, 28 Jul 2021 07:42:16 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 528e340e-6c6d-45be-fef6-08d9519a6433
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1823:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MWHPR10MB1823366B33655771C9EE841E8EEA9@MWHPR10MB1823.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1122;
+X-MS-Office365-Filtering-Correlation-Id: e7f65754-914c-4edd-654f-08d9519b3b3e
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5478:
+X-Microsoft-Antispam-PRVS: <DM8PR12MB5478592BB8FCF4AEC8BDAE9CDFEA9@DM8PR12MB5478.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FM5uyf1RjD2vOqO1Ar5On6BeA9zCWdiHOIvkEpC4CWwfsgWAEUydN8mhKKGRaPyeprxZNgNRUIZ/B7RRVg2DZP/3XbunLyeym+HN/GTZvrpVAfgKlIIYV86UXI25jykTsWWAPOq6gbj5yb4E2Mw3Ve+jrqKTV/AYjdazYKSkjDWpuNI08alUvKJImY+t2S69gi0f1Q1aozgSqJiXShhKEaHDDBek3hYM5+SQzj/w1dkYkIOZ/edOKUrbjc8oAWRF5iWXRkueQdIyah+r3IDADdALSUSF5aCHSL9Ft2P+pD9yoHtIhWVrGhNHU+1KwFl7UCBm0idS89Uke4FYMvg0a00M0/bazNa8AXZo09VKuxIB1I/s3kWFKd+vX4U+E2Tp8WqtBCUNoFU2/mjJECtwRRkyLlzmss3Y6cINAkDSyc9BUhEnjZ5wlDVxk5NAmjSA5QSc+ToLwB6B0GhcoDmfT4gLWkovFMM4f2IL4FDL3VhDiKQmiaLqysHe/MIYh54Ldt+iFJ7uvpGCsmrVT50A1ycxFx1dyXRPVY1A3n+AwzV9sEN2DbFHXUyewJde033S8H0FvD5DF8v0YhNpFuVue4AX38cXE3zW30upz8l9CJJ803nJyj+shMqgiyjJ+FHzfrL05o04Cxu0N8vE0oG2mfvj6OiMRMfWoGbGl+vtsuny+KmTgvj7LpOJBlYZjWTmGQeb2c6WNJXrWcYaZ0tumQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(346002)(39860400002)(376002)(136003)(86362001)(38100700002)(38350700002)(2906002)(7416002)(4326008)(9576002)(8936002)(956004)(54906003)(44832011)(6496006)(52116002)(33656002)(83380400001)(5660300002)(6916009)(316002)(186003)(26005)(6666004)(1076003)(478600001)(66476007)(66556008)(55016002)(66946007)(9686003)(33716001)(8676002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: xP8SFhu8FlMZDTzHJ0BohdwGBayvs8crN7HIZYa1wMcL2Y4bfeV9IttFmqtW0L6JgLG5uQwYvVgkuVsbHspZvSAGAnofj3h9423lxBKQ9hp2XCMkl2vT5hMlnjE2+Yb/AA9gytutrks2FVPP78pZHETg6VMs8HNNwUiv6kNRYzQ4HZGTs6+7+mD7d3ySqD0BeOCY7dTY17qwpjDHCSM6GkDQZRlfG+zHYcc/qGmd4W2hW6U9PibPTOiS6fiqXocR+kl+dd3lz6gdZJbYiaoo8V43muoUNGQNJ2BI25LLND9bPttucZPhD23yRZIzkBD2oGtA2Tl2yI2yn/n+QfjXXVXf6rQd1wnmot6vu9LGOF5LWEPU0kDLt5+avHjaj6zqEF47Qmfmo6i6D1syEvuS+BGqPZ4kBUvZFsLiCDN9m3PyTTT50rtJnt3cXtxkotfxJncQTZpkUwqxVbvXq3cGcOdKk6j/k+f8pBRfKzNskzi0uVHTirz0ZqZTim6eWk39NeyZD6np/+E3LEkuK/ps0hFGAU2W/PUclMEhFfHOtuxi/k5GGdwlsvTkHISZMXHgDrhx6rY+MXWEyvytBD/gIL9cSNItIQC2TgN6VQ7vvYEpXWF/eI41ffvCyDfXIzd9yEHIyqVXsZNoT4w/2hSMcVnwh/DiKLp25lmruH0BchpOCdxhC3Mwnu7jmOYPG9JfrnMH7wuhaMEeDv0vFUBd/dPOk2EnkXT2vlaOVHsEAk4OGwiYadT7IqAugUE3BQ7880W2td/oJUUwbI6YZw0CemGpxBlxDXM8Kn3DsAOCY3ZBXbKwHnKCpRjyvSVQpknr
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5278.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(31686004)(6666004)(86362001)(26005)(8936002)(2616005)(478600001)(2906002)(186003)(7416002)(66556008)(956004)(8676002)(53546011)(66946007)(4326008)(66476007)(316002)(16576012)(5660300002)(38100700002)(83380400001)(36756003)(6486002)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xJbfF3FtviXJJGzptUJjFXQG0ZEL71Xage6OQv+rLQgb/AShBSWSw7udSdGL?=
- =?us-ascii?Q?VjtnPQxZTxiMR+Ejq3cqK42vOWLWCXZ2x9refSo/K6CALZhmuuWNXlvmUHIU?=
- =?us-ascii?Q?ZvvflN+mvzXgVpwHmMtMuO7qgocT3RXwtzIpdVIwI4Q+7ffam+Ehzm7t7pyA?=
- =?us-ascii?Q?n3vMYhnSAIQ9sxiFbLHj9c+ofTYeKYzr/JSpvPnUP4CX9410eruNbZg11Dcq?=
- =?us-ascii?Q?zzQveuHZvPUMnZFDJcom9sHtYbMljPMDrm8X9w2Aj+1BgkDlovi2Bu95zG5h?=
- =?us-ascii?Q?gUwSyTPvWi/XJp1Pc/ySUCWxLL3+bKBYbgQxSU8odmkWkBEKpvIeP2nK1Nqe?=
- =?us-ascii?Q?RulEVTjpLPss+Aqc0w3rq8EZ8qH35iq0GV7ypjpZAoqix+vyHXrv1PFaBVIq?=
- =?us-ascii?Q?tE8MjviGQIo+Xefx8EpxgUboUoO5GEpG8xKJzde8tbYHxZAQ7v5V4QYcA/r8?=
- =?us-ascii?Q?qrAySJNNFal2dhpFNCibZ2+O6065G5YIbj0YiZtSVY3SoSXEqnGBdGEbuAj6?=
- =?us-ascii?Q?18YV3bRgqM6omfKI8oLx03O/CGi7NrRD81XidG39FGVU+LglPtndsds5kkzn?=
- =?us-ascii?Q?vNUU6h1kCbrl46NnWiwoQvtWpU6AMg4UPcMDj0yJJDRXq1x8U8yVKI0VWJcY?=
- =?us-ascii?Q?BNFSeSJXSS98/WS3UEjcy9cqTVLj52A9Swh6h71fynUMqcSTcacFUNyNW1d9?=
- =?us-ascii?Q?/z4LeMu3AbDENBTV064PB+1THZl1ytGJ5lE8nVJtj7jLpoTBNA2xbMySDRzX?=
- =?us-ascii?Q?kK90lZ+DlbPK0s6Iz0sENfzmFglX1gqaYhhmnV+IN6OVm0rODZZVixAo+4En?=
- =?us-ascii?Q?mX7SDF+yf/9W+9c1mRFS+o1xXtRmaSuAcmR5mXI7FSUFCexx8qFb73JUJs8r?=
- =?us-ascii?Q?qpjEJdErskQ0cK8s+U3AK/ntAPfGeJiVTmlktylPzC0oYvlCvRb/mFQyY1/q?=
- =?us-ascii?Q?RmuHpaFBbzlRixUaWueMN4mpzp/dtUOdREc6dbtZTryUKZ/asdbqmD3SPmw+?=
- =?us-ascii?Q?NlQxzWJvnsirK98Sm7xSxu1JKVCSi5xtxWA6ZUfNkoS2C1MRqVNYpTLIeJcH?=
- =?us-ascii?Q?Cf5cnEV1aFSgi0j86h/DAnE7qkM/9hdpW2+9kBQ/Z+1EDN9+sXVsg+pzecae?=
- =?us-ascii?Q?byTib18ad4XbCnIKU+uVMEsi6/XtzO25Vn0VrBf1GshudkbnoCZLXc3amd07?=
- =?us-ascii?Q?nr7ii1vWmPBPPaIDDMQxWbLTSSLWzsqu5Y19n9v3OrZGW2Tl0/ckuN1scHo0?=
- =?us-ascii?Q?ZNwPTLeTSYG+jHgmGrdR63nEn1LU//9vgewKAsyF692qwxHLAPNRZMIE8vj1?=
- =?us-ascii?Q?R24szslkuZ2PU0FgTOM4wf/1?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 528e340e-6c6d-45be-fef6-08d9519a6433
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Vk5ybWhKMVVtakdRQ0RpNHVOTjRZNU5zZm9acnV5SXcxWXlEQW83bjVFR1Ix?=
+ =?utf-8?B?d3pueS92bFllM3dnZjhYT2tEU3VlaTBqZkNMK3ZCenlEd0NZYkYrWkNnQkU3?=
+ =?utf-8?B?K0llZkpJTnR1MEtKeEJmUVBqcWNtRHo4RUZ1MGc0aGhFVlBpZzMwQzFQSmhX?=
+ =?utf-8?B?ZWNpUlI5dlJsdm1RUHpBcDJ1T1RST1grQlNpWXhXbHlyRHIrMUtwU0xya0tW?=
+ =?utf-8?B?TEZEblZjWjN1NVRvRWVGOWd1MFRoNlRrdnRBc2VDWmtxVlFqeTcwdWxDeDZY?=
+ =?utf-8?B?VDZxZEhKNzhDc25GU3BweldnZEVNMFlpUFc5UGtGa2lWM3JUTnFlUk9kcEVv?=
+ =?utf-8?B?VlRITXV4RUFlMTBBay9tVnRwK0I0dEx4amFvQmtCN29tWXkvQXBaTFNWWk00?=
+ =?utf-8?B?b0pxeW82VGt1ZEpBQWdab0NFd1RDc0MzdG5OWE1DcjQzMWM1QXhsTnZjMnA2?=
+ =?utf-8?B?b0UrOC9aaXpBZFlVTzdKUGZqWEtTc0VoaUxuRHRrNlNDaldFM205dEFaQk9V?=
+ =?utf-8?B?NVAvMjlSMnAvK3BGUG1NaFpTUFBOZWtGSDFBZ3ZKTUtpTFF2Z0FCdFVXa2Iw?=
+ =?utf-8?B?SVloRGdKQ0drZUJFTjlsMzdUdmdBNXk2VEg4c2l5U0RPN3pOaGRFZXZ0TlV1?=
+ =?utf-8?B?TDRpTERWck10aW4wa0lBQ1V6VFozdDVqd2hnT0ZhVC9ZVWs4NFUvNGg1VzZy?=
+ =?utf-8?B?ZDhLZUVJdithZ0RPK2VyaElVRXlrbkJNbU90ZnY2NDFhU2MybElXL0dGY2dH?=
+ =?utf-8?B?MzFwcGxvTy9SOFdmbm9JYlNaM3ZibkNOVmlubFlBbkdCSTlQaGVQUC9aei92?=
+ =?utf-8?B?Z24rSVhwUzk5L2p4WWFhUkpkS1ZMbXZyZW5yVWhxSmtSSE4vOFFnclhxQ2xo?=
+ =?utf-8?B?RjhZME5HcWg5Nkk0Uk9iYS8zZk1WeE1VWDkwQWdUdnVnbHl5OVdjdm9abUhv?=
+ =?utf-8?B?YW45V2VmSVRRR29hM2JWN1Z5eHdINDhZSDdDQjZ5d0pkd3orWXhSUlBYLytl?=
+ =?utf-8?B?OG1FdUFTN3BLbHgrUzZSYVo4WXFKbFJybllhNmpLN0hDSEtHQytSK2FmMlE1?=
+ =?utf-8?B?MVRzN3ZoTkxuN0E2NkFHY2RkWUlmNzR3M3M5TFBFMkhadm5mVVAvWjB0dGVM?=
+ =?utf-8?B?dmVuY29sU0dXUUVtcnFEZ1NqcEVGUzhUN1dHeWtZY1N3Vjc4NFBoNVpYcTRQ?=
+ =?utf-8?B?S3VMTDhrS1pqeFMyYisxVHpYTm0xS3VjOFhHclJkeGRoaFdoYkNZZ29wZVhS?=
+ =?utf-8?B?TUo1ZzcrYzRzbnMvU1BYTFlkN1FPQUlqbjhPT09NbVhXLzU4Z2dSUHRpc1lz?=
+ =?utf-8?B?Q3loUklQOXJadHZDRi9oMG81MU5NbG1lQWI4LzVVS1hBYVF5UXB2czJNNDhq?=
+ =?utf-8?B?WEV5U3BiRUttWFNhRzlUcGRIR3VmQi8yR0dqbjVyVGR1aFg0NGZwN2VydnBx?=
+ =?utf-8?B?UTY4d3lXWUNLN1Zsc3pwOERxNVRwVGF6cjh2dVlqaG11VjdzN0xCQTBPZFhW?=
+ =?utf-8?B?T2RKc2tPK1ZyOERMNGFSTnFRencvRmZwRWdoV1dNY3Q0NC8zREY1b29EZWsx?=
+ =?utf-8?B?UEdiNkVZMTQ2UkdFVGtwZndaU3E0NVBGL0JzYXIvZm9PQWFqQThlVzE3TFlR?=
+ =?utf-8?B?YzBGdCtSVXRySTFkS3BFVDNZNmdxTWJ0UzNveVpSR1U3MG5tSzRVRW9QK1pX?=
+ =?utf-8?B?dEtHdlE0VXJKYkdOS2pMK21VeG4vUG9NaGduTjJqYit6YWxWZnpML3VnR0Vh?=
+ =?utf-8?Q?FrOMLSIP36fH1qdjqTbXSKjFTi0t+8iFDfuuWBJ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7f65754-914c-4edd-654f-08d9519b3b3e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5278.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 07:36:20.3165
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 07:42:20.7243
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I7VLyOuIi1yC2CeTU41RM+DLp7WL9CtA/GKmkaRbpOlNWzEyuyfTjySFjUWtX8Si+lTU1ceco2P3a3fffEZb6kXVxXd3iJfFiPXb6P7oYNE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1823
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10058 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0
- suspectscore=0 phishscore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107280042
-X-Proofpoint-GUID: cR4q8qtkwg64r25iE_LSTBA9F0qpqnIx
-X-Proofpoint-ORIG-GUID: cR4q8qtkwg64r25iE_LSTBA9F0qpqnIx
+X-MS-Exchange-CrossTenant-UserPrincipalName: iUN7EdUdcgNPF0DgOXVEBp8EcRu9jfojFk8orgw/xFjHmPmk7TvRLcavU91J6OdVrFgDEWFW/3mTE9TtCuoX8Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5478
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 27, 2021 at 01:57:53PM -0700, Kees Cook wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memcpy(), memmove(), and memset(), avoid
-> intentionally writing across neighboring fields.
-> 
-> The it_present member of struct ieee80211_radiotap_header is treated as a
-> flexible array (multiple u32s can be conditionally present). In order for
-> memcpy() to reason (or really, not reason) about the size of operations
-> against this struct, use of bytes beyond it_present need to be treated
-> as part of the flexible array. Add a union/struct to contain the new
-> "bitmap" member, for use with trailing presence bitmaps and arguments.
-> 
-> Additionally improve readability in the iterator code which walks
-> through the bitmaps and arguments.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/net/ieee80211_radiotap.h | 24 ++++++++++++++++++++----
->  net/mac80211/rx.c                |  2 +-
->  net/wireless/radiotap.c          |  5 ++---
->  3 files changed, 23 insertions(+), 8 deletions(-)
-> 
-> diff --git a/include/net/ieee80211_radiotap.h b/include/net/ieee80211_radiotap.h
-> index c0854933e24f..101c1e961032 100644
-> --- a/include/net/ieee80211_radiotap.h
-> +++ b/include/net/ieee80211_radiotap.h
-> @@ -39,10 +39,26 @@ struct ieee80211_radiotap_header {
->  	 */
->  	__le16 it_len;
->  
-> -	/**
-> -	 * @it_present: (first) present word
-> -	 */
-> -	__le32 it_present;
-> +	union {
-> +		/**
-> +		 * @it_present: (first) present word
-> +		 */
-> +		__le32 it_present;
-> +
-> +		struct {
-> +			/* The compiler makes it difficult to overlap
-> +			 * a flex-array with an existing singleton,
-> +			 * so we're forced to add an empty named
-> +			 * variable here.
-> +			 */
-> +			struct { } __unused;
-> +
-> +			/**
-> +			 * @bitmap: all presence bitmaps
-> +			 */
-> +			__le32 bitmap[];
-> +		};
-> +	};
->  } __packed;
+On 28/07/2021 10:34, Nikolay Aleksandrov wrote:
+> On 28/07/2021 09:19, Yufeng Mo wrote:
+>> Some time ago, I reported a calltrace issue
+>> "did not find a suitable aggregator", please see[1].
+>> After a period of analysis and reproduction, I find
+>> that this problem is caused by concurrency.
+>>
+>> Before the problem occurs, the bond structure is like follows:
+>>
+>> bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+>>                       \
+>>                         port0
+>>       \
+>>         slaver1(eth1) - agg1.lag_ports -> NULL
+>>                       \
+>>                         port1
+>>
+>> If we run 'ifenslave bond0 -d eth1', the process is like below:
+>>
+>> excuting __bond_release_one()
+>> |
+>> bond_upper_dev_unlink()[step1]
+>> |                       |                       |
+>> |                       |                       bond_3ad_lacpdu_recv()
+>> |                       |                       ->bond_3ad_rx_indication()
+>> |                       |                       spin_lock_bh()
+>> |                       |                       ->ad_rx_machine()
+>> |                       |                       ->__record_pdu()[step2]
+>> |                       |                       spin_unlock_bh()
+>> |                       |                       |
+>> |                       bond_3ad_state_machine_handler()
+>> |                       spin_lock_bh()
+>> |                       ->ad_port_selection_logic()
+>> |                       ->try to find free aggregator[step3]
+>> |                       ->try to find suitable aggregator[step4]
+>> |                       ->did not find a suitable aggregator[step5]
+>> |                       spin_unlock_bh()
+>> |                       |
+>> |                       |
+>> bond_3ad_unbind_slave() |
+>> spin_lock_bh()
+>> spin_unlock_bh()
+>>
+>> step1: already removed slaver1(eth1) from list, but port1 remains
+>> step2: receive a lacpdu and update port0
+>> step3: port0 will be removed from agg0.lag_ports. The struct is
+>>        "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+>> 	   same time, slaver1/agg1 has been removed from the list by step1.
+>> 	   So we can't find a free aggregator now.
+>> step4: can't find suitable aggregator because of step2
+>> step5: cause a calltrace since port->aggregator is NULL
+>>
+>> To solve this concurrency problem, the range of bond->mode_lock
+>> is extended from only bond_3ad_unbind_slave() to both
+>> bond_upper_dev_unlink() and bond_3ad_unbind_slave().
+>>
+>> [1]https://lore.kernel.org/netdev/10374.1611947473@famine/
+>>
+>> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+>> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>> ---
+>>  drivers/net/bonding/bond_3ad.c  | 7 +------
+>>  drivers/net/bonding/bond_main.c | 6 +++++-
+>>  2 files changed, 6 insertions(+), 7 deletions(-)
+>>
+> [snip]
+> after netdev_rx_handler_unregister() the bond's recv_probe cannot be executed
+> so you don't really need to unlink it under mode_lock or move mode_lock at all
+^^^^
+Forget this part of the comment, I saw later that you don't want to receive
+lacpdu on the other port
 
-This patch is so confusing...
+The notifier sleep problem still exists though.
 
-Btw, after the end of the __le32 data there is a bunch of other le64,
-u8 and le16 data so the struct is not accurate or complete.
+> 
+>>  	if (BOND_MODE(bond) == BOND_MODE_8023AD)
+>>  		bond_3ad_unbind_slave(slave);
+>> +	spin_unlock_bh(&bond->mode_lock);
+>>  
+>>  	if (bond_mode_can_use_xmit_hash(bond))
+>>  		bond_update_slave_arr(bond, slave);
+>>
+> 
 
-It might be better to re-write this as something like this:
-
-diff --git a/include/net/ieee80211_radiotap.h b/include/net/ieee80211_radiotap.h
-index c0854933e24f..0cb5719e9668 100644
---- a/include/net/ieee80211_radiotap.h
-+++ b/include/net/ieee80211_radiotap.h
-@@ -42,7 +42,10 @@ struct ieee80211_radiotap_header {
- 	/**
- 	 * @it_present: (first) present word
- 	 */
--	__le32 it_present;
-+	struct {
-+		__le32 it_present;
-+		char buff[];
-+	} data;
- } __packed;
- 
- /* version is always 0 */
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 771921c057e8..9cc891364a07 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -328,7 +328,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 
- 	rthdr = skb_push(skb, rtap_len);
- 	memset(rthdr, 0, rtap_len - rtap.len - rtap.pad);
--	it_present = &rthdr->it_present;
-+	it_present = (__le32 *)&rthdr->data;
- 
- 	/* radiotap header, set always present flags */
- 	rthdr->it_len = cpu_to_le16(rtap_len);
-@@ -372,7 +372,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 			ieee80211_calculate_rx_timestamp(local, status,
- 							 mpdulen, 0),
- 			pos);
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_TSFT);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_TSFT);
- 		pos += 8;
- 	}
- 
-@@ -396,7 +396,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		*pos = 0;
- 	} else {
- 		int shift = 0;
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_RATE);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_RATE);
- 		if (status->bw == RATE_INFO_BW_10)
- 			shift = 1;
- 		else if (status->bw == RATE_INFO_BW_5)
-@@ -432,7 +432,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 	if (ieee80211_hw_check(&local->hw, SIGNAL_DBM) &&
- 	    !(status->flag & RX_FLAG_NO_SIGNAL_VAL)) {
- 		*pos = status->signal;
--		rthdr->it_present |=
-+		rthdr->data.it_present |=
- 			cpu_to_le32(1 << IEEE80211_RADIOTAP_DBM_ANTSIGNAL);
- 		pos++;
- 	}
-@@ -459,7 +459,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 	if (status->encoding == RX_ENC_HT) {
- 		unsigned int stbc;
- 
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_MCS);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_MCS);
- 		*pos++ = local->hw.radiotap_mcs_details;
- 		*pos = 0;
- 		if (status->enc_flags & RX_ENC_FLAG_SHORT_GI)
-@@ -482,7 +482,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		/* ensure 4 byte alignment */
- 		while ((pos - (u8 *)rthdr) & 3)
- 			pos++;
--		rthdr->it_present |=
-+		rthdr->data.it_present |=
- 			cpu_to_le32(1 << IEEE80211_RADIOTAP_AMPDU_STATUS);
- 		put_unaligned_le32(status->ampdu_reference, pos);
- 		pos += 4;
-@@ -510,7 +510,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 	if (status->encoding == RX_ENC_VHT) {
- 		u16 known = local->hw.radiotap_vht_details;
- 
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_VHT);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_VHT);
- 		put_unaligned_le16(known, pos);
- 		pos += 2;
- 		/* flags */
-@@ -553,7 +553,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		u16 accuracy = 0;
- 		u8 flags = IEEE80211_RADIOTAP_TIMESTAMP_FLAG_32BIT;
- 
--		rthdr->it_present |=
-+		rthdr->data.it_present |=
- 			cpu_to_le32(1 << IEEE80211_RADIOTAP_TIMESTAMP);
- 
- 		/* ensure 8 byte alignment */
-@@ -642,7 +642,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		/* ensure 2 byte alignment */
- 		while ((pos - (u8 *)rthdr) & 1)
- 			pos++;
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_HE);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_HE);
- 		memcpy(pos, &he, sizeof(he));
- 		pos += sizeof(he);
- 	}
-@@ -652,13 +652,13 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		/* ensure 2 byte alignment */
- 		while ((pos - (u8 *)rthdr) & 1)
- 			pos++;
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_HE_MU);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_HE_MU);
- 		memcpy(pos, &he_mu, sizeof(he_mu));
- 		pos += sizeof(he_mu);
- 	}
- 
- 	if (status->flag & RX_FLAG_NO_PSDU) {
--		rthdr->it_present |=
-+		rthdr->data.it_present |=
- 			cpu_to_le32(1 << IEEE80211_RADIOTAP_ZERO_LEN_PSDU);
- 		*pos++ = status->zero_length_psdu_type;
- 	}
-@@ -667,7 +667,7 @@ ieee80211_add_rx_radiotap_header(struct ieee80211_local *local,
- 		/* ensure 2 byte alignment */
- 		while ((pos - (u8 *)rthdr) & 1)
- 			pos++;
--		rthdr->it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_LSIG);
-+		rthdr->data.it_present |= cpu_to_le32(1 << IEEE80211_RADIOTAP_LSIG);
- 		memcpy(pos, &lsig, sizeof(lsig));
- 		pos += sizeof(lsig);
- 	}
-diff --git a/net/wireless/radiotap.c b/net/wireless/radiotap.c
-index 36f1b59a78bf..f7852024c011 100644
---- a/net/wireless/radiotap.c
-+++ b/net/wireless/radiotap.c
-@@ -114,11 +114,10 @@ int ieee80211_radiotap_iterator_init(
- 	iterator->_rtheader = radiotap_header;
- 	iterator->_max_length = get_unaligned_le16(&radiotap_header->it_len);
- 	iterator->_arg_index = 0;
--	iterator->_bitmap_shifter = get_unaligned_le32(&radiotap_header->it_present);
-+	iterator->_bitmap_shifter = get_unaligned_le32(&radiotap_header->data.it_present);
- 	iterator->_arg = (uint8_t *)radiotap_header + sizeof(*radiotap_header);
- 	iterator->_reset_on_ext = 0;
--	iterator->_next_bitmap = &radiotap_header->it_present;
--	iterator->_next_bitmap++;
-+	iterator->_next_bitmap = (__le32 *)&radiotap_header->data.buff;
- 	iterator->_vns = vns;
- 	iterator->current_namespace = &radiotap_ns;
- 	iterator->is_radiotap_ns = 1;
