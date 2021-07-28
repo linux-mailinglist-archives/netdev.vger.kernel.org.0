@@ -2,62 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A23053D8D7E
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 14:10:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C643D8D81
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 14:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234910AbhG1MKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 08:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234647AbhG1MKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 08:10:09 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A10DC061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 05:10:08 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id nd39so4213218ejc.5
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 05:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=seja4eeYUckqwZ5S9INDMzP6B+XclkPhXWDd5ioC3L0=;
-        b=WBNC9iJvLhXi2roFN3DrIP3CVUifqN5SvW/JZB9OdEg/+Yzq8H2xR45K4otPDM1cRe
-         DrqvjX8hxlPYNM4lM99FTlssHQ7buxpk/tuBpz9ikPUEmqU6qzIv1c1drRZPxWO5NP+W
-         S7u7tCDs9G8b0SPFMZhv9uQDZ7s8knyvaj7SE7LI7q0bIikL9PdfopvWWith8sMGuXQ5
-         CaDsf3bd1E0iAHfB7O+awkkXNpE2AcBOtc1za362WXL54fy3RtrL/esCqRFOje/4MjxZ
-         pkoFHs71YoNicdtae0G9JUHP+7+acCgffRuiFqv4J3BJ+/8acQI3yom/8p67i0onbqLR
-         k1WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=seja4eeYUckqwZ5S9INDMzP6B+XclkPhXWDd5ioC3L0=;
-        b=OfMN+OugYouc93SUd14fshN3j8xYb3XmiEpLF9PRZEuV9c7ZEcYsPQrbzbxGpVoH9x
-         adKJh7LaIOESm4frmfer8Lki2BziTPPqYDSn8UC8MN9oAJ9PYegl80AvD1gCC6+Nqi/x
-         y+0S0LAZZE73OSkeDbrJCj1cwwA5TIh6DovO9io6HkKY/kFzWS+OFu31tc12egb28SaF
-         TZDIL72dhsvdxr/PfHVBJKjYn0ezaQOD/4hD7gO0Ee2cWBjxQpRKYf8UfxFp+RWwGHWo
-         iD+y//oDkL7ubdMEwRbfHv18rwNyacTk7KcAXTBijN2nRT/ff0xPSBJsVXHGyLkyCyLG
-         jhLA==
-X-Gm-Message-State: AOAM532QtL88PdAUBs7q1uSvmWnnUv8ONFpOgPxYwA/WVarnEh51djvH
-        0hf4KV4QUC5Q+ajaEfe3rULQzH5f5A5X/wr43iA=
-X-Google-Smtp-Source: ABdhPJwg5MDrniGKEGdnVg1D3pvpdEcfk14iNaKrpHJ2wMqFFc4b/igaQagNyZKOUqZ2FclpLheNaRcOGyHRzyIJcIY=
-X-Received: by 2002:a17:906:d8a7:: with SMTP id qc7mr19768202ejb.372.1627474206807;
- Wed, 28 Jul 2021 05:10:06 -0700 (PDT)
+        id S235942AbhG1MLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 08:11:37 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:7883 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234647AbhG1MLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 08:11:36 -0400
+Received: from dggeme766-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GZXVD0Qd5z81Cy;
+        Wed, 28 Jul 2021 20:07:48 +0800 (CST)
+Received: from huawei.com (10.175.104.82) by dggeme766-chm.china.huawei.com
+ (10.3.19.112) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 28
+ Jul 2021 20:11:32 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <venza@brownhat.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] sis900: Fix missing pci_disable_device() in probe and remove
+Date:   Wed, 28 Jul 2021 20:11:07 +0800
+Message-ID: <20210728121107.273717-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 28 Jul 2021 20:09:30 +0800
-Message-ID: <CAMDZJNXEXdMR+wUOHKOnJfPwJyKECY-GXAUK0bRp-M1=Au9Ung@mail.gmail.com>
-Subject: sock dst_entry
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggeme766-chm.china.huawei.com (10.3.19.112)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric
-the commit 7f502361531e9eecb396cf99bdc9e9a59f7ebd7f remove "sk_dst_lock"
-one question, what different usage between __sk_dst_set and sk_dst_set?
-and __sk_dst_set only is used in __sk_dst_reset, can we remove __sk_dst_set ?
+Replace pci_enable_device() with pcim_enable_device(),
+pci_disable_device() and pci_release_regions() will be
+called in release automatically.
 
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/sis/sis900.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
+index ca9c00b7f588..cff87de9178a 100644
+--- a/drivers/net/ethernet/sis/sis900.c
++++ b/drivers/net/ethernet/sis/sis900.c
+@@ -443,7 +443,7 @@ static int sis900_probe(struct pci_dev *pci_dev,
+ #endif
+ 
+ 	/* setup various bits in PCI command register */
+-	ret = pci_enable_device(pci_dev);
++	ret = pcim_enable_device(pci_dev);
+ 	if(ret) return ret;
+ 
+ 	i = dma_set_mask(&pci_dev->dev, DMA_BIT_MASK(32));
+@@ -469,7 +469,7 @@ static int sis900_probe(struct pci_dev *pci_dev,
+ 	ioaddr = pci_iomap(pci_dev, 0, 0);
+ 	if (!ioaddr) {
+ 		ret = -ENOMEM;
+-		goto err_out_cleardev;
++		goto err_out;
+ 	}
+ 
+ 	sis_priv = netdev_priv(net_dev);
+@@ -581,8 +581,6 @@ static int sis900_probe(struct pci_dev *pci_dev,
+ 			  sis_priv->tx_ring_dma);
+ err_out_unmap:
+ 	pci_iounmap(pci_dev, ioaddr);
+-err_out_cleardev:
+-	pci_release_regions(pci_dev);
+  err_out:
+ 	free_netdev(net_dev);
+ 	return ret;
+@@ -2499,7 +2497,6 @@ static void sis900_remove(struct pci_dev *pci_dev)
+ 			  sis_priv->tx_ring_dma);
+ 	pci_iounmap(pci_dev, sis_priv->ioaddr);
+ 	free_netdev(net_dev);
+-	pci_release_regions(pci_dev);
+ }
+ 
+ static int __maybe_unused sis900_suspend(struct device *dev)
 -- 
-Best regards, Tonghao
+2.17.1
+
