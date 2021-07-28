@@ -2,120 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CBC03D8D01
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 13:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 865413D8D15
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 13:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234695AbhG1LtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 07:49:01 -0400
-Received: from mail-dm6nam10on2091.outbound.protection.outlook.com ([40.107.93.91]:40288
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        id S234758AbhG1Lv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 07:51:59 -0400
+Received: from mail-vi1eur05on2073.outbound.protection.outlook.com ([40.107.21.73]:32449
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232530AbhG1Ls6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 07:48:58 -0400
+        id S234537AbhG1Lv6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 07:51:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e3zx/t0I+qYTEv4nnF5c+w5lksmVpyZ6we1o4jMiNTLWbThc9DLwbuzLQ7MIkEnfEdF+FeNQAD0c0/OQ4dxMyfVV4OcaGM8tOrXF2dcS4vO3rTTqizfGIx4+iqkbzv06hVK6FqJN6EIM7YpYmrZP5oPYDYc7TEVBervuZhtgvz03Hu6luuMyYaWUnG/Zkm6Y2azpfZVb71gWFsdahtIQ4uXJNK4w2t+8zepmc5IIHMAAlu8YeBN2KhtbiL3bnDvJZh6RW3RHKcjSLXJxHAx05ZeQT8onlhcU8D/qBIgnfSpxkNvasiy4IVbRL0MX7y9svtnhjf4PaH+esOepG4DYzw==
+ b=imx/OX9DS/oIVjSS9eVz8ODt+64OZaoGgurHv+MKVDLwyKi+nLQNS4yYKzgLOLlu/kw6JXBBjE7PPDCCC/CnaYsBvJoLpQVypTXcI4B7woCL8t9F2ZLylrmefV074QjeuyFV88XwlLLhgq1PUjeCTU7lR9+NCXvQHxQYueRJzfIA9aMAGSnnHg/vChV7uuQfFlrvc4yxd6hl3/D0fjBGlsch8tuyj3HjC4qAfwMnsTi2P/OH0WDkOEUtSgdtGjzOnWZodQMs0n34HS8vhM5k6x9q/el6kQuYtz5upkEIBVADLm88lAiUM2njy6Qao2z2HdrA4qs+9zonL7Uk9PW9HA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KoXYGPc1Mes2/TDokIIZRwJ4YE7M9qMGmes25FFM60A=;
- b=MKlG9XeOLbNofBiNLyAMqZtcp6AkRj19Y6RNH8GO3MZ2RT/SDDCUDvzAWyPVamPMgOD9MWvF6SLIzjqov1LTI9BtgDzZDSvwI+LovTGPk8ewLtPIVTvLs5H02QIJrQWTdBDQjaoy0+yJx5RkUHi7retGKSoFA1DbUQhMfazJNAhhu5lqKuOZ9RdExFoy0WTz7KK3+4W0bD0/hC1rVqvZ/dBiwC8sS/Yfy9SfxLhbfkJ4xo+gBh5jKHWWVckgGFCGbaPOvmB4dmdQ0Oc3S3PWiuXCmSlFoT/w9J7W9DS2VNoMWFYL8UfQD7kXQKtRrUp+7jk6YMtBzvvEWVic7q0i0A==
+ bh=DmC2RZjt0OOqlW1JC+lks1SbLSMo+H4f+pR+34O7AhU=;
+ b=Be/KjtGTbbSbCsi+qm1lbwOIeEJl9FczcowAaaAx9X2N2BohYNfusSakLCyWPGZsmmZWK9dapNq5lQ8rAR8vlHBQBe/m2xDgVpL0KpO7BI2cWdQwAAnTXrsZKj5cH7ZVsaA8h+7JUYTRVDrpD5MhIym/tvY8TrsAzpzRJlmE0r4k1c3ADM8L4KOc+L7THNfe/L42hwTvoJQz1CDdicw0tJEYVC8rvZA4RHJM1d4jZfehpzIqExnPe0QeqLHC9PIQo8ZJT8ulHeEjODutMvJzufXMJpcx4fi3uV969kBkWVHgzQcQwP37dlNWRo4X0xa6WDQBhUZROeFkgm5XMRV48A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KoXYGPc1Mes2/TDokIIZRwJ4YE7M9qMGmes25FFM60A=;
- b=iL1moIlNsPaelo/tjhdhNGVnUBnlQA8Hb5eHcPOHVC8oAKP6rVVuwgYOMuUkUcTnlygUHlvDRnfY3TfeQ8RVYGgnr0Bqsomjv7UW2xwFs1ms7Y1qaNt+YwU2G9behvMroTeOJVr1a1yIs4FNipax7I9cwnCWPLkd7juiDM6S8Ic=
-Authentication-Results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH0PR13MB4970.namprd13.prod.outlook.com (2603:10b6:510:90::22) with
+ bh=DmC2RZjt0OOqlW1JC+lks1SbLSMo+H4f+pR+34O7AhU=;
+ b=A0Ga8lH2SKGvTAS6Frus1NRnPMZbhxO8ygGUormZ2T+SGgXTqduzDItZtcVcAKY7wLjiaG5LhnvvqU8WCdUQiHfb2x0SQLTZIVKjytsXL7F1/GuIrRJuSXzZOtDuJEadRnfXcoUwL8MQwK1REtCyjsPyEg7eaVTeCOhwd2vfZ6s=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR04MB3094.eurprd04.prod.outlook.com (2603:10a6:6:10::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.9; Wed, 28 Jul
- 2021 11:48:55 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::cd1:e3ba:77fd:f4f3%9]) with mapi id 15.20.4373.018; Wed, 28 Jul 2021
- 11:48:54 +0000
-Date:   Wed, 28 Jul 2021 13:48:48 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, louis.peens@corigine.com,
-        yinjun.zhang@corigine.com
-Subject: Re: [PATCH net-next] nfp: flower-ct: fix error return code in
- nfp_fl_ct_add_offload()
-Message-ID: <20210728114844.GA25291@corigine.com>
-References: <20210728091631.2421865-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210728091631.2421865-1-yangyingliang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: AM8P251CA0021.EURP251.PROD.OUTLOOK.COM
- (2603:10a6:20b:21b::26) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18; Wed, 28 Jul
+ 2021 11:51:54 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9c70:fd2f:f676:4802]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9c70:fd2f:f676:4802%9]) with mapi id 15.20.4352.032; Wed, 28 Jul 2021
+ 11:51:53 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2 net-next 0/7] net: fec: add support for i.MX8MQ and i.MX8QM
+Date:   Wed, 28 Jul 2021 19:51:56 +0800
+Message-Id: <20210728115203.16263-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0100.apcprd01.prod.exchangelabs.com
+ (2603:1096:3:15::26) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from corigine.com (2001:982:7ed1:403:201:8eff:fe22:8fea) by AM8P251CA0021.EURP251.PROD.OUTLOOK.COM (2603:10a6:20b:21b::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Wed, 28 Jul 2021 11:48:53 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR01CA0100.apcprd01.prod.exchangelabs.com (2603:1096:3:15::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.18 via Frontend Transport; Wed, 28 Jul 2021 11:51:50 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 87905f56-c44f-4f05-6c19-08d951bdad22
-X-MS-TrafficTypeDiagnostic: PH0PR13MB4970:
+X-MS-Office365-Filtering-Correlation-Id: 60e84ee6-cc5e-451b-8e4d-08d951be17cf
+X-MS-TrafficTypeDiagnostic: DB6PR04MB3094:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <PH0PR13MB4970D7EFDF43221DD689B83BE8EA9@PH0PR13MB4970.namprd13.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-Microsoft-Antispam-PRVS: <DB6PR04MB3094D33BDC88733AA443D1EDE6EA9@DB6PR04MB3094.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nsie8UMPd9qYA2uvtOlOad9J1bCY/DG3psJmrD+8X6yGVYiAeUTnyXkFZd9xJfj2d/hu9GAeHLHs0Nzj3hPtGFK3NVilkBPYLIqzvfhKcNNJBZduAk4VsFbscxoDaYSpU8T+n0HN2MFzOWI/q1Y7/CI9EsclSk9H9G1DxryL5Q3kMlwk3udWcFPfO5PNZIq0kskQHgGXZXzInu1io1+HOwm4XM4nOoG+z4l863iJ7MMsUJV1lMZkdLcf94PHGKGjQmxGkKK0/K2UgniX1RXR2eIeYeh0cLXz0w2g2HkQBRGSW/j4BJrN0gHdrowJxvQw4B3yzm8XVGhNNITUuDsZe1qDCfZEstdh/fUxTCqDt9F+by4s0ueFKmbq6AeVOgF1X6XlbYJfYhsLr7qPATLtm/3hrVEh6xV6Vgd9I0CODxKIHuLm2ijZrRZlS+/+MPW3l2TyCBxSKwEpHGgbXtkOLIL2rD55L5ed+/sOEY2HJ/cvTXg2PWlYsvXr+kLOH6+0QPSVvCiP5aUeOIAUcc0xAQtN/O93VFc7vcEIDKGNciPbKuIcLXZ1pFE/sqXlz6vxeVF5Z+p1T3gZpelnpbLyEhX/Xh5pWISo3jDO1WLfjzKjx7WP2ew6qeduxnRKDmMh1SggTBDoU1dA5l2QdHdzQw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(366004)(396003)(39830400003)(136003)(346002)(33656002)(186003)(8886007)(86362001)(2906002)(38100700002)(6666004)(7696005)(5660300002)(52116002)(4744005)(316002)(8936002)(107886003)(8676002)(44832011)(2616005)(1076003)(66476007)(66556008)(66946007)(36756003)(55016002)(4326008)(6916009)(478600001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: zs2+XSWuwZcjRau8OckMWbOMm5xpg7vUGeUMlQDkJ+6cI+eiRe1FQJCOQ+jkQy/aJVQ92fDpDkqKIm6din1xqI0CNVcf/PORtqFx+Uimv/tHZhjwi84DhW9OZFNWRYRGxb7cjcZfkWhkzYujO6/4aOs5iVWMETwRbAh9BaKCWHcPZK1KiVTw9foofv2xSpjyfzPjN22NnNP3Cy59RSWEhG2f7xq9/K0+SVRU9U4MMATi47ddwkUlXS1FUPeEVgTL7sbsFyMOgInzfHLiMqBXxGEj2zC0EW6+Wy2iohvb/ZE+5i9xqI+h0uzwXdx1cG6RInc+Z/l/EWOpW/ZJXdrvPIWcFqDyqF3FOIpEs7DA1xL8U9NZy64sA8O6s4yaU8rUA30RZuKiagL9aSGwSong7y8RseCL6RuLVtTMb4Xoirk4Kf1eIIl2sW4WQTH1Be/YfgVjpc4KxV4IcTHgpCSgr+m7oaMKkq48WJAhFtg40DHIHCTEhbY58TJiqZB7iV7wqYMZq1j0AG9IpTCHPikO97BfhtcwYiFCVnyGDnp+ZPGPeShOPDw9zlBy6myiAv88X2+/nj6EmeB8eygr+5/I1jQ1+m3gOK7GieELZwBV/YSYGjhNqtUBBqubWMm6An1SQWYRttoql+5k4V4qxh7lHj8NvEkrrxgNE74OCpT+vWKP2P4SZ5K1s3f+hBLxrKGmFIeAVGTbUIszzY4D9ErKAQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39840400004)(136003)(396003)(366004)(376002)(346002)(6512007)(7416002)(26005)(2906002)(6486002)(66946007)(66476007)(66556008)(8676002)(1076003)(6506007)(478600001)(38350700002)(38100700002)(186003)(5660300002)(2616005)(956004)(36756003)(86362001)(316002)(52116002)(83380400001)(4326008)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jEHOtLtnM6gYTzaUIR6TVHVVfKla52cKtsjaI+rKQh/rgJhTm4obYCAvrF+l?=
- =?us-ascii?Q?TOmSY95QmAiMuvLGAg83M42a68I3Z/uDQtMtvDYCY4SJeNR5dO76Se83nNWv?=
- =?us-ascii?Q?WLYtTBcj9sgiypnQKeD7378YOCcVHGuq+M1LfpNhun477Ft7K3fXpsNN4HrO?=
- =?us-ascii?Q?wpD8KgS2zY6CrrFFWelP9a1NtRxaAWfXUaT0P2LrqOJxL3Gu1Eq15Fn7g1uo?=
- =?us-ascii?Q?dIYBYwCsAnEGD0HBxVNJOKuWDr1xPvV7Nx1uV9scu1gd+88k3KfPT1UIWuTj?=
- =?us-ascii?Q?kpM9OXCprOaLX9l7jcNaxA/YlLDnV3RrCeocs10Lpvi+qaypugBPA5QxJosJ?=
- =?us-ascii?Q?CMBz8aWBAO/TtPI0Rky8bg9tDdkBM6EwY4biLbAHLdswINEAXux1E5QLfvFy?=
- =?us-ascii?Q?NTBbqhRoirDdGU674+4kzy/L4HAcPtI3m6hP7a8mQOCrZ/UYgdHqNs2nXhOm?=
- =?us-ascii?Q?J8YZaF0YXMKwQlJX6mQxv/aZ6AHnAgqSrMx6w4ZouOYYSPVz/M3sE5Ke7AFZ?=
- =?us-ascii?Q?phKeqHfUgr5xfYh1gXmhEGq6TSSzMBEvy8zyFuolb3qRD126gzpARnK11nOZ?=
- =?us-ascii?Q?WWKv19IiOgCTbW0/CNcGBMfJotq6Jw9qvj/jbOOXowjBAe42s7ZdEOhJQbKC?=
- =?us-ascii?Q?sZAnCIy1G3cflY5dXJs+27+7zamLXAkFqIjbP8XoCO+UglZyzaFXik95FWcr?=
- =?us-ascii?Q?ZXYK9C8ap42swm7D2FpwUKFWcrG9r9rVgokJMaPJFAfY7qDfbfmH0pzxrHav?=
- =?us-ascii?Q?xFP5GoTbUfmute2e/QhGx33QO8gj7lurCRcIdL7WrANND0EwmBUVBfkCKr1a?=
- =?us-ascii?Q?WjxW4gVZVmgvcQ1yriVNBlNyDmg+GWSuiLTQXWpFedYbe7cujCVJ8jfnwsgX?=
- =?us-ascii?Q?uVeKLeUrzw3NEraMLV9Sm19hTgpRYgU5eFId00L9vBGMRNKgiaXgpWjwIYzG?=
- =?us-ascii?Q?zSDrSdwjU6ozLb809bUa9nbCnUcY14L5CFiq1P3GJ9iIJylcZVvYOiRj2bV3?=
- =?us-ascii?Q?J1eW8SqkVuP5GwE/N2MgWH7P13tm5f5Lug+gHDNquuGIb9D3GYGAjBJx/XNL?=
- =?us-ascii?Q?JTTYWvcIZTyJWms8W1pLwKO60TMtW3Qsk4G8QtYIn5PjEclc8tYxRuh465gv?=
- =?us-ascii?Q?09ZwXQrme3AzgEtcUOVrXSxjZCPpcJs5aAf9dymkhu3BxesuPNSjlp3RyYz4?=
- =?us-ascii?Q?SBApCLFHXJ/EU8ky0sI5JSPOfxfpPfUshs3AiQqHX5iDnU/gIFQvmdbhktSZ?=
- =?us-ascii?Q?Q9jMIUMGyGMYYrhs3JCJUb67TULF3Ak8t+F5LJmSulZqrUMheQIdN84xX/ts?=
- =?us-ascii?Q?U9Hi4ON3casDiNszlU5Pv0EQpwRkbQc3MZyVm5Nzg+RnkIjyEBgxBhSFc7oT?=
- =?us-ascii?Q?doP+u0Gfs5X6XBjEw1kg985sjUrN?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87905f56-c44f-4f05-6c19-08d951bdad22
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9MdR/QEXqA1U9RcTY5dqC0itLeC9kvECmOyYQI5ceCSrY0cm/FA3eqrQq+03?=
+ =?us-ascii?Q?SvZavj9o8faUGYDwwI1OrnXI7kVpSuI+yRK9PPae1UXdAicg4pw8v/9IIwuW?=
+ =?us-ascii?Q?BOM3Qypyd6YxO5tPbhqTo1NoXo3B5Xqwwaa8IyVxO/RMut9iy3l2ZUYBKFDs?=
+ =?us-ascii?Q?PFIjB9qpNPwdnOmNYA3zQNwqtWs51g773JxKFdhKAyWe0siQ52xfEONr/mIv?=
+ =?us-ascii?Q?r2YO70LS5F49gY8GBhagRiTkps80B832GTmMqf8Z6KHJK8i3sbVNbm8kpU7V?=
+ =?us-ascii?Q?0J/c8X+JHE4TVJPETX8O26//rWQtozNnd8BQMeaT5vm/KVQqwVw2aqG2qk9g?=
+ =?us-ascii?Q?dr/sL+3ubjx/KkB246hrtNxsaKTiTghzO51rsWNsjdcQUc4nLVap7+Qo8Dwe?=
+ =?us-ascii?Q?HrLV3ip9XwAHLaRGq/dFJF3mxlfPvksh5YZ05RaX51yoQvLGjwbemqRjNvqk?=
+ =?us-ascii?Q?lOYGw02GUC/sMEHU20JlfJndEZMpkeqx93MuD/h3pkdsoM+kSJoqUSKbhuyn?=
+ =?us-ascii?Q?9S1SLIcP4xJTIk4zU1w0QR3LP1tuyF9MVcV4avpYDjMRxc6cIIPj2mEZfMQM?=
+ =?us-ascii?Q?5UFxJrjdI1EqxdSNA590C+752EZAb4CaZ//MbcGJL24aMM05I/CtOnO5qwll?=
+ =?us-ascii?Q?5Mbcghdm/EG41FL9Qko5ROyzVe8/TCky3dq5hCr3fipG3DWUMWF1PUj720eM?=
+ =?us-ascii?Q?Xcdv120a6b1+o0IEZxcqzKF7OpIZMeAKCWM4Qy79ERjadCGhpA7O0CwUUuqY?=
+ =?us-ascii?Q?a0x23IA0Y8Me1nzZGEvR8W3W8AgvKmSK90AJak1SSlnaqdcus6l47Uyu+p54?=
+ =?us-ascii?Q?aITjfcfrVcAFZPFmUqCfp+JF/T2dUKrdkO0NyYx9Uq0q2za+2fjRqOthe+IZ?=
+ =?us-ascii?Q?OYBni5wum+5EdYE2BA3cl2FWsi/az45RCrU5omwUoeq8Ug9irfNarq94AOyq?=
+ =?us-ascii?Q?BPYacP/h2no8OGrG5Ibe88wbadJTcQeTGWZNwoJlWDn56FQsq7BBrTZJoToR?=
+ =?us-ascii?Q?98ty3TLo1iWSskRFaQJ2aln7sOXjrylXMi4uJ4RiI0dm1XduUvkrjZ02OugB?=
+ =?us-ascii?Q?mVXa04xUPxe68DvJVuzZMD52VTPfUm9GjgHDULSsT0XbzNoShgZtXi83Brzu?=
+ =?us-ascii?Q?KfAc+Etee/KjwM0mqa/3khMOEploUYdqd5qFOucHtNxPzJDjqM8VIKt3uSOe?=
+ =?us-ascii?Q?wgM2u9QzV1PFncTrgwAtr0mgFwIGNbR7fdELPBn3B4zWMHfu3p6nYp/mCQus?=
+ =?us-ascii?Q?eU4VqRYJnzGXTkcs5eLeibutZhv1SunvjlhekhKjz7SZqpSOBvOr/0XuVpIq?=
+ =?us-ascii?Q?eNsM517pxt7z3wunYnGrf4Ql?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60e84ee6-cc5e-451b-8e4d-08d951be17cf
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 11:48:54.7488
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 11:51:53.8374
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AFnlvSVK32SFPdKrBXA0MuP2xORU+lSJGXw+bk9e1m/voGw6Dfp0DKMbauc/SGpLSJcwB7ccWpXbYpR7BpeRA9ZFC4lHR38jRtKWZYSsbfo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR13MB4970
+X-MS-Exchange-CrossTenant-UserPrincipalName: Lfa0zgSCjPEaD5jXHwq8gpcf+V3NEYRGzAETvFTzaIEiDKBK4TjLDLLWj+J5GY//0zGSkcYTfkBfENEtIA0oYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3094
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 05:16:31PM +0800, Yang Yingliang wrote:
-> If nfp_tunnel_add_ipv6_off() fails, it should return error code
-> in nfp_fl_ct_add_offload().
-> 
-> Fixes: 5a2b93041646 ("nfp: flower-ct: compile match sections of flow_payload")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+This patch set adds supports for i.MX8MQ and i.MX8QM, both of them extend new features.
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+ChangeLogs:
+V1->V2:
+	* rebase on schema binding, and update dts compatible string.
+	* use generic ethernet controller property for MAC internal RGMII clock delay
+	  rx-internal-delay-ps and tx-internal-delay-ps
+
+Fugang Duan (3):
+  net: fec: add imx8mq and imx8qm new versions support
+  net: fec: add eee mode tx lpi support
+  net: fec: add MAC internal delayed clock feature support
+
+Joakim Zhang (4):
+  dt-bindings: net: fsl,fec: update compatible items
+  dt-bindings: net: fsl,fec: add RGMII internal clock delay
+  arm64: dts: imx8m: add "fsl,imx8mq-fec" compatible string for FEC
+  arm64: dts: imx8qxp: add "fsl,imx8qm-fec" compatible string for FEC
+
+ .../devicetree/bindings/net/fsl,fec.yaml      |  27 ++++
+ arch/arm64/boot/dts/freescale/imx8mm.dtsi     |   2 +-
+ arch/arm64/boot/dts/freescale/imx8mn.dtsi     |   2 +-
+ .../boot/dts/freescale/imx8qxp-ss-conn.dtsi   |   4 +-
+ drivers/net/ethernet/freescale/fec.h          |  25 +++
+ drivers/net/ethernet/freescale/fec_main.c     | 146 ++++++++++++++++++
+ 6 files changed, 202 insertions(+), 4 deletions(-)
+
+-- 
+2.17.1
 
