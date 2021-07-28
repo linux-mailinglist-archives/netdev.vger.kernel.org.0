@@ -2,52 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9823D9012
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 16:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4006F3D9016
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 16:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236473AbhG1OHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 10:07:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38192 "EHLO mail.kernel.org"
+        id S236613AbhG1OIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 10:08:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49904 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233439AbhG1OHh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 10:07:37 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D77C660C3F;
-        Wed, 28 Jul 2021 14:07:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627481256;
-        bh=LFYS6sxKo4PXSjLsok+9iz45Dtwvy535c2NhhiC2Xns=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lEGczgVx0B7ZJJb4fPb7mzKYbGQabtOleGviPcDuArvy1Ga2ORPEvjxIZSIanS1tl
-         nOl3TnVAZKBxiS8x54uHzRUGYodTdTptKOMEl4qiWHQ0Y7SihkEL/7qhJ2ElCQr7dN
-         voY36cffiVRpQBvdvltHLkAl4FWG5w8XIdaX/RZ1AVOhtrfXUwjGO2QdKI3w/TTi97
-         7uR2fYcbhonBkAki/sAdgJ0qAZJEccqw3AvHaMNIT9nhzPTQKfUnu/NHeRnKymsS78
-         Jacbpb3vtDNfJxFLD0GYE+FMG+ILJUcRIPSNFxiZbbf4PfA0Nr26WFM4vDYKEjhDDw
-         53ATmgxqj2iHA==
-Date:   Wed, 28 Jul 2021 10:07:34 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Vasily Averin <vvs@virtuozzo.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.13 07/19] ipv6: allocate enough headroom in
- ip6_finish_output2()
-Message-ID: <YQFkpo140o/fy56p@sashalap>
-References: <20210723035721.531372-1-sashal@kernel.org>
- <20210723035721.531372-7-sashal@kernel.org>
- <2b57c728-3ef2-aeba-2ff3-ff2555fb6ee3@virtuozzo.com>
+        id S233439AbhG1OIT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 10:08:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=p1ZPqb4JnoiqJdUy3vnukyeR01HwkRN6PlUru+n8cQk=; b=3H8BpUcZNCR7qZ5elLTY+OrAXg
+        lW2dhXJwczo0A9Xdg+esFXvfYBmqWRwlM5parI7UKDosoXS09/yQHSyFDDf1U96dVK01wie9SxHjQ
+        9Wmm0BxPjA7ovj/f4eJJcUooQQLz6Rzy0BXOQyxZtp4C/Yx35EyWVPxYAt9uaU2ya0Hc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m8kEE-00FB6E-5W; Wed, 28 Jul 2021 16:08:10 +0200
+Date:   Wed, 28 Jul 2021 16:08:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, linux-imx@nxp.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 net-next 2/7] dt-bindings: net: fsl,fec: add RGMII
+ internal clock delay
+Message-ID: <YQFkysjHFEN1w6Yz@lunn.ch>
+References: <20210728115203.16263-1-qiangqing.zhang@nxp.com>
+ <20210728115203.16263-3-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2b57c728-3ef2-aeba-2ff3-ff2555fb6ee3@virtuozzo.com>
+In-Reply-To: <20210728115203.16263-3-qiangqing.zhang@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 23, 2021 at 09:03:33AM +0300, Vasily Averin wrote:
->this patch is incomplete, and requires following fixup
->https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2d85a1b31dde84038ea07ad825c3d8d3e71f4344
+On Wed, Jul 28, 2021 at 07:51:58PM +0800, Joakim Zhang wrote:
 
-I've grabbed it too, thanks!
+> +      The "enet_2x_txclk"(option), for RGMII sampling clock which fixed at 250Mhz.
+> +      The clock is required if SoC RGMII enable clock delay.
 
--- 
-Thanks,
-Sasha
+Hi Joakim
+
+So you only need the clock if you are using RGMII delays? For RGMII
+without delays, the clock is not needed?
+
+You might want to add a check in the C code that the clock is provided
+when needed.
+
+     Andrew
