@@ -2,91 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5013D8D51
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 13:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B2E3D8D60
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 14:00:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236108AbhG1L55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 07:57:57 -0400
-Received: from m12-11.163.com ([220.181.12.11]:35664 "EHLO m12-11.163.com"
+        id S236217AbhG1MAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 08:00:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236145AbhG1L5r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 07:57:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=u3qOm
-        i3yxLZFOkDotBepUEsryH0TnOvUsnY/qvFuVKg=; b=ZDRxCktgL8uMj84k1BJW9
-        CuIOOWGYhz9f+R8+vzPCULDnHtig/AbRLeB2lKdlgtPWm6YfckaijexFOm4BMplw
-        Mkc75V6GQXxG7vs5YSEQ5cc5brpinB4n5pOd8JKjzkSR87MI4eKUXtBepvEhgFdr
-        auAHe/LBeda4BBT1r4Ypys=
-Received: from localhost (unknown [218.17.89.92])
-        by smtp7 (Coremail) with SMTP id C8CowABHRZ0mRgFhIOECpA--.48350S2;
-        Wed, 28 Jul 2021 19:57:26 +0800 (CST)
-Date:   Wed, 28 Jul 2021 19:57:34 +0800
-From:   wengjianfeng <samirweng1979@163.com>
-To:     broonie@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        tangbin@cmss.chinamobile.com
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210728195734.00002cfe@163.com>
-Organization: yulong
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S234758AbhG1MAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Jul 2021 08:00:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 519C060F91;
+        Wed, 28 Jul 2021 12:00:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627473605;
+        bh=+w8uRcP+PlyXqAXzjRgqMr0AStxVrxmXG3ZtiR4di0E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=W1m/Hwc7ks22bh8vEscMNQoex/R6L8qfcoQMuShZdk6W/rI6fud08y+oDYv9Sm45p
+         VGcxMjc83TibxSdgByP08J/HjoScYZpDnaiwVohFzOkQmXLlN9MsKlaDWxjIythBn3
+         6FhvNbUmI/1Tqx8KZLvsFaEpUTKsoy/ZNZeMb3gWb0DEH+tfGlMcj75oyT7DfADmsc
+         fjlUcwyK0bO7xA2FmMz4WSkSXPdksvI0KLdrCzvj1C+SEv9XDJshueOCAs+ua5rDHc
+         QlxY/Zd6E+W6N2X61KSqxeESbpGVKsEiITsviZezYgufswnkHiCjXGAGpx5fDriItv
+         a+6Jd4geJZS4w==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 40F0760A6C;
+        Wed, 28 Jul 2021 12:00:05 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: C8CowABHRZ0mRgFhIOECpA--.48350S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WF1xCFWUJrWDAryUZrWDurg_yoW8Xr1kpr
-        W5J3W0kF18JFn5ArykAw4DuF15tw1xCr1Uu392q3y8AF93ZF97GanF9FWkWrWDurWF93W3
-        tr42qw1293WFqaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jATmDUUUUU=
-X-Originating-IP: [218.17.89.92]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiHQfdsVSIrqS+NAAAsq
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: let flow have same hash in two directions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162747360526.13277.18400122814387528993.git-patchwork-notify@kernel.org>
+Date:   Wed, 28 Jul 2021 12:00:05 +0000
+References: <20210728105418.7379-1-zhangkaiheb@126.com>
+In-Reply-To: <20210728105418.7379-1-zhangkaiheb@126.com>
+To:     zhang kai <zhangkaiheb@126.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, krzysztof.kozlowski@canonical.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi all,
-> >
-> >Today's linux-next merge of the net-next tree got a conflict in:
-> >
-> >  drivers/nfc/s3fwrn5/firmware.c
-> >
-> >between commit:
-> >
-> >  801e541c79bb ("nfc: s3fwrn5: fix undefined parameter values in
-> >  dev_err()")
-> >
-> > from the net tree and commit:
+Hello:
 
-> >  a0302ff5906a ("nfc: s3fwrn5: remove unnecessary label")
+This patch was applied to netdev/net.git (refs/heads/master):
 
-> > from the net-next tree.
+On Wed, 28 Jul 2021 18:54:18 +0800 you wrote:
+> using same source and destination ip/port for flow hash calculation
+> within the two directions.
+> 
+> Signed-off-by: zhang kai <zhangkaiheb@126.com>
+> ---
+>  net/core/flow_dissector.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 
-> > I fixed it up (see below) and can carry the fix as necessary. This
-> > is now fixed as far as linux-next is concerned, but any non trivial
-> > conflicts should be mentioned to your upstream maintainer when your
-> > tree is submitted for merging.  You may also want to consider
-> > cooperating with the maintainer of the conflicting tree to minimise
-> > any particularly complex conflicts.
+Here is the summary with links:
+  - net: let flow have same hash in two directions
+    https://git.kernel.org/netdev/net/c/1e60cebf8294
 
-> > diff --cc drivers/nfc/s3fwrn5/firmware.c
-> > index 1340fab9565e,1421ffd46d9a..000000000000
-> > --- a/drivers/nfc/s3fwrn5/firmware.c
-> > +++ b/drivers/nfc/s3fwrn5/firmware.c
-> > @@@ -421,10 -421,9 +421,9 @@@ int s3fwrn5_fw_download(struct
-> > s3fwrn5_
-> > 
-> >  tfm = crypto_alloc_shash("sha1", 0, 0);
-> >  if (IS_ERR(tfm)) {
-> >- ret = PTR_ERR(tfm);
- > > dev_err(&fw_info->ndev->nfc_dev->dev,
-> >-	"Cannot allocate shash (code=%d)\n", ret);
-> >+	"Cannot allocate shash (code=%ld)\n", PTR_ERR(tfm));
-> >- goto out;
-> >+ return PTR_ERR(tfm);
-> >  }
-> > 
-> >  ret = crypto_shash_tfm_digest(tfm, fw->image, image_size,
-> > hash_data);
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Hi Mark,  
-  Thanks for you fix the issue, I'll pay attention to this later.
 
