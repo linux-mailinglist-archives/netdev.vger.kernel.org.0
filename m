@@ -2,154 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F013D8710
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 07:13:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A2983D8712
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 07:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbhG1FN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 01:13:27 -0400
-Received: from mail-sn1anam02on2056.outbound.protection.outlook.com ([40.107.96.56]:43522
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229752AbhG1FN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Jul 2021 01:13:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E0Etu6/hSwI/6fe4kIqSRKVfHiHpMGBdq2e6Fw8mwQ943xBW4zopruj2CiZkupDtrOB2HV6g2DrP+u9yJSvn6QvmaW9WMW8obq7yus3dWub8f2gdPyZUKze0zTcPji8y1PkYLE/5CBwYgukjFIIJfmKkRTYPkDwbsC5MAuGz637k1q3cixVeWH1Gl33/I1AwrAF05acW/PZRZgIvvvW4jkf6GaEMrVB08TXPlmYYMZtblQ3uDk9ddyVEpz+kh+TpailTy5IDwwzoFp81TNCREKtCeBhG/oRfj1CWYPyXNF96ngoEYNTP9ehBbrO40ekP2J3ZswkuZjqYGW9PGKYIIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g4iuScFnijfROaKCvOYlCLjPQpDtNBrkD1fjvvR1X4g=;
- b=Sq/cFI+sBkbfJZhQcrbbhJeuQ3xZU9L+jOuhD3x12QwAoDCPxejTiitpP0hf8DyzUTaJaTq7Y6AA9+lKV1/nxnoPK6vPZs+ghw5Teus6XJEprCbOGOsszVkuGjdgcbq9U6nbQ/2iAfsM6HTbcPwwxjVW1FN5Bzf7u+8QI9vYRGosDYccBhaC/pmXjFGlw+wa9FrdVp0QNUtqzpFWV1dOMQrFMnBLeImrxMM7oc25H5ExydnpMR1iSZrunm6A7RcEJ6tZyvD/cWMPsRPCwyOev6fYpEbp8HFskqvoemrjJubaxvFTTA75RsIiSSbMia/HHeowDACB/qS5Dw5lagSz5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g4iuScFnijfROaKCvOYlCLjPQpDtNBrkD1fjvvR1X4g=;
- b=jGNFaJaWp5K24FBM0STEfFagqbhgcMD6NmQoFguH8ubmYvx8uYGfSKIwAbFXkuIqNoLwqzEIptld5UC0nXPTPfRmLlnKm/x7qVDz3clS4PEyN3WX0zYNBIyoxRCiII0LM0gpFP4eRvUR/6mSZpDc9LJoaTYdzxyk4YfnF3CHgcs=
-Received: from SN6PR04CA0107.namprd04.prod.outlook.com (2603:10b6:805:f2::48)
- by SN6PR02MB5295.namprd02.prod.outlook.com (2603:10b6:805:67::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.29; Wed, 28 Jul
- 2021 05:13:23 +0000
-Received: from SN1NAM02FT0038.eop-nam02.prod.protection.outlook.com
- (2603:10b6:805:f2:cafe::49) by SN6PR04CA0107.outlook.office365.com
- (2603:10b6:805:f2::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend
- Transport; Wed, 28 Jul 2021 05:13:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0038.mail.protection.outlook.com (10.97.5.7) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4352.24 via Frontend Transport; Wed, 28 Jul 2021 05:13:23 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 27 Jul 2021 22:13:23 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.2 via Frontend Transport; Tue, 27 Jul 2021 22:13:23 -0700
-Envelope-to: devicetree@vger.kernel.org,
- netdev@vger.kernel.org,
- kuba@kernel.org,
- davem@davemloft.net,
- gerhard@engleder-embedded.com,
- robh+dt@kernel.org
-Received: from [172.30.17.109] (port=33808)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1m8bsg-0003cV-Pg; Tue, 27 Jul 2021 22:13:23 -0700
-Subject: Re: [PATCH net-next 2/5] dt-bindings: net: Add tsnep Ethernet
- controller
-To:     Rob Herring <robh+dt@kernel.org>,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        netdev <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
- <20210726194603.14671-3-gerhard@engleder-embedded.com>
- <CAL_JsqLe0XScBgCJ+or=QdnnUGp36cyxr17BhKrirbkZ_nrxkA@mail.gmail.com>
- <CANr-f5wscRwY1zk4tu2qY_zguLf+8qNcEqp46GzpMka8d-qxjQ@mail.gmail.com>
- <CAL_JsqKq6H471iFoLWRGvNSLpaJmuF+feDFut2p+J725n3U4HA@mail.gmail.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <ae17968a-e265-6108-233a-bd0538ad186c@xilinx.com>
-Date:   Wed, 28 Jul 2021 07:13:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        id S233670AbhG1FN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 01:13:58 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:48212
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229752AbhG1FN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 01:13:57 -0400
+Received: from famine.localdomain (1.general.jvosburgh.us.vpn [10.172.68.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id A78F2402C2;
+        Wed, 28 Jul 2021 05:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627449235;
+        bh=8svXSp3hdKJmyVBs5oNMWBFqCE47CuYsPgYWZ8llyl0=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=nMX/oEt4+3njSOrgEdfpi+7Pk8QqMXAiHYM+H+I3fK7I3oJj0gPOtNvNdoTacK4yF
+         idV5aEr25l0h2+flADpPAwUDu54Le8HvI7/82rb4FwPXczdojLXIBrf+STOlPJJUHR
+         v5MRXeGB8OEuWQ9SkSb4OtyLtW4YkzJXmm7/eDhwLSp5sTAfCw4usTDHl4/2AWYcBy
+         QeMh41zXguCy9WXApluDx+yb74yZ5U8kWzaBiXSizJlx3frnC56e/muElIdLh/rkkX
+         89kSwJZ415VDpi6bCSiIJt31AnYTGXcl1Ub9vV81r4k14n+fYYXWPFo17wPan//6o0
+         /DajrM6YXabbw==
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id B1FA35FBC4; Tue, 27 Jul 2021 22:13:48 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id ACB38A040B;
+        Tue, 27 Jul 2021 22:13:48 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Yufeng Mo <moyufeng@huawei.com>
+cc:     davem@davemloft.net, kuba@kernel.org, jiri@resnulli.us,
+        netdev@vger.kernel.org, shenjian15@huawei.com,
+        lipeng321@huawei.com, yisen.zhuang@huawei.com,
+        linyunsheng@huawei.com, zhangjiaran@huawei.com,
+        huangguangbin2@huawei.com, chenhao288@hisilicon.com,
+        salil.mehta@huawei.com, linuxarm@huawei.com, linuxarm@openeuler.org
+Subject: Re: [PATCH RFC net-next] bonding: 3ad: fix the conflict between __bond_release_one and bond_3ad_state_machine_handler
+In-reply-to: <1627025171-18480-1-git-send-email-moyufeng@huawei.com>
+References: <1627025171-18480-1-git-send-email-moyufeng@huawei.com>
+Comments: In-reply-to Yufeng Mo <moyufeng@huawei.com>
+   message dated "Fri, 23 Jul 2021 15:26:11 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqKq6H471iFoLWRGvNSLpaJmuF+feDFut2p+J725n3U4HA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3ee900ff-54db-45c6-99a0-08d951866c67
-X-MS-TrafficTypeDiagnostic: SN6PR02MB5295:
-X-Microsoft-Antispam-PRVS: <SN6PR02MB5295507FDC6B8775805EBC68C6EA9@SN6PR02MB5295.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: A67hnXVTnxn8gykbY+nVvVO4/XfXRWNF2TytbzhTVMplQn/ltWU80d3aWmGG6qqCfRiRcf5nigEhpY6ymc4iPuIKMplQ7Rvu1TSkY/7ZvCraJPSZI9p81bgluRCCzkm/igA68uj2QYQx+SJcRPiwOAec6cvaQEL5AzvqgzIX7jZQJxnZFl0AF9UO9jqZuaHPR9uMx0DibNHsrBOrtWOLJHpUvIFqTERLqz04cRlv2xUq/4rTXXm1w6omCZ3Bj+2vvbnviqDGNpxgiCsE/GHpH+kBcyrvDoT/c/pGqZdsb4hOJWji2+wuky7He1QlO7UA09RbMvBcLaz6BPS/I9psSDt2Kz09vfMI01aRgP6fehGwiKaX+Rv0phrZMMAcgPIvMjO5KSsM1vnYzZqPWYtC9u0BpIGxOL1rif+dL51wwq5bHBW7wLVK+GPJpZrnupWJgSDuARd1MH4wuVlKaJ9O+PXSbeQ2CoxEKxiL4Gylnj3PdQ5npaTQm16QnfCiymrykIF4AM27+uKJpkuClW1MB3okPMieiVPfYJQA/l6w+VgJfl8a+glugREHKyKkN87F+QRnL9KqdkU+Pq3OzRj6P+C3QB/wA8rMVvYkooQUo/8hEW+ciQmwBxvvF4L3BV7WZpkDgRWp7piuanXgyGuujRZUAupBr8adznHE0QscW2RVkNXuUvQpT/UNRgV/iQwyPlFM97wAzIKDxYqyIkZ3beYKTI0JVNEL3up9c74uwhm4OW/FQKC4sEp+C8++uHA1HGVy1ks0eNpGAs4Z6rpstA==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(346002)(136003)(396003)(376002)(39850400004)(46966006)(36840700001)(70586007)(426003)(8936002)(356005)(53546011)(36906005)(2906002)(36756003)(70206006)(7636003)(31696002)(2616005)(316002)(83380400001)(36860700001)(478600001)(336012)(8676002)(186003)(4326008)(110136005)(44832011)(54906003)(31686004)(5660300002)(82740400003)(82310400003)(9786002)(26005)(47076005)(50156003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2021 05:13:23.5032
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3ee900ff-54db-45c6-99a0-08d951866c67
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0038.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB5295
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10702.1627449228.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Tue, 27 Jul 2021 22:13:48 -0700
+Message-ID: <10703.1627449228@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Yufeng Mo <moyufeng@huawei.com> wrote:
+
+>Some time ago, I reported a calltrace issue
+>"did not find a suitable aggregator", please see[1].
+>After a period of analysis and reproduction, I find
+>that this problem is caused by concurrency.
+>
+>Before the problem occurs, the bond structure is like follows:
+>
+>bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+>                      \
+>                        port0
+>      \
+>        slaver1(eth1) - agg1.lag_ports -> NULL
+>                      \
+>                        port1
+>
+>If we run 'ifenslave bond0 -d eth1', the process is like below:
+>
+>excuting __bond_release_one()
+>|
+>bond_upper_dev_unlink()[step1]
+>|                       |                       |
+>|                       |                       bond_3ad_lacpdu_recv()
+>|                       |                       ->bond_3ad_rx_indication(=
+)
+>|                       |                       ->ad_rx_machine()
+>|                       |                       ->__record_pdu()[step2]
+>|                       |                       |
+>|                       bond_3ad_state_machine_handler()
+>|                       ->ad_port_selection_logic()
+>|                       ->try to find free aggregator[step3]
+>|                       ->try to find suitable aggregator[step4]
+>|                       ->did not find a suitable aggregator[step5]
+>|                       |
+>|                       |
+>bond_3ad_unbind_slave() |
+>
+>step1: already removed slaver1(eth1) from list, but port1 remains
+>step2: receive a lacpdu and update port0
+>step3: port0 will be removed from agg0.lag_ports. The struct is
+>       "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+>       same time, slaver1/agg1 has been removed from the list by step1.
+>       So we can't find a free aggregator now.
+>step4: can't find suitable aggregator because of step2
+>step5: cause a calltrace since port->aggregator is NULL
+>
+>To solve this concurrency problem, the range of bond->mode_lock
+>is extended from only bond_3ad_unbind_slave() to both
+>bond_upper_dev_unlink() and bond_3ad_unbind_slave().
+>
+>[1]https://lore.kernel.org/netdev/10374.1611947473@famine/
+>
+>Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+
+	This looks good to me, and explains the previously reported
+issue.  If Jakub or Davem are comfortable applying this even though it
+was posted as RFC (it applies cleanly to today's net-next, although I
+did not build it) I'm fine with that; otherwise, please repost and
+include:
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+	-J
 
 
-On 7/27/21 10:25 PM, Rob Herring wrote:
-> On Tue, Jul 27, 2021 at 12:35 PM Gerhard Engleder
-> <gerhard@engleder-embedded.com> wrote:
->>
->> On Tue, Jul 27, 2021 at 1:35 AM Rob Herring <robh+dt@kernel.org> wrote:
->>>> +properties:
->>>> +  compatible:
->>>> +    oneOf:
->>>
->>> Don't need oneOf when there is only one entry.
->>
->> I will fix that.
->>
->>>> +      - enum:
->>>> +        - engleder,tsnep
->>>
->>> tsnep is pretty generic. Only 1 version ever? Or differences are/will
->>> be discoverable by other means.
->>
->> Differences shall be detected by flags in the registers; e.g., a flag for
->> gate control support. Anyway a version may make sense. Can you
->> point to a good reference binding with versions? I did not find a
->> network controller binding with versions.
-> 
-> Some of the SiFive IP blocks have versions. Version numbers are the
-> exception though. Ideally they would correspond to some version of
-> your FPGA image. I just don't want to see 'v1' because that sounds
-> made up. The above string can mean 'v1' or whatever version you want.
-> I'm fine if you just add some description here about feature flag
-> registers.
+>---
+> drivers/net/bonding/bond_3ad.c  | 7 +------
+> drivers/net/bonding/bond_main.c | 3 +++
+> 2 files changed, 4 insertions(+), 6 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3a=
+d.c
+>index 6908822..f0f5adb 100644
+>--- a/drivers/net/bonding/bond_3ad.c
+>+++ b/drivers/net/bonding/bond_3ad.c
+>@@ -2099,15 +2099,13 @@ void bond_3ad_unbind_slave(struct slave *slave)
+> 	struct list_head *iter;
+> 	bool dummy_slave_update; /* Ignore this value as caller updates array *=
+/
+> =
 
-Don't Xilinx design tool (vivado) force you to use IP version?
-Normally all Xilinx IPs have certain version because that's the only way
-how to manage it.
+>-	/* Sync against bond_3ad_state_machine_handler() */
+>-	spin_lock_bh(&bond->mode_lock);
+> 	aggregator =3D &(SLAVE_AD_INFO(slave)->aggregator);
+> 	port =3D &(SLAVE_AD_INFO(slave)->port);
+> =
 
-Thanks,
-Michal
+> 	/* if slave is null, the whole port is not initialized */
+> 	if (!port->slave) {
+> 		slave_warn(bond->dev, slave->dev, "Trying to unbind an uninitialized p=
+ort\n");
+>-		goto out;
+>+		return;
+> 	}
+> =
+
+> 	slave_dbg(bond->dev, slave->dev, "Unbinding Link Aggregation Group %d\n=
+",
+>@@ -2239,9 +2237,6 @@ void bond_3ad_unbind_slave(struct slave *slave)
+> 		}
+> 	}
+> 	port->slave =3D NULL;
+>-
+>-out:
+>-	spin_unlock_bh(&bond->mode_lock);
+> }
+> =
+
+> /**
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index 0ff7567..00a501c 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -2129,6 +2129,8 @@ static int __bond_release_one(struct net_device *bo=
+nd_dev,
+> 	/* recompute stats just before removing the slave */
+> 	bond_get_stats(bond->dev, &bond->bond_stats);
+> =
+
+>+	/* Sync against bond_3ad_state_machine_handler() */
+>+	spin_lock_bh(&bond->mode_lock);
+> 	bond_upper_dev_unlink(bond, slave);
+> 	/* unregister rx_handler early so bond_handle_frame wouldn't be called
+> 	 * for this slave anymore.
+>@@ -2137,6 +2139,7 @@ static int __bond_release_one(struct net_device *bo=
+nd_dev,
+> =
+
+> 	if (BOND_MODE(bond) =3D=3D BOND_MODE_8023AD)
+> 		bond_3ad_unbind_slave(slave);
+>+	spin_unlock_bh(&bond->mode_lock);
+> =
+
+> 	if (bond_mode_can_use_xmit_hash(bond))
+> 		bond_update_slave_arr(bond, slave);
+>-- =
+
+>2.8.1
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
