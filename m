@@ -2,126 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C01D3D97B9
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:46:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625473D97D9
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 23:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231929AbhG1VqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 17:46:02 -0400
-Received: from mail-pj1-f49.google.com ([209.85.216.49]:40676 "EHLO
-        mail-pj1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbhG1VqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:46:00 -0400
-Received: by mail-pj1-f49.google.com with SMTP id u9-20020a17090a1f09b029017554809f35so12204025pja.5;
-        Wed, 28 Jul 2021 14:45:58 -0700 (PDT)
+        id S231982AbhG1Vyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 17:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231668AbhG1Vyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 17:54:36 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AF5C061757
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:54:34 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id m1so7271098pjv.2
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 14:54:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=54mw3Izs0wCpg2NhuA6+mLfvte221C+afMaDmhUk9ec=;
+        b=nkhLolP8LZqxwbOoNp/FC6WCYmDOQYqq+ONKh5Zve2Ko6NOPXdOiUqJ2jIFGATcIHu
+         hfPdzEjBAjmf0fNCXyI3RV8V/GjFkYQmS1YcNSH7SQVwsOnN2QL2Mgr+lfZ76gIAL7IM
+         moeenZQIyxqz0gMVV3wVouxUtILZqGrrYaAMh8OfYg6ZXs/jM7y3/WROuFQJ1XbNRibm
+         xnhZdkmSc7Z00ztqeFhTXOA6pJ/1cpvyKjQI9XdLrdvIEErISp03PAI4N/C/xN7qpytI
+         vSWnY1jPbwIZ0ulJyfk4F5keHNSGFAK0neUwk/ShmZxq8mo1bxVI6+bvUH+LVrJybG8t
+         3fbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XicekCZGMuTmx7BgzDuVSPZdtJx2YNBwg9Vgy0Mbawo=;
-        b=VsdJVD9iLYkTZckyM9peEdy+mj36F+LurPNiPrqbBO6rJKeUSWwHC90l6NckKkKhfo
-         zAy4Mz7RazjHVctU+QhA1AFPT+vWsk+WdTqR7QOCBeSQoHgVn+A/Z83IxjJr6j4hZXJs
-         0uerb8kXtF31NZkzAthE0gRaNV/BtrgQP0a589Xgj/oDHp4zPIQ1qp++TltPKeXqXwSJ
-         LC3BLPoTYx2M7VjImbGndHv2Tg79A0ywsKJE+PswfiIzKTRekyvR2uqAXbfSJ7LM+6qh
-         BdoqCYnLtO0vHhagqQedYZZt9KUcvywgBvk4gcJilvXFFwJRSowpP1T+oCYwNcLqQ6af
-         xo6w==
-X-Gm-Message-State: AOAM531C83eFuhpmkEosL4s1i1/EdD6jkGzrdl4onTfDWVAkaLu8VbqH
-        aiVm+XQTeQ5ZQnl90gUcZSU=
-X-Google-Smtp-Source: ABdhPJw8GLTntP9/607bFZm4hvTLuV2RygVm16ypIjamKfpthJMPHWWs51SpMIWNplCV818V7piMmg==
-X-Received: by 2002:a62:61c3:0:b029:35b:cb61:d2c3 with SMTP id v186-20020a6261c30000b029035bcb61d2c3mr1780844pfb.62.1627508758153;
-        Wed, 28 Jul 2021 14:45:58 -0700 (PDT)
-Received: from bvanassche-linux.mtv.corp.google.com ([2620:15c:211:1:3328:5f8d:f6e2:85ea])
-        by smtp.gmail.com with ESMTPSA id b15sm876167pgj.60.2021.07.28.14.45.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Jul 2021 14:45:57 -0700 (PDT)
-Subject: Re: [PATCH 48/64] drbd: Use struct_group() to zero algs
-To:     Kees Cook <keescook@chromium.org>, linux-hardening@vger.kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-49-keescook@chromium.org>
-From:   Bart Van Assche <bvanassche@acm.org>
-Message-ID: <1cc74e5e-8d28-6da4-244e-861eac075ca2@acm.org>
-Date:   Wed, 28 Jul 2021 14:45:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=54mw3Izs0wCpg2NhuA6+mLfvte221C+afMaDmhUk9ec=;
+        b=rL1IFiy1bEiFjwrc2fIiTyMzTkJKC3xnWynq+oLuL8cAHDBkuXl7tw/aTZDV0hrf+L
+         rOx35dYO1/0mzEXINZ9OzGb4ksCyrGEoN9b4/Y9vdgpftieu3QnTkRvtfeqQsjf/ngKp
+         eQr7bz/Yw4KrEYbdrFnA7e0iqeluzMTb/Q4KPUSY9rmuczOsiTeKz7A+aBaqfltfhqov
+         3exVGJ7qwrWXL4kBlKOqjbcqp336KddI+iPg8s2jpTXOVmDSYl8Vlv4gErxEkCvyFJah
+         GiPSo1EKqP3EXOwXnzy5J77oTbLdDvl8HTvqCkUzfrSqRPCA116x/S9kw8erIWOUHG7G
+         JgUA==
+X-Gm-Message-State: AOAM5335+KA7+lAuB0hHijSGPzlHL6iPusxE6YQfEBS8h0uBtTshhk8w
+        TuV6GPnUQGsuws4OSUCYEuYlTfbPBJgeh0FsT++bUQ==
+X-Google-Smtp-Source: ABdhPJxY9TwRIEcSU7iVOMPmHgvGYqMUfWRwwDCj6WOJIiqEq8Fxy9v9suESuzsmac/S3fo0vPA2MZtdYkMtelLstrY=
+X-Received: by 2002:a63:235f:: with SMTP id u31mr947718pgm.248.1627509273773;
+ Wed, 28 Jul 2021 14:54:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210727205855.411487-49-keescook@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210721153808.6902-1-quentin@isovalent.com> <CAEf4Bzb30BNeLgio52OrxHk2VWfKitnbNUnO0sAXZTA94bYfmg@mail.gmail.com>
+ <CAEf4BzZZXx28w1y_6xfsue91c_7whvHzMhKvbSnsQRU4yA+RwA@mail.gmail.com>
+ <82e61e60-e2e9-f42d-8e49-bbe416b7513d@isovalent.com> <CAEf4BzYpCr=Vdfc3moaapQqBxYV3SKfD72s0F=FAh_zLzSqxqA@mail.gmail.com>
+ <bb0d3640-c6da-a802-4794-50cd033119ac@isovalent.com> <CAEf4BzZ8wXhpRwPkBmH3i94oVea2BucC56PCK-0j4N_3gk29Ng@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ8wXhpRwPkBmH3i94oVea2BucC56PCK-0j4N_3gk29Ng@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Wed, 28 Jul 2021 22:54:22 +0100
+Message-ID: <CACdoK4+HCt6+70rKsWuwqMkuOGGcUPCgretnVp430gb_mWpUQw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/5] libbpf: rename btf__get_from_id() and
+ btf__load() APIs, support split BTF
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/27/21 1:58 PM, Kees Cook wrote:
-> In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> field bounds checking for memset(), avoid intentionally writing across
-> neighboring fields.
-> 
-> Add a struct_group() for the algs so that memset() can correctly reason
-> about the size.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->   drivers/block/drbd/drbd_main.c     | 3 ++-
->   drivers/block/drbd/drbd_protocol.h | 6 ++++--
->   drivers/block/drbd/drbd_receiver.c | 3 ++-
->   3 files changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-> index 55234a558e98..b824679cfcb2 100644
-> --- a/drivers/block/drbd/drbd_main.c
-> +++ b/drivers/block/drbd/drbd_main.c
-> @@ -729,7 +729,8 @@ int drbd_send_sync_param(struct drbd_peer_device *peer_device)
->   	cmd = apv >= 89 ? P_SYNC_PARAM89 : P_SYNC_PARAM;
->   
->   	/* initialize verify_alg and csums_alg */
-> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
-> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
-> +	memset(&p->algs, 0, sizeof(p->algs));
->   
->   	if (get_ldev(peer_device->device)) {
->   		dc = rcu_dereference(peer_device->device->ldev->disk_conf);
-> diff --git a/drivers/block/drbd/drbd_protocol.h b/drivers/block/drbd/drbd_protocol.h
-> index dea59c92ecc1..a882b65ab5d2 100644
-> --- a/drivers/block/drbd/drbd_protocol.h
-> +++ b/drivers/block/drbd/drbd_protocol.h
-> @@ -283,8 +283,10 @@ struct p_rs_param_89 {
->   
->   struct p_rs_param_95 {
->   	u32 resync_rate;
-> -	char verify_alg[SHARED_SECRET_MAX];
-> -	char csums_alg[SHARED_SECRET_MAX];
-> +	struct_group(algs,
-> +		char verify_alg[SHARED_SECRET_MAX];
-> +		char csums_alg[SHARED_SECRET_MAX];
-> +	);
->   	u32 c_plan_ahead;
->   	u32 c_delay_target;
->   	u32 c_fill_target;
-> diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
-> index 1f740e42e457..6df2539e215b 100644
-> --- a/drivers/block/drbd/drbd_receiver.c
-> +++ b/drivers/block/drbd/drbd_receiver.c
-> @@ -3921,7 +3921,8 @@ static int receive_SyncParam(struct drbd_connection *connection, struct packet_i
->   
->   	/* initialize verify_alg and csums_alg */
->   	p = pi->data;
-> -	memset(p->verify_alg, 0, 2 * SHARED_SECRET_MAX);
-> +	BUILD_BUG_ON(sizeof(p->algs) != 2 * SHARED_SECRET_MAX);
-> +	memset(&p->algs, 0, sizeof(p->algs));
+On Tue, 27 Jul 2021 at 21:49, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-Using struct_group() introduces complexity. Has it been considered not 
-to modify struct p_rs_param_95 and instead to use two memset() calls 
-instead of one (one memset() call per member)?
+> > >>>
+> > >>> LIBBPF_DEPRECATED_SINCE(0, 6, "API that will be marked deprecated in v0.6")
+> >
+> > So I've been looking into this, and it's not _that_ simple to do. Unless
+> > I missed something about preprocessing macros, I cannot bake a "#if" in
+> > a "#define", to have the attribute printed if and only if the current
+> > version is >= 0.6 in this example.
+> >
+> > I've come up with something, but it is not optimal because I have to
+> > write a check and macros for each version number used with the
+> > LIBBPF_DEPRECATED_SINCE macro. If we really wanted to automate that part
+> > I guess we could generate a header with those macros from the Makefile
+> > and include it in libbpf_common.h, but that does not really look much
+> > cleaner to me.
+>
+> Yeah, let's not add unnecessary code generation. It sucks, of course,
+> that we can't do #ifdef inside a macro :(
+>
+> So it's either do something like what you did with defining
+> version-specific macros, which is actually not too bad, because it's
+> not like we have tons of those versions anyways.
+>
+> LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
+> LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
+>
+> Alternatively, we can go with:
+>
+> #if LIBBPF_AT_OR_NEWER(0, 6)
+> LIBBPF_DEPRECATED("use btf__load_from_kernel_by_id instead")
+> #endif
+> LIBBPF API int btf__get_from_id(__u32 id, struct btf **btf);
+>
+> I don't really dislike the second variant too much either, but
+> LIBBPF_DEPRECATED_SINCE() reads nicer. Let's go with that. See some
+> comments below about implementation.
 
-Thanks,
+Ok.
 
-Bart.
+>
+> >
+> > Here's my current code, below - does it correspond to what you had in
+> > mind? Or did you think of something else?
+> >
+> > ------
+> >
+> > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> > index ec14aa725bb0..095d5dc30d50 100644
+> > --- a/tools/lib/bpf/Makefile
+> > +++ b/tools/lib/bpf/Makefile
+> > @@ -8,6 +8,7 @@ LIBBPF_VERSION := $(shell \
+> >         grep -oE '^LIBBPF_([0-9.]+)' libbpf.map | \
+> >         sort -rV | head -n1 | cut -d'_' -f2)
+> >  LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
+> > +LIBBPF_MINOR_VERSION := $(firstword $(subst ., ,$(subst $(LIBBPF_MAJOR_VERSION)., ,$(LIBBPF_VERSION))))
+>
+> Given all this is for internal use, I'd instead define something like
+> __LIBBPF_CURVER as an integer that is easy to compare against:
+>
+> #define __LIBBPF_CURVER (LIBBPF_MAJOR_VERSION * 100 +
+> LIBBPF_MINOR_VERSION) * 100 + LIBBPF_PATCH_VERSION
+>
+> That will simplify some stuff below and is generally easier to use in
+> code, if we will need this somewhere to use explicitly.
+
+Did you mean computing __LIBBPF_CURVER in the Makefile, or in the
+header?
+
+I can do that if you want, although I'm not convinced it will simplify
+much. Instead of having one long-ish condition, we'll have to compute
+the integer for the current version, as well as for each of the versions
+that we list for deprecating functions. I suppose I can add another
+dedicated macro.
+
+Do you actually want the patch version? I chose to leave it aside
+because 1) I thought it would not be relevant for deprecating symbols,
+and 2) if anything like a -rc1 suffix is ever appended to the version,
+it makes it more complex to parse from the version string.
+
+>
+> >
+> >  MAKEFLAGS += --no-print-directory
+> >
+> > @@ -86,6 +87,8 @@ override CFLAGS += -Werror -Wall
+> >  override CFLAGS += $(INCLUDES)
+> >  override CFLAGS += -fvisibility=hidden
+> >  override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+> > +override CFLAGS += -DLIBBPF_MAJOR_VERSION=$(LIBBPF_MAJOR_VERSION)
+> > +override CFLAGS += -DLIBBPF_MINOR_VERSION=$(LIBBPF_MINOR_VERSION)
+> >
+> >  # flags specific for shared library
+> >  SHLIB_FLAGS := -DSHARED -fPIC
+> > diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+> > index cf8490f95641..8b6b5442dbd8 100644
+> > --- a/tools/lib/bpf/btf.h
+> > +++ b/tools/lib/bpf/btf.h
+> > @@ -45,7 +45,8 @@ LIBBPF_API struct btf *btf__parse_raw(const char *path);
+> >  LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
+> >  LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
+> >  LIBBPF_API struct btf *btf__load_from_kernel_by_id_split(__u32 id, struct btf *base_btf);
+> > -LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
+> > +LIBBPF_API LIBBPF_DEPRECATED_SINCE(0, 6, "use btf__load_from_kernel_by_id instead")
+>
+> nit: given how long those deprecations will be, let's keep them at a
+> separate (first) line and keep LIBBPF_API near the function
+> declaration itself
+
+I thought having the LIBBPF_API on a separate line would slightly reduce
+the risk, when moving lines around, to move the function prototype but
+not the deprecation attribute. But ok, fine.
+
+>
+> > +int btf__get_from_id(__u32 id, struct btf **btf);
+> >
+> >  LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
+> >  LIBBPF_API int btf__load(struct btf *btf);
+> > diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
+> > index 947d8bd8a7bb..9ba9f8135dc8 100644
+> > --- a/tools/lib/bpf/libbpf_common.h
+> > +++ b/tools/lib/bpf/libbpf_common.h
+> > @@ -17,6 +17,28 @@
+> >
+> >  #define LIBBPF_DEPRECATED(msg) __attribute__((deprecated(msg)))
+> >
+> > +#ifndef LIBBPF_DEPRECATED_SINCE
+>
+> why #ifndef conditional?
+
+Right, we don't expect to have the macro defined elsewhere. I'll remove
+it.
+
+>
+> > +#define __LIBBPF_VERSION_CHECK(major, minor) \
+> > +       LIBBPF_MAJOR_VERSION > major || \
+> > +               (LIBBPF_MAJOR_VERSION == major && LIBBPF_MINOR_VERSION >= minor)
+>
+> so we don't need this if we do __LIBBPF_CURVER
+
+Right, but we do need to compute an integer for each of the versions
+listed below (0.6 for now). I'll see if I can come up with something
+short.
+
+>
+> > +
+> > +/* Add checks for other versions below when planning deprecation of API symbols
+> > + * with the LIBBPF_DEPRECATED_SINCE macro.
+> > + */
+> > +#if __LIBBPF_VERSION_CHECK(0, 6)
+> > +#define __LIBBPF_MARK_DEPRECATED_0_6(X) X
+> > +#else
+> > +#define __LIBBPF_MARK_DEPRECATED_0_6(X)
+> > +#endif
+> > +
+> > +#define __LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
+> > +       __LIBBPF_MARK_DEPRECATED_ ## major ## _ ## minor (LIBBPF_DEPRECATED("v" # major "." # minor "+, " msg))
+> > +
+> > +/* Mark a symbol as deprecated when libbpf version is >= {major}.{minor} */
+> > +#define LIBBPF_DEPRECATED_SINCE(major, minor, msg) \
+> > +       __LIBBPF_DEPRECATED_SINCE(major, minor, msg)
+>
+> Is it needed for some macro value concatenation magic to have this
+> nested __LIBBPF_DEPRECATED_SINCE?
+
+I double-checked (I needed to, anyway), and it seems not. It's a
+leftover from an earlier version of my code, I'll clean it up before
+the proper submission.
+
+Thanks!
+Quentin
