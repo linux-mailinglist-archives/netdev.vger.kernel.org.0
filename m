@@ -2,154 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D053D8F9F
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 15:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A433D8FAC
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 15:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236989AbhG1NwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 09:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
+        id S237314AbhG1NxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 09:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237362AbhG1Ntv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 09:49:51 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5344C061757;
-        Wed, 28 Jul 2021 06:49:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5gAFhq7uxpygosvYi5fsP8TKJ4+Xv342mlFirtLR2YU=; b=fJQUuozmRpR8MormyH8buz5xzx
-        /+ROEeWNCEWYdzKhhXlPEfaaa4AZj9YFiIdXYUsv2WmOzIyBBtLtk+WgdXGyRYHPT3USV7SruHk1D
-        irJQTziFyhJcmijEKzvtEoWgZbW8pJBx7xr33C5qcdt2r/XixHBv72RlHXu4kHn5u02+uBYjuEWX8
-        Uw5YmkDgSlh5XgxVFqWDa5AWNpa7gVI3umnucUiV3JmQUymFdIdY0NtjBW/+0QTioCVjUVInaS2/d
-        6BSmeaIukdbwTt1d6t5V0ha/5W+sgC2s+aZtPRNPsfMnGNWrN2g29hTzTkVHydV4AS4L/U8guWXC6
-        QSJMpWcg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1m8jvj-000pwG-NP; Wed, 28 Jul 2021 13:49:03 +0000
-Date:   Wed, 28 Jul 2021 06:49:03 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "tj@kernel.org" <tj@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andriin@fb.com" <andriin@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "alobakin@pm.me" <alobakin@pm.me>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "ap420073@gmail.com" <ap420073@gmail.com>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "ngupta@vflare.org" <ngupta@vflare.org>,
-        "sergey.senozhatsky.work@gmail.com" 
-        <sergey.senozhatsky.work@gmail.com>,
-        "minchan@kernel.org" <minchan@kernel.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "mbenes@suse.com" <mbenes@suse.com>,
-        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "jikos@kernel.org" <jikos@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] kernel/module: add documentation for try_module_get()
-Message-ID: <YQFgTxz62G+3Lc8G@bombadil.infradead.org>
-References: <20210722221905.1718213-1-mcgrof@kernel.org>
- <dbf27fa2f8864e1d91f7015249b1a5f1@AcuMS.aculab.com>
- <YQBCvKgH481C7o1c@bombadil.infradead.org>
- <YQBGemOIF4sp/ges@kroah.com>
- <YQBN2/K4Ne5orgzS@bombadil.infradead.org>
- <YQBSutZfhqfTzKQa@kroah.com>
- <YQByfUaDaXCUqrlo@bombadil.infradead.org>
- <6054c136290346d581e276abbb2e3ff1@AcuMS.aculab.com>
+        with ESMTP id S236889AbhG1NwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 09:52:04 -0400
+X-Greylist: delayed 145 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 28 Jul 2021 06:52:02 PDT
+Received: from gmmr3.centrum.cz (gmmr3.centrum.cz [IPv6:2a00:da80:0:502::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461B4C061764;
+        Wed, 28 Jul 2021 06:52:02 -0700 (PDT)
+Received: from gmmr-2.centrum.cz (unknown [10.255.254.15])
+        by gmmr3.centrum.cz (Postfix) with ESMTP id 527B718007FA5;
+        Wed, 28 Jul 2021 15:49:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=atlas.cz; s=mail;
+        t=1627480175; bh=btdGKWwqdzolFUEYa7m2BSrGTcmJuco6D2JUC+cfccY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eTjGvc+8YQyWse+4rXP0H3odllxS9gF81n8nQGrQ1RMtQfMkxKILQ+bNpDMjtWhnm
+         wKAidtGPjheHzecYALPBCJSw+8Pl4dhSk1H27maQO6djIgtCsqJruQxYUXO7rlkW8m
+         uBEJuao9LEfXF8nnLVwUNI/FqZrqLWkJT2idkmYU=
+Received: from vm2.excello.cz (vm2.excello.cz [212.24.139.173])
+        by gmmr-2.centrum.cz (Postfix) with QMQP
+        id 5029F77DE; Wed, 28 Jul 2021 15:49:35 +0200 (CEST)
+Received: from vm2.excello.cz by vm2.excello.cz
+ (VF-Scanner: Clear:RC:0(2a00:da80:1:502::8):SC:0(-20.5/5.0):CC:0:;
+ processed in 0.3 s); 28 Jul 2021 13:49:35 +0000
+X-VF-Scanner-ID: 20210728134935.001014.21804.vm2.excello.cz.0
+X-Spam-Status: No, hits=-20.5, required=5.0
+Received: from gmmr-4.centrum.cz (2a00:da80:1:502::8)
+  by out1.virusfree.cz with ESMTPS (TLSv1.3, TLS_AES_256_GCM_SHA384); 28 Jul 2021 15:49:34 +0200
+Received: from gm-smtp10.centrum.cz (unknown [10.255.254.32])
+        by gmmr-4.centrum.cz (Postfix) with ESMTP id EC69A20056064;
+        Wed, 28 Jul 2021 15:49:34 +0200 (CEST)
+Received: from arkam (unknown [94.113.86.190])
+        by gm-smtp10.centrum.cz (Postfix) with ESMTPA id 815C4C063A35;
+        Wed, 28 Jul 2021 15:49:34 +0200 (CEST)
+Date:   Wed, 28 Jul 2021 15:49:33 +0200
+From:   Petr =?utf-8?B?VmFuxJtr?= <arkamar@atlas.cz>
+To:     Pavo Banicevic <pavo.banicevic@sartura.hr>
+Cc:     linux@armlinux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, ivan.khoronzhuk@linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, matt.redfearn@mips.com,
+        mingo@kernel.org, dvlasenk@redhat.com, juraj.vijtiuk@sartura.hr,
+        robert.marko@sartura.hr, luka.perkov@sartura.hr,
+        jakov.petrina@sartura.hr
+Subject: Re: [PATCH 3/3] include/uapi/linux/swab: Fix potentially missing
+ __always_inline
+Message-ID: <YQFgbRXKIeZ7H6mo@arkam>
+References: <20210727141119.19812-1-pavo.banicevic@sartura.hr>
+ <20210727141119.19812-4-pavo.banicevic@sartura.hr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <6054c136290346d581e276abbb2e3ff1@AcuMS.aculab.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210727141119.19812-4-pavo.banicevic@sartura.hr>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 08:28:11AM +0000, David Laight wrote:
-> ...
-> > sysfs files are safe to use try_module_get() because once they are
-> > active a removal of the file cannot happen, and so removal will wait.
+On Tue, Jul 27, 2021 at 04:11:19PM +0200, Pavo Banicevic wrote:
+> From: Matt Redfearn <matt.redfearn@mips.com>
 > 
-> I doubt it.
-
-But that is what happens.
-
-> If the module_remove() function removes sysfs nodes then (something
-> like) this has to happen.
+> Commit bc27fb68aaad ("include/uapi/linux/byteorder, swab: force inlining
+> of some byteswap operations") added __always_inline to swab functions
+> and commit 283d75737837 ("uapi/linux/stddef.h: Provide __always_inline to
+> userspace headers") added a definition of __always_inline for use in
+> exported headers when the kernel's compiler.h is not available.
 > 
-> 1) rmmod (or similar) tries to remove the module.
-> 2) The reference count is zero so the remove is allowed.
-> 3) Something tries to access a sysfs node in the module.
-> 3a) If sysfs knew the nodes were in a module it could use
->     try_module_get() to ensure the module wasn't being unloaded.
->     Failure would cause the sysfs access to fail.
->     But I'm not sure it does,
-
-
-It does, if a sysfs file had a try_module_get() it would fail as the
-module is going.
-
->     and in any case it doesn't help.
-
-Not clear how from your example.
-
-> 3b) The sysfs thread calls into the module code and waits on a mutex.
-
-If try_module_get() is used on the syfs files, the deadlock is escaped if
-used on remove.
-
-> 3c) The rmmod thread gets around to calling into sysfs to remove the nodes.
+> However, since swab.h does not include stddef.h, if the header soup does
+> not indirectly include it, the definition of __always_inline is missing,
+> resulting in a compilation failure, which was observed compiling the
+> perf tool using exported headers containing this commit:
 > 
-> At this point we hit the standard 'deregistering a callback' issue.
-> Exactly the same issue affects removal of per-device sysfs node
-> from a driver's .remove function.
+> In file included from /usr/include/linux/byteorder/little_endian.h:12:0,
+>                  from /usr/include/asm/byteorder.h:14,
+>                  from tools/include/uapi/linux/perf_event.h:20,
+>                  from perf.h:8,
+>                  from builtin-bench.c:18:
+> /usr/include/linux/swab.h:160:8: error: unknown type name `__always_inline'
+>  static __always_inline __u16 __swab16p(const __u16 *p)
 > 
-> Typically this is solved by making the deregister routing sleep
-> until all the callbacks have completed.
+> Fix this by replacing the inclusion of linux/compiler.h with
+> linux/stddef.h to ensure that we pick up that definition if required,
+> without relying on it's indirect inclusion. compiler.h is then included
+> indirectly, via stddef.h.
 > 
-> So this would require functions like sysfs_remove_group() and
-> hwmon_device_unregister() to be allowed to sleep
+> Fixes: 283d75737837 ("uapi/linux/stddef.h: Provide __always_inline to userspace headers")
+> 
+> Signed-off-by: Matt Redfearn <matt.redfearn@mips.com>
+> ---
 
-Both can.
+I use this patch in order to fix __always_inline issue for kernels
+5.12+, see https://lore.kernel.org/lkml/YPGXXt6Z3O1W0AYS@arkam/ .
+I believe this is the correct solution.
 
-Both kernfs_find_and_get_ns() and kernfs_remove_by_name_ns() call
-mutex_lock(), they certainly can sleep.
-
-hwmon_device_unregister() calls device_del() which also holds a mutex.
-
-> and not be
-> called with any locks (of any kind) held that the callback
-> functions acquire.
-
-Not sure why you think this is a requirement.
-
-> The module reference count is irrelevant.
-
-To be clear, there were concerns that there were races here which would
-make things murky on sysfs operations and module removal (null
-deferences when accessing back the gendisk->private_data) however a
-a new selftest driver for sysfs [0], and error injections to allow us to
-test and verify all these things I just said are true. If you'd like
-to extend the tests to include something you might be concerned about
-and want to try, please send me a patch against my tree [1].
-
-[0] https://lkml.kernel.org/r/20210703004632.621662-1-mcgrof@kernel.org
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux-next.git/log/?h=20210701-sysfs-fix-races-v2
-
-  Luis
+Reviewed-by: Petr Vaněk <arkamar@atlas.cz>
