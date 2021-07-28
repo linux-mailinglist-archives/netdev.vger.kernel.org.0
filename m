@@ -2,117 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB05C3D9618
-	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 21:37:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2463D961A
+	for <lists+netdev@lfdr.de>; Wed, 28 Jul 2021 21:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231516AbhG1ThT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 15:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
+        id S231585AbhG1Thd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 15:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbhG1ThS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 15:37:18 -0400
-Received: from tulum.helixd.com (unknown [IPv6:2604:4500:0:9::b0fd:3c92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FD8C061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 12:37:16 -0700 (PDT)
-Received: from [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242] (unknown [IPv6:2600:8801:8800:12e8:2884:1d04:ad3c:7242])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: dalcocer@helixd.com)
-        by tulum.helixd.com (Postfix) with ESMTPSA id D617F20465;
-        Wed, 28 Jul 2021 12:37:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tulum.helixd.com;
-        s=mail; t=1627501036;
-        bh=h+OyJi0QQTsDGYul/BKDbOIr6zCsSUHnqFNZp8FBDO8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=o5gmrTOz6cJX2rh+VHwZ14+dH5/40kKdpv7oj9XaLpVJz71iOIZR4pXBWq3XeNGMN
-         M5jo4x30rdLHt04Mfw/fCy4fs1mM9K6iNJtsevNUqa0QZPRK5RcMUjHAS5nR+cCJ9N
-         n5PTUHhYeDHuKC8rdkYRawDLGu5y00bo84uUYxd4=
-Subject: Re: Marvell switch port shows LOWERLAYERDOWN, ping fails
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <YPsJnLCKVzEUV5cb@lunn.ch>
- <b5d1facd-470b-c45f-8ce7-c7df49267989@helixd.com>
- <82974be6-4ccc-3ae1-a7ad-40fd2e134805@helixd.com> <YPxPF2TFSDX8QNEv@lunn.ch>
- <f8ee6413-9cf5-ce07-42f3-6cc670c12824@helixd.com>
- <bcd589bd-eeb4-478c-127b-13f613fdfebc@helixd.com>
- <527bcc43-d99c-f86e-29b0-2b4773226e38@helixd.com>
- <fb7ced72-384c-9908-0a35-5f425ec52748@helixd.com> <YQGgvj2e7dqrHDCc@lunn.ch>
- <59790fef-bf4a-17e5-4927-5f8d8a1645f7@helixd.com> <YQGu2r02XdMR5Ajp@lunn.ch>
-From:   Dario Alcocer <dalcocer@helixd.com>
-Message-ID: <11b81662-e9ce-591c-122a-af280f1e1f59@helixd.com>
-Date:   Wed, 28 Jul 2021 12:37:14 -0700
+        with ESMTP id S229542AbhG1Thb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 15:37:31 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36489C061757;
+        Wed, 28 Jul 2021 12:37:29 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id m1so6783149pjv.2;
+        Wed, 28 Jul 2021 12:37:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=YGNbXA3LWoeJvRqmwBvBDGTrMpQsxN7Ok+KzzHRsrJE=;
+        b=BYHqUywK6NhuYK8K63h8dsZIeYvypTzKbDDQusjvHwR5ZclWGmvOmGEv4IuYp2c/mC
+         W4RvFdId2rD1w1Y8ClR8xM44L40dR6Bl3Iz7Q8rRkY2nMyXrucXK6aJNVT2KcL7QUVie
+         gq8GOllM308JsT4ptYu0SptVrVUFH0I0Fl6RbNN4mQT5bIN8Ky9qI0+ll4zUI3/hFQ/J
+         DoNOJ1TpF6o/NG5/O1pMMaC7LdwAehVRfhiOMYmKfn29fqvJ8N2MJp0LKp5BQ6smkqDH
+         dqiot/YvFBp0djSX4pd1WvHsKeU9DCIn0zEK6UzFchg6sIsSsZpOEk70Yu2IAwc0gr7J
+         UA8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YGNbXA3LWoeJvRqmwBvBDGTrMpQsxN7Ok+KzzHRsrJE=;
+        b=dJrfzrX4jw/tgL93V6igCq80icE9OOAg2BSCQcvqzBd31yTBpYVj8GYi5dTyoLsXIs
+         iveblb/gA02Tf9LoX7rWABIkF3pytN7P+mMtCbiX2KqcOr6LQE3D1jSKx6j7egod6XI3
+         QwH/EOlsWSl72TcPwTyp8JI23y9xvJr0LOHc/CKMBovrv74FeJR/dPMS8GWQr9xT3SLU
+         MA1zdnSGJ+XHxsqv+T4jo4aOktAFxVNfEASp4l7LfcHskKHFCfYkDpJz7ebtf+/23ZVf
+         Uv7R61l7uJ8UxJGalyTpuVzO3v4fSi4o+FwOwSXBYEzWfClmQ7gs+bdW8hMTOYvpmx+A
+         iyYQ==
+X-Gm-Message-State: AOAM531TA+6zv6LT8DXt9vxvaNHreB7yoINVKJb/xtcqXZXkZxfgfJUj
+        4iVqtrjSDVn4BhLlvwJUGmhycpCE+FLhqR4T
+X-Google-Smtp-Source: ABdhPJxn0tndfDcbLrGTOjSfF0xXe64xCfGTt9FAN3qryeAvMdxs1I2MuhGkzqcgXSV2bfAAzyBHAg==
+X-Received: by 2002:a17:902:a606:b029:12b:fbb7:1f9d with SMTP id u6-20020a170902a606b029012bfbb71f9dmr1243712plq.22.1627501048516;
+        Wed, 28 Jul 2021 12:37:28 -0700 (PDT)
+Received: from [192.168.1.10] ([223.236.188.83])
+        by smtp.gmail.com with ESMTPSA id 2sm656294pgz.26.2021.07.28.12.37.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Jul 2021 12:37:28 -0700 (PDT)
+Subject: Re: [PATCH v2] ath9k_htc: Add a missing spin_lock_init()
+To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <38fa8cc-c9c4-66c1-e2ee-fe02caa7ef63@gmail.com>
+ <20210728191719.17856-1-rajatasthana4@gmail.com>
+From:   Rajat Asthana <rajatasthana4@gmail.com>
+Message-ID: <eb79099c-8dc9-21ee-f03e-207d1685941c@gmail.com>
+Date:   Thu, 29 Jul 2021 01:07:24 +0530
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <YQGu2r02XdMR5Ajp@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210728191719.17856-1-rajatasthana4@gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/28/21 12:24 PM, Andrew Lunn wrote:
-> On Wed, Jul 28, 2021 at 11:33:35AM -0700, Dario Alcocer wrote:
->> On 7/28/21 11:23 AM, Andrew Lunn wrote:
->>> On Wed, Jul 28, 2021 at 11:07:37AM -0700, Dario Alcocer wrote:
->>>> It appears the port link-state issue is caused by the mv88e6xxx switch
->>>> driver. The function mv88e6xxx_mac_config identifies the PHY as internal and
->>>> skips the call to mv88e6xxx_port_setup_mac.
->>>>
->>>> It does not make sense to me why internal PHY configuration should be
->>>> skipped.
->>>
->>> The switch should do the configuration itself for internal PHYs. At
->>> least that works for other switches. What value does CMODE have for
->>> the port? 0xf?
->>>
->>>       Andrew
->>>
->>
->> Is CMODE available via the DSA debugfs? Here are the registers for port0,
->> which should be lan1:
->>
->> root@dali:~# ls /sys/kernel/debug/dsa/switch0/
->> port0/        port1/        port2/        port3/        port4/ port5/
->> port6/        tag_protocol  tree
->> root@dali:~# ls /sys/kernel/debug/dsa/switch0/port0/
->> fdb    mdb    regs   stats  vlan
->> root@dali:~# cat /sys/kernel/debug/dsa/switch0/port0/regs
->>   0: 100f
-> 
-> It is the lower nibble of this register. So 0xf.
-> 
-> Take a look at:
-> 
-> https://github.com/lunn/mv88e6xxx_dump/blob/master/mv88e6xxx_dump.c
-> 
+please ignore this patch!
 
-Many thanks for the link; I will build and install it on the target. 
-Hope it will work with the older kernel (5.4.114) we're using.
 
-> The 1 in 100f means it has found the PHY. But there is no link,
-> 10/Half duplex, etc.
-> 
->>   1: 0003
-> 
-> This at least looks sensible. Nothing is forced, normal speed
-> detection should be performed. So what should happen is the link
-> speed, duplex etc from the internal PHY should directly appear in
-> register 0. There is no need for software to ask the PHY and then
-> configure the MAC.
-> 
 
-Ok, so the internal PHY seems to be configured as expected.
+I have sent this by wrongly giving the `in-reply-to` field in the `git 
+send-email`. Really sorry for this!
 
-Does this mean that the issue is caused by the link partner?
 
-I did notice that the RJ45 link LED on each of the peer devices no 
-longer light up. Previously, the LED was coming on. Perhaps it's time to 
-check the following:
 
-- confirm the network cable for each link peer is good
-- confirm each link peer works by connecting to a 100baseT or 1000baseT 
-switch
+Best wishes,
 
-Thanks again for all of your feedback!
+-- Rajat
