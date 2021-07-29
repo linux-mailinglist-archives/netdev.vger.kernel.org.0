@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 092BC3D9C71
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 06:02:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D673D9C73
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 06:03:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233647AbhG2ECr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 00:02:47 -0400
-Received: from cmccmta3.chinamobile.com ([221.176.66.81]:25707 "EHLO
-        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbhG2ECq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 00:02:46 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.15]) by rmmx-syy-dmz-app10-12010 (RichMail) with SMTP id 2eea6102283d7d6-b0042; Thu, 29 Jul 2021 12:02:08 +0800 (CST)
-X-RM-TRANSID: 2eea6102283d7d6-b0042
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost.localdomain (unknown[223.112.105.130])
-        by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee86102283cb6d-fca0b;
-        Thu, 29 Jul 2021 12:02:07 +0800 (CST)
-X-RM-TRANSID: 2ee86102283cb6d-fca0b
-From:   Tang Bin <tangbin@cmss.chinamobile.com>
-To:     davem@davemloft.net, kuba@kernel.org, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Tang Bin <tangbin@cmss.chinamobile.com>,
-        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Subject: [PATCH v2] bcm63xx_enet: delete a redundant assignment
-Date:   Thu, 29 Jul 2021 12:03:00 +0800
-Message-Id: <20210729040300.25928-1-tangbin@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.20.1.windows.1
+        id S233700AbhG2EDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 00:03:13 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:51554 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229485AbhG2EDM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 00:03:12 -0400
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtp (Exim 4.92 #5 (Debian))
+        id 1m8xGD-0003hT-9R; Thu, 29 Jul 2021 12:03:05 +0800
+Received: from herbert by gondobar with local (Exim 4.92)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1m8xGB-0001pU-SN; Thu, 29 Jul 2021 12:03:03 +0800
+Date:   Thu, 29 Jul 2021 12:03:03 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     yajun.deng@linux.dev
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] Revert "net: Get rid of consume_skb when tracing is off"
+Message-ID: <20210729040303.GA7009@gondor.apana.org.au>
+References: <20210728125248.GC2598@gondor.apana.org.au>
+ <20210728035605.24510-1-yajun.deng@linux.dev>
+ <177cd530dcb2c9f4d09a2b23fdbbc71a@linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <177cd530dcb2c9f4d09a2b23fdbbc71a@linux.dev>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the function bcm_enetsw_probe(), 'ret' will be assigned by
-bcm_enet_change_mtu(), so 'ret = 0' make no sense.
+On Thu, Jul 29, 2021 at 04:01:28AM +0000, yajun.deng@linux.dev wrote:
+>
+> if we don't define CONFIG_TRACEPOINTS, consume_skb() wolud called kfree_skb(), there have
+> trace_kfree_skb() in kfree_skb(), the trace_kfree_skb() is also a trace function. So we
+> can trace consume_skb() even if we don't define CONFIG_TRACEPOINTS.
+> This patch "net: Get rid of consume_skb when tracing is off" does not seem to be effective.
 
-Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
----
-Changes from v1
- - fix up the subject
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 1 -
- 1 file changed, 1 deletion(-)
+The point of my patch was to get rid of consume_skb because its
+only purpose is to provide extra information for tracing.  If you're
+not tracing then you don't need that extra information (and overhead).
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 916824cca..509e10013 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -2646,7 +2646,6 @@ static int bcm_enetsw_probe(struct platform_device *pdev)
- 	if (!res_mem || irq_rx < 0)
- 		return -ENODEV;
- 
--	ret = 0;
- 	dev = alloc_etherdev(sizeof(*priv));
- 	if (!dev)
- 		return -ENOMEM;
+Cheers,
 -- 
-2.20.1.windows.1
-
-
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
