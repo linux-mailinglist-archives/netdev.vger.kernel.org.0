@@ -2,111 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8543DA2D3
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 14:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D30A3DA2E3
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 14:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235324AbhG2MGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 08:06:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55160 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231674AbhG2MGn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 08:06:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7647060E76;
-        Thu, 29 Jul 2021 12:06:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627560400;
-        bh=vlWIaFERZhUTYIzo4LuIPX3bA+LZfCt3DKt3CEiMiSE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NaE/vjSgmMbnpmb8T4vb1q6znKLGK3x9P++ku0UV/ZSfzWV2mf4F8Rr6WpVLeKEXw
-         iX8NrFsIGPCGMhS5CrpaD8axtEkKEEeKWimvkNLisX6n9zUECoKJQiXXn75Mse68fv
-         Qm0/GAb3l8c5uyxyngd8GEDz2Ep2AM1iMfWFvMSw0uWUtilX8Yxq5SEsFE4qByz6Jq
-         EGvpcy+kawUUmicsy2+SD74LvfgDt6uegSHTopXL8sI7fczip7QKSxUM91z0tFJe+u
-         WFZfm5Nv/W/8G+N1a4CEbpEFrVvS6XPtZ7HZqOOXn1ZH7WQaahPudoP5yVl8N+e4US
-         c5xijvtlgbdJA==
-Date:   Thu, 29 Jul 2021 15:06:36 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net-next 2/2] devlink: Allocate devlink directly in
- requested net namespace
-Message-ID: <YQKZzBaqSC02jCPU@unreal>
-References: <cover.1627545799.git.leonro@nvidia.com>
- <ca29973a59c9c128ab960e3cbff8dfa95280b6b0.1627545799.git.leonro@nvidia.com>
- <YQKXMT4tbzCnkYlA@nanopsycho>
+        id S236850AbhG2MLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 08:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235358AbhG2MLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 08:11:35 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDFEC0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 05:11:31 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id h14so6625435wrx.10
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 05:11:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8Nz6vB9p8A0wBJs6kkDYFIrrTzDZDT+uS9XB0IAUyko=;
+        b=IX9QYptYV6st0L1XmOo2+ZVTD1czWMC0yv2A0wEKs5uhoKxyG1M8hYGFid/Rc9caoJ
+         g3s8uihSolFDNGNVDmh/KcSkUnjuvxHUSlZem764aZk2d9p45qyVKzkwnR65zmpbIjwe
+         oixk5YiEQMSk6egRcnGh8U5DvdkvMLdRPa8MA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=8Nz6vB9p8A0wBJs6kkDYFIrrTzDZDT+uS9XB0IAUyko=;
+        b=hL9BrEIjg79AU9qnlAYBmm4tAvrdBQh0FzBrdVDbMnGTt8JLm0LpMwubnyl6o5gU0J
+         wTG/nVC7wryeEJBC9e7VguCok5oUsaMSjjRYQMUcYzNxfCP/MZ1eaLiI3Pe/8NeirMoH
+         aJxMZ/JKR0dRQWe0iIw5i1Heoc5+fUG/xvWV2eX/i3YrC9nNJD2YFZCP/VvFRe+iBloO
+         vcyLZx8CDlfCUXtbEVnxG2DVAzB/GWdqapA3pTjDjZFwsF5ZrBsg/SoI8rPl6gTUf/V0
+         qLKO/YZGM2Yu0GsPllEyytz3CC/sa4kQaMTERW36kECfc4XFPwF1Vh+F3Q3p6UWNePg2
+         kyJw==
+X-Gm-Message-State: AOAM530BLLy/qXgiqaCdBL6DyC2/zV/hrt/lj02kljQEgUD5HCEaSd0Q
+        2FLT1QTKdvjDz5gUxmGsTrj9nw==
+X-Google-Smtp-Source: ABdhPJyxNFOOp917FBlh8xg1Ee/DiYPVZ7Er8zzOKotZZKyVJ/yUFb4NW2JEu0Us3Suihgl1chkn3Q==
+X-Received: by 2002:a5d:4e91:: with SMTP id e17mr4462754wru.7.1627560689971;
+        Thu, 29 Jul 2021 05:11:29 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id a14sm3323850wrf.97.2021.07.29.05.11.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Jul 2021 05:11:29 -0700 (PDT)
+Date:   Thu, 29 Jul 2021 14:11:27 +0200
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Kees Cook <keescook@chromium.org>, linux-kbuild@vger.kernel.org,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-block@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Keith Packard <keithpac@amazon.com>,
+        linux-hardening@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH 25/64] drm/mga/mga_ioc32: Use struct_group() for memcpy()
+ region
+Message-ID: <YQKa76A6XuFqgM03@phenom.ffwll.local>
+Mail-Followup-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>, linux-kbuild@vger.kernel.org,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-block@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Keith Packard <keithpac@amazon.com>,
+        linux-hardening@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-26-keescook@chromium.org>
+ <YQDxmEYfppJ4wAmD@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YQKXMT4tbzCnkYlA@nanopsycho>
+In-Reply-To: <YQDxmEYfppJ4wAmD@kroah.com>
+X-Operating-System: Linux phenom 5.10.0-7-amd64 
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 01:55:29PM +0200, Jiri Pirko wrote:
-> Thu, Jul 29, 2021 at 10:15:26AM CEST, leon@kernel.org wrote:
-> >From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> >There is no need in extra call indirection and check from impossible
-> >flow where someone tries to set namespace without prior call
-> >to devlink_alloc().
-> >
-> >Instead of this extra logic and additional EXPORT_SYMBOL, use specialized
-> >devlink allocation function that receives net namespace as an argument.
-> >
-> >Such specialized API allows clear view when devlink initialized in wrong
-> >net namespace and/or kernel users don't try to change devlink namespace
-> >under the hood.
-> >
-> >Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> >---
-> > drivers/net/netdevsim/dev.c |  4 ++--
-> > include/net/devlink.h       | 14 ++++++++++++--
-> > net/core/devlink.c          | 26 ++++++++------------------
-> > 3 files changed, 22 insertions(+), 22 deletions(-)
-> >
-> >diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> >index 6348307bfa84..d538a39d4225 100644
-> >--- a/drivers/net/netdevsim/dev.c
-> >+++ b/drivers/net/netdevsim/dev.c
-> >@@ -1431,10 +1431,10 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
-> > 	struct devlink *devlink;
-> > 	int err;
+On Wed, Jul 28, 2021 at 07:56:40AM +0200, Greg Kroah-Hartman wrote:
+> On Tue, Jul 27, 2021 at 01:58:16PM -0700, Kees Cook wrote:
+> > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > field bounds checking for memcpy(), memmove(), and memset(), avoid
+> > intentionally writing across neighboring fields.
 > > 
-> >-	devlink = devlink_alloc(&nsim_dev_devlink_ops, sizeof(*nsim_dev));
-> >+	devlink = devlink_alloc_ns(&nsim_dev_devlink_ops, sizeof(*nsim_dev),
-> >+				   nsim_bus_dev->initial_net);
-> > 	if (!devlink)
-> > 		return -ENOMEM;
-> >-	devlink_net_set(devlink, nsim_bus_dev->initial_net);
-> > 	nsim_dev = devlink_priv(devlink);
-> > 	nsim_dev->nsim_bus_dev = nsim_bus_dev;
-> > 	nsim_dev->switch_id.id_len = sizeof(nsim_dev->switch_id.id);
-> >diff --git a/include/net/devlink.h b/include/net/devlink.h
-> >index e48a62320407..b4691c40320f 100644
-> >--- a/include/net/devlink.h
-> >+++ b/include/net/devlink.h
-> >@@ -1540,8 +1540,18 @@ static inline struct devlink *netdev_to_devlink(struct net_device *dev)
-> > struct ib_device;
+> > Use struct_group() in struct drm32_mga_init around members chipset, sgram,
+> > maccess, fb_cpp, front_offset, front_pitch, back_offset, back_pitch,
+> > depth_cpp, depth_offset, depth_pitch, texture_offset, and texture_size,
+> > so they can be referenced together. This will allow memcpy() and sizeof()
+> > to more easily reason about sizes, improve readability, and avoid future
+> > warnings about writing beyond the end of chipset.
 > > 
-> > struct net *devlink_net(const struct devlink *devlink);
-> >-void devlink_net_set(struct devlink *devlink, struct net *net);
-> >-struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
-> >+/* This RAW call is intended for software devices that can
+> > "pahole" shows no size nor member offset changes to struct drm32_mga_init.
+> > "objdump -d" shows no meaningful object code changes (i.e. only source
+> > line number induced differences and optimizations).
+> > 
+> > Note that since this includes a UAPI header, struct_group() has been
+> > explicitly redefined local to the header.
+> > 
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  drivers/gpu/drm/mga/mga_ioc32.c | 30 ++++++++++++++------------
+> >  include/uapi/drm/mga_drm.h      | 37 ++++++++++++++++++++++++---------
+> >  2 files changed, 44 insertions(+), 23 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/mga/mga_ioc32.c b/drivers/gpu/drm/mga/mga_ioc32.c
+> > index 4fd4de16cd32..fbd0329dbd4f 100644
+> > --- a/drivers/gpu/drm/mga/mga_ioc32.c
+> > +++ b/drivers/gpu/drm/mga/mga_ioc32.c
+> > @@ -38,16 +38,21 @@
+> >  typedef struct drm32_mga_init {
+> >  	int func;
+> >  	u32 sarea_priv_offset;
+> > -	int chipset;
+> > -	int sgram;
+> > -	unsigned int maccess;
+> > -	unsigned int fb_cpp;
+> > -	unsigned int front_offset, front_pitch;
+> > -	unsigned int back_offset, back_pitch;
+> > -	unsigned int depth_cpp;
+> > -	unsigned int depth_offset, depth_pitch;
+> > -	unsigned int texture_offset[MGA_NR_TEX_HEAPS];
+> > -	unsigned int texture_size[MGA_NR_TEX_HEAPS];
+> > +	struct_group(always32bit,
+> > +		int chipset;
+> > +		int sgram;
+> > +		unsigned int maccess;
+> > +		unsigned int fb_cpp;
+> > +		unsigned int front_offset;
+> > +		unsigned int front_pitch;
+> > +		unsigned int back_offset;
+> > +		unsigned int back_pitch;
+> > +		unsigned int depth_cpp;
+> > +		unsigned int depth_offset;
+> > +		unsigned int depth_pitch;
+> > +		unsigned int texture_offset[MGA_NR_TEX_HEAPS];
+> > +		unsigned int texture_size[MGA_NR_TEX_HEAPS];
+> > +	);
+> >  	u32 fb_offset;
+> >  	u32 mmio_offset;
+> >  	u32 status_offset;
+> > @@ -67,9 +72,8 @@ static int compat_mga_init(struct file *file, unsigned int cmd,
+> >  
+> >  	init.func = init32.func;
+> >  	init.sarea_priv_offset = init32.sarea_priv_offset;
+> > -	memcpy(&init.chipset, &init32.chipset,
+> > -		offsetof(drm_mga_init_t, fb_offset) -
+> > -		offsetof(drm_mga_init_t, chipset));
+> > +	memcpy(&init.always32bit, &init32.always32bit,
+> > +	       sizeof(init32.always32bit));
+> >  	init.fb_offset = init32.fb_offset;
+> >  	init.mmio_offset = init32.mmio_offset;
+> >  	init.status_offset = init32.status_offset;
+> > diff --git a/include/uapi/drm/mga_drm.h b/include/uapi/drm/mga_drm.h
+> > index 8c4337548ab5..61612e5ecab2 100644
+> > --- a/include/uapi/drm/mga_drm.h
+> > +++ b/include/uapi/drm/mga_drm.h
+> > @@ -265,6 +265,16 @@ typedef struct _drm_mga_sarea {
+> >  #define DRM_IOCTL_MGA_WAIT_FENCE    DRM_IOWR(DRM_COMMAND_BASE + DRM_MGA_WAIT_FENCE, __u32)
+> >  #define DRM_IOCTL_MGA_DMA_BOOTSTRAP DRM_IOWR(DRM_COMMAND_BASE + DRM_MGA_DMA_BOOTSTRAP, drm_mga_dma_bootstrap_t)
+> >  
+> > +#define __struct_group(name, fields) \
+> > +	union { \
+> > +		struct { \
+> > +			fields \
+> > +		}; \
+> > +		struct { \
+> > +			fields \
+> > +		} name; \
+> > +	}
+> > +
+> >  typedef struct _drm_mga_warp_index {
+> >  	int installed;
+> >  	unsigned long phys_addr;
+> > @@ -279,20 +289,25 @@ typedef struct drm_mga_init {
+> >  
+> >  	unsigned long sarea_priv_offset;
+> >  
+> > -	int chipset;
+> > -	int sgram;
+> > +	__struct_group(always32bit,
+> > +		int chipset;
+> > +		int sgram;
+> >  
+> > -	unsigned int maccess;
+> > +		unsigned int maccess;
+> >  
+> > -	unsigned int fb_cpp;
+> > -	unsigned int front_offset, front_pitch;
+> > -	unsigned int back_offset, back_pitch;
+> > +		unsigned int fb_cpp;
+> > +		unsigned int front_offset;
+> > +		unsigned int front_pitch;
+> > +		unsigned int back_offset;
+> > +		unsigned int back_pitch;
+> >  
+> > -	unsigned int depth_cpp;
+> > -	unsigned int depth_offset, depth_pitch;
+> > +		unsigned int depth_cpp;
+> > +		unsigned int depth_offset;
+> > +		unsigned int depth_pitch;
+> >  
+> > -	unsigned int texture_offset[MGA_NR_TEX_HEAPS];
+> > -	unsigned int texture_size[MGA_NR_TEX_HEAPS];
+> > +		unsigned int texture_offset[MGA_NR_TEX_HEAPS];
+> > +		unsigned int texture_size[MGA_NR_TEX_HEAPS];
+> > +	);
+> >  
+> >  	unsigned long fb_offset;
+> >  	unsigned long mmio_offset;
+> > @@ -302,6 +317,8 @@ typedef struct drm_mga_init {
+> >  	unsigned long buffers_offset;
+> >  } drm_mga_init_t;
+> >  
+> > +#undef __struct_group
+> > +
 > 
-> Not sure what "RAW call" is, perhaps you can just avoid this here.
+> Why can you use __struct_group in this uapi header, but not the
+> networking one?
 
-I wanted to emphasize the message that we shouldn't see this call in
-regular drivers and it is very specific to SW drivers.
+If there's others, maybe we can stuff the uapi __struct_group into
+linux/types.h where all the other __ uapi types hang out?
 
-I'll drop "RAW".
+Anyway mga is very dead, I don't anyone cares.
+
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+I'm assuming this goes in through a topic pull from you?
+
+I'll leave the drm/amd one to figure out between you and Alex.
+-Daniel
 
 > 
-> Otherwise, this patch looks fine to me:
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-
-Thanks
-
+> thanks,
 > 
-> [...]
+> greg k-h
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
