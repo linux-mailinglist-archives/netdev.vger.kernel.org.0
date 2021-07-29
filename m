@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AF13DA834
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 18:01:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0342E3DA82A
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 18:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233420AbhG2QBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 12:01:03 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:19748 "EHLO
+        id S232963AbhG2QAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 12:00:35 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:31265 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S238460AbhG2QAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 12:00:00 -0400
+        with ESMTP id S238486AbhG2QAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 12:00:14 -0400
 X-UUID: 36b79c4521e141579b1629a2cd57443d-20210729
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
         h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=FmMPo1YNUA+2iUSxBL6ChqAQr9+S6f3vHwPsCvfChoo=;
