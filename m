@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52CB13D9F2F
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 10:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 797A83D9F3F
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 10:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234995AbhG2IIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 04:08:39 -0400
-Received: from mail.netfilter.org ([217.70.188.207]:40712 "EHLO
-        mail.netfilter.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234917AbhG2IIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 04:08:39 -0400
-Received: from netfilter.org (bl11-146-165.dsl.telepac.pt [85.244.146.165])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 50C916411D;
-        Thu, 29 Jul 2021 10:08:03 +0200 (CEST)
-Date:   Thu, 29 Jul 2021 10:08:29 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     kadlec@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] netfilter: nf_conntrack_bridge: Fix memory leak when
- error
-Message-ID: <20210729080829.GA16912@salvia>
-References: <20210729074658.8538-1-yajun.deng@linux.dev>
+        id S234928AbhG2IPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 04:15:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234758AbhG2IPe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 04:15:34 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EB03760EBB;
+        Thu, 29 Jul 2021 08:15:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627546531;
+        bh=DFBlHPm/bf7vQ3w1NRoI1dt9uFHlynm3vsqIQrPCViw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=J2vpOvZeNb6fTpqf6vGHaXT/LfkYPIBHudsS483rN++TThQ4OVWEdObBvn+vcQQe8
+         d1NvFEB4BtHCEu/3jgLyphaKq4YZnFc045SI5Xa73ZiFUAsHQHGWSK/Sj2sQ7j1nF0
+         pdGYzaSqWZ3Ren5MjotNkij7yyKtwQCkzFI0Jmdr2TJ8FzLTwWQfHfl/IvhJB+k1/6
+         jRTHLlW4p5CDTtfW+XH14+R3dZ72PY3z6NqiJIjLIYrPbC2rhuMQ0nUs0C7DQsc7v8
+         icjmRW+ryluYOTFq93x2MK+qK20ESTxzKfmZlJGdXX8j1u1Sv8mdVnxso3Y4mQ7zP4
+         /FDPTnmt8wBeg==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next 0/2] Clean devlink net namespace operations
+Date:   Thu, 29 Jul 2021 11:15:24 +0300
+Message-Id: <cover.1627545799.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210729074658.8538-1-yajun.deng@linux.dev>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 03:46:58PM +0800, Yajun Deng wrote:
-> It should be added kfree_skb_list() when err is not equal to zero
-> in nf_br_ip_fragment().
-> 
-> v2: keep this aligned with IPv6.
-> 
-> Fixes: 3c171f496ef5 ("netfilter: bridge: add connection tracking system")
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-> ---
->  net/bridge/netfilter/nf_conntrack_bridge.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
-> index 8d033a75a766..3cf5457919c6 100644
-> --- a/net/bridge/netfilter/nf_conntrack_bridge.c
-> +++ b/net/bridge/netfilter/nf_conntrack_bridge.c
-> @@ -88,6 +88,11 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
->  
->  			skb = ip_fraglist_next(&iter);
->  		}
-> +
-> +		if (!err)
-> +			return 0;
-> +
-> +		kfree_skb_list(iter.frag_list);
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Actually:
-		kfree_skb_list(iter.frag);
+Hi Dave, Jakub and Jiri
 
-I used frag_list instead of frag in my snippet.
+This short series continues my work on devlink core code to make devlink
+reload less prone to errors and harden it from API abuse.
 
->  		return err;
->  	}
->  slow_path:
-> -- 
-> 2.32.0
-> 
+Despite first patch being a clear fix, I would ask you to apply it to net-next
+anyway, because the fixed patch is anyway old and it will help us to eliminate
+merge conflicts that will arise for following patches or even for the second one.
+
+Thanks
+
+Leon Romanovsky (2):
+  devlink: Break parameter notification sequence to be before/after
+    unload/load driver
+  devlink: Allocate devlink directly in requested net namespace
+
+ drivers/net/netdevsim/dev.c |  4 +--
+ include/net/devlink.h       | 14 ++++++++--
+ net/core/devlink.c          | 56 ++++++++++++++++++-------------------
+ 3 files changed, 41 insertions(+), 33 deletions(-)
+
+-- 
+2.31.1
+
