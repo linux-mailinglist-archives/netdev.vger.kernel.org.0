@@ -2,72 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 418AD3DA215
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:27:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 245FB3DA21D
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234595AbhG2L1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:27:50 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:22118 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231645AbhG2L1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:27:49 -0400
-Received: from localhost.localdomain ([86.243.172.93])
-        by mwinf5d05 with ME
-        id azTi2500F21Fzsu03zTjaB; Thu, 29 Jul 2021 13:27:44 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 29 Jul 2021 13:27:44 +0200
-X-ME-IP: 86.243.172.93
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, angelo@kernel-space.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] can: flexcan: Fix an uninitialized variable issue
-Date:   Thu, 29 Jul 2021 13:27:42 +0200
-Message-Id: <a55780a2f4c8f1895b6bcbac4d3f8312b2731079.1627557857.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S236285AbhG2LaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 07:30:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231576AbhG2LaK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 07:30:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPS id 1903C60F23;
+        Thu, 29 Jul 2021 11:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627558207;
+        bh=2e5SInslfL8UdNJgZY8KZwxJqEELR1t+TSPEQACVbsY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RP4+cn9gSQHxdQkYVkCuY34rBT0OlyCgR+tMAHKQvT0yyamWyQkWQ2xlJcTTFUCfq
+         oN/N71/ANtZo6nwzbnb6K0ChhXNMgSHGgpWIIWnwRzRrcG5ZmAnM0Pn/PZQ4RsLxZT
+         0sCui63RCSO67TH31UJypK8zvgSeDaD1dyBsvdQxLAxz1swXZBzi+N2v80+h7W2IPS
+         vcsvSj1X8khIazkxcwLjQAMCkxjReslAixQWM/HNDR6G87M4iSm8JpNEzWeO6cm7nU
+         0lrdjZNK9NFxboh1wa96Nyyms9THlTWTBVfyOXQeFloQVbDMITIrWsVKtXv28HhgH3
+         b87T8x6otBvxw==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0B4FA60A7B;
+        Thu, 29 Jul 2021 11:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 00/12] nfc: constify, continued (part 2)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <162755820704.26856.6157999905884570707.git-patchwork-notify@kernel.org>
+Date:   Thu, 29 Jul 2021 11:30:07 +0000
+References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     mgreer@animalcreek.com, bongsu.jeon@samsung.com,
+        davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If both 'clk_ipg' and 'clk_per' are NULL, we return an un-init value.
-So set 'err' to 0, to return success in such a case.
+Hello:
 
-Fixes: d9cead75b1c6 ("can: flexcan: add mcf5441x support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-Another way to fix it is to remove the NULL checks for 'clk_ipg' and
-'clk_per' that been added in commit d9cead75b1c6.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-They look useless to me because 'clk_prepare_enable()' returns 0 if it is
-passed a NULL pointer.
-Having these explicit tests is maybe informational (i.e. these pointers
-can really be NULL) or have been added to silent a compiler or a static
-checker.
+On Thu, 29 Jul 2021 12:40:10 +0200 you wrote:
+> Hi,
+> 
+> On top of:
+> nfc: constify pointed data
+> https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
+> 
+> Best regards,
+> Krzysztof
+> 
+> [...]
 
-So, in case, I've left the tests and just fixed the un-init 'err' variable
-issue.
----
- drivers/net/can/flexcan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here is the summary with links:
+  - [01/12] nfc: constify passed nfc_dev
+    https://git.kernel.org/netdev/net-next/c/dd8987a394c0
+  - [02/12] nfc: mei_phy: constify buffer passed to mei_nfc_send()
+    https://git.kernel.org/netdev/net-next/c/894a6e158633
+  - [03/12] nfc: port100: constify several pointers
+    https://git.kernel.org/netdev/net-next/c/9a4af01c35a5
+  - [04/12] nfc: trf7970a: constify several pointers
+    https://git.kernel.org/netdev/net-next/c/ea050c5ee74a
+  - [05/12] nfc: virtual_ncidev: constify pointer to nfc_dev
+    https://git.kernel.org/netdev/net-next/c/83428dbbac51
+  - [06/12] nfc: nfcsim: constify drvdata (struct nfcsim)
+    https://git.kernel.org/netdev/net-next/c/582fdc98adc8
+  - [07/12] nfc: fdp: drop unneeded cast for printing firmware size in dev_dbg()
+    https://git.kernel.org/netdev/net-next/c/6c755b1d2511
+  - [08/12] nfc: fdp: use unsigned int as loop iterator
+    https://git.kernel.org/netdev/net-next/c/c3e26b6dc1b4
+  - [09/12] nfc: fdp: constify several pointers
+    https://git.kernel.org/netdev/net-next/c/3d463dd5023b
+  - [10/12] nfc: microread: constify several pointers
+    https://git.kernel.org/netdev/net-next/c/a751449f8b47
+  - [11/12] nfc: mrvl: constify several pointers
+    https://git.kernel.org/netdev/net-next/c/fe53159fe3e0
+  - [12/12] nfc: mrvl: constify static nfcmrvl_if_ops
+    https://git.kernel.org/netdev/net-next/c/2695503729da
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 54ffb796a320..7734229aa078 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -649,7 +649,7 @@ static inline void flexcan_error_irq_disable(const struct flexcan_priv *priv)
- 
- static int flexcan_clks_enable(const struct flexcan_priv *priv)
- {
--	int err;
-+	int err = 0;
- 
- 	if (priv->clk_ipg) {
- 		err = clk_prepare_enable(priv->clk_ipg);
--- 
-2.30.2
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
