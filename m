@@ -2,36 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA8B43D9EF2
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 09:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F3833D9EF9
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 09:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234722AbhG2HrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 03:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234524AbhG2HrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 03:47:17 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0B7C061757;
-        Thu, 29 Jul 2021 00:47:14 -0700 (PDT)
+        id S234766AbhG2HtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 03:49:14 -0400
+Received: from out0.migadu.com ([94.23.1.103]:32110 "EHLO out0.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234765AbhG2HtM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 03:49:12 -0400
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1627544832;
+        t=1627544947;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=XXimOoQI1d0O8kEjg5QeSeqgs9ahW1SYrIjYJUFIUFk=;
-        b=ZxU028pHpwvCtyCHblNHopevwPhNISY8scbRLab5RO12ZB79ThzDFEUOMpoitqLZcEhufp
-        MJ54uK4qZoUJk7QEp6rYStFMQ0B1Ub76M1kpRxuJ5cFk3knShr9ucpjgEh5Q7sc/GbEd7f
-        EuIcMCBQb5gpowr3KfbDZ5/moNDpICM=
+        bh=eYna94/iq9qX8HUpO54fYGtWdCUpTqGssNfyTTxr8DE=;
+        b=aVZzuZ+FQ414amE0JQHI7kvZsjymTf1vDhBHiuYXBDPAD93ApZHDWBnt484tkjf8v3yWd/
+        DcrEOu1evS4aOj2fWo2Ka9SWZv1nGf0B6FQJMcDidppZ24j5ginTSQ5kuHALVvPKUFnsje
+        t7/+gdzmM/0lEhs6C1EnUh7goarw8Cw=
 From:   Yajun Deng <yajun.deng@linux.dev>
-To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yajun Deng <yajun.deng@linux.dev>
-Subject: [PATCH v2] netfilter: nf_conntrack_bridge: Fix memory leak when error
-Date:   Thu, 29 Jul 2021 15:46:58 +0800
-Message-Id: <20210729074658.8538-1-yajun.deng@linux.dev>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Yajun Deng <yajun.deng@linux.dev>
+Subject: [PATCH] net: netlink: Remove unused function
+Date:   Thu, 29 Jul 2021 15:48:54 +0800
+Message-Id: <20210729074854.8968-1-yajun.deng@linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
@@ -40,33 +36,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should be added kfree_skb_list() when err is not equal to zero
-in nf_br_ip_fragment().
+lockdep_genl_is_held() and its caller arm not used now, just remove them.
 
-v2: keep this aligned with IPv6.
-
-Fixes: 3c171f496ef5 ("netfilter: bridge: add connection tracking system")
 Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
 ---
- net/bridge/netfilter/nf_conntrack_bridge.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/linux/genetlink.h | 23 -----------------------
+ net/netlink/genetlink.c   |  8 --------
+ 2 files changed, 31 deletions(-)
 
-diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
-index 8d033a75a766..3cf5457919c6 100644
---- a/net/bridge/netfilter/nf_conntrack_bridge.c
-+++ b/net/bridge/netfilter/nf_conntrack_bridge.c
-@@ -88,6 +88,11 @@ static int nf_br_ip_fragment(struct net *net, struct sock *sk,
+diff --git a/include/linux/genetlink.h b/include/linux/genetlink.h
+index bc738504ab4a..c285968e437a 100644
+--- a/include/linux/genetlink.h
++++ b/include/linux/genetlink.h
+@@ -8,34 +8,11 @@
+ /* All generic netlink requests are serialized by a global lock.  */
+ extern void genl_lock(void);
+ extern void genl_unlock(void);
+-#ifdef CONFIG_LOCKDEP
+-extern bool lockdep_genl_is_held(void);
+-#endif
  
- 			skb = ip_fraglist_next(&iter);
- 		}
-+
-+		if (!err)
-+			return 0;
-+
-+		kfree_skb_list(iter.frag_list);
- 		return err;
- 	}
- slow_path:
+ /* for synchronisation between af_netlink and genetlink */
+ extern atomic_t genl_sk_destructing_cnt;
+ extern wait_queue_head_t genl_sk_destructing_waitq;
+ 
+-/**
+- * rcu_dereference_genl - rcu_dereference with debug checking
+- * @p: The pointer to read, prior to dereferencing
+- *
+- * Do an rcu_dereference(p), but check caller either holds rcu_read_lock()
+- * or genl mutex. Note : Please prefer genl_dereference() or rcu_dereference()
+- */
+-#define rcu_dereference_genl(p)					\
+-	rcu_dereference_check(p, lockdep_genl_is_held())
+-
+-/**
+- * genl_dereference - fetch RCU pointer when updates are prevented by genl mutex
+- * @p: The pointer to read, prior to dereferencing
+- *
+- * Return the value of the specified RCU-protected pointer, but omit
+- * the READ_ONCE(), because caller holds genl mutex.
+- */
+-#define genl_dereference(p)					\
+-	rcu_dereference_protected(p, lockdep_genl_is_held())
+-
+ #define MODULE_ALIAS_GENL_FAMILY(family)\
+  MODULE_ALIAS_NET_PF_PROTO_NAME(PF_NETLINK, NETLINK_GENERIC, "-family-" family)
+ 
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index ae58da608a31..1afca2a6c2ac 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -40,14 +40,6 @@ void genl_unlock(void)
+ }
+ EXPORT_SYMBOL(genl_unlock);
+ 
+-#ifdef CONFIG_LOCKDEP
+-bool lockdep_genl_is_held(void)
+-{
+-	return lockdep_is_held(&genl_mutex);
+-}
+-EXPORT_SYMBOL(lockdep_genl_is_held);
+-#endif
+-
+ static void genl_lock_all(void)
+ {
+ 	down_write(&cb_lock);
 -- 
 2.32.0
 
