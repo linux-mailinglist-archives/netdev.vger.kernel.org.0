@@ -2,94 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A583DA401
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8700A3DA412
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:27:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237648AbhG2NYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 09:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237634AbhG2NYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 09:24:45 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611F8C0613D5
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 06:24:41 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id q15so10227755ybu.2
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 06:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I3gtSFNqWlMDmi9F4nxYDosBV6KTlor90/18ofAi344=;
-        b=C7koYkLFCNRI5d3aOLmjP4UgotIcym7KhpDnQrZq+VbEO0/RuCP9WbJ9nmGJA0Y7Zy
-         gaRETBwCP25fPOjkKsDbgvuIoLI15o+ifA0BNxQYCN+1/Talwpjn7DvAgnmdeIlgHWMa
-         V1Ubx8NEvQfb5ygqm3DvFVTYS67gVpLND8VKDYdvpCidVVjhtCsuyim3f9O43DT/E9p3
-         cEmO5s+SISsMBXMZcUYpUVIqyj4lN3BvbEs+GXIsYzMnciptSQH6o0EbNQXaI5o+xaWx
-         HirTVc1V41nKF/c7sjIYKdgagCdF+yikaGf4P28Y1MHyLuV3wNEyL4EO19wJGfE2mpXT
-         t0sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I3gtSFNqWlMDmi9F4nxYDosBV6KTlor90/18ofAi344=;
-        b=bPuyI2McOKFrFIL+OVmy6jdWUoCtKOgyXkoRc5IZajtRGie5C23meuH5MgokrxPbnJ
-         NLP0wLqnY0XxX0kALUGhRfBP/4JTvw+9kW+oB8vvZ1r3NF7HG6WJu35C9GKBMVwzF/mJ
-         qx47boEdYaZty91H7gTw+H/Y2iOql/UI6Tr0g5zbq/LtfxwmUCVACOdMvAfRzJZ/K28f
-         nwnxvYN5WUL8+CSH3BGGs/Wlm/JHIAQdp/VH4vwLn1fInEU1NUcGd1Ake70ykxImCQDW
-         iB45BbdWctnREuRE93tfZcRNr1XtmRmVVdr5AoATugEiuU7kf2pEznD+dVVGgiWNUfgC
-         69Pw==
-X-Gm-Message-State: AOAM533o4mn6XD1IpnlDP27FB3n8BguDjSe2mXVXoqFqJqa12FU3SOlD
-        +NBa5QsDlwAiTBnQUvDwGk68flRCNiasPOnH7lvrxw==
-X-Google-Smtp-Source: ABdhPJzGyV91GtfYtuhcB/tTlKHgTZafB6xVSMrvN/YBDR52baHS3XwWbpKhz2+KqAmfd0TTop2jmaE/7wvwYcPxxLE=
-X-Received: by 2002:a25:7b83:: with SMTP id w125mr6681536ybc.238.1627565080581;
- Thu, 29 Jul 2021 06:24:40 -0700 (PDT)
+        id S237561AbhG2N1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 09:27:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51792 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237528AbhG2N1C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 09:27:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ve/KL1lU44TvwHzfefIp6JxgDdI8qbOUpEiu1gJ+fiU=; b=Z7OaNwnYWxUZ3TTXmSx0cznR3c
+        Tr03VFm1LyFn5euqXGtQ0L5TuicEeg/xYF/h0QERCRdUo0H1TUsG8SY+YtaSAEWtN4vJfljqHoJfD
+        w0v2zUo9xqF0mFQC94/UYFqBeyjhaHIp45kkw+xflO/G8x5I2VgAH/HoN5kewLZkNDD0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1m963q-00FJdk-4G; Thu, 29 Jul 2021 15:26:54 +0200
+Date:   Thu, 29 Jul 2021 15:26:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Luo Jie <luoj@codeaurora.org>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        p.zabel@pengutronix.de, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        robert.marko@sartura.hr, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, sricharan@codeaurora.org
+Subject: Re: [PATCH 1/3] net: mdio-ipq4019: Add mdio reset function
+Message-ID: <YQKsnqWCfoTpTuxI@lunn.ch>
+References: <20210729125358.5227-1-luoj@codeaurora.org>
 MIME-Version: 1.0
-References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
- <20210728170502.351010-11-johan.almbladh@anyfinetworks.com> <6c362bc2-e4cf-321b-89fb-4e20276c0d73@fb.com>
-In-Reply-To: <6c362bc2-e4cf-321b-89fb-4e20276c0d73@fb.com>
-From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
-Date:   Thu, 29 Jul 2021 15:24:29 +0200
-Message-ID: <CAM1=_QRN+aioWWNfeS5Tddo2u6UG86bVj66BJoYyzaUDSkDZ1w@mail.gmail.com>
-Subject: Re: [PATCH 10/14] bpf/tests: Add branch conversion JIT test
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Tony Ambardar <Tony.Ambardar@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210729125358.5227-1-luoj@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 2:55 AM Yonghong Song <yhs@fb.com> wrote:
-> > +static int bpf_fill_long_jmp(struct bpf_test *self)
-> > +{
-> > +     unsigned int len = BPF_MAXINSNS;
->
-> BPF_MAXINSNS is 4096 as defined in uapi/linux/bpf_common.h.
-> Will it be able to trigger a PC relative branch + long
-> conditional jump?
+Hi Luo
 
-It does, on the MIPS32 JIT. The ALU64 MUL instruction with a large
-immediate was chosen since it expands to a lot of MIPS32 instructions:
-2 to load the immediate, 1 to zero/sign extend it, and then 9 for the
-64x64 multiply.
+For a patchset, netdev wants to see a patch 0/X which describes the
+big picture. What is the patchset as a whole doing.
 
-Other JITs will be different of course. On the other hand, other
-architectures have other limitations that this test may not trigger
-anyway. I added the test because I was implementing a non-trivial
-iterative branch conversion logic in the MIPS32 JIT. One can argue
-that when such complex JIT mechanisms are added, the test suite should
-also be updated to cover that, especially if the mechanism handles
-something that almost never occur in practice.
+> +static int ipq_mdio_reset(struct mii_bus *bus)
+> +{
+> +	struct ipq4019_mdio_data *priv = bus->priv;
+> +	struct device *dev = bus->parent;
+> +	struct gpio_desc *reset_gpio;
+> +	u32 val;
+> +	int i, ret;
+> +
+> +	/* To indicate CMN_PLL that ethernet_ldo has been ready if needed */
+> +	if (!IS_ERR(priv->eth_ldo_rdy)) {
+> +		val = readl(priv->eth_ldo_rdy);
+> +		val |= BIT(0);
+> +		writel(val, priv->eth_ldo_rdy);
+> +		fsleep(QCA_PHY_SET_DELAY_US);
+> +	}
+> +
+> +	/* Reset GEPHY if need */
+> +	if (!IS_ERR(priv->reset_ctrl)) {
+> +		reset_control_assert(priv->reset_ctrl);
+> +		fsleep(QCA_PHY_SET_DELAY_US);
+> +		reset_control_deassert(priv->reset_ctrl);
+> +		fsleep(QCA_PHY_SET_DELAY_US);
+> +	}
 
-Since I was able to trigger the branch conversion with BPF_MAXINSNS
-instructions, and no other test was using more, I left it at that.
-However, should I or someone else work on the MIPS64 JIT, I think
-updating the test suite so that similar special cases there are
-triggered would be a valuable contribution.
+What exactly is being reset here? Which is GEPHY?
+
+The MDIO bus master driver should not be touching any Ethernet
+PHYs. All it provides is a bus, nothing more.
+
+> +
+> +	/* Configure MDIO clock frequency */
+> +	if (!IS_ERR(priv->mdio_clk)) {
+> +		ret = clk_set_rate(priv->mdio_clk, QCA_MDIO_CLK_RATE);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = clk_prepare_enable(priv->mdio_clk);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+> +
+> +	/* Reset PHYs by gpio pins */
+> +	for (i = 0; i < gpiod_count(dev, "phy-reset"); i++) {
+> +		reset_gpio = gpiod_get_index_optional(dev, "phy-reset", i, GPIOD_OUT_HIGH);
+> +		if (IS_ERR(reset_gpio))
+> +			continue;
+> +		gpiod_set_value_cansleep(reset_gpio, 0);
+> +		fsleep(QCA_PHY_SET_DELAY_US);
+> +		gpiod_set_value_cansleep(reset_gpio, 1);
+> +		fsleep(QCA_PHY_SET_DELAY_US);
+> +		gpiod_put(reset_gpio);
+> +	}
+
+No, there is common code in phylib to do that.
+
+>  static int ipq4019_mdio_probe(struct platform_device *pdev)
+>  {
+>  	struct ipq4019_mdio_data *priv;
+>  	struct mii_bus *bus;
+> +	struct resource *res;
+>  	int ret;
+>  
+>  	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
+> @@ -182,14 +244,23 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	priv = bus->priv;
+> +	priv->eth_ldo_rdy = IOMEM_ERR_PTR(-EINVAL);
+>  
+>  	priv->membase = devm_platform_ioremap_resource(pdev, 0);
+>  	if (IS_ERR(priv->membase))
+>  		return PTR_ERR(priv->membase);
+>  
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> +	if (res)
+> +		priv->eth_ldo_rdy = devm_ioremap_resource(&pdev->dev, res);
+> +
+> +	priv->reset_ctrl = devm_reset_control_get_exclusive(&pdev->dev, "gephy_mdc_rst");
+> +	priv->mdio_clk = devm_clk_get(&pdev->dev, "gcc_mdio_ahb_clk");
+
+You probably want to use devm_clk_get_optional().
+
+    Andrew
