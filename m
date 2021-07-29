@@ -2,130 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B60A3DA239
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:35:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F39B73DA23F
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbhG2Lfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:35:51 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:37746
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231576AbhG2Lfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:35:50 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 200093F114
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 11:35:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627558546;
-        bh=ecITBiExnfrz7s+2RNbpApFu8QtFtMdKsbfQbWi6TUo=;
-        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-         In-Reply-To:Content-Type;
-        b=jDFB8hynE9ZQwWHiGA6bOgl34CotqcdGlqgND74z+l5eKCqYmIoffXUvip3EDsdwC
-         cdmTqidmf2qhbREL2UsCSjJfHjMwiZFIK2vgjoQF+sqErVC2c/c8itsiTHlC/jSUAW
-         YUU8WC1fjEmUU+5TAfFTqyVdKaygGi3fnO0mtO25meIETEKrJvzlkcvcn+pF2HemVR
-         BzBuK9FIe/ym0ZdstE2nN/y7PsMpCKmG8FrxSOy+v9UqhRDJZOzAvp0Te+0CPiWUl9
-         RqZX1hsPO+a/lkU0CXHIxP3xYDtXpenGMIUyUNhIYhMjBx8ouF0UFjaBuXWWAJ9jkR
-         wctEuFnQwqdPQ==
-Received: by mail-ed1-f70.google.com with SMTP id b88-20020a509f610000b02903ab1f22e1dcso2796215edf.23
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:35:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ecITBiExnfrz7s+2RNbpApFu8QtFtMdKsbfQbWi6TUo=;
-        b=VdnrYbm7+6CjKG5OX47MmZ8TT297JxV0ktiIVHz/sv4FIYeCPwlrLDV/bvaGjuaSnB
-         eBjF8a1DKrCQoWfCAXQaWGANV4mYuviCy46WKnFByyvhJcbuE+rDXrWTEaNxT94FBTz9
-         +rp4/5i32RSHxp1cTK3NIY8uX+tPFzgU9rVd8Q+jrEE+bwwb7HexWKoTrbTlAqsWRtKg
-         q0a4CI/5jqxwmCGVaazCWoY1y8LamQIq7fHErQxpPAJjwf2Whap8/Xil4HKAF04DwfLg
-         RuOV/FLHdLVWR+UWmv6Mv5xBtF+o6JVOCuq766/L0+sYa0BKvR8P6kWEpT2GdQF0Iyow
-         F+Bg==
-X-Gm-Message-State: AOAM533oyvIO9/rwO1znABOLJkMDG22mIyXuswvvht9mIH9IiQwOWmUY
-        VM/MvGMMHwc9f7zDuHlZz5Q6i/gsAHK4NCWmeVoWldOJsihIinF/T/PdpoqOaJZwqBZ0NkPooXQ
-        H50z8wkZFf2Iw0DF9t3So5r3SU40DKPFCsw==
-X-Received: by 2002:a05:6402:124e:: with SMTP id l14mr5714534edw.356.1627558545851;
-        Thu, 29 Jul 2021 04:35:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwOaujUGXPLJ56H1P6zQk70UrsB6Pwk0g/7UcJ0l0bQB/BF2GdMVdpMGIjWRvJLxo2hy2jOyQ==
-X-Received: by 2002:a05:6402:124e:: with SMTP id l14mr5714522edw.356.1627558545691;
-        Thu, 29 Jul 2021 04:35:45 -0700 (PDT)
-Received: from [192.168.8.102] ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id u10sm868329ejf.121.2021.07.29.04.35.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Jul 2021 04:35:45 -0700 (PDT)
-Subject: Re: [PATCH 00/12] nfc: constify, continued (part 2)
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     mgreer@animalcreek.com, bongsu.jeon@samsung.com,
-        davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
- <162755820704.26856.6157999905884570707.git-patchwork-notify@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <7b0ae615-dcdc-251e-4067-959b31c28159@canonical.com>
-Date:   Thu, 29 Jul 2021 13:35:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S234594AbhG2LgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 07:36:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57980 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234653AbhG2LgB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 07:36:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4369F60249;
+        Thu, 29 Jul 2021 11:35:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627558558;
+        bh=QMYmvRoZEkCtByFqbI3acbRN22Gz5Ier6e/xHEC/tIA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mbGojacH57fTXUBWAYRa2tzs6iP8zToXTAMSKI3ukcd1o3RySu/Da1ZhdEM5Uj+F2
+         l7CgixVgwxpUYSD6XGb8zea+byTZ3VN/PYRpVhCpPN7ufCA0LXm+csGmUFfji9f6Zo
+         SSlicAmEWeAgVUEHqhzaZfcYI7szg0yu1QlMN6UZ23S817lkJPQ84iVU/kDDxTO4yd
+         wYmYL7+WajbtA/c6tLREdtmOvfUMn1MadwMChjht80TdqupRqlQp0K+V8kIi5F0CAV
+         LpoOnFX64/TeLTYNyIgKiH9aP/boIaAkmEtAY4n8qRYT+LhsHgE7Ruiqh9bgigC/Iv
+         oiQLI1ertr0FA==
+Date:   Thu, 29 Jul 2021 14:35:55 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Parav Pandit <parav@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] devlink: Break parameter notification
+ sequence to be before/after unload/load driver
+Message-ID: <YQKSmwzppN4KNQiX@unreal>
+References: <cover.1627545799.git.leonro@nvidia.com>
+ <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
+ <YQKPkmYfKdM9zE5f@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <162755820704.26856.6157999905884570707.git-patchwork-notify@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YQKPkmYfKdM9zE5f@nanopsycho>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/07/2021 13:30, patchwork-bot+netdevbpf@kernel.org wrote:
-> Hello:
+On Thu, Jul 29, 2021 at 01:22:58PM +0200, Jiri Pirko wrote:
+> Thu, Jul 29, 2021 at 10:15:25AM CEST, leon@kernel.org wrote:
+> >From: Leon Romanovsky <leonro@nvidia.com>
+
+<...>
+
+> >diff --git a/net/core/devlink.c b/net/core/devlink.c
+> >index b596a971b473..54e2a0375539 100644
+> >--- a/net/core/devlink.c
+> >+++ b/net/core/devlink.c
+> >@@ -3801,8 +3801,9 @@ static void devlink_param_notify(struct devlink *devlink,
+> > 				 struct devlink_param_item *param_item,
+> > 				 enum devlink_command cmd);
+> > 
+> >-static void devlink_reload_netns_change(struct devlink *devlink,
+> >-					struct net *dest_net)
+> >+static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
 > 
-> This series was applied to netdev/net-next.git (refs/heads/master):
+> Please name it differently. This function notifies not only the params,
+> but the devlink instance itself as well.
+
+I'm open for suggestion. What did you have in mind?
+
 > 
-> On Thu, 29 Jul 2021 12:40:10 +0200 you wrote:
->> Hi,
->>
->> On top of:
->> nfc: constify pointed data
->> https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
->>
->> Best regards,
->> Krzysztof
->>
->> [...]
 > 
-> Here is the summary with links:
->   - [01/12] nfc: constify passed nfc_dev
->     https://git.kernel.org/netdev/net-next/c/dd8987a394c0
->   - [02/12] nfc: mei_phy: constify buffer passed to mei_nfc_send()
->     https://git.kernel.org/netdev/net-next/c/894a6e158633
->   - [03/12] nfc: port100: constify several pointers
->     https://git.kernel.org/netdev/net-next/c/9a4af01c35a5
->   - [04/12] nfc: trf7970a: constify several pointers
->     https://git.kernel.org/netdev/net-next/c/ea050c5ee74a
->   - [05/12] nfc: virtual_ncidev: constify pointer to nfc_dev
->     https://git.kernel.org/netdev/net-next/c/83428dbbac51
->   - [06/12] nfc: nfcsim: constify drvdata (struct nfcsim)
->     https://git.kernel.org/netdev/net-next/c/582fdc98adc8
->   - [07/12] nfc: fdp: drop unneeded cast for printing firmware size in dev_dbg()
->     https://git.kernel.org/netdev/net-next/c/6c755b1d2511
->   - [08/12] nfc: fdp: use unsigned int as loop iterator
->     https://git.kernel.org/netdev/net-next/c/c3e26b6dc1b4
->   - [09/12] nfc: fdp: constify several pointers
->     https://git.kernel.org/netdev/net-next/c/3d463dd5023b
->   - [10/12] nfc: microread: constify several pointers
->     https://git.kernel.org/netdev/net-next/c/a751449f8b47
->   - [11/12] nfc: mrvl: constify several pointers
->     https://git.kernel.org/netdev/net-next/c/fe53159fe3e0
+> >+				  struct net *curr_net,
+> >+				  enum devlink_command cmd)
+> > {
+> > 	struct devlink_param_item *param_item;
+> > 
+> >@@ -3812,17 +3813,17 @@ static void devlink_reload_netns_change(struct devlink *devlink,
+> > 	 * reload process so the notifications are generated separatelly.
+> > 	 */
+> > 
+> >-	list_for_each_entry(param_item, &devlink->param_list, list)
+> >-		devlink_param_notify(devlink, 0, param_item,
+> >-				     DEVLINK_CMD_PARAM_DEL);
+> >-	devlink_notify(devlink, DEVLINK_CMD_DEL);
+> >+	if (!dest_net || net_eq(dest_net, curr_net))
+> >+		return;
+> > 
+> >-	__devlink_net_set(devlink, dest_net);
+> >+	if (cmd == DEVLINK_CMD_PARAM_NEW)
+> >+		devlink_notify(devlink, DEVLINK_CMD_NEW);
+> 
+> This is quite odd. According to PARAMS cmd you decife devlink CMD.
+> 
+> Just have bool arg which would help you select both
+> DEVLINK_CMD_PARAM_NEW/DEL and DEVLINK_CMD_NEW/DEL
 
-Oh, folks, too fast :)
+The patch is quite misleading, but the final result looks neat:
 
-Sorry for the mess, but the patch 11/12 has one const which is wrong
-(I sent an email for it) and this should be on top of my
-previous set:
-https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
-which I think you did not take in.
+   3847 static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
+   3848                                   struct net *curr_net,
+   3849                                   enum devlink_command cmd)
+   3850 {
+   3851         struct devlink_param_item *param_item;
+   3852 
+   3853         /* Userspace needs to be notified about devlink objects
+   3854          * removed from original and entering new network namespace.
+   3855          * The rest of the devlink objects are re-created during
+   3856          * reload process so the notifications are generated separatelly.
+   3857          */
+   3858 
+   3859         if (!dest_net || net_eq(dest_net, curr_net))
+   3860                 return;
+   3861 
+   3862         if (cmd == DEVLINK_CMD_PARAM_NEW)
+   3863                 devlink_notify(devlink, DEVLINK_CMD_NEW);
+   3864 
+   3865         list_for_each_entry(param_item, &devlink->param_list, list)
+   3866                 devlink_param_notify(devlink, 0, param_item, cmd);
+   3867 
+   3868         if (cmd == DEVLINK_CMD_PARAM_DEL)
+   3869                 devlink_notify(devlink, DEVLINK_CMD_DEL);
+   3870 }
 
-I am not sure if it compiles cleanly without the one above.
 
-Best regards,
-Krzysztof
+So as you can see in line 3866, we anyway will need to provide "cmd", so
+do you suggest to add extra two bool variables to the function signature
+to avoid "cmd == DEVLINK_CMD_PARAM_NEW" and "cmd == DEVLINK_CMD_PARAM_DEL" ifs?
+
+Thanks
