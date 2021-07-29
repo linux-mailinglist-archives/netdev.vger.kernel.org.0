@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A993DA6D2
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 16:50:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC6523DA6D3
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 16:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237756AbhG2OuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 10:50:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49474 "EHLO mail.kernel.org"
+        id S237763AbhG2OuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 10:50:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49468 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237350AbhG2OuI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229864AbhG2OuI (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 29 Jul 2021 10:50:08 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id A6E1160EE6;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9C87A60EBB;
         Thu, 29 Jul 2021 14:50:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1627570205;
-        bh=N83vUm64NlkHsfA8TCWyYSdlzTuALn97KMNARtdBHoo=;
+        bh=j3Pa5yorPsCcmTNZNk48ih+QnX9PtTD6RceUgPazZz0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UDpiQ3JQed1iVyWUb0iYRIRfdJBmMKqk+9ZHWJWQxiK8qgOpacwHJGydedYXwuzMd
-         Rb8pr+g7eEewvOqkbKRA1HmNmu/BvQgcy4OaVF1deHChPVO2OKXAAauVhi5Komfl+H
-         qQ00PmBf/aWC/i5SF0JmscmuVpT6pZ0IsNT89krjLo0vmblX36pg3rjGDHDUm7pVdL
-         L+lWRo0fnL6ln43U06yLsGn3glh+lcWN062/dblIjrT90Oo/jhZc2BkMouxIiUpVjS
-         9ApmxOZenOeKjap/JwSJi0/eyVI6UZhzWsFsVn/zKqaOwz9nEdPY+TlLu2fk+TqQpT
-         Q4aYjqcaXM05A==
+        b=WRYCvLymeY21tV22krNCcIWDmgjzpKmTzpNiMUrSYT5s/ahAwz9AHf9LK+AkBcRgX
+         mZaR+KRQLq4J1HbSxYPC0v05Ud4xwkYsC9CYSqrFx+nsf/LcQTygMq0v+jiTyzPtYt
+         PyvQEOOEACx+391XBVhUPVlZJ9R8I3jfiUpsp/7+OfQ2KRKSi8lESNJbxE0GYZhd7/
+         2LY0NiR6SVJjQLxNJwqoGEJ/YJ6sPDQ/MiJRMtDNdKpm6uvEsjKXs3O2uR3+NH1kF9
+         MD2XPIiqrZyP70x/0EbmhoxStfbKyoKaBK/MnzDJCp8gys57KdX1RGdb/ZWLpvcu9D
+         HqqjFLwWPMMqg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9E53960A59;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 93E7460A7B;
         Thu, 29 Jul 2021 14:50:05 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qed: Remove the qed module version
+Subject: Re: [PATCH] qede: Remove the qede module version
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162757020564.26339.1638465060110774440.git-patchwork-notify@kernel.org>
+Message-Id: <162757020560.26339.12991898884828087680.git-patchwork-notify@kernel.org>
 Date:   Thu, 29 Jul 2021 14:50:05 +0000
-References: <20210729100011.10090-1-pkushwaha@marvell.com>
-In-Reply-To: <20210729100011.10090-1-pkushwaha@marvell.com>
+References: <20210729100042.10332-1-pkushwaha@marvell.com>
+In-Reply-To: <20210729100042.10332-1-pkushwaha@marvell.com>
 To:     Prabhakar Kushwaha <pkushwaha@marvell.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         malin1024@gmail.com, smalin@marvell.com, aelior@marvell.com
@@ -46,10 +46,10 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 29 Jul 2021 13:00:11 +0300 you wrote:
+On Thu, 29 Jul 2021 13:00:42 +0300 you wrote:
 > From: Shai Malin <smalin@marvell.com>
 > 
-> Removing the qed module version which is not needed and not allowed
+> Removing the qede module version which is not needed and not allowed
 > with inbox drivers.
 > 
 > Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
@@ -59,8 +59,8 @@ On Thu, 29 Jul 2021 13:00:11 +0300 you wrote:
 > [...]
 
 Here is the summary with links:
-  - qed: Remove the qed module version
-    https://git.kernel.org/netdev/net-next/c/7a3febed4455
+  - qede: Remove the qede module version
+    https://git.kernel.org/netdev/net-next/c/88ea96f8c14e
 
 You are awesome, thank you!
 --
