@@ -2,195 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2CC3DA2DF
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 14:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCAD43DA2FE
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 14:18:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236731AbhG2MLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 08:11:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58120 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231674AbhG2MLe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 08:11:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39BCB60EFF;
-        Thu, 29 Jul 2021 12:11:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627560691;
-        bh=sMoRtbrebUOK25Jsr9b7sT+iIpdf0tk5y/lFky3HY4s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TcfXCgxC46SPDPYMwT97SWt7ipMWIxx2vV372Tt03zEPt9IJ/Tq3/he3MgMqPqqJt
-         GbUmQyKfnMosnS1OkUldnoLu4dUTNuaJVZ9j1EirrD3BGjaE8PN6Vceuboy/itU++f
-         /7ITVeh2XH15/z1A0XKiBLsGZEj4+BUxy3CXZAmW8nx10b96TwjSR8rzw9+g8c1JUs
-         c/2ybyioHhq4Q4J+sQLbgUHXRxwXovAQ5PG6Z8Bzwg0lfb3MJ3mV48A1LUfpF2r5Yz
-         6n5vbTgd0MGWXZ4BduCf87EY9id9Q6r9H6IPFmqJcwFINucN/UVgWq/mhjiFBs0hS0
-         tZZOtOhj1Wxdg==
-Date:   Thu, 29 Jul 2021 15:11:28 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Break parameter notification
- sequence to be before/after unload/load driver
-Message-ID: <YQKa8DqBS/UPVLaq@unreal>
-References: <cover.1627545799.git.leonro@nvidia.com>
- <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
- <YQKPkmYfKdM9zE5f@nanopsycho>
- <YQKSmwzppN4KNQiX@unreal>
- <YQKXjTZ0W04L7xqG@nanopsycho>
+        id S236996AbhG2MSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 08:18:42 -0400
+Received: from mx21.baidu.com ([220.181.3.85]:55426 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236978AbhG2MSl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 08:18:41 -0400
+Received: from BC-Mail-EX08.internal.baidu.com (unknown [172.31.51.48])
+        by Forcepoint Email with ESMTPS id 258AA6B4DB088E50910F;
+        Thu, 29 Jul 2021 20:18:35 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BC-Mail-EX08.internal.baidu.com (172.31.51.48) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2242.12; Thu, 29 Jul 2021 20:18:34 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Thu, 29 Jul 2021 20:18:34 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>, <pbonzini@redhat.com>,
+        <stefanha@redhat.com>, <sgarzare@redhat.com>
+CC:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Cai Huoqing <caihuoqing@baidu.com>
+Subject: [PATCH] vhost: Fix typo in comments
+Date:   Thu, 29 Jul 2021 20:18:28 +0800
+Message-ID: <20210729121828.2029-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YQKXjTZ0W04L7xqG@nanopsycho>
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BC-Mail-EX06.internal.baidu.com (172.31.51.46) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 01:57:01PM +0200, Jiri Pirko wrote:
-> Thu, Jul 29, 2021 at 01:35:55PM CEST, leon@kernel.org wrote:
-> >On Thu, Jul 29, 2021 at 01:22:58PM +0200, Jiri Pirko wrote:
-> >> Thu, Jul 29, 2021 at 10:15:25AM CEST, leon@kernel.org wrote:
-> >> >From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> ><...>
-> >
-> >> >diff --git a/net/core/devlink.c b/net/core/devlink.c
-> >> >index b596a971b473..54e2a0375539 100644
-> >> >--- a/net/core/devlink.c
-> >> >+++ b/net/core/devlink.c
-> >> >@@ -3801,8 +3801,9 @@ static void devlink_param_notify(struct devlink *devlink,
-> >> > 				 struct devlink_param_item *param_item,
-> >> > 				 enum devlink_command cmd);
-> >> > 
-> >> >-static void devlink_reload_netns_change(struct devlink *devlink,
-> >> >-					struct net *dest_net)
-> >> >+static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
-> >> 
-> >> Please name it differently. This function notifies not only the params,
-> >> but the devlink instance itself as well.
-> >
-> >I'm open for suggestion. What did you have in mind?
-> 
-> devlink_ns_change_notify?
+fix typo for vhost
 
-NP, will change 
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+ drivers/vhost/scsi.c   |  4 ++--
+ drivers/vhost/vhost.c  |  2 +-
+ drivers/vhost/vringh.c | 18 +++++++++---------
+ drivers/vhost/vsock.c  |  6 +++---
+ 4 files changed, 15 insertions(+), 15 deletions(-)
 
-> 
-> >
-> >> 
-> >> 
-> >> >+				  struct net *curr_net,
-> >> >+				  enum devlink_command cmd)
-> >> > {
-> >> > 	struct devlink_param_item *param_item;
-> >> > 
-> >> >@@ -3812,17 +3813,17 @@ static void devlink_reload_netns_change(struct devlink *devlink,
-> >> > 	 * reload process so the notifications are generated separatelly.
-> >> > 	 */
-> >> > 
-> >> >-	list_for_each_entry(param_item, &devlink->param_list, list)
-> >> >-		devlink_param_notify(devlink, 0, param_item,
-> >> >-				     DEVLINK_CMD_PARAM_DEL);
-> >> >-	devlink_notify(devlink, DEVLINK_CMD_DEL);
-> >> >+	if (!dest_net || net_eq(dest_net, curr_net))
-> >> >+		return;
-> >> > 
-> >> >-	__devlink_net_set(devlink, dest_net);
-> >> >+	if (cmd == DEVLINK_CMD_PARAM_NEW)
-> >> >+		devlink_notify(devlink, DEVLINK_CMD_NEW);
-> >> 
-> >> This is quite odd. According to PARAMS cmd you decife devlink CMD.
-> >> 
-> >> Just have bool arg which would help you select both
-> >> DEVLINK_CMD_PARAM_NEW/DEL and DEVLINK_CMD_NEW/DEL
-> >
-> >The patch is quite misleading, but the final result looks neat:
-> >
-> >   3847 static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
-> >   3848                                   struct net *curr_net,
-> >   3849                                   enum devlink_command cmd)
-> >   3850 {
-> >   3851         struct devlink_param_item *param_item;
-> >   3852 
-> >   3853         /* Userspace needs to be notified about devlink objects
-> >   3854          * removed from original and entering new network namespace.
-> >   3855          * The rest of the devlink objects are re-created during
-> >   3856          * reload process so the notifications are generated separatelly.
-> >   3857          */
-> >   3858 
-> >   3859         if (!dest_net || net_eq(dest_net, curr_net))
-> >   3860                 return;
-> >   3861 
-> >   3862         if (cmd == DEVLINK_CMD_PARAM_NEW)
-> >   3863                 devlink_notify(devlink, DEVLINK_CMD_NEW);
-> 
-> Nothing misleading here. This is exactly what I'm pointing out...
-
-Do you ask for this change?
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 077310c26a8b..ee7204787b29 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3846,7 +3846,7 @@ static void devlink_param_notify(struct devlink *devlink,
- 
- static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
-                                  struct net *curr_net,
--                                 enum devlink_command cmd)
-+                                 enum devlink_command cmd, bool new)
- {
-        struct devlink_param_item *param_item;
- 
-@@ -3859,13 +3859,13 @@ static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
-        if (!dest_net || net_eq(dest_net, curr_net))
-                return;
- 
--       if (cmd == DEVLINK_CMD_PARAM_NEW)
-+       if (new)
-                devlink_notify(devlink, DEVLINK_CMD_NEW);
- 
-        list_for_each_entry(param_item, &devlink->param_list, list)
-                devlink_param_notify(devlink, 0, param_item, cmd);
- 
--       if (cmd == DEVLINK_CMD_PARAM_DEL)
-+       if (!new)
-                devlink_notify(devlink, DEVLINK_CMD_DEL);
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index 46f897e41217..18612219e994 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -119,7 +119,7 @@ struct vhost_scsi_nexus {
+ struct vhost_scsi_tpg {
+ 	/* Vhost port target portal group tag for TCM */
+ 	u16 tport_tpgt;
+-	/* Used to track number of TPG Port/Lun Links wrt to explict I_T Nexus shutdown */
++	/* Used to track number of TPG Port/Lun Links wrt to explicit I_T Nexus shutdown */
+ 	int tv_tpg_port_count;
+ 	/* Used for vhost_scsi device reference to tpg_nexus, protected by tv_tpg_mutex */
+ 	int tv_tpg_vhost_count;
+@@ -1057,7 +1057,7 @@ vhost_scsi_handle_vq(struct vhost_scsi *vs, struct vhost_virtqueue *vq)
+ 			/*
+ 			 * Set prot_iter to data_iter and truncate it to
+ 			 * prot_bytes, and advance data_iter past any
+-			 * preceeding prot_bytes that may be present.
++			 * preceding prot_bytes that may be present.
+ 			 *
+ 			 * Also fix up the exp_data_len to reflect only the
+ 			 * actual data payload length.
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index b9e853e6094d..9a0f8b93f64d 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -2486,7 +2486,7 @@ void vhost_add_used_and_signal_n(struct vhost_dev *dev,
  }
+ EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
  
-@@ -3957,7 +3957,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 
-        curr_net = devlink_net(devlink);
-        devlink_params_notify(devlink, dest_net, curr_net,
--                             DEVLINK_CMD_PARAM_DEL);
-+                             DEVLINK_CMD_PARAM_DEL, false);
-        err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
-        if (err)
-                return err;
-@@ -3971,7 +3971,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
-                return err;
- 
-        devlink_params_notify(devlink, dest_net, curr_net,
--                             DEVLINK_CMD_PARAM_NEW);
-+                             DEVLINK_CMD_PARAM_NEW, true);
-        WARN_ON(!(*actions_performed & BIT(action)));
-        /* Catch driver on updating the remote action within devlink reload */
-        WARN_ON(memcmp(remote_reload_stats, devlink->stats.remote_reload_stats,
+-/* return true if we're sure that avaiable ring is empty */
++/* return true if we're sure that available ring is empty */
+ bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
+ {
+ 	__virtio16 avail_idx;
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 4af8fa259d65..83e8c677ac11 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -630,9 +630,9 @@ static inline int xfer_to_user(const struct vringh *vrh,
+  * @features: the feature bits for this ring.
+  * @num: the number of elements.
+  * @weak_barriers: true if we only need memory barriers, not I/O.
+- * @desc: the userpace descriptor pointer.
+- * @avail: the userpace avail pointer.
+- * @used: the userpace used pointer.
++ * @desc: the userspace descriptor pointer.
++ * @avail: the userspace avail pointer.
++ * @used: the userspace used pointer.
+  *
+  * Returns an error if num is invalid: you should check pointers
+  * yourself!
+@@ -905,9 +905,9 @@ static inline int kern_xfer(const struct vringh *vrh, void *dst,
+  * @features: the feature bits for this ring.
+  * @num: the number of elements.
+  * @weak_barriers: true if we only need memory barriers, not I/O.
+- * @desc: the userpace descriptor pointer.
+- * @avail: the userpace avail pointer.
+- * @used: the userpace used pointer.
++ * @desc: the userspace descriptor pointer.
++ * @avail: the userspace avail pointer.
++ * @used: the userspace used pointer.
+  *
+  * Returns an error if num is invalid.
+  */
+@@ -1268,9 +1268,9 @@ static inline int putused_iotlb(const struct vringh *vrh,
+  * @features: the feature bits for this ring.
+  * @num: the number of elements.
+  * @weak_barriers: true if we only need memory barriers, not I/O.
+- * @desc: the userpace descriptor pointer.
+- * @avail: the userpace avail pointer.
+- * @used: the userpace used pointer.
++ * @desc: the userspace descriptor pointer.
++ * @avail: the userspace avail pointer.
++ * @used: the userspace used pointer.
+  *
+  * Returns an error if num is invalid.
+  */
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index f249622ef11b..78f0efdc5713 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -178,10 +178,10 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
+ 			 * small rx buffers, headers of packets in rx queue are
+ 			 * created dynamically and are initialized with header
+ 			 * of current packet(except length). But in case of
+-			 * SOCK_SEQPACKET, we also must clear record delimeter
++			 * SOCK_SEQPACKET, we also must clear record delimiter
+ 			 * bit(VIRTIO_VSOCK_SEQ_EOR). Otherwise, instead of one
+-			 * packet with delimeter(which marks end of record),
+-			 * there will be sequence of packets with delimeter
++			 * packet with delimiter(which marks end of record),
++			 * there will be sequence of packets with delimiter
+ 			 * bit set. After initialized header will be copied to
+ 			 * rx buffer, this bit will be restored.
+ 			 */
+-- 
+2.25.1
 
-
-> 
-> 
-> 
-> >   3864 
-> >   3865         list_for_each_entry(param_item, &devlink->param_list, list)
-> >   3866                 devlink_param_notify(devlink, 0, param_item, cmd);
-> >   3867 
-> >   3868         if (cmd == DEVLINK_CMD_PARAM_DEL)
-> >   3869                 devlink_notify(devlink, DEVLINK_CMD_DEL);
-> >   3870 }
-> >
-> >
-> >So as you can see in line 3866, we anyway will need to provide "cmd", so
-> >do you suggest to add extra two bool variables to the function signature
-> >to avoid "cmd == DEVLINK_CMD_PARAM_NEW" and "cmd == DEVLINK_CMD_PARAM_DEL" ifs?
-> >
-> >Thanks
