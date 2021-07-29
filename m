@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284A13D9F43
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 10:15:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4C93D9F41
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 10:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235130AbhG2IPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 04:15:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57030 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234986AbhG2IPl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S235054AbhG2IPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 29 Jul 2021 04:15:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 18D7A60EBB;
-        Thu, 29 Jul 2021 08:15:37 +0000 (UTC)
+Received: from mail.kernel.org ([198.145.29.99]:57002 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234917AbhG2IPi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 04:15:38 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C87D260EBB;
+        Thu, 29 Jul 2021 08:15:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627546538;
-        bh=dxk/EivKHHW3QOZcT76H8hwjDQ/GEQstTgAbrUEK51E=;
+        s=k20201202; t=1627546535;
+        bh=KyjLRDfscOh8u1K820uzrlgW4POL7rThGF5tlhgKuH4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gpUv6WWwz6x+rFCvr1vNRDNV0wDa+R2K8ozrNmfCadKZywO3QEQtDqPU4EyamWLEr
-         +s82PIoibex6D0zy668BEC2Y9iW2Fvu/VsJMnTfe4afaU2oMxXdjOtYJWdPC6T7IGN
-         e5fI0FyivXjtvbWPxuP9cmSPiV28ajMWuF3nCl2bXgi+BCzpqYpMnpTltCP02bdaUK
-         1hoVB1GNlDjDPx2cWROYETjIEdb0eRam/pBmtXuYVGr5JYMa8tMNzF29NepcVYJcRi
-         zp8nNVGlbTbvM0/Zx3tGrbXLyGtnNnj34ilibMT+ngci6iGPVWMsRX1x1W5iV8O8UW
-         8tHQkhksDYm9Q==
+        b=iwa2im8EISOGCfmNsdltwRUWe2+ACsNeKYK0HqjAj0Jdn+ur4uwBsVaAjnXDSnxAs
+         AITRGDnQfIH3WHiA1vtge3fxTN6iR/rnvb5YoLMjrFwISWjkeu5RyY+DZXbEwe9jYg
+         qra/Jgp6zFMhLHZUYV7u4wtx+hxyeLfO6/eUAk2mHE3fo0S0INZ+tBYdlfqoIIOuz5
+         /nJMAI9ozZ2bn2qH/F75nLpbfktLtNIqkJy25L5dSoiO6PGMIat9gR0QlMk8uroape
+         R/hMZk9xeAC2oRKeAI8LysW/YsT+bCtaVWoHcPNyRCAJF6MACmKjg5BGsg71SaCNlX
+         SN6mdfTQwdfvw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>
-Subject: [PATCH net-next 1/2] devlink: Break parameter notification sequence to be before/after unload/load driver
-Date:   Thu, 29 Jul 2021 11:15:25 +0300
-Message-Id: <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
+Subject: [PATCH net-next 2/2] devlink: Allocate devlink directly in requested net namespace
+Date:   Thu, 29 Jul 2021 11:15:26 +0300
+Message-Id: <ca29973a59c9c128ab960e3cbff8dfa95280b6b0.1627545799.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <cover.1627545799.git.leonro@nvidia.com>
 References: <cover.1627545799.git.leonro@nvidia.com>
@@ -42,249 +42,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-The change of namespaces during devlink reload calls to driver unload
-before it accesses devlink parameters. The commands below causes to
-use-after-free bug when trying to get flow steering mode.
+There is no need in extra call indirection and check from impossible
+flow where someone tries to set namespace without prior call
+to devlink_alloc().
 
- * ip netns add n1
- * devlink dev reload pci/0000:00:09.0 netns n1
+Instead of this extra logic and additional EXPORT_SYMBOL, use specialized
+devlink allocation function that receives net namespace as an argument.
 
- ==================================================================
- BUG: KASAN: use-after-free in mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
- Read of size 4 at addr ffff888009d04308 by task devlink/275
+Such specialized API allows clear view when devlink initialized in wrong
+net namespace and/or kernel users don't try to change devlink namespace
+under the hood.
 
- CPU: 6 PID: 275 Comm: devlink Not tainted 5.12.0-rc2+ #2853
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- Call Trace:
-  dump_stack+0x93/0xc2
-  print_address_description.constprop.0+0x18/0x140
-  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
-  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
-  kasan_report.cold+0x7c/0xd8
-  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
-  mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
-  devlink_nl_param_fill+0x1c8/0xe80
-  ? __free_pages_ok+0x37a/0x8a0
-  ? devlink_flash_update_timeout_notify+0xd0/0xd0
-  ? lock_acquire+0x1a9/0x6d0
-  ? fs_reclaim_acquire+0xb7/0x160
-  ? lock_is_held_type+0x98/0x110
-  ? 0xffffffff81000000
-  ? lock_release+0x1f9/0x6c0
-  ? fs_reclaim_release+0xa1/0xf0
-  ? lock_downgrade+0x6d0/0x6d0
-  ? lock_is_held_type+0x98/0x110
-  ? lock_is_held_type+0x98/0x110
-  ? memset+0x20/0x40
-  ? __build_skb_around+0x1f8/0x2b0
-  devlink_param_notify+0x6d/0x180
-  devlink_reload+0x1c3/0x520
-  ? devlink_remote_reload_actions_performed+0x30/0x30
-  ? mutex_trylock+0x24b/0x2d0
-  ? devlink_nl_cmd_reload+0x62b/0x1070
-  devlink_nl_cmd_reload+0x66d/0x1070
-  ? devlink_reload+0x520/0x520
-  ? devlink_get_from_attrs+0x1bc/0x260
-  ? devlink_nl_pre_doit+0x64/0x4d0
-  genl_family_rcv_msg_doit+0x1e9/0x2f0
-  ? mutex_lock_io_nested+0x1130/0x1130
-  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x240/0x240
-  ? security_capable+0x51/0x90
-  genl_rcv_msg+0x27f/0x4a0
-  ? genl_get_cmd+0x3c0/0x3c0
-  ? lock_acquire+0x1a9/0x6d0
-  ? devlink_reload+0x520/0x520
-  ? lock_release+0x6c0/0x6c0
-  netlink_rcv_skb+0x11d/0x340
-  ? genl_get_cmd+0x3c0/0x3c0
-  ? netlink_ack+0x9f0/0x9f0
-  ? lock_release+0x1f9/0x6c0
-  genl_rcv+0x24/0x40
-  netlink_unicast+0x433/0x700
-  ? netlink_attachskb+0x730/0x730
-  ? _copy_from_iter_full+0x178/0x650
-  ? __alloc_skb+0x113/0x2b0
-  netlink_sendmsg+0x6f1/0xbd0
-  ? netlink_unicast+0x700/0x700
-  ? lock_is_held_type+0x98/0x110
-  ? netlink_unicast+0x700/0x700
-  sock_sendmsg+0xb0/0xe0
-  __sys_sendto+0x193/0x240
-  ? __x64_sys_getpeername+0xb0/0xb0
-  ? do_sys_openat2+0x10b/0x370
-  ? __up_read+0x1a1/0x7b0
-  ? do_user_addr_fault+0x219/0xdc0
-  ? __x64_sys_openat+0x120/0x1d0
-  ? __x64_sys_open+0x1a0/0x1a0
-  __x64_sys_sendto+0xdd/0x1b0
-  ? syscall_enter_from_user_mode+0x1d/0x50
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7fc69d0af14a
- Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
- RSP: 002b:00007ffc1d8292f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
- RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 00007fc69d0af14a
- RDX: 0000000000000038 RSI: 0000555f57c56440 RDI: 0000000000000003
- RBP: 0000555f57c56410 R08: 00007fc69d17b200 R09: 000000000000000c
- R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
- R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
- Allocated by task 146:
-  kasan_save_stack+0x1b/0x40
-  __kasan_kmalloc+0x99/0xc0
-  mlx5_init_fs+0xf0/0x1c50 [mlx5_core]
-  mlx5_load+0xd2/0x180 [mlx5_core]
-  mlx5_init_one+0x2f6/0x450 [mlx5_core]
-  probe_one+0x47d/0x6e0 [mlx5_core]
-  pci_device_probe+0x2a0/0x4a0
-  really_probe+0x20a/0xc90
-  driver_probe_device+0xd8/0x380
-  device_driver_attach+0x1df/0x250
-  __driver_attach+0xff/0x240
-  bus_for_each_dev+0x11e/0x1a0
-  bus_add_driver+0x309/0x570
-  driver_register+0x1ee/0x380
-  0xffffffffa06b8062
-  do_one_initcall+0xd5/0x410
-  do_init_module+0x1c8/0x760
-  load_module+0x6d8b/0x9650
-  __do_sys_finit_module+0x118/0x1b0
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
- Freed by task 275:
-  kasan_save_stack+0x1b/0x40
-  kasan_set_track+0x1c/0x30
-  kasan_set_free_info+0x20/0x30
-  __kasan_slab_free+0x102/0x140
-  slab_free_freelist_hook+0x74/0x1b0
-  kfree+0xd7/0x2a0
-  mlx5_unload+0x16/0xb0 [mlx5_core]
-  mlx5_unload_one+0xae/0x120 [mlx5_core]
-  mlx5_devlink_reload_down+0x1bc/0x380 [mlx5_core]
-  devlink_reload+0x141/0x520
-  devlink_nl_cmd_reload+0x66d/0x1070
-  genl_family_rcv_msg_doit+0x1e9/0x2f0
-  genl_rcv_msg+0x27f/0x4a0
-  netlink_rcv_skb+0x11d/0x340
-  genl_rcv+0x24/0x40
-  netlink_unicast+0x433/0x700
-  netlink_sendmsg+0x6f1/0xbd0
-  sock_sendmsg+0xb0/0xe0
-  __sys_sendto+0x193/0x240
-  __x64_sys_sendto+0xdd/0x1b0
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-
- The buggy address belongs to the object at ffff888009d04300
-  which belongs to the cache kmalloc-128 of size 128
- The buggy address is located 8 bytes inside of
-  128-byte region [ffff888009d04300, ffff888009d04380)
- The buggy address belongs to the page:
- page:0000000086a64ecc refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888009d04000 pfn:0x9d04
- head:0000000086a64ecc order:1 compound_mapcount:0
- flags: 0x4000000000010200(slab|head)
- raw: 4000000000010200 ffffea0000203980 0000000200000002 ffff8880050428c0
- raw: ffff888009d04000 000000008020001d 00000001ffffffff 0000000000000000
- page dumped because: kasan: bad access detected
-
- Memory state around the buggy address:
-  ffff888009d04200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff888009d04280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
- >ffff888009d04300: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                       ^
-  ffff888009d04380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff888009d04400: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ==================================================================
-
-The right solution to devlink reload is to notify about deletion of
-parameters, unload driver, change net namespaces, load driver and notify
-about addition of parameters.
-
-Fixes: 070c63f20f6c ("net: devlink: allow to change namespaces during reload")
-Reviewed-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- net/core/devlink.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ drivers/net/netdevsim/dev.c |  4 ++--
+ include/net/devlink.h       | 14 ++++++++++++--
+ net/core/devlink.c          | 26 ++++++++------------------
+ 3 files changed, 22 insertions(+), 22 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b596a971b473..54e2a0375539 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -3801,8 +3801,9 @@ static void devlink_param_notify(struct devlink *devlink,
- 				 struct devlink_param_item *param_item,
- 				 enum devlink_command cmd);
- 
--static void devlink_reload_netns_change(struct devlink *devlink,
--					struct net *dest_net)
-+static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
-+				  struct net *curr_net,
-+				  enum devlink_command cmd)
- {
- 	struct devlink_param_item *param_item;
- 
-@@ -3812,17 +3813,17 @@ static void devlink_reload_netns_change(struct devlink *devlink,
- 	 * reload process so the notifications are generated separatelly.
- 	 */
- 
--	list_for_each_entry(param_item, &devlink->param_list, list)
--		devlink_param_notify(devlink, 0, param_item,
--				     DEVLINK_CMD_PARAM_DEL);
--	devlink_notify(devlink, DEVLINK_CMD_DEL);
-+	if (!dest_net || net_eq(dest_net, curr_net))
-+		return;
- 
--	__devlink_net_set(devlink, dest_net);
-+	if (cmd == DEVLINK_CMD_PARAM_NEW)
-+		devlink_notify(devlink, DEVLINK_CMD_NEW);
- 
--	devlink_notify(devlink, DEVLINK_CMD_NEW);
- 	list_for_each_entry(param_item, &devlink->param_list, list)
--		devlink_param_notify(devlink, 0, param_item,
--				     DEVLINK_CMD_PARAM_NEW);
-+		devlink_param_notify(devlink, 0, param_item, cmd);
-+
-+	if (cmd == DEVLINK_CMD_PARAM_DEL)
-+		devlink_notify(devlink, DEVLINK_CMD_DEL);
- }
- 
- static bool devlink_reload_supported(const struct devlink_ops *ops)
-@@ -3902,6 +3903,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 			  u32 *actions_performed, struct netlink_ext_ack *extack)
- {
- 	u32 remote_reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
-+	struct net *curr_net;
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 6348307bfa84..d538a39d4225 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1431,10 +1431,10 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	struct devlink *devlink;
  	int err;
  
- 	if (!devlink->reload_enabled)
-@@ -3909,18 +3911,24 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+-	devlink = devlink_alloc(&nsim_dev_devlink_ops, sizeof(*nsim_dev));
++	devlink = devlink_alloc_ns(&nsim_dev_devlink_ops, sizeof(*nsim_dev),
++				   nsim_bus_dev->initial_net);
+ 	if (!devlink)
+ 		return -ENOMEM;
+-	devlink_net_set(devlink, nsim_bus_dev->initial_net);
+ 	nsim_dev = devlink_priv(devlink);
+ 	nsim_dev->nsim_bus_dev = nsim_bus_dev;
+ 	nsim_dev->switch_id.id_len = sizeof(nsim_dev->switch_id.id);
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index e48a62320407..b4691c40320f 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1540,8 +1540,18 @@ static inline struct devlink *netdev_to_devlink(struct net_device *dev)
+ struct ib_device;
  
- 	memcpy(remote_reload_stats, devlink->stats.remote_reload_stats,
- 	       sizeof(remote_reload_stats));
-+
-+	curr_net = devlink_net(devlink);
-+	devlink_params_notify(devlink, dest_net, curr_net,
-+			      DEVLINK_CMD_PARAM_DEL);
- 	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
- 	if (err)
+ struct net *devlink_net(const struct devlink *devlink);
+-void devlink_net_set(struct devlink *devlink, struct net *net);
+-struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
++/* This RAW call is intended for software devices that can
++ * create devlink instance in other namespaces than init_net.
++ *
++ * Drivers that operate on real HW must use devlink_alloc() instead.
++ */
++struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
++				 size_t priv_size, struct net *net);
++static inline struct devlink *devlink_alloc(const struct devlink_ops *ops,
++					    size_t priv_size)
++{
++	return devlink_alloc_ns(ops, priv_size, &init_net);
++}
+ int devlink_register(struct devlink *devlink, struct device *dev);
+ void devlink_unregister(struct devlink *devlink);
+ void devlink_reload_enable(struct devlink *devlink);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 54e2a0375539..b419b7a6ec40 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -108,19 +108,6 @@ struct net *devlink_net(const struct devlink *devlink)
+ }
+ EXPORT_SYMBOL_GPL(devlink_net);
+ 
+-static void __devlink_net_set(struct devlink *devlink, struct net *net)
+-{
+-	write_pnet(&devlink->_net, net);
+-}
+-
+-void devlink_net_set(struct devlink *devlink, struct net *net)
+-{
+-	if (WARN_ON(devlink->dev))
+-		return;
+-	__devlink_net_set(devlink, net);
+-}
+-EXPORT_SYMBOL_GPL(devlink_net_set);
+-
+ static struct devlink *devlink_get_from_attrs(struct net *net,
+ 					      struct nlattr **attrs)
+ {
+@@ -3920,7 +3907,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
  		return err;
  
--	if (dest_net && !net_eq(dest_net, devlink_net(devlink)))
--		devlink_reload_netns_change(devlink, dest_net);
-+	if (dest_net && !net_eq(dest_net, curr_net))
-+		__devlink_net_set(devlink, dest_net);
+ 	if (dest_net && !net_eq(dest_net, curr_net))
+-		__devlink_net_set(devlink, dest_net);
++		write_pnet(&devlink->_net, dest_net);
  
  	err = devlink->ops->reload_up(devlink, action, limit, actions_performed, extack);
  	devlink_reload_failed_set(devlink, !!err);
- 	if (err)
- 		return err;
+@@ -8776,15 +8763,18 @@ static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
+ }
  
-+	devlink_params_notify(devlink, dest_net, curr_net,
-+			      DEVLINK_CMD_PARAM_NEW);
- 	WARN_ON(!(*actions_performed & BIT(action)));
- 	/* Catch driver on updating the remote action within devlink reload */
- 	WARN_ON(memcmp(remote_reload_stats, devlink->stats.remote_reload_stats,
+ /**
+- *	devlink_alloc - Allocate new devlink instance resources
++ *	devlink_alloc_ns - Allocate new devlink instance resources
++ *	in specific namespace
+  *
+  *	@ops: ops
+  *	@priv_size: size of user private data
++ *	@net: net namespace
+  *
+  *	Allocate new devlink instance resources, including devlink index
+  *	and name.
+  */
+-struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
++struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
++				 size_t priv_size, struct net *net)
+ {
+ 	struct devlink *devlink;
+ 
+@@ -8799,7 +8789,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
+ 		return NULL;
+ 	devlink->ops = ops;
+ 	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
+-	__devlink_net_set(devlink, &init_net);
++	write_pnet(&devlink->_net, net);
+ 	INIT_LIST_HEAD(&devlink->port_list);
+ 	INIT_LIST_HEAD(&devlink->rate_list);
+ 	INIT_LIST_HEAD(&devlink->sb_list);
+@@ -8815,7 +8805,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
+ 	mutex_init(&devlink->reporters_lock);
+ 	return devlink;
+ }
+-EXPORT_SYMBOL_GPL(devlink_alloc);
++EXPORT_SYMBOL_GPL(devlink_alloc_ns);
+ 
+ /**
+  *	devlink_register - Register devlink instance
 -- 
 2.31.1
 
