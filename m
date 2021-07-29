@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ED0F3DAFF0
-	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 01:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324403DAFF2
+	for <lists+netdev@lfdr.de>; Fri, 30 Jul 2021 01:37:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235257AbhG2Xhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 19:37:39 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:64617 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235179AbhG2Xhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 19:37:38 -0400
+        id S235264AbhG2Xh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 19:37:56 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:2061 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234878AbhG2Xhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 19:37:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1627601855; x=1659137855;
+  s=amazon201209; t=1627601872; x=1659137872;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ty0noPyc9zK4YWeOiZkJWu+HO4/YosPOuBWXAaeZEmA=;
-  b=mX61g7vWH+R0SXRP3CGY/lborMrl2KI+HWEBrDKimxY60l8ts8TTu181
-   P7B5htHCw5+IsS6ge3Jdtiu6ByulKX8F8vPxDamBocx8Zr7i8OWjpYipY
-   kPFW4UsgdUMQr0/ZL7sTcuFjGUYGIjhERSSrN2NIP9o55nEbWdyxRkQMF
-   Y=;
+  bh=WV3xX5/6kNrLU/BdVe/5BEuj3hmqkznzAp1eoc+uVuo=;
+  b=jR8Tq3sbzYKVtPvbMIQU/k4uNCZ7rQyz3Bv92popvv5fqw9tnyO+l/u2
+   3i4UKxIPebAaCTbM5YlypTnR4DAZQmuPqVPOoaErDHQbv1dIyGESa95Xm
+   N0/JE7JxE0N46rxMIu8sTcohuT21N7CTPMgxL/ESb0V6Kq7eztI+y7VAg
+   Q=;
 X-IronPort-AV: E=Sophos;i="5.84,280,1620691200"; 
-   d="scan'208";a="149159677"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-1a-94ef7264.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 29 Jul 2021 23:37:33 +0000
+   d="scan'208";a="130384601"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-27fb8269.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 29 Jul 2021 23:37:51 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-94ef7264.us-east-1.amazon.com (Postfix) with ESMTPS id 10694A264F;
-        Thu, 29 Jul 2021 23:37:32 +0000 (UTC)
+        by email-inbound-relay-1e-27fb8269.us-east-1.amazon.com (Postfix) with ESMTPS id 0274DA1B2C;
+        Thu, 29 Jul 2021 23:37:47 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Thu, 29 Jul 2021 23:37:31 +0000
+ id 15.0.1497.23; Thu, 29 Jul 2021 23:37:46 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.164) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Thu, 29 Jul 2021 23:37:26 +0000
+ id 15.0.1497.23; Thu, 29 Jul 2021 23:37:42 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -48,9 +48,9 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
         Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next 1/2] bpf: af_unix: Implement BPF iterator for UNIX domain socket.
-Date:   Fri, 30 Jul 2021 08:36:44 +0900
-Message-ID: <20210729233645.4869-2-kuniyu@amazon.co.jp>
+Subject: [PATCH bpf-next 2/2] selftest/bpf: Implement sample UNIX domain socket iterator program.
+Date:   Fri, 30 Jul 2021 08:36:45 +0900
+Message-ID: <20210729233645.4869-3-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210729233645.4869-1-kuniyu@amazon.co.jp>
 References: <20210729233645.4869-1-kuniyu@amazon.co.jp>
@@ -64,143 +64,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch implements the BPF iterator for the UNIX domain socket.
+If there are no abstract sockets, this prog can output the same result
+compared to /proc/net/unix.
 
-Currently, the batch optimization introduced for the TCP iterator in the
-commit 04c7820b776f ("bpf: tcp: Bpf iter batching and lock_sock") is not
-applied.  It will require replacing the big lock for the hash table with
-small locks for each hash list not to block other processes.
+  # cat /sys/fs/bpf/unix | head -n 2
+  Num       RefCount Protocol Flags    Type St Inode Path
+  ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
+
+  # cat /proc/net/unix | head -n 2
+  Num       RefCount Protocol Flags    Type St Inode Path
+  ffff9ab7122db000: 00000002 00000000 00010000 0001 01 10623 private/defer
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- include/linux/btf_ids.h |  3 +-
- net/unix/af_unix.c      | 78 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 80 insertions(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 17 +++++
+ .../selftests/bpf/progs/bpf_iter_unix.c       | 75 +++++++++++++++++++
+ 2 files changed, 92 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_unix.c
 
-diff --git a/include/linux/btf_ids.h b/include/linux/btf_ids.h
-index 57890b357f85..bed4b9964581 100644
---- a/include/linux/btf_ids.h
-+++ b/include/linux/btf_ids.h
-@@ -172,7 +172,8 @@ extern struct btf_id_set name;
- 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
- 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
- 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
--	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
-+	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)			\
-+	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UNIX, unix_sock)
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+index 1f1aade56504..4746bac68d36 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -13,6 +13,7 @@
+ #include "bpf_iter_tcp6.skel.h"
+ #include "bpf_iter_udp4.skel.h"
+ #include "bpf_iter_udp6.skel.h"
++#include "bpf_iter_unix.skel.h"
+ #include "bpf_iter_test_kern1.skel.h"
+ #include "bpf_iter_test_kern2.skel.h"
+ #include "bpf_iter_test_kern3.skel.h"
+@@ -313,6 +314,20 @@ static void test_udp6(void)
+ 	bpf_iter_udp6__destroy(skel);
+ }
  
- enum {
- #define BTF_SOCK_TYPE(name, str) name,
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 89927678c0dc..d45ad87e3a49 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -113,6 +113,7 @@
- #include <linux/security.h>
- #include <linux/freezer.h>
- #include <linux/file.h>
-+#include <linux/btf_ids.h>
- 
- #include "scm.h"
- 
-@@ -2935,6 +2936,49 @@ static const struct seq_operations unix_seq_ops = {
- 	.stop   = unix_seq_stop,
- 	.show   = unix_seq_show,
- };
-+
-+#ifdef CONFIG_BPF_SYSCALL
-+struct bpf_iter__unix {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct unix_sock *, unix_sk);
-+	uid_t uid __aligned(8);
-+};
-+
-+static int unix_prog_seq_show(struct bpf_prog *prog, struct bpf_iter_meta *meta,
-+			      struct unix_sock *unix_sk, uid_t uid)
++static void test_unix(void)
 +{
-+	struct bpf_iter__unix ctx;
++	struct bpf_iter_unix *skel;
 +
-+	meta->seq_num--;  /* skip SEQ_START_TOKEN */
-+	ctx.meta = meta;
-+	ctx.unix_sk = unix_sk;
-+	ctx.uid = uid;
-+	return bpf_iter_run_prog(prog, &ctx);
++	skel = bpf_iter_unix__open_and_load();
++	if (CHECK(!skel, "bpf_iter_unix__open_and_load",
++		  "skeleton open_and_load failed\n"))
++		return;
++
++	do_dummy_read(skel->progs.dump_unix);
++
++	bpf_iter_unix__destroy(skel);
 +}
 +
-+static int bpf_iter_unix_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter_meta meta;
-+	struct bpf_prog *prog;
-+	struct sock *sk = v;
-+	uid_t uid;
+ /* The expected string is less than 16 bytes */
+ static int do_read_with_fd(int iter_fd, const char *expected,
+ 			   bool read_one_char)
+@@ -1255,6 +1270,8 @@ void test_bpf_iter(void)
+ 		test_udp4();
+ 	if (test__start_subtest("udp6"))
+ 		test_udp6();
++	if (test__start_subtest("unix"))
++		test_unix();
+ 	if (test__start_subtest("anon"))
+ 		test_anon_iter(false);
+ 	if (test__start_subtest("anon-read-one-char"))
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_unix.c b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+new file mode 100644
+index 000000000000..285ec2f7944d
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_unix.c
+@@ -0,0 +1,75 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright Amazon.com Inc. or its affiliates. */
++#include "bpf_iter.h"
++#include "bpf_tracing_net.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
 +
-+	if (v == SEQ_START_TOKEN)
++char _license[] SEC("license") = "GPL";
++
++#define __SO_ACCEPTCON		(1 << 16)
++#define UNIX_HASH_SIZE		256
++#define UNIX_ABSTRACT(unix_sk)	(unix_sk->addr->hash < UNIX_HASH_SIZE)
++
++static long sock_i_ino(const struct sock *sk)
++{
++	const struct socket *sk_socket = sk->sk_socket;
++	const struct inode *inode;
++	unsigned long ino;
++
++	if (!sk_socket)
 +		return 0;
 +
-+	uid = from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk));
-+	meta.seq = seq;
-+	prog = bpf_iter_get_info(&meta, false);
-+	return unix_prog_seq_show(prog, &meta, v, uid);
++	inode = &container_of(sk_socket, struct socket_alloc, socket)->vfs_inode;
++	bpf_probe_read_kernel(&ino, sizeof(ino), &inode->i_ino);
++	return ino;
 +}
 +
-+static const struct seq_operations bpf_iter_unix_seq_ops = {
-+	.start	= unix_seq_start,
-+	.next	= unix_seq_next,
-+	.stop	= unix_seq_stop,
-+	.show	= bpf_iter_unix_seq_show,
-+};
-+#endif
- #endif
- 
- static const struct net_proto_family unix_family_ops = {
-@@ -2975,6 +3019,35 @@ static struct pernet_operations unix_net_ops = {
- 	.exit = unix_net_exit,
- };
- 
-+#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
-+DEFINE_BPF_ITER_FUNC(unix, struct bpf_iter_meta *meta,
-+		     struct unix_sock *unix_sk, uid_t uid)
-+
-+static const struct bpf_iter_seq_info unix_seq_info = {
-+	.seq_ops		= &bpf_iter_unix_seq_ops,
-+	.init_seq_private	= bpf_iter_init_seq_net,
-+	.fini_seq_private	= bpf_iter_fini_seq_net,
-+	.seq_priv_size		= sizeof(struct seq_net_private),
-+};
-+
-+static struct bpf_iter_reg unix_reg_info = {
-+	.target			= "unix",
-+	.ctx_arg_info_size	= 1,
-+	.ctx_arg_info		= {
-+		{ offsetof(struct bpf_iter__unix, unix_sk),
-+		  PTR_TO_BTF_ID_OR_NULL },
-+	},
-+	.seq_info		= &unix_seq_info,
-+};
-+
-+static void __init bpf_iter_register(void)
++SEC("iter/unix")
++int dump_unix(struct bpf_iter__unix *ctx)
 +{
-+	unix_reg_info.ctx_arg_info[0].btf_id = btf_sock_ids[BTF_SOCK_TYPE_UNIX];
-+	if (bpf_iter_reg_target(&unix_reg_info))
-+		pr_warn("Warning: could not register bpf iterator unix\n");
++	struct unix_sock *unix_sk = ctx->unix_sk;
++	struct sock *sk = (struct sock *)unix_sk;
++	struct seq_file *seq;
++	__u32 seq_num;
++
++	if (!unix_sk)
++		return 0;
++
++	seq = ctx->meta->seq;
++	seq_num = ctx->meta->seq_num;
++	if (seq_num == 0)
++		BPF_SEQ_PRINTF(seq, "Num       RefCount Protocol Flags    "
++			       "Type St Inode Path\n");
++
++	BPF_SEQ_PRINTF(seq, "%pK: %08X %08X %08X %04X %02X %5lu",
++		       unix_sk,
++		       sk->sk_refcnt.refs.counter,
++		       0,
++		       sk->sk_state == TCP_LISTEN ? __SO_ACCEPTCON : 0,
++		       sk->sk_type,
++		       sk->sk_socket ?
++		       (sk->sk_state == TCP_ESTABLISHED ?
++			SS_CONNECTED : SS_UNCONNECTED) :
++		       (sk->sk_state == TCP_ESTABLISHED ?
++			SS_CONNECTING : SS_DISCONNECTING),
++		       sock_i_ino(sk));
++
++	if (unix_sk->addr) {
++		if (UNIX_ABSTRACT(unix_sk))
++			/* Abstract UNIX domain socket can contain '\0' in
++			 * the path, and it should be escaped.  However, it
++			 * requires loops and the BPF verifier rejects it.
++			 * So here, print only the escaped first byte to
++			 * indicate it is an abstract UNIX domain socket.
++			 * (See: unix_seq_show() and commit e7947ea770d0d)
++			 */
++			BPF_SEQ_PRINTF(seq, " @");
++		else
++			BPF_SEQ_PRINTF(seq, " %s", unix_sk->addr->name->sun_path);
++	}
++
++	BPF_SEQ_PRINTF(seq, "\n");
++
++	return 0;
 +}
-+#endif
-+
- static int __init af_unix_init(void)
- {
- 	int rc = -1;
-@@ -2990,6 +3063,11 @@ static int __init af_unix_init(void)
- 	sock_register(&unix_family_ops);
- 	register_pernet_subsys(&unix_net_ops);
- 	unix_bpf_build_proto();
-+
-+#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_PROC_FS)
-+	bpf_iter_register();
-+#endif
-+
- out:
- 	return rc;
- }
 -- 
 2.30.2
 
