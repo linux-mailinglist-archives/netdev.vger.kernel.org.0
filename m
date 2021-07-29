@@ -2,101 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55F8C3DAE54
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 23:27:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1C773DAE5C
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 23:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234105AbhG2V13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 17:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
+        id S233413AbhG2Va6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 17:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233967AbhG2V12 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 17:27:28 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26ECAC061765;
-        Thu, 29 Jul 2021 14:27:24 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id c16so8514809plh.7;
-        Thu, 29 Jul 2021 14:27:24 -0700 (PDT)
+        with ESMTP id S231164AbhG2Va5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 17:30:57 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B017C061765
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 14:30:54 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id s48so12461865ybi.7
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 14:30:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CmUz25v47EVa8gRZMq5MLvl4L4iFYPzewIDb5rn7kIM=;
-        b=SORUYDWsPT1mdtbTKodQJcv9mUm1olu6HMr4QDAkVdC+quIpbsQcHkbJlqdK4TXOSL
-         MtWLhjVlUb1zReImAq0EdZTUjGgE//o1T+UnAHL5a9KIXw5s+qvWDL9LLWESASgQgkwj
-         Ir5R/rcLaHiqf5NzeCffZ/Gs5Ronm9P/VFKO+4HJH1GIoulmE5CUbEiO2RyQr3eO7Rn6
-         hEuLUZmW/0RrVUShatRfqHxBAmuqMJ8QQhzKOCcGc+zMDUw+lhDVTBVyNt/GLhPvLYim
-         7In52S/+PV5DBJG+c0dStIuFe+9NcCZ0h0MUP3YbZzbyzvjTxr1ugmv8arPjJiV41HBP
-         MzUg==
+        bh=W7A9NX6+R1ItDbdDIykYJjZM1Xg5IpEpNDoq6IEGQ8o=;
+        b=JTVj1vaunTbw9kjl1pX0C+tDUCSH3ibGRU4k4l2Hxh7n9Sdl40XCw2otPlx68jrCcM
+         cc7Qlx0M1K7JKWWG6ceg5i4rxVa80c+RkHxopfGq59XpvV454renSO/OpK0/sYs7k/Dw
+         k9ywW5HKeQGBD6sHVpQiXwjxFk5y6AdUG1rHTuMpqPgtldoU2Aj75lZ0suFTaoZJXVdt
+         Ox6r0DMvIBiBTmgsU5j6t8yHwCtfw9H302+gY5pQJshKZvBDyeDnDLTBdxdpaA0VJ+61
+         t1qCxCuyaCm0LqvLn9L3jYzGA3BxNSyEhkr71nzirtzWqDL1h0z/m1WIl1ntdB1D7rDN
+         Uh/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CmUz25v47EVa8gRZMq5MLvl4L4iFYPzewIDb5rn7kIM=;
-        b=RXKw8AHvbq3BrvZ5MUCC5iN0z8zLlAeP55BJXKhBBU+29xTw9uju5vSPppVs1wefcw
-         aWz9kuSmZuoq26B0R+cPk3Ba994IuiFyblpSXZQvMaMxEAMHP8PBXv2QkXhEHOVb8+cc
-         RJF2F+W1aHFmhFj4Cc9CmNAS5WQmfZenj5JLkrkCyZxpxghrHOBFcwRdbrHIWtKZAMH8
-         eIPEN7VYj+qzOSMoTf68k6ZBV51hm6fV9ta5E6501yUPMSmR2QnA2VjlSE6YiHxLlvUj
-         xv85CJ2ncSYq791rIXm5kU3feJa03nw8g8xq/gmgPTsiu/LpGKmY53S68+lMUTowmRtH
-         y+kw==
-X-Gm-Message-State: AOAM531+6vQ46NlP3im7tn60wK9lIZeXGJBPZIuTqEp3F4427j8uD4h2
-        IL4XzTn/TLLSZVwUs1FcFfVuPp6Fyws0q3t9Uvg=
-X-Google-Smtp-Source: ABdhPJzcwd8CEaU5dsVlvlXTZD3ucVxwPiCBIwPZZKnWXpoWb19DKemjYFPzIC1Px66OiyySjVG1CK1cfBOjKtHRZT8=
-X-Received: by 2002:a62:1609:0:b029:3ab:afdb:acf3 with SMTP id
- 9-20020a6216090000b02903abafdbacf3mr2117397pfw.43.1627594043670; Thu, 29 Jul
- 2021 14:27:23 -0700 (PDT)
+        bh=W7A9NX6+R1ItDbdDIykYJjZM1Xg5IpEpNDoq6IEGQ8o=;
+        b=Xy0tcxJTeOtmf41ZW7J1IagTkeeN3UicMVR0BJPFl92K3ahN27nBCcUVZ5oQFqIKIH
+         uHfOa+o5EoFZxFJzPqsmLImD2HqKZ5Vo7B5lNqzZXoYSB8Kij9fQYGSMpK8Bgq05vke1
+         EIns2Y9tju5gctVp3dKjb+nRCn1IMeDFhwAebnpWqYrMkIuIew9jiaRRenPEZc3SaF2p
+         rAuExB7kKotcnHSBhaQ+gnxjD5oKBF2UuUKQIAnR+eVEVYull6J4D2AIGUeuqEzEZwEz
+         NXhiS6i6VcDkZMNH5jNgxZMLaU/fSOa5piqMD8uFMUTXjeZhUPCfKw49mkybAQ5fNYIY
+         VGnQ==
+X-Gm-Message-State: AOAM532nqqYI10TMKb5uafm+r43+wZcPhDprcPXGTdQS74FL0NwtCljD
+        qmd9NQTusISzRpP2S6l/+aP/DQkb6qqDxniCJh50Sg==
+X-Google-Smtp-Source: ABdhPJzuhcxaS2sQ+qP2XuyzDDaW9wET+IM6k8IAttgmQzrnqgR5umhTtP9xE3TkKRLiUwaLFRcOhflSQlq/XZT5vwM=
+X-Received: by 2002:a25:6b51:: with SMTP id o17mr9577028ybm.149.1627594253432;
+ Thu, 29 Jul 2021 14:30:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210727001252.1287673-1-jiang.wang@bytedance.com>
- <20210727001252.1287673-3-jiang.wang@bytedance.com> <6100363add8a9_199a412089@john-XPS-13-9370.notmuch>
- <CAM_iQpVedTzRbf-bC7WuGMFYF=qnUxbnUdqJ9+FaxrTAn5DkTw@mail.gmail.com> <6101a56bf2a11_1e1ff620813@john-XPS-13-9370.notmuch>
-In-Reply-To: <6101a56bf2a11_1e1ff620813@john-XPS-13-9370.notmuch>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 29 Jul 2021 14:27:12 -0700
-Message-ID: <CAM_iQpXiqhfL9M04x1hvJ_6zCCUoDAv1_ywysu=O7wnCUuJaTw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 2/5] af_unix: add unix_stream_proto for sockmap
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jiang Wang <jiang.wang@bytedance.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "Cong Wang ." <cong.wang@bytedance.com>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        xieyongji@bytedance.com, chaiwen.cc@bytedance.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-2-johan.almbladh@anyfinetworks.com> <ede57ee2-a975-b98c-5978-102280a77d8c@fb.com>
+In-Reply-To: <ede57ee2-a975-b98c-5978-102280a77d8c@fb.com>
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Date:   Thu, 29 Jul 2021 23:30:42 +0200
+Message-ID: <CAM1=_QSnRvN=rW3W79TCoNe38pgQ4-5Dmu4uRWCV5hqX4nwE_Q@mail.gmail.com>
+Subject: Re: [PATCH 01/14] bpf/tests: Add BPF_JMP32 test cases
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Johan Almbladh <johan.almbladh@anyfinetworks.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tony Ambardar <Tony.Ambardar@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 11:44 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
+On Thu, Jul 29, 2021 at 12:31 AM Yonghong Song <yhs@fb.com> wrote:
+> > +     /* BPF_JMP32 | BPF_JGT | BPF_X */
+> > +     {
+> > +             "JMP32_JGT_X",
+> > +             .u.insns_int = {
+> > +                     BPF_ALU32_IMM(BPF_MOV, R0, 0xfffffffe),
+> > +                     BPF_ALU32_IMM(BPF_MOV, R1, 0xffffffff),
+> > +                     BPF_JMP32_REG(BPF_JGT, R0, R1, 1),
 >
-> Cong Wang wrote:
-> > On Tue, Jul 27, 2021 at 9:37 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > Do we really need an unhash hook for unix_stream? I'm doing some testing
-> > > now to pull it out of TCP side as well. It seems to be an artifact of old
-> > > code that is no longer necessary. On TCP side at least just using close()
-> > > looks to be enough now.
-> >
-> > How do you handle the disconnection from remote without ->unhash()?
->
-> Would close() not work for stream/dgram sockets?
+> Maybe change the offset from 1 to 2? Otherwise, this may jump to
+>    BPF_JMP32_REG(BPF_JGT, R0, R1, 1)
+> which will just do the same comparison and jump to BTT_EXIT_INSN()
+> which will also have R0 = 0xfffffffe at the end.
 
-close() is called when the local closes the sockets, but when the remote
-closes or disconnects it, unhash() is called. This is why TCP calls unhash()
-to remove the socket from established socket hash table. unhash() itself
-might not make much sense for AF_UNIX as it probably does not need a
-hash table to track established ones, however, the idea is the same, that
-is, we have to handle remote disconnections here.
-
-Thanks.
+You are right. All BPF_X versions should have the first jump offset
+incremented by one to account for the extra MOV that is not present in
+the BPF_K version of the test. I'll correct it.
