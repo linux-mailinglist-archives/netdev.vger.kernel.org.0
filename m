@@ -2,117 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FCE3DA126
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E0A3DA11F
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235966AbhG2Kg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 06:36:28 -0400
-Received: from smtp-out1.suse.de ([195.135.220.28]:40160 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233273AbhG2Kg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:36:27 -0400
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 508A0223DB;
-        Thu, 29 Jul 2021 10:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1627554983;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UkKnqVbw14P1zZ1afK/03fijXFZbWicFe7fyoa6bfnY=;
-        b=pwTsly5mnrizCEq06N5ukXErKPn6Gc1C4FWAemD4tE4rdrKSAD7WEsJBIsy8JMWoICKPro
-        YUD+rdsGqthszKzibpdDw9PZmLm6K7z+/nJcnH3/9RbXzkKL1yBN2iLF4qJdxbzSEE22IX
-        Yy8hsiRj4qt+y/wj0C71RSUrfiRJOCs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1627554983;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UkKnqVbw14P1zZ1afK/03fijXFZbWicFe7fyoa6bfnY=;
-        b=oD2Z+sefoAAeNVxRJnEQBL4v50NCmrVZt9d8xH9i0feek4vyCIM8VXMg7aRjFLf8nzGBrz
-        j9JufWGGGCZMyACA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 36ED5A3B8C;
-        Thu, 29 Jul 2021 10:36:23 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id D7134DA7AF; Thu, 29 Jul 2021 12:33:37 +0200 (CEST)
-Date:   Thu, 29 Jul 2021 12:33:37 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH 47/64] btrfs: Use memset_after() to clear end of struct
-Message-ID: <20210729103337.GS5047@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Keith Packard <keithpac@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
-References: <20210727205855.411487-1-keescook@chromium.org>
- <20210727205855.411487-48-keescook@chromium.org>
- <20210728094215.GX5047@twin.jikos.cz>
- <202107281455.2A0753F5@keescook>
+        id S236000AbhG2Keb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 06:34:31 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:35095 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232054AbhG2Ke3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:34:29 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BF350580CD8;
+        Thu, 29 Jul 2021 06:34:26 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 29 Jul 2021 06:34:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=rZVUw9pgoUdhW+JWJZ3Hk75t5pQ
+        SA6lpVEQ51FpxcxI=; b=Q27O/Jk/qRHVQGN6GeFY+jRt2URH60oKQYPW/A5hIkk
+        mjQEJMTLuiKPDUwNoxKheQ4tX4IBrL9HBjOf8A2DUkLmuL4TEqk8ivC72/Q06jN3
+        eE9f0NaUtcqnosZLQVLtcxneRxfn4iAJM95DiPHgmrqMAz2scB8VtdyT1ijSUNQC
+        JUPRcr1tDBVACDz7cNCRalJCFIWK0g0akcGKInArTJD86nYIYjlBjX6+7IfTCW9a
+        25GVIfidIbP6KVgoAsUUsWGoxMz0cE4sbnAv3cXQeCl/Qwjw/56ddwSyyEUctpXA
+        dG3XjSqIY+eHZmN8RwWZEQ/wEhmdz0PV0uv4xu7oQbw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=rZVUw9
+        pgoUdhW+JWJZ3Hk75t5pQSA6lpVEQ51FpxcxI=; b=V1c69sO71JXrJpZlvn/kDd
+        2kSL2ND06sF4SdtQKX0hpYQ3TorQn/1dIIQJkfY0ZJl3ibr2LZ+QrIhUvVERJCfJ
+        9BPOV8FxiSpgCsS3ck1OR9cqdjnxxODq+4NQlbDKQlqV3ma0pwpVUHBVqYOyiaT5
+        zrYBpHaW0rMZkBgKzgGHpzK7wkIbrhNCJY/EGiRFYc0+CGBuN98ePs3qe8OXdTIB
+        vAmxWVXJ61003OMYlTpyQus9UPdhkh7DQ7JesL35wazvyHjVAf88nYfsfz0MjM2Y
+        1w/yfzHOvrdHciPUhFI4Enm3UygRNjJQpb7yEh3YHtDTPi0J5W0Wt3GjDclsxxbQ
+        ==
+X-ME-Sender: <xms:MYQCYTwUs5t13gEbuWaW2ydmCBCYzp1K7G0duvYUQNrFTQSueKLPqw>
+    <xme:MYQCYbShsyZFgX8c0Y4Gzag6awCW9Q8WmwA-BNO3AiBQjIghHBp9HmAfdi1FKpkgt
+    kQ3SnFln1GgjA>
+X-ME-Received: <xmr:MYQCYdXpE_-Q5v-eY_ci5--tHpR734sQ3SYizU7JjEyvpC_EQ8KC6dDSIQBIv3CdRbe313Z2xdW7Hrhx_e2b6t0zNNoYtu61>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrhedugddvudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttdortd
+    dttddvnecuhfhrohhmpefirhgvghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeen
+    ucggtffrrghtthgvrhhnpedvfeeggeehudevuedvffdvtdevffeukedvheduuefhveegue
+    dvhfetveduheejffenucffohhmrghinhepsghsshdrnhgvthenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:MYQCYdhZzwriJ1isIAdiN-xrP4pgHYbJRYxOeMWp1_TBZOk31nCuZQ>
+    <xmx:MYQCYVAVZUQaN3GkbKzfzxkaZN3Yu0hff7PSPnhMyE7NN-688JRiaQ>
+    <xmx:MYQCYWKP1nb-Sfr2D-Txg4-mKd0_XgVot4ZjJwpYTR4Fb61h4-3o1w>
+    <xmx:MoQCYdaaT1JR38lvWKFbniN8ojnxOke75PwZ3wrYsEmLdmP-jp8hbA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 29 Jul 2021 06:34:25 -0400 (EDT)
+Date:   Thu, 29 Jul 2021 12:34:22 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Nguyen Dinh Phi <phind.uet@gmail.com>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH V2] cfg80211: Fix possible memory leak in function
+ cfg80211_bss_update
+Message-ID: <YQKELjKuAQsjmpLY@kroah.com>
+References: <20210628132334.851095-1-phind.uet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202107281455.2A0753F5@keescook>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20210628132334.851095-1-phind.uet@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 02:56:31PM -0700, Kees Cook wrote:
-> On Wed, Jul 28, 2021 at 11:42:15AM +0200, David Sterba wrote:
-> > On Tue, Jul 27, 2021 at 01:58:38PM -0700, Kees Cook wrote:
-> > > In preparation for FORTIFY_SOURCE performing compile-time and run-time
-> > > field bounds checking for memset(), avoid intentionally writing across
-> > > neighboring fields.
-> > > 
-> > > Use memset_after() so memset() doesn't get confused about writing
-> > > beyond the destination member that is intended to be the starting point
-> > > of zeroing through the end of the struct.
-> > > 
-> > > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > > ---
-> > >  fs/btrfs/root-tree.c | 5 +----
-> > >  1 file changed, 1 insertion(+), 4 deletions(-)
-> > > 
-> > > diff --git a/fs/btrfs/root-tree.c b/fs/btrfs/root-tree.c
-> > > index 702dc5441f03..ec9e78f65fca 100644
-> > > --- a/fs/btrfs/root-tree.c
-> > > +++ b/fs/btrfs/root-tree.c
-> > > @@ -39,10 +39,7 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
-> > >  		need_reset = 1;
-> > >  	}
-> > >  	if (need_reset) {
-> > > -		memset(&item->generation_v2, 0,
-> > > -			sizeof(*item) - offsetof(struct btrfs_root_item,
-> > > -					generation_v2));
-> > > -
-> > 
-> > Please add
-> > 		/* Clear all members from generation_v2 onwards */
-> > 
-> > > +		memset_after(item, 0, level);
+On Mon, Jun 28, 2021 at 09:23:34PM +0800, Nguyen Dinh Phi wrote:
+> When we exceed the limit of BSS entries, this function will free the
+> new entry, however, at this time, it is the last door to access the
+> inputed ies, so these ies will be unreferenced objects and cause memory
+> leak.
+> Therefore we should free its ies before deallocating the new entry, beside
+> of dropping it from hidden_list.
 > 
-> Perhaps there should be another helper memset_starting()? That would
-> make these cases a bit more self-documenting.
+> Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+> ---
+> V2:	- Add subsystem to the subject line.
+> 	- Use bss_ref_put function for better clean-up dynamically allocated
+> 	cfg80211_internal_bss objects. It helps to clean relative hidden_bss.
+> 
+>  net/wireless/scan.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+> index f03c7ac8e184..7897b1478c3c 100644
+> --- a/net/wireless/scan.c
+> +++ b/net/wireless/scan.c
+> @@ -1754,16 +1754,14 @@ cfg80211_bss_update(struct cfg80211_registered_device *rdev,
+>  			 * be grouped with this beacon for updates ...
+>  			 */
+>  			if (!cfg80211_combine_bsses(rdev, new)) {
+> -				kfree(new);
+> +				bss_ref_put(rdev, new);
+>  				goto drop;
+>  			}
+>  		}
+> 
+>  		if (rdev->bss_entries >= bss_entries_limit &&
+>  		    !cfg80211_bss_expire_oldest(rdev)) {
+> -			if (!list_empty(&new->hidden_list))
+> -				list_del(&new->hidden_list);
+> -			kfree(new);
+> +			bss_ref_put(rdev, new);
+>  			goto drop;
+>  		}
+> 
+> --
+> 2.25.1
 
-That would be better, yes.
+Did this change get lost somewhere?
 
-> +		memset_starting(item, 0, generation_v2);
+thanks,
 
-memset_from?
+greg k-h
