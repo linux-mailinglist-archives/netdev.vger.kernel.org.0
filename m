@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 876B73D9DC0
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 08:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD5E3D9DD0
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 08:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234312AbhG2Gjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 02:39:41 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41816 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234079AbhG2Gjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 02:39:40 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1627540777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Asgvin5S1f9dEiJluCRzPv1N8ZNVLVa60pZqyczXVbM=;
-        b=Lcop8+qnCibsUhX0pcxLxiheAielV6ODvbynPyoUm/pjkbLVn72RJmvP0lFXPqqGm+7A9L
-        TEfjUXMj5Bnpq7Ykj+aawHgqu8Xt2/wNTay1urEmQ6dzHpmMSF8iIa4q+4rX4kLM6SpH20
-        cVQEwp07AT+WGKvEbDMJU4qUDdejMOf10Qwz1x/BNE2ebgLqNTxqVx8g7nFZFmmtsdx+mj
-        GUrX+gTNkvtt4xFSN6CF5IDfawnprbYXtUg3pEv966bDn1SeirrjqTyaCd8lU0hASPYyVh
-        GB7gEJaIMUlU2Qt6P/OowSE8971z1yF1/peIHjNxpwYjieW7wCXSx3bBJGVWFA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1627540777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Asgvin5S1f9dEiJluCRzPv1N8ZNVLVa60pZqyczXVbM=;
-        b=xBnpF0c92pjQlMiObiJd/+Kp7gjjpGvCfyZThHtwAFGb2eFGhDPpBYS/Zt4imh3JO5/c3f
-        k6Sf+FA6hqjo5yDA==
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Cc:     andrew@lunn.ch, anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
-        davem@davemloft.net, dvorax.fuxbrumer@linux.intel.com,
-        f.fainelli@gmail.com, jacek.anaszewski@gmail.com, kuba@kernel.org,
-        linux-leds@vger.kernel.org, netdev@vger.kernel.org, pavel@ucw.cz,
-        sasha.neftin@intel.com, vinicius.gomes@intel.com,
-        vitaly.lifshits@intel.com
-Subject: Re: [PATCH net-next 5/5] igc: Export LEDs
-In-Reply-To: <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
-References: <YP9n+VKcRDIvypes@lunn.ch>
- <20210727081528.9816-1-michael@walle.cc>
- <20210727165605.5c8ddb68@thinkpad>
- <c56fd3dbe1037a5c2697b311f256b3d8@walle.cc>
- <20210727172828.1529c764@thinkpad>
- <8edcc387025a6212d58fe01865725734@walle.cc>
- <20210727183213.73f34141@thinkpad>
- <25d3e798-09f5-56b5-5764-c60435109dd2@gmail.com>
-Date:   Thu, 29 Jul 2021 08:39:35 +0200
-Message-ID: <87k0l9r5co.fsf@kurt>
+        id S234339AbhG2GrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 02:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234079AbhG2GrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 02:47:23 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F973C061757
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 23:47:20 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id y4so4784903ilp.0
+        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 23:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=eao//OsP6cSr6GKd8L7vo+eJ14NpICiKg2DYYKkeyGY=;
+        b=YM+lxX2iK/At5v+fSELdaUWzHdInnJ5z+rczTJVW2CWlcNuU1ZV/8MGqc+Xsy8fOBf
+         BWUVzyzoidByT5q49kJOwjMsHvSH8WFO9wUspDFvznQ2PsvcFgCkf1RDSaeFTwC2z4VU
+         +rYFYvfZjeY49EUDzpBL6i7g4Lne+Ubql8s6Voed0ooRvwK/i4Xx7OxqGrBO5fveJjfm
+         K7o+85RwT6FOTCkf5vUl2KfK38ADJcMG6mFSAB+fI2Y4BNPOtMqkelWsBcRj75hsyN82
+         BlnaaRmwwCIFlUUw9NUzT6eo8V9J4GP++E6/Wyn6hxi6fU47oJHCPjCThHc26jh5bRaQ
+         KAAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=eao//OsP6cSr6GKd8L7vo+eJ14NpICiKg2DYYKkeyGY=;
+        b=gLsE64Wf0sW/YCxtrBI0iNsUdnbjilglUXaj9/awCPp5rrGgs9obFH9VufmVBp9u8t
+         JwCPqFY3UvztRBwyD8P/89/YEEjMcN5uF849yM1H+8Xds+7ZxNa9a3FI1EtYOFzUk+gE
+         IM44nCZ/jGsEx4RSiObn03VJvX9H3ahQMLsvyCBL3TLB9DoLQsfvUUj3OolPF0JPxoYl
+         g+VA9zGNZmByxluS7wwocjDb8QupkRZvNrlD7T0IX9C6hV22JAdbasBz42agjCvVACeV
+         h+gBXbdUbh/vhXsLlFrH8JcmE0jLmBpu7O+2tfvhvQ2GmBd8Il8bqwRP0+L9K9V3n9lk
+         CPvA==
+X-Gm-Message-State: AOAM533zNy2ouLcvBUEf6wJsPYRV7bInm6MAXgU98aGFrmvIqxJI2sGW
+        FOa1evQ5gjCBUAnGHzZF3xuY+yvBh80Tkd+nmrPW2w==
+X-Google-Smtp-Source: ABdhPJyqZyzu4Y3EVzk9nBehU7aUQd6Z1swoutv1tb4BKQZh2SMDR7OUdYIJrMje2q98r5i6Wf9Gu6JOPR2Zp+2a4ZI=
+X-Received: by 2002:a92:9412:: with SMTP id c18mr1848147ili.38.1627541239754;
+ Wed, 28 Jul 2021 23:47:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+References: <20210726194603.14671-1-gerhard@engleder-embedded.com>
+ <20210726194603.14671-6-gerhard@engleder-embedded.com> <CAL_JsqJC19OsTCa6T98m8bOJ3Z4jUbaVO13MwZFK78XPSpoWBg@mail.gmail.com>
+ <CANr-f5yW4sob_fgxhEafHME71QML8K-+Ka5AzNm5p3A0Ktv02Q@mail.gmail.com>
+ <CAL_JsqK9OvwicCbckvpk4CMWbhcP8yDBXAW_7CmLzR__-fJf0Q@mail.gmail.com>
+ <CANr-f5zWdFAYAteE7tX5qTvT4XMZ+kxaHy03=BnRxFbQLt3pUg@mail.gmail.com>
+ <43958f2b-6756-056a-b2fa-cb8f6d84f603@xilinx.com> <CANr-f5xu=xHn7CGve3=Msd8CEcoDujQzSYSNQ2Zbh7NOvyXFYA@mail.gmail.com>
+ <839bdf26-6aef-7e05-94b9-78c0d2061bf9@xilinx.com> <CANr-f5xJbTYa-jPzVMPcAV2Un+POBn24gd+604rzPt36RkRcDQ@mail.gmail.com>
+ <d763d777-f258-7390-a85a-6cae098102eb@xilinx.com>
+In-Reply-To: <d763d777-f258-7390-a85a-6cae098102eb@xilinx.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Thu, 29 Jul 2021 08:47:08 +0200
+Message-ID: <CANr-f5yuZ0t782fX_6w3ksKXVdObGWxFHA9Lg+tUQwrXkUh2ng@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] arm64: dts: zynqmp: Add ZCU104 based TSN endpoint
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-On Wed Jul 28 2021, Heiner Kallweit wrote:
-> Did we come to any conclusion?
+On Thu, Jul 29, 2021 at 7:22 AM Michal Simek <michal.simek@xilinx.com> wrot=
+e:
+> On 7/28/21 10:51 PM, Gerhard Engleder wrote:
+> > On Wed, Jul 28, 2021 at 12:59 PM Michal Simek <michal.simek@xilinx.com>=
+ wrote:
+> >>>> In past we said that we won't be accepting any FPGA description in
+> >>>> u-boot/linux projects. I don't think anything has changed from that =
+time
+> >>>> and I don't want to end up in situation that we will have a lot of
+> >>>> configurations which none else can try and use.
+> >> You have to share to customers bitstream. Likely also boot.bin with
+> >> PS/PL configuration and other files in it. That's why it will be quite
+> >> simple to also share them full DT or DT overlay just for your IP in th=
+e
+> >> same image.
+> >
+> > That's possible of course.
+> >
+> >> Till now I didn't hear any strong argument why this should be accepted=
+.
+> >
+> > I want to try a new argument:
+> >
+> > For new bindings a schema is used. The goal is to ensure that the bindi=
+ng
+> > schema and the driver fit together. The validation chain is the followi=
+ng:
+> > 1) The binding schema is used to validate the device tree.
+> > 2) The device tree is used to "validate" the driver by booting.
+> >
+> > So the kernel tree needs to contain a device tree which uses the bindin=
+g
+> > to build up the complete validation chain. The validation of the driver=
+ against
+> > the binding is not possible without a device tree. The only option woul=
+d be
+> > to compare driver and binding manually, which is error prone.
+> >
+> > If device trees with FPGA descriptions are not allowed in the kernel tr=
+ee, then
+> > the kernel tree will never contain complete validation chains f=C3=BCr =
+FPGA based
+> > IPs. The validation of bindings for FPGA based IPs has to rely on devic=
+e trees
+> > which are maintained out of tree. It is possible/likely that schema
+> > validation is
+> > not done out of tree. As a result it is more likely that binding and
+> > driver do not
+> > fit together for FPGA based IPs. In the end the quality of the support =
+for FPGA
+> > based IPs would suffer.
+> >
+> > I suggest allowing a single device tree with FPGA descriptions for a bi=
+nding
+> > of FPGA based IPs. This will build up the complete validation chain in =
+the
+> > kernel tree and ensures that binding and driver fit together. This sing=
+le device
+> > tree would form the reference platform for the FPGA based IP.
 >
-> My preliminary r8169 implementation now creates the following LED
-> names:
-
-Is that implementation somewhere available?
-
+> This is good theory but the only person who can do this validation is
+> you or your customer who is interested in TSN. I am doing this for quite
+> a long time and even people are giving me commitments that they will
+> support the whole custom board but they stop to do at some point and
+> then silently disappear. Then it is up to me to deal with this and I
+> really don't want to do it.
+> When your driver is merged you should start to do regression testing
+> against linux-next, rc versions. When you convince me that you are
+> regularly doing this for 2 years or so we can restart this discussion.
 >
-> lrwxrwxrwx 1 root root 0 Jul 26 22:50 r8169-led0-0300 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/r8169-led0-0300
-> lrwxrwxrwx 1 root root 0 Jul 26 22:50 r8169-led1-0300 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/r8169-led1-0300
-> lrwxrwxrwx 1 root root 0 Jul 26 22:50 r8169-led2-0300 -> ../../devices/pci0000:00/0000:00:1d.0/0000:03:00.0/net/enp3s0/r8169-led2-0300
->
-> I understood that LEDs should at least be renamed to r8169-0300::link-0
-> to link-2 Is this correct? Or do we have to wait with any network LED support
-> for a name discussion outcome?
->
-> For the different LED modes I defined private hw triggers (using trigger_type
-> to make the triggers usable with r8169 LEDs only). The trigger attribute now
-> looks like this:
->
-> [none] link_10_100 link_1000 link_10_100_1000 link_ACT link_10_100_ACT link_1000_ACT link_10_100_1000_ACT
->
-> Nice, or? Issue is just that these trigger names really should be made a
-> standard for all network LEDs. I don't care about the exact naming, important
-> is just that trigger names are the same, no matter whether it's about a r8169-
-> or igc- or whatever network chip controlled LEDs.
+> Till that time you can simply keep rebasing one patch with your DT on
+> the top which is quite easy to do and you get all
+> functionality/advantages you are asking about above.
 
-Your above trigger definitions are OK for the igc as well. Except it
-supports up to 2500 Mbit/s. For igc there's also more triggers available
-such as filter activity, paused and spd mode.
+Ok, I give up.
 
-However, what about the cross LED settings which are common to all LEDs?
-The igc has one attribute to control the blink rate of all three LEDs.
-
->
-> And I don't have a good solution for initialization yet. LED mode is whatever
-> BIOS sets, but initial trigger value is "none". I would have to read the
-> initial LED control register values, iterate over the triggers to find the
-> matching one, and call led_trigger_set() to properly set this trigger as
-> current trigger.
-
-Yes, there needs to be a way to determine the default state.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmECTScTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRB5KluBy5jwprg7D/9A0BV/ZMMH5S94YRumqEoCp1o0OZmb
-Y0d3TCP14JK0fxEQgad1PRTjNImnWoz80FxGhMquL66YRiHoZfW35Sr32cJwx4ST
-iPSW1lc40CiWA83x3UXZYc4zjLd4ofP9eRp6yDgrYRBllnCTjqGaeEcrj3ZeDIR5
-Cv1CDMIb/MCcfAxVcRVs2N5w3gjfVI9q/vVolCqqf21ic4rtdIIhn+MaCwb9RQl4
-rYw8x5eZV11z4vlNsey001fOPZqg1h7Etx/bUY+VbJHMpBd+DoakYAYmQWVaWptO
-0b49xLaZIpTBMYTN2bwJOXlwwn9VctNwhmlRUA6/tIqTd6Gaz4p6YN83k83cHh4G
-ECZ4gJiMyyqZmsjv8FvM6PVQHaajUbjj4G2Z9VLlRHERkQCxbrU4QyoyvwmEPU7u
-+qKKgarE6NcCLIQQLW2r6h3V9wXiHophSOqsJYRNsx+d5YpMt/Bd69R6XPJXs+3V
-1A0hsFs42znXIFSkfWDCDabIfauFmk7NX2oK0hTlJBRA4QPw0iXFNNvZoK7GRmCd
-wT1eY3qq5HKePov0ExI2eg/ramujKUaXZbZDfoiYSQhD0r2xmQSz7KRsFbUPlKU9
-NDlOuZzsVCkjrJNu5N9ekLN4QovWTjm4aQsq55kUcGUzJkjxY+K6bxp6HVEDCcxO
-eDbnhOFVmoH6uw==
-=cvzA
------END PGP SIGNATURE-----
---=-=-=--
+Gerhard
