@@ -2,132 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8700A3DA412
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AB73DA45E
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237561AbhG2N1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 09:27:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51792 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237528AbhG2N1C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 09:27:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ve/KL1lU44TvwHzfefIp6JxgDdI8qbOUpEiu1gJ+fiU=; b=Z7OaNwnYWxUZ3TTXmSx0cznR3c
-        Tr03VFm1LyFn5euqXGtQ0L5TuicEeg/xYF/h0QERCRdUo0H1TUsG8SY+YtaSAEWtN4vJfljqHoJfD
-        w0v2zUo9xqF0mFQC94/UYFqBeyjhaHIp45kkw+xflO/G8x5I2VgAH/HoN5kewLZkNDD0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m963q-00FJdk-4G; Thu, 29 Jul 2021 15:26:54 +0200
-Date:   Thu, 29 Jul 2021 15:26:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        p.zabel@pengutronix.de, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        robert.marko@sartura.hr, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH 1/3] net: mdio-ipq4019: Add mdio reset function
-Message-ID: <YQKsnqWCfoTpTuxI@lunn.ch>
-References: <20210729125358.5227-1-luoj@codeaurora.org>
+        id S238017AbhG2Nah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 09:30:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237957AbhG2NaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 09:30:09 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8B1C06179F
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 06:30:04 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id s48so10220517ybi.7
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 06:30:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=anyfinetworks-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0Qz9La3QPRMndTjsVYo9vnU/gF+lgGUUdSa/ncd8lBk=;
+        b=yuwYCym4ZCkUrjAr3kGI7Zwpk9UdTA6kptMprZ7yZVZeVD1JU4YjO07xP0jNSuSS81
+         wDOmj4pxIN6tYlRAzi/FaabfoDFunVVKscYb5n8c0EFEZZcLmq9zQQ9M8rlkzafAi82M
+         1iRebWSFOqQtH2dMYfOHWZ7z5gZbFvefCxV9txdXz4rslX1hnxB/MIenBOyBYOgZLCvu
+         aTktHQjUL7j9PJ90feDGnY0TDjniT8Tfy2akKN1Lzea3Od1zUQp1nCnWLlL/+JOmZ0Zh
+         OPJCPoArD8Zmr1tSNMRrEM5CjnMJqNHsY0FjozL6aoUa6vKkVWkMT1vT9WiOWTt3loKp
+         u/Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0Qz9La3QPRMndTjsVYo9vnU/gF+lgGUUdSa/ncd8lBk=;
+        b=hX37n7ROdu0KBHdpyEuMdgbshZB/xNQH31FxdAx5H0oIbcPBxrWs8M1of2C55wwxTq
+         0DGbSR6efVRHyjjhC7S+OWw9/D+jA3ptUP8rdeMbxWwEFfkrfRFgt0fFLz/w2cWHBkKi
+         PnXG6AzXjmtGgwkObP7NuHycIpeeL/AmYrlyVpQzD8f7adU1ZBBnvJk0oxuAiLRxLeQM
+         LEHIhenbrbkzUe5hxdE/DoMuLyvw9SpHsjDF9gVusKbCNjj0IaepUI26Kf/nqnFS4ubG
+         c9GMFdIQymaEgmYJnx0QV1D5gNYQhOgucm6qcGltA1BZIJT8sOEh0cXZm3JnAiEy7o3y
+         UF6Q==
+X-Gm-Message-State: AOAM532wu8fKeP3O09PIh/CP/bd/4y7WnbzBczPXQIiSdoySlrNTKXIb
+        yMa+Xa4r8TI2NeJIMQ8LwDpPnelwRdnyF2KYnlLdAA==
+X-Google-Smtp-Source: ABdhPJxDNB+xboKdpjjX2tqT4JaA88pbPliST3MyNExL63yz6P083Fk3EPy5DbC/pEXFSKrJgyvieiwFRMc5o98+tjs=
+X-Received: by 2002:a25:380c:: with SMTP id f12mr7088014yba.208.1627565403514;
+ Thu, 29 Jul 2021 06:30:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210729125358.5227-1-luoj@codeaurora.org>
+References: <20210728170502.351010-1-johan.almbladh@anyfinetworks.com>
+ <20210728170502.351010-12-johan.almbladh@anyfinetworks.com> <deee75a2-a4ce-303c-981a-cd5b6e8cecdf@fb.com>
+In-Reply-To: <deee75a2-a4ce-303c-981a-cd5b6e8cecdf@fb.com>
+From:   Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Date:   Thu, 29 Jul 2021 15:29:52 +0200
+Message-ID: <CAM1=_QSDhFQ6EBOi5F3cM9xEoxNFpX_4uCM71cUiOaurRpH0iw@mail.gmail.com>
+Subject: Re: [PATCH 11/14] bpf/tests: Add test for 32-bit context pointer
+ argument passing
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Tony Ambardar <Tony.Ambardar@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Luo
+On Thu, Jul 29, 2021 at 2:09 AM Yonghong Song <yhs@fb.com> wrote:
+> On 7/28/21 10:04 AM, Johan Almbladh wrote:
+> > On a 32-bit architecture, the context pointer should occupy the low
+> > half of R0, and the other half should be zero.
+>
+> I think this is probably true. The word choice "should" indicates
+> this doesn't need to be the case if people choose a different
+> implementation, right?
+>
 
-For a patchset, netdev wants to see a patch 0/X which describes the
-big picture. What is the patchset as a whole doing.
-
-> +static int ipq_mdio_reset(struct mii_bus *bus)
-> +{
-> +	struct ipq4019_mdio_data *priv = bus->priv;
-> +	struct device *dev = bus->parent;
-> +	struct gpio_desc *reset_gpio;
-> +	u32 val;
-> +	int i, ret;
-> +
-> +	/* To indicate CMN_PLL that ethernet_ldo has been ready if needed */
-> +	if (!IS_ERR(priv->eth_ldo_rdy)) {
-> +		val = readl(priv->eth_ldo_rdy);
-> +		val |= BIT(0);
-> +		writel(val, priv->eth_ldo_rdy);
-> +		fsleep(QCA_PHY_SET_DELAY_US);
-> +	}
-> +
-> +	/* Reset GEPHY if need */
-> +	if (!IS_ERR(priv->reset_ctrl)) {
-> +		reset_control_assert(priv->reset_ctrl);
-> +		fsleep(QCA_PHY_SET_DELAY_US);
-> +		reset_control_deassert(priv->reset_ctrl);
-> +		fsleep(QCA_PHY_SET_DELAY_US);
-> +	}
-
-What exactly is being reset here? Which is GEPHY?
-
-The MDIO bus master driver should not be touching any Ethernet
-PHYs. All it provides is a bus, nothing more.
-
-> +
-> +	/* Configure MDIO clock frequency */
-> +	if (!IS_ERR(priv->mdio_clk)) {
-> +		ret = clk_set_rate(priv->mdio_clk, QCA_MDIO_CLK_RATE);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = clk_prepare_enable(priv->mdio_clk);
-> +		if (ret)
-> +			return ret;
-> +	}
-
-> +
-> +	/* Reset PHYs by gpio pins */
-> +	for (i = 0; i < gpiod_count(dev, "phy-reset"); i++) {
-> +		reset_gpio = gpiod_get_index_optional(dev, "phy-reset", i, GPIOD_OUT_HIGH);
-> +		if (IS_ERR(reset_gpio))
-> +			continue;
-> +		gpiod_set_value_cansleep(reset_gpio, 0);
-> +		fsleep(QCA_PHY_SET_DELAY_US);
-> +		gpiod_set_value_cansleep(reset_gpio, 1);
-> +		fsleep(QCA_PHY_SET_DELAY_US);
-> +		gpiod_put(reset_gpio);
-> +	}
-
-No, there is common code in phylib to do that.
-
->  static int ipq4019_mdio_probe(struct platform_device *pdev)
->  {
->  	struct ipq4019_mdio_data *priv;
->  	struct mii_bus *bus;
-> +	struct resource *res;
->  	int ret;
->  
->  	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
-> @@ -182,14 +244,23 @@ static int ipq4019_mdio_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  
->  	priv = bus->priv;
-> +	priv->eth_ldo_rdy = IOMEM_ERR_PTR(-EINVAL);
->  
->  	priv->membase = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(priv->membase))
->  		return PTR_ERR(priv->membase);
->  
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-> +	if (res)
-> +		priv->eth_ldo_rdy = devm_ioremap_resource(&pdev->dev, res);
-> +
-> +	priv->reset_ctrl = devm_reset_control_get_exclusive(&pdev->dev, "gephy_mdc_rst");
-> +	priv->mdio_clk = devm_clk_get(&pdev->dev, "gcc_mdio_ahb_clk");
-
-You probably want to use devm_clk_get_optional().
-
-    Andrew
+Right. To the best of my knowledge this is true. I can change the
+wording to "will" to remove the ambiguity.
