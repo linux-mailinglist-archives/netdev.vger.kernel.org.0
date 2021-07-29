@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AB63DA14A
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68F253DA15B
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236745AbhG2Kkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 06:40:53 -0400
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:34506
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236320AbhG2Kkp (ORCPT
+        id S237013AbhG2KlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 06:41:21 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:47798
+        "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236284AbhG2Kkp (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:40:45 -0400
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id A33173F051
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 724863F10E
         for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 10:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
         s=20210705; t=1627555241;
-        bh=So1uUDkE721+BEqMeRM8NOIaRYftuFanUkfPQdOA99A=;
+        bh=Cti8DGqbNI8YPSuGsMvGoiLdXe5FLuXImkkJsU3HkS0=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=u0jjrKClB9lAfxEnC3BPeK/21mXBBAY/dUsu55HIiip9FeWVwDD9hLpvpNrV2p8WY
-         A+V4z+55VhIP8Rt1QLZwB+0YwbPjOBPsJCpgKdD5+RdCFezYei+C3nCGpQGco5aVBJ
-         FDVCZX0W2yHfcRiICYN5ZFgWOekdrDht67W8FVjkjwLfDywc2qMDtzAE7kf4hGOsXH
-         i581WHEd4bU9kRn+r7AFexTBXfHioAWLzJ8CNDyFL8wDnxK/Mg6q9jx31LEf1Ug8zQ
-         tMEN4X01kURbUR5kKZ4xI9+hRIKxPIQHyOCOyxH556XUZhU8LxJbnpR7GmMwaW5DIa
-         EIjImHCHsVlqw==
-Received: by mail-ej1-f70.google.com with SMTP id lu19-20020a170906fad3b029058768348f55so1847690ejb.12
+        b=f5A+RajiHfLk8wB2DyLPhBFhc9RkwBvXKx/WWTqFq5DD0TpG5TO/5JATW0U6TrlAs
+         VuJAHlSB/36DAUBtsLmGmCSvilO5mvu/KYBwZRwj5Bw9fCeI5Zlm41niNssE0insmk
+         9u7akXzfUgCvB7qNSz/sN6BVXpkddyNK13irLfKaA57Moch5+Z9ZflH5b75RM9z3K1
+         1dFn+t6+ZHVhJ/wVTACcziT/pNXgV2VoJZhOR4KyodfZf/Kiy/snG0SHfpZccc7fsA
+         /i6opkVnifNa8GH/0YjGBlZbndhSczJ0BzxLhvOG4CWGIkFz5aROslMJkFQ3uRGUJR
+         mWH43JvF656xA==
+Received: by mail-ed1-f71.google.com with SMTP id l10-20020aa7caca0000b02903b874f26036so2713080edt.20
         for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 03:40:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=So1uUDkE721+BEqMeRM8NOIaRYftuFanUkfPQdOA99A=;
-        b=Na99Gebqi/G0kQyIwmPLHrE2sNbXbt+EjABwS7IvZN+tqblYZcmkTnmc+OdkSeH/Bm
-         EIX39RT9voc3Do39IDLF4SMrNSftc7NwsrDKBuPhCTbmZpROilYAw/UkoMrkHc96/6JW
-         X/np99gv1zFmA7AE/NYnpV7qveYNL48wx2YfRhHxA62Pns6JHGRcdsNXWrss6FoTzJHE
-         q8+hdHleU9ZM4BvvWTFVL55GYXwqfiFnBoKhG0mixGHLHwdgp8X7viqPyy2C1jNfUTrr
-         rqNiZMrUpB5qq3K06bZlVyST9ocUVACH1Gz1M8IqHyMsLLOtJTUSz8HBPDvo47ndyk40
-         1oTQ==
-X-Gm-Message-State: AOAM531gRu/DbDkg+3n/NKj5fgi+IkKvSZ3HqNredA75ibJgk/lQW2oM
-        B+xShEICbPkIwVOf/wAGGLeG8jHMzs8MkzfTV2DmGIyRe8l/+6aCuycDInhSOUdHAyB+WGPYHYK
-        PgJzB8Ooa7B4imTNTWKAsKw3/J4o1NhuDbg==
-X-Received: by 2002:a05:6402:cb9:: with SMTP id cn25mr4576418edb.271.1627555240172;
-        Thu, 29 Jul 2021 03:40:40 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwg8gQFeBPTWOxeoK6KYjuQRUdToXFwmH6p9ZgcYdRRS/mw4BXtIUndBzQfGalBkLacI2jz9A==
-X-Received: by 2002:a05:6402:cb9:: with SMTP id cn25mr4576407edb.271.1627555240070;
-        Thu, 29 Jul 2021 03:40:40 -0700 (PDT)
+        bh=Cti8DGqbNI8YPSuGsMvGoiLdXe5FLuXImkkJsU3HkS0=;
+        b=F+M5QkFy1IyurQGUqBMzD20GvHkR94V9CJMW0t2Ae7jq8EtCJWnVoLsvFEENpcIxnT
+         wiVm5oLIyHCwQBvOrr5TCuYN7pf09Dp3vWvPFwaToR7mPumGtGkepLM1D4zPkOleljH2
+         dDLjkmCcmiEAZTqgXqdXJY+xZswAYU3sA8YkOT7QuabWUX8vOz7bHZcxOOwQAGle1qUT
+         R6aFh0SVfLgvAOqJivQbK9CMjMph1OTHPY2hsN7eW5MVnQIRJf5FxO3ccD1stpYN4oVs
+         MUkit01aGmi/3SfrFSwKKYoYJqPpVHdOd/290z12cYkczPC5NJUBZUg4JgXY4Tu+zVnf
+         KDqg==
+X-Gm-Message-State: AOAM53320w6VCxKH41oLBjlxPUtwpZs8Uakw1fxXomSqDnzrOCwNrcvM
+        Dj9sMoGocr+44nNllvo/18+I5Y9B1jL2ngZ3OlHex43IaxiBTBsqrzd86DdmCCT750KRKJwbLAa
+        6+1QXNORqsf7UPHQpfpTYj5aVUfx+baNbGQ==
+X-Received: by 2002:aa7:d342:: with SMTP id m2mr5302486edr.40.1627555241263;
+        Thu, 29 Jul 2021 03:40:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwjxgKl6WmnwX+WqFoKb6oCeo3LEsCBOoKuWEW0W2jjhEWMO4WBVPwCw/S6BOn4eM0m2lGmgg==
+X-Received: by 2002:aa7:d342:: with SMTP id m2mr5302475edr.40.1627555241166;
+        Thu, 29 Jul 2021 03:40:41 -0700 (PDT)
 Received: from localhost.localdomain ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id c14sm824475ejb.78.2021.07.29.03.40.38
+        by smtp.gmail.com with ESMTPSA id c14sm824475ejb.78.2021.07.29.03.40.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 03:40:39 -0700 (PDT)
+        Thu, 29 Jul 2021 03:40:40 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Mark Greer <mgreer@animalcreek.com>,
@@ -61,9 +61,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 05/12] nfc: virtual_ncidev: constify pointer to nfc_dev
-Date:   Thu, 29 Jul 2021 12:40:15 +0200
-Message-Id: <20210729104022.47761-6-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 06/12] nfc: nfcsim: constify drvdata (struct nfcsim)
+Date:   Thu, 29 Jul 2021 12:40:16 +0200
+Message-Id: <20210729104022.47761-7-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
 References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
@@ -73,27 +73,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtual_ncidev_ioctl() does not modify struct nfc_dev, so local variable
+nfcsim_abort_cmd() does not modify struct nfcsim, so local variable
 can be a pointer to const.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/nfc/virtual_ncidev.c | 2 +-
+ drivers/nfc/nfcsim.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nfc/virtual_ncidev.c b/drivers/nfc/virtual_ncidev.c
-index b914ab2c2109..2ee0ec4bb739 100644
---- a/drivers/nfc/virtual_ncidev.c
-+++ b/drivers/nfc/virtual_ncidev.c
-@@ -170,7 +170,7 @@ static int virtual_ncidev_close(struct inode *inode, struct file *file)
- static long virtual_ncidev_ioctl(struct file *flip, unsigned int cmd,
- 				 unsigned long arg)
- {
--	struct nfc_dev *nfc_dev = ndev->nfc_dev;
-+	const struct nfc_dev *nfc_dev = ndev->nfc_dev;
- 	void __user *p = (void __user *)arg;
+diff --git a/drivers/nfc/nfcsim.c b/drivers/nfc/nfcsim.c
+index 143dc49b815b..15754671eb4d 100644
+--- a/drivers/nfc/nfcsim.c
++++ b/drivers/nfc/nfcsim.c
+@@ -240,7 +240,7 @@ static int nfcsim_send(struct nfc_digital_dev *ddev, struct sk_buff *skb,
  
- 	if (cmd != IOCTL_GET_NCIDEV_IDX)
+ static void nfcsim_abort_cmd(struct nfc_digital_dev *ddev)
+ {
+-	struct nfcsim *dev = nfc_digital_get_drvdata(ddev);
++	const struct nfcsim *dev = nfc_digital_get_drvdata(ddev);
+ 
+ 	nfcsim_link_recv_cancel(dev->link_in);
+ }
 -- 
 2.27.0
 
