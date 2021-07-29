@@ -2,179 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4216F3DA9F7
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 19:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A833DAA16
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 19:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232403AbhG2RTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 13:19:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38296 "EHLO mail.kernel.org"
+        id S231777AbhG2R1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 13:27:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231574AbhG2RTl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 13:19:41 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9B51C60F22;
-        Thu, 29 Jul 2021 17:19:37 +0000 (UTC)
+        id S229556AbhG2R1O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 13:27:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1637B601FA;
+        Thu, 29 Jul 2021 17:27:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627579178;
-        bh=sLhNKbF5DaDIRKTN0m0Kzjv1hybrIrBlw4Aqis83rY4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=brnPWJsv+BqRanrJoqCSVM0xr2LwPLUCKuUM1pvGbeF6RTiUN71ybB7m51uTxAHpw
-         LX9Bo76CZerIMmV3wfJSNJjJmgiwpT0Et9AoxH8WwcOIvd+miDp4eWJIDQJp0xX4fj
-         4jPGRwg1D8EMiyuAmElqjkugVck9UWxe50YfzTLT54P4FtpbKMomJHN9G7Edt2pSi3
-         YC1lGhQ3id/BZ4t2qIh/AiUg3zy39f70cyzIZoRznIQFzxuirCd6Z56EEv0wtoC9mv
-         xupbuhGxp/pUtt3Acrm0/6McrjyhGY//yw227nYTY6J5QJh9UDMFMFtwv/U4cqVgI8
-         P2cXGNV8afxFA==
+        s=k20201202; t=1627579630;
+        bh=kssTgqcbXEPlcdsvyvqpSjM1LIWESEJ+zCyffEvb604=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YzdV9ItjgDa2iZKwe24iIX4qYDNymVr5eVUv7OJS1Ygxh2TLodDNSrffuR9zlPADi
+         vjvOg9KwUNWxcUQVuCi1D1qllzOv/ryKTAGgtpvKEbPcRdu3VgmoXScsRweEPa/DjN
+         78ak1uvc6m1PHtiuwtPFt7liiv8GcWfscpXa+XAOwWoTnV2NS8RMFM/1O6yjdFZkKU
+         gHDpVXyKeXV2mMPBECU9HPcTVCNSWZJzcDzUpPFUjMecJ9xcPOBQIckHKnZr3abr2p
+         7qKd8NAjlcispml/XK/ONvohYmYEDylbbBUATeg5B0RvKFD4pSJ19Yc/HPfVThpxz7
+         aSwIlAPRjI+oQ==
+Date:   Thu, 29 Jul 2021 20:27:07 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>
-Subject: [PATCH net-next v2 2/2] devlink: Allocate devlink directly in requested net namespace
-Date:   Thu, 29 Jul 2021 20:19:25 +0300
-Message-Id: <ab6449b87dba621df34c6d1af9d3f951b9329a23.1627578998.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1627578998.git.leonro@nvidia.com>
-References: <cover.1627578998.git.leonro@nvidia.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Aharon Landau <aharonl@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH mlx5-next 1/5] RDMA/mlx5: Replace struct mlx5_core_mkey
+ by u32 key
+Message-ID: <YQLk65qM6oJ1J9fg@unreal>
+References: <cover.1624362290.git.leonro@nvidia.com>
+ <2e0feba18d8fe310b2ed38fbfbdd4af7a9b84bf1.1624362290.git.leonro@nvidia.com>
+ <20210729152803.GA2394514@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210729152803.GA2394514@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Jul 29, 2021 at 12:28:03PM -0300, Jason Gunthorpe wrote:
+> On Tue, Jun 22, 2021 at 03:08:19PM +0300, Leon Romanovsky wrote:
+> 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > index 50af84e76fb6..7a76b5eb1c1a 100644
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > @@ -35,13 +35,11 @@
+> >  #include <linux/mlx5/driver.h>
+> >  #include "mlx5_core.h"
+> >  
+> > -int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
+> > -			  struct mlx5_core_mkey *mkey,
+> > -			  u32 *in, int inlen)
+> > +int mlx5_core_create_mkey(struct mlx5_core_dev *dev, u32 *mkey, u32 *in,
+> > +			  int inlen)
+> >  {
+> >  	u32 lout[MLX5_ST_SZ_DW(create_mkey_out)] = {};
+> >  	u32 mkey_index;
+> > -	void *mkc;
+> >  	int err;
+> >  
+> >  	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
+> > @@ -50,38 +48,32 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
+> >  	if (err)
+> >  		return err;
+> >  
+> > -	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+> >  	mkey_index = MLX5_GET(create_mkey_out, lout, mkey_index);
+> > -	mkey->iova = MLX5_GET64(mkc, mkc, start_addr);
+> > -	mkey->size = MLX5_GET64(mkc, mkc, len);
+> > -	mkey->key |= mlx5_idx_to_mkey(mkey_index);
+> > -	mkey->pd = MLX5_GET(mkc, mkc, pd);
+> > -	init_waitqueue_head(&mkey->wait);
+> > +	*mkey |= mlx5_idx_to_mkey(mkey_index);
+> 
+> 
+> This conflicts with 0232fc2ddcf4 ("net/mlx5: Reset mkey index on creation")
+> 
+> Please resend/rebase. I think it should be fixed like
+> 
+> 	mkey_index = MLX5_GET(create_mkey_out, lout, mkey_index);
+> 	*mkey = (u32)mlx5_mkey_variant(mkey->key) | mlx5_idx_to_mkey(mkey_index);
+> 
+> 	mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n", mkey_index,	*mkey);
+> ?
 
-There is no need in extra call indirection and check from impossible
-flow where someone tries to set namespace without prior call
-to devlink_alloc().
+Yes, this is how it is fixed in my tree. I just waited till you finish the review.
 
-Instead of this extra logic and additional EXPORT_SYMBOL, use specialized
-devlink allocation function that receives net namespace as an argument.
-
-Such specialized API allows clear view when devlink initialized in wrong
-net namespace and/or kernel users don't try to change devlink namespace
-under the hood.
-
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/net/netdevsim/dev.c |  4 ++--
- include/net/devlink.h       | 14 ++++++++++++--
- net/core/devlink.c          | 26 ++++++++------------------
- 3 files changed, 22 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 6348307bfa84..d538a39d4225 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -1431,10 +1431,10 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	struct devlink *devlink;
- 	int err;
- 
--	devlink = devlink_alloc(&nsim_dev_devlink_ops, sizeof(*nsim_dev));
-+	devlink = devlink_alloc_ns(&nsim_dev_devlink_ops, sizeof(*nsim_dev),
-+				   nsim_bus_dev->initial_net);
- 	if (!devlink)
- 		return -ENOMEM;
--	devlink_net_set(devlink, nsim_bus_dev->initial_net);
- 	nsim_dev = devlink_priv(devlink);
- 	nsim_dev->nsim_bus_dev = nsim_bus_dev;
- 	nsim_dev->switch_id.id_len = sizeof(nsim_dev->switch_id.id);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index e48a62320407..08f4c6191e72 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1540,8 +1540,18 @@ static inline struct devlink *netdev_to_devlink(struct net_device *dev)
- struct ib_device;
- 
- struct net *devlink_net(const struct devlink *devlink);
--void devlink_net_set(struct devlink *devlink, struct net *net);
--struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
-+/* This call is intended for software devices that can create
-+ * devlink instances in other namespaces than init_net.
-+ *
-+ * Drivers that operate on real HW must use devlink_alloc() instead.
-+ */
-+struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
-+				 size_t priv_size, struct net *net);
-+static inline struct devlink *devlink_alloc(const struct devlink_ops *ops,
-+					    size_t priv_size)
-+{
-+	return devlink_alloc_ns(ops, priv_size, &init_net);
-+}
- int devlink_register(struct devlink *devlink, struct device *dev);
- void devlink_unregister(struct devlink *devlink);
- void devlink_reload_enable(struct devlink *devlink);
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index fbca61ad9bbc..fd2fc2befba9 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -108,19 +108,6 @@ struct net *devlink_net(const struct devlink *devlink)
- }
- EXPORT_SYMBOL_GPL(devlink_net);
- 
--static void __devlink_net_set(struct devlink *devlink, struct net *net)
--{
--	write_pnet(&devlink->_net, net);
--}
--
--void devlink_net_set(struct devlink *devlink, struct net *net)
--{
--	if (WARN_ON(devlink->dev))
--		return;
--	__devlink_net_set(devlink, net);
--}
--EXPORT_SYMBOL_GPL(devlink_net_set);
--
- static struct devlink *devlink_get_from_attrs(struct net *net,
- 					      struct nlattr **attrs)
- {
-@@ -3921,7 +3908,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- 		return err;
- 
- 	if (dest_net && !net_eq(dest_net, curr_net))
--		__devlink_net_set(devlink, dest_net);
-+		write_pnet(&devlink->_net, dest_net);
- 
- 	err = devlink->ops->reload_up(devlink, action, limit, actions_performed, extack);
- 	devlink_reload_failed_set(devlink, !!err);
-@@ -8776,15 +8763,18 @@ static bool devlink_reload_actions_valid(const struct devlink_ops *ops)
- }
- 
- /**
-- *	devlink_alloc - Allocate new devlink instance resources
-+ *	devlink_alloc_ns - Allocate new devlink instance resources
-+ *	in specific namespace
-  *
-  *	@ops: ops
-  *	@priv_size: size of user private data
-+ *	@net: net namespace
-  *
-  *	Allocate new devlink instance resources, including devlink index
-  *	and name.
-  */
--struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
-+struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
-+				 size_t priv_size, struct net *net)
- {
- 	struct devlink *devlink;
- 
-@@ -8799,7 +8789,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
- 		return NULL;
- 	devlink->ops = ops;
- 	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
--	__devlink_net_set(devlink, &init_net);
-+	write_pnet(&devlink->_net, net);
- 	INIT_LIST_HEAD(&devlink->port_list);
- 	INIT_LIST_HEAD(&devlink->rate_list);
- 	INIT_LIST_HEAD(&devlink->sb_list);
-@@ -8815,7 +8805,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
- 	mutex_init(&devlink->reporters_lock);
- 	return devlink;
- }
--EXPORT_SYMBOL_GPL(devlink_alloc);
-+EXPORT_SYMBOL_GPL(devlink_alloc_ns);
- 
- /**
-  *	devlink_register - Register devlink instance
--- 
-2.31.1
-
+> 
+> (though I will look at the rest of the series today, so don't rush on
+> this)
+> 
+> Jason
