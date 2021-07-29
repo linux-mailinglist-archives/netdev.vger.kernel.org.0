@@ -2,112 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE933DA966
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 18:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4500F3DA9CE
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 19:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbhG2Que (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 12:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbhG2Que (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 12:50:34 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD6FC061765;
-        Thu, 29 Jul 2021 09:50:30 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id f13so9035236edq.13;
-        Thu, 29 Jul 2021 09:50:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ge2c2dD+EBmDmaGN5nupteoqdj28OTIbcgEuzsesBTw=;
-        b=qL2Rj3JukTZAxtcWyetmk0LTL3hs8/mi9vn+JdDmSkmyeRjbMqR9jXg8gFWsv6kGdz
-         O0mVq9BBHW+9GVS+YDVrhRf0mXLlO5vCDryASFucgvyh0dkAlvrfzd/ieoXEO75YfthV
-         P3NThxNT4ZFkznm+Tkruy0vS3BJakX4rGnzOqjRuyu1qC9V8Ydx9GUQnjJbXIy+Y6DOo
-         Jwx+w1uqo7G9P/fIIdEpYI81sGJQaMfU4fn1MlNIs6Uh8wlE1YenINqJN6SFKeF6cmN6
-         l1l0o1orLp4On4m4sET2NN461fgFveISmPlIFkRWIAH9vXEz16WarCNbpNHwG+kNT+SC
-         a2oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ge2c2dD+EBmDmaGN5nupteoqdj28OTIbcgEuzsesBTw=;
-        b=NApSNNceX5ZCGj1961NQBOXyuM1Ed7PDhy5k3bBD+2XFrFaVt2xhLU/AdnHhvfF57e
-         1TgXm+FpqdeL6so4uLtxSUu2XWiznLVSXQUZST+EJgjCtVKyFkQNSR9rNQVSe1CVeI6Y
-         9qU9iCuzG0gwHWrLRZgBotWKl0s0y3h33DrsSUOt1JYxi8LUoz5WKElkKq3TIikGwUCs
-         bozuLZZTQmKuyrUxDKKq0JlNy7c6/8YkxwGI1T8NnZCGEUvVzjFULrhjpmBJikki7cAn
-         dK6+pLuLyiBL0+OqOTVngmh5DU26UNiDaL46o7Q0ghVTU9sI8lnkgjn8xLayEo7VVF0i
-         bt9g==
-X-Gm-Message-State: AOAM532QB+iAD6vgd0fydb39DOrRw01p5AmuTdxpu8dO6Tr0kCnsfQSl
-        1qCXuLglKeDxJJTx6sNJj7M=
-X-Google-Smtp-Source: ABdhPJw3QV3+/J7tiE+JZbeIL/dUyVkeZkd4O2CYoDmctiP9takCqIOmAAt5RBeHoxF+m8qK2doyCw==
-X-Received: by 2002:a05:6402:d63:: with SMTP id ec35mr7069658edb.347.1627577429163;
-        Thu, 29 Jul 2021 09:50:29 -0700 (PDT)
-Received: from skbuf ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id la23sm1155008ejc.63.2021.07.29.09.50.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 09:50:28 -0700 (PDT)
-Date:   Thu, 29 Jul 2021 19:50:27 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC net-next 2/2] net: dsa: mt7530: trap packets from
- standalone ports to the CPU
-Message-ID: <20210729165027.okmfa3ulpd3e6gte@skbuf>
-References: <20210728175327.1150120-1-dqfext@gmail.com>
- <20210728175327.1150120-3-dqfext@gmail.com>
- <20210729152805.o2pur7pp2kpxvvnq@skbuf>
- <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com>
+        id S229807AbhG2ROd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 13:14:33 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:40324
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229598AbhG2ROd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 13:14:33 -0400
+Received: from famine.localdomain (1.general.jvosburgh.us.vpn [10.172.68.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2B9483F230;
+        Thu, 29 Jul 2021 17:14:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627578867;
+        bh=TtJUedAKwDLWk4XNYBO9nVsDkeqfDsb/JnUi3lOCP/s=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=Fhk+oT+qoSlI1tyjBG4EjNarVJT99XiegFMGQ7ZFBFeCJKgjq/l/CmyOsk3vX7ZB+
+         3aqYdEXQzGvCJ1eFZ3S5gQZKulNDkItu47Kewo4symldVq5kWGvDsG+za0iRqSj52D
+         fXM2muMdknc8jq4CnFfmyENe05yCujzCL4phBiRwVmAFZPDkHHi1Ea6I6BLY7MS6pc
+         CbKc4yGm7xWH8y3QqM96VYypIuv/HnJenLp4d+HQbQ2XldgPlCvWsZLZ/8+X8hQy2I
+         SInpkTPjn6SZVxZkJhFP8KeuDPAQF9hI5v+Y7vHL1L1n1BHeAoOAX3ydg8AiSdD7NT
+         mdf6nOZGa5qrw==
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 7A73C5FBC4; Thu, 29 Jul 2021 10:14:14 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 7508F9FAC3;
+        Thu, 29 Jul 2021 10:14:14 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] bonding: add new option lacp_active
+In-reply-to: <YQIMay98k1OjAmjm@Laptop-X1>
+References: <20210728095229.591321-1-liuhangbin@gmail.com> <YQFiJQx7gkqNYkga@nanopsycho> <3752.1627499438@famine> <YQIMay98k1OjAmjm@Laptop-X1>
+Comments: In-reply-to Hangbin Liu <liuhangbin@gmail.com>
+   message dated "Thu, 29 Jul 2021 10:03:23 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALW65jbHwRhekX=7xoFvts2m7xTRM4ti9zpTiah8ed0n0fCrRg@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <15809.1627578854.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 29 Jul 2021 10:14:14 -0700
+Message-ID: <15810.1627578854@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 12:11:45AM +0800, DENG Qingfang wrote:
-> On Thu, Jul 29, 2021 at 11:28 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > Actually, on second thought...
-> > If MT7530 supports 8 FIDs and it has 7 ports, then you can assign one
-> > FID to each standalone port or VLAN-unaware bridge it is a member of.
-> 
-> The problem is, there is no way to do that..
-> 
-> According to the reference manual:
-> Filter ID is learned automatically from VLAN Table. 0 is the default value if
-> VLAN Table is not applicable.
-> 
-> So it is always 0 in VLAN-unaware mode.
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-I have the MT7621 GSW, and sadly this reference manual isn't the best in
-explaining what is and what is not possible. For example, I am still not
-clear what is meant by "VID1" and "VID0". Is "VID1" the inner (customer)
-VLAN tag, and "VID0" the outer (service) VLAN tag, or "VID1" means the
-actual VLAN ID 1?
+>On Wed, Jul 28, 2021 at 12:10:38PM -0700, Jay Vosburgh wrote:
+>> Jiri Pirko <jiri@resnulli.us> wrote:
+>> =
 
-And the bits 3:1 of VAWD1 (VLAN table access register) indicate a FID
-field per VLAN. I cannot find the piece that you quoted in this manual.
-But what I expect to happen for a Transparent Port is that the packets
-are always classified to that port's PVID, and the VLAN Table is looked
-up with that PVID. There, it will find the FID, which this driver
-currently always configures as zero. In my manual's description, in the
-"Transparent Port" chapter, it does explicitly say:
+>> >Wed, Jul 28, 2021 at 11:52:29AM CEST, liuhangbin@gmail.com wrote:
+>> >
+>> >[...]
+>> >
+>> >>+module_param(lacp_active, int, 0);
+>> >>+MODULE_PARM_DESC(lacp_active, "Send LACPDU frames as the configured =
+lacp_rate or acts as speak when spoken to; "
+>> >>+			      "0 for off, 1 for on (default)");
+>> >
+>> >Afaik adding module parameters is not allowed.
+>> =
 
-	VID0 and VID1 will store PVID as the default VID which is used
-	to look up the VLAN table.
+>> 	Correct; also, adding options requires adding support to
+>> iproute2 to handle the new options via netlink.
+>
+>Hi Jay, Jiri,
+>
+>Thanks for this info. I will remove the module param. For iproute2, I alr=
+eady
+>have a patch to support this options. I planed to post it after the
+>kernel patch applied.
 
-So I get the impression that the phrase "the VLAN table is not applicable"
-is not quite correct, but I might be wrong...
+	Please post the iproute2 patch at the same time as the new
+option patch.
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
