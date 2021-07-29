@@ -2,162 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CDDD3DA2A3
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825C43DA2A7
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:58:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236652AbhG2L5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52298 "EHLO
+        id S234999AbhG2L6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 07:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235698AbhG2L5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:57:07 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A192C0613C1
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:57:04 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id n28-20020a05600c3b9cb02902552e60df56so3827255wms.0
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:57:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ba1iJmAyqagKpMTSuItuq8ZuW63KNd8SLJ5GPxqSiTM=;
-        b=PLmD+kqV9jVV9jdFgXijZPCNG7nsHnJHhvGJQBZGo932IYTMwPsr3uXMRaP8lf2O5v
-         vtXFF1rjgGn9yMKXnFavFZTCaxJhqbJXU6KEHPpHM1tKYBJwR44X/4Je13FkZGPNsJA3
-         /4JukIx5folmD5H8kKIZEM8KWUYZOEYiDtssSOQfldELHART8LimyJyViJc1hzuOS1og
-         M/6o2lz1okAMdeeTH1D4t9acJ77kqQO+MTl/Sp+ltVjP0yOhuw8XBQy2qsEAOgE+TG9E
-         Jh/P4CCsyMBwp6qCBKO9B3MUDjVEIsEvQtbgfaG8KSzB/vzzqR5W4o/fL806UAhvck3d
-         slvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ba1iJmAyqagKpMTSuItuq8ZuW63KNd8SLJ5GPxqSiTM=;
-        b=IY2jZ5+Wj0KMEzW1zR73R55tGr3Y5n+hh8sp6dBpq0XPl9hkaZIobCrZuIf55gRwv5
-         CCqsurOMkAW1vUd17py2q29ybtkIBfMrqIcDmqxiN+PHqUozoMj3ONzhZgiu+iT2qGz6
-         B7F4fG2dGjdFNaO7gulAZ71ZlGexl4i/80hWWokleOxGtajgF1SdpfnEX7imIeoFQr5q
-         SA57/fAMOtqtWpUTEy7mgv9FepGd5Fj1dMYUrHMXUgFYOgYuTYMbVQLMt98vDjaOfpKA
-         slnd/g3t6/dIQ7Iqp7tbHJWrvWPz7Z54HaWlncTQoblzFnCMAoo3fwiuz2jzz4PC6wbV
-         ujmA==
-X-Gm-Message-State: AOAM5302FC3MTgcyyq9FGRMW8k/wXW/ZL3XHsp8Ep96v3+8aZPo73Ci/
-        tv6+7sgSvDEgLDmDv0QhBjR1dOjj3Q3ysMsw9Pk=
-X-Google-Smtp-Source: ABdhPJy8Tt3gIUtlY+O4+Vt07HJLNE5VaAZCJqIPEVk1+JLINxzpXlPsOxRSMzvhp9N/OX5E5S71fA==
-X-Received: by 2002:a05:600c:4f4d:: with SMTP id m13mr4435100wmq.9.1627559822691;
-        Thu, 29 Jul 2021 04:57:02 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id t17sm2673417wmq.17.2021.07.29.04.57.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 04:57:02 -0700 (PDT)
-Date:   Thu, 29 Jul 2021 13:57:01 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Break parameter notification
- sequence to be before/after unload/load driver
-Message-ID: <YQKXjTZ0W04L7xqG@nanopsycho>
-References: <cover.1627545799.git.leonro@nvidia.com>
- <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
- <YQKPkmYfKdM9zE5f@nanopsycho>
- <YQKSmwzppN4KNQiX@unreal>
+        with ESMTP id S234231AbhG2L6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:58:06 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7303AC0613C1
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:58:03 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1m94fd-00060L-LG; Thu, 29 Jul 2021 13:57:49 +0200
+Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:f664:c769:c9a5:5ced])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 80EE165AE04;
+        Thu, 29 Jul 2021 11:57:45 +0000 (UTC)
+Date:   Thu, 29 Jul 2021 13:57:44 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        angelo@kernel-space.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] can: flexcan: Fix an uninitialized variable issue
+Message-ID: <20210729115744.ta5lo42d4metzxtf@pengutronix.de>
+References: <a55780a2f4c8f1895b6bcbac4d3f8312b2731079.1627557857.git.christophe.jaillet@wanadoo.fr>
+ <20210729113101.n5aucrwu56lyqhg7@pengutronix.de>
+ <20210729114442.GT1931@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="73tosamqqeac4x5o"
 Content-Disposition: inline
-In-Reply-To: <YQKSmwzppN4KNQiX@unreal>
+In-Reply-To: <20210729114442.GT1931@kadam>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 29, 2021 at 01:35:55PM CEST, leon@kernel.org wrote:
->On Thu, Jul 29, 2021 at 01:22:58PM +0200, Jiri Pirko wrote:
->> Thu, Jul 29, 2021 at 10:15:25AM CEST, leon@kernel.org wrote:
->> >From: Leon Romanovsky <leonro@nvidia.com>
->
-><...>
->
->> >diff --git a/net/core/devlink.c b/net/core/devlink.c
->> >index b596a971b473..54e2a0375539 100644
->> >--- a/net/core/devlink.c
->> >+++ b/net/core/devlink.c
->> >@@ -3801,8 +3801,9 @@ static void devlink_param_notify(struct devlink *devlink,
->> > 				 struct devlink_param_item *param_item,
->> > 				 enum devlink_command cmd);
->> > 
->> >-static void devlink_reload_netns_change(struct devlink *devlink,
->> >-					struct net *dest_net)
->> >+static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
->> 
->> Please name it differently. This function notifies not only the params,
->> but the devlink instance itself as well.
->
->I'm open for suggestion. What did you have in mind?
 
-devlink_ns_change_notify?
+--73tosamqqeac4x5o
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
->> 
->> 
->> >+				  struct net *curr_net,
->> >+				  enum devlink_command cmd)
->> > {
->> > 	struct devlink_param_item *param_item;
->> > 
->> >@@ -3812,17 +3813,17 @@ static void devlink_reload_netns_change(struct devlink *devlink,
->> > 	 * reload process so the notifications are generated separatelly.
->> > 	 */
->> > 
->> >-	list_for_each_entry(param_item, &devlink->param_list, list)
->> >-		devlink_param_notify(devlink, 0, param_item,
->> >-				     DEVLINK_CMD_PARAM_DEL);
->> >-	devlink_notify(devlink, DEVLINK_CMD_DEL);
->> >+	if (!dest_net || net_eq(dest_net, curr_net))
->> >+		return;
->> > 
->> >-	__devlink_net_set(devlink, dest_net);
->> >+	if (cmd == DEVLINK_CMD_PARAM_NEW)
->> >+		devlink_notify(devlink, DEVLINK_CMD_NEW);
->> 
->> This is quite odd. According to PARAMS cmd you decife devlink CMD.
->> 
->> Just have bool arg which would help you select both
->> DEVLINK_CMD_PARAM_NEW/DEL and DEVLINK_CMD_NEW/DEL
->
->The patch is quite misleading, but the final result looks neat:
->
->   3847 static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
->   3848                                   struct net *curr_net,
->   3849                                   enum devlink_command cmd)
->   3850 {
->   3851         struct devlink_param_item *param_item;
->   3852 
->   3853         /* Userspace needs to be notified about devlink objects
->   3854          * removed from original and entering new network namespace.
->   3855          * The rest of the devlink objects are re-created during
->   3856          * reload process so the notifications are generated separatelly.
->   3857          */
->   3858 
->   3859         if (!dest_net || net_eq(dest_net, curr_net))
->   3860                 return;
->   3861 
->   3862         if (cmd == DEVLINK_CMD_PARAM_NEW)
->   3863                 devlink_notify(devlink, DEVLINK_CMD_NEW);
+On 29.07.2021 14:44:42, Dan Carpenter wrote:
+> On Thu, Jul 29, 2021 at 01:31:01PM +0200, Marc Kleine-Budde wrote:
+> > On 29.07.2021 13:27:42, Christophe JAILLET wrote:
+> > > If both 'clk_ipg' and 'clk_per' are NULL, we return an un-init value.
+> > > So set 'err' to 0, to return success in such a case.
+> >=20
+> > Thanks for the patch, a similar one has been posted before:
+> > https://lore.kernel.org/linux-can/20210728075428.1493568-1-mkl@pengutro=
+nix.de/
+> >=20
+> > > Fixes: d9cead75b1c6 ("can: flexcan: add mcf5441x support")
+> > > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> > > ---
+> > > Another way to fix it is to remove the NULL checks for 'clk_ipg' and
+> > > 'clk_per' that been added in commit d9cead75b1c6.
+> > >=20
+> > > They look useless to me because 'clk_prepare_enable()' returns 0 if i=
+t is
+> > > passed a NULL pointer.
+> >=20
+> > ACK, while the common clock framework's clk_prepare_enable() can handle
+> > NULL pointers, the clock framework used on the mcf5441x doesn't.
+>=20
+> Huh?  It looks like it just uses the regular stuff?
 
-Nothing misleading here. This is exactly what I'm pointing out...
+https://lore.kernel.org/linux-can/CAMuHMdUeeH2BWgVRoVX7yfckY=3Dwi8X3qkaH0TH=
+hVF_3FpZsbqg@mail.gmail.com/
+Geert Uytterhoeven said:
 
+>> Except that the non-CCF implementation of clk_enable() in
+>> arch/m68k/coldfire/clk.c still returns -EINVAL instead of NULL.
+>> Any plans to move to CCF? Or at least fix legacy clk_enable().
 
+https://lore.kernel.org/linux-can/7c1151fc-cc28-cbc0-c385-313428b32dd7@kern=
+el-space.org/
+Angelo Dureghello said:
+>> as Geert pointed out, right now without this protection
+>> (that shouldn't anyway harm), probe fails:
+>>=20
+>> [    1.680000] flexcan: probe of flexcan.0 failed with error -22
 
->   3864 
->   3865         list_for_each_entry(param_item, &devlink->param_list, list)
->   3866                 devlink_param_notify(devlink, 0, param_item, cmd);
->   3867 
->   3868         if (cmd == DEVLINK_CMD_PARAM_DEL)
->   3869                 devlink_notify(devlink, DEVLINK_CMD_DEL);
->   3870 }
->
->
->So as you can see in line 3866, we anyway will need to provide "cmd", so
->do you suggest to add extra two bool variables to the function signature
->to avoid "cmd == DEVLINK_CMD_PARAM_NEW" and "cmd == DEVLINK_CMD_PARAM_DEL" ifs?
->
->Thanks
+Maybe it's time to fix the mcf5441x's clk_enable() as Geert pointed out.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--73tosamqqeac4x5o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmECl7YACgkQqclaivrt
+76k7Hwf8CPDPauuzqcjQbON/KZXOqa6NlC4gzaGfi769N9cePz2abzU5lSugGuYR
+J8nIAU8rnksLWHn7KkxPBF4wSfrbFHv/oWpy5V420b0X9dHHP57dGREZVSqbhGg6
+TL8Kb+Guud/L+Z9W1yEkis9Y7e0E3NJNsg56fnOwec9MeFPHSWdkSVve3ng8Te5N
+o72z+HcEgN8YdJXZA7v4TX6FdJMevFVhvTH31Oj3SnugmgiHR9UEXGhBSNYhqP2R
+isXmNfo1wXJ4itD+5CGHyRZzrJN4iH8acpLwbsdJ6pESCv6XXMxIbHsGaCEe38mh
+uo7VfTlr+PLoNIqLsLv0eCAQHZVZYg==
+=hCb4
+-----END PGP SIGNATURE-----
+
+--73tosamqqeac4x5o--
