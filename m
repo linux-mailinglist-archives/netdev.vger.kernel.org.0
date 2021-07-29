@@ -2,330 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0023DA207
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 418AD3DA215
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:27:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236642AbhG2LXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:23:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235741AbhG2LXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:23:04 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 912D7C0613C1
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:23:01 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gn26so10124753ejc.3
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:23:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MjkJVRK4wR66RrtaUOf7OQixuZnqR9KxDUaKchz3xOw=;
-        b=mAIOU9HM7q8WVW16jvyq2+bpWR2u5lVbzveenQzOKFU+h7RGuXUzi1bSF6/OrcioNR
-         PhRJ1do+mxzyzRsr9eOOwkT7cN3ALwtaoaNk1SK23gn7sKxHd/sB/2spB5pYMT7lIViZ
-         atjQbRk7eQse0T1WY23cNmbK3c/JUIS2JPq6JzpkO7IzkUBJldjbmHLP++6R5/nn78qc
-         B8Nzr3PTsFixvxQ2awsuirlVtI07MZbN2MlNIhSUPTMXo7EGDw9PrXv1kJmaSG1/t030
-         TVA4S5XKiUchstg6grB/Wvao9VBRyTzJRwUH6o6igmLbuodxC2q4MHZs91WEK2CXx0+Q
-         PaMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MjkJVRK4wR66RrtaUOf7OQixuZnqR9KxDUaKchz3xOw=;
-        b=cXZdu7VXKUbXv/ZmpWLd9yjJEGuCgo1EQYaXfHh4RJIDS4Ds3k1KT1MrBhyf0CYeL3
-         vBU2B2+ZWaoz+snXxUsILT1spL2JSOnAd8Dmo/FYQH+5wutHzwH5uumrWtIW8QuzLkIq
-         b49S6/JAYuVV36xpiZxi30pBJJL6EhNbSL2ynFbuV6z1KOUwVeLeg5RUB1iXvbrciG09
-         JwcEg0cPs8K79P/PSw1dJ6bTJMFEnf7FGD7wJmtY6JRr5q+3kKfT+ozVkCDqv94wahEf
-         ehiTuT7ZHnheiPfpCsSgAKguu85Qqw/W+gi5B/yI0e3dh5ZN+weL8l5zYcpR3hF3+7VW
-         69OA==
-X-Gm-Message-State: AOAM532Nujjk6jYuQQR+IWteb5xbLt0ZighhKEHJxWMQ4O003XjqT/4g
-        ah9ogCtlztJMMkZMIBJ/6IcEfQ==
-X-Google-Smtp-Source: ABdhPJwjuKzBtpT/FKwOWvM8mbpp/seuNVBUgH/m9I7XT/J4POOSclGPZLfY9cbwGg729daXDPL9hg==
-X-Received: by 2002:a17:906:b811:: with SMTP id dv17mr4079539ejb.444.1627557780092;
-        Thu, 29 Jul 2021 04:23:00 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id c7sm1059911edn.45.2021.07.29.04.22.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 04:22:59 -0700 (PDT)
-Date:   Thu, 29 Jul 2021 13:22:58 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net-next 1/2] devlink: Break parameter notification
- sequence to be before/after unload/load driver
-Message-ID: <YQKPkmYfKdM9zE5f@nanopsycho>
-References: <cover.1627545799.git.leonro@nvidia.com>
- <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
+        id S234595AbhG2L1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 07:27:50 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:22118 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231645AbhG2L1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:27:49 -0400
+Received: from localhost.localdomain ([86.243.172.93])
+        by mwinf5d05 with ME
+        id azTi2500F21Fzsu03zTjaB; Thu, 29 Jul 2021 13:27:44 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 29 Jul 2021 13:27:44 +0200
+X-ME-IP: 86.243.172.93
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, angelo@kernel-space.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] can: flexcan: Fix an uninitialized variable issue
+Date:   Thu, 29 Jul 2021 13:27:42 +0200
+Message-Id: <a55780a2f4c8f1895b6bcbac4d3f8312b2731079.1627557857.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6d59d527ccbec04615ef0b4a237ea4e27f10cd8d.1627545799.git.leonro@nvidia.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jul 29, 2021 at 10:15:25AM CEST, leon@kernel.org wrote:
->From: Leon Romanovsky <leonro@nvidia.com>
->
->The change of namespaces during devlink reload calls to driver unload
->before it accesses devlink parameters. The commands below causes to
->use-after-free bug when trying to get flow steering mode.
->
-> * ip netns add n1
-> * devlink dev reload pci/0000:00:09.0 netns n1
->
-> ==================================================================
-> BUG: KASAN: use-after-free in mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
-> Read of size 4 at addr ffff888009d04308 by task devlink/275
->
-> CPU: 6 PID: 275 Comm: devlink Not tainted 5.12.0-rc2+ #2853
-> Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-> Call Trace:
->  dump_stack+0x93/0xc2
->  print_address_description.constprop.0+0x18/0x140
->  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
->  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
->  kasan_report.cold+0x7c/0xd8
->  ? mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
->  mlx5_devlink_fs_mode_get+0x96/0xa0 [mlx5_core]
->  devlink_nl_param_fill+0x1c8/0xe80
->  ? __free_pages_ok+0x37a/0x8a0
->  ? devlink_flash_update_timeout_notify+0xd0/0xd0
->  ? lock_acquire+0x1a9/0x6d0
->  ? fs_reclaim_acquire+0xb7/0x160
->  ? lock_is_held_type+0x98/0x110
->  ? 0xffffffff81000000
->  ? lock_release+0x1f9/0x6c0
->  ? fs_reclaim_release+0xa1/0xf0
->  ? lock_downgrade+0x6d0/0x6d0
->  ? lock_is_held_type+0x98/0x110
->  ? lock_is_held_type+0x98/0x110
->  ? memset+0x20/0x40
->  ? __build_skb_around+0x1f8/0x2b0
->  devlink_param_notify+0x6d/0x180
->  devlink_reload+0x1c3/0x520
->  ? devlink_remote_reload_actions_performed+0x30/0x30
->  ? mutex_trylock+0x24b/0x2d0
->  ? devlink_nl_cmd_reload+0x62b/0x1070
->  devlink_nl_cmd_reload+0x66d/0x1070
->  ? devlink_reload+0x520/0x520
->  ? devlink_get_from_attrs+0x1bc/0x260
->  ? devlink_nl_pre_doit+0x64/0x4d0
->  genl_family_rcv_msg_doit+0x1e9/0x2f0
->  ? mutex_lock_io_nested+0x1130/0x1130
->  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x240/0x240
->  ? security_capable+0x51/0x90
->  genl_rcv_msg+0x27f/0x4a0
->  ? genl_get_cmd+0x3c0/0x3c0
->  ? lock_acquire+0x1a9/0x6d0
->  ? devlink_reload+0x520/0x520
->  ? lock_release+0x6c0/0x6c0
->  netlink_rcv_skb+0x11d/0x340
->  ? genl_get_cmd+0x3c0/0x3c0
->  ? netlink_ack+0x9f0/0x9f0
->  ? lock_release+0x1f9/0x6c0
->  genl_rcv+0x24/0x40
->  netlink_unicast+0x433/0x700
->  ? netlink_attachskb+0x730/0x730
->  ? _copy_from_iter_full+0x178/0x650
->  ? __alloc_skb+0x113/0x2b0
->  netlink_sendmsg+0x6f1/0xbd0
->  ? netlink_unicast+0x700/0x700
->  ? lock_is_held_type+0x98/0x110
->  ? netlink_unicast+0x700/0x700
->  sock_sendmsg+0xb0/0xe0
->  __sys_sendto+0x193/0x240
->  ? __x64_sys_getpeername+0xb0/0xb0
->  ? do_sys_openat2+0x10b/0x370
->  ? __up_read+0x1a1/0x7b0
->  ? do_user_addr_fault+0x219/0xdc0
->  ? __x64_sys_openat+0x120/0x1d0
->  ? __x64_sys_open+0x1a0/0x1a0
->  __x64_sys_sendto+0xdd/0x1b0
->  ? syscall_enter_from_user_mode+0x1d/0x50
->  do_syscall_64+0x2d/0x40
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7fc69d0af14a
-> Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
-> RSP: 002b:00007ffc1d8292f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-> RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 00007fc69d0af14a
-> RDX: 0000000000000038 RSI: 0000555f57c56440 RDI: 0000000000000003
-> RBP: 0000555f57c56410 R08: 00007fc69d17b200 R09: 000000000000000c
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
->
-> Allocated by task 146:
->  kasan_save_stack+0x1b/0x40
->  __kasan_kmalloc+0x99/0xc0
->  mlx5_init_fs+0xf0/0x1c50 [mlx5_core]
->  mlx5_load+0xd2/0x180 [mlx5_core]
->  mlx5_init_one+0x2f6/0x450 [mlx5_core]
->  probe_one+0x47d/0x6e0 [mlx5_core]
->  pci_device_probe+0x2a0/0x4a0
->  really_probe+0x20a/0xc90
->  driver_probe_device+0xd8/0x380
->  device_driver_attach+0x1df/0x250
->  __driver_attach+0xff/0x240
->  bus_for_each_dev+0x11e/0x1a0
->  bus_add_driver+0x309/0x570
->  driver_register+0x1ee/0x380
->  0xffffffffa06b8062
->  do_one_initcall+0xd5/0x410
->  do_init_module+0x1c8/0x760
->  load_module+0x6d8b/0x9650
->  __do_sys_finit_module+0x118/0x1b0
->  do_syscall_64+0x2d/0x40
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> Freed by task 275:
->  kasan_save_stack+0x1b/0x40
->  kasan_set_track+0x1c/0x30
->  kasan_set_free_info+0x20/0x30
->  __kasan_slab_free+0x102/0x140
->  slab_free_freelist_hook+0x74/0x1b0
->  kfree+0xd7/0x2a0
->  mlx5_unload+0x16/0xb0 [mlx5_core]
->  mlx5_unload_one+0xae/0x120 [mlx5_core]
->  mlx5_devlink_reload_down+0x1bc/0x380 [mlx5_core]
->  devlink_reload+0x141/0x520
->  devlink_nl_cmd_reload+0x66d/0x1070
->  genl_family_rcv_msg_doit+0x1e9/0x2f0
->  genl_rcv_msg+0x27f/0x4a0
->  netlink_rcv_skb+0x11d/0x340
->  genl_rcv+0x24/0x40
->  netlink_unicast+0x433/0x700
->  netlink_sendmsg+0x6f1/0xbd0
->  sock_sendmsg+0xb0/0xe0
->  __sys_sendto+0x193/0x240
->  __x64_sys_sendto+0xdd/0x1b0
->  do_syscall_64+0x2d/0x40
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
->
-> The buggy address belongs to the object at ffff888009d04300
->  which belongs to the cache kmalloc-128 of size 128
-> The buggy address is located 8 bytes inside of
->  128-byte region [ffff888009d04300, ffff888009d04380)
-> The buggy address belongs to the page:
-> page:0000000086a64ecc refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff888009d04000 pfn:0x9d04
-> head:0000000086a64ecc order:1 compound_mapcount:0
-> flags: 0x4000000000010200(slab|head)
-> raw: 4000000000010200 ffffea0000203980 0000000200000002 ffff8880050428c0
-> raw: ffff888009d04000 000000008020001d 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
->
-> Memory state around the buggy address:
->  ffff888009d04200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff888009d04280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> >ffff888009d04300: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                       ^
->  ffff888009d04380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff888009d04400: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
->
->The right solution to devlink reload is to notify about deletion of
->parameters, unload driver, change net namespaces, load driver and notify
->about addition of parameters.
->
->Fixes: 070c63f20f6c ("net: devlink: allow to change namespaces during reload")
->Reviewed-by: Parav Pandit <parav@nvidia.com>
->Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
->---
-> net/core/devlink.c | 32 ++++++++++++++++++++------------
-> 1 file changed, 20 insertions(+), 12 deletions(-)
->
->diff --git a/net/core/devlink.c b/net/core/devlink.c
->index b596a971b473..54e2a0375539 100644
->--- a/net/core/devlink.c
->+++ b/net/core/devlink.c
->@@ -3801,8 +3801,9 @@ static void devlink_param_notify(struct devlink *devlink,
-> 				 struct devlink_param_item *param_item,
-> 				 enum devlink_command cmd);
-> 
->-static void devlink_reload_netns_change(struct devlink *devlink,
->-					struct net *dest_net)
->+static void devlink_params_notify(struct devlink *devlink, struct net *dest_net,
+If both 'clk_ipg' and 'clk_per' are NULL, we return an un-init value.
+So set 'err' to 0, to return success in such a case.
 
-Please name it differently. This function notifies not only the params,
-but the devlink instance itself as well.
+Fixes: d9cead75b1c6 ("can: flexcan: add mcf5441x support")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Another way to fix it is to remove the NULL checks for 'clk_ipg' and
+'clk_per' that been added in commit d9cead75b1c6.
 
+They look useless to me because 'clk_prepare_enable()' returns 0 if it is
+passed a NULL pointer.
+Having these explicit tests is maybe informational (i.e. these pointers
+can really be NULL) or have been added to silent a compiler or a static
+checker.
 
->+				  struct net *curr_net,
->+				  enum devlink_command cmd)
-> {
-> 	struct devlink_param_item *param_item;
-> 
->@@ -3812,17 +3813,17 @@ static void devlink_reload_netns_change(struct devlink *devlink,
-> 	 * reload process so the notifications are generated separatelly.
-> 	 */
-> 
->-	list_for_each_entry(param_item, &devlink->param_list, list)
->-		devlink_param_notify(devlink, 0, param_item,
->-				     DEVLINK_CMD_PARAM_DEL);
->-	devlink_notify(devlink, DEVLINK_CMD_DEL);
->+	if (!dest_net || net_eq(dest_net, curr_net))
->+		return;
-> 
->-	__devlink_net_set(devlink, dest_net);
->+	if (cmd == DEVLINK_CMD_PARAM_NEW)
->+		devlink_notify(devlink, DEVLINK_CMD_NEW);
+So, in case, I've left the tests and just fixed the un-init 'err' variable
+issue.
+---
+ drivers/net/can/flexcan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is quite odd. According to PARAMS cmd you decife devlink CMD.
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 54ffb796a320..7734229aa078 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -649,7 +649,7 @@ static inline void flexcan_error_irq_disable(const struct flexcan_priv *priv)
+ 
+ static int flexcan_clks_enable(const struct flexcan_priv *priv)
+ {
+-	int err;
++	int err = 0;
+ 
+ 	if (priv->clk_ipg) {
+ 		err = clk_prepare_enable(priv->clk_ipg);
+-- 
+2.30.2
 
-Just have bool arg which would help you select both
-DEVLINK_CMD_PARAM_NEW/DEL and DEVLINK_CMD_NEW/DEL.
-
-
-> 
->-	devlink_notify(devlink, DEVLINK_CMD_NEW);
-> 	list_for_each_entry(param_item, &devlink->param_list, list)
->-		devlink_param_notify(devlink, 0, param_item,
->-				     DEVLINK_CMD_PARAM_NEW);
->+		devlink_param_notify(devlink, 0, param_item, cmd);
->+
->+	if (cmd == DEVLINK_CMD_PARAM_DEL)
->+		devlink_notify(devlink, DEVLINK_CMD_DEL);
-> }
-> 
-> static bool devlink_reload_supported(const struct devlink_ops *ops)
->@@ -3902,6 +3903,7 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
-> 			  u32 *actions_performed, struct netlink_ext_ack *extack)
-> {
-> 	u32 remote_reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
->+	struct net *curr_net;
-> 	int err;
-> 
-> 	if (!devlink->reload_enabled)
->@@ -3909,18 +3911,24 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
-> 
-> 	memcpy(remote_reload_stats, devlink->stats.remote_reload_stats,
-> 	       sizeof(remote_reload_stats));
->+
->+	curr_net = devlink_net(devlink);
->+	devlink_params_notify(devlink, dest_net, curr_net,
->+			      DEVLINK_CMD_PARAM_DEL);
-> 	err = devlink->ops->reload_down(devlink, !!dest_net, action, limit, extack);
-> 	if (err)
-> 		return err;
-> 
->-	if (dest_net && !net_eq(dest_net, devlink_net(devlink)))
->-		devlink_reload_netns_change(devlink, dest_net);
->+	if (dest_net && !net_eq(dest_net, curr_net))
->+		__devlink_net_set(devlink, dest_net);
-> 
-> 	err = devlink->ops->reload_up(devlink, action, limit, actions_performed, extack);
-> 	devlink_reload_failed_set(devlink, !!err);
-> 	if (err)
-> 		return err;
-> 
->+	devlink_params_notify(devlink, dest_net, curr_net,
->+			      DEVLINK_CMD_PARAM_NEW);
-> 	WARN_ON(!(*actions_performed & BIT(action)));
-> 	/* Catch driver on updating the remote action within devlink reload */
-> 	WARN_ON(memcmp(remote_reload_stats, devlink->stats.remote_reload_stats,
->-- 
->2.31.1
->
