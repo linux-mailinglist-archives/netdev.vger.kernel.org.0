@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F9993D9C90
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 06:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6F863D9CC1
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 06:28:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233599AbhG2EX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 00:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58988 "EHLO
+        id S233756AbhG2E2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 00:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229485AbhG2EX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 00:23:27 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9979CC061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 21:23:24 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id ca5so8359015pjb.5
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 21:23:24 -0700 (PDT)
+        with ESMTP id S233664AbhG2E2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 00:28:43 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1C1C061757;
+        Wed, 28 Jul 2021 21:28:40 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id j1so8416425pjv.3;
+        Wed, 28 Jul 2021 21:28:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JYmM1PPgd4m/UVC0Uv+s8j70kYQ2+cdyylIZCdjsdy0=;
-        b=J3udGRsDMy2KBZqoT/IAY9IVFwn5g6FrReMz5OKq4q+cm7C+v81phmU5y7OUq0yS6p
-         oFUtgo1CyFQq4ct8nXqCRFam+XIWjlTs5v9te5rwfnoppjtAcNpk9pAkC7mhM0ynx8se
-         newv+u04Ua3Oa3KHpxFdpOUE1FySfxjo88rTY/rPZbwerSFa3Xd653J/TtdxN7Ol7xzW
-         GGwW/aRCiMZuBKPFQPVolwZNbCONc73iIY8ckdvj3hAiEJ3sASnZo5ATzC+f2+2fEM/D
-         6HG7XPDL09puy4E6uqPdxL3s8djbNErHGVl8Ry37fJcibExGdudSsXRemDPGB34zCL25
-         Q7Yg==
+        bh=tW4DIBxR80i4BJo02U0SxUluh+ki4NFjLgvAshr0xxA=;
+        b=l4ZOGC66Ljc1csQjbpoEwnSp1sFzgtXS3Q7rjGMrE40E69jSYsY7nVqM3kyc8M3haz
+         wLso0RS7wRUStsSKxFjafxATDFQzY72LNDfunK21zfA3FTts1ObmZJr87CuF1j6rrmap
+         4iL+U875tmUarppfdGaYq+IHqyvAoxuvzheMyG/mYWxGZzJUz66ge3ZsyNVH48ElmJXW
+         +ABYYA4taxaa2yswqwlAB/HajNt/7SHEMoX3BRLHjmrmFx+URDHVTlJul57IbnFZCIIG
+         eL2o58qpM0xUCYKns13y75YW2uig+XgY3Q44W/DjhpUyNOc3lN5SmsnF5TqDux2oPiwN
+         bM1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JYmM1PPgd4m/UVC0Uv+s8j70kYQ2+cdyylIZCdjsdy0=;
-        b=eYcF4rlQ0uwCkncraPY+UeHUiymuyhfFC+XjZKkuPRKgEPcvdf7RoxOn4f+gOsRKvN
-         +GN63FkbLyF/niPUrQUiOEfzHjmNiIroiKifEcTCsHwGrEmuBS67xLLJrRDG+WkaqE4w
-         V0n830rJ3ziDwsLtzekmZwY2vTkOKezl7q/x73SrGLfKHjU2U9dg099cX5qElMM/1rOp
-         e9NrjIJ7cSo6DcaZV58cftzctySKcKlnfxM1Y6qQxpY6/3KN3zNZxj7ZhnPvIZgS5mb5
-         9UChpLGURJpnOHE5+LVgClqylELXs5F3Vmwrtzl3ilU+P9IxovCO4DyNKG+KgH/bs7Yo
-         NDMA==
-X-Gm-Message-State: AOAM531Lo5MM5MQgrlQrDDNKg21bF29TpUfVCFeEPWKM1KuI3/Efb5wB
-        wIFdbab1Qxevg3y11cbN9dE=
-X-Google-Smtp-Source: ABdhPJzVy4WEAjebbXnJURS7OjYavsR4tECcJkK/luwa0SU04k/hV2a65s1jJ5zBG2x1nGU/VN2Jdg==
-X-Received: by 2002:a65:5087:: with SMTP id r7mr2180473pgp.160.1627532604165;
-        Wed, 28 Jul 2021 21:23:24 -0700 (PDT)
-Received: from [192.168.1.121] (99-44-17-11.lightspeed.irvnca.sbcglobal.net. [99.44.17.11])
-        by smtp.gmail.com with ESMTPSA id w18sm1427674pjg.50.2021.07.28.21.23.22
+        bh=tW4DIBxR80i4BJo02U0SxUluh+ki4NFjLgvAshr0xxA=;
+        b=sdxU1w5Nz1ehp63o8ifWqRqdYAJjM8RRNxpZD/26baJlHHrX7MKqTjW1dt5km+Lvrp
+         wwqWIr3222/QP87+YCXTn3DevKbRpjP/fxF2GVvsPSCUQn73wFAv7BihHnyAxOq28mK+
+         4IpdAgT2340dcEp12bjmjkTwcI/ZMYQ1vHwwOpxI6MTe1ipjKQEBMf8FdiuZKUDRx2Q0
+         kSxPwTqcEk/6y5utsKtjRIQcdGRjdfXq1KUK43mMjpG2c+r/y76hd0U7ew6xbQtSORYT
+         pb+h9N9QKjx2jwFCV9m7u6nZqNifbngLDmd0e0JFKK0lrZbsI08BgH12a2CJEn2gli0K
+         Y3ow==
+X-Gm-Message-State: AOAM531kZAe2LbO1pa9q4RCPYHh6h8wKQ/0OZCfTDitYM0jbf5tbOIpX
+        fIeOD3XWNLS2FeqK3WsZVwI=
+X-Google-Smtp-Source: ABdhPJzJrK4273rjTXGt/mNhlac2/bk86XjPDCdBLZ7pWU6F2N22Wczrf2f17PGXudgdoSB7e7iQmg==
+X-Received: by 2002:a17:903:2c2:b029:101:9c88:d928 with SMTP id s2-20020a17090302c2b02901019c88d928mr2848193plk.62.1627532920344;
+        Wed, 28 Jul 2021 21:28:40 -0700 (PDT)
+Received: from [192.168.1.237] ([118.200.190.93])
+        by smtp.gmail.com with ESMTPSA id b6sm7813162pjl.17.2021.07.28.21.28.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Jul 2021 21:23:23 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/3] net: dsa: sja1105: make sure untagged
- packets are dropped on ingress ports with no pvid
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Wed, 28 Jul 2021 21:28:39 -0700 (PDT)
+Subject: Re: [PATCH v4] Bluetooth: schedule SCO timeouts with delayed_work
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-References: <20210728215429.3989666-1-vladimir.oltean@nxp.com>
- <20210728215429.3989666-3-vladimir.oltean@nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <047854fe-a850-d105-1b62-6cbb49823fc4@gmail.com>
-Date:   Wed, 28 Jul 2021 21:23:21 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        skhan@linuxfoundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+References: <20210728071721.411669-1-desmondcheongzx@gmail.com>
+ <CABBYNZ+_mYB=r3B-f0Pu214ZmKVAM2EmpSFYQksTDbdm61Q4Bw@mail.gmail.com>
+From:   Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Message-ID: <6c152b1f-fe15-6ea3-cb96-1d87f0f7dea7@gmail.com>
+Date:   Thu, 29 Jul 2021 12:28:34 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210728215429.3989666-3-vladimir.oltean@nxp.com>
+In-Reply-To: <CABBYNZ+_mYB=r3B-f0Pu214ZmKVAM2EmpSFYQksTDbdm61Q4Bw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,55 +77,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Luiz,
 
+On 29/7/21 7:07 am, Luiz Augusto von Dentz wrote:
+> Hi Desmond,
+> 
+> On Wed, Jul 28, 2021 at 12:17 AM Desmond Cheong Zhi Xi
+> <desmondcheongzx@gmail.com> wrote:
+>>
+>> struct sock.sk_timer should be used as a sock cleanup timer. However,
+>> SCO uses it to implement sock timeouts.
+>>
+>> This causes issues because struct sock.sk_timer's callback is run in
+>> an IRQ context, and the timer callback function sco_sock_timeout takes
+>> a spin lock on the socket. However, other functions such as
+>> sco_conn_del, sco_conn_ready, rfcomm_connect_ind, and
+>> bt_accept_enqueue also take the spin lock with interrupts enabled.
+>>
+>> This inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock usage could
+>> lead to deadlocks as reported by Syzbot [1]:
+>>         CPU0
+>>         ----
+>>    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>>    <Interrupt>
+>>      lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>>
+>> To fix this, we use delayed work to implement SCO sock timouts
+>> instead. This allows us to avoid taking the spin lock on the socket in
+>> an IRQ context, and corrects the misuse of struct sock.sk_timer.
+>>
+>> Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
+>> Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+>> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+>> ---
+>>
+>> Hi,
+>>
+>> As suggested, this patch addresses the inconsistent lock state while
+>> avoiding having to deal with local_bh_disable.
+>>
+>> Now that sco_sock_timeout is no longer run in IRQ context, it might
+>> be the case that bh_lock_sock is no longer needed to sync between
+>> SOFTIRQ and user contexts, so we can switch to lock_sock.
+>>
+>> I'm not too certain about this, or if there's any benefit to using
+>> lock_sock instead, so I've left that out of this patch.
+>>
+>> v3 -> v4:
+>> - Switch to using delayed_work to schedule SCO sock timeouts instead
+>> of using local_bh_disable. As suggested by Luiz Augusto von Dentz.
+>>
+>> v2 -> v3:
+>> - Split SCO and RFCOMM code changes, as suggested by Luiz Augusto von
+>> Dentz.
+>> - Simplify local bh disabling in SCO by using local_bh_disable/enable
+>> inside sco_chan_del since local_bh_disable/enable pairs are reentrant.
+>>
+>> v1 -> v2:
+>> - Instead of pulling out the clean-up code out from sco_chan_del and
+>> using it directly in sco_conn_del, disable local softirqs for relevant
+>> sections.
+>> - Disable local softirqs more thoroughly for instances of
+>> bh_lock_sock/bh_lock_sock_nested in the bluetooth subsystem.
+>> Specifically, the calls in af_bluetooth.c and rfcomm/sock.c are now made
+>> with local softirqs disabled as well.
+>>
+>> Best wishes,
+>> Desmond
+>>
+>>   net/bluetooth/sco.c | 39 ++++++++++++++++++++++++---------------
+>>   1 file changed, 24 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+>> index 3bd41563f118..b6dd16153d38 100644
+>> --- a/net/bluetooth/sco.c
+>> +++ b/net/bluetooth/sco.c
+>> @@ -48,6 +48,8 @@ struct sco_conn {
+>>          spinlock_t      lock;
+>>          struct sock     *sk;
+>>
+>> +       struct delayed_work     sk_timer;
+>> +
+>>          unsigned int    mtu;
+>>   };
+>>
+>> @@ -74,9 +76,11 @@ struct sco_pinfo {
+>>   #define SCO_CONN_TIMEOUT       (HZ * 40)
+>>   #define SCO_DISCONN_TIMEOUT    (HZ * 2)
+>>
+>> -static void sco_sock_timeout(struct timer_list *t)
+>> +static void sco_sock_timeout(struct work_struct *work)
+>>   {
+>> -       struct sock *sk = from_timer(sk, t, sk_timer);
+>> +       struct sco_conn *conn = container_of(work, struct sco_conn,
+>> +                                            sk_timer.work);
+>> +       struct sock *sk = conn->sk;
+>>
+>>          BT_DBG("sock %p state %d", sk, sk->sk_state);
+>>
+>> @@ -89,16 +93,18 @@ static void sco_sock_timeout(struct timer_list *t)
+>>          sock_put(sk);
+>>   }
+>>
+>> -static void sco_sock_set_timer(struct sock *sk, long timeout)
+>> +static void sco_sock_set_timer(struct sock *sk, struct delayed_work *work,
+>> +                              long timeout)
+>>   {
+>>          BT_DBG("sock %p state %d timeout %ld", sk, sk->sk_state, timeout);
+>> -       sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
+>> +       cancel_delayed_work(work);
+>> +       schedule_delayed_work(work, timeout);
+> 
+> I guess if you want to really guarantee cancel takes effect you must
+> call cancel_delayed_work_sync
+> 
 
-On 7/28/2021 2:54 PM, Vladimir Oltean wrote:
-> Surprisingly, this configuration:
-> 
-> ip link add br0 type bridge vlan_filtering 1
-> ip link set swp2 master br0
-> bridge vlan del dev swp2 vid 1
-> 
-> still has the sja1105 switch sending untagged packets to the CPU (and
-> failing to decode them, since dsa_find_designated_bridge_port_by_vid
-> searches by VID 1 and rightfully finds no bridge VLAN 1 on a port).
-> 
-> Dumping the switch configuration, the VLANs are managed properly:
-> - the pvid of swp2 is 1 in the MAC Configuration Table, but
-> - only the CPU port is in the port membership of VLANID 1 in the VLAN
->    Lookup Table
-> 
-> When the ingress packets are tagged with VID 1, they are properly
-> dropped. But when they are untagged, they are able to reach the CPU
-> port. Also, when the pvid in the MAC Configuration Table is changed to
-> e.g. 55 (an unused VLAN), the untagged packets are also dropped.
-> 
-> So it looks like:
-> - the switch bypasses ingress VLAN membership checks for untagged traffic
-> - the reason why the untagged traffic is dropped when I make the pvid 55
->    is due to the lack of valid destination ports in VLAN 55, rather than
->    an ingress membership violation
-> - the ingress VLAN membership cheks are only done for VLAN-tagged traffic
-> 
-> Interesting. It looks like there is an explicit bit to drop untagged
-> traffic, so we should probably be using that to preserve user expectations.
-> 
-> Note that only VLAN-aware ports should drop untagged packets due to no
-> pvid - when VLAN-unaware, the software bridge doesn't do this even if
-> there is no pvid on any bridge port and on the bridge itself. So the new
-> sja1105_drop_untagged() function cannot simply be called with "false"
-> from sja1105_bridge_vlan_add() and with "true" from sja1105_bridge_vlan_del.
-> Instead, we need to also consider the VLAN awareness state. That means
-> we need to hook the "drop untagged" setting in all the same places where
-> the "commit pvid" logic is, and it needs to factor in all the state when
-> flipping the "drop untagged" bit: is our current pvid in the VLAN Lookup
-> Table, and is the current port in that VLAN's port membership list?
-> VLAN-unaware ports will never drop untagged frames because these checks
-> always succeed by construction, and the tag_8021q VLANs cannot be changed
-> by the user.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Got it, thanks for catching that.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+>>   }
+>>
+>> -static void sco_sock_clear_timer(struct sock *sk)
+>> +static void sco_sock_clear_timer(struct sock *sk, struct delayed_work *work)
+>>   {
+>>          BT_DBG("sock %p state %d", sk, sk->sk_state);
+>> -       sk_stop_timer(sk, &sk->sk_timer);
+>> +       cancel_delayed_work(work);
+>>   }
+>>
+>>   /* ---- SCO connections ---- */
+>> @@ -174,7 +180,7 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+>>          if (sk) {
+>>                  sock_hold(sk);
+>>                  bh_lock_sock(sk);
+>> -               sco_sock_clear_timer(sk);
+>> +               sco_sock_clear_timer(sk, &conn->sk_timer);
+>>                  sco_chan_del(sk, err);
+>>                  bh_unlock_sock(sk);
+>>                  sco_sock_kill(sk);
+>> @@ -193,6 +199,8 @@ static void __sco_chan_add(struct sco_conn *conn, struct sock *sk,
+>>          sco_pi(sk)->conn = conn;
+>>          conn->sk = sk;
+>>
+>> +       INIT_DELAYED_WORK(&conn->sk_timer, sco_sock_timeout);
+>> +
+>>          if (parent)
+>>                  bt_accept_enqueue(parent, sk, true);
+>>   }
+>> @@ -260,11 +268,11 @@ static int sco_connect(struct sock *sk)
+>>                  goto done;
+>>
+>>          if (hcon->state == BT_CONNECTED) {
+>> -               sco_sock_clear_timer(sk);
+>> +               sco_sock_clear_timer(sk, &conn->sk_timer);
+>>                  sk->sk_state = BT_CONNECTED;
+>>          } else {
+>>                  sk->sk_state = BT_CONNECT;
+>> -               sco_sock_set_timer(sk, sk->sk_sndtimeo);
+>> +               sco_sock_set_timer(sk, &conn->sk_timer, sk->sk_sndtimeo);
+>>          }
+>>
+>>   done:
+>> @@ -419,7 +427,8 @@ static void __sco_sock_close(struct sock *sk)
+>>          case BT_CONFIG:
+>>                  if (sco_pi(sk)->conn->hcon) {
+>>                          sk->sk_state = BT_DISCONN;
+>> -                       sco_sock_set_timer(sk, SCO_DISCONN_TIMEOUT);
+>> +                       sco_sock_set_timer(sk, &sco_pi(sk)->conn->sk_timer,
+>> +                                          SCO_DISCONN_TIMEOUT);
+>>                          sco_conn_lock(sco_pi(sk)->conn);
+>>                          hci_conn_drop(sco_pi(sk)->conn->hcon);
+>>                          sco_pi(sk)->conn->hcon = NULL;
+>> @@ -443,7 +452,8 @@ static void __sco_sock_close(struct sock *sk)
+>>   /* Must be called on unlocked socket. */
+>>   static void sco_sock_close(struct sock *sk)
+>>   {
+>> -       sco_sock_clear_timer(sk);
+>> +       if (sco_pi(sk)->conn)
+>> +               sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
+>>          lock_sock(sk);
+>>          __sco_sock_close(sk);
+>>          release_sock(sk);
+>> @@ -500,8 +510,6 @@ static struct sock *sco_sock_alloc(struct net *net, struct socket *sock,
+>>
+>>          sco_pi(sk)->setting = BT_VOICE_CVSD_16BIT;
+>>
+>> -       timer_setup(&sk->sk_timer, sco_sock_timeout, 0);
+>> -
+>>          bt_sock_link(&sco_sk_list, sk);
+>>          return sk;
+>>   }
+>> @@ -1036,7 +1044,8 @@ static int sco_sock_shutdown(struct socket *sock, int how)
+>>
+>>          if (!sk->sk_shutdown) {
+>>                  sk->sk_shutdown = SHUTDOWN_MASK;
+>> -               sco_sock_clear_timer(sk);
+>> +               if (sco_pi(sk)->conn)
+>> +                       sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
+> 
+> It probably makes it simpler if we can have the check for
+> sco_pi(sk)->conn inside sco_sock_{clear,set}_timer, that way we don't
+> need to keep checking like in the code above.
+> 
+
+Makes sense, I'll make the change.
+
+Re: testing, this patch passes some local tests I set up to trigger the 
+lockdep warning, but I'll run the updated patch through Syzbot again to 
+double-check.
+
+Best wishes,
+Desmond
+
+>>                  __sco_sock_close(sk);
+>>
+>>                  if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime &&
+>> @@ -1083,7 +1092,7 @@ static void sco_conn_ready(struct sco_conn *conn)
+>>          BT_DBG("conn %p", conn);
+>>
+>>          if (sk) {
+>> -               sco_sock_clear_timer(sk);
+>> +               sco_sock_clear_timer(sk, &conn->sk_timer);
+>>                  bh_lock_sock(sk);
+>>                  sk->sk_state = BT_CONNECTED;
+>>                  sk->sk_state_change(sk);
+>> --
+>> 2.25.1
+>>
+> 
+> 
+
