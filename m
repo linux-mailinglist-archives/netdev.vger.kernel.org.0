@@ -2,128 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 825C43DA2A7
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:58:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 166DF3DA2AD
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:58:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234999AbhG2L6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234231AbhG2L6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:58:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7303AC0613C1
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:58:03 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1m94fd-00060L-LG; Thu, 29 Jul 2021 13:57:49 +0200
-Received: from pengutronix.de (unknown [IPv6:2a03:f580:87bc:d400:f664:c769:c9a5:5ced])
+        id S236009AbhG2L6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 07:58:40 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:39386
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234912AbhG2L6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:58:39 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 80EE165AE04;
-        Thu, 29 Jul 2021 11:57:45 +0000 (UTC)
-Date:   Thu, 29 Jul 2021 13:57:44 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        angelo@kernel-space.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] can: flexcan: Fix an uninitialized variable issue
-Message-ID: <20210729115744.ta5lo42d4metzxtf@pengutronix.de>
-References: <a55780a2f4c8f1895b6bcbac4d3f8312b2731079.1627557857.git.christophe.jaillet@wanadoo.fr>
- <20210729113101.n5aucrwu56lyqhg7@pengutronix.de>
- <20210729114442.GT1931@kadam>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 5120C3F0A5
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 11:58:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1627559915;
+        bh=mJegt6nAKectUckt+rbFcl6x63P1a1GPjk8ahj5YQQU=;
+        h=Subject:From:To:Cc:References:Message-ID:Date:MIME-Version:
+         In-Reply-To:Content-Type;
+        b=bQGamwfephWaMoWpVCkkn6eCMN3KZaBoWqWicZ/qbKALsfgq4hHLFVuaMtxQWYAe6
+         /SoeM+AKnrhtCw2Izm17aHvKnl1DeKyE39GgEIdY1DKgxYWcAe2hBKDjPE0Lgz4BWp
+         w28yBjEQOLTe14gTT4MVxOGq2cahZs3scRYruWtIWCiHxQq4zZPtQCp/gf5xed38ru
+         0Pi4Y6uqp779oBX/W+n7BelGsVbD6+ubLDIRvE+E9ArgKmalQ0vbqLSULXFFmfj3gi
+         eCG7jKJpRw0Hn05NSmjREt6ODJPb1YsR8ETYYs3Eirrk8fssajqcvSVPS2XEyXIPpq
+         ANnjJ6G20RQwg==
+Received: by mail-ed1-f70.google.com with SMTP id de5-20020a0564023085b02903bb92fd182eso2854080edb.8
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 04:58:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mJegt6nAKectUckt+rbFcl6x63P1a1GPjk8ahj5YQQU=;
+        b=prtF6dlBHC8UZlT2zXympbQVr9epOgOoPfXCo7Ghqv7vXbcB+KfZRQBAI+33FSMtp2
+         Tgo6aVTAK7/tl/+iFjs3dEiY1IPH8vdd6EM/zSU0EIzxIMraJ/EX0ztcnr+IbJ/crFWm
+         yt6esyXAcMm+OBhqVEeOMzLoLmXJFYnRt21od0xKukPEkffdm6BsylqgqG13vZLJUzOa
+         3WHznaGaHgtormFNcNOA0Yl1XZGnNMH/zUdoXTAcoGM9uRd+GZdSiCg7YxKfCZw9VIRJ
+         +msSAp+d2kZUPegoF9XbNW/ZIS9MhCJLG6lbLy5MoIFl4b8yCGxyNfJqNsSiGxv1Os4A
+         VMUA==
+X-Gm-Message-State: AOAM531IRKIm7zW2dnBNQcS9ja1f8CeLnRzsI/nWaI2d+oKGER0obWB5
+        V0Bjycp2uxs0c6HCaMCuFYzQJ49YK4ERRlGRY8Bef5zHnejGuMBRR+cJ6js0Py+nVTlGrHADfsS
+        Nspa8C3Js+I4cOJx742hEtbAi5+jwXxkQwQ==
+X-Received: by 2002:a17:906:c085:: with SMTP id f5mr4338568ejz.250.1627559914474;
+        Thu, 29 Jul 2021 04:58:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzv4BAiKXa3/y/e8C9RanIKpgbXJfSN4+8ZZEBon9lao+WKG0BTNjyji29VQ1OsQPbAi6/DMw==
+X-Received: by 2002:a17:906:c085:: with SMTP id f5mr4338563ejz.250.1627559914327;
+        Thu, 29 Jul 2021 04:58:34 -0700 (PDT)
+Received: from [192.168.8.102] ([86.32.47.9])
+        by smtp.gmail.com with ESMTPSA id n11sm908803ejg.111.2021.07.29.04.58.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Jul 2021 04:58:33 -0700 (PDT)
+Subject: Re: [PATCH 00/12] nfc: constify, continued (part 2)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     patchwork-bot+netdevbpf@kernel.org, davem@davemloft.net
+Cc:     mgreer@animalcreek.com, bongsu.jeon@samsung.com, kuba@kernel.org,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org
+References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
+ <162755820704.26856.6157999905884570707.git-patchwork-notify@kernel.org>
+ <7b0ae615-dcdc-251e-4067-959b31c28159@canonical.com>
+Message-ID: <f3521001-58f3-8c6c-5b07-9dd8dae0cba8@canonical.com>
+Date:   Thu, 29 Jul 2021 13:58:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="73tosamqqeac4x5o"
-Content-Disposition: inline
-In-Reply-To: <20210729114442.GT1931@kadam>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <7b0ae615-dcdc-251e-4067-959b31c28159@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 29/07/2021 13:35, Krzysztof Kozlowski wrote:
+> On 29/07/2021 13:30, patchwork-bot+netdevbpf@kernel.org wrote:
+>> Hello:
+>>
+>> This series was applied to netdev/net-next.git (refs/heads/master):
+>>
+>> On Thu, 29 Jul 2021 12:40:10 +0200 you wrote:
+>>> Hi,
+>>>
+>>> On top of:
+>>> nfc: constify pointed data
+>>> https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
+>>>
+>>> Best regards,
+>>> Krzysztof
+>>>
+>>> [...]
+>>
+>> Here is the summary with links:
+>>   - [01/12] nfc: constify passed nfc_dev
+>>     https://git.kernel.org/netdev/net-next/c/dd8987a394c0
+>>   - [02/12] nfc: mei_phy: constify buffer passed to mei_nfc_send()
+>>     https://git.kernel.org/netdev/net-next/c/894a6e158633
+>>   - [03/12] nfc: port100: constify several pointers
+>>     https://git.kernel.org/netdev/net-next/c/9a4af01c35a5
+>>   - [04/12] nfc: trf7970a: constify several pointers
+>>     https://git.kernel.org/netdev/net-next/c/ea050c5ee74a
+>>   - [05/12] nfc: virtual_ncidev: constify pointer to nfc_dev
+>>     https://git.kernel.org/netdev/net-next/c/83428dbbac51
+>>   - [06/12] nfc: nfcsim: constify drvdata (struct nfcsim)
+>>     https://git.kernel.org/netdev/net-next/c/582fdc98adc8
+>>   - [07/12] nfc: fdp: drop unneeded cast for printing firmware size in dev_dbg()
+>>     https://git.kernel.org/netdev/net-next/c/6c755b1d2511
+>>   - [08/12] nfc: fdp: use unsigned int as loop iterator
+>>     https://git.kernel.org/netdev/net-next/c/c3e26b6dc1b4
+>>   - [09/12] nfc: fdp: constify several pointers
+>>     https://git.kernel.org/netdev/net-next/c/3d463dd5023b
+>>   - [10/12] nfc: microread: constify several pointers
+>>     https://git.kernel.org/netdev/net-next/c/a751449f8b47
+>>   - [11/12] nfc: mrvl: constify several pointers
+>>     https://git.kernel.org/netdev/net-next/c/fe53159fe3e0
+> 
+> Oh, folks, too fast :)
+> 
+> Sorry for the mess, but the patch 11/12 has one const which is wrong
+> (I sent an email for it) and this should be on top of my
+> previous set:
+> https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
+> which I think you did not take in.
+> 
+> I am not sure if it compiles cleanly without the one above.
 
---73tosamqqeac4x5o
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi David,
 
-On 29.07.2021 14:44:42, Dan Carpenter wrote:
-> On Thu, Jul 29, 2021 at 01:31:01PM +0200, Marc Kleine-Budde wrote:
-> > On 29.07.2021 13:27:42, Christophe JAILLET wrote:
-> > > If both 'clk_ipg' and 'clk_per' are NULL, we return an un-init value.
-> > > So set 'err' to 0, to return success in such a case.
-> >=20
-> > Thanks for the patch, a similar one has been posted before:
-> > https://lore.kernel.org/linux-can/20210728075428.1493568-1-mkl@pengutro=
-nix.de/
-> >=20
-> > > Fixes: d9cead75b1c6 ("can: flexcan: add mcf5441x support")
-> > > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> > > ---
-> > > Another way to fix it is to remove the NULL checks for 'clk_ipg' and
-> > > 'clk_per' that been added in commit d9cead75b1c6.
-> > >=20
-> > > They look useless to me because 'clk_prepare_enable()' returns 0 if i=
-t is
-> > > passed a NULL pointer.
-> >=20
-> > ACK, while the common clock framework's clk_prepare_enable() can handle
-> > NULL pointers, the clock framework used on the mcf5441x doesn't.
->=20
-> Huh?  It looks like it just uses the regular stuff?
+This fails because of missing patchset above:
+../drivers/nfc/fdp/fdp.c: In function ‘fdp_nci_set_production_data’:
+../drivers/nfc/fdp/fdp.c:116:60: warning: passing argument 4 of
+‘nci_prop_cmd’ discards ‘const’ qualifier from pointer target type
+[-Wdiscarded-qualifiers]
+  116 |  return nci_prop_cmd(ndev, NCI_OP_PROP_SET_PDATA_OID, len, data);
 
-https://lore.kernel.org/linux-can/CAMuHMdUeeH2BWgVRoVX7yfckY=3Dwi8X3qkaH0TH=
-hVF_3FpZsbqg@mail.gmail.com/
-Geert Uytterhoeven said:
+It also has one issue in patch 11/12. Can you drop this from
+net-dev/master? I can send a v2 of both patchsets combined.
 
->> Except that the non-CCF implementation of clk_enable() in
->> arch/m68k/coldfire/clk.c still returns -EINVAL instead of NULL.
->> Any plans to move to CCF? Or at least fix legacy clk_enable().
-
-https://lore.kernel.org/linux-can/7c1151fc-cc28-cbc0-c385-313428b32dd7@kern=
-el-space.org/
-Angelo Dureghello said:
->> as Geert pointed out, right now without this protection
->> (that shouldn't anyway harm), probe fails:
->>=20
->> [    1.680000] flexcan: probe of flexcan.0 failed with error -22
-
-Maybe it's time to fix the mcf5441x's clk_enable() as Geert pointed out.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---73tosamqqeac4x5o
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmECl7YACgkQqclaivrt
-76k7Hwf8CPDPauuzqcjQbON/KZXOqa6NlC4gzaGfi769N9cePz2abzU5lSugGuYR
-J8nIAU8rnksLWHn7KkxPBF4wSfrbFHv/oWpy5V420b0X9dHHP57dGREZVSqbhGg6
-TL8Kb+Guud/L+Z9W1yEkis9Y7e0E3NJNsg56fnOwec9MeFPHSWdkSVve3ng8Te5N
-o72z+HcEgN8YdJXZA7v4TX6FdJMevFVhvTH31Oj3SnugmgiHR9UEXGhBSNYhqP2R
-isXmNfo1wXJ4itD+5CGHyRZzrJN4iH8acpLwbsdJ6pESCv6XXMxIbHsGaCEe38mh
-uo7VfTlr+PLoNIqLsLv0eCAQHZVZYg==
-=hCb4
------END PGP SIGNATURE-----
-
---73tosamqqeac4x5o--
+Best regards,
+Krzysztof
