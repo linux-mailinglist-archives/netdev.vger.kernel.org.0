@@ -2,93 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245FB3DA21D
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679383DA221
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 13:30:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236285AbhG2LaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 07:30:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231576AbhG2LaK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 07:30:10 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1903C60F23;
-        Thu, 29 Jul 2021 11:30:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1627558207;
-        bh=2e5SInslfL8UdNJgZY8KZwxJqEELR1t+TSPEQACVbsY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RP4+cn9gSQHxdQkYVkCuY34rBT0OlyCgR+tMAHKQvT0yyamWyQkWQ2xlJcTTFUCfq
-         oN/N71/ANtZo6nwzbnb6K0ChhXNMgSHGgpWIIWnwRzRrcG5ZmAnM0Pn/PZQ4RsLxZT
-         0sCui63RCSO67TH31UJypK8zvgSeDaD1dyBsvdQxLAxz1swXZBzi+N2v80+h7W2IPS
-         vcsvSj1X8khIazkxcwLjQAMCkxjReslAixQWM/HNDR6G87M4iSm8JpNEzWeO6cm7nU
-         0lrdjZNK9NFxboh1wa96Nyyms9THlTWTBVfyOXQeFloQVbDMITIrWsVKtXv28HhgH3
-         b87T8x6otBvxw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0B4FA60A7B;
-        Thu, 29 Jul 2021 11:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 00/12] nfc: constify, continued (part 2)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <162755820704.26856.6157999905884570707.git-patchwork-notify@kernel.org>
-Date:   Thu, 29 Jul 2021 11:30:07 +0000
-References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     mgreer@animalcreek.com, bongsu.jeon@samsung.com,
-        davem@davemloft.net, kuba@kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
+        id S236652AbhG2LaX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 29 Jul 2021 07:30:23 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:35408 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231837AbhG2LaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 07:30:20 -0400
+Received: from smtpclient.apple (p5b3d23f8.dip0.t-ipconnect.de [91.61.35.248])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 5FDB1CED14;
+        Thu, 29 Jul 2021 13:30:15 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [PATCH v4] Bluetooth: schedule SCO timeouts with delayed_work
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20210728071721.411669-1-desmondcheongzx@gmail.com>
+Date:   Thu, 29 Jul 2021 13:30:14 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        skhan@linuxfoundation.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+Content-Transfer-Encoding: 8BIT
+Message-Id: <565F72A4-F9B6-430F-A35D-8EAC7545C141@holtmann.org>
+References: <20210728071721.411669-1-desmondcheongzx@gmail.com>
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Desmond,
 
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 29 Jul 2021 12:40:10 +0200 you wrote:
+> struct sock.sk_timer should be used as a sock cleanup timer. However,
+> SCO uses it to implement sock timeouts.
+> 
+> This causes issues because struct sock.sk_timer's callback is run in
+> an IRQ context, and the timer callback function sco_sock_timeout takes
+> a spin lock on the socket. However, other functions such as
+> sco_conn_del, sco_conn_ready, rfcomm_connect_ind, and
+> bt_accept_enqueue also take the spin lock with interrupts enabled.
+> 
+> This inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock usage could
+> lead to deadlocks as reported by Syzbot [1]:
+>       CPU0
+>       ----
+>  lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>  <Interrupt>
+>    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+> 
+> To fix this, we use delayed work to implement SCO sock timouts
+> instead. This allows us to avoid taking the spin lock on the socket in
+> an IRQ context, and corrects the misuse of struct sock.sk_timer.
+> 
+> Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
+> Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
+> Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+> ---
+> 
 > Hi,
 > 
-> On top of:
-> nfc: constify pointed data
-> https://lore.kernel.org/lkml/20210726145224.146006-1-krzysztof.kozlowski@canonical.com/
+> As suggested, this patch addresses the inconsistent lock state while
+> avoiding having to deal with local_bh_disable.
 > 
-> Best regards,
-> Krzysztof
+> Now that sco_sock_timeout is no longer run in IRQ context, it might
+> be the case that bh_lock_sock is no longer needed to sync between
+> SOFTIRQ and user contexts, so we can switch to lock_sock.
 > 
-> [...]
+> I'm not too certain about this, or if there's any benefit to using
+> lock_sock instead, so I've left that out of this patch.
 
-Here is the summary with links:
-  - [01/12] nfc: constify passed nfc_dev
-    https://git.kernel.org/netdev/net-next/c/dd8987a394c0
-  - [02/12] nfc: mei_phy: constify buffer passed to mei_nfc_send()
-    https://git.kernel.org/netdev/net-next/c/894a6e158633
-  - [03/12] nfc: port100: constify several pointers
-    https://git.kernel.org/netdev/net-next/c/9a4af01c35a5
-  - [04/12] nfc: trf7970a: constify several pointers
-    https://git.kernel.org/netdev/net-next/c/ea050c5ee74a
-  - [05/12] nfc: virtual_ncidev: constify pointer to nfc_dev
-    https://git.kernel.org/netdev/net-next/c/83428dbbac51
-  - [06/12] nfc: nfcsim: constify drvdata (struct nfcsim)
-    https://git.kernel.org/netdev/net-next/c/582fdc98adc8
-  - [07/12] nfc: fdp: drop unneeded cast for printing firmware size in dev_dbg()
-    https://git.kernel.org/netdev/net-next/c/6c755b1d2511
-  - [08/12] nfc: fdp: use unsigned int as loop iterator
-    https://git.kernel.org/netdev/net-next/c/c3e26b6dc1b4
-  - [09/12] nfc: fdp: constify several pointers
-    https://git.kernel.org/netdev/net-next/c/3d463dd5023b
-  - [10/12] nfc: microread: constify several pointers
-    https://git.kernel.org/netdev/net-next/c/a751449f8b47
-  - [11/12] nfc: mrvl: constify several pointers
-    https://git.kernel.org/netdev/net-next/c/fe53159fe3e0
-  - [12/12] nfc: mrvl: constify static nfcmrvl_if_ops
-    https://git.kernel.org/netdev/net-next/c/2695503729da
+I don’t see a reason why we can’t switch to lock_sock, but lets do that in a separate patch in case I missed something it is easier to revert.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> v3 -> v4:
+> - Switch to using delayed_work to schedule SCO sock timeouts instead
+> of using local_bh_disable. As suggested by Luiz Augusto von Dentz.
+> 
+> v2 -> v3:
+> - Split SCO and RFCOMM code changes, as suggested by Luiz Augusto von
+> Dentz.
+> - Simplify local bh disabling in SCO by using local_bh_disable/enable
+> inside sco_chan_del since local_bh_disable/enable pairs are reentrant.
+> 
+> v1 -> v2:
+> - Instead of pulling out the clean-up code out from sco_chan_del and
+> using it directly in sco_conn_del, disable local softirqs for relevant
+> sections.
+> - Disable local softirqs more thoroughly for instances of
+> bh_lock_sock/bh_lock_sock_nested in the bluetooth subsystem.
+> Specifically, the calls in af_bluetooth.c and rfcomm/sock.c are now made
+> with local softirqs disabled as well.
+> 
+> Best wishes,
+> Desmond
+> 
+> net/bluetooth/sco.c | 39 ++++++++++++++++++++++++---------------
+> 1 file changed, 24 insertions(+), 15 deletions(-)
+> 
+> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> index 3bd41563f118..b6dd16153d38 100644
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -48,6 +48,8 @@ struct sco_conn {
+> 	spinlock_t	lock;
+> 	struct sock	*sk;
+> 
+> +	struct delayed_work	sk_timer;
+> +
 
+I don’t like the sk_timer name. That is confusing. Maybe better use timeout_work or to_work. The sk_* are really more struct sock fields (hence the sk->sk_xyz naming schema).
+
+> 	unsigned int    mtu;
+> };
+> 
+> @@ -74,9 +76,11 @@ struct sco_pinfo {
+> #define SCO_CONN_TIMEOUT	(HZ * 40)
+> #define SCO_DISCONN_TIMEOUT	(HZ * 2)
+> 
+> -static void sco_sock_timeout(struct timer_list *t)
+> +static void sco_sock_timeout(struct work_struct *work)
+> {
+> -	struct sock *sk = from_timer(sk, t, sk_timer);
+> +	struct sco_conn *conn = container_of(work, struct sco_conn,
+> +					     sk_timer.work);
+> +	struct sock *sk = conn->sk;
+> 
+> 	BT_DBG("sock %p state %d", sk, sk->sk_state);
+> 
+> @@ -89,16 +93,18 @@ static void sco_sock_timeout(struct timer_list *t)
+> 	sock_put(sk);
+> }
+> 
+> -static void sco_sock_set_timer(struct sock *sk, long timeout)
+> +static void sco_sock_set_timer(struct sock *sk, struct delayed_work *work,
+> +			       long timeout)
+> {
+
+I don’t get the extra variable here. Can we not just pass in struct hci_conn.
+
+
+> 	BT_DBG("sock %p state %d timeout %ld", sk, sk->sk_state, timeout);
+> -	sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
+> +	cancel_delayed_work(work);
+> +	schedule_delayed_work(work, timeout);
+> }
+> 
+> -static void sco_sock_clear_timer(struct sock *sk)
+> +static void sco_sock_clear_timer(struct sock *sk, struct delayed_work *work)
+> {
+> 	BT_DBG("sock %p state %d", sk, sk->sk_state);
+> -	sk_stop_timer(sk, &sk->sk_timer);
+> +	cancel_delayed_work(work);
+
+Same as above, we pass in struct sock just for the debug message.
+
+> }
+> 
+> /* ---- SCO connections ---- */
+> @@ -174,7 +180,7 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+> 	if (sk) {
+> 		sock_hold(sk);
+> 		bh_lock_sock(sk);
+> -		sco_sock_clear_timer(sk);
+> +		sco_sock_clear_timer(sk, &conn->sk_timer);
+> 		sco_chan_del(sk, err);
+> 		bh_unlock_sock(sk);
+> 		sco_sock_kill(sk);
+> @@ -193,6 +199,8 @@ static void __sco_chan_add(struct sco_conn *conn, struct sock *sk,
+> 	sco_pi(sk)->conn = conn;
+> 	conn->sk = sk;
+> 
+> +	INIT_DELAYED_WORK(&conn->sk_timer, sco_sock_timeout);
+> +
+> 	if (parent)
+> 		bt_accept_enqueue(parent, sk, true);
+> }
+> @@ -260,11 +268,11 @@ static int sco_connect(struct sock *sk)
+> 		goto done;
+> 
+> 	if (hcon->state == BT_CONNECTED) {
+> -		sco_sock_clear_timer(sk);
+> +		sco_sock_clear_timer(sk, &conn->sk_timer);
+> 		sk->sk_state = BT_CONNECTED;
+> 	} else {
+> 		sk->sk_state = BT_CONNECT;
+> -		sco_sock_set_timer(sk, sk->sk_sndtimeo);
+> +		sco_sock_set_timer(sk, &conn->sk_timer, sk->sk_sndtimeo);
+> 	}
+> 
+> done:
+> @@ -419,7 +427,8 @@ static void __sco_sock_close(struct sock *sk)
+> 	case BT_CONFIG:
+> 		if (sco_pi(sk)->conn->hcon) {
+> 			sk->sk_state = BT_DISCONN;
+> -			sco_sock_set_timer(sk, SCO_DISCONN_TIMEOUT);
+> +			sco_sock_set_timer(sk, &sco_pi(sk)->conn->sk_timer,
+> +					   SCO_DISCONN_TIMEOUT);
+> 			sco_conn_lock(sco_pi(sk)->conn);
+> 			hci_conn_drop(sco_pi(sk)->conn->hcon);
+> 			sco_pi(sk)->conn->hcon = NULL;
+> @@ -443,7 +452,8 @@ static void __sco_sock_close(struct sock *sk)
+> /* Must be called on unlocked socket. */
+> static void sco_sock_close(struct sock *sk)
+> {
+> -	sco_sock_clear_timer(sk);
+> +	if (sco_pi(sk)->conn)
+> +		sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
+> 	lock_sock(sk);
+> 	__sco_sock_close(sk);
+> 	release_sock(sk);
+> @@ -500,8 +510,6 @@ static struct sock *sco_sock_alloc(struct net *net, struct socket *sock,
+> 
+> 	sco_pi(sk)->setting = BT_VOICE_CVSD_16BIT;
+> 
+> -	timer_setup(&sk->sk_timer, sco_sock_timeout, 0);
+> -
+> 	bt_sock_link(&sco_sk_list, sk);
+> 	return sk;
+> }
+> @@ -1036,7 +1044,8 @@ static int sco_sock_shutdown(struct socket *sock, int how)
+> 
+> 	if (!sk->sk_shutdown) {
+> 		sk->sk_shutdown = SHUTDOWN_MASK;
+> -		sco_sock_clear_timer(sk);
+> +		if (sco_pi(sk)->conn)
+> +			sco_sock_clear_timer(sk, &sco_pi(sk)->conn->sk_timer);
+> 		__sco_sock_close(sk);
+> 
+> 		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime &&
+> @@ -1083,7 +1092,7 @@ static void sco_conn_ready(struct sco_conn *conn)
+> 	BT_DBG("conn %p", conn);
+> 
+> 	if (sk) {
+> -		sco_sock_clear_timer(sk);
+> +		sco_sock_clear_timer(sk, &conn->sk_timer);
+> 		bh_lock_sock(sk);
+> 		sk->sk_state = BT_CONNECTED;
+> 		sk->sk_state_change(sk);
+
+Other than these minor cleanups, this looks great.
+
+Regards
+
+Marcel
 
