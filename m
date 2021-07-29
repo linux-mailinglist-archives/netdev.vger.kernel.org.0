@@ -2,94 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8E7A3D9B90
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 04:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E443D9BA5
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 04:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbhG2CDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 22:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233444AbhG2CDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 22:03:34 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F56C061757
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 19:03:30 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id d1so5077680pll.1
-        for <netdev@vger.kernel.org>; Wed, 28 Jul 2021 19:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IZah8dMI3miWSXLvjvWWjJ+HQXuxd8zF9a3wtlgK9eg=;
-        b=HGwBRSqighFYIKvIv6CqqX28o7rht7Hqo4Fi+PjI9lIhLArlu2Ev1m1+3gZksAHamq
-         VeBZeHvt+D0WlPHvUXvrPvPGhVvCvtO0dpIHv0jXOfUXfSsGwzSjmhiAqyBvo7EFaXKC
-         mpszz3J3/1R3N+o4BdUB9MLVdnHB8Rlz/9G4eNCJzCGn6AFdmRfA5OBT8s38R3mHN4bk
-         L8VaQorkZDyzLYN7MvEda8XSiObnl4E9JDCPUXMB5rea+nPJXMNO36gCsmWTZnLl4T4K
-         Jcy4FqdarlN0buyX9VMn5cL80BEEZKLg5UgnYHTXb6XePaM9OGbhB7wNBRNCmKWnYfT8
-         G0Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IZah8dMI3miWSXLvjvWWjJ+HQXuxd8zF9a3wtlgK9eg=;
-        b=CXYsNcA4XNqzdOvvnlTfVQG7UrrvFJyfV2FOM9rIbTTGCVKoERFGEz/YmT3/7zUH2q
-         G3O7eltkc8tFGZQJ+4GCy1ihQeeugjlXirHl4qQvRtNNmHFMjnwwWxUuhyAVkCcr9Wm+
-         KSE1L5HXQ553XWQ53RCG4qImScpxLecI2hM7YR8FbByM3wUg03JUjqm9LZ13k8XOn1km
-         CtlES/S9bGOHyG87hqrYStFxU4qiYJYA8ixjIfj1wcIG9p87zvF4DGskey81DoFLJHis
-         S5z5F29T8WMWF96YuhK2lB+7oSYNqq2m2o0B2dkTqPI6pgQzCBaPfSgX2Sx3KCoeIbFH
-         CZcA==
-X-Gm-Message-State: AOAM533An2wCC0Rbol+yRygcXFJ14HsByIRNdpP5GCMh0pr8On0J2pQu
-        tunE2H6mdyjMUdU4yJZaCTs=
-X-Google-Smtp-Source: ABdhPJyEZ7uy7ZbK4+DGcDqFjwq8CG+YSAkbbEAKX/tWfWPMAxuflirVGgzrA40e5JwC0oUjvF+Sxg==
-X-Received: by 2002:a63:3f42:: with SMTP id m63mr1712705pga.33.1627524210105;
-        Wed, 28 Jul 2021 19:03:30 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v7sm1057720pjk.37.2021.07.28.19.03.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jul 2021 19:03:29 -0700 (PDT)
-Date:   Thu, 29 Jul 2021 10:03:23 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jarod Wilson <jarod@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] bonding: add new option lacp_active
-Message-ID: <YQIMay98k1OjAmjm@Laptop-X1>
-References: <20210728095229.591321-1-liuhangbin@gmail.com>
- <YQFiJQx7gkqNYkga@nanopsycho>
- <3752.1627499438@famine>
+        id S233541AbhG2CVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 22:21:15 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:35792 "EHLO
+        codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233162AbhG2CVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 22:21:10 -0400
+Received: by codeconstruct.com.au (Postfix, from userid 10000)
+        id CC4D120226; Thu, 29 Jul 2021 10:21:03 +0800 (AWST)
+From:   Jeremy Kerr <jk@codeconstruct.com.au>
+To:     netdev@vger.kernel.org
+Cc:     Matt Johnston <matt@codeconstruct.com.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-doc@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Paul Moore <paul@paul-moore.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org
+Subject: [PATCH net-next v4 00/15] Add Management Component Transport Protocol support
+Date:   Thu, 29 Jul 2021 10:20:38 +0800
+Message-Id: <20210729022053.134453-1-jk@codeconstruct.com.au>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3752.1627499438@famine>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 28, 2021 at 12:10:38PM -0700, Jay Vosburgh wrote:
-> Jiri Pirko <jiri@resnulli.us> wrote:
-> 
-> >Wed, Jul 28, 2021 at 11:52:29AM CEST, liuhangbin@gmail.com wrote:
-> >
-> >[...]
-> >
-> >>+module_param(lacp_active, int, 0);
-> >>+MODULE_PARM_DESC(lacp_active, "Send LACPDU frames as the configured lacp_rate or acts as speak when spoken to; "
-> >>+			      "0 for off, 1 for on (default)");
-> >
-> >Afaik adding module parameters is not allowed.
-> 
-> 	Correct; also, adding options requires adding support to
-> iproute2 to handle the new options via netlink.
+This series adds core MCTP support to the kernel. From the Kconfig
+description:
 
-Hi Jay, Jiri,
+  Management Component Transport Protocol (MCTP) is an in-system
+  protocol for communicating between management controllers and
+  their managed devices (peripherals, host processors, etc.). The
+  protocol is defined by DMTF specification DSP0236.
 
-Thanks for this info. I will remove the module param. For iproute2, I already
-have a patch to support this options. I planed to post it after the
-kernel patch applied.
+  This option enables core MCTP support. For communicating with other
+  devices, you'll want to enable a driver for a specific hardware
+  channel.
 
-Thanks
-Hangbin
+This implementation allows a sockets-based API for sending and receiving
+MCTP messages via sendmsg/recvmsg on SOCK_DGRAM sockets. Kernel stack
+control is all via netlink, using existing RTM_* messages. The userspace
+ABI change is fairly small; just the necessary AF_/ETH_P_/ARPHDR_
+constants, a new sockaddr, and a new netlink attribute.
+
+For MAINTAINERS, I've just included netdev@ as the list entry. I'm happy
+to alter this based on preferences here - an alternative would be the
+OpenBMC list (the main user of the MCTP interface), or we can create a
+new list entirely.
+
+We have a couple of interface drivers almost ready to go at the moment,
+but those can wait until the core code has some review.
+
+This is v4 of the series; v1 and v2 were both RFC.
+
+selinux folks: CCing 01/15 due to the new PF_MCTP protocol family.
+
+linux-doc folks: CCing 15/15 for the new MCTP overview document.
+
+Review, comments, questions etc. are most welcome.
+
+Cheers,
+
+
+Jeremy
+
+v2:
+ - change to match spec terminology: controller -> component
+ - require specific capabilities for bind() & sendmsg()
+ - add address and tag defintions to uapi
+ - add selinux AF_MCTP table definitions
+ - remove strict cflags; warnings are present in common headers
+
+v3:
+ - require caps for MCTP bind() & send()
+ - comment typo fixes
+ - switch to an array for local EIDs
+ - fix addrinfo dump iteration & error path
+ - add RTM_DELADDR
+ - remove GENMASK() and BIT() from uapi
+
+v4:
+ - drop tun patch; that can be submitted separately
+ - keep nipa happy: add maintainer CCs, including doc and selinux
+ - net-next rebase
+ - Include AF_MCTP in af_family_slock_keys and pf_family_names
+ - Introduce MODULE_ definitions earlier
+ - upstream change: set_link_af no longer called with RTNL held
+ - add kdoc for net_device.mctp_ptr
+ - don't inline mctp_rt_match_eid
+ - require rtm_type == RTN_UNICAST in route management handlers
+ - remove unused RTAX policy table
+ - fix mctp_sock->keys rcu annotations
+ - fix spurious rcu_read_unlock in route input
+
+Jeremy Kerr (10):
+  mctp: Add MCTP base
+  mctp: Add base socket/protocol definitions
+  mctp: Add base packet definitions
+  mctp: Add sockaddr_mctp to uapi
+  mctp: Add initial driver infrastructure
+  mctp: Add device handling and netlink interface
+  mctp: Add initial routing framework
+  mctp: Populate socket implementation
+  mctp: Implement message fragmentation & reassembly
+  mctp: Add MCTP overview document
+
+Matt Johnston (6):
+  mctp: Add netlink route management
+  mctp: Add neighbour implementation
+  mctp: Add neighbour netlink interface
+  mctp: Add dest neighbour lladdr to route output
+  mctp: Allow per-netns default networks
+  mctp: Allow MCTP on tun devices
+
+ Documentation/networking/index.rst  |    1 +
+ Documentation/networking/mctp.rst   |  213 ++++++
+ MAINTAINERS                         |   12 +
+ drivers/net/Kconfig                 |    2 +
+ drivers/net/Makefile                |    1 +
+ drivers/net/mctp/Kconfig            |    8 +
+ drivers/net/mctp/Makefile           |    0
+ include/linux/netdevice.h           |    3 +
+ include/linux/socket.h              |    6 +-
+ include/net/mctp.h                  |  235 ++++++
+ include/net/mctpdevice.h            |   36 +
+ include/net/net_namespace.h         |    4 +
+ include/net/netns/mctp.h            |   36 +
+ include/uapi/linux/if_arp.h         |    1 +
+ include/uapi/linux/if_ether.h       |    3 +
+ include/uapi/linux/if_link.h        |   10 +
+ include/uapi/linux/mctp.h           |   36 +
+ net/Kconfig                         |    1 +
+ net/Makefile                        |    1 +
+ net/mctp/Kconfig                    |   13 +
+ net/mctp/Makefile                   |    3 +
+ net/mctp/af_mctp.c                  |  396 ++++++++++
+ net/mctp/device.c                   |  427 +++++++++++
+ net/mctp/neigh.c                    |  342 +++++++++
+ net/mctp/route.c                    | 1095 +++++++++++++++++++++++++++
+ security/selinux/hooks.c            |    4 +-
+ security/selinux/include/classmap.h |    4 +-
+ 27 files changed, 2890 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/networking/mctp.rst
+ create mode 100644 drivers/net/mctp/Kconfig
+ create mode 100644 drivers/net/mctp/Makefile
+ create mode 100644 include/net/mctp.h
+ create mode 100644 include/net/mctpdevice.h
+ create mode 100644 include/net/netns/mctp.h
+ create mode 100644 include/uapi/linux/mctp.h
+ create mode 100644 net/mctp/Kconfig
+ create mode 100644 net/mctp/Makefile
+ create mode 100644 net/mctp/af_mctp.c
+ create mode 100644 net/mctp/device.c
+ create mode 100644 net/mctp/neigh.c
+ create mode 100644 net/mctp/route.c
+
+-- 
+2.30.2
+
+
+
+Jeremy Kerr (10):
+  mctp: Add MCTP base
+  mctp: Add base socket/protocol definitions
+  mctp: Add base packet definitions
+  mctp: Add sockaddr_mctp to uapi
+  mctp: Add initial driver infrastructure
+  mctp: Add device handling and netlink interface
+  mctp: Add initial routing framework
+  mctp: Populate socket implementation
+  mctp: Implement message fragmentation & reassembly
+  mctp: Add MCTP overview document
+
+Matt Johnston (5):
+  mctp: Add netlink route management
+  mctp: Add neighbour implementation
+  mctp: Add neighbour netlink interface
+  mctp: Add dest neighbour lladdr to route output
+  mctp: Allow per-netns default networks
+
+ Documentation/networking/index.rst  |    1 +
+ Documentation/networking/mctp.rst   |  213 ++++++
+ MAINTAINERS                         |   12 +
+ drivers/net/Kconfig                 |    2 +
+ drivers/net/Makefile                |    1 +
+ drivers/net/mctp/Kconfig            |    8 +
+ drivers/net/mctp/Makefile           |    0
+ include/linux/netdevice.h           |    4 +
+ include/linux/socket.h              |    6 +-
+ include/net/mctp.h                  |  231 ++++++
+ include/net/mctpdevice.h            |   36 +
+ include/net/net_namespace.h         |    4 +
+ include/net/netns/mctp.h            |   36 +
+ include/uapi/linux/if_arp.h         |    1 +
+ include/uapi/linux/if_ether.h       |    3 +
+ include/uapi/linux/if_link.h        |   10 +
+ include/uapi/linux/mctp.h           |   36 +
+ net/Kconfig                         |    1 +
+ net/Makefile                        |    1 +
+ net/core/sock.c                     |    1 +
+ net/mctp/Kconfig                    |   13 +
+ net/mctp/Makefile                   |    3 +
+ net/mctp/af_mctp.c                  |  396 ++++++++++
+ net/mctp/device.c                   |  423 +++++++++++
+ net/mctp/neigh.c                    |  342 +++++++++
+ net/mctp/route.c                    | 1099 +++++++++++++++++++++++++++
+ net/socket.c                        |    1 +
+ security/selinux/hooks.c            |    4 +-
+ security/selinux/include/classmap.h |    4 +-
+ 29 files changed, 2889 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/networking/mctp.rst
+ create mode 100644 drivers/net/mctp/Kconfig
+ create mode 100644 drivers/net/mctp/Makefile
+ create mode 100644 include/net/mctp.h
+ create mode 100644 include/net/mctpdevice.h
+ create mode 100644 include/net/netns/mctp.h
+ create mode 100644 include/uapi/linux/mctp.h
+ create mode 100644 net/mctp/Kconfig
+ create mode 100644 net/mctp/Makefile
+ create mode 100644 net/mctp/af_mctp.c
+ create mode 100644 net/mctp/device.c
+ create mode 100644 net/mctp/neigh.c
+ create mode 100644 net/mctp/route.c
+
+-- 
+2.30.2
+
+
+Jeremy Kerr (10):
+  mctp: Add MCTP base
+  mctp: Add base socket/protocol definitions
+  mctp: Add base packet definitions
+  mctp: Add sockaddr_mctp to uapi
+  mctp: Add initial driver infrastructure
+  mctp: Add device handling and netlink interface
+  mctp: Add initial routing framework
+  mctp: Populate socket implementation
+  mctp: Implement message fragmentation & reassembly
+  mctp: Add MCTP overview document
+
+Matt Johnston (5):
+  mctp: Add netlink route management
+  mctp: Add neighbour implementation
+  mctp: Add neighbour netlink interface
+  mctp: Add dest neighbour lladdr to route output
+  mctp: Allow per-netns default networks
+
+ Documentation/networking/index.rst  |    1 +
+ Documentation/networking/mctp.rst   |  213 ++++++
+ MAINTAINERS                         |   12 +
+ drivers/net/Kconfig                 |    2 +
+ drivers/net/Makefile                |    1 +
+ drivers/net/mctp/Kconfig            |    8 +
+ drivers/net/mctp/Makefile           |    0
+ include/linux/netdevice.h           |    4 +
+ include/linux/socket.h              |    6 +-
+ include/net/mctp.h                  |  231 ++++++
+ include/net/mctpdevice.h            |   36 +
+ include/net/net_namespace.h         |    4 +
+ include/net/netns/mctp.h            |   36 +
+ include/uapi/linux/if_arp.h         |    1 +
+ include/uapi/linux/if_ether.h       |    3 +
+ include/uapi/linux/if_link.h        |   10 +
+ include/uapi/linux/mctp.h           |   36 +
+ net/Kconfig                         |    1 +
+ net/Makefile                        |    1 +
+ net/core/sock.c                     |    1 +
+ net/mctp/Kconfig                    |   13 +
+ net/mctp/Makefile                   |    3 +
+ net/mctp/af_mctp.c                  |  396 ++++++++++
+ net/mctp/device.c                   |  423 +++++++++++
+ net/mctp/neigh.c                    |  342 +++++++++
+ net/mctp/route.c                    | 1099 +++++++++++++++++++++++++++
+ net/socket.c                        |    1 +
+ security/selinux/hooks.c            |    4 +-
+ security/selinux/include/classmap.h |    4 +-
+ 29 files changed, 2889 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/networking/mctp.rst
+ create mode 100644 drivers/net/mctp/Kconfig
+ create mode 100644 drivers/net/mctp/Makefile
+ create mode 100644 include/net/mctp.h
+ create mode 100644 include/net/mctpdevice.h
+ create mode 100644 include/net/netns/mctp.h
+ create mode 100644 include/uapi/linux/mctp.h
+ create mode 100644 net/mctp/Kconfig
+ create mode 100644 net/mctp/Makefile
+ create mode 100644 net/mctp/af_mctp.c
+ create mode 100644 net/mctp/device.c
+ create mode 100644 net/mctp/neigh.c
+ create mode 100644 net/mctp/route.c
+
+-- 
+2.30.2
+
