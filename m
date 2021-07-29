@@ -2,254 +2,314 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 424093D9D81
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 08:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30D7F3D9DA4
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 08:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234112AbhG2GQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 02:16:04 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234019AbhG2GQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 02:16:02 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 16T69GQr028705;
-        Wed, 28 Jul 2021 23:15:46 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=ZuIowdJJF7Mx5IZ5I8X4FsN3LrXand4X0W5QZVPY5ow=;
- b=nxXLIhFWdHaVEFTShLvucQOviseaf0Bcrqh3+aE98qmXF/QcAJyVTuLCkK1Ya7yuXePM
- j4VVKGbTU6K3K0L97fiS4g+LbIStZ05xO0LGqrYE708kjrqCkJUFXdr+Mcdq6J64tPB7
- JQrXnaZu3DWdO2oUJOqb+K3fbIMkMteD6Vw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 3a37bf5922-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 28 Jul 2021 23:15:45 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+        id S234123AbhG2G3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 02:29:08 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:12423 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233934AbhG2G3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 02:29:06 -0400
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Gb0rr2dVlzcjgm;
+        Thu, 29 Jul 2021 14:25:32 +0800 (CST)
+Received: from dggpeml500024.china.huawei.com (7.185.36.10) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 28 Jul 2021 23:15:45 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cyV/av5ItxilufKjspNYlJt+sojeqgt9ZiYGkNlll0fYbDGudiRzmf+SkWe/ZNz+somhQcQ9h4esWfbyTOo3dTqiGNCxN1tkFtSG5aZsdzCC51Pbh7tmTOEOuyoQbmad2kmJq4RbeDYO4aAzcxqwRMeq6VvDvEkvmn3EsPUyRkHlcFzWN78pEovXmPzTdJbgEnnyLLKk9OqWIu63L/7w0e8vyxLENu2W+kBVNq7iPB5Lb4F++W3R3NwA/JZWAj1KaiDPr2sZCcIlO0GSN6Cb/ZjkvsjYs951Un3iHENfdfFRFDOTzZ/SG1g1WvhtFOGO7ZJTQ1cSJOt2It7FXfmMLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZuIowdJJF7Mx5IZ5I8X4FsN3LrXand4X0W5QZVPY5ow=;
- b=A9vsRDB482Ss83/hLzLMUNSgpdxqd8TlPRY5z4lYIV+Auo213vrCy4lV72YcHk+4pi59vkpzVlTsH0f4F4DBoE3jwBTxmLzAoaFo0rRWxrcr4/vZIrfTIG8Qt/geEBsfszhWoOojQsdziwV0EC4pKUK6TmzoaB7DnhoHbqPeW+vJTQ2x5cm8HP2hFO5xcIv3NQO0UNR4bxzINN4zXUtBX4ihz0HGtLMk5F5pVRCykEV86M5aiQLEj0rOpTbR6Iwtc8UZKBD4gGJ5yV9j50VwSw0P4FVcpb6O7CRr5l2yxYO9gPq85vN5X/za6j5EGOeyVaglpkDA6RVMZg/oWLH/Zw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SA1PR15MB4871.namprd15.prod.outlook.com (2603:10b6:806:1d2::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.20; Thu, 29 Jul
- 2021 06:15:43 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c143:fac2:85b4:14cb%7]) with mapi id 15.20.4373.021; Thu, 29 Jul 2021
- 06:15:42 +0000
-Subject: Re: [PATCH bpf-next] selftests/bpf: move netcnt test under test_progs
-To:     Stanislav Fomichev <sdf@google.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>
-References: <20210728151419.501183-1-sdf@google.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <eae5801e-8cef-436c-ade6-84f9eea00871@fb.com>
-Date:   Wed, 28 Jul 2021 23:15:40 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
-In-Reply-To: <20210728151419.501183-1-sdf@google.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CO2PR04CA0092.namprd04.prod.outlook.com
- (2603:10b6:104:6::18) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+ 15.1.2176.2; Thu, 29 Jul 2021 14:28:52 +0800
+Received: from [10.67.103.6] (10.67.103.6) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 29 Jul
+ 2021 14:28:52 +0800
+Subject: Re: [PATCH net-next] bonding: 3ad: fix the concurrency between
+ __bond_release_one() and bond_3ad_state_machine_handler()
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <1627453192-54463-1-git-send-email-moyufeng@huawei.com>
+ <47d9f710-59f7-0ccc-d41b-ee7ee0f69017@nvidia.com> <3528.1627499144@famine>
+ <bca516cf-1174-22c9-215f-4463713edd52@huawei.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@resnulli.us>,
+        <netdev@vger.kernel.org>, <shenjian15@huawei.com>,
+        <lipeng321@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linyunsheng@huawei.com>, <zhangjiaran@huawei.com>,
+        <huangguangbin2@huawei.com>, <chenhao288@hisilicon.com>,
+        <salil.mehta@huawei.com>, <linuxarm@huawei.com>,
+        <linuxarm@openeuler.org>
+From:   moyufeng <moyufeng@huawei.com>
+Message-ID: <ed9423af-6cf2-2d9e-a31a-72cbe9f4ff73@huawei.com>
+Date:   Thu, 29 Jul 2021 14:28:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21d6::1181] (2620:10d:c090:400::5:d11a) by CO2PR04CA0092.namprd04.prod.outlook.com (2603:10b6:104:6::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.17 via Frontend Transport; Thu, 29 Jul 2021 06:15:41 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dff4f361-ba42-4785-efa7-08d952584b74
-X-MS-TrafficTypeDiagnostic: SA1PR15MB4871:
-X-Microsoft-Antispam-PRVS: <SA1PR15MB48716DE7EB46CB8C8E3812ACD3EB9@SA1PR15MB4871.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p3aoUsqlT2JWjUV44z7QgVbsJvh5q1Jiahhz514iJgr/UTDcU58iOc3sxgltkUQWZz2umAFaTRSqwoiSo9sqG4ABWxwmtw5RDikzMRhejFUz9xJhprIPZEaH+j/VJ1kK6HOT5fBZqEmszwZfT4fkmEUw24t80/LrJtZSSTdKrD4fZku4J2237TsFVbJbv8j+rSVeQ0VbRhIA4WvEswIBGCP3MHwF8rFY8DtmyTqr1WFG6Ap7wc8OLAqi8jqfCwzycc8XuFQuKiUP6/P2WofbTVhTIJVgIlfwioAgeYc1Q9/2H4auA4Ad7AMrBjSifA0r7iyT6fkfSEkGBw/9RQHuT+7EMEF4pgazMVLYvGr2v1PHfTq6dzBKSKK+Yd6oJpNt8cqrqLJh2fK5Mwqfz+rradkXkeRFUQxj2zYpPJWCcCyDT8iK6zoAgEvj9BsdnJ3ru5a/3uB9dd3OMUPgPETFVpasVuj517ciF8zuEbgR5lFH0nNsBKI0HMgw5R5prG5aQhw2p94aA5WgMHC4j673dobKvuG/HiJ5Ai2tbc2SejL0Mju06FAXG6sOCqYeo4fJ9Vcwsj7KLSZjm75AmA2/ipf+v0/t05xvQxLyH3gg8xa/5xcw/Ou4KdhwyMdGa/ujgfU8stPao8a7zsYhDt7wpcsek9Ig/4E+HvhruY1z4lRdAe0Av/kZQLLPIDq4NUSW0RvSQaf+9bponP1iCs/ANZIl7vF43prWg16e5sZqRKc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(346002)(376002)(39860400002)(6486002)(8936002)(66946007)(66476007)(38100700002)(66556008)(4326008)(86362001)(478600001)(2906002)(2616005)(31686004)(53546011)(83380400001)(52116002)(31696002)(186003)(36756003)(8676002)(316002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?enZlVktoT0hNcWFTL3hMT3ZhanRncHp1RkU2L0hwY1BFNlJXQlNnay9DbGVV?=
- =?utf-8?B?VmhRekhSSW9hSDF1eVB0VzJpYmEvQVh0dml6STU0cmp6TitYRS9uZktiMlVZ?=
- =?utf-8?B?eXFvVkloY2V5Mk0rSy9iMkJUVDZoQkVLMU85TU52TE4wTEloRC9qR0VXd1Bm?=
- =?utf-8?B?Umc5MWs0RlZUNW1vV0JyLzAyTGFZQnViY3NXZS9kMisxM2JNaEZyUFlCRUVC?=
- =?utf-8?B?SjQ4RTVHTGJRSkZTTGNKVjIvcVVPQlZDemt5T2tDWFFYdDV3czdhblh2MzBl?=
- =?utf-8?B?TWVGWUdzOHBGZkl3MjhRNFA0U1lIejZkNHJLQXRWK0ZES296NUhBckk5Q0pP?=
- =?utf-8?B?SlAvcnNaenhLQ0liV2RKUzlSbkIwT3NMVnRzRTlNTWhmOEIvanVrWTJUVCs2?=
- =?utf-8?B?NHdKamJpM2YwY285b3prSldQcGxoNUU4anpZN3NwSFNuTElhNm1jb1UrbWo5?=
- =?utf-8?B?TjE4Y21VOGVkb05RTkdNS3FGTjVLdmZYK3MyR2MxSzEwUmZmeFRrZmNmanZM?=
- =?utf-8?B?Wk4xbUo5czlFWkZ4QjMyUVNxbjcybVFZOW9Yak1DY09KVzZYbUNETEJDNWlB?=
- =?utf-8?B?M0dkZ0UybVhQMGF6cHR2azlWa25zOTRXaGUrRUE2WjhrL3pyaHd2MzZzUHFa?=
- =?utf-8?B?cjVQeUJ6NTZ1eFpGWkx1QVZmRy9QdmtlSUcwWndYYzMrUll1azdWVGtoVi9I?=
- =?utf-8?B?elJBcjVxUC9wRGFEMVFxTEk1LzZWc3EveVYxMlMxdmRnbk5mUVlMUm5Uby9Q?=
- =?utf-8?B?cko5ei8vL2t3VW1zdGNnUTVHWk0vTE52cXozZlFwRlIxV3lMeU0wSXF5bWRa?=
- =?utf-8?B?aWhNdTExck1wOGxHSkFxYVFZZXRPaGF2L1k4TFFJV0R4NTVoY0dIcHRDc3Ar?=
- =?utf-8?B?UlBYKzJsYTFjYUFLcG53WXVQUnlsaVRKRzRaQVVaSTV0cVQwR1hTMU55c0pT?=
- =?utf-8?B?ajJLVVA0T2N6VlBYa09NU0E2WkR4VFJGZTBiZ0ZHSEZ5cGplakMxTzk5M1JL?=
- =?utf-8?B?MkpJSndJNFkxT05peDdBa0JtZnNoKzg5YmsrcEVvc3JuQmtGRHVpUDA2QVo2?=
- =?utf-8?B?OStrL3VJNUVSUFZFMGRSTjJTRFlHajVZcXQ4RGNuZlRhTjFYYUpWTEMzRUU1?=
- =?utf-8?B?OWhSRzJBWXlzL3ViQXRjWUlDK1ltdmdkam9JaFRSZEhJMTlIL3VVRmNoTWJM?=
- =?utf-8?B?UHFib3JoVCs0NmoxRXV4MmhWQzVBQjZwN2ZFbC9LK3p5L1BCNVB2T2VVclp1?=
- =?utf-8?B?VWhmeHJ5enpveUpqSXBKOHpyUHhIUG5tcXFpZ2ZJbld3VDYvOEJ0RXhybGVo?=
- =?utf-8?B?dlNJTUFmeGFvdUFBSVdabzlQOXk3VkN6K0JubG5lVHVYUGVUSE1zdHlyaWJu?=
- =?utf-8?B?M0VHRkRUTkJpSmhranE3SUdGdDRFSEdERGZvMkFpbm5jamZSSkVncTBITUVp?=
- =?utf-8?B?N2tzak92ZHJMeEN3UFpybG02T2FMSGdRWXpXYkZDRGdnZjNSY29FajRpYVZw?=
- =?utf-8?B?WCtMVUVVdnllUWtaWjMvSTBRWWpob0svQWpIMUM3RTlxcGFhTDNtUjhhWUVZ?=
- =?utf-8?B?S0FWS2cyUkN4N25WMkJ6dlVPeDVkTHJXRERHYkRIczJDOG53LzhLS0QrMnJV?=
- =?utf-8?B?MFlJZjRoeEREaWtnL0RNSDdPWVd6QVd4d2VEc3gwN0FkcG9mUFhYby9uVHgw?=
- =?utf-8?B?QXBaTGc1Tml5ZEViR2Q2Ti9CSjhpellTQ0VHZ3dxeWhiZm5Pb2Zvdkx2MTgv?=
- =?utf-8?B?N1pESG1BczRyNHMrSHJISGdjdVNuUFg2M0QraGVIZHZDZjV4M2VZUWk4dFVj?=
- =?utf-8?Q?6hYyxhYwEKwoVPUGML9UjnEzieXeVGlA+EilU=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: dff4f361-ba42-4785-efa7-08d952584b74
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2021 06:15:42.6999
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pyalFxxPORXG+Pq4iUxxAl8Pf5ymqgod3L5wETkHQtodXh41dMN2031smF2FJz0b
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB4871
-X-OriginatorOrg: fb.com
-X-Proofpoint-ORIG-GUID: HIJ3M5XgZTNhopmtsiwvIXdfXVxoUd7f
-X-Proofpoint-GUID: HIJ3M5XgZTNhopmtsiwvIXdfXVxoUd7f
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-29_06:2021-07-27,2021-07-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999 phishscore=0
- clxscore=1015 adultscore=0 suspectscore=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107290042
-X-FB-Internal: deliver
+In-Reply-To: <bca516cf-1174-22c9-215f-4463713edd52@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 7/28/21 8:14 AM, Stanislav Fomichev wrote:
-> Rewrite to skel and ASSERT macros as well while we are at it.
+On 2021/7/29 10:32, moyufeng wrote:
 > 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-
-Thanks for converting test_netcnt to test_progs.
-The patch looks good to me except a couple of minor issues.
-
-Acked-by: Yonghong Song <yhs@fb.com>
-
-> ---
->   tools/testing/selftests/bpf/Makefile          |   3 +-
->   .../testing/selftests/bpf/prog_tests/netcnt.c |  93 +++++++++++
->   tools/testing/selftests/bpf/test_netcnt.c     | 148 ------------------
->   3 files changed, 94 insertions(+), 150 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/netcnt.c
->   delete mode 100644 tools/testing/selftests/bpf/test_netcnt.c
 > 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index f405b20c1e6c..2a58b7b5aea4 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -38,7 +38,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
->   	test_verifier_log test_dev_cgroup \
->   	test_sock test_sockmap get_cgroup_id_user \
->   	test_cgroup_storage \
-> -	test_netcnt test_tcpnotify_user test_sysctl \
-> +	test_tcpnotify_user test_sysctl \
->   	test_progs-no_alu32
->   
->   # Also test bpf-gcc, if present
-> @@ -197,7 +197,6 @@ $(OUTPUT)/test_sockmap: cgroup_helpers.c
->   $(OUTPUT)/test_tcpnotify_user: cgroup_helpers.c trace_helpers.c
->   $(OUTPUT)/get_cgroup_id_user: cgroup_helpers.c
->   $(OUTPUT)/test_cgroup_storage: cgroup_helpers.c
-> -$(OUTPUT)/test_netcnt: cgroup_helpers.c
->   $(OUTPUT)/test_sock_fields: cgroup_helpers.c
->   $(OUTPUT)/test_sysctl: cgroup_helpers.c
->   
-> diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-> new file mode 100644
-> index 000000000000..063a40d228b6
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-> @@ -0,0 +1,93 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <sys/sysinfo.h>
-> +#include <test_progs.h>
-> +#include "netcnt_prog.skel.h"
-> +#include "netcnt_common.h"
-> +
-> +#define CG_NAME "/netcnt"
-> +
-> +void test_netcnt(void)
-> +{
-> +	union percpu_net_cnt *percpu_netcnt = NULL;
-> +	struct bpf_cgroup_storage_key key;
-> +	int map_fd, percpu_map_fd;
-> +	struct netcnt_prog *skel;
-> +	unsigned long packets;
-> +	union net_cnt netcnt;
-> +	unsigned long bytes;
-> +	int cpu, nproc;
-> +	int cg_fd = -1;
-> +
-> +	skel = netcnt_prog__open_and_load();
-> +	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
-> +		return;
-> +
-> +	nproc = get_nprocs_conf();
-> +	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
-> +	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
-> +		goto err;
-> +
-> +	cg_fd = test__join_cgroup(CG_NAME);
-> +	if (!ASSERT_GE(cg_fd, 0, "test__join_cgroup"))
-> +		goto err;
-> +
-> +	skel->links.bpf_nextcnt =
-> +		bpf_program__attach_cgroup(skel->progs.bpf_nextcnt, cg_fd);
-> +	if (!ASSERT_OK_PTR(skel->links.bpf_nextcnt,
-> +			   "attach_cgroup(bpf_nextcnt)"))
-> +		goto err;
-> +
-> +	if (system("which ping6 &>/dev/null") == 0)
-> +		assert(!system("ping6 ::1 -c 10000 -f -q > /dev/null"));
-> +	else
-> +		assert(!system("ping -6 ::1 -c 10000 -f -q > /dev/null"));
-> +
-> +	map_fd = bpf_map__fd(skel->maps.netcnt);
-> +	if (!ASSERT_GE(map_fd, 0, "bpf_map__fd(netcnt)"))
-> +		goto err;
+> On 2021/7/29 3:05, Jay Vosburgh wrote:
+>> Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
+>>
+>>> On 28/07/2021 09:19, Yufeng Mo wrote:
+>>>> Some time ago, I reported a calltrace issue
+>>>> "did not find a suitable aggregator", please see[1].
+>>>> After a period of analysis and reproduction, I find
+>>>> that this problem is caused by concurrency.
+>>>>
+>>>> Before the problem occurs, the bond structure is like follows:
+>>>>
+>>>> bond0 - slaver0(eth0) - agg0.lag_ports -> port0 - port1
+>>>>                       \
+>>>>                         port0
+>>>>       \
+>>>>         slaver1(eth1) - agg1.lag_ports -> NULL
+>>>>                       \
+>>>>                         port1
+>>>>
+>>>> If we run 'ifenslave bond0 -d eth1', the process is like below:
+>>>>
+>>>> excuting __bond_release_one()
+>>>> |
+>>>> bond_upper_dev_unlink()[step1]
+>>>> |                       |                       |
+>>>> |                       |                       bond_3ad_lacpdu_recv()
+>>>> |                       |                       ->bond_3ad_rx_indication()
+>>>> |                       |                       spin_lock_bh()
+>>>> |                       |                       ->ad_rx_machine()
+>>>> |                       |                       ->__record_pdu()[step2]
+>>>> |                       |                       spin_unlock_bh()
+>>>> |                       |                       |
+>>>> |                       bond_3ad_state_machine_handler()
+>>>> |                       spin_lock_bh()
+>>>> |                       ->ad_port_selection_logic()
+>>>> |                       ->try to find free aggregator[step3]
+>>>> |                       ->try to find suitable aggregator[step4]
+>>>> |                       ->did not find a suitable aggregator[step5]
+>>>> |                       spin_unlock_bh()
+>>>> |                       |
+>>>> |                       |
+>>>> bond_3ad_unbind_slave() |
+>>>> spin_lock_bh()
+>>>> spin_unlock_bh()
+>>>>
+>>>> step1: already removed slaver1(eth1) from list, but port1 remains
+>>>> step2: receive a lacpdu and update port0
+>>>> step3: port0 will be removed from agg0.lag_ports. The struct is
+>>>>        "agg0.lag_ports -> port1" now, and agg0 is not free. At the
+>>>> 	   same time, slaver1/agg1 has been removed from the list by step1.
+>>>> 	   So we can't find a free aggregator now.
+>>>> step4: can't find suitable aggregator because of step2
+>>>> step5: cause a calltrace since port->aggregator is NULL
+>>>>
+>>>> To solve this concurrency problem, the range of bond->mode_lock
+>>>> is extended from only bond_3ad_unbind_slave() to both
+>>>> bond_upper_dev_unlink() and bond_3ad_unbind_slave().
+>>>>
+>>>> [1]https://lore.kernel.org/netdev/10374.1611947473@famine/
+>>>>
+>>>> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+>>>> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>>>> ---
+>>>>  drivers/net/bonding/bond_3ad.c  | 7 +------
+>>>>  drivers/net/bonding/bond_main.c | 6 +++++-
+>>>>  2 files changed, 6 insertions(+), 7 deletions(-)
+>>>>
+>>> [snip]
+>>>>  /**
+>>>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>>>> index 0ff7567..deb019e 100644
+>>>> --- a/drivers/net/bonding/bond_main.c
+>>>> +++ b/drivers/net/bonding/bond_main.c
+>>>> @@ -2129,14 +2129,18 @@ static int __bond_release_one(struct net_device *bond_dev,
+>>>>  	/* recompute stats just before removing the slave */
+>>>>  	bond_get_stats(bond->dev, &bond->bond_stats);
+>>>>  
+>>>> -	bond_upper_dev_unlink(bond, slave);
+>>>>  	/* unregister rx_handler early so bond_handle_frame wouldn't be called
+>>>>  	 * for this slave anymore.
+>>>>  	 */
+>>>>  	netdev_rx_handler_unregister(slave_dev);
+>>>>  
+>>>> +	/* Sync against bond_3ad_state_machine_handler() */
+>>>> +	spin_lock_bh(&bond->mode_lock);
+>>>> +	bond_upper_dev_unlink(bond, slave);
+>>>
+>>> this calls netdev_upper_dev_unlink() which calls call_netdevice_notifiers_info() for
+>>> NETDEV_PRECHANGEUPPER and NETDEV_CHANGEUPPER, both of which are allowed to sleep so you
+>>> cannot hold the mode lock
+>>
+>> 	Indeed it does, I missed that the callbacks can sleep.
+>>
+> 
+> Yes, I missed that too.
+> 
+>>> after netdev_rx_handler_unregister() the bond's recv_probe cannot be executed
+>>> so you don't really need to unlink it under mode_lock or move mode_lock at all
+>>
+>> 	I don't think moving the call to netdev_rx_handler_unregister is
+>> sufficient to close the race.  If it's moved above the call to
+>> bond_upper_dev_unlink, the probe won't be called afterwards, but the
+>> LACPDU could have arrived just prior to the unregister and changed the
+>> port state in the bond_3ad_lacpdu_recv call sequence ("step 2",
+>> something in the LACPDU causes AD_PORT_SELECTED to be cleared).  Later,
+>> bond_3ad_state_machine_handler runs in a separate work queue context,
+>> and could process the effect of the LACPDU after the rx_handler
+>> unregister, and still race with the upper_dev_unlink.
+>>
+>> 	I suspect the solution is to rework ad_port_selection_logic to
+>> correctly handle the situation where no aggregator is available.  Off
+>> the top of my head, I think something along the lines of:
+>>
+>> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+>> index 6908822d9773..eb6223e4510e 100644
+>> --- a/drivers/net/bonding/bond_3ad.c
+>> +++ b/drivers/net/bonding/bond_3ad.c
+>> @@ -1537,6 +1537,10 @@ static void ad_port_selection_logic(struct port *port, bool *update_slave_arr)
+>>  			slave_err(bond->dev, port->slave->dev,
+>>  				  "Port %d did not find a suitable aggregator\n",
+>>  				  port->actor_port_number);
+>> +			aggregator = __get_first_agg(port);
+>> +			ad_agg_selection_logic(aggregator, update_slave_arr);
+>> +
+>> +			return;
+>>  		}
+>>  	}
+>>  	/* if all aggregator's ports are READY_N == TRUE, set ready=TRUE
+>>
+>> 	I've not compiled or tested this, but the theory is that it will
+>> reselect a new aggregator for the bond (which happens anyway later in
+>> the function), then returns, leaving "port" as not AD_PORT_SELECTED.
+>> The next run of the state machine should attempt to select it again, and
+>> presumably succeed at that time.
+>>
+>> 	This may leave the bond with no active ports for one interval
+>> between runs of the state machine, unfortunately, but it should
+>> eliminate the panic.
+>>
+>> 	Another possibility might be netdev_rx_handler_unregister, then
+>> , and finally bond_upper_dev_unlink, but I'm not
+>> sure right off if that would have other side effects.
+>>
+> 
+> This may cause "%s: Warning: Found an uninitialized port\n" to be
+> printed in bond_3ad_state_machine_handler(). But it doesn't matter.
+> 
+> In addition, I have analyzed the code in bond_3ad_unbind_slave().
+> Even if the slaver is not deleted from the list, the process is
+> not affected. This seems to work. Anyway, I will test it.
+> 
+>> 	Yufeng, would you be able to test the above and see if it
+>> resolves the issue in your test?
+>>
+> 
+> Sure，I will test both these two solution and report then.
+> 
+> Thanks Nikolay and Jay for the comments.
+> 
 
-For skeleton, map_fd is always valid and you do not need to check it.
+I have tested these two solution and got result below:
 
-> +
-> +	percpu_map_fd = bpf_map__fd(skel->maps.percpu_netcnt);
-> +	if (!ASSERT_GE(percpu_map_fd, 0, "bpf_map__fd(percpu_netcnt)"))
-> +		goto err;
+solution 1: handle the situation where no aggregator is available
+result: failed
 
-The same for percpu_map_fd, it is always valid and no need to check it.
+I got a calltrace similar to the previous one. I think this is
+because port->aggregator is still NULL after the modification.
+The calltrace still occurs in the subsequent process.
 
-> +
-> +	if (!ASSERT_OK(bpf_map_get_next_key(map_fd, NULL, &key),
-> +		       "bpf_map_get_next_key"))
-> +		goto err;
-> +
-> +	if (!ASSERT_OK(bpf_map_lookup_elem(map_fd, &key, &netcnt),
-> +		       "bpf_map_lookup_elem(netcnt)"))
-> +		goto err;
-> +
-[...]
+log as below(bond0 with two slaver:eth0 and eth3):
+
+$ ifenslave bond0 -d eth3
+[87113.498148] bond0: (slave eth0): Port 1 did not find a suitable aggregator
+[87113.504996] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000030
+[87113.513741] Mem abort info:
+[87113.516524]   ESR = 0x96000004
+[87113.519567]   EC = 0x25: DABT (current EL), IL = 32 bits
+[87113.524856]   SET = 0, FnV = 0
+[87113.527898]   EA = 0, S1PTW = 0
+[87113.531026] Data abort info:
+[87113.533894]   ISV = 0, ISS = 0x00000004
+[87113.537713]   CM = 0, WnR = 0
+[87113.540667] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020bfe17000
+[87113.547078] [0000000000000030] pgd=0000000000000000, p4d=0000000000000000
+[87113.553840] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[87113.559387] Modules linked in: bonding hclgevf hns3 hclge hnae3 [last unloaded: bonding]
+[87113.567445] CPU: 65 PID: 7 Comm: kworker/u256:0 Not tainted 5.13.0-rc4+ #1
+[87113.574287] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 CS V5.B110.01 01/07/2021
+[87113.583116] Workqueue: bond0 bond_3ad_state_machine_handler [bonding]
+[87113.589540] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
+[87113.595518] pc : bond_3ad_state_machine_handler+0x5b0/0xe40 [bonding]
+[87113.601934] lr : bond_3ad_state_machine_handler+0x700/0xe40 [bonding]
+[87113.608348] sp : ffff800010533d10
+[87113.611648] x29: ffff800010533d10 x28: ffff800010533d90 x27: ffff0020bfe2d638
+[87113.618750] x26: ffff00400166e940 x25: ffff00400166ebf0 x24: ffffdf65e83a8524
+[87113.625852] x23: ffff800010533d88 x22: ffff00400166e900 x21: ffff0020bfe2d600
+[87113.632956] x20: 0000000000000000 x19: ffff00400166e900 x18: 0000000000000030
+[87113.640059] x17: 0000000000000000 x16: ffffdf66343c1350 x15: ffff00208d685b68
+[87113.647162] x14: ffffffffffffffff x13: ffff800090533927 x12: ffff80001053392f
+[87113.654264] x11: 0000000000000000 x10: ffff2047b7940000 x9 : ffffdf65e8395f9c
+[87113.661368] x8 : ffff2047b7680000 x7 : ffff2047b7940000 x6 : 0000000000000000
+[87113.668470] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
+[87113.675574] x2 : 000000000000003f x1 : 0000000000000004 x0 : 0000000000000003
+[87113.682676] Call trace:
+[87113.685113]  bond_3ad_state_machine_handler+0x5b0/0xe40 [bonding]
+[87113.691183]  process_one_work+0x1dc/0x48c
+[87113.695176]  worker_thread+0x15c/0x464
+[87113.698908]  kthread+0x168/0x16c
+[87113.702122]  ret_from_fork+0x10/0x18
+[87113.705685] Code: 7104009f 54001820 52800060 b9004f60 (79406064)
+[87113.711804] ---[ end trace 5bf403daf9e444eb ]---
+[87113.721609] Kernel panic - not syncing: Oops: Fatal exception in interrupt
+[87113.728476] SMP: stopping secondary CPUs
+[87114.054358] Kernel Offset: 0x5f6624290000 from 0xffff800010000000
+[87114.060423] PHYS_OFFSET: 0x0
+[87114.063291] CPU features: 0x00000241,a3002c40
+[87114.067628] Memory Limit: none
+[87114.075727] ---[ end Kernel panic - not syncing: Oops: Fatal exception in interrupt ]---
+
+
+solution 2: put bond_upper_dev_unlink() after bond_3ad_unbind_slave()
+result: passed
+
+The result is passed, except for a previously mentioned warning print.
+In normal cases, this warning is not printed.
+
+log as below(bond0 with two slaver:eth0 and eth3):
+
+$ ifenslave bond0 -d eth3
+[86653.902168] bond0: Warning: Found an uninitialized port
+[86654.003515] bond0: (slave eth3): Releasing backup interface
+[86654.031183] hns3 0000:7d:00.3 eth3: net stop
+[86654.035823] hns3 0000:7d:00.3 eth3: link down
+
+
+The solution 2 avoids the failure to find a suitable aggregator.
+So I think the solution 2 seems to solve the problem better.
+
+>> 	-J
+>>
+>>
+>>>>  	if (BOND_MODE(bond) == BOND_MODE_8023AD)
+>>>>  		bond_3ad_unbind_slave(slave);
+>>>> +	spin_unlock_bh(&bond->mode_lock);
+>>>>  
+>>>>  	if (bond_mode_can_use_xmit_hash(bond))
+>>>>  		bond_update_slave_arr(bond, slave);
+>>>>
+>>>
+>>
+>> ---
+>> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+>> .
+>>
+> .
+> 
