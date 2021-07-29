@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C20E3D9BA3
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 04:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17FAF3D9BA6
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 04:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233487AbhG2CVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Jul 2021 22:21:12 -0400
-Received: from pi.codeconstruct.com.au ([203.29.241.158]:35850 "EHLO
+        id S233582AbhG2CVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Jul 2021 22:21:16 -0400
+Received: from pi.codeconstruct.com.au ([203.29.241.158]:35892 "EHLO
         codeconstruct.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbhG2CVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 22:21:10 -0400
+        with ESMTP id S233374AbhG2CVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Jul 2021 22:21:11 -0400
 Received: by codeconstruct.com.au (Postfix, from userid 10000)
-        id B6B7921449; Thu, 29 Jul 2021 10:21:05 +0800 (AWST)
+        id 269172144B; Thu, 29 Jul 2021 10:21:06 +0800 (AWST)
 From:   Jeremy Kerr <jk@codeconstruct.com.au>
 To:     netdev@vger.kernel.org
 Cc:     Matt Johnston <matt@codeconstruct.com.au>,
         Andrew Jeffery <andrew@aj.id.au>,
         Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v4 04/15] mctp: Add sockaddr_mctp to uapi
-Date:   Thu, 29 Jul 2021 10:20:42 +0800
-Message-Id: <20210729022053.134453-5-jk@codeconstruct.com.au>
+Subject: [PATCH net-next v4 05/15] mctp: Add initial driver infrastructure
+Date:   Thu, 29 Jul 2021 10:20:43 +0800
+Message-Id: <20210729022053.134453-6-jk@codeconstruct.com.au>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210729022053.134453-1-jk@codeconstruct.com.au>
 References: <20210729022053.134453-1-jk@codeconstruct.com.au>
@@ -31,53 +31,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change introduces the user-visible MCTP header, containing the
-protocol-specific addressing definitions.
+Add an empty drivers/net/mctp/, for future interface drivers.
 
 Signed-off-by: Jeremy Kerr <jk@codeconstruct.com.au>
-
 ---
-v2:
- - include MCTP_ADDR_NULL and MCTP_TAG_* definitions
-v3:
- - don't use GENMASK/BIT in uapi
----
- include/uapi/linux/mctp.h | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ MAINTAINERS                 | 1 +
+ drivers/net/Kconfig         | 2 ++
+ drivers/net/Makefile        | 1 +
+ drivers/net/mctp/Kconfig    | 8 ++++++++
+ drivers/net/mctp/Makefile   | 0
+ include/uapi/linux/if_arp.h | 1 +
+ 6 files changed, 13 insertions(+)
+ create mode 100644 drivers/net/mctp/Kconfig
+ create mode 100644 drivers/net/mctp/Makefile
 
-diff --git a/include/uapi/linux/mctp.h b/include/uapi/linux/mctp.h
-index 2640a589c14c..52b54d13f385 100644
---- a/include/uapi/linux/mctp.h
-+++ b/include/uapi/linux/mctp.h
-@@ -9,7 +9,28 @@
- #ifndef __UAPI_MCTP_H
- #define __UAPI_MCTP_H
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 770b986d10f0..e95eb3b00cd2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11037,6 +11037,7 @@ M:	Jeremy Kerr <jk@codeconstruct.com.au>
+ M:	Matt Johnston <matt@codeconstruct.com.au>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
++F:	drivers/net/mctp/
+ F:	include/net/mctp.h
+ F:	net/mctp/
  
-+#include <linux/types.h>
-+
-+typedef __u8			mctp_eid_t;
-+
-+struct mctp_addr {
-+	mctp_eid_t		s_addr;
-+};
-+
- struct sockaddr_mctp {
-+	unsigned short int	smctp_family;
-+	int			smctp_network;
-+	struct mctp_addr	smctp_addr;
-+	__u8			smctp_type;
-+	__u8			smctp_tag;
- };
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 6977f8248df7..56213a8a1ec5 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -483,6 +483,8 @@ config NET_SB1000
  
-+#define MCTP_NET_ANY		0x0
+ source "drivers/net/phy/Kconfig"
+ 
++source "drivers/net/mctp/Kconfig"
 +
-+#define MCTP_ADDR_NULL		0x00
-+#define MCTP_ADDR_ANY		0xff
+ source "drivers/net/mdio/Kconfig"
+ 
+ source "drivers/net/pcs/Kconfig"
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index 7ffd2d03efaf..a48a664605a3 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -69,6 +69,7 @@ obj-$(CONFIG_WAN) += wan/
+ obj-$(CONFIG_WLAN) += wireless/
+ obj-$(CONFIG_IEEE802154) += ieee802154/
+ obj-$(CONFIG_WWAN) += wwan/
++obj-$(CONFIG_MCTP) += mctp/
+ 
+ obj-$(CONFIG_VMXNET3) += vmxnet3/
+ obj-$(CONFIG_XEN_NETDEV_FRONTEND) += xen-netfront.o
+diff --git a/drivers/net/mctp/Kconfig b/drivers/net/mctp/Kconfig
+new file mode 100644
+index 000000000000..d8f966cedc89
+--- /dev/null
++++ b/drivers/net/mctp/Kconfig
+@@ -0,0 +1,8 @@
 +
-+#define MCTP_TAG_MASK		0x07
-+#define MCTP_TAG_OWNER		0x08
++if MCTP
 +
- #endif /* __UAPI_MCTP_H */
++menu "MCTP Device Drivers"
++
++endmenu
++
++endif
+diff --git a/drivers/net/mctp/Makefile b/drivers/net/mctp/Makefile
+new file mode 100644
+index 000000000000..e69de29bb2d1
+diff --git a/include/uapi/linux/if_arp.h b/include/uapi/linux/if_arp.h
+index c3cc5a9e5eaf..4783af9fe520 100644
+--- a/include/uapi/linux/if_arp.h
++++ b/include/uapi/linux/if_arp.h
+@@ -54,6 +54,7 @@
+ #define ARPHRD_X25	271		/* CCITT X.25			*/
+ #define ARPHRD_HWX25	272		/* Boards with X.25 in firmware	*/
+ #define ARPHRD_CAN	280		/* Controller Area Network      */
++#define ARPHRD_MCTP	290
+ #define ARPHRD_PPP	512
+ #define ARPHRD_CISCO	513		/* Cisco HDLC	 		*/
+ #define ARPHRD_HDLC	ARPHRD_CISCO
 -- 
 2.30.2
 
