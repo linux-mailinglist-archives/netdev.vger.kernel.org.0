@@ -2,106 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0023D3DA3B6
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 689C43DA3BD
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 15:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237402AbhG2NPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 09:15:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51718 "EHLO vps0.lunn.ch"
+        id S237449AbhG2NSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 09:18:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237236AbhG2NPq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Jul 2021 09:15:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=szPN/IUb4a+Mhtg0in2BOoWLdWFrCWgNEz1rf5rVRSc=; b=g+UaSTqBrLYgUXsX7qNj30vi3O
-        oU5DJzh1/d3hSVyQQdnAtMHlTpdjC0EiWvlMDv1ujH7OxWZXPw0CCoyjMgvtW22TFQT9/At66e6IY
-        7B+URLhr4cNRG1fByKI4ADH0zcerOlV9Q30mTApkv9cNyGkGwaTwqYmDou4oolarVAN4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1m95ss-00FJXN-B2; Thu, 29 Jul 2021 15:15:34 +0200
-Date:   Thu, 29 Jul 2021 15:15:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Luo Jie <luoj@codeaurora.org>
-Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        p.zabel@pengutronix.de, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        robert.marko@sartura.hr, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, sricharan@codeaurora.org
-Subject: Re: [PATCH 2/3] net: mdio-ipq4019: rename mdio_ipq4019 to mdio_ipq
-Message-ID: <YQKp9gsnjBNmXYIc@lunn.ch>
-References: <20210729125358.5227-1-luoj@codeaurora.org>
- <20210729125358.5227-2-luoj@codeaurora.org>
+        id S237407AbhG2NR6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Jul 2021 09:17:58 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A652160230;
+        Thu, 29 Jul 2021 13:17:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1627564675;
+        bh=657q3Ny5GNsQEvrnZwjQv2SsH7ghWBvOM5beSTWCFis=;
+        h=From:To:Cc:Subject:Date:From;
+        b=edYl6vSNTxA5ibh5bUjI13vokD2nM0eAlvDT6JvqgJa7VITT0cMTrSjPMRgxUXnVm
+         JRemjZHgHVK9FCu2aY6ox3vl2b0PpsZDzmaYUaHaOKTqv8RW0uVWjhQGYK8DMKFngJ
+         Z7sBNwU+ozOG6d67ZWfN1zRKjg2cS/G2ByFnJn70J32TP8b/w71hBFZwYz4J/IrWHO
+         2CzXWYhJtLpRIeXOmmwpp+AtoE6FiTuIT+OMd1Lk9H1PLNjsJb2IsjJIRB3YP8H1PA
+         7vSF7yyMLaII5rDERz1nm96KA2tQ1peFouWc3TH57tmLYGm1iw2yWDsJ9nKeRCKInW
+         Jy8ul8RgrLf0A==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next v1 0/2] Clean devlink net namespace operations
+Date:   Thu, 29 Jul 2021 16:17:48 +0300
+Message-Id: <cover.1627564383.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210729125358.5227-2-luoj@codeaurora.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 29, 2021 at 08:53:57PM +0800, Luo Jie wrote:
-> mdio_ipq driver supports more SOCs such as ipq40xx, ipq807x,
-> ipq60xx and ipq50xx.
-> 
-> Signed-off-by: Luo Jie <luoj@codeaurora.org>
-> ---
->  drivers/net/mdio/Kconfig                      |  6 +-
->  drivers/net/mdio/Makefile                     |  2 +-
->  .../net/mdio/{mdio-ipq4019.c => mdio-ipq.c}   | 66 +++++++++----------
->  3 files changed, 37 insertions(+), 37 deletions(-)
->  rename drivers/net/mdio/{mdio-ipq4019.c => mdio-ipq.c} (81%)
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi Luo
+Changelog:
+v1:
+ * Patch 1:
+   * Renamed function name
+   * Added bool parameter to the notifier function 
+ * Patch 2: 
+   * added Jiri's ROB and dropped word "RAW" from the comment"
+v0: https://lore.kernel.org/lkml/cover.1627545799.git.leonro@nvidia.com
 
-We don't rename files unless there is a very good reason. It makes
-back porting of fixes harder in stable. There are plenty of examples
-of files with device specific names, but supporting a broad range of
-devices. Take for example lm75, at24.
+-----------------------------------------------------------------------------
+Hi Dave, Jakub and Jiri
 
-> -config MDIO_IPQ4019
-> -	tristate "Qualcomm IPQ4019 MDIO interface support"
-> +config MDIO_IPQ
-> +	tristate "Qualcomm IPQ MDIO interface support"
->  	depends on HAS_IOMEM && OF_MDIO
->  	depends on GPIOLIB && COMMON_CLK && RESET_CONTROLLER
->  	help
->  	  This driver supports the MDIO interface found in Qualcomm
-> -	  IPQ40xx series Soc-s.
-> +	  IPQ40xx, IPQ60XX, IPQ807X and IPQ50XX series Soc-s.
+This short series continues my work on devlink core code to make devlink
+reload less prone to errors and harden it from API abuse.
 
-Please leave the MDIO_IPQ4019 unchanged, so we don't break backwards
-compatibility, but the changes to the text are O.K.
+Despite first patch being a clear fix, I would ask you to apply it to net-next
+anyway, because the fixed patch is anyway old and it will help us to eliminate
+merge conflicts that will arise for following patches or even for the second one.
 
-> @@ -31,38 +31,38 @@
->  /* 0 = Clause 22, 1 = Clause 45 */
->  #define MDIO_MODE_C45				BIT(8)
->  
-> -#define IPQ4019_MDIO_TIMEOUT	10000
-> -#define IPQ4019_MDIO_SLEEP		10
-> +#define IPQ_MDIO_TIMEOUT	10000
-> +#define IPQ_MDIO_SLEEP		10
+Thanks
 
-This sort of mass rename will also make back porting fixes
-harder. Please don't do it.
+Leon Romanovsky (2):
+  devlink: Break parameter notification sequence to be before/after
+    unload/load driver
+  devlink: Allocate devlink directly in requested net namespace
 
-> -static const struct of_device_id ipq4019_mdio_dt_ids[] = {
-> +static const struct of_device_id ipq_mdio_dt_ids[] = {
->  	{ .compatible = "qcom,ipq4019-mdio" },
-> +	{ .compatible = "qcom,ipq-mdio" },
->  	{ }
->  };
+ drivers/net/netdevsim/dev.c |  4 +--
+ include/net/devlink.h       | 14 ++++++++--
+ net/core/devlink.c          | 56 ++++++++++++++++++-------------------
+ 3 files changed, 41 insertions(+), 33 deletions(-)
 
-Such a generic name is not a good idea. It appears this driver is not
-compatible with the IPQ8064? It is O.K. to add more specific
-compatibles. So you could add
+-- 
+2.31.1
 
-qcom,ipq40xx, qcom,ipq60xx, qcom,ipq807x and qcom,ipq50xx.
-
-But really, there is no need. Take for example snps,dwmac-mdio, which
-is used in all sorts of devices.
-
-   Andrew
