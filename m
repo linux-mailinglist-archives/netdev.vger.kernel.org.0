@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 805833DA154
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 530273DA153
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236980AbhG2KlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 06:41:00 -0400
-Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:47826
+        id S237203AbhG2KlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 06:41:03 -0400
+Received: from smtp-relay-canonical-1.canonical.com ([185.125.188.121]:47912
         "EHLO smtp-relay-canonical-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235880AbhG2Kkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:40:49 -0400
+        by vger.kernel.org with ESMTP id S236732AbhG2Kkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:40:52 -0400
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 6CFB43F23A
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 10:40:46 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPS id 5409F3F231
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 10:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1627555246;
-        bh=BZIMPFV8uXC9L/K0xzDgkM9m6seQbMO32c9dNbfWa80=;
+        s=20210705; t=1627555249;
+        bh=6LhaqEyE6YM7qc+DvvBC/izK9f7my9CENZwOkswScoM=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=BTaP1d8ydrV0hgqkvf/+UhufeiCSWdGIGAW4o196Prd6ZEqDC2WF3iYjM848wn9Dj
-         VPKZ8ix+0RfiaO26QLgqT7Z/1agpsiRaeCzPIDc0jHdLJiHnmltOES+3nX113AcY88
-         +9XVJP0/1JjYJRM/nSMyX2LE7f615J6AwEZ5nXupdTkR5itCw5mz66kXyZpHPcGBLf
-         7rS9vDW9u8VlblQ0tv8KO25uGVKV/GU21bs4JxY77fjIaBCJ+MIo8nWAzep7v78vAn
-         zsvgWkvLVPIgGMNqKzHht81g6NPRQxwWcEhaWWYlvOLySc15W0153dZ6YFCDSDaOt+
-         mclQZNrRELrLA==
-Received: by mail-ed1-f70.google.com with SMTP id p2-20020a50c9420000b02903a12bbba1ebso2729727edh.6
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 03:40:46 -0700 (PDT)
+        b=pCYFcLJxKT89TDwTk0M8wOK5c1x26ozPyWOD6ZU25R6PpydbnVjOHI7Y0WRqyi2gp
+         QkoZMvNN6kXZf1+MKk1z8kSeN5qZ5UfDq2Cbn2yw/ahNiUV3ZuV8NPkUeBDS75S1Xo
+         KXRTsx6YkPBE1gQ5HpATaOptgOGNgYn6v7W+QbHO6qplXXqJceHBUfwyyRfyiwltH8
+         uoKC5DGL7izx9dh17V9FKnH2Q2foaSQxkZ/4Vu/tujJpvPgkUA6Rdqwu6KgQ7IPgL5
+         nGcg5Po0pCuHnp82haOExEamXWwFXONQQ7cbdhKjAvgyCn1jiq0GuQ9iEcT73a9+Ng
+         6Z+Y/SztD1wwA==
+Received: by mail-ed1-f70.google.com with SMTP id n24-20020aa7c7980000b02903bb4e1d45aaso2725124eds.15
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 03:40:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BZIMPFV8uXC9L/K0xzDgkM9m6seQbMO32c9dNbfWa80=;
-        b=LfMJhctMPZP07KPs5q1R6GJZ1e4K4RL6FIahb7ZRJgzrTFQ2Zy9R1IHqjguheOOuk3
-         txnvcF1fD54xLnWKk2vsQKUGb7hJcyGUfC9+h3wn09NRLQ6Ho81M1ff5+y7q+cKZBEJi
-         f/bbcYWcpRTIXav3Mj4FacMtW3Mtq2BMbNg1vGTlT2U2c9OtbnR6L1V0XStF0DrTZYO8
-         UNRl7mn0cYNLTYpgxHWJ+mnu0XzvP0ekrTa3DdFwHb67lpKYf67SVQVeW4hWcHKeZQJn
-         9ZN8oLPUCpeiUkBX0m1nMYlz4Pw+aNWTP+Q5+vg7xbCz5D+8AayciSydXrImylRE++xs
-         Tjzg==
-X-Gm-Message-State: AOAM53294Oe2Acy/QmnWcvkDOKg9Hmk1l68y16HmYs8/zUDYPNimCnNV
-        0eBAGnaCx57wJ2u5MmE5RXyly1j2thvNEGiHhwN82zsz+GTI2XxtAZlbBeLPyF8KVkO1GZI0yx9
-        wEs5mgpYJEEb+5h0/r35Vmrw7BaoRPgX1iQ==
-X-Received: by 2002:a17:906:b0c5:: with SMTP id bk5mr3881339ejb.428.1627555246144;
-        Thu, 29 Jul 2021 03:40:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygcbnz2mL1I+EM9Bv/vZsYeICNIGIdcaZXywSSZmph4zECffAhqDCrnUSC3LB/1TyQegjgiQ==
-X-Received: by 2002:a17:906:b0c5:: with SMTP id bk5mr3881326ejb.428.1627555246020;
-        Thu, 29 Jul 2021 03:40:46 -0700 (PDT)
+        bh=6LhaqEyE6YM7qc+DvvBC/izK9f7my9CENZwOkswScoM=;
+        b=pKD1Y2JOgkIHX2UbNPJIITbHd/EBRO6s0M9kKI0G+j1OSZ9uh4JN01CokOmGQyRLAM
+         61p1Z2qdR7JAqBHKsvhhkU30UQIJJpWpqaS4RB0h+qA4FwDD2BeFjmu5TOaGUqT1yVJt
+         Y0mZFsHEfn7k6aCOSdx2nHykQjZykjVm3ELSb3w5jypJURu2ApkLvaM3IQgtqKj9JDUE
+         8H23IxJgI5DrPBcQ0aIAKPKH3QS7yGmXCDo6BGeu7zeQPAdQg3VQeZwKF3qyoqDeEc+4
+         97jhTjckmDLBr0HeMNN/+SG7fwoaahDdsrc5v/XQ1ligNcMthLWhpxyFzAlg2XJRHR+Y
+         MCdQ==
+X-Gm-Message-State: AOAM532bvEu1LPnO+LbVpMJ4UhvYWylsH/Oi5ur+Z1jRJVFLqzS1Erof
+        DJiT2osIi0xMKxr7HRo0BIVk9PrVSMJ0tWGUugpL/85Ltxnrmsak1jllU7SWML8rl8AHLl8Q5FT
+        xGlFjDlRPN4Grmp+zlKYrW1PbaoQG1eZK8A==
+X-Received: by 2002:a05:6402:d2:: with SMTP id i18mr5264564edu.17.1627555247739;
+        Thu, 29 Jul 2021 03:40:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyU2Ka89Z3Qjr8Tzvk3IIGX+JEzwdx0FNyuEdwHjyphht6T2bpxMENgCaQjv8QxWPsttQOLJw==
+X-Received: by 2002:a05:6402:d2:: with SMTP id i18mr5264543edu.17.1627555247595;
+        Thu, 29 Jul 2021 03:40:47 -0700 (PDT)
 Received: from localhost.localdomain ([86.32.47.9])
-        by smtp.gmail.com with ESMTPSA id c14sm824475ejb.78.2021.07.29.03.40.44
+        by smtp.gmail.com with ESMTPSA id c14sm824475ejb.78.2021.07.29.03.40.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 03:40:45 -0700 (PDT)
+        Thu, 29 Jul 2021 03:40:46 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Mark Greer <mgreer@animalcreek.com>,
@@ -61,9 +61,9 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 10/12] nfc: microread: constify several pointers
-Date:   Thu, 29 Jul 2021 12:40:20 +0200
-Message-Id: <20210729104022.47761-11-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 11/12] nfc: mrvl: constify several pointers
+Date:   Thu, 29 Jul 2021 12:40:21 +0200
+Message-Id: <20210729104022.47761-12-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
 References: <20210729104022.47761-1-krzysztof.kozlowski@canonical.com>
@@ -78,59 +78,159 @@ variables can be const for correctness and safety.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/nfc/microread/i2c.c       | 2 +-
- drivers/nfc/microread/microread.c | 4 ++--
- drivers/nfc/microread/microread.h | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/nfc/nfcmrvl/fw_dnld.c | 16 +++++++++-------
+ drivers/nfc/nfcmrvl/i2c.c     |  2 +-
+ drivers/nfc/nfcmrvl/main.c    |  2 +-
+ drivers/nfc/nfcmrvl/nfcmrvl.h |  2 +-
+ drivers/nfc/nfcmrvl/spi.c     |  4 ++--
+ drivers/nfc/nfcmrvl/uart.c    |  2 +-
+ 6 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/nfc/microread/i2c.c b/drivers/nfc/microread/i2c.c
-index f91760c78455..86f593c73ed6 100644
---- a/drivers/nfc/microread/i2c.c
-+++ b/drivers/nfc/microread/i2c.c
-@@ -73,7 +73,7 @@ static void microread_i2c_remove_len_crc(struct sk_buff *skb)
- 	skb_trim(skb, MICROREAD_I2C_FRAME_TAILROOM);
+diff --git a/drivers/nfc/nfcmrvl/fw_dnld.c b/drivers/nfc/nfcmrvl/fw_dnld.c
+index aaccb8b76b3e..edac56b01fd1 100644
+--- a/drivers/nfc/nfcmrvl/fw_dnld.c
++++ b/drivers/nfc/nfcmrvl/fw_dnld.c
+@@ -129,7 +129,7 @@ static void fw_dnld_timeout(struct timer_list *t)
  }
  
--static int check_crc(struct sk_buff *skb)
-+static int check_crc(const struct sk_buff *skb)
+ static int process_state_reset(struct nfcmrvl_private *priv,
+-			       struct sk_buff *skb)
++			       const struct sk_buff *skb)
  {
- 	int i;
- 	u8 crc = 0;
-diff --git a/drivers/nfc/microread/microread.c b/drivers/nfc/microread/microread.c
-index 8e847524937c..9d83ccebd434 100644
---- a/drivers/nfc/microread/microread.c
-+++ b/drivers/nfc/microread/microread.c
-@@ -358,7 +358,7 @@ static int microread_complete_target_discovered(struct nfc_hci_dev *hdev,
- static void microread_im_transceive_cb(void *context, struct sk_buff *skb,
- 				       int err)
- {
--	struct microread_info *info = context;
-+	const struct microread_info *info = context;
+ 	if (sizeof(nci_pattern_core_reset_ntf) != skb->len ||
+ 	    memcmp(skb->data, nci_pattern_core_reset_ntf,
+@@ -145,7 +145,8 @@ static int process_state_reset(struct nfcmrvl_private *priv,
+ 	return 0;
+ }
  
- 	switch (info->async_cb_type) {
- 	case MICROREAD_CB_TYPE_READER_ALL:
-@@ -642,7 +642,7 @@ static const struct nfc_hci_ops microread_hci_ops = {
+-static int process_state_init(struct nfcmrvl_private *priv, struct sk_buff *skb)
++static int process_state_init(struct nfcmrvl_private *priv,
++			      const struct sk_buff *skb)
+ {
+ 	struct nci_core_set_config_cmd cmd;
+ 
+@@ -175,7 +176,7 @@ static void create_lc(struct nfcmrvl_private *priv)
+ }
+ 
+ static int process_state_set_ref_clock(struct nfcmrvl_private *priv,
+-				       struct sk_buff *skb)
++				       const struct sk_buff *skb)
+ {
+ 	struct nci_core_set_config_cmd cmd;
+ 
+@@ -221,7 +222,7 @@ static int process_state_set_ref_clock(struct nfcmrvl_private *priv,
+ }
+ 
+ static int process_state_set_hi_config(struct nfcmrvl_private *priv,
+-				       struct sk_buff *skb)
++				       const struct sk_buff *skb)
+ {
+ 	if (sizeof(nci_pattern_core_set_config_rsp) != skb->len ||
+ 	    memcmp(skb->data, nci_pattern_core_set_config_rsp, skb->len))
+@@ -232,7 +233,7 @@ static int process_state_set_hi_config(struct nfcmrvl_private *priv,
+ }
+ 
+ static int process_state_open_lc(struct nfcmrvl_private *priv,
+-				 struct sk_buff *skb)
++				 const struct sk_buff *skb)
+ {
+ 	if (sizeof(nci_pattern_core_conn_create_rsp) >= skb->len ||
+ 	    memcmp(skb->data, nci_pattern_core_conn_create_rsp,
+@@ -347,7 +348,7 @@ static int process_state_fw_dnld(struct nfcmrvl_private *priv,
+ }
+ 
+ static int process_state_close_lc(struct nfcmrvl_private *priv,
+-				  struct sk_buff *skb)
++				  const struct sk_buff *skb)
+ {
+ 	if (sizeof(nci_pattern_core_conn_close_rsp) != skb->len ||
+ 	    memcmp(skb->data, nci_pattern_core_conn_close_rsp, skb->len))
+@@ -358,7 +359,8 @@ static int process_state_close_lc(struct nfcmrvl_private *priv,
+ 	return 0;
+ }
+ 
+-static int process_state_boot(struct nfcmrvl_private *priv, struct sk_buff *skb)
++static int process_state_boot(struct nfcmrvl_private *priv,
++			      const struct sk_buff *skb)
+ {
+ 	if (sizeof(nci_pattern_proprietary_boot_rsp) != skb->len ||
+ 	    memcmp(skb->data, nci_pattern_proprietary_boot_rsp, skb->len))
+diff --git a/drivers/nfc/nfcmrvl/i2c.c b/drivers/nfc/nfcmrvl/i2c.c
+index 59a529e72d96..6e659e77c8a2 100644
+--- a/drivers/nfc/nfcmrvl/i2c.c
++++ b/drivers/nfc/nfcmrvl/i2c.c
+@@ -182,8 +182,8 @@ static int nfcmrvl_i2c_parse_dt(struct device_node *node,
+ static int nfcmrvl_i2c_probe(struct i2c_client *client,
+ 			     const struct i2c_device_id *id)
+ {
++	const struct nfcmrvl_platform_data *pdata;
+ 	struct nfcmrvl_i2c_drv_data *drv_data;
+-	struct nfcmrvl_platform_data *pdata;
+ 	struct nfcmrvl_platform_data config;
+ 	int ret;
+ 
+diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
+index 6e9e7ce8792c..d8e48bdaf652 100644
+--- a/drivers/nfc/nfcmrvl/main.c
++++ b/drivers/nfc/nfcmrvl/main.c
+@@ -93,7 +93,7 @@ struct nfcmrvl_private *nfcmrvl_nci_register_dev(enum nfcmrvl_phy phy,
+ 				void *drv_data,
+ 				struct nfcmrvl_if_ops *ops,
+ 				struct device *dev,
+-				struct nfcmrvl_platform_data *pdata)
++				const struct nfcmrvl_platform_data *pdata)
+ {
+ 	struct nfcmrvl_private *priv;
+ 	int rc;
+diff --git a/drivers/nfc/nfcmrvl/nfcmrvl.h b/drivers/nfc/nfcmrvl/nfcmrvl.h
+index a715543bc9bf..84fafa95965e 100644
+--- a/drivers/nfc/nfcmrvl/nfcmrvl.h
++++ b/drivers/nfc/nfcmrvl/nfcmrvl.h
+@@ -94,7 +94,7 @@ struct nfcmrvl_private *nfcmrvl_nci_register_dev(enum nfcmrvl_phy phy,
+ 				void *drv_data,
+ 				struct nfcmrvl_if_ops *ops,
+ 				struct device *dev,
+-				struct nfcmrvl_platform_data *pdata);
++				const struct nfcmrvl_platform_data *pdata);
+ 
+ 
+ void nfcmrvl_chip_reset(struct nfcmrvl_private *priv);
+diff --git a/drivers/nfc/nfcmrvl/spi.c b/drivers/nfc/nfcmrvl/spi.c
+index 66696321c645..7b015bb33fc9 100644
+--- a/drivers/nfc/nfcmrvl/spi.c
++++ b/drivers/nfc/nfcmrvl/spi.c
+@@ -106,7 +106,7 @@ static struct nfcmrvl_if_ops spi_ops = {
+ 	.nci_update_config = nfcmrvl_spi_nci_update_config,
  };
  
- int microread_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
--		    char *llc_name, int phy_headroom, int phy_tailroom,
-+		    const char *llc_name, int phy_headroom, int phy_tailroom,
- 		    int phy_payload, struct nfc_hci_dev **hdev)
+-static int nfcmrvl_spi_parse_dt(struct device_node *node,
++static int nfcmrvl_spi_parse_dt(const struct device_node *node,
+ 				struct nfcmrvl_platform_data *pdata)
  {
- 	struct microread_info *info;
-diff --git a/drivers/nfc/microread/microread.h b/drivers/nfc/microread/microread.h
-index 76152d7aa53c..2ee7ccfa22dd 100644
---- a/drivers/nfc/microread/microread.h
-+++ b/drivers/nfc/microread/microread.h
-@@ -11,7 +11,7 @@
- #define DRIVER_DESC "NFC driver for microread"
+ 	int ret;
+@@ -129,7 +129,7 @@ static int nfcmrvl_spi_parse_dt(struct device_node *node,
  
- int microread_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
--		    char *llc_name, int phy_headroom, int phy_tailroom,
-+		    const char *llc_name, int phy_headroom, int phy_tailroom,
- 		    int phy_payload, struct nfc_hci_dev **hdev);
+ static int nfcmrvl_spi_probe(struct spi_device *spi)
+ {
+-	struct nfcmrvl_platform_data *pdata;
++	const struct nfcmrvl_platform_data *pdata;
+ 	struct nfcmrvl_platform_data config;
+ 	struct nfcmrvl_spi_drv_data *drv_data;
+ 	int ret = 0;
+diff --git a/drivers/nfc/nfcmrvl/uart.c b/drivers/nfc/nfcmrvl/uart.c
+index 50d86c90b9dd..63ac434675c8 100644
+--- a/drivers/nfc/nfcmrvl/uart.c
++++ b/drivers/nfc/nfcmrvl/uart.c
+@@ -98,8 +98,8 @@ static int nfcmrvl_uart_parse_dt(struct device_node *node,
+ static int nfcmrvl_nci_uart_open(struct nci_uart *nu)
+ {
+ 	struct nfcmrvl_private *priv;
+-	struct nfcmrvl_platform_data *pdata = NULL;
+ 	struct nfcmrvl_platform_data config;
++	const struct nfcmrvl_platform_data *pdata = NULL;
+ 	struct device *dev = nu->tty->dev;
  
- void microread_remove(struct nfc_hci_dev *hdev);
+ 	/*
 -- 
 2.27.0
 
