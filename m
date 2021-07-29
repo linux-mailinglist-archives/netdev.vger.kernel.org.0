@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6743DA8D3
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 18:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7925A3DA8D7
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 18:20:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbhG2QU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 12:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60848 "EHLO
+        id S231906AbhG2QVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 12:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231634AbhG2QUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 12:20:45 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA240C061765
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 09:20:41 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h14so7602050wrx.10
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 09:20:41 -0700 (PDT)
+        with ESMTP id S231771AbhG2QUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 12:20:47 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB845C061798
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 09:20:42 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id l18so7646087wrv.5
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 09:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WpzKuMYPOOo+opYvgS0cCtV4tL2VnVBIMo4lNV54X2A=;
-        b=TTEXmlfC+Q8I3qXy7YVvc9OFAJCu2F3mWWpgxrQvRNH+ck8brFpuYMMoi0+VktDVyL
-         8OEbSzLRtbY3oSMOPTo5omt2sbwqMr1by/oc/HWCzEzMg2Fg5W4IBGhVXifNPz3KxcHS
-         Zvv/mihY70YeIwt33voOzV6ZeQNzcziYfwlZ6Bb88ADrEWPzcFbLJEY6AR5S1XwMAqD5
-         Dn+zzn+0G16pcK1cdqFMIVmLPJvOkCVjzMvtoJG9TbrrhEtC3xKw0xFpEOv5diy192jp
-         Ykr/2utdbakW5mtmJTHgXT7LN6ba4ezwlPFEY3+eI0l52rWuciMYMLx7xH4GTf4v3liC
-         s7Bw==
+        bh=o/hBpf5viYMSq0AktZJVEsskRhUKYFmlrZVQvNFOpzo=;
+        b=aPG03mWax//aD/qbmVyFxwq6o62C0oVHpmZQ8NuF1QD51r1GW1N9UJNTvCEj6SgpqP
+         0fWt+9xP332zDVioHfUFDm/Th7gMUUDWLcuhQOIgdxKG2HE/mZjlnTgASFr8nfCxTkjd
+         xtceWzdMaGBpMHwovj4TpxUZlhciVofJy8ylEQpHG0jPCpKK0M50PHngYBMMpalFcSCH
+         njNmwjiXaseMtDeOKsX9MEUhab6diZhhL6yvId7vuAPrgNzDYmB+ZxcRPYJ225SUU78c
+         IYrpF9beII/kcrFDMXyxiAQxiUiGRoGWBNRe6/Fhskl+A6yo9UwLAAFfTyKd4GoKF7rG
+         msxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WpzKuMYPOOo+opYvgS0cCtV4tL2VnVBIMo4lNV54X2A=;
-        b=LJa/02twPQSICFUYwFRHfE/UBLUvX7cp91P6ILGUPg9zd5VlGKiLklj9fh1Qor1aGh
-         zb2KzvSl6j/GmWskhtzH6sVxi+rDmPcUUq2M+BeE/0/Ly0GSGSlthEVTanLWAsDzoYv4
-         pUgm/eZBw/kirh40zIX5YBvJNnodBS+NlS9+zgKUygu/l1hMbdvbTfZYQrW10CqmG+mG
-         wF/iw32XqfqOiEBdbog6t45bEUzEOcg5Q4SMLa/+lh5rcnviFdiQvXQjOCBPKNmOiqAt
-         XDgkdu6wUEh9njQYPIJbN+frgbqWkuZXvAU8+0gr9MQ3NqUxPosEYKPmJIzq17MNAMwu
-         4GDA==
-X-Gm-Message-State: AOAM533FkZRwQJrozZfxwqTFq2ErahXGI8DscFjlRpwrg+TwCHETM/Wn
-        r3zyte/JA+Pxh8t7eJBMqq92b1I+mJ6ikHCdaP0=
-X-Google-Smtp-Source: ABdhPJxAZJFxVjOsG4dFTmMC24NdvSZAPVL+ch7lG5vJAjZ6aNax9Hn7256v7Z7aSle8dY13l8s/Rw==
-X-Received: by 2002:adf:9cc7:: with SMTP id h7mr3206863wre.406.1627575640270;
-        Thu, 29 Jul 2021 09:20:40 -0700 (PDT)
+        bh=o/hBpf5viYMSq0AktZJVEsskRhUKYFmlrZVQvNFOpzo=;
+        b=WF/9WTuuJI53DR06fK+EFtgpcnqNEIulmxdRyQ6iUoMqRaqu30AA4w/kZamD1vfUax
+         w/f3Ebp60p5cM8uxc2LIx/QdJnWUwbEkgviqHqtS4XrgLaJydKNauk+UGvtVsEy3ICLU
+         N4u20pF4XfLeS1lEqOPdvbEXCSTGMQM+UZPO+pAegFrppaLlU57Kk0RaW6Xq23/4Ebuf
+         r5ofS1kiLqHYtfnKHMDiWBw4UWH7OFNDsoK7xJsOOreZAFC8gCFMAgPdkfeYB+RFgmbb
+         EN2VlVJwJNtBhXLa0nmlJQqIzeMJr904fkiDYyRnbO33k86dCSuAjeaHhlD2J3MmogzR
+         sN0A==
+X-Gm-Message-State: AOAM531KPe9s2Ltppmzg1WVZUb8SnEWVq/CZCY8/a84F673N97CJSkEU
+        wa5XBo/0WqM4JNQx1khNfKC3LakC9vpdbV+UTIo=
+X-Google-Smtp-Source: ABdhPJyk16ft4kg/WHYcIwhutv0sVyhiF5DTjy4XrboD3DhZ/6XjRcq4MdmmY7LP3LRKNw5JHfMbkg==
+X-Received: by 2002:a05:6000:10c3:: with SMTP id b3mr5806832wrx.271.1627575641341;
+        Thu, 29 Jul 2021 09:20:41 -0700 (PDT)
 Received: from localhost.localdomain ([149.86.66.250])
-        by smtp.gmail.com with ESMTPSA id c10sm3854853wmb.40.2021.07.29.09.20.39
+        by smtp.gmail.com with ESMTPSA id c10sm3854853wmb.40.2021.07.29.09.20.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 09:20:39 -0700 (PDT)
+        Thu, 29 Jul 2021 09:20:40 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH bpf-next v3 3/8] libbpf: rename btf__get_from_id() as btf__load_from_kernel_by_id()
-Date:   Thu, 29 Jul 2021 17:20:23 +0100
-Message-Id: <20210729162028.29512-4-quentin@isovalent.com>
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v3 4/8] tools: free BTF objects at various locations
+Date:   Thu, 29 Jul 2021 17:20:24 +0100
+Message-Id: <20210729162028.29512-5-quentin@isovalent.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210729162028.29512-1-quentin@isovalent.com>
 References: <20210729162028.29512-1-quentin@isovalent.com>
@@ -66,129 +65,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename function btf__get_from_id() as btf__load_from_kernel_by_id() to
-better indicate what the function does. Change the new function so that,
-instead of requiring a pointer to the pointer to update and returning
-with an error code, it takes a single argument (the id of the BTF
-object) and returns the corresponding pointer. This is more in line with
-the existing constructors.
+Make sure to call btf__free() (and not simply free(), which does not
+free all pointers stored in the struct) on pointers to struct btf
+objects retrieved at various locations.
 
-The other tools calling the (soon-to-be) deprecated btf__get_from_id()
-function will be updated in a future commit.
+These were found while updating the calls to btf__get_from_id().
 
-References:
-
-- https://github.com/libbpf/libbpf/issues/278
-- https://github.com/libbpf/libbpf/wiki/Libbpf:-the-road-to-v1.0#btfh-apis
-
+Fixes: 999d82cbc044 ("tools/bpf: enhance test_btf file testing to test func info")
+Fixes: 254471e57a86 ("tools/bpf: bpftool: add support for func types")
+Fixes: 7b612e291a5a ("perf tools: Synthesize PERF_RECORD_* for loaded BPF programs")
+Fixes: d56354dc4909 ("perf tools: Save bpf_prog_info and BTF of new BPF programs")
+Fixes: 47c09d6a9f67 ("bpftool: Introduce "prog profile" command")
+Fixes: fa853c4b839e ("perf stat: Enable counting events for BPF programs")
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
 ---
- tools/lib/bpf/btf.c      | 25 +++++++++++++++++--------
- tools/lib/bpf/btf.h      |  3 ++-
- tools/lib/bpf/libbpf.c   |  5 +++--
- tools/lib/bpf/libbpf.map |  1 +
- 4 files changed, 23 insertions(+), 11 deletions(-)
+ tools/bpf/bpftool/prog.c                     | 5 ++++-
+ tools/perf/util/bpf-event.c                  | 4 ++--
+ tools/perf/util/bpf_counter.c                | 3 ++-
+ tools/testing/selftests/bpf/prog_tests/btf.c | 1 +
+ 4 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 7e0de560490e..948c29fee447 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -1383,21 +1383,30 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
- 	return btf;
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index cc48726740ad..9d709b427665 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -781,6 +781,8 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		kernel_syms_destroy(&dd);
+ 	}
+ 
++	btf__free(btf);
++
+ 	return 0;
  }
  
-+struct btf *btf__load_from_kernel_by_id(__u32 id)
-+{
-+	struct btf *btf;
-+	int btf_fd;
-+
-+	btf_fd = bpf_btf_get_fd_by_id(id);
-+	if (btf_fd < 0)
-+		return libbpf_err_ptr(-errno);
-+
-+	btf = btf_get_from_fd(btf_fd, NULL);
-+	close(btf_fd);
-+
-+	return libbpf_ptr(btf);
-+}
-+
- int btf__get_from_id(__u32 id, struct btf **btf)
- {
- 	struct btf *res;
--	int err, btf_fd;
-+	int err;
- 
- 	*btf = NULL;
--	btf_fd = bpf_btf_get_fd_by_id(id);
--	if (btf_fd < 0)
--		return libbpf_err(-errno);
--
--	res = btf_get_from_fd(btf_fd, NULL);
-+	res = btf__load_from_kernel_by_id(id);
- 	err = libbpf_get_error(res);
- 
--	close(btf_fd);
--
- 	if (err)
- 		return libbpf_err(err);
- 
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index fd8a21d936ef..698afde03c2e 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -43,6 +43,8 @@ LIBBPF_API struct btf *btf__parse_elf(const char *path, struct btf_ext **btf_ext
- LIBBPF_API struct btf *btf__parse_elf_split(const char *path, struct btf *base_btf);
- LIBBPF_API struct btf *btf__parse_raw(const char *path);
- LIBBPF_API struct btf *btf__parse_raw_split(const char *path, struct btf *base_btf);
-+LIBBPF_API struct btf *btf__load_from_kernel_by_id(__u32 id);
-+LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
- 
- LIBBPF_API int btf__finalize_data(struct bpf_object *obj, struct btf *btf);
- LIBBPF_API int btf__load(struct btf *btf);
-@@ -67,7 +69,6 @@ LIBBPF_API void btf__set_fd(struct btf *btf, int fd);
- LIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);
- LIBBPF_API const char *btf__name_by_offset(const struct btf *btf, __u32 offset);
- LIBBPF_API const char *btf__str_by_offset(const struct btf *btf, __u32 offset);
--LIBBPF_API int btf__get_from_id(__u32 id, struct btf **btf);
- LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
- 				    __u32 expected_key_size,
- 				    __u32 expected_value_size,
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 9a657d6d7da3..313883179919 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8316,7 +8316,7 @@ static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_fd)
- {
+@@ -2002,8 +2004,8 @@ static char *profile_target_name(int tgt_fd)
  	struct bpf_prog_info_linear *info_linear;
- 	struct bpf_prog_info *info;
--	struct btf *btf = NULL;
-+	struct btf *btf;
- 	int err;
+ 	struct bpf_func_info *func_info;
+ 	const struct btf_type *t;
++	struct btf *btf = NULL;
+ 	char *name = NULL;
+-	struct btf *btf;
  
- 	info_linear = bpf_program__get_prog_info_linear(attach_prog_fd, 0);
-@@ -8333,7 +8333,8 @@ static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_fd)
- 		pr_warn("The target program doesn't have BTF\n");
- 		goto out;
+ 	info_linear = bpf_program__get_prog_info_linear(
+ 		tgt_fd, 1UL << BPF_PROG_INFO_FUNC_INFO);
+@@ -2027,6 +2029,7 @@ static char *profile_target_name(int tgt_fd)
  	}
--	if (btf__get_from_id(info->btf_id, &btf)) {
-+	btf = btf__load_from_kernel_by_id(info->btf_id);
-+	if (libbpf_get_error(btf)) {
- 		pr_warn("Failed to get BTF of the program\n");
- 		goto out;
+ 	name = strdup(btf__name_by_offset(btf, t->name_off));
+ out:
++	btf__free(btf);
+ 	free(info_linear);
+ 	return name;
+ }
+diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+index cdecda1ddd36..17a9844e4fbf 100644
+--- a/tools/perf/util/bpf-event.c
++++ b/tools/perf/util/bpf-event.c
+@@ -296,7 +296,7 @@ static int perf_event__synthesize_one_bpf_prog(struct perf_session *session,
+ 
+ out:
+ 	free(info_linear);
+-	free(btf);
++	btf__free(btf);
+ 	return err ? -1 : 0;
+ }
+ 
+@@ -486,7 +486,7 @@ static void perf_env__add_bpf_info(struct perf_env *env, u32 id)
+ 	perf_env__fetch_btf(env, btf_id, btf);
+ 
+ out:
+-	free(btf);
++	btf__free(btf);
+ 	close(fd);
+ }
+ 
+diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
+index 8150e03367bb..beca55129b0b 100644
+--- a/tools/perf/util/bpf_counter.c
++++ b/tools/perf/util/bpf_counter.c
+@@ -64,8 +64,8 @@ static char *bpf_target_prog_name(int tgt_fd)
+ 	struct bpf_prog_info_linear *info_linear;
+ 	struct bpf_func_info *func_info;
+ 	const struct btf_type *t;
++	struct btf *btf = NULL;
+ 	char *name = NULL;
+-	struct btf *btf;
+ 
+ 	info_linear = bpf_program__get_prog_info_linear(
+ 		tgt_fd, 1UL << BPF_PROG_INFO_FUNC_INFO);
+@@ -89,6 +89,7 @@ static char *bpf_target_prog_name(int tgt_fd)
  	}
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 4d80eb8c56b0..3a9c6939301e 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -375,6 +375,7 @@ LIBBPF_0.5.0 {
- 		bpf_map_lookup_and_delete_elem_flags;
- 		bpf_program__attach_kprobe_opts;
- 		bpf_object__gen_loader;
-+		btf__load_from_kernel_by_id;
- 		btf__load_into_kernel;
- 		btf_dump__dump_type_data;
- 		libbpf_set_strict_mode;
+ 	name = strdup(btf__name_by_offset(btf, t->name_off));
+ out:
++	btf__free(btf);
+ 	free(info_linear);
+ 	return name;
+ }
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+index 857e3f26086f..68e415f4d33c 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+@@ -4386,6 +4386,7 @@ static void do_test_file(unsigned int test_num)
+ 	fprintf(stderr, "OK");
+ 
+ done:
++	btf__free(btf);
+ 	free(func_info);
+ 	bpf_object__close(obj);
+ }
 -- 
 2.30.2
 
