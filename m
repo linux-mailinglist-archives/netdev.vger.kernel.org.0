@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6A03DA9EC
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 19:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809423DA9EE
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 19:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232392AbhG2RSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 13:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
+        id S232593AbhG2RSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 13:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbhG2RSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 13:18:01 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CB8C061798;
-        Thu, 29 Jul 2021 10:17:57 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id ec13so8686453edb.0;
-        Thu, 29 Jul 2021 10:17:57 -0700 (PDT)
+        with ESMTP id S232146AbhG2RSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 13:18:03 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A3CC0613D5;
+        Thu, 29 Jul 2021 10:17:59 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id o5so11976084ejy.2;
+        Thu, 29 Jul 2021 10:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qMIB2ROb9Jl4hKjccOFMhpclOaN08ueTHwZ/9EPgJ28=;
-        b=SsvxOqWbwYPZhdl0g9sC7Fk6Kadv0FrK/30uje13Y6wUQFiqoeq+uMF+8k+5zUqsXi
-         iYpwe1ZQf6+b+0FBkJKIQdefOuLt8zXzFN/OsID9sgi04OZsEYxLkQ4bKGpKwCCI1BSc
-         cG3DBQalrU4lWuBIH0vxd3aUSy3KmTsZmk3Qw88tZ96sNlyufczi8rhh/bhd6fpETlmW
-         3oOqOTwu+iNY701y6GBVZPtLSmRpYfcUDwnsSaQXwhKNRGA9mdwV4Xv2a4c4A1mZF9Hm
-         4li2N1Gz0AVm1W3/jlCGFHu8pLZSpS+gFZAKWw7yTR5MRCcqgK3p6rdqPqQsHGt2XZ2y
-         zKdA==
+        bh=89CgPT3VkrqPxNLqY/6UFH61Wf0AdKuC1cOTr/8rVjg=;
+        b=P/UlxHpng+VrreQnHWQ2u5qsblJMhHsWX774JkuVi/e7Y/ale0KCt0/9OJuvZdg0SL
+         8Z/1quHw9niI6DqAWAsrVHFkm7KXAvowR/ZOZNv2YY4GQ5SUaEYu/jvwCez/RQ6e84dC
+         LotNewEyYAihDQeffUvYTtPFuEdVJjoqG6VAWDGj2uFLyGlbAShrOcTNlMdzCNTXpUGV
+         eRVt/Fd0qbgge+wl0CJYjn5ybtphlR2DtLR5d6mwwr+jswUuMTIFXnB53l+8X8uPw6t0
+         0chyrhh0MtPQjG1gRFP4+miS041abdHvMTJewvT90qulr5V8D3BrWnRv0cmgNUQzQyZQ
+         4RrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qMIB2ROb9Jl4hKjccOFMhpclOaN08ueTHwZ/9EPgJ28=;
-        b=SjRFjkdP3uFhzYDiqhVDVDibZOHlJQAwmlpX/jU3kZJjIlPV6hS0biHZC2c7w6TlEh
-         s1Dalw+KY7K4GjXZiIqkwN1LTRHPjsPlFb/2EfBWbuPSB5OeeOLi3wLwnvDqGIyA02C+
-         EyfFgawNLIFAkduzN+P1gH9xzP/uVtALhC9wSAxAMSlJcxMhU2zBh0DOtpXcIKS3r/wX
-         rQFSTcNL+MsykA/1dJ8OO77l649Wel0OzLK+VtYEqTDSyW1Ctjf/IAbtdLPd3vKUgAij
-         /JY9Hhq6SUugfCll/AJ7gCYWG3eICflhQ3zx1ufdQRhrQTZJJBXp+Pm9j6fW+bRQm/Rj
-         1gSQ==
-X-Gm-Message-State: AOAM530lWjz0N3BVTURZKqSAoi9lCjLqt8BQmzgV4nTYsnsHT2eq+vmb
-        pnnp60a4bPche9diVQXhppE=
-X-Google-Smtp-Source: ABdhPJwAD6VlOAALw3ZyWigZdfp6SkDf2jZRw9Q8TRuQ3jp/Wy0q7/iyAERCZnt4pFhWJzAMNYYUqQ==
-X-Received: by 2002:a05:6402:152:: with SMTP id s18mr7153839edu.221.1627579076261;
-        Thu, 29 Jul 2021 10:17:56 -0700 (PDT)
+        bh=89CgPT3VkrqPxNLqY/6UFH61Wf0AdKuC1cOTr/8rVjg=;
+        b=qNqYAZyN8XfZ9NFSUrE8qGb7foQ0qiriPeG0ts37ySW8uBwJDQj/vKmSDSpr+Q89+E
+         GpR2oa8yEDYrYrCgJxao4ygAz9+pRgMK3RYmg+CDqxpQA/CRclso2hA+yuz5ostoazby
+         x0Zzuygrfetun2CgeyO55p+2QcZasEEgRn3+Uuv9c1xTpSohSgdAP4b0Et6+4ilnM8ti
+         tlLTepBbf7uJs2hCJnJHwt1e6oyyvnqCZEw5OyCA0RBphQPiokp8knsxc8Mn4O+ybndl
+         P7+w1k3qys8LkhrZNBmPOTAzl81TSU0mvM1JYtqKbN3BjZD57K3XJ9zMxqf/PiusDcmV
+         0R/A==
+X-Gm-Message-State: AOAM5321ZFtkYeVPuVhiImj4hFAy01GwkgULRSJ3cmZA/ldLHGIyF2jZ
+        URugg500tUZMPn4VHNFzR/w=
+X-Google-Smtp-Source: ABdhPJzRrIAt3p+sob5R9V8cAZbz7Mjfw33Lnw99WHDXoaPeyA4FIUVabER3LiG4GY215y9qBC5TgQ==
+X-Received: by 2002:a17:906:b30d:: with SMTP id n13mr5654322ejz.401.1627579077506;
+        Thu, 29 Jul 2021 10:17:57 -0700 (PDT)
 Received: from yoga-910.localhost ([82.76.66.29])
-        by smtp.gmail.com with ESMTPSA id df14sm1451612edb.90.2021.07.29.10.17.55
+        by smtp.gmail.com with ESMTPSA id df14sm1451612edb.90.2021.07.29.10.17.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 10:17:55 -0700 (PDT)
+        Thu, 29 Jul 2021 10:17:56 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     corbet@lwn.net, netdev@vger.kernel.org, linux-doc@vger.kernel.org,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 8/9] dpaa2-switch: offload shared block mirror filters when binding to a port
-Date:   Thu, 29 Jul 2021 20:19:00 +0300
-Message-Id: <20210729171901.3211729-9-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 9/9] docs: networking: dpaa2: document mirroring support on the switch
+Date:   Thu, 29 Jul 2021 20:19:01 +0300
+Message-Id: <20210729171901.3211729-10-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210729171901.3211729-1-ciorneiioana@gmail.com>
 References: <20210729171901.3211729-1-ciorneiioana@gmail.com>
@@ -65,135 +65,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-When mirroring rules are added in shared filter blocks, the same
-mirroring rule has to be configured on all the switch ports that are
-part of the same block.
-
-In case a switch port joins a shared block after mirroring filters have
-been already added to it, then all the mirror rules should be offloaded
-to the port. The reverse, removal of mirroring rules, has to be done at
-block unbind.
-
-For this purpose, the dpaa2_switch_block_offload_mirror() and
-dpaa2_switch_block_unoffload_mirror() functions are added and called
-upon binding and unbinding a switch port to/from a block.
+Document the mirroring capabilities of the dpaa2-switch driver,
+any restrictions that are imposed and some example commands.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- .../freescale/dpaa2/dpaa2-switch-flower.c     | 51 +++++++++++++++++++
- .../ethernet/freescale/dpaa2/dpaa2-switch.c   | 14 +++++
- .../ethernet/freescale/dpaa2/dpaa2-switch.h   |  6 +++
- 3 files changed, 71 insertions(+)
+ .../freescale/dpaa2/switch-driver.rst         | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-index 3c4f5ada12fd..d6eefbbf163f 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-@@ -803,6 +803,57 @@ int dpaa2_switch_cls_matchall_replace(struct dpaa2_switch_filter_block *block,
- 	}
- }
- 
-+int dpaa2_switch_block_offload_mirror(struct dpaa2_switch_filter_block *block,
-+				      struct ethsw_port_priv *port_priv)
-+{
-+	struct ethsw_core *ethsw = port_priv->ethsw_data;
-+	struct dpaa2_switch_mirror_entry *tmp;
-+	int err;
+diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
+index 863ca6bd8318..8bf411b857d4 100644
+--- a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
++++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/switch-driver.rst
+@@ -172,3 +172,46 @@ Example 4: Use a single shared filter block on both eth5 and eth6::
+                 action trap
+         $ tc filter add block 1 ingress protocol ipv4 flower src_ip 192.168.1.1 skip_sw \
+                 action mirred egress redirect dev eth3
 +
-+	list_for_each_entry(tmp, &block->mirror_entries, list) {
-+		err = dpsw_if_add_reflection(ethsw->mc_io, 0,
-+					     ethsw->dpsw_handle,
-+					     port_priv->idx, &tmp->cfg);
-+		if (err)
-+			goto unwind_add;
-+	}
++Mirroring
++~~~~~~~~~
 +
-+	return 0;
++The DPAA2 switch supports only per port mirroring and per VLAN mirroring.
++Adding mirroring filters in shared blocks is also supported.
 +
-+unwind_add:
-+	list_for_each_entry(tmp, &block->mirror_entries, list)
-+		dpsw_if_remove_reflection(ethsw->mc_io, 0,
-+					  ethsw->dpsw_handle,
-+					  port_priv->idx, &tmp->cfg);
++When using the tc-flower classifier with the 802.1q protocol, only the
++''vlan_id'' key will be accepted. Mirroring based on any other fields from the
++802.1q protocol will be rejected::
 +
-+	return err;
-+}
++        $ tc qdisc add dev eth8 ingress_block 1 clsact
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_prio 3 action mirred egress mirror dev eth6
++        Error: fsl_dpaa2_switch: Only matching on VLAN ID supported.
++        We have an error talking to the kernel
 +
-+int dpaa2_switch_block_unoffload_mirror(struct dpaa2_switch_filter_block *block,
-+					struct ethsw_port_priv *port_priv)
-+{
-+	struct ethsw_core *ethsw = port_priv->ethsw_data;
-+	struct dpaa2_switch_mirror_entry *tmp;
-+	int err;
++If a mirroring VLAN filter is requested on a port, the VLAN must to be
++installed on the switch port in question either using ''bridge'' or by creating
++a VLAN upper device if the switch port is used as a standalone interface::
 +
-+	list_for_each_entry(tmp, &block->mirror_entries, list) {
-+		err = dpsw_if_remove_reflection(ethsw->mc_io, 0,
-+						ethsw->dpsw_handle,
-+						port_priv->idx, &tmp->cfg);
-+		if (err)
-+			goto unwind_remove;
-+	}
++        $ tc qdisc add dev eth8 ingress_block 1 clsact
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_id 200 action mirred egress mirror dev eth6
++        Error: VLAN must be installed on the switch port.
++        We have an error talking to the kernel
 +
-+	return 0;
++        $ bridge vlan add vid 200 dev eth8
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_id 200 action mirred egress mirror dev eth6
 +
-+unwind_remove:
-+	list_for_each_entry(tmp, &block->mirror_entries, list)
-+		dpsw_if_add_reflection(ethsw->mc_io, 0, ethsw->dpsw_handle,
-+				       port_priv->idx, &tmp->cfg);
++        $ ip link add link eth8 name eth8.200 type vlan id 200
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_id 200 action mirred egress mirror dev eth6
 +
-+	return err;
-+}
++Also, it should be noted that the mirrored traffic will be subject to the same
++egress restrictions as any other traffic. This means that when a mirrored
++packet will reach the mirror port, if the VLAN found in the packet is not
++installed on the port it will get dropped.
 +
- int dpaa2_switch_cls_matchall_destroy(struct dpaa2_switch_filter_block *block,
- 				      struct tc_cls_matchall_offload *cls)
- {
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-index 3857d9093623..71129724d9ca 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -1229,6 +1229,13 @@ static int dpaa2_switch_port_block_bind(struct ethsw_port_priv *port_priv,
- 	struct dpaa2_switch_filter_block *old_block = port_priv->filter_block;
- 	int err;
- 
-+	/* Offload all the mirror entries found in the block on this new port
-+	 * joining it.
-+	 */
-+	err = dpaa2_switch_block_offload_mirror(block, port_priv);
-+	if (err)
-+		return err;
++The DPAA2 switch supports only a single mirroring destination, thus multiple
++mirror rules can be installed but their ''to'' port has to be the same::
 +
- 	/* If the port is already bound to this ACL table then do nothing. This
- 	 * can happen when this port is the first one to join a tc block
- 	 */
-@@ -1256,6 +1263,13 @@ dpaa2_switch_port_block_unbind(struct ethsw_port_priv *port_priv,
- 	struct dpaa2_switch_filter_block *new_block;
- 	int err;
- 
-+	/* Unoffload all the mirror entries found in the block from the
-+	 * port leaving it.
-+	 */
-+	err = dpaa2_switch_block_unoffload_mirror(block, port_priv);
-+	if (err)
-+		return err;
-+
- 	/* We are the last port that leaves a block (an ACL table).
- 	 * We'll continue to use this table.
- 	 */
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.h
-index 79e8a40f97f7..f69d940f3c5b 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.h
-@@ -253,4 +253,10 @@ int dpaa2_switch_cls_matchall_destroy(struct dpaa2_switch_filter_block *block,
- 
- int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *block,
- 			       struct dpaa2_switch_acl_entry *entry);
-+
-+int dpaa2_switch_block_offload_mirror(struct dpaa2_switch_filter_block *block,
-+				      struct ethsw_port_priv *port_priv);
-+
-+int dpaa2_switch_block_unoffload_mirror(struct dpaa2_switch_filter_block *block,
-+					struct ethsw_port_priv *port_priv);
- #endif	/* __ETHSW_H */
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_id 200 action mirred egress mirror dev eth6
++        $ tc filter add block 1 ingress protocol 802.1q flower skip_sw vlan_id 100 action mirred egress mirror dev eth7
++        Error: fsl_dpaa2_switch: Multiple mirror ports not supported.
++        We have an error talking to the kernel
 -- 
 2.31.1
 
