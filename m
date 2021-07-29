@@ -2,147 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314F63DA0C4
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FCE3DA126
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 12:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235451AbhG2KBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 06:01:09 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53992 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231622AbhG2KBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:01:08 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16T9oN93015543;
-        Thu, 29 Jul 2021 03:00:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=7qkxdV8qf1nb90+5pIEBJ36TVxbUXcm0lZyqdonU0bM=;
- b=DssCtBkjc8kVelpXFKLPhbOy2p2Kae64Gj2qMqIw5V/xRHoPG13z0YBSDZ1DPGPPXgn+
- TKR+dhbjBEEt8QgpFVi0dXUG7bQy7CtW38xFbji9FXcVntC0r1/LoKuI0XZPOKlnY5+P
- OSl9indff5kHUGurnHkP6MpQCiUNIS+OakzdLmILD3eoq4cGItT0whNwW/wCo/WSVyym
- UZbAVfWDzwo1oLvv9VUDlNoy0l9iL2C+lr7uMW2rujm2fegZ63CyFRziYxzPdhBclK+/
- QAtnN1gakuoYULsnFffxKeMyO1WkzXrZzr65NrUfLO1FsGSrlxXMAuLMuDHhhdmVSeqC Fw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3a35pr46x7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 29 Jul 2021 03:00:59 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 29 Jul
- 2021 03:00:57 -0700
-Received: from lbtlvb-pcie154.il.qlogic.org (10.69.176.80) by
- DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server id
- 15.0.1497.18 via Frontend Transport; Thu, 29 Jul 2021 03:00:55 -0700
-From:   Prabhakar Kushwaha <pkushwaha@marvell.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <malin1024@gmail.com>, <smalin@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        Ariel Elior <aelior@marvell.com>
-Subject: [PATCH] qede: Remove the qede module version
-Date:   Thu, 29 Jul 2021 13:00:42 +0300
-Message-ID: <20210729100042.10332-1-pkushwaha@marvell.com>
-X-Mailer: git-send-email 2.16.6
+        id S235966AbhG2Kg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 06:36:28 -0400
+Received: from smtp-out1.suse.de ([195.135.220.28]:40160 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233273AbhG2Kg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 06:36:27 -0400
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 508A0223DB;
+        Thu, 29 Jul 2021 10:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1627554983;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UkKnqVbw14P1zZ1afK/03fijXFZbWicFe7fyoa6bfnY=;
+        b=pwTsly5mnrizCEq06N5ukXErKPn6Gc1C4FWAemD4tE4rdrKSAD7WEsJBIsy8JMWoICKPro
+        YUD+rdsGqthszKzibpdDw9PZmLm6K7z+/nJcnH3/9RbXzkKL1yBN2iLF4qJdxbzSEE22IX
+        Yy8hsiRj4qt+y/wj0C71RSUrfiRJOCs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1627554983;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UkKnqVbw14P1zZ1afK/03fijXFZbWicFe7fyoa6bfnY=;
+        b=oD2Z+sefoAAeNVxRJnEQBL4v50NCmrVZt9d8xH9i0feek4vyCIM8VXMg7aRjFLf8nzGBrz
+        j9JufWGGGCZMyACA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 36ED5A3B8C;
+        Thu, 29 Jul 2021 10:36:23 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id D7134DA7AF; Thu, 29 Jul 2021 12:33:37 +0200 (CEST)
+Date:   Thu, 29 Jul 2021 12:33:37 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 47/64] btrfs: Use memset_after() to clear end of struct
+Message-ID: <20210729103337.GS5047@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Keith Packard <keithpac@amazon.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-staging@lists.linux.dev, linux-block@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, clang-built-linux@googlegroups.com
+References: <20210727205855.411487-1-keescook@chromium.org>
+ <20210727205855.411487-48-keescook@chromium.org>
+ <20210728094215.GX5047@twin.jikos.cz>
+ <202107281455.2A0753F5@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: MTcTF2dvn6yTHompYA_waXiM5Y_mVDLt
-X-Proofpoint-GUID: MTcTF2dvn6yTHompYA_waXiM5Y_mVDLt
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-29_09:2021-07-27,2021-07-29 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202107281455.2A0753F5@keescook>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shai Malin <smalin@marvell.com>
+On Wed, Jul 28, 2021 at 02:56:31PM -0700, Kees Cook wrote:
+> On Wed, Jul 28, 2021 at 11:42:15AM +0200, David Sterba wrote:
+> > On Tue, Jul 27, 2021 at 01:58:38PM -0700, Kees Cook wrote:
+> > > In preparation for FORTIFY_SOURCE performing compile-time and run-time
+> > > field bounds checking for memset(), avoid intentionally writing across
+> > > neighboring fields.
+> > > 
+> > > Use memset_after() so memset() doesn't get confused about writing
+> > > beyond the destination member that is intended to be the starting point
+> > > of zeroing through the end of the struct.
+> > > 
+> > > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > > ---
+> > >  fs/btrfs/root-tree.c | 5 +----
+> > >  1 file changed, 1 insertion(+), 4 deletions(-)
+> > > 
+> > > diff --git a/fs/btrfs/root-tree.c b/fs/btrfs/root-tree.c
+> > > index 702dc5441f03..ec9e78f65fca 100644
+> > > --- a/fs/btrfs/root-tree.c
+> > > +++ b/fs/btrfs/root-tree.c
+> > > @@ -39,10 +39,7 @@ static void btrfs_read_root_item(struct extent_buffer *eb, int slot,
+> > >  		need_reset = 1;
+> > >  	}
+> > >  	if (need_reset) {
+> > > -		memset(&item->generation_v2, 0,
+> > > -			sizeof(*item) - offsetof(struct btrfs_root_item,
+> > > -					generation_v2));
+> > > -
+> > 
+> > Please add
+> > 		/* Clear all members from generation_v2 onwards */
+> > 
+> > > +		memset_after(item, 0, level);
+> 
+> Perhaps there should be another helper memset_starting()? That would
+> make these cases a bit more self-documenting.
 
-Removing the qede module version which is not needed and not allowed
-with inbox drivers.
+That would be better, yes.
 
-Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: Shai Malin <smalin@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/qede.h         |  9 ---------
- drivers/net/ethernet/qlogic/qede/qede_ethtool.c |  6 +++---
- drivers/net/ethernet/qlogic/qede/qede_main.c    | 10 +---------
- 3 files changed, 4 insertions(+), 21 deletions(-)
+> +		memset_starting(item, 0, generation_v2);
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index 2e62a2c4eb63..8693117a6180 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -30,15 +30,6 @@
- #include <net/pkt_cls.h>
- #include <net/tc_act/tc_gact.h>
- 
--#define QEDE_MAJOR_VERSION		8
--#define QEDE_MINOR_VERSION		37
--#define QEDE_REVISION_VERSION		0
--#define QEDE_ENGINEERING_VERSION	20
--#define DRV_MODULE_VERSION __stringify(QEDE_MAJOR_VERSION) "."	\
--		__stringify(QEDE_MINOR_VERSION) "."		\
--		__stringify(QEDE_REVISION_VERSION) "."		\
--		__stringify(QEDE_ENGINEERING_VERSION)
--
- #define DRV_MODULE_SYM		qede
- 
- struct qede_stats_common {
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index 1560ad3d9290..9c6aa6859646 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -625,13 +625,13 @@ static void qede_get_drvinfo(struct net_device *ndev,
- 		 (edev->dev_info.common.mfw_rev >> 8) & 0xFF,
- 		 edev->dev_info.common.mfw_rev & 0xFF);
- 
--	if ((strlen(storm) + strlen(DRV_MODULE_VERSION) + strlen("[storm]  ")) <
-+	if ((strlen(storm) + strlen("[storm]")) <
- 	    sizeof(info->version))
- 		snprintf(info->version, sizeof(info->version),
--			 "%s [storm %s]", DRV_MODULE_VERSION, storm);
-+			 "[storm %s]", storm);
- 	else
- 		snprintf(info->version, sizeof(info->version),
--			 "%s %s", DRV_MODULE_VERSION, storm);
-+			 "%s", storm);
- 
- 	if (edev->dev_info.common.mbi_version) {
- 		snprintf(mbi, ETHTOOL_FWVERS_LEN, "%d.%d.%d",
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 173878696143..033bf2c7f56c 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -39,12 +39,8 @@
- #include "qede.h"
- #include "qede_ptp.h"
- 
--static char version[] =
--	"QLogic FastLinQ 4xxxx Ethernet Driver qede " DRV_MODULE_VERSION "\n";
--
- MODULE_DESCRIPTION("QLogic FastLinQ 4xxxx Ethernet Driver");
- MODULE_LICENSE("GPL");
--MODULE_VERSION(DRV_MODULE_VERSION);
- 
- static uint debug;
- module_param(debug, uint, 0);
-@@ -258,7 +254,7 @@ int __init qede_init(void)
- {
- 	int ret;
- 
--	pr_info("qede_init: %s\n", version);
-+	pr_info("qede init: QLogic FastLinQ 4xxxx Ethernet Driver qede\n");
- 
- 	qede_forced_speed_maps_init();
- 
-@@ -1150,10 +1146,6 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
- 	/* Start the Slowpath-process */
- 	memset(&sp_params, 0, sizeof(sp_params));
- 	sp_params.int_mode = QED_INT_MODE_MSIX;
--	sp_params.drv_major = QEDE_MAJOR_VERSION;
--	sp_params.drv_minor = QEDE_MINOR_VERSION;
--	sp_params.drv_rev = QEDE_REVISION_VERSION;
--	sp_params.drv_eng = QEDE_ENGINEERING_VERSION;
- 	strlcpy(sp_params.name, "qede LAN", QED_DRV_VER_STR_SIZE);
- 	rc = qed_ops->common->slowpath_start(cdev, &sp_params);
- 	if (rc) {
--- 
-2.22.0
-
+memset_from?
