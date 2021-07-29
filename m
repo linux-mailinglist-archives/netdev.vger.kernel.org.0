@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D2933D9E87
-	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 09:36:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC853D9E8E
+	for <lists+netdev@lfdr.de>; Thu, 29 Jul 2021 09:36:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234872AbhG2HgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Jul 2021 03:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
+        id S234637AbhG2HgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Jul 2021 03:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234745AbhG2HgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 03:36:11 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EECDDC0613C1
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 00:36:08 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id t21so5904320plr.13
-        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 00:36:08 -0700 (PDT)
+        with ESMTP id S234769AbhG2HgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Jul 2021 03:36:16 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA99DC0613C1
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 00:36:13 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id mz5-20020a17090b3785b0290176ecf64922so14250712pjb.3
+        for <netdev@vger.kernel.org>; Thu, 29 Jul 2021 00:36:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=x7lCOA+2uHcoDlHpnAPiyr08qHLnKknrRwhD42bW14c=;
-        b=L3+zrqxq1jDIch5mBMRlq4aMkZWeJXNgz//RgYj4u3V1lMU7q20ZSp16442c0mWaWo
-         3pimykQ5c3xo5hFxpe8YP2kPqJRUDXMEfySemYatlQJMfgm4TKPWnxljrQ4scQVJVmAe
-         SgYBeBiHSj6pBrjI7edJBnGY1o6V08/DYlBoSrgQMsrmRK906zgqaAWchZrUKOHWJ1s2
-         G28MPqjFEY3cvBXfzP0Rxts8xu3e5wgWbnD4qAUWn0c4JOpCgg0t7ExynJrXsb/Lqv0X
-         wvgLL4SNtH3zcQoSC98vHFIPnTb8V3qERqJnvlidDS9Zlh9UapAb0RrBTxogd7yCCZ8j
-         K9/A==
+        bh=ezTwUwcHdLzbLJ6Qex8t9bSwQh5nV4gM1nW+onIqamc=;
+        b=aJeeKmO1iUSf5ulfQYOmU/f6LrJOJ/xpojaG8sp5MHHhsHcHMnmIPAHKBLhJjNXk9I
+         SdMsytyS3rpG7e6wxN4paTE8aVeoxADQ2Qq2VajHXG4r7NSce8dZXAAfl9JaBWANBaRx
+         62S32j4gMEjGzd6F2uS/UK4OCyD90ujkUW/g8osNQTriob7uuqrBY8QD40XGCDT+tN2r
+         S96uxeNvFTeXzWXlZhJR4HK9PQRPgGSR4ZaMIRepsa9zFFjt3FCL/aHCfKqU1O86lhtV
+         BKjZynlYbYg8IdfiD8WOoifTvfmhUBkRhWKiO7j2lB54h5a/mglAbeZ0WzkX2aAkZUz9
+         Nm/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=x7lCOA+2uHcoDlHpnAPiyr08qHLnKknrRwhD42bW14c=;
-        b=j/6/1HuVTBWzbZ5kZ3/guW8wmaK3/fcAnXsIk2A+CWcLECWje2ytq0Nfgn4CwVtCOs
-         uGCtk98zIHU9SbJmdMyTgjjWspXM7Wh8ncb96PnrxKI/YaI6tB+qjN3y1NXhreDLrqIA
-         zpkxLkBbpxABv17W64NB2VGSPt4efx6ODzg/F9uoVtR98WzCXNybc+62pQ/8Re2bTrKc
-         NnjXK4okGeRsxZh+FjG4hN5lPoTD2coFN+NqwgkncU1y/2wq31AjYGE11AhH5IDgG80N
-         LKehkEjimHYi7q8JzugFcwslruS9BGRY12A0SwjzmC1kHmYdFGfsZE6nQRaTVEtAMk7B
-         SHvw==
-X-Gm-Message-State: AOAM531wJp7/txJ/Nkd60SeOq5qDqyhWNIUz9cBak9ejhhNYlHj+hxZz
-        LAfpYnS4kApWQ15kyvaTPdVs
-X-Google-Smtp-Source: ABdhPJz6gtDSzVbKQwR9fMTMuBAxDE/HudL65A5sjPsB1aFvsDsAWmfl9tE1fqIYigp4LRfAx1lPGg==
-X-Received: by 2002:a62:804b:0:b029:328:db41:1f47 with SMTP id j72-20020a62804b0000b0290328db411f47mr3610895pfd.43.1627544168542;
-        Thu, 29 Jul 2021 00:36:08 -0700 (PDT)
+        bh=ezTwUwcHdLzbLJ6Qex8t9bSwQh5nV4gM1nW+onIqamc=;
+        b=A41xWy7ZErtsshlmPBEocCjLkc4zT2tMpyKkFyXFiJpXu74uSQxaRaDa6a/zq7SIpq
+         RQaMxBY15r8LLBCoYFw1r9Fo7mVo6w9N6iyGnX4BEYRfCw/bLHmRvxPiSgJYnnOJZDrH
+         XKqK20kue+02bArl20qoNifTbd5vw4FUpzCPUa9W+l2uU/xzpaZQpBnjvTqs7NqqKOOh
+         rqrLsU9K5iffnL9gXqXEe3QEFjuWR06reTGuCfGnShp2hiWsQnKHm4/pU1Z1ouj8o6Gs
+         KhLSu1IKdV66xC4JmVuvdaWn16rEiNzrHmqfWXXaSXXFMpuaZ6wt7isXkbenV6Nm1bSO
+         nP9Q==
+X-Gm-Message-State: AOAM531mDUnokEyfWlW9BgtbEGaDj9eQR6gX8K1C9TCzbvQdJUo8oWpz
+        Vm4I2CqMCcYlvl62fHNVRtnz
+X-Google-Smtp-Source: ABdhPJy5HgYXGcMdvwyyUChEjHwAKCF6yZJqkhXxctPNS68GNGc1IbWVQnCkOAkuA+3j2foct0eGxg==
+X-Received: by 2002:a17:902:a9c6:b029:129:8fdb:698f with SMTP id b6-20020a170902a9c6b02901298fdb698fmr3526952plr.15.1627544173432;
+        Thu, 29 Jul 2021 00:36:13 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
-        by smtp.gmail.com with ESMTPSA id y8sm2535031pfe.162.2021.07.29.00.36.07
+        by smtp.gmail.com with ESMTPSA id y10sm2148879pjy.18.2021.07.29.00.36.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jul 2021 00:36:08 -0700 (PDT)
+        Thu, 29 Jul 2021 00:36:12 -0700 (PDT)
 From:   Xie Yongji <xieyongji@bytedance.com>
 To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
         sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -60,9 +60,9 @@ Cc:     songmuchun@bytedance.com,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v10 02/17] file: Export receive_fd() to modules
-Date:   Thu, 29 Jul 2021 15:34:48 +0800
-Message-Id: <20210729073503.187-3-xieyongji@bytedance.com>
+Subject: [PATCH v10 03/17] vdpa: Fix code indentation
+Date:   Thu, 29 Jul 2021 15:34:49 +0800
+Message-Id: <20210729073503.187-4-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210729073503.187-1-xieyongji@bytedance.com>
 References: <20210729073503.187-1-xieyongji@bytedance.com>
@@ -72,58 +72,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Export receive_fd() so that some modules can use
-it to pass file descriptor between processes without
-missing any security stuffs.
+Use tabs to indent the code instead of spaces.
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 ---
- fs/file.c            | 6 ++++++
- include/linux/file.h | 7 +++----
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ include/linux/vdpa.h | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/fs/file.c b/fs/file.c
-index 86dc9956af32..210e540672aa 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -1134,6 +1134,12 @@ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags)
- 	return new_fd;
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index 7c49bc5a2b71..406d53a606ac 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
+  * @last_used_idx: used index
+  */
+ struct vdpa_vq_state_packed {
+-        u16	last_avail_counter:1;
+-        u16	last_avail_idx:15;
+-        u16	last_used_counter:1;
+-        u16	last_used_idx:15;
++	u16	last_avail_counter:1;
++	u16	last_avail_idx:15;
++	u16	last_used_counter:1;
++	u16	last_used_idx:15;
+ };
+ 
+ struct vdpa_vq_state {
+-     union {
+-          struct vdpa_vq_state_split split;
+-          struct vdpa_vq_state_packed packed;
+-     };
++	union {
++		struct vdpa_vq_state_split split;
++		struct vdpa_vq_state_packed packed;
++	};
+ };
+ 
+ struct vdpa_mgmt_dev;
+@@ -131,7 +131,7 @@ struct vdpa_iova_range {
+  *				@vdev: vdpa device
+  *				@idx: virtqueue index
+  *				@state: pointer to returned state (last_avail_idx)
+- * @get_vq_notification: 	Get the notification area for a virtqueue
++ * @get_vq_notification:	Get the notification area for a virtqueue
+  *				@vdev: vdpa device
+  *				@idx: virtqueue index
+  *				Returns the notifcation area
+@@ -342,25 +342,24 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
+ 
+ static inline void vdpa_reset(struct vdpa_device *vdev)
+ {
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
+ 
+ 	vdev->features_valid = false;
+-        ops->set_status(vdev, 0);
++	ops->set_status(vdev, 0);
  }
  
-+int receive_fd(struct file *file, unsigned int o_flags)
-+{
-+	return __receive_fd(file, NULL, o_flags);
-+}
-+EXPORT_SYMBOL_GPL(receive_fd);
-+
- static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
+ static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
  {
- 	int err = -EBADF;
-diff --git a/include/linux/file.h b/include/linux/file.h
-index 2de2e4613d7b..51e830b4fe3a 100644
---- a/include/linux/file.h
-+++ b/include/linux/file.h
-@@ -94,6 +94,9 @@ extern void fd_install(unsigned int fd, struct file *file);
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
  
- extern int __receive_fd(struct file *file, int __user *ufd,
- 			unsigned int o_flags);
-+
-+extern int receive_fd(struct file *file, unsigned int o_flags);
-+
- static inline int receive_fd_user(struct file *file, int __user *ufd,
- 				  unsigned int o_flags)
- {
-@@ -101,10 +104,6 @@ static inline int receive_fd_user(struct file *file, int __user *ufd,
- 		return -EFAULT;
- 	return __receive_fd(file, ufd, o_flags);
+ 	vdev->features_valid = true;
+-        return ops->set_features(vdev, features);
++	return ops->set_features(vdev, features);
  }
--static inline int receive_fd(struct file *file, unsigned int o_flags)
--{
--	return __receive_fd(file, NULL, o_flags);
--}
- int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags);
  
- extern void flush_delayed_fput(void);
+-
+ static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+ 				   void *buf, unsigned int len)
+ {
+-        const struct vdpa_config_ops *ops = vdev->config;
++	const struct vdpa_config_ops *ops = vdev->config;
+ 
+ 	/*
+ 	 * Config accesses aren't supposed to trigger before features are set.
 -- 
 2.11.0
 
